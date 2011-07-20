@@ -1,0 +1,22 @@
+<network>
+  <name>vepa-net</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a8b</uuid>
+  <forward mode="vepa">
+    <interface dev="eth1"/>
+    <interface dev="eth2"/>
+    <interface dev="eth3"/>
+  </forward>
+  <virtualport type="802.1Qbg">
+    <parameters managerid="11" typeid="1193047" typeidversion="2" instanceid="b153fa89-1b87-9719-ec12-99e0054fb844"/>
+  </virtualport>
+  <portgroup name="bob" default="yes">
+    <virtualport type="802.1Qbg">
+      <parameters managerid="12" typeid="2193047" typeidversion="3" instanceid="5d00e0ba-e15c-959c-fbb6-b595b0655735"/>
+    </virtualport>
+  </portgroup>
+  <portgroup name="alice">
+    <virtualport type="802.1Qbg">
+      <parameters managerid="13" typeid="3193047" typeidversion="4" instanceid="70bf45f9-01a8-f5ee-3c0f-e25a0a2e44a6"/>
+    </virtualport>
+  </portgroup>
+</network>

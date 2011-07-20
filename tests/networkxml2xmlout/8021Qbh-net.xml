@@ -1,0 +1,14 @@
+<network>
+  <name>8021Qbh-net</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a8c</uuid>
+  <forward dev='eth1' mode='private'>
+    <interface dev='eth1'/>
+    <interface dev='eth2'/>
+    <interface dev='eth3'/>
+    <interface dev='eth4'/>
+    <interface dev='eth5'/>
+  </forward>
+  <virtualport type='802.1Qbh'>
+    <parameters profileid='spongebob24'/>
+  </virtualport>
+</network>

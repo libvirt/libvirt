@@ -88,6 +88,10 @@ mymain(void)
     DO_TEST("netboot-proxy-network");
     DO_TEST("nat-network-dns-txt-record");
     DO_TEST("nat-network-dns-hosts");
+    DO_TEST("8021Qbh-net");
+    DO_TEST("direct-net");
+    DO_TEST("host-bridge-net");
+    DO_TEST("vepa-net");
 
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

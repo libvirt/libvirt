@@ -747,6 +747,7 @@ virNetworkRemoveInactive;
 virNetworkSaveConfig;
 virNetworkSetBridgeMacAddr;
 virNetworkSetBridgeName;
+virPortGroupFindByName;
 
 
 # node_device_conf.h

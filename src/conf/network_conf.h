@@ -33,11 +33,14 @@
 # include "network.h"
 # include "util.h"
 
-/* 2 possible types of forwarding */
 enum virNetworkForwardType {
     VIR_NETWORK_FORWARD_NONE   = 0,
     VIR_NETWORK_FORWARD_NAT,
     VIR_NETWORK_FORWARD_ROUTE,
+    VIR_NETWORK_FORWARD_BRIDGE,
+    VIR_NETWORK_FORWARD_PRIVATE,
+    VIR_NETWORK_FORWARD_VEPA,
+    VIR_NETWORK_FORWARD_PASSTHROUGH,
 
     VIR_NETWORK_FORWARD_LAST,
 };
@@ -107,6 +110,21 @@ struct _virNetworkIpDef {
     virSocketAddr bootserver;
    };
 
+typedef struct _virNetworkForwardIfDef virNetworkForwardIfDef;
+typedef virNetworkForwardIfDef *virNetworkForwardIfDefPtr;
+struct _virNetworkForwardIfDef {
+    char *dev;      /* name of device */
+    int usageCount; /* how many guest interfaces are bound to this device? */
+};
+
+typedef struct _virPortGroupDef virPortGroupDef;
+typedef virPortGroupDef *virPortGroupDefPtr;
+struct _virPortGroupDef {
+    char *name;
+    bool isDefault;
+    virVirtualPortProfileParamsPtr virtPortProfile;
+};
+
 typedef struct _virNetworkDef virNetworkDef;
 typedef virNetworkDef *virNetworkDefPtr;
 struct _virNetworkDef {
@@ -121,12 +139,21 @@ struct _virNetworkDef {
     bool mac_specified;
 
     int forwardType;    /* One of virNetworkForwardType constants */
-    char *forwardDev;   /* Destination device for forwarding */
+
+    /* If there are multiple forward devices (i.e. a pool of
+     * interfaces), they will be listed here.
+     */
+    size_t nForwardIfs;
+    virNetworkForwardIfDefPtr forwardIfs;
 
     size_t nips;
     virNetworkIpDefPtr ips; /* ptr to array of IP addresses on this network */
 
     virNetworkDNSDefPtr dns; /* ptr to dns related configuration */
+    virVirtualPortProfileParamsPtr virtPortProfile;
+
+    size_t nPortGroups;
+    virPortGroupDefPtr portGroups;
 };
 
 typedef struct _virNetworkObj virNetworkObj;
@@ -178,6 +205,16 @@ virNetworkDefPtr virNetworkDefParseNode(xmlDocPtr xml,
                                         xmlNodePtr root);
 
 char *virNetworkDefFormat(const virNetworkDefPtr def);
+
+static inline const char *
+virNetworkDefForwardIf(const virNetworkDefPtr def, size_t n)
+{
+    return ((def->forwardIfs && (def->nForwardIfs > n))
+            ? def->forwardIfs[n].dev : NULL);
+}
+
+virPortGroupDefPtr virPortGroupFindByName(virNetworkDefPtr net,
+                                          const char *portgroup);
 
 virNetworkIpDefPtr
 virNetworkDefGetIpByIndex(const virNetworkDefPtr def,

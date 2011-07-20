@@ -7,6 +7,7 @@
   </start>
 
   <include href='basictypes.rng'/>
+  <include href='networkcommon.rng'/>
 
   <define name="network">
 
@@ -77,11 +78,47 @@
                 <choice>
                   <value>nat</value>
                   <value>route</value>
+                  <value>bridge</value>
+                  <value>passthrough</value>
+                  <value>private</value>
+                  <value>vepa</value>
                 </choice>
               </attribute>
             </optional>
+            <zeroOrMore>
+              <element name='interface'>
+                <attribute name='dev'>
+                  <ref name='deviceName'/>
+                </attribute>
+              </element>
+            </zeroOrMore>
           </element>
         </optional>
+
+        <!-- <virtualport> element -->
+        <optional>
+          <ref name="virtualPortProfile"/>
+        </optional>
+
+        <!-- <portgroup> elements -->
+        <zeroOrMore>
+          <element name="portgroup">
+            <attribute name="name">
+              <ref name="deviceName"/>
+            </attribute>
+            <optional>
+              <attribute name="default">
+                <choice>
+                  <value>yes</value>
+                  <value>no</value>
+                </choice>
+              </attribute>
+            </optional>
+            <optional>
+              <ref name="virtualPortProfile"/>
+            </optional>
+          </element>
+        </zeroOrMore>
 
         <!-- <domain> element -->
         <optional>

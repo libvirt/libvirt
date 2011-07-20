@@ -1,7 +1,9 @@
 <network>
   <name>default</name>
   <uuid>81ff0d90-c91e-6742-64da-4a736edb9a9b</uuid>
-  <forward dev='eth1' mode='nat'/>
+  <forward dev='eth1' mode='nat'>
+    <interface dev='eth1'/>
+  </forward>
   <bridge name='virbr0' stp='on' delay='0' />
   <dns>
     <txt name='example' value='example value' />

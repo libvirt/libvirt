@@ -1,0 +1,7 @@
+<network>
+  <name>direct-net</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a8f</uuid>
+  <forward mode="bridge">
+    <interface dev="eth10"/>
+  </forward>
+</network>

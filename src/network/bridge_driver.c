@@ -898,6 +898,7 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
                                     virNetworkIpDefPtr ipdef)
 {
     int prefix = virNetworkIpDefPrefix(ipdef);
+    const char *forwardIf = virNetworkDefForwardIf(network->def, 0);
 
     if (prefix < 0) {
         networkReportError(VIR_ERR_INTERNAL_ERROR,
@@ -911,7 +912,7 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
                                    &ipdef->address,
                                    prefix,
                                    network->def->bridge,
-                                   network->def->forwardDev) < 0) {
+                                   forwardIf) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
                            _("failed to add iptables rule to allow forwarding from '%s'"),
                            network->def->bridge);
@@ -925,7 +926,7 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
                                          &ipdef->address,
                                          prefix,
                                          network->def->bridge,
-                                         network->def->forwardDev) < 0) {
+                                         forwardIf) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
                            _("failed to add iptables rule to allow forwarding to '%s'"),
                            network->def->bridge);
@@ -959,11 +960,13 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
     if (iptablesAddForwardMasquerade(driver->iptables,
                                      &ipdef->address,
                                      prefix,
-                                     network->def->forwardDev,
+                                     forwardIf,
                                      NULL) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
-                           _("failed to add iptables rule to enable masquerading to '%s'"),
-                           network->def->forwardDev ? network->def->forwardDev : NULL);
+                           forwardIf ?
+                           _("failed to add iptables rule to enable masquerading to %s") :
+                           _("failed to add iptables rule to enable masquerading"),
+                           forwardIf);
         goto masqerr3;
     }
 
@@ -971,11 +974,13 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
     if (iptablesAddForwardMasquerade(driver->iptables,
                                      &ipdef->address,
                                      prefix,
-                                     network->def->forwardDev,
+                                     forwardIf,
                                      "udp") < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
-                           _("failed to add iptables rule to enable UDP masquerading to '%s'"),
-                           network->def->forwardDev ? network->def->forwardDev : NULL);
+                           forwardIf ?
+                           _("failed to add iptables rule to enable UDP masquerading to %s") :
+                           _("failed to add iptables rule to enable UDP masquerading"),
+                           forwardIf);
         goto masqerr4;
     }
 
@@ -983,11 +988,13 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
     if (iptablesAddForwardMasquerade(driver->iptables,
                                      &ipdef->address,
                                      prefix,
-                                     network->def->forwardDev,
+                                     forwardIf,
                                      "tcp") < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
-                           _("failed to add iptables rule to enable TCP masquerading to '%s'"),
-                           network->def->forwardDev ? network->def->forwardDev : NULL);
+                           forwardIf ?
+                           _("failed to add iptables rule to enable TCP masquerading to %s") :
+                           _("failed to add iptables rule to enable TCP masquerading"),
+                           forwardIf);
         goto masqerr5;
     }
 
@@ -997,26 +1004,26 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
     iptablesRemoveForwardMasquerade(driver->iptables,
                                     &ipdef->address,
                                     prefix,
-                                    network->def->forwardDev,
+                                    forwardIf,
                                     "udp");
  masqerr4:
     iptablesRemoveForwardMasquerade(driver->iptables,
                                     &ipdef->address,
                                     prefix,
-                                    network->def->forwardDev,
+                                    forwardIf,
                                     NULL);
  masqerr3:
     iptablesRemoveForwardAllowRelatedIn(driver->iptables,
                                         &ipdef->address,
                                         prefix,
                                         network->def->bridge,
-                                        network->def->forwardDev);
+                                        forwardIf);
  masqerr2:
     iptablesRemoveForwardAllowOut(driver->iptables,
                                   &ipdef->address,
                                   prefix,
                                   network->def->bridge,
-                                  network->def->forwardDev);
+                                  forwardIf);
  masqerr1:
     return -1;
 }
@@ -1027,34 +1034,35 @@ networkRemoveMasqueradingIptablesRules(struct network_driver *driver,
                                        virNetworkIpDefPtr ipdef)
 {
     int prefix = virNetworkIpDefPrefix(ipdef);
+    const char *forwardIf = virNetworkDefForwardIf(network->def, 0);
 
     if (prefix >= 0) {
         iptablesRemoveForwardMasquerade(driver->iptables,
                                         &ipdef->address,
                                         prefix,
-                                        network->def->forwardDev,
+                                        forwardIf,
                                         "tcp");
         iptablesRemoveForwardMasquerade(driver->iptables,
                                         &ipdef->address,
                                         prefix,
-                                        network->def->forwardDev,
+                                        forwardIf,
                                         "udp");
         iptablesRemoveForwardMasquerade(driver->iptables,
                                         &ipdef->address,
                                         prefix,
-                                        network->def->forwardDev,
+                                        forwardIf,
                                         NULL);
 
         iptablesRemoveForwardAllowRelatedIn(driver->iptables,
                                             &ipdef->address,
                                             prefix,
                                             network->def->bridge,
-                                            network->def->forwardDev);
+                                            forwardIf);
         iptablesRemoveForwardAllowOut(driver->iptables,
                                       &ipdef->address,
                                       prefix,
                                       network->def->bridge,
-                                      network->def->forwardDev);
+                                      forwardIf);
     }
 }
 
@@ -1064,6 +1072,7 @@ networkAddRoutingIptablesRules(struct network_driver *driver,
                                virNetworkIpDefPtr ipdef)
 {
     int prefix = virNetworkIpDefPrefix(ipdef);
+    const char *forwardIf = virNetworkDefForwardIf(network->def, 0);
 
     if (prefix < 0) {
         networkReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1077,7 +1086,7 @@ networkAddRoutingIptablesRules(struct network_driver *driver,
                                    &ipdef->address,
                                    prefix,
                                    network->def->bridge,
-                                   network->def->forwardDev) < 0) {
+                                   forwardIf) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
                            _("failed to add iptables rule to allow routing from '%s'"),
                            network->def->bridge);
@@ -1089,7 +1098,7 @@ networkAddRoutingIptablesRules(struct network_driver *driver,
                                   &ipdef->address,
                                   prefix,
                                   network->def->bridge,
-                                  network->def->forwardDev) < 0) {
+                                  forwardIf) < 0) {
         networkReportError(VIR_ERR_SYSTEM_ERROR,
                            _("failed to add iptables rule to allow routing to '%s'"),
                            network->def->bridge);
@@ -1103,7 +1112,7 @@ routeerr2:
                                   &ipdef->address,
                                   prefix,
                                   network->def->bridge,
-                                  network->def->forwardDev);
+                                  forwardIf);
 routeerr1:
     return -1;
 }
@@ -1114,19 +1123,20 @@ networkRemoveRoutingIptablesRules(struct network_driver *driver,
                                   virNetworkIpDefPtr ipdef)
 {
     int prefix = virNetworkIpDefPrefix(ipdef);
+    const char *forwardIf = virNetworkDefForwardIf(network->def, 0);
 
     if (prefix >= 0) {
         iptablesRemoveForwardAllowIn(driver->iptables,
                                      &ipdef->address,
                                      prefix,
                                      network->def->bridge,
-                                     network->def->forwardDev);
+                                     forwardIf);
 
         iptablesRemoveForwardAllowOut(driver->iptables,
                                       &ipdef->address,
                                       prefix,
                                       network->def->bridge,
-                                      network->def->forwardDev);
+                                      forwardIf);
     }
 }
 
@@ -2171,10 +2181,18 @@ static virNetworkPtr networkCreate(virConnectPtr conn, const char *xml) {
     if (virNetworkObjIsDuplicate(&driver->networks, def, 1) < 0)
         goto cleanup;
 
-    if (virNetworkSetBridgeName(&driver->networks, def, 1))
-        goto cleanup;
+    /* Only the three L3 network types that are configured by libvirt
+     * need to have a bridge device name / mac address provided
+     */
+    if (def->forwardType == VIR_NETWORK_FORWARD_NONE ||
+        def->forwardType == VIR_NETWORK_FORWARD_NAT ||
+        def->forwardType == VIR_NETWORK_FORWARD_ROUTE) {
 
-    virNetworkSetBridgeMacAddr(def);
+        if (virNetworkSetBridgeName(&driver->networks, def, 1))
+            goto cleanup;
+
+        virNetworkSetBridgeMacAddr(def);
+    }
 
     if (!(network = virNetworkAssignDef(&driver->networks,
                                         def)))
@@ -2216,10 +2234,18 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
     if (virNetworkObjIsDuplicate(&driver->networks, def, 0) < 0)
         goto cleanup;
 
-    if (virNetworkSetBridgeName(&driver->networks, def, 1))
-        goto cleanup;
+    /* Only the three L3 network types that are configured by libvirt
+     * need to have a bridge device name / mac address provided
+     */
+    if (def->forwardType == VIR_NETWORK_FORWARD_NONE ||
+        def->forwardType == VIR_NETWORK_FORWARD_NAT ||
+        def->forwardType == VIR_NETWORK_FORWARD_ROUTE) {
 
-    virNetworkSetBridgeMacAddr(def);
+        if (virNetworkSetBridgeName(&driver->networks, def, 1))
+            goto cleanup;
+
+        virNetworkSetBridgeMacAddr(def);
+    }
 
     if (!(network = virNetworkAssignDef(&driver->networks,
                                         def)))
