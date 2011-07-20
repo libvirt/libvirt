@@ -1420,6 +1420,7 @@ static const vshCmdInfo info_undefine[] = {
 
 static const vshCmdOptDef opts_undefine[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name or uuid")},
+    {"managed-save", VSH_OT_BOOL, 0, N_("remove domain managed state file")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1430,6 +1431,16 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name = NULL;
     int id;
+    int flags = 0;
+    int managed_save = vshCommandOptBool(cmd, "managed-save");
+    int has_managed_save = 0;
+    int rc = -1;
+
+    if (managed_save)
+        flags |= VIR_DOMAIN_UNDEFINE_MANAGED_SAVE;
+
+    if (!managed_save)
+        flags = -1;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -1451,7 +1462,55 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
                                       VSH_BYNAME|VSH_BYUUID)))
         return false;
 
-    if (virDomainUndefine(dom) == 0) {
+    has_managed_save = virDomainHasManagedSaveImage(dom, 0);
+    if (has_managed_save < 0) {
+        if (last_error->code != VIR_ERR_NO_SUPPORT) {
+            virshReportError(ctl);
+            virDomainFree(dom);
+            return false;
+        } else {
+            virFreeError(last_error);
+            last_error = NULL;
+        }
+    }
+
+    if (flags == -1) {
+        if (has_managed_save == 1) {
+            vshError(ctl,
+                     _("Refusing to undefine while domain managed save "
+                       "image exists"));
+            virDomainFree(dom);
+            return false;
+        }
+
+        rc = virDomainUndefine(dom);
+    } else {
+        rc = virDomainUndefineFlags(dom, flags);
+
+        /* It might fail when virDomainUndefineFlags is not
+         * supported on older libvirt, try to undefine the
+         * domain with combo virDomainManagedSaveRemove and
+         * virDomainUndefine.
+         */
+        if (rc < 0) {
+            if (last_error->code != VIR_ERR_NO_SUPPORT) {
+                virshReportError(ctl);
+                goto end;
+            } else {
+                virFreeError(last_error);
+                last_error = NULL;
+            }
+
+            if ((has_managed_save == 1) &&
+                virDomainManagedSaveRemove(dom, 0) < 0)
+                goto end;
+
+            rc = virDomainUndefine(dom);
+        }
+    }
+
+end:
+    if (rc == 0) {
         vshPrint(ctl, _("Domain %s has been undefined\n"), name);
     } else {
         vshError(ctl, _("Failed to undefine domain %s"), name);

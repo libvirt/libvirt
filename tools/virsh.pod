@@ -813,10 +813,18 @@ hypervisor.
 Output the device used for the TTY console of the domain. If the information
 is not available the processes will provide an exit code of 1.
 
-=item B<undefine> I<domain-id>
+=item B<undefine> I<domain-id> [I<--managed-save>]
 
-Undefine the configuration for an inactive domain. Since it's not running
-the domain name or UUID must be used as the I<domain-id>.
+Undefine a domain. If the domain is running, this converts it to a
+transient domain, without stopping it. If the domain is inactive,
+the domain configuration is removed.
+
+The I<--managed-save> flag guarantees that any managed save image(see
+the B<managedsave> command) is also cleaned up.  Without the flag, attempts
+to undefine a domain with a managed save image will fail.
+
+NOTE: For an inactive domain, the domain name or UUID must be used as the
+I<domain-id>.
 
 =item B<vcpucount> I<domain-id>  [{I<--maximum> | I<--current>}
 {I<--config> | I<--live>}]
