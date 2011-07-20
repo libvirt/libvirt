@@ -4311,11 +4311,17 @@ cleanup:
     return dom;
 }
 
-static int qemudDomainUndefine(virDomainPtr dom) {
+static int
+qemuDomainUndefineFlags(virDomainPtr dom,
+                         unsigned int flags)
+{
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainEventPtr event = NULL;
+    char *name = NULL;
     int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_UNDEFINE_MANAGED_SAVE, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -4340,6 +4346,26 @@ static int qemudDomainUndefine(virDomainPtr dom) {
         goto cleanup;
     }
 
+    name = qemuDomainManagedSavePath(driver, vm);
+    if (name == NULL)
+        goto cleanup;
+
+    if (virFileExists(name)) {
+        if (flags & VIR_DOMAIN_UNDEFINE_MANAGED_SAVE) {
+            if (unlink(name) < 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Failed to remove domain managed "
+                                  "save image"));
+                goto cleanup;
+            }
+        } else {
+            qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                            _("Refusing to undefine while domain managed "
+                              "save image exists"));
+            goto cleanup;
+        }
+    }
+
     if (virDomainDeleteConfig(driver->configDir, driver->autostartDir, vm) < 0)
         goto cleanup;
 
@@ -4354,12 +4380,19 @@ static int qemudDomainUndefine(virDomainPtr dom) {
     ret = 0;
 
 cleanup:
+    VIR_FREE(name);
     if (vm)
         virDomainObjUnlock(vm);
     if (event)
         qemuDomainEventQueue(driver, event);
     qemuDriverUnlock(driver);
     return ret;
+}
+
+static int
+qemudDomainUndefine(virDomainPtr dom)
+{
+    return qemuDomainUndefineFlags(dom, 0);
 }
 
 static int
@@ -8553,6 +8586,7 @@ static virDriver qemuDriver = {
     .domainCreateWithFlags = qemudDomainStartWithFlags, /* 0.8.2 */
     .domainDefineXML = qemudDomainDefine, /* 0.2.0 */
     .domainUndefine = qemudDomainUndefine, /* 0.2.0 */
+    .domainUndefineFlags = qemuDomainUndefineFlags, /* 0.9.4 */
     .domainAttachDevice = qemuDomainAttachDevice, /* 0.4.1 */
     .domainAttachDeviceFlags = qemuDomainAttachDeviceFlags, /* 0.7.7 */
     .domainDetachDevice = qemuDomainDetachDevice, /* 0.5.0 */
