@@ -1526,12 +1526,15 @@ cleanup:
 }
 
 static int
-libxlDomainDestroy(virDomainPtr dom)
+libxlDomainDestroyFlags(virDomainPtr dom,
+                        unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     virDomainEventPtr event = NULL;
+
+    virCheckFlags(0, -1);
 
     libxlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1572,6 +1575,12 @@ cleanup:
         libxlDomainEventQueue(driver, event);
     libxlDriverUnlock(driver);
     return ret;
+}
+
+static int
+libxlDomainDestroy(virDomainPtr dom)
+{
+    return libxlDomainDestroyFlags(dom, 0);
 }
 
 static char *
@@ -3842,6 +3851,7 @@ static virDriver libxlDriver = {
     .domainShutdown = libxlDomainShutdown, /* 0.9.0 */
     .domainReboot = libxlDomainReboot, /* 0.9.0 */
     .domainDestroy = libxlDomainDestroy, /* 0.9.0 */
+    .domainDestroyFlags = libxlDomainDestroyFlags, /* 0.9.4 */
     .domainGetOSType = libxlDomainGetOSType, /* 0.9.0 */
     .domainGetMaxMemory = libxlDomainGetMaxMemory, /* 0.9.0 */
     .domainSetMaxMemory = libxlDomainSetMaxMemory, /* 0.9.2 */
