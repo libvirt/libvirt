@@ -2078,6 +2078,58 @@ error:
 }
 
 /**
+ * virDomainDestroyFlags:
+ * @domain: a domain object
+ * @flags: an OR'ed set of virDomainDestroyFlagsValues
+ *
+ * Destroy the domain object. The running instance is shutdown if not down
+ * already and all resources used by it are given back to the hypervisor.
+ * This does not free the associated virDomainPtr object.
+ * This function may require privileged access.
+ *
+ * Calling this function with no @flags set (equal to zero)
+ * is equivalent to calling virDomainDestroy.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainDestroyFlags(virDomainPtr domain,
+                      unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = domain->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainDestroyFlags) {
+        int ret;
+        ret = conn->driver->domainDestroyFlags(domain, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
  * virDomainFree:
  * @domain: a domain object
  *

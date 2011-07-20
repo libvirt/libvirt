@@ -471,6 +471,7 @@ LIBVIRT_0.9.4 {
         virDomainRestoreFlags;
         virDomainSaveFlags;
         virDomainUndefineFlags;
+        virDomainDestroyFlags;
 } LIBVIRT_0.9.3;
 
 # .... define new API here using predicted next version number ....
