@@ -1069,7 +1069,7 @@ void virDomainEventDispatch(virDomainEventPtr event,
 {
     int i;
     /* Cache this now, since we may be dropping the lock,
-       and have more callbacks added. We're guarenteed not
+       and have more callbacks added. We're guaranteed not
        to have any removed */
     int cbCount = callbacks->count;
 

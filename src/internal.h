@@ -140,7 +140,7 @@
  * Macro used to check printf like functions, if compiling
  * with gcc.
  *
- * We use gnulib which guarentees we always have GNU style
+ * We use gnulib which guarantees we always have GNU style
  * printf format specifiers even on broken Win32 platforms
  * hence we have to force 'gnu_printf' for new GCC
  */

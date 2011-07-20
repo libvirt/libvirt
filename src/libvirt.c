@@ -13390,7 +13390,7 @@ error:
  * Changes the set of events to monitor for a stream. This allows
  * for event notification to be changed without having to
  * unregister & register the callback completely. This method
- * is guarenteed to succeed if a callback is already registered
+ * is guaranteed to succeed if a callback is already registered
  *
  * Returns 0 on success, -1 if no callback is registered
  */

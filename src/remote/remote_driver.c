@@ -584,7 +584,7 @@ doRemoteOpen (virConnectPtr conn,
         if (!(priv->client = virNetClientNewExternal(cmd_argv)))
             goto failed;
 
-        /* Do not set 'is_secure' flag since we can't guarentee
+        /* Do not set 'is_secure' flag since we can't guarantee
          * an external program is secure, and this flag must be
          * pessimistic */
     }   break;

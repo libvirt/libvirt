@@ -143,7 +143,7 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
         }
 
         /* XXX ideally we'd fill in secret UUID here
-         * but we cannot guarentee 'conn' is non-NULL
+         * but we cannot guarantee 'conn' is non-NULL
          * at this point in time :-(  So we only fill
          * in secrets when someone first queries a vol
          */

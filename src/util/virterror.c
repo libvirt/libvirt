@@ -327,7 +327,7 @@ int
 virCopyLastError(virErrorPtr to)
 {
     virErrorPtr err = virLastErrorObject();
-    /* We can't guarentee caller has initialized it to zero */
+    /* We can't guarantee caller has initialized it to zero */
     memset(to, 0, sizeof(*to));
     if (err)
         virCopyError(err, to);
@@ -464,7 +464,7 @@ virConnGetLastError(virConnectPtr conn)
 int
 virConnCopyLastError(virConnectPtr conn, virErrorPtr to)
 {
-    /* We can't guarentee caller has initialized it to zero */
+    /* We can't guarantee caller has initialized it to zero */
     memset(to, 0, sizeof(*to));
 
     if (conn == NULL)

@@ -36,7 +36,7 @@ xenDaemonOpen_unix(virConnectPtr conn, const char *path);
  * \return 0 for success; -1 (with errno) on error
  *
  * xen_create() returns after a domain has been allocated including
- * its memory.  This does not guarentee, though, that the devices
+ * its memory.  This does not guarantee, though, that the devices
  * have come up properly.  For instance, if you create a VBD with an
  * invalid filename, the error won't occur until after this function
  * returns.
