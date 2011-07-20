@@ -676,6 +676,11 @@ struct remote_domain_destroy_args {
     remote_nonnull_domain dom;
 };
 
+struct remote_domain_destroy_flags_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
 struct remote_domain_get_os_type_args {
     remote_nonnull_domain dom;
 };
@@ -2406,6 +2411,7 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_UNDEFINE_FLAGS = 231,  /* autogen autogen */
     REMOTE_PROC_DOMAIN_SAVE_FLAGS = 232,  /* autogen autogen */
     REMOTE_PROC_DOMAIN_RESTORE_FLAGS = 233  /* autogen autogen */
+    REMOTE_PROC_DOMAIN_DESTROY_FLAGS = 234 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

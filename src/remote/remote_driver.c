@@ -4152,6 +4152,7 @@ static virDriver remote_driver = {
     .domainShutdown = remoteDomainShutdown, /* 0.3.0 */
     .domainReboot = remoteDomainReboot, /* 0.3.0 */
     .domainDestroy = remoteDomainDestroy, /* 0.3.0 */
+    .domainDestroyFlags = remoteDomainDestroyFlags, /* 0.9.4 */
     .domainGetOSType = remoteDomainGetOSType, /* 0.3.0 */
     .domainGetMaxMemory = remoteDomainGetMaxMemory, /* 0.3.0 */
     .domainSetMaxMemory = remoteDomainSetMaxMemory, /* 0.3.0 */
