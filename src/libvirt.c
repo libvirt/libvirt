@@ -6374,7 +6374,13 @@ error:
  * virDomainUndefine:
  * @domain: pointer to a defined domain
  *
- * Undefine a domain but does not stop it if it is running
+ * Undefine a domain. If the domain is running, it's converted to
+ * transient domain, without stopping it. If the domain is inactive,
+ * the domain configuration is removed.
+ *
+ * If the domain has a managed save image (see
+ * virDomainHasManagedSaveImage()), then the undefine will fail. See
+ * virDomainUndefineFlags() for more control.
  *
  * Returns 0 in case of success, -1 in case of error
  */
@@ -6411,6 +6417,58 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
+/**
+ * virDomainUndefineFlags:
+ * @domain: pointer to a defined domain
+ * @flags: bitwise-or of supported virDomainUndefineFlagsValues
+ *
+ * Undefine a domain. If the domain is running, it's converted to
+ * transient domain, without stopping it. If the domain is inactive,
+ * the domain configuration is removed.
+ *
+ * If the domain has a managed save image (see virDomainHasManagedSaveImage()),
+ * then including VIR_DOMAIN_UNDEFINE_MANAGED_SAVE in @flags will also remove
+ * that file, and omitting the flag will cause the undefine process to fail.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+int
+virDomainUndefineFlags(virDomainPtr domain,
+                       unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "flags=%x", flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    conn = domain->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainUndefineFlags) {
+        int ret;
+        ret = conn->driver->domainUndefineFlags (domain, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
 
 /**
  * virConnectNumOfDefinedDomains:

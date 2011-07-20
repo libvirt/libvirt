@@ -219,6 +219,9 @@ typedef virDomainPtr
 typedef int
         (*virDrvDomainUndefine)		(virDomainPtr dom);
 typedef int
+        (*virDrvDomainUndefineFlags)	(virDomainPtr dom,
+                                         unsigned int flags);
+typedef int
         (*virDrvDomainSetVcpus)		(virDomainPtr domain,
                                          unsigned int nvcpus);
 typedef int
@@ -733,6 +736,7 @@ struct _virDriver {
     virDrvDomainCreateWithFlags	domainCreateWithFlags;
     virDrvDomainDefineXML           domainDefineXML;
     virDrvDomainUndefine            domainUndefine;
+    virDrvDomainUndefineFlags       domainUndefineFlags;
     virDrvDomainAttachDevice	domainAttachDevice;
     virDrvDomainAttachDeviceFlags	domainAttachDeviceFlags;
     virDrvDomainDetachDevice	domainDetachDevice;
