@@ -2766,7 +2766,7 @@ libxlDomainUndefineFlags(virDomainPtr dom,
     if (virFileExists(name)) {
         if (flags & VIR_DOMAIN_UNDEFINE_MANAGED_SAVE) {
             if (unlink(name) < 0) {
-                libxlError(VIR_ERR_INTERNAL_ERR,
+                libxlError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to remove domain managed save image"));
                 goto cleanup;
             }
