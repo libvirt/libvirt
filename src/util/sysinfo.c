@@ -113,7 +113,10 @@ void virSysinfoDefFree(virSysinfoDefPtr def)
  *
  * Returns: a filled up sysinfo structure or NULL in case of error
  */
-#ifdef WIN32
+#if defined(WIN32) || \
+    !(defined(__x86_64__) || \
+      defined(__i386__) ||   \
+      defined(__amd64__))
 virSysinfoDefPtr
 virSysinfoRead(void) {
     /*
@@ -125,7 +128,7 @@ virSysinfoRead(void) {
     return NULL;
 }
 
-#else /* !WIN32 */
+#else /* !WIN32 && x86 */
 
 static char *
 virSysinfoParseBIOS(char *base, virSysinfoDefPtr ret)
@@ -509,7 +512,7 @@ no_memory:
     ret = NULL;
     goto cleanup;
 }
-#endif /* !WIN32 */
+#endif /* !WIN32 && x86 */
 
 static void
 virSysinfoBIOSFormat(virSysinfoDefPtr def, const char *prefix,
