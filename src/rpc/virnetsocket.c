@@ -604,6 +604,7 @@ int virNetSocketNewConnectSSH(const char *nodename,
     virCommandAddEnvPassCommon(cmd);
     virCommandAddEnvPass(cmd, "SSH_AUTH_SOCK");
     virCommandAddEnvPass(cmd, "SSH_ASKPASS");
+    virCommandAddEnvPass(cmd, "DISPLAY");
     virCommandClearCaps(cmd);
 
     if (service)
