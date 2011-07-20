@@ -2535,11 +2535,15 @@ static int testDomainCreate(virDomainPtr domain) {
     return testDomainCreateWithFlags(domain, 0);
 }
 
-static int testDomainUndefine(virDomainPtr domain) {
+static int testDomainUndefineFlags(virDomainPtr domain,
+                                   unsigned int flags)
+{
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     virDomainEventPtr event = NULL;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     testDriverLock(privconn);
     privdom = virDomainFindByName(&privconn->domains,
@@ -2571,6 +2575,11 @@ cleanup:
         testDomainEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
+}
+
+static int testDomainUndefine(virDomainPtr domain)
+{
+    return testDomainUndefineFlags(domain, 0);
 }
 
 static int testDomainGetAutostart(virDomainPtr domain,
@@ -5556,6 +5565,7 @@ static virDriver testDriver = {
     .domainCreateWithFlags = testDomainCreateWithFlags, /* 0.8.2 */
     .domainDefineXML = testDomainDefineXML, /* 0.1.11 */
     .domainUndefine = testDomainUndefine, /* 0.1.11 */
+    .domainUndefineFlags = testDomainUndefineFlags, /* 0.9.4 */
     .domainGetAutostart = testDomainGetAutostart, /* 0.3.2 */
     .domainSetAutostart = testDomainSetAutostart, /* 0.3.2 */
     .domainGetSchedulerType = testDomainGetSchedulerType, /* 0.3.2 */

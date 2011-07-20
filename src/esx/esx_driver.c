@@ -3290,7 +3290,8 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
 
 
 static int
-esxDomainUndefine(virDomainPtr domain)
+esxDomainUndefineFlags(virDomainPtr domain,
+                       unsigned int flags)
 {
     int result = -1;
     esxPrivate *priv = domain->conn->privateData;
@@ -3298,6 +3299,8 @@ esxDomainUndefine(virDomainPtr domain)
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_VirtualMachinePowerState powerState;
+
+    virCheckFlags(0, -1);
 
     if (priv->vCenter != NULL) {
         ctx = priv->vCenter;
@@ -3339,6 +3342,11 @@ esxDomainUndefine(virDomainPtr domain)
 }
 
 
+static int
+esxDomainUndefine(virDomainPtr domain)
+{
+    return esxDomainUndefineFlags(domain, 0);
+}
 
 static int
 esxDomainGetAutostart(virDomainPtr domain, int *autostart)
@@ -4747,6 +4755,7 @@ static virDriver esxDriver = {
     .domainCreateWithFlags = esxDomainCreateWithFlags, /* 0.8.2 */
     .domainDefineXML = esxDomainDefineXML, /* 0.7.2 */
     .domainUndefine = esxDomainUndefine, /* 0.7.1 */
+    .domainUndefineFlags = esxDomainUndefineFlags, /* 0.9.4 */
     .domainGetAutostart = esxDomainGetAutostart, /* 0.9.0 */
     .domainSetAutostart = esxDomainSetAutostart, /* 0.9.0 */
     .domainGetSchedulerType = esxDomainGetSchedulerType, /* 0.7.0 */

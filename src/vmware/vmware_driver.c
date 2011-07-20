@@ -609,11 +609,14 @@ vmwareDomainCreate(virDomainPtr dom)
 }
 
 static int
-vmwareDomainUndefine(virDomainPtr dom)
+vmwareDomainUndefineFlags(virDomainPtr dom,
+                          unsigned int flags)
 {
     struct vmware_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     vmwareDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -648,6 +651,12 @@ vmwareDomainUndefine(virDomainPtr dom)
         virDomainObjUnlock(vm);
     vmwareDriverUnlock(driver);
     return ret;
+}
+
+static int
+vmwareDomainUndefine(virDomainPtr dom)
+{
+    return vmwareDomainUndefineFlags(dom, 0);
 }
 
 static virDomainPtr
@@ -969,6 +978,7 @@ static virDriver vmwareDriver = {
     .domainCreateWithFlags = vmwareDomainCreateWithFlags, /* 0.8.7 */
     .domainDefineXML = vmwareDomainDefineXML, /* 0.8.7 */
     .domainUndefine = vmwareDomainUndefine, /* 0.8.7 */
+    .domainUndefineFlags = vmwareDomainUndefineFlags, /* 0.9.4 */
     .domainIsActive = vmwareDomainIsActive, /* 0.8.7 */
     .domainIsPersistent = vmwareDomainIsPersistent, /* 0.8.7 */
 };

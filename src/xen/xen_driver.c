@@ -1527,17 +1527,23 @@ xenUnifiedDomainDefineXML (virConnectPtr conn, const char *xml)
 }
 
 static int
-xenUnifiedDomainUndefine (virDomainPtr dom)
+xenUnifiedDomainUndefineFlags (virDomainPtr dom, unsigned int flags)
 {
     GET_PRIVATE(dom->conn);
     int i;
 
+    virCheckFlags(0, -1);
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] && drivers[i]->domainUndefine &&
             drivers[i]->domainUndefine (dom) == 0)
             return 0;
 
     return -1;
+}
+
+static int
+xenUnifiedDomainUndefine (virDomainPtr dom) {
+    return xenUnifiedDomainUndefineFlags(dom, 0);
 }
 
 static int
@@ -2223,6 +2229,7 @@ static virDriver xenUnifiedDriver = {
     .domainCreateWithFlags = xenUnifiedDomainCreateWithFlags, /* 0.8.2 */
     .domainDefineXML = xenUnifiedDomainDefineXML, /* 0.1.1 */
     .domainUndefine = xenUnifiedDomainUndefine, /* 0.1.1 */
+    .domainUndefineFlags = xenUnifiedDomainUndefineFlags, /* 0.9.4 */
     .domainAttachDevice = xenUnifiedDomainAttachDevice, /* 0.1.9 */
     .domainAttachDeviceFlags = xenUnifiedDomainAttachDeviceFlags, /* 0.7.7 */
     .domainDetachDevice = xenUnifiedDomainDetachDevice, /* 0.1.9 */

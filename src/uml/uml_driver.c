@@ -1778,10 +1778,14 @@ cleanup:
     return dom;
 }
 
-static int umlDomainUndefine(virDomainPtr dom) {
+static int umlDomainUndefineFlags(virDomainPtr dom,
+                                  unsigned int flags)
+{
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     umlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1818,6 +1822,11 @@ cleanup:
     return ret;
 }
 
+
+static int umlDomainUndefine(virDomainPtr dom)
+{
+    return umlDomainUndefineFlags(dom, 0);
+}
 
 static int umlDomainAttachUmlDisk(struct uml_driver *driver,
                                   virDomainObjPtr vm,
@@ -2427,6 +2436,7 @@ static virDriver umlDriver = {
     .domainCreateWithFlags = umlDomainStartWithFlags, /* 0.8.2 */
     .domainDefineXML = umlDomainDefine, /* 0.5.0 */
     .domainUndefine = umlDomainUndefine, /* 0.5.0 */
+    .domainUndefineFlags = umlDomainUndefineFlags, /* 0.9.4 */
     .domainAttachDevice = umlDomainAttachDevice, /* 0.8.4 */
     .domainAttachDeviceFlags = umlDomainAttachDeviceFlags, /* 0.8.4 */
     .domainDetachDevice = umlDomainDetachDevice, /* 0.8.4 */

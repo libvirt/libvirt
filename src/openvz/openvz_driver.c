@@ -1085,12 +1085,15 @@ openvzDomainCreate(virDomainPtr dom)
 }
 
 static int
-openvzDomainUndefine(virDomainPtr dom)
+openvzDomainUndefineFlags(virDomainPtr dom,
+                          unsigned int flags)
 {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     const char *prog[] = { VZCTL, "--quiet", "destroy", PROGRAM_SENTINAL, NULL };
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     openvzDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1122,6 +1125,11 @@ cleanup:
     return ret;
 }
 
+static int
+openvzDomainUndefine(virDomainPtr dom)
+{
+    return openvzDomainUndefineFlags(dom, 0);
+}
 static int
 openvzDomainSetAutostart(virDomainPtr dom, int autostart)
 {
@@ -1627,6 +1635,7 @@ static virDriver openvzDriver = {
     .domainCreateWithFlags = openvzDomainCreateWithFlags, /* 0.8.2 */
     .domainDefineXML = openvzDomainDefineXML, /* 0.3.3 */
     .domainUndefine = openvzDomainUndefine, /* 0.3.3 */
+    .domainUndefineFlags = openvzDomainUndefineFlags, /* 0.9.4 */
     .domainGetAutostart = openvzDomainGetAutostart, /* 0.4.6 */
     .domainSetAutostart = openvzDomainSetAutostart, /* 0.4.6 */
     .isEncrypted = openvzIsEncrypted, /* 0.7.3 */

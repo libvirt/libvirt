@@ -458,12 +458,15 @@ cleanup:
     return dom;
 }
 
-static int lxcDomainUndefine(virDomainPtr dom)
+static int lxcDomainUndefineFlags(virDomainPtr dom,
+                                  unsigned int flags)
 {
     lxc_driver_t *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainEventPtr event = NULL;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     lxcDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -507,6 +510,11 @@ cleanup:
         lxcDomainEventQueue(driver, event);
     lxcDriverUnlock(driver);
     return ret;
+}
+
+static int lxcDomainUndefine(virDomainPtr dom)
+{
+    return lxcDomainUndefineFlags(dom, 0);
 }
 
 static int lxcDomainGetInfo(virDomainPtr dom,
@@ -2935,6 +2943,7 @@ static virDriver lxcDriver = {
     .domainCreateWithFlags = lxcDomainStartWithFlags, /* 0.8.2 */
     .domainDefineXML = lxcDomainDefine, /* 0.4.2 */
     .domainUndefine = lxcDomainUndefine, /* 0.4.2 */
+    .domainUndefineFlags = lxcDomainUndefineFlags, /* 0.9.4 */
     .domainGetAutostart = lxcDomainGetAutostart, /* 0.7.0 */
     .domainSetAutostart = lxcDomainSetAutostart, /* 0.7.0 */
     .domainGetSchedulerType = lxcGetSchedulerType, /* 0.5.0 */
