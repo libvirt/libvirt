@@ -1934,19 +1934,24 @@ static void lxcDomainEventQueue(lxc_driver_t *driver,
 }
 
 /**
- * lxcDomainDestroy:
+ * lxcDomainDestroyFlags:
  * @dom: pointer to domain to destroy
+ * @flags: an OR'ed set of virDomainDestroyFlags
  *
  * Sends SIGKILL to container root process to terminate the container
  *
  * Returns 0 on success or -1 in case of error
  */
-static int lxcDomainDestroy(virDomainPtr dom)
+static int
+lxcDomainDestroyFlags(virDomainPtr dom,
+                      unsigned int flags)
 {
     lxc_driver_t *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainEventPtr event = NULL;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     lxcDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1981,6 +1986,20 @@ cleanup:
         lxcDomainEventQueue(driver, event);
     lxcDriverUnlock(driver);
     return ret;
+}
+
+/**
+ * lxcDomainDestroy:
+ * @dom: pointer to domain to destroy
+ *
+ * Sends SIGKILL to container root process to terminate the container
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int
+lxcDomainDestroy(virDomainPtr dom)
+{
+    return lxcDomainDestroyFlags(dom, 0);
 }
 
 static int lxcCheckNetNsSupport(void)
@@ -2928,6 +2947,7 @@ static virDriver lxcDriver = {
     .domainSuspend = lxcDomainSuspend, /* 0.7.2 */
     .domainResume = lxcDomainResume, /* 0.7.2 */
     .domainDestroy = lxcDomainDestroy, /* 0.4.4 */
+    .domainDestroyFlags = lxcDomainDestroyFlags, /* 0.9.4 */
     .domainGetOSType = lxcGetOSType, /* 0.4.2 */
     .domainGetMaxMemory = lxcDomainGetMaxMemory, /* 0.7.2 */
     .domainSetMaxMemory = lxcDomainSetMaxMemory, /* 0.7.2 */
