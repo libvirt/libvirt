@@ -230,7 +230,7 @@ xenapiClose (virConnectPtr conn)
 
     if (priv->session != NULL) {
         xen_session_logout(priv->session);
-        xenSessionFree(priv->session);
+        priv->session = NULL;
     }
 
     VIR_FREE(priv->url);
