@@ -104,6 +104,12 @@ int virCgroupDenyDevicePath(virCgroupPtr group,
 int virCgroupSetCpuShares(virCgroupPtr group, unsigned long long shares);
 int virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares);
 
+int virCgroupSetCpuCfsPeriod(virCgroupPtr group, unsigned long long cfs_period);
+int virCgroupGetCpuCfsPeriod(virCgroupPtr group, unsigned long long *cfs_period);
+
+int virCgroupSetCpuCfsQuota(virCgroupPtr group, long long cfs_quota);
+int virCgroupGetCpuCfsQuota(virCgroupPtr group, long long *cfs_quota);
+
 int virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage);
 
 int virCgroupSetFreezerState(virCgroupPtr group, const char *state);

@@ -398,8 +398,6 @@ static int virCgroupSetValueI64(virCgroupPtr group,
     return rc;
 }
 
-#if 0
-/* This is included for completeness, but not yet used */
 static int virCgroupGetValueI64(virCgroupPtr group,
                                 int controller,
                                 const char *key,
@@ -419,7 +417,6 @@ out:
 
     return rc;
 }
-#endif
 
 static int virCgroupGetValueU64(virCgroupPtr group,
                                 int controller,
@@ -1382,6 +1379,84 @@ int virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares)
     return virCgroupGetValueU64(group,
                                 VIR_CGROUP_CONTROLLER_CPU,
                                 "cpu.shares", shares);
+}
+
+/**
+ * virCgroupSetCpuCfsPeriod:
+ *
+ * @group: The cgroup to change cpu.cfs_period_us for
+ * @cfs_period: The bandwidth period in usecs
+ *
+ * Returns: 0 on success
+ */
+int virCgroupSetCpuCfsPeriod(virCgroupPtr group, unsigned long long cfs_period)
+{
+    /* The cfs_period shoule be greater or equal than 1ms, and less or equal
+     * than 1s.
+     */
+    if (cfs_period < 1000 || cfs_period > 1000000)
+        return -EINVAL;
+
+    return virCgroupSetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_CPU,
+                                "cpu.cfs_period_us", cfs_period);
+}
+
+/**
+ * virCgroupGetCpuCfsPeriod:
+ *
+ * @group: The cgroup to get cpu.cfs_period_us for
+ * @cfs_period: Pointer to the returned bandwidth period in usecs
+ *
+ * Returns: 0 on success
+ */
+int virCgroupGetCpuCfsPeriod(virCgroupPtr group, unsigned long long *cfs_period)
+{
+    return virCgroupGetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_CPU,
+                                "cpu.cfs_period_us", cfs_period);
+}
+
+/**
+ * virCgroupSetCpuCfsQuota:
+ *
+ * @group: The cgroup to change cpu.cfs_quota_us for
+ * @cfs_quota: the cpu bandwidth (in usecs) that this tg will be allowed to
+ *             consume over period
+ *
+ * Returns: 0 on success
+ */
+int virCgroupSetCpuCfsQuota(virCgroupPtr group, long long cfs_quota)
+{
+    if (cfs_quota >= 0) {
+        /* The cfs_quota shoule be greater or equal than 1ms */
+        if (cfs_quota < 1000)
+            return -EINVAL;
+
+        /* check overflow */
+        if (cfs_quota > ULLONG_MAX / 1000)
+            return -EINVAL;
+    }
+
+    return virCgroupSetValueI64(group,
+                                VIR_CGROUP_CONTROLLER_CPU,
+                                "cpu.cfs_quota_us", cfs_quota);
+}
+
+/**
+ * virCgroupGetCpuCfsQuota:
+ *
+ * @group: The cgroup to get cpu.cfs_quota_us for
+ * @cfs_quota: Pointer to the returned cpu bandwidth (in usecs) that this tg
+ *             will be allowed to consume over period
+ *
+ * Returns: 0 on success
+ */
+int virCgroupGetCpuCfsQuota(virCgroupPtr group, long long *cfs_quota)
+{
+    return virCgroupGetValueI64(group,
+                                VIR_CGROUP_CONTROLLER_CPU,
+                                "cpu.cfs_quota_us", cfs_quota);
 }
 
 int virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage)
