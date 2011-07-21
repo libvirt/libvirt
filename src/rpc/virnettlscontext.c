@@ -1006,7 +1006,6 @@ virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
 {
     virNetTLSSessionPtr sess;
     int err;
-    static const int cert_type_priority[] = { GNUTLS_CRT_X509, 0 };
 
     VIR_DEBUG("ctxt=%p hostname=%s isServer=%d", ctxt, NULLSTR(hostname), ctxt->isServer);
 
@@ -1033,9 +1032,7 @@ virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
     /* avoid calling all the priority functions, since the defaults
      * are adequate.
      */
-    if ((err = gnutls_set_default_priority(sess->session)) != 0 ||
-        (err = gnutls_certificate_type_set_priority(sess->session,
-                                                    cert_type_priority))) {
+    if ((err = gnutls_set_default_priority(sess->session)) != 0) {
         virNetError(VIR_ERR_SYSTEM_ERROR,
                     _("Failed to set TLS session priority %s"),
                     gnutls_strerror(err));
