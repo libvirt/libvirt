@@ -193,6 +193,7 @@ crl_file = \"/etc/pki/CA/crl.pem\"
 # Default is to always verify. Uncommenting this will disable
 # verification - make sure an IP whitelist is set
 tls_no_verify_certificate = 1
+tls_no_sanity_certificate = 1
 
 
 # A whitelist of allowed x509  Distinguished Names
@@ -468,6 +469,7 @@ audit_level = 2
         { "#comment" = "Default is to always verify. Uncommenting this will disable" }
         { "#comment" = "verification - make sure an IP whitelist is set" }
         { "tls_no_verify_certificate" = "1" }
+        { "tls_no_sanity_certificate" = "1" }
         { "#empty" }
         { "#empty" }
         { "#comment" = "A whitelist of allowed x509  Distinguished Names" }

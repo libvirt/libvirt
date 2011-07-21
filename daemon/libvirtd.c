@@ -120,6 +120,7 @@ struct daemonConfig {
     char *mdns_name;
 
     int tls_no_verify_certificate;
+    int tls_no_sanity_certificate;
     char **tls_allowed_dn_list;
     char **sasl_allowed_username_list;
 
@@ -535,12 +536,14 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                                                        config->cert_file,
                                                        config->key_file,
                                                        (const char *const*)config->tls_allowed_dn_list,
+                                                       config->tls_no_sanity_certificate ? false : true,
                                                        config->tls_no_verify_certificate ? false : true)))
                     goto error;
             } else {
                 if (!(ctxt = virNetTLSContextNewServerPath(NULL,
                                                            !privileged,
                                                            (const char *const*)config->tls_allowed_dn_list,
+                                                           config->tls_no_sanity_certificate ? false : true,
                                                            config->tls_no_verify_certificate ? false : true)))
                     goto error;
             }
@@ -1054,6 +1057,7 @@ daemonConfigLoad(struct daemonConfig *data,
     GET_CONF_INT (conf, filename, mdns_adv);
     GET_CONF_STR (conf, filename, mdns_name);
 
+    GET_CONF_INT (conf, filename, tls_no_sanity_certificate);
     GET_CONF_INT (conf, filename, tls_no_verify_certificate);
 
     GET_CONF_STR (conf, filename, key_file);

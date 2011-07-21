@@ -382,7 +382,7 @@ virNetTLSContextCheckCertDN(gnutls_x509_crt_t cert,
                     certFile, gnutls_strerror(ret));
         return -1;
     }
-
+    VIR_DEBUG("Peer DN is %s", name);
     if (whitelist &&
         virNetTLSContextCheckCertDNWhitelist(name, whitelist) <= 0)
         return -1;
@@ -637,6 +637,7 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
                                                const char *cert,
                                                const char *key,
                                                const char *const*x509dnWhitelist,
+                                               bool sanityCheckCert,
                                                bool requireValidCert,
                                                bool isServer)
 {
@@ -644,8 +645,8 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
     char *gnutlsdebug;
     int err;
 
-    VIR_DEBUG("cacert=%s cacrl=%s cert=%s key=%s requireValid=%d isServer=%d",
-              cacert, NULLSTR(cacrl), cert, key, requireValidCert, isServer);
+    VIR_DEBUG("cacert=%s cacrl=%s cert=%s key=%s sanityCheckCert=%d requireValid=%d isServer=%d",
+              cacert, NULLSTR(cacrl), cert, key, sanityCheckCert, requireValidCert, isServer);
 
     if (VIR_ALLOC(ctxt) < 0) {
         virReportOOMError();
@@ -675,7 +676,7 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
         goto error;
     }
 
-    if (requireValidCert &&
+    if (sanityCheckCert &&
         virNetTLSContextSanityCheckCredentials(isServer, cacert, cert) < 0)
         goto error;
 
@@ -851,6 +852,7 @@ out_of_memory:
 static virNetTLSContextPtr virNetTLSContextNewPath(const char *pkipath,
                                                    bool tryUserPkiPath,
                                                    const char *const*x509dnWhitelist,
+                                                   bool sanityCheckCert,
                                                    bool requireValidCert,
                                                    bool isServer)
 {
@@ -862,7 +864,8 @@ static virNetTLSContextPtr virNetTLSContextNewPath(const char *pkipath,
         return NULL;
 
     ctxt = virNetTLSContextNew(cacert, cacrl, cert, key,
-                               x509dnWhitelist, requireValidCert, isServer);
+                               x509dnWhitelist, sanityCheckCert,
+                               requireValidCert, isServer);
 
     VIR_FREE(cacert);
     VIR_FREE(cacrl);
@@ -875,18 +878,20 @@ static virNetTLSContextPtr virNetTLSContextNewPath(const char *pkipath,
 virNetTLSContextPtr virNetTLSContextNewServerPath(const char *pkipath,
                                                   bool tryUserPkiPath,
                                                   const char *const*x509dnWhitelist,
+                                                  bool sanityCheckCert,
                                                   bool requireValidCert)
 {
-    return virNetTLSContextNewPath(pkipath, tryUserPkiPath,
-                                   x509dnWhitelist, requireValidCert, true);
+    return virNetTLSContextNewPath(pkipath, tryUserPkiPath, x509dnWhitelist,
+                                   sanityCheckCert, requireValidCert, true);
 }
 
 virNetTLSContextPtr virNetTLSContextNewClientPath(const char *pkipath,
                                                   bool tryUserPkiPath,
+                                                  bool sanityCheckCert,
                                                   bool requireValidCert)
 {
-    return virNetTLSContextNewPath(pkipath, tryUserPkiPath,
-                                   NULL, requireValidCert, false);
+    return virNetTLSContextNewPath(pkipath, tryUserPkiPath, NULL,
+                                   sanityCheckCert, requireValidCert, false);
 }
 
 
@@ -895,10 +900,11 @@ virNetTLSContextPtr virNetTLSContextNewServer(const char *cacert,
                                               const char *cert,
                                               const char *key,
                                               const char *const*x509dnWhitelist,
+                                              bool sanityCheckCert,
                                               bool requireValidCert)
 {
-    return virNetTLSContextNew(cacert, cacrl, cert, key,
-                               x509dnWhitelist, requireValidCert, true);
+    return virNetTLSContextNew(cacert, cacrl, cert, key, x509dnWhitelist,
+                               sanityCheckCert, requireValidCert, true);
 }
 
 
@@ -906,10 +912,11 @@ virNetTLSContextPtr virNetTLSContextNewClient(const char *cacert,
                                               const char *cacrl,
                                               const char *cert,
                                               const char *key,
+                                              bool sanityCheckCert,
                                               bool requireValidCert)
 {
-    return virNetTLSContextNew(cacert, cacrl, key, cert,
-                               NULL, requireValidCert, false);
+    return virNetTLSContextNew(cacert, cacrl, cert, key, NULL,
+                               sanityCheckCert, requireValidCert, false);
 }
 
 
@@ -1047,11 +1054,14 @@ int virNetTLSContextCheckCertificate(virNetTLSContextPtr ctxt,
                                      virNetTLSSessionPtr sess)
 {
     if (virNetTLSContextValidCertificate(ctxt, sess) < 0) {
+        virErrorPtr err = virGetLastError();
+        VIR_WARN("Certificate check failed %s", err && err->message ? err->message : "<unknown>");
         if (ctxt->requireValidCert) {
             virNetError(VIR_ERR_AUTH_FAILED, "%s",
                         _("Failed to verify peer's certificate"));
             return -1;
         }
+        virResetLastError();
         VIR_INFO("Ignoring bad certificate at user request");
     }
     return 0;

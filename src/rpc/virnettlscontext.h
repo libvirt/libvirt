@@ -33,10 +33,12 @@ typedef virNetTLSSession *virNetTLSSessionPtr;
 virNetTLSContextPtr virNetTLSContextNewServerPath(const char *pkipath,
                                                   bool tryUserPkiPath,
                                                   const char *const*x509dnWhitelist,
+                                                  bool sanityCheckCert,
                                                   bool requireValidCert);
 
 virNetTLSContextPtr virNetTLSContextNewClientPath(const char *pkipath,
                                                   bool tryUserPkiPath,
+                                                  bool sanityCheckCert,
                                                   bool requireValidCert);
 
 virNetTLSContextPtr virNetTLSContextNewServer(const char *cacert,
@@ -44,12 +46,14 @@ virNetTLSContextPtr virNetTLSContextNewServer(const char *cacert,
                                               const char *cert,
                                               const char *key,
                                               const char *const*x509dnWhitelist,
+                                              bool sanityCheckCert,
                                               bool requireValidCert);
 
 virNetTLSContextPtr virNetTLSContextNewClient(const char *cacert,
                                               const char *cacrl,
                                               const char *cert,
                                               const char *key,
+                                              bool sanityCheckCert,
                                               bool requireValidCert);
 
 void virNetTLSContextRef(virNetTLSContextPtr ctxt);

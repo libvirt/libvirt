@@ -351,7 +351,7 @@ doRemoteOpen (virConnectPtr conn,
      */
     char *name = NULL, *command = NULL, *sockname = NULL, *netcat = NULL;
     char *port = NULL, *authtype = NULL, *username = NULL;
-    int no_verify = 0, no_tty = 0;
+    bool sanity = true, verify = true, tty = true;
     char *pkipath = NULL, *keyfile = NULL;
 
     /* Return code from this function, and the private data. */
@@ -429,12 +429,14 @@ doRemoteOpen (virConnectPtr conn,
                 VIR_FREE(keyfile);
                 keyfile = strdup (var->value);
                 if (!keyfile) goto out_of_memory;
+            } else if (STRCASEEQ (var->name, "no_sanity")) {
+                sanity = atoi(var->value) == 0;
                 var->ignore = 1;
             } else if (STRCASEEQ (var->name, "no_verify")) {
-                no_verify = atoi (var->value);
+                verify = atoi (var->value) == 0;
                 var->ignore = 1;
             } else if (STRCASEEQ (var->name, "no_tty")) {
-                no_tty = atoi (var->value);
+                tty = atoi (var->value) == 0;
                 var->ignore = 1;
             } else if (STRCASEEQ(var->name, "pkipath")) {
                 VIR_FREE(pkipath);
@@ -514,7 +516,7 @@ doRemoteOpen (virConnectPtr conn,
     case trans_tls:
         priv->tls = virNetTLSContextNewClientPath(pkipath,
                                                   geteuid() != 0 ? true : false,
-                                                  no_verify ? false : true);
+                                                  sanity, verify);
         if (!priv->tls)
             goto failed;
         priv->is_secure = 1;
@@ -584,8 +586,8 @@ doRemoteOpen (virConnectPtr conn,
                                                 port,
                                                 command,
                                                 username,
-                                                no_tty,
-                                                no_verify,
+                                                !tty,
+                                                !verify,
                                                 netcat ? netcat : "nc",
                                                 keyfile,
                                                 sockname)))

@@ -48,6 +48,7 @@ module Libvirtd =
                          | str_entry "crl_file"
 
    let authorization_entry = bool_entry "tls_no_verify_certificate"
+                           | bool_entry "tls_no_sanity_certificate"
                            | str_array_entry "tls_allowed_dn_list"
                            | str_array_entry "sasl_allowed_username_list"
 
