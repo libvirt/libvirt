@@ -2408,6 +2408,23 @@ int qemuMonitorInjectNMI(qemuMonitorPtr mon)
     return ret;
 }
 
+int qemuMonitorSendKey(qemuMonitorPtr mon,
+                       unsigned int holdtime,
+                       unsigned int *keycodes,
+                       unsigned int nkeycodes)
+{
+    int ret;
+
+    VIR_DEBUG("mon=%p, holdtime=%u, nkeycodes=%u",
+              mon, holdtime, nkeycodes);
+
+    if (mon->json)
+        ret = qemuMonitorJSONSendKey(mon, holdtime, keycodes, nkeycodes);
+    else
+        ret = qemuMonitorTextSendKey(mon, holdtime, keycodes, nkeycodes);
+    return ret;
+}
+
 int qemuMonitorScreendump(qemuMonitorPtr mon,
                           const char *file)
 {

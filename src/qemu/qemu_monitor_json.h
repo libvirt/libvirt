@@ -217,6 +217,11 @@ int qemuMonitorJSONArbitraryCommand(qemuMonitorPtr mon,
 
 int qemuMonitorJSONInjectNMI(qemuMonitorPtr mon);
 
+int qemuMonitorJSONSendKey(qemuMonitorPtr mon,
+                           unsigned int holdtime,
+                           unsigned int *keycodes,
+                           unsigned int nkeycodes);
+
 int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
                               const char *file);
 

@@ -2755,6 +2755,55 @@ fail:
     return -1;
 }
 
+int qemuMonitorTextSendKey(qemuMonitorPtr mon,
+                           unsigned int holdtime,
+                           unsigned int *keycodes,
+                           unsigned int nkeycodes)
+{
+    int i;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *cmd, *reply = NULL;
+
+    if (nkeycodes > VIR_DOMAIN_SEND_KEY_MAX_KEYS || nkeycodes == 0)
+        return -1;
+
+    virBufferAddLit(&buf, "sendkey ");
+    for (i = 0; i < nkeycodes; i++) {
+        if (keycodes[i] > 0xffff) {
+            qemuReportError(VIR_ERR_OPERATION_FAILED,
+                            _("keycode %d is invalid: 0x%X"),
+                            i, keycodes[i]);
+            virBufferFreeAndReset(&buf);
+            return -1;
+        }
+
+        if (i)
+            virBufferAddChar(&buf, '-');
+        virBufferAsprintf(&buf, "0x%02X", keycodes[i]);
+    }
+
+    if (holdtime)
+        virBufferAsprintf(&buf, " %u", holdtime);
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        return -1;
+    }
+
+    cmd = virBufferContentAndReset(&buf);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                         _("failed to send key using command '%s'"),
+                         cmd);
+        VIR_FREE(cmd);
+        return -1;
+    }
+
+    VIR_FREE(cmd);
+    VIR_FREE(reply);
+    return 0;
+}
+
 /* Returns -1 on error, -2 if not supported */
 int qemuMonitorTextScreendump(qemuMonitorPtr mon, const char *file)
 {

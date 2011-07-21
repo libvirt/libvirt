@@ -87,6 +87,7 @@
 #include "configmake.h"
 #include "threadpool.h"
 #include "locking/lock_manager.h"
+#include "virkeycode.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -1836,6 +1837,75 @@ static int qemuDomainInjectNMI(virDomainPtr domain, unsigned int flags)
         goto cleanup;
     ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, vm));
     ret = qemuMonitorInjectNMI(priv->mon);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+    if (qemuDomainObjEndJob(driver, vm) == 0) {
+        vm = NULL;
+        goto cleanup;
+    }
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
+static int qemuDomainSendKey(virDomainPtr domain,
+                             unsigned int codeset,
+                             unsigned int holdtime,
+                             unsigned int *keycodes,
+                             int nkeycodes,
+                             unsigned int flags)
+{
+    struct qemud_driver *driver = domain->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv;
+
+    virCheckFlags(0, -1);
+
+    /* translate the keycode to XT_KBD for qemu driver */
+    if (codeset != VIR_KEYCODE_SET_XT_KBD) {
+        int i;
+        int keycode;
+
+        for (i = 0; i < nkeycodes; i++) {
+            keycode = virKeycodeValueTranslate(codeset, VIR_KEYCODE_SET_XT_KBD,
+                                               keycodes[i]);
+            if (keycode < 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+             _("cannot translate keycode %u of %s codeset to xt_kbd keycode"),
+                                keycodes[i],
+                                virKeycodeSetTypeToString(codeset));
+                return -1;
+            }
+            keycodes[i] = keycode;
+        }
+    }
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, domain->uuid);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(domain->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, vm));
+    ret = qemuMonitorSendKey(priv->mon, holdtime, keycodes, nkeycodes);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
     if (qemuDomainObjEndJob(driver, vm) == 0) {
         vm = NULL;
@@ -8653,6 +8723,7 @@ static virDriver qemuDriver = {
     .domainMigratePerform3 = qemuDomainMigratePerform3, /* 0.9.2 */
     .domainMigrateFinish3 = qemuDomainMigrateFinish3, /* 0.9.2 */
     .domainMigrateConfirm3 = qemuDomainMigrateConfirm3, /* 0.9.2 */
+    .domainSendKey = qemuDomainSendKey, /* 0.9.4 */
 };
 
 

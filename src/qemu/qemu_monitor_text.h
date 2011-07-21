@@ -211,6 +211,11 @@ int qemuMonitorTextArbitraryCommand(qemuMonitorPtr mon, const char *cmd,
 
 int qemuMonitorTextInjectNMI(qemuMonitorPtr mon);
 
+int qemuMonitorTextSendKey(qemuMonitorPtr mon,
+                           unsigned int holdtime,
+                           unsigned int *keycodes,
+                           unsigned int nkeycodes);
+
 int qemuMonitorTextScreendump(qemuMonitorPtr mon, const char *file);
 
 #endif /* QEMU_MONITOR_TEXT_H */
