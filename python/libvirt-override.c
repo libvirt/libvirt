@@ -4174,6 +4174,53 @@ libvirt_virStreamSend(PyObject *self ATTRIBUTE_UNUSED,
     return py_retval;
 }
 
+static PyObject *
+libvirt_virDomainSendKey(PyObject *self ATTRIBUTE_UNUSED,
+                         PyObject *args)
+{
+    PyObject *py_retval;
+    virDomainPtr domain;
+    PyObject *pyobj_domain;
+    PyObject *pyobj_list;
+    int codeset;
+    int holdtime;
+    unsigned int flags;
+    int ret;
+    int i;
+    unsigned int keycodes[VIR_DOMAIN_SEND_KEY_MAX_KEYS];
+    unsigned int nkeycodes;
+
+    if (!PyArg_ParseTuple(args, (char *)"OiiOii:virDomainSendKey",
+                          &pyobj_domain, &codeset, &holdtime, &pyobj_list,
+                          &nkeycodes, &flags)) {
+        DEBUG("%s failed to parse tuple\n", __FUNCTION__);
+        return VIR_PY_INT_FAIL;
+    }
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    if (!PyList_Check(pyobj_list)) {
+        return VIR_PY_INT_FAIL;
+    }
+
+    if (nkeycodes != PyList_Size(pyobj_list) ||
+        nkeycodes > VIR_DOMAIN_SEND_KEY_MAX_KEYS) {
+        return VIR_PY_INT_FAIL;
+    }
+
+    for (i = 0; i < nkeycodes; i++) {
+        keycodes[i] = (int)PyInt_AsLong(PyList_GetItem(pyobj_list, i));
+    }
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    ret = virDomainSendKey(domain, codeset, holdtime, keycodes, nkeycodes, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    DEBUG("virDomainSendKey ret=%d\n", ret);
+
+    py_retval = libvirt_intWrap(ret);
+    return py_retval;
+}
+
 /************************************************************************
  *									*
  *			The registration stuff				*
@@ -4262,6 +4309,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainSnapshotListNames", libvirt_virDomainSnapshotListNames, METH_VARARGS, NULL},
     {(char *) "virDomainRevertToSnapshot", libvirt_virDomainRevertToSnapshot, METH_VARARGS, NULL},
     {(char *) "virDomainGetBlockJobInfo", libvirt_virDomainGetBlockJobInfo, METH_VARARGS, NULL},
+    {(char *) "virDomainSendKey", libvirt_virDomainSendKey, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 
