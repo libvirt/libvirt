@@ -309,6 +309,10 @@ running B<virsh suspend>.  When in a paused state the domain will still
 consume allocated resources like memory, but will not be eligible for
 scheduling by the hypervisor.
 
+=item B<send-key> I<domain-id> optional I<--codeset> B<codeset> optional I<--holdtime> B<holdtime> B<keycode>...
+
+Send keys to the guest
+
 =item B<shutdown>
 
 The domain is in the process of shutting down, i.e. the guest operating system

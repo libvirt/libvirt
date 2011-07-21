@@ -58,6 +58,7 @@
 #include "threads.h"
 #include "command.h"
 #include "count-one-bits.h"
+#include "virkeycode.h"
 
 static char *progname;
 
@@ -3442,6 +3443,98 @@ cmdInjectNMI(vshControl *ctl, const vshCmd *cmd)
     if (virDomainInjectNMI(dom, 0) < 0)
             ret = false;
 
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
+ * "send-key" command
+ */
+static const vshCmdInfo info_send_key[] = {
+    {"help", N_("Send keycodes to the guest")},
+    {"desc", N_("Send keycodes to the guest, the keycodes must be integers\n"
+                "    Examples:\n\n"
+                "        virsh # send-key <domain> 37 18 21\n"
+                "        virsh # send-key <domain> KEY_RIGHTCTRL KEY_C\n"
+                "        virsh # send-key <domain> --codeset xt 37 18 21\n"
+                "        virsh # send-key <domain> --holdtime 1000 0x15 18 0xf\n"
+                )},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_send_key[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"codeset", VSH_OT_STRING, VSH_OFLAG_REQ_OPT, N_("the codeset of keycodes, default:linux")},
+    {"holdtime", VSH_OT_INT, VSH_OFLAG_REQ_OPT,
+                 N_("the time (in millsecond) how long the keys will be held")},
+    {"keycode", VSH_OT_ARGV, VSH_OFLAG_REQ, N_("the key code")},
+    {NULL, 0, 0, NULL}
+};
+
+static int get_integer_keycode(const char *key_name)
+{
+    long val;
+    char *endptr;
+
+    val = strtol(key_name, &endptr, 0);
+    if (*endptr != '\0' || val > 0xffff || val <= 0)
+         return -1;
+
+    return val;
+}
+
+static bool
+cmdSendKey(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    int ret = false;
+    const char *codeset_option;
+    int codeset;
+    int holdtime;
+    int count = 0;
+    const vshCmdOpt *opt = NULL;
+    int keycode;
+    unsigned int keycodes[VIR_DOMAIN_SEND_KEY_MAX_KEYS];
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptString(cmd, "codeset", &codeset_option) <= 0)
+        codeset_option = "linux";
+
+    if (vshCommandOptInt(cmd, "holdtime", &holdtime) <= 0)
+        holdtime = 0;
+
+    codeset = virKeycodeSetTypeFromString(codeset_option);
+    if ((int)codeset < 0) {
+        vshError(ctl, _("unknown codeset: '%s'"), codeset_option);
+        goto cleanup;
+    }
+
+    while ((opt = vshCommandOptArgv(cmd, opt))) {
+        if (count == VIR_DOMAIN_SEND_KEY_MAX_KEYS) {
+            vshError(ctl, _("too many keycodes"));
+            goto cleanup;
+        }
+
+        if ((keycode = get_integer_keycode(opt->data)) <= 0) {
+            if ((keycode = virKeycodeValueFromString(codeset, opt->data)) <= 0) {
+                vshError(ctl, _("invalid keycode: '%s'"), opt->data);
+                goto cleanup;
+            }
+        }
+
+        keycodes[count] = keycode;
+        count++;
+    }
+
+    if (!(virDomainSendKey(dom, codeset, holdtime, keycodes, count, 0) < 0))
+        ret = true;
+
+cleanup:
     virDomainFree(dom);
     return ret;
 }
@@ -12005,6 +12098,7 @@ static const vshCmdDef domManagementCmds[] = {
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml, 0},
     {"edit", cmdEdit, opts_edit, info_edit, 0},
     {"inject-nmi", cmdInjectNMI, opts_inject_nmi, info_inject_nmi, 0},
+    {"send-key", cmdSendKey, opts_send_key, info_send_key},
     {"managedsave", cmdManagedSave, opts_managedsave, info_managedsave, 0},
     {"managedsave-remove", cmdManagedSaveRemove, opts_managedsaveremove,
      info_managedsaveremove, 0},
