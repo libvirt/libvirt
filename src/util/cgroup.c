@@ -52,6 +52,16 @@ struct virCgroup {
     struct virCgroupController controllers[VIR_CGROUP_CONTROLLER_LAST];
 };
 
+typedef enum {
+    VIR_CGROUP_NONE = 0, /* create subdir under each cgroup if possible. */
+    VIR_CGROUP_MEM_HIERACHY = 1 << 0, /* call virCgroupSetMemoryUseHierarchy
+                                       * before creating subcgroups and
+                                       * attaching tasks
+                                       */
+    VIR_CGROUP_VCPU = 1 << 1, /* create subdir only under the cgroup cpu,
+                               * cpuacct and cpuset if possible. */
+} virCgroupFlags;
+
 /**
  * virCgroupFree:
  *
@@ -503,7 +513,7 @@ static int virCgroupSetMemoryUseHierarchy(virCgroupPtr group)
 }
 
 static int virCgroupMakeGroup(virCgroupPtr parent, virCgroupPtr group,
-                              int create, bool memory_hierarchy)
+                              int create, unsigned int flags)
 {
     int i;
     int rc = 0;
@@ -515,6 +525,13 @@ static int virCgroupMakeGroup(virCgroupPtr parent, virCgroupPtr group,
         /* Skip over controllers that aren't mounted */
         if (!group->controllers[i].mountPoint)
             continue;
+
+        /* We need to control cpu bandwidth for each vcpu now */
+        if ((flags & VIR_CGROUP_VCPU) && (i != VIR_CGROUP_CONTROLLER_CPU)) {
+            /* treat it as unmounted and we can use virCgroupAddTask */
+            VIR_FREE(group->controllers[i].mountPoint);
+            continue;
+        }
 
         rc = virCgroupPathOfController(group, i, "", &path);
         if (rc < 0)
@@ -555,8 +572,8 @@ static int virCgroupMakeGroup(virCgroupPtr parent, virCgroupPtr group,
              * Note that virCgroupSetMemoryUseHierarchy should always be
              * called prior to creating subcgroups and attaching tasks.
              */
-            if (memory_hierarchy &&
-                group->controllers[VIR_CGROUP_CONTROLLER_MEMORY].mountPoint != NULL &&
+            if ((flags & VIR_CGROUP_MEM_HIERACHY) &&
+                (group->controllers[VIR_CGROUP_CONTROLLER_MEMORY].mountPoint != NULL) &&
                 (i == VIR_CGROUP_CONTROLLER_MEMORY ||
                  STREQ(group->controllers[i].mountPoint, group->controllers[VIR_CGROUP_CONTROLLER_MEMORY].mountPoint))) {
                 rc = virCgroupSetMemoryUseHierarchy(group);
@@ -641,7 +658,7 @@ static int virCgroupAppRoot(int privileged,
     if (rc != 0)
         goto cleanup;
 
-    rc = virCgroupMakeGroup(rootgrp, *group, create, false);
+    rc = virCgroupMakeGroup(rootgrp, *group, create, VIR_CGROUP_NONE);
 
 cleanup:
     virCgroupFree(&rootgrp);
@@ -801,7 +818,7 @@ int virCgroupForDriver(const char *name,
     VIR_FREE(path);
 
     if (rc == 0) {
-        rc = virCgroupMakeGroup(rootgrp, *group, create, false);
+        rc = virCgroupMakeGroup(rootgrp, *group, create, VIR_CGROUP_NONE);
         if (rc != 0)
             virCgroupFree(group);
     }
@@ -861,7 +878,7 @@ int virCgroupForDomain(virCgroupPtr driver,
          * a group for driver, is to avoid overhead to track
          * cumulative usage that we don't need.
          */
-        rc = virCgroupMakeGroup(driver, *group, create, true);
+        rc = virCgroupMakeGroup(driver, *group, create, VIR_CGROUP_MEM_HIERACHY);
         if (rc != 0)
             virCgroupFree(group);
     }
@@ -873,6 +890,51 @@ int virCgroupForDomain(virCgroupPtr driver ATTRIBUTE_UNUSED,
                        const char *name ATTRIBUTE_UNUSED,
                        virCgroupPtr *group ATTRIBUTE_UNUSED,
                        int create ATTRIBUTE_UNUSED)
+{
+    return -ENXIO;
+}
+#endif
+
+/**
+ * virCgroupForVcpu:
+ *
+ * @driver: group for the domain
+ * @vcpuid: id of the vcpu
+ * @group: Pointer to returned virCgroupPtr
+ *
+ * Returns 0 on success
+ */
+#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+int virCgroupForVcpu(virCgroupPtr driver,
+                     int vcpuid,
+                     virCgroupPtr *group,
+                     int create)
+{
+    int rc;
+    char *path;
+
+    if (driver == NULL)
+        return -EINVAL;
+
+    if (virAsprintf(&path, "%s/vcpu%d", driver->path, vcpuid) < 0)
+        return -ENOMEM;
+
+    rc = virCgroupNew(path, group);
+    VIR_FREE(path);
+
+    if (rc == 0) {
+        rc = virCgroupMakeGroup(driver, *group, create, VIR_CGROUP_VCPU);
+        if (rc != 0)
+            virCgroupFree(group);
+    }
+
+    return rc;
+}
+#else
+int virCgroupForVcpu(virCgroupPtr driver ATTRIBUTE_UNUSED,
+                     int vcpuid ATTRIBUTE_UNUSED,
+                     virCgroupPtr *group ATTRIBUTE_UNUSED,
+                     int create ATTRIBUTE_UNUSED)
 {
     return -ENXIO;
 }

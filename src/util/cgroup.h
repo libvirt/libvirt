@@ -40,6 +40,11 @@ int virCgroupForDomain(virCgroupPtr driver,
                        virCgroupPtr *group,
                        int create);
 
+int virCgroupForVcpu(virCgroupPtr driver,
+                     int vcpuid,
+                     virCgroupPtr *group,
+                     int create);
+
 int virCgroupPathOfController(virCgroupPtr group,
                               int controller,
                               const char *key,

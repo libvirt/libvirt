@@ -67,6 +67,7 @@ virCgroupDenyAllDevices;
 virCgroupDenyDevicePath;
 virCgroupForDomain;
 virCgroupForDriver;
+virCgroupForVcpu;
 virCgroupFree;
 virCgroupGetBlkioWeight;
 virCgroupGetCpuShares;
