@@ -71,7 +71,7 @@ install-data-local:
 uninstall-local:
 	rm -f $(DESTDIR)$(pyexecdir)/libvirt.py
 
-CLEANFILES= $(GENERATED) generated.stamp
+CLEANFILES= $(GENERATED) $(GENERATE).stamp
 
 else
 all:
