@@ -5209,11 +5209,45 @@ cleanup:
 }
 
 
+/*
+ * check whether the host supports CFS bandwidth
+ *
+ * Return 1 when CFS bandwidth is supported, 0 when CFS bandwidth is not
+ * supported, -1 on error.
+ */
+static int qemuGetCpuBWStatus(virCgroupPtr cgroup)
+{
+    char *cfs_period_path = NULL;
+    int ret = -1;
+
+    if (!cgroup)
+        return 0;
+
+    if (virCgroupPathOfController(cgroup, VIR_CGROUP_CONTROLLER_CPU,
+                                  "cpu.cfs_period_us", &cfs_period_path) < 0) {
+        VIR_INFO("cannot get the path of cgroup CPU controller");
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (access(cfs_period_path, F_OK) < 0) {
+        ret = 0;
+    } else {
+        ret = 1;
+    }
+
+cleanup:
+    VIR_FREE(cfs_period_path);
+    return ret;
+}
+
+
 static char *qemuGetSchedulerType(virDomainPtr dom,
                                   int *nparams)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     char *ret = NULL;
+    int rc;
 
     qemuDriverLock(driver);
     if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
@@ -5222,8 +5256,15 @@ static char *qemuGetSchedulerType(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (nparams)
-        *nparams = 1;
+    if (nparams) {
+        rc = qemuGetCpuBWStatus(driver->cgroup);
+        if (rc < 0)
+            goto cleanup;
+        else if (rc == 0)
+            *nparams = 1;
+        else
+            *nparams = 3;
+    }
 
     ret = strdup("posix");
     if (!ret)
@@ -5856,6 +5897,58 @@ cleanup:
     return ret;
 }
 
+static int
+qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
+                   unsigned long long period, long long quota)
+{
+    int i;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virCgroupPtr cgroup_vcpu = NULL;
+    int rc;
+
+    if (period == 0 && quota == 0)
+        return 0;
+
+    if (priv->nvcpupids == 0 || priv->vcpupids[0] == vm->pid) {
+        /* If we does not know VCPU<->PID mapping or all vcpu runs in the same
+         * thread, we can not control each vcpu.
+         */
+        /* Ensure that we can multiply by vcpus without overflowing. */
+        if (quota > LLONG_MAX / vm->def->vcpus) {
+            virReportSystemError(EINVAL,
+                                 _("%s"),
+                                 "Unable to set cpu bandwidth quota");
+            goto cleanup;
+        }
+
+        if (quota > 0)
+            quota *= vm->def->vcpus;
+        return qemuSetupCgroupVcpuBW(cgroup, period, quota);
+    }
+
+    for (i = 0; i < priv->nvcpupids; i++) {
+        rc = virCgroupForVcpu(cgroup, i, &cgroup_vcpu, 0);
+        if (rc < 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to find vcpu cgroup for %s(vcpu:"
+                                   " %d)"),
+                                 vm->def->name, i);
+            goto cleanup;
+        }
+
+        if (qemuSetupCgroupVcpuBW(cgroup_vcpu, period, quota) < 0)
+            goto cleanup;
+
+        virCgroupFree(&cgroup_vcpu);
+    }
+
+    return 0;
+
+cleanup:
+    virCgroupFree(&cgroup_vcpu);
+    return -1;
+}
+
 static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
                                            virTypedParameterPtr params,
                                            int nparams,
@@ -5865,9 +5958,10 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
     int i;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
-    virDomainDefPtr persistentDef = NULL;
+    virDomainDefPtr vmdef = NULL;
     int ret = -1;
     bool isActive;
+    int rc;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -5891,10 +5985,17 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
             flags = VIR_DOMAIN_AFFECT_CONFIG;
     }
 
-    if ((flags & VIR_DOMAIN_AFFECT_CONFIG) && !vm->persistent) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                        _("cannot change persistent config of a transient domain"));
-        goto cleanup;
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (!vm->persistent) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                            _("cannot change persistent config of a transient domain"));
+            goto cleanup;
+        }
+
+        /* Make a copy for updated domain. */
+        vmdef = virDomainObjCopyPersistentDef(driver->caps, vm);
+        if (!vmdef)
+            goto cleanup;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
@@ -5921,7 +6022,6 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
         virTypedParameterPtr param = &params[i];
 
         if (STREQ(param->field, "cpu_shares")) {
-            int rc;
             if (param->type != VIR_TYPED_PARAM_ULLONG) {
                 qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                                 _("invalid type for cpu_shares tunable, expected a 'ullong'"));
@@ -5940,19 +6040,47 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                persistentDef = virDomainObjGetPersistentDef(driver->caps, vm);
-                if (!persistentDef) {
-                    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                    _("can't get persistentDef"));
+                vmdef->cputune.shares = params[i].value.ul;
+            }
+        } else if (STREQ(param->field, "cfs_period")) {
+            if (param->type != VIR_TYPED_PARAM_ULLONG) {
+                qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                _("invalid type for cfs_period tunable,"
+                                  " expected a 'ullong'"));
+                goto cleanup;
+            }
+
+            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+                rc = qemuSetVcpusBWLive(vm, group, params[i].value.ul, 0);
+                if (rc != 0)
                     goto cleanup;
-                }
-                persistentDef->cputune.shares = params[i].value.ul;
-                rc = virDomainSaveConfig(driver->configDir, persistentDef);
-                if (rc) {
-                    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                    _("can't save config"));
+
+                if (params[i].value.ul)
+                    vm->def->cputune.period = params[i].value.ul;
+            }
+
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+                vmdef->cputune.period = params[i].value.ul;
+            }
+        } else if (STREQ(param->field, "cfs_quota")) {
+            if (param->type != VIR_TYPED_PARAM_LLONG) {
+                qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                _("invalid type for cfs_quota tunable,"
+                                  " expected a 'llong'"));
+                goto cleanup;
+            }
+
+            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+                rc = qemuSetVcpusBWLive(vm, group, 0, params[i].value.l);
+                if (rc != 0)
                     goto cleanup;
-                }
+
+                if (params[i].value.l)
+                    vm->def->cputune.quota = params[i].value.l;
+            }
+
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+                vmdef->cputune.quota = params[i].value.l;
             }
         } else {
             qemuReportError(VIR_ERR_INVALID_ARG,
@@ -5961,9 +6089,23 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
         }
     }
 
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+        goto cleanup;
+
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        rc = virDomainSaveConfig(driver->configDir, vmdef);
+        if (rc < 0)
+            goto cleanup;
+
+        virDomainObjAssignDef(vm, vmdef, false);
+        vmdef = NULL;
+    }
+
     ret = 0;
 
 cleanup:
+    virDomainDefFree(vmdef);
     virCgroupFree(&group);
     if (vm)
         virDomainObjUnlock(vm);
@@ -5982,6 +6124,71 @@ static int qemuSetSchedulerParameters(virDomainPtr dom,
 }
 
 static int
+qemuGetVcpuBWLive(virCgroupPtr cgroup, unsigned long long *period,
+                  long long *quota)
+{
+    int rc;
+
+    rc = virCgroupGetCpuCfsPeriod(cgroup, period);
+    if (rc < 0) {
+        virReportSystemError(-rc, "%s",
+                             _("unable to get cpu bandwidth period tunable"));
+        return -1;
+    }
+
+    rc = virCgroupGetCpuCfsQuota(cgroup, quota);
+    if (rc < 0) {
+        virReportSystemError(-rc, "%s",
+                             _("unable to get cpu bandwidth tunable"));
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+qemuGetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
+                   unsigned long long *period, long long *quota)
+{
+    virCgroupPtr cgroup_vcpu = NULL;
+    qemuDomainObjPrivatePtr priv = NULL;
+    int rc;
+    int ret = -1;
+
+    priv = vm->privateData;
+    if (priv->nvcpupids == 0 || priv->vcpupids[0] == vm->pid) {
+        /* We do not create sub dir for each vcpu */
+        rc = qemuGetVcpuBWLive(cgroup, period, quota);
+        if (rc < 0)
+            goto cleanup;
+
+        if (*quota > 0)
+            *quota /= vm->def->vcpus;
+        goto out;
+    }
+
+    /* get period and quota for vcpu0 */
+    rc = virCgroupForVcpu(cgroup, 0, &cgroup_vcpu, 0);
+    if (!cgroup_vcpu) {
+        virReportSystemError(-rc,
+                             _("Unable to find vcpu cgroup for %s(vcpu: 0)"),
+                             vm->def->name);
+        goto cleanup;
+    }
+
+    rc = qemuGetVcpuBWLive(cgroup_vcpu, period, quota);
+    if (rc < 0)
+        goto cleanup;
+
+out:
+    ret = 0;
+
+cleanup:
+    virCgroupFree(&cgroup_vcpu);
+    return ret;
+}
+
+static int
 qemuGetSchedulerParametersFlags(virDomainPtr dom,
                                 virTypedParameterPtr params,
                                 int *nparams,
@@ -5990,10 +6197,14 @@ qemuGetSchedulerParametersFlags(virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
-    unsigned long long val;
+    unsigned long long shares;
+    unsigned long long period;
+    long long quota;
     int ret = -1;
     int rc;
     bool isActive;
+    bool cpu_bw_status;
+    int saved_nparams = 0;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -6011,6 +6222,13 @@ qemuGetSchedulerParametersFlags(virDomainPtr dom,
         qemuReportError(VIR_ERR_INVALID_ARG,
                         "%s", _("Invalid parameter count"));
         goto cleanup;
+    }
+
+    if (*nparams > 1) {
+        rc = qemuGetCpuBWStatus(driver->cgroup);
+        if (rc < 0)
+            goto cleanup;
+        cpu_bw_status = !!rc;
     }
 
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -6046,9 +6264,17 @@ qemuGetSchedulerParametersFlags(virDomainPtr dom,
                                 _("can't get persistentDef"));
                 goto cleanup;
             }
-            val = persistentDef->cputune.shares;
+            shares = persistentDef->cputune.shares;
+            if (*nparams > 1 && cpu_bw_status) {
+                period = persistentDef->cputune.period;
+                quota = persistentDef->cputune.quota;
+            }
         } else {
-            val = vm->def->cputune.shares;
+            shares = vm->def->cputune.shares;
+            if (*nparams > 1 && cpu_bw_status) {
+                period = vm->def->cputune.period;
+                quota = vm->def->cputune.quota;
+            }
         }
         goto out;
     }
@@ -6071,14 +6297,20 @@ qemuGetSchedulerParametersFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    rc = virCgroupGetCpuShares(group, &val);
+    rc = virCgroupGetCpuShares(group, &shares);
     if (rc != 0) {
         virReportSystemError(-rc, "%s",
                              _("unable to get cpu shares tunable"));
         goto cleanup;
     }
+
+    if (*nparams > 1 && cpu_bw_status) {
+        rc = qemuGetVcpusBWLive(vm, group, &period, &quota);
+        if (rc != 0)
+            goto cleanup;
+    }
 out:
-    params[0].value.ul = val;
+    params[0].value.ul = shares;
     params[0].type = VIR_TYPED_PARAM_ULLONG;
     if (virStrcpyStatic(params[0].field, "cpu_shares") == NULL) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -6086,7 +6318,36 @@ out:
         goto cleanup;
     }
 
-    *nparams = 1;
+    saved_nparams++;
+
+    if (cpu_bw_status) {
+        if (*nparams > saved_nparams) {
+            params[1].value.ul = period;
+            params[1].type = VIR_TYPED_PARAM_ULLONG;
+            if (virStrcpyStatic(params[1].field, "cfs_period") == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s",
+                                _("Field cfs_period too long for destination"));
+                goto cleanup;
+            }
+            saved_nparams++;
+        }
+
+        if (*nparams > saved_nparams) {
+            params[2].value.ul = quota;
+            params[2].type = VIR_TYPED_PARAM_LLONG;
+            if (virStrcpyStatic(params[2].field, "cfs_quota") == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s",
+                                _("Field cfs_quota too long for destination"));
+                goto cleanup;
+            }
+            saved_nparams++;
+        }
+    }
+
+    *nparams = saved_nparams;
+
     ret = 0;
 
 cleanup:
