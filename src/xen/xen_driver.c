@@ -351,8 +351,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
     /* Hypervisor is only run with privilege & required to succeed */
     if (xenHavePrivilege()) {
         VIR_DEBUG("Trying hypervisor sub-driver");
-        if (drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->xenOpen(conn, auth, flags) ==
-            VIR_DRV_OPEN_SUCCESS) {
+        if (xenHypervisorOpen(conn, auth, flags) == VIR_DRV_OPEN_SUCCESS) {
             VIR_DEBUG("Activated hypervisor sub-driver");
             priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] = 1;
         }
@@ -360,8 +359,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
 
     /* XenD is required to succeed if privileged */
     VIR_DEBUG("Trying XenD sub-driver");
-    if (drivers[XEN_UNIFIED_XEND_OFFSET]->xenOpen(conn, auth, flags) ==
-        VIR_DRV_OPEN_SUCCESS) {
+    if (xenDaemonOpen(conn, auth, flags) == VIR_DRV_OPEN_SUCCESS) {
         VIR_DEBUG("Activated XenD sub-driver");
         priv->opened[XEN_UNIFIED_XEND_OFFSET] = 1;
 
@@ -369,15 +367,13 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
          * succeed if root, optional otherwise */
         if (priv->xendConfigVersion <= 2) {
             VIR_DEBUG("Trying XM sub-driver");
-            if (drivers[XEN_UNIFIED_XM_OFFSET]->xenOpen(conn, auth, flags) ==
-                VIR_DRV_OPEN_SUCCESS) {
+            if (xenXMOpen(conn, auth, flags) == VIR_DRV_OPEN_SUCCESS) {
                 VIR_DEBUG("Activated XM sub-driver");
                 priv->opened[XEN_UNIFIED_XM_OFFSET] = 1;
             }
         }
         VIR_DEBUG("Trying XS sub-driver");
-        if (drivers[XEN_UNIFIED_XS_OFFSET]->xenOpen(conn, auth, flags) ==
-            VIR_DRV_OPEN_SUCCESS) {
+        if (xenStoreOpen(conn, auth, flags) == VIR_DRV_OPEN_SUCCESS) {
             VIR_DEBUG("Activated XS sub-driver");
             priv->opened[XEN_UNIFIED_XS_OFFSET] = 1;
         } else {
@@ -404,8 +400,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
 #if WITH_XEN_INOTIFY
     if (xenHavePrivilege()) {
         VIR_DEBUG("Trying Xen inotify sub-driver");
-        if (drivers[XEN_UNIFIED_INOTIFY_OFFSET]->xenOpen(conn, auth, flags) ==
-            VIR_DRV_OPEN_SUCCESS) {
+        if (xenInotifyOpen(conn, auth, flags) == VIR_DRV_OPEN_SUCCESS) {
             VIR_DEBUG("Activated Xen inotify sub-driver");
             priv->opened[XEN_UNIFIED_INOTIFY_OFFSET] = 1;
         }
@@ -840,8 +835,7 @@ xenUnifiedDomainSuspend (virDomainPtr dom)
             return 0;
 
     if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] &&
-        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->xenDomainSuspend &&
-        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->xenDomainSuspend (dom) == 0)
+        xenHypervisorPauseDomain(dom) == 0)
         return 0;
 
     return -1;
@@ -864,8 +858,7 @@ xenUnifiedDomainResume (virDomainPtr dom)
             return 0;
 
     if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] &&
-        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->xenDomainResume &&
-        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->xenDomainResume (dom) == 0)
+        xenHypervisorResumeDomain(dom) == 0)
         return 0;
 
     return -1;
@@ -921,9 +914,7 @@ xenUnifiedDomainDestroyFlags(virDomainPtr dom,
             return 0;
 
     if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] &&
-        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->xenDomainDestroyFlags&&
-        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->xenDomainDestroyFlags(dom,
-                                                                   flags) == 0)
+        xenHypervisorDestroyDomainFlags(dom, flags) == 0)
         return 0;
 
     return -1;
