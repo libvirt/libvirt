@@ -839,13 +839,19 @@ xenapiDomainReboot (virDomainPtr dom, unsigned int flags)
 }
 
 /*
- * xenapiDomaindestroy
+ * xenapiDomainDestroyFlags:
+ * @dom: domain object
+ * @flags: an OR'ed set of virDomainDestroyFlagsValues
+ *
+ * Calling this function with no flags set (equal to zero)
+ * is equivalent to calling xenapiDomainDestroy.
  *
  * A VM is hard shutdown
  * Returns 0 on success or -1 in case of error
  */
 static int
-xenapiDomainDestroy (virDomainPtr dom)
+xenapiDomainDestroyFlags(virDomainPtr dom,
+                         unsigned int flags)
 {
     /* vm.hard_shutdown */
     xen_vm vm;
@@ -873,6 +879,17 @@ xenapiDomainDestroy (virDomainPtr dom)
     return -1;
 }
 
+/*
+ * xenapiDomainDestroy:
+ * @dom: domain object
+ *
+ * See xenapiDomainDestroyFlags
+ */
+static int
+xenapiDomainDestroy(virDomainPtr dom)
+{
+    return xenapiDomainDestroyFlags(dom, 0);
+}
 /*
  * xenapiDomainGetOSType
  *
@@ -1883,6 +1900,7 @@ static virDriver xenapiDriver = {
     .domainShutdown = xenapiDomainShutdown, /* 0.8.0 */
     .domainReboot = xenapiDomainReboot, /* 0.8.0 */
     .domainDestroy = xenapiDomainDestroy, /* 0.8.0 */
+    .domainDestroyFlags = xenapiDomainDestroyFlags, /* 0.9.4 */
     .domainGetOSType = xenapiDomainGetOSType, /* 0.8.0 */
     .domainGetMaxMemory = xenapiDomainGetMaxMemory, /* 0.8.0 */
     .domainSetMaxMemory = xenapiDomainSetMaxMemory, /* 0.8.0 */
