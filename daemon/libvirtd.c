@@ -1156,6 +1156,8 @@ static void daemonRunStateInit(void *opaque)
      * seriously delay OS bootup process */
     if (virStateInitialize(virNetServerIsPrivileged(srv)) < 0) {
         VIR_ERROR(_("Driver state initialization failed"));
+        /* Ensure the main event loop quits */
+        kill(getpid(), SIGTERM);
         virNetServerFree(srv);
         return;
     }

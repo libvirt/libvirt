@@ -671,6 +671,7 @@ void virNetServerRun(virNetServerPtr srv)
         goto cleanup;
     }
 
+    VIR_DEBUG("srv=%p quit=%d", srv, srv->quit);
     while (!srv->quit) {
         /* A shutdown timeout is specified, so check
          * if any drivers have active state, if not
@@ -731,6 +732,7 @@ void virNetServerQuit(virNetServerPtr srv)
 {
     virNetServerLock(srv);
 
+    VIR_DEBUG("Quit requested %p", srv);
     srv->quit = 1;
 
     virNetServerUnlock(srv);
