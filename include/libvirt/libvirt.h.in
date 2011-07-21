@@ -1788,6 +1788,12 @@ typedef enum {
     VIR_KEYCODE_SET_ATSET1         = 2,
     VIR_KEYCODE_SET_ATSET2         = 3,
     VIR_KEYCODE_SET_ATSET3         = 4,
+    VIR_KEYCODE_SET_OSX            = 5,
+    VIR_KEYCODE_SET_XT_KBD         = 6,
+    VIR_KEYCODE_SET_USB            = 7,
+    VIR_KEYCODE_SET_WIN32          = 8,
+
+    VIR_KEYCODE_SET_LAST,
 } virKeycodeSet;
 
 /**

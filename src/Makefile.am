@@ -81,7 +81,18 @@ UTIL_SOURCES =							\
 		util/util.c util/util.h				\
 		util/viraudit.c util/viraudit.h			\
 		util/xml.c util/xml.h				\
-		util/virterror.c util/virterror_internal.h
+		util/virterror.c util/virterror_internal.h	\
+		util/virkeycode.c util/virkeycode.h		\
+		util/virkeymaps.h
+
+EXTRA_DIST += $(srcdir)/util/virkeymaps.h $(srcdir)/util/keymaps.csv \
+		$(srcdir)/util/virkeycode-mapgen.py
+
+$(srcdir)/util/virkeymaps.h: $(srcdir)/util/keymaps.csv	\
+		$(srcdir)/util/virkeycode-mapgen.py
+	python $(srcdir)/util/virkeycode-mapgen.py <$(srcdir)/util/keymaps.csv >$@
+
+$(srcdir)/util/virkeycode.c: $(srcdir)/util/virkeycode.h $(srcdir)/util/virkeymaps.h
 
 EXTRA_DIST += util/threads-pthread.c util/threads-win32.c
 

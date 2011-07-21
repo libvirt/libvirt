@@ -1097,6 +1097,11 @@ virSetError;
 virSetErrorLogPriorityFunc;
 virStrerror;
 
+# virkeycode.h
+virKeycodeSetTypeToString;
+virKeycodeSetTypeFromString;
+virKeycodeValueFromString;
+virKeycodeValueTranslate;
 
 # xml.h
 virXMLParseFileHelper;
