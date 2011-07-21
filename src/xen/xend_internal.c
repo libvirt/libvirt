@@ -1546,18 +1546,6 @@ xenDaemonDomainDestroyFlags(virDomainPtr domain,
 }
 
 /**
- * xenDaemonDomainDestroy:
- * @domain: pointer to the Domain block
- *
- * See xenDaemonDomainDestroyFlags
- */
-int
-xenDaemonDomainDestroy(virDomainPtr dom)
-{
-    return xenDaemonDomainDestroyFlags(dom, 0);
-}
-
-/**
  * xenDaemonDomainGetOSType:
  * @domain: a domain object
  *
@@ -2667,7 +2655,7 @@ xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc,
   error:
     /* Make sure we don't leave a still-born domain around */
     if (dom != NULL) {
-        xenDaemonDomainDestroy(dom);
+        xenDaemonDomainDestroyFlags(dom, 0);
         virUnrefDomain(dom);
     }
     virDomainDefFree(def);
@@ -3959,7 +3947,6 @@ struct xenUnifiedDriver xenDaemonDriver = {
     xenDaemonDomainResume,       /* domainResume */
     xenDaemonDomainShutdown,     /* domainShutdown */
     xenDaemonDomainReboot,       /* domainReboot */
-    xenDaemonDomainDestroy,      /* domainDestroy */
     xenDaemonDomainDestroyFlags, /* domainDestroyFlags */
     xenDaemonDomainGetOSType,    /* domainGetOSType */
     xenDaemonDomainGetMaxMemory, /* domainGetMaxMemory */

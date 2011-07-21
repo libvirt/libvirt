@@ -902,30 +902,6 @@ xenUnifiedDomainReboot (virDomainPtr dom, unsigned int flags)
 }
 
 static int
-xenUnifiedDomainDestroy (virDomainPtr dom)
-{
-    GET_PRIVATE(dom->conn);
-    int i;
-
-    /* Try non-hypervisor methods first, then hypervisor direct method
-     * as a last resort.
-     */
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (i != XEN_UNIFIED_HYPERVISOR_OFFSET &&
-            priv->opened[i] &&
-            drivers[i]->domainDestroy &&
-            drivers[i]->domainDestroy (dom) == 0)
-            return 0;
-
-    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] &&
-        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainDestroy &&
-        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainDestroy (dom) == 0)
-        return 0;
-
-    return -1;
-}
-
-static int
 xenUnifiedDomainDestroyFlags(virDomainPtr dom,
                              unsigned int flags)
 {
@@ -941,15 +917,22 @@ xenUnifiedDomainDestroyFlags(virDomainPtr dom,
         if (i != XEN_UNIFIED_HYPERVISOR_OFFSET &&
             priv->opened[i] &&
             drivers[i]->domainDestroyFlags &&
-            drivers[i]->domainDestroyFlags(dom) == 0)
+            drivers[i]->domainDestroyFlags(dom, flags) == 0)
             return 0;
 
     if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] &&
         drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainDestroyFlags&&
-        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainDestroyFlags(dom) == 0)
+        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainDestroyFlags(dom,
+                                                                   flags) == 0)
         return 0;
 
     return -1;
+}
+
+static int
+xenUnifiedDomainDestroy(virDomainPtr dom)
+{
+    return xenUnifiedDomainDestroyFlags(dom, 0);
 }
 
 static char *

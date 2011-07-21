@@ -815,7 +815,6 @@ struct xenUnifiedDriver xenHypervisorDriver = {
     xenHypervisorResumeDomain, /* domainResume */
     NULL, /* domainShutdown */
     NULL, /* domainReboot */
-    xenHypervisorDestroyDomain, /* domainDestroy */
     xenHypervisorDestroyDomainFlags, /* domainDestroyFlags */
     xenHypervisorDomainGetOSType, /* domainGetOSType */
     xenHypervisorGetMaxMemory, /* domainGetMaxMemory */
@@ -3465,18 +3464,6 @@ xenHypervisorDestroyDomainFlags(virDomainPtr domain,
     if (ret < 0)
         return (-1);
     return (0);
-}
-
-/**
- * xenHypervisorDestroyDomain:
- * @domain: pointer to the domain block
- *
- * See xenHypervisorDestroyDomainFlags
- */
-int
-xenHypervisorDestroyDomain(virDomainPtr domain)
-{
-    return xenHypervisorDestroyDomainFlags(domain, 0);
 }
 
 /**

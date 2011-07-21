@@ -94,7 +94,6 @@ struct xenUnifiedDriver xenXMDriver = {
     NULL, /* domainResume */
     NULL, /* domainShutdown */
     NULL, /* domainReboot */
-    NULL, /* domainDestroy */
     NULL, /* domainDestroyFlags */
     NULL, /* domainGetOSType */
     xenXMDomainGetMaxMemory, /* domainGetMaxMemory */
@@ -1083,7 +1082,7 @@ int xenXMDomainCreate(virDomainPtr domain) {
 
  error:
     if (domain->id != -1) {
-        xenDaemonDomainDestroy(domain);
+        xenDaemonDomainDestroyFlags(domain, 0);
         domain->id = -1;
     }
     xenUnifiedUnlock(priv);
