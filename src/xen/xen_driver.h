@@ -81,8 +81,8 @@ extern int xenRegister (void);
  * structure with direct calls in xen_unified.c.
  */
 struct xenUnifiedDriver {
-    virDrvOpen xenOpen;
-    virDrvClose xenClose;
+    virDrvOpen xenOpen; /* Must not be NULL */
+    virDrvClose xenClose; /* Must not be NULL */
     virDrvGetVersion  xenVersion;
     virDrvGetHostname xenGetHostname;
     virDrvNodeGetInfo xenNodeGetInfo;

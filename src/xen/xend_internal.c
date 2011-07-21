@@ -1638,7 +1638,7 @@ xenDaemonDomainSave(virDomainPtr domain, const char *filename)
  *
  * Returns 0 in case of success, -1 in case of error.
  */
-static int
+int
 xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
                         unsigned int flags)
 {
@@ -2608,7 +2608,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
  *
  * Returns a new domain object or NULL in case of failure
  */
-static virDomainPtr
+virDomainPtr
 xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc,
                      unsigned int flags)
 {
@@ -2841,7 +2841,7 @@ cleanup:
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
-static int
+int
 xenDaemonUpdateDeviceFlags(virDomainPtr domain, const char *xml,
                            unsigned int flags)
 {

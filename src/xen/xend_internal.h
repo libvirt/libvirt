@@ -107,6 +107,8 @@ int xenDaemonDomainShutdown(virDomainPtr domain);
 int xenDaemonDomainReboot(virDomainPtr domain, unsigned int flags);
 int xenDaemonDomainDestroyFlags(virDomainPtr domain, unsigned int flags);
 int xenDaemonDomainSave(virDomainPtr domain, const char *filename);
+int xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
+                            unsigned int flags);
 int xenDaemonDomainRestore(virConnectPtr conn, const char *filename);
 int xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory);
 int xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory);
@@ -140,6 +142,8 @@ int	xenDaemonDomainGetVcpus		(virDomainPtr domain,
                                          int maxinfo,
                                          unsigned char *cpumaps,
                                          int maplen);
+int xenDaemonUpdateDeviceFlags(virDomainPtr domain, const char *xml,
+                               unsigned int flags);
 int xenDaemonDomainGetAutostart          (virDomainPtr dom,
                                           int *autostart);
 int xenDaemonDomainSetAutostart          (virDomainPtr domain,
@@ -149,6 +153,8 @@ int xenDaemonDomainSetAutostart          (virDomainPtr domain,
 extern struct xenUnifiedDriver xenDaemonDriver;
 int xenDaemonInit (void);
 
+virDomainPtr xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc,
+                                unsigned int flags);
 virDomainPtr xenDaemonLookupByID(virConnectPtr conn, int id);
 virDomainPtr xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid);
 virDomainPtr xenDaemonLookupByName(virConnectPtr conn, const char *domname);
