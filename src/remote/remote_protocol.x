@@ -2410,7 +2410,7 @@ enum remote_procedure {
 
     REMOTE_PROC_DOMAIN_UNDEFINE_FLAGS = 231,  /* autogen autogen */
     REMOTE_PROC_DOMAIN_SAVE_FLAGS = 232,  /* autogen autogen */
-    REMOTE_PROC_DOMAIN_RESTORE_FLAGS = 233  /* autogen autogen */
+    REMOTE_PROC_DOMAIN_RESTORE_FLAGS = 233,  /* autogen autogen */
     REMOTE_PROC_DOMAIN_DESTROY_FLAGS = 234 /* autogen autogen */
 
     /*
