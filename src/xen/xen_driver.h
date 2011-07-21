@@ -95,6 +95,7 @@ struct xenUnifiedDriver {
         virDrvDomainShutdown		domainShutdown;
         virDrvDomainReboot		domainReboot;
         virDrvDomainDestroy		domainDestroy;
+        virDrvDomainDestroyFlags    domainDestroyFlags;
         virDrvDomainGetOSType		domainGetOSType;
         virDrvDomainGetMaxMemory	domainGetMaxMemory;
         virDrvDomainSetMaxMemory	domainSetMaxMemory;

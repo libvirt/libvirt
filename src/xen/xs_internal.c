@@ -56,6 +56,7 @@ struct xenUnifiedDriver xenStoreDriver = {
     xenStoreDomainShutdown, /* domainShutdown */
     xenStoreDomainReboot, /* domainReboot */
     NULL, /* domainDestroy */
+    NULL, /* domainDestroyFlags */
     xenStoreDomainGetOSType, /* domainGetOSType */
     xenStoreDomainGetMaxMemory, /* domainGetMaxMemory */
     NULL, /* domainSetMaxMemory */

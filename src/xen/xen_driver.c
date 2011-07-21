@@ -925,6 +925,33 @@ xenUnifiedDomainDestroy (virDomainPtr dom)
     return -1;
 }
 
+static int
+xenUnifiedDomainDestroyFlags(virDomainPtr dom,
+                             unsigned int flags)
+{
+    GET_PRIVATE(dom->conn);
+    int i;
+
+    virCheckFlags(0, -1);
+
+    /* Try non-hypervisor methods first, then hypervisor direct method
+     * as a last resort.
+     */
+    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
+        if (i != XEN_UNIFIED_HYPERVISOR_OFFSET &&
+            priv->opened[i] &&
+            drivers[i]->domainDestroyFlags &&
+            drivers[i]->domainDestroyFlags(dom) == 0)
+            return 0;
+
+    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] &&
+        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainDestroyFlags&&
+        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainDestroyFlags(dom) == 0)
+        return 0;
+
+    return -1;
+}
+
 static char *
 xenUnifiedDomainGetOSType (virDomainPtr dom)
 {
@@ -2205,6 +2232,7 @@ static virDriver xenUnifiedDriver = {
     .domainShutdown = xenUnifiedDomainShutdown, /* 0.0.3 */
     .domainReboot = xenUnifiedDomainReboot, /* 0.1.0 */
     .domainDestroy = xenUnifiedDomainDestroy, /* 0.0.3 */
+    .domainDestroyFlags = xenUnifiedDomainDestroyFlags, /* 0.9.4 */
     .domainGetOSType = xenUnifiedDomainGetOSType, /* 0.0.3 */
     .domainGetMaxMemory = xenUnifiedDomainGetMaxMemory, /* 0.0.3 */
     .domainSetMaxMemory = xenUnifiedDomainSetMaxMemory, /* 0.0.3 */

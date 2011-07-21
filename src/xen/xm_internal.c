@@ -95,6 +95,7 @@ struct xenUnifiedDriver xenXMDriver = {
     NULL, /* domainShutdown */
     NULL, /* domainReboot */
     NULL, /* domainDestroy */
+    NULL, /* domainDestroyFlags */
     NULL, /* domainGetOSType */
     xenXMDomainGetMaxMemory, /* domainGetMaxMemory */
     xenXMDomainSetMaxMemory, /* domainSetMaxMemory */

@@ -816,6 +816,7 @@ struct xenUnifiedDriver xenHypervisorDriver = {
     NULL, /* domainShutdown */
     NULL, /* domainReboot */
     xenHypervisorDestroyDomain, /* domainDestroy */
+    xenHypervisorDestroyDomainFlags, /* domainDestroyFlags */
     xenHypervisorDomainGetOSType, /* domainGetOSType */
     xenHypervisorGetMaxMemory, /* domainGetMaxMemory */
     xenHypervisorSetMaxMemory, /* domainSetMaxMemory */
@@ -3433,18 +3434,25 @@ xenHypervisorResumeDomain(virDomainPtr domain)
 }
 
 /**
- * xenHypervisorDestroyDomain:
+ * xenHypervisorDestroyDomainFlags:
  * @domain: pointer to the domain block
+ * @flags: an OR'ed set of virDomainDestroyFlagsValues
  *
  * Do an hypervisor call to destroy the given domain
+ *
+ * Calling this function with no @flags set (equal to zero)
+ * is equivalent to calling xenHypervisorDestroyDomain.
  *
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xenHypervisorDestroyDomain(virDomainPtr domain)
+xenHypervisorDestroyDomainFlags(virDomainPtr domain,
+                                unsigned int flags)
 {
     int ret;
     xenUnifiedPrivatePtr priv;
+
+    virCheckFlags(0, -1);
 
     if (domain->conn == NULL)
         return -1;
@@ -3457,6 +3465,18 @@ xenHypervisorDestroyDomain(virDomainPtr domain)
     if (ret < 0)
         return (-1);
     return (0);
+}
+
+/**
+ * xenHypervisorDestroyDomain:
+ * @domain: pointer to the domain block
+ *
+ * See xenHypervisorDestroyDomainFlags
+ */
+int
+xenHypervisorDestroyDomain(virDomainPtr domain)
+{
+    return xenHypervisorDestroyDomainFlags(domain, 0);
 }
 
 /**

@@ -1509,8 +1509,9 @@ xenDaemonDomainReboot(virDomainPtr domain, unsigned int flags)
 }
 
 /**
- * xenDaemonDomainDestroy:
+ * xenDaemonDomainDestroyFlags:
  * @domain: pointer to the Domain block
+ * @flags: an OR'ed set of virDomainDestroyFlagsValues
  *
  * Abruptly halt the domain, the OS is not properly shutdown and the
  * resources allocated for the domain are immediately freed, mounted
@@ -1519,11 +1520,17 @@ xenDaemonDomainReboot(virDomainPtr domain, unsigned int flags)
  * dying and will go away completely once all of the resources have been
  * unmapped (usually from the backend devices).
  *
+ * Calling this function with no @flags set (equal to zero)
+ * is equivalent to calling xenDaemonDomainDestroy.
+ *
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xenDaemonDomainDestroy(virDomainPtr domain)
+xenDaemonDomainDestroyFlags(virDomainPtr domain,
+                            unsigned int flags)
 {
+    virCheckFlags(0, -1);
+
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
@@ -1536,6 +1543,18 @@ xenDaemonDomainDestroy(virDomainPtr domain)
     }
 
     return xend_op(domain->conn, domain->name, "op", "destroy", NULL);
+}
+
+/**
+ * xenDaemonDomainDestroy:
+ * @domain: pointer to the Domain block
+ *
+ * See xenDaemonDomainDestroyFlags
+ */
+int
+xenDaemonDomainDestroy(virDomainPtr dom)
+{
+    return xenDaemonDomainDestroyFlags(dom, 0);
 }
 
 /**
@@ -3941,6 +3960,7 @@ struct xenUnifiedDriver xenDaemonDriver = {
     xenDaemonDomainShutdown,     /* domainShutdown */
     xenDaemonDomainReboot,       /* domainReboot */
     xenDaemonDomainDestroy,      /* domainDestroy */
+    xenDaemonDomainDestroyFlags, /* domainDestroyFlags */
     xenDaemonDomainGetOSType,    /* domainGetOSType */
     xenDaemonDomainGetMaxMemory, /* domainGetMaxMemory */
     xenDaemonDomainSetMaxMemory, /* domainSetMaxMemory */
