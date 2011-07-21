@@ -1417,11 +1417,16 @@ cleanup:
 }
 
 
-static int umlDomainDestroy(virDomainPtr dom) {
+static int
+umlDomainDestroyFlags(virDomainPtr dom,
+                      unsigned int flags)
+{
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainEventPtr event = NULL;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     umlDriverLock(driver);
     vm = virDomainFindByID(&driver->domains, dom->id);
@@ -1450,6 +1455,12 @@ cleanup:
         umlDomainEventQueue(driver, event);
     umlDriverUnlock(driver);
     return ret;
+}
+
+
+static int umlDomainDestroy(virDomainPtr dom)
+{
+    return umlDomainDestroyFlags(dom, 0);
 }
 
 
@@ -2423,6 +2434,7 @@ static virDriver umlDriver = {
     .domainLookupByName = umlDomainLookupByName, /* 0.5.0 */
     .domainShutdown = umlDomainShutdown, /* 0.5.0 */
     .domainDestroy = umlDomainDestroy, /* 0.5.0 */
+    .domainDestroyFlags = umlDomainDestroyFlags, /* 0.9.4 */
     .domainGetOSType = umlDomainGetOSType, /* 0.5.0 */
     .domainGetMaxMemory = umlDomainGetMaxMemory, /* 0.5.0 */
     .domainSetMaxMemory = umlDomainSetMaxMemory, /* 0.5.0 */
