@@ -194,10 +194,7 @@ xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth,
         return VIR_DRV_OPEN_SUCCESS;
     }
 
-    xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
-                              *privP->session->error_description != NULL ?
-                              *privP->session->error_description :
-                              _("unknown error"));
+    xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED, NULL);
 
   error:
     VIR_FREE(username);
