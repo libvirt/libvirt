@@ -6203,7 +6203,7 @@ qemuGetSchedulerParametersFlags(virDomainPtr dom,
     int ret = -1;
     int rc;
     bool isActive;
-    bool cpu_bw_status;
+    bool cpu_bw_status = false;
     int saved_nparams = 0;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
