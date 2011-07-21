@@ -1689,7 +1689,10 @@ cleanup:
     return ret;
 }
 
-static int vboxDomainDestroy(virDomainPtr dom) {
+static int
+vboxDomainDestroyFlags(virDomainPtr dom,
+                       unsigned int flags)
+{
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
     vboxIID iid = VBOX_IID_INITIALIZER;
@@ -1697,6 +1700,8 @@ static int vboxDomainDestroy(virDomainPtr dom) {
     PRUint32 state       = MachineState_Null;
     PRBool isAccessible  = PR_FALSE;
     nsresult rc;
+
+    virCheckFlags(0, -1);
 
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
@@ -1744,6 +1749,12 @@ cleanup:
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&iid);
     return ret;
+}
+
+static int
+vboxDomainDestroy(virDomainPtr dom)
+{
+    return vboxDomainDestroyFlags(dom, 0);
 }
 
 static char *vboxDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED) {
@@ -8774,6 +8785,7 @@ virDriver NAME(Driver) = {
     .domainShutdown = vboxDomainShutdown, /* 0.6.3 */
     .domainReboot = vboxDomainReboot, /* 0.6.3 */
     .domainDestroy = vboxDomainDestroy, /* 0.6.3 */
+    .domainDestroyFlags = vboxDomainDestroyFlags, /* 0.9.4 */
     .domainGetOSType = vboxDomainGetOSType, /* 0.6.3 */
     .domainSetMemory = vboxDomainSetMemory, /* 0.6.3 */
     .domainGetInfo = vboxDomainGetInfo, /* 0.6.3 */
