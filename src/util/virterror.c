@@ -1183,6 +1183,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("invalid stream pointer in %s");
             break;
+        case VIR_ERR_ARGUMENT_UNSUPPORTED:
+            if (info == NULL)
+                errmsg = _("argument unsupported");
+            else
+                errmsg = _("argument unsupported: %s");
+            break;
     }
     return (errmsg);
 }

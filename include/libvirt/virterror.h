@@ -4,7 +4,7 @@
  * Description: Provides the interfaces of the libvirt library to handle
  *              errors raised while using the library.
  *
- * Copy:  Copyright (C) 2006, 2010 Red Hat, Inc.
+ * Copy:  Copyright (C) 2006, 2010-2011 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -232,6 +232,8 @@ typedef enum {
     VIR_ERR_INVALID_DOMAIN_SNAPSHOT = 71,/* invalid domain snapshot */
     VIR_ERR_NO_DOMAIN_SNAPSHOT = 72,	/* domain snapshot not found */
     VIR_ERR_INVALID_STREAM = 73,        /* stream pointer not valid */
+    VIR_ERR_ARGUMENT_UNSUPPORTED = 74,  /* valid API use but unsupported by
+                                           the given driver */
 } virErrorNumber;
 
 /**
