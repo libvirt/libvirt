@@ -3497,7 +3497,8 @@ phypDomainGetState(virDomainPtr dom,
 }
 
 static int
-phypDomainDestroy(virDomainPtr dom)
+phypDomainDestroyFlags(virDomainPtr dom,
+                       unsigned int flags)
 {
     int result = -1;
     ConnectionData *connection_data = dom->conn->networkPrivateData;
@@ -3508,6 +3509,8 @@ phypDomainDestroy(virDomainPtr dom)
     int exit_status = 0;
     char *ret = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virCheckFlags(0, -1);
 
     virBufferAddLit(&buf, "rmsyscfg");
     if (system_type == HMC)
@@ -3528,6 +3531,12 @@ cleanup:
     VIR_FREE(ret);
 
     return result;
+}
+
+static int
+phypDomainDestroy(virDomainPtr dom)
+{
+    return phypDomainDestroyFlags(dom, 0);
 }
 
 static int
@@ -3763,6 +3772,7 @@ static virDriver phypDriver = {
     .domainShutdown = phypDomainShutdown, /* 0.7.0 */
     .domainReboot = phypDomainReboot, /* 0.9.1 */
     .domainDestroy = phypDomainDestroy, /* 0.7.3 */
+    .domainDestroyFlags = phypDomainDestroyFlags, /* 0.9.4 */
     .domainGetInfo = phypDomainGetInfo, /* 0.7.0 */
     .domainGetState = phypDomainGetState, /* 0.9.2 */
     .domainSetVcpus = phypDomainSetCPU, /* 0.7.3 */
