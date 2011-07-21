@@ -577,11 +577,15 @@ cleanup:
   return ret;
 }
 
-static int openvzDomainShutdown(virDomainPtr dom) {
+static int
+openvzDomainShutdownFlags(virDomainPtr dom,
+                          unsigned int flags) {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     const char *prog[] = {VZCTL, "--quiet", "stop", PROGRAM_SENTINAL, NULL};
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     openvzDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -612,6 +616,12 @@ cleanup:
     if (vm)
         virDomainObjUnlock(vm);
     return ret;
+}
+
+static int
+openvzDomainShutdown(virDomainPtr dom)
+{
+    return openvzDomainShutdownFlags(dom, 0);
 }
 
 static int openvzDomainReboot(virDomainPtr dom,
@@ -1621,6 +1631,7 @@ static virDriver openvzDriver = {
     .domainShutdown = openvzDomainShutdown, /* 0.3.1 */
     .domainReboot = openvzDomainReboot, /* 0.3.1 */
     .domainDestroy = openvzDomainShutdown, /* 0.3.1 */
+    .domainDestroyFlags = openvzDomainShutdownFlags, /* 0.9.4 */
     .domainGetOSType = openvzGetOSType, /* 0.3.1 */
     .domainGetInfo = openvzDomainGetInfo, /* 0.3.1 */
     .domainGetState = openvzDomainGetState, /* 0.9.2 */
