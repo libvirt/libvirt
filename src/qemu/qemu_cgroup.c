@@ -391,14 +391,14 @@ int qemuSetupCgroupVcpuBW(virCgroupPtr cgroup, unsigned long long period,
         rc = virCgroupGetCpuCfsPeriod(cgroup, &old_period);
         if (rc < 0) {
             virReportSystemError(-rc,
-                                 _("%s"), "Unable to get cpu bandwidth period");
+                                 "%s", _("Unable to get cpu bandwidth period"));
             return -1;
         }
 
         rc = virCgroupSetCpuCfsPeriod(cgroup, period);
         if (rc < 0) {
             virReportSystemError(-rc,
-                                 _("%s"), "Unable to set cpu bandwidth period");
+                                 "%s", _("Unable to set cpu bandwidth period"));
             return -1;
         }
     }
@@ -407,7 +407,7 @@ int qemuSetupCgroupVcpuBW(virCgroupPtr cgroup, unsigned long long period,
         rc = virCgroupSetCpuCfsQuota(cgroup, quota);
         if (rc < 0) {
             virReportSystemError(-rc,
-                                 _("%s"), "Unable to set cpu bandwidth quota");
+                                 "%s", _("Unable to set cpu bandwidth quota"));
             goto cleanup;
         }
     }
@@ -449,7 +449,7 @@ int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm)
 
     if (priv->nvcpupids == 0 || priv->vcpupids[0] == vm->pid) {
         /* If we does not know VCPU<->PID mapping or all vcpu runs in the same
-         * thread, we can not control each vcpu.
+         * thread, we cannot control each vcpu.
          */
         if (period || quota) {
             if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {

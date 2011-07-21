@@ -5911,7 +5911,7 @@ qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
 
     if (priv->nvcpupids == 0 || priv->vcpupids[0] == vm->pid) {
         /* If we does not know VCPU<->PID mapping or all vcpu runs in the same
-         * thread, we can not control each vcpu.
+         * thread, we cannot control each vcpu.
          */
         /* Ensure that we can multiply by vcpus without overflowing. */
         if (quota > LLONG_MAX / vm->def->vcpus) {
