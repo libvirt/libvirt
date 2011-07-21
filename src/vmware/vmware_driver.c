@@ -312,11 +312,14 @@ vmwareDomainDefineXML(virConnectPtr conn, const char *xml)
 }
 
 static int
-vmwareDomainShutdown(virDomainPtr dom)
+vmwareDomainShutdownFlags(virDomainPtr dom,
+                          unsigned int flags)
 {
     struct vmware_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     vmwareDriverLock(driver);
 
@@ -348,6 +351,12 @@ vmwareDomainShutdown(virDomainPtr dom)
         virDomainObjUnlock(vm);
     vmwareDriverUnlock(driver);
     return ret;
+}
+
+static int
+vmwareDomainShutdown(virDomainPtr dom)
+{
+    return vmwareDomainShutdownFlags(dom, 0);
 }
 
 static int
@@ -968,6 +977,7 @@ static virDriver vmwareDriver = {
     .domainShutdown = vmwareDomainShutdown, /* 0.8.7 */
     .domainReboot = vmwareDomainReboot, /* 0.8.7 */
     .domainDestroy = vmwareDomainShutdown, /* 0.8.7 */
+    .domainDestroyFlags = vmwareDomainShutdownFlags, /* 0.9.4 */
     .domainGetOSType = vmwareGetOSType, /* 0.8.7 */
     .domainGetInfo = vmwareDomainGetInfo, /* 0.8.7 */
     .domainGetState = vmwareDomainGetState, /* 0.9.2 */
