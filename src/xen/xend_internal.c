@@ -3934,44 +3934,41 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
 }
 
 struct xenUnifiedDriver xenDaemonDriver = {
-    xenDaemonOpen,               /* open */
-    xenDaemonClose,              /* close */
-    xenDaemonGetVersion,         /* version */
-    NULL,                        /* hostname */
-    xenDaemonNodeGetInfo,        /* nodeGetInfo */
-    NULL,                        /* getCapabilities */
-    xenDaemonListDomains,        /* listDomains */
-    xenDaemonNumOfDomains,       /* numOfDomains */
-    xenDaemonCreateXML,          /* domainCreateXML */
-    xenDaemonDomainSuspend,      /* domainSuspend */
-    xenDaemonDomainResume,       /* domainResume */
-    xenDaemonDomainShutdown,     /* domainShutdown */
-    xenDaemonDomainReboot,       /* domainReboot */
-    xenDaemonDomainDestroyFlags, /* domainDestroyFlags */
-    xenDaemonDomainGetOSType,    /* domainGetOSType */
-    xenDaemonDomainGetMaxMemory, /* domainGetMaxMemory */
-    xenDaemonDomainSetMaxMemory, /* domainSetMaxMemory */
-    xenDaemonDomainSetMemory,    /* domainMaxMemory */
-    xenDaemonDomainGetInfo,      /* domainGetInfo */
-    xenDaemonDomainSave,         /* domainSave */
-    xenDaemonDomainRestore,      /* domainRestore */
-    xenDaemonDomainCoreDump,     /* domainCoreDump */
-    NULL,                        /* domainScreenshot */
-    xenDaemonDomainPinVcpu,      /* domainPinVcpu */
-    xenDaemonDomainGetVcpus,     /* domainGetVcpus */
-    xenDaemonListDefinedDomains, /* listDefinedDomains */
-    xenDaemonNumOfDefinedDomains,/* numOfDefinedDomains */
-    xenDaemonDomainCreate,       /* domainCreate */
-    xenDaemonDomainDefineXML,    /* domainDefineXML */
-    xenDaemonDomainUndefine,     /* domainUndefine */
-    xenDaemonAttachDeviceFlags,       /* domainAttachDeviceFlags */
-    xenDaemonDetachDeviceFlags,       /* domainDetachDeviceFlags */
-    xenDaemonUpdateDeviceFlags,       /* domainUpdateDeviceFlags */
-    xenDaemonDomainGetAutostart, /* domainGetAutostart */
-    xenDaemonDomainSetAutostart, /* domainSetAutostart */
-    xenDaemonGetSchedulerType,   /* domainGetSchedulerType */
-    xenDaemonGetSchedulerParameters, /* domainGetSchedulerParameters */
-    xenDaemonSetSchedulerParameters, /* domainSetSchedulerParameters */
+    .xenOpen = xenDaemonOpen,
+    .xenClose = xenDaemonClose,
+    .xenVersion = xenDaemonGetVersion,
+    .xenNodeGetInfo = xenDaemonNodeGetInfo,
+    .xenListDomains = xenDaemonListDomains,
+    .xenNumOfDomains = xenDaemonNumOfDomains,
+    .xenDomainCreateXML = xenDaemonCreateXML,
+    .xenDomainSuspend = xenDaemonDomainSuspend,
+    .xenDomainResume = xenDaemonDomainResume,
+    .xenDomainShutdown = xenDaemonDomainShutdown,
+    .xenDomainReboot = xenDaemonDomainReboot,
+    .xenDomainDestroyFlags = xenDaemonDomainDestroyFlags,
+    .xenDomainGetOSType = xenDaemonDomainGetOSType,
+    .xenDomainGetMaxMemory = xenDaemonDomainGetMaxMemory,
+    .xenDomainSetMaxMemory = xenDaemonDomainSetMaxMemory,
+    .xenDomainSetMemory = xenDaemonDomainSetMemory,
+    .xenDomainGetInfo = xenDaemonDomainGetInfo,
+    .xenDomainSave = xenDaemonDomainSave,
+    .xenDomainRestore = xenDaemonDomainRestore,
+    .xenDomainCoreDump = xenDaemonDomainCoreDump,
+    .xenDomainPinVcpu = xenDaemonDomainPinVcpu,
+    .xenDomainGetVcpus = xenDaemonDomainGetVcpus,
+    .xenListDefinedDomains = xenDaemonListDefinedDomains,
+    .xenNumOfDefinedDomains = xenDaemonNumOfDefinedDomains,
+    .xenDomainCreate = xenDaemonDomainCreate,
+    .xenDomainDefineXML = xenDaemonDomainDefineXML,
+    .xenDomainUndefine = xenDaemonDomainUndefine,
+    .xenDomainAttachDeviceFlags = xenDaemonAttachDeviceFlags,
+    .xenDomainDetachDeviceFlags = xenDaemonDetachDeviceFlags,
+    .xenDomainUpdateDeviceFlags = xenDaemonUpdateDeviceFlags,
+    .xenDomainGetAutostart = xenDaemonDomainGetAutostart,
+    .xenDomainSetAutostart = xenDaemonDomainSetAutostart,
+    .xenDomainGetSchedulerType = xenDaemonGetSchedulerType,
+    .xenDomainGetSchedulerParameters = xenDaemonGetSchedulerParameters,
+    .xenDomainSetSchedulerParameters = xenDaemonSetSchedulerParameters,
 };
 
 

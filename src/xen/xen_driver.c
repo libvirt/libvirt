@@ -351,7 +351,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
     /* Hypervisor is only run with privilege & required to succeed */
     if (xenHavePrivilege()) {
         VIR_DEBUG("Trying hypervisor sub-driver");
-        if (drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->open(conn, auth, flags) ==
+        if (drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->xenOpen(conn, auth, flags) ==
             VIR_DRV_OPEN_SUCCESS) {
             VIR_DEBUG("Activated hypervisor sub-driver");
             priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] = 1;
@@ -360,7 +360,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
 
     /* XenD is required to succeed if privileged */
     VIR_DEBUG("Trying XenD sub-driver");
-    if (drivers[XEN_UNIFIED_XEND_OFFSET]->open(conn, auth, flags) ==
+    if (drivers[XEN_UNIFIED_XEND_OFFSET]->xenOpen(conn, auth, flags) ==
         VIR_DRV_OPEN_SUCCESS) {
         VIR_DEBUG("Activated XenD sub-driver");
         priv->opened[XEN_UNIFIED_XEND_OFFSET] = 1;
@@ -369,14 +369,14 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
          * succeed if root, optional otherwise */
         if (priv->xendConfigVersion <= 2) {
             VIR_DEBUG("Trying XM sub-driver");
-            if (drivers[XEN_UNIFIED_XM_OFFSET]->open(conn, auth, flags) ==
+            if (drivers[XEN_UNIFIED_XM_OFFSET]->xenOpen(conn, auth, flags) ==
                 VIR_DRV_OPEN_SUCCESS) {
                 VIR_DEBUG("Activated XM sub-driver");
                 priv->opened[XEN_UNIFIED_XM_OFFSET] = 1;
             }
         }
         VIR_DEBUG("Trying XS sub-driver");
-        if (drivers[XEN_UNIFIED_XS_OFFSET]->open(conn, auth, flags) ==
+        if (drivers[XEN_UNIFIED_XS_OFFSET]->xenOpen(conn, auth, flags) ==
             VIR_DRV_OPEN_SUCCESS) {
             VIR_DEBUG("Activated XS sub-driver");
             priv->opened[XEN_UNIFIED_XS_OFFSET] = 1;
@@ -404,7 +404,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
 #if WITH_XEN_INOTIFY
     if (xenHavePrivilege()) {
         VIR_DEBUG("Trying Xen inotify sub-driver");
-        if (drivers[XEN_UNIFIED_INOTIFY_OFFSET]->open(conn, auth, flags) ==
+        if (drivers[XEN_UNIFIED_INOTIFY_OFFSET]->xenOpen(conn, auth, flags) ==
             VIR_DRV_OPEN_SUCCESS) {
             VIR_DEBUG("Activated Xen inotify sub-driver");
             priv->opened[XEN_UNIFIED_INOTIFY_OFFSET] = 1;
@@ -419,7 +419,7 @@ fail:
 clean:
     VIR_DEBUG("Failed to activate a mandatory sub-driver");
     for (i = 0 ; i < XEN_UNIFIED_NR_DRIVERS ; i++)
-        if (priv->opened[i]) drivers[i]->close(conn);
+        if (priv->opened[i]) drivers[i]->xenClose(conn);
     virMutexDestroy(&priv->lock);
     VIR_FREE(priv);
     conn->privateData = NULL;
@@ -439,8 +439,8 @@ xenUnifiedClose (virConnectPtr conn)
     virDomainEventCallbackListFree(priv->domainEventCallbacks);
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->close)
-            (void) drivers[i]->close (conn);
+        if (priv->opened[i] && drivers[i]->xenClose)
+            (void) drivers[i]->xenClose (conn);
 
     virMutexDestroy(&priv->lock);
     VIR_FREE(conn->privateData);
@@ -493,8 +493,8 @@ xenUnifiedGetVersion (virConnectPtr conn, unsigned long *hvVer)
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] &&
-            drivers[i]->version &&
-            drivers[i]->version (conn, hvVer) == 0)
+            drivers[i]->xenVersion &&
+            drivers[i]->xenVersion (conn, hvVer) == 0)
             return 0;
 
     return -1;
@@ -546,8 +546,8 @@ xenUnifiedNodeGetInfo (virConnectPtr conn, virNodeInfoPtr info)
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] &&
-            drivers[i]->nodeGetInfo &&
-            drivers[i]->nodeGetInfo (conn, info) == 0)
+            drivers[i]->xenNodeGetInfo &&
+            drivers[i]->xenNodeGetInfo (conn, info) == 0)
             return 0;
 
     return -1;
@@ -630,8 +630,8 @@ xenUnifiedDomainCreateXML (virConnectPtr conn,
     virDomainPtr ret;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainCreateXML) {
-            ret = drivers[i]->domainCreateXML (conn, xmlDesc, flags);
+        if (priv->opened[i] && drivers[i]->xenDomainCreateXML) {
+            ret = drivers[i]->xenDomainCreateXML (conn, xmlDesc, flags);
             if (ret) return ret;
         }
 
@@ -835,13 +835,13 @@ xenUnifiedDomainSuspend (virDomainPtr dom)
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (i != XEN_UNIFIED_HYPERVISOR_OFFSET &&
             priv->opened[i] &&
-            drivers[i]->domainSuspend &&
-            drivers[i]->domainSuspend (dom) == 0)
+            drivers[i]->xenDomainSuspend &&
+            drivers[i]->xenDomainSuspend (dom) == 0)
             return 0;
 
     if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] &&
-        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainSuspend &&
-        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainSuspend (dom) == 0)
+        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->xenDomainSuspend &&
+        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->xenDomainSuspend (dom) == 0)
         return 0;
 
     return -1;
@@ -859,13 +859,13 @@ xenUnifiedDomainResume (virDomainPtr dom)
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (i != XEN_UNIFIED_HYPERVISOR_OFFSET &&
             priv->opened[i] &&
-            drivers[i]->domainResume &&
-            drivers[i]->domainResume (dom) == 0)
+            drivers[i]->xenDomainResume &&
+            drivers[i]->xenDomainResume (dom) == 0)
             return 0;
 
     if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] &&
-        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainResume &&
-        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainResume (dom) == 0)
+        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->xenDomainResume &&
+        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->xenDomainResume (dom) == 0)
         return 0;
 
     return -1;
@@ -879,8 +879,8 @@ xenUnifiedDomainShutdown (virDomainPtr dom)
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] &&
-            drivers[i]->domainShutdown &&
-            drivers[i]->domainShutdown (dom) == 0)
+            drivers[i]->xenDomainShutdown &&
+            drivers[i]->xenDomainShutdown (dom) == 0)
             return 0;
 
     return -1;
@@ -894,8 +894,8 @@ xenUnifiedDomainReboot (virDomainPtr dom, unsigned int flags)
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] &&
-            drivers[i]->domainReboot &&
-            drivers[i]->domainReboot (dom, flags) == 0)
+            drivers[i]->xenDomainReboot &&
+            drivers[i]->xenDomainReboot (dom, flags) == 0)
             return 0;
 
     return -1;
@@ -916,13 +916,13 @@ xenUnifiedDomainDestroyFlags(virDomainPtr dom,
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (i != XEN_UNIFIED_HYPERVISOR_OFFSET &&
             priv->opened[i] &&
-            drivers[i]->domainDestroyFlags &&
-            drivers[i]->domainDestroyFlags(dom, flags) == 0)
+            drivers[i]->xenDomainDestroyFlags &&
+            drivers[i]->xenDomainDestroyFlags(dom, flags) == 0)
             return 0;
 
     if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] &&
-        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainDestroyFlags&&
-        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainDestroyFlags(dom,
+        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->xenDomainDestroyFlags&&
+        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->xenDomainDestroyFlags(dom,
                                                                    flags) == 0)
         return 0;
 
@@ -943,8 +943,8 @@ xenUnifiedDomainGetOSType (virDomainPtr dom)
     char *ret;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainGetOSType) {
-            ret = drivers[i]->domainGetOSType (dom);
+        if (priv->opened[i] && drivers[i]->xenDomainGetOSType) {
+            ret = drivers[i]->xenDomainGetOSType (dom);
             if (ret) return ret;
         }
 
@@ -959,8 +959,8 @@ xenUnifiedDomainGetMaxMemory (virDomainPtr dom)
     unsigned long ret;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainGetMaxMemory) {
-            ret = drivers[i]->domainGetMaxMemory (dom);
+        if (priv->opened[i] && drivers[i]->xenDomainGetMaxMemory) {
+            ret = drivers[i]->xenDomainGetMaxMemory (dom);
             if (ret != 0) return ret;
         }
 
@@ -982,8 +982,8 @@ xenUnifiedDomainSetMaxMemory (virDomainPtr dom, unsigned long memory)
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (i != XEN_UNIFIED_XEND_OFFSET &&
             priv->opened[i] &&
-            drivers[i]->domainSetMaxMemory &&
-            drivers[i]->domainSetMaxMemory (dom, memory) == 0)
+            drivers[i]->xenDomainSetMaxMemory &&
+            drivers[i]->xenDomainSetMaxMemory (dom, memory) == 0)
             return 0;
 
     return -1;
@@ -997,8 +997,8 @@ xenUnifiedDomainSetMemory (virDomainPtr dom, unsigned long memory)
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] &&
-            drivers[i]->domainSetMemory &&
-            drivers[i]->domainSetMemory (dom, memory) == 0)
+            drivers[i]->xenDomainSetMemory &&
+            drivers[i]->xenDomainSetMemory (dom, memory) == 0)
             return 0;
 
     return -1;
@@ -1012,8 +1012,8 @@ xenUnifiedDomainGetInfo (virDomainPtr dom, virDomainInfoPtr info)
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] &&
-            drivers[i]->domainGetInfo &&
-            drivers[i]->domainGetInfo (dom, info) == 0)
+            drivers[i]->xenDomainGetInfo &&
+            drivers[i]->xenDomainGetInfo (dom, info) == 0)
             return 0;
 
     return -1;
@@ -1076,8 +1076,8 @@ xenUnifiedDomainSaveFlags(virDomainPtr dom, const char *to, const char *dxml,
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] &&
-            drivers[i]->domainSave &&
-            drivers[i]->domainSave (dom, to) == 0)
+            drivers[i]->xenDomainSave &&
+            drivers[i]->xenDomainSave (dom, to) == 0)
             return 0;
 
     return -1;
@@ -1105,8 +1105,8 @@ xenUnifiedDomainRestoreFlags(virConnectPtr conn, const char *from,
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] &&
-            drivers[i]->domainRestore &&
-            drivers[i]->domainRestore (conn, from) == 0)
+            drivers[i]->xenDomainRestore &&
+            drivers[i]->xenDomainRestore (conn, from) == 0)
             return 0;
 
     return -1;
@@ -1126,8 +1126,8 @@ xenUnifiedDomainCoreDump (virDomainPtr dom, const char *to, unsigned int flags)
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] &&
-            drivers[i]->domainCoreDump &&
-            drivers[i]->domainCoreDump (dom, to, flags) == 0)
+            drivers[i]->xenDomainCoreDump &&
+            drivers[i]->xenDomainCoreDump (dom, to, flags) == 0)
             return 0;
 
     return -1;
@@ -1205,8 +1205,8 @@ xenUnifiedDomainPinVcpu (virDomainPtr dom, unsigned int vcpu,
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] &&
-            drivers[i]->domainPinVcpu &&
-            drivers[i]->domainPinVcpu (dom, vcpu, cpumap, maplen) == 0)
+            drivers[i]->xenDomainPinVcpu &&
+            drivers[i]->xenDomainPinVcpu (dom, vcpu, cpumap, maplen) == 0)
             return 0;
 
     return -1;
@@ -1221,8 +1221,8 @@ xenUnifiedDomainGetVcpus (virDomainPtr dom,
     int i, ret;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainGetVcpus) {
-            ret = drivers[i]->domainGetVcpus (dom, info, maxinfo, cpumaps, maplen);
+        if (priv->opened[i] && drivers[i]->xenDomainGetVcpus) {
+            ret = drivers[i]->xenDomainGetVcpus (dom, info, maxinfo, cpumaps, maplen);
             if (ret > 0)
                 return ret;
         }
@@ -1495,8 +1495,8 @@ xenUnifiedListDefinedDomains (virConnectPtr conn, char **const names,
     int ret;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->listDefinedDomains) {
-            ret = drivers[i]->listDefinedDomains (conn, names, maxnames);
+        if (priv->opened[i] && drivers[i]->xenListDefinedDomains) {
+            ret = drivers[i]->xenListDefinedDomains (conn, names, maxnames);
             if (ret >= 0) return ret;
         }
 
@@ -1511,8 +1511,8 @@ xenUnifiedNumOfDefinedDomains (virConnectPtr conn)
     int ret;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->numOfDefinedDomains) {
-            ret = drivers[i]->numOfDefinedDomains (conn);
+        if (priv->opened[i] && drivers[i]->xenNumOfDefinedDomains) {
+            ret = drivers[i]->xenNumOfDefinedDomains (conn);
             if (ret >= 0) return ret;
         }
 
@@ -1528,8 +1528,8 @@ xenUnifiedDomainCreateWithFlags (virDomainPtr dom, unsigned int flags)
     virCheckFlags(0, -1);
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainCreate &&
-            drivers[i]->domainCreate (dom) == 0)
+        if (priv->opened[i] && drivers[i]->xenDomainCreate &&
+            drivers[i]->xenDomainCreate (dom) == 0)
             return 0;
 
     return -1;
@@ -1549,8 +1549,8 @@ xenUnifiedDomainDefineXML (virConnectPtr conn, const char *xml)
     virDomainPtr ret;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainDefineXML) {
-            ret = drivers[i]->domainDefineXML (conn, xml);
+        if (priv->opened[i] && drivers[i]->xenDomainDefineXML) {
+            ret = drivers[i]->xenDomainDefineXML (conn, xml);
             if (ret) return ret;
         }
 
@@ -1565,8 +1565,8 @@ xenUnifiedDomainUndefineFlags (virDomainPtr dom, unsigned int flags)
 
     virCheckFlags(0, -1);
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainUndefine &&
-            drivers[i]->domainUndefine (dom) == 0)
+        if (priv->opened[i] && drivers[i]->xenDomainUndefine &&
+            drivers[i]->xenDomainUndefine (dom) == 0)
             return 0;
 
     return -1;
@@ -1594,8 +1594,8 @@ xenUnifiedDomainAttachDevice (virDomainPtr dom, const char *xml)
         flags |= VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainAttachDeviceFlags &&
-            drivers[i]->domainAttachDeviceFlags(dom, xml, flags) == 0)
+        if (priv->opened[i] && drivers[i]->xenDomainAttachDeviceFlags &&
+            drivers[i]->xenDomainAttachDeviceFlags(dom, xml, flags) == 0)
             return 0;
 
     return -1;
@@ -1609,8 +1609,8 @@ xenUnifiedDomainAttachDeviceFlags (virDomainPtr dom, const char *xml,
     int i;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainAttachDeviceFlags &&
-            drivers[i]->domainAttachDeviceFlags(dom, xml, flags) == 0)
+        if (priv->opened[i] && drivers[i]->xenDomainAttachDeviceFlags &&
+            drivers[i]->xenDomainAttachDeviceFlags(dom, xml, flags) == 0)
             return 0;
 
     return -1;
@@ -1633,8 +1633,8 @@ xenUnifiedDomainDetachDevice (virDomainPtr dom, const char *xml)
         flags |= VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainDetachDeviceFlags &&
-            drivers[i]->domainDetachDeviceFlags(dom, xml, flags) == 0)
+        if (priv->opened[i] && drivers[i]->xenDomainDetachDeviceFlags &&
+            drivers[i]->xenDomainDetachDeviceFlags(dom, xml, flags) == 0)
             return 0;
 
     return -1;
@@ -1648,8 +1648,8 @@ xenUnifiedDomainDetachDeviceFlags (virDomainPtr dom, const char *xml,
     int i;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainDetachDeviceFlags &&
-            drivers[i]->domainDetachDeviceFlags(dom, xml, flags) == 0)
+        if (priv->opened[i] && drivers[i]->xenDomainDetachDeviceFlags &&
+            drivers[i]->xenDomainDetachDeviceFlags(dom, xml, flags) == 0)
             return 0;
 
     return -1;
@@ -1663,8 +1663,8 @@ xenUnifiedDomainUpdateDeviceFlags (virDomainPtr dom, const char *xml,
     int i;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainUpdateDeviceFlags &&
-            drivers[i]->domainUpdateDeviceFlags(dom, xml, flags) == 0)
+        if (priv->opened[i] && drivers[i]->xenDomainUpdateDeviceFlags &&
+            drivers[i]->xenDomainUpdateDeviceFlags(dom, xml, flags) == 0)
             return 0;
 
     return -1;
@@ -1712,8 +1712,8 @@ xenUnifiedDomainGetSchedulerType (virDomainPtr dom, int *nparams)
     char *schedulertype;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; i++) {
-        if (priv->opened[i] && drivers[i]->domainGetSchedulerType) {
-            schedulertype = drivers[i]->domainGetSchedulerType (dom, nparams);
+        if (priv->opened[i] && drivers[i]->xenDomainGetSchedulerType) {
+            schedulertype = drivers[i]->xenDomainGetSchedulerType (dom, nparams);
             if (schedulertype != NULL)
                 return(schedulertype);
         }
@@ -1733,8 +1733,8 @@ xenUnifiedDomainGetSchedulerParametersFlags(virDomainPtr dom,
     virCheckFlags(0, -1);
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i) {
-        if (priv->opened[i] && drivers[i]->domainGetSchedulerParameters) {
-           ret = drivers[i]->domainGetSchedulerParameters(dom, params, nparams);
+        if (priv->opened[i] && drivers[i]->xenDomainGetSchedulerParameters) {
+           ret = drivers[i]->xenDomainGetSchedulerParameters(dom, params, nparams);
            if (ret == 0)
                return(0);
         }
@@ -1764,8 +1764,8 @@ xenUnifiedDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
     /* do the hypervisor call last to get better error */
     for (i = XEN_UNIFIED_NR_DRIVERS - 1; i >= 0; i--) {
-        if (priv->opened[i] && drivers[i]->domainSetSchedulerParameters) {
-           ret = drivers[i]->domainSetSchedulerParameters(dom, params, nparams);
+        if (priv->opened[i] && drivers[i]->xenDomainSetSchedulerParameters) {
+           ret = drivers[i]->xenDomainSetSchedulerParameters(dom, params, nparams);
            if (ret == 0)
                return 0;
         }

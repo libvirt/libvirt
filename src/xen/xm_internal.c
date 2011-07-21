@@ -81,44 +81,20 @@ static int xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
 #define XM_XML_ERROR "Invalid xml"
 
 struct xenUnifiedDriver xenXMDriver = {
-    xenXMOpen, /* open */
-    xenXMClose, /* close */
-    NULL, /* version */
-    NULL, /* hostname */
-    NULL, /* nodeGetInfo */
-    NULL, /* getCapabilities */
-    NULL, /* listDomains */
-    NULL, /* numOfDomains */
-    NULL, /* domainCreateXML */
-    NULL, /* domainSuspend */
-    NULL, /* domainResume */
-    NULL, /* domainShutdown */
-    NULL, /* domainReboot */
-    NULL, /* domainDestroyFlags */
-    NULL, /* domainGetOSType */
-    xenXMDomainGetMaxMemory, /* domainGetMaxMemory */
-    xenXMDomainSetMaxMemory, /* domainSetMaxMemory */
-    xenXMDomainSetMemory, /* domainMaxMemory */
-    xenXMDomainGetInfo, /* domainGetInfo */
-    NULL, /* domainSave */
-    NULL, /* domainRestore */
-    NULL, /* domainCoreDump */
-    NULL, /* domainScreenshot */
-    xenXMDomainPinVcpu, /* domainPinVcpu */
-    NULL, /* domainGetVcpus */
-    xenXMListDefinedDomains, /* listDefinedDomains */
-    xenXMNumOfDefinedDomains, /* numOfDefinedDomains */
-    xenXMDomainCreate, /* domainCreate */
-    xenXMDomainDefineXML, /* domainDefineXML */
-    xenXMDomainUndefine, /* domainUndefine */
-    xenXMDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
-    xenXMDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
-    NULL, /* domainUpdateDeviceFlags */
-    NULL, /* domainGetAutostart */
-    NULL, /* domainSetAutostart */
-    NULL, /* domainGetSchedulerType */
-    NULL, /* domainGetSchedulerParameters */
-    NULL, /* domainSetSchedulerParameters */
+    .xenOpen = xenXMOpen,
+    .xenClose = xenXMClose,
+    .xenDomainGetMaxMemory = xenXMDomainGetMaxMemory,
+    .xenDomainSetMaxMemory = xenXMDomainSetMaxMemory,
+    .xenDomainSetMemory = xenXMDomainSetMemory,
+    .xenDomainGetInfo = xenXMDomainGetInfo,
+    .xenDomainPinVcpu = xenXMDomainPinVcpu,
+    .xenListDefinedDomains = xenXMListDefinedDomains,
+    .xenNumOfDefinedDomains = xenXMNumOfDefinedDomains,
+    .xenDomainCreate = xenXMDomainCreate,
+    .xenDomainDefineXML = xenXMDomainDefineXML,
+    .xenDomainUndefine = xenXMDomainUndefine,
+    .xenDomainAttachDeviceFlags = xenXMDomainAttachDeviceFlags,
+    .xenDomainDetachDeviceFlags = xenXMDomainDetachDeviceFlags,
 };
 
 #define xenXMError(code, ...)                                              \

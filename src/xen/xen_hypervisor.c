@@ -802,44 +802,24 @@ typedef struct xen_op_v2_dom xen_op_v2_dom;
 static unsigned long xenHypervisorGetMaxMemory(virDomainPtr domain);
 
 struct xenUnifiedDriver xenHypervisorDriver = {
-    xenHypervisorOpen, /* open */
-    xenHypervisorClose, /* close */
-    xenHypervisorGetVersion, /* version */
-    NULL, /* hostname */
-    NULL, /* nodeGetInfo */
-    xenHypervisorGetCapabilities, /* getCapabilities */
-    xenHypervisorListDomains, /* listDomains */
-    xenHypervisorNumOfDomains, /* numOfDomains */
-    NULL, /* domainCreateXML */
-    xenHypervisorPauseDomain, /* domainSuspend */
-    xenHypervisorResumeDomain, /* domainResume */
-    NULL, /* domainShutdown */
-    NULL, /* domainReboot */
-    xenHypervisorDestroyDomainFlags, /* domainDestroyFlags */
-    xenHypervisorDomainGetOSType, /* domainGetOSType */
-    xenHypervisorGetMaxMemory, /* domainGetMaxMemory */
-    xenHypervisorSetMaxMemory, /* domainSetMaxMemory */
-    NULL, /* domainSetMemory */
-    xenHypervisorGetDomainInfo, /* domainGetInfo */
-    NULL, /* domainSave */
-    NULL, /* domainRestore */
-    NULL, /* domainCoreDump */
-    NULL, /* domainScreenshot */
-    xenHypervisorPinVcpu, /* domainPinVcpu */
-    xenHypervisorGetVcpus, /* domainGetVcpus */
-    NULL, /* listDefinedDomains */
-    NULL, /* numOfDefinedDomains */
-    NULL, /* domainCreate */
-    NULL, /* domainDefineXML */
-    NULL, /* domainUndefine */
-    NULL, /* domainAttachDeviceFlags */
-    NULL, /* domainDetachDeviceFlags */
-    NULL, /* domainUpdateDeviceFlags */
-    NULL, /* domainGetAutostart */
-    NULL, /* domainSetAutostart */
-    xenHypervisorGetSchedulerType, /* domainGetSchedulerType */
-    xenHypervisorGetSchedulerParameters, /* domainGetSchedulerParameters */
-    xenHypervisorSetSchedulerParameters, /* domainSetSchedulerParameters */
+    .xenOpen = xenHypervisorOpen,
+    .xenClose = xenHypervisorClose,
+    .xenVersion = xenHypervisorGetVersion,
+    .xenGetCapabilities = xenHypervisorGetCapabilities,
+    .xenListDomains = xenHypervisorListDomains,
+    .xenNumOfDomains = xenHypervisorNumOfDomains,
+    .xenDomainSuspend = xenHypervisorPauseDomain,
+    .xenDomainResume = xenHypervisorResumeDomain,
+    .xenDomainDestroyFlags = xenHypervisorDestroyDomainFlags,
+    .xenDomainGetOSType = xenHypervisorDomainGetOSType,
+    .xenDomainGetMaxMemory = xenHypervisorGetMaxMemory,
+    .xenDomainSetMaxMemory = xenHypervisorSetMaxMemory,
+    .xenDomainGetInfo = xenHypervisorGetDomainInfo,
+    .xenDomainPinVcpu = xenHypervisorPinVcpu,
+    .xenDomainGetVcpus = xenHypervisorGetVcpus,
+    .xenDomainGetSchedulerType = xenHypervisorGetSchedulerType,
+    .xenDomainGetSchedulerParameters = xenHypervisorGetSchedulerParameters,
+    .xenDomainSetSchedulerParameters = xenHypervisorSetSchedulerParameters,
 };
 
 #define virXenError(code, ...)                                             \
