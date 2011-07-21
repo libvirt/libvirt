@@ -49,6 +49,10 @@ int qemuSetupHostUsbDeviceCgroup(usbDevice *dev,
                                  void *opaque);
 int qemuSetupCgroup(struct qemud_driver *driver,
                     virDomainObjPtr vm);
+int qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
+                          unsigned long long period,
+                          long long quota);
+int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm);
 int qemuRemoveCgroup(struct qemud_driver *driver,
                      virDomainObjPtr vm,
                      int quiet);

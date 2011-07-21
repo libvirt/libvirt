@@ -6026,6 +6026,14 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                       &def->cputune.shares) < 0)
         def->cputune.shares = 0;
 
+    if (virXPathULongLong("string(./cputune/period[1])", ctxt,
+                          &def->cputune.period) < 0)
+        def->cputune.period = 0;
+
+    if (virXPathLongLong("string(./cputune/quota[1])", ctxt,
+                         &def->cputune.quota) < 0)
+        def->cputune.quota = 0;
+
     if ((n = virXPathNodeSet("./cputune/vcpupin", ctxt, &nodes)) < 0) {
         goto error;
     }
@@ -9727,12 +9735,19 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAsprintf(&buf, " current='%u'", def->vcpus);
     virBufferAsprintf(&buf, ">%u</vcpu>\n", def->maxvcpus);
 
-    if (def->cputune.shares || def->cputune.vcpupin)
+    if (def->cputune.shares || def->cputune.vcpupin ||
+        def->cputune.period || def->cputune.quota)
         virBufferAddLit(&buf, "  <cputune>\n");
 
     if (def->cputune.shares)
         virBufferAsprintf(&buf, "    <shares>%lu</shares>\n",
                           def->cputune.shares);
+    if (def->cputune.period)
+        virBufferAsprintf(&buf, "    <period>%llu</period>\n",
+                          def->cputune.period);
+    if (def->cputune.quota)
+        virBufferAsprintf(&buf, "    <quota>%lld</quota>\n",
+                          def->cputune.quota);
     if (def->cputune.vcpupin) {
         int i;
         for (i = 0; i < def->cputune.nvcpupin; i++) {
@@ -9754,7 +9769,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         }
     }
 
-    if (def->cputune.shares || def->cputune.vcpupin)
+    if (def->cputune.shares || def->cputune.vcpupin ||
+        def->cputune.period || def->cputune.quota)
         virBufferAddLit(&buf, "  </cputune>\n");
 
     if (def->numatune.memory.nodemask)

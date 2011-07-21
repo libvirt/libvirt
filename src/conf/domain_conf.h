@@ -1190,6 +1190,8 @@ struct _virDomainDef {
 
     struct {
         unsigned long shares;
+        unsigned long long period;
+        long long quota;
         int nvcpupin;
         virDomainVcpuPinDefPtr *vcpupin;
     } cputune;

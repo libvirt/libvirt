@@ -2789,6 +2789,10 @@ int qemuProcessStart(virConnectPtr conn,
     if (qemuProcessDetectVcpuPIDs(driver, vm) < 0)
         goto cleanup;
 
+    VIR_DEBUG("Setting cgroup for each VCPU(if required)");
+    if (qemuSetupCgroupForVcpu(driver, vm) < 0)
+        goto cleanup;
+
     VIR_DEBUG("Setting VCPU affinities");
     if (qemuProcessSetVcpuAffinites(conn, vm) < 0)
         goto cleanup;
