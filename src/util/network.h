@@ -48,6 +48,20 @@ typedef struct {
 
 typedef virSocketAddr *virSocketAddrPtr;
 
+typedef struct {
+    unsigned long long average;  /* kbytes/s */
+    unsigned long long peak;     /* kbytes/s */
+    unsigned long long burst;    /* kbytes */
+} virRate;
+
+typedef virRate *virRatePtr;
+
+typedef struct {
+    virRatePtr in, out;
+} virBandwidth;
+
+typedef virBandwidth *virBandwidthPtr;
+
 int virSocketParseAddr    (const char *val,
                            virSocketAddrPtr addr,
                            int hint);
