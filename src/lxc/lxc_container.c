@@ -176,6 +176,7 @@ static int lxcContainerSetStdio(int control, int ttyfd, int handshakefd)
     rc = 0;
 
 cleanup:
+    VIR_DEBUG("rc=%d", rc);
     return rc;
 }
 
@@ -513,41 +514,77 @@ static int lxcContainerPopulateDevices(void)
 }
 
 
-static int lxcContainerMountNewFS(virDomainDefPtr vmDef)
+static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
+                                   const char *srcprefix)
 {
-    int i;
+    char *src = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&src, "%s%s", srcprefix, fs->src) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virFileMakePath(fs->dst) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to create %s"),
+                             fs->dst);
+        goto cleanup;
+    }
+
+    if (mount(src, fs->dst, NULL, MS_BIND, NULL) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to bind mount directory %s to %s"),
+                             src, fs->dst);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+    VIR_DEBUG("Done mounting filesystem ret=%d", ret);
+
+cleanup:
+    VIR_FREE(src);
+    return ret;
+}
+
+
+static int lxcContainerMountFS(virDomainFSDefPtr fs,
+                               const char *srcprefix)
+{
+    switch (fs->type) {
+    case VIR_DOMAIN_FS_TYPE_MOUNT:
+        if (lxcContainerMountFSBind(fs, srcprefix) < 0)
+            return -1;
+        break;
+    default:
+        lxcError(VIR_ERR_CONFIG_UNSUPPORTED,
+                 _("Cannot mount filesystem type %s"),
+                 virDomainFSTypeToString(fs->type));
+        break;
+    }
+    return 0;
+}
+
+
+static int lxcContainerMountAllFS(virDomainDefPtr vmDef,
+                                  const char *dstprefix,
+                                  bool skipRoot)
+{
+    size_t i;
+    VIR_DEBUG("Mounting %s %d", dstprefix, skipRoot);
 
     /* Pull in rest of container's mounts */
     for (i = 0 ; i < vmDef->nfss ; i++) {
-        char *src;
-        if (STREQ(vmDef->fss[i]->dst, "/"))
-            continue;
-        /* XXX fix */
-        if (vmDef->fss[i]->type != VIR_DOMAIN_FS_TYPE_MOUNT)
+        if (skipRoot &&
+            STREQ(vmDef->fss[i]->dst, "/"))
             continue;
 
-        if (virAsprintf(&src, "/.oldroot/%s", vmDef->fss[i]->src) < 0) {
-            virReportOOMError();
+        if (lxcContainerMountFS(vmDef->fss[i], dstprefix) < 0)
             return -1;
-        }
-
-        if (virFileMakePath(vmDef->fss[i]->dst) < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to create %s"),
-                                 vmDef->fss[i]->dst);
-            VIR_FREE(src);
-            return -1;
-        }
-        if (mount(src, vmDef->fss[i]->dst, NULL, MS_BIND, NULL) < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to mount %s at %s"),
-                                 src, vmDef->fss[i]->dst);
-            VIR_FREE(src);
-            return -1;
-        }
-        VIR_FREE(src);
     }
 
+    VIR_DEBUG("Mounted all filesystems");
     return 0;
 }
 
@@ -624,7 +661,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
         return -1;
 
     /* Sets up any non-root mounts from guest config */
-    if (lxcContainerMountNewFS(vmDef) < 0)
+    if (lxcContainerMountAllFS(vmDef, "/.oldroot", true) < 0)
         return -1;
 
     /* Gets rid of all remaining mounts from host OS, including /.oldroot itself */
@@ -634,34 +671,25 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     return 0;
 }
 
+
 /* Nothing mapped to /, we're using the main root,
    but with extra stuff mapped in */
 static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef)
 {
-    int i;
-
+    VIR_DEBUG("def=%p", vmDef);
+    /*
+     * This makes sure that any new filesystems in the
+     * host OS propagate to the container, but any
+     * changes in the container are private
+     */
     if (mount("", "/", NULL, MS_SLAVE|MS_REC, NULL) < 0) {
         virReportSystemError(errno, "%s",
                              _("Failed to make / slave"));
         return -1;
     }
-    for (i = 0 ; i < vmDef->nfss ; i++) {
-        /* XXX fix to support other mount types */
-        if (vmDef->fss[i]->type != VIR_DOMAIN_FS_TYPE_MOUNT)
-            continue;
 
-        if (mount(vmDef->fss[i]->src,
-                  vmDef->fss[i]->dst,
-                  NULL,
-                  MS_BIND,
-                  NULL) < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to mount %s at %s"),
-                                 vmDef->fss[i]->src,
-                                 vmDef->fss[i]->dst);
-            return -1;
-        }
-    }
+    if (lxcContainerMountAllFS(vmDef, "", false) < 0)
+        return -1;
 
     /* mount /proc */
     if (mount("lxcproc", "/proc", "proc", 0, NULL) < 0) {

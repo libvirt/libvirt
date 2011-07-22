@@ -290,6 +290,8 @@ virDomainDiskRemoveByName;
 virDomainDiskTypeFromString;
 virDomainDiskTypeToString;
 virDomainFSDefFree;
+virDomainFSTypeFromString;
+virDomainFSTypeToString;
 virDomainFindByID;
 virDomainFindByName;
 virDomainFindByUUID;
