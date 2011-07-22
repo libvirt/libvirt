@@ -452,6 +452,19 @@ int qemuMonitorSendKey(qemuMonitorPtr mon,
                        unsigned int *keycodes,
                        unsigned int nkeycodes);
 
+typedef enum {
+    BLOCK_JOB_ABORT = 0,
+    BLOCK_JOB_INFO = 1,
+    BLOCK_JOB_SPEED = 2,
+    BLOCK_JOB_PULL = 3,
+} BLOCK_JOB_CMD;
+
+int qemuMonitorBlockJob(qemuMonitorPtr mon,
+                        const char *device,
+                        unsigned long bandwidth,
+                        virDomainBlockJobInfoPtr info,
+                        int mode);
+
 /**
  * When running two dd process and using <> redirection, we need a
  * shell that will not truncate files.  These two strings serve that

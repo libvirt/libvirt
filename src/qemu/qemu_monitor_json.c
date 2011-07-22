@@ -2732,3 +2732,150 @@ int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
     virJSONValueFree(reply);
     return ret;
 }
+
+static int qemuMonitorJSONGetBlockJobInfoOne(virJSONValuePtr entry,
+                                              const char *device,
+                                              virDomainBlockJobInfoPtr info)
+{
+    const char *this_dev;
+    const char *type;
+    unsigned long long speed_bytes;
+
+    if ((this_dev = virJSONValueObjectGetString(entry, "device")) == NULL) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("entry was missing 'device'"));
+        return -1;
+    }
+    if (!STREQ(this_dev, device))
+        return -1;
+
+    type = virJSONValueObjectGetString(entry, "type");
+    if (!type) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("entry was missing 'type'"));
+        return -1;
+    }
+    if (STREQ(type, "stream"))
+        info->type = VIR_DOMAIN_BLOCK_JOB_TYPE_PULL;
+    else
+        info->type = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
+
+    if (virJSONValueObjectGetNumberUlong(entry, "speed", &speed_bytes) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("entry was missing 'speed'"));
+        return -1;
+    }
+    info->bandwidth = speed_bytes / 1024ULL / 1024ULL;
+
+    if (virJSONValueObjectGetNumberUlong(entry, "offset", &info->cur) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("entry was missing 'offset'"));
+        return -1;
+    }
+
+    if (virJSONValueObjectGetNumberUlong(entry, "len", &info->end) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("entry was missing 'len'"));
+        return -1;
+    }
+    return 0;
+}
+
+/** qemuMonitorJSONGetBlockJobInfo:
+ * Parse Block Job information.
+ * The reply is a JSON array of objects, one per active job.
+ */
+static int qemuMonitorJSONGetBlockJobInfo(virJSONValuePtr reply,
+                                           const char *device,
+                                           virDomainBlockJobInfoPtr info)
+{
+    virJSONValuePtr data;
+    int nr_results, i;
+
+    if (!info)
+        return -1;
+
+    if ((data = virJSONValueObjectGet(reply, "return")) == NULL) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("reply was missing return data"));
+        return -1;
+    }
+
+    if (data->type != VIR_JSON_TYPE_ARRAY) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("urecognized format of block job information"));
+        return -1;
+    }
+
+    if ((nr_results = virJSONValueArraySize(data)) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("unable to determine array size"));
+        return -1;
+    }
+
+    for (i = 0; i < nr_results; i++) {
+        virJSONValuePtr entry = virJSONValueArrayGet(data, i);
+        if (qemuMonitorJSONGetBlockJobInfoOne(entry, device, info) == 0)
+            return 1;
+    }
+
+    return 0;
+}
+
+
+int qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
+                             const char *device,
+                             unsigned long bandwidth,
+                             virDomainBlockJobInfoPtr info,
+                             int mode)
+{
+    int ret = -1;
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+
+    if (mode == BLOCK_JOB_ABORT)
+        cmd = qemuMonitorJSONMakeCommand("block_job_cancel",
+                                         "s:device", device, NULL);
+    else if (mode == BLOCK_JOB_INFO)
+        cmd = qemuMonitorJSONMakeCommand("query-block-jobs", NULL);
+    else if (mode == BLOCK_JOB_SPEED)
+        cmd = qemuMonitorJSONMakeCommand("block_job_set_speed",
+                                         "s:device", device,
+                                         "U:value", bandwidth * 1024ULL * 1024ULL,
+                                         NULL);
+    else if (mode == BLOCK_JOB_PULL)
+        cmd = qemuMonitorJSONMakeCommand("block_stream",
+                                         "s:device", device, NULL);
+
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0 && virJSONValueObjectHasKey(reply, "error")) {
+        if (qemuMonitorJSONHasError(reply, "DeviceNotActive"))
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                _("No active operation on device: %s"), device);
+        else if (qemuMonitorJSONHasError(reply, "DeviceInUse"))
+            qemuReportError(VIR_ERR_OPERATION_FAILED,
+                _("Device %s in use"), device);
+        else if (qemuMonitorJSONHasError(reply, "NotSupported"))
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                _("Operation is not supported for device: %s"), device);
+        else
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Unexpected error"));
+        ret = -1;
+    }
+
+    if (ret == 0 && mode == BLOCK_JOB_INFO)
+        ret = qemuMonitorJSONGetBlockJobInfo(reply, device, info);
+
+    if (ret == 0 && mode == BLOCK_JOB_PULL && bandwidth != 0)
+        ret = qemuMonitorJSONBlockJob(mon, device, bandwidth, NULL,
+                                      BLOCK_JOB_SPEED);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}

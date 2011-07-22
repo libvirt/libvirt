@@ -2834,3 +2834,165 @@ cleanup:
     VIR_FREE(cmd);
     return ret;
 }
+
+static int qemuMonitorTextParseBlockJobOne(const char *text,
+                                           const char *device,
+                                           virDomainBlockJobInfoPtr info,
+                                           const char **next)
+{
+    virDomainBlockJobInfo tmp;
+    char *p;
+    unsigned long long speed_bytes;
+    int mismatch = 0;
+
+    if (next == NULL)
+        return -1;
+    *next = NULL;
+
+    /*
+     * Each active stream will appear on its own line in the following format:
+     * Streaming device <device>: Completed <cur> of <end> bytes
+     */
+    if ((text = STRSKIP(text, "Streaming device ")) == NULL)
+        return -EINVAL;
+
+    if (!STREQLEN(text, device, strlen(device)))
+        mismatch = 1;
+
+    if ((text = strstr(text, ": Completed ")) == NULL)
+        return -EINVAL;
+    text += 11;
+
+    if (virStrToLong_ull (text, &p, 10, &tmp.cur))
+        return -EINVAL;
+    text = p;
+
+    if (!STRPREFIX(text, " of "))
+        return -EINVAL;
+    text += 4;
+
+    if (virStrToLong_ull (text, &p, 10, &tmp.end))
+        return -EINVAL;
+    text = p;
+
+    if (!STRPREFIX(text, " bytes, speed limit "))
+        return -EINVAL;
+    text += 20;
+
+    if (virStrToLong_ull (text, &p, 10, &speed_bytes))
+        return -EINVAL;
+    text = p;
+
+    if (!STRPREFIX(text, " bytes/s"))
+        return -EINVAL;
+
+    if (mismatch) {
+        *next = STRSKIP(text, "\n");
+        return -EAGAIN;
+    }
+
+    if (info) {
+        info->cur = tmp.cur;
+        info->end = tmp.end;
+        info->bandwidth = speed_bytes / 1024ULL / 1024ULL;
+        info->type = VIR_DOMAIN_BLOCK_JOB_TYPE_PULL;
+    }
+    return 1;
+}
+
+static int qemuMonitorTextParseBlockJob(const char *text,
+                                        const char *device,
+                                        virDomainBlockJobInfoPtr info)
+{
+    const char *next = NULL;
+    int ret = 0;
+
+    /* Check error: Device not found */
+    if (strstr(text, "Device '") && strstr(text, "' not found")) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s", _("Device not found"));
+        return -1;
+    }
+
+    /* Check error: Job already active on this device */
+    if (strstr(text, "Device '") && strstr(text, "' is in use")) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED, _("Device %s in use"),
+            device);
+        return -1;
+    }
+
+    /* Check error: Stop non-existent job */
+    if (strstr(text, "has not been activated")) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,\
+            _("No active operation on device: %s"), device);
+        return -1;
+    }
+
+    /* This is not an error condition, there are just no results to report. */
+    if (strstr(text, "No active jobs")) {
+        return 0;
+    }
+
+    /* Check for unsupported operation */
+    if (strstr(text, "Operation is not supported")) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+            _("Operation is not supported for device: %s"), device);
+        return -1;
+    }
+
+    /* No output indicates success for Pull, JobAbort, and JobSetSpeed */
+    if (STREQ(text, ""))
+        return 0;
+
+    /* Now try to parse BlockJobInfo */
+    do {
+        ret = qemuMonitorTextParseBlockJobOne(text, device, info, &next);
+        text = next;
+    } while (text && ret == -EAGAIN);
+
+    if (ret < 0)
+        return -1;
+    return ret;
+}
+
+int qemuMonitorTextBlockJob(qemuMonitorPtr mon,
+                             const char *device,
+                             unsigned long bandwidth,
+                             virDomainBlockJobInfoPtr info,
+                             int mode)
+{
+    char *cmd = NULL;
+    char *reply = NULL;
+    int ret;
+
+    if (mode == BLOCK_JOB_ABORT)
+        ret = virAsprintf(&cmd, "block_job_cancel %s", device);
+    else if (mode == BLOCK_JOB_INFO)
+        ret = virAsprintf(&cmd, "info block-jobs");
+    else if (mode == BLOCK_JOB_SPEED)
+        ret = virAsprintf(&cmd, "block_job_set_speed %s %llu", device,
+                          bandwidth * 1024ULL * 1024ULL);
+    else if (mode == BLOCK_JOB_PULL)
+        ret = virAsprintf(&cmd, "block_stream %s", device);
+    else
+        return -1;
+
+    if (ret < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    ret = 0;
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("cannot run monitor command"));
+        ret = -1;
+        goto cleanup;
+    }
+
+    ret = qemuMonitorTextParseBlockJob(reply, device, info);
+
+cleanup:
+    VIR_FREE(cmd);
+    VIR_FREE(reply);
+    return ret;
+}

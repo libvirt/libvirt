@@ -218,4 +218,10 @@ int qemuMonitorTextSendKey(qemuMonitorPtr mon,
 
 int qemuMonitorTextScreendump(qemuMonitorPtr mon, const char *file);
 
+int qemuMonitorTextBlockJob(qemuMonitorPtr mon,
+                            const char *device,
+                            unsigned long bandwidth,
+                            virDomainBlockJobInfoPtr info,
+                            int mode);
+
 #endif /* QEMU_MONITOR_TEXT_H */

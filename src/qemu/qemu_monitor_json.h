@@ -225,5 +225,10 @@ int qemuMonitorJSONSendKey(qemuMonitorPtr mon,
 int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
                               const char *file);
 
+int qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
+                            const char *device,
+                            unsigned long bandwidth,
+                            virDomainBlockJobInfoPtr info,
+                            int mode);
 
 #endif /* QEMU_MONITOR_JSON_H */

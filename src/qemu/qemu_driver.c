@@ -9003,6 +9003,115 @@ cleanup:
     return ret;
 }
 
+static const char *
+qemuDiskPathToAlias(virDomainObjPtr vm, const char *path) {
+    int i;
+    char *ret = NULL;
+
+    for (i = 0 ; i < vm->def->ndisks ; i++) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+
+        if (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
+            disk->type != VIR_DOMAIN_DISK_TYPE_FILE)
+            continue;
+
+        if (disk->src != NULL && STREQ(disk->src, path)) {
+            if (virAsprintf(&ret, "drive-%s", disk->info.alias) < 0) {
+                virReportOOMError();
+                return NULL;
+            }
+            break;
+        }
+    }
+
+    if (!ret) {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        "%s", _("No device found for specified path"));
+    }
+    return ret;
+}
+
+static int
+qemuDomainBlockJobImpl(virDomainPtr dom, const char *path,
+                       unsigned long bandwidth, virDomainBlockJobInfoPtr info,
+                       int mode)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    qemuDomainObjPrivatePtr priv;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    const char *device = NULL;
+    int ret = -1;
+
+    qemuDriverLock(driver);
+    virUUIDFormat(dom->uuid, uuidstr);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    if (!vm) {
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    device = qemuDiskPathToAlias(vm, path);
+    if (!device) {
+        goto cleanup;
+    }
+
+    if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+    ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, vm));
+    priv = vm->privateData;
+    ret = qemuMonitorBlockJob(priv->mon, device, bandwidth, info, mode);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+    if (qemuDomainObjEndJob(driver, vm) == 0) {
+        vm = NULL;
+        goto cleanup;
+    }
+
+cleanup:
+    VIR_FREE(device);
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
+static int
+qemuDomainBlockJobAbort(virDomainPtr dom, const char *path, unsigned int flags)
+{
+    virCheckFlags(0, -1);
+    return qemuDomainBlockJobImpl(dom, path, 0, NULL, BLOCK_JOB_ABORT);
+}
+
+static int
+qemuDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
+                           virDomainBlockJobInfoPtr info, unsigned int flags)
+{
+    virCheckFlags(0, -1);
+    return qemuDomainBlockJobImpl(dom, path, 0, info, BLOCK_JOB_INFO);
+}
+
+static int
+qemuDomainBlockJobSetSpeed(virDomainPtr dom, const char *path,
+                           unsigned long bandwidth, unsigned int flags)
+{
+    virCheckFlags(0, -1);
+    return qemuDomainBlockJobImpl(dom, path, bandwidth, NULL, BLOCK_JOB_SPEED);
+}
+
+static int
+qemuDomainBlockPull(virDomainPtr dom, const char *path, unsigned long bandwidth,
+                    unsigned int flags)
+{
+    virCheckFlags(0, -1);
+    return qemuDomainBlockJobImpl(dom, path, bandwidth, NULL, BLOCK_JOB_PULL);
+}
 
 static virDriver qemuDriver = {
     .no = VIR_DRV_QEMU,
@@ -9134,6 +9243,10 @@ static virDriver qemuDriver = {
     .domainMigrateFinish3 = qemuDomainMigrateFinish3, /* 0.9.2 */
     .domainMigrateConfirm3 = qemuDomainMigrateConfirm3, /* 0.9.2 */
     .domainSendKey = qemuDomainSendKey, /* 0.9.4 */
+    .domainBlockJobAbort = qemuDomainBlockJobAbort, /* 0.9.4 */
+    .domainGetBlockJobInfo = qemuDomainGetBlockJobInfo, /* 0.9.4 */
+    .domainBlockJobSetSpeed = qemuDomainBlockJobSetSpeed, /* 0.9.4 */
+    .domainBlockPull = qemuDomainBlockPull, /* 0.9.4 */
 };
 
 

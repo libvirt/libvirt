@@ -2444,3 +2444,21 @@ int qemuMonitorScreendump(qemuMonitorPtr mon,
         ret = qemuMonitorTextScreendump(mon, file);
     return ret;
 }
+
+int qemuMonitorBlockJob(qemuMonitorPtr mon,
+                        const char *device,
+                        unsigned long bandwidth,
+                        virDomainBlockJobInfoPtr info,
+                        int mode)
+{
+    int ret;
+
+    VIR_DEBUG("mon=%p, device=%p, bandwidth=%lu, info=%p, mode=%o",
+              mon, device, bandwidth, info, mode);
+
+    if (mon->json)
+        ret = qemuMonitorJSONBlockJob(mon, device, bandwidth, info, mode);
+    else
+        ret = qemuMonitorTextBlockJob(mon, device, bandwidth, info, mode);
+    return ret;
+}
