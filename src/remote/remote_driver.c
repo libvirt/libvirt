@@ -1997,6 +1997,44 @@ done:
     return rv;
 }
 
+static int remoteDomainGetBlockJobInfo(virDomainPtr domain,
+                                       const char *path,
+                                       virDomainBlockJobInfoPtr info,
+                                       unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_get_block_job_info_args args;
+    remote_domain_get_block_job_info_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, domain);
+    args.path = (char *)path;
+    args.flags = flags;
+
+    if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_BLOCK_JOB_INFO,
+             (xdrproc_t)xdr_remote_domain_get_block_job_info_args,
+               (char *)&args,
+             (xdrproc_t)xdr_remote_domain_get_block_job_info_ret,
+               (char *)&ret) == -1)
+        goto done;
+
+    if (ret.found) {
+        info->type = ret.type;
+        info->bandwidth = ret.bandwidth;
+        info->cur = ret.cur;
+        info->end = ret.end;
+        rv = 1;
+    } else {
+        rv = 0;
+    }
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
@@ -4262,6 +4300,10 @@ static virDriver remote_driver = {
     .domainMigrateFinish3 = remoteDomainMigrateFinish3, /* 0.9.2 */
     .domainMigrateConfirm3 = remoteDomainMigrateConfirm3, /* 0.9.2 */
     .domainSendKey = remoteDomainSendKey, /* 0.9.3 */
+    .domainBlockJobAbort = remoteDomainBlockJobAbort, /* 0.9.4 */
+    .domainGetBlockJobInfo = remoteDomainGetBlockJobInfo, /* 0.9.4 */
+    .domainBlockJobSetSpeed = remoteDomainBlockJobSetSpeed, /* 0.9.4 */
+    .domainBlockPull = remoteDomainBlockPull, /* 0.9.4 */
 };
 
 static virNetworkDriver network_driver = {

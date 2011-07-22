@@ -220,6 +220,8 @@ my $long_legacy = {
     GetLibVersion               => { ret => { lib_ver => 1 } },
     GetVersion                  => { ret => { hv_ver => 1 } },
     NodeGetInfo                 => { ret => { memory => 1 } },
+    DomainBlockPull             => { arg => { bandwidth => 1 } },
+    DomainBlockJobSetSpeed      => { arg => { bandwidth => 1 } },
 };
 
 sub hyper_to_long

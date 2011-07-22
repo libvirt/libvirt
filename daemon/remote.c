@@ -1587,6 +1587,48 @@ no_memory:
     goto cleanup;
 }
 
+static int
+remoteDispatchDomainGetBlockJobInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                    virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                    virNetMessageHeaderPtr hdr ATTRIBUTE_UNUSED,
+                                    virNetMessageErrorPtr rerr,
+                                    remote_domain_get_block_job_info_args *args,
+                                    remote_domain_get_block_job_info_ret *ret)
+{
+    virDomainPtr dom = NULL;
+    virDomainBlockJobInfo tmp;
+    int rv = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+
+    rv = virDomainGetBlockJobInfo(dom, args->path, &tmp, args->flags);
+    if (rv <= 0)
+        goto cleanup;
+
+    ret->type = tmp.type;
+    ret->bandwidth = tmp.bandwidth;
+    ret->cur = tmp.cur;
+    ret->end = tmp.end;
+    ret->found = 1;
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
+
 /*-------------------------------------------------------------*/
 
 static int

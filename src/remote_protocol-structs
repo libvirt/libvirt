@@ -711,6 +711,35 @@ struct remote_domain_set_autostart_args {
         remote_nonnull_domain      dom;
         int                        autostart;
 };
+struct remote_domain_block_job_abort_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      path;
+        u_int                      flags;
+};
+struct remote_domain_get_block_job_info_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      path;
+        u_int                      flags;
+};
+struct remote_domain_get_block_job_info_ret {
+        int                        found;
+        int                        type;
+        uint64_t                   bandwidth;
+        uint64_t                   cur;
+        uint64_t                   end;
+};
+struct remote_domain_block_job_set_speed_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      path;
+        uint64_t                   bandwidth;
+        u_int                      flags;
+};
+struct remote_domain_block_pull_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      path;
+        uint64_t                   bandwidth;
+        u_int                      flags;
+};
 struct remote_num_of_networks_ret {
         int                        num;
 };
@@ -1896,4 +1925,8 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_DESTROY_FLAGS = 234,
         REMOTE_PROC_DOMAIN_SAVE_IMAGE_GET_XML_DESC = 235,
         REMOTE_PROC_DOMAIN_SAVE_IMAGE_DEFINE_XML = 236,
+        REMOTE_PROC_DOMAIN_BLOCK_JOB_ABORT = 237,
+        REMOTE_PROC_DOMAIN_GET_BLOCK_JOB_INFO = 238,
+        REMOTE_PROC_DOMAIN_BLOCK_JOB_SET_SPEED = 239,
+        REMOTE_PROC_DOMAIN_BLOCK_PULL = 240,
 };

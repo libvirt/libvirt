@@ -1018,6 +1018,40 @@ struct remote_domain_set_autostart_args {
     int autostart;
 };
 
+struct remote_domain_block_job_abort_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string path;
+    unsigned int flags;
+};
+
+struct remote_domain_get_block_job_info_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string path;
+    unsigned int flags;
+};
+
+struct remote_domain_get_block_job_info_ret {
+    int found;
+    int type;
+    unsigned hyper bandwidth;
+    unsigned hyper cur;
+    unsigned hyper end;
+};
+
+struct remote_domain_block_job_set_speed_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string path;
+    unsigned hyper bandwidth;
+    unsigned int flags;
+};
+
+struct remote_domain_block_pull_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string path;
+    unsigned hyper bandwidth;
+    unsigned int flags;
+};
+
 /* Network calls: */
 
 struct remote_num_of_networks_ret {
@@ -2428,7 +2462,11 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_RESTORE_FLAGS = 233, /* autogen autogen */
     REMOTE_PROC_DOMAIN_DESTROY_FLAGS = 234, /* autogen autogen */
     REMOTE_PROC_DOMAIN_SAVE_IMAGE_GET_XML_DESC = 235, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_SAVE_IMAGE_DEFINE_XML = 236 /* autogen autogen */
+    REMOTE_PROC_DOMAIN_SAVE_IMAGE_DEFINE_XML = 236, /* autogen autogen */
+    REMOTE_PROC_DOMAIN_BLOCK_JOB_ABORT = 237, /* autogen autogen */
+    REMOTE_PROC_DOMAIN_GET_BLOCK_JOB_INFO = 238, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_BLOCK_JOB_SET_SPEED = 239, /* autogen autogen */
+    REMOTE_PROC_DOMAIN_BLOCK_PULL = 240 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
