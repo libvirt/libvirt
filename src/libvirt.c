@@ -15862,3 +15862,229 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
+/**
+ * virDomainBlockJobAbort:
+ * @dom: pointer to domain object
+ * @path: fully-qualified filename of disk
+ * @flags: currently unused, for future extension
+ *
+ * Cancel the active block job on the given disk.
+ *
+ * Returns -1 in case of failure, 0 when successful.
+ */
+int virDomainBlockJobAbort(virDomainPtr dom, const char *path,
+                           unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "path=%p, flags=%x", path, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    conn = dom->conn;
+
+    if (dom->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (!path) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                           _("path is NULL"));
+        goto error;
+    }
+
+    if (conn->driver->domainBlockJobAbort) {
+        int ret;
+        ret = conn->driver->domainBlockJobAbort(dom, path, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
+/**
+ * virDomainGetBlockJobInfo:
+ * @dom: pointer to domain object
+ * @path: fully-qualified filename of disk
+ * @info: pointer to a virDomainBlockJobInfo structure
+ * @flags: currently unused, for future extension
+ *
+ * Request block job information for the given disk.  If an operation is active
+ * @info will be updated with the current progress.
+ *
+ * Returns -1 in case of failure, 0 when nothing found, 1 when info was found.
+ */
+int virDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
+                             virDomainBlockJobInfoPtr info, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "path=%p, info=%p, flags=%x", path, info, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    conn = dom->conn;
+
+    if (!path) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                           _("path is NULL"));
+        goto error;
+    }
+
+    if (!info) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                           _("info is NULL"));
+        goto error;
+    }
+
+    if (conn->driver->domainGetBlockJobInfo) {
+        int ret;
+        ret = conn->driver->domainGetBlockJobInfo(dom, path, info, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
+/**
+ * virDomainBlockJobSetSpeed:
+ * @dom: pointer to domain object
+ * @path: fully-qualified filename of disk
+ * @bandwidth: specify bandwidth limit in Mbps
+ * @flags: currently unused, for future extension
+ *
+ * Set the maximimum allowable bandwidth that a block job may consume.  If
+ * bandwidth is 0, the limit will revert to the hypervisor default.
+ *
+ * Returns -1 in case of failure, 0 when successful.
+ */
+int virDomainBlockJobSetSpeed(virDomainPtr dom, const char *path,
+                              unsigned long bandwidth, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "path=%p, bandwidth=%lu, flags=%x",
+                     path, bandwidth, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    conn = dom->conn;
+
+    if (dom->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (!path) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                           _("path is NULL"));
+        goto error;
+    }
+
+    if (conn->driver->domainBlockJobSetSpeed) {
+        int ret;
+        ret = conn->driver->domainBlockJobSetSpeed(dom, path, bandwidth, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
+/**
+ * virDomainBlockPull:
+ * @dom: pointer to domain object
+ * @path: Fully-qualified filename of disk
+ * @bandwidth: (optional) specify copy bandwidth limit in Mbps
+ * @flags: currently unused, for future extension
+ *
+ * Populate a disk image with data from its backing image.  Once all data from
+ * its backing image has been pulled, the disk no longer depends on a backing
+ * image.  This function pulls data for the entire device in the background.
+ * Progress of the operation can be checked with virDomainGetBlockJobInfo() and
+ * the operation can be aborted with virDomainBlockJobAbort().  When finished,
+ * an asynchronous event is raised to indicate the final status.
+ *
+ * The maximum bandwidth (in Mbps) that will be used to do the copy can be
+ * specified with the bandwidth parameter.  If set to 0, libvirt will choose a
+ * suitable default.  Some hypervisors do not support this feature and will
+ * return an error if bandwidth is not 0.
+ *
+ * Returns 0 if the operation has started, -1 on failure.
+ */
+int virDomainBlockPull(virDomainPtr dom, const char *path,
+                       unsigned long bandwidth, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "path=%p, bandwidth=%lu, flags=%x",
+                     path, bandwidth, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    conn = dom->conn;
+
+    if (dom->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (!path) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                           _("path is NULL"));
+        goto error;
+    }
+
+    if (conn->driver->domainBlockPull) {
+        int ret;
+        ret = conn->driver->domainBlockPull(dom, path, bandwidth, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dom->conn);
+    return -1;
+}
