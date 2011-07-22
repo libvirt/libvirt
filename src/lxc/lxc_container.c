@@ -393,41 +393,75 @@ err:
 }
 
 
-static int lxcContainerMountBasicFS(virDomainFSDefPtr root)
+static int lxcContainerMountBasicFS(const char *srcprefix)
 {
     const struct {
+        bool needPrefix;
         const char *src;
         const char *dst;
         const char *type;
+        const char *opts;
+        int mflags;
     } mnts[] = {
-        { "/dev", "/dev", "tmpfs" },
-        { "/proc", "/proc", "proc" },
-        { "/sys", "/sys", "sysfs" },
-#if WITH_SELINUX
-        { "none", "/selinux", "selinuxfs" },
-#endif
+        { false, "devfs", "/dev", "tmpfs", "mode=755", MS_NOSUID },
+        { false, "proc", "/proc", "proc", NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV },
+        { false, "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND },
+        { true, "/sys", "/sys", NULL, NULL, MS_BIND },
+        { true, "/selinux", "/selinux", NULL, NULL, MS_BIND },
     };
     int i, rc = -1;
-    char *devpts;
-
-    if (virAsprintf(&devpts, "/.oldroot%s/dev/pts", root->src) < 0) {
-        virReportOOMError();
-        return rc;
-    }
 
     for (i = 0 ; i < ARRAY_CARDINALITY(mnts) ; i++) {
+        char *src = NULL;
+        const char *srcpath = NULL;
         if (virFileMakePath(mnts[i].dst) < 0) {
             virReportSystemError(errno,
                                  _("Failed to mkdir %s"),
                                  mnts[i].src);
             goto cleanup;
         }
-        if (mount(mnts[i].src, mnts[i].dst, mnts[i].type, 0, NULL) < 0) {
+
+        if (mnts[i].needPrefix && srcprefix) {
+            if (virAsprintf(&src, "%s%s", srcprefix, mnts[i].src) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+            srcpath = src;
+        } else {
+            srcpath = mnts[i].src;
+        }
+
+        /* Skip if mount doesn't exist in source */
+        if ((srcpath[0] == '/') &&
+            (access(srcpath, R_OK) < 0))
+            continue;
+
+        if (mount(srcpath, mnts[i].dst, mnts[i].type, mnts[i].mflags, mnts[i].opts) < 0) {
+            VIR_FREE(src);
             virReportSystemError(errno,
-                                 _("Failed to mount %s on %s"),
-                                 mnts[i].type, mnts[i].type);
+                                 _("Failed to mount %s on %s type %s"),
+                                 mnts[i].src, mnts[i].dst, NULLSTR(mnts[i].type));
             goto cleanup;
         }
+        VIR_FREE(src);
+    }
+
+    rc = 0;
+
+cleanup:
+    VIR_DEBUG("rc=%d", rc);
+    return rc;
+}
+
+
+static int lxcContainerMountDevFS(virDomainFSDefPtr root)
+{
+    char *devpts = NULL;
+    int rc = -1;
+
+    if (virAsprintf(&devpts, "/.oldroot%s/dev/pts", root->src) < 0) {
+        virReportOOMError();
+        goto cleanup;
     }
 
     if (virFileMakePath("/dev/pts") < 0) {
@@ -652,8 +686,12 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     if (lxcContainerPivotRoot(root) < 0)
         return -1;
 
-    /* Mounts the core /proc, /sys, /dev, /dev/pts filesystems */
-    if (lxcContainerMountBasicFS(root) < 0)
+    /* Mounts the core /proc, /sys, etc filesystems */
+    if (lxcContainerMountBasicFS("/.oldroot") < 0)
+        return -1;
+
+    /* Mounts /dev and /dev/pts */
+    if (lxcContainerMountDevFS(root) < 0)
         return -1;
 
     /* Populates device nodes in /dev/ */
@@ -688,16 +726,16 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef)
         return -1;
     }
 
+    VIR_DEBUG("Mounting config FS");
     if (lxcContainerMountAllFS(vmDef, "", false) < 0)
         return -1;
 
-    /* mount /proc */
-    if (mount("lxcproc", "/proc", "proc", 0, NULL) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to mount /proc"));
+    /* Mounts the core /proc, /sys, etc filesystems */
+    VIR_DEBUG("Mounting basic FS");
+    if (lxcContainerMountBasicFS(NULL) < 0)
         return -1;
-    }
 
+    VIR_DEBUG("Mounting completed");
     return 0;
 }
 
@@ -994,5 +1032,6 @@ int lxcContainerAvailable(int features)
         waitpid(cpid, &childStatus, 0);
     }
 
+    VIR_DEBUG("Mounted all filesystems");
     return 0;
 }
