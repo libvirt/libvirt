@@ -1,0 +1,16 @@
+<network>
+  <name>test-net</name>
+  <uuid>986fed9e-a488-186d-ef2d-17ebfd1993f8</uuid>
+  <forward mode='nat'/>
+  <bridge name='virbr1' stp='on' delay='0' />
+  <mac address='52:54:00:E6:A2:C9'/>
+  <bandwidth>
+    <inbound average='1000' peak='2000' burst='1024'/>
+    <outbound average='2000'/>
+  </bandwidth>
+  <ip address='192.168.120.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.120.2' end='192.168.120.254' />
+    </dhcp>
+  </ip>
+</network>
