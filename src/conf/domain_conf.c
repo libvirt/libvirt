@@ -810,6 +810,8 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     VIR_FREE(def->filter);
     virNWFilterHashTableFree(def->filterparams);
 
+    virBandwidthDefFree(def->bandwidth);
+
     VIR_FREE(def);
 }
 
@@ -2822,6 +2824,9 @@ virDomainNetDefParseXML(virCapsPtr caps,
                        (def->type == VIR_DOMAIN_NET_TYPE_NETWORK) &&
                        xmlStrEqual(cur->name, BAD_CAST "actual")) {
                 if (virDomainActualNetDefParseXML(cur, ctxt, &actual) < 0)
+                    goto error;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "bandwidth")) {
+                if (!(def->bandwidth = virBandwidthDefParseNode(cur)))
                     goto error;
             }
         }

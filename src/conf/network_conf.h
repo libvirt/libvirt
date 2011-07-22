@@ -154,6 +154,7 @@ struct _virNetworkDef {
 
     size_t nPortGroups;
     virPortGroupDefPtr portGroups;
+    virBandwidthPtr bandwidth;
 };
 
 typedef struct _virNetworkObj virNetworkObj;

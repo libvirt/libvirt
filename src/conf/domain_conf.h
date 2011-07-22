@@ -425,6 +425,7 @@ struct _virDomainNetDef {
     virDomainDeviceInfo info;
     char *filter;
     virNWFilterHashTablePtr filterparams;
+    virBandwidthPtr bandwidth;
 };
 
 enum virDomainChrDeviceType {

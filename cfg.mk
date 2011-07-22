@@ -84,6 +84,7 @@ useless_free_options =				\
   --name=qemuMigrationCookieFree                \
   --name=qemuMigrationCookieGraphicsFree        \
   --name=sexpr_free				\
+  --name=virBandwidthDefFree			\
   --name=virBitmapFree                          \
   --name=virCPUDefFree				\
   --name=virCapabilitiesFree			\

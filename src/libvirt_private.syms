@@ -710,6 +710,8 @@ nlComm;
 
 
 # network.h
+virBandwidthDefFree;
+virBandwidthDefParseNode;
 virSocketAddrBroadcast;
 virSocketAddrBroadcastByPrefix;
 virSocketAddrIsNetmask;

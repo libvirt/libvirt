@@ -883,3 +883,150 @@ virVirtualPortProfileFormat(virBufferPtr buf,
 
     virBufferAsprintf(buf, "%s</virtualport>\n", indent);
 }
+
+static int
+virBandwidthParseChildDefNode(xmlNodePtr node, virRatePtr rate)
+{
+    int ret = -1;
+    char *average = NULL;
+    char *peak = NULL;
+    char *burst = NULL;
+
+    if (!node || !rate) {
+        virSocketError(VIR_ERR_INVALID_ARG, "%s",
+                       _("invalid argument supplied"));
+        return -1;
+    }
+
+    average = virXMLPropString(node, "average");
+    peak = virXMLPropString(node, "peak");
+    burst = virXMLPropString(node, "burst");
+
+    if (average) {
+        if (virStrToLong_ull(average, NULL, 10, &rate->average) < 0) {
+            virSocketError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("could not convert %s"),
+                           average);
+            goto cleanup;
+        }
+    } else {
+        virSocketError(VIR_ERR_XML_DETAIL, "%s",
+                       _("Missing mandatory average attribute"));
+        goto cleanup;
+    }
+
+    if (peak && virStrToLong_ull(peak, NULL, 10, &rate->peak) < 0) {
+        virSocketError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("could not convert %s"),
+                       peak);
+        goto cleanup;
+    }
+
+    if (burst && virStrToLong_ull(burst, NULL, 10, &rate->burst) < 0) {
+        virSocketError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("could not convert %s"),
+                       burst);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(average);
+    VIR_FREE(peak);
+    VIR_FREE(burst);
+
+    return ret;
+}
+
+/**
+ * virBandwidthDefParseNode:
+ * @node: XML node
+ *
+ * Parse bandwidth XML and return pointer to structure
+ *
+ * Returns !NULL on success, NULL on error.
+ */
+virBandwidthPtr
+virBandwidthDefParseNode(xmlNodePtr node)
+{
+    virBandwidthPtr def = NULL;
+    xmlNodePtr cur = node->children;
+    xmlNodePtr in = NULL, out = NULL;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    if (!node || !xmlStrEqual(node->name, BAD_CAST "bandwidth")) {
+        virSocketError(VIR_ERR_INVALID_ARG, "%s",
+                       _("invalid argument supplied"));
+        goto error;
+    }
+
+    while (cur) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (xmlStrEqual(cur->name, BAD_CAST "inbound")) {
+                if (in) {
+                    virSocketError(VIR_ERR_XML_DETAIL, "%s",
+                                   _("Only one child <inbound> "
+                                     "element allowed"));
+                    goto error;
+                }
+                in = cur;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "outbound")) {
+                if (out) {
+                    virSocketError(VIR_ERR_XML_DETAIL, "%s",
+                                   _("Only one child <outbound> "
+                                     "element allowed"));
+                    goto error;
+                }
+                out = cur;
+            }
+            /* Silently ignore unknown elements */
+        }
+        cur = cur->next;
+    }
+
+    if (in) {
+        if (VIR_ALLOC(def->in) < 0) {
+            virReportOOMError();
+            goto error;
+        }
+
+        if (virBandwidthParseChildDefNode(in, def->in) < 0) {
+            /* helper reported error for us */
+            goto error;
+        }
+    }
+
+    if (out) {
+        if (VIR_ALLOC(def->out) < 0) {
+            virReportOOMError();
+            goto error;
+        }
+
+        if (virBandwidthParseChildDefNode(out, def->out) < 0) {
+            /* helper reported error for us */
+            goto error;
+        }
+    }
+
+    return def;
+
+error:
+    virBandwidthDefFree(def);
+    return NULL;
+}
+
+void
+virBandwidthDefFree(virBandwidthPtr def)
+{
+    if (!def)
+        return;
+
+    VIR_FREE(def->in);
+    VIR_FREE(def->out);
+    VIR_FREE(def);
+}

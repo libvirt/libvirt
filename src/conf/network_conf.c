@@ -167,6 +167,8 @@ void virNetworkDefFree(virNetworkDefPtr def)
 
     virNetworkDNSDefFree(def->dns);
 
+    virBandwidthDefFree(def->bandwidth);
+
     VIR_FREE(def);
 }
 
@@ -814,6 +816,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     int nIps, nPortGroups, nForwardIfs;
     char *forwardDev = NULL;
     xmlNodePtr save = ctxt->node;
+    xmlNodePtr bandwidthNode = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -847,6 +850,10 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
 
     /* Parse network domain information */
     def->domain = virXPathString("string(./domain[1]/@name)", ctxt);
+
+    if ((bandwidthNode = virXPathNode("./bandwidth", ctxt)) != NULL &&
+        (def->bandwidth = virBandwidthDefParseNode(bandwidthNode)) == NULL)
+        goto error;
 
     /* Parse bridge information */
     def->bridge = virXPathString("string(./bridge[1]/@name)", ctxt);
