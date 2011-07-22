@@ -16,6 +16,7 @@
 #include "network.h"
 #include "util.h"
 #include "virterror_internal.h"
+#include "command.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 #define virSocketError(code, ...)                                       \
@@ -1100,5 +1101,165 @@ virBandwidthDefFormat(virBufferPtr buf,
     ret = 0;
 
 cleanup:
+    return ret;
+}
+
+/**
+ * virBandwidthEnable:
+ * @bandwidth: rates to set
+ * @iface: on which interface
+ *
+ * This function enables QoS on specified interface
+ * and set given traffic limits for both, incoming
+ * and outgoing traffic. Any previous setting get
+ * overwritten.
+ *
+ * Return 0 on success, -1 otherwise.
+ */
+int
+virBandwidthEnable(virBandwidthPtr bandwidth,
+                   const char *iface)
+{
+    int ret = -1;
+    virCommandPtr cmd = NULL;
+    char *average = NULL;
+    char *peak = NULL;
+    char *burst = NULL;
+
+    if (!iface)
+        return -1;
+
+    if (!bandwidth) {
+        /* nothing to be enabled */
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (virBandwidthDisable(iface, true) < 0)
+        goto cleanup;
+
+    if (bandwidth->in) {
+        if (virAsprintf(&average, "%llukbps", bandwidth->in->average) < 0)
+            goto cleanup;
+        if (bandwidth->in->peak &&
+            (virAsprintf(&peak, "%llukbps", bandwidth->in->peak) < 0))
+            goto cleanup;
+        if (bandwidth->in->burst &&
+            (virAsprintf(&burst, "%llukb", bandwidth->in->burst) < 0))
+            goto cleanup;
+
+        cmd = virCommandNew(TC);
+        virCommandAddArgList(cmd, "qdisc", "add", "dev", iface, "root",
+                             "handle", "1:", "htb", "default", "1", NULL);
+        if (virCommandRun(cmd, NULL) < 0)
+            goto cleanup;
+
+        virCommandFree(cmd);
+        cmd = virCommandNew(TC);
+            virCommandAddArgList(cmd,"class", "add", "dev", iface, "parent",
+                                 "1:", "classid", "1:1", "htb", NULL);
+        virCommandAddArgList(cmd, "rate", average, NULL);
+
+        if (peak)
+            virCommandAddArgList(cmd, "ceil", peak, NULL);
+        if (burst)
+            virCommandAddArgList(cmd, "burst", burst, NULL);
+
+        if (virCommandRun(cmd, NULL) < 0)
+            goto cleanup;
+
+        virCommandFree(cmd);
+        cmd = virCommandNew(TC);
+            virCommandAddArgList(cmd,"filter", "add", "dev", iface, "parent",
+                                 "1:0", "protocol", "ip", "handle", "1", "fw",
+                                 "flowid", "1", NULL);
+
+        if (virCommandRun(cmd, NULL) < 0)
+            goto cleanup;
+
+        VIR_FREE(average);
+        VIR_FREE(peak);
+        VIR_FREE(burst);
+    }
+
+    if (bandwidth->out) {
+        if (virAsprintf(&average, "%llukbps", bandwidth->out->average) < 0)
+            goto cleanup;
+        if (virAsprintf(&burst, "%llukb", bandwidth->out->burst ?
+                        bandwidth->out->burst : bandwidth->out->average) < 0)
+            goto cleanup;
+
+        virCommandFree(cmd);
+        cmd = virCommandNew(TC);
+            virCommandAddArgList(cmd, "qdisc", "add", "dev", iface,
+                                 "ingress", NULL);
+
+        if (virCommandRun(cmd, NULL) < 0)
+            goto cleanup;
+
+        virCommandFree(cmd);
+        cmd = virCommandNew(TC);
+        virCommandAddArgList(cmd, "filter", "add", "dev", iface, "parent",
+                             "ffff:", "protocol", "ip", "u32", "match", "ip",
+                             "src", "0.0.0.0/0", "police", "rate", average,
+                             "burst", burst, "mtu", burst, "drop", "flowid",
+                             ":1", NULL);
+
+        if (virCommandRun(cmd, NULL) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    virCommandFree(cmd);
+    VIR_FREE(average);
+    VIR_FREE(peak);
+    VIR_FREE(burst);
+    return ret;
+}
+
+/**
+ * virBandwidthDisable:
+ * @iface: on which interface
+ * @may_fail: should be unsuccessful disable considered fatal?
+ *
+ * This function tries to disable QoS on specified interface
+ * by deleting root and ingress qdisc. However, this may fail
+ * if we try to remove the default one.
+ *
+ * Return 0 on success, -1 otherwise.
+ */
+int
+virBandwidthDisable(const char *iface,
+                    bool may_fail)
+{
+    int ret = -1;
+    int status;
+    virCommandPtr cmd = NULL;
+
+    if (!iface)
+        return -1;
+
+    cmd = virCommandNew(TC);
+    virCommandAddArgList(cmd, "qdisc", "del", "dev", iface, "root", NULL);
+
+    if ((virCommandRun(cmd, &status) < 0) ||
+        (!may_fail && status))
+        goto cleanup;
+
+    virCommandFree(cmd);
+
+    cmd = virCommandNew(TC);
+    virCommandAddArgList(cmd, "qdisc",  "del", "dev", iface, "ingress", NULL);
+
+    if ((virCommandRun(cmd, &status) < 0) ||
+        (!may_fail && status))
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    virCommandFree(cmd);
     return ret;
 }

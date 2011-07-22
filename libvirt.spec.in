@@ -250,7 +250,7 @@ Requires: %{name}-client = %{version}-%{release}
 Requires: bridge-utils
 # for modprobe of pci devices
 Requires: module-init-tools
-# for /sbin/ip
+# for /sbin/ip & /sbin/tc
 Requires: iproute
 %endif
 %if %{with_network}

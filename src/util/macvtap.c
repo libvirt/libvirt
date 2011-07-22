@@ -267,7 +267,8 @@ openMacvtapTap(const char *tgifname,
                virVirtualPortProfileParamsPtr virtPortProfile,
                char **res_ifname,
                enum virVMOperationType vmOp,
-               char *stateDir)
+               char *stateDir,
+               virBandwidthPtr bandwidth)
 {
     const char *type = "macvtap";
     int c, rc;
@@ -360,6 +361,15 @@ create_name:
         *res_ifname = strdup(cr_ifname);
     } else
         goto disassociate_exit;
+
+    if (virBandwidthEnable(bandwidth, cr_ifname) < 0) {
+        macvtapError(VIR_ERR_INTERNAL_ERROR,
+                     _("cannot set bandwidth limits on %s"),
+                     cr_ifname);
+        rc = -1;
+        goto disassociate_exit;
+    }
+
 
     return rc;
 

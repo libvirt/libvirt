@@ -132,7 +132,7 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
                         vnet_hdr, def->uuid,
                         virDomainNetGetActualDirectVirtPortProfile(net),
                         &res_ifname,
-                        vmop, driver->stateDir);
+                        vmop, driver->stateDir, net->bandwidth);
     if (rc >= 0) {
         virDomainAuditNetDevice(def, net, res_ifname, true);
         VIR_FREE(net->ifname);
@@ -296,6 +296,15 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
                  _("failed to add ebtables rule to allow MAC address on  '%s'"),
                                  net->ifname);
         }
+    }
+
+    if (tapfd >= 0 &&
+        virBandwidthEnable(net->bandwidth, net->ifname) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("cannot set bandwidth limits on %s"),
+                        net->ifname);
+        VIR_FORCE_CLOSE(tapfd);
+        goto cleanup;
     }
 
     if (tapfd >= 0) {

@@ -1822,9 +1822,22 @@ networkStartNetworkVirtual(struct network_driver *driver,
     if (v6present && networkStartRadvd(network) < 0)
         goto err4;
 
+    if (virBandwidthEnable(network->def->bandwidth, network->def->bridge) < 0) {
+        networkReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot set bandwidth limits on %s"),
+                           network->def->bridge);
+        goto err5;
+    }
+
     VIR_FREE(macTapIfName);
 
     return 0;
+
+ err5:
+    if (virBandwidthDisable(network->def->bridge, true) < 0) {
+        VIR_WARN("Failed to disable QoS on %s",
+                 network->def->bridge);
+    }
 
  err4:
     if (!save_err)
@@ -1882,6 +1895,11 @@ static int networkShutdownNetworkVirtual(struct network_driver *driver,
 {
     int err;
     char ebuf[1024];
+
+    if (virBandwidthDisable(network->def->bridge, true) < 0) {
+        VIR_WARN("Failed to disable QoS on %s",
+                 network->def->name);
+    }
 
     if (network->radvdPid > 0) {
         char *radvdpidbase;

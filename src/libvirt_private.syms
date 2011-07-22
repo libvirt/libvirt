@@ -713,6 +713,8 @@ nlComm;
 virBandwidthDefFormat;
 virBandwidthDefFree;
 virBandwidthDefParseNode;
+virBandwidthDisable;
+virBandwidthEnable;
 virSocketAddrBroadcast;
 virSocketAddrBroadcastByPrefix;
 virSocketAddrIsNetmask;
