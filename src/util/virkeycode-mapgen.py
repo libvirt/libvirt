@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/python
 
 """
 Generate the big keycodes table for virkeys.
