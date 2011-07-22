@@ -309,14 +309,14 @@ openMacvtapTap(const char *tgifname,
         cr_ifname = tgifname;
         rc = ifaceMacvtapLinkAdd(type, macaddress, 6, tgifname, linkdev,
                                  macvtapMode, &do_retry);
-        if (rc)
+        if (rc < 0)
             return -1;
     } else {
 create_name:
         retries = 5;
         for (c = 0; c < 8192; c++) {
             snprintf(ifname, sizeof(ifname), MACVTAP_NAME_PATTERN, c);
-            if (ifaceGetIndex(false, ifname, &ifindex) == ENODEV) {
+            if (ifaceGetIndex(false, ifname, &ifindex) == -ENODEV) {
                 rc = ifaceMacvtapLinkAdd(type, macaddress, 6, ifname, linkdev,
                                          macvtapMode, &do_retry);
                 if (rc == 0)
@@ -340,7 +340,7 @@ create_name:
     }
 
     rc = ifaceUp(cr_ifname);
-    if (rc != 0) {
+    if (rc < 0) {
         virReportSystemError(errno,
                              _("cannot 'up' interface %s -- another "
                              "macvtap device may be 'up' and have the same "
@@ -838,7 +838,7 @@ getPhysdevAndVlan(const char *ifname, int *root_ifindex, char *root_ifname,
         if (nth == 0)
             break;
         if (*vlanid == -1) {
-            if (ifaceGetVlanID(root_ifname, vlanid))
+            if (ifaceGetVlanID(root_ifname, vlanid) < 0)
                 *vlanid = -1;
         }
 
@@ -997,7 +997,7 @@ doPortProfileOp8021Qbh(const char *ifname,
     if (rc)
         goto err_exit;
 
-    if (ifaceGetIndex(true, physfndev, &ifindex) != 0) {
+    if (ifaceGetIndex(true, physfndev, &ifindex) < 0) {
         rc = 1;
         goto err_exit;
     }
