@@ -4916,7 +4916,8 @@ out_sig:
 }
 
 static void
-print_job_progress(unsigned long long remaining, unsigned long long total)
+print_job_progress(const char *label, unsigned long long remaining,
+                   unsigned long long total)
 {
     int progress;
 
@@ -4936,7 +4937,7 @@ print_job_progress(unsigned long long remaining, unsigned long long total)
         }
     }
 
-    fprintf(stderr, "\rMigration: [%3d %%]", progress);
+    fprintf(stderr, "\r%s: [%3d %%]", label, progress);
 }
 
 static bool
@@ -5021,7 +5022,7 @@ repoll:
                     functionReturn = true;
                     if (verbose) {
                         /* print [100 %] */
-                        print_job_progress(0, 1);
+                        print_job_progress("Migration", 0, 1);
                     }
                 } else
                     functionReturn = false;
@@ -5057,7 +5058,8 @@ repoll:
             ret = virDomainGetJobInfo(dom, &jobinfo);
             pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
             if (ret == 0)
-                print_job_progress(jobinfo.dataRemaining, jobinfo.dataTotal);
+                print_job_progress("Migration", jobinfo.dataRemaining,
+                                   jobinfo.dataTotal);
         }
     }
 
@@ -5159,6 +5161,129 @@ done:
     virDomainFree(dom);
     return ret;
 }
+
+typedef enum {
+    VSH_CMD_BLOCK_JOB_ABORT = 0,
+    VSH_CMD_BLOCK_JOB_INFO = 1,
+    VSH_CMD_BLOCK_JOB_SPEED = 2,
+    VSH_CMD_BLOCK_JOB_PULL = 3,
+} VSH_CMD_BLOCK_JOB_MODE;
+
+static int
+blockJobImpl(vshControl *ctl, const vshCmd *cmd,
+              virDomainBlockJobInfoPtr info, int mode)
+{
+    virDomainPtr dom = NULL;
+    const char *name, *path;
+    unsigned long bandwidth = 0;
+    int ret = -1;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        goto out;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
+        goto out;
+
+    if (vshCommandOptString(cmd, "path", &path) < 0)
+        goto out;
+
+    if (vshCommandOptUL(cmd, "bandwidth", &bandwidth) < 0)
+        goto out;
+
+    if (mode == VSH_CMD_BLOCK_JOB_ABORT)
+        ret = virDomainBlockJobAbort(dom, path, 0);
+    else if (mode == VSH_CMD_BLOCK_JOB_INFO)
+        ret = virDomainGetBlockJobInfo(dom, path, info, 0);
+    else if (mode == VSH_CMD_BLOCK_JOB_SPEED)
+        ret = virDomainBlockJobSetSpeed(dom, path, bandwidth, 0);
+    else if (mode == VSH_CMD_BLOCK_JOB_PULL)
+        ret = virDomainBlockPull(dom, path, bandwidth, 0);
+
+out:
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
+ * "blockpull" command
+ */
+static const vshCmdInfo info_block_pull[] = {
+    {"help", N_("Populate a disk from its backing image.")},
+    {"desc", N_("Populate a disk from its backing image.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_block_pull[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"path", VSH_OT_DATA, VSH_OFLAG_REQ, N_("Fully-qualified path of disk")},
+    {"bandwidth", VSH_OT_DATA, VSH_OFLAG_NONE, N_("Bandwidth limit in MB/s")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
+{
+    if (blockJobImpl(ctl, cmd, NULL, VSH_CMD_BLOCK_JOB_PULL) != 0)
+        return false;
+    return true;
+}
+
+/*
+ * "blockjobinfo" command
+ */
+static const vshCmdInfo info_block_job[] = {
+    {"help", N_("Manage active block operations.")},
+    {"desc", N_("Manage active block operations.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_block_job[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"path", VSH_OT_DATA, VSH_OFLAG_REQ, N_("Fully-qualified path of disk")},
+    {"abort", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("Abort the active job on the speficied disk")},
+    {"info", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("Get active job information for the specified disk")},
+    {"bandwidth", VSH_OT_DATA, VSH_OFLAG_NONE, N_("Set the Bandwidth limit in MB/s")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
+{
+    int mode;
+    virDomainBlockJobInfo info;
+    const char *type;
+    int ret;
+
+    if (vshCommandOptBool (cmd, "abort")) {
+        mode = VSH_CMD_BLOCK_JOB_ABORT;
+    } else if (vshCommandOptBool (cmd, "info")) {
+        mode = VSH_CMD_BLOCK_JOB_INFO;
+    } else if (vshCommandOptBool (cmd, "bandwidth")) {
+        mode = VSH_CMD_BLOCK_JOB_SPEED;
+    } else {
+        vshError(ctl, "%s",
+                 _("One of --abort, --info, or --bandwidth is required"));
+        return false;
+    }
+
+    ret = blockJobImpl(ctl, cmd, &info, mode);
+    if (ret < 0)
+        return false;
+
+    if (ret == 0 || mode != VSH_CMD_BLOCK_JOB_INFO)
+        return true;
+
+    if (info.type == VIR_DOMAIN_BLOCK_JOB_TYPE_PULL)
+        type = "Block Pull";
+    else
+        type = "Unknown job";
+
+    print_job_progress(type, info.end - info.cur, info.end);
+    if (info.bandwidth != 0)
+        vshPrint(ctl, "    Bandwidth limit: %lu MB/s\n", info.bandwidth);
+    return true;
+}
+
 
 /*
  * "net-autostart" command
@@ -12309,6 +12434,8 @@ static const vshCmdDef domManagementCmds[] = {
      info_attach_interface, 0},
     {"autostart", cmdAutostart, opts_autostart, info_autostart, 0},
     {"blkiotune", cmdBlkiotune, opts_blkiotune, info_blkiotune, 0},
+    {"blockpull", cmdBlockPull, opts_block_pull, info_block_pull, 0},
+    {"blockjob", cmdBlockJob, opts_block_job, info_block_job, 0},
 #ifndef WIN32
     {"console", cmdConsole, opts_console, info_console, 0},
 #endif
