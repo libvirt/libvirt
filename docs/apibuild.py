@@ -1641,7 +1641,9 @@ class CParser:
         "virDomainMigrateSetMaxSpeed"    : (False, ("bandwidth")),
         "virDomainSetMaxMemory"          : (False, ("memory")),
         "virDomainSetMemory"             : (False, ("memory")),
-        "virDomainSetMemoryFlags"        : (False, ("memory")) }
+        "virDomainSetMemoryFlags"        : (False, ("memory")),
+        "virDomainBlockJobSetSpeed"      : (False, ("bandwidth")),
+        "virDomainBlockPull"             : (False, ("bandwidth")) }
 
     def checkLongLegacyFunction(self, name, return_type, signature):
         if "long" in return_type and "long long" not in return_type:
@@ -1667,7 +1669,8 @@ class CParser:
     # [unsigned] long long
     long_legacy_struct_fields = \
       { "_virDomainInfo"                 : ("maxMem", "memory"),
-        "_virNodeInfo"                   : ("memory") }
+        "_virNodeInfo"                   : ("memory"),
+        "_virDomainBlockJobInfo"         : ("bandwidth") }
 
     def checkLongLegacyStruct(self, name, fields):
         for field in fields:

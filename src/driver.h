@@ -686,6 +686,26 @@ typedef int
                      unsigned long flags,
                      int cancelled);
 
+
+typedef int
+    (*virDrvDomainBlockJobAbort)(virDomainPtr dom, const char *path,
+                                 unsigned int flags);
+
+typedef int
+    (*virDrvDomainGetBlockJobInfo)(virDomainPtr dom, const char *path,
+                                   virDomainBlockJobInfoPtr info,
+                                   unsigned int flags);
+
+typedef int
+    (*virDrvDomainBlockJobSetSpeed)(virDomainPtr dom,
+                                    const char *path, unsigned long bandwidth,
+                                    unsigned int flags);
+
+typedef int
+    (*virDrvDomainBlockPull)(virDomainPtr dom, const char *path,
+                             unsigned long bandwidth, unsigned int flags);
+
+
 /**
  * _virDriver:
  *
@@ -833,6 +853,10 @@ struct _virDriver {
     virDrvDomainMigrateFinish3	domainMigrateFinish3;
     virDrvDomainMigrateConfirm3	domainMigrateConfirm3;
     virDrvDomainSendKey domainSendKey;
+    virDrvDomainBlockJobAbort domainBlockJobAbort;
+    virDrvDomainGetBlockJobInfo domainGetBlockJobInfo;
+    virDrvDomainBlockJobSetSpeed domainBlockJobSetSpeed;
+    virDrvDomainBlockPull domainBlockPull;
 };
 
 typedef int

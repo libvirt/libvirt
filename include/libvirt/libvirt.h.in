@@ -1420,6 +1420,50 @@ int virDomainUpdateDeviceFlags(virDomainPtr domain,
                                const char *xml, unsigned int flags);
 
 /*
+ * BlockJob API
+ */
+
+/**
+ * virDomainBlockJobType:
+ *
+ * VIR_DOMAIN_BLOCK_JOB_TYPE_PULL: Block Pull (virDomainBlockPull)
+ */
+typedef enum {
+    VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN = 0,
+    VIR_DOMAIN_BLOCK_JOB_TYPE_PULL = 1,
+} virDomainBlockJobType;
+
+/* An iterator for monitoring block job operations */
+typedef unsigned long long virDomainBlockJobCursor;
+
+typedef struct _virDomainBlockJobInfo virDomainBlockJobInfo;
+struct _virDomainBlockJobInfo {
+    virDomainBlockJobType type;
+    unsigned long bandwidth;
+    /*
+     * The following fields provide an indication of block job progress.  @cur
+     * indicates the current position and will be between 0 and @end.  @end is
+     * the final cursor position for this operation and represents completion.
+     * To approximate progress, divide @cur by @end.
+     */
+    virDomainBlockJobCursor cur;
+    virDomainBlockJobCursor end;
+};
+typedef virDomainBlockJobInfo *virDomainBlockJobInfoPtr;
+
+int       virDomainBlockJobAbort(virDomainPtr dom, const char *path,
+                                 unsigned int flags);
+int     virDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
+                                 virDomainBlockJobInfoPtr info,
+                                 unsigned int flags);
+int    virDomainBlockJobSetSpeed(virDomainPtr dom, const char *path,
+                                 unsigned long bandwidth, unsigned int flags);
+
+int           virDomainBlockPull(virDomainPtr dom, const char *path,
+                                 unsigned long bandwidth, unsigned int flags);
+
+
+/*
  * NUMA support
  */
 

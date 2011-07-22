@@ -474,6 +474,10 @@ LIBVIRT_0.9.4 {
         virDomainSaveImageGetXMLDesc;
         virDomainUndefineFlags;
         virDomainDestroyFlags;
+        virDomainBlockJobAbort;
+        virDomainGetBlockJobInfo;
+        virDomainBlockJobSetSpeed;
+        virDomainBlockPull;
 } LIBVIRT_0.9.3;
 
 # .... define new API here using predicted next version number ....
