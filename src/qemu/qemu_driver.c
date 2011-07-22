@@ -3722,29 +3722,32 @@ cleanup:
     return ret;
 }
 
-static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(6)
+/* Return -1 on failure, -2 if edit was specified but xmlin does not
+ * represent any changes, and opened fd on all other success.  */
+static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
 qemuDomainSaveImageOpen(struct qemud_driver *driver,
                         const char *path,
                         virDomainDefPtr *ret_def,
                         struct qemud_save_header *ret_header,
                         bool bypass_cache, virFileDirectFdPtr *directFd,
-                        const char *xmlin)
+                        const char *xmlin, bool edit)
 {
     int fd;
     struct qemud_save_header header;
     char *xml = NULL;
     virDomainDefPtr def = NULL;
-    int directFlag = 0;
+    int oflags = edit ? O_RDWR : O_RDONLY;
 
     if (bypass_cache) {
-        directFlag = virFileDirectFdFlag();
+        int directFlag = virFileDirectFdFlag();
         if (directFlag < 0) {
             qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
                             _("bypass cache unsupported by this system"));
             goto error;
         }
+        oflags |= directFlag;
     }
-    if ((fd = virFileOpenAs(path, O_RDONLY | directFlag, 0,
+    if ((fd = virFileOpenAs(path, oflags, 0,
                             getuid(), getgid(), 0)) < 0) {
         if ((fd != -EACCES && fd != -EPERM) ||
             driver->user == getuid()) {
@@ -3755,7 +3758,7 @@ qemuDomainSaveImageOpen(struct qemud_driver *driver,
 
         /* Opening as root failed, but qemu runs as a different user
          * that might have better luck. */
-        if ((fd = virFileOpenAs(path, O_RDONLY | directFlag, 0,
+        if ((fd = virFileOpenAs(path, oflags, 0,
                                 driver->user, driver->group,
                                 VIR_FILE_OPEN_AS_UID)) < 0) {
             qemuReportError(VIR_ERR_OPERATION_FAILED,
@@ -3805,6 +3808,15 @@ qemuDomainSaveImageOpen(struct qemud_driver *driver,
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("failed to read XML"));
         goto error;
+    }
+
+    if (edit && STREQ(xml, xmlin)) {
+        VIR_FREE(xml);
+        if (VIR_CLOSE(fd) < 0) {
+            virReportSystemError(errno, _("cannot close file: %s"), path);
+            goto error;
+        }
+        return -2;
     }
 
     /* Create a domain from this XML */
@@ -3965,7 +3977,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
 
     fd = qemuDomainSaveImageOpen(driver, path, &def, &header,
                                  (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
-                                 &directFd, dxml);
+                                 &directFd, dxml, false);
     if (fd < 0)
         goto cleanup;
 
@@ -4011,6 +4023,98 @@ qemuDomainRestore(virConnectPtr conn,
     return qemuDomainRestoreFlags(conn, path, NULL, 0);
 }
 
+static char *
+qemuDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *path,
+                              unsigned int flags)
+{
+    struct qemud_driver *driver = conn->privateData;
+    char *ret = NULL;
+    virDomainDefPtr def = NULL;
+    int fd = -1;
+    struct qemud_save_header header;
+
+    /* We only take subset of virDomainDefFormat flags.  */
+    virCheckFlags(VIR_DOMAIN_XML_SECURE, NULL);
+
+    qemuDriverLock(driver);
+
+    fd = qemuDomainSaveImageOpen(driver, path, &def, &header, false, NULL,
+                                 NULL, false);
+
+    if (fd < 0)
+        goto cleanup;
+
+    ret = qemuDomainDefFormatXML(driver, def, flags);
+
+cleanup:
+    virDomainDefFree(def);
+    VIR_FORCE_CLOSE(fd);
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
+static int
+qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
+                             const char *dxml, unsigned int flags)
+{
+    struct qemud_driver *driver = conn->privateData;
+    int ret = -1;
+    virDomainDefPtr def = NULL;
+    int fd = -1;
+    struct qemud_save_header header;
+    char *xml = NULL;
+    size_t len;
+
+    virCheckFlags(0, -1);
+
+    qemuDriverLock(driver);
+
+    fd = qemuDomainSaveImageOpen(driver, path, &def, &header, false, NULL,
+                                 dxml, true);
+
+    if (fd < 0) {
+        /* Check for special case of no change needed.  */
+        if (fd == -2)
+            ret = 0;
+        goto cleanup;
+    }
+
+    xml = qemuDomainDefFormatXML(driver, def, (VIR_DOMAIN_XML_INACTIVE |
+                                               VIR_DOMAIN_XML_SECURE));
+    if (!xml)
+        goto cleanup;
+    len = strlen(xml) + 1;
+
+    if (len > header.xml_len) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                        _("new xml too large to fit in file"));
+        goto cleanup;
+    }
+    if (VIR_EXPAND_N(xml, len, header.xml_len - len) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (lseek(fd, sizeof(header), SEEK_SET) != sizeof(header)) {
+        virReportSystemError(errno, _("cannot seek in '%s'"), path);
+        goto cleanup;
+    }
+    if (safewrite(fd, xml, len) != len ||
+        VIR_CLOSE(fd) < 0) {
+        virReportSystemError(errno, _("failed to write xml to '%s'"), path);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    virDomainDefFree(def);
+    VIR_FORCE_CLOSE(fd);
+    VIR_FREE(xml);
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
 static int
 qemuDomainObjRestore(virConnectPtr conn,
                      struct qemud_driver *driver,
@@ -4025,7 +4129,7 @@ qemuDomainObjRestore(virConnectPtr conn,
     virFileDirectFdPtr directFd = NULL;
 
     fd = qemuDomainSaveImageOpen(driver, path, &def, &header,
-                                 bypass_cache, &directFd, NULL);
+                                 bypass_cache, &directFd, NULL, false);
     if (fd < 0)
         goto cleanup;
 
@@ -9298,6 +9402,8 @@ static virDriver qemuDriver = {
     .domainSaveFlags = qemuDomainSaveFlags, /* 0.9.4 */
     .domainRestore = qemuDomainRestore, /* 0.2.0 */
     .domainRestoreFlags = qemuDomainRestoreFlags, /* 0.9.4 */
+    .domainSaveImageGetXMLDesc = qemuDomainSaveImageGetXMLDesc, /* 0.9.4 */
+    .domainSaveImageDefineXML = qemuDomainSaveImageDefineXML, /* 0.9.4 */
     .domainCoreDump = qemudDomainCoreDump, /* 0.7.0 */
     .domainScreenshot = qemuDomainScreenshot, /* 0.9.2 */
     .domainSetVcpus = qemuDomainSetVcpus, /* 0.4.4 */
