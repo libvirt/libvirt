@@ -136,7 +136,12 @@ LIBS=$old_libs
 dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([pwd.h paths.h regex.h sys/un.h \
   sys/poll.h syslog.h mntent.h net/ethernet.h linux/magic.h \
-  sys/un.h sys/syscall.h netinet/tcp.h ifaddrs.h])
+  sys/un.h sys/syscall.h netinet/tcp.h ifaddrs.h libtasn1.h])
+
+dnl Our only use of libtasn1.h is in the testsuite, and can be skipped
+dnl if the header is not present.  Assume -ltasn1 is present if the
+dnl header could be found.
+AM_CONDITIONAL([HAVE_LIBTASN1], [test "x$ac_cv_header_libtasn1_h" = "xyes"])
 
 AC_CHECK_LIB([intl],[gettext],[])
 

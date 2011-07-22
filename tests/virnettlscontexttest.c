@@ -33,7 +33,7 @@
 #include "command.h"
 #include "network.h"
 
-#ifndef WIN32
+#if !defined WIN32 && HAVE_LIBTASN1_H
 # include <libtasn1.h>
 # include <gnutls/gnutls.h>
 # include <gnutls/x509.h>
@@ -112,9 +112,10 @@ struct testTLSCertReq {
     const char *keyPurposeOID1;
     const char *keyPurposeOID2;
 
-    /* if zero, then the current time will be used */
-    time_t start;
-    time_t expire;
+    /* zero for current time, or non-zero for hours from now */
+    int start_offset;
+    /* zero for 24 hours from now, or non-zero for hours from now */
+    int expire_offset;
 };
 
 
@@ -160,13 +161,9 @@ testTLSGenerateCert(struct testTLSCertReq *req)
     size_t size = sizeof(buffer);
     char serial[5] = { 1, 2, 3, 4, 0 };
     gnutls_datum_t der = { (unsigned char *)buffer, size };
-    time_t start = req->start;
-    time_t expire = req->expire;
-
-    if (!start)
-        start = time(NULL);
-    if (!expire)
-        expire = time(NULL) + (60*60*24);
+    time_t start = time(NULL) + (60*60*req->start_offset);
+    time_t expire = time(NULL) + (60*60*(req->expire_offset
+                                         ? req->expire_offset : 24));
 
     /*
      * Prepare our new certificate object
@@ -767,7 +764,7 @@ mymain(void)
     /* A perfect CA, perfect client & perfect server */
 
     /* Basic:CA:critical */
-    struct testTLSCertReq cacertreq = {
+    static struct testTLSCertReq cacertreq = {
         NULL, NULL, "cacert.pem", "UK",
         "libvirt CA", NULL, NULL, NULL, NULL,
         true, true, true,
@@ -775,7 +772,7 @@ mymain(void)
         false, false, NULL, NULL,
         0, 0,
     };
-    struct testTLSCertReq servercertreq = {
+    static struct testTLSCertReq servercertreq = {
         NULL, NULL, "servercert.pem", "UK",
         "libvirt.org", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -783,7 +780,7 @@ mymain(void)
         true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
         0, 0,
     };
-    struct testTLSCertReq clientcertreq = {
+    static struct testTLSCertReq clientcertreq = {
         NULL, NULL, "clientcert.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -800,7 +797,7 @@ mymain(void)
     /* Some other CAs which are good */
 
     /* Basic:CA:critical */
-    struct testTLSCertReq cacert1req = {
+    static struct testTLSCertReq cacert1req = {
         NULL, NULL, "cacert1.pem", "UK",
         "libvirt CA 1", NULL, NULL, NULL, NULL,
         true, true, true,
@@ -809,7 +806,7 @@ mymain(void)
         0, 0,
     };
     /* Basic:CA:not-critical */
-    struct testTLSCertReq cacert2req = {
+    static struct testTLSCertReq cacert2req = {
         NULL, NULL, "cacert2.pem", "UK",
         "libvirt CA 2", NULL, NULL, NULL, NULL,
         true, false, true,
@@ -822,7 +819,7 @@ mymain(void)
     /* Default GNUTLS session config forbids use of CAs without
      * basic constraints, so skip this otherwise valid test
      */
-    struct testTLSCertReq cacert3req = {
+    static struct testTLSCertReq cacert3req = {
         NULL, NULL, "cacert3.pem", "UK",
         "libvirt CA 3", NULL, NULL, NULL, NULL,
         true, false, false,
@@ -832,7 +829,7 @@ mymain(void)
     };
 # endif
     /* Key usage:cert-sign:critical */
-    struct testTLSCertReq cacert4req = {
+    static struct testTLSCertReq cacert4req = {
         NULL, NULL, "cacert4.pem", "UK",
         "libvirt CA 4", NULL, NULL, NULL, NULL,
         true, true, true,
@@ -841,7 +838,7 @@ mymain(void)
         0, 0,
     };
     /* Key usage:dig-sig:not-critical */
-    struct testTLSCertReq cacert5req = {
+    static struct testTLSCertReq cacert5req = {
         NULL, NULL, "cacert5.pem", "UK",
         "libvirt CA 5", NULL, NULL, NULL, NULL,
         true, true, true,
@@ -861,7 +858,7 @@ mymain(void)
     /* Now some bad certs */
 
     /* no-basic */
-    struct testTLSCertReq cacert6req = {
+    static struct testTLSCertReq cacert6req = {
         NULL, NULL, "cacert6.pem", "UK",
         "libvirt CA 6", NULL, NULL, NULL, NULL,
         false, false, false,
@@ -870,7 +867,7 @@ mymain(void)
         0, 0,
     };
     /* Key usage:dig-sig:critical */
-    struct testTLSCertReq cacert7req = {
+    static struct testTLSCertReq cacert7req = {
         NULL, NULL, "cacert7.pem", "UK",
         "libvirt CA 7", NULL, NULL, NULL, NULL,
         true, true, true,
@@ -885,7 +882,7 @@ mymain(void)
 
     /* Various good servers */
     /* no usage or purpose */
-    struct testTLSCertReq servercert1req = {
+    static struct testTLSCertReq servercert1req = {
         NULL, NULL, "servercert1.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -894,7 +891,7 @@ mymain(void)
         0, 0,
     };
     /* usage:cert-sign+dig-sig+encipher:critical */
-    struct testTLSCertReq servercert2req = {
+    static struct testTLSCertReq servercert2req = {
         NULL, NULL, "servercert2.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -903,7 +900,7 @@ mymain(void)
         0, 0,
     };
     /* usage:cert-sign:not-critical */
-    struct testTLSCertReq servercert3req = {
+    static struct testTLSCertReq servercert3req = {
         NULL, NULL, "servercert3.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -912,7 +909,7 @@ mymain(void)
         0, 0,
     };
     /* purpose:server:critical */
-    struct testTLSCertReq servercert4req = {
+    static struct testTLSCertReq servercert4req = {
         NULL, NULL, "servercert4.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -921,7 +918,7 @@ mymain(void)
         0, 0,
     };
     /* purpose:server:not-critical */
-    struct testTLSCertReq servercert5req = {
+    static struct testTLSCertReq servercert5req = {
         NULL, NULL, "servercert5.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -930,7 +927,7 @@ mymain(void)
         0, 0,
     };
     /* purpose:client+server:critical */
-    struct testTLSCertReq servercert6req = {
+    static struct testTLSCertReq servercert6req = {
         NULL, NULL, "servercert6.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -939,7 +936,7 @@ mymain(void)
         0, 0,
     };
     /* purpose:client+server:not-critical */
-    struct testTLSCertReq servercert7req = {
+    static struct testTLSCertReq servercert7req = {
         NULL, NULL, "servercert7.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -958,7 +955,7 @@ mymain(void)
     /* Bad servers */
 
     /* usage:cert-sign:critical */
-    struct testTLSCertReq servercert8req = {
+    static struct testTLSCertReq servercert8req = {
         NULL, NULL, "servercert8.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -967,7 +964,7 @@ mymain(void)
         0, 0,
     };
     /* purpose:client:critical */
-    struct testTLSCertReq servercert9req = {
+    static struct testTLSCertReq servercert9req = {
         NULL, NULL, "servercert9.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -976,7 +973,7 @@ mymain(void)
         0, 0,
     };
     /* usage: none:critical */
-    struct testTLSCertReq servercert10req = {
+    static struct testTLSCertReq servercert10req = {
         NULL, NULL, "servercert10.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -993,7 +990,7 @@ mymain(void)
 
     /* Various good clients */
     /* no usage or purpose */
-    struct testTLSCertReq clientcert1req = {
+    static struct testTLSCertReq clientcert1req = {
         NULL, NULL, "clientcert1.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -1002,7 +999,7 @@ mymain(void)
         0, 0,
     };
     /* usage:cert-sign+dig-sig+encipher:critical */
-    struct testTLSCertReq clientcert2req = {
+    static struct testTLSCertReq clientcert2req = {
         NULL, NULL, "clientcert2.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -1011,7 +1008,7 @@ mymain(void)
         0, 0,
     };
     /* usage:cert-sign:not-critical */
-    struct testTLSCertReq clientcert3req = {
+    static struct testTLSCertReq clientcert3req = {
         NULL, NULL, "clientcert3.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -1020,7 +1017,7 @@ mymain(void)
         0, 0,
     };
     /* purpose:client:critical */
-    struct testTLSCertReq clientcert4req = {
+    static struct testTLSCertReq clientcert4req = {
         NULL, NULL, "clientcert4.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -1029,7 +1026,7 @@ mymain(void)
         0, 0,
     };
     /* purpose:client:not-critical */
-    struct testTLSCertReq clientcert5req = {
+    static struct testTLSCertReq clientcert5req = {
         NULL, NULL, "clientcert5.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -1038,7 +1035,7 @@ mymain(void)
         0, 0,
     };
     /* purpose:client+client:critical */
-    struct testTLSCertReq clientcert6req = {
+    static struct testTLSCertReq clientcert6req = {
         NULL, NULL, "clientcert6.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -1047,7 +1044,7 @@ mymain(void)
         0, 0,
     };
     /* purpose:client+client:not-critical */
-    struct testTLSCertReq clientcert7req = {
+    static struct testTLSCertReq clientcert7req = {
         NULL, NULL, "clientcert7.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -1066,7 +1063,7 @@ mymain(void)
     /* Bad clients */
 
     /* usage:cert-sign:critical */
-    struct testTLSCertReq clientcert8req = {
+    static struct testTLSCertReq clientcert8req = {
         NULL, NULL, "clientcert8.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -1075,7 +1072,7 @@ mymain(void)
         0, 0,
     };
     /* purpose:client:critical */
-    struct testTLSCertReq clientcert9req = {
+    static struct testTLSCertReq clientcert9req = {
         NULL, NULL, "clientcert9.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -1084,7 +1081,7 @@ mymain(void)
         0, 0,
     };
     /* usage: none:critical */
-    struct testTLSCertReq clientcert10req = {
+    static struct testTLSCertReq clientcert10req = {
         NULL, NULL, "clientcert10.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -1101,7 +1098,7 @@ mymain(void)
 
     /* Expired stuff */
 
-    struct testTLSCertReq cacertexpreq = {
+    static struct testTLSCertReq cacertexpreq = {
         NULL, NULL, "cacert.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, true,
@@ -1109,7 +1106,7 @@ mymain(void)
         false, false, NULL, NULL,
         0, 1,
     };
-    struct testTLSCertReq servercertexpreq = {
+    static struct testTLSCertReq servercertexpreq = {
         NULL, NULL, "servercert.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -1117,7 +1114,7 @@ mymain(void)
         true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
         0, 1,
     };
-    struct testTLSCertReq clientcertexpreq = {
+    static struct testTLSCertReq clientcertexpreq = {
         NULL, NULL, "clientcert.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
@@ -1133,29 +1130,29 @@ mymain(void)
 
     /* Not activated stuff */
 
-    struct testTLSCertReq cacertnewreq = {
+    static struct testTLSCertReq cacertnewreq = {
         NULL, NULL, "cacert.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, true,
         true, true, GNUTLS_KEY_KEY_CERT_SIGN,
         false, false, NULL, NULL,
-        time(NULL)+(60*60), time(NULL)+(60*60*2),
+        1, 2,
     };
-    struct testTLSCertReq servercertnewreq = {
+    static struct testTLSCertReq servercertnewreq = {
         NULL, NULL, "servercert.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
         true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
         true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
-        time(NULL)+(60*60), time(NULL)+(60*60*2),
+        1, 2,
     };
-    struct testTLSCertReq clientcertnewreq = {
+    static struct testTLSCertReq clientcertnewreq = {
         NULL, NULL, "clientcert.pem", "UK",
         "libvirt", NULL, NULL, NULL, NULL,
         true, true, false,
         true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
         true, true, GNUTLS_KP_TLS_WWW_CLIENT, NULL,
-        time(NULL)+(60*60), time(NULL)+(60*60*2),
+        1, 2,
     };
 
     DO_CTX_TEST(true, cacertnewreq, servercertreq, true);
@@ -1168,7 +1165,7 @@ mymain(void)
 
     /* When an altname is set, the CN is ignored, so it must be duplicated
      * as an altname for it to match */
-    struct testTLSCertReq servercertalt1req = {
+    static struct testTLSCertReq servercertalt1req = {
         NULL, NULL, "servercert.pem", "UK",
         "libvirt.org", "www.libvirt.org", "libvirt.org", "192.168.122.1", "fec0::dead:beaf",
         true, true, false,
@@ -1177,7 +1174,7 @@ mymain(void)
         0, 0,
     };
     /* This intentionally doesn't replicate */
-    struct testTLSCertReq servercertalt2req = {
+    static struct testTLSCertReq servercertalt2req = {
         NULL, NULL, "servercert.pem", "UK",
         "libvirt.org", "www.libvirt.org", "wiki.libvirt.org", "192.168.122.1", "fec0::dead:beaf",
         true, true, false,
@@ -1234,12 +1231,12 @@ mymain(void)
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
+VIRT_TEST_MAIN(mymain)
+
 #else
-static int
-mymain(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
+int
+main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
 {
     exit (EXIT_AM_SKIP);
 }
 #endif
-
-VIRT_TEST_MAIN(mymain)

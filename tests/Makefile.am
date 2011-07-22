@@ -454,9 +454,15 @@ virnetsockettest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
 virnetsockettest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
 
 virnettlscontexttest_SOURCES = \
-	virnettlscontexttest.c testutils.h testutils.c pkix_asn1_tab.c
+	virnettlscontexttest.c testutils.h testutils.c
 virnettlscontexttest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
-virnettlscontexttest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS) -ltasn1
+virnettlscontexttest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
+if HAVE_LIBTASN1
+virnettlscontexttest_SOURCES += pkix_asn1_tab.c
+virnettlscontexttest_LDADD += -ltasn1
+else
+EXTRA_DIST += pkix_asn1_tab.c
+endif
 
 
 seclabeltest_SOURCES = \
