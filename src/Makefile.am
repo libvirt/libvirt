@@ -1396,6 +1396,9 @@ install-data-local:
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/cache/libvirt"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/images"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/boot"
+if HAVE_SANLOCK
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/sanlock"
+endif
 if WITH_QEMU
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/qemu"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/qemu"
@@ -1438,6 +1441,9 @@ uninstall-local::
 	rmdir "$(DESTDIR)$(localstatedir)/cache/libvirt" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/images" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/boot" ||:
+if HAVE_SANLOCK
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/sanlock" ||:
+endif
 if WITH_QEMU
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/qemu" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/qemu" ||:
