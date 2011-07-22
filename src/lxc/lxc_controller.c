@@ -188,6 +188,23 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         }
     }
 
+    for (i = 0 ; i < def->nfss ; i++) {
+        if (def->fss[i]->type != VIR_DOMAIN_FS_TYPE_BLOCK)
+            continue;
+
+        rc = virCgroupAllowDevicePath(cgroup,
+                                      def->fss[i]->src,
+                                      def->fss[i]->readonly ?
+                                      VIR_CGROUP_DEVICE_READ :
+                                      VIR_CGROUP_DEVICE_RW);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to allow device %s for domain %s"),
+                                 def->fss[i]->src, def->name);
+            goto cleanup;
+        }
+    }
+
     rc = virCgroupAllowDeviceMajor(cgroup, 'c', LXC_DEV_MAJ_PTY,
                                    VIR_CGROUP_DEVICE_RWM);
     if (rc != 0) {
