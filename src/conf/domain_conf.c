@@ -1411,11 +1411,12 @@ int virDomainDeviceVirtioSerialAddressIsValid(
 }
 
 
-int virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info)
+static int
+virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info, unsigned int flags)
 {
     if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
         return 1;
-    if (info->alias)
+    if (info->alias && !(flags & VIR_DOMAIN_XML_INACTIVE))
         return 1;
     return 0;
 }
@@ -3297,7 +3298,7 @@ error:
  * <target>, which is used by <serial> but not <smartcard>). */
 static int
 virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
-                              xmlNodePtr cur)
+                              xmlNodePtr cur, unsigned int flags)
 {
     char *bindHost = NULL;
     char *bindService = NULL;
@@ -3320,7 +3321,10 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                 case VIR_DOMAIN_CHR_TYPE_FILE:
                 case VIR_DOMAIN_CHR_TYPE_PIPE:
                 case VIR_DOMAIN_CHR_TYPE_UNIX:
-                    if (path == NULL)
+                    /* PTY path is only parsed from live xml.  */
+                    if (path == NULL &&
+                        (def->type != VIR_DOMAIN_CHR_TYPE_PTY ||
+                         !(flags & VIR_DOMAIN_XML_INACTIVE)))
                         path = virXMLPropString(cur, "path");
 
                     break;
@@ -3571,7 +3575,7 @@ virDomainChrDefParseXML(virCapsPtr caps,
     }
 
     cur = node->children;
-    remaining = virDomainChrSourceDefParseXML(&def->source, cur);
+    remaining = virDomainChrSourceDefParseXML(&def->source, cur, flags);
     if (remaining < 0)
         goto error;
     if (remaining) {
@@ -3703,7 +3707,7 @@ virDomainSmartcardDefParseXML(xmlNodePtr node,
         }
 
         cur = node->children;
-        if (virDomainChrSourceDefParseXML(&def->data.passthru, cur) < 0)
+        if (virDomainChrSourceDefParseXML(&def->data.passthru, cur, flags) < 0)
             goto error;
 
         if (def->data.passthru.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
@@ -8736,7 +8740,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
         break;
     }
 
-    if (virDomainDeviceInfoIsSet(&def->info)) {
+    if (virDomainDeviceInfoIsSet(&def->info, flags)) {
         virBufferAddLit(buf, ">\n");
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
@@ -8966,9 +8970,14 @@ virDomainNetDefFormat(virBufferPtr buf,
         break;
     }
 
-    if (def->ifname)
+
+    if (def->ifname &&
+        !((flags & VIR_DOMAIN_XML_INACTIVE) &&
+          (STRPREFIX(def->ifname, VIR_NET_GENERATED_PREFIX)))) {
+        /* Skip auto-generated target names for inactive config. */
         virBufferEscapeString(buf, "      <target dev='%s'/>\n",
                               def->ifname);
+    }
     if (def->model) {
         virBufferEscapeString(buf, "      <model type='%s'/>\n",
                               def->model);
@@ -9204,7 +9213,7 @@ virDomainChrDefFormat(virBufferPtr buf,
         break;
     }
 
-    if (virDomainDeviceInfoIsSet(&def->info)) {
+    if (virDomainDeviceInfoIsSet(&def->info, flags)) {
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
     }
@@ -9232,7 +9241,7 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "    <smartcard mode='%s'", mode);
     switch (def->type) {
     case VIR_DOMAIN_SMARTCARD_TYPE_HOST:
-        if (!virDomainDeviceInfoIsSet(&def->info)) {
+        if (!virDomainDeviceInfoIsSet(&def->info, flags)) {
             virBufferAddLit(buf, "/>\n");
             return 0;
         }
@@ -9282,7 +9291,7 @@ virDomainSoundDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "    <sound model='%s'",
                       model);
 
-    if (virDomainDeviceInfoIsSet(&def->info)) {
+    if (virDomainDeviceInfoIsSet(&def->info, flags)) {
         virBufferAddLit(buf, ">\n");
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
@@ -9311,7 +9320,7 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "    <memballoon model='%s'",
                       model);
 
-    if (virDomainDeviceInfoIsSet(&def->info)) {
+    if (virDomainDeviceInfoIsSet(&def->info, flags)) {
         virBufferAddLit(buf, ">\n");
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
@@ -9360,7 +9369,7 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "    <watchdog model='%s' action='%s'",
                       model, action);
 
-    if (virDomainDeviceInfoIsSet(&def->info)) {
+    if (virDomainDeviceInfoIsSet(&def->info, flags)) {
         virBufferAddLit(buf, ">\n");
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
@@ -9443,7 +9452,7 @@ virDomainInputDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "    <input type='%s' bus='%s'",
                       type, bus);
 
-    if (virDomainDeviceInfoIsSet(&def->info)) {
+    if (virDomainDeviceInfoIsSet(&def->info, flags)) {
         virBufferAddLit(buf, ">\n");
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
@@ -10265,9 +10274,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if (def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
             !def->seclabel.baselabel &&
             (flags & VIR_DOMAIN_XML_INACTIVE)) {
-            virBufferAsprintf(&buf, "  <seclabel type='%s' model='%s' relabel='%s'/>\n",
-                              sectype, def->seclabel.model,
-                              def->seclabel.norelabel ? "no" : "yes");
+            /* This is the default for inactive xml, so nothing to output.  */
         } else {
             virBufferAsprintf(&buf, "  <seclabel type='%s' model='%s' relabel='%s'>\n",
                               sectype, def->seclabel.model,

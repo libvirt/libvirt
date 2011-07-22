@@ -267,7 +267,6 @@ virDomainDeviceAddressIsValid;
 virDomainDeviceAddressTypeToString;
 virDomainDeviceDefFree;
 virDomainDeviceDefParse;
-virDomainDeviceInfoIsSet;
 virDomainDeviceInfoIterate;
 virDomainDevicePCIAddressIsValid;
 virDomainDeviceTypeToString;
