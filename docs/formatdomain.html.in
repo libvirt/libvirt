@@ -1882,6 +1882,40 @@ qemu-kvm -net nic,model=? /dev/null
       <span class="since">Since 0.8.8</span>
     </p>
 
+    <h5><a name="elementQoS">Quality of service</a></h5>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='network'&gt;
+      &lt;source network='default'/&gt;
+      &lt;target dev='vnet0'/&gt;
+      <b>&lt;bandwidth&gt;
+        &lt;inbound average='1000' peak='5000' burst='1024'/&gt;
+        &lt;outbound average='128' peak='256' burst='256'/&gt;
+      &lt;/bandwidth&gt;</b>
+    &lt;/interface&gt;
+  &lt;devices&gt;
+  ...</pre>
+
+    <p>
+      This part of interface XML provides setting quality of service. Incoming
+      and outgoing traffic can be shaped independently. The
+      <code>bandwidth</code> element can have at most one <code>inbound</code>
+      and at most one <code>outbound</code> child elements. Leaving any of these
+      children element out result in no QoS applied on that traffic direction.
+      So, when you want to shape only domain's incoming traffic, use
+      <code>inbound</code> only, and vice versa. Each of these elements have one
+      mandatory attribute <code>average</code>. It specifies average bit rate on
+      interface being shaped. Then there are two optional attributes:
+      <code>peak</code>, which specifies maximum rate at which interface can send
+      data, and <code>burst</code>, amount of bytes that can be burst at
+      <code>peak</code> speed. Accepted values for attributes are integer
+      numbers. The units for <code>average</code> and <code>peak</code> attributes
+      are kilobytes per second, and for the <code>burst</code> just kilobytes.
+      <span class="since">Since 0.9.4</span>
+    </p>
+
     <h4><a name="elementsInput">Input devices</a></h4>
 
     <p>

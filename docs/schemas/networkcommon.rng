@@ -47,4 +47,52 @@
       </group>
     </choice>
   </define>
+
+  <define name="bandwidth">
+    <element name="bandwidth">
+      <interleave>
+        <optional>
+          <element name="inbound">
+            <ref name="bandwidth-attributes"/>
+            <empty/>
+          </element>
+        </optional>
+        <optional>
+          <element name="outbound">
+            <ref name="bandwidth-attributes"/>
+            <empty/>
+          </element>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
+  <define name="bandwidth-attributes">
+    <attribute name="average">
+      <ref name="speed"/>
+    </attribute>
+    <optional>
+      <attribute name="peak">
+        <ref name="speed"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name='burst'>
+        <ref name="BurstSize"/>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="speed">
+    <data type="unsignedInt">
+      <param name="pattern">[0-9]+</param>
+      <param name="minInclusive">1</param>
+    </data>
+  </define>
+  <define name="BurstSize">
+    <data type="unsignedInt">
+      <param name="pattern">[0-9]+</param>
+      <param name="minInclusive">1</param>
+    </data>
+  </define>
 </grammar>

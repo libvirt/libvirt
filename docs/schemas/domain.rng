@@ -1189,6 +1189,9 @@
       <optional>
         <ref name="deviceBoot"/>
       </optional>
+      <optional>
+        <ref name="bandwidth"/>
+      </optional>
     </interleave>
   </define>
   <!--

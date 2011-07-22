@@ -147,6 +147,9 @@
               </zeroOrMore>
             </element>
         </optional>
+       <optional>
+         <ref name="bandwidth"/>
+       </optional>
 
         <!-- <ip> element -->
         <zeroOrMore>
