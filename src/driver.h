@@ -1000,7 +1000,7 @@ typedef virInterfaceDriver *virInterfaceDriverPtr;
 /**
  * _virInterfaceDriver:
  *
- * Structure associated to a network virtualization driver, defining the various
+ * Structure associated to a network interface driver, defining the various
  * entry points for it.
  *
  * All drivers must support the following fields/methods:
@@ -1161,7 +1161,7 @@ typedef virStorageDriver *virStorageDriverPtr;
 /**
  * _virStorageDriver:
  *
- * Structure associated to a network virtualization driver, defining the various
+ * Structure associated to a storage driver, defining the various
  * entry points for it.
  *
  * All drivers must support the following fields/methods:
