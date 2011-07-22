@@ -1479,6 +1479,12 @@ struct remote_domain_event_graphics_msg {
                 remote_domain_event_graphics_identity * subject_val;
         } subject;
 };
+struct remote_domain_event_block_job_msg {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      path;
+        int                        type;
+        int                        status;
+};
 struct remote_domain_managed_save_args {
         remote_nonnull_domain      dom;
         u_int                      flags;
@@ -1929,4 +1935,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_GET_BLOCK_JOB_INFO = 238,
         REMOTE_PROC_DOMAIN_BLOCK_JOB_SET_SPEED = 239,
         REMOTE_PROC_DOMAIN_BLOCK_PULL = 240,
+        REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB = 241,
 };

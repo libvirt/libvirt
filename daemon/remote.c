@@ -339,6 +339,36 @@ static int remoteRelayDomainEventGraphics(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int remoteRelayDomainEventBlockJob(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                          virDomainPtr dom,
+                                          const char *path,
+                                          int type,
+                                          int status,
+                                          void *opaque)
+{
+    virNetServerClientPtr client = opaque;
+    remote_domain_event_block_job_msg data;
+
+    if (!client)
+        return -1;
+
+    VIR_DEBUG("Relaying domain block job event %s %d %s %i, %i",
+              dom->name, dom->id, path, type, status);
+
+    /* build return data */
+    memset(&data, 0, sizeof data);
+    make_nonnull_domain(&data.dom, dom);
+    data.path = (char*)path;
+    data.type = type;
+    data.status = status;
+
+    remoteDispatchDomainEventSend(client, remoteProgram,
+                                  REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB,
+                                  (xdrproc_t)xdr_remote_domain_event_block_job_msg, &data);
+
+    return 0;
+}
+
 
 static int remoteRelayDomainEventControlError(virConnectPtr conn ATTRIBUTE_UNUSED,
                                               virDomainPtr dom,
@@ -373,6 +403,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventGraphics),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventIOErrorReason),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventControlError),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventBlockJob),
 };
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

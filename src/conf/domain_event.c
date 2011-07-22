@@ -83,6 +83,11 @@ struct _virDomainEvent {
             char *authScheme;
             virDomainEventGraphicsSubjectPtr subject;
         } graphics;
+        struct {
+            char *path;
+            int type;
+            int status;
+        } blockJob;
     } data;
 };
 
@@ -499,6 +504,11 @@ void virDomainEventFree(virDomainEventPtr event)
             }
             VIR_FREE(event->data.graphics.subject);
         }
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_BLOCK_JOB:
+        VIR_FREE(event->data.blockJob.path);
+        break;
     }
 
     VIR_FREE(event->dom.name);
@@ -874,6 +884,44 @@ virDomainEventPtr virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
     return ev;
 }
 
+static virDomainEventPtr
+virDomainEventBlockJobNew(int id, const char *name, unsigned char *uuid,
+                          const char *path, int type, int status)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_BLOCK_JOB,
+                                  id, name, uuid);
+
+    if (ev) {
+        if (!(ev->data.blockJob.path = strdup(path))) {
+            virReportOOMError();
+            virDomainEventFree(ev);
+            return NULL;
+        }
+        ev->data.blockJob.type = type;
+        ev->data.blockJob.status = status;
+    }
+
+    return ev;
+}
+
+virDomainEventPtr virDomainEventBlockJobNewFromObj(virDomainObjPtr obj,
+                                                   const char *path,
+                                                   int type,
+                                                   int status)
+{
+    return virDomainEventBlockJobNew(obj->def->id, obj->def->name,
+                                     obj->def->uuid, path, type, status);
+}
+
+virDomainEventPtr virDomainEventBlockJobNewFromDom(virDomainPtr dom,
+                                                   const char *path,
+                                                   int type,
+                                                   int status)
+{
+    return virDomainEventBlockJobNew(dom->id, dom->name, dom->uuid,
+                                     path, type, status);
+}
 
 virDomainEventPtr virDomainEventControlErrorNewFromDom(virDomainPtr dom)
 {
@@ -1025,6 +1073,14 @@ void virDomainEventDispatchDefaultFunc(virConnectPtr conn,
     case VIR_DOMAIN_EVENT_ID_CONTROL_ERROR:
         (cb)(conn, dom,
              cbopaque);
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_BLOCK_JOB:
+        ((virConnectDomainEventBlockJobCallback)cb)(conn, dom,
+                                                    event->data.blockJob.path,
+                                                    event->data.blockJob.type,
+                                                    event->data.blockJob.status,
+                                                    cbopaque);
         break;
 
     default:

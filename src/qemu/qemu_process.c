@@ -662,6 +662,36 @@ qemuProcessHandleIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                          virDomainObjPtr vm,
+                          const char *diskAlias,
+                          int type,
+                          int status)
+{
+    struct qemud_driver *driver = qemu_driver;
+    virDomainEventPtr event = NULL;
+    const char *path;
+    virDomainDiskDefPtr disk;
+
+    virDomainObjLock(vm);
+    disk = qemuProcessFindDomainDiskByAlias(vm, diskAlias);
+
+    if (disk) {
+        path = disk->src;
+        event = virDomainEventBlockJobNewFromObj(vm, path, type, status);
+    }
+
+    virDomainObjUnlock(vm);
+
+    if (event) {
+        qemuDriverLock(driver);
+        qemuDomainEventQueue(driver, event);
+        qemuDriverUnlock(driver);
+    }
+
+    return 0;
+}
 
 static int
 qemuProcessHandleGraphics(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
@@ -779,6 +809,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .domainWatchdog = qemuProcessHandleWatchdog,
     .domainIOError = qemuProcessHandleIOError,
     .domainGraphics = qemuProcessHandleGraphics,
+    .domainBlockJob = qemuProcessHandleBlockJob,
 };
 
 static int

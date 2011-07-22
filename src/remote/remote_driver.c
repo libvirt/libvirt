@@ -223,6 +223,11 @@ remoteDomainBuildEventControlError(virNetClientProgramPtr prog,
                                    virNetClientPtr client,
                                    void *evdata, void *opaque);
 
+static void
+remoteDomainBuildEventBlockJob(virNetClientProgramPtr prog,
+                               virNetClientPtr client,
+                               void *evdata, void *opaque);
+
 static virNetClientProgramEvent remoteDomainEvents[] = {
     { REMOTE_PROC_DOMAIN_EVENT_RTC_CHANGE,
       remoteDomainBuildEventRTCChange,
@@ -256,6 +261,10 @@ static virNetClientProgramEvent remoteDomainEvents[] = {
       remoteDomainBuildEventControlError,
       sizeof(remote_domain_event_control_error_msg),
       (xdrproc_t)xdr_remote_domain_event_control_error_msg },
+    { REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB,
+      remoteDomainBuildEventBlockJob,
+      sizeof(remote_domain_event_block_job_msg),
+      (xdrproc_t)xdr_remote_domain_event_block_job_msg },
 };
 
 enum virDrvOpenRemoteFlags {
@@ -3095,6 +3104,28 @@ remoteDomainBuildEventIOErrorReason(virNetClientProgramPtr prog ATTRIBUTE_UNUSED
     remoteDomainEventQueue(priv, event);
 }
 
+static void
+remoteDomainBuildEventBlockJob(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                               virNetClientPtr client ATTRIBUTE_UNUSED,
+                               void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    struct private_data *priv = conn->privateData;
+    remote_domain_event_block_job_msg *msg = evdata;
+    virDomainPtr dom;
+    virDomainEventPtr event = NULL;
+
+    dom = get_nonnull_domain(conn, msg->dom);
+    if (!dom)
+        return;
+
+    event = virDomainEventBlockJobNewFromDom(dom, msg->path, msg->type,
+                                             msg->status);
+
+    virDomainFree(dom);
+
+    remoteDomainEventQueue(priv, event);
+}
 
 static void
 remoteDomainBuildEventGraphics(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
