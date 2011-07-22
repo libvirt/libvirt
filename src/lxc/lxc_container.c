@@ -363,6 +363,15 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
         goto err;
     }
 
+    if (root->readonly) {
+        if (mount(root->src, newroot, NULL, MS_BIND|MS_REC|MS_RDONLY|MS_REMOUNT, NULL) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to make new root %s readonly"),
+                                 root->src);
+            goto err;
+        }
+    }
+
     /* Now we chroot into the tmpfs, then pivot into the
      * root->src bind-mounted onto '/new' */
     if (chdir(newroot) < 0) {
@@ -403,11 +412,20 @@ static int lxcContainerMountBasicFS(const char *srcprefix)
         const char *opts;
         int mflags;
     } mnts[] = {
+        /* When we want to make a bind mount readonly, for unknown reasons,
+         * it is currently neccessary to bind it once, and then remount the
+         * bind with the readonly flag. If this is not done, then the original
+         * mount point in the main OS becomes readonly too which si not what
+         * we want. Hence some things have two entries here.
+         */
         { false, "devfs", "/dev", "tmpfs", "mode=755", MS_NOSUID },
         { false, "proc", "/proc", "proc", NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV },
         { false, "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND },
+        { false, "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
         { true, "/sys", "/sys", NULL, NULL, MS_BIND },
+        { true, "/sys", "/sys", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
         { true, "/selinux", "/selinux", NULL, NULL, MS_BIND },
+        { true, "/selinux", "/selinux", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
     };
     int i, rc = -1;
 
@@ -571,6 +589,17 @@ static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
                              _("Failed to bind mount directory %s to %s"),
                              src, fs->dst);
         goto cleanup;
+    }
+
+    if (fs->readonly) {
+        VIR_DEBUG("Binding %s readonly", fs->dst);
+        if (mount(fs->dst, fs->dst, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY, NULL) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to make directory %s readonly"),
+                                 fs->dst);
+            goto cleanup;
+        }
+
     }
 
     ret = 0;
