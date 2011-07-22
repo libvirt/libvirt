@@ -320,5 +320,12 @@
       <arg name='flags' type='unsigned int' info='flags, curently unused'/>
       <return type='int' info="0 on success, -1 on error"/>
     </function>
+    <function name='virDomainGetBlockJobInfo' file='python'>
+      <info>Get progress information for a block job</info>
+      <arg name='dom' type='virDomainPtr' info='pointer to the domain'/>
+      <arg name='path' type='const char *' info='Fully-qualified filename of disk'/>
+      <arg name='flags' type='unsigned int' info='fine-tuning flags, currently unused, pass 0.'/>
+      <return type='virDomainBlockJobInfo' info='A dictionary containing job information.' />
+    </function>
   </symbols>
 </api>

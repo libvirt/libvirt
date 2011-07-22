@@ -186,7 +186,6 @@ def enum(type, name, value):
 functions_failed = []
 functions_skipped = [
     "virConnectListDomains",
-    'virDomainGetBlockJobInfo',
 ]
 
 skipped_modules = {
@@ -370,6 +369,7 @@ skip_impl = (
     'virDomainSendKey',
     'virNodeGetCPUStats',
     'virNodeGetMemoryStats',
+    'virDomainGetBlockJobInfo',
 )
 
 

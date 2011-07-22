@@ -2413,6 +2413,44 @@ libvirt_virDomainGetJobInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     return(py_retval);
 }
 
+static PyObject *
+libvirt_virDomainGetBlockJobInfo(PyObject *self ATTRIBUTE_UNUSED,
+                                 PyObject *args)
+{
+    virDomainPtr domain;
+    PyObject *pyobj_domain;
+    const char *path;
+    unsigned int flags;
+    virDomainBlockJobInfo info;
+    int c_ret;
+    PyObject *ret;
+
+    if (!PyArg_ParseTuple(args, (char *)"Ozi:virDomainGetBlockJobInfo",
+                          &pyobj_domain, &path, &flags))
+        return(NULL);
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_ret = virDomainGetBlockJobInfo(domain, path, &info, flags);
+LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_ret != 1)
+        return VIR_PY_NONE;
+
+    if ((ret = PyDict_New()) == NULL)
+        return VIR_PY_NONE;
+
+    PyDict_SetItem(ret, libvirt_constcharPtrWrap("type"),
+                   libvirt_intWrap(info.type));
+    PyDict_SetItem(ret, libvirt_constcharPtrWrap("bandwidth"),
+                   libvirt_ulongWrap(info.bandwidth));
+    PyDict_SetItem(ret, libvirt_constcharPtrWrap("cur"),
+                   libvirt_ulonglongWrap(info.cur));
+    PyDict_SetItem(ret, libvirt_constcharPtrWrap("end"),
+                   libvirt_ulonglongWrap(info.end));
+
+    return ret;
+}
 
 /*******************************************
  * Helper functions to avoid importing modules
@@ -3872,6 +3910,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainGetJobInfo", libvirt_virDomainGetJobInfo, METH_VARARGS, NULL},
     {(char *) "virDomainSnapshotListNames", libvirt_virDomainSnapshotListNames, METH_VARARGS, NULL},
     {(char *) "virDomainRevertToSnapshot", libvirt_virDomainRevertToSnapshot, METH_VARARGS, NULL},
+    {(char *) "virDomainGetBlockJobInfo", libvirt_virDomainGetBlockJobInfo, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 
