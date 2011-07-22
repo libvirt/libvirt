@@ -1329,6 +1329,9 @@ char *virNetworkDefFormat(const virNetworkDefPtr def)
     if (virNetworkDNSDefFormat(&buf, def->dns) < 0)
         goto error;
 
+    if (virBandwidthDefFormat(&buf, def->bandwidth, "  ") < 0)
+        goto error;
+
     for (ii = 0; ii < def->nips; ii++) {
         if (virNetworkIpDefFormat(&buf, &def->ips[ii]) < 0)
             goto error;

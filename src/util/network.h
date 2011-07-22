@@ -152,4 +152,7 @@ virVirtualPortProfileFormat(virBufferPtr buf,
 
 virBandwidthPtr virBandwidthDefParseNode(xmlNodePtr node);
 void virBandwidthDefFree(virBandwidthPtr def);
+int virBandwidthDefFormat(virBufferPtr buf,
+                          virBandwidthPtr def,
+                          const char *indent);
 #endif /* __VIR_NETWORK_H__ */

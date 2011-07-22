@@ -710,6 +710,7 @@ nlComm;
 
 
 # network.h
+virBandwidthDefFormat;
 virBandwidthDefFree;
 virBandwidthDefParseNode;
 virSocketAddrBroadcast;

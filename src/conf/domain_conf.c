@@ -8855,6 +8855,9 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferAddLit(buf,   "      </tune>\n");
     }
 
+    if (virBandwidthDefFormat(buf, def->bandwidth, "      ") < 0)
+        return -1;
+
     if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;
 

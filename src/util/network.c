@@ -1030,3 +1030,75 @@ virBandwidthDefFree(virBandwidthPtr def)
     VIR_FREE(def->out);
     VIR_FREE(def);
 }
+
+static int
+virBandwidthChildDefFormat(virBufferPtr buf,
+                           virRatePtr def,
+                           const char *elem_name)
+{
+    if (!buf || !def || !elem_name)
+        return -1;
+
+    if (def->average) {
+        virBufferAsprintf(buf, "<%s average='%llu'", elem_name, def->average);
+
+        if (def->peak)
+            virBufferAsprintf(buf, " peak='%llu'", def->peak);
+
+        if (def->burst)
+            virBufferAsprintf(buf, " burst='%llu'", def->burst);
+        virBufferAddLit(buf, "/>\n");
+    }
+
+    return 0;
+}
+
+/**
+ * virBandwidthDefFormat:
+ * @buf: Buffer to print to
+ * @def: Data source
+ * @indent: prepend all lines printed with this
+ *
+ * Formats bandwidth and prepend each line with @indent.
+ * Passing NULL to @indent is equivalent passing "".
+ *
+ * Returns 0 on success, else -1.
+ */
+int
+virBandwidthDefFormat(virBufferPtr buf,
+                      virBandwidthPtr def,
+                      const char *indent)
+{
+    int ret = -1;
+
+    if (!buf)
+        goto cleanup;
+
+    if (!def) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (!indent)
+        indent = "";
+
+    virBufferAsprintf(buf, "%s<bandwidth>\n", indent);
+    if (def->in) {
+        virBufferAsprintf(buf, "%s  ", indent);
+        if (virBandwidthChildDefFormat(buf, def->in, "inbound") < 0)
+            goto cleanup;
+    }
+
+    if (def->out) {
+        virBufferAsprintf(buf, "%s  ", indent);
+        if (virBandwidthChildDefFormat(buf, def->out, "outbound") < 0)
+            goto cleanup;
+    }
+
+    virBufferAsprintf(buf, "%s</bandwidth>\n", indent);
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
