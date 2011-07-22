@@ -410,10 +410,18 @@ static gnutls_x509_privkey_t testTLSLoadKey(void)
 {
     gnutls_x509_privkey_t key;
     const gnutls_datum_t data = { (unsigned char *)PRIVATE_KEY, strlen(PRIVATE_KEY) };
+    int err;
 
-    gnutls_x509_privkey_init(&key);
+    if ((err = gnutls_x509_privkey_init(&key)) < 0) {
+        VIR_WARN("Failed to init key %s", gnutls_strerror(err));
+        abort();
+    }
 
-    gnutls_x509_privkey_import(key, &data, GNUTLS_X509_FMT_PEM);
+    if ((err = gnutls_x509_privkey_import(key, &data,
+                                          GNUTLS_X509_FMT_PEM)) < 0) {
+        VIR_WARN("Failed to init key %s", gnutls_strerror(err));
+        abort();
+    }
 
     return key;
 }
