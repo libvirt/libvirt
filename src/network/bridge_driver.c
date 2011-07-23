@@ -745,8 +745,10 @@ networkStartDhcpDaemon(virNetworkObjPtr network)
     if (ret < 0)
         goto cleanup;
 
-    if (virCommandRun(cmd, NULL) < 0)
+    ret = virCommandRun(cmd, NULL);
+    if (ret < 0) {
         goto cleanup;
+    }
 
     /*
      * There really is no race here - when dnsmasq daemonizes, its
