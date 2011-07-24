@@ -282,85 +282,17 @@
       </dd>
     </dl>
 
-    <h3><a name="elementsResources">Basic resources</a></h3>
+    <h3><a name="elementsCPUAllocation">CPU Allocation</a></h3>
 
 <pre>
+&lt;domain&gt;
   ...
-  &lt;memory&gt;524288&lt;/memory&gt;
-  &lt;currentMemory&gt;524288&lt;/currentMemory&gt;
-  &lt;memoryBacking&gt;
-    &lt;hugepages/&gt;
-  &lt;/memoryBacking&gt;
-  &lt;blkiotune&gt;
-    &lt;weight&gt;800&lt;/weight&gt;
-  &lt;/blkiotune&gt;
-  &lt;memtune&gt;
-    &lt;hard_limit&gt;1048576&lt;/hard_limit&gt;
-    &lt;soft_limit&gt;131072&lt;/soft_limit&gt;
-    &lt;swap_hard_limit&gt;2097152&lt;/swap_hard_limit&gt;
-    &lt;min_guarantee&gt;65536&lt;/min_guarantee&gt;
-  &lt;/memtune&gt;
   &lt;vcpu cpuset="1-4,^3,6" current="1"&gt;2&lt;/vcpu&gt;
-  &lt;cputune&gt;
-    &lt;vcpupin vcpu="0" cpuset="1-4,^2"/&gt;
-    &lt;vcpupin vcpu="1" cpuset="0,1"/&gt;
-    &lt;vcpupin vcpu="2" cpuset="2,3"/&gt;
-    &lt;vcpupin vcpu="3" cpuset="0,4"/&gt;
-    &lt;shares&gt;2048&lt;/shares&gt;
-    &lt;period&gt;1000000&lt;/period&gt;
-    &lt;quota&gt;-1&lt;/quota&gt;
-  &lt;/cputune&gt;
-  &lt;numatune&gt;
-    &lt;memory mode="strict" nodeset="1-4,^3"/&gt;
-  &lt;/numatune&gt;
-  ...</pre>
+  ...
+&lt;/domain&gt;
+</pre>
 
     <dl>
-      <dt><code>memory</code></dt>
-      <dd>The maximum allocation of memory for the guest at boot time.
-        The units for this value are kilobytes (i.e. blocks of 1024 bytes)</dd>
-      <dt><code>currentMemory</code></dt>
-      <dd>The actual allocation of memory for the guest. This value can
-        be less than the maximum allocation, to allow for ballooning
-        up the guests memory on the fly. If this is omitted, it defaults
-        to the same value as the <code>memory</code> element</dd>
-      <dt><code>memoryBacking</code></dt>
-      <dd>The optional <code>memoryBacking</code> element, may have an
-        <code>hugepages</code> element set within it. This tells the
-        hypervisor that the guest should have its memory allocated using
-        hugepages instead of the normal native page size.</dd>
-      <dt><code>blkiotune</code></dt>
-      <dd> The optional <code>blkiotune</code> element provides the ability
-        to tune Blkio cgroup tunable parameters for the domain. If this is
-        omitted, it defaults to the OS provided defaults.</dd>
-      <dt><code>weight</code></dt>
-      <dd> The optional <code>weight</code> element is the I/O weight of the
-        guest. The value should be in range [100, 1000].</dd>
-      <dt><code>memtune</code></dt>
-      <dd> The optional <code>memtune</code> element provides details
-        regarding the memory tunable parameters for the domain. If this is
-        omitted, it defaults to the OS provided defaults. For QEMU/KVM, the
-        parameters are applied to the QEMU process as a whole. Thus, when
-        counting them, one needs to add up guest RAM, guest video RAM, and
-        some memory overhead of QEMU itself. The last piece is hard to
-        determine so one needs guess and try.</dd>
-      <dt><code>hard_limit</code></dt>
-      <dd> The optional <code>hard_limit</code> element is the maximum memory
-        the guest can use. The units for this value are kilobytes (i.e. blocks
-        of 1024 bytes)</dd>
-      <dt><code>soft_limit</code></dt>
-      <dd> The optional <code>soft_limit</code> element is the memory limit to
-        enforce during memory contention. The units for this value are
-        kilobytes (i.e. blocks of 1024 bytes)</dd>
-      <dt><code>swap_hard_limit</code></dt>
-      <dd> The optional <code>swap_hard_limit</code> element is the maximum
-        memory plus swap the guest can use. The units for this value are
-        kilobytes (i.e. blocks of 1024 bytes). This has to be more than
-        hard_limit value provided</dd>
-      <dt><code>min_guarantee</code></dt>
-      <dd> The optional <code>min_guarantee</code> element is the guaranteed
-        minimum memory allocation for the guest. The units for this value are
-        kilobytes (i.e. blocks of 1024 bytes)</dd>
       <dt><code>vcpu</code></dt>
       <dd>The content of this element defines the maximum number of virtual
         CPUs allocated for the guest OS, which must be between 1 and
@@ -375,6 +307,28 @@
         be used to specify whether fewer than the maximum number of
         virtual CPUs should be enabled.
       </dd>
+    </dl>
+
+
+    <h3><a name="elementsCPUTuning">CPU Tuning</a></h3>
+
+<pre>
+&lt;domain&gt;
+  ...
+  &lt;cputune&gt;
+    &lt;vcpupin vcpu="0" cpuset="1-4,^2"/&gt;
+    &lt;vcpupin vcpu="1" cpuset="0,1"/&gt;
+    &lt;vcpupin vcpu="2" cpuset="2,3"/&gt;
+    &lt;vcpupin vcpu="3" cpuset="0,4"/&gt;
+    &lt;shares&gt;2048&lt;/shares&gt;
+    &lt;period&gt;1000000&lt;/period&gt;
+    &lt;quota&gt;-1&lt;/quota&gt;
+  &lt;/cputune&gt;
+  ...
+&lt;/domain&gt;
+</pre>
+
+    <dl>
       <dt><code>cputune</code></dt>
       <dd>
          The optional <code>cputune</code> element provides details
@@ -422,6 +376,110 @@
         speed. (NB: Only qemu driver support)
         <span class="since">Since 0.9.4</span>
       </dd>
+    </dl>
+
+
+    <h3><a name="elementsMemoryAllocation">Memory Allocation</a></h3>
+
+<pre>
+&lt;domain&gt;
+  ...
+  &lt;memory&gt;524288&lt;/memory&gt;
+  &lt;currentMemory&gt;524288&lt;/currentMemory&gt;
+  ...
+&lt;/domain&gt;
+</pre>
+
+    <dl>
+      <dt><code>memory</code></dt>
+      <dd>The maximum allocation of memory for the guest at boot time.
+        The units for this value are kilobytes (i.e. blocks of 1024 bytes)</dd>
+      <dt><code>currentMemory</code></dt>
+      <dd>The actual allocation of memory for the guest. This value can
+        be less than the maximum allocation, to allow for ballooning
+        up the guests memory on the fly. If this is omitted, it defaults
+        to the same value as the <code>memory</code> element</dd>
+    </dl>
+
+
+    <h3><a name="elementsMemoryBacking">Memory Backing</a></h3>
+
+<pre>
+&lt;domain&gt;
+  ...
+  &lt;memoryBacking&gt;
+    &lt;hugepages/&gt;
+  &lt;/memoryBacking&gt;
+  ...
+&lt;/domain&gt;
+</pre>
+
+    <dl>
+      <dt><code>memoryBacking</code></dt>
+      <dd>The optional <code>memoryBacking</code> element, may have an
+        <code>hugepages</code> element set within it. This tells the
+        hypervisor that the guest should have its memory allocated using
+        hugepages instead of the normal native page size.</dd>
+    </dl>
+
+
+    <h3><a name="elementsMemoryTuning">Memory Tuning</a></h3>
+
+<pre>
+&lt;domain&gt;
+  ...
+  &lt;memtune&gt;
+    &lt;hard_limit&gt;1048576&lt;/hard_limit&gt;
+    &lt;soft_limit&gt;131072&lt;/soft_limit&gt;
+    &lt;swap_hard_limit&gt;2097152&lt;/swap_hard_limit&gt;
+    &lt;min_guarantee&gt;65536&lt;/min_guarantee&gt;
+  &lt;/memtune&gt;
+  ...
+&lt;/domain&gt;
+</pre>
+
+    <dl>
+      <dt><code>memtune</code></dt>
+      <dd> The optional <code>memtune</code> element provides details
+        regarding the memory tunable parameters for the domain. If this is
+        omitted, it defaults to the OS provided defaults. For QEMU/KVM, the
+        parameters are applied to the QEMU process as a whole. Thus, when
+        counting them, one needs to add up guest RAM, guest video RAM, and
+        some memory overhead of QEMU itself. The last piece is hard to
+        determine so one needs guess and try.</dd>
+      <dt><code>hard_limit</code></dt>
+      <dd> The optional <code>hard_limit</code> element is the maximum memory
+        the guest can use. The units for this value are kilobytes (i.e. blocks
+        of 1024 bytes)</dd>
+      <dt><code>soft_limit</code></dt>
+      <dd> The optional <code>soft_limit</code> element is the memory limit to
+        enforce during memory contention. The units for this value are
+        kilobytes (i.e. blocks of 1024 bytes)</dd>
+      <dt><code>swap_hard_limit</code></dt>
+      <dd> The optional <code>swap_hard_limit</code> element is the maximum
+        memory plus swap the guest can use. The units for this value are
+        kilobytes (i.e. blocks of 1024 bytes). This has to be more than
+        hard_limit value provided</dd>
+      <dt><code>min_guarantee</code></dt>
+      <dd> The optional <code>min_guarantee</code> element is the guaranteed
+        minimum memory allocation for the guest. The units for this value are
+        kilobytes (i.e. blocks of 1024 bytes)</dd>
+    </dl>
+
+
+    <h3><a name="elementsNUMATuning">NUMA Node Tuning</a></h3>
+
+<pre>
+&lt;domain&gt;
+  ...
+  &lt;numatune&gt;
+    &lt;memory mode="strict" nodeset="1-4,^3"/&gt;
+  &lt;/numatune&gt;
+  ...
+&lt;/domain&gt;
+</pre>
+
+    <dl>
       <dt><code>numatune</code></dt>
       <dd>
         The optional <code>numatune</code> element provides details of
@@ -439,6 +497,29 @@
         <span class='since'>Since 0.9.3</span>
       </dd>
     </dl>
+
+
+    <h3><a name="elementsBlockTuning">Block I/O Tuning</a></h3>
+<pre>
+&lt;domain&gt;
+  ...
+  &lt;blkiotune&gt;
+    &lt;weight&gt;800&lt;/weight&gt;
+  &lt;/blkiotune&gt;
+  ...
+&lt;/domain&gt;
+</pre>
+
+    <dl>
+      <dt><code>blkiotune</code></dt>
+      <dd> The optional <code>blkiotune</code> element provides the ability
+        to tune Blkio cgroup tunable parameters for the domain. If this is
+        omitted, it defaults to the OS provided defaults.</dd>
+      <dt><code>weight</code></dt>
+      <dd> The optional <code>weight</code> element is the I/O weight of the
+        guest. The value should be in range [100, 1000].</dd>
+    </dl>
+
 
     <h3><a name="elementsCPU">CPU model and topology</a></h3>
 
