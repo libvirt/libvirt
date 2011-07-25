@@ -467,7 +467,102 @@ libvirt_virDomainSetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
     return VIR_PY_INT_SUCCESS;
 }
 
+static PyObject *
+libvirt_virDomainSetSchedulerParametersFlags(PyObject *self ATTRIBUTE_UNUSED,
+                                             PyObject *args) {
+    virDomainPtr domain;
+    PyObject *pyobj_domain, *info;
+    char *c_retval;
+    int i_retval;
+    int nparams, i;
+    unsigned int flags;
+    virTypedParameterPtr params;
 
+    if (!PyArg_ParseTuple(args,
+                          (char *)"OOi:virDomainSetScedulerParametersFlags",
+                          &pyobj_domain, &info, &flags))
+        return(NULL);
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virDomainGetSchedulerType(domain, &nparams);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_retval == NULL)
+        return VIR_PY_INT_FAIL;
+    free(c_retval);
+
+    if ((params = malloc(sizeof(*params)*nparams)) == NULL)
+        return VIR_PY_INT_FAIL;
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    i_retval = virDomainGetSchedulerParametersFlags(domain, params, &nparams, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (i_retval < 0) {
+        free(params);
+        return VIR_PY_INT_FAIL;
+    }
+
+    /* convert to a Python tuple of long objects */
+    for (i = 0; i < nparams; i++) {
+        PyObject *key, *val;
+        key = libvirt_constcharPtrWrap(params[i].field);
+        val = PyDict_GetItem(info, key);
+        Py_DECREF(key);
+
+        if (val == NULL)
+            continue;
+
+        switch (params[i].type) {
+        case VIR_TYPED_PARAM_INT:
+            params[i].value.i = (int)PyInt_AS_LONG(val);
+            break;
+
+        case VIR_TYPED_PARAM_UINT:
+            params[i].value.ui = (unsigned int)PyInt_AS_LONG(val);
+            break;
+
+        case VIR_TYPED_PARAM_LLONG:
+            params[i].value.l = (long long)PyLong_AsLongLong(val);
+            break;
+
+        case VIR_TYPED_PARAM_ULLONG:
+            params[i].value.ul = (unsigned long long)PyLong_AsLongLong(val);
+            break;
+
+        case VIR_TYPED_PARAM_DOUBLE:
+            params[i].value.d = (double)PyFloat_AsDouble(val);
+            break;
+
+        case VIR_TYPED_PARAM_BOOLEAN:
+            {
+                /* Hack - Python's definition of Py_True breaks strict
+                 * aliasing rules, so can't directly compare :-(
+                 */
+                PyObject *hacktrue = PyBool_FromLong(1);
+                params[i].value.b = hacktrue == val ? 1: 0;
+                Py_DECREF(hacktrue);
+            }
+            break;
+
+        default:
+            free(params);
+            return VIR_PY_INT_FAIL;
+        }
+    }
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    i_retval = virDomainSetSchedulerParametersFlags(domain, params, nparams, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (i_retval < 0) {
+        free(params);
+        return VIR_PY_INT_FAIL;
+    }
+
+    free(params);
+    return VIR_PY_INT_SUCCESS;
+}
 
 
 /* FIXME: This is a place holder for the implementation. */
@@ -4007,6 +4102,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainGetSchedulerParameters", libvirt_virDomainGetSchedulerParameters, METH_VARARGS, NULL},
     {(char *) "virDomainGetSchedulerParametersFlags", libvirt_virDomainGetSchedulerParametersFlags, METH_VARARGS, NULL},
     {(char *) "virDomainSetSchedulerParameters", libvirt_virDomainSetSchedulerParameters, METH_VARARGS, NULL},
+    {(char *) "virDomainSetSchedulerParametersFlags", libvirt_virDomainSetSchedulerParametersFlags, METH_VARARGS, NULL},
     {(char *) "virDomainSetBlkioParameters", libvirt_virDomainSetBlkioParameters, METH_VARARGS, NULL},
     {(char *) "virDomainGetBlkioParameters", libvirt_virDomainGetBlkioParameters, METH_VARARGS, NULL},
     {(char *) "virDomainSetMemoryParameters", libvirt_virDomainSetMemoryParameters, METH_VARARGS, NULL},

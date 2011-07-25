@@ -180,6 +180,13 @@
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
       <arg name='params' type='virSchedParameterPtr' info='pointer to scheduler parameter objects'/>
     </function>
+    <function name='virDomainSetSchedulerParametersFlags' file='python'>
+      <info>Change the scheduler parameters</info>
+      <return type='int' info='-1 in case of error, 0 in case of success.'/>
+      <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
+      <arg name='params' type='virSchedParameterPtr' info='pointer to scheduler parameter objects'/>
+      <arg name='flags'  type='int' info='an OR&apos;ed set of virDomainModificationImpact'/>
+    </function>
     <function name='virDomainSetBlkioParameters' file='python'>
       <info>Change the blkio tunables</info>
       <return type='int' info='-1 in case of error, 0 in case of success.'/>
