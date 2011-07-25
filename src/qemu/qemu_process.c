@@ -2754,7 +2754,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     /* wait for qemu process to show up */
     if (ret == 0) {
-        if (virFileReadPidPath(priv->pidfile, &vm->pid)) {
+        if (virFileReadPidPath(priv->pidfile, &vm->pid) < 0) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("Domain %s didn't show up"), vm->def->name);
             ret = -1;

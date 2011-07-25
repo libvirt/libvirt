@@ -1612,8 +1612,8 @@ static int lxcVmStart(virConnectPtr conn,
         goto cleanup;
 
     /* And get its pid */
-    if ((r = virFileReadPid(driver->stateDir, vm->def->name, &vm->pid)) != 0) {
-        virReportSystemError(r,
+    if ((r = virFileReadPid(driver->stateDir, vm->def->name, &vm->pid)) < 0) {
+        virReportSystemError(-r,
                              _("Failed to read pid file %s/%s.pid"),
                              driver->stateDir, vm->def->name);
         goto cleanup;

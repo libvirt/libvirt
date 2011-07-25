@@ -1165,17 +1165,17 @@ int virFileWritePid(const char *dir,
     char *pidfile = NULL;
 
     if (name == NULL || dir == NULL) {
-        rc = EINVAL;
+        rc = -EINVAL;
         goto cleanup;
     }
 
     if (virFileMakePath(dir) < 0) {
-        rc = errno;
+        rc = -errno;
         goto cleanup;
     }
 
     if (!(pidfile = virFilePid(dir, name))) {
-        rc = ENOMEM;
+        rc = -ENOMEM;
         goto cleanup;
     }
 
@@ -1196,18 +1196,18 @@ int virFileWritePidPath(const char *pidfile,
     if ((fd = open(pidfile,
                    O_WRONLY | O_CREAT | O_TRUNC,
                    S_IRUSR | S_IWUSR)) < 0) {
-        rc = errno;
+        rc = -errno;
         goto cleanup;
     }
 
     if (!(file = VIR_FDOPEN(fd, "w"))) {
-        rc = errno;
+        rc = -errno;
         VIR_FORCE_CLOSE(fd);
         goto cleanup;
     }
 
     if (fprintf(file, "%d", pid) < 0) {
-        rc = errno;
+        rc = -errno;
         goto cleanup;
     }
 
@@ -1215,7 +1215,7 @@ int virFileWritePidPath(const char *pidfile,
 
 cleanup:
     if (VIR_FCLOSE(file) < 0)
-        rc = errno;
+        rc = -errno;
 
     return rc;
 }
@@ -1230,18 +1230,18 @@ int virFileReadPidPath(const char *path,
     *pid = 0;
 
     if (!(file = fopen(path, "r"))) {
-        rc = errno;
+        rc = -errno;
         goto cleanup;
     }
 
     if (fscanf(file, "%d", pid) != 1) {
-        rc = EINVAL;
+        rc = -EINVAL;
         VIR_FORCE_FCLOSE(file);
         goto cleanup;
     }
 
     if (VIR_FCLOSE(file) < 0) {
-        rc = errno;
+        rc = -errno;
         goto cleanup;
     }
 
@@ -1261,12 +1261,12 @@ int virFileReadPid(const char *dir,
     *pid = 0;
 
     if (name == NULL || dir == NULL) {
-        rc = EINVAL;
+        rc = -EINVAL;
         goto cleanup;
     }
 
     if (!(pidfile = virFilePid(dir, name))) {
-        rc = ENOMEM;
+        rc = -ENOMEM;
         goto cleanup;
     }
 
@@ -1284,17 +1284,17 @@ int virFileDeletePid(const char *dir,
     char *pidfile = NULL;
 
     if (name == NULL || dir == NULL) {
-        rc = EINVAL;
+        rc = -EINVAL;
         goto cleanup;
     }
 
     if (!(pidfile = virFilePid(dir, name))) {
-        rc = ENOMEM;
+        rc = -ENOMEM;
         goto cleanup;
     }
 
     if (unlink(pidfile) < 0 && errno != ENOENT)
-        rc = errno;
+        rc = -errno;
 
 cleanup:
     VIR_FREE(pidfile);

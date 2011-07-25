@@ -947,8 +947,8 @@ int main(int argc, char *argv[])
             goto cleanup;
 
         if (pid > 0) {
-            if ((rc = virFileWritePid(LXC_STATE_DIR, name, pid)) != 0) {
-                virReportSystemError(rc,
+            if ((rc = virFileWritePid(LXC_STATE_DIR, name, pid)) < 0) {
+                virReportSystemError(-rc,
                                      _("Unable to write pid file '%s/%s.pid'"),
                                      LXC_STATE_DIR, name);
                 _exit(1);
@@ -996,5 +996,5 @@ cleanup:
         unlink(sockpath);
     VIR_FREE(sockpath);
 
-    return rc;
+    return rc ? EXIT_FAILURE : EXIT_SUCCESS;
 }

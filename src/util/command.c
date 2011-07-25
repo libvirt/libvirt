@@ -493,7 +493,7 @@ virExecWithHook(const char *const*argv,
         }
 
         if (pid > 0) {
-            if (pidfile && virFileWritePidPath(pidfile,pid)) {
+            if (pidfile && (virFileWritePidPath(pidfile,pid) < 0)) {
                 kill(pid, SIGTERM);
                 usleep(500*1000);
                 kill(pid, SIGTERM);

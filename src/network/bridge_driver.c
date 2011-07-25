@@ -758,8 +758,9 @@ networkStartDhcpDaemon(virNetworkObjPtr network)
      * pid
      */
 
-    if (virFileReadPid(NETWORK_PID_DIR, network->def->name,
-                       &network->dnsmasqPid) < 0)
+    ret = virFileReadPid(NETWORK_PID_DIR, network->def->name,
+                         &network->dnsmasqPid);
+    if (ret < 0)
         goto cleanup;
 
     ret = 0;

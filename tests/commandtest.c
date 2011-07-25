@@ -230,7 +230,7 @@ static int test4(const void *unused ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virFileReadPid(abs_builddir, "commandhelper", &pid) != 0) {
+    if (virFileReadPid(abs_builddir, "commandhelper", &pid) < 0) {
         printf("cannot read pidfile\n");
         goto cleanup;
     }
@@ -686,7 +686,7 @@ static int test18(const void *unused ATTRIBUTE_UNUSED)
     }
     alarm(0);
 
-    if (virFileReadPid(abs_builddir, "commandhelper", &pid) != 0) {
+    if (virFileReadPid(abs_builddir, "commandhelper", &pid) < 0) {
         printf("cannot read pidfile\n");
         goto cleanup;
     }
