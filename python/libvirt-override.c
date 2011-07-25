@@ -291,6 +291,88 @@ libvirt_virDomainGetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
 }
 
 static PyObject *
+libvirt_virDomainGetSchedulerParametersFlags(PyObject *self ATTRIBUTE_UNUSED,
+                                        PyObject *args) {
+    virDomainPtr domain;
+    PyObject *pyobj_domain, *info;
+    char *c_retval;
+    int i_retval;
+    int nparams, i;
+    unsigned int flags;
+    virTypedParameterPtr params;
+
+    if (!PyArg_ParseTuple(args, (char *)"Oi:virDomainGetScedulerParametersFlags",
+                          &pyobj_domain, &flags))
+        return(NULL);
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virDomainGetSchedulerType(domain, &nparams);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_retval == NULL)
+        return VIR_PY_NONE;
+    free(c_retval);
+
+    if ((params = malloc(sizeof(*params)*nparams)) == NULL)
+        return VIR_PY_NONE;
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    i_retval = virDomainGetSchedulerParametersFlags(domain, params, &nparams, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (i_retval < 0) {
+        free(params);
+        return VIR_PY_NONE;
+    }
+
+    /* convert to a Python tuple of long objects */
+    if ((info = PyDict_New()) == NULL) {
+        free(params);
+        return VIR_PY_NONE;
+    }
+    for (i = 0 ; i < nparams ; i++) {
+        PyObject *key, *val;
+
+        switch (params[i].type) {
+        case VIR_TYPED_PARAM_INT:
+            val = PyInt_FromLong((long)params[i].value.i);
+            break;
+
+        case VIR_TYPED_PARAM_UINT:
+            val = PyInt_FromLong((long)params[i].value.ui);
+            break;
+
+        case VIR_TYPED_PARAM_LLONG:
+            val = PyLong_FromLongLong((long long)params[i].value.l);
+            break;
+
+        case VIR_TYPED_PARAM_ULLONG:
+            val = PyLong_FromLongLong((long long)params[i].value.ul);
+            break;
+
+        case VIR_TYPED_PARAM_DOUBLE:
+            val = PyFloat_FromDouble((double)params[i].value.d);
+            break;
+
+        case VIR_TYPED_PARAM_BOOLEAN:
+            val = PyBool_FromLong((long)params[i].value.b);
+            break;
+
+        default:
+            free(params);
+            Py_DECREF(info);
+            return VIR_PY_NONE;
+        }
+
+        key = libvirt_constcharPtrWrap(params[i].field);
+        PyDict_SetItem(info, key, val);
+    }
+    free(params);
+    return(info);
+}
+
+static PyObject *
 libvirt_virDomainSetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
                                         PyObject *args) {
     virDomainPtr domain;
@@ -3923,6 +4005,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virNodeGetCellsFreeMemory", libvirt_virNodeGetCellsFreeMemory, METH_VARARGS, NULL},
     {(char *) "virDomainGetSchedulerType", libvirt_virDomainGetSchedulerType, METH_VARARGS, NULL},
     {(char *) "virDomainGetSchedulerParameters", libvirt_virDomainGetSchedulerParameters, METH_VARARGS, NULL},
+    {(char *) "virDomainGetSchedulerParametersFlags", libvirt_virDomainGetSchedulerParametersFlags, METH_VARARGS, NULL},
     {(char *) "virDomainSetSchedulerParameters", libvirt_virDomainSetSchedulerParameters, METH_VARARGS, NULL},
     {(char *) "virDomainSetBlkioParameters", libvirt_virDomainSetBlkioParameters, METH_VARARGS, NULL},
     {(char *) "virDomainGetBlkioParameters", libvirt_virDomainGetBlkioParameters, METH_VARARGS, NULL},

@@ -151,6 +151,12 @@
       <return type='int' info='-1 in case of error, 0 in case of success.'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
     </function>
+    <function name='virDomainGetSchedulerParametersFlags' file='python'>
+      <info>Get the scheduler parameters</info>
+     <return type='virSchedParameterPtr' info='None in case of error, returns a dictionary of params'/>
+     <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
+     <arg name='flags' type='int' info='an OR&apos;ed set of virDomainModificationImpact'/>
+    </function>
     <function name='virDomainGetSchedulerType' file='python'>
       <info>Get the scheduler type.</info>
       <return type='char *' info='NULL in case of error. The caller must free the returned string.'/>
