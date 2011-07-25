@@ -6188,10 +6188,10 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
                 vmdef->cputune.shares = params[i].value.ul;
             }
-        } else if (STREQ(param->field, "cfs_period")) {
+        } else if (STREQ(param->field, "vcpu_period")) {
             if (param->type != VIR_TYPED_PARAM_ULLONG) {
                 qemuReportError(VIR_ERR_INVALID_ARG, "%s",
-                                _("invalid type for cfs_period tunable,"
+                                _("invalid type for vcpu_period tunable,"
                                   " expected a 'ullong'"));
                 goto cleanup;
             }
@@ -6208,10 +6208,10 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
                 vmdef->cputune.period = params[i].value.ul;
             }
-        } else if (STREQ(param->field, "cfs_quota")) {
+        } else if (STREQ(param->field, "vcpu_quota")) {
             if (param->type != VIR_TYPED_PARAM_LLONG) {
                 qemuReportError(VIR_ERR_INVALID_ARG, "%s",
-                                _("invalid type for cfs_quota tunable,"
+                                _("invalid type for vcpu_quota tunable,"
                                   " expected a 'llong'"));
                 goto cleanup;
             }
@@ -6470,10 +6470,10 @@ out:
         if (*nparams > saved_nparams) {
             params[1].value.ul = period;
             params[1].type = VIR_TYPED_PARAM_ULLONG;
-            if (virStrcpyStatic(params[1].field, "cfs_period") == NULL) {
+            if (virStrcpyStatic(params[1].field, "vcpu_period") == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s",
-                                _("Field cfs_period too long for destination"));
+                                _("Field vcpu_period too long for destination"));
                 goto cleanup;
             }
             saved_nparams++;
@@ -6482,10 +6482,10 @@ out:
         if (*nparams > saved_nparams) {
             params[2].value.ul = quota;
             params[2].type = VIR_TYPED_PARAM_LLONG;
-            if (virStrcpyStatic(params[2].field, "cfs_quota") == NULL) {
+            if (virStrcpyStatic(params[2].field, "vcpu_quota") == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s",
-                                _("Field cfs_quota too long for destination"));
+                                _("Field vcpu_quota too long for destination"));
                 goto cleanup;
             }
             saved_nparams++;
