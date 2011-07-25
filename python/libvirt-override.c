@@ -784,6 +784,74 @@ libvirt_virDomainPinVcpuFlags(PyObject *self ATTRIBUTE_UNUSED,
     return VIR_PY_INT_SUCCESS;
 }
 
+static PyObject *
+libvirt_virDomainGetVcpuPinInfo(PyObject *self ATTRIBUTE_UNUSED,
+                                PyObject *args) {
+    virDomainPtr domain;
+    PyObject *pyobj_domain, *pycpumaps = NULL;
+    virNodeInfo nodeinfo;
+    virDomainInfo dominfo;
+    unsigned char *cpumaps;
+    int cpumaplen, vcpu, pcpu;
+    unsigned int flags;
+    int i_retval;
+
+    if (!PyArg_ParseTuple(args, (char *)"Oi:virDomainGetVcpuPinInfo",
+                          &pyobj_domain, &flags))
+        return(NULL);
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    i_retval = virNodeGetInfo(virDomainGetConnect(domain), &nodeinfo);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (i_retval < 0)
+        return VIR_PY_NONE;
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    i_retval = virDomainGetInfo(domain, &dominfo);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (i_retval < 0)
+        return VIR_PY_NONE;
+
+    cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
+    if ((cpumaps = malloc(dominfo.nrVirtCpu * cpumaplen)) == NULL)
+        goto cleanup;
+    memset(cpumaps, 0, dominfo.nrVirtCpu * cpumaplen);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    i_retval = virDomainGetVcpuPinInfo(domain, dominfo.nrVirtCpu,
+                                       cpumaps, cpumaplen, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (i_retval < 0)
+        goto cleanup;
+
+    if ((pycpumaps = PyList_New(dominfo.nrVirtCpu)) == NULL)
+        goto cleanup;
+
+    for (vcpu = 0; vcpu < dominfo.nrVirtCpu; vcpu++) {
+        PyObject *mapinfo = PyTuple_New(VIR_NODEINFO_MAXCPUS(nodeinfo));
+        if (mapinfo == NULL)
+            goto cleanup;
+
+        for (pcpu = 0; pcpu < VIR_NODEINFO_MAXCPUS(nodeinfo); pcpu++) {
+            PyTuple_SetItem(mapinfo, pcpu,
+                            PyBool_FromLong(VIR_CPU_USABLE(cpumaps, cpumaplen, vcpu, pcpu)));
+        }
+        PyList_SetItem(pycpumaps, vcpu, mapinfo);
+    }
+
+    free(cpumaps);
+
+    return pycpumaps;
+
+cleanup:
+    free(cpumaps);
+
+    if (pycpumaps) { Py_DECREF(pycpumaps);}
+
+    return VIR_PY_NONE;
+}
+
 /************************************************************************
  *									*
  *		Global error handler at the Python level		*
@@ -4157,6 +4225,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainGetVcpus", libvirt_virDomainGetVcpus, METH_VARARGS, NULL},
     {(char *) "virDomainPinVcpu", libvirt_virDomainPinVcpu, METH_VARARGS, NULL},
     {(char *) "virDomainPinVcpuFlags", libvirt_virDomainPinVcpuFlags, METH_VARARGS, NULL},
+    {(char *) "virDomainGetVcpuPinInfo", libvirt_virDomainGetVcpuPinInfo, METH_VARARGS, NULL},
     {(char *) "virConnectListStoragePools", libvirt_virConnectListStoragePools, METH_VARARGS, NULL},
     {(char *) "virConnectListDefinedStoragePools", libvirt_virConnectListDefinedStoragePools, METH_VARARGS, NULL},
     {(char *) "virStoragePoolGetAutostart", libvirt_virStoragePoolGetAutostart, METH_VARARGS, NULL},

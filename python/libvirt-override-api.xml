@@ -182,6 +182,12 @@
       <arg name='cpumap' type='unsigned char *' info='pointer to a bit map of real CPUs (in 8-bit bytes) (IN) Each bit set to 1 means that corresponding CPU is usable. Bytes are stored in little-endian order: CPU0-7, 8-15... In each byte, lowest CPU number is least significant bit.'/>
       <arg name='flags' type='int' info='flags to specify'/>
     </function>
+    <function name='virDomainGetVcpuPinInfo' file='python'>
+      <info>Query the CPU affinity setting of all virtual CPUs of domain</info>
+      <return type='unsigned char *' info='the array of cpumap'/>
+      <arg name='domain' type='virDomainPtr' info='pointer to domain object, or NULL for Domain0'/>
+      <arg name='flags'  type='int' info='an OR&apos;ed set of virDomainModificationImpact'/>
+    </function>
     <function name='virDomainSetSchedulerParameters' file='python'>
       <info>Change the scheduler parameters</info>
       <return type='int' info='-1 in case of error, 0 in case of success.'/>
