@@ -736,6 +736,53 @@ libvirt_virDomainPinVcpu(PyObject *self ATTRIBUTE_UNUSED,
     return VIR_PY_INT_SUCCESS;
 }
 
+static PyObject *
+libvirt_virDomainPinVcpuFlags(PyObject *self ATTRIBUTE_UNUSED,
+                              PyObject *args) {
+    virDomainPtr domain;
+    PyObject *pyobj_domain, *pycpumap, *truth;
+    virNodeInfo nodeinfo;
+    unsigned char *cpumap;
+    int cpumaplen, i, vcpu;
+    unsigned int flags;
+    int i_retval;
+
+    if (!PyArg_ParseTuple(args, (char *)"OiOi:virDomainPinVcpuFlags",
+                          &pyobj_domain, &vcpu, &pycpumap, &flags))
+        return(NULL);
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    i_retval = virNodeGetInfo(virDomainGetConnect(domain), &nodeinfo);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (i_retval < 0)
+        return VIR_PY_INT_FAIL;
+
+    cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
+    if ((cpumap = malloc(cpumaplen)) == NULL)
+        return VIR_PY_INT_FAIL;
+    memset(cpumap, 0, cpumaplen);
+
+    truth = PyBool_FromLong(1);
+    for (i = 0 ; i < VIR_NODEINFO_MAXCPUS(nodeinfo) ; i++) {
+        PyObject *flag = PyTuple_GetItem(pycpumap, i);
+        if (flag == truth)
+            VIR_USE_CPU(cpumap, i);
+        else
+            VIR_UNUSE_CPU(cpumap, i);
+    }
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    i_retval = virDomainPinVcpuFlags(domain, vcpu, cpumap, cpumaplen, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+    Py_DECREF(truth);
+    free(cpumap);
+
+    if (i_retval < 0)
+        return VIR_PY_INT_FAIL;
+
+    return VIR_PY_INT_SUCCESS;
+}
 
 /************************************************************************
  *									*
@@ -4109,6 +4156,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainGetMemoryParameters", libvirt_virDomainGetMemoryParameters, METH_VARARGS, NULL},
     {(char *) "virDomainGetVcpus", libvirt_virDomainGetVcpus, METH_VARARGS, NULL},
     {(char *) "virDomainPinVcpu", libvirt_virDomainPinVcpu, METH_VARARGS, NULL},
+    {(char *) "virDomainPinVcpuFlags", libvirt_virDomainPinVcpuFlags, METH_VARARGS, NULL},
     {(char *) "virConnectListStoragePools", libvirt_virConnectListStoragePools, METH_VARARGS, NULL},
     {(char *) "virConnectListDefinedStoragePools", libvirt_virConnectListDefinedStoragePools, METH_VARARGS, NULL},
     {(char *) "virStoragePoolGetAutostart", libvirt_virStoragePoolGetAutostart, METH_VARARGS, NULL},

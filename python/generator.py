@@ -344,6 +344,7 @@ skip_impl = (
     'virDomainGetMemoryParameters',
     'virDomainGetVcpus',
     'virDomainPinVcpu',
+    'virDomainPinVcpuFlags',
     'virSecretGetValue',
     'virSecretSetValue',
     'virSecretGetUUID',
