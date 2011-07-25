@@ -1112,7 +1112,7 @@ mymain(void)
         true, true, true,
         true, true, GNUTLS_KEY_KEY_CERT_SIGN,
         false, false, NULL, NULL,
-        0, 1,
+        0, -1,
     };
     static struct testTLSCertReq servercertexpreq = {
         NULL, NULL, "servercert.pem", "UK",
@@ -1120,7 +1120,7 @@ mymain(void)
         true, true, false,
         true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
         true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
-        0, 1,
+        0, -1,
     };
     static struct testTLSCertReq clientcertexpreq = {
         NULL, NULL, "clientcert.pem", "UK",
@@ -1128,7 +1128,7 @@ mymain(void)
         true, true, false,
         true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
         true, true, GNUTLS_KP_TLS_WWW_CLIENT, NULL,
-        0, 1,
+        0, -1,
     };
 
     DO_CTX_TEST(true, cacertexpreq, servercertreq, true);
