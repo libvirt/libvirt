@@ -4151,11 +4151,12 @@ libvirt_virStreamSend(PyObject *self ATTRIBUTE_UNUSED,
     PyObject *pyobj_stream;
     virStreamPtr stream;
     char *data;
+    int datalen;
     int ret;
     int nbytes;
 
-    if (!PyArg_ParseTuple(args, (char *) "Ozi:virStreamRecv",
-                          &pyobj_stream, &data, &nbytes)) {
+    if (!PyArg_ParseTuple(args, (char *) "Oz#i:virStreamRecv",
+                          &pyobj_stream, &data, &datalen, &nbytes)) {
         DEBUG("%s failed to parse tuple\n", __FUNCTION__);
         return VIR_PY_INT_FAIL;
     }
