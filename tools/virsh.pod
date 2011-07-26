@@ -268,7 +268,7 @@ Inject NMI to the guest.
 
 =item B<list> [I<--inactive> | I<--all>]
 
-Prints information about one or more domains.  If no domains are
+Prints information about existing domains.  If no options are
 specified it prints out information about running domains.
 
 An example format for the list is as follows:
