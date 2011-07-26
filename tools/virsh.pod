@@ -798,7 +798,7 @@ value are kilobytes (i.e. blocks of 1024 bytes).
 =back
 
 =item B<blkiotune> I<domain-id> [I<--weight> B<weight>] [[I<--config>]
-[I<--live] | [I<--current>]]
+[I<--live>] | [I<--current>]]
 
 Display or set the blkio parameters. QEMU/KVM supports I<--weight>.
 I<--weight> is in range [100, 1000].
@@ -811,7 +811,7 @@ exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
 
 =item B<setvcpus> I<domain-id> I<count> [I<--maximum>] [[I<--config>]
-[I<--live>] | [I<--current]]
+[I<--live>] | [I<--current>]]
 
 Change the number of virtual CPUs active in a guest domain.  By default,
 this command works on active guest domains.  To change the settings for an
