@@ -192,6 +192,7 @@ int virNetSocketNewListenTCP(const char *nodename,
     struct addrinfo hints;
     int fd = -1;
     int i;
+    int addrInUse = false;
 
     *retsocks = NULL;
     *nretsocks = 0;
@@ -250,7 +251,9 @@ int virNetSocketNewListenTCP(const char *nodename,
                 virReportSystemError(errno, "%s", _("Unable to bind to port"));
                 goto error;
             }
+            addrInUse = true;
             VIR_FORCE_CLOSE(fd);
+            runp = runp->ai_next;
             continue;
         }
 
@@ -271,6 +274,12 @@ int virNetSocketNewListenTCP(const char *nodename,
             goto error;
         runp = runp->ai_next;
         fd = -1;
+    }
+
+    if (nsocks == 0 &&
+        addrInUse) {
+        virReportSystemError(EADDRINUSE, "%s", _("Unable to bind to port"));
+        goto error;
     }
 
     freeaddrinfo(ai);
