@@ -781,7 +781,9 @@ void virNetServerFree(virNetServerPtr srv)
     VIR_FREE(srv->clients);
 
     VIR_FREE(srv->mdnsGroupName);
+#if HAVE_AVAHI
     virNetServerMDNSFree(srv->mdns);
+#endif
 
 #if HAVE_DBUS
     if (srv->sysbus)
