@@ -139,6 +139,15 @@ static int virNetTLSContextCheckCertTimes(gnutls_x509_crt_t cert,
     return 0;
 }
 
+
+#ifndef GNUTLS_1_0_COMPAT
+/*
+ * The gnutls_x509_crt_get_basic_constraints function isn't
+ * available in GNUTLS 1.0.x branches. This isn't critical
+ * though, since gnutls_certificate_verify_peers2 will do
+ * pretty much the same check at runtime, so we can just
+ * disable this code
+ */
 static int virNetTLSContextCheckCertBasicConstraints(gnutls_x509_crt_t cert,
                                                      const char *certFile,
                                                      bool isServer,
@@ -180,6 +189,8 @@ static int virNetTLSContextCheckCertBasicConstraints(gnutls_x509_crt_t cert,
 
     return 0;
 }
+#endif
+
 
 static int virNetTLSContextCheckCertKeyUsage(gnutls_x509_crt_t cert,
                                              const char *certFile,
@@ -412,9 +423,11 @@ static int virNetTLSContextCheckCert(gnutls_x509_crt_t cert,
                                        isServer, isCA) < 0)
         return -1;
 
+#ifndef GNUTLS_1_0_COMPAT
     if (virNetTLSContextCheckCertBasicConstraints(cert, certFile,
                                                   isServer, isCA) < 0)
         return -1;
+#endif
 
     if (virNetTLSContextCheckCertKeyUsage(cert, certFile,
                                           isCA) < 0)
@@ -1019,11 +1032,13 @@ static int virNetTLSContextValidCertificate(virNetTLSContextPtr ctxt,
             /* !sess->isServer, since on the client, we're validating the
              * server's cert, and on the server, the client's cert
              */
+#ifndef GNUTLS_1_0_COMPAT
             if (virNetTLSContextCheckCertBasicConstraints(cert, "[session]",
                                                           !sess->isServer, false) < 0) {
                 gnutls_x509_crt_deinit(cert);
                 goto authdeny;
             }
+#endif
 
             if (virNetTLSContextCheckCertKeyUsage(cert, "[session]",
                                                   false) < 0) {

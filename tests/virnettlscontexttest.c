@@ -33,7 +33,7 @@
 #include "command.h"
 #include "network.h"
 
-#if !defined WIN32 && HAVE_LIBTASN1_H
+#if !defined WIN32 && HAVE_LIBTASN1_H && !defined GNUTLS_1_0_COMPAT
 # include <libtasn1.h>
 # include <gnutls/gnutls.h>
 # include <gnutls/x509.h>
