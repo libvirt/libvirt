@@ -131,8 +131,6 @@ static void virNetServerHandleJob(void *jobOpaque, void *opaque)
     virNetServerProgramPtr prog = NULL;
     size_t i;
 
-    virNetServerClientRef(job->client);
-
     virNetServerLock(srv);
     VIR_DEBUG("server=%p client=%p message=%p",
               srv, job->client, job->msg);

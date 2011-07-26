@@ -763,10 +763,12 @@ readmore:
 
         /* Send off to for normal dispatch to workers */
         if (msg) {
+            client->refs++;
             if (!client->dispatchFunc ||
                 client->dispatchFunc(client, msg, client->dispatchOpaque) < 0) {
                 virNetMessageFree(msg);
                 client->wantClose = true;
+                client->refs--;
                 return;
             }
         }
