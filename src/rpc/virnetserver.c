@@ -783,6 +783,7 @@ void virNetServerFree(virNetServerPtr srv)
     VIR_FREE(srv->clients);
 
     VIR_FREE(srv->mdnsGroupName);
+    virNetServerMDNSFree(srv->mdns);
 
 #if HAVE_DBUS
     if (srv->sysbus)
