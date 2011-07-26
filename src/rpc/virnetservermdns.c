@@ -583,6 +583,7 @@ void virNetServerMDNSFree(virNetServerMDNSPtr mdns)
         group = tmp;
     }
 
+    VIR_FREE(mdns->poller);
     VIR_FREE(mdns);
 }
 
@@ -601,6 +602,7 @@ void virNetServerMDNSGroupFree(virNetServerMDNSGroupPtr grp)
         entry = tmp;
     }
 
+    VIR_FREE(grp->name);
     VIR_FREE(grp);
 }
 
@@ -610,5 +612,6 @@ void virNetServerMDNSEntryFree(virNetServerMDNSEntryPtr entry)
     if (!entry)
         return;
 
+    VIR_FREE(entry->type);
     VIR_FREE(entry);
 }
