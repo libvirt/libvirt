@@ -46,7 +46,6 @@
 #include "conf.h"
 #include "util.h"
 #include "memory.h"
-#include "verify.h"
 #include "datatypes.h"
 #include "xml.h"
 #include "nodeinfo.h"

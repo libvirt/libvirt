@@ -43,7 +43,6 @@
 #include "util.h"
 #include "memory.h"
 #include "nodeinfo.h"
-#include "verify.h"
 #include "bridge.h"
 #include "logging.h"
 #include "domain_nwfilter.h"
