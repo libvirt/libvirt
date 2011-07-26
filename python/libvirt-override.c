@@ -4138,8 +4138,10 @@ libvirt_virStreamRecv(PyObject *self ATTRIBUTE_UNUSED,
     buf[ret > -1 ? ret : 0] = '\0';
     DEBUG("StreamRecv ret=%d strlen=%d\n", ret, (int) strlen(buf));
 
-    if (ret < 0)
+    if (ret == -2)
         return libvirt_intWrap(ret);
+    if (ret < 0)
+        return VIR_PY_NONE;
     return libvirt_charPtrSizeWrap((char *) buf, (Py_ssize_t) ret);
 }
 
