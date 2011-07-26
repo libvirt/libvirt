@@ -34,6 +34,7 @@
 #include "virterror_internal.h"
 #include "util.h"
 #include "logging.h"
+#include "threads.h"
 #include "configmake.h"
 
 #define DH_BITS 1024
@@ -52,6 +53,7 @@
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 struct _virNetTLSContext {
+    virMutex lock;
     int refs;
 
     gnutls_certificate_credentials_t x509cred;
@@ -63,6 +65,8 @@ struct _virNetTLSContext {
 };
 
 struct _virNetTLSSession {
+    virMutex lock;
+
     int refs;
 
     bool handshakeComplete;
@@ -653,6 +657,13 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
         return NULL;
     }
 
+    if (virMutexInit(&ctxt->lock) < 0) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("Failed to initialized mutex"));
+        VIR_FREE(ctxt);
+        return NULL;
+    }
+
     ctxt->refs = 1;
 
     /* Initialise GnuTLS. */
@@ -1053,18 +1064,29 @@ authfail:
 int virNetTLSContextCheckCertificate(virNetTLSContextPtr ctxt,
                                      virNetTLSSessionPtr sess)
 {
+    int ret = -1;
+
+    virMutexLock(&ctxt->lock);
+    virMutexLock(&sess->lock);
     if (virNetTLSContextValidCertificate(ctxt, sess) < 0) {
         virErrorPtr err = virGetLastError();
         VIR_WARN("Certificate check failed %s", err && err->message ? err->message : "<unknown>");
         if (ctxt->requireValidCert) {
             virNetError(VIR_ERR_AUTH_FAILED, "%s",
                         _("Failed to verify peer's certificate"));
-            return -1;
+            goto cleanup;
         }
         virResetLastError();
         VIR_INFO("Ignoring bad certificate at user request");
     }
-    return 0;
+
+    ret = 0;
+
+cleanup:
+    virMutexUnlock(&ctxt->lock);
+    virMutexUnlock(&sess->lock);
+
+    return ret;
 }
 
 void virNetTLSContextFree(virNetTLSContextPtr ctxt)
@@ -1072,12 +1094,17 @@ void virNetTLSContextFree(virNetTLSContextPtr ctxt)
     if (!ctxt)
         return;
 
+    virMutexLock(&ctxt->lock);
     ctxt->refs--;
-    if (ctxt->refs > 0)
+    if (ctxt->refs > 0) {
+        virMutexUnlock(&ctxt->lock);
         return;
+    }
 
     gnutls_dh_params_deinit(ctxt->dhParams);
     gnutls_certificate_free_credentials(ctxt->x509cred);
+    virMutexUnlock(&ctxt->lock);
+    virMutexDestroy(&ctxt->lock);
     VIR_FREE(ctxt);
 }
 
@@ -1121,6 +1148,13 @@ virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
 
     if (VIR_ALLOC(sess) < 0) {
         virReportOOMError();
+        return NULL;
+    }
+
+    if (virMutexInit(&sess->lock) < 0) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("Failed to initialized mutex"));
+        VIR_FREE(ctxt);
         return NULL;
     }
 
@@ -1184,7 +1218,9 @@ error:
 
 void virNetTLSSessionRef(virNetTLSSessionPtr sess)
 {
+    virMutexLock(&sess->lock);
     sess->refs++;
+    virMutexUnlock(&sess->lock);
 }
 
 void virNetTLSSessionSetIOCallbacks(virNetTLSSessionPtr sess,
@@ -1192,9 +1228,11 @@ void virNetTLSSessionSetIOCallbacks(virNetTLSSessionPtr sess,
                                     virNetTLSSessionReadFunc readFunc,
                                     void *opaque)
 {
+    virMutexLock(&sess->lock);
     sess->writeFunc = writeFunc;
     sess->readFunc = readFunc;
     sess->opaque = opaque;
+    virMutexUnlock(&sess->lock);
 }
 
 
@@ -1202,10 +1240,12 @@ ssize_t virNetTLSSessionWrite(virNetTLSSessionPtr sess,
                               const char *buf, size_t len)
 {
     ssize_t ret;
+
+    virMutexLock(&sess->lock);
     ret = gnutls_record_send(sess->session, buf, len);
 
     if (ret >= 0)
-        return ret;
+        goto cleanup;
 
     switch (ret) {
     case GNUTLS_E_AGAIN:
@@ -1222,7 +1262,11 @@ ssize_t virNetTLSSessionWrite(virNetTLSSessionPtr sess,
         break;
     }
 
-    return -1;
+    ret = -1;
+
+cleanup:
+    virMutexUnlock(&sess->lock);
+    return ret;
 }
 
 ssize_t virNetTLSSessionRead(virNetTLSSessionPtr sess,
@@ -1230,10 +1274,11 @@ ssize_t virNetTLSSessionRead(virNetTLSSessionPtr sess,
 {
     ssize_t ret;
 
+    virMutexLock(&sess->lock);
     ret = gnutls_record_recv(sess->session, buf, len);
 
     if (ret >= 0)
-        return ret;
+        goto cleanup;
 
     switch (ret) {
     case GNUTLS_E_AGAIN:
@@ -1247,21 +1292,29 @@ ssize_t virNetTLSSessionRead(virNetTLSSessionPtr sess,
         break;
     }
 
-    return -1;
+    ret = -1;
+
+cleanup:
+    virMutexUnlock(&sess->lock);
+    return ret;
 }
 
 int virNetTLSSessionHandshake(virNetTLSSessionPtr sess)
 {
+    int ret;
     VIR_DEBUG("sess=%p", sess);
-    int ret = gnutls_handshake(sess->session);
+    virMutexLock(&sess->lock);
+    ret = gnutls_handshake(sess->session);
     VIR_DEBUG("Ret=%d", ret);
     if (ret == 0) {
         sess->handshakeComplete = true;
         VIR_DEBUG("Handshake is complete");
-        return 0;
+        goto cleanup;
     }
-    if (ret == GNUTLS_E_INTERRUPTED || ret == GNUTLS_E_AGAIN)
-        return 1;
+    if (ret == GNUTLS_E_INTERRUPTED || ret == GNUTLS_E_AGAIN) {
+        ret = 1;
+        goto cleanup;
+    }
 
 #if 0
     PROBE(CLIENT_TLS_FAIL, "fd=%d",
@@ -1271,32 +1324,43 @@ int virNetTLSSessionHandshake(virNetTLSSessionPtr sess)
     virNetError(VIR_ERR_AUTH_FAILED,
                 _("TLS handshake failed %s"),
                 gnutls_strerror(ret));
-    return -1;
+    ret = -1;
+
+cleanup:
+    virMutexUnlock(&sess->lock);
+    return ret;
 }
 
 virNetTLSSessionHandshakeStatus
 virNetTLSSessionGetHandshakeStatus(virNetTLSSessionPtr sess)
 {
+    virNetTLSSessionHandshakeStatus ret;
+    virMutexLock(&sess->lock);
     if (sess->handshakeComplete)
-        return VIR_NET_TLS_HANDSHAKE_COMPLETE;
+        ret = VIR_NET_TLS_HANDSHAKE_COMPLETE;
     else if (gnutls_record_get_direction(sess->session) == 0)
-        return VIR_NET_TLS_HANDSHAKE_RECVING;
+        ret = VIR_NET_TLS_HANDSHAKE_RECVING;
     else
-        return VIR_NET_TLS_HANDSHAKE_SENDING;
+        ret = VIR_NET_TLS_HANDSHAKE_SENDING;
+    virMutexUnlock(&sess->lock);
+    return ret;
 }
 
 int virNetTLSSessionGetKeySize(virNetTLSSessionPtr sess)
 {
     gnutls_cipher_algorithm_t cipher;
     int ssf;
-
+    virMutexLock(&sess->lock);
     cipher = gnutls_cipher_get(sess->session);
     if (!(ssf = gnutls_cipher_get_key_size(cipher))) {
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
                     _("invalid cipher size for TLS session"));
-        return -1;
+        ssf = -1;
+        goto cleanup;
     }
 
+cleanup:
+    virMutexUnlock(&sess->lock);
     return ssf;
 }
 
@@ -1306,11 +1370,16 @@ void virNetTLSSessionFree(virNetTLSSessionPtr sess)
     if (!sess)
         return;
 
+    virMutexLock(&sess->lock);
     sess->refs--;
-    if (sess->refs > 0)
+    if (sess->refs > 0) {
+        virMutexUnlock(&sess->lock);
         return;
+    }
 
     VIR_FREE(sess->hostname);
     gnutls_deinit(sess->session);
+    virMutexUnlock(&sess->lock);
+    virMutexDestroy(&sess->lock);
     VIR_FREE(sess);
 }
