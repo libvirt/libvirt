@@ -1263,3 +1263,61 @@ cleanup:
     virCommandFree(cmd);
     return ret;
 }
+
+/*
+ * virBandwidthCopy:
+ * @dest: destination
+ * @src:  source
+ *
+ * Returns -1 on OOM error (which gets reported),
+ * 0 otherwise.
+ */
+int
+virBandwidthCopy(virBandwidthPtr *dest,
+                 const virBandwidthPtr src)
+{
+    int ret = -1;
+
+    if (!dest) {
+        virSocketError(VIR_ERR_INVALID_ARG, "%s",
+                       _("invalid argument supplied"));
+        return -1;
+    }
+
+    *dest = NULL;
+    if (!src) {
+        /* nothing to be copied */
+        return 0;
+    }
+
+    if (VIR_ALLOC(*dest) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (src->in) {
+        if (VIR_ALLOC((*dest)->in) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        memcpy((*dest)->in, src->in, sizeof(*src->in));
+    }
+
+    if (src->out) {
+        if (VIR_ALLOC((*dest)->out) < 0) {
+            virReportOOMError();
+            VIR_FREE((*dest)->in);
+            goto cleanup;
+        }
+        memcpy((*dest)->out, src->out, sizeof(*src->out));
+    }
+
+    ret = 0;
+
+cleanup:
+    if (ret < 0) {
+        virBandwidthDefFree(*dest);
+        *dest = NULL;
+    }
+    return ret;
+}

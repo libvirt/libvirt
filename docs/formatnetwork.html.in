@@ -129,6 +129,8 @@
         numbers, The units for <code>average</code> and <code>peak</code> attributes
         are kilobytes per second, and for the <code>burst</code> just kilobytes.
         The rate is shared equally within domains connected to the network.
+        Moreover, <code>bandwidth</code> element can be included in
+        <code>portgroup</code> element.
         <span class="since">Since 0.9.4</span>
       </p>
 

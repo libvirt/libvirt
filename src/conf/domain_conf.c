@@ -753,6 +753,8 @@ virDomainActualNetDefFree(virDomainActualNetDefPtr def)
         break;
     }
 
+    virBandwidthDefFree(def->bandwidth);
+
     VIR_FREE(def);
 }
 
@@ -2621,6 +2623,7 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
     virDomainActualNetDefPtr actual = NULL;
     int ret = -1;
     xmlNodePtr save_ctxt = ctxt->node;
+    xmlNodePtr bandwidth_node = NULL;
     char *type = NULL;
     char *mode = NULL;
 
@@ -2676,6 +2679,11 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
             goto error;
         }
     }
+
+    bandwidth_node = virXPathNode("./bandwidth", ctxt);
+    if (bandwidth_node &&
+        !(actual->bandwidth = virBandwidthDefParseNode(bandwidth_node)))
+        goto error;
 
     *def = actual;
     actual = NULL;
@@ -8713,6 +8721,10 @@ virDomainActualNetDefFormat(virBufferPtr buf,
     default:
         break;
     }
+
+    if (virBandwidthDefFormat(buf, def->bandwidth, "      ") < 0)
+        goto error;
+
     virBufferAddLit(buf, "      </actual>\n");
 
     ret = 0;
@@ -11382,4 +11394,14 @@ virDomainNetGetActualDirectVirtPortProfile(virDomainNetDefPtr iface)
     if (!iface->data.network.actual)
         return NULL;
     return iface->data.network.actual->data.direct.virtPortProfile;
+}
+
+virBandwidthPtr
+virDomainNetGetActualBandwidth(virDomainNetDefPtr iface)
+{
+    if ((iface->type == VIR_DOMAIN_NET_TYPE_NETWORK) &&
+        iface->data.network.actual && iface->data.network.actual->bandwidth) {
+        return iface->data.network.actual->bandwidth;
+    }
+    return iface->bandwidth;
 }

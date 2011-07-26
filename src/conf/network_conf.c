@@ -92,6 +92,8 @@ virPortGroupDefClear(virPortGroupDefPtr def)
 {
     VIR_FREE(def->name);
     VIR_FREE(def->virtPortProfile);
+    virBandwidthDefFree(def->bandwidth);
+    def->bandwidth = NULL;
 }
 
 static void
@@ -771,6 +773,7 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
 
     xmlNodePtr save;
     xmlNodePtr virtPortNode;
+    xmlNodePtr bandwidth_node;
     char *isDefault = NULL;
 
     int result = -1;
@@ -787,6 +790,12 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
     if (virtPortNode &&
         (virVirtualPortProfileParseXML(virtPortNode,
                                        &def->virtPortProfile) < 0)) {
+        goto error;
+    }
+
+    bandwidth_node = virXPathNode("./bandwidth", ctxt);
+    if (bandwidth_node &&
+        !(def->bandwidth = virBandwidthDefParseNode(bandwidth_node))) {
         goto error;
     }
 
@@ -1257,6 +1266,7 @@ virPortGroupDefFormat(virBufferPtr buf,
     }
     virBufferAddLit(buf, ">\n");
     virVirtualPortProfileFormat(buf, def->virtPortProfile, "    ");
+    virBandwidthDefFormat(buf, def->bandwidth, "    ");
     virBufferAddLit(buf, "  </portgroup>\n");
 }
 

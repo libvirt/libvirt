@@ -132,7 +132,8 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
                         vnet_hdr, def->uuid,
                         virDomainNetGetActualDirectVirtPortProfile(net),
                         &res_ifname,
-                        vmop, driver->stateDir, net->bandwidth);
+                        vmop, driver->stateDir,
+                        virDomainNetGetActualBandwidth(net));
     if (rc >= 0) {
         virDomainAuditNetDevice(def, net, res_ifname, true);
         VIR_FREE(net->ifname);
@@ -299,7 +300,8 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
     }
 
     if (tapfd >= 0 &&
-        virBandwidthEnable(net->bandwidth, net->ifname) < 0) {
+        virBandwidthEnable(virDomainNetGetActualBandwidth(net),
+                           net->ifname) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("cannot set bandwidth limits on %s"),
                         net->ifname);

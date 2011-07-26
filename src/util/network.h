@@ -158,4 +158,6 @@ int virBandwidthDefFormat(virBufferPtr buf,
 
 int virBandwidthEnable(virBandwidthPtr bandwidth, const char *iface);
 int virBandwidthDisable(const char *iface, bool may_fail);
+int virBandwidthCopy(virBandwidthPtr *dest, const virBandwidthPtr src);
+
 #endif /* __VIR_NETWORK_H__ */

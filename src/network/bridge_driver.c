@@ -2811,6 +2811,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                (netdef->forwardType == VIR_NETWORK_FORWARD_VEPA) ||
                (netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH)) {
         virVirtualPortProfileParamsPtr virtport = NULL;
+        virPortGroupDefPtr portgroup = NULL;
 
         /* <forward type='bridge|private|vepa|passthrough'> are all
          * VIR_DOMAIN_NET_TYPE_DIRECT.
@@ -2839,11 +2840,10 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         }
 
         /* Find the most specific virtportprofile and copy it */
+        portgroup = virPortGroupFindByName(netdef, iface->data.network.portgroup);
         if (iface->data.network.virtPortProfile) {
             virtport = iface->data.network.virtPortProfile;
         } else {
-            virPortGroupDefPtr portgroup
-               = virPortGroupFindByName(netdef, iface->data.network.portgroup);
             if (portgroup)
                 virtport = portgroup->virtPortProfile;
             else
@@ -2859,6 +2859,21 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
              */
             *iface->data.network.actual->data.direct.virtPortProfile = *virtport;
         }
+
+        /* Find the most specific bandwidth config and copy it */
+        if (iface->bandwidth) {
+            if (virBandwidthCopy(&iface->data.network.actual->bandwidth,
+                                 iface->bandwidth) < 0) {
+                goto cleanup;
+            }
+        } else {
+            if (portgroup &&
+                virBandwidthCopy(&iface->data.network.actual->bandwidth,
+                                 portgroup->bandwidth) < 0) {
+                goto cleanup;
+            }
+        }
+
         /* If there is only a single device, just return it (caller will detect
          * any error if exclusive use is required but could not be acquired).
          */

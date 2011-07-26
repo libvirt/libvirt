@@ -337,6 +337,7 @@ virDomainLoadAllConfigs;
 virDomainMemballoonModelTypeFromString;
 virDomainMemballoonModelTypeToString;
 virDomainNetDefFree;
+virDomainNetGetActualBandwidth;
 virDomainNetGetActualBridgeName;
 virDomainNetGetActualDirectDev;
 virDomainNetGetActualDirectMode;
@@ -710,6 +711,7 @@ nlComm;
 
 
 # network.h
+virBandwidthCopy;
 virBandwidthDefFormat;
 virBandwidthDefFree;
 virBandwidthDefParseNode;
