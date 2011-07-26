@@ -55,7 +55,7 @@ int networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network,
 #  define networkAllocateActualDevice(iface) 0
 #  define networkNotifyActualDevice(iface) 0
 #  define networkReleaseActualDevice(iface) 0
-#  defing networkGetNetworkAddress(netname, netaddr) (-2)
+#  define networkGetNetworkAddress(netname, netaddr) (-2)
 #  define networkBuildDhcpDaemonCommandLine(network, cmdout, pidfile, dctx) 0
 # endif
 
