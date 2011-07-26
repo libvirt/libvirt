@@ -390,10 +390,13 @@ cleanup:
 
 static int virNetSASLSessionUpdateBufSize(virNetSASLSessionPtr sasl)
 {
-    unsigned *maxbufsize;
+    union {
+        unsigned *maxbufsize;
+        const void *ptr;
+    } u;
     int err;
 
-    err = sasl_getprop(sasl->conn, SASL_MAXOUTBUF, (const void **)&maxbufsize);
+    err = sasl_getprop(sasl->conn, SASL_MAXOUTBUF, &u.ptr);
     if (err != SASL_OK) {
         virNetError(VIR_ERR_INTERNAL_ERROR,
                     _("cannot get security props %d (%s)"),
@@ -402,8 +405,8 @@ static int virNetSASLSessionUpdateBufSize(virNetSASLSessionPtr sasl)
     }
 
     VIR_DEBUG("Negotiated bufsize is %u vs requested size %zu",
-              *maxbufsize, sasl->maxbufsize);
-    sasl->maxbufsize = *maxbufsize;
+              *u.maxbufsize, sasl->maxbufsize);
+    sasl->maxbufsize = *u.maxbufsize;
     return 0;
 }
 
