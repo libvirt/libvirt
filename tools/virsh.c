@@ -4438,9 +4438,9 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
 
     if (!flag_percent) {
         if (!flag_utilization) {
-            vshPrint(ctl, "%-15s %20llu\n", _("user  :"), cpu_stats[0].user);
+            vshPrint(ctl, "%-15s %20llu\n", _("user:"), cpu_stats[0].user);
             vshPrint(ctl, "%-15s %20llu\n", _("system:"), cpu_stats[0].sys);
-            vshPrint(ctl, "%-15s %20llu\n", _("idle  :"), cpu_stats[0].idle);
+            vshPrint(ctl, "%-15s %20llu\n", _("idle:"), cpu_stats[0].idle);
             vshPrint(ctl, "%-15s %20llu\n", _("iowait:"), cpu_stats[0].iowait);
         }
     } else {
@@ -4448,7 +4448,7 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
             usage = cpu_stats[0].util;
 
             vshPrint(ctl, "%-15s %5.1lf%%\n", _("usage:"), usage);
-            vshPrint(ctl, "%-15s %5.1lf%%\n", _("idle :"), 100 - usage);
+            vshPrint(ctl, "%-15s %5.1lf%%\n", _("idle:"), 100 - usage);
         } else {
             user_time   = cpu_stats[1].user   - cpu_stats[0].user;
             sys_time    = cpu_stats[1].sys    - cpu_stats[0].sys;
@@ -4461,11 +4461,11 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "%-15s %5.1lf%%\n",
                      _("usage:"), usage);
             vshPrint(ctl, "%-15s %5.1lf%%\n",
-                     _("    user  :"), user_time / total_time * 100);
+                     _("user:"), user_time / total_time * 100);
             vshPrint(ctl, "%-15s %5.1lf%%\n",
-                     _("    system:"), sys_time  / total_time * 100);
+                     _("system:"), sys_time  / total_time * 100);
             vshPrint(ctl, "%-15s %5.1lf%%\n",
-                     _("idle  :"), idle_time     / total_time * 100);
+                     _("idle:"), idle_time     / total_time * 100);
             vshPrint(ctl, "%-15s %5.1lf%%\n",
                      _("iowait:"), iowait_time   / total_time * 100);
         }
