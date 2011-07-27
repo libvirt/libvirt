@@ -430,6 +430,27 @@ Get memory stats for a running domain.
 
 Get block device size info for a domain.
 
+=item B<blockpull> I<domain> I<path> [I<bandwidth>]
+
+Populate a disk from its backing image. Once all data from its backing
+image has been pulled, the disk no longer depends on the backing image.
+It pulls data for the entire disk in the background, the process of the
+operation can be checked with B<blockjob>.
+
+I<path> specifies fully-qualified path of the disk.
+I<bandwidth> specifies copying bandwidth limit in Mbps.
+
+=item B<blockjob> I<domain> I<path> [I<--abort>] [I<--info>] [I<bandwidth>]
+
+Manage active block operations.
+
+I<path> specifies fully-qualified path of the disk.
+If I<--live> is specified, the active job on the specified disk will
+be aborted.
+If I<--info> is specified, the active job information on the specified
+disk will be printed.
+I<bandwidth> can be used to set bandwidth limit for the active job.
+
 =item B<dominfo> I<domain-id>
 
 Returns basic information about the domain.
