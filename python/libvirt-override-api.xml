@@ -206,6 +206,7 @@
       <return type='int' info='-1 in case of error, 0 in case of success.'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
       <arg name='params' type='virBlkioParameterPtr' info='pointer to blkio tunable objects'/>
+      <arg name='flags'  type='int' info='an OR&apos;ed set of virDomainModificationImpact'/>
     </function>
     <function name='virDomainGetBlkioParameters' file='python'>
       <info>Get the blkio parameters</info>
