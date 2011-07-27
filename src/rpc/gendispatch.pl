@@ -979,6 +979,7 @@ elsif ($opt_k) {
         my @args_check_list = ();
         my @setters_list = ();
         my @setters_list2 = ();
+        my @free_list = ();
         my $priv_src = "conn";
         my $priv_name = "privateData";
         my $call_args = "&args";
@@ -1105,6 +1106,7 @@ elsif ($opt_k) {
                                          "        xdr_free((xdrproc_t)xdr_$call->{args}, (char *)&args);\n" .
                                          "        goto done;\n" .
                                          "    }");
+                    push(@free_list, "    remoteFreeTypedParameters(args.params.params_val, args.params.params_len);\n");
                 } elsif ($args_member =~ m/^((?:unsigned )?int) (\S+);\s*\/\*\s*call-by-reference\s*\*\//) {
                     my $type_name = "$1 *";
                     my $arg_name = $2;
@@ -1500,6 +1502,9 @@ elsif ($opt_k) {
 
         print "\n";
         print "done:\n";
+
+        print join("\n", @free_list);
+
         print "    remoteDriverUnlock(priv);\n";
         print "    return rv;\n";
         print "}\n";

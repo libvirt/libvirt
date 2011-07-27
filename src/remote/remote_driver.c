@@ -1208,6 +1208,22 @@ done:
     return rv;
 }
 
+/* Helper to free typed parameters. */
+static void
+remoteFreeTypedParameters(remote_typed_param *args_params_val,
+                          u_int args_params_len)
+{
+    u_int i;
+
+    if (args_params_val == NULL)
+        return;
+
+    for (i = 0; i < args_params_len; i++)
+        VIR_FREE(args_params_val[i].field);
+
+    VIR_FREE(args_params_val);
+}
+
 /* Helper to serialize typed parameters. */
 static int
 remoteSerializeTypedParameters(virTypedParameterPtr params,
@@ -1264,11 +1280,7 @@ remoteSerializeTypedParameters(virTypedParameterPtr params,
     rv = 0;
 
 cleanup:
-    if (val) {
-        for (i = 0; i < nparams; i++)
-            VIR_FREE(val[i].field);
-        VIR_FREE(val);
-    }
+    remoteFreeTypedParameters(val, nparams);
     return rv;
 }
 
