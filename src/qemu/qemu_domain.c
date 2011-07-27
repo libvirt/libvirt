@@ -832,31 +832,6 @@ int qemuDomainObjBeginAsyncJobWithDriver(struct qemud_driver *driver,
 }
 
 /*
- * Use this to protect monitor sections within active async job.
- *
- * The caller must call qemuDomainObjBeginAsyncJob{,WithDriver} before it can
- * use this method.  Never use this method if you only own non-async job, use
- * qemuDomainObjBeginJob{,WithDriver} instead.
- */
-int
-qemuDomainObjBeginNestedJob(struct qemud_driver *driver,
-                            virDomainObjPtr obj)
-{
-    return qemuDomainObjBeginJobInternal(driver, false, obj,
-                                         QEMU_JOB_ASYNC_NESTED,
-                                         QEMU_ASYNC_JOB_NONE);
-}
-
-int
-qemuDomainObjBeginNestedJobWithDriver(struct qemud_driver *driver,
-                                      virDomainObjPtr obj)
-{
-    return qemuDomainObjBeginJobInternal(driver, true, obj,
-                                         QEMU_JOB_ASYNC_NESTED,
-                                         QEMU_ASYNC_JOB_NONE);
-}
-
-/*
  * obj must be locked before calling, qemud_driver does not matter
  *
  * To be called after completing the work associated with the
@@ -888,21 +863,6 @@ qemuDomainObjEndAsyncJob(struct qemud_driver *driver, virDomainObjPtr obj)
     return virDomainObjUnref(obj);
 }
 
-void
-qemuDomainObjEndNestedJob(struct qemud_driver *driver, virDomainObjPtr obj)
-{
-    qemuDomainObjPrivatePtr priv = obj->privateData;
-
-    qemuDomainObjResetJob(priv);
-    qemuDomainObjSaveJob(driver, obj);
-    virCondSignal(&priv->job.cond);
-
-    /* safe to ignore since the surrounding async job increased the reference
-     * counter as well */
-    ignore_value(virDomainObjUnref(obj));
-}
-
-
 static int ATTRIBUTE_NONNULL(1)
 qemuDomainObjEnterMonitorInternal(struct qemud_driver *driver,
                                   bool driver_locked,
@@ -911,7 +871,9 @@ qemuDomainObjEnterMonitorInternal(struct qemud_driver *driver,
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
     if (priv->job.active == QEMU_JOB_NONE && priv->job.asyncJob) {
-        if (qemuDomainObjBeginNestedJob(driver, obj) < 0)
+        if (qemuDomainObjBeginJobInternal(driver, driver_locked, obj,
+                                          QEMU_JOB_ASYNC_NESTED,
+                                          QEMU_ASYNC_JOB_NONE) < 0)
             return -1;
         if (!virDomainObjIsActive(obj)) {
             qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
@@ -952,8 +914,15 @@ qemuDomainObjExitMonitorInternal(struct qemud_driver *driver,
         priv->mon = NULL;
     }
 
-    if (priv->job.active == QEMU_JOB_ASYNC_NESTED)
-        qemuDomainObjEndNestedJob(driver, obj);
+    if (priv->job.active == QEMU_JOB_ASYNC_NESTED) {
+        qemuDomainObjResetJob(priv);
+        qemuDomainObjSaveJob(driver, obj);
+        virCondSignal(&priv->job.cond);
+
+        /* safe to ignore since the surrounding async job increased
+         * the reference counter as well */
+        ignore_value(virDomainObjUnref(obj));
+    }
 }
 
 /*
@@ -962,7 +931,7 @@ qemuDomainObjExitMonitorInternal(struct qemud_driver *driver,
  * To be called immediately before any QEMU monitor API call
  * Must have already either called qemuDomainObjBeginJob() and checked
  * that the VM is still active or called qemuDomainObjBeginAsyncJob, in which
- * case this will call qemuDomainObjBeginNestedJob.
+ * case this will start a nested job.
  *
  * To be followed with qemuDomainObjExitMonitor() once complete
  */
@@ -988,7 +957,7 @@ void qemuDomainObjExitMonitor(struct qemud_driver *driver,
  * To be called immediately before any QEMU monitor API call
  * Must have already either called qemuDomainObjBeginJobWithDriver() and
  * checked that the VM is still active or called qemuDomainObjBeginAsyncJob,
- * in which case this will call qemuDomainObjBeginNestedJobWithDriver.
+ * in which case this will start a nested job.
  *
  * To be followed with qemuDomainObjExitMonitorWithDriver() once complete
  */

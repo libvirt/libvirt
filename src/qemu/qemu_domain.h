@@ -143,9 +143,6 @@ int qemuDomainObjBeginAsyncJob(struct qemud_driver *driver,
                                virDomainObjPtr obj,
                                enum qemuDomainAsyncJob asyncJob)
     ATTRIBUTE_RETURN_CHECK;
-int qemuDomainObjBeginNestedJob(struct qemud_driver *driver,
-                                virDomainObjPtr obj)
-    ATTRIBUTE_RETURN_CHECK;
 int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
                                     virDomainObjPtr obj,
                                     enum qemuDomainJob job)
@@ -154,9 +151,6 @@ int qemuDomainObjBeginAsyncJobWithDriver(struct qemud_driver *driver,
                                          virDomainObjPtr obj,
                                          enum qemuDomainAsyncJob asyncJob)
     ATTRIBUTE_RETURN_CHECK;
-int qemuDomainObjBeginNestedJobWithDriver(struct qemud_driver *driver,
-                                          virDomainObjPtr obj)
-    ATTRIBUTE_RETURN_CHECK;
 
 int qemuDomainObjEndJob(struct qemud_driver *driver,
                         virDomainObjPtr obj)
@@ -164,9 +158,6 @@ int qemuDomainObjEndJob(struct qemud_driver *driver,
 int qemuDomainObjEndAsyncJob(struct qemud_driver *driver,
                              virDomainObjPtr obj)
     ATTRIBUTE_RETURN_CHECK;
-void qemuDomainObjEndNestedJob(struct qemud_driver *driver,
-                               virDomainObjPtr obj);
-
 void qemuDomainObjSetJobPhase(struct qemud_driver *driver,
                               virDomainObjPtr obj,
                               int phase);
