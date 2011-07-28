@@ -3461,7 +3461,7 @@ error:
  * @params: pointer to blkio parameter objects
  * @nparams: number of blkio parameters (this value can be the same or
  *          less than the number of parameters supported)
- * @flags: currently unused, for future extension
+ * @flags: an OR'ed set of virDomainModificationImpact
  *
  * Change all or a subset of the blkio tunables.
  * This function requires privileged access to the hypervisor.
@@ -3516,7 +3516,7 @@ error:
  * @params: pointer to blkio parameter object
  *          (return value, allocated by the caller)
  * @nparams: pointer to number of blkio parameters
- * @flags: currently unused, for future extension
+ * @flags: an OR'ed set of virDomainModificationImpact
  *
  * Get all blkio parameters, the @params array will be filled with the values
  * equal to the number of parameters suggested by @nparams.
