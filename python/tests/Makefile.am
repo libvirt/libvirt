@@ -1,3 +1,6 @@
+## Copyright (C) 2005-2011 Red Hat, Inc.
+## See COPYING.LIB for the License of this software
+
 EXAMPLE_DIR = $(datadir)/doc/libvirt-python-$(LIBVIRT_VERSION)/examples
 
 PYTESTS=		\
