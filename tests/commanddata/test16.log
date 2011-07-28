@@ -1,1 +1,1 @@
-A=B /bin/true C
+A=B true C

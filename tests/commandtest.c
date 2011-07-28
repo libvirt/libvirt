@@ -566,9 +566,9 @@ cleanup:
  */
 static int test16(const void *unused ATTRIBUTE_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew("/bin/true");
+    virCommandPtr cmd = virCommandNew("true");
     char *outactual = NULL;
-    const char *outexpect = "A=B /bin/true C";
+    const char *outexpect = "A=B true C";
     int ret = -1;
     int fd = -1;
 
@@ -610,7 +610,7 @@ cleanup:
  */
 static int test17(const void *unused ATTRIBUTE_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew("/bin/true");
+    virCommandPtr cmd = virCommandNew("true");
     int ret = -1;
     char *outbuf;
     char *errbuf;
