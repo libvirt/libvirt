@@ -727,7 +727,8 @@ qemuMigrationSetOffline(struct qemud_driver *driver,
 {
     int ret;
     VIR_DEBUG("driver=%p vm=%p", driver, vm);
-    ret = qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_MIGRATION);
+    ret = qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_MIGRATION,
+                              QEMU_ASYNC_JOB_MIGRATION_OUT);
     if (ret == 0) {
         virDomainEventPtr event;
 
@@ -745,7 +746,8 @@ qemuMigrationSetOffline(struct qemud_driver *driver,
 static int
 qemuMigrationUpdateJobStatus(struct qemud_driver *driver,
                              virDomainObjPtr vm,
-                             const char *job)
+                             const char *job,
+                             enum qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
@@ -754,21 +756,17 @@ qemuMigrationUpdateJobStatus(struct qemud_driver *driver,
     unsigned long long memRemaining;
     unsigned long long memTotal;
 
-    if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, _("%s: %s"),
-                        job, _("guest unexpectedly quit"));
+    ret = qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob);
+    if (ret < 0) {
+        /* Guest already exited; nothing further to update.  */
         return -1;
     }
-
-    ret = qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (ret == 0) {
-        ret = qemuMonitorGetMigrationStatus(priv->mon,
-                                            &status,
-                                            &memProcessed,
-                                            &memRemaining,
-                                            &memTotal);
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-    }
+    ret = qemuMonitorGetMigrationStatus(priv->mon,
+                                        &status,
+                                        &memProcessed,
+                                        &memRemaining,
+                                        &memTotal);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     if (ret < 0 || virTimeMs(&priv->job.info.timeElapsed) < 0) {
         priv->job.info.type = VIR_DOMAIN_JOB_FAILED;
@@ -817,8 +815,9 @@ qemuMigrationUpdateJobStatus(struct qemud_driver *driver,
 }
 
 
-int
-qemuMigrationWaitForCompletion(struct qemud_driver *driver, virDomainObjPtr vm)
+static int
+qemuMigrationWaitForCompletion(struct qemud_driver *driver, virDomainObjPtr vm,
+                               enum qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     const char *job;
@@ -843,7 +842,7 @@ qemuMigrationWaitForCompletion(struct qemud_driver *driver, virDomainObjPtr vm)
         /* Poll every 50ms for progress & to allow cancellation */
         struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
 
-        if (qemuMigrationUpdateJobStatus(driver, vm, job) < 0)
+        if (qemuMigrationUpdateJobStatus(driver, vm, job, asyncJob) < 0)
             goto cleanup;
 
         virDomainObjUnlock(vm);
@@ -883,7 +882,8 @@ qemuDomainMigrateGraphicsRelocate(struct qemud_driver *driver,
     if (cookie->graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE)
         return 0;
 
-    ret = qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ret = qemuDomainObjEnterMonitorAsync(driver, vm,
+                                         QEMU_ASYNC_JOB_MIGRATION_OUT);
     if (ret == 0) {
         ret = qemuMonitorGraphicsRelocate(priv->mon,
                                           cookie->graphics->type,
@@ -1330,7 +1330,8 @@ static int doNativeMigrate(struct qemud_driver *driver,
             goto cleanup;
     }
 
-    if (qemuDomainObjEnterMonitorWithDriver(driver, vm) < 0)
+    if (qemuDomainObjEnterMonitorAsync(driver, vm,
+                                       QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
 
     if (resource > 0 &&
@@ -1352,7 +1353,8 @@ static int doNativeMigrate(struct qemud_driver *driver,
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    if (qemuMigrationWaitForCompletion(driver, vm) < 0)
+    if (qemuMigrationWaitForCompletion(driver, vm,
+                                       QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
 
     /* When migration completed, QEMU will have paused the
@@ -1591,7 +1593,8 @@ static int doTunnelMigrate(struct qemud_driver *driver,
             goto cleanup;
     }
 
-    if (qemuDomainObjEnterMonitorWithDriver(driver, vm) < 0)
+    if (qemuDomainObjEnterMonitorAsync(driver, vm,
+                                       QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
 
     if (resource > 0 &&
@@ -1634,7 +1637,8 @@ static int doTunnelMigrate(struct qemud_driver *driver,
     /* it is also possible that the migrate didn't fail initially, but
      * rather failed later on.  Check the output of "info migrate"
      */
-    if (qemuDomainObjEnterMonitorWithDriver(driver, vm) < 0)
+    if (qemuDomainObjEnterMonitorAsync(driver, vm,
+                                       QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cancel;
     if (qemuMonitorGetMigrationStatus(priv->mon,
                                       &status,
@@ -1664,7 +1668,8 @@ static int doTunnelMigrate(struct qemud_driver *driver,
     if (!(iothread = qemuMigrationStartTunnel(st, client_sock)))
         goto cancel;
 
-    ret = qemuMigrationWaitForCompletion(driver, vm);
+    ret = qemuMigrationWaitForCompletion(driver, vm,
+                                         QEMU_ASYNC_JOB_MIGRATION_OUT);
 
     /* When migration completed, QEMU will have paused the
      * CPUs for us, but unless we're using the JSON monitor
@@ -1693,7 +1698,8 @@ cancel:
     if (ret != 0 && virDomainObjIsActive(vm)) {
         VIR_FORCE_CLOSE(client_sock);
         VIR_FORCE_CLOSE(qemu_sock);
-        if (qemuDomainObjEnterMonitorWithDriver(driver, vm) == 0) {
+        if (qemuDomainObjEnterMonitorAsync(driver, vm,
+                                           QEMU_ASYNC_JOB_MIGRATION_OUT) == 0) {
             qemuMonitorMigrateCancel(priv->mon);
             qemuDomainObjExitMonitorWithDriver(driver, vm);
         }
@@ -2201,7 +2207,8 @@ endjob:
     if (resume && virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
         /* we got here through some sort of failure; start the domain again */
         if (qemuProcessStartCPUs(driver, vm, conn,
-                                 VIR_DOMAIN_RUNNING_MIGRATION_CANCELED) < 0) {
+                                 VIR_DOMAIN_RUNNING_MIGRATION_CANCELED,
+                                 QEMU_ASYNC_JOB_MIGRATION_OUT) < 0) {
             /* Hm, we already know we are in error here.  We don't want to
              * overwrite the previous error, though, so we just throw something
              * to the logs and hope for the best
@@ -2274,7 +2281,8 @@ qemuMigrationPerformPhase(struct qemud_driver *driver,
         virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
         /* we got here through some sort of failure; start the domain again */
         if (qemuProcessStartCPUs(driver, vm, conn,
-                                 VIR_DOMAIN_RUNNING_MIGRATION_CANCELED) < 0) {
+                                 VIR_DOMAIN_RUNNING_MIGRATION_CANCELED,
+                                 QEMU_ASYNC_JOB_MIGRATION_OUT) < 0) {
             /* Hm, we already know we are in error here.  We don't want to
              * overwrite the previous error, though, so we just throw something
              * to the logs and hope for the best
@@ -2500,7 +2508,8 @@ qemuMigrationFinish(struct qemud_driver *driver,
              * older qemu's, but it also doesn't hurt anything there
              */
             if (qemuProcessStartCPUs(driver, vm, dconn,
-                                     VIR_DOMAIN_RUNNING_MIGRATED) < 0) {
+                                     VIR_DOMAIN_RUNNING_MIGRATED,
+                                     QEMU_ASYNC_JOB_MIGRATION_IN) < 0) {
                 if (virGetLastError() == NULL)
                     qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                     "%s", _("resume operation failed"));
@@ -2626,7 +2635,8 @@ int qemuMigrationConfirm(struct qemud_driver *driver,
          * older qemu's, but it also doesn't hurt anything there
          */
         if (qemuProcessStartCPUs(driver, vm, conn,
-                                 VIR_DOMAIN_RUNNING_MIGRATED) < 0) {
+                                 VIR_DOMAIN_RUNNING_MIGRATED,
+                                 QEMU_ASYNC_JOB_MIGRATION_OUT) < 0) {
             if (virGetLastError() == NULL)
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("resume operation failed"));
@@ -2657,7 +2667,8 @@ int
 qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
                     int fd, off_t offset, const char *path,
                     const char *compressor,
-                    bool is_reg, bool bypassSecurityDriver)
+                    bool is_reg, bool bypassSecurityDriver,
+                    enum qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCgroupPtr cgroup = NULL;
@@ -2709,7 +2720,7 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
         restoreLabel = true;
     }
 
-    if (qemuDomainObjEnterMonitorWithDriver(driver, vm) < 0)
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto cleanup;
 
     if (!compressor) {
@@ -2763,7 +2774,7 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
     if (rc < 0)
         goto cleanup;
 
-    rc = qemuMigrationWaitForCompletion(driver, vm);
+    rc = qemuMigrationWaitForCompletion(driver, vm, asyncJob);
 
     if (rc < 0)
         goto cleanup;

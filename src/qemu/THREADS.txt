@@ -217,10 +217,7 @@ To acquire the QEMU monitor lock
 
   NB: caller must take care to drop the driver lock if necessary
 
-  These functions automatically begin/end nested job if called inside an
-  asynchronous job.  The caller must then check the return value of
-  qemuDomainObjEnterMonitor to detect if domain died while waiting on
-  the nested job.
+  These functions must not be used by an asynchronous job.
 
 
 To acquire the QEMU monitor lock with the driver lock held
@@ -237,10 +234,30 @@ To acquire the QEMU monitor lock with the driver lock held
 
   NB: caller must take care to drop the driver lock if necessary
 
-  These functions automatically begin/end nested job if called inside an
-  asynchronous job.  The caller must then check the return value of
-  qemuDomainObjEnterMonitorWithDriver to detect if domain died while
-  waiting on the nested job.
+  These functions must not be used inside an asynchronous job.
+
+
+To acquire the QEMU monitor lock with the driver lock held and as part
+of an asynchronous job
+
+  qemuDomainObjEnterMonitorAsync()
+    - Validates that the right async job is still running
+    - Acquires the qemuMonitorObjPtr lock
+    - Releases the virDomainObjPtr lock
+    - Releases the driver lock
+    - Validates that the VM is still active
+
+  qemuDomainObjExitMonitorWithDriver()
+    - Releases the qemuMonitorObjPtr lock
+    - Acquires the driver lock
+    - Acquires the virDomainObjPtr lock
+
+  NB: caller must take care to drop the driver lock if necessary
+
+  These functions are for use inside an asynchronous job; the caller
+  must check for a return of -1 (VM not running, so nothing to exit).
+  Helper functions may also call this with QEMU_ASYNC_JOB_NONE when
+  used from a sync job (such as when first starting a domain).
 
 
 To keep a domain alive while waiting on a remote command, starting
@@ -333,8 +350,7 @@ Design patterns
      ...do prep work...
 
      if (virDomainObjIsActive(vm)) {
-         /* using ignore_value is safe since vm is active */
-         ignore_value(qemuDomainObjEnterMonitor(obj));
+         qemuDomainObjEnterMonitor(obj);
          qemuMonitorXXXX(priv->mon);
          qemuDomainObjExitMonitor(obj);
      }
@@ -361,8 +377,7 @@ Design patterns
      ...do prep work...
 
      if (virDomainObjIsActive(vm)) {
-         /* using ignore_value is safe since vm is active */
-         ignore_value(qemuDomainObjEnterMonitorWithDriver(driver, obj));
+         qemuDomainObjEnterMonitorWithDriver(driver, obj);
          qemuMonitorXXXX(priv->mon);
          qemuDomainObjExitMonitorWithDriver(driver, obj);
      }
@@ -374,7 +389,7 @@ Design patterns
      qemuDriverUnlock(driver);
 
 
- * Running asynchronous job
+ * Running asynchronous job with driver lock held
 
      virDomainObjPtr obj;
      qemuDomainObjPrivatePtr priv;
@@ -387,7 +402,8 @@ Design patterns
 
      ...do prep work...
 
-     if (qemuDomainObjEnterMonitorWithDriver(driver, obj) < 0) {
+     if (qemuDomainObjEnterMonitorAsync(driver, obj,
+                                        QEMU_ASYNC_JOB_TYPE) < 0) {
          /* domain died in the meantime */
          goto error;
      }
@@ -395,7 +411,8 @@ Design patterns
      qemuDomainObjExitMonitorWithDriver(driver, obj);
 
      while (!finished) {
-         if (qemuDomainObjEnterMonitorWithDriver(driver, obj) < 0) {
+         if (qemuDomainObjEnterMonitorAsync(driver, obj,
+                                            QEMU_ASYNC_JOB_TYPE) < 0) {
              /* domain died in the meantime */
              goto error;
          }

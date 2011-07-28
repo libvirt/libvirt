@@ -168,20 +168,28 @@ void qemuDomainObjRestoreJob(virDomainObjPtr obj,
 void qemuDomainObjDiscardAsyncJob(struct qemud_driver *driver,
                                   virDomainObjPtr obj);
 
-int qemuDomainObjEnterMonitor(struct qemud_driver *driver,
-                              virDomainObjPtr obj)
-    ATTRIBUTE_RETURN_CHECK;
+void qemuDomainObjEnterMonitor(struct qemud_driver *driver,
+                               virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 void qemuDomainObjExitMonitor(struct qemud_driver *driver,
-                              virDomainObjPtr obj);
-int qemuDomainObjEnterMonitorWithDriver(struct qemud_driver *driver,
-                                        virDomainObjPtr obj)
-    ATTRIBUTE_RETURN_CHECK;
+                              virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+void qemuDomainObjEnterMonitorWithDriver(struct qemud_driver *driver,
+                                         virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+int qemuDomainObjEnterMonitorAsync(struct qemud_driver *driver,
+                                   virDomainObjPtr obj,
+                                   enum qemuDomainAsyncJob asyncJob)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 void qemuDomainObjExitMonitorWithDriver(struct qemud_driver *driver,
-                                        virDomainObjPtr obj);
+                                        virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 void qemuDomainObjEnterRemoteWithDriver(struct qemud_driver *driver,
-                                        virDomainObjPtr obj);
+                                        virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
-                                       virDomainObjPtr obj);
+                                       virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 char *qemuDomainDefFormatXML(struct qemud_driver *driver,
                              virDomainDefPtr vm,
