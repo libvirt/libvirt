@@ -9,7 +9,8 @@ INCLUDES = \
 	$(PYTHON_INCLUDES) \
 	-I$(top_srcdir)/include \
 	-I$(top_builddir)/include \
-	-I$(top_builddir)/$(subdir)
+	-I$(top_builddir)/$(subdir) \
+	$(GETTEXT_CPPFLAGS)
 
 AM_CFLAGS = $(WARN_CFLAGS)
 

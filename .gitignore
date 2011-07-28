@@ -36,7 +36,9 @@
 /configure.lineno
 /daemon/*_dispatch.h
 /docs/hvsupport.html.in
-/gnulib/
+/gnulib/lib/*
+/gnulib/m4/*
+/gnulib/tests/*
 /libtool
 /libvirt-*.tar.gz
 /libvirt-[0-9]*
@@ -74,6 +76,8 @@ results.log
 stamp-h
 stamp-h.in
 stamp-h1
+!/gnulib/lib/Makefile.am
+!/gnulib/tests/Makefile.am
 !/m4/virt-*.m4
 !/po/*.po
 !/po/POTFILES.in

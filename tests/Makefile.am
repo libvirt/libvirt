@@ -11,7 +11,8 @@ INCLUDES = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/util \
-	-I$(top_srcdir)/src/conf
+	-I$(top_srcdir)/src/conf \
+	$(GETTEXT_CPPFLAGS)
 
 AM_CFLAGS = \
 	$(LIBXML_CFLAGS) \

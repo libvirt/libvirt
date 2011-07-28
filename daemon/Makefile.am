@@ -3,6 +3,16 @@
 ## Copyright (C) 2005-2011 Red Hat, Inc.
 ## See COPYING.LIB for the License of this software
 
+INCLUDES = \
+	-I$(top_srcdir)/gnulib/lib -I../gnulib/lib \
+	-I$(top_srcdir)/include -I$(top_builddir)/include \
+	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/src/util \
+	-I$(top_srcdir)/src/conf \
+	-I$(top_srcdir)/src/rpc \
+	-I$(top_srcdir)/src/remote \
+	$(GETTEXT_CPPFLAGS)
+
 CLEANFILES =
 
 DAEMON_GENERATED =					\
@@ -82,13 +92,6 @@ libvirtd_SOURCES = $(DAEMON_SOURCES)
 
 #-D_XOPEN_SOURCE=600 -D_XOPEN_SOURCE_EXTENDED=1 -D_POSIX_C_SOURCE=199506L
 libvirtd_CFLAGS = \
-	-I$(top_srcdir)/gnulib/lib -I../gnulib/lib \
-	-I$(top_srcdir)/include -I$(top_builddir)/include \
-	-I$(top_srcdir)/src \
-	-I$(top_srcdir)/src/util \
-	-I$(top_srcdir)/src/conf \
-	-I$(top_srcdir)/src/rpc \
-	-I$(top_srcdir)/src/remote \
 	$(LIBXML_CFLAGS) $(GNUTLS_CFLAGS) $(SASL_CFLAGS) \
 	$(XDR_CFLAGS) $(POLKIT_CFLAGS) \
 	$(WARN_CFLAGS) \

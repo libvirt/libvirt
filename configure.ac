@@ -2058,8 +2058,30 @@ dnl Enable building libvirtd?
 AM_CONDITIONAL([WITH_LIBVIRTD],[test "x$with_libvirtd" = "xyes"])
 
 dnl Check for gettext - don't go any newer than what RHEL 5 supports
+dnl
+dnl save and restore CPPFLAGS around gettext check as the internal iconv
+dnl check might leave -I/usr/local/include in CPPFLAGS on FreeBSD resulting
+dnl in the build picking up previously installed libvirt/libvirt.h instead
+dnl of the correct one from the source tree.
+dnl compute the difference between save_CPPFLAGS and CPPFLAGS and append it
+dnl to INCLUDES in order to preserve changes made by gettext but in a place
+dnl that does not break the build
+save_CPPFLAGS="$CPPFLAGS"
 AM_GNU_GETTEXT_VERSION([0.17])
 AM_GNU_GETTEXT([external])
+GETTEXT_CPPFLAGS=
+if test "x$save_CPPFLAGS" != "x$CPPFLAGS"; then
+ set dummy $CPPFLAGS; shift
+ for var
+ do
+   case " $var " in
+     " $save_CPPFLAGS ") ;;
+     *) GETTEXT_CPPFLAGS="$GETTEXT_CPPFLAGS $var" ;;
+   esac
+ done
+fi
+CPPFLAGS="$save_CPPFLAGS"
+AC_SUBST([GETTEXT_CPPFLAGS])
 
 ALL_LINGUAS=`cd "$srcdir/po" > /dev/null && ls *.po | sed 's+\.po$++'`
 

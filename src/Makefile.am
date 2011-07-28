@@ -5,13 +5,14 @@
 
 # No libraries with the exception of LIBXML should be listed
 # here. List them against the individual XXX_la_CFLAGS targets
-# that actually use them
+# that actually use them. Also keep GETTEXT_CPPFLAGS at the end.
 INCLUDES =	-I$(top_srcdir)/gnulib/lib			\
 		-I../gnulib/lib					\
 		-I../include					\
 		-I@top_srcdir@/src/util				\
 		-I@top_srcdir@/include				\
-		-DIN_LIBVIRT
+		-DIN_LIBVIRT					\
+		$(GETTEXT_CPPFLAGS)
 
 AM_CFLAGS =	$(DRIVER_MODULE_CFLAGS)				\
 		$(LIBXML_CFLAGS)				\
