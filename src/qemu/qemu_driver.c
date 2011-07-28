@@ -6949,7 +6949,7 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     int ret = -1;
     int fd = -1;
     off_t end;
-    virStorageFileMetadata meta;
+    virStorageFileMetadata *meta = NULL;
     virDomainDiskDefPtr disk = NULL;
     struct stat sb;
     int i;
@@ -7017,9 +7017,14 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
         }
     }
 
+    if (VIR_ALLOC(meta) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
     if (virStorageFileGetMetadataFromFD(path, fd,
                                         format,
-                                        &meta) < 0)
+                                        meta) < 0)
         goto cleanup;
 
     /* Get info for normal formats */
@@ -7056,8 +7061,8 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
 
     /* If the file we probed has a capacity set, then override
      * what we calculated from file/block extents */
-    if (meta.capacity)
-        info->capacity = meta.capacity;
+    if (meta->capacity)
+        info->capacity = meta->capacity;
 
     /* Set default value .. */
     info->allocation = info->physical;
@@ -7091,6 +7096,7 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     }
 
 cleanup:
+    virStorageFileFreeMetadata(meta);
     VIR_FORCE_CLOSE(fd);
     if (vm)
         virDomainObjUnlock(vm);
