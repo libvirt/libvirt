@@ -11860,7 +11860,8 @@ error:
  * pool documentation for information on getting the
  * persistent naming
  *
- * Returns the storage volume path, or NULL on error
+ * Returns the storage volume path, or NULL on error. The
+ * caller must free() the returned path after use.
  */
 char *
 virStorageVolGetPath(virStorageVolPtr vol)

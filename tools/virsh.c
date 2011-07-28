@@ -9320,6 +9320,7 @@ cmdVolPath(vshControl *ctl, const vshCmd *cmd)
 {
     virStorageVolPtr vol;
     const char *name = NULL;
+    char * StorageVolPath;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -9328,7 +9329,13 @@ cmdVolPath(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    vshPrint(ctl, "%s\n", virStorageVolGetPath(vol));
+    if ((StorageVolPath = virStorageVolGetPath(vol)) == NULL) {
+        virStorageVolFree(vol);
+        return false;
+    }
+
+    vshPrint(ctl, "%s\n", StorageVolPath);
+    VIR_FREE(StorageVolPath);
     virStorageVolFree(vol);
     return true;
 }
