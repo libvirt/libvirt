@@ -4004,6 +4004,7 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
     virDomainPtr dom;
     int weight = 0;
     int nparams = 0;
+    int rv = 0;
     unsigned int i = 0;
     virTypedParameterPtr params = NULL, temp = NULL;
     bool ret = false;
@@ -4031,15 +4032,15 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptInt(cmd, "weight", &weight) < 0) {
+    if ((rv = vshCommandOptInt(cmd, "weight", &weight)) < 0) {
         vshError(ctl, "%s",
                  _("Unable to parse integer parameter"));
         goto cleanup;
     }
 
-    if (weight) {
+    if (rv > 0) {
         nparams++;
-        if (weight < 0) {
+        if (weight <= 0) {
             vshError(ctl, _("Invalid value of %d for I/O weight"), weight);
             goto cleanup;
         }
