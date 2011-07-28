@@ -651,6 +651,7 @@ libxlMakeVfb(libxlDriverPrivatePtr driver, virDomainDefPtr def,
              virDomainGraphicsDefPtr l_vfb, libxl_device_vfb *x_vfb)
 {
     int port;
+    const char *listenAddr;
 
     switch (l_vfb->type) {
         case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
@@ -682,11 +683,11 @@ libxlMakeVfb(libxlDriverPrivatePtr driver, virDomainDefPtr def,
             }
             x_vfb->vncdisplay = l_vfb->data.vnc.port - LIBXL_VNC_PORT_MIN;
 
-            if (l_vfb->data.vnc.listenAddr) {
+            listenAddr = virDomainGraphicsListenGetAddress(l_vfb, 0);
+            if (listenAddr) {
                 /* libxl_device_vfb_init() does strdup("127.0.0.1") */
                 free(x_vfb->vnclisten);
-                if ((x_vfb->vnclisten =
-                    strdup(l_vfb->data.vnc.listenAddr)) == NULL) {
+                if ((x_vfb->vnclisten = strdup(listenAddr)) == NULL) {
                     virReportOOMError();
                     return -1;
                 }
