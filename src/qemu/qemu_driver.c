@@ -2713,17 +2713,18 @@ getCompressionType(struct qemud_driver *driver)
      */
     if (driver->dumpImageFormat) {
         compress = qemudSaveCompressionTypeFromString(driver->dumpImageFormat);
+        /* Use "raw" as the format if the specified format is not valid,
+         * or the compress program is not available.
+         */
         if (compress < 0) {
-            qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                            _("Invalid dump image format specified in "
-                              "configuration file, using raw"));
+            VIR_WARN("%s", _("Invalid dump image format specified in "
+                             "configuration file, using raw"));
             return QEMUD_SAVE_FORMAT_RAW;
         }
         if (!qemudCompressProgramAvailable(compress)) {
-            qemuReportError(VIR_ERR_OPERATION_FAILED,
-                            "%s", _("Compression program for dump image format "
-                                    "in configuration file isn't available, "
-                                    "using raw"));
+            VIR_WARN("%s", _("Compression program for dump image format "
+                             "in configuration file isn't available, "
+                             "using raw"));
             return QEMUD_SAVE_FORMAT_RAW;
         }
     }
