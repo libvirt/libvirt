@@ -1249,9 +1249,11 @@ mymain(void)
 VIRT_TEST_MAIN(mymain)
 
 #else
+
 int
-main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
+main(void)
 {
-    exit (EXIT_AM_SKIP);
+    return EXIT_AM_SKIP;
 }
+
 #endif

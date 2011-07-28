@@ -9,7 +9,17 @@
 #include "util.h"
 #include "testutils.h"
 
-#define DOM_UUID "ef861801-45b9-11cb-88e3-afbfe5370493"
+#ifdef WIN32
+
+int
+main(void)
+{
+    return EXIT_AM_SKIP;
+}
+
+#else
+
+# define DOM_UUID "ef861801-45b9-11cb-88e3-afbfe5370493"
 
 static const char *dominfo_fc4 = "\
 Id:             2\n\
@@ -71,13 +81,13 @@ cleanup:
     return result;
 }
 
-#define VIRSH_DEFAULT     "../tools/virsh", \
+# define VIRSH_DEFAULT     "../tools/virsh", \
     "--connect", \
     "test:///default"
 
 static char *custom_uri;
 
-#define VIRSH_CUSTOM     "../tools/virsh", \
+# define VIRSH_CUSTOM     "../tools/virsh", \
     "--connect", \
     custom_uri
 
@@ -224,10 +234,6 @@ mymain(void)
 {
     int ret = 0;
 
-#ifdef WIN32
-    exit (EXIT_AM_SKIP);
-#endif
-
     if (virAsprintf(&custom_uri, "test://%s/../examples/xml/test/testnode.xml",
                     abs_srcdir) < 0)
         return EXIT_FAILURE;
@@ -298,7 +304,7 @@ mymain(void)
 
     /* It's a bit awkward listing result before argument, but that's a
      * limitation of C99 vararg macros.  */
-#define DO_TEST(i, result, ...)                                         \
+# define DO_TEST(i, result, ...)                                         \
     do {                                                                \
         const char *myargv[] = { VIRSH_DEFAULT, __VA_ARGS__, NULL };    \
         const struct testInfo info = { myargv, result };                \
@@ -380,10 +386,12 @@ mymain(void)
     DO_TEST(30, "--shell a\n",
             "echo \t '-'\"-\" \t --shell \t a");
 
-#undef DO_TEST
+# undef DO_TEST
 
     free(custom_uri);
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
 VIRT_TEST_MAIN(mymain)
+
+#endif /* WIN32 */

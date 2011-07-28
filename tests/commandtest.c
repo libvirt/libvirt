@@ -38,10 +38,10 @@
 
 #ifdef WIN32
 
-static int
-mymain(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
+int
+main(void)
 {
-    exit (EXIT_AM_SKIP);
+    return EXIT_AM_SKIP;
 }
 
 #else
@@ -814,6 +814,6 @@ mymain(void)
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
-#endif /* !WIN32 */
-
 VIRT_TEST_MAIN(mymain)
+
+#endif /* !WIN32 */

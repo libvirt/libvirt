@@ -206,6 +206,10 @@ VIRT_TEST_MAIN(mymain)
 
 #else
 
-int main (void) { exit (EXIT_AM_SKIP); }
+int
+main(void)
+{
+    return EXIT_AM_SKIP;
+}
 
 #endif /* WITH_QEMU */
