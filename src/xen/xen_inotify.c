@@ -49,7 +49,6 @@
                              __FUNCTION__, __LINE__, __VA_ARGS__)
 
 struct xenUnifiedDriver xenInotifyDriver = {
-    .xenOpen = xenInotifyOpen,
     .xenClose = xenInotifyClose,
 };
 

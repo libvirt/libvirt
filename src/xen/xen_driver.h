@@ -81,15 +81,9 @@ extern int xenRegister (void);
  * structure with direct calls in xen_unified.c.
  */
 struct xenUnifiedDriver {
-    virDrvOpen xenOpen; /* Must not be NULL */
-    virDrvClose xenClose; /* Must not be NULL */
+    virDrvClose xenClose; /* Only mandatory callback; all others may be NULL */
     virDrvGetVersion  xenVersion;
     virDrvGetHostname xenGetHostname;
-    virDrvNodeGetInfo xenNodeGetInfo;
-    virDrvGetCapabilities xenGetCapabilities;
-    virDrvListDomains xenListDomains;
-    virDrvNumOfDomains xenNumOfDomains;
-    virDrvDomainCreateXML xenDomainCreateXML;
     virDrvDomainSuspend xenDomainSuspend;
     virDrvDomainResume xenDomainResume;
     virDrvDomainShutdown xenDomainShutdown;
@@ -100,10 +94,6 @@ struct xenUnifiedDriver {
     virDrvDomainSetMaxMemory xenDomainSetMaxMemory;
     virDrvDomainSetMemory xenDomainSetMemory;
     virDrvDomainGetInfo xenDomainGetInfo;
-    virDrvDomainSave xenDomainSave;
-    virDrvDomainRestore xenDomainRestore;
-    virDrvDomainCoreDump xenDomainCoreDump;
-    virDrvDomainScreenshot xenDomainScreenshot;
     virDrvDomainPinVcpu xenDomainPinVcpu;
     virDrvDomainGetVcpus xenDomainGetVcpus;
     virDrvListDefinedDomains xenListDefinedDomains;
@@ -113,9 +103,6 @@ struct xenUnifiedDriver {
     virDrvDomainUndefine xenDomainUndefine;
     virDrvDomainAttachDeviceFlags xenDomainAttachDeviceFlags;
     virDrvDomainDetachDeviceFlags xenDomainDetachDeviceFlags;
-    virDrvDomainUpdateDeviceFlags xenDomainUpdateDeviceFlags;
-    virDrvDomainGetAutostart xenDomainGetAutostart;
-    virDrvDomainSetAutostart xenDomainSetAutostart;
     virDrvDomainGetSchedulerType xenDomainGetSchedulerType;
     virDrvDomainGetSchedulerParameters xenDomainGetSchedulerParameters;
     virDrvDomainSetSchedulerParameters xenDomainSetSchedulerParameters;

@@ -42,9 +42,7 @@ static void xenStoreWatchEvent(int watch, int fd, int events, void *data);
 static void xenStoreWatchListFree(xenStoreWatchListPtr list);
 
 struct xenUnifiedDriver xenStoreDriver = {
-    .xenOpen = xenStoreOpen,
     .xenClose = xenStoreClose,
-    .xenListDomains = xenStoreListDomains,
     .xenDomainShutdown = xenStoreDomainShutdown,
     .xenDomainReboot = xenStoreDomainReboot,
     .xenDomainGetOSType = xenStoreDomainGetOSType,
