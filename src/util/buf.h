@@ -52,6 +52,7 @@ void virBufferEscapeString(const virBufferPtr buf, const char *format, const cha
 void virBufferEscapeSexpr(const virBufferPtr buf, const char *format, const char *str);
 void virBufferEscape(const virBufferPtr buf, const char *toescape, const char *format, const char *str);
 void virBufferURIEncodeString (const virBufferPtr buf, const char *str);
+void virBufferEscapeShell(virBufferPtr buf, const char *str);
 
 # define virBufferAddLit(buf_, literal_string_) \
   virBufferAdd (buf_, "" literal_string_ "", sizeof literal_string_ - 1)

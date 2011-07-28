@@ -27,6 +27,7 @@ virBufferContentAndReset;
 virBufferError;
 virBufferEscape;
 virBufferEscapeSexpr;
+virBufferEscapeShell;
 virBufferEscapeString;
 virBufferFreeAndReset;
 virBufferStrcat;

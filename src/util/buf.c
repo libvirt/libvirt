@@ -486,6 +486,60 @@ virBufferURIEncodeString (virBufferPtr buf, const char *str)
 }
 
 /**
+ * virBufferEscapeShell:
+ * @buf:  the buffer to append to
+ * @str:  an unquoted string
+ *
+ * Quotes a string so that the shell (/bin/sh) will interpret the
+ * quoted string to mean str.
+ */
+void
+virBufferEscapeShell(virBufferPtr buf, const char *str)
+{
+    int len;
+    char *escaped, *out;
+    const char *cur;
+
+    if ((buf == NULL) || (str == NULL))
+        return;
+
+    if (buf->error)
+        return;
+
+    /* Only quote if str includes shell metacharacters. */
+    if (!strpbrk(str, "\r\t\n !\"#$&'()*;<>?[\\]^`{|}~")) {
+        virBufferAdd(buf, str, -1);
+        return;
+    }
+
+    len = strlen(str);
+    if (xalloc_oversized(4, len) ||
+        VIR_ALLOC_N(escaped, 4 * len + 3) < 0) {
+        virBufferSetError(buf);
+        return;
+    }
+
+    cur = str;
+    out = escaped;
+
+    *out++ = '\'';
+    while (*cur != 0) {
+        *out++ = *cur++;
+        if (*cur == '\'') {
+            /* Replace literal ' with a close ', a \', and a open ' */
+            *out++ = '\\';
+            *out++ = '\'';
+            *out++ = '\'';
+        }
+    }
+    *out++ = '\'';
+    *out = 0;
+
+    virBufferAdd(buf, escaped, -1);
+    VIR_FREE(escaped);
+}
+
+/**
  * virBufferStrcat:
  * @buf:  the buffer to dump
  * @...:  the variable list of strings, the last argument must be NULL
