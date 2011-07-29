@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Ensure that an invalid domain ID isn't interpreted as a valid one.
 # Before, an ID of 2^32+2 would be treated just like an ID of 2.
 
