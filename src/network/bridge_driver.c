@@ -531,10 +531,15 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
 
     /* If this is an isolated network, set the default route option
      * (3) to be empty to avoid setting a default route that's
-     * guaranteed to not work.
+     * guaranteed to not work, and set --no-resolv so that no dns
+     * requests are forwarded on to the dns server listed in the
+     * host's /etc/resolv.conf (since this could be used as a channel
+     * to build a connection to the outside).
      */
-    if (network->def->forwardType == VIR_NETWORK_FORWARD_NONE)
-        virCommandAddArg(cmd, "--dhcp-option=3");
+    if (network->def->forwardType == VIR_NETWORK_FORWARD_NONE) {
+        virCommandAddArgList(cmd, "--dhcp-option=3",
+                             "--no-resolv", NULL);
+    }
 
     if (network->def->dns != NULL) {
         virNetworkDNSDefPtr dns = network->def->dns;
