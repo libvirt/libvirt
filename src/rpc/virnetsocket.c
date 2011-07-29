@@ -345,8 +345,8 @@ int virNetSocketNewListenUNIX(const char *path,
      */
     if (grp != 0 && chown(path, -1, grp)) {
         virReportSystemError(errno,
-                             _("Failed to change group ID of '%s' to %d"),
-                             path, grp);
+                             _("Failed to change group ID of '%s' to %u"),
+                             path, (unsigned int) grp);
         goto error;
     }
 
@@ -737,7 +737,7 @@ int virNetSocketGetLocalIdentity(virNetSocketPtr sock,
                                  pid_t *pid)
 {
     struct ucred cr;
-    unsigned int cr_len = sizeof (cr);
+    socklen_t cr_len = sizeof (cr);
     virMutexLock(&sock->lock);
 
     if (getsockopt(sock->fd, SOL_SOCKET, SO_PEERCRED, &cr, &cr_len) < 0) {
