@@ -193,6 +193,7 @@ int
 virHookCall(int driver, const char *id, int op, int sub_op, const char *extra,
             const char *input) {
     int ret;
+    int exitstatus;
     char *path;
     virCommandPtr cmd;
     const char *drvstr;
@@ -257,7 +258,13 @@ virHookCall(int driver, const char *id, int op, int sub_op, const char *extra,
     if (input)
         virCommandSetInputBuffer(cmd, input);
 
-    ret = virCommandRun(cmd, NULL);
+    ret = virCommandRun(cmd, &exitstatus);
+    if (ret == 0 && exitstatus != 0) {
+        virHookReportError(VIR_ERR_HOOK_SCRIPT_FAILED,
+                           _("Hook script %s %s failed with error code %d"),
+                           path, drvstr, exitstatus);
+        ret = -1;
+    }
 
     virCommandFree(cmd);
 
