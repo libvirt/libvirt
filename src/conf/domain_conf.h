@@ -429,6 +429,10 @@ struct _virDomainNetDef {
     virBandwidthPtr bandwidth;
 };
 
+/* Used for prefix of ifname of any network name generated dynamically
+ * by libvirt, and cannot be used for a persistent network name.  */
+# define VIR_NET_GENERATED_PREFIX "vnet"
+
 enum virDomainChrDeviceType {
     VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL = 0,
     VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL,

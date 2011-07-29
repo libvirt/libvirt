@@ -2819,7 +2819,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
                 ifname = virXMLPropString(cur, "dev");
                 if ((ifname != NULL) &&
                     ((flags & VIR_DOMAIN_XML_INACTIVE) &&
-                      (STRPREFIX((const char*)ifname, "vnet")))) {
+                      (STRPREFIX(ifname, VIR_NET_GENERATED_PREFIX)))) {
                     /* An auto-generated target name, blank it out */
                     VIR_FREE(ifname);
                 }

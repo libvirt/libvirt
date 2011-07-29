@@ -115,7 +115,7 @@ umlConnectTapDevice(virConnectPtr conn,
                     const char *bridge)
 {
     brControl *brctl = NULL;
-    int template_ifname = 0;
+    bool template_ifname = false;
     int err;
     unsigned char tapmac[VIR_MAC_BUFLEN];
 
@@ -126,13 +126,13 @@ umlConnectTapDevice(virConnectPtr conn,
     }
 
     if (!net->ifname ||
-        STRPREFIX(net->ifname, "vnet") ||
+        STRPREFIX(net->ifname, VIR_NET_GENERATED_PREFIX) ||
         strchr(net->ifname, '%')) {
         VIR_FREE(net->ifname);
-        if (!(net->ifname = strdup("vnet%d")))
+        if (!(net->ifname = strdup(VIR_NET_GENERATED_PREFIX "%d")))
             goto no_memory;
         /* avoid exposing vnet%d in getXMLDesc or error outputs */
-        template_ifname = 1;
+        template_ifname = true;
     }
 
     memcpy(tapmac, net->mac, VIR_MAC_BUFLEN);
