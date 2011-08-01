@@ -169,6 +169,8 @@ void virNetworkDefFree(virNetworkDefPtr def)
 
     virNetworkDNSDefFree(def->dns);
 
+    VIR_FREE(def->virtPortProfile);
+
     virBandwidthDefFree(def->bandwidth);
 
     VIR_FREE(def);
