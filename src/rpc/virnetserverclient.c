@@ -177,7 +177,8 @@ static int virNetServerClientRegisterEvent(virNetServerClientPtr client)
 
     client->refs++;
     VIR_DEBUG("Registering client event callback %d", mode);
-    if (virNetSocketAddIOCallback(client->sock,
+    if (!client->sock ||
+        virNetSocketAddIOCallback(client->sock,
                                   mode,
                                   virNetServerClientDispatchEvent,
                                   client,
@@ -386,9 +387,10 @@ int virNetServerClientGetTLSKeySize(virNetServerClientPtr client)
 
 int virNetServerClientGetFD(virNetServerClientPtr client)
 {
-    int fd = 0;
+    int fd = -1;
     virNetServerClientLock(client);
-    fd = virNetSocketGetFD(client->sock);
+    if (client->sock)
+        fd = virNetSocketGetFD(client->sock);
     virNetServerClientUnlock(client);
     return fd;
 }
@@ -396,9 +398,10 @@ int virNetServerClientGetFD(virNetServerClientPtr client)
 int virNetServerClientGetLocalIdentity(virNetServerClientPtr client,
                                        uid_t *uid, pid_t *pid)
 {
-    int ret;
+    int ret = -1;
     virNetServerClientLock(client);
-    ret = virNetSocketGetLocalIdentity(client->sock, uid, pid);
+    if (client->sock)
+        ret = virNetSocketGetLocalIdentity(client->sock, uid, pid);
     virNetServerClientUnlock(client);
     return ret;
 }
@@ -413,7 +416,7 @@ bool virNetServerClientIsSecure(virNetServerClientPtr client)
     if (client->sasl)
         secure = true;
 #endif
-    if (virNetSocketIsLocal(client->sock))
+    if (client->sock && virNetSocketIsLocal(client->sock))
         secure = true;
     virNetServerClientUnlock(client);
     return secure;
@@ -502,12 +505,16 @@ void virNetServerClientSetDispatcher(virNetServerClientPtr client,
 
 const char *virNetServerClientLocalAddrString(virNetServerClientPtr client)
 {
+    if (!client->sock)
+        return NULL;
     return virNetSocketLocalAddrString(client->sock);
 }
 
 
 const char *virNetServerClientRemoteAddrString(virNetServerClientPtr client)
 {
+    if (!client->sock)
+        return NULL;
     return virNetSocketRemoteAddrString(client->sock);
 }
 
@@ -570,10 +577,7 @@ void virNetServerClientClose(virNetServerClientPtr client)
         virNetTLSSessionFree(client->tls);
         client->tls = NULL;
     }
-    if (client->sock) {
-        virNetSocketFree(client->sock);
-        client->sock = NULL;
-    }
+    client->wantClose = true;
 
     while (client->rx) {
         virNetMessagePtr msg
@@ -584,6 +588,11 @@ void virNetServerClientClose(virNetServerClientPtr client)
         virNetMessagePtr msg
             = virNetMessageQueueServe(&client->tx);
         virNetMessageFree(msg);
+    }
+
+    if (client->sock) {
+        virNetSocketFree(client->sock);
+        client->sock = NULL;
     }
 
     virNetServerClientUnlock(client);
