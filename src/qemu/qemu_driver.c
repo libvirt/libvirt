@@ -5688,7 +5688,9 @@ static int qemuDomainSetBlkioParameters(virDomainPtr dom,
                 ret = -1;
             }
         }
-        ret = virDomainSaveConfig(driver->configDir, persistentDef);
+
+        if (virDomainSaveConfig(driver->configDir, persistentDef) < 0)
+            ret = -1;
     }
 
 cleanup:
