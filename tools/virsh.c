@@ -9201,7 +9201,7 @@ cmdVolName(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
 
-    if (!(vol = vshCommandOptVolBy(ctl, cmd, "vol", "pool", NULL,
+    if (!(vol = vshCommandOptVolBy(ctl, cmd, "vol", NULL, NULL,
                                    VSH_BYUUID)))
         return false;
 
@@ -9238,7 +9238,7 @@ cmdVolPool(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     /* Use the supplied string to locate the volume */
-    if (!(vol = vshCommandOptVolBy(ctl, cmd, "vol", "pool", NULL,
+    if (!(vol = vshCommandOptVolBy(ctl, cmd, "vol", NULL, NULL,
                                    VSH_BYUUID))) {
         return false;
     }
@@ -13619,7 +13619,7 @@ vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
     if (vshCommandOptString(cmd, optname, &n) <= 0)
         return NULL;
 
-    if (vshCommandOptString(cmd, pooloptname, &p) < 0) {
+    if (pooloptname != NULL && vshCommandOptString(cmd, pooloptname, &p) < 0) {
         vshError(ctl, "%s", _("missing option"));
         return NULL;
     }
