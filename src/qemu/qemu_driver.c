@@ -5983,7 +5983,8 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        ret = virDomainSaveConfig(driver->configDir, persistentDef);
+        if (virDomainSaveConfig(driver->configDir, persistentDef) < 0)
+            ret = -1;
     }
 
 cleanup:
