@@ -8065,7 +8065,7 @@ static int qemuDomainAbortJob(virDomainPtr dom) {
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_ABORT) < 0)
         goto cleanup;
 
-    if (virDomainObjIsActive(vm)) {
+    if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is not running"));
         goto endjob;
