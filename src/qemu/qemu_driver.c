@@ -2912,18 +2912,21 @@ qemuDomainScreenshot(virDomainPtr dom,
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorScreendump(priv->mon, tmp) < 0) {
         qemuDomainObjExitMonitor(driver, vm);
+        unlink(tmp);
         goto endjob;
     }
     qemuDomainObjExitMonitor(driver, vm);
 
     if (VIR_CLOSE(tmp_fd) < 0) {
         virReportSystemError(errno, _("unable to close %s"), tmp);
+        unlink(tmp);
         goto endjob;
     }
 
     if (virFDStreamOpenFile(st, tmp, 0, 0, O_RDONLY, true) < 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
                         _("unable to open stream"));
+        unlink(tmp);
         goto endjob;
     }
 
@@ -2931,10 +2934,7 @@ qemuDomainScreenshot(virDomainPtr dom,
 
 endjob:
     VIR_FORCE_CLOSE(tmp_fd);
-    if (tmp) {
-        unlink(tmp);
-        VIR_FREE(tmp);
-    }
+    VIR_FREE(tmp);
 
     if (qemuDomainObjEndJob(driver, vm) == 0)
         vm = NULL;

@@ -8713,6 +8713,7 @@ vboxDomainScreenshot(virDomainPtr dom,
                 if (NS_FAILED(rc) || !width || !height) {
                     vboxError(VIR_ERR_OPERATION_FAILED, "%s",
                               _("unable to get screen resolution"));
+                    unlink(tmp);
                     goto endjob;
                 }
 
@@ -8723,6 +8724,7 @@ vboxDomainScreenshot(virDomainPtr dom,
                 if (NS_FAILED(rc)) {
                     vboxError(VIR_ERR_OPERATION_FAILED, "%s",
                               _("failed to take screenshot"));
+                    unlink(tmp);
                     goto endjob;
                 }
 
@@ -8730,17 +8732,20 @@ vboxDomainScreenshot(virDomainPtr dom,
                               screenDataSize) < 0) {
                     virReportSystemError(errno, _("unable to write data "
                                                   "to '%s'"), tmp);
+                    unlink(tmp);
                     goto endjob;
                 }
 
                 if (VIR_CLOSE(tmp_fd) < 0) {
                     virReportSystemError(errno, _("unable to close %s"), tmp);
+                    unlink(tmp);
                     goto endjob;
                 }
 
                 if (virFDStreamOpenFile(st, tmp, 0, 0, O_RDONLY, true) < 0) {
                     vboxError(VIR_ERR_OPERATION_FAILED, "%s",
                               _("unable to open stream"));
+                    unlink(tmp);
                     goto endjob;
                 }
 
