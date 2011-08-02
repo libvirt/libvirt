@@ -1159,7 +1159,8 @@ virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
     virNetTLSSessionPtr sess;
     int err;
 
-    VIR_DEBUG("ctxt=%p hostname=%s isServer=%d", ctxt, NULLSTR(hostname), ctxt->isServer);
+    VIR_DEBUG("ctxt=%p hostname=%s isServer=%d",
+              ctxt, NULLSTR(hostname), ctxt->isServer);
 
     if (VIR_ALLOC(sess) < 0) {
         virReportOOMError();
@@ -1169,7 +1170,7 @@ virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
     if (virMutexInit(&sess->lock) < 0) {
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
                     _("Failed to initialized mutex"));
-        VIR_FREE(ctxt);
+        VIR_FREE(sess);
         return NULL;
     }
 
