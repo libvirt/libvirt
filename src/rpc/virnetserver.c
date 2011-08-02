@@ -471,7 +471,7 @@ cleanup:
 
 static int virNetServerSignalSetup(virNetServerPtr srv)
 {
-    int fds[2];
+    int fds[2] = { -1, -1 };
 
     if (srv->sigwrite != -1)
         return 0;
