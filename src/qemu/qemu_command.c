@@ -5938,6 +5938,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
     int video = VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
     int nvirtiodisk = 0;
     qemuDomainCmdlineDefPtr cmd = NULL;
+    virDomainDiskDefPtr disk = NULL;
 
     if (pidfile)
         *pidfile = NULL;
@@ -6124,7 +6125,6 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                    STRPREFIX(arg, "-fd") ||
                    STREQ(arg, "-cdrom")) {
             WANT_VALUE();
-            virDomainDiskDefPtr disk;
             if (VIR_ALLOC(disk) < 0)
                 goto no_memory;
 
@@ -6226,19 +6226,16 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
             }
 
             if (!(disk->src || disk->nhosts > 0) ||
-                !disk->dst) {
-                virDomainDiskDefFree(disk);
+                !disk->dst)
                 goto no_memory;
-            }
 
             if (virDomainDiskDefAssignAddress(caps, disk) < 0)
                 goto error;
 
-            if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0) {
-                virDomainDiskDefFree(disk);
+            if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
                 goto no_memory;
-            }
             def->disks[def->ndisks++] = disk;
+            disk = NULL;
         } else if (STREQ(arg, "-no-acpi")) {
             def->features &= ~(1 << VIR_DOMAIN_FEATURE_ACPI);
         } else if (STREQ(arg, "-no-reboot")) {
@@ -6307,8 +6304,10 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                 if (!(chr = virDomainChrDefNew()))
                     goto error;
 
-                if (qemuParseCommandLineChr(&chr->source, val) < 0)
+                if (qemuParseCommandLineChr(&chr->source, val) < 0) {
+                    virDomainChrDefFree(chr);
                     goto error;
+                }
                 if (VIR_REALLOC_N(def->serials, def->nserials+1) < 0) {
                     virDomainChrDefFree(chr);
                     goto no_memory;
@@ -6325,8 +6324,10 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                 if (!(chr = virDomainChrDefNew()))
                     goto error;
 
-                if (qemuParseCommandLineChr(&chr->source, val) < 0)
+                if (qemuParseCommandLineChr(&chr->source, val) < 0) {
+                    virDomainChrDefFree(chr);
                     goto error;
+                }
                 if (VIR_REALLOC_N(def->parallels, def->nparallels+1) < 0) {
                     virDomainChrDefFree(chr);
                     goto no_memory;
@@ -6353,29 +6354,22 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                 }
                 def->inputs[def->ninputs++] = input;
             } else if (STRPREFIX(val, "disk:")) {
-                virDomainDiskDefPtr disk;
                 if (VIR_ALLOC(disk) < 0)
                     goto no_memory;
                 disk->src = strdup(val + strlen("disk:"));
-                if (!disk->src) {
-                    virDomainDiskDefFree(disk);
+                if (!disk->src)
                     goto no_memory;
-                }
                 if (STRPREFIX(disk->src, "/dev/"))
                     disk->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
                 else
                     disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
                 disk->device = VIR_DOMAIN_DISK_DEVICE_DISK;
                 disk->bus = VIR_DOMAIN_DISK_BUS_USB;
-                if (!(disk->dst = strdup("sda"))) {
-                    virDomainDiskDefFree(disk);
+                if (!(disk->dst = strdup("sda")) ||
+                    VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
                     goto no_memory;
-                }
-                if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0) {
-                    virDomainDiskDefFree(disk);
-                    goto no_memory;
-                }
                 def->disks[def->ndisks++] = disk;
+                disk = NULL;
             } else {
                 virDomainHostdevDefPtr hostdev;
                 if (!(hostdev = qemuParseCommandLineUSB(val)))
@@ -6399,18 +6393,16 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                 def->nets[def->nnets++] = net;
             }
         } else if (STREQ(arg, "-drive")) {
-            virDomainDiskDefPtr disk;
             WANT_VALUE();
             if (!(disk = qemuParseCommandLineDisk(caps, val, nvirtiodisk)))
                 goto error;
-            if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0) {
-                virDomainDiskDefFree(disk);
+            if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
                 goto no_memory;
-            }
-            def->disks[def->ndisks++] = disk;
-
             if (disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO)
                 nvirtiodisk++;
+
+            def->disks[def->ndisks++] = disk;
+            disk = NULL;
         } else if (STREQ(arg, "-pcidevice")) {
             virDomainHostdevDefPtr hostdev;
             WANT_VALUE();
@@ -6516,8 +6508,10 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                 if (VIR_ALLOC(chr) < 0)
                     goto no_memory;
 
-                if (qemuParseCommandLineChr(chr, val) < 0)
+                if (qemuParseCommandLineChr(chr, val) < 0) {
+                    virDomainChrSourceDefFree(chr);
                     goto error;
+                }
 
                 *monConfig = chr;
             }
@@ -6545,10 +6539,9 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
             char *hosts, *port, *saveptr = NULL, *token;
             virDomainDiskDefPtr first_rbd_disk = NULL;
             for (i = 0 ; i < def->ndisks ; i++) {
-                virDomainDiskDefPtr disk = def->disks[i];
-                if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
-                    disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
-                    first_rbd_disk = disk;
+                if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
+                    def->disks[i]->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
+                    first_rbd_disk = def->disks[i];
                     break;
                 }
             }
@@ -6676,6 +6669,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
 no_memory:
     virReportOOMError();
 error:
+    virDomainDiskDefFree(disk);
     VIR_FREE(cmd);
     virDomainDefFree(def);
     VIR_FREE(nics);
