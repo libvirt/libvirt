@@ -1060,8 +1060,7 @@ ifaceGetNthParent(int ifindex, const char *ifname, unsigned int nthParent,
         i++;
     }
 
-    if (nth)
-        *nth = i - 1;
+    *nth = i - 1;
 
     return rc;
 }

@@ -1,6 +1,7 @@
 /*
  * interface.h: interface helper APIs for libvirt
  *
+ * Copyright (C) 2011 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corporation, Inc.
  *
  * See COPYING.LIB for the License of this software
@@ -67,7 +68,9 @@ int ifaceMacvtapLinkDump(bool nltarget_kernel, const char *ifname, int ifindex,
 
 int ifaceGetNthParent(int ifindex, const char *ifname, unsigned int nthParent,
                       int *parent_ifindex, char *parent_ifname,
-                      unsigned int *nth);
+                      unsigned int *nth)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5)
+    ATTRIBUTE_NONNULL(6);
 
 int ifaceReplaceMacAddress(const unsigned char *macaddress,
                            const char *linkdev,
