@@ -505,8 +505,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
                             unsigned long long offset,
                             unsigned long long length,
                             int oflags,
-                            int mode,
-                            bool delete)
+                            int mode)
 {
     int fd = -1;
     int fds[2] = { -1, -1 };
@@ -514,8 +513,8 @@ virFDStreamOpenFileInternal(virStreamPtr st,
     virCommandPtr cmd = NULL;
     int errfd = -1;
 
-    VIR_DEBUG("st=%p path=%s oflags=%x offset=%llu length=%llu mode=%o delete=%d",
-              st, path, oflags, offset, length, mode, delete);
+    VIR_DEBUG("st=%p path=%s oflags=%x offset=%llu length=%llu mode=%o",
+              st, path, oflags, offset, length, mode);
 
     if (oflags & O_CREAT)
         fd = open(path, oflags, mode);
@@ -593,9 +592,6 @@ virFDStreamOpenFileInternal(virStreamPtr st,
     if (virFDStreamOpenInternal(st, fd, cmd, errfd, length) < 0)
         goto error;
 
-    if (delete)
-        unlink(path);
-
     return 0;
 
 error:
@@ -603,6 +599,8 @@ error:
     VIR_FORCE_CLOSE(fds[0]);
     VIR_FORCE_CLOSE(fds[1]);
     VIR_FORCE_CLOSE(fd);
+    if (oflags & O_CREAT)
+        unlink(path);
     return -1;
 }
 
@@ -610,8 +608,7 @@ int virFDStreamOpenFile(virStreamPtr st,
                         const char *path,
                         unsigned long long offset,
                         unsigned long long length,
-                        int oflags,
-                        bool delete)
+                        int oflags)
 {
     if (oflags & O_CREAT) {
         streamsReportError(VIR_ERR_INTERNAL_ERROR,
@@ -621,7 +618,7 @@ int virFDStreamOpenFile(virStreamPtr st,
     }
     return virFDStreamOpenFileInternal(st, path,
                                        offset, length,
-                                       oflags, 0, delete);
+                                       oflags, 0);
 }
 
 int virFDStreamCreateFile(virStreamPtr st,
@@ -629,11 +626,9 @@ int virFDStreamCreateFile(virStreamPtr st,
                           unsigned long long offset,
                           unsigned long long length,
                           int oflags,
-                          mode_t mode,
-                          bool delete)
+                          mode_t mode)
 {
     return virFDStreamOpenFileInternal(st, path,
                                        offset, length,
-                                       oflags | O_CREAT,
-                                       mode, delete);
+                                       oflags | O_CREAT, mode);
 }

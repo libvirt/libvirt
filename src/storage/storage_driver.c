@@ -1614,7 +1614,7 @@ storageVolumeDownload(virStorageVolPtr obj,
     if (virFDStreamOpenFile(stream,
                             vol->target.path,
                             offset, length,
-                            O_RDONLY, false) < 0)
+                            O_RDONLY) < 0)
         goto out;
 
     ret = 0;
@@ -1678,7 +1678,7 @@ storageVolumeUpload(virStorageVolPtr obj,
     if (virFDStreamOpenFile(stream,
                             vol->target.path,
                             offset, length,
-                            O_WRONLY, false) < 0)
+                            O_WRONLY) < 0)
         goto out;
 
     ret = 0;

@@ -2164,7 +2164,7 @@ xenUnifiedDomainOpenConsole(virDomainPtr dom,
     }
 
     if (virFDStreamOpenFile(st, chr->source.data.file.path,
-                            0, 0, O_RDWR, false) < 0)
+                            0, 0, O_RDWR) < 0)
         goto cleanup;
 
     ret = 0;

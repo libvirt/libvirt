@@ -2862,6 +2862,7 @@ qemuDomainScreenshot(virDomainPtr dom,
     char *tmp = NULL;
     int tmp_fd = -1;
     char *ret = NULL;
+    bool unlink_tmp = false;
 
     virCheckFlags(0, NULL);
 
@@ -2906,27 +2907,25 @@ qemuDomainScreenshot(virDomainPtr dom,
         virReportSystemError(errno, _("mkstemp(\"%s\") failed"), tmp);
         goto endjob;
     }
+    unlink_tmp = true;
 
     virSecurityManagerSetSavedStateLabel(qemu_driver->securityManager, vm, tmp);
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorScreendump(priv->mon, tmp) < 0) {
         qemuDomainObjExitMonitor(driver, vm);
-        unlink(tmp);
         goto endjob;
     }
     qemuDomainObjExitMonitor(driver, vm);
 
     if (VIR_CLOSE(tmp_fd) < 0) {
         virReportSystemError(errno, _("unable to close %s"), tmp);
-        unlink(tmp);
         goto endjob;
     }
 
-    if (virFDStreamOpenFile(st, tmp, 0, 0, O_RDONLY, true) < 0) {
+    if (virFDStreamOpenFile(st, tmp, 0, 0, O_RDONLY) < 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
                         _("unable to open stream"));
-        unlink(tmp);
         goto endjob;
     }
 
@@ -2934,6 +2933,8 @@ qemuDomainScreenshot(virDomainPtr dom,
 
 endjob:
     VIR_FORCE_CLOSE(tmp_fd);
+    if (unlink_tmp)
+        unlink(tmp);
     VIR_FREE(tmp);
 
     if (qemuDomainObjEndJob(driver, vm) == 0)
@@ -9259,7 +9260,7 @@ qemuDomainOpenConsole(virDomainPtr dom,
     }
 
     if (virFDStreamOpenFile(st, chr->source.data.file.path,
-                            0, 0, O_RDWR, false) < 0)
+                            0, 0, O_RDWR) < 0)
         goto cleanup;
 
     ret = 0;

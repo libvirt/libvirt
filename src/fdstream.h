@@ -37,14 +37,12 @@ int virFDStreamOpenFile(virStreamPtr st,
                         const char *path,
                         unsigned long long offset,
                         unsigned long long length,
-                        int oflags,
-                        bool delete);
+                        int oflags);
 int virFDStreamCreateFile(virStreamPtr st,
                           const char *path,
                           unsigned long long offset,
                           unsigned long long length,
                           int oflags,
-                          mode_t mode,
-                          bool delete);
+                          mode_t mode);
 
 #endif /* __VIR_FDSTREAM_H_ */
