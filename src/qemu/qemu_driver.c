@@ -3432,6 +3432,9 @@ qemudDomainGetVcpuPinInfo(virDomainPtr dom,
             goto cleanup;
     }
 
+    /* Coverity didn't realize that targetDef must be set if we got here.  */
+    sa_assert(targetDef);
+
     if (nodeGetInfo(dom->conn, &nodeinfo) < 0)
         goto cleanup;
     hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
@@ -6138,6 +6141,9 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
         val = 0;
         param->value.ul = 0;
         param->type = VIR_TYPED_PARAM_ULLONG;
+
+        /* Coverity does not realize that if we get here, group is set.  */
+        sa_assert(group);
 
         switch (i) {
         case 0: /* fill memory hard limit here */
