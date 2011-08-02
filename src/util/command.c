@@ -1543,11 +1543,13 @@ virCommandTranslateStatus(int status)
 {
     char *buf;
     if (WIFEXITED(status)) {
-        virAsprintf(&buf, _("exit status %d"), WEXITSTATUS(status));
+        ignore_value(virAsprintf(&buf, _("exit status %d"),
+                                 WEXITSTATUS(status)));
     } else if (WIFSIGNALED(status)) {
-        virAsprintf(&buf, _("fatal signal %d"), WTERMSIG(status));
+        ignore_value(virAsprintf(&buf, _("fatal signal %d"),
+                                 WTERMSIG(status)));
     } else {
-        virAsprintf(&buf, _("invalid value %d"), status);
+        ignore_value(virAsprintf(&buf, _("invalid value %d"), status));
     }
     return buf;
 }

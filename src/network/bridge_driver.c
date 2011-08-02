@@ -60,6 +60,7 @@
 #include "dnsmasq.h"
 #include "util/network.h"
 #include "configmake.h"
+#include "ignore-value.h"
 
 #define NETWORK_PID_DIR LOCALSTATEDIR "/run/libvirt/network"
 #define NETWORK_STATE_DIR LOCALSTATEDIR "/lib/libvirt/network"
@@ -125,8 +126,8 @@ networkDnsmasqLeaseFileNameDefault(const char *netname)
 {
     char *leasefile;
 
-    virAsprintf(&leasefile, DNSMASQ_STATE_DIR "/%s.leases",
-                netname);
+    ignore_value(virAsprintf(&leasefile, DNSMASQ_STATE_DIR "/%s.leases",
+                             netname));
     return leasefile;
 }
 
@@ -139,7 +140,7 @@ networkRadvdPidfileBasename(const char *netname)
     /* this is simple but we want to be sure it's consistently done */
     char *pidfilebase;
 
-    virAsprintf(&pidfilebase, "%s-radvd", netname);
+    ignore_value(virAsprintf(&pidfilebase, "%s-radvd", netname));
     return pidfilebase;
 }
 
@@ -148,8 +149,8 @@ networkRadvdConfigFileName(const char *netname)
 {
     char *configfile;
 
-    virAsprintf(&configfile, RADVD_STATE_DIR "/%s-radvd.conf",
-                netname);
+    ignore_value(virAsprintf(&configfile, RADVD_STATE_DIR "/%s-radvd.conf",
+                             netname));
     return configfile;
 }
 
@@ -166,12 +167,13 @@ networkBridgeDummyNicName(const char *brname)
          * a possible numeric ending (eg virbr0, virbr1, etc), we grab
          * the first 8 and last 3 characters of the string.
          */
-         virAsprintf(&nicname, "%.*s%s%s",
-                     /* space for last 3 chars + "-nic" + NULL */
-                     (int)(IFNAMSIZ - (3 + sizeof(dummyNicSuffix))),
-                     brname, brname + strlen(brname) - 3, dummyNicSuffix);
+        ignore_value(virAsprintf(&nicname, "%.*s%s%s",
+                                 /* space for last 3 chars + "-nic" + NULL */
+                                 (int)(IFNAMSIZ - (3 + sizeof(dummyNicSuffix))),
+                                 brname, brname + strlen(brname) - 3,
+                                 dummyNicSuffix));
     } else {
-         virAsprintf(&nicname, "%s%s", brname, dummyNicSuffix);
+        ignore_value(virAsprintf(&nicname, "%s%s", brname, dummyNicSuffix));
     }
     return nicname;
 }

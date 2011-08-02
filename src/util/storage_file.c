@@ -512,7 +512,7 @@ absolutePathFromBaseFile(const char *base_file, const char *path)
     if (d_len > INT_MAX)
         return NULL;
 
-    virAsprintf(&res, "%.*s/%s", (int) d_len, base_file, path);
+    ignore_value(virAsprintf(&res, "%.*s/%s", (int) d_len, base_file, path));
     return res;
 }
 

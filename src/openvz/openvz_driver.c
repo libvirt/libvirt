@@ -710,7 +710,7 @@ openvzGenerateContainerVethName(int veid)
         }
 
         /* set new name */
-        virAsprintf(&name, "eth%d", max + 1);
+        ignore_value(virAsprintf(&name, "eth%d", max + 1));
     }
 
     VIR_FREE(temp);
