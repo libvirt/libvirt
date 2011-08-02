@@ -786,9 +786,10 @@ readmore:
         if (client->nrequests < client->nrequests_max) {
             if (!(client->rx = virNetMessageNew())) {
                 client->wantClose = true;
+            } else {
+                client->rx->bufferLength = VIR_NET_MESSAGE_LEN_MAX;
+                client->nrequests++;
             }
-            client->rx->bufferLength = VIR_NET_MESSAGE_LEN_MAX;
-            client->nrequests++;
         }
         virNetServerClientUpdateEvent(client);
     }
