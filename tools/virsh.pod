@@ -445,7 +445,7 @@ I<bandwidth> specifies copying bandwidth limit in Mbps.
 Manage active block operations.
 
 I<path> specifies fully-qualified path of the disk.
-If I<--live> is specified, the active job on the specified disk will
+If I<--abort> is specified, the active job on the specified disk will
 be aborted.
 If I<--info> is specified, the active job information on the specified
 disk will be printed.
