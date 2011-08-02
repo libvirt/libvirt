@@ -1789,7 +1789,7 @@ virDomainGetConnect (virDomainPtr dom)
  *
  * Launch a new guest domain, based on an XML description similar
  * to the one returned by virDomainGetXMLDesc()
- * This function may requires privileged access to the hypervisor.
+ * This function may require privileged access to the hypervisor.
  * The domain is not persistent, so its definition will disappear when it
  * is destroyed, or if the host is restarted (see virDomainDefineXML() to
  * define persistent domains).
@@ -2198,7 +2198,7 @@ virDomainRef(virDomainPtr domain)
  * to CPU resources and I/O but the memory used by the domain at the
  * hypervisor level will stay allocated. Use virDomainResume() to reactivate
  * the domain.
- * This function may requires privileged access.
+ * This function may require privileged access.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -2244,7 +2244,7 @@ error:
  *
  * Resume a suspended domain, the process is restarted from the state where
  * it was frozen by calling virSuspendDomain().
- * This function may requires privileged access
+ * This function may require privileged access
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -3158,7 +3158,7 @@ error:
  * Dynamically change the maximum amount of physical memory allocated to a
  * domain. If domain is NULL, then this change the amount of memory reserved
  * to Domain0 i.e. the domain where the application runs.
- * This function requires privileged access to the hypervisor.
+ * This function may require privileged access to the hypervisor.
  *
  * This command is hypervisor-specific for whether active, persistent,
  * or both configurations are changed; for more control, use
@@ -3213,7 +3213,7 @@ error:
  * Dynamically change the target amount of physical memory allocated to a
  * domain. If domain is NULL, then this change the amount of memory reserved
  * to Domain0 i.e. the domain where the application runs.
- * This function may requires privileged access to the hypervisor.
+ * This function may require privileged access to the hypervisor.
  *
  * This command only changes the runtime configuration of the domain,
  * so can only be called on an active domain.
@@ -3269,7 +3269,7 @@ error:
  * Dynamically change the target amount of physical memory allocated to a
  * domain. If domain is NULL, then this change the amount of memory reserved
  * to Domain0 i.e. the domain where the application runs.
- * This function may requires privileged access to the hypervisor.
+ * This function may require privileged access to the hypervisor.
  *
  * @flags may include VIR_DOMAIN_AFFECT_LIVE or VIR_DOMAIN_AFFECT_CONFIG.
  * Both flags may be set. If VIR_DOMAIN_AFFECT_LIVE is set, the change affects
@@ -3338,7 +3338,7 @@ error:
  * @flags: bitwise-OR of virDomainModificationImpact
  *
  * Change all or a subset of the memory tunables.
- * This function requires privileged access to the hypervisor.
+ * This function may require privileged access to the hypervisor.
  *
  * Returns -1 in case of error, 0 in case of success.
  */
@@ -3412,7 +3412,7 @@ error:
  *         goto error;
  * }
  *
- * This function requires privileged access to the hypervisor. This function
+ * This function may require privileged access to the hypervisor. This function
  * expects the caller to allocate the @params.
  *
  * Returns -1 in case of error, 0 in case of success.
@@ -3464,7 +3464,7 @@ error:
  * @flags: an OR'ed set of virDomainModificationImpact
  *
  * Change all or a subset of the blkio tunables.
- * This function requires privileged access to the hypervisor.
+ * This function may require privileged access to the hypervisor.
  *
  * Returns -1 in case of error, 0 in case of success.
  */
@@ -3522,7 +3522,7 @@ error:
  * equal to the number of parameters suggested by @nparams.
  * See virDomainGetMemoryParameters for an equivalent usage example.
  *
- * This function requires privileged access to the hypervisor. This function
+ * This function may require privileged access to the hypervisor. This function
  * expects the caller to allocate the @params.
  *
  * Returns -1 in case of error, 0 in case of success.
@@ -7293,7 +7293,7 @@ error:
  * Dynamically change the number of virtual CPUs used by the domain.
  * Note that this call may fail if the underlying virtualization hypervisor
  * does not support it or if growing the number is arbitrary limited.
- * This function requires privileged access to the hypervisor.
+ * This function may require privileged access to the hypervisor.
  *
  * This command only changes the runtime configuration of the domain,
  * so can only be called on an active domain.  It is hypervisor-dependent
@@ -7352,7 +7352,7 @@ error:
  * Dynamically change the number of virtual CPUs used by the domain.
  * Note that this call may fail if the underlying virtualization hypervisor
  * does not support it or if growing the number is arbitrary limited.
- * This function requires privileged access to the hypervisor.
+ * This function may require privileged access to the hypervisor.
  *
  * @flags may include VIR_DOMAIN_AFFECT_LIVE to affect a running
  * domain (which may fail if domain is not active), or
@@ -7423,7 +7423,7 @@ error:
  *
  * Query the number of virtual CPUs used by the domain.  Note that
  * this call may fail if the underlying virtualization hypervisor does
- * not support it.  This function requires privileged access to the
+ * not support it.  This function may require privileged access to the
  * hypervisor.
  *
  * If @flags includes VIR_DOMAIN_AFFECT_LIVE, this will query a
@@ -7492,7 +7492,7 @@ error:
  *	If maplen > size, failure code is returned.
  *
  * Dynamically change the real CPUs which can be allocated to a virtual CPU.
- * This function requires privileged access to the hypervisor.
+ * This function may require privileged access to the hypervisor.
  *
  * This command only changes the runtime configuration of the domain,
  * so can only be called on an active domain.
@@ -7557,7 +7557,7 @@ error:
  * @flags: bitwise-OR of virDomainModificationImpac
  *
  * Dynamically change the real CPUs which can be allocated to a virtual CPU.
- * This function requires privileged access to the hypervisor.
+ * This function may require privileged access to the hypervisor.
  *
  * @flags may include VIR_DOMAIN_AFFECT_LIVE or VIR_DOMAIN_AFFECT_CONFIG.
  * Both flags may be set.
