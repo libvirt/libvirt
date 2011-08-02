@@ -5597,6 +5597,7 @@ cmdNetworkInfo(vshControl *ctl, const vshCmd *cmd)
     if (bridge)
         vshPrint(ctl, "%-15s %s\n", _("Bridge:"), bridge);
 
+    VIR_FREE(bridge);
     virNetworkFree(network);
     return true;
 }
