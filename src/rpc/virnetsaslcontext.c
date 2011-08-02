@@ -132,7 +132,7 @@ int virNetSASLContextCheckIdentity(virNetSASLContextPtr ctxt,
             ret = 1;
             goto cleanup; /* Succesful match */
         }
-        if (ret != FNM_NOMATCH) {
+        if (rv != FNM_NOMATCH) {
             virNetError(VIR_ERR_INTERNAL_ERROR,
                         _("Malformed TLS whitelist regular expression '%s'"),
                         *wildcards);
