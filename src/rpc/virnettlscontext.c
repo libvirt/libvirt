@@ -264,7 +264,7 @@ static int virNetTLSContextCheckCertKeyPurpose(gnutls_x509_crt_t cert,
     int i;
     unsigned int purposeCritical;
     unsigned int critical;
-    char *buffer;
+    char *buffer = NULL;
     size_t size;
     bool allowClient = false, allowServer = false;
 
