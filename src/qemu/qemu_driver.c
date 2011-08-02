@@ -2717,7 +2717,7 @@ doCoreDump(struct qemud_driver *driver,
 
 cleanup:
     VIR_FORCE_CLOSE(fd);
-    virFileDirectFdClose(directFd);
+    virFileDirectFdFree(directFd);
     if (ret != 0)
         unlink(path);
     return ret;
