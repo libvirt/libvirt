@@ -11315,7 +11315,7 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
                                 virDomainDiskDefPathIterator iter,
                                 void *opaque)
 {
-    virHashTablePtr paths;
+    virHashTablePtr paths = NULL;
     int format;
     int ret = -1;
     size_t depth = 0;
@@ -11339,7 +11339,7 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                  _("unknown disk format '%s' for %s"),
                                  disk->driverType, disk->src);
-            return -1;
+            goto cleanup;
         }
     } else {
         if (allowProbing) {
@@ -11348,7 +11348,7 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                  _("no disk format for %s and probing is disabled"),
                                  disk->src);
-            return -1;
+            goto cleanup;
         }
     }
 
