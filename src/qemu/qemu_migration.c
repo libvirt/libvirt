@@ -2569,13 +2569,11 @@ qemuMigrationFinish(struct qemud_driver *driver,
         VIR_WARN("Unable to encode migration cookie");
 
 endjob:
-    if (vm) {
-        if (qemuMigrationJobFinish(driver, vm) == 0) {
-            vm = NULL;
-        } else if (!vm->persistent && !virDomainObjIsActive(vm)) {
-            virDomainRemoveInactive(&driver->domains, vm);
-            vm = NULL;
-        }
+    if (qemuMigrationJobFinish(driver, vm) == 0) {
+        vm = NULL;
+    } else if (!vm->persistent && !virDomainObjIsActive(vm)) {
+        virDomainRemoveInactive(&driver->domains, vm);
+        vm = NULL;
     }
 
 cleanup:
