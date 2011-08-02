@@ -1114,7 +1114,7 @@ libvirt_virDomainGetVcpuPinInfo(PyObject *self ATTRIBUTE_UNUSED,
     virNodeInfo nodeinfo;
     virDomainInfo dominfo;
     unsigned char *cpumaps;
-    int cpumaplen, vcpu, pcpu;
+    size_t cpumaplen, vcpu, pcpu;
     unsigned int flags;
     int i_retval;
 
