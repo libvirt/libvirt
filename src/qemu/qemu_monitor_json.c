@@ -1018,7 +1018,7 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr reply,
         int thread;
         if (!entry) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("character device information was missing aray element"));
+                            _("character device information was missing array element"));
             goto cleanup;
         }
 
@@ -2266,7 +2266,7 @@ static int qemuMonitorJSONExtractPtyPaths(virJSONValuePtr reply,
         const char *id;
         if (!entry) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("character device information was missing aray element"));
+                            _("character device information was missing array element"));
             goto cleanup;
         }
 
@@ -2855,6 +2855,11 @@ static int qemuMonitorJSONGetBlockJobInfo(virJSONValuePtr reply,
 
     for (i = 0; i < nr_results; i++) {
         virJSONValuePtr entry = virJSONValueArrayGet(data, i);
+        if (!entry) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("missing array element"));
+            return -1;
+        }
         if (qemuMonitorJSONGetBlockJobInfoOne(entry, device, info) == 0)
             return 1;
     }
