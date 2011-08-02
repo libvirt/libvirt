@@ -2931,7 +2931,10 @@ qemuDomainScreenshot(virDomainPtr dom,
 
 endjob:
     VIR_FORCE_CLOSE(tmp_fd);
-    VIR_FREE(tmp);
+    if (tmp) {
+        unlink(tmp);
+        VIR_FREE(tmp);
+    }
 
     if (qemuDomainObjEndJob(driver, vm) == 0)
         vm = NULL;
