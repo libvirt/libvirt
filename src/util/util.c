@@ -1126,8 +1126,10 @@ int virFileOpenTtyAt(const char *ptmx,
             goto cleanup;
         }
 
-        if (ptsname_r(*ttymaster, *ttyName, PATH_MAX) < 0)
+        if (ptsname_r(*ttymaster, *ttyName, PATH_MAX) != 0) {
+            VIR_FREE(*ttyName);
             goto cleanup;
+        }
     }
 
     rc = 0;
