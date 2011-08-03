@@ -834,20 +834,6 @@ fi
 AC_SUBST([GNUTLS_CFLAGS])
 AC_SUBST([GNUTLS_LIBS])
 
-dnl Old versions of GnuTLS uses types like 'gnutls_session' instead
-dnl of 'gnutls_session_t'.  Try to detect this type if defined so
-dnl that we can offer backwards compatibility.
-old_cflags="$CFLAGS"
-old_libs="$LIBS"
-CFLAGS="$CFLAGS $GNUTLS_CFLAGS"
-LIBS="$LIBS $GNUTLS_LIBS"
-AC_CHECK_TYPE([gnutls_session],
-	AC_DEFINE([GNUTLS_1_0_COMPAT],[],
-		[enable GnuTLS 1.0 compatibility macros]),,
-	[#include <gnutls/gnutls.h>])
-CFLAGS="$old_cflags"
-LIBS="$old_libs"
-
 
 dnl Cyrus SASL
 AC_ARG_WITH([sasl],

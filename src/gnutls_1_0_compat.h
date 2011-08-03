@@ -21,8 +21,16 @@
  */
 
 #ifndef LIBVIRT_GNUTLS_1_0_COMPAT_H__
+# define LIBVIRT_GNUTLS_1_0_COMPAT_H__
 
 # include <config.h>
+
+# include <gnutls/gnutls.h>
+
+/* enable backward compatibility macros for gnutls 1.x.y */
+# if LIBGNUTLS_VERSION_MAJOR < 2
+#  define GNUTLS_1_0_COMPAT
+# endif
 
 # ifdef GNUTLS_1_0_COMPAT
 #  define gnutls_session_t                 gnutls_session
