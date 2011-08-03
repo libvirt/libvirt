@@ -2338,6 +2338,7 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
     struct network_driver *driver = conn->networkPrivateData;
     virNetworkIpDefPtr ipdef, ipv4def = NULL;
     virNetworkDefPtr def;
+    bool freeDef = true;
     virNetworkObjPtr network = NULL;
     virNetworkPtr ret = NULL;
     int ii;
@@ -2367,21 +2368,19 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
     if (!(network = virNetworkAssignDef(&driver->networks,
                                         def)))
         goto cleanup;
-    def = NULL;
+    freeDef = false;
 
     network->persistent = 1;
 
-    if (virNetworkSaveConfig(driver->networkConfigDir,
-                             network->newDef ? network->newDef : network->def) < 0) {
-        virNetworkRemoveInactive(&driver->networks,
-                                 network);
+    if (virNetworkSaveConfig(driver->networkConfigDir, def) < 0) {
+        virNetworkRemoveInactive(&driver->networks, network);
         network = NULL;
         goto cleanup;
     }
 
     /* We only support dhcp on one IPv4 address per defined network */
     for (ii = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
+         (ipdef = virNetworkDefGetIpByIndex(def, AF_UNSPEC, ii));
          ii++) {
         if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET)) {
             if (ipdef->nranges || ipdef->nhosts) {
@@ -2396,18 +2395,19 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
         }
     }
     if (ipv4def) {
-        dctx = dnsmasqContextNew(network->def->name, DNSMASQ_STATE_DIR);
+        dctx = dnsmasqContextNew(def->name, DNSMASQ_STATE_DIR);
         if (dctx == NULL ||
-            networkBuildDnsmasqHostsfile(dctx, ipv4def, network->def->dns) < 0 ||
+            networkBuildDnsmasqHostsfile(dctx, ipv4def, def->dns) < 0 ||
             dnsmasqSave(dctx) < 0)
             goto cleanup;
     }
 
-    VIR_INFO("Defining network '%s'", network->def->name);
-    ret = virGetNetwork(conn, network->def->name, network->def->uuid);
+    VIR_INFO("Defining network '%s'", def->name);
+    ret = virGetNetwork(conn, def->name, def->uuid);
 
 cleanup:
-    virNetworkDefFree(def);
+    if (freeDef)
+       virNetworkDefFree(def);
     dnsmasqContextFree(dctx);
     if (network)
         virNetworkObjUnlock(network);
