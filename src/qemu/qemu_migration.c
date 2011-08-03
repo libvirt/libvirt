@@ -257,7 +257,7 @@ qemuMigrationCookieNew(virDomainObjPtr dom)
     memcpy(mig->uuid, dom->def->uuid, VIR_UUID_BUFLEN);
 
     if (!(mig->localHostname = virGetHostname(NULL)))
-        goto no_memory;
+        goto error;
     if (virGetHostUUID(mig->localHostuuid) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("Unable to obtain host UUID"));
