@@ -209,7 +209,7 @@ static int lxcSetContainerResources(virDomainDefPtr def)
                                    VIR_CGROUP_DEVICE_RWM);
     if (rc != 0) {
         virReportSystemError(-rc,
-                             _("Unable to allow PYT devices for domain %s"),
+                             _("Unable to allow PTY devices for domain %s"),
                              def->name);
         goto cleanup;
     }
