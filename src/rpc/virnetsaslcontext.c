@@ -298,7 +298,7 @@ int virNetSASLSessionExtKeySize(virNetSASLSessionPtr sasl,
     ret = 0;
 
 cleanup:
-    virMutexLock(&sasl->lock);
+    virMutexUnlock(&sasl->lock);
     return ret;
 }
 
