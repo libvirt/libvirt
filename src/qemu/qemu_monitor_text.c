@@ -2981,7 +2981,6 @@ int qemuMonitorTextBlockJob(qemuMonitorPtr mon,
         return -1;
     }
 
-    ret = 0;
     if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("cannot run monitor command"));
