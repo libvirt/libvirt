@@ -2908,13 +2908,11 @@ int qemuProcessStart(virConnectPtr conn,
 
     VIR_DEBUG("Writing early domain status to disk");
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
-        ret = -1;
         goto cleanup;
     }
 
     VIR_DEBUG("Waiting for handshake from child");
     if (virCommandHandshakeWait(cmd) < 0) {
-        ret = -1;
         goto cleanup;
     }
 
@@ -2943,7 +2941,6 @@ int qemuProcessStart(virConnectPtr conn,
 
     VIR_DEBUG("Labelling done, completing handshake to child");
     if (virCommandHandshakeNotify(cmd) < 0) {
-        ret = -1;
         goto cleanup;
     }
     VIR_DEBUG("Handshake complete, child running");
