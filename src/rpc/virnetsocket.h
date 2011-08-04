@@ -118,6 +118,7 @@ void virNetSocketUpdateIOCallback(virNetSocketPtr sock,
 
 void virNetSocketRemoveIOCallback(virNetSocketPtr sock);
 
+void virNetSocketClose(virNetSocketPtr sock);
 
 
 #endif /* __VIR_NET_SOCKET_H__ */

@@ -1558,6 +1558,7 @@ int main(int argc, char **argv) {
 cleanup:
     virNetServerProgramFree(remoteProgram);
     virNetServerProgramFree(qemuProgram);
+    virNetServerClose(srv);
     virNetServerFree(srv);
     if (statuswrite != -1) {
         if (ret != 0) {

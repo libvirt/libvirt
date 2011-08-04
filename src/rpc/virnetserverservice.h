@@ -66,4 +66,6 @@ void virNetServerServiceFree(virNetServerServicePtr svc);
 void virNetServerServiceToggle(virNetServerServicePtr svc,
                                bool enabled);
 
+void virNetServerServiceClose(virNetServerServicePtr svc);
+
 #endif

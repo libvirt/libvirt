@@ -85,5 +85,6 @@ void virNetServerQuit(virNetServerPtr srv);
 
 void virNetServerFree(virNetServerPtr srv);
 
+void virNetServerClose(virNetServerPtr srv);
 
 #endif

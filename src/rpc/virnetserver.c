@@ -798,3 +798,19 @@ void virNetServerFree(virNetServerPtr srv)
     virMutexDestroy(&srv->lock);
     VIR_FREE(srv);
 }
+
+void virNetServerClose(virNetServerPtr srv)
+{
+    int i;
+
+    if (!srv)
+        return;
+
+    virNetServerLock(srv);
+
+    for (i = 0; i < srv->nservices; i++) {
+        virNetServerServiceClose(srv->services[i]);
+    }
+
+    virNetServerUnlock(srv);
+}

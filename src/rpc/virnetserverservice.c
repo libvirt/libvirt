@@ -280,3 +280,15 @@ void virNetServerServiceToggle(virNetServerServicePtr svc,
                                      VIR_EVENT_HANDLE_READABLE :
                                      0);
 }
+
+void virNetServerServiceClose(virNetServerServicePtr svc)
+{
+    int i;
+
+    if (!svc)
+        return;
+
+    for (i = 0; i < svc->nsocks; i++) {
+        virNetSocketClose(svc->socks[i]);
+    }
+}

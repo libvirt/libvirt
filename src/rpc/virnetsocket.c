@@ -1222,3 +1222,25 @@ void virNetSocketRemoveIOCallback(virNetSocketPtr sock)
 
     virMutexUnlock(&sock->lock);
 }
+
+void virNetSocketClose(virNetSocketPtr sock)
+{
+    if (!sock)
+        return;
+
+    virMutexLock(&sock->lock);
+
+    VIR_FORCE_CLOSE(sock->fd);
+
+#ifdef HAVE_SYS_UN_H
+    /* If a server socket, then unlink UNIX path */
+    if (!sock->client &&
+        sock->localAddr.data.sa.sa_family == AF_UNIX &&
+        sock->localAddr.data.un.sun_path[0] != '\0') {
+        if (unlink(sock->localAddr.data.un.sun_path) == 0)
+            sock->localAddr.data.un.sun_path[0] = '\0';
+    }
+#endif
+
+    virMutexUnlock(&sock->lock);
+}
