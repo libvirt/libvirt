@@ -402,9 +402,10 @@ err:
 }
 
 
-static int lxcContainerMountBasicFS(const char *srcprefix)
+static int lxcContainerMountBasicFS(const char *srcprefix, bool pivotRoot)
 {
     const struct {
+        bool onlyPivotRoot;
         bool needPrefix;
         const char *src;
         const char *dst;
@@ -415,23 +416,31 @@ static int lxcContainerMountBasicFS(const char *srcprefix)
         /* When we want to make a bind mount readonly, for unknown reasons,
          * it is currently neccessary to bind it once, and then remount the
          * bind with the readonly flag. If this is not done, then the original
-         * mount point in the main OS becomes readonly too which si not what
+         * mount point in the main OS becomes readonly too which is not what
          * we want. Hence some things have two entries here.
          */
-        { false, "devfs", "/dev", "tmpfs", "mode=755", MS_NOSUID },
-        { false, "proc", "/proc", "proc", NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV },
-        { false, "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND },
-        { false, "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
-        { true, "/sys", "/sys", NULL, NULL, MS_BIND },
-        { true, "/sys", "/sys", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
-        { true, "/selinux", "/selinux", NULL, NULL, MS_BIND },
-        { true, "/selinux", "/selinux", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
+        { true, false, "devfs", "/dev", "tmpfs", "mode=755", MS_NOSUID },
+        { false, false, "proc", "/proc", "proc", NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV },
+        { false, false, "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND },
+        { false, false, "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
+        { false, true, "/sys", "/sys", NULL, NULL, MS_BIND },
+        { false, true, "/sys", "/sys", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
+        { false, true, "/selinux", "/selinux", NULL, NULL, MS_BIND },
+        { false, true, "/selinux", "/selinux", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
     };
     int i, rc = -1;
+
+    VIR_DEBUG("Mounting basic filesystems %s pivotRoot=%d", NULLSTR(srcprefix), pivotRoot);
 
     for (i = 0 ; i < ARRAY_CARDINALITY(mnts) ; i++) {
         char *src = NULL;
         const char *srcpath = NULL;
+
+        VIR_DEBUG("Consider %s onlyPivotRoot=%d",
+                  mnts[i].src, mnts[i].onlyPivotRoot);
+        if (mnts[i].onlyPivotRoot && !pivotRoot)
+            continue;
+
         if (virFileMakePath(mnts[i].dst) < 0) {
             virReportSystemError(errno,
                                  _("Failed to mkdir %s"),
@@ -454,6 +463,8 @@ static int lxcContainerMountBasicFS(const char *srcprefix)
             (access(srcpath, R_OK) < 0))
             continue;
 
+        VIR_DEBUG("Mount %s on %s type=%s flags=%x, opts=%s",
+                  srcpath, mnts[i].dst, mnts[i].type, mnts[i].mflags, mnts[i].opts);
         if (mount(srcpath, mnts[i].dst, mnts[i].type, mnts[i].mflags, mnts[i].opts) < 0) {
             VIR_FREE(src);
             virReportSystemError(errno,
@@ -716,7 +727,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
         return -1;
 
     /* Mounts the core /proc, /sys, etc filesystems */
-    if (lxcContainerMountBasicFS("/.oldroot") < 0)
+    if (lxcContainerMountBasicFS("/.oldroot", true) < 0)
         return -1;
 
     /* Mounts /dev and /dev/pts */
@@ -760,8 +771,7 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef)
         return -1;
 
     /* Mounts the core /proc, /sys, etc filesystems */
-    VIR_DEBUG("Mounting basic FS");
-    if (lxcContainerMountBasicFS(NULL) < 0)
+    if (lxcContainerMountBasicFS(NULL, false) < 0)
         return -1;
 
     VIR_DEBUG("Mounting completed");
