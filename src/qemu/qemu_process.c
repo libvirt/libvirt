@@ -1214,7 +1214,7 @@ qemuProcessWaitForMonitor(struct qemud_driver* driver,
 cleanup:
     virHashFree(paths);
 
-    if (kill(vm->pid, 0) == -1 && errno == ESRCH) {
+    if (pos != -1 && kill(vm->pid, 0) == -1 && errno == ESRCH) {
         /* VM is dead, any other error raised in the interim is probably
          * not as important as the qemu cmdline output */
         qemuProcessReadLogFD(logfd, buf, buf_size, strlen(buf));
@@ -1225,8 +1225,6 @@ cleanup:
     }
 
 closelog:
-    VIR_FREE(buf);
-
     if (VIR_CLOSE(logfd) < 0) {
         char ebuf[1024];
         VIR_WARN("Unable to close logfile: %s",
