@@ -35,6 +35,7 @@
 #include "libvirt_internal.h"
 #include "virterror_internal.h"
 #include "virfile.h"
+#include "virpidfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -257,44 +258,6 @@ static int daemonForkIntoBackground(const char *argv0)
             _exit(ret == 1 && status == 0 ? 0 : 1);
         }
     }
-}
-
-static int daemonWritePidFile(const char *pidFile, const char *argv0)
-{
-    int fd;
-    FILE *fh;
-    char ebuf[1024];
-
-    if (pidFile[0] == '\0')
-        return 0;
-
-    if ((fd = open(pidFile, O_WRONLY|O_CREAT|O_EXCL, 0644)) < 0) {
-        VIR_ERROR(_("Failed to open pid file '%s' : %s"),
-                  pidFile, virStrerror(errno, ebuf, sizeof ebuf));
-        return -1;
-    }
-
-    if (!(fh = VIR_FDOPEN(fd, "w"))) {
-        VIR_ERROR(_("Failed to fdopen pid file '%s' : %s"),
-                  pidFile, virStrerror(errno, ebuf, sizeof ebuf));
-        VIR_FORCE_CLOSE(fd);
-        return -1;
-    }
-
-    if (fprintf(fh, "%lu\n", (unsigned long)getpid()) < 0) {
-        VIR_ERROR(_("%s: Failed to write to pid file '%s' : %s"),
-                  argv0, pidFile, virStrerror(errno, ebuf, sizeof ebuf));
-        VIR_FORCE_FCLOSE(fh);
-        return -1;
-    }
-
-    if (VIR_FCLOSE(fh) == EOF) {
-        VIR_ERROR(_("%s: Failed to close pid file '%s' : %s"),
-                  argv0, pidFile, virStrerror(errno, ebuf, sizeof ebuf));
-        return -1;
-    }
-
-    return 0;
 }
 
 
@@ -1261,6 +1224,7 @@ int main(int argc, char **argv) {
     char *remote_config_file = NULL;
     int statuswrite = -1;
     int ret = 1;
+    int pid_file_fd = -1;
     char *pid_file = NULL;
     char *sock_file = NULL;
     char *sock_file_ro = NULL;
@@ -1378,7 +1342,7 @@ int main(int argc, char **argv) {
     if (daemonSetupLogging(config, privileged, verbose, godaemon) < 0)
         exit(EXIT_FAILURE);
 
-    if (!pid_file && privileged &&
+    if (!pid_file &&
         daemonPidFilePath(privileged,
                           &pid_file) < 0)
         exit(EXIT_FAILURE);
@@ -1405,14 +1369,6 @@ int main(int argc, char **argv) {
         }
     }
 
-    /* If we have a pidfile set, claim it now, exiting if already taken */
-    if (pid_file != NULL &&
-        daemonWritePidFile(pid_file, argv[0]) < 0) {
-        VIR_FREE(pid_file); /* Prevent unlinking of someone else's pid ! */
-        ret = VIR_DAEMON_ERR_PIDFILE;
-        goto cleanup;
-    }
-
     /* Ensure the rundir exists (on tmpfs on some systems) */
     if (privileged) {
         const char *rundir = LOCALSTATEDIR "/run/libvirt";
@@ -1430,6 +1386,12 @@ int main(int argc, char **argv) {
             }
         }
         umask(old_umask);
+    }
+
+    /* Try to claim the pidfile, exiting if we can't */
+    if ((pid_file_fd = virPidFileAcquirePath(pid_file, getpid())) < 0) {
+        ret = VIR_DAEMON_ERR_PIDFILE;
+        goto cleanup;
     }
 
     use_polkit_dbus = config->auth_unix_rw == REMOTE_AUTH_POLKIT ||
@@ -1570,8 +1532,8 @@ cleanup:
         }
         VIR_FORCE_CLOSE(statuswrite);
     }
-    if (pid_file)
-        unlink (pid_file);
+    if (pid_file_fd != -1)
+        virPidFileReleasePath(pid_file, pid_file_fd);
 
     VIR_FREE(sock_file);
     VIR_FREE(sock_file_ro);
