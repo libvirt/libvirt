@@ -12476,8 +12476,8 @@ static const vshCmdInfo info_qemu_monitor_command[] = {
 
 static const vshCmdOptDef opts_qemu_monitor_command[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"cmd", VSH_OT_DATA, VSH_OFLAG_REQ, N_("command")},
     {"hmp", VSH_OT_BOOL, 0, N_("command is in human monitor protocol")},
+    {"cmd", VSH_OT_ARGV, VSH_OFLAG_REQ, N_("command")},
     {NULL, 0, 0, NULL}
 };
 
@@ -12486,9 +12486,12 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     bool ret = false;
-    const char *monitor_cmd = NULL;
+    char *monitor_cmd = NULL;
     char *result = NULL;
     unsigned int flags = 0;
+    const vshCmdOpt *opt = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    bool pad = false;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -12497,10 +12500,17 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
     if (dom == NULL)
         goto cleanup;
 
-    if (vshCommandOptString(cmd, "cmd", &monitor_cmd) <= 0) {
-        vshError(ctl, "%s", _("missing monitor command"));
+    while ((opt = vshCommandOptArgv(cmd, opt))) {
+        if (pad)
+            virBufferAddChar(&buf, ' ');
+        pad = true;
+        virBufferAdd(&buf, opt->data, -1);
+    }
+    if (virBufferError(&buf)) {
+        vshPrint(ctl, "%s", _("Failed to collect command"));
         goto cleanup;
     }
+    monitor_cmd = virBufferContentAndReset(&buf);
 
     if (vshCommandOptBool(cmd, "hmp"))
         flags |= VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP;
@@ -12514,6 +12524,7 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
 
 cleanup:
     VIR_FREE(result);
+    VIR_FREE(monitor_cmd);
     if (dom)
         virDomainFree(dom);
 
