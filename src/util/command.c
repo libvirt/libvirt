@@ -39,6 +39,7 @@
 #include "util.h"
 #include "logging.h"
 #include "virfile.h"
+#include "virpidfile.h"
 #include "buf.h"
 #include "ignore-value.h"
 #include "verify.h"
@@ -493,7 +494,7 @@ virExecWithHook(const char *const*argv,
         }
 
         if (pid > 0) {
-            if (pidfile && (virFileWritePidPath(pidfile,pid) < 0)) {
+            if (pidfile && (virPidFileWritePath(pidfile,pid) < 0)) {
                 kill(pid, SIGTERM);
                 usleep(500*1000);
                 kill(pid, SIGTERM);

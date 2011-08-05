@@ -50,6 +50,7 @@
 #include "memory.h"
 #include "hooks.h"
 #include "virfile.h"
+#include "virpidfile.h"
 #include "util.h"
 #include "c-ctype.h"
 #include "nodeinfo.h"
@@ -2771,7 +2772,7 @@ int qemuProcessStart(virConnectPtr conn,
     priv->gotShutdown = false;
 
     VIR_FREE(priv->pidfile);
-    if (!(priv->pidfile = virFilePid(driver->stateDir, vm->def->name))) {
+    if (!(priv->pidfile = virPidFileBuildPath(driver->stateDir, vm->def->name))) {
         virReportSystemError(errno,
                              "%s", _("Failed to build pidfile path."));
         goto cleanup;
@@ -2880,7 +2881,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     /* wait for qemu process to show up */
     if (ret == 0) {
-        if (virFileReadPidPath(priv->pidfile, &vm->pid) < 0) {
+        if (virPidFileReadPath(priv->pidfile, &vm->pid) < 0) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("Domain %s didn't show up"), vm->def->name);
             ret = -1;

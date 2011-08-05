@@ -1033,7 +1033,6 @@ virEventAddHandle;
 virEventRemoveHandle;
 virFileAbsPath;
 virFileBuildPath;
-virFileDeletePid;
 virFileExists;
 virFileFindMountPoint;
 virFileHasSuffix;
@@ -1044,11 +1043,8 @@ virFileMakePath;
 virFileMatchesNameSuffix;
 virFileOpenAs;
 virFileOpenTty;
-virFilePid;
 virFileReadAll;
 virFileReadLimFD;
-virFileReadPid;
-virFileReadPidPath;
 virFileResolveLink;
 virFileSanitizePath;
 virFileStripSuffix;
@@ -1121,6 +1117,16 @@ virFileDirectFdFree;
 virFileDirectFdNew;
 virFileFclose;
 virFileFdopen;
+
+
+# virpidfile.h
+virPidFileBuildPath;
+virPidFileRead;
+virPidFileReadPath;
+virPidFileWrite;
+virPidFileWritePath;
+virPidFileDelete;
+virPidFileDeletePath;
 
 
 # virterror_internal.h

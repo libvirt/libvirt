@@ -120,21 +120,6 @@ int virFileOpenTtyAt(const char *ptmx,
                      char **ttyName,
                      int rawmode);
 
-char* virFilePid(const char *dir,
-                 const char *name);
-
-int virFileWritePidPath(const char *path,
-                        pid_t pid) ATTRIBUTE_RETURN_CHECK;
-int virFileWritePid(const char *dir,
-                    const char *name,
-                    pid_t pid) ATTRIBUTE_RETURN_CHECK;
-int virFileReadPidPath(const char *path,
-                       pid_t *pid) ATTRIBUTE_RETURN_CHECK;
-int virFileReadPid(const char *dir,
-                   const char *name,
-                   pid_t *pid) ATTRIBUTE_RETURN_CHECK;
-int virFileDeletePid(const char *dir,
-                     const char *name);
 
 char *virArgvToString(const char *const *argv);
 

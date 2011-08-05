@@ -49,6 +49,7 @@
 #include "network_conf.h"
 #include "driver.h"
 #include "buf.h"
+#include "virpidfile.h"
 #include "util.h"
 #include "command.h"
 #include "memory.h"
@@ -218,7 +219,7 @@ networkFindActiveConfigs(struct network_driver *driver) {
             if (obj->def->ips && (obj->def->nips > 0)) {
                 char *pidpath, *radvdpidbase;
 
-                if (virFileReadPid(NETWORK_PID_DIR, obj->def->name,
+                if (virPidFileRead(NETWORK_PID_DIR, obj->def->name,
                                    &obj->dnsmasqPid) == 0) {
                     /* Check that it's still alive */
                     if (kill(obj->dnsmasqPid, 0) != 0)
@@ -236,7 +237,7 @@ networkFindActiveConfigs(struct network_driver *driver) {
                     virReportOOMError();
                     goto cleanup;
                 }
-                if (virFileReadPid(NETWORK_PID_DIR, radvdpidbase,
+                if (virPidFileRead(NETWORK_PID_DIR, radvdpidbase,
                                    &obj->radvdPid) == 0) {
                     /* Check that it's still alive */
                     if (kill(obj->radvdPid, 0) != 0)
@@ -728,7 +729,7 @@ networkStartDhcpDaemon(virNetworkObjPtr network)
         goto cleanup;
     }
 
-    if (!(pidfile = virFilePid(NETWORK_PID_DIR, network->def->name))) {
+    if (!(pidfile = virPidFileBuildPath(NETWORK_PID_DIR, network->def->name))) {
         virReportOOMError();
         goto cleanup;
     }
@@ -765,7 +766,7 @@ networkStartDhcpDaemon(virNetworkObjPtr network)
      * pid
      */
 
-    ret = virFileReadPid(NETWORK_PID_DIR, network->def->name,
+    ret = virPidFileRead(NETWORK_PID_DIR, network->def->name,
                          &network->dnsmasqPid);
     if (ret < 0)
         goto cleanup;
@@ -818,7 +819,7 @@ networkStartRadvd(virNetworkObjPtr network)
         virReportOOMError();
         goto cleanup;
     }
-    if (!(pidfile = virFilePid(NETWORK_PID_DIR, radvdpidbase))) {
+    if (!(pidfile = virPidFileBuildPath(NETWORK_PID_DIR, radvdpidbase))) {
         virReportOOMError();
         goto cleanup;
     }
@@ -885,7 +886,7 @@ networkStartRadvd(virNetworkObjPtr network)
      * a dummy pidfile name - virCommand will create the pidfile we
      * want to use (this is necessary because radvd's internal
      * daemonization and pidfile creation causes a race, and the
-     * virFileReadPid() below will fail if we use them).
+     * virPidFileRead() below will fail if we use them).
      * Unfortunately, it isn't possible to tell radvd to not create
      * its own pidfile, so we just let it do so, with a slightly
      * different name. Unused, but harmless.
@@ -901,7 +902,7 @@ networkStartRadvd(virNetworkObjPtr network)
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
-    if (virFileReadPid(NETWORK_PID_DIR, radvdpidbase,
+    if (virPidFileRead(NETWORK_PID_DIR, radvdpidbase,
                        &network->radvdPid) < 0)
         goto cleanup;
 
@@ -1919,7 +1920,7 @@ static int networkShutdownNetworkVirtual(struct network_driver *driver,
         if (!(radvdpidbase = networkRadvdPidfileBasename(network->def->name))) {
             virReportOOMError();
         } else {
-            virFileDeletePid(NETWORK_PID_DIR, radvdpidbase);
+            virPidFileDelete(NETWORK_PID_DIR, radvdpidbase);
             VIR_FREE(radvdpidbase);
         }
     }
@@ -2486,7 +2487,7 @@ static int networkUndefine(virNetworkPtr net) {
             virReportOOMError();
             goto cleanup;
         }
-        virFileDeletePid(NETWORK_PID_DIR, radvdpidbase);
+        virPidFileDelete(NETWORK_PID_DIR, radvdpidbase);
         VIR_FREE(radvdpidbase);
 
     }

@@ -50,6 +50,7 @@
 #include "stats_linux.h"
 #include "hooks.h"
 #include "virfile.h"
+#include "virpidfile.h"
 #include "fdstream.h"
 #include "domain_audit.h"
 #include "domain_nwfilter.h"
@@ -1030,7 +1031,7 @@ static void lxcVmCleanup(lxc_driver_t *driver,
     virEventRemoveHandle(priv->monitorWatch);
     VIR_FORCE_CLOSE(priv->monitor);
 
-    virFileDeletePid(driver->stateDir, vm->def->name);
+    virPidFileDelete(driver->stateDir, vm->def->name);
     virDomainDeleteConfig(driver->stateDir, NULL, vm);
 
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
@@ -1612,7 +1613,7 @@ static int lxcVmStart(virConnectPtr conn,
         goto cleanup;
 
     /* And get its pid */
-    if ((r = virFileReadPid(driver->stateDir, vm->def->name, &vm->pid)) < 0) {
+    if ((r = virPidFileRead(driver->stateDir, vm->def->name, &vm->pid)) < 0) {
         virReportSystemError(-r,
                              _("Failed to read pid file %s/%s.pid"),
                              driver->stateDir, vm->def->name);
