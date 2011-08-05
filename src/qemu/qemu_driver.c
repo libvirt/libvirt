@@ -7994,9 +7994,9 @@ qemuCPUCompare(virConnectPtr conn,
     if (!driver->caps || !driver->caps->host.cpu) {
         qemuReportError(VIR_ERR_NO_SUPPORT,
                         "%s", _("cannot get host CPU capabilities"));
-    }
-    else
+    } else {
         ret = cpuCompareXML(driver->caps->host.cpu, xmlDesc);
+    }
 
     qemuDriverUnlock(driver);
 
@@ -8497,8 +8497,7 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (!virDomainObjIsActive(vm)) {
         if (qemuDomainSnapshotCreateInactive(vm, snap) < 0)
             goto cleanup;
-    }
-    else {
+    } else {
         if (qemuDomainSnapshotCreateActive(domain->conn, driver,
                                            &vm, snap) < 0)
             goto cleanup;
@@ -8773,15 +8772,15 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             qemuDomainObjExitMonitorWithDriver(driver, vm);
             if (rc < 0)
                 goto endjob;
-        }
-        else {
+        } else {
             if (qemuDomainSnapshotSetCurrentActive(vm, driver->snapshotDir) < 0)
                 goto endjob;
 
             rc = qemuProcessStart(snapshot->domain->conn, driver, vm, NULL,
                                   false, false, -1, NULL, VIR_VM_OP_CREATE);
             virDomainAuditStart(vm, "from-snapshot", rc >= 0);
-            if (qemuDomainSnapshotSetCurrentInactive(vm, driver->snapshotDir) < 0)
+            if (qemuDomainSnapshotSetCurrentInactive(vm,
+                                                     driver->snapshotDir) < 0)
                 goto endjob;
             if (rc < 0)
                 goto endjob;
@@ -8805,8 +8804,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STARTED,
                                          VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT);
-    }
-    else {
+    } else {
         /* qemu is a little funny with running guests and the restoration
          * of snapshots.  If the snapshot was taken online,
          * then after a "loadvm" monitor command, the VM is set running
@@ -8891,8 +8889,7 @@ static int qemuDomainSnapshotDiscard(struct qemud_driver *driver,
                 }
             }
         }
-    }
-    else {
+    } else {
         priv = vm->privateData;
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         /* we continue on even in the face of error */
@@ -8913,9 +8910,9 @@ static int qemuDomainSnapshotDiscard(struct qemud_driver *driver,
 
             /* Now we set the new current_snapshot for the domain */
             vm->current_snapshot = parentsnap;
-        }
-        else
+        } else {
             vm->current_snapshot = NULL;
+        }
     }
 
     if (virAsprintf(&snapFile, "%s/%s/%s.xml", driver->snapshotDir,
