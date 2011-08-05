@@ -1269,6 +1269,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
     virDomainEventPtr event = NULL;
+    virDomainEventPtr event2 = NULL;
 
     virCheckFlags(VIR_DOMAIN_START_PAUSED |
                   VIR_DOMAIN_START_AUTODESTROY, NULL);
@@ -1316,6 +1317,16 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_BOOTED);
+    if (event && (flags & VIR_DOMAIN_START_PAUSED)) {
+        /* There are two classes of event-watching clients - those
+         * that only care about on/off (and must see a started event
+         * no matter what, but don't care about suspend events), and
+         * those that also care about running/paused.  To satisfy both
+         * client types, we have to send two events.  */
+        event2 = virDomainEventNewFromObj(vm,
+                                          VIR_DOMAIN_EVENT_SUSPENDED,
+                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
+    }
     virDomainAuditStart(vm, "booted", true);
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
@@ -1329,8 +1340,11 @@ cleanup:
     virDomainDefFree(def);
     if (vm)
         virDomainObjUnlock(vm);
-    if (event)
+    if (event) {
         qemuDomainEventQueue(driver, event);
+        if (event2)
+            qemuDomainEventQueue(driver, event2);
+    }
     qemuDriverUnlock(driver);
     return dom;
 }
@@ -3934,7 +3948,8 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
                            virDomainObjPtr vm,
                            int *fd,
                            const struct qemud_save_header *header,
-                           const char *path)
+                           const char *path,
+                           bool start_paused)
 {
     int ret = -1;
     virDomainEventPtr event;
@@ -4005,8 +4020,8 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
         qemuDomainEventQueue(driver, event);
 
 
-    /* If it was running before, resume it now. */
-    if (header->was_running) {
+    /* If it was running before, resume it now unless caller requested pause. */
+    if (header->was_running && !start_paused) {
         if (qemuProcessStartCPUs(driver, vm, conn,
                                  VIR_DOMAIN_RUNNING_RESTORED,
                                  QEMU_ASYNC_JOB_NONE) < 0) {
@@ -4019,6 +4034,14 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
             goto out;
         }
+    } else {
+        int detail = (start_paused ? VIR_DOMAIN_EVENT_SUSPENDED_PAUSED :
+                      VIR_DOMAIN_EVENT_SUSPENDED_RESTORED);
+        event = virDomainEventNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_SUSPENDED,
+                                         detail);
+        if (event)
+            qemuDomainEventQueue(driver, event);
     }
 
     ret = 0;
@@ -4070,7 +4093,8 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    ret = qemuDomainSaveImageStartVM(conn, driver, vm, &fd, &header, path);
+    ret = qemuDomainSaveImageStartVM(conn, driver, vm, &fd, &header, path,
+                                     false);
     if (virFileDirectFdClose(directFd) < 0)
         VIR_WARN("Failed to close %s", path);
 
@@ -4197,6 +4221,7 @@ qemuDomainObjRestore(virConnectPtr conn,
                      struct qemud_driver *driver,
                      virDomainObjPtr vm,
                      const char *path,
+                     bool start_paused,
                      bool bypass_cache)
 {
     virDomainDefPtr def = NULL;
@@ -4230,7 +4255,8 @@ qemuDomainObjRestore(virConnectPtr conn,
     virDomainObjAssignDef(vm, def, true);
     def = NULL;
 
-    ret = qemuDomainSaveImageStartVM(conn, driver, vm, &fd, &header, path);
+    ret = qemuDomainSaveImageStartVM(conn, driver, vm, &fd, &header, path,
+                                     start_paused);
     if (virFileDirectFdClose(directFd) < 0)
         VIR_WARN("Failed to close %s", path);
 
@@ -4518,7 +4544,7 @@ qemuDomainObjStart(virConnectPtr conn,
             }
         } else {
             ret = qemuDomainObjRestore(conn, driver, vm, managed_save,
-                                       bypass_cache);
+                                       start_paused, bypass_cache);
 
             if (ret == 0 && unlink(managed_save) < 0)
                 VIR_WARN("Failed to remove the managed state %s", managed_save);
@@ -4537,8 +4563,16 @@ qemuDomainObjStart(virConnectPtr conn,
             virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_BOOTED);
-        if (event)
+        if (event) {
             qemuDomainEventQueue(driver, event);
+            if (start_paused) {
+                event = virDomainEventNewFromObj(vm,
+                                                 VIR_DOMAIN_EVENT_SUSPENDED,
+                                                 VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
+                if (event)
+                    qemuDomainEventQueue(driver, event);
+            }
+        }
     }
 
 cleanup:
@@ -8813,6 +8847,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     virDomainSnapshotObjPtr snap = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainEventPtr event = NULL;
+    virDomainEventPtr event2 = NULL;
     qemuDomainObjPrivatePtr priv;
     int rc;
 
@@ -8869,6 +8904,9 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 goto endjob;
         }
 
+        event = virDomainEventNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_STARTED,
+                                         VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT);
         if (snap->def->state == VIR_DOMAIN_PAUSED) {
             /* qemu unconditionally starts the domain running again after
              * loadvm, so let's pause it to keep consistency
@@ -8879,14 +8917,13 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                      QEMU_ASYNC_JOB_NONE);
             if (rc < 0)
                 goto endjob;
+            event2 = virDomainEventNewFromObj(vm,
+                                              VIR_DOMAIN_EVENT_SUSPENDED,
+                                              VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT);
         } else {
             virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
                                  VIR_DOMAIN_RUNNING_FROM_SNAPSHOT);
         }
-
-        event = virDomainEventNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_STARTED,
-                                         VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT);
     } else {
         /* qemu is a little funny with running guests and the restoration
          * of snapshots.  If the snapshot was taken online,
@@ -8929,8 +8966,11 @@ cleanup:
     } else if (snap) {
         snap->def->current = false;
     }
-    if (event)
+    if (event) {
         qemuDomainEventQueue(driver, event);
+        if (event2)
+            qemuDomainEventQueue(driver, event2);
+    }
     if (vm)
         virDomainObjUnlock(vm);
     qemuDriverUnlock(driver);

@@ -87,19 +87,45 @@ static const char *eventDetailToString(int event, int detail) {
             case VIR_DOMAIN_EVENT_STARTED_RESTORED:
                 ret = "Restored";
                 break;
+            case VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT:
+                ret = "Snapshot";
+                break;
             }
             break;
         case VIR_DOMAIN_EVENT_SUSPENDED:
-            if (detail == VIR_DOMAIN_EVENT_SUSPENDED_PAUSED)
+            switch (detail) {
+            case VIR_DOMAIN_EVENT_SUSPENDED_PAUSED:
                 ret = "Paused";
-            else if (detail == VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED)
+                break;
+            case VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED:
                 ret = "Migrated";
+                break;
+            case VIR_DOMAIN_EVENT_SUSPENDED_IOERROR:
+                ret = "I/O Error";
+                break;
+            case VIR_DOMAIN_EVENT_SUSPENDED_WATCHDOG:
+                ret = "Watchdog";
+                break;
+            case VIR_DOMAIN_EVENT_SUSPENDED_RESTORED:
+                ret = "Restored";
+                break;
+            case VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT:
+                ret = "Snapshot";
+                break;
+            }
             break;
         case VIR_DOMAIN_EVENT_RESUMED:
-            if (detail == VIR_DOMAIN_EVENT_RESUMED_UNPAUSED)
+            switch (detail) {
+            case VIR_DOMAIN_EVENT_RESUMED_UNPAUSED:
                 ret = "Unpaused";
-            else if (detail == VIR_DOMAIN_EVENT_RESUMED_MIGRATED)
+                break;
+            case VIR_DOMAIN_EVENT_RESUMED_MIGRATED:
                 ret = "Migrated";
+                break;
+            case VIR_DOMAIN_EVENT_RESUMED_FROM_SNAPSHOT:
+                ret = "Snapshot";
+                break;
+            }
             break;
         case VIR_DOMAIN_EVENT_STOPPED:
             switch (detail) {
@@ -120,6 +146,9 @@ static const char *eventDetailToString(int event, int detail) {
                 break;
             case VIR_DOMAIN_EVENT_STOPPED_FAILED:
                 ret = "Failed";
+                break;
+            case VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT:
+                ret = "Snapshot";
                 break;
             }
             break;
