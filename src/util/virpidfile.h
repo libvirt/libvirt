@@ -42,6 +42,14 @@ int virPidFileRead(const char *dir,
                    const char *name,
                    pid_t *pid) ATTRIBUTE_RETURN_CHECK;
 
+int virPidFileReadPathIfAlive(const char *path,
+                              pid_t *pid,
+                              const char *binpath) ATTRIBUTE_RETURN_CHECK;
+int virPidFileReadIfAlive(const char *dir,
+                          const char *name,
+                          pid_t *pid,
+                          const char *binpath) ATTRIBUTE_RETURN_CHECK;
+
 int virPidFileDeletePath(const char *path);
 int virPidFileDelete(const char *dir,
                      const char *name);

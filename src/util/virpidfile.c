@@ -24,6 +24,7 @@
 #include <config.h>
 
 #include <fcntl.h>
+#include <signal.h>
 
 #include "virpidfile.h"
 #include "virfile.h"
@@ -159,6 +160,99 @@ int virPidFileRead(const char *dir,
     rc = virPidFileReadPath(pidfile, pid);
 
  cleanup:
+    VIR_FREE(pidfile);
+    return rc;
+}
+
+
+
+/**
+ * virPidFileReadPathIfAlive:
+ * @path: path to pidfile
+ * @pid: variable to return pid in
+ * @binpath: path of executable associated with the pidfile
+ *
+ * This will attempt to read a pid from @path, and store it
+ * in @pid. The @pid will only be set, however, if the
+ * pid in @path is running, and its executable path
+ * resolves to @binpath. This adds protection against
+ * recycling of previously reaped pids.
+ *
+ * Returns -errno upon error, or zero on successful
+ * reading of the pidfile. If the PID was not still
+ * alive, zero will be returned, but @pid will be
+ * set to -1.
+ */
+int virPidFileReadPathIfAlive(const char *path,
+                              pid_t *pid,
+                              const char *binpath)
+{
+    int rc;
+    char *procpath = NULL;
+
+    rc = virPidFileReadPath(path, pid);
+    if (rc < 0)
+        return rc;
+
+    /* Check that it's still alive */
+    if (kill(*pid, 0) < 0) {
+        *pid = -1;
+        return 0;
+    }
+
+    if (virAsprintf(&procpath, "/proc/%d/exe", *pid) < 0) {
+        *pid = -1;
+        return 0;
+    }
+#ifdef __linux__
+    if (virFileLinkPointsTo(procpath, binpath) == 0)
+        *pid = -1;
+#endif
+    VIR_FREE(procpath);
+
+    return 0;
+}
+
+
+/**
+ * virPidFileReadIfAlive:
+ * @dir: directory containing pidfile
+ * @name: base filename of pidfile
+ * @pid: variable to return pid in
+ * @binpath: path of executable associated with the pidfile
+ *
+ * This will attempt to read a pid from the pidfile @name
+ * in directory @dir, and store it in @pid. The @pid will
+ * only be set, however, if the pid in @name is running,
+ * and its executable path resolves to @binpath. This adds
+ * protection against recycling of previously reaped pids.
+ *
+ * Returns -errno upon error, or zero on successful
+ * reading of the pidfile. If the PID was not still
+ * alive, zero will be returned, but @pid will be
+ * set to -1.
+ */
+int virPidFileReadIfAlive(const char *dir,
+                          const char *name,
+                          pid_t *pid,
+                          const char *binpath)
+{
+    int rc = 0;
+    char *pidfile = NULL;
+
+    if (name == NULL || dir == NULL) {
+        rc = -EINVAL;
+        goto cleanup;
+    }
+
+    if (!(pidfile = virPidFileBuildPath(dir, name))) {
+        rc = -ENOMEM;
+        goto cleanup;
+    }
+
+    rc = virPidFileReadPathIfAlive(pidfile, pid, binpath);
+
+cleanup:
     VIR_FREE(pidfile);
     return rc;
 }

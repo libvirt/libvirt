@@ -217,40 +217,17 @@ networkFindActiveConfigs(struct network_driver *driver) {
 
             /* Try and read dnsmasq/radvd pids if any */
             if (obj->def->ips && (obj->def->nips > 0)) {
-                char *pidpath, *radvdpidbase;
+                char *radvdpidbase;
 
-                if (virPidFileRead(NETWORK_PID_DIR, obj->def->name,
-                                   &obj->dnsmasqPid) == 0) {
-                    /* Check that it's still alive */
-                    if (kill(obj->dnsmasqPid, 0) != 0)
-                        obj->dnsmasqPid = -1;
-                    if (virAsprintf(&pidpath, "/proc/%d/exe", obj->dnsmasqPid) < 0) {
-                        virReportOOMError();
-                        goto cleanup;
-                    }
-                    if (virFileLinkPointsTo(pidpath, DNSMASQ) == 0)
-                        obj->dnsmasqPid = -1;
-                    VIR_FREE(pidpath);
-                }
+                ignore_value(virPidFileReadIfAlive(NETWORK_PID_DIR, obj->def->name,
+                                                   &obj->dnsmasqPid, DNSMASQ));
 
                 if (!(radvdpidbase = networkRadvdPidfileBasename(obj->def->name))) {
                     virReportOOMError();
                     goto cleanup;
                 }
-                if (virPidFileRead(NETWORK_PID_DIR, radvdpidbase,
-                                   &obj->radvdPid) == 0) {
-                    /* Check that it's still alive */
-                    if (kill(obj->radvdPid, 0) != 0)
-                        obj->radvdPid = -1;
-                    if (virAsprintf(&pidpath, "/proc/%d/exe", obj->radvdPid) < 0) {
-                        virReportOOMError();
-                        VIR_FREE(radvdpidbase);
-                        goto cleanup;
-                    }
-                    if (virFileLinkPointsTo(pidpath, RADVD) == 0)
-                        obj->radvdPid = -1;
-                    VIR_FREE(pidpath);
-                }
+                ignore_value(virPidFileReadIfAlive(NETWORK_PID_DIR, radvdpidbase,
+                                                   &obj->radvdPid, RADVD));
                 VIR_FREE(radvdpidbase);
             }
         }
