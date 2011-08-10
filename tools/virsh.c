@@ -11963,9 +11963,9 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
 
     virBufferAddLit(&buf, "<domainsnapshot>\n");
     if (name)
-        virBufferAsprintf(&buf, "  <name>%s</name>\n", name);
+        virBufferEscapeString(&buf, "  <name>%s</name>\n", name);
     if (desc)
-        virBufferAsprintf(&buf, "  <description>%s</description>\n", desc);
+        virBufferEscapeString(&buf, "  <description>%s</description>\n", desc);
     virBufferAddLit(&buf, "</domainsnapshot>\n");
 
     buffer = virBufferContentAndReset(&buf);
