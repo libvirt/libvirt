@@ -246,6 +246,8 @@ typedef struct __vshControl {
     char *historyfile;          /* readline history file name */
     bool useGetInfo;            /* must use virDomainGetInfo, since
                                    virDomainGetState is not supported */
+    bool useSnapshotGetXML;     /* must use virDomainSnapshotGetXMLDesc, since
+                                   virDomainSnapshotGetParent is missing */
 } __vshControl;
 
 typedef struct vshCmdGrp {
@@ -597,6 +599,7 @@ vshReconnect(vshControl *ctl)
         vshError(ctl, "%s", _("Reconnected to the hypervisor"));
     disconnected = 0;
     ctl->useGetInfo = false;
+    ctl->useSnapshotGetXML = false;
 }
 
 /* ---------------
@@ -744,6 +747,7 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
     ctl->name = vshStrdup(ctl, name);
 
     ctl->useGetInfo = false;
+    ctl->useSnapshotGetXML = false;
     ctl->readonly = ro;
 
     ctl->conn = virConnectOpenAuth(ctl->name, virConnectAuthPtrDefault,
@@ -12977,6 +12981,52 @@ cleanup:
     return ret;
 }
 
+/* Helper function to get the name of a snapshot's parent.  Caller
+ * must free the result.  */
+static char *
+vshGetSnapshotParent(vshControl *ctl, virDomainSnapshotPtr snapshot)
+{
+    virDomainSnapshotPtr parent = NULL;
+    char *xml = NULL;
+    xmlDocPtr xmldoc = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    char *parent_name = NULL;
+
+    /* Try new API, since it is faster. */
+    if (!ctl->useSnapshotGetXML) {
+        parent = virDomainSnapshotGetParent(snapshot, 0);
+        if (parent) {
+            /* API works, and virDomainSnapshotGetName will succeed */
+            parent_name = vshStrdup(ctl, virDomainSnapshotGetName(parent));
+            goto cleanup;
+        }
+        if (last_error->code == VIR_ERR_NO_DOMAIN_SNAPSHOT) {
+            /* API works, and we found a root with no parent */
+            goto cleanup;
+        }
+        /* API didn't work, fall back to XML scraping. */
+        ctl->useSnapshotGetXML = true;
+    }
+
+    xml = virDomainSnapshotGetXMLDesc(snapshot, 0);
+    if (!xml)
+        goto cleanup;
+
+    xmldoc = virXMLParseStringCtxt(xml, _("(domain_snapshot)"), &ctxt);
+    if (!xmldoc)
+        goto cleanup;
+
+    parent_name = virXPathString("string(/domainsnapshot/parent/name)", ctxt);
+
+cleanup:
+    if (parent)
+        virDomainSnapshotFree(parent);
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(xmldoc);
+    VIR_FREE(xml);
+    return parent_name;
+}
+
 /*
  * "snapshot-list" command
  */
@@ -13230,10 +13280,7 @@ cmdSnapshotParent(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     const char *name = NULL;
     virDomainSnapshotPtr snapshot = NULL;
-    char *xml = NULL;
     char *parent = NULL;
-    xmlDocPtr xmldoc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -13249,15 +13296,7 @@ cmdSnapshotParent(vshControl *ctl, const vshCmd *cmd)
     if (snapshot == NULL)
         goto cleanup;
 
-    xml = virDomainSnapshotGetXMLDesc(snapshot, 0);
-    if (!xml)
-        goto cleanup;
-
-    xmldoc = virXMLParseStringCtxt(xml, _("(domain_snapshot)"), &ctxt);
-    if (!xmldoc)
-        goto cleanup;
-
-    parent = virXPathString("string(/domainsnapshot/parent/name)", ctxt);
+    parent = vshGetSnapshotParent(ctl, snapshot);
     if (!parent)
         goto cleanup;
 
@@ -13267,9 +13306,6 @@ cmdSnapshotParent(vshControl *ctl, const vshCmd *cmd)
 
 cleanup:
     VIR_FREE(parent);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xmldoc);
-    VIR_FREE(xml);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
     if (dom)
