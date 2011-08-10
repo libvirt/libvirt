@@ -70,36 +70,172 @@
         bridge device allowing them to talk to each other. The bridge device
         may also be connected to the LAN. It is recommended that bridge
         device names started with the prefix <code>vir</code>, but the name
-        <code>virbr0</code> is reserved for the "default" virtual network.
-        This element should always be provided when defining a new network.
-        Attribute <code>stp</code> specifies if Spanning Tree Protocol is
-        'on' or 'off' (default is 'on'). Attribute <code>delay</code> sets
-        the bridge's forward delay value in seconds (default is 0).
+        <code>virbr0</code> is reserved for the "default" virtual
+        network.  This element should always be provided when defining
+        a new network with a <code>&lt;forward&gt;</code> mode of
+        "nat" or "route" (or an isolated network with
+        no <code>&lt;forward&gt;</code> element).
+        Attribute <code>stp</code> specifies if Spanning Tree Protocol
+        is 'on' or 'off' (default is
+        'on'). Attribute <code>delay</code> sets the bridge's forward
+        delay value in seconds (default is 0).
         <span class="since">Since 0.3.0</span>
       </dd>
       <dt><code>domain</code></dt>
       <dd>
-        The <code>name</code> attribute on the <code>domain</code> element
-        defines the DNS domain of the DHCP server. This element is optional.
-        <span class="since">Since 0.4.5</span>
+        The <code>name</code> attribute on the <code>domain</code>
+        element defines the DNS domain of the DHCP server. This
+        element is optional, and is only used for those networks with
+        a <code>&lt;forward&gt;</code> mode of "nat" or "route" (or an
+        isolated network with no <code>&lt;forward&gt;</code>
+        element). <span class="since">Since 0.4.5</span>
       </dd>
       <dt><code>forward</code></dt>
       <dd>Inclusion of the <code>forward</code> element indicates that
         the virtual network is to be connected to the physical
-        LAN. the <code>mode</code> attribute determines the method of
-        forwarding; possible selections are 'nat' and 'route'. If mode
-        is not specified, NAT forwarding will be used for
-        connectivity.  If a network has any IPv6 addresses defined,
-        even if <code>mode</code> is given as 'nat', the IPv6 traffic
-        will be forwarded using routing, since IPv6 has no concept of NAT.
-        Firewall rules will allow forwarding to any other network device whether
-        ethernet, wireless, dialup, or VPN. If the <code>dev</code> attribute
-        is set, the firewall rules will restrict forwarding to the named
-        device only. If the <code>mode</code> attribute is set to <code>route</code>
-        then the traffic will not have NAT applied. This presumes that the
-        local LAN router has suitable routing table entries to return traffic
-        to this host. <span class="since">Since 0.3.0; 'mode' attribute since
-        0.4.2</span></dd>
+        LAN.<span class="since">Since 0.3.0.</span>
+        The <code>mode</code> attribute determines the method of
+        forwarding. If there is no <code>forward</code> element, the
+        network will be isolated from any other network (unless a
+        guest connected to that network is acting as a router, of
+        course). The following are valid settings
+        for <code>mode</code> (if there is a <code>forward</code>
+        element but mode is not specified, <code>mode='nat'</code> is
+        assumed):
+        <dl>
+          <dt><code>nat</code></dt>
+          <dd>
+            All traffic between guests connected to this network and
+            the physical network will be forwarded to the physical
+            network via the host's IP routing stack, after the guest's
+            IP address is translated to appear as the host machine's
+            public IP address (a.k.a. Network Address Translation, or
+            "NAT"). This allows multiple guests, all having access to
+            the physical network, on a host that is only allowed a
+            single public IP address. If a network has any IPv6
+            addresses defined, the IPv6 traffic will be forwarded
+            using plain routing, since IPv6 has no concept of NAT.
+            Firewall rules will allow outbound connections to any
+            other network device whether ethernet, wireless, dialup,
+            or VPN. If the <code>dev</code> attribute is set, the
+            firewall rules will restrict forwarding to the named
+            device only. Inbound connections from other networks are
+            all prohibited; all connections between guests on the same
+            network, and to/from the host to the guests, are
+            unrestricted and not NATed.<span class="since">Since
+            0.4.2</span>
+          </dd>
+
+          <dt><code>route</code></dt>
+          <dd>
+            Guest network traffic will be forwarded to the physical
+            network via the host's IP routing stack, but without
+            having NAT applied. Again, if the <code>dev</code>
+            attribute is set, firewall rules will restrict forwarding
+            to the named device only. This presumes that the local LAN
+            router has suitable routing table entries to return
+            traffic to this host. Firewall rules are also installed
+            that prevent incoming sessions from the physical network
+            to the guests, but outgoing sessions are unrestricted (as
+            are sessions from the host to the guests, and between
+            guests on the same network.)<span class="since">Since
+            0.4.2</span>
+          </dd>
+
+          <dt><code>bridge</code></dt>
+          <dd>
+            This network describes either 1) an existing host bridge
+            that was configured outside of libvirt (if
+            a <code>&lt;bridge name='xyz'/&gt;</code> element has been
+            specified), or 2) an interface or group of interfaces to
+            be used for a "direct" connection via macvtap using
+            macvtap's "bridge" mode (if the forward element has one or
+            more <code>&lt;interface&gt;</code> subelements)
+            (see <a href="formatdomain.html#elementsNICSDirect">Direct
+            attachment to physical interface</a> for descriptions of
+            the various macvtap modes). libvirt doesn't attempt to
+            manage the bridge interface at all, thus
+            the <code>&lt;bridge&gt;</code> element's <code>stp</code>
+            and <code>delay</code> attributes are not allowed; no
+            iptables rules, IP addresses, or DHCP/DNS services are
+            added; at the IP level, the guest interface appears to be
+            directly connected to the physical
+            interface.<span class="since">Since 0.9.4</span>
+          </dd>
+          <dt><code>private</code></dt>
+          <dd>
+            This network uses a macvtap "direct" connection in
+            "private" mode to connect each guest to the network. The
+            physical interface to be used will be picked from among
+            those listed in <code>&lt;interface&gt;</code> subelements
+            of the <code>&lt;forward&gt;</code> element; when using
+            802.1Qbh mode (as indicated by
+            the <code>&lt;virtualport&gt;</code> type attribute - note
+            that this requires an 802.1Qbh-capable hardware switch),
+            each physical interface can only be in use by a single
+            guest interface at a time; in modes other than 802.1Qbh,
+            multiple guest interfaces can share each physical
+            interface (libvirt will attempt to balance usage between
+            all available interfaces).<span class="since">Since
+            0.9.4</span>
+          </dd>
+          <dt><code>vepa</code></dt>
+          <dd>
+            This network uses a macvtap "direct" connection in "vepa"
+            mode to connect each guest to the network (this requires
+            that the physical interfaces used be connected to a
+            vepa-capable hardware switch. The physical interface to be
+            used will be picked from among those listed
+            in <code>&lt;interface&gt;</code> subelements of
+            the <code>&lt;forward&gt;</code> element; multiple guest
+            interfaces can share each physical interface (libvirt will
+            attempt to balance usage between all available
+            interfaces).<span class="since">Since 0.9.4</span>
+          </dd>
+          <dt><code>passthrough</code></dt>
+          <dd>
+            This network uses a macvtap "direct" connection in
+            "passthrough" mode to connect each guest to the network
+            (note that this is <i>not</i> the same thing as "PCI
+            passthrough"). The physical interface to be used will be
+            picked from among those listed
+            in <code>&lt;interface&gt;</code> subelements of
+            the <code>&lt;forward&gt;</code> element.  Each physical
+            interface can only be in use by a single guest interface
+            at a time, so libvirt will keep track of which interfaces
+            are currently in use, and only assign unused interfaces
+            (if there are no available physical interfaces when a
+            domain interface is being attached, an error will be
+            logged, and the operation causing the attach will fail
+            (usually either a domain start, or a hotplug interface
+            attach to a domain).<span class="since">Since 0.9.4</span>
+          </dd>
+        </dl>
+        As mentioned above, a <code>&lt;forward&gt;</code> element can
+        have multiple <code>&lt;interface&gt;</code> subelements, each
+        one giving the name of a physical interface that can be used
+        for this network<span class="since">Since 0.9.4</span>:
+        <pre>
+...
+  &lt;forward mode='passthrough'&gt;
+    &lt;interface dev='eth10'/&gt;
+    &lt;interface dev='eth11'/&gt;
+    &lt;interface dev='eth12'/&gt;
+    &lt;interface dev='eth13'/&gt;
+    &lt;interface dev='eth14'/&gt;
+  &lt;/forward&gt;
+...
+        </pre>
+        When a guest interface is being constructed, libvirt will pick
+        an interface from this list to use for the connection. In
+        modes where physical interfaces can be shared by multiple
+        guest interfaces, libvirt will choose the interface that
+        currently has the least number of connections. For those modes
+        that do not allow sharing of the physical device (in
+        particular, 'passthrough' mode, and 'private' mode when using
+        802.1Qbh), libvirt will choose an unused physical interface
+        or, if it can't find an unused interface, fail the operation.
+      </dd>
     </dl>
     <h5><a name="elementQoS">Quality of service</a></h5>
 
@@ -110,7 +246,6 @@
     &lt;inbound average='1000' peak='5000' burst='5120'/&gt;
     &lt;outbound average='128' peak='256' burst='256'/&gt;
   &lt;/bandwidth&gt;</b>
-  &lt;mac address='00:16:3E:5D:C7:9E'/&gt;
 ...</pre>
 
       <p>
@@ -134,13 +269,72 @@
         <span class="since">Since 0.9.4</span>
       </p>
 
+    <h5><a name="elementsPortgroup">Portgroups</a></h5>
+
+<pre>
+...
+  &lt;forward mode='private'/&gt;
+    &lt;interface dev="eth20"/&gt;
+    &lt;interface dev="eth21"/&gt;
+    &lt;interface dev="eth22"/&gt;
+    &lt;interface dev="eth23"/&gt;
+    &lt;interface dev="eth24"/&gt;
+  &lt;/forward&gt;
+  <b>&lt;portgroup name='engineering' default='yes'&gt;
+    &lt;virtualport type='802.1Qbh'&gt;
+      &lt;parameters profileid='test'/&gt;
+    &lt;/virtualport&gt;
+    &lt;bandwidth&gt;
+      &lt;inbound average='1000' peak='5000' burst='5120'/&gt;
+      &lt;outbound average='1000' peak='5000' burst='5120'/&gt;
+    &lt;/bandwidth&gt;
+  &lt;/portgroup&gt;</b>
+  <b>&lt;portgroup name='sales'&gt;
+    &lt;virtualport type='802.1Qbh'&gt;
+      &lt;parameters profileid='salestest'/&gt;
+    &lt;/virtualport&gt;
+    &lt;bandwidth&gt;
+      &lt;inbound average='500' peak='2000' burst='2560'/&gt;
+      &lt;outbound average='128' peak='256' burst='256'/&gt;
+    &lt;/bandwidth&gt;
+  &lt;/portgroup&gt;</b>
+...</pre>
+
+    <p>
+      A portgroup provides a method of easily putting guest
+      connections to the network into different classes, with each
+      class potentially having a different level/type of service. Each
+      network can have multiple portgroup elements (and one of those
+      can optionally be designated as the 'default' portgroup for the
+      network), and each portgroup has a name, as well as various
+      subelements associated with it. The currently supported
+      subelements are <code>&lt;bandwidth&gt;</code>
+      (documented <a href="formatdomain.html#elementQoS">here</a>)
+      and <code>&lt;virtualport&gt;</code>
+      (documented <a href="formatdomain.html#elementsNICSDirect">here</a>).
+      If a domain interface definition specifies a portgroup (by
+      adding a <code>portgroup</code> attribute to
+      the <code>&lt;source&gt;</code> subelement), that portgroup's
+      info will be merged into the interface's configuration. If no
+      portgroup is given in the interface definition, and one of the
+      network's portgroups has <code>default='yes'</code>, that
+      default portgroup will be used. If no portgroup is given in the
+      interface definition, and there is no default portgroup, then
+      none will be used. Any <code>&lt;bandwidth&gt;</code>
+      or <code>&lt;virtualport&gt;</code> specified directly in the
+      domain XML will take precedence over any setting in the chosen
+      portgroup.
+    </p>
+
     <h3><a name="elementsAddress">Addressing</a></h3>
 
     <p>
       The final set of elements define the addresses (IPv4 and/or
       IPv6, as well as MAC) to be assigned to the bridge device
       associated with the virtual network, and optionally enable DHCP
-      services.
+      services. These elements are only valid for isolated networks
+      (no <code>forward</code> element specified), and for those with
+      a forward mode of 'route' or 'nat'.
     </p>
 
     <pre>
@@ -343,6 +537,56 @@
           &lt;/dhcp&gt;
         &lt;/ip&gt;
         &lt;ip family="ipv6" address="2001:8794:ca2:3::1" prefix="64" /&gt;
+      &lt;/network&gt;</pre>
+
+    <h3><a name="examplesBridge">Using an existing host bridge</a></h3>
+
+    <p>
+      This shows how to use a pre-existing host bridge "br0". The
+      guests will effectively be directly connected to the physical
+      network (i.e. their IP addresses will all be on the subnet of
+      the physical network, and there will be no restrictions on
+      inbound or outbound connections).
+    </p>
+
+    <pre>
+      &lt;network&gt;
+        &lt;name&gt;host-bridge&lt;/name&gt;
+        &lt;forward mode="bridge"/&gt;
+        &lt;bridge name="br0"/&gt;
+      &lt;/network&gt;</pre>
+
+    <h3><a name="examplesDirect">Using a macvtap "direct" connection</a></h3>
+
+    <p>
+      This shows how to use macvtap to connect to the physical network
+      directly through one of a group of physical devices (without
+      using a host bridge device). As with the host bridge network,
+      the guests will effectively be directly connected to the
+      physical network so their IP addresses will all be on the subnet
+      of the physical network, and there will be no restrictions on
+      inbound or outbound connections. Note that, due to a limitation
+      in the implementation of macvtap, these connections do not allow
+      communication directly between the host and the guests - if you
+      require this you will either need the attached physical switch
+      to be operating in a mirroring mode (so that all traffic coming
+      to the switch is reflected back to the host's interface), or
+      provide alternate means for this communication (e.g. a second
+      interface on each guest that is connected to an isolated
+      network). The other forward modes that use macvtap (private,
+      vepa, and passthrough) would be used in a similar fashion.
+    </p>
+
+    <pre>
+      &lt;network&gt;
+        &lt;name&gt;direct-macvtap&lt;/name&gt;
+        &lt;forward mode="bridge"&gt;
+          &lt;interface dev="eth20"/&gt;
+          &lt;interface dev="eth21"/&gt;
+          &lt;interface dev="eth22"/&gt;
+          &lt;interface dev="eth23"/&gt;
+          &lt;interface dev="eth24"/&gt;
+        &lt;/forward&gt;
       &lt;/network&gt;</pre>
 
   </body>
