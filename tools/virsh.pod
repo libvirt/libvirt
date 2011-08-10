@@ -1569,9 +1569,11 @@ Create a snapshot for domain I<domain> with the given <name> and
 value.  If I<--print-xml> is specified, then XML appropriate for
 I<snapshot-create> is output, rather than actually creating a snapshot.
 
-=item B<snapshot-current> I<domain>
+=item B<snapshot-current> I<domain> [I<--name>]
 
 Output the snapshot XML for the domain's current snapshot (if any).
+If I<--name> is specified, just list the snapshot name instead of the
+full xml.
 
 =item B<snapshot-list> I<domain>
 

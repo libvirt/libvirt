@@ -12034,6 +12034,7 @@ static const vshCmdInfo info_snapshot_current[] = {
 
 static const vshCmdOptDef opts_snapshot_current[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"name", VSH_OT_BOOL, 0, N_("list the name, rather than the full xml")},
     {NULL, 0, 0, NULL}
 };
 
@@ -12044,6 +12045,7 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     int current;
     virDomainSnapshotPtr snapshot = NULL;
+    char *xml = NULL;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -12056,7 +12058,7 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
     if (current < 0)
         goto cleanup;
     else if (current) {
-        char *xml;
+        char *name = NULL;
 
         if (!(snapshot = virDomainSnapshotCurrent(dom, 0)))
             goto cleanup;
@@ -12065,13 +12067,36 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
         if (!xml)
             goto cleanup;
 
-        vshPrint(ctl, "%s", xml);
-        VIR_FREE(xml);
+        if (vshCommandOptBool(cmd, "name")) {
+            xmlDocPtr xmldoc = NULL;
+            xmlXPathContextPtr ctxt = NULL;
+
+            xmldoc = xmlReadDoc((const xmlChar *) xml, "domainsnapshot.xml",
+                                NULL, XML_PARSE_NOENT | XML_PARSE_NONET |
+                                XML_PARSE_NOWARNING);
+            if (!xmldoc)
+                goto cleanup;
+            ctxt = xmlXPathNewContext(xmldoc);
+            if (!ctxt) {
+                xmlFreeDoc(xmldoc);
+                goto cleanup;
+            }
+
+            name = virXPathString("string(/domainsnapshot/name)", ctxt);
+            xmlXPathFreeContext(ctxt);
+            xmlFreeDoc(xmldoc);
+            if (!name)
+                goto cleanup;
+        }
+
+        vshPrint(ctl, "%s", name ? name : xml);
+        VIR_FREE(name);
     }
 
     ret = true;
 
 cleanup:
+    VIR_FREE(xml);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
     if (dom)
