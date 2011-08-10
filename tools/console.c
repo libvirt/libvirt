@@ -95,7 +95,7 @@ virConsoleShutdown(virConsolePtr con)
         virStreamFree(con->st);
     if (con->stdinWatch != -1)
         virEventRemoveHandle(con->stdinWatch);
-    if (con->stdinWatch != -1)
+    if (con->stdoutWatch != -1)
         virEventRemoveHandle(con->stdoutWatch);
     con->stdinWatch = -1;
     con->stdoutWatch = -1;
