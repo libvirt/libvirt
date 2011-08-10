@@ -12285,6 +12285,82 @@ cleanup:
 }
 
 /*
+ * "snapshot-parent" command
+ */
+static const vshCmdInfo info_snapshot_parent[] = {
+    {"help", N_("Get the name of the parent of the current snapshot")},
+    {"desc", N_("Extract the snapshot's parent, if any")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_snapshot_parent[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"snapshotname", VSH_OT_DATA, VSH_OFLAG_REQ, N_("snapshot name")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdSnapshotParent(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    bool ret = false;
+    const char *name = NULL;
+    virDomainSnapshotPtr snapshot = NULL;
+    char *xml = NULL;
+    char *parent = NULL;
+    xmlDocPtr xmldoc = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        goto cleanup;
+
+    dom = vshCommandOptDomain(ctl, cmd, NULL);
+    if (dom == NULL)
+        goto cleanup;
+
+    if (vshCommandOptString(cmd, "snapshotname", &name) <= 0)
+        goto cleanup;
+
+    snapshot = virDomainSnapshotLookupByName(dom, name, 0);
+    if (snapshot == NULL)
+        goto cleanup;
+
+    xml = virDomainSnapshotGetXMLDesc(snapshot, 0);
+    if (!xml)
+        goto cleanup;
+
+    xmldoc = xmlReadDoc((const xmlChar *) xml, "domainsnapshot.xml", NULL,
+                        XML_PARSE_NOENT | XML_PARSE_NONET |
+                        XML_PARSE_NOWARNING);
+    if (!xmldoc)
+        goto cleanup;
+    ctxt = xmlXPathNewContext(xmldoc);
+    if (!ctxt)
+        goto cleanup;
+
+    parent = virXPathString("string(/domainsnapshot/parent/name)", ctxt);
+    if (!parent)
+        goto cleanup;
+
+    vshPrint(ctl, "%s", parent);
+
+    ret = true;
+
+cleanup:
+    VIR_FREE(parent);
+    xmlXPathFreeContext(ctxt);
+    if (xmldoc)
+        xmlFreeDoc(xmldoc);
+    VIR_FREE(xml);
+    if (snapshot)
+        virDomainSnapshotFree(snapshot);
+    if (dom)
+        virDomainFree(dom);
+
+    return ret;
+}
+
+/*
  * "snapshot-revert" command
  */
 static const vshCmdInfo info_snapshot_revert[] = {
@@ -12754,6 +12830,8 @@ static const vshCmdDef snapshotCmds[] = {
      info_snapshot_dumpxml, 0},
     {"snapshot-list", cmdSnapshotList, opts_snapshot_list,
      info_snapshot_list, 0},
+    {"snapshot-parent", cmdSnapshotParent, opts_snapshot_parent,
+     info_snapshot_parent, 0},
     {"snapshot-revert", cmdDomainSnapshotRevert, opts_snapshot_revert,
      info_snapshot_revert, 0},
     {NULL, NULL, NULL, NULL, 0}

@@ -1583,6 +1583,10 @@ List all of the available snapshots for the given domain.
 
 Output the snapshot XML for the domain's snapshot named I<snapshot>.
 
+=item B<snapshot-parent> I<domain> I<snapshot>
+
+Output the name of the parent snapshot for the given I<snapshot>, if any.
+
 =item B<snapshot-revert> I<domain> I<snapshot>
 
 Revert the given domain to the snapshot specified by I<snapshot>.  Be aware
