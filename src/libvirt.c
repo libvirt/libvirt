@@ -15285,6 +15285,9 @@ error:
  * the saved state itself, and will reuse it once the domain is being
  * restarted (automatically or via an explicit libvirt call).
  * As a result any running domain is sure to not have a managed saved image.
+ * This also implies that managed save only works on persistent domains,
+ * since the domain must still exist in order to use virDomainCreate() to
+ * restart it.
  *
  * If @flags includes VIR_DOMAIN_SAVE_BYPASS_CACHE, then libvirt will
  * attempt to bypass the file system cache while creating the file, or

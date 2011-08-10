@@ -2132,6 +2132,11 @@ libxlDomainManagedSave(virDomainPtr dom, unsigned int flags)
         libxlError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not running"));
         goto cleanup;
     }
+    if (!vm->persistent) {
+        libxlError(VIR_ERR_OPERATION_INVALID, "%s",
+                   _("cannot do managed save for transient domain"));
+        goto cleanup;
+    }
 
     name = libxlDomainManagedSavePath(driver, vm);
     if (name == NULL)

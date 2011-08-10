@@ -2582,6 +2582,11 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
                         "%s", _("domain is not running"));
         goto cleanup;
     }
+    if (!vm->persistent) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("cannot do managed save for transient domain"));
+        goto cleanup;
+    }
 
     name = qemuDomainManagedSavePath(driver, vm);
     if (name == NULL)
