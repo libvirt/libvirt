@@ -1269,6 +1269,7 @@ cleanup:
 enum qemuMigrationDestinationType {
     MIGRATION_DEST_HOST,
     MIGRATION_DEST_UNIX,
+    MIGRATION_DEST_FD,
 };
 
 enum qemuMigrationForwardType {
@@ -1287,9 +1288,14 @@ struct _qemuMigrationSpec {
         } host;
 
         struct {
-            const char *file;
+            char *file;
             int sock;
         } unix_socket;
+
+        struct {
+            int qemu;
+            int local;
+        } fd;
     } dest;
 
     enum qemuMigrationForwardType fwdType;
@@ -1481,6 +1487,14 @@ qemuMigrationRun(struct qemud_driver *driver,
             ret = qemuMonitorMigrateToCommand(priv->mon, migrate_flags, args);
         }
         break;
+
+    case MIGRATION_DEST_FD:
+        if (spec->fwdType != MIGRATION_FWD_DIRECT)
+            fd = spec->dest.fd.local;
+        ret = qemuMonitorMigrateToFd(priv->mon, migrate_flags,
+                                     spec->dest.fd.qemu);
+        VIR_FORCE_CLOSE(spec->dest.fd.qemu);
+        break;
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
     if (ret < 0)
@@ -1577,9 +1591,11 @@ static int doNativeMigrate(struct qemud_driver *driver,
                            unsigned long flags,
                            unsigned long resource)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     xmlURIPtr uribits = NULL;
-    int ret;
+    int ret = -1;
     qemuMigrationSpec spec;
+    char *tmp = NULL;
 
     VIR_DEBUG("driver=%p, vm=%p, uri=%s, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, resource=%lu",
@@ -1588,13 +1604,12 @@ static int doNativeMigrate(struct qemud_driver *driver,
 
     if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri, "tcp://")) {
         /* HACK: source host generates bogus URIs, so fix them up */
-        char *tmpuri;
-        if (virAsprintf(&tmpuri, "tcp://%s", uri + strlen("tcp:")) < 0) {
+        if (virAsprintf(&tmp, "tcp://%s", uri + strlen("tcp:")) < 0) {
             virReportOOMError();
             return -1;
         }
-        uribits = xmlParseURI(tmpuri);
-        VIR_FREE(tmpuri);
+        uribits = xmlParseURI(tmp);
+        VIR_FREE(tmp);
     } else {
         uribits = xmlParseURI(uri);
     }
@@ -1604,13 +1619,38 @@ static int doNativeMigrate(struct qemud_driver *driver,
         return -1;
     }
 
-    spec.destType = MIGRATION_DEST_HOST;
-    spec.dest.host.name = uribits->server;
-    spec.dest.host.port = uribits->port;
     spec.fwdType = MIGRATION_FWD_DIRECT;
+
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD)) {
+        virNetSocketPtr sock;
+
+        spec.destType = MIGRATION_DEST_FD;
+        spec.dest.fd.qemu = -1;
+
+        if (virAsprintf(&tmp, "%d", uribits->port) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        if (virNetSocketNewConnectTCP(uribits->server, tmp, &sock) == 0) {
+            spec.dest.fd.qemu = virNetSocketDupFD(sock, true);
+            virNetSocketFree(sock);
+        }
+        if (spec.dest.fd.qemu == -1)
+            goto cleanup;
+    } else {
+        spec.destType = MIGRATION_DEST_HOST;
+        spec.dest.host.name = uribits->server;
+        spec.dest.host.port = uribits->port;
+    }
 
     ret = qemuMigrationRun(driver, vm, cookiein, cookieinlen, cookieout,
                            cookieoutlen, flags, resource, &spec);
+
+cleanup:
+    if (spec.destType == MIGRATION_DEST_FD)
+        VIR_FORCE_CLOSE(spec.dest.fd.qemu);
+
+    VIR_FREE(tmp);
     xmlFreeURI(uribits);
 
     return ret;
@@ -1628,7 +1668,6 @@ static int doTunnelMigrate(struct qemud_driver *driver,
                            unsigned long resource)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    char *unixfile = NULL;
     virNetSocketPtr sock = NULL;
     int ret = -1;
     qemuMigrationSpec spec;
@@ -1638,36 +1677,67 @@ static int doTunnelMigrate(struct qemud_driver *driver,
               driver, vm, st, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, resource);
 
-    if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX) &&
+    if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
+        !qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX) &&
         !qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        "%s", _("Source qemu is too old to support tunnelled migration"));
-        goto cleanup;
+        qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                        _("Source qemu is too old to support tunnelled migration"));
+        return -1;
     }
 
-    if (virAsprintf(&unixfile, "%s/qemu.tunnelmigrate.src.%s",
-                    driver->libDir, vm->def->name) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    if (virNetSocketNewListenUNIX(unixfile, 0700,
-                                  driver->user, driver->group, &sock) < 0 ||
-        virNetSocketListen(sock, 1) < 0)
-        goto cleanup;
-
-    spec.destType = MIGRATION_DEST_UNIX;
-    spec.dest.unix_socket.file = unixfile;
-    spec.dest.unix_socket.sock = virNetSocketGetFD(sock);
     spec.fwdType = MIGRATION_FWD_STREAM;
     spec.fwd.stream = st;
+
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD)) {
+        int fds[2];
+
+        spec.destType = MIGRATION_DEST_FD;
+        spec.dest.fd.qemu = -1;
+        spec.dest.fd.local = -1;
+
+        if (pipe(fds) == 0) {
+            spec.dest.fd.qemu = fds[1];
+            spec.dest.fd.local = fds[0];
+        }
+        if (spec.dest.fd.qemu == -1 ||
+            virSetCloseExec(spec.dest.fd.qemu) < 0 ||
+            virSetCloseExec(spec.dest.fd.local) < 0) {
+            virReportSystemError(errno, "%s",
+                        _("cannot create pipe for tunnelled migration"));
+            goto cleanup;
+        }
+    } else {
+        spec.destType = MIGRATION_DEST_UNIX;
+        spec.dest.unix_socket.sock = -1;
+        spec.dest.unix_socket.file = NULL;
+
+        if (virAsprintf(&spec.dest.unix_socket.file,
+                        "%s/qemu.tunnelmigrate.src.%s",
+                        driver->libDir, vm->def->name) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (virNetSocketNewListenUNIX(spec.dest.unix_socket.file, 0700,
+                                      driver->user, driver->group,
+                                      &sock) < 0 ||
+            virNetSocketListen(sock, 1) < 0)
+            goto cleanup;
+
+        spec.dest.unix_socket.sock = virNetSocketGetFD(sock);
+    }
 
     ret = qemuMigrationRun(driver, vm, cookiein, cookieinlen, cookieout,
                            cookieoutlen, flags, resource, &spec);
 
 cleanup:
-    virNetSocketFree(sock);
-    VIR_FREE(unixfile);
+    if (spec.destType == MIGRATION_DEST_FD) {
+        VIR_FORCE_CLOSE(spec.dest.fd.qemu);
+        VIR_FORCE_CLOSE(spec.dest.fd.local);
+    } else {
+        virNetSocketFree(sock);
+        VIR_FREE(spec.dest.unix_socket.file);
+    }
 
     return ret;
 }
