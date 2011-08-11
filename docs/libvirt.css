@@ -199,6 +199,10 @@ div.api table {
     whitespace: pre;
 }
 
+div.api table td, div.variablelist table td {
+    vertical-align: top;
+}
+
 
 h1 a, h2 a, h3 a, h4 a, h5 a {
     color: inherit;
