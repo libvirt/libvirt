@@ -1431,7 +1431,6 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     bool ret = true;
     const char *name = NULL;
-    int id;
     int flags = 0;
     int managed_save = vshCommandOptBool(cmd, "managed-save");
     int has_managed_save = 0;
@@ -1449,19 +1448,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "domain", &name) <= 0)
         return false;
 
-    if (name && virStrToLong_i(name, NULL, 10, &id) == 0
-        && id >= 0 && (dom = virDomainLookupByID(ctl->conn, id))) {
-        vshError(ctl,
-                 _("a running domain like %s cannot be undefined;\n"
-                   "to undefine, first shutdown then undefine"
-                   " using its name or UUID"),
-                 name);
-        virDomainFree(dom);
-        return false;
-    }
-    if (!(dom = vshCommandOptDomainBy(ctl, cmd, &name,
-                                      VSH_BYNAME|VSH_BYUUID)))
-        return false;
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
 
     has_managed_save = virDomainHasManagedSaveImage(dom, 0);
     if (has_managed_save < 0) {
