@@ -53,9 +53,6 @@ machines through authenticated and encrypted connections.
       <li>
         <a href="#Remote_limitations">Limitations</a>
       </li>
-      <li>
-        <a href="#Remote_implementation_notes">Implementation notes</a>
-      </li>
     </ul>
     <h3>
       <a name="Remote_basic_usage">Basic usage</a>
@@ -879,48 +876,6 @@ just read-write/read-only as at present.
     </ul>
     <p>
 Please come and discuss these issues and more on <a href="https://www.redhat.com/mailman/listinfo/libvir-list" title="libvir-list mailing list">the mailing list</a>.
-</p>
-    <h3>
-      <a name="Remote_implementation_notes">Implementation notes</a>
-    </h3>
-    <p>
-The current implementation uses <a href="http://en.wikipedia.org/wiki/External_Data_Representation" title="External Data Representation">XDR</a>-encoded packets with a
-simple remote procedure call implementation which also supports
-asynchronous messaging and asynchronous and out-of-order replies,
-although these latter features are not used at the moment.
-</p>
-    <p>
-The implementation should be considered <b>strictly internal</b> to
-libvirt and <b>subject to change at any time without notice</b>.  If
-you wish to talk to libvirtd, link to libvirt.  If there is a problem
-that means you think you need to use the protocol directly, please
-first discuss this on <a href="https://www.redhat.com/mailman/listinfo/libvir-list" title="libvir-list mailing list">the mailing list</a>.
-</p>
-    <p>
-The messaging protocol is described in
-<code>qemud/remote_protocol.x</code>.
-</p>
-    <p>
-Authentication and encryption (for TLS) is done using <a href="http://www.gnu.org/software/gnutls/" title="GnuTLS project&#10;page">GnuTLS</a> and the RPC protocol is unaware of this layer.
-</p>
-    <p>
-Protocol messages are sent using a simple 32 bit length word (encoded
-XDR int) followed by the message header (XDR
-<code>remote_message_header</code>) followed by the message body.  The
-length count includes the length word itself, and is measured in
-bytes.  Maximum message size is <code>REMOTE_MESSAGE_MAX</code> and to
-avoid denial of services attacks on the XDR decoders strings are
-individually limited to <code>REMOTE_STRING_MAX</code> bytes.  In the
-TLS case, messages may be split over TLS records, but a TLS record
-cannot contain parts of more than one message.  In the common RPC case
-a single <code>REMOTE_CALL</code> message is sent from client to
-server, and the server then replies synchronously with a single
-<code>REMOTE_REPLY</code> message, but other forms of messaging are
-also possible.
-</p>
-    <p>
-The protocol contains support for multiple program types and protocol
-versioning, modelled after SunRPC.
 </p>
   </body>
 </html>

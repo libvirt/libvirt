@@ -289,6 +289,10 @@
                 <span>Spawning commands from libvirt driver code</span>
               </li>
               <li>
+                <a href="internals/rpc.html">RPC protocol &amp; APIs</a>
+                <span>RPC protocol information and API / dispatch guide</span>
+              </li>
+              <li>
                 <a href="internals/locking.html">Lock managers</a>
                 <span>Use lock managers to protect disk content</span>
               </li>
