@@ -898,10 +898,17 @@ _virNWFilterInstantiateFilter(virConnectPtr conn,
     int ifindex;
     int rc;
 
-    if (ifaceGetIndex(true, net->ifname, &ifindex) < 0)
-        return 1;
-
     virNWFilterLockFilterUpdates();
+
+    /* after grabbing the filter update lock check for the interface; if
+       it's not there anymore its filters will be or are being removed
+       (while holding the lock) and we don't want to build new ones */
+    if (ifaceGetIndex(false, net->ifname, &ifindex) < 0) {
+        /* interfaces / VMs can disappear during filter instantiation;
+           don't mark it as an error */
+        rc = 0;
+        goto cleanup;
+    }
 
     rc = __virNWFilterInstantiateFilter(conn,
                                         teardownOld,
@@ -917,6 +924,7 @@ _virNWFilterInstantiateFilter(virConnectPtr conn,
                                         false,
                                         foundNewFilter);
 
+cleanup:
     virNWFilterUnlockFilterUpdates();
 
     return rc;
