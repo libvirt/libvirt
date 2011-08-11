@@ -127,16 +127,16 @@ static void virNetworkDNSDefFree(virNetworkDNSDefPtr def)
                 VIR_FREE(def->txtrecords[def->ntxtrecords].name);
                 VIR_FREE(def->txtrecords[def->ntxtrecords].value);
             }
-            VIR_FREE(def->txtrecords);
         }
+        VIR_FREE(def->txtrecords);
         if (def->nhosts) {
             while (def->nhosts--) {
                 while (def->hosts[def->nhosts].nnames--)
                     VIR_FREE(def->hosts[def->nhosts].names[def->hosts[def->nhosts].nnames]);
                 VIR_FREE(def->hosts[def->nhosts].names);
             }
-            VIR_FREE(def->hosts);
         }
+        VIR_FREE(def->hosts);
         VIR_FREE(def);
     }
 }
