@@ -510,14 +510,6 @@ virNetworkDNSHostsDefParseXML(virNetworkDNSDefPtr def,
     virSocketAddr inaddr;
     int ret = -1;
 
-    if (def->hosts == NULL) {
-        if (VIR_ALLOC(def->hosts) < 0) {
-            virReportOOMError();
-            goto error;
-        }
-        def->nhosts = 0;
-    }
-
     if (!(ip = virXMLPropString(node, "ip")) ||
         (virSocketAddrParse(&inaddr, ip, AF_UNSPEC) < 0)) {
         virNetworkReportError(VIR_ERR_XML_DETAIL,
