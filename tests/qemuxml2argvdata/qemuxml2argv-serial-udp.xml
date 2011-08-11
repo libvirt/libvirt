@@ -25,6 +25,10 @@
       <source mode='connect' host='127.0.0.1' service='9998'/>
       <target port='0'/>
     </serial>
+    <serial type='udp'>
+      <source mode='connect' service='9999'/>
+      <target port='1'/>
+    </serial>
     <console type='udp'>
       <source mode='bind' host='127.0.0.1' service='9999'/>
       <source mode='connect' host='127.0.0.1' service='9998'/>

@@ -2274,17 +2274,27 @@ qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias,
         virBufferAsprintf(&buf, "stdio,id=char%s", alias);
         break;
 
-    case VIR_DOMAIN_CHR_TYPE_UDP:
+    case VIR_DOMAIN_CHR_TYPE_UDP: {
+        const char *connectHost = dev->data.udp.connectHost;
+        const char *bindHost = dev->data.udp.bindHost;
+        const char *bindService = dev->data.udp.bindService;
+
+        if (connectHost == NULL)
+            connectHost = "";
+        if (bindHost == NULL)
+            bindHost = "";
+        if (bindService == NULL)
+            bindService = "0";
+
         virBufferAsprintf(&buf,
                           "udp,id=char%s,host=%s,port=%s,localaddr=%s,"
                           "localport=%s",
                           alias,
-                          dev->data.udp.connectHost,
+                          connectHost,
                           dev->data.udp.connectService,
-                          dev->data.udp.bindHost,
-                          dev->data.udp.bindService);
+                          bindHost, bindService);
         break;
-
+    }
     case VIR_DOMAIN_CHR_TYPE_TCP:
         telnet = dev->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
         virBufferAsprintf(&buf,
@@ -2371,14 +2381,25 @@ qemuBuildChrArgStr(virDomainChrSourceDefPtr dev, const char *prefix)
         virBufferAddLit(&buf, "stdio");
         break;
 
-    case VIR_DOMAIN_CHR_TYPE_UDP:
-        virBufferAsprintf(&buf, "udp:%s:%s@%s:%s",
-                          dev->data.udp.connectHost,
-                          dev->data.udp.connectService,
-                          dev->data.udp.bindHost,
-                          dev->data.udp.bindService);
-        break;
+    case VIR_DOMAIN_CHR_TYPE_UDP: {
+        const char *connectHost = dev->data.udp.connectHost;
+        const char *bindHost = dev->data.udp.bindHost;
+        const char *bindService  = dev->data.udp.bindService;
 
+        if (connectHost == NULL)
+            connectHost = "";
+        if (bindHost == NULL)
+            bindHost = "";
+        if (bindService == NULL)
+            bindService = "0";
+
+        virBufferAsprintf(&buf, "udp:%s:%s@%s:%s",
+                          connectHost,
+                          dev->data.udp.connectService,
+                          bindHost,
+                          bindService);
+        break;
+    }
     case VIR_DOMAIN_CHR_TYPE_TCP:
         if (dev->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET) {
             virBufferAsprintf(&buf, "telnet:%s:%s%s",
@@ -5649,13 +5670,12 @@ qemuParseCommandLineChr(virDomainChrSourceDefPtr source,
         host2 = svc1 ? strchr(svc1, '@') : NULL;
         svc2 = host2 ? strchr(host2, ':') : NULL;
 
-        if (svc1)
+        if (svc1 && (svc1 != val)) {
             source->data.udp.connectHost = strndup(val, svc1-val);
-        else
-            source->data.udp.connectHost = strdup(val);
 
-        if (!source->data.udp.connectHost)
-            goto no_memory;
+            if (!source->data.udp.connectHost)
+                goto no_memory;
+        }
 
         if (svc1) {
             svc1++;
@@ -5670,19 +5690,21 @@ qemuParseCommandLineChr(virDomainChrSourceDefPtr source,
 
         if (host2) {
             host2++;
-            if (svc2)
+            if (svc2 && (svc2 != host2)) {
                 source->data.udp.bindHost = strndup(host2, svc2-host2);
-            else
-                source->data.udp.bindHost = strdup(host2);
 
-            if (!source->data.udp.bindHost)
-                goto no_memory;
+                if (!source->data.udp.bindHost)
+                    goto no_memory;
+            }
         }
+
         if (svc2) {
             svc2++;
-            source->data.udp.bindService = strdup(svc2);
-            if (!source->data.udp.bindService)
-                goto no_memory;
+            if (STRNEQ(svc2, "0")) {
+                source->data.udp.bindService = strdup(svc2);
+                if (!source->data.udp.bindService)
+                    goto no_memory;
+            }
         }
     } else if (STRPREFIX(val, "tcp:") ||
                STRPREFIX(val, "telnet:")) {
