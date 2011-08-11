@@ -8989,10 +8989,19 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                 /* Convert the returned volume info into output strings */
 
                 /* Volume type */
-                if (volumeInfo.type == VIR_STORAGE_VOL_FILE)
-                    volInfoTexts[i].type = vshStrdup(ctl, _("file"));
-                else
-                    volInfoTexts[i].type = vshStrdup(ctl, _("block"));
+                switch (volumeInfo.type) {
+                        case VIR_STORAGE_VOL_FILE:
+                            volInfoTexts[i].type = vshStrdup(ctl, _("file"));
+                            break;
+                        case VIR_STORAGE_VOL_BLOCK:
+                            volInfoTexts[i].type = vshStrdup(ctl, _("block"));
+                            break;
+                        case VIR_STORAGE_VOL_DIR:
+                            volInfoTexts[i].type = vshStrdup(ctl, _("dir"));
+                            break;
+                        default:
+                            volInfoTexts[i].type = vshStrdup(ctl, _("unknown"));
+                }
 
                 /* Create the capacity output string */
                 val = prettyCapacity(volumeInfo.capacity, &unit);
