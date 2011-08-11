@@ -1705,6 +1705,7 @@ typedef virStorageVol *virStorageVolPtr;
 typedef enum {
   VIR_STORAGE_VOL_FILE = 0,     /* Regular file based volumes */
   VIR_STORAGE_VOL_BLOCK = 1,    /* Block based volumes */
+  VIR_STORAGE_VOL_DIR = 2,      /* Directory-passthrough based volume */
 } virStorageVolType;
 
 typedef enum {

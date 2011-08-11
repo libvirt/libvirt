@@ -675,6 +675,10 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
                 goto cleanup;
         }
 
+        /* directory based volume */
+        if (vol->target.format == VIR_STORAGE_FILE_DIR)
+            vol->type = VIR_STORAGE_VOL_DIR;
+
         if (backingStore != NULL) {
             vol->backingStore.path = backingStore;
             vol->backingStore.format = backingStoreFormat;
