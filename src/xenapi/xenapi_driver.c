@@ -1696,17 +1696,19 @@ xenapiDomainDefineXML (virConnectPtr conn, const char *xml)
 }
 
 /*
- * xenapiDomainUndefine
+ * xenapiDomainUndefineFlags
  *
  * destroys a domain
  * Return 0 on success or -1 in case of error
  */
 static int
-xenapiDomainUndefine (virDomainPtr dom)
+xenapiDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
 {
     struct xen_vm_set *vms;
     xen_vm vm;
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
+    virCheckFlags(0, -1);
+
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
             xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
@@ -1726,6 +1728,12 @@ xenapiDomainUndefine (virDomainPtr dom)
     if (vms) xen_vm_set_free(vms);
     xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
+}
+
+static int
+xenapiDomainUndefine(virDomainPtr dom)
+{
+    return xenapiDomainUndefineFlags(dom, 0);
 }
 
 /*
@@ -1922,6 +1930,7 @@ static virDriver xenapiDriver = {
     .domainCreateWithFlags = xenapiDomainCreateWithFlags, /* 0.8.2 */
     .domainDefineXML = xenapiDomainDefineXML, /* 0.8.0 */
     .domainUndefine = xenapiDomainUndefine, /* 0.8.0 */
+    .domainUndefineFlags = xenapiDomainUndefineFlags, /* 0.9.5 */
     .domainGetAutostart = xenapiDomainGetAutostart, /* 0.8.0 */
     .domainSetAutostart = xenapiDomainSetAutostart, /* 0.8.0 */
     .domainGetSchedulerType = xenapiDomainGetSchedulerType, /* 0.8.0 */

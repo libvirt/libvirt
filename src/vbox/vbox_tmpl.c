@@ -251,7 +251,7 @@ static vboxGlobalData *g_pVBoxGlobalData = NULL;
 
 static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml);
 static int vboxDomainCreate(virDomainPtr dom);
-static int vboxDomainUndefine(virDomainPtr dom);
+static int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags);
 
 static void vboxDriverLock(vboxGlobalData *data) {
     virMutexLock(&data->lock);
@@ -1193,7 +1193,7 @@ static virDomainPtr vboxDomainCreateXML(virConnectPtr conn, const char *xml,
         return NULL;
 
     if (vboxDomainCreate(dom) < 0) {
-        vboxDomainUndefine(dom);
+        vboxDomainUndefineFlags(dom, 0);
         virUnrefDomain(dom);
         return NULL;
     }
@@ -4973,7 +4973,7 @@ cleanup:
 }
 
 static int
-vboxDomainUndefine(virDomainPtr dom)
+vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
@@ -4982,6 +4982,7 @@ vboxDomainUndefine(virDomainPtr dom)
 #if VBOX_API_VERSION >= 4000
     vboxArray media = VBOX_ARRAY_INITIALIZER;
 #endif
+    virCheckFlags(0, -1);
 
     vboxIIDFromUUID(&iid, dom->uuid);
 
@@ -5129,6 +5130,12 @@ vboxDomainUndefine(virDomainPtr dom)
     VBOX_RELEASE(machine);
 
     return ret;
+}
+
+static int
+vboxDomainUndefine(virDomainPtr dom)
+{
+    return vboxDomainUndefineFlags(dom, 0);
 }
 
 static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
@@ -8806,6 +8813,7 @@ virDriver NAME(Driver) = {
     .domainCreateWithFlags = vboxDomainCreateWithFlags, /* 0.8.2 */
     .domainDefineXML = vboxDomainDefineXML, /* 0.6.3 */
     .domainUndefine = vboxDomainUndefine, /* 0.6.3 */
+    .domainUndefineFlags = vboxDomainUndefineFlags, /* 0.9.5 */
     .domainAttachDevice = vboxDomainAttachDevice, /* 0.6.3 */
     .domainAttachDeviceFlags = vboxDomainAttachDeviceFlags, /* 0.7.7 */
     .domainDetachDevice = vboxDomainDetachDevice, /* 0.6.3 */
