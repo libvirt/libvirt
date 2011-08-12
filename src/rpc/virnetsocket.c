@@ -302,6 +302,7 @@ error:
 #if HAVE_SYS_UN_H
 int virNetSocketNewListenUNIX(const char *path,
                               mode_t mask,
+                              uid_t user,
                               gid_t grp,
                               virNetSocketPtr *retsock)
 {
@@ -344,10 +345,10 @@ int virNetSocketNewListenUNIX(const char *path,
     /* chown() doesn't work for abstract sockets but we use them only
      * if libvirtd runs unprivileged
      */
-    if (grp != 0 && chown(path, -1, grp)) {
+    if (grp != 0 && chown(path, user, grp)) {
         virReportSystemError(errno,
-                             _("Failed to change group ID of '%s' to %u"),
-                             path, (unsigned int) grp);
+                             _("Failed to change ownership of '%s' to %d:%d"),
+                             path, (int) user, (int) grp);
         goto error;
     }
 

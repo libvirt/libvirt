@@ -47,6 +47,7 @@ int virNetSocketNewListenTCP(const char *nodename,
 
 int virNetSocketNewListenUNIX(const char *path,
                               mode_t mask,
+                              uid_t user,
                               gid_t grp,
                               virNetSocketPtr *addr);
 

@@ -182,6 +182,7 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
 
     if (virNetSocketNewListenUNIX(path,
                                   mask,
+                                  -1,
                                   grp,
                                   &svc->socks[0]) < 0)
         goto error;
