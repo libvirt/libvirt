@@ -1270,6 +1270,9 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
+    /* initialize early logging */
+    virLogSetFromEnv();
+
     while (1) {
         int optidx = 0;
         int c;
@@ -1305,14 +1308,18 @@ int main(int argc, char **argv) {
 
         case 'p':
             VIR_FREE(pid_file);
-            if (!(pid_file = strdup(optarg)))
+            if (!(pid_file = strdup(optarg))) {
+                VIR_ERROR(_("Can't allocate memory"));
                 exit(EXIT_FAILURE);
+            }
             break;
 
         case 'f':
             VIR_FREE(remote_config_file);
-            if (!(remote_config_file = strdup(optarg)))
+            if (!(remote_config_file = strdup(optarg))) {
+                VIR_ERROR(_("Can't allocate memory"));
                 exit(EXIT_FAILURE);
+            }
             break;
 
         case OPT_VERSION:
@@ -1324,27 +1331,33 @@ int main(int argc, char **argv) {
             return 2;
 
         default:
-            fprintf (stderr, _("%s: internal error: unknown flag: %c\n"),
-                     argv[0], c);
+            VIR_ERROR(_("%s: internal error: unknown flag: %c"),
+                      argv[0], c);
             exit (EXIT_FAILURE);
         }
     }
 
-    if (!(config = daemonConfigNew(privileged)))
+    if (!(config = daemonConfigNew(privileged))) {
+        VIR_ERROR(_("Can't create initial configuration"));
         exit(EXIT_FAILURE);
+    }
 
     /* No explicit config, so try and find a default one */
     if (remote_config_file == NULL) {
         implicit_conf = true;
         if (daemonConfigFilePath(privileged,
-                                 &remote_config_file) < 0)
+                                 &remote_config_file) < 0) {
+            VIR_ERROR(_("Can't determine config path"));
             exit(EXIT_FAILURE);
+        }
     }
 
     /* Read the config file if it exists*/
     if (remote_config_file &&
-        daemonConfigLoad(config, remote_config_file, implicit_conf) < 0)
+        daemonConfigLoad(config, remote_config_file, implicit_conf) < 0) {
+        VIR_ERROR(_("Can't load config file '%s'"), remote_config_file);
         exit(EXIT_FAILURE);
+    }
 
     if (config->host_uuid &&
         virSetHostUUIDStr(config->host_uuid) < 0) {
@@ -1352,19 +1365,25 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    if (daemonSetupLogging(config, privileged, verbose, godaemon) < 0)
+    if (daemonSetupLogging(config, privileged, verbose, godaemon) < 0) {
+        VIR_ERROR(_("Can't initialize logging"));
         exit(EXIT_FAILURE);
+    }
 
     if (!pid_file &&
         daemonPidFilePath(privileged,
-                          &pid_file) < 0)
+                          &pid_file) < 0) {
+        VIR_ERROR(_("Can't determine pid file path."));
         exit(EXIT_FAILURE);
+    }
 
     if (daemonUnixSocketPaths(config,
                               privileged,
                               &sock_file,
-                              &sock_file_ro) < 0)
+                              &sock_file_ro) < 0) {
+        VIR_ERROR(_("Can't determine socket paths"));
         exit(EXIT_FAILURE);
+    }
 
     if (godaemon) {
         char ebuf[1024];
