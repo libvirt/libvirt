@@ -1434,6 +1434,8 @@ static const vshCmdInfo info_undefine[] = {
 static const vshCmdOptDef opts_undefine[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name or uuid")},
     {"managed-save", VSH_OT_BOOL, 0, N_("remove domain managed state file")},
+    {"snapshots-metadata", VSH_OT_BOOL, 0,
+     N_("remove all domain snapshot metadata, if inactive")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1441,18 +1443,31 @@ static bool
 cmdUndefine(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
-    bool ret = true;
+    bool ret = false;
     const char *name = NULL;
+    /* Flags to attempt.  */
     unsigned int flags = 0;
-    int managed_save = vshCommandOptBool(cmd, "managed-save");
+    /* User-requested actions.  */
+    bool managed_save = vshCommandOptBool(cmd, "managed-save");
+    bool snapshots_metadata = vshCommandOptBool(cmd, "snapshots-metadata");
+    /* Positive if these items exist.  */
     int has_managed_save = 0;
+    int has_snapshots_metadata = 0;
+    int has_snapshots = 0;
+    /* True if undefine will not strand data, even on older servers.  */
+    bool managed_save_safe = false;
+    bool snapshots_safe = false;
     int rc = -1;
+    int running;
 
-    if (managed_save)
+    if (managed_save) {
         flags |= VIR_DOMAIN_UNDEFINE_MANAGED_SAVE;
-
-    if (!managed_save)
-        flags = -1;
+        managed_save_safe = true;
+    }
+    if (snapshots_metadata) {
+        flags |= VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA;
+        snapshots_safe = true;
+    }
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -1460,61 +1475,120 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
-    has_managed_save = virDomainHasManagedSaveImage(dom, 0);
-    if (has_managed_save < 0) {
-        if (last_error->code != VIR_ERR_NO_SUPPORT) {
-            virshReportError(ctl);
-            virDomainFree(dom);
-            return false;
-        } else {
-            virFreeError(last_error);
-            last_error = NULL;
-        }
+    /* Do some flag manipulation.  The goal here is to disable bits
+     * from flags to reduce the likelihood of a server rejecting
+     * unknown flag bits, as well as to track conditions which are
+     * safe by default for the given hypervisor and server version.  */
+    running = virDomainIsActive(dom);
+    if (running < 0) {
+        virshReportError(ctl);
+        goto cleanup;
     }
-
-    if (flags == -1) {
-        if (has_managed_save == 1) {
-            vshError(ctl,
-                     _("Refusing to undefine while domain managed save "
-                       "image exists"));
-            virDomainFree(dom);
-            return false;
-        }
-
-        rc = virDomainUndefine(dom);
-    } else {
-        rc = virDomainUndefineFlags(dom, flags);
-
-        /* It might fail when virDomainUndefineFlags is not
-         * supported on older libvirt, try to undefine the
-         * domain with combo virDomainManagedSaveRemove and
-         * virDomainUndefine.
-         */
-        if (rc < 0) {
+    if (!running) {
+        /* Undefine with snapshots only fails for inactive domains,
+         * and managed save only exists on inactive domains; if
+         * running, then we don't want to remove anything.  */
+        has_managed_save = virDomainHasManagedSaveImage(dom, 0);
+        if (has_managed_save < 0) {
             if (last_error->code != VIR_ERR_NO_SUPPORT) {
                 virshReportError(ctl);
-                goto end;
-            } else {
+                goto cleanup;
+            }
+            virFreeError(last_error);
+            last_error = NULL;
+            has_managed_save = 0;
+        }
+
+        has_snapshots = virDomainSnapshotNum(dom, 0);
+        if (has_snapshots < 0) {
+            if (last_error->code != VIR_ERR_NO_SUPPORT) {
+                virshReportError(ctl);
+                goto cleanup;
+            }
+            virFreeError(last_error);
+            last_error = NULL;
+            has_snapshots = 0;
+        }
+        if (has_snapshots) {
+            has_snapshots_metadata
+                = virDomainSnapshotNum(dom, VIR_DOMAIN_SNAPSHOT_LIST_METADATA);
+            if (has_snapshots_metadata < 0) {
+                /* The server did not know the new flag, assume that all
+                   snapshots have metadata.  */
                 virFreeError(last_error);
                 last_error = NULL;
+                has_snapshots_metadata = has_snapshots;
+            } else {
+                /* The server knew the new flag, all aspects of
+                 * undefineFlags are safe.  */
+                managed_save_safe = snapshots_safe = true;
             }
+        }
+    }
+    if (!has_managed_save) {
+        flags &= ~VIR_DOMAIN_UNDEFINE_MANAGED_SAVE;
+        managed_save_safe = true;
+    }
+    if (has_snapshots == 0) {
+        snapshots_safe = true;
+    }
+    if (has_snapshots_metadata == 0) {
+        flags &= ~VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA;
+        snapshots_safe = true;
+    }
 
-            if ((has_managed_save == 1) &&
-                virDomainManagedSaveRemove(dom, 0) < 0)
-                goto end;
+    /* Generally we want to try the new API first.  However, while
+     * virDomainUndefineFlags was introduced at the same time as
+     * VIR_DOMAIN_UNDEFINE_MANAGED_SAVE in 0.9.4, the
+     * VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA flag was not present
+     * until 0.9.5; skip to piecewise emulation if we couldn't prove
+     * above that the new API is safe.  */
+    if (managed_save_safe && snapshots_safe) {
+        rc = virDomainUndefineFlags(dom, flags);
+        if (rc == 0 || (last_error->code != VIR_ERR_NO_SUPPORT &&
+                        last_error->code != VIR_ERR_INVALID_ARG))
+            goto out;
+        virFreeError(last_error);
+        last_error = NULL;
+    }
 
-            rc = virDomainUndefine(dom);
+    /* The new API is unsupported or unsafe; fall back to doing things
+     * piecewise.  */
+    if (has_managed_save) {
+        if (!managed_save) {
+            vshError(ctl, "%s",
+                     _("Refusing to undefine while domain managed save "
+                       "image exists"));
+            goto cleanup;
+        }
+        if (virDomainManagedSaveRemove(dom, 0) < 0) {
+            virshReportError(ctl);
+            goto cleanup;
         }
     }
 
-end:
-    if (rc == 0) {
-        vshPrint(ctl, _("Domain %s has been undefined\n"), name);
-    } else {
-        vshError(ctl, _("Failed to undefine domain %s"), name);
-        ret = false;
+    /* No way to emulate deletion of just snapshot metadata
+     * without support for the newer flags.  Oh well.  */
+    if (has_snapshots_metadata) {
+        vshError(ctl,
+                 snapshots_metadata ?
+                 _("Unable to remove metadata of %d snapshots") :
+                 _("Refusing to undefine while %d snapshots exist"),
+                 has_snapshots_metadata);
+        goto cleanup;
     }
 
+    rc = virDomainUndefine(dom);
+
+out:
+    if (rc == 0) {
+        vshPrint(ctl, _("Domain %s has been undefined\n"), name);
+        ret = true;
+    } else {
+        vshError(ctl, _("Failed to undefine domain %s"), name);
+    }
+
+cleanup:
     virDomainFree(dom);
     return ret;
 }

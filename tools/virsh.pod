@@ -496,6 +496,11 @@ the B<shutdown> command instead.  However, this does not delete any
 storage volumes used by the guest, and if the domain is persistent, it
 can be restarted later.
 
+If I<domain-id> is transient, then the metadata of any snapshots will
+be lost once the guest stops running, but the snapshot contents still
+exist, and a new domain with the same name and UUID can restore the
+snapshot metadata with B<snapshot-create>.
+
 =item B<domblkstat> I<domain> I<block-device>
 
 Get device block stats for a running domain.
@@ -998,6 +1003,11 @@ services must be shutdown in the domain.
 The exact behavior of a domain when it shuts down is set by the
 I<on_shutdown> parameter in the domain's XML definition.
 
+If I<domain-id> is transient, then the metadata of any snapshots will
+be lost once the guest stops running, but the snapshot contents still
+exist, and a new domain with the same name and UUID can restore the
+snapshot metadata with B<snapshot-create>.
+
 =item B<start> I<domain-name> [I<--console>] [I<--paused>] [I<--autodestroy>]
 [I<--bypass-cache>] [I<--force-boot>]
 
@@ -1029,15 +1039,21 @@ hypervisor.
 Output the device used for the TTY console of the domain. If the information
 is not available the processes will provide an exit code of 1.
 
-=item B<undefine> I<domain-id> [I<--managed-save>]
+=item B<undefine> I<domain-id> [I<--managed-save>] [I<--snapshots-metadata]
 
 Undefine a domain. If the domain is running, this converts it to a
 transient domain, without stopping it. If the domain is inactive,
 the domain configuration is removed.
 
-The I<--managed-save> flag guarantees that any managed save image(see
+The I<--managed-save> flag guarantees that any managed save image (see
 the B<managedsave> command) is also cleaned up.  Without the flag, attempts
 to undefine a domain with a managed save image will fail.
+
+The I<--snapshots-metadata> flag guarantees that any snapshots (see the
+B<snapshot-list> command) are also cleaned up when undefining an inactive
+domain.  Without the flag, attempts to undefine an inactive domain with
+snapshot metadata will fail.  If the domain is active, this flag is
+ignored.
 
 NOTE: For an inactive domain, the domain name or UUID must be used as the
 I<domain-id>.
@@ -1710,6 +1726,11 @@ but any metadata is immediately discarded (that is, libvirt does not
 treat the snapshot as current, and cannot revert to the snapshot
 unless I<--redefine> is later used to teach libvirt about the
 metadata again).
+
+Existence of snapshot metadata will prevent attempts to B<undefine>
+a persistent domain.  However, for transient domains, snapshot
+metadata is silently lost when the domain quits running (whether
+by command such as B<destroy> or by internal guest action).
 
 =item B<snapshot-create-as> I<domain> {[I<--print-xml>] | [I<--no-metadata>]}
 [I<name>] [I<description>]
