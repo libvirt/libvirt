@@ -57,6 +57,7 @@ module Libvirtd =
                         | int_entry "max_clients"
                         | int_entry "max_requests"
                         | int_entry "max_client_requests"
+                        | int_entry "prio_workers"
 
    let logging_entry = int_entry "log_level"
                      | str_entry "log_filters"

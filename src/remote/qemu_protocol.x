@@ -52,9 +52,14 @@ const QEMU_PROGRAM = 0x20008087;
 const QEMU_PROTOCOL_VERSION = 1;
 
 enum qemu_procedure {
-    /* Each function must have a two-word comment.  The first word is
+    /* Each function must have a three-word comment.  The first word is
      * whether gendispatch.pl handles daemon, the second whether
-     * it handles src/remote.  */
-    QEMU_PROC_MONITOR_COMMAND = 1, /* skipgen skipgen */
-    QEMU_PROC_DOMAIN_ATTACH = 2 /* autogen autogen */
+     * it handles src/remote.
+     * The last argument describes priority of API. There are two accepted
+     * values: low, high; Each API that might eventually access hypervisor's
+     * monitor (and thus block) MUST fall into low priority. However, there
+     * are some exceptions to this rule, e.g. domainDestroy. Other APIs MAY
+     * be marked as high priority. If in doubt, it's safe to choose low. */
+    QEMU_PROC_MONITOR_COMMAND = 1, /* skipgen skipgen priority:low */
+    QEMU_PROC_DOMAIN_ATTACH = 2 /* autogen autogen priority:low */
 };

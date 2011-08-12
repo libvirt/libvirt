@@ -39,6 +39,7 @@ typedef int (*virNetServerClientInitHook)(virNetServerPtr srv,
 
 virNetServerPtr virNetServerNew(size_t min_workers,
                                 size_t max_workers,
+                                size_t priority_workers,
                                 size_t max_clients,
                                 const char *mdnsGroupName,
                                 bool connectDBus,

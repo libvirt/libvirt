@@ -35,12 +35,14 @@ typedef void (*virThreadPoolJobFunc)(void *jobdata, void *opaque);
 
 virThreadPoolPtr virThreadPoolNew(size_t minWorkers,
                                   size_t maxWorkers,
+                                  size_t prioWorkers,
                                   virThreadPoolJobFunc func,
-                                  void *opaque) ATTRIBUTE_NONNULL(3);
+                                  void *opaque) ATTRIBUTE_NONNULL(4);
 
 void virThreadPoolFree(virThreadPoolPtr pool);
 
 int virThreadPoolSendJob(virThreadPoolPtr pool,
+                         unsigned int priority,
                          void *jobdata) ATTRIBUTE_NONNULL(1)
                                         ATTRIBUTE_RETURN_CHECK;
 

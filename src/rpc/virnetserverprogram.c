@@ -108,6 +108,17 @@ static virNetServerProgramProcPtr virNetServerProgramGetProc(virNetServerProgram
     return &prog->procs[procedure];
 }
 
+unsigned int
+virNetServerProgramGetPriority(virNetServerProgramPtr prog,
+                               int procedure)
+{
+    virNetServerProgramProcPtr proc = virNetServerProgramGetProc(prog, procedure);
+
+    if (!proc)
+        return 0;
+
+    return proc->priority;
+}
 
 static int
 virNetServerProgramSendError(unsigned program,

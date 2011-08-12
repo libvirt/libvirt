@@ -53,6 +53,7 @@ struct _virNetServerProgramProc {
     size_t ret_len;
     xdrproc_t ret_filter;
     bool needAuth;
+    unsigned int priority;
 };
 
 virNetServerProgramPtr virNetServerProgramNew(unsigned program,
@@ -62,6 +63,9 @@ virNetServerProgramPtr virNetServerProgramNew(unsigned program,
 
 int virNetServerProgramGetID(virNetServerProgramPtr prog);
 int virNetServerProgramGetVersion(virNetServerProgramPtr prog);
+
+unsigned int virNetServerProgramGetPriority(virNetServerProgramPtr prog,
+                                            int procedure);
 
 void virNetServerProgramRef(virNetServerProgramPtr prog);
 

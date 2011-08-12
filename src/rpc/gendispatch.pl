@@ -146,12 +146,13 @@ while (<PROTOCOL>) {
         }
 
         if ($opt_b or $opt_k) {
-            if (!($flags =~ m/^\s*\/\*\s*(\S+)\s+(\S+)\s*(.*)\*\/\s*$/)) {
+            if (!($flags =~ m/^\s*\/\*\s*(\S+)\s+(\S+)\s*(\|.*)?\s+(priority:(\S+))?\s*\*\/\s*$/)) {
                 die "invalid generator flags for ${procprefix}_PROC_${name}"
             }
 
             my $genmode = $opt_b ? $1 : $2;
             my $genflags = $3;
+            my $priority = defined $5 ? $5 : "low";
 
             if ($genmode eq "autogen") {
                 push(@autogen, $ProcName);
@@ -170,6 +171,16 @@ while (<PROTOCOL>) {
                 }
             } else {
                 $calls{$name}->{streamflag} = "none";
+            }
+
+            # for now, we distinguish only two levels of prioroty:
+            # low (0) and high (1)
+            if ($priority eq "high") {
+                $calls{$name}->{priority} = 1;
+            } elsif ($priority eq "low") {
+                $calls{$name}->{priority} = 0;
+            } else {
+                die "invalid priority ${priority} for ${procprefix}_PROC_${name}"
             }
         }
 
@@ -260,6 +271,7 @@ if ($opt_d) {
         print "$_:\n";
         print "        name $calls{$_}->{name} ($calls{$_}->{ProcName})\n";
         print "        $calls{$_}->{args} -> $calls{$_}->{ret}\n";
+        print "        priority -> $calls{$_}->{priority}\n";
     }
 }
 
@@ -935,7 +947,7 @@ elsif ($opt_b) {
 
     print "virNetServerProgramProc ${structprefix}Procs[] = {\n";
     for ($id = 0 ; $id <= $#calls ; $id++) {
-	my ($comment, $name, $argtype, $arglen, $argfilter, $retlen, $retfilter);
+	my ($comment, $name, $argtype, $arglen, $argfilter, $retlen, $retfilter, $priority);
 
 	if (defined $calls[$id] && !$calls[$id]->{msg}) {
 	    $comment = "/* Method $calls[$id]->{ProcName} => $id */";
@@ -958,7 +970,9 @@ elsif ($opt_b) {
 	    $retfilter = "xdr_void";
 	}
 
-	print "{ $comment\n   ${name},\n   $arglen,\n   (xdrproc_t)$argfilter,\n   $retlen,\n   (xdrproc_t)$retfilter,\n   true \n},\n";
+    $priority = defined $calls[$id]->{priority} ? $calls[$id]->{priority} : 0;
+
+	print "{ $comment\n   ${name},\n   $arglen,\n   (xdrproc_t)$argfilter,\n   $retlen,\n   (xdrproc_t)$retfilter,\n   true,\n   $priority\n},\n";
     }
     print "};\n";
     print "size_t ${structprefix}NProcs = ARRAY_CARDINALITY(${structprefix}Procs);\n";

@@ -571,7 +571,7 @@ qemuProcessHandleWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
              * deleted before handling watchdog event is finished.
              */
             virDomainObjRef(vm);
-            if (virThreadPoolSendJob(driver->workerPool, wdEvent) < 0) {
+            if (virThreadPoolSendJob(driver->workerPool, 0, wdEvent) < 0) {
                 if (virDomainObjUnref(vm) == 0)
                     vm = NULL;
                 VIR_FREE(wdEvent);

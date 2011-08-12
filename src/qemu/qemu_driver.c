@@ -663,7 +663,7 @@ qemudStartup(int privileged) {
     virHashForEach(qemu_driver->domains.objs, qemuDomainSnapshotLoad,
                    qemu_driver->snapshotDir);
 
-    qemu_driver->workerPool = virThreadPoolNew(0, 1, processWatchdogEvent, qemu_driver);
+    qemu_driver->workerPool = virThreadPoolNew(0, 1, 0, processWatchdogEvent, qemu_driver);
     if (!qemu_driver->workerPool)
         goto error;
 

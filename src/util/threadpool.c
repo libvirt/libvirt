@@ -37,7 +37,9 @@ typedef struct _virThreadPoolJob virThreadPoolJob;
 typedef virThreadPoolJob *virThreadPoolJobPtr;
 
 struct _virThreadPoolJob {
+    virThreadPoolJobPtr prev;
     virThreadPoolJobPtr next;
+    unsigned int priority;
 
     void *data;
 };
@@ -47,7 +49,8 @@ typedef virThreadPoolJobList *virThreadPoolJobListPtr;
 
 struct _virThreadPoolJobList {
     virThreadPoolJobPtr head;
-    virThreadPoolJobPtr *tail;
+    virThreadPoolJobPtr tail;
+    virThreadPoolJobPtr firstPrio;
 };
 
 
@@ -57,6 +60,7 @@ struct _virThreadPool {
     virThreadPoolJobFunc jobFunc;
     void *jobOpaque;
     virThreadPoolJobList jobList;
+    size_t jobQueueDepth;
 
     virMutex mutex;
     virCond cond;
@@ -66,33 +70,75 @@ struct _virThreadPool {
     size_t freeWorkers;
     size_t nWorkers;
     virThreadPtr workers;
+
+    size_t nPrioWorkers;
+    virThreadPtr prioWorkers;
+    virCond prioCond;
+};
+
+struct virThreadPoolWorkerData {
+    virThreadPoolPtr pool;
+    virCondPtr cond;
+    bool priority;
 };
 
 static void virThreadPoolWorker(void *opaque)
 {
-    virThreadPoolPtr pool = opaque;
+    struct virThreadPoolWorkerData *data = opaque;
+    virThreadPoolPtr pool = data->pool;
+    virCondPtr cond = data->cond;
+    bool priority = data->priority;
+    virThreadPoolJobPtr job = NULL;
+
+    VIR_FREE(data);
 
     virMutexLock(&pool->mutex);
 
     while (1) {
         while (!pool->quit &&
-               !pool->jobList.head) {
-            pool->freeWorkers++;
-            if (virCondWait(&pool->cond, &pool->mutex) < 0) {
-                pool->freeWorkers--;
+               ((!priority && !pool->jobList.head) ||
+                (priority && !pool->jobList.firstPrio))) {
+            if (!priority)
+                pool->freeWorkers++;
+            if (virCondWait(cond, &pool->mutex) < 0) {
+                if (!priority)
+                    pool->freeWorkers--;
                 goto out;
             }
-            pool->freeWorkers--;
+            if (!priority)
+                pool->freeWorkers--;
         }
 
         if (pool->quit)
             break;
 
-        virThreadPoolJobPtr job = pool->jobList.head;
-        pool->jobList.head = pool->jobList.head->next;
-        job->next = NULL;
-        if (pool->jobList.tail == &job->next)
-            pool->jobList.tail = &pool->jobList.head;
+        if (priority) {
+            job = pool->jobList.firstPrio;
+        } else {
+            job = pool->jobList.head;
+        }
+
+        if (job == pool->jobList.firstPrio) {
+            virThreadPoolJobPtr tmp = job->next;
+            while (tmp) {
+                if (tmp->priority) {
+                    break;
+                }
+                tmp = tmp->next;
+            }
+            pool->jobList.firstPrio = tmp;
+        }
+
+        if (job->prev)
+            job->prev->next = job->next;
+        else
+            pool->jobList.head = job->next;
+        if (job->next)
+            job->next->prev = job->prev;
+        else
+            pool->jobList.tail = job->prev;
+
+        pool->jobQueueDepth--;
 
         virMutexUnlock(&pool->mutex);
         (pool->jobFunc)(job->data, pool->jobOpaque);
@@ -101,19 +147,24 @@ static void virThreadPoolWorker(void *opaque)
     }
 
 out:
-    pool->nWorkers--;
-    if (pool->nWorkers == 0)
+    if (priority)
+        pool->nPrioWorkers--;
+    else
+        pool->nWorkers--;
+    if (pool->nWorkers == 0 && pool->nPrioWorkers==0)
         virCondSignal(&pool->quit_cond);
     virMutexUnlock(&pool->mutex);
 }
 
 virThreadPoolPtr virThreadPoolNew(size_t minWorkers,
                                   size_t maxWorkers,
+                                  size_t prioWorkers,
                                   virThreadPoolJobFunc func,
                                   void *opaque)
 {
     virThreadPoolPtr pool;
     size_t i;
+    struct virThreadPoolWorkerData *data = NULL;
 
     if (minWorkers > maxWorkers)
         minWorkers = maxWorkers;
@@ -123,8 +174,7 @@ virThreadPoolPtr virThreadPoolNew(size_t minWorkers,
         return NULL;
     }
 
-    pool->jobList.head = NULL;
-    pool->jobList.tail = &pool->jobList.head;
+    pool->jobList.tail = pool->jobList.head = NULL;
 
     pool->jobFunc = func;
     pool->jobOpaque = opaque;
@@ -141,18 +191,51 @@ virThreadPoolPtr virThreadPoolNew(size_t minWorkers,
 
     pool->maxWorkers = maxWorkers;
     for (i = 0; i < minWorkers; i++) {
+        if (VIR_ALLOC(data) < 0) {
+            virReportOOMError();
+            goto error;
+        }
+        data->pool = pool;
+        data->cond = &pool->cond;
+
         if (virThreadCreate(&pool->workers[i],
                             true,
                             virThreadPoolWorker,
-                            pool) < 0) {
+                            data) < 0) {
             goto error;
         }
         pool->nWorkers++;
     }
 
+    if (prioWorkers) {
+        if (virCondInit(&pool->prioCond) < 0)
+            goto error;
+        if (VIR_ALLOC_N(pool->prioWorkers, prioWorkers) < 0)
+            goto error;
+
+        for (i = 0; i < prioWorkers; i++) {
+            if (VIR_ALLOC(data) < 0) {
+                virReportOOMError();
+                goto error;
+            }
+            data->pool = pool;
+            data->cond = &pool->prioCond;
+            data->priority = true;
+
+            if (virThreadCreate(&pool->prioWorkers[i],
+                                true,
+                                virThreadPoolWorker,
+                                data) < 0) {
+                goto error;
+            }
+            pool->nPrioWorkers++;
+        }
+    }
+
     return pool;
 
 error:
+    VIR_FREE(data);
     virThreadPoolFree(pool);
     return NULL;
 
@@ -161,16 +244,21 @@ error:
 void virThreadPoolFree(virThreadPoolPtr pool)
 {
     virThreadPoolJobPtr job;
+    bool priority = false;
 
     if (!pool)
         return;
 
     virMutexLock(&pool->mutex);
     pool->quit = true;
-    if (pool->nWorkers > 0) {
+    if (pool->nWorkers > 0)
         virCondBroadcast(&pool->cond);
-        ignore_value(virCondWait(&pool->quit_cond, &pool->mutex));
+    if (pool->nPrioWorkers > 0) {
+        priority = true;
+        virCondBroadcast(&pool->prioCond);
     }
+
+    ignore_value(virCondWait(&pool->quit_cond, &pool->mutex));
 
     while ((job = pool->jobList.head)) {
         pool->jobList.head = pool->jobList.head->next;
@@ -182,10 +270,19 @@ void virThreadPoolFree(virThreadPoolPtr pool)
     virMutexDestroy(&pool->mutex);
     ignore_value(virCondDestroy(&pool->quit_cond));
     ignore_value(virCondDestroy(&pool->cond));
+    if (priority) {
+        VIR_FREE(pool->prioWorkers);
+        ignore_value(virCondDestroy(&pool->prioCond));
+    }
     VIR_FREE(pool);
 }
 
+/*
+ * @priority - job priority
+ * Return: 0 on success, -1 otherwise
+ */
 int virThreadPoolSendJob(virThreadPoolPtr pool,
+                         unsigned int priority,
                          void *jobData)
 {
     virThreadPoolJobPtr job;
@@ -194,7 +291,7 @@ int virThreadPoolSendJob(virThreadPoolPtr pool,
     if (pool->quit)
         goto error;
 
-    if (pool->freeWorkers == 0 &&
+    if (pool->freeWorkers - pool->jobQueueDepth <= 0 &&
         pool->nWorkers < pool->maxWorkers) {
         if (VIR_EXPAND_N(pool->workers, pool->nWorkers, 1) < 0) {
             virReportOOMError();
@@ -216,13 +313,26 @@ int virThreadPoolSendJob(virThreadPoolPtr pool,
     }
 
     job->data = jobData;
-    job->next = NULL;
-    *pool->jobList.tail = job;
-    pool->jobList.tail = &(*pool->jobList.tail)->next;
+    job->priority = priority;
+
+    job->prev = pool->jobList.tail;
+    if (pool->jobList.tail)
+        pool->jobList.tail->next = job;
+    pool->jobList.tail = job;
+
+    if (!pool->jobList.head)
+        pool->jobList.head = job;
+
+    if (priority && !pool->jobList.firstPrio)
+        pool->jobList.firstPrio = job;
+
+    pool->jobQueueDepth++;
 
     virCondSignal(&pool->cond);
-    virMutexUnlock(&pool->mutex);
+    if (priority)
+        virCondSignal(&pool->prioCond);
 
+    virMutexUnlock(&pool->mutex);
     return 0;
 
 error:

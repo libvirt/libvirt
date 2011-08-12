@@ -64,6 +64,7 @@ typedef virNetServerJob *virNetServerJobPtr;
 struct _virNetServerJob {
     virNetServerClientPtr client;
     virNetMessagePtr msg;
+    virNetServerProgramPtr prog;
 };
 
 struct _virNetServer {
@@ -128,53 +129,30 @@ static void virNetServerHandleJob(void *jobOpaque, void *opaque)
 {
     virNetServerPtr srv = opaque;
     virNetServerJobPtr job = jobOpaque;
-    virNetServerProgramPtr prog = NULL;
-    size_t i;
 
-    virNetServerLock(srv);
-    VIR_DEBUG("server=%p client=%p message=%p",
-              srv, job->client, job->msg);
+    VIR_DEBUG("server=%p client=%p message=%p prog=%p",
+              srv, job->client, job->msg, job->prog);
 
-    for (i = 0 ; i < srv->nprograms ; i++) {
-        if (virNetServerProgramMatches(srv->programs[i], job->msg)) {
-            prog = srv->programs[i];
-            break;
-        }
-    }
-
-    if (!prog) {
-        if (virNetServerProgramUnknownError(job->client,
-                                            job->msg,
-                                            &job->msg->header) < 0)
-            goto error;
-        else
-            goto cleanup;
-    }
-
-    virNetServerProgramRef(prog);
-    virNetServerUnlock(srv);
-
-    if (virNetServerProgramDispatch(prog,
+    if (virNetServerProgramDispatch(job->prog,
                                     srv,
                                     job->client,
                                     job->msg) < 0)
         goto error;
 
     virNetServerLock(srv);
-
-cleanup:
-    virNetServerProgramFree(prog);
+    virNetServerProgramFree(job->prog);
     virNetServerUnlock(srv);
     virNetServerClientFree(job->client);
     VIR_FREE(job);
     return;
 
 error:
+    virNetServerProgramFree(job->prog);
     virNetMessageFree(job->msg);
     virNetServerClientClose(job->client);
-    goto cleanup;
+    virNetServerClientFree(job->client);
+    VIR_FREE(job);
 }
-
 
 static int virNetServerDispatchNewMessage(virNetServerClientPtr client,
                                           virNetMessagePtr msg,
@@ -182,7 +160,10 @@ static int virNetServerDispatchNewMessage(virNetServerClientPtr client,
 {
     virNetServerPtr srv = opaque;
     virNetServerJobPtr job;
-    int ret;
+    virNetServerProgramPtr prog = NULL;
+    unsigned int priority = 0;
+    size_t i;
+    int ret = -1;
 
     VIR_DEBUG("server=%p client=%p message=%p",
               srv, client, msg);
@@ -196,8 +177,29 @@ static int virNetServerDispatchNewMessage(virNetServerClientPtr client,
     job->msg = msg;
 
     virNetServerLock(srv);
-    if ((ret = virThreadPoolSendJob(srv->workers, job)) < 0)
+    for (i = 0 ; i < srv->nprograms ; i++) {
+        if (virNetServerProgramMatches(srv->programs[i], job->msg)) {
+            prog = srv->programs[i];
+            break;
+        }
+    }
+
+    if (!prog) {
+        virNetServerProgramUnknownError(client, msg, &msg->header);
+        goto cleanup;
+    }
+
+    virNetServerProgramRef(prog);
+    job->prog = prog;
+    priority = virNetServerProgramGetPriority(prog, msg->header.proc);
+
+    ret = virThreadPoolSendJob(srv->workers, priority, job);
+
+cleanup:
+    if (ret < 0) {
         VIR_FREE(job);
+        virNetServerProgramFree(prog);
+    }
     virNetServerUnlock(srv);
 
     return ret;
@@ -274,6 +276,7 @@ static void virNetServerFatalSignal(int sig, siginfo_t *siginfo ATTRIBUTE_UNUSED
 
 virNetServerPtr virNetServerNew(size_t min_workers,
                                 size_t max_workers,
+                                size_t priority_workers,
                                 size_t max_clients,
                                 const char *mdnsGroupName,
                                 bool connectDBus ATTRIBUTE_UNUSED,
@@ -290,6 +293,7 @@ virNetServerPtr virNetServerNew(size_t min_workers,
     srv->refs = 1;
 
     if (!(srv->workers = virThreadPoolNew(min_workers, max_workers,
+                                          priority_workers,
                                           virNetServerHandleJob,
                                           srv)))
         goto error;
