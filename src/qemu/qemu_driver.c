@@ -8459,8 +8459,12 @@ cleanup:
                         _("resuming after snapshot failed"));
     }
 
-    if (qemuDomainObjEndJob(driver, vm) == 0)
+    if (qemuDomainObjEndJob(driver, vm) == 0) {
+        /* Only possible if a transient vm quit while our locks were down,
+         * in which case we don't want to save snapshot metadata.  */
         *vmptr = NULL;
+        ret = -1;
+    }
 
     return ret;
 }
@@ -8474,7 +8478,7 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
     virDomainSnapshotObjPtr snap = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    virDomainSnapshotDefPtr def;
+    virDomainSnapshotDefPtr def = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -8502,8 +8506,17 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
 
     if (!(snap = virDomainSnapshotAssignDef(&vm->snapshots, def)))
         goto cleanup;
+    def = NULL;
 
     snap->def->state = virDomainObjGetState(vm, NULL);
+    if (vm->current_snapshot) {
+        snap->def->parent = strdup(vm->current_snapshot->def->name);
+        if (snap->def->parent == NULL) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        vm->current_snapshot = NULL;
+    }
 
     /* actually do the snapshot */
     if (!virDomainObjIsActive(vm)) {
@@ -8515,32 +8528,24 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
             goto cleanup;
     }
 
-    /* FIXME: if we fail after this point, there's not a whole lot we can
+    /* If we fail after this point, there's not a whole lot we can
      * do; we've successfully taken the snapshot, and we are now running
      * on it, so we have to go forward the best we can
      */
-
-    if (vm->current_snapshot) {
-        def->parent = strdup(vm->current_snapshot->def->name);
-        if (def->parent == NULL) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    }
-
-    /* Now we set the new current_snapshot for the domain */
-    vm->current_snapshot = snap;
-
-    if (qemuDomainSnapshotWriteMetadata(vm, vm->current_snapshot,
-                                        driver->snapshotDir) < 0)
-        /* qemuDomainSnapshotWriteMetadata set the error */
+    if (qemuDomainSnapshotWriteMetadata(vm, snap, driver->snapshotDir) < 0)
         goto cleanup;
 
     snapshot = virGetDomainSnapshot(domain, snap->def->name);
 
 cleanup:
-    if (vm)
+    if (vm) {
+        if (snapshot)
+            vm->current_snapshot = snap;
+        else if (snap)
+            virDomainSnapshotObjListRemove(&vm->snapshots, snap);
         virDomainObjUnlock(vm);
+    }
+    virDomainSnapshotDefFree(def);
     qemuDriverUnlock(driver);
     return snapshot;
 }
