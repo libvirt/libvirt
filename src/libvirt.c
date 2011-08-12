@@ -15962,14 +15962,18 @@ error:
 /**
  * virDomainSnapshotDelete:
  * @snapshot: a domain snapshot object
- * @flags: flag parameters
+ * @flags: bitwise-or of supported virDomainSnapshotDeleteFlags
  *
  * Delete the snapshot.
  *
  * If @flags is 0, then just this snapshot is deleted, and changes from
  * this snapshot are automatically merged into children snapshots.  If
- * flags is VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN, then this snapshot
- * and any children snapshots are deleted.
+ * @flags includes VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN, then this snapshot
+ * and any children snapshots are deleted.  If @flags includes
+ * VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY, then any snapshot metadata
+ * tracked by libvirt is removed while keeping the snapshot contents
+ * intact; if a hypervisor does not require any libvirt metadata to
+ * track snapshots, then this flag is silently ignored.
  *
  * Returns 0 if the snapshot was successfully deleted, -1 on error.
  */

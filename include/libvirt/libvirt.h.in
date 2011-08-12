@@ -2596,7 +2596,8 @@ int virDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
 /* Delete a snapshot */
 typedef enum {
-    VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN = (1 << 0),
+    VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN      = (1 << 0), /* Also delete children */
+    VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY = (1 << 1), /* Delete just metadata */
 } virDomainSnapshotDeleteFlags;
 
 int virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,

@@ -6361,7 +6361,8 @@ vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     PRUint32 state;
     nsresult rc;
 
-    virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN, -1);
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
+                  VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY, -1);
 
     vboxIIDFromUUID(&domiid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(domiid.value, &machine);
@@ -6379,6 +6380,13 @@ vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     if (NS_FAILED(rc)) {
         vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
                   _("could not get domain state"));
+        goto cleanup;
+    }
+
+    /* VBOX snapshots do not require any libvirt metadata, making this
+     * flag trivial once we know we have a valid snapshot.  */
+    if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY) {
+        ret = 0;
         goto cleanup;
     }
 

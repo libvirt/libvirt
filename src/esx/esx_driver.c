@@ -4543,7 +4543,8 @@ esxDomainSnapshotDelete(virDomainSnapshotPtr snapshot, unsigned int flags)
     esxVI_TaskInfoState taskInfoState;
     char *taskInfoErrorMessage = NULL;
 
-    virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN, -1);
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
+                  VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY, -1);
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
@@ -4558,6 +4559,13 @@ esxDomainSnapshotDelete(virDomainSnapshotPtr snapshot, unsigned int flags)
         esxVI_GetSnapshotTreeByName(rootSnapshotList, snapshot->name,
                                     &snapshotTree, &snapshotTreeParent,
                                     esxVI_Occurrence_RequiredItem) < 0) {
+        goto cleanup;
+    }
+
+    /* ESX snapshots do not require any libvirt metadata, making this
+     * flag trivial once we know we have a valid snapshot.  */
+    if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY) {
+        result = 0;
         goto cleanup;
     }
 
