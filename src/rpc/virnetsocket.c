@@ -1076,10 +1076,10 @@ ssize_t virNetSocketWrite(virNetSocketPtr sock, const char *buf, size_t len)
 }
 
 
-int virNetSocketListen(virNetSocketPtr sock)
+int virNetSocketListen(virNetSocketPtr sock, int backlog)
 {
     virMutexLock(&sock->lock);
-    if (listen(sock->fd, 30) < 0) {
+    if (listen(sock->fd, backlog > 0 ? backlog : 30) < 0) {
         virReportSystemError(errno, "%s", _("Unable to listen on socket"));
         virMutexUnlock(&sock->lock);
         return -1;

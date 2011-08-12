@@ -105,7 +105,7 @@ void virNetSocketFree(virNetSocketPtr sock);
 const char *virNetSocketLocalAddrString(virNetSocketPtr sock);
 const char *virNetSocketRemoteAddrString(virNetSocketPtr sock);
 
-int virNetSocketListen(virNetSocketPtr sock);
+int virNetSocketListen(virNetSocketPtr sock, int backlog);
 int virNetSocketAccept(virNetSocketPtr sock,
                        virNetSocketPtr *clientsock);
 

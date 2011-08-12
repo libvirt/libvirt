@@ -127,7 +127,7 @@ virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
         goto error;
 
     for (i = 0 ; i < svc->nsocks ; i++) {
-        if (virNetSocketListen(svc->socks[i]) < 0)
+        if (virNetSocketListen(svc->socks[i], 0) < 0)
             goto error;
 
         /* IO callback is initially disabled, until we're ready
@@ -187,7 +187,7 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
         goto error;
 
     for (i = 0 ; i < svc->nsocks ; i++) {
-        if (virNetSocketListen(svc->socks[i]) < 0)
+        if (virNetSocketListen(svc->socks[i], 0) < 0)
             goto error;
 
         /* IO callback is initially disabled, until we're ready
