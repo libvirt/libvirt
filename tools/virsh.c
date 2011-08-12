@@ -1449,6 +1449,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
+        return false;
 
     has_managed_save = virDomainHasManagedSaveImage(dom, 0);
     if (has_managed_save < 0) {
