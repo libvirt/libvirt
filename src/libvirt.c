@@ -4149,6 +4149,7 @@ virDomainMigrateVersion3(virDomainPtr domain,
     virErrorPtr orig_err = NULL;
     int cancelled = 1;
     unsigned long protection = 0;
+    bool notify_source = true;
 
     VIR_DOMAIN_DEBUG(domain, "dconn=%p xmlin=%s, flags=%lx, "
                      "dname=%s, uri=%s, bandwidth=%lu",
@@ -4229,8 +4230,13 @@ virDomainMigrateVersion3(virDomainPtr domain,
          uri, flags | protection, dname, bandwidth);
 
     /* Perform failed. Make sure Finish doesn't overwrite the error */
-    if (ret < 0)
+    if (ret < 0) {
         orig_err = virSaveLastError();
+        /* Perform failed so we don't need to call confirm to let source know
+         * about the failure.
+         */
+        notify_source = false;
+    }
 
     /* If Perform returns < 0, then we need to cancel the VM
      * startup on the destination
@@ -4273,25 +4279,29 @@ finish:
 
 confirm:
     /*
-     * If cancelled, then src VM will be restarted, else
-     * it will be killed
+     * If cancelled, then src VM will be restarted, else it will be killed.
+     * Don't do this if migration failed on source and thus it was already
+     * cancelled there.
      */
-    VIR_DEBUG("Confirm3 %p ret=%d domain=%p", domain->conn, ret, domain);
-    VIR_FREE(cookiein);
-    cookiein = cookieout;
-    cookieinlen = cookieoutlen;
-    cookieout = NULL;
-    cookieoutlen = 0;
-    ret = domain->conn->driver->domainMigrateConfirm3
-        (domain, cookiein, cookieinlen,
-         flags | protection, cancelled);
-    /* If Confirm3 returns -1, there's nothing more we can
-     * do, but fortunately worst case is that there is a
-     * domain left in 'paused' state on source.
-     */
-    if (ret < 0)
-        VIR_WARN("Guest %s probably left in 'paused' state on source",
-                 domain->name);
+    if (notify_source) {
+        VIR_DEBUG("Confirm3 %p ret=%d domain=%p", domain->conn, ret, domain);
+        VIR_FREE(cookiein);
+        cookiein = cookieout;
+        cookieinlen = cookieoutlen;
+        cookieout = NULL;
+        cookieoutlen = 0;
+        ret = domain->conn->driver->domainMigrateConfirm3
+            (domain, cookiein, cookieinlen,
+             flags | protection, cancelled);
+        /* If Confirm3 returns -1, there's nothing more we can
+         * do, but fortunately worst case is that there is a
+         * domain left in 'paused' state on source.
+         */
+        if (ret < 0) {
+            VIR_WARN("Guest %s probably left in 'paused' state on source",
+                     domain->name);
+        }
+    }
 
  done:
     if (orig_err) {
