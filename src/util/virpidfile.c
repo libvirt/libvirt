@@ -299,13 +299,13 @@ cleanup:
 }
 
 
+verify(sizeof(pid_t) <= sizeof(unsigned int));
 
 int virPidFileAcquirePath(const char *path,
                           pid_t pid)
 {
     int fd = -1;
     char pidstr[INT_BUFSIZE_BOUND(pid)];
-    verify(sizeof(pid_t) <= sizeof(unsigned int));
 
     if (path[0] == '\0')
         return 0;

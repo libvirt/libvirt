@@ -35,6 +35,7 @@
 #include "memory.h"
 #include "command.h"
 #include "virfile.h"
+#include "virpidfile.h"
 
 #ifdef WIN32
 
@@ -214,7 +215,7 @@ cleanup:
 static int test4(const void *unused ATTRIBUTE_UNUSED)
 {
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
-    char *pidfile = virFilePid(abs_builddir, "commandhelper");
+    char *pidfile = virPidFileBuildPath(abs_builddir, "commandhelper");
     pid_t pid;
     int ret = -1;
 
@@ -230,7 +231,7 @@ static int test4(const void *unused ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virFileReadPid(abs_builddir, "commandhelper", &pid) < 0) {
+    if (virPidFileRead(abs_builddir, "commandhelper", &pid) < 0) {
         printf("cannot read pidfile\n");
         goto cleanup;
     }
@@ -668,7 +669,7 @@ cleanup:
 static int test18(const void *unused ATTRIBUTE_UNUSED)
 {
     virCommandPtr cmd = virCommandNewArgList("sleep", "100", NULL);
-    char *pidfile = virFilePid(abs_builddir, "commandhelper");
+    char *pidfile = virPidFileBuildPath(abs_builddir, "commandhelper");
     pid_t pid;
     int ret = -1;
 
@@ -686,7 +687,7 @@ static int test18(const void *unused ATTRIBUTE_UNUSED)
     }
     alarm(0);
 
-    if (virFileReadPid(abs_builddir, "commandhelper", &pid) < 0) {
+    if (virPidFileRead(abs_builddir, "commandhelper", &pid) < 0) {
         printf("cannot read pidfile\n");
         goto cleanup;
     }
