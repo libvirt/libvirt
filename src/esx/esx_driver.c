@@ -4329,11 +4329,15 @@ esxDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
     esxPrivate *priv = domain->conn->privateData;
     esxVI_VirtualMachineSnapshotTree *rootSnapshotTreeList = NULL;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
     }
+
+    /* ESX snapshots do not require libvirt to maintain any metadata.  */
+    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_METADATA)
+        return 0;
 
     if (esxVI_LookupRootSnapshotTreeList(priv->primary, domain->uuid,
                                          &rootSnapshotTreeList) < 0) {
@@ -4357,14 +4361,14 @@ esxDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
     esxPrivate *priv = domain->conn->privateData;
     esxVI_VirtualMachineSnapshotTree *rootSnapshotTreeList = NULL;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
 
     if (names == NULL || nameslen < 0) {
         ESX_ERROR(VIR_ERR_INVALID_ARG, "%s", _("Invalid argument"));
         return -1;
     }
 
-    if (nameslen == 0) {
+    if (nameslen == 0 || (flags & VIR_DOMAIN_SNAPSHOT_LIST_METADATA)) {
         return 0;
     }
 

@@ -15677,11 +15677,19 @@ error:
 /**
  * virDomainSnapshotNum:
  * @domain: a domain object
- * @flags: unused flag parameters; callers should pass 0
+ * @flags: bitwise-or of supported virDomainSnapshotListFlags
  *
- * Provides the number of domain snapshots for this domain..
+ * Provides the number of domain snapshots for this domain.
  *
- * Returns the number of domain snapshost found or -1 in case of error.
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_ROOTS, then the result is
+ * filtered to the number of snapshots that have no parents.
+ *
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_METADATA, then the result is
+ * the number of snapshots that also include metadata that would prevent
+ * the removal of the last reference to a domain; this value will either
+ * be 0 or the same value as if the flag were not given.
+ *
+ * Returns the number of domain snapshots found or -1 in case of error.
  */
 int
 virDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
@@ -15717,11 +15725,20 @@ error:
  * @domain: a domain object
  * @names: array to collect the list of names of snapshots
  * @nameslen: size of @names
- * @flags: unused flag parameters; callers should pass 0
+ * @flags: bitwise-or of supported virDomainSnapshotListFlags
  *
  * Collect the list of domain snapshots for the given domain, and store
  * their names in @names.  Caller is responsible for freeing each member
- * of the array.
+ * of the array.  The value to use for @nameslen can be determined by
+ * virDomainSnapshotNum() with the same @flags.
+ *
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_ROOTS, then the result is
+ * filtered to the number of snapshots that have no parents.
+ *
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_METADATA, then the result is
+ * the number of snapshots that also include metadata that would prevent
+ * the removal of the last reference to a domain; this value will either
+ * be 0 or the same value as if the flag were not given.
  *
  * Returns the number of domain snapshots found or -1 in case of error.
  */
