@@ -11678,6 +11678,109 @@ int virDomainSnapshotHasChildren(virDomainSnapshotObjPtr snap,
     return children.number;
 }
 
+typedef enum {
+    MARK_NONE,       /* No relation determined yet */
+    MARK_DESCENDANT, /* Descendant of target */
+    MARK_OTHER,      /* Not a descendant of target */
+} snapshot_mark;
+
+struct snapshot_mark_descendant {
+    const char *name; /* Parent's name on round 1, NULL on other rounds.  */
+    virDomainSnapshotObjListPtr snapshots;
+    bool marked; /* True if descendants were found in this round */
+};
+
+/* To be called in a loop until no more descendants are found.
+ * Additionally marking known unrelated snapshots reduces the number
+ * of total hash searches needed.  */
+static void
+virDomainSnapshotMarkDescendant(void *payload,
+                                const void *name ATTRIBUTE_UNUSED,
+                                void *data)
+{
+    virDomainSnapshotObjPtr obj = payload;
+    struct snapshot_mark_descendant *curr = data;
+    virDomainSnapshotObjPtr parent = NULL;
+
+    /* Learned on a previous pass.  */
+    if (obj->mark)
+        return;
+
+    if (curr->name) {
+        /* First round can only find root nodes and direct children.  */
+        if (!obj->def->parent) {
+            obj->mark = MARK_OTHER;
+        } else if (STREQ(obj->def->parent, curr->name)) {
+            obj->mark = MARK_DESCENDANT;
+            curr->marked = true;
+        }
+    } else {
+        /* All remaining rounds propagate marks from parents to children.  */
+        parent = virDomainSnapshotFindByName(curr->snapshots, obj->def->parent);
+        if (!parent) {
+            VIR_WARN("snapshot hash table is inconsistent!");
+            obj->mark = MARK_OTHER;
+            return;
+        }
+        if (parent->mark) {
+            obj->mark = parent->mark;
+            if (obj->mark == MARK_DESCENDANT)
+                curr->marked = true;
+        }
+    }
+}
+
+struct snapshot_act_on_descendant {
+    int number;
+    virHashIterator iter;
+    void *data;
+};
+
+static void
+virDomainSnapshotActOnDescendant(void *payload,
+                                 const void *name,
+                                 void *data)
+{
+    virDomainSnapshotObjPtr obj = payload;
+    struct snapshot_act_on_descendant *curr = data;
+
+    if (obj->mark == MARK_DESCENDANT) {
+        curr->number++;
+        (curr->iter)(payload, name, curr->data);
+    }
+    obj->mark = MARK_NONE;
+}
+
+/* Run iter(data) on all descendants of snapshot, while ignoring all
+ * other entries in snapshots.  Return the number of descendants
+ * visited.  No particular ordering is guaranteed.  */
+int
+virDomainSnapshotForEachDescendant(virDomainSnapshotObjListPtr snapshots,
+                                   virDomainSnapshotObjPtr snapshot,
+                                   virHashIterator iter,
+                                   void *data)
+{
+    struct snapshot_mark_descendant mark;
+    struct snapshot_act_on_descendant act;
+
+    /* virHashForEach does not support nested traversal, so we must
+     * instead iterate until no more snapshots get marked.  We
+     * guarantee that on exit, all marks have been cleared again.  */
+    mark.name = snapshot->def->name;
+    mark.snapshots = snapshots;
+    mark.marked = true;
+    while (mark.marked) {
+        mark.marked = false;
+        virHashForEach(snapshots->objs, virDomainSnapshotMarkDescendant, &mark);
+        mark.name = NULL;
+    }
+    act.number = 0;
+    act.iter = iter;
+    act.data = data;
+    virHashForEach(snapshots->objs, virDomainSnapshotActOnDescendant, &act);
+
+    return act.number;
+}
 
 int virDomainChrDefForeach(virDomainDefPtr def,
                            bool abortOnError,

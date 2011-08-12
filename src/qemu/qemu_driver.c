@@ -9230,31 +9230,21 @@ cleanup:
 struct snap_remove {
     struct qemud_driver *driver;
     virDomainObjPtr vm;
-    char *parent;
     int err;
 };
 
-static void qemuDomainSnapshotDiscardChildren(void *payload,
-                                              const void *name ATTRIBUTE_UNUSED,
-                                              void *data)
+static void
+qemuDomainSnapshotDiscardDescendant(void *payload,
+                                    const void *name ATTRIBUTE_UNUSED,
+                                    void *data)
 {
     virDomainSnapshotObjPtr snap = payload;
     struct snap_remove *curr = data;
-    struct snap_remove this;
+    int err;
 
-    if (snap->def->parent && STREQ(snap->def->parent, curr->parent)) {
-        this.driver = curr->driver;
-        this.vm = curr->vm;
-        this.parent = snap->def->name;
-        this.err = 0;
-        virHashForEach(curr->vm->snapshots.objs,
-                       qemuDomainSnapshotDiscardChildren, &this);
-
-        if (this.err)
-            curr->err = this.err;
-        else
-            this.err = qemuDomainSnapshotDiscard(curr->driver, curr->vm, snap);
-    }
+    err = qemuDomainSnapshotDiscard(curr->driver, curr->vm, snap);
+    if (err && !curr->err)
+        curr->err = err;
 }
 
 struct snap_reparent {
@@ -9330,10 +9320,11 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN) {
         rem.driver = driver;
         rem.vm = vm;
-        rem.parent = snap->def->name;
         rem.err = 0;
-        virHashForEach(vm->snapshots.objs, qemuDomainSnapshotDiscardChildren,
-                       &rem);
+        virDomainSnapshotForEachDescendant(&vm->snapshots,
+                                           snap,
+                                           qemuDomainSnapshotDiscardDescendant,
+                                           &rem);
         if (rem.err < 0)
             goto endjob;
     } else {
