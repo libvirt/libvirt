@@ -2058,6 +2058,10 @@ error:
  * does not free the associated virDomainPtr object.
  * This function may require privileged access
  *
+ * If the domain is transient and has any snapshot metadata (see
+ * virDomainSnapshotNum()), then that metadata will automatically
+ * be deleted when the domain quits.
+ *
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
@@ -2107,7 +2111,9 @@ error:
  * This function may require privileged access.
  *
  * Calling this function with no @flags set (equal to zero)
- * is equivalent to calling virDomainDestroy.
+ * is equivalent to calling virDomainDestroy.  Using virDomainShutdown()
+ * may produce cleaner results for the guest's disks, but depends on guest
+ * support.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -2912,12 +2918,17 @@ error:
  * virDomainShutdown:
  * @domain: a domain object
  *
- * Shutdown a domain, the domain object is still usable there after but
+ * Shutdown a domain, the domain object is still usable thereafter but
  * the domain OS is being stopped. Note that the guest OS may ignore the
- * request.
+ * request.  For guests that react to a shutdown request, the differences
+ * from virDomainDestroy() are that the guests disk storage will be in a
+ * stable state rather than having the (virtual) power cord pulled, and
+ * this command returns as soon as the shutdown request is issued rather
+ * than blocking until the guest is no longer running.
  *
- * TODO: should we add an option for reboot, knowing it may not be doable
- *       in the general case ?
+ * If the domain is transient and has any snapshot metadata (see
+ * virDomainSnapshotNum()), then that metadata will automatically
+ * be deleted when the domain quits.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -6879,8 +6890,9 @@ error:
  * the domain configuration is removed.
  *
  * If the domain has a managed save image (see
- * virDomainHasManagedSaveImage()), then the undefine will fail. See
- * virDomainUndefineFlags() for more control.
+ * virDomainHasManagedSaveImage()), or if it is inactive and has any
+ * snapshot metadata (see virDomainSnapshotNum()), then the undefine will
+ * fail. See virDomainUndefineFlags() for more control.
  *
  * Returns 0 in case of success, -1 in case of error
  */
@@ -6930,6 +6942,15 @@ error:
  * If the domain has a managed save image (see virDomainHasManagedSaveImage()),
  * then including VIR_DOMAIN_UNDEFINE_MANAGED_SAVE in @flags will also remove
  * that file, and omitting the flag will cause the undefine process to fail.
+ *
+ * If the domain is inactive and has any snapshot metadata (see
+ * virDomainSnapshotNum()), then including
+ * VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA in @flags will also remove
+ * that metadata.  Omitting the flag will cause the undefine of an
+ * inactive domain to fail.  Active snapshots will retain snapshot
+ * metadata until the (now-transient) domain halts, regardless of
+ * whether this flag is present.  On hypervisors where snapshots do
+ * not use libvirt metadata, this flag has no effect.
  *
  * Returns 0 in case of success, -1 in case of error
  */

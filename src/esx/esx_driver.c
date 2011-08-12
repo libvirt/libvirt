@@ -3309,7 +3309,10 @@ esxDomainUndefineFlags(virDomainPtr domain,
     esxVI_String *propertyNameList = NULL;
     esxVI_VirtualMachinePowerState powerState;
 
-    virCheckFlags(0, -1);
+    /* No managed save, so we explicitly reject
+     * VIR_DOMAIN_UNDEFINE_MANAGED_SAVE.  No snapshot metadata for
+     * ESX, so we can trivially ignore that flag.  */
+    virCheckFlags(VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA, -1);
 
     if (priv->vCenter != NULL) {
         ctx = priv->vCenter;

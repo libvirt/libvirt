@@ -923,10 +923,12 @@ virConnectPtr           virDomainGetConnect     (virDomainPtr domain);
  * Domain creation and destruction
  */
 
+
 /*
  * typedef enum {
  * } virDomainDestroyFlagsValues;
  */
+
 virDomainPtr            virDomainCreateXML      (virConnectPtr conn,
                                                  const char *xmlDesc,
                                                  unsigned int flags);
@@ -1247,7 +1249,11 @@ virDomainPtr            virDomainDefineXML      (virConnectPtr conn,
 int                     virDomainUndefine       (virDomainPtr domain);
 
 typedef enum {
-    VIR_DOMAIN_UNDEFINE_MANAGED_SAVE = (1 << 0),
+    VIR_DOMAIN_UNDEFINE_MANAGED_SAVE       = (1 << 0), /* Also remove any
+                                                          managed save */
+    VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA = (1 << 1), /* If last use of domain,
+                                                          then also remove any
+                                                          snapshot metadata */
 
     /* Future undefine control flags should come here. */
 } virDomainUndefineFlagsValues;

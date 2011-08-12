@@ -4982,7 +4982,10 @@ vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
 #if VBOX_API_VERSION >= 4000
     vboxArray media = VBOX_ARRAY_INITIALIZER;
 #endif
-    virCheckFlags(0, -1);
+    /* No managed save, so we explicitly reject
+     * VIR_DOMAIN_UNDEFINE_MANAGED_SAVE.  No snapshot metadata for
+     * VBox, so we can trivially ignore that flag.  */
+    virCheckFlags(VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA, -1);
 
     vboxIIDFromUUID(&iid, dom->uuid);
 
