@@ -1445,9 +1445,6 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
 
-    if (vshCommandOptString(cmd, "domain", &name) <= 0)
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
