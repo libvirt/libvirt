@@ -5073,7 +5073,8 @@ qemuDomainUndefineFlags(virDomainPtr dom,
     int ret = -1;
     int nsnapshots;
 
-    virCheckFlags(VIR_DOMAIN_UNDEFINE_MANAGED_SAVE, -1);
+    virCheckFlags(VIR_DOMAIN_UNDEFINE_MANAGED_SAVE |
+                  VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -5088,10 +5089,23 @@ qemuDomainUndefineFlags(virDomainPtr dom,
 
     if (!virDomainObjIsActive(vm) &&
         (nsnapshots = virDomainSnapshotObjListNum(&vm->snapshots, 0))) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        _("cannot delete inactive domain with %d snapshots"),
-                        nsnapshots);
-        goto cleanup;
+        struct snap_remove rem;
+
+        if (flags & VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            _("cannot delete inactive domain with %d "
+                              "snapshots"),
+                            nsnapshots);
+            goto cleanup;
+        }
+
+        rem.driver = driver;
+        rem.vm = vm;
+        rem.metadata_only = true;
+        rem.err = 0;
+        virHashForEach(vm->snapshots.objs, qemuDomainSnapshotDiscardAll, &rem);
+        if (rem.err < 0)
+            goto cleanup;
     }
 
     if (!vm->persistent) {
