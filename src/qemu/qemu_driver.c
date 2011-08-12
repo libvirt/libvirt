@@ -9171,23 +9171,26 @@ static int
 qemuDomainSnapshotDiscard(struct qemud_driver *driver,
                           virDomainObjPtr vm,
                           virDomainSnapshotObjPtr snap,
-                          bool update_current)
+                          bool update_current,
+                          bool metadata_only)
 {
     char *snapFile = NULL;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
     virDomainSnapshotObjPtr parentsnap = NULL;
 
-    if (!virDomainObjIsActive(vm)) {
-        /* Ignore any skipped disks */
-        if (qemuDomainSnapshotForEachQcow2(vm, snap, "-d", true) < 0)
-            goto cleanup;
-    } else {
-        priv = vm->privateData;
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        /* we continue on even in the face of error */
-        qemuMonitorDeleteSnapshot(priv->mon, snap->def->name);
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
+    if (!metadata_only) {
+        if (!virDomainObjIsActive(vm)) {
+            /* Ignore any skipped disks */
+            if (qemuDomainSnapshotForEachQcow2(vm, snap, "-d", true) < 0)
+                goto cleanup;
+        } else {
+            priv = vm->privateData;
+            qemuDomainObjEnterMonitorWithDriver(driver, vm);
+            /* we continue on even in the face of error */
+            qemuMonitorDeleteSnapshot(priv->mon, snap->def->name);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+        }
     }
 
     if (virAsprintf(&snapFile, "%s/%s/%s.xml", driver->snapshotDir,
@@ -9232,6 +9235,7 @@ cleanup:
 struct snap_remove {
     struct qemud_driver *driver;
     virDomainObjPtr vm;
+    bool metadata_only;
     int err;
     bool current;
 };
@@ -9247,7 +9251,8 @@ qemuDomainSnapshotDiscardDescendant(void *payload,
 
     if (snap->def->current)
         curr->current = true;
-    err = qemuDomainSnapshotDiscard(curr->driver, curr->vm, snap, false);
+    err = qemuDomainSnapshotDiscard(curr->driver, curr->vm, snap, false,
+                                    curr->metadata_only);
     if (err && !curr->err)
         curr->err = err;
 }
@@ -9297,8 +9302,10 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     struct snap_remove rem;
     struct snap_reparent rep;
+    bool metadata_only = !!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY);
 
-    virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN, -1);
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
+                  VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY, -1);
 
     qemuDriverLock(driver);
     virUUIDFormat(snapshot->domain->uuid, uuidstr);
@@ -9323,6 +9330,7 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN) {
         rem.driver = driver;
         rem.vm = vm;
+        rem.metadata_only = metadata_only;
         rem.err = 0;
         rem.current = false;
         virDomainSnapshotForEachDescendant(&vm->snapshots,
@@ -9345,7 +9353,7 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
             goto endjob;
     }
 
-    ret = qemuDomainSnapshotDiscard(driver, vm, snap, true);
+    ret = qemuDomainSnapshotDiscard(driver, vm, snap, true, metadata_only);
 
 endjob:
     if (qemuDomainObjEndJob(driver, vm) == 0)
