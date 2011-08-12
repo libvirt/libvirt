@@ -1582,6 +1582,236 @@ cleanup:
 }
 
 
+/* Locate an appropriate 'qemu-img' binary.  */
+static char *
+qemuFindQemuImgBinary(void)
+{
+    char *ret;
+
+    ret = virFindFileInPath("kvm-img");
+    if (ret == NULL)
+        ret = virFindFileInPath("qemu-img");
+    if (ret == NULL)
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("unable to find kvm-img or qemu-img"));
+
+    return ret;
+}
+
+static int
+qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
+                                virDomainSnapshotObjPtr snapshot,
+                                char *snapshotDir)
+{
+    int fd = -1;
+    char *newxml = NULL;
+    int ret = -1;
+    char *snapDir = NULL;
+    char *snapFile = NULL;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    newxml = virDomainSnapshotDefFormat(uuidstr, snapshot->def, 1);
+    if (newxml == NULL) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (virAsprintf(&snapDir, "%s/%s", snapshotDir, vm->def->name) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    if (virFileMakePath(snapDir) < 0) {
+        virReportSystemError(errno, _("cannot create snapshot directory '%s'"),
+                             snapDir);
+        goto cleanup;
+    }
+
+    if (virAsprintf(&snapFile, "%s/%s.xml", snapDir, snapshot->def->name) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    fd = open(snapFile, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR);
+    if (fd < 0) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("failed to create snapshot file '%s'"), snapFile);
+        goto cleanup;
+    }
+    if (safewrite(fd, newxml, strlen(newxml)) != strlen(newxml)) {
+        virReportSystemError(errno, _("Failed to write snapshot data to %s"),
+                             snapFile);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(snapFile);
+    VIR_FREE(snapDir);
+    VIR_FREE(newxml);
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+
+/* The domain is expected to be locked and inactive. Return -1 on normal
+ * failure, 1 if we skipped a disk due to try_all.  */
+static int
+qemuDomainSnapshotForEachQcow2(virDomainObjPtr vm,
+                               virDomainSnapshotObjPtr snap,
+                               const char *op,
+                               bool try_all)
+{
+    const char *qemuimgarg[] = { NULL, "snapshot", NULL, NULL, NULL, NULL };
+    int ret = -1;
+    int i;
+    bool skipped = false;
+
+    qemuimgarg[0] = qemuFindQemuImgBinary();
+    if (qemuimgarg[0] == NULL) {
+        /* qemuFindQemuImgBinary set the error */
+        goto cleanup;
+    }
+
+    qemuimgarg[2] = op;
+    qemuimgarg[3] = snap->def->name;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        /* FIXME: we also need to handle LVM here */
+        /* FIXME: if we fail halfway through this loop, we are in an
+         * inconsistent state.  I'm not quite sure what to do about that
+         */
+        if (vm->def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+            if (!vm->def->disks[i]->driverType ||
+                STRNEQ(vm->def->disks[i]->driverType, "qcow2")) {
+                if (try_all) {
+                    /* Continue on even in the face of error, since other
+                     * disks in this VM may have the same snapshot name.
+                     */
+                    VIR_WARN("skipping snapshot action on %s",
+                             vm->def->disks[i]->info.alias);
+                    skipped = true;
+                    continue;
+                }
+                qemuReportError(VIR_ERR_OPERATION_INVALID,
+                                _("Disk device '%s' does not support"
+                                  " snapshotting"),
+                                vm->def->disks[i]->info.alias);
+                goto cleanup;
+            }
+
+            qemuimgarg[4] = vm->def->disks[i]->src;
+
+            if (virRun(qemuimgarg, NULL) < 0) {
+                if (try_all) {
+                    VIR_WARN("skipping snapshot action on %s",
+                             vm->def->disks[i]->info.alias);
+                    skipped = true;
+                    continue;
+                }
+                goto cleanup;
+            }
+        }
+    }
+
+    ret = skipped ? 1 : 0;
+
+cleanup:
+    VIR_FREE(qemuimgarg[0]);
+    return ret;
+}
+
+/* Discard one snapshot (or its metadata), without reparenting any children.  */
+static int
+qemuDomainSnapshotDiscard(struct qemud_driver *driver,
+                          virDomainObjPtr vm,
+                          virDomainSnapshotObjPtr snap,
+                          bool update_current,
+                          bool metadata_only)
+{
+    char *snapFile = NULL;
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv;
+    virDomainSnapshotObjPtr parentsnap = NULL;
+
+    if (!metadata_only) {
+        if (!virDomainObjIsActive(vm)) {
+            /* Ignore any skipped disks */
+            if (qemuDomainSnapshotForEachQcow2(vm, snap, "-d", true) < 0)
+                goto cleanup;
+        } else {
+            priv = vm->privateData;
+            qemuDomainObjEnterMonitorWithDriver(driver, vm);
+            /* we continue on even in the face of error */
+            qemuMonitorDeleteSnapshot(priv->mon, snap->def->name);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+        }
+    }
+
+    if (virAsprintf(&snapFile, "%s/%s/%s.xml", driver->snapshotDir,
+                    vm->def->name, snap->def->name) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (snap == vm->current_snapshot) {
+        if (update_current && snap->def->parent) {
+            parentsnap = virDomainSnapshotFindByName(&vm->snapshots,
+                                                     snap->def->parent);
+            if (!parentsnap) {
+                VIR_WARN("missing parent snapshot matching name '%s'",
+                         snap->def->parent);
+            } else {
+                parentsnap->def->current = true;
+                if (qemuDomainSnapshotWriteMetadata(vm, parentsnap,
+                                                    driver->snapshotDir) < 0) {
+                    VIR_WARN("failed to set parent snapshot '%s' as current",
+                             snap->def->parent);
+                    parentsnap->def->current = false;
+                    parentsnap = NULL;
+                }
+            }
+        }
+        vm->current_snapshot = parentsnap;
+    }
+
+    if (unlink(snapFile) < 0)
+        VIR_WARN("Failed to unlink %s", snapFile);
+    virDomainSnapshotObjListRemove(&vm->snapshots, snap);
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(snapFile);
+
+    return ret;
+}
+
+struct snap_remove {
+    struct qemud_driver *driver;
+    virDomainObjPtr vm;
+    int err;
+    bool metadata_only;
+    bool current;
+};
+
+/* Hash iterator callback to discard multiple snapshots.  */
+static void
+qemuDomainSnapshotDiscardAll(void *payload,
+                             const void *name ATTRIBUTE_UNUSED,
+                             void *data)
+{
+    virDomainSnapshotObjPtr snap = payload;
+    struct snap_remove *curr = data;
+    int err;
+
+    if (snap->def->current)
+        curr->current = true;
+    err = qemuDomainSnapshotDiscard(curr->driver, curr->vm, snap, false,
+                                    curr->metadata_only);
+    if (err && !curr->err)
+        curr->err = err;
+}
+
 static int
 qemuDomainDestroyFlags(virDomainPtr dom,
                        unsigned int flags)
@@ -8398,75 +8628,6 @@ cleanup:
     return ret;
 }
 
-static char *qemuFindQemuImgBinary(void)
-{
-    char *ret;
-
-    ret = virFindFileInPath("kvm-img");
-    if (ret == NULL)
-        ret = virFindFileInPath("qemu-img");
-    if (ret == NULL)
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("unable to find kvm-img or qemu-img"));
-
-    return ret;
-}
-
-static int qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
-                                           virDomainSnapshotObjPtr snapshot,
-                                           char *snapshotDir)
-{
-    int fd = -1;
-    char *newxml = NULL;
-    int ret = -1;
-    char *snapDir = NULL;
-    char *snapFile = NULL;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-    virUUIDFormat(vm->def->uuid, uuidstr);
-    newxml = virDomainSnapshotDefFormat(uuidstr, snapshot->def, 1);
-    if (newxml == NULL) {
-        virReportOOMError();
-        return -1;
-    }
-
-    if (virAsprintf(&snapDir, "%s/%s", snapshotDir, vm->def->name) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-    if (virFileMakePath(snapDir) < 0) {
-        virReportSystemError(errno, _("cannot create snapshot directory '%s'"),
-                             snapDir);
-        goto cleanup;
-    }
-
-    if (virAsprintf(&snapFile, "%s/%s.xml", snapDir, snapshot->def->name) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-    fd = open(snapFile, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR);
-    if (fd < 0) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("failed to create snapshot file '%s'"), snapFile);
-        goto cleanup;
-    }
-    if (safewrite(fd, newxml, strlen(newxml)) != strlen(newxml)) {
-        virReportSystemError(errno, _("Failed to write snapshot data to %s"),
-                             snapFile);
-        goto cleanup;
-    }
-
-    ret = 0;
-
-cleanup:
-    VIR_FREE(snapFile);
-    VIR_FREE(snapDir);
-    VIR_FREE(newxml);
-    VIR_FORCE_CLOSE(fd);
-    return ret;
-}
-
-
 static int qemuDomainSnapshotIsAllowed(virDomainObjPtr vm)
 {
     int i;
@@ -8487,73 +8648,6 @@ static int qemuDomainSnapshotIsAllowed(virDomainObjPtr vm)
     }
 
     return 1;
-}
-
-/* The domain is expected to be locked and inactive. Return -1 on normal
- * failure, 1 if we skipped a disk due to try_all.  */
-static int
-qemuDomainSnapshotForEachQcow2(virDomainObjPtr vm,
-                               virDomainSnapshotObjPtr snap,
-                               const char *op,
-                               bool try_all)
-{
-    const char *qemuimgarg[] = { NULL, "snapshot", NULL, NULL, NULL, NULL };
-    int ret = -1;
-    int i;
-    bool skipped = false;
-
-    qemuimgarg[0] = qemuFindQemuImgBinary();
-    if (qemuimgarg[0] == NULL) {
-        /* qemuFindQemuImgBinary set the error */
-        goto cleanup;
-    }
-
-    qemuimgarg[2] = op;
-    qemuimgarg[3] = snap->def->name;
-
-    for (i = 0; i < vm->def->ndisks; i++) {
-        /* FIXME: we also need to handle LVM here */
-        /* FIXME: if we fail halfway through this loop, we are in an
-         * inconsistent state.  I'm not quite sure what to do about that
-         */
-        if (vm->def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-            if (!vm->def->disks[i]->driverType ||
-                STRNEQ(vm->def->disks[i]->driverType, "qcow2")) {
-                if (try_all) {
-                    /* Continue on even in the face of error, since other
-                     * disks in this VM may have the same snapshot name.
-                     */
-                    VIR_WARN("skipping snapshot action on %s",
-                             vm->def->disks[i]->info.alias);
-                    skipped = true;
-                    continue;
-                }
-                qemuReportError(VIR_ERR_OPERATION_INVALID,
-                                _("Disk device '%s' does not support"
-                                  " snapshotting"),
-                                vm->def->disks[i]->info.alias);
-                goto cleanup;
-            }
-
-            qemuimgarg[4] = vm->def->disks[i]->src;
-
-            if (virRun(qemuimgarg, NULL) < 0) {
-                if (try_all) {
-                    VIR_WARN("skipping snapshot action on %s",
-                             vm->def->disks[i]->info.alias);
-                    skipped = true;
-                    continue;
-                }
-                goto cleanup;
-            }
-        }
-    }
-
-    ret = skipped ? 1 : 0;
-
-cleanup:
-    VIR_FREE(qemuimgarg[0]);
-    return ret;
 }
 
 /* The domain is expected to be locked and inactive. */
@@ -9271,96 +9365,6 @@ cleanup:
     return ret;
 }
 
-static int
-qemuDomainSnapshotDiscard(struct qemud_driver *driver,
-                          virDomainObjPtr vm,
-                          virDomainSnapshotObjPtr snap,
-                          bool update_current,
-                          bool metadata_only)
-{
-    char *snapFile = NULL;
-    int ret = -1;
-    qemuDomainObjPrivatePtr priv;
-    virDomainSnapshotObjPtr parentsnap = NULL;
-
-    if (!metadata_only) {
-        if (!virDomainObjIsActive(vm)) {
-            /* Ignore any skipped disks */
-            if (qemuDomainSnapshotForEachQcow2(vm, snap, "-d", true) < 0)
-                goto cleanup;
-        } else {
-            priv = vm->privateData;
-            qemuDomainObjEnterMonitorWithDriver(driver, vm);
-            /* we continue on even in the face of error */
-            qemuMonitorDeleteSnapshot(priv->mon, snap->def->name);
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-        }
-    }
-
-    if (virAsprintf(&snapFile, "%s/%s/%s.xml", driver->snapshotDir,
-                    vm->def->name, snap->def->name) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    if (snap == vm->current_snapshot) {
-        if (update_current && snap->def->parent) {
-            parentsnap = virDomainSnapshotFindByName(&vm->snapshots,
-                                                     snap->def->parent);
-            if (!parentsnap) {
-                VIR_WARN("missing parent snapshot matching name '%s'",
-                         snap->def->parent);
-            } else {
-                parentsnap->def->current = true;
-                if (qemuDomainSnapshotWriteMetadata(vm, parentsnap,
-                                                    driver->snapshotDir) < 0) {
-                    VIR_WARN("failed to set parent snapshot '%s' as current",
-                             snap->def->parent);
-                    parentsnap->def->current = false;
-                    parentsnap = NULL;
-                }
-            }
-        }
-        vm->current_snapshot = parentsnap;
-    }
-
-    if (unlink(snapFile) < 0)
-        VIR_WARN("Failed to unlink %s", snapFile);
-    virDomainSnapshotObjListRemove(&vm->snapshots, snap);
-
-    ret = 0;
-
-cleanup:
-    VIR_FREE(snapFile);
-
-    return ret;
-}
-
-struct snap_remove {
-    struct qemud_driver *driver;
-    virDomainObjPtr vm;
-    bool metadata_only;
-    int err;
-    bool current;
-};
-
-static void
-qemuDomainSnapshotDiscardDescendant(void *payload,
-                                    const void *name ATTRIBUTE_UNUSED,
-                                    void *data)
-{
-    virDomainSnapshotObjPtr snap = payload;
-    struct snap_remove *curr = data;
-    int err;
-
-    if (snap->def->current)
-        curr->current = true;
-    err = qemuDomainSnapshotDiscard(curr->driver, curr->vm, snap, false,
-                                    curr->metadata_only);
-    if (err && !curr->err)
-        curr->err = err;
-}
-
 struct snap_reparent {
     struct qemud_driver *driver;
     const char *parent;
@@ -9439,7 +9443,7 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         rem.current = false;
         virDomainSnapshotForEachDescendant(&vm->snapshots,
                                            snap,
-                                           qemuDomainSnapshotDiscardDescendant,
+                                           qemuDomainSnapshotDiscardAll,
                                            &rem);
         if (rem.err < 0)
             goto endjob;
