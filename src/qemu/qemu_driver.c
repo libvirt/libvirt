@@ -777,6 +777,7 @@ qemudShutdown(void) {
     VIR_FREE(qemu_driver->cacheDir);
     VIR_FREE(qemu_driver->saveDir);
     VIR_FREE(qemu_driver->snapshotDir);
+    VIR_FREE(qemu_driver->qemuImgBinary);
     VIR_FREE(qemu_driver->autoDumpPath);
     VIR_FREE(qemu_driver->vncTLSx509certdir);
     VIR_FREE(qemu_driver->vncListen);
@@ -1583,19 +1584,19 @@ cleanup:
 
 
 /* Locate an appropriate 'qemu-img' binary.  */
-static char *
-qemuFindQemuImgBinary(void)
+static const char *
+qemuFindQemuImgBinary(struct qemud_driver *driver)
 {
-    char *ret;
+    if (!driver->qemuImgBinary) {
+        driver->qemuImgBinary = virFindFileInPath("kvm-img");
+        if (!driver->qemuImgBinary)
+            driver->qemuImgBinary = virFindFileInPath("qemu-img");
+        if (!driver->qemuImgBinary)
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            "%s", _("unable to find kvm-img or qemu-img"));
+    }
 
-    ret = virFindFileInPath("kvm-img");
-    if (ret == NULL)
-        ret = virFindFileInPath("qemu-img");
-    if (ret == NULL)
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("unable to find kvm-img or qemu-img"));
-
-    return ret;
+    return driver->qemuImgBinary;
 }
 
 static int
@@ -1656,7 +1657,8 @@ cleanup:
 /* The domain is expected to be locked and inactive. Return -1 on normal
  * failure, 1 if we skipped a disk due to try_all.  */
 static int
-qemuDomainSnapshotForEachQcow2(virDomainObjPtr vm,
+qemuDomainSnapshotForEachQcow2(struct qemud_driver *driver,
+                               virDomainObjPtr vm,
                                virDomainSnapshotObjPtr snap,
                                const char *op,
                                bool try_all)
@@ -1666,7 +1668,7 @@ qemuDomainSnapshotForEachQcow2(virDomainObjPtr vm,
     int i;
     bool skipped = false;
 
-    qemuimgarg[0] = qemuFindQemuImgBinary();
+    qemuimgarg[0] = qemuFindQemuImgBinary(driver);
     if (qemuimgarg[0] == NULL) {
         /* qemuFindQemuImgBinary set the error */
         goto cleanup;
@@ -1736,7 +1738,8 @@ qemuDomainSnapshotDiscard(struct qemud_driver *driver,
     if (!metadata_only) {
         if (!virDomainObjIsActive(vm)) {
             /* Ignore any skipped disks */
-            if (qemuDomainSnapshotForEachQcow2(vm, snap, "-d", true) < 0)
+            if (qemuDomainSnapshotForEachQcow2(driver, vm, snap, "-d",
+                                               true) < 0)
                 goto cleanup;
         } else {
             priv = vm->privateData;
@@ -8652,10 +8655,11 @@ static int qemuDomainSnapshotIsAllowed(virDomainObjPtr vm)
 
 /* The domain is expected to be locked and inactive. */
 static int
-qemuDomainSnapshotCreateInactive(virDomainObjPtr vm,
+qemuDomainSnapshotCreateInactive(struct qemud_driver *driver,
+                                 virDomainObjPtr vm,
                                  virDomainSnapshotObjPtr snap)
 {
-    return qemuDomainSnapshotForEachQcow2(vm, snap, "-c", false);
+    return qemuDomainSnapshotForEachQcow2(driver, vm, snap, "-c", false);
 }
 
 /* The domain is expected to be locked and active. */
@@ -8860,7 +8864,7 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
          * qemu-img recognizes the snapshot name in at least one of
          * the domain's disks?  */
     } else if (!virDomainObjIsActive(vm)) {
-        if (qemuDomainSnapshotCreateInactive(vm, snap) < 0)
+        if (qemuDomainSnapshotCreateInactive(driver, vm, snap) < 0)
             goto cleanup;
     } else {
         if (qemuDomainSnapshotCreateActive(domain->conn, driver,
@@ -9097,11 +9101,12 @@ cleanup:
 
 /* The domain is expected to be locked and inactive. */
 static int
-qemuDomainSnapshotRevertInactive(virDomainObjPtr vm,
+qemuDomainSnapshotRevertInactive(struct qemud_driver *driver,
+                                 virDomainObjPtr vm,
                                  virDomainSnapshotObjPtr snap)
 {
     /* Try all disks, but report failure if we skipped any.  */
-    int ret = qemuDomainSnapshotForEachQcow2(vm, snap, "-a", true);
+    int ret = qemuDomainSnapshotForEachQcow2(driver, vm, snap, "-a", true);
     return ret > 0 ? -1 : ret;
 }
 
@@ -9294,7 +9299,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                              detail);
         }
 
-        if (qemuDomainSnapshotRevertInactive(vm, snap) < 0) {
+        if (qemuDomainSnapshotRevertInactive(driver, vm, snap) < 0) {
             if (!vm->persistent) {
                 if (qemuDomainObjEndJob(driver, vm) > 0)
                     virDomainRemoveInactive(&driver->domains, vm);
