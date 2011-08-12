@@ -109,6 +109,8 @@ struct qemud_driver {
 
     int maxProcesses;
 
+    int max_queued;
+
     virCapsPtr caps;
 
     virDomainEventStatePtr domainEventState;

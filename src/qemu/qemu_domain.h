@@ -113,6 +113,8 @@ struct _qemuDomainObjPrivate {
     char *lockState;
 
     bool fakeReboot;
+
+    int jobs_queued;
 };
 
 struct qemuDomainWatchdogEvent

@@ -458,6 +458,10 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         VIR_FREE(lockConf);
     }
 
+    p = virConfGetValue(conf, "max_queued");
+    CHECK_TYPE("max_queued", VIR_CONF_LONG);
+    if (p) driver->max_queued = p->l;
+
     virConfFree (conf);
     return 0;
 }

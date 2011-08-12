@@ -51,6 +51,7 @@ module Libvirtd_qemu =
                  | bool_entry "set_process_name"
                  | int_entry "max_processes"
                  | str_entry "lock_manager"
+                 | int_entry "max_queued"
 
    (* Each enty in the config is one of the following three ... *)
    let entry = vnc_entry

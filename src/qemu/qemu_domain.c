@@ -713,6 +713,8 @@ qemuDomainObjBeginJobInternal(struct qemud_driver *driver,
     unsigned long long then;
     bool nested = job == QEMU_JOB_ASYNC_NESTED;
 
+    priv->jobs_queued++;
+
     if (virTimeMs(&now) < 0)
         return -1;
     then = now + QEMU_JOB_WAIT_TIME;
@@ -722,6 +724,11 @@ qemuDomainObjBeginJobInternal(struct qemud_driver *driver,
         qemuDriverUnlock(driver);
 
 retry:
+    if (driver->max_queued &&
+        priv->jobs_queued > driver->max_queued) {
+        goto error;
+    }
+
     while (!nested && !qemuDomainJobAllowed(priv, job)) {
         if (virCondWaitUntil(&priv->job.asyncCond, &obj->lock, then) < 0)
             goto error;
@@ -761,9 +768,15 @@ error:
     if (errno == ETIMEDOUT)
         qemuReportError(VIR_ERR_OPERATION_TIMEOUT,
                         "%s", _("cannot acquire state change lock"));
+    else if (driver->max_queued &&
+             priv->jobs_queued > driver->max_queued)
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        "%s", _("cannot acquire state change lock "
+                                "due to max_queued limit"));
     else
         virReportSystemError(errno,
                              "%s", _("cannot acquire job mutex"));
+    priv->jobs_queued--;
     if (driver_locked) {
         virDomainObjUnlock(obj);
         qemuDriverLock(driver);
@@ -844,6 +857,8 @@ int qemuDomainObjEndJob(struct qemud_driver *driver, virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
+    priv->jobs_queued--;
+
     qemuDomainObjResetJob(priv);
     qemuDomainObjSaveJob(driver, obj);
     virCondSignal(&priv->job.cond);
@@ -855,6 +870,8 @@ int
 qemuDomainObjEndAsyncJob(struct qemud_driver *driver, virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
+
+    priv->jobs_queued--;
 
     qemuDomainObjResetAsyncJob(priv);
     qemuDomainObjSaveJob(driver, obj);
