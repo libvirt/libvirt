@@ -701,9 +701,36 @@ error:
     return NULL;
 }
 
-bool
-qemuMigrationIsAllowed(virDomainDefPtr def)
+/* Validate whether the domain is safe to migrate.  If vm is NULL,
+ * then this is being run in the v2 Prepare stage on the destination
+ * (where we only have the target xml); if vm is provided, then this
+ * is being run in either v2 Perform or v3 Begin (where we also have
+ * access to all of the domain's metadata, such as whether it is
+ * marked autodestroy or has snapshots).  While it would be nice to
+ * assume that checking on source is sufficient to prevent ever
+ * talking to the destination in the first place, we are stuck with
+ * the fact that older servers did not do checks on the source. */
+static bool
+qemuMigrationIsAllowed(struct qemud_driver *driver, virDomainObjPtr vm,
+                       virDomainDefPtr def)
 {
+    int nsnapshots;
+
+    if (vm) {
+        if (qemuProcessAutoDestroyActive(driver, vm)) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("domain is marked for auto destroy"));
+            return false;
+        }
+        if ((nsnapshots = virDomainSnapshotObjListNum(&vm->snapshots, 0))) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            _("cannot migrate domain with %d snapshots"),
+                            nsnapshots);
+            return false;
+        }
+
+        def = vm->def;
+    }
     if (def->nhostdevs > 0) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
             "%s", _("Domain with assigned host devices cannot be migrated"));
@@ -915,13 +942,7 @@ char *qemuMigrationBegin(struct qemud_driver *driver,
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT)
         qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_BEGIN3);
 
-    if (qemuProcessAutoDestroyActive(driver, vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is marked for auto destroy"));
-        goto cleanup;
-    }
-
-    if (!qemuMigrationIsAllowed(vm->def))
+    if (!qemuMigrationIsAllowed(driver, vm, NULL))
         goto cleanup;
 
     if (!(mig = qemuMigrationEatCookie(driver, vm, NULL, 0, 0)))
@@ -990,7 +1011,7 @@ qemuMigrationPrepareAny(struct qemud_driver *driver,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (!qemuMigrationIsAllowed(def))
+    if (!qemuMigrationIsAllowed(driver, NULL, def))
         goto cleanup;
 
     /* Target domain name, maybe renamed. */
@@ -2194,11 +2215,8 @@ qemuMigrationPerformJob(struct qemud_driver *driver,
         goto endjob;
     }
 
-    if (qemuProcessAutoDestroyActive(driver, vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is marked for auto destroy"));
-        goto endjob;
-    }
+    if (!qemuMigrationIsAllowed(driver, vm, NULL))
+        goto cleanup;
 
     resume = virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING;
 
