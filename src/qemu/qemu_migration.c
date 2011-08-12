@@ -42,6 +42,7 @@
 #include "fdstream.h"
 #include "uuid.h"
 #include "locking/domain_lock.h"
+#include "rpc/virnetsocket.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -1627,9 +1628,8 @@ static int doTunnelMigrate(struct qemud_driver *driver,
                            unsigned long resource)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int qemu_sock = -1;
-    struct sockaddr_un sa_qemu;
     char *unixfile = NULL;
+    virNetSocketPtr sock = NULL;
     int ret = -1;
     qemuMigrationSpec spec;
 
@@ -1651,45 +1651,14 @@ static int doTunnelMigrate(struct qemud_driver *driver,
         goto cleanup;
     }
 
-    qemu_sock = socket(AF_UNIX, SOCK_STREAM, 0);
-    if (qemu_sock < 0) {
-        virReportSystemError(errno, "%s",
-                             _("cannot open tunnelled migration socket"));
+    if (virNetSocketNewListenUNIX(unixfile, 0700,
+                                  driver->user, driver->group, &sock) < 0 ||
+        virNetSocketListen(sock, 1) < 0)
         goto cleanup;
-    }
-    memset(&sa_qemu, 0, sizeof(sa_qemu));
-    sa_qemu.sun_family = AF_UNIX;
-    if (virStrcpy(sa_qemu.sun_path, unixfile,
-                  sizeof(sa_qemu.sun_path)) == NULL) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Unix socket '%s' too big for destination"),
-                        unixfile);
-        goto cleanup;
-    }
-    unlink(unixfile);
-    if (bind(qemu_sock, (struct sockaddr *)&sa_qemu, sizeof(sa_qemu)) < 0) {
-        virReportSystemError(errno,
-                             _("Cannot bind to unix socket '%s' for tunnelled migration"),
-                             unixfile);
-        goto cleanup;
-    }
-    if (listen(qemu_sock, 1) < 0) {
-        virReportSystemError(errno,
-                             _("Cannot listen on unix socket '%s' for tunnelled migration"),
-                             unixfile);
-        goto cleanup;
-    }
-
-    if (chown(unixfile, driver->user, driver->group) < 0) {
-        virReportSystemError(errno,
-                             _("Cannot change unix socket '%s' owner"),
-                             unixfile);
-        goto cleanup;
-    }
 
     spec.destType = MIGRATION_DEST_UNIX;
     spec.dest.unix_socket.file = unixfile;
-    spec.dest.unix_socket.sock = qemu_sock;
+    spec.dest.unix_socket.sock = virNetSocketGetFD(sock);
     spec.fwdType = MIGRATION_FWD_STREAM;
     spec.fwd.stream = st;
 
@@ -1697,11 +1666,8 @@ static int doTunnelMigrate(struct qemud_driver *driver,
                            cookieoutlen, flags, resource, &spec);
 
 cleanup:
-    VIR_FORCE_CLOSE(qemu_sock);
-    if (unixfile) {
-        unlink(unixfile);
-        VIR_FREE(unixfile);
-    }
+    virNetSocketFree(sock);
+    VIR_FREE(unixfile);
 
     return ret;
 }
