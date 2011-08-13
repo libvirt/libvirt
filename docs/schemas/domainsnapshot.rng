@@ -1,8 +1,11 @@
+<?xml version="1.0"?>
 <!-- A Relax NG schema for the libvirt domain snapshot properties XML format -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0">
   <start>
     <ref name='domainsnapshot'/>
   </start>
+
+  <include href='domaincommon.rng'/>
 
   <define name='domainsnapshot'>
     <element name='domainsnapshot'>
@@ -36,11 +39,14 @@
           </element>
         </optional>
         <optional>
-          <element name='domain'>
-            <element name='uuid'>
-              <text/>
+          <choice>
+            <element name='domain'>
+              <element name='uuid'>
+                <ref name="UUID"/>
+              </element>
             </element>
-          </element>
+            <ref name='domain'/>
+          </choice>
         </optional>
         <optional>
           <element name='parent'>

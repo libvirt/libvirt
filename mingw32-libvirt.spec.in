@@ -97,19 +97,20 @@ rm -rf $RPM_BUILD_ROOT
 
 %dir %{_mingw32_datadir}/libvirt/
 %dir %{_mingw32_datadir}/libvirt/schemas/
-%{_mingw32_datadir}/libvirt/schemas/domain.rng
-%{_mingw32_datadir}/libvirt/schemas/domainsnapshot.rng
-%{_mingw32_datadir}/libvirt/schemas/network.rng
-%{_mingw32_datadir}/libvirt/schemas/storagepool.rng
-%{_mingw32_datadir}/libvirt/schemas/storagevol.rng
-%{_mingw32_datadir}/libvirt/schemas/nodedev.rng
+%{_mingw32_datadir}/libvirt/schemas/basictypes.rng
 %{_mingw32_datadir}/libvirt/schemas/capability.rng
+%{_mingw32_datadir}/libvirt/schemas/domain.rng
+%{_mingw32_datadir}/libvirt/schemas/domaincommon.rng
+%{_mingw32_datadir}/libvirt/schemas/domainsnapshot.rng
 %{_mingw32_datadir}/libvirt/schemas/interface.rng
+%{_mingw32_datadir}/libvirt/schemas/network.rng
+%{_mingw32_datadir}/libvirt/schemas/networkcommon.rng
+%{_mingw32_datadir}/libvirt/schemas/nodedev.rng
 %{_mingw32_datadir}/libvirt/schemas/nwfilter.rng
 %{_mingw32_datadir}/libvirt/schemas/secret.rng
 %{_mingw32_datadir}/libvirt/schemas/storageencryption.rng
-%{_mingw32_datadir}/libvirt/schemas/basictypes.rng
-%{_mingw32_datadir}/libvirt/schemas/networkcommon.rng
+%{_mingw32_datadir}/libvirt/schemas/storagepool.rng
+%{_mingw32_datadir}/libvirt/schemas/storagevol.rng
 
 %{_mingw32_datadir}/libvirt/cpu_map.xml
 

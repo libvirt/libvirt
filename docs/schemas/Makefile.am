@@ -6,6 +6,7 @@ schema_DATA = \
 	basictypes.rng \
 	capability.rng \
 	domain.rng \
+	domaincommon.rng \
 	domainsnapshot.rng \
 	interface.rng \
 	network.rng \
