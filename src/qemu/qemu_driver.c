@@ -8712,7 +8712,8 @@ static int qemuDomainSnapshotListNames(virDomainPtr domain, char **names,
     virDomainObjPtr vm = NULL;
     int n = -1;
 
-    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
@@ -8724,7 +8725,8 @@ static int qemuDomainSnapshotListNames(virDomainPtr domain, char **names,
         goto cleanup;
     }
 
-    n = virDomainSnapshotObjListGetNames(&vm->snapshots, names, nameslen);
+    n = virDomainSnapshotObjListGetNames(&vm->snapshots, names, nameslen,
+                                         flags);
 
 cleanup:
     if (vm)
@@ -8740,7 +8742,8 @@ static int qemuDomainSnapshotNum(virDomainPtr domain,
     virDomainObjPtr vm = NULL;
     int n = -1;
 
-    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
@@ -8756,7 +8759,7 @@ static int qemuDomainSnapshotNum(virDomainPtr domain,
      * VIR_DOMAIN_SNAPSHOT_LIST_METADATA makes no difference to our
      * answer.  */
 
-    n = virDomainSnapshotObjListNum(&vm->snapshots);
+    n = virDomainSnapshotObjListNum(&vm->snapshots, flags);
 
 cleanup:
     if (vm)

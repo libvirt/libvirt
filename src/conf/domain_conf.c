@@ -11579,6 +11579,7 @@ struct virDomainSnapshotNameData {
     int numnames;
     int maxnames;
     char **const names;
+    unsigned int flags;
 };
 
 static void virDomainSnapshotObjListCopyNames(void *payload,
@@ -11590,6 +11591,8 @@ static void virDomainSnapshotObjListCopyNames(void *payload,
 
     if (data->oom)
         return;
+    if ((data->flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS) && obj->def->parent)
+        return;
 
     if (data->numnames < data->maxnames) {
         if (!(data->names[data->numnames] = strdup(obj->def->name)))
@@ -11600,9 +11603,10 @@ static void virDomainSnapshotObjListCopyNames(void *payload,
 }
 
 int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
-                                     char **const names, int maxnames)
+                                     char **const names, int maxnames,
+                                     unsigned int flags)
 {
-    struct virDomainSnapshotNameData data = { 0, 0, maxnames, names };
+    struct virDomainSnapshotNameData data = { 0, 0, maxnames, names, flags };
     int i;
 
     virHashForEach(snapshots->objs, virDomainSnapshotObjListCopyNames, &data);
@@ -11619,22 +11623,31 @@ cleanup:
     return -1;
 }
 
-static void virDomainSnapshotObjListCount(void *payload ATTRIBUTE_UNUSED,
-                                          const void *name ATTRIBUTE_UNUSED,
-                                          void *data)
-{
-    int *count = data;
+struct virDomainSnapshotNumData {
+    int count;
+    unsigned int flags;
+};
 
-    (*count)++;
+static void virDomainSnapshotObjListCount(void *payload,
+                                          const void *name ATTRIBUTE_UNUSED,
+                                          void *opaque)
+{
+    virDomainSnapshotObjPtr obj = payload;
+    struct virDomainSnapshotNumData *data = opaque;
+
+    if ((data->flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS) && obj->def->parent)
+        return;
+    data->count++;
 }
 
-int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots)
+int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
+                                unsigned int flags)
 {
-    int count = 0;
+    struct virDomainSnapshotNumData data = { 0, flags };
 
-    virHashForEach(snapshots->objs, virDomainSnapshotObjListCount, &count);
+    virHashForEach(snapshots->objs, virDomainSnapshotObjListCount, &data);
 
-    return count;
+    return data.count;
 }
 
 virDomainSnapshotObjPtr

@@ -1418,8 +1418,10 @@ virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr s
 
 int virDomainSnapshotObjListInit(virDomainSnapshotObjListPtr objs);
 int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
-                                     char **const names, int maxnames);
-int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots);
+                                     char **const names, int maxnames,
+                                     unsigned int flags);
+int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
+                                unsigned int flags);
 virDomainSnapshotObjPtr virDomainSnapshotFindByName(const virDomainSnapshotObjListPtr snapshots,
                                                     const char *name);
 void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
