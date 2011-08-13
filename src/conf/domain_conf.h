@@ -244,6 +244,15 @@ enum virDomainVirtioEventIdx {
     VIR_DOMAIN_VIRTIO_EVENT_IDX_LAST
 };
 
+enum virDomainDiskSnapshot {
+    VIR_DOMAIN_DISK_SNAPSHOT_DEFAULT = 0,
+    VIR_DOMAIN_DISK_SNAPSHOT_NO,
+    VIR_DOMAIN_DISK_SNAPSHOT_INTERNAL,
+    VIR_DOMAIN_DISK_SNAPSHOT_EXTERNAL,
+
+    VIR_DOMAIN_DISK_SNAPSHOT_LAST
+};
+
 /* Stores the virtual disk configuration */
 typedef struct _virDomainDiskDef virDomainDiskDef;
 typedef virDomainDiskDef *virDomainDiskDefPtr;
@@ -265,8 +274,10 @@ struct _virDomainDiskDef {
     int iomode;
     int ioeventfd;
     int event_idx;
+    int snapshot; /* enum virDomainDiskSnapshot */
     unsigned int readonly : 1;
     unsigned int shared : 1;
+    unsigned int transient : 1;
     virDomainDeviceInfo info;
     virStorageEncryptionPtr encryption;
 };
@@ -1779,6 +1790,7 @@ VIR_ENUM_DECL(virDomainDiskCache)
 VIR_ENUM_DECL(virDomainDiskErrorPolicy)
 VIR_ENUM_DECL(virDomainDiskProtocol)
 VIR_ENUM_DECL(virDomainDiskIo)
+VIR_ENUM_DECL(virDomainDiskSnapshot)
 VIR_ENUM_DECL(virDomainIoEventFd)
 VIR_ENUM_DECL(virDomainVirtioEventIdx)
 VIR_ENUM_DECL(virDomainController)

@@ -289,6 +289,8 @@ virDomainDiskIoTypeFromString;
 virDomainDiskIoTypeToString;
 virDomainDiskRemove;
 virDomainDiskRemoveByName;
+virDomainDiskSnapshotTypeFromString;
+virDomainDiskSnapshotTypeToString;
 virDomainDiskTypeFromString;
 virDomainDiskTypeToString;
 virDomainFSDefFree;

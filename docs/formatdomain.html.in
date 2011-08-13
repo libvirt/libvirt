@@ -889,7 +889,7 @@
 <pre>
   ...
   &lt;devices&gt;
-    &lt;disk type='file'&gt;
+    &lt;disk type='file' snapshot='external'&gt;
       &lt;driver name="tap" type="aio" cache="default"/&gt;
       &lt;source file='/var/lib/xen/images/fv0'/&gt;
       &lt;target dev='hda' bus='ide'/&gt;
@@ -910,7 +910,13 @@
       &lt;/source&gt;
       &lt;target dev="hdb" bus="ide"/&gt;
       &lt;boot order='1'/&gt;
+      &lt;transient/&gt;
       &lt;address type='drive' controller='0' bus='1' unit='0'/&gt;
+    &lt;/disk&gt;
+    &lt;disk type='block' device='cdrom'&gt;
+      &lt;driver name='qemu' type='raw'/&gt;
+      &lt;target def='hdc' bus='ide'/&gt;
+      &lt;readonly/&gt;
     &lt;/disk&gt;
   &lt;/devices&gt;
   ...</pre>
@@ -923,9 +929,23 @@
         and refers to the underlying source for the disk. The optional
         <code>device</code> attribute indicates how the disk is to be exposed
         to the guest OS. Possible values for this attribute are "floppy", "disk"
-        and "cdrom", defaulting to "disk".
-        <span class="since">Since 0.0.3; "device" attribute since 0.1.4;
-        "network" attribute since 0.8.7</span></dd>
+        and "cdrom", defaulting to "disk".  The
+        optional <code>snapshot</code> attribute indicates the default
+        behavior of the disk during disk snapshots: "internal"
+        requires a file format such as qcow2 that can store both the
+        snapshot and the data changes since the snapshot;
+        "external" will separate the snapshot from the live data; and
+        "no" means the disk will not participate in snapshots.
+        Read-only disks default to "no", while the default for other
+        disks depends on the hypervisor's capabilities.  Some
+        hypervisors allow a per-snapshot choice as well,
+        during <a href="formatsnapshot.html">domain snapshot
+        creation</a>.  Not all snapshot modes are supported;
+        for example, <code>snapshot='yes'</code> with a transient disk
+        generally does not make sense.  <span class="since">Since 0.0.3;
+        "device" attribute since 0.1.4;
+        "network" attribute since 0.8.7; "snapshot" since
+        0.9.5</span></dd>
       <dt><code>source</code></dt>
       <dd>If the disk <code>type</code> is "file", then
         the <code>file</code> attribute specifies the fully-qualified
@@ -1034,10 +1054,22 @@
         the <a href="formatstorageencryption.html">Storage Encryption</a> page
         for more information.
       </dd>
+      <dt><code>readonly</code></dt>
+      <dd>If present, this indicates the device cannot be modified by
+        the guest.  For now, this is the default for disks with
+        attribute <code>type='cdrom'</code>.
+      </dd>
       <dt><code>shareable</code></dt>
       <dd>If present, this indicates the device is expected to be shared
           between domains (assuming the hypervisor and OS support this),
           which means that caching should be deactivated for that device.
+      </dd>
+      <dt><code>transient</code></dt>
+      <dd>If present, this indicates that changes to the device
+        contents should be reverted automatically when the guest
+        exits.  With some hypervisors, marking a disk transient
+        prevents the domain from participating in migration or
+        snapshots. <span class="since">Since 0.9.5</span>
       </dd>
       <dt><code>serial</code></dt>
       <dd>If present, this specify serial number of virtual hard drive.
