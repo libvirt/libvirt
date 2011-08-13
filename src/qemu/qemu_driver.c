@@ -8744,12 +8744,14 @@ cleanup:
     return ret;
 }
 
-static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
-                                                        const char *xmlDesc,
-                                                        unsigned int flags)
+static virDomainSnapshotPtr
+qemuDomainSnapshotCreateXML(virDomainPtr domain,
+                            const char *xmlDesc,
+                            unsigned int flags)
 {
     struct qemud_driver *driver = domain->conn->privateData;
     virDomainObjPtr vm = NULL;
+    char *xml = NULL;
     virDomainSnapshotObjPtr snap = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -8782,16 +8784,6 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
                         "%s", _("domain is marked for auto destroy"));
         goto cleanup;
     }
-
-    /* in a perfect world, we would allow qemu to tell us this.  The problem
-     * is that qemu only does this check device-by-device; so if you had a
-     * domain that booted from a large qcow2 device, but had a secondary raw
-     * device attached, you wouldn't find out that you can't snapshot your
-     * guest until *after* it had spent the time to snapshot the boot device.
-     * This is probably a bug in qemu, but we'll work around it here for now.
-     */
-    if (!qemuDomainSnapshotIsAllowed(vm))
-        goto cleanup;
 
     if (!(def = virDomainSnapshotDefParseString(xmlDesc, driver->caps,
                                                 QEMU_EXPECTED_VIRT_TYPES,
@@ -8834,6 +8826,13 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
         }
 
         /* Check that any replacement is compatible */
+        if (def->dom &&
+            memcmp(def->dom->uuid, domain->uuid, VIR_UUID_BUFLEN)) {
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("definition for snapshot %s must use uuid %s"),
+                            def->name, uuidstr);
+            goto cleanup;
+        }
         other = virDomainSnapshotFindByName(&vm->snapshots, def->name);
         if (other) {
             if ((other->def->state == VIR_DOMAIN_RUNNING ||
@@ -8846,7 +8845,17 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
                                 def->name);
                 goto cleanup;
             }
-            /* XXX Ensure ABI compatibility before replacing anything.  */
+            if (other->def->dom) {
+                if (def->dom) {
+                    if (!virDomainDefCheckABIStability(other->def->dom,
+                                                       def->dom))
+                        goto cleanup;
+                } else {
+                    /* Transfer the domain def */
+                    def->dom = other->def->dom;
+                    other->def->dom = NULL;
+                }
+            }
             if (other == vm->current_snapshot) {
                 update_current = true;
                 vm->current_snapshot = NULL;
@@ -8857,7 +8866,26 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
              * qemu-img output to check that def->name matches at
              * least one qcow2 snapshot name?  */
         }
+    } else {
+        /* Easiest way to clone inactive portion of vm->def is via
+         * conversion in and back out of xml.  */
+        if (!(xml = virDomainDefFormat(vm->def, (VIR_DOMAIN_XML_INACTIVE |
+                                                 VIR_DOMAIN_XML_SECURE))) ||
+            !(def->dom = virDomainDefParseString(driver->caps, xml,
+                                                 QEMU_EXPECTED_VIRT_TYPES,
+                                                 VIR_DOMAIN_XML_INACTIVE)))
+            goto cleanup;
     }
+
+    /* in a perfect world, we would allow qemu to tell us this.  The problem
+     * is that qemu only does this check device-by-device; so if you had a
+     * domain that booted from a large qcow2 device, but had a secondary raw
+     * device attached, you wouldn't find out that you can't snapshot your
+     * guest until *after* it had spent the time to snapshot the boot device.
+     * This is probably a bug in qemu, but we'll work around it here for now.
+     */
+    if (!qemuDomainSnapshotIsAllowed(vm))
+        goto cleanup;
 
     if (!(snap = virDomainSnapshotAssignDef(&vm->snapshots, def)))
         goto cleanup;
@@ -8921,6 +8949,7 @@ cleanup:
         virDomainObjUnlock(vm);
     }
     virDomainSnapshotDefFree(def);
+    VIR_FREE(xml);
     qemuDriverUnlock(driver);
     return snapshot;
 }
@@ -9149,6 +9178,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     int detail;
     qemuDomainObjPrivatePtr priv;
     int rc;
+    virDomainDefPtr config = NULL;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
                   VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED, -1);
@@ -9204,7 +9234,30 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
          * in the failure cases where we know there was no change?  */
     }
 
+    /* Prepare to copy the snapshot inactive xml as the config of this
+     * domain.  Easiest way is by a round trip through xml.
+     *
+     * XXX Should domain snapshots track live xml rather
+     * than inactive xml?  */
     snap->def->current = true;
+    if (snap->def->dom) {
+        char *xml;
+        if (!(xml = virDomainDefFormat(snap->def->dom,
+                                       (VIR_DOMAIN_XML_INACTIVE |
+                                        VIR_DOMAIN_XML_SECURE))))
+            goto cleanup;
+        config = virDomainDefParseString(driver->caps, xml,
+                                         QEMU_EXPECTED_VIRT_TYPES,
+                                         VIR_DOMAIN_XML_INACTIVE);
+        VIR_FREE(xml);
+        if (!config)
+            goto cleanup;
+    } else {
+        /* XXX Fail if VIR_DOMAIN_REVERT_FORCE is not set, rather than
+         * blindly hoping for the best.  */
+        VIR_WARN("snapshot is lacking rollback information for domain '%s'",
+                 snap->def->name);
+    }
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
@@ -9222,6 +9275,14 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
          * to have finer control.  */
         if (virDomainObjIsActive(vm)) {
             /* Transitions 5, 6, 8, 9 */
+            /* Check for ABI compatibility.  */
+            if (config && !virDomainDefCheckABIStability(vm->def, config)) {
+                /* XXX Add VIR_DOMAIN_REVERT_FORCE to permit killing
+                 * and restarting a new qemu, since loadvm monitor
+                 * command won't work.  */
+                goto endjob;
+            }
+
             priv = vm->privateData;
             if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
                 /* Transitions 5, 6 */
@@ -9251,9 +9312,14 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                  * failed loadvm attempt? */
                 goto endjob;
             }
+            if (config)
+                virDomainObjAssignDef(vm, config, false);
         } else {
             /* Transitions 2, 3 */
             was_stopped = true;
+            if (config)
+                virDomainObjAssignDef(vm, config, false);
+
             rc = qemuProcessStart(snapshot->domain->conn, driver, vm, NULL,
                                   true, false, -1, NULL, snap,
                                   VIR_VM_OP_CREATE);
@@ -9334,6 +9400,8 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             }
             goto endjob;
         }
+        if (config)
+            virDomainObjAssignDef(vm, config, false);
 
         if (flags & (VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
                      VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) {
