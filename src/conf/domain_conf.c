@@ -11377,12 +11377,19 @@ void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def)
     VIR_FREE(def->name);
     VIR_FREE(def->description);
     VIR_FREE(def->parent);
+    virDomainDefFree(def->dom);
     VIR_FREE(def);
 }
 
-/* flags are from virDomainSnapshotParseFlags */
+/* flags is bitwise-or of virDomainSnapshotParseFlags.
+ * If flags does not include VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE, then
+ * caps and expectedVirtTypes are ignored.
+ */
 virDomainSnapshotDefPtr
-virDomainSnapshotDefParseString(const char *xmlStr, unsigned int flags)
+virDomainSnapshotDefParseString(const char *xmlStr,
+                                virCapsPtr caps,
+                                unsigned int expectedVirtTypes,
+                                unsigned int flags)
 {
     xmlXPathContextPtr ctxt = NULL;
     xmlDocPtr xml = NULL;
@@ -11391,6 +11398,7 @@ virDomainSnapshotDefParseString(const char *xmlStr, unsigned int flags)
     char *creation = NULL, *state = NULL;
     struct timeval tv;
     int active;
+    char *tmp;
 
     xml = virXMLParseCtxt(NULL, xmlStr, "domainsnapshot.xml", &ctxt);
     if (!xml) {
@@ -11454,6 +11462,29 @@ virDomainSnapshotDefParseString(const char *xmlStr, unsigned int flags)
                                  state);
             goto cleanup;
         }
+
+        /* Older snapshots were created with just <domain>/<uuid>, and
+         * lack domain/@type.  In that case, leave dom NULL, and
+         * clients will have to decide between best effort
+         * initialization or outright failure.  */
+        if ((tmp = virXPathString("string(./domain/@type)", ctxt))) {
+            xmlNodePtr domainNode = virXPathNode("./domain", ctxt);
+
+            VIR_FREE(tmp);
+            if (!domainNode) {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                     _("missing domain in snapshot"));
+                goto cleanup;
+            }
+            def->dom = virDomainDefParseNode(caps, xml, domainNode,
+                                             expectedVirtTypes,
+                                             (VIR_DOMAIN_XML_INACTIVE |
+                                              VIR_DOMAIN_XML_SECURE));
+            if (!def->dom)
+                goto cleanup;
+        } else {
+            VIR_WARN("parsing older snapshot that lacks domain");
+        }
     } else {
         def->creationTime = tv.tv_sec;
     }
@@ -11482,9 +11513,14 @@ cleanup:
 
 char *virDomainSnapshotDefFormat(char *domain_uuid,
                                  virDomainSnapshotDefPtr def,
+                                 unsigned int flags,
                                  int internal)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virCheckFlags(VIR_DOMAIN_XML_SECURE, NULL);
+
+    flags |= VIR_DOMAIN_XML_INACTIVE;
 
     virBufferAddLit(&buf, "<domainsnapshot>\n");
     virBufferAsprintf(&buf, "  <name>%s</name>\n", def->name);
@@ -11500,9 +11536,13 @@ char *virDomainSnapshotDefFormat(char *domain_uuid,
     }
     virBufferAsprintf(&buf, "  <creationTime>%lld</creationTime>\n",
                       def->creationTime);
-    virBufferAddLit(&buf, "  <domain>\n");
-    virBufferAsprintf(&buf, "    <uuid>%s</uuid>\n", domain_uuid);
-    virBufferAddLit(&buf, "  </domain>\n");
+    if (def->dom) {
+        virDomainDefFormatInternal(def->dom, flags, &buf);
+    } else {
+        virBufferAddLit(&buf, "  <domain>\n");
+        virBufferAsprintf(&buf, "    <uuid>%s</uuid>\n", domain_uuid);
+        virBufferAddLit(&buf, "  </domain>\n");
+    }
     if (internal)
         virBufferAsprintf(&buf, "  <active>%d</active>\n", def->current);
     virBufferAddLit(&buf, "</domainsnapshot>\n");

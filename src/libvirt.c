@@ -15698,9 +15698,14 @@ error:
 /**
  * virDomainSnapshotGetXMLDesc:
  * @snapshot: a domain snapshot object
- * @flags: unused flag parameters; callers should pass 0
+ * @flags: bitwise-OR of subset of virDomainXMLFlags
  *
  * Provide an XML description of the domain snapshot.
+ *
+ * No security-sensitive data will be included unless @flags contains
+ * VIR_DOMAIN_XML_SECURE; this flag is rejected on read-only
+ * connections.  For this API, @flags should not contain either
+ * VIR_DOMAIN_XML_INACTIVE or VIR_DOMAIN_XML_UPDATE_CPU.
  *
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
  *         the caller must free() the returned value.

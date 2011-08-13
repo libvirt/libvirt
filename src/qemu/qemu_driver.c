@@ -340,7 +340,9 @@ static void qemuDomainSnapshotLoad(void *payload,
             continue;
         }
 
-        def = virDomainSnapshotDefParseString(xmlStr, flags);
+        def = virDomainSnapshotDefParseString(xmlStr, qemu_driver->caps,
+                                              QEMU_EXPECTED_VIRT_TYPES,
+                                              flags);
         if (def == NULL) {
             /* Nothing we can do here, skip this one */
             VIR_ERROR(_("Failed to parse snapshot XML from file '%s'"),
@@ -1610,9 +1612,11 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
     char *snapDir = NULL;
     char *snapFile = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char *tmp;
 
     virUUIDFormat(vm->def->uuid, uuidstr);
-    newxml = virDomainSnapshotDefFormat(uuidstr, snapshot->def, 1);
+    newxml = virDomainSnapshotDefFormat(uuidstr, snapshot->def,
+                                        VIR_DOMAIN_XML_SECURE, 1);
     if (newxml == NULL) {
         virReportOOMError();
         return -1;
@@ -1638,6 +1642,14 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
                         _("failed to create snapshot file '%s'"), snapFile);
         goto cleanup;
     }
+
+    if (virAsprintf(&tmp, "snapshot-edit %s", vm->def->name) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    virEmitXMLWarning(fd, snapshot->def->name, tmp);
+    VIR_FREE(tmp);
+
     if (safewrite(fd, newxml, strlen(newxml)) != strlen(newxml)) {
         virReportSystemError(errno, _("Failed to write snapshot data to %s"),
                              snapFile);
@@ -8781,7 +8793,9 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (!qemuDomainSnapshotIsAllowed(vm))
         goto cleanup;
 
-    if (!(def = virDomainSnapshotDefParseString(xmlDesc, parse_flags)))
+    if (!(def = virDomainSnapshotDefParseString(xmlDesc, driver->caps,
+                                                QEMU_EXPECTED_VIRT_TYPES,
+                                                parse_flags)))
         goto cleanup;
 
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) {
@@ -9083,8 +9097,6 @@ static char *qemuDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     virDomainSnapshotObjPtr snap = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    /* XXX Actually wire this up once we return domain xml; for now,
-     * it is trivially safe to ignore this flag. */
     virCheckFlags(VIR_DOMAIN_XML_SECURE, NULL);
 
     qemuDriverLock(driver);
@@ -9104,7 +9116,7 @@ static char *qemuDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    xml = virDomainSnapshotDefFormat(uuidstr, snap->def, 0);
+    xml = virDomainSnapshotDefFormat(uuidstr, snap->def, flags, 0);
 
 cleanup:
     if (vm)

@@ -4220,7 +4220,7 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
         return NULL;
     }
 
-    def = virDomainSnapshotDefParseString(xmlDesc, 0);
+    def = virDomainSnapshotDefParseString(xmlDesc, NULL, 0, 0);
 
     if (def == NULL) {
         return NULL;
@@ -4316,7 +4316,7 @@ esxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     virUUIDFormat(snapshot->domain->uuid, uuid_string);
 
-    xml = virDomainSnapshotDefFormat(uuid_string, &def, 0);
+    xml = virDomainSnapshotDefFormat(uuid_string, &def, flags, 0);
 
   cleanup:
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotList);

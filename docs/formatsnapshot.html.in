@@ -63,18 +63,33 @@
         snapshots, as described above.  Readonly.
       </dd>
       <dt><code>domain</code></dt>
-      <dd>The domain that this snapshot was taken against.  This
-      element contains exactly one child element, uuid.  This
-      specifies the uuid of the domain that this snapshot was taken
-      against.  Readonly.
+      <dd>The domain that this snapshot was taken against.  Older
+        versions of libvirt stored only a single child element, uuid;
+        reverting to a snapshot like this is risky if the current
+        state of the domain differs from the state that the domain was
+        created in, and requires the use of the
+        <code>VIR_DOMAIN_SNAPSHOT_REVERT_FORCE</code> flag
+        in <code>virDomainRevertToSnapshot()</code>.  Newer versions
+        of libvirt store the entire
+        inactive <a href="formatdomain.html">domain configuration</a>
+        at the time of the snapshot (<span class="since">since
+        0.9.5</span>).  Readonly.
       </dd>
     </dl>
 
-    <h2><a name="example">Example</a></h2>
+    <h2><a name="example">Examples</a></h2>
 
+    <p>Using this XML on creation:</p>
     <pre>
 &lt;domainsnapshot&gt;
-  &lt;name&gt;os-updates&lt;/name&gt;
+  &lt;description&gt;Snapshot of OS install and updates&lt;/description&gt;
+&lt;/domainsnapshot&gt;</pre>
+
+    <p>will result in XML similar to this from
+    virDomainSnapshotGetXMLDesc:</p>
+    <pre>
+&lt;domainsnapshot&gt;
+  &lt;name&gt;1270477159&lt;/name&gt;
   &lt;description&gt;Snapshot of OS install and updates&lt;/description&gt;
   &lt;state&gt;running&lt;/state&gt;
   &lt;creationTime&gt;1270477159&lt;/creationTime&gt;
@@ -82,7 +97,11 @@
     &lt;name&gt;bare-os-install&lt;/name&gt;
   &lt;/parent&gt;
   &lt;domain&gt;
+    &lt;name&gt;fedora&lt;/name&gt;
     &lt;uuid&gt;93a5c045-6457-2c09-e56c-927cdf34e178&lt;/uuid&gt;
+    &lt;memory&gt;1048576&lt;/memory&gt;
+    ...
+    &lt;/devices&gt;
   &lt;/domain&gt;
 &lt;/domainsnapshot&gt;</pre>
   </body>
