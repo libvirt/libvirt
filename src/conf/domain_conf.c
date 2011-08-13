@@ -11650,32 +11650,52 @@ void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
     virHashRemoveEntry(snapshots->objs, snapshot->def->name);
 }
 
-struct snapshot_has_children {
-    char *name;
+struct snapshot_act_on_child {
+    char *parent;
     int number;
+    virHashIterator iter;
+    void *data;
 };
 
-static void virDomainSnapshotCountChildren(void *payload,
-                                           const void *name ATTRIBUTE_UNUSED,
-                                           void *data)
+static void
+virDomainSnapshotActOnChild(void *payload,
+                            const void *name,
+                            void *data)
 {
     virDomainSnapshotObjPtr obj = payload;
-    struct snapshot_has_children *curr = data;
+    struct snapshot_act_on_child *curr = data;
 
-    if (obj->def->parent && STREQ(obj->def->parent, curr->name))
+    if (obj->def->parent && STREQ(curr->parent, obj->def->parent)) {
         curr->number++;
+        if (curr->iter)
+            (curr->iter)(payload, name, curr->data);
+    }
+}
+
+/* Run iter(data) on all direct children of snapshot, while ignoring all
+ * other entries in snapshots.  Return the number of children
+ * visited.  No particular ordering is guaranteed.  */
+int
+virDomainSnapshotForEachChild(virDomainSnapshotObjListPtr snapshots,
+                              virDomainSnapshotObjPtr snapshot,
+                              virHashIterator iter,
+                              void *data)
+{
+    struct snapshot_act_on_child act;
+
+    act.parent = snapshot->def->name;
+    act.number = 0;
+    act.iter = iter;
+    act.data = data;
+    virHashForEach(snapshots->objs, virDomainSnapshotActOnChild, &act);
+
+    return act.number;
 }
 
 int virDomainSnapshotHasChildren(virDomainSnapshotObjPtr snap,
-                                virDomainSnapshotObjListPtr snapshots)
+                                 virDomainSnapshotObjListPtr snapshots)
 {
-    struct snapshot_has_children children;
-
-    children.name = snap->def->name;
-    children.number = 0;
-    virHashForEach(snapshots->objs, virDomainSnapshotCountChildren, &children);
-
-    return children.number;
+    return virDomainSnapshotForEachChild(snapshots, snap, NULL, NULL);
 }
 
 typedef enum {

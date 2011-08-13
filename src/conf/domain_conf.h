@@ -1426,6 +1426,10 @@ void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
                                     virDomainSnapshotObjPtr snapshot);
 int virDomainSnapshotHasChildren(virDomainSnapshotObjPtr snap,
                                 virDomainSnapshotObjListPtr snapshots);
+int virDomainSnapshotForEachChild(virDomainSnapshotObjListPtr snapshots,
+                                  virDomainSnapshotObjPtr snapshot,
+                                  virHashIterator iter,
+                                  void *data);
 int virDomainSnapshotForEachDescendant(virDomainSnapshotObjListPtr snapshots,
                                        virDomainSnapshotObjPtr snapshot,
                                        virHashIterator iter,

@@ -9254,7 +9254,7 @@ qemuDomainSnapshotDiscardDescendant(void *payload,
 
 struct snap_reparent {
     struct qemud_driver *driver;
-    virDomainSnapshotObjPtr snap;
+    const char *parent;
     virDomainObjPtr vm;
     int err;
 };
@@ -9271,22 +9271,20 @@ qemuDomainSnapshotReparentChildren(void *payload,
         return;
     }
 
-    if (snap->def->parent && STREQ(snap->def->parent, rep->snap->def->name)) {
-        VIR_FREE(snap->def->parent);
+    VIR_FREE(snap->def->parent);
 
-        if (rep->snap->def->parent != NULL) {
-            snap->def->parent = strdup(rep->snap->def->parent);
+    if (rep->parent != NULL) {
+        snap->def->parent = strdup(rep->parent);
 
-            if (snap->def->parent == NULL) {
-                virReportOOMError();
-                rep->err = -1;
-                return;
-            }
+        if (snap->def->parent == NULL) {
+            virReportOOMError();
+            rep->err = -1;
+            return;
         }
-
-        rep->err = qemuDomainSnapshotWriteMetadata(rep->vm, snap,
-                                                   rep->driver->snapshotDir);
     }
+
+    rep->err = qemuDomainSnapshotWriteMetadata(rep->vm, snap,
+                                               rep->driver->snapshotDir);
 }
 
 static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
@@ -9337,11 +9335,12 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
             vm->current_snapshot = snap;
     } else {
         rep.driver = driver;
-        rep.snap = snap;
+        rep.parent = snap->def->parent;
         rep.vm = vm;
         rep.err = 0;
-        virHashForEach(vm->snapshots.objs, qemuDomainSnapshotReparentChildren,
-                       &rep);
+        virDomainSnapshotForEachChild(&vm->snapshots, snap,
+                                      qemuDomainSnapshotReparentChildren,
+                                      &rep);
         if (rep.err < 0)
             goto endjob;
     }
