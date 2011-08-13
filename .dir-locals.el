@@ -11,4 +11,7 @@
  (sh-mode . (
 	     (indent-tabs-mode . nil)
 	     ))
+ (nxml-mode . (
+	       (indent-tabs-mode . nil)
+	       ))
  )
