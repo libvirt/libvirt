@@ -537,6 +537,11 @@ libxlMakeDisk(virDomainDefPtr def, virDomainDiskDefPtr l_disk,
     x_disk->unpluggable = 1;
     x_disk->readwrite = !l_disk->readonly;
     x_disk->is_cdrom = l_disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ? 1 : 0;
+    if (l_disk->transient) {
+        libxlError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("libxenlight does not support transient disks"));
+        return -1;
+    }
 
     x_disk->domid = def->id;
 

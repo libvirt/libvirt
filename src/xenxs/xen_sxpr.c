@@ -1713,6 +1713,11 @@ xenFormatSxprDisk(virDomainDiskDefPtr def,
         virBufferAddLit(buf, "(mode 'w!')");
     else
         virBufferAddLit(buf, "(mode 'w')");
+    if (def->transient) {
+        XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
+                    _("transient disks not supported yet"));
+        return -1;
+    }
 
     if (!isAttach)
         virBufferAddLit(buf, ")");

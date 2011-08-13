@@ -1164,6 +1164,11 @@ static int xenFormatXMDisk(virConfValuePtr list,
         virBufferAddLit(&buf, ",!");
     else
         virBufferAddLit(&buf, ",w");
+    if (disk->transient) {
+        XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
+                    _("transient disks not supported yet"));
+        return -1;
+    }
 
     if (virBufferError(&buf)) {
         virReportOOMError();

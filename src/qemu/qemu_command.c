@@ -1594,6 +1594,11 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     if (disk->readonly &&
         qemuCapsGet(qemuCaps, QEMU_CAPS_DRIVE_READONLY))
         virBufferAddLit(&opt, ",readonly=on");
+    if (disk->transient) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("transient disks not supported yet"));
+        goto error;
+    }
     if (disk->driverType && *disk->driverType != '\0' &&
         disk->type != VIR_DOMAIN_DISK_TYPE_DIR &&
         qemuCapsGet(qemuCaps, QEMU_CAPS_DRIVE_FORMAT))
