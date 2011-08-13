@@ -209,6 +209,14 @@ enum virDomainIoEventFd {
     VIR_DOMAIN_IO_EVENT_FD_LAST
 };
 
+enum virDomainVirtioEventIdx {
+    VIR_DOMAIN_VIRTIO_EVENT_IDX_DEFAULT = 0,
+    VIR_DOMAIN_VIRTIO_EVENT_IDX_ON,
+    VIR_DOMAIN_VIRTIO_EVENT_IDX_OFF,
+
+    VIR_DOMAIN_VIRTIO_EVENT_IDX_LAST
+};
+
 /* Stores the virtual disk configuration */
 typedef struct _virDomainDiskDef virDomainDiskDef;
 typedef virDomainDiskDef *virDomainDiskDefPtr;
@@ -229,6 +237,7 @@ struct _virDomainDiskDef {
     int bootIndex;
     int iomode;
     int ioeventfd;
+    int event_idx;
     unsigned int readonly : 1;
     unsigned int shared : 1;
     virDomainDeviceInfo info;
@@ -377,6 +386,7 @@ struct _virDomainNetDef {
             enum virDomainNetBackendType name; /* which driver backend to use */
             enum virDomainNetVirtioTxModeType txmode;
             enum virDomainIoEventFd ioeventfd;
+            enum virDomainVirtioEventIdx event_idx;
         } virtio;
     } driver;
     union {
@@ -1661,6 +1671,7 @@ VIR_ENUM_DECL(virDomainDiskErrorPolicy)
 VIR_ENUM_DECL(virDomainDiskProtocol)
 VIR_ENUM_DECL(virDomainDiskIo)
 VIR_ENUM_DECL(virDomainIoEventFd)
+VIR_ENUM_DECL(virDomainVirtioEventIdx)
 VIR_ENUM_DECL(virDomainController)
 VIR_ENUM_DECL(virDomainControllerModel)
 VIR_ENUM_DECL(virDomainFS)

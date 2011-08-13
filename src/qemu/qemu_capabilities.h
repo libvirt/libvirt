@@ -98,6 +98,8 @@ enum qemuCapsFlags {
     QEMU_CAPS_PCI_MULTIFUNCTION = 60, /* -device multifunction=on|off */
     QEMU_CAPS_VIRTIO_IOEVENTFD  = 61, /* IOeventFD feature: virtio-{net|blk}-pci.ioeventfd=on/off */
     QEMU_CAPS_SGA               = 62, /* Serial Graphics Adapter */
+    QEMU_CAPS_VIRTIO_BLK_EVENT_IDX = 63, /* virtio-blk-pci.event_idx */
+    QEMU_CAPS_VIRTIO_NET_EVENT_IDX = 64, /* virtio-net-pci.event_idx */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

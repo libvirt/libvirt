@@ -182,6 +182,10 @@ VIR_ENUM_IMPL(virDomainIoEventFd, VIR_DOMAIN_IO_EVENT_FD_LAST,
               "on",
               "off")
 
+VIR_ENUM_IMPL(virDomainVirtioEventIdx, VIR_DOMAIN_VIRTIO_EVENT_IDX_LAST,
+              "default",
+              "on",
+              "off")
 
 VIR_ENUM_IMPL(virDomainController, VIR_DOMAIN_CONTROLLER_TYPE_LAST,
               "ide",
@@ -2081,6 +2085,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     char *error_policy = NULL;
     char *iotag = NULL;
     char *ioeventfd = NULL;
+    char *event_idx = NULL;
     char *devaddr = NULL;
     virStorageEncryptionPtr encryption = NULL;
     char *serial = NULL;
@@ -2197,6 +2202,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                 error_policy = virXMLPropString(cur, "error_policy");
                 iotag = virXMLPropString(cur, "io");
                 ioeventfd = virXMLPropString(cur, "ioeventfd");
+                event_idx = virXMLPropString(cur, "event_idx");
             } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
                 def->readonly = 1;
             } else if (xmlStrEqual(cur->name, BAD_CAST "shareable")) {
@@ -2351,6 +2357,24 @@ virDomainDiskDefParseXML(virCapsPtr caps,
         def->ioeventfd=i;
     }
 
+    if (event_idx) {
+        if (def->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
+            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                 _("disk event_idx mode supported "
+                                   "only for virtio bus"));
+            goto error;
+        }
+
+        int idx;
+        if ((idx = virDomainVirtioEventIdxTypeFromString(event_idx)) <= 0) {
+            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                 _("unknown disk event_idx mode '%s'"),
+                                 event_idx);
+            goto error;
+        }
+        def->event_idx = idx;
+    }
+
     if (devaddr) {
         if (virDomainParseLegacyDeviceAddress(devaddr,
                                               &def->info.addr.pci) < 0) {
@@ -2414,6 +2438,7 @@ cleanup:
     VIR_FREE(error_policy);
     VIR_FREE(iotag);
     VIR_FREE(ioeventfd);
+    VIR_FREE(event_idx);
     VIR_FREE(devaddr);
     VIR_FREE(serial);
     virStorageEncryptionFree(encryption);
@@ -2744,6 +2769,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
     char *backend = NULL;
     char *txmode = NULL;
     char *ioeventfd = NULL;
+    char *event_idx = NULL;
     char *filter = NULL;
     char *internal = NULL;
     char *devaddr = NULL;
@@ -2835,6 +2861,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
                 backend = virXMLPropString(cur, "name");
                 txmode = virXMLPropString(cur, "txmode");
                 ioeventfd = virXMLPropString(cur, "ioeventfd");
+                event_idx = virXMLPropString(cur, "event_idx");
             } else if (xmlStrEqual (cur->name, BAD_CAST "filterref")) {
                 filter = virXMLPropString(cur, "filter");
                 VIR_FREE(filterparams);
@@ -3075,6 +3102,16 @@ virDomainNetDefParseXML(virCapsPtr caps,
             }
             def->driver.virtio.ioeventfd = i;
         }
+        if (event_idx) {
+            int idx;
+            if ((idx = virDomainVirtioEventIdxTypeFromString(event_idx)) <= 0) {
+                virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                     _("unknown interface event_idx mode '%s'"),
+                                     event_idx);
+                goto error;
+            }
+            def->driver.virtio.event_idx = idx;
+        }
     }
 
     if (filter != NULL) {
@@ -3118,6 +3155,7 @@ cleanup:
     VIR_FREE(backend);
     VIR_FREE(txmode);
     VIR_FREE(ioeventfd);
+    VIR_FREE(event_idx);
     VIR_FREE(filter);
     VIR_FREE(type);
     VIR_FREE(internal);
@@ -8576,6 +8614,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     const char *error_policy = virDomainDiskErrorPolicyTypeToString(def->error_policy);
     const char *iomode = virDomainDiskIoTypeToString(def->iomode);
     const char *ioeventfd = virDomainIoEventFdTypeToString(def->ioeventfd);
+    const char *event_idx = virDomainVirtioEventIdxTypeToString(def->event_idx);
 
     if (!type) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -8608,7 +8647,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
                       type, device);
 
     if (def->driverName || def->driverType || def->cachemode ||
-        def->ioeventfd) {
+        def->ioeventfd || def->event_idx) {
         virBufferAsprintf(buf, "      <driver");
         if (def->driverName)
             virBufferAsprintf(buf, " name='%s'", def->driverName);
@@ -8622,6 +8661,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
             virBufferAsprintf(buf, " io='%s'", iomode);
         if (def->ioeventfd)
             virBufferAsprintf(buf, " ioeventfd='%s'", ioeventfd);
+        if (def->event_idx)
+            virBufferAsprintf(buf, " event_idx='%s'", event_idx);
         virBufferAsprintf(buf, "/>\n");
     }
 
@@ -8995,6 +9036,10 @@ virDomainNetDefFormat(virBufferPtr buf,
             if (def->driver.virtio.ioeventfd) {
                 virBufferAsprintf(buf, " ioeventfd='%s'",
                                   virDomainIoEventFdTypeToString(def->driver.virtio.ioeventfd));
+            }
+            if (def->driver.virtio.event_idx) {
+                virBufferAsprintf(buf, " event_idx='%s'",
+                                  virDomainVirtioEventIdxTypeToString(def->driver.virtio.event_idx));
             }
             virBufferAddLit(buf, "/>\n");
         }

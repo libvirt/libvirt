@@ -904,7 +904,7 @@
     &lt;/disk&gt;
       ...
     &lt;disk type='network'&gt;
-      &lt;driver name="qemu" type="raw" io="threads" ioeventfd="on"/&gt;
+      &lt;driver name="qemu" type="raw" io="threads" ioeventfd="on" event_idx="off"/&gt;
       &lt;source protocol="sheepdog" name="image_name"&gt;
         &lt;host name="hostname" port="7000"/&gt;
       &lt;/source&gt;
@@ -1001,6 +1001,19 @@
             during I/O will benefit from this. On the other hand,
             on overloaded host it could increase guest I/O latency.
             <span class="since">Since 0.9.3 (QEMU and KVM only)</span>
+            <b>In general you should leave this option alone, unless you
+            are very certain you know what you are doing.</b>
+          </li>
+          <li>
+            The optional <code>event_idx</code> attribute controls
+            some aspects of device event processing. The value can be
+            either 'on' or 'off' - if it is on, it will reduce the
+            number of interupts and exits for the guest. The default
+            is determined by QEMU; usually if the feature is
+            supported, default is on. In case there is a situation
+            where this behavior is suboptimal, this attribute provides
+            a way to force the feature off.
+            <span class="since">Since 0.9.5 (QEMU and KVM only)</span>
             <b>In general you should leave this option alone, unless you
             are very certain you know what you are doing.</b>
           </li>
@@ -1850,7 +1863,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;source network='default'/&gt;
       &lt;target dev='vnet1'/&gt;
       &lt;model type='virtio'/&gt;
-      <b>&lt;driver name='vhost' txmode='iothread' ioeventfd='on'/&gt;</b>
+      <b>&lt;driver name='vhost' txmode='iothread' ioeventfd='on' event_idx='off'/&gt;</b>
     &lt;/interface&gt;
   &lt;/devices&gt;
   ...</pre>
@@ -1913,6 +1926,20 @@ qemu-kvm -net nic,model=? /dev/null
         during I/O will benefit from this. On the other hand,
         on overloaded host it could increase guest I/O latency.
         <span class="since">Since 0.9.3 (QEMU and KVM only)</span><br/><br/>
+
+        <b>In general you should leave this option alone, unless you
+        are very certain you know what you are doing.</b>
+      </dd>
+      <dt><code>event_idx</code></dt>
+      <dd>
+        The <code>event_idx</code> attribute controls some aspects of
+        device event processing. The value can be either 'on' or 'off'
+        - if it is on, it will reduce the number of interupts and
+        exits for the guest. The default is determined by QEMU;
+        usually if the feature is supported, default is on. In case
+        there is a situation where this behavior is suboptimal, this
+        attribute provides a way to force the feature off.
+        <span class="since">Since 0.9.5 (QEMU and KVM only)</span><br/><br/>
 
         <b>In general you should leave this option alone, unless you
         are very certain you know what you are doing.</b>

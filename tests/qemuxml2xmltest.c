@@ -187,6 +187,7 @@ mymain(void)
 
     DO_TEST("smp");
     DO_TEST("lease");
+    DO_TEST("event_idx");
 
     /* These tests generate different XML */
     DO_TEST_DIFFERENT("balloon-device-auto");

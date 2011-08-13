@@ -359,6 +359,11 @@ mymain(void)
     DO_TEST("disk-ioeventfd", false,
             QEMU_CAPS_DRIVE, QEMU_CAPS_VIRTIO_IOEVENTFD,
             QEMU_CAPS_VIRTIO_TX_ALG, QEMU_CAPS_DEVICE);
+    DO_TEST("event_idx", false,
+            QEMU_CAPS_DRIVE,
+            QEMU_CAPS_VIRTIO_BLK_EVENT_IDX,
+            QEMU_CAPS_VIRTIO_NET_EVENT_IDX,
+            QEMU_CAPS_DEVICE);
 
     DO_TEST("graphics-vnc", false, NONE);
     DO_TEST("graphics-vnc-socket", false, NONE);

@@ -807,6 +807,9 @@
       <optional>
         <ref name="ioeventfd"/>
       </optional>
+      <optional>
+        <ref name="event_idx"/>
+      </optional>
       <empty/>
     </element>
   </define>
@@ -848,6 +851,14 @@
   </define>
   <define name="ioeventfd">
     <attribute name="ioeventfd">
+      <choice>
+        <value>on</value>
+        <value>off</value>
+      </choice>
+    </attribute>
+  </define>
+  <define name="event_idx">
+    <attribute name="event_idx">
       <choice>
         <value>on</value>
         <value>off</value>
@@ -1164,6 +1175,9 @@
           </optional>
           <optional>
             <ref name="ioeventfd"/>
+          </optional>
+          <optional>
+            <ref name="event_idx"/>
           </optional>
           <empty/>
         </element>

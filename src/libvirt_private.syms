@@ -414,6 +414,8 @@ virDomainVideoDefaultRAM;
 virDomainVideoDefaultType;
 virDomainVideoTypeFromString;
 virDomainVideoTypeToString;
+virDomainVirtioEventIdxTypeFromString;
+virDomainVirtioEventIdxTypeToString;
 virDomainVirtTypeToString;
 virDomainWatchdogActionTypeFromString;
 virDomainWatchdogActionTypeToString;
