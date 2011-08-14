@@ -82,6 +82,11 @@ void virNetServerClientSetPrivateData(virNetServerClientPtr client,
                                       virNetServerClientFreeFunc ff);
 void *virNetServerClientGetPrivateData(virNetServerClientPtr client);
 
+typedef void (*virNetServerClientCloseFunc)(virNetServerClientPtr client);
+
+void virNetServerClientSetCloseHook(virNetServerClientPtr client,
+                                    virNetServerClientCloseFunc cf);
+
 void virNetServerClientSetDispatcher(virNetServerClientPtr client,
                                      virNetServerClientDispatchFunc func,
                                      void *opaque);

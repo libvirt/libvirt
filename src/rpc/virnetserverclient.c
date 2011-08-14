@@ -97,6 +97,7 @@ struct _virNetServerClient
 
     void *privateData;
     virNetServerClientFreeFunc privateDataFreeFunc;
+    virNetServerClientCloseFunc privateDataCloseFunc;
 };
 
 
@@ -492,6 +493,15 @@ void *virNetServerClientGetPrivateData(virNetServerClientPtr client)
 }
 
 
+void virNetServerClientSetCloseHook(virNetServerClientPtr client,
+                                    virNetServerClientCloseFunc cf)
+{
+    virNetServerClientLock(client);
+    client->privateDataCloseFunc = cf;
+    virNetServerClientUnlock(client);
+}
+
+
 void virNetServerClientSetDispatcher(virNetServerClientPtr client,
                                      virNetServerClientDispatchFunc func,
                                      void *opaque)
@@ -560,11 +570,22 @@ void virNetServerClientFree(virNetServerClientPtr client)
  */
 void virNetServerClientClose(virNetServerClientPtr client)
 {
+    virNetServerClientCloseFunc cf;
+
     virNetServerClientLock(client);
     VIR_DEBUG("client=%p refs=%d", client, client->refs);
     if (!client->sock) {
         virNetServerClientUnlock(client);
         return;
+    }
+
+    if (client->privateDataCloseFunc) {
+        cf = client->privateDataCloseFunc;
+        client->refs++;
+        virNetServerClientUnlock(client);
+        (cf)(client);
+        virNetServerClientLock(client);
+        client->refs--;
     }
 
     /* Do now, even though we don't close the socket

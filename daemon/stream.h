@@ -45,4 +45,7 @@ int
 daemonRemoveClientStream(virNetServerClientPtr client,
                          daemonClientStream *stream);
 
+void
+daemonRemoveAllClientStreams(daemonClientStream *stream);
+
 #endif /* __LIBVIRTD_STREAM_H__ */

@@ -439,6 +439,13 @@ static void remoteClientFreeFunc(void *data)
 }
 
 
+static void remoteClientCloseFunc(virNetServerClientPtr client)
+{
+    struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
+
+    daemonRemoveAllClientStreams(priv->streams);
+}
+
 
 int remoteClientInitHook(virNetServerPtr srv ATTRIBUTE_UNUSED,
                          virNetServerClientPtr client)
@@ -460,7 +467,9 @@ int remoteClientInitHook(virNetServerPtr srv ATTRIBUTE_UNUSED,
     for (i = 0 ; i < VIR_DOMAIN_EVENT_ID_LAST ; i++)
         priv->domainEventCallbackID[i] = -1;
 
-    virNetServerClientSetPrivateData(client, priv, remoteClientFreeFunc);
+    virNetServerClientSetPrivateData(client, priv,
+                                     remoteClientFreeFunc);
+    virNetServerClientSetCloseHook(client, remoteClientCloseFunc);
     return 0;
 }
 

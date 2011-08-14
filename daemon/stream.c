@@ -334,13 +334,17 @@ int daemonFreeClientStream(virNetServerClientPtr client,
     msg = stream->rx;
     while (msg) {
         virNetMessagePtr tmp = msg->next;
-        /* Send a dummy reply to free up 'msg' & unblock client rx */
-        memset(msg, 0, sizeof(*msg));
-        msg->header.type = VIR_NET_REPLY;
-        if (virNetServerClientSendMessage(client, msg) < 0) {
-            virNetServerClientImmediateClose(client);
+        if (client) {
+            /* Send a dummy reply to free up 'msg' & unblock client rx */
+            memset(msg, 0, sizeof(*msg));
+            msg->header.type = VIR_NET_REPLY;
+            if (virNetServerClientSendMessage(client, msg) < 0) {
+                virNetServerClientImmediateClose(client);
+                virNetMessageFree(msg);
+                ret = -1;
+            }
+        } else {
             virNetMessageFree(msg);
-            ret = -1;
         }
         msg = tmp;
     }
@@ -440,6 +444,28 @@ daemonRemoveClientStream(virNetServerClientPtr client,
     return -1;
 }
 
+
+void
+daemonRemoveAllClientStreams(daemonClientStream *stream)
+{
+    daemonClientStream *tmp;
+
+    VIR_DEBUG("stream=%p", stream);
+
+    while (stream) {
+        tmp = stream->next;
+
+        if (!stream->closed) {
+            virStreamEventRemoveCallback(stream->st);
+            virStreamAbort(stream->st);
+        }
+
+        daemonFreeClientStream(NULL, stream);
+
+        VIR_DEBUG("next stream=%p", tmp);
+        stream = tmp;
+    }
+}
 
 /*
  * Returns:
