@@ -210,6 +210,10 @@ int qemuMonitorJSONCreateSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorJSONLoadSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorJSONDeleteSnapshot(qemuMonitorPtr mon, const char *name);
 
+int qemuMonitorJSONDiskSnapshot(qemuMonitorPtr mon,
+                                const char *device,
+                                const char *file);
+
 int qemuMonitorJSONArbitraryCommand(qemuMonitorPtr mon,
                                     const char *cmd_str,
                                     char **reply_str,

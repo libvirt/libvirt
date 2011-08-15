@@ -2391,6 +2391,30 @@ int qemuMonitorDeleteSnapshot(qemuMonitorPtr mon, const char *name)
     return ret;
 }
 
+/* Use the snapshot_blkdev command to convert the existing file for
+ * device into a read-only backing file of a new qcow2 image located
+ * at file.  */
+int
+qemuMonitorDiskSnapshot(qemuMonitorPtr mon, const char *device,
+                        const char *file)
+{
+    int ret;
+
+    VIR_DEBUG("mon=%p, device=%s, file=%s", mon, device, file);
+
+    if (!mon) {
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (mon->json)
+        ret = qemuMonitorJSONDiskSnapshot(mon, device, file);
+    else
+        ret = qemuMonitorTextDiskSnapshot(mon, device, file);
+    return ret;
+}
+
 int qemuMonitorArbitraryCommand(qemuMonitorPtr mon,
                                 const char *cmd,
                                 char **reply,
