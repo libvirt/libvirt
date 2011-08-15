@@ -1102,6 +1102,17 @@ static void daemonShutdownHandler(virNetServerPtr srv,
     virNetServerQuit(srv);
 }
 
+static void daemonReloadHandler(virNetServerPtr srv ATTRIBUTE_UNUSED,
+                                siginfo_t *sig ATTRIBUTE_UNUSED,
+                                void *opaque ATTRIBUTE_UNUSED)
+{
+        VIR_INFO("Reloading configuration on SIGHUP");
+        virHookCall(VIR_HOOK_DRIVER_DAEMON, "-",
+                    VIR_HOOK_DAEMON_OP_RELOAD, SIGHUP, "SIGHUP", NULL);
+        if (virStateReload() < 0)
+            VIR_WARN("Error while reloading drivers");
+}
+
 static int daemonSetupSignals(virNetServerPtr srv)
 {
     if (virNetServerAddSignalHandler(srv, SIGINT, daemonShutdownHandler, NULL) < 0)
@@ -1109,6 +1120,8 @@ static int daemonSetupSignals(virNetServerPtr srv)
     if (virNetServerAddSignalHandler(srv, SIGQUIT, daemonShutdownHandler, NULL) < 0)
         return -1;
     if (virNetServerAddSignalHandler(srv, SIGTERM, daemonShutdownHandler, NULL) < 0)
+        return -1;
+    if (virNetServerAddSignalHandler(srv, SIGHUP, daemonReloadHandler, NULL) < 0)
         return -1;
     return 0;
 }
