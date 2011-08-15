@@ -13988,8 +13988,12 @@ int virStreamAbort(virStreamPtr stream)
         return -1;
     }
 
-    if (stream->driver &&
-        stream->driver->streamAbort) {
+    if (!stream->driver) {
+        VIR_DEBUG("aborting unused stream");
+        return 0;
+    }
+
+    if (stream->driver->streamAbort) {
         int ret;
         ret = (stream->driver->streamAbort)(stream);
         if (ret < 0)
