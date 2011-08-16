@@ -16057,16 +16057,22 @@ error:
  *
  * Delete the snapshot.
  *
- * If @flags is 0, then just this snapshot is deleted, and changes from
- * this snapshot are automatically merged into children snapshots.  If
- * @flags includes VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN, then this snapshot
- * and any children snapshots are deleted.  If @flags includes
- * VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY, then any snapshot metadata
- * tracked by libvirt is removed while keeping the snapshot contents
- * intact; if a hypervisor does not require any libvirt metadata to
- * track snapshots, then this flag is silently ignored.
+ * If @flags is 0, then just this snapshot is deleted, and changes
+ * from this snapshot are automatically merged into children
+ * snapshots.  If @flags includes VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN,
+ * then this snapshot and any descendant snapshots are deleted.  If
+ * @flags includes VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY, then any
+ * descendant snapshots are deleted, but this snapshot remains.  These
+ * two flags are mutually exclusive.
  *
- * Returns 0 if the snapshot was successfully deleted, -1 on error.
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY, then
+ * any snapshot metadata tracked by libvirt is removed while keeping
+ * the snapshot contents intact; if a hypervisor does not require any
+ * libvirt metadata to track snapshots, then this flag is silently
+ * ignored.
+ *
+ * Returns 0 if the selected snapshot(s) were successfully deleted,
+ * -1 on error.
  */
 int
 virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
@@ -16088,6 +16094,14 @@ virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     conn = snapshot->domain->conn;
     if (conn->flags & VIR_CONNECT_RO) {
         virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if ((flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN) &&
+        (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                          _("children and children_only flags are "
+                            "mutually exclusive"));
         goto error;
     }
 

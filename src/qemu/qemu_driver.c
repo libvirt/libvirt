@@ -9512,7 +9512,8 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     bool metadata_only = !!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY);
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
-                  VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY, -1);
+                  VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY |
+                  VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY, -1);
 
     qemuDriverLock(driver);
     virUUIDFormat(snapshot->domain->uuid, uuidstr);
@@ -9534,7 +9535,8 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN) {
+    if (flags & (VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
+                 VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)) {
         rem.driver = driver;
         rem.vm = vm;
         rem.metadata_only = metadata_only;
@@ -9546,8 +9548,20 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
                                            &rem);
         if (rem.err < 0)
             goto endjob;
-        if (rem.current)
+        if (rem.current) {
+            if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) {
+                snap->def->current = true;
+                if (qemuDomainSnapshotWriteMetadata(vm, snap,
+                                                    driver->snapshotDir) < 0) {
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                    _("failed to set snapshot '%s' as current"),
+                                    snap->def->name);
+                    snap->def->current = false;
+                    goto endjob;
+                }
+            }
             vm->current_snapshot = snap;
+        }
     } else {
         rep.driver = driver;
         rep.parent = snap->def->parent;
@@ -9560,7 +9574,10 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
             goto endjob;
     }
 
-    ret = qemuDomainSnapshotDiscard(driver, vm, snap, true, metadata_only);
+    if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)
+        ret = 0;
+    else
+        ret = qemuDomainSnapshotDiscard(driver, vm, snap, true, metadata_only);
 
 endjob:
     if (qemuDomainObjEndJob(driver, vm) == 0)
