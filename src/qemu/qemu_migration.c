@@ -2043,6 +2043,9 @@ finish:
      * do, but fortunately worst case is that there is a
      * domain left in 'paused' state on source.
      */
+    if (ret < 0)
+        VIR_WARN("Guest %s probably left in 'paused' state on source",
+                 vm->def->name);
 
  cleanup:
     if (ddomain) {
