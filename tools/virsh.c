@@ -12769,6 +12769,9 @@ static const vshCmdOptDef opts_snapshot_delete[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"snapshotname", VSH_OT_DATA, VSH_OFLAG_REQ, N_("snapshot name")},
     {"children", VSH_OT_BOOL, 0, N_("delete snapshot and all children")},
+    {"children-only", VSH_OT_BOOL, 0, N_("delete children but not snapshot")},
+    {"metadata", VSH_OT_BOOL, 0,
+     N_("delete only libvirt metadata, leaving snapshot contents behind")},
     {NULL, 0, 0, NULL}
 };
 
@@ -12793,13 +12796,23 @@ cmdSnapshotDelete(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "children"))
         flags |= VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN;
+    if (vshCommandOptBool(cmd, "children-only"))
+        flags |= VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY;
+    if (vshCommandOptBool(cmd, "metadata"))
+        flags |= VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY;
 
     snapshot = virDomainSnapshotLookupByName(dom, name, 0);
     if (snapshot == NULL)
         goto cleanup;
 
+    /* XXX If we wanted, we could emulate DELETE_CHILDREN_ONLY even on
+     * older servers that reject the flag, by manually computing the
+     * list of descendants.  But that's a lot of code to maintain.  */
     if (virDomainSnapshotDelete(snapshot, flags) == 0) {
-        vshPrint(ctl, _("Domain snapshot %s deleted\n"), name);
+        if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)
+            vshPrint(ctl, _("Domain snapshot %s children deleted\n"), name);
+        else
+            vshPrint(ctl, _("Domain snapshot %s deleted\n"), name);
     } else {
         vshError(ctl, _("Failed to delete snapshot %s"), name);
         goto cleanup;

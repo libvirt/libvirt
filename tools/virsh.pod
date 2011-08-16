@@ -1815,12 +1815,20 @@ I<--running> or I<--paused> flag will perform additional state changes
 transient domains cannot be inactive, it is required to use one of these
 flags when reverting to a disk snapshot of a transient domain.
 
-=item B<snapshot-delete> I<domain> I<snapshot> I<--children>
+=item B<snapshot-delete> I<domain> I<snapshot> [I<--metadata>]
+[{I<--children> | I<--children-only>}]
 
 Delete the snapshot for the domain named I<snapshot>.  If this snapshot
 has child snapshots, changes from this snapshot will be merged into the
 children.  If I<--children> is passed, then delete this snapshot and any
-children of this snapshot.
+children of this snapshot.  If I<--children-only> is passed, then delete
+any children of this snapshot, but leave this snapshot intact.  These
+two flags are mutually exclusive.
+
+If I<--metadata> is specified, then only delete the snapshot metadata
+maintained by libvirt, while leaving the snapshot contents intact for
+access by external tools; otherwise deleting a snapshot also removes
+the data contents from that point in time.
 
 =back
 
