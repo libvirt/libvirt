@@ -44,7 +44,7 @@
 
 int virFileClose(int *fdptr, bool preserve_errno)
 {
-    int saved_errno;
+    int saved_errno = 0;
     int rc = 0;
 
     if (*fdptr >= 0) {
@@ -62,7 +62,7 @@ int virFileClose(int *fdptr, bool preserve_errno)
 
 int virFileFclose(FILE **file, bool preserve_errno)
 {
-    int saved_errno;
+    int saved_errno = 0;
     int rc = 0;
 
     if (*file) {

@@ -1317,7 +1317,7 @@ ifaceGetPhysicalFunction(const char *ifname, char **pfname)
 }
 #else
 int
-ifaceIsVirtualFunction(const char *ifname)
+ifaceIsVirtualFunction(const char *ifname ATTRIBUTE_UNUSED)
 {
     ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
                _("ifaceIsVirtualFunction is not supported on non-linux "
@@ -1326,8 +1326,9 @@ ifaceIsVirtualFunction(const char *ifname)
 }
 
 int
-ifaceGetVirtualFunctionIndex(const char *pfname, const char *vfname,
-                             int *vf_index)
+ifaceGetVirtualFunctionIndex(const char *pfname ATTRIBUTE_UNUSED,
+                             const char *vfname ATTRIBUTE_UNUSED,
+                             int *vf_index ATTRIBUTE_UNUSED)
 {
     ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
                _("ifaceGetVirtualFunctionIndex is not supported on non-linux "
@@ -1336,7 +1337,8 @@ ifaceGetVirtualFunctionIndex(const char *pfname, const char *vfname,
 }
 
 int
-ifaceGetPhysicalFunction(const char *ifname, char **pfname)
+ifaceGetPhysicalFunction(const char *ifname ATTRIBUTE_UNUSED,
+                         char **pfname ATTRIBUTE_UNUSED)
 {
     ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
                _("ifaceGetPhysicalFunction is not supported on non-linux "
