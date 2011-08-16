@@ -12282,7 +12282,7 @@ cleanup:
  * "snapshot-parent" command
  */
 static const vshCmdInfo info_snapshot_parent[] = {
-    {"help", N_("Get the name of the parent of the current snapshot")},
+    {"help", N_("Get the name of the parent of a snapshot")},
     {"desc", N_("Extract the snapshot's parent, if any")},
     {NULL, NULL}
 };
