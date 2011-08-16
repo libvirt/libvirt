@@ -815,6 +815,7 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
+    qemuMonitorPtr mon = NULL;
 
     if (virSecurityManagerSetDaemonSocketLabel(driver->securityManager,
                                                vm) < 0) {
@@ -827,14 +828,28 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
      * deleted while the monitor is active */
     virDomainObjRef(vm);
 
-    priv->mon = qemuMonitorOpen(vm,
-                                priv->monConfig,
-                                priv->monJSON,
-                                &monitorCallbacks);
+    ignore_value(virTimeMs(&priv->monStart));
+    virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+
+    mon = qemuMonitorOpen(vm,
+                          priv->monConfig,
+                          priv->monJSON,
+                          &monitorCallbacks);
+
+    qemuDriverLock(driver);
+    virDomainObjLock(vm);
+    priv->monStart = 0;
 
     /* Safe to ignore value since ref count was incremented above */
-    if (priv->mon == NULL)
+    if (mon == NULL)
         ignore_value(virDomainObjUnref(vm));
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuMonitorClose(mon);
+        goto error;
+    }
+    priv->mon = mon;
 
     if (virSecurityManagerClearSocketLabel(driver->securityManager, vm) < 0) {
         VIR_ERROR(_("Failed to clear security context for monitor for %s"),
@@ -2485,24 +2500,30 @@ qemuProcessRecoverJob(struct qemud_driver *driver,
 struct qemuProcessReconnectData {
     virConnectPtr conn;
     struct qemud_driver *driver;
+    void *payload;
+    struct qemuDomainJobObj oldjob;
 };
 /*
  * Open an existing VM's monitor, re-detect VCPU threads
  * and re-reserve the security labels in use
  */
 static void
-qemuProcessReconnect(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
+qemuProcessReconnect(void *opaque)
 {
-    virDomainObjPtr obj = payload;
     struct qemuProcessReconnectData *data = opaque;
     struct qemud_driver *driver = data->driver;
+    virDomainObjPtr obj = data->payload;
     qemuDomainObjPrivatePtr priv;
     virConnectPtr conn = data->conn;
     struct qemuDomainJobObj oldjob;
 
+    memcpy(&oldjob, &data->oldjob, sizeof(oldjob));
+
+    VIR_FREE(data);
+
+    qemuDriverLock(driver);
     virDomainObjLock(obj);
 
-    qemuDomainObjRestoreJob(obj, &oldjob);
 
     VIR_DEBUG("Reconnect monitor to %p '%s'", obj, obj->def->name);
 
@@ -2573,12 +2594,21 @@ qemuProcessReconnect(void *payload, const void *name ATTRIBUTE_UNUSED, void *opa
     if (virDomainObjUnref(obj) > 0)
         virDomainObjUnlock(obj);
 
+    if (qemuDomainObjEndJob(driver, obj) == 0)
+        obj = NULL;
+
+    qemuDriverUnlock(driver);
+
     return;
 
 error:
+    if (qemuDomainObjEndJob(driver, obj) == 0)
+        obj = NULL;
+
     if (!virDomainObjIsActive(obj)) {
         if (virDomainObjUnref(obj) > 0)
             virDomainObjUnlock(obj);
+        qemuDriverUnlock(driver);
         return;
     }
 
@@ -2592,6 +2622,81 @@ error:
         else
             virDomainObjUnlock(obj);
     }
+    qemuDriverUnlock(driver);
+}
+
+static void
+qemuProcessReconnectHelper(void *payload,
+                           const void *name ATTRIBUTE_UNUSED,
+                           void *opaque)
+{
+    virThread thread;
+    struct qemuProcessReconnectData *src = opaque;
+    struct qemuProcessReconnectData *data;
+    virDomainObjPtr obj = payload;
+
+    if (VIR_ALLOC(data) < 0) {
+        virReportOOMError();
+        return;
+    }
+
+    memcpy(data, src, sizeof(*data));
+    data->payload = payload;
+
+    /* This iterator is called with driver being locked.
+     * We create a separate thread to run qemuProcessReconnect in it.
+     * However, qemuProcessReconnect needs to:
+     * 1. lock driver
+     * 2. just before monitor reconnect do lightweight MonitorEnter
+     *    (increase VM refcount, unlock VM & driver)
+     * 3. reconnect to monitor
+     * 4. do lightweight MonitorExit (lock driver & VM)
+     * 5. continue reconnect process
+     * 6. EndJob
+     * 7. unlock driver
+     *
+     * It is necessary to NOT hold driver lock for the entire run
+     * of reconnect, otherwise we will get blocked if there is
+     * unresponsive qemu.
+     * However, iterating over hash table MUST be done on locked
+     * driver.
+     *
+     * NB, we can't do normal MonitorEnter & MonitorExit because
+     * these two lock the monitor lock, which does not exists in
+     * this early phase.
+     */
+
+    virDomainObjLock(obj);
+
+    qemuDomainObjRestoreJob(obj, &data->oldjob);
+
+    if (qemuDomainObjBeginJobWithDriver(src->driver, obj, QEMU_JOB_MODIFY) < 0)
+        goto error;
+
+    if (virThreadCreate(&thread, true, qemuProcessReconnect, data) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not create thread. QEMU initialization "
+                          "might be incomplete"));
+        if (qemuDomainObjEndJob(src->driver, obj) == 0) {
+            obj = NULL;
+        } else if (virDomainObjUnref(obj) > 0) {
+           /* We can't spawn a thread and thus connect to monitor.
+            * Kill qemu */
+            qemuProcessStop(src->driver, obj, 0, VIR_DOMAIN_SHUTOFF_FAILED);
+            if (!obj->persistent)
+                virDomainRemoveInactive(&src->driver->domains, obj);
+            else
+                virDomainObjUnlock(obj);
+        }
+        goto error;
+    }
+
+    virDomainObjUnlock(obj);
+
+    return;
+
+error:
+    VIR_FREE(data);
 }
 
 /**
@@ -2604,7 +2709,7 @@ void
 qemuProcessReconnectAll(virConnectPtr conn, struct qemud_driver *driver)
 {
     struct qemuProcessReconnectData data = {conn, driver};
-    virHashForEach(driver->domains.objs, qemuProcessReconnect, &data);
+    virHashForEach(driver->domains.objs, qemuProcessReconnectHelper, &data);
 }
 
 int qemuProcessStart(virConnectPtr conn,

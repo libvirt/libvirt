@@ -147,16 +147,18 @@ qemuAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED,
 
     virDomainObjLock(vm);
     virResetLastError();
-    if (qemuDomainObjBeginJobWithDriver(data->driver, vm,
-                                        QEMU_JOB_MODIFY) < 0) {
-        err = virGetLastError();
-        VIR_ERROR(_("Failed to start job on VM '%s': %s"),
-                  vm->def->name,
-                  err ? err->message : _("unknown error"));
-    } else {
-        if (vm->autostart &&
-            !virDomainObjIsActive(vm) &&
-            qemuDomainObjStart(data->conn, data->driver, vm, flags) < 0) {
+    if (vm->autostart &&
+        !virDomainObjIsActive(vm)) {
+        if (qemuDomainObjBeginJobWithDriver(data->driver, vm,
+                                            QEMU_JOB_MODIFY) < 0) {
+            err = virGetLastError();
+            VIR_ERROR(_("Failed to start job on VM '%s': %s"),
+                      vm->def->name,
+                      err ? err->message : _("unknown error"));
+            goto cleanup;
+        }
+
+        if (qemuDomainObjStart(data->conn, data->driver, vm, flags) < 0) {
             err = virGetLastError();
             VIR_ERROR(_("Failed to autostart VM '%s': %s"),
                       vm->def->name,
@@ -167,6 +169,7 @@ qemuAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED,
             vm = NULL;
     }
 
+cleanup:
     if (vm)
         virDomainObjUnlock(vm);
 }
