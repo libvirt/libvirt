@@ -596,7 +596,7 @@ Output the domain information as an XML dump to stdout, this format can be used
 by the B<create> command. Additional options affecting the XML dump may be
 used. I<--inactive> tells virsh to dump domain configuration that will be used
 on next start of the domain as opposed to the current domain configuration.
-Using I<--security-info> security sensitive information will also be included
+Using I<--security-info> will also include security sensitive information
 in the XML dump. I<--update-cpu> updates domain CPU requirements according to
 host CPU.
 
@@ -1702,21 +1702,32 @@ value.  If I<--print-xml> is specified, then XML appropriate for
 I<snapshot-create> is output, rather than actually creating a snapshot.
 
 =item B<snapshot-current> I<domain> [I<--name>]
+=item B<snapshot-current> I<domain> {[I<--name>] | [I<--security-info]}
 
 Output the snapshot XML for the domain's current snapshot (if any).
-If I<--name> is specified, just list the snapshot name instead of the
-full xml.
+If I<--name> is specified, just print the current snapshot name instead
+of the full xml.  Otherwise, using I<--security-info> will also include
+security sensitive information in the XML.
 
-=item B<snapshot-list> I<domain> [I<--parent>]
+=item B<snapshot-list> I<domain> [{I<--parent> | I<--roots>}] [I<--metadata>]
 
 List all of the available snapshots for the given domain.
 
 If I<--parent> is specified, add a column to the output table giving
 the name of the parent of each snapshot.
 
-=item B<snapshot-dumpxml> I<domain> I<snapshot>
+If I<--roots> is specified, the list will be filtered to just snapshots
+that have no parents; this option is not compatible with I<--parent>.
+
+If I<--metadata> is specified, the list will be filtered to just
+snapshots that involve libvirt metadata, and thus would prevent
+B<undefine> of a persistent domain, or be lost on B<destroy> of
+a transient domain.
+
+=item B<snapshot-dumpxml> I<domain> I<snapshot> [I<--security-info>]
 
 Output the snapshot XML for the domain's snapshot named I<snapshot>.
+Using I<--security-info> will also include security sensitive information.
 
 =item B<snapshot-parent> I<domain> I<snapshot>
 

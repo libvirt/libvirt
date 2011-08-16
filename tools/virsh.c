@@ -12120,6 +12120,8 @@ static const vshCmdInfo info_snapshot_current[] = {
 static const vshCmdOptDef opts_snapshot_current[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"name", VSH_OT_BOOL, 0, N_("list the name, rather than the full xml")},
+    {"security-info", VSH_OT_BOOL, 0,
+     N_("include security sensitive information in XML dump")},
     {NULL, 0, 0, NULL}
 };
 
@@ -12131,6 +12133,10 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
     int current;
     virDomainSnapshotPtr snapshot = NULL;
     char *xml = NULL;
+    unsigned int flags = 0;
+
+    if (vshCommandOptBool(cmd, "security-info"))
+        flags |= VIR_DOMAIN_XML_SECURE;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -12148,7 +12154,7 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
         if (!(snapshot = virDomainSnapshotCurrent(dom, 0)))
             goto cleanup;
 
-        xml = virDomainSnapshotGetXMLDesc(snapshot, 0);
+        xml = virDomainSnapshotGetXMLDesc(snapshot, flags);
         if (!xml)
             goto cleanup;
 
@@ -12195,6 +12201,9 @@ static const vshCmdInfo info_snapshot_list[] = {
 static const vshCmdOptDef opts_snapshot_list[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"parent", VSH_OT_BOOL, 0, N_("add a column showing parent snapshot")},
+    {"roots", VSH_OT_BOOL, 0, N_("list only snapshots without parents")},
+    {"metadata", VSH_OT_BOOL, 0,
+     N_("list only snapshots that have metadata that would prevent undefine")},
     {NULL, 0, 0, NULL}
 };
 
@@ -12204,8 +12213,8 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     bool ret = false;
     unsigned int flags = 0;
-    int parent_filter = 0; /* 0 for no parent information needed,
-                              1 for parent column */
+    int parent_filter = 0; /* -1 for roots filtering, 0 for no parent
+                              information needed, 1 for parent column */
     int numsnaps;
     char **names = NULL;
     int actual = 0;
@@ -12222,7 +12231,18 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     struct tm time_info;
 
     if (vshCommandOptBool(cmd, "parent")) {
+        if (vshCommandOptBool(cmd, "roots")) {
+            vshError(ctl, "%s",
+                     _("--parent and --roots are mutually exlusive"));
+            return false;
+        }
         parent_filter = 1;
+    } else if (vshCommandOptBool(cmd, "roots")) {
+        flags |= VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
+    }
+
+    if (vshCommandOptBool(cmd, "metadata")) {
+        flags |= VIR_DOMAIN_SNAPSHOT_LIST_METADATA;
     }
 
     if (!vshConnectionUsability(ctl, ctl->conn))
@@ -12233,6 +12253,16 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     numsnaps = virDomainSnapshotNum(dom, flags);
+
+    /* Fall back to simulation if --roots was unsupported.  */
+    if (numsnaps < 0 && last_error->code == VIR_ERR_INVALID_ARG &&
+        (flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS)) {
+        virFreeError(last_error);
+        last_error = NULL;
+        parent_filter = -1;
+        flags &= ~VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
+        numsnaps = virDomainSnapshotNum(dom, flags);
+    }
 
     if (numsnaps < 0)
         goto cleanup;
@@ -12281,6 +12311,8 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
             if (parent_filter) {
                 parent = virXPathString("string(/domainsnapshot/parent/name)",
                                         ctxt);
+                if (!parent && parent_filter < 0)
+                    continue;
             }
 
             state = virXPathString("string(/domainsnapshot/state)", ctxt);
@@ -12338,6 +12370,8 @@ static const vshCmdInfo info_snapshot_dumpxml[] = {
 static const vshCmdOptDef opts_snapshot_dumpxml[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"snapshotname", VSH_OT_DATA, VSH_OFLAG_REQ, N_("snapshot name")},
+    {"security-info", VSH_OT_BOOL, 0,
+     N_("include security sensitive information in XML dump")},
     {NULL, 0, 0, NULL}
 };
 
@@ -12349,6 +12383,10 @@ cmdSnapshotDumpXML(vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     char *xml = NULL;
+    unsigned int flags = 0;
+
+    if (vshCommandOptBool(cmd, "security-info"))
+        flags |= VIR_DOMAIN_XML_SECURE;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -12364,7 +12402,7 @@ cmdSnapshotDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (snapshot == NULL)
         goto cleanup;
 
-    xml = virDomainSnapshotGetXMLDesc(snapshot, 0);
+    xml = virDomainSnapshotGetXMLDesc(snapshot, flags);
     if (!xml)
         goto cleanup;
 
