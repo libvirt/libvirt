@@ -210,10 +210,11 @@ int virPidFileReadPathIfAlive(const char *path,
         *pid = -1;
         return 0;
     }
-#ifdef __linux__
-    if (virFileLinkPointsTo(procpath, binpath) == 0)
+
+    if (virFileIsLink(procpath) &&
+        virFileLinkPointsTo(procpath, binpath) == 0)
         *pid = -1;
-#endif
+
     VIR_FREE(procpath);
 
     return 0;

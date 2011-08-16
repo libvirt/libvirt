@@ -78,6 +78,9 @@ int virFileLinkPointsTo(const char *checkLink,
 int virFileResolveLink(const char *linkpath,
                        char **resultpath) ATTRIBUTE_RETURN_CHECK;
 
+int virFileIsLink(const char *linkpath)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+
 char *virFindFileInPath(const char *file);
 
 bool virFileExists(const char *file) ATTRIBUTE_NONNULL(1);

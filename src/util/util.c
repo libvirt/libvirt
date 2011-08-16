@@ -570,6 +570,23 @@ int virFileResolveLink(const char *linkpath,
     return *resultpath == NULL ? -1 : 0;
 }
 
+
+/*
+ * Check whether the given file is a link.
+ * Returns 1 in case of the file being a link, 0 in case it is not
+ * a link and the negative errno in all other cases.
+ */
+int virFileIsLink(const char *linkpath)
+{
+    struct stat st;
+
+    if (lstat(linkpath, &st) < 0)
+        return -errno;
+
+    return (S_ISLNK(st.st_mode) != 0);
+}
+
+
 /*
  * Finds a requested executable file in the PATH env. e.g.:
  * "kvm-img" will return "/usr/bin/kvm-img"

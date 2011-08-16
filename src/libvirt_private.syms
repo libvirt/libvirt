@@ -1047,6 +1047,7 @@ virFileExists;
 virFileFindMountPoint;
 virFileHasSuffix;
 virFileIsExecutable;
+virFileIsLink;
 virFileLinkPointsTo;
 virFileLock;
 virFileMakePath;
