@@ -45,6 +45,8 @@
 #include "virfile.h"
 #include "memory.h"
 #include "netlink.h"
+#include "pci.h"
+#include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_NET
 
@@ -1196,3 +1198,149 @@ ifaceRestoreMacAddress(const char *linkdev,
 
     return rc;
 }
+
+#ifdef __linux__
+static int
+ifaceSysfsFile(char **pf_sysfs_device_link, const char *ifname,
+               const char *file)
+{
+
+    if (virAsprintf(pf_sysfs_device_link, NET_SYSFS "%s/%s",
+        ifname, file) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+ifaceSysfsDeviceFile(char **pf_sysfs_device_link, const char *ifname,
+                     const char *file)
+{
+
+    if (virAsprintf(pf_sysfs_device_link, NET_SYSFS "%s/device/%s",
+        ifname, file) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    return 0;
+}
+
+/**
+ * ifaceIsVirtualFunction
+ *
+ * @ifname : name of the interface
+ *
+ * Checks if an interface is a SRIOV virtual function.
+ *
+ * Returns 1 if interface is SRIOV virtual function, 0 if not and -1 if error
+ *
+ */
+int
+ifaceIsVirtualFunction(const char *ifname)
+{
+    char *if_sysfs_device_link = NULL;
+    int ret = -1;
+
+    if (ifaceSysfsFile(&if_sysfs_device_link, ifname, "device"))
+        return ret;
+
+    ret = pciDeviceIsVirtualFunction(if_sysfs_device_link);
+
+    VIR_FREE(if_sysfs_device_link);
+
+    return ret;
+}
+
+/**
+ * ifaceGetVirtualFunctionIndex
+ *
+ * @pfname : name of the physical function interface name
+ * @vfname : name of the virtual function interface name
+ * @vf_index : Pointer to int. Contains vf index of interface upon successful
+ *             return
+ *
+ * Returns 0 on success, -1 on failure
+ *
+ */
+int
+ifaceGetVirtualFunctionIndex(const char *pfname, const char *vfname,
+                             int *vf_index)
+{
+    char *pf_sysfs_device_link = NULL, *vf_sysfs_device_link = NULL;
+    int ret = -1;
+
+    if (ifaceSysfsFile(&pf_sysfs_device_link, pfname, "device"))
+        return ret;
+
+    if (ifaceSysfsFile(&vf_sysfs_device_link, vfname, "device")) {
+        VIR_FREE(pf_sysfs_device_link);
+        return ret;
+    }
+
+    ret = pciGetVirtualFunctionIndex(pf_sysfs_device_link,
+                                     vf_sysfs_device_link,
+                                     vf_index);
+
+    VIR_FREE(pf_sysfs_device_link);
+    VIR_FREE(vf_sysfs_device_link);
+
+    return ret;
+}
+
+/**
+ * ifaceGetPhysicalFunction
+ *
+ * @ifname : name of the physical function interface name
+ * @pfname : Contains sriov physical function for interface ifname
+ *           upon successful return
+ *
+ * Returns 0 on success, -1 on failure
+ *
+ */
+int
+ifaceGetPhysicalFunction(const char *ifname, char **pfname)
+{
+    char *physfn_sysfs_path = NULL;
+    int ret = -1;
+
+    if (ifaceSysfsDeviceFile(&physfn_sysfs_path, ifname, "physfn"))
+        return ret;
+
+    ret = pciDeviceNetName(physfn_sysfs_path, pfname);
+
+    VIR_FREE(physfn_sysfs_path);
+
+    return ret;
+}
+#else
+int
+ifaceIsVirtualFunction(const char *ifname)
+{
+    ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
+               _("ifaceIsVirtualFunction is not supported on non-linux "
+               "platforms"));
+    return -1;
+}
+
+int
+ifaceGetVirtualFunctionIndex(const char *pfname, const char *vfname,
+                             int *vf_index)
+{
+    ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
+               _("ifaceGetVirtualFunctionIndex is not supported on non-linux "
+               "platforms"));
+    return -1;
+}
+
+int
+ifaceGetPhysicalFunction(const char *ifname, char **pfname)
+{
+    ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
+               _("ifaceGetPhysicalFunction is not supported on non-linux "
+               "platforms"));
+    return -1;
+}
+#endif /* __linux__ */

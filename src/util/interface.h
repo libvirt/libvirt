@@ -27,6 +27,8 @@ struct nlattr;
 # include "datatypes.h"
 # include "network.h"
 
+# define NET_SYSFS "/sys/class/net/"
+
 int ifaceGetFlags(const char *name, short *flags);
 int ifaceIsUp(const char *name, bool *up);
 
@@ -78,5 +80,12 @@ int ifaceReplaceMacAddress(const unsigned char *macaddress,
 
 int ifaceRestoreMacAddress(const char *linkdev,
                            const char *stateDir);
+
+int ifaceIsVirtualFunction(const char *ifname);
+
+int ifaceGetVirtualFunctionIndex(const char *pfname, const char *vfname,
+                                 int *vf_index);
+
+int ifaceGetPhysicalFunction(const char *ifname, char **pfname);
 
 #endif /* __VIR_INTERFACE_H__ */
