@@ -678,7 +678,15 @@ daemonStreamHandleRead(virNetServerClientPtr client,
     size_t bufferLen = VIR_NET_MESSAGE_PAYLOAD_MAX;
     int ret;
 
-    VIR_DEBUG("client=%p, stream=%p", client, stream);
+    VIR_DEBUG("client=%p, stream=%p tx=%d closed=%d",
+              client, stream, stream->tx, stream->closed);
+
+    /* We might have had an event pending before we shut
+     * down the stream, so if we're marked as closed,
+     * then do nothing
+     */
+    if (stream->closed)
+        return 0;
 
     /* Shouldn't ever be called unless we're marked able to
      * transmit, but doesn't hurt to check */
