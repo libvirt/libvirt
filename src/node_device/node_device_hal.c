@@ -35,6 +35,7 @@
 #include "datatypes.h"
 #include "memory.h"
 #include "uuid.h"
+#include "pci.h"
 #include "logging.h"
 #include "node_device_driver.h"
 
@@ -146,8 +147,13 @@ static int gather_pci_cap(LibHalContext *ctx, const char *udi,
             (void)virStrToLong_ui(p+1, &p, 16, &d->pci_dev.function);
         }
 
-        get_physical_function(sysfs_path, d);
-        get_virtual_functions(sysfs_path, d);
+        if (!pciGetPhysicalFunction(sysfs_path, &d->pci_dev.physical_function))
+            d->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
+
+        if (!pciGetVirtualFunctions(sysfs_path, &d->pci_dev.virtual_functions,
+            &d->pci_dev.num_virtual_functions) ||
+            d->pci_dev.num_virtual_functions > 0)
+            d->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION;
 
         VIR_FREE(sysfs_path);
     }

@@ -82,13 +82,6 @@ enum virNodeDevPCICapFlags {
     VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION		= (1 << 1),
 };
 
-struct pci_config_address {
-    unsigned int domain;
-    unsigned int bus;
-    unsigned int slot;
-    unsigned int function;
-};
-
 typedef struct _virNodeDevCapsDef virNodeDevCapsDef;
 typedef virNodeDevCapsDef *virNodeDevCapsDefPtr;
 struct _virNodeDevCapsDef {
