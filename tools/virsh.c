@@ -12194,6 +12194,7 @@ static const vshCmdInfo info_snapshot_list[] = {
 
 static const vshCmdOptDef opts_snapshot_list[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"parent", VSH_OT_BOOL, 0, N_("add a column showing parent snapshot")},
     {NULL, 0, 0, NULL}
 };
 
@@ -12202,6 +12203,9 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     bool ret = false;
+    unsigned int flags = 0;
+    int parent_filter = 0; /* 0 for no parent information needed,
+                              1 for parent column */
     int numsnaps;
     char **names = NULL;
     int actual = 0;
@@ -12211,10 +12215,15 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     char *doc = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     char *state = NULL;
+    char *parent = NULL;
     long long creation_longlong;
     time_t creation_time_t;
     char timestr[100];
     struct tm time_info;
+
+    if (vshCommandOptBool(cmd, "parent")) {
+        parent_filter = 1;
+    }
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -12223,19 +12232,25 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     if (dom == NULL)
         goto cleanup;
 
-    numsnaps = virDomainSnapshotNum(dom, 0);
+    numsnaps = virDomainSnapshotNum(dom, flags);
 
     if (numsnaps < 0)
         goto cleanup;
 
-    vshPrintExtra(ctl, " %-20s %-25s %s\n", _("Name"), _("Creation Time"), _("State"));
-    vshPrintExtra(ctl, "---------------------------------------------------\n");
+    if (parent_filter > 0)
+        vshPrintExtra(ctl, " %-20s %-25s %-15s %s",
+                      _("Name"), _("Creation Time"), _("State"), _("Parent"));
+    else
+        vshPrintExtra(ctl, " %-20s %-25s %s",
+                      _("Name"), _("Creation Time"), _("State"));
+    vshPrintExtra(ctl, "\n\
+------------------------------------------------------------\n");
 
     if (numsnaps) {
         if (VIR_ALLOC_N(names, numsnaps) < 0)
             goto cleanup;
 
-        actual = virDomainSnapshotListNames(dom, names, numsnaps, 0);
+        actual = virDomainSnapshotListNames(dom, names, numsnaps, flags);
         if (actual < 0)
             goto cleanup;
 
@@ -12243,6 +12258,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
 
         for (i = 0; i < actual; i++) {
             /* free up memory from previous iterations of the loop */
+            VIR_FREE(parent);
             VIR_FREE(state);
             if (snapshot)
                 virDomainSnapshotFree(snapshot);
@@ -12262,6 +12278,11 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
             if (!xml)
                 continue;
 
+            if (parent_filter) {
+                parent = virXPathString("string(/domainsnapshot/parent/name)",
+                                        ctxt);
+            }
+
             state = virXPathString("string(/domainsnapshot/state)", ctxt);
             if (state == NULL)
                 continue;
@@ -12274,9 +12295,14 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
                 continue;
             }
             localtime_r(&creation_time_t, &time_info);
-            strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%M:%S %z", &time_info);
+            strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%M:%S %z",
+                     &time_info);
 
-            vshPrint(ctl, " %-20s %-25s %s\n", names[i], timestr, state);
+            if (parent)
+                vshPrint(ctl, " %-20s %-25s %-15s %s\n",
+                         names[i], timestr, state, parent);
+            else
+                vshPrint(ctl, " %-20s %-25s %s\n", names[i], timestr, state);
         }
     }
 
@@ -12284,6 +12310,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
 
 cleanup:
     /* this frees up memory from the last iteration of the loop */
+    VIR_FREE(parent);
     VIR_FREE(state);
     if (snapshot)
         virDomainSnapshotFree(snapshot);

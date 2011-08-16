@@ -1707,9 +1707,12 @@ Output the snapshot XML for the domain's current snapshot (if any).
 If I<--name> is specified, just list the snapshot name instead of the
 full xml.
 
-=item B<snapshot-list> I<domain>
+=item B<snapshot-list> I<domain> [I<--parent>]
 
 List all of the available snapshots for the given domain.
+
+If I<--parent> is specified, add a column to the output table giving
+the name of the parent of each snapshot.
 
 =item B<snapshot-dumpxml> I<domain> I<snapshot>
 
