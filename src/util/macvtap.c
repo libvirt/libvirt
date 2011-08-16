@@ -943,23 +943,20 @@ err_exit:
 
 # ifdef IFLA_VF_PORT_MAX
 static int
-getPhysfn(const char *linkdev,
-          int32_t *vf,
-          char **physfndev)
+getPhysfnDev(const char *linkdev,
+             int32_t *vf,
+             char **physfndev)
 {
     int rc = 0;
-    bool virtfn = false;
 
-    if (virtfn) {
+    if (ifaceIsVirtualFunction(linkdev)) {
 
-        /* XXX: if linkdev is SR-IOV VF, then set vf = VF index */
-        /* XXX: and set linkdev = PF device */
-        /* XXX: need to use get_physical_function_linux() or */
-        /* XXX: something like that to get PF */
-        /* XXX: device and figure out VF index */
+        /* if linkdev is SR-IOV VF, then set vf = VF index */
+        /* and set linkdev = PF device */
 
-        rc = 1;
-
+        rc = ifaceGetPhysicalFunction(linkdev, physfndev);
+        if (!rc)
+            rc = ifaceGetVirtualFunctionIndex(*physfndev, linkdev, vf);
     } else {
 
         /* Not SR-IOV VF: physfndev is linkdev and VF index
@@ -1003,7 +1000,7 @@ doPortProfileOp8021Qbh(const char *ifname,
     int ifindex;
     int vlanid = -1;
 
-    rc = getPhysfn(ifname, &vf, &physfndev);
+    rc = getPhysfnDev(ifname, &vf, &physfndev);
     if (rc)
         goto err_exit;
 
