@@ -1685,6 +1685,19 @@ int pciDeviceIsAssignable(pciDevice *dev,
     return 1;
 }
 
+/*
+ * returns 1 if equal and 0 if not
+ */
+static int
+pciConfigAddressEqual(struct pci_config_address *bdf1,
+                      struct pci_config_address *bdf2)
+{
+    return ((bdf1->domain == bdf2->domain) &&
+            (bdf1->bus == bdf2->bus) &&
+            (bdf1->slot == bdf2->slot) &&
+            (bdf1->function == bdf2->function));
+}
+
 static int
 logStrToLong_ui(char const *s,
                 char **end_ptr,
@@ -1889,6 +1902,112 @@ out:
 
     return ret;
 }
+
+/*
+ * Returns 1 if vf device is a virtual function, 0 if not, -1 on error
+ */
+int
+pciDeviceIsVirtualFunction(const char *vf_sysfs_device_link)
+{
+    char *vf_sysfs_physfn_link = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&vf_sysfs_physfn_link, "%s/physfn",
+        vf_sysfs_device_link) < 0) {
+        virReportOOMError();
+        return ret;
+    }
+
+    ret = virFileExists(vf_sysfs_physfn_link);
+
+    VIR_FREE(vf_sysfs_physfn_link);
+
+    return ret;
+}
+
+/*
+ * Returns the sriov virtual function index of vf given its pf
+ */
+int
+pciGetVirtualFunctionIndex(const char *pf_sysfs_device_link,
+                           const char *vf_sysfs_device_link,
+                           int *vf_index)
+{
+    int ret = -1, i;
+    unsigned int num_virt_fns = 0;
+    struct pci_config_address *vf_bdf = NULL;
+    struct pci_config_address **virt_fns = NULL;
+
+    if (pciGetPciConfigAddressFromSysfsDeviceLink(vf_sysfs_device_link,
+        &vf_bdf))
+        return ret;
+
+    if (pciGetVirtualFunctions(pf_sysfs_device_link, &virt_fns,
+        &num_virt_fns)) {
+        pciReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Error getting physical function's '%s' "
+                      "virtual_functions"), pf_sysfs_device_link);
+        goto out;
+    }
+
+    for (i = 0; i < num_virt_fns; i++) {
+         if (pciConfigAddressEqual(vf_bdf, virt_fns[i])) {
+             *vf_index = i;
+             ret = 0;
+             break;
+         }
+    }
+
+out:
+
+    /* free virtual functions */
+    for (i = 0; i < num_virt_fns; i++)
+         VIR_FREE(virt_fns[i]);
+
+    VIR_FREE(vf_bdf);
+
+    return ret;
+}
+
+/*
+ * Returns the network device name of a pci device
+ */
+int
+pciDeviceNetName(char *device_link_sysfs_path, char **netname)
+{
+     char *pcidev_sysfs_net_path = NULL;
+     int ret = -1;
+     DIR *dir = NULL;
+     struct dirent *entry = NULL;
+
+     if (virBuildPath(&pcidev_sysfs_net_path, device_link_sysfs_path,
+         "net") == -1) {
+         virReportOOMError();
+         return -1;
+     }
+
+     dir = opendir(pcidev_sysfs_net_path);
+     if (dir == NULL)
+         goto out;
+
+     while ((entry = readdir(dir))) {
+            if (STREQ(entry->d_name, ".") ||
+                STREQ(entry->d_name, ".."))
+                continue;
+
+            /* Assume a single directory entry */
+            *netname = strdup(entry->d_name);
+            ret = 0;
+            break;
+     }
+
+     closedir(dir);
+
+out:
+     VIR_FREE(pcidev_sysfs_net_path);
+
+     return ret;
+}
 #else
 int
 pciGetPhysicalFunction(const char *vf_sysfs_path,
@@ -1905,6 +2024,33 @@ pciGetVirtualFunctions(const char *sysfs_path,
                        unsigned int *num_virtual_functions)
 {
     pciReportError(VIR_ERR_INTERNAL_ERROR, _("pciGetVirtualFunctions is not "
+                   "supported on non-linux platforms"));
+    return -1;
+}
+
+int
+pciDeviceIsVirtualFunction(const char *vf_sysfs_device_link)
+{
+    pciReportError(VIR_ERR_INTERNAL_ERROR, _("pciDeviceIsVirtualFunction is "
+                   "not supported on non-linux platforms"));
+    return -1;
+}
+
+int
+pciGetVirtualFunctionIndex(const char *pf_sysfs_device_link,
+                           const char *vf_sysfs_device_link,
+                           int *vf_index)
+{
+    pciReportError(VIR_ERR_INTERNAL_ERROR, _("pciGetVirtualFunctionIndex is "
+                   "not supported on non-linux platforms"));
+    return -1;
+
+}
+
+int
+pciDeviceNetName(char *device_link_sysfs_path, char **netname)
+{
+    pciReportError(VIR_ERR_INTERNAL_ERROR, _("pciDeviceNetName is not "
                    "supported on non-linux platforms"));
     return -1;
 }
