@@ -257,23 +257,14 @@ int virNetServerProgramDispatch(virNetServerProgramPtr prog,
          * stream packets after we closed down a stream. Just drop & ignore
          * these.
          */
-        if (msg->header.status == VIR_NET_CONTINUE) {
-            VIR_INFO("Ignoring unexpected stream data serial=%d proc=%d status=%d",
-                     msg->header.serial, msg->header.proc, msg->header.status);
-            /* Send a dummy reply to free up 'msg' & unblock client rx */
-            memset(msg, 0, sizeof(*msg));
-            msg->header.type = VIR_NET_REPLY;
-            if (virNetServerClientSendMessage(client, msg) < 0) {
-                ret = -1;
-                goto cleanup;
-            }
-        } else {
-            VIR_INFO("Unexpected stream control message serial=%d proc=%d status=%d",
-                     msg->header.serial, msg->header.proc, msg->header.status);
-            virNetError(VIR_ERR_RPC,
-                        _("Unexpected stream control message serial=%d proc=%d status=%d"),
-                          msg->header.serial, msg->header.proc, msg->header.status);
-            goto error;
+        VIR_INFO("Ignoring unexpected stream data serial=%d proc=%d status=%d",
+                 msg->header.serial, msg->header.proc, msg->header.status);
+        /* Send a dummy reply to free up 'msg' & unblock client rx */
+        memset(msg, 0, sizeof(*msg));
+        msg->header.type = VIR_NET_REPLY;
+        if (virNetServerClientSendMessage(client, msg) < 0) {
+            ret = -1;
+            goto cleanup;
         }
         ret = 0;
         break;
