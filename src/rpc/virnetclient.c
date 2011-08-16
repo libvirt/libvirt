@@ -1045,7 +1045,7 @@ static int virNetClientIO(virNetClientPtr client,
 {
     int rv = -1;
 
-    VIR_DEBUG("program=%u version=%u serial=%u proc=%d type=%d length=%zu dispatch=%p",
+    VIR_DEBUG("Outgoing message prog=%u version=%u serial=%u proc=%d type=%d length=%zu dispatch=%p",
               thiscall->msg->header.prog,
               thiscall->msg->header.vers,
               thiscall->msg->header.serial,
