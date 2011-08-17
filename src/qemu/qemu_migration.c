@@ -1624,11 +1624,14 @@ static int doNativeMigrate(struct qemud_driver *driver,
             virReportOOMError();
             goto cleanup;
         }
+        if (virSecurityManagerSetSocketLabel(driver->securityManager, vm) < 0)
+            goto cleanup;
         if (virNetSocketNewConnectTCP(uribits->server, tmp, &sock) == 0) {
             spec.dest.fd.qemu = virNetSocketDupFD(sock, true);
             virNetSocketFree(sock);
         }
-        if (spec.dest.fd.qemu == -1)
+        if (virSecurityManagerClearSocketLabel(driver->securityManager, vm) < 0 ||
+            spec.dest.fd.qemu == -1)
             goto cleanup;
     } else {
         spec.destType = MIGRATION_DEST_HOST;
