@@ -200,15 +200,18 @@ int virPidFileReadPathIfAlive(const char *path,
     if (rc < 0)
         return rc;
 
-    /* Check that it's still alive */
+#ifndef WIN32
+    /* Check that it's still alive.  Safe to skip this sanity check on
+     * mingw, which lacks kill().  */
     if (kill(*pid, 0) < 0) {
         *pid = -1;
         return 0;
     }
+#endif
 
     if (virAsprintf(&procpath, "/proc/%d/exe", *pid) < 0) {
         *pid = -1;
-        return 0;
+        return -1;
     }
 
     if (virFileIsLink(procpath) &&
