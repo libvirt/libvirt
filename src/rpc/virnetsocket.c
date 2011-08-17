@@ -366,6 +366,7 @@ error:
 #else
 int virNetSocketNewListenUNIX(const char *path ATTRIBUTE_UNUSED,
                               mode_t mask ATTRIBUTE_UNUSED,
+                              uid_t user ATTRIBUTE_UNUSED,
                               gid_t grp ATTRIBUTE_UNUSED,
                               virNetSocketPtr *retsock ATTRIBUTE_UNUSED)
 {
