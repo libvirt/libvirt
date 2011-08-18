@@ -1074,9 +1074,7 @@ ESX_VI__TEMPLATE__FREE(Response,
 {
     VIR_FREE(item->content);
 
-    if (item->document != NULL) {
-        xmlFreeDoc(item->document);
-    }
+    xmlFreeDoc(item->document);
 })
 
 

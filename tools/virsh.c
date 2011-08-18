@@ -2971,8 +2971,7 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
 
 cleanup:
     xmlXPathFreeContext(ctxt);
-    if (xml)
-        xmlFreeDoc(xml);
+    xmlFreeDoc(xml);
     VIR_FREE(nodes);
     VIR_FREE(nodes_free);
     VIR_FREE(nodes_id);
@@ -10234,8 +10233,7 @@ cmdVNCDisplay(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
-    if (xml)
-        xmlFreeDoc(xml);
+    xmlFreeDoc(xml);
     virDomainFree(dom);
     return ret;
 }
@@ -10295,8 +10293,7 @@ cmdTTYConsole(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
-    if (xml)
-        xmlFreeDoc(xml);
+    xmlFreeDoc(xml);
     virDomainFree(dom);
     return ret;
 }
@@ -10752,10 +10749,8 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
         virDomainFree(dom);
     xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
-    if (xml)
-        xmlFreeDoc(xml);
-    if (xml_buf)
-        xmlBufferFree(xml_buf);
+    xmlFreeDoc(xml);
+    xmlBufferFree(xml_buf);
     return functionReturn;
 }
 
@@ -11216,10 +11211,8 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
-    if (xml)
-        xmlFreeDoc(xml);
-    if (xml_buf)
-        xmlBufferFree(xml_buf);
+    xmlFreeDoc(xml);
+    xmlBufferFree(xml_buf);
     if (dom)
         virDomainFree(dom);
     return functionReturn;
@@ -11898,8 +11891,7 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
 cleanup:
     VIR_FREE(name);
     xmlXPathFreeContext(ctxt);
-    if (xml)
-        xmlFreeDoc(xml);
+    xmlFreeDoc(xml);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
     VIR_FREE(doc);
@@ -12005,8 +11997,7 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
 cleanup:
     VIR_FREE(parsed_name);
     xmlXPathFreeContext(ctxt);
-    if (xml)
-        xmlFreeDoc(xml);
+    xmlFreeDoc(xml);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
     VIR_FREE(doc);
@@ -12163,8 +12154,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
             if (snapshot)
                 virDomainSnapshotFree(snapshot);
             xmlXPathFreeContext(ctxt);
-            if (xml)
-                xmlFreeDoc(xml);
+            xmlFreeDoc(xml);
             VIR_FREE(doc);
 
             snapshot = virDomainSnapshotLookupByName(dom, names[i], 0);
@@ -12210,8 +12200,7 @@ cleanup:
     if (snapshot)
         virDomainSnapshotFree(snapshot);
     xmlXPathFreeContext(ctxt);
-    if (xml)
-        xmlFreeDoc(xml);
+    xmlFreeDoc(xml);
     VIR_FREE(doc);
     for (i = 0; i < actual; i++)
         VIR_FREE(names[i]);
@@ -12343,8 +12332,7 @@ cmdSnapshotParent(vshControl *ctl, const vshCmd *cmd)
 cleanup:
     VIR_FREE(parent);
     xmlXPathFreeContext(ctxt);
-    if (xmldoc)
-        xmlFreeDoc(xmldoc);
+    xmlFreeDoc(xmldoc);
     VIR_FREE(xml);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
