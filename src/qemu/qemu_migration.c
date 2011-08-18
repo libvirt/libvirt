@@ -602,15 +602,8 @@ qemuMigrationCookieXMLParseStr(qemuMigrationCookiePtr mig,
 
     VIR_DEBUG("xml=%s", NULLSTR(xml));
 
-    if (!(doc = virXMLParseString(xml, "qemumigration.xml")))
+    if (!(doc = virXMLParseStringCtxt(xml, "qemumigration.xml", &ctxt)))
         goto cleanup;
-
-    if ((ctxt = xmlXPathNewContext(doc)) == NULL) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    ctxt->node = xmlDocGetRootElement(doc);
 
     ret = qemuMigrationCookieXMLParse(mig, ctxt, flags);
 

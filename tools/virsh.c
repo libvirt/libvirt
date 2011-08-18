@@ -67,6 +67,8 @@ static char *progname;
 #define VSH_PROMPT_RW    "virsh # "
 #define VSH_PROMPT_RO    "virsh > "
 
+#define VIR_FROM_THIS VIR_FROM_NONE
+
 #define GETTIMEOFDAY(T) gettimeofday(T, NULL)
 #define DIFF_MSEC(T, U) \
         ((((int) ((T)->tv_sec - (U)->tv_sec)) * 1000000.0 + \
@@ -2901,16 +2903,11 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         }
 
-        xml = xmlReadDoc((const xmlChar *) cap_xml, "node.xml", NULL,
-                          XML_PARSE_NOENT | XML_PARSE_NONET |
-                          XML_PARSE_NOWARNING);
-
+        xml = virXMLParseStringCtxt(cap_xml, "node.xml", &ctxt);
         if (!xml) {
             vshError(ctl, "%s", _("unable to get node capabilities"));
             goto cleanup;
         }
-
-        ctxt = xmlXPathNewContext(xml);
         nodes_cnt = virXPathNodeSet("/capabilities/host/topology/cells/cell",
                                     ctxt, &nodes);
 
@@ -8404,12 +8401,8 @@ makeCloneXML(const char *origxml, const char *newname) {
     xmlChar *newxml = NULL;
     int size;
 
-    doc = xmlReadDoc((const xmlChar *) origxml, "domain.xml", NULL,
-                     XML_PARSE_NOENT | XML_PARSE_NONET | XML_PARSE_NOWARNING);
+    doc = virXMLParseStringCtxt(origxml, "domain.xml", &ctxt);
     if (!doc)
-        goto cleanup;
-    ctxt = xmlXPathNewContext(doc);
-    if (!ctxt)
         goto cleanup;
 
     obj = xmlXPathEval(BAD_CAST "/volume/name", ctxt);
@@ -10199,14 +10192,9 @@ cmdVNCDisplay(vshControl *ctl, const vshCmd *cmd)
     if (!doc)
         goto cleanup;
 
-    xml = xmlReadDoc((const xmlChar *) doc, "domain.xml", NULL,
-                     XML_PARSE_NOENT | XML_PARSE_NONET |
-                     XML_PARSE_NOWARNING);
+    xml = virXMLParseStringCtxt(doc, "domain.xml", &ctxt);
     VIR_FREE(doc);
     if (!xml)
-        goto cleanup;
-    ctxt = xmlXPathNewContext(xml);
-    if (!ctxt)
         goto cleanup;
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/devices/graphics[@type='vnc']/@port)", ctxt);
@@ -10272,14 +10260,9 @@ cmdTTYConsole(vshControl *ctl, const vshCmd *cmd)
     if (!doc)
         goto cleanup;
 
-    xml = xmlReadDoc((const xmlChar *) doc, "domain.xml", NULL,
-                     XML_PARSE_NOENT | XML_PARSE_NONET |
-                     XML_PARSE_NOWARNING);
+    xml = virXMLParseStringCtxt(doc, "domain.xml", &ctxt);
     VIR_FREE(doc);
     if (!xml)
-        goto cleanup;
-    ctxt = xmlXPathNewContext(xml);
-    if (!ctxt)
         goto cleanup;
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/devices/console/@tty)", ctxt);
@@ -10664,16 +10647,9 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     if (!doc)
         goto cleanup;
 
-    xml = xmlReadDoc((const xmlChar *) doc, "domain.xml", NULL,
-                     XML_PARSE_NOENT | XML_PARSE_NONET |
-                     XML_PARSE_NOWARNING);
+    xml = virXMLParseStringCtxt(doc, "domain.xml", &ctxt);
     VIR_FREE(doc);
     if (!xml) {
-        vshError(ctl, "%s", _("Failed to get interface information"));
-        goto cleanup;
-    }
-    ctxt = xmlXPathNewContext(xml);
-    if (!ctxt) {
         vshError(ctl, "%s", _("Failed to get interface information"));
         goto cleanup;
     }
@@ -11138,16 +11114,9 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     if (!doc)
         goto cleanup;
 
-    xml = xmlReadDoc((const xmlChar *) doc, "domain.xml", NULL,
-                     XML_PARSE_NOENT | XML_PARSE_NONET |
-                     XML_PARSE_NOWARNING);
+    xml = virXMLParseStringCtxt(doc, "domain.xml", &ctxt);
     VIR_FREE(doc);
     if (!xml) {
-        vshError(ctl, "%s", _("Failed to get disk information"));
-        goto cleanup;
-    }
-    ctxt = xmlXPathNewContext(xml);
-    if (!ctxt) {
         vshError(ctl, "%s", _("Failed to get disk information"));
         goto cleanup;
     }
@@ -11865,13 +11834,8 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
     if (!doc)
         goto cleanup;
 
-    xml = xmlReadDoc((const xmlChar *) doc, "domainsnapshot.xml", NULL,
-                     XML_PARSE_NOENT | XML_PARSE_NONET |
-                     XML_PARSE_NOWARNING);
+    xml = virXMLParseStringCtxt(doc, "domainsnapshot.xml", &ctxt);
     if (!xml)
-        goto cleanup;
-    ctxt = xmlXPathNewContext(xml);
-    if (!ctxt)
         goto cleanup;
 
     name = virXPathString("string(/domainsnapshot/name)", ctxt);
@@ -11974,13 +11938,8 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     if (!doc)
         goto cleanup;
 
-    xml = xmlReadDoc((const xmlChar *) doc, "domainsnapshot.xml", NULL,
-                     XML_PARSE_NOENT | XML_PARSE_NONET |
-                     XML_PARSE_NOWARNING);
+    xml = virXMLParseStringCtxt(doc, "domainsnapshot.xml", &ctxt);
     if (!xml)
-        goto cleanup;
-    ctxt = xmlXPathNewContext(xml);
-    if (!ctxt)
         goto cleanup;
 
     parsed_name = virXPathString("string(/domainsnapshot/name)", ctxt);
@@ -12056,16 +12015,9 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
             xmlDocPtr xmldoc = NULL;
             xmlXPathContextPtr ctxt = NULL;
 
-            xmldoc = xmlReadDoc((const xmlChar *) xml, "domainsnapshot.xml",
-                                NULL, XML_PARSE_NOENT | XML_PARSE_NONET |
-                                XML_PARSE_NOWARNING);
+            xmldoc = virXMLParseStringCtxt(xml, "domainsnapshot.xml", &ctxt);
             if (!xmldoc)
                 goto cleanup;
-            ctxt = xmlXPathNewContext(xmldoc);
-            if (!ctxt) {
-                xmlFreeDoc(xmldoc);
-                goto cleanup;
-            }
 
             name = virXPathString("string(/domainsnapshot/name)", ctxt);
             xmlXPathFreeContext(ctxt);
@@ -12165,13 +12117,8 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
             if (!doc)
                 continue;
 
-            xml = xmlReadDoc((const xmlChar *) doc, "domainsnapshot.xml", NULL,
-                             XML_PARSE_NOENT | XML_PARSE_NONET |
-                             XML_PARSE_NOWARNING);
+            xml = virXMLParseStringCtxt(doc, "domainsnapshot.xml", &ctxt);
             if (!xml)
-                continue;
-            ctxt = xmlXPathNewContext(xml);
-            if (!ctxt)
                 continue;
 
             state = virXPathString("string(/domainsnapshot/state)", ctxt);
@@ -12312,13 +12259,8 @@ cmdSnapshotParent(vshControl *ctl, const vshCmd *cmd)
     if (!xml)
         goto cleanup;
 
-    xmldoc = xmlReadDoc((const xmlChar *) xml, "domainsnapshot.xml", NULL,
-                        XML_PARSE_NOENT | XML_PARSE_NONET |
-                        XML_PARSE_NOWARNING);
+    xmldoc = virXMLParseStringCtxt(xml, "domainsnapshot.xml", &ctxt);
     if (!xmldoc)
-        goto cleanup;
-    ctxt = xmlXPathNewContext(xmldoc);
-    if (!ctxt)
         goto cleanup;
 
     parent = virXPathString("string(/domainsnapshot/parent/name)", ctxt);

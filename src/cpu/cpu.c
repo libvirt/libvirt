@@ -1,7 +1,7 @@
 /*
  * cpu.c: internal functions for CPU manipulation
  *
- * Copyright (C) 2009--2010 Red Hat, Inc.
+ * Copyright (C) 2009-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -76,15 +76,8 @@ cpuCompareXML(virCPUDefPtr host,
 
     VIR_DEBUG("host=%p, xml=%s", host, NULLSTR(xml));
 
-    if (!(doc = virXMLParseString(xml, "cpu.xml")))
+    if (!(doc = virXMLParseStringCtxt(xml, "cpu.xml", &ctxt)))
         goto cleanup;
-
-    if ((ctxt = xmlXPathNewContext(doc)) == NULL) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    ctxt->node = xmlDocGetRootElement(doc);
 
     cpu = virCPUDefParseXML(ctxt->node, ctxt, VIR_CPU_TYPE_AUTO);
     if (cpu == NULL)
@@ -311,13 +304,8 @@ cpuBaselineXML(const char **xmlCPUs,
         goto no_memory;
 
     for (i = 0; i < ncpus; i++) {
-        if (!(doc = virXMLParseString(xmlCPUs[i], "cpu.xml")))
+        if (!(doc = virXMLParseStringCtxt(xmlCPUs[i], "cpu.xml", &ctxt)))
             goto error;
-
-        if ((ctxt = xmlXPathNewContext(doc)) == NULL)
-            goto no_memory;
-
-        ctxt->node = xmlDocGetRootElement(doc);
 
         cpus[i] = virCPUDefParseXML(ctxt->node, ctxt, VIR_CPU_TYPE_HOST);
         if (cpus[i] == NULL)

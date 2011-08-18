@@ -96,11 +96,9 @@ cpuTestLoadXML(const char *arch, const char *name)
     if (virAsprintf(&xml, "%s/cputestdata/%s-%s.xml", abs_srcdir, arch, name) < 0)
         goto cleanup;
 
-    if (!(doc = virXMLParseFile(xml)) ||
-        !(ctxt = xmlXPathNewContext(doc)))
+    if (!(doc = virXMLParseFileCtxt(xml, &ctxt)))
         goto cleanup;
 
-    ctxt->node = xmlDocGetRootElement(doc);
     cpu = virCPUDefParseXML(ctxt->node, ctxt, VIR_CPU_TYPE_AUTO);
 
 cleanup:
@@ -127,11 +125,8 @@ cpuTestLoadMultiXML(const char *arch,
     if (virAsprintf(&xml, "%s/cputestdata/%s-%s.xml", abs_srcdir, arch, name) < 0)
         goto cleanup;
 
-    if (!(doc = virXMLParseFile(xml)) ||
-        !(ctxt = xmlXPathNewContext(doc)))
+    if (!(doc = virXMLParseFileCtxt(xml, &ctxt)))
         goto error;
-
-    ctxt->node = xmlDocGetRootElement(doc);
 
     n = virXPathNodeSet("/cpuTest/cpu", ctxt, &nodes);
     if (n <= 0 || !(cpus = calloc(n, sizeof(virCPUDefPtr))))

@@ -910,18 +910,11 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
     (*response)->content = virBufferContentAndReset(&buffer);
 
     if ((*response)->responseCode == 500 || (*response)->responseCode == 200) {
-        (*response)->document = virXMLParseString((*response)->content,
-                                                  "esx.xml");
+        (*response)->document = virXMLParseStringCtxt((*response)->content,
+                                                      "esx.xml",
+                                                      &xpathContext);
 
         if ((*response)->document == NULL) {
-            goto cleanup;
-        }
-
-        xpathContext = xmlXPathNewContext((*response)->document);
-
-        if (xpathContext == NULL) {
-            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                         _("Could not create XPath context"));
             goto cleanup;
         }
 

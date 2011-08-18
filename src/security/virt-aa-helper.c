@@ -640,23 +640,15 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
     int rc = -1;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    xmlNodePtr root;
 
-    if (!(xml = virXMLParseString(xmlStr, "domain.xml"))) {
+    if (!(xml = virXMLParseStringCtxt(xmlStr, "domain.xml", &ctxt))) {
         goto cleanup;
     }
 
-    root = xmlDocGetRootElement(xml);
-    if (!xmlStrEqual(root->name, BAD_CAST "domain")) {
+    if (!xmlStrEqual(ctxt->node->name, BAD_CAST "domain")) {
         vah_error(NULL, 0, _("incorrect root element"));
         goto cleanup;
     }
-
-    if ((ctxt = xmlXPathNewContext(xml)) == NULL) {
-        vah_error(ctl, 0, _("could not allocate memory"));
-        goto cleanup;
-    }
-    ctxt->node = root;
 
     /* Quick sanity check for some required elements */
     if (verify_xpath_context(ctxt) != 0)

@@ -505,13 +505,7 @@ virStoragePoolDefParseSourceString(const char *srcSpec,
     xmlXPathContextPtr xpath_ctxt = NULL;
     virStoragePoolSourcePtr def = NULL, ret = NULL;
 
-    if (!(doc = virXMLParseString(srcSpec, "srcSpec.xml"))) {
-        goto cleanup;
-    }
-
-    xpath_ctxt = xmlXPathNewContext(doc);
-    if (xpath_ctxt == NULL) {
-        virReportOOMError();
+    if (!(doc = virXMLParseStringCtxt(srcSpec, "srcSpec.xml", &xpath_ctxt))) {
         goto cleanup;
     }
 

@@ -5385,17 +5385,10 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
     xmlXPathContextPtr ctxt = NULL;
     virDomainDeviceDefPtr dev = NULL;
 
-    if (!(xml = virXMLParseString(xmlStr, "device.xml"))) {
+    if (!(xml = virXMLParseStringCtxt(xmlStr, "device.xml", &ctxt))) {
         goto error;
     }
-    node = xmlDocGetRootElement(xml);
-
-    ctxt = xmlXPathNewContext(xml);
-    if (ctxt == NULL) {
-        virReportOOMError();
-        goto error;
-    }
-    ctxt->node = xmlDocGetRootElement(xml);
+    node = ctxt->node;
 
     if (VIR_ALLOC(dev) < 0) {
         virReportOOMError();
@@ -10968,15 +10961,9 @@ virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
     char *creation = NULL, *state = NULL;
     struct timeval tv;
 
-    xml = virXMLParse(NULL, xmlStr, "domainsnapshot.xml");
+    xml = virXMLParseCtxt(NULL, xmlStr, "domainsnapshot.xml", &ctxt);
     if (!xml) {
         return NULL;
-    }
-
-    ctxt = xmlXPathNewContext(xml);
-    if (ctxt == NULL) {
-        virReportOOMError();
-        goto cleanup;
     }
 
     if (VIR_ALLOC(def) < 0) {
@@ -10984,7 +10971,6 @@ virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
         goto cleanup;
     }
 
-    ctxt->node = xmlDocGetRootElement(xml);
     if (!xmlStrEqual(ctxt->node->name, BAD_CAST "domainsnapshot")) {
         virDomainReportError(VIR_ERR_XML_ERROR, "%s", _("domainsnapshot"));
         goto cleanup;
