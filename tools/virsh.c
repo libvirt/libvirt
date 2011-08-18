@@ -11996,14 +11996,44 @@ vshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
 {
     bool ret = false;
     virDomainSnapshotPtr snapshot;
+    bool halt = false;
     char *doc = NULL;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
     char *name = NULL;
 
     snapshot = virDomainSnapshotCreateXML(dom, buffer, flags);
+
+    /* Emulate --halt on older servers.  */
+    if (!snapshot && last_error->code == VIR_ERR_INVALID_ARG &&
+        (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT)) {
+        int persistent;
+
+        virFreeError(last_error);
+        last_error = NULL;
+        persistent = virDomainIsPersistent(dom);
+        if (persistent < 0) {
+            virshReportError(ctl);
+            goto cleanup;
+        }
+        if (!persistent) {
+            vshError(ctl, "%s",
+                     _("cannot halt after snapshot of transient domain"));
+            goto cleanup;
+        }
+        if (virDomainIsActive(dom) == 1)
+            halt = true;
+        flags &= ~VIR_DOMAIN_SNAPSHOT_CREATE_HALT;
+        snapshot = virDomainSnapshotCreateXML(dom, buffer, flags);
+    }
+
     if (snapshot == NULL)
         goto cleanup;
+
+    if (halt && virDomainDestroy(dom) < 0) {
+        virshReportError(ctl);
+        goto cleanup;
+    }
 
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)
         doc = vshStrdup(ctl, buffer);
@@ -12055,6 +12085,7 @@ static const vshCmdOptDef opts_snapshot_create[] = {
     {"redefine", VSH_OT_BOOL, 0, N_("redefine metadata for existing snapshot")},
     {"current", VSH_OT_BOOL, 0, N_("with redefine, set current snapshot")},
     {"no-metadata", VSH_OT_BOOL, 0, N_("take snapshot but create no metadata")},
+    {"halt", VSH_OT_BOOL, 0, N_("halt domain after snapshot is created")},
     {NULL, 0, 0, NULL}
 };
 
@@ -12073,6 +12104,8 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT;
     if (vshCommandOptBool(cmd, "no-metadata"))
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA;
+    if (vshCommandOptBool(cmd, "halt"))
+        flags |= VIR_DOMAIN_SNAPSHOT_CREATE_HALT;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -12123,6 +12156,7 @@ static const vshCmdOptDef opts_snapshot_create_as[] = {
     {"description", VSH_OT_DATA, 0, N_("description of snapshot")},
     {"print-xml", VSH_OT_BOOL, 0, N_("print XML document rather than create")},
     {"no-metadata", VSH_OT_BOOL, 0, N_("take snapshot but create no metadata")},
+    {"halt", VSH_OT_BOOL, 0, N_("halt domain after snapshot is created")},
     {NULL, 0, 0, NULL}
 };
 
@@ -12139,6 +12173,8 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "no-metadata"))
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA;
+    if (vshCommandOptBool(cmd, "halt"))
+        flags |= VIR_DOMAIN_SNAPSHOT_CREATE_HALT;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -12167,6 +12203,11 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (vshCommandOptBool(cmd, "print-xml")) {
+        if (vshCommandOptBool(cmd, "halt")) {
+            vshError(ctl, "%s",
+                     _("--print-xml and --halt are mutually exclusive"));
+            goto cleanup;
+        }
         vshPrint(ctl, "%s\n",  buffer);
         ret = true;
         goto cleanup;

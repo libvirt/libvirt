@@ -1702,7 +1702,7 @@ used to represent properties of snapshots.
 =over 4
 
 =item B<snapshot-create> I<domain> [I<xmlfile>] {[I<--redefine> [I<--current>]]
-| [I<--no-metadata>]}
+| [I<--no-metadata>] [I<--halt>]}
 
 Create a snapshot for domain I<domain> with the properties specified in
 I<xmlfile>.  Normally, the only properties settable for a domain snapshot
@@ -1710,6 +1710,9 @@ are the <name> and <description> elements; the rest of the fields are
 ignored, and automatically filled in by libvirt.  If I<xmlfile> is
 completely omitted, then libvirt will choose a value for all fields.
 The new snapshot will become current, as listed by B<snapshot-current>.
+
+If I<--halt> is specified, the domain will be left in an inactive state
+after the snapshot is created.
 
 If I<--redefine> is specified, then all XML elements produced by
 B<snapshot-dumpxml> are valid; this can be used to migrate snapshot
@@ -1732,13 +1735,15 @@ a persistent domain.  However, for transient domains, snapshot
 metadata is silently lost when the domain quits running (whether
 by command such as B<destroy> or by internal guest action).
 
-=item B<snapshot-create-as> I<domain> {[I<--print-xml>] | [I<--no-metadata>]}
-[I<name>] [I<description>]
+=item B<snapshot-create-as> I<domain> {[I<--print-xml>]
+| [I<--no-metadata>] [I<--halt>]} [I<name>] [I<description>]
 
 Create a snapshot for domain I<domain> with the given <name> and
 <description>; if either value is omitted, libvirt will choose a
 value.  If I<--print-xml> is specified, then XML appropriate for
 I<snapshot-create> is output, rather than actually creating a snapshot.
+Otherwise, if I<--halt> is specified, the domain will be left in an
+inactive state after the snapshot is created.
 
 If I<--no-metadata> is specified, then the snapshot data is created,
 but any metadata is immediately discarded (that is, libvirt does not
