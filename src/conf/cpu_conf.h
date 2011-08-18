@@ -38,6 +38,16 @@ enum virCPUType {
 
 VIR_ENUM_DECL(virCPU)
 
+enum virCPUMode {
+    VIR_CPU_MODE_CUSTOM,
+    VIR_CPU_MODE_HOST_MODEL,
+    VIR_CPU_MODE_HOST_PASSTHROUGH,
+
+    VIR_CPU_MODE_LAST
+};
+
+VIR_ENUM_DECL(virCPUMode)
+
 enum virCPUMatch {
     VIR_CPU_MATCH_MINIMUM,
     VIR_CPU_MATCH_EXACT,
@@ -89,6 +99,7 @@ typedef struct _virCPUDef virCPUDef;
 typedef virCPUDef *virCPUDefPtr;
 struct _virCPUDef {
     int type;           /* enum virCPUType */
+    int mode;           /* enum virCPUMode */
     int match;          /* enum virCPUMatch */
     char *arch;
     char *model;
@@ -123,14 +134,17 @@ virCPUDefIsEqual(virCPUDefPtr src,
                  virCPUDefPtr dst);
 
 char *
-virCPUDefFormat(virCPUDefPtr def);
+virCPUDefFormat(virCPUDefPtr def,
+                unsigned int flags);
 
 int
 virCPUDefFormatBuf(virBufferPtr buf,
-                   virCPUDefPtr def);
+                   virCPUDefPtr def,
+                   unsigned int flags);
 int
 virCPUDefFormatBufFull(virBufferPtr buf,
-                       virCPUDefPtr def);
+                       virCPUDefPtr def,
+                       unsigned int flags);
 
 int
 virCPUDefAddFeature(virCPUDefPtr cpu,

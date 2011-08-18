@@ -112,6 +112,7 @@ virCapsPtr testQemuCapsInit(void) {
     };
     static virCPUDef host_cpu = {
         VIR_CPU_TYPE_HOST,      /* type */
+        0,                      /* mode */
         0,                      /* match */
         (char *) "x86_64",      /* arch */
         (char *) "core2duo",    /* model */

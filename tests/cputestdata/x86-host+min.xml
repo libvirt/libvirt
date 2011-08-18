@@ -1,4 +1,4 @@
-<cpu match='exact'>
+<cpu mode='custom' match='exact'>
   <model fallback='allow'>Penryn</model>
   <feature policy='require' name='dca'/>
   <feature policy='require' name='xtpr'/>

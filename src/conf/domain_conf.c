@@ -11639,7 +11639,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     }
 
     virBufferAdjustIndent(buf, 2);
-    if (virCPUDefFormatBufFull(buf, def->cpu) < 0)
+    if (virCPUDefFormatBufFull(buf, def->cpu, flags) < 0)
         goto cleanup;
     virBufferAdjustIndent(buf, -2);
 

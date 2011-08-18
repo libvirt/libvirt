@@ -691,7 +691,7 @@ virCapabilitiesFormatXML(virCapsPtr caps)
     }
 
     virBufferAdjustIndent(&xml, 6);
-    virCPUDefFormatBuf(&xml, caps->host.cpu);
+    virCPUDefFormatBuf(&xml, caps->host.cpu, 0);
     virBufferAdjustIndent(&xml, -6);
 
     virBufferAddLit(&xml, "    </cpu>\n");

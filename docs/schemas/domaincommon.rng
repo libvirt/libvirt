@@ -2538,6 +2538,20 @@
           </interleave>
         </group>
         <group>
+          <ref name="cpuMode"/>
+          <interleave>
+            <optional>
+              <ref name="cpuModel"/>
+            </optional>
+            <optional>
+              <ref name="cpuNuma"/>
+            </optional>
+          </interleave>
+        </group>
+        <group>
+          <optional>
+            <ref name="cpuMode"/>
+          </optional>
           <ref name="cpuMatch"/>
           <interleave>
             <ref name="cpuModel"/>
@@ -2557,6 +2571,16 @@
         </group>
       </choice>
     </element>
+  </define>
+
+  <define name="cpuMode">
+    <attribute name="mode">
+      <choice>
+        <value>custom</value>
+        <value>host-model</value>
+        <value>host-passthrough</value>
+      </choice>
+    </attribute>
   </define>
 
   <define name="cpuMatch">
@@ -2579,7 +2603,10 @@
           </choice>
         </attribute>
       </optional>
-      <text/>
+      <choice>
+        <text/>
+        <empty/>
+      </choice>
     </element>
   </define>
 

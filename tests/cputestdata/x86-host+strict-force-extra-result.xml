@@ -1,4 +1,4 @@
-<cpu match='exact'>
+<cpu mode='custom' match='exact'>
   <arch>x86_64</arch>
   <model fallback='allow'>Penryn</model>
   <feature policy='require' name='3dnow'/>

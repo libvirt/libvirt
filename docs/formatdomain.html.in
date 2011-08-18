@@ -566,6 +566,17 @@
   &lt;/cpu&gt;
   ...</pre>
 
+<pre>
+  &lt;cpu mode='host-model'&gt;
+    &lt;model fallback='forbid'/&gt;
+    &lt;topology sockets='1' cores='2' threads='1'/&gt;
+  &lt;/cpu&gt;
+  ...</pre>
+
+<pre>
+  &lt;cpu mode='host-passthrough'/&gt;
+  ...</pre>
+
     <p>
       In case no restrictions need to be put on CPU model and its features, a
       simpler <code>cpu</code> element can be used.
@@ -603,6 +614,55 @@
 
         <span class="since">Since 0.8.5</span> the <code>match</code>
         attribute can be omitted and will default to <code>exact</code>.
+
+        <span class="since">Since 0.9.10</span>, an optional <code>mode</code>
+        attribute may be used to make it easier to configure a guest CPU to be
+        as close to host CPU as possible. Possible values for the
+        <code>mode</code> attribute are:
+
+        <dl>
+          <dt><code>custom</code></dt>
+          <dd>In this mode, the <code>cpu</code> element describes the CPU
+          that should be presented to the guest. This is the default when no
+          <code>mode</code> attribute is specified. This mode makes it so that
+          a persistent guest will see the same hardware no matter what host
+          the guest is booted on.</dd>
+          <dt><code>host-model</code></dt>
+          <dd>The <code>host-model</code> mode is essentially a shortcut to
+          copying host CPU definition from capabilities XML into domain XML.
+          Since the CPU definition is copied just before starting a domain,
+          exactly the same XML can be used on different hosts while still
+          providing the best guest CPU each host supports. Neither
+          <code>match</code> attribute nor any <code>feature</code> elements
+          can be used in this mode. Specifying CPU model is not supported
+          either, but <code>model</code>'s <code>fallback</code> attribute may
+          still be used. Libvirt does not model every aspect of each CPU so
+          the guest CPU will not match the host CPU exactly. On the other
+          hand, the ABI provided to the guest is reproducible. During
+          migration, complete CPU model definition is transferred to the
+          destination host so the migrated guest will see exactly the same CPU
+          model even if the destination host contains more capable CPUs for
+          the running instance of the guest; but shutting down and restarting
+          the guest may present different hardware to the guest according to
+          the capabilities of the new host.</dd>
+          <dt><code>host-passthrough</code></dt>
+          <dd>With this mode, the CPU visible to the guest should be exactly
+          the same as the host CPU even in the aspects that libvirt does not
+          understand. Though the downside of this mode is that the guest
+          environment cannot be reproduced on different hardware. Thus, if you
+          hit any bugs, you are on your own. Neither <code>model</code> nor
+          <code>feature</code> elements are allowed in this mode.</dd>
+        </dl>
+
+        In both <code>host-model</code> and <code>host-passthrough</code>
+        mode, the real (approximate in <code>host-passthrough</code> mode) CPU
+        definition which would be used on current host can be determined by
+        specifying <code>VIR_DOMAIN_XML_UPDATE_CPU</code> flag when calling
+        <code>virDomainGetXMLDesc</code> API. When running a guest that might
+        be prone to operating system reactivation when presented with
+        different hardware, and which will be migrated between hosts with
+        different capabilities, you can use this output to rewrite XML to the
+        <code>custom</code> mode for more robust migration.
       </dd>
 
       <dt><code>model</code></dt>

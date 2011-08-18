@@ -1,4 +1,4 @@
-<cpu match='exact'>
+<cpu mode='custom' match='exact'>
   <arch>x86_64</arch>
   <model fallback='allow'>qemu64</model>
   <feature policy='require' name='lahf_lm'/>
