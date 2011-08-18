@@ -388,6 +388,7 @@ virDomainSmartcardDefForeach;
 virDomainSmartcardDefFree;
 virDomainSmartcardTypeFromString;
 virDomainSmartcardTypeToString;
+virDomainSnapshotAlignDisks;
 virDomainSnapshotAssignDef;
 virDomainSnapshotDefFormat;
 virDomainSnapshotDefFree;

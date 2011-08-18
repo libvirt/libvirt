@@ -1391,7 +1391,20 @@ enum virDomainTaintFlags {
     VIR_DOMAIN_TAINT_LAST
 };
 
-/* Snapshot state */
+/* Items related to snapshot state */
+
+/* Stores disk-snapshot information */
+typedef struct _virDomainSnapshotDiskDef virDomainSnapshotDiskDef;
+typedef virDomainSnapshotDiskDef *virDomainSnapshotDiskDefPtr;
+struct _virDomainSnapshotDiskDef {
+    char *name; /* name matching the <target dev='...' of the domain */
+    int index; /* index within snapshot->dom->disks that matches name */
+    int snapshot; /* enum virDomainDiskSnapshot */
+    char *file; /* new source file when snapshot is external */
+    char *driverType; /* file format type of new file */
+};
+
+/* Stores the complete snapshot metadata */
 typedef struct _virDomainSnapshotDef virDomainSnapshotDef;
 typedef virDomainSnapshotDef *virDomainSnapshotDefPtr;
 struct _virDomainSnapshotDef {
@@ -1401,6 +1414,10 @@ struct _virDomainSnapshotDef {
     char *parent;
     long long creationTime; /* in seconds */
     int state; /* enum virDomainSnapshotState */
+
+    size_t ndisks; /* should not exceed dom->ndisks */
+    virDomainSnapshotDiskDef *disks;
+
     virDomainDefPtr dom;
 
     /* Internal use.  */
@@ -1426,7 +1443,8 @@ struct _virDomainSnapshotObjList {
 
 typedef enum {
     VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE = 1 << 0,
-    VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL = 1 << 1,
+    VIR_DOMAIN_SNAPSHOT_PARSE_DISKS    = 1 << 1,
+    VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL = 1 << 2,
 } virDomainSnapshotParseFlags;
 
 virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
@@ -1438,6 +1456,9 @@ char *virDomainSnapshotDefFormat(char *domain_uuid,
                                  virDomainSnapshotDefPtr def,
                                  unsigned int flags,
                                  int internal);
+int virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapshot,
+                                int default_snapshot,
+                                bool require_match);
 virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr snapshots,
                                                    const virDomainSnapshotDefPtr def);
 

@@ -31,6 +31,13 @@
           </element>
         </optional>
         <optional>
+          <element name='disks'>
+            <zeroOrMore>
+              <ref name='disksnapshot'/>
+            </zeroOrMore>
+          </element>
+        </optional>
+        <optional>
           <element name='active'>
             <choice>
               <value>0</value>
@@ -70,6 +77,51 @@
       <value>crashed</value>
       <value>disk-snapshot</value>
     </choice>
+  </define>
+
+  <define name='disksnapshot'>
+    <element name='disk'>
+      <attribute name='name'>
+        <ref name='deviceName'/>
+      </attribute>
+      <choice>
+        <attribute name='snapshot'>
+          <value>no</value>
+        </attribute>
+        <attribute name='snapshot'>
+          <value>internal</value>
+        </attribute>
+        <group>
+          <optional>
+            <attribute name='snapshot'>
+              <value>external</value>
+            </attribute>
+          </optional>
+          <interleave>
+            <optional>
+              <element name='driver'>
+                <optional>
+                  <attribute name='type'>
+                    <ref name='genericName'/>
+                  </attribute>
+                </optional>
+                <empty/>
+              </element>
+            </optional>
+            <optional>
+              <element name='source'>
+                <optional>
+                  <attribute name='file'>
+                    <ref name='absFilePath'/>
+                  </attribute>
+                </optional>
+                <empty/>
+              </element>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
   </define>
 
 </grammar>

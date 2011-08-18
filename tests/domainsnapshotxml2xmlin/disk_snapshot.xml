@@ -1,0 +1,16 @@
+<domainsnapshot>
+  <name>my snap name</name>
+  <description>!@#$%^</description>
+  <disks>
+    <disk name='hda'/>
+    <disk name='hdb' snapshot='no'/>
+    <disk name='hdc' snapshot='internal'/>
+    <disk name='hdd' snapshot='external'>
+      <source/>
+      <driver type='qed'/>
+    </disk>
+    <disk name='hde' snapshot='external'>
+      <source file='/path/to/new'/>
+    </disk>
+  </disks>
+</domainsnapshot>
