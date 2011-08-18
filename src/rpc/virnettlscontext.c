@@ -679,9 +679,6 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
 
     ctxt->refs = 1;
 
-    /* Initialise GnuTLS. */
-    gnutls_global_init();
-
     if ((gnutlsdebug = getenv("LIBVIRT_GNUTLS_DEBUG")) != NULL) {
         int val;
         if (virStrToLong_i(gnutlsdebug, NULL, 10, &val) < 0)
@@ -1398,4 +1395,26 @@ void virNetTLSSessionFree(virNetTLSSessionPtr sess)
     virMutexUnlock(&sess->lock);
     virMutexDestroy(&sess->lock);
     VIR_FREE(sess);
+}
+
+/*
+ * This function MUST be called before any
+ * virNetTLS* because it initializes
+ * underlying GnuTLS library. According to
+ * it's documentation, it's safe to be called
+ * many times, but is not thread safe. Each
+ * call SHOULD be later followed by
+ * virNetTLSContextDeinit.
+ */
+void virNetTLSInit(void)
+{
+    gnutls_global_init();
+}
+
+/*
+ * See virNetTLSInit
+ */
+void virNetTLSDeinit(void)
+{
+    gnutls_global_deinit();
 }
