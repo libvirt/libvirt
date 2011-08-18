@@ -75,7 +75,8 @@ VIR_ENUM_IMPL(virDomainTaint, VIR_DOMAIN_TAINT_LAST,
               "high-privileges",
               "shell-scripts",
               "disk-probing",
-              "external-launch");
+              "external-launch",
+              "host-cpu");
 
 VIR_ENUM_IMPL(virDomainVirt, VIR_DOMAIN_VIRT_LAST,
               "qemu",
