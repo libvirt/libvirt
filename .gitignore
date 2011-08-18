@@ -53,6 +53,7 @@
 /po/*
 /proxy/
 /python/generator.py.stamp
+/sc_*
 /src/libvirt_iohelper
 /src/locking/qemu-sanlock.conf
 /src/remote/*_client_bodies.h
