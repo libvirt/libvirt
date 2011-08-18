@@ -1,6 +1,6 @@
 #! /bin/sh
 # Print a version string.
-scriptversion=2011-06-22.06; # UTC
+scriptversion=2011-08-11.17; # UTC
 
 # Bootstrap this package from checked-out sources.
 
@@ -800,20 +800,7 @@ slurp() {
         echo "$me: $dir/$file overrides $1/$dir/$file"
       else
         copied=$copied$sep$file; sep=$nl
-        if test $file = gettext.m4; then
-          echo "$me: patching m4/gettext.m4 to remove need for intl/* ..."
-          rm -f $dir/$file
-          sed '
-            /^AC_DEFUN(\[AM_INTL_SUBDIR],/,/^]/c\
-              AC_DEFUN([AM_INTL_SUBDIR], [])
-            /^AC_DEFUN(\[gt_INTL_SUBDIR_CORE],/,/^]/c\
-              AC_DEFUN([gt_INTL_SUBDIR_CORE], [])
-            $a\
-              AC_DEFUN([gl_LOCK_EARLY], [])
-          ' $1/$dir/$file >$dir/$file
-        else
-          cp_mark_as_generated $1/$dir/$file $dir/$file
-        fi
+        cp_mark_as_generated $1/$dir/$file $dir/$file
       fi || exit
     done
 
