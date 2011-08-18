@@ -424,6 +424,13 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
             VIR_FORCE_CLOSE(fd);
             goto cleanup;
         }
+        if (fsync(fd) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot flush header of device'%s'"),
+                                 pool->def->source.devices[i].path);
+            VIR_FORCE_CLOSE(fd);
+            goto cleanup;
+        }
         if (VIR_CLOSE(fd) < 0) {
             virReportSystemError(errno,
                                  _("cannot close device '%s'"),

@@ -1777,6 +1777,14 @@ storageWipeExtent(virStorageVolDefPtr vol,
         remaining -= written;
     }
 
+    if (fdatasync(fd) < 0) {
+        ret = -errno;
+        virReportSystemError(errno,
+                             _("cannot sync data to volume with path '%s'"),
+                             vol->target.path);
+        goto out;
+    }
+
     VIR_DEBUG("Wrote %zu bytes to volume with path '%s'",
               *bytes_wiped, vol->target.path);
 

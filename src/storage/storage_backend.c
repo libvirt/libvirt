@@ -208,6 +208,14 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
         } while ((amtleft -= interval) > 0);
     }
 
+    if (fdatasync(fd) < 0) {
+        ret = -errno;
+        virReportSystemError(errno, _("cannot sync data to file '%s'"),
+                             vol->target.path);
+        goto cleanup;
+    }
+
+
     if (VIR_CLOSE(inputfd) < 0) {
         ret = -errno;
         virReportSystemError(errno,
