@@ -11915,6 +11915,54 @@ cmdQuit(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     return true;
 }
 
+/* Helper for snapshot-create and snapshot-create-as */
+static bool
+vshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
+                  unsigned int flags, const char *from)
+{
+    bool ret = false;
+    virDomainSnapshotPtr snapshot;
+    char *doc = NULL;
+    xmlDocPtr xml = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    char *name = NULL;
+
+    snapshot = virDomainSnapshotCreateXML(dom, buffer, flags);
+    if (snapshot == NULL)
+        goto cleanup;
+
+    doc = virDomainSnapshotGetXMLDesc(snapshot, 0);
+    if (!doc)
+        goto cleanup;
+
+    xml = virXMLParseStringCtxt(doc, "domainsnapshot.xml", &ctxt);
+    if (!xml)
+        goto cleanup;
+
+    name = virXPathString("string(/domainsnapshot/name)", ctxt);
+    if (!name) {
+        vshError(ctl, "%s",
+                 _("Could not find 'name' element in domain snapshot XML"));
+        goto cleanup;
+    }
+
+    if (from)
+        vshPrint(ctl, _("Domain snapshot %s created from '%s'"), name, from);
+    else
+        vshPrint(ctl, _("Domain snapshot %s created"), name);
+
+    ret = true;
+
+cleanup:
+    VIR_FREE(name);
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(xml);
+    if (snapshot)
+        virDomainSnapshotFree(snapshot);
+    VIR_FREE(doc);
+    return ret;
+}
+
 /*
  * "snapshot-create" command
  */
@@ -11937,11 +11985,6 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     const char *from = NULL;
     char *buffer = NULL;
-    virDomainSnapshotPtr snapshot = NULL;
-    xmlDocPtr xml = NULL;
-    xmlXPathContextPtr ctxt = NULL;
-    char *doc = NULL;
-    char *name = NULL;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -11967,39 +12010,9 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    snapshot = virDomainSnapshotCreateXML(dom, buffer, 0);
-    if (snapshot == NULL)
-        goto cleanup;
-
-    doc = virDomainSnapshotGetXMLDesc(snapshot, 0);
-    if (!doc)
-        goto cleanup;
-
-    xml = virXMLParseStringCtxt(doc, "domainsnapshot.xml", &ctxt);
-    if (!xml)
-        goto cleanup;
-
-    name = virXPathString("string(/domainsnapshot/name)", ctxt);
-    if (!name) {
-        vshError(ctl, "%s",
-                 _("Could not find 'name' element in domain snapshot XML"));
-        goto cleanup;
-    }
-
-    vshPrint(ctl, _("Domain snapshot %s created"), name);
-    if (from)
-        vshPrint(ctl, _(" from '%s'"), from);
-    vshPrint(ctl, "\n");
-
-    ret = true;
+    ret = vshSnapshotCreate(ctl, dom, buffer, 0, from);
 
 cleanup:
-    VIR_FREE(name);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xml);
-    if (snapshot)
-        virDomainSnapshotFree(snapshot);
-    VIR_FREE(doc);
     VIR_FREE(buffer);
     if (dom)
         virDomainFree(dom);
@@ -12030,13 +12043,8 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     bool ret = false;
     char *buffer = NULL;
-    virDomainSnapshotPtr snapshot = NULL;
-    xmlDocPtr xml = NULL;
-    xmlXPathContextPtr ctxt = NULL;
-    char *doc = NULL;
     const char *name = NULL;
     const char *desc = NULL;
-    char *parsed_name = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
@@ -12071,36 +12079,9 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    snapshot = virDomainSnapshotCreateXML(dom, buffer, 0);
-    if (snapshot == NULL)
-        goto cleanup;
-
-    doc = virDomainSnapshotGetXMLDesc(snapshot, 0);
-    if (!doc)
-        goto cleanup;
-
-    xml = virXMLParseStringCtxt(doc, "domainsnapshot.xml", &ctxt);
-    if (!xml)
-        goto cleanup;
-
-    parsed_name = virXPathString("string(/domainsnapshot/name)", ctxt);
-    if (!parsed_name) {
-        vshError(ctl, "%s",
-                 _("Could not find 'name' element in domain snapshot XML"));
-        goto cleanup;
-    }
-
-    vshPrint(ctl, _("Domain snapshot %s created\n"), name ? name : parsed_name);
-
-    ret = true;
+    ret = vshSnapshotCreate(ctl, dom, buffer, 0, NULL);
 
 cleanup:
-    VIR_FREE(parsed_name);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xml);
-    if (snapshot)
-        virDomainSnapshotFree(snapshot);
-    VIR_FREE(doc);
     VIR_FREE(buffer);
     if (dom)
         virDomainFree(dom);
