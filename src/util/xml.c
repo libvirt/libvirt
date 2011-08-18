@@ -662,6 +662,7 @@ catchXMLError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
  * @filename: file to be parsed or NULL if string parsing is requested
  * @xmlStr: XML string to be parsed in case filename is NULL
  * @url: URL of XML document for string parser
+ * @ctxt: optional pointer to populate with new context pointer
  *
  * Parse XML document provided either as a file or a string. The function
  * guarantees that the XML document contains a root element.
@@ -672,7 +673,8 @@ xmlDocPtr
 virXMLParseHelper(int domcode,
                   const char *filename,
                   const char *xmlStr,
-                  const char *url)
+                  const char *url,
+                  xmlXPathContextPtr *ctxt)
 {
     struct virParserData private;
     xmlParserCtxtPtr pctxt;
@@ -680,8 +682,10 @@ virXMLParseHelper(int domcode,
 
     /* Set up a parser context so we can catch the details of XML errors. */
     pctxt = xmlNewParserCtxt();
-    if (!pctxt || !pctxt->sax)
+    if (!pctxt || !pctxt->sax) {
+        virReportOOMError();
         goto error;
+    }
 
     private.domcode = domcode;
     pctxt->_private = &private;
@@ -705,6 +709,15 @@ virXMLParseHelper(int domcode,
         goto error;
     }
 
+    if (ctxt) {
+        *ctxt = xmlXPathNewContext(xml);
+        if (!*ctxt) {
+            virReportOOMError();
+            goto error;
+        }
+        (*ctxt)->node = xmlDocGetRootElement(xml);
+    }
+
 cleanup:
     xmlFreeParserCtxt(pctxt);
 
@@ -719,40 +732,4 @@ error:
                               "%s", _("failed to parse xml document"));
     }
     goto cleanup;
-}
-
-/**
- * virXMLParseStrHelper:
- * @domcode: error domain of the caller, usually VIR_FROM_THIS
- * @xmlStr: XML string to be parsed in case filename is NULL
- * @url: URL of XML document for string parser
- *
- * Parse XML document provided as a string. The function guarantees that
- * the XML document contains a root element.
- *
- * Returns parsed XML document.
- */
-xmlDocPtr
-virXMLParseStrHelper(int domcode,
-                     const char *xmlStr,
-                     const char *url)
-{
-    return virXMLParseHelper(domcode, NULL, xmlStr, url);
-}
-
-/**
- * virXMLParseFileHelper:
- * @domcode: error domain of the caller, usually VIR_FROM_THIS
- * @filename: file to be parsed
- *
- * Parse XML document provided as a file. The function guarantees that
- * the XML document contains a root element.
- *
- * Returns parsed XML document.
- */
-xmlDocPtr
-virXMLParseFileHelper(int domcode,
-                      const char *filename)
-{
-    return virXMLParseHelper(domcode, filename, NULL, NULL);
 }

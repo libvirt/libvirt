@@ -53,23 +53,89 @@ int              virXPathNodeSet(const char *xpath,
 char *          virXMLPropString(xmlNodePtr node,
                                  const char *name);
 
+/* Internal function; prefer the macros below.  */
 xmlDocPtr      virXMLParseHelper(int domcode,
                                  const char *filename,
                                  const char *xmlStr,
-                                 const char *url);
-xmlDocPtr   virXMLParseStrHelper(int domcode,
-                                 const char *xmlStr,
-                                 const char *url);
-xmlDocPtr  virXMLParseFileHelper(int domcode,
-                                 const char *filename);
+                                 const char *url,
+                                 xmlXPathContextPtr *pctxt);
 
+/**
+ * virXMLParse:
+ * @filename: file to parse, or NULL for string parsing
+ * @xmlStr: if @filename is NULL, a string to parse
+ * @url: if @filename is NULL, an optional filename to attribute the parse to
+ *
+ * Parse xml from either a file or a string.
+ *
+ * Return the parsed document object, or NULL on failure.
+ */
 # define virXMLParse(filename, xmlStr, url)                     \
-        virXMLParseHelper(VIR_FROM_THIS, filename, xmlStr, url)
+    virXMLParseHelper(VIR_FROM_THIS, filename, xmlStr, url, NULL)
 
+/**
+ * virXMLParseString:
+ * @xmlStr: a string to parse
+ * @url: an optional filename to attribute the parse to
+ *
+ * Parse xml from a string.
+ *
+ * Return the parsed document object, or NULL on failure.
+ */
 # define virXMLParseString(xmlStr, url)                         \
-        virXMLParseStrHelper(VIR_FROM_THIS, xmlStr, url)
+    virXMLParseHelper(VIR_FROM_THIS, NULL, xmlStr, url, NULL)
 
+/**
+ * virXMLParseFile:
+ * @filename: file to parse
+ *
+ * Parse xml from a file.
+ *
+ * Return the parsed document object, or NULL on failure.
+ */
 # define virXMLParseFile(filename)                              \
-        virXMLParseFileHelper(VIR_FROM_THIS, filename)
+    virXMLParseHelper(VIR_FROM_THIS, filename, NULL, NULL, NULL)
+
+/**
+ * virXMLParseCtxt:
+ * @filename: file to parse, or NULL for string parsing
+ * @xmlStr: if @filename is NULL, a string to parse
+ * @url: if @filename is NULL, an optional filename to attribute the parse to
+ * @pctxt: if non-NULL, populate with a new context object on success,
+ * with (*pctxt)->node pre-set to the root node
+ *
+ * Parse xml from either a file or a string.
+ *
+ * Return the parsed document object, or NULL on failure.
+ */
+# define virXMLParseCtxt(filename, xmlStr, url, pctxt)                  \
+    virXMLParseHelper(VIR_FROM_THIS, filename, xmlStr, url, pctxt)
+
+/**
+ * virXMLParseStringCtxt:
+ * @xmlStr: a string to parse
+ * @url: an optional filename to attribute the parse to
+ * @pctxt: if non-NULL, populate with a new context object on success,
+ * with (*pctxt)->node pre-set to the root node
+ *
+ * Parse xml from a string.
+ *
+ * Return the parsed document object, or NULL on failure.
+ */
+# define virXMLParseStringCtxt(xmlStr, url, pctxt)              \
+    virXMLParseHelper(VIR_FROM_THIS, NULL, xmlStr, url, pctxt)
+
+/**
+ * virXMLParseFileCtxt:
+ * @filename: file to parse
+ * @pctxt: if non-NULL, populate with a new context object on success,
+ * with (*pctxt)->node pre-set to the root node
+ *
+ * Parse xml from a file.
+ *
+ * Return the parsed document object, or NULL on failure.
+ */
+# define virXMLParseFileCtxt(filename, pctxt)                           \
+    virXMLParseHelper(VIR_FROM_THIS, filename, NULL, NULL, pctxt)
 
 #endif                          /* __VIR_XML_H__ */

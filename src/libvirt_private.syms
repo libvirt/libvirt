@@ -1164,9 +1164,7 @@ virKeycodeValueFromString;
 virKeycodeValueTranslate;
 
 # xml.h
-virXMLParseFileHelper;
 virXMLParseHelper;
-virXMLParseStrHelper;
 virXMLPropString;
 virXPathBoolean;
 virXPathInt;
