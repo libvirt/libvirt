@@ -639,20 +639,19 @@ vmwareDomainUndefineFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virDomainObjIsActive(vm)) {
-        vmwareError(VIR_ERR_OPERATION_INVALID,
-                    "%s", _("cannot undefine active domain"));
-        goto cleanup;
-    }
-
     if (!vm->persistent) {
         vmwareError(VIR_ERR_OPERATION_INVALID,
                     "%s", _("cannot undefine transient domain"));
         goto cleanup;
     }
 
-    virDomainRemoveInactive(&driver->domains, vm);
-    vm = NULL;
+    if (virDomainObjIsActive(vm)) {
+        vm->persistent = 0;
+    } else {
+        virDomainRemoveInactive(&driver->domains, vm);
+        vm = NULL;
+    }
+
     ret = 0;
 
   cleanup:
