@@ -547,13 +547,17 @@ static int parseMemoryStat(char **text, unsigned int tag,
             return 0;
         }
 
-        /* Convert bytes to kilobytes for libvirt */
         switch (tag) {
+            /* Convert megabytes to kilobytes for libvirt */
+            case VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON:
+                value <<= 10;
+                break;
+            /* Convert bytes to kilobytes for libvirt */
             case VIR_DOMAIN_MEMORY_STAT_SWAP_IN:
             case VIR_DOMAIN_MEMORY_STAT_SWAP_OUT:
             case VIR_DOMAIN_MEMORY_STAT_UNUSED:
             case VIR_DOMAIN_MEMORY_STAT_AVAILABLE:
-                value = value >> 10;
+                value >>= 10;
         }
         stat->tag = tag;
         stat->val = value;
@@ -563,14 +567,24 @@ static int parseMemoryStat(char **text, unsigned int tag,
 }
 
 /* The reply from the 'info balloon' command may contain additional memory
- * statistics in the form: '[,<tag>=<val>]*'
+ * statistics in the form: 'actual=<val> [,<tag>=<val>]*'
  */
-static int qemuMonitorParseExtraBalloonInfo(char *text,
-                                            virDomainMemoryStatPtr stats,
-                                            unsigned int nr_stats)
+static int qemuMonitorParseBalloonInfo(char *text,
+                                       virDomainMemoryStatPtr stats,
+                                       unsigned int nr_stats)
 {
     char *p = text;
     unsigned int nr_stats_found = 0;
+
+    /* Since "actual=" always comes first in the returned string,
+     * and sometime we only care about the value of "actual", such
+     * as qemuMonitorGetBalloonInfo, we parse it outside of the
+     * loop.
+     */
+    if (parseMemoryStat(&p, VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON,
+                        "actual=", &stats[nr_stats_found]) == 1) {
+        nr_stats_found++;
+    }
 
     while (*p && nr_stats_found < nr_stats) {
         if (parseMemoryStat(&p, VIR_DOMAIN_MEMORY_STAT_SWAP_IN,
@@ -584,9 +598,7 @@ static int qemuMonitorParseExtraBalloonInfo(char *text,
             parseMemoryStat(&p, VIR_DOMAIN_MEMORY_STAT_UNUSED,
                             ",free_mem=", &stats[nr_stats_found]) ||
             parseMemoryStat(&p, VIR_DOMAIN_MEMORY_STAT_AVAILABLE,
-                            ",total_mem=", &stats[nr_stats_found]) ||
-            parseMemoryStat(&p, VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON,
-                            ",actual=", &stats[nr_stats_found]))
+                            ",total_mem=", &stats[nr_stats_found]))
             nr_stats_found++;
 
         /* Skip to the next label.  When *p is ',' the last match attempt
@@ -602,7 +614,7 @@ static int qemuMonitorParseExtraBalloonInfo(char *text,
 
 
 /* The reply from QEMU contains 'ballon: actual=421' where value is in MB */
-#define BALLOON_PREFIX "balloon: actual="
+#define BALLOON_PREFIX "balloon: "
 
 /*
  * Returns: 0 if balloon not supported, +1 if balloon query worked
@@ -622,15 +634,22 @@ int qemuMonitorTextGetBalloonInfo(qemuMonitorPtr mon,
     }
 
     if ((offset = strstr(reply, BALLOON_PREFIX)) != NULL) {
-        unsigned int memMB;
-        char *end;
         offset += strlen(BALLOON_PREFIX);
-        if (virStrToLong_ui(offset, &end, 10, &memMB) < 0) {
-            qemuReportError(VIR_ERR_OPERATION_FAILED,
-                            _("could not parse memory balloon allocation from '%s'"), reply);
+        struct _virDomainMemoryStat stats[1];
+
+        if (qemuMonitorParseBalloonInfo(offset, stats, 1) == 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("unexpected balloon information '%s'"), reply);
             goto cleanup;
         }
-        *currmem = memMB * 1024;
+
+        if (stats[0].tag != VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("unexpected balloon information '%s'"), reply);
+            goto cleanup;
+        }
+
+        *currmem = stats[0].val;
         ret = 1;
     } else {
         /* We don't raise an error here, since its to be expected that
@@ -660,9 +679,7 @@ int qemuMonitorTextGetMemoryStats(qemuMonitorPtr mon,
 
     if ((offset = strstr(reply, BALLOON_PREFIX)) != NULL) {
         offset += strlen(BALLOON_PREFIX);
-        if ((offset = strchr(offset, ',')) != NULL) {
-            ret = qemuMonitorParseExtraBalloonInfo(offset, stats, nr_stats);
-        }
+        ret = qemuMonitorParseBalloonInfo(offset, stats, nr_stats);
     }
 
     VIR_FREE(reply);
