@@ -2601,18 +2601,17 @@ static int testDomainUndefineFlags(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (virDomainObjGetState(privdom, NULL) != VIR_DOMAIN_SHUTOFF) {
-        testError(VIR_ERR_INTERNAL_ERROR,
-                  _("Domain '%s' is still running"), domain->name);
-        goto cleanup;
-    }
-
     event = virDomainEventNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_UNDEFINED,
                                      VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
-    virDomainRemoveInactive(&privconn->domains,
-                            privdom);
-    privdom = NULL;
+    if (virDomainObjIsActive(vm)) {
+        vm->persistent = 0;
+    } else {
+        virDomainRemoveInactive(&privconn->domains,
+                                privdom);
+        privdom = NULL;
+    }
+
     ret = 0;
 
 cleanup:
