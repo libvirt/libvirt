@@ -1218,8 +1218,6 @@ int xenXMDomainUndefine(virDomainPtr domain) {
         return (-1);
     }
 
-    if (domain->id != -1)
-        return (-1);
     if (domain->conn->flags & VIR_CONNECT_RO)
         return (-1);
 
@@ -1235,13 +1233,17 @@ int xenXMDomainUndefine(virDomainPtr domain) {
     if (unlink(entry->filename) < 0)
         goto cleanup;
 
-    /* Remove the name -> filename mapping */
-    if (virHashRemoveEntry(priv->nameConfigMap, domain->name) < 0)
-        goto cleanup;
+    if (virDomainObjIsActive(vm)) {
+        vm->persistent = 0;
+    } else {
+        /* Remove the name -> filename mapping */
+        if (virHashRemoveEntry(priv->nameConfigMap, domain->name) < 0)
+            goto cleanup;
 
-    /* Remove the config record itself */
-    if (virHashRemoveEntry(priv->configCache, entry->filename) < 0)
-        goto cleanup;
+        /* Remove the config record itself */
+        if (virHashRemoveEntry(priv->configCache, entry->filename) < 0)
+            goto cleanup;
+    }
 
     ret = 0;
 
