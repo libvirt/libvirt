@@ -1806,12 +1806,6 @@ static int umlDomainUndefineFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virDomainObjIsActive(vm)) {
-        umlReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("cannot delete active domain"));
-        goto cleanup;
-    }
-
     if (!vm->persistent) {
         umlReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("cannot undefine transient domain"));
@@ -1821,9 +1815,13 @@ static int umlDomainUndefineFlags(virDomainPtr dom,
     if (virDomainDeleteConfig(driver->configDir, driver->autostartDir, vm) < 0)
         goto cleanup;
 
-    virDomainRemoveInactive(&driver->domains,
-                            vm);
-    vm = NULL;
+    if (virDomainObjIsActive(vm)) {
+        vm->persistent = 0;
+    } else {
+        virDomainRemoveInactive(&driver->domains, vm);
+        vm = NULL;
+    }
+
     ret = 0;
 
 cleanup:
