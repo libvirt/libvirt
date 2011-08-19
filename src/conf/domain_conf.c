@@ -9206,8 +9206,8 @@ virDomainFSDefFormat(virBufferPtr buf,
         }
     }
 
-    virBufferAsprintf(buf, "      <target dir='%s'/>\n",
-                      def->dst);
+    virBufferEscapeString(buf, "      <target dir='%s'/>\n",
+                          def->dst);
 
     if (def->readonly)
         virBufferAddLit(buf, "      <readonly/>\n");
@@ -10009,7 +10009,7 @@ virDomainGraphicsListenDefFormat(virBufferPtr buf,
 
     if (def->network &&
         (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK)) {
-        virBufferAsprintf(buf, " network='%s'", def->network);
+        virBufferEscapeString(buf, " network='%s'", def->network);
     }
 
     virBufferAddLit(buf, "/>\n");
@@ -11523,15 +11523,15 @@ char *virDomainSnapshotDefFormat(char *domain_uuid,
     flags |= VIR_DOMAIN_XML_INACTIVE;
 
     virBufferAddLit(&buf, "<domainsnapshot>\n");
-    virBufferAsprintf(&buf, "  <name>%s</name>\n", def->name);
+    virBufferEscapeString(&buf, "  <name>%s</name>\n", def->name);
     if (def->description)
-        virBufferAsprintf(&buf, "  <description>%s</description>\n",
-                          def->description);
+        virBufferEscapeString(&buf, "  <description>%s</description>\n",
+                              def->description);
     virBufferAsprintf(&buf, "  <state>%s</state>\n",
                       virDomainStateTypeToString(def->state));
     if (def->parent) {
         virBufferAddLit(&buf, "  <parent>\n");
-        virBufferAsprintf(&buf, "    <name>%s</name>\n", def->parent);
+        virBufferEscapeString(&buf, "    <name>%s</name>\n", def->parent);
         virBufferAddLit(&buf, "  </parent>\n");
     }
     virBufferAsprintf(&buf, "  <creationTime>%lld</creationTime>\n",
