@@ -712,7 +712,9 @@ I<domain-id>
 Allows you to show (and set) the domain scheduler parameters. The parameters
 available for each hypervisor are:
 
-LXC, QEMU/KVM (posix scheduler): cpu_shares
+LXC (posix scheduler) : cpu_shares
+
+QEMU/KVM (posix scheduler): cpu_shares, vcpu_period, vcpu_quota
 
 Xen (credit scheduler): weight, cap
 
@@ -728,6 +730,10 @@ Therefore, -1 is a useful shorthand for 262144.
 
 B<Note>: The weight and cap parameters are defined only for the
 XEN_CREDIT scheduler and are now I<DEPRECATED>.
+
+B<Note>: The vcpu_period parameter has a valid value range of 1000-1000000 or
+0, and the vcpu_quota parameter has a valid value range of 1000-1844674407370955
+or less than 0.
 
 =item B<screenshot> I<domain-id> [I<imagefilepath>] [I<--screen> B<screenID>]
 
