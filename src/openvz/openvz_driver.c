@@ -1132,19 +1132,18 @@ openvzDomainUndefineFlags(virDomainPtr dom,
     if (openvzGetVEStatus(vm, &status, NULL) == -1)
         goto cleanup;
 
-    if (status != VIR_DOMAIN_SHUTOFF) {
-        openvzError(VIR_ERR_OPERATION_INVALID, "%s",
-                    _("cannot delete active domain"));
-        goto cleanup;
-    }
-
     openvzSetProgramSentinal(prog, vm->def->name);
     if (virRun(prog, NULL) < 0) {
         goto cleanup;
     }
 
-    virDomainRemoveInactive(&driver->domains, vm);
-    vm = NULL;
+    if (virDomainObjIsActive(vm)) {
+        vm->persistent = 0;
+    } else {
+        virDomainRemoveInactive(&driver->domains, vm);
+        vm = NULL;
+    }
+
     ret = 0;
 
 cleanup:
