@@ -851,6 +851,8 @@ static const vshCmdInfo info_list[] = {
 static const vshCmdOptDef opts_list[] = {
     {"inactive", VSH_OT_BOOL, 0, N_("list inactive domains")},
     {"all", VSH_OT_BOOL, 0, N_("list inactive & active domains")},
+    {"managed-save", VSH_OT_BOOL, 0,
+     N_("mark domains with managed save state")},
     {NULL, 0, 0, NULL}
 };
 
@@ -864,6 +866,9 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     int *ids = NULL, maxid = 0, i;
     char **names = NULL;
     int maxname = 0;
+    bool managed = vshCommandOptBool(cmd, "managed-save");
+    int state;
+
     inactive |= all;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
@@ -920,7 +925,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         vshPrint(ctl, "%3d %-20s %s\n",
                  virDomainGetID(dom),
                  virDomainGetName(dom),
-                 vshDomainStateToString(vshDomainState(ctl, dom, NULL)));
+                 _(vshDomainStateToString(vshDomainState(ctl, dom, NULL))));
         virDomainFree(dom);
     }
     for (i = 0; i < maxname; i++) {
@@ -932,10 +937,15 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             continue;
         }
 
+        state = vshDomainState(ctl, dom, NULL);
+        if (managed && state == VIR_DOMAIN_SHUTOFF &&
+            virDomainHasManagedSaveImage(dom, 0) > 0)
+            state = -2;
+
         vshPrint(ctl, "%3s %-20s %s\n",
                  "-",
                  names[i],
-                 vshDomainStateToString(vshDomainState(ctl, dom, NULL)));
+                 state == -2 ? _("saved") : _(vshDomainStateToString(state)));
 
         virDomainFree(dom);
         VIR_FREE(names[i]);

@@ -266,7 +266,7 @@ The XML also show the NUMA topology information if available.
 
 Inject NMI to the guest.
 
-=item B<list> [I<--inactive> | I<--all>]
+=item B<list> [I<--inactive> | I<--all>] [I<--managed-save>]
 
 Prints information about existing domains.  If no options are
 specified it prints out information about running domains.
@@ -336,6 +336,10 @@ The domain is in process of dying, but hasn't completely shutdown or
 crashed.
 
 =back
+
+If I<--managed-save> is specified, then domains that have managed save
+state (only possible if they are in the B<shut off> state) will
+instead show as B<saved> in the listing.
 
 =item B<freecell> [B<cellno> | I<--all>]
 
