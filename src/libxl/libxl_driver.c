@@ -2802,12 +2802,6 @@ libxlDomainUndefineFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virDomainObjIsActive(vm)) {
-        libxlError(VIR_ERR_OPERATION_INVALID,
-                   "%s", _("cannot undefine active domain"));
-        goto cleanup;
-    }
-
     if (!vm->persistent) {
         libxlError(VIR_ERR_OPERATION_INVALID,
                    "%s", _("cannot undefine transient domain"));
@@ -2841,8 +2835,13 @@ libxlDomainUndefineFlags(virDomainPtr dom,
     event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_UNDEFINED,
                                      VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
 
-    virDomainRemoveInactive(&driver->domains, vm);
-    vm = NULL;
+    if (virDomainObjIsActive(vm)) {
+        vm->persistent = 0;
+    } else {
+        virDomainRemoveInactive(&driver->domains, vm);
+        vm = NULL;
+    }
+
     ret = 0;
 
   cleanup:
