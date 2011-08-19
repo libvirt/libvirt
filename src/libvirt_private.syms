@@ -399,6 +399,8 @@ virDomainSnapshotHasChildren;
 virDomainSnapshotObjListGetNames;
 virDomainSnapshotObjListNum;
 virDomainSnapshotObjListRemove;
+virDomainSnapshotStateTypeFromString;
+virDomainSnapshotStateTypeToString;
 virDomainSoundDefFree;
 virDomainSoundModelTypeFromString;
 virDomainSoundModelTypeToString;

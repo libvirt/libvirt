@@ -14588,6 +14588,8 @@ vshDomainState(vshControl *ctl, virDomainPtr dom, int *reason)
 static const char *
 vshDomainStateToString(int state)
 {
+    /* Can't use virDomainStateTypeToString, because we want to mark
+     * strings for translation.  */
     switch ((virDomainState) state) {
     case VIR_DOMAIN_RUNNING:
         return N_("running");
@@ -14602,6 +14604,7 @@ vshDomainStateToString(int state)
     case VIR_DOMAIN_CRASHED:
         return N_("crashed");
     case VIR_DOMAIN_NOSTATE:
+    default:
         ;/*FALLTHROUGH*/
     }
     return N_("no state");  /* = dom0 state */
@@ -14703,6 +14706,9 @@ vshDomainStateReasonToString(int state, int reason)
             ;
         }
         break;
+
+    default:
+        ;
     }
 
     return N_("unknown");

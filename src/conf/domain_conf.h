@@ -253,6 +253,11 @@ enum virDomainDiskSnapshot {
     VIR_DOMAIN_DISK_SNAPSHOT_LAST
 };
 
+enum virDomainSnapshotState {
+    /* Inherit the VIR_DOMAIN_* states from virDomainState.  */
+    VIR_DOMAIN_DISK_SNAPSHOT = VIR_DOMAIN_LAST,
+};
+
 /* Stores the virtual disk configuration */
 typedef struct _virDomainDiskDef virDomainDiskDef;
 typedef virDomainDiskDef *virDomainDiskDefPtr;
@@ -1395,7 +1400,7 @@ struct _virDomainSnapshotDef {
     char *description;
     char *parent;
     long long creationTime; /* in seconds */
-    int state;
+    int state; /* enum virDomainSnapshotState */
     virDomainDefPtr dom;
 
     /* Internal use.  */
@@ -1832,6 +1837,7 @@ VIR_ENUM_DECL(virDomainGraphicsSpicePlaybackCompression)
 VIR_ENUM_DECL(virDomainGraphicsSpiceStreamingMode)
 VIR_ENUM_DECL(virDomainGraphicsSpiceClipboardCopypaste)
 VIR_ENUM_DECL(virDomainNumatuneMemMode)
+VIR_ENUM_DECL(virDomainSnapshotState)
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState)
 VIR_ENUM_DECL(virDomainNostateReason)

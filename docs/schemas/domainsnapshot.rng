@@ -22,7 +22,7 @@
         </optional>
         <optional>
           <element name='state'>
-            <text/>
+            <ref name='state'/>
           </element>
         </optional>
         <optional>
@@ -57,6 +57,19 @@
         </optional>
       </interleave>
     </element>
+  </define>
+
+  <define name='state'>
+    <choice>
+      <value>nostate</value>
+      <value>running</value>
+      <value>blocked</value>
+      <value>paused</value>
+      <value>shutdown</value>
+      <value>shutoff</value>
+      <value>crashed</value>
+      <value>disk-snapshot</value>
+    </choice>
   </define>
 
 </grammar>

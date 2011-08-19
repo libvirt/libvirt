@@ -86,7 +86,14 @@ typedef enum {
      VIR_DOMAIN_PAUSED  = 3, /* the domain is paused by user */
      VIR_DOMAIN_SHUTDOWN= 4, /* the domain is being shut down */
      VIR_DOMAIN_SHUTOFF = 5, /* the domain is shut off */
-     VIR_DOMAIN_CRASHED = 6  /* the domain is crashed */
+     VIR_DOMAIN_CRASHED = 6, /* the domain is crashed */
+
+    /*
+     * NB: this enum value will increase over time as new events are
+     * added to the libvirt API. It reflects the last state supported
+     * by this version of the libvirt API.
+     */
+     VIR_DOMAIN_LAST
 } virDomainState;
 
 typedef enum {
@@ -1892,6 +1899,11 @@ typedef enum {
     VIR_KEYCODE_SET_WIN32          = 8,
     VIR_KEYCODE_SET_RFB            = 9,
 
+    /*
+     * NB: this enum value will increase over time as new events are
+     * added to the libvirt API. It reflects the last keycode set supported
+     * by this version of the libvirt API.
+     */
     VIR_KEYCODE_SET_LAST,
 } virKeycodeSet;
 
