@@ -4720,12 +4720,6 @@ qemuDomainUndefineFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("cannot delete active domain"));
-        goto cleanup;
-    }
-
     if (!vm->persistent) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("cannot undefine transient domain"));
@@ -4760,9 +4754,19 @@ qemuDomainUndefineFlags(virDomainPtr dom,
                                      VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
 
     VIR_INFO("Undefining domain '%s'", vm->def->name);
-    virDomainRemoveInactive(&driver->domains,
-                            vm);
-    vm = NULL;
+
+    /* If the domain is active, keep it running but set it as transient.
+     * domainDestroy and domainShutdown will take care of removing the
+     * domain obj from the hash table.
+     */
+    if (virDomainObjIsActive(vm)) {
+        vm->persistent = 0;
+    } else {
+        virDomainRemoveInactive(&driver->domains,
+                                vm);
+        vm = NULL;
+    }
+
     ret = 0;
 
 cleanup:
