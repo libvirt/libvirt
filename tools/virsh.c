@@ -4956,7 +4956,10 @@ print_job_progress(const char *label, unsigned long long remaining,
         }
     }
 
+    /* see comments in vshError about why we must flush */
+    fflush(stdout);
     fprintf(stderr, "\r%s: [%3d %%]", label, progress);
+    fflush(stderr);
 }
 
 static bool
@@ -14336,6 +14339,10 @@ vshError(vshControl *ctl, const char *format, ...)
         va_end(ap);
     }
 
+    /* Most output is to stdout, but if someone ran virsh 2>&1, then
+     * printing to stderr will not interleave correctly with stdout
+     * unless we flush between every transition between streams.  */
+    fflush(stdout);
     fputs(_("error: "), stderr);
 
     va_start(ap, format);
@@ -14345,6 +14352,7 @@ vshError(vshControl *ctl, const char *format, ...)
     va_end(ap);
 
     fprintf(stderr, "%s\n", NULLSTR(str));
+    fflush(stderr);
     VIR_FREE(str);
 }
 
