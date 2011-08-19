@@ -479,12 +479,6 @@ static int lxcDomainUndefineFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virDomainObjIsActive(vm)) {
-        lxcError(VIR_ERR_OPERATION_INVALID,
-                 "%s", _("Cannot delete active domain"));
-        goto cleanup;
-    }
-
     if (!vm->persistent) {
         lxcError(VIR_ERR_OPERATION_INVALID,
                  "%s", _("Cannot undefine transient domain"));
@@ -500,8 +494,13 @@ static int lxcDomainUndefineFlags(virDomainPtr dom,
                                      VIR_DOMAIN_EVENT_UNDEFINED,
                                      VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
 
-    virDomainRemoveInactive(&driver->domains, vm);
-    vm = NULL;
+    if (virDomainObjIsActive(vm)) {
+        vm->persistent = 0;
+    } else {
+        virDomainRemoveInactive(&driver->domains, vm);
+        vm = NULL;
+    }
+
     ret = 0;
 
 cleanup:
