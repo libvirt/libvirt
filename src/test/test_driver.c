@@ -2604,8 +2604,8 @@ static int testDomainUndefineFlags(virDomainPtr domain,
     event = virDomainEventNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_UNDEFINED,
                                      VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
-    if (virDomainObjIsActive(vm)) {
-        vm->persistent = 0;
+    if (virDomainObjIsActive(privdom)) {
+        privdom->persistent = 0;
     } else {
         virDomainRemoveInactive(&privconn->domains,
                                 privdom);
