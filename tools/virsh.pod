@@ -505,7 +505,8 @@ snapshot metadata with B<snapshot-create>.
 
 Get device block stats for a running domain.  A I<block-device> corresponds
 to a unique target name (<target dev='name'/>) or source file (<source
-file='name'/>) for one of the disk devices attached to I<domain>.
+file='name'/>) for one of the disk devices attached to I<domain> (see
+also B<domblklist> for listing these names).
 
 =item B<domifstat> I<domain> I<interface-device>
 
@@ -519,7 +520,18 @@ Get memory stats for a running domain.
 
 Get block device size info for a domain.  A I<block-device> corresponds
 to a unique target name (<target dev='name'/>) or source file (<source
-file='name'/>) for one of the disk devices attached to I<domain>.
+file='name'/>) for one of the disk devices attached to I<domain> (see
+also B<domblklist> for listing these names).
+
+=item B<domblklist> I<domain> [I<--inactive>]
+
+Print a table showing the names of all block devices associated with
+I<domain>, as well as the path to the source of each device.  If
+I<--inactive> is specified, query the block devices that will be used
+on the next boot, rather than those currently in use by a running
+domain.  Other contexts that require a block device name (such as
+I<domblkinfo> or I<snapshot-create> for disk snapshots) will accept
+either target or unique source names printed by this command.
 
 =item B<blockpull> I<domain> I<path> [I<bandwidth>]
 

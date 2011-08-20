@@ -1277,6 +1277,86 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "domblklist" command
+ */
+static const vshCmdInfo info_domblklist[] = {
+    {"help", N_("list all domain blocks")},
+    {"desc", N_("Get the names of block devices for a domain.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_domblklist[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"inactive", VSH_OT_BOOL, 0,
+     N_("get inactive rather than running configuration")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    bool ret = false;
+    unsigned int flags = 0;
+    char *xml = NULL;
+    xmlDocPtr xmldoc = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    int ndisks;
+    xmlNodePtr *disks = NULL;
+    int i;
+
+    if (vshCommandOptBool(cmd, "inactive"))
+        flags |= VIR_DOMAIN_XML_INACTIVE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    xml = virDomainGetXMLDesc(dom, flags);
+    if (!xml)
+        goto cleanup;
+
+    xmldoc = virXMLParseStringCtxt(xml, "domain.xml", &ctxt);
+    if (!xmldoc)
+        goto cleanup;
+
+    ndisks = virXPathNodeSet("./devices/disk", ctxt, &disks);
+    if (ndisks < 0)
+        goto cleanup;
+
+    vshPrint(ctl, "%-10s %s\n", _("Target"), _("Source"));
+    vshPrint(ctl, "------------------------------------------------\n");
+
+    for (i = 0; i < ndisks; i++) {
+        char *target;
+        char *source;
+
+        ctxt->node = disks[i];
+        target = virXPathString("string(./target/@dev)", ctxt);
+        if (!target) {
+            vshError(ctl, "unable to query block list");
+            goto cleanup;
+        }
+        source = virXPathString("string(./source/@file"
+                                "|./source/@dev"
+                                "|./source/@dir"
+                                "|./source/@name)", ctxt);
+        vshPrint(ctl, "%-10s %s\n", target, source ? source : "-");
+        VIR_FREE(target);
+        VIR_FREE(source);
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(disks);
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "suspend" command
  */
 static const vshCmdInfo info_suspend[] = {
@@ -13064,6 +13144,7 @@ static const vshCmdDef domManagementCmds[] = {
 
 static const vshCmdDef domMonitoringCmds[] = {
     {"domblkinfo", cmdDomblkinfo, opts_domblkinfo, info_domblkinfo, 0},
+    {"domblklist", cmdDomblklist, opts_domblklist, info_domblklist, 0},
     {"domblkstat", cmdDomblkstat, opts_domblkstat, info_domblkstat, 0},
     {"domcontrol", cmdDomControl, opts_domcontrol, info_domcontrol, 0},
     {"domifstat", cmdDomIfstat, opts_domifstat, info_domifstat, 0},
