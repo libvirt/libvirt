@@ -298,6 +298,7 @@ static void qemuDomainSnapshotLoad(void *payload,
     virDomainSnapshotObjPtr current = NULL;
     char ebuf[1024];
     unsigned int flags = (VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE |
+                          VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
                           VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL);
 
     virDomainObjLock(vm);
@@ -8763,6 +8764,241 @@ cleanup:
     return ret;
 }
 
+static int
+qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def)
+{
+    int ret = -1;
+    int i;
+    bool found = false;
+    bool active = virDomainObjIsActive(vm);
+    struct stat st;
+
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainSnapshotDiskDefPtr disk = &def->disks[i];
+
+        switch (disk->snapshot) {
+        case VIR_DOMAIN_DISK_SNAPSHOT_INTERNAL:
+            if (active) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                _("active qemu domains require external disk "
+                                  "snapshots; disk %s requested internal"),
+                                disk->name);
+                goto cleanup;
+            }
+            if (!vm->def->disks[i]->driverType ||
+                STRNEQ(vm->def->disks[i]->driverType, "qcow2")) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                _("internal snapshot for disk %s unsupported "
+                                  "for storage type %s"),
+                                disk->name,
+                                NULLSTR(vm->def->disks[i]->driverType));
+                goto cleanup;
+            }
+            found = true;
+            break;
+
+        case VIR_DOMAIN_DISK_SNAPSHOT_EXTERNAL:
+            if (!disk->driverType) {
+                if (!(disk->driverType = strdup("qcow2"))) {
+                    virReportOOMError();
+                    goto cleanup;
+                }
+            } else if (STRNEQ(disk->driverType, "qcow2")) {
+                /* XXX We should also support QED */
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                _("external snapshot format for disk %s "
+                                  "is unsupported: %s"),
+                                disk->name, disk->driverType);
+                goto cleanup;
+            }
+            if (stat(disk->file, &st) < 0) {
+                if (errno != ENOENT) {
+                    virReportSystemError(errno,
+                                         _("unable to stat for disk %s: %s"),
+                                         disk->name, disk->file);
+                    goto cleanup;
+                }
+            } else if (!S_ISBLK(st.st_mode)) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                _("external snapshot file for disk %s already "
+                                  "exists and is not a block device: %s"),
+                                disk->name, disk->file);
+                goto cleanup;
+            }
+            found = true;
+            break;
+
+        case VIR_DOMAIN_DISK_SNAPSHOT_NO:
+            break;
+
+        case VIR_DOMAIN_DISK_SNAPSHOT_DEFAULT:
+        default:
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("unexpected code path"));
+            goto cleanup;
+        }
+    }
+
+    if (!found) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("disk snapshots require at least one disk to be "
+                          "selected for snapshot"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
+/* The domain is expected to hold monitor lock.  */
+static int
+qemuDomainSnapshotCreateSingleDiskActive(virDomainObjPtr vm,
+                                         virDomainSnapshotDiskDefPtr snap,
+                                         virDomainDiskDefPtr disk)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char *device = NULL;
+    char *source = NULL;
+    char *driverType = NULL;
+    int ret = -1;
+
+    if (snap->snapshot != VIR_DOMAIN_DISK_SNAPSHOT_EXTERNAL) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("unexpected code path"));
+        return -1;
+    }
+
+    if (virAsprintf(&device, "drive-%s", disk->info.alias) < 0 ||
+        !(source = strdup(snap->file)) ||
+        (STRNEQ_NULLABLE(disk->driverType, "qcow2") &&
+         !(driverType = strdup("qcow2")))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* XXX create new file and set selinux labels */
+    ret = qemuMonitorDiskSnapshot(priv->mon, device, source);
+    virDomainAuditDisk(vm, disk->src, source, "snapshot", ret >= 0);
+    if (ret < 0)
+        goto cleanup;
+
+    /* Update vm in place to match changes.  */
+    VIR_FREE(disk->src);
+    disk->src = source;
+    source = NULL;
+    if (driverType) {
+        VIR_FREE(disk->driverType);
+        disk->driverType = driverType;
+        driverType = NULL;
+    }
+
+    /* XXX Do we also need to update vm->newDef if there are pending
+     * configuration changes awaiting the next boot?  */
+
+cleanup:
+    VIR_FREE(device);
+    VIR_FREE(source);
+    VIR_FREE(driverType);
+    return ret;
+}
+
+/* The domain is expected to be locked and active. */
+static int
+qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
+                                   struct qemud_driver *driver,
+                                   virDomainObjPtr *vmptr,
+                                   virDomainSnapshotObjPtr snap,
+                                   unsigned int flags)
+{
+    virDomainObjPtr vm = *vmptr;
+    bool resume = false;
+    int ret = -1;
+    int i;
+
+    if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
+        return -1;
+
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+        /* In qemu, snapshot_blkdev on a single disk will pause cpus,
+         * but this confuses libvirt since notifications are not given
+         * when qemu resumes.  And for multiple disks, libvirt must
+         * pause externally to get all snapshots to be at the same
+         * point in time.  For simplicitly, we always pause ourselves
+         * rather than relying on qemu doing pause.
+         */
+        if (qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_SAVE,
+                                QEMU_ASYNC_JOB_NONE) < 0)
+            goto cleanup;
+
+        resume = true;
+        if (!virDomainObjIsActive(vm)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("guest unexpectedly quit"));
+            goto cleanup;
+        }
+    }
+
+    /* No way to roll back if first disk succeeds but later disks
+     * fail.  Based on earlier qemuDomainSnapshotDiskPrepare, all
+     * disks in this list are now either SNAPSHOT_NO, or
+     * SNAPSHOT_EXTERNAL with a valid file name and qcow2 format.  */
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    for (i = 0; i < snap->def->ndisks; i++) {
+        if (snap->def->disks[i].snapshot == VIR_DOMAIN_DISK_SNAPSHOT_NO)
+            continue;
+
+        ret = qemuDomainSnapshotCreateSingleDiskActive(vm,
+                                                       &snap->def->disks[i],
+                                                       vm->def->disks[i]);
+        if (ret < 0)
+            break;
+    }
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+    if (ret < 0)
+        goto cleanup;
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT) {
+        virDomainEventPtr event;
+
+        event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
+                                         VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
+        qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT);
+        virDomainAuditStop(vm, "from-snapshot");
+        /* We already filtered the _HALT flag for persistent domains
+         * only, so this end job never drops the last reference.  */
+        ignore_value(qemuDomainObjEndJob(driver, vm));
+        resume = false;
+        vm = NULL;
+        if (event)
+            qemuDomainEventQueue(driver, event);
+    }
+
+cleanup:
+    if (resume && virDomainObjIsActive(vm) &&
+        qemuProcessStartCPUs(driver, vm, conn,
+                             VIR_DOMAIN_RUNNING_UNPAUSED,
+                             QEMU_ASYNC_JOB_NONE) < 0 &&
+        virGetLastError() == NULL) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                        _("resuming after snapshot failed"));
+    }
+
+    if (vm) {
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+            ret = -1;
+        if (qemuDomainObjEndJob(driver, vm) == 0) {
+            /* Only possible if a transient vm quit while our locks were down,
+             * in which case we don't want to save snapshot metadata.  */
+            *vmptr = NULL;
+            ret = -1;
+        }
+    }
+
+    return ret;
+}
+
 static virDomainSnapshotPtr
 qemuDomainSnapshotCreateXML(virDomainPtr domain,
                             const char *xmlDesc,
@@ -8781,7 +9017,8 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE |
                   VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT |
                   VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA |
-                  VIR_DOMAIN_SNAPSHOT_CREATE_HALT, NULL);
+                  VIR_DOMAIN_SNAPSHOT_CREATE_HALT |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY, NULL);
 
     if (((flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) &&
          !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) ||
@@ -8789,6 +9026,8 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         update_current = false;
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE)
         parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE;
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY)
+        parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
 
     qemuDriverLock(driver);
     virUUIDFormat(domain->uuid, uuidstr);
@@ -8895,6 +9134,12 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
             }
             virDomainSnapshotObjListRemove(&vm->snapshots, other);
         }
+        if (def->state == VIR_DOMAIN_DISK_SNAPSHOT && def->dom) {
+            if (virDomainSnapshotAlignDisks(def,
+                                            VIR_DOMAIN_DISK_SNAPSHOT_EXTERNAL,
+                                            false) < 0)
+                goto cleanup;
+        }
     } else {
         /* Easiest way to clone inactive portion of vm->def is via
          * conversion in and back out of xml.  */
@@ -8904,22 +9149,29 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                                                  QEMU_EXPECTED_VIRT_TYPES,
                                                  VIR_DOMAIN_XML_INACTIVE)))
             goto cleanup;
-    }
 
-    /* in a perfect world, we would allow qemu to tell us this.  The problem
-     * is that qemu only does this check device-by-device; so if you had a
-     * domain that booted from a large qcow2 device, but had a secondary raw
-     * device attached, you wouldn't find out that you can't snapshot your
-     * guest until *after* it had spent the time to snapshot the boot device.
-     * This is probably a bug in qemu, but we'll work around it here for now.
-     */
-    if (!qemuDomainSnapshotIsAllowed(vm))
-        goto cleanup;
-
-    if (def->ndisks) {
-        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                        _("disk snapshots not supported yet"));
-        goto cleanup;
+        if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
+            if (virDomainSnapshotAlignDisks(def,
+                                            VIR_DOMAIN_DISK_SNAPSHOT_EXTERNAL,
+                                            false) < 0)
+                goto cleanup;
+            if (qemuDomainSnapshotDiskPrepare(vm, def) < 0)
+                goto cleanup;
+            def->state = VIR_DOMAIN_DISK_SNAPSHOT;
+        } else {
+            /* In a perfect world, we would allow qemu to tell us this.
+             * The problem is that qemu only does this check
+             * device-by-device; so if you had a domain that booted from a
+             * large qcow2 device, but had a secondary raw device
+             * attached, you wouldn't find out that you can't snapshot
+             * your guest until *after* it had spent the time to snapshot
+             * the boot device.  This is probably a bug in qemu, but we'll
+             * work around it here for now.
+             */
+            if (!qemuDomainSnapshotIsAllowed(vm))
+                goto cleanup;
+            def->state = virDomainObjGetState(vm, NULL);
+        }
     }
 
     if (!(snap = virDomainSnapshotAssignDef(&vm->snapshots, def)))
@@ -8928,8 +9180,6 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
 
     if (update_current)
         snap->def->current = true;
-    if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE))
-        snap->def->state = virDomainObjGetState(vm, NULL);
     if (vm->current_snapshot) {
         if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE)) {
             snap->def->parent = strdup(vm->current_snapshot->def->name);
@@ -8952,6 +9202,16 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         /* XXX Should we validate that the redefined snapshot even
          * makes sense, such as checking that qemu-img recognizes the
          * snapshot name in at least one of the domain's disks?  */
+    } else if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
+        if (!virDomainObjIsActive(vm)) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("disk snapshots of inactive domains not "
+                              "implemented yet"));
+            goto cleanup;
+        }
+        if (qemuDomainSnapshotCreateDiskActive(domain->conn, driver,
+                                               &vm, snap, flags) < 0)
+            goto cleanup;
     } else if (!virDomainObjIsActive(vm)) {
         if (qemuDomainSnapshotCreateInactive(driver, vm, snap) < 0)
             goto cleanup;
