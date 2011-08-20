@@ -15643,6 +15643,12 @@ error:
  * running after the snapshot.  This flag is invalid on transient domains,
  * and is incompatible with VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE.
  *
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY, then the
+ * snapshot will be limited to the disks described in @xmlDesc, and no
+ * VM state will be saved.  For an active guest, the disk image may be
+ * inconsistent (as if power had been pulled), and specifying this
+ * with the VIR_DOMAIN_SNAPSHOT_CREATE_HALT flag risks data loss.
+ *
  * Returns an (opaque) virDomainSnapshotPtr on success, NULL on failure.
  */
 virDomainSnapshotPtr

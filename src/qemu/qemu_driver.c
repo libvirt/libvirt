@@ -8899,6 +8899,12 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (!qemuDomainSnapshotIsAllowed(vm))
         goto cleanup;
 
+    if (def->ndisks) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("disk snapshots not supported yet"));
+        goto cleanup;
+    }
+
     if (!(snap = virDomainSnapshotAssignDef(&vm->snapshots, def)))
         goto cleanup;
     def = NULL;

@@ -4226,6 +4226,12 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
         return NULL;
     }
 
+    if (def->ndisks) {
+        ESX_ERROR(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                  _("disk snapshots not supported yet"));
+        return NULL;
+    }
+
     if (esxVI_LookupVirtualMachineByUuidAndPrepareForTask
           (priv->primary, domain->uuid, NULL, &virtualMachine,
            priv->parsedUri->autoAnswer) < 0 ||

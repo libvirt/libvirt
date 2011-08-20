@@ -5661,6 +5661,12 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     if (!(def = virDomainSnapshotDefParseString(xmlDesc, NULL, 0, 0)))
         goto cleanup;
 
+    if (def->ndisks) {
+        vboxError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                  _("disk snapshots not supported yet"));
+        goto cleanup;
+    }
+
     vboxIIDFromUUID(&domiid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(domiid.value, &machine);
     if (NS_FAILED(rc)) {
