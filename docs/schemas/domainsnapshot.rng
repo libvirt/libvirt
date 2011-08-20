@@ -82,7 +82,10 @@
   <define name='disksnapshot'>
     <element name='disk'>
       <attribute name='name'>
-        <ref name='deviceName'/>
+        <choice>
+          <ref name='diskTarget'/>
+          <ref name='absFilePath'/>
+        </choice>
       </attribute>
       <choice>
         <attribute name='snapshot'>

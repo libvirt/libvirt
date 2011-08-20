@@ -2,7 +2,7 @@
   <name>my snap name</name>
   <description>!@#$%^</description>
   <disks>
-    <disk name='hda'/>
+    <disk name='/dev/HostVG/QEMUGuest1'/>
     <disk name='hdb' snapshot='no'/>
     <disk name='hdc' snapshot='internal'/>
     <disk name='hdd' snapshot='external'>

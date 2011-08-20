@@ -2175,7 +2175,8 @@ umlDomainBlockPeek(virDomainPtr dom,
 {
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    int fd = -1, ret = -1, i;
+    int fd = -1, ret = -1;
+    const char *actual;
 
     virCheckFlags(0, -1);
 
@@ -2196,40 +2197,33 @@ umlDomainBlockPeek(virDomainPtr dom,
     }
 
     /* Check the path belongs to this domain. */
-    for (i = 0 ; i < vm->def->ndisks ; i++) {
-        if (vm->def->disks[i]->src != NULL &&
-            STREQ (vm->def->disks[i]->src, path)) {
-            ret = 0;
-            break;
-        }
+    if (!(actual = virDomainDiskPathByName(vm->def, path))) {
+        umlReportError(VIR_ERR_INVALID_ARG,
+                       _("invalid path '%s'"), path);
+        goto cleanup;
+    }
+    path = actual;
+
+    /* The path is correct, now try to open it and get its size. */
+    fd = open(path, O_RDONLY);
+    if (fd == -1) {
+        virReportSystemError(errno,
+                             _("cannot open %s"), path);
+        goto cleanup;
     }
 
-    if (ret == 0) {
-        ret = -1;
-        /* The path is correct, now try to open it and get its size. */
-        fd = open (path, O_RDONLY);
-        if (fd == -1) {
-            virReportSystemError(errno,
-                                 _("cannot open %s"), path);
-            goto cleanup;
-        }
-
-        /* Seek and read. */
-        /* NB. Because we configure with AC_SYS_LARGEFILE, off_t should
-         * be 64 bits on all platforms.
-         */
-        if (lseek (fd, offset, SEEK_SET) == (off_t) -1 ||
-            saferead (fd, buffer, size) == (ssize_t) -1) {
-            virReportSystemError(errno,
-                                 _("cannot read %s"), path);
-            goto cleanup;
-        }
-
-        ret = 0;
-    } else {
-        umlReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("invalid path"));
+    /* Seek and read. */
+    /* NB. Because we configure with AC_SYS_LARGEFILE, off_t should
+     * be 64 bits on all platforms.
+     */
+    if (lseek(fd, offset, SEEK_SET) == (off_t) -1 ||
+        saferead(fd, buffer, size) == (ssize_t) -1) {
+        virReportSystemError(errno,
+                             _("cannot read %s"), path);
+        goto cleanup;
     }
+
+    ret = 0;
 
 cleanup:
     VIR_FORCE_CLOSE(fd);

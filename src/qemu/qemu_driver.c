@@ -5495,7 +5495,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         disk = dev->data.disk;
-        if (virDomainDiskIndexByName(vmdef, disk->dst) >= 0) {
+        if (virDomainDiskIndexByName(vmdef, disk->dst, true) >= 0) {
             qemuReportError(VIR_ERR_INVALID_ARG,
                             _("target %s already exists."), disk->dst);
             return -1;
@@ -5613,10 +5613,10 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         disk = dev->data.disk;
-        pos = virDomainDiskIndexByName(vmdef, disk->dst);
+        pos = virDomainDiskIndexByName(vmdef, disk->dst, false);
         if (pos < 0) {
             qemuReportError(VIR_ERR_INVALID_ARG,
-                            _("target %s doesn't exists."), disk->dst);
+                            _("target %s doesn't exist."), disk->dst);
             return -1;
         }
         orig = vmdef->disks[pos];
@@ -7355,7 +7355,8 @@ qemudDomainBlockPeek (virDomainPtr dom,
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    int fd = -1, ret = -1, i;
+    int fd = -1, ret = -1;
+    const char *actual;
 
     virCheckFlags(0, -1);
 
@@ -7377,41 +7378,34 @@ qemudDomainBlockPeek (virDomainPtr dom,
         goto cleanup;
     }
 
-    /* Check the path belongs to this domain. */
-    for (i = 0 ; i < vm->def->ndisks ; i++) {
-        if (vm->def->disks[i]->src != NULL &&
-            STREQ (vm->def->disks[i]->src, path)) {
-            ret = 0;
-            break;
-        }
-    }
-
-    if (ret == 0) {
-        ret = -1;
-        /* The path is correct, now try to open it and get its size. */
-        fd = open (path, O_RDONLY);
-        if (fd == -1) {
-            virReportSystemError(errno,
-                                 _("%s: failed to open"), path);
-            goto cleanup;
-        }
-
-        /* Seek and read. */
-        /* NB. Because we configure with AC_SYS_LARGEFILE, off_t should
-         * be 64 bits on all platforms.
-         */
-        if (lseek (fd, offset, SEEK_SET) == (off_t) -1 ||
-            saferead (fd, buffer, size) == (ssize_t) -1) {
-            virReportSystemError(errno,
-                                 _("%s: failed to seek or read"), path);
-            goto cleanup;
-        }
-
-        ret = 0;
-    } else {
+    /* Check the path belongs to this domain.  */
+    if (!(actual = virDomainDiskPathByName(vm->def, path))) {
         qemuReportError(VIR_ERR_INVALID_ARG,
-                        "%s", _("invalid path"));
+                        _("invalid path '%s'"), path);
+        goto cleanup;
     }
+    path = actual;
+
+    /* The path is correct, now try to open it and get its size. */
+    fd = open(path, O_RDONLY);
+    if (fd == -1) {
+        virReportSystemError(errno,
+                             _("%s: failed to open"), path);
+        goto cleanup;
+    }
+
+    /* Seek and read. */
+    /* NB. Because we configure with AC_SYS_LARGEFILE, off_t should
+     * be 64 bits on all platforms.
+     */
+    if (lseek(fd, offset, SEEK_SET) == (off_t) -1 ||
+        saferead(fd, buffer, size) == (ssize_t) -1) {
+        virReportSystemError(errno,
+                             _("%s: failed to seek or read"), path);
+        goto cleanup;
+    }
+
+    ret = 0;
 
 cleanup:
     VIR_FORCE_CLOSE(fd);
@@ -7491,7 +7485,7 @@ qemudDomainMemoryPeek (virDomainPtr dom,
     qemuDomainObjExitMonitor(driver, vm);
 
     /* Read the memory file into buffer. */
-    if (saferead (fd, buffer, size) == (ssize_t) -1) {
+    if (saferead(fd, buffer, size) == (ssize_t) -1) {
         virReportSystemError(errno,
                              _("failed to read temporary file "
                                "created with template %s"), tmp);
@@ -7527,8 +7521,8 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     virStorageFileMetadata *meta = NULL;
     virDomainDiskDefPtr disk = NULL;
     struct stat sb;
-    int i;
     int format;
+    const char *actual;
 
     virCheckFlags(0, -1);
 
@@ -7550,22 +7544,15 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     }
 
     /* Check the path belongs to this domain. */
-    for (i = 0 ; i < vm->def->ndisks ; i++) {
-        if (vm->def->disks[i]->src != NULL &&
-            STREQ (vm->def->disks[i]->src, path)) {
-            disk = vm->def->disks[i];
-            break;
-        }
-    }
-
-    if (!disk) {
+    if (!(actual = virDomainDiskPathByName(vm->def, path))) {
         qemuReportError(VIR_ERR_INVALID_ARG,
                         _("invalid path %s not assigned to domain"), path);
         goto cleanup;
     }
+    path = actual;
 
     /* The path is correct, now try to open it and get its size. */
-    fd = open (path, O_RDONLY);
+    fd = open(path, O_RDONLY);
     if (fd == -1) {
         virReportSystemError(errno,
                              _("failed to open path '%s'"), path);
@@ -7624,7 +7611,7 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
         /* NB. Because we configure with AC_SYS_LARGEFILE, off_t should
          * be 64 bits on all platforms.
          */
-        end = lseek (fd, 0, SEEK_END);
+        end = lseek(fd, 0, SEEK_END);
         if (end == (off_t)-1) {
             virReportSystemError(errno,
                                  _("failed to seek to end of %s"), path);
@@ -9831,23 +9818,26 @@ static const char *
 qemuDiskPathToAlias(virDomainObjPtr vm, const char *path) {
     int i;
     char *ret = NULL;
+    virDomainDiskDefPtr disk;
 
-    for (i = 0 ; i < vm->def->ndisks ; i++) {
-        virDomainDiskDefPtr disk = vm->def->disks[i];
+    i = virDomainDiskIndexByName(vm->def, path, true);
+    if (i < 0)
+        goto cleanup;
 
-        if (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
-            disk->type != VIR_DOMAIN_DISK_TYPE_FILE)
-            continue;
+    disk = vm->def->disks[i];
 
-        if (disk->src != NULL && STREQ(disk->src, path)) {
-            if (virAsprintf(&ret, "drive-%s", disk->info.alias) < 0) {
-                virReportOOMError();
-                return NULL;
-            }
-            break;
+    if (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
+        disk->type != VIR_DOMAIN_DISK_TYPE_FILE)
+        goto cleanup;
+
+    if (disk->src) {
+        if (virAsprintf(&ret, "drive-%s", disk->info.alias) < 0) {
+            virReportOOMError();
+            return NULL;
         }
     }
 
+cleanup:
     if (!ret) {
         qemuReportError(VIR_ERR_INVALID_ARG,
                         "%s", _("No device found for specified path"));

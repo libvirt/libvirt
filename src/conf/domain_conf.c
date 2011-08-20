@@ -5811,17 +5811,44 @@ virDomainChrTargetTypeToString(int deviceType,
     return type;
 }
 
-int virDomainDiskIndexByName(virDomainDefPtr def, const char *name)
+int
+virDomainDiskIndexByName(virDomainDefPtr def, const char *name,
+                         bool allow_ambiguous)
 {
     virDomainDiskDefPtr vdisk;
     int i;
+    int candidate = -1;
 
+    /* We prefer the <target dev='name'/> name (it's shorter, required
+     * for all disks, and should be unambiguous), but also support
+     * <source file='name'/> (if unambiguous).  Assume dst if there is
+     * no leading slash, source name otherwise.  */
     for (i = 0; i < def->ndisks; i++) {
         vdisk = def->disks[i];
-        if (STREQ(vdisk->dst, name))
-            return i;
+        if (*name != '/') {
+            if (STREQ(vdisk->dst, name))
+                return i;
+        } else if (vdisk->src &&
+                   STREQ(vdisk->src, name)) {
+            if (allow_ambiguous)
+                return i;
+            if (candidate >= 0)
+                return -1;
+            candidate = i;
+        }
     }
-    return -1;
+    return candidate;
+}
+
+/* Return the path to a disk image if a string identifies at least one
+ * disk belonging to the domain (both device strings 'vda' and paths
+ * '/path/to/file' are converted into '/path/to/file').  */
+const char *
+virDomainDiskPathByName(virDomainDefPtr def, const char *name)
+{
+    int i = virDomainDiskIndexByName(def, name, true);
+
+    return i < 0 ? NULL : def->disks[i]->src;
 }
 
 int virDomainDiskInsert(virDomainDefPtr def,
@@ -5897,7 +5924,7 @@ void virDomainDiskRemove(virDomainDefPtr def, size_t i)
 
 int virDomainDiskRemoveByName(virDomainDefPtr def, const char *name)
 {
-    int i = virDomainDiskIndexByName(def, name);
+    int i = virDomainDiskIndexByName(def, name, false);
     if (i < 0)
         return -1;
     virDomainDiskRemove(def, i);
@@ -11651,11 +11678,12 @@ disksorter(const void *a, const void *b)
 
 /* Align def->disks to def->domain.  Sort the list of def->disks,
  * filling in any missing disks or snapshot state defaults given by
- * the domain, with a fallback to a passed in default.  Issue an error
- * and return -1 if any def->disks[n]->name appears more than once or
- * does not map to dom->disks.  If require_match, also require that
- * existing def->disks snapshot states do not override explicit
- * def->dom settings.  */
+ * the domain, with a fallback to a passed in default.  Convert paths
+ * to disk targets for uniformity.  Issue an error and return -1 if
+ * any def->disks[n]->name appears more than once or does not map to
+ * dom->disks.  If require_match, also require that existing
+ * def->disks snapshot states do not override explicit def->dom
+ * settings.  */
 int
 virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
                             int default_snapshot,
@@ -11693,7 +11721,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
     /* Double check requested disks.  */
     for (i = 0; i < def->ndisks; i++) {
         virDomainSnapshotDiskDefPtr disk = &def->disks[i];
-        int idx = virDomainDiskIndexByName(def->dom, disk->name);
+        int idx = virDomainDiskIndexByName(def->dom, disk->name, false);
         int disk_snapshot;
 
         if (idx < 0) {
@@ -11730,6 +11758,13 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
                                    "use of external snapshot mode"),
                                  disk->file, disk->name);
             goto cleanup;
+        }
+        if (STRNEQ(disk->name, def->dom->disks[idx]->dst)) {
+            VIR_FREE(disk->name);
+            if (!(disk->name = strdup(def->dom->disks[idx]->dst))) {
+                virReportOOMError();
+                goto cleanup;
+            }
         }
     }
 

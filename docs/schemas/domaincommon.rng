@@ -770,10 +770,15 @@
       </choice>
     </element>
   </define>
+  <define name="diskTarget">
+    <data type="string">
+      <param name="pattern">(ioemu:)?(fd|hd|sd|vd|xvd|ubd)[a-zA-Z0-9_]+</param>
+    </data>
+  </define>
   <define name="target">
     <element name="target">
       <attribute name="dev">
-        <ref name="deviceName"/>
+        <ref name="diskTarget"/>
       </attribute>
       <optional>
         <attribute name="bus">

@@ -1648,7 +1648,9 @@ int virDomainVcpuPinAdd(virDomainDefPtr def,
 
 int virDomainVcpuPinDel(virDomainDefPtr def, int vcpu);
 
-int virDomainDiskIndexByName(virDomainDefPtr def, const char *name);
+int virDomainDiskIndexByName(virDomainDefPtr def, const char *name,
+                             bool allow_ambiguous);
+const char *virDomainDiskPathByName(virDomainDefPtr, const char *name);
 int virDomainDiskInsert(virDomainDefPtr def,
                         virDomainDiskDefPtr disk);
 void virDomainDiskInsertPreAlloced(virDomainDefPtr def,

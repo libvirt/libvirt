@@ -3849,11 +3849,11 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
     xenUnifiedPrivatePtr priv;
     struct sexpr *root = NULL;
     int fd = -1, ret = -1;
-    int found = 0, i;
     virDomainDefPtr def;
     int id;
     char * tty;
     int vncport;
+    const char *actual;
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
@@ -3889,18 +3889,12 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
                              vncport)))
         goto cleanup;
 
-    for (i = 0 ; i < def->ndisks ; i++) {
-        if (def->disks[i]->src &&
-            STREQ(def->disks[i]->src, path)) {
-            found = 1;
-            break;
-        }
-    }
-    if (!found) {
+    if (!(actual = virDomainDiskPathByName(def, path))) {
         virXendError(VIR_ERR_INVALID_ARG,
                       _("%s: invalid path"), path);
         goto cleanup;
     }
+    path = actual;
 
     /* The path is correct, now try to open it and get its size. */
     fd = open (path, O_RDONLY);

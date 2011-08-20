@@ -192,15 +192,10 @@ static virDomainDiskDefPtr
 qemuProcessFindDomainDiskByPath(virDomainObjPtr vm,
                                 const char *path)
 {
-    int i;
+    int i = virDomainDiskIndexByName(vm->def, path, true);
 
-    for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDefPtr disk;
-
-        disk = vm->def->disks[i];
-        if (disk->src != NULL && STREQ(disk->src, path))
-            return disk;
-    }
+    if (i >= 0)
+        return vm->def->disks[i];
 
     qemuReportError(VIR_ERR_INTERNAL_ERROR,
                     _("no disk found with path %s"),
