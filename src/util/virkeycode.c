@@ -118,7 +118,7 @@ static int __virKeycodeValueTranslate(unsigned int from_offset,
 {
     int i;
 
-    for (i = 0; ARRAY_CARDINALITY(virKeycodes); i++) {
+    for (i = 0; i < ARRAY_CARDINALITY(virKeycodes); i++) {
         if (getfield(virKeycodes + i, unsigned short, from_offset) == key_value)
             return getfield(virKeycodes + i, unsigned short, to_offset);
     }
