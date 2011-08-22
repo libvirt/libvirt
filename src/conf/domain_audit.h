@@ -35,8 +35,8 @@ void virDomainAuditStop(virDomainObjPtr vm,
                         const char *reason)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 void virDomainAuditDisk(virDomainObjPtr vm,
-                        virDomainDiskDefPtr oldDef,
-                        virDomainDiskDefPtr newDef,
+                        const char *oldDef,
+                        const char *newDef,
                         const char *reason,
                         bool success)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);

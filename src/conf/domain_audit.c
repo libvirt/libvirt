@@ -60,7 +60,7 @@ virDomainAuditGetRdev(const char *path ATTRIBUTE_UNUSED)
 
 void
 virDomainAuditDisk(virDomainObjPtr vm,
-                   virDomainDiskDefPtr oldDef, virDomainDiskDefPtr newDef,
+                   const char *oldDef, const char *newDef,
                    const char *reason, bool success)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -80,15 +80,11 @@ virDomainAuditDisk(virDomainObjPtr vm,
         virt = "?";
     }
 
-    if (!(oldsrc = virAuditEncode("old-disk",
-                                  oldDef && oldDef->src ?
-                                  oldDef->src : "?"))) {
+    if (!(oldsrc = virAuditEncode("old-disk", VIR_AUDIT_STR(oldDef)))) {
         VIR_WARN("OOM while encoding audit message");
         goto cleanup;
     }
-    if (!(newsrc = virAuditEncode("new-disk",
-                                  newDef && newDef->src ?
-                                  newDef->src : "?"))) {
+    if (!(newsrc = virAuditEncode("new-disk", VIR_AUDIT_STR(newDef)))) {
         VIR_WARN("OOM while encoding audit message");
         goto cleanup;
     }
@@ -580,7 +576,7 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
         if (disk->src) /* Skips CDROM without media initially inserted */
-            virDomainAuditDisk(vm, NULL, disk, "start", true);
+            virDomainAuditDisk(vm, NULL, disk->src, "start", true);
     }
 
     for (i = 0 ; i < vm->def->nfss ; i++) {
