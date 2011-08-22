@@ -67,6 +67,26 @@ for args in \
   virsh -d0 -c $test_url setvcpus $args >out 2>>err || fail=1
   LC_ALL=C sort out | compare - exp-out || fail=1
 done
+
+# Another complex parsing example
+cat <<\EOF > exp-out || framework_failure
+<domainsnapshot>
+  <description>1&lt;2</description>
+  <disks>
+    <disk name='vda' snapshot='external'>
+      <source file='a&amp;b,c'/>
+    </disk>
+    <disk name='vdb'/>
+  </disks>
+</domainsnapshot>
+
+
+EOF
+virsh -c $test_url snapshot-create-as --print-xml test \
+  --diskspec 'vda,file=a&b,,c,snapshot=external' --description '1<2' \
+  --diskspec vdb >out 2>>err || fail=1
+compare out exp-out || fail=1
+
 test -s err && fail=1
 
 (exit $fail); exit $fail

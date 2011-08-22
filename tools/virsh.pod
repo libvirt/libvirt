@@ -1718,17 +1718,26 @@ used to represent properties of snapshots.
 =over 4
 
 =item B<snapshot-create> I<domain> [I<xmlfile>] {[I<--redefine> [I<--current>]]
-| [I<--no-metadata>] [I<--halt>]}
+| [I<--no-metadata>] [I<--halt>] [I<--disk-only>]}
 
 Create a snapshot for domain I<domain> with the properties specified in
 I<xmlfile>.  Normally, the only properties settable for a domain snapshot
-are the <name> and <description> elements; the rest of the fields are
+are the <name> and <description> elements, as well as <disks> if
+I<--disk-only> is given; the rest of the fields are
 ignored, and automatically filled in by libvirt.  If I<xmlfile> is
 completely omitted, then libvirt will choose a value for all fields.
 The new snapshot will become current, as listed by B<snapshot-current>.
 
 If I<--halt> is specified, the domain will be left in an inactive state
 after the snapshot is created.
+
+If I<--disk-only> is specified, the snapshot will only include disk
+state rather than the usual system checkpoint with vm state.  Disk
+snapshots are faster than full system checkpoints, but reverting to a
+disk snapshot may require fsck or journal replays, since it is like
+the disk state at the point when the power cord is abruptly pulled;
+and mixing I<--halt> and I<--disk-only> loses any data that was not
+flushed to disk at the time.
 
 If I<--redefine> is specified, then all XML elements produced by
 B<snapshot-dumpxml> are valid; this can be used to migrate snapshot
@@ -1753,13 +1762,26 @@ by command such as B<destroy> or by internal guest action).
 
 =item B<snapshot-create-as> I<domain> {[I<--print-xml>]
 | [I<--no-metadata>] [I<--halt>]} [I<name>] [I<description>]
+[I<--disk-only> [I<diskspec>]...]
 
 Create a snapshot for domain I<domain> with the given <name> and
 <description>; if either value is omitted, libvirt will choose a
 value.  If I<--print-xml> is specified, then XML appropriate for
 I<snapshot-create> is output, rather than actually creating a snapshot.
 Otherwise, if I<--halt> is specified, the domain will be left in an
-inactive state after the snapshot is created.
+inactive state after the snapshot is created, and if I<--disk-only>
+is specified, the snapshot will not include vm state.
+
+The I<--disk-only> flag is used to request a disk-only snapshot.  When
+this flag is in use, the command can also take additional I<diskspec>
+arguments to add <disk> elements to the xml.  Each <diskspec> is in the
+form B<disk[,snapshot=type][,driver=type][,file=name]>.  To include a
+literal comma in B<disk> or in B<file=name>, escape it with a second
+comma.  For example, a diskspec of "vda,snapshot=external,file=/path/to,,new"
+results in the following XML:
+  <disk name='vda' snapshot='external'>
+    <source file='/path/to,new'/>
+  </disk>
 
 If I<--no-metadata> is specified, then the snapshot data is created,
 but any metadata is immediately discarded (that is, libvirt does not
