@@ -325,9 +325,17 @@ doRemoteOpen (virConnectPtr conn,
             } else {
                 if (STRCASEEQ (transport_str, "tls"))
                     transport = trans_tls;
-                else if (STRCASEEQ (transport_str, "unix"))
-                    transport = trans_unix;
-                else if (STRCASEEQ (transport_str, "ssh"))
+                else if (STRCASEEQ (transport_str, "unix")) {
+                    if (conn->uri->server) {
+                        remoteError(VIR_ERR_INVALID_ARG,
+                                    _("using unix socket and remote "
+                                      "server '%s' is not supported."),
+                                    conn->uri->server);
+                        return VIR_DRV_OPEN_ERROR;
+                    } else {
+                        transport = trans_unix;
+                    }
+                } else if (STRCASEEQ (transport_str, "ssh"))
                     transport = trans_ssh;
                 else if (STRCASEEQ (transport_str, "ext"))
                     transport = trans_ext;
