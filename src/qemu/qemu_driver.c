@@ -1827,6 +1827,19 @@ qemuDomainSnapshotDiscardAll(void *payload,
         curr->err = err;
 }
 
+/* Count how many snapshots in a set have external disk snapshots.  */
+static void
+qemuDomainSnapshotCountExternal(void *payload,
+                                const void *name ATTRIBUTE_UNUSED,
+                                void *data)
+{
+    virDomainSnapshotObjPtr snap = payload;
+    int *count = data;
+
+    if (snap->def->state == VIR_DOMAIN_DISK_SNAPSHOT)
+        (*count)++;
+}
+
 static int
 qemuDomainDestroyFlags(virDomainPtr dom,
                        unsigned int flags)
@@ -8857,6 +8870,14 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                                 def->name);
                 goto cleanup;
             }
+            if ((other->def->state == VIR_DOMAIN_DISK_SNAPSHOT) !=
+                (def->state == VIR_DOMAIN_DISK_SNAPSHOT)) {
+                qemuReportError(VIR_ERR_INVALID_ARG,
+                                _("cannot change between disk snapshot and "
+                                  "system checkpoint in snapshot %s"),
+                                def->name);
+                goto cleanup;
+            }
             if (other->def->dom) {
                 if (def->dom) {
                     if (!virDomainDefCheckABIStability(other->def->dom,
@@ -8873,10 +8894,6 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                 vm->current_snapshot = NULL;
             }
             virDomainSnapshotObjListRemove(&vm->snapshots, other);
-        } else {
-            /* XXX Should we do some feasibility checks, like parsing
-             * qemu-img output to check that def->name matches at
-             * least one qcow2 snapshot name?  */
         }
     } else {
         /* Easiest way to clone inactive portion of vm->def is via
@@ -8933,10 +8950,8 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     /* actually do the snapshot */
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) {
         /* XXX Should we validate that the redefined snapshot even
-         * makes sense, such as checking whether the requested parent
-         * snapshot exists and is not creating a loop, or that
-         * qemu-img recognizes the snapshot name in at least one of
-         * the domain's disks?  */
+         * makes sense, such as checking that qemu-img recognizes the
+         * snapshot name in at least one of the domain's disks?  */
     } else if (!virDomainObjIsActive(vm)) {
         if (qemuDomainSnapshotCreateInactive(driver, vm, snap) < 0)
             goto cleanup;
@@ -9241,6 +9256,12 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                           "to revert to inactive snapshot"));
         goto cleanup;
     }
+    if (snap->def->state == VIR_DOMAIN_DISK_SNAPSHOT) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("revert to external disk snapshot not supported "
+                          "yet"));
+        goto cleanup;
+    }
 
     if (vm->current_snapshot) {
         vm->current_snapshot->def->current = false;
@@ -9528,6 +9549,7 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     struct snap_remove rem;
     struct snap_reparent rep;
     bool metadata_only = !!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY);
+    int external = 0;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
                   VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY |
@@ -9548,6 +9570,22 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
                         _("no domain snapshot with matching name '%s'"),
                         snapshot->name);
         goto cleanup;
+    }
+
+    if (!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY)) {
+        if (!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) &&
+            snap->def->state == VIR_DOMAIN_DISK_SNAPSHOT)
+            external++;
+        if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN)
+            virDomainSnapshotForEachDescendant(&vm->snapshots, snap,
+                                               qemuDomainSnapshotCountExternal,
+                                               &external);
+        if (external) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("deletion of %d external disk snapshots not "
+                              "supported yet"), external);
+            goto cleanup;
+        }
     }
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
