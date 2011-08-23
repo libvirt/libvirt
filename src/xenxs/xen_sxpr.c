@@ -604,7 +604,7 @@ xenParseSxprSound(virDomainDefPtr def,
          * Special compatability code for Xen with a bogus
          * sound=all in config.
          *
-         * NB delibrately, don't include all possible
+         * NB deliberately, don't include all possible
          * sound models anymore, just the 2 that were
          * historically present in Xen's QEMU.
          *

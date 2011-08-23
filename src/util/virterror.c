@@ -248,7 +248,7 @@ virCopyError(virErrorPtr from,
     to->int1 = from->int1;
     to->int2 = from->int2;
     /*
-     * Delibrately not setting 'conn', 'dom', 'net' references
+     * Deliberately not setting 'conn', 'dom', 'net' references
      */
     return ret;
 }
@@ -708,7 +708,7 @@ virRaiseErrorFull(const char *filename ATTRIBUTE_UNUSED,
      * Save the information about the error
      */
     /*
-     * Delibrately not setting conn, dom & net fields since
+     * Deliberately not setting conn, dom & net fields since
      * they're utterly unsafe
      */
     to->domain = domain;

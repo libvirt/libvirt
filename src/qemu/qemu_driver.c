@@ -2304,7 +2304,7 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
         /* Avoid throwing an error here, since it is possible
          * that with NFS we can't actually stat() the file.
          * The subsequent codepaths will still raise an error
-         * if a truely fatal problem is hit */
+         * if a truly fatal problem is hit */
         is_reg = true;
     } else {
         is_reg = !!S_ISREG(sb.st_mode);

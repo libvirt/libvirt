@@ -1103,11 +1103,11 @@ static int virDomainEventDispatchMatchCallback(virDomainEventPtr event,
         return 0;
 
     if (cb->dom) {
-        /* Delibrately ignoring 'id' for matching, since that
+        /* Deliberately ignoring 'id' for matching, since that
          * will cause problems when a domain switches between
          * running & shutoff states & ignoring 'name' since
          * Xen sometimes renames guests during migration, thus
-         * leaving 'uuid' as the only truely reliable ID we can use*/
+         * leaving 'uuid' as the only truly reliable ID we can use*/
 
         if (memcmp(event->dom.uuid, cb->dom->uuid, VIR_UUID_BUFLEN) == 0)
             return 1;

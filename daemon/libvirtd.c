@@ -1131,7 +1131,7 @@ static void daemonRunStateInit(void *opaque)
     virNetServerPtr srv = opaque;
 
     /* Start the stateful HV drivers
-     * This is delibrately done after telling the parent process
+     * This is deliberately done after telling the parent process
      * we're ready, since it can take a long time and this will
      * seriously delay OS bootup process */
     if (virStateInitialize(virNetServerIsPrivileged(srv)) < 0) {
