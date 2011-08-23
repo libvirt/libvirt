@@ -157,17 +157,17 @@ int main(int argc, char **argv)
                    part->num, '\0',
                    type, '\0',
                    content, '\0',
-                   part->geom.start * 512llu, '\0',
-                   (part->geom.end + 1 ) * 512llu, '\0',
-                   part->geom.length * 512llu, '\0');
+                   part->geom.start * dev->sector_size, '\0',
+                   (part->geom.end + 1 ) * dev->sector_size, '\0',
+                   part->geom.length * dev->sector_size, '\0');
         } else {
             printf("%s%c%s%c%s%c%llu%c%llu%c%llu%c",
                    "-", '\0',
                    type, '\0',
                    content, '\0',
-                   part->geom.start * 512llu, '\0',
-                   (part->geom.end + 1 ) * 512llu, '\0',
-                   part->geom.length * 512llu, '\0');
+                   part->geom.start * dev->sector_size, '\0',
+                   (part->geom.end + 1 ) * dev->sector_size, '\0',
+                   part->geom.length * dev->sector_size, '\0');
         }
         part = ped_disk_next_partition(disk, part);
     }
