@@ -4084,7 +4084,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         switch(console->targetType) {
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO:
             if (!qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-                qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                     _("virtio channel requires QEMU to support -device"));
                 goto error;
             }
@@ -4109,7 +4109,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             break;
 
         default:
-            qemuReportError(VIR_ERR_NO_SUPPORT,
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             _("unsupported console target type %s"),
                             NULLSTR(virDomainChrConsoleTargetTypeToString(console->targetType)));
             goto error;

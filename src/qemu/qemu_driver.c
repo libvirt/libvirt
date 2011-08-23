@@ -1552,7 +1552,7 @@ static int qemuDomainReboot(virDomainPtr dom, unsigned int flags) {
             vm = NULL;
     } else {
 #endif
-        qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
                         _("Reboot is not supported without the JSON monitor"));
 #if HAVE_YAJL
     }
@@ -3309,7 +3309,7 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
                                           cpumap, maplen, maxcpu) < 0)
                 goto cleanup;
         } else {
-            qemuReportError(VIR_ERR_NO_SUPPORT,
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
                             "%s", _("cpu affinity is not supported"));
             goto cleanup;
         }
@@ -3563,7 +3563,7 @@ qemudDomainGetVcpus(virDomainPtr dom,
                         goto cleanup;
                 }
             } else {
-                qemuReportError(VIR_ERR_NO_SUPPORT,
+                qemuReportError(VIR_ERR_OPERATION_INVALID,
                                 "%s", _("cpu affinity is not available"));
                 goto cleanup;
             }
@@ -5637,7 +5637,7 @@ static int qemuDomainSetBlkioParameters(virDomainPtr dom,
         }
 
         if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
-            qemuReportError(VIR_ERR_NO_SUPPORT, _("blkio cgroup isn't mounted"));
+            qemuReportError(VIR_ERR_OPERATION_INVALID, _("blkio cgroup isn't mounted"));
             goto cleanup;
         }
 
@@ -5790,7 +5790,7 @@ static int qemuDomainGetBlkioParameters(virDomainPtr dom,
         }
 
         if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
-            qemuReportError(VIR_ERR_NO_SUPPORT, _("blkio cgroup isn't mounted"));
+            qemuReportError(VIR_ERR_OPERATION_INVALID, _("blkio cgroup isn't mounted"));
             goto cleanup;
         }
 
@@ -6887,8 +6887,8 @@ qemudDomainInterfaceStats (virDomainPtr dom,
                            const char *path ATTRIBUTE_UNUSED,
                            struct _virDomainInterfaceStats *stats ATTRIBUTE_UNUSED)
 {
-    qemuReportError(VIR_ERR_NO_SUPPORT,
-                    "%s", __FUNCTION__);
+    qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                    _("interface stats not implemented on this platform"));
     return -1;
 }
 #endif
@@ -8004,7 +8004,7 @@ qemuCPUCompare(virConnectPtr conn,
     qemuDriverLock(driver);
 
     if (!driver->caps || !driver->caps->host.cpu) {
-        qemuReportError(VIR_ERR_NO_SUPPORT,
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("cannot get host CPU capabilities"));
     } else {
         ret = cpuCompareXML(driver->caps->host.cpu, xmlDesc);
