@@ -2690,7 +2690,7 @@ int
 qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
                     int fd, off_t offset, const char *path,
                     const char *compressor,
-                    bool is_reg, bool bypassSecurityDriver,
+                    bool bypassSecurityDriver,
                     enum qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -2713,11 +2713,11 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
         bypassSecurityDriver = true;
     } else {
         /* Phooey - we have to fall back on exec migration, where qemu
-         * has to popen() the file by name.  We might also stumble on
+         * has to popen() the file by name, and block devices have to be
+         * given cgroup ACL permission.  We might also stumble on
          * a race present in some qemu versions where it does a wait()
          * that botches pclose.  */
-        if (!is_reg &&
-            qemuCgroupControllerActive(driver,
+        if (qemuCgroupControllerActive(driver,
                                        VIR_CGROUP_CONTROLLER_DEVICES)) {
             if (virCgroupForDomain(driver->cgroup, vm->def->name,
                                    &cgroup, 0) != 0) {
@@ -2729,7 +2729,10 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
             rc = virCgroupAllowDevicePath(cgroup, path,
                                           VIR_CGROUP_DEVICE_RW);
             virDomainAuditCgroupPath(vm, cgroup, "allow", path, "rw", rc);
-            if (rc < 0) {
+            if (rc == 1) {
+                /* path was not a device, no further need for cgroup */
+                virCgroupFree(&cgroup);
+            } else if (rc < 0) {
                 virReportSystemError(-rc,
                                      _("Unable to allow device %s for %s"),
                                      path, vm->def->name);

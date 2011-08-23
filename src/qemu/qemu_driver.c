@@ -2191,6 +2191,113 @@ qemuCompressProgramName(int compress)
             qemudSaveCompressionTypeToString(compress));
 }
 
+/* Internal function to properly create or open existing files, with
+ * ownership affected by qemu driver setup.  */
+static int
+qemuOpenFile(struct qemud_driver *driver, const char *path, int oflags,
+             bool *needUnlink, bool *bypassSecurityDriver)
+{
+    struct stat sb;
+    bool is_reg = true;
+    bool need_unlink = false;
+    bool bypass_security = false;
+    int fd = -1;
+    uid_t uid = getuid();
+    gid_t gid = getgid();
+
+    /* path might be a pre-existing block dev, in which case
+     * we need to skip the create step, and also avoid unlink
+     * in the failure case */
+    if (oflags & O_CREAT) {
+        need_unlink = true;
+        if (stat(path, &sb) == 0) {
+            is_reg = !!S_ISREG(sb.st_mode);
+            /* If the path is regular file which exists
+             * already and dynamic_ownership is off, we don't
+             * want to change it's ownership, just open it as-is */
+            if (is_reg && !driver->dynamicOwnership) {
+                uid = sb.st_uid;
+                gid = sb.st_gid;
+            }
+        }
+    }
+
+    /* First try creating the file as root */
+    if (!is_reg) {
+        fd = open(path, oflags & ~O_CREAT);
+        if (fd < 0) {
+            virReportSystemError(errno, _("unable to open %s"), path);
+            goto cleanup;
+        }
+    } else {
+        if ((fd = virFileOpenAs(path, oflags, S_IRUSR | S_IWUSR,
+                                uid, gid, 0)) < 0) {
+            /* If we failed as root, and the error was permission-denied
+               (EACCES or EPERM), assume it's on a network-connected share
+               where root access is restricted (eg, root-squashed NFS). If the
+               qemu user (driver->user) is non-root, just set a flag to
+               bypass security driver shenanigans, and retry the operation
+               after doing setuid to qemu user */
+            if ((fd != -EACCES && fd != -EPERM) ||
+                driver->user == getuid()) {
+                virReportSystemError(-fd,
+                                     _("Failed to create file '%s'"),
+                                     path);
+                goto cleanup;
+            }
+
+            /* On Linux we can also verify the FS-type of the directory. */
+            switch (virStorageFileIsSharedFS(path)) {
+                case 1:
+                   /* it was on a network share, so we'll continue
+                    * as outlined above
+                    */
+                   break;
+
+                case -1:
+                   virReportSystemError(errno,
+                                        _("Failed to create file "
+                                          "'%s': couldn't determine fs type"),
+                                        path);
+                   goto cleanup;
+
+                case 0:
+                default:
+                   /* local file - log the error returned by virFileOpenAs */
+                   virReportSystemError(-fd,
+                                        _("Failed to create file '%s'"),
+                                        path);
+                   goto cleanup;
+            }
+
+            /* Retry creating the file as driver->user */
+
+            if ((fd = virFileOpenAs(path, oflags,
+                                    S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP,
+                                    driver->user, driver->group,
+                                    VIR_FILE_OPEN_AS_UID)) < 0) {
+                virReportSystemError(-fd,
+                                   _("Error from child process creating '%s'"),
+                                     path);
+                goto cleanup;
+            }
+
+            /* Since we had to setuid to create the file, and the fstype
+               is NFS, we assume it's a root-squashing NFS share, and that
+               the security driver stuff would have failed anyway */
+
+            bypass_security = true;
+        }
+    }
+cleanup:
+    if (needUnlink)
+        *needUnlink = need_unlink;
+    if (bypassSecurityDriver)
+        *bypassSecurityDriver = bypass_security;
+
+    return fd;
+}
+
 /* This internal function expects the driver lock to already be held on
  * entry and the vm must be active + locked. Vm will be unlocked and
  * potentially free'd after this returns (eg transient VMs are freed
@@ -2209,14 +2316,11 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
     int rc;
     virDomainEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv;
-    struct stat sb;
-    bool is_reg = false;
+    bool needUnlink = false;
     size_t len;
     unsigned long long offset;
     unsigned long long pad;
     int fd = -1;
-    uid_t uid = getuid();
-    gid_t gid = getgid();
     int directFlag = 0;
     virFileDirectFdPtr directFd = NULL;
 
@@ -2304,107 +2408,18 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
     header.xml_len = len;
 
     /* Obtain the file handle.  */
-    /* path might be a pre-existing block dev, in which case
-     * we need to skip the create step, and also avoid unlink
-     * in the failure case */
-    if (stat(path, &sb) < 0) {
-        /* Avoid throwing an error here, since it is possible
-         * that with NFS we can't actually stat() the file.
-         * The subsequent codepaths will still raise an error
-         * if a truly fatal problem is hit */
-        is_reg = true;
-    } else {
-        is_reg = !!S_ISREG(sb.st_mode);
-        /* If the path is regular file which exists
-         * already and dynamic_ownership is off, we don't
-         * want to change it's ownership, just open it as-is */
-        if (is_reg && !driver->dynamicOwnership) {
-            uid=sb.st_uid;
-            gid=sb.st_gid;
-        }
-    }
-
-    /* First try creating the file as root */
     if (bypass_cache) {
         directFlag = virFileDirectFdFlag();
         if (directFlag < 0) {
             qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
                             _("bypass cache unsupported by this system"));
-            goto endjob;
+            goto cleanup;
         }
     }
-    if (!is_reg) {
-        fd = open(path, O_WRONLY | O_TRUNC | directFlag);
-        if (fd < 0) {
-            virReportSystemError(errno, _("unable to open %s"), path);
-            goto endjob;
-        }
-    } else {
-        int oflags = O_CREAT | O_TRUNC | O_WRONLY | directFlag;
-        if ((fd = virFileOpenAs(path, oflags, S_IRUSR | S_IWUSR,
-                                uid, gid, 0)) < 0) {
-            /* If we failed as root, and the error was permission-denied
-               (EACCES or EPERM), assume it's on a network-connected share
-               where root access is restricted (eg, root-squashed NFS). If the
-               qemu user (driver->user) is non-root, just set a flag to
-               bypass security driver shenanigans, and retry the operation
-               after doing setuid to qemu user */
-            rc = fd;
-            if (((rc != -EACCES) && (rc != -EPERM)) ||
-                driver->user == getuid()) {
-                virReportSystemError(-rc,
-                                    _("Failed to create domain save file '%s'"),
-                                     path);
-                goto endjob;
-            }
-
-            /* On Linux we can also verify the FS-type of the directory. */
-            switch (virStorageFileIsSharedFS(path)) {
-                case 1:
-                   /* it was on a network share, so we'll continue
-                    * as outlined above
-                    */
-                   break;
-
-                case -1:
-                   virReportSystemError(errno,
-                                        _("Failed to create domain save file "
-                                          "'%s': couldn't determine fs type"),
-                                        path);
-                   goto endjob;
-                   break;
-
-                case 0:
-                default:
-                   /* local file - log the error returned by virFileOpenAs */
-                   virReportSystemError(-rc,
-                                    _("Failed to create domain save file '%s'"),
-                                        path);
-                   goto endjob;
-                   break;
-
-            }
-
-            /* Retry creating the file as driver->user */
-
-            if ((fd = virFileOpenAs(path, oflags,
-                                    S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP,
-                                    driver->user, driver->group,
-                                    VIR_FILE_OPEN_AS_UID)) < 0) {
-                virReportSystemError(-fd,
-                                   _("Error from child process creating '%s'"),
-                                     path);
-                goto endjob;
-            }
-
-            /* Since we had to setuid to create the file, and the fstype
-               is NFS, we assume it's a root-squashing NFS share, and that
-               the security driver stuff would have failed anyway */
-
-            bypassSecurityDriver = true;
-        }
-    }
-
+    fd = qemuOpenFile(driver, path, O_WRONLY | O_TRUNC | O_CREAT | directFlag,
+                      &needUnlink, &bypassSecurityDriver);
+    if (fd < 0)
+        goto endjob;
     if (bypass_cache && (directFd = virFileDirectFdNew(&fd, path)) == NULL)
         goto endjob;
 
@@ -2417,7 +2432,7 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
     /* Perform the migration */
     if (qemuMigrationToFile(driver, vm, fd, offset, path,
                             qemuCompressProgramName(compressed),
-                            is_reg, bypassSecurityDriver,
+                            bypassSecurityDriver,
                             QEMU_ASYNC_JOB_SAVE) < 0)
         goto endjob;
     if (VIR_CLOSE(fd) < 0) {
@@ -2461,7 +2476,7 @@ cleanup:
     VIR_FORCE_CLOSE(fd);
     virFileDirectFdFree(directFd);
     VIR_FREE(xml);
-    if (ret != 0 && is_reg)
+    if (ret != 0 && needUnlink)
         unlink(path);
     if (event)
         qemuDomainEventQueue(driver, event);
@@ -2705,18 +2720,19 @@ doCoreDump(struct qemud_driver *driver,
             goto cleanup;
         }
     }
-    if ((fd = open(path, O_CREAT | O_TRUNC | O_WRONLY | directFlag,
-                   S_IRUSR | S_IWUSR)) < 0) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("failed to create '%s'"), path);
+    /* Core dumps usually imply last-ditch analysis efforts are
+     * desired, so we intentionally do not unlink even if a file was
+     * created.  */
+    if ((fd = qemuOpenFile(driver, path,
+                           O_CREAT | O_TRUNC | O_WRONLY | directFlag,
+                           NULL, NULL)) < 0)
         goto cleanup;
-    }
 
     if (bypass_cache && (directFd = virFileDirectFdNew(&fd, path)) == NULL)
         goto cleanup;
 
     if (qemuMigrationToFile(driver, vm, fd, 0, path,
-                            qemuCompressProgramName(compress), true, false,
+                            qemuCompressProgramName(compress), false,
                             QEMU_ASYNC_JOB_DUMP) < 0)
         goto cleanup;
 
@@ -3778,25 +3794,9 @@ qemuDomainSaveImageOpen(struct qemud_driver *driver,
         }
         oflags |= directFlag;
     }
-    if ((fd = virFileOpenAs(path, oflags, 0,
-                            getuid(), getgid(), 0)) < 0) {
-        if ((fd != -EACCES && fd != -EPERM) ||
-            driver->user == getuid()) {
-            qemuReportError(VIR_ERR_OPERATION_FAILED,
-                            "%s", _("cannot read domain image"));
-            goto error;
-        }
 
-        /* Opening as root failed, but qemu runs as a different user
-         * that might have better luck. */
-        if ((fd = virFileOpenAs(path, oflags, 0,
-                                driver->user, driver->group,
-                                VIR_FILE_OPEN_AS_UID)) < 0) {
-            qemuReportError(VIR_ERR_OPERATION_FAILED,
-                            "%s", _("cannot read domain image"));
-            goto error;
-        }
-    }
+    if ((fd = qemuOpenFile(driver, path, oflags, NULL, NULL)) < 0)
+        goto error;
     if (bypass_cache && (*directFd = virFileDirectFdNew(&fd, path)) == NULL)
         goto error;
 
