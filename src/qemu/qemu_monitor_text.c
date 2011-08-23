@@ -713,7 +713,7 @@ int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
      * to detect if qemu supports the command.
      */
     if (strstr(info, "\ninfo ")) {
-        qemuReportError(VIR_ERR_NO_SUPPORT,
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s",
                         _("'info blockstats' not supported by this qemu"));
         goto cleanup;
@@ -1388,7 +1388,7 @@ int qemuMonitorTextMigrate(qemuMonitorPtr mon,
     /* If the command isn't supported then qemu prints:
      * unknown command: migrate" */
     if (strstr(info, "unknown command:")) {
-        qemuReportError(VIR_ERR_NO_SUPPORT,
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
                         _("migration to '%s' not supported by this qemu: %s"), dest, info);
         goto cleanup;
     }
@@ -1652,7 +1652,7 @@ int qemuMonitorTextAddPCIHostDevice(qemuMonitorPtr mon,
     }
 
     if (strstr(reply, "invalid type: host")) {
-        qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
                         _("PCI device assignment is not supported by this version of qemu"));
         goto cleanup;
     }
@@ -1839,7 +1839,7 @@ int qemuMonitorTextSendFileHandle(qemuMonitorPtr mon,
     /* If the command isn't supported then qemu prints:
      * unknown command: getfd" */
     if (strstr(reply, "unknown command:")) {
-        qemuReportError(VIR_ERR_NO_SUPPORT,
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
                         _("qemu does not support sending of file handles: %s"),
                         reply);
         goto cleanup;
@@ -1882,7 +1882,7 @@ int qemuMonitorTextCloseFileHandle(qemuMonitorPtr mon,
     /* If the command isn't supported then qemu prints:
      * unknown command: getfd" */
     if (strstr(reply, "unknown command:")) {
-        qemuReportError(VIR_ERR_NO_SUPPORT,
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
                         _("qemu does not support closing of file handles: %s"),
                         reply);
         goto cleanup;
