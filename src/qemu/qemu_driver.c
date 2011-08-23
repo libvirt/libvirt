@@ -87,6 +87,7 @@
 #include "configmake.h"
 #include "threadpool.h"
 #include "locking/lock_manager.h"
+#include "locking/domain_lock.h"
 #include "virkeycode.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -8854,7 +8855,8 @@ cleanup:
 
 /* The domain is expected to hold monitor lock.  */
 static int
-qemuDomainSnapshotCreateSingleDiskActive(virDomainObjPtr vm,
+qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
+                                         virDomainObjPtr vm,
                                          virDomainSnapshotDiskDefPtr snap,
                                          virDomainDiskDefPtr disk)
 {
@@ -8863,6 +8865,10 @@ qemuDomainSnapshotCreateSingleDiskActive(virDomainObjPtr vm,
     char *source = NULL;
     char *driverType = NULL;
     int ret = -1;
+    int fd = -1;
+    char *origsrc = NULL;
+    char *origdriver = NULL;
+    bool need_unlink = false;
 
     if (snap->snapshot != VIR_DOMAIN_DISK_SNAPSHOT_EXTERNAL) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -8878,7 +8884,35 @@ qemuDomainSnapshotCreateSingleDiskActive(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    /* XXX create new file and set selinux labels */
+    /* create the stub file and set selinux labels; manipulate disk in
+     * place, in a way that can be reverted on failure. */
+    fd = qemuOpenFile(driver, source, O_WRONLY | O_TRUNC | O_CREAT,
+                      &need_unlink, NULL);
+    if (fd < 0)
+        goto cleanup;
+    VIR_FORCE_CLOSE(fd);
+
+    origsrc = disk->src;
+    disk->src = source;
+    origdriver = disk->driverType;
+    disk->driverType = driverType;
+
+    if (virDomainLockDiskAttach(driver->lockManager, vm, disk) < 0)
+        goto cleanup;
+    if (virSecurityManagerSetImageLabel(driver->securityManager, vm,
+                                        disk) < 0) {
+        if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
+            VIR_WARN("Unable to release lock on %s", source);
+        goto cleanup;
+    }
+    need_unlink = false;
+
+    disk->src = origsrc;
+    origsrc = NULL;
+    disk->driverType = origdriver;
+    origdriver = NULL;
+
+    /* create the actual snapshot */
     ret = qemuMonitorDiskSnapshot(priv->mon, device, source);
     virDomainAuditDisk(vm, disk->src, source, "snapshot", ret >= 0);
     if (ret < 0)
@@ -8898,6 +8932,12 @@ qemuDomainSnapshotCreateSingleDiskActive(virDomainObjPtr vm,
      * configuration changes awaiting the next boot?  */
 
 cleanup:
+    if (origsrc) {
+        disk->src = origsrc;
+        disk->driverType = origdriver;
+    }
+    if (need_unlink && unlink(source))
+        VIR_WARN("unable to unlink just-created %s", source);
     VIR_FREE(device);
     VIR_FREE(source);
     VIR_FREE(driverType);
@@ -8949,7 +8989,7 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
         if (snap->def->disks[i].snapshot == VIR_DOMAIN_DISK_SNAPSHOT_NO)
             continue;
 
-        ret = qemuDomainSnapshotCreateSingleDiskActive(vm,
+        ret = qemuDomainSnapshotCreateSingleDiskActive(driver, vm,
                                                        &snap->def->disks[i],
                                                        vm->def->disks[i]);
         if (ret < 0)
