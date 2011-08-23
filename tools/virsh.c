@@ -5201,17 +5201,17 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
     int ret = -1;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
-        goto out;
+        goto cleanup;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
-        goto out;
+        goto cleanup;
 
     if (vshCommandOptString(cmd, "path", &path) < 0)
-        goto out;
+        goto cleanup;
 
     if (vshCommandOptUL(cmd, "bandwidth", &bandwidth) < 0) {
         vshError(ctl, "%s", _("bandwidth must be a number"));
-        goto out;
+        goto cleanup;
     }
 
     if (mode == VSH_CMD_BLOCK_JOB_ABORT)
@@ -5224,7 +5224,8 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
         ret = virDomainBlockPull(dom, path, bandwidth, 0);
 
 out:
-    virDomainFree(dom);
+    if (dom)
+        virDomainFree(dom);
     return ret;
 }
 
