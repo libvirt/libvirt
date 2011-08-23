@@ -421,7 +421,7 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
         goto cleanup;
 
     if ((def->nets != NULL) && !(driver->have_netns)) {
-        lxcError(VIR_ERR_NO_SUPPORT,
+        lxcError(VIR_ERR_OPERATION_INVALID,
                  "%s", _("System lacks NETNS support"));
         goto cleanup;
     }
@@ -728,7 +728,7 @@ static int lxcDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
     }
 
     if (driver->cgroup == NULL) {
-        lxcError(VIR_ERR_NO_SUPPORT,
+        lxcError(VIR_ERR_OPERATION_INVALID,
                  "%s", _("cgroups must be configured on the host"));
         goto cleanup;
     }
@@ -1710,7 +1710,7 @@ static int lxcDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
     }
 
     if ((vm->def->nets != NULL) && !(driver->have_netns)) {
-        lxcError(VIR_ERR_NO_SUPPORT,
+        lxcError(VIR_ERR_OPERATION_INVALID,
                  "%s", _("System lacks NETNS support"));
         goto cleanup;
     }
@@ -1786,7 +1786,7 @@ lxcDomainCreateAndStart(virConnectPtr conn,
         goto cleanup;
 
     if ((def->nets != NULL) && !(driver->have_netns)) {
-        lxcError(VIR_ERR_NO_SUPPORT,
+        lxcError(VIR_ERR_OPERATION_INVALID,
                  "%s", _("System lacks NETNS support"));
         goto cleanup;
     }
@@ -2519,7 +2519,8 @@ static int
 lxcDomainInterfaceStats(virDomainPtr dom,
                         const char *path ATTRIBUTE_UNUSED,
                         struct _virDomainInterfaceStats *stats ATTRIBUTE_UNUSED)
-    lxcError(VIR_ERR_NO_SUPPORT, "%s", __FUNCTION__);
+    lxcError(VIR_ERR_OPERATION_INVALID, "%s",
+             _("interface stats not implemented on this platform"));
     return -1;
 }
 #endif
