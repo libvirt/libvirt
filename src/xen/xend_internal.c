@@ -2793,14 +2793,14 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
                 goto cleanup;
             }
         } else {
-            virXendError(VIR_ERR_NO_SUPPORT, "%s",
+            virXendError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                          _("unsupported device type"));
             goto cleanup;
         }
         break;
 
     default:
-        virXendError(VIR_ERR_NO_SUPPORT, "%s",
+        virXendError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                      _("unsupported device type"));
         goto cleanup;
     }
@@ -2921,7 +2921,7 @@ xenDaemonUpdateDeviceFlags(virDomainPtr domain, const char *xml,
         break;
 
     default:
-        virXendError(VIR_ERR_NO_SUPPORT, "%s",
+        virXendError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                      _("unsupported device type"));
         goto cleanup;
     }
@@ -3032,7 +3032,7 @@ xenDaemonDetachDeviceFlags(virDomainPtr domain, const char *xml,
             if (xenFormatSxprOnePCI(dev->data.hostdev, &buf, 1) < 0)
                 goto cleanup;
         } else {
-            virXendError(VIR_ERR_NO_SUPPORT, "%s",
+            virXendError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                          _("unsupported device type"));
             goto cleanup;
         }
@@ -3222,7 +3222,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
 
     /* Xen doesn't support renaming domains during migration. */
     if (dname) {
-        virXendError(VIR_ERR_NO_SUPPORT,
+        virXendError(VIR_ERR_OPERATION_INVALID,
                       "%s", _("xenDaemonDomainMigrate: Xen does not support"
                         " renaming domains during migration"));
         return -1;
@@ -3232,7 +3232,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
      * ignores it.
      */
     if (bandwidth) {
-        virXendError(VIR_ERR_NO_SUPPORT,
+        virXendError(VIR_ERR_OPERATION_INVALID,
                       "%s", _("xenDaemonDomainMigrate: Xen does not support"
                         " bandwidth limits during migration"));
         return -1;
@@ -3260,7 +3260,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
      * a nice error message.
      */
     if (flags & VIR_MIGRATE_PAUSED) {
-        virXendError(VIR_ERR_NO_SUPPORT,
+        virXendError(VIR_ERR_OPERATION_INVALID,
                       "%s", _("xenDaemonDomainMigrate: xend cannot migrate paused domains"));
         return -1;
     }
@@ -3268,7 +3268,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
     /* XXX we could easily do tunnelled & peer2peer migration too
        if we want to. support these... */
     if (flags != 0) {
-        virXendError(VIR_ERR_NO_SUPPORT,
+        virXendError(VIR_ERR_OPERATION_INVALID,
                       "%s", _("xenDaemonDomainMigrate: unsupported flag"));
         return -1;
     }
@@ -3569,7 +3569,7 @@ xenDaemonGetSchedulerType(virDomainPtr domain, int *nparams)
     /* Support only xendConfigVersion >=4 */
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
     if (priv->xendConfigVersion < 4) {
-        virXendError(VIR_ERR_NO_SUPPORT,
+        virXendError(VIR_ERR_OPERATION_INVALID,
                       "%s", _("unsupported in xendConfigVersion < 4"));
         return NULL;
     }
@@ -3645,7 +3645,7 @@ xenDaemonGetSchedulerParameters(virDomainPtr domain,
     /* Support only xendConfigVersion >=4 */
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
     if (priv->xendConfigVersion < 4) {
-        virXendError(VIR_ERR_NO_SUPPORT,
+        virXendError(VIR_ERR_OPERATION_INVALID,
                       "%s", _("unsupported in xendConfigVersion < 4"));
         return (-1);
     }
@@ -3752,7 +3752,7 @@ xenDaemonSetSchedulerParameters(virDomainPtr domain,
     /* Support only xendConfigVersion >=4 and active domains */
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
     if (priv->xendConfigVersion < 4) {
-        virXendError(VIR_ERR_NO_SUPPORT,
+        virXendError(VIR_ERR_OPERATION_INVALID,
                       "%s", _("unsupported in xendConfigVersion < 4"));
         return (-1);
     }
@@ -3871,7 +3871,7 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
                           domain->name);
     else {
         /* This call always fails for dom0. */
-        virXendError(VIR_ERR_NO_SUPPORT,
+        virXendError(VIR_ERR_OPERATION_INVALID,
                       "%s", _("domainBlockPeek is not supported for dom0"));
         return -1;
     }
@@ -4060,7 +4060,7 @@ virDomainXMLDevID(virDomainPtr domain,
         if (tmp == NULL)
             return -1;
     } else {
-        virXendError(VIR_ERR_NO_SUPPORT,
+        virXendError(VIR_ERR_OPERATION_INVALID,
                      "%s", _("hotplug of device type not supported"));
         return -1;
     }

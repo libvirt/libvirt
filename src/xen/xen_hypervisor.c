@@ -1457,7 +1457,7 @@ xenHypervisorDomainBlockStats (virDomainPtr dom,
     xenUnifiedUnlock(priv);
     return ret;
 #else
-    virXenErrorFunc(VIR_ERR_NO_SUPPORT, __FUNCTION__,
+    virXenErrorFunc(VIR_ERR_OPERATION_INVALID, __FUNCTION__,
                     "block statistics not supported on this platform",
                     dom->id);
     return -1;
@@ -1495,7 +1495,7 @@ xenHypervisorDomainInterfaceStats (virDomainPtr dom,
 
     return linuxDomainInterfaceStats(path, stats);
 #else
-    virXenErrorFunc(VIR_ERR_NO_SUPPORT, __FUNCTION__,
+    virXenErrorFunc(VIR_ERR_OPERATION_INVALID, __FUNCTION__,
                     "/proc/net/dev: Interface not found", 0);
     return -1;
 #endif

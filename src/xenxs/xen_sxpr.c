@@ -1865,7 +1865,7 @@ xenFormatSxprOnePCI(virDomainHostdevDefPtr def,
                     int detach)
 {
     if (def->managed) {
-        XENXS_ERROR(VIR_ERR_NO_SUPPORT, "%s",
+        XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                      _("managed PCI devices not supported with XenD"));
         return -1;
     }
@@ -1915,7 +1915,7 @@ xenFormatSxprAllPCI(virDomainDefPtr def,
         if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             def->hostdevs[i]->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
             if (def->hostdevs[i]->managed) {
-                XENXS_ERROR(VIR_ERR_NO_SUPPORT, "%s",
+                XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                              _("managed PCI devices not supported with XenD"));
                 return -1;
             }

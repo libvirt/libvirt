@@ -1571,7 +1571,8 @@ xenXMDomainBlockPeek (virDomainPtr dom ATTRIBUTE_UNUSED,
                       size_t size ATTRIBUTE_UNUSED,
                       void *buffer ATTRIBUTE_UNUSED)
 {
-    xenXMError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    xenXMError(VIR_ERR_OPERATION_INVALID, "%s",
+               _("block peeking not implemented"));
     return -1;
 }
 
