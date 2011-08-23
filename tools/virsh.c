@@ -5223,7 +5223,7 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
     else if (mode == VSH_CMD_BLOCK_JOB_PULL)
         ret = virDomainBlockPull(dom, path, bandwidth, 0);
 
-out:
+cleanup:
     if (dom)
         virDomainFree(dom);
     return ret;
