@@ -2928,7 +2928,7 @@ static int remoteDomainEventRegister(virConnectPtr conn,
     remoteDriverLock(priv);
 
     if (priv->domainEventState->timer < 0) {
-         remoteError(VIR_ERR_NO_SUPPORT, "%s", _("no event support"));
+         remoteError(VIR_ERR_OPERATION_INVALID, "%s", _("no event support"));
          goto done;
     }
 
@@ -3277,7 +3277,7 @@ remoteSecretGetValue (virSecretPtr secret, size_t *value_size,
 
     /* internalFlags intentionally do not go over the wire */
     if (internalFlags) {
-        remoteError(VIR_ERR_NO_SUPPORT, "%s", _("no internalFlags support"));
+        remoteError(VIR_ERR_OPERATION_INVALID, "%s", _("no internalFlags support"));
         goto done;
     }
 
@@ -3541,7 +3541,7 @@ static int remoteDomainEventRegisterAny(virConnectPtr conn,
     remoteDriverLock(priv);
 
     if (priv->domainEventState->timer < 0) {
-         remoteError(VIR_ERR_NO_SUPPORT, "%s", _("no event support"));
+         remoteError(VIR_ERR_OPERATION_INVALID, "%s", _("no event support"));
          goto done;
     }
 
