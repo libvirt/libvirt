@@ -5209,8 +5209,10 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
     if (vshCommandOptString(cmd, "path", &path) < 0)
         goto out;
 
-    if (vshCommandOptUL(cmd, "bandwidth", &bandwidth) < 0)
+    if (vshCommandOptUL(cmd, "bandwidth", &bandwidth) < 0) {
+        vshError(ctl, "%s", _("bandwidth must be a number"));
         goto out;
+    }
 
     if (mode == VSH_CMD_BLOCK_JOB_ABORT)
         ret = virDomainBlockJobAbort(dom, path, 0);
