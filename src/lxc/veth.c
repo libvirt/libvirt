@@ -1,7 +1,7 @@
 /*
  * veth.c: Tools for managing veth pairs
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * See COPYING.LIB for the License of this software
@@ -12,8 +12,11 @@
 
 #include <config.h>
 
+#include <linux/sockios.h>
+#include <net/if.h>
 #include <string.h>
 #include <stdio.h>
+#include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
@@ -23,6 +26,7 @@
 #include "memory.h"
 #include "command.h"
 #include "virterror_internal.h"
+#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -186,41 +190,49 @@ int vethDelete(const char *veth)
  * @veth: name of veth device
  * @upOrDown: 0 => down, 1 => up
  *
- * Enables a veth device using the ifconfig command.  A NULL inetAddress
- * will cause it to be left off the command line.
+ * Enables a veth device using SIOCSIFFLAGS
  *
- * Returns 0 on success or -1 in case of error
+ * Returns 0 on success, -1 on failure, with errno set
  */
 int vethInterfaceUpOrDown(const char* veth, int upOrDown)
 {
-    int rc;
-    const char *argv[] = {"ifconfig", veth, NULL, NULL};
-    int cmdResult = 0;
+    struct ifreq ifr;
+    int fd, ret;
 
-    if (0 == upOrDown)
-        argv[2] = "down";
-    else
-        argv[2] = "up";
+    if ((fd = socket(PF_PACKET, SOCK_DGRAM, 0)) == -1)
+        return(-1);
 
-    rc = virRun(argv, &cmdResult);
+    memset(&ifr, 0, sizeof(struct ifreq));
 
-    if (rc != 0 ||
-        (WIFEXITED(cmdResult) && WEXITSTATUS(cmdResult) != 0)) {
-        if (0 == upOrDown)
+    if (virStrcpyStatic(ifr.ifr_name, veth) == NULL) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    if ((ret = ioctl(fd, SIOCGIFFLAGS, &ifr)) == 0) {
+        if (upOrDown)
+            ifr.ifr_flags |= IFF_UP;
+        else
+            ifr.ifr_flags &= ~(IFF_UP | IFF_RUNNING);
+
+        ret = ioctl(fd, SIOCSIFFLAGS, &ifr);
+    }
+
+    VIR_FORCE_CLOSE(fd);
+    if (ret == -1)
+        if (upOrDown == 0)
             /*
              * Prevent overwriting an error log which may be set
              * where an actual failure occurs.
              */
-            VIR_DEBUG("Failed to disable '%s' (%d)",
-                      veth, WEXITSTATUS(cmdResult));
+            VIR_DEBUG("Failed to disable '%s'", veth);
         else
             vethError(VIR_ERR_INTERNAL_ERROR,
-                      _("Failed to enable '%s' (%d)"),
-                      veth, WEXITSTATUS(cmdResult));
-        rc = -1;
-    }
+                      _("Failed to enable '%s'"), veth);
+    else
+        ret = 0;
 
-    return rc;
+    return(ret);
 }
 
 /**
@@ -279,17 +291,29 @@ int setMacAddr(const char* iface, const char* macaddr)
  * @iface: name of device
  * @new: new name of @iface
  *
- * Changes the name of the given device with the
- * given new name using this command:
- *     ip link set @iface name @new
+ * Changes the name of the given device.
  *
- * Returns 0 on success or -1 in case of error
+ * Returns 0 on success, -1 on failure with errno set.
  */
 int setInterfaceName(const char* iface, const char* new)
 {
-    const char *argv[] = {
-        "ip", "link", "set", iface, "name", new, NULL
-    };
+    struct ifreq ifr;
+    int fd = socket(PF_PACKET, SOCK_DGRAM, 0);
 
-    return virRun(argv, NULL);
+    memset(&ifr, 0, sizeof(struct ifreq));
+
+    if (virStrcpyStatic(ifr.ifr_name, iface) == NULL) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    if (virStrcpyStatic(ifr.ifr_newname, new) == NULL) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    if (ioctl(fd, SIOCSIFNAME, &ifr))
+        return -1;
+
+    return 0;
 }
