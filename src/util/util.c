@@ -697,6 +697,7 @@ virFileOpenAsNoFork(const char *path, int openflags, mode_t mode,
             goto error;
         }
         if (((st.st_uid != uid) || (st.st_gid != gid))
+            && (openflags & O_CREAT)
             && (fchown(fd, uid, gid) < 0)) {
             ret = -errno;
             virReportSystemError(errno, _("cannot chown '%s' to (%u, %u)"),
