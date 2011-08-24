@@ -11637,23 +11637,11 @@ int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots)
     return count;
 }
 
-static int virDomainSnapshotObjListSearchName(const void *payload,
-                                              const void *name ATTRIBUTE_UNUSED,
-                                              const void *data)
+virDomainSnapshotObjPtr
+virDomainSnapshotFindByName(const virDomainSnapshotObjListPtr snapshots,
+                            const char *name)
 {
-    virDomainSnapshotObjPtr obj = (virDomainSnapshotObjPtr)payload;
-    int want = 0;
-
-    if (STREQ(obj->def->name, (const char *)data))
-        want = 1;
-
-    return want;
-}
-
-virDomainSnapshotObjPtr virDomainSnapshotFindByName(const virDomainSnapshotObjListPtr snapshots,
-                                                    const char *name)
-{
-    return virHashSearch(snapshots->objs, virDomainSnapshotObjListSearchName, name);
+    return virHashLookup(snapshots->objs, name);
 }
 
 void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
