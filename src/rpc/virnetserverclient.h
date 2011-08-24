@@ -99,6 +99,13 @@ bool virNetServerClientWantClose(virNetServerClientPtr client);
 
 int virNetServerClientInit(virNetServerClientPtr client);
 
+int virNetServerClientInitKeepAlive(virNetServerClientPtr client,
+                                    int interval,
+                                    unsigned int count);
+bool virNetServerClientCheckKeepAlive(virNetServerClientPtr client,
+                                      virNetMessagePtr msg);
+int virNetServerClientStartKeepAlive(virNetServerClientPtr client);
+
 const char *virNetServerClientLocalAddrString(virNetServerClientPtr client);
 const char *virNetServerClientRemoteAddrString(virNetServerClientPtr client);
 

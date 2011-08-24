@@ -61,6 +61,7 @@ struct daemonClientPrivate {
     virConnectPtr conn;
 
     daemonClientStreamPtr streams;
+    bool keepalive_supported;
 };
 
 # if HAVE_SASL

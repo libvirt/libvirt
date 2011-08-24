@@ -66,6 +66,10 @@ module Libvirtd =
    let auditing_entry = int_entry "audit_level"
                       | bool_entry "audit_logging"
 
+   let keepalive_entry = int_entry "keepalive_interval"
+                       | int_entry "keepalive_count"
+                       | bool_entry "keepalive_required"
+
    (* Each enty in the config is one of the following three ... *)
    let entry = network_entry
              | sock_acl_entry
@@ -75,6 +79,7 @@ module Libvirtd =
              | processing_entry
              | logging_entry
              | auditing_entry
+             | keepalive_entry
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]
 

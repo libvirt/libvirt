@@ -41,6 +41,9 @@ virNetServerPtr virNetServerNew(size_t min_workers,
                                 size_t max_workers,
                                 size_t priority_workers,
                                 size_t max_clients,
+                                int keepaliveInterval,
+                                unsigned int keepaliveCount,
+                                bool keepaliveRequired,
                                 const char *mdnsGroupName,
                                 bool connectDBus,
                                 virNetServerClientInitHook clientInitHook);
@@ -87,5 +90,7 @@ void virNetServerQuit(virNetServerPtr srv);
 void virNetServerFree(virNetServerPtr srv);
 
 void virNetServerClose(virNetServerPtr srv);
+
+bool virNetServerKeepAliveRequired(virNetServerPtr srv);
 
 #endif

@@ -1262,6 +1262,7 @@ virNetServerAutoShutdown;
 virNetServerClose;
 virNetServerFree;
 virNetServerIsPrivileged;
+virNetServerKeepAliveRequired;
 virNetServerNew;
 virNetServerQuit;
 virNetServerRef;
@@ -1294,6 +1295,7 @@ virNetServerClientSendMessage;
 virNetServerClientSetCloseHook;
 virNetServerClientSetIdentity;
 virNetServerClientSetPrivateData;
+virNetServerClientStartKeepAlive;
 
 
 # virnetserverprogram.h

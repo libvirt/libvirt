@@ -581,7 +581,7 @@ int remoteClientInitHook(virNetServerPtr srv ATTRIBUTE_UNUSED,
 /*----- Functions. -----*/
 
 static int
-remoteDispatchOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
+remoteDispatchOpen(virNetServerPtr server,
                    virNetServerClientPtr client,
                    virNetMessagePtr msg ATTRIBUTE_UNUSED,
                    virNetMessageErrorPtr rerr,
@@ -597,6 +597,12 @@ remoteDispatchOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
     /* Already opened? */
     if (priv->conn) {
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection already open"));
+        goto cleanup;
+    }
+
+    if (virNetServerKeepAliveRequired(server) && !priv->keepalive_supported) {
+        virNetError(VIR_ERR_OPERATION_FAILED, "%s",
+                    _("keepalive support is required to connect"));
         goto cleanup;
     }
 
@@ -3226,6 +3232,16 @@ static int remoteDispatchSupportsFeature(
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
+    /* This feature is checked before opening the connection, thus we must
+     * check it first.
+     */
+    if (args->feature == VIR_DRV_FEATURE_PROGRAM_KEEPALIVE) {
+        if (virNetServerClientStartKeepAlive(client) < 0)
+            goto cleanup;
+        supported = 1;
+        goto done;
+    }
+
     if (!priv->conn) {
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
         goto cleanup;
@@ -3242,6 +3258,7 @@ static int remoteDispatchSupportsFeature(
         break;
     }
 
+done:
     ret->supported = supported;
     rv = 0;
 

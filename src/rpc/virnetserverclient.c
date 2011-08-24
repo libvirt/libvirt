@@ -33,6 +33,7 @@
 #include "virterror_internal.h"
 #include "memory.h"
 #include "threads.h"
+#include "virkeepalive.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 #define virNetError(code, ...)                                    \
@@ -100,6 +101,9 @@ struct _virNetServerClient
     void *privateData;
     virNetServerClientFreeFunc privateDataFreeFunc;
     virNetServerClientCloseFunc privateDataCloseFunc;
+
+    virKeepAlivePtr keepalive;
+    int keepaliveFilter;
 };
 
 
@@ -213,14 +217,14 @@ static void virNetServerClientUpdateEvent(virNetServerClientPtr client)
 }
 
 
-int virNetServerClientAddFilter(virNetServerClientPtr client,
-                                virNetServerClientFilterFunc func,
-                                void *opaque)
+static int
+virNetServerClientAddFilterLocked(virNetServerClientPtr client,
+                                  virNetServerClientFilterFunc func,
+                                  void *opaque)
 {
     virNetServerClientFilterPtr filter;
+    virNetServerClientFilterPtr *place;
     int ret = -1;
-
-    virNetServerClientLock(client);
 
     if (VIR_ALLOC(filter) < 0) {
         virReportOOMError();
@@ -231,22 +235,34 @@ int virNetServerClientAddFilter(virNetServerClientPtr client,
     filter->func = func;
     filter->opaque = opaque;
 
-    filter->next = client->filters;
-    client->filters = filter;
+    place = &client->filters;
+    while (*place)
+        place = &(*place)->next;
+    *place = filter;
 
     ret = filter->id;
 
 cleanup:
+    return ret;
+}
+
+int virNetServerClientAddFilter(virNetServerClientPtr client,
+                                virNetServerClientFilterFunc func,
+                                void *opaque)
+{
+    int ret;
+
+    virNetServerClientLock(client);
+    ret = virNetServerClientAddFilterLocked(client, func, opaque);
     virNetServerClientUnlock(client);
     return ret;
 }
 
-
-void virNetServerClientRemoveFilter(virNetServerClientPtr client,
-                                    int filterID)
+static void
+virNetServerClientRemoveFilterLocked(virNetServerClientPtr client,
+                                     int filterID)
 {
     virNetServerClientFilterPtr tmp, prev;
-    virNetServerClientLock(client);
 
     prev = NULL;
     tmp = client->filters;
@@ -263,7 +279,13 @@ void virNetServerClientRemoveFilter(virNetServerClientPtr client,
         prev = tmp;
         tmp = tmp->next;
     }
+}
 
+void virNetServerClientRemoveFilter(virNetServerClientPtr client,
+                                    int filterID)
+{
+    virNetServerClientLock(client);
+    virNetServerClientRemoveFilterLocked(client, filterID);
     virNetServerClientUnlock(client);
 }
 
@@ -337,6 +359,7 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
     client->readonly = readonly;
     client->tlsCtxt = tls;
     client->nrequests_max = nrequests_max;
+    client->keepaliveFilter = -1;
 
     client->sockTimer = virEventAddTimeout(-1, virNetServerClientSockTimerFunc,
                                            client, NULL);
@@ -603,12 +626,27 @@ void virNetServerClientFree(virNetServerClientPtr client)
 void virNetServerClientClose(virNetServerClientPtr client)
 {
     virNetServerClientCloseFunc cf;
+    virKeepAlivePtr ka;
 
     virNetServerClientLock(client);
     VIR_DEBUG("client=%p refs=%d", client, client->refs);
     if (!client->sock) {
         virNetServerClientUnlock(client);
         return;
+    }
+
+    if (client->keepaliveFilter >= 0)
+        virNetServerClientRemoveFilterLocked(client, client->keepaliveFilter);
+
+    if (client->keepalive) {
+        virKeepAliveStop(client->keepalive);
+        ka = client->keepalive;
+        client->keepalive = NULL;
+        client->refs++;
+        virNetServerClientUnlock(client);
+        virKeepAliveFree(ka);
+        virNetServerClientLock(client);
+        client->refs--;
     }
 
     if (client->privateDataCloseFunc) {
@@ -1066,6 +1104,7 @@ int virNetServerClientSendMessage(virNetServerClientPtr client,
     VIR_DEBUG("msg=%p proc=%d len=%zu offset=%zu",
               msg, msg->header.proc,
               msg->bufferLength, msg->bufferOffset);
+
     virNetServerClientLock(client);
 
     msg->donefds = 0;
@@ -1082,6 +1121,7 @@ int virNetServerClientSendMessage(virNetServerClientPtr client,
     }
 
     virNetServerClientUnlock(client);
+
     return ret;
 }
 
@@ -1094,4 +1134,85 @@ bool virNetServerClientNeedAuth(virNetServerClientPtr client)
         need = true;
     virNetServerClientUnlock(client);
     return need;
+}
+
+
+static void
+virNetServerClientKeepAliveDeadCB(void *opaque)
+{
+    virNetServerClientImmediateClose(opaque);
+}
+
+static int
+virNetServerClientKeepAliveSendCB(void *opaque,
+                                  virNetMessagePtr msg)
+{
+    return virNetServerClientSendMessage(opaque, msg);
+}
+
+static void
+virNetServerClientFreeCB(void *opaque)
+{
+    virNetServerClientFree(opaque);
+}
+
+static int
+virNetServerClientKeepAliveFilter(virNetServerClientPtr client,
+                                  virNetMessagePtr msg,
+                                  void *opaque ATTRIBUTE_UNUSED)
+{
+    if (virKeepAliveCheckMessage(client->keepalive, msg)) {
+        virNetMessageFree(msg);
+        client->nrequests--;
+        return 1;
+    }
+
+    return 0;
+}
+
+int
+virNetServerClientInitKeepAlive(virNetServerClientPtr client,
+                                int interval,
+                                unsigned int count)
+{
+    virKeepAlivePtr ka;
+    int ret = -1;
+
+    virNetServerClientLock(client);
+
+    if (!(ka = virKeepAliveNew(interval, count, client,
+                               virNetServerClientKeepAliveSendCB,
+                               virNetServerClientKeepAliveDeadCB,
+                               virNetServerClientFreeCB)))
+        goto cleanup;
+    /* keepalive object has a reference to client */
+    client->refs++;
+
+    client->keepaliveFilter =
+        virNetServerClientAddFilterLocked(client,
+                                          virNetServerClientKeepAliveFilter,
+                                          NULL);
+    if (client->keepaliveFilter < 0)
+        goto cleanup;
+
+    client->keepalive = ka;
+    ka = NULL;
+
+cleanup:
+    virNetServerClientUnlock(client);
+    if (ka)
+        virKeepAliveStop(ka);
+    virKeepAliveFree(ka);
+
+    return ret;
+}
+
+int
+virNetServerClientStartKeepAlive(virNetServerClientPtr client)
+{
+    int ret;
+    virNetServerClientLock(client);
+    ret = virKeepAliveStart(client->keepalive, 0, 0);
+    virNetServerClientUnlock(client);
+    return ret;
 }

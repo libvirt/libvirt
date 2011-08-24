@@ -102,6 +102,10 @@ struct _virNetServer {
     size_t nclients_max;
     virNetServerClientPtr *clients;
 
+    int keepaliveInterval;
+    unsigned int keepaliveCount;
+    bool keepaliveRequired;
+
     unsigned int quit :1;
 
     virNetTLSContextPtr tls;
@@ -261,6 +265,9 @@ static int virNetServerDispatchNewClient(virNetServerServicePtr svc ATTRIBUTE_UN
                                     virNetServerDispatchNewMessage,
                                     srv);
 
+    virNetServerClientInitKeepAlive(client, srv->keepaliveInterval,
+                                    srv->keepaliveCount);
+
     virNetServerUnlock(srv);
     return 0;
 
@@ -300,6 +307,9 @@ virNetServerPtr virNetServerNew(size_t min_workers,
                                 size_t max_workers,
                                 size_t priority_workers,
                                 size_t max_clients,
+                                int keepaliveInterval,
+                                unsigned int keepaliveCount,
+                                bool keepaliveRequired,
                                 const char *mdnsGroupName,
                                 bool connectDBus ATTRIBUTE_UNUSED,
                                 virNetServerClientInitHook clientInitHook)
@@ -321,6 +331,9 @@ virNetServerPtr virNetServerNew(size_t min_workers,
         goto error;
 
     srv->nclients_max = max_clients;
+    srv->keepaliveInterval = keepaliveInterval;
+    srv->keepaliveCount = keepaliveCount;
+    srv->keepaliveRequired = keepaliveRequired;
     srv->sigwrite = srv->sigread = -1;
     srv->clientInitHook = clientInitHook;
     srv->privileged = geteuid() == 0 ? true : false;
@@ -839,4 +852,13 @@ void virNetServerClose(virNetServerPtr srv)
     }
 
     virNetServerUnlock(srv);
+}
+
+bool virNetServerKeepAliveRequired(virNetServerPtr srv)
+{
+    bool required;
+    virNetServerLock(srv);
+    required = srv->keepaliveRequired;
+    virNetServerUnlock(srv);
+    return required;
 }
