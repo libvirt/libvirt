@@ -878,7 +878,7 @@ int qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
 {
     int function;
 
-    for (function = 0; function <= QEMU_PCI_ADDRESS_LAST_FUNCTION; function++) {
+    for (function = 0; function < QEMU_PCI_ADDRESS_LAST_FUNCTION; function++) {
         if (qemuDomainPCIAddressReserveFunction(addrs, slot, function) < 0)
             goto cleanup;
     }
@@ -956,7 +956,7 @@ int qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs, int slot)
     dev.addr.pci.bus = 0;
     dev.addr.pci.slot = slot;
 
-    for (*function = 0; *function <= QEMU_PCI_ADDRESS_LAST_FUNCTION; (*function)++) {
+    for (*function = 0; *function < QEMU_PCI_ADDRESS_LAST_FUNCTION; (*function)++) {
         addr = qemuPCIAddressAsString(&dev);
         if (!addr)
             return -1;
