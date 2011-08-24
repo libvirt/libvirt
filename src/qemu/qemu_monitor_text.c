@@ -271,6 +271,23 @@ qemuMonitorTextCommandWithFd(qemuMonitorPtr mon,
                                              scm_fd, reply);
 }
 
+/* Check monitor output for evidence that the command was not recognized.
+ * For 'info' commands, qemu returns help text.  For other commands, qemu
+ * returns 'unknown command:'.
+ */
+static int
+qemuMonitorTextCommandNotFound(const char *cmd, const char *reply)
+{
+    if (STRPREFIX(cmd, "info ")) {
+        if (strstr(reply, "info version"))
+            return 1;
+    } else {
+        if (strstr(reply, "unknown command:"))
+            return 1;
+    }
+
+    return 0;
+}
 
 static int
 qemuMonitorSendDiskPassphrase(qemuMonitorPtr mon,
@@ -3031,18 +3048,24 @@ int qemuMonitorTextBlockJob(qemuMonitorPtr mon,
     char *cmd = NULL;
     char *reply = NULL;
     int ret;
+    const char *cmd_name = NULL;
 
-    if (mode == BLOCK_JOB_ABORT)
-        ret = virAsprintf(&cmd, "block_job_cancel %s", device);
-    else if (mode == BLOCK_JOB_INFO)
-        ret = virAsprintf(&cmd, "info block-jobs");
-    else if (mode == BLOCK_JOB_SPEED)
-        ret = virAsprintf(&cmd, "block_job_set_speed %s %llu", device,
+    if (mode == BLOCK_JOB_ABORT) {
+        cmd_name = "block_job_cancel";
+        ret = virAsprintf(&cmd, "%s %s", cmd_name, device);
+    } else if (mode == BLOCK_JOB_INFO) {
+        cmd_name = "info block-jobs";
+        ret = virAsprintf(&cmd, "%s", cmd_name);
+    } else if (mode == BLOCK_JOB_SPEED) {
+        cmd_name = "block_job_set_speed";
+        ret = virAsprintf(&cmd, "%s %s %llu", cmd_name, device,
                           bandwidth * 1024ULL * 1024ULL);
-    else if (mode == BLOCK_JOB_PULL)
-        ret = virAsprintf(&cmd, "block_stream %s", device);
-    else
+    } else if (mode == BLOCK_JOB_PULL) {
+        cmd_name = "block_stream";
+        ret = virAsprintf(&cmd, "%s %s", cmd_name, device);
+    } else {
         return -1;
+    }
 
     if (ret < 0) {
         virReportOOMError();
@@ -3052,6 +3075,13 @@ int qemuMonitorTextBlockJob(qemuMonitorPtr mon,
     if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("cannot run monitor command"));
+        ret = -1;
+        goto cleanup;
+    }
+
+    if (qemuMonitorTextCommandNotFound(cmd_name, reply)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        _("Command '%s' is not found"), cmd_name);
         ret = -1;
         goto cleanup;
     }
