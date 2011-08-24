@@ -40,6 +40,7 @@
 #include "memory.h"
 #include "configmake.h"
 #include "intprops.h"
+#include "rpc/virnettlscontext.h"
 
 #ifndef WITH_DRIVER_MODULES
 # ifdef WITH_TEST
@@ -412,6 +413,8 @@ virInitialize(void)
     gcry_check_version(NULL);
 
     virLogSetFromEnv();
+
+    virNetTLSInit();
 
     VIR_DEBUG("register drivers");
 

@@ -1516,7 +1516,6 @@ int main(int argc, char **argv) {
     virHookCall(VIR_HOOK_DRIVER_DAEMON, "-", VIR_HOOK_DAEMON_OP_START,
                 0, "start", NULL);
 
-    virNetTLSInit();
     if (daemonSetupNetworking(srv, config,
                               sock_file, sock_file_ro,
                               ipsock, privileged) < 0) {
@@ -1555,7 +1554,6 @@ cleanup:
     virNetServerProgramFree(qemuProgram);
     virNetServerClose(srv);
     virNetServerFree(srv);
-    virNetTLSDeinit();
     if (statuswrite != -1) {
         if (ret != 0) {
             /* Tell parent of daemon what failed */

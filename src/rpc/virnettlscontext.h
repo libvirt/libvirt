@@ -31,7 +31,6 @@ typedef virNetTLSSession *virNetTLSSessionPtr;
 
 
 void virNetTLSInit(void);
-void virNetTLSDeinit(void);
 
 virNetTLSContextPtr virNetTLSContextNewServerPath(const char *pkipath,
                                                   bool tryUserPkiPath,

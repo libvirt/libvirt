@@ -1410,11 +1410,3 @@ void virNetTLSInit(void)
 {
     gnutls_global_init();
 }
-
-/*
- * See virNetTLSInit
- */
-void virNetTLSDeinit(void)
-{
-    gnutls_global_deinit();
-}
