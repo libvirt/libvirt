@@ -1072,6 +1072,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
     int i;
     bool reservedIDE = false;
     bool reservedVGA = false;
+    int function;
 
     /* Host bridge */
     if (qemuDomainPCIAddressReserveSlot(addrs, 0) < 0)
@@ -1107,9 +1108,14 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
     /* PIIX3 (ISA bridge, IDE controller, something else unknown, USB controller)
      * hardcoded slot=1, multifunction device
      */
-    if (!reservedIDE &&
-        qemuDomainPCIAddressReserveSlot(addrs, 1) < 0)
-        goto error;
+    for (function = 0; function < QEMU_PCI_ADDRESS_LAST_FUNCTION; function++) {
+        if (function == 1 && reservedIDE)
+            /* we have reserved this pci address */
+            continue;
+
+        if (qemuDomainPCIAddressReserveFunction(addrs, 1, function) < 0)
+            goto error;
+    }
 
     /* First VGA is hardcoded slot=2 */
     if (def->nvideos > 0) {
