@@ -9167,9 +9167,11 @@ cleanup:
     return ret;
 }
 
-static int qemuDomainSnapshotDiscard(struct qemud_driver *driver,
-                                     virDomainObjPtr vm,
-                                     virDomainSnapshotObjPtr snap)
+static int
+qemuDomainSnapshotDiscard(struct qemud_driver *driver,
+                          virDomainObjPtr vm,
+                          virDomainSnapshotObjPtr snap,
+                          bool update_current)
 {
     char *snapFile = NULL;
     int ret = -1;
@@ -9195,7 +9197,7 @@ static int qemuDomainSnapshotDiscard(struct qemud_driver *driver,
     }
 
     if (snap == vm->current_snapshot) {
-        if (snap->def->parent) {
+        if (update_current && snap->def->parent) {
             parentsnap = virDomainSnapshotFindByName(&vm->snapshots,
                                                      snap->def->parent);
             if (!parentsnap) {
@@ -9231,6 +9233,7 @@ struct snap_remove {
     struct qemud_driver *driver;
     virDomainObjPtr vm;
     int err;
+    bool current;
 };
 
 static void
@@ -9242,7 +9245,9 @@ qemuDomainSnapshotDiscardDescendant(void *payload,
     struct snap_remove *curr = data;
     int err;
 
-    err = qemuDomainSnapshotDiscard(curr->driver, curr->vm, snap);
+    if (snap->def->current)
+        curr->current = true;
+    err = qemuDomainSnapshotDiscard(curr->driver, curr->vm, snap, false);
     if (err && !curr->err)
         curr->err = err;
 }
@@ -9321,12 +9326,15 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         rem.driver = driver;
         rem.vm = vm;
         rem.err = 0;
+        rem.current = false;
         virDomainSnapshotForEachDescendant(&vm->snapshots,
                                            snap,
                                            qemuDomainSnapshotDiscardDescendant,
                                            &rem);
         if (rem.err < 0)
             goto endjob;
+        if (rem.current)
+            vm->current_snapshot = snap;
     } else {
         rep.driver = driver;
         rep.snap = snap;
@@ -9338,7 +9346,7 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
             goto endjob;
     }
 
-    ret = qemuDomainSnapshotDiscard(driver, vm, snap);
+    ret = qemuDomainSnapshotDiscard(driver, vm, snap, true);
 
 endjob:
     if (qemuDomainObjEndJob(driver, vm) == 0)
