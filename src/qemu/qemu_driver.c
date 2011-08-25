@@ -804,12 +804,6 @@ qemudShutdown(void) {
 }
 
 
-static int qemuDomainSnapshotSetCurrentActive(virDomainObjPtr vm,
-                                              char *snapshotDir);
-static int qemuDomainSnapshotSetCurrentInactive(virDomainObjPtr vm,
-                                                char *snapshotDir);
-
-
 static virDrvOpenStatus qemudOpen(virConnectPtr conn,
                                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                   unsigned int flags)
@@ -1297,7 +1291,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     if (qemuProcessStart(conn, driver, vm, NULL,
                          (flags & VIR_DOMAIN_START_PAUSED) != 0,
                          (flags & VIR_DOMAIN_START_AUTODESTROY) != 0,
-                         -1, NULL, VIR_VM_OP_CREATE) < 0) {
+                         -1, NULL, NULL, VIR_VM_OP_CREATE) < 0) {
         virDomainAuditStart(vm, "booted", false);
         if (qemuDomainObjEndJob(driver, vm) > 0)
             virDomainRemoveInactive(&driver->domains,
@@ -3920,7 +3914,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
 
     /* Set the migration source and start it up. */
     ret = qemuProcessStart(conn, driver, vm, "stdio", true,
-                           false, *fd, path, VIR_VM_OP_RESTORE);
+                           false, *fd, path, NULL, VIR_VM_OP_RESTORE);
 
     if (intermediatefd != -1) {
         if (ret < 0) {
@@ -4462,7 +4456,7 @@ qemuDomainObjStart(virConnectPtr conn,
     }
 
     ret = qemuProcessStart(conn, driver, vm, NULL, start_paused,
-                           autodestroy, -1, NULL, VIR_VM_OP_CREATE);
+                           autodestroy, -1, NULL, NULL, VIR_VM_OP_CREATE);
     virDomainAuditStart(vm, "booted", ret >= 0);
     if (ret >= 0) {
         virDomainEventPtr event =
@@ -8318,32 +8312,6 @@ cleanup:
     return ret;
 }
 
-static int qemuDomainSnapshotSetCurrentActive(virDomainObjPtr vm,
-                                              char *snapshotDir)
-{
-    if (vm->current_snapshot) {
-        vm->current_snapshot->def->active = 1;
-
-        return qemuDomainSnapshotWriteMetadata(vm, vm->current_snapshot,
-                                               snapshotDir);
-    }
-
-    return 0;
-}
-
-static int qemuDomainSnapshotSetCurrentInactive(virDomainObjPtr vm,
-                                                char *snapshotDir)
-{
-    if (vm->current_snapshot) {
-        vm->current_snapshot->def->active = 0;
-
-        return qemuDomainSnapshotWriteMetadata(vm, vm->current_snapshot,
-                                               snapshotDir);
-    }
-
-    return 0;
-}
-
 
 static int qemuDomainSnapshotIsAllowed(virDomainObjPtr vm)
 {
@@ -8790,15 +8758,10 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             if (rc < 0)
                 goto endjob;
         } else {
-            if (qemuDomainSnapshotSetCurrentActive(vm, driver->snapshotDir) < 0)
-                goto endjob;
-
             rc = qemuProcessStart(snapshot->domain->conn, driver, vm, NULL,
-                                  false, false, -1, NULL, VIR_VM_OP_CREATE);
+                                  false, false, -1, NULL, vm->current_snapshot,
+                                  VIR_VM_OP_CREATE);
             virDomainAuditStart(vm, "from-snapshot", rc >= 0);
-            if (qemuDomainSnapshotSetCurrentInactive(vm,
-                                                     driver->snapshotDir) < 0)
-                goto endjob;
             if (rc < 0)
                 goto endjob;
         }
@@ -8845,9 +8808,6 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 goto cleanup;
             }
         }
-
-        if (qemuDomainSnapshotSetCurrentActive(vm, driver->snapshotDir) < 0)
-            goto endjob;
     }
 
     ret = 0;

@@ -1034,7 +1034,7 @@ qemuMigrationPrepareAny(struct qemud_driver *driver,
      * -incoming $migrateFrom
      */
     if (qemuProcessStart(dconn, driver, vm, migrateFrom, true,
-                         true, dataFD[0], NULL,
+                         true, dataFD[0], NULL, NULL,
                          VIR_VM_OP_MIGRATE_IN_START) < 0) {
         virDomainAuditStart(vm, "migrated", false);
         /* Note that we don't set an error here because qemuProcessStart

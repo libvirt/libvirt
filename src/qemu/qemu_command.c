@@ -2866,7 +2866,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                      virBitmapPtr qemuCaps,
                      const char *migrateFrom,
                      int migrateFd,
-                     virDomainSnapshotObjPtr current_snapshot,
+                     virDomainSnapshotObjPtr snapshot,
                      enum virVMOperationType vmop)
 {
     int i;
@@ -4782,9 +4782,8 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (current_snapshot && current_snapshot->def->active)
-        virCommandAddArgList(cmd, "-loadvm", current_snapshot->def->name,
-                             NULL);
+    if (snapshot)
+        virCommandAddArgList(cmd, "-loadvm", snapshot->def->name, NULL);
 
     if (def->namespaceData) {
         qemuDomainCmdlineDefPtr qemucmd;

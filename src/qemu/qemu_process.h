@@ -52,6 +52,7 @@ int qemuProcessStart(virConnectPtr conn,
                      bool autodestroy,
                      int stdin_fd,
                      const char *stdin_path,
+                     virDomainSnapshotObjPtr snapshot,
                      enum virVMOperationType vmop);
 
 void qemuProcessStop(struct qemud_driver *driver,

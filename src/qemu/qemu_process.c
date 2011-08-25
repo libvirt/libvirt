@@ -2614,6 +2614,7 @@ int qemuProcessStart(virConnectPtr conn,
                      bool autodestroy,
                      int stdin_fd,
                      const char *stdin_path,
+                     virDomainSnapshotObjPtr snapshot,
                      enum virVMOperationType vmop)
 {
     int ret;
@@ -2816,15 +2817,8 @@ int qemuProcessStart(virConnectPtr conn,
     VIR_DEBUG("Building emulator command line");
     if (!(cmd = qemuBuildCommandLine(conn, driver, vm->def, priv->monConfig,
                                      priv->monJSON != 0, priv->qemuCaps,
-                                     migrateFrom, stdin_fd,
-                                     vm->current_snapshot, vmop)))
+                                     migrateFrom, stdin_fd, snapshot, vmop)))
         goto cleanup;
-
-#if 0
-    /* XXX */
-    if (qemuDomainSnapshotSetCurrentInactive(vm, driver->snapshotDir) < 0)
-        goto cleanup;
-#endif
 
     /* now that we know it is about to start call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
