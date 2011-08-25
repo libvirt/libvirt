@@ -2848,6 +2848,7 @@ int qemuMonitorTextSendKey(qemuMonitorPtr mon,
     int i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *cmd, *reply = NULL;
+    int ret = -1;
 
     if (nkeycodes > VIR_DOMAIN_SEND_KEY_MAX_KEYS || nkeycodes == 0)
         return -1;
@@ -2880,13 +2881,21 @@ int qemuMonitorTextSendKey(qemuMonitorPtr mon,
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                          _("failed to send key using command '%s'"),
                          cmd);
-        VIR_FREE(cmd);
-        return -1;
+        goto cleanup;
     }
 
+    if (STRNEQ(reply, "")) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("failed to send key '%s'"), reply);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
     VIR_FREE(cmd);
     VIR_FREE(reply);
-    return 0;
+    return ret;
 }
 
 /* Returns -1 on error, -2 if not supported */
