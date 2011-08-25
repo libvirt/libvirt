@@ -14,6 +14,7 @@ import sys
 import re
 
 namecolums = (0,2,10)
+xtkbdkey_index = 8
 
 def quotestring(str):
     if str[0] != '"':
@@ -35,10 +36,21 @@ sys.stdin.readline() # eat the fist line.
 for line in sys.stdin.xreadlines():
     a = re.match("([^,]*)," * 13 + "([^,]*)$", line[0:-1]).groups()
     b = ""
+    rfbkey = 0
     for i in namecolums:
         b = b + (a[i] and quotestring(a[i]) or 'NULL') + ','
     for i in [ x for x in range(12) if not x in namecolums ]:
         b = b + (a[i] or '0') + ','
+        if i == xtkbdkey_index:
+            # RFB keycodes are XT kbd keycodes with a slightly
+            # different encoding of 0xe0 scan codes. RFB uses
+            # the high bit of the first byte, instead of the low
+            # bit of the second byte.
+            rfbkey = int(a[i] or '0')
+            rfbkey = (rfbkey & 0x100) >> 1 | (rfbkey & 0x7f)
+
+    # Append RFB keycode as the last column
+    b = b + str(rfbkey)
     print "    { " + b + "},"
 
 print '};'

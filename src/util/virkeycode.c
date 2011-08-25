@@ -38,6 +38,7 @@ struct keycode {
     unsigned short xt_kbd;
     unsigned short usb;
     unsigned short win32;
+    unsigned short rfb;
 };
 
 #define VIRT_KEY_INTERNAL
@@ -62,7 +63,10 @@ static unsigned int codeOffset[] = {
         offsetof(struct keycode, usb),
     [VIR_KEYCODE_SET_WIN32] =
         offsetof(struct keycode, win32),
+    [VIR_KEYCODE_SET_RFB] =
+        offsetof(struct keycode, rfb),
 };
+verify(ARRAY_CARDINALITY(codeOffset) == VIR_KEYCODE_SET_LAST);
 
 VIR_ENUM_IMPL(virKeycodeSet, VIR_KEYCODE_SET_LAST,
     "linux",
@@ -74,6 +78,7 @@ VIR_ENUM_IMPL(virKeycodeSet, VIR_KEYCODE_SET_LAST,
     "xt_kbd",
     "usb",
     "win32",
+    "rfb",
 );
 
 static int __virKeycodeValueFromString(unsigned int name_offset,

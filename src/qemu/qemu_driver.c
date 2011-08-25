@@ -1889,17 +1889,17 @@ static int qemuDomainSendKey(virDomainPtr domain,
 
     virCheckFlags(0, -1);
 
-    /* translate the keycode to XT_KBD for qemu driver */
-    if (codeset != VIR_KEYCODE_SET_XT_KBD) {
+    /* translate the keycode to RFB for qemu driver */
+    if (codeset != VIR_KEYCODE_SET_RFB) {
         int i;
         int keycode;
 
         for (i = 0; i < nkeycodes; i++) {
-            keycode = virKeycodeValueTranslate(codeset, VIR_KEYCODE_SET_XT_KBD,
+            keycode = virKeycodeValueTranslate(codeset, VIR_KEYCODE_SET_RFB,
                                                keycodes[i]);
             if (keycode < 0) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
-             _("cannot translate keycode %u of %s codeset to xt_kbd keycode"),
+             _("cannot translate keycode %u of %s codeset to rfb keycode"),
                                 keycodes[i],
                                 virKeycodeSetTypeToString(codeset));
                 return -1;

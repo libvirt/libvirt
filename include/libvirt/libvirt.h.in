@@ -1875,6 +1875,7 @@ typedef enum {
     VIR_KEYCODE_SET_XT_KBD         = 6,
     VIR_KEYCODE_SET_USB            = 7,
     VIR_KEYCODE_SET_WIN32          = 8,
+    VIR_KEYCODE_SET_RFB            = 9,
 
     VIR_KEYCODE_SET_LAST,
 } virKeycodeSet;
