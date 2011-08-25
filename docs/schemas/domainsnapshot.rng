@@ -29,7 +29,10 @@
         </optional>
         <optional>
           <element name='active'>
-            <text/>
+            <choice>
+              <value>0</value>
+              <value>1</value>
+            </choice>
           </element>
         </optional>
         <optional>

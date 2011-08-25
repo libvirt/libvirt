@@ -1297,13 +1297,15 @@ enum virDomainTaintFlags {
 typedef struct _virDomainSnapshotDef virDomainSnapshotDef;
 typedef virDomainSnapshotDef *virDomainSnapshotDefPtr;
 struct _virDomainSnapshotDef {
+    /* Public XML.  */
     char *name;
     char *description;
     char *parent;
     long long creationTime; /* in seconds */
     int state;
 
-    long active;
+    /* Internal use.  */
+    bool current; /* At most one snapshot in the list should have this set */
 };
 
 typedef struct _virDomainSnapshotObj virDomainSnapshotObj;

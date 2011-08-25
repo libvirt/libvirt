@@ -294,6 +294,7 @@ static void qemuDomainSnapshotLoad(void *payload,
     char *fullpath;
     virDomainSnapshotDefPtr def = NULL;
     virDomainSnapshotObjPtr snap = NULL;
+    virDomainSnapshotObjPtr current = NULL;
     char ebuf[1024];
 
     virDomainObjLock(vm);
@@ -339,7 +340,8 @@ static void qemuDomainSnapshotLoad(void *payload,
         def = virDomainSnapshotDefParseString(xmlStr, 0);
         if (def == NULL) {
             /* Nothing we can do here, skip this one */
-            VIR_ERROR(_("Failed to parse snapshot XML from file '%s'"), fullpath);
+            VIR_ERROR(_("Failed to parse snapshot XML from file '%s'"),
+                      fullpath);
             VIR_FREE(fullpath);
             VIR_FREE(xmlStr);
             continue;
@@ -348,10 +350,20 @@ static void qemuDomainSnapshotLoad(void *payload,
         snap = virDomainSnapshotAssignDef(&vm->snapshots, def);
         if (snap == NULL) {
             virDomainSnapshotDefFree(def);
+        } else if (snap->def->current) {
+            current = snap;
+            if (!vm->current_snapshot)
+                vm->current_snapshot = snap;
         }
 
         VIR_FREE(fullpath);
         VIR_FREE(xmlStr);
+    }
+
+    if (vm->current_snapshot != current) {
+        VIR_ERROR(_("Too many snapshots claiming to be current for domain %s"),
+                  vm->def->name);
+        vm->current_snapshot = NULL;
     }
 
     /* FIXME: qemu keeps internal track of snapshots.  We can get access
@@ -8477,12 +8489,17 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
     def = NULL;
 
     snap->def->state = virDomainObjGetState(vm, NULL);
+    snap->def->current = true;
     if (vm->current_snapshot) {
         snap->def->parent = strdup(vm->current_snapshot->def->name);
         if (snap->def->parent == NULL) {
             virReportOOMError();
             goto cleanup;
         }
+        vm->current_snapshot->def->current = false;
+        if (qemuDomainSnapshotWriteMetadata(vm, vm->current_snapshot,
+                                            driver->snapshotDir) < 0)
+            goto cleanup;
         vm->current_snapshot = NULL;
     }
 
@@ -8502,6 +8519,7 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
      */
     if (qemuDomainSnapshotWriteMetadata(vm, snap, driver->snapshotDir) < 0)
         goto cleanup;
+    vm->current_snapshot = snap;
 
     snapshot = virGetDomainSnapshot(domain, snap->def->name);
 
@@ -8742,7 +8760,17 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    vm->current_snapshot = snap;
+    if (vm->current_snapshot) {
+        vm->current_snapshot->def->current = false;
+        if (qemuDomainSnapshotWriteMetadata(vm, vm->current_snapshot,
+                                            driver->snapshotDir) < 0)
+            goto cleanup;
+        vm->current_snapshot = NULL;
+        /* XXX Should we restore vm->current_snapshot after this point
+         * in the failure cases where we know there was no change?  */
+    }
+
+    snap->def->current = true;
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
@@ -8759,7 +8787,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 goto endjob;
         } else {
             rc = qemuProcessStart(snapshot->domain->conn, driver, vm, NULL,
-                                  false, false, -1, NULL, vm->current_snapshot,
+                                  false, false, -1, NULL, snap,
                                   VIR_VM_OP_CREATE);
             virDomainAuditStart(vm, "from-snapshot", rc >= 0);
             if (rc < 0)
@@ -8817,6 +8845,15 @@ endjob:
         vm = NULL;
 
 cleanup:
+    if (vm && ret == 0) {
+        if (qemuDomainSnapshotWriteMetadata(vm, snap,
+                                            driver->snapshotDir) < 0)
+            ret = -1;
+        else
+            vm->current_snapshot = snap;
+    } else if (snap) {
+        snap->def->current = false;
+    }
     if (event)
         qemuDomainEventQueue(driver, event);
     if (vm)
@@ -8835,7 +8872,7 @@ static int qemuDomainSnapshotDiscard(struct qemud_driver *driver,
     int ret = -1;
     int i;
     qemuDomainObjPrivatePtr priv;
-    virDomainSnapshotObjPtr parentsnap;
+    virDomainSnapshotObjPtr parentsnap = NULL;
 
     if (!virDomainObjIsActive(vm)) {
         qemuimgarg[0] = qemuFindQemuImgBinary();
@@ -8874,31 +8911,35 @@ static int qemuDomainSnapshotDiscard(struct qemud_driver *driver,
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     }
 
-    if (snap == vm->current_snapshot) {
-        if (snap->def->parent) {
-            parentsnap = virDomainSnapshotFindByName(&vm->snapshots,
-                                                     snap->def->parent);
-            if (!parentsnap) {
-                qemuReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
-                                _("no domain snapshot parent with matching name '%s'"),
-                                snap->def->parent);
-                goto cleanup;
-            }
-
-            /* Now we set the new current_snapshot for the domain */
-            vm->current_snapshot = parentsnap;
-        } else {
-            vm->current_snapshot = NULL;
-        }
-    }
-
     if (virAsprintf(&snapFile, "%s/%s/%s.xml", driver->snapshotDir,
                     vm->def->name, snap->def->name) < 0) {
         virReportOOMError();
         goto cleanup;
     }
-    unlink(snapFile);
 
+    if (snap == vm->current_snapshot) {
+        if (snap->def->parent) {
+            parentsnap = virDomainSnapshotFindByName(&vm->snapshots,
+                                                     snap->def->parent);
+            if (!parentsnap) {
+                VIR_WARN("missing parent snapshot matching name '%s'",
+                         snap->def->parent);
+            } else {
+                parentsnap->def->current = true;
+                if (qemuDomainSnapshotWriteMetadata(vm, parentsnap,
+                                                    driver->snapshotDir) < 0) {
+                    VIR_WARN("failed to set parent snapshot '%s' as current",
+                             snap->def->parent);
+                    parentsnap->def->current = false;
+                    parentsnap = NULL;
+                }
+            }
+        }
+        vm->current_snapshot = parentsnap;
+    }
+
+    if (unlink(snapFile) < 0)
+        VIR_WARN("Failed to unlink %s", snapFile);
     virDomainSnapshotObjListRemove(&vm->snapshots, snap);
 
     ret = 0;

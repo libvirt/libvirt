@@ -10960,6 +10960,7 @@ virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
     virDomainSnapshotDefPtr ret = NULL;
     char *creation = NULL, *state = NULL;
     struct timeval tv;
+    int active;
 
     xml = virXMLParseCtxt(NULL, xmlStr, "domainsnapshot.xml", &ctxt);
     if (!xml) {
@@ -11016,11 +11017,12 @@ virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
             goto cleanup;
         }
 
-        if (virXPathLong("string(./active)", ctxt, &def->active) < 0) {
+        if (virXPathInt("string(./active)", ctxt, &active) < 0) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                  _("Could not find 'active' element"));
             goto cleanup;
         }
+        def->current = active != 0;
     }
     else
         def->creationTime = tv.tv_sec;
@@ -11062,7 +11064,7 @@ char *virDomainSnapshotDefFormat(char *domain_uuid,
     virBufferAsprintf(&buf, "    <uuid>%s</uuid>\n", domain_uuid);
     virBufferAddLit(&buf, "  </domain>\n");
     if (internal)
-        virBufferAsprintf(&buf, "  <active>%ld</active>\n", def->active);
+        virBufferAsprintf(&buf, "  <active>%d</active>\n", def->current);
     virBufferAddLit(&buf, "</domainsnapshot>\n");
 
     if (virBufferError(&buf)) {
