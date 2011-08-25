@@ -8878,10 +8878,24 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainEventPtr event = NULL;
     virDomainEventPtr event2 = NULL;
+    int detail;
     qemuDomainObjPrivatePtr priv;
     int rc;
 
     virCheckFlags(0, -1);
+
+    /* We have the following transitions, which create the following events:
+     * 1. inactive -> inactive: none
+     * 2. inactive -> running:  EVENT_STARTED
+     * 3. inactive -> paused:   EVENT_STARTED, EVENT_PAUSED
+     * 4. running  -> inactive: EVENT_STOPPED
+     * 5. running  -> running:  none
+     * 6. running  -> paused:   EVENT_PAUSED
+     * 7. paused   -> inactive: EVENT_STOPPED
+     * 8. paused   -> running:  EVENT_RESUMED
+     * 9. paused   -> paused:   none
+     * Also, several transitions occur even if we fail partway through.
+     */
 
     qemuDriverLock(driver);
     virUUIDFormat(snapshot->domain->uuid, uuidstr);
@@ -8917,44 +8931,103 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
     if (snap->def->state == VIR_DOMAIN_RUNNING
         || snap->def->state == VIR_DOMAIN_PAUSED) {
+        /* Transitions 2, 3, 5, 6, 8, 9 */
+        bool was_running = false;
+        bool was_stopped = false;
 
+        /* When using the loadvm monitor command, qemu does not know
+         * whether to pause or run the reverted domain, and just stays
+         * in the same state as before the monitor command, whether
+         * that is paused or running.  We always pause before loadvm,
+         * to have finer control.  */
         if (virDomainObjIsActive(vm)) {
+            /* Transitions 5, 6, 8, 9 */
             priv = vm->privateData;
+            if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+                /* Transitions 5, 6 */
+                was_running = true;
+                if (qemuProcessStopCPUs(driver, vm,
+                                        VIR_DOMAIN_PAUSED_FROM_SNAPSHOT,
+                                        QEMU_ASYNC_JOB_NONE) < 0)
+                    goto endjob;
+                /* Create an event now in case the restore fails, so
+                 * that user will be alerted that they are now paused.
+                 * If restore later succeeds, we might replace this. */
+                detail = VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT;
+                event = virDomainEventNewFromObj(vm,
+                                                 VIR_DOMAIN_EVENT_SUSPENDED,
+                                                 detail);
+                if (!virDomainObjIsActive(vm)) {
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                    _("guest unexpectedly quit"));
+                    goto endjob;
+                }
+            }
             qemuDomainObjEnterMonitorWithDriver(driver, vm);
             rc = qemuMonitorLoadSnapshot(priv->mon, snap->def->name);
             qemuDomainObjExitMonitorWithDriver(driver, vm);
-            if (rc < 0)
+            if (rc < 0) {
+                /* XXX resume domain if it was running before the
+                 * failed loadvm attempt? */
                 goto endjob;
+            }
         } else {
+            /* Transitions 2, 3 */
+            was_stopped = true;
             rc = qemuProcessStart(snapshot->domain->conn, driver, vm, NULL,
-                                  false, false, -1, NULL, snap,
+                                  true, false, -1, NULL, snap,
                                   VIR_VM_OP_CREATE);
             virDomainAuditStart(vm, "from-snapshot", rc >= 0);
+            detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
+            event = virDomainEventNewFromObj(vm,
+                                             VIR_DOMAIN_EVENT_STARTED,
+                                             detail);
             if (rc < 0)
                 goto endjob;
         }
 
-        event = virDomainEventNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_STARTED,
-                                         VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT);
+        /* Touch up domain state.  */
         if (snap->def->state == VIR_DOMAIN_PAUSED) {
-            /* qemu unconditionally starts the domain running again after
-             * loadvm, so let's pause it to keep consistency
-             * XXX we should have used qemuProcessStart's start_paused instead
-             */
-            rc = qemuProcessStopCPUs(driver, vm,
-                                     VIR_DOMAIN_PAUSED_FROM_SNAPSHOT,
-                                     QEMU_ASYNC_JOB_NONE);
+            /* Transitions 3, 6, 9 */
+            virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
+                                 VIR_DOMAIN_PAUSED_FROM_SNAPSHOT);
+            if (was_stopped) {
+                /* Transition 3, use event as-is and add event2 */
+                detail = VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT;
+                event2 = virDomainEventNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_SUSPENDED,
+                                                  detail);
+            } /* else transition 6 and 9 use event as-is */
+        } else {
+            /* Transitions 2, 5, 8 */
+            if (!virDomainObjIsActive(vm)) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("guest unexpectedly quit"));
+                goto endjob;
+            }
+            rc = qemuProcessStartCPUs(driver, vm, snapshot->domain->conn,
+                                      VIR_DOMAIN_RUNNING_FROM_SNAPSHOT,
+                                      QEMU_ASYNC_JOB_NONE);
             if (rc < 0)
                 goto endjob;
-            event2 = virDomainEventNewFromObj(vm,
-                                              VIR_DOMAIN_EVENT_SUSPENDED,
-                                              VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT);
-        } else {
-            virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
-                                 VIR_DOMAIN_RUNNING_FROM_SNAPSHOT);
+            virDomainEventFree(event);
+            event = NULL;
+            if (was_stopped) {
+                /* Transition 2 */
+                detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
+                event = virDomainEventNewFromObj(vm,
+                                                 VIR_DOMAIN_EVENT_STARTED,
+                                                 detail);
+            } else if (was_running) {
+                /* Transition 8 */
+                detail = VIR_DOMAIN_EVENT_RESUMED;
+                event = virDomainEventNewFromObj(vm,
+                                                 VIR_DOMAIN_EVENT_RESUMED,
+                                                 detail);
+            }
         }
     } else {
+        /* Transitions 1, 4, 7 */
         /* qemu is a little funny with running guests and the restoration
          * of snapshots.  If the snapshot was taken online,
          * then after a "loadvm" monitor command, the VM is set running
@@ -8966,11 +9039,13 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
          */
 
         if (virDomainObjIsActive(vm)) {
+            /* Transitions 4, 7 */
             qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT);
             virDomainAuditStop(vm, "from-snapshot");
+            detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
             event = virDomainEventNewFromObj(vm,
                                              VIR_DOMAIN_EVENT_STOPPED,
-                                             VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
+                                             detail);
             if (!vm->persistent) {
                 if (qemuDomainObjEndJob(driver, vm) > 0)
                     virDomainRemoveInactive(&driver->domains, vm);
