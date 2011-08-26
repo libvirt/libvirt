@@ -1437,6 +1437,7 @@ qemuMigrationRun(struct qemud_driver *driver,
     qemuMigrationCookiePtr mig = NULL;
     qemuMigrationIOThreadPtr iothread = NULL;
     int fd = -1;
+    unsigned long migrate_speed = resource ? resource : priv->migMaxBandwidth;
 
     VIR_DEBUG("driver=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, resource=%lu, "
@@ -1472,8 +1473,7 @@ qemuMigrationRun(struct qemud_driver *driver,
                                        QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
 
-    if (resource > 0 &&
-        qemuMonitorSetMigrationSpeed(priv->mon, resource) < 0) {
+    if (qemuMonitorSetMigrationSpeed(priv->mon, migrate_speed) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         goto cleanup;
     }
