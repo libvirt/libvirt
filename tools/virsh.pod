@@ -737,8 +737,9 @@ B<Note>: The weight and cap parameters are defined only for the
 XEN_CREDIT scheduler and are now I<DEPRECATED>.
 
 B<Note>: The vcpu_period parameter has a valid value range of 1000-1000000 or
-0, and the vcpu_quota parameter has a valid value range of 1000-1844674407370955
-or less than 0.
+0, and the vcpu_quota parameter has a valid value range of
+1000-18446744073709551 or less than 0. The value 0 for either parameter is
+the same as not specifying that parameter.
 
 =item B<screenshot> I<domain-id> [I<imagefilepath>] [I<--screen> B<screenID>]
 
