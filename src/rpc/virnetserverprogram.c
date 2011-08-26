@@ -110,7 +110,8 @@ static virNetServerProgramProcPtr virNetServerProgramGetProc(virNetServerProgram
 
 
 static int
-virNetServerProgramSendError(virNetServerProgramPtr prog,
+virNetServerProgramSendError(unsigned program,
+                             unsigned version,
                              virNetServerClientPtr client,
                              virNetMessagePtr msg,
                              virNetMessageErrorPtr rerr,
@@ -119,13 +120,13 @@ virNetServerProgramSendError(virNetServerProgramPtr prog,
                              int serial)
 {
     VIR_DEBUG("prog=%d ver=%d proc=%d type=%d serial=%d msg=%p rerr=%p",
-              prog->program, prog->version, procedure, type, serial, msg, rerr);
+              program, version, procedure, type, serial, msg, rerr);
 
     virNetMessageSaveError(rerr);
 
     /* Return header. */
-    msg->header.prog = prog->program;
-    msg->header.vers = prog->version;
+    msg->header.prog = program;
+    msg->header.vers = version;
     msg->header.proc = procedure;
     msg->header.type = type;
     msg->header.serial = serial;
@@ -170,7 +171,8 @@ virNetServerProgramSendReplyError(virNetServerProgramPtr prog,
      * For data streams, errors are sent back as data streams
      * For method calls, errors are sent back as method replies
      */
-    return virNetServerProgramSendError(prog,
+    return virNetServerProgramSendError(prog->program,
+                                        prog->version,
                                         client,
                                         msg,
                                         rerr,
@@ -187,13 +189,35 @@ int virNetServerProgramSendStreamError(virNetServerProgramPtr prog,
                                        int procedure,
                                        int serial)
 {
-    return virNetServerProgramSendError(prog,
+    return virNetServerProgramSendError(prog->program,
+                                        prog->version,
                                         client,
                                         msg,
                                         rerr,
                                         procedure,
                                         VIR_NET_STREAM,
                                         serial);
+}
+
+
+int virNetServerProgramUnknownError(virNetServerClientPtr client,
+                                    virNetMessagePtr msg,
+                                    virNetMessageHeaderPtr req)
+{
+    virNetMessageError rerr;
+
+    virNetError(VIR_ERR_RPC,
+                _("Cannot find program %d version %d"), req->prog, req->vers);
+
+    memset(&rerr, 0, sizeof(rerr));
+    return virNetServerProgramSendError(req->prog,
+                                        req->vers,
+                                        client,
+                                        msg,
+                                        &rerr,
+                                        req->proc,
+                                        VIR_NET_REPLY,
+                                        req->serial);
 }
 
 

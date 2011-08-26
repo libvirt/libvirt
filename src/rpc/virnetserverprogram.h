@@ -86,6 +86,10 @@ int virNetServerProgramSendStreamError(virNetServerProgramPtr prog,
                                        int procedure,
                                        int serial);
 
+int virNetServerProgramUnknownError(virNetServerClientPtr client,
+                                    virNetMessagePtr msg,
+                                    virNetMessageHeaderPtr req);
+
 int virNetServerProgramSendStreamData(virNetServerProgramPtr prog,
                                       virNetServerClientPtr client,
                                       virNetMessagePtr msg,

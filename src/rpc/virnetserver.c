@@ -143,10 +143,12 @@ static void virNetServerHandleJob(void *jobOpaque, void *opaque)
     }
 
     if (!prog) {
-        VIR_DEBUG("Cannot find program %d version %d",
-                  job->msg->header.prog,
-                  job->msg->header.vers);
-        goto error;
+        if (virNetServerProgramUnknownError(job->client,
+                                            job->msg,
+                                            &job->msg->header) < 0)
+            goto error;
+        else
+            goto cleanup;
     }
 
     virNetServerProgramRef(prog);
@@ -159,20 +161,18 @@ static void virNetServerHandleJob(void *jobOpaque, void *opaque)
         goto error;
 
     virNetServerLock(srv);
+
+cleanup:
     virNetServerProgramFree(prog);
     virNetServerUnlock(srv);
     virNetServerClientFree(job->client);
-
     VIR_FREE(job);
     return;
 
 error:
-    virNetServerUnlock(srv);
-    virNetServerProgramFree(prog);
     virNetMessageFree(job->msg);
     virNetServerClientClose(job->client);
-    virNetServerClientFree(job->client);
-    VIR_FREE(job);
+    goto cleanup;
 }
 
 
