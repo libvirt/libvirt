@@ -960,11 +960,14 @@ int                     virDomainResume         (virDomainPtr domain);
 
 /**
  * virDomainSaveRestoreFlags:
- * Flags for use in virDomainSaveFlags(), virDomainManagedSave(), and
- * virDomainRestoreFlags().
+ * Flags for use in virDomainSaveFlags(), virDomainManagedSave(),
+ * virDomainRestoreFlags(), and virDomainSaveImageDefineXML().  Not all
+ * flags apply to all these functions.
  */
 typedef enum {
     VIR_DOMAIN_SAVE_BYPASS_CACHE = 1 << 0, /* Avoid file system cache pollution */
+    VIR_DOMAIN_SAVE_RUNNING      = 1 << 1, /* Favor running over paused */
+    VIR_DOMAIN_SAVE_PAUSED       = 1 << 2, /* Favor paused over running */
 } virDomainSaveRestoreFlags;
 
 int                     virDomainSave           (virDomainPtr domain,
@@ -2578,6 +2581,11 @@ int virDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags);
 /* Get a handle to the current snapshot */
 virDomainSnapshotPtr virDomainSnapshotCurrent(virDomainPtr domain,
                                               unsigned int flags);
+
+typedef enum {
+    VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING = 1 << 0, /* Run after revert */
+    VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED  = 1 << 1, /* Pause after revert */
+} virDomainSnapshotRevertFlags;
 
 /* Revert the domain to a point-in-time snapshot.  The
  * state of the guest after this call will be the state

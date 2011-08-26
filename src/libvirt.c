@@ -2310,7 +2310,7 @@ error:
  *
  * This method will suspend a domain and save its memory contents to
  * a file on disk. After the call, if successful, the domain is not
- * listed as running anymore (this may be a problem).
+ * listed as running anymore (this ends the life of a transient domain).
  * Use virDomainRestore() to restore a domain after saving.
  *
  * See virDomainSaveFlags() for more control.  Also, a save file can
@@ -2379,7 +2379,7 @@ error:
  *
  * This method will suspend a domain and save its memory contents to
  * a file on disk. After the call, if successful, the domain is not
- * listed as running anymore (this may be a problem).
+ * listed as running anymore (this ends the life of a transient domain).
  * Use virDomainRestore() to restore a domain after saving.
  *
  * If the hypervisor supports it, @dxml can be used to alter
@@ -2393,6 +2393,12 @@ error:
  * attempt to bypass the file system cache while creating the file, or
  * fail if it cannot do so for the given system; this can allow less
  * pressure on file system cache, but also risks slowing saves to NFS.
+ *
+ * Normally, the saved state file will remember whether the domain was
+ * running or paused, and restore defaults to the same state.
+ * Specifying VIR_DOMAIN_SAVE_RUNNING or VIR_DOMAIN_SAVE_PAUSED in
+ * @flags will override what state gets saved into the file.  These
+ * two flags are mutually exclusive.
  *
  * A save file can be inspected or modified slightly with
  * virDomainSaveImageGetXMLDesc() and virDomainSaveImageDefineXML().
@@ -2422,6 +2428,12 @@ virDomainSaveFlags(virDomainPtr domain, const char *to,
     conn = domain->conn;
     if (to == NULL) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if ((flags & VIR_DOMAIN_SAVE_RUNNING) && (flags & VIR_DOMAIN_SAVE_PAUSED)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                          _("running and paused flags are mutually exclusive"));
         goto error;
     }
 
@@ -2532,6 +2544,12 @@ error:
  * fail if it cannot do so for the given system; this can allow less
  * pressure on file system cache, but also risks slowing saves to NFS.
  *
+ * Normally, the saved state file will remember whether the domain was
+ * running or paused, and restore defaults to the same state.
+ * Specifying VIR_DOMAIN_SAVE_RUNNING or VIR_DOMAIN_SAVE_PAUSED in
+ * @flags will override the default read from the file.  These two
+ * flags are mutually exclusive.
+ *
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
@@ -2554,6 +2572,12 @@ virDomainRestoreFlags(virConnectPtr conn, const char *from, const char *dxml,
     }
     if (from == NULL) {
         virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if ((flags & VIR_DOMAIN_SAVE_RUNNING) && (flags & VIR_DOMAIN_SAVE_PAUSED)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                          _("running and paused flags are mutually exclusive"));
         goto error;
     }
 
@@ -2661,7 +2685,7 @@ error:
  * @conn: pointer to the hypervisor connection
  * @file: path to saved state file
  * @dxml: XML config for adjusting guest xml used on restore
- * @flags: 0 for now
+ * @flags: bitwise-OR of virDomainSaveRestoreFlags
  *
  * This updates the definition of a domain stored in a saved state
  * file.  @file must be a file created previously by virDomainSave()
@@ -2672,6 +2696,13 @@ error:
  * possible to alter the backing filename that is associated with a
  * disk device, to match renaming done as part of backing up the disk
  * device while the domain is stopped.
+ *
+ * Normally, the saved state file will remember whether the domain was
+ * running or paused, and restore defaults to the same state.
+ * Specifying VIR_DOMAIN_SAVE_RUNNING or VIR_DOMAIN_SAVE_PAUSED in
+ * @flags will override the default saved into the file; omitting both
+ * leaves the file's default unchanged.  These two flags are mutually
+ * exclusive.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -2695,6 +2726,12 @@ virDomainSaveImageDefineXML(virConnectPtr conn, const char *file,
     }
     if (!file || !dxml) {
         virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if ((flags & VIR_DOMAIN_SAVE_RUNNING) && (flags & VIR_DOMAIN_SAVE_PAUSED)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                          _("running and paused flags are mutually exclusive"));
         goto error;
     }
 
@@ -7018,7 +7055,9 @@ error:
  * @domain: pointer to a defined domain
  *
  * Launch a defined domain. If the call succeeds the domain moves from the
- * defined to the running domains pools.
+ * defined to the running domains pools.  The domain will be paused only
+ * if restoring from managed state created from a paused domain.  For more
+ * control, see virDomainCreateWithFlags().
  *
  * Returns 0 in case of success, -1 in case of error
  */
@@ -7064,9 +7103,12 @@ error:
  * Launch a defined domain. If the call succeeds the domain moves from the
  * defined to the running domains pools.
  *
- * If the VIR_DOMAIN_START_PAUSED flag is set, the guest domain
- * will be started, but its CPUs will remain paused. The CPUs
- * can later be manually started using virDomainResume.
+ * If the VIR_DOMAIN_START_PAUSED flag is set, or if the guest domain
+ * has a managed save image that requested paused state (see
+ * virDomainManagedSave()) the guest domain will be started, but its
+ * CPUs will remain paused. The CPUs can later be manually started
+ * using virDomainResume().  In all other cases, the guest domain will
+ * be running.
  *
  * If the VIR_DOMAIN_START_AUTODESTROY flag is set, the guest
  * domain will be automatically destroyed when the virConnectPtr
@@ -15391,6 +15433,12 @@ error:
  * fail if it cannot do so for the given system; this can allow less
  * pressure on file system cache, but also risks slowing saves to NFS.
  *
+ * Normally, the managed saved state will remember whether the domain
+ * was running or paused, and start will resume to the same state.
+ * Specifying VIR_DOMAIN_SAVE_RUNNING or VIR_DOMAIN_SAVE_PAUSED in
+ * @flags will override the default saved into the file.  These two
+ * flags are mutually exclusive.
+ *
  * Returns 0 in case of success or -1 in case of failure
  */
 int virDomainManagedSave(virDomainPtr dom, unsigned int flags)
@@ -15410,6 +15458,12 @@ int virDomainManagedSave(virDomainPtr dom, unsigned int flags)
     conn = dom->conn;
     if (conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if ((flags & VIR_DOMAIN_SAVE_RUNNING) && (flags & VIR_DOMAIN_SAVE_PAUSED)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                          _("running and paused flags are mutually exclusive"));
         goto error;
     }
 
@@ -15844,9 +15898,21 @@ error:
 /**
  * virDomainRevertToSnapshot:
  * @snapshot: a domain snapshot object
- * @flags: unused flag parameters; callers should pass 0
+ * @flags: bitwise-OR of virDomainSnapshotRevertFlags
  *
  * Revert the domain to a given snapshot.
+ *
+ * Normally, the domain will revert to the same state the domain was
+ * in while the snapshot was taken (whether inactive, running, or
+ * paused), except that disk snapshots default to reverting to
+ * inactive state.  Including VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING in
+ * @flags overrides the snapshot state to guarantee a running domain
+ * after the revert; or including VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED in
+ * @flags guarantees a paused domain after the revert.  These two
+ * flags are mutually exclusive.  While a persistent domain does not
+ * need either flag, it is not possible to revert a transient domain
+ * into an inactive state, so transient domains require the use of one
+ * of these two flags.
  *
  * Returns 0 if the creation is successful, -1 on error.
  */
@@ -15870,6 +15936,13 @@ virDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     conn = snapshot->domain->conn;
     if (conn->flags & VIR_CONNECT_RO) {
         virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if ((flags & VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING) &&
+        (flags & VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                          _("running and paused flags are mutually exclusive"));
         goto error;
     }
 
