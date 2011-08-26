@@ -202,7 +202,7 @@ const char *virEnumToString(const char *const*types,
 
 # define VIR_ENUM_IMPL(name, lastVal, ...)                               \
     static const char *const name ## TypeList[] = { __VA_ARGS__ };      \
-    extern int (* name ## Verify (void)) [verify_true (ARRAY_CARDINALITY(name ## TypeList) == lastVal)]; \
+    verify(ARRAY_CARDINALITY(name ## TypeList) == lastVal);             \
     const char *name ## TypeToString(int type) {                        \
         return virEnumToString(name ## TypeList,                        \
                                ARRAY_CARDINALITY(name ## TypeList),     \
