@@ -1361,12 +1361,6 @@ static int qemudDomainSuspend(virDomainPtr dom) {
         goto cleanup;
     }
 
-    if (qemuProcessAutoDestroyActive(driver, vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is marked for auto destroy"));
-        goto cleanup;
-    }
-
     priv = vm->privateData;
 
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT) {
@@ -2225,6 +2219,12 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
     gid_t gid = getgid();
     int directFlag = 0;
     virFileDirectFdPtr directFd = NULL;
+
+    if (qemuProcessAutoDestroyActive(driver, vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is marked for auto destroy"));
+        return -1;
+    }
 
     memset(&header, 0, sizeof(header));
     memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
@@ -8478,6 +8478,12 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (!vm) {
         qemuReportError(VIR_ERR_NO_DOMAIN,
                         _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (qemuProcessAutoDestroyActive(driver, vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is marked for auto destroy"));
         goto cleanup;
     }
 
