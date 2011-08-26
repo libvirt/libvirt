@@ -208,7 +208,7 @@ chmod o+x /path/to/directory
 
     <p>
       If the QEMU driver is configured to run virtual machines as non-root,
-      then they will already loose all their process capabilities at time
+      then they will already lose all their process capabilities at time
       of startup. The Linux capability feature is thus aimed primarily at
       the scenario where the QEMU processes are running as root. In this
       case, before launching a QEMU virtual machine, libvirtd will use

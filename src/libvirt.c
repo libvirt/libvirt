@@ -1820,7 +1820,7 @@ virDomainGetConnect (virDomainPtr dom)
  * If the VIR_DOMAIN_START_AUTODESTROY flag is set, the guest
  * domain will be automatically destroyed when the virConnectPtr
  * object is finally released. This will also happen if the
- * client application crashes / looses its connection to the
+ * client application crashes / loses its connection to the
  * libvirtd daemon. Any domains marked for auto destroy will
  * block attempts at migration or save-to-file
  *
@@ -7071,7 +7071,7 @@ error:
  * If the VIR_DOMAIN_START_AUTODESTROY flag is set, the guest
  * domain will be automatically destroyed when the virConnectPtr
  * object is finally released. This will also happen if the
- * client application crashes / looses its connection to the
+ * client application crashes / loses its connection to the
  * libvirtd daemon. Any domains marked for auto destroy will
  * block attempts at migration or save-to-file
  *
