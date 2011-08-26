@@ -792,9 +792,9 @@ virErrorMsg(virErrorNumber error, const char *info)
             break;
         case VIR_ERR_INVALID_ARG:
             if (info == NULL)
-                errmsg = _("invalid argument in");
+                errmsg = _("invalid argument");
             else
-                errmsg = _("invalid argument in %s");
+                errmsg = _("invalid argument: %s");
             break;
         case VIR_ERR_OPERATION_FAILED:
             if (info != NULL)
