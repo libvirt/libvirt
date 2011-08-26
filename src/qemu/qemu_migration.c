@@ -2487,11 +2487,12 @@ qemuMigrationFinish(struct qemud_driver *driver,
         qemuMigrationVPAssociatePortProfiles(vm->def);
 
         if (flags & VIR_MIGRATE_PERSIST_DEST) {
+            virDomainDefPtr vmdef;
             if (vm->persistent)
                 newVM = 0;
             vm->persistent = 1;
-
-            if (virDomainSaveConfig(driver->configDir, vm->def) < 0) {
+            vmdef = virDomainObjGetPersistentDef(driver->caps, vm);
+            if (virDomainSaveConfig(driver->configDir, vmdef) < 0) {
                 /* Hmpf.  Migration was successful, but making it persistent
                  * was not.  If we report successful, then when this domain
                  * shuts down, management tools are in for a surprise.  On the
