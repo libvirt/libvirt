@@ -355,6 +355,22 @@ virSecurityStackSetDaemonSocketLabel(virSecurityManagerPtr mgr,
 
 
 static int
+virSecurityStackSetSocketLabel(virSecurityManagerPtr mgr,
+                               virDomainObjPtr vm)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    int rc = 0;
+
+    if (virSecurityManagerSetSocketLabel(priv->secondary, vm) < 0)
+        rc = -1;
+    if (virSecurityManagerSetSocketLabel(priv->primary, vm) < 0)
+        rc = -1;
+
+    return rc;
+}
+
+
+static int
 virSecurityStackClearSocketLabel(virSecurityManagerPtr mgr,
                                  virDomainObjPtr vm)
 {
@@ -419,6 +435,7 @@ virSecurityDriver virSecurityDriverStack = {
     virSecurityStackRestoreSecurityImageLabel,
 
     virSecurityStackSetDaemonSocketLabel,
+    virSecurityStackSetSocketLabel,
     virSecurityStackClearSocketLabel,
 
     virSecurityStackGenLabel,

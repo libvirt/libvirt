@@ -55,6 +55,8 @@ int virSecurityManagerRestoreImageLabel(virSecurityManagerPtr mgr,
                                         virDomainDiskDefPtr disk);
 int virSecurityManagerSetDaemonSocketLabel(virSecurityManagerPtr mgr,
                                            virDomainObjPtr vm);
+int virSecurityManagerSetSocketLabel(virSecurityManagerPtr mgr,
+                                     virDomainObjPtr vm);
 int virSecurityManagerClearSocketLabel(virSecurityManagerPtr mgr,
                                        virDomainObjPtr vm);
 int virSecurityManagerSetImageLabel(virSecurityManagerPtr mgr,

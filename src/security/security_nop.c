@@ -59,6 +59,12 @@ static int virSecurityDomainSetDaemonSocketLabelNop(virSecurityManagerPtr mgr AT
     return 0;
 }
 
+static int virSecurityDomainSetSocketLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                              virDomainObjPtr vm ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
 static int virSecurityDomainClearSocketLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                                 virDomainObjPtr vm ATTRIBUTE_UNUSED)
 {
@@ -172,6 +178,7 @@ virSecurityDriver virSecurityDriverNop = {
     virSecurityDomainRestoreImageLabelNop,
 
     virSecurityDomainSetDaemonSocketLabelNop,
+    virSecurityDomainSetSocketLabelNop,
     virSecurityDomainClearSocketLabelNop,
 
     virSecurityDomainGenLabelNop,

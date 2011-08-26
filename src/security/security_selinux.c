@@ -1137,6 +1137,43 @@ done:
 }
 
 static int
+SELinuxSetSecuritySocketLabel(virSecurityManagerPtr mgr,
+                              virDomainObjPtr vm)
+{
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+    int rc = -1;
+
+    if (secdef->label == NULL)
+        return 0;
+
+    if (!STREQ(virSecurityManagerGetModel(mgr), secdef->model)) {
+        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("security label driver mismatch: "
+                                 "'%s' model configured for domain, but "
+                                 "hypervisor driver is '%s'."),
+                               secdef->model, virSecurityManagerGetModel(mgr));
+        goto done;
+    }
+
+    VIR_DEBUG("Setting VM %s socket context %s",
+              vm->def->name, secdef->label);
+    if (setsockcreatecon(secdef->label) == -1) {
+        virReportSystemError(errno,
+                             _("unable to set socket security context '%s'"),
+                             secdef->label);
+        goto done;
+    }
+
+    rc = 0;
+
+done:
+    if (security_getenforce() != 1)
+        rc = 0;
+
+    return rc;
+}
+
+static int
 SELinuxClearSecuritySocketLabel(virSecurityManagerPtr mgr,
                                 virDomainObjPtr vm)
 {
@@ -1313,6 +1350,7 @@ virSecurityDriver virSecurityDriverSELinux = {
     SELinuxRestoreSecurityImageLabel,
 
     SELinuxSetSecurityDaemonSocketLabel,
+    SELinuxSetSecuritySocketLabel,
     SELinuxClearSecuritySocketLabel,
 
     SELinuxGenSecurityLabel,

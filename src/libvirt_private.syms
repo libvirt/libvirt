@@ -911,6 +911,7 @@ virSecurityManagerSetHostdevLabel;
 virSecurityManagerSetProcessFDLabel;
 virSecurityManagerSetProcessLabel;
 virSecurityManagerSetSavedStateLabel;
+virSecurityManagerSetSocketLabel;
 virSecurityManagerVerify;
 
 # sexpr.h

@@ -170,6 +170,16 @@ int virSecurityManagerSetDaemonSocketLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
+int virSecurityManagerSetSocketLabel(virSecurityManagerPtr mgr,
+                                     virDomainObjPtr vm)
+{
+    if (mgr->drv->domainSetSecuritySocketLabel)
+        return mgr->drv->domainSetSecuritySocketLabel(mgr, vm);
+
+    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
 int virSecurityManagerClearSocketLabel(virSecurityManagerPtr mgr,
                                        virDomainObjPtr vm)
 {
