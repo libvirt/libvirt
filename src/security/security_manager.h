@@ -53,8 +53,8 @@ bool virSecurityManagerGetAllowDiskFormatProbing(virSecurityManagerPtr mgr);
 int virSecurityManagerRestoreImageLabel(virSecurityManagerPtr mgr,
                                         virDomainObjPtr vm,
                                         virDomainDiskDefPtr disk);
-int virSecurityManagerSetSocketLabel(virSecurityManagerPtr mgr,
-                                     virDomainObjPtr vm);
+int virSecurityManagerSetDaemonSocketLabel(virSecurityManagerPtr mgr,
+                                           virDomainObjPtr vm);
 int virSecurityManagerClearSocketLabel(virSecurityManagerPtr mgr,
                                        virDomainObjPtr vm);
 int virSecurityManagerSetImageLabel(virSecurityManagerPtr mgr,

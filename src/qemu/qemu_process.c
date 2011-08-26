@@ -821,7 +821,8 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
 
-    if (virSecurityManagerSetSocketLabel(driver->securityManager, vm) < 0) {
+    if (virSecurityManagerSetDaemonSocketLabel(driver->securityManager,
+                                               vm) < 0) {
         VIR_ERROR(_("Failed to set security context for monitor for %s"),
                   vm->def->name);
         goto error;

@@ -1066,8 +1066,8 @@ SELinuxSetSecurityProcessLabel(virSecurityManagerPtr mgr,
 }
 
 static int
-SELinuxSetSecuritySocketLabel(virSecurityManagerPtr mgr,
-                               virDomainObjPtr vm)
+SELinuxSetSecurityDaemonSocketLabel(virSecurityManagerPtr mgr,
+                                    virDomainObjPtr vm)
 {
     /* TODO: verify DOI */
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
@@ -1312,7 +1312,7 @@ virSecurityDriver virSecurityDriverSELinux = {
     SELinuxSetSecurityImageLabel,
     SELinuxRestoreSecurityImageLabel,
 
-    SELinuxSetSecuritySocketLabel,
+    SELinuxSetSecurityDaemonSocketLabel,
     SELinuxClearSecuritySocketLabel,
 
     SELinuxGenSecurityLabel,

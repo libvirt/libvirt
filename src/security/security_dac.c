@@ -667,8 +667,8 @@ virSecurityDACGetProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 }
 
 static int
-virSecurityDACSetSocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                               virDomainObjPtr vm ATTRIBUTE_UNUSED)
+virSecurityDACSetDaemonSocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                   virDomainObjPtr vm ATTRIBUTE_UNUSED)
 {
     return 0;
 }
@@ -714,7 +714,7 @@ virSecurityDriver virSecurityDriverDAC = {
     virSecurityDACSetSecurityImageLabel,
     virSecurityDACRestoreSecurityImageLabel,
 
-    virSecurityDACSetSocketLabel,
+    virSecurityDACSetDaemonSocketLabel,
     virSecurityDACClearSocketLabel,
 
     virSecurityDACGenLabel,

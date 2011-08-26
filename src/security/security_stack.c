@@ -339,15 +339,15 @@ virSecurityStackGetProcessLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityStackSetSocketLabel(virSecurityManagerPtr mgr,
-                               virDomainObjPtr vm)
+virSecurityStackSetDaemonSocketLabel(virSecurityManagerPtr mgr,
+                                     virDomainObjPtr vm)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     int rc = 0;
 
-    if (virSecurityManagerSetSocketLabel(priv->secondary, vm) < 0)
+    if (virSecurityManagerSetDaemonSocketLabel(priv->secondary, vm) < 0)
         rc = -1;
-    if (virSecurityManagerSetSocketLabel(priv->primary, vm) < 0)
+    if (virSecurityManagerSetDaemonSocketLabel(priv->primary, vm) < 0)
         rc = -1;
 
     return rc;
@@ -418,7 +418,7 @@ virSecurityDriver virSecurityDriverStack = {
     virSecurityStackSetSecurityImageLabel,
     virSecurityStackRestoreSecurityImageLabel,
 
-    virSecurityStackSetSocketLabel,
+    virSecurityStackSetDaemonSocketLabel,
     virSecurityStackClearSocketLabel,
 
     virSecurityStackGenLabel,

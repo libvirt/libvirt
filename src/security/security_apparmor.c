@@ -578,8 +578,8 @@ AppArmorSetSecurityProcessLabel(virSecurityManagerPtr mgr, virDomainObjPtr vm)
 }
 
 static int
-AppArmorSetSecuritySocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                               virDomainObjPtr vm ATTRIBUTE_UNUSED)
+AppArmorSetSecurityDaemonSocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                     virDomainObjPtr vm ATTRIBUTE_UNUSED)
 {
     return 0;
 }
@@ -835,7 +835,7 @@ virSecurityDriver virAppArmorSecurityDriver = {
     AppArmorSetSecurityImageLabel,
     AppArmorRestoreSecurityImageLabel,
 
-    AppArmorSetSecuritySocketLabel,
+    AppArmorSetSecurityDaemonSocketLabel,
     AppArmorClearSecuritySocketLabel,
 
     AppArmorGenSecurityLabel,
