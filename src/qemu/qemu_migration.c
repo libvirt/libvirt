@@ -2718,6 +2718,16 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
     bool restoreLabel = false;
     virCommandPtr cmd = NULL;
     int pipeFD[2] = { -1, -1 };
+    unsigned long saveMigBandwidth = priv->migMaxBandwidth;
+
+    /* Increase migration bandwidth to unlimited since target is a file.
+     * Failure to change migration speed is not fatal. */
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
+        qemuMonitorSetMigrationSpeed(priv->mon,
+                                     QEMU_DOMAIN_FILE_MIG_BANDWIDTH_MAX);
+        priv->migMaxBandwidth = QEMU_DOMAIN_FILE_MIG_BANDWIDTH_MAX;
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+    }
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
         (!compressor || pipe(pipeFD) == 0)) {
@@ -2829,6 +2839,13 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
     ret = 0;
 
 cleanup:
+    /* Restore max migration bandwidth */
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
+        qemuMonitorSetMigrationSpeed(priv->mon, saveMigBandwidth);
+        priv->migMaxBandwidth = saveMigBandwidth;
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+    }
+
     VIR_FORCE_CLOSE(pipeFD[0]);
     VIR_FORCE_CLOSE(pipeFD[1]);
     virCommandFree(cmd);
