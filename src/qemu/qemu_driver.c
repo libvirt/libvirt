@@ -8880,6 +8880,38 @@ cleanup:
     return ret;
 }
 
+static int
+qemuDomainMigrateGetMaxSpeed(virDomainPtr dom,
+                             unsigned long *bandwidth,
+                             unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    *bandwidth = vm->privateData->migMaxBandwidth;
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
 static int qemuDomainSnapshotIsAllowed(virDomainObjPtr vm)
 {
     int i;
@@ -10606,6 +10638,7 @@ static virDriver qemuDriver = {
     .domainAbortJob = qemuDomainAbortJob, /* 0.7.7 */
     .domainMigrateSetMaxDowntime = qemuDomainMigrateSetMaxDowntime, /* 0.8.0 */
     .domainMigrateSetMaxSpeed = qemuDomainMigrateSetMaxSpeed, /* 0.9.0 */
+    .domainMigrateGetMaxSpeed = qemuDomainMigrateGetMaxSpeed, /* 0.9.5 */
     .domainEventRegisterAny = qemuDomainEventRegisterAny, /* 0.8.0 */
     .domainEventDeregisterAny = qemuDomainEventDeregisterAny, /* 0.8.0 */
     .domainManagedSave = qemuDomainManagedSave, /* 0.8.0 */
