@@ -2081,15 +2081,26 @@ static int qemuProcessHook(void *data)
     h->vm->pid = getpid();
 
     VIR_DEBUG("Obtaining domain lock");
+    /*
+     * Since we're going to leak the returned FD to QEMU,
+     * we need to make sure it gets a sensible label.
+     * This mildly sucks, because there could be other
+     * sockets the lock driver opens that we don't want
+     * labelled. So far we're ok though.
+     */
+    if (virSecurityManagerSetSocketLabel(h->driver->securityManager, h->vm) < 0)
+        goto cleanup;
     if (virDomainLockProcessStart(h->driver->lockManager,
                                   h->vm,
                                   /* QEMU is always pased initially */
                                   true,
                                   &fd) < 0)
         goto cleanup;
+    if (virSecurityManagerClearSocketLabel(h->driver->securityManager, h->vm) < 0)
+        goto cleanup;
 
     if (qemuProcessLimits(h->driver) < 0)
-        return -1;
+        goto cleanup;
 
     /* This must take place before exec(), so that all QEMU
      * memory allocation is on the correct NUMA node
@@ -2110,12 +2121,6 @@ static int qemuProcessHook(void *data)
     VIR_DEBUG("Setting up security labelling");
     if (virSecurityManagerSetProcessLabel(h->driver->securityManager, h->vm) < 0)
         goto cleanup;
-
-    if (fd != -1) {
-        VIR_DEBUG("Setting up lock manager FD labelling");
-        if (virSecurityManagerSetProcessFDLabel(h->driver->securityManager, h->vm, fd) < 0)
-            goto cleanup;
-    }
 
     ret = 0;
 
