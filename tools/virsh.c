@@ -5199,6 +5199,45 @@ done:
     return ret;
 }
 
+/*
+ * "migrate-getspeed" command
+ */
+static const vshCmdInfo info_migrate_getspeed[] = {
+    {"help", N_("Get the maximum migration bandwidth")},
+    {"desc", N_("Get the maximum migration bandwidth (in Mbps) for a domain.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_migrate_getspeed[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdMigrateGetMaxSpeed(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    unsigned long bandwidth;
+    bool ret = false;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (virDomainMigrateGetMaxSpeed(dom, &bandwidth, 0) < 0)
+        goto done;
+
+    vshPrint(ctl, "%lu\n", bandwidth);
+
+    ret = true;
+
+done:
+    virDomainFree(dom);
+    return ret;
+}
+
 typedef enum {
     VSH_CMD_BLOCK_JOB_ABORT = 0,
     VSH_CMD_BLOCK_JOB_INFO = 1,
@@ -12576,6 +12615,8 @@ static const vshCmdDef domManagementCmds[] = {
      opts_migrate_setmaxdowntime, info_migrate_setmaxdowntime, 0},
     {"migrate-setspeed", cmdMigrateSetMaxSpeed,
      opts_migrate_setspeed, info_migrate_setspeed, 0},
+    {"migrate-getspeed", cmdMigrateGetMaxSpeed,
+     opts_migrate_getspeed, info_migrate_getspeed, 0},
     {"reboot", cmdReboot, opts_reboot, info_reboot, 0},
     {"restore", cmdRestore, opts_restore, info_restore, 0},
     {"resume", cmdResume, opts_resume, info_resume, 0},

@@ -624,6 +624,10 @@ to be down at the end of live migration.
 Set the maximum migration bandwidth (in Mbps) for a domain which is being
 migrated to another host.
 
+=item B<migrate-getspeed> I<domain-id>
+
+Get the maximum migration bandwidth (in Mbps) for a domain.
+
 =item B<reboot> I<domain-id>
 
 Reboot a domain.  This acts just as if the domain had the B<reboot>
