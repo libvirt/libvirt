@@ -72,7 +72,8 @@ instead of the default connection.
 =item B<-d>, B<--debug> I<LEVEL>
 
 Enable debug messages at integer I<LEVEL> and above.  I<LEVEL> can
-range from 0 (default) to 4.
+range from 0 to 4 (default).  See the documentation of B<VIRSH_DEBUG>
+environment variable for the description of each I<LEVEL>.
 
 =item B<-l>, B<--log> I<FILE>
 
