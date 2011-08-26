@@ -215,6 +215,8 @@ static void *qemuDomainObjPrivateAlloc(void)
     if (qemuDomainObjInitJob(priv) < 0)
         VIR_FREE(priv);
 
+    priv->migMaxBandwidth = QEMU_DOMAIN_DEFAULT_MIG_BANDWIDTH_MAX;
+
     return priv;
 }
 

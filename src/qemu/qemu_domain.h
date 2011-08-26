@@ -36,6 +36,9 @@
      (1 << VIR_DOMAIN_VIRT_KVM) |      \
      (1 << VIR_DOMAIN_VIRT_XEN))
 
+# define QEMU_DOMAIN_DEFAULT_MIG_BANDWIDTH_MAX (32 << 20)
+# define QEMU_DOMAIN_FILE_MIG_BANDWIDTH_MAX    (INT64_MAX / (1024 * 1024))
+
 # define JOB_MASK(job)                  (1 << (job - 1))
 # define DEFAULT_JOB_MASK               \
     (JOB_MASK(QEMU_JOB_QUERY) |         \
@@ -115,6 +118,8 @@ struct _qemuDomainObjPrivate {
     bool fakeReboot;
 
     int jobs_queued;
+
+    unsigned long migMaxBandwidth;
 };
 
 struct qemuDomainWatchdogEvent
