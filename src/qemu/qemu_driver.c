@@ -8848,31 +8848,25 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
         return -1;
     }
 
-    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MIGRATION_OP) < 0)
-        goto cleanup;
-
-    if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is not running"));
-        goto endjob;
-    }
-
     priv = vm->privateData;
+    if (virDomainObjIsActive(vm)) {
+        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MIGRATION_OP) < 0)
+            goto cleanup;
 
-    if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is not being migrated"));
-        goto endjob;
+        VIR_DEBUG("Setting migration bandwidth to %luMbs", bandwidth);
+        qemuDomainObjEnterMonitor(driver, vm);
+        ret = qemuMonitorSetMigrationSpeed(priv->mon, bandwidth);
+        qemuDomainObjExitMonitor(driver, vm);
+
+        if (ret == 0)
+            priv->migMaxBandwidth = bandwidth;
+
+        if (qemuDomainObjEndJob(driver, vm) == 0)
+            vm = NULL;
+    } else {
+        priv->migMaxBandwidth = bandwidth;
+        ret = 0;
     }
-
-    VIR_DEBUG("Setting migration bandwidth to %luMbs", bandwidth);
-    qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorSetMigrationSpeed(priv->mon, bandwidth);
-    qemuDomainObjExitMonitor(driver, vm);
-
-endjob:
-    if (qemuDomainObjEndJob(driver, vm) == 0)
-        vm = NULL;
 
 cleanup:
     if (vm)
