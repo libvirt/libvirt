@@ -4335,6 +4335,7 @@ static virDriver remote_driver = {
     .domainAbortJob = remoteDomainAbortJob, /* 0.7.7 */
     .domainMigrateSetMaxDowntime = remoteDomainMigrateSetMaxDowntime, /* 0.8.0 */
     .domainMigrateSetMaxSpeed = remoteDomainMigrateSetMaxSpeed, /* 0.9.0 */
+    .domainMigrateGetMaxSpeed = remoteDomainMigrateGetMaxSpeed, /* 0.9.5 */
     .domainEventRegisterAny = remoteDomainEventRegisterAny, /* 0.8.0 */
     .domainEventDeregisterAny = remoteDomainEventDeregisterAny, /* 0.8.0 */
     .domainManagedSave = remoteDomainManagedSave, /* 0.8.0 */

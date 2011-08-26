@@ -1429,6 +1429,14 @@ struct remote_domain_migrate_set_max_speed_args {
         uint64_t                   bandwidth;
         u_int                      flags;
 };
+struct remote_domain_migrate_get_max_speed_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
+struct remote_domain_migrate_get_max_speed_ret {
+        uint64_t                   bandwidth;
+};
+
 struct remote_domain_events_register_any_args {
         int                        eventID;
 };
@@ -1936,4 +1944,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_BLOCK_JOB_SET_SPEED = 239,
         REMOTE_PROC_DOMAIN_BLOCK_PULL = 240,
         REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB = 241,
+        REMOTE_PROC_DOMAIN_MIGRATE_GET_MAX_SPEED = 242,
 };

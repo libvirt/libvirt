@@ -222,6 +222,7 @@ my $long_legacy = {
     NodeGetInfo                 => { ret => { memory => 1 } },
     DomainBlockPull             => { arg => { bandwidth => 1 } },
     DomainBlockJobSetSpeed      => { arg => { bandwidth => 1 } },
+    DomainMigrateGetMaxSpeed    => { ret => { bandwidth => 1 } },
 };
 
 sub hyper_to_long

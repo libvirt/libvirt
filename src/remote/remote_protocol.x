@@ -1913,6 +1913,16 @@ struct remote_domain_migrate_set_max_speed_args {
     unsigned int flags;
 };
 
+struct remote_domain_migrate_get_max_speed_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_migrate_get_max_speed_ret {
+     unsigned hyper bandwidth; /* insert@1 */
+};
+
+
 struct remote_domain_events_register_any_args {
     int eventID;
 };
@@ -2475,7 +2485,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_BLOCK_JOB_SET_SPEED = 239, /* autogen autogen */
     REMOTE_PROC_DOMAIN_BLOCK_PULL = 240, /* autogen autogen */
 
-    REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB = 241 /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB = 241, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_MIGRATE_GET_MAX_SPEED = 242 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

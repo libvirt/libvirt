@@ -15198,6 +15198,57 @@ error:
 }
 
 /**
+ * virDomainMigrateGetMaxSpeed:
+ * @domain: a domain object
+ * @bandwidth: return value of current migration bandwidth limit in Mbps
+ * @flags: fine-tuning flags, currently unused, use 0
+ *
+ * Get the current maximum bandwidth (in Mbps) that will be used if the
+ * domain is migrated.  Not all hypervisors will support a bandwidth limit.
+ *
+ * Returns 0 in case of success, -1 otherwise.
+ */
+int
+virDomainMigrateGetMaxSpeed(virDomainPtr domain,
+                            unsigned long *bandwidth,
+                            unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "bandwidth = %p, flags=%x", bandwidth, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (!bandwidth) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    conn = domain->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainMigrateGetMaxSpeed) {
+        if (conn->driver->domainMigrateGetMaxSpeed(domain, bandwidth, flags) < 0)
+            goto error;
+        return 0;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
  * virConnectDomainEventRegisterAny:
  * @conn: pointer to the connection
  * @dom: pointer to the domain

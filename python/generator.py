@@ -372,6 +372,7 @@ skip_impl = (
     'virNodeGetCPUStats',
     'virNodeGetMemoryStats',
     'virDomainGetBlockJobInfo',
+    'virDomainMigrateGetMaxSpeed',
 )
 
 

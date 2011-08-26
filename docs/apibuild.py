@@ -1643,7 +1643,8 @@ class CParser:
         "virDomainSetMemory"             : (False, ("memory")),
         "virDomainSetMemoryFlags"        : (False, ("memory")),
         "virDomainBlockJobSetSpeed"      : (False, ("bandwidth")),
-        "virDomainBlockPull"             : (False, ("bandwidth")) }
+        "virDomainBlockPull"             : (False, ("bandwidth")),
+        "virDomainMigrateGetMaxSpeed"    : (False, ("bandwidth")) }
 
     def checkLongLegacyFunction(self, name, return_type, signature):
         if "long" in return_type and "long long" not in return_type:

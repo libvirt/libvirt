@@ -712,6 +712,10 @@ int virDomainMigrateSetMaxSpeed(virDomainPtr domain,
                                 unsigned long bandwidth,
                                 unsigned int flags);
 
+int virDomainMigrateGetMaxSpeed(virDomainPtr domain,
+                                unsigned long *bandwidth,
+                                unsigned int flags);
+
 /**
  * VIR_NODEINFO_MAXCPUS:
  * @nodeinfo: virNodeInfo instance
