@@ -8478,14 +8478,18 @@ static int qemuDomainSnapshotIsAllowed(virDomainObjPtr vm)
     return 1;
 }
 
-/* The domain is expected to be locked and inactive. */
+/* The domain is expected to be locked and inactive. Return -1 on normal
+ * failure, 1 if we skipped a disk due to try_all.  */
 static int
-qemuDomainSnapshotCreateInactive(virDomainObjPtr vm,
-                                 virDomainSnapshotObjPtr snap)
+qemuDomainSnapshotForEachQcow2(virDomainObjPtr vm,
+                               virDomainSnapshotObjPtr snap,
+                               const char *op,
+                               bool try_all)
 {
-    const char *qemuimgarg[] = { NULL, "snapshot", "-c", NULL, NULL, NULL };
+    const char *qemuimgarg[] = { NULL, "snapshot", NULL, NULL, NULL, NULL };
     int ret = -1;
     int i;
+    bool skipped = false;
 
     qemuimgarg[0] = qemuFindQemuImgBinary();
     if (qemuimgarg[0] == NULL) {
@@ -8493,6 +8497,7 @@ qemuDomainSnapshotCreateInactive(virDomainObjPtr vm,
         goto cleanup;
     }
 
+    qemuimgarg[2] = op;
     qemuimgarg[3] = snap->def->name;
 
     for (i = 0; i < vm->def->ndisks; i++) {
@@ -8503,6 +8508,15 @@ qemuDomainSnapshotCreateInactive(virDomainObjPtr vm,
         if (vm->def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
             if (!vm->def->disks[i]->driverType ||
                 STRNEQ(vm->def->disks[i]->driverType, "qcow2")) {
+                if (try_all) {
+                    /* Continue on even in the face of error, since other
+                     * disks in this VM may have the same snapshot name.
+                     */
+                    VIR_WARN("skipping snapshot action on %s",
+                             vm->def->disks[i]->info.alias);
+                    skipped = true;
+                    continue;
+                }
                 qemuReportError(VIR_ERR_OPERATION_INVALID,
                                 _("Disk device '%s' does not support"
                                   " snapshotting"),
@@ -8512,16 +8526,31 @@ qemuDomainSnapshotCreateInactive(virDomainObjPtr vm,
 
             qemuimgarg[4] = vm->def->disks[i]->src;
 
-            if (virRun(qemuimgarg, NULL) < 0)
+            if (virRun(qemuimgarg, NULL) < 0) {
+                if (try_all) {
+                    VIR_WARN("skipping snapshot action on %s",
+                             vm->def->disks[i]->info.alias);
+                    skipped = true;
+                    continue;
+                }
                 goto cleanup;
+            }
         }
     }
 
-    ret = 0;
+    ret = skipped ? 1 : 0;
 
 cleanup:
     VIR_FREE(qemuimgarg[0]);
     return ret;
+}
+
+/* The domain is expected to be locked and inactive. */
+static int
+qemuDomainSnapshotCreateInactive(virDomainObjPtr vm,
+                                 virDomainSnapshotObjPtr snap)
+{
+    return qemuDomainSnapshotForEachQcow2(vm, snap, "-c", false);
 }
 
 /* The domain is expected to be locked and active. */
@@ -8868,6 +8897,16 @@ cleanup:
     return xml;
 }
 
+/* The domain is expected to be locked and inactive. */
+static int
+qemuDomainSnapshotRevertInactive(virDomainObjPtr vm,
+                                 virDomainSnapshotObjPtr snap)
+{
+    /* Try all disks, but report failure if we skipped any.  */
+    int ret = qemuDomainSnapshotForEachQcow2(vm, snap, "-a", true);
+    return ret > 0 ? -1 : ret;
+}
+
 static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                       unsigned int flags)
 {
@@ -9028,14 +9067,9 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         }
     } else {
         /* Transitions 1, 4, 7 */
-        /* qemu is a little funny with running guests and the restoration
-         * of snapshots.  If the snapshot was taken online,
-         * then after a "loadvm" monitor command, the VM is set running
-         * again.  If the snapshot was taken offline, then after a "loadvm"
-         * monitor command the VM is left paused.  Unpausing it leads to
-         * the memory state *before* the loadvm with the disk *after* the
-         * loadvm, which obviously is bound to corrupt something.
-         * Therefore we destroy the domain and set it to "off" in this case.
+        /* Newer qemu -loadvm refuses to revert to the state of a snapshot
+         * created by qemu-img snapshot -c.  If the domain is running, we
+         * must take it offline; then do the revert using qemu-img.
          */
 
         if (virDomainObjIsActive(vm)) {
@@ -9047,12 +9081,19 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                              VIR_DOMAIN_EVENT_STOPPED,
                                              detail);
             if (!vm->persistent) {
+                /* XXX For transient domains, enforce that one of the
+                 * flags is set to get domain running again. For now,
+                 * reverting to offline on a transient domain ends up
+                 * killing the domain, without reverting any disk state. */
                 if (qemuDomainObjEndJob(driver, vm) > 0)
                     virDomainRemoveInactive(&driver->domains, vm);
                 vm = NULL;
                 goto cleanup;
             }
         }
+
+        if (qemuDomainSnapshotRevertInactive(vm, snap) < 0)
+            goto endjob;
     }
 
     ret = 0;
@@ -9087,42 +9128,15 @@ static int qemuDomainSnapshotDiscard(struct qemud_driver *driver,
                                      virDomainObjPtr vm,
                                      virDomainSnapshotObjPtr snap)
 {
-    const char *qemuimgarg[] = { NULL, "snapshot", "-d", NULL, NULL, NULL };
     char *snapFile = NULL;
     int ret = -1;
-    int i;
     qemuDomainObjPrivatePtr priv;
     virDomainSnapshotObjPtr parentsnap = NULL;
 
     if (!virDomainObjIsActive(vm)) {
-        qemuimgarg[0] = qemuFindQemuImgBinary();
-        if (qemuimgarg[0] == NULL)
-            /* qemuFindQemuImgBinary set the error */
+        /* Ignore any skipped disks */
+        if (qemuDomainSnapshotForEachQcow2(vm, snap, "-d", true) < 0)
             goto cleanup;
-
-        qemuimgarg[3] = snap->def->name;
-
-        for (i = 0; i < vm->def->ndisks; i++) {
-            /* FIXME: we also need to handle LVM here */
-            if (vm->def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-                if (!vm->def->disks[i]->driverType ||
-                    STRNEQ(vm->def->disks[i]->driverType, "qcow2")) {
-                    /* we continue on even in the face of error, since other
-                     * disks in this VM may have this snapshot in place
-                     */
-                    continue;
-                }
-
-                qemuimgarg[4] = vm->def->disks[i]->src;
-
-                if (virRun(qemuimgarg, NULL) < 0) {
-                    /* we continue on even in the face of error, since other
-                     * disks in this VM may have this snapshot in place
-                     */
-                    continue;
-                }
-            }
-        }
     } else {
         priv = vm->privateData;
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
@@ -9166,7 +9180,6 @@ static int qemuDomainSnapshotDiscard(struct qemud_driver *driver,
 
 cleanup:
     VIR_FREE(snapFile);
-    VIR_FREE(qemuimgarg[0]);
 
     return ret;
 }
