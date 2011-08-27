@@ -2324,7 +2324,7 @@ cleanup:
 static int
 qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
                        virDomainObjPtr vm, const char *path,
-                       int compressed, bool bypass_cache, const char *xmlin)
+                       int compressed, const char *xmlin, unsigned int flags)
 {
     char *xml = NULL;
     struct qemud_save_header header;
@@ -2340,6 +2340,7 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
     int fd = -1;
     int directFlag = 0;
     virFileDirectFdPtr directFd = NULL;
+    bool bypass_cache = flags & VIR_DOMAIN_SAVE_BYPASS_CACHE;
 
     if (qemuProcessAutoDestroyActive(driver, vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
@@ -2375,6 +2376,11 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
             goto endjob;
         }
     }
+    /* libvirt.c already guaranteed these two flags are exclusive.  */
+    if (flags & VIR_DOMAIN_SAVE_RUNNING)
+        header.was_running = 1;
+    else if (flags & VIR_DOMAIN_SAVE_PAUSED)
+        header.was_running = 0;
 
     /* Get XML for the domain.  Restore needs only the inactive xml,
      * including secure.  We should get the same result whether xmlin
@@ -2552,7 +2558,9 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
     int ret = -1;
     virDomainObjPtr vm = NULL;
 
-    virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE, -1);
+    virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
+                  VIR_DOMAIN_SAVE_RUNNING |
+                  VIR_DOMAIN_SAVE_PAUSED, -1);
 
     qemuDriverLock(driver);
 
@@ -2590,8 +2598,7 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
     }
 
     ret = qemuDomainSaveInternal(driver, dom, vm, path, compressed,
-                                 (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
-                                 dxml);
+                                 dxml, flags);
     vm = NULL;
 
 cleanup:
@@ -2629,7 +2636,9 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
     int ret = -1;
     int compressed;
 
-    virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE, -1);
+    virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
+                  VIR_DOMAIN_SAVE_RUNNING |
+                  VIR_DOMAIN_SAVE_PAUSED, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -2660,8 +2669,7 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
 
     compressed = QEMUD_SAVE_FORMAT_RAW;
     ret = qemuDomainSaveInternal(driver, dom, vm, name, compressed,
-                                 (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
-                                 NULL);
+                                 NULL, flags);
     vm = NULL;
 
 cleanup:
@@ -3812,15 +3820,17 @@ cleanup:
 }
 
 /* Return -1 on most failures after raising error, -2 if edit was specified
- * but xmlin does not represent any changes (no error raised), -3 if corrupt
- * image was unlinked (no error raised), and opened fd on success.  */
+ * but xmlin and state (-1 for no change, 0 for paused, 1 for running) do
+ * not represent any changes (no error raised), -3 if corrupt image was
+ * unlinked (no error raised), and opened fd on success.  */
 static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
 qemuDomainSaveImageOpen(struct qemud_driver *driver,
                         const char *path,
                         virDomainDefPtr *ret_def,
                         struct qemud_save_header *ret_header,
                         bool bypass_cache, virFileDirectFdPtr *directFd,
-                        const char *xmlin, bool edit, bool unlink_corrupt)
+                        const char *xmlin, int state, bool edit,
+                        bool unlink_corrupt)
 {
     int fd;
     struct qemud_save_header header;
@@ -3898,7 +3908,8 @@ qemuDomainSaveImageOpen(struct qemud_driver *driver,
         goto error;
     }
 
-    if (edit && STREQ(xml, xmlin)) {
+    if (edit && STREQ(xml, xmlin) &&
+        (state < 0 || state == header.was_running)) {
         VIR_FREE(xml);
         if (VIR_CLOSE(fd) < 0) {
             virReportSystemError(errno, _("cannot close file: %s"), path);
@@ -3906,6 +3917,8 @@ qemuDomainSaveImageOpen(struct qemud_driver *driver,
         }
         return -2;
     }
+    if (state >= 0)
+        header.was_running = state;
 
     /* Create a domain from this XML */
     if (!(def = virDomainDefParseString(driver->caps, xml,
@@ -4068,14 +4081,22 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     int ret = -1;
     struct qemud_save_header header;
     virFileDirectFdPtr directFd = NULL;
+    int state = -1;
 
-    virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE, -1);
+    virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
+                  VIR_DOMAIN_SAVE_RUNNING |
+                  VIR_DOMAIN_SAVE_PAUSED, -1);
 
     qemuDriverLock(driver);
 
+    if (flags & VIR_DOMAIN_SAVE_RUNNING)
+        state = 1;
+    else if (flags & VIR_DOMAIN_SAVE_PAUSED)
+        state = 0;
+
     fd = qemuDomainSaveImageOpen(driver, path, &def, &header,
                                  (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
-                                 &directFd, dxml, false, false);
+                                 &directFd, dxml, state, false, false);
     if (fd < 0)
         goto cleanup;
 
@@ -4138,7 +4159,7 @@ qemuDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *path,
     qemuDriverLock(driver);
 
     fd = qemuDomainSaveImageOpen(driver, path, &def, &header, false, NULL,
-                                 NULL, false, false);
+                                 NULL, -1, false, false);
 
     if (fd < 0)
         goto cleanup;
@@ -4163,13 +4184,20 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
     struct qemud_save_header header;
     char *xml = NULL;
     size_t len;
+    int state = -1;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_SAVE_RUNNING |
+                  VIR_DOMAIN_SAVE_PAUSED, -1);
 
     qemuDriverLock(driver);
 
+    if (flags & VIR_DOMAIN_SAVE_RUNNING)
+        state = 1;
+    else if (flags & VIR_DOMAIN_SAVE_PAUSED)
+        state = 0;
+
     fd = qemuDomainSaveImageOpen(driver, path, &def, &header, false, NULL,
-                                 dxml, true, false);
+                                 dxml, state, true, false);
 
     if (fd < 0) {
         /* Check for special case of no change needed.  */
@@ -4194,11 +4222,12 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
         goto cleanup;
     }
 
-    if (lseek(fd, sizeof(header), SEEK_SET) != sizeof(header)) {
+    if (lseek(fd, 0, SEEK_SET) != 0) {
         virReportSystemError(errno, _("cannot seek in '%s'"), path);
         goto cleanup;
     }
-    if (safewrite(fd, xml, len) != len ||
+    if (safewrite(fd, &header, sizeof(header)) != sizeof(header) ||
+        safewrite(fd, xml, len) != len ||
         VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno, _("failed to write xml to '%s'"), path);
         goto cleanup;
@@ -4231,7 +4260,8 @@ qemuDomainObjRestore(virConnectPtr conn,
     virFileDirectFdPtr directFd = NULL;
 
     fd = qemuDomainSaveImageOpen(driver, path, &def, &header,
-                                 bypass_cache, &directFd, NULL, false, true);
+                                 bypass_cache, &directFd, NULL, -1, false,
+                                 true);
     if (fd < 0) {
         if (fd == -3)
             ret = 1;
