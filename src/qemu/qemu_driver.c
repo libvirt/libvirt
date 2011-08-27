@@ -8921,7 +8921,8 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     qemuDomainObjPrivatePtr priv;
     int rc;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
+                  VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED, -1);
 
     /* We have the following transitions, which create the following events:
      * 1. inactive -> inactive: none
@@ -8950,6 +8951,17 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         qemuReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
                         _("no domain snapshot with matching name '%s'"),
                         snapshot->name);
+        goto cleanup;
+    }
+
+    if (!vm->persistent &&
+        snap->def->state != VIR_DOMAIN_RUNNING &&
+        snap->def->state != VIR_DOMAIN_PAUSED &&
+        (flags & (VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
+                  VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) == 0) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("transient domain needs to request run or pause "
+                          "to revert to inactive snapshot"));
         goto cleanup;
     }
 
@@ -9026,7 +9038,9 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         }
 
         /* Touch up domain state.  */
-        if (snap->def->state == VIR_DOMAIN_PAUSED) {
+        if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING) &&
+            (snap->def->state == VIR_DOMAIN_PAUSED ||
+             (flags & VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED))) {
             /* Transitions 3, 6, 9 */
             virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
                                  VIR_DOMAIN_PAUSED_FROM_SNAPSHOT);
@@ -9080,20 +9094,49 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             event = virDomainEventNewFromObj(vm,
                                              VIR_DOMAIN_EVENT_STOPPED,
                                              detail);
+        }
+
+        if (qemuDomainSnapshotRevertInactive(vm, snap) < 0) {
             if (!vm->persistent) {
-                /* XXX For transient domains, enforce that one of the
-                 * flags is set to get domain running again. For now,
-                 * reverting to offline on a transient domain ends up
-                 * killing the domain, without reverting any disk state. */
                 if (qemuDomainObjEndJob(driver, vm) > 0)
                     virDomainRemoveInactive(&driver->domains, vm);
                 vm = NULL;
                 goto cleanup;
             }
+            goto endjob;
         }
 
-        if (qemuDomainSnapshotRevertInactive(vm, snap) < 0)
-            goto endjob;
+        if (flags & (VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
+                     VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) {
+            /* Flush first event, now do transition 2 or 3 */
+            bool paused = (flags & VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED) != 0;
+
+            if (event)
+                qemuDomainEventQueue(driver, event);
+            rc = qemuProcessStart(snapshot->domain->conn, driver, vm, NULL,
+                                  paused, false, -1, NULL, NULL,
+                                  VIR_VM_OP_CREATE);
+            virDomainAuditStart(vm, "from-snapshot", rc >= 0);
+            if (rc < 0) {
+                if (!vm->persistent) {
+                    if (qemuDomainObjEndJob(driver, vm) > 0)
+                        virDomainRemoveInactive(&driver->domains, vm);
+                    vm = NULL;
+                    goto cleanup;
+                }
+                goto endjob;
+            }
+            detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
+            event = virDomainEventNewFromObj(vm,
+                                             VIR_DOMAIN_EVENT_STARTED,
+                                             detail);
+            if (paused) {
+                detail = VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT;
+                event2 = virDomainEventNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_SUSPENDED,
+                                                  detail);
+            }
+        }
     }
 
     ret = 0;
