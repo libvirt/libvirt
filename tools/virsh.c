@@ -1641,6 +1641,8 @@ static const vshCmdOptDef opts_save[] = {
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("where to save the data")},
     {"xml", VSH_OT_STRING, 0,
      N_("filename containing updated XML for the target")},
+    {"running", VSH_OT_BOOL, 0, N_("set domain to be running on restore")},
+    {"paused", VSH_OT_BOOL, 0, N_("set domain to be paused on restore")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1663,6 +1665,10 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "bypass-cache"))
         flags |= VIR_DOMAIN_SAVE_BYPASS_CACHE;
+    if (vshCommandOptBool(cmd, "running"))
+        flags |= VIR_DOMAIN_SAVE_RUNNING;
+    if (vshCommandOptBool(cmd, "paused"))
+        flags |= VIR_DOMAIN_SAVE_PAUSED;
 
     if (vshCommandOptString(cmd, "xml", &xmlfile) < 0) {
         vshError(ctl, "%s", _("malformed xml argument"));
@@ -1750,6 +1756,8 @@ static const vshCmdOptDef opts_save_image_define[] = {
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("saved state file to modify")},
     {"xml", VSH_OT_STRING, VSH_OFLAG_REQ,
      N_("filename containing updated XML for the target")},
+    {"running", VSH_OT_BOOL, 0, N_("set domain to be running on restore")},
+    {"paused", VSH_OT_BOOL, 0, N_("set domain to be paused on restore")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1760,6 +1768,12 @@ cmdSaveImageDefine(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     const char *xmlfile = NULL;
     char *xml = NULL;
+    unsigned int flags = 0;
+
+    if (vshCommandOptBool(cmd, "running"))
+        flags |= VIR_DOMAIN_SAVE_RUNNING;
+    if (vshCommandOptBool(cmd, "paused"))
+        flags |= VIR_DOMAIN_SAVE_PAUSED;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -1799,6 +1813,8 @@ static const vshCmdInfo info_save_image_edit[] = {
 
 static const vshCmdOptDef opts_save_image_edit[] = {
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("saved state file to edit")},
+    {"running", VSH_OT_BOOL, 0, N_("set domain to be running on restore")},
+    {"paused", VSH_OT_BOOL, 0, N_("set domain to be paused on restore")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1810,7 +1826,22 @@ cmdSaveImageEdit(vshControl *ctl, const vshCmd *cmd)
     char *tmp = NULL;
     char *doc = NULL;
     char *doc_edited = NULL;
-    unsigned int flags = VIR_DOMAIN_XML_SECURE;
+    unsigned int getxml_flags = VIR_DOMAIN_XML_SECURE;
+    unsigned int define_flags = 0;
+
+    if (vshCommandOptBool(cmd, "running"))
+        define_flags |= VIR_DOMAIN_SAVE_RUNNING;
+    if (vshCommandOptBool(cmd, "paused"))
+        define_flags |= VIR_DOMAIN_SAVE_PAUSED;
+
+    /* Normally, we let the API reject mutually exclusive flags.
+     * However, in the edit cycle, we let the user retry if the define
+     * step fails, but the define step will always fail on invalid
+     * flags, so we reject it up front to avoid looping.  */
+    if (define_flags == (VIR_DOMAIN_SAVE_RUNNING | VIR_DOMAIN_SAVE_PAUSED)) {
+        vshError(ctl, "%s", _("--running and --saved are mutually exclusive"));
+        return false;
+    }
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -1819,7 +1850,7 @@ cmdSaveImageEdit(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     /* Get the XML configuration of the saved image.  */
-    doc = virDomainSaveImageGetXMLDesc(ctl->conn, file, flags);
+    doc = virDomainSaveImageGetXMLDesc(ctl->conn, file, getxml_flags);
     if (!doc)
         goto cleanup;
 
@@ -1837,8 +1868,9 @@ cmdSaveImageEdit(vshControl *ctl, const vshCmd *cmd)
     if (!doc_edited)
         goto cleanup;
 
-    /* Compare original XML with edited.  Has it changed at all?  */
-    if (STREQ(doc, doc_edited)) {
+    /* Compare original XML with edited.  Short-circuit if it did not
+     * change, and we do not have any flags.  */
+    if (STREQ(doc, doc_edited) && !define_flags) {
         vshPrint(ctl, _("Saved image %s XML configuration not changed.\n"),
                  file);
         ret = true;
@@ -1846,7 +1878,8 @@ cmdSaveImageEdit(vshControl *ctl, const vshCmd *cmd)
     }
 
     /* Everything checks out, so redefine the xml.  */
-    if (virDomainSaveImageDefineXML(ctl->conn, file, doc_edited, 0) < 0) {
+    if (virDomainSaveImageDefineXML(ctl->conn, file, doc_edited,
+                                    define_flags) < 0) {
         vshError(ctl, _("Failed to update %s"), file);
         goto cleanup;
     }
@@ -1879,6 +1912,8 @@ static const vshCmdInfo info_managedsave[] = {
 static const vshCmdOptDef opts_managedsave[] = {
     {"bypass-cache", VSH_OT_BOOL, 0, N_("avoid file system cache when saving")},
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"running", VSH_OT_BOOL, 0, N_("set domain to be running on next start")},
+    {"paused", VSH_OT_BOOL, 0, N_("set domain to be paused on next start")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1895,6 +1930,10 @@ cmdManagedSave(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "bypass-cache"))
         flags |= VIR_DOMAIN_SAVE_BYPASS_CACHE;
+    if (vshCommandOptBool(cmd, "running"))
+        flags |= VIR_DOMAIN_SAVE_RUNNING;
+    if (vshCommandOptBool(cmd, "paused"))
+        flags |= VIR_DOMAIN_SAVE_PAUSED;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
@@ -2238,6 +2277,8 @@ static const vshCmdOptDef opts_restore[] = {
      N_("avoid file system cache when restoring")},
     {"xml", VSH_OT_STRING, 0,
      N_("filename containing updated XML for the target")},
+    {"running", VSH_OT_BOOL, 0, N_("restore domain into running state")},
+    {"paused", VSH_OT_BOOL, 0, N_("restore domain into paused state")},
     {NULL, 0, 0, NULL}
 };
 
@@ -2258,6 +2299,10 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "bypass-cache"))
         flags |= VIR_DOMAIN_SAVE_BYPASS_CACHE;
+    if (vshCommandOptBool(cmd, "running"))
+        flags |= VIR_DOMAIN_SAVE_RUNNING;
+    if (vshCommandOptBool(cmd, "paused"))
+        flags |= VIR_DOMAIN_SAVE_PAUSED;
 
     if (vshCommandOptString(cmd, "xml", &xmlfile) < 0) {
         vshError(ctl, "%s", _("malformed xml argument"));
@@ -12392,6 +12437,8 @@ static const vshCmdInfo info_snapshot_revert[] = {
 static const vshCmdOptDef opts_snapshot_revert[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"snapshotname", VSH_OT_DATA, VSH_OFLAG_REQ, N_("snapshot name")},
+    {"running", VSH_OT_BOOL, 0, N_("after reverting, change state to running")},
+    {"paused", VSH_OT_BOOL, 0, N_("after reverting, change state to paused")},
     {NULL, 0, 0, NULL}
 };
 
@@ -12402,6 +12449,12 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     const char *name = NULL;
     virDomainSnapshotPtr snapshot = NULL;
+    unsigned int flags = 0;
+
+    if (vshCommandOptBool(cmd, "running"))
+        flags |= VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING;
+    if (vshCommandOptBool(cmd, "paused"))
+        flags |= VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -12417,7 +12470,7 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
     if (snapshot == NULL)
         goto cleanup;
 
-    if (virDomainRevertToSnapshot(snapshot, 0) < 0)
+    if (virDomainRevertToSnapshot(snapshot, flags) < 0)
         goto cleanup;
 
     ret = true;

@@ -623,12 +623,18 @@ The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
 variables, and defaults to C<vi>.
 
 =item B<managedsave> I<domain-id> [I<--bypass-cache>]
+[{I<--running> | I<--paused>}]
 
 Save and destroy (stop) a running domain, so it can be restarted from the same
 state at a later time.  When the virsh B<start> command is next run for
 the domain, it will automatically be started from this saved state.
 If I<--bypass-cache> is specified, the save will avoid the file system
 cache, although this may slow down the operation.
+
+Normally, starting a managed save will decide between running or paused
+based on the state the domain was in when the save was done; passing
+either the I<--running> or I<--paused> flag will allow overriding which
+state the B<start> should use.
 
 The B<dominfo> command can be used to query whether a domain currently
 has any managed save image.
@@ -716,6 +722,7 @@ The exact behavior of a domain when it reboots is set by the
 I<on_reboot> parameter in the domain's XML definition.
 
 =item B<restore> I<state-file> [I<--bypass-cache>] [I<--xml> B<file>]
+[{I<--running> | I<--paused>}]
 
 Restores a domain from a B<virsh save> state file. See I<save> for more info.
 
@@ -728,12 +735,18 @@ in the host-specific portions of the domain XML.  For example, it can
 be used to account for file naming differences in underlying storage
 due to disk snapshots taken after the guest was saved.
 
+Normally, restoring a saved image will use the state recorded in the
+save image to decide between running or paused; passing either the
+I<--running> or I<--paused> flag will allow overriding which state the
+domain should be started in.
+
 B<Note>: To avoid corrupting file system contents within the domain, you
 should not reuse the saved state file for a second B<restore> unless you
 have also reverted all storage volumes back to the same contents as when
 the state file was created.
 
 =item B<save> I<domain-id> I<state-file> [I<--bypass-cache>] [I<--xml> B<file>]
+[{I<--running> | I<--paused>}]
 
 Saves a running domain (RAM, but not disk state) to a state file so that
 it can be restored
@@ -753,12 +766,17 @@ in the host-specific portions of the domain XML.  For example, it can
 be used to account for file naming differences that are planned to
 be made via disk snapshots of underlying storage after the guest is saved.
 
+Normally, restoring a saved image will decide between running or paused
+based on the state the domain was in when the save was done; passing
+either the I<--running> or I<--paused> flag will allow overriding which
+state the B<restore> should use.
+
 Domain saved state files assume that disk images will be unchanged
 between the creation and restore point.  For a more complete system
 restore point, where the disk state is saved alongside the memory
 state, see the B<snapshot> family of commands.
 
-=item B<save-image-define> I<file> I<xml>
+=item B<save-image-define> I<file> I<xml> [{I<--running> | I<--paused>}]
 
 Update the domain XML that will be used when I<file> is later
 used in the B<restore> command.  The I<xml> argument must be a file
@@ -767,16 +785,26 @@ host-specific portions of the domain XML.  For example, it can
 be used to account for file naming differences resulting from creating
 disk snapshots of underlying storage after the guest was saved.
 
+The save image records whether the domain should be restored to a
+running or paused state.  Normally, this command does not alter the
+recorded state; passing either the I<--running> or I<--paused> flag
+will allow overriding which state the B<restore> should use.
+
 =item B<save-image-dumpxml> I<file> [I<--security-info>]
 
 Extract the domain XML that was in effect at the time the saved state
 file I<file> was created with the B<save> command.  Using
 I<--security-info> will also include security sensitive information.
 
-=item B<save-image-edit> I<file>
+=item B<save-image-edit> I<file> [{I<--running> | I<--paused>}]
 
 Edit the XML configuration associated with a saved state file I<file>
 created by the B<save> command.
+
+The save image records whether the domain should be restored to a
+running or paused state.  Normally, this command does not alter the
+recorded state; passing either the I<--running> or I<--paused> flag
+will allow overriding which state the B<restore> should use.
 
 This is equivalent to:
 
@@ -1691,13 +1719,21 @@ Output the snapshot XML for the domain's snapshot named I<snapshot>.
 
 Output the name of the parent snapshot for the given I<snapshot>, if any.
 
-=item B<snapshot-revert> I<domain> I<snapshot>
+=item B<snapshot-revert> I<domain> I<snapshot> [{I<--running> | I<--paused>}]
 
 Revert the given domain to the snapshot specified by I<snapshot>.  Be aware
-that this is a destructive action; any changes in the domain since the
+that this is a destructive action; any changes in the domain since the last
 snapshot was taken will be lost.  Also note that the state of the domain after
 snapshot-revert is complete will be the state of the domain at the time
 the original snapshot was taken.
+
+Normally, reverting to a snapshot leaves the domain in the state it was
+at the time the snapshot was created, except that a disk snapshot with
+no vm state leaves the domain in an inactive state.  Passing either the
+I<--running> or I<--paused> flag will perform additional state changes
+(such as booting an inactive domain, or pausing a running domain).  Since
+transient domains cannot be inactive, it is required to use one of these
+flags when reverting to a disk snapshot of a transient domain.
 
 =item B<snapshot-delete> I<domain> I<snapshot> I<--children>
 
