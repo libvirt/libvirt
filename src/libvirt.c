@@ -7081,6 +7081,9 @@ error:
  * the file, or fail if it cannot do so for the given system; this can allow
  * less pressure on file system cache, but also risks slowing loads from NFS.
  *
+ * If the VIR_DOMAIN_START_FORCE_BOOT flag is set, then any managed save
+ * file for this domain is discarded, and the domain boots from scratch.
+ *
  * Returns 0 in case of success, -1 in case of error
  */
 int

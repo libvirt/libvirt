@@ -1537,9 +1537,12 @@ static const vshCmdOptDef opts_start[] = {
     {"console", VSH_OT_BOOL, 0, N_("attach to console after creation")},
 #endif
     {"paused", VSH_OT_BOOL, 0, N_("leave the guest paused after creation")},
-    {"autodestroy", VSH_OT_BOOL, 0, N_("automatically destroy the guest when virsh disconnects")},
+    {"autodestroy", VSH_OT_BOOL, 0,
+     N_("automatically destroy the guest when virsh disconnects")},
     {"bypass-cache", VSH_OT_BOOL, 0,
      N_("avoid file system cache when loading")},
+    {"force-boot", VSH_OT_BOOL, 0,
+     N_("force fresh boot by discarding any managed save")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1572,6 +1575,8 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_START_AUTODESTROY;
     if (vshCommandOptBool(cmd, "bypass-cache"))
         flags |= VIR_DOMAIN_START_BYPASS_CACHE;
+    if (vshCommandOptBool(cmd, "force-boot"))
+        flags |= VIR_DOMAIN_START_FORCE_BOOT;
 
     /* Prefer older API unless we have to pass a flag.  */
     if ((flags ? virDomainCreateWithFlags(dom, flags)

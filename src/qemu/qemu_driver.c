@@ -120,9 +120,7 @@ static int qemudShutdown(void);
 static int qemuDomainObjStart(virConnectPtr conn,
                               struct qemud_driver *driver,
                               virDomainObjPtr vm,
-                              bool start_paused,
-                              bool autodestroy,
-                              bool bypass_cache);
+                              unsigned int flags);
 
 static int qemudDomainGetMaxVcpus(virDomainPtr dom);
 
@@ -135,11 +133,16 @@ struct qemuAutostartData {
 };
 
 static void
-qemuAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
+qemuAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED,
+                    void *opaque)
 {
     virDomainObjPtr vm = payload;
     struct qemuAutostartData *data = opaque;
     virErrorPtr err;
+    int flags = 0;
+
+    if (data->driver->autoStartBypassCache)
+        flags |= VIR_DOMAIN_START_BYPASS_CACHE;
 
     virDomainObjLock(vm);
     virResetLastError();
@@ -152,9 +155,7 @@ qemuAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaq
     } else {
         if (vm->autostart &&
             !virDomainObjIsActive(vm) &&
-            qemuDomainObjStart(data->conn, data->driver, vm,
-                               false, false,
-                               data->driver->autoStartBypassCache) < 0) {
+            qemuDomainObjStart(data->conn, data->driver, vm, flags) < 0) {
             err = virGetLastError();
             VIR_ERROR(_("Failed to autostart VM '%s': %s"),
                       vm->def->name,
@@ -4441,12 +4442,14 @@ static int
 qemuDomainObjStart(virConnectPtr conn,
                    struct qemud_driver *driver,
                    virDomainObjPtr vm,
-                   bool start_paused,
-                   bool autodestroy,
-                   bool bypass_cache)
+                   unsigned int flags)
 {
     int ret = -1;
     char *managed_save;
+    bool start_paused = (flags & VIR_DOMAIN_START_PAUSED) != 0;
+    bool autodestroy = (flags & VIR_DOMAIN_START_AUTODESTROY) != 0;
+    bool bypass_cache = (flags & VIR_DOMAIN_START_BYPASS_CACHE) != 0;
+    bool force_boot = (flags & VIR_DOMAIN_START_FORCE_BOOT) != 0;
 
     /*
      * If there is a managed saved state restore it instead of starting
@@ -4458,13 +4461,22 @@ qemuDomainObjStart(virConnectPtr conn,
         goto cleanup;
 
     if (virFileExists(managed_save)) {
-        ret = qemuDomainObjRestore(conn, driver, vm, managed_save,
-                                   bypass_cache);
+        if (force_boot) {
+            if (unlink(managed_save) < 0) {
+                virReportSystemError(errno,
+                                     _("cannot remove managed save file %s"),
+                                     managed_save);
+                goto cleanup;
+            }
+        } else {
+            ret = qemuDomainObjRestore(conn, driver, vm, managed_save,
+                                       bypass_cache);
 
-        if ((ret == 0) && (unlink(managed_save) < 0))
-            VIR_WARN("Failed to remove the managed state %s", managed_save);
+            if ((ret == 0) && (unlink(managed_save) < 0))
+                VIR_WARN("Failed to remove the managed state %s", managed_save);
 
-        goto cleanup;
+            goto cleanup;
+        }
     }
 
     ret = qemuProcessStart(conn, driver, vm, NULL, start_paused,
@@ -4493,7 +4505,8 @@ qemuDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
 
     virCheckFlags(VIR_DOMAIN_START_PAUSED |
                   VIR_DOMAIN_START_AUTODESTROY |
-                  VIR_DOMAIN_START_BYPASS_CACHE, -1);
+                  VIR_DOMAIN_START_BYPASS_CACHE |
+                  VIR_DOMAIN_START_FORCE_BOOT, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -4515,10 +4528,7 @@ qemuDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
         goto endjob;
     }
 
-    if (qemuDomainObjStart(dom->conn, driver, vm,
-                           (flags & VIR_DOMAIN_START_PAUSED) != 0,
-                           (flags & VIR_DOMAIN_START_AUTODESTROY) != 0,
-                           (flags & VIR_DOMAIN_START_BYPASS_CACHE) != 0) < 0)
+    if (qemuDomainObjStart(dom->conn, driver, vm, flags) < 0)
         goto endjob;
 
     ret = 0;

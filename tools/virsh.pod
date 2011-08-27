@@ -890,7 +890,7 @@ The exact behavior of a domain when it shuts down is set by the
 I<on_shutdown> parameter in the domain's XML definition.
 
 =item B<start> I<domain-name> [I<--console>] [I<--paused>] [I<--autodestroy>]
-[I<--bypass-cache>]
+[I<--bypass-cache>] [I<--force-boot>]
 
 Start a (previously defined) inactive domain, either from the last
 B<managedsave> state, or via a fresh boot if no managedsave state is
@@ -901,7 +901,8 @@ If I<--autodestroy> is requested, then the guest will be automatically
 destroyed when virsh closes its connection to libvirt, or otherwise
 exits.  If I<--bypass-cache> is specified, and managedsave state exists,
 the restore will avoid the file system cache, although this may slow
-down the operation.
+down the operation.  If I<--force-boot> is specified, then any
+managedsave state is discarded and a fresh boot occurs.
 
 =item B<suspend> I<domain-id>
 
