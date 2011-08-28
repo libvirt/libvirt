@@ -468,7 +468,7 @@ int virNetServerProgramSendStreamData(virNetServerProgramPtr prog,
         if (virNetMessageEncodePayloadEmpty(msg) < 0)
             return -1;
     }
-    VIR_DEBUG("Total %zu", msg->bufferOffset);
+    VIR_DEBUG("Total %zu", msg->bufferLength);
 
     return virNetServerClientSendMessage(client, msg);
 }
