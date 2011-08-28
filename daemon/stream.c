@@ -727,7 +727,6 @@ daemonStreamHandleRead(virNetServerClientPtr client,
         if (msg) {
             msg->cb = daemonStreamMessageFinished;
             msg->opaque = stream;
-            virNetServerClientRef(client);
             ret = virNetServerProgramSendStreamData(remoteProgram,
                                                     client,
                                                     msg,
