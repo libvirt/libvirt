@@ -24,6 +24,7 @@
 #include <sys/time.h>
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
+#include <fcntl.h>
 
 #include "qemu_migration.h"
 #include "qemu_monitor.h"
@@ -1691,13 +1692,13 @@ static int doTunnelMigrate(struct qemud_driver *driver,
         spec.dest.fd.qemu = -1;
         spec.dest.fd.local = -1;
 
-        if (pipe(fds) == 0) {
+        if (pipe2(fds, O_CLOEXEC) == 0) {
             spec.dest.fd.qemu = fds[1];
             spec.dest.fd.local = fds[0];
         }
         if (spec.dest.fd.qemu == -1 ||
-            virSetCloseExec(spec.dest.fd.qemu) < 0 ||
-            virSetCloseExec(spec.dest.fd.local) < 0) {
+            virSecurityManagerSetImageFDLabel(driver->securityManager, vm,
+                                              spec.dest.fd.qemu) < 0) {
             virReportSystemError(errno, "%s",
                         _("cannot create pipe for tunnelled migration"));
             goto cleanup;
