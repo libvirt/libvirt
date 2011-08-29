@@ -1249,6 +1249,8 @@ int main(int argc, char **argv) {
     bool privileged = geteuid() == 0 ? true : false;
     bool implicit_conf = false;
     bool use_polkit_dbus;
+    char *run_dir = NULL;
+    mode_t old_umask;
 
     struct option opts[] = {
         { "verbose", no_argument, &verbose, 1},
@@ -1403,22 +1405,31 @@ int main(int argc, char **argv) {
 
     /* Ensure the rundir exists (on tmpfs on some systems) */
     if (privileged) {
-        const char *rundir = LOCALSTATEDIR "/run/libvirt";
-        mode_t old_umask;
+        run_dir = strdup(LOCALSTATEDIR "/run/libvirt");
+    } else {
+        char *user_dir = virGetUserDirectory(geteuid());
 
-        old_umask = umask(022);
-        if (mkdir (rundir, 0755)) {
-            if (errno != EEXIST) {
-                char ebuf[1024];
-                VIR_ERROR(_("unable to create rundir %s: %s"), rundir,
-                          virStrerror(errno, ebuf, sizeof(ebuf)));
-                ret = VIR_DAEMON_ERR_RUNDIR;
-                umask(old_umask);
-                goto cleanup;
-            }
+        if (!user_dir) {
+            VIR_ERROR(_("Can't determine user directory"));
+            goto cleanup;
         }
-        umask(old_umask);
+        ignore_value(virAsprintf(&run_dir, "%s/.libvirt/", user_dir));
+        VIR_FREE(user_dir);
     }
+    if (!run_dir) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    old_umask = umask(022);
+    if (virFileMakePath(run_dir) < 0) {
+        char ebuf[1024];
+        VIR_ERROR(_("unable to create rundir %s: %s"), run_dir,
+                  virStrerror(errno, ebuf, sizeof(ebuf)));
+        ret = VIR_DAEMON_ERR_RUNDIR;
+        goto cleanup;
+    }
+    umask(old_umask);
 
     /* Try to claim the pidfile, exiting if we can't */
     if ((pid_file_fd = virPidFileAcquirePath(pid_file, getpid())) < 0) {
@@ -1571,6 +1582,8 @@ cleanup:
     VIR_FREE(sock_file_ro);
     VIR_FREE(pid_file);
     VIR_FREE(remote_config_file);
+    VIR_FREE(run_dir);
+
     daemonConfigFree(config);
     virLogShutdown();
 
