@@ -84,9 +84,6 @@ typedef int (*virSecurityDomainSecurityVerify) (virSecurityManagerPtr mgr,
 typedef int (*virSecurityDomainSetImageFDLabel) (virSecurityManagerPtr mgr,
                                                  virDomainObjPtr vm,
                                                  int fd);
-typedef int (*virSecurityDomainSetProcessFDLabel) (virSecurityManagerPtr mgr,
-                                                   virDomainObjPtr vm,
-                                                   int fd);
 
 struct _virSecurityDriver {
     size_t privateDataLen;
@@ -124,7 +121,6 @@ struct _virSecurityDriver {
     virSecurityDomainRestoreSavedStateLabel domainRestoreSavedStateLabel;
 
     virSecurityDomainSetImageFDLabel domainSetSecurityImageFDLabel;
-    virSecurityDomainSetProcessFDLabel domainSetSecurityProcessFDLabel;
 };
 
 virSecurityDriverPtr virSecurityDriverLookup(const char *name);

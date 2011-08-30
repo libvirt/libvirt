@@ -346,14 +346,3 @@ int virSecurityManagerSetImageFDLabel(virSecurityManagerPtr mgr,
     virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
-
-int virSecurityManagerSetProcessFDLabel(virSecurityManagerPtr mgr,
-                                        virDomainObjPtr vm,
-                                        int fd)
-{
-    if (mgr->drv->domainSetSecurityProcessFDLabel)
-        return mgr->drv->domainSetSecurityProcessFDLabel(mgr, vm, fd);
-
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return -1;
-}
