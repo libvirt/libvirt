@@ -1081,7 +1081,7 @@ int qemuMonitorTextChangeMedia(qemuMonitorPtr mon,
     /* If the command failed qemu prints:
      * device not found, device is locked ...
      * No message is printed on success it seems */
-    if (strstr(reply, "device ")) {
+    if (c_strcasestr(reply, "device ")) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         _("could not change media on %s: %s"), devname, reply);
         goto cleanup;
