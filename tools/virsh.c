@@ -1550,11 +1550,12 @@ static bool
 cmdStart(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
-    bool ret = true;
+    bool ret = false;
 #ifndef WIN32
     int console = vshCommandOptBool(cmd, "console");
 #endif
     unsigned int flags = VIR_DOMAIN_NONE;
+    int rc;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -1578,19 +1579,49 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "force-boot"))
         flags |= VIR_DOMAIN_START_FORCE_BOOT;
 
+    /* We can emulate force boot, even for older servers that reject it.  */
+    if (flags & VIR_DOMAIN_START_FORCE_BOOT) {
+        if (virDomainCreateWithFlags(dom, flags) == 0)
+            goto started;
+        if (last_error->code != VIR_ERR_NO_SUPPORT &&
+            last_error->code != VIR_ERR_INVALID_ARG) {
+            virshReportError(ctl);
+            goto cleanup;
+        }
+        virFreeError(last_error);
+        last_error = NULL;
+        rc = virDomainHasManagedSaveImage(dom, 0);
+        if (rc < 0) {
+            /* No managed save image to remove */
+            virFreeError(last_error);
+            last_error = NULL;
+        } else if (rc > 0) {
+            if (virDomainManagedSaveRemove(dom, 0) < 0) {
+                virshReportError(ctl);
+                goto cleanup;
+            }
+        }
+        flags &= ~VIR_DOMAIN_START_FORCE_BOOT;
+    }
+
     /* Prefer older API unless we have to pass a flag.  */
     if ((flags ? virDomainCreateWithFlags(dom, flags)
-         : virDomainCreate(dom)) == 0) {
-        vshPrint(ctl, _("Domain %s started\n"),
-                 virDomainGetName(dom));
-#ifndef WIN32
-        if (console)
-            cmdRunConsole(ctl, dom, NULL);
-#endif
-    } else {
+         : virDomainCreate(dom)) < 0) {
         vshError(ctl, _("Failed to start domain %s"), virDomainGetName(dom));
-        ret = false;
+        goto cleanup;
     }
+
+started:
+    vshPrint(ctl, _("Domain %s started\n"),
+             virDomainGetName(dom));
+#ifndef WIN32
+    if (console && !cmdRunConsole(ctl, dom, NULL))
+        goto cleanup;
+#endif
+
+    ret = true;
+
+cleanup:
     virDomainFree(dom);
     return ret;
 }
