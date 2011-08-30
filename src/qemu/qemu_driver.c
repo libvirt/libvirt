@@ -2111,8 +2111,11 @@ cleanup:
 }
 
 
-#define QEMUD_SAVE_MAGIC "LibvirtQemudSave"
+#define QEMUD_SAVE_MAGIC   "LibvirtQemudSave"
+#define QEMUD_SAVE_PARTIAL "LibvirtQemudPart"
 #define QEMUD_SAVE_VERSION 2
+
+verify(sizeof(QEMUD_SAVE_MAGIC) == sizeof(QEMUD_SAVE_PARTIAL));
 
 enum qemud_save_formats {
     QEMUD_SAVE_FORMAT_RAW = 0,
@@ -2331,7 +2334,7 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
     }
 
     memset(&header, 0, sizeof(header));
-    memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
+    memcpy(header.magic, QEMUD_SAVE_PARTIAL, sizeof(header.magic));
     header.version = QEMUD_SAVE_VERSION;
 
     header.compressed = compressed;
@@ -2435,12 +2438,37 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
                             bypassSecurityDriver,
                             QEMU_ASYNC_JOB_SAVE) < 0)
         goto endjob;
+
+    /* Touch up file header to mark image complete.  */
+    if (bypass_cache) {
+        /* Reopen the file to touch up the header, since we aren't set
+         * up to seek backwards on directFd.  The reopened fd will
+         * trigger a single page of file system cache pollution, but
+         * that's acceptable.  */
+        if (VIR_CLOSE(fd) < 0) {
+            virReportSystemError(errno, _("unable to close %s"), path);
+            goto endjob;
+        }
+        if (virFileDirectFdClose(directFd) < 0)
+            goto endjob;
+        fd = qemuOpenFile(driver, path, O_WRONLY, NULL, NULL);
+        if (fd < 0)
+            goto endjob;
+    } else {
+        if (lseek(fd, 0, SEEK_SET) != 0) {
+            virReportSystemError(errno, _("unable to seek %s"), path);
+            goto endjob;
+        }
+    }
+    memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
+    if (safewrite(fd, &header, sizeof(header)) != sizeof(header)) {
+        virReportSystemError(errno, _("unable to write %s"), path);
+        goto endjob;
+    }
     if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno, _("unable to close %s"), path);
         goto endjob;
     }
-    if (virFileDirectFdClose(directFd) < 0)
-        goto endjob;
 
     ret = 0;
 
@@ -3769,15 +3797,16 @@ cleanup:
     return ret;
 }
 
-/* Return -1 on failure, -2 if edit was specified but xmlin does not
- * represent any changes, and opened fd on all other success.  */
+/* Return -1 on most failures after raising error, -2 if edit was specified
+ * but xmlin does not represent any changes (no error raised), -3 if corrupt
+ * image was unlinked (no error raised), and opened fd on success.  */
 static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
 qemuDomainSaveImageOpen(struct qemud_driver *driver,
                         const char *path,
                         virDomainDefPtr *ret_def,
                         struct qemud_save_header *ret_header,
                         bool bypass_cache, virFileDirectFdPtr *directFd,
-                        const char *xmlin, bool edit)
+                        const char *xmlin, bool edit, bool unlink_corrupt)
 {
     int fd;
     struct qemud_save_header header;
@@ -3807,8 +3836,22 @@ qemuDomainSaveImageOpen(struct qemud_driver *driver,
     }
 
     if (memcmp(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic)) != 0) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        "%s", _("image magic is incorrect"));
+        const char *msg = _("image magic is incorrect");
+
+        if (memcmp(header.magic, QEMUD_SAVE_PARTIAL,
+                   sizeof(header.magic)) == 0) {
+            msg = _("save image is incomplete");
+            if (unlink_corrupt) {
+                if (VIR_CLOSE(fd) < 0 || unlink(path) < 0) {
+                    virReportSystemError(errno,
+                                         _("cannot remove corrupt file: %s"),
+                                         path);
+                    goto error;
+                }
+                return -3;
+            }
+        }
+        qemuReportError(VIR_ERR_OPERATION_FAILED, "%s", msg);
         goto error;
     }
 
@@ -4009,7 +4052,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
 
     fd = qemuDomainSaveImageOpen(driver, path, &def, &header,
                                  (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
-                                 &directFd, dxml, false);
+                                 &directFd, dxml, false, false);
     if (fd < 0)
         goto cleanup;
 
@@ -4071,7 +4114,7 @@ qemuDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *path,
     qemuDriverLock(driver);
 
     fd = qemuDomainSaveImageOpen(driver, path, &def, &header, false, NULL,
-                                 NULL, false);
+                                 NULL, false, false);
 
     if (fd < 0)
         goto cleanup;
@@ -4102,7 +4145,7 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
     qemuDriverLock(driver);
 
     fd = qemuDomainSaveImageOpen(driver, path, &def, &header, false, NULL,
-                                 dxml, true);
+                                 dxml, true, false);
 
     if (fd < 0) {
         /* Check for special case of no change needed.  */
@@ -4147,6 +4190,8 @@ cleanup:
     return ret;
 }
 
+/* Return 0 on success, 1 if incomplete saved image was silently unlinked,
+ * and -1 on failure with error raised.  */
 static int
 qemuDomainObjRestore(virConnectPtr conn,
                      struct qemud_driver *driver,
@@ -4161,9 +4206,12 @@ qemuDomainObjRestore(virConnectPtr conn,
     virFileDirectFdPtr directFd = NULL;
 
     fd = qemuDomainSaveImageOpen(driver, path, &def, &header,
-                                 bypass_cache, &directFd, NULL, false);
-    if (fd < 0)
+                                 bypass_cache, &directFd, NULL, false, true);
+    if (fd < 0) {
+        if (fd == -3)
+            ret = 1;
         goto cleanup;
+    }
 
     if (STRNEQ(vm->def->name, def->name) ||
         memcmp(vm->def->uuid, def->uuid, VIR_UUID_BUFLEN)) {
@@ -4472,10 +4520,12 @@ qemuDomainObjStart(virConnectPtr conn,
             ret = qemuDomainObjRestore(conn, driver, vm, managed_save,
                                        bypass_cache);
 
-            if ((ret == 0) && (unlink(managed_save) < 0))
+            if (ret == 0 && unlink(managed_save) < 0)
                 VIR_WARN("Failed to remove the managed state %s", managed_save);
-
-            goto cleanup;
+            if (ret > 0)
+                VIR_WARN("Ignoring incomplete managed state %s", managed_save);
+            else
+                goto cleanup;
         }
     }
 
