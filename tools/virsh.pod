@@ -1355,9 +1355,18 @@ where the query is performed.
 
 Configure whether I<pool> should automatically start at boot.
 
-=item B<pool-build> I<pool-or-uuid>
+=item B<pool-build> I<pool-or-uuid> [I<--overwrite>] [I<--no-overwrite>]
 
 Build a given pool.
+
+Options I<--overwrite> and I<--no-overwrite> can only be used for
+B<pool-build> a filesystem pool. If neither of them is specified,
+B<pool-build> on a filesystem pool only makes the directory; If
+I<--no-overwrite> is specified, it probes to determine if a
+filesystem already exists on the target device, returning an error
+if exists, or using mkfs to format the target device if not; If
+I<--overwrite> is specified, mkfs is always executed, any existed
+data on the target device is overwritten unconditionally.
 
 =item B<pool-create> I<file>
 

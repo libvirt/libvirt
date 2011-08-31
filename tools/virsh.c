@@ -7199,6 +7199,8 @@ static const vshCmdInfo info_pool_build[] = {
 
 static const vshCmdOptDef opts_pool_build[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool name or uuid")},
+    {"no-overwrite", VSH_OT_BOOL, 0, N_("do not overwrite an existing pool of this type")},
+    {"overwrite", VSH_OT_BOOL, 0, N_("overwrite any existing data")},
     {NULL, 0, 0, NULL}
 };
 
@@ -7208,6 +7210,7 @@ cmdPoolBuild(vshControl *ctl, const vshCmd *cmd)
     virStoragePoolPtr pool;
     bool ret = true;
     const char *name;
+    unsigned int flags = 0;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -7215,7 +7218,15 @@ cmdPoolBuild(vshControl *ctl, const vshCmd *cmd)
     if (!(pool = vshCommandOptPool(ctl, cmd, "pool", &name)))
         return false;
 
-    if (virStoragePoolBuild(pool, 0) == 0) {
+    if (vshCommandOptBool (cmd, "no-overwrite")) {
+        flags |= VIR_STORAGE_POOL_BUILD_NO_OVERWRITE;
+    }
+
+    if (vshCommandOptBool (cmd, "overwrite")) {
+        flags |= VIR_STORAGE_POOL_BUILD_OVERWRITE;
+    }
+
+    if (virStoragePoolBuild(pool, flags) == 0) {
         vshPrint(ctl, _("Pool %s built\n"), name);
     } else {
         vshError(ctl, _("Failed to build pool %s"), name);
@@ -7226,7 +7237,6 @@ cmdPoolBuild(vshControl *ctl, const vshCmd *cmd)
 
     return ret;
 }
-
 
 /*
  * "pool-destroy" command
