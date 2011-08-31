@@ -5300,8 +5300,10 @@ virSecurityLabelDefParseXML(const virDomainDefPtr def,
         } else {
             virDomainReportError(VIR_ERR_XML_ERROR,
                                  _("invalid security relabel value %s"), p);
+            VIR_FREE(p);
             goto error;
         }
+        VIR_FREE(p);
         if (def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
             def->seclabel.norelabel) {
             virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
