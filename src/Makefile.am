@@ -954,6 +954,10 @@ endif
 if WITH_SECDRIVER_APPARMOR
 libvirt_driver_storage_la_LIBADD += $(APPARMOR_LIBS)
 endif
+if HAVE_LIBBLKID
+libvirt_driver_storage_la_CFLAGS += $(BLKID_CFLAGS)
+libvirt_driver_storage_la_LIBADD += $(BLKID_LIBS)
+endif
 if WITH_STORAGE_DIR
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_storage.la

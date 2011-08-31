@@ -1670,8 +1670,10 @@ typedef enum {
 
 typedef enum {
   VIR_STORAGE_POOL_BUILD_NEW  = 0,   /* Regular build from scratch */
-  VIR_STORAGE_POOL_BUILD_REPAIR = 1, /* Repair / reinitialize */
-  VIR_STORAGE_POOL_BUILD_RESIZE = 2  /* Extend existing pool */
+  VIR_STORAGE_POOL_BUILD_REPAIR = (1 << 0), /* Repair / reinitialize */
+  VIR_STORAGE_POOL_BUILD_RESIZE = (1 << 1),  /* Extend existing pool */
+  VIR_STORAGE_POOL_BUILD_NO_OVERWRITE = (1 << 2),  /* Do not overwrite existing pool */
+  VIR_STORAGE_POOL_BUILD_OVERWRITE = (1 << 3),  /* Overwrite data */
 } virStoragePoolBuildFlags;
 
 typedef enum {

@@ -37,6 +37,10 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
+#if HAVE_LIBBLKID
+# include <blkid/blkid.h>
+#endif
+
 #include "virterror_internal.h"
 #include "storage_backend_fs.h"
 #include "storage_conf.h"
@@ -45,6 +49,7 @@
 #include "memory.h"
 #include "xml.h"
 #include "virfile.h"
+#include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -534,12 +539,171 @@ virStorageBackendFileSystemStart(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 #endif /* WITH_STORAGE_FS */
 
+#if HAVE_LIBBLKID
+static virStoragePoolProbeResult
+virStorageBackendFileSystemProbe(const char *device,
+                                 const char *format) {
+
+    virStoragePoolProbeResult ret = FILESYSTEM_PROBE_ERROR;
+    blkid_probe probe = NULL;
+    const char *fstype = NULL;
+    char *names[2], *libblkid_format = NULL;
+
+    VIR_DEBUG("Probing for existing filesystem of type %s on device %s",
+              format, device);
+
+    if (blkid_known_fstype(format) == 0) {
+        virStorageReportError(VIR_ERR_STORAGE_PROBE_FAILED,
+                              _("Not capable of probing for "
+                                "filesystem of type %s"),
+                              format);
+        goto error;
+    }
+
+    probe = blkid_new_probe_from_filename(device);
+    if (probe == NULL) {
+        virStorageReportError(VIR_ERR_STORAGE_PROBE_FAILED,
+                                  _("Failed to create filesystem probe "
+                                  "for device %s"),
+                                  device);
+        goto error;
+    }
+
+    if ((libblkid_format = strdup(format)) == NULL) {
+        virReportOOMError();
+        goto error;
+    }
+
+    names[0] = libblkid_format;
+    names[1] = NULL;
+
+    blkid_probe_filter_superblocks_type(probe,
+                                        BLKID_FLTR_ONLYIN,
+                                        names);
+
+    if (blkid_do_probe(probe) != 0) {
+        VIR_INFO("No filesystem of type '%s' found on device '%s'",
+                 format, device);
+        ret = FILESYSTEM_PROBE_NOT_FOUND;
+    } else if (blkid_probe_lookup_value(probe, "TYPE", &fstype, NULL) == 0) {
+        virStorageReportError(VIR_ERR_STORAGE_POOL_BUILT,
+                              _("Existing filesystem of type '%s' found on "
+                                "device '%s'"),
+                              fstype, device);
+        ret = FILESYSTEM_PROBE_FOUND;
+    }
+
+    if (blkid_do_probe(probe) != 1) {
+        virStorageReportError(VIR_ERR_STORAGE_PROBE_FAILED,
+                                  _("Found additional probes to run, "
+                                    "filesystem probing may be incorrect"));
+        ret = FILESYSTEM_PROBE_ERROR;
+    }
+
+error:
+    VIR_FREE(libblkid_format);
+
+    if (probe != NULL) {
+        blkid_free_probe(probe);
+    }
+
+    return ret;
+}
+
+#else /* #if HAVE_LIBBLKID */
+
+static virStoragePoolProbeResult
+virStorageBackendFileSystemProbe(const char *device ATTRIBUTE_UNUSED,
+                                 const char *format ATTRIBUTE_UNUSED)
+{
+    virStorageReportError(VIR_ERR_OPERATION_INVALID,
+                          _("probing for filesystems is unsupported "
+                            "by this build"));
+
+    return FILESYSTEM_PROBE_ERROR;
+}
+
+#endif /* #if HAVE_LIBBLKID */
+
+static int
+virStorageBackendExecuteMKFS(const char *device,
+                             const char *format)
+{
+    int ret = 0;
+    virCommandPtr cmd = NULL;
+
+    cmd = virCommandNewArgList(MKFS,
+                               "-t",
+                               format,
+                               device,
+                               NULL);
+
+    if (virCommandRun(cmd, NULL) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to make filesystem of "
+                               "type '%s' on device '%s'"),
+                             format, device);
+        ret = -1;
+    }
+    return ret;
+}
+
+static int
+virStorageBackendMakeFileSystem(virStoragePoolObjPtr pool,
+                                unsigned int flags)
+{
+    const char *device = NULL, *format = NULL;
+    bool ok_to_mkfs = false;
+    int ret = -1;
+
+    if (pool->def->source.devices == NULL) {
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
+                              _("No source device specified when formatting pool '%s'"),
+                              pool->def->name);
+        goto error;
+    }
+
+    device = pool->def->source.devices[0].path;
+    format = virStoragePoolFormatFileSystemTypeToString(pool->def->source.format);
+    VIR_DEBUG("source device: '%s' format: '%s'", device, format);
+
+    if (!virFileExists(device)) {
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
+                              _("Source device does not exist when formatting pool '%s'"),
+                              pool->def->name);
+        goto error;
+    }
+
+    if (flags & VIR_STORAGE_POOL_BUILD_OVERWRITE) {
+        ok_to_mkfs = true;
+    } else if (flags & VIR_STORAGE_POOL_BUILD_NO_OVERWRITE &&
+               virStorageBackendFileSystemProbe(device, format) ==
+               FILESYSTEM_PROBE_NOT_FOUND) {
+        ok_to_mkfs = true;
+    }
+
+    if (ok_to_mkfs) {
+        ret = virStorageBackendExecuteMKFS(device, format);
+    }
+
+error:
+    return ret;
+}
+
 
 /**
  * @conn connection to report errors against
  * @pool storage pool to build
+ * @flags controls the pool formating behaviour
  *
  * Build a directory or FS based storage pool.
+ *
+ * If no flag is set, it only makes the directory; If
+ * VIR_STORAGE_POOL_BUILD_NO_OVERWRITE set, it probes to determine if
+ * filesystem already exists on the target device, renurning an error
+ * if exists, or using mkfs to format the target device if not; If
+ * VIR_STORAGE_POOL_BUILD_OVERWRITE is set, mkfs is always executed,
+ * any existed data on the target device is overwritten unconditionally.
  *
  *  - If it is a FS based pool, mounts the unlying source device on the pool
  *
@@ -551,10 +715,20 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
                                  unsigned int flags)
 {
     int err, ret = -1;
-    char *parent;
-    char *p;
+    char *parent = NULL;
+    char *p = NULL;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_STORAGE_POOL_BUILD_OVERWRITE |
+                  VIR_STORAGE_POOL_BUILD_NO_OVERWRITE, ret);
+
+    if (flags == (VIR_STORAGE_POOL_BUILD_OVERWRITE |
+                  VIR_STORAGE_POOL_BUILD_NO_OVERWRITE)) {
+
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
+                              _("Overwrite and no overwrite flags"
+                                " are mutually exclusive"));
+        goto error;
+    }
 
     if ((parent = strdup(pool->def->target.path)) == NULL) {
         virReportOOMError();
@@ -604,7 +778,13 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
             goto error;
         }
     }
-    ret = 0;
+
+    if (flags != 0) {
+        ret = virStorageBackendMakeFileSystem(pool, flags);
+    } else {
+        ret = 0;
+    }
+
 error:
     VIR_FREE(parent);
     return ret;

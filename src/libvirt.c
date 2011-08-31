@@ -10466,6 +10466,10 @@ error:
  * virStoragePoolBuild:
  * @pool: pointer to storage pool
  * @flags: future flags, use 0 for now
+ * @flags: flags to control pool build behaviour
+ *
+ * Currently only filesystem pool accepts flags VIR_STORAGE_POOL_BUILD_OVERWRITE
+ * and VIR_STORAGE_POOL_BUILD_NO_OVERWRITE.
  *
  * Build the underlying storage pool
  *

@@ -1030,6 +1030,18 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("Storage volume not found: %s");
             break;
+        case VIR_ERR_STORAGE_PROBE_FAILED:
+            if (info == NULL)
+                errmsg = _("Storage pool probe failed");
+            else
+                errmsg = _("Storage pool probe failed: %s");
+            break;
+        case VIR_ERR_STORAGE_POOL_BUILT:
+            if (info == NULL)
+                errmsg = _("Storage pool already built");
+            else
+                errmsg = _("Storage pool already built: %s");
+            break;
         case VIR_ERR_INVALID_STORAGE_POOL:
             if (info == NULL)
                 errmsg = _("invalid storage pool pointer in");

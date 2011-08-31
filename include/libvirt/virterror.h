@@ -235,6 +235,8 @@ typedef enum {
     VIR_ERR_INVALID_STREAM = 73,        /* stream pointer not valid */
     VIR_ERR_ARGUMENT_UNSUPPORTED = 74,  /* valid API use but unsupported by
                                            the given driver */
+    VIR_ERR_STORAGE_PROBE_FAILED = 75,  /* storage pool proble failed */
+    VIR_ERR_STORAGE_POOL_BUILT = 76,    /* storage pool already built */
 } virErrorNumber;
 
 /**
