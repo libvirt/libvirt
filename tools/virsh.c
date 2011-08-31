@@ -3749,21 +3749,16 @@ cmdInjectNMI(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_send_key[] = {
     {"help", N_("Send keycodes to the guest")},
-    {"desc", N_("Send keycodes to the guest, the keycodes must be integers\n"
-                "    Examples:\n\n"
-                "        virsh # send-key <domain> 37 18 21\n"
-                "        virsh # send-key <domain> KEY_RIGHTCTRL KEY_C\n"
-                "        virsh # send-key <domain> --codeset xt 37 18 21\n"
-                "        virsh # send-key <domain> --holdtime 1000 0x15 18 0xf\n"
-                )},
+    {"desc", N_("Send keycodes (integers or symbolic names) to the guest")},
     {NULL, NULL}
 };
 
 static const vshCmdOptDef opts_send_key[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"codeset", VSH_OT_STRING, VSH_OFLAG_REQ_OPT, N_("the codeset of keycodes, default:linux")},
+    {"codeset", VSH_OT_STRING, VSH_OFLAG_REQ_OPT,
+     N_("the codeset of keycodes, default:linux")},
     {"holdtime", VSH_OT_INT, VSH_OFLAG_REQ_OPT,
-                 N_("the time (in millsecond) how long the keys will be held")},
+     N_("the time (in millseconds) how long the keys will be held")},
     {"keycode", VSH_OT_ARGV, VSH_OFLAG_REQ, N_("the key code")},
     {NULL, 0, 0, NULL}
 };
