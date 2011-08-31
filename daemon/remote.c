@@ -334,8 +334,6 @@ static int remoteRelayDomainEventGraphics(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   REMOTE_PROC_DOMAIN_EVENT_GRAPHICS,
                                   (xdrproc_t)xdr_remote_domain_event_graphics_msg, &data);
 
-    VIR_FREE(data.subject.subject_val);
-
     return 0;
 }
 
@@ -2498,7 +2496,7 @@ remoteDispatchDomainEventSend(virNetServerClientPtr client,
     virNetMessagePtr msg;
 
     if (!(msg = virNetMessageNew()))
-        return;
+        goto cleanup;
 
     msg->header.prog = virNetServerProgramGetID(program);
     msg->header.vers = virNetServerProgramGetVersion(program);
@@ -2516,10 +2514,12 @@ remoteDispatchDomainEventSend(virNetServerClientPtr client,
     VIR_DEBUG("Queue event %d %zu", procnr, msg->bufferLength);
     virNetServerClientSendMessage(client, msg);
 
+    xdr_free(proc, data);
     return;
 
 cleanup:
     virNetMessageFree(msg);
+    xdr_free(proc, data);
 }
 
 static int
