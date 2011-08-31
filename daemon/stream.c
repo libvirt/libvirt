@@ -38,6 +38,7 @@
 
 struct daemonClientStream {
     daemonClientPrivatePtr priv;
+    int refs;
 
     virNetServerProgramPtr prog;
 
@@ -102,6 +103,8 @@ daemonStreamMessageFinished(virNetMessagePtr msg,
 
     stream->tx = 1;
     daemonStreamUpdateEvents(stream);
+
+    daemonFreeClientStream(NULL, stream);
 }
 
 
@@ -299,6 +302,7 @@ daemonCreateClientStream(virNetServerClientPtr client,
         return NULL;
     }
 
+    stream->refs = 1;
     stream->priv = priv;
     stream->prog = prog;
     stream->procedure = header->proc;
@@ -324,6 +328,10 @@ int daemonFreeClientStream(virNetServerClientPtr client,
     int ret = 0;
 
     if (!stream)
+        return 0;
+
+    stream->refs--;
+    if (stream->refs)
         return 0;
 
     VIR_DEBUG("client=%p, proc=%d, serial=%d",
@@ -727,6 +735,7 @@ daemonStreamHandleRead(virNetServerClientPtr client,
         if (msg) {
             msg->cb = daemonStreamMessageFinished;
             msg->opaque = stream;
+            stream->refs++;
             ret = virNetServerProgramSendStreamData(remoteProgram,
                                                     client,
                                                     msg,
