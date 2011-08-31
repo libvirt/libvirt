@@ -9,10 +9,26 @@
     <p>
       Attributes of libvirt snapshots are stored as child elements of
       the <code>domainsnapshot</code> element.  At snapshot creation
-      time, only the <code>name</code> and <code>description</code>
-      elements are settable; the rest of the fields are informational
-      (and readonly) and will be filled in by libvirt when the
-      snapshot is created.
+      time, normally only the <code>name</code>
+      and <code>description</code> elements are settable; the rest of
+      the fields are ignored on creation, and will be filled in by
+      libvirt in for informational purposes
+      by <code>virDomainSnapshotGetXMLDesc()</code>.  However, when
+      redefining a snapshot (<span class="since">since 0.9.5</span>),
+      with the <code>VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE</code> flag
+      of <code>virDomainSnapshotCreateXML()</code>, all of the XML
+      described here is relevant.
+    </p>
+    <p>
+      Snapshots are maintained in a hierarchy.  A domain can have a
+      current snapshot, which is the most recent snapshot compared to
+      the current state of the domain (although a domain might have
+      snapshots without a current snapshot, if snapshots have been
+      deleted in the meantime).  Creating or reverting to a snapshot
+      sets that snapshot as current, and the prior current snapshot is
+      the parent of the new snapshot.  Branches in the hierarchy can
+      be formed by reverting to a snapshot with a child, then creating
+      another snapshot.
     </p>
     <p>
       The top-level <code>domainsnapshot</code> element may contain
@@ -21,9 +37,10 @@
     <dl>
       <dt><code>name</code></dt>
       <dd>The name for this snapshot.  If the name is specified when
-      initially creating the snapshot, then the snapshot will have
-      that particular name.  If the name is omitted when initially
-      creating the snapshot, then libvirt will make up a name for the snapshot.
+        initially creating the snapshot, then the snapshot will have
+        that particular name.  If the name is omitted when initially
+        creating the snapshot, then libvirt will make up a name for
+        the snapshot, based on the time when it was created.
       </dd>
       <dt><code>description</code></dt>
       <dd>A human-readable description of the snapshot.  If the
@@ -32,18 +49,18 @@
       </dd>
       <dt><code>creationTime</code></dt>
       <dd>The time this snapshot was created.  The time is specified
-      in seconds since the Epoch, UTC (i.e. Unix time).  Readonly.
+        in seconds since the Epoch, UTC (i.e. Unix time).  Readonly.
       </dd>
       <dt><code>state</code></dt>
-      <dd>The state of the domain at the time this snapshot was
-      taken.  When the domain is reverted to this snapshot, the domain's state
-      will be set to whatever is in this field.  Readonly.
+      <dd>The state of the domain at the time this snapshot was taken.
+        When the domain is reverted to this snapshot, the domain's
+        state will default to whatever is in this field.  Readonly.
       </dd>
       <dt><code>parent</code></dt>
       <dd>The parent of this snapshot.  This element contains exactly
-      one child element, name.  This specifies the name of the parent
-      snapshot of this snapshot, and is used to represent trees of
-      snapshots.  Readonly.
+        one child element, name.  This specifies the name of the parent
+        snapshot of this snapshot, and is used to represent trees of
+        snapshots, as described above.  Readonly.
       </dd>
       <dt><code>domain</code></dt>
       <dd>The domain that this snapshot was taken against.  This
@@ -56,17 +73,17 @@
     <h2><a name="example">Example</a></h2>
 
     <pre>
-      &lt;domainsnapshot&gt;
-         &lt;name&gt;os-updates&lt;/name&gt;
-         &lt;description&gt;Snapshot of OS install and updates&lt;/description&gt;
-         &lt;state&gt;running&lt;/state&gt;
-         &lt;creationTime&gt;1270477159&lt;/creationTime&gt;
-         &lt;parent&gt;
-            &lt;name&gt;bare-os-install&lt;/name&gt;
-         &lt;/parent&gt;
-         &lt;domain&gt;
-            &lt;uuid&gt;93a5c045-6457-2c09-e56c-927cdf34e178&lt;/uuid&gt;
-         &lt;/domain&gt;
-      &lt;/domainsnapshot&gt;</pre>
+&lt;domainsnapshot&gt;
+  &lt;name&gt;os-updates&lt;/name&gt;
+  &lt;description&gt;Snapshot of OS install and updates&lt;/description&gt;
+  &lt;state&gt;running&lt;/state&gt;
+  &lt;creationTime&gt;1270477159&lt;/creationTime&gt;
+  &lt;parent&gt;
+    &lt;name&gt;bare-os-install&lt;/name&gt;
+  &lt;/parent&gt;
+  &lt;domain&gt;
+    &lt;uuid&gt;93a5c045-6457-2c09-e56c-927cdf34e178&lt;/uuid&gt;
+  &lt;/domain&gt;
+&lt;/domainsnapshot&gt;</pre>
   </body>
 </html>

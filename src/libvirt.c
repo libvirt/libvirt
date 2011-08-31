@@ -15576,10 +15576,45 @@ error:
  * virDomainSnapshotCreateXML:
  * @domain: a domain object
  * @xmlDesc: string containing an XML description of the domain
- * @flags: unused flag parameters; callers should pass 0
+ * @flags: bitwise-OR of virDomainSnapshotCreateFlags
  *
  * Creates a new snapshot of a domain based on the snapshot xml
  * contained in xmlDesc.
+ *
+ * If @flags is 0, the domain can be active, in which case the
+ * snapshot will be a system checkpoint (both disk state and runtime
+ * VM state such as RAM contents), where reverting to the snapshot is
+ * the same as resuming from hibernation (TCP connections may have
+ * timed out, but everything else picks up where it left off); or
+ * the domain can be inactive, in which case the snapshot includes
+ * just the disk state prior to booting.  The newly created snapshot
+ * becomes current (see virDomainSnapshotCurrent()), and is a child
+ * of any previous current snapshot.
+ *
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE, then this
+ * is a request to reinstate snapshot metadata that was previously
+ * discarded, rather than creating a new snapshot.  This can be used
+ * to recreate a snapshot hierarchy on a destination, then remove it
+ * on the source, in order to allow migration (since migration
+ * normally fails if snapshot metadata still remains on the source
+ * machine).  When redefining snapshot metadata, the current snapshot
+ * will not be altered unless the VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT
+ * flag is also present.  It is an error to request the
+ * VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT flag without
+ * VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE.  On some hypervisors,
+ * redefining an existing snapshot can be used to alter host-specific
+ * portions of the domain XML to be used during revert (such as
+ * backing filenames associated with disk devices), but must not alter
+ * guest-visible layout.  When redefining a snapshot name that does
+ * not exist, the hypervisor may validate that reverting to the
+ * snapshot appears to be possible (for example, disk images have
+ * snapshot contents by the requested name).  Not all hypervisors
+ * support these flags.
+ *
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA, then the
+ * domain's disk images are modified according to @xmlDesc, but then
+ * the just-created snapshot has its metadata deleted.  This flag is
+ * incompatible with VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE.
  *
  * Returns an (opaque) virDomainSnapshotPtr on success, NULL on failure.
  */
@@ -15609,6 +15644,19 @@ virDomainSnapshotCreateXML(virDomainPtr domain,
 
     if (conn->flags & VIR_CONNECT_RO) {
         virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT) &&
+        !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                          _("use of current flag requires redefine flag"));
+        goto error;
+    }
+    if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) &&
+        (flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                   _("redefine and no metadata flags are mutually exclusive"));
         goto error;
     }
 

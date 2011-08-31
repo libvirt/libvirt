@@ -2554,6 +2554,15 @@ typedef struct _virDomainSnapshot virDomainSnapshot;
  */
 typedef virDomainSnapshot *virDomainSnapshotPtr;
 
+typedef enum {
+    VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE    = (1 << 0), /* Restore or alter
+                                                          metadata */
+    VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT     = (1 << 1), /* With redefine, make
+                                                          snapshot current */
+    VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA = (1 << 2), /* Make snapshot without
+                                                          remembering it */
+} virDomainSnapshotCreateFlags;
+
 /* Take a snapshot of the current VM state */
 virDomainSnapshotPtr virDomainSnapshotCreateXML(virDomainPtr domain,
                                                 const char *xmlDesc,

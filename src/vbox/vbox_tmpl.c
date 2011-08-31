@@ -5652,7 +5652,8 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     PRInt32 result;
 #endif
 
-    virCheckFlags(0, NULL);
+    /* VBox has no snapshot metadata, so this flag is trivial.  */
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA, NULL);
 
     if (!(def = virDomainSnapshotDefParseString(xmlDesc, 1)))
         goto cleanup;

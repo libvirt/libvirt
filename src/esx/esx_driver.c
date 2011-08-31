@@ -4210,7 +4210,8 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
     char *taskInfoErrorMessage = NULL;
     virDomainSnapshotPtr snapshot = NULL;
 
-    virCheckFlags(0, NULL);
+    /* ESX has no snapshot metadata, so this flag is trivial.  */
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA, NULL);
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;
