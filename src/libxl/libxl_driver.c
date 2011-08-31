@@ -963,19 +963,19 @@ libxlStartup(int privileged) {
     libxl_driver->logger =
             (xentoollog_logger *)xtl_createlogger_stdiostream(libxl_driver->logger_file, XTL_DEBUG,  0);
     if (!libxl_driver->logger) {
-        VIR_ERROR(_("cannot create logger for libxenlight"));
+        VIR_INFO("cannot create logger for libxenlight, disabling driver");
         goto fail;
     }
 
     if (libxl_ctx_init(&libxl_driver->ctx,
                        LIBXL_VERSION,
                        libxl_driver->logger)) {
-        VIR_ERROR(_("cannot initialize libxenlight context"));
+        VIR_INFO("cannot initialize libxenlight context, probably not running in a Xen Dom0, disabling driver");
         goto fail;
     }
 
     if ((ver_info = libxl_get_version_info(&libxl_driver->ctx)) == NULL) {
-        VIR_ERROR(_("cannot version information from libxenlight"));
+        VIR_INFO("cannot version information from libxenlight, disabling driver");
         goto fail;
     }
     libxl_driver->version = (ver_info->xen_version_major * 1000000) +
