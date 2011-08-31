@@ -908,7 +908,6 @@ virSecurityManagerSetDaemonSocketLabel;
 virSecurityManagerSetImageFDLabel;
 virSecurityManagerSetImageLabel;
 virSecurityManagerSetHostdevLabel;
-virSecurityManagerSetProcessFDLabel;
 virSecurityManagerSetProcessLabel;
 virSecurityManagerSetSavedStateLabel;
 virSecurityManagerSetSocketLabel;
