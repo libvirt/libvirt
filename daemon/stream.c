@@ -207,7 +207,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
             virNetError(VIR_ERR_RPC,
                         "%s", _("stream had I/O failure"));
 
-        msg = virNetMessageNew();
+        msg = virNetMessageNew(false);
         if (!msg) {
             ret = -1;
         } else {
@@ -344,7 +344,7 @@ int daemonFreeClientStream(virNetServerClientPtr client,
         virNetMessagePtr tmp = msg->next;
         if (client) {
             /* Send a dummy reply to free up 'msg' & unblock client rx */
-            memset(msg, 0, sizeof(*msg));
+            virNetMessageClear(msg);
             msg->header.type = VIR_NET_REPLY;
             if (virNetServerClientSendMessage(client, msg) < 0) {
                 virNetServerClientImmediateClose(client);
@@ -653,7 +653,7 @@ daemonStreamHandleWrite(virNetServerClientPtr client,
          * its active request count / throttling
          */
         if (msg->header.status == VIR_NET_CONTINUE) {
-            memset(msg, 0, sizeof(*msg));
+            virNetMessageClear(msg);
             msg->header.type = VIR_NET_REPLY;
             if (virNetServerClientSendMessage(client, msg) < 0) {
                 virNetMessageFree(msg);
@@ -715,7 +715,7 @@ daemonStreamHandleRead(virNetServerClientPtr client,
 
         memset(&rerr, 0, sizeof(rerr));
 
-        if (!(msg = virNetMessageNew()))
+        if (!(msg = virNetMessageNew(false)))
             ret = -1;
         else
             ret = virNetServerProgramSendStreamError(remoteProgram,
@@ -729,7 +729,7 @@ daemonStreamHandleRead(virNetServerClientPtr client,
         stream->tx = 0;
         if (ret == 0)
             stream->recvEOF = 1;
-        if (!(msg = virNetMessageNew()))
+        if (!(msg = virNetMessageNew(false)))
             ret = -1;
 
         if (msg) {

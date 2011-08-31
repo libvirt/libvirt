@@ -2495,7 +2495,7 @@ remoteDispatchDomainEventSend(virNetServerClientPtr client,
 {
     virNetMessagePtr msg;
 
-    if (!(msg = virNetMessageNew()))
+    if (!(msg = virNetMessageNew(false)))
         goto cleanup;
 
     msg->header.prog = virNetServerProgramGetID(program);

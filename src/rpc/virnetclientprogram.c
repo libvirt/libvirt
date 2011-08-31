@@ -272,7 +272,7 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
 {
     virNetMessagePtr msg;
 
-    if (!(msg = virNetMessageNew()))
+    if (!(msg = virNetMessageNew(false)))
         return -1;
 
     msg->header.prog = prog->program;

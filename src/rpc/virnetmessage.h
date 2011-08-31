@@ -35,6 +35,8 @@ typedef void (*virNetMessageFreeCallback)(virNetMessagePtr msg, void *opaque);
  * use virNetMessageNew() to allocate on the heap
  */
 struct _virNetMessage {
+    bool tracked;
+
     char buffer[VIR_NET_MESSAGE_MAX + VIR_NET_MESSAGE_LEN_MAX];
     size_t bufferLength;
     size_t bufferOffset;
@@ -48,7 +50,9 @@ struct _virNetMessage {
 };
 
 
-virNetMessagePtr virNetMessageNew(void);
+virNetMessagePtr virNetMessageNew(bool tracked);
+
+void virNetMessageClear(virNetMessagePtr);
 
 void virNetMessageFree(virNetMessagePtr msg);
 

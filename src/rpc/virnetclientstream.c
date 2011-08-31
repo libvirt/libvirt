@@ -328,7 +328,7 @@ int virNetClientStreamSendPacket(virNetClientStreamPtr st,
     bool wantReply;
     VIR_DEBUG("st=%p status=%d data=%p nbytes=%zu", st, status, data, nbytes);
 
-    if (!(msg = virNetMessageNew()))
+    if (!(msg = virNetMessageNew(false)))
         return -1;
 
     virMutexLock(&st->lock);
@@ -390,7 +390,7 @@ int virNetClientStreamRecvPacket(virNetClientStreamPtr st,
             goto cleanup;
         }
 
-        if (!(msg = virNetMessageNew())) {
+        if (!(msg = virNetMessageNew(false))) {
             virReportOOMError();
             goto cleanup;
         }

@@ -277,7 +277,7 @@ virNetServerClientCheckAccess(virNetServerClientPtr client)
         return -1;
     }
 
-    if (!(confirm = virNetMessageNew()))
+    if (!(confirm = virNetMessageNew(false)))
         return -1;
 
     /* Checks have succeeded.  Write a '\1' byte back to the client to
@@ -323,7 +323,7 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
         virNetTLSContextRef(tls);
 
     /* Prepare one for packet receive */
-    if (!(client->rx = virNetMessageNew()))
+    if (!(client->rx = virNetMessageNew(true)))
         goto error;
     client->rx->bufferLength = VIR_NET_MESSAGE_LEN_MAX;
     client->nrequests = 1;
@@ -805,7 +805,7 @@ readmore:
 
         /* Possibly need to create another receive buffer */
         if (client->nrequests < client->nrequests_max) {
-            if (!(client->rx = virNetMessageNew())) {
+            if (!(client->rx = virNetMessageNew(true))) {
                 client->wantClose = true;
             } else {
                 client->rx->bufferLength = VIR_NET_MESSAGE_LEN_MAX;
@@ -885,16 +885,14 @@ virNetServerClientDispatchWrite(virNetServerClientPtr client)
             /* Get finished msg from head of tx queue */
             msg = virNetMessageQueueServe(&client->tx);
 
-            if (msg->header.type == VIR_NET_REPLY ||
-                (msg->header.type == VIR_NET_STREAM &&
-                 msg->header.status != VIR_NET_CONTINUE)) {
+            if (msg->tracked) {
                 client->nrequests--;
                 /* See if the recv queue is currently throttled */
                 if (!client->rx &&
                     client->nrequests < client->nrequests_max) {
                     /* Ready to recv more messages */
+                    virNetMessageClear(msg);
                     client->rx = msg;
-                    memset(client->rx, 0, sizeof(*client->rx));
                     client->rx->bufferLength = VIR_NET_MESSAGE_LEN_MAX;
                     msg = NULL;
                     client->nrequests++;

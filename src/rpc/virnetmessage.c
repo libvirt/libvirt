@@ -32,7 +32,7 @@
     virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,           \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
-virNetMessagePtr virNetMessageNew(void)
+virNetMessagePtr virNetMessageNew(bool tracked)
 {
     virNetMessagePtr msg;
 
@@ -41,10 +41,20 @@ virNetMessagePtr virNetMessageNew(void)
         return NULL;
     }
 
-    VIR_DEBUG("msg=%p", msg);
+    msg->tracked = tracked;
+    VIR_DEBUG("msg=%p tracked=%d", msg, tracked);
 
     return msg;
 }
+
+
+void virNetMessageClear(virNetMessagePtr msg)
+{
+    bool tracked = msg->tracked;
+    memset(msg, 0, sizeof(*msg));
+    msg->tracked = tracked;
+}
+
 
 void virNetMessageFree(virNetMessagePtr msg)
 {
