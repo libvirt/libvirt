@@ -131,7 +131,12 @@ static int virCgroupDetectMounts(virCgroupPtr group)
                 } else {
                     len = strlen(tmp);
                 }
+                /* NB, the same controller can appear >1 time in mount list
+                 * due to bind mounts from one location to another. Pick the
+                 * first entry only
+                 */
                 if (typelen == len && STREQLEN(typestr, tmp, len) &&
+                    !group->controllers[i].mountPoint &&
                     !(group->controllers[i].mountPoint = strdup(entry.mnt_dir)))
                     goto no_memory;
                 tmp = next;
