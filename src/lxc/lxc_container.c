@@ -543,18 +543,18 @@ static int lxcContainerPopulateDevices(void)
         }
     }
 
+    dev_t dev = makedev(LXC_DEV_MAJ_TTY, LXC_DEV_MIN_PTMX);
+    if (mknod("/dev/ptmx", S_IFCHR, dev) < 0 ||
+        chmod("/dev/ptmx", 0666)) {
+        virReportSystemError(errno, "%s",
+                             _("Failed to make device /dev/ptmx"));
+        return -1;
+    }
+
     if (access("/dev/pts/ptmx", W_OK) == 0) {
-        if (symlink("/dev/pts/ptmx", "/dev/ptmx") < 0) {
+        if (mount("/dev/pts/ptmx", "/dev/ptmx", "ptmx", MS_BIND, NULL) < 0) {
             virReportSystemError(errno, "%s",
-                                 _("Failed to create symlink /dev/ptmx to /dev/pts/ptmx"));
-            return -1;
-        }
-    } else {
-        dev_t dev = makedev(LXC_DEV_MAJ_TTY, LXC_DEV_MIN_PTMX);
-        if (mknod("/dev/ptmx", S_IFCHR, dev) < 0 ||
-            chmod("/dev/ptmx", 0666)) {
-            virReportSystemError(errno, "%s",
-                                 _("Failed to make device /dev/ptmx"));
+                                 _("Failed to bind-mount /dev/ptmx to /dev/pts/ptmx"));
             return -1;
         }
     }
