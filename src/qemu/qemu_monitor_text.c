@@ -3067,8 +3067,7 @@ int qemuMonitorTextBlockJob(qemuMonitorPtr mon,
         ret = virAsprintf(&cmd, "%s", cmd_name);
     } else if (mode == BLOCK_JOB_SPEED) {
         cmd_name = "block_job_set_speed";
-        ret = virAsprintf(&cmd, "%s %s %llu", cmd_name, device,
-                          bandwidth * 1024ULL * 1024ULL);
+        ret = virAsprintf(&cmd, "%s %s %luM", cmd_name, device, bandwidth);
     } else if (mode == BLOCK_JOB_PULL) {
         cmd_name = "block_stream";
         ret = virAsprintf(&cmd, "%s %s", cmd_name, device);
