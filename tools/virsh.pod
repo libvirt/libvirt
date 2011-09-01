@@ -1685,15 +1685,33 @@ used to represent properties of snapshots.
 
 =over 4
 
-=item B<snapshot-create> I<domain> [I<xmlfile>]
+=item B<snapshot-create> I<domain> [I<xmlfile>] {[I<--redefine> [I<--current>]]
+| [I<--no-metadata>]}
 
 Create a snapshot for domain I<domain> with the properties specified in
-I<xmlfile>.  The only properties settable for a domain snapshot are the
-<name> and <description>; the rest of the fields are ignored, and
-automatically filled in by libvirt.  If I<xmlfile> is completely omitted,
-then libvirt will choose a value for all fields.
+I<xmlfile>.  Normally, the only properties settable for a domain snapshot
+are the <name> and <description> elements; the rest of the fields are
+ignored, and automatically filled in by libvirt.  If I<xmlfile> is
+completely omitted, then libvirt will choose a value for all fields.
+The new snapshot will become current, as listed by B<snapshot-current>.
 
-=item B<snapshot-create-as> I<domain> [I<--print-xml>]
+If I<--redefine> is specified, then all XML elements produced by
+B<snapshot-dumpxml> are valid; this can be used to migrate snapshot
+hierarchy from one machine to another, to recreate hierarchy for the
+case of a transient domain that goes away and is later recreated with
+the same name and UUID, or to make slight alterations in the snapshot
+metadata (such as host-specific aspects of the domain XML embedded in
+the snapshot).  When this flag is supplied, the I<xmlfile> argument
+is mandatory, and the domain's current snapshot will not be altered
+unless the I<--current> flag is also given.
+
+If I<--no-metadata> is specified, then the snapshot data is created,
+but any metadata is immediately discarded (that is, libvirt does not
+treat the snapshot as current, and cannot revert to the snapshot
+unless I<--redefine> is later used to teach libvirt about the
+metadata again).
+
+=item B<snapshot-create-as> I<domain> {[I<--print-xml>] | [I<--no-metadata>]}
 [I<name>] [I<description>]
 
 Create a snapshot for domain I<domain> with the given <name> and
@@ -1701,13 +1719,40 @@ Create a snapshot for domain I<domain> with the given <name> and
 value.  If I<--print-xml> is specified, then XML appropriate for
 I<snapshot-create> is output, rather than actually creating a snapshot.
 
-=item B<snapshot-current> I<domain> [I<--name>]
-=item B<snapshot-current> I<domain> {[I<--name>] | [I<--security-info]}
+If I<--no-metadata> is specified, then the snapshot data is created,
+but any metadata is immediately discarded (that is, libvirt does not
+treat the snapshot as current, and cannot revert to the snapshot
+unless B<snapshot-create> is later used to teach libvirt about the
+metadata again).  This flag is incompatible with I<--print-xml>.
 
-Output the snapshot XML for the domain's current snapshot (if any).
-If I<--name> is specified, just print the current snapshot name instead
-of the full xml.  Otherwise, using I<--security-info> will also include
-security sensitive information in the XML.
+=item B<snapshot-current> I<domain> {[I<--name>] | [I<--security-info]
+| [I<snapshotname>]}
+
+Without I<snapshotname>, this will output the snapshot XML for the domain's
+current snapshot (if any).  If I<--name> is specified, just the
+current snapshot name instead of the full xml.  Otherwise, using
+I<--security-info> will also include security sensitive information in
+the XML.
+
+With I<snapshotname>, this is a request to make the existing named
+snapshot become the current snapshot, without reverting the domain.
+
+=item B<snapshot-edit> I<domain> I<snapshotname> [I<--current>]
+
+Edit the XML configuration file for I<snapshotname> of a domain.  If
+I<--current> is specified, also force the edited snapshot to become
+the current snapshot.
+
+This is equivalent to:
+
+ virsh snapshot-dumpxml dom name > snapshot.xml
+ vi snapshot.xml (or make changes with your other text editor)
+ virsh snapshot-create dom snapshot.xml --redefine [--current]
+
+except that it does some error checking.
+
+The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
+variables, and defaults to C<vi>.
 
 =item B<snapshot-list> I<domain> [{I<--parent> | I<--roots>}] [I<--metadata>]
 

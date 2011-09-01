@@ -11931,7 +11931,10 @@ vshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
     if (snapshot == NULL)
         goto cleanup;
 
-    doc = virDomainSnapshotGetXMLDesc(snapshot, 0);
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)
+        doc = vshStrdup(ctl, buffer);
+    else
+        doc = virDomainSnapshotGetXMLDesc(snapshot, 0);
     if (!doc)
         goto cleanup;
 
@@ -11975,6 +11978,9 @@ static const vshCmdInfo info_snapshot_create[] = {
 static const vshCmdOptDef opts_snapshot_create[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"xmlfile", VSH_OT_DATA, 0, N_("domain snapshot XML")},
+    {"redefine", VSH_OT_BOOL, 0, N_("redefine metadata for existing snapshot")},
+    {"current", VSH_OT_BOOL, 0, N_("with redefine, set current snapshot")},
+    {"no-metadata", VSH_OT_BOOL, 0, N_("take snapshot but create no metadata")},
     {NULL, 0, 0, NULL}
 };
 
@@ -11985,6 +11991,14 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     const char *from = NULL;
     char *buffer = NULL;
+    unsigned int flags = 0;
+
+    if (vshCommandOptBool(cmd, "redefine"))
+        flags |= VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
+    if (vshCommandOptBool(cmd, "current"))
+        flags |= VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT;
+    if (vshCommandOptBool(cmd, "no-metadata"))
+        flags |= VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -12010,7 +12024,7 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    ret = vshSnapshotCreate(ctl, dom, buffer, 0, from);
+    ret = vshSnapshotCreate(ctl, dom, buffer, flags, from);
 
 cleanup:
     VIR_FREE(buffer);
@@ -12034,6 +12048,7 @@ static const vshCmdOptDef opts_snapshot_create_as[] = {
     {"name", VSH_OT_DATA, 0, N_("name of snapshot")},
     {"description", VSH_OT_DATA, 0, N_("description of snapshot")},
     {"print-xml", VSH_OT_BOOL, 0, N_("print XML document rather than create")},
+    {"no-metadata", VSH_OT_BOOL, 0, N_("take snapshot but create no metadata")},
     {NULL, 0, 0, NULL}
 };
 
@@ -12046,6 +12061,10 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL;
     const char *desc = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    unsigned int flags = 0;
+
+    if (vshCommandOptBool(cmd, "no-metadata"))
+        flags |= VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -12079,7 +12098,7 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    ret = vshSnapshotCreate(ctl, dom, buffer, 0, NULL);
+    ret = vshSnapshotCreate(ctl, dom, buffer, flags, NULL);
 
 cleanup:
     VIR_FREE(buffer);
@@ -12090,11 +12109,112 @@ cleanup:
 }
 
 /*
+ * "snapshot-edit" command
+ */
+static const vshCmdInfo info_snapshot_edit[] = {
+    {"help", N_("edit XML for a snapshot")},
+    {"desc", N_("Edit the domain snapshot XML for a named snapshot")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_snapshot_edit[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"snapshotname", VSH_OT_DATA, VSH_OFLAG_REQ, N_("snapshot name")},
+    {"current", VSH_OT_BOOL, 0, N_("also set edited snapshot as current")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    virDomainSnapshotPtr snapshot = NULL;
+    const char *name;
+    bool ret = false;
+    char *tmp = NULL;
+    char *doc = NULL;
+    char *doc_edited = NULL;
+    unsigned int getxml_flags = VIR_DOMAIN_XML_SECURE;
+    unsigned int define_flags = VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
+
+    if (vshCommandOptBool(cmd, "current"))
+        define_flags |= VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (vshCommandOptString(cmd, "snapshotname", &name) <= 0)
+        goto cleanup;
+
+    dom = vshCommandOptDomain(ctl, cmd, NULL);
+    if (dom == NULL)
+        goto cleanup;
+
+    snapshot = virDomainSnapshotLookupByName(dom, name, 0);
+    if (snapshot == NULL)
+        goto cleanup;
+
+    /* Get the XML configuration of the snapshot.  */
+    doc = virDomainSnapshotGetXMLDesc(snapshot, getxml_flags);
+    if (!doc)
+        goto cleanup;
+    virDomainSnapshotFree(snapshot);
+    snapshot = NULL;
+
+    /* Create and open the temporary file.  */
+    tmp = editWriteToTempFile(ctl, doc);
+    if (!tmp)
+        goto cleanup;
+
+    /* Start the editor.  */
+    if (editFile(ctl, tmp) == -1)
+        goto cleanup;
+
+    /* Read back the edited file.  */
+    doc_edited = editReadBackFile(ctl, tmp);
+    if (!doc_edited)
+        goto cleanup;
+
+    /* Compare original XML with edited.  Short-circuit if it did not
+     * change, and we do not have any flags.  */
+    if (STREQ(doc, doc_edited) &&
+        !(define_flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) {
+        vshPrint(ctl, _("Snapshot %s XML configuration not changed.\n"),
+                 name);
+        ret = true;
+        goto cleanup;
+    }
+
+    /* Everything checks out, so redefine the xml.  */
+    snapshot = virDomainSnapshotCreateXML(dom, doc_edited, define_flags);
+    if (!snapshot) {
+        vshError(ctl, _("Failed to update %s"), name);
+        goto cleanup;
+    }
+
+    vshPrint(ctl, _("Snapshot %s edited.\n"), name);
+    ret = true;
+
+cleanup:
+    VIR_FREE(doc);
+    VIR_FREE(doc_edited);
+    if (tmp) {
+        unlink(tmp);
+        VIR_FREE(tmp);
+    }
+    if (snapshot)
+        virDomainSnapshotFree(snapshot);
+    if (dom)
+        virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "snapshot-current" command
  */
 static const vshCmdInfo info_snapshot_current[] = {
-    {"help", N_("Get the current snapshot")},
-    {"desc", N_("Get the current snapshot")},
+    {"help", N_("Get or set the current snapshot")},
+    {"desc", N_("Get or set the current snapshot")},
     {NULL, NULL}
 };
 
@@ -12103,6 +12223,8 @@ static const vshCmdOptDef opts_snapshot_current[] = {
     {"name", VSH_OT_BOOL, 0, N_("list the name, rather than the full xml")},
     {"security-info", VSH_OT_BOOL, 0,
      N_("include security sensitive information in XML dump")},
+    {"snapshotname", VSH_OT_DATA, 0,
+     N_("name of existing snapshot to make current")},
     {NULL, 0, 0, NULL}
 };
 
@@ -12114,6 +12236,7 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
     int current;
     virDomainSnapshotPtr snapshot = NULL;
     char *xml = NULL;
+    const char *snapshotname = NULL;
     unsigned int flags = 0;
 
     if (vshCommandOptBool(cmd, "security-info"))
@@ -12125,6 +12248,35 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
         goto cleanup;
+
+    if (vshCommandOptString(cmd, "snapshotname", &snapshotname) < 0) {
+        vshError(ctl, _("invalid snapshotname argument '%s'"), snapshotname);
+        goto cleanup;
+    }
+    if (snapshotname) {
+        virDomainSnapshotPtr snapshot2 = NULL;
+        flags = (VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE |
+                 VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT);
+
+        if (vshCommandOptBool(cmd, "name")) {
+            vshError(ctl, "%s",
+                     _("--name and snapshotname are mutually exclusive"));
+            goto cleanup;
+        }
+        snapshot = virDomainSnapshotLookupByName(dom, snapshotname, 0);
+        if (snapshot == NULL)
+            goto cleanup;
+        xml = virDomainSnapshotGetXMLDesc(snapshot, VIR_DOMAIN_XML_SECURE);
+        if (!xml)
+            goto cleanup;
+        snapshot2 = virDomainSnapshotCreateXML(dom, xml, flags);
+        if (snapshot2 == NULL)
+            goto cleanup;
+        virDomainSnapshotFree(snapshot2);
+        vshPrint(ctl, _("Snapshot %s set as current"), snapshotname);
+        ret = true;
+        goto cleanup;
+    }
 
     current = virDomainHasCurrentSnapshot(dom, 0);
     if (current < 0)
@@ -12960,6 +13112,8 @@ static const vshCmdDef snapshotCmds[] = {
      info_snapshot_delete, 0},
     {"snapshot-dumpxml", cmdSnapshotDumpXML, opts_snapshot_dumpxml,
      info_snapshot_dumpxml, 0},
+    {"snapshot-edit", cmdSnapshotEdit, opts_snapshot_edit,
+     info_snapshot_edit, 0},
     {"snapshot-list", cmdSnapshotList, opts_snapshot_list,
      info_snapshot_list, 0},
     {"snapshot-parent", cmdSnapshotParent, opts_snapshot_parent,
