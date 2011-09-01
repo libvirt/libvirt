@@ -11092,9 +11092,15 @@ static virDomainObjPtr virDomainLoadConfig(virCapsPtr caps,
     if ((dom = virDomainFindByUUID(doms, def->uuid))) {
         dom->autostart = autostart;
 
+        if (virDomainObjIsActive(dom) &&
+            !dom->newDef) {
+            virDomainObjAssignDef(dom, def, false);
+        } else {
+            virDomainDefFree(def);
+        }
+
         VIR_FREE(configFile);
         VIR_FREE(autostartLink);
-        virDomainDefFree(def);
         return dom;
     }
 
