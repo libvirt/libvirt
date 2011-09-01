@@ -8205,13 +8205,13 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
         }
         if (snapVol == NULL) {
             vshError(ctl, _("failed to get vol '%s'"), snapshotStrVol);
-            return false;
+            goto cleanup;
         }
 
         char *snapshotStrVolPath;
         if ((snapshotStrVolPath = virStorageVolGetPath(snapVol)) == NULL) {
             virStorageVolFree(snapVol);
-            return false;
+            goto cleanup;
         }
 
         /* Create XML for the backing store */
@@ -8230,7 +8230,7 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
 
     if (virBufferError(&buf)) {
         vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
-        return false;
+        goto cleanup;
     }
     xml = virBufferContentAndReset(&buf);
     vol = virStorageVolCreateXML(pool, xml, 0);
