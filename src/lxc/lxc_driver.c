@@ -1786,7 +1786,7 @@ lxcDomainCreateAndStart(virConnectPtr conn,
         goto cleanup;
 
     if ((def->nets != NULL) && !(driver->have_netns)) {
-        lxcError(VIR_ERR_OPERATION_INVALID,
+        lxcError(VIR_ERR_CONFIG_UNSUPPORTED,
                  "%s", _("System lacks NETNS support"));
         goto cleanup;
     }
@@ -2519,8 +2519,7 @@ static int
 lxcDomainInterfaceStats(virDomainPtr dom,
                         const char *path ATTRIBUTE_UNUSED,
                         struct _virDomainInterfaceStats *stats ATTRIBUTE_UNUSED)
-    lxcError(VIR_ERR_OPERATION_INVALID, "%s",
-             _("interface stats not implemented on this platform"));
+    lxcError(VIR_ERR_NO_SUPPORT, "%s", __FUNCTION__);
     return -1;
 }
 #endif
