@@ -2956,10 +2956,6 @@ int qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
     if (ret == 0 && mode == BLOCK_JOB_INFO)
         ret = qemuMonitorJSONGetBlockJobInfo(reply, device, info);
 
-    if (ret == 0 && mode == BLOCK_JOB_PULL && bandwidth != 0)
-        ret = qemuMonitorJSONBlockJob(mon, device, bandwidth, NULL,
-                                      BLOCK_JOB_SPEED);
-
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;

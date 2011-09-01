@@ -9418,8 +9418,14 @@ static int
 qemuDomainBlockPull(virDomainPtr dom, const char *path, unsigned long bandwidth,
                     unsigned int flags)
 {
+    int ret;
+
     virCheckFlags(0, -1);
-    return qemuDomainBlockJobImpl(dom, path, bandwidth, NULL, BLOCK_JOB_PULL);
+    ret = qemuDomainBlockJobImpl(dom, path, bandwidth, NULL, BLOCK_JOB_PULL);
+    if (ret == 0 && bandwidth != 0)
+        ret = qemuDomainBlockJobImpl(dom, path, bandwidth, NULL,
+                                     BLOCK_JOB_SPEED);
+    return ret;
 }
 
 static virDriver qemuDriver = {
