@@ -2223,7 +2223,7 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
     if (qemuProcessAutoDestroyActive(driver, vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is marked for auto destroy"));
-        return -1;
+        goto cleanup;
     }
 
     memset(&header, 0, sizeof(header));
