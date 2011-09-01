@@ -1277,7 +1277,7 @@ virNodeDeviceGetWWNs(virNodeDeviceDefPtr def,
     }
 
     if (cap == NULL) {
-        virNodeDeviceReportError(VIR_ERR_OPERATION_INVALID,
+        virNodeDeviceReportError(VIR_ERR_INTERNAL_ERROR,
                                  "%s", _("Device is not a fibre channel HBA"));
         ret = -1;
     } else if (*wwnn == NULL || *wwpn == NULL) {
