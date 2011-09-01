@@ -15637,6 +15637,12 @@ error:
  * the just-created snapshot has its metadata deleted.  This flag is
  * incompatible with VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE.
  *
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_HALT, then the domain
+ * will be inactive after the snapshot completes, regardless of whether
+ * it was active before; otherwise, a running domain will still be
+ * running after the snapshot.  This flag is invalid on transient domains,
+ * and is incompatible with VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE.
+ *
  * Returns an (opaque) virDomainSnapshotPtr on success, NULL on failure.
  */
 virDomainSnapshotPtr
@@ -15678,6 +15684,12 @@ virDomainSnapshotCreateXML(virDomainPtr domain,
         (flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
         virLibDomainError(VIR_ERR_INVALID_ARG,
                    _("redefine and no metadata flags are mutually exclusive"));
+        goto error;
+    }
+    if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) &&
+        (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                   _("redefine and halt flags are mutually exclusive"));
         goto error;
     }
 

@@ -8693,7 +8693,8 @@ static int
 qemuDomainSnapshotCreateActive(virConnectPtr conn,
                                struct qemud_driver *driver,
                                virDomainObjPtr *vmptr,
-                               virDomainSnapshotObjPtr snap)
+                               virDomainSnapshotObjPtr snap,
+                               unsigned int flags)
 {
     virDomainObjPtr vm = *vmptr;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -8723,6 +8724,24 @@ qemuDomainSnapshotCreateActive(virConnectPtr conn,
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorCreateSnapshot(priv->mon, snap->def->name);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
+    if (ret < 0)
+        goto cleanup;
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT) {
+        virDomainEventPtr event;
+
+        event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
+                                         VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
+        qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT);
+        virDomainAuditStop(vm, "from-snapshot");
+        /* We already filtered the _HALT flag for persistent domains
+         * only, so this end job never drops the last reference.  */
+        ignore_value(qemuDomainObjEndJob(driver, vm));
+        resume = false;
+        vm = NULL;
+        if (event)
+            qemuDomainEventQueue(driver, event);
+    }
 
 cleanup:
     if (resume && virDomainObjIsActive(vm) &&
@@ -8734,7 +8753,7 @@ cleanup:
                         _("resuming after snapshot failed"));
     }
 
-    if (qemuDomainObjEndJob(driver, vm) == 0) {
+    if (vm && qemuDomainObjEndJob(driver, vm) == 0) {
         /* Only possible if a transient vm quit while our locks were down,
          * in which case we don't want to save snapshot metadata.  */
         *vmptr = NULL;
@@ -8761,7 +8780,8 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE |
                   VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT |
-                  VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA, NULL);
+                  VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_HALT, NULL);
 
     if (((flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) &&
          !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) ||
@@ -8782,6 +8802,11 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (qemuProcessAutoDestroyActive(driver, vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is marked for auto destroy"));
+        goto cleanup;
+    }
+    if (!vm->persistent && (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("cannot halt after transient domain snapshot"));
         goto cleanup;
     }
 
@@ -8924,7 +8949,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
             goto cleanup;
     } else {
         if (qemuDomainSnapshotCreateActive(domain->conn, driver,
-                                           &vm, snap) < 0)
+                                           &vm, snap, flags) < 0)
             goto cleanup;
     }
 

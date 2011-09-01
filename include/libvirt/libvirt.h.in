@@ -2567,6 +2567,8 @@ typedef enum {
                                                           snapshot current */
     VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA = (1 << 2), /* Make snapshot without
                                                           remembering it */
+    VIR_DOMAIN_SNAPSHOT_CREATE_HALT        = (1 << 3), /* Stop running guest
+                                                          after snapshot */
 } virDomainSnapshotCreateFlags;
 
 /* Take a snapshot of the current VM state */
