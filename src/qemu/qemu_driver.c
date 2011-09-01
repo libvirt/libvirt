@@ -8620,7 +8620,7 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainSnapshotDefPtr def = NULL;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA, NULL);
 
     qemuDriverLock(driver);
     virUUIDFormat(domain->uuid, uuidstr);
@@ -8662,11 +8662,13 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
             virReportOOMError();
             goto cleanup;
         }
-        vm->current_snapshot->def->current = false;
-        if (qemuDomainSnapshotWriteMetadata(vm, vm->current_snapshot,
-                                            driver->snapshotDir) < 0)
-            goto cleanup;
-        vm->current_snapshot = NULL;
+        if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
+            vm->current_snapshot->def->current = false;
+            if (qemuDomainSnapshotWriteMetadata(vm, vm->current_snapshot,
+                                                driver->snapshotDir) < 0)
+                goto cleanup;
+            vm->current_snapshot = NULL;
+        }
     }
 
     /* actually do the snapshot */
@@ -8687,7 +8689,7 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
 
 cleanup:
     if (vm) {
-        if (snapshot) {
+        if (snapshot && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
             if (qemuDomainSnapshotWriteMetadata(vm, snap,
                                                 driver->snapshotDir) < 0)
                 VIR_WARN("unable to save metadata for snapshot %s",
@@ -8876,7 +8878,9 @@ static char *qemuDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     virDomainSnapshotObjPtr snap = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    virCheckFlags(0, NULL);
+    /* XXX Actually wire this up once we return domain xml; for now,
+     * it is trivially safe to ignore this flag. */
+    virCheckFlags(VIR_DOMAIN_XML_SECURE, NULL);
 
     qemuDriverLock(driver);
     virUUIDFormat(snapshot->domain->uuid, uuidstr);
