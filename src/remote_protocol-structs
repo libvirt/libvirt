@@ -1436,7 +1436,6 @@ struct remote_domain_migrate_get_max_speed_args {
 struct remote_domain_migrate_get_max_speed_ret {
         uint64_t                   bandwidth;
 };
-
 struct remote_domain_events_register_any_args {
         int                        eventID;
 };
