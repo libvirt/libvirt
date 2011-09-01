@@ -359,8 +359,10 @@ xend_get(virConnectPtr xend, const char *path,
     ret = xend_req(s, content);
     VIR_FORCE_CLOSE(s);
 
-    if (((ret < 0) || (ret >= 300)) &&
-        ((ret != 404) || (!STRPREFIX(path, "/xend/domain/")))) {
+    if (ret < 0)
+        return ret;
+
+    if ((ret >= 300) && ((ret != 404) || (!STRPREFIX(path, "/xend/domain/")))) {
         virXendError(VIR_ERR_GET_FAILED,
                      _("%d status from xen daemon: %s:%s"),
                      ret, path, NULLSTR(*content));
@@ -1810,12 +1812,8 @@ xenDaemonDomainFetch(virConnectPtr conn,
         root = sexpr_get(conn, "/xend/domain/%s?detail=1", name);
     else
         root = sexpr_get(conn, "/xend/domain/%d?detail=1", domid);
-    if (root == NULL) {
-        virXendError(VIR_ERR_XEN_CALL,
-                      "%s", _("xenDaemonDomainFetch failed to"
-                        " find this domain"));
+    if (root == NULL)
         return (NULL);
-    }
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
 
