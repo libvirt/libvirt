@@ -8583,18 +8583,20 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
      * do; we've successfully taken the snapshot, and we are now running
      * on it, so we have to go forward the best we can
      */
-    if (qemuDomainSnapshotWriteMetadata(vm, snap, driver->snapshotDir) < 0)
-        goto cleanup;
-    vm->current_snapshot = snap;
-
     snapshot = virGetDomainSnapshot(domain, snap->def->name);
 
 cleanup:
     if (vm) {
-        if (snapshot)
-            vm->current_snapshot = snap;
-        else if (snap)
+        if (snapshot) {
+            if (qemuDomainSnapshotWriteMetadata(vm, snap,
+                                                driver->snapshotDir) < 0)
+                VIR_WARN("unable to save metadata for snapshot %s",
+                         snap->def->name);
+            else
+                vm->current_snapshot = snap;
+        } else if (snap) {
             virDomainSnapshotObjListRemove(&vm->snapshots, snap);
+        }
         virDomainObjUnlock(vm);
     }
     virDomainSnapshotDefFree(def);
