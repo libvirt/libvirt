@@ -297,6 +297,8 @@ static void qemuDomainSnapshotLoad(void *payload,
     virDomainSnapshotObjPtr snap = NULL;
     virDomainSnapshotObjPtr current = NULL;
     char ebuf[1024];
+    unsigned int flags = (VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE |
+                          VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL);
 
     virDomainObjLock(vm);
     if (virAsprintf(&snapDir, "%s/%s", baseDir, vm->def->name) < 0) {
@@ -338,7 +340,7 @@ static void qemuDomainSnapshotLoad(void *payload,
             continue;
         }
 
-        def = virDomainSnapshotDefParseString(xmlStr, 0);
+        def = virDomainSnapshotDefParseString(xmlStr, flags);
         if (def == NULL) {
             /* Nothing we can do here, skip this one */
             VIR_ERROR(_("Failed to parse snapshot XML from file '%s'"),
@@ -8619,8 +8621,19 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
     virDomainSnapshotPtr snapshot = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainSnapshotDefPtr def = NULL;
+    bool update_current = true;
+    unsigned int parse_flags = 0;
 
-    virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA, NULL);
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA, NULL);
+
+    if (((flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) &&
+         !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) ||
+        (flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA))
+        update_current = false;
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE)
+        parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE;
 
     qemuDriverLock(driver);
     virUUIDFormat(domain->uuid, uuidstr);
@@ -8647,22 +8660,87 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (!qemuDomainSnapshotIsAllowed(vm))
         goto cleanup;
 
-    if (!(def = virDomainSnapshotDefParseString(xmlDesc, 1)))
+    if (!(def = virDomainSnapshotDefParseString(xmlDesc, parse_flags)))
         goto cleanup;
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) {
+        virDomainSnapshotObjPtr other = NULL;
+
+        /* Prevent circular chains */
+        if (def->parent) {
+            if (STREQ(def->name, def->parent)) {
+                qemuReportError(VIR_ERR_INVALID_ARG,
+                                _("cannot set snapshot %s as its own parent"),
+                                def->name);
+                goto cleanup;
+            }
+            other = virDomainSnapshotFindByName(&vm->snapshots, def->parent);
+            if (!other) {
+                qemuReportError(VIR_ERR_INVALID_ARG,
+                                _("parent %s for snapshot %s not found"),
+                                def->parent, def->name);
+                goto cleanup;
+            }
+            while (other->def->parent) {
+                if (STREQ(other->def->parent, def->name)) {
+                    qemuReportError(VIR_ERR_INVALID_ARG,
+                                    _("parent %s would create cycle to %s"),
+                                    other->def->name, def->name);
+                    goto cleanup;
+                }
+                other = virDomainSnapshotFindByName(&vm->snapshots,
+                                                    other->def->parent);
+                if (!other) {
+                    VIR_WARN("snapshots are inconsistent for %s",
+                             vm->def->name);
+                    break;
+                }
+            }
+        }
+
+        /* Check that any replacement is compatible */
+        other = virDomainSnapshotFindByName(&vm->snapshots, def->name);
+        if (other) {
+            if ((other->def->state == VIR_DOMAIN_RUNNING ||
+                 other->def->state == VIR_DOMAIN_PAUSED) !=
+                (def->state == VIR_DOMAIN_RUNNING ||
+                 def->state == VIR_DOMAIN_PAUSED)) {
+                qemuReportError(VIR_ERR_INVALID_ARG,
+                                _("cannot change between online and offline "
+                                  "snapshot state in snapshot %s"),
+                                def->name);
+                goto cleanup;
+            }
+            /* XXX Ensure ABI compatibility before replacing anything.  */
+            if (other == vm->current_snapshot) {
+                update_current = true;
+                vm->current_snapshot = NULL;
+            }
+            virDomainSnapshotObjListRemove(&vm->snapshots, other);
+        } else {
+            /* XXX Should we do some feasibility checks, like parsing
+             * qemu-img output to check that def->name matches at
+             * least one qcow2 snapshot name?  */
+        }
+    }
 
     if (!(snap = virDomainSnapshotAssignDef(&vm->snapshots, def)))
         goto cleanup;
     def = NULL;
 
-    snap->def->state = virDomainObjGetState(vm, NULL);
-    snap->def->current = true;
+    if (update_current)
+        snap->def->current = true;
+    if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE))
+        snap->def->state = virDomainObjGetState(vm, NULL);
     if (vm->current_snapshot) {
-        snap->def->parent = strdup(vm->current_snapshot->def->name);
-        if (snap->def->parent == NULL) {
-            virReportOOMError();
-            goto cleanup;
+        if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE)) {
+            snap->def->parent = strdup(vm->current_snapshot->def->name);
+            if (snap->def->parent == NULL) {
+                virReportOOMError();
+                goto cleanup;
+            }
         }
-        if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
+        if (update_current) {
             vm->current_snapshot->def->current = false;
             if (qemuDomainSnapshotWriteMetadata(vm, vm->current_snapshot,
                                                 driver->snapshotDir) < 0)
@@ -8672,7 +8750,13 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
     }
 
     /* actually do the snapshot */
-    if (!virDomainObjIsActive(vm)) {
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) {
+        /* XXX Should we validate that the redefined snapshot even
+         * makes sense, such as checking whether the requested parent
+         * snapshot exists and is not creating a loop, or that
+         * qemu-img recognizes the snapshot name in at least one of
+         * the domain's disks?  */
+    } else if (!virDomainObjIsActive(vm)) {
         if (qemuDomainSnapshotCreateInactive(vm, snap) < 0)
             goto cleanup;
     } else {
@@ -8694,7 +8778,7 @@ cleanup:
                                                 driver->snapshotDir) < 0)
                 VIR_WARN("unable to save metadata for snapshot %s",
                          snap->def->name);
-            else
+            else if (update_current)
                 vm->current_snapshot = snap;
         } else if (snap) {
             virDomainSnapshotObjListRemove(&vm->snapshots, snap);

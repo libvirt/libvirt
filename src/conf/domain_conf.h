@@ -1407,8 +1407,13 @@ struct _virDomainSnapshotObjList {
     virHashTable *objs;
 };
 
+typedef enum {
+    VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE = 1 << 0,
+    VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL = 1 << 1,
+} virDomainSnapshotParseFlags;
+
 virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
-                                                        int newSnapshot);
+                                                        unsigned int flags);
 void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def);
 char *virDomainSnapshotDefFormat(char *domain_uuid,
                                  virDomainSnapshotDefPtr def,

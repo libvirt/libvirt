@@ -5655,7 +5655,7 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     /* VBox has no snapshot metadata, so this flag is trivial.  */
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA, NULL);
 
-    if (!(def = virDomainSnapshotDefParseString(xmlDesc, 1)))
+    if (!(def = virDomainSnapshotDefParseString(xmlDesc, 0)))
         goto cleanup;
 
     vboxIIDFromUUID(&domiid, dom->uuid);

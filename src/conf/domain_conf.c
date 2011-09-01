@@ -11375,8 +11375,9 @@ void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def)
     VIR_FREE(def);
 }
 
-virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
-                                                        int newSnapshot)
+/* flags are from virDomainSnapshotParseFlags */
+virDomainSnapshotDefPtr
+virDomainSnapshotDefParseString(const char *xmlStr, unsigned int flags)
 {
     xmlXPathContextPtr ctxt = NULL;
     xmlDocPtr xml = NULL;
@@ -11404,8 +11405,16 @@ virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
     gettimeofday(&tv, NULL);
 
     def->name = virXPathString("string(./name)", ctxt);
-    if (def->name == NULL)
-        ignore_value(virAsprintf(&def->name, "%lld", (long long)tv.tv_sec));
+    if (def->name == NULL) {
+        if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE) {
+            virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                                 _("a redefined snapshot must have a name"));
+            goto cleanup;
+        } else {
+            ignore_value(virAsprintf(&def->name, "%lld",
+                                     (long long)tv.tv_sec));
+        }
+    }
 
     if (def->name == NULL) {
         virReportOOMError();
@@ -11414,7 +11423,7 @@ virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
 
     def->description = virXPathString("string(./description)", ctxt);
 
-    if (!newSnapshot) {
+    if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE) {
         if (virXPathLongLong("string(./creationTime)", ctxt,
                              &def->creationTime) < 0) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -11440,7 +11449,11 @@ virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
                                  state);
             goto cleanup;
         }
+    } else {
+        def->creationTime = tv.tv_sec;
+    }
 
+    if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL) {
         if (virXPathInt("string(./active)", ctxt, &active) < 0) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                  _("Could not find 'active' element"));
@@ -11448,8 +11461,6 @@ virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
         }
         def->current = active != 0;
     }
-    else
-        def->creationTime = tv.tv_sec;
 
     ret = def;
 
