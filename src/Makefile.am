@@ -1232,7 +1232,7 @@ libvirt_qemu.def: $(srcdir)/libvirt_qemu.syms
 libvirt_la_SOURCES =
 libvirt_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)$(LIBVIRT_SYMBOL_FILE) \
 		     -version-info $(LIBVIRT_VERSION_INFO) \
-		    $(AM_LDFLAGS) \
+		    $(LIBVIRT_NODELETE) $(AM_LDFLAGS) \
 		    $(CYGWIN_EXTRA_LDFLAGS) $(MINGW_EXTRA_LDFLAGS)
 libvirt_la_BUILT_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_la_LIBADD += $(LIBXML_LIBS) \

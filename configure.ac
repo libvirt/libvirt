@@ -97,9 +97,18 @@ AM_PROG_LIBTOOL
 AM_PROG_CC_C_O
 AM_PROG_LD
 
+AC_MSG_CHECKING([for how to mark DSO non-deletable at runtime])
+LIBVIRT_NODELETE=
+`$LD --help 2>&1 | grep -- "-z nodelete" >/dev/null` && \
+    LIBVIRT_NODELETE="-Wl,-z -Wl,nodelete"
+AC_MSG_RESULT([$LIBVIRT_NODELETE])
+AC_SUBST([LIBVIRT_NODELETE])
+
+AC_MSG_CHECKING([for how to set DSO symbol versions])
 VERSION_SCRIPT_FLAGS=-Wl,--version-script=
 `$LD --help 2>&1 | grep -- --version-script >/dev/null` || \
     VERSION_SCRIPT_FLAGS="-Wl,-M -Wl,"
+AC_MSG_RESULT([$VERSION_SCRIPT_FLAGS])
 
 LIBVIRT_COMPILE_WARNINGS([maximum])
 

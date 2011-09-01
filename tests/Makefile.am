@@ -89,7 +89,9 @@ check_PROGRAMS = virshtest conftest sockettest \
 	nodeinfotest qparamtest virbuftest \
 	commandtest commandhelper seclabeltest \
 	hashtest virnetmessagetest virnetsockettest ssh \
-	utiltest virnettlscontexttest
+	utiltest virnettlscontexttest shunloadtest
+
+check_LTLIBRARIES = libshunload.la
 
 # This is a fake SSH we use from virnetsockettest
 ssh_SOURCES = ssh.c
@@ -207,6 +209,7 @@ TESTS = virshtest \
 	virnetmessagetest \
 	virnetsockettest \
 	virnettlscontexttest \
+	shunloadtest \
 	utiltest \
 	$(test_scripts)
 
@@ -502,6 +505,15 @@ eventtest_SOURCES = \
 	eventtest.c testutils.h testutils.c
 eventtest_LDADD = -lrt $(LDADDS)
 endif
+
+libshunload_la_SOURCES = shunloadhelper.c
+libshunload_la_LIBADD = ../src/libvirt.la
+libshunload_la_LDFLAGS = -module -avoid-version -rpath /evil/libtool/hack/to/force/shared/lib/creation
+
+shunloadtest_SOURCES = \
+	shunloadtest.c
+shunloadtest_LDADD = -lpthread
+shunloadtest_DEPENDENCIES = libshunload.la
 
 if WITH_CIL
 CILOPTFLAGS =

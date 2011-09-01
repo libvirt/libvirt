@@ -5,6 +5,8 @@
 *.gcda
 *.gcno
 *.gcov
+*.la
+*.lo
 *.o
 *.orig
 *.rej
@@ -72,6 +74,7 @@
 /tests/networkxml2argvtest
 /tests/nwfilterxml2xmltest
 /tests/openvzutilstest
+/tests/shunloadtest
 /update.log
 Makefile
 Makefile.in
