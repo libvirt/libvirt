@@ -56,7 +56,7 @@
  * The number of Xen scheduler parameters
  */
 
-#define XEND_RCV_BUF_MAX_LEN 65536
+#define XEND_RCV_BUF_MAX_LEN (256 * 1024)
 
 static int
 virDomainXMLDevID(virDomainPtr domain,
