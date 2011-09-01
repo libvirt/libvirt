@@ -4082,7 +4082,7 @@ testStorageFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
         break;
 
     default:
-        testError(VIR_ERR_OPERATION_INVALID,
+        testError(VIR_ERR_NO_SUPPORT,
                   _("pool type '%s' does not support source discovery"), type);
     }
 
