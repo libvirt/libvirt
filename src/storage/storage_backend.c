@@ -387,7 +387,7 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
     virCheckFlags(0, -1);
 
     if (vol->target.encryption != NULL) {
-        virStorageReportError(VIR_ERR_OPERATION_INVALID,
+        virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                               "%s", _("storage pool does not support encrypted "
                                       "volumes"));
         goto cleanup;
@@ -461,7 +461,7 @@ virStorageGenerateQcowEncryption(virConnectPtr conn,
         conn->secretDriver->lookupByUUID == NULL ||
         conn->secretDriver->defineXML == NULL ||
         conn->secretDriver->setValue == NULL) {
-        virStorageReportError(VIR_ERR_OPERATION_INVALID, "%s",
+        virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                               _("secret storage not supported"));
         goto cleanup;
     }
@@ -740,7 +740,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
 
         if (vol->target.format != VIR_STORAGE_FILE_QCOW &&
             vol->target.format != VIR_STORAGE_FILE_QCOW2) {
-            virStorageReportError(VIR_ERR_OPERATION_INVALID,
+            virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                   _("qcow volume encryption unsupported with "
                                     "volume format %s"), type);
             return -1;
@@ -748,7 +748,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
         enc = vol->target.encryption;
         if (enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_QCOW &&
             enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT) {
-            virStorageReportError(VIR_ERR_OPERATION_INVALID,
+            virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                   _("unsupported volume encryption format %d"),
                                   vol->target.encryption->format);
             return -1;
@@ -880,13 +880,13 @@ virStorageBackendCreateQcowCreate(virConnectPtr conn ATTRIBUTE_UNUSED,
         return -1;
     }
     if (vol->backingStore.path != NULL) {
-        virStorageReportError(VIR_ERR_OPERATION_INVALID, "%s",
+        virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                               _("copy-on-write image not supported with "
                                       "qcow-create"));
         return -1;
     }
     if (vol->target.encryption != NULL) {
-        virStorageReportError(VIR_ERR_OPERATION_INVALID,
+        virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                               "%s", _("encrypted volumes not supported with "
                                       "qcow-create"));
         return -1;

@@ -584,7 +584,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     const char **cmdargv = cmdargvnew;
 
     if (vol->target.encryption != NULL) {
-        virStorageReportError(VIR_ERR_OPERATION_INVALID,
+        virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                               "%s", _("storage pool does not support encrypted "
                                       "volumes"));
         return -1;

@@ -866,7 +866,7 @@ _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
 
     if (inputvol) {
         if (vol->target.encryption != NULL) {
-            virStorageReportError(VIR_ERR_OPERATION_INVALID,
+            virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                   "%s", _("storage pool does not support "
                                           "building encrypted volumes from "
                                           "other volumes"));
