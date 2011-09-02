@@ -412,16 +412,16 @@ esxAutodetectSCSIControllerModel(virDomainDiskDefPtr def, int *model,
 
     if (STRCASEEQ(vmDiskFileInfo->controllerType,
                   "VirtualBusLogicController")) {
-        *model = VIR_DOMAIN_CONTROLLER_MODEL_BUSLOGIC;
+        *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC;
     } else if (STRCASEEQ(vmDiskFileInfo->controllerType,
                          "VirtualLsiLogicController")) {
-        *model = VIR_DOMAIN_CONTROLLER_MODEL_LSILOGIC;
+        *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
     } else if (STRCASEEQ(vmDiskFileInfo->controllerType,
                          "VirtualLsiLogicSASController")) {
-        *model = VIR_DOMAIN_CONTROLLER_MODEL_LSISAS1068;
+        *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068;
     } else if (STRCASEEQ(vmDiskFileInfo->controllerType,
                          "ParaVirtualSCSIController")) {
-        *model = VIR_DOMAIN_CONTROLLER_MODEL_VMPVSCSI;
+        *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI;
     } else {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Found unexpected controller model '%s' for disk '%s'"),

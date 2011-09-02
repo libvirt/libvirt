@@ -196,7 +196,7 @@ VIR_ENUM_IMPL(virDomainController, VIR_DOMAIN_CONTROLLER_TYPE_LAST,
               "virtio-serial",
               "ccid")
 
-VIR_ENUM_IMPL(virDomainControllerModel, VIR_DOMAIN_CONTROLLER_MODEL_LAST,
+VIR_ENUM_IMPL(virDomainControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
               "auto",
               "buslogic",
               "lsilogic",
@@ -2456,6 +2456,16 @@ no_memory:
 }
 
 
+static int
+virDomainControllerModelTypeFromString(const virDomainControllerDefPtr def,
+                                       const char *model)
+{
+    if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
+        return virDomainControllerModelSCSITypeFromString(model);
+
+    return -1;
+}
+
 /* Parse the XML definition for a controller
  * @param node XML nodeset to parse for controller definition
  */
@@ -2493,7 +2503,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
 
     model = virXMLPropString(node, "model");
     if (model) {
-        if ((def->model = virDomainControllerModelTypeFromString(model)) < 0) {
+        if ((def->model = virDomainControllerModelTypeFromString(def, model)) < 0) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                  _("Unknown model type '%s'"), model);
             goto error;
@@ -8729,6 +8739,16 @@ virDomainDiskDefFormat(virBufferPtr buf,
     return 0;
 }
 
+static const char *
+virDomainControllerModelTypeToString(virDomainControllerDefPtr def,
+                                     int model)
+{
+    if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
+        return virDomainControllerModelSCSITypeToString(model);
+
+    return NULL;
+}
+
 static int
 virDomainControllerDefFormat(virBufferPtr buf,
                              virDomainControllerDefPtr def,
@@ -8744,7 +8764,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
     }
 
     if (def->model != -1) {
-        model = virDomainControllerModelTypeToString(def->model);
+        model = virDomainControllerModelTypeToString(def, def->model);
 
         if (!model) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,

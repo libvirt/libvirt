@@ -483,8 +483,8 @@ def->parallels[0]...
 /* directly map the virDomainControllerModel to virVMXSCSIControllerModel,
  * this is good enough for now because all virDomainControllerModel values
  * are actually SCSI controller models in the ESX case */
-VIR_ENUM_DECL(virVMXSCSIControllerModel)
-VIR_ENUM_IMPL(virVMXSCSIControllerModel, VIR_DOMAIN_CONTROLLER_MODEL_LAST,
+VIR_ENUM_DECL(virVMXControllerModelSCSI)
+VIR_ENUM_IMPL(virVMXControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
               "auto", /* just to match virDomainControllerModel, will never be used */
               "buslogic",
               "lsilogic",
@@ -1040,7 +1040,7 @@ virVMXHandleLegacySCSIDiskDriverName(virDomainDefPtr def,
         *tmp = c_tolower(*tmp);
     }
 
-    model = virDomainControllerModelTypeFromString(disk->driverName);
+    model = virDomainControllerModelSCSITypeFromString(disk->driverName);
 
     if (model < 0) {
         VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
@@ -1068,7 +1068,7 @@ virVMXHandleLegacySCSIDiskDriverName(virDomainDefPtr def,
         VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Inconsistent SCSI controller model ('%s' is not '%s') "
                     "for SCSI controller index %d"), disk->driverName,
-                  virDomainControllerModelTypeToString(controller->model),
+                  virDomainControllerModelSCSITypeToString(controller->model),
                   controller->idx);
         return -1;
     }
@@ -1120,7 +1120,7 @@ virVMXGatherSCSIControllers(virVMXContext *ctx, virDomainDefPtr def,
             continue;
         }
 
-        if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_AUTO &&
+        if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO &&
             ctx->autodetectSCSIControllerModel != NULL) {
             count = 0;
 
@@ -1157,15 +1157,15 @@ virVMXGatherSCSIControllers(virVMXContext *ctx, virDomainDefPtr def,
         }
 
         if (controller->model != -1 &&
-            controller->model != VIR_DOMAIN_CONTROLLER_MODEL_BUSLOGIC &&
-            controller->model != VIR_DOMAIN_CONTROLLER_MODEL_LSILOGIC &&
-            controller->model != VIR_DOMAIN_CONTROLLER_MODEL_LSISAS1068 &&
-            controller->model != VIR_DOMAIN_CONTROLLER_MODEL_VMPVSCSI) {
+            controller->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC &&
+            controller->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC &&
+            controller->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068 &&
+            controller->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI) {
             VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Expecting domain XML attribute 'model' of entry "
                         "'controller' to be 'buslogic' or 'lsilogic' or "
                         "'lsisas1068' or 'vmpvscsi' but found '%s'"),
-                      virDomainControllerModelTypeToString(controller->model));
+                      virDomainControllerModelSCSITypeToString(controller->model));
             goto cleanup;
         }
 
@@ -1869,13 +1869,13 @@ virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
             *tmp = c_tolower(*tmp);
         }
 
-        *virtualDev = virVMXSCSIControllerModelTypeFromString(virtualDev_string);
+        *virtualDev = virVMXControllerModelSCSITypeFromString(virtualDev_string);
 
         if (*virtualDev == -1 ||
-            (*virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_BUSLOGIC &&
-             *virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_LSILOGIC &&
-             *virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_LSISAS1068 &&
-             *virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_VMPVSCSI)) {
+            (*virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC &&
+             *virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC &&
+             *virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068 &&
+             *virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI)) {
             VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Expecting VMX entry '%s' to be 'buslogic' or 'lsilogic' "
                         "or 'lsisas1068' or 'pvscsi' but found '%s'"),
@@ -3088,7 +3088,7 @@ virVMXFormatConfig(virVMXContext *ctx, virCapsPtr caps, virDomainDefPtr def,
 
             if (scsi_virtualDev[i] != -1) {
                 virBufferAsprintf(&buffer, "scsi%d.virtualDev = \"%s\"\n", i,
-                                  virVMXSCSIControllerModelTypeToString
+                                  virVMXControllerModelSCSITypeToString
                                     (scsi_virtualDev[i]));
             }
         }

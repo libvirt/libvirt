@@ -143,7 +143,7 @@ static int
 testAutodetectSCSIControllerModel(virDomainDiskDefPtr def ATTRIBUTE_UNUSED,
                                   int *model, void *opaque ATTRIBUTE_UNUSED)
 {
-    *model = VIR_DOMAIN_CONTROLLER_MODEL_LSILOGIC;
+    *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
 
     return 0;
 }
