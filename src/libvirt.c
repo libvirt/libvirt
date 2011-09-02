@@ -15225,12 +15225,13 @@ virDomainMigrateGetMaxSpeed(virDomainPtr domain,
         return -1;
     }
 
+    conn = domain->conn;
+
     if (!bandwidth) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
-    conn = domain->conn;
     if (conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
