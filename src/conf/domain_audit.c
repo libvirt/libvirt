@@ -309,6 +309,66 @@ cleanup:
 
 
 /**
+ * virDomainAuditRedirdev:
+ * @vm: domain making a change in pass-through host device
+ * @redirdev: device being attached or removed
+ * @reason: one of "start", "attach", or "detach"
+ * @success: true if the device passthrough operation succeeded
+ *
+ * Log an audit message about an attempted device passthrough change.
+ */
+void
+virDomainAuditRedirdev(virDomainObjPtr vm, virDomainRedirdevDefPtr redirdev,
+                      const char *reason, bool success)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char *vmname;
+    char *address;
+    char *device;
+    const char *virt;
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    if (!(vmname = virAuditEncode("vm", vm->def->name))) {
+        VIR_WARN("OOM while encoding audit message");
+        return;
+    }
+
+    if (!(virt = virDomainVirtTypeToString(vm->def->virtType))) {
+        VIR_WARN("Unexpected virt type %d while encoding audit message", vm->def->virtType);
+        virt = "?";
+    }
+
+    switch (redirdev->bus) {
+    case VIR_DOMAIN_REDIRDEV_BUS_USB:
+        if (virAsprintf(&address, "USB redirdev") < 0) {
+            VIR_WARN("OOM while encoding audit message");
+            goto cleanup;
+        }
+    default:
+        VIR_WARN("Unexpected redirdev bus while encoding audit message: %d",
+                 redirdev->bus);
+        goto cleanup;
+    }
+
+    if (!(device = virAuditEncode("device", VIR_AUDIT_STR(address)))) {
+        VIR_WARN("OOM while encoding audit message");
+        goto cleanup;
+    }
+
+    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+              "virt=%s resrc=dev reason=%s %s uuid=%s bus=%s %s",
+              virt, reason, vmname, uuidstr,
+              virDomainRedirdevBusTypeToString(redirdev->bus),
+              device);
+
+cleanup:
+    VIR_FREE(vmname);
+    VIR_FREE(device);
+    VIR_FREE(address);
+}
+
+
+/**
  * virDomainAuditCgroup:
  * @vm: domain making the cgroups ACL change
  * @cgroup: cgroup that manages the devices
@@ -536,6 +596,11 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
     for (i = 0 ; i < vm->def->nhostdevs ; i++) {
         virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
         virDomainAuditHostdev(vm, hostdev, "start", true);
+    }
+
+    for (i = 0 ; i < vm->def->nredirdevs ; i++) {
+        virDomainRedirdevDefPtr redirdev = vm->def->redirdevs[i];
+        virDomainAuditRedirdev(vm, redirdev, "start", true);
     }
 
     virDomainAuditMemory(vm, 0, vm->def->mem.cur_balloon, "start", true);

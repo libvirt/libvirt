@@ -1724,21 +1724,25 @@
     </element>
   </define>
 
+  <define name="qemucdevSrcTypeChoice">
+    <choice>
+      <value>dev</value>
+      <value>file</value>
+      <value>pipe</value>
+      <value>unix</value>
+      <value>tcp</value>
+      <value>udp</value>
+      <value>null</value>
+      <value>stdio</value>
+      <value>vc</value>
+      <value>pty</value>
+      <value>spicevmc</value>
+    </choice>
+  </define>
+
   <define name="qemucdevSrcType">
     <attribute name="type">
-      <choice>
-        <value>dev</value>
-        <value>file</value>
-        <value>pipe</value>
-        <value>unix</value>
-        <value>tcp</value>
-        <value>udp</value>
-        <value>null</value>
-        <value>stdio</value>
-        <value>vc</value>
-        <value>pty</value>
-        <value>spicevmc</value>
-      </choice>
+      <ref name="qemucdevSrcTypeChoice"/>
     </attribute>
   </define>
   <define name="qemucdevSrcDef">
@@ -1975,6 +1979,19 @@
       </optional>
     </element>
   </define>
+  <define name="redirdev">
+    <element name="redirdev">
+      <attribute name="bus">
+        <choice>
+          <value>usb</value>
+        </choice>
+      </attribute>
+      <attribute name="type">
+        <ref name="qemucdevSrcTypeChoice"/>
+      </attribute>
+      <ref name="qemucdevSrcDef"/>
+    </element>
+  </define>
   <define name="hostdev">
     <element name="hostdev">
       <optional>
@@ -2139,6 +2156,7 @@
             <ref name="channel"/>
             <ref name="smartcard"/>
             <ref name="hub"/>
+            <ref name="redirdev"/>
           </choice>
         </zeroOrMore>
         <optional>

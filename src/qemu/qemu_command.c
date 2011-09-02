@@ -607,6 +607,33 @@ qemuAssignDeviceHostdevAlias(virDomainDefPtr def, virDomainHostdevDefPtr hostdev
 
 
 int
+qemuAssignDeviceRedirdevAlias(virDomainDefPtr def, virDomainRedirdevDefPtr redirdev, int idx)
+{
+    if (idx == -1) {
+        int i;
+        idx = 0;
+        for (i = 0 ; i < def->nredirdevs ; i++) {
+            int thisidx;
+            if ((thisidx = qemuDomainDeviceAliasIndex(&def->redirdevs[i]->info, "redir")) < 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Unable to determine device index for redirected device"));
+                return -1;
+            }
+            if (thisidx >= idx)
+                idx = thisidx + 1;
+        }
+    }
+
+    if (virAsprintf(&redirdev->info.alias, "redir%d", idx) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int
 qemuAssignDeviceControllerAlias(virDomainControllerDefPtr controller)
 {
     const char *prefix = virDomainControllerTypeToString(controller->type);
@@ -651,6 +678,10 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virBitmapPtr qemuCaps)
     }
     for (i = 0; i < def->nhostdevs ; i++) {
         if (qemuAssignDeviceHostdevAlias(def, def->hostdevs[i], i) < 0)
+            return -1;
+    }
+    for (i = 0; i < def->nredirdevs ; i++) {
+        if (qemuAssignDeviceRedirdevAlias(def, def->redirdevs[i], i) < 0)
             return -1;
     }
     for (i = 0; i < def->nvideos ; i++) {
@@ -2347,6 +2378,45 @@ qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev)
     return ret;
 }
 
+
+char *
+qemuBuildRedirdevDevStr(virDomainRedirdevDefPtr dev,
+                        virBitmapPtr qemuCaps)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (dev->bus != VIR_DOMAIN_REDIRDEV_BUS_USB) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("Redirection bus %s is not supported by QEMU"),
+                        virDomainRedirdevBusTypeToString(dev->bus));
+        goto error;
+    }
+
+    if (!qemuCapsGet(qemuCaps, QEMU_CAPS_USB_REDIR)) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("USB redirection is not supported "
+                          "by this version of QEMU"));
+        goto error;
+    }
+
+    virBufferAsprintf(&buf, "usb-redir,chardev=char%s,id=%s",
+                      dev->info.alias,
+                      dev->info.alias);
+
+    if (qemuBuildDeviceAddressStr(&buf, &dev->info, qemuCaps) < 0)
+        goto error;
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
 
 char *
 qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev,
@@ -4838,6 +4908,32 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
         virCommandAddArgList(cmd, "-watchdog-action", action, NULL);
     }
+
+    /* Add redirected devices */
+    for (i = 0 ; i < def->nredirdevs ; i++) {
+        virDomainRedirdevDefPtr redirdev = def->redirdevs[i];
+        char *devstr;
+
+        virCommandAddArg(cmd, "-chardev");
+        if (!(devstr = qemuBuildChrChardevStr(&redirdev->source.chr,
+                                              redirdev->info.alias,
+                                              qemuCaps))) {
+            goto error;
+        }
+
+        virCommandAddArg(cmd, devstr);
+        VIR_FREE(devstr);
+
+        if (!qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
+            goto error;
+
+        virCommandAddArg(cmd, "-device");
+        if (!(devstr = qemuBuildRedirdevDevStr(redirdev, qemuCaps)))
+            goto error;
+        virCommandAddArg(cmd, devstr);
+        VIR_FREE(devstr);
+    }
+
 
     /* Add host passthrough hardware */
     for (i = 0 ; i < def->nhostdevs ; i++) {

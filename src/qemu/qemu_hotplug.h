@@ -53,6 +53,9 @@ int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
 int qemuDomainAttachHostUsbDevice(struct qemud_driver *driver,
                                   virDomainObjPtr vm,
                                   virDomainHostdevDefPtr hostdev);
+int qemuDomainAttachRedirdevDevice(struct qemud_driver *driver,
+                                   virDomainObjPtr vm,
+                                   virDomainRedirdevDefPtr hostdev);
 int qemuDomainAttachHostDevice(struct qemud_driver *driver,
                                virDomainObjPtr vm,
                                virDomainHostdevDefPtr hostdev);

@@ -120,6 +120,7 @@ char * qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev,
                                  virBitmapPtr qemuCaps);
 
 char * qemuBuildHubDevStr(virDomainHubDefPtr dev, virBitmapPtr qemuCaps);
+char * qemuBuildRedirdevDevStr(virDomainRedirdevDefPtr dev, virBitmapPtr qemuCaps);
 
 
 int qemuNetworkIfaceConnect(virDomainDefPtr def,
@@ -189,8 +190,9 @@ int  qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr ad
 int qemuDomainNetVLAN(virDomainNetDefPtr def);
 int qemuAssignDeviceNetAlias(virDomainDefPtr def, virDomainNetDefPtr net, int idx);
 int qemuAssignDeviceDiskAlias(virDomainDiskDefPtr def, virBitmapPtr qemuCaps);
-int qemuAssignDeviceHostdevAlias(virDomainDefPtr def, virDomainHostdevDefPtr net, int idx);
+int qemuAssignDeviceHostdevAlias(virDomainDefPtr def, virDomainHostdevDefPtr hostdev, int idx);
 int qemuAssignDeviceControllerAlias(virDomainControllerDefPtr controller);
+int qemuAssignDeviceRedirdevAlias(virDomainDefPtr def, virDomainRedirdevDefPtr redirdev, int idx);
 
 int
 qemuParseKeywords(const char *str,

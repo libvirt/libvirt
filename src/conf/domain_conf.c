@@ -127,7 +127,8 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "watchdog",
               "controller",
               "graphics",
-              "hub")
+              "hub",
+              "redirdev")
 
 VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "none",
@@ -439,6 +440,9 @@ VIR_ENUM_IMPL(virDomainState, VIR_DOMAIN_CRASHED+1,
               "crashed")
 
 VIR_ENUM_IMPL(virDomainHub, VIR_DOMAIN_HUB_TYPE_LAST,
+              "usb")
+
+VIR_ENUM_IMPL(virDomainRedirdevBus, VIR_DOMAIN_REDIRDEV_BUS_LAST,
               "usb")
 
 #define VIR_DOMAIN_NOSTATE_LAST (VIR_DOMAIN_NOSTATE_UNKNOWN + 1)
@@ -1013,6 +1017,17 @@ void virDomainHubDefFree(virDomainHubDefPtr def)
     VIR_FREE(def);
 }
 
+void virDomainRedirdevDefFree(virDomainRedirdevDefPtr def)
+{
+    if (!def)
+        return;
+
+    virDomainChrSourceDefClear(&def->source.chr);
+    virDomainDeviceInfoClear(&def->info);
+
+    VIR_FREE(def);
+}
+
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
 {
     if (!def)
@@ -1051,6 +1066,9 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
         break;
     case VIR_DOMAIN_DEVICE_HUB:
         virDomainHubDefFree(def->data.hub);
+        break;
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+        virDomainRedirdevDefFree(def->data.redirdev);
         break;
     }
 
@@ -5344,7 +5362,6 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
                             virBitmapPtr bootMap,
                             unsigned int flags)
 {
-
     xmlNodePtr cur;
     virDomainHostdevDefPtr def;
     char *mode, *type = NULL, *managed = NULL;
@@ -5391,8 +5408,8 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
             if (xmlStrEqual(cur->name, BAD_CAST "source")) {
                 if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
                     def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-                        if (virDomainHostdevSubsysUsbDefParseXML(cur, def) < 0)
-                            goto error;
+                    if (virDomainHostdevSubsysUsbDefParseXML(cur, def) < 0)
+                        goto error;
                 }
                 if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
                     def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
@@ -5444,6 +5461,68 @@ error:
     goto cleanup;
 }
 
+
+static virDomainRedirdevDefPtr
+virDomainRedirdevDefParseXML(const xmlNodePtr node,
+                             unsigned int flags)
+{
+    xmlNodePtr cur;
+    virDomainRedirdevDefPtr def;
+    char *bus, *type = NULL;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    bus = virXMLPropString(node, "bus");
+    if (bus) {
+        if ((def->bus = virDomainRedirdevBusTypeFromString(bus)) < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("unknown redirdev bus '%s'"), bus);
+            goto error;
+        }
+    } else {
+        def->bus = VIR_DOMAIN_REDIRDEV_BUS_USB;
+    }
+
+    type = virXMLPropString(node, "type");
+    if (type) {
+        if ((def->source.chr.type = virDomainChrTypeFromString(type)) < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("unknown redirdev character device type '%s'"), type);
+            goto error;
+        }
+    } else {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("missing type in redirdev"));
+        goto error;
+    }
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (xmlStrEqual(cur->name, BAD_CAST "source")) {
+                int remaining;
+
+                remaining = virDomainChrSourceDefParseXML(&def->source.chr, cur, flags);
+                if (remaining != 0)
+                    goto error;
+            }
+        }
+        cur = cur->next;
+    }
+
+cleanup:
+    VIR_FREE(bus);
+    VIR_FREE(type);
+    return def;
+
+error:
+    virDomainRedirdevDefFree(def);
+    def = NULL;
+    goto cleanup;
+}
 
 static int virDomainLifecycleParseXML(xmlXPathContextPtr ctxt,
                                       const char *xpath,
@@ -5649,6 +5728,10 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
     } else if (xmlStrEqual(node->name, BAD_CAST "hub")) {
         dev->type = VIR_DOMAIN_DEVICE_HUB;
         if (!(dev->data.hub = virDomainHubDefParseXML(node, flags)))
+            goto error;
+    } else if (xmlStrEqual(node->name, BAD_CAST "redirdev")) {
+        dev->type = VIR_DOMAIN_DEVICE_REDIRDEV;
+        if (!(dev->data.redirdev = virDomainRedirdevDefParseXML(node, flags)))
             goto error;
     } else {
         virDomainReportError(VIR_ERR_XML_ERROR,
@@ -7066,6 +7149,22 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             goto error;
 
         def->hubs[def->nhubs++] = hub;
+    }
+    VIR_FREE(nodes);
+
+    /* analysis of the redirected devices */
+    if ((n = virXPathNodeSet("./devices/redirdev", ctxt, &nodes)) < 0) {
+        goto error;
+    }
+    if (n && VIR_ALLOC_N(def->redirdevs, n) < 0)
+        goto no_memory;
+    for (i = 0 ; i < n ; i++) {
+        virDomainRedirdevDefPtr redirdev = virDomainRedirdevDefParseXML(nodes[i],
+                                                                        flags);
+        if (!redirdev)
+            goto error;
+
+        def->redirdevs[def->nredirdevs++] = redirdev;
     }
     VIR_FREE(nodes);
 
@@ -10158,6 +10257,22 @@ virDomainHostdevDefFormat(virBufferPtr buf,
     return 0;
 }
 
+static int
+virDomainRedirdevDefFormat(virBufferPtr buf,
+                           virDomainRedirdevDefPtr def,
+                           unsigned int flags)
+{
+    const char *bus;
+
+    bus = virDomainRedirdevBusTypeToString(def->bus);
+
+    virBufferAsprintf(buf, "    <redirdev bus='%s'", bus);
+    if (virDomainChrSourceDefFormat(buf, &def->source.chr, false, flags) < 0)
+        return -1;
+    virBufferAddLit(buf, "    </redirdev>\n");
+
+    return 0;
+}
 
 static int
 virDomainHubDefFormat(virBufferPtr buf,
@@ -10590,6 +10705,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     for (n = 0 ; n < def->nhostdevs ; n++)
         if (virDomainHostdevDefFormat(&buf, def->hostdevs[n], flags) < 0)
+            goto cleanup;
+
+    for (n = 0 ; n < def->nredirdevs ; n++)
+        if (virDomainRedirdevDefFormat(&buf, def->redirdevs[n], flags) < 0)
             goto cleanup;
 
     for (n = 0 ; n < def->nhubs ; n++)

@@ -911,6 +911,49 @@ error:
 }
 
 
+int qemuDomainAttachRedirdevDevice(struct qemud_driver *driver,
+                                   virDomainObjPtr vm,
+                                   virDomainRedirdevDefPtr redirdev)
+{
+    int ret;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char *devstr = NULL;
+
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
+        if (qemuAssignDeviceRedirdevAlias(vm->def, redirdev, -1) < 0)
+            goto error;
+        if (!(devstr = qemuBuildRedirdevDevStr(redirdev, priv->qemuCaps)))
+            goto error;
+    }
+
+    if (VIR_REALLOC_N(vm->def->redirdevs, vm->def->nredirdevs+1) < 0) {
+        virReportOOMError();
+        goto error;
+    }
+
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE))
+        ret = qemuMonitorAddDevice(priv->mon, devstr);
+    else
+        goto error;
+
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+    virDomainAuditRedirdev(vm, redirdev, "attach", ret == 0);
+    if (ret < 0)
+        goto error;
+
+    vm->def->redirdevs[vm->def->nredirdevs++] = redirdev;
+
+    VIR_FREE(devstr);
+
+    return 0;
+
+error:
+    VIR_FREE(devstr);
+    return -1;
+
+}
+
 int qemuDomainAttachHostUsbDevice(struct qemud_driver *driver,
                                   virDomainObjPtr vm,
                                   virDomainHostdevDefPtr hostdev)

@@ -4978,6 +4978,13 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
             dev->data.hostdev = NULL;
         break;
 
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+        ret = qemuDomainAttachRedirdevDevice(driver, vm,
+                                             dev->data.redirdev);
+        if (!ret)
+            dev->data.redirdev = NULL;
+        break;
+
     default:
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                         _("device type '%s' cannot be attached"),

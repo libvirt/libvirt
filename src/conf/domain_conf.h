@@ -939,6 +939,23 @@ struct _virDomainHostdevDef {
     virDomainDeviceInfo info; /* Guest address */
 };
 
+enum virDomainRedirdevBus {
+    VIR_DOMAIN_REDIRDEV_BUS_USB,
+
+    VIR_DOMAIN_REDIRDEV_BUS_LAST
+};
+
+typedef struct _virDomainRedirdevDef virDomainRedirdevDef;
+typedef virDomainRedirdevDef *virDomainRedirdevDefPtr;
+struct _virDomainRedirdevDef {
+    int bus; /* enum virDomainRedirdevBus */
+
+    union {
+        virDomainChrSourceDef chr;
+    } source;
+
+    virDomainDeviceInfo info; /* Guest address */
+};
 
 enum {
     VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO,
@@ -979,6 +996,7 @@ enum virDomainDeviceType {
     VIR_DOMAIN_DEVICE_CONTROLLER,
     VIR_DOMAIN_DEVICE_GRAPHICS,
     VIR_DOMAIN_DEVICE_HUB,
+    VIR_DOMAIN_DEVICE_REDIRDEV,
 
     VIR_DOMAIN_DEVICE_LAST,
 };
@@ -1000,6 +1018,7 @@ struct _virDomainDeviceDef {
         virDomainWatchdogDefPtr watchdog;
         virDomainGraphicsDefPtr graphics;
         virDomainHubDefPtr hub;
+        virDomainRedirdevDefPtr redirdev;
     } data;
 };
 
@@ -1312,6 +1331,9 @@ struct _virDomainDef {
     int nhostdevs;
     virDomainHostdevDefPtr *hostdevs;
 
+    int nredirdevs;
+    virDomainRedirdevDefPtr *redirdevs;
+
     int nsmartcards;
     virDomainSmartcardDefPtr *smartcards;
 
@@ -1479,6 +1501,7 @@ void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def);
 void virDomainVideoDefFree(virDomainVideoDefPtr def);
 void virDomainHostdevDefFree(virDomainHostdevDefPtr def);
 void virDomainHubDefFree(virDomainHubDefPtr def);
+void virDomainRedirdevDefFree(virDomainRedirdevDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
 int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
                                   int type);
@@ -1760,6 +1783,7 @@ VIR_ENUM_DECL(virDomainVideo)
 VIR_ENUM_DECL(virDomainHostdevMode)
 VIR_ENUM_DECL(virDomainHostdevSubsys)
 VIR_ENUM_DECL(virDomainHub)
+VIR_ENUM_DECL(virDomainRedirdevBus)
 VIR_ENUM_DECL(virDomainInput)
 VIR_ENUM_DECL(virDomainInputBus)
 VIR_ENUM_DECL(virDomainGraphics)
