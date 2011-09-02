@@ -125,7 +125,16 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "sga",
               "virtio-blk-pci.event_idx",
               "virtio-net-pci.event_idx",
-              "cache-directsync",
+
+              "cache-directsync", /* 65 */
+              "piix3-usb-uhci",
+              "piix4-usb-uhci",
+              "usb-ehci",
+              "ich9-usb-ehci1",
+
+              "vt82c686b-usb-uhci", /* 70 */
+              "pci-ohci",
+              "usb-redir",
     );
 
 struct qemu_feature_flags {
@@ -1200,6 +1209,22 @@ qemuCapsParseDeviceStr(const char *str, virBitmapPtr flags)
         qemuCapsSet(flags, QEMU_CAPS_CCID_EMULATED);
     if (strstr(str, "name \"ccid-card-passthru\""))
         qemuCapsSet(flags, QEMU_CAPS_CCID_PASSTHRU);
+
+    if (strstr(str, "name \"piix3-usb-uhci\""))
+        qemuCapsSet(flags, QEMU_CAPS_PIIX3_USB_UHCI);
+    if (strstr(str, "name \"piix4-usb-uhci\""))
+        qemuCapsSet(flags, QEMU_CAPS_PIIX4_USB_UHCI);
+    if (strstr(str, "name \"usb-ehci\""))
+        qemuCapsSet(flags, QEMU_CAPS_USB_EHCI);
+    if (strstr(str, "name \"ich9-usb-ehci1\""))
+        qemuCapsSet(flags, QEMU_CAPS_ICH9_USB_EHCI1);
+    if (strstr(str, "name \"vt82c686b-usb-uhci\""))
+        qemuCapsSet(flags, QEMU_CAPS_VT82C686B_USB_UHCI);
+    if (strstr(str, "name \"pci-ohci\""))
+        qemuCapsSet(flags, QEMU_CAPS_PCI_OHCI);
+    if (strstr(str, "name \"usb-redir\""))
+        qemuCapsSet(flags, QEMU_CAPS_USB_REDIR);
+
     /* Prefer -chardev spicevmc (detected earlier) over -device spicevmc */
     if (!qemuCapsGet(flags, QEMU_CAPS_CHARDEV_SPICEVMC) &&
         strstr(str, "name \"spicevmc\""))
