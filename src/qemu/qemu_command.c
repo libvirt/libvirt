@@ -1091,6 +1091,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
 {
     int i;
     bool reservedIDE = false;
+    bool reservedUSB = false;
     bool reservedVGA = false;
     int function;
 
@@ -1122,6 +1123,13 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
                 def->controllers[i]->info.addr.pci.slot = 1;
                 def->controllers[i]->info.addr.pci.function = 1;
             }
+        } else if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+                   def->controllers[i]->idx == 0 &&
+                   def->controllers[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+                   def->controllers[i]->info.addr.pci.domain == 0 &&
+                   def->controllers[i]->info.addr.pci.bus == 0 &&
+                   def->controllers[i]->info.addr.pci.slot == 1) {
+            reservedUSB = true;
         }
     }
 
@@ -1129,7 +1137,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
      * hardcoded slot=1, multifunction device
      */
     for (function = 0; function < QEMU_PCI_ADDRESS_LAST_FUNCTION; function++) {
-        if (function == 1 && reservedIDE)
+        if (function == 1 && (reservedIDE || reservedUSB))
             /* we have reserved this pci address */
             continue;
 
