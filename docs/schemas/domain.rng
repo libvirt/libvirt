@@ -924,6 +924,9 @@
         </attribute>
       </optional>
       <optional>
+        <ref name="usbmaster"/>
+      </optional>
+      <optional>
         <ref name="address"/>
       </optional>
     </element>
@@ -2376,6 +2379,15 @@
           <ref name="usbportaddress"/>
         </group>
       </choice>
+    </element>
+  </define>
+
+  <define name="usbmaster">
+    <element name="master">
+      <attribute name="startport">
+        <ref name="usbAddr"/>
+      </attribute>
+      <empty/>
     </element>
   </define>
 

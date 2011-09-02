@@ -1245,6 +1245,28 @@
       sub-element.
     </p>
 
+    <p>
+      USB companion controllers have an optional
+      sub-element <code>&lt;master&gt;</code> to specify the exact
+      relationship of the companion to its master controller.
+      A companion controller is on the same bus as its master, so
+      the companion <code>index</code> value should be equal.
+    </p>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;controller type='usb' index='0' model='ich9-ehci1'&gt;
+      &lt;address type='pci' domain='0' bus='0' slot='4' function='7'/&gt;
+    &lt;/controller&gt;
+    &lt;controller type='usb' index='0' model='ich9-uhci1'&gt;
+      &lt;master startport='0'/&gt;
+      &lt;address type='pci' domain='0' bus='0' slot='4' function='0'/&gt;
+    &lt;/controller&gt;
+    ...
+  &lt;/devices&gt;
+  ...</pre>
+
     <h4><a name="elementsLease">Device leases</a></h4>
 
     <p>

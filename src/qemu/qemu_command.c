@@ -1767,7 +1767,16 @@ qemuBuildUSBControllerDevStr(virDomainControllerDefPtr def,
         return -1;
     }
 
-    virBufferAsprintf(buf, "%s,id=usb%d", smodel, def->idx);
+    virBufferAsprintf(buf, "%s", smodel);
+
+    if (def->info.mastertype == VIR_DOMAIN_CONTROLLER_MASTER_USB) {
+        virBufferAsprintf(buf, ",masterbus=usb%d.0", def->idx);
+        virBufferAsprintf(buf, ",firstport=%d", def->info.master.usb.startport);
+    } else {
+        virBufferAsprintf(buf, ",id=usb%d", def->idx);
+    }
+
+
     return 0;
 }
 

@@ -113,6 +113,19 @@ struct _virDomainDeviceUSBAddress {
     unsigned int port;
 };
 
+enum virDomainControllerMaster {
+    VIR_DOMAIN_CONTROLLER_MASTER_NONE,
+    VIR_DOMAIN_CONTROLLER_MASTER_USB,
+
+    VIR_DOMAIN_CONTROLLER_MASTER_LAST
+};
+
+typedef struct _virDomainDeviceUSBMaster virDomainDeviceUSBMaster;
+typedef virDomainDeviceUSBMaster *virDomainDeviceUSBMasterPtr;
+struct _virDomainDeviceUSBMaster {
+    unsigned int startport;
+};
+
 typedef struct _virDomainDeviceInfo virDomainDeviceInfo;
 typedef virDomainDeviceInfo *virDomainDeviceInfoPtr;
 struct _virDomainDeviceInfo {
@@ -125,6 +138,10 @@ struct _virDomainDeviceInfo {
         virDomainDeviceCcidAddress ccid;
         virDomainDeviceUSBAddress usb;
     } addr;
+    int mastertype;
+    union {
+        virDomainDeviceUSBMaster usb;
+    } master;
 };
 
 typedef struct _virDomainLeaseDef virDomainLeaseDef;

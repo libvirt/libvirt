@@ -1556,6 +1556,11 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
         virBufferAsprintf(buf, "      <alias name='%s'/>\n", info->alias);
     }
 
+    if (info->mastertype == VIR_DOMAIN_CONTROLLER_MASTER_USB) {
+        virBufferAsprintf(buf, "      <master startport='%d'/>\n",
+                          info->master.usb.startport);
+    }
+
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
         return 0;
 
@@ -1833,6 +1838,31 @@ cleanup:
     return ret;
 }
 
+static int
+virDomainDeviceUSBMasterParseXML(xmlNodePtr node,
+                                 virDomainDeviceUSBMasterPtr master)
+{
+    char *startport;
+    int ret = -1;
+
+    memset(master, 0, sizeof(*master));
+
+    startport = virXMLPropString(node, "startport");
+
+    if (startport &&
+        virStrToLong_ui(startport, NULL, 10, &master->startport) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Cannot parse <master> 'startport' attribute"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(startport);
+    return ret;
+}
+
 /* Parse the XML definition for a device address
  * @param node XML nodeset to parse for device address definition
  */
@@ -1843,6 +1873,7 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
 {
     xmlNodePtr cur;
     xmlNodePtr address = NULL;
+    xmlNodePtr master = NULL;
     xmlNodePtr alias = NULL;
     char *type = NULL;
     int ret = -1;
@@ -1859,6 +1890,9 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
             } else if (address == NULL &&
                        xmlStrEqual(cur->name, BAD_CAST "address")) {
                 address = cur;
+            } else if (master == NULL &&
+                       xmlStrEqual(cur->name, BAD_CAST "master")) {
+                master = cur;
             }
         }
         cur = cur->next;
@@ -1866,6 +1900,12 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
 
     if (alias)
         info->alias = virXMLPropString(alias, "name");
+
+    if (master) {
+        info->mastertype = VIR_DOMAIN_CONTROLLER_MASTER_USB;
+        if (virDomainDeviceUSBMasterParseXML(master, &info->master.usb) < 0)
+            goto cleanup;
+    }
 
     if (!address)
         return 0;
