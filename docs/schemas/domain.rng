@@ -2030,6 +2030,14 @@
       </attribute>
     </element>
   </define>
+  <define name="usbportaddress">
+    <attribute name="bus">
+      <ref name="usbAddr"/>
+    </attribute>
+    <attribute name="port">
+      <ref name="usbAddr"/>
+    </attribute>
+  </define>
   <define name="pciaddress">
     <optional>
       <attribute name="domain">
@@ -2360,6 +2368,12 @@
             <value>ccid</value>
           </attribute>
           <ref name="ccidaddress"/>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>usb</value>
+          </attribute>
+          <ref name="usbportaddress"/>
         </group>
       </choice>
     </element>

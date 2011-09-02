@@ -98,7 +98,8 @@ char * qemuBuildWatchdogDevStr(virDomainWatchdogDefPtr dev,
 char * qemuBuildMemballoonDevStr(virDomainMemballoonDefPtr dev,
                                  virBitmapPtr qemuCaps);
 
-char * qemuBuildUSBInputDevStr(virDomainInputDefPtr dev);
+char * qemuBuildUSBInputDevStr(virDomainInputDefPtr dev,
+                               virBitmapPtr qemuCaps);
 
 char * qemuBuildSoundDevStr(virDomainSoundDefPtr sound,
                             virBitmapPtr qemuCaps);
@@ -115,7 +116,8 @@ int qemuOpenPCIConfig(virDomainHostdevDefPtr dev);
 /* Legacy, pre device support */
 char * qemuBuildUSBHostdevUsbDevStr(virDomainHostdevDefPtr dev);
 /* Current, best practice */
-char * qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev);
+char * qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev,
+                                 virBitmapPtr qemuCaps);
 
 
 

@@ -922,7 +922,7 @@ int qemuDomainAttachHostUsbDevice(struct qemud_driver *driver,
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
             goto error;
-        if (!(devstr = qemuBuildUSBHostdevDevStr(hostdev)))
+        if (!(devstr = qemuBuildUSBHostdevDevStr(hostdev, priv->qemuCaps)))
             goto error;
     }
 

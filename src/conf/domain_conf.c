@@ -133,7 +133,8 @@ VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "pci",
               "drive",
               "virtio-serial",
-              "ccid")
+              "ccid",
+              "usb")
 
 VIR_ENUM_IMPL(virDomainDisk, VIR_DOMAIN_DISK_TYPE_LAST,
               "block",
@@ -1399,6 +1400,9 @@ int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
         return virDomainDeviceDriveAddressIsValid(&info->addr.drive);
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
+        return virDomainDeviceUSBAddressIsValid(&info->addr.usb);
     }
 
     return 0;
@@ -1420,6 +1424,13 @@ int virDomainDeviceDriveAddressIsValid(virDomainDeviceDriveAddressPtr addr ATTRI
     return 1; /* 0 is valid for all fields, so any successfully parsed addr is valid */
 }
 
+int virDomainDeviceUSBAddressIsValid(virDomainDeviceUSBAddressPtr addr)
+{
+    if (addr->port >= 128) /* FIXME: is this correct */
+        return 0;
+
+    return 1;
+}
 
 int virDomainDeviceVirtioSerialAddressIsValid(
     virDomainDeviceVirtioSerialAddressPtr addr ATTRIBUTE_UNUSED)
@@ -1788,6 +1799,40 @@ cleanup:
     return ret;
 }
 
+static int
+virDomainDeviceUSBAddressParseXML(xmlNodePtr node,
+                                  virDomainDeviceUSBAddressPtr addr)
+{
+    char *port, *bus;
+    int ret = -1;
+
+    memset(addr, 0, sizeof(*addr));
+
+    port = virXMLPropString(node, "port");
+    bus = virXMLPropString(node, "bus");
+
+    if (port &&
+        virStrToLong_ui(port, NULL, 10, &addr->port) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Cannot parse <address> 'port' attribute"));
+        goto cleanup;
+    }
+
+    if (bus &&
+        virStrToLong_ui(bus, NULL, 10, &addr->bus) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Cannot parse <address> 'bus' attribute"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(bus);
+    VIR_FREE(port);
+    return ret;
+}
+
 /* Parse the XML definition for a device address
  * @param node XML nodeset to parse for device address definition
  */
@@ -1858,6 +1903,11 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
         if (virDomainDeviceCcidAddressParseXML(address, &info->addr.ccid) < 0)
+            goto cleanup;
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
+        if (virDomainDeviceUSBAddressParseXML(address, &info->addr.usb) < 0)
             goto cleanup;
         break;
 
@@ -3807,7 +3857,7 @@ error:
     goto cleanup;
 }
 
-/* Parse the XML definition for a network interface */
+/* Parse the XML definition for an input device */
 static virDomainInputDefPtr
 virDomainInputDefParseXML(const char *ostype,
                           xmlNodePtr node,
@@ -3884,6 +3934,14 @@ virDomainInputDefParseXML(const char *ostype,
 
     if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
         goto error;
+
+    if (def->bus == VIR_DOMAIN_INPUT_BUS_USB &&
+        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
+        virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                             _("Invalid address for a USB device"));
+        goto error;
+    }
 
 cleanup:
     VIR_FREE(type);

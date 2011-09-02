@@ -69,6 +69,7 @@ enum virDomainDeviceAddressType {
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB,
 
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST
 };
@@ -105,6 +106,13 @@ struct _virDomainDeviceCcidAddress {
     unsigned int slot;
 };
 
+typedef struct _virDomainDeviceUSBAddress virDomainDeviceUSBAddress;
+typedef virDomainDeviceUSBAddress *virDomainDeviceUSBAddressPtr;
+struct _virDomainDeviceUSBAddress {
+    unsigned int bus;
+    unsigned int port;
+};
+
 typedef struct _virDomainDeviceInfo virDomainDeviceInfo;
 typedef virDomainDeviceInfo *virDomainDeviceInfoPtr;
 struct _virDomainDeviceInfo {
@@ -115,6 +123,7 @@ struct _virDomainDeviceInfo {
         virDomainDeviceDriveAddress drive;
         virDomainDeviceVirtioSerialAddress vioserial;
         virDomainDeviceCcidAddress ccid;
+        virDomainDeviceUSBAddress usb;
     } addr;
 };
 
@@ -1440,6 +1449,7 @@ int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
 int virDomainDevicePCIAddressIsValid(virDomainDevicePCIAddressPtr addr);
 int virDomainDeviceDriveAddressIsValid(virDomainDeviceDriveAddressPtr addr);
 int virDomainDeviceVirtioSerialAddressIsValid(virDomainDeviceVirtioSerialAddressPtr addr);
+int virDomainDeviceUSBAddressIsValid(virDomainDeviceUSBAddressPtr addr);
 void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info);
 void virDomainDefClearPCIAddresses(virDomainDefPtr def);
 void virDomainDefClearDeviceAliases(virDomainDefPtr def);

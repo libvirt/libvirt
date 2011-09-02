@@ -1325,7 +1325,11 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
                               info->addr.pci.slot, info->addr.pci.function);
         else
             virBufferAsprintf(buf, ",addr=0x%x", info->addr.pci.slot);
+    } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
+        virBufferAsprintf(buf, ",bus=usb%d.0", info->addr.usb.bus);
+        virBufferAsprintf(buf, ",port=%d", info->addr.usb.port);
     }
+
     return 0;
 }
 
@@ -2098,13 +2102,17 @@ error:
 
 
 char *
-qemuBuildUSBInputDevStr(virDomainInputDefPtr dev)
+qemuBuildUSBInputDevStr(virDomainInputDefPtr dev,
+                        virBitmapPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, "%s,id=%s",
                       dev->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ?
                       "usb-mouse" : "usb-tablet", dev->info.alias);
+
+    if (qemuBuildDeviceAddressStr(&buf, &dev->info, qemuCaps) < 0)
+        goto error;
 
     if (virBufferError(&buf)) {
         virReportOOMError();
@@ -2294,9 +2302,10 @@ qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev)
 
 
 char *
-qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev)
+qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev,
+                          virBitmapPtr qemuCaps)
 {
-    char *ret = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (!dev->source.subsys.u.usb.bus &&
         !dev->source.subsys.u.usb.device) {
@@ -2305,13 +2314,24 @@ qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev)
         return NULL;
     }
 
-    if (virAsprintf(&ret, "usb-host,hostbus=%d,hostaddr=%d,id=%s",
-                    dev->source.subsys.u.usb.bus,
-                    dev->source.subsys.u.usb.device,
-                    dev->info.alias) < 0)
-        virReportOOMError();
+    virBufferAsprintf(&buf, "usb-host,hostbus=%d,hostaddr=%d,id=%s",
+                      dev->source.subsys.u.usb.bus,
+                      dev->source.subsys.u.usb.device,
+                      dev->info.alias);
 
-    return ret;
+    if (qemuBuildDeviceAddressStr(&buf, &dev->info, qemuCaps) < 0)
+        goto error;
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
 }
 
 
@@ -4232,7 +4252,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
                 char *optstr;
                 virCommandAddArg(cmd, "-device");
-                if (!(optstr = qemuBuildUSBInputDevStr(input)))
+                if (!(optstr = qemuBuildUSBInputDevStr(input, qemuCaps)))
                     goto error;
                 virCommandAddArg(cmd, optstr);
                 VIR_FREE(optstr);
@@ -4750,7 +4770,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
                 virCommandAddArg(cmd, "-device");
-                if (!(devstr = qemuBuildUSBHostdevDevStr(hostdev)))
+                if (!(devstr = qemuBuildUSBHostdevDevStr(hostdev, qemuCaps)))
                     goto error;
                 virCommandAddArg(cmd, devstr);
                 VIR_FREE(devstr);
