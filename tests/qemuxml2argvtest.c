@@ -493,6 +493,9 @@ mymain(void)
     DO_TEST("usb-piix3-controller", false,
             QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE, QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("usb-ich9-ehci-addr", false,
+            QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_PCI_MULTIFUNCTION, QEMU_CAPS_ICH9_USB_EHCI1);
 
     DO_TEST("smbios", false, QEMU_CAPS_SMBIOS_TYPE);
 
