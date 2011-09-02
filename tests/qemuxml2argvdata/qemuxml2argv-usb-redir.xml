@@ -33,6 +33,8 @@
       <source mode='connect' host='localhost' service='4000'/>
       <protocol type='raw'/>
     </redirdev>
+    <redirdev bus='usb' type='spicevmc'>
+    </redirdev>
     <memballoon model='virtio'/>
   </devices>
 </domain>

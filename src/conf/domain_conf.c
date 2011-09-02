@@ -290,7 +290,8 @@ VIR_ENUM_IMPL(virDomainChrTcpProtocol, VIR_DOMAIN_CHR_TCP_PROTOCOL_LAST,
 
 VIR_ENUM_IMPL(virDomainChrSpicevmc, VIR_DOMAIN_CHR_SPICEVMC_LAST,
               "vdagent",
-              "smartcard")
+              "smartcard",
+              "usbredir")
 
 VIR_ENUM_IMPL(virDomainSmartcard, VIR_DOMAIN_SMARTCARD_TYPE_LAST,
               "host",
@@ -5511,6 +5512,10 @@ virDomainRedirdevDefParseXML(const xmlNodePtr node,
             }
         }
         cur = cur->next;
+    }
+
+    if (def->source.chr.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
+        def->source.chr.data.spicevmc = VIR_DOMAIN_CHR_SPICEVMC_USBREDIR;
     }
 
 cleanup:

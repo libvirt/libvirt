@@ -5,4 +5,6 @@ LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M pc
 -device ich9-usb-uhci3,masterbus=usb.0,firstport=4,bus=pci.0,multifunction=on,addr=0x4.0x2 \
 -chardev socket,id=charredir0,host=localhost,port=4000 \
 -device usb-redir,chardev=charredir0,id=redir0 \
+-chardev spicevmc,id=charredir1,name=usbredir \
+-device usb-redir,chardev=charredir1,id=redir1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,multifunction=on,addr=0x3.0x0
