@@ -910,6 +910,15 @@
             <value>lsilogic</value>
             <value>lsisas1068</value>
             <value>vmpvscsi</value>
+            <value>piix3-uhci</value>
+            <value>piix4-uhci</value>
+            <value>ehci</value>
+            <value>ich9-ehci1</value>
+            <value>ich9-uhci1</value>
+            <value>ich9-uhci2</value>
+            <value>ich9-uhci3</value>
+            <value>vt82c686b-uhci</value>
+            <value>pci-ohci</value>
           </choice>
         </attribute>
       </optional>

@@ -268,6 +268,20 @@ enum virDomainControllerModelSCSI {
     VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST
 };
 
+enum virDomainControllerModelUSB {
+    VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI,
+    VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX4_UHCI,
+    VIR_DOMAIN_CONTROLLER_MODEL_USB_EHCI,
+    VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1,
+    VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1,
+    VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2,
+    VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3,
+    VIR_DOMAIN_CONTROLLER_MODEL_USB_VT82C686B_UHCI,
+    VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI,
+
+    VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST
+};
+
 typedef struct _virDomainVirtioSerialOpts virDomainVirtioSerialOpts;
 typedef virDomainVirtioSerialOpts *virDomainVirtioSerialOptsPtr;
 struct _virDomainVirtioSerialOpts {
@@ -1677,6 +1691,7 @@ VIR_ENUM_DECL(virDomainIoEventFd)
 VIR_ENUM_DECL(virDomainVirtioEventIdx)
 VIR_ENUM_DECL(virDomainController)
 VIR_ENUM_DECL(virDomainControllerModelSCSI)
+VIR_ENUM_DECL(virDomainControllerModelUSB)
 VIR_ENUM_DECL(virDomainFS)
 VIR_ENUM_DECL(virDomainFSAccessMode)
 VIR_ENUM_DECL(virDomainNet)

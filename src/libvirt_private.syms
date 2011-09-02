@@ -248,6 +248,8 @@ virDomainConfigFile;
 virDomainControllerDefFree;
 virDomainControllerInsert;
 virDomainControllerInsertPreAlloced;
+virDomainControllerModelUSBTypeFromString;
+virDomainControllerModelUSBTypeToString;
 virDomainControllerModelSCSITypeFromString;
 virDomainControllerModelSCSITypeToString;
 virDomainControllerTypeToString;
