@@ -100,6 +100,7 @@ enum qemuCapsFlags {
     QEMU_CAPS_SGA               = 62, /* Serial Graphics Adapter */
     QEMU_CAPS_VIRTIO_BLK_EVENT_IDX = 63, /* virtio-blk-pci.event_idx */
     QEMU_CAPS_VIRTIO_NET_EVENT_IDX = 64, /* virtio-net-pci.event_idx */
+    QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC = 65, /* Is cache=directsync supported? */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

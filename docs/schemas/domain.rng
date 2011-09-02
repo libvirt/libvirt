@@ -829,6 +829,7 @@
         <value>none</value>
         <value>writeback</value>
         <value>writethrough</value>
+        <value>directsync</value>
       </choice>
     </attribute>
   </define>

@@ -64,14 +64,16 @@ VIR_ENUM_DECL(qemuDiskCacheV2)
 VIR_ENUM_IMPL(qemuDiskCacheV1, VIR_DOMAIN_DISK_CACHE_LAST,
               "default",
               "off",
-              "off", /* writethrough not supported, so for safety, disable */
-              "on"); /* Old 'on' was equivalent to 'writeback' */
+              "off",  /* writethrough not supported, so for safety, disable */
+              "on",   /* Old 'on' was equivalent to 'writeback' */
+              "off"); /* directsync not supported, for safety, disable */
 
 VIR_ENUM_IMPL(qemuDiskCacheV2, VIR_DOMAIN_DISK_CACHE_LAST,
               "default",
               "none",
               "writethrough",
-              "writeback");
+              "writeback",
+              "directsync");
 
 VIR_ENUM_DECL(qemuVideo)
 
@@ -1516,10 +1518,21 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     }
 
     if (disk->cachemode) {
-        const char *mode =
-            qemuCapsGet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_V2) ?
-            qemuDiskCacheV2TypeToString(disk->cachemode) :
-            qemuDiskCacheV1TypeToString(disk->cachemode);
+        const char *mode = NULL;
+
+        if (qemuCapsGet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_V2)) {
+            mode = qemuDiskCacheV2TypeToString(disk->cachemode);
+
+            if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_DIRECTSYNC &&
+                !qemuCapsGet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC)) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                _("disk cache mode 'directsync' is not "
+                                  "supported by this QEMU"));
+                goto error;
+            }
+        } else {
+            mode = qemuDiskCacheV1TypeToString(disk->cachemode);
+        }
 
         virBufferAsprintf(&opt, ",cache=%s", mode);
     } else if (disk->shared && !disk->readonly) {
@@ -5211,6 +5224,8 @@ qemuParseCommandLineDisk(virCapsPtr caps,
                 def->cachemode = VIR_DOMAIN_DISK_CACHE_WRITEBACK;
             else if (STREQ(values[i], "writethrough"))
                 def->cachemode = VIR_DOMAIN_DISK_CACHE_WRITETHRU;
+            else if (STREQ(values[i], "directsync"))
+                def->cachemode = VIR_DOMAIN_DISK_CACHE_DIRECTSYNC;
         } else if (STREQ(keywords[i], "werror") ||
                    STREQ(keywords[i], "rerror")) {
             if (STREQ(values[i], "stop"))

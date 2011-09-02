@@ -125,6 +125,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "sga",
               "virtio-blk-pci.event_idx",
               "virtio-net-pci.event_idx",
+              "cache-directsync",
     );
 
 struct qemu_feature_flags {
@@ -902,8 +903,11 @@ qemuCapsComputeCmdFlags(const char *help,
     if (strstr(help, "-drive")) {
         qemuCapsSet(flags, QEMU_CAPS_DRIVE);
         if (strstr(help, "cache=") &&
-            !strstr(help, "cache=on|off"))
+            !strstr(help, "cache=on|off")) {
             qemuCapsSet(flags, QEMU_CAPS_DRIVE_CACHE_V2);
+            if (strstr(help, "directsync"))
+                qemuCapsSet(flags, QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC);
+        }
         if (strstr(help, "format="))
             qemuCapsSet(flags, QEMU_CAPS_DRIVE_FORMAT);
         if (strstr(help, "readonly="))
