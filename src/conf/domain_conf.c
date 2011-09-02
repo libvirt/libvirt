@@ -1444,12 +1444,9 @@ int virDomainDeviceDriveAddressIsValid(virDomainDeviceDriveAddressPtr addr ATTRI
     return 1; /* 0 is valid for all fields, so any successfully parsed addr is valid */
 }
 
-int virDomainDeviceUSBAddressIsValid(virDomainDeviceUSBAddressPtr addr)
+int virDomainDeviceUSBAddressIsValid(virDomainDeviceUSBAddressPtr addr ATTRIBUTE_UNUSED)
 {
-    if (addr->port >= 128) /* FIXME: is this correct */
-        return 0;
-
-    return 1;
+    return 1; /* FIXME.. any successfully parsed addr is valid */
 }
 
 int virDomainDeviceVirtioSerialAddressIsValid(
@@ -1472,6 +1469,10 @@ virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info, unsigned int flags)
 
 void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
 {
+    VIR_FREE(info->alias);
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
+        VIR_FREE(info->addr.usb.port);
+    }
     VIR_FREE(info->alias);
     memset(&info->addr, 0, sizeof(info->addr));
     info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
@@ -1621,7 +1622,7 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
-        virBufferAsprintf(buf, " bus='%d' port='%d'",
+        virBufferAsprintf(buf, " bus='%d' port='%s'",
                           info->addr.usb.bus,
                           info->addr.usb.port);
         break;
@@ -1837,7 +1838,8 @@ static int
 virDomainDeviceUSBAddressParseXML(xmlNodePtr node,
                                   virDomainDeviceUSBAddressPtr addr)
 {
-    char *port, *bus;
+    char *port, *bus, *tmp;
+    unsigned int p;
     int ret = -1;
 
     memset(addr, 0, sizeof(*addr));
@@ -1846,11 +1848,17 @@ virDomainDeviceUSBAddressParseXML(xmlNodePtr node,
     bus = virXMLPropString(node, "bus");
 
     if (port &&
-        virStrToLong_ui(port, NULL, 10, &addr->port) < 0) {
+        ((virStrToLong_ui(port, &tmp, 10, &p) < 0 || (*tmp != '\0' && *tmp != '.')) ||
+         (*tmp == '.' && (virStrToLong_ui(tmp + 1, &tmp, 10, &p) < 0 || (*tmp != '\0' && *tmp != '.'))) ||
+         (*tmp == '.' && (virStrToLong_ui(tmp + 1, &tmp, 10, &p) < 0 || (*tmp != '\0' && *tmp != '.'))) ||
+         (*tmp == '.' && (virStrToLong_ui(tmp + 1, &tmp, 10, &p) < 0 || (*tmp != '\0'))))) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                              _("Cannot parse <address> 'port' attribute"));
         goto cleanup;
     }
+
+    addr->port = port;
+    port = NULL;
 
     if (bus &&
         virStrToLong_ui(bus, NULL, 10, &addr->bus) < 0) {

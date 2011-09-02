@@ -1334,7 +1334,7 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
             virBufferAsprintf(buf, ",addr=0x%x", info->addr.pci.slot);
     } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
         virBufferAsprintf(buf, ",bus=usb%d.0", info->addr.usb.bus);
-        virBufferAsprintf(buf, ",port=%d", info->addr.usb.port);
+        virBufferAsprintf(buf, ",port=%s", info->addr.usb.port);
     }
 
     return 0;

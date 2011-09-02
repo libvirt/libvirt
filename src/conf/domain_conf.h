@@ -110,7 +110,7 @@ typedef struct _virDomainDeviceUSBAddress virDomainDeviceUSBAddress;
 typedef virDomainDeviceUSBAddress *virDomainDeviceUSBAddressPtr;
 struct _virDomainDeviceUSBAddress {
     unsigned int bus;
-    unsigned int port;
+    char *port;
 };
 
 enum virDomainControllerMaster {
