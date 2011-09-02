@@ -1099,7 +1099,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
     if (qemuDomainPCIAddressReserveSlot(addrs, 0) < 0)
         goto error;
 
-    /* Verify that first IDE controller (if any) is on the PIIX3, fn 1 */
+    /* Verify that first IDE and USB controllers (if any) is on the PIIX3, fn 1 */
     for (i = 0; i < def->ncontrollers ; i++) {
         /* First IDE controller lives on the PIIX3 at slot=1, function=1 */
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE &&
@@ -1125,11 +1125,24 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
             }
         } else if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
                    def->controllers[i]->idx == 0 &&
-                   def->controllers[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-                   def->controllers[i]->info.addr.pci.domain == 0 &&
-                   def->controllers[i]->info.addr.pci.bus == 0 &&
-                   def->controllers[i]->info.addr.pci.slot == 1) {
-            reservedUSB = true;
+                   def->controllers[i]->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI) {
+            if (def->controllers[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+                if (def->controllers[i]->info.addr.pci.domain != 0 ||
+                    def->controllers[i]->info.addr.pci.bus != 0 ||
+                    def->controllers[i]->info.addr.pci.slot != 1 ||
+                    def->controllers[i]->info.addr.pci.function != 2) {
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                    _("PIIX3 USB controller must have PCI address 0:0:1.2"));
+                    goto error;
+                }
+                reservedUSB = true;
+            } else {
+                def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+                def->controllers[i]->info.addr.pci.domain = 0;
+                def->controllers[i]->info.addr.pci.bus = 0;
+                def->controllers[i]->info.addr.pci.slot = 1;
+                def->controllers[i]->info.addr.pci.function = 2;
+            }
         }
     }
 
@@ -1292,6 +1305,14 @@ error:
     return -1;
 }
 
+static void
+qemuUsbId(virBufferPtr buf, int idx)
+{
+    if (idx == 0)
+        virBufferAsprintf(buf, "usb");
+    else
+        virBufferAsprintf(buf, "usb%d", idx);
+}
 
 static int
 qemuBuildDeviceAddressStr(virBufferPtr buf,
@@ -1341,8 +1362,9 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
         else
             virBufferAsprintf(buf, ",addr=0x%x", info->addr.pci.slot);
     } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
-        virBufferAsprintf(buf, ",bus=usb%d.0", info->addr.usb.bus);
-        virBufferAsprintf(buf, ",port=%s", info->addr.usb.port);
+        virBufferAsprintf(buf, ",bus=");
+        qemuUsbId(buf, info->addr.usb.bus);
+        virBufferAsprintf(buf, ".0,port=%s", info->addr.usb.port);
     }
 
     return 0;
@@ -1785,10 +1807,12 @@ qemuBuildUSBControllerDevStr(virDomainControllerDefPtr def,
     virBufferAsprintf(buf, "%s", smodel);
 
     if (def->info.mastertype == VIR_DOMAIN_CONTROLLER_MASTER_USB) {
-        virBufferAsprintf(buf, ",masterbus=usb%d.0", def->idx);
-        virBufferAsprintf(buf, ",firstport=%d", def->info.master.usb.startport);
+        virBufferAsprintf(buf, ",masterbus=");
+        qemuUsbId(buf, def->idx);
+        virBufferAsprintf(buf, ".0,firstport=%d", def->info.master.usb.startport);
     } else {
-        virBufferAsprintf(buf, ",id=usb%d", def->idx);
+        virBufferAsprintf(buf, ",id=");
+        qemuUsbId(buf, def->idx);
     }
 
     return 0;
