@@ -1219,17 +1219,22 @@
 
     <p>
       Each controller has a mandatory attribute <code>type</code>,
-      which must be one of "ide", "fdc", "scsi", "sata", "ccid", or
-      "virtio-serial", and a mandatory attribute <code>index</code>
-      which is the decimal integer describing in which order the bus
-      controller is encountered (for use in <code>controller</code>
-      attributes of <code>&lt;address&gt;</code> elements).  The
-      "virtio-serial" controller has two additional optional
+      which must be one of "ide", "fdc", "scsi", "sata", "usb",
+      "ccid", or "virtio-serial", and a mandatory
+      attribute <code>index</code> which is the decimal integer
+      describing in which order the bus controller is encountered (for
+      use in <code>controller</code> attributes
+      of <code>&lt;address&gt;</code> elements).  The "virtio-serial"
+      controller has two additional optional
       attributes <code>ports</code> and <code>vectors</code>, which
       control how many devices can be connected through the
       controller.  A "scsi" controller has an optional
       attribute <code>model</code>, which is one of "auto",
       "buslogic", "lsilogic", "lsias1068", or "vmpvscsi".
+      A "usb" controller has an optional attribute <code>model</code>,
+      which is one of "piix3-uhci", "piix4-uhci", "ehci",
+      "ich9-ehci1", "ich9-uhci1", "ich9-uhci2", "ich9-uhci3",
+      "vt82c686b-uhci" or "pci-ohci".
     </p>
 
     <p>

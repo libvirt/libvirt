@@ -89,7 +89,8 @@ char * qemuBuildFSDevStr(virDomainFSDefPtr fs,
                          virBitmapPtr qemuCaps);
 /* Current, best practice */
 char * qemuBuildControllerDevStr(virDomainControllerDefPtr def,
-                                 virBitmapPtr qemuCaps);
+                                 virBitmapPtr qemuCaps,
+                                 int *nusbcontroller);
 
 char * qemuBuildWatchdogDevStr(virDomainWatchdogDefPtr dev,
                                virBitmapPtr qemuCaps);

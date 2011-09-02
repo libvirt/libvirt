@@ -878,6 +878,7 @@
                 <value>scsi</value>
                 <value>sata</value>
                 <value>ccid</value>
+                <value>usb</value>
               </choice>
             </attribute>
           </optional>

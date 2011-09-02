@@ -194,7 +194,8 @@ VIR_ENUM_IMPL(virDomainController, VIR_DOMAIN_CONTROLLER_TYPE_LAST,
               "scsi",
               "sata",
               "virtio-serial",
-              "ccid")
+              "ccid",
+              "usb")
 
 VIR_ENUM_IMPL(virDomainControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
               "auto",
@@ -2473,6 +2474,8 @@ virDomainControllerModelTypeFromString(const virDomainControllerDefPtr def,
 {
     if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
         return virDomainControllerModelSCSITypeFromString(model);
+    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_USB)
+        return virDomainControllerModelUSBTypeFromString(model);
 
     return -1;
 }
@@ -8756,6 +8759,8 @@ virDomainControllerModelTypeToString(virDomainControllerDefPtr def,
 {
     if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
         return virDomainControllerModelSCSITypeToString(model);
+    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_USB)
+        return virDomainControllerModelUSBTypeToString(model);
 
     return NULL;
 }

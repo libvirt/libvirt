@@ -85,6 +85,20 @@ VIR_ENUM_IMPL(qemuVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "", /* don't support vbox */
               "qxl");
 
+VIR_ENUM_DECL(qemuControllerModelUSB)
+
+VIR_ENUM_IMPL(qemuControllerModelUSB, VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST,
+              "piix3-usb-uhci",
+              "piix4-usb-uhci",
+              "usb-ehci",
+              "ich9-usb-ehci1",
+              "ich9-usb-uhci1",
+              "ich9-usb-uhci2",
+              "ich9-usb-uhci3",
+              "vt82c686b-usb-uhci",
+              "pci-ohci");
+
+
 static void
 uname_normalize (struct utsname *ut)
 {
@@ -1703,9 +1717,60 @@ error:
 }
 
 
+static int
+qemuControllerModelUSBToCaps(int model)
+{
+    switch (model) {
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI:
+        return QEMU_CAPS_PIIX3_USB_UHCI;
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX4_UHCI:
+        return QEMU_CAPS_PIIX4_USB_UHCI;
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_EHCI:
+        return QEMU_CAPS_USB_EHCI;
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3:
+        return QEMU_CAPS_ICH9_USB_EHCI1;
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_VT82C686B_UHCI:
+        return QEMU_CAPS_VT82C686B_USB_UHCI;
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI:
+        return QEMU_CAPS_PCI_OHCI;
+    default:
+        return -1;
+    }
+}
+
+
+static int
+qemuBuildUSBControllerDevStr(virDomainControllerDefPtr def,
+                             virBitmapPtr qemuCaps,
+                             virBuffer *buf)
+{
+    const char *smodel;
+    int model, caps;
+
+    model = def->model;
+    if (model == -1)
+        model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
+
+    smodel = qemuControllerModelUSBTypeToString(model);
+    caps = qemuControllerModelUSBToCaps(model);
+
+    if (caps == -1 || !qemuCapsGet(qemuCaps, caps)) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("%s not supported in this QEMU binary"), smodel);
+        return -1;
+    }
+
+    virBufferAsprintf(buf, "%s,id=usb%d", smodel, def->idx);
+    return 0;
+}
+
 char *
 qemuBuildControllerDevStr(virDomainControllerDefPtr def,
-                          virBitmapPtr qemuCaps)
+                          virBitmapPtr qemuCaps,
+                          int *nusbcontroller)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -1735,6 +1800,15 @@ qemuBuildControllerDevStr(virDomainControllerDefPtr def,
 
     case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
         virBufferAsprintf(&buf, "usb-ccid,id=ccid%d", def->idx);
+        break;
+
+    case VIR_DOMAIN_CONTROLLER_TYPE_USB:
+        if (qemuBuildUSBControllerDevStr(def, qemuCaps, &buf) == -1)
+            goto error;
+
+        if (nusbcontroller)
+            *nusbcontroller += 1;
+
         break;
 
     /* We always get an IDE controller, whether we want it or not. */
@@ -2904,7 +2978,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     bool has_rbd_hosts = false;
     virBuffer rbd_hosts = VIR_BUFFER_INITIALIZER;
     bool emitBootindex = false;
-
+    int usbcontroller = 0;
+    bool usblegacy = false;
     uname_normalize(&ut);
 
     if (qemuAssignDeviceAliases(def, qemuCaps) < 0)
@@ -3423,14 +3498,26 @@ qemuBuildCommandLine(virConnectPtr conn,
                 goto error;
             }
 
-            virCommandAddArg(cmd, "-device");
+            if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+                def->controllers[i]->model == -1 &&
+                !qemuCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI)) {
+                if (usblegacy) {
+                    qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                    _("Multiple legacy USB controller not supported"));
+                    goto error;
+                }
+                usblegacy = true;
+            } else {
+                virCommandAddArg(cmd, "-device");
 
-            char *devstr;
-            if (!(devstr = qemuBuildControllerDevStr(def->controllers[i], qemuCaps)))
-                goto error;
+                char *devstr;
+                if (!(devstr = qemuBuildControllerDevStr(def->controllers[i], qemuCaps,
+                                                         &usbcontroller)))
+                    goto error;
 
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
+                virCommandAddArg(cmd, devstr);
+                VIR_FREE(devstr);
+            }
         }
     }
 
@@ -4135,7 +4222,9 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    virCommandAddArg(cmd, "-usb");
+    if (usbcontroller == 0)
+        virCommandAddArg(cmd, "-usb");
+
     for (i = 0 ; i < def->ninputs ; i++) {
         virDomainInputDefPtr input = def->inputs[i];
 
