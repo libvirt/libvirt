@@ -681,6 +681,10 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virBitmapPtr qemuCaps)
         if (virAsprintf(&def->smartcards[i]->info.alias, "smartcard%d", i) < 0)
             goto no_memory;
     }
+    for (i = 0; i < def->nhubs ; i++) {
+        if (virAsprintf(&def->hubs[i]->info.alias, "hub%d", i) < 0)
+            goto no_memory;
+    }
     if (def->console) {
         if (virAsprintf(&def->console->info.alias, "console%d", i) < 0)
             goto no_memory;
@@ -1270,6 +1274,9 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
     for (i = 0; i < def->nchannels ; i++) {
         /* Nada - none are PCI based (yet) */
     }
+    for (i = 0; i < def->nhubs ; i++) {
+        /* Nada - none are PCI based (yet) */
+    }
 
     return 0;
 
@@ -1775,7 +1782,6 @@ qemuBuildUSBControllerDevStr(virDomainControllerDefPtr def,
     } else {
         virBufferAsprintf(buf, ",id=usb%d", def->idx);
     }
-
 
     return 0;
 }
@@ -2328,6 +2334,43 @@ qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev,
                       dev->source.subsys.u.usb.device,
                       dev->info.alias);
 
+    if (qemuBuildDeviceAddressStr(&buf, &dev->info, qemuCaps) < 0)
+        goto error;
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
+
+char *
+qemuBuildHubDevStr(virDomainHubDefPtr dev,
+                   virBitmapPtr qemuCaps)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (dev->type != VIR_DOMAIN_HUB_TYPE_USB) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("hub type %s not supported"),
+                        virDomainHubTypeToString(dev->type));
+        goto error;
+    }
+
+    if (!qemuCapsGet(qemuCaps, QEMU_CAPS_USB_HUB)) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("usb-hub not supported by QEMU binary"));
+        goto error;
+    }
+
+    virBufferAddLit(&buf, "usb-hub");
+    virBufferAsprintf(&buf, ",id=%s", dev->info.alias);
     if (qemuBuildDeviceAddressStr(&buf, &dev->info, qemuCaps) < 0)
         goto error;
 
@@ -4253,6 +4296,17 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     if (usbcontroller == 0)
         virCommandAddArg(cmd, "-usb");
+
+    for (i = 0 ; i < def->nhubs ; i++) {
+        virDomainHubDefPtr hub = def->hubs[i];
+        char *optstr;
+
+        virCommandAddArg(cmd, "-device");
+        if (!(optstr = qemuBuildHubDevStr(hub, qemuCaps)))
+            goto error;
+        virCommandAddArg(cmd, optstr);
+        VIR_FREE(optstr);
+    }
 
     for (i = 0 ; i < def->ninputs ; i++) {
         virDomainInputDefPtr input = def->inputs[i];

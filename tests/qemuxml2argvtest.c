@@ -501,6 +501,9 @@ mymain(void)
     DO_TEST("usb-ich9-companion", false,
             QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_PCI_MULTIFUNCTION, QEMU_CAPS_ICH9_USB_EHCI1);
+    DO_TEST("usb-hub", false,
+            QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE, QEMU_CAPS_USB_HUB,
+            QEMU_CAPS_NODEFCONFIG);
 
     DO_TEST("smbios", false, QEMU_CAPS_SMBIOS_TYPE);
 

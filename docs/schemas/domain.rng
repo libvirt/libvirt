@@ -1963,6 +1963,18 @@
       </optional>
     </element>
   </define>
+  <define name="hub">
+    <element name="hub">
+      <attribute name="type">
+        <choice>
+          <value>usb</value>
+        </choice>
+      </attribute>
+      <optional>
+        <ref name="address"/>
+      </optional>
+    </element>
+  </define>
   <define name="hostdev">
     <element name="hostdev">
       <optional>
@@ -2126,6 +2138,7 @@
             <ref name="serial"/>
             <ref name="channel"/>
             <ref name="smartcard"/>
+            <ref name="hub"/>
           </choice>
         </zeroOrMore>
         <optional>

@@ -327,6 +327,8 @@ virDomainGraphicsTypeToString;
 virDomainHostdevDefFree;
 virDomainHostdevModeTypeToString;
 virDomainHostdevSubsysTypeToString;
+virDomainHubTypeFromString;
+virDomainHubTypeToString;
 virDomainInputDefFree;
 virDomainIoEventFdTypeFromString;
 virDomainIoEventFdTypeToString;

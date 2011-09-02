@@ -135,6 +135,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "vt82c686b-usb-uhci", /* 70 */
               "pci-ohci",
               "usb-redir",
+              "usb-hub",
     );
 
 struct qemu_feature_flags {
@@ -1224,6 +1225,8 @@ qemuCapsParseDeviceStr(const char *str, virBitmapPtr flags)
         qemuCapsSet(flags, QEMU_CAPS_PCI_OHCI);
     if (strstr(str, "name \"usb-redir\""))
         qemuCapsSet(flags, QEMU_CAPS_USB_REDIR);
+    if (strstr(str, "name \"usb-hub\""))
+        qemuCapsSet(flags, QEMU_CAPS_USB_HUB);
 
     /* Prefer -chardev spicevmc (detected earlier) over -device spicevmc */
     if (!qemuCapsGet(flags, QEMU_CAPS_CHARDEV_SPICEVMC) &&

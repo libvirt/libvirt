@@ -616,6 +616,13 @@ struct _virDomainSmartcardDef {
     virDomainDeviceInfo info;
 };
 
+typedef struct _virDomainHubDef virDomainHubDef;
+typedef virDomainHubDef *virDomainHubDefPtr;
+struct _virDomainHubDef {
+    int type;
+    virDomainDeviceInfo info;
+};
+
 enum virDomainInputType {
     VIR_DOMAIN_INPUT_TYPE_MOUSE,
     VIR_DOMAIN_INPUT_TYPE_TABLET,
@@ -825,6 +832,12 @@ enum virDomainGraphicsListenType {
     VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST,
 };
 
+enum virDomainHubType {
+    VIR_DOMAIN_HUB_TYPE_USB,
+
+    VIR_DOMAIN_HUB_TYPE_LAST,
+};
+
 typedef struct _virDomainGraphicsListenDef virDomainGraphicsListenDef;
 typedef virDomainGraphicsListenDef *virDomainGraphicsListenDefPtr;
 struct _virDomainGraphicsListenDef {
@@ -965,6 +978,7 @@ enum virDomainDeviceType {
     VIR_DOMAIN_DEVICE_WATCHDOG,
     VIR_DOMAIN_DEVICE_CONTROLLER,
     VIR_DOMAIN_DEVICE_GRAPHICS,
+    VIR_DOMAIN_DEVICE_HUB,
 
     VIR_DOMAIN_DEVICE_LAST,
 };
@@ -985,6 +999,7 @@ struct _virDomainDeviceDef {
         virDomainHostdevDefPtr hostdev;
         virDomainWatchdogDefPtr watchdog;
         virDomainGraphicsDefPtr graphics;
+        virDomainHubDefPtr hub;
     } data;
 };
 
@@ -1312,6 +1327,9 @@ struct _virDomainDef {
     size_t nleases;
     virDomainLeaseDefPtr *leases;
 
+    int nhubs;
+    virDomainHubDefPtr *hubs;
+
     /* Only 1 */
     virDomainChrDefPtr console;
     virSecurityLabelDef seclabel;
@@ -1460,6 +1478,7 @@ void virDomainMemballoonDefFree(virDomainMemballoonDefPtr def);
 void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def);
 void virDomainVideoDefFree(virDomainVideoDefPtr def);
 void virDomainHostdevDefFree(virDomainHostdevDefPtr def);
+void virDomainHubDefFree(virDomainHubDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
 int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
                                   int type);
@@ -1740,6 +1759,7 @@ VIR_ENUM_DECL(virDomainWatchdogAction)
 VIR_ENUM_DECL(virDomainVideo)
 VIR_ENUM_DECL(virDomainHostdevMode)
 VIR_ENUM_DECL(virDomainHostdevSubsys)
+VIR_ENUM_DECL(virDomainHub)
 VIR_ENUM_DECL(virDomainInput)
 VIR_ENUM_DECL(virDomainInputBus)
 VIR_ENUM_DECL(virDomainGraphics)

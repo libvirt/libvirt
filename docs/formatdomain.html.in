@@ -2086,6 +2086,33 @@ qemu-kvm -net nic,model=? /dev/null
       device to a particular PCI slot.
     </p>
 
+    <h4><a name="elementsHub">Hub devices</a></h4>
+
+    <p>
+      A hub is a device that expands a single port into several so
+      that there are more ports available to connect devices to a host
+      system.
+    </p>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;hub type='usb'/&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
+    <dl>
+      <dt><code>hub</code></dt>
+      <dd>The <code>hub</code> element has one mandatory attribute,
+        the <code>type</code> whose value can only be 'usb'.</dd>
+    </dl>
+
+    <p>
+      The <code>hub</code> element has an optional
+      sub-element <code>&lt;address&gt;</code> which can tie the
+      device to a particular controller.
+    </p>
+
     <h4><a name="elementsGraphics">Graphical framebuffers</a></h4>
 
     <p>

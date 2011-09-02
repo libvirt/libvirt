@@ -126,7 +126,8 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "hostdev",
               "watchdog",
               "controller",
-              "graphics")
+              "graphics",
+              "hub")
 
 VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "none",
@@ -436,6 +437,9 @@ VIR_ENUM_IMPL(virDomainState, VIR_DOMAIN_CRASHED+1,
               "shutdown",
               "shutoff",
               "crashed")
+
+VIR_ENUM_IMPL(virDomainHub, VIR_DOMAIN_HUB_TYPE_LAST,
+              "usb")
 
 #define VIR_DOMAIN_NOSTATE_LAST (VIR_DOMAIN_NOSTATE_UNKNOWN + 1)
 VIR_ENUM_IMPL(virDomainNostateReason, VIR_DOMAIN_NOSTATE_LAST,
@@ -1000,6 +1004,15 @@ void virDomainHostdevDefFree(virDomainHostdevDefPtr def)
     VIR_FREE(def);
 }
 
+void virDomainHubDefFree(virDomainHubDefPtr def)
+{
+    if (!def)
+        return;
+
+    virDomainDeviceInfoClear(&def->info);
+    VIR_FREE(def);
+}
+
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
 {
     if (!def)
@@ -1035,6 +1048,9 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
         break;
     case VIR_DOMAIN_DEVICE_GRAPHICS:
         virDomainGraphicsDefFree(def->data.graphics);
+        break;
+    case VIR_DOMAIN_DEVICE_HUB:
+        virDomainHubDefFree(def->data.hub);
         break;
     }
 
@@ -1144,6 +1160,10 @@ void virDomainDefFree(virDomainDefPtr def)
     for (i = 0 ; i < def->nhostdevs ; i++)
         virDomainHostdevDefFree(def->hostdevs[i]);
     VIR_FREE(def->hostdevs);
+
+    for (i = 0 ; i < def->nhubs ; i++)
+        virDomainHubDefFree(def->hubs[i]);
+    VIR_FREE(def->hubs);
 
     VIR_FREE(def->os.type);
     VIR_FREE(def->os.arch);
@@ -1528,6 +1548,9 @@ int virDomainDeviceInfoIterate(virDomainDefPtr def,
     if (def->console)
         if (cb(def, &def->console->info, opaque) < 0)
             return -1;
+    for (i = 0; i < def->nhubs ; i++)
+        if (cb(def, &def->hubs[i]->info, opaque) < 0)
+            return -1;
     return 0;
 }
 
@@ -1595,6 +1618,12 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " controller='%d' slot='%d'",
                           info->addr.ccid.controller,
                           info->addr.ccid.slot);
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
+        virBufferAsprintf(buf, " bus='%d' port='%d'",
+                          info->addr.usb.bus,
+                          info->addr.usb.port);
         break;
 
     default:
@@ -3996,6 +4025,47 @@ error:
 }
 
 
+/* Parse the XML definition for an hub device */
+static virDomainHubDefPtr
+virDomainHubDefParseXML(xmlNodePtr node, unsigned int flags)
+{
+    virDomainHubDefPtr def;
+    char *type = NULL;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    type = virXMLPropString(node, "type");
+
+    if (!type) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("missing hub device type"));
+        goto error;
+    }
+
+    if ((def->type = virDomainHubTypeFromString(type)) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unknown hub device type '%s'"), type);
+        goto error;
+    }
+
+    if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+        goto error;
+
+cleanup:
+    VIR_FREE(type);
+
+    return def;
+
+error:
+    virDomainHubDefFree(def);
+    def = NULL;
+    goto cleanup;
+}
+
+
 /* Parse the XML definition for a clock timer */
 static virDomainTimerDefPtr
 virDomainTimerDefParseXML(const xmlNodePtr node,
@@ -5568,6 +5638,10 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
         dev->type = VIR_DOMAIN_DEVICE_GRAPHICS;
         if (!(dev->data.graphics = virDomainGraphicsDefParseXML(node, ctxt, flags)))
             goto error;
+    } else if (xmlStrEqual(node->name, BAD_CAST "hub")) {
+        dev->type = VIR_DOMAIN_DEVICE_HUB;
+        if (!(dev->data.hub = virDomainHubDefParseXML(node, flags)))
+            goto error;
     } else {
         virDomainReportError(VIR_ERR_XML_ERROR,
                              "%s", _("unknown device type"));
@@ -6972,6 +7046,21 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         }
     }
 
+    /* analysis of the hub devices */
+    if ((n = virXPathNodeSet("./devices/hub", ctxt, &nodes)) < 0) {
+        goto error;
+    }
+    if (n && VIR_ALLOC_N(def->hubs, n) < 0)
+        goto no_memory;
+    for (i = 0 ; i < n ; i++) {
+        virDomainHubDefPtr hub = virDomainHubDefParseXML(nodes[i], flags);
+        if (!hub)
+            goto error;
+
+        def->hubs[def->nhubs++] = hub;
+    }
+    VIR_FREE(nodes);
+
     /* analysis of security label */
     if (virSecurityLabelDefParseXML(def, ctxt, flags) == -1)
         goto error;
@@ -7882,6 +7971,29 @@ cleanup:
 }
 
 
+static bool virDomainHubDefCheckABIStability(virDomainHubDefPtr src,
+                                                   virDomainHubDefPtr dst)
+{
+    bool identical = false;
+
+    if (src->type != dst->type) {
+        virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                             _("Target hub device type %s does not match source %s"),
+                             virDomainHubTypeToString(dst->type),
+                             virDomainHubTypeToString(src->type));
+        goto cleanup;
+    }
+
+    if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
+        goto cleanup;
+
+    identical = true;
+
+cleanup:
+    return identical;
+}
+
+
 /* This compares two configurations and looks for any differences
  * which will affect the guest ABI. This is primarily to allow
  * validation of custom XML config passed in during migration
@@ -8114,6 +8226,17 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
                              dst->console ? 1 : 0, src->console ? 1 : 0);
         goto cleanup;
     }
+
+    if (src->nhubs != dst->nhubs) {
+        virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                             _("Target domain hub device count %d does not match source %d"),
+                             dst->nhubs, src->nhubs);
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < src->nhubs ; i++)
+        if (!virDomainHubDefCheckABIStability(src->hubs[i], dst->hubs[i]))
+            goto cleanup;
 
     if (src->console &&
         !virDomainConsoleDefCheckABIStability(src->console, dst->console))
@@ -10028,6 +10151,34 @@ virDomainHostdevDefFormat(virBufferPtr buf,
 }
 
 
+static int
+virDomainHubDefFormat(virBufferPtr buf,
+                        virDomainHubDefPtr def,
+                        unsigned int flags)
+{
+    const char *type = virDomainHubTypeToString(def->type);
+
+    if (!type) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected hub type %d"), def->type);
+        return -1;
+    }
+
+    virBufferAsprintf(buf, "    <hub type='%s'", type);
+
+    if (virDomainDeviceInfoIsSet(&def->info, flags)) {
+        virBufferAddLit(buf, ">\n");
+        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+            return -1;
+        virBufferAddLit(buf, "    </hub>\n");
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
+
+    return 0;
+}
+
+
 #define DUMPXML_FLAGS                           \
     (VIR_DOMAIN_XML_SECURE |                    \
      VIR_DOMAIN_XML_INACTIVE |                  \
@@ -10431,6 +10582,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     for (n = 0 ; n < def->nhostdevs ; n++)
         if (virDomainHostdevDefFormat(&buf, def->hostdevs[n], flags) < 0)
+            goto cleanup;
+
+    for (n = 0 ; n < def->nhubs ; n++)
+        if (virDomainHubDefFormat(&buf, def->hubs[n], flags) < 0)
             goto cleanup;
 
     if (def->watchdog)

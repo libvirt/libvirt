@@ -102,13 +102,14 @@ enum qemuCapsFlags {
     QEMU_CAPS_VIRTIO_NET_EVENT_IDX = 64, /* virtio-net-pci.event_idx */
     QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC = 65, /* Is cache=directsync supported? */
 
-    QEMU_CAPS_PIIX3_USB_UHCI    = 65, /* -device piix3-usb-uhci */
-    QEMU_CAPS_PIIX4_USB_UHCI    = 66, /* -device piix4-usb-uhci */
-    QEMU_CAPS_USB_EHCI          = 67, /* -device usb-ehci */
-    QEMU_CAPS_ICH9_USB_EHCI1    = 68, /* -device ich9-usb-ehci1 and companions */
-    QEMU_CAPS_VT82C686B_USB_UHCI = 69, /* -device vt82c686b-usb-uhci */
-    QEMU_CAPS_PCI_OHCI          = 70, /* -device pci-ohci */
-    QEMU_CAPS_USB_REDIR         = 71, /* -device usb-redir */
+    QEMU_CAPS_PIIX3_USB_UHCI    = 66, /* -device piix3-usb-uhci */
+    QEMU_CAPS_PIIX4_USB_UHCI    = 67, /* -device piix4-usb-uhci */
+    QEMU_CAPS_USB_EHCI          = 68, /* -device usb-ehci */
+    QEMU_CAPS_ICH9_USB_EHCI1    = 69, /* -device ich9-usb-ehci1 and companions */
+    QEMU_CAPS_VT82C686B_USB_UHCI = 70, /* -device vt82c686b-usb-uhci */
+    QEMU_CAPS_PCI_OHCI          = 71, /* -device pci-ohci */
+    QEMU_CAPS_USB_REDIR         = 72, /* -device usb-redir */
+    QEMU_CAPS_USB_HUB           = 73, /* -device usb-hub */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
