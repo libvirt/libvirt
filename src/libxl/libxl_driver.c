@@ -3017,7 +3017,7 @@ libxlDomainDetachDeviceDiskLive(libxlDomainObjPrivatePtr priv,
             } else {
                 libxlError(VIR_ERR_CONFIG_UNSUPPORTED,
                         _("disk bus '%s' cannot be hot unplugged."),
-                        virDomainDiskBusTypeToString(l_disk->bus));
+                        virDomainDiskBusTypeToString(dev->data.disk->bus));
             }
             break;
         default:
