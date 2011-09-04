@@ -1050,6 +1050,7 @@ static int virNetTLSContextValidCertificate(virNetTLSContextPtr ctxt,
                 goto authdeny;
             }
         }
+        gnutls_x509_crt_deinit(cert);
     }
 
 #if 0
