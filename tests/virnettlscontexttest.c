@@ -712,6 +712,8 @@ static int testTLSSessionInit(const void *opaque)
 cleanup:
     virNetTLSContextFree(serverCtxt);
     virNetTLSContextFree(clientCtxt);
+    virNetTLSSessionFree(serverSess);
+    virNetTLSSessionFree(clientSess);
     gnutls_x509_crt_deinit(data->careq.crt);
     if (data->othercareq.filename)
         gnutls_x509_crt_deinit(data->othercareq.crt);
