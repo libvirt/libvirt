@@ -7242,8 +7242,12 @@ qemudDomainBlockStats (virDomainPtr dom,
                                        disk->info.alias,
                                        &stats->rd_req,
                                        &stats->rd_bytes,
+                                       NULL,
                                        &stats->wr_req,
                                        &stats->wr_bytes,
+                                       NULL,
+                                       NULL,
+                                       NULL,
                                        &stats->errs);
     qemuDomainObjExitMonitor(driver, vm);
 

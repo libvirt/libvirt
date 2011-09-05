@@ -708,8 +708,12 @@ int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
                                      const char *devname,
                                      long long *rd_req,
                                      long long *rd_bytes,
+                                     long long *rd_total_times,
                                      long long *wr_req,
                                      long long *wr_bytes,
+                                     long long *wr_total_times,
+                                     long long *flush_req,
+                                     long long *flush_total_times,
                                      long long *errs)
 {
     char *info = NULL;
@@ -736,11 +740,17 @@ int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    *rd_req = -1;
-    *rd_bytes = -1;
-    *wr_req = -1;
-    *wr_bytes = -1;
-    *errs = -1;
+    *rd_req = *rd_bytes = -1;
+    *wr_req = *wr_bytes = *errs = -1;
+
+    if (rd_total_times)
+        *rd_total_times = -1;
+    if (wr_total_times)
+        *wr_total_times = -1;
+    if (flush_req)
+        *flush_req = -1;
+    if (flush_total_times)
+        *flush_total_times = -1;
 
     /* The output format for both qemu & KVM is:
      *   blockdevice: rd_bytes=% wr_bytes=% rd_operations=% wr_operations=%
@@ -768,23 +778,44 @@ int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
 
             while (*p) {
                 if (STRPREFIX (p, "rd_bytes=")) {
-                    p += 9;
+                    p += strlen("rd_bytes=");
                     if (virStrToLong_ll (p, &dummy, 10, rd_bytes) == -1)
                         VIR_DEBUG ("error reading rd_bytes: %s", p);
                 } else if (STRPREFIX (p, "wr_bytes=")) {
-                    p += 9;
+                    p += strlen("wr_bytes=");
                     if (virStrToLong_ll (p, &dummy, 10, wr_bytes) == -1)
                         VIR_DEBUG ("error reading wr_bytes: %s", p);
                 } else if (STRPREFIX (p, "rd_operations=")) {
-                    p += 14;
+                    p += strlen("rd_operations=");
                     if (virStrToLong_ll (p, &dummy, 10, rd_req) == -1)
                         VIR_DEBUG ("error reading rd_req: %s", p);
                 } else if (STRPREFIX (p, "wr_operations=")) {
-                    p += 14;
+                    p += strlen("wr_operations=");
                     if (virStrToLong_ll (p, &dummy, 10, wr_req) == -1)
                         VIR_DEBUG ("error reading wr_req: %s", p);
-                } else
+                } else if (rd_total_times &&
+                           STRPREFIX (p, "rd_total_times_ns=")) {
+                    p += strlen("rd_total_times_ns=");
+                    if (virStrToLong_ll (p, &dummy, 10, rd_total_times) == -1)
+                        VIR_DEBUG ("error reading rd_total_times: %s", p);
+                } else if (wr_total_times &&
+                           STRPREFIX (p, "wr_total_times_ns=")) {
+                    p += strlen("wr_total_times_ns=");
+                    if (virStrToLong_ll (p, &dummy, 10, wr_total_times) == -1)
+                        VIR_DEBUG ("error reading wr_total_times: %s", p);
+                } else if (flush_req &&
+                           STRPREFIX (p, "flush_operations=")) {
+                    p += strlen("flush_operations=");
+                    if (virStrToLong_ll (p, &dummy, 10, flush_req) == -1)
+                        VIR_DEBUG ("error reading flush_req: %s", p);
+                } else if (flush_total_times &&
+                           STRPREFIX (p, "flush_total_times_ns=")) {
+                    p += strlen("flush_total_times_ns=");
+                    if (virStrToLong_ll (p, &dummy, 10, flush_total_times) == -1)
+                        VIR_DEBUG ("error reading flush_total_times: %s", p);
+                } else {
                     VIR_DEBUG ("unknown block stat near %s", p);
+                }
 
                 /* Skip to next label. */
                 p = strchr (p, ' ');
@@ -810,6 +841,76 @@ int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
     return ret;
 }
 
+int qemuMonitorTextGetBlockStatsParamsNumber(qemuMonitorPtr mon,
+                                             int *nparams)
+{
+    char *info = NULL;
+    int ret = -1;
+    int num = 0;
+    const char *p, *eol;
+
+    if (qemuMonitorHMPCommand (mon, "info blockstats", &info) < 0) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        "%s", _("'info blockstats' command failed"));
+        goto cleanup;
+    }
+
+    /* If the command isn't supported then qemu prints the supported
+     * info commands, so the output starts "info ".  Since this is
+     * unlikely to be the name of a block device, we can use this
+     * to detect if qemu supports the command.
+     */
+    if (strstr(info, "\ninfo ")) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s",
+                        _("'info blockstats' not supported by this qemu"));
+        goto cleanup;
+    }
+
+    /* The output format for both qemu & KVM is:
+     *   blockdevice: rd_bytes=% wr_bytes=% rd_operations=% wr_operations=%
+     *   (repeated for each block device)
+     * where '%' is a 64 bit number.
+     */
+    p = info;
+
+    eol = strchr (p, '\n');
+    if (!eol)
+        eol = p + strlen (p);
+
+    /* Skip the device name and following ":", and spaces (e.g.
+     * "floppy0: ")
+     */
+    p = strchr(p, ' ');
+    p++;
+
+    while (*p) {
+            if (STRPREFIX (p, "rd_bytes=") ||
+                STRPREFIX (p, "wr_bytes=") ||
+                STRPREFIX (p, "rd_operations=") ||
+                STRPREFIX (p, "wr_operations=") ||
+                STRPREFIX (p, "rd_total_times_ns=") ||
+                STRPREFIX (p, "wr_total_times_ns=") ||
+                STRPREFIX (p, "flush_operations=") ||
+                STRPREFIX (p, "flush_total_times_ns=")) {
+                num++;
+            } else {
+                VIR_DEBUG ("unknown block stat near %s", p);
+            }
+
+            /* Skip to next label. */
+            p = strchr (p, ' ');
+            if (!p || p >= eol) break;
+            p++;
+    }
+
+    *nparams = num;
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(info);
+    return ret;
+}
 
 int qemuMonitorTextGetBlockExtent(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                   const char *devname ATTRIBUTE_UNUSED,

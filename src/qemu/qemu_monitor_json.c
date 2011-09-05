@@ -1318,8 +1318,12 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
                                      const char *devname,
                                      long long *rd_req,
                                      long long *rd_bytes,
+                                     long long *rd_total_times,
                                      long long *wr_req,
                                      long long *wr_bytes,
+                                     long long *wr_total_times,
+                                     long long *flush_req,
+                                     long long *flush_total_times,
                                      long long *errs)
 {
     int ret;
@@ -1330,7 +1334,17 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr devices;
 
-    *rd_req = *rd_bytes = *wr_req = *wr_bytes = *errs = 0;
+    *rd_req = *rd_bytes = -1;
+    *wr_req = *wr_bytes = *errs = -1;
+
+    if (rd_total_times)
+        *rd_total_times = -1;
+    if (wr_total_times)
+        *wr_total_times = -1;
+    if (flush_req)
+        *flush_req = -1;
+    if (flush_total_times)
+        *flush_total_times = -1;
 
     if (!cmd)
         return -1;
@@ -1396,6 +1410,15 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
                             "rd_operations");
             goto cleanup;
         }
+        if (rd_total_times &&
+            virJSONValueObjectHasKey(stats, "rd_total_times_ns") &&
+            (virJSONValueObjectGetNumberLong(stats, "rd_total_times_ns",
+                                             rd_total_times) < 0)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("cannot read %s statistic"),
+                            "rd_total_times_ns");
+            goto cleanup;
+        }
         if (virJSONValueObjectGetNumberLong(stats, "wr_bytes", wr_bytes) < 0) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("cannot read %s statistic"),
@@ -1406,6 +1429,33 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("cannot read %s statistic"),
                             "wr_operations");
+            goto cleanup;
+        }
+        if (wr_total_times &&
+            virJSONValueObjectHasKey(stats, "wr_total_times_ns") &&
+            (virJSONValueObjectGetNumberLong(stats, "wr_total_times_ns",
+                                             wr_total_times) < 0)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("cannot read %s statistic"),
+                            "wr_total_times_ns");
+            goto cleanup;
+        }
+        if (flush_req &&
+            virJSONValueObjectHasKey(stats, "flush_operations") &&
+            (virJSONValueObjectGetNumberLong(stats, "flush_operations",
+                                            flush_req) < 0)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("cannot read %s statistic"),
+                            "flush_operations");
+            goto cleanup;
+        }
+        if (flush_total_times &&
+            virJSONValueObjectHasKey(stats, "flush_total_times_ns") &&
+            (virJSONValueObjectGetNumberLong(stats, "flush_total_times_ns",
+                                            flush_total_times) < 0)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("cannot read %s statistic"),
+                            "flush_total_times_ns");
             goto cleanup;
         }
     }
@@ -1423,6 +1473,78 @@ cleanup:
     return ret;
 }
 
+
+int qemuMonitorJSONGetBlockStatsParamsNumber(qemuMonitorPtr mon,
+                                             int *nparams)
+{
+    int ret, i, num = 0;
+    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-blockstats",
+                                                     NULL);
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr devices = NULL;
+    virJSONValuePtr dev = NULL;
+    virJSONValuePtr stats = NULL;
+
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if (ret < 0)
+        goto cleanup;
+    ret = -1;
+
+    devices = virJSONValueObjectGet(reply, "return");
+    if (!devices || devices->type != VIR_JSON_TYPE_ARRAY) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("blockstats reply was missing device list"));
+        goto cleanup;
+    }
+
+    dev = virJSONValueArrayGet(devices, 0);
+
+    if (!dev || dev->type != VIR_JSON_TYPE_OBJECT) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("blockstats device entry was not in expected format"));
+        goto cleanup;
+    }
+
+    if ((stats = virJSONValueObjectGet(dev, "stats")) == NULL ||
+        stats->type != VIR_JSON_TYPE_OBJECT) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("blockstats stats entry was not in expected format"));
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < stats->data.object.npairs; i++) {
+        const char *key = stats->data.object.pairs[i].key;
+
+        if (STREQ(key, "rd_bytes") ||
+            STREQ(key, "rd_operations") ||
+            STREQ(key, "rd_total_times_ns") ||
+            STREQ(key, "wr_bytes") ||
+            STREQ(key, "wr_operations") ||
+            STREQ(key, "wr_total_times_ns") ||
+            STREQ(key, "flush_operations") ||
+            STREQ(key, "flush_total_times_ns")) {
+            num++;
+        } else {
+            /* wr_highest_offset is parsed by qemuMonitorJSONGetBlockExtent. */
+            if (STRNEQ(key, "wr_highest_offset"))
+                VIR_DEBUG("Missed block stat: %s", key);
+        }
+    }
+
+    *nparams = num;
+    ret = 0;
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
 
 int qemuMonitorJSONGetBlockExtent(qemuMonitorPtr mon,
                                   const char *devname,
