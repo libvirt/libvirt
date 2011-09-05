@@ -1156,7 +1156,8 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
             }
         } else if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
                    def->controllers[i]->idx == 0 &&
-                   def->controllers[i]->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI) {
+                   (def->controllers[i]->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI ||
+                    def->controllers[i]->model == -1)) {
             if (def->controllers[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
                 if (def->controllers[i]->info.addr.pci.domain != 0 ||
                     def->controllers[i]->info.addr.pci.bus != 0 ||
