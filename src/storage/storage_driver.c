@@ -536,6 +536,9 @@ storagePoolCreate(virConnectPtr conn,
     if (virStoragePoolObjIsDuplicate(&driver->pools, def, 1) < 0)
         goto cleanup;
 
+    if (virStoragePoolSourceFindDuplicate(&driver->pools, def) < 0)
+        goto cleanup;
+
     if ((backend = virStorageBackendForType(def->type)) == NULL)
         goto cleanup;
 
@@ -587,6 +590,9 @@ storagePoolDefine(virConnectPtr conn,
         goto cleanup;
 
     if (virStoragePoolObjIsDuplicate(&driver->pools, def, 0) < 0)
+        goto cleanup;
+
+    if (virStoragePoolSourceFindDuplicate(&driver->pools, def) < 0)
         goto cleanup;
 
     if (virStorageBackendForType(def->type) == NULL)

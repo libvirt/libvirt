@@ -335,6 +335,8 @@ virStoragePoolObjPtr virStoragePoolObjFindByUUID(virStoragePoolObjListPtr pools,
                                                  const unsigned char *uuid);
 virStoragePoolObjPtr virStoragePoolObjFindByName(virStoragePoolObjListPtr pools,
                                                  const char *name);
+virStoragePoolObjPtr virStoragePoolSourceFindDuplicateDevices(virStoragePoolObjPtr pool,
+                                                              virStoragePoolDefPtr def);
 
 virStorageVolDefPtr virStorageVolDefFindByKey(virStoragePoolObjPtr pool,
                                               const char *key);
@@ -387,6 +389,9 @@ char *virStoragePoolSourceListFormat(virStoragePoolSourceListPtr def);
 int virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
                                  virStoragePoolDefPtr def,
                                  unsigned int check_active);
+
+int virStoragePoolSourceFindDuplicate(virStoragePoolObjListPtr pools,
+                                      virStoragePoolDefPtr def);
 
 void virStoragePoolObjLock(virStoragePoolObjPtr obj);
 void virStoragePoolObjUnlock(virStoragePoolObjPtr obj);
