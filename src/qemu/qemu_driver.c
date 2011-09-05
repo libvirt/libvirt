@@ -7261,6 +7261,194 @@ cleanup:
     return ret;
 }
 
+static int
+qemudDomainBlockStatsFlags (virDomainPtr dom,
+                            const char *path,
+                            virTypedParameterPtr params,
+                            int *nparams,
+                            unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    int i, tmp, ret = -1;
+    virDomainObjPtr vm;
+    virDomainDiskDefPtr disk = NULL;
+    qemuDomainObjPrivatePtr priv;
+    long long rd_req, rd_bytes, wr_req, wr_bytes, rd_total_times;
+    long long wr_total_times, flush_req, flush_total_times, errs;
+
+    virCheckFlags(0, -1);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (*nparams != 0) {
+        for (i = 0 ; i < vm->def->ndisks ; i++) {
+            if (STREQ(path, vm->def->disks[i]->dst)) {
+                disk = vm->def->disks[i];
+                break;
+            }
+        }
+
+        if (!disk) {
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("invalid path: %s"), path);
+            goto cleanup;
+        }
+
+        if (!disk->info.alias) {
+             qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("missing disk device alias name for %s"), disk->dst);
+             goto cleanup;
+        }
+    }
+
+    priv = vm->privateData;
+    VIR_DEBUG("priv=%p, params=%p, flags=%x", priv, params, flags);
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+        goto cleanup;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    tmp = *nparams;
+    ret = qemuMonitorGetBlockStatsParamsNumber(priv->mon, nparams);
+
+    if (tmp == 0) {
+        qemuDomainObjExitMonitor(driver, vm);
+        goto endjob;
+    }
+
+    ret = qemuMonitorGetBlockStatsInfo(priv->mon,
+                                       disk->info.alias,
+                                       &rd_req,
+                                       &rd_bytes,
+                                       &rd_total_times,
+                                       &wr_req,
+                                       &wr_bytes,
+                                       &wr_total_times,
+                                       &flush_req,
+                                       &flush_total_times,
+                                       &errs);
+
+    qemuDomainObjExitMonitor(driver, vm);
+
+    if (ret < 0)
+        goto endjob;
+
+    /* Field 'errs' is meaningless for QEMU, won't set it. */
+    for (i = 0; i < *nparams; i++) {
+        virTypedParameterPtr param = &params[i];
+
+        switch (i) {
+        case 0: /* fill write_bytes here */
+            if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES) == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("Field write bytes too long for destination"));
+                goto cleanup;
+            }
+            param->type = VIR_TYPED_PARAM_LLONG;
+            param->value.l = wr_bytes;
+            break;
+
+        case 1: /* fill wr_operations here */
+            if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_WRITE_REQ) == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("Field write requests too long for destination"));
+                goto cleanup;
+            }
+            param->type = VIR_TYPED_PARAM_LLONG;
+            param->value.l = wr_req;
+            break;
+
+        case 2: /* fill read_bytes here */
+            if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_READ_BYTES) == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("Field read bytes too long for destination"));
+                goto cleanup;
+            }
+            param->type = VIR_TYPED_PARAM_LLONG;
+            param->value.l = rd_bytes;
+            break;
+
+        case 3: /* fill rd_operations here */
+            if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_READ_REQ) == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("Field read requests too long for destination"));
+                goto cleanup;
+            }
+            param->type = VIR_TYPED_PARAM_LLONG;
+            param->value.l = rd_req;
+            break;
+
+        case 4: /* fill flush_operations here */
+            if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_FLUSH_REQ) == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("Field flush requests too long for destination"));
+                goto cleanup;
+            }
+            param->type = VIR_TYPED_PARAM_LLONG;
+            param->value.l = flush_req;
+            break;
+
+        case 5: /* fill wr_total_times_ns here */
+            if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_WRITE_TOTAL_TIMES) == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("Field write total times too long for destination"));
+                goto cleanup;
+            }
+            param->type = VIR_TYPED_PARAM_LLONG;
+            param->value.l = wr_total_times;
+            break;
+
+        case 6: /* fill rd_total_times_ns here */
+            if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES) == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("Field read total times too long for destination"));
+                goto cleanup;
+            }
+            param->type = VIR_TYPED_PARAM_LLONG;
+            param->value.l = rd_total_times;
+            break;
+
+        case 7: /* fill flush_total_times_ns here */
+            if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES) == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("Field flush total times too long for destination"));
+                goto cleanup;
+            }
+            param->type = VIR_TYPED_PARAM_LLONG;
+            param->value.l = flush_total_times;
+            break;
+
+        default:
+            break;
+            /* should not hit here */
+        }
+    }
+
+endjob:
+    if (qemuDomainObjEndJob(driver, vm) == 0)
+        vm = NULL;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
 #ifdef __linux__
 static int
 qemudDomainInterfaceStats (virDomainPtr dom,
@@ -10363,6 +10551,7 @@ static virDriver qemuDriver = {
     .domainSetSchedulerParametersFlags = qemuSetSchedulerParametersFlags, /* 0.9.2 */
     .domainMigratePerform = qemudDomainMigratePerform, /* 0.5.0 */
     .domainBlockStats = qemudDomainBlockStats, /* 0.4.1 */
+    .domainBlockStatsFlags = qemudDomainBlockStatsFlags, /* 0.9.5 */
     .domainInterfaceStats = qemudDomainInterfaceStats, /* 0.4.1 */
     .domainMemoryStats = qemudDomainMemoryStats, /* 0.7.5 */
     .domainBlockPeek = qemudDomainBlockPeek, /* 0.4.4 */
