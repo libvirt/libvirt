@@ -1181,7 +1181,8 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
      * hardcoded slot=1, multifunction device
      */
     for (function = 0; function < QEMU_PCI_ADDRESS_LAST_FUNCTION; function++) {
-        if (function == 1 && (reservedIDE || reservedUSB))
+        if ((function == 1 && reservedIDE) ||
+            (function == 2 && reservedUSB))
             /* we have reserved this pci address */
             continue;
 
