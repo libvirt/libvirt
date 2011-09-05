@@ -1070,6 +1070,9 @@ cmdDomblkstat (vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     const char *name = NULL, *device = NULL;
     struct _virDomainBlockStats stats;
+    virTypedParameterPtr params = NULL;
+    int rc, nparams = 0;
+    bool ret = false;
 
     if (!vshConnectionUsability (ctl, ctl->conn))
         return false;
@@ -1077,34 +1080,95 @@ cmdDomblkstat (vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain (ctl, cmd, &name)))
         return false;
 
-    if (vshCommandOptString (cmd, "device", &device) <= 0) {
-        virDomainFree(dom);
-        return false;
+    if (vshCommandOptString (cmd, "device", &device) <= 0)
+        goto cleanup;
+
+    rc = virDomainBlockStatsFlags(dom, device, NULL, &nparams, 0);
+
+    /* It might fail when virDomainBlockStatsFlags is not
+     * supported on older libvirt, fallback to use virDomainBlockStats
+     * then.
+     */
+    if (rc < 0) {
+        if (last_error->code != VIR_ERR_NO_SUPPORT) {
+            virshReportError(ctl);
+            goto cleanup;
+        } else {
+            virFreeError(last_error);
+            last_error = NULL;
+
+            if (virDomainBlockStats (dom, device, &stats,
+                                     sizeof stats) == -1) {
+                vshError(ctl, _("Failed to get block stats %s %s"),
+                         name, device);
+                goto cleanup;
+            }
+
+            if (stats.rd_req >= 0)
+                vshPrint (ctl, "%s rd_req %lld\n", device, stats.rd_req);
+
+            if (stats.rd_bytes >= 0)
+                vshPrint (ctl, "%s rd_bytes %lld\n", device, stats.rd_bytes);
+
+            if (stats.wr_req >= 0)
+                vshPrint (ctl, "%s wr_req %lld\n", device, stats.wr_req);
+
+            if (stats.wr_bytes >= 0)
+                vshPrint (ctl, "%s wr_bytes %lld\n", device, stats.wr_bytes);
+
+            if (stats.errs >= 0)
+                vshPrint (ctl, "%s errs %lld\n", device, stats.errs);
+        }
+    } else {
+        params = vshMalloc(ctl, sizeof(*params) * nparams);
+        memset(params, 0, sizeof(*params) * nparams);
+
+        if (virDomainBlockStatsFlags (dom, device, params, &nparams, 0) < 0) {
+            vshError(ctl, _("Failed to get block stats %s %s"), name, device);
+            goto cleanup;
+        }
+
+        int i;
+        /* XXX: The output sequence will be different. */
+        for (i = 0; i < nparams; i++) {
+            switch(params[i].type) {
+            case VIR_TYPED_PARAM_INT:
+                vshPrint (ctl, "%s %s %d\n", device,
+                          params[i].field, params[i].value.i);
+                break;
+            case VIR_TYPED_PARAM_UINT:
+                vshPrint (ctl, "%s %s %u\n", device,
+                          params[i].field, params[i].value.ui);
+                break;
+            case VIR_TYPED_PARAM_LLONG:
+                vshPrint (ctl, "%s %s %lld\n", device,
+                          params[i].field, params[i].value.l);
+                break;
+            case VIR_TYPED_PARAM_ULLONG:
+                vshPrint (ctl, "%s %s %llu\n", device,
+                          params[i].field, params[i].value.ul);
+                break;
+            case VIR_TYPED_PARAM_DOUBLE:
+                vshPrint (ctl, "%s %s %f\n", device,
+                          params[i].field, params[i].value.d);
+                break;
+            case VIR_TYPED_PARAM_BOOLEAN:
+                vshPrint (ctl, "%s %s %s\n", device,
+                          params[i].field, params[i].value.b ? _("yes") : _("no"));
+                break;
+            default:
+                vshError(ctl, _("unimplemented block statistics parameter type"));
+            }
+
+        }
     }
 
-    if (virDomainBlockStats (dom, device, &stats, sizeof stats) == -1) {
-        vshError(ctl, _("Failed to get block stats %s %s"), name, device);
-        virDomainFree(dom);
-        return false;
-    }
+    ret = true;
 
-    if (stats.rd_req >= 0)
-        vshPrint (ctl, "%s rd_req %lld\n", device, stats.rd_req);
-
-    if (stats.rd_bytes >= 0)
-        vshPrint (ctl, "%s rd_bytes %lld\n", device, stats.rd_bytes);
-
-    if (stats.wr_req >= 0)
-        vshPrint (ctl, "%s wr_req %lld\n", device, stats.wr_req);
-
-    if (stats.wr_bytes >= 0)
-        vshPrint (ctl, "%s wr_bytes %lld\n", device, stats.wr_bytes);
-
-    if (stats.errs >= 0)
-        vshPrint (ctl, "%s errs %lld\n", device, stats.errs);
-
+cleanup:
+    VIR_FREE(params);
     virDomainFree(dom);
-    return true;
+    return ret;
 }
 
 /* "domifstat" command
