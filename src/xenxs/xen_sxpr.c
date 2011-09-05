@@ -1195,6 +1195,9 @@ xenParseSxpr(const struct sexpr *root,
             def->clock.ntimers = 1;
             def->clock.timers[0] = timer;
         }
+    } else { /* !hvm */
+        if (sexpr_int(root, "domain/image/linux/localtime"))
+            def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
     }
 
     /* Current XenD allows localtime here, for PV and HVM */
