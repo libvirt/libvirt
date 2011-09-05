@@ -6442,6 +6442,77 @@ error:
 }
 
 /**
+ * virDomainBlockStatsFlags:
+ * @dom: pointer to domain object
+ * @path: path to the block device
+ * @params: pointer to block stats parameter object
+ *          (return value)
+ * @nparams: pointer to number of block stats
+ * @flags: unused, always passes 0
+ *
+ * This function is to get block stats parameters for block
+ * devices attached to the domain.
+ *
+ * The @path is the name of the block device.  Get this
+ * by calling virDomainGetXMLDesc and finding the <target dev='...'>
+ * attribute within //domain/devices/disk.  (For example, "xvda").
+ *
+ * Domains may have more than one block device.  To get stats for
+ * each you should make multiple calls to this function.
+ *
+ * The @params array will be filled with the value equal to the number of
+ * parameters suggested by @nparams.
+ *
+ * As the value of @nparams is dynamic, call the API setting @nparams to 0 and
+ * @params as NULL, the API returns the number of parameters supported by the
+ * HV by updating @nparams on SUCCESS. (Note that block device of different type
+ * might support different parameters numbers, so it might be necessary to compute
+ * @nparams for each block device type). The caller should then allocate @params
+ * array, i.e. (sizeof(@virTypedParameter) * @nparams) bytes and call the API
+ * again. See virDomainGetMemoryParameters for more details.
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ */
+int virDomainBlockStatsFlags (virDomainPtr dom,
+                              const char *path,
+                              virTypedParameterPtr params,
+                              int *nparams,
+                              unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "path=%s, params=%p, nparams=%d, flags=%x",
+                     path, params, nparams ? *nparams : -1, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (!path || (nparams == NULL) || (*nparams < 0)) {
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    conn = dom->conn;
+
+    if (conn->driver->domainBlockStatsFlags) {
+        int ret;
+        ret = conn->driver->domainBlockStatsFlags(dom, path, params, nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
+
+/**
  * virDomainInterfaceStats:
  * @dom: pointer to the domain object
  * @path: path to the interface
