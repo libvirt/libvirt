@@ -933,6 +933,75 @@ cleanup:
 }
 
 static int
+remoteDispatchDomainBlockStatsFlags(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                    virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                    virNetMessageHeaderPtr hdr ATTRIBUTE_UNUSED,
+                                    virNetMessageErrorPtr rerr,
+                                    remote_domain_block_stats_flags_args *args,
+                                    remote_domain_block_stats_flags_ret *ret)
+{
+    virTypedParameterPtr params = NULL;
+    virDomainPtr dom = NULL;
+    int i;
+    const char *path = args->path;
+    int nparams = args->nparams;
+    unsigned int flags;
+    int rv = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+    flags = args->flags;
+
+    if (nparams > REMOTE_DOMAIN_BLOCK_STATS_PARAMETERS_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
+        goto cleanup;
+    }
+    if (VIR_ALLOC_N(params, nparams) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virDomainBlockStatsFlags(dom, path, params, &nparams, flags) < 0)
+        goto cleanup;
+
+    /* In this case, we need to send back the number of parameters
+     * supported
+     */
+    if (args->nparams == 0) {
+        ret->nparams = nparams;
+        goto success;
+    }
+
+    /* Serialise the block stats. */
+    if (remoteSerializeTypedParameters(params, nparams,
+                                       &ret->params.params_val,
+                                       &ret->params.params_len) < 0)
+        goto cleanup;
+
+success:
+    rv = 0;
+
+cleanup:
+    if (rv < 0) {
+        virNetMessageSaveError(rerr);
+        if (ret->params.params_val) {
+            for (i = 0; i < nparams; i++)
+                VIR_FREE(ret->params.params_val[i].field);
+            VIR_FREE(ret->params.params_val);
+        }
+    }
+    VIR_FREE(params);
+    return rv;
+}
+
+static int
 remoteDispatchDomainMemoryPeek(virNetServerPtr server ATTRIBUTE_UNUSED,
                                virNetServerClientPtr client ATTRIBUTE_UNUSED,
                                virNetMessageHeaderPtr hdr ATTRIBUTE_UNUSED,

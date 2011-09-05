@@ -1361,6 +1361,69 @@ cleanup:
 }
 
 static int
+remoteDomainBlockStatsFlags(virDomainPtr domain,
+                            const char *path,
+                            virTypedParameterPtr params,
+                            int *nparams,
+                            unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_block_stats_flags_args args;
+    remote_domain_block_stats_flags_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+    args.nparams = *nparams;
+    args.path = (char *) path;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_BLOCK_STATS_FLAGS,
+              (xdrproc_t) xdr_remote_domain_block_stats_flags_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_block_stats_flags_ret, (char *) &ret) == -1)
+        goto done;
+
+    /* Check the length of the returned list carefully. */
+    if (ret.params.params_len > REMOTE_DOMAIN_BLOCK_STATS_PARAMETERS_MAX ||
+        ret.params.params_len > *nparams) {
+        remoteError(VIR_ERR_RPC, "%s",
+                    _("remoteDomainBlockStatsFlags: "
+                      "returned number of stats exceeds limit"));
+        goto cleanup;
+    }
+
+    /* Handle the case when the caller does not know the number of stats
+     * and is asking for the number of stats supported
+     */
+    if (*nparams == 0) {
+        *nparams = ret.nparams;
+        rv = 0;
+        goto cleanup;
+    }
+
+    *nparams = ret.params.params_len;
+
+    /* Deserialise the result. */
+    if (remoteDeserializeTypedParameters(ret.params.params_val,
+                                         ret.params.params_len,
+                                         REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX,
+                                         params,
+                                         nparams) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+cleanup:
+    xdr_free ((xdrproc_t) xdr_remote_domain_block_stats_flags_ret,
+              (char *) &ret);
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
 remoteDomainGetMemoryParameters (virDomainPtr domain,
                                  virTypedParameterPtr params, int *nparams,
                                  unsigned int flags)
@@ -4307,6 +4370,7 @@ static virDriver remote_driver = {
     .domainMigratePerform = remoteDomainMigratePerform, /* 0.3.2 */
     .domainMigrateFinish = remoteDomainMigrateFinish, /* 0.3.2 */
     .domainBlockStats = remoteDomainBlockStats, /* 0.3.2 */
+    .domainBlockStatsFlags = remoteDomainBlockStatsFlags, /* 0.9.5 */
     .domainInterfaceStats = remoteDomainInterfaceStats, /* 0.3.2 */
     .domainMemoryStats = remoteDomainMemoryStats, /* 0.7.5 */
     .domainBlockPeek = remoteDomainBlockPeek, /* 0.4.2 */

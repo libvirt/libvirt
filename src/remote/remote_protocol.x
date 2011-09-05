@@ -131,6 +131,9 @@ const REMOTE_NODE_CPU_STATS_MAX = 16;
 /* Upper limit on list of node memory stats. */
 const REMOTE_NODE_MEMORY_STATS_MAX = 16;
 
+/* Upper limit on list of block stats. */
+const REMOTE_DOMAIN_BLOCK_STATS_PARAMETERS_MAX = 16;
+
 /* Upper limit on number of NUMA cells */
 const REMOTE_NODE_MAX_CELLS = 1024;
 
@@ -330,6 +333,7 @@ struct remote_node_get_memory_stats {
     remote_nonnull_string field;
     unsigned hyper value;
 };
+
 
 /*----- Calls. -----*/
 
@@ -542,6 +546,18 @@ struct remote_domain_block_stats_ret { /* insert@2 */
     hyper wr_req;
     hyper wr_bytes;
     hyper errs;
+};
+
+struct remote_domain_block_stats_flags_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string path;
+    int nparams;
+    unsigned int flags;
+};
+
+struct remote_domain_block_stats_flags_ret {
+    remote_typed_param params<REMOTE_DOMAIN_BLOCK_STATS_PARAMETERS_MAX>;
+    int nparams;
 };
 
 struct remote_domain_interface_stats_args {
@@ -2492,7 +2508,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_BLOCK_PULL = 240, /* autogen autogen */
 
     REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB = 241, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_MIGRATE_GET_MAX_SPEED = 242 /* autogen autogen */
+    REMOTE_PROC_DOMAIN_MIGRATE_GET_MAX_SPEED = 242, /* autogen autogen */
+    REMOTE_PROC_DOMAIN_BLOCK_STATS_FLAGS = 243 /* skipgen skipgen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
