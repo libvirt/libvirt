@@ -483,6 +483,7 @@ LIBVIRT_0.9.4 {
 LIBVIRT_0.9.5 {
     global:
         virDomainMigrateGetMaxSpeed;
+        virDomainBlockStatsFlags;
 } LIBVIRT_0.9.4;
 
 # .... define new API here using predicted next version number ....

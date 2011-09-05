@@ -581,6 +581,85 @@ struct _virDomainBlockStats {
  */
 typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
 
+
+/**
+ * VIR_DOMAIN_BLOCK_STATS_FIELD_LENGTH:
+ *
+ * Macro providing the field length of virDomainBlockStatsFlagsStruct
+ */
+#define VIR_DOMAIN_BLOCK_STATS_FIELD_LENGTH 80
+
+/**
+ * VIR_DOMAIN_BLOCK_STATS_READ_BYTES:
+ *
+ * Macro represents the total number of read bytes of the
+ * block device.
+ */
+#define VIR_DOMAIN_BLOCK_STATS_READ_BYTES "rd_bytes"
+
+/**
+ * VIR_DOMAIN_BLOCK_STATS_READ_REQ:
+ *
+ * Macro represents the total read requests of the
+ * block device.
+ */
+#define VIR_DOMAIN_BLOCK_STATS_READ_REQ "rd_operations"
+
+/**
+ * VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES:
+ *
+ * Macro represents the total time spend on cache reads in
+ * nano-seconds of the block device.
+ */
+#define VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES "rd_total_times"
+
+/**
+ * VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES:
+ *
+ * Macro represents the total number of write bytes of the
+ * block device.
+ */
+#define VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES "wr_bytes"
+
+/**
+ * VIR_DOMAIN_BLOCK_STATS_WRITE_REQ:
+ *
+ * Macro represents the total write requests of the
+ * block device.
+ */
+#define VIR_DOMAIN_BLOCK_STATS_WRITE_REQ "wr_operations"
+
+/**
+ * VIR_DOMAIN_BLOCK_STATS_WRITE_TOTAL_TIMES:
+ *
+ * Macro represents the total time spend on cache writes in
+ * nano-seconds of the block device.
+ */
+#define VIR_DOMAIN_BLOCK_STATS_WRITE_TOTAL_TIMES "wr_total_times"
+
+/**
+ * VIR_DOMAIN_BLOCK_STATS_FLUSH_REQ:
+ *
+ * Macro represents the total flush requests of the
+ * block device.
+ */
+#define VIR_DOMAIN_BLOCK_STATS_FLUSH_REQ "flush_operations"
+
+/**
+ * VIR_DOMAIN_BLOCK_STATS_FLUSH_TOTAL_TIMES:
+ *
+ * Macro represents the total time spend on cache flushing in
+ * nano-seconds of the block device.
+ */
+#define VIR_DOMAIN_BLOCK_STATS_FLUSH_TOTAL_TIMES "flush_total_times"
+
+/**
+ * VIR_DOMAIN_BLOCK_STATS_ERRS:
+ *
+ * In Xen this returns the mysterious 'oo_req'
+ */
+#define VIR_DOMAIN_BLOCK_STATS_ERRS "errs"
+
 /**
  * virDomainInterfaceStats:
  *
@@ -1185,6 +1264,11 @@ int                     virDomainBlockStats     (virDomainPtr dom,
                                                  const char *path,
                                                  virDomainBlockStatsPtr stats,
                                                  size_t size);
+int                     virDomainBlockStatsFlags (virDomainPtr dom,
+                                                  const char *path,
+                                                  virTypedParameterPtr params,
+                                                  int *nparams,
+                                                  unsigned int flags);
 int                     virDomainInterfaceStats (virDomainPtr dom,
                                                  const char *path,
                                                  virDomainInterfaceStatsPtr stats,
