@@ -348,6 +348,13 @@ typedef int
                      const char *path,
                      struct _virDomainBlockStats *stats);
 typedef int
+    (*virDrvDomainBlockStatsFlags)
+                    (virDomainPtr domain,
+                     const char *path,
+                     virTypedParameterPtr params,
+                     int *nparams,
+                     unsigned int flags);
+typedef int
     (*virDrvDomainInterfaceStats)
                     (virDomainPtr domain,
                      const char *path,
@@ -806,6 +813,7 @@ struct _virDriver {
     virDrvDomainMigratePerform	domainMigratePerform;
     virDrvDomainMigrateFinish	domainMigrateFinish;
     virDrvDomainBlockStats      domainBlockStats;
+    virDrvDomainBlockStatsFlags domainBlockStatsFlags;
     virDrvDomainInterfaceStats  domainInterfaceStats;
     virDrvDomainMemoryStats     domainMemoryStats;
     virDrvDomainBlockPeek	domainBlockPeek;
