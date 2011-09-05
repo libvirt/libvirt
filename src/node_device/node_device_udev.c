@@ -1620,7 +1620,7 @@ static int udevDeviceMonitorStartup(int privileged)
         /* Ignore failure as non-root; udev is not as helpful in that
          * situation, but a non-privileged user won't benefit much
          * from udev in the first place.  */
-        if (privileged || errno != EACCES) {
+        if (errno != ENOENT && (privileged  || errno != EACCES)) {
             char ebuf[256];
             VIR_ERROR(_("Failed to initialize libpciaccess: %s"),
                       virStrerror(pciret, ebuf, sizeof ebuf));
