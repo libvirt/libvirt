@@ -3964,7 +3964,7 @@ esxVI_ProductVersionToDefaultVirtualHWVersion(esxVI_ProductVersion productVersio
 
 
 #define ESX_VI__TEMPLATE__LOOKUP(_type, _complete_properties,                 \
-                                         _cast_from_anytype)                  \
+                                 _cast_from_anytype)                          \
     int                                                                       \
     esxVI_Lookup##_type(esxVI_Context *ctx, const char* name /* optional */,  \
                         esxVI_ManagedObjectReference *root,                   \
@@ -3996,6 +3996,12 @@ esxVI_ProductVersionToDefaultVirtualHWVersion(esxVI_ProductVersion productVersio
                                             propertyNameList, &objectContent, \
                                             &objectContentList,               \
                                             occurrence) < 0) {                \
+            goto cleanup;                                                     \
+        }                                                                     \
+                                                                              \
+        if (objectContent == NULL) {                                          \
+            /* not found, exit early */                                       \
+            result = 0;                                                       \
             goto cleanup;                                                     \
         }                                                                     \
                                                                               \
