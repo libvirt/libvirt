@@ -1256,9 +1256,8 @@ static const vshCmdOptDef opts_domif_setlink[] = {
 static bool
 cmdDomIfSetLink (vshControl *ctl, const vshCmd *cmd)
 {
-
     virDomainPtr dom;
-    const char *interface;
+    const char *iface;
     const char *state;
     const char *mac;
     const char *desc;
@@ -1266,13 +1265,11 @@ cmdDomIfSetLink (vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     unsigned int flags = 0;
     int i;
-
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlXPathObjectPtr obj = NULL;
     xmlNodePtr cur = NULL;
     xmlBufferPtr xml_buf = NULL;
-
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -1280,7 +1277,7 @@ cmdDomIfSetLink (vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptString(cmd, "interface", &interface) <= 0)
+    if (vshCommandOptString(cmd, "interface", &iface) <= 0)
         goto cleanup;
 
     if (vshCommandOptString(cmd, "state", &state) <= 0)
@@ -1332,7 +1329,7 @@ cmdDomIfSetLink (vshControl *ctl, const vshCmd *cmd)
                 xmlStrEqual(cur->name, BAD_CAST "mac")) {
                 mac = virXMLPropString(cur, "address");
 
-                if (STRCASEEQ(mac, interface)) {
+                if (STRCASEEQ(mac, iface)) {
                     VIR_FREE(mac);
                     goto hit;
                 }
@@ -1342,7 +1339,7 @@ cmdDomIfSetLink (vshControl *ctl, const vshCmd *cmd)
         }
     }
 
-    vshError(ctl, _("interface with address '%s' not found"), interface);
+    vshError(ctl, _("interface with address '%s' not found"), iface);
     goto cleanup;
 
 hit:
@@ -1424,13 +1421,12 @@ static bool
 cmdDomIfGetLink (vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
-    const char *interface = NULL;
+    const char *iface = NULL;
     int flags = 0;
     char *state = NULL;
     char *mac = NULL;
     bool ret = false;
     int i;
-
     char *desc;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
@@ -1443,7 +1439,7 @@ cmdDomIfGetLink (vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain (ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptString (cmd, "interface", &interface) <= 0) {
+    if (vshCommandOptString (cmd, "interface", &iface) <= 0) {
         virDomainFree(dom);
         return false;
     }
@@ -1481,7 +1477,7 @@ cmdDomIfGetLink (vshControl *ctl, const vshCmd *cmd)
 
                 mac = virXMLPropString(cur, "address");
 
-                if (STRCASEEQ(mac, interface)){
+                if (STRCASEEQ(mac, iface)){
                     VIR_FREE(mac);
                     goto hit;
                 }
@@ -1490,7 +1486,7 @@ cmdDomIfGetLink (vshControl *ctl, const vshCmd *cmd)
         }
     }
 
-    vshError(ctl, _("Interface with address '%s' not found."), interface);
+    vshError(ctl, _("Interface with address '%s' not found."), iface);
     goto cleanup;
 
 hit:
@@ -1500,7 +1496,7 @@ hit:
             xmlStrEqual(cur->name, BAD_CAST "link")) {
 
             state = virXMLPropString(cur, "state");
-            vshPrint(ctl, "%s %s", interface, state);
+            vshPrint(ctl, "%s %s", iface, state);
             VIR_FREE(state);
 
             goto cleanup;
@@ -1509,7 +1505,7 @@ hit:
     }
 
     /* attribute not found */
-    vshPrint(ctl, "%s default", interface);
+    vshPrint(ctl, "%s default", iface);
 
 cleanup:
     xmlXPathFreeObject(obj);
