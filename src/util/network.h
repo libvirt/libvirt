@@ -150,6 +150,8 @@ virVirtualPortProfileFormat(virBufferPtr buf,
                             virVirtualPortProfileParamsPtr virtPort,
                             const char *indent);
 
+bool virVirtualPortProfileEqual(virVirtualPortProfileParamsPtr a, virVirtualPortProfileParamsPtr b);
+
 virBandwidthPtr virBandwidthDefParseNode(xmlNodePtr node);
 void virBandwidthDefFree(virBandwidthPtr def);
 int virBandwidthDefFormat(virBufferPtr buf,
@@ -159,5 +161,8 @@ int virBandwidthDefFormat(virBufferPtr buf,
 int virBandwidthEnable(virBandwidthPtr bandwidth, const char *iface);
 int virBandwidthDisable(const char *iface, bool may_fail);
 int virBandwidthCopy(virBandwidthPtr *dest, const virBandwidthPtr src);
+
+bool virBandwidthEqual(virBandwidthPtr a, virBandwidthPtr b);
+
 
 #endif /* __VIR_NETWORK_H__ */

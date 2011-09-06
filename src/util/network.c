@@ -842,6 +842,43 @@ error:
     return ret;
 }
 
+bool
+virVirtualPortProfileEqual(virVirtualPortProfileParamsPtr a, virVirtualPortProfileParamsPtr b)
+{
+    /* NULL resistant */
+    if (!a && !b)
+        return true;
+
+    if (!a || !b)
+        return false;
+
+    if (a->virtPortType != b->virtPortType)
+        return false;
+
+    switch (a->virtPortType) {
+    case VIR_VIRTUALPORT_NONE:
+        break;
+
+    case VIR_VIRTUALPORT_8021QBG:
+        if (a->u.virtPort8021Qbg.managerID != b->u.virtPort8021Qbg.managerID ||
+            a->u.virtPort8021Qbg.typeID != b->u.virtPort8021Qbg.typeID ||
+            a->u.virtPort8021Qbg.typeIDVersion != b->u.virtPort8021Qbg.typeIDVersion ||
+            memcmp(a->u.virtPort8021Qbg.instanceID, b->u.virtPort8021Qbg.instanceID, VIR_UUID_BUFLEN) != 0)
+            return false;
+        break;
+
+    case VIR_VIRTUALPORT_8021QBH:
+        if (STRNEQ(a->u.virtPort8021Qbh.profileID, b->u.virtPort8021Qbh.profileID))
+            return false;
+        break;
+
+    default:
+        break;
+    }
+
+    return true;
+}
+
 void
 virVirtualPortProfileFormat(virBufferPtr buf,
                             virVirtualPortProfileParamsPtr virtPort,
@@ -1320,4 +1357,29 @@ cleanup:
         *dest = NULL;
     }
     return ret;
+}
+
+bool
+virBandwidthEqual(virBandwidthPtr a,
+                  virBandwidthPtr b)
+{
+        if (!a && !b)
+            return true;
+
+        if (!a || !b)
+            return false;
+
+        /* in */
+        if (a->in->average != b->in->average ||
+            a->in->peak != b->in->peak ||
+            a->in->burst != b->in->burst)
+            return false;
+
+        /*out*/
+        if (a->out->average != b->out->average ||
+            a->out->peak != b->out->peak ||
+            a->out->burst != b->out->burst)
+            return false;
+
+        return true;
 }
