@@ -1237,6 +1237,290 @@ cmdDomIfstat (vshControl *ctl, const vshCmd *cmd)
     return true;
 }
 
+/* "domif-setlink" command
+ */
+static const vshCmdInfo info_domif_setlink[] = {
+    {"help", N_("set link state of a virtual interface")},
+    {"desc", N_("Set link state of a domain's virtual interface. This command wraps usage of update-device command.")},
+    {NULL,NULL}
+};
+
+static const vshCmdOptDef opts_domif_setlink[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, N_("interface device (MAC Address)")},
+    {"state", VSH_OT_DATA, VSH_OFLAG_REQ, N_("new state of the device")},
+    {"persistent", VSH_OT_BOOL, 0, N_("persist interface state")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdDomIfSetLink (vshControl *ctl, const vshCmd *cmd)
+{
+
+    virDomainPtr dom;
+    const char *interface;
+    const char *state;
+    const char *mac;
+    const char *desc;
+    bool persistent;
+    bool ret = false;
+    unsigned int flags = 0;
+    int i;
+
+    xmlDocPtr xml = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    xmlXPathObjectPtr obj = NULL;
+    xmlNodePtr cur = NULL;
+    xmlBufferPtr xml_buf = NULL;
+
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptString(cmd, "interface", &interface) <= 0)
+        goto cleanup;
+
+    if (vshCommandOptString(cmd, "state", &state) <= 0)
+        goto cleanup;
+
+    persistent = vshCommandOptBool(cmd, "persistent");
+
+    if (STRNEQ(state, "up") && STRNEQ(state, "down")) {
+        vshError(ctl, _("invalid link state '%s'"), state);
+        goto cleanup;
+    }
+
+    /* get persistent or live description of network device */
+    desc = virDomainGetXMLDesc(dom, persistent?VIR_DOMAIN_XML_INACTIVE:0);
+    if (desc == NULL) {
+        vshError(ctl, _("Failed to get domain description xml"));
+        goto cleanup;
+    }
+
+    if (persistent)
+        flags = VIR_DOMAIN_AFFECT_CONFIG;
+    else
+        flags = VIR_DOMAIN_AFFECT_LIVE;
+
+    if (virDomainIsActive(dom) == 0)
+        flags = VIR_DOMAIN_AFFECT_CONFIG;
+
+    /* extract current network device description */
+    xml = virXMLParseStringCtxt(desc, "domain configuration", &ctxt);
+    VIR_FREE(desc);
+    if (!xml) {
+        vshError(ctl, _("Failed to parse domain description xml"));
+        goto cleanup;
+    }
+
+    obj = xmlXPathEval(BAD_CAST "/domain/devices/interface", ctxt);
+    if (obj == NULL || obj->type != XPATH_NODESET ||
+        obj->nodesetval == NULL || obj->nodesetval->nodeNr == 0) {
+        vshError(ctl, _("Failed to extract interface information or no interfaces found"));
+        goto cleanup;
+    }
+
+    /* find interface with matching mac addr */
+    for (i = 0; i < obj->nodesetval->nodeNr; i++) {
+        cur = obj->nodesetval->nodeTab[i]->children;
+
+        while (cur) {
+            if (cur->type == XML_ELEMENT_NODE &&
+                xmlStrEqual(cur->name, BAD_CAST "mac")) {
+                mac = virXMLPropString(cur, "address");
+
+                if (STRCASEEQ(mac, interface)) {
+                    VIR_FREE(mac);
+                    goto hit;
+                }
+                VIR_FREE(mac);
+            }
+            cur = cur->next;
+        }
+    }
+
+    vshError(ctl, _("interface with address '%s' not found"), interface);
+    goto cleanup;
+
+hit:
+    /* find and modify/add link state node */
+    /* try to find <link> element */
+    cur = obj->nodesetval->nodeTab[i]->children;
+
+    while (cur) {
+        if (cur->type == XML_ELEMENT_NODE &&
+            xmlStrEqual(cur->name, BAD_CAST "link")) {
+            /* found, just modify the property */
+            xmlSetProp(cur, BAD_CAST "state", BAD_CAST state);
+
+            break;
+        }
+        cur = cur->next;
+    }
+
+    if (!cur) {
+        /* element <link> not found, add one */
+        cur = xmlNewChild(obj->nodesetval->nodeTab[i],
+                          NULL,
+                          BAD_CAST "link",
+                          NULL);
+        if (!cur)
+            goto cleanup;
+
+        if (xmlNewProp(cur, BAD_CAST "state", BAD_CAST state) == NULL)
+            goto cleanup;
+    }
+
+    xml_buf = xmlBufferCreate();
+    if (!xml_buf) {
+        vshError(ctl, _("Failed to allocate memory"));
+        goto cleanup;
+    }
+
+    if (xmlNodeDump(xml_buf, xml, obj->nodesetval->nodeTab[i], 0, 0) < 0 ) {
+        vshError(ctl, _("Failed to create XML"));
+        goto cleanup;
+    }
+
+    if (virDomainUpdateDeviceFlags(dom, (char *)xmlBufferContent(xml_buf), flags) < 0) {
+        vshError(ctl, _("Failed to update interface link state"));
+        goto cleanup;
+    } else {
+        vshPrint(ctl, "%s", _("Device updated successfully\n"));
+        ret = true;
+    }
+
+cleanup:
+    xmlXPathFreeObject(obj);
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(xml);
+    xmlBufferFree(xml_buf);
+
+    if (dom)
+        virDomainFree(dom);
+
+    return ret;
+}
+
+/* "domif-getlink" command
+ */
+static const vshCmdInfo info_domif_getlink[] = {
+    {"help", N_("get link state of a virtual interface")},
+    {"desc", N_("Get link state of a domain's virtual interface.")},
+    {NULL,NULL}
+};
+
+static const vshCmdOptDef opts_domif_getlink[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, N_("interface device (MAC Address)")},
+    {"persistent", VSH_OT_BOOL, 0, N_("Get persistent interface state")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdDomIfGetLink (vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    const char *interface = NULL;
+    int flags = 0;
+    char *state = NULL;
+    char *mac = NULL;
+    bool ret = false;
+    int i;
+
+    char *desc;
+    xmlDocPtr xml = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    xmlNodePtr cur = NULL;
+    xmlXPathObjectPtr obj = NULL;
+
+    if (!vshConnectionUsability (ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain (ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptString (cmd, "interface", &interface) <= 0) {
+        virDomainFree(dom);
+        return false;
+    }
+
+    if (vshCommandOptBool(cmd, "persistent"))
+        flags = VIR_DOMAIN_XML_INACTIVE;
+
+    desc = virDomainGetXMLDesc(dom, flags);
+    if (desc == NULL) {
+        vshError(ctl, _("Failed to get domain description xml"));
+        goto cleanup;
+    }
+
+    xml = virXMLParseStringCtxt(desc, "domain configuration", &ctxt);
+    VIR_FREE(desc);
+    if (!xml) {
+        vshError(ctl, _("Failed to parse domain description xml"));
+        goto cleanup;
+    }
+
+    obj = xmlXPathEval(BAD_CAST "/domain/devices/interface", ctxt);
+    if (obj == NULL || obj->type != XPATH_NODESET ||
+        obj->nodesetval == NULL || obj->nodesetval->nodeNr == 0) {
+        vshError(ctl, _("Failed to extract interface information or no interfaces found"));
+        goto cleanup;
+    }
+
+    /* find interface with matching mac addr */
+    for (i = 0; i < obj->nodesetval->nodeNr; i++) {
+        cur = obj->nodesetval->nodeTab[i]->children;
+
+        while (cur) {
+            if (cur->type == XML_ELEMENT_NODE &&
+                xmlStrEqual(cur->name, BAD_CAST "mac")) {
+
+                mac = virXMLPropString(cur, "address");
+
+                if (STRCASEEQ(mac, interface)){
+                    VIR_FREE(mac);
+                    goto hit;
+                }
+            }
+            cur = cur->next;
+        }
+    }
+
+    vshError(ctl, _("Interface with address '%s' not found."), interface);
+    goto cleanup;
+
+hit:
+    cur = obj->nodesetval->nodeTab[i]->children;
+    while (cur) {
+        if (cur->type == XML_ELEMENT_NODE &&
+            xmlStrEqual(cur->name, BAD_CAST "link")) {
+
+            state = virXMLPropString(cur, "state");
+            vshPrint(ctl, "%s %s", interface, state);
+            VIR_FREE(state);
+
+            goto cleanup;
+        }
+        cur = cur->next;
+    }
+
+    /* attribute not found */
+    vshPrint(ctl, "%s default", interface);
+
+cleanup:
+    xmlXPathFreeObject(obj);
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(xml);
+    if (dom)
+        virDomainFree(dom);
+
+    return ret;
+}
+
 /*
  * "dommemstats" command
  */
@@ -13221,6 +13505,7 @@ static const vshCmdDef domManagementCmds[] = {
     {"detach-interface", cmdDetachInterface, opts_detach_interface,
      info_detach_interface, 0},
     {"domid", cmdDomid, opts_domid, info_domid, 0},
+    {"domif-setlink", cmdDomIfSetLink, opts_domif_setlink, info_domif_setlink, 0},
     {"domjobabort", cmdDomjobabort, opts_domjobabort, info_domjobabort, 0},
     {"domjobinfo", cmdDomjobinfo, opts_domjobinfo, info_domjobinfo, 0},
     {"domname", cmdDomname, opts_domname, info_domname, 0},
@@ -13281,6 +13566,7 @@ static const vshCmdDef domMonitoringCmds[] = {
     {"domblklist", cmdDomblklist, opts_domblklist, info_domblklist, 0},
     {"domblkstat", cmdDomblkstat, opts_domblkstat, info_domblkstat, 0},
     {"domcontrol", cmdDomControl, opts_domcontrol, info_domcontrol, 0},
+    {"domif-getlink", cmdDomIfGetLink, opts_domif_getlink, info_domif_getlink, 0},
     {"domifstat", cmdDomIfstat, opts_domifstat, info_domifstat, 0},
     {"dominfo", cmdDominfo, opts_dominfo, info_dominfo, 0},
     {"dommemstat", cmdDomMemStat, opts_dommemstat, info_dommemstat, 0},
