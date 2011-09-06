@@ -633,28 +633,92 @@ virXPathNodeSet(const char *xpath,
  * catchXMLError:
  *
  * Called from SAX on parsing errors in the XML.
+ *
+ * This version is heavily based on xmlParserPrintFileContextInternal from libxml2.
  */
 static void
 catchXMLError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
 {
-    int domcode = VIR_FROM_XML;
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
 
-    if (ctxt) {
-        if (ctxt->_private)
+    const xmlChar *cur, *base;
+    unsigned int n, col;	/* GCC warns if signed, because compared with sizeof() */
+    int domcode = VIR_FROM_XML;
+
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *contextstr = NULL;
+    char *pointerstr = NULL;
+
+
+    /* conditions for error printing */
+    if (!ctxt ||
+        (virGetLastError() != NULL) ||
+        ctxt->input == NULL ||
+        ctxt->lastError.level != XML_ERR_FATAL ||
+        ctxt->lastError.message == NULL)
+        return;
+
+    if (ctxt->_private)
             domcode = ((struct virParserData *) ctxt->_private)->domcode;
 
-        if (virGetLastError() == NULL &&
-            ctxt->lastError.level == XML_ERR_FATAL &&
-            ctxt->lastError.message != NULL) {
-            virGenericReportError(domcode, VIR_ERR_XML_DETAIL,
-                                  _("at line %d: %s"),
-                                  ctxt->lastError.line,
-                                  ctxt->lastError.message);
-        }
-    }
-}
 
+    cur = ctxt->input->cur;
+    base = ctxt->input->base;
+
+    /* skip backwards over any end-of-lines */
+    while ((cur > base) && ((*(cur) == '\n') || (*(cur) == '\r'))) {
+        cur--;
+    }
+
+    /* search backwards for beginning-of-line (to max buff size) */
+    while ((cur > base) && (*(cur) != '\n') && (*(cur) != '\r'))
+        cur--;
+    if ((*(cur) == '\n') || (*(cur) == '\r')) cur++;
+
+    /* calculate the error position in terms of the current position */
+    col = ctxt->input->cur - cur;
+
+    /* search forward for end-of-line (to max buff size) */
+    /* copy selected text to our buffer */
+    while ((*cur != 0) && (*(cur) != '\n') && (*(cur) != '\r')) {
+        virBufferAddChar(&buf, *cur++);
+    }
+
+    /* create blank line with problem pointer */
+    contextstr = virBufferContentAndReset(&buf);
+
+    /* (leave buffer space for pointer + line terminator) */
+    for  (n = 0; (n<col) && (contextstr[n] != 0); n++) {
+        if (contextstr[n] == '\t')
+            virBufferAddChar(&buf, '\t');
+        else
+            virBufferAddChar(&buf, '-');
+    }
+
+    virBufferAddChar(&buf, '^');
+
+    pointerstr = virBufferContentAndReset(&buf);
+
+    if (ctxt->lastError.file) {
+        virGenericReportError(domcode, VIR_ERR_XML_DETAIL,
+                              _("%s:%d: %s%s\n%s"),
+                              ctxt->lastError.file,
+                              ctxt->lastError.line,
+                              ctxt->lastError.message,
+                              contextstr,
+                              pointerstr);
+    } else {
+         virGenericReportError(domcode, VIR_ERR_XML_DETAIL,
+                              _("at line %d: %s%s\n%s"),
+                              ctxt->lastError.line,
+                              ctxt->lastError.message,
+                              contextstr,
+                              pointerstr);
+    }
+
+    VIR_FREE(contextstr);
+    VIR_FREE(pointerstr);
+}
 
 /**
  * virXMLParseHelper:
