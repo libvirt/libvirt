@@ -5492,6 +5492,9 @@ qemuDomainUpdateDeviceLive(virDomainObjPtr vm,
     case VIR_DOMAIN_DEVICE_GRAPHICS:
         ret = qemuDomainChangeGraphics(driver, vm, dev->data.graphics);
         break;
+    case VIR_DOMAIN_DEVICE_NET:
+        ret = qemuDomainChangeNet(driver, vm, dom, dev->data.net);
+        break;
     default:
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                         _("device type '%s' cannot be updated"),
@@ -5626,6 +5629,7 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
                              virDomainDeviceDefPtr dev)
 {
     virDomainDiskDefPtr orig, disk;
+    virDomainNetDefPtr net;
     int pos;
 
     switch (dev->type) {
@@ -5664,6 +5668,26 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
         }
         disk->src = NULL;
         break;
+
+    case VIR_DOMAIN_DEVICE_NET:
+        net = dev->data.net;
+        if ((pos = virDomainNetIndexByMac(vmdef, net->mac)) < 0) {
+            char macbuf[VIR_MAC_STRING_BUFLEN];
+            virFormatMacAddr(net->mac, macbuf);
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("mac %s doesn't exist"), macbuf);
+            return -1;
+        }
+
+        VIR_FREE(vmdef->nets[pos]);
+
+        vmdef->nets[pos] = net;
+        dev->data.net = NULL;
+
+        if (qemuDomainAssignPCIAddresses(vmdef) < 0)
+            return -1;
+        break;
+
     default:
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                          _("persistent update of device is not supported"));

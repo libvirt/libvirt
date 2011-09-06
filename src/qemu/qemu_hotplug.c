@@ -751,6 +751,30 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
+    /* set link state */
+    if (net->linkstate == VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN) {
+        if (!net->info.alias) {
+            qemuReportError(VIR_ERR_OPERATION_FAILED,
+                            _("device alias not found: cannot set link state to down"));
+        } else {
+            qemuDomainObjEnterMonitorWithDriver(driver, vm);
+
+            if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV)) {
+                if (qemuMonitorSetLink(priv->mon, net->info.alias, VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN) < 0) {
+                    qemuDomainObjExitMonitorWithDriver(driver, vm);
+                    virDomainAuditNet(vm, NULL, net, "attach", false);
+                    goto try_remove;
+                }
+            } else {
+                qemuReportError(VIR_ERR_OPERATION_FAILED,
+                                _("setting of link state not supported: Link is up"));
+            }
+
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+        }
+        /* link set to down */
+    }
+
     virDomainAuditNet(vm, NULL, net, "attach", true);
 
     ret = 0;
@@ -1081,6 +1105,158 @@ error:
 
     return -1;
 }
+
+static virDomainNetDefPtr qemuDomainFindNet(virDomainObjPtr vm,
+                                            virDomainNetDefPtr dev)
+{
+    int i;
+
+    for (i = 0; i < vm->def->nnets; i++) {
+        if (memcmp(vm->def->nets[i]->mac, dev->mac, VIR_MAC_BUFLEN) == 0)
+            return vm->def->nets[i];
+    }
+
+    return NULL;
+}
+
+int qemuDomainChangeNetLinkState(struct qemud_driver *driver,
+                                 virDomainObjPtr vm,
+                                 virDomainNetDefPtr dev,
+                                 int linkstate)
+{
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    VIR_DEBUG("dev: %s, state: %d", dev->info.alias, linkstate);
+
+    if (!dev->info.alias) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("can't change link state: device alias not found"));
+        return -1;
+    }
+
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+
+    ret = qemuMonitorSetLink(priv->mon, dev->info.alias, linkstate);
+    if (ret < 0)
+        goto cleanup;
+
+    /* modify the device configuration */
+    dev->linkstate = linkstate;
+
+cleanup:
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    return ret;
+}
+
+int qemuDomainChangeNet(struct qemud_driver *driver,
+                        virDomainObjPtr vm,
+                        virDomainPtr dom ATTRIBUTE_UNUSED,
+                        virDomainNetDefPtr dev)
+
+{
+    virDomainNetDefPtr olddev = qemuDomainFindNet(vm, dev);
+    int ret = 0;
+
+    if (!olddev) {
+        qemuReportError(VIR_ERR_NO_SUPPORT,
+                        _("cannot find existing network device to modify"));
+        return -1;
+    }
+
+    if (olddev->type != dev->type) {
+        qemuReportError(VIR_ERR_NO_SUPPORT,
+                        _("cannot change network interface type"));
+        return -1;
+    }
+
+    switch (olddev->type) {
+    case VIR_DOMAIN_NET_TYPE_USER:
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
+        if (STRNEQ_NULLABLE(olddev->data.ethernet.dev, dev->data.ethernet.dev) ||
+            STRNEQ_NULLABLE(olddev->data.ethernet.script, dev->data.ethernet.script) ||
+            STRNEQ_NULLABLE(olddev->data.ethernet.ipaddr, dev->data.ethernet.ipaddr)) {
+            qemuReportError(VIR_ERR_NO_SUPPORT,
+                            _("cannot modify ethernet network device configuration"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+        if (STRNEQ_NULLABLE(olddev->data.socket.address, dev->data.socket.address) ||
+            olddev->data.socket.port != dev->data.socket.port) {
+            qemuReportError(VIR_ERR_NO_SUPPORT,
+                            _("cannot modify network socket device configuration"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+        if (STRNEQ_NULLABLE(olddev->data.network.name, dev->data.network.name) ||
+            STRNEQ_NULLABLE(olddev->data.network.portgroup, dev->data.network.portgroup) ||
+            !virVirtualPortProfileEqual(olddev->data.network.virtPortProfile, dev->data.network.virtPortProfile)) {
+            qemuReportError(VIR_ERR_NO_SUPPORT,
+                            _("cannot modify network device configuration"));
+            return -1;
+        }
+
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+        if (STRNEQ_NULLABLE(olddev->data.internal.name, dev->data.internal.name)) {
+            qemuReportError(VIR_ERR_NO_SUPPORT,
+                            _("cannot modify internal network device configuration"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+        if (STRNEQ_NULLABLE(olddev->data.direct.linkdev, dev->data.direct.linkdev) ||
+            olddev->data.direct.mode != dev->data.direct.mode ||
+            !virVirtualPortProfileEqual(olddev->data.direct.virtPortProfile, dev->data.direct.virtPortProfile)) {
+            qemuReportError(VIR_ERR_NO_SUPPORT,
+                            _("cannot modify direct network device configuration"));
+            return -1;
+        }
+        break;
+
+    default:
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("unable to change config on '%s' network type"),
+                        virDomainNetTypeToString(dev->type));
+        break;
+
+    }
+
+    /* all other unmodifiable parameters */
+    if (STRNEQ_NULLABLE(olddev->model, dev->model) ||
+        STRNEQ_NULLABLE(olddev->filter, dev->filter)) {
+        qemuReportError(VIR_ERR_NO_SUPPORT,
+                        _("cannot modify network device configuration"));
+        return -1;
+    }
+
+    /* check if device name has been set, if no, retain the autogenerated one */
+    if (dev->ifname &&
+        STRNEQ_NULLABLE(olddev->ifname, dev->ifname)) {
+        qemuReportError(VIR_ERR_NO_SUPPORT,
+                        _("cannot modify network device configuration"));
+        return -1;
+    }
+
+    if (olddev->linkstate != dev->linkstate) {
+        if ((ret = qemuDomainChangeNetLinkState(driver, vm, olddev, dev->linkstate)) < 0)
+            return ret;
+    }
+
+    return ret;
+}
+
 
 
 static virDomainGraphicsDefPtr qemuDomainFindGraphics(virDomainObjPtr vm,

@@ -1453,7 +1453,40 @@ qemuProcessInitCpuAffinity(virDomainObjPtr vm)
     return 0;
 }
 
-/* Set CPU affinites for vcpus if vcpupin xml provided. */
+/* set link states to down on interfaces at qemu start */
+static int
+qemuProcessSetLinkStates(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDefPtr def = vm->def;
+    int i;
+    int ret = 0;
+
+    for (i = 0; i < def->nnets; i++) {
+        if (def->nets[i]->linkstate == VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN) {
+            VIR_DEBUG("Setting link state: %s", def->nets[i]->info.alias);
+
+            if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV)) {
+                qemuReportError(VIR_ERR_NO_SUPPORT,
+                                _("Setting of link state is not supported by this qemu"));
+                return -1;
+            }
+
+            ret = qemuMonitorSetLink(priv->mon,
+                                     def->nets[i]->info.alias,
+                                     VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN);
+            if (ret != 0) {
+                qemuReportError(VIR_ERR_OPERATION_FAILED,
+                               _("Couldn't set link state on interface: %s"), def->nets[i]->info.alias);
+                break;
+            }
+        }
+    }
+
+    return ret;
+}
+
+/* Set CPU affinities for vcpus if vcpupin xml provided. */
 static int
 qemuProcessSetVcpuAffinites(virConnectPtr conn,
                             virDomainObjPtr vm)
@@ -3080,6 +3113,18 @@ int qemuProcessStart(virConnectPtr conn,
         if (qemuProcessInitPCIAddresses(driver, vm) < 0)
             goto cleanup;
     }
+
+    /* set default link states */
+    /* qemu doesn't support setting this on the command line, so
+     * enter the monitor */
+    VIR_DEBUG("Setting network link states");
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    if (qemuProcessSetLinkStates(vm) < 0) {
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        goto cleanup;
+    }
+
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     /* Technically, qemuProcessStart can be called from inside
      * QEMU_ASYNC_JOB_MIGRATION_IN, but we are okay treating this like
