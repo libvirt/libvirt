@@ -5553,6 +5553,18 @@ virDomainRedirdevDefParseXML(const xmlNodePtr node,
         def->source.chr.data.spicevmc = VIR_DOMAIN_CHR_SPICEVMC_USBREDIR;
     }
 
+    if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+        goto error;
+
+    if (def->bus == VIR_DOMAIN_REDIRDEV_BUS_USB &&
+        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
+        virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                             _("Invalid address for a USB device"));
+        goto error;
+    }
+
+
 cleanup:
     VIR_FREE(bus);
     VIR_FREE(type);
@@ -10342,6 +10354,8 @@ virDomainRedirdevDefFormat(virBufferPtr buf,
 
     virBufferAsprintf(buf, "    <redirdev bus='%s'", bus);
     if (virDomainChrSourceDefFormat(buf, &def->source.chr, false, flags) < 0)
+        return -1;
+    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;
     virBufferAddLit(buf, "    </redirdev>\n");
 

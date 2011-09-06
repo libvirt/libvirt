@@ -34,6 +34,7 @@
       <protocol type='raw'/>
     </redirdev>
     <redirdev bus='usb' type='spicevmc'>
+      <address type='usb' bus='0' port='4'/>
     </redirdev>
     <memballoon model='virtio'/>
   </devices>

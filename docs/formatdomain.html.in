@@ -1449,14 +1449,21 @@
         tunnel; <code>type='tcp'</code>
         or <code>type='spicevmc'</code> (which uses the usbredir
         channel of a <a href="#elementsGraphics">SPICE graphics
-        device</a>) are typical.  Further sub-elements, such
-        as <code>&lt;source&gt;</code>, may be required according to
-        the given type, although a <code>&lt;target&gt;</code>
-        sub-element is not required (since the consumer of the
-        character device is the hypervisor itself, rather than a
-        device visible in the guest).</dd>
+        device</a>) are typical.</dd>
 
     </dl>
+    <p>
+      The redirdev element has an optional sub-element
+      <code>&lt;address&gt;</code> which can tie the device to a
+      particular controller.
+    </p>
+    <p>
+      Further sub-elements, such as <code>&lt;source&gt;</code>, may
+      be required according to the given type, although
+      a <code>&lt;target&gt;</code> sub-element is not required (since
+      the consumer of the character device is the hypervisor itself,
+      rather than a device visible in the guest).
+    </p>
 
     <h4><a name="elementsSmartcard">Smartcard devices</a></h4>
 

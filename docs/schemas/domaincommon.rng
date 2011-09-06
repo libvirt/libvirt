@@ -2008,6 +2008,9 @@
         <ref name="qemucdevSrcTypeChoice"/>
       </attribute>
       <ref name="qemucdevSrcDef"/>
+      <optional>
+        <ref name="address"/>
+      </optional>
     </element>
   </define>
   <define name="hostdev">
