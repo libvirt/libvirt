@@ -150,6 +150,17 @@
        <optional>
          <ref name="bandwidth"/>
        </optional>
+       <optional>
+         <element name="link">
+           <attribute name="state">
+             <choice>
+               <value>up</value>
+               <value>down</value>
+             </choice>
+           </attribute>
+           <empty/>
+         </element>
+        </optional>
 
         <!-- <ip> element -->
         <zeroOrMore>

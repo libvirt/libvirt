@@ -410,6 +410,15 @@ enum virDomainNetVirtioTxModeType {
     VIR_DOMAIN_NET_VIRTIO_TX_MODE_LAST,
 };
 
+/* link interface states */
+enum virDomainNetInterfaceLinkState {
+        VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DEFAULT = 0, /* Default link state (up) */
+        VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP,          /* Link is up. ("cable" connected) */
+        VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN ,       /* Link is down. ("cable" disconnected) */
+
+        VIR_DOMAIN_NET_INTERFACE_LINK_STATE_LAST
+};
+
 /* Config that was actually used to bring up interface, after
  * resolving network reference. This is private data, only used within
  * libvirt, but still must maintain backward compatibility, because
@@ -495,6 +504,7 @@ struct _virDomainNetDef {
     char *filter;
     virNWFilterHashTablePtr filterparams;
     virBandwidthPtr bandwidth;
+    int linkstate;
 };
 
 /* Used for prefix of ifname of any network name generated dynamically
@@ -1829,6 +1839,7 @@ VIR_ENUM_DECL(virDomainFSAccessMode)
 VIR_ENUM_DECL(virDomainNet)
 VIR_ENUM_DECL(virDomainNetBackend)
 VIR_ENUM_DECL(virDomainNetVirtioTxMode)
+VIR_ENUM_DECL(virDomainNetInterfaceLinkState)
 VIR_ENUM_DECL(virDomainChrDevice)
 VIR_ENUM_DECL(virDomainChrChannelTarget)
 VIR_ENUM_DECL(virDomainChrConsoleTarget)

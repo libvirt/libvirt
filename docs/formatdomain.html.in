@@ -2131,6 +2131,27 @@ qemu-kvm -net nic,model=? /dev/null
       <span class="since">Since 0.9.4</span>
     </p>
 
+    <h5><a name="elementLink">Modyfing virtual link state</a></h5>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='network'&gt;
+      &lt;source network='default'/&gt;
+      &lt;target dev='vnet0'/&gt;
+      <b>&lt;link state='down'/&gt;</b>
+    &lt;/interface&gt;
+  &lt;devices&gt;
+  ...</pre>
+
+    <p>
+      This element provides means of setting state of the virtual network link.
+      Possible values for attribute <code>state</code> are <code>up</code> and
+      <code>down</code>. If <code>down</code> is specified as the value, the interface
+      behaves as if it had the network cable disconnected. Default behavior if this
+      element is unspecified is to have the link state <code>up</code>.
+      <span class="since">Since 0.9.5</span>
+    </p>
+
     <h4><a name="elementsInput">Input devices</a></h4>
 
     <p>

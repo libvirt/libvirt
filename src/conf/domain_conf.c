@@ -257,6 +257,11 @@ VIR_ENUM_IMPL(virDomainNetVirtioTxMode, VIR_DOMAIN_NET_VIRTIO_TX_MODE_LAST,
               "iothread",
               "timer")
 
+VIR_ENUM_IMPL(virDomainNetInterfaceLinkState, VIR_DOMAIN_NET_INTERFACE_LINK_STATE_LAST,
+              "default",
+              "up",
+              "down")
+
 VIR_ENUM_IMPL(virDomainChrChannelTarget,
               VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_LAST,
               "guestfwd",
@@ -2980,6 +2985,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
     char *internal = NULL;
     char *devaddr = NULL;
     char *mode = NULL;
+    char *linkstate = NULL;
     virNWFilterHashTablePtr filterparams = NULL;
     virVirtualPortProfileParamsPtr virtPort = NULL;
     virDomainActualNetDefPtr actual = NULL;
@@ -3056,6 +3062,9 @@ virDomainNetDefParseXML(virCapsPtr caps,
                     /* An auto-generated target name, blank it out */
                     VIR_FREE(ifname);
                 }
+            } else if ((linkstate == NULL) &&
+                       xmlStrEqual(cur->name, BAD_CAST "link")) {
+                linkstate = virXMLPropString(cur, "state");
             } else if ((script == NULL) &&
                        (def->type == VIR_DOMAIN_NET_TYPE_ETHERNET ||
                         def->type == VIR_DOMAIN_NET_TYPE_BRIDGE) &&
@@ -3320,6 +3329,16 @@ virDomainNetDefParseXML(virCapsPtr caps,
         }
     }
 
+    def->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DEFAULT;
+    if (linkstate != NULL) {
+        if ((def->linkstate = virDomainNetInterfaceLinkStateTypeFromString(linkstate)) <= 0) {
+            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                 _("unknown interface link state '%s'"),
+                                 linkstate);
+            goto error;
+        }
+    }
+
     if (filter != NULL) {
         switch (def->type) {
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -3367,6 +3386,7 @@ cleanup:
     VIR_FREE(internal);
     VIR_FREE(devaddr);
     VIR_FREE(mode);
+    VIR_FREE(linkstate);
     virNWFilterHashTableFree(filterparams);
 
     return def;
@@ -9509,6 +9529,10 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, "        <sndbuf>%lu</sndbuf>\n", def->tune.sndbuf);
         virBufferAddLit(buf,   "      </tune>\n");
     }
+
+    if (def->linkstate)
+        virBufferAsprintf(buf, "      <link state='%s'/>\n",
+                          virDomainNetInterfaceLinkStateTypeToString(def->linkstate));
 
     if (virBandwidthDefFormat(buf, def->bandwidth, "      ") < 0)
         return -1;
