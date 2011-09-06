@@ -273,6 +273,19 @@ struct remote_domain_block_stats_ret {
         int64_t                    wr_bytes;
         int64_t                    errs;
 };
+struct remote_domain_block_stats_flags_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      path;
+        int                        nparams;
+        u_int                      flags;
+};
+struct remote_domain_block_stats_flags_ret {
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        int                        nparams;
+};
 struct remote_domain_interface_stats_args {
         remote_nonnull_domain      dom;
         remote_nonnull_string      path;
@@ -1944,4 +1957,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_BLOCK_PULL = 240,
         REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB = 241,
         REMOTE_PROC_DOMAIN_MIGRATE_GET_MAX_SPEED = 242,
+        REMOTE_PROC_DOMAIN_BLOCK_STATS_FLAGS = 243,
 };
