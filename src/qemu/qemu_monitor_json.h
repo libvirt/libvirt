@@ -241,4 +241,8 @@ int qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
                             virDomainBlockJobInfoPtr info,
                             int mode);
 
+int qemuMonitorJSONSetLink(qemuMonitorPtr mon,
+                           const char *name,
+                           enum virDomainNetInterfaceLinkState state);
+
 #endif /* QEMU_MONITOR_JSON_H */

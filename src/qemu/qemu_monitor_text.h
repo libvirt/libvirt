@@ -234,4 +234,8 @@ int qemuMonitorTextBlockJob(qemuMonitorPtr mon,
                             virDomainBlockJobInfoPtr info,
                             int mode);
 
+int qemuMonitorTextSetLink(qemuMonitorPtr mon,
+                           const char *name,
+                           enum virDomainNetInterfaceLinkState state);
+
 #endif /* QEMU_MONITOR_TEXT_H */

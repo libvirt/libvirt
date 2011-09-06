@@ -1135,6 +1135,25 @@ int qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
     return ret;
 }
 
+int qemuMonitorSetLink(qemuMonitorPtr mon,
+                       const char *name,
+                       enum virDomainNetInterfaceLinkState state)
+{
+    int ret;
+    VIR_DEBUG("mon=%p, name=%p:%s, state=%u", mon, name, name, state);
+
+    if (!mon || !name) {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        _("monitor || name must not be NULL"));
+        return -1;
+    }
+
+    if (mon->json)
+        ret = qemuMonitorJSONSetLink(mon, name, state);
+    else
+        ret = qemuMonitorTextSetLink(mon, name, state);
+    return ret;
+}
 
 int qemuMonitorGetVirtType(qemuMonitorPtr mon,
                            int *virtType)
