@@ -286,6 +286,7 @@ int virThreadPoolSendJob(virThreadPoolPtr pool,
                          void *jobData)
 {
     virThreadPoolJobPtr job;
+    struct virThreadPoolWorkerData *data = NULL;
 
     virMutexLock(&pool->mutex);
     if (pool->quit)
@@ -298,10 +299,20 @@ int virThreadPoolSendJob(virThreadPoolPtr pool,
             goto error;
         }
 
+        if (VIR_ALLOC(data) < 0) {
+            pool->nWorkers--;
+            virReportOOMError();
+            goto error;
+        }
+
+        data->pool = pool;
+        data->cond = &pool->cond;
+
         if (virThreadCreate(&pool->workers[pool->nWorkers - 1],
                             true,
                             virThreadPoolWorker,
-                            pool) < 0) {
+                            data) < 0) {
+            VIR_FREE(data);
             pool->nWorkers--;
             goto error;
         }
