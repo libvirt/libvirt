@@ -487,7 +487,9 @@ xend_op_ext(virConnectPtr xend, const char *path, const char *key, va_list ap)
     while (k) {
         v = va_arg(ap, const char *);
 
-        virBufferAsprintf(&buf, "%s=%s", k, v);
+        virBufferURIEncodeString(&buf, k);
+        virBufferAddChar(&buf, '=');
+        virBufferURIEncodeString(&buf, v);
         k = va_arg(ap, const char *);
 
         if (k)
@@ -597,47 +599,6 @@ sexpr_uuid(unsigned char *ptr, const struct sexpr *node, const char *path)
     if (!r)
         return -1;
     return virUUIDParse(r, ptr);
-}
-
-
-/**
- * urlencode:
- * @string: the input URL
- *
- * Encode an URL see RFC 2396 and following
- *
- * Returns the new string or NULL in case of error.
- */
-static char *
-urlencode(const char *string)
-{
-    size_t len = strlen(string);
-    char *buffer;
-    char *ptr;
-    size_t i;
-
-    if (VIR_ALLOC_N(buffer, len * 3 + 1) < 0) {
-        virReportOOMError();
-        return (NULL);
-    }
-    ptr = buffer;
-    for (i = 0; i < len; i++) {
-        switch (string[i]) {
-            case ' ':
-            case '\n':
-            case '&':
-                snprintf(ptr, 4, "%%%02x", string[i]);
-                ptr += 3;
-                break;
-            default:
-                *ptr = string[i];
-                ptr++;
-        }
-    }
-
-    *ptr = 0;
-
-    return buffer;
 }
 
 /* PUBLIC FUNCTIONS */
@@ -862,22 +823,9 @@ xenDaemonListDomainsOld(virConnectPtr xend)
 int
 xenDaemonDomainCreateXML(virConnectPtr xend, const char *sexpr)
 {
-    int ret, serrno;
-    char *ptr;
+    int ret;
 
-    ptr = urlencode(sexpr);
-    if (ptr == NULL) {
-        /* this should be caught at the interface but ... */
-        virXendError(VIR_ERR_INTERNAL_ERROR,
-                     "%s", _("failed to urlencode the create S-Expr"));
-        return (-1);
-    }
-
-    ret = xend_op(xend, "", "op", "create", "config", ptr, NULL);
-
-    serrno = errno;
-    VIR_FREE(ptr);
-    errno = serrno;
+    ret = xend_op(xend, "", "op", "create", "config", sexpr, NULL);
 
     return ret;
 }
