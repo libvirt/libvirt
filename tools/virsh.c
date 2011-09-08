@@ -1306,7 +1306,7 @@ cmdDomIfSetLink (vshControl *ctl, const vshCmd *cmd)
         flags = VIR_DOMAIN_AFFECT_CONFIG;
 
     /* extract current network device description */
-    xml = virXMLParseStringCtxt(desc, "domain configuration", &ctxt);
+    xml = virXMLParseStringCtxt(desc, _("(domain definition)"), &ctxt);
     VIR_FREE(desc);
     if (!xml) {
         vshError(ctl, _("Failed to parse domain description xml"));
@@ -1453,7 +1453,7 @@ cmdDomIfGetLink (vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    xml = virXMLParseStringCtxt(desc, "domain configuration", &ctxt);
+    xml = virXMLParseStringCtxt(desc, _("(domain definition)"), &ctxt);
     VIR_FREE(desc);
     if (!xml) {
         vshError(ctl, _("Failed to parse domain description xml"));
@@ -1662,7 +1662,7 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     if (!xml)
         goto cleanup;
 
-    xmldoc = virXMLParseStringCtxt(xml, "domain.xml", &ctxt);
+    xmldoc = virXMLParseStringCtxt(xml, _("(domain definition)"), &ctxt);
     if (!xmldoc)
         goto cleanup;
 
@@ -3492,7 +3492,7 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         }
 
-        xml = virXMLParseStringCtxt(cap_xml, "node.xml", &ctxt);
+        xml = virXMLParseStringCtxt(cap_xml, _("(capabilities)"), &ctxt);
         if (!xml) {
             vshError(ctl, "%s", _("unable to get node capabilities"));
             goto cleanup;
@@ -9032,7 +9032,8 @@ cleanup:
 }
 
 static xmlChar *
-makeCloneXML(const char *origxml, const char *newname) {
+makeCloneXML(const char *origxml, const char *newname)
+{
 
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
@@ -9040,7 +9041,7 @@ makeCloneXML(const char *origxml, const char *newname) {
     xmlChar *newxml = NULL;
     int size;
 
-    doc = virXMLParseStringCtxt(origxml, "domain.xml", &ctxt);
+    doc = virXMLParseStringCtxt(origxml, _("(volume definition)"), &ctxt);
     if (!doc)
         goto cleanup;
 
@@ -10831,7 +10832,7 @@ cmdVNCDisplay(vshControl *ctl, const vshCmd *cmd)
     if (!doc)
         goto cleanup;
 
-    xml = virXMLParseStringCtxt(doc, "domain.xml", &ctxt);
+    xml = virXMLParseStringCtxt(doc, _("(domain definition)"), &ctxt);
     VIR_FREE(doc);
     if (!xml)
         goto cleanup;
@@ -10899,7 +10900,7 @@ cmdTTYConsole(vshControl *ctl, const vshCmd *cmd)
     if (!doc)
         goto cleanup;
 
-    xml = virXMLParseStringCtxt(doc, "domain.xml", &ctxt);
+    xml = virXMLParseStringCtxt(doc, _("(domain definition)"), &ctxt);
     VIR_FREE(doc);
     if (!xml)
         goto cleanup;
@@ -11286,7 +11287,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     if (!doc)
         goto cleanup;
 
-    xml = virXMLParseStringCtxt(doc, "domain.xml", &ctxt);
+    xml = virXMLParseStringCtxt(doc, _("(domain definition)"), &ctxt);
     VIR_FREE(doc);
     if (!xml) {
         vshError(ctl, "%s", _("Failed to get interface information"));
@@ -11753,7 +11754,7 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     if (!doc)
         goto cleanup;
 
-    xml = virXMLParseStringCtxt(doc, "domain.xml", &ctxt);
+    xml = virXMLParseStringCtxt(doc, _("(domain definition)"), &ctxt);
     VIR_FREE(doc);
     if (!xml) {
         vshError(ctl, "%s", _("Failed to get disk information"));
@@ -13023,7 +13024,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
             if (!doc)
                 continue;
 
-            xml = virXMLParseStringCtxt(doc, "domainsnapshot.xml", &ctxt);
+            xml = virXMLParseStringCtxt(doc, _("(domain snapshot)"), &ctxt);
             if (!xml)
                 continue;
 
@@ -13184,7 +13185,7 @@ cmdSnapshotParent(vshControl *ctl, const vshCmd *cmd)
     if (!xml)
         goto cleanup;
 
-    xmldoc = virXMLParseStringCtxt(xml, "domainsnapshot.xml", &ctxt);
+    xmldoc = virXMLParseStringCtxt(xml, _("(domain snapshot)"), &ctxt);
     if (!xmldoc)
         goto cleanup;
 

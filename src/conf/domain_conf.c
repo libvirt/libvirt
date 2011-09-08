@@ -7461,7 +7461,7 @@ virDomainDefParse(const char *xmlStr,
     xmlDocPtr xml;
     virDomainDefPtr def = NULL;
 
-    if ((xml = virXMLParse(filename, xmlStr, "domain.xml"))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(domain definition)")))) {
         def = virDomainDefParseNode(caps, xml, xmlDocGetRootElement(xml),
                                     expectedVirtTypes, flags);
         xmlFreeDoc(xml);
