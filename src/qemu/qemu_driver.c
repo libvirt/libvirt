@@ -7755,8 +7755,8 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     virStorageFileMetadata *meta = NULL;
     virDomainDiskDefPtr disk = NULL;
     struct stat sb;
+    int i;
     int format;
-    const char *actual;
 
     virCheckFlags(0, -1);
 
@@ -7778,12 +7778,19 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     }
 
     /* Check the path belongs to this domain. */
-    if (!(actual = virDomainDiskPathByName(vm->def, path))) {
+    if ((i = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
         qemuReportError(VIR_ERR_INVALID_ARG,
                         _("invalid path %s not assigned to domain"), path);
         goto cleanup;
     }
-    path = actual;
+    disk = vm->def->disks[i];
+    if (!disk->src) {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        _("disk %s does not currently have a source assigned"),
+                        path);
+        goto cleanup;
+    }
+    path = disk->src;
 
     /* The path is correct, now try to open it and get its size. */
     fd = open(path, O_RDONLY);
