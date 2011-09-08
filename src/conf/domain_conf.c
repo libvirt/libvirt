@@ -11622,7 +11622,7 @@ virDomainSnapshotDefParseString(const char *xmlStr,
                 goto cleanup;
         }
         VIR_FREE(nodes);
-    } else {
+    } else if (i) {
         virDomainReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                              _("unable to handle disk requests in snapshot"));
         goto cleanup;
