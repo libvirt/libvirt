@@ -2656,6 +2656,10 @@ typedef struct _virDomainSnapshot virDomainSnapshot;
  */
 typedef virDomainSnapshot *virDomainSnapshotPtr;
 
+const char *virDomainSnapshotGetName(virDomainSnapshotPtr snapshot);
+virDomainPtr virDomainSnapshotGetDomain(virDomainSnapshotPtr snapshot);
+virConnectPtr virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot);
+
 typedef enum {
     VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE    = (1 << 0), /* Restore or alter
                                                           metadata */

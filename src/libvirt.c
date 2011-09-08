@@ -15665,6 +15665,79 @@ error:
 }
 
 /**
+ * virDomainSnapshotGetName:
+ * @snapshot: a snapshot object
+ *
+ * Get the public name for that snapshot
+ *
+ * Returns a pointer to the name or NULL, the string need not be deallocated
+ * as its lifetime will be the same as the snapshot object.
+ */
+const char *
+virDomainSnapshotGetName(virDomainSnapshotPtr snapshot)
+{
+    VIR_DEBUG("snapshot=%p", snapshot);
+
+    virResetLastError();
+
+    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
+        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
+                                  __FUNCTION__);
+        virDispatchError(NULL);
+        return NULL;
+    }
+    return snapshot->name;
+}
+
+/**
+ * virDomainSnapshotGetDomain:
+ * @snapshot: a snapshot object
+ *
+ * Get the domain that a snapshot was created for
+ *
+ * Returns the domain or NULL.
+ */
+virDomainPtr
+virDomainSnapshotGetDomain(virDomainSnapshotPtr snapshot)
+{
+    VIR_DEBUG("snapshot=%p", snapshot);
+
+    virResetLastError();
+
+    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
+        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
+                                  __FUNCTION__);
+        virDispatchError(NULL);
+        return NULL;
+    }
+    return snapshot->domain;
+}
+
+/**
+ * virDomainSnapshotGetConnect:
+ * @snapshot: a snapshot object
+ *
+ * Get the connection that owns the domain that a snapshot was created for
+ *
+ * Returns the connection or NULL.
+ */
+virConnectPtr
+virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
+{
+    VIR_DEBUG("snapshot=%p", snapshot);
+
+    virResetLastError();
+
+    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
+        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
+                                  __FUNCTION__);
+        virDispatchError(NULL);
+        return NULL;
+    }
+    return snapshot->domain->conn;
+}
+
+/**
  * virDomainSnapshotCreateXML:
  * @domain: a domain object
  * @xmlDesc: string containing an XML description of the domain
