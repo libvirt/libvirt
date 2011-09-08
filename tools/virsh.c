@@ -4301,7 +4301,7 @@ static const vshCmdOptDef opts_send_key[] = {
     {"codeset", VSH_OT_STRING, VSH_OFLAG_REQ_OPT,
      N_("the codeset of keycodes, default:linux")},
     {"holdtime", VSH_OT_INT, VSH_OFLAG_REQ_OPT,
-     N_("the time (in millseconds) how long the keys will be held")},
+     N_("the time (in milliseconds) how long the keys will be held")},
     {"keycode", VSH_OT_ARGV, VSH_OFLAG_REQ, N_("the key code")},
     {NULL, 0, 0, NULL}
 };
