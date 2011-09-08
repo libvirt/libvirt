@@ -420,8 +420,17 @@ SELinuxSetFilecon(const char *path, char *tcon)
          * virt_use_{nfs,usb,pci}  boolean tunables to allow it...
          */
         if (setfilecon_errno != EOPNOTSUPP) {
+            const char *errmsg;
+            if ((virStorageFileIsSharedFSType(path,
+                                             VIR_STORAGE_FILE_SHFS_NFS) == 1) &&
+                security_get_boolean_active("virt_use_nfs") != 1) {
+                errmsg = _("unable to set security context '%s' on '%s'. "
+                           "Consider setting virt_use_nfs");
+            } else {
+                errmsg = _("unable to set security context '%s' on '%s'");
+            }
             virReportSystemError(setfilecon_errno,
-                                 _("unable to set security context '%s' on '%s'"),
+                                 errmsg,
                                  tcon, path);
             if (security_getenforce() == 1)
                 return -1;
