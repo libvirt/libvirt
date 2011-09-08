@@ -12424,7 +12424,7 @@ vshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
     char *doc = NULL;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    char *name = NULL;
+    const char *name = NULL;
 
     snapshot = virDomainSnapshotCreateXML(dom, buffer, flags);
 
@@ -12459,21 +12459,9 @@ vshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
         goto cleanup;
     }
 
-    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)
-        doc = vshStrdup(ctl, buffer);
-    else
-        doc = virDomainSnapshotGetXMLDesc(snapshot, 0);
-    if (!doc)
-        goto cleanup;
-
-    xml = virXMLParseStringCtxt(doc, "domainsnapshot.xml", &ctxt);
-    if (!xml)
-        goto cleanup;
-
-    name = virXPathString("string(/domainsnapshot/name)", ctxt);
+    name = virDomainSnapshotGetName(snapshot);
     if (!name) {
-        vshError(ctl, "%s",
-                 _("Could not find 'name' element in domain snapshot XML"));
+        vshError(ctl, "%s", _("Could not get snapshot name"));
         goto cleanup;
     }
 
@@ -12485,7 +12473,6 @@ vshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
     ret = true;
 
 cleanup:
-    VIR_FREE(name);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
     if (snapshot)
@@ -12891,32 +12878,22 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
     if (current < 0)
         goto cleanup;
     else if (current) {
-        char *name = NULL;
+        const char *name = NULL;
 
         if (!(snapshot = virDomainSnapshotCurrent(dom, 0)))
             goto cleanup;
 
-        xml = virDomainSnapshotGetXMLDesc(snapshot, flags);
-        if (!xml)
-            goto cleanup;
-
         if (vshCommandOptBool(cmd, "name")) {
-            xmlDocPtr xmldoc = NULL;
-            xmlXPathContextPtr ctxt = NULL;
-
-            xmldoc = virXMLParseStringCtxt(xml, "domainsnapshot.xml", &ctxt);
-            if (!xmldoc)
-                goto cleanup;
-
-            name = virXPathString("string(/domainsnapshot/name)", ctxt);
-            xmlXPathFreeContext(ctxt);
-            xmlFreeDoc(xmldoc);
+            name = virDomainSnapshotGetName(snapshot);
             if (!name)
+                goto cleanup;
+        } else {
+            xml = virDomainSnapshotGetXMLDesc(snapshot, flags);
+            if (!xml)
                 goto cleanup;
         }
 
         vshPrint(ctl, "%s", name ? name : xml);
-        VIR_FREE(name);
     }
 
     ret = true;
