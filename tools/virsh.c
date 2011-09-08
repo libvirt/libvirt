@@ -1924,6 +1924,13 @@ static const vshCmdInfo info_undefine[] = {
 static const vshCmdOptDef opts_undefine[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name or uuid")},
     {"managed-save", VSH_OT_BOOL, 0, N_("remove domain managed state file")},
+    {"storage", VSH_OT_DATA, VSH_OFLAG_NONE,
+     N_("remove associated storage volumes (comma separated list of targets "
+        "or source paths) (see domblklist)")},
+    {"remove-all-storage", VSH_OT_BOOL, 0,
+     N_("remove all associated storage volumes (use with caution)")},
+    {"wipe-storage", VSH_OT_BOOL, VSH_OFLAG_NONE,
+     N_("wipe data on the removed volumes")},
     {"snapshots-metadata", VSH_OT_BOOL, 0,
      N_("remove all domain snapshot metadata, if inactive")},
     {NULL, 0, 0, NULL}
@@ -1940,6 +1947,9 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     /* User-requested actions.  */
     bool managed_save = vshCommandOptBool(cmd, "managed-save");
     bool snapshots_metadata = vshCommandOptBool(cmd, "snapshots-metadata");
+    bool wipe_storage = vshCommandOptBool(cmd, "wipe-storage");
+    bool remove_storage = false;
+    bool remove_all_storage = vshCommandOptBool(cmd, "remove-all-storage");
     /* Positive if these items exist.  */
     int has_managed_save = 0;
     int has_snapshots_metadata = 0;
@@ -1949,6 +1959,23 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     bool snapshots_safe = false;
     int rc = -1;
     int running;
+    /* list of volumes to remove along with this domain */
+    const char *volumes_arg = NULL;
+    char *volumes = NULL;
+    char **volume_tokens = NULL;
+    char *volume_tok = NULL;
+    int nvolume_tokens = 0;
+    char *def = NULL;
+    char *source = NULL;
+    char *target = NULL;
+    int vol_i;
+    int tok_i;
+    xmlDocPtr doc = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    xmlNodePtr *vol_nodes = NULL;
+    int nvolumes = 0;
+    virStorageVolPtr vol = NULL;
+    bool vol_del_failed = false;
 
     if (managed_save) {
         flags |= VIR_DOMAIN_UNDEFINE_MANAGED_SAVE;
@@ -1964,6 +1991,17 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
+
+    /* check if a string that should contain list of volumes to remove is present */
+    if (vshCommandOptString(cmd, "storage", &volumes_arg) > 0) {
+        volumes = vshStrdup(ctl, volumes_arg);
+
+        if (remove_all_storage) {
+            vshError(ctl, _("Specified both --storage and --remove-all-storage"));
+            goto cleanup;
+        }
+        remove_storage = true;
+   }
 
     /* Do some flag manipulation.  The goal here is to disable bits
      * from flags to reduce the likelihood of a server rejecting
@@ -2027,6 +2065,19 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
         snapshots_safe = true;
     }
 
+    /* Stash domain description for later use */
+    if (remove_storage || remove_all_storage) {
+        if (running) {
+            vshError(ctl, _("Storage volume deletion is supported only on stopped domains"));
+            goto cleanup;
+        }
+
+        if (!(def = virDomainGetXMLDesc(dom, 0))) {
+            vshError(ctl, _("Could not retrieve domain XML description"));
+            goto cleanup;
+        }
+    }
+
     /* Generally we want to try the new API first.  However, while
      * virDomainUndefineFlags was introduced at the same time as
      * VIR_DOMAIN_UNDEFINE_MANAGED_SAVE in 0.9.4, the
@@ -2076,9 +2127,138 @@ out:
         ret = true;
     } else {
         vshError(ctl, _("Failed to undefine domain %s"), name);
+        goto cleanup;
+    }
+
+    /* try to undefine storage volumes associated with this domain, if it's requested */
+    if (remove_storage || remove_all_storage) {
+        ret = false;
+
+        /* tokenize the string from user and save it's parts into an array */
+        if (volumes) {
+            /* count the delimiters */
+            volume_tok = volumes;
+            nvolume_tokens = 1; /* we need at least one member */
+            while (*volume_tok) {
+                if (*volume_tok == ',')
+                    nvolume_tokens++;
+                volume_tok++;
+            }
+
+            volume_tokens = vshCalloc(ctl, nvolume_tokens,  sizeof(char *));
+
+            /* tokenize the input string */
+            nvolume_tokens = 0;
+            volume_tok = volumes;
+            do {
+                volume_tokens[nvolume_tokens] = strsep(&volume_tok, ",");
+                nvolume_tokens++;
+            } while (volume_tok);
+        }
+
+        doc = virXMLParseStringCtxt(def, _("(domain_definition)"), &ctxt);
+        if (!doc)
+            goto cleanup;
+
+        nvolumes = virXPathNodeSet("./devices/disk", ctxt, &vol_nodes);
+
+        if (nvolumes < 0)
+            goto cleanup;
+
+        for (vol_i = 0; vol_i < nvolumes; vol_i++) {
+            ctxt->node = vol_nodes[vol_i];
+            VIR_FREE(target);
+            VIR_FREE(source);
+            if (vol) {
+                virStorageVolFree(vol);
+                vol = NULL;
+            }
+
+            /* get volume source and target paths */
+            if (!(target = virXPathString("string(./target/@dev)", ctxt))) {
+                vshError(ctl, _("Failed to enumerate devices"));
+                goto cleanup;
+            }
+
+            if (!(source = virXPathString("string("
+                                          "./source/@file|"
+                                          "./source/@dir|"
+                                          "./source/@name|"
+                                          "./source/@dev)", ctxt)) &&
+                virGetLastError())
+                goto cleanup;
+
+            /* lookup if volume was selected by user */
+            if (volumes) {
+                volume_tok = NULL;
+                for (tok_i = 0; tok_i < nvolume_tokens; tok_i++) {
+                    if (volume_tokens[tok_i] &&
+                        (STREQ_NULLABLE(volume_tokens[tok_i], target) ||
+                         STREQ_NULLABLE(volume_tokens[tok_i], source))) {
+                        volume_tok = volume_tokens[tok_i];
+                        volume_tokens[tok_i] = NULL;
+                        break;
+                    }
+                }
+                if (!volume_tok)
+                    continue;
+            }
+
+            if (!source)
+                continue;
+
+            if (!(vol = virStorageVolLookupByPath(ctl->conn, source))) {
+                vshPrint(ctl,
+                         _("Storage volume '%s'(%s) is not managed by libvirt. "
+                           "Remove it manually.\n"), target, source);
+                virResetLastError();
+                continue;
+            }
+
+            if (wipe_storage) {
+                vshPrint(ctl, _("Wiping volume '%s'(%s) ... "), target, source);
+                fflush(stdout);
+                if (virStorageVolWipe(vol, 0) < 0) {
+                    vshError(ctl, _("Failed! Volume not removed."));
+                    vol_del_failed = true;
+                    continue;
+                } else {
+                    vshPrint(ctl, _("Done.\n"));
+                }
+            }
+
+            /* delete the volume */
+            if (virStorageVolDelete(vol, 0) < 0) {
+                vshError(ctl, _("Failed to remove storage volume '%s'(%s)"),
+                         target, source);
+                vol_del_failed = true;
+            }
+            vshPrint(ctl, _("Volume '%s' removed.\n"), volume_tok?volume_tok:source);
+        }
+
+        /* print volumes specified by user that were not found in domain definition */
+        if (volumes) {
+            for (tok_i = 0; tok_i < nvolume_tokens; tok_i++) {
+                if (volume_tokens[tok_i])
+                    vshPrint(ctl, _("Volume '%s' was not found in domain's "
+                                    "definition.\n"),
+                             volume_tokens[tok_i]);
+            }
+        }
+
+        if (!vol_del_failed)
+            ret = true;
     }
 
 cleanup:
+    VIR_FREE(source);
+    VIR_FREE(target);
+    VIR_FREE(volumes);
+    VIR_FREE(volume_tokens);
+    VIR_FREE(def);
+    VIR_FREE(vol_nodes);
+    xmlFreeDoc(doc);
+    xmlXPathFreeContext(ctxt);
     virDomainFree(dom);
     return ret;
 }
