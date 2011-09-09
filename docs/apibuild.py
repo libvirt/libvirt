@@ -27,6 +27,11 @@ included_files = {
   "event.c": "event loop for monitoring file handles",
 }
 
+qemu_included_files = {
+  "libvirt-qemu.h": "header with QEMU specific API definitions",
+  "libvirt-qemu.c": "Implementations for the QEMU specific APIs",
+}
+
 ignored_words = {
   "ATTRIBUTE_UNUSED": (0, "macro keyword"),
   "ATTRIBUTE_SENTINEL": (0, "macro keyword"),
@@ -1832,7 +1837,10 @@ class docBuilder:
         self.name = name
         self.path = path
         self.directories = directories
-        self.includes = includes + included_files.keys()
+        if name == "libvirt":
+            self.includes = includes + included_files.keys()
+        elif name == "libvirt-qemu":
+            self.includes = includes + qemu_included_files.keys()
         self.modules = {}
         self.headers = {}
         self.idx = index()
@@ -2345,22 +2353,25 @@ class docBuilder:
         output.close()
 
 
-def rebuild():
+def rebuild(name):
+    if name not in ["libvirt", "libvirt-qemu"]:
+        self.warning("rebuild() failed, unkown module %s") % name
+        return None
     builder = None
     srcdir = os.environ["srcdir"]
     if glob.glob(srcdir + "/../src/libvirt.c") != [] :
         if not quiet:
-            print "Rebuilding API description for libvirt"
+            print "Rebuilding API description for %s" % name
         dirs = [srcdir + "/../src",
                 srcdir + "/../src/util",
                 srcdir + "/../include/libvirt"]
         if glob.glob(srcdir + "/../include/libvirt/libvirt.h") == [] :
             dirs.append("../include/libvirt")
-        builder = docBuilder("libvirt", srcdir, dirs, [])
+        builder = docBuilder(name, srcdir, dirs, [])
     elif glob.glob("src/libvirt.c") != [] :
         if not quiet:
-            print "Rebuilding API description for libvirt"
-        builder = docBuilder("libvirt", srcdir,
+            print "Rebuilding API description for %s" % name
+        builder = docBuilder(name, srcdir,
                              ["src", "src/util", "include/libvirt"],
                              [])
     else:
@@ -2384,7 +2395,8 @@ if __name__ == "__main__":
         debug = 1
         parse(sys.argv[1])
     else:
-        rebuild()
+        rebuild("libvirt")
+        rebuild("libvirt-qemu")
     if warnings > 0:
         sys.exit(2)
     else:
