@@ -4,7 +4,9 @@
 #
 
 functions = {}
+qemu_functions = {}
 enums = {} # { enumType: { enumConstant: enumValue } }
+qemu_enums = {} # { enumType: { enumConstant: enumValue } }
 
 import os
 import sys
@@ -82,10 +84,13 @@ class docParser(xml.sax.handler.ContentHandler):
             self.function_descr = None
             self.function_return = None
             self.function_file = None
+            self.function_module= None
             if attrs.has_key('name'):
                 self.function = attrs['name']
             if attrs.has_key('file'):
                 self.function_file = attrs['file']
+            if attrs.has_key('module'):
+                self.function_module= attrs['module']
         elif tag == 'cond':
             self._data = []
         elif tag == 'info':
@@ -115,16 +120,36 @@ class docParser(xml.sax.handler.ContentHandler):
                 if attrs.has_key('field'):
                     self.function_return_field = attrs['field']
         elif tag == 'enum':
-            enum(attrs['type'],attrs['name'],attrs['value'])
+            if attrs['file'] == "libvirt":
+                enum(attrs['type'],attrs['name'],attrs['value'])
+            elif attrs['file'] == "libvirt-qemu":
+                qemu_enum(attrs['type'],attrs['name'],attrs['value'])
 
     def end(self, tag):
         if debug:
             print "end %s" % tag
         if tag == 'function':
             if self.function != None:
-                function(self.function, self.function_descr,
-                         self.function_return, self.function_args,
-                         self.function_file, self.function_cond)
+                if self.function_module == "libvirt":
+                    function(self.function, self.function_descr,
+                             self.function_return, self.function_args,
+                             self.function_file, self.function_module,
+                             self.function_cond)
+                elif self.function_module == "libvirt-qemu":
+                    qemu_function(self.function, self.function_descr,
+                             self.function_return, self.function_args,
+                             self.function_file, self.function_module,
+                             self.function_cond)
+                elif self.function_file == "python":
+                    function(self.function, self.function_descr,
+                             self.function_return, self.function_args,
+                             self.function_file, self.function_module,
+                             self.function_cond)
+                elif self.function_file == "python-qemu":
+                    qemu_function(self.function, self.function_descr,
+                                  self.function_return, self.function_args,
+                                  self.function_file, self.function_module,
+                                  self.function_cond)
                 self.in_function = 0
         elif tag == 'arg':
             if self.in_function == 1:
@@ -150,8 +175,11 @@ class docParser(xml.sax.handler.ContentHandler):
                 self.function_cond = str
 
 
-def function(name, desc, ret, args, file, cond):
-    functions[name] = (desc, ret, args, file, cond)
+def function(name, desc, ret, args, file, module, cond):
+    functions[name] = (desc, ret, args, file, module, cond)
+
+def qemu_function(name, desc, ret, args, file, module, cond):
+    qemu_functions[name] = (desc, ret, args, file, module, cond)
 
 def enum(type, name, value):
     if not enums.has_key(type):
@@ -176,6 +204,12 @@ def enum(type, name, value):
         value = 2
     enums[type][name] = value
 
+def qemu_enum(type, name, value):
+    if not qemu_enums.has_key(type):
+        qemu_enums[type] = {}
+    qemu_enums[type][name] = value
+
+
 #######################################################################
 #
 #  Some filtering rukes to drop functions/types which should not
@@ -184,9 +218,11 @@ def enum(type, name, value):
 #######################################################################
 
 functions_failed = []
+qemu_functions_failed = []
 functions_skipped = [
     "virConnectListDomains",
 ]
+qemu_functions_skipped = []
 
 skipped_modules = {
 }
@@ -376,6 +412,10 @@ skip_impl = (
     'virDomainBlockStatsFlags',
 )
 
+qemu_skip_impl = (
+    'virDomainQemuMonitorCommand',
+)
+
 
 # These are functions which the generator skips completly - no python
 # or C code is generated. Generally should not be used for any more
@@ -428,37 +468,54 @@ skip_function = (
     "virStorageVolGetConnect",
 )
 
+qemu_skip_function = (
+    #"virDomainQemuAttach",
+)
+
 # Generate C code, but skip python impl
 function_skip_python_impl = (
     "virStreamFree", # Needed in custom virStream __del__, but free shouldn't
                      # be exposed in bindings
 )
 
+qemu_function_skip_python_impl = ()
+
 function_skip_index_one = (
     "virDomainRevertToSnapshot",
 )
 
-
-def print_function_wrapper(name, output, export, include):
+def print_function_wrapper(module, name, output, export, include):
     global py_types
     global unknown_types
     global functions
+    global qemu_functions
     global skipped_modules
     global function_skip_python_impl
 
     try:
-        (desc, ret, args, file, cond) = functions[name]
+        if module == "libvirt":
+            (desc, ret, args, file, mod, cond) = functions[name]
+        if module == "libvirt-qemu":
+            (desc, ret, args, file, mod, cond) = qemu_functions[name]
     except:
-        print "failed to get function %s infos"
+        print "failed to get function %s infos" % name
         return
 
-    if skipped_modules.has_key(file):
+    if skipped_modules.has_key(module):
         return 0
-    if name in skip_function:
-        return 0
-    if name in skip_impl:
-        # Don't delete the function entry in the caller.
-        return 1
+
+    if module == "libvirt":
+        if name in skip_function:
+            return 0
+        if name in skip_impl:
+            # Don't delete the function entry in the caller.
+            return 1
+    elif module == "libvirt-qemu":
+        if name in qemu_skip_function:
+            return 0
+        if name in qemu_skip_impl:
+            # Don't delete the function entry in the caller.
+            return 1
 
     c_call = "";
     format=""
@@ -549,10 +606,14 @@ def print_function_wrapper(name, output, export, include):
         output.write("#if %s\n" % cond)
 
     include.write("PyObject * ")
-    include.write("libvirt_%s(PyObject *self, PyObject *args);\n" % (name));
-
-    export.write("    { (char *)\"%s\", libvirt_%s, METH_VARARGS, NULL },\n" %
-                 (name, name))
+    if module == "libvirt":
+        include.write("libvirt_%s(PyObject *self, PyObject *args);\n" % (name));
+        export.write("    { (char *)\"%s\", libvirt_%s, METH_VARARGS, NULL },\n" %
+                     (name, name))
+    elif module == "libvirt-qemu":
+        include.write("libvirt_qemu_%s(PyObject *self, PyObject *args);\n" % (name));
+        export.write("    { (char *)\"%s\", libvirt_qemu_%s, METH_VARARGS, NULL },\n" %
+                     (name, name))
 
     if file == "python":
         # Those have been manually generated
@@ -570,7 +631,10 @@ def print_function_wrapper(name, output, export, include):
         return 1
 
     output.write("PyObject *\n")
-    output.write("libvirt_%s(PyObject *self ATTRIBUTE_UNUSED," % (name))
+    if module == "libvirt":
+        output.write("libvirt_%s(PyObject *self ATTRIBUTE_UNUSED," % (name))
+    elif module == "libvirt-qemu":
+        output.write("libvirt_qemu_%s(PyObject *self ATTRIBUTE_UNUSED," % (name))
     output.write(" PyObject *args")
     if format == "":
         output.write(" ATTRIBUTE_UNUSED")
@@ -586,11 +650,11 @@ def print_function_wrapper(name, output, export, include):
                      (format, format_args))
         output.write("        return(NULL);\n")
     if c_convert != "":
-        output.write(c_convert)
+        output.write(c_convert + "\n")
 
-    output.write("LIBVIRT_BEGIN_ALLOW_THREADS;\n");
+    output.write("    LIBVIRT_BEGIN_ALLOW_THREADS;");
     output.write(c_call);
-    output.write("LIBVIRT_END_ALLOW_THREADS;\n");
+    output.write("    LIBVIRT_END_ALLOW_THREADS;\n");
     output.write(ret_convert)
     output.write("}\n\n")
     if cond != None and cond != "":
@@ -598,24 +662,43 @@ def print_function_wrapper(name, output, export, include):
         export.write("#endif /* %s */\n" % cond)
         output.write("#endif /* %s */\n" % cond)
 
-    if name in function_skip_python_impl:
-        return 0
+    if module == "libvirt":
+        if name in function_skip_python_impl:
+            return 0
+    elif module == "libvirt-qemu":
+        if name in qemu_function_skip_python_impl:
+            return 0
     return 1
 
-def buildStubs():
+def buildStubs(module):
     global py_types
     global py_return_types
     global unknown_types
 
+    if module not in ["libvirt", "libvirt-qemu"]:
+        print "ERROR: Unknown module type: %s" % module
+        return None
+
+    if module == "libvirt":
+        funcs = functions
+        funcs_failed = functions_failed
+        funcs_skipped = functions_skipped
+    elif module == "libvirt-qemu":
+        funcs = qemu_functions
+        funcs_failed = qemu_functions_failed
+        funcs_skipped = functions_skipped
+
+    api_xml = "%s-api.xml" % module
+
     try:
-        f = open(os.path.join(srcPref,"libvirt-api.xml"))
+        f = open(os.path.join(srcPref,api_xml))
         data = f.read()
         (parser, target)  = getparser()
         parser.feed(data)
         parser.close()
     except IOError, msg:
         try:
-            f = open(os.path.join(srcPref,"..","docs","libvirt-api.xml"))
+            f = open(os.path.join(srcPref,"..","docs",api_xml))
             data = f.read()
             (parser, target)  = getparser()
             parser.feed(data)
@@ -624,13 +707,15 @@ def buildStubs():
             print file, ":", msg
             sys.exit(1)
 
-    n = len(functions.keys())
+    n = len(funcs.keys())
     if not quiet:
-        print "Found %d functions in libvirt-api.xml" % (n)
+        print "Found %d functions in %s" % ((n), api_xml)
 
+    override_api_xml = "%s-override-api.xml" % module
     py_types['pythonObject'] = ('O', "pythonObject", "pythonObject", "pythonObject")
+
     try:
-        f = open(os.path.join(srcPref,"libvirt-override-api.xml"))
+        f = open(os.path.join(srcPref, override_api_xml))
         data = f.read()
         (parser, target)  = getparser()
         parser.feed(data)
@@ -639,32 +724,41 @@ def buildStubs():
         print file, ":", msg
 
     if not quiet:
-        print "Found %d functions in libvirt-override-api.xml" % (
-          len(functions.keys()) - n)
+        # XXX: This is not right, same function already in @functions
+        # will be overwritten.
+        print "Found %d functions in %s" % ((len(funcs.keys()) - n), override_api_xml)
     nb_wrap = 0
     failed = 0
     skipped = 0
 
-    include = open("libvirt.h", "w")
+    header_file = "%s.h" % module
+    export_file = "%s-export.c" % module
+    wrapper_file = "%s.c" % module
+
+    include = open(header_file, "w")
     include.write("/* Generated */\n\n")
-    export = open("libvirt-export.c", "w")
+
+    export = open(export_file, "w")
     export.write("/* Generated */\n\n")
-    wrapper = open("libvirt.c", "w")
+
+    wrapper = open(wrapper_file, "w")
     wrapper.write("/* Generated */\n\n")
     wrapper.write("#include <Python.h>\n")
-    wrapper.write("#include <libvirt/libvirt.h>\n")
+    wrapper.write("#include <libvirt/" + module + ".h>\n")
     wrapper.write("#include \"typewrappers.h\"\n")
-    wrapper.write("#include \"libvirt.h\"\n\n")
-    for function in functions.keys():
-        ret = print_function_wrapper(function, wrapper, export, include)
+    wrapper.write("#include \"" + module + ".h\"\n\n")
+
+    for function in funcs.keys():
+        # Skip the functions which are not for the module
+        ret = print_function_wrapper(module, function, wrapper, export, include)
         if ret < 0:
             failed = failed + 1
-            functions_failed.append(function)
-            del functions[function]
+            funcs_failed.append(function)
+            del funcs[function]
         if ret == 0:
             skipped = skipped + 1
-            functions_skipped.append(function)
-            del functions[function]
+            funcs_skipped.append(function)
+            del funcs[function]
         if ret == 1:
             nb_wrap = nb_wrap + 1
     include.close()
@@ -679,7 +773,7 @@ def buildStubs():
         for type in unknown_types.keys():
             print "%s:%d " % (type, len(unknown_types[type])),
 
-    for f in functions_failed:
+    for f in funcs_failed:
         print "ERROR: failed %s" % f
 
     if failed > 0:
@@ -734,6 +828,7 @@ primary_classes = ["virDomain", "virNetwork", "virInterface",
 
 classes_ancestor = {
 }
+
 classes_destructors = {
     "virDomain": "virDomainFree",
     "virNetwork": "virNetworkFree",
@@ -956,8 +1051,8 @@ def nameFixup(name, classe, type, file):
 
 
 def functionCompare(info1, info2):
-    (index1, func1, name1, ret1, args1, file1) = info1
-    (index2, func2, name2, ret2, args2, file2) = info2
+    (index1, func1, name1, ret1, args1, file1, mod1) = info1
+    (index2, func2, name2, ret2, args2, file2, mod2) = info2
     if file1 == file2:
         if func1 < func2:
             return -1
@@ -973,10 +1068,14 @@ def functionCompare(info1, info2):
         return 1
     return 0
 
-def writeDoc(name, args, indent, output):
-     if functions[name][0] is None or functions[name][0] == "":
+def writeDoc(module, name, args, indent, output):
+     if module == "libvirt":
+         funcs = functions
+     elif module == "libvirt-qemu":
+         funcs = qemu_functions
+     if funcs[name][0] is None or funcs[name][0] == "":
          return
-     val = functions[name][0]
+     val = funcs[name][0]
      val = string.replace(val, "NULL", "None");
      output.write(indent)
      output.write('"""')
@@ -990,7 +1089,7 @@ def writeDoc(name, args, indent, output):
      output.write(val)
      output.write(' """\n')
 
-def buildWrappers():
+def buildWrappers(module):
     global ctypes
     global py_types
     global py_return_types
@@ -1005,9 +1104,12 @@ def buildWrappers():
     global classes_ancestor
     global converter_type
     global primary_classes
-    global classes_ancestor
     global classes_destructors
     global functions_noexcept
+
+    if not module == "libvirt":
+        print "ERROR: Unknown module type: %s" % module
+        return None
 
     for type in classes_type.keys():
         function_classes[classes_type[type][2]] = []
@@ -1041,30 +1143,35 @@ def buildWrappers():
 
     for name in functions.keys():
         found = 0;
-        (desc, ret, args, file, cond) = functions[name]
+        (desc, ret, args, file, mod, cond) = functions[name]
         for type in ctypes:
             classe = classes_type[type][2]
 
             if name[0:3] == "vir" and len(args) >= 1 and args[0][1] == type:
                 found = 1
                 func = nameFixup(name, classe, type, file)
-                info = (0, func, name, ret, args, file)
+                info = (0, func, name, ret, args, file, mod)
                 function_classes[classe].append(info)
             elif name[0:3] == "vir" and len(args) >= 2 and args[1][1] == type \
                 and file != "python_accessor" and not name in function_skip_index_one:
                 found = 1
                 func = nameFixup(name, classe, type, file)
-                info = (1, func, name, ret, args, file)
+                info = (1, func, name, ret, args, file, mod)
                 function_classes[classe].append(info)
         if found == 1:
             continue
         func = nameFixup(name, "None", file, file)
-        info = (0, func, name, ret, args, file)
+        info = (0, func, name, ret, args, file, mod)
         function_classes['None'].append(info)
 
-    classes = open("libvirt.py", "w")
+    classes_file = "%s.py" % module
+    extra_file = "%s-override.py" % module
+    extra = None
 
-    extra = open(os.path.join(srcPref,"libvirt-override.py"), "r")
+    classes = open(classes_file, "w")
+
+    if os.path.exists(extra_file):
+        extra = open(os.path.join(srcPref,extra_file), "r")
     classes.write("#! " + python + " -i\n")
     classes.write("#\n")
     classes.write("# WARNING WARNING WARNING WARNING\n")
@@ -1072,26 +1179,28 @@ def buildWrappers():
     classes.write("# This file is automatically written by generator.py. Any changes\n")
     classes.write("# made here will be lost.\n")
     classes.write("#\n")
-    classes.write("# To change the manually written methods edit libvirt-override.py\n")
+    classes.write("# To change the manually written methods edit " + module + "-override.py\n")
     classes.write("# To change the automatically written methods edit generator.py\n")
     classes.write("#\n")
     classes.write("# WARNING WARNING WARNING WARNING\n")
     classes.write("#\n")
-    classes.writelines(extra.readlines())
+    if extra != None:
+        classes.writelines(extra.readlines())
     classes.write("#\n")
     classes.write("# WARNING WARNING WARNING WARNING\n")
     classes.write("#\n")
     classes.write("# Automatically written part of python bindings for libvirt\n")
     classes.write("#\n")
     classes.write("# WARNING WARNING WARNING WARNING\n")
-    extra.close()
+    if extra != None:
+        extra.close()
 
     if function_classes.has_key("None"):
         flist = function_classes["None"]
         flist.sort(functionCompare)
         oldfile = ""
         for info in flist:
-            (index, func, name, ret, args, file) = info
+            (index, func, name, ret, args, file, mod) = info
             if file != oldfile:
                 classes.write("#\n# Functions from module %s\n#\n\n" % file)
                 oldfile = file
@@ -1103,7 +1212,7 @@ def buildWrappers():
                 classes.write("%s" % arg[0])
                 n = n + 1
             classes.write("):\n")
-            writeDoc(name, args, '    ', classes);
+            writeDoc(module, name, args, '    ', classes);
 
             for arg in args:
                 if classes_type.has_key(arg[1]):
@@ -1235,7 +1344,7 @@ def buildWrappers():
             flist.sort(functionCompare)
             oldfile = ""
             for info in flist:
-                (index, func, name, ret, args, file) = info
+                (index, func, name, ret, args, file, mod) = info
                 #
                 # Do not provide as method the destructors for the class
                 # to avoid double free
@@ -1258,7 +1367,7 @@ def buildWrappers():
                         classes.write(", %s" % arg[0])
                     n = n + 1
                 classes.write("):\n")
-                writeDoc(name, args, '        ', classes);
+                writeDoc(module, name, args, '        ', classes);
                 n = 0
                 for arg in args:
                     if classes_type.has_key(arg[1]):
@@ -1272,8 +1381,8 @@ def buildWrappers():
                     classes.write("        ret = ");
                 else:
                     classes.write("        ");
-                classes.write("libvirtmod.%s(" % name)
                 n = 0
+                classes.write("libvirtmod.%s(" % name)
                 for arg in args:
                     if n != 0:
                         classes.write(", ");
@@ -1501,7 +1610,123 @@ def buildWrappers():
 
     classes.close()
 
-if buildStubs() < 0:
+def qemuBuildWrappers(module):
+    global qemu_functions
+
+    if not module == "libvirt-qemu":
+        print "ERROR: only libvirt-qemu is supported"
+        return None
+
+    extra_file = "%s-override.py" % module
+    extra = None
+
+    fd = open("libvirt_qemu.py", "w")
+
+    if os.path.exists(extra_file):
+        extra = open(os.path.join(srcPref,extra_file), "r")
+    fd.write("#! " + python + " -i\n")
+    fd.write("#\n")
+    fd.write("# WARNING WARNING WARNING WARNING\n")
+    fd.write("#\n")
+    fd.write("# This file is automatically written by generator.py. Any changes\n")
+    fd.write("# made here will be lost.\n")
+    fd.write("#\n")
+    fd.write("# To change the manually written methods edit " + module + "-override.py\n")
+    fd.write("# To change the automatically written methods edit generator.py\n")
+    fd.write("#\n")
+    fd.write("# WARNING WARNING WARNING WARNING\n")
+    fd.write("#\n")
+    if extra != None:
+        fd.writelines(extra.readlines())
+    fd.write("#\n")
+    fd.write("# WARNING WARNING WARNING WARNING\n")
+    fd.write("#\n")
+    fd.write("# Automatically written part of python bindings for libvirt\n")
+    fd.write("#\n")
+    fd.write("# WARNING WARNING WARNING WARNING\n")
+    if extra != None:
+        extra.close()
+
+    fd.write("try:\n")
+    fd.write("    import libvirtmod_qemu\n")
+    fd.write("except ImportError, lib_e:\n")
+    fd.write("    try:\n")
+    fd.write("        import cygvirtmod_qemu as libvirtmod_qemu\n")
+    fd.write("    except ImportError, cyg_e:\n")
+    fd.write("        if str(cyg_e).count(\"No module named\"):\n")
+    fd.write("            raise lib_e\n\n")
+
+    fd.write("import libvirt\n\n");
+    fd.write("#\n# Functions from module %s\n#\n\n" % module)
+    #
+    # Generate functions directly, no classes
+    #
+    for name in qemu_functions.keys():
+        func = nameFixup(name, 'None', None, None)
+        (desc, ret, args, file, mod, cond) = qemu_functions[name]
+        fd.write("def %s(" % func)
+        n = 0
+        for arg in args:
+            if n != 0:
+                fd.write(", ")
+            fd.write("%s" % arg[0])
+            n = n + 1
+        fd.write("):\n")
+        writeDoc(module, name, args, '    ', fd);
+
+        if ret[0] != "void":
+            fd.write("    ret = ");
+        else:
+            fd.write("    ");
+        fd.write("libvirtmod_qemu.%s(" % name)
+        n = 0
+
+        conn = None
+
+        for arg in args:
+            if arg[1] == "virConnectPtr":
+                conn = arg[0]
+
+            if n != 0:
+                fd.write(", ");
+            if arg[1] in ["virDomainPtr", "virConnectPtr"]:
+                # FIXME: This might have problem if the function
+                # has multiple args which are objects.
+                fd.write("%s.%s" % (arg[0], "_o"))
+            else:
+                fd.write("%s" % arg[0])
+            n = n + 1
+        fd.write(")\n");
+
+        if ret[0] != "void":
+            fd.write("    if ret is None: raise libvirt.libvirtError('" + name + "() failed')\n")
+            if ret[0] == "virDomainPtr":
+                fd.write("    __tmp = virDomain(" + conn + ",_obj=ret)\n")
+                fd.write("    return __tmp\n")
+            else:
+                fd.write("    return ret\n")
+
+        fd.write("\n")
+
+    #
+    # Generate enum constants
+    #
+    for type,enum in qemu_enums.items():
+        fd.write("# %s\n" % type)
+        items = enum.items()
+        items.sort(lambda i1,i2: cmp(long(i1[1]),long(i2[1])))
+        for name,value in items:
+            fd.write("%s = %s\n" % (name,value))
+        fd.write("\n");
+
+    fd.close()
+
+
+quiet = 0
+if buildStubs("libvirt") < 0:
     sys.exit(1)
-buildWrappers()
+if buildStubs("libvirt-qemu") < 0:
+    sys.exit(1)
+buildWrappers("libvirt")
+qemuBuildWrappers("libvirt-qemu")
 sys.exit(0)
