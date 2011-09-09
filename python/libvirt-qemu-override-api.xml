@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<api name='libvir-qemu-python'>
+  <symbols>
+      <function name='virDomainQemuMonitorCommand' file='python-qemu'>
+        <info>Send an arbitrary monitor command through qemu monitor of domain</info>
+        <return type='str *' info='the command output or None in case of error'/>
+        <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
+        <arg name='cmd' type='const char *' info='the command which will be passed to QEMU monitor'/>
+        <arg name='flags' type='unsigned int' info='an OR&apos;ed set of virDomainQemuMonitorCommandFlags'/>
+      </function>
+  </symbols>
+</api>
