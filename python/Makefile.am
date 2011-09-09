@@ -29,15 +29,18 @@ EXTRA_DIST =			\
 	libvirt-override.c	\
 	libvirt-override.py	\
 	libvirt-override-api.xml \
+	libvirt-qemu-override.c	\
+	libvirt-qemu-override-api.xml \
 	$(CLASSES_EXTRA) \
 	$(DOCS)
 
 if WITH_PYTHON
 mylibs = $(top_builddir)/src/libvirt.la
+myqemulibs = $(top_builddir)/src/libvirt-qemu.la
 
-all-local: libvirt.py
+all-local: libvirt.py libvirt_qemu.py
 
-pyexec_LTLIBRARIES = libvirtmod.la
+pyexec_LTLIBRARIES = libvirtmod.la libvirtmod_qemu.la
 
 libvirtmod_la_SOURCES = libvirt-override.c typewrappers.c
 nodist_libvirtmod_la_SOURCES = libvirt.c libvirt.h
@@ -50,6 +53,17 @@ libvirtmod_la_LDFLAGS = -module -avoid-version -shared -L$(top_builddir)/src/.li
 libvirtmod_la_LIBADD = $(mylibs) \
 	$(CYGWIN_EXTRA_LIBADD) $(CYGWIN_EXTRA_PYTHON_LIBADD)
 
+libvirtmod_qemu_la_SOURCES = libvirt-qemu-override.c typewrappers.c
+nodist_libvirtmod_qemu_la_SOURCES = libvirt-qemu.c libvirt-qemu.h
+# Python <= 2.4 header files contain a redundant decl, hence we
+# need extra flags here
+libvirtmod_qemu_la_CFLAGS = $(WARN_PYTHON_CFLAGS)
+
+libvirtmod_qemu_la_LDFLAGS = -module -avoid-version -shared -L$(top_builddir)/src/.libs \
+	$(CYGWIN_EXTRA_LDFLAGS)
+libvirtmod_qemu_la_LIBADD = $(myqemulibs) \
+	$(CYGWIN_EXTRA_LIBADD) $(CYGWIN_EXTRA_PYTHON_LIBADD)
+
 GENERATE = generator.py
 API_DESC = $(top_srcdir)/docs/libvirt-api.xml $(srcdir)/libvirt-override-api.xml
 GENERATED= libvirt-export.c \
@@ -57,25 +71,34 @@ GENERATED= libvirt-export.c \
 	   libvirt.h \
 	   libvirt.py
 
-$(GENERATE).stamp: $(srcdir)/$(GENERATE) $(API_DESC)
+QEMU_API_DESC = $(top_srcdir)/docs/libvirt-qemu-api.xml $(srcdir)/libvirt-qemu-override-api.xml
+QEMU_GENERATED= libvirt-qemu-export.c \
+	   libvirt-qemu.c \
+	   libvirt-qemu.h \
+	   libvirt_qemu.py
+
+$(GENERATE).stamp: $(srcdir)/$(GENERATE) $(API_DESC) $(QEMU_API_DESC)
 	$(AM_V_GEN)$(PYTHON) $(srcdir)/$(GENERATE) $(PYTHON) && \
 	touch $@
 
-$(GENERATED): $(GENERATE).stamp
+$(GENERATED) $(QEMU_GENERATED): $(GENERATE).stamp
 
 $(libvirtmod_la_OBJECTS): $(GENERATED)
+$(libvirtmod_qemu_la_OBJECTS): $(QEMU_GENERATED)
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(pyexecdir)
 	$(INSTALL) -m 0644 libvirt.py $(DESTDIR)$(pyexecdir)
+	$(INSTALL) -m 0644 libvirt_qemu.py $(DESTDIR)$(pyexecdir)
 	$(mkinstalldirs) $(DESTDIR)$(DOCS_DIR)
 	@(for doc in $(DOCS) ; \
 	   do $(INSTALL) -m 0644 $$doc $(DESTDIR)$(DOCS_DIR) ; done)
 
 uninstall-local:
 	rm -f $(DESTDIR)$(pyexecdir)/libvirt.py
+	rm -f $(DESTDIR)$(pyexecdir)/libvirt_qemu.py
 
-CLEANFILES= $(GENERATED) $(GENERATE).stamp
+CLEANFILES= $(GENERATED) $(QEMU_GENERATED) $(GENERATE).stamp
 
 else
 all:
