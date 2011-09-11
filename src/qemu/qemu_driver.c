@@ -1681,14 +1681,13 @@ qemuDomainSnapshotForEachQcow2(struct qemud_driver *driver,
                                bool try_all)
 {
     const char *qemuimgarg[] = { NULL, "snapshot", NULL, NULL, NULL, NULL };
-    int ret = -1;
     int i;
     bool skipped = false;
 
     qemuimgarg[0] = qemuFindQemuImgBinary(driver);
     if (qemuimgarg[0] == NULL) {
         /* qemuFindQemuImgBinary set the error */
-        goto cleanup;
+        return -1;
     }
 
     qemuimgarg[2] = op;
@@ -1707,15 +1706,15 @@ qemuDomainSnapshotForEachQcow2(struct qemud_driver *driver,
                      * disks in this VM may have the same snapshot name.
                      */
                     VIR_WARN("skipping snapshot action on %s",
-                             vm->def->disks[i]->info.alias);
+                             vm->def->disks[i]->dst);
                     skipped = true;
                     continue;
                 }
                 qemuReportError(VIR_ERR_OPERATION_INVALID,
                                 _("Disk device '%s' does not support"
                                   " snapshotting"),
-                                vm->def->disks[i]->info.alias);
-                goto cleanup;
+                                vm->def->disks[i]->dst);
+                return -1;
             }
 
             qemuimgarg[4] = vm->def->disks[i]->src;
@@ -1727,16 +1726,12 @@ qemuDomainSnapshotForEachQcow2(struct qemud_driver *driver,
                     skipped = true;
                     continue;
                 }
-                goto cleanup;
+                return -1;
             }
         }
     }
 
-    ret = skipped ? 1 : 0;
-
-cleanup:
-    VIR_FREE(qemuimgarg[0]);
-    return ret;
+    return skipped ? 1 : 0;
 }
 
 /* Discard one snapshot (or its metadata), without reparenting any children.  */
