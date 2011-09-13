@@ -165,4 +165,10 @@ void qemuDriverUnlock(struct qemud_driver *driver);
 int qemudLoadDriverConfig(struct qemud_driver *driver,
                           const char *filename);
 
+struct qemuDomainDiskInfo {
+    bool removable;
+    bool locked;
+    bool tray_open;
+};
+
 #endif /* __QEMUD_CONF_H */

@@ -1223,6 +1223,25 @@ int qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
     return ret;
 }
 
+int qemuMonitorGetBlockInfo(qemuMonitorPtr mon,
+                            const char *devname,
+                            struct qemuDomainDiskInfo *info)
+{
+    int ret;
+
+    VIR_DEBUG("mon=%p dev=%p info=%p", mon, devname, info);
+    if (!mon) {
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (mon->json)
+        ret = qemuMonitorJSONGetBlockInfo(mon, devname, info);
+    else
+        ret = qemuMonitorTextGetBlockInfo(mon, devname, info);
+    return ret;
+}
 
 int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
                                  const char *dev_name,

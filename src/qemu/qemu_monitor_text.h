@@ -59,6 +59,9 @@ int qemuMonitorTextGetBalloonInfo(qemuMonitorPtr mon,
 int qemuMonitorTextGetMemoryStats(qemuMonitorPtr mon,
                                   virDomainMemoryStatPtr stats,
                                   unsigned int nr_stats);
+int qemuMonitorTextGetBlockInfo(qemuMonitorPtr mon,
+                                const char *devname,
+                                struct qemuDomainDiskInfo *info);
 int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
                                      const char *dev_name,
                                      long long *rd_req,

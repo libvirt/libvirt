@@ -150,6 +150,40 @@ error:
     return -1;
 }
 
+int
+qemuDomainCheckEjectableMedia(struct qemud_driver *driver,
+                             virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret = -1;
+    int i;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+        struct qemuDomainDiskInfo info;
+
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
+                 continue;
+
+        memset(&info, 0, sizeof(info));
+
+        qemuDomainObjEnterMonitor(driver, vm);
+        if (qemuMonitorGetBlockInfo(priv->mon, disk->info.alias, &info) < 0) {
+            qemuDomainObjExitMonitor(driver, vm);
+            goto cleanup;
+        }
+        qemuDomainObjExitMonitor(driver, vm);
+
+        if (info.tray_open && disk->src)
+            VIR_FREE(disk->src);
+    }
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
 
 int qemuDomainAttachPciDiskDevice(struct qemud_driver *driver,
                                   virDomainObjPtr vm,

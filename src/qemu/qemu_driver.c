@@ -7985,6 +7985,13 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
         goto endjob;
     }
 
+    /* Check if there is any ejected media.
+     * We don't want to require them on the destination.
+     */
+
+    if (qemuDomainCheckEjectableMedia(driver, vm) < 0)
+        goto endjob;
+
     if (!(xml = qemuMigrationBegin(driver, vm, xmlin,
                                    cookieout, cookieoutlen)))
         goto endjob;
