@@ -1090,7 +1090,8 @@ cmdDomblkstat (vshControl *ctl, const vshCmd *cmd)
      * then.
      */
     if (rc < 0) {
-        if (last_error->code != VIR_ERR_NO_SUPPORT) {
+        if (last_error->code != VIR_ERR_NO_SUPPORT &&
+            last_error->code != VIR_ERR_RPC) {
             virshReportError(ctl);
             goto cleanup;
         } else {
