@@ -405,6 +405,7 @@ qemuProcessFakeReboot(void *opaque)
                             "%s", _("resume operation failed"));
         goto endjob;
     }
+    priv->gotShutdown = false;
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_RESUMED,
                                      VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
