@@ -8229,6 +8229,26 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
         goto cleanup;
     }
 
+    if (src->mem.max_balloon != dst->mem.max_balloon) {
+        virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                             _("Target domain max memory %ld does not match source %ld"),
+                             dst->mem.max_balloon, src->mem.max_balloon);
+        goto cleanup;
+    }
+    if (src->mem.cur_balloon != dst->mem.cur_balloon) {
+        virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                             _("Target domain current memory %ld does not match source %ld"),
+                             dst->mem.cur_balloon, src->mem.cur_balloon);
+        goto cleanup;
+    }
+    if (src->mem.hugepage_backed != dst->mem.hugepage_backed) {
+        virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                             _("Target domain huge page backing %ld does not match source %ld"),
+                             dst->mem.hugepage_backed,
+                             src->mem.hugepage_backed);
+        goto cleanup;
+    }
+
     if (src->vcpus != dst->vcpus) {
         virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                              _("Target domain vpu count %d does not match source %d"),
