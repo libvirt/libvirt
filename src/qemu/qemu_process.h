@@ -68,7 +68,7 @@ int qemuProcessAttach(virConnectPtr conn,
                       virDomainChrSourceDefPtr monConfig,
                       bool monJSON);
 
-void qemuProcessKill(virDomainObjPtr vm);
+void qemuProcessKill(virDomainObjPtr vm, bool gracefully);
 
 int qemuProcessAutoDestroyInit(struct qemud_driver *driver);
 void qemuProcessAutoDestroyRun(struct qemud_driver *driver,

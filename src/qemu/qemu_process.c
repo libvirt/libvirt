@@ -419,7 +419,7 @@ endjob:
 cleanup:
     if (vm) {
         if (ret == -1)
-            qemuProcessKill(vm);
+            qemuProcessKill(vm, false);
         if (virDomainObjUnref(vm) > 0)
             virDomainObjUnlock(vm);
     }
@@ -437,6 +437,12 @@ qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     VIR_DEBUG("vm=%p", vm);
 
     virDomainObjLock(vm);
+    if (priv->gotShutdown) {
+        VIR_DEBUG("Ignoring repeated SHUTDOWN event from domain %s",
+                  vm->def->name);
+        goto cleanup;
+    }
+
     priv->gotShutdown = true;
     if (priv->fakeReboot) {
         virDomainObjRef(vm);
@@ -446,16 +452,17 @@ qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                             qemuProcessFakeReboot,
                             vm) < 0) {
             VIR_ERROR(_("Failed to create reboot thread, killing domain"));
-            qemuProcessKill(vm);
+            qemuProcessKill(vm, true);
             if (virDomainObjUnref(vm) == 0)
                 vm = NULL;
         }
     } else {
-        qemuProcessKill(vm);
+        qemuProcessKill(vm, true);
     }
+
+cleanup:
     if (vm)
         virDomainObjUnlock(vm);
-
     return 0;
 }
 
@@ -3200,10 +3207,11 @@ cleanup:
 }
 
 
-void qemuProcessKill(virDomainObjPtr vm)
+void qemuProcessKill(virDomainObjPtr vm, bool gracefully)
 {
     int i;
-    VIR_DEBUG("vm=%s pid=%d", vm->def->name, vm->pid);
+    VIR_DEBUG("vm=%s pid=%d gracefully=%d",
+              vm->def->name, vm->pid, gracefully);
 
     if (!virDomainObjIsActive(vm)) {
         VIR_DEBUG("VM '%s' not active", vm->def->name);
@@ -3232,6 +3240,9 @@ void qemuProcessKill(virDomainObjPtr vm)
             }
             break;
         }
+
+        if (i == 0 && gracefully)
+            break;
 
         usleep(200 * 1000);
     }
@@ -3317,7 +3328,7 @@ void qemuProcessStop(struct qemud_driver *driver,
     }
 
     /* shut it off for sure */
-    qemuProcessKill(vm);
+    qemuProcessKill(vm, false);
 
     /* Stop autodestroy in case guest is restarted */
     qemuProcessAutoDestroyRemove(driver, vm);

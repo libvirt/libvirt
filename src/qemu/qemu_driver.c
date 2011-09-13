@@ -1870,7 +1870,7 @@ qemuDomainDestroyFlags(virDomainPtr dom,
      * can kill the process even if a job is active. Killing
      * it now means the job will be released
      */
-    qemuProcessKill(vm);
+    qemuProcessKill(vm, false);
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_DESTROY) < 0)
         goto cleanup;
