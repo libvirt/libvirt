@@ -139,7 +139,7 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         VIR_DEBUG("Monitor connection to '%s' closed without SHUTDOWN event; "
                   "assuming the domain crashed", vm->def->name);
         eventReason = VIR_DOMAIN_EVENT_STOPPED_FAILED;
-        stopReason = VIR_DOMAIN_SHUTOFF_FAILED;
+        stopReason = VIR_DOMAIN_SHUTOFF_CRASHED;
         auditReason = "failed";
     }
 
