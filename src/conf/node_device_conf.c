@@ -1231,7 +1231,7 @@ virNodeDeviceDefParse(const char *str,
     xmlDocPtr xml;
     virNodeDeviceDefPtr def = NULL;
 
-    if ((xml = virXMLParse(filename, str, "device.xml"))) {
+    if ((xml = virXMLParse(filename, str, _("(node_device_definition)")))) {
         def = virNodeDeviceDefParseNode(xml, xmlDocGetRootElement(xml), create);
         xmlFreeDoc(xml);
     }

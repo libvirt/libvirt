@@ -5739,7 +5739,7 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
     xmlXPathContextPtr ctxt = NULL;
     virDomainDeviceDefPtr dev = NULL;
 
-    if (!(xml = virXMLParseStringCtxt(xmlStr, "device.xml", &ctxt))) {
+    if (!(xml = virXMLParseStringCtxt(xmlStr, _("(device_definition)"), &ctxt))) {
         goto error;
     }
     node = ctxt->node;
@@ -7461,7 +7461,7 @@ virDomainDefParse(const char *xmlStr,
     xmlDocPtr xml;
     virDomainDefPtr def = NULL;
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(domain definition)")))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(domain_definition)")))) {
         def = virDomainDefParseNode(caps, xml, xmlDocGetRootElement(xml),
                                     expectedVirtTypes, flags);
         xmlFreeDoc(xml);
@@ -11573,7 +11573,7 @@ virDomainSnapshotDefParseString(const char *xmlStr,
     int active;
     char *tmp;
 
-    xml = virXMLParseCtxt(NULL, xmlStr, "domainsnapshot.xml", &ctxt);
+    xml = virXMLParseCtxt(NULL, xmlStr, _("(domain_snapshot)"), &ctxt);
     if (!xml) {
         return NULL;
     }

@@ -1084,7 +1084,7 @@ virNetworkDefParse(const char *xmlStr,
     xmlDocPtr xml;
     virNetworkDefPtr def = NULL;
 
-    if ((xml = virXMLParse(filename, xmlStr, "network.xml"))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(network_definition)")))) {
         def = virNetworkDefParseNode(xml, xmlDocGetRootElement(xml));
         xmlFreeDoc(xml);
     }

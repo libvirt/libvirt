@@ -2119,7 +2119,7 @@ virNWFilterDefParse(virConnectPtr conn ATTRIBUTE_UNUSED,
     virNWFilterDefPtr def = NULL;
     xmlDocPtr xml;
 
-    if ((xml = virXMLParse(filename, xmlStr, "nwfilter.xml"))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(nwfilter_definition")))) {
         def = virNWFilterDefParseNode(xml, xmlDocGetRootElement(xml));
         xmlFreeDoc(xml);
     }

@@ -603,7 +603,7 @@ qemuMigrationCookieXMLParseStr(qemuMigrationCookiePtr mig,
 
     VIR_DEBUG("xml=%s", NULLSTR(xml));
 
-    if (!(doc = virXMLParseStringCtxt(xml, "qemumigration.xml", &ctxt)))
+    if (!(doc = virXMLParseStringCtxt(xml, _("(qemu_migration_cookie)"), &ctxt)))
         goto cleanup;
 
     ret = qemuMigrationCookieXMLParse(mig, ctxt, flags);

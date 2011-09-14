@@ -195,7 +195,7 @@ virSecretDefParse(const char *xmlStr,
     xmlDocPtr xml;
     virSecretDefPtr ret = NULL;
 
-    if ((xml = virXMLParse(filename, xmlStr, "secret.xml"))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(definition_of_secret)")))) {
         ret = secretXMLParseNode(xml, xmlDocGetRootElement(xml));
         xmlFreeDoc(xml);
     }

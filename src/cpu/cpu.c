@@ -76,7 +76,7 @@ cpuCompareXML(virCPUDefPtr host,
 
     VIR_DEBUG("host=%p, xml=%s", host, NULLSTR(xml));
 
-    if (!(doc = virXMLParseStringCtxt(xml, "cpu.xml", &ctxt)))
+    if (!(doc = virXMLParseStringCtxt(xml, _("(CPU_definition)"), &ctxt)))
         goto cleanup;
 
     cpu = virCPUDefParseXML(ctxt->node, ctxt, VIR_CPU_TYPE_AUTO);
@@ -304,7 +304,7 @@ cpuBaselineXML(const char **xmlCPUs,
         goto no_memory;
 
     for (i = 0; i < ncpus; i++) {
-        if (!(doc = virXMLParseStringCtxt(xmlCPUs[i], "cpu.xml", &ctxt)))
+        if (!(doc = virXMLParseStringCtxt(xmlCPUs[i], _("(CPU_definition)"), &ctxt)))
             goto error;
 
         cpus[i] = virCPUDefParseXML(ctxt->node, ctxt, VIR_CPU_TYPE_HOST);

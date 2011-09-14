@@ -641,7 +641,7 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
 
-    if (!(xml = virXMLParseStringCtxt(xmlStr, _("(domain definition)"),
+    if (!(xml = virXMLParseStringCtxt(xmlStr, _("(domain_definition)"),
                                       &ctxt))) {
         goto cleanup;
     }

@@ -911,7 +911,7 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
 
     if ((*response)->responseCode == 500 || (*response)->responseCode == 200) {
         (*response)->document = virXMLParseStringCtxt((*response)->content,
-                                                      "esx.xml",
+                                                      _("(esx execute response)"),
                                                       &xpathContext);
 
         if ((*response)->document == NULL) {

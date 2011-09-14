@@ -505,7 +505,7 @@ virStoragePoolDefParseSourceString(const char *srcSpec,
     xmlXPathContextPtr xpath_ctxt = NULL;
     virStoragePoolSourcePtr def = NULL, ret = NULL;
 
-    if (!(doc = virXMLParseStringCtxt(srcSpec, "srcSpec.xml", &xpath_ctxt))) {
+    if (!(doc = virXMLParseStringCtxt(srcSpec, _("(storage_source_specification)"), &xpath_ctxt))) {
         goto cleanup;
     }
 
@@ -765,7 +765,7 @@ virStoragePoolDefParse(const char *xmlStr,
     virStoragePoolDefPtr ret = NULL;
     xmlDocPtr xml;
 
-    if ((xml = virXMLParse(filename, xmlStr, "storage.xml"))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(storage_pool_definition)")))) {
         ret = virStoragePoolDefParseNode(xml, xmlDocGetRootElement(xml));
         xmlFreeDoc(xml);
     }
@@ -1146,7 +1146,7 @@ virStorageVolDefParse(virStoragePoolDefPtr pool,
     virStorageVolDefPtr ret = NULL;
     xmlDocPtr xml;
 
-    if ((xml = virXMLParse(filename, xmlStr, "storage.xml"))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(storage_volume_definition)")))) {
         ret = virStorageVolDefParseNode(pool, xml, xmlDocGetRootElement(xml));
         xmlFreeDoc(xml);
     }
