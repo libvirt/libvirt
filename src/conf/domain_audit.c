@@ -246,8 +246,8 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname;
-    char *address;
-    char *device;
+    char *address = NULL;
+    char *device = NULL;
     const char *virt;
 
     virUUIDFormat(vm->def->uuid, uuidstr);
@@ -319,8 +319,8 @@ virDomainAuditRedirdev(virDomainObjPtr vm, virDomainRedirdevDefPtr redirdev,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname;
-    char *address;
-    char *device;
+    char *address = NULL;
+    char *device = NULL;
     const char *virt;
 
     virUUIDFormat(vm->def->uuid, uuidstr);
@@ -340,6 +340,7 @@ virDomainAuditRedirdev(virDomainObjPtr vm, virDomainRedirdevDefPtr redirdev,
             VIR_WARN("OOM while encoding audit message");
             goto cleanup;
         }
+        break;
     default:
         VIR_WARN("Unexpected redirdev bus while encoding audit message: %d",
                  redirdev->bus);
