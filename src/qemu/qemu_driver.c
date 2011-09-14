@@ -8881,6 +8881,7 @@ qemuDomainMigrateGetMaxSpeed(virDomainPtr dom,
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
+    qemuDomainObjPrivatePtr priv;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -8897,7 +8898,8 @@ qemuDomainMigrateGetMaxSpeed(virDomainPtr dom,
         goto cleanup;
     }
 
-    *bandwidth = vm->privateData->migMaxBandwidth;
+    priv = vm->privateData;
+    *bandwidth = priv->migMaxBandwidth;
     ret = 0;
 
 cleanup:
