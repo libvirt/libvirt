@@ -17,6 +17,7 @@ BUILT_SOURCES=hvsupport.html.in
 apihtml =			\
   html/index.html		\
   html/libvirt-libvirt.html	\
+  html/libvirt-libvirt-qemu.html \
   html/libvirt-virterror.html
 
 apipng =	\
@@ -30,6 +31,7 @@ devhelphtml =			\
   devhelp/index.html		\
   devhelp/general.html		\
   devhelp/libvirt-libvirt.html	\
+  devhelp/libvirt-libvirt-qemu.html	\
   devhelp/libvirt-virterror.html
 
 css =         \
@@ -76,6 +78,10 @@ xml = \
   libvirt-api.xml \
   libvirt-refs.xml
 
+qemu_xml = \
+  libvirt-qemu-api.xml \
+  libvirt-qemu-refs.xml
+
 fig = \
   libvirt-net-logical.fig \
   libvirt-net-physical.fig \
@@ -89,7 +95,7 @@ EXTRA_DIST=					\
   hacking1.xsl hacking2.xsl wrapstring.xsl \
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
   $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
-  $(xml) $(fig) $(png) $(css) \
+  $(xml) $(qemu_xml) $(fig) $(png) $(css) \
   $(patches) \
   sitemap.html.in \
   todo.pl hvsupport.pl todo.cfg-example
@@ -102,6 +108,7 @@ MAINTAINERCLEANFILES = \
 all: web
 
 api: $(srcdir)/libvirt-api.xml $(srcdir)/libvirt-refs.xml
+qemu_api: $(srcdir)/libvirt-qemu-api.xml $(srcdir)/libvirt-qemu-refs.xml
 
 web: $(dot_html) html/index.html devhelp/index.html
 
@@ -172,15 +179,20 @@ $(addprefix $(srcdir)/,$(devhelphtml)): $(srcdir)/libvirt-api.xml $(devhelpxsl)
 	  $(XSLTPROC) --nonet -o $(srcdir)/devhelp/ \
 	  $(top_srcdir)/docs/devhelp/devhelp.xsl $(srcdir)/libvirt-api.xml ; fi
 
+
 python_generated_files = \
 		$(srcdir)/html/libvirt-libvirt.html \
+		$(srcdir)/html/libvirt-libvirt-qemu.html \
 		$(srcdir)/html/libvirt-virterror.html \
 		$(srcdir)/libvirt-api.xml \
-		$(srcdir)/libvirt-refs.xml
+		$(srcdir)/libvirt-refs.xml \
+		$(srcdir)/libvirt-qemu-api.xml \
+		$(srcdir)/libvirt-qemu-refs.xml
 
 $(python_generated_files): $(srcdir)/apibuild.py \
 		$(srcdir)/../include/libvirt/*.h \
 		$(srcdir)/../src/libvirt.c \
+		$(srcdir)/../src/libvirt-qemu.c \
 		$(srcdir)/../src/util/virterror.c
 	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) $(srcdir)/apibuild.py
 
@@ -191,8 +203,9 @@ clean-local:
 
 maintainer-clean-local: clean-local
 	rm -rf $(srcdir)/libvirt-api.xml $(srcdir)/libvirt-refs.xml todo.html.in hvsupport.html.in
+	rm -rf $(srcdir)/libvirt-qemu-api.xml $(srcdir)/libvirt-qemu-refs.xml
 
-rebuild: api all
+rebuild: api qemu_api all
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)
