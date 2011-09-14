@@ -742,6 +742,7 @@ virBandwidthDefFree;
 virBandwidthDefParseNode;
 virBandwidthDisable;
 virBandwidthEnable;
+virBandwidthEqual;
 virSocketAddrBroadcast;
 virSocketAddrBroadcastByPrefix;
 virSocketAddrIsNetmask;
@@ -757,6 +758,7 @@ virSocketParseAddr;
 virSocketParseIpv4Addr;
 virSocketParseIpv6Addr;
 virSocketSetPort;
+virVirtualPortProfileEqual;
 virVirtualPortProfileFormat;
 virVirtualPortProfileParseXML;
 
