@@ -17,7 +17,6 @@ BUILT_SOURCES=hvsupport.html.in
 apihtml =			\
   html/index.html		\
   html/libvirt-libvirt.html	\
-  html/libvirt-libvirt-qemu.html \
   html/libvirt-virterror.html
 
 apipng =	\
@@ -31,7 +30,6 @@ devhelphtml =			\
   devhelp/index.html		\
   devhelp/general.html		\
   devhelp/libvirt-libvirt.html	\
-  devhelp/libvirt-libvirt-qemu.html	\
   devhelp/libvirt-virterror.html
 
 css =         \
