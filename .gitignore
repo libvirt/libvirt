@@ -36,6 +36,7 @@
 /configure.lineno
 /daemon/*_dispatch.h
 /docs/hvsupport.html.in
+/docs/libvirt-qemu-*.xml
 /gnulib/lib/*
 /gnulib/m4/*
 /gnulib/tests/*
@@ -53,6 +54,9 @@
 /po/*
 /proxy/
 /python/generator.py.stamp
+/python/libvirt-qemu-export.c
+/python/libvirt-qemu.[ch]
+/python/libvirt_qemu.py
 /sc_*
 /src/hyperv/*.generated.*
 /src/libvirt_iohelper
