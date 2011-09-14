@@ -80,12 +80,49 @@ cat <<\EOF > exp-out || framework_failure
   </disks>
 </domainsnapshot>
 
-
 EOF
-virsh -c $test_url snapshot-create-as --print-xml test \
+virsh -q -c $test_url snapshot-create-as --print-xml test \
   --diskspec 'vda,file=a&b,,c,snapshot=external' --description '1<2' \
   --diskspec vdb >out 2>>err || fail=1
 compare out exp-out || fail=1
+
+cat <<\EOF > exp-out || framework_failure
+<domainsnapshot>
+  <name>name</name>
+  <description>vda</description>
+  <disks>
+    <disk name='vdb'/>
+  </disks>
+</domainsnapshot>
+
+EOF
+virsh -q -c $test_url snapshot-create-as  --print-xml test name vda vdb \
+  >out 2>>err || fail=1
+compare out exp-out || fail=1
+
+cat <<\EOF > exp-out || framework_failure
+<domainsnapshot>
+  <name>name</name>
+  <description>desc</description>
+  <disks>
+    <disk name='vda'/>
+    <disk name='vdb'/>
+  </disks>
+</domainsnapshot>
+
+EOF
+for args in \
+    'test name desc vda vdb' \
+    'test name desc --diskspec vda vdb' \
+    'test name desc --diskspec vda --diskspec vdb' \
+    'test name desc vda vdb' \
+    'test --diskspec vda name --diskspec vdb desc' \
+    '--description desc --name name --domain test vda vdb' \
+; do
+  virsh -q -c $test_url snapshot-create-as --print-xml $args \
+    >out 2>>err || fail=1
+  compare out exp-out || fail=1
+done
 
 test -s err && fail=1
 

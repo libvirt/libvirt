@@ -1773,7 +1773,7 @@ by command such as B<destroy> or by internal guest action).
 
 =item B<snapshot-create-as> I<domain> {[I<--print-xml>]
 | [I<--no-metadata>] [I<--halt>]} [I<name>] [I<description>]
-[I<--disk-only> [I<diskspec>]...]
+[I<--disk-only> [[I<--diskspec>] B<diskspec>]...
 
 Create a snapshot for domain I<domain> with the given <name> and
 <description>; if either value is omitted, libvirt will choose a
@@ -1788,7 +1788,9 @@ this flag is in use, the command can also take additional I<diskspec>
 arguments to add <disk> elements to the xml.  Each <diskspec> is in the
 form B<disk[,snapshot=type][,driver=type][,file=name]>.  To include a
 literal comma in B<disk> or in B<file=name>, escape it with a second
-comma.  For example, a diskspec of "vda,snapshot=external,file=/path/to,,new"
+comma.  A literal I<--diskspec> must preceed each B<diskspec> unless
+all three of I<domain>, I<name>, and I<description> are also present.
+For example, a diskspec of "vda,snapshot=external,file=/path/to,,new"
 results in the following XML:
   <disk name='vda' snapshot='external'>
     <source file='/path/to,new'/>

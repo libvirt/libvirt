@@ -13856,9 +13856,10 @@ vshCmddefGetData(const vshCmdDef *cmd, uint32_t *opts_need_arg,
     /* Grab least-significant set bit */
     i = ffs(*opts_need_arg) - 1;
     opt = &cmd->opts[i];
-    if (opt->type != VSH_OT_ARGV)
+    if (opt->type != VSH_OT_ARGV) {
         *opts_need_arg &= ~(1 << i);
-    *opts_seen |= 1 << i;
+        *opts_seen |= 1 << i;
+    }
     return opt;
 }
 
@@ -13956,6 +13957,7 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
         char buf[256];
         uint32_t opts_need_arg;
         uint32_t opts_required;
+        bool shortopt = false; /* true if 'arg' works instead of '--opt arg' */
 
         if (vshCmddefOptParse(def, &opts_need_arg, &opts_required)) {
             vshError(ctl, _("internal error: bad options in command: '%s'"),
@@ -13980,18 +13982,30 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
                     /* xgettext:c-format */
                     fmt = ((opt->flags & VSH_OFLAG_REQ) ? "<%s>"
                            : _("[--%s <number>]"));
+                    if (!(opt->flags & VSH_OFLAG_REQ_OPT))
+                        shortopt = true;
                     break;
                 case VSH_OT_STRING:
                     /* xgettext:c-format */
                     fmt = _("[--%s <string>]");
+                    if (!(opt->flags & VSH_OFLAG_REQ_OPT))
+                        shortopt = true;
                     break;
                 case VSH_OT_DATA:
                     fmt = ((opt->flags & VSH_OFLAG_REQ) ? "<%s>" : "[<%s>]");
+                    if (!(opt->flags & VSH_OFLAG_REQ_OPT))
+                        shortopt = true;
                     break;
                 case VSH_OT_ARGV:
                     /* xgettext:c-format */
-                    fmt = (opt->flags & VSH_OFLAG_REQ) ? _("<%s>...")
-                           : _("[<%s>]...");
+                    if (shortopt) {
+                        fmt = (opt->flags & VSH_OFLAG_REQ)
+                            ? _("{[--%s] <string>}...")
+                            : _("[[--%s] <string>]...");
+                    } else {
+                        fmt = (opt->flags & VSH_OFLAG_REQ) ? _("<%s>...")
+                            : _("[<%s>]...");
+                    }
                     break;
                 default:
                     assert(0);
@@ -14030,8 +14044,9 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
                              opt->name);
                     break;
                 case VSH_OT_ARGV:
-                    /* Not really an option. */
-                    snprintf(buf, sizeof(buf), _("<%s>"), opt->name);
+                    snprintf(buf, sizeof(buf),
+                             shortopt ? _("[--%s] <string>") : _("<%s>"),
+                             opt->name);
                     break;
                 default:
                     assert(0);
