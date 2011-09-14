@@ -120,7 +120,8 @@ class docParser(xml.sax.handler.ContentHandler):
                 if attrs.has_key('field'):
                     self.function_return_field = attrs['field']
         elif tag == 'enum':
-            if attrs['file'] == "libvirt":
+            if (attrs['file'] == "libvirt" or
+                attrs['file'] == "virterror"):
                 enum(attrs['type'],attrs['name'],attrs['value'])
             elif attrs['file'] == "libvirt-qemu":
                 qemu_enum(attrs['type'],attrs['name'],attrs['value'])
@@ -130,7 +131,9 @@ class docParser(xml.sax.handler.ContentHandler):
             print "end %s" % tag
         if tag == 'function':
             if self.function != None:
-                if self.function_module == "libvirt":
+                if (self.function_module == "libvirt" or
+                    self.function_module == "event" or
+                    self.function_module == "virterror"):
                     function(self.function, self.function_descr,
                              self.function_return, self.function_args,
                              self.function_file, self.function_module,
