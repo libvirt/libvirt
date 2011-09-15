@@ -29,7 +29,7 @@ cd "$LOCKDIR" || exit 1
 
 for MD5 in *
 do
-  if test $MD5 != '*' && $MD5 != $LOCKSPACE ; then
+  if test $MD5 != '*' && test $MD5 != $LOCKSPACE ; then
     RESOURCE="$LOCKSPACE:$MD5:$LOCKDIR/$MD5:0"
     notify -n "Cleanup: $RESOURCE "
     sanlock client command -r $RESOURCE -c /bin/rm -f "$LOCKDIR/$MD5" 2>/dev/null
