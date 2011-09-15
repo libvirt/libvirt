@@ -384,9 +384,6 @@ static void *_vshMalloc(vshControl *ctl, size_t sz, const char *filename, int li
 static void *_vshCalloc(vshControl *ctl, size_t nmemb, size_t sz, const char *filename, int line);
 #define vshCalloc(_ctl, _nmemb, _sz)    _vshCalloc(_ctl, _nmemb, _sz, __FILE__, __LINE__)
 
-static void *_vshRealloc(vshControl *ctl, void *ptr, size_t sz, const char *filename, int line);
-#define vshRealloc(_ctl, _ptr, _sz)    _vshRealloc(_ctl, _ptr, _sz, __FILE__, __LINE__)
-
 static char *_vshStrdup(vshControl *ctl, const char *s, const char *filename, int line);
 #define vshStrdup(_ctl, _s)    _vshStrdup(_ctl, _s, __FILE__, __LINE__)
 
@@ -411,19 +408,6 @@ _vshCalloc(vshControl *ctl, size_t nmemb, size_t size, const char *filename, int
         return x;
     vshError(ctl, _("%s: %d: failed to allocate %d bytes"),
              filename, line, (int) (size*nmemb));
-    exit(EXIT_FAILURE);
-}
-
-static void *
-_vshRealloc(vshControl *ctl, void *ptr, size_t size, const char *filename, int line)
-{
-    void *x;
-
-    if ((x = realloc(ptr, size)))
-        return x;
-    VIR_FREE(ptr);
-    vshError(ctl, _("%s: %d: failed to allocate %d bytes"),
-             filename, line, (int) size);
     exit(EXIT_FAILURE);
 }
 
@@ -12003,18 +11987,18 @@ static bool
 cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
 {
     const char *from = NULL;
-    bool ret = true;
+    bool ret = false;
     char *buffer;
     char *result = NULL;
     const char **list = NULL;
-    unsigned int count = 0;
-    xmlDocPtr doc = NULL;
-    xmlNodePtr node_list;
+    int count = 0;
+
+    xmlDocPtr xml = NULL;
+    xmlNodePtr *node_list = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    xmlSaveCtxtPtr sctxt = NULL;
-    xmlBufferPtr buf = NULL;
-    xmlXPathObjectPtr obj = NULL;
-    int res, i;
+    xmlBufferPtr xml_buf = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int i;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -12025,69 +12009,57 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
     if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    doc = xmlNewDoc(NULL);
-    if (doc == NULL)
+    /* add an separate container around the xml */
+    virBufferStrcat(&buf, "<container>", buffer, "</container>", NULL);
+    if (virBufferError(&buf))
         goto no_memory;
 
-    res = xmlParseBalancedChunkMemory(doc, NULL, NULL, 0,
-                                      (const xmlChar *)buffer, &node_list);
-    if (res != 0) {
-        vshError(ctl, _("Failed to parse XML fragment %s"), from);
-        ret = false;
-        goto cleanup;
-    }
+    VIR_FREE(buffer);
+    buffer = virBufferContentAndReset(&buf);
 
-    xmlAddChildList((xmlNodePtr) doc, node_list);
 
-    ctxt = xmlXPathNewContext(doc);
-    if (!ctxt)
-        goto no_memory;
-
-    obj = xmlXPathEval(BAD_CAST "//cpu[not(ancestor::cpu)]", ctxt);
-    if ((obj == NULL) || (obj->nodesetval == NULL) ||
-        (obj->nodesetval->nodeTab == NULL))
+    if (!(xml = virXMLParseStringCtxt(buffer, from, &ctxt)))
         goto cleanup;
 
-    for (i = 0;i < obj->nodesetval->nodeNr;i++) {
-        buf = xmlBufferCreate();
-        if (buf == NULL)
-            goto no_memory;
-        sctxt = xmlSaveToBuffer(buf, NULL, 0);
-        if (sctxt == NULL) {
-            xmlBufferFree(buf);
-            goto no_memory;
-        }
-
-        xmlSaveTree(sctxt, obj->nodesetval->nodeTab[i]);
-        xmlSaveClose(sctxt);
-
-        list = vshRealloc(ctl, list, sizeof(char *) * (count + 1));
-        list[count++] = (char *) buf->content;
-        buf->content = NULL;
-        xmlBufferFree(buf);
-        buf = NULL;
-    }
+    if ((count = virXPathNodeSet("//cpu[not(ancestor::cpus)]",
+                                 ctxt, &node_list)) == -1)
+        goto cleanup;
 
     if (count == 0) {
         vshError(ctl, _("No host CPU specified in '%s'"), from);
-        ret = false;
         goto cleanup;
+    }
+
+    list = vshCalloc(ctl, count, sizeof(const char *));
+
+    if (!(xml_buf = xmlBufferCreate()))
+        goto no_memory;
+
+    for (i = 0; i < count; i++) {
+        xmlBufferEmpty(xml_buf);
+
+        if (xmlNodeDump(xml_buf, xml,  node_list[i], 0, 0) < 0) {
+            vshError(ctl, _("Failed to extract <cpu> element"));
+            goto cleanup;
+        }
+
+        list[i] = vshStrdup(ctl, (const char *)xmlBufferContent(xml_buf));
     }
 
     result = virConnectBaselineCPU(ctl->conn, list, count, 0);
 
-    if (result)
+    if (result) {
         vshPrint(ctl, "%s", result);
-    else
-        ret = false;
+        ret = true;
+    }
 
 cleanup:
-    xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(doc);
+    xmlFreeDoc(xml);
+    xmlBufferFree(xml_buf);
     VIR_FREE(result);
     if ((list != NULL) && (count > 0)) {
-        for (i = 0;i < count;i++)
+        for (i = 0; i < count; i++)
             VIR_FREE(list[i]);
     }
     VIR_FREE(list);
