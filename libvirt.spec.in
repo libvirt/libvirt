@@ -519,6 +519,8 @@ the virtualization capabilities of recent versions of Linux (and other OSes).
 Summary: Sanlock lock manager plugin for QEMU driver
 Group: Development/Libraries
 Requires: sanlock
+#for virt-sanlock-cleanup require augeas
+Requires: augeas
 Requires: %{name} = %{version}-%{release}
 
 %description lock-sanlock
