@@ -64,6 +64,7 @@ VIR_ENUM_IMPL(qemuMigrationJobPhase, QEMU_MIGRATION_PHASE_LAST,
 enum qemuMigrationCookieFlags {
     QEMU_MIGRATION_COOKIE_FLAG_GRAPHICS,
     QEMU_MIGRATION_COOKIE_FLAG_LOCKSTATE,
+    QEMU_MIGRATION_COOKIE_FLAG_PERSISTENT,
 
     QEMU_MIGRATION_COOKIE_FLAG_LAST
 };
@@ -71,11 +72,12 @@ enum qemuMigrationCookieFlags {
 VIR_ENUM_DECL(qemuMigrationCookieFlag);
 VIR_ENUM_IMPL(qemuMigrationCookieFlag,
               QEMU_MIGRATION_COOKIE_FLAG_LAST,
-              "graphics", "lockstate");
+              "graphics", "lockstate", "persistent");
 
 enum qemuMigrationCookieFeatures {
     QEMU_MIGRATION_COOKIE_GRAPHICS  = (1 << QEMU_MIGRATION_COOKIE_FLAG_GRAPHICS),
     QEMU_MIGRATION_COOKIE_LOCKSTATE = (1 << QEMU_MIGRATION_COOKIE_FLAG_LOCKSTATE),
+    QEMU_MIGRATION_COOKIE_PERSISTENT = (1 << QEMU_MIGRATION_COOKIE_FLAG_PERSISTENT),
 };
 
 typedef struct _qemuMigrationCookieGraphics qemuMigrationCookieGraphics;
@@ -110,6 +112,9 @@ struct _qemuMigrationCookie {
 
     /* If (flags & QEMU_MIGRATION_COOKIE_GRAPHICS) */
     qemuMigrationCookieGraphicsPtr graphics;
+
+    /* If (flags & QEMU_MIGRATION_COOKIE_PERSISTENT) */
+    virDomainDefPtr persistent;
 };
 
 static void qemuMigrationCookieGraphicsFree(qemuMigrationCookieGraphicsPtr grap)
@@ -334,6 +339,26 @@ qemuMigrationCookieAddLockstate(qemuMigrationCookiePtr mig,
 }
 
 
+static int
+qemuMigrationCookieAddPersistent(qemuMigrationCookiePtr mig,
+                                 virDomainObjPtr dom)
+{
+    if (mig->flags & QEMU_MIGRATION_COOKIE_PERSISTENT) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Migration persistent data already present"));
+        return -1;
+    }
+
+    if (!dom->newDef)
+        return 0;
+
+    mig->persistent = dom->newDef;
+    mig->flags |= QEMU_MIGRATION_COOKIE_PERSISTENT;
+    mig->flagsMandatory |= QEMU_MIGRATION_COOKIE_PERSISTENT;
+    return 0;
+}
+
+
 
 static void qemuMigrationCookieGraphicsXMLFormat(virBufferPtr buf,
                                                  qemuMigrationCookieGraphicsPtr grap)
@@ -358,6 +383,7 @@ static void qemuMigrationCookieXMLFormat(virBufferPtr buf,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char hostuuidstr[VIR_UUID_STRING_BUFLEN];
+    char *domXML;
     int i;
 
     virUUIDFormat(mig->uuid, uuidstr);
@@ -386,6 +412,15 @@ static void qemuMigrationCookieXMLFormat(virBufferPtr buf,
         virBufferAsprintf(buf, "    <leases>%s</leases>\n",
                           mig->lockState);
         virBufferAddLit(buf, "  </lockstate>\n");
+    }
+
+    if ((mig->flags & QEMU_MIGRATION_COOKIE_PERSISTENT) &&
+        mig->persistent) {
+        domXML = virDomainDefFormat(mig->persistent,
+                                    VIR_DOMAIN_XML_INACTIVE |
+                                    VIR_DOMAIN_XML_SECURE);
+        virBufferAdd(buf, domXML, -1);
+        VIR_FREE(domXML);
     }
 
     virBufferAddLit(buf, "</qemu-migration>\n");
@@ -460,6 +495,8 @@ error:
 
 static int
 qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
+                            struct qemud_driver *driver,
+                            xmlDocPtr doc,
                             xmlXPathContextPtr ctxt,
                             unsigned int flags)
 {
@@ -583,6 +620,25 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
             VIR_FREE(mig->lockState);
     }
 
+    if ((flags & QEMU_MIGRATION_COOKIE_PERSISTENT) &&
+        virXPathBoolean("count(./domain) > 0", ctxt)) {
+        if ((n = virXPathNodeSet("./domain", ctxt, &nodes)) > 1) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Too many domain elements in "
+                              "migration cookie: %d"),
+                            n);
+            goto error;
+        }
+        mig->persistent = virDomainDefParseNode(driver->caps, doc, nodes[0],
+                                                -1, VIR_DOMAIN_XML_INACTIVE);
+        if (!mig->persistent) {
+            /* virDomainDefParseNode already reported
+             * an error for us */
+            goto error;
+        }
+        VIR_FREE(nodes);
+    }
+
     return 0;
 
 error:
@@ -594,6 +650,7 @@ error:
 
 static int
 qemuMigrationCookieXMLParseStr(qemuMigrationCookiePtr mig,
+                               struct qemud_driver *driver,
                                const char *xml,
                                unsigned int flags)
 {
@@ -606,7 +663,7 @@ qemuMigrationCookieXMLParseStr(qemuMigrationCookiePtr mig,
     if (!(doc = virXMLParseStringCtxt(xml, _("(qemu_migration_cookie)"), &ctxt)))
         goto cleanup;
 
-    ret = qemuMigrationCookieXMLParse(mig, ctxt, flags);
+    ret = qemuMigrationCookieXMLParse(mig, driver, doc, ctxt, flags);
 
 cleanup:
     xmlXPathFreeContext(ctxt);
@@ -635,6 +692,10 @@ qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
 
     if (flags & QEMU_MIGRATION_COOKIE_LOCKSTATE &&
         qemuMigrationCookieAddLockstate(mig, driver, dom) < 0)
+        return -1;
+
+    if (flags & QEMU_MIGRATION_COOKIE_PERSISTENT &&
+        qemuMigrationCookieAddPersistent(mig, dom) < 0)
         return -1;
 
     if (!(*cookieout = qemuMigrationCookieXMLFormatStr(mig)))
@@ -672,6 +733,7 @@ qemuMigrationEatCookie(struct qemud_driver *driver,
 
     if (cookiein && cookieinlen &&
         qemuMigrationCookieXMLParseStr(mig,
+                                       driver,
                                        cookiein,
                                        flags) < 0)
         goto error;
@@ -1575,7 +1637,8 @@ cleanup:
     }
 
     if (ret == 0 &&
-        qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen, 0) < 0)
+        qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen,
+                                QEMU_MIGRATION_COOKIE_PERSISTENT ) < 0)
         VIR_WARN("Unable to encode migration cookie");
 
     qemuMigrationCookieFree(mig);
@@ -2477,6 +2540,7 @@ qemuMigrationFinish(struct qemud_driver *driver,
     int newVM = 1;
     qemuMigrationCookiePtr mig = NULL;
     virErrorPtr orig_err = NULL;
+    int cookie_flags = 0;
 
     VIR_DEBUG("driver=%p, dconn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, retcode=%d",
@@ -2490,7 +2554,11 @@ qemuMigrationFinish(struct qemud_driver *driver,
                                v3proto ? QEMU_MIGRATION_PHASE_FINISH3
                                        : QEMU_MIGRATION_PHASE_FINISH2);
 
-    if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen, 0)))
+    if (flags & VIR_MIGRATE_PERSIST_DEST)
+        cookie_flags |= QEMU_MIGRATION_COOKIE_PERSISTENT;
+
+    if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein,
+                                       cookieinlen, cookie_flags)))
         goto endjob;
 
     /* Did the migration go as planned?  If yes, return the domain
@@ -2510,7 +2578,10 @@ qemuMigrationFinish(struct qemud_driver *driver,
             if (vm->persistent)
                 newVM = 0;
             vm->persistent = 1;
-            vmdef = virDomainObjGetPersistentDef(driver->caps, vm);
+            if (mig->persistent)
+                vm->newDef = vmdef = mig->persistent;
+            else
+                vmdef = virDomainObjGetPersistentDef(driver->caps, vm);
             if (virDomainSaveConfig(driver->configDir, vmdef) < 0) {
                 /* Hmpf.  Migration was successful, but making it persistent
                  * was not.  If we report successful, then when this domain
