@@ -11903,9 +11903,15 @@ static bool
 cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
 {
     const char *from = NULL;
-    bool ret = true;
+    bool ret = false;
     char *buffer;
     int result;
+    const char *snippet;
+
+    xmlDocPtr xml = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    xmlBufferPtr xml_buf = NULL;
+    xmlNodePtr node;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -11913,36 +11919,68 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
-    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
+        vshError(ctl, _("Failed to read file '%s' to compare"),
+                 from);
         return false;
+    }
 
-    result = virConnectCompareCPU(ctl->conn, buffer, 0);
-    VIR_FREE(buffer);
+    /* try to extract the CPU element from as it would appear in a domain XML*/
+    if (!(xml = virXMLParseStringCtxt(buffer, from, &ctxt)))
+        goto cleanup;
+
+    if ((node = virXPathNode("/cpu|"
+                             "/domain/cpu|"
+                              "/capabilities/host/cpu", ctxt))) {
+        if (!(xml_buf = xmlBufferCreate())) {
+            vshError(ctl, _("Can't create XML buffer to extract CPU element."));
+            goto cleanup;
+        }
+
+        if (xmlNodeDump(xml_buf, xml, node, 0, 0) < 0) {
+            vshError(ctl, _("Failed to extract CPU element snippet from domain XML."));
+            goto cleanup;
+        }
+
+        snippet = (const char *) xmlBufferContent(xml_buf);
+    } else {
+        vshError(ctl, _("File '%s' does not contain a <cpu> element or is not "
+                        "a valid domain or capabilities XML"), from);
+        goto cleanup;
+    }
+
+    result = virConnectCompareCPU(ctl->conn, snippet, 0);
 
     switch (result) {
     case VIR_CPU_COMPARE_INCOMPATIBLE:
         vshPrint(ctl, _("CPU described in %s is incompatible with host CPU\n"),
                  from);
-        ret = false;
+        goto cleanup;
         break;
 
     case VIR_CPU_COMPARE_IDENTICAL:
         vshPrint(ctl, _("CPU described in %s is identical to host CPU\n"),
                  from);
-        ret = true;
         break;
 
     case VIR_CPU_COMPARE_SUPERSET:
         vshPrint(ctl, _("Host CPU is a superset of CPU described in %s\n"),
                  from);
-        ret = true;
         break;
 
     case VIR_CPU_COMPARE_ERROR:
     default:
         vshError(ctl, _("Failed to compare host CPU with %s"), from);
-        ret = false;
+        goto cleanup;
     }
+
+    ret = true;
+
+cleanup:
+    VIR_FREE(buffer);
+    xmlBufferFree(xml_buf);
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(xml);
 
     return ret;
 }
