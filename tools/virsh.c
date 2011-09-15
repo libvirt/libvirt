@@ -15151,6 +15151,8 @@ vshDomainStateReasonToString(int state, int reason)
             return N_("watchdog");
         case VIR_DOMAIN_PAUSED_FROM_SNAPSHOT:
             return N_("from snapshot");
+        case VIR_DOMAIN_PAUSED_SHUTTING_DOWN:
+            return N_("shutting down");
         case VIR_DOMAIN_PAUSED_UNKNOWN:
             ;
         }

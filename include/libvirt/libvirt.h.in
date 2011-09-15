@@ -124,6 +124,7 @@ typedef enum {
     VIR_DOMAIN_PAUSED_IOERROR = 5,      /* paused due to a disk I/O error */
     VIR_DOMAIN_PAUSED_WATCHDOG = 6,     /* paused due to a watchdog event */
     VIR_DOMAIN_PAUSED_FROM_SNAPSHOT = 7, /* paused after restoring from snapshot */
+    VIR_DOMAIN_PAUSED_SHUTTING_DOWN = 8, /* paused during shutdown process */
 } virDomainPausedReason;
 
 typedef enum {

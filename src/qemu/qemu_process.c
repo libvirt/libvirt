@@ -473,14 +473,22 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 {
     struct qemud_driver *driver = qemu_driver;
     virDomainEventPtr event = NULL;
+    virDomainPausedReason reason = VIR_DOMAIN_PAUSED_UNKNOWN;
 
     virDomainObjLock(vm);
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
-        VIR_DEBUG("Transitioned guest %s to paused state due to unknown event",
-                  vm->def->name);
 
-        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_UNKNOWN);
+        if (priv->gotShutdown) {
+            VIR_DEBUG("Got STOP event after SHUTDOWN, assuming we are stopping"
+                      " for shutdown");
+            reason = VIR_DOMAIN_PAUSED_SHUTTING_DOWN;
+        }
+
+        VIR_DEBUG("Transitioned guest %s to paused state, reason=%s",
+                  vm->def->name, virDomainPausedReasonTypeToString(reason));
+
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, reason);
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
