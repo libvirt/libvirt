@@ -518,7 +518,7 @@ Modify link state of the domain's virtual interface. Possible values for
 state are "up" and "down. If --persistent is specified, only the persistent
 configuration of the domain is modified.
 
-=item B<domif-setlink> I<domain> I<interface-MAC> I<--persistent>
+=item B<domif-getlink> I<domain> I<interface-MAC> I<--persistent>
 
 Query link state of the domain's virtual interface. If --persistent
 is specified, query the persistent configuration.
