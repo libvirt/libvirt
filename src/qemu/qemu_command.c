@@ -1702,7 +1702,8 @@ qemuBuildDriveDevStr(virDomainDiskDefPtr disk,
             virBufferAsprintf(&opt, ",event_idx=%s",
                               virDomainVirtioEventIdxTypeToString(disk->event_idx));
         }
-        qemuBuildDeviceAddressStr(&opt, &disk->info, qemuCaps);
+        if (qemuBuildDeviceAddressStr(&opt, &disk->info, qemuCaps) < 0)
+            goto error;
         break;
     case VIR_DOMAIN_DISK_BUS_USB:
         virBufferAddLit(&opt, "usb-storage");
@@ -1781,7 +1782,9 @@ qemuBuildFSDevStr(virDomainFSDefPtr fs,
     virBufferAsprintf(&opt, ",id=%s", fs->info.alias);
     virBufferAsprintf(&opt, ",fsdev=%s%s", QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
     virBufferAsprintf(&opt, ",mount_tag=%s", fs->dst);
-    qemuBuildDeviceAddressStr(&opt, &fs->info, qemuCaps);
+
+    if (qemuBuildDeviceAddressStr(&opt, &fs->info, qemuCaps) < 0)
+        goto error;
 
     if (virBufferError(&opt)) {
         virReportOOMError();
