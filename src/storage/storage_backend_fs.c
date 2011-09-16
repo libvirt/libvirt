@@ -625,6 +625,8 @@ virStorageBackendFileSystemProbe(const char *device ATTRIBUTE_UNUSED,
 
 #endif /* #if HAVE_LIBBLKID */
 
+/* some platforms don't support mkfs */
+#ifdef MKFS
 static int
 virStorageBackendExecuteMKFS(const char *device,
                              const char *format)
@@ -647,6 +649,19 @@ virStorageBackendExecuteMKFS(const char *device,
     }
     return ret;
 }
+#else /* #ifdef MKFS */
+static int
+virStorageBackendExecuteMKFS(const char *device ATTRIBUTE_UNUSED,
+                             const char *format ATTRIBUTE_UNUSED)
+{
+    virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+                              _("mkfs is not supported on this platform: "
+                                "Failed to make filesystem of "
+                               "type '%s' on device '%s'"),
+                             format, device);
+    return -1;
+}
+#endif /* #ifdef MKFS */
 
 static int
 virStorageBackendMakeFileSystem(virStoragePoolObjPtr pool,
