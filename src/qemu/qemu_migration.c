@@ -2222,6 +2222,10 @@ static int doPeer2PeerMigrate(struct qemud_driver *driver,
         return -1;
     }
 
+    if (virConnectSetKeepAlive(dconn, driver->keepAliveInterval,
+                               driver->keepAliveCount) < 0)
+        goto cleanup;
+
     qemuDomainObjEnterRemoteWithDriver(driver, vm);
     p2p = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
                                    VIR_DRV_FEATURE_MIGRATION_P2P);

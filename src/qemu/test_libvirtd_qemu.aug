@@ -115,6 +115,9 @@ vnc_auto_unix_socket = 1
 max_processes = 12345
 
 lock_manager = \"fcntl\"
+
+keepalive_interval = 1
+keepalive_count = 42
 "
 
    test Libvirtd_qemu.lns get conf =
@@ -240,3 +243,6 @@ lock_manager = \"fcntl\"
 { "max_processes" = "12345" }
 { "#empty" }
 { "lock_manager" = "fcntl" }
+{ "#empty" }
+{ "keepalive_interval" = "1" }
+{ "keepalive_count" = "42" }

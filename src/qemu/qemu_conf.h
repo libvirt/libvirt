@@ -135,6 +135,9 @@ struct qemud_driver {
      * of guests which will be automatically killed
      * when the virConnectPtr is closed*/
     virHashTablePtr autodestroy;
+
+    int keepAliveInterval;
+    unsigned int keepAliveCount;
 };
 
 typedef struct _qemuDomainCmdlineDef qemuDomainCmdlineDef;

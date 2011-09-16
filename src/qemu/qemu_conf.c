@@ -115,6 +115,9 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
           virLockManagerPluginNew("nop", NULL, 0)))
         return -1;
 
+    driver->keepAliveInterval = 5;
+    driver->keepAliveCount = 5;
+
     /* Just check the file is readable before opening it, otherwise
      * libvirt emits an error.
      */
@@ -459,6 +462,14 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     p = virConfGetValue(conf, "max_queued");
     CHECK_TYPE("max_queued", VIR_CONF_LONG);
     if (p) driver->max_queued = p->l;
+
+    p = virConfGetValue(conf, "keepalive_interval");
+    CHECK_TYPE("keepalive_interval", VIR_CONF_LONG);
+    if (p) driver->keepAliveInterval = p->l;
+
+    p = virConfGetValue(conf, "keepalive_count");
+    CHECK_TYPE("keepalive_count", VIR_CONF_LONG);
+    if (p) driver->keepAliveCount = p->l;
 
     virConfFree (conf);
     return 0;
