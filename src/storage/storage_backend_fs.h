@@ -29,12 +29,13 @@
 # if WITH_STORAGE_FS
 extern virStorageBackend virStorageBackendFileSystem;
 extern virStorageBackend virStorageBackendNetFileSystem;
+# endif
+
 typedef enum {
     FILESYSTEM_PROBE_FOUND,
     FILESYSTEM_PROBE_NOT_FOUND,
     FILESYSTEM_PROBE_ERROR,
 } virStoragePoolProbeResult;
-# endif
 extern virStorageBackend virStorageBackendDirectory;
 
 #endif /* __VIR_STORAGE_BACKEND_FS_H__ */
