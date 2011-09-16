@@ -213,7 +213,7 @@ int qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
                               virDomainMemoryStatPtr stats,
                               unsigned int nr_stats);
 int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
-                                 const char *devname,
+                                 const char *dev_name,
                                  long long *rd_req,
                                  long long *rd_bytes,
                                  long long *rd_total_times,
@@ -227,7 +227,7 @@ int qemuMonitorGetBlockStatsParamsNumber(qemuMonitorPtr mon,
                                          int *nparams);
 
 int qemuMonitorGetBlockExtent(qemuMonitorPtr mon,
-                              const char *devname,
+                              const char *dev_name,
                               unsigned long long *extent);
 
 
@@ -250,10 +250,10 @@ int qemuMonitorSetCPU(qemuMonitorPtr mon, int cpu, int online);
  * this when doing the QMP implementation
  */
 int qemuMonitorEjectMedia(qemuMonitorPtr mon,
-                          const char *devname,
+                          const char *dev_name,
                           bool force);
 int qemuMonitorChangeMedia(qemuMonitorPtr mon,
-                           const char *devname,
+                           const char *dev_name,
                            const char *newmedia,
                            const char *format);
 

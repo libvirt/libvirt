@@ -125,7 +125,7 @@ cleanup:
 
 
 static int
-virStorageBackendIsMultipath(const char *devname)
+virStorageBackendIsMultipath(const char *dev_name)
 {
     int ret = 0;
     struct dm_task *dmt = NULL;
@@ -140,7 +140,7 @@ virStorageBackendIsMultipath(const char *devname)
         goto out;
     }
 
-    if (dm_task_set_name(dmt, devname) == 0) {
+    if (dm_task_set_name(dmt, dev_name) == 0) {
         ret = -1;
         goto out;
     }
@@ -172,7 +172,7 @@ out:
 
 
 static int
-virStorageBackendGetMinorNumber(const char *devname, uint32_t *minor)
+virStorageBackendGetMinorNumber(const char *dev_name, uint32_t *minor)
 {
     int ret = -1;
     struct dm_task *dmt;
@@ -182,7 +182,7 @@ virStorageBackendGetMinorNumber(const char *devname, uint32_t *minor)
         goto out;
     }
 
-    if (!dm_task_set_name(dmt, devname)) {
+    if (!dm_task_set_name(dmt, dev_name)) {
         goto out;
     }
 

@@ -61,7 +61,7 @@ int qemuMonitorJSONGetMemoryStats(qemuMonitorPtr mon,
                                   virDomainMemoryStatPtr stats,
                                   unsigned int nr_stats);
 int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
-                                     const char *devname,
+                                     const char *dev_name,
                                      long long *rd_req,
                                      long long *rd_bytes,
                                      long long *rd_total_times,
@@ -74,7 +74,7 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
 int qemuMonitorJSONGetBlockStatsParamsNumber(qemuMonitorPtr mon,
                                              int *nparams);
 int qemuMonitorJSONGetBlockExtent(qemuMonitorPtr mon,
-                                  const char *devname,
+                                  const char *dev_name,
                                   unsigned long long *extent);
 
 
@@ -92,10 +92,10 @@ int qemuMonitorJSONSetBalloon(qemuMonitorPtr mon,
 int qemuMonitorJSONSetCPU(qemuMonitorPtr mon, int cpu, int online);
 
 int qemuMonitorJSONEjectMedia(qemuMonitorPtr mon,
-                              const char *devname,
+                              const char *dev_name,
                               bool force);
 int qemuMonitorJSONChangeMedia(qemuMonitorPtr mon,
-                               const char *devname,
+                               const char *dev_name,
                                const char *newmedia,
                                const char *format);
 

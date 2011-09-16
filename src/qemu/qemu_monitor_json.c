@@ -1338,7 +1338,7 @@ cleanup:
 
 
 int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
-                                     const char *devname,
+                                     const char *dev_name,
                                      long long *rd_req,
                                      long long *rd_bytes,
                                      long long *rd_total_times,
@@ -1405,12 +1405,12 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
 
         /* New QEMU has separate names for host & guest side of the disk
          * and libvirt gives the host side a 'drive-' prefix. The passed
-         * in devname is the guest side though
+         * in dev_name is the guest side though
          */
         if (STRPREFIX(thisdev, QEMU_DRIVE_HOST_PREFIX))
             thisdev += strlen(QEMU_DRIVE_HOST_PREFIX);
 
-        if (STRNEQ(thisdev, devname))
+        if (STRNEQ(thisdev, dev_name))
             continue;
 
         found = 1;
@@ -1485,7 +1485,7 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
 
     if (!found) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("cannot find statistics for device '%s'"), devname);
+                        _("cannot find statistics for device '%s'"), dev_name);
         goto cleanup;
     }
     ret = 0;
@@ -1570,7 +1570,7 @@ cleanup:
 }
 
 int qemuMonitorJSONGetBlockExtent(qemuMonitorPtr mon,
-                                  const char *devname,
+                                  const char *dev_name,
                                   unsigned long long *extent)
 {
     int ret = -1;
@@ -1620,12 +1620,12 @@ int qemuMonitorJSONGetBlockExtent(qemuMonitorPtr mon,
 
         /* New QEMU has separate names for host & guest side of the disk
          * and libvirt gives the host side a 'drive-' prefix. The passed
-         * in devname is the guest side though
+         * in dev_name is the guest side though
          */
         if (STRPREFIX(thisdev, QEMU_DRIVE_HOST_PREFIX))
             thisdev += strlen(QEMU_DRIVE_HOST_PREFIX);
 
-        if (STRNEQ(thisdev, devname))
+        if (STRNEQ(thisdev, dev_name))
             continue;
 
         found = 1;
@@ -1653,7 +1653,7 @@ int qemuMonitorJSONGetBlockExtent(qemuMonitorPtr mon,
 
     if (!found) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("cannot find statistics for device '%s'"), devname);
+                        _("cannot find statistics for device '%s'"), dev_name);
         goto cleanup;
     }
     ret = 0;
@@ -1840,12 +1840,12 @@ cleanup:
 
 
 int qemuMonitorJSONEjectMedia(qemuMonitorPtr mon,
-                              const char *devname,
+                              const char *dev_name,
                               bool force)
 {
     int ret;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("eject",
-                                                     "s:device", devname,
+                                                     "s:device", dev_name,
                                                      "b:force", force ? 1 : 0,
                                                      NULL);
     virJSONValuePtr reply = NULL;
@@ -1864,7 +1864,7 @@ int qemuMonitorJSONEjectMedia(qemuMonitorPtr mon,
 
 
 int qemuMonitorJSONChangeMedia(qemuMonitorPtr mon,
-                               const char *devname,
+                               const char *dev_name,
                                const char *newmedia,
                                const char *format)
 {
@@ -1872,13 +1872,13 @@ int qemuMonitorJSONChangeMedia(qemuMonitorPtr mon,
     virJSONValuePtr cmd;
     if (format)
         cmd = qemuMonitorJSONMakeCommand("change",
-                                         "s:device", devname,
+                                         "s:device", dev_name,
                                          "s:target", newmedia,
                                          "s:arg", format,
                                          NULL);
     else
         cmd = qemuMonitorJSONMakeCommand("change",
-                                         "s:device", devname,
+                                         "s:device", dev_name,
                                          "s:target", newmedia,
                                          NULL);
 

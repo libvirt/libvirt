@@ -67,7 +67,7 @@ struct cgroup_device_policy {
 };
 
 
-static int lxcGetLoopFD(char **devname)
+static int lxcGetLoopFD(char **dev_name)
 {
     int fd = -1;
     DIR *dh = NULL;
@@ -122,7 +122,7 @@ static int lxcGetLoopFD(char **devname)
 cleanup:
     if (fd != -1) {
         VIR_DEBUG("Got free loop device %s %d", looppath, fd);
-        *devname = looppath;
+        *dev_name = looppath;
     } else {
         VIR_DEBUG("No free loop devices available");
         VIR_FREE(looppath);

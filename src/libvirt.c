@@ -16313,13 +16313,13 @@ virDomainSnapshotFree(virDomainSnapshotPtr snapshot)
 /**
  * virDomainOpenConsole:
  * @dom: a domain object
- * @devname: the console, serial or parallel port device alias, or NULL
+ * @dev_name: the console, serial or parallel port device alias, or NULL
  * @st: a stream to associate with the console
  * @flags: unused, pass 0
  *
  * This opens the backend associated with a console, serial or
  * parallel port device on a guest, if the backend is supported.
- * If the @devname is omitted, then the first console or serial
+ * If the @dev_name is omitted, then the first console or serial
  * device is opened. The console is associated with the passed
  * in @st stream, which should have been opened in non-blocking
  * mode for bi-directional I/O.
@@ -16327,14 +16327,14 @@ virDomainSnapshotFree(virDomainSnapshotPtr snapshot)
  * returns 0 if the console was opened, -1 on error
  */
 int virDomainOpenConsole(virDomainPtr dom,
-                         const char *devname,
+                         const char *dev_name,
                          virStreamPtr st,
                          unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(dom, "devname=%s, st=%p, flags=%x",
-                     NULLSTR(devname), st, flags);
+    VIR_DOMAIN_DEBUG(dom, "dev_name=%s, st=%p, flags=%x",
+                     NULLSTR(dev_name), st, flags);
 
     virResetLastError();
 
@@ -16352,7 +16352,7 @@ int virDomainOpenConsole(virDomainPtr dom,
 
     if (conn->driver->domainOpenConsole) {
         int ret;
-        ret = conn->driver->domainOpenConsole(dom, devname, st, flags);
+        ret = conn->driver->domainOpenConsole(dom, dev_name, st, flags);
         if (ret < 0)
             goto error;
         return ret;

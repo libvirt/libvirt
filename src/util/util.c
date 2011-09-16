@@ -2455,11 +2455,11 @@ virTimeMs(unsigned long long *ms)
 
 #if HAVE_LIBDEVMAPPER_H
 bool
-virIsDevMapperDevice(const char *devname)
+virIsDevMapperDevice(const char *dev_name)
 {
     struct stat buf;
 
-    if (!stat(devname, &buf) &&
+    if (!stat(dev_name, &buf) &&
         S_ISBLK(buf.st_mode) &&
         dm_is_dm_major(major(buf.st_rdev)))
             return true;
@@ -2467,7 +2467,7 @@ virIsDevMapperDevice(const char *devname)
     return false;
 }
 #else
-bool virIsDevMapperDevice(const char *devname ATTRIBUTE_UNUSED)
+bool virIsDevMapperDevice(const char *dev_name ATTRIBUTE_UNUSED)
 {
     return false;
 }

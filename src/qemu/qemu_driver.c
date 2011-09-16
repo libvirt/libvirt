@@ -10334,7 +10334,7 @@ cleanup:
 
 static int
 qemuDomainOpenConsole(virDomainPtr dom,
-                      const char *devname,
+                      const char *dev_name,
                       virStreamPtr st,
                       unsigned int flags)
 {
@@ -10362,16 +10362,16 @@ qemuDomainOpenConsole(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (devname) {
+    if (dev_name) {
         if (vm->def->console &&
-            STREQ(devname, vm->def->console->info.alias))
+            STREQ(dev_name, vm->def->console->info.alias))
             chr = vm->def->console;
         for (i = 0 ; !chr && i < vm->def->nserials ; i++) {
-            if (STREQ(devname, vm->def->serials[i]->info.alias))
+            if (STREQ(dev_name, vm->def->serials[i]->info.alias))
                 chr = vm->def->serials[i];
         }
         for (i = 0 ; !chr && i < vm->def->nparallels ; i++) {
-            if (STREQ(devname, vm->def->parallels[i]->info.alias))
+            if (STREQ(dev_name, vm->def->parallels[i]->info.alias))
                 chr = vm->def->parallels[i];
         }
     } else {
@@ -10384,14 +10384,14 @@ qemuDomainOpenConsole(virDomainPtr dom,
     if (!chr) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("cannot find character device %s"),
-                        NULLSTR(devname));
+                        NULLSTR(dev_name));
         goto cleanup;
     }
 
     if (chr->source.type != VIR_DOMAIN_CHR_TYPE_PTY) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("character device %s is not using a PTY"),
-                        NULLSTR(devname));
+                        NULLSTR(dev_name));
         goto cleanup;
     }
 

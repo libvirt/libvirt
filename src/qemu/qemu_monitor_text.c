@@ -751,7 +751,7 @@ int qemuMonitorTextGetMemoryStats(qemuMonitorPtr mon,
 
 
 int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
-                                     const char *devname,
+                                     const char *dev_name,
                                      long long *rd_req,
                                      long long *rd_bytes,
                                      long long *rd_total_times,
@@ -766,7 +766,7 @@ int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
     int ret = -1;
     char *dummy;
     const char *p, *eol;
-    int devnamelen = strlen(devname);
+    int devnamelen = strlen(dev_name);
 
     if (qemuMonitorHMPCommand (mon, "info blockstats", &info) < 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
@@ -808,12 +808,12 @@ int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
     while (*p) {
         /* New QEMU has separate names for host & guest side of the disk
          * and libvirt gives the host side a 'drive-' prefix. The passed
-         * in devname is the guest side though
+         * in dev_name is the guest side though
          */
         if (STRPREFIX(p, QEMU_DRIVE_HOST_PREFIX))
             p += strlen(QEMU_DRIVE_HOST_PREFIX);
 
-        if (STREQLEN (p, devname, devnamelen)
+        if (STREQLEN (p, dev_name, devnamelen)
             && p[devnamelen] == ':' && p[devnamelen+1] == ' ') {
 
             eol = strchr (p, '\n');
@@ -880,7 +880,7 @@ int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
 
     /* If we reach here then the device was not found. */
     qemuReportError (VIR_ERR_INVALID_ARG,
-                     _("no stats found for device %s"), devname);
+                     _("no stats found for device %s"), dev_name);
 
  cleanup:
     VIR_FREE(info);
@@ -959,7 +959,7 @@ int qemuMonitorTextGetBlockStatsParamsNumber(qemuMonitorPtr mon,
 }
 
 int qemuMonitorTextGetBlockExtent(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                                  const char *devname ATTRIBUTE_UNUSED,
+                                  const char *dev_name ATTRIBUTE_UNUSED,
                                   unsigned long long *extent ATTRIBUTE_UNUSED)
 {
     qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1163,21 +1163,21 @@ int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, int online)
 
 
 int qemuMonitorTextEjectMedia(qemuMonitorPtr mon,
-                              const char *devname,
+                              const char *dev_name,
                               bool force)
 {
     char *cmd = NULL;
     char *reply = NULL;
     int ret = -1;
 
-    if (virAsprintf(&cmd, "eject %s%s", force ? "-f " : "", devname) < 0) {
+    if (virAsprintf(&cmd, "eject %s%s", force ? "-f " : "", dev_name) < 0) {
         virReportOOMError();
         goto cleanup;
     }
 
     if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("could not eject media on %s"), devname);
+                        _("could not eject media on %s"), dev_name);
         goto cleanup;
     }
 
@@ -1186,7 +1186,7 @@ int qemuMonitorTextEjectMedia(qemuMonitorPtr mon,
      * No message is printed on success it seems */
     if (c_strcasestr(reply, "device ")) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("could not eject media on %s: %s"), devname, reply);
+                        _("could not eject media on %s: %s"), dev_name, reply);
         goto cleanup;
     }
 
@@ -1200,7 +1200,7 @@ cleanup:
 
 
 int qemuMonitorTextChangeMedia(qemuMonitorPtr mon,
-                               const char *devname,
+                               const char *dev_name,
                                const char *newmedia,
                                const char *format ATTRIBUTE_UNUSED)
 {
@@ -1214,14 +1214,14 @@ int qemuMonitorTextChangeMedia(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (virAsprintf(&cmd, "change %s \"%s\"", devname, safepath) < 0) {
+    if (virAsprintf(&cmd, "change %s \"%s\"", dev_name, safepath) < 0) {
         virReportOOMError();
         goto cleanup;
     }
 
     if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("could not change media on %s"), devname);
+                        _("could not change media on %s"), dev_name);
         goto cleanup;
     }
 
@@ -1230,14 +1230,14 @@ int qemuMonitorTextChangeMedia(qemuMonitorPtr mon,
      * No message is printed on success it seems */
     if (c_strcasestr(reply, "device ")) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("could not change media on %s: %s"), devname, reply);
+                        _("could not change media on %s: %s"), dev_name, reply);
         goto cleanup;
     }
 
     /* Could not open message indicates bad filename */
     if (strstr(reply, "Could not open ")) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("could not change media on %s: %s"), devname, reply);
+                        _("could not change media on %s: %s"), dev_name, reply);
         goto cleanup;
     }
 

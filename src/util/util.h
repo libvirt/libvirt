@@ -255,7 +255,7 @@ char *virTimestamp(void);
 
 int virTimeMs(unsigned long long *ms) ATTRIBUTE_NONNULL(1);
 
-bool virIsDevMapperDevice(const char *devname) ATTRIBUTE_NONNULL(1);
+bool virIsDevMapperDevice(const char *dev_name) ATTRIBUTE_NONNULL(1);
 
 int virEmitXMLWarning(int fd,
                       const char *name,

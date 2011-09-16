@@ -612,7 +612,7 @@ typedef virDomainPtr
 
 typedef int
     (*virDrvDomainOpenConsole)(virDomainPtr dom,
-                               const char *devname,
+                               const char *dev_name,
                                virStreamPtr st,
                                unsigned int flags);
 

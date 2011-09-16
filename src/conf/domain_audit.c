@@ -202,7 +202,7 @@ virDomainAuditNetDevice(virDomainDefPtr vmDef, virDomainNetDefPtr netDef,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char macstr[VIR_MAC_STRING_BUFLEN];
     char *vmname;
-    char *devname;
+    char *dev_name;
     char *rdev;
     const char *virt;
 
@@ -211,7 +211,7 @@ virDomainAuditNetDevice(virDomainDefPtr vmDef, virDomainNetDefPtr netDef,
     rdev = virDomainAuditGetRdev(device);
 
     if (!(vmname = virAuditEncode("vm", vmDef->name)) ||
-        !(devname = virAuditEncode("path", device))) {
+        !(dev_name = virAuditEncode("path", device))) {
         VIR_WARN("OOM while encoding audit message");
         goto cleanup;
     }
@@ -223,11 +223,11 @@ virDomainAuditNetDevice(virDomainDefPtr vmDef, virDomainNetDefPtr netDef,
 
     VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
               "virt=%s resrc=net reason=open %s uuid=%s net='%s' %s rdev=%s",
-              virt, vmname, uuidstr, macstr, devname, VIR_AUDIT_STR(rdev));
+              virt, vmname, uuidstr, macstr, dev_name, VIR_AUDIT_STR(rdev));
 
 cleanup:
     VIR_FREE(vmname);
-    VIR_FREE(devname);
+    VIR_FREE(dev_name);
     VIR_FREE(rdev);
 }
 

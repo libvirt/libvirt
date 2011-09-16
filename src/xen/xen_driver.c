@@ -2119,7 +2119,7 @@ out:
 
 static int
 xenUnifiedDomainOpenConsole(virDomainPtr dom,
-                            const char *devname,
+                            const char *dev_name,
                             virStreamPtr st,
                             unsigned int flags)
 {
@@ -2135,7 +2135,7 @@ xenUnifiedDomainOpenConsole(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (devname) {
+    if (dev_name) {
         /* XXX support device aliases in future */
         xenUnifiedError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("Named device aliases are not supported"));
@@ -2159,7 +2159,7 @@ xenUnifiedDomainOpenConsole(virDomainPtr dom,
 
     if (chr->source.type != VIR_DOMAIN_CHR_TYPE_PTY) {
         xenUnifiedError(VIR_ERR_INTERNAL_ERROR,
-                        _("character device %s is not using a PTY"), devname);
+                        _("character device %s is not using a PTY"), dev_name);
         goto cleanup;
     }
 

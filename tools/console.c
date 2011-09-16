@@ -278,7 +278,7 @@ virConsoleEventOnStdout(int watch ATTRIBUTE_UNUSED,
 }
 
 
-int vshRunConsole(virDomainPtr dom, const char *devname)
+int vshRunConsole(virDomainPtr dom, const char *dev_name)
 {
     int ret = -1;
     struct termios ttyattr, rawattr;
@@ -331,7 +331,7 @@ int vshRunConsole(virDomainPtr dom, const char *devname)
     if (!con->st)
         goto cleanup;
 
-    if (virDomainOpenConsole(dom, devname, con->st, 0) < 0)
+    if (virDomainOpenConsole(dom, dev_name, con->st, 0) < 0)
         goto cleanup;
 
     con->stdinWatch = virEventAddHandle(STDIN_FILENO,

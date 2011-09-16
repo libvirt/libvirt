@@ -422,20 +422,20 @@ int qemuDomainNetVLAN(virDomainNetDefPtr def)
 /* Names used before -drive existed */
 static int qemuAssignDeviceDiskAliasLegacy(virDomainDiskDefPtr disk)
 {
-    char *devname;
+    char *dev_name;
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
         STREQ(disk->dst, "hdc"))
-        devname = strdup("cdrom");
+        dev_name = strdup("cdrom");
     else
-        devname = strdup(disk->dst);
+        dev_name = strdup(disk->dst);
 
-    if (!devname) {
+    if (!dev_name) {
         virReportOOMError();
         return -1;
     }
 
-    disk->info.alias = devname;
+    disk->info.alias = dev_name;
     return 0;
 }
 
@@ -465,7 +465,7 @@ static int qemuAssignDeviceDiskAliasFixed(virDomainDiskDefPtr disk)
 {
     int busid, devid;
     int ret;
-    char *devname;
+    char *dev_name;
 
     if (virDiskNameToBusDeviceIndex(disk, &busid, &devid) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -477,24 +477,24 @@ static int qemuAssignDeviceDiskAliasFixed(virDomainDiskDefPtr disk)
     switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_IDE:
         if (disk->device== VIR_DOMAIN_DISK_DEVICE_DISK)
-            ret = virAsprintf(&devname, "ide%d-hd%d", busid, devid);
+            ret = virAsprintf(&dev_name, "ide%d-hd%d", busid, devid);
         else
-            ret = virAsprintf(&devname, "ide%d-cd%d", busid, devid);
+            ret = virAsprintf(&dev_name, "ide%d-cd%d", busid, devid);
         break;
     case VIR_DOMAIN_DISK_BUS_SCSI:
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
-            ret = virAsprintf(&devname, "scsi%d-hd%d", busid, devid);
+            ret = virAsprintf(&dev_name, "scsi%d-hd%d", busid, devid);
         else
-            ret = virAsprintf(&devname, "scsi%d-cd%d", busid, devid);
+            ret = virAsprintf(&dev_name, "scsi%d-cd%d", busid, devid);
         break;
     case VIR_DOMAIN_DISK_BUS_FDC:
-        ret = virAsprintf(&devname, "floppy%d", devid);
+        ret = virAsprintf(&dev_name, "floppy%d", devid);
         break;
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
-        ret = virAsprintf(&devname, "virtio%d", devid);
+        ret = virAsprintf(&dev_name, "virtio%d", devid);
         break;
     case VIR_DOMAIN_DISK_BUS_XEN:
-        ret = virAsprintf(&devname, "xenblk%d", devid);
+        ret = virAsprintf(&dev_name, "xenblk%d", devid);
         break;
     default:
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -508,7 +508,7 @@ static int qemuAssignDeviceDiskAliasFixed(virDomainDiskDefPtr disk)
         return -1;
     }
 
-    disk->info.alias = devname;
+    disk->info.alias = dev_name;
 
     return 0;
 }

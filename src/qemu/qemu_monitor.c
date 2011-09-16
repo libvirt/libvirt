@@ -1217,7 +1217,7 @@ int qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
 
 
 int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
-                                 const char *devname,
+                                 const char *dev_name,
                                  long long *rd_req,
                                  long long *rd_bytes,
                                  long long *rd_total_times,
@@ -1229,7 +1229,7 @@ int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
                                  long long *errs)
 {
     int ret;
-    VIR_DEBUG("mon=%p dev=%s", mon, devname);
+    VIR_DEBUG("mon=%p dev=%s", mon, dev_name);
 
     if (!mon) {
         qemuReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -1238,7 +1238,7 @@ int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
     }
 
     if (mon->json)
-        ret = qemuMonitorJSONGetBlockStatsInfo(mon, devname,
+        ret = qemuMonitorJSONGetBlockStatsInfo(mon, dev_name,
                                                rd_req, rd_bytes,
                                                rd_total_times,
                                                wr_req, wr_bytes,
@@ -1247,7 +1247,7 @@ int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
                                                flush_total_times,
                                                errs);
     else
-        ret = qemuMonitorTextGetBlockStatsInfo(mon, devname,
+        ret = qemuMonitorTextGetBlockStatsInfo(mon, dev_name,
                                                rd_req, rd_bytes,
                                                rd_total_times,
                                                wr_req, wr_bytes,
@@ -1282,17 +1282,17 @@ int qemuMonitorGetBlockStatsParamsNumber(qemuMonitorPtr mon,
 }
 
 int qemuMonitorGetBlockExtent(qemuMonitorPtr mon,
-                              const char *devname,
+                              const char *dev_name,
                               unsigned long long *extent)
 {
     int ret;
-    VIR_DEBUG("mon=%p, fd=%d, devname=%p",
-          mon, mon->fd, devname);
+    VIR_DEBUG("mon=%p, fd=%d, dev_name=%p",
+          mon, mon->fd, dev_name);
 
     if (mon->json)
-        ret = qemuMonitorJSONGetBlockExtent(mon, devname, extent);
+        ret = qemuMonitorJSONGetBlockExtent(mon, dev_name, extent);
     else
-        ret = qemuMonitorTextGetBlockExtent(mon, devname, extent);
+        ret = qemuMonitorTextGetBlockExtent(mon, dev_name, extent);
 
     return ret;
 }
@@ -1439,11 +1439,11 @@ int qemuMonitorSetCPU(qemuMonitorPtr mon, int cpu, int online)
 
 
 int qemuMonitorEjectMedia(qemuMonitorPtr mon,
-                          const char *devname,
+                          const char *dev_name,
                           bool force)
 {
     int ret;
-    VIR_DEBUG("mon=%p devname=%s force=%d", mon, devname, force);
+    VIR_DEBUG("mon=%p dev_name=%s force=%d", mon, dev_name, force);
 
     if (!mon) {
         qemuReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -1452,21 +1452,21 @@ int qemuMonitorEjectMedia(qemuMonitorPtr mon,
     }
 
     if (mon->json)
-        ret = qemuMonitorJSONEjectMedia(mon, devname, force);
+        ret = qemuMonitorJSONEjectMedia(mon, dev_name, force);
     else
-        ret = qemuMonitorTextEjectMedia(mon, devname, force);
+        ret = qemuMonitorTextEjectMedia(mon, dev_name, force);
     return ret;
 }
 
 
 int qemuMonitorChangeMedia(qemuMonitorPtr mon,
-                           const char *devname,
+                           const char *dev_name,
                            const char *newmedia,
                            const char *format)
 {
     int ret;
-    VIR_DEBUG("mon=%p devname=%s newmedia=%s format=%s",
-          mon, devname, newmedia, format);
+    VIR_DEBUG("mon=%p dev_name=%s newmedia=%s format=%s",
+          mon, dev_name, newmedia, format);
 
     if (!mon) {
         qemuReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -1475,9 +1475,9 @@ int qemuMonitorChangeMedia(qemuMonitorPtr mon,
     }
 
     if (mon->json)
-        ret = qemuMonitorJSONChangeMedia(mon, devname, newmedia, format);
+        ret = qemuMonitorJSONChangeMedia(mon, dev_name, newmedia, format);
     else
-        ret = qemuMonitorTextChangeMedia(mon, devname, newmedia, format);
+        ret = qemuMonitorTextChangeMedia(mon, dev_name, newmedia, format);
     return ret;
 }
 

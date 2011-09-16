@@ -3142,7 +3142,7 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
     virNetworkIpDefPtr ipdef;
     virSocketAddr addr;
     virSocketAddrPtr addrptr = NULL;
-    char *devname = NULL;
+    char *dev_name = NULL;
 
     *netaddr = NULL;
     networkDriverLock(driver);
@@ -3172,7 +3172,7 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
         break;
 
     case VIR_NETWORK_FORWARD_BRIDGE:
-        if ((devname = netdef->bridge))
+        if ((dev_name = netdef->bridge))
             break;
         /*
          * fall through if netdef->bridge wasn't set, since this is
@@ -3182,9 +3182,9 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
     case VIR_NETWORK_FORWARD_VEPA:
     case VIR_NETWORK_FORWARD_PASSTHROUGH:
         if ((netdef->nForwardIfs > 0) && netdef->forwardIfs)
-            devname = netdef->forwardIfs[0].dev;
+            dev_name = netdef->forwardIfs[0].dev;
 
-        if (!devname) {
+        if (!dev_name) {
             networkReportError(VIR_ERR_INTERNAL_ERROR,
                                _("network '%s' has no associated interface or bridge"),
                                netdef->name);
@@ -3192,11 +3192,11 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
         break;
     }
 
-    if (devname) {
-        if (ifaceGetIPAddress(devname, &addr)) {
+    if (dev_name) {
+        if (ifaceGetIPAddress(dev_name, &addr)) {
             virReportSystemError(errno,
                                  _("Failed to get IP address for '%s' (network '%s')"),
-                                 devname, netdef->name);
+                                 dev_name, netdef->name);
         } else {
             addrptr = &addr;
         }
