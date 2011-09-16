@@ -1206,6 +1206,10 @@ void virDomainDefFree(virDomainDefPtr def)
         virDomainHubDefFree(def->hubs[i]);
     VIR_FREE(def->hubs);
 
+    for (i = 0 ; i < def->nredirdevs ; i++)
+        virDomainRedirdevDefFree(def->redirdevs[i]);
+    VIR_FREE(def->redirdevs);
+
     VIR_FREE(def->os.type);
     VIR_FREE(def->os.arch);
     VIR_FREE(def->os.machine);
