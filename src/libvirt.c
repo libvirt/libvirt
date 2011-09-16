@@ -2777,7 +2777,8 @@ error:
  *
  * This method will dump the core of a domain on a given file for analysis.
  * Note that for remote Xen Daemon the file path will be interpreted in
- * the remote host.
+ * the remote host. Hypervisors may require  the user to manually ensure
+ * proper permissions on the file named by @to.
  *
  * If @flags includes VIR_DUMP_CRASH, then leave the guest shut off with
  * a crashed state after the dump completes.  If @flags includes

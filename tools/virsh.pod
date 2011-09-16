@@ -621,6 +621,9 @@ rather than merely left in a paused state.
 If I<--bypass-cache> is specified, the save will avoid the file system
 cache, although this may slow down the operation.
 
+NOTE: Some hypervisors may require the user to manually ensure proper
+permissions on file and path specified by argument I<corefilepath>.
+
 =item B<dumpxml> I<domain-id> [I<--inactive>] [I<--security-info>]
 [I<--update-cpu>]
 
