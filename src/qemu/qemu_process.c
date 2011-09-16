@@ -2539,6 +2539,10 @@ struct qemuProcessReconnectData {
 /*
  * Open an existing VM's monitor, re-detect VCPU threads
  * and re-reserve the security labels in use
+ *
+ * We own the virConnectPtr we are passed here - whoever started
+ * this thread function has increased the reference counter to it
+ * so that we now have to close it.
  */
 static void
 qemuProcessReconnect(void *opaque)
@@ -2632,6 +2636,8 @@ qemuProcessReconnect(void *opaque)
 
     qemuDriverUnlock(driver);
 
+    virConnectClose(conn);
+
     return;
 
 error:
@@ -2656,6 +2662,8 @@ error:
             virDomainObjUnlock(obj);
     }
     qemuDriverUnlock(driver);
+
+    virConnectClose(conn);
 }
 
 static void
@@ -2706,7 +2714,16 @@ qemuProcessReconnectHelper(void *payload,
     if (qemuDomainObjBeginJobWithDriver(src->driver, obj, QEMU_JOB_MODIFY) < 0)
         goto error;
 
+    /* Since we close the connection later on, we have to make sure
+     * that the threads we start see a valid connection throughout their
+     * lifetime. We simply increase the reference counter here.
+     */
+    virConnectRef(data->conn);
+
     if (virThreadCreate(&thread, true, qemuProcessReconnect, data) < 0) {
+
+        virConnectClose(data->conn);
+
         qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("Could not create thread. QEMU initialization "
                           "might be incomplete"));
