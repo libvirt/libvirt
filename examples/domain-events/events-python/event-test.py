@@ -531,11 +531,13 @@ def main():
     vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_GRAPHICS, myDomainEventGraphicsCallback, None)
     vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_DISK_CHANGE, myDomainEventDiskChangeCallback, None)
 
+    vc.setKeepAlive(5, 3)
+
     # The rest of your app would go here normally, but for sake
     # of demo we'll just go to sleep. The other option is to
     # run the event loop in your main thread if your app is
     # totally event based.
-    while 1:
+    while vc.isAlive() == 1:
         time.sleep(1)
 
 
