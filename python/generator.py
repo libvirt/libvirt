@@ -1168,13 +1168,13 @@ def buildWrappers(module):
         function_classes['None'].append(info)
 
     classes_file = "%s.py" % module
-    extra_file = "%s-override.py" % module
+    extra_file = os.path.join(srcPref, "%s-override.py" % module)
     extra = None
 
     classes = open(classes_file, "w")
 
     if os.path.exists(extra_file):
-        extra = open(os.path.join(srcPref,extra_file), "r")
+        extra = open(extra_file, "r")
     classes.write("#! " + python + " -i\n")
     classes.write("#\n")
     classes.write("# WARNING WARNING WARNING WARNING\n")
@@ -1620,13 +1620,13 @@ def qemuBuildWrappers(module):
         print "ERROR: only libvirt-qemu is supported"
         return None
 
-    extra_file = "%s-override.py" % module
+    extra_file = os.path.join(srcPref, "%s-override.py" % module)
     extra = None
 
     fd = open("libvirt_qemu.py", "w")
 
     if os.path.exists(extra_file):
-        extra = open(os.path.join(srcPref,extra_file), "r")
+        extra = open(extra_file, "r")
     fd.write("#! " + python + " -i\n")
     fd.write("#\n")
     fd.write("# WARNING WARNING WARNING WARNING\n")
