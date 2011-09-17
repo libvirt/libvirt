@@ -384,12 +384,12 @@ static void qemuMigrationCookieGraphicsXMLFormat(virBufferPtr buf,
 }
 
 
-static void qemuMigrationCookieXMLFormat(virBufferPtr buf,
-                                         qemuMigrationCookiePtr mig)
+static int
+qemuMigrationCookieXMLFormat(virBufferPtr buf,
+                             qemuMigrationCookiePtr mig)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char hostuuidstr[VIR_UUID_STRING_BUFLEN];
-    char *domXML;
     int i;
 
     virUUIDFormat(mig->uuid, uuidstr);
@@ -422,14 +422,17 @@ static void qemuMigrationCookieXMLFormat(virBufferPtr buf,
 
     if ((mig->flags & QEMU_MIGRATION_COOKIE_PERSISTENT) &&
         mig->persistent) {
-        domXML = virDomainDefFormat(mig->persistent,
-                                    VIR_DOMAIN_XML_INACTIVE |
-                                    VIR_DOMAIN_XML_SECURE);
-        virBufferAdd(buf, domXML, -1);
-        VIR_FREE(domXML);
+        virBufferAdjustIndent(buf, 2);
+        if (virDomainDefFormatInternal(mig->persistent,
+                                       VIR_DOMAIN_XML_INACTIVE |
+                                       VIR_DOMAIN_XML_SECURE,
+                                       buf) < 0)
+            return -1;
+        virBufferAdjustIndent(buf, -2);
     }
 
     virBufferAddLit(buf, "</qemu-migration>\n");
+    return 0;
 }
 
 
@@ -437,10 +440,14 @@ static char *qemuMigrationCookieXMLFormatStr(qemuMigrationCookiePtr mig)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    qemuMigrationCookieXMLFormat(&buf, mig);
+    if (qemuMigrationCookieXMLFormat(&buf, mig) < 0) {
+        virBufferFreeAndReset(&buf);
+        return NULL;
+    }
 
     if (virBufferError(&buf)) {
         virReportOOMError();
+        virBufferFreeAndReset(&buf);
         return NULL;
     }
 

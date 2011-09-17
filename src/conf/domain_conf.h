@@ -1683,6 +1683,9 @@ int virDomainDefAddImplicitControllers(virDomainDefPtr def);
 
 char *virDomainDefFormat(virDomainDefPtr def,
                          unsigned int flags);
+int virDomainDefFormatInternal(virDomainDefPtr def,
+                               unsigned int flags,
+                               virBufferPtr buf);
 
 int virDomainCpuSetParse(const char **str,
                          char sep,

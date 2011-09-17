@@ -10559,14 +10559,13 @@ verify(((VIR_DOMAIN_XML_INTERNAL_STATUS |
 
 /* This internal version can accept VIR_DOMAIN_XML_INTERNAL_*,
  * whereas the public version cannot.  Also, it appends to an existing
- * buffer, rather than flattening to string.  Return -1 on failure.  */
-static int
+ * buffer (possibly with auto-indent), rather than flattening to string.
+ * Return -1 on failure.  */
+int
 virDomainDefFormatInternal(virDomainDefPtr def,
                            unsigned int flags,
                            virBufferPtr buf)
 {
-    /* XXX Also need to take an indentation parameter - either int or
-     * string prefix, so that snapshot xml gets uniform indentation.  */
     unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     const char *type = NULL;
@@ -11056,8 +11055,10 @@ static char *virDomainObjFormat(virCapsPtr caps,
         ((caps->privateDataXMLFormat)(&buf, obj->privateData)) < 0)
         goto error;
 
+    virBufferAdjustIndent(&buf, 2);
     if (virDomainDefFormatInternal(obj->def, flags, &buf) < 0)
         goto error;
+    virBufferAdjustIndent(&buf, -2);
 
     virBufferAddLit(&buf, "</domstatus>\n");
 
@@ -12074,7 +12075,12 @@ char *virDomainSnapshotDefFormat(char *domain_uuid,
         virBufferAddLit(&buf, "  </disks>\n");
     }
     if (def->dom) {
-        virDomainDefFormatInternal(def->dom, flags, &buf);
+        virBufferAdjustIndent(&buf, 2);
+        if (virDomainDefFormatInternal(def->dom, flags, &buf) < 0) {
+            virBufferFreeAndReset(&buf);
+            return NULL;
+        }
+        virBufferAdjustIndent(&buf, -2);
     } else {
         virBufferAddLit(&buf, "  <domain>\n");
         virBufferAsprintf(&buf, "    <uuid>%s</uuid>\n", domain_uuid);

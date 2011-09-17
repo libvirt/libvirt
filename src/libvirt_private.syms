@@ -267,6 +267,7 @@ virDomainDefCheckABIStability;
 virDomainDefClearDeviceAliases;
 virDomainDefClearPCIAddresses;
 virDomainDefFormat;
+virDomainDefFormatInternal;
 virDomainDefFree;
 virDomainDefParseFile;
 virDomainDefParseNode;
