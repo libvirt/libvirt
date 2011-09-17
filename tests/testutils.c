@@ -363,7 +363,7 @@ int virtTestDifference(FILE *stream,
     }
 
     /* Show the trimmed differences */
-    fprintf(stream, "\nExpect [");
+    fprintf(stream, "\nOffset %d\nExpect [", (int) (expectStart - expect));
     if ((expectEnd - expectStart + 1) &&
         fwrite(expectStart, (expectEnd-expectStart+1), 1, stream) != 1)
         return -1;
