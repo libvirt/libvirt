@@ -9151,7 +9151,7 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
     origsrc = disk->src;
     disk->src = source;
     origdriver = disk->driverType;
-    disk->driverType = driverType;
+    disk->driverType = (char *) "raw"; /* Don't want to probe backing files */
 
     if (virDomainLockDiskAttach(driver->lockManager, vm, disk) < 0)
         goto cleanup;
