@@ -9107,12 +9107,15 @@ static int
 qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
                                          virDomainObjPtr vm,
                                          virDomainSnapshotDiskDefPtr snap,
-                                         virDomainDiskDefPtr disk)
+                                         virDomainDiskDefPtr disk,
+                                         virDomainDiskDefPtr persistDisk)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *device = NULL;
     char *source = NULL;
     char *driverType = NULL;
+    char *persistSource = NULL;
+    char *persistDriverType = NULL;
     int ret = -1;
     int fd = -1;
     char *origsrc = NULL;
@@ -9128,7 +9131,11 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
     if (virAsprintf(&device, "drive-%s", disk->info.alias) < 0 ||
         !(source = strdup(snap->file)) ||
         (STRNEQ_NULLABLE(disk->driverType, "qcow2") &&
-         !(driverType = strdup("qcow2")))) {
+         !(driverType = strdup("qcow2"))) ||
+        (persistDisk &&
+         (!(persistSource = strdup(source)) ||
+          (STRNEQ_NULLABLE(persistDisk->driverType, "qcow2") &&
+           !(persistDriverType = strdup("qcow2")))))) {
         virReportOOMError();
         goto cleanup;
     }
@@ -9176,9 +9183,16 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
         disk->driverType = driverType;
         driverType = NULL;
     }
-
-    /* XXX Do we also need to update vm->newDef if there are pending
-     * configuration changes awaiting the next boot?  */
+    if (persistDisk) {
+        VIR_FREE(persistDisk->src);
+        persistDisk->src = persistSource;
+        persistSource = NULL;
+        if (persistDriverType) {
+            VIR_FREE(persistDisk->driverType);
+            persistDisk->driverType = persistDriverType;
+            persistDriverType = NULL;
+        }
+    }
 
 cleanup:
     if (origsrc) {
@@ -9190,6 +9204,8 @@ cleanup:
     VIR_FREE(device);
     VIR_FREE(source);
     VIR_FREE(driverType);
+    VIR_FREE(persistSource);
+    VIR_FREE(persistDriverType);
     return ret;
 }
 
@@ -9205,6 +9221,7 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
     bool resume = false;
     int ret = -1;
     int i;
+    bool persist = false;
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         return -1;
@@ -9235,12 +9252,24 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
      * SNAPSHOT_EXTERNAL with a valid file name and qcow2 format.  */
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     for (i = 0; i < snap->def->ndisks; i++) {
+        virDomainDiskDefPtr persistDisk = NULL;
+
         if (snap->def->disks[i].snapshot == VIR_DOMAIN_DISK_SNAPSHOT_NO)
             continue;
+        if (vm->newDef) {
+            int indx = virDomainDiskIndexByName(vm->newDef,
+                                                vm->def->disks[i]->dst,
+                                                false);
+            if (indx >= 0) {
+                persistDisk = vm->newDef->disks[indx];
+                persist = true;
+            }
+        }
 
         ret = qemuDomainSnapshotCreateSingleDiskActive(driver, vm,
                                                        &snap->def->disks[i],
-                                                       vm->def->disks[i]);
+                                                       vm->def->disks[i],
+                                                       persistDisk);
         if (ret < 0)
             break;
     }
@@ -9275,7 +9304,9 @@ cleanup:
     }
 
     if (vm) {
-        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0 ||
+            (persist &&
+             virDomainSaveConfig(driver->configDir, vm->newDef) < 0))
             ret = -1;
         if (qemuDomainObjEndJob(driver, vm) == 0) {
             /* Only possible if a transient vm quit while our locks were down,
