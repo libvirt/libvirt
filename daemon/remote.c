@@ -997,6 +997,8 @@ cleanup:
             VIR_FREE(ret->params.params_val);
         }
     }
+    if (dom)
+        virDomainFree(dom);
     VIR_FREE(params);
     return rv;
 }
