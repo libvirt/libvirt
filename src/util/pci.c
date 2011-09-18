@@ -1965,6 +1965,7 @@ out:
     for (i = 0; i < num_virt_fns; i++)
          VIR_FREE(virt_fns[i]);
 
+    VIR_FREE(virt_fns);
     VIR_FREE(vf_bdf);
 
     return ret;
