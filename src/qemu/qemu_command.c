@@ -6540,7 +6540,6 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                     host = disk->src;
                     port = strchr(host, ':');
                     if (!port) {
-                        def = NULL;
                         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                         _("cannot parse nbd filename '%s'"), disk->src);
                         goto error;
