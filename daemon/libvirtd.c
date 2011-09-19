@@ -1311,8 +1311,10 @@ int main(int argc, char **argv) {
             if (virStrToLong_i(optarg, &tmp, 10, &timeout) != 0
                 || timeout <= 0
                 /* Ensure that we can multiply by 1000 without overflowing.  */
-                || timeout > INT_MAX / 1000)
-                timeout = -1;
+                || timeout > INT_MAX / 1000) {
+                VIR_ERROR(_("Invalid value for timeout"));
+                exit(EXIT_FAILURE);
+            }
             break;
 
         case 'p':
