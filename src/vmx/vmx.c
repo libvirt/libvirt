@@ -1253,7 +1253,7 @@ virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
     /* Allocate domain def */
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
-        return NULL;
+        goto cleanup;
     }
 
     def->virtType = VIR_DOMAIN_VIRT_VMWARE;
