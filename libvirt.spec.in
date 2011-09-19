@@ -354,7 +354,7 @@ BuildRequires: libpciaccess-devel >= 0.10.9
 BuildRequires: yajl-devel
 %endif
 %if %{with_sanlock}
-BuildRequires: sanlock-devel
+BuildRequires: sanlock-devel >= 1.8
 %endif
 %if %{with_libpcap}
 BuildRequires: libpcap-devel
@@ -518,7 +518,7 @@ the virtualization capabilities of recent versions of Linux (and other OSes).
 %package lock-sanlock
 Summary: Sanlock lock manager plugin for QEMU driver
 Group: Development/Libraries
-Requires: sanlock
+Requires: sanlock >= 1.8
 #for virt-sanlock-cleanup require augeas
 Requires: augeas
 Requires: %{name} = %{version}-%{release}

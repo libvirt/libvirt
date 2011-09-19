@@ -966,7 +966,7 @@ AC_SUBST([YAJL_LIBS])
 
 dnl SANLOCK https://fedorahosted.org/sanlock/
 AC_ARG_WITH([sanlock],
-  AC_HELP_STRING([--with-sanlock], [use SANLOCK for lock management @<:@default=check@:>@]),
+  AC_HELP_STRING([--with-sanlock], [build Sanlock plugin for lock management @<:@default=check@:>@]),
   [],
   [with_sanlock=check])
 
@@ -989,8 +989,8 @@ if test "x$with_sanlock" != "xno"; then
         fail=1
     fi])
   if test "x$with_sanlock" != "xno" ; then
-    AC_CHECK_LIB([sanlock], [sanlock_restrict],[
-      SANLOCK_LIBS="$SANLOCK_LIBS -lsanlock"
+    AC_CHECK_LIB([sanlock_client], [sanlock_init],[
+      SANLOCK_LIBS="$SANLOCK_LIBS -lsanlock_client"
       with_sanlock=yes
     ],[
       if test "x$with_sanlock" = "xcheck" ; then
@@ -1001,12 +1001,12 @@ if test "x$with_sanlock" != "xno"; then
     ])
   fi
   test $fail = 1 &&
-    AC_MSG_ERROR([You must install the SANLOCK development package in order to compile libvirt])
+    AC_MSG_ERROR([You must install the Sanlock development package in order to compile libvirt])
   CPPFLAGS="$old_cppflags"
   LIBS="$old_libs"
   if test "x$with_sanlock" = "xyes" ; then
     AC_DEFINE_UNQUOTED([HAVE_SANLOCK], 1,
-      [whether SANLOCK is available for JSON parsing/formatting])
+      [whether Sanlock plugin for lock management is available])
   fi
 fi
 AM_CONDITIONAL([HAVE_SANLOCK], [test "x$with_sanlock" = "xyes"])

@@ -33,7 +33,6 @@
 
 #include <sanlock.h>
 #include <sanlock_resource.h>
-#include <sanlock_direct.h>
 #include <sanlock_admin.h>
 
 #include "lock_driver.h"
@@ -181,7 +180,7 @@ static int virLockManagerSanlockSetupLockspace(void)
             }
             VIR_DEBUG("Someone else just created lockspace %s", path);
         } else {
-            if ((rv = sanlock_direct_align(&ls.host_id_disk)) < 0) {
+            if ((rv = sanlock_align(&ls.host_id_disk)) < 0) {
                 if (rv <= -200)
                     virLockError(VIR_ERR_INTERNAL_ERROR,
                                  _("Unable to query sector size %s: error %d"),
@@ -210,7 +209,7 @@ static int virLockManagerSanlockSetupLockspace(void)
                 goto error_unlink;
             }
 
-            if ((rv = sanlock_direct_init(&ls, NULL, 0, 0, 0)) < 0) {
+            if ((rv = sanlock_init(&ls, NULL, 0, 0)) < 0) {
                 if (rv <= -200)
                     virLockError(VIR_ERR_INTERNAL_ERROR,
                                  _("Unable to initialize lockspace %s: error %d"),
@@ -555,7 +554,7 @@ static int virLockManagerSanlockCreateLease(struct sanlk_resource *res)
             }
             VIR_DEBUG("Someone else just created lockspace %s", res->disks[0].path);
         } else {
-            if ((rv = sanlock_direct_align(&res->disks[0])) < 0) {
+            if ((rv = sanlock_align(&res->disks[0])) < 0) {
                 if (rv <= -200)
                     virLockError(VIR_ERR_INTERNAL_ERROR,
                                  _("Unable to query sector size %s: error %d"),
@@ -584,7 +583,7 @@ static int virLockManagerSanlockCreateLease(struct sanlk_resource *res)
                 goto error_unlink;
             }
 
-            if ((rv = sanlock_direct_init(NULL, res, 0, 0, 0)) < 0) {
+            if ((rv = sanlock_init(NULL, res, 0, 0)) < 0) {
                 if (rv <= -200)
                     virLockError(VIR_ERR_INTERNAL_ERROR,
                                  _("Unable to initialize lease %s: error %d"),

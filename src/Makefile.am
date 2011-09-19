@@ -1279,7 +1279,7 @@ lockdriver_LTLIBRARIES = sanlock.la
 sanlock_la_SOURCES = $(LOCK_DRIVER_SANLOCK_SOURCES)
 sanlock_la_CFLAGS = $(AM_CLFAGS)
 sanlock_la_LDFLAGS = -module -avoid-version
-sanlock_la_LIBADD = -lsanlock \
+sanlock_la_LIBADD = -lsanlock_client \
 		../gnulib/lib/libgnu.la
 
 augeas_DATA += locking/libvirt_sanlock.aug
