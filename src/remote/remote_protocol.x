@@ -2102,7 +2102,7 @@ struct remote_domain_snapshot_delete_args {
 
 struct remote_domain_open_console_args {
     remote_nonnull_domain dom;
-    remote_string devname;
+    remote_string dev_name;
     unsigned int flags;
 };
 
