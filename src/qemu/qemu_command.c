@@ -3657,7 +3657,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
         if (disk->driverName != NULL &&
             !STREQ(disk->driverName, "qemu")) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             _("unsupported driver name '%s' for disk '%s'"),
                             disk->driverName, disk->src);
             goto error;

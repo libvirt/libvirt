@@ -1184,7 +1184,8 @@ the single existing device; consider using B<update-device> for this usage.
 
 Attach a new disk device to the domain.
 I<source> and I<target> are paths for the files and devices.
-I<driver> can be I<file>, I<tap> or I<phy> depending on the kind of access.
+I<driver> can be I<file>, I<tap> or I<phy> for the Xen hypervisor depending on
+the kind of access; or I<qemu> for the QEMU emulator.
 I<type> can indicate I<cdrom> or I<floppy> as alternative to the disk default,
 although this use only replaces the media within the existing virtual cdrom or
 floppy device; consider using B<update-device> for this usage instead.
