@@ -1080,21 +1080,21 @@ struct _domblkstat_sequence {
  * versions */
 static const struct _domblkstat_sequence domblkstat_output[] = {
     { VIR_DOMAIN_BLOCK_STATS_READ_REQ,          "rd_req",
-      N_("number of read operations:     ") }, /* 0 */
+      N_("number of read operations:") }, /* 0 */
     { VIR_DOMAIN_BLOCK_STATS_READ_BYTES,        "rd_bytes",
-      N_("number of read bytes:          ") }, /* 1 */
+      N_("number of bytes read:") }, /* 1 */
     { VIR_DOMAIN_BLOCK_STATS_WRITE_REQ,         "wr_req",
-      N_("number of write operations:    ") }, /* 2 */
+      N_("number of write operations:") }, /* 2 */
     { VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES,       "wr_bytes",
-      N_("number of bytes written:       ") }, /* 3 */
+      N_("number of bytes written:") }, /* 3 */
     { VIR_DOMAIN_BLOCK_STATS_ERRS,              "errs",
-      N_("error count:                   ") }, /* 4 */
+      N_("error count:") }, /* 4 */
     { VIR_DOMAIN_BLOCK_STATS_FLUSH_REQ,         NULL,
-      N_("number of flush operations:    ") }, /* 5 */
+      N_("number of flush operations:") }, /* 5 */
     { VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES,  NULL,
-      N_("total duration of reads (ns):  ") }, /* 6 */
+      N_("total duration of reads (ns):") }, /* 6 */
     { VIR_DOMAIN_BLOCK_STATS_WRITE_TOTAL_TIMES, NULL,
-      N_("total duration of writes (ns): ") }, /* 7 */
+      N_("total duration of writes (ns):") }, /* 7 */
     { VIR_DOMAIN_BLOCK_STATS_FLUSH_TOTAL_TIMES, NULL,
       N_("total duration of flushes (ns):") }, /* 8 */
     { NULL, NULL, NULL }
@@ -1102,7 +1102,8 @@ static const struct _domblkstat_sequence domblkstat_output[] = {
 
 #define DOMBLKSTAT_LEGACY_PRINT(ID, VALUE)              \
     if (VALUE >= 0)                                     \
-        vshPrint(ctl, "%s %s %lld\n", device,           \
+        vshPrint(ctl, "%s %-*s %lld\n", device,         \
+                 human ? 31 : 0,                        \
                  human ? _(domblkstat_output[ID].human) \
                  : domblkstat_output[ID].legacy,        \
                  VALUE);
@@ -1201,7 +1202,8 @@ cmdDomblkstat (vshControl *ctl, const vshCmd *cmd)
             if (!field)
                 field = domblkstat_output[i].field;
 
-            vshPrint(ctl, "%s %s %s\n", device, field, value);
+            vshPrint(ctl, "%s %-*s %s\n", device,
+                     human ? 31 : 0, field, value);
 
             VIR_FREE(value);
         }
