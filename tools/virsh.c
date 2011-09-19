@@ -369,6 +369,10 @@ static const char *vshDomainStateReasonToString(int state, int reason);
 static const char *vshDomainControlStateToString(int state);
 static const char *vshDomainVcpuStateToString(int state);
 static bool vshConnectionUsability(vshControl *ctl, virConnectPtr conn);
+static virTypedParameterPtr vshFindTypedParamByName(const char *name,
+                                                    virTypedParameterPtr list,
+                                                    int count);
+static char *vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item);
 
 static char *editWriteToTempFile (vshControl *ctl, const char *doc);
 static int   editFile (vshControl *ctl, const char *filename);
@@ -1054,15 +1058,54 @@ cleanup:
  */
 static const vshCmdInfo info_domblkstat[] = {
     {"help", N_("get device block stats for a domain")},
-    {"desc", N_("Get device block stats for a running domain.")},
+    {"desc", N_("Get device block stats for a running domain. See man page or "
+                "use --human for explanation of fields")},
     {NULL,NULL}
 };
 
 static const vshCmdOptDef opts_domblkstat[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"device", VSH_OT_DATA, VSH_OFLAG_REQ, N_("block device")},
+    {"human",  VSH_OT_BOOL, 0, N_("print a more human readable output")},
     {NULL, 0, 0, NULL}
 };
+
+struct _domblkstat_sequence {
+    const char *field;  /* field name */
+    const char *legacy; /* legacy name from previous releases */
+    const char *human;  /* human-friendly explanation */
+};
+
+/* sequence of values for output to honor legacy format from previous
+ * versions */
+static const struct _domblkstat_sequence domblkstat_output[] = {
+    { VIR_DOMAIN_BLOCK_STATS_READ_REQ,          "rd_req",
+      N_("number of read operations:     ") }, /* 0 */
+    { VIR_DOMAIN_BLOCK_STATS_READ_BYTES,        "rd_bytes",
+      N_("number of read bytes:          ") }, /* 1 */
+    { VIR_DOMAIN_BLOCK_STATS_WRITE_REQ,         "wr_req",
+      N_("number of write operations:    ") }, /* 2 */
+    { VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES,       "wr_bytes",
+      N_("number of bytes written:       ") }, /* 3 */
+    { VIR_DOMAIN_BLOCK_STATS_ERRS,              "errs",
+      N_("error count:                   ") }, /* 4 */
+    { VIR_DOMAIN_BLOCK_STATS_FLUSH_REQ,         NULL,
+      N_("number of flush operations:    ") }, /* 5 */
+    { VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES,  NULL,
+      N_("total duration of reads (ns):  ") }, /* 6 */
+    { VIR_DOMAIN_BLOCK_STATS_WRITE_TOTAL_TIMES, NULL,
+      N_("total duration of writes (ns): ") }, /* 7 */
+    { VIR_DOMAIN_BLOCK_STATS_FLUSH_TOTAL_TIMES, NULL,
+      N_("total duration of flushes (ns):") }, /* 8 */
+    { NULL, NULL, NULL }
+};
+
+#define DOMBLKSTAT_LEGACY_PRINT(ID, VALUE)              \
+    if (VALUE >= 0)                                     \
+        vshPrint(ctl, "%s %s %lld\n", device,           \
+                 human ? _(domblkstat_output[ID].human) \
+                 : domblkstat_output[ID].legacy,        \
+                 VALUE);
 
 static bool
 cmdDomblkstat (vshControl *ctl, const vshCmd *cmd)
@@ -1071,16 +1114,21 @@ cmdDomblkstat (vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL, *device = NULL;
     struct _virDomainBlockStats stats;
     virTypedParameterPtr params = NULL;
+    virTypedParameterPtr par = NULL;
+    char *value = NULL;
+    const char *field = NULL;
     int rc, nparams = 0;
+    int i = 0;
     bool ret = false;
+    bool human = vshCommandOptBool(cmd, "human"); /* human readable output */
 
-    if (!vshConnectionUsability (ctl, ctl->conn))
+    if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
 
-    if (!(dom = vshCommandOptDomain (ctl, cmd, &name)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
-    if (vshCommandOptString (cmd, "device", &device) <= 0)
+    if (vshCommandOptString(cmd, "device", &device) <= 0)
         goto cleanup;
 
     rc = virDomainBlockStatsFlags(dom, device, NULL, &nparams, 0);
@@ -1090,76 +1138,84 @@ cmdDomblkstat (vshControl *ctl, const vshCmd *cmd)
      * then.
      */
     if (rc < 0) {
-        if (last_error->code != VIR_ERR_NO_SUPPORT) {
-            virshReportError(ctl);
+        /* try older API if newer is not supported */
+        if (last_error->code != VIR_ERR_NO_SUPPORT)
             goto cleanup;
-        } else {
-            virFreeError(last_error);
-            last_error = NULL;
 
-            if (virDomainBlockStats (dom, device, &stats,
-                                     sizeof stats) == -1) {
-                vshError(ctl, _("Failed to get block stats %s %s"),
-                         name, device);
-                goto cleanup;
-            }
+        virFreeError(last_error);
+        last_error = NULL;
 
-            if (stats.rd_req >= 0)
-                vshPrint (ctl, "%s rd_req %lld\n", device, stats.rd_req);
-
-            if (stats.rd_bytes >= 0)
-                vshPrint (ctl, "%s rd_bytes %lld\n", device, stats.rd_bytes);
-
-            if (stats.wr_req >= 0)
-                vshPrint (ctl, "%s wr_req %lld\n", device, stats.wr_req);
-
-            if (stats.wr_bytes >= 0)
-                vshPrint (ctl, "%s wr_bytes %lld\n", device, stats.wr_bytes);
-
-            if (stats.errs >= 0)
-                vshPrint (ctl, "%s errs %lld\n", device, stats.errs);
+        if (virDomainBlockStats(dom, device, &stats,
+                                sizeof stats) == -1) {
+            vshError(ctl, _("Failed to get block stats %s %s"),
+                     name, device);
+            goto cleanup;
         }
+
+        /* human friendly output */
+        if (human) {
+            vshPrint(ctl, N_("Device: %s\n"), device);
+            device = "";
+        }
+
+        DOMBLKSTAT_LEGACY_PRINT(0, stats.rd_req);
+        DOMBLKSTAT_LEGACY_PRINT(1, stats.rd_bytes);
+        DOMBLKSTAT_LEGACY_PRINT(2, stats.wr_req);
+        DOMBLKSTAT_LEGACY_PRINT(3, stats.wr_bytes);
+        DOMBLKSTAT_LEGACY_PRINT(4, stats.errs);
     } else {
-        params = vshMalloc(ctl, sizeof(*params) * nparams);
-        memset(params, 0, sizeof(*params) * nparams);
+        params = vshCalloc(ctl, nparams, sizeof(*params));
 
         if (virDomainBlockStatsFlags (dom, device, params, &nparams, 0) < 0) {
             vshError(ctl, _("Failed to get block stats %s %s"), name, device);
             goto cleanup;
         }
 
-        int i;
-        /* XXX: The output sequence will be different. */
-        for (i = 0; i < nparams; i++) {
-            switch(params[i].type) {
-            case VIR_TYPED_PARAM_INT:
-                vshPrint (ctl, "%s %s %d\n", device,
-                          params[i].field, params[i].value.i);
-                break;
-            case VIR_TYPED_PARAM_UINT:
-                vshPrint (ctl, "%s %s %u\n", device,
-                          params[i].field, params[i].value.ui);
-                break;
-            case VIR_TYPED_PARAM_LLONG:
-                vshPrint (ctl, "%s %s %lld\n", device,
-                          params[i].field, params[i].value.l);
-                break;
-            case VIR_TYPED_PARAM_ULLONG:
-                vshPrint (ctl, "%s %s %llu\n", device,
-                          params[i].field, params[i].value.ul);
-                break;
-            case VIR_TYPED_PARAM_DOUBLE:
-                vshPrint (ctl, "%s %s %f\n", device,
-                          params[i].field, params[i].value.d);
-                break;
-            case VIR_TYPED_PARAM_BOOLEAN:
-                vshPrint (ctl, "%s %s %s\n", device,
-                          params[i].field, params[i].value.b ? _("yes") : _("no"));
-                break;
-            default:
-                vshError(ctl, _("unimplemented block statistics parameter type"));
-            }
+        /* set for prettier output */
+        if (human) {
+            vshPrint(ctl, N_("Device: %s\n"), device);
+            device = "";
+        }
 
+        /* at first print all known values in desired order */
+        for (i = 0; domblkstat_output[i].field != NULL; i++) {
+            if (!(par = vshFindTypedParamByName(domblkstat_output[i].field,
+                                                params,
+                                                nparams)))
+                continue;
+
+            if (!(value = vshGetTypedParamValue(ctl, par)))
+                continue;
+
+            /* to print other not supported fields, mark the already printed */
+            par->field[0] = '\0'; /* set the name to empty string */
+
+            /* translate into human readable or legacy spelling */
+            field = NULL;
+            if (human)
+                field = _(domblkstat_output[i].human);
+            else
+                field = domblkstat_output[i].legacy;
+
+            /* use the provided spelling if no translation is available */
+            if (!field)
+                field = domblkstat_output[i].field;
+
+            vshPrint(ctl, "%s %s %s\n", device, field, value);
+
+            VIR_FREE(value);
+        }
+
+        /* go through the fields again, for remaining fields */
+        for (i = 0; i < nparams; i++) {
+            if (!*params[i].field)
+                continue;
+
+            if (!(value = vshGetTypedParamValue(ctl, params+i)))
+                continue;
+
+            vshPrint(ctl, "%s %s %s\n", device, params[i].field, value);
+            VIR_FREE(value);
         }
     }
 
@@ -1170,6 +1226,7 @@ cleanup:
     virDomainFree(dom);
     return ret;
 }
+#undef DOMBLKSTAT_LEGACY_PRINT
 
 /* "domifstat" command
  */
@@ -15200,6 +15257,69 @@ vshDomainStateReasonToString(int state, int reason)
     }
 
     return N_("unknown");
+}
+
+static char *
+vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item)
+{
+    int ret = 0;
+    char *str = NULL;
+
+    if (!ctl || !item)
+        return NULL;
+
+    switch(item->type) {
+    case VIR_TYPED_PARAM_INT:
+        ret = virAsprintf(&str, "%d", item->value.i);
+        break;
+
+    case VIR_TYPED_PARAM_UINT:
+        ret = virAsprintf(&str, "%u", item->value.ui);
+        break;
+
+    case VIR_TYPED_PARAM_LLONG:
+        ret = virAsprintf(&str, "%lld", item->value.l);
+        break;
+
+    case VIR_TYPED_PARAM_ULLONG:
+        ret = virAsprintf(&str, "%llu", item->value.ul);
+        break;
+
+    case VIR_TYPED_PARAM_DOUBLE:
+        ret = virAsprintf(&str, "%f", item->value.d);
+        break;
+
+    case VIR_TYPED_PARAM_BOOLEAN:
+        ret = virAsprintf(&str, "%s", item->value.b ? _("yes") : _("no"));
+        break;
+
+    default:
+        vshError(ctl, _("unimplemented block statistics parameter type"));
+    }
+
+    if (ret < 0)
+        vshError(ctl, "%s", _("Out of memory"));
+    return str;
+}
+
+static virTypedParameterPtr
+vshFindTypedParamByName(const char *name, virTypedParameterPtr list, int count)
+{
+    int i = count;
+    virTypedParameterPtr found = list;
+
+    if (!list || !name)
+        return NULL;
+
+    while (i-- > 0) {
+        if (STREQ(name, found->field))
+            return found;
+
+        found++; /* go to next struct in array */
+    }
+
+    /* not found */
+    return NULL;
 }
 
 static const char *
