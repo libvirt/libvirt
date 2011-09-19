@@ -262,7 +262,6 @@ static int
 virStorageBackendDiskReadPartitions(virStoragePoolObjPtr pool,
                                     virStorageVolDefPtr vol)
 {
-
     /*
      *  # libvirt_parthelper DEVICE
      * /dev/sda1      normal       data        32256    106928128    106896384
@@ -319,6 +318,13 @@ virStorageBackendDiskRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     pool->def->source.devices[0].nfreeExtent = 0;
 
     virFileWaitForDevices();
+
+    if (!virFileExists(pool->def->source.devices[0].path)) {
+        virStorageReportError(VIR_ERR_INVALID_ARG,
+                              _("device path '%s' doesn't exist"),
+                              pool->def->source.devices[0].path);
+        return -1;
+    }
 
     if (virStorageBackendDiskReadGeometry(pool) != 0) {
         return -1;
