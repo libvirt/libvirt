@@ -1150,6 +1150,15 @@ fi
 %endif
 
 %changelog
+* Tue Sep 20 2011 Daniel Veillard <veillard@redhat.com> - 0.9.5-1
+- many snapshot improvements (Eric Blake)
+- latency: Define new public API and structure (Osier Yang)
+- USB2 and various USB improvements (Marc-André Lureau)
+- storage: Add fs pool formatting (Osier Yang)
+- Add public API for getting migration speed (Jim Fehlig)
+- Add basic driver for Microsoft Hyper-V (Matthias Bolte)
+- many improvements and bug fixes
+
 * Wed Aug  3 2011 Daniel Veillard <veillard@redhat.com> - 0.9.4-1
 - network bandwidth QoS control
 - Add new API virDomainBlockPull*
