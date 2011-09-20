@@ -212,7 +212,7 @@ useless_free_options =				\
 # y virDomainWatchdogDefFree
 # n virDrvNodeGetCellsFreeMemory (returns int)
 # n virDrvNodeGetFreeMemory (returns long long)
-# n virFree (dereferences param)
+# n virFree - dereferences param
 # n virFreeError
 # n virHashFree (takes 2 args)
 # y virInterfaceDefFree
@@ -304,6 +304,12 @@ sc_flags_usage:
 	  $(_sc_search_regexp)
 	@prohibit='^[^@]*([^d] (int|long long)|[^dg] long) flags[;,)]'	\
 	halt='flags should be unsigned'					\
+	  $(_sc_search_regexp)
+
+# Avoid functions that should only be called via macro counterparts.
+sc_prohibit_internal_functions:
+	@prohibit='vir(Free|AllocN?|ReallocN|File(Close|Fclose|Fdopen)) *\(' \
+	halt='use VIR_ macros instead of internal functions'		\
 	  $(_sc_search_regexp)
 
 # Avoid functions that can lead to double-close bugs.
@@ -705,6 +711,9 @@ exclude_file_name_regexp--sc_prohibit_fork_wrappers = \
   (^($(_src2)|tests/testutils|daemon/libvirtd)\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_gethostname = ^src/util/util\.c$$
+
+exclude_file_name_regexp--sc_prohibit_internal_functions = \
+  ^src/(util/(memory|util|virfile)\.[hc]|esx/esx_vi\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_newline_at_end_of_diagnostic = \
   ^src/rpc/gendispatch\.pl$$

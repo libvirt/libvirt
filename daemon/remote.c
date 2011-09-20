@@ -250,8 +250,8 @@ static int remoteRelayDomainEventIOError(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 mem_error:
     virReportOOMError();
-    virFree(data.srcPath);
-    virFree(data.devAlias);
+    VIR_FREE(data.srcPath);
+    VIR_FREE(data.devAlias);
     return -1;
 }
 
@@ -296,9 +296,9 @@ static int remoteRelayDomainEventIOErrorReason(virConnectPtr conn ATTRIBUTE_UNUS
 
 mem_error:
     virReportOOMError();
-    virFree(data.srcPath);
-    virFree(data.devAlias);
-    virFree(data.reason);
+    VIR_FREE(data.srcPath);
+    VIR_FREE(data.devAlias);
+    VIR_FREE(data.reason);
     return -1;
 }
 
@@ -374,17 +374,17 @@ static int remoteRelayDomainEventGraphics(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 mem_error:
     virReportOOMError();
-    virFree(data.authScheme);
-    virFree(data.local.node);
-    virFree(data.local.service);
-    virFree(data.remote.node);
-    virFree(data.remote.service);
+    VIR_FREE(data.authScheme);
+    VIR_FREE(data.local.node);
+    VIR_FREE(data.local.service);
+    VIR_FREE(data.remote.node);
+    VIR_FREE(data.remote.service);
     if (data.subject.subject_val != NULL) {
         for (i = 0 ; i < data.subject.subject_len ; i++) {
-            virFree(data.subject.subject_val[i].type);
-            virFree(data.subject.subject_val[i].name);
+            VIR_FREE(data.subject.subject_val[i].type);
+            VIR_FREE(data.subject.subject_val[i].name);
         }
-        virFree(data.subject.subject_val);
+        VIR_FREE(data.subject.subject_val);
     }
     return -1;
 }
@@ -422,7 +422,7 @@ static int remoteRelayDomainEventBlockJob(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 mem_error:
     virReportOOMError();
-    virFree(data.path);
+    VIR_FREE(data.path);
     return -1;
 }
 
