@@ -443,6 +443,12 @@ VIR_ENUM_IMPL(virDomainHostdevSubsys, VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST,
               "usb",
               "pci")
 
+VIR_ENUM_IMPL(virDomainPciRombarMode,
+              VIR_DOMAIN_PCI_ROMBAR_LAST,
+              "default",
+              "on",
+              "off")
+
 VIR_ENUM_IMPL(virDomainHub, VIR_DOMAIN_HUB_TYPE_LAST,
               "usb")
 
@@ -5486,6 +5492,20 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
                 if (virDomainDeviceBootParseXML(cur, &def->bootIndex,
                                                 bootMap))
                     goto error;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "rom")) {
+                char *rombar = virXMLPropString(cur, "bar");
+                if (!rombar) {
+                    virDomainReportError(VIR_ERR_XML_ERROR,
+                                         "%s", _("missing rom bar attribute"));
+                    goto error;
+                }
+                if ((def->rombar = virDomainPciRombarModeTypeFromString(rombar)) <= 0) {
+                    virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                         _("unknown rom bar value '%s'"), rombar);
+                    VIR_FREE(rombar);
+                    goto error;
+                }
+                VIR_FREE(rombar);
             } else {
                 virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                      _("unknown node %s"), cur->name);
@@ -10387,6 +10407,18 @@ virDomainHostdevDefFormat(virBufferPtr buf,
 
     if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;
+
+    if (def->rombar) {
+        const char *rombar
+            = virDomainPciRombarModeTypeToString(def->rombar);
+        if (!rombar) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("unexpected rom bar value %d"),
+                                 def->rombar);
+            return -1;
+        }
+        virBufferAsprintf(buf, "      <rom bar='%s'/>\n", rombar);
+    }
 
     virBufferAddLit(buf, "    </hostdev>\n");
 

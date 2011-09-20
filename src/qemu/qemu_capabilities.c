@@ -139,6 +139,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "no-shutdown",
 
               "cache-unsafe", /* 75 */
+              "rombar",
     );
 
 struct qemu_feature_flags {
@@ -1063,6 +1064,19 @@ qemuCapsComputeCmdFlags(const char *help,
 
     if (version >= 13000)
         qemuCapsSet(flags, QEMU_CAPS_PCI_MULTIFUNCTION);
+
+    /* Although very new versions of qemu advertise the presence of
+     * the rombar option in the output of "qemu -device pci-assign,?",
+     * this advertisement was added to the code long after the option
+     * itself. According to qemu developers, though, rombar is
+     * available in all qemu binaries from release 0.12 onward.
+     * Setting the capability this way makes it available in more
+     * cases where it might be needed, and shouldn't cause any false
+     * positives (in the case that it did, qemu would produce an error
+     * log and refuse to start, so it would be immediately obvious).
+     */
+    if (version >= 12000)
+        qemuCapsSet(flags, QEMU_CAPS_PCI_ROMBAR);
 }
 
 /* We parse the output of 'qemu -help' to get the QEMU

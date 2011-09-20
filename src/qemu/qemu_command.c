@@ -2369,6 +2369,25 @@ qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev, const char *configfd,
     if (qemuBuildDeviceAddressStr(&buf, &dev->info, qemuCaps) < 0)
         goto error;
 
+    if (dev->rombar) {
+        if (!qemuCapsGet(qemuCaps, QEMU_CAPS_PCI_ROMBAR)) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            "%s", _("rombar not supported in this QEMU binary"));
+            goto error;
+        }
+
+        switch (dev->rombar) {
+        case VIR_DOMAIN_PCI_ROMBAR_OFF:
+            virBufferAddLit(&buf, ",rombar=0");
+            break;
+        case VIR_DOMAIN_PCI_ROMBAR_ON:
+            virBufferAddLit(&buf, ",rombar=1");
+            break;
+        default:
+            break;
+        }
+    }
+
     if (virBufferError(&buf)) {
         virReportOOMError();
         goto error;

@@ -1376,6 +1376,7 @@
         &lt;address bus='0x06' slot='0x02' function='0x0'/&gt;
       &lt;/source&gt;
       &lt;boot order='1'/&gt;
+      &lt;rom bar='off'/&gt;
     &lt;/hostdev&gt;
   &lt;/devices&gt;
   ...</pre>
@@ -1407,6 +1408,18 @@
       used together with general boot elements in
       <a href="#elementsOSBIOS">BIOS bootloader</a> section.
       <span class="since">Since 0.8.8</span></dd>
+      <dt><code>rom</code></dt>
+      <dd>The <code>rom</code> element is used to change how a PCI
+        device's ROM is presented to the guest. The <code>bar</code>
+        attribute can be set to "on" or "off", and determines whether
+        or not the device's ROM will be visible in the guest's memory
+        map. (In PCI documentation, the "rombar" setting controls the
+        presence of the Base Address Register for the ROM). If no rom
+        bar is specified, the qemu default will be used (older
+        versions of qemu used a default of "off", while newer qemus
+        have a default of "on"). <span class="since">Since
+        0.9.7</span>
+      </dd>
       <dt><code>address</code></dt>
       <dd>The <code>address</code> element for USB devices has a
       <code>bus</code> and <code>device</code> attribute to specify the

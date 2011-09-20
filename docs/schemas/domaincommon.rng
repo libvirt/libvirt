@@ -2060,6 +2060,17 @@
       <optional>
         <ref name="address"/>
       </optional>
+      <optional>
+        <element name="rom">
+          <attribute name="bar">
+            <choice>
+              <value>on</value>
+              <value>off</value>
+            </choice>
+          </attribute>
+          <empty/>
+        </element>
+      </optional>
     </element>
   </define>
   <define name="usbproduct">

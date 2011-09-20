@@ -937,6 +937,14 @@ enum virDomainHostdevSubsysType {
     VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST
 };
 
+enum virDomainPciRombarMode {
+    VIR_DOMAIN_PCI_ROMBAR_DEFAULT = 0,
+    VIR_DOMAIN_PCI_ROMBAR_ON,
+    VIR_DOMAIN_PCI_ROMBAR_OFF,
+
+    VIR_DOMAIN_PCI_ROMBAR_LAST
+};
+
 typedef struct _virDomainHostdevDef virDomainHostdevDef;
 typedef virDomainHostdevDef *virDomainHostdevDefPtr;
 struct _virDomainHostdevDef {
@@ -965,6 +973,7 @@ struct _virDomainHostdevDef {
     } source;
     int bootIndex;
     virDomainDeviceInfo info; /* Guest address */
+    int rombar;               /* enum virDomainPciRombarMode */
 };
 
 enum virDomainRedirdevBus {
@@ -1856,6 +1865,7 @@ VIR_ENUM_DECL(virDomainWatchdogAction)
 VIR_ENUM_DECL(virDomainVideo)
 VIR_ENUM_DECL(virDomainHostdevMode)
 VIR_ENUM_DECL(virDomainHostdevSubsys)
+VIR_ENUM_DECL(virDomainPciRombarMode)
 VIR_ENUM_DECL(virDomainHub)
 VIR_ENUM_DECL(virDomainRedirdevBus)
 VIR_ENUM_DECL(virDomainInput)
