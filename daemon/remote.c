@@ -234,9 +234,13 @@ static int remoteRelayDomainEventIOError(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     /* build return data */
     memset(&data, 0, sizeof data);
+    data.srcPath = strdup(srcPath);
+    if (data.srcPath == NULL)
+        goto mem_error;
+    data.devAlias = strdup(devAlias);
+    if (data.devAlias == NULL)
+        goto mem_error;
     make_nonnull_domain(&data.dom, dom);
-    data.srcPath = (char*)srcPath;
-    data.devAlias = (char*)devAlias;
     data.action = action;
 
     remoteDispatchDomainEventSend(client, remoteProgram,
@@ -244,6 +248,11 @@ static int remoteRelayDomainEventIOError(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   (xdrproc_t)xdr_remote_domain_event_io_error_msg, &data);
 
     return 0;
+mem_error:
+    virReportOOMError();
+    virFree(data.srcPath);
+    virFree(data.devAlias);
+    return -1;
 }
 
 
@@ -266,17 +275,31 @@ static int remoteRelayDomainEventIOErrorReason(virConnectPtr conn ATTRIBUTE_UNUS
 
     /* build return data */
     memset(&data, 0, sizeof data);
-    make_nonnull_domain(&data.dom, dom);
-    data.srcPath = (char*)srcPath;
-    data.devAlias = (char*)devAlias;
+    data.srcPath = strdup(srcPath);
+    if (data.srcPath == NULL)
+        goto mem_error;
+    data.devAlias = strdup(devAlias);
+    if (data.devAlias == NULL)
+        goto mem_error;
     data.action = action;
-    data.reason = (char*)reason;
+    data.reason = strdup(reason);
+    if (data.reason == NULL)
+        goto mem_error;
+
+    make_nonnull_domain(&data.dom, dom);
 
     remoteDispatchDomainEventSend(client, remoteProgram,
                                   REMOTE_PROC_DOMAIN_EVENT_IO_ERROR_REASON,
                                   (xdrproc_t)xdr_remote_domain_event_io_error_reason_msg, &data);
 
     return 0;
+
+mem_error:
+    virReportOOMError();
+    virFree(data.srcPath);
+    virFree(data.devAlias);
+    virFree(data.reason);
+    return -1;
 }
 
 
@@ -308,33 +331,62 @@ static int remoteRelayDomainEventGraphics(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     /* build return data */
     memset(&data, 0, sizeof data);
-    make_nonnull_domain(&data.dom, dom);
     data.phase = phase;
-    data.authScheme = (char*)authScheme;
-
     data.local.family = local->family;
-    data.local.node = (char *)local->node;
-    data.local.service = (char *)local->service;
-
     data.remote.family = remote->family;
-    data.remote.node = (char*)remote->node;
-    data.remote.service = (char*)remote->service;
+    data.authScheme = strdup(authScheme);
+    if (data.authScheme == NULL)
+        goto mem_error;
+
+    data.local.node = strdup(local->node);
+    if (data.local.node == NULL)
+        goto mem_error;
+    data.local.service = strdup(local->service);
+    if (data.local.service == NULL)
+        goto mem_error;
+
+    data.remote.node = strdup(remote->node);
+    if (data.remote.node == NULL)
+        goto mem_error;
+    data.remote.service = strdup(remote->service);
+    if (data.remote.service == NULL)
+        goto mem_error;
 
     data.subject.subject_len = subject->nidentity;
-    if (VIR_ALLOC_N(data.subject.subject_val, data.subject.subject_len) < 0) {
-        virReportOOMError();
-        return -1;
-    }
+    if (VIR_ALLOC_N(data.subject.subject_val, data.subject.subject_len) < 0)
+        goto mem_error;
+
     for (i = 0 ; i < data.subject.subject_len ; i++) {
-        data.subject.subject_val[i].type = (char*)subject->identities[i].type;
-        data.subject.subject_val[i].name = (char*)subject->identities[i].name;
+        data.subject.subject_val[i].type = strdup(subject->identities[i].type);
+        if (data.subject.subject_val[i].type == NULL)
+            goto mem_error;
+        data.subject.subject_val[i].name = strdup(subject->identities[i].name);
+        if (data.subject.subject_val[i].name == NULL)
+            goto mem_error;
     }
+    make_nonnull_domain(&data.dom, dom);
 
     remoteDispatchDomainEventSend(client, remoteProgram,
                                   REMOTE_PROC_DOMAIN_EVENT_GRAPHICS,
                                   (xdrproc_t)xdr_remote_domain_event_graphics_msg, &data);
 
     return 0;
+
+mem_error:
+    virReportOOMError();
+    virFree(data.authScheme);
+    virFree(data.local.node);
+    virFree(data.local.service);
+    virFree(data.remote.node);
+    virFree(data.remote.service);
+    if (data.subject.subject_val != NULL) {
+        for (i = 0 ; i < data.subject.subject_len ; i++) {
+            virFree(data.subject.subject_val[i].type);
+            virFree(data.subject.subject_val[i].name);
+        }
+        virFree(data.subject.subject_val);
+    }
+    return -1;
 }
 
 static int remoteRelayDomainEventBlockJob(virConnectPtr conn ATTRIBUTE_UNUSED,
@@ -355,16 +407,23 @@ static int remoteRelayDomainEventBlockJob(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     /* build return data */
     memset(&data, 0, sizeof data);
-    make_nonnull_domain(&data.dom, dom);
-    data.path = (char*)path;
+    data.path = strdup(path);
+    if (data.path == NULL)
+        goto mem_error;
     data.type = type;
     data.status = status;
+    make_nonnull_domain(&data.dom, dom);
 
     remoteDispatchDomainEventSend(client, remoteProgram,
                                   REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB,
                                   (xdrproc_t)xdr_remote_domain_event_block_job_msg, &data);
 
     return 0;
+
+mem_error:
+    virReportOOMError();
+    virFree(data.path);
+    return -1;
 }
 
 
