@@ -37,7 +37,13 @@
      (1 << VIR_DOMAIN_VIRT_XEN))
 
 # define QEMU_DOMAIN_DEFAULT_MIG_BANDWIDTH_MAX (32 << 20)
-# define QEMU_DOMAIN_FILE_MIG_BANDWIDTH_MAX    (INT64_MAX / (1024 * 1024))
+# if ULONG_MAX == 4294967295
+/* Qemu has a 64-bit limit, but we are limited by our historical choice of
+ * representing bandwidth in a long instead of a 64-bit int.  */
+#  define QEMU_DOMAIN_FILE_MIG_BANDWIDTH_MAX    ULONG_MAX
+# else
+#  define QEMU_DOMAIN_FILE_MIG_BANDWIDTH_MAX    (INT64_MAX / (1024 * 1024))
+# endif
 
 # define JOB_MASK(job)                  (1 << (job - 1))
 # define DEFAULT_JOB_MASK               \
