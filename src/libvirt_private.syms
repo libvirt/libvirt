@@ -25,6 +25,7 @@ virBufferAddChar;
 virBufferAsprintf;
 virBufferContentAndReset;
 virBufferError;
+virBufferEscape;
 virBufferEscapeSexpr;
 virBufferEscapeString;
 virBufferFreeAndReset;

@@ -50,6 +50,7 @@ void virBufferStrcat(const virBufferPtr buf, ...)
   ATTRIBUTE_SENTINEL;
 void virBufferEscapeString(const virBufferPtr buf, const char *format, const char *str);
 void virBufferEscapeSexpr(const virBufferPtr buf, const char *format, const char *str);
+void virBufferEscape(const virBufferPtr buf, const char *toescape, const char *format, const char *str);
 void virBufferURIEncodeString (const virBufferPtr buf, const char *str);
 
 # define virBufferAddLit(buf_, literal_string_) \
