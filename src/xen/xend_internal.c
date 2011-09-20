@@ -753,12 +753,10 @@ xend_wait_for_devices(virConnectPtr xend, const char *name)
 char **
 xenDaemonListDomainsOld(virConnectPtr xend)
 {
-    size_t extra = 0;
     struct sexpr *root = NULL;
     char **ret = NULL;
     int count = 0;
     int i;
-    char *ptr;
     struct sexpr *_for_i, *node;
 
     root = sexpr_get(xend, "/xend/domain");
@@ -769,32 +767,22 @@ xenDaemonListDomainsOld(virConnectPtr xend)
          _for_i = _for_i->u.s.cdr, node = _for_i->u.s.car) {
         if (node->kind != SEXPR_VALUE)
             continue;
-        extra += strlen(node->u.value) + 1;
         count++;
     }
 
-    /*
-     * We can'tuse the normal allocation routines as we are mixing
-     * an array of char * at the beginning followed by an array of char
-     * ret points to the NULL terminated array of char *
-     * ptr points to the current string after that array but in the same
-     * allocated block
-     */
-    if (virAlloc((void *)&ptr,
-                 (count + 1) * sizeof(char *) + extra * sizeof(char)) < 0)
+    if (VIR_ALLOC_N(ret, count + 1) < 0) {
+        virReportOOMError();
         goto error;
-
-    ret = (char **) ptr;
-    ptr += sizeof(char *) * (count + 1);
+    }
 
     i = 0;
     for (_for_i = root, node = root->u.s.car; _for_i->kind == SEXPR_CONS;
          _for_i = _for_i->u.s.cdr, node = _for_i->u.s.car) {
         if (node->kind != SEXPR_VALUE)
             continue;
-        ret[i] = ptr;
-        strcpy(ptr, node->u.value);
-        ptr += strlen(node->u.value) + 1;
+        ret[i] = strdup(node->u.value);
+        if (!ret[i])
+            goto no_memory;
         i++;
     }
 
@@ -803,6 +791,12 @@ xenDaemonListDomainsOld(virConnectPtr xend)
   error:
     sexpr_free(root);
     return ret;
+
+no_memory:
+    for (i = 0; i < count; i++)
+        VIR_FREE(ret[i]);
+    VIR_FREE(ret);
+    goto error;
 }
 
 
@@ -2493,14 +2487,16 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
             id = xenDaemonDomainLookupByName_ids(conn, *tmp, &ident[0]);
             if (id >= 0) {
                 if (!memcmp(uuid, ident, VIR_UUID_BUFLEN)) {
-                    name = strdup(*tmp);
-
-                    if (name == NULL)
-                        virReportOOMError();
-
+                    name = *tmp;
                     break;
                 }
             }
+            tmp++;
+        }
+        tmp = names;
+        while (*tmp) {
+            if (*tmp != name)
+                VIR_FREE(*tmp);
             tmp++;
         }
         VIR_FREE(names);
