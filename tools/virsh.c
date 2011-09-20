@@ -10006,13 +10006,12 @@ static bool
 cmdVolPath(vshControl *ctl, const vshCmd *cmd)
 {
     virStorageVolPtr vol;
-    const char *name = NULL;
     char * StorageVolPath;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
 
-    if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", &name))) {
+    if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", NULL))) {
         return false;
     }
 
