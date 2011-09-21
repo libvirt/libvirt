@@ -1,0 +1,21 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+/usr/bin/qemu \
+-S \
+-M pc \
+-m 214 \
+-smp 1 \
+-nographic \
+-nodefconfig \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/test-monitor,server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-no-shutdown \
+-no-acpi \
+-boot c \
+-hda /dev/hda1 \
+-usb \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

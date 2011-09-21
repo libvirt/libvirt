@@ -1557,6 +1557,12 @@ static int qemuDomainReboot(virDomainPtr dom, unsigned int flags) {
     priv = vm->privateData;
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON)) {
+        if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                            _("Reboot is not supported with this QEMU binary"));
+            goto cleanup;
+        }
+
         if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
             goto cleanup;
 

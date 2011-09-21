@@ -136,6 +136,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "pci-ohci",
               "usb-redir",
               "usb-hub",
+              "no-shutdown",
     );
 
 struct qemu_feature_flags {
@@ -1007,6 +1008,13 @@ qemuCapsComputeCmdFlags(const char *help,
     if (strstr(help, ",vhost=")) {
         qemuCapsSet(flags, QEMU_CAPS_VHOST_NET);
     }
+
+    /* Do not use -no-shutdown if qemu doesn't support it or SIGTERM handling
+     * is most likely buggy when used with -no-shutdown (which applies for qemu
+     * 0.14.* and 0.15.*)
+     */
+    if (strstr(help, "-no-shutdown") && (version < 14000 || version > 15999))
+        qemuCapsSet(flags, QEMU_CAPS_NO_SHUTDOWN);
 
     /*
      * Handling of -incoming arg with varying features

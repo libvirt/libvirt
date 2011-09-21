@@ -578,6 +578,9 @@ mymain(void)
     json = true;
     DO_TEST("monitor-json", false, QEMU_CAPS_DEVICE,
             QEMU_CAPS_CHARDEV, QEMU_CAPS_MONITOR_JSON, QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("no-shutdown", false, QEMU_CAPS_DEVICE,
+            QEMU_CAPS_CHARDEV, QEMU_CAPS_MONITOR_JSON, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_NO_SHUTDOWN);
     json = false;
 
     free(driver.stateDir);
