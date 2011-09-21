@@ -627,6 +627,15 @@ static int virNetClientCallDispatchStream(virNetClientPtr client)
     case VIR_NET_CONTINUE: {
         if (virNetClientStreamQueuePacket(st, &client->msg) < 0)
             return -1;
+
+        if (thecall && thecall->expectReply) {
+            if (thecall->msg->header.status == VIR_NET_CONTINUE) {
+                VIR_DEBUG("Got a synchronous confirm");
+                thecall->mode = VIR_NET_CLIENT_MODE_COMPLETE;
+            } else {
+                VIR_DEBUG("Not completing call with status %d", thecall->msg->header.status);
+            }
+        }
         return 0;
     }
 
@@ -1189,6 +1198,7 @@ int virNetClientSend(virNetClientPtr client,
     int ret = -1;
 
     if (expectReply &&
+        (msg->bufferLength != 0) &&
         (msg->header.status == VIR_NET_CONTINUE)) {
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
                     _("Attempt to send an asynchronous message with a synchronous reply"));
