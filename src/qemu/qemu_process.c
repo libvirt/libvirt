@@ -2661,22 +2661,24 @@ error:
     if (qemuDomainObjEndJob(driver, obj) == 0)
         obj = NULL;
 
-    if (!virDomainObjIsActive(obj)) {
-        if (virDomainObjUnref(obj) > 0)
-            virDomainObjUnlock(obj);
-        qemuDriverUnlock(driver);
-        return;
-    }
+    if (obj) {
+        if (!virDomainObjIsActive(obj)) {
+            if (virDomainObjUnref(obj) > 0)
+                virDomainObjUnlock(obj);
+            qemuDriverUnlock(driver);
+            return;
+        }
 
-    if (virDomainObjUnref(obj) > 0) {
-        /* We can't get the monitor back, so must kill the VM
-         * to remove danger of it ending up running twice if
-         * user tries to start it again later */
-        qemuProcessStop(driver, obj, 0, VIR_DOMAIN_SHUTOFF_FAILED);
-        if (!obj->persistent)
-            virDomainRemoveInactive(&driver->domains, obj);
-        else
-            virDomainObjUnlock(obj);
+        if (virDomainObjUnref(obj) > 0) {
+            /* We can't get the monitor back, so must kill the VM
+            * to remove danger of it ending up running twice if
+            * user tries to start it again later */
+            qemuProcessStop(driver, obj, 0, VIR_DOMAIN_SHUTOFF_FAILED);
+            if (!obj->persistent)
+                virDomainRemoveInactive(&driver->domains, obj);
+            else
+                virDomainObjUnlock(obj);
+        }
     }
     qemuDriverUnlock(driver);
 
