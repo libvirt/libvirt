@@ -5095,7 +5095,7 @@ cleanup:
 
 static int
 qemuDomainUndefineFlags(virDomainPtr dom,
-                         unsigned int flags)
+                        unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -5118,11 +5118,17 @@ qemuDomainUndefineFlags(virDomainPtr dom,
         goto cleanup;
     }
 
+    if (!vm->persistent) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("cannot undefine transient domain"));
+        goto cleanup;
+    }
+
     if (!virDomainObjIsActive(vm) &&
         (nsnapshots = virDomainSnapshotObjListNum(&vm->snapshots, 0))) {
         struct snap_remove rem;
 
-        if (flags & VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA) {
+        if (!(flags & VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA)) {
             qemuReportError(VIR_ERR_OPERATION_INVALID,
                             _("cannot delete inactive domain with %d "
                               "snapshots"),
@@ -5137,12 +5143,6 @@ qemuDomainUndefineFlags(virDomainPtr dom,
         virHashForEach(vm->snapshots.objs, qemuDomainSnapshotDiscardAll, &rem);
         if (rem.err < 0)
             goto cleanup;
-    }
-
-    if (!vm->persistent) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("cannot undefine transient domain"));
-        goto cleanup;
     }
 
     name = qemuDomainManagedSavePath(driver, vm);
