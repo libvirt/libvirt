@@ -77,8 +77,8 @@ static int testHelpStrParsing(const void *data)
 
     if (STRNEQ(got, expected)) {
         fprintf(stderr,
-                "Computed flags do not match: got %s, expected %s\n",
-                got, expected);
+                "%s: computed flags do not match: got %s, expected %s\n",
+                info->name, got, expected);
 
         if (getenv("VIR_TEST_DEBUG"))
             printMismatchedFlags(flags, info->flags);
@@ -87,22 +87,22 @@ static int testHelpStrParsing(const void *data)
     }
 
     if (version != info->version) {
-        fprintf(stderr, "Parsed versions do not match: got %u, expected %u\n",
-                version, info->version);
+        fprintf(stderr, "%s: parsed versions do not match: got %u, expected %u\n",
+                info->name, version, info->version);
         goto cleanup;
     }
 
     if (is_kvm != info->is_kvm) {
         fprintf(stderr,
-                "Parsed is_kvm flag does not match: got %u, expected %u\n",
-                is_kvm, info->is_kvm);
+                "%s: parsed is_kvm flag does not match: got %u, expected %u\n",
+                info->name, is_kvm, info->is_kvm);
         goto cleanup;
     }
 
     if (kvm_version != info->kvm_version) {
         fprintf(stderr,
-                "Parsed KVM versions do not match: got %u, expected %u\n",
-                kvm_version, info->kvm_version);
+                "%s: parsed KVM versions do not match: got %u, expected %u\n",
+                info->name, kvm_version, info->kvm_version);
         goto cleanup;
     }
 
