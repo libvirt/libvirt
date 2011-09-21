@@ -10825,8 +10825,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAddLit(buf, "  </features>\n");
     }
 
-    if (virCPUDefFormatBuf(buf, def->cpu, "  ", 0) < 0)
+    virBufferAdjustIndent(buf, 2);
+    if (virCPUDefFormatBufFull(buf, def->cpu) < 0)
         goto cleanup;
+    virBufferAdjustIndent(buf, -2);
 
     virBufferAsprintf(buf, "  <clock offset='%s'",
                       virDomainClockOffsetTypeToString(def->clock.offset));

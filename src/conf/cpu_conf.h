@@ -95,25 +95,19 @@ virCPUDefParseXML(const xmlNodePtr node,
                   xmlXPathContextPtr ctxt,
                   enum virCPUType mode);
 
-enum virCPUFormatFlags {
-    VIR_CPU_FORMAT_EMBEDED  = (1 << 0)  /* embed into existing <cpu/> element
-                                         * in host capabilities */
-};
-
 bool
 virCPUDefIsEqual(virCPUDefPtr src,
                  virCPUDefPtr dst);
 
 char *
-virCPUDefFormat(virCPUDefPtr def,
-                const char *indent,
-                unsigned int flags);
+virCPUDefFormat(virCPUDefPtr def);
 
 int
 virCPUDefFormatBuf(virBufferPtr buf,
-                   virCPUDefPtr def,
-                   const char *indent,
-                   unsigned int flags);
+                   virCPUDefPtr def);
+int
+virCPUDefFormatBufFull(virBufferPtr buf,
+                       virCPUDefPtr def);
 
 int
 virCPUDefAddFeature(virCPUDefPtr cpu,

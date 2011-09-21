@@ -1,7 +1,7 @@
 /*
  * capabilities.c: hypervisor capabilities
  *
- * Copyright (C) 2006-2008, 2010 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2010-2011 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -681,8 +681,9 @@ virCapabilitiesFormatXML(virCapsPtr caps)
         virBufferAddLit(&xml, "      </features>\n");
     }
 
-    virCPUDefFormatBuf(&xml, caps->host.cpu, "    ",
-                       VIR_CPU_FORMAT_EMBEDED);
+    virBufferAdjustIndent(&xml, 6);
+    virCPUDefFormatBuf(&xml, caps->host.cpu);
+    virBufferAdjustIndent(&xml, -6);
 
     virBufferAddLit(&xml, "    </cpu>\n");
 

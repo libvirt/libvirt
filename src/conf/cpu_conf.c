@@ -305,13 +305,11 @@ error:
 
 
 char *
-virCPUDefFormat(virCPUDefPtr def,
-                const char *indent,
-                unsigned int flags)
+virCPUDefFormat(virCPUDefPtr def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (virCPUDefFormatBuf(&buf, def, indent, flags) < 0)
+    if (virCPUDefFormatBufFull(&buf, def) < 0)
         goto cleanup;
 
     if (virBufferError(&buf))
@@ -328,18 +326,46 @@ cleanup:
 
 
 int
+virCPUDefFormatBufFull(virBufferPtr buf,
+                       virCPUDefPtr def)
+{
+    if (!def)
+        return 0;
+
+    if (def->type == VIR_CPU_TYPE_GUEST && def->model) {
+        const char *match;
+        if (!(match = virCPUMatchTypeToString(def->match))) {
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                              _("Unexpected CPU match policy %d"), def->match);
+            return -1;
+        }
+
+        virBufferAsprintf(buf, "<cpu match='%s'>\n", match);
+    } else {
+        virBufferAddLit(buf, "<cpu>\n");
+    }
+
+    if (def->arch)
+        virBufferAsprintf(buf, "  <arch>%s</arch>\n", def->arch);
+
+    virBufferAdjustIndent(buf, 2);
+    if (virCPUDefFormatBuf(buf, def) < 0)
+        return -1;
+    virBufferAdjustIndent(buf, -2);
+
+    virBufferAddLit(buf, "</cpu>\n");
+
+    return 0;
+}
+
+int
 virCPUDefFormatBuf(virBufferPtr buf,
-                   virCPUDefPtr def,
-                   const char *indent,
-                   unsigned int flags)
+                   virCPUDefPtr def)
 {
     unsigned int i;
 
     if (!def)
         return 0;
-
-    if (indent == NULL)
-        indent = "";
 
     if (!def->model && def->nfeatures) {
         virCPUReportError(VIR_ERR_INTERNAL_ERROR,
@@ -347,34 +373,15 @@ virCPUDefFormatBuf(virBufferPtr buf,
         return -1;
     }
 
-    if (!(flags & VIR_CPU_FORMAT_EMBEDED)) {
-        if (def->type == VIR_CPU_TYPE_GUEST && def->model) {
-            const char *match;
-            if (!(match = virCPUMatchTypeToString(def->match))) {
-                virCPUReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Unexpected CPU match policy %d"), def->match);
-                return -1;
-            }
-
-            virBufferAsprintf(buf, "%s<cpu match='%s'>\n", indent, match);
-        }
-        else
-            virBufferAsprintf(buf, "%s<cpu>\n", indent);
-
-        if (def->arch)
-            virBufferAsprintf(buf, "%s  <arch>%s</arch>\n", indent, def->arch);
-    }
-
     if (def->model)
-        virBufferAsprintf(buf, "%s  <model>%s</model>\n", indent, def->model);
+        virBufferAsprintf(buf, "<model>%s</model>\n", def->model);
 
     if (def->vendor) {
-        virBufferAsprintf(buf, "%s  <vendor>%s</vendor>\n",
-                          indent, def->vendor);
+        virBufferAsprintf(buf, "<vendor>%s</vendor>\n", def->vendor);
     }
 
     if (def->sockets && def->cores && def->threads) {
-        virBufferAsprintf(buf, "%s  <topology", indent);
+        virBufferAddLit(buf, "<topology");
         virBufferAsprintf(buf, " sockets='%u'", def->sockets);
         virBufferAsprintf(buf, " cores='%u'", def->cores);
         virBufferAsprintf(buf, " threads='%u'", def->threads);
@@ -399,17 +406,13 @@ virCPUDefFormatBuf(virBufferPtr buf,
                         _("Unexpected CPU feature policy %d"), feature->policy);
                 return -1;
             }
-            virBufferAsprintf(buf, "%s  <feature policy='%s' name='%s'/>\n",
-                    indent, policy, feature->name);
-        }
-        else {
-            virBufferAsprintf(buf, "%s  <feature name='%s'/>\n",
-                    indent, feature->name);
+            virBufferAsprintf(buf, "<feature policy='%s' name='%s'/>\n",
+                              policy, feature->name);
+        } else {
+            virBufferAsprintf(buf, "<feature name='%s'/>\n",
+                              feature->name);
         }
     }
-
-    if (!(flags & VIR_CPU_FORMAT_EMBEDED))
-        virBufferAsprintf(buf, "%s</cpu>\n", indent);
 
     return 0;
 }
