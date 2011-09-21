@@ -106,7 +106,7 @@ qemuProcessRemoveDomainStatus(struct qemud_driver *driver,
 extern struct qemud_driver *qemu_driver;
 
 /*
- * This is a callback registered with a qemuMonitorPtr  instance,
+ * This is a callback registered with a qemuMonitorPtr instance,
  * and to be invoked when the monitor console hits an end of file
  * condition, or error, thus indicating VM shutdown should be
  * performed

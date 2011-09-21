@@ -1438,9 +1438,9 @@ virDomainObjGetPersistentDef(virCapsPtr caps,
 }
 
 /*
- * The caller must hold a lock  on the driver owning 'doms',
+ * The caller must hold a lock on the driver owning 'doms',
  * and must also have locked 'dom', to ensure no one else
- * is either waiting for 'dom' or still usingn it
+ * is either waiting for 'dom' or still using it
  */
 void virDomainRemoveInactive(virDomainObjListPtr doms,
                              virDomainObjPtr dom)

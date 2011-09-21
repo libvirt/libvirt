@@ -237,4 +237,40 @@ int qemuDomainAppendLog(struct qemud_driver *driver,
                         int logFD,
                         const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(4, 5);
 
+const char *qemuFindQemuImgBinary(struct qemud_driver *driver);
+
+int qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
+                                    virDomainSnapshotObjPtr snapshot,
+                                    char *snapshotDir);
+
+int qemuDomainSnapshotForEachQcow2(struct qemud_driver *driver,
+                                   virDomainObjPtr vm,
+                                   virDomainSnapshotObjPtr snap,
+                                   const char *op,
+                                   bool try_all);
+
+int qemuDomainSnapshotDiscard(struct qemud_driver *driver,
+                              virDomainObjPtr vm,
+                              virDomainSnapshotObjPtr snap,
+                              bool update_current,
+                              bool metadata_only);
+
+struct qemu_snap_remove {
+    struct qemud_driver *driver;
+    virDomainObjPtr vm;
+    int err;
+    bool metadata_only;
+    bool current;
+};
+
+void qemuDomainSnapshotDiscardAll(void *payload,
+                                  const void *name,
+                                  void *data);
+
+int qemuDomainSnapshotDiscardAllMetadata(struct qemud_driver *driver,
+                                         virDomainObjPtr vm);
+
+void qemuDomainRemoveInactive(struct qemud_driver *driver,
+                              virDomainObjPtr vm);
+
 #endif /* __QEMU_DOMAIN_H__ */
