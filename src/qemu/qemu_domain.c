@@ -1537,7 +1537,6 @@ qemuDomainSnapshotDiscardAllMetadata(struct qemud_driver *driver,
     rem.err = 0;
     virHashForEach(vm->snapshots.objs, qemuDomainSnapshotDiscardAll, &rem);
 
-    /* XXX also do rmdir ? */
     return rem.err;
 }
 
@@ -1549,10 +1548,21 @@ void
 qemuDomainRemoveInactive(struct qemud_driver *driver,
                          virDomainObjPtr vm)
 {
+    char *snapDir;
+
     /* Remove any snapshot metadata prior to removing the domain */
     if (qemuDomainSnapshotDiscardAllMetadata(driver, vm) < 0) {
         VIR_WARN("unable to remove all snapshots for domain %s",
                  vm->def->name);
+    }
+    else if (virAsprintf(&snapDir, "%s/%s", driver->snapshotDir,
+                         vm->def->name) < 0) {
+        VIR_WARN("unable to remove snapshot directory %s/%s",
+                 driver->snapshotDir, vm->def->name);
+    } else {
+        if (rmdir(snapDir) < 0 && errno != ENOENT)
+            VIR_WARN("unable to remove snapshot directory %s", snapDir);
+        VIR_FREE(snapDir);
     }
     virDomainRemoveInactive(&driver->domains, vm);
 }
