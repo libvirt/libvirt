@@ -14714,8 +14714,13 @@ vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
         vol = virStorageVolLookupByPath(ctl->conn, n);
     }
 
-    if (!vol)
-        vshError(ctl, _("failed to get vol '%s'"), n);
+    if (!vol) {
+        if (pool)
+            vshError(ctl, _("failed to get vol '%s'"), n);
+        else
+            vshError(ctl, _("failed to get vol '%s', specifying --pool "
+                            "might help"), n);
+    }
 
     if (pool)
         virStoragePoolFree(pool);
