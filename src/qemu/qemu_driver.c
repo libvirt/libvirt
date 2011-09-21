@@ -967,6 +967,7 @@ static char *
 qemuGetSysinfo(virConnectPtr conn, unsigned int flags)
 {
     struct qemud_driver *driver = conn->privateData;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virCheckFlags(0, NULL);
 
@@ -976,7 +977,13 @@ qemuGetSysinfo(virConnectPtr conn, unsigned int flags)
         return NULL;
     }
 
-    return virSysinfoFormat(driver->hostsysinfo, "");
+    if (virSysinfoFormat(&buf, driver->hostsysinfo) < 0)
+        return NULL;
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        return NULL;
+    }
+    return virBufferContentAndReset(&buf);
 }
 
 static int qemudGetMaxVCPUs(virConnectPtr conn ATTRIBUTE_UNUSED, const char *type) {

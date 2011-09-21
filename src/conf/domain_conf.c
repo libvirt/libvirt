@@ -9973,13 +9973,11 @@ static int
 virDomainSysinfoDefFormat(virBufferPtr buf,
                           virSysinfoDefPtr def)
 {
-    char *format = virSysinfoFormat(def, "  ");
-
-    if (!format)
-        return -1;
-    virBufferAdd(buf, format, strlen(format));
-    VIR_FREE(format);
-    return 0;
+    int ret;
+    virBufferAdjustIndent(buf, 2);
+    ret = virSysinfoFormat(buf, def);
+    virBufferAdjustIndent(buf, -2);
+    return ret;
 }
 
 

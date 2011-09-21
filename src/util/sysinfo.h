@@ -26,6 +26,7 @@
 
 # include "internal.h"
 # include "util.h"
+# include "buf.h"
 
 enum virSysinfoType {
     VIR_SYSINFO_SMBIOS,
@@ -93,7 +94,7 @@ virSysinfoDefPtr virSysinfoRead(void);
 
 void virSysinfoDefFree(virSysinfoDefPtr def);
 
-char *virSysinfoFormat(virSysinfoDefPtr def, const char *prefix)
+int virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 bool virSysinfoIsEqual(virSysinfoDefPtr src,

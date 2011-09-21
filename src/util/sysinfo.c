@@ -515,324 +515,189 @@ no_memory:
 #endif /* !WIN32 && x86 */
 
 static void
-virSysinfoBIOSFormat(virSysinfoDefPtr def, const char *prefix,
-                     virBufferPtr buf)
+virSysinfoBIOSFormat(virBufferPtr buf, virSysinfoDefPtr def)
 {
-    int len = strlen(prefix);
+    if (!def->bios_vendor && !def->bios_version &&
+        !def->bios_date && !def->bios_release)
+        return;
 
-    if ((def->bios_vendor != NULL) || (def->bios_version != NULL) ||
-        (def->bios_date != NULL) || (def->bios_release != NULL)) {
-        virBufferAsprintf(buf, "%s  <bios>\n", prefix);
-        if (def->bios_vendor != NULL) {
-            virBufferAdd(buf, prefix, len);
-            virBufferEscapeString(buf,
-                                  "    <entry name='vendor'>%s</entry>\n",
-                                  def->bios_vendor);
-        }
-        if (def->bios_version != NULL) {
-            virBufferAdd(buf, prefix, len);
-            virBufferEscapeString(buf,
-                                  "    <entry name='version'>%s</entry>\n",
-                                  def->bios_version);
-        }
-        if (def->bios_date != NULL) {
-            virBufferAdd(buf, prefix, len);
-            virBufferEscapeString(buf,
-                                  "    <entry name='date'>%s</entry>\n",
-                                  def->bios_date);
-        }
-        if (def->bios_release != NULL) {
-            virBufferAdd(buf, prefix, len);
-            virBufferEscapeString(buf,
-                                  "    <entry name='release'>%s</entry>\n",
-                                  def->bios_release);
-        }
-        virBufferAsprintf(buf, "%s  </bios>\n", prefix);
-    }
-
-    return;
+    virBufferAddLit(buf, "  <bios>\n");
+    virBufferEscapeString(buf, "    <entry name='vendor'>%s</entry>\n",
+                          def->bios_vendor);
+    virBufferEscapeString(buf, "    <entry name='version'>%s</entry>\n",
+                          def->bios_version);
+    virBufferEscapeString(buf, "    <entry name='date'>%s</entry>\n",
+                          def->bios_date);
+    virBufferEscapeString(buf, "    <entry name='release'>%s</entry>\n",
+                          def->bios_release);
+    virBufferAddLit(buf, "  </bios>\n");
 }
 
 static void
-virSysinfoSystemFormat(virSysinfoDefPtr def, const char *prefix,
-                       virBufferPtr buf)
+virSysinfoSystemFormat(virBufferPtr buf, virSysinfoDefPtr def)
 {
-    int len = strlen(prefix);
+    if (!def->system_manufacturer && !def->system_product &&
+        !def->system_version && !def->system_serial &&
+        !def->system_uuid && !def->system_sku && !def->system_family)
+        return;
 
-    if ((def->system_manufacturer != NULL) || (def->system_product != NULL) ||
-        (def->system_version != NULL) || (def->system_serial != NULL) ||
-        (def->system_uuid != NULL) || (def->system_sku != NULL) ||
-        (def->system_family != NULL)) {
-        virBufferAsprintf(buf, "%s  <system>\n", prefix);
-        if (def->system_manufacturer != NULL) {
-            virBufferAdd(buf, prefix, len);
-            virBufferEscapeString(buf,
-                                  "    <entry name='manufacturer'>%s</entry>\n",
-                                  def->system_manufacturer);
-        }
-        if (def->system_product != NULL) {
-            virBufferAdd(buf, prefix, len);
-            virBufferEscapeString(buf,
-                                  "    <entry name='product'>%s</entry>\n",
-                                  def->system_product);
-        }
-        if (def->system_version != NULL) {
-            virBufferAdd(buf, prefix, len);
-            virBufferEscapeString(buf,
-                                  "    <entry name='version'>%s</entry>\n",
-                                  def->system_version);
-        }
-        if (def->system_serial != NULL) {
-            virBufferAdd(buf, prefix, len);
-            virBufferEscapeString(buf,
-                                  "    <entry name='serial'>%s</entry>\n",
-                                  def->system_serial);
-        }
-        if (def->system_uuid != NULL) {
-            virBufferAdd(buf, prefix, len);
-            virBufferEscapeString(buf,
-                                  "    <entry name='uuid'>%s</entry>\n",
-                                  def->system_uuid);
-        }
-        if (def->system_sku != NULL) {
-            virBufferAdd(buf, prefix, len);
-            virBufferEscapeString(buf,
-                                  "    <entry name='sku'>%s</entry>\n",
-                                  def->system_sku);
-        }
-        if (def->system_family != NULL) {
-            virBufferAdd(buf, prefix, len);
-            virBufferEscapeString(buf,
-                                  "    <entry name='family'>%s</entry>\n",
-                                  def->system_family);
-        }
-        virBufferAsprintf(buf, "%s  </system>\n", prefix);
-    }
-
-    return;
+    virBufferAddLit(buf, "  <system>\n");
+    virBufferEscapeString(buf, "    <entry name='manufacturer'>%s</entry>\n",
+                          def->system_manufacturer);
+    virBufferEscapeString(buf, "    <entry name='product'>%s</entry>\n",
+                          def->system_product);
+    virBufferEscapeString(buf, "    <entry name='version'>%s</entry>\n",
+                          def->system_version);
+    virBufferEscapeString(buf, "    <entry name='serial'>%s</entry>\n",
+                          def->system_serial);
+    virBufferEscapeString(buf, "    <entry name='uuid'>%s</entry>\n",
+                          def->system_uuid);
+    virBufferEscapeString(buf, "    <entry name='sku'>%s</entry>\n",
+                          def->system_sku);
+    virBufferEscapeString(buf, "    <entry name='family'>%s</entry>\n",
+                          def->system_family);
+    virBufferAddLit(buf, "  </system>\n");
 }
 
 static void
-virSysinfoProcessorFormat(virSysinfoDefPtr def, const char *prefix,
-                          virBufferPtr buf)
+virSysinfoProcessorFormat(virBufferPtr buf, virSysinfoDefPtr def)
 {
     int i;
-    int len = strlen(prefix);
     virSysinfoProcessorDefPtr processor;
 
     for (i = 0; i < def->nprocessor; i++) {
         processor = &def->processor[i];
 
-        if ((processor->processor_socket_destination != NULL) ||
-            (processor->processor_type != NULL) ||
-            (processor->processor_family != NULL) ||
-            (processor->processor_manufacturer != NULL) ||
-            (processor->processor_signature != NULL) ||
-            (processor->processor_version != NULL) ||
-            (processor->processor_external_clock != NULL) ||
-            (processor->processor_max_speed != NULL) ||
-            (processor->processor_status != NULL) ||
-            (processor->processor_serial_number != NULL) ||
-            (processor->processor_part_number != NULL)) {
-            virBufferAsprintf(buf, "%s  <processor>\n", prefix);
-            if (processor->processor_socket_destination != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='socket_destination'>%s</entry>\n",
-                                      processor->processor_socket_destination);
-            }
-            if (processor->processor_type != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='type'>%s</entry>\n",
-                                      processor->processor_type);
-            }
-            if (processor->processor_family != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='family'>%s</entry>\n",
-                                      processor->processor_family);
-            }
-            if (processor->processor_manufacturer != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='manufacturer'>%s</entry>\n",
-                                      processor->processor_manufacturer);
-            }
-            if (processor->processor_signature != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='signature'>%s</entry>\n",
-                                      processor->processor_signature);
-            }
-            if (processor->processor_version != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='version'>%s</entry>\n",
-                                      processor->processor_version);
-            }
-            if (processor->processor_external_clock != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='external_clock'>%s</entry>\n",
-                                      processor->processor_external_clock);
-            }
-            if (processor->processor_max_speed != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='max_speed'>%s</entry>\n",
-                                      processor->processor_max_speed);
-            }
-            if (processor->processor_status != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='status'>%s</entry>\n",
-                                      processor->processor_status);
-            }
-            if (processor->processor_serial_number != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='serial_number'>%s</entry>\n",
-                                      processor->processor_serial_number);
-            }
-            if (processor->processor_part_number != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='part_number'>%s</entry>\n",
-                                      processor->processor_part_number);
-            }
-            virBufferAsprintf(buf, "%s  </processor>\n", prefix);
-        }
-    }
+        if (!processor->processor_socket_destination &&
+            !processor->processor_type &&
+            !processor->processor_family &&
+            !processor->processor_manufacturer &&
+            !processor->processor_signature &&
+            !processor->processor_version &&
+            !processor->processor_external_clock &&
+            !processor->processor_max_speed &&
+            !processor->processor_status &&
+            !processor->processor_serial_number &&
+            !processor->processor_part_number)
+            continue;
 
-    return;
+        virBufferAddLit(buf, "  <processor>\n");
+        virBufferAdjustIndent(buf, 4);
+        virBufferEscapeString(buf,
+                              "<entry name='socket_destination'>%s</entry>\n",
+                              processor->processor_socket_destination);
+        virBufferEscapeString(buf, "<entry name='type'>%s</entry>\n",
+                              processor->processor_type);
+        virBufferEscapeString(buf, "<entry name='family'>%s</entry>\n",
+                              processor->processor_family);
+        virBufferEscapeString(buf, "<entry name='manufacturer'>%s</entry>\n",
+                              processor->processor_manufacturer);
+        virBufferEscapeString(buf, "<entry name='signature'>%s</entry>\n",
+                              processor->processor_signature);
+        virBufferEscapeString(buf, "<entry name='version'>%s</entry>\n",
+                              processor->processor_version);
+        virBufferEscapeString(buf, "<entry name='external_clock'>%s</entry>\n",
+                              processor->processor_external_clock);
+        virBufferEscapeString(buf, "<entry name='max_speed'>%s</entry>\n",
+                              processor->processor_max_speed);
+        virBufferEscapeString(buf, "<entry name='status'>%s</entry>\n",
+                              processor->processor_status);
+        virBufferEscapeString(buf, "<entry name='serial_number'>%s</entry>\n",
+                              processor->processor_serial_number);
+        virBufferEscapeString(buf, "<entry name='part_number'>%s</entry>\n",
+                              processor->processor_part_number);
+        virBufferAdjustIndent(buf, -4);
+        virBufferAddLit(buf, "  </processor>\n");
+    }
 }
 
 static void
-virSysinfoMemoryFormat(virSysinfoDefPtr def, const char *prefix,
-                             virBufferPtr buf)
+virSysinfoMemoryFormat(virBufferPtr buf, virSysinfoDefPtr def)
 {
     int i;
-    int len = strlen(prefix);
     virSysinfoMemoryDefPtr memory;
 
     for (i = 0; i < def->nmemory; i++) {
         memory = &def->memory[i];
 
-        if ((memory->memory_size != NULL) ||
-            (memory->memory_form_factor != NULL) ||
-            (memory->memory_locator != NULL) ||
-            (memory->memory_bank_locator != NULL) ||
-            (memory->memory_type != NULL) ||
-            (memory->memory_type_detail != NULL) ||
-            (memory->memory_speed != NULL) ||
-            (memory->memory_manufacturer != NULL) ||
-            (memory->memory_serial_number != NULL) ||
-            (memory->memory_part_number != NULL)) {
-            virBufferAsprintf(buf, "%s  <memory_device>\n", prefix);
-            if (memory->memory_size != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='size'>%s</entry>\n",
-                                      memory->memory_size);
-            }
-            if (memory->memory_form_factor != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='form_factor'>%s</entry>\n",
-                                      memory->memory_form_factor);
-            }
-            if (memory->memory_locator != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='locator'>%s</entry>\n",
-                                      memory->memory_locator);
-            }
-            if (memory->memory_bank_locator != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='bank_locator'>%s</entry>\n",
-                                      memory->memory_bank_locator);
-            }
-            if (memory->memory_type != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='type'>%s</entry>\n",
-                                      memory->memory_type);
-            }
-            if (memory->memory_type_detail != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='type_detail'>%s</entry>\n",
-                                      memory->memory_type_detail);
-            }
-            if (memory->memory_speed != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='speed'>%s</entry>\n",
-                                      memory->memory_speed);
-            }
-            if (memory->memory_manufacturer != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='manufacturer'>%s</entry>\n",
-                                      memory->memory_manufacturer);
-            }
-            if (memory->memory_serial_number != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='serial_number'>%s</entry>\n",
-                                      memory->memory_serial_number);
-            }
-            if (memory->memory_part_number != NULL) {
-                virBufferAdd(buf, prefix, len);
-                virBufferEscapeString(buf,
-                                      "    <entry name='part_number'>%s</entry>\n",
-                                      memory->memory_part_number);
-            }
-            virBufferAsprintf(buf, "%s  </memory_device>\n", prefix);
-        }
-    }
+        if (!memory->memory_size &&
+            !memory->memory_form_factor &&
+            !memory->memory_locator &&
+            !memory->memory_bank_locator &&
+            !memory->memory_type &&
+            !memory->memory_type_detail &&
+            !memory->memory_speed &&
+            !memory->memory_manufacturer &&
+            !memory->memory_serial_number &&
+            !memory->memory_part_number)
+            continue;
 
-    return;
+        virBufferAddLit(buf, "  <memory_device>\n");
+        virBufferEscapeString(buf, "    <entry name='size'>%s</entry>\n",
+                              memory->memory_size);
+        virBufferEscapeString(buf,
+                              "    <entry name='form_factor'>%s</entry>\n",
+                              memory->memory_form_factor);
+        virBufferEscapeString(buf, "    <entry name='locator'>%s</entry>\n",
+                              memory->memory_locator);
+        virBufferEscapeString(buf,
+                              "    <entry name='bank_locator'>%s</entry>\n",
+                              memory->memory_bank_locator);
+        virBufferEscapeString(buf, "    <entry name='type'>%s</entry>\n",
+                              memory->memory_type);
+        virBufferEscapeString(buf,
+                              "    <entry name='type_detail'>%s</entry>\n",
+                              memory->memory_type_detail);
+        virBufferEscapeString(buf, "    <entry name='speed'>%s</entry>\n",
+                              memory->memory_speed);
+        virBufferEscapeString(buf,
+                              "    <entry name='manufacturer'>%s</entry>\n",
+                              memory->memory_manufacturer);
+        virBufferEscapeString(buf,
+                              "    <entry name='serial_number'>%s</entry>\n",
+                              memory->memory_serial_number);
+        virBufferEscapeString(buf,
+                              "    <entry name='part_number'>%s</entry>\n",
+                              memory->memory_part_number);
+        virBufferAddLit(buf, "  </memory_device>\n");
+    }
 }
 
 /**
  * virSysinfoFormat:
+ * @buf: buffer to append output to (may use auto-indentation)
  * @def: structure to convert to xml string
- * @prefix: string to prefix before each line of xml
  *
- * This returns the XML description of the sysinfo, or NULL after
- * generating an error message.
+ * Returns 0 on success, -1 on failure after generating an error message.
  */
-char *
-virSysinfoFormat(virSysinfoDefPtr def, const char *prefix)
+int
+virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
 {
     const char *type = virSysinfoTypeToString(def->type);
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (!type) {
         virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
                              _("unexpected sysinfo type model %d"),
                              def->type);
-        return NULL;
+        virBufferFreeAndReset(buf);
+        return -1;
     }
 
-    virBufferAsprintf(&buf, "%s<sysinfo type='%s'>\n", prefix, type);
+    virBufferAsprintf(buf, "<sysinfo type='%s'>\n", type);
 
-    virSysinfoBIOSFormat(def, prefix, &buf);
-    virSysinfoSystemFormat(def, prefix, &buf);
-    virSysinfoProcessorFormat(def, prefix, &buf);
-    virSysinfoMemoryFormat(def, prefix, &buf);
+    virSysinfoBIOSFormat(buf, def);
+    virSysinfoSystemFormat(buf, def);
+    virSysinfoProcessorFormat(buf, def);
+    virSysinfoMemoryFormat(buf, def);
 
-    virBufferAsprintf(&buf, "%s</sysinfo>\n", prefix);
+    virBufferAddLit(buf, "</sysinfo>\n");
 
-    if (virBufferError(&buf)) {
+    if (virBufferError(buf)) {
         virReportOOMError();
-        return NULL;
+        return -1;
     }
 
-    return virBufferContentAndReset(&buf);
+    return 0;
 }
 
 bool virSysinfoIsEqual(virSysinfoDefPtr src,
