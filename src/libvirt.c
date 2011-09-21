@@ -10300,7 +10300,7 @@ virConnectFindStoragePoolSources(virConnectPtr conn,
                                  unsigned int flags)
 {
     VIR_DEBUG("conn=%p, type=%s, src=%s, flags=%x",
-              conn, type ? type : "", srcSpec ? srcSpec : "", flags);
+              conn, NULLSTR(type), NULLSTR(srcSpec), flags);
 
     virResetLastError();
 
