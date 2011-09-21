@@ -13834,6 +13834,7 @@ vshCmddefGetInfo(const vshCmdDef * cmd, const char *name)
     return NULL;
 }
 
+/* Validate that the options associated with cmd can be parsed.  */
 static int
 vshCmddefOptParse(const vshCmdDef *cmd, uint32_t *opts_need_arg,
                   uint32_t *opts_required)
@@ -13871,13 +13872,16 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint32_t *opts_need_arg,
         } else {
             optional = true;
         }
+
+        if (opt->type == VSH_OT_ARGV && cmd->opts[i + 1].name)
+            return -1; /* argv option must be listed last */
     }
     return 0;
 }
 
 static const vshCmdOptDef *
 vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
-                   uint32_t *opts_seen)
+                   uint32_t *opts_seen, int *opt_index)
 {
     int i;
 
@@ -13885,12 +13889,12 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
         const vshCmdOptDef *opt = &cmd->opts[i];
 
         if (STREQ(opt->name, name)) {
-            if (*opts_seen & (1 << i)) {
+            if ((*opts_seen & (1 << i)) && opt->type != VSH_OT_ARGV) {
                 vshError(ctl, _("option --%s already seen"), name);
                 return NULL;
             }
-            if (opt->type != VSH_OT_ARGV)
-                *opts_seen |= 1 << i;
+            *opts_seen |= 1 << i;
+            *opt_index = i;
             return opt;
         }
     }
@@ -13913,10 +13917,9 @@ vshCmddefGetData(const vshCmdDef *cmd, uint32_t *opts_need_arg,
     /* Grab least-significant set bit */
     i = ffs(*opts_need_arg) - 1;
     opt = &cmd->opts[i];
-    if (opt->type != VSH_OT_ARGV) {
+    if (opt->type != VSH_OT_ARGV)
         *opts_need_arg &= ~(1 << i);
-        *opts_seen |= 1 << i;
-    }
+    *opts_seen |= 1 << i;
     return opt;
 }
 
@@ -14883,12 +14886,14 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
             } else if (tkdata[0] == '-' && tkdata[1] == '-' &&
                        c_isalnum(tkdata[2])) {
                 char *optstr = strchr(tkdata + 2, '=');
+                int opt_index;
+
                 if (optstr) {
                     *optstr = '\0'; /* convert the '=' to '\0' */
                     optstr = vshStrdup(ctl, optstr + 1);
                 }
                 if (!(opt = vshCmddefGetOption(ctl, cmd, tkdata + 2,
-                                               &opts_seen))) {
+                                               &opts_seen, &opt_index))) {
                     VIR_FREE(optstr);
                     goto syntaxError;
                 }
@@ -14910,7 +14915,8 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
                                  VSH_OT_INT ? _("number") : _("string"));
                         goto syntaxError;
                     }
-                    opts_need_arg &= ~opts_seen;
+                    if (opt->type != VSH_OT_ARGV)
+                        opts_need_arg &= ~(1 << opt_index);
                 } else {
                     tkdata = NULL;
                     if (optstr) {

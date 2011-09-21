@@ -118,6 +118,7 @@ for args in \
     'test name desc vda vdb' \
     'test --diskspec vda name --diskspec vdb desc' \
     '--description desc --name name --domain test vda vdb' \
+    '--description desc --diskspec vda --name name --domain test vdb' \
 ; do
   virsh -q -c $test_url snapshot-create-as --print-xml $args \
     >out 2>>err || fail=1
@@ -125,5 +126,13 @@ for args in \
 done
 
 test -s err && fail=1
+
+# Test a required argv
+cat <<\EOF > exp-err || framework_failure
+error: this function is not supported by the connection driver: virDomainQemuMonitorCommand
+EOF
+virsh -q -c $test_url qemu-monitor-command test a >out 2>err && fail=1
+test -s out && fail=1
+compare err exp-err || fail=1
 
 (exit $fail); exit $fail
