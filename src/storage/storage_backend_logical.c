@@ -686,6 +686,8 @@ virStorageBackendLogicalDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     virCheckFlags(0, -1);
 
+    virFileWaitForDevices();
+
     if (virRun(cmdargv, NULL) < 0)
         return -1;
 
