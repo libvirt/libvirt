@@ -445,6 +445,7 @@ qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     priv->gotShutdown = true;
     if (priv->fakeReboot) {
+        priv->fakeReboot = false;
         virDomainObjRef(vm);
         virThread th;
         if (virThreadCreate(&th,
