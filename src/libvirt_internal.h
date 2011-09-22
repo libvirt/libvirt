@@ -39,8 +39,8 @@ int virStateActive(void);
  *
  * The remote driver passes features through to the real driver at the
  * remote end unmodified, except if you query a VIR_DRV_FEATURE_REMOTE*
- * feature.
- *
+ * feature.  Queries for VIR_DRV_FEATURE_PROGRAM* features are answered
+ * directly by the RPC layer and not by the real driver.
  */
 enum {
     /* Driver supports V1-style virDomainMigrate, ie. domainMigratePrepare/
@@ -89,6 +89,12 @@ enum {
      * Support for VIR_TYPED_PARAM_STRING
      */
     VIR_DRV_FEATURE_TYPED_PARAM_STRING = 9,
+
+    /*
+     * Remote party supports keepalive program (i.e., sending keepalive
+     * messages).
+     */
+    VIR_DRV_FEATURE_PROGRAM_KEEPALIVE = 10,
 };
 
 

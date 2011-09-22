@@ -740,6 +740,10 @@ typedef int
     (*virDrvDomainBlockPull)(virDomainPtr dom, const char *path,
                              unsigned long bandwidth, unsigned int flags);
 
+typedef int
+    (*virDrvSetKeepAlive)(virConnectPtr conn,
+                          int interval,
+                          unsigned int count);
 
 /**
  * _virDriver:
@@ -899,6 +903,7 @@ struct _virDriver {
     virDrvDomainGetBlockJobInfo domainGetBlockJobInfo;
     virDrvDomainBlockJobSetSpeed domainBlockJobSetSpeed;
     virDrvDomainBlockPull domainBlockPull;
+    virDrvSetKeepAlive setKeepAlive;
 };
 
 typedef int

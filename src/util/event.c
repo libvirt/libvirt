@@ -193,9 +193,9 @@ void virEventRegisterImpl(virEventAddHandleFunc addHandle,
  * not have a need to integrate with an external event
  * loop impl.
  *
- * Once registered, the application can invoke
- * virEventRunDefaultImpl in a loop to process
- * events
+ * Once registered, the application has to invoke virEventRunDefaultImpl in
+ * a loop to process events.  Failure to do so may result in connections being
+ * closed unexpectedly as a result of keepalive timeout.
  *
  * Returns 0 on success, -1 on failure.
  */

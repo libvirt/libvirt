@@ -498,4 +498,9 @@ LIBVIRT_0.9.7 {
         virDomainSnapshotNumChildren;
 } LIBVIRT_0.9.5;
 
+LIBVIRT_0.9.8 {
+    global:
+        virConnectSetKeepAlive;
+} LIBVIRT_0.9.7;
+
 # .... define new API here using predicted next version number ....

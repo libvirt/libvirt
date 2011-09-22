@@ -3387,6 +3387,10 @@ typedef struct _virTypedParameter virMemoryParameter;
  */
 typedef virMemoryParameter *virMemoryParameterPtr;
 
+int virConnectSetKeepAlive(virConnectPtr conn,
+                           int interval,
+                           unsigned int count);
+
 #ifdef __cplusplus
 }
 #endif

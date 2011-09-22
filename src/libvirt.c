@@ -17188,3 +17188,61 @@ error:
     virDispatchError(dom->conn);
     return -1;
 }
+
+
+/**
+ * virConnectSetKeepAlive:
+ * @conn: pointer to a hypervisor connection
+ * @interval: number of seconds of inactivity before a keepalive message is sent
+ * @count: number of messages that can be sent in a row
+ *
+ * Start sending keepalive messages after interval second of inactivity and
+ * consider the connection to be broken when no response is received after
+ * count keepalive messages sent in a row.  In other words, sending count + 1
+ * keepalive message results in closing the connection.  When interval is <= 0,
+ * no keepalive messages will be sent.  When count is 0, the connection will be
+ * automatically closed after interval seconds of inactivity without sending
+ * any keepalive messages.
+ *
+ * Note: client has to implement and run event loop to be able to use keepalive
+ * messages.  Failure to do so may result in connections being closed
+ * unexpectedly.
+ *
+ * Returns -1 on error, 0 on success, 1 when remote party doesn't support
+ * keepalive messages.
+ */
+int virConnectSetKeepAlive(virConnectPtr conn,
+                           int interval,
+                           unsigned int count)
+{
+    int ret = -1;
+
+    VIR_DEBUG("conn=%p, interval=%d, count=%u", conn, interval, count);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (interval <= 0) {
+        virLibConnError(VIR_ERR_INVALID_ARG,
+                        _("negative or zero interval make no sense"));
+        goto error;
+    }
+
+    if (conn->driver->setKeepAlive) {
+        ret = conn->driver->setKeepAlive(conn, interval, count);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
