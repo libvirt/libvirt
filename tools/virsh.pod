@@ -959,6 +959,7 @@ Allows you to display or set the domain memory parameters. Without
 flags, the current settings are displayed; with a flag, the
 appropriate limit is adjusted if supported by the hypervisor.  LXC and
 QEMU/KVM support I<--hard-limit>, I<--soft-limit>, and I<--swap-hard-limit>.
+I<--min-guarantee> is supported only by ESX hypervisor.
 
 If I<--live> is specified, affect a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.
@@ -996,6 +997,8 @@ The guaranteed minimum memory allocation for the guest.  The units for this
 value are kilobytes (i.e. blocks of 1024 bytes).
 
 =back
+
+Specifying -1 as a value for these limits is interpreted as unlimited.
 
 =item B<blkiotune> I<domain-id> [I<--weight> B<weight>] [[I<--config>]
 [I<--live>] | [I<--current>]]
