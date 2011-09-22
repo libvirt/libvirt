@@ -1387,7 +1387,8 @@ libvirt_net_rpc_la_SOURCES = \
 	rpc/virnetprotocol.h rpc/virnetprotocol.c \
 	rpc/virnetsocket.h rpc/virnetsocket.c \
 	rpc/virnettlscontext.h rpc/virnettlscontext.c \
-	rpc/virkeepaliveprotocol.h rpc/virkeepaliveprotocol.c
+	rpc/virkeepaliveprotocol.h rpc/virkeepaliveprotocol.c \
+	rpc/virkeepalive.h rpc/virkeepalive.c
 if HAVE_SASL
 libvirt_net_rpc_la_SOURCES += \
 	rpc/virnetsaslcontext.h rpc/virnetsaslcontext.c
