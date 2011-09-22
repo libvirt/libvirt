@@ -69,6 +69,7 @@
 /src/util/virkeymaps.h
 /tests/*.log
 /tests/cputest
+/tests/domainsnapshotxml2xmltest
 /tests/hashtest
 /tests/jsontest
 /tests/networkxml2argvtest

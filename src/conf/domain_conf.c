@@ -12020,7 +12020,7 @@ cleanup:
     return ret;
 }
 
-char *virDomainSnapshotDefFormat(char *domain_uuid,
+char *virDomainSnapshotDefFormat(const char *domain_uuid,
                                  virDomainSnapshotDefPtr def,
                                  unsigned int flags,
                                  int internal)
@@ -12061,12 +12061,12 @@ char *virDomainSnapshotDefFormat(char *domain_uuid,
                                   virDomainDiskSnapshotTypeToString(disk->snapshot));
             if (disk->file || disk->driverType) {
                 virBufferAddLit(&buf, ">\n");
-                if (disk->file)
-                    virBufferEscapeString(&buf, "      <source file='%s'/>\n",
-                                          disk->file);
                 if (disk->driverType)
                     virBufferEscapeString(&buf, "      <driver type='%s'/>\n",
                                           disk->driverType);
+                if (disk->file)
+                    virBufferEscapeString(&buf, "      <source file='%s'/>\n",
+                                          disk->file);
                 virBufferAddLit(&buf, "    </disk>\n");
             } else {
                 virBufferAddLit(&buf, "/>\n");
@@ -12081,7 +12081,7 @@ char *virDomainSnapshotDefFormat(char *domain_uuid,
             return NULL;
         }
         virBufferAdjustIndent(&buf, -2);
-    } else {
+    } else if (domain_uuid) {
         virBufferAddLit(&buf, "  <domain>\n");
         virBufferAsprintf(&buf, "    <uuid>%s</uuid>\n", domain_uuid);
         virBufferAddLit(&buf, "  </domain>\n");

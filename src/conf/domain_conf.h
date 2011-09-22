@@ -1498,7 +1498,7 @@ virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
                                                         unsigned int expectedVirtTypes,
                                                         unsigned int flags);
 void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def);
-char *virDomainSnapshotDefFormat(char *domain_uuid,
+char *virDomainSnapshotDefFormat(const char *domain_uuid,
                                  virDomainSnapshotDefPtr def,
                                  unsigned int flags,
                                  int internal);
