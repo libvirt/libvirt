@@ -9491,15 +9491,18 @@ virDomainActualNetDefFormat(virBufferPtr buf,
             return ret;
         }
         virBufferAsprintf(buf, " mode='%s'/>\n", mode);
-        virVirtualPortProfileFormat(buf, def->data.direct.virtPortProfile,
-                                    "        ");
+        virBufferAdjustIndent(buf, 8);
+        virVirtualPortProfileFormat(buf, def->data.direct.virtPortProfile);
+        virBufferAdjustIndent(buf, -8);
         break;
     default:
         break;
     }
 
-    if (virBandwidthDefFormat(buf, def->bandwidth, "      ") < 0)
+    virBufferAdjustIndent(buf, 8);
+    if (virBandwidthDefFormat(buf, def->bandwidth) < 0)
         goto error;
+    virBufferAdjustIndent(buf, -8);
 
     virBufferAddLit(buf, "      </actual>\n");
 
@@ -9538,8 +9541,9 @@ virDomainNetDefFormat(virBufferPtr buf,
                                  def->data.network.portgroup);
         }
         virBufferAddLit(buf, "/>\n");
-        virVirtualPortProfileFormat(buf, def->data.network.virtPortProfile,
-                                    "      ");
+        virBufferAdjustIndent(buf, 6);
+        virVirtualPortProfileFormat(buf, def->data.network.virtPortProfile);
+        virBufferAdjustIndent(buf, -6);
         if ((flags & VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET) &&
             (virDomainActualNetDefFormat(buf, def->data.network.actual) < 0))
             return -1;
@@ -9590,8 +9594,9 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " mode='%s'",
                    virMacvtapModeTypeToString(def->data.direct.mode));
         virBufferAddLit(buf, "/>\n");
-        virVirtualPortProfileFormat(buf, def->data.direct.virtPortProfile,
-                                    "      ");
+        virBufferAdjustIndent(buf, 6);
+        virVirtualPortProfileFormat(buf, def->data.direct.virtPortProfile);
+        virBufferAdjustIndent(buf, -6);
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
@@ -9656,8 +9661,10 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, "      <link state='%s'/>\n",
                           virDomainNetInterfaceLinkStateTypeToString(def->linkstate));
 
-    if (virBandwidthDefFormat(buf, def->bandwidth, "      ") < 0)
+    virBufferAdjustIndent(buf, 6);
+    if (virBandwidthDefFormat(buf, def->bandwidth) < 0)
         return -1;
+    virBufferAdjustIndent(buf, -6);
 
     if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;

@@ -1,7 +1,7 @@
 /*
  * network.h: network helper APIs for libvirt
  *
- * Copyright (C) 2009-2009 Red Hat, Inc.
+ * Copyright (C) 2009-2011 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -147,16 +147,15 @@ virVirtualPortProfileParseXML(xmlNodePtr node,
                               virVirtualPortProfileParamsPtr *virtPort);
 void
 virVirtualPortProfileFormat(virBufferPtr buf,
-                            virVirtualPortProfileParamsPtr virtPort,
-                            const char *indent);
+                            virVirtualPortProfileParamsPtr virtPort);
 
-bool virVirtualPortProfileEqual(virVirtualPortProfileParamsPtr a, virVirtualPortProfileParamsPtr b);
+bool virVirtualPortProfileEqual(virVirtualPortProfileParamsPtr a,
+                                virVirtualPortProfileParamsPtr b);
 
 virBandwidthPtr virBandwidthDefParseNode(xmlNodePtr node);
 void virBandwidthDefFree(virBandwidthPtr def);
 int virBandwidthDefFormat(virBufferPtr buf,
-                          virBandwidthPtr def,
-                          const char *indent);
+                          virBandwidthPtr def);
 
 int virBandwidthEnable(virBandwidthPtr bandwidth, const char *iface);
 int virBandwidthDisable(const char *iface, bool may_fail);

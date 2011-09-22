@@ -1267,8 +1267,10 @@ virPortGroupDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, " default='yes'");
     }
     virBufferAddLit(buf, ">\n");
-    virVirtualPortProfileFormat(buf, def->virtPortProfile, "    ");
-    virBandwidthDefFormat(buf, def->bandwidth, "    ");
+    virBufferAdjustIndent(buf, 4);
+    virVirtualPortProfileFormat(buf, def->virtPortProfile);
+    virBandwidthDefFormat(buf, def->bandwidth);
+    virBufferAdjustIndent(buf, -4);
     virBufferAddLit(buf, "  </portgroup>\n");
 }
 
@@ -1341,15 +1343,19 @@ char *virNetworkDefFormat(const virNetworkDefPtr def)
     if (virNetworkDNSDefFormat(&buf, def->dns) < 0)
         goto error;
 
-    if (virBandwidthDefFormat(&buf, def->bandwidth, "  ") < 0)
+    virBufferAdjustIndent(&buf, 2);
+    if (virBandwidthDefFormat(&buf, def->bandwidth) < 0)
         goto error;
+    virBufferAdjustIndent(&buf, -2);
 
     for (ii = 0; ii < def->nips; ii++) {
         if (virNetworkIpDefFormat(&buf, &def->ips[ii]) < 0)
             goto error;
     }
 
-    virVirtualPortProfileFormat(&buf, def->virtPortProfile, "  ");
+    virBufferAdjustIndent(&buf, 2);
+    virVirtualPortProfileFormat(&buf, def->virtPortProfile);
+    virBufferAdjustIndent(&buf, -2);
 
     for (ii = 0; ii < def->nPortGroups; ii++)
         virPortGroupDefFormat(&buf, &def->portGroups[ii]);

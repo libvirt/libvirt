@@ -881,16 +881,14 @@ virVirtualPortProfileEqual(virVirtualPortProfileParamsPtr a, virVirtualPortProfi
 
 void
 virVirtualPortProfileFormat(virBufferPtr buf,
-                            virVirtualPortProfileParamsPtr virtPort,
-                            const char *indent)
+                            virVirtualPortProfileParamsPtr virtPort)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (!virtPort || virtPort->virtPortType == VIR_VIRTUALPORT_NONE)
         return;
 
-    virBufferAsprintf(buf, "%s<virtualport type='%s'>\n",
-                      indent,
+    virBufferAsprintf(buf, "<virtualport type='%s'>\n",
                       virVirtualPortTypeToString(virtPort->virtPortType));
 
     switch (virtPort->virtPortType) {
@@ -902,9 +900,8 @@ virVirtualPortProfileFormat(virBufferPtr buf,
         virUUIDFormat(virtPort->u.virtPort8021Qbg.instanceID,
                       uuidstr);
         virBufferAsprintf(buf,
-                          "%s  <parameters managerid='%d' typeid='%d' "
+                          "  <parameters managerid='%d' typeid='%d' "
                           "typeidversion='%d' instanceid='%s'/>\n",
-                          indent,
                           virtPort->u.virtPort8021Qbg.managerID,
                           virtPort->u.virtPort8021Qbg.typeID,
                           virtPort->u.virtPort8021Qbg.typeIDVersion,
@@ -913,13 +910,12 @@ virVirtualPortProfileFormat(virBufferPtr buf,
 
     case VIR_VIRTUALPORT_8021QBH:
         virBufferAsprintf(buf,
-                          "%s  <parameters profileid='%s'/>\n",
-                          indent,
+                          "  <parameters profileid='%s'/>\n",
                           virtPort->u.virtPort8021Qbh.profileID);
         break;
     }
 
-    virBufferAsprintf(buf, "%s</virtualport>\n", indent);
+    virBufferAddLit(buf, "</virtualport>\n");
 }
 
 static int
@@ -1074,11 +1070,14 @@ virBandwidthChildDefFormat(virBufferPtr buf,
                            virRatePtr def,
                            const char *elem_name)
 {
-    if (!buf || !def || !elem_name)
+    if (!buf || !elem_name)
         return -1;
+    if (!def)
+        return 0;
 
     if (def->average) {
-        virBufferAsprintf(buf, "<%s average='%llu'", elem_name, def->average);
+        virBufferAsprintf(buf, "  <%s average='%llu'", elem_name,
+                          def->average);
 
         if (def->peak)
             virBufferAsprintf(buf, " peak='%llu'", def->peak);
@@ -1095,17 +1094,15 @@ virBandwidthChildDefFormat(virBufferPtr buf,
  * virBandwidthDefFormat:
  * @buf: Buffer to print to
  * @def: Data source
- * @indent: prepend all lines printed with this
  *
  * Formats bandwidth and prepend each line with @indent.
- * Passing NULL to @indent is equivalent passing "".
+ * @buf may use auto-indentation.
  *
  * Returns 0 on success, else -1.
  */
 int
 virBandwidthDefFormat(virBufferPtr buf,
-                      virBandwidthPtr def,
-                      const char *indent)
+                      virBandwidthPtr def)
 {
     int ret = -1;
 
@@ -1117,23 +1114,11 @@ virBandwidthDefFormat(virBufferPtr buf,
         goto cleanup;
     }
 
-    if (!indent)
-        indent = "";
-
-    virBufferAsprintf(buf, "%s<bandwidth>\n", indent);
-    if (def->in) {
-        virBufferAsprintf(buf, "%s  ", indent);
-        if (virBandwidthChildDefFormat(buf, def->in, "inbound") < 0)
-            goto cleanup;
-    }
-
-    if (def->out) {
-        virBufferAsprintf(buf, "%s  ", indent);
-        if (virBandwidthChildDefFormat(buf, def->out, "outbound") < 0)
-            goto cleanup;
-    }
-
-    virBufferAsprintf(buf, "%s</bandwidth>\n", indent);
+    virBufferAddLit(buf, "<bandwidth>\n");
+    if (virBandwidthChildDefFormat(buf, def->in, "inbound") < 0 ||
+        virBandwidthChildDefFormat(buf, def->out, "outbound") < 0)
+        goto cleanup;
+    virBufferAddLit(buf, "</bandwidth>\n");
 
     ret = 0;
 
