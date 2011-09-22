@@ -1127,7 +1127,7 @@ endjob:
     if (qemuMigrationJobFinish(driver, vm) == 0) {
         vm = NULL;
     } else if (!vm->persistent) {
-        virDomainRemoveInactive(&driver->domains, vm);
+        qemuDomainRemoveInactive(driver, vm);
         vm = NULL;
     }
     goto cleanup;
@@ -2272,7 +2272,7 @@ endjob:
                 (ret == 0 && (flags & VIR_MIGRATE_UNDEFINE_SOURCE)))) {
         if (flags & VIR_MIGRATE_UNDEFINE_SOURCE)
             virDomainDeleteConfig(driver->configDir, driver->autostartDir, vm);
-        virDomainRemoveInactive(&driver->domains, vm);
+        qemuDomainRemoveInactive(driver, vm);
         vm = NULL;
     }
 
@@ -2351,7 +2351,7 @@ endjob:
     if (refs == 0) {
         vm = NULL;
     } else if (!virDomainObjIsActive(vm) && !vm->persistent) {
-        virDomainRemoveInactive(&driver->domains, vm);
+        qemuDomainRemoveInactive(driver, vm);
         vm = NULL;
     }
 
@@ -2615,7 +2615,7 @@ endjob:
     if (qemuMigrationJobFinish(driver, vm) == 0) {
         vm = NULL;
     } else if (!vm->persistent && !virDomainObjIsActive(vm)) {
-        virDomainRemoveInactive(&driver->domains, vm);
+        qemuDomainRemoveInactive(driver, vm);
         vm = NULL;
     }
 

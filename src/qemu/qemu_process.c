@@ -150,7 +150,7 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virDomainAuditStop(vm, auditReason);
 
     if (!vm->persistent)
-        virDomainRemoveInactive(&driver->domains, vm);
+        qemuDomainRemoveInactive(driver, vm);
     else
         virDomainObjUnlock(vm);
 
@@ -2671,11 +2671,12 @@ error:
 
         if (virDomainObjUnref(obj) > 0) {
             /* We can't get the monitor back, so must kill the VM
-            * to remove danger of it ending up running twice if
-            * user tries to start it again later */
+             * to remove danger of it ending up running twice if
+             * user tries to start it again later
+             */
             qemuProcessStop(driver, obj, 0, VIR_DOMAIN_SHUTOFF_FAILED);
             if (!obj->persistent)
-                virDomainRemoveInactive(&driver->domains, obj);
+                qemuDomainRemoveInactive(driver, obj);
             else
                 virDomainObjUnlock(obj);
         }
@@ -2753,7 +2754,7 @@ qemuProcessReconnectHelper(void *payload,
             * Kill qemu */
             qemuProcessStop(src->driver, obj, 0, VIR_DOMAIN_SHUTOFF_FAILED);
             if (!obj->persistent)
-                virDomainRemoveInactive(&src->driver->domains, obj);
+                qemuDomainRemoveInactive(src->driver, obj);
             else
                 virDomainObjUnlock(obj);
         }
@@ -3700,7 +3701,7 @@ static void qemuProcessAutoDestroyDom(void *payload,
     if (qemuDomainObjEndJob(data->driver, dom) == 0)
         dom = NULL;
     if (dom && !dom->persistent)
-        virDomainRemoveInactive(&data->driver->domains, dom);
+        qemuDomainRemoveInactive(data->driver, dom);
 
 cleanup:
     if (dom)

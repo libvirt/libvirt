@@ -1318,8 +1318,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
                          -1, NULL, NULL, VIR_VM_OP_CREATE) < 0) {
         virDomainAuditStart(vm, "booted", false);
         if (qemuDomainObjEndJob(driver, vm) > 0)
-            virDomainRemoveInactive(&driver->domains,
-                                    vm);
+            qemuDomainRemoveInactive(driver, vm);
         vm = NULL;
         goto cleanup;
     }
@@ -1658,8 +1657,7 @@ qemuDomainDestroyFlags(virDomainPtr dom,
 
     if (!vm->persistent) {
         if (qemuDomainObjEndJob(driver, vm) > 0)
-            virDomainRemoveInactive(&driver->domains,
-                                    vm);
+            qemuDomainRemoveInactive(driver, vm);
         vm = NULL;
     }
     ret = 0;
@@ -2529,8 +2527,7 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
                                      VIR_DOMAIN_EVENT_STOPPED_SAVED);
     if (!vm->persistent) {
         if (qemuDomainObjEndAsyncJob(driver, vm) > 0)
-            virDomainRemoveInactive(&driver->domains,
-                                    vm);
+            qemuDomainRemoveInactive(driver, vm);
         vm = NULL;
     }
 
@@ -2947,8 +2944,7 @@ endjob:
     if (qemuDomainObjEndAsyncJob(driver, vm) == 0)
         vm = NULL;
     else if ((ret == 0) && (flags & VIR_DUMP_CRASH) && !vm->persistent) {
-        virDomainRemoveInactive(&driver->domains,
-                                vm);
+        qemuDomainRemoveInactive(driver, vm);
         vm = NULL;
     }
 
@@ -4151,7 +4147,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     if (qemuDomainObjEndJob(driver, vm) == 0)
         vm = NULL;
     else if (ret < 0 && !vm->persistent) {
-        virDomainRemoveInactive(&driver->domains, vm);
+        qemuDomainRemoveInactive(driver, vm);
         vm = NULL;
     }
 
@@ -4830,8 +4826,7 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
     if (virDomainSaveConfig(driver->configDir,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
         VIR_INFO("Defining domain '%s'", vm->def->name);
-        virDomainRemoveInactive(&driver->domains,
-                                vm);
+        qemuDomainRemoveInactive(driver, vm);
         vm = NULL;
         goto cleanup;
     }
@@ -4936,8 +4931,7 @@ qemuDomainUndefineFlags(virDomainPtr dom,
     if (virDomainObjIsActive(vm)) {
         vm->persistent = 0;
     } else {
-        virDomainRemoveInactive(&driver->domains,
-                                vm);
+        qemuDomainRemoveInactive(driver, vm);
         vm = NULL;
     }
 
@@ -8243,7 +8237,7 @@ qemuDomainMigrateConfirm3(virDomainPtr domain,
                (!vm->persistent || (flags & VIR_MIGRATE_UNDEFINE_SOURCE))) {
         if (flags & VIR_MIGRATE_UNDEFINE_SOURCE)
             virDomainDeleteConfig(driver->configDir, driver->autostartDir, vm);
-        virDomainRemoveInactive(&driver->domains, vm);
+        qemuDomainRemoveInactive(driver, vm);
         vm = NULL;
     }
 
@@ -9774,7 +9768,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         if (qemuDomainSnapshotRevertInactive(driver, vm, snap) < 0) {
             if (!vm->persistent) {
                 if (qemuDomainObjEndJob(driver, vm) > 0)
-                    virDomainRemoveInactive(&driver->domains, vm);
+                    qemuDomainRemoveInactive(driver, vm);
                 vm = NULL;
                 goto cleanup;
             }
@@ -9797,7 +9791,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             if (rc < 0) {
                 if (!vm->persistent) {
                     if (qemuDomainObjEndJob(driver, vm) > 0)
-                        virDomainRemoveInactive(&driver->domains, vm);
+                        qemuDomainRemoveInactive(driver, vm);
                     vm = NULL;
                     goto cleanup;
                 }
