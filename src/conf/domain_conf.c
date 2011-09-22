@@ -9328,9 +9328,12 @@ virDomainDiskDefFormat(virBufferPtr buf,
     if (def->serial)
         virBufferEscapeString(buf, "      <serial>%s</serial>\n",
                               def->serial);
-    if (def->encryption != NULL &&
-        virStorageEncryptionFormat(buf, def->encryption, 6) < 0)
-        return -1;
+    if (def->encryption) {
+        virBufferAdjustIndent(buf, 6);
+        if (virStorageEncryptionFormat(buf, def->encryption) < 0)
+            return -1;
+        virBufferAdjustIndent(buf, -6);
+    }
 
     if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;

@@ -1211,9 +1211,12 @@ virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
 
     virBufferAddLit(buf,"    </permissions>\n");
 
-    if (def->encryption != NULL &&
-        virStorageEncryptionFormat(buf, def->encryption, 4) < 0)
-        return -1;
+    if (def->encryption) {
+        virBufferAdjustIndent(buf, 4);
+        if (virStorageEncryptionFormat(buf, def->encryption) < 0)
+            return -1;
+        virBufferAdjustIndent(buf, -4);
+    }
 
     virBufferAsprintf(buf, "  </%s>\n", type);
 

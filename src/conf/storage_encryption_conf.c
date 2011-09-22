@@ -1,7 +1,7 @@
 /*
  * storage_encryption_conf.c: volume encryption information
  *
- * Copyright (C) 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2009-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -211,8 +211,7 @@ virStorageEncryptionParseNode(xmlDocPtr xml, xmlNodePtr root)
 
 static int
 virStorageEncryptionSecretFormat(virBufferPtr buf,
-                                 virStorageEncryptionSecretPtr secret,
-                                 int indent)
+                                 virStorageEncryptionSecretPtr secret)
 {
     const char *type;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -225,15 +224,14 @@ virStorageEncryptionSecretFormat(virBufferPtr buf,
     }
 
     virUUIDFormat(secret->uuid, uuidstr);
-    virBufferAsprintf(buf, "%*s<secret type='%s' uuid='%s'/>\n",
-                      indent, "", type, uuidstr);
+    virBufferAsprintf(buf, "  <secret type='%s' uuid='%s'/>\n",
+                      type, uuidstr);
     return 0;
 }
 
 int
 virStorageEncryptionFormat(virBufferPtr buf,
-                           virStorageEncryptionPtr enc,
-                           int indent)
+                           virStorageEncryptionPtr enc)
 {
     const char *format;
     size_t i;
@@ -244,16 +242,14 @@ virStorageEncryptionFormat(virBufferPtr buf,
                               "%s", _("unexpected encryption format"));
         return -1;
     }
-    virBufferAsprintf(buf, "%*s<encryption format='%s'>\n",
-                      indent, "", format);
+    virBufferAsprintf(buf, "<encryption format='%s'>\n", format);
 
     for (i = 0; i < enc->nsecrets; i++) {
-        if (virStorageEncryptionSecretFormat(buf, enc->secrets[i],
-                                             indent + 2) < 0)
+        if (virStorageEncryptionSecretFormat(buf, enc->secrets[i]) < 0)
             return -1;
     }
 
-    virBufferAsprintf(buf, "%*s</encryption>\n", indent, "");
+    virBufferAddLit(buf, "</encryption>\n");
 
     return 0;
 }
