@@ -9554,7 +9554,6 @@ virDomainNetDefFormat(virBufferPtr buf,
                       unsigned int flags)
 {
     const char *type = virDomainNetTypeToString(def->type);
-    char *attrs;
 
     if (!type) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -9675,15 +9674,11 @@ virDomainNetDefFormat(virBufferPtr buf,
         }
     }
     if (def->filter) {
-        virBufferEscapeString(buf, "      <filterref filter='%s'",
-                              def->filter);
-        attrs = virNWFilterFormatParamAttributes(def->filterparams,
-                                                 "        ");
-        if (!attrs || strlen(attrs) <= 1)
-            virBufferAddLit(buf, "/>\n");
-        else
-            virBufferAsprintf(buf, ">\n%s      </filterref>\n", attrs);
-        VIR_FREE(attrs);
+        virBufferAdjustIndent(buf, 6);
+        if (virNWFilterFormatParamAttributes(buf, def->filterparams,
+                                             def->filter) < 0)
+            return -1;
+        virBufferAdjustIndent(buf, -6);
     }
     if (def->bootIndex)
         virBufferAsprintf(buf, "      <boot order='%d'/>\n", def->bootIndex);

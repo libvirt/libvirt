@@ -2853,19 +2853,15 @@ no_memory:
 static char *
 virNWFilterIncludeDefFormat(virNWFilterIncludeDefPtr inc)
 {
-    char *attrs;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf,"  <filterref filter='%s'",
-                      inc->filterref);
-
-    attrs = virNWFilterFormatParamAttributes(inc->params, "    ");
-
-    if (!attrs || strlen(attrs) <= 1)
-        virBufferAddLit(&buf, "/>\n");
-    else
-        virBufferAsprintf(&buf, ">\n%s  </filterref>\n", attrs);
-
+    virBufferAdjustIndent(&buf, 2);
+    if (virNWFilterFormatParamAttributes(&buf, inc->params,
+                                         inc->filterref) < 0) {
+        virBufferFreeAndReset(&buf);
+        return NULL;
+    }
+    virBufferAdjustIndent(&buf, -2);
     if (virBufferError(&buf)) {
         virReportOOMError();
         virBufferFreeAndReset(&buf);

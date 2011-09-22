@@ -1,6 +1,7 @@
 /*
  * nwfilter_params.h: parsing and data maintenance of filter parameters
  *
+ * Copyright (C) 2011 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -23,6 +24,7 @@
 # define NWFILTER_PARAMS_H
 
 # include "hash.h"
+# include "buf.h"
 
 typedef struct _virNWFilterHashTable virNWFilterHashTable;
 typedef virNWFilterHashTable *virNWFilterHashTablePtr;
@@ -35,8 +37,9 @@ struct _virNWFilterHashTable {
 
 
 virNWFilterHashTablePtr virNWFilterParseParamAttributes(xmlNodePtr cur);
-char * virNWFilterFormatParamAttributes(virNWFilterHashTablePtr table,
-                                        const char *indent);
+int virNWFilterFormatParamAttributes(virBufferPtr buf,
+                                     virNWFilterHashTablePtr table,
+                                     const char *filterref);
 
 virNWFilterHashTablePtr virNWFilterHashTableCreate(int n);
 void virNWFilterHashTableFree(virNWFilterHashTablePtr table);

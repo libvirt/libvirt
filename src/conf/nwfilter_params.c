@@ -258,41 +258,36 @@ skip_entry:
 }
 
 
-struct formatterParam {
-    virBufferPtr buf;
-    const char *indent;
-};
-
-
 static void
 _formatParameterAttrs(void *payload, const void *name, void *data)
 {
-    struct formatterParam *fp = (struct formatterParam *)data;
+    virBufferPtr buf = data;
 
-    virBufferAsprintf(fp->buf, "%s<parameter name='%s' value='%s'/>\n",
-                      fp->indent,
+    virBufferAsprintf(buf, "  <parameter name='%s' value='%s'/>\n",
                       (const char *)name,
                       (char *)payload);
 }
 
 
-char *
-virNWFilterFormatParamAttributes(virNWFilterHashTablePtr table,
-                                 const char *indent)
+int
+virNWFilterFormatParamAttributes(virBufferPtr buf,
+                                 virNWFilterHashTablePtr table,
+                                 const char *filterref)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    struct formatterParam fp = {
-        .buf = &buf,
-        .indent = indent,
-    };
+    int count = virHashSize(table->hashTable);
 
-    virHashForEach(table->hashTable, _formatParameterAttrs, &fp);
-
-    if (virBufferError(&buf)) {
-        virReportOOMError();
-        virBufferFreeAndReset(&buf);
-        return NULL;
+    if (count < 0) {
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("missing filter parameter table"));
+        return -1;
     }
-
-    return virBufferContentAndReset(&buf);
+    virBufferAsprintf(buf, "<filterref filter='%s'", filterref);
+    if (count) {
+        virBufferAddLit(buf, ">\n");
+        virHashForEach(table->hashTable, _formatParameterAttrs, buf);
+        virBufferAddLit(buf, "</filterref>\n");
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
+    return 0;
 }
