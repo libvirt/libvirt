@@ -419,24 +419,27 @@ SELinuxSetFilecon(const char *path, char *tcon)
          * The user hopefully set one of the necessary SELinux
          * virt_use_{nfs,usb,pci}  boolean tunables to allow it...
          */
-        if (setfilecon_errno != EOPNOTSUPP) {
-            const char *errmsg;
-            if ((virStorageFileIsSharedFSType(path,
-                                             VIR_STORAGE_FILE_SHFS_NFS) == 1) &&
-                security_get_boolean_active("virt_use_nfs") != 1) {
-                errmsg = _("unable to set security context '%s' on '%s'. "
-                           "Consider setting virt_use_nfs");
-            } else {
-                errmsg = _("unable to set security context '%s' on '%s'");
-            }
+        if (setfilecon_errno != EOPNOTSUPP && setfilecon_errno != ENOTSUP) {
             virReportSystemError(setfilecon_errno,
-                                 errmsg,
+                                 _("unable to set security context '%s' on '%s'"),
                                  tcon, path);
             if (security_getenforce() == 1)
                 return -1;
         } else {
-            VIR_INFO("Setting security context '%s' on '%s' not supported",
-                     tcon, path);
+            const char *msg;
+            if ((virStorageFileIsSharedFSType(path,
+                                              VIR_STORAGE_FILE_SHFS_NFS) == 1) &&
+                security_get_boolean_active("virt_use_nfs") != 1) {
+                msg = _("Setting security context '%s' on '%s' not supported. "
+                        "Consider setting virt_use_nfs");
+               if (security_getenforce() == 1)
+                   VIR_WARN(msg, tcon, path);
+               else
+                   VIR_INFO(msg, tcon, path);
+            } else {
+                VIR_INFO("Setting security context '%s' on '%s' not supported",
+                         tcon, path);
+            }
         }
     }
     return 0;
