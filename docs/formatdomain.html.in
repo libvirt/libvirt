@@ -996,10 +996,15 @@
           <li>
             The optional <code>cache</code> attribute controls the
             cache mechanism, possible values are "default", "none",
-            "writethrough", "writeback", and "directsync". "directsync"
-            is like "writethrough", but it bypasses the host page
-            cache.
-            <span class="since">Since 0.6.0</span>
+            "writethrough", "writeback", "directsync" (like
+            "writethrough", but it bypasses the host page cache) and
+            "unsafe" (host may cache all disk io, and sync requests from
+            guest are ignored).
+            <span class="since">
+              Since 0.6.0,
+              "directsync" since 0.9.5,
+              "unsafe" since 0.9.7
+            </span>
           </li>
           <li>
             The optional <code>error_policy</code> attribute controls

@@ -112,6 +112,8 @@ enum qemuCapsFlags {
     QEMU_CAPS_USB_HUB           = 73, /* -device usb-hub */
     QEMU_CAPS_NO_SHUTDOWN       = 74, /* usable -no-shutdown */
 
+    QEMU_CAPS_DRIVE_CACHE_UNSAFE = 75, /* Is cache=unsafe supported? */
+
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
 

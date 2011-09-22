@@ -1195,8 +1195,8 @@ floppy device; consider using B<update-device> for this usage instead.
 I<mode> can specify the two specific mode I<readonly> or I<shareable>.
 I<persistent> indicates the changes will affect the next boot of the domain.
 I<sourcetype> can indicate the type of source (block|file)
-I<cache> can be one of "default", "none", "writethrough", "writeback", or
-"directsync".
+I<cache> can be one of "default", "none", "writethrough", "writeback",
+"directsync" or "unsafe".
 I<serial> is the serial of disk device. I<shareable> indicates the disk device
 is shareable between domains.
 I<address> is the address of disk device in the form of pci:domain.bus.slot.function,

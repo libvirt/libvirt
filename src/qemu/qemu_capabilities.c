@@ -137,6 +137,8 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "usb-redir",
               "usb-hub",
               "no-shutdown",
+
+              "cache-unsafe", /* 75 */
     );
 
 struct qemu_feature_flags {
@@ -912,12 +914,16 @@ qemuCapsComputeCmdFlags(const char *help,
     else if (strstr(help, "-domid"))
         qemuCapsSet(flags, QEMU_CAPS_DOMID);
     if (strstr(help, "-drive")) {
+        const char *cache = strstr(help, "cache=");
+
         qemuCapsSet(flags, QEMU_CAPS_DRIVE);
-        if (strstr(help, "cache=") &&
-            !strstr(help, "cache=on|off")) {
-            qemuCapsSet(flags, QEMU_CAPS_DRIVE_CACHE_V2);
-            if (strstr(help, "directsync"))
+        if (cache && (p = strchr(cache, ']'))) {
+            if (memmem(cache, p - cache, "on|off", sizeof("on|off") - 1) == NULL)
+                qemuCapsSet(flags, QEMU_CAPS_DRIVE_CACHE_V2);
+            if (memmem(cache, p - cache, "directsync", sizeof("directsync") - 1))
                 qemuCapsSet(flags, QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC);
+            if (memmem(cache, p - cache, "unsafe", sizeof("unsafe") - 1))
+                qemuCapsSet(flags, QEMU_CAPS_DRIVE_CACHE_UNSAFE);
         }
         if (strstr(help, "format="))
             qemuCapsSet(flags, QEMU_CAPS_DRIVE_FORMAT);

@@ -1,0 +1,5 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M \
+pc -m 214 -smp 1 -nographic -monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi -boot c -drive file=/dev/HostVG/QEMUGuest1,if=ide,bus=0,unit=0,\
+format=qcow2,cache=unsafe -drive file=/dev/HostVG/QEMUGuest2,if=ide,\
+media=cdrom,bus=1,unit=0,format=raw -net none -serial none -parallel none -usb

@@ -848,6 +848,7 @@
         <value>writeback</value>
         <value>writethrough</value>
         <value>directsync</value>
+        <value>unsafe</value>
       </choice>
     </attribute>
   </define>
