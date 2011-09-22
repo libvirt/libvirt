@@ -285,7 +285,8 @@ PDWTAGS = \
 PROTOCOL_STRUCTS = \
 	$(srcdir)/remote_protocol-structs \
 	$(srcdir)/qemu_protocol-structs \
-	$(srcdir)/virnetprotocol-structs
+	$(srcdir)/virnetprotocol-structs \
+	$(srcdir)/virkeepaliveprotocol-structs
 if WITH_REMOTE
 # The .o file that pdwtags parses is created as a side effect of running
 # libtool; but from make's perspective we depend on the .lo file.
@@ -293,6 +294,7 @@ $(srcdir)/%_protocol-structs: libvirt_driver_remote_la-%_protocol.lo
 	$(PDWTAGS)
 $(srcdir)/virnetprotocol-structs: libvirt_net_rpc_la-virnetprotocol.lo
 	$(PDWTAGS)
+$(srcdir)/virkeepaliveprotocol-structs: libvirt_net_rpc_la-virkeepaliveprotocol.lo
 else !WITH_REMOTE
 # These generated files must live in git, because they cannot be re-generated
 # when configured --without-remote.
@@ -1287,7 +1289,10 @@ probes.h: probes.d
 probes.o: probes.d
 	$(AM_V_GEN)$(DTRACE) -o $@ -G -s $<
 
-RPC_PROBE_FILES = $(srcdir)/rpc/virnetprotocol.x $(srcdir)/remote/remote_protocol.x $(srcdir)/remote/qemu_protocol.x
+RPC_PROBE_FILES = $(srcdir)/rpc/virnetprotocol.x \
+		  $(srcdir)/rpc/virkeepaliveprotocol.x \
+		  $(srcdir)/remote/remote_protocol.x \
+		  $(srcdir)/remote/qemu_protocol.x
 
 libvirt_functions.stp: $(RPC_PROBE_FILES) $(srcdir)/rpc/gensystemtap.pl
 	$(AM_V_GEN)perl -w $(srcdir)/rpc/gensystemtap.pl $(RPC_PROBE_FILES) > $@
@@ -1366,11 +1371,14 @@ EXTRA_DIST += \
 	rpc/gendispatch.pl \
 	rpc/genprotocol.pl \
 	rpc/gensystemtap.pl \
-	rpc/virnetprotocol.x
+	rpc/virnetprotocol.x \
+	rpc/virkeepaliveprotocol.x
 
 VIR_NET_RPC_GENERATED = \
 	$(srcdir)/rpc/virnetprotocol.h \
-	$(srcdir)/rpc/virnetprotocol.c
+	$(srcdir)/rpc/virnetprotocol.c \
+	$(srcdir)/rpc/virkeepaliveprotocol.h \
+	$(srcdir)/rpc/virkeepaliveprotocol.c
 
 BUILT_SOURCES += $(VIR_NET_RPC_GENERATED)
 
@@ -1378,7 +1386,8 @@ libvirt_net_rpc_la_SOURCES = \
 	rpc/virnetmessage.h rpc/virnetmessage.c \
 	rpc/virnetprotocol.h rpc/virnetprotocol.c \
 	rpc/virnetsocket.h rpc/virnetsocket.c \
-	rpc/virnettlscontext.h rpc/virnettlscontext.c
+	rpc/virnettlscontext.h rpc/virnettlscontext.c \
+	rpc/virkeepaliveprotocol.h rpc/virkeepaliveprotocol.c
 if HAVE_SASL
 libvirt_net_rpc_la_SOURCES += \
 	rpc/virnetsaslcontext.h rpc/virnetsaslcontext.c

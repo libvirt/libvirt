@@ -65,6 +65,7 @@
 /src/locking/qemu-sanlock.conf
 /src/remote/*_client_bodies.h
 /src/remote/*_protocol.[ch]
+/src/rpc/virkeepaliveprotocol.[ch]
 /src/rpc/virnetprotocol.[ch]
 /src/util/virkeymaps.h
 /tests/*.log
