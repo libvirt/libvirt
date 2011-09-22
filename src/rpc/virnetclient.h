@@ -95,4 +95,9 @@ int virNetClientGetTLSKeySize(virNetClientPtr client);
 void virNetClientFree(virNetClientPtr client);
 void virNetClientClose(virNetClientPtr client);
 
+bool virNetClientKeepAliveIsSupported(virNetClientPtr client);
+int virNetClientKeepAliveStart(virNetClientPtr client,
+                               int interval,
+                               unsigned int count);
+
 #endif /* __VIR_NET_CLIENT_H__ */

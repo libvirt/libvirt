@@ -29,6 +29,7 @@
 
 #include "virnetclient.h"
 #include "virnetsocket.h"
+#include "virkeepalive.h"
 #include "memory.h"
 #include "threads.h"
 #include "virfile.h"
@@ -102,11 +103,12 @@ struct _virNetClient {
     size_t nstreams;
     virNetClientStreamPtr *streams;
 
+    virKeepAlivePtr keepalive;
     bool wantClose;
 };
 
 
-void virNetClientRequestClose(virNetClientPtr client);
+static void virNetClientRequestClose(virNetClientPtr client);
 
 static void virNetClientLock(virNetClientPtr client)
 {
@@ -222,11 +224,56 @@ static void virNetClientEventFree(void *opaque)
     virNetClientFree(client);
 }
 
+bool
+virNetClientKeepAliveIsSupported(virNetClientPtr client)
+{
+    bool supported;
+
+    virNetClientLock(client);
+    supported = !!client->keepalive;
+    virNetClientUnlock(client);
+
+    return supported;
+}
+
+int
+virNetClientKeepAliveStart(virNetClientPtr client,
+                           int interval,
+                           unsigned int count)
+{
+    int ret;
+
+    virNetClientLock(client);
+    ret = virKeepAliveStart(client->keepalive, interval, count);
+    virNetClientUnlock(client);
+
+    return ret;
+}
+
+static void
+virNetClientKeepAliveDeadCB(void *opaque)
+{
+    virNetClientRequestClose(opaque);
+}
+
+static int
+virNetClientKeepAliveSendCB(void *opaque,
+                            virNetMessagePtr msg)
+{
+    int ret;
+
+    ret = virNetClientSendNonBlock(opaque, msg);
+    if (ret != -1 && ret != 1)
+        virNetMessageFree(msg);
+    return ret;
+}
+
 static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
                                        const char *hostname)
 {
     virNetClientPtr client = NULL;
     int wakeupFD[2] = { -1, -1 };
+    virKeepAlivePtr ka = NULL;
 
     if (pipe2(wakeupFD, O_CLOEXEC) < 0) {
         virReportSystemError(errno, "%s",
@@ -259,13 +306,24 @@ static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
                                   client,
                                   virNetClientEventFree) < 0) {
         client->refs--;
-        VIR_DEBUG("Failed to add event watch, disabling events");
+        VIR_DEBUG("Failed to add event watch, disabling events and support for"
+                  " keepalive messages");
+    } else {
+        /* Keepalive protocol consists of async messages so it can only be used
+         * if the client supports them */
+        if (!(ka = virKeepAliveNew(-1, 0, client,
+                                   virNetClientKeepAliveSendCB,
+                                   virNetClientKeepAliveDeadCB,
+                                   virNetClientEventFree)))
+            goto error;
+        /* keepalive object has a reference to client */
+        client->refs++;
     }
 
+    client->keepalive = ka;
     PROBE(RPC_CLIENT_NEW,
           "client=%p refs=%d sock=%p",
           client, client->refs, client->sock);
-
     return client;
 
 no_memory:
@@ -273,6 +331,10 @@ no_memory:
 error:
     VIR_FORCE_CLOSE(wakeupFD[0]);
     VIR_FORCE_CLOSE(wakeupFD[1]);
+    if (ka) {
+        virKeepAliveStop(ka);
+        virKeepAliveFree(ka);
+    }
     virNetClientFree(client);
     return NULL;
 }
@@ -416,6 +478,8 @@ void virNetClientFree(virNetClientPtr client)
 static void
 virNetClientCloseLocked(virNetClientPtr client)
 {
+    virKeepAlivePtr ka;
+
     VIR_DEBUG("client=%p, sock=%p", client, client->sock);
 
     if (!client->sock)
@@ -430,7 +494,20 @@ virNetClientCloseLocked(virNetClientPtr client)
     virNetSASLSessionFree(client->sasl);
     client->sasl = NULL;
 #endif
+    ka = client->keepalive;
+    client->keepalive = NULL;
     client->wantClose = false;
+
+    if (ka) {
+        client->refs++;
+        virNetClientUnlock(client);
+
+        virKeepAliveStop(ka);
+        virKeepAliveFree(ka);
+
+        virNetClientLock(client);
+        client->refs--;
+    }
 }
 
 void virNetClientClose(virNetClientPtr client)
@@ -443,7 +520,7 @@ void virNetClientClose(virNetClientPtr client)
     virNetClientUnlock(client);
 }
 
-void
+static void
 virNetClientRequestClose(virNetClientPtr client)
 {
     VIR_DEBUG("client=%p", client);
@@ -843,6 +920,9 @@ virNetClientCallDispatch(virNetClientPtr client)
           client, client->msg.bufferLength,
           client->msg.header.prog, client->msg.header.vers, client->msg.header.proc,
           client->msg.header.type, client->msg.header.status, client->msg.header.serial);
+
+    if (virKeepAliveCheckMessage(client->keepalive, &client->msg))
+        return 0;
 
     switch (client->msg.header.type) {
     case VIR_NET_REPLY: /* Normal RPC replies */

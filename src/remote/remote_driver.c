@@ -68,6 +68,7 @@
 #endif
 
 static int inside_daemon = 0;
+static virDriverPtr remoteDriver = NULL;
 
 struct private_data {
     virMutex lock;
@@ -84,6 +85,7 @@ struct private_data {
     char *type;                 /* Cached return from remoteType. */
     int localUses;              /* Ref count for private data */
     char *hostname;             /* Original hostname */
+    bool serverKeepAlive;       /* Does server support keepalive protocol? */
 
     virDomainEventStatePtr domainEventState;
 };
@@ -666,6 +668,26 @@ doRemoteOpen (virConnectPtr conn,
     VIR_DEBUG("Trying authentication");
     if (remoteAuthenticate(conn, priv, auth, authtype) == -1)
         goto failed;
+
+    if (virNetClientKeepAliveIsSupported(priv->client)) {
+        remote_supports_feature_args args =
+            { VIR_DRV_FEATURE_PROGRAM_KEEPALIVE };
+        remote_supports_feature_ret ret = { 0 };
+        int rc;
+
+        rc = call(conn, priv, 0, REMOTE_PROC_SUPPORTS_FEATURE,
+                  (xdrproc_t)xdr_remote_supports_feature_args, (char *) &args,
+                  (xdrproc_t)xdr_remote_supports_feature_ret, (char *) &ret);
+        if (rc == -1)
+            goto failed;
+
+        if (ret.supported) {
+            priv->serverKeepAlive = true;
+        } else {
+            VIR_INFO("Disabling keepalive protocol since it is not supported"
+                     " by the server");
+        }
+    }
 
     /* Finally we can call the remote side's open function. */
     {
@@ -4180,6 +4202,33 @@ done:
 }
 
 
+static int
+remoteSetKeepAlive(virConnectPtr conn, int interval, unsigned int count)
+{
+    struct private_data *priv = conn->privateData;
+    int ret = -1;
+
+    remoteDriverLock(priv);
+    if (!virNetClientKeepAliveIsSupported(priv->client)) {
+        remoteError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("the caller doesn't support keepalive protocol;"
+                      " perhaps it's missing event loop implementation"));
+        goto cleanup;
+    }
+
+    if (!priv->serverKeepAlive) {
+        ret = 1;
+        goto cleanup;
+    }
+
+    ret = virNetClientKeepAliveStart(priv->client, interval, count);
+
+cleanup:
+    remoteDriverUnlock(priv);
+    return ret;
+}
+
+
 #include "remote_client_bodies.h"
 #include "qemu_client_bodies.h"
 
@@ -4550,6 +4599,7 @@ static virDriver remote_driver = {
     .domainGetBlockJobInfo = remoteDomainGetBlockJobInfo, /* 0.9.4 */
     .domainBlockJobSetSpeed = remoteDomainBlockJobSetSpeed, /* 0.9.4 */
     .domainBlockPull = remoteDomainBlockPull, /* 0.9.4 */
+    .setKeepAlive = remoteSetKeepAlive, /* 0.9.7 */
 };
 
 static virNetworkDriver network_driver = {
@@ -4700,6 +4750,8 @@ static virStateDriver state_driver = {
 int
 remoteRegister (void)
 {
+    remoteDriver = &remote_driver;
+
     if (virRegisterDriver (&remote_driver) == -1) return -1;
     if (virRegisterNetworkDriver (&network_driver) == -1) return -1;
     if (virRegisterInterfaceDriver (&interface_driver) == -1) return -1;
