@@ -2346,7 +2346,7 @@ cmdSaveImageDefine(vshControl *ctl, const vshCmd *cmd)
     if (virFileReadAll(xmlfile, 8192, &xml) < 0)
         goto cleanup;
 
-    if (virDomainSaveImageDefineXML(ctl->conn, file, xml, 0) < 0) {
+    if (virDomainSaveImageDefineXML(ctl->conn, file, xml, flags) < 0) {
         vshError(ctl, _("Failed to update %s"), file);
         goto cleanup;
     }
