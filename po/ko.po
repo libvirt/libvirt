@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ko\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2011-09-20 13:59+0800\n"
+"POT-Creation-Date: 2011-09-22 14:47+0800\n"
 "PO-Revision-Date: 2010-04-22 14:04+1000\n"
 "Last-Translator: Hyunsok Oh <hoh@redhat.com>\n"
 "Language-Team: Korean <ko@li.org>\n"
@@ -1866,8 +1866,8 @@ msgstr "알려지지 않은 유형 '%s'"
 
 #: src/conf/domain_conf.c:7469 src/security/virt-aa-helper.c:644
 #: tools/virsh.c:1368 tools/virsh.c:1515 tools/virsh.c:1724
-#: tools/virsh.c:10894 tools/virsh.c:10962 tools/virsh.c:11349
-#: tools/virsh.c:11816
+#: tools/virsh.c:10893 tools/virsh.c:10961 tools/virsh.c:11348
+#: tools/virsh.c:11815
 #, fuzzy
 msgid "(domain_definition)"
 msgstr "도메인 정보"
@@ -2485,7 +2485,7 @@ msgstr "이미 %s 도메인이 이미 uuid %s로 존재함"
 msgid "missing name from disk snapshot element"
 msgstr "%s 인자에 대해 빠진 값"
 
-#: src/conf/domain_conf.c:11607 tools/virsh.c:13086 tools/virsh.c:13247
+#: src/conf/domain_conf.c:11607 tools/virsh.c:13085 tools/virsh.c:13246
 #, fuzzy
 msgid "(domain_snapshot)"
 msgstr "도메인 상태"
@@ -2571,7 +2571,7 @@ msgstr "예기치 못한 도메인 %s가 이미 존재함"
 msgid "unknown disk format '%s' for %s"
 msgstr "알 수 없는 디스크 유형 '%s'"
 
-#: src/conf/domain_conf.c:12412 src/qemu/qemu_driver.c:7812
+#: src/conf/domain_conf.c:12412 src/qemu/qemu_driver.c:7567
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr ""
@@ -5235,9 +5235,9 @@ msgid "System is not available"
 msgstr "cpu 친밀도(affinity)를 사용할 수 없습니다"
 
 #: src/hyperv/hyperv_wmi.c:382 tools/virsh.c:3001 tools/virsh.c:8381
-#: tools/virsh.c:8468 tools/virsh.c:9837 tools/virsh.c:12062
-#: tools/virsh.c:12604 tools/virsh.c:12747 tools/virsh.c:15303
-#: tools/virsh.c:15412 tools/virsh.c:15803 tools/virsh.c:15809
+#: tools/virsh.c:8468 tools/virsh.c:9837 tools/virsh.c:12061
+#: tools/virsh.c:12603 tools/virsh.c:12746 tools/virsh.c:15313
+#: tools/virsh.c:15422 tools/virsh.c:15813 tools/virsh.c:15819
 msgid "Out of memory"
 msgstr "메모리 부족"
 
@@ -5519,17 +5519,17 @@ msgstr "%s 장치를 허용할 수 없음"
 msgid "Lockspace path '%s' exceeded %d characters"
 msgstr ""
 
-#: src/locking/lock_driver_sanlock.c:177 src/locking/lock_driver_sanlock.c:551
+#: src/locking/lock_driver_sanlock.c:177 src/locking/lock_driver_sanlock.c:550
 #, fuzzy, c-format
 msgid "Unable to create lockspace %s"
 msgstr "블럭 이름 %s 구문 분석 실패"
 
-#: src/locking/lock_driver_sanlock.c:186 src/locking/lock_driver_sanlock.c:560
+#: src/locking/lock_driver_sanlock.c:186 src/locking/lock_driver_sanlock.c:559
 #, fuzzy, c-format
 msgid "Unable to query sector size %s: error %d"
 msgstr "블럭 이름 %s 구문 분석 실패"
 
-#: src/locking/lock_driver_sanlock.c:190 src/locking/lock_driver_sanlock.c:564
+#: src/locking/lock_driver_sanlock.c:190 src/locking/lock_driver_sanlock.c:563
 #, fuzzy, c-format
 msgid "Unable to query sector size %s"
 msgstr "%s를 열 수 없음"
@@ -5564,149 +5564,149 @@ msgstr "블럭 이름 %s 구문 분석 실패"
 msgid "Unable to add lockspace %s"
 msgstr "블럭 이름 %s 구문 분석 실패"
 
-#: src/locking/lock_driver_sanlock.c:293
+#: src/locking/lock_driver_sanlock.c:292
 msgid "Automatic disk lease mode enabled, but no host ID is set"
 msgstr ""
 
-#: src/locking/lock_driver_sanlock.c:335
+#: src/locking/lock_driver_sanlock.c:334
 msgid "Sanlock plugin is not initialized"
 msgstr ""
 
-#: src/locking/lock_driver_sanlock.c:341
+#: src/locking/lock_driver_sanlock.c:340
 #, fuzzy, c-format
 msgid "Unsupported object type %d"
 msgstr "지원하지 않는 모니터 유형 '%s'"
 
-#: src/locking/lock_driver_sanlock.c:360 src/locking/lock_driver_sanlock.c:701
+#: src/locking/lock_driver_sanlock.c:359 src/locking/lock_driver_sanlock.c:700
 #, c-format
 msgid "Domain name '%s' exceeded %d characters"
 msgstr ""
 
-#: src/locking/lock_driver_sanlock.c:406
+#: src/locking/lock_driver_sanlock.c:405
 msgid "String length too small to store md5 checksum"
 msgstr ""
 
-#: src/locking/lock_driver_sanlock.c:412
+#: src/locking/lock_driver_sanlock.c:411
 #, fuzzy
 msgid "Unable to compute md5 checksum"
 msgstr "%s를 열 수 없음"
 
-#: src/locking/lock_driver_sanlock.c:442
+#: src/locking/lock_driver_sanlock.c:441
 #, c-format
 msgid "Resource name '%s' exceeds %d characters"
 msgstr ""
 
-#: src/locking/lock_driver_sanlock.c:451 src/locking/lock_driver_sanlock.c:513
+#: src/locking/lock_driver_sanlock.c:450 src/locking/lock_driver_sanlock.c:512
 #, c-format
 msgid "Lease path '%s' exceeds %d characters"
 msgstr ""
 
-#: src/locking/lock_driver_sanlock.c:460 src/locking/lock_driver_sanlock.c:522
+#: src/locking/lock_driver_sanlock.c:459 src/locking/lock_driver_sanlock.c:521
 #, c-format
 msgid "Resource lockspace '%s' exceeds %d characters"
 msgstr ""
 
-#: src/locking/lock_driver_sanlock.c:493
+#: src/locking/lock_driver_sanlock.c:492
 #, fuzzy
 msgid "Unexpected lock parameters for disk resource"
 msgstr "IDE 디스크에 대해 예기치 못한 주소 유형"
 
-#: src/locking/lock_driver_sanlock.c:574
+#: src/locking/lock_driver_sanlock.c:573
 #, fuzzy, c-format
 msgid "Unable to allocate lease %s"
 msgstr "%s 장치를 허용할 수 없음"
 
-#: src/locking/lock_driver_sanlock.c:581
+#: src/locking/lock_driver_sanlock.c:580
 #, fuzzy, c-format
 msgid "Unable to save lease %s"
 msgstr "파일 %s 저장 실패"
 
-#: src/locking/lock_driver_sanlock.c:589
+#: src/locking/lock_driver_sanlock.c:588
 #, fuzzy, c-format
 msgid "Unable to initialize lease %s: error %d"
 msgstr "블럭 이름 %s 구문 분석 실패"
 
-#: src/locking/lock_driver_sanlock.c:593
+#: src/locking/lock_driver_sanlock.c:592
 #, fuzzy, c-format
 msgid "Unable to initialize lease %s"
 msgstr "TLS 클라이언트를 초기화할 수 없음: %s"
 
-#: src/locking/lock_driver_sanlock.c:624
+#: src/locking/lock_driver_sanlock.c:623
 #, fuzzy, c-format
 msgid "Too many resources %d for object"
 msgstr "qcow 암호화에 대해 너무 많은 비밀 정보"
 
-#: src/locking/lock_driver_sanlock.c:631
+#: src/locking/lock_driver_sanlock.c:630
 #, fuzzy
 msgid "Readonly leases are not supported"
 msgstr "설정가능한 타임존을 지원하지 않습니다."
 
-#: src/locking/lock_driver_sanlock.c:636
+#: src/locking/lock_driver_sanlock.c:635
 #, fuzzy
 msgid "Shareable leases are not supported"
 msgstr "설정가능한 타임존을 지원하지 않습니다."
 
-#: src/locking/lock_driver_sanlock.c:690
+#: src/locking/lock_driver_sanlock.c:689
 msgid ""
 "Read/write, exclusive access, disks were present, but no leases specified"
 msgstr ""
 
-#: src/locking/lock_driver_sanlock.c:712
+#: src/locking/lock_driver_sanlock.c:711
 #, fuzzy, c-format
 msgid "Unable to parse lock state %s: error %d"
 msgstr "블럭 이름 %s 구문 분석 실패"
 
-#: src/locking/lock_driver_sanlock.c:716
+#: src/locking/lock_driver_sanlock.c:715
 #, fuzzy, c-format
 msgid "Unable to parse lock state %s"
 msgstr "블럭 이름 %s 구문 분석 실패"
 
-#: src/locking/lock_driver_sanlock.c:737
+#: src/locking/lock_driver_sanlock.c:736
 #, fuzzy, c-format
 msgid "Failed to open socket to sanlock daemon: error %d"
 msgstr "소켓을 '%s'로 바인드 하는 것이 실패했습니다: %s  "
 
-#: src/locking/lock_driver_sanlock.c:741
+#: src/locking/lock_driver_sanlock.c:740
 #, fuzzy
 msgid "Failed to open socket to sanlock daemon"
 msgstr "소켓을 '%s'로 바인드 하는 것이 실패했습니다: %s  "
 
-#: src/locking/lock_driver_sanlock.c:752
+#: src/locking/lock_driver_sanlock.c:751
 #, fuzzy, c-format
 msgid "Failed to acquire lock: error %d"
 msgstr "블럭 이름 %s 구문 분석 실패"
 
-#: src/locking/lock_driver_sanlock.c:755
+#: src/locking/lock_driver_sanlock.c:754
 #, fuzzy
 msgid "Failed to acquire lock"
 msgstr "소켓 생성 실패"
 
-#: src/locking/lock_driver_sanlock.c:776
+#: src/locking/lock_driver_sanlock.c:775
 #, fuzzy, c-format
 msgid "Failed to restrict process: error %d"
 msgstr "풀 %s를 시작하는 데 실패"
 
-#: src/locking/lock_driver_sanlock.c:779
+#: src/locking/lock_driver_sanlock.c:778
 #, fuzzy
 msgid "Failed to restrict process"
 msgstr "풀 %s를 시작하는 데 실패"
 
-#: src/locking/lock_driver_sanlock.c:825 src/locking/lock_driver_sanlock.c:868
+#: src/locking/lock_driver_sanlock.c:824 src/locking/lock_driver_sanlock.c:867
 #, fuzzy, c-format
 msgid "Failed to inquire lock: error %d"
 msgstr "블럭 이름 %s 구문 분석 실패"
 
-#: src/locking/lock_driver_sanlock.c:828 src/locking/lock_driver_sanlock.c:871
+#: src/locking/lock_driver_sanlock.c:827 src/locking/lock_driver_sanlock.c:870
 #, fuzzy
 msgid "Failed to inquire lock"
 msgstr "블럭 이름 %s 구문 분석 실패"
 
-#: src/locking/lock_driver_sanlock.c:839
+#: src/locking/lock_driver_sanlock.c:838
 #, fuzzy, c-format
 msgid "Failed to release lock: error %d"
 msgstr "블럭 이름 %s 구문 분석 실패"
 
-#: src/locking/lock_driver_sanlock.c:842
+#: src/locking/lock_driver_sanlock.c:841
 #, fuzzy
 msgid "Failed to release lock"
 msgstr "소켓 생성 실패"
@@ -6243,93 +6243,93 @@ msgstr ""
 msgid "Failed to set memory for domain"
 msgstr "도메인에 대한 메모리 설정 실패"
 
-#: src/lxc/lxc_driver.c:784 src/qemu/qemu_driver.c:6090
-#: src/qemu/qemu_driver.c:6243 src/qemu/qemu_driver.c:6371
-#: src/qemu/qemu_driver.c:6528 src/qemu/qemu_driver.c:6843
-#: src/qemu/qemu_driver.c:7124
+#: src/lxc/lxc_driver.c:784 src/qemu/qemu_driver.c:5845
+#: src/qemu/qemu_driver.c:5998 src/qemu/qemu_driver.c:6126
+#: src/qemu/qemu_driver.c:6283 src/qemu/qemu_driver.c:6598
+#: src/qemu/qemu_driver.c:6879
 #, c-format
 msgid "cannot find cgroup for domain %s"
 msgstr "도메인 %s에 대한 cgroup을 찾을 수 없음"
 
-#: src/lxc/lxc_driver.c:796 src/qemu/qemu_driver.c:6394
+#: src/lxc/lxc_driver.c:796 src/qemu/qemu_driver.c:6149
 #, fuzzy
 msgid "invalid type for memory hard_limit tunable, expected a 'ullong'"
 msgstr "cpu_shares tunable에 대해 잘못된 유형, 'ullong'이 필요함"
 
-#: src/lxc/lxc_driver.c:804 src/qemu/qemu_driver.c:6403
+#: src/lxc/lxc_driver.c:804 src/qemu/qemu_driver.c:6158
 #, fuzzy
 msgid "unable to set memory hard_limit tunable"
 msgstr "cpu shares tunable을 설정할 수 없음"
 
-#: src/lxc/lxc_driver.c:811 src/qemu/qemu_driver.c:6415
+#: src/lxc/lxc_driver.c:811 src/qemu/qemu_driver.c:6170
 #, fuzzy
 msgid "invalid type for memory soft_limit tunable, expected a 'ullong'"
 msgstr "cpu_shares tunable에 대해 잘못된 유형, 'ullong'이 필요함"
 
-#: src/lxc/lxc_driver.c:819 src/qemu/qemu_driver.c:6424
+#: src/lxc/lxc_driver.c:819 src/qemu/qemu_driver.c:6179
 #, fuzzy
 msgid "unable to set memory soft_limit tunable"
 msgstr "도메인 %s에 대한 메모리 제한을 설정할 수 없음"
 
-#: src/lxc/lxc_driver.c:826 src/qemu/qemu_driver.c:6436
+#: src/lxc/lxc_driver.c:826 src/qemu/qemu_driver.c:6191
 #, fuzzy
 msgid "invalid type for swap_hard_limit tunable, expected a 'ullong'"
 msgstr "cpu_shares tunable에 대해 잘못된 유형, 'ullong'이 필요함"
 
-#: src/lxc/lxc_driver.c:834 src/qemu/qemu_driver.c:6445
+#: src/lxc/lxc_driver.c:834 src/qemu/qemu_driver.c:6200
 #, fuzzy
 msgid "unable to set swap_hard_limit tunable"
 msgstr "cpu shares tunable을 설정할 수 없음"
 
-#: src/lxc/lxc_driver.c:839 src/qemu/qemu_driver.c:6454
+#: src/lxc/lxc_driver.c:839 src/qemu/qemu_driver.c:6209
 #, c-format
 msgid "Memory tunable `%s' not implemented"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:843 src/qemu/qemu_driver.c:6134
-#: src/qemu/qemu_driver.c:6163 src/qemu/qemu_driver.c:6458
+#: src/lxc/lxc_driver.c:843 src/qemu/qemu_driver.c:5889
+#: src/qemu/qemu_driver.c:5918 src/qemu/qemu_driver.c:6213
 #, fuzzy, c-format
 msgid "Parameter `%s' not supported"
 msgstr "비밀 저장소를 지원하지 않습니다"
 
 #: src/lxc/lxc_driver.c:891 src/lxc/lxc_driver.c:2421
 #: src/libxl/libxl_driver.c:3635 src/nodeinfo.c:417
-#: src/qemu/qemu_driver.c:6216 src/qemu/qemu_driver.c:6552
-#: src/qemu/qemu_driver.c:7051 src/test/test_driver.c:2713
+#: src/qemu/qemu_driver.c:5971 src/qemu/qemu_driver.c:6307
+#: src/qemu/qemu_driver.c:6806 src/test/test_driver.c:2713
 #: src/xen/xen_hypervisor.c:1269 src/xen/xen_hypervisor.c:1279
-#: src/xen/xend_internal.c:3616 src/xen/xend_internal.c:3626
+#: src/xen/xend_internal.c:3612 src/xen/xend_internal.c:3622
 msgid "Invalid parameter count"
 msgstr "잘못된 매개변수 갯수"
 
-#: src/lxc/lxc_driver.c:912 src/qemu/qemu_driver.c:6613
+#: src/lxc/lxc_driver.c:912 src/qemu/qemu_driver.c:6368
 #, fuzzy
 msgid "unable to get memory hard limit"
 msgstr "도메인에 대한 메모리 설정 실패"
 
-#: src/lxc/lxc_driver.c:917 src/qemu/qemu_driver.c:6567
-#: src/qemu/qemu_driver.c:6618
+#: src/lxc/lxc_driver.c:917 src/qemu/qemu_driver.c:6322
+#: src/qemu/qemu_driver.c:6373
 #, fuzzy
 msgid "Field memory hard limit too long for destination"
 msgstr "필드 cpu_shares가 목적지에 대해 너무 긺"
 
-#: src/lxc/lxc_driver.c:927 src/qemu/qemu_driver.c:6628
+#: src/lxc/lxc_driver.c:927 src/qemu/qemu_driver.c:6383
 #, fuzzy
 msgid "unable to get memory soft limit"
 msgstr "도메인에 대한 메모리 설정 실패"
 
-#: src/lxc/lxc_driver.c:932 src/qemu/qemu_driver.c:6576
-#: src/qemu/qemu_driver.c:6633
+#: src/lxc/lxc_driver.c:932 src/qemu/qemu_driver.c:6331
+#: src/qemu/qemu_driver.c:6388
 #, fuzzy
 msgid "Field memory soft limit too long for destination"
 msgstr "필드 cpu_shares가 목적지에 대해 너무 긺"
 
-#: src/lxc/lxc_driver.c:942 src/qemu/qemu_driver.c:6643
+#: src/lxc/lxc_driver.c:942 src/qemu/qemu_driver.c:6398
 #, fuzzy
 msgid "unable to get swap hard limit"
 msgstr "cpu shares tunable을 얻을 수 없음"
 
-#: src/lxc/lxc_driver.c:947 src/qemu/qemu_driver.c:6585
-#: src/qemu/qemu_driver.c:6648
+#: src/lxc/lxc_driver.c:947 src/qemu/qemu_driver.c:6340
+#: src/qemu/qemu_driver.c:6403
 #, fuzzy
 msgid "Field swap hard limit too long for destination"
 msgstr "필드 cpu_shares가 목적지에 대해 너무 긺"
@@ -6461,7 +6461,7 @@ msgstr "VM '%s'의 autostart 실패: %s"
 msgid "Unknown release: %s"
 msgstr "알려지지 않은 릴리즈: %s"
 
-#: src/lxc/lxc_driver.c:2365 src/qemu/qemu_driver.c:6915
+#: src/lxc/lxc_driver.c:2365 src/qemu/qemu_driver.c:6670
 #, c-format
 msgid "Invalid parameter `%s'"
 msgstr "잘못된 매개변수 '%s'"
@@ -6494,13 +6494,13 @@ msgid "Cannot create autostart directory %s"
 msgstr "autostart 디렉터리 %s를 생성할 수 없음"
 
 #: src/lxc/lxc_driver.c:2604 src/libxl/libxl_driver.c:3503
-#: src/qemu/qemu_driver.c:5949 src/uml/uml_driver.c:2142
+#: src/qemu/qemu_driver.c:5704 src/uml/uml_driver.c:2142
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "심볼릭 링크 '%s'를 '%s'에 대해 생성하는 데 실패"
 
 #: src/lxc/lxc_driver.c:2611 src/libxl/libxl_driver.c:3510
-#: src/network/bridge_driver.c:2672 src/qemu/qemu_driver.c:5956
+#: src/network/bridge_driver.c:2672 src/qemu/qemu_driver.c:5711
 #: src/storage/storage_driver.c:1063 src/uml/uml_driver.c:2149
 #, c-format
 msgid "Failed to delete symlink '%s'"
@@ -6517,35 +6517,35 @@ msgstr "재개 동작이 실패했습니다"
 #: src/lxc/lxc_driver.c:2857 src/libxl/libxl_driver.c:2801
 #: src/qemu/qemu_driver.c:1126 src/qemu/qemu_driver.c:1178
 #: src/qemu/qemu_driver.c:1202 src/qemu/qemu_driver.c:1226
-#: src/qemu/qemu_driver.c:1379 src/qemu/qemu_driver.c:1446
-#: src/qemu/qemu_driver.c:1503 src/qemu/qemu_driver.c:1552
-#: src/qemu/qemu_driver.c:1861 src/qemu/qemu_driver.c:1930
-#: src/qemu/qemu_driver.c:1957 src/qemu/qemu_driver.c:1989
-#: src/qemu/qemu_driver.c:2118 src/qemu/qemu_driver.c:2186
-#: src/qemu/qemu_driver.c:2232 src/qemu/qemu_driver.c:2314
-#: src/qemu/qemu_driver.c:2347 src/qemu/qemu_driver.c:2850
-#: src/qemu/qemu_driver.c:2909 src/qemu/qemu_driver.c:2960
-#: src/qemu/qemu_driver.c:2994 src/qemu/qemu_driver.c:3116
-#: src/qemu/qemu_driver.c:3446 src/qemu/qemu_driver.c:3584
-#: src/qemu/qemu_driver.c:3746 src/qemu/qemu_driver.c:3844
-#: src/qemu/qemu_driver.c:3935 src/qemu/qemu_driver.c:3999
-#: src/qemu/qemu_driver.c:4579 src/qemu/qemu_driver.c:4892
-#: src/qemu/qemu_driver.c:5111 src/qemu/qemu_driver.c:5727
-#: src/qemu/qemu_driver.c:5894 src/qemu/qemu_driver.c:5921
-#: src/qemu/qemu_driver.c:7220 src/qemu/qemu_driver.c:7307
-#: src/qemu/qemu_driver.c:7490 src/qemu/qemu_driver.c:7552
-#: src/qemu/qemu_driver.c:7600 src/qemu/qemu_driver.c:7668
-#: src/qemu/qemu_driver.c:7765 src/qemu/qemu_driver.c:8127
-#: src/qemu/qemu_driver.c:8216 src/qemu/qemu_driver.c:8390
-#: src/qemu/qemu_driver.c:8461 src/qemu/qemu_driver.c:8679
-#: src/qemu/qemu_driver.c:8729 src/qemu/qemu_driver.c:8791
-#: src/qemu/qemu_driver.c:8847 src/qemu/qemu_driver.c:8897
-#: src/qemu/qemu_driver.c:9357 src/qemu/qemu_driver.c:9587
-#: src/qemu/qemu_driver.c:9617 src/qemu/qemu_driver.c:9651
-#: src/qemu/qemu_driver.c:9686 src/qemu/qemu_driver.c:9714
-#: src/qemu/qemu_driver.c:9749 src/qemu/qemu_driver.c:9817
-#: src/qemu/qemu_driver.c:10143 src/qemu/qemu_driver.c:10246
-#: src/qemu/qemu_driver.c:10386 src/qemu/qemu_driver.c:10489
+#: src/qemu/qemu_driver.c:1378 src/qemu/qemu_driver.c:1445
+#: src/qemu/qemu_driver.c:1502 src/qemu/qemu_driver.c:1551
+#: src/qemu/qemu_driver.c:1629 src/qemu/qemu_driver.c:1697
+#: src/qemu/qemu_driver.c:1724 src/qemu/qemu_driver.c:1756
+#: src/qemu/qemu_driver.c:1885 src/qemu/qemu_driver.c:1953
+#: src/qemu/qemu_driver.c:1999 src/qemu/qemu_driver.c:2081
+#: src/qemu/qemu_driver.c:2114 src/qemu/qemu_driver.c:2616
+#: src/qemu/qemu_driver.c:2675 src/qemu/qemu_driver.c:2726
+#: src/qemu/qemu_driver.c:2760 src/qemu/qemu_driver.c:2882
+#: src/qemu/qemu_driver.c:3211 src/qemu/qemu_driver.c:3349
+#: src/qemu/qemu_driver.c:3511 src/qemu/qemu_driver.c:3609
+#: src/qemu/qemu_driver.c:3700 src/qemu/qemu_driver.c:3764
+#: src/qemu/qemu_driver.c:4344 src/qemu/qemu_driver.c:4657
+#: src/qemu/qemu_driver.c:4875 src/qemu/qemu_driver.c:5482
+#: src/qemu/qemu_driver.c:5649 src/qemu/qemu_driver.c:5676
+#: src/qemu/qemu_driver.c:6975 src/qemu/qemu_driver.c:7062
+#: src/qemu/qemu_driver.c:7245 src/qemu/qemu_driver.c:7307
+#: src/qemu/qemu_driver.c:7355 src/qemu/qemu_driver.c:7423
+#: src/qemu/qemu_driver.c:7520 src/qemu/qemu_driver.c:7882
+#: src/qemu/qemu_driver.c:7971 src/qemu/qemu_driver.c:8145
+#: src/qemu/qemu_driver.c:8216 src/qemu/qemu_driver.c:8434
+#: src/qemu/qemu_driver.c:8484 src/qemu/qemu_driver.c:8546
+#: src/qemu/qemu_driver.c:8602 src/qemu/qemu_driver.c:8652
+#: src/qemu/qemu_driver.c:9112 src/qemu/qemu_driver.c:9342
+#: src/qemu/qemu_driver.c:9372 src/qemu/qemu_driver.c:9406
+#: src/qemu/qemu_driver.c:9441 src/qemu/qemu_driver.c:9469
+#: src/qemu/qemu_driver.c:9504 src/qemu/qemu_driver.c:9572
+#: src/qemu/qemu_driver.c:9898 src/qemu/qemu_driver.c:10001
+#: src/qemu/qemu_driver.c:10141 src/qemu/qemu_driver.c:10244
 #: src/test/test_driver.c:2107 src/uml/uml_driver.c:1505
 #: src/uml/uml_driver.c:1530 src/uml/uml_driver.c:1563
 #: src/uml/uml_driver.c:1905 src/uml/uml_driver.c:2023
@@ -6554,25 +6554,25 @@ msgstr "재개 동작이 실패했습니다"
 msgid "no domain with matching uuid '%s'"
 msgstr "uuid가 '%s'와 일치하는 도메인이 없음"
 
-#: src/lxc/lxc_driver.c:2863 src/qemu/qemu_driver.c:1384
-#: src/qemu/qemu_driver.c:1403 src/qemu/qemu_driver.c:1455
-#: src/qemu/qemu_driver.c:1512 src/qemu/qemu_driver.c:1565
-#: src/qemu/qemu_driver.c:1880 src/qemu/qemu_driver.c:2013
-#: src/qemu/qemu_driver.c:2124 src/qemu/qemu_driver.c:2197
-#: src/qemu/qemu_driver.c:2353 src/qemu/qemu_driver.c:2856
-#: src/qemu/qemu_driver.c:2915 src/qemu/qemu_driver.c:3126
-#: src/qemu/qemu_driver.c:3230 src/qemu/qemu_driver.c:3321
-#: src/qemu/qemu_driver.c:3473 src/qemu/qemu_driver.c:3761
-#: src/qemu/qemu_driver.c:6079 src/qemu/qemu_driver.c:6232
-#: src/qemu/qemu_driver.c:6359 src/qemu/qemu_driver.c:6516
-#: src/qemu/qemu_driver.c:6832 src/qemu/qemu_driver.c:7112
-#: src/qemu/qemu_driver.c:7226 src/qemu/qemu_driver.c:7255
-#: src/qemu/qemu_driver.c:7313 src/qemu/qemu_driver.c:7496
-#: src/qemu/qemu_driver.c:7566 src/qemu/qemu_driver.c:7683
-#: src/qemu/qemu_driver.c:8230 src/qemu/qemu_driver.c:8703
-#: src/qemu/qemu_driver.c:8738 src/qemu/qemu_driver.c:8800
-#: src/qemu/qemu_driver.c:10252 src/qemu/qemu_driver.c:10392
-#: src/qemu/qemu_driver.c:10495 src/qemu/qemu_migration.c:2214
+#: src/lxc/lxc_driver.c:2863 src/qemu/qemu_driver.c:1383
+#: src/qemu/qemu_driver.c:1402 src/qemu/qemu_driver.c:1454
+#: src/qemu/qemu_driver.c:1511 src/qemu/qemu_driver.c:1570
+#: src/qemu/qemu_driver.c:1648 src/qemu/qemu_driver.c:1780
+#: src/qemu/qemu_driver.c:1891 src/qemu/qemu_driver.c:1964
+#: src/qemu/qemu_driver.c:2120 src/qemu/qemu_driver.c:2622
+#: src/qemu/qemu_driver.c:2681 src/qemu/qemu_driver.c:2892
+#: src/qemu/qemu_driver.c:2995 src/qemu/qemu_driver.c:3086
+#: src/qemu/qemu_driver.c:3238 src/qemu/qemu_driver.c:3526
+#: src/qemu/qemu_driver.c:5834 src/qemu/qemu_driver.c:5987
+#: src/qemu/qemu_driver.c:6114 src/qemu/qemu_driver.c:6271
+#: src/qemu/qemu_driver.c:6587 src/qemu/qemu_driver.c:6867
+#: src/qemu/qemu_driver.c:6981 src/qemu/qemu_driver.c:7010
+#: src/qemu/qemu_driver.c:7068 src/qemu/qemu_driver.c:7251
+#: src/qemu/qemu_driver.c:7321 src/qemu/qemu_driver.c:7438
+#: src/qemu/qemu_driver.c:7985 src/qemu/qemu_driver.c:8458
+#: src/qemu/qemu_driver.c:8493 src/qemu/qemu_driver.c:8555
+#: src/qemu/qemu_driver.c:10007 src/qemu/qemu_driver.c:10147
+#: src/qemu/qemu_driver.c:10250 src/qemu/qemu_migration.c:2214
 #: src/uml/uml_driver.c:2261 src/xen/xen_driver.c:2134
 #: src/xen/xen_hypervisor.c:1155 src/xen/xen_hypervisor.c:1239
 #: src/xen/xen_hypervisor.c:1356 src/xen/xm_internal.c:715
@@ -6590,7 +6590,7 @@ msgstr "설정가능한 타임존을 지원하지 않습니다."
 msgid "cannot find default console device"
 msgstr "컨트롤러 장치를 추출할 수 없음"
 
-#: src/lxc/lxc_driver.c:2887 src/qemu/qemu_driver.c:10424
+#: src/lxc/lxc_driver.c:2887 src/qemu/qemu_driver.c:10179
 #: src/uml/uml_driver.c:2285 src/xen/xen_driver.c:2162
 #, fuzzy, c-format
 msgid "character device %s is not using a PTY"
@@ -6631,21 +6631,21 @@ msgstr "도메인 이미지를 읽을 수 없음"
 msgid "failed to read libxl header"
 msgstr "qemu 헤더를 읽는 것을 실패"
 
-#: src/libxl/libxl_driver.c:256 src/qemu/qemu_driver.c:4123
+#: src/libxl/libxl_driver.c:256 src/qemu/qemu_driver.c:3888
 msgid "image magic is incorrect"
 msgstr "이미지 매직이 잘못되었습니다"
 
-#: src/libxl/libxl_driver.c:262 src/qemu/qemu_driver.c:4149
+#: src/libxl/libxl_driver.c:262 src/qemu/qemu_driver.c:3914
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr "이미지가 지원하지 않는 버전입니다(%d > %d)"
 
-#: src/libxl/libxl_driver.c:269 src/qemu/qemu_driver.c:4156
+#: src/libxl/libxl_driver.c:269 src/qemu/qemu_driver.c:3921
 #, c-format
 msgid "invalid XML length: %d"
 msgstr "잘못된 이미지 길이: %d"
 
-#: src/libxl/libxl_driver.c:279 src/qemu/qemu_driver.c:4167
+#: src/libxl/libxl_driver.c:279 src/qemu/qemu_driver.c:3932
 msgid "failed to read XML"
 msgstr "XML을 읽는 것을 실패"
 
@@ -6659,7 +6659,7 @@ msgstr "도메인 %s에 대한 cgroup을 생성할 수 없음"
 msgid "Failed to pin vcpu '%d' with libxenlight"
 msgstr "도메인 %s를 재부팅하기 실패"
 
-#: src/libxl/libxl_driver.c:660 src/qemu/qemu_driver.c:4538
+#: src/libxl/libxl_driver.c:660 src/qemu/qemu_driver.c:4303
 #, c-format
 msgid ""
 "cannot restore domain '%s' uuid %s from a file which belongs to domain '%s' "
@@ -6786,10 +6786,10 @@ msgid "cannot set memory on an inactive domain"
 msgstr "동작중인 도메인의 메모리를 설정할 수 없음"
 
 #: src/libxl/libxl_driver.c:1684 src/libxl/libxl_driver.c:2276
-#: src/qemu/qemu_driver.c:2020 src/qemu/qemu_driver.c:3479
-#: src/qemu/qemu_driver.c:3615 src/qemu/qemu_driver.c:6098
-#: src/qemu/qemu_driver.c:6251 src/qemu/qemu_driver.c:6379
-#: src/qemu/qemu_driver.c:6536 src/qemu/qemu_driver.c:6819
+#: src/qemu/qemu_driver.c:1787 src/qemu/qemu_driver.c:3244
+#: src/qemu/qemu_driver.c:3380 src/qemu/qemu_driver.c:5853
+#: src/qemu/qemu_driver.c:6006 src/qemu/qemu_driver.c:6134
+#: src/qemu/qemu_driver.c:6291 src/qemu/qemu_driver.c:6574
 #, fuzzy
 msgid "cannot change persistent config of a transient domain"
 msgstr "도메인의 영구 설정을 변경할 수 없음"
@@ -6799,7 +6799,7 @@ msgstr "도메인의 영구 설정을 변경할 수 없음"
 msgid "Failed to set maximum memory for domain '%d' with libxenlight"
 msgstr "도메인 %s를 재부팅하기 실패"
 
-#: src/libxl/libxl_driver.c:1719 src/qemu/qemu_driver.c:2052
+#: src/libxl/libxl_driver.c:1719 src/qemu/qemu_driver.c:1819
 #: src/uml/uml_driver.c:1575
 msgid "cannot set memory higher than max memory"
 msgstr "최대 메모리보다 더 높게 메모리를 설정할 수 없음"
@@ -6865,13 +6865,13 @@ msgstr "도메인 %s를 재부팅하기 실패"
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr "도메인 %s를 재부팅하기 실패"
 
-#: src/libxl/libxl_driver.c:2137 src/qemu/qemu_driver.c:2920
+#: src/libxl/libxl_driver.c:2137 src/qemu/qemu_driver.c:2686
 #, fuzzy
 msgid "cannot do managed save for transient domain"
 msgstr "임시 도메인에 대해 autostart를 설정할 수 없음"
 
 #: src/libxl/libxl_driver.c:2250 src/libxl/libxl_driver.c:2397
-#: src/qemu/qemu_driver.c:3949 src/test/test_driver.c:2121
+#: src/qemu/qemu_driver.c:3714 src/test/test_driver.c:2121
 #: src/test/test_driver.c:2177 src/xen/xen_driver.c:1119
 #, fuzzy, c-format
 msgid "invalid flag combination: (0x%x)"
@@ -6886,12 +6886,12 @@ msgstr ""
 msgid "cannot set vcpus on an inactive domain"
 msgstr "실행중이 아닌 도메인의 vcpu 목록을 얻을 수 없음"
 
-#: src/libxl/libxl_driver.c:2282 src/qemu/qemu_driver.c:3492
+#: src/libxl/libxl_driver.c:2282 src/qemu/qemu_driver.c:3257
 msgid "could not determine max vcpus for the domain"
 msgstr "도메인에 대해 최대 vcpu를 결정할 수 없음"
 
-#: src/libxl/libxl_driver.c:2292 src/qemu/qemu_driver.c:3502
-#: src/xen/xend_internal.c:2231 src/xen/xm_internal.c:740
+#: src/libxl/libxl_driver.c:2292 src/qemu/qemu_driver.c:3267
+#: src/xen/xend_internal.c:2225 src/xen/xm_internal.c:740
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
@@ -6902,7 +6902,7 @@ msgstr "요청된 vcpu가 도메인에서 허용할 수 있는 최대 갯수보�
 msgid "Failed to set vcpus for domain '%d' with libxenlight"
 msgstr "도메인 %s를 재부팅하기 실패"
 
-#: src/libxl/libxl_driver.c:2411 src/qemu/qemu_driver.c:3963
+#: src/libxl/libxl_driver.c:2411 src/qemu/qemu_driver.c:3728
 #: src/test/test_driver.c:2137
 #, fuzzy
 msgid "domain is transient"
@@ -6923,7 +6923,7 @@ msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr "도메인 %s를 재부팅하기 실패"
 
 #: src/libxl/libxl_driver.c:2587 src/libxl/libxl_driver.c:2630
-#: src/qemu/qemu_driver.c:4632 src/qemu/qemu_driver.c:4675
+#: src/qemu/qemu_driver.c:4397 src/qemu/qemu_driver.c:4440
 #: src/xen/xen_driver.c:1276 src/xen/xen_driver.c:1325
 #, c-format
 msgid "unsupported config type %s"
@@ -6939,17 +6939,17 @@ msgstr "디스크 정보 보기 실패"
 msgid "parsing xm config failed"
 msgstr "풀의 설정 파일이 없습니다"
 
-#: src/libxl/libxl_driver.c:2807 src/qemu/qemu_driver.c:5138
+#: src/libxl/libxl_driver.c:2807 src/qemu/qemu_driver.c:4881
 #: src/uml/uml_driver.c:1811 src/vmware/vmware_driver.c:644
 msgid "cannot undefine transient domain"
 msgstr "임시 도메인 정의를 해제할 수 없음"
 
-#: src/libxl/libxl_driver.c:2819 src/qemu/qemu_driver.c:5150
+#: src/libxl/libxl_driver.c:2819 src/qemu/qemu_driver.c:4906
 #, fuzzy
 msgid "Failed to remove domain managed save image"
 msgstr "도메인 저장 파일 '%s'를 만드는 데 실패"
 
-#: src/libxl/libxl_driver.c:2824 src/qemu/qemu_driver.c:5156
+#: src/libxl/libxl_driver.c:2824 src/qemu/qemu_driver.c:4912
 #: tools/virsh.c:2043
 #, fuzzy
 msgid "Refusing to undefine while domain managed save image exists"
@@ -6987,13 +6987,13 @@ msgstr "디스크 원본 경로가 빠졌습니다"
 msgid "libxenlight failed to attach disk '%s'"
 msgstr "비활성화 도메인 %s 생성 실패\n"
 
-#: src/libxl/libxl_driver.c:2964 src/qemu/qemu_driver.c:5242
+#: src/libxl/libxl_driver.c:2964 src/qemu/qemu_driver.c:4997
 #: src/uml/uml_driver.c:1928
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "디스크 버스 '%s'가 핫플러그될 수 없습니다"
 
-#: src/libxl/libxl_driver.c:2970 src/qemu/qemu_driver.c:5247
+#: src/libxl/libxl_driver.c:2970 src/qemu/qemu_driver.c:5002
 #, c-format
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr "디스크 장치 타입 '%s'가 핫플러그 될 수 없습니다"
@@ -7019,80 +7019,80 @@ msgstr "디스크 버스 '%s'가 핫플러그될 수 없습니다"
 msgid "device type '%s' cannot hot unplugged"
 msgstr "디스크 장치 타입 '%s'가 핫플러그 될 수 없습니다"
 
-#: src/libxl/libxl_driver.c:3049 src/qemu/qemu_driver.c:5337
+#: src/libxl/libxl_driver.c:3049 src/qemu/qemu_driver.c:5092
 #: src/uml/uml_driver.c:1933
 #, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "장치 유형 '%s'가 부착될 수 없습니다"
 
-#: src/libxl/libxl_driver.c:3067 src/qemu/qemu_driver.c:5516
+#: src/libxl/libxl_driver.c:3067 src/qemu/qemu_driver.c:5271
 #, fuzzy, c-format
 msgid "target %s already exists."
 msgstr "타겟 %s가 이미 존재합니다"
 
-#: src/libxl/libxl_driver.c:3080 src/qemu/qemu_driver.c:5567
+#: src/libxl/libxl_driver.c:3080 src/qemu/qemu_driver.c:5322
 #, fuzzy
 msgid "persistent attach of device is not supported"
 msgstr "cpu 친밀도(affinity)가 지원되지 않습니다"
 
-#: src/libxl/libxl_driver.c:3099 src/qemu/qemu_driver.c:5367
+#: src/libxl/libxl_driver.c:3099 src/qemu/qemu_driver.c:5122
 #: src/xen/xm_internal.c:1548
 #, fuzzy, c-format
 msgid "device type '%s' cannot be detached"
 msgstr "장치 유형 '%s'가 부착될 수 없습니다"
 
-#: src/libxl/libxl_driver.c:3118 src/qemu/qemu_driver.c:5587
+#: src/libxl/libxl_driver.c:3118 src/qemu/qemu_driver.c:5342
 #, fuzzy, c-format
 msgid "no target device %s"
 msgstr "장치 %s을(를) 구문 분석할 수 없음  "
 
-#: src/libxl/libxl_driver.c:3125 src/qemu/qemu_driver.c:5616
+#: src/libxl/libxl_driver.c:3125 src/qemu/qemu_driver.c:5371
 #, fuzzy
 msgid "persistent detach of device is not supported"
 msgstr "cpu 친밀도(affinity)가 지원되지 않습니다"
 
-#: src/libxl/libxl_driver.c:3150 src/qemu/qemu_driver.c:5458
+#: src/libxl/libxl_driver.c:3150 src/qemu/qemu_driver.c:5213
 #, fuzzy, c-format
 msgid "disk bus '%s' cannot be updated."
 msgstr "디스크 버스 '%s'가 핫플러그될 수 없습니다"
 
-#: src/libxl/libxl_driver.c:3157 src/qemu/qemu_driver.c:5495
+#: src/libxl/libxl_driver.c:3157 src/qemu/qemu_driver.c:5250
 #, fuzzy, c-format
 msgid "device type '%s' cannot be updated"
 msgstr "디스크 장치 타입 '%s'가 핫플러그 될 수 없습니다"
 
-#: src/libxl/libxl_driver.c:3178 src/qemu/qemu_driver.c:5636
+#: src/libxl/libxl_driver.c:3178 src/qemu/qemu_driver.c:5391
 #, fuzzy, c-format
 msgid "target %s doesn't exist."
 msgstr "'%s' 명령이 존재하지 않음"
 
-#: src/libxl/libxl_driver.c:3184 src/qemu/qemu_driver.c:5643
+#: src/libxl/libxl_driver.c:3184 src/qemu/qemu_driver.c:5398
 #, fuzzy
 msgid "this disk doesn't support update"
 msgstr "ps2 버스는 %s 입력 장치를 지원하지 않음   "
 
-#: src/libxl/libxl_driver.c:3205 src/qemu/qemu_driver.c:5688
+#: src/libxl/libxl_driver.c:3205 src/qemu/qemu_driver.c:5443
 #, fuzzy
 msgid "persistent update of device is not supported"
 msgstr "cpu 친밀도(affinity)가 지원되지 않습니다"
 
-#: src/libxl/libxl_driver.c:3260 src/qemu/qemu_driver.c:5752
+#: src/libxl/libxl_driver.c:3260 src/qemu/qemu_driver.c:5507
 #, fuzzy
 msgid "cannot modify device on transient domain"
 msgstr "임시 도메인 정의를 해제할 수 없음"
 
 #: src/libxl/libxl_driver.c:3290 src/libxl/libxl_driver.c:3314
-#: src/qemu/qemu_driver.c:5778 src/qemu/qemu_driver.c:5808
+#: src/qemu/qemu_driver.c:5533 src/qemu/qemu_driver.c:5563
 #, fuzzy, c-format
 msgid "unknown domain modify action %d"
 msgstr "알려지지 않은 생명주기 동작 %s"
 
-#: src/libxl/libxl_driver.c:3481 src/qemu/qemu_driver.c:5927
+#: src/libxl/libxl_driver.c:3481 src/qemu/qemu_driver.c:5682
 #: src/uml/uml_driver.c:2120
 msgid "cannot set autostart for transient domain"
 msgstr "임시 도메인에 대해 autostart를 설정할 수 없음"
 
-#: src/libxl/libxl_driver.c:3496 src/qemu/qemu_driver.c:5942
+#: src/libxl/libxl_driver.c:3496 src/qemu/qemu_driver.c:5697
 #: src/storage/storage_driver.c:1048 src/uml/uml_driver.c:2135
 #, c-format
 msgid "cannot create autostart directory %s"
@@ -7163,7 +7163,7 @@ msgstr "xen 버스는 %s 입력 장치를 지원하지 않음  "
 msgid "libxenlight does not support transient disks"
 msgstr "xen 버스는 %s 입력 장치를 지원하지 않음  "
 
-#: src/libxl/libxl_conf.c:684 src/qemu/qemu_process.c:2875
+#: src/libxl/libxl_conf.c:684 src/qemu/qemu_process.c:2879
 msgid "Unable to find an unused VNC port"
 msgstr "사용되지 않은 VNC 포트를 찾을 수 없음"
 
@@ -8443,18 +8443,18 @@ msgstr "브리지 '%s'상의 mac 주소를 팔터링할 수 없음"
 msgid "failed to add ebtables rule to allow routing to '%s'"
 msgstr "'%s'으로의 라우팅을 허용하는 규칙을 ebtables에 추가하는 데 실패"
 
-#: src/qemu/qemu_capabilities.c:279 src/qemu/qemu_capabilities.c:1280
-#: src/qemu/qemu_capabilities.c:1363
+#: src/qemu/qemu_capabilities.c:280 src/qemu/qemu_capabilities.c:1288
+#: src/qemu/qemu_capabilities.c:1371
 #, c-format
 msgid "Cannot find QEMU binary %s"
 msgstr "QEMU 바이너리 %s를 찾을 수 없음"
 
-#: src/qemu/qemu_capabilities.c:1156
+#: src/qemu/qemu_capabilities.c:1164
 #, c-format
 msgid "cannot parse %s version number in '%s'"
 msgstr "버전 번호 %s를 '%s'에서 구문 분석할 수 없음"
 
-#: src/qemu/qemu_capabilities.c:1357
+#: src/qemu/qemu_capabilities.c:1365
 #, fuzzy, c-format
 msgid "Cannot find suitable emulator for %s"
 msgstr "주어진 데이터에 들어맞는 CPU 모델을 찾을 수 없음"
@@ -8542,14 +8542,14 @@ msgid "Unable to set cpu bandwidth quota"
 msgstr "cpu shares tunable을 설정할 수 없음"
 
 #: src/qemu/qemu_cgroup.c:422 src/qemu/qemu_cgroup.c:457
-#: src/qemu/qemu_driver.c:6691 src/xenapi/xenapi_utils.c:389
+#: src/qemu/qemu_driver.c:6446 src/xenapi/xenapi_utils.c:389
 #: src/xenapi/xenapi_utils.c:393
 #, c-format
 msgid "%s"
 msgstr "%s"
 
 #: src/qemu/qemu_cgroup.c:446 src/qemu/qemu_cgroup.c:537
-#: src/qemu/qemu_driver.c:5220 src/qemu/qemu_driver.c:5441
+#: src/qemu/qemu_driver.c:4975 src/qemu/qemu_driver.c:5196
 #: src/qemu/qemu_hotplug.c:1008 src/qemu/qemu_hotplug.c:1482
 #: src/qemu/qemu_hotplug.c:1585 src/qemu/qemu_migration.c:2753
 #, fuzzy, c-format
@@ -8980,7 +8980,7 @@ msgstr "cpu 친밀도(affinity)가 지원되지 않습니다"
 msgid "hypervisor lacks deviceboot feature"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3661 src/qemu/qemu_driver.c:5212
+#: src/qemu/qemu_command.c:3661 src/qemu/qemu_driver.c:4967
 #, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "드라이버 이름 '%s'가 디스크 '%s'에 대해 지원되지 않음"
@@ -9478,7 +9478,7 @@ msgstr "예기치 못한 디스크 버스 %d"
 msgid "domain is no longer running"
 msgstr "도메인이 실행중이 아닙니다"
 
-#: src/qemu/qemu_domain.c:1062 src/qemu/qemu_driver.c:8638
+#: src/qemu/qemu_domain.c:1062 src/qemu/qemu_driver.c:8393
 msgid "cannot get host CPU capabilities"
 msgstr "호스트 CPU 기능을 얻는 데 실패했습니다"
 
@@ -9492,6 +9492,30 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Unable to write to domain logfile %s"
 msgstr "도메인 저장 파일 '%s'를 만드는 데 실패"
+
+#: src/qemu/qemu_domain.c:1310 src/storage/storage_backend.c:778
+msgid "unable to find kvm-img or qemu-img"
+msgstr "kvm-img나 qemu-img를 찾을 수 없음"
+
+#: src/qemu/qemu_domain.c:1342
+#, fuzzy, c-format
+msgid "cannot create snapshot directory '%s'"
+msgstr "autostart 디렉터리 '%s'를 생성할 수 없음"
+
+#: src/qemu/qemu_domain.c:1354
+#, fuzzy, c-format
+msgid "failed to create snapshot file '%s'"
+msgstr "파일 '%s'를 만드는 데 실패"
+
+#: src/qemu/qemu_domain.c:1366
+#, fuzzy, c-format
+msgid "Failed to write snapshot data to %s"
+msgstr "저장 헤더를 '%s'에 쓰는 데 실패"
+
+#: src/qemu/qemu_domain.c:1421
+#, fuzzy, c-format
+msgid "Disk device '%s' does not support snapshotting"
+msgstr "qeum 에뮬레이터 '%s'가 xen을 지원하지 않습니다"
 
 #: src/qemu/qemu_driver.c:155
 #, fuzzy, c-format
@@ -9598,104 +9622,85 @@ msgstr "예기치 못한 QEMU URI 경로 '%s', qemu:///session을 시도"
 msgid "no domain with matching id %d"
 msgstr "id가 %d와 일치하는 도메인이 없음"
 
-#: src/qemu/qemu_driver.c:1151 src/qemu/qemu_driver.c:8173
-#: src/qemu/qemu_driver.c:8427
+#: src/qemu/qemu_driver.c:1151 src/qemu/qemu_driver.c:7928
+#: src/qemu/qemu_driver.c:8182
 #, c-format
 msgid "no domain with matching name '%s'"
 msgstr "이름이 '%s'와 일치하는 도메인이 없음"
 
-#: src/qemu/qemu_driver.c:1464 src/qemu/qemu_migration.c:2558
+#: src/qemu/qemu_driver.c:1463 src/qemu/qemu_migration.c:2558
 #: src/qemu/qemu_migration.c:2683 src/qemu/qemu_process.c:405
-#: src/qemu/qemu_process.c:3183
+#: src/qemu/qemu_process.c:3187
 msgid "resume operation failed"
 msgstr "재개 동작이 실패했습니다"
 
-#: src/qemu/qemu_driver.c:1581
+#: src/qemu/qemu_driver.c:1561
+#, fuzzy
+msgid "Reboot is not supported with this QEMU binary"
+msgstr "이 QEMU 바이너리에서는 SATA를 지원하지 않습니다"
+
+#: src/qemu/qemu_driver.c:1586
 #, fuzzy
 msgid "Reboot is not supported without the JSON monitor"
 msgstr "이 QEMU 바이너리에서는 SATA를 지원하지 않습니다"
 
-#: src/qemu/qemu_driver.c:1603 src/storage/storage_backend.c:778
-msgid "unable to find kvm-img or qemu-img"
-msgstr "kvm-img나 qemu-img를 찾을 수 없음"
-
-#: src/qemu/qemu_driver.c:1635
-#, fuzzy, c-format
-msgid "cannot create snapshot directory '%s'"
-msgstr "autostart 디렉터리 '%s'를 생성할 수 없음"
-
-#: src/qemu/qemu_driver.c:1647
-#, fuzzy, c-format
-msgid "failed to create snapshot file '%s'"
-msgstr "파일 '%s'를 만드는 데 실패"
-
-#: src/qemu/qemu_driver.c:1659
-#, fuzzy, c-format
-msgid "Failed to write snapshot data to %s"
-msgstr "저장 헤더를 '%s'에 쓰는 데 실패"
-
-#: src/qemu/qemu_driver.c:1714
-#, fuzzy, c-format
-msgid "Disk device '%s' does not support snapshotting"
-msgstr "qeum 에뮬레이터 '%s'가 xen을 지원하지 않습니다"
-
-#: src/qemu/qemu_driver.c:2032
+#: src/qemu/qemu_driver.c:1799
 #, fuzzy
 msgid "cannot resize the maximum memory on an active domain"
 msgstr "동작중인 도메인의 메모리를 설정할 수 없음"
 
-#: src/qemu/qemu_driver.c:2069 src/uml/uml_driver.c:1569
+#: src/qemu/qemu_driver.c:1836 src/uml/uml_driver.c:1569
 msgid "cannot set memory of an active domain"
 msgstr "동작중인 도메인의 메모리를 설정할 수 없음"
 
-#: src/qemu/qemu_driver.c:2171
+#: src/qemu/qemu_driver.c:1938
 #, c-format
 msgid "cannot translate keycode %u of %s codeset to rfb keycode"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2243 src/uml/uml_driver.c:1611
+#: src/qemu/qemu_driver.c:2010 src/uml/uml_driver.c:1611
 msgid "cannot read cputime for domain"
 msgstr "도메인에 대한 cputime을 읽을 수 없음"
 
-#: src/qemu/qemu_driver.c:2447
+#: src/qemu/qemu_driver.c:2214
 #, fuzzy, c-format
 msgid "failed to write header to domain save file '%s'"
 msgstr "도메인 저장 파일 '%s'를 만드는 데 실패"
 
-#: src/qemu/qemu_driver.c:2455 src/qemu/qemu_driver.c:4492
+#: src/qemu/qemu_driver.c:2222 src/qemu/qemu_driver.c:4257
 #, c-format
 msgid "failed to write xml to '%s'"
 msgstr "xml을 '%s'에 쓰는 데 실패"
 
-#: src/qemu/qemu_driver.c:2506
+#: src/qemu/qemu_driver.c:2273
 #, fuzzy, c-format
 msgid "unable to open %s"
 msgstr "%s를 열 수 없음"
 
-#: src/qemu/qemu_driver.c:2521 src/qemu/qemu_driver.c:2545
+#: src/qemu/qemu_driver.c:2288 src/qemu/qemu_driver.c:2312
 #, fuzzy, c-format
 msgid "Failed to create file '%s'"
 msgstr "파일 '%s'를 만드는 데 실패"
 
-#: src/qemu/qemu_driver.c:2536
+#: src/qemu/qemu_driver.c:2303
 #, fuzzy, c-format
 msgid "Failed to create file '%s': couldn't determine fs type"
 msgstr "도메인 저장 파일 '%s'를 만드는 데 실패"
 
-#: src/qemu/qemu_driver.c:2557
+#: src/qemu/qemu_driver.c:2324
 #, c-format
 msgid "Error from child process creating '%s'"
 msgstr "'%s' 자식 프로세스 생성시 오류 발생"
 
-#: src/qemu/qemu_driver.c:2607 src/qemu/qemu_driver.c:9363
+#: src/qemu/qemu_driver.c:2374 src/qemu/qemu_driver.c:9118
 #: src/qemu/qemu_migration.c:722
 #, fuzzy
 msgid "domain is marked for auto destroy"
 msgstr "%s 도메인은 자동 시작으로 표시됨\n"
 
-#: src/qemu/qemu_driver.c:2635 src/qemu/qemu_driver.c:3144
-#: src/qemu/qemu_driver.c:8970 src/qemu/qemu_driver.c:9244
-#: src/qemu/qemu_driver.c:9922 src/qemu/qemu_driver.c:9972
+#: src/qemu/qemu_driver.c:2402 src/qemu/qemu_driver.c:2910
+#: src/qemu/qemu_driver.c:8725 src/qemu/qemu_driver.c:8999
+#: src/qemu/qemu_driver.c:9677 src/qemu/qemu_driver.c:9727
 #: src/qemu/qemu_hotplug.c:373 src/qemu/qemu_hotplug.c:723
 #: src/qemu/qemu_migration.c:1521 src/qemu/qemu_migration.c:1832
 #: src/qemu/qemu_migration.c:2152 src/qemu/qemu_migration.c:2502
@@ -9704,719 +9709,719 @@ msgstr "%s 도메인은 자동 시작으로 표시됨\n"
 msgid "guest unexpectedly quit"
 msgstr "이전(migration)이 예기치 않게 실패했습니다"
 
-#: src/qemu/qemu_driver.c:2669
+#: src/qemu/qemu_driver.c:2436
 msgid "failed to get domain xml"
 msgstr "도메인 xml을 얻는 데 실패"
 
-#: src/qemu/qemu_driver.c:2698 src/qemu/qemu_driver.c:3029
-#: src/qemu/qemu_driver.c:4105
+#: src/qemu/qemu_driver.c:2465 src/qemu/qemu_driver.c:2795
+#: src/qemu/qemu_driver.c:3870
 #, fuzzy
 msgid "bypass cache unsupported by this system"
 msgstr "이 qemu에서는 'info blockstats'를 지원하지 않습니다"
 
-#: src/qemu/qemu_driver.c:2729 src/qemu/qemu_driver.c:2749
-#: src/qemu/qemu_driver.c:3264 src/vbox/vbox_tmpl.c:8773
+#: src/qemu/qemu_driver.c:2496 src/qemu/qemu_driver.c:2516
+#: src/qemu/qemu_driver.c:3029 src/vbox/vbox_tmpl.c:8773
 #, fuzzy, c-format
 msgid "unable to close %s"
 msgstr "%s를 열 수 없음"
 
-#: src/qemu/qemu_driver.c:2739
+#: src/qemu/qemu_driver.c:2506
 #, fuzzy, c-format
 msgid "unable to seek %s"
 msgstr "%s를 열 수 없음"
 
-#: src/qemu/qemu_driver.c:2745
+#: src/qemu/qemu_driver.c:2512
 #, fuzzy, c-format
 msgid "unable to write %s"
 msgstr "%s를 열 수 없음"
 
-#: src/qemu/qemu_driver.c:2833
+#: src/qemu/qemu_driver.c:2599
 msgid "Invalid save image format specified in configuration file"
 msgstr "설정 파일에서 잘못된 저장 이미지 형태가 지정됨"
 
-#: src/qemu/qemu_driver.c:2839
+#: src/qemu/qemu_driver.c:2605
 msgid ""
 "Compression program for image format in configuration file isn't available"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3051
+#: src/qemu/qemu_driver.c:2817
 #, c-format
 msgid "unable to save file %s"
 msgstr "파일 %s 저장 실패"
 
-#: src/qemu/qemu_driver.c:3083
+#: src/qemu/qemu_driver.c:2849
 #, fuzzy
 msgid "Invalid dump image format specified in configuration file, using raw"
 msgstr "설정 파일에서 잘못된 저장 이미지 형태가 지정됨"
 
-#: src/qemu/qemu_driver.c:3088
+#: src/qemu/qemu_driver.c:2854
 msgid ""
 "Compression program for dump image format in configuration file isn't "
 "available, using raw"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3174
+#: src/qemu/qemu_driver.c:2940
 msgid "resuming after dump failed"
 msgstr "덤프한 후 재개하는 데 실패했습니다"
 
-#: src/qemu/qemu_driver.c:3219
+#: src/qemu/qemu_driver.c:2984
 #, fuzzy, c-format
 msgid "no domain matching uuid '%s'"
 msgstr "uuid가 '%s'와 일치하는 도메인이 없음"
 
-#: src/qemu/qemu_driver.c:3238
+#: src/qemu/qemu_driver.c:3003
 msgid "currently is supported only taking screenshots of screen ID 0"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3249 src/qemu/qemu_driver.c:7695
+#: src/qemu/qemu_driver.c:3014 src/qemu/qemu_driver.c:7450
 #: src/vbox/vbox_tmpl.c:8725
 #, c-format
 msgid "mkstemp(\"%s\") failed"
 msgstr "mkstemp(\"%s\") 실패함"
 
-#: src/qemu/qemu_driver.c:3270 src/vbox/vbox_tmpl.c:8779
+#: src/qemu/qemu_driver.c:3035 src/vbox/vbox_tmpl.c:8779
 #, fuzzy
 msgid "unable to open stream"
 msgstr "%s를 열 수 없음"
 
-#: src/qemu/qemu_driver.c:3331
+#: src/qemu/qemu_driver.c:3096
 #, fuzzy
 msgid "Dump failed"
 msgstr "popen 실패"
 
-#: src/qemu/qemu_driver.c:3339
+#: src/qemu/qemu_driver.c:3104
 #, fuzzy
 msgid "Resuming after dump failed"
 msgstr "덤프한 후 재개하는 데 실패했습니다"
 
-#: src/qemu/qemu_driver.c:3410
+#: src/qemu/qemu_driver.c:3175
 msgid "cannot change vcpu count of this domain"
 msgstr "이 도메인의 vcpu 갯수를 변경할 수 없음"
 
-#: src/qemu/qemu_driver.c:3434 src/test/test_driver.c:2182
+#: src/qemu/qemu_driver.c:3199 src/test/test_driver.c:2182
 #: src/xen/xen_driver.c:1124
 #, fuzzy, c-format
 msgid "argument out of range: %d"
 msgstr "vcpu 갯수가 범위를 벗어남 %d > %d"
 
-#: src/qemu/qemu_driver.c:3467
+#: src/qemu/qemu_driver.c:3232
 #, fuzzy
 msgid "cannot adjust maximum on running domain"
 msgstr "동작중인 도메인을 삭제할 수 없음"
 
-#: src/qemu/qemu_driver.c:3485 src/qemu/qemu_driver.c:4005
+#: src/qemu/qemu_driver.c:3250 src/qemu/qemu_driver.c:3770
 #, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr "도메인 정의 '%d'에 알려져 있지 않은 virt 유형"
 
-#: src/qemu/qemu_driver.c:3598
+#: src/qemu/qemu_driver.c:3363
 msgid "a domain is inactive; can change only persistent config"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3607
+#: src/qemu/qemu_driver.c:3372
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr "vcpu 갯수가 범위를 벗어남 %d > %d"
 
-#: src/qemu/qemu_driver.c:3646 src/qemu/qemu_process.c:1528
+#: src/qemu/qemu_driver.c:3411 src/qemu/qemu_process.c:1529
 msgid "cpu affinity is not supported"
 msgstr "cpu 친밀도(affinity)가 지원되지 않습니다"
 
-#: src/qemu/qemu_driver.c:3653
+#: src/qemu/qemu_driver.c:3418
 #, fuzzy
 msgid "failed to delete vcpupin xml of a running domain"
 msgstr "동작중인 도메인을 삭제할 수 없음"
 
-#: src/qemu/qemu_driver.c:3660
+#: src/qemu/qemu_driver.c:3425
 #, fuzzy
 msgid "failed to update or add vcpupin xml of a running domain"
 msgstr "도메인 xml을 얻는 데 실패"
 
-#: src/qemu/qemu_driver.c:3675
+#: src/qemu/qemu_driver.c:3440
 #, fuzzy
 msgid "failed to delete vcpupin xml of a persistent domain"
 msgstr "xml 문서 구문분석 실패"
 
-#: src/qemu/qemu_driver.c:3682
+#: src/qemu/qemu_driver.c:3447
 #, fuzzy
 msgid "failed to update or add vcpupin xml of a persistent domain"
 msgstr "도메인 xml을 얻는 데 실패"
 
-#: src/qemu/qemu_driver.c:3734
+#: src/qemu/qemu_driver.c:3499
 #, fuzzy
 msgid "cannot get live and persistent info concurrently"
 msgstr "기존 비밀정보의 개인용 플래그를 변경할 수 없음"
 
-#: src/qemu/qemu_driver.c:3770
+#: src/qemu/qemu_driver.c:3535
 #, fuzzy
 msgid "cannot get persistent config of a transient domain"
 msgstr "도메인의 영구 설정을 변경할 수 없음"
 
-#: src/qemu/qemu_driver.c:3851
+#: src/qemu/qemu_driver.c:3616
 msgid "cannot list vcpu pinning for an inactive domain"
 msgstr "비활성화된 도메인의 vcpu 고정 목록을 얻을 수 없음"
 
-#: src/qemu/qemu_driver.c:3882
+#: src/qemu/qemu_driver.c:3647
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "vCPU 위치와 pCPU 시간을 얻을 수 없음"
 
-#: src/qemu/qemu_driver.c:3900
+#: src/qemu/qemu_driver.c:3665
 msgid "cpu affinity is not available"
 msgstr "cpu 친밀도(affinity)를 사용할 수 없습니다"
 
-#: src/qemu/qemu_driver.c:3956 src/test/test_driver.c:2130
-#: src/xen/xend_internal.c:2353 src/xen/xm_internal.c:795
+#: src/qemu/qemu_driver.c:3721 src/test/test_driver.c:2130
+#: src/xen/xend_internal.c:2347 src/xen/xm_internal.c:795
 #, fuzzy
 msgid "domain not active"
 msgstr "도메인 상태"
 
-#: src/qemu/qemu_driver.c:4028
+#: src/qemu/qemu_driver.c:3793
 msgid "Failed to get security label"
 msgstr "보안 레이블을 얻는 데 실패"
 
-#: src/qemu/qemu_driver.c:4060
+#: src/qemu/qemu_driver.c:3825
 #, c-format
 msgid "security model string exceeds max %d bytes"
 msgstr "보안 모델 문자열이 최대 %d 바이트를 넘어갑니다"
 
-#: src/qemu/qemu_driver.c:4070
+#: src/qemu/qemu_driver.c:3835
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "보안 DOI 문자열이 최대 %d 바이트를 넘어갑니다"
 
-#: src/qemu/qemu_driver.c:4118
+#: src/qemu/qemu_driver.c:3883
 msgid "failed to read qemu header"
 msgstr "qemu 헤더를 읽는 것을 실패"
 
-#: src/qemu/qemu_driver.c:4127
+#: src/qemu/qemu_driver.c:3892
 #, fuzzy
 msgid "save image is incomplete"
 msgstr "이미지 매직이 잘못되었습니다"
 
-#: src/qemu/qemu_driver.c:4131
+#: src/qemu/qemu_driver.c:3896
 #, fuzzy, c-format
 msgid "cannot remove corrupt file: %s"
 msgstr "'%s' 설정 파일을 제거할 수 없음"
 
-#: src/qemu/qemu_driver.c:4175 src/qemu/qemu_driver.c:4279
+#: src/qemu/qemu_driver.c:3940 src/qemu/qemu_driver.c:4044
 #, fuzzy, c-format
 msgid "cannot close file: %s"
 msgstr "파일 '%s'를 닫을 수 없음"
 
-#: src/qemu/qemu_driver.c:4236
+#: src/qemu/qemu_driver.c:4001
 #, c-format
 msgid "Invalid compressed save format %d"
 msgstr "잘못된 암축 보존 형태 %d"
 
-#: src/qemu/qemu_driver.c:4251
+#: src/qemu/qemu_driver.c:4016
 #, c-format
 msgid "Failed to start decompression binary %s"
 msgstr "바이너리 %s의 압축 해제 시작 실패"
 
-#: src/qemu/qemu_driver.c:4303
+#: src/qemu/qemu_driver.c:4068
 msgid "failed to resume domain"
 msgstr "도메인을 재개하는 것에 실패"
 
-#: src/qemu/qemu_driver.c:4477
+#: src/qemu/qemu_driver.c:4242
 #, fuzzy
 msgid "new xml too large to fit in file"
 msgstr "설정 파일 구문 분석 실패"
 
-#: src/qemu/qemu_driver.c:4486
+#: src/qemu/qemu_driver.c:4251
 #, fuzzy, c-format
 msgid "cannot seek in '%s'"
 msgstr "'%s'를 열 수 없음"
 
-#: src/qemu/qemu_driver.c:4831
+#: src/qemu/qemu_driver.c:4596
 #, fuzzy, c-format
 msgid "cannot remove managed save file %s"
 msgstr "'%s' 설정 파일을 제거할 수 없음"
 
-#: src/qemu/qemu_driver.c:4901
+#: src/qemu/qemu_driver.c:4666
 msgid "domain is already running"
 msgstr "도메인이 이미 실행중입니다"
 
-#: src/qemu/qemu_driver.c:5121
+#: src/qemu/qemu_driver.c:4889
 #, fuzzy, c-format
 msgid "cannot delete inactive domain with %d snapshots"
 msgstr "동작중인 도메인을 삭제할 수 없음"
 
-#: src/qemu/qemu_driver.c:5277
+#: src/qemu/qemu_driver.c:5032
 #, c-format
 msgid "disk controller bus '%s' cannot be hotplugged."
 msgstr "디스크 컨트롤러 버스 '%s'가 핫플러그될 수 없습니다"
 
-#: src/qemu/qemu_driver.c:5363 src/uml/uml_driver.c:2044
+#: src/qemu/qemu_driver.c:5118 src/uml/uml_driver.c:2044
 #, fuzzy
 msgid "This type of disk cannot be hot unplugged"
 msgstr "이런 유형의 장치는 핫 언플러그될 수 없습니다"
 
-#: src/qemu/qemu_driver.c:5388
+#: src/qemu/qemu_driver.c:5143
 #, c-format
 msgid "disk controller bus '%s' cannot be hotunplugged."
 msgstr "디스크 컨트롤러 버스 '%s'는 핫 언플러그될 수 없습니다"
 
-#: src/qemu/qemu_driver.c:5420 src/uml/uml_driver.c:2048
+#: src/qemu/qemu_driver.c:5175 src/uml/uml_driver.c:2048
 msgid "This type of device cannot be hot unplugged"
 msgstr "이런 유형의 장치는 핫 언플러그될 수 없습니다"
 
-#: src/qemu/qemu_driver.c:5538
+#: src/qemu/qemu_driver.c:5293
 #, fuzzy, c-format
 msgid "mac %s already exists"
 msgstr "타겟 %s가 이미 존재합니다"
 
-#: src/qemu/qemu_driver.c:5554
+#: src/qemu/qemu_driver.c:5309
 #, fuzzy, c-format
 msgid "Lease %s in lockspace %s already exists"
 msgstr "인터페이스 %s가 이미 존재합니다"
 
-#: src/qemu/qemu_driver.c:5599
+#: src/qemu/qemu_driver.c:5354
 #, c-format
 msgid "no nic of mac %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5608 src/qemu/qemu_hotplug.c:2224
+#: src/qemu/qemu_driver.c:5363 src/qemu/qemu_hotplug.c:2224
 #, fuzzy, c-format
 msgid "Lease %s in lockspace %s does not exist"
 msgstr "인터페이스 %s가 존재하지 않습니다"
 
-#: src/qemu/qemu_driver.c:5673
+#: src/qemu/qemu_driver.c:5428
 #, fuzzy, c-format
 msgid "mac %s doesn't exist"
 msgstr "'%s' 명령이 존재하지 않음"
 
-#: src/qemu/qemu_driver.c:5744
+#: src/qemu/qemu_driver.c:5499
 #, fuzzy
 msgid "cannot do live update a device on inactive domain"
 msgstr "작동중이 아닌 도메인에서 장치를 탈착할 수 없음"
 
-#: src/qemu/qemu_driver.c:6019 src/qemu/qemu_driver.c:6838
-#: src/qemu/qemu_driver.c:7118
+#: src/qemu/qemu_driver.c:5774 src/qemu/qemu_driver.c:6593
+#: src/qemu/qemu_driver.c:6873
 #, fuzzy
 msgid "cgroup CPU controller is not mounted"
 msgstr "디스크 컨트롤러 %s:%d를 찾을 수 없음"
 
-#: src/qemu/qemu_driver.c:6063 src/qemu/qemu_driver.c:6203
-#: src/qemu/qemu_driver.c:6343 src/qemu/qemu_driver.c:6500
-#: src/qemu/qemu_driver.c:6803 src/qemu/qemu_driver.c:7066
+#: src/qemu/qemu_driver.c:5818 src/qemu/qemu_driver.c:5958
+#: src/qemu/qemu_driver.c:6098 src/qemu/qemu_driver.c:6255
+#: src/qemu/qemu_driver.c:6558 src/qemu/qemu_driver.c:6821
 #, c-format
 msgid "No such domain %s"
 msgstr "도메인 %s는 없음"
 
-#: src/qemu/qemu_driver.c:6084 src/qemu/qemu_driver.c:6237
+#: src/qemu/qemu_driver.c:5839 src/qemu/qemu_driver.c:5992
 msgid "blkio cgroup isn't mounted"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6114 src/qemu/qemu_driver.c:6148
+#: src/qemu/qemu_driver.c:5869 src/qemu/qemu_driver.c:5903
 #, fuzzy
 msgid "invalid type for blkio weight tunable, expected a 'unsigned int'"
 msgstr "cpu_shares tunable에 대해 잘못된 유형, 'ullong'이 필요함"
 
-#: src/qemu/qemu_driver.c:6121 src/qemu/qemu_driver.c:6155
+#: src/qemu/qemu_driver.c:5876 src/qemu/qemu_driver.c:5910
 msgid "out of blkio weight range."
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6129
+#: src/qemu/qemu_driver.c:5884
 #, fuzzy
 msgid "unable to set blkio weight tunable"
 msgstr "cpu shares tunable을 설정할 수 없음"
 
-#: src/qemu/qemu_driver.c:6270
+#: src/qemu/qemu_driver.c:6025
 #, fuzzy
 msgid "unable to get blkio weight"
 msgstr "cpu shares tunable을 얻을 수 없음"
 
-#: src/qemu/qemu_driver.c:6275 src/qemu/qemu_driver.c:6297
+#: src/qemu/qemu_driver.c:6030 src/qemu/qemu_driver.c:6052
 #, fuzzy
 msgid "Field blkio weight too long for destination"
 msgstr "필드 cpu_shares가 목적지에 대해 너무 긺"
 
-#: src/qemu/qemu_driver.c:6365 src/qemu/qemu_driver.c:6522
+#: src/qemu/qemu_driver.c:6120 src/qemu/qemu_driver.c:6277
 #, fuzzy
 msgid "cgroup memory controller is not mounted"
 msgstr "디스크 컨트롤러 %s:%d를 찾을 수 없음"
 
-#: src/qemu/qemu_driver.c:6704 src/qemu/qemu_driver.c:6970
+#: src/qemu/qemu_driver.c:6459 src/qemu/qemu_driver.c:6725
 #, fuzzy
 msgid "unable to get cpu bandwidth tunable"
 msgstr "cpu shares tunable을 얻을 수 없음"
 
-#: src/qemu/qemu_driver.c:6711 src/qemu/qemu_driver.c:6963
+#: src/qemu/qemu_driver.c:6466 src/qemu/qemu_driver.c:6718
 #, fuzzy
 msgid "unable to get cpu bandwidth period tunable"
 msgstr "cpu shares tunable을 얻을 수 없음"
 
-#: src/qemu/qemu_driver.c:6754
+#: src/qemu/qemu_driver.c:6509
 #, fuzzy, c-format
 msgid "Unable to find vcpu cgroup for %s(vcpu: %d)"
 msgstr "%s에 대한 cgroup을 찾을 수 없음\n"
 
-#: src/qemu/qemu_driver.c:6855
+#: src/qemu/qemu_driver.c:6610
 msgid "invalid type for cpu_shares tunable, expected a 'ullong'"
 msgstr "cpu_shares tunable에 대해 잘못된 유형, 'ullong'이 필요함"
 
-#: src/qemu/qemu_driver.c:6863
+#: src/qemu/qemu_driver.c:6618
 msgid "unable to set cpu shares tunable"
 msgstr "cpu shares tunable을 설정할 수 없음"
 
-#: src/qemu/qemu_driver.c:6876
+#: src/qemu/qemu_driver.c:6631
 #, fuzzy
 msgid "invalid type for vcpu_period tunable, expected a 'ullong'"
 msgstr "cpu_shares tunable에 대해 잘못된 유형, 'ullong'이 필요함"
 
-#: src/qemu/qemu_driver.c:6896
+#: src/qemu/qemu_driver.c:6651
 #, fuzzy
 msgid "invalid type for vcpu_quota tunable, expected a 'llong'"
 msgstr "cpu_shares tunable에 대해 잘못된 유형, 'ullong'이 필요함"
 
-#: src/qemu/qemu_driver.c:7002
+#: src/qemu/qemu_driver.c:6757
 #, fuzzy, c-format
 msgid "Unable to find vcpu cgroup for %s(vcpu: 0)"
 msgstr "%s에 대한 cgroup을 찾을 수 없음\n"
 
-#: src/qemu/qemu_driver.c:7045
+#: src/qemu/qemu_driver.c:6800
 #, fuzzy
 msgid "cannot query live and config together"
 msgstr "%s에 대한 설정을 제거할 수 없음"
 
-#: src/qemu/qemu_driver.c:7082
+#: src/qemu/qemu_driver.c:6837
 #, fuzzy
 msgid "cannot query persistent config of a transient domain"
 msgstr "도메인의 영구 설정을 변경할 수 없음"
 
-#: src/qemu/qemu_driver.c:7092
+#: src/qemu/qemu_driver.c:6847
 #, fuzzy
 msgid "can't get persistentDef"
 msgstr "피어 소켓 식별자를 얻을 수 없습니다"
 
-#: src/qemu/qemu_driver.c:7131
+#: src/qemu/qemu_driver.c:6886
 msgid "unable to get cpu shares tunable"
 msgstr "cpu shares tunable을 얻을 수 없음"
 
-#: src/qemu/qemu_driver.c:7145
+#: src/qemu/qemu_driver.c:6900
 msgid "Field cpu_shares too long for destination"
 msgstr "필드 cpu_shares가 목적지에 대해 너무 긺"
 
-#: src/qemu/qemu_driver.c:7158
+#: src/qemu/qemu_driver.c:6913
 #, fuzzy
 msgid "Field vcpu_period too long for destination"
 msgstr "필드 cpu_shares가 목적지에 대해 너무 긺"
 
-#: src/qemu/qemu_driver.c:7170
+#: src/qemu/qemu_driver.c:6925
 #, fuzzy
 msgid "Field vcpu_quota too long for destination"
 msgstr "필드 cpu_shares가 목적지에 대해 너무 긺"
 
-#: src/qemu/qemu_driver.c:7239 src/qemu/qemu_driver.c:7327
+#: src/qemu/qemu_driver.c:6994 src/qemu/qemu_driver.c:7082
 #: src/test/test_driver.c:2819
 #, c-format
 msgid "invalid path: %s"
 msgstr "잘못된 경로: %s"
 
-#: src/qemu/qemu_driver.c:7245 src/qemu/qemu_driver.c:7333
+#: src/qemu/qemu_driver.c:7000 src/qemu/qemu_driver.c:7088
 #: src/qemu/qemu_hotplug.c:75
 #, c-format
 msgid "missing disk device alias name for %s"
 msgstr "%s에 대한 디스크 장치 별칭이 빠짐"
 
-#: src/qemu/qemu_driver.c:7378
+#: src/qemu/qemu_driver.c:7133
 #, fuzzy
 msgid "Field write bytes too long for destination"
 msgstr "필드 cpu_shares가 목적지에 대해 너무 긺"
 
-#: src/qemu/qemu_driver.c:7388
+#: src/qemu/qemu_driver.c:7143
 #, fuzzy
 msgid "Field write requests too long for destination"
 msgstr "필드 cpu_shares가 목적지에 대해 너무 긺"
 
-#: src/qemu/qemu_driver.c:7398
+#: src/qemu/qemu_driver.c:7153
 #, fuzzy
 msgid "Field read bytes too long for destination"
 msgstr "필드 cpu_shares가 목적지에 대해 너무 긺"
 
-#: src/qemu/qemu_driver.c:7408
+#: src/qemu/qemu_driver.c:7163
 #, fuzzy
 msgid "Field read requests too long for destination"
 msgstr "필드 cpu_shares가 목적지에 대해 너무 긺"
 
-#: src/qemu/qemu_driver.c:7418
+#: src/qemu/qemu_driver.c:7173
 #, fuzzy
 msgid "Field flush requests too long for destination"
 msgstr "필드 cpu_shares가 목적지에 대해 너무 긺"
 
-#: src/qemu/qemu_driver.c:7428
+#: src/qemu/qemu_driver.c:7183
 #, fuzzy
 msgid "Field write total times too long for destination"
 msgstr "필드 cpu_shares가 목적지에 대해 너무 긺"
 
-#: src/qemu/qemu_driver.c:7438
+#: src/qemu/qemu_driver.c:7193
 #, fuzzy
 msgid "Field read total times too long for destination"
 msgstr "필드 cpu_shares가 목적지에 대해 너무 긺"
 
-#: src/qemu/qemu_driver.c:7448
+#: src/qemu/qemu_driver.c:7203
 #, fuzzy
 msgid "Field flush total times too long for destination"
 msgstr "필드 cpu_shares가 목적지에 대해 너무 긺"
 
-#: src/qemu/qemu_driver.c:7513 src/test/test_driver.c:2874
+#: src/qemu/qemu_driver.c:7268 src/test/test_driver.c:2874
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "잘못된 경로, '%s'는 알려진 인터페이스가 이닙니다"
 
-#: src/qemu/qemu_driver.c:7527
+#: src/qemu/qemu_driver.c:7282
 #, fuzzy
 msgid "interface stats not implemented on this platform"
 msgstr "이 플랫폼에는 노드 정보가 구현되어 있지 않습니다"
 
-#: src/qemu/qemu_driver.c:7606 src/qemu/qemu_driver.c:7771
+#: src/qemu/qemu_driver.c:7361 src/qemu/qemu_driver.c:7526
 #: src/uml/uml_driver.c:2195
 msgid "NULL or empty path"
 msgstr "NULL 또는 비어있는 경로"
 
-#: src/qemu/qemu_driver.c:7613 src/uml/uml_driver.c:2202
+#: src/qemu/qemu_driver.c:7368 src/uml/uml_driver.c:2202
 #, fuzzy, c-format
 msgid "invalid path '%s'"
 msgstr "잘못된 경로: %s"
 
-#: src/qemu/qemu_driver.c:7622
+#: src/qemu/qemu_driver.c:7377
 #, c-format
 msgid "%s: failed to open"
 msgstr "%s: 여는 데 실패"
 
-#: src/qemu/qemu_driver.c:7633
+#: src/qemu/qemu_driver.c:7388
 #, c-format
 msgid "%s: failed to seek or read"
 msgstr "%s: seek이나 읽기가 실패함"
 
-#: src/qemu/qemu_driver.c:7674
+#: src/qemu/qemu_driver.c:7429
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr ""
 "플래그 매개변수는 VIR_MEMORY_VIRTUAL이거나 VIR_MEMORY_PHYSICAL이어야 합니다"
 
-#: src/qemu/qemu_driver.c:7719
+#: src/qemu/qemu_driver.c:7474
 #, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "템플릿 %s로 생성된 임시 파일을 읽는 데 실패"
 
-#: src/qemu/qemu_driver.c:7778
+#: src/qemu/qemu_driver.c:7533
 #, fuzzy, c-format
 msgid "invalid path %s not assigned to domain"
 msgstr "잘못된 경로, '%s'는 알려진 인터페이스가 이닙니다"
 
-#: src/qemu/qemu_driver.c:7784
+#: src/qemu/qemu_driver.c:7539
 #, c-format
 msgid "disk %s does not currently have a source assigned"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7794
+#: src/qemu/qemu_driver.c:7549
 #, fuzzy, c-format
 msgid "failed to open path '%s'"
 msgstr "경로 '%s'를 opendir하는데 실패"
 
-#: src/qemu/qemu_driver.c:7802
+#: src/qemu/qemu_driver.c:7557
 #, fuzzy, c-format
 msgid "unknown disk format %s for %s"
 msgstr "알려져 있지 않은 풀(pool) 형식 타입 %s"
 
-#: src/qemu/qemu_driver.c:7831 src/storage/storage_backend.c:1026
+#: src/qemu/qemu_driver.c:7586 src/storage/storage_backend.c:1026
 #: src/storage/storage_backend.c:1146 src/util/storage_file.c:744
 #: src/util/storage_file.c:840
 #, c-format
 msgid "cannot stat file '%s'"
 msgstr "파일 '%s'를 stat할 수 없음"
 
-#: src/qemu/qemu_driver.c:7853
+#: src/qemu/qemu_driver.c:7608
 #, fuzzy, c-format
 msgid "failed to seek to end of %s"
 msgstr "파일에서 읽거나 lseek하는 데 실패했습니다: %s"
 
-#: src/qemu/qemu_driver.c:8006 src/qemu/qemu_driver.c:8078
-#: src/qemu/qemu_driver.c:8304 src/qemu/qemu_driver.c:8339
+#: src/qemu/qemu_driver.c:7761 src/qemu/qemu_driver.c:7833
+#: src/qemu/qemu_driver.c:8059 src/qemu/qemu_driver.c:8094
 msgid "no domain XML passed"
 msgstr "도메인 XML이 넘겨지지 않음"
 
-#: src/qemu/qemu_driver.c:8011 src/qemu/qemu_driver.c:8344
+#: src/qemu/qemu_driver.c:7766 src/qemu/qemu_driver.c:8099
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel이 호출되었지만 TUNNELLED 플래그가 설정되지 않았습니다"
 
-#: src/qemu/qemu_driver.c:8016 src/qemu/qemu_driver.c:8349
+#: src/qemu/qemu_driver.c:7771 src/qemu/qemu_driver.c:8104
 msgid "tunnelled migration requested but NULL stream passed"
 msgstr "터널링을 이용한 이전이 요청되었지만 NULL 스트림이 넘겨졌습니다"
 
-#: src/qemu/qemu_driver.c:8022 src/qemu/qemu_driver.c:8062
-#: src/qemu/qemu_driver.c:8117
+#: src/qemu/qemu_driver.c:7777 src/qemu/qemu_driver.c:7817
+#: src/qemu/qemu_driver.c:7872
 #, c-format
 msgid "Cannot use migrate v2 protocol with lock manager %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8072 src/qemu/qemu_driver.c:8298
+#: src/qemu/qemu_driver.c:7827 src/qemu/qemu_driver.c:8053
 msgid "Tunnelled migration requested but invalid RPC method called"
 msgstr ""
 "터널링을 이용한 이전이 요청되었으나, 잘못된 RPC 메소드가 호출되었습니다"
 
-#: src/qemu/qemu_driver.c:8246 src/qemu/qemu_migration.c:1109
+#: src/qemu/qemu_driver.c:8001 src/qemu/qemu_migration.c:1109
 #, fuzzy
 msgid "domain disappeared"
 msgstr "도메인이 일시 중지되지 않았습니다"
 
-#: src/qemu/qemu_driver.c:8532 src/xen/xen_driver.c:1972
+#: src/qemu/qemu_driver.c:8287 src/xen/xen_driver.c:1972
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr "장치 %s는 PCI 장치가 아닙니다"
 
-#: src/qemu/qemu_driver.c:8746
+#: src/qemu/qemu_driver.c:8501
 msgid "no job is active on the domain"
 msgstr "도메인에 작동중인 잡이 없습니다"
 
-#: src/qemu/qemu_driver.c:8750
+#: src/qemu/qemu_driver.c:8505
 msgid "cannot abort incoming migration; use virDomainDestroy instead"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8808
+#: src/qemu/qemu_driver.c:8563
 msgid "domain is not being migrated"
 msgstr "도메인이 이전중 아닙니다"
 
-#: src/qemu/qemu_driver.c:8924
+#: src/qemu/qemu_driver.c:8679
 #, fuzzy, c-format
 msgid "Disk '%s' does not support snapshotting"
 msgstr "ps2 버스는 %s 입력 장치를 지원하지 않음   "
 
-#: src/qemu/qemu_driver.c:9004 src/qemu/qemu_driver.c:9303
+#: src/qemu/qemu_driver.c:8759 src/qemu/qemu_driver.c:9058
 #, fuzzy
 msgid "resuming after snapshot failed"
 msgstr "덤프한 후 재개하는 데 실패했습니다"
 
-#: src/qemu/qemu_driver.c:9033
+#: src/qemu/qemu_driver.c:8788
 #, c-format
 msgid ""
 "active qemu domains require external disk snapshots; disk %s requested "
 "internal"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9041
+#: src/qemu/qemu_driver.c:8796
 #, fuzzy, c-format
 msgid "internal snapshot for disk %s unsupported for storage type %s"
 msgstr "인터페이스의 유형이 지원되지 않는 '%s'입니다"
 
-#: src/qemu/qemu_driver.c:9059
+#: src/qemu/qemu_driver.c:8814
 #, c-format
 msgid "external snapshot format for disk %s is unsupported: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9067
+#: src/qemu/qemu_driver.c:8822
 #, fuzzy, c-format
 msgid "unable to stat for disk %s: %s"
 msgstr "USB 디스크 %s를 추가할 수 없음: %s"
 
-#: src/qemu/qemu_driver.c:9073
+#: src/qemu/qemu_driver.c:8828
 #, c-format
 msgid ""
 "external snapshot file for disk %s already exists and is not a block device: "
 "%s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9087 src/qemu/qemu_driver.c:9127
+#: src/qemu/qemu_driver.c:8842 src/qemu/qemu_driver.c:8882
 #, fuzzy
 msgid "unexpected code path"
 msgstr "예기치 못한 디스크 캐시 모드 %d"
 
-#: src/qemu/qemu_driver.c:9094
+#: src/qemu/qemu_driver.c:8849
 msgid "disk snapshots require at least one disk to be selected for snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9368
+#: src/qemu/qemu_driver.c:9123
 #, fuzzy
 msgid "cannot halt after transient domain snapshot"
 msgstr "임시 도메인 정의를 해제할 수 없음"
 
-#: src/qemu/qemu_driver.c:9384
+#: src/qemu/qemu_driver.c:9139
 #, fuzzy, c-format
 msgid "cannot set snapshot %s as its own parent"
 msgstr "동작중인 도메인을 삭제할 수 없음"
 
-#: src/qemu/qemu_driver.c:9391
+#: src/qemu/qemu_driver.c:9146
 #, fuzzy, c-format
 msgid "parent %s for snapshot %s not found"
 msgstr "도메인을 찾을 수 없음"
 
-#: src/qemu/qemu_driver.c:9398
+#: src/qemu/qemu_driver.c:9153
 #, fuzzy, c-format
 msgid "parent %s would create cycle to %s"
 msgstr "%s를 %s 생성을 위해 실행할 수 없음"
 
-#: src/qemu/qemu_driver.c:9416
+#: src/qemu/qemu_driver.c:9171
 #, c-format
 msgid "definition for snapshot %s must use uuid %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9427
+#: src/qemu/qemu_driver.c:9182
 #, fuzzy, c-format
 msgid "cannot change between online and offline snapshot state in snapshot %s"
 msgstr "CPU 온라인 상태를 변경할 수 없음"
 
-#: src/qemu/qemu_driver.c:9435
+#: src/qemu/qemu_driver.c:9190
 #, c-format
 msgid ""
 "cannot change between disk snapshot and system checkpoint in snapshot %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9528
+#: src/qemu/qemu_driver.c:9283
 msgid "disk snapshots of inactive domains not implemented yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9658
+#: src/qemu/qemu_driver.c:9413
 #, fuzzy, c-format
 msgid "no snapshot with matching name '%s'"
 msgstr "이름이 '%s'와 일치하는 풀이 없음"
 
-#: src/qemu/qemu_driver.c:9720
+#: src/qemu/qemu_driver.c:9475
 #, fuzzy
 msgid "the domain does not have a current snapshot"
 msgstr "도메인을 다른 호스트로 이전"
 
-#: src/qemu/qemu_driver.c:9756 src/qemu/qemu_driver.c:9824
-#: src/qemu/qemu_driver.c:10150
+#: src/qemu/qemu_driver.c:9511 src/qemu/qemu_driver.c:9579
+#: src/qemu/qemu_driver.c:9905
 #, fuzzy, c-format
 msgid "no domain snapshot with matching name '%s'"
 msgstr "이름이 '%s'와 일치하는 도메인이 없음"
 
-#: src/qemu/qemu_driver.c:9835
+#: src/qemu/qemu_driver.c:9590
 msgid ""
 "transient domain needs to request run or pause to revert to inactive snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9841
+#: src/qemu/qemu_driver.c:9596
 #, fuzzy
 msgid "revert to external disk snapshot not supported yet"
 msgstr "디스크 암호 설정을 지원하지 않습니다"
 
-#: src/qemu/qemu_driver.c:10165
+#: src/qemu/qemu_driver.c:9920
 #, fuzzy, c-format
 msgid "deletion of %d external disk snapshots not supported yet"
 msgstr "디스크 암호 설정을 지원하지 않습니다"
 
-#: src/qemu/qemu_driver.c:10193
+#: src/qemu/qemu_driver.c:9948
 #, fuzzy, c-format
 msgid "failed to set snapshot '%s' as current"
 msgstr "xml 문서 구문분석 실패"
 
-#: src/qemu/qemu_driver.c:10302
+#: src/qemu/qemu_driver.c:10057
 #, fuzzy, c-format
 msgid "No monitor connection for pid %u"
 msgstr "하이퍼바이저 연결 URI"
 
-#: src/qemu/qemu_driver.c:10308
+#: src/qemu/qemu_driver.c:10063
 #, c-format
 msgid "Cannot connect to monitor connection of type '%s' for pid %u"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10417 src/uml/uml_driver.c:2279
+#: src/qemu/qemu_driver.c:10172 src/uml/uml_driver.c:2279
 #, fuzzy, c-format
 msgid "cannot find character device %s"
 msgstr "문자 디바이스 %s에서 포트 번호를 찾을 수 없음"
 
-#: src/qemu/qemu_driver.c:10467
+#: src/qemu/qemu_driver.c:10222
 msgid "No device found for specified path"
 msgstr ""
 
@@ -11935,178 +11940,178 @@ msgstr "볼륨 %s에 대해 잘못된 <encryption>"
 msgid "format='qcow' passphrase for %s must not contain a '\\0'"
 msgstr "format='qcow'. %s를 위한 암호구는 '\\0'를 포함해서는 안됩니다."
 
-#: src/qemu/qemu_process.c:454
+#: src/qemu/qemu_process.c:455
 #, fuzzy
 msgid "Failed to create reboot thread, killing domain"
 msgstr "비활성화 도메인 %s 생성 실패\n"
 
-#: src/qemu/qemu_process.c:838
+#: src/qemu/qemu_process.c:839
 #, fuzzy, c-format
 msgid "Failed to set security context for monitor for %s"
 msgstr "%s에 대한 모니터연결 실패"
 
-#: src/qemu/qemu_process.c:871
+#: src/qemu/qemu_process.c:872
 #, fuzzy, c-format
 msgid "Failed to clear security context for monitor for %s"
 msgstr "%s에 대한 모니터연결 실패"
 
-#: src/qemu/qemu_process.c:937
+#: src/qemu/qemu_process.c:938
 #, c-format
 msgid "Failure while reading %s log output"
 msgstr "%s 로그 출력을 읽는 데 실패"
 
-#: src/qemu/qemu_process.c:959
+#: src/qemu/qemu_process.c:960
 #, c-format
 msgid "Out of space while reading %s log output: %s"
 msgstr "%s 로그 출력을 읽는 중 메모리 꽉 참: %s"
 
-#: src/qemu/qemu_process.c:966
+#: src/qemu/qemu_process.c:967
 #, c-format
 msgid "Process exited while reading %s log output: %s"
 msgstr "%s 로그 출력을 읽는 중 프로세스가 종료 됨: %s"
 
-#: src/qemu/qemu_process.c:981
+#: src/qemu/qemu_process.c:982
 #, c-format
 msgid "Timed out while reading %s log output: %s"
 msgstr "%s 로그 출력을 읽는 중 타임 아웃 : %s"
 
-#: src/qemu/qemu_process.c:1068
+#: src/qemu/qemu_process.c:1069
 #, c-format
 msgid "no assigned pty for device %s"
 msgstr "장치 %s에 대해 할당된 pty가 없음"
 
-#: src/qemu/qemu_process.c:1250
+#: src/qemu/qemu_process.c:1251
 #, fuzzy, c-format
 msgid "process exited while connecting to monitor: %s"
 msgstr "%s 로그 출력을 읽는 중 프로세스가 종료 됨: %s"
 
-#: src/qemu/qemu_process.c:1300
+#: src/qemu/qemu_process.c:1301
 #, c-format
 msgid "got wrong number of vCPU pids from QEMU monitor. got %d, wanted %d"
 msgstr "QEMU 모니터에서 vCPU pid의 갯수를 잘못 얻음. 얻은 값 %d, 원하는 값 %d"
 
-#: src/qemu/qemu_process.c:1336
+#: src/qemu/qemu_process.c:1337
 msgid "Host kernel is not aware of NUMA."
 msgstr ""
 
-#: src/qemu/qemu_process.c:1348
+#: src/qemu/qemu_process.c:1349
 #, c-format
 msgid "Host cannot support NUMA node %d"
 msgstr ""
 
-#: src/qemu/qemu_process.c:1377
+#: src/qemu/qemu_process.c:1378
 msgid "NUMA memory tuning in 'preferred' mode only supports single node"
 msgstr ""
 
-#: src/qemu/qemu_process.c:1391
+#: src/qemu/qemu_process.c:1392
 #, fuzzy
 msgid "Invalid mode for memory NUMA tuning."
 msgstr "메모리 크기에 대해 %d의 잘못된 값"
 
-#: src/qemu/qemu_process.c:1406
+#: src/qemu/qemu_process.c:1407
 msgid "libvirt is compiled without NUMA tuning support"
 msgstr ""
 
-#: src/qemu/qemu_process.c:1487
+#: src/qemu/qemu_process.c:1488
 #, fuzzy
 msgid "Setting of link state is not supported by this qemu"
 msgstr "이 qemu에서는 'info blockstats'를 지원하지 않습니다"
 
-#: src/qemu/qemu_process.c:1496
+#: src/qemu/qemu_process.c:1497
 #, fuzzy, c-format
 msgid "Couldn't set link state on interface: %s"
 msgstr "인터페이스 MAC 주소를 인터페이스 이름으로 변환합니다"
 
-#: src/qemu/qemu_process.c:1897
+#: src/qemu/qemu_process.c:1898
 #, c-format
 msgid "cannot find PCI address for VirtIO disk %s"
 msgstr "VirtIO 디스크 %s에 대한 PCI 주소를 찾을 수 없음"
 
-#: src/qemu/qemu_process.c:1911
+#: src/qemu/qemu_process.c:1912
 #, c-format
 msgid "cannot find PCI address for %s NIC"
 msgstr "%s NIC에 대해 PCI주소를 찾을 수 없음"
 
-#: src/qemu/qemu_process.c:1925
+#: src/qemu/qemu_process.c:1926
 #, c-format
 msgid "cannot find PCI address for controller %s"
 msgstr "%s 컨트롤러에 대해 PCI주소를 찾을 수 없음"
 
-#: src/qemu/qemu_process.c:1939
+#: src/qemu/qemu_process.c:1940
 #, c-format
 msgid "cannot find PCI address for video adapter %s"
 msgstr "%s 비디오 아답터에 대해 PCI주소를 찾을 수 없음"
 
-#: src/qemu/qemu_process.c:1953
+#: src/qemu/qemu_process.c:1954
 #, c-format
 msgid "cannot find PCI address for sound adapter %s"
 msgstr "%s 사운드 아답터 대해 PCI주소를 찾을 수 없음"
 
-#: src/qemu/qemu_process.c:1966
+#: src/qemu/qemu_process.c:1967
 #, c-format
 msgid "cannot find PCI address for watchdog %s"
 msgstr "%s 와치독에 대해 PCI주소를 찾을 수 없음"
 
-#: src/qemu/qemu_process.c:1978
+#: src/qemu/qemu_process.c:1979
 #, fuzzy, c-format
 msgid "cannot find PCI address for balloon %s"
 msgstr "%s 와치독에 대해 PCI주소를 찾을 수 없음"
 
-#: src/qemu/qemu_process.c:2097
+#: src/qemu/qemu_process.c:2098
 #, fuzzy, c-format
 msgid "Unable to pre-create chardev file '%s'"
 msgstr "파일 '%s'를 만드는 데 실패"
 
-#: src/qemu/qemu_process.c:2117
+#: src/qemu/qemu_process.c:2118
 #, fuzzy, c-format
 msgid "cannot limit number of processes to %d"
 msgstr "프로세스 %d의 CPU 진화도를 얻을 수 없음"
 
-#: src/qemu/qemu_process.c:2744
+#: src/qemu/qemu_process.c:2748
 msgid "Could not create thread. QEMU initialization might be incomplete"
 msgstr ""
 
-#: src/qemu/qemu_process.c:2810 src/qemu/qemu_process.c:3475
+#: src/qemu/qemu_process.c:2814 src/qemu/qemu_process.c:3479
 #: src/uml/uml_driver.c:885
 msgid "VM is already active"
 msgstr "VM이 이미 실행중입니다"
 
-#: src/qemu/qemu_process.c:2885
+#: src/qemu/qemu_process.c:2889
 #, fuzzy
 msgid "Unable to find an unused SPICE port"
 msgstr "사용되지 않은 VNC 포트를 찾을 수 없음"
 
-#: src/qemu/qemu_process.c:2893
+#: src/qemu/qemu_process.c:2897
 #, fuzzy
 msgid "Unable to find an unused SPICE TLS port"
 msgstr "사용되지 않은 VNC 포트를 찾을 수 없음"
 
-#: src/qemu/qemu_process.c:2906 src/qemu/qemu_process.c:3491
+#: src/qemu/qemu_process.c:2910 src/qemu/qemu_process.c:3495
 #: src/uml/uml_driver.c:907
 #, c-format
 msgid "cannot create log directory %s"
 msgstr "로그 디렉터리 %s를 생성할 수 없음"
 
-#: src/qemu/qemu_process.c:2950
+#: src/qemu/qemu_process.c:2954
 msgid "Failed to build pidfile path."
 msgstr "pidfile 경로를 설정하는 데 실패"
 
-#: src/qemu/qemu_process.c:2957
+#: src/qemu/qemu_process.c:2961
 #, fuzzy, c-format
 msgid "Cannot remove stale PID file %s"
 msgstr "%s에 대한 비정상 PID파일을 제거할 수 없음"
 
-#: src/qemu/qemu_process.c:3052
+#: src/qemu/qemu_process.c:3056
 #, fuzzy, c-format
 msgid "Domain %s didn't show up"
 msgstr "도메인 %s가 보이지 않습니다\n"
 
-#: src/qemu/qemu_process.c:3099
+#: src/qemu/qemu_process.c:3103
 #, fuzzy, c-format
 msgid "cannot stat fd %d"
 msgstr "stat할 수 없음: %s"
 
-#: src/qemu/qemu_process.c:3322
+#: src/qemu/qemu_process.c:3326
 #, c-format
 msgid "failed to remove ebtables rule to allow MAC address on  '%s'"
 msgstr "MAC 주소를 '%s'에 허용하는 ebtables 규칙을 제거하는 데 실패"
@@ -16303,7 +16308,7 @@ msgstr ""
 msgid "warning"
 msgstr "경고"
 
-#: src/util/virterror.c:572 tools/virsh.c:15338
+#: src/util/virterror.c:572 tools/virsh.c:15348
 msgid "error"
 msgstr "오류"
 
@@ -18262,219 +18267,219 @@ msgstr "호스트명 '%s'를 찾을 수 없음: %s"
 msgid "unable to connect to '%s:%s'"
 msgstr "'%s:%s'에 연결할 수 없음"
 
-#: src/xen/xend_internal.c:861
+#: src/xen/xend_internal.c:855
 msgid "domain information incomplete, missing domid"
 msgstr "도메인 정보가 완료되지 않음, domid 부재"
 
-#: src/xen/xend_internal.c:867
+#: src/xen/xend_internal.c:861
 msgid "domain information incorrect domid not numeric"
 msgstr "도메인 정보가 수치가 아닌 잘못된 domid임"
 
-#: src/xen/xend_internal.c:872 src/xen/xend_internal.c:924
+#: src/xen/xend_internal.c:866 src/xen/xend_internal.c:918
 msgid "domain information incomplete, missing uuid"
 msgstr "도메인 정보가 완료되지 않음, uuid 부재"
 
-#: src/xen/xend_internal.c:911 src/xenxs/xen_sxpr.c:1065
+#: src/xen/xend_internal.c:905 src/xenxs/xen_sxpr.c:1065
 #: src/xenxs/xen_sxpr.c:1072
 msgid "domain information incomplete, missing name"
 msgstr "도메인 정보가 완료되지 않음, 이름 부재"
 
-#: src/xen/xend_internal.c:1182
+#: src/xen/xend_internal.c:1176
 msgid "topology syntax error"
 msgstr "토폴로지 구문 오류"
 
-#: src/xen/xend_internal.c:1245
+#: src/xen/xend_internal.c:1239
 msgid "failed to parse Xend domain information"
 msgstr "Xend 도메인 정보 분석 실패"
 
-#: src/xen/xend_internal.c:1371 src/xen/xend_internal.c:1397
-#: src/xen/xend_internal.c:1424 src/xen/xend_internal.c:1454
-#: src/xen/xend_internal.c:1491 src/xen/xend_internal.c:1567
-#: src/xen/xend_internal.c:1605
+#: src/xen/xend_internal.c:1365 src/xen/xend_internal.c:1391
+#: src/xen/xend_internal.c:1418 src/xen/xend_internal.c:1448
+#: src/xen/xend_internal.c:1485 src/xen/xend_internal.c:1561
+#: src/xen/xend_internal.c:1599
 #, c-format
 msgid "Domain %s isn't running."
 msgstr "도메인 %s가 실행중이 아닙니다."
 
-#: src/xen/xend_internal.c:2202 src/xen/xend_internal.c:2654
-#: src/xen/xend_internal.c:2664 src/xen/xend_internal.c:2822
-#: src/xen/xend_internal.c:2832 src/xen/xend_internal.c:2935
-#: src/xen/xend_internal.c:2945
+#: src/xen/xend_internal.c:2196 src/xen/xend_internal.c:2650
+#: src/xen/xend_internal.c:2660 src/xen/xend_internal.c:2818
+#: src/xen/xend_internal.c:2828 src/xen/xend_internal.c:2931
+#: src/xen/xend_internal.c:2941
 #, fuzzy
 msgid "Xend version does not support modifying persistent config"
 msgstr "Xend 버전이 영구적인 설정을 변경하는 것을 지원하지 않습니다"
 
-#: src/xen/xend_internal.c:2209
+#: src/xen/xend_internal.c:2203
 #, fuzzy
 msgid "domain not running"
 msgstr "도메인이 실행중이 아닙니다"
 
-#: src/xen/xend_internal.c:2216 src/xen/xend_internal.c:2675
-#: src/xen/xend_internal.c:2843 src/xen/xend_internal.c:2956
+#: src/xen/xend_internal.c:2210 src/xen/xend_internal.c:2671
+#: src/xen/xend_internal.c:2839 src/xen/xend_internal.c:2952
 #, fuzzy
 msgid "Xend only supports modifying both live and persistent config"
 msgstr "Xend만 라이브와 영구 설정을 모두 변경하는 것을 허용합니다"
 
-#: src/xen/xend_internal.c:2226 src/xen/xm_internal.c:731
+#: src/xen/xend_internal.c:2220 src/xen/xm_internal.c:731
 #, fuzzy
 msgid "could not determin max vcpus for the domain"
 msgstr "도메인에 대해 최대 vcpu를 결정할 수 없음"
 
-#: src/xen/xend_internal.c:2305
+#: src/xen/xend_internal.c:2299
 #, fuzzy
 msgid "failed to add vcpupin xml entry"
 msgstr "xml 문서 구문분석 실패"
 
-#: src/xen/xend_internal.c:2648 src/xen/xend_internal.c:2816
-#: src/xen/xend_internal.c:2929
+#: src/xen/xend_internal.c:2644 src/xen/xend_internal.c:2812
+#: src/xen/xend_internal.c:2925
 msgid "Cannot modify live config if domain is inactive"
 msgstr "도메인이 실행중이 아니면 라이브 설정을 변경할 수 없습니다"
 
-#: src/xen/xend_internal.c:2743 src/xen/xend_internal.c:2750
-#: src/xen/xend_internal.c:2871 src/xen/xend_internal.c:2982
+#: src/xen/xend_internal.c:2739 src/xen/xend_internal.c:2746
+#: src/xen/xend_internal.c:2867 src/xen/xend_internal.c:2978
 msgid "unsupported device type"
 msgstr "지원하지 않는 장치 유형"
 
-#: src/xen/xend_internal.c:2763
+#: src/xen/xend_internal.c:2759
 #, fuzzy, c-format
 msgid "target '%s' already exists"
 msgstr "타겟 %s가 이미 존재합니다"
 
-#: src/xen/xend_internal.c:2879
+#: src/xen/xend_internal.c:2875
 #, fuzzy
 msgid "requested device does not exist"
 msgstr "인터페이스 %s가 존재하지 않습니다"
 
-#: src/xen/xend_internal.c:3026
+#: src/xen/xend_internal.c:3022
 msgid "xenDaemonGetAutostart failed to find this domain"
 msgstr "xenDaemonGetAutostart가 이 도메인을 찾는 데 실패했습니다"
 
-#: src/xen/xend_internal.c:3066
+#: src/xen/xend_internal.c:3062
 msgid "xenDaemonSetAutostart failed to find this domain"
 msgstr "xenDaemonSetAutostart가 이 도메인을 찾는 데 실패했습니다"
 
-#: src/xen/xend_internal.c:3076
+#: src/xen/xend_internal.c:3072
 msgid "unexpected value from on_xend_start"
 msgstr "on_xend_start에 예기치 못한 값"
 
-#: src/xen/xend_internal.c:3091
+#: src/xen/xend_internal.c:3087
 msgid "sexpr2string failed"
 msgstr "sexpr2string 실패"
 
-#: src/xen/xend_internal.c:3104
+#: src/xen/xend_internal.c:3100
 msgid "Failed to redefine sexpr"
 msgstr "sexpr을 재정의하는 데 실패"
 
-#: src/xen/xend_internal.c:3109
+#: src/xen/xend_internal.c:3105
 msgid "on_xend_start not present in sexpr"
 msgstr "sexpr에 on_xend_start이 없음"
 
-#: src/xen/xend_internal.c:3172
+#: src/xen/xend_internal.c:3168
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
 msgstr ""
 "xenDaemonDomainMigrate: Xen은 이전중에 도메인 이름 변경을 지원하지 않습니다"
 
-#: src/xen/xend_internal.c:3182
+#: src/xen/xend_internal.c:3178
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr ""
 "xenDaemonDomainMigrate: Xen은 이전하는 동안의 대역폭 제한을 지원하지 않습니다"
 
-#: src/xen/xend_internal.c:3210
+#: src/xen/xend_internal.c:3206
 msgid "xenDaemonDomainMigrate: xend cannot migrate paused domains"
 msgstr "xenDaemonDomainMigrate: xend은 일시정지된 도메인을 이전할 수 없습니다"
 
-#: src/xen/xend_internal.c:3218
+#: src/xen/xend_internal.c:3214
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr "xenDaemonDomainMigrate: 지원하지 않는 플래그"
 
-#: src/xen/xend_internal.c:3231
+#: src/xen/xend_internal.c:3227
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr "xenDaemonDomainMigrate: 잘못된 URI"
 
-#: src/xen/xend_internal.c:3236
+#: src/xen/xend_internal.c:3232
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr "xenDaemonDomainMigrate: xenmigr:// 이전 만 Xen이 지원하고 있습니다"
 
-#: src/xen/xend_internal.c:3243
+#: src/xen/xend_internal.c:3239
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr "xenDaemonDomainMigrate: URI에서 호스트명이 지정되어야만 합니다"
 
-#: src/xen/xend_internal.c:3263
+#: src/xen/xend_internal.c:3259
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr "xenDaemonDomainMigrate: 잘못된 포트 번호"
 
-#: src/xen/xend_internal.c:3329
+#: src/xen/xend_internal.c:3325
 msgid "failed to parse domain description"
 msgstr "도메인 설명 구문 분석 실패"
 
-#: src/xen/xend_internal.c:3335
+#: src/xen/xend_internal.c:3331
 msgid "failed to build sexpr"
 msgstr "sexpr 구축 실패"
 
-#: src/xen/xend_internal.c:3343
+#: src/xen/xend_internal.c:3339
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s"
 msgstr "비활성화 도메인 %s 생성 실패\n"
 
-#: src/xen/xend_internal.c:3519 src/xen/xend_internal.c:3595
-#: src/xen/xend_internal.c:3702
+#: src/xen/xend_internal.c:3515 src/xen/xend_internal.c:3591
+#: src/xen/xend_internal.c:3698
 msgid "unsupported in xendConfigVersion < 4"
 msgstr "xendConfigVersion < 4 에서는 지원하지 않습니다"
 
-#: src/xen/xend_internal.c:3531
+#: src/xen/xend_internal.c:3527
 msgid "node information incomplete, missing scheduler name"
 msgstr "노드 정보가 불완전합니다, 스케줄러 이름이 빠졌습니다"
 
-#: src/xen/xend_internal.c:3551 src/xen/xend_internal.c:3662
-#: src/xen/xend_internal.c:3772
+#: src/xen/xend_internal.c:3547 src/xen/xend_internal.c:3658
+#: src/xen/xend_internal.c:3768
 msgid "Unknown scheduler"
 msgstr "알려지지 않은 스케줄러"
 
-#: src/xen/xend_internal.c:3608 src/xen/xend_internal.c:3715
+#: src/xen/xend_internal.c:3604 src/xen/xend_internal.c:3711
 msgid "Failed to get a scheduler name"
 msgstr "스케줄러 이름을 얻는 데 실패"
 
-#: src/xen/xend_internal.c:3633 src/xen/xend_internal.c:3751
+#: src/xen/xend_internal.c:3629 src/xen/xend_internal.c:3747
 msgid "domain information incomplete, missing cpu_weight"
 msgstr "도메인 정보가 완전하지 않음, cpu_weight가 빠짐"
 
-#: src/xen/xend_internal.c:3638 src/xen/xend_internal.c:3760
+#: src/xen/xend_internal.c:3634 src/xen/xend_internal.c:3756
 msgid "domain information incomplete, missing cpu_cap"
 msgstr "도메인 정보가 완전하지 않음, cpu_cap이 빠짐"
 
-#: src/xen/xend_internal.c:3644
+#: src/xen/xend_internal.c:3640
 #, c-format
 msgid "Weight %s too big for destination"
 msgstr "웨이트 %s가 목적지로는 너무 큽니다"
 
-#: src/xen/xend_internal.c:3653
+#: src/xen/xend_internal.c:3649
 #, c-format
 msgid "Cap %s too big for destination"
 msgstr "캡 %s가 목적지로는 너무 큽니다"
 
-#: src/xen/xend_internal.c:3821
+#: src/xen/xend_internal.c:3817
 msgid "domainBlockPeek is not supported for dom0"
 msgstr "dom0에 대해 domainBlockPeek가 지원되지 않습니다"
 
-#: src/xen/xend_internal.c:3842
+#: src/xen/xend_internal.c:3838
 #, c-format
 msgid "%s: invalid path"
 msgstr "%s: 잘못된 경로"
 
-#: src/xen/xend_internal.c:3851
+#: src/xen/xend_internal.c:3847
 #, c-format
 msgid "failed to open for reading: %s"
 msgstr "읽기 용으로 열기 실패: %s"
 
-#: src/xen/xend_internal.c:3863
+#: src/xen/xend_internal.c:3859
 #, c-format
 msgid "failed to lseek or read from file: %s"
 msgstr "파일에서 읽거나 lseek하는 데 실패했습니다: %s"
 
-#: src/xen/xend_internal.c:4004
+#: src/xen/xend_internal.c:4000
 msgid "hotplug of device type not supported"
 msgstr "장치 유형의 핫플러그가 지원되지 않음"
 
@@ -19088,7 +19093,7 @@ msgstr ""
 "명령:\n"
 "\n"
 
-#: tools/virsh.c:651 tools/virsh.c:13991
+#: tools/virsh.c:651 tools/virsh.c:13993
 #, c-format
 msgid " %s (help keyword '%s'):\n"
 msgstr ""
@@ -19116,14 +19121,14 @@ msgstr "부팅시 자동으로 도메인이 시작되도록 설정함."
 #: tools/virsh.c:4231 tools/virsh.c:4325 tools/virsh.c:4359 tools/virsh.c:4446
 #: tools/virsh.c:4536 tools/virsh.c:4616 tools/virsh.c:4766 tools/virsh.c:5204
 #: tools/virsh.c:5461 tools/virsh.c:5752 tools/virsh.c:5797 tools/virsh.c:5840
-#: tools/virsh.c:5924 tools/virsh.c:5948 tools/virsh.c:10869
-#: tools/virsh.c:10938 tools/virsh.c:10993 tools/virsh.c:11058
-#: tools/virsh.c:11123 tools/virsh.c:11193 tools/virsh.c:11307
-#: tools/virsh.c:11442 tools/virsh.c:11781 tools/virsh.c:12335
-#: tools/virsh.c:12554 tools/virsh.c:12684 tools/virsh.c:12777
-#: tools/virsh.c:12878 tools/virsh.c:12981 tools/virsh.c:13150
-#: tools/virsh.c:13212 tools/virsh.c:13282 tools/virsh.c:13341
-#: tools/virsh.c:13414
+#: tools/virsh.c:5924 tools/virsh.c:5948 tools/virsh.c:10868
+#: tools/virsh.c:10937 tools/virsh.c:10992 tools/virsh.c:11057
+#: tools/virsh.c:11122 tools/virsh.c:11192 tools/virsh.c:11306
+#: tools/virsh.c:11441 tools/virsh.c:11780 tools/virsh.c:12334
+#: tools/virsh.c:12553 tools/virsh.c:12683 tools/virsh.c:12776
+#: tools/virsh.c:12877 tools/virsh.c:12980 tools/virsh.c:13149
+#: tools/virsh.c:13211 tools/virsh.c:13281 tools/virsh.c:13340
+#: tools/virsh.c:13413
 msgid "domain name, id or uuid"
 msgstr "도메인명, id 또는 uuid"
 
@@ -19168,7 +19173,7 @@ msgstr "하이퍼바이저 연결 URI"
 msgid "read-only connection"
 msgstr "읽기 전용 연결"
 
-#: tools/virsh.c:749 tools/virsh.c:15891
+#: tools/virsh.c:749 tools/virsh.c:15901
 #, fuzzy, c-format
 msgid "Failed to disconnect from the hypervisor, %d leaked reference(s)"
 msgstr "하이퍼바이저에서 연결 끊기 실패"
@@ -19253,17 +19258,17 @@ msgstr "Id"
 #: tools/virsh.c:919 tools/virsh.c:6245 tools/virsh.c:6440 tools/virsh.c:6713
 #: tools/virsh.c:7271 tools/virsh.c:8261 tools/virsh.c:8281 tools/virsh.c:8350
 #: tools/virsh.c:9744 tools/virsh.c:9759 tools/virsh.c:9809
-#: tools/virsh.c:13051 tools/virsh.c:13054
+#: tools/virsh.c:13050 tools/virsh.c:13053
 msgid "Name"
 msgstr "이름"
 
 #: tools/virsh.c:919 tools/virsh.c:6440 tools/virsh.c:6713 tools/virsh.c:8261
-#: tools/virsh.c:8286 tools/virsh.c:8350 tools/virsh.c:13051
-#: tools/virsh.c:13054
+#: tools/virsh.c:8286 tools/virsh.c:8350 tools/virsh.c:13050
+#: tools/virsh.c:13053
 msgid "State"
 msgstr "상태"
 
-#: tools/virsh.c:952 tools/virsh.c:15240
+#: tools/virsh.c:952 tools/virsh.c:15250
 msgid "saved"
 msgstr ""
 
@@ -19428,12 +19433,12 @@ msgstr "인터페이스 정보 보기 실패"
 msgid "interface with address '%s' not found"
 msgstr "MAC 주소가 %s인 인터페이스를 찾을 수 없음"
 
-#: tools/virsh.c:1435 tools/virsh.c:10159 tools/virsh.c:10218
-#: tools/virsh.c:11395 tools/virsh.c:11852
+#: tools/virsh.c:1435 tools/virsh.c:10158 tools/virsh.c:10217
+#: tools/virsh.c:11394 tools/virsh.c:11851
 msgid "Failed to allocate memory"
 msgstr "메모리 할당 실패"
 
-#: tools/virsh.c:1440 tools/virsh.c:11400 tools/virsh.c:11857
+#: tools/virsh.c:1440 tools/virsh.c:11399 tools/virsh.c:11856
 msgid "Failed to create XML"
 msgstr "XML 생성하기 실패"
 
@@ -19442,7 +19447,7 @@ msgstr "XML 생성하기 실패"
 msgid "Failed to update interface link state"
 msgstr "인터페이스 %s의 시작이 실패"
 
-#: tools/virsh.c:1448 tools/virsh.c:11175
+#: tools/virsh.c:1448 tools/virsh.c:11174
 #, fuzzy
 msgid "Device updated successfully\n"
 msgstr "장치가 성공적으로 부착되었습니다\n"
@@ -19738,8 +19743,8 @@ msgstr "XML 덤프로서의 도메인 정보를 표준 출력으로 출력."
 msgid "saved state file to read"
 msgstr "'%s' 읽기 위한 파이프 생성에 실패"
 
-#: tools/virsh.c:2270 tools/virsh.c:5206 tools/virsh.c:12881
-#: tools/virsh.c:13153
+#: tools/virsh.c:2270 tools/virsh.c:5206 tools/virsh.c:12880
+#: tools/virsh.c:13152
 msgid "include security sensitive information in XML dump"
 msgstr "XML 덤프에 보안상 중요한 정보를 포함합니다"
 
@@ -19762,7 +19767,7 @@ msgstr ""
 msgid "malformed or missing xml argument"
 msgstr "잘못된 형식의 group 요소"
 
-#: tools/virsh.c:2350 tools/virsh.c:2440 tools/virsh.c:12847
+#: tools/virsh.c:2350 tools/virsh.c:2440 tools/virsh.c:12846
 #, fuzzy, c-format
 msgid "Failed to update %s"
 msgstr "%s 생성 실패"
@@ -20211,8 +20216,8 @@ msgstr ""
 #: tools/virsh.c:3327 tools/virsh.c:3339 tools/virsh.c:6256 tools/virsh.c:8127
 #: tools/virsh.c:8142 tools/virsh.c:8144 tools/virsh.c:8145 tools/virsh.c:8146
 #: tools/virsh.c:8603 tools/virsh.c:9654 tools/virsh.c:9661 tools/virsh.c:9662
-#: tools/virsh.c:9663 tools/virsh.c:9679 tools/virsh.c:15261
-#: tools/virsh.c:15341
+#: tools/virsh.c:9663 tools/virsh.c:9679 tools/virsh.c:15271
+#: tools/virsh.c:15351
 #, fuzzy
 msgid "unknown"
 msgstr "알려지지 않음"
@@ -20220,14 +20225,14 @@ msgstr "알려지지 않음"
 #: tools/virsh.c:3329 tools/virsh.c:3342 tools/virsh.c:6252 tools/virsh.c:6258
 #: tools/virsh.c:6263 tools/virsh.c:6459 tools/virsh.c:6482 tools/virsh.c:8119
 #: tools/virsh.c:8130 tools/virsh.c:8605 tools/virsh.c:8614
-#: tools/virsh.c:15295
+#: tools/virsh.c:15305
 msgid "yes"
 msgstr ""
 
 #: tools/virsh.c:3329 tools/virsh.c:3342 tools/virsh.c:6252 tools/virsh.c:6258
 #: tools/virsh.c:6263 tools/virsh.c:6459 tools/virsh.c:6482 tools/virsh.c:8119
 #: tools/virsh.c:8130 tools/virsh.c:8605 tools/virsh.c:8614
-#: tools/virsh.c:15295
+#: tools/virsh.c:15305
 msgid "no"
 msgstr ""
 
@@ -21183,7 +21188,7 @@ msgid "Configure a network to be automatically started at boot."
 msgstr "부팅 시 자동으로 시작하기 위해 네트워크 설정"
 
 #: tools/virsh.c:6006 tools/virsh.c:6146 tools/virsh.c:6185 tools/virsh.c:6578
-#: tools/virsh.c:12436
+#: tools/virsh.c:12435
 msgid "network name or uuid"
 msgstr "네트워크 이름 또는 uuid"
 
@@ -21284,7 +21289,7 @@ msgstr "XML에 있는 네트워크 정보"
 msgid "network name"
 msgstr "네트워크 이름"
 
-#: tools/virsh.c:6248 tools/virsh.c:7271 tools/virsh.c:10305
+#: tools/virsh.c:6248 tools/virsh.c:7271 tools/virsh.c:10304
 msgid "UUID"
 msgstr "UUID"
 
@@ -21320,7 +21325,7 @@ msgstr "인터페이스 이름 또는 MAC 주소"
 msgid "Interface %s XML configuration not changed.\n"
 msgstr "인터페이스 %s XML 설정이 변경되지 않았습니다.\n"
 
-#: tools/virsh.c:6340 tools/virsh.c:7363 tools/virsh.c:12394
+#: tools/virsh.c:6340 tools/virsh.c:7363 tools/virsh.c:12393
 msgid "ERROR: the XML configuration was changed by another user"
 msgstr "오류: XML 설정이 다른 사용자에 의해 변경되었습니다"
 
@@ -21713,7 +21718,7 @@ msgstr "부팅시 자동으로 풀이 시작되도록 설정함."
 #: tools/virsh.c:7932 tools/virsh.c:7971 tools/virsh.c:8547 tools/virsh.c:8904
 #: tools/virsh.c:9134 tools/virsh.c:9211 tools/virsh.c:9311 tools/virsh.c:9407
 #: tools/virsh.c:9448 tools/virsh.c:9489 tools/virsh.c:9540 tools/virsh.c:9580
-#: tools/virsh.c:9968 tools/virsh.c:10001 tools/virsh.c:12453
+#: tools/virsh.c:9968 tools/virsh.c:10001 tools/virsh.c:12452
 msgid "pool name or uuid"
 msgstr "풀 이름 또는 uuid"
 
@@ -21851,7 +21856,7 @@ msgid "format for underlying storage"
 msgstr "저장소에 대한 타겟"
 
 #: tools/virsh.c:7650 tools/virsh.c:8870 tools/virsh.c:9169
-#: tools/virsh.c:11266 tools/virsh.c:11740 tools/virsh.c:12315
+#: tools/virsh.c:11265 tools/virsh.c:11739 tools/virsh.c:12314
 msgid "Failed to allocate XML buffer"
 msgstr "XML 버퍼 할당에 실패"
 
@@ -22027,8 +22032,8 @@ msgstr "저장소 풀 정보"
 msgid "building"
 msgstr "만드는중"
 
-#: tools/virsh.c:8161 tools/virsh.c:8586 tools/virsh.c:15140
-#: tools/virsh.c:15353
+#: tools/virsh.c:8161 tools/virsh.c:8586 tools/virsh.c:15150
+#: tools/virsh.c:15363
 msgid "running"
 msgstr "실행중"
 
@@ -22111,8 +22116,8 @@ msgstr "발견할 저장소 풀 소스의 유형"
 msgid "optional file of source xml to query for pools"
 msgstr "풀에 대해 질의할 소스 xml 파일(선택적임)"
 
-#: tools/virsh.c:8514 tools/virsh.c:11341 tools/virsh.c:11640
-#: tools/virsh.c:14686
+#: tools/virsh.c:8514 tools/virsh.c:11340 tools/virsh.c:11639
+#: tools/virsh.c:14688
 #, fuzzy
 msgid "missing option"
 msgstr "빠짐 \""
@@ -22200,7 +22205,7 @@ msgstr ""
 msgid "Malformed size %s"
 msgstr "잘못된 형식의 크기 %s"
 
-#: tools/virsh.c:8845 tools/virsh.c:14719
+#: tools/virsh.c:8845 tools/virsh.c:14722
 #, c-format
 msgid "failed to get vol '%s'"
 msgstr "'%s' 볼륨을 얻는 데 실패"
@@ -22518,671 +22523,671 @@ msgstr ""
 msgid "volume name or key"
 msgstr "볼륨 이름 또는 키"
 
-#: tools/virsh.c:10035
+#: tools/virsh.c:10034
 msgid "define or modify a secret from an XML file"
 msgstr "XML 파일의 비밀 정보를 정의하거나 변경"
 
-#: tools/virsh.c:10036
+#: tools/virsh.c:10035
 msgid "Define or modify a secret."
 msgstr "비밀정보를 정의하거나 변경"
 
-#: tools/virsh.c:10041
+#: tools/virsh.c:10040
 msgid "file containing secret attributes in XML"
 msgstr "XML의 비밀 특성을 포함하는 파일"
 
-#: tools/virsh.c:10066
+#: tools/virsh.c:10065
 #, c-format
 msgid "Failed to set attributes from %s"
 msgstr "%s에 특성 설정하기 실패"
 
-#: tools/virsh.c:10070
+#: tools/virsh.c:10069
 msgid "Failed to get UUID of created secret"
 msgstr "생성된 비밀정보의 UUID를 얻는 데 실패"
 
-#: tools/virsh.c:10074
+#: tools/virsh.c:10073
 #, c-format
 msgid "Secret %s created\n"
 msgstr "비밀 %s가 생성되었습니다\n"
 
-#: tools/virsh.c:10083
+#: tools/virsh.c:10082
 msgid "secret attributes in XML"
 msgstr "XML로 된 비밀 정보 특성"
 
-#: tools/virsh.c:10084
+#: tools/virsh.c:10083
 msgid "Output attributes of a secret as an XML dump to stdout."
 msgstr "비밀정보 특성을 XML 덤프로 표준 출력에 출력"
 
-#: tools/virsh.c:10089 tools/virsh.c:10129 tools/virsh.c:10189
-#: tools/virsh.c:10241
+#: tools/virsh.c:10088 tools/virsh.c:10128 tools/virsh.c:10188
+#: tools/virsh.c:10240
 msgid "secret UUID"
 msgstr "비밀 UUID"
 
-#: tools/virsh.c:10123
+#: tools/virsh.c:10122
 msgid "set a secret value"
 msgstr "비밀정보 값을 설정"
 
-#: tools/virsh.c:10124
+#: tools/virsh.c:10123
 msgid "Set a secret value."
 msgstr "비밀정보 값을 설정."
 
-#: tools/virsh.c:10130
+#: tools/virsh.c:10129
 msgid "base64-encoded secret value"
 msgstr "base64로 인코딩된 비밀 정보 값"
 
-#: tools/virsh.c:10155
+#: tools/virsh.c:10154
 msgid "Invalid base64 data"
 msgstr "잘못된 base64 데이터"
 
-#: tools/virsh.c:10168
+#: tools/virsh.c:10167
 msgid "Failed to set secret value"
 msgstr "비밀정보 값 설정 실패"
 
-#: tools/virsh.c:10171
+#: tools/virsh.c:10170
 msgid "Secret value set\n"
 msgstr "비밀정보 값이 설정됨\n"
 
-#: tools/virsh.c:10183
+#: tools/virsh.c:10182
 msgid "Output a secret value"
 msgstr "비밀정보 값을 출력"
 
-#: tools/virsh.c:10184
+#: tools/virsh.c:10183
 msgid "Output a secret value to stdout."
 msgstr "비밀정보 값을 표준출력에 출력"
 
-#: tools/virsh.c:10235
+#: tools/virsh.c:10234
 msgid "undefine a secret"
 msgstr "비밀정보 정의를 해제"
 
-#: tools/virsh.c:10236
+#: tools/virsh.c:10235
 msgid "Undefine a secret."
 msgstr "비밀정보 정의를 해제"
 
-#: tools/virsh.c:10260
+#: tools/virsh.c:10259
 #, c-format
 msgid "Failed to delete secret %s"
 msgstr "비밀정보 %s 삭제 실패"
 
-#: tools/virsh.c:10263
+#: tools/virsh.c:10262
 #, c-format
 msgid "Secret %s deleted\n"
 msgstr "비밀정보 %s가 삭제되었습니다\n"
 
-#: tools/virsh.c:10275
+#: tools/virsh.c:10274
 msgid "list secrets"
 msgstr "비밀정보 목록 나열"
 
-#: tools/virsh.c:10276
+#: tools/virsh.c:10275
 msgid "Returns a list of secrets"
 msgstr "비밀정보 목록을 반환"
 
-#: tools/virsh.c:10291 tools/virsh.c:10298
+#: tools/virsh.c:10290 tools/virsh.c:10297
 msgid "Failed to list secrets"
 msgstr "비밀정보 목록생성 실패"
 
-#: tools/virsh.c:10305
+#: tools/virsh.c:10304
 msgid "Usage"
 msgstr "사용법"
 
-#: tools/virsh.c:10319
+#: tools/virsh.c:10318
 msgid "Volume"
 msgstr "볼륨"
 
-#: tools/virsh.c:10329
+#: tools/virsh.c:10328
 msgid "Unused"
 msgstr "미사용"
 
-#: tools/virsh.c:10343
+#: tools/virsh.c:10342
 msgid "show version"
 msgstr "버전 보여주기"
 
-#: tools/virsh.c:10344
+#: tools/virsh.c:10343
 msgid "Display the system version information."
 msgstr "시스템 버전 정보 보여주기."
 
-#: tools/virsh.c:10349
+#: tools/virsh.c:10348
 msgid "report daemon version too"
 msgstr ""
 
-#: tools/virsh.c:10372
+#: tools/virsh.c:10371
 msgid "failed to get hypervisor type"
 msgstr "하이퍼바이저 유형 보기 실패"
 
-#: tools/virsh.c:10381
+#: tools/virsh.c:10380
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr "라이브러리에 대해 컴파일됨: libvir %d.%d.%d\n"
 
-#: tools/virsh.c:10386
+#: tools/virsh.c:10385
 msgid "failed to get the library version"
 msgstr "라이브러리 버전 보기 실패"
 
-#: tools/virsh.c:10393
+#: tools/virsh.c:10392
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr "사용중인 라이브러리: libvir %d.%d.%d\n"
 
-#: tools/virsh.c:10400
+#: tools/virsh.c:10399
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr "사용중인 API: %s %d.%d.%d\n"
 
-#: tools/virsh.c:10405
+#: tools/virsh.c:10404
 msgid "failed to get the hypervisor version"
 msgstr "하이퍼바이저 버전 보기 실패"
 
-#: tools/virsh.c:10410
+#: tools/virsh.c:10409
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "실행중인 %s 하이퍼바이저 버전을 추출할 수 없음\n"
 
-#: tools/virsh.c:10417
+#: tools/virsh.c:10416
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "실행중인 하이퍼바이저: %s %d.%d.%d\n"
 
-#: tools/virsh.c:10424
+#: tools/virsh.c:10423
 #, fuzzy
 msgid "failed to get the daemon version"
 msgstr "라이브러리 버전 보기 실패"
 
-#: tools/virsh.c:10430
+#: tools/virsh.c:10429
 #, fuzzy, c-format
 msgid "Running against daemon: %d.%d.%d\n"
 msgstr "실행중인 하이퍼바이저: %s %d.%d.%d\n"
 
-#: tools/virsh.c:10442
+#: tools/virsh.c:10441
 msgid "enumerate devices on this host"
 msgstr "호스트상의 장치를 열거"
 
-#: tools/virsh.c:10448
+#: tools/virsh.c:10447
 msgid "list devices in a tree"
 msgstr "장치를 트리로 나열"
 
-#: tools/virsh.c:10449
+#: tools/virsh.c:10448
 msgid "capability name"
 msgstr "기능 이름"
 
-#: tools/virsh.c:10549
+#: tools/virsh.c:10548
 msgid "Failed to count node devices"
 msgstr "노드 장치 갯수 세기 실패"
 
-#: tools/virsh.c:10559
+#: tools/virsh.c:10558
 msgid "Failed to list node devices"
 msgstr "노드 장치 목록 얻기 실패"
 
-#: tools/virsh.c:10609
+#: tools/virsh.c:10608
 msgid "node device details in XML"
 msgstr "XML로 된 노드 장치 상세정보"
 
-#: tools/virsh.c:10610
+#: tools/virsh.c:10609
 msgid "Output the node device details as an XML dump to stdout."
 msgstr "노드 장치 상세정보를 XML 덤프로 표준출력에 출력"
 
-#: tools/virsh.c:10616 tools/virsh.c:10659 tools/virsh.c:10700
-#: tools/virsh.c:10741
+#: tools/virsh.c:10615 tools/virsh.c:10658 tools/virsh.c:10699
+#: tools/virsh.c:10740
 msgid "device key"
 msgstr "장치 키"
 
-#: tools/virsh.c:10632 tools/virsh.c:10675 tools/virsh.c:10716
-#: tools/virsh.c:10757
+#: tools/virsh.c:10631 tools/virsh.c:10674 tools/virsh.c:10715
+#: tools/virsh.c:10756
 msgid "Could not find matching device"
 msgstr "일치하는 장치를 찾을 수 없음"
 
-#: tools/virsh.c:10652
+#: tools/virsh.c:10651
 msgid "dettach node device from its device driver"
 msgstr "장치 드라이버에서 노드 장치 탈착"
 
-#: tools/virsh.c:10653
+#: tools/virsh.c:10652
 msgid ""
 "Dettach node device from its device driver before assigning to a domain."
 msgstr "도메인에 할당하기 전에 장치 드라이버에서 노드 장치를 탈착"
 
-#: tools/virsh.c:10680
+#: tools/virsh.c:10679
 #, c-format
 msgid "Device %s dettached\n"
 msgstr "장치 %s가 탈착되었습니다\n"
 
-#: tools/virsh.c:10682
+#: tools/virsh.c:10681
 #, c-format
 msgid "Failed to dettach device %s"
 msgstr "장치 %s 분리 실패"
 
-#: tools/virsh.c:10693
+#: tools/virsh.c:10692
 msgid "reattach node device to its device driver"
 msgstr "장치 드라이버에 노드 장치를 재부착"
 
-#: tools/virsh.c:10694
+#: tools/virsh.c:10693
 msgid "Reattach node device to its device driver once released by the domain."
 msgstr "도메인에 의해 한번 해제된 장치 드라이버에 노드 장치를 재부착."
 
-#: tools/virsh.c:10721
+#: tools/virsh.c:10720
 #, c-format
 msgid "Device %s re-attached\n"
 msgstr "장치 %s가 재부착되었습니다\n"
 
-#: tools/virsh.c:10723
+#: tools/virsh.c:10722
 #, c-format
 msgid "Failed to re-attach device %s"
 msgstr "장치 %s 재부착 실패"
 
-#: tools/virsh.c:10734
+#: tools/virsh.c:10733
 msgid "reset node device"
 msgstr "노드 장치 리셋"
 
-#: tools/virsh.c:10735
+#: tools/virsh.c:10734
 msgid "Reset node device before or after assigning to a domain."
 msgstr "도메인에 할당하기 전 또는 한 후 노드 장치를 리셋"
 
-#: tools/virsh.c:10762
+#: tools/virsh.c:10761
 #, c-format
 msgid "Device %s reset\n"
 msgstr "장치 %s가 리셋됨\n"
 
-#: tools/virsh.c:10764
+#: tools/virsh.c:10763
 #, c-format
 msgid "Failed to reset device %s"
 msgstr "장치 %s의 리셋이 실패"
 
-#: tools/virsh.c:10775
+#: tools/virsh.c:10774
 msgid "print the hypervisor hostname"
 msgstr "하이퍼바이저 호스트명 인쇄"
 
-#: tools/virsh.c:10790
+#: tools/virsh.c:10789
 msgid "failed to get hostname"
 msgstr "호스트명 보기 실패"
 
-#: tools/virsh.c:10804
+#: tools/virsh.c:10803
 msgid "print the hypervisor canonical URI"
 msgstr "하이퍼바이저 정규 URI 인쇄"
 
-#: tools/virsh.c:10819
+#: tools/virsh.c:10818
 msgid "failed to get URI"
 msgstr "URI 보기 실패"
 
-#: tools/virsh.c:10833
+#: tools/virsh.c:10832
 #, fuzzy
 msgid "print the hypervisor sysinfo"
 msgstr "하이퍼바이저 호스트명 인쇄"
 
-#: tools/virsh.c:10835
+#: tools/virsh.c:10834
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr ""
 
-#: tools/virsh.c:10849
+#: tools/virsh.c:10848
 #, fuzzy
 msgid "failed to get sysinfo"
 msgstr "호스트명 보기 실패"
 
-#: tools/virsh.c:10863
+#: tools/virsh.c:10862
 msgid "vnc display"
 msgstr "vnc 화면"
 
-#: tools/virsh.c:10864
+#: tools/virsh.c:10863
 msgid "Output the IP address and port number for the VNC display."
 msgstr "VNC 화면의 IP 주소 및 포트 번호 출력"
 
-#: tools/virsh.c:10932
+#: tools/virsh.c:10931
 msgid "tty console"
 msgstr "tty 콘솔"
 
-#: tools/virsh.c:10933
+#: tools/virsh.c:10932
 msgid "Output the device for the TTY console."
 msgstr "TTY 콘솔에 대한 장치 출력"
 
-#: tools/virsh.c:10987
+#: tools/virsh.c:10986
 msgid "attach device from an XML file"
 msgstr "XML 파일에서 장치 부착"
 
-#: tools/virsh.c:10988
+#: tools/virsh.c:10987
 msgid "Attach device from an XML <file>."
 msgstr "XML 파일에서 장치 부착 <file>."
 
-#: tools/virsh.c:10994 tools/virsh.c:11059 tools/virsh.c:11124
+#: tools/virsh.c:10993 tools/virsh.c:11058 tools/virsh.c:11123
 msgid "XML file"
 msgstr "XML 파일"
 
-#: tools/virsh.c:10995
+#: tools/virsh.c:10994
 msgid "persist device attachment"
 msgstr "영구적인 장치 부착"
 
-#: tools/virsh.c:11036
+#: tools/virsh.c:11035
 #, c-format
 msgid "Failed to attach device from %s"
 msgstr "%s에서 장치 부착하기 실패"
 
-#: tools/virsh.c:11040
+#: tools/virsh.c:11039
 msgid "Device attached successfully\n"
 msgstr "장치가 성공적으로 부착되었습니다\n"
 
-#: tools/virsh.c:11052
+#: tools/virsh.c:11051
 msgid "detach device from an XML file"
 msgstr "XML 파일에서 분리 장치"
 
-#: tools/virsh.c:11053
+#: tools/virsh.c:11052
 msgid "Detach device from an XML <file>"
 msgstr "XML 파일에서의 분리 장치 <file>"
 
-#: tools/virsh.c:11060
+#: tools/virsh.c:11059
 msgid "persist device detachment"
 msgstr "영구적인 장치 탈착"
 
-#: tools/virsh.c:11101
+#: tools/virsh.c:11100
 #, c-format
 msgid "Failed to detach device from %s"
 msgstr "%s에서 장치 분리 실패"
 
-#: tools/virsh.c:11105
+#: tools/virsh.c:11104
 msgid "Device detached successfully\n"
 msgstr "장치가 성공적으로 탈착되었습니다\n"
 
-#: tools/virsh.c:11117
+#: tools/virsh.c:11116
 #, fuzzy
 msgid "update device from an XML file"
 msgstr "XML 파일에서 장치 부착"
 
-#: tools/virsh.c:11118
+#: tools/virsh.c:11117
 #, fuzzy
 msgid "Update device from an XML <file>."
 msgstr "XML 파일에서 장치 부착 <file>."
 
-#: tools/virsh.c:11125
+#: tools/virsh.c:11124
 #, fuzzy
 msgid "persist device update"
 msgstr "영구적인 장치 부착"
 
-#: tools/virsh.c:11126
+#: tools/virsh.c:11125
 #, fuzzy
 msgid "force device update"
 msgstr "영구적인 장치 부착"
 
-#: tools/virsh.c:11171
+#: tools/virsh.c:11170
 #, fuzzy, c-format
 msgid "Failed to update device from %s"
 msgstr "%s에서 장치 부착하기 실패"
 
-#: tools/virsh.c:11187
+#: tools/virsh.c:11186
 msgid "attach network interface"
 msgstr "네트워크 인터페이스 부착"
 
-#: tools/virsh.c:11188
+#: tools/virsh.c:11187
 msgid "Attach new network interface."
 msgstr "새 네트워크 인터페이스 부착"
 
-#: tools/virsh.c:11194 tools/virsh.c:11308
+#: tools/virsh.c:11193 tools/virsh.c:11307
 msgid "network interface type"
 msgstr "네트워크 인터페이스 유형"
 
-#: tools/virsh.c:11195
+#: tools/virsh.c:11194
 msgid "source of network interface"
 msgstr "네트워크 인터페이스 소스"
 
-#: tools/virsh.c:11196
+#: tools/virsh.c:11195
 msgid "target network name"
 msgstr "대상 네트워크 이름"
 
-#: tools/virsh.c:11197 tools/virsh.c:11309
+#: tools/virsh.c:11196 tools/virsh.c:11308
 msgid "MAC address"
 msgstr "MAC 주소"
 
-#: tools/virsh.c:11198
+#: tools/virsh.c:11197
 msgid "script used to bridge network interface"
 msgstr "네트워크 인터페이스를 연결하기 위해 사용된 스크립트"
 
-#: tools/virsh.c:11199
+#: tools/virsh.c:11198
 #, fuzzy
 msgid "model type"
 msgstr "작업 유형:"
 
-#: tools/virsh.c:11200
+#: tools/virsh.c:11199
 msgid "persist interface attachment"
 msgstr "영구적인 인터페이스 부착"
 
-#: tools/virsh.c:11241
+#: tools/virsh.c:11240
 #, fuzzy, c-format
 msgid "No support for %s in command 'attach-interface'"
 msgstr "'attach-interface' 명령에서 %s을(를) 지원하지 않음"
 
-#: tools/virsh.c:11284
+#: tools/virsh.c:11283
 msgid "Failed to attach interface"
 msgstr "인터페이스 부착 실패"
 
-#: tools/virsh.c:11286
+#: tools/virsh.c:11285
 msgid "Interface attached successfully\n"
 msgstr "인터페이스가 성공적으로 부착되었습니다\n"
 
-#: tools/virsh.c:11301
+#: tools/virsh.c:11300
 msgid "detach network interface"
 msgstr "네트워크 인터페이스 분리"
 
-#: tools/virsh.c:11302
+#: tools/virsh.c:11301
 msgid "Detach network interface."
 msgstr "네트워크 인터페이스 분리"
 
-#: tools/virsh.c:11310
+#: tools/virsh.c:11309
 msgid "persist interface detachment"
 msgstr "영구적인 인터페이스 탈착"
 
-#: tools/virsh.c:11352
+#: tools/virsh.c:11351
 msgid "Failed to get interface information"
 msgstr "인터페이스 정보 보기 실패"
 
-#: tools/virsh.c:11360
+#: tools/virsh.c:11359
 #, c-format
 msgid "No found interface whose type is %s"
 msgstr "유형이 %s인 인터페이스를 찾을 수 없음"
 
-#: tools/virsh.c:11365
+#: tools/virsh.c:11364
 #, c-format
 msgid ""
 "Domain has %d interfaces. Please specify which one to detach using --mac"
 msgstr ""
 
-#: tools/virsh.c:11389
+#: tools/virsh.c:11388
 #, c-format
 msgid "No found interface whose MAC address is %s"
 msgstr "MAC 주소가 %s인 인터페이스를 찾을 수 없음"
 
-#: tools/virsh.c:11416
+#: tools/virsh.c:11415
 msgid "Failed to detach interface"
 msgstr "인터페이스 탈착 실패"
 
-#: tools/virsh.c:11418
+#: tools/virsh.c:11417
 msgid "Interface detached successfully\n"
 msgstr "인터페이스가 성공적으로 탈착되었습니다\n"
 
-#: tools/virsh.c:11436
+#: tools/virsh.c:11435
 msgid "attach disk device"
 msgstr "디스크 장치 부착"
 
-#: tools/virsh.c:11437
+#: tools/virsh.c:11436
 msgid "Attach new disk device."
 msgstr "새 디스크 장치 부착"
 
-#: tools/virsh.c:11443
+#: tools/virsh.c:11442
 msgid "source of disk device"
 msgstr "디스크 장치의 소스"
 
-#: tools/virsh.c:11444 tools/virsh.c:11782
+#: tools/virsh.c:11443 tools/virsh.c:11781
 msgid "target of disk device"
 msgstr "디스크 장치의 대상"
 
-#: tools/virsh.c:11445
+#: tools/virsh.c:11444
 msgid "driver of disk device"
 msgstr "디스크 장치의 드라이버"
 
-#: tools/virsh.c:11446
+#: tools/virsh.c:11445
 msgid "subdriver of disk device"
 msgstr "디스크 장치의 하부 드라이버"
 
-#: tools/virsh.c:11447
+#: tools/virsh.c:11446
 #, fuzzy
 msgid "cache mode of disk device"
 msgstr "디스크 장치의 소스"
 
-#: tools/virsh.c:11448
+#: tools/virsh.c:11447
 msgid "target device type"
 msgstr "대상 장치 유형"
 
-#: tools/virsh.c:11449
+#: tools/virsh.c:11448
 msgid "mode of device reading and writing"
 msgstr "읽기 및 쓰기 장치 모드"
 
-#: tools/virsh.c:11450
+#: tools/virsh.c:11449
 msgid "persist disk attachment"
 msgstr "영구적인 디스크 부착"
 
-#: tools/virsh.c:11451
+#: tools/virsh.c:11450
 msgid "type of source (block|file)"
 msgstr ""
 
-#: tools/virsh.c:11452
+#: tools/virsh.c:11451
 #, fuzzy
 msgid "serial of disk device"
 msgstr "디스크 장치의 소스"
 
-#: tools/virsh.c:11453
+#: tools/virsh.c:11452
 msgid "shareable between domains"
 msgstr ""
 
-#: tools/virsh.c:11454
+#: tools/virsh.c:11453
 #, fuzzy
 msgid "address of disk device"
 msgstr "디스크 장치의 대상"
 
-#: tools/virsh.c:11650
+#: tools/virsh.c:11649
 #, fuzzy, c-format
 msgid "Unknown source type: '%s'"
 msgstr "알려지지 않은 usb 소스 유형 '%s'  "
 
-#: tools/virsh.c:11656
+#: tools/virsh.c:11655
 #, fuzzy, c-format
 msgid "No support for %s in command 'attach-disk'"
 msgstr "'attach-disk' 명령에서 %s을(를) 지원하지 않음"
 
-#: tools/virsh.c:11697
+#: tools/virsh.c:11696
 #, fuzzy
 msgid "Invalid address."
 msgstr "잘못된 MAC 주소"
 
-#: tools/virsh.c:11709
+#: tools/virsh.c:11708
 msgid "expecting a pci:0000.00.00.00 address."
 msgstr ""
 
-#: tools/virsh.c:11720
+#: tools/virsh.c:11719
 msgid "expecting a scsi:00.00.00 address."
 msgstr ""
 
-#: tools/virsh.c:11731
+#: tools/virsh.c:11730
 msgid "expecting an ide:00.00.00 address."
 msgstr ""
 
-#: tools/virsh.c:11758
+#: tools/virsh.c:11757
 msgid "Failed to attach disk"
 msgstr "디스크 부착 성공"
 
-#: tools/virsh.c:11760
+#: tools/virsh.c:11759
 msgid "Disk attached successfully\n"
 msgstr "디스크가 성공적으로 부착되었습니다\n"
 
-#: tools/virsh.c:11775
+#: tools/virsh.c:11774
 msgid "detach disk device"
 msgstr "디스크 장치 분리"
 
-#: tools/virsh.c:11776
+#: tools/virsh.c:11775
 msgid "Detach disk device."
 msgstr "디스크 장치 분리"
 
-#: tools/virsh.c:11783
+#: tools/virsh.c:11782
 msgid "persist disk detachment"
 msgstr "영구적인 디스크 탈착"
 
-#: tools/virsh.c:11819 tools/virsh.c:11826
+#: tools/virsh.c:11818 tools/virsh.c:11825
 msgid "Failed to get disk information"
 msgstr "디스크 정보 보기 실패"
 
-#: tools/virsh.c:11846
+#: tools/virsh.c:11845
 #, c-format
 msgid "No found disk whose target is %s"
 msgstr "대상이 %s인 디스크를 찾을 수 없음"
 
-#: tools/virsh.c:11873
+#: tools/virsh.c:11872
 msgid "Failed to detach disk"
 msgstr "디스크 탈착 실패"
 
-#: tools/virsh.c:11875
+#: tools/virsh.c:11874
 msgid "Disk detached successfully\n"
 msgstr "디스크가 성공적으로 탈착되었습니다\n"
 
-#: tools/virsh.c:11893
+#: tools/virsh.c:11892
 msgid "compare host CPU with a CPU described by an XML file"
 msgstr "호스트 CPU를 XML에 설명된 CPU와 비교"
 
-#: tools/virsh.c:11894
+#: tools/virsh.c:11893
 msgid "compare CPU with host CPU"
 msgstr "CPU와 호스트 CPU를 비교"
 
-#: tools/virsh.c:11899
+#: tools/virsh.c:11898
 msgid "file containing an XML CPU description"
 msgstr "XML CPU 설명을 포함하는 파일"
 
-#: tools/virsh.c:11925
+#: tools/virsh.c:11924
 #, c-format
 msgid "CPU described in %s is incompatible with host CPU\n"
 msgstr "%s에 묘사된 CPU가 호스트 CPU와 호환되지 않습니다\n"
 
-#: tools/virsh.c:11931
+#: tools/virsh.c:11930
 #, c-format
 msgid "CPU described in %s is identical to host CPU\n"
 msgstr "%s에 묘사된 CPU가 호스트 CPU와 동일합니다\n"
 
-#: tools/virsh.c:11937
+#: tools/virsh.c:11936
 #, c-format
 msgid "Host CPU is a superset of CPU described in %s\n"
 msgstr "호스트 CPU가 %s에 묘사된 CPU의 상위집합입니다\n"
 
-#: tools/virsh.c:11944
+#: tools/virsh.c:11943
 #, c-format
 msgid "Failed to compare host CPU with %s"
 msgstr "호스트 CPU를 %s와 비교하는 데 실패"
 
-#: tools/virsh.c:11955
+#: tools/virsh.c:11954
 msgid "compute baseline CPU"
 msgstr "베이스라인 CPU 계산"
 
-#: tools/virsh.c:11956
+#: tools/virsh.c:11955
 msgid "Compute baseline CPU for a set of given CPUs."
 msgstr "주어진 CPU들에 대한 베이스라인 CPU를 계산"
 
-#: tools/virsh.c:11961
+#: tools/virsh.c:11960
 msgid "file containing XML CPU descriptions"
 msgstr "XML CPU 설명을 포함하는 파일"
 
-#: tools/virsh.c:11998
+#: tools/virsh.c:11997
 #, c-format
 msgid "Failed to parse XML fragment %s"
 msgstr "XML 조각 %s의 구문분석 실패"
 
-#: tools/virsh.c:12035
+#: tools/virsh.c:12034
 #, c-format
 msgid "No host CPU specified in '%s'"
 msgstr "'%s'에 호스트 CPU가 지정되지 않았습니다"
 
-#: tools/virsh.c:12082
+#: tools/virsh.c:12081
 #, fuzzy, c-format
 msgid "mkstemps: failed to create temporary file: %s"
 msgstr "mkstemp: 임시 파일 생성에 실패: %s"
 
-#: tools/virsh.c:12089
+#: tools/virsh.c:12088
 #, c-format
 msgid "write: %s: failed to write to temporary file: %s"
 msgstr "write: %s: 임시 파일에 쓰는 데 실패: %s"
 
-#: tools/virsh.c:12097
+#: tools/virsh.c:12096
 #, c-format
 msgid "close: %s: failed to write or close temporary file: %s"
 msgstr "close: %s: 임시 파일을 쓰거나 닫는데 실패: %s"
 
-#: tools/virsh.c:12138
+#: tools/virsh.c:12137
 #, c-format
 msgid ""
 "%s: temporary filename contains shell meta or other unacceptable characters "
@@ -23191,458 +23196,458 @@ msgstr ""
 "%s: 임시 파일명이 셀 메타 문자나 허용되지 않는 문자를 포함합니다($TMPDIR이 잘"
 "못되었습니까?)"
 
-#: tools/virsh.c:12171
+#: tools/virsh.c:12170
 #, c-format
 msgid "%s: failed to read temporary file: %s"
 msgstr "%s: 임시 파일을 읽는 데 실패: %s"
 
-#: tools/virsh.c:12183
+#: tools/virsh.c:12182
 msgid "change the current directory"
 msgstr "현재 디렉터리를 변경함"
 
-#: tools/virsh.c:12184
+#: tools/virsh.c:12183
 msgid "Change the current directory."
 msgstr "현재 디렉터리를 변경함."
 
-#: tools/virsh.c:12189
+#: tools/virsh.c:12188
 msgid "directory to switch to (default: home or else root)"
 msgstr "변경하려는 디렉터리(디폴트: 홈 또는 다른 루트)"
 
-#: tools/virsh.c:12201
+#: tools/virsh.c:12200
 msgid "cd: command valid only in interactive mode"
 msgstr "cd: 명령어가 양방향 모드에서만 유효합니다"
 
-#: tools/virsh.c:12213
+#: tools/virsh.c:12212
 #, c-format
 msgid "cd: %s: %s"
 msgstr "cd: %s: %s"
 
-#: tools/virsh.c:12225
+#: tools/virsh.c:12224
 msgid "print the current directory"
 msgstr "현재 디렉터리를 출력."
 
-#: tools/virsh.c:12226
+#: tools/virsh.c:12225
 msgid "Print the current directory."
 msgstr "현재 디렉터리를 출력."
 
-#: tools/virsh.c:12238
+#: tools/virsh.c:12237
 #, c-format
 msgid "pwd: cannot get current directory: %s"
 msgstr "pwd: 현재 디렉터리를 얻을 수 없음: %s"
 
-#: tools/virsh.c:12242
+#: tools/virsh.c:12241
 #, c-format
 msgid "%s\n"
 msgstr "%s\n"
 
-#: tools/virsh.c:12253
+#: tools/virsh.c:12252
 #, fuzzy
 msgid "echo arguments"
 msgstr "알려져 있지 않은 인자 '%s'"
 
-#: tools/virsh.c:12254
+#: tools/virsh.c:12253
 msgid "Echo back arguments, possibly with quoting."
 msgstr ""
 
-#: tools/virsh.c:12259
+#: tools/virsh.c:12258
 msgid "escape for shell use"
 msgstr ""
 
-#: tools/virsh.c:12260
+#: tools/virsh.c:12259
 msgid "escape for XML use"
 msgstr ""
 
-#: tools/virsh.c:12261
+#: tools/virsh.c:12260
 msgid "arguments to echo"
 msgstr ""
 
-#: tools/virsh.c:12329
+#: tools/virsh.c:12328
 msgid "edit XML configuration for a domain"
 msgstr "도메인을 위한 XML 설정 편집"
 
-#: tools/virsh.c:12330
+#: tools/virsh.c:12329
 msgid "Edit the XML configuration for a domain."
 msgstr "도메인을 위한 XML 설정 편집"
 
-#: tools/virsh.c:12378
+#: tools/virsh.c:12377
 #, c-format
 msgid "Domain %s XML configuration not changed.\n"
 msgstr "도메인 %s XML 설정이 변경되지 않았습니다.\n"
 
-#: tools/virsh.c:12404
+#: tools/virsh.c:12403
 #, c-format
 msgid "Domain %s XML configuration edited.\n"
 msgstr "도메인 %s XML 설정이 편집되었습니다.\n"
 
-#: tools/virsh.c:12430
+#: tools/virsh.c:12429
 msgid "edit XML configuration for a network"
 msgstr "네트워크를 위한 XML 설정을 편집"
 
-#: tools/virsh.c:12431
+#: tools/virsh.c:12430
 msgid "Edit the XML configuration for a network."
 msgstr "네트워크를 위한 XML 설정을 편집"
 
-#: tools/virsh.c:12447
+#: tools/virsh.c:12446
 msgid "edit XML configuration for a storage pool"
 msgstr "저장소 풀을 위한 XML 설정을 편집"
 
-#: tools/virsh.c:12448
+#: tools/virsh.c:12447
 msgid "Edit the XML configuration for a storage pool."
 msgstr "저장소 풀을 위한 XML 설정을 편집"
 
-#: tools/virsh.c:12464
+#: tools/virsh.c:12463
 msgid "quit this interactive terminal"
 msgstr "대화식 터미널 종료"
 
-#: tools/virsh.c:12505
+#: tools/virsh.c:12504
 #, fuzzy
 msgid "cannot halt after snapshot of transient domain"
 msgstr "동작중인 도메인을 삭제할 수 없음"
 
-#: tools/virsh.c:12524
+#: tools/virsh.c:12523
 #, fuzzy
 msgid "Could not get snapshot name"
 msgstr "표준화된 호스트 이름을 결정할 수 없습니다"
 
-#: tools/virsh.c:12529
+#: tools/virsh.c:12528
 #, fuzzy, c-format
 msgid "Domain snapshot %s created from '%s'"
 msgstr "%s 에서 생성된 도메인 %s\n"
 
-#: tools/virsh.c:12531
+#: tools/virsh.c:12530
 #, fuzzy, c-format
 msgid "Domain snapshot %s created"
 msgstr "%s 에서 생성된 도메인 %s\n"
 
-#: tools/virsh.c:12548
+#: tools/virsh.c:12547
 #, fuzzy
 msgid "Create a snapshot from XML"
 msgstr "풀을 생성."
 
-#: tools/virsh.c:12549
+#: tools/virsh.c:12548
 msgid "Create a snapshot (disk and RAM) from XML"
 msgstr ""
 
-#: tools/virsh.c:12555
+#: tools/virsh.c:12554
 #, fuzzy
 msgid "domain snapshot XML"
 msgstr "도메인 상태"
 
-#: tools/virsh.c:12556
+#: tools/virsh.c:12555
 msgid "redefine metadata for existing snapshot"
 msgstr ""
 
-#: tools/virsh.c:12557
+#: tools/virsh.c:12556
 #, fuzzy
 msgid "with redefine, set current snapshot"
 msgstr "현재 시간을 얻을 수 없음"
 
-#: tools/virsh.c:12558 tools/virsh.c:12688
+#: tools/virsh.c:12557 tools/virsh.c:12687
 #, fuzzy
 msgid "take snapshot but create no metadata"
 msgstr "%s 에서 생성된 도메인 %s\n"
 
-#: tools/virsh.c:12559 tools/virsh.c:12689
+#: tools/virsh.c:12558 tools/virsh.c:12688
 #, fuzzy
 msgid "halt domain after snapshot is created"
 msgstr "%s 에서 생성된 도메인 %s\n"
 
-#: tools/virsh.c:12560 tools/virsh.c:12690
+#: tools/virsh.c:12559 tools/virsh.c:12689
 msgid "capture disk state but not vm state"
 msgstr ""
 
-#: tools/virsh.c:12672
+#: tools/virsh.c:12671
 #, fuzzy, c-format
 msgid "unable to parse diskspec: %s"
 msgstr "모니터 경로 %s를 열 수 없음"
 
-#: tools/virsh.c:12678
+#: tools/virsh.c:12677
 #, fuzzy
 msgid "Create a snapshot from a set of args"
 msgstr "매개변수로부터 풀을 생성합니다"
 
-#: tools/virsh.c:12679
+#: tools/virsh.c:12678
 msgid "Create a snapshot (disk and RAM) from arguments"
 msgstr ""
 
-#: tools/virsh.c:12685
+#: tools/virsh.c:12684
 #, fuzzy
 msgid "name of snapshot"
 msgstr "풀을 생성."
 
-#: tools/virsh.c:12686
+#: tools/virsh.c:12685
 #, fuzzy
 msgid "description of snapshot"
 msgstr "%s상의 매체를 꺼내기할 수 없음"
 
-#: tools/virsh.c:12687
+#: tools/virsh.c:12686
 #, fuzzy
 msgid "print XML document rather than create"
 msgstr "XML 문서를 인쇄하되, 정의하거나 만들지는 않습니다"
 
-#: tools/virsh.c:12692
+#: tools/virsh.c:12691
 msgid "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
 msgstr ""
 
-#: tools/virsh.c:12724
+#: tools/virsh.c:12723
 #, fuzzy
 msgid "argument must not be empty"
 msgstr "플래그가 0이어야 합니다"
 
-#: tools/virsh.c:12771
+#: tools/virsh.c:12770
 #, fuzzy
 msgid "edit XML for a snapshot"
 msgstr "풀을 생성."
 
-#: tools/virsh.c:12772
+#: tools/virsh.c:12771
 #, fuzzy
 msgid "Edit the domain snapshot XML for a named snapshot"
 msgstr "도메인을 다른 호스트로 이전"
 
-#: tools/virsh.c:12778 tools/virsh.c:13151 tools/virsh.c:13213
-#: tools/virsh.c:13283 tools/virsh.c:13342
+#: tools/virsh.c:12777 tools/virsh.c:13150 tools/virsh.c:13212
+#: tools/virsh.c:13282 tools/virsh.c:13341
 #, fuzzy
 msgid "snapshot name"
 msgstr "풀 이름"
 
-#: tools/virsh.c:12779
+#: tools/virsh.c:12778
 #, fuzzy
 msgid "also set edited snapshot as current"
 msgstr "xml 문서 구문분석 실패"
 
-#: tools/virsh.c:12838
+#: tools/virsh.c:12837
 #, fuzzy, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "도메인 %s XML 설정이 변경되지 않았습니다.\n"
 
-#: tools/virsh.c:12851
+#: tools/virsh.c:12850
 #, fuzzy, c-format
 msgid "Snapshot %s edited.\n"
 msgstr "%s 네트워크가 정의되지 않음\n"
 
-#: tools/virsh.c:12872 tools/virsh.c:12873
+#: tools/virsh.c:12871 tools/virsh.c:12872
 #, fuzzy
 msgid "Get or set the current snapshot"
 msgstr "현재 시간을 얻을 수 없음"
 
-#: tools/virsh.c:12879
+#: tools/virsh.c:12878
 msgid "list the name, rather than the full xml"
 msgstr ""
 
-#: tools/virsh.c:12883
+#: tools/virsh.c:12882
 msgid "name of existing snapshot to make current"
 msgstr ""
 
-#: tools/virsh.c:12909
+#: tools/virsh.c:12908
 #, fuzzy, c-format
 msgid "invalid snapshotname argument '%s'"
 msgstr "%s에 있는 잘못된 인수"
 
-#: tools/virsh.c:12919
+#: tools/virsh.c:12918
 msgid "--name and snapshotname are mutually exclusive"
 msgstr ""
 
-#: tools/virsh.c:12932
+#: tools/virsh.c:12931
 #, fuzzy, c-format
 msgid "Snapshot %s set as current"
 msgstr "'%s'를 생성할 수 없음"
 
-#: tools/virsh.c:12975
+#: tools/virsh.c:12974
 #, fuzzy
 msgid "List snapshots for a domain"
 msgstr "도메인에 대한 메모리 통계를 얻음"
 
-#: tools/virsh.c:12976
+#: tools/virsh.c:12975
 msgid "Snapshot List"
 msgstr ""
 
-#: tools/virsh.c:12982
+#: tools/virsh.c:12981
 #, fuzzy
 msgid "add a column showing parent snapshot"
 msgstr "%s에 인자를 넣을 수 없음"
 
-#: tools/virsh.c:12983
+#: tools/virsh.c:12982
 #, fuzzy
 msgid "list only snapshots without parents"
 msgstr "이미 %s 도메인이 이미 uuid %s로 존재함"
 
-#: tools/virsh.c:12985
+#: tools/virsh.c:12984
 msgid "list only snapshots that have metadata that would prevent undefine"
 msgstr ""
 
-#: tools/virsh.c:13015
+#: tools/virsh.c:13014
 msgid "--parent and --roots are mutually exlusive"
 msgstr ""
 
-#: tools/virsh.c:13051 tools/virsh.c:13054
+#: tools/virsh.c:13050 tools/virsh.c:13053
 #, fuzzy
 msgid "Creation Time"
 msgstr "작업 실패"
 
-#: tools/virsh.c:13051
+#: tools/virsh.c:13050
 msgid "Parent"
 msgstr ""
 
-#: tools/virsh.c:13105
+#: tools/virsh.c:13104
 msgid "time_t overflow"
 msgstr ""
 
-#: tools/virsh.c:13144
+#: tools/virsh.c:13143
 msgid "Dump XML for a domain snapshot"
 msgstr ""
 
-#: tools/virsh.c:13145
+#: tools/virsh.c:13144
 msgid "Snapshot Dump XML"
 msgstr ""
 
-#: tools/virsh.c:13206
+#: tools/virsh.c:13205
 #, fuzzy
 msgid "Get the name of the parent of a snapshot"
 msgstr "%s상의 매체를 꺼내기할 수 없음"
 
-#: tools/virsh.c:13207
+#: tools/virsh.c:13206
 msgid "Extract the snapshot's parent, if any"
 msgstr ""
 
-#: tools/virsh.c:13276
+#: tools/virsh.c:13275
 #, fuzzy
 msgid "Revert a domain to a snapshot"
 msgstr "도메인을 다른 호스트로 이전"
 
-#: tools/virsh.c:13277
+#: tools/virsh.c:13276
 #, fuzzy
 msgid "Revert domain to snapshot"
 msgstr "도메인을 다른 호스트로 이전"
 
-#: tools/virsh.c:13284
+#: tools/virsh.c:13283
 msgid "after reverting, change state to running"
 msgstr ""
 
-#: tools/virsh.c:13285
+#: tools/virsh.c:13284
 msgid "after reverting, change state to paused"
 msgstr ""
 
-#: tools/virsh.c:13335
+#: tools/virsh.c:13334
 #, fuzzy
 msgid "Delete a domain snapshot"
 msgstr "주어진 풀을 삭제"
 
-#: tools/virsh.c:13336
+#: tools/virsh.c:13335
 msgid "Snapshot Delete"
 msgstr ""
 
-#: tools/virsh.c:13343
+#: tools/virsh.c:13342
 msgid "delete snapshot and all children"
 msgstr ""
 
-#: tools/virsh.c:13344
+#: tools/virsh.c:13343
 #, fuzzy
 msgid "delete children but not snapshot"
 msgstr "현재 시간을 얻을 수 없음"
 
-#: tools/virsh.c:13346
+#: tools/virsh.c:13345
 msgid "delete only libvirt metadata, leaving snapshot contents behind"
 msgstr ""
 
-#: tools/virsh.c:13385
+#: tools/virsh.c:13384
 #, fuzzy, c-format
 msgid "Domain snapshot %s children deleted\n"
 msgstr "%s 에서 생성된 도메인 %s\n"
 
-#: tools/virsh.c:13387
+#: tools/virsh.c:13386
 #, fuzzy, c-format
 msgid "Domain snapshot %s deleted\n"
 msgstr "%s 에서 생성된 도메인 %s\n"
 
-#: tools/virsh.c:13389
+#: tools/virsh.c:13388
 #, fuzzy, c-format
 msgid "Failed to delete snapshot %s"
 msgstr "경로 %s를 만드는 데 실패"
 
-#: tools/virsh.c:13408 tools/virsh.c:13409
+#: tools/virsh.c:13407 tools/virsh.c:13408
 #, fuzzy
 msgid "QEMU Monitor Command"
 msgstr "모니터 명령 '%s'를 보낼 수 없음"
 
-#: tools/virsh.c:13415
+#: tools/virsh.c:13414
 msgid "command is in human monitor protocol"
 msgstr ""
 
-#: tools/virsh.c:13416
+#: tools/virsh.c:13415
 #, fuzzy
 msgid "command"
 msgstr ""
 "명령:\n"
 "\n"
 
-#: tools/virsh.c:13446
+#: tools/virsh.c:13445
 #, fuzzy
 msgid "Failed to collect command"
 msgstr "QEMU 명령 '%s'를 실행할 수 없음"
 
-#: tools/virsh.c:13474 tools/virsh.c:13475
+#: tools/virsh.c:13473 tools/virsh.c:13474
 msgid "QEMU Attach"
 msgstr ""
 
-#: tools/virsh.c:13480
+#: tools/virsh.c:13479
 msgid "pid"
 msgstr ""
 
-#: tools/virsh.c:13496
+#: tools/virsh.c:13495
 #, fuzzy
 msgid "missing pid value"
 msgstr "CPU 모델 이름이 빠져있습니다"
 
-#: tools/virsh.c:13504
+#: tools/virsh.c:13503
 #, fuzzy, c-format
 msgid "Domain %s attached to pid %u\n"
 msgstr "도메인 %s는 %s에 저장됨\n"
 
-#: tools/virsh.c:13509
+#: tools/virsh.c:13508
 #, fuzzy, c-format
 msgid "Failed to attach to pid %u"
 msgstr "디스크 부착 성공"
 
-#: tools/virsh.c:13890
+#: tools/virsh.c:13893
 #, fuzzy, c-format
 msgid "option --%s already seen"
 msgstr "연결이 이미 열려있습니다"
 
-#: tools/virsh.c:13899
+#: tools/virsh.c:13902
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "명령 '%s'는 --%s 옵션을 지원하지 않음"
 
-#: tools/virsh.c:13944
+#: tools/virsh.c:13946
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "'%s' 명령은 <%s> 옵션이 필요함"
 
-#: tools/virsh.c:13945
+#: tools/virsh.c:13947
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "'%s' 명령은 --%s 옵션이 필요함"
 
-#: tools/virsh.c:13988
+#: tools/virsh.c:13990
 #, fuzzy, c-format
 msgid "command group '%s' doesn't exist"
 msgstr "'%s' 명령이 존재하지 않음"
 
-#: tools/virsh.c:14009
+#: tools/virsh.c:14011
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "'%s' 명령이 존재하지 않음"
 
-#: tools/virsh.c:14021 tools/virsh.c:14872
+#: tools/virsh.c:14023 tools/virsh.c:14879
 #, fuzzy, c-format
 msgid "internal error: bad options in command: '%s'"
 msgstr "내부 오류: 버퍼가 너무 작음"
 
-#: tools/virsh.c:14026
+#: tools/virsh.c:14028
 msgid "  NAME\n"
 msgstr "  이름\n"
 
-#: tools/virsh.c:14029
+#: tools/virsh.c:14031
 msgid ""
 "\n"
 "  SYNOPSIS\n"
@@ -23650,37 +23655,37 @@ msgstr ""
 "\n"
 "  시놉시스\n"
 
-#: tools/virsh.c:14042
+#: tools/virsh.c:14044
 #, c-format
 msgid "[--%s <number>]"
 msgstr "[--%s <number>]"
 
-#: tools/virsh.c:14048
+#: tools/virsh.c:14050
 #, c-format
 msgid "[--%s <string>]"
 msgstr "[--%s <string>]"
 
-#: tools/virsh.c:14061
+#: tools/virsh.c:14063
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s <string>]"
 
-#: tools/virsh.c:14062
+#: tools/virsh.c:14064
 #, fuzzy, c-format
 msgid "[[--%s] <string>]..."
 msgstr "[--%s <string>]"
 
-#: tools/virsh.c:14064
+#: tools/virsh.c:14066
 #, c-format
 msgid "<%s>..."
 msgstr ""
 
-#: tools/virsh.c:14065
+#: tools/virsh.c:14067
 #, fuzzy, c-format
 msgid "[<%s>]..."
 msgstr "[--%s <string>]"
 
-#: tools/virsh.c:14079
+#: tools/virsh.c:14081
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -23688,7 +23693,7 @@ msgstr ""
 "\n"
 "  설명\n"
 
-#: tools/virsh.c:14085
+#: tools/virsh.c:14087
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -23696,67 +23701,72 @@ msgstr ""
 "\n"
 "  옵션\n"
 
-#: tools/virsh.c:14093
+#: tools/virsh.c:14095
 #, fuzzy, c-format
 msgid "[--%s] <number>"
 msgstr "[--%s <number>]"
 
-#: tools/virsh.c:14094
+#: tools/virsh.c:14096
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <number>"
 
-#: tools/virsh.c:14098
+#: tools/virsh.c:14100
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <string>"
 
-#: tools/virsh.c:14101 tools/virsh.c:14106
+#: tools/virsh.c:14103 tools/virsh.c:14108
 #, fuzzy, c-format
 msgid "[--%s] <string>"
 msgstr "[--%s <string>]"
 
-#: tools/virsh.c:14106
+#: tools/virsh.c:14108
 #, c-format
 msgid "<%s>"
 msgstr ""
 
-#: tools/virsh.c:14469
+#: tools/virsh.c:14471
 #, c-format
 msgid "internal error: virsh %s: no %s VSH_OT_DATA option"
 msgstr "내부 오류: virsh %s: %s VSH_OT_DATA 옵션이 없음"
 
-#: tools/virsh.c:14517
+#: tools/virsh.c:14519
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "'%s' 도메인 보기 실패"
 
-#: tools/virsh.c:14555
+#: tools/virsh.c:14557
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "'%s' 네트워크 보기 실패"
 
-#: tools/virsh.c:14594
+#: tools/virsh.c:14596
 #, fuzzy, c-format
 msgid "failed to get nwfilter '%s'"
 msgstr "인터페이스 '%s'를 가져오는 데 실패"
 
-#: tools/virsh.c:14632
+#: tools/virsh.c:14634
 #, c-format
 msgid "failed to get interface '%s'"
 msgstr "인터페이스 '%s'를 가져오는 데 실패"
 
-#: tools/virsh.c:14667
+#: tools/virsh.c:14669
 #, c-format
 msgid "failed to get pool '%s'"
 msgstr "풀 '%s'을 얻는 데 실패"
 
-#: tools/virsh.c:14749
+#: tools/virsh.c:14724
+#, c-format
+msgid "failed to get vol '%s', specifying --pool might help"
+msgstr ""
+
+#: tools/virsh.c:14756
 #, c-format
 msgid "failed to get secret '%s'"
 msgstr "'%s' 비밀 얻는 데 실패"
 
-#: tools/virsh.c:14796
+#: tools/virsh.c:14803
 #, c-format
 msgid ""
 "\n"
@@ -23767,224 +23777,224 @@ msgstr ""
 "(시간: %.3f ms)\n"
 "\n"
 
-#: tools/virsh.c:14866
+#: tools/virsh.c:14873
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "알려지지 않은 명령: '%s'"
 
-#: tools/virsh.c:14903
+#: tools/virsh.c:14912
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "예상된 구문: --%s <%s>"
 
-#: tools/virsh.c:14906
+#: tools/virsh.c:14915
 msgid "number"
 msgstr "숫자"
 
-#: tools/virsh.c:14906
+#: tools/virsh.c:14915
 msgid "string"
 msgstr "문자열"
 
-#: tools/virsh.c:14913
+#: tools/virsh.c:14923
 #, fuzzy, c-format
 msgid "invalid '=' after option --%s"
 msgstr "%s 내부에 잘못된 인터페이스 포인터"
 
-#: tools/virsh.c:14927
+#: tools/virsh.c:14937
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "예상외의 데이터 '%s'"
 
-#: tools/virsh.c:14949
+#: tools/virsh.c:14959
 msgid "optdata"
 msgstr ""
 
-#: tools/virsh.c:14949
+#: tools/virsh.c:14959
 msgid "bool"
 msgstr ""
 
-#: tools/virsh.c:14950
+#: tools/virsh.c:14960
 msgid "(none)"
 msgstr ""
 
-#: tools/virsh.c:15066
+#: tools/virsh.c:15076
 msgid "dangling \\"
 msgstr ""
 
-#: tools/virsh.c:15079
+#: tools/virsh.c:15089
 msgid "missing \""
 msgstr "빠짐 \""
 
-#: tools/virsh.c:15142 tools/virsh.c:15351
+#: tools/virsh.c:15152 tools/virsh.c:15361
 msgid "idle"
 msgstr "유휴상태"
 
-#: tools/virsh.c:15144
+#: tools/virsh.c:15154
 msgid "paused"
 msgstr "중지됨"
 
-#: tools/virsh.c:15146
+#: tools/virsh.c:15156
 msgid "in shutdown"
 msgstr "종료중"
 
-#: tools/virsh.c:15148
+#: tools/virsh.c:15158
 msgid "shut off"
 msgstr "종료"
 
-#: tools/virsh.c:15150 tools/virsh.c:15236
+#: tools/virsh.c:15160 tools/virsh.c:15246
 msgid "crashed"
 msgstr "충돌됨"
 
-#: tools/virsh.c:15155 tools/virsh.c:15357
+#: tools/virsh.c:15165 tools/virsh.c:15367
 msgid "no state"
 msgstr "상태 없음"
 
-#: tools/virsh.c:15172
+#: tools/virsh.c:15182
 msgid "booted"
 msgstr ""
 
-#: tools/virsh.c:15174 tools/virsh.c:15238
+#: tools/virsh.c:15184 tools/virsh.c:15248
 #, fuzzy
 msgid "migrated"
 msgstr "이전이 실패했습니다"
 
-#: tools/virsh.c:15176
+#: tools/virsh.c:15186
 msgid "restored"
 msgstr ""
 
-#: tools/virsh.c:15178 tools/virsh.c:15212 tools/virsh.c:15244
+#: tools/virsh.c:15188 tools/virsh.c:15222 tools/virsh.c:15254
 #, fuzzy
 msgid "from snapshot"
 msgstr "풀을 생성."
 
-#: tools/virsh.c:15180
+#: tools/virsh.c:15190
 #, fuzzy
 msgid "unpaused"
 msgstr "중지됨"
 
-#: tools/virsh.c:15182
+#: tools/virsh.c:15192
 #, fuzzy
 msgid "migration canceled"
 msgstr "이전이 실패했습니다"
 
-#: tools/virsh.c:15184
+#: tools/virsh.c:15194
 msgid "save canceled"
 msgstr ""
 
-#: tools/virsh.c:15200 tools/virsh.c:15223
+#: tools/virsh.c:15210 tools/virsh.c:15233
 msgid "user"
 msgstr ""
 
-#: tools/virsh.c:15202
+#: tools/virsh.c:15212
 #, fuzzy
 msgid "migrating"
 msgstr "실시간 이전"
 
-#: tools/virsh.c:15204
+#: tools/virsh.c:15214
 msgid "saving"
 msgstr ""
 
-#: tools/virsh.c:15206
+#: tools/virsh.c:15216
 msgid "dumping"
 msgstr ""
 
-#: tools/virsh.c:15208
+#: tools/virsh.c:15218
 #, fuzzy
 msgid "I/O error"
 msgstr "오류"
 
-#: tools/virsh.c:15210
+#: tools/virsh.c:15220
 msgid "watchdog"
 msgstr ""
 
-#: tools/virsh.c:15214
+#: tools/virsh.c:15224
 #, fuzzy
 msgid "shutting down"
 msgstr "종료중"
 
-#: tools/virsh.c:15232
+#: tools/virsh.c:15242
 #, fuzzy
 msgid "shutdown"
 msgstr "종료중"
 
-#: tools/virsh.c:15234
+#: tools/virsh.c:15244
 #, fuzzy
 msgid "destroyed"
 msgstr "풀 %s가 파괴되었습니다\n"
 
-#: tools/virsh.c:15242
+#: tools/virsh.c:15252
 #, fuzzy
 msgid "failed"
 msgstr "popen 실패"
 
-#: tools/virsh.c:15299
+#: tools/virsh.c:15309
 msgid "unimplemented block statistics parameter type"
 msgstr ""
 
-#: tools/virsh.c:15332
+#: tools/virsh.c:15342
 msgid "ok"
 msgstr ""
 
-#: tools/virsh.c:15334
+#: tools/virsh.c:15344
 msgid "background job"
 msgstr ""
 
-#: tools/virsh.c:15336
+#: tools/virsh.c:15346
 msgid "occupied"
 msgstr ""
 
-#: tools/virsh.c:15349
+#: tools/virsh.c:15359
 msgid "offline"
 msgstr "오프라인"
 
-#: tools/virsh.c:15367
+#: tools/virsh.c:15377
 msgid "no valid connection"
 msgstr "유효하지 않은 연결"
 
-#: tools/virsh.c:15438
+#: tools/virsh.c:15448
 msgid "error: "
 msgstr "오류:"
 
-#: tools/virsh.c:15471
+#: tools/virsh.c:15481
 msgid "VIRSH_DEBUG not set with a valid numeric value"
 msgstr ""
 
-#: tools/virsh.c:15510
+#: tools/virsh.c:15520
 msgid "failed to connect to the hypervisor"
 msgstr "하이퍼바이저에 연결 실패"
 
-#: tools/virsh.c:15540
+#: tools/virsh.c:15550
 msgid "failed to get the log file information"
 msgstr "로그 파일 정보 보기 실패"
 
-#: tools/virsh.c:15545
+#: tools/virsh.c:15555
 msgid "the log path is not a file"
 msgstr "로그 경로가 파일이 아님"
 
-#: tools/virsh.c:15553
+#: tools/virsh.c:15563
 msgid "failed to open the log file. check the log file path"
 msgstr "로그 파일 열기 실패. 로그 파일 경로 확인"
 
-#: tools/virsh.c:15635
+#: tools/virsh.c:15645
 msgid "failed to write the log file"
 msgstr "로그 파일 쓰기 실패"
 
-#: tools/virsh.c:15650
+#: tools/virsh.c:15660
 #, c-format
 msgid "%s: failed to write log file: %s"
 msgstr "%s: 로그 파일 쓰기 실패: %s"
 
-#: tools/virsh.c:15798
+#: tools/virsh.c:15808
 #, fuzzy
 msgid "Could not determine home directory"
 msgstr "디렉터리 %s를 열 수 없음"
 
-#: tools/virsh.c:15827
+#: tools/virsh.c:15837
 #, c-format
 msgid "Failed to create '%s': %s"
 msgstr "'%s' 생성 실패: %s"
 
-#: tools/virsh.c:15908
+#: tools/virsh.c:15918
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -24020,12 +24030,12 @@ msgstr ""
 "\n"
 "  명령 (비대화식 모드):\n"
 
-#: tools/virsh.c:15923
+#: tools/virsh.c:15933
 #, c-format
 msgid " %s (help keyword '%s')\n"
 msgstr ""
 
-#: tools/virsh.c:15933
+#: tools/virsh.c:15943
 #, fuzzy
 msgid ""
 "\n"
@@ -24035,7 +24045,7 @@ msgstr ""
 "  (명령에 대한 정보를 보기 위해 help <command>를 지정)\n"
 "\n"
 
-#: tools/virsh.c:15935
+#: tools/virsh.c:15945
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
@@ -24045,58 +24055,58 @@ msgstr ""
 "  (명령에 대한 정보를 보기 위해 help <command>를 지정)\n"
 "\n"
 
-#: tools/virsh.c:15946
+#: tools/virsh.c:15956
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr ""
 
-#: tools/virsh.c:15947
+#: tools/virsh.c:15957
 #, c-format
 msgid ""
 "See web site at %s\n"
 "\n"
 msgstr ""
 
-#: tools/virsh.c:15949
+#: tools/virsh.c:15959
 msgid "Compiled with support for:\n"
 msgstr ""
 
-#: tools/virsh.c:15950
+#: tools/virsh.c:15960
 msgid " Hypervisors:"
 msgstr ""
 
-#: tools/virsh.c:15986
+#: tools/virsh.c:15996
 msgid " Networking:"
 msgstr ""
 
-#: tools/virsh.c:16013
+#: tools/virsh.c:16023
 msgid " Storage:"
 msgstr ""
 
-#: tools/virsh.c:16037
+#: tools/virsh.c:16047
 msgid " Miscellaneous:"
 msgstr ""
 
-#: tools/virsh.c:16090
+#: tools/virsh.c:16100
 msgid "option -d takes a numeric argument"
 msgstr ""
 
-#: tools/virsh.c:16122
+#: tools/virsh.c:16132
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "지원되지 않는 옵션 '-%c'. --help 참조."
 
-#: tools/virsh.c:16129
+#: tools/virsh.c:16139
 #, c-format
 msgid "extra argument '%s'. See --help."
 msgstr "추가 인자 '%s'. --help 참조."
 
-#: tools/virsh.c:16177
+#: tools/virsh.c:16187
 #, fuzzy
 msgid "Failed to initialize libvirt"
 msgstr "인증서를 초기화할 수 없습니다: %s"
 
-#: tools/virsh.c:16206
+#: tools/virsh.c:16216
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -24105,7 +24115,7 @@ msgstr ""
 "%s, 가상화 대화식 터미널에 오신 것을 환영합니다.\n"
 "\n"
 
-#: tools/virsh.c:16209
+#: tools/virsh.c:16219
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"

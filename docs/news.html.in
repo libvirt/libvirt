@@ -8,6 +8,32 @@
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
 
+    <h3>0.9.6: Sep 22 2011</h3>
+    <ul>
+      <li> Portability:<br/>
+      build: silence warning on 32-bit build (Eric Blake)<br/>
+      </li>
+      <li> Bug Fixes:<br/>
+      snapshot: fix logic bug in qemu undefine (Eric Blake),<br/>
+      sanlock: fix memory leak (Eric Blake),<br/>
+      virsh: fix regression in argv parsing (Eric Blake),<br/>
+      storage: Wait udev events are handled before removing lvm vol (Osier Yang),<br/>
+      qemu: avoid dereferencing a NULL pointer (Alex Jia),<br/>
+      qemu: Avoid loop of fake reboots (Jiri Denemark),<br/>
+      qemu: Fix shutdown regression with buggy qemu (Jiri Denemark),<br/>
+      remote: fix crash on OOM (Eric Blake)<br/>
+      </li>
+      <li> Improvements:<br/>
+      snapshot: also delete empty directory (Eric Blake),<br/>
+      snapshot: remove snapshot metadata on transient exit (Eric Blake),<br/>
+      snapshot: prepare to remove transient snapshot metadata (Eric Blake),<br/>
+      virsh: More friendly err if no pool is specified for looking up a vol (Osier Yang),<br/>
+      tests: improve test failure diagnosis (Oskari Saarenmaa),<br/>
+      API: prefer to use NULLSTR macro (Osier Yang),<br/>
+      xen: use typical allocations (Eric Blake),<br/>
+      virsh: Remove useless codes of cmdVolPath (Osier Yang)<br/>
+      </li>
+    </ul>
     <h3>0.9.5: Sep 20 2011</h3>
     <ul>
       <li> Features:<br/>
