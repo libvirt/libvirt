@@ -590,6 +590,10 @@ typedef int
     (*virDrvDomainHasCurrentSnapshot)(virDomainPtr domain, unsigned int flags);
 
 typedef virDomainSnapshotPtr
+    (*virDrvDomainSnapshotGetParent)(virDomainSnapshotPtr snapshot,
+                                     unsigned int flags);
+
+typedef virDomainSnapshotPtr
     (*virDrvDomainSnapshotCurrent)(virDomainPtr domain,
                                    unsigned int flags);
 
@@ -854,6 +858,7 @@ struct _virDriver {
     virDrvDomainSnapshotListNames domainSnapshotListNames;
     virDrvDomainSnapshotLookupByName domainSnapshotLookupByName;
     virDrvDomainHasCurrentSnapshot domainHasCurrentSnapshot;
+    virDrvDomainSnapshotGetParent domainSnapshotGetParent;
     virDrvDomainSnapshotCurrent domainSnapshotCurrent;
     virDrvDomainRevertToSnapshot domainRevertToSnapshot;
     virDrvDomainSnapshotDelete domainSnapshotDelete;

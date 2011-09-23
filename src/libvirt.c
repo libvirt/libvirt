@@ -16150,6 +16150,50 @@ error:
 }
 
 /**
+ * virDomainSnapshotGetParent:
+ * @snapshot: a snapshot object
+ * @flags: unused flag parameters; callers should pass 0
+ *
+ * Get the parent snapshot for @snapshot, if any.
+ *
+ * Returns a domain snapshot object or NULL in case of failure.  If the
+ * given snapshot is a root (no parent), then the VIR_ERR_NO_DOMAIN_SNAPSHOT
+ * error is raised.
+ */
+virDomainSnapshotPtr
+virDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
+                           unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DEBUG("snapshot=%p, flags=%x", snapshot, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
+        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
+                                  __FUNCTION__);
+        virDispatchError(NULL);
+        return NULL;
+    }
+
+    conn = snapshot->domain->conn;
+
+    if (conn->driver->domainSnapshotGetParent) {
+        virDomainSnapshotPtr snap;
+        snap = conn->driver->domainSnapshotGetParent(snapshot, flags);
+        if (!snap)
+            goto error;
+        return snap;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+/**
  * virDomainRevertToSnapshot:
  * @snapshot: a domain snapshot object
  * @flags: bitwise-OR of virDomainSnapshotRevertFlags

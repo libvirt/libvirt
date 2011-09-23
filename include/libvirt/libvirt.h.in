@@ -2711,6 +2711,10 @@ int virDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags);
 virDomainSnapshotPtr virDomainSnapshotCurrent(virDomainPtr domain,
                                               unsigned int flags);
 
+/* Get a handle to the parent snapshot, if one exists */
+virDomainSnapshotPtr virDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
+                                                unsigned int flags);
+
 typedef enum {
     VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING = 1 << 0, /* Run after revert */
     VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED  = 1 << 1, /* Pause after revert */
