@@ -3877,6 +3877,13 @@ libxlDomainEventDeregisterAny(virConnectPtr conn, int callbackID)
 }
 
 
+static int
+libxlIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 1;
+}
+
+
 static virDriver libxlDriver = {
     .no = VIR_DRV_LIBXL,
     .name = "xenlight",
@@ -3950,6 +3957,7 @@ static virDriver libxlDriver = {
     .domainIsUpdated = libxlDomainIsUpdated, /* 0.9.0 */
     .domainEventRegisterAny = libxlDomainEventRegisterAny, /* 0.9.0 */
     .domainEventDeregisterAny = libxlDomainEventDeregisterAny, /* 0.9.0 */
+    .isAlive = libxlIsAlive, /* 0.9.7 */
 };
 
 static virStateDriver libxlStateDriver = {

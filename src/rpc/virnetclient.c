@@ -677,6 +677,20 @@ bool virNetClientIsEncrypted(virNetClientPtr client)
 }
 
 
+bool virNetClientIsOpen(virNetClientPtr client)
+{
+    bool ret;
+
+    if (!client)
+        return false;
+
+    virNetClientLock(client);
+    ret = client->sock && !client->wantClose;
+    virNetClientUnlock(client);
+    return ret;
+}
+
+
 int virNetClientAddProgram(virNetClientPtr client,
                            virNetClientProgramPtr prog)
 {

@@ -940,6 +940,11 @@ static int qemuIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
     return 0;
 }
 
+static int qemuIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 1;
+}
+
 
 static int kvmGetMaxVCPUs(void) {
     int maxvcpus = 1;
@@ -10907,6 +10912,7 @@ static virDriver qemuDriver = {
     .domainGetBlockJobInfo = qemuDomainGetBlockJobInfo, /* 0.9.4 */
     .domainBlockJobSetSpeed = qemuDomainBlockJobSetSpeed, /* 0.9.4 */
     .domainBlockPull = qemuDomainBlockPull, /* 0.9.4 */
+    .isAlive = qemuIsAlive, /* 0.9.7 */
 };
 
 

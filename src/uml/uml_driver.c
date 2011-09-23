@@ -1226,6 +1226,12 @@ static int umlIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
 }
 
 
+static int umlIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 1;
+}
+
+
 static char *umlGetCapabilities(virConnectPtr conn) {
     struct uml_driver *driver = (struct uml_driver *)conn->privateData;
     char *xml;
@@ -2597,6 +2603,7 @@ static virDriver umlDriver = {
     .domainEventRegisterAny = umlDomainEventRegisterAny, /* 0.9.4 */
     .domainEventDeregisterAny = umlDomainEventDeregisterAny, /* 0.9.4 */
     .domainOpenConsole = umlDomainOpenConsole, /* 0.8.6 */
+    .isAlive = umlIsAlive, /* 0.9.7 */
 };
 
 static int

@@ -201,6 +201,12 @@ static int lxcIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
 }
 
 
+static int lxcIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 1;
+}
+
+
 static char *lxcGetCapabilities(virConnectPtr conn) {
     lxc_driver_t *driver = conn->privateData;
     char *xml;
@@ -3273,6 +3279,7 @@ static virDriver lxcDriver = {
     .domainEventRegisterAny = lxcDomainEventRegisterAny, /* 0.8.0 */
     .domainEventDeregisterAny = lxcDomainEventDeregisterAny, /* 0.8.0 */
     .domainOpenConsole = lxcDomainOpenConsole, /* 0.8.6 */
+    .isAlive = lxcIsAlive, /* 0.9.7 */
 };
 
 static virStateDriver lxcStateDriver = {

@@ -1082,6 +1082,11 @@ static int vboxIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED) {
     return 0;
 }
 
+static int vboxIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 1;
+}
+
 static int vboxGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED) {
     VBOX_OBJECT_CHECK(conn, int, -1);
     PRUint32 maxCPUCount = 0;
@@ -9194,6 +9199,7 @@ virDriver NAME(Driver) = {
     .domainSnapshotCurrent = vboxDomainSnapshotCurrent, /* 0.8.0 */
     .domainRevertToSnapshot = vboxDomainRevertToSnapshot, /* 0.8.0 */
     .domainSnapshotDelete = vboxDomainSnapshotDelete, /* 0.8.0 */
+    .isAlive = vboxIsAlive, /* 0.9.7 */
 };
 
 virNetworkDriver NAME(NetworkDriver) = {

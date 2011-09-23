@@ -4176,6 +4176,23 @@ esxIsSecure(virConnectPtr conn)
 
 
 static int
+esxIsAlive(virConnectPtr conn)
+{
+    esxPrivate *priv = conn->privateData;
+
+    /* XXX we should be able to do something better than this but this is
+     * simple, safe, and good enough for now. In worst case, the function will
+     * return true even though the connection is not alive.
+     */
+    if (priv->primary)
+        return 1;
+    else
+        return 0;
+}
+
+
+
+static int
 esxDomainIsActive(virDomainPtr domain)
 {
     int result = -1;
@@ -4996,6 +5013,7 @@ static virDriver esxDriver = {
     .domainSnapshotCurrent = esxDomainSnapshotCurrent, /* 0.8.0 */
     .domainRevertToSnapshot = esxDomainRevertToSnapshot, /* 0.8.0 */
     .domainSnapshotDelete = esxDomainSnapshotDelete, /* 0.8.0 */
+    .isAlive = esxIsAlive, /* 0.9.7 */
 };
 
 

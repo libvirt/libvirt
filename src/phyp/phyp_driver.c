@@ -1293,6 +1293,23 @@ phypIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
     return 1;
 }
 
+
+static int
+phypIsAlive(virConnectPtr conn)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+
+    /* XXX we should be able to do something better but this is simple, safe,
+     * and good enough for now. In worst case, the function will return true
+     * even though the connection is not alive.
+     */
+    if (connection_data && connection_data->session)
+        return 1;
+    else
+        return 0;
+}
+
+
 static int
 phypIsUpdated(virDomainPtr conn ATTRIBUTE_UNUSED)
 {
@@ -3795,6 +3812,7 @@ static virDriver phypDriver = {
     .isEncrypted = phypIsEncrypted, /* 0.7.3 */
     .isSecure = phypIsSecure, /* 0.7.3 */
     .domainIsUpdated = phypIsUpdated, /* 0.8.6 */
+    .isAlive = phypIsAlive, /* 0.9.7 */
 };
 
 static virStorageDriver phypStorageDriver = {

@@ -1895,6 +1895,17 @@ xenapiNodeGetCellsFreeMemory (virConnectPtr conn, unsigned long long *freeMems,
     }
 }
 
+static int
+xenapiIsAlive(virConnectPtr conn)
+{
+    struct _xenapiPrivate *priv = conn->privateData;
+
+    if (priv->session && priv->session->ok)
+        return 1;
+    else
+        return 0;
+}
+
 /* The interface which we export upwards to libvirt.c. */
 static virDriver xenapiDriver = {
     .no = VIR_DRV_XENAPI,
@@ -1945,6 +1956,7 @@ static virDriver xenapiDriver = {
     .nodeGetCellsFreeMemory = xenapiNodeGetCellsFreeMemory, /* 0.8.0 */
     .nodeGetFreeMemory = xenapiNodeGetFreeMemory, /* 0.8.0 */
     .domainIsUpdated = xenapiDomainIsUpdated, /* 0.8.6 */
+    .isAlive = xenapiIsAlive, /* 0.9.7 */
 };
 
 /**

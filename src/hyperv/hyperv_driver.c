@@ -1119,6 +1119,23 @@ hypervIsSecure(virConnectPtr conn)
 
 
 static int
+hypervIsAlive(virConnectPtr conn)
+{
+    hypervPrivate *priv = conn->privateData;
+
+    /* XXX we should be able to do something better than this is simple, safe,
+     * and good enough for now. In worst case, the function will return true
+     * even though the connection is not alive.
+     */
+    if (priv->client)
+        return 1;
+    else
+        return 0;
+}
+
+
+
+static int
 hypervDomainIsActive(virDomainPtr domain)
 {
     int result = -1;
@@ -1276,6 +1293,7 @@ static virDriver hypervDriver = {
     .domainManagedSave = hypervDomainManagedSave, /* 0.9.5 */
     .domainHasManagedSaveImage = hypervDomainHasManagedSaveImage, /* 0.9.5 */
     .domainManagedSaveRemove = hypervDomainManagedSaveRemove, /* 0.9.5 */
+    .isAlive = hypervIsAlive, /* 0.9.7 */
 };
 
 

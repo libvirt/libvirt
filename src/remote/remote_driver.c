@@ -4229,6 +4229,23 @@ cleanup:
 }
 
 
+static int
+remoteIsAlive(virConnectPtr conn)
+{
+    struct private_data *priv = conn->privateData;
+    bool ret;
+
+    remoteDriverLock(priv);
+    ret = virNetClientIsOpen(priv->client);
+    remoteDriverUnlock(priv);
+
+    if (ret)
+        return 1;
+    else
+        return 0;
+}
+
+
 #include "remote_client_bodies.h"
 #include "qemu_client_bodies.h"
 
@@ -4600,6 +4617,7 @@ static virDriver remote_driver = {
     .domainBlockJobSetSpeed = remoteDomainBlockJobSetSpeed, /* 0.9.4 */
     .domainBlockPull = remoteDomainBlockPull, /* 0.9.4 */
     .setKeepAlive = remoteSetKeepAlive, /* 0.9.7 */
+    .isAlive = remoteIsAlive, /* 0.9.7 */
 };
 
 static virNetworkDriver network_driver = {

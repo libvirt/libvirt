@@ -1191,6 +1191,11 @@ static int testIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
     return 0;
 }
 
+static int testIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 1;
+}
+
 static int testGetMaxVCPUs(virConnectPtr conn ATTRIBUTE_UNUSED,
                            const char *type ATTRIBUTE_UNUSED)
 {
@@ -5624,6 +5629,7 @@ static virDriver testDriver = {
     .domainIsUpdated = testDomainIsUpdated, /* 0.8.6 */
     .domainEventRegisterAny = testDomainEventRegisterAny, /* 0.8.0 */
     .domainEventDeregisterAny = testDomainEventDeregisterAny, /* 0.8.0 */
+    .isAlive = testIsAlive, /* 0.9.7 */
 };
 
 static virNetworkDriver testNetworkDriver = {

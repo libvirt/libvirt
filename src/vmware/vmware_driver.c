@@ -958,6 +958,12 @@ vmwareDomainGetState(virDomainPtr dom,
     return ret;
 }
 
+static int
+vmwareIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 1;
+}
+
 static virDriver vmwareDriver = {
     .no = VIR_DRV_VMWARE,
     .name = "VMWARE",
@@ -990,6 +996,7 @@ static virDriver vmwareDriver = {
     .domainUndefineFlags = vmwareDomainUndefineFlags, /* 0.9.4 */
     .domainIsActive = vmwareDomainIsActive, /* 0.8.7 */
     .domainIsPersistent = vmwareDomainIsPersistent, /* 0.8.7 */
+    .isAlive = vmwareIsAlive, /* 0.9.7 */
 };
 
 int

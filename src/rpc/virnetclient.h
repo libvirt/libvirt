@@ -86,6 +86,7 @@ int virNetClientSetTLSSession(virNetClientPtr client,
                               virNetTLSContextPtr tls);
 
 bool virNetClientIsEncrypted(virNetClientPtr client);
+bool virNetClientIsOpen(virNetClientPtr client);
 
 const char *virNetClientLocalAddrString(virNetClientPtr client);
 const char *virNetClientRemoteAddrString(virNetClientPtr client);
