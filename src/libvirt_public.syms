@@ -500,6 +500,7 @@ LIBVIRT_0.9.7 {
 
 LIBVIRT_0.9.8 {
     global:
+        virConnectIsAlive;
         virConnectSetKeepAlive;
 } LIBVIRT_0.9.7;
 

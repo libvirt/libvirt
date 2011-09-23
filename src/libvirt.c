@@ -17246,3 +17246,39 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
+/**
+ * virConnectIsAlive:
+ * @conn: pointer to the connection object
+ *
+ * Determine if the connection to the hypervisor is still alive
+ *
+ * A connection will be classed as alive if it is either local, or running
+ * over a channel (TCP or UNIX socket) which is not closed.
+ *
+ * Returns 1 if alive, 0 if dead, -1 on error
+ */
+int virConnectIsAlive(virConnectPtr conn)
+{
+    VIR_DEBUG("conn=%p", conn);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (conn->driver->isAlive) {
+        int ret;
+        ret = conn->driver->isAlive(conn);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return -1;
+}

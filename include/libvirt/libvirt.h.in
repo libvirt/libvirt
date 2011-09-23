@@ -2655,6 +2655,7 @@ int virInterfaceIsActive(virInterfacePtr iface);
 
 int virConnectIsEncrypted(virConnectPtr conn);
 int virConnectIsSecure(virConnectPtr conn);
+int virConnectIsAlive(virConnectPtr conn);
 
 /*
  * CPU specification API

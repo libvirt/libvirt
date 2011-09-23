@@ -509,6 +509,8 @@ typedef int
 typedef int
     (*virDrvConnectIsSecure)(virConnectPtr conn);
 typedef int
+    (*virDrvConnectIsAlive)(virConnectPtr conn);
+typedef int
     (*virDrvDomainIsActive)(virDomainPtr dom);
 typedef int
     (*virDrvDomainIsPersistent)(virDomainPtr dom);
@@ -904,6 +906,7 @@ struct _virDriver {
     virDrvDomainBlockJobSetSpeed domainBlockJobSetSpeed;
     virDrvDomainBlockPull domainBlockPull;
     virDrvSetKeepAlive setKeepAlive;
+    virDrvConnectIsAlive isAlive;
 };
 
 typedef int
