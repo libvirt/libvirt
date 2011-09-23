@@ -28,6 +28,7 @@ The primary maintainers and people with commit access rights:
   Osier Yang           <jyang@redhat.com>
   Wen Congyang         <wency@cn.fujitsu.com>
   Michal Prívozník     <mprivozn@redhat.com>
+  Peter Krempa         <pkrempa@redhat.com>
 
 Previous maintainers:
   Karel Zak            <kzak@redhat.com>
@@ -185,7 +186,6 @@ Patches have also been contributed by:
   Michael Santos       <michael.santos@gmail.com>
   Alex Jia             <ajia@redhat.com>
   Oskari Saarenmaa     <os@ohmu.fi>
-  Peter Krempa         <pkrempa@redhat.com>
   Nan Zhang            <nzhang@redhat.com>
   Wieland Hoffmann     <themineo@googlemail.com>
   Douglas Schilling Landgraf <dougsland@redhat.com>
