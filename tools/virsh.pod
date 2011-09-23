@@ -1200,6 +1200,7 @@ Attach a device to the domain, using a device definition in an XML file.
 See the documentation to learn about libvirt XML format for a device.
 For cdrom and floppy devices, this command only replaces the media within
 the single existing device; consider using B<update-device> for this usage.
+For passthrough host devices, see also B<nodedev-dettach>.
 
 =item B<attach-disk> I<domain-id> I<source> I<target>
 [I<--driver driver>] [I<--subdriver subdriver>] [I<--cache cache>]
@@ -1241,6 +1242,7 @@ I<persistent> indicates the changes will affect the next boot of the domain.
 
 Detach a device from the domain, takes the same kind of XML descriptions
 as command B<attach-device>.
+For passthrough host devices, see also B<nodedev-reattach>.
 
 =item B<detach-disk> I<domain-id> I<target>
 
@@ -1262,6 +1264,82 @@ used, the changes will affect the next boot of the domain. The I<--force>
 option can be used to force device update, e.g., to eject a CD-ROM even if it
 is locked/mounted in the domain. See the documentation to learn about libvirt
 XML format for a device.
+
+=back
+
+=head1 NODEDEV COMMANDS
+
+The following commands manipulate host devices that are intended to be
+passed through to guest domains via <hostdev> elements in a domain's
+<devices> section.  A node device key is generally specified by the bus
+name followed by its address, using underscores between all components,
+such as pci_0000_00_02_1, usb_1_5_3, or net_eth1_00_27_13_6a_fe_00.
+The B<nodedev-list> gives the full list of host devices that are known
+to libvirt, although this includes devices that cannot be assigned to
+a guest (for example, attempting to detach the PCI device that controls
+the host's hard disk controller where the guest's disk images live could
+cause the host system to lock up or reboot).
+
+For more information on node device definition see:
+L<http://libvirt.org/formatnode.html>.
+
+Passthrough devices cannot be simultaneously used by the host and its
+guest domains.  Attempts to use a passthrough <hostdev> for a guest may
+have the ability to behave as if B<nodedev-dettach> had been called,
+although making this call explicitly is safe.  Once a guest no longer
+needs a passthrough device, reversing the process so that the host can
+again use the device requires the explicit use of B<nodedev-reattach>.
+
+=over 4
+
+=item B<nodedev-create> I<FILE>
+
+Create a device on the host node that can then be assigned to virtual
+machines. Normally, libvirt is able to automatically determine which
+host nodes are available for use, but this allows registration of
+host hardware that libvirt did not automatically detect.  I<file>
+contains xml for a top-level <device> description of a node device.
+
+=item B<nodedev-destroy> I<nodedev>
+
+Destroy (stop) a device on the host.  Note that this makes libvirt
+quit managing a host device, and may even make that device unusable
+by the rest of the physical host until a reboot.
+
+=item B<nodedev-dettach> I<nodedev>
+
+Detach I<nodedev> from the host, so that it can safely be used by
+guests via <hostdev> passthrough.  This is reversed with
+B<nodedev-reattach>.
+
+=item B<nodedev-dumpxml> I<nodedev>
+
+Dump a <device> XML representation for the given node device, including
+such information as the device name, which bus owns the device, the
+vendor and product id, and any capabilities of the device usable by
+libvirt (such as whether device reset is supported).
+
+=item B<nodedev-list> I<cap> I<--tree>
+
+List all of the devices available on the node that are known by libvirt.
+If I<cap> is used, the list is filtered to show only the nodes that
+include the given capability.  If I<--tree> is used, the output is
+formatted in a tree representing parents of each node.
+
+=item B<nodedev-reattach> I<nodedev>
+
+Declare that I<nodedev> is no longer in use by any guests, and that
+the host can resume normal use of the device.  While libvirt can
+sometimes perform an implicit B<nodedev-dettach> when creating a
+guest, it currently requires an explicit B<nodedev-reattach> after
+the last guest use of the device before the host regains full control.
+
+=item B<nodedev-reset> I<nodedev>
+
+Trigger a device reset for I<nodedev>, useful prior to transferring
+a node device between guest passthrough or the host.  Libvirt will
+often do this action implicitly when required, but this command
+allows an explicit reset when needed.
 
 =back
 
