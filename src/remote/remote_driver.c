@@ -4412,6 +4412,7 @@ static virDriver remote_driver = {
     .domainSnapshotListNames = remoteDomainSnapshotListNames, /* 0.8.0 */
     .domainSnapshotLookupByName = remoteDomainSnapshotLookupByName, /* 0.8.0 */
     .domainHasCurrentSnapshot = remoteDomainHasCurrentSnapshot, /* 0.8.0 */
+    .domainSnapshotGetParent = remoteDomainSnapshotGetParent, /* 0.9.7 */
     .domainSnapshotCurrent = remoteDomainSnapshotCurrent, /* 0.8.0 */
     .domainRevertToSnapshot = remoteDomainRevertToSnapshot, /* 0.8.0 */
     .domainSnapshotDelete = remoteDomainSnapshotDelete, /* 0.8.0 */

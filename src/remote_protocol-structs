@@ -1568,6 +1568,13 @@ struct remote_domain_has_current_snapshot_args {
 struct remote_domain_has_current_snapshot_ret {
         int                        result;
 };
+struct remote_domain_snapshot_get_parent_args {
+        remote_nonnull_domain_snapshot snap;
+        u_int                      flags;
+};
+struct remote_domain_snapshot_get_parent_ret {
+        remote_nonnull_domain_snapshot snap;
+};
 struct remote_domain_snapshot_current_args {
         remote_nonnull_domain      dom;
         u_int                      flags;
@@ -1958,4 +1965,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB = 241,
         REMOTE_PROC_DOMAIN_MIGRATE_GET_MAX_SPEED = 242,
         REMOTE_PROC_DOMAIN_BLOCK_STATS_FLAGS = 243,
+        REMOTE_PROC_DOMAIN_SNAPSHOT_GET_PARENT = 244,
 };

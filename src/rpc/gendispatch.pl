@@ -1273,7 +1273,9 @@ elsif ($opt_k) {
                         $single_ret_type = "int";
                     } else {
                         if ($name eq "domain_snapshot") {
-                            push(@ret_list, "rv = get_nonnull_$name(dom, ret.$arg_name);");
+                            my $dom = "$priv_src";
+                            $dom =~ s/->conn//;
+                            push(@ret_list, "rv = get_nonnull_$name($dom, ret.$arg_name);");
                         } else {
                             push(@ret_list, "rv = get_nonnull_$name($priv_src, ret.$arg_name);");
                         }

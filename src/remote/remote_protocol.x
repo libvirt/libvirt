@@ -2081,6 +2081,15 @@ struct remote_domain_has_current_snapshot_ret {
     int result;
 };
 
+struct remote_domain_snapshot_get_parent_args {
+    remote_nonnull_domain_snapshot snap;
+    unsigned int flags;
+};
+
+struct remote_domain_snapshot_get_parent_ret {
+    remote_nonnull_domain_snapshot snap;
+};
+
 struct remote_domain_snapshot_current_args {
     remote_nonnull_domain dom;
     unsigned int flags;
@@ -2509,7 +2518,8 @@ enum remote_procedure {
 
     REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB = 241, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_GET_MAX_SPEED = 242, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_BLOCK_STATS_FLAGS = 243 /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_BLOCK_STATS_FLAGS = 243, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_SNAPSHOT_GET_PARENT = 244 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
