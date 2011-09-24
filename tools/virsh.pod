@@ -1955,15 +1955,17 @@ except that it does some error checking.
 The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
 variables, and defaults to C<vi>.
 
-=item B<snapshot-list> I<domain> [{I<--parent> | I<--roots>}] [I<--metadata>]
+=item B<snapshot-list> I<domain> [{I<--parent> | I<--roots> | I<--tree>}]
+[I<--metadata>]
 
-List all of the available snapshots for the given domain.
+List all of the available snapshots for the given domain, defaulting
+to show columns for the snapshot name, creation time, and domain state.
 
 If I<--parent> is specified, add a column to the output table giving
-the name of the parent of each snapshot.
-
-If I<--roots> is specified, the list will be filtered to just snapshots
-that have no parents; this option is not compatible with I<--parent>.
+the name of the parent of each snapshot.  If I<--roots> is specified,
+the list will be filtered to just snapshots that have no parents.
+If I<--tree> is specified, the output will be in a tree format, listing
+just snapshot names.  These three options are mutually exclusive.
 
 If I<--metadata> is specified, the list will be filtered to just
 snapshots that involve libvirt metadata, and thus would prevent

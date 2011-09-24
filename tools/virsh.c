@@ -13042,6 +13042,7 @@ static const vshCmdOptDef opts_snapshot_list[] = {
     {"roots", VSH_OT_BOOL, 0, N_("list only snapshots without parents")},
     {"metadata", VSH_OT_BOOL, 0,
      N_("list only snapshots that have metadata that would prevent undefine")},
+    {"tree", VSH_OT_BOOL, 0, N_("list snapshots in a tree")},
     {NULL, 0, 0, NULL}
 };
 
@@ -13067,6 +13068,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     time_t creation_time_t;
     char timestr[100];
     struct tm time_info;
+    bool tree = vshCommandOptBool(cmd, "tree");
 
     if (vshCommandOptBool(cmd, "parent")) {
         if (vshCommandOptBool(cmd, "roots")) {
@@ -13074,8 +13076,18 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
                      _("--parent and --roots are mutually exlusive"));
             return false;
         }
+        if (tree) {
+            vshError(ctl, "%s",
+                     _("--parent and --tree are mutually exlusive"));
+            return false;
+        }
         parent_filter = 1;
     } else if (vshCommandOptBool(cmd, "roots")) {
+        if (tree) {
+            vshError(ctl, "%s",
+                     _("--roots and --tree are mutually exlusive"));
+            return false;
+        }
         flags |= VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
     }
 
@@ -13105,23 +13117,66 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     if (numsnaps < 0)
         goto cleanup;
 
-    if (parent_filter > 0)
-        vshPrintExtra(ctl, " %-20s %-25s %-15s %s",
-                      _("Name"), _("Creation Time"), _("State"), _("Parent"));
-    else
-        vshPrintExtra(ctl, " %-20s %-25s %s",
-                      _("Name"), _("Creation Time"), _("State"));
-    vshPrintExtra(ctl, "\n\
+    if (!tree) {
+        if (parent_filter > 0)
+            vshPrintExtra(ctl, " %-20s %-25s %-15s %s",
+                          _("Name"), _("Creation Time"), _("State"),
+                          _("Parent"));
+        else
+            vshPrintExtra(ctl, " %-20s %-25s %s",
+                          _("Name"), _("Creation Time"), _("State"));
+        vshPrintExtra(ctl, "\n\
 ------------------------------------------------------------\n");
+    }
 
-    if (numsnaps) {
-        if (VIR_ALLOC_N(names, numsnaps) < 0)
-            goto cleanup;
+    if (!numsnaps) {
+        ret = true;
+        goto cleanup;
+    }
 
-        actual = virDomainSnapshotListNames(dom, names, numsnaps, flags);
-        if (actual < 0)
-            goto cleanup;
+    if (VIR_ALLOC_N(names, numsnaps) < 0)
+        goto cleanup;
 
+    actual = virDomainSnapshotListNames(dom, names, numsnaps, flags);
+    if (actual < 0)
+        goto cleanup;
+
+    if (tree) {
+        char indentBuf[INDENT_BUFLEN];
+        char **parents = vshMalloc(ctl, sizeof(char *) * actual);
+        for (i = 0; i < actual; i++) {
+            /* free up memory from previous iterations of the loop */
+            if (snapshot)
+                virDomainSnapshotFree(snapshot);
+            snapshot = virDomainSnapshotLookupByName(dom, names[i], 0);
+            if (!snapshot) {
+                while (--i >= 0)
+                    VIR_FREE(parents[i]);
+                VIR_FREE(parents);
+                goto cleanup;
+            }
+            parents[i] = vshGetSnapshotParent(ctl, snapshot);
+        }
+        for (i = 0 ; i < actual ; i++) {
+            memset(indentBuf, '\0', sizeof indentBuf);
+            if (parents[i] == NULL)
+                cmdNodeListDevicesPrint(ctl,
+                                        names,
+                                        parents,
+                                        actual,
+                                        i,
+                                        i,
+                                        0,
+                                        0,
+                                        indentBuf);
+        }
+        for (i = 0 ; i < actual ; i++)
+            VIR_FREE(parents[i]);
+        VIR_FREE(parents);
+
+        ret = true;
+        goto cleanup;
+    } else {
         qsort(&names[0], actual, sizeof(char*), namesorter);
 
         for (i = 0; i < actual; i++) {
