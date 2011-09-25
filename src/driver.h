@@ -584,6 +584,16 @@ typedef int
                                      int nameslen,
                                      unsigned int flags);
 
+typedef int
+    (*virDrvDomainSnapshotNumChildren)(virDomainSnapshotPtr snapshot,
+                                       unsigned int flags);
+
+typedef int
+    (*virDrvDomainSnapshotListChildrenNames)(virDomainSnapshotPtr snapshot,
+                                             char **names,
+                                             int nameslen,
+                                             unsigned int flags);
+
 typedef virDomainSnapshotPtr
     (*virDrvDomainSnapshotLookupByName)(virDomainPtr domain,
                                         const char *name,
@@ -860,6 +870,8 @@ struct _virDriver {
     virDrvDomainSnapshotGetXMLDesc domainSnapshotGetXMLDesc;
     virDrvDomainSnapshotNum domainSnapshotNum;
     virDrvDomainSnapshotListNames domainSnapshotListNames;
+    virDrvDomainSnapshotNumChildren domainSnapshotNumChildren;
+    virDrvDomainSnapshotListChildrenNames domainSnapshotListChildrenNames;
     virDrvDomainSnapshotLookupByName domainSnapshotLookupByName;
     virDrvDomainHasCurrentSnapshot domainHasCurrentSnapshot;
     virDrvDomainSnapshotGetParent domainSnapshotGetParent;

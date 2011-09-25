@@ -346,14 +346,20 @@
     <function name='virDomainSnapshotListNames' file='python'>
       <info>collect the list of snapshots for the given domain</info>
       <arg name='dom' type='virDomainPtr' info='pointer to the domain'/>
-      <arg name='flags' type='unsigned int' info='flags, curently unused'/>
-      <return type='str *' info='the list of Names of None in case of error'/>
+      <arg name='flags' type='unsigned int' info='flags'/>
+      <return type='str *' info='the list of Names or None in case of error'/>
+    </function>
+    <function name='virDomainSnapshotListChildrenNames' file='python'>
+      <info>collect the list of child snapshots for the given snapshot</info>
+      <arg name='snapshot' type='virDomainSnapshotPtr' info='pointer to the snapshot'/>
+      <arg name='flags' type='unsigned int' info='flags'/>
+      <return type='str *' info='the list of Names or None in case of error'/>
     </function>
     <function name='virDomainRevertToSnapshot' file='python'>
       <info>revert the domain to the given snapshot</info>
       <arg name='dom' type='virDomainPtr' info='dummy domain pointer'/>
       <arg name='snap' type='virDomainSnapshotPtr' info='pointer to the snapshot'/>
-      <arg name='flags' type='unsigned int' info='flags, curently unused'/>
+      <arg name='flags' type='unsigned int' info='flags'/>
       <return type='int' info="0 on success, -1 on error"/>
     </function>
     <function name='virDomainGetBlockJobInfo' file='python'>

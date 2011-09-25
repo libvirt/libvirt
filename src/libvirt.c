@@ -16068,6 +16068,117 @@ error:
 }
 
 /**
+ * virDomainSnapshotNumChildren:
+ * @snapshot: a domain snapshot object
+ * @flags: bitwise-or of supported virDomainSnapshotListFlags
+ *
+ * Provides the number of child snapshots for this domain snapshot.
+ *
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS, then the result
+ * includes all descendants, otherwise it is limited to direct children.
+ *
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_METADATA, then the result is
+ * the number of snapshots that also include metadata that would prevent
+ * the removal of the last reference to a domain; this value will either
+ * be 0 or the same value as if the flag were not given.
+ *
+ * Returns the number of domain snapshots found or -1 in case of error.
+ */
+int
+virDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DEBUG("snapshot=%p, flags=%x", snapshot, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
+        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
+                                  __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = snapshot->domain->conn;
+    if (conn->driver->domainSnapshotNumChildren) {
+        int ret = conn->driver->domainSnapshotNumChildren(snapshot, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
+ * virDomainSnapshotListChildrenNames:
+ * @snapshot: a domain snapshot object
+ * @names: array to collect the list of names of snapshots
+ * @nameslen: size of @names
+ * @flags: bitwise-or of supported virDomainSnapshotListFlags
+ *
+ * Collect the list of domain snapshots that are children of the given
+ * snapshot, and store their names in @names.  Caller is responsible for
+ * freeing each member of the array.  The value to use for @nameslen can
+ * be determined by virDomainSnapshotNumChildren() with the same @flags.
+ *
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS, then the result
+ * includes all descendants, otherwise it is limited to direct children.
+ *
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_METADATA, then the result is
+ * the number of snapshots that also include metadata that would prevent
+ * the removal of the last reference to a domain; this value will either
+ * be 0 or the same value as if the flag were not given.
+ *
+ * Returns the number of domain snapshots found or -1 in case of error.
+ */
+int
+virDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
+                                   char **names, int nameslen,
+                                   unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DEBUG("snapshot=%p, names=%p, nameslen=%d, flags=%x",
+              snapshot, names, nameslen, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
+        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
+                                  __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = snapshot->domain->conn;
+
+    if ((names == NULL) || (nameslen < 0)) {
+        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainSnapshotListChildrenNames) {
+        int ret = conn->driver->domainSnapshotListChildrenNames(snapshot,
+                                                                names,
+                                                                nameslen,
+                                                                flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
  * virDomainSnapshotLookupByName:
  * @domain: a domain object
  * @name: name for the domain snapshot

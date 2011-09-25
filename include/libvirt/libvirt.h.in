@@ -2688,13 +2688,19 @@ virDomainSnapshotPtr virDomainSnapshotCreateXML(virDomainPtr domain,
 char *virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
                                   unsigned int flags);
 
-/* Flags valid for both virDomainSnapshotNum() and
- * virDomainSnapshotListNames().  */
+/* Flags valid for virDomainSnapshotNum(),
+ * virDomainSnapshotListNames(), virDomainSnapshotNumChildren(), and
+ * virDomainSnapshotListChildrenNames().  Note that the interpretation
+ * of flag (1<<0) depends on which function it is passed to.  */
 typedef enum {
-    VIR_DOMAIN_SNAPSHOT_LIST_ROOTS    = (1 << 0), /* Filter by snapshots which
-                                                     have no parents */
-    VIR_DOMAIN_SNAPSHOT_LIST_METADATA = (1 << 1), /* Filter by snapshots which
-                                                     have metadata */
+    VIR_DOMAIN_SNAPSHOT_LIST_ROOTS       = (1 << 0), /* Filter by snapshots
+                                                        with no parents, when
+                                                        listing a domain */
+    VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS = (1 << 0), /* List all descendants,
+                                                        not just children, when
+                                                        listing a snapshot */
+    VIR_DOMAIN_SNAPSHOT_LIST_METADATA    = (1 << 1), /* Filter by snapshots
+                                                        which have metadata */
 } virDomainSnapshotListFlags;
 
 /* Return the number of snapshots for this domain */
@@ -2703,6 +2709,15 @@ int virDomainSnapshotNum(virDomainPtr domain, unsigned int flags);
 /* Get the names of all snapshots for this domain */
 int virDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
                                unsigned int flags);
+
+/* Return the number of child snapshots for this snapshot */
+int virDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
+                                 unsigned int flags);
+
+/* Get the names of all child snapshots for this snapshot */
+int virDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
+                                       char **names, int nameslen,
+                                       unsigned int flags);
 
 /* Get a handle to a named snapshot */
 virDomainSnapshotPtr virDomainSnapshotLookupByName(virDomainPtr domain,

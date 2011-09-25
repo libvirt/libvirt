@@ -352,6 +352,7 @@ skip_impl = (
     'virConnectListDefinedInterfaces',
     'virConnectListNWFilters',
     'virDomainSnapshotListNames',
+    'virDomainSnapshotListChildrenNames',
     'virConnGetLastError',
     'virGetLastError',
     'virDomainGetInfo',
@@ -962,6 +963,9 @@ def nameFixup(name, classe, type, file):
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:26] == "virDomainSnapshotListNames":
         func = name[9:]
+        func = string.lower(func[0:1]) + func[1:]
+    elif name[0:28] == "virDomainSnapshotNumChildren":
+        func = name[17:]
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:20] == "virDomainSnapshotNum":
         func = name[9:]
