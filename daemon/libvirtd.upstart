@@ -31,9 +31,6 @@ script
         ulimit -c "$DAEMON_COREFILE_LIMIT"
     fi
 
-    # Clean up a pidfile that might be left around
-    rm -f /var/run/libvirtd.pid
-
     mkdir -p /var/cache/libvirt
     rm -rf /var/cache/libvirt/*
 
@@ -41,6 +38,5 @@ script
 end script
 
 post-stop script
-    rm -f $PIDFILE
     rm -rf /var/cache/libvirt/*
 end script
