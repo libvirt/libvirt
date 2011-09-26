@@ -727,9 +727,12 @@ and I<--suspend> leaves the domain paused on the destination host.
 I<--copy-storage-all> indicates migration with non-shared storage with full
 disk copy, I<--copy-storage-inc> indicates migration with non-shared storage
 with incremental copy (same base image shared between source and destination).
-I<--change-protection> enforces that no incompatible configuration changes
-will be made to the domain while the migration is underway; this flag is
-implicitly enabled when supported by the hypervisor, but can be explicitly
+In both cases the disk images have to exist on destination host, the
+I<--copy-storage-...> options only tell libvirt to transfer data from the
+images on source host to the images found at the same place on the destination
+host. I<--change-protection> enforces that no incompatible configuration
+changes will be made to the domain while the migration is underway; this flag
+is implicitly enabled when supported by the hypervisor, but can be explicitly
 used to reject the migration if the hypervisor lacks change protection
 support.  I<--verbose> displays the progress of migration.
 
