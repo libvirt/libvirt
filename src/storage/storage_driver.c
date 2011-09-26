@@ -1247,14 +1247,14 @@ storageVolumeLookupByPath(virConnectPtr conn,
 
             stable_path = virStorageBackendStablePath(driver->pools.objs[i],
                                                       cleanpath);
-            /*
-             * virStorageBackendStablePath already does
-             * virStorageReportError if it fails; we just need to keep
-             * propagating the return code
-             */
             if (stable_path == NULL) {
+                /* Don't break the whole lookup process if it fails on
+                 * getting the stable path for some of the pools.
+                 */
+                VIR_WARN("Failed to get stable path for pool '%s'",
+                         driver->pools.objs[i]->def->name);
                 virStoragePoolObjUnlock(driver->pools.objs[i]);
-                goto cleanup;
+                continue;
             }
 
             vol = virStorageVolDefFindByPath(driver->pools.objs[i],
@@ -1274,7 +1274,6 @@ storageVolumeLookupByPath(virConnectPtr conn,
         virStorageReportError(VIR_ERR_NO_STORAGE_VOL,
                               "%s", _("no storage vol with matching path"));
 
-cleanup:
     VIR_FREE(cleanpath);
     storageDriverUnlock(driver);
     return ret;
