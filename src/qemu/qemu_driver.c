@@ -2923,11 +2923,13 @@ static int qemudDomainCoreDump(virDomainPtr dom,
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
+    qemuDomainObjPrivatePtr priv;
     int resume = 0, paused = 0;
     int ret = -1;
     virDomainEventPtr event = NULL;
 
-    virCheckFlags(VIR_DUMP_LIVE | VIR_DUMP_CRASH | VIR_DUMP_BYPASS_CACHE, -1);
+    virCheckFlags(VIR_DUMP_LIVE | VIR_DUMP_CRASH |
+                  VIR_DUMP_BYPASS_CACHE | VIR_DUMP_RESET, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -2988,10 +2990,18 @@ endjob:
     /* Since the monitor is always attached to a pty for libvirt, it
        will support synchronous operations so we always get here after
        the migration is complete.  */
-    else if (resume && paused && virDomainObjIsActive(vm)) {
-        if (qemuProcessStartCPUs(driver, vm, dom->conn,
-                                 VIR_DOMAIN_RUNNING_UNPAUSED,
-                                 QEMU_ASYNC_JOB_DUMP) < 0) {
+    else if (((resume && paused) || (flags & VIR_DUMP_RESET)) &&
+             virDomainObjIsActive(vm)) {
+        if ((ret == 0) && (flags & VIR_DUMP_RESET)) {
+            priv =  vm->privateData;
+            qemuDomainObjEnterMonitorWithDriver(driver, vm);
+            ret = qemuMonitorSystemReset(priv->mon);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+        }
+
+        if (resume && qemuProcessStartCPUs(driver, vm, dom->conn,
+                                           VIR_DOMAIN_RUNNING_UNPAUSED,
+                                           QEMU_ASYNC_JOB_DUMP) < 0) {
             if (virGetLastError() == NULL)
                 qemuReportError(VIR_ERR_OPERATION_FAILED,
                                 "%s", _("resuming after dump failed"));
