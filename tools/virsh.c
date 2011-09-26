@@ -2888,6 +2888,7 @@ static const vshCmdOptDef opts_dump[] = {
     {"crash", VSH_OT_BOOL, 0, N_("crash the domain after core dump")},
     {"bypass-cache", VSH_OT_BOOL, 0,
      N_("avoid file system cache when saving")},
+    {"reset", VSH_OT_BOOL, 0, N_("reset the domain after core dump")},
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("where to dump the core")},
     {NULL, 0, 0, NULL}
@@ -2917,6 +2918,8 @@ cmdDump(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DUMP_CRASH;
     if (vshCommandOptBool(cmd, "bypass-cache"))
         flags |= VIR_DUMP_BYPASS_CACHE;
+    if (vshCommandOptBool(cmd, "reset"))
+        flags |= VIR_DUMP_RESET;
 
     if (virDomainCoreDump(dom, to, flags) < 0) {
         vshError(ctl, _("Failed to core dump domain %s to %s"), name, to);

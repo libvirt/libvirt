@@ -2784,7 +2784,8 @@ error:
  * a crashed state after the dump completes.  If @flags includes
  * VIR_DUMP_LIVE, then make the core dump while continuing to allow
  * the guest to run; otherwise, the guest is suspended during the dump.
- * The above two flags are mutually exclusive.
+ * VIR_DUMP_RESET flag forces reset of the quest after dump.
+ * The above three flags are mutually exclusive.
  *
  * Additionally, if @flags includes VIR_DUMP_BYPASS_CACHE, then libvirt
  * will attempt to bypass the file system cache while creating the file,
@@ -2820,6 +2821,18 @@ virDomainCoreDump(virDomainPtr domain, const char *to, unsigned int flags)
     if ((flags & VIR_DUMP_CRASH) && (flags & VIR_DUMP_LIVE)) {
         virLibDomainError(VIR_ERR_INVALID_ARG,
                           _("crash and live flags are mutually exclusive"));
+        goto error;
+    }
+
+    if ((flags & VIR_DUMP_CRASH) && (flags & VIR_DUMP_RESET)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                         _("crash and reset flags are mutually exclusive"));
+        goto error;
+    }
+
+    if ((flags & VIR_DUMP_LIVE) && (flags & VIR_DUMP_RESET)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                          _("live and reset flags are mutually exclusive"));
         goto error;
     }
 

@@ -628,14 +628,16 @@ named by I<format> to a domain XML format.
 Convert the file I<xml> in domain XML format to the native guest
 configuration format named by I<format>.
 
-=item B<dump> I<domain-id> I<corefilepath> [I<--live>] [I<--crash>]
-[I<--bypass-cache>]
+=item B<dump> I<domain-id> I<corefilepath> [I<--bypass-cache>]
+{ [I<--live>] | [I<--crash>] | [I<--reset>] }
 
 Dumps the core of a domain to a file for analysis.
 If I<--live> is specified, the domain continues to run until the core
 dump is complete, rather than pausing up front.
 If I<--crash> is specified, the domain is halted with a crashed status,
 rather than merely left in a paused state.
+If I<--reset> is specified, the domain is reset after successful dump.
+Note, these three switches are mutually exclusive.
 If I<--bypass-cache> is specified, the save will avoid the file system
 cache, although this may slow down the operation.
 
