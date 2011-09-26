@@ -94,7 +94,7 @@ daemonStreamUpdateEvents(daemonClientStream *stream)
  * fast stream, but slow client
  */
 static void
-daemonStreamMessageFinished(virNetMessagePtr msg,
+daemonStreamMessageFinished(virNetMessagePtr msg ATTRIBUTE_UNUSED,
                             void *opaque)
 {
     daemonClientStream *stream = opaque;
@@ -244,7 +244,7 @@ cleanup:
  * -1 on fatal client error
  */
 static int
-daemonStreamFilter(virNetServerClientPtr client,
+daemonStreamFilter(virNetServerClientPtr client ATTRIBUTE_UNUSED,
                    virNetMessagePtr msg,
                    void *opaque)
 {

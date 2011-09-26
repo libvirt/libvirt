@@ -96,7 +96,8 @@ virNetTLSContextCheckCertFile(const char *type, const char *file, bool allowMiss
 }
 
 
-static void virNetTLSLog(int level, const char *str) {
+static void virNetTLSLog(int level ATTRIBUTE_UNUSED,
+                         const char *str ATTRIBUTE_UNUSED) {
     VIR_DEBUG("%d %s", level, str);
 }
 
@@ -490,7 +491,7 @@ static int virNetTLSContextCheckCertPair(gnutls_x509_crt_t cert,
 
 static gnutls_x509_crt_t virNetTLSContextLoadCertFromFile(const char *certFile,
                                                           bool isServer,
-                                                          bool isCA)
+                                                          bool isCA ATTRIBUTE_UNUSED)
 {
     gnutls_datum_t data;
     gnutls_x509_crt_t cert = NULL;

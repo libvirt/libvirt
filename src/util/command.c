@@ -1686,7 +1686,8 @@ virCommandProcessIO(virCommandPtr cmd)
                 } else {
                     inoff += done;
                     if (inoff == inlen) {
-                        int tmpfd = infd;
+                        int tmpfd ATTRIBUTE_UNUSED;
+                        tmpfd = infd;
                         if (VIR_CLOSE(infd) < 0)
                             VIR_DEBUG("ignoring failed close on fd %d", tmpfd);
                     }
@@ -1877,7 +1878,8 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
             VIR_DEBUG("ignoring failed close on fd %d", tmpfd);
     }
     if (cmd->outbuf == &outbuf) {
-        int tmpfd = cmd->outfd;
+        int tmpfd ATTRIBUTE_UNUSED;
+        tmpfd = cmd->outfd;
         if (VIR_CLOSE(cmd->outfd) < 0)
             VIR_DEBUG("ignoring failed close on fd %d", tmpfd);
         cmd->outfdptr = NULL;
@@ -1885,7 +1887,8 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
         VIR_FREE(outbuf);
     }
     if (cmd->errbuf == &errbuf) {
-        int tmpfd = cmd->errfd;
+        int tmpfd ATTRIBUTE_UNUSED;
+        tmpfd = cmd->errfd;
         if (VIR_CLOSE(cmd->errfd) < 0)
             VIR_DEBUG("ignoring failed close on fd %d", tmpfd);
         cmd->errfdptr = NULL;

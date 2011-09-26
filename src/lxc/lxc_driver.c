@@ -2165,7 +2165,7 @@ static int lxcStartup(int privileged)
 
     rc = virCgroupForDriver("lxc", &lxc_driver->cgroup, privileged, 1);
     if (rc < 0) {
-        char buf[1024];
+        char buf[1024] ATTRIBUTE_UNUSED;
         VIR_DEBUG("Unable to create cgroup for LXC driver: %s",
                   virStrerror(-rc, buf, sizeof(buf)));
         /* Don't abort startup. We will explicitly report to

@@ -1245,7 +1245,7 @@ int lxcContainerAvailable(int features)
     cpid = clone(lxcContainerDummyChild, childStack, flags, NULL);
     VIR_FREE(stack);
     if (cpid < 0) {
-        char ebuf[1024];
+        char ebuf[1024] ATTRIBUTE_UNUSED;
         VIR_DEBUG("clone call returned %s, container support is not enabled",
               virStrerror(errno, ebuf, sizeof ebuf));
         return -1;

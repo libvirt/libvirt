@@ -703,7 +703,7 @@ out:
 }
 
 
-static int udevGetSCSIType(virNodeDeviceDefPtr def,
+static int udevGetSCSIType(virNodeDeviceDefPtr def ATTRIBUTE_UNUSED,
                            unsigned int type, char **typestring)
 {
     int ret = 0;

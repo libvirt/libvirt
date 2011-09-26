@@ -1829,7 +1829,7 @@ cleanup:
  * instead of client app context & also adding in tunnel
  * handling */
 static int doPeer2PeerMigrate2(struct qemud_driver *driver,
-                               virConnectPtr sconn,
+                               virConnectPtr sconn ATTRIBUTE_UNUSED,
                                virConnectPtr dconn,
                                virDomainObjPtr vm,
                                const char *dconnuri,
