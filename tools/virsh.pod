@@ -639,6 +639,11 @@ rather than merely left in a paused state.
 If I<--bypass-cache> is specified, the save will avoid the file system
 cache, although this may slow down the operation.
 
+The progress may be monitored using B<domjobinfo> virsh command and canceled
+with B<domjobabort> command (sent by another virsh instance). Interrupting
+(usually with C<Ctrl-C>) the virsh process which runs B<dump> command is not
+enough to actually cancel the operation.
+
 NOTE: Some hypervisors may require the user to manually ensure proper
 permissions on file and path specified by argument I<corefilepath>.
 
@@ -683,6 +688,11 @@ state at a later time.  When the virsh B<start> command is next run for
 the domain, it will automatically be started from this saved state.
 If I<--bypass-cache> is specified, the save will avoid the file system
 cache, although this may slow down the operation.
+
+The progress may be monitored using B<domjobinfo> virsh command and canceled
+with B<domjobabort> command (sent by another virsh instance). Interrupting
+(usually with C<Ctrl-C>) the virsh process which runs B<managedsave> command
+is not enough to actually cancel the operation.
 
 Normally, starting a managed save will decide between running or paused
 based on the state the domain was in when the save was done; passing
@@ -735,6 +745,9 @@ between source and destination in accessing underlying storage.
 I<--timeout> B<seconds> forces guest to suspend when live migration exceeds
 that many seconds, and
 then the migration will complete offline. It can only be used with I<--live>.
+
+Running migration can be canceled by interrupting virsh (usually using
+C<Ctrl-C>) or by B<domjobabort> command sent from another virsh instance.
 
 B<Note>: The I<desturi> parameter for normal migration and peer2peer migration
 has different semantics:
@@ -808,6 +821,11 @@ system, thus the memory allocated for the domain will be free for
 other domains to use.  B<virsh restore> restores from this state file.
 If I<--bypass-cache> is specified, the save will avoid the file system
 cache, although this may slow down the operation.
+
+The progress may be monitored using B<domjobinfo> virsh command and canceled
+with B<domjobabort> command (sent by another virsh instance). Interrupting
+(usually with C<Ctrl-C>) the virsh process which runs B<save> command is not
+enough to actually cancel the operation.
 
 This is roughly equivalent to doing a hibernate on a running computer,
 with all the same limitations.  Open network connections may be
