@@ -1178,8 +1178,12 @@ cleanup:
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(dataFD[0]);
     VIR_FORCE_CLOSE(dataFD[1]);
-    if (vm)
-        virDomainObjUnlock(vm);
+    if (vm) {
+        if (ret >= 0 || vm->persistent)
+            virDomainObjUnlock(vm);
+        else
+            qemuDomainRemoveInactive(driver, vm);
+    }
     if (event)
         qemuDomainEventQueue(driver, event);
     qemuMigrationCookieFree(mig);
@@ -1187,9 +1191,6 @@ cleanup:
 
 endjob:
     if (qemuMigrationJobFinish(driver, vm) == 0) {
-        vm = NULL;
-    } else if (!vm->persistent) {
-        qemuDomainRemoveInactive(driver, vm);
         vm = NULL;
     }
     goto cleanup;
