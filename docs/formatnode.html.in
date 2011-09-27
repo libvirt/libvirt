@@ -1,5 +1,225 @@
 <html>
   <body>
     <h1>Node devices XML format</h1>
+
+    <ul id="toc"></ul>
+
+    <h2><a name="NodedevAttributes">Node Device XML</a></h2>
+
+    <p>
+      There are several libvirt functions, all with the
+      prefix <code>virNodeDevice</code>, which deal with management of
+      host devices that can be handed to guests via passthrough as
+      &lt;hostdev&gt; elements
+      in <a href="formatdomain.html#elementsUSB">the domain XML</a>.
+      These devices are represented as a hierarchy, where a device on
+      a bus has a parent of the bus controller device; the root of the
+      hierarchy is the node named "computer".
+    </p>
+
+    <p>
+      When represented in XML, a node device uses the
+      top-level <code>device</code> element, with the following
+      elements present according to the type of device:
+    </p>
+    <dl>
+      <dt><code>name</code></dt>
+      <dd>The name for this device.  The name will be alphanumeric,
+        with words separated by underscore.  For many devices, the
+        name is just the bus type and address, as in
+        "pci_0000_00_02_1" or "usb_1_5_3", but some devices are able
+        to provide more specific names, such as
+        "net_eth1_00_27_13_6a_fe_00".
+      </dd>
+      <dt><code>parent</code></dt>
+      <dd>If this element is present, it names the parent device (that
+        is, a controller to which this node belongs).
+      </dd>
+      <dt><code>capability</code></dt>
+      <dd>This node appears for each capability that libvirt
+        associates with a node.  A mandatory
+        attribute <code>type</code> lists which category the device
+        belongs to, and controls which further subelements will be
+        present to describe the node:
+        <dl>
+          <dt><code>system</code></dt>
+          <dd>Describes the overall host.  Sub-elements include:
+            <dl>
+              <dt><code>product</code></dt>
+              <dd>If present, a simple text string giving the product
+                name of the system.</dd>
+              <dt><code>hardware</code></dt>
+              <dd>Describes the hardware of the system, including
+                sub-elements for <code>vendor</code>, <code>version</code>,
+                <code>serial</code>, and <code>uuid</code>.</dd>
+              <dt><code>firmware</code></dt>
+              <dd>Describes the firmware of the system, including
+                sub-elements for <code>vendor</code>, <code>version</code>,
+                and <code>release_date</code>.</dd>
+            </dl>
+          </dd>
+          <dt><code>pci</code></dt>
+          <dd>Describes a device on the host's PCI bus.  Sub-elements
+            include:
+            <dl>
+              <dt><code>domain</code></dt>
+              <dd>Which domain the device belongs to.</dd>
+              <dt><code>bus</code></dt>
+              <dd>Which bus within the domain.</dd>
+              <dt><code>slot</code></dt>
+              <dd>Which slot within the bus.</dd>
+              <dt><code>function</code></dt>
+              <dd>Which function within the slot.</dd>
+              <dt><code>product</code></dt>
+              <dd>Product details from the device ROM, including an
+                attribute <code>id</code> with the hexadecimal product
+                id, and an optional text description of that id.</dd>
+              <dt><code>vendor</code></dt>
+              <dd>Vendor details from the device ROM, including an
+                attribute <code>id</code> with the hexadecimal vendor
+                id, and an optional text name of that vendor.</dd>
+            </dl>
+          </dd>
+          <dt><code>usb_device</code></dt>
+          <dd>Describes a device on the host's USB bus, based on its
+            location within the bus.  Sub-elements include:
+            <dl>
+              <dt><code>bus</code></dt>
+              <dd>Which bus the device belongs to.</dd>
+              <dt><code>device</code></dt>
+              <dd>Which device within the bus.</dd>
+              <dt><code>product</code></dt>
+              <dd>Product details from the device ROM, including an
+                attribute <code>id</code> with the hexadecimal product
+                id, and an optional text description of that id.</dd>
+              <dt><code>vendor</code></dt>
+              <dd>Vendor details from the device ROM, including an
+                attribute <code>id</code> with the hexadecimal vendor
+                id, and an optional text name of that vendor.</dd>
+            </dl>
+          </dd>
+          <dt><code>usb</code></dt>
+          <dd>Describes a USB device, based on its advertised driver
+            interface.  Sub-elements include:
+            <dl>
+              <dt><code>number</code></dt>
+              <dd>The device number.</dd>
+              <dt><code>number</code></dt>
+              <dd>The device class.</dd>
+              <dt><code>number</code></dt>
+              <dd>The device subclass.</dd>
+              <dt><code>number</code></dt>
+              <dd>The device protocol.</dd>
+              <dt><code>description</code></dt>
+              <dd>If present, a description of the device.</dd>
+            </dl>
+          </dd>
+          <dt><code>net</code></dt>
+          <dd>Describes a device capable for use as a network
+            interface.  Sub-elements include:
+            <dl>
+              <dt><code>interface</code></dt>
+              <dd>The interface name tied to this device.</dd>
+              <dt><code>address</code></dt>
+              <dd>If present, the MAC address of the device.</dd>
+              <dt><code>capability</code></dt>
+              <dd>A network protocol exposed by the device, where the
+                attribute <code>type</code> can be "80203" for IEEE
+                802.3, or "80211" for various flavors of IEEE 802.11.
+            </dl>
+          </dd>
+          <dt><code>scsi_host</code></dt>
+          <dd>Describes a SCSI host device.  Sub-elements include:
+            <dl>
+              <dt><code>host</code></dt>
+              <dd>The SCSI host number.</dd>
+            </dl>
+          </dd>
+          <dt><code>scsi</code></dt>
+          <dd>Desribes a SCSI device.  Sub-elements include:
+            <dl>
+              <dt><code>host</code></dt>
+              <dd>The SCSI host containing the device.</dd>
+              <dt><code>bus</code></dt>
+              <dd>The bus within the host.</dd>
+              <dt><code>target</code></dt>
+              <dd>The target within the bus.</dd>
+              <dt><code>lun</code></dt>
+              <dd>The lun within the target.</dd>
+              <dt><code>type</code></dt>
+              <dd>The type of SCSI device.</dd>
+            </dl>
+          </dd>
+          <dt><code>storage</code></dt>
+          <dd>Describes a device usable for storage.  Sub-elements
+            include:
+            <dl>
+              <dt><code>block</code></dt>
+              <dd>A block device file name that accesses the storage
+                present on the device.</dd>
+              <dt><code>bus</code></dt>
+              <dd>If present, the name of the bus the device is found
+                on.</dd>
+              <dt><code>drive_type</code></dt>
+              <dd>The type of the drive, such as "disk" or
+                "cdrom".</dd>
+              <dt><code>model</code></dt>
+              <dd>Any model information available from the
+                device.</dd>
+              <dt><code>vendor</code></dt>
+              <dd>Any vendor information available from the
+                device.</dd>
+              <dt><code>serial</code></dt>
+              <dd>Any serial number information available from the
+                device.</dd>
+              <dt><code>size</code></dt>
+              <dd>For fixed-size storage, the amount of storage
+                available.</dd>
+              <dt><code>capability</code></dt>
+              <dd>If present, an additional capability is listed via
+                the attribute <code>type</code>.  Current capabilites
+                include "hotpluggable" and "removable", with the
+                latter implying the following
+                sub-elements: <code>media_available</code> (0 or
+                1), <code>media_size</code>,
+                and <code>media_label</code>.</dd>
+            </dl>
+          </dd>
+        </dl>
+      </dd>
+    </dl>
+
+    <h2><a name="nodeExample">Examples</a></h2>
+
+    <p>The following are some example node device XML outputs:</p>
+    <pre>
+&lt;device&gt;
+  &lt;name&gt;computer&lt;/name&gt;
+  &lt;capability type='system'&gt;
+    &lt;product&gt;2241B36&lt;/product&gt;
+    &lt;hardware&gt;
+      &lt;vendor&gt;LENOVO&lt;/vendor&gt;
+      &lt;version&gt;ThinkPad T500&lt;/version&gt;
+      &lt;serial&gt;R89055N&lt;/serial&gt;
+      &lt;uuid&gt;c9488981-5049-11cb-9c1c-993d0230b4cd&lt;/uuid&gt;
+    &lt;/hardware&gt;
+    &lt;firmware&gt;
+      &lt;vendor&gt;LENOVO&lt;/vendor&gt;
+      &lt;version&gt;6FET82WW (3.12 )&lt;/version&gt;
+      &lt;release_date&gt;11/26/2009&lt;/release_date&gt;
+    &lt;/firmware&gt;
+  &lt;/capability&gt;
+&lt;/device&gt;
+
+&lt;device&gt;
+  &lt;name&gt;net_eth1_00_27_13_6a_fe_00&lt;/name&gt;
+  &lt;parent&gt;pci_0000_00_19_0&lt;/parent&gt;
+  &lt;capability type='net'&gt;
+    &lt;interface&gt;eth1&lt;/interface&gt;
+    &lt;address&gt;00:27:13:6a:fe:00&lt;/address&gt;
+    &lt;capability type='80203'/&gt;
+  &lt;/capability&gt;
+&lt;/device&gt;</pre>
+
   </body>
 </html>
