@@ -938,18 +938,39 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth,
         unsigned int flags)
 {
     virDrvOpenStatus result = VIR_DRV_OPEN_ERROR;
+    char *plus;
     esxPrivate *priv = NULL;
     char *potentialVCenterIpAddress = NULL;
     char vCenterIpAddress[NI_MAXHOST] = "";
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    /* Decline if the URI is NULL or the scheme is not one of {vpx|esx|gsx} */
-    if (conn->uri == NULL || conn->uri->scheme == NULL ||
-        (STRCASENEQ(conn->uri->scheme, "vpx") &&
-         STRCASENEQ(conn->uri->scheme, "esx") &&
-         STRCASENEQ(conn->uri->scheme, "gsx"))) {
+    /* Decline if the URI is NULL or the scheme is NULL */
+    if (conn->uri == NULL || conn->uri->scheme == NULL) {
         return VIR_DRV_OPEN_DECLINED;
+    }
+
+    /* Decline if the scheme is not one of {vpx|esx|gsx} */
+    plus = strchr(conn->uri->scheme, '+');
+
+    if (plus == NULL) {
+        if (STRCASENEQ(conn->uri->scheme, "vpx") &&
+            STRCASENEQ(conn->uri->scheme, "esx") &&
+            STRCASENEQ(conn->uri->scheme, "gsx")) {
+            return VIR_DRV_OPEN_DECLINED;
+        }
+    } else {
+        if (plus - conn->uri->scheme != 3 ||
+            (STRCASENEQLEN(conn->uri->scheme, "vpx", 3) &&
+             STRCASENEQLEN(conn->uri->scheme, "esx", 3) &&
+             STRCASENEQLEN(conn->uri->scheme, "gsx", 3))) {
+            return VIR_DRV_OPEN_DECLINED;
+        }
+
+        ESX_ERROR(VIR_ERR_INVALID_ARG,
+                  _("Transport '%s' in URI scheme is not supported, try again "
+                    "without the transport part"), plus + 1);
+        return VIR_DRV_OPEN_ERROR;
     }
 
     /* Require server part */
