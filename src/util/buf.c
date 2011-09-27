@@ -27,24 +27,24 @@
 struct _virBuffer {
     unsigned int size;
     unsigned int use;
-    unsigned int error;
+    unsigned int error; /* errno value, or -1 for usage error */
     char *content;
 };
 
 /**
  * virBufferFail
  * @buf: the buffer
+ * @error: which error occurred (errno value, or -1 for usage)
  *
- * Mark the buffer has having failed a memory allocation,
- * freeing the content and setting the error flag.
+ * Mark the buffer as failed, free the content and set the error flag.
  */
 static void
-virBufferSetError(virBufferPtr buf)
+virBufferSetError(virBufferPtr buf, int error)
 {
     VIR_FREE(buf->content);
     buf->size = 0;
     buf->use = 0;
-    buf->error = 1;
+    buf->error = error;
 }
 
 /**
@@ -70,7 +70,7 @@ virBufferGrow(virBufferPtr buf, unsigned int len)
     size = buf->use + len + 1000;
 
     if (VIR_REALLOC_N(buf->content, size) < 0) {
-        virBufferSetError(buf);
+        virBufferSetError(buf, errno);
         return -1;
     }
     buf->size = size;
@@ -184,15 +184,15 @@ void virBufferFreeAndReset(virBufferPtr buf)
  * @buf: the buffer
  *
  * Check to see if the buffer is in an error state due
- * to failed memory allocation
+ * to failed memory allocation or usage error
  *
- * Return true if in error, 0 if normal
+ * Return positive errno value or -1 on usage error, 0 if normal
  */
 int
 virBufferError(const virBufferPtr buf)
 {
     if (buf == NULL)
-        return 1;
+        return -1;
 
     return buf->error;
 }
@@ -258,7 +258,7 @@ virBufferVasprintf(virBufferPtr buf, const char *format, va_list argptr)
     size = buf->size - buf->use;
     if ((count = vsnprintf(&buf->content[buf->use],
                            size, format, copy)) < 0) {
-        virBufferSetError(buf);
+        virBufferSetError(buf, errno);
         va_end(copy);
         return;
     }
@@ -276,7 +276,7 @@ virBufferVasprintf(virBufferPtr buf, const char *format, va_list argptr)
         size = buf->size - buf->use;
         if ((count = vsnprintf(&buf->content[buf->use],
                                size, format, argptr)) < 0) {
-            virBufferSetError(buf);
+            virBufferSetError(buf, errno);
             return;
         }
     }
@@ -313,7 +313,7 @@ virBufferEscapeString(virBufferPtr buf, const char *format, const char *str)
 
     if (xalloc_oversized(6, len) ||
         VIR_ALLOC_N(escaped, 6 * len + 1) < 0) {
-        virBufferSetError(buf);
+        virBufferSetError(buf, errno);
         return;
     }
 
@@ -418,7 +418,7 @@ virBufferEscape(virBufferPtr buf, const char *toescape,
 
     if (xalloc_oversized(2, len) ||
         VIR_ALLOC_N(escaped, 2 * len + 1) < 0) {
-        virBufferSetError(buf);
+        virBufferSetError(buf, errno);
         return;
     }
 
@@ -514,7 +514,7 @@ virBufferEscapeShell(virBufferPtr buf, const char *str)
         len = strlen(str);
         if (xalloc_oversized(4, len) ||
             VIR_ALLOC_N(escaped, 4 * len + 3) < 0) {
-            virBufferSetError(buf);
+            virBufferSetError(buf, errno);
             return;
         }
     } else {
