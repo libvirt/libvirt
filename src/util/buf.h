@@ -36,25 +36,28 @@ struct _virBuffer {
 };
 # endif
 
-char *virBufferContentAndReset(const virBufferPtr buf);
-void virBufferFreeAndReset(const virBufferPtr buf);
+char *virBufferContentAndReset(virBufferPtr buf);
+void virBufferFreeAndReset(virBufferPtr buf);
 int virBufferError(const virBufferPtr buf);
 unsigned int virBufferUse(const virBufferPtr buf);
-void virBufferAdd(const virBufferPtr buf, const char *str, int len);
-void virBufferAddChar(const virBufferPtr buf, char c);
-void virBufferAsprintf(const virBufferPtr buf, const char *format, ...)
+void virBufferAdd(virBufferPtr buf, const char *str, int len);
+void virBufferAddChar(virBufferPtr buf, char c);
+void virBufferAsprintf(virBufferPtr buf, const char *format, ...)
   ATTRIBUTE_FMT_PRINTF(2, 3);
-void virBufferVasprintf(const virBufferPtr buf, const char *format, va_list ap)
+void virBufferVasprintf(virBufferPtr buf, const char *format, va_list ap)
   ATTRIBUTE_FMT_PRINTF(2, 0);
-void virBufferStrcat(const virBufferPtr buf, ...)
+void virBufferStrcat(virBufferPtr buf, ...)
   ATTRIBUTE_SENTINEL;
-void virBufferEscapeString(const virBufferPtr buf, const char *format, const char *str);
-void virBufferEscapeSexpr(const virBufferPtr buf, const char *format, const char *str);
-void virBufferEscape(const virBufferPtr buf, const char *toescape, const char *format, const char *str);
-void virBufferURIEncodeString (const virBufferPtr buf, const char *str);
+void virBufferEscape(virBufferPtr buf, const char *toescape,
+                     const char *format, const char *str);
+void virBufferEscapeString(virBufferPtr buf, const char *format,
+                           const char *str);
+void virBufferEscapeSexpr(virBufferPtr buf, const char *format,
+                          const char *str);
 void virBufferEscapeShell(virBufferPtr buf, const char *str);
+void virBufferURIEncodeString(virBufferPtr buf, const char *str);
 
 # define virBufferAddLit(buf_, literal_string_) \
-  virBufferAdd (buf_, "" literal_string_ "", sizeof literal_string_ - 1)
+    virBufferAdd(buf_, "" literal_string_ "", sizeof literal_string_ - 1)
 
 #endif /* __VIR_BUFFER_H__ */

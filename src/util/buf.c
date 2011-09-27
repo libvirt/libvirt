@@ -39,7 +39,7 @@ struct _virBuffer {
  * freeing the content and setting the error flag.
  */
 static void
-virBufferSetError(const virBufferPtr buf)
+virBufferSetError(virBufferPtr buf)
 {
     VIR_FREE(buf->content);
     buf->size = 0;
@@ -88,7 +88,7 @@ virBufferGrow(virBufferPtr buf, unsigned int len)
  *
  */
 void
-virBufferAdd(const virBufferPtr buf, const char *str, int len)
+virBufferAdd(virBufferPtr buf, const char *str, int len)
 {
     unsigned int needSize;
 
@@ -113,7 +113,7 @@ virBufferAdd(const virBufferPtr buf, const char *str, int len)
 
 /**
  * virBufferAddChar:
- * @buf: the buffer to add to
+ * @buf: the buffer to append to
  * @c: the character to add
  *
  * Add a single character 'c' to a buffer.
@@ -150,7 +150,7 @@ virBufferAddChar (virBufferPtr buf, char c)
  * Returns the buffer content or NULL in case of error.
  */
 char *
-virBufferContentAndReset(const virBufferPtr buf)
+virBufferContentAndReset(virBufferPtr buf)
 {
     char *str;
     if (buf == NULL)
@@ -172,7 +172,7 @@ virBufferContentAndReset(const virBufferPtr buf)
  *
  * Frees the buffer content and resets the buffer structure.
  */
-void virBufferFreeAndReset(const virBufferPtr buf)
+void virBufferFreeAndReset(virBufferPtr buf)
 {
     char *str = virBufferContentAndReset(buf);
 
@@ -214,14 +214,14 @@ virBufferUse(const virBufferPtr buf)
 
 /**
  * virBufferAsprintf:
- * @buf:  the buffer to dump
+ * @buf: the buffer to append to
  * @format:  the format
  * @...:  the variable list of arguments
  *
  * Do a formatted print to an XML buffer.
  */
 void
-virBufferAsprintf(const virBufferPtr buf, const char *format, ...)
+virBufferAsprintf(virBufferPtr buf, const char *format, ...)
 {
     va_list argptr;
     va_start(argptr, format);
@@ -238,7 +238,7 @@ virBufferAsprintf(const virBufferPtr buf, const char *format, ...)
  * Do a formatted print to an XML buffer.
  */
 void
-virBufferVasprintf(const virBufferPtr buf, const char *format, va_list argptr)
+virBufferVasprintf(virBufferPtr buf, const char *format, va_list argptr)
 {
     int size, count, grow_size;
     va_list copy;
@@ -285,7 +285,7 @@ virBufferVasprintf(const virBufferPtr buf, const char *format, va_list argptr)
 
 /**
  * virBufferEscapeString:
- * @buf:  the buffer to dump
+ * @buf: the buffer to append to
  * @format: a printf like format string but with only one %s parameter
  * @str:  the string argument which need to be escaped
  *
@@ -293,7 +293,7 @@ virBufferVasprintf(const virBufferPtr buf, const char *format, va_list argptr)
  * is escaped to avoid generating a not well-formed XML instance.
  */
 void
-virBufferEscapeString(const virBufferPtr buf, const char *format, const char *str)
+virBufferEscapeString(virBufferPtr buf, const char *format, const char *str)
 {
     int len;
     char *escaped, *out;
@@ -370,7 +370,7 @@ virBufferEscapeString(const virBufferPtr buf, const char *format, const char *st
 
 /**
  * virBufferEscapeSexpr:
- * @buf:  the buffer to dump
+ * @buf: the buffer to append to
  * @format: a printf like format string but with only one %s parameter
  * @str:  the string argument which need to be escaped
  *
@@ -379,7 +379,7 @@ virBufferEscapeString(const virBufferPtr buf, const char *format, const char *st
  * doesn't fully escape the sexpr, just enough for our code to work.
  */
 void
-virBufferEscapeSexpr(const virBufferPtr buf,
+virBufferEscapeSexpr(virBufferPtr buf,
                      const char *format,
                      const char *str)
 {
@@ -388,19 +388,17 @@ virBufferEscapeSexpr(const virBufferPtr buf,
 
 /**
  * virBufferEscape:
- * @buf:  the buffer to dump
- * @toescape: NULL-terminated list of characters to escape
+ * @buf: the buffer to append to
+ * @toescape: NUL-terminated list of characters to escape
  * @format: a printf like format string but with only one %s parameter
- * @str:  the string argument which need to be escaped
+ * @str: the string argument which needs to be escaped
  *
  * Do a formatted print with a single string to a buffer.  Any characters
  * in the provided list are escaped with a preceeding \.
  */
 void
-virBufferEscape(const virBufferPtr buf,
-                const char *toescape,
-                const char *format,
-                const char *str)
+virBufferEscape(virBufferPtr buf, const char *toescape,
+                const char *format, const char *str)
 {
     int len;
     char *escaped, *out;
@@ -440,7 +438,7 @@ virBufferEscape(const virBufferPtr buf,
 
 /**
  * virBufferURIEncodeString:
- * @buf:  the buffer to append to
+ * @buf: the buffer to append to
  * @str:  the string argument which will be URI-encoded
  *
  * Append the string to the buffer.  The string will be URI-encoded
@@ -448,7 +446,7 @@ virBufferEscape(const virBufferPtr buf,
  * with '%xx' hex sequences).
  */
 void
-virBufferURIEncodeString (virBufferPtr buf, const char *str)
+virBufferURIEncodeString(virBufferPtr buf, const char *str)
 {
     int grow_size = 0;
     const char *p;
@@ -546,7 +544,7 @@ virBufferEscapeShell(virBufferPtr buf, const char *str)
 
 /**
  * virBufferStrcat:
- * @buf:  the buffer to dump
+ * @buf: the buffer to append to
  * @...:  the variable list of strings, the last argument must be NULL
  *
  * Concatenate strings to an XML buffer.
