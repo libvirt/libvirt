@@ -806,18 +806,18 @@ SELinuxSetSecurityChardevLabel(virDomainObjPtr vm,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if (virFileExists(dev->data.file.path)) {
-            if (SELinuxSetFilecon(dev->data.file.path, secdef->imagelabel) < 0)
-                goto done;
-        } else {
-            if ((virAsprintf(&in, "%s.in", dev->data.file.path) < 0) ||
-                (virAsprintf(&out, "%s.out", dev->data.file.path) < 0)) {
-                virReportOOMError();
+        if ((virAsprintf(&in, "%s.in", dev->data.file.path) < 0) ||
+            (virAsprintf(&out, "%s.out", dev->data.file.path) < 0)) {
+            virReportOOMError();
+            goto done;
+        }
+        if (virFileExists(in) && virFileExists(out)) {
+            if ((SELinuxSetFilecon(in, secdef->imagelabel) < 0) ||
+                (SELinuxSetFilecon(out, secdef->imagelabel) < 0)) {
                 goto done;
             }
-            if ((SELinuxSetFilecon(in, secdef->imagelabel) < 0) ||
-                (SELinuxSetFilecon(out, secdef->imagelabel) < 0))
-                goto done;
+        } else if (SELinuxSetFilecon(dev->data.file.path, secdef->imagelabel) < 0) {
+            goto done;
         }
         ret = 0;
         break;
@@ -858,9 +858,14 @@ SELinuxRestoreSecurityChardevLabel(virDomainObjPtr vm,
             virReportOOMError();
             goto done;
         }
-        if ((SELinuxRestoreSecurityFileLabel(out) < 0) ||
-            (SELinuxRestoreSecurityFileLabel(in) < 0))
+        if (virFileExists(in) && virFileExists(out)) {
+            if ((SELinuxRestoreSecurityFileLabel(out) < 0) ||
+                (SELinuxRestoreSecurityFileLabel(in) < 0)) {
+                goto done;
+            }
+        } else if (SELinuxRestoreSecurityFileLabel(dev->data.file.path) < 0) {
             goto done;
+        }
         ret = 0;
         break;
 

@@ -406,18 +406,19 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if (virFileExists(dev->data.file.path)) {
-            if (virSecurityDACSetOwnership(dev->data.file.path, priv->user, priv->group) < 0)
-                goto done;
-        } else {
-            if ((virAsprintf(&in, "%s.in", dev->data.file.path) < 0) ||
-                (virAsprintf(&out, "%s.out", dev->data.file.path) < 0)) {
-                virReportOOMError();
+        if ((virAsprintf(&in, "%s.in", dev->data.file.path) < 0) ||
+            (virAsprintf(&out, "%s.out", dev->data.file.path) < 0)) {
+            virReportOOMError();
+            goto done;
+        }
+        if (virFileExists(in) && virFileExists(out)) {
+            if ((virSecurityDACSetOwnership(in, priv->user, priv->group) < 0) ||
+                (virSecurityDACSetOwnership(out, priv->user, priv->group) < 0)) {
                 goto done;
             }
-            if ((virSecurityDACSetOwnership(in, priv->user, priv->group) < 0) ||
-                (virSecurityDACSetOwnership(out, priv->user, priv->group) < 0))
-                goto done;
+        } else if (virSecurityDACSetOwnership(dev->data.file.path,
+                                              priv->user, priv->group) < 0) {
+            goto done;
         }
         ret = 0;
         break;
@@ -452,9 +453,14 @@ virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
             virReportOOMError();
             goto done;
         }
-        if ((virSecurityDACRestoreSecurityFileLabel(out) < 0) ||
-            (virSecurityDACRestoreSecurityFileLabel(in) < 0))
+        if (virFileExists(in) && virFileExists(out)) {
+            if ((virSecurityDACRestoreSecurityFileLabel(out) < 0) ||
+                (virSecurityDACRestoreSecurityFileLabel(in) < 0)) {
             goto done;
+            }
+        } else if (virSecurityDACRestoreSecurityFileLabel(dev->data.file.path) < 0) {
+            goto done;
+        }
         ret = 0;
         break;
 
