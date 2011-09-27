@@ -5,6 +5,21 @@
 %define __find_provides %{_mingw32_findprovides}
 %define __debug_install_post %{_mingw32_debug_install_post}
 
+# The mingw build is client only.  Set up defaults for hypervisor drivers
+# that talk via a native remote protocol, and for which prereq mingw
+# libraries exist.
+%define with_phyp          0%{!?_without_phyp:1}
+%define with_esx           0%{!?_without_esx:1}
+%define with_hyperv        0%{!?_without_hyperv:0} # missing libwsman
+%define with_xenapi        0%{!?_without_xenapi:1}
+
+# RHEL ships ESX but not PowerHypervisor, HyperV, or libxenserver (xenapi)
+%if 0%{?rhel}
+%define with_phyp 0
+%define with_xenapi 0
+%define with_hyperv 0
+%endif
+
 Name:           mingw32-libvirt
 Version:        @VERSION@
 Release:        3%{?dist}%{?extra_release}
@@ -29,6 +44,13 @@ BuildRequires:  pkgconfig
 # Need native version for msgfmt
 BuildRequires:  gettext
 
+%if %{with_phyp}
+BuildRequires: mingw32-libssh2
+%endif
+%if %{with_esx}
+BuildRequires: mingw32-curl
+%endif
+
 BuildArch:      noarch
 
 %{?_mingw32_debug_package}
@@ -42,23 +64,43 @@ MinGW Windows libvirt virtualization library.
 
 
 %build
+%if ! %{with_phyp}
+%define _without_phyp --without-phyp
+%endif
+
+%if ! %{with_esx}
+%define _without_esx --without-esx
+%endif
+
+%if ! %{with_hyperv}
+%define _without_hyperv --without-hyperv
+%endif
+
+%if ! %{with_xenapi}
+%define _without_xenapi --without-xenapi
+%endif
+
 # XXX enable SASL in future
 %{_mingw32_configure} \
+  --without-xen \
+  --without-qemu \
+  --without-openvz \
+  --without-lxc \
+  --without-vbox \
+  %{?_without_xenapi} \
   --without-sasl \
   --without-avahi \
   --without-polkit \
   --without-python \
-  --without-xen \
-  --without-qemu \
-  --without-lxc \
+  --without-libvirtd \
   --without-uml \
-  --without-vbox \
-  --without-openvz \
-  --without-phyp \
+  %{?_without_phyp} \
+  %{?_without_esx} \
+  %{?_without_hyperv} \
+  --without-vmware \
   --without-netcf \
   --without-audit \
-  --without-dtrace \
-  --without-libvirtd
+  --without-dtrace
 make
 
 

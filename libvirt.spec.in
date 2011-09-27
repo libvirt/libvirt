@@ -47,7 +47,7 @@
 %define with_libxl         0%{!?_without_libxl:%{server_drivers}}
 %define with_vmware        0%{!?_without_vmware:%{server_drivers}}
 
-# Then the hypervisor drivers that talk a native remote protocol
+# Then the hypervisor drivers that talk via a native remote protocol
 %define with_phyp          0%{!?_without_phyp:1}
 %define with_esx           0%{!?_without_esx:1}
 %define with_hyperv        0%{!?_without_hyperv:1}
@@ -711,7 +711,6 @@ of recent versions of Linux (and other OSes).
            %{?_without_python} \
            %{?_without_libvirtd} \
            %{?_without_uml} \
-           %{?_without_one} \
            %{?_without_phyp} \
            %{?_without_esx} \
            %{?_without_hyperv} \

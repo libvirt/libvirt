@@ -71,21 +71,23 @@ if [ -x /usr/bin/i686-pc-mingw32-gcc ]; then
     --host=i686-pc-mingw32 \
     --prefix="$AUTOBUILD_INSTALL_ROOT/i686-pc-mingw32/sys-root/mingw" \
     --enable-compile-warnings=error \
+    --without-xen \
+    --without-qemu \
+    --without-openvz \
+    --without-lxc \
+    --without-vbox \
+    --without-xenapi \
+    --without-uml \
     --without-sasl \
     --without-avahi \
     --without-polkit \
     --without-python \
-    --without-xen \
-    --without-qemu \
-    --without-lxc \
-    --without-uml \
-    --without-vbox \
-    --without-openvz \
+    --without-libvirtd \
     --without-phyp \
+    --without-hyperv \
     --without-netcf \
     --without-audit \
     --without-dtrace \
-    --without-libvirtd
 
   make
   make install
