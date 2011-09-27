@@ -81,6 +81,12 @@ VIR_ENUM_IMPL(qemuMonitorMigrationStatus,
               QEMU_MONITOR_MIGRATION_STATUS_LAST,
               "inactive", "active", "completed", "failed", "cancelled")
 
+VIR_ENUM_IMPL(qemuMonitorVMStatus,
+              QEMU_MONITOR_VM_STATUS_LAST,
+              "debug", "inmigrate", "internal-error", "io-error", "paused",
+              "postmigrate", "prelaunch", "finish-migrate", "restore-vm",
+              "running", "save-vm", "shutdown", "watchdog")
+
 char *qemuMonitorEscapeArg(const char *in)
 {
     int len = 0;
@@ -1059,10 +1065,12 @@ qemuMonitorStopCPUs(qemuMonitorPtr mon)
 
 
 int
-qemuMonitorGetStatus(qemuMonitorPtr mon, bool *running)
+qemuMonitorGetStatus(qemuMonitorPtr mon,
+                     bool *running,
+                     virDomainPausedReason *reason)
 {
     int ret;
-    VIR_DEBUG("mon=%p, running=%p", mon, running);
+    VIR_DEBUG("mon=%p, running=%p, reason=%p", mon, running, reason);
 
     if (!mon || !running) {
         qemuReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -1071,9 +1079,9 @@ qemuMonitorGetStatus(qemuMonitorPtr mon, bool *running)
     }
 
     if (mon->json)
-        ret = qemuMonitorJSONGetStatus(mon, running);
+        ret = qemuMonitorJSONGetStatus(mon, running, reason);
     else
-        ret = qemuMonitorTextGetStatus(mon, running);
+        ret = qemuMonitorTextGetStatus(mon, running, reason);
     return ret;
 }
 
@@ -2552,4 +2560,54 @@ int qemuMonitorBlockJob(qemuMonitorPtr mon,
     else
         ret = qemuMonitorTextBlockJob(mon, device, bandwidth, info, mode);
     return ret;
+}
+
+int qemuMonitorVMStatusToPausedReason(const char *status)
+{
+    int st;
+
+    if (!status)
+        return VIR_DOMAIN_PAUSED_UNKNOWN;
+
+    if ((st = qemuMonitorVMStatusTypeFromString(status)) < 0) {
+        VIR_WARN("Qemu reported unknown VM status: '%s'", status);
+        return VIR_DOMAIN_PAUSED_UNKNOWN;
+    }
+
+    switch ((qemuMonitorVMStatus) st) {
+    case QEMU_MONITOR_VM_STATUS_DEBUG:
+    case QEMU_MONITOR_VM_STATUS_INTERNAL_ERROR:
+    case QEMU_MONITOR_VM_STATUS_RESTORE_VM:
+        return VIR_DOMAIN_PAUSED_UNKNOWN;
+
+    case QEMU_MONITOR_VM_STATUS_INMIGRATE:
+    case QEMU_MONITOR_VM_STATUS_POSTMIGRATE:
+    case QEMU_MONITOR_VM_STATUS_FINISH_MIGRATE:
+        return VIR_DOMAIN_PAUSED_MIGRATION;
+
+    case QEMU_MONITOR_VM_STATUS_IO_ERROR:
+        return VIR_DOMAIN_PAUSED_IOERROR;
+
+    case QEMU_MONITOR_VM_STATUS_PAUSED:
+    case QEMU_MONITOR_VM_STATUS_PRELAUNCH:
+        return VIR_DOMAIN_PAUSED_USER;
+
+    case QEMU_MONITOR_VM_STATUS_RUNNING:
+        VIR_WARN("Qemu reports the guest is paused but status is 'running'");
+        return VIR_DOMAIN_PAUSED_UNKNOWN;
+
+    case QEMU_MONITOR_VM_STATUS_SAVE_VM:
+        return VIR_DOMAIN_PAUSED_SAVE;
+
+    case QEMU_MONITOR_VM_STATUS_SHUTDOWN:
+        return VIR_DOMAIN_PAUSED_SHUTTING_DOWN;
+
+    case QEMU_MONITOR_VM_STATUS_WATCHDOG:
+        return VIR_DOMAIN_PAUSED_WATCHDOG;
+
+    /* unreachable from this point on */
+    case QEMU_MONITOR_VM_STATUS_LAST:
+        ;
+    }
+    return VIR_DOMAIN_PAUSED_UNKNOWN;
 }

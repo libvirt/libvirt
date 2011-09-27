@@ -896,12 +896,18 @@ qemuMonitorJSONStopCPUs(qemuMonitorPtr mon)
 
 
 int
-qemuMonitorJSONGetStatus(qemuMonitorPtr mon, bool *running)
+qemuMonitorJSONGetStatus(qemuMonitorPtr mon,
+                         bool *running,
+                         virDomainPausedReason *reason)
 {
     int ret;
+    const char *status;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
+
+    if (reason)
+        *reason = VIR_DOMAIN_PAUSED_UNKNOWN;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("query-status", NULL)))
         return -1;
@@ -926,6 +932,13 @@ qemuMonitorJSONGetStatus(qemuMonitorPtr mon, bool *running)
         qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("query-status reply was missing running state"));
         goto cleanup;
+    }
+
+    if ((status = virJSONValueObjectGetString(data, "status"))) {
+        if (!*running && reason)
+            *reason = qemuMonitorVMStatusToPausedReason(status);
+    } else if (!*running) {
+        VIR_DEBUG("query-status reply was missing status details");
     }
 
     ret = 0;

@@ -2321,11 +2321,12 @@ qemuProcessUpdateState(struct qemud_driver *driver, virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainState state;
+    virDomainPausedReason reason;
     bool running;
     int ret;
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    ret = qemuMonitorGetStatus(priv->mon, &running);
+    ret = qemuMonitorGetStatus(priv->mon, &running, &reason);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     if (ret < 0 || !virDomainObjIsActive(vm))
@@ -2339,9 +2340,10 @@ qemuProcessUpdateState(struct qemud_driver *driver, virDomainObjPtr vm)
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
                              VIR_DOMAIN_RUNNING_UNPAUSED);
     } else if (state == VIR_DOMAIN_RUNNING && !running) {
-        VIR_DEBUG("Domain %s was paused while its monitor was disconnected;"
-                  " changing state to paused", vm->def->name);
-        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_UNKNOWN);
+        VIR_DEBUG("Domain %s was paused (%s) while its monitor was"
+                  " disconnected; changing state to paused",
+                  vm->def->name, virDomainPausedReasonTypeToString(reason));
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, reason);
     } else if (state == VIR_DOMAIN_SHUTOFF && running) {
         VIR_DEBUG("Domain %s finished booting; changing state to running",
                   vm->def->name);
@@ -3470,6 +3472,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     char *timestamp;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool running = true;
+    virDomainPausedReason reason;
     virSecurityLabelPtr seclabel = NULL;
 
     VIR_DEBUG("Beginning VM attach process");
@@ -3599,7 +3602,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         goto cleanup;
     }
-    if (qemuMonitorGetStatus(priv->mon, &running) < 0) {
+    if (qemuMonitorGetStatus(priv->mon, &running, &reason) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         goto cleanup;
     }
@@ -3616,7 +3619,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
                              VIR_DOMAIN_RUNNING_UNPAUSED);
     else
-        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_UNKNOWN);
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, reason);
 
     VIR_DEBUG("Writing domain status to disk");
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)

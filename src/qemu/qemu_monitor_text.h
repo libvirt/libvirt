@@ -43,7 +43,9 @@ int qemuMonitorTextCommandWithFd(qemuMonitorPtr mon,
 int qemuMonitorTextStartCPUs(qemuMonitorPtr mon,
                              virConnectPtr conn);
 int qemuMonitorTextStopCPUs(qemuMonitorPtr mon);
-int qemuMonitorTextGetStatus(qemuMonitorPtr mon, bool *running);
+int qemuMonitorTextGetStatus(qemuMonitorPtr mon,
+                             bool *running,
+                             virDomainPausedReason *reason);
 
 int qemuMonitorTextSystemPowerdown(qemuMonitorPtr mon);
 int qemuMonitorTextSystemReset(qemuMonitorPtr mon);

@@ -198,7 +198,30 @@ int qemuMonitorEmitBlockJob(qemuMonitorPtr mon,
 int qemuMonitorStartCPUs(qemuMonitorPtr mon,
                          virConnectPtr conn);
 int qemuMonitorStopCPUs(qemuMonitorPtr mon);
-int qemuMonitorGetStatus(qemuMonitorPtr mon, bool *running);
+
+typedef enum {
+    QEMU_MONITOR_VM_STATUS_DEBUG,
+    QEMU_MONITOR_VM_STATUS_INMIGRATE,
+    QEMU_MONITOR_VM_STATUS_INTERNAL_ERROR,
+    QEMU_MONITOR_VM_STATUS_IO_ERROR,
+    QEMU_MONITOR_VM_STATUS_PAUSED,
+    QEMU_MONITOR_VM_STATUS_POSTMIGRATE,
+    QEMU_MONITOR_VM_STATUS_PRELAUNCH,
+    QEMU_MONITOR_VM_STATUS_FINISH_MIGRATE,
+    QEMU_MONITOR_VM_STATUS_RESTORE_VM,
+    QEMU_MONITOR_VM_STATUS_RUNNING,
+    QEMU_MONITOR_VM_STATUS_SAVE_VM,
+    QEMU_MONITOR_VM_STATUS_SHUTDOWN,
+    QEMU_MONITOR_VM_STATUS_WATCHDOG,
+
+    QEMU_MONITOR_VM_STATUS_LAST
+} qemuMonitorVMStatus;
+VIR_ENUM_DECL(qemuMonitorVMStatus)
+int qemuMonitorVMStatusToPausedReason(const char *status);
+
+int qemuMonitorGetStatus(qemuMonitorPtr mon,
+                         bool *running,
+                         virDomainPausedReason *reason);
 
 int qemuMonitorSystemReset(qemuMonitorPtr mon);
 int qemuMonitorSystemPowerdown(qemuMonitorPtr mon);
