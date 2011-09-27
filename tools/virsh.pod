@@ -1111,7 +1111,7 @@ hypervisor.
 Output the device used for the TTY console of the domain. If the information
 is not available the processes will provide an exit code of 1.
 
-=item B<undefine> I<domain-id> [I<--managed-save>] [I<--snapshots-metadata]
+=item B<undefine> I<domain-id> [I<--managed-save>] [I<--snapshots-metadata>]
 
 Undefine a domain. If the domain is running, this converts it to a
 transient domain, without stopping it. If the domain is inactive,
@@ -1848,7 +1848,7 @@ treat the snapshot as current, and cannot revert to the snapshot
 unless B<snapshot-create> is later used to teach libvirt about the
 metadata again).  This flag is incompatible with I<--print-xml>.
 
-=item B<snapshot-current> I<domain> {[I<--name>] | [I<--security-info]
+=item B<snapshot-current> I<domain> {[I<--name>] | [I<--security-info>]
 | [I<snapshotname>]}
 
 Without I<snapshotname>, this will output the snapshot XML for the domain's
