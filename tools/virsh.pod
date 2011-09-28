@@ -914,7 +914,8 @@ If I<--current> is specified, affect the current guest state.
 
 B<Note>: The cpu_shares parameter has a valid value range of 0-262144; Negative
 values are wrapped to positive, and larger values are capped at the maximum.
-Therefore, -1 is a useful shorthand for 262144.
+Therefore, -1 is a useful shorthand for 262144. On the Linux kernel, the
+values 0 and 1 are automatically converted to a minimal value of 2.
 
 B<Note>: The weight and cap parameters are defined only for the
 XEN_CREDIT scheduler and are now I<DEPRECATED>.
