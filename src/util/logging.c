@@ -627,8 +627,10 @@ virLogFormatTimestamp(void)
 
     gettimeofday(&cur_time, NULL);
     localtime_r(&cur_time.tv_sec, &time_info);
+    time_info.tm_year += 1900;
 
-    if (virAsprintf(&str, "%02d:%02d:%02d.%03d",
+    if (virAsprintf(&str, "%4d-%02d-%02d %02d:%02d:%02d.%03d",
+                    time_info.tm_year, time_info.tm_mon, time_info.tm_mday,
                     time_info.tm_hour, time_info.tm_min, time_info.tm_sec,
                     (int) (cur_time.tv_usec / 1000)) < 0)
         return NULL;
