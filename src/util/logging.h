@@ -78,8 +78,8 @@ typedef enum {
  * @priority: the priority for the message
  * @funcname: the function emitting the message
  * @linenr: line where the message was emitted
- * @msg: the message to log, preformatted and zero terminated
- * @len: the lenght of the message in bytes without the terminating zero
+ * @timestamp: zero terminated string with timestamp of the message
+ * @str: the message to log, preformatted and zero terminated
  * @data: extra output logging data
  *
  * Callback function used to output messages
@@ -87,8 +87,9 @@ typedef enum {
  * Returns the number of bytes written or -1 in case of error
  */
 typedef int (*virLogOutputFunc) (const char *category, int priority,
-                                 const char *funcname, long long lineno,
-                                 const char *str, int len, void *data);
+                                 const char *funcname, long long linenr,
+                                 const char *timestamp, const char *str,
+                                 void *data);
 
 /**
  * virLogCloseFunc:
