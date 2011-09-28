@@ -442,7 +442,7 @@ qemuProcessShutdownOrReboot(virDomainObjPtr vm)
 
     priv->gotShutdown = true;
     if (priv->fakeReboot) {
-        priv->fakeReboot = false;
+        qemuDomainSetFakeReboot(qemu_driver, vm, false);
         virDomainObjRef(vm);
         virThread th;
         if (virThreadCreate(&th,
@@ -2846,7 +2846,7 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     vm->def->id = driver->nextvmid++;
-    priv->fakeReboot = false;
+    qemuDomainSetFakeReboot(driver, vm, false);
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_UNKNOWN);
 
     /* Run an early hook to set-up missing devices */

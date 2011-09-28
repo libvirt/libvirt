@@ -302,6 +302,9 @@ static int qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
         virBufferAddLit(buf, "/>\n");
     }
 
+    if (priv->fakeReboot)
+        virBufferAsprintf(buf, "  <fakereboot/>\n");
+
     return 0;
 }
 
@@ -444,6 +447,8 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
             VIR_FREE(tmp);
         }
     }
+
+    priv->fakeReboot = virXPathBoolean("boolean(./fakereboot)", ctxt) == 1;
 
     return 0;
 
@@ -1565,4 +1570,20 @@ qemuDomainRemoveInactive(struct qemud_driver *driver,
         VIR_FREE(snapDir);
     }
     virDomainRemoveInactive(&driver->domains, vm);
+}
+
+void
+qemuDomainSetFakeReboot(struct qemud_driver *driver,
+                        virDomainObjPtr vm,
+                        bool value)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (priv->fakeReboot == value)
+        return;
+
+    priv->fakeReboot = value;
+
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+        VIR_WARN("Failed to save status on vm %s", vm->def->name);
 }

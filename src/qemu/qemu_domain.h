@@ -273,4 +273,8 @@ int qemuDomainSnapshotDiscardAllMetadata(struct qemud_driver *driver,
 void qemuDomainRemoveInactive(struct qemud_driver *driver,
                               virDomainObjPtr vm);
 
+void qemuDomainSetFakeReboot(struct qemud_driver *driver,
+                             virDomainObjPtr vm,
+                             bool value);
+
 #endif /* __QEMU_DOMAIN_H__ */

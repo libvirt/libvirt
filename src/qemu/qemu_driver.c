@@ -1512,12 +1512,12 @@ static int qemuDomainShutdown(virDomainPtr dom) {
         goto endjob;
     }
 
+    qemuDomainSetFakeReboot(driver, vm, false);
+
     priv = vm->privateData;
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorSystemPowerdown(priv->mon);
     qemuDomainObjExitMonitor(driver, vm);
-
-    priv->fakeReboot = false;
 
 endjob:
     if (qemuDomainObjEndJob(driver, vm) == 0)
@@ -1575,7 +1575,8 @@ static int qemuDomainReboot(virDomainPtr dom, unsigned int flags) {
         ret = qemuMonitorSystemPowerdown(priv->mon);
         qemuDomainObjExitMonitor(driver, vm);
 
-        priv->fakeReboot = true;
+        if (ret == 0)
+            qemuDomainSetFakeReboot(driver, vm, true);
 
     endjob:
         if (qemuDomainObjEndJob(driver, vm) == 0)
@@ -1616,7 +1617,6 @@ qemuDomainDestroyFlags(virDomainPtr dom,
     virDomainObjPtr vm;
     int ret = -1;
     virDomainEventPtr event = NULL;
-    qemuDomainObjPrivatePtr priv;
 
     virCheckFlags(0, -1);
 
@@ -1630,8 +1630,7 @@ qemuDomainDestroyFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    priv = vm->privateData;
-    priv->fakeReboot = false;
+    qemuDomainSetFakeReboot(driver, vm, false);
 
     /* Although qemuProcessStop does this already, there may
      * be an outstanding job active. We want to make sure we
