@@ -458,11 +458,13 @@ virtTestLogOutput(const char *category ATTRIBUTE_UNUSED,
                   int priority ATTRIBUTE_UNUSED,
                   const char *funcname ATTRIBUTE_UNUSED,
                   long long lineno ATTRIBUTE_UNUSED,
-                  const char *str, int len, void *data)
+                  const char *timestamp,
+                  const char *str,
+                  void *data)
 {
     struct virtTestLogData *log = data;
-    virBufferAdd(&log->buf, str, len);
-    return len;
+    virBufferAsprintf(&log->buf, "%s: %s", timestamp, str);
+    return strlen(timestamp) + 2 + strlen(str);
 }
 
 static void

@@ -98,7 +98,8 @@ static int virLogResetFilters(void);
 static int virLogResetOutputs(void);
 static int virLogOutputToFd(const char *category, int priority,
                             const char *funcname, long long linenr,
-                            const char *str, int len, void *data);
+                            const char *timestamp, const char *str,
+                            void *data);
 
 /*
  * Logs accesses must be serialized though a mutex
@@ -282,16 +283,16 @@ void virLogShutdown(void) {
 /*
  * Store a string in the ring buffer
  */
-static void virLogStr(const char *str, int len) {
+static void virLogStr(const char *str)
+{
     int tmp;
+    int len;
 
     if ((str == NULL) || (virLogBuffer == NULL) || (virLogSize <= 0))
         return;
-    if (len <= 0)
-        len = strlen(str);
+    len = strlen(str);
     if (len >= virLogSize)
         return;
-    virLogLock();
 
     /*
      * copy the data and reset the end, we cycle over the end of the buffer
@@ -317,7 +318,6 @@ static void virLogStr(const char *str, int len) {
         if (virLogStart >= virLogSize)
             virLogStart -= virLogSize;
     }
-    virLogUnlock();
 }
 
 static void virLogDumpAllFD(const char *msg, int len) {
@@ -618,12 +618,28 @@ cleanup:
     return ret;
 }
 
+static char *
+virLogFormatTimestamp(void)
+{
+    struct timeval cur_time;
+    struct tm time_info;
+    char *str = NULL;
+
+    gettimeofday(&cur_time, NULL);
+    localtime_r(&cur_time.tv_sec, &time_info);
+
+    if (virAsprintf(&str, "%02d:%02d:%02d.%03d",
+                    time_info.tm_hour, time_info.tm_min, time_info.tm_sec,
+                    (int) (cur_time.tv_usec / 1000)) < 0)
+        return NULL;
+
+    return str;
+}
+
 static int
 virLogFormatString(char **msg,
                    const char *funcname,
                    long long linenr,
-                   struct tm *time_info,
-                   struct timeval *cur_time,
                    int priority,
                    const char *str)
 {
@@ -637,25 +653,19 @@ virLogFormatString(char **msg,
      * to just grep for it to find the right place.
      */
     if ((funcname != NULL)) {
-        ret = virAsprintf(msg, "%02d:%02d:%02d.%03d: %d: %s : %s:%lld : %s\n",
-                          time_info->tm_hour, time_info->tm_min,
-                          time_info->tm_sec, (int) cur_time->tv_usec / 1000,
-                          virThreadSelfID(),
-                          virLogPriorityString(priority), funcname, linenr, str);
+        ret = virAsprintf(msg, "%d: %s : %s:%lld : %s\n",
+                          virThreadSelfID(), virLogPriorityString(priority),
+                          funcname, linenr, str);
     } else {
-        ret = virAsprintf(msg, "%02d:%02d:%02d.%03d: %d: %s : %s\n",
-                          time_info->tm_hour, time_info->tm_min,
-                          time_info->tm_sec, (int) cur_time->tv_usec / 1000,
-                          virThreadSelfID(),
-                          virLogPriorityString(priority), str);
+        ret = virAsprintf(msg, "%d: %s : %s\n",
+                          virThreadSelfID(), virLogPriorityString(priority),
+                          str);
     }
     return ret;
 }
 
 static int
-virLogVersionString(char **msg,
-                    struct tm *time_info,
-                    struct timeval *cur_time)
+virLogVersionString(char **msg)
 {
 #ifdef PACKAGER_VERSION
 # ifdef PACKAGER
@@ -670,9 +680,7 @@ virLogVersionString(char **msg,
     "libvirt version: " VERSION
 #endif
 
-    return virLogFormatString(msg, NULL, 0,
-                              time_info, cur_time,
-                              VIR_LOG_INFO, LOG_VERSION_STRING);
+    return virLogFormatString(msg, NULL, 0, VIR_LOG_INFO, LOG_VERSION_STRING);
 }
 
 /**
@@ -694,9 +702,8 @@ void virLogMessage(const char *category, int priority, const char *funcname,
     static bool logVersionStderr = true;
     char *str = NULL;
     char *msg = NULL;
-    struct timeval cur_time;
-    struct tm time_info;
-    int len, fprio, i, ret;
+    char *timestamp = NULL;
+    int fprio, i, ret;
     int saved_errno = errno;
     int emit = 1;
     va_list ap;
@@ -730,14 +737,13 @@ void virLogMessage(const char *category, int priority, const char *funcname,
         goto cleanup;
     }
     va_end(ap);
-    gettimeofday(&cur_time, NULL);
-    localtime_r(&cur_time.tv_sec, &time_info);
 
-    ret = virLogFormatString(&msg, funcname, linenr,
-                             &time_info, &cur_time,
-                             priority, str);
+    ret = virLogFormatString(&msg, funcname, linenr, priority, str);
     VIR_FREE(str);
     if (ret < 0)
+        goto cleanup;
+
+    if (!(timestamp = virLogFormatTimestamp()))
         goto cleanup;
 
     /*
@@ -748,42 +754,49 @@ void virLogMessage(const char *category, int priority, const char *funcname,
      *       threads, but avoid intermixing. Maybe set up locks per output
      *       to improve paralellism.
      */
-    len = strlen(msg);
-    virLogStr(msg, len);
+    virLogLock();
+    virLogStr(timestamp);
+    virLogStr(msg);
+    virLogUnlock();
     if (emit == 0)
         goto cleanup;
 
     virLogLock();
-    for (i = 0; i < virLogNbOutputs;i++) {
+    for (i = 0; i < virLogNbOutputs; i++) {
         if (priority >= virLogOutputs[i].priority) {
             if (virLogOutputs[i].logVersion) {
                 char *ver = NULL;
-                if (virLogVersionString(&ver, &time_info, &cur_time) >= 0)
-                    virLogOutputs[i].f(category, VIR_LOG_INFO, __func__, __LINE__,
-                                       ver, strlen(ver),
+                if (virLogVersionString(&ver) >= 0)
+                    virLogOutputs[i].f(category, VIR_LOG_INFO,
+                                       __func__, __LINE__,
+                                       timestamp, ver,
                                        virLogOutputs[i].data);
                 VIR_FREE(ver);
                 virLogOutputs[i].logVersion = false;
             }
             virLogOutputs[i].f(category, priority, funcname, linenr,
-                               msg, len, virLogOutputs[i].data);
+                               timestamp, msg, virLogOutputs[i].data);
         }
     }
     if ((virLogNbOutputs == 0) && (flags != 1)) {
         if (logVersionStderr) {
             char *ver = NULL;
-            if (virLogVersionString(&ver, &time_info, &cur_time) >= 0)
-                ignore_value (safewrite(STDERR_FILENO,
-                                        ver, strlen(ver)));
+            if (virLogVersionString(&ver) >= 0)
+                virLogOutputToFd(category, VIR_LOG_INFO,
+                                 __func__, __LINE__,
+                                 timestamp, ver,
+                                 (void *) STDERR_FILENO);
             VIR_FREE(ver);
             logVersionStderr = false;
         }
-        ignore_value (safewrite(STDERR_FILENO, msg, len));
+        virLogOutputToFd(category, priority, funcname, linenr,
+                         timestamp, msg, (void *) STDERR_FILENO);
     }
     virLogUnlock();
 
 cleanup:
     VIR_FREE(msg);
+    VIR_FREE(timestamp);
     errno = saved_errno;
 }
 
@@ -791,13 +804,23 @@ static int virLogOutputToFd(const char *category ATTRIBUTE_UNUSED,
                             int priority ATTRIBUTE_UNUSED,
                             const char *funcname ATTRIBUTE_UNUSED,
                             long long linenr ATTRIBUTE_UNUSED,
-                            const char *str, int len, void *data) {
+                            const char *timestamp,
+                            const char *str,
+                            void *data)
+{
     int fd = (long) data;
     int ret;
+    char *msg;
 
     if (fd < 0)
         return -1;
-    ret = safewrite(fd, str, len);
+
+    if (virAsprintf(&msg, "%s: %s", timestamp, str) < 0)
+        return -1;
+
+    ret = safewrite(fd, msg, strlen(msg));
+    VIR_FREE(msg);
+
     return ret;
 }
 
@@ -833,8 +856,10 @@ static int virLogOutputToSyslog(const char *category ATTRIBUTE_UNUSED,
                                 int priority,
                                 const char *funcname ATTRIBUTE_UNUSED,
                                 long long linenr ATTRIBUTE_UNUSED,
-                                const char *str, int len ATTRIBUTE_UNUSED,
-                                void *data ATTRIBUTE_UNUSED) {
+                                const char *timestamp ATTRIBUTE_UNUSED,
+                                const char *str,
+                                void *data ATTRIBUTE_UNUSED)
+{
     int prio;
 
     switch (priority) {
@@ -854,7 +879,7 @@ static int virLogOutputToSyslog(const char *category ATTRIBUTE_UNUSED,
             prio = LOG_ERR;
     }
     syslog(prio, "%s", str);
-    return len;
+    return strlen(str);
 }
 
 static char *current_ident = NULL;
