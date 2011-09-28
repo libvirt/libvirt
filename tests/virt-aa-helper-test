@@ -1,4 +1,10 @@
 #!/bin/sh
+#
+# virt-aa-helper needs a working locale system. If testing this in a chroot
+# system, need to make sure these are setup properly. On Debian-based systems
+# this can be done with something like (as root):
+#  locale-gen en_US.UTF-8
+
 set -e
 
 test_hostdev="no"
@@ -255,6 +261,10 @@ testme "0" "serial (pty)" "-r -u $valid_uuid" "$test_xml"
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<serial type='dev'><source path='/dev/ttyS0'/><target port='0'/></serial></devices>,g" "$template_xml" > "$test_xml"
 testme "0" "serial (dev)" "-r -u $valid_uuid" "$test_xml"
 
+sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<serial type='pipe'><source path='$tmpdir/serial.pipe'/><target port='0'/></serial></devices>,g" "$template_xml" > "$test_xml"
+mkfifo "$tmpdir/serial.pipe.in" "$tmpdir/serial.pipe.out"
+testme "0" "serial (pipe)" "-r -u $valid_uuid" "$test_xml"
+
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<console type='file'><source path='$tmpdir/console.log'/><target port='0'/></console></devices>,g" "$template_xml" > "$test_xml"
 touch "$tmpdir/console.log"
 testme "0" "console" "-r -u $valid_uuid" "$test_xml"
@@ -262,8 +272,16 @@ testme "0" "console" "-r -u $valid_uuid" "$test_xml"
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<console type='pty'><target port='0'/></console></devices>,g" "$template_xml" > "$test_xml"
 testme "0" "console (pty)" "-r -u $valid_uuid" "$test_xml"
 
+sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<console type='pipe'><source path='$tmpdir/console.pipe'/><target port='0'/></console></devices>,g" "$template_xml" > "$test_xml"
+mkfifo "$tmpdir/console.pipe.in" "$tmpdir/console.pipe.out"
+testme "0" "console (pipe)" "-r -u $valid_uuid" "$test_xml"
+
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<parallel type='pty'><source path='/dev/pts/0'/><target port='0'/></parallel></devices>,g" "$template_xml" > "$test_xml"
 testme "0" "parallel (pty)" "-r -u $valid_uuid" "$test_xml"
+
+sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<parallel type='pipe'><source path='$tmpdir/parallel.pipe'/><target port='0'/></parallel></devices>,g" "$template_xml" > "$test_xml"
+mkfifo "$tmpdir/parallel.pipe.in" "$tmpdir/parallel.pipe.out"
+testme "0" "parallel (pipe)" "-r -u $valid_uuid" "$test_xml"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<channel type='unix'><source mode='bind' path='$tmpdir/guestfwd'/><target type='guestfwd' address='10.0.2.1' port='4600'/></channel></devices>,g" "$template_xml" > "$test_xml"
 touch "$tmpdir/guestfwd"
