@@ -266,7 +266,7 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
 
     if (virStorageBackendRunProgRegex(NULL, prog, 1, regexes, vars,
                             virStorageBackendFileSystemNetFindPoolSourcesFunc,
-                            &state) < 0)
+                            &state, NULL) < 0)
         goto cleanup;
 
     retval = virStoragePoolSourceListFormat(&state.list);

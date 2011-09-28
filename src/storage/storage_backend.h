@@ -140,7 +140,7 @@ int virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
                                   const char **regex,
                                   int *nvars,
                                   virStorageBackendListVolRegexFunc func,
-                                  void *data);
+                                  void *data, const char *cmd_to_ignore);
 
 int virStorageBackendRunProgNul(virStoragePoolObjPtr pool,
                                 const char **prog,

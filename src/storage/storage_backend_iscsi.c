@@ -160,7 +160,7 @@ virStorageBackendISCSISession(virStoragePoolObjPtr pool,
                                       regexes,
                                       vars,
                                       virStorageBackendISCSIExtractSession,
-                                      &session) < 0)
+                                      &session, NULL) < 0)
         return NULL;
 
     if (session == NULL &&
@@ -517,7 +517,7 @@ virStorageBackendISCSIScanTargets(const char *portal,
                                       regexes,
                                       vars,
                                       virStorageBackendISCSIGetTargets,
-                                      &list) < 0) {
+                                      &list, NULL) < 0) {
         return -1;
     }
 
