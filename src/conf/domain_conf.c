@@ -2189,6 +2189,15 @@ virDomainDiskDefAssignAddress(virCapsPtr caps, virDomainDiskDefPtr def)
         def->info.addr.drive.unit = (idx % 2);
         break;
 
+    case VIR_DOMAIN_DISK_BUS_SATA:
+        /* For SATA we define the default mapping to be 6 units
+         * per bus, 1 bus per controller, many controllers */
+        def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
+        def->info.addr.drive.controller = idx / 6;
+        def->info.addr.drive.bus = 0;
+        def->info.addr.drive.unit = idx % 6;
+        break;
+
     case VIR_DOMAIN_DISK_BUS_FDC:
         /* For FDC we define the default mapping to be 2 units
          * per bus, 1 bus per controller, many controllers */
@@ -8746,6 +8755,11 @@ int virDomainDefAddImplicitControllers(virDomainDefPtr def)
     if (virDomainDefAddDiskControllersForType(def,
                                               VIR_DOMAIN_CONTROLLER_TYPE_IDE,
                                               VIR_DOMAIN_DISK_BUS_IDE) < 0)
+        return -1;
+
+    if (virDomainDefAddDiskControllersForType(def,
+                                              VIR_DOMAIN_CONTROLLER_TYPE_SATA,
+                                              VIR_DOMAIN_DISK_BUS_SATA) < 0)
         return -1;
 
     if (virDomainDefMaybeAddVirtioSerialController(def) < 0)

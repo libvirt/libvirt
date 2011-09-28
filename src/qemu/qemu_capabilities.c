@@ -140,6 +140,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
 
               "cache-unsafe", /* 75 */
               "rombar",
+              "ich9-ahci",
     );
 
 struct qemu_feature_flags {
@@ -1255,6 +1256,8 @@ qemuCapsParseDeviceStr(const char *str, virBitmapPtr flags)
         qemuCapsSet(flags, QEMU_CAPS_USB_REDIR);
     if (strstr(str, "name \"usb-hub\""))
         qemuCapsSet(flags, QEMU_CAPS_USB_HUB);
+    if (strstr(str, "name \"ich9-ahci\""))
+        qemuCapsSet(flags, QEMU_CAPS_ICH9_AHCI);
 
     /* Prefer -chardev spicevmc (detected earlier) over -device spicevmc */
     if (!qemuCapsGet(flags, QEMU_CAPS_CHARDEV_SPICEVMC) &&

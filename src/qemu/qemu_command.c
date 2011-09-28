@@ -1776,6 +1776,12 @@ qemuBuildDriveDevStr(virDomainDiskDefPtr disk,
                           disk->info.addr.drive.bus,
                           disk->info.addr.drive.unit);
         break;
+    case VIR_DOMAIN_DISK_BUS_SATA:
+        virBufferAddLit(&opt, "ide-drive");
+        virBufferAsprintf(&opt, ",bus=ahci%d.%d",
+                          disk->info.addr.drive.controller,
+                          disk->info.addr.drive.unit);
+        break;
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
         virBufferAddLit(&opt, "virtio-blk-pci");
         qemuBuildIoEventFdStr(&opt, disk->ioeventfd, qemuCaps);
@@ -1981,6 +1987,10 @@ qemuBuildControllerDevStr(virDomainControllerDefPtr def,
 
     case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
         virBufferAsprintf(&buf, "usb-ccid,id=ccid%d", def->idx);
+        break;
+
+    case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
+        virBufferAsprintf(&buf, "ahci,id=ahci%d", def->idx);
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_USB:
@@ -3783,14 +3793,22 @@ qemuBuildCommandLine(virConnectPtr conn,
                 cont->type == VIR_DOMAIN_CONTROLLER_TYPE_FDC)
                 continue;
 
-            /* QEMU doesn't implement a SATA driver */
+            /* Only recent QEMU implements a SATA (AHCI) controller */
             if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA) {
-                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                "%s", _("SATA is not supported with this QEMU binary"));
-                goto error;
-            }
+                if (!qemuCapsGet(qemuCaps, QEMU_CAPS_ICH9_AHCI)) {
+                    qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                    "%s", _("SATA is not supported with this QEMU binary"));
+                    goto error;
+                } else {
+                    char *devstr;
 
-            if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+                    virCommandAddArg(cmd, "-device");
+                    if (!(devstr = qemuBuildControllerDevStr(cont, qemuCaps, NULL)))
+                        goto error;
+
+                    virCommandAddArg(cmd, devstr);
+                }
+            } else if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
                 def->controllers[i]->model == -1 &&
                 !qemuCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI)) {
                 if (usblegacy) {

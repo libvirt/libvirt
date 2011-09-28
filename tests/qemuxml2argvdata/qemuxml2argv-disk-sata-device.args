@@ -1,0 +1,6 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M \
+pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults -monitor \
+unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -device ahci,id=ahci0,\
+bus=pci.0,addr=0x3 -drive file=/dev/HostVG/QEMUGuest1,if=none,\
+id=drive-sata0-0-0 -device ide-drive,bus=ahci0.0,drive=drive-sata0-0-0,\
+id=sata0-0-0 -usb -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4

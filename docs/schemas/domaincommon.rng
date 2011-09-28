@@ -790,6 +790,7 @@
             <value>xen</value>
             <value>usb</value>
             <value>uml</value>
+            <value>sata</value>
           </choice>
         </attribute>
       </optional>
