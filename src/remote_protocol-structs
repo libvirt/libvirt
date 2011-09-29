@@ -1557,6 +1557,24 @@ struct remote_domain_snapshot_list_names_ret {
                 remote_nonnull_string * names_val;
         } names;
 };
+struct remote_domain_snapshot_num_children_args {
+        remote_nonnull_domain_snapshot snap;
+        u_int                      flags;
+};
+struct remote_domain_snapshot_num_children_ret {
+        int                        num;
+};
+struct remote_domain_snapshot_list_children_names_args {
+        remote_nonnull_domain_snapshot snap;
+        int                        maxnames;
+        u_int                      flags;
+};
+struct remote_domain_snapshot_list_children_names_ret {
+        struct {
+                u_int              names_len;
+                remote_nonnull_string * names_val;
+        } names;
+};
 struct remote_domain_snapshot_lookup_by_name_args {
         remote_nonnull_domain      dom;
         remote_nonnull_string      name;
@@ -1971,4 +1989,6 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_BLOCK_STATS_FLAGS = 243,
         REMOTE_PROC_DOMAIN_SNAPSHOT_GET_PARENT = 244,
         REMOTE_PROC_DOMAIN_RESET = 245,
+        REMOTE_PROC_DOMAIN_SNAPSHOT_NUM_CHILDREN = 246,
+        REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_CHILDREN_NAMES = 247,
 };

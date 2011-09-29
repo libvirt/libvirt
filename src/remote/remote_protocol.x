@@ -2067,6 +2067,25 @@ struct remote_domain_snapshot_list_names_ret {
     remote_nonnull_string names<REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX>; /* insert@1 */
 };
 
+struct remote_domain_snapshot_num_children_args {
+    remote_nonnull_domain_snapshot snap;
+    unsigned int flags;
+};
+
+struct remote_domain_snapshot_num_children_ret {
+    int num;
+};
+
+struct remote_domain_snapshot_list_children_names_args {
+    remote_nonnull_domain_snapshot snap;
+    int maxnames;
+    unsigned int flags;
+};
+
+struct remote_domain_snapshot_list_children_names_ret {
+    remote_nonnull_string names<REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX>; /* insert@1 */
+};
+
 struct remote_domain_snapshot_lookup_by_name_args {
     remote_nonnull_domain dom;
     remote_nonnull_string name;
@@ -2524,8 +2543,10 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB = 241, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_GET_MAX_SPEED = 242, /* autogen autogen */
     REMOTE_PROC_DOMAIN_BLOCK_STATS_FLAGS = 243, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_SNAPSHOT_GET_PARENT = 244, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_RESET = 245 /* autogen autogen */
+    REMOTE_PROC_DOMAIN_SNAPSHOT_GET_PARENT = 244, /* autogen autogen priority:high */
+    REMOTE_PROC_DOMAIN_RESET = 245, /* autogen autogen */
+    REMOTE_PROC_DOMAIN_SNAPSHOT_NUM_CHILDREN = 246, /* autogen autogen priority:high */
+    REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_CHILDREN_NAMES = 247 /* autogen autogen priority:high */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
