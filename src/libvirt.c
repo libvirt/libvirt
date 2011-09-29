@@ -3017,6 +3017,56 @@ error:
 }
 
 /**
+ * virDomainReset:
+ * @domain: a domain object
+ * @flags: extra flags for the reboot operation, not used yet
+ *
+ * Reset a domain immediately without any guest OS shutdown.
+ * Reset emulates the power reset button on a machine, where all
+ * hardware sees the RST line set and reinitializes internal state.
+ *
+ * Note that there is a risk of data loss caused by reset without any
+ * guest OS shutdown.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainReset(virDomainPtr domain, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "flags=%x", flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    conn = domain->conn;
+
+    if (conn->driver->domainReset) {
+        int ret;
+        ret = conn->driver->domainReset (domain, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
  * virDomainGetName:
  * @domain: a domain object
  *

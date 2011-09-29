@@ -1031,6 +1031,9 @@ virDomainPtr            virDomainLookupByUUIDString     (virConnectPtr conn,
 int                     virDomainShutdown       (virDomainPtr domain);
 int                     virDomainReboot         (virDomainPtr domain,
                                                  unsigned int flags);
+int                     virDomainReset          (virDomainPtr domain,
+                                                 unsigned int flags);
+
 int                     virDomainDestroy        (virDomainPtr domain);
 int                     virDomainDestroyFlags   (virDomainPtr domain,
                                                  unsigned int flags);
