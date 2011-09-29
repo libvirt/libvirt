@@ -138,6 +138,12 @@ VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "ccid",
               "usb")
 
+VIR_ENUM_IMPL(virDomainDeviceAddressPciMulti,
+              VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_LAST,
+              "default",
+              "on",
+              "off")
+
 VIR_ENUM_IMPL(virDomainDisk, VIR_DOMAIN_DISK_TYPE_LAST,
               "block",
               "file",
@@ -1645,6 +1651,10 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
                           info->addr.pci.bus,
                           info->addr.pci.slot,
                           info->addr.pci.function);
+        if (info->addr.pci.multi) {
+           virBufferAsprintf(buf, " multifunction='%s'",
+                             virDomainDeviceAddressPciMultiTypeToString(info->addr.pci.multi));
+        }
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
@@ -1689,7 +1699,7 @@ static int
 virDomainDevicePCIAddressParseXML(xmlNodePtr node,
                                   virDomainDevicePCIAddressPtr addr)
 {
-    char *domain, *slot, *bus, *function;
+    char *domain, *slot, *bus, *function, *multi;
     int ret = -1;
 
     memset(addr, 0, sizeof(*addr));
@@ -1698,6 +1708,7 @@ virDomainDevicePCIAddressParseXML(xmlNodePtr node,
     bus      = virXMLPropString(node, "bus");
     slot     = virXMLPropString(node, "slot");
     function = virXMLPropString(node, "function");
+    multi    = virXMLPropString(node, "multifunction");
 
     if (domain &&
         virStrToLong_ui(domain, NULL, 0, &addr->domain) < 0) {
@@ -1727,6 +1738,14 @@ virDomainDevicePCIAddressParseXML(xmlNodePtr node,
         goto cleanup;
     }
 
+    if (multi &&
+        ((addr->multi = virDomainDeviceAddressPciMultiTypeFromString(multi)) <= 0)) {
+        virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                             _("Unknown value '%s' for <address> 'multifunction' attribute"),
+                             multi);
+        goto cleanup;
+
+    }
     if (!virDomainDevicePCIAddressIsValid(addr)) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                              _("Insufficient specification for PCI address"));
@@ -1740,6 +1759,7 @@ cleanup:
     VIR_FREE(bus);
     VIR_FREE(slot);
     VIR_FREE(function);
+    VIR_FREE(multi);
     return ret;
 }
 

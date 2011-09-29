@@ -1113,10 +1113,14 @@
         The <code>type</code> attribute is mandatory, and is typically
         "pci" or "drive".  For a "pci" controller, additional
         attributes for <code>bus</code>, <code>slot</code>,
-        and <code>function</code> must be present, as well as an
-        optional <code>domain</code>.  For a "drive" controller,
-        additional attributes <code>controller</code>, <code>bus</code>,
+        and <code>function</code> must be present, as well as
+        optional <code>domain</code> and <code>multifunction</code>.
+        Multifunction defaults to 'off'; any other value requires
+        QEMU 0.1.3 and <span class="since">libvirt 0.9.7</span>.  For a
+        "drive" controller, additional attributes
+        <code>controller</code>, <code>bus</code>,
         and <code>unit</code> are available, each defaulting to 0.
+
       </dd>
     </dl>
 
@@ -1293,7 +1297,7 @@
     &lt;/controller&gt;
     &lt;controller type='usb' index='0' model='ich9-uhci1'&gt;
       &lt;master startport='0'/&gt;
-      &lt;address type='pci' domain='0' bus='0' slot='4' function='0'/&gt;
+      &lt;address type='pci' domain='0' bus='0' slot='4' function='0' multifunction='on'/&gt;
     &lt;/controller&gt;
     ...
   &lt;/devices&gt;
@@ -1413,10 +1417,16 @@
       with <code>virsh nodedev-list</code>. The
       <code>bus</code> attribute allows the hexadecimal values 0 to ff, the
       <code>slot</code> attribute allows the hexadecimal values 0 to 1f, and
-      the <code>function</code> attribute allows the hexadecimal values 0 to
-      7. There is also an optional <code>domain</code> attribute for the
-      PCI domain, with hexadecimal values 0 to ffff, but it is currently
-      not used by qemu.</dd>
+      the <code>function</code> attribute allows the hexadecimal values 0 to 7.
+      The <code>multifunction</code> attribute controls turning on the
+      multifunction bit for a particular slot/function in the PCI
+      control register<span class="since">since 0.9.7, requires QEMU
+      0.13</span>. <code>multifunction</code> defaults to 'off', but
+      should be set to 'on' for function 0 of a slot that will have
+      multiple functions used.
+      There is also an optional <code>domain</code> attribute for
+      the PCI domain, with hexadecimal values 0 to ffff, but it is
+      currently not used by qemu.</dd>
     </dl>
 
     <h4><a name="elementsRedir">Redirected devices</a></h4>
@@ -1584,7 +1594,8 @@
       the interface to a particular pci slot, with
       attribute <code>type='pci'</code> and additional
       attributes <code>domain</code>, <code>bus</code>, <code>slot</code>,
-      and <code>function</code> as appropriate.
+      <code>function</code>, and <code>multifunction</code>
+      <span class="since">since 0.9.7, requires QEMU 0.13</span> as appropriate.
     </p>
 
     <h5><a name="elementsNICSVirtual">Virtual network</a></h5>
