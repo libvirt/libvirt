@@ -13146,6 +13146,8 @@ static const vshCmdOptDef opts_snapshot_list[] = {
     {"metadata", VSH_OT_BOOL, 0,
      N_("list only snapshots that have metadata that would prevent undefine")},
     {"tree", VSH_OT_BOOL, 0, N_("list snapshots in a tree")},
+    {"from", VSH_OT_DATA, 0, N_("limit list to children of given snapshot")},
+    {"descendants", VSH_OT_BOOL, 0, N_("with --from, list all descendants")},
     {NULL, 0, 0, NULL}
 };
 
@@ -13172,6 +13174,13 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     char timestr[100];
     struct tm time_info;
     bool tree = vshCommandOptBool(cmd, "tree");
+    const char *from = NULL;
+    virDomainSnapshotPtr start = NULL;
+
+    if (vshCommandOptString(cmd, "from", &from) < 0) {
+        vshError(ctl, _("invalid from argument '%s'"), from);
+        goto cleanup;
+    }
 
     if (vshCommandOptBool(cmd, "parent")) {
         if (vshCommandOptBool(cmd, "roots")) {
@@ -13191,6 +13200,10 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
                      _("--roots and --tree are mutually exclusive"));
             return false;
         }
+        if (from) {
+            vshError(ctl, "%s",
+                     _("--roots and --from are mutually exclusive"));
+        }
         flags |= VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
     }
 
@@ -13205,16 +13218,29 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     if (dom == NULL)
         goto cleanup;
 
-    numsnaps = virDomainSnapshotNum(dom, flags);
-
-    /* Fall back to simulation if --roots was unsupported.  */
-    if (numsnaps < 0 && last_error->code == VIR_ERR_INVALID_ARG &&
-        (flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS)) {
-        virFreeError(last_error);
-        last_error = NULL;
-        parent_filter = -1;
-        flags &= ~VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
+    if (from) {
+        start = virDomainSnapshotLookupByName(dom, from, 0);
+        if (!start)
+            goto cleanup;
+        if (vshCommandOptBool(cmd, "descendants") || tree) {
+            flags |= VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
+        }
+        numsnaps = virDomainSnapshotNumChildren(start, flags);
+        if (numsnaps >= 0 && tree)
+            numsnaps++;
+        /* XXX Is it worth emulating --from on older servers?  */
+    } else {
         numsnaps = virDomainSnapshotNum(dom, flags);
+
+        /* Fall back to simulation if --roots was unsupported. */
+        if (numsnaps < 0 && last_error->code == VIR_ERR_INVALID_ARG &&
+            (flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS)) {
+            virFreeError(last_error);
+            last_error = NULL;
+            parent_filter = -1;
+            flags &= ~VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
+            numsnaps = virDomainSnapshotNum(dom, flags);
+        }
     }
 
     if (numsnaps < 0)
@@ -13240,7 +13266,25 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     if (VIR_ALLOC_N(names, numsnaps) < 0)
         goto cleanup;
 
-    actual = virDomainSnapshotListNames(dom, names, numsnaps, flags);
+    if (from) {
+        /* When mixing --from and --tree, we want to start the tree at the
+         * given snapshot.  Without --tree, only list the children.  */
+        if (tree) {
+            if (numsnaps)
+                actual = virDomainSnapshotListChildrenNames(start, names + 1,
+                                                            numsnaps - 1,
+                                                            flags);
+            if (actual >= 0) {
+                actual++;
+                names[0] = vshStrdup(ctl, from);
+            }
+        } else {
+            actual = virDomainSnapshotListChildrenNames(start, names,
+                                                        numsnaps, flags);
+        }
+    } else {
+        actual = virDomainSnapshotListNames(dom, names, numsnaps, flags);
+    }
     if (actual < 0)
         goto cleanup;
 
@@ -13248,8 +13292,8 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
 
     if (tree) {
         char indentBuf[INDENT_BUFLEN];
-        char **parents = vshMalloc(ctl, sizeof(char *) * actual);
-        for (i = 0; i < actual; i++) {
+        char **parents = vshCalloc(ctl, sizeof(char *), actual);
+        for (i = (from ? 1 : 0); i < actual; i++) {
             /* free up memory from previous iterations of the loop */
             if (snapshot)
                 virDomainSnapshotFree(snapshot);
@@ -13342,6 +13386,8 @@ cleanup:
     VIR_FREE(state);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
+    if (start)
+        virDomainSnapshotFree(start);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
     VIR_FREE(doc);
