@@ -1397,7 +1397,7 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
         }
         if (STRNEQ_NULLABLE(oldListenNetwork,newListenNetwork)) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("cannot change listen network setting on vnc graphics"));
+                            _("cannot change listen network setting on spice graphics"));
             return -1;
         }
         if (STRNEQ_NULLABLE(olddev->data.spice.keymap,
