@@ -6046,6 +6046,72 @@ cleanup:
 }
 
 static virDomainSnapshotPtr
+vboxDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
+                            unsigned int flags)
+{
+    virDomainPtr dom = snapshot->domain;
+    VBOX_OBJECT_CHECK(dom->conn, virDomainSnapshotPtr, NULL);
+    vboxIID iid = VBOX_IID_INITIALIZER;
+    IMachine *machine = NULL;
+    ISnapshot *snap = NULL;
+    ISnapshot *parent = NULL;
+    PRUnichar *nameUtf16 = NULL;
+    char *name = NULL;
+    nsresult rc;
+
+    virCheckFlags(0, NULL);
+
+    vboxIIDFromUUID(&iid, dom->uuid);
+    rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
+    if (NS_FAILED(rc)) {
+        vboxError(VIR_ERR_NO_DOMAIN, "%s",
+                  _("no domain with matching UUID"));
+        goto cleanup;
+    }
+
+    if (!(snap = vboxDomainSnapshotGet(data, dom, machine, snapshot->name)))
+        goto cleanup;
+
+    rc = snap->vtbl->GetParent(snap, &parent);
+    if (NS_FAILED(rc)) {
+        vboxError(VIR_ERR_INTERNAL_ERROR,
+                  _("could not get parent of snapshot %s"),
+                  snapshot->name);
+        goto cleanup;
+    }
+    if (!parent) {
+        vboxError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
+                  _("snapshot '%s' does not have a parent"),
+                  snapshot->name);
+        goto cleanup;
+    }
+
+    rc = parent->vtbl->GetName(parent, &nameUtf16);
+    if (NS_FAILED(rc) || !nameUtf16) {
+        vboxError(VIR_ERR_INTERNAL_ERROR,
+                  _("could not get name of parent of snapshot %s"),
+                  snapshot->name);
+        goto cleanup;
+    }
+    VBOX_UTF16_TO_UTF8(nameUtf16, &name);
+    if (!name) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ret = virGetDomainSnapshot(dom, name);
+
+cleanup:
+    VBOX_UTF8_FREE(name);
+    VBOX_UTF16_FREE(nameUtf16);
+    VBOX_RELEASE(snap);
+    VBOX_RELEASE(parent);
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
+    return ret;
+}
+
+static virDomainSnapshotPtr
 vboxDomainSnapshotCurrent(virDomainPtr dom,
                           unsigned int flags)
 {
@@ -8879,6 +8945,7 @@ virDriver NAME(Driver) = {
     .domainSnapshotListNames = vboxDomainSnapshotListNames, /* 0.8.0 */
     .domainSnapshotLookupByName = vboxDomainSnapshotLookupByName, /* 0.8.0 */
     .domainHasCurrentSnapshot = vboxDomainHasCurrentSnapshot, /* 0.8.0 */
+    .domainSnapshotGetParent = vboxDomainSnapshotGetParent, /* 0.9.7 */
     .domainSnapshotCurrent = vboxDomainSnapshotCurrent, /* 0.8.0 */
     .domainRevertToSnapshot = vboxDomainRevertToSnapshot, /* 0.8.0 */
     .domainSnapshotDelete = vboxDomainSnapshotDelete, /* 0.8.0 */
