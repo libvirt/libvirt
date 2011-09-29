@@ -4484,6 +4484,46 @@ esxDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags)
 
 
 static virDomainSnapshotPtr
+esxDomainSnapshotGetParent(virDomainSnapshotPtr snapshot, unsigned int flags)
+{
+    esxPrivate *priv = snapshot->domain->conn->privateData;
+    esxVI_VirtualMachineSnapshotTree *rootSnapshotList = NULL;
+    esxVI_VirtualMachineSnapshotTree *snapshotTree = NULL;
+    esxVI_VirtualMachineSnapshotTree *snapshotTreeParent = NULL;
+    virDomainSnapshotPtr parent = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (esxVI_EnsureSession(priv->primary) < 0) {
+        return NULL;
+    }
+
+    if (esxVI_LookupRootSnapshotTreeList(priv->primary, snapshot->domain->uuid,
+                                         &rootSnapshotList) < 0 ||
+        esxVI_GetSnapshotTreeByName(rootSnapshotList, snapshot->name,
+                                    &snapshotTree, &snapshotTreeParent,
+                                    esxVI_Occurrence_RequiredItem) < 0) {
+        goto cleanup;
+    }
+
+    if (!snapshotTreeParent) {
+        ESX_ERROR(VIR_ERR_NO_DOMAIN_SNAPSHOT,
+                  _("snapshot '%s' does not have a parent"),
+                  snapshotTree->name);
+        goto cleanup;
+    }
+
+    parent = virGetDomainSnapshot(snapshot->domain, snapshotTreeParent->name);
+
+cleanup:
+    esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotList);
+
+    return parent;
+}
+
+
+
+static virDomainSnapshotPtr
 esxDomainSnapshotCurrent(virDomainPtr domain, unsigned int flags)
 {
     esxPrivate *priv = domain->conn->privateData;
@@ -4831,6 +4871,7 @@ static virDriver esxDriver = {
     .domainSnapshotListNames = esxDomainSnapshotListNames, /* 0.8.0 */
     .domainSnapshotLookupByName = esxDomainSnapshotLookupByName, /* 0.8.0 */
     .domainHasCurrentSnapshot = esxDomainHasCurrentSnapshot, /* 0.8.0 */
+    .domainSnapshotGetParent = esxDomainSnapshotGetParent, /* 0.9.7 */
     .domainSnapshotCurrent = esxDomainSnapshotCurrent, /* 0.8.0 */
     .domainRevertToSnapshot = esxDomainRevertToSnapshot, /* 0.8.0 */
     .domainSnapshotDelete = esxDomainSnapshotDelete, /* 0.8.0 */
