@@ -1204,6 +1204,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("argument unsupported: %s");
             break;
+        case VIR_ERR_SNAPSHOT_REVERT_RISKY:
+            if (info == NULL)
+                errmsg = _("revert requires force");
+            else
+                errmsg = _("revert requires force: %s");
+            break;
     }
     return (errmsg);
 }

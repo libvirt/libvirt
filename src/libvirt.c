@@ -16262,6 +16262,28 @@ error:
  * into an inactive state, so transient domains require the use of one
  * of these two flags.
  *
+ * Reverting to any snapshot discards all configuration changes made since
+ * the last snapshot.  Additionally, reverting to a snapshot from a running
+ * domain is a form of data loss, since it discards whatever is in the
+ * guest's RAM at the time.  Since the very nature of keeping snapshots
+ * implies the intent to roll back state, no additional confirmation is
+ * normally required for these lossy effects.
+ *
+ * However, there are two particular situations where reverting will
+ * be refused by default, and where @flags must include
+ * VIR_DOMAIN_SNAPSHOT_REVERT_FORCE to acknowledge the risks.  1) Any
+ * attempt to revert to a snapshot that lacks the metadata to perform
+ * ABI compatibility checks (generally the case for snapshots that
+ * lack a full <domain> when listed by virDomainSnapshotGetXMLDesc(),
+ * such as those created prior to libvirt 0.9.5).  2) Any attempt to
+ * revert a running domain to an active state that requires starting a
+ * new hypervisor instance rather than reusing the existing hypervisor
+ * (since this would terminate all connections to the domain, such as
+ * such as VNC or Spice graphics) - this condition arises from active
+ * snapshots that are provably ABI incomaptible, as well as from
+ * inactive snapshots with a @flags request to start the domain after
+ * the revert.
+ *
  * Returns 0 if the creation is successful, -1 on error.
  */
 int

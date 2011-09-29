@@ -237,6 +237,8 @@ typedef enum {
                                            the given driver */
     VIR_ERR_STORAGE_PROBE_FAILED = 75,  /* storage pool proble failed */
     VIR_ERR_STORAGE_POOL_BUILT = 76,    /* storage pool already built */
+    VIR_ERR_SNAPSHOT_REVERT_RISKY = 77, /* force was not requested for a
+                                           risky domain snapshot revert */
 } virErrorNumber;
 
 /**

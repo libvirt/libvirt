@@ -13446,6 +13446,7 @@ static const vshCmdOptDef opts_snapshot_revert[] = {
     {"snapshotname", VSH_OT_DATA, VSH_OFLAG_REQ, N_("snapshot name")},
     {"running", VSH_OT_BOOL, 0, N_("after reverting, change state to running")},
     {"paused", VSH_OT_BOOL, 0, N_("after reverting, change state to paused")},
+    {"force", VSH_OT_BOOL, 0, N_("try harder on risky reverts")},
     {NULL, 0, 0, NULL}
 };
 
@@ -13457,11 +13458,19 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     unsigned int flags = 0;
+    bool force = false;
+    int result;
 
     if (vshCommandOptBool(cmd, "running"))
         flags |= VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING;
     if (vshCommandOptBool(cmd, "paused"))
         flags |= VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED;
+    /* We want virsh snapshot-revert --force to work even when talking
+     * to older servers that did the unsafe revert by default but
+     * reject the flag, so we probe without the flag, and only use it
+     * when the error says it will make a difference.  */
+    if (vshCommandOptBool(cmd, "force"))
+        force = true;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -13477,7 +13486,15 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
     if (snapshot == NULL)
         goto cleanup;
 
-    if (virDomainRevertToSnapshot(snapshot, flags) < 0)
+    result = virDomainRevertToSnapshot(snapshot, flags);
+    if (result < 0 && force &&
+        last_error->code == VIR_ERR_SNAPSHOT_REVERT_RISKY) {
+        flags |= VIR_DOMAIN_SNAPSHOT_REVERT_FORCE;
+        virFreeError(last_error);
+        last_error = NULL;
+        result = virDomainRevertToSnapshot(snapshot, flags);
+    }
+    if (result < 0)
         goto cleanup;
 
     ret = true;
