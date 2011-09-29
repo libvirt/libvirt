@@ -12180,6 +12180,37 @@ cleanup:
     return -1;
 }
 
+int virDomainSnapshotObjListGetNamesFrom(virDomainSnapshotObjPtr snapshot,
+                                         virDomainSnapshotObjListPtr snapshots,
+                                         char **const names, int maxnames,
+                                         unsigned int flags)
+{
+    struct virDomainSnapshotNameData data = { 0, 0, maxnames, names, 0 };
+    int i;
+
+    data.flags = flags & ~VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS)
+        virDomainSnapshotForEachDescendant(snapshots, snapshot,
+                                           virDomainSnapshotObjListCopyNames,
+                                           &data);
+    else
+        virDomainSnapshotForEachChild(snapshots, snapshot,
+                                      virDomainSnapshotObjListCopyNames, &data);
+
+    if (data.oom) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    return data.numnames;
+
+cleanup:
+    for (i = 0; i < data.numnames; i++)
+        VIR_FREE(data.names[i]);
+    return -1;
+}
+
 struct virDomainSnapshotNumData {
     int count;
     unsigned int flags;
@@ -12203,6 +12234,26 @@ int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
     struct virDomainSnapshotNumData data = { 0, flags };
 
     virHashForEach(snapshots->objs, virDomainSnapshotObjListCount, &data);
+
+    return data.count;
+}
+
+int
+virDomainSnapshotObjListNumFrom(virDomainSnapshotObjPtr snapshot,
+                                virDomainSnapshotObjListPtr snapshots,
+                                unsigned int flags)
+{
+    struct virDomainSnapshotNumData data = { 0, 0 };
+
+    data.flags = flags & ~VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS)
+        virDomainSnapshotForEachDescendant(snapshots, snapshot,
+                                           virDomainSnapshotObjListCount,
+                                           &data);
+    else
+        virDomainSnapshotForEachChild(snapshots, snapshot,
+                                      virDomainSnapshotObjListCount, &data);
 
     return data.count;
 }

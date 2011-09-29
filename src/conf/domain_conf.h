@@ -1499,6 +1499,13 @@ int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
                                      unsigned int flags);
 int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
                                 unsigned int flags);
+int virDomainSnapshotObjListGetNamesFrom(virDomainSnapshotObjPtr snapshot,
+                                         virDomainSnapshotObjListPtr snapshots,
+                                         char **const names, int maxnames,
+                                         unsigned int flags);
+int virDomainSnapshotObjListNumFrom(virDomainSnapshotObjPtr snapshot,
+                                    virDomainSnapshotObjListPtr snapshots,
+                                    unsigned int flags);
 virDomainSnapshotObjPtr virDomainSnapshotFindByName(const virDomainSnapshotObjListPtr snapshots,
                                                     const char *name);
 void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
