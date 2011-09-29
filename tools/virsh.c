@@ -246,8 +246,8 @@ typedef struct __vshControl {
     char *historyfile;          /* readline history file name */
     bool useGetInfo;            /* must use virDomainGetInfo, since
                                    virDomainGetState is not supported */
-    bool useSnapshotGetXML;     /* must use virDomainSnapshotGetXMLDesc, since
-                                   virDomainSnapshotGetParent is missing */
+    bool useSnapshotOld;        /* cannot use virDomainSnapshotGetParent or
+                                   virDomainSnapshotNumChildren */
 } __vshControl;
 
 typedef struct vshCmdGrp {
@@ -599,7 +599,7 @@ vshReconnect(vshControl *ctl)
         vshError(ctl, "%s", _("Reconnected to the hypervisor"));
     disconnected = 0;
     ctl->useGetInfo = false;
-    ctl->useSnapshotGetXML = false;
+    ctl->useSnapshotOld = false;
 }
 
 /* ---------------
@@ -747,7 +747,7 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
     ctl->name = vshStrdup(ctl, name);
 
     ctl->useGetInfo = false;
-    ctl->useSnapshotGetXML = false;
+    ctl->useSnapshotOld = false;
     ctl->readonly = ro;
 
     ctl->conn = virConnectOpenAuth(ctl->name, virConnectAuthPtrDefault,
@@ -13086,7 +13086,7 @@ vshGetSnapshotParent(vshControl *ctl, virDomainSnapshotPtr snapshot,
     *parent_name = NULL;
 
     /* Try new API, since it is faster. */
-    if (!ctl->useSnapshotGetXML) {
+    if (!ctl->useSnapshotOld) {
         parent = virDomainSnapshotGetParent(snapshot, 0);
         if (parent) {
             /* API works, and virDomainSnapshotGetName will succeed */
@@ -13100,7 +13100,7 @@ vshGetSnapshotParent(vshControl *ctl, virDomainSnapshotPtr snapshot,
             goto cleanup;
         }
         /* API didn't work, fall back to XML scraping. */
-        ctl->useSnapshotGetXML = true;
+        ctl->useSnapshotOld = true;
     }
 
     xml = virDomainSnapshotGetXMLDesc(snapshot, 0);
@@ -13225,10 +13225,22 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         if (vshCommandOptBool(cmd, "descendants") || tree) {
             flags |= VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
         }
-        numsnaps = virDomainSnapshotNumChildren(start, flags);
-        if (numsnaps >= 0 && tree)
-            numsnaps++;
-        /* XXX Is it worth emulating --from on older servers?  */
+        numsnaps = ctl->useSnapshotOld ? -1 :
+            virDomainSnapshotNumChildren(start, flags);
+        /* XXX Is it worth emulating --from without --tree on older servers?  */
+        if (tree) {
+            if (numsnaps >= 0) {
+                numsnaps++;
+            } else if (ctl->useSnapshotOld ||
+                       last_error->code == VIR_ERR_NO_SUPPORT) {
+                /* We can emulate --tree --from.  */
+                virFreeError(last_error);
+                last_error = NULL;
+                ctl->useSnapshotOld = true;
+                flags &= ~VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
+                numsnaps = virDomainSnapshotNum(dom, flags);
+            }
+        }
     } else {
         numsnaps = virDomainSnapshotNum(dom, flags);
 
@@ -13243,8 +13255,11 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         }
     }
 
-    if (numsnaps < 0)
+    if (numsnaps < 0) {
+        if (!last_error)
+            vshError(ctl, _("missing support"));
         goto cleanup;
+    }
 
     if (!tree) {
         if (parent_filter > 0)
@@ -13266,7 +13281,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     if (VIR_ALLOC_N(names, numsnaps) < 0)
         goto cleanup;
 
-    if (from) {
+    if (from && !ctl->useSnapshotOld) {
         /* When mixing --from and --tree, we want to start the tree at the
          * given snapshot.  Without --tree, only list the children.  */
         if (tree) {
@@ -13293,7 +13308,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     if (tree) {
         char indentBuf[INDENT_BUFLEN];
         char **parents = vshCalloc(ctl, sizeof(char *), actual);
-        for (i = (from ? 1 : 0); i < actual; i++) {
+        for (i = (from && !ctl->useSnapshotOld); i < actual; i++) {
             /* free up memory from previous iterations of the loop */
             if (snapshot)
                 virDomainSnapshotFree(snapshot);
@@ -13308,7 +13323,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         }
         for (i = 0 ; i < actual ; i++) {
             memset(indentBuf, '\0', sizeof indentBuf);
-            if (parents[i] == NULL)
+            if (ctl->useSnapshotOld ? STREQ(names[i], from) : !parents[i])
                 cmdNodeListDevicesPrint(ctl,
                                         names,
                                         parents,
