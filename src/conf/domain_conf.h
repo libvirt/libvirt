@@ -74,6 +74,14 @@ enum virDomainDeviceAddressType {
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST
 };
 
+enum virDomainDeviceAddressPciMulti {
+    VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_DEFAULT = 0,
+    VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_ON,
+    VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_OFF,
+
+    VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_LAST
+};
+
 typedef struct _virDomainDevicePCIAddress virDomainDevicePCIAddress;
 typedef virDomainDevicePCIAddress *virDomainDevicePCIAddressPtr;
 struct _virDomainDevicePCIAddress {
@@ -81,6 +89,7 @@ struct _virDomainDevicePCIAddress {
     unsigned int bus;
     unsigned int slot;
     unsigned int function;
+    int          multi;  /* enum virDomainDeviceAddressPciMulti */
 };
 
 typedef struct _virDomainDeviceDriveAddress virDomainDeviceDriveAddress;
@@ -1830,6 +1839,7 @@ VIR_ENUM_DECL(virDomainLifecycle)
 VIR_ENUM_DECL(virDomainLifecycleCrash)
 VIR_ENUM_DECL(virDomainDevice)
 VIR_ENUM_DECL(virDomainDeviceAddress)
+VIR_ENUM_DECL(virDomainDeviceAddressPciMulti)
 VIR_ENUM_DECL(virDomainDisk)
 VIR_ENUM_DECL(virDomainDiskDevice)
 VIR_ENUM_DECL(virDomainDiskBus)

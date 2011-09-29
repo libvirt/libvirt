@@ -774,22 +774,65 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
                                  virDomainDeviceInfoPtr dev,
                                  void *opaque)
 {
+    int ret = -1;
+    char *addr = NULL;
     qemuDomainPCIAddressSetPtr addrs = opaque;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-        char *addr = qemuPCIAddressAsString(dev);
-        if (!addr)
-            return -1;
+    if (dev->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
+        return 0;
 
-        VIR_DEBUG("Remembering PCI addr %s", addr);
+    addr = qemuPCIAddressAsString(dev);
+    if (!addr)
+        goto cleanup;
 
-        if (virHashAddEntry(addrs->used, addr, addr) < 0) {
-            VIR_FREE(addr);
-            return -1;
+    if (virHashLookup(addrs->used, addr)) {
+        if (dev->addr.pci.function != 0) {
+            qemuReportError(VIR_ERR_XML_ERROR,
+                            _("Attempted double use of PCI Address '%s' "
+                              "(may need \"multifunction='on'\" for device on function 0"),
+                            addr);
+        } else {
+            qemuReportError(VIR_ERR_XML_ERROR,
+                            _("Attempted double use of PCI Address '%s'"), addr);
         }
+        goto cleanup;
     }
 
-    return 0;
+    VIR_DEBUG("Remembering PCI addr %s", addr);
+    if (virHashAddEntry(addrs->used, addr, addr) < 0)
+        goto cleanup;
+    addr = NULL;
+
+    if ((dev->addr.pci.function == 0) &&
+        (dev->addr.pci.multi != VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_ON)) {
+        /* a function 0 w/o multifunction=on must reserve the entire slot */
+        int function;
+        virDomainDeviceInfo temp_dev = *dev;
+
+        for (function = 1; function < QEMU_PCI_ADDRESS_LAST_FUNCTION; function++) {
+            temp_dev.addr.pci.function = function;
+            addr = qemuPCIAddressAsString(&temp_dev);
+            if (!addr)
+                goto cleanup;
+
+            if (virHashLookup(addrs->used, addr)) {
+                qemuReportError(VIR_ERR_XML_ERROR,
+                                _("Attempted double use of PCI Address '%s'"
+                                  "(need \"multifunction='off'\" for device on function 0)"),
+                                addr);
+                goto cleanup;
+            }
+
+            VIR_DEBUG("Remembering PCI addr %s (multifunction=off for function 0)", addr);
+            if (virHashAddEntry(addrs->used, addr, addr))
+                goto cleanup;
+            addr = NULL;
+        }
+    }
+    ret = 0;
+cleanup:
+    VIR_FREE(addr);
+    return ret;
 }
 
 
@@ -1376,7 +1419,13 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
             if (info->addr.pci.function != 0) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                 _("Only PCI device addresses with function=0 "
-                                  "are supported"));
+                                  "are supported with this QEMU binary"));
+                return -1;
+            }
+            if (info->addr.pci.multi == VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_ON) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                _("'multifunction=on' is not supported with "
+                                  "this QEMU binary"));
                 return -1;
             }
         }
@@ -1391,11 +1440,13 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
             virBufferAsprintf(buf, ",bus=pci.0");
         else
             virBufferAsprintf(buf, ",bus=pci");
-        if (qemuCapsGet(qemuCaps, QEMU_CAPS_PCI_MULTIFUNCTION))
-            virBufferAsprintf(buf, ",multifunction=on,addr=0x%x.0x%x",
-                              info->addr.pci.slot, info->addr.pci.function);
-        else
-            virBufferAsprintf(buf, ",addr=0x%x", info->addr.pci.slot);
+        if (info->addr.pci.multi == VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_ON)
+            virBufferAddLit(buf, ",multifunction=on");
+        else if (info->addr.pci.multi == VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_OFF)
+            virBufferAddLit(buf, ",multifunction=off");
+        virBufferAsprintf(buf, ",addr=0x%x", info->addr.pci.slot);
+        if (info->addr.pci.function != 0)
+           virBufferAsprintf(buf, ".0x%x", info->addr.pci.function);
     } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
         virBufferAsprintf(buf, ",bus=");
         qemuUsbId(buf, info->addr.usb.bus);

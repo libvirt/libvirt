@@ -1,1 +1,6 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults -chardev socket,id=charmonitor,path=/tmp/test-monitor,server,nowait -mon chardev=charmonitor,id=monitor,mode=readline -no-acpi -boot c -device ich9-usb-ehci1,id=usb,bus=pci.0,multifunction=on,addr=0x4.0x7 -device virtio-balloon-pci,id=balloon0,bus=pci.0,multifunction=on,addr=0x3.0x0
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S \
+-M pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/test-monitor,server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline -no-acpi -boot c \
+-device ich9-usb-ehci1,id=usb,bus=pci.0,addr=0x4.0x7 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

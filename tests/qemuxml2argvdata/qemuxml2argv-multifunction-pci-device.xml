@@ -20,13 +20,13 @@
       <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
     <controller type='scsi' index='0'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0' multifunction='off'/>
     </controller>
     <controller type='scsi' index='1'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0' multifunction='on'/>
     </controller>
     <controller type='scsi' index='2'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x1'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x1' multifunction='on'/>
     </controller>
     <controller type='scsi' index='3'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x2'/>

@@ -2118,6 +2118,14 @@
     <attribute name="function">
       <ref name="pciFunc"/>
     </attribute>
+    <optional>
+      <attribute name="multifunction">
+        <choice>
+          <value>on</value>
+          <value>off</value>
+        </choice>
+      </attribute>
+    </optional>
   </define>
   <define name="driveaddress">
     <optional>

@@ -19,7 +19,7 @@
     </controller>
     <controller type='usb' index='0' model='ich9-uhci1'>
       <master startport='0'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0' multifunction='on'/>
     </controller>
     <controller type='usb' index='0' model='ich9-uhci2'>
       <master startport='2'/>
