@@ -13161,6 +13161,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
                               information needed, 1 for parent column */
     int numsnaps;
     char **names = NULL;
+    char **parents = NULL;
     int actual = 0;
     int i;
     xmlDocPtr xml = NULL;
@@ -13176,6 +13177,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     bool tree = vshCommandOptBool(cmd, "tree");
     const char *from = NULL;
     virDomainSnapshotPtr start = NULL;
+    bool descendants = false;
 
     if (vshCommandOptString(cmd, "from", &from) < 0) {
         vshError(ctl, _("invalid from argument '%s'"), from);
@@ -13219,27 +13221,29 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (from) {
+        descendants = vshCommandOptBool(cmd, "descendants");
         start = virDomainSnapshotLookupByName(dom, from, 0);
         if (!start)
             goto cleanup;
-        if (vshCommandOptBool(cmd, "descendants") || tree) {
+        if (descendants || tree) {
             flags |= VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
         }
         numsnaps = ctl->useSnapshotOld ? -1 :
             virDomainSnapshotNumChildren(start, flags);
-        /* XXX Is it worth emulating --from without --tree on older servers?  */
-        if (tree) {
-            if (numsnaps >= 0) {
-                numsnaps++;
-            } else if (ctl->useSnapshotOld ||
-                       last_error->code == VIR_ERR_NO_SUPPORT) {
-                /* We can emulate --tree --from.  */
+        if (numsnaps < 0) {
+            /* XXX also want to emulate --descendants without --tree */
+            if ((!descendants || tree) &&
+                (ctl->useSnapshotOld ||
+                 last_error->code == VIR_ERR_NO_SUPPORT)) {
+                /* We can emulate --from.  */
                 virFreeError(last_error);
                 last_error = NULL;
                 ctl->useSnapshotOld = true;
                 flags &= ~VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
                 numsnaps = virDomainSnapshotNum(dom, flags);
             }
+        } else if (tree) {
+            numsnaps++;
         }
     } else {
         numsnaps = virDomainSnapshotNum(dom, flags);
@@ -13305,9 +13309,8 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
 
     qsort(&names[0], actual, sizeof(char*), namesorter);
 
-    if (tree) {
-        char indentBuf[INDENT_BUFLEN];
-        char **parents = vshCalloc(ctl, sizeof(char *), actual);
+    if (tree || ctl->useSnapshotOld) {
+        parents = vshCalloc(ctl, sizeof(char *), actual);
         for (i = (from && !ctl->useSnapshotOld); i < actual; i++) {
             /* free up memory from previous iterations of the loop */
             if (snapshot)
@@ -13321,6 +13324,9 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
                 goto cleanup;
             }
         }
+    }
+    if (tree) {
+        char indentBuf[INDENT_BUFLEN];
         for (i = 0 ; i < actual ; i++) {
             memset(indentBuf, '\0', sizeof indentBuf);
             if (ctl->useSnapshotOld ? STREQ(names[i], from) : !parents[i])
@@ -13334,14 +13340,19 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
                                         0,
                                         indentBuf);
         }
-        for (i = 0 ; i < actual ; i++)
-            VIR_FREE(parents[i]);
-        VIR_FREE(parents);
 
         ret = true;
         goto cleanup;
     } else {
+        if (ctl->useSnapshotOld && descendants) {
+            /* XXX emulate --descendants as well */
+            goto cleanup;
+        }
+
         for (i = 0; i < actual; i++) {
+            if (ctl->useSnapshotOld && STRNEQ_NULLABLE(parents[i], from))
+                continue;
+
             /* free up memory from previous iterations of the loop */
             VIR_FREE(parent);
             VIR_FREE(state);
@@ -13406,9 +13417,13 @@ cleanup:
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
     VIR_FREE(doc);
-    for (i = 0; i < actual; i++)
+    for (i = 0; i < actual; i++) {
         VIR_FREE(names[i]);
+        if (parents)
+            VIR_FREE(parents[i]);
+    }
     VIR_FREE(names);
+    VIR_FREE(parents);
     if (dom)
         virDomainFree(dom);
 
