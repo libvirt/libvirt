@@ -688,6 +688,11 @@ struct remote_domain_reboot_args {
     unsigned int flags;
 };
 
+struct remote_domain_reset_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
 struct remote_domain_destroy_args {
     remote_nonnull_domain dom;
 };
@@ -2519,7 +2524,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB = 241, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_GET_MAX_SPEED = 242, /* autogen autogen */
     REMOTE_PROC_DOMAIN_BLOCK_STATS_FLAGS = 243, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_SNAPSHOT_GET_PARENT = 244 /* autogen autogen */
+    REMOTE_PROC_DOMAIN_SNAPSHOT_GET_PARENT = 244, /* autogen autogen */
+    REMOTE_PROC_DOMAIN_RESET = 245 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

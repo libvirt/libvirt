@@ -400,6 +400,10 @@ struct remote_domain_reboot_args {
         remote_nonnull_domain      dom;
         u_int                      flags;
 };
+struct remote_domain_reset_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
 struct remote_domain_destroy_args {
         remote_nonnull_domain      dom;
 };
@@ -1966,4 +1970,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_MIGRATE_GET_MAX_SPEED = 242,
         REMOTE_PROC_DOMAIN_BLOCK_STATS_FLAGS = 243,
         REMOTE_PROC_DOMAIN_SNAPSHOT_GET_PARENT = 244,
+        REMOTE_PROC_DOMAIN_RESET = 245,
 };
