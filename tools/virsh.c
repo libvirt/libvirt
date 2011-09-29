@@ -13177,6 +13177,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     bool tree = vshCommandOptBool(cmd, "tree");
     const char *from = NULL;
     virDomainSnapshotPtr start = NULL;
+    int start_index = -1;
     bool descendants = false;
 
     if (vshCommandOptString(cmd, "from", &from) < 0) {
@@ -13231,10 +13232,8 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         numsnaps = ctl->useSnapshotOld ? -1 :
             virDomainSnapshotNumChildren(start, flags);
         if (numsnaps < 0) {
-            /* XXX also want to emulate --descendants without --tree */
-            if ((!descendants || tree) &&
-                (ctl->useSnapshotOld ||
-                 last_error->code == VIR_ERR_NO_SUPPORT)) {
+            if (ctl->useSnapshotOld ||
+                last_error->code == VIR_ERR_NO_SUPPORT) {
                 /* We can emulate --from.  */
                 virFreeError(last_error);
                 last_error = NULL;
@@ -13312,6 +13311,11 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     if (tree || ctl->useSnapshotOld) {
         parents = vshCalloc(ctl, sizeof(char *), actual);
         for (i = (from && !ctl->useSnapshotOld); i < actual; i++) {
+            if (ctl->useSnapshotOld && STREQ(names[i], from)) {
+                start_index = i;
+                continue;
+            }
+
             /* free up memory from previous iterations of the loop */
             if (snapshot)
                 virDomainSnapshotFree(snapshot);
@@ -13345,12 +13349,61 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     } else {
         if (ctl->useSnapshotOld && descendants) {
-            /* XXX emulate --descendants as well */
-            goto cleanup;
+            bool changed = false;
+
+            /* Make multiple passes over the list - first pass NULLs
+             * out all roots except start, remaining passes NULL out
+             * any entry whose parent is not still in list.  Also, we
+             * NULL out parent when name is known to be in list.
+             * Sorry, this is O(n^3) - hope your hierarchy isn't huge.  */
+            if (start_index < 0) {
+                vshError(ctl, _("snapshot %s disappeared from list"), from);
+                goto cleanup;
+            }
+            for (i = 0; i < actual; i++) {
+                if (i == start_index)
+                    continue;
+                if (!parents[i]) {
+                    VIR_FREE(names[i]);
+                } else if (STREQ(parents[i], from)) {
+                    VIR_FREE(parents[i]);
+                    changed = true;
+                }
+            }
+            if (!changed) {
+                ret = true;
+                goto cleanup;
+            }
+            while (changed) {
+                changed = false;
+                for (i = 0; i < actual; i++) {
+                    bool found = false;
+                    int j;
+
+                    if (!names[i] || !parents[i])
+                        continue;
+                    for (j = 0; j < actual; j++) {
+                        if (!names[j] || i == j)
+                            continue;
+                        if (STREQ(parents[i], names[j])) {
+                            found = true;
+                            if (!parents[j])
+                                VIR_FREE(parents[i]);
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        changed = true;
+                        VIR_FREE(names[i]);
+                    }
+                }
+            }
+            VIR_FREE(names[start_index]);
         }
 
         for (i = 0; i < actual; i++) {
-            if (ctl->useSnapshotOld && STRNEQ_NULLABLE(parents[i], from))
+            if (ctl->useSnapshotOld &&
+                (descendants ? !names[i] : STRNEQ_NULLABLE(parents[i], from)))
                 continue;
 
             /* free up memory from previous iterations of the loop */
