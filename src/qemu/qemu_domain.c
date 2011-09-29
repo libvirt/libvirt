@@ -696,9 +696,15 @@ qemuDomainObjDiscardAsyncJob(struct qemud_driver *driver, virDomainObjPtr obj)
 }
 
 static bool
-qemuDomainJobAllowed(qemuDomainObjPrivatePtr priv, enum qemuDomainJob job)
+qemuDomainNestedJobAllowed(qemuDomainObjPrivatePtr priv, enum qemuDomainJob job)
 {
     return !priv->job.asyncJob || (priv->job.mask & JOB_MASK(job)) != 0;
+}
+
+bool
+qemuDomainJobAllowed(qemuDomainObjPrivatePtr priv, enum qemuDomainJob job)
+{
+    return !priv->job.active && qemuDomainNestedJobAllowed(priv, job);
 }
 
 /* Give up waiting for mutex after 30 seconds */
@@ -736,7 +742,7 @@ retry:
         goto error;
     }
 
-    while (!nested && !qemuDomainJobAllowed(priv, job)) {
+    while (!nested && !qemuDomainNestedJobAllowed(priv, job)) {
         if (virCondWaitUntil(&priv->job.asyncCond, &obj->lock, then) < 0)
             goto error;
     }
@@ -748,7 +754,7 @@ retry:
 
     /* No job is active but a new async job could have been started while obj
      * was unlocked, so we need to recheck it. */
-    if (!nested && !qemuDomainJobAllowed(priv, job))
+    if (!nested && !qemuDomainNestedJobAllowed(priv, job))
         goto retry;
 
     qemuDomainObjResetJob(priv);

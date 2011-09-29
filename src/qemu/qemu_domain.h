@@ -277,4 +277,6 @@ void qemuDomainSetFakeReboot(struct qemud_driver *driver,
                              virDomainObjPtr vm,
                              bool value);
 
+bool qemuDomainJobAllowed(qemuDomainObjPrivatePtr priv,
+                          enum qemuDomainJob job);
 #endif /* __QEMU_DOMAIN_H__ */
