@@ -790,6 +790,14 @@ domain actually reboots.
 The exact behavior of a domain when it reboots is set by the
 I<on_reboot> parameter in the domain's XML definition.
 
+=item B<reset> I<domain-id>
+
+Reset a domain immediately without any guest shutdown. B<reset>
+emulates the power reset button on a machine, where all guest
+hardware sees the RST line set and reinitializes internal state.
+
+B<Note>: Reset without any guest OS shutdown risks data loss.
+
 =item B<restore> I<state-file> [I<--bypass-cache>] [I<--xml> B<file>]
 [{I<--running> | I<--paused>}]
 
