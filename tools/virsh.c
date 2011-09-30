@@ -12946,6 +12946,7 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
     char *xml = NULL;
     const char *snapshotname = NULL;
     unsigned int flags = 0;
+    const char *domname;
 
     if (vshCommandOptBool(cmd, "security-info"))
         flags |= VIR_DOMAIN_XML_SECURE;
@@ -12953,7 +12954,7 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
 
-    dom = vshCommandOptDomain(ctl, cmd, NULL);
+    dom = vshCommandOptDomain(ctl, cmd, &domname);
     if (dom == NULL)
         goto cleanup;
 
@@ -12987,9 +12988,12 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
     }
 
     current = virDomainHasCurrentSnapshot(dom, 0);
-    if (current < 0)
+    if (current < 0) {
         goto cleanup;
-    else if (current) {
+    } else if (!current) {
+        vshError(ctl, _("domain '%s' has no current snapshot"), domname);
+        goto cleanup;
+    } else {
         const char *name = NULL;
 
         if (!(snapshot = virDomainSnapshotCurrent(dom, 0)))
@@ -13011,6 +13015,8 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
 cleanup:
+    if (!ret)
+        virshReportError(ctl);
     VIR_FREE(xml);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
@@ -13021,26 +13027,33 @@ cleanup:
 }
 
 /* Helper function to get the name of a snapshot's parent.  Caller
- * must free the result.  */
-static char *
-vshGetSnapshotParent(vshControl *ctl, virDomainSnapshotPtr snapshot)
+ * must free the result.  Returns 0 on success (including when it was
+ * proven no parent exists), and -1 on failure with error reported
+ * (such as no snapshot support or domain deleted in meantime).  */
+static int
+vshGetSnapshotParent(vshControl *ctl, virDomainSnapshotPtr snapshot,
+                     char **parent_name)
 {
     virDomainSnapshotPtr parent = NULL;
     char *xml = NULL;
     xmlDocPtr xmldoc = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    char *parent_name = NULL;
+    int ret = -1;
+
+    *parent_name = NULL;
 
     /* Try new API, since it is faster. */
     if (!ctl->useSnapshotGetXML) {
         parent = virDomainSnapshotGetParent(snapshot, 0);
         if (parent) {
             /* API works, and virDomainSnapshotGetName will succeed */
-            parent_name = vshStrdup(ctl, virDomainSnapshotGetName(parent));
+            *parent_name = vshStrdup(ctl, virDomainSnapshotGetName(parent));
+            ret = 0;
             goto cleanup;
         }
         if (last_error->code == VIR_ERR_NO_DOMAIN_SNAPSHOT) {
             /* API works, and we found a root with no parent */
+            ret = 0;
             goto cleanup;
         }
         /* API didn't work, fall back to XML scraping. */
@@ -13055,15 +13068,23 @@ vshGetSnapshotParent(vshControl *ctl, virDomainSnapshotPtr snapshot)
     if (!xmldoc)
         goto cleanup;
 
-    parent_name = virXPathString("string(/domainsnapshot/parent/name)", ctxt);
+    *parent_name = virXPathString("string(/domainsnapshot/parent/name)", ctxt);
+    ret = 0;
 
 cleanup:
+    if (ret < 0) {
+        virshReportError(ctl);
+        vshError(ctl, "%s", _("unable to determine if snapshot has parent"));
+    } else {
+        virFreeError(last_error);
+        last_error = NULL;
+    }
     if (parent)
         virDomainSnapshotFree(parent);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xmldoc);
     VIR_FREE(xml);
-    return parent_name;
+    return ret;
 }
 
 /*
@@ -13188,13 +13209,13 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
             if (snapshot)
                 virDomainSnapshotFree(snapshot);
             snapshot = virDomainSnapshotLookupByName(dom, names[i], 0);
-            if (!snapshot) {
+            if (!snapshot ||
+                vshGetSnapshotParent(ctl, snapshot, &parents[i]) < 0) {
                 while (--i >= 0)
                     VIR_FREE(parents[i]);
                 VIR_FREE(parents);
                 goto cleanup;
             }
-            parents[i] = vshGetSnapshotParent(ctl, snapshot);
         }
         for (i = 0 ; i < actual ; i++) {
             memset(indentBuf, '\0', sizeof indentBuf);
@@ -13390,9 +13411,12 @@ cmdSnapshotParent(vshControl *ctl, const vshCmd *cmd)
     if (snapshot == NULL)
         goto cleanup;
 
-    parent = vshGetSnapshotParent(ctl, snapshot);
-    if (!parent)
+    if (vshGetSnapshotParent(ctl, snapshot, &parent) < 0)
         goto cleanup;
+    if (!parent) {
+        vshError(ctl, _("snapshot '%s' has no parent"), name);
+        goto cleanup;
+    }
 
     vshPrint(ctl, "%s", parent);
 
