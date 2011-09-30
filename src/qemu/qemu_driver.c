@@ -9654,7 +9654,8 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     virDomainDefPtr config = NULL;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
-                  VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED, -1);
+                  VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED |
+                  VIR_DOMAIN_SNAPSHOT_REVERT_FORCE, -1);
 
     /* We have the following transitions, which create the following events:
      * 1. inactive -> inactive: none
@@ -9666,7 +9667,8 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
      * 7. paused   -> inactive: EVENT_STOPPED
      * 8. paused   -> running:  EVENT_RESUMED
      * 9. paused   -> paused:   none
-     * Also, several transitions occur even if we fail partway through.
+     * Also, several transitions occur even if we fail partway through,
+     * and use of FORCE can cause multiple transitions.
      */
 
     qemuDriverLock(driver);
@@ -9702,6 +9704,24 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                           "yet"));
         goto cleanup;
     }
+    if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_FORCE)) {
+        if (!snap->def->dom) {
+            qemuReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY,
+                            _("snapshot '%s' lacks domain '%s' rollback info"),
+                            snap->def->name, vm->def->name);
+            goto cleanup;
+        }
+        if (virDomainObjIsActive(vm) &&
+            !(snap->def->state == VIR_DOMAIN_RUNNING
+              || snap->def->state == VIR_DOMAIN_PAUSED) &&
+            (flags & (VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
+                      VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED))) {
+            qemuReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY,
+                            _("must respawn qemu to start inactive snapshot"));
+            goto cleanup;
+        }
+    }
+
 
     if (vm->current_snapshot) {
         vm->current_snapshot->def->current = false;
@@ -9731,11 +9751,6 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         VIR_FREE(xml);
         if (!config)
             goto cleanup;
-    } else {
-        /* XXX Fail if VIR_DOMAIN_REVERT_FORCE is not set, rather than
-         * blindly hoping for the best.  */
-        VIR_WARN("snapshot is lacking rollback information for domain '%s'",
-                 snap->def->name);
     }
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
@@ -9756,10 +9771,26 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             /* Transitions 5, 6, 8, 9 */
             /* Check for ABI compatibility.  */
             if (config && !virDomainDefCheckABIStability(vm->def, config)) {
-                /* XXX Add VIR_DOMAIN_REVERT_FORCE to permit killing
-                 * and restarting a new qemu, since loadvm monitor
-                 * command won't work.  */
-                goto endjob;
+                virErrorPtr err = virGetLastError();
+
+                if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_FORCE)) {
+                    /* Re-spawn error using correct category. */
+                    if (err->code == VIR_ERR_CONFIG_UNSUPPORTED)
+                        qemuReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY, "%s",
+                                        err->str2);
+                    goto endjob;
+                }
+                virResetError(err);
+                qemuProcessStop(driver, vm, 0,
+                                VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT);
+                virDomainAuditStop(vm, "from-snapshot");
+                detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
+                event = virDomainEventNewFromObj(vm,
+                                                 VIR_DOMAIN_EVENT_STOPPED,
+                                                 detail);
+                if (event)
+                    qemuDomainEventQueue(driver, event);
+                goto load;
             }
 
             priv = vm->privateData;
@@ -9795,6 +9826,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 virDomainObjAssignDef(vm, config, false);
         } else {
             /* Transitions 2, 3 */
+        load:
             was_stopped = true;
             if (config)
                 virDomainObjAssignDef(vm, config, false);
