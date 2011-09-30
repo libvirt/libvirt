@@ -111,8 +111,6 @@ libvirtd_LDADD =					\
 	$(POLKIT_LIBS)
 
 libvirtd_LDADD += \
-	../src/libvirt-net-rpc-server.la \
-	../src/libvirt-net-rpc.la \
 	../src/libvirt-qemu.la
 
 if ! WITH_DRIVER_MODULES

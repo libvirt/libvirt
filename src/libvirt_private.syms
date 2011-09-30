@@ -1167,6 +1167,101 @@ virFileFclose;
 virFileFdopen;
 
 
+# virnetmessage.h
+virNetMessageClear;
+virNetMessageEncodeHeader;
+virNetMessageEncodePayload;
+virNetMessageFree;
+virNetMessageNew;
+virNetMessageQueuePush;
+virNetMessageQueueServe;
+virNetMessageSaveError;
+
+
+# virnetsaslcontext.h
+virNetSASLContextCheckIdentity;
+virNetSASLContextNewServer;
+virNetSASLSessionExtKeySize;
+virNetSASLSessionFree;
+virNetSASLSessionGetIdentity;
+virNetSASLSessionGetKeySize;
+virNetSASLSessionListMechanisms;
+virNetSASLSessionNewServer;
+virNetSASLSessionSecProps;
+virNetSASLSessionServerStart;
+virNetSASLSessionServerStep;
+
+
+# virnetserver.h
+virNetServerAddProgram;
+virNetServerAddService;
+virNetServerAddSignalHandler;
+virNetServerAutoShutdown;
+virNetServerClose;
+virNetServerFree;
+virNetServerIsPrivileged;
+virNetServerNew;
+virNetServerQuit;
+virNetServerRef;
+virNetServerRun;
+virNetServerServiceFree;
+virNetServerServiceNewTCP;
+virNetServerServiceNewUNIX;
+virNetServerUpdateServices;
+
+
+# virnetserverclient.h
+virNetServerClientAddFilter;
+virNetServerClientClose;
+virNetServerClientDelayedClose;
+virNetServerClientFree;
+virNetServerClientGetAuth;
+virNetServerClientGetFD;
+virNetServerClientGetLocalIdentity;
+virNetServerClientGetPrivateData;
+virNetServerClientGetReadonly;
+virNetServerClientGetTLSKeySize;
+virNetServerClientHasTLSSession;
+virNetServerClientImmediateClose;
+virNetServerClientIsSecure;
+virNetServerClientLocalAddrString;
+virNetServerClientRef;
+virNetServerClientRemoteAddrString;
+virNetServerClientRemoveFilter;
+virNetServerClientSendMessage;
+virNetServerClientSetCloseHook;
+virNetServerClientSetIdentity;
+virNetServerClientSetPrivateData;
+virNetServerClientSetSASLSession;
+
+
+# virnetserverprogram.h
+virNetServerProgramFree;
+virNetServerProgramGetID;
+virNetServerProgramGetVersion;
+virNetServerProgramMatches;
+virNetServerProgramNew;
+virNetServerProgramRef;
+virNetServerProgramSendReplyError;
+virNetServerProgramSendStreamData;
+virNetServerProgramSendStreamError;
+
+
+# virnetsocket.h
+virNetSocketDupFD;
+virNetSocketFree;
+virNetSocketGetFD;
+virNetSocketListen;
+virNetSocketNewConnectTCP;
+virNetSocketNewListenUNIX;
+
+
+# virnettlscontext.h
+virNetTLSContextFree;
+virNetTLSContextNewServer;
+virNetTLSContextNewServerPath;
+
+
 # virpidfile.h
 virPidFileAcquire;
 virPidFileAcquirePath;

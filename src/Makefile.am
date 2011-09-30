@@ -610,7 +610,10 @@ libvirt_driver_remote_la_CFLAGS =				\
 		-I@top_srcdir@/src/rpc				\
 		$(AM_CFLAGS)
 libvirt_driver_remote_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_remote_la_LIBADD = $(GNUTLS_LIBS) libvirt-net-rpc-client.la libvirt-net-rpc.la
+libvirt_driver_remote_la_LIBADD = $(GNUTLS_LIBS) \
+                libvirt-net-rpc-client.la \
+                libvirt-net-rpc-server.la \
+                libvirt-net-rpc.la
 if WITH_DRIVER_MODULES
 libvirt_driver_remote_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_remote_la_LDFLAGS += -module -avoid-version
