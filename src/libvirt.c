@@ -15969,7 +15969,10 @@ error:
  * Provides the number of domain snapshots for this domain.
  *
  * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_ROOTS, then the result is
- * filtered to the number of snapshots that have no parents.
+ * filtered to the number of snapshots that have no parents.  Likewise,
+ * if @flags includes VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, then the result is
+ * filtered to the number of snapshots that have no children.  Both flags
+ * can be used together to find unrelated snapshots.
  *
  * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_METADATA, then the result is
  * the number of snapshots that also include metadata that would prevent
@@ -16020,7 +16023,10 @@ error:
  * virDomainSnapshotNum() with the same @flags.
  *
  * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_ROOTS, then the result is
- * filtered to the number of snapshots that have no parents.
+ * filtered to the number of snapshots that have no parents.  Likewise,
+ * if @flags includes VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, then the result is
+ * filtered to the number of snapshots that have no children.  Both flags
+ * can be used together to find unrelated snapshots.
  *
  * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_METADATA, then the result is
  * the number of snapshots that also include metadata that would prevent
@@ -16077,6 +16083,9 @@ error:
  * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS, then the result
  * includes all descendants, otherwise it is limited to direct children.
  *
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, then the result is
+ * filtered to the number of snapshots that have no children.
+ *
  * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_METADATA, then the result is
  * the number of snapshots that also include metadata that would prevent
  * the removal of the last reference to a domain; this value will either
@@ -16128,6 +16137,9 @@ error:
  *
  * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS, then the result
  * includes all descendants, otherwise it is limited to direct children.
+ *
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, then the result is
+ * filtered to the number of snapshots that have no children.
  *
  * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_METADATA, then the result is
  * the number of snapshots that also include metadata that would prevent

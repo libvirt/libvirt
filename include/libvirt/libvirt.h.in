@@ -2701,6 +2701,8 @@ typedef enum {
                                                         listing a snapshot */
     VIR_DOMAIN_SNAPSHOT_LIST_METADATA    = (1 << 1), /* Filter by snapshots
                                                         which have metadata */
+    VIR_DOMAIN_SNAPSHOT_LIST_LEAVES      = (1 << 2), /* Filter by snapshots
+                                                        with no children */
 } virDomainSnapshotListFlags;
 
 /* Return the number of snapshots for this domain */

@@ -1980,7 +1980,8 @@ snapshots, such as internal snapshots within a single qcow2 file, are
 accessible only from the original name.
 
 =item B<snapshot-list> I<domain> [{I<--parent> | I<--roots> | I<--tree>}]
-[I<--metadata>] [{[I<--from>] B<snapshot> | I<--current>} [I<--descendants>]]
+[{[I<--from>] B<snapshot> | I<--current>} [I<--descendants>]]
+[I<--metadata>] [I<--leaves>]
 
 List all of the available snapshots for the given domain, defaulting
 to show columns for the snapshot name, creation time, and domain state.
@@ -1998,6 +1999,10 @@ I<--parent>, the list is limited to direct children unless
 I<--descendants> is also present.  When used with I<--tree>, the
 use of I<--descendants> is implied.  This option is not compatible
 with I<--roots>.
+
+If I<--leaves> is specified, the list will be filtered to just
+snapshots that have no children.  This option is not compatible
+with I<--tree>.
 
 If I<--metadata> is specified, the list will be filtered to just
 snapshots that involve libvirt metadata, and thus would prevent

@@ -13180,6 +13180,7 @@ static const vshCmdOptDef opts_snapshot_list[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"parent", VSH_OT_BOOL, 0, N_("add a column showing parent snapshot")},
     {"roots", VSH_OT_BOOL, 0, N_("list only snapshots without parents")},
+    {"leaves", VSH_OT_BOOL, 0, N_("list only snapshots without children")},
     {"metadata", VSH_OT_BOOL, 0,
      N_("list only snapshots that have metadata that would prevent undefine")},
     {"tree", VSH_OT_BOOL, 0, N_("list snapshots in a tree")},
@@ -13214,6 +13215,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     char timestr[100];
     struct tm time_info;
     bool tree = vshCommandOptBool(cmd, "tree");
+    bool leaves = vshCommandOptBool(cmd, "leaves");
     const char *from = NULL;
     virDomainSnapshotPtr start = NULL;
     int start_index = -1;
@@ -13255,6 +13257,14 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         }
         flags |= VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
     }
+    if (leaves) {
+        if (tree) {
+            vshError(ctl, "%s",
+                     _("--leaves and --tree are mutually exclusive"));
+            return false;
+        }
+        flags |= VIR_DOMAIN_SNAPSHOT_LIST_LEAVES;
+    }
 
     if (vshCommandOptBool(cmd, "metadata")) {
         flags |= VIR_DOMAIN_SNAPSHOT_LIST_METADATA;
@@ -13271,6 +13281,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
             if (ctl->useSnapshotOld ||
                 last_error->code == VIR_ERR_NO_SUPPORT) {
                 /* We can emulate --from.  */
+                /* XXX can we also emulate --leaves? */
                 virFreeError(last_error);
                 last_error = NULL;
                 ctl->useSnapshotOld = true;
@@ -13284,6 +13295,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         numsnaps = virDomainSnapshotNum(dom, flags);
 
         /* Fall back to simulation if --roots was unsupported. */
+        /* XXX can we also emulate --leaves? */
         if (numsnaps < 0 && last_error->code == VIR_ERR_INVALID_ARG &&
             (flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS)) {
             virFreeError(last_error);
