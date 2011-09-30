@@ -25,6 +25,9 @@ AM_LDFLAGS = $(COVERAGE_LDFLAGS)
 EXTRA_DIST = $(conf_DATA) util/keymaps.csv
 
 BUILT_SOURCES =
+CLEANFILES =
+DISTCLEANFILES =
+MAINTAINERCLEANFILES =
 
 if WITH_NETWORK
 UUID=$(shell uuidgen 2>/dev/null)
@@ -1249,6 +1252,35 @@ libvirt_la_CFLAGS = -DIN_LIBVIRT $(AM_CFLAGS)
 # picked out for us.
 libvirt_la_DEPENDENCIES = $(libvirt_la_BUILT_LIBADD) $(LIBVIRT_SYMBOL_FILE)
 
+if WITH_DTRACE
+libvirt_la_LIBADD += probes.o
+nodist_libvirt_la_SOURCES = probes.h
+
+BUILT_SOURCES += probes.h libvirt_probes.stp libvirt_functions.stp
+
+tapsetdir = $(datadir)/systemtap/tapset
+tapset_DATA = libvirt_probes.stp libvirt_functions.stp
+
+probes.h: probes.d
+	$(AM_V_GEN)$(DTRACE) -o $@ -h -s $<
+
+probes.o: probes.d
+	$(AM_V_GEN)$(DTRACE) -o $@ -G -s $<
+
+RPC_PROBE_FILES = $(srcdir)/rpc/virnetprotocol.x $(srcdir)/remote/remote_protocol.x $(srcdir)/remote/qemu_protocol.x
+
+libvirt_functions.stp: $(RPC_PROBE_FILES) $(srcdir)/rpc/gensystemtap.pl
+	$(AM_V_GEN)perl -w $(srcdir)/rpc/gensystemtap.pl $(RPC_PROBE_FILES) > $@
+
+libvirt_probes.stp: probes.d $(srcdir)/dtrace2systemtap.pl
+	$(AM_V_GEN)perl -w $(srcdir)/dtrace2systemtap.pl $< > $@
+
+CLEANFILES += probes.h probes.o libvirt_functions.stp libvirt_probes.stp
+endif
+
+EXTRA_DIST += probes.d
+
+
 # Create an automake "convenience library" version of libvirt_la,
 # just for testing, since the test harness requires access to internal
 # bits and pieces that we don't want to make publicly accessible.
@@ -1432,6 +1464,9 @@ libvirt_lxc_LDADD = $(CAPNG_LIBS) $(YAJL_LIBS) \
 		$(LIBXML_LIBS) $(NUMACTL_LIBS) $(LIB_PTHREAD) \
 		$(LIBNL_LIBS) $(AUDIT_LIBS) $(DEVMAPPER_LIBS) \
 		../gnulib/lib/libgnu.la
+if WITH_DTRACE
+libvirt_lxc_LDADD += probes.o
+endif
 libvirt_lxc_CFLAGS =				\
 		$(LIBPARTED_CFLAGS)		\
 		$(NUMACTL_CFLAGS)		\
@@ -1545,6 +1580,6 @@ if WITH_NETWORK
 endif
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt" ||:
 
-CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
-DISTCLEANFILES = $(GENERATED_SYM_FILES)
-MAINTAINERCLEANFILES = $(REMOTE_DRIVER_GENERATED) $(VIR_NET_RPC_GENERATED) $(ESX_DRIVER_GENERATED)
+CLEANFILES += *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
+DISTCLEANFILES += $(GENERATED_SYM_FILES)
+MAINTAINERCLEANFILES += $(REMOTE_DRIVER_GENERATED) $(VIR_NET_RPC_GENERATED) $(ESX_DRIVER_GENERATED)

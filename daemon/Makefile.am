@@ -48,7 +48,6 @@ EXTRA_DIST =						\
 	THREADS.txt					\
 	libvirtd.pod.in					\
 	libvirtd.8.in					\
-	libvirtd.stp					\
 	$(DAEMON_SOURCES)
 
 BUILT_SOURCES =
@@ -110,6 +109,10 @@ libvirtd_LDADD =					\
 	$(SASL_LIBS)					\
 	$(POLKIT_LIBS)
 
+if WITH_DTRACE
+libvirtd_LDADD += ../src/probes.o
+endif
+
 libvirtd_LDADD += \
 	../src/libvirt-qemu.la
 
@@ -165,24 +168,6 @@ else
 policydir = $(datadir)/polkit-1/actions
 policyfile = libvirtd.policy-1
 endif
-endif
-
-if WITH_DTRACE
-libvirtd_LDADD += probes.o
-nodist_libvirtd_SOURCES = probes.h
-
-BUILT_SOURCES += probes.h
-
-tapsetdir = $(datadir)/systemtap/tapset
-tapset_DATA = libvirtd.stp
-
-probes.h: probes.d
-	$(AM_V_GEN)$(DTRACE) -o $@ -h -s $<
-
-probes.o: probes.d
-	$(AM_V_GEN)$(DTRACE) -o $@ -G -s $<
-
-CLEANFILES += probes.h probes.o
 endif
 
 install-data-local: install-init install-data-sasl install-data-polkit \
@@ -298,9 +283,6 @@ else # WITH_LIBVIRTD
 install-data-local: install-data-sasl
 uninstall-local:: uninstall-data-sasl
 endif # WITH_LIBVIRTD
-
-# This is needed for 'make dist' too, so can't wrap in WITH_LIBVIRTD.
-EXTRA_DIST += probes.d libvirtd.stp
 
 POD2MAN = pod2man -c "Virtualization Support" \
 			-r "$(PACKAGE)-$(VERSION)" -s 8

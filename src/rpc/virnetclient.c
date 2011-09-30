@@ -157,7 +157,10 @@ static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
         VIR_DEBUG("Failed to add event watch, disabling events");
     }
 
-    VIR_DEBUG("client=%p refs=%d", client, client->refs);
+    PROBE(RPC_CLIENT_NEW,
+          "client=%p refs=%d sock=%p",
+          client, client->refs, client->sock);
+
     return client;
 
 no_memory:
@@ -228,7 +231,9 @@ void virNetClientRef(virNetClientPtr client)
 {
     virNetClientLock(client);
     client->refs++;
-    VIR_DEBUG("client=%p refs=%d", client, client->refs);
+    PROBE(RPC_CLIENT_REF,
+          "client=%p refs=%d",
+          client, client->refs);
     virNetClientUnlock(client);
 }
 
@@ -261,7 +266,9 @@ void virNetClientFree(virNetClientPtr client)
         return;
 
     virNetClientLock(client);
-    VIR_DEBUG("client=%p refs=%d", client, client->refs);
+    PROBE(RPC_CLIENT_FREE,
+          "client=%p refs=%d",
+          client, client->refs);
     client->refs--;
     if (client->refs > 0) {
         virNetClientUnlock(client);
@@ -680,10 +687,11 @@ virNetClientCallDispatch(virNetClientPtr client)
     if (virNetMessageDecodeHeader(&client->msg) < 0)
         return -1;
 
-    VIR_DEBUG("Incoming message prog %d vers %d proc %d type %d status %d serial %d",
-              client->msg.header.prog, client->msg.header.vers,
-              client->msg.header.proc, client->msg.header.type,
-              client->msg.header.status, client->msg.header.serial);
+    PROBE(RPC_CLIENT_MSG_RX,
+          "client=%p len=%zu prog=%u vers=%u proc=%u type=%u status=%u serial=%u",
+          client, client->msg.bufferLength,
+          client->msg.header.prog, client->msg.header.vers, client->msg.header.proc,
+          client->msg.header.type, client->msg.header.status, client->msg.header.serial);
 
     switch (client->msg.header.type) {
     case VIR_NET_REPLY: /* Normal RPC replies */
@@ -1196,6 +1204,12 @@ int virNetClientSend(virNetClientPtr client,
 {
     virNetClientCallPtr call;
     int ret = -1;
+
+    PROBE(RPC_CLIENT_MSG_TX_QUEUE,
+          "client=%p len=%zu prog=%u vers=%u proc=%u type=%u status=%u serial=%u",
+          client, msg->bufferLength,
+          msg->header.prog, msg->header.vers, msg->header.proc,
+          msg->header.type, msg->header.status, msg->header.serial);
 
     if (expectReply &&
         (msg->bufferLength != 0) &&

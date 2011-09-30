@@ -1933,8 +1933,9 @@ authfail:
     virNetError(VIR_ERR_AUTH_FAILED, "%s",
                 _("authentication failed"));
     virNetMessageSaveError(rerr);
-    PROBE(CLIENT_AUTH_FAIL, "fd=%d, auth=%d",
-          virNetServerClientGetFD(client), REMOTE_AUTH_SASL);
+    PROBE(RPC_SERVER_CLIENT_AUTH_FAIL,
+          "client=%p auth=%d",
+          client, REMOTE_AUTH_SASL);
     virNetSASLSessionFree(sasl);
     virMutexUnlock(&priv->lock);
     return -1;
@@ -1976,8 +1977,9 @@ remoteSASLFinish(virNetServerClientPtr client)
     VIR_DEBUG("Authentication successful %d", virNetServerClientGetFD(client));
 
     identity = virNetSASLSessionGetIdentity(priv->sasl);
-    PROBE(CLIENT_AUTH_ALLOW, "fd=%d, auth=%d, username=%s",
-          virNetServerClientGetFD(client), REMOTE_AUTH_SASL, identity);
+    PROBE(RPC_SERVER_CLIENT_AUTH_ALLOW,
+          "client=%p auth=%d identity=%s",
+          client, REMOTE_AUTH_SASL, identity);
 
     virNetSASLSessionFree(priv->sasl);
     priv->sasl = NULL;
@@ -2064,14 +2066,16 @@ remoteDispatchAuthSaslStart(virNetServerPtr server ATTRIBUTE_UNUSED,
     return 0;
 
 authfail:
-    PROBE(CLIENT_AUTH_FAIL, "fd=%d, auth=%d",
-          virNetServerClientGetFD(client), REMOTE_AUTH_SASL);
+    PROBE(RPC_SERVER_CLIENT_AUTH_FAIL,
+          "client=%p auth=%d",
+          client, REMOTE_AUTH_SASL);
     goto error;
 
 authdeny:
     identity = virNetSASLSessionGetIdentity(priv->sasl);
-    PROBE(CLIENT_AUTH_DENY, "fd=%d, auth=%d, username=%s",
-          virNetServerClientGetFD(client), REMOTE_AUTH_SASL, identity);
+    PROBE(RPC_SERVER_CLIENT_AUTH_DENY,
+          "client=%p auth=%d identity=%s",
+          client, REMOTE_AUTH_SASL, identity);
     goto error;
 
 error:
@@ -2160,14 +2164,16 @@ remoteDispatchAuthSaslStep(virNetServerPtr server ATTRIBUTE_UNUSED,
     return 0;
 
 authfail:
-    PROBE(CLIENT_AUTH_FAIL, "fd=%d, auth=%d",
-          virNetServerClientGetFD(client), REMOTE_AUTH_SASL);
+    PROBE(RPC_SERVER_CLIENT_AUTH_FAIL,
+          "client=%p auth=%d",
+          client, REMOTE_AUTH_SASL);
     goto error;
 
 authdeny:
     identity = virNetSASLSessionGetIdentity(priv->sasl);
-    PROBE(CLIENT_AUTH_DENY, "fd=%d, auth=%d, username=%s",
-          virNetServerClientGetFD(client), REMOTE_AUTH_SASL, identity);
+    PROBE(RPC_SERVER_CLIENT_AUTH_DENY,
+          "client=%p auth=%d identity=%s",
+          client, REMOTE_AUTH_SASL, identity);
     goto error;
 
 error:
@@ -2295,8 +2301,9 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
         VIR_FREE(tmp);
         goto authdeny;
     }
-    PROBE(CLIENT_AUTH_ALLOW, "fd=%d, auth=%d, username=%s",
-          virNetServerClientGetFD(client), REMOTE_AUTH_POLKIT, ident);
+    PROBE(RPC_SERVER_CLIENT_AUTH_ALLOW,
+          "client=%p auth=%d identity=%s",
+          client, REMOTE_AUTH_POLKIT, ident);
     VIR_INFO("Policy allowed action %s from pid %d, uid %d",
              action, callerPid, callerUid);
     ret->complete = 1;
@@ -2315,13 +2322,15 @@ error:
     return -1;
 
 authfail:
-    PROBE(CLIENT_AUTH_FAIL, "fd=%d, auth=%d",
-          virNetServerClientGetFD(client), REMOTE_AUTH_POLKIT);
+    PROBE(RPC_SERVER_CLIENT_AUTH_FAIL,
+          "client=%p auth=%d",
+          client, REMOTE_AUTH_POLKIT);
     goto error;
 
 authdeny:
-    PROBE(CLIENT_AUTH_DENY, "fd=%d, auth=%d, username=%s",
-          virNetServerClientGetFD(client), REMOTE_AUTH_POLKIT, (char *)ident);
+    PROBE(RPC_SERVER_CLIENT_AUTH_DENY,
+          "client=%p auth=%d identity=%s",
+          client, REMOTE_AUTH_POLKIT, (char *)ident);
     goto error;
 }
 #elif HAVE_POLKIT0
@@ -2429,8 +2438,9 @@ remoteDispatchAuthPolkit(virNetServerPtr server,
                   polkit_result_to_string_representation(pkresult));
         goto authdeny;
     }
-    PROBE(CLIENT_AUTH_ALLOW, "fd=%d, auth=%d, username=%s",
-          virNetServerClientGetFD(client), REMOTE_AUTH_POLKIT, ident);
+    PROBE(RPC_SERVER_CLIENT_AUTH_ALLOW,
+          "client=%p auth=%d identity=%s",
+          client, REMOTE_AUTH_POLKIT, ident);
     VIR_INFO("Policy allowed action %s from pid %d, uid %d, result %s",
              action, callerPid, callerUid,
              polkit_result_to_string_representation(pkresult));
@@ -2449,13 +2459,15 @@ error:
     return -1;
 
 authfail:
-    PROBE(CLIENT_AUTH_FAIL, "fd=%d, auth=%d",
-          virNetServerClientGetFD(client), REMOTE_AUTH_POLKIT);
+    PROBE(RPC_SERVER_CLIENT_AUTH_FAIL,
+          "client=%p auth=%d",
+          client, REMOTE_AUTH_POLKIT);
     goto error;
 
 authdeny:
-    PROBE(CLIENT_AUTH_DENY, "fd=%d, auth=%d, username=%s",
-          virNetServerClientGetFD(client), REMOTE_AUTH_POLKIT, ident);
+    PROBE(RPC_SERVER_CLIENT_AUTH_DENY,
+          "client=%p auth=%d identity=%s",
+          client, REMOTE_AUTH_POLKIT, ident);
     goto error;
 }
 

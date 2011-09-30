@@ -16,3 +16,7 @@ libvirt_qemu.def
 *.s
 remote_protocol-structs-t
 virt-aa-helper
+libvirt_functions.stp
+libvirt_probes.stp
+probes.o
+probes.h

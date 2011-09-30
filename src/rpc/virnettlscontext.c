@@ -650,9 +650,6 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
     char *gnutlsdebug;
     int err;
 
-    VIR_DEBUG("cacert=%s cacrl=%s cert=%s key=%s sanityCheckCert=%d requireValid=%d isServer=%d",
-              cacert, NULLSTR(cacrl), cert, key, sanityCheckCert, requireValidCert, isServer);
-
     if (VIR_ALLOC(ctxt) < 0) {
         virReportOOMError();
         return NULL;
@@ -720,6 +717,10 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
     ctxt->requireValidCert = requireValidCert;
     ctxt->x509dnWhitelist = x509dnWhitelist;
     ctxt->isServer = isServer;
+
+    PROBE(RPC_TLS_CONTEXT_NEW,
+          "ctxt=%p refs=%d cacert=%s cacrl=%s cert=%s key=%s sanityCheckCert=%d requireValidCert=%d isServer=%d",
+          ctxt, ctxt->refs, cacert, NULLSTR(cacrl), cert, key, sanityCheckCert, requireValidCert, isServer);
 
     return ctxt;
 
@@ -933,6 +934,9 @@ void virNetTLSContextRef(virNetTLSContextPtr ctxt)
 {
     virMutexLock(&ctxt->lock);
     ctxt->refs++;
+    PROBE(RPC_TLS_CONTEXT_REF,
+          "ctxt=%p refs=%d",
+          ctxt, ctxt->refs);
     virMutexUnlock(&ctxt->lock);
 }
 
@@ -1056,24 +1060,24 @@ static int virNetTLSContextValidCertificate(virNetTLSContextPtr ctxt,
         gnutls_x509_crt_deinit(cert);
     }
 
-#if 0
-    PROBE(CLIENT_TLS_ALLOW, "fd=%d, name=%s",
-          virNetServerClientGetFD(client), name);
-#endif
+    PROBE(RPC_TLS_CONTEXT_SESSION_ALLOW,
+          "ctxt=%p sess=%p dname=%s",
+          ctxt, sess, dname);
+
     return 0;
 
 authdeny:
-#if 0
-    PROBE(CLIENT_TLS_DENY, "fd=%d, name=%s",
-          virNetServerClientGetFD(client), name);
-#endif
+    PROBE(RPC_TLS_CONTEXT_SESSION_DENY,
+          "ctxt=%p sess=%p dname=%s",
+          ctxt, sess, dname);
+
     return -1;
 
 authfail:
-#if 0
-    PROBE(CLIENT_TLS_FAIL, "fd=%d",
-          virNetServerClientGetFD(client));
-#endif
+    PROBE(RPC_TLS_CONTEXT_SESSION_FAIL,
+          "ctxt=%p sess=%p",
+          ctxt, sess);
+
     return -1;
 }
 
@@ -1111,6 +1115,9 @@ void virNetTLSContextFree(virNetTLSContextPtr ctxt)
         return;
 
     virMutexLock(&ctxt->lock);
+    PROBE(RPC_TLS_CONTEXT_FREE,
+          "ctxt=%p refs=%d",
+          ctxt, ctxt->refs);
     ctxt->refs--;
     if (ctxt->refs > 0) {
         virMutexUnlock(&ctxt->lock);
@@ -1225,6 +1232,10 @@ virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
 
     sess->isServer = ctxt->isServer;
 
+    PROBE(RPC_TLS_SESSION_NEW,
+          "sess=%p refs=%d ctxt=%p hostname=%s isServer=%d",
+          sess, sess->refs, ctxt, hostname, sess->isServer);
+
     return sess;
 
 error:
@@ -1237,6 +1248,9 @@ void virNetTLSSessionRef(virNetTLSSessionPtr sess)
 {
     virMutexLock(&sess->lock);
     sess->refs++;
+    PROBE(RPC_TLS_SESSION_REF,
+          "sess=%p refs=%d",
+          sess, sess->refs);
     virMutexUnlock(&sess->lock);
 }
 
@@ -1388,6 +1402,9 @@ void virNetTLSSessionFree(virNetTLSSessionPtr sess)
         return;
 
     virMutexLock(&sess->lock);
+    PROBE(RPC_TLS_SESSION_FREE,
+          "sess=%p refs=%d",
+          sess, sess->refs);
     sess->refs--;
     if (sess->refs > 0) {
         virMutexUnlock(&sess->lock);

@@ -170,8 +170,10 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
 
     sock->client = isClient;
 
-    VIR_DEBUG("sock=%p localAddrStr=%s remoteAddrStr=%s",
-              sock, NULLSTR(sock->localAddrStr), NULLSTR(sock->remoteAddrStr));
+    PROBE(RPC_SOCKET_NEW,
+          "sock=%p refs=%d fd=%d errfd=%d pid=%d localAddr=%s, remoteAddr=%s",
+          sock, sock->refs, fd, errfd,
+          pid, NULLSTR(sock->localAddrStr), NULLSTR(sock->remoteAddrStr));
 
     return sock;
 
@@ -659,6 +661,9 @@ void virNetSocketRef(virNetSocketPtr sock)
 {
     virMutexLock(&sock->lock);
     sock->refs++;
+    PROBE(RPC_SOCKET_REF,
+          "sock=%p refs=%d",
+          sock, sock->refs);
     virMutexUnlock(&sock->lock);
 }
 
@@ -669,6 +674,10 @@ void virNetSocketFree(virNetSocketPtr sock)
         return;
 
     virMutexLock(&sock->lock);
+    PROBE(RPC_SOCKET_FREE,
+          "sock=%p refs=%d",
+          sock, sock->refs);
+
     sock->refs--;
     if (sock->refs > 0) {
         virMutexUnlock(&sock->lock);
