@@ -3004,7 +3004,7 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
     unsigned int screen = 0;
     unsigned int flags = 0; /* currently unused */
     int ret = false;
-    bool created = true;
+    bool created = false;
     bool generated = false;
     char *mime = NULL;
 
@@ -3039,12 +3039,13 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
     }
 
     if ((fd = open(file, O_WRONLY|O_CREAT|O_EXCL, 0666)) < 0) {
-        created = false;
         if (errno != EEXIST ||
             (fd = open(file, O_WRONLY|O_TRUNC, 0666)) < 0) {
             vshError(ctl, _("cannot create file %s"), file);
             goto cleanup;
         }
+    } else {
+        created = true;
     }
 
     if (virStreamRecvAll(st, vshStreamSink, &fd) < 0) {
