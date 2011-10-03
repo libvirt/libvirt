@@ -1166,6 +1166,14 @@ static int lxcSetupInterfaces(virConnectPtr conn,
         if (vethInterfaceUpOrDown(parentVeth, 1) < 0)
             goto error_exit;
 
+        if (virBandwidthEnable(virDomainNetGetActualBandwidth(def->nets[i]),
+                               def->nets[i]->ifname) < 0) {
+            lxcError(VIR_ERR_INTERNAL_ERROR,
+                     _("cannot set bandwidth limits on %s"),
+                     def->nets[i]->ifname);
+            goto error_exit;
+        }
+
         if (def->nets[i]->filter &&
             virDomainConfNWFilterInstantiate(conn, def->nets[i]) < 0)
             goto error_exit;
