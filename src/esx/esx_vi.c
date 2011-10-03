@@ -2243,7 +2243,7 @@ esxVI_GetSnapshotTreeByName
     esxVI_VirtualMachineSnapshotTree *candidate;
 
     if (snapshotTree == NULL || *snapshotTree != NULL ||
-        snapshotTreeParent == NULL || *snapshotTreeParent != NULL) {
+        (snapshotTreeParent && *snapshotTreeParent != NULL)) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
@@ -2252,14 +2252,15 @@ esxVI_GetSnapshotTreeByName
          candidate = candidate->_next) {
         if (STREQ(candidate->name, name)) {
             *snapshotTree = candidate;
-            *snapshotTreeParent = NULL;
+            if (snapshotTreeParent)
+                *snapshotTreeParent = NULL;
             return 1;
         }
 
         if (esxVI_GetSnapshotTreeByName(candidate->childSnapshotList, name,
                                         snapshotTree, snapshotTreeParent,
                                         occurrence) > 0) {
-            if (*snapshotTreeParent == NULL) {
+            if (snapshotTreeParent && *snapshotTreeParent == NULL) {
                 *snapshotTreeParent = candidate;
             }
 
