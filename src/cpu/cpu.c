@@ -28,6 +28,7 @@
 #include "xml.h"
 #include "cpu.h"
 #include "cpu_x86.h"
+#include "cpu_powerpc.h"
 #include "cpu_generic.h"
 
 
@@ -36,6 +37,7 @@
 
 static struct cpuArchDriver *drivers[] = {
     &cpuDriverX86,
+    &cpuDriverPowerPC,
     /* generic driver must always be the last one */
     &cpuDriverGeneric
 };

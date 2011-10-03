@@ -535,7 +535,8 @@ CPU_SOURCES =							\
 		cpu/cpu.h cpu/cpu.c				\
 		cpu/cpu_generic.h cpu/cpu_generic.c		\
 		cpu/cpu_x86.h cpu/cpu_x86.c cpu/cpu_x86_data.h	\
-		cpu/cpu_map.h cpu/cpu_map.c
+		cpu/cpu_map.h cpu/cpu_map.c cpu/cpu_powerpc.h	\
+		cpu/cpu_powerpc.c
 
 VMX_SOURCES =							\
 		vmx/vmx.c vmx/vmx.h
