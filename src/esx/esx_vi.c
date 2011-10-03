@@ -2164,15 +2164,17 @@ esxVI_GetVirtualMachineIdentity(esxVI_ObjectContent *virtualMachine,
 
 int
 esxVI_GetNumberOfSnapshotTrees
-  (esxVI_VirtualMachineSnapshotTree *snapshotTreeList)
+  (esxVI_VirtualMachineSnapshotTree *snapshotTreeList, bool recurse)
 {
     int count = 0;
     esxVI_VirtualMachineSnapshotTree *snapshotTree;
 
     for (snapshotTree = snapshotTreeList; snapshotTree != NULL;
          snapshotTree = snapshotTree->_next) {
-        count += 1 + esxVI_GetNumberOfSnapshotTrees
-                       (snapshotTree->childSnapshotList);
+        count++;
+        if (recurse)
+            count += esxVI_GetNumberOfSnapshotTrees
+                (snapshotTree->childSnapshotList, true);
     }
 
     return count;
@@ -2182,7 +2184,7 @@ esxVI_GetNumberOfSnapshotTrees
 
 int
 esxVI_GetSnapshotTreeNames(esxVI_VirtualMachineSnapshotTree *snapshotTreeList,
-                           char **names, int nameslen)
+                           char **names, int nameslen, bool recurse)
 {
     int count = 0;
     int result;
@@ -2205,14 +2207,18 @@ esxVI_GetSnapshotTreeNames(esxVI_VirtualMachineSnapshotTree *snapshotTreeList,
             break;
         }
 
-        result = esxVI_GetSnapshotTreeNames(snapshotTree->childSnapshotList,
-                                            names + count, nameslen - count);
+        if (recurse) {
+            result = esxVI_GetSnapshotTreeNames(snapshotTree->childSnapshotList,
+                                                names + count,
+                                                nameslen - count,
+                                                true);
 
-        if (result < 0) {
-            goto failure;
+            if (result < 0) {
+                goto failure;
+            }
+
+            count += result;
         }
-
-        count += result;
     }
 
     return count;

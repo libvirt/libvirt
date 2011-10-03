@@ -4359,8 +4359,12 @@ esxDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
     int count;
     esxPrivate *priv = domain->conn->privateData;
     esxVI_VirtualMachineSnapshotTree *rootSnapshotTreeList = NULL;
+    bool recurse;
 
-    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+
+    recurse = (flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS) == 0;
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
@@ -4375,7 +4379,7 @@ esxDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
         return -1;
     }
 
-    count = esxVI_GetNumberOfSnapshotTrees(rootSnapshotTreeList);
+    count = esxVI_GetNumberOfSnapshotTrees(rootSnapshotTreeList, recurse);
 
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotTreeList);
 
@@ -4391,8 +4395,12 @@ esxDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
     int result;
     esxPrivate *priv = domain->conn->privateData;
     esxVI_VirtualMachineSnapshotTree *rootSnapshotTreeList = NULL;
+    bool recurse;
 
-    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+
+    recurse = (flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS) == 0;
 
     if (names == NULL || nameslen < 0) {
         ESX_ERROR(VIR_ERR_INVALID_ARG, "%s", _("Invalid argument"));
@@ -4412,7 +4420,8 @@ esxDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
         return -1;
     }
 
-    result = esxVI_GetSnapshotTreeNames(rootSnapshotTreeList, names, nameslen);
+    result = esxVI_GetSnapshotTreeNames(rootSnapshotTreeList, names, nameslen,
+                                        recurse);
 
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotTreeList);
 

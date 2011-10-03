@@ -2,6 +2,7 @@
 /*
  * esx_vi.h: client for the VMware VI API 2.5 to manage ESX hosts
  *
+ * Copyright (C) 2011 Red Hat, Inc.
  * Copyright (C) 2009-2010 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -357,11 +358,12 @@ int esxVI_GetVirtualMachineIdentity(esxVI_ObjectContent *virtualMachine,
                                     int *id, char **name, unsigned char *uuid);
 
 int esxVI_GetNumberOfSnapshotTrees
-      (esxVI_VirtualMachineSnapshotTree *snapshotTreeList);
+      (esxVI_VirtualMachineSnapshotTree *snapshotTreeList,
+       bool recurse);
 
 int esxVI_GetSnapshotTreeNames
       (esxVI_VirtualMachineSnapshotTree *snapshotTreeList, char **names,
-       int nameslen);
+       int nameslen, bool recurse);
 
 int esxVI_GetSnapshotTreeByName
       (esxVI_VirtualMachineSnapshotTree *snapshotTreeList, const char *name,
