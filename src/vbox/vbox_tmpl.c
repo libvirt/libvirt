@@ -5871,7 +5871,8 @@ vboxDomainSnapshotNum(virDomainPtr dom,
     nsresult rc;
     PRUint32 snapshotCount;
 
-    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
 
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
@@ -5895,7 +5896,11 @@ vboxDomainSnapshotNum(virDomainPtr dom,
         goto cleanup;
     }
 
-    ret = snapshotCount;
+    /* VBox has at most one root snapshot.  */
+    if (snapshotCount && (flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS))
+        ret = 1;
+    else
+        ret = snapshotCount;
 
 cleanup:
     VBOX_RELEASE(machine);
@@ -5917,7 +5922,8 @@ vboxDomainSnapshotListNames(virDomainPtr dom,
     int count = 0;
     int i;
 
-    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
 
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
@@ -5932,8 +5938,29 @@ vboxDomainSnapshotListNames(virDomainPtr dom,
         goto cleanup;
     }
 
-    if ((count = vboxDomainSnapshotGetAll(dom, machine, &snapshots)) < 0)
-        goto cleanup;
+    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS) {
+        vboxIID empty = VBOX_IID_INITIALIZER;
+
+        if (VIR_ALLOC_N(snapshots, 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+#if VBOX_API_VERSION < 4000
+        rc = machine->vtbl->GetSnapshot(machine, empty.value, snapshots);
+#else /* VBOX_API_VERSION >= 4000 */
+        rc = machine->vtbl->FindSnapshot(machine, empty.value, snapshots);
+#endif /* VBOX_API_VERSION >= 4000 */
+        if (NS_FAILED(rc) || !snapshots[0]) {
+            vboxError(VIR_ERR_INTERNAL_ERROR,
+                      _("could not get root snapshot for domain %s"),
+                      dom->name);
+            goto cleanup;
+        }
+        count = 1;
+    } else {
+        if ((count = vboxDomainSnapshotGetAll(dom, machine, &snapshots)) < 0)
+            goto cleanup;
+    }
 
     for (i = 0; i < nameslen; i++) {
         PRUnichar *nameUtf16;
