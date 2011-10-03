@@ -4429,6 +4429,103 @@ esxDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
 
 
 
+static int
+esxDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot, unsigned int flags)
+{
+    int count = -1;
+    esxPrivate *priv = snapshot->domain->conn->privateData;
+    esxVI_VirtualMachineSnapshotTree *rootSnapshotTreeList = NULL;
+    esxVI_VirtualMachineSnapshotTree *snapshotTree = NULL;
+    bool recurse;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+
+    recurse = (flags & VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS) != 0;
+
+    if (esxVI_EnsureSession(priv->primary) < 0) {
+        return -1;
+    }
+
+    if (esxVI_LookupRootSnapshotTreeList(priv->primary, snapshot->domain->uuid,
+                                         &rootSnapshotTreeList) < 0 ||
+        esxVI_GetSnapshotTreeByName(rootSnapshotTreeList, snapshot->name,
+                                    &snapshotTree, NULL,
+                                    esxVI_Occurrence_RequiredItem) < 0) {
+        goto cleanup;
+    }
+
+    /* ESX snapshots do not require libvirt to maintain any metadata.  */
+    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_METADATA) {
+        count = 0;
+        goto cleanup;
+    }
+
+    count = esxVI_GetNumberOfSnapshotTrees(snapshotTree->childSnapshotList,
+                                           recurse);
+
+cleanup:
+    esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotTreeList);
+
+    return count;
+}
+
+
+
+static int
+esxDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
+                                   char **names, int nameslen,
+                                   unsigned int flags)
+{
+    int result = -1;
+    esxPrivate *priv = snapshot->domain->conn->privateData;
+    esxVI_VirtualMachineSnapshotTree *rootSnapshotTreeList = NULL;
+    esxVI_VirtualMachineSnapshotTree *snapshotTree = NULL;
+    bool recurse;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+
+    recurse = (flags & VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS) != 0;
+
+    if (names == NULL || nameslen < 0) {
+        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (nameslen == 0) {
+        return 0;
+    }
+
+    if (esxVI_EnsureSession(priv->primary) < 0) {
+        return -1;
+    }
+
+    if (esxVI_LookupRootSnapshotTreeList(priv->primary, snapshot->domain->uuid,
+                                         &rootSnapshotTreeList) < 0 ||
+        esxVI_GetSnapshotTreeByName(rootSnapshotTreeList, snapshot->name,
+                                    &snapshotTree, NULL,
+                                    esxVI_Occurrence_RequiredItem) < 0) {
+        goto cleanup;
+    }
+
+    /* ESX snapshots do not require libvirt to maintain any metadata.  */
+    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_METADATA) {
+        result = 0;
+        goto cleanup;
+    }
+
+    result = esxVI_GetSnapshotTreeNames(snapshotTree->childSnapshotList,
+                                        names, nameslen, recurse);
+
+cleanup:
+    esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotTreeList);
+
+    return result;
+}
+
+
+
 static virDomainSnapshotPtr
 esxDomainSnapshotLookupByName(virDomainPtr domain, const char *name,
                               unsigned int flags)
@@ -4874,6 +4971,8 @@ static virDriver esxDriver = {
     .domainSnapshotGetXMLDesc = esxDomainSnapshotGetXMLDesc, /* 0.8.0 */
     .domainSnapshotNum = esxDomainSnapshotNum, /* 0.8.0 */
     .domainSnapshotListNames = esxDomainSnapshotListNames, /* 0.8.0 */
+    .domainSnapshotNumChildren = esxDomainSnapshotNumChildren, /* 0.9.7 */
+    .domainSnapshotListChildrenNames = esxDomainSnapshotListChildrenNames, /* 0.9.7 */
     .domainSnapshotLookupByName = esxDomainSnapshotLookupByName, /* 0.8.0 */
     .domainHasCurrentSnapshot = esxDomainHasCurrentSnapshot, /* 0.8.0 */
     .domainSnapshotGetParent = esxDomainSnapshotGetParent, /* 0.9.7 */
