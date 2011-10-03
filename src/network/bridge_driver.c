@@ -1566,9 +1566,9 @@ networkSetIPv6Sysctls(virNetworkObjPtr network)
         goto cleanup;
     }
 
-    if (virFileWriteStr(field, "1", 0) < 0) {
+    if (virFileWriteStr(field, "0", 0) < 0) {
         virReportSystemError(errno,
-                             _("cannot enable %s"), field);
+                             _("cannot disable %s"), field);
         goto cleanup;
     }
 
