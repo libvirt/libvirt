@@ -2243,13 +2243,15 @@ typedef void (*virEventHandleCallback)(int watch, int fd, int events, void *opaq
  * @opaque: user data to pass to the callback
  * @ff: the callback invoked to free opaque data blob
  *
- * Part of the EventImpl, this callback Adds a file handle callback to
+ * Part of the EventImpl, this callback adds a file handle callback to
  * listen for specific events. The same file handle can be registered
  * multiple times provided the requested event sets are non-overlapping
  *
  * If the opaque user data requires free'ing when the handle
  * is unregistered, then a 2nd callback can be supplied for
- * this purpose.
+ * this purpose. This callback needs to be invoked from a clean stack.
+ * If 'ff' callbacks are invoked directly from the virEventRemoveHandleFunc
+ * they will likely deadlock in libvirt.
  *
  * Returns a handle watch number to be used for updating
  * and unregistering for events
