@@ -39,6 +39,23 @@ driver. On such kernels, it may be neccessary to unmount the blkio controller.
 </p>
 
 
+<h2>Environment setup for the container init</h2>
+
+<p>
+When the container "init" process is started, it will be given several useful
+environment variables.
+</p>
+
+<dl>
+<dt>LIBVIRT_LXC_NAME</dt>
+<dd>The name assigned to the container by libvirt</dd>
+<dt>LIBVIRT_LXC_UUID</dt>
+<dd>The UUID assigned to the container by libvirt</dd>
+<dt>LIBVIRT_LXC_CMDLINE</dt>
+<dd>The unparsed command line arguments specified in the container configuration</dd>
+</dl>
+
+
 <h3>Example config version 1</h3>
 <p></p>
 <pre>

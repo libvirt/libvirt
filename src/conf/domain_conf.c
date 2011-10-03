@@ -6834,6 +6834,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                 goto error;
             }
         }
+        def->os.cmdline = virXPathString("string(./os/cmdline[1])", ctxt);
     }
 
     if (STREQ(def->os.type, "xen") ||
