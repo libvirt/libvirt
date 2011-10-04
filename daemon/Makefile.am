@@ -38,6 +38,7 @@ EXTRA_DIST =						\
 	libvirtd.policy-1				\
 	libvirtd.sasl					\
 	libvirtd.sysconf				\
+	libvirtd.sysctl					\
 	libvirtd.aug                                    \
 	libvirtd.logrotate.in                           \
 	libvirtd.qemu.logrotate.in                      \
@@ -252,16 +253,20 @@ install-logrotate: $(LOGROTATE_CONFS)
 
 if LIBVIRT_INIT_SCRIPT_RED_HAT
 install-init: libvirtd.init
-	mkdir -p $(DESTDIR)$(sysconfdir)/rc.d/init.d
+	mkdir -p $(DESTDIR)$(sysconfdir)/rc.d/init.d \
+	  $(DESTDIR)$(sysconfdir)/sysconfig \
+	  $(DESTDIR)$(sysconfdir)/sysctl.d
 	$(INSTALL_SCRIPT) libvirtd.init \
 	  $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
-	mkdir -p $(DESTDIR)$(sysconfdir)/sysconfig
 	$(INSTALL_DATA) $(srcdir)/libvirtd.sysconf \
 	  $(DESTDIR)$(sysconfdir)/sysconfig/libvirtd
+	$(INSTALL_DATA) $(srcdir)/libvirtd.sysctl \
+	  $(DESTDIR)$(sysconfdir)/sysctl.d/libvirtd
 
 uninstall-init:
 	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd \
-		$(DESTDIR)$(sysconfdir)/sysconfig/libvirtd
+		$(DESTDIR)$(sysconfdir)/sysconfig/libvirtd \
+		$(DESTDIR)$(sysconfdir)/sysctl.d/libvirtd
 
 BUILT_SOURCES += libvirtd.init
 
