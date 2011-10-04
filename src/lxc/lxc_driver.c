@@ -54,6 +54,7 @@
 #include "fdstream.h"
 #include "domain_audit.h"
 #include "domain_nwfilter.h"
+#include "network/bridge_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -1042,6 +1043,8 @@ static void lxcVmCleanup(lxc_driver_t *driver,
     for (i = 0 ; i < vm->def->nnets ; i++) {
         vethInterfaceUpOrDown(vm->def->nets[i]->ifname, 0);
         vethDelete(vm->def->nets[i]->ifname);
+
+        networkReleaseActualDevice(vm->def->nets[i]);
     }
 
     virDomainConfVMNWFilterTeardown(vm);
@@ -1093,7 +1096,14 @@ static int lxcSetupInterfaces(virConnectPtr conn,
         char *parentVeth;
         char *containerVeth = NULL;
 
-        switch (def->nets[i]->type) {
+        /* If appropriate, grab a physical device from the configured
+         * network's pool of devices, or resolve bridge device name
+         * to the one defined in the network definition.
+         */
+        if (networkAllocateActualDevice(def->nets[i]) < 0)
+            goto error_exit;
+
+        switch (virDomainNetGetActualType(def->nets[i])) {
         case VIR_DOMAIN_NET_TYPE_NETWORK:
         {
             virNetworkPtr network;
@@ -1110,7 +1120,7 @@ static int lxcSetupInterfaces(virConnectPtr conn,
             break;
         }
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
-            bridge = def->nets[i]->data.bridge.brname;
+            bridge = virDomainNetGetActualBridgeName(def->nets[i]);
             break;
 
         case VIR_DOMAIN_NET_TYPE_USER:
@@ -1183,6 +1193,10 @@ static int lxcSetupInterfaces(virConnectPtr conn,
 
 error_exit:
     brShutdown(brctl);
+    if (rc != 0) {
+        for (i = 0 ; i < def->nnets ; i++)
+            networkReleaseActualDevice(def->nets[i]);
+    }
     return rc;
 }
 
