@@ -1692,11 +1692,25 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     }
 
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_MONITOR_JSON)) {
-        if (disk->error_policy) {
-            virBufferAsprintf(&opt, ",werror=%s,rerror=%s",
-                              virDomainDiskErrorPolicyTypeToString(disk->error_policy),
-                              virDomainDiskErrorPolicyTypeToString(disk->error_policy));
+        const char *wpolicy = NULL, *rpolicy = NULL;
+
+        if (disk->error_policy)
+            wpolicy = virDomainDiskErrorPolicyTypeToString(disk->error_policy);
+        if (!rpolicy)
+            rpolicy = wpolicy;
+
+        if (disk->error_policy == VIR_DOMAIN_DISK_ERROR_POLICY_ENOSPACE) {
+            /* in the case of enospace, the option is spelled differently in qemu,
+             * and it's only valid for werror, not for rerror.
+             */
+            wpolicy="enospc";
+            rpolicy="ignore";
         }
+
+        if (wpolicy)
+            virBufferAsprintf(&opt, ",werror=%s", wpolicy);
+        if (rpolicy)
+            virBufferAsprintf(&opt, ",rerror=%s", rpolicy);
     }
 
     if (disk->iomode) {
