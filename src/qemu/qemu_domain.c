@@ -1402,6 +1402,14 @@ qemuDomainSnapshotForEachQcow2(struct qemud_driver *driver,
     const char *qemuimgarg[] = { NULL, "snapshot", NULL, NULL, NULL, NULL };
     int i;
     bool skipped = false;
+    virDomainDefPtr def;
+
+    /* Prefer action on the disks in use at the time the snapshot was
+     * created; but fall back to current definition if dealing with a
+     * snapshot created prior to libvirt 0.9.5.  */
+    def = snap->def->dom;
+    if (!def)
+        def = vm->def;
 
     qemuimgarg[0] = qemuFindQemuImgBinary(driver);
     if (qemuimgarg[0] == NULL) {
@@ -1412,36 +1420,36 @@ qemuDomainSnapshotForEachQcow2(struct qemud_driver *driver,
     qemuimgarg[2] = op;
     qemuimgarg[3] = snap->def->name;
 
-    for (i = 0; i < vm->def->ndisks; i++) {
+    for (i = 0; i < def->ndisks; i++) {
         /* FIXME: we also need to handle LVM here */
         /* FIXME: if we fail halfway through this loop, we are in an
          * inconsistent state.  I'm not quite sure what to do about that
          */
-        if (vm->def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-            if (!vm->def->disks[i]->driverType ||
-                STRNEQ(vm->def->disks[i]->driverType, "qcow2")) {
+        if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+            if (!def->disks[i]->driverType ||
+                STRNEQ(def->disks[i]->driverType, "qcow2")) {
                 if (try_all) {
                     /* Continue on even in the face of error, since other
                      * disks in this VM may have the same snapshot name.
                      */
                     VIR_WARN("skipping snapshot action on %s",
-                             vm->def->disks[i]->dst);
+                             def->disks[i]->dst);
                     skipped = true;
                     continue;
                 }
                 qemuReportError(VIR_ERR_OPERATION_INVALID,
                                 _("Disk device '%s' does not support"
                                   " snapshotting"),
-                                vm->def->disks[i]->dst);
+                                def->disks[i]->dst);
                 return -1;
             }
 
-            qemuimgarg[4] = vm->def->disks[i]->src;
+            qemuimgarg[4] = def->disks[i]->src;
 
             if (virRun(qemuimgarg, NULL) < 0) {
                 if (try_all) {
                     VIR_WARN("skipping snapshot action on %s",
-                             vm->def->disks[i]->info.alias);
+                             def->disks[i]->dst);
                     skipped = true;
                     continue;
                 }
