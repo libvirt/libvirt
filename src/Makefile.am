@@ -256,9 +256,9 @@ PDWTAGS = \
 		-e '    exit 8;'					\
 		-e '  }'						\
 		-e '}'							\
-		> $@-t;							\
+		> $(@F)-t;						\
 	  case $$? in 8) exit 0;; 0) ;; *) exit 1;; esac;		\
-	  diff -u $@-t $@; st=$$?; rm -f $@-t; exit $$st;	\
+	  diff -u $(@F)-t $@; st=$$?; rm -f $(@F)-t; exit $$st;		\
 	else								\
 	  echo 'WARNING: you lack pdwtags; skipping the $@ test' >&2;	\
 	  echo 'WARNING: install the dwarves package to get pdwtags' >&2; \
