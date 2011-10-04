@@ -165,6 +165,7 @@ mymain(void)
     DO_TEST("disk-drive-cache-v1-none");
     DO_TEST("disk-drive-error-policy-stop");
     DO_TEST("disk-drive-error-policy-enospace");
+    DO_TEST("disk-drive-error-policy-wreport-rignore");
     DO_TEST("disk-drive-cache-v2-wt");
     DO_TEST("disk-drive-cache-v2-wb");
     DO_TEST("disk-drive-cache-v2-none");

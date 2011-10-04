@@ -1008,9 +1008,21 @@
           </li>
           <li>
             The optional <code>error_policy</code> attribute controls
-            how the hypervisor will behave on an error, possible
-            values are "stop", "ignore", and "enospace".
-            <span class="since">Since 0.8.0</span>
+            how the hypervisor will behave on a disk read or write
+            error, possible values are "stop", "report", "ignore", and
+            "enospace".<span class="since">Since 0.8.0, "report" since
+            0.9.7</span> The default setting of error_policy is "report".
+            There is also an
+            optional <code>rerror_policy</code> that controls behavior
+            for read errors only. <span class="since">Since
+            0.9.7</space>. If no rerror_policy is given, error_policy
+            is used for both read and write errors. If rerror_policy
+            is given, it overrides the <code>error_policy</code> for
+            read errors. Also note that "enospace" is not a valid
+            policy for read errors, so if <code>error_policy</code> is
+            set to "enospace" and no <code>rerror_policy</code> is
+            given, the read error policy will be left at its default,
+            which is "report".
           </li>
           <li>
             The optional <code>io</code> attribute controls specific

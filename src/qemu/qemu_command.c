@@ -1696,6 +1696,8 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
 
         if (disk->error_policy)
             wpolicy = virDomainDiskErrorPolicyTypeToString(disk->error_policy);
+        if (disk->rerror_policy)
+            rpolicy = virDomainDiskErrorPolicyTypeToString(disk->rerror_policy);
 
         if (disk->error_policy == VIR_DOMAIN_DISK_ERROR_POLICY_ENOSPACE) {
             /* in the case of enospace, the option is spelled
@@ -5631,14 +5633,22 @@ qemuParseCommandLineDisk(virCapsPtr caps,
                 def->cachemode = VIR_DOMAIN_DISK_CACHE_DIRECTSYNC;
             else if (STREQ(values[i], "unsafe"))
                 def->cachemode = VIR_DOMAIN_DISK_CACHE_UNSAFE;
-        } else if (STREQ(keywords[i], "werror") ||
-                   STREQ(keywords[i], "rerror")) {
+        } else if (STREQ(keywords[i], "werror")) {
             if (STREQ(values[i], "stop"))
                 def->error_policy = VIR_DOMAIN_DISK_ERROR_POLICY_STOP;
+            else if (STREQ(values[i], "report"))
+                def->error_policy = VIR_DOMAIN_DISK_ERROR_POLICY_REPORT;
             else if (STREQ(values[i], "ignore"))
                 def->error_policy = VIR_DOMAIN_DISK_ERROR_POLICY_IGNORE;
             else if (STREQ(values[i], "enospc"))
                 def->error_policy = VIR_DOMAIN_DISK_ERROR_POLICY_ENOSPACE;
+        } else if (STREQ(keywords[i], "rerror")) {
+            if (STREQ(values[i], "stop"))
+                def->rerror_policy = VIR_DOMAIN_DISK_ERROR_POLICY_STOP;
+            else if (STREQ(values[i], "report"))
+                def->rerror_policy = VIR_DOMAIN_DISK_ERROR_POLICY_REPORT;
+            else if (STREQ(values[i], "ignore"))
+                def->rerror_policy = VIR_DOMAIN_DISK_ERROR_POLICY_IGNORE;
         } else if (STREQ(keywords[i], "index")) {
             if (virStrToLong_i(values[i], NULL, 10, &idx) < 0) {
                 virDomainDiskDefFree(def);
@@ -5673,6 +5683,9 @@ qemuParseCommandLineDisk(virCapsPtr caps,
             }
         }
     }
+
+    if (def->rerror_policy == def->error_policy)
+        def->rerror_policy = 0;
 
     if (!def->src &&
         def->device == VIR_DOMAIN_DISK_DEVICE_DISK &&

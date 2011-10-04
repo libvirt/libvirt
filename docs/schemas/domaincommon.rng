@@ -820,6 +820,9 @@
         <ref name="driverErrorPolicy"/>
       </optional>
       <optional>
+        <ref name="driverRerrorPolicy"/>
+      </optional>
+      <optional>
         <ref name="driverIO"/>
       </optional>
       <optional>
@@ -856,8 +859,18 @@
     <attribute name="error_policy">
       <choice>
         <value>stop</value>
+        <value>report</value>
         <value>ignore</value>
         <value>enospace</value>
+      </choice>
+    </attribute>
+  </define>
+  <define name="driverRerrorPolicy">
+    <attribute name="rerror_policy">
+      <choice>
+        <value>stop</value>
+        <value>report</value>
+        <value>ignore</value>
       </choice>
     </attribute>
   </define>

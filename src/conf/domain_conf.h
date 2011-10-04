@@ -209,6 +209,7 @@ enum  virDomainDiskCache {
 enum  virDomainDiskErrorPolicy {
     VIR_DOMAIN_DISK_ERROR_POLICY_DEFAULT,
     VIR_DOMAIN_DISK_ERROR_POLICY_STOP,
+    VIR_DOMAIN_DISK_ERROR_POLICY_REPORT,
     VIR_DOMAIN_DISK_ERROR_POLICY_IGNORE,
     VIR_DOMAIN_DISK_ERROR_POLICY_ENOSPACE,
 
@@ -284,7 +285,8 @@ struct _virDomainDiskDef {
     char *driverType;
     char *serial;
     int cachemode;
-    int error_policy;
+    int error_policy;  /* enum virDomainDiskErrorPolicy */
+    int rerror_policy; /* enum virDomainDiskErrorPolicy */
     int bootIndex;
     int iomode;
     int ioeventfd;

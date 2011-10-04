@@ -176,6 +176,7 @@ VIR_ENUM_IMPL(virDomainDiskCache, VIR_DOMAIN_DISK_CACHE_LAST,
 VIR_ENUM_IMPL(virDomainDiskErrorPolicy, VIR_DOMAIN_DISK_ERROR_POLICY_LAST,
               "default",
               "stop",
+              "report",
               "ignore",
               "enospace")
 
@@ -2297,6 +2298,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     char *bus = NULL;
     char *cachetag = NULL;
     char *error_policy = NULL;
+    char *rerror_policy = NULL;
     char *iotag = NULL;
     char *ioeventfd = NULL;
     char *event_idx = NULL;
@@ -2416,6 +2418,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                 driverType = virXMLPropString(cur, "type");
                 cachetag = virXMLPropString(cur, "cache");
                 error_policy = virXMLPropString(cur, "error_policy");
+                rerror_policy = virXMLPropString(cur, "rerror_policy");
                 iotag = virXMLPropString(cur, "io");
                 ioeventfd = virXMLPropString(cur, "ioeventfd");
                 event_idx = virXMLPropString(cur, "event_idx");
@@ -2560,6 +2563,16 @@ virDomainDiskDefParseXML(virCapsPtr caps,
         goto error;
     }
 
+    if (rerror_policy &&
+        (((def->rerror_policy
+           = virDomainDiskErrorPolicyTypeFromString(rerror_policy)) <= 0) ||
+         (def->rerror_policy == VIR_DOMAIN_DISK_ERROR_POLICY_ENOSPACE))) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unknown disk read error policy '%s'"),
+                             rerror_policy);
+        goto error;
+    }
+
     if (iotag) {
         if ((def->iomode = virDomainDiskIoTypeFromString(iotag)) < 0 ||
             def->iomode == VIR_DOMAIN_DISK_IO_DEFAULT) {
@@ -2667,6 +2680,7 @@ cleanup:
     VIR_FREE(driverName);
     VIR_FREE(cachetag);
     VIR_FREE(error_policy);
+    VIR_FREE(rerror_policy);
     VIR_FREE(iotag);
     VIR_FREE(ioeventfd);
     VIR_FREE(event_idx);
@@ -9127,6 +9141,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     const char *bus = virDomainDiskBusTypeToString(def->bus);
     const char *cachemode = virDomainDiskCacheTypeToString(def->cachemode);
     const char *error_policy = virDomainDiskErrorPolicyTypeToString(def->error_policy);
+    const char *rerror_policy = virDomainDiskErrorPolicyTypeToString(def->rerror_policy);
     const char *iomode = virDomainDiskIoTypeToString(def->iomode);
     const char *ioeventfd = virDomainIoEventFdTypeToString(def->ioeventfd);
     const char *event_idx = virDomainVirtioEventIdxTypeToString(def->event_idx);
@@ -9177,6 +9192,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
             virBufferAsprintf(buf, " cache='%s'", cachemode);
         if (def->error_policy)
             virBufferAsprintf(buf, " error_policy='%s'", error_policy);
+        if (def->rerror_policy)
+            virBufferAsprintf(buf, " rerror_policy='%s'", rerror_policy);
         if (def->iomode)
             virBufferAsprintf(buf, " io='%s'", iomode);
         if (def->ioeventfd)
