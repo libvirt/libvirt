@@ -231,6 +231,7 @@ static void qemuDomainObjPrivateFree(void *data)
     qemuDomainObjFreeJob(priv);
     VIR_FREE(priv->vcpupids);
     VIR_FREE(priv->lockState);
+    VIR_FREE(priv->origname);
 
     /* This should never be non-NULL if we get here, but just in case... */
     if (priv->mon) {

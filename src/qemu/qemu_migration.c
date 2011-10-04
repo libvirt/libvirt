@@ -254,12 +254,18 @@ error:
 static qemuMigrationCookiePtr
 qemuMigrationCookieNew(virDomainObjPtr dom)
 {
+    qemuDomainObjPrivatePtr priv = dom->privateData;
     qemuMigrationCookiePtr mig = NULL;
+    const char *name;
 
     if (VIR_ALLOC(mig) < 0)
         goto no_memory;
 
-    if (!(mig->name = strdup(dom->def->name)))
+    if (priv->origname)
+        name = priv->origname;
+    else
+        name = dom->def->name;
+    if (!(mig->name = strdup(name)))
         goto no_memory;
     memcpy(mig->uuid, dom->def->uuid, VIR_UUID_BUFLEN);
 
@@ -1064,6 +1070,7 @@ qemuMigrationPrepareAny(struct qemud_driver *driver,
     unsigned long long now;
     qemuMigrationCookiePtr mig = NULL;
     bool tunnel = !!st;
+    char *origname = NULL;
 
     if (virTimeMs(&now) < 0)
         return -1;
@@ -1078,7 +1085,7 @@ qemuMigrationPrepareAny(struct qemud_driver *driver,
 
     /* Target domain name, maybe renamed. */
     if (dname) {
-        VIR_FREE(def->name);
+        origname = def->name;
         def->name = strdup(dname);
         if (def->name == NULL)
             goto cleanup;
@@ -1095,6 +1102,8 @@ qemuMigrationPrepareAny(struct qemud_driver *driver,
     }
     def = NULL;
     priv = vm->privateData;
+    priv->origname = origname;
+    origname = NULL;
 
     if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen,
                                        QEMU_MIGRATION_COOKIE_LOCKSTATE)))
@@ -1175,6 +1184,7 @@ qemuMigrationPrepareAny(struct qemud_driver *driver,
     ret = 0;
 
 cleanup:
+    VIR_FREE(origname);
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(dataFD[0]);
     VIR_FORCE_CLOSE(dataFD[1]);
@@ -2542,6 +2552,7 @@ qemuMigrationFinish(struct qemud_driver *driver,
     qemuMigrationCookiePtr mig = NULL;
     virErrorPtr orig_err = NULL;
     int cookie_flags = 0;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
 
     VIR_DEBUG("driver=%p, dconn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, retcode=%d",
@@ -2695,8 +2706,10 @@ endjob:
     }
 
 cleanup:
-    if (vm)
+    if (vm) {
+        VIR_FREE(priv->origname);
         virDomainObjUnlock(vm);
+    }
     if (event)
         qemuDomainEventQueue(driver, event);
     qemuMigrationCookieFree(mig);

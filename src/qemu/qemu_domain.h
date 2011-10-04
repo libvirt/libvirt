@@ -126,6 +126,7 @@ struct _qemuDomainObjPrivate {
     int jobs_queued;
 
     unsigned long migMaxBandwidth;
+    char *origname;
 };
 
 struct qemuDomainWatchdogEvent
