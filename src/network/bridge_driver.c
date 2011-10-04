@@ -2753,6 +2753,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
     struct network_driver *driver = driverState;
     virNetworkObjPtr network;
     virNetworkDefPtr netdef;
+    virPortGroupDefPtr portgroup;
     int ret = -1;
 
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
@@ -2772,14 +2773,48 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
     }
 
     netdef = network->def;
-    if ((netdef->forwardType == VIR_NETWORK_FORWARD_BRIDGE) &&
-        netdef->bridge) {
+
+    /* portgroup can be present for any type of network, in particular
+     * for bandwidth information, so we need to check for that and
+     * fill it in appropriately for all forward types.
+    */
+    portgroup = virPortGroupFindByName(netdef, iface->data.network.portgroup);
+
+    /* If there is already interface-specific bandwidth, just use that
+     * (already in NetDef). Otherwise, if there is bandwidth info in
+     * the portgroup, fill that into the ActualDef.
+     */
+    if (portgroup && !iface->bandwidth) {
+        if (!iface->data.network.actual
+            && (VIR_ALLOC(iface->data.network.actual) < 0)) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (virBandwidthCopy(&iface->data.network.actual->bandwidth,
+                             portgroup->bandwidth) < 0) {
+            goto cleanup;
+        }
+    }
+
+    if ((netdef->forwardType == VIR_NETWORK_FORWARD_NONE) ||
+        (netdef->forwardType == VIR_NETWORK_FORWARD_NAT) ||
+        (netdef->forwardType == VIR_NETWORK_FORWARD_ROUTE)) {
+        /* for these forward types, the actual net type really *is*
+         *NETWORK; we just keep the info from the portgroup in
+         * iface->data.network.actual
+        */
+        if (iface->data.network.actual)
+            iface->data.network.actual->type = VIR_DOMAIN_NET_TYPE_NETWORK;
+    } else if ((netdef->forwardType == VIR_NETWORK_FORWARD_BRIDGE) &&
+               netdef->bridge) {
 
         /* <forward type='bridge'/> <bridge name='xxx'/>
          * is VIR_DOMAIN_NET_TYPE_BRIDGE
          */
 
-        if (VIR_ALLOC(iface->data.network.actual) < 0) {
+        if (!iface->data.network.actual
+            && (VIR_ALLOC(iface->data.network.actual) < 0)) {
             virReportOOMError();
             goto cleanup;
         }
@@ -2796,13 +2831,13 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                (netdef->forwardType == VIR_NETWORK_FORWARD_VEPA) ||
                (netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH)) {
         virVirtualPortProfileParamsPtr virtport = NULL;
-        virPortGroupDefPtr portgroup = NULL;
 
         /* <forward type='bridge|private|vepa|passthrough'> are all
          * VIR_DOMAIN_NET_TYPE_DIRECT.
          */
 
-        if (VIR_ALLOC(iface->data.network.actual) < 0) {
+        if (!iface->data.network.actual
+            && (VIR_ALLOC(iface->data.network.actual) < 0)) {
             virReportOOMError();
             goto cleanup;
         }
@@ -2825,7 +2860,6 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         }
 
         /* Find the most specific virtportprofile and copy it */
-        portgroup = virPortGroupFindByName(netdef, iface->data.network.portgroup);
         if (iface->data.network.virtPortProfile) {
             virtport = iface->data.network.virtPortProfile;
         } else {
@@ -2843,20 +2877,6 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
              * is sufficient
              */
             *iface->data.network.actual->data.direct.virtPortProfile = *virtport;
-        }
-
-        /* Find the most specific bandwidth config and copy it */
-        if (iface->bandwidth) {
-            if (virBandwidthCopy(&iface->data.network.actual->bandwidth,
-                                 iface->bandwidth) < 0) {
-                goto cleanup;
-            }
-        } else {
-            if (portgroup &&
-                virBandwidthCopy(&iface->data.network.actual->bandwidth,
-                                 portgroup->bandwidth) < 0) {
-                goto cleanup;
-            }
         }
 
         /* If there is only a single device, just return it (caller will detect
