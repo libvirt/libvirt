@@ -1696,15 +1696,16 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
 
         if (disk->error_policy)
             wpolicy = virDomainDiskErrorPolicyTypeToString(disk->error_policy);
-        if (!rpolicy)
-            rpolicy = wpolicy;
 
         if (disk->error_policy == VIR_DOMAIN_DISK_ERROR_POLICY_ENOSPACE) {
-            /* in the case of enospace, the option is spelled differently in qemu,
-             * and it's only valid for werror, not for rerror.
+            /* in the case of enospace, the option is spelled
+             * differently in qemu, and it's only valid for werror,
+             * not for rerror, so leave leave rerror NULL.
              */
-            wpolicy="enospc";
-            rpolicy="ignore";
+            wpolicy = "enospc";
+        } else if (!rpolicy) {
+            /* for other policies, rpolicy can match wpolicy */
+            rpolicy = wpolicy;
         }
 
         if (wpolicy)
@@ -5636,7 +5637,7 @@ qemuParseCommandLineDisk(virCapsPtr caps,
                 def->error_policy = VIR_DOMAIN_DISK_ERROR_POLICY_STOP;
             else if (STREQ(values[i], "ignore"))
                 def->error_policy = VIR_DOMAIN_DISK_ERROR_POLICY_IGNORE;
-            else if (STREQ(values[i], "enospace"))
+            else if (STREQ(values[i], "enospc"))
                 def->error_policy = VIR_DOMAIN_DISK_ERROR_POLICY_ENOSPACE;
         } else if (STREQ(keywords[i], "index")) {
             if (virStrToLong_i(values[i], NULL, 10, &idx) < 0) {

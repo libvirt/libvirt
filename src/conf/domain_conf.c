@@ -2554,7 +2554,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     }
 
     if (error_policy &&
-        (def->error_policy = virDomainDiskErrorPolicyTypeFromString(error_policy)) < 0) {
+        (def->error_policy = virDomainDiskErrorPolicyTypeFromString(error_policy)) <= 0) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                              _("unknown disk error policy '%s'"), error_policy);
         goto error;
