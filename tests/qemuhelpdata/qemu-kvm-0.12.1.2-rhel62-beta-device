@@ -1,0 +1,120 @@
+name "pci-bridge", bus PCI
+name "virtio-balloon-pci", bus PCI
+name "virtio-serial-pci", bus PCI, alias "virtio-serial"
+name "virtio-net-pci", bus PCI
+name "virtio-blk-pci", bus PCI, alias "virtio-blk"
+name "i82562", bus PCI
+name "i82559er", bus PCI
+name "i82559c", bus PCI
+name "i82559b", bus PCI
+name "i82559a", bus PCI
+name "i82558b", bus PCI
+name "i82558a", bus PCI
+name "i82557c", bus PCI
+name "i82557b", bus PCI
+name "i82557a", bus PCI
+name "i82551", bus PCI
+name "i82550", bus PCI
+name "pcnet", bus PCI
+name "rtl8139", bus PCI
+name "e1000", bus PCI, desc "Intel Gigabit Ethernet"
+name "ide-drive", bus IDE
+name "isa-ide", bus ISA
+name "ES1370", bus PCI, desc "ENSONIQ AudioPCI ES1370"
+name "AC97", bus PCI, desc "Intel 82801AA AC97 Audio"
+name "intel-hda", bus PCI, desc "Intel HD Audio Controller"
+name "hda-duplex", bus HDA, desc "HDA Audio Codec, duplex"
+name "hda-output", bus HDA, desc "HDA Audio Codec, output-only"
+name "VGA", bus PCI
+name "SUNW,fdtwo", bus System
+name "sysbus-fdc", bus System
+name "isa-serial", bus ISA
+name "cirrus-vga", bus PCI, desc "Cirrus CLGD 54xx VGA"
+name "isa-parallel", bus ISA
+name "sga", bus ISA, desc "Serial Graphics Adapter"
+name "ich9-usb-uhci3", bus PCI
+name "ich9-usb-uhci2", bus PCI
+name "ich9-usb-uhci1", bus PCI
+name "piix4-usb-uhci", bus PCI
+name "piix3-usb-uhci", bus PCI
+name "ib700", bus ISA
+name "ne2k_isa", bus ISA
+name "testdev", bus ISA
+name "pci-assign", bus PCI, desc "pass through host pci devices to the guest"
+name "qxl", bus PCI, desc "Spice QXL GPU (secondary)"
+name "qxl-vga", bus PCI, desc "Spice QXL GPU (primary, vga compatible)"
+name "smbus-eeprom", bus I2C
+name "usb-hub", bus USB
+name "usb-host", bus USB
+name "usb-kbd", bus USB
+name "usb-mouse", bus USB
+name "usb-tablet", bus USB
+name "usb-storage", bus USB
+name "scsi-disk", bus SCSI, desc "virtual SCSI disk or CD-ROM (legacy)"
+name "scsi-cd", bus SCSI, desc "virtual SCSI CD-ROM"
+name "scsi-hd", bus SCSI, desc "virtual SCSI disk"
+name "usb-ccid", bus USB, desc "CCID Rev 1.1 smartcard reader"
+name "ccid-card-passthru", bus ccid-bus, desc "passthrough smartcard"
+name "virtserialport", bus virtio-serial-bus
+name "virtconsole", bus virtio-serial-bus
+name "ich9-usb-ehci1", bus PCI
+name "usb-ehci", bus PCI
+name "i6300esb", bus PCI
+name "ne2k_pci", bus PCI
+pci-assign.host=pci-hostaddr
+pci-assign.iommu=uint32
+pci-assign.bootindex=int32
+pci-assign.configfd=string
+pci-assign.addr=pci-devfn
+pci-assign.romfile=string
+pci-assign.rombar=uint32
+pci-assign.multifunction=on/off
+virtio-blk-pci.class=hex32
+virtio-blk-pci.drive=drive
+virtio-blk-pci.logical_block_size=uint16
+virtio-blk-pci.physical_block_size=uint16
+virtio-blk-pci.min_io_size=uint16
+virtio-blk-pci.opt_io_size=uint32
+virtio-blk-pci.bootindex=int32
+virtio-blk-pci.discard_granularity=uint32
+virtio-blk-pci.ioeventfd=on/off
+virtio-blk-pci.vectors=uint32
+virtio-blk-pci.indirect_desc=on/off
+virtio-blk-pci.event_idx=on/off
+virtio-blk-pci.scsi=on/off
+virtio-blk-pci.addr=pci-devfn
+virtio-blk-pci.romfile=string
+virtio-blk-pci.rombar=uint32
+virtio-blk-pci.multifunction=on/off
+virtio-net-pci.ioeventfd=on/off
+virtio-net-pci.vectors=uint32
+virtio-net-pci.indirect_desc=on/off
+virtio-net-pci.event_idx=on/off
+virtio-net-pci.csum=on/off
+virtio-net-pci.guest_csum=on/off
+virtio-net-pci.gso=on/off
+virtio-net-pci.guest_tso4=on/off
+virtio-net-pci.guest_tso6=on/off
+virtio-net-pci.guest_ecn=on/off
+virtio-net-pci.guest_ufo=on/off
+virtio-net-pci.host_tso4=on/off
+virtio-net-pci.host_tso6=on/off
+virtio-net-pci.host_ecn=on/off
+virtio-net-pci.host_ufo=on/off
+virtio-net-pci.mrg_rxbuf=on/off
+virtio-net-pci.status=on/off
+virtio-net-pci.ctrl_vq=on/off
+virtio-net-pci.ctrl_rx=on/off
+virtio-net-pci.ctrl_vlan=on/off
+virtio-net-pci.ctrl_rx_extra=on/off
+virtio-net-pci.mac=macaddr
+virtio-net-pci.vlan=vlan
+virtio-net-pci.netdev=netdev
+virtio-net-pci.bootindex=int32
+virtio-net-pci.x-txtimer=uint32
+virtio-net-pci.x-txburst=int32
+virtio-net-pci.tx=string
+virtio-net-pci.addr=pci-devfn
+virtio-net-pci.romfile=string
+virtio-net-pci.rombar=uint32
+virtio-net-pci.multifunction=on/off

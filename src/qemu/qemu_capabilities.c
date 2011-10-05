@@ -1264,6 +1264,8 @@ qemuCapsParseDeviceStr(const char *str, virBitmapPtr flags)
     /* Features of given devices. */
     if (strstr(str, "pci-assign.configfd"))
         qemuCapsSet(flags, QEMU_CAPS_PCI_CONFIGFD);
+    if (strstr(str, "virtio-blk-pci.multifunction"))
+        qemuCapsSet(flags, QEMU_CAPS_PCI_MULTIFUNCTION);
     if (strstr(str, "virtio-blk-pci.bootindex")) {
         qemuCapsSet(flags, QEMU_CAPS_BOOTINDEX);
         if (strstr(str, "pci-assign.bootindex"))
