@@ -2083,13 +2083,18 @@ static int qemudDomainGetInfo(virDomainPtr dom,
                 goto cleanup;
             }
 
-            if (err < 0)
-                goto cleanup;
-            if (err == 0)
+            if (err < 0) {
+                /* We couldn't get current memory allocation but that's not
+                 * a show stopper; we wouldn't get it if there was a job
+                 * active either
+                 */
+                info->memory = vm->def->mem.cur_balloon;
+            } else if (err == 0) {
                 /* Balloon not supported, so maxmem is always the allocation */
                 info->memory = vm->def->mem.max_balloon;
-            else
+            } else {
                 info->memory = balloon;
+            }
         } else {
             info->memory = vm->def->mem.cur_balloon;
         }
