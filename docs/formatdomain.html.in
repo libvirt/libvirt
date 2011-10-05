@@ -3017,6 +3017,10 @@ qemu-kvm -net nic,model=? /dev/null
     &lt;channel type='pty'&gt;
       &lt;target type='virtio' name='arbitrary.virtio.serial.port.name'/&gt;
     &lt;/channel&gt;
+    &lt;channel type='unix'&gt;
+      &lt;source mode='bind' path='/var/lib/libvirt/qemu/f16x86_64.agent'/&gt;
+      &lt;target type='virtio' name='org.qemu.guest_agent.0'/&gt;
+    &lt;/channel&gt;
     &lt;channel type='spicevmc'&gt;
       &lt;target type='virtio' name='com.redhat.spice.0'/&gt;
     &lt;/channel&gt;
@@ -3045,7 +3049,11 @@ qemu-kvm -net nic,model=? /dev/null
         optional element <code>address</code> can tie the channel to a
         particular <code>type='virtio-serial'</code>
         controller, <a href="#elementsAddress">documented above</a>.
-        <span class="since">Since 0.7.7</span></dd>
+        With qemu, if <code>name</code> is "org.qemu.guest_agent.0",
+        then libvirt can interact with a guest agent installed in the
+        guest, for actions such as guest shutdown or file system quiescing.
+        <span class="since">Since 0.7.7, guest agent interaction
+        since 0.9.10</span></dd>
 
       <dt><code>spicevmc</code></dt>
       <dd>Paravirtualized SPICE channel. The domain must also have a

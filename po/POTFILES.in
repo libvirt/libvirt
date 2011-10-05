@@ -57,6 +57,7 @@ src/nwfilter/nwfilter_learnipaddr.c
 src/openvz/openvz_conf.c
 src/openvz/openvz_driver.c
 src/phyp/phyp_driver.c
+src/qemu/qemu_agent.c
 src/qemu/qemu_bridge_filter.c
 src/qemu/qemu_capabilities.c
 src/qemu/qemu_cgroup.c

@@ -219,6 +219,10 @@ static void qemuDomainObjPrivateFree(void *data)
         VIR_ERROR(_("Unexpected QEMU monitor still active during domain deletion"));
         qemuMonitorClose(priv->mon);
     }
+    if (priv->agent) {
+        VIR_ERROR(_("Unexpected QEMU agent still active during domain deletion"));
+        qemuAgentClose(priv->agent);
+    }
     VIR_FREE(priv);
 }
 
@@ -1023,6 +1027,99 @@ void qemuDomainObjExitMonitorWithDriver(struct qemud_driver *driver,
                                         virDomainObjPtr obj)
 {
     qemuDomainObjExitMonitorInternal(driver, true, obj);
+}
+
+
+
+static int
+qemuDomainObjEnterAgentInternal(struct qemud_driver *driver,
+                                bool driver_locked,
+                                virDomainObjPtr obj)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+
+    qemuAgentLock(priv->agent);
+    qemuAgentRef(priv->agent);
+    ignore_value(virTimeMillisNow(&priv->agentStart));
+    virDomainObjUnlock(obj);
+    if (driver_locked)
+        qemuDriverUnlock(driver);
+
+    return 0;
+}
+
+static void ATTRIBUTE_NONNULL(1)
+qemuDomainObjExitAgentInternal(struct qemud_driver *driver,
+                               bool driver_locked,
+                               virDomainObjPtr obj)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+    int refs;
+
+    refs = qemuAgentUnref(priv->agent);
+
+    if (refs > 0)
+        qemuAgentUnlock(priv->agent);
+
+    if (driver_locked)
+        qemuDriverLock(driver);
+    virDomainObjLock(obj);
+
+    priv->agentStart = 0;
+    if (refs == 0) {
+        priv->agent = NULL;
+    }
+}
+
+/*
+ * obj must be locked before calling, qemud_driver must be unlocked
+ *
+ * To be called immediately before any QEMU agent API call
+ * Must have already either called qemuDomainObjBeginJob() and checked
+ * that the VM is still active;
+ *
+ * To be followed with qemuDomainObjExitAgent() once complete
+ */
+void qemuDomainObjEnterAgent(struct qemud_driver *driver,
+                             virDomainObjPtr obj)
+{
+    ignore_value(qemuDomainObjEnterAgentInternal(driver, false, obj));
+}
+
+/* obj must NOT be locked before calling, qemud_driver must be unlocked
+ *
+ * Should be paired with an earlier qemuDomainObjEnterAgent() call
+ */
+void qemuDomainObjExitAgent(struct qemud_driver *driver,
+                            virDomainObjPtr obj)
+{
+    qemuDomainObjExitAgentInternal(driver, false, obj);
+}
+
+/*
+ * obj must be locked before calling, qemud_driver must be locked
+ *
+ * To be called immediately before any QEMU agent API call
+ * Must have already either called qemuDomainObjBeginJobWithDriver() and
+ * checked that the VM is still active; may not be used for nested async jobs.
+ *
+ * To be followed with qemuDomainObjExitAgentWithDriver() once complete
+ */
+void qemuDomainObjEnterAgentWithDriver(struct qemud_driver *driver,
+                                       virDomainObjPtr obj)
+{
+    ignore_value(qemuDomainObjEnterAgentInternal(driver, true, obj));
+}
+
+/* obj must NOT be locked before calling, qemud_driver must be unlocked,
+ * and will be locked after returning
+ *
+ * Should be paired with an earlier qemuDomainObjEnterAgentWithDriver() call
+ */
+void qemuDomainObjExitAgentWithDriver(struct qemud_driver *driver,
+                                      virDomainObjPtr obj)
+{
+    qemuDomainObjExitAgentInternal(driver, true, obj);
 }
 
 void qemuDomainObjEnterRemoteWithDriver(struct qemud_driver *driver,

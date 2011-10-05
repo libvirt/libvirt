@@ -59,7 +59,7 @@ static void qemuMonitorJSONHandleVNCInitialize(qemuMonitorPtr mon, virJSONValueP
 static void qemuMonitorJSONHandleVNCDisconnect(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleBlockJob(qemuMonitorPtr mon, virJSONValuePtr data);
 
-struct {
+static struct {
     const char *type;
     void (*handler)(qemuMonitorPtr mon, virJSONValuePtr data);
 } eventHandlers[] = {

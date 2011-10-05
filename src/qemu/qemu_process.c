@@ -107,6 +107,164 @@ qemuProcessRemoveDomainStatus(struct qemud_driver *driver,
 extern struct qemud_driver *qemu_driver;
 
 /*
+ * This is a callback registered with a qemuAgentPtr instance,
+ * and to be invoked when the agent console hits an end of file
+ * condition, or error, thus indicating VM shutdown should be
+ * performed
+ */
+static void
+qemuProcessHandleAgentEOF(qemuAgentPtr agent ATTRIBUTE_UNUSED,
+                          virDomainObjPtr vm)
+{
+    struct qemud_driver *driver = qemu_driver;
+    qemuDomainObjPrivatePtr priv;
+
+    VIR_DEBUG("Received EOF from agent on %p '%s'", vm, vm->def->name);
+
+    qemuDriverLock(driver);
+    virDomainObjLock(vm);
+
+    priv = vm->privateData;
+
+    qemuAgentClose(agent);
+    priv->agent = NULL;
+
+    virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+}
+
+
+/*
+ * This is invoked when there is some kind of error
+ * parsing data to/from the agent. The VM can continue
+ * to run, but no further agent commands will be
+ * allowed
+ */
+static void
+qemuProcessHandleAgentError(qemuAgentPtr agent ATTRIBUTE_UNUSED,
+                            virDomainObjPtr vm)
+{
+    struct qemud_driver *driver = qemu_driver;
+    qemuDomainObjPrivatePtr priv;
+
+    VIR_DEBUG("Received error from agent on %p '%s'", vm, vm->def->name);
+
+    qemuDriverLock(driver);
+    virDomainObjLock(vm);
+
+    priv = vm->privateData;
+
+    priv->agentError = true;
+
+    virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+}
+
+static void qemuProcessHandleAgentDestroy(qemuAgentPtr agent,
+                                          virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv;
+
+    virDomainObjLock(vm);
+    priv = vm->privateData;
+    if (priv->agent == agent)
+        priv->agent = NULL;
+    if (virDomainObjUnref(vm) > 0)
+        virDomainObjUnlock(vm);
+}
+
+
+static qemuAgentCallbacks agentCallbacks = {
+    .destroy = qemuProcessHandleAgentDestroy,
+    .eofNotify = qemuProcessHandleAgentEOF,
+    .errorNotify = qemuProcessHandleAgentError,
+};
+
+static virDomainChrSourceDefPtr
+qemuFindAgentConfig(virDomainDefPtr def)
+{
+    virDomainChrSourceDefPtr config = NULL;
+    int i;
+
+    for (i = 0 ; i < def->nchannels ; i++) {
+        virDomainChrDefPtr channel = def->channels[i];
+
+        if (channel->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO)
+            continue;
+
+        if (STREQ(channel->target.name, "org.qemu.guest_agent.0")) {
+            config = &channel->source;
+            break;
+        }
+    }
+
+    return config;
+}
+
+static int
+qemuConnectAgent(struct qemud_driver *driver, virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret = -1;
+    qemuAgentPtr agent = NULL;
+    virDomainChrSourceDefPtr config = qemuFindAgentConfig(vm->def);
+
+    if (!config)
+        return 0;
+
+    if (virSecurityManagerSetDaemonSocketLabel(driver->securityManager,
+                                               vm->def) < 0) {
+        VIR_ERROR(_("Failed to set security context for agent for %s"),
+                  vm->def->name);
+        goto cleanup;
+    }
+
+    /* Hold an extra reference because we can't allow 'vm' to be
+     * deleted while the agent is active */
+    virDomainObjRef(vm);
+
+    ignore_value(virTimeMillisNow(&priv->agentStart));
+    virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+
+    agent = qemuAgentOpen(vm,
+                          config,
+                          &agentCallbacks);
+
+    qemuDriverLock(driver);
+    virDomainObjLock(vm);
+    priv->agentStart = 0;
+
+    if (virSecurityManagerClearSocketLabel(driver->securityManager,
+                                           vm->def) < 0) {
+        VIR_ERROR(_("Failed to clear security context for agent for %s"),
+                  vm->def->name);
+        goto cleanup;
+    }
+
+    /* Safe to ignore value since ref count was incremented above */
+    if (agent == NULL)
+        ignore_value(virDomainObjUnref(vm));
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuAgentClose(agent);
+        goto cleanup;
+    }
+    priv->agent = agent;
+
+    if (priv->agent == NULL) {
+        VIR_INFO("Failed to connect agent for %s", vm->def->name);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
+
+/*
  * This is a callback registered with a qemuMonitorPtr instance,
  * and to be invoked when the monitor console hits an end of file
  * condition, or error, thus indicating VM shutdown should be
@@ -2691,6 +2849,14 @@ qemuProcessReconnect(void *opaque)
     if (qemuConnectMonitor(driver, obj) < 0)
         goto error;
 
+    /* Failure to connect to agent shouldn't be fatal */
+    if (qemuConnectAgent(driver, obj) < 0) {
+        VIR_WARN("Cannot connect to QEMU guest agent for %s",
+                 obj->def->name);
+        virResetLastError();
+        priv->agentError = true;
+    }
+
     if (qemuUpdateActivePciHostdevs(driver, obj->def) < 0) {
         goto error;
     }
@@ -3258,6 +3424,14 @@ int qemuProcessStart(virConnectPtr conn,
     if (qemuProcessWaitForMonitor(driver, vm, priv->qemuCaps, pos) < 0)
         goto cleanup;
 
+    /* Failure to connect to agent shouldn't be fatal */
+    if (qemuConnectAgent(driver, vm) < 0) {
+        VIR_WARN("Cannot connect to QEMU guest agent for %s",
+                 vm->def->name);
+        virResetLastError();
+        priv->agentError = true;
+    }
+
     VIR_DEBUG("Detecting VCPU PIDs");
     if (qemuProcessDetectVcpuPIDs(driver, vm) < 0)
         goto cleanup;
@@ -3458,6 +3632,12 @@ void qemuProcessStop(struct qemud_driver *driver,
                                      net->ifname);
             }
         }
+    }
+
+    if (priv->agent) {
+        qemuAgentClose(priv->agent);
+        priv->agent = NULL;
+        priv->agentError = false;
     }
 
     if (priv->mon)
@@ -3712,6 +3892,14 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     VIR_DEBUG("Waiting for monitor to show up");
     if (qemuProcessWaitForMonitor(driver, vm, priv->qemuCaps, -1) < 0)
         goto cleanup;
+
+    /* Failure to connect to agent shouldn't be fatal */
+    if (qemuConnectAgent(driver, vm) < 0) {
+        VIR_WARN("Cannot connect to QEMU guest agent for %s",
+                 vm->def->name);
+        virResetLastError();
+        priv->agentError = true;
+    }
 
     VIR_DEBUG("Detecting VCPU PIDs");
     if (qemuProcessDetectVcpuPIDs(driver, vm) < 0)

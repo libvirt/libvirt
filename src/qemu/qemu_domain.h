@@ -27,6 +27,7 @@
 # include "threads.h"
 # include "domain_conf.h"
 # include "qemu_monitor.h"
+# include "qemu_agent.h"
 # include "qemu_conf.h"
 # include "bitmap.h"
 
@@ -102,6 +103,11 @@ struct _qemuDomainObjPrivate {
     int monJSON;
     bool monError;
     unsigned long long monStart;
+
+    qemuAgentPtr agent;
+    bool agentError;
+    unsigned long long agentStart;
+
     bool gotShutdown;
     bool beingDestroyed;
     char *pidfile;
@@ -192,6 +198,22 @@ int qemuDomainObjEnterMonitorAsync(struct qemud_driver *driver,
 void qemuDomainObjExitMonitorWithDriver(struct qemud_driver *driver,
                                         virDomainObjPtr obj)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+
+void qemuDomainObjEnterAgent(struct qemud_driver *driver,
+                             virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+void qemuDomainObjExitAgent(struct qemud_driver *driver,
+                            virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+void qemuDomainObjEnterAgentWithDriver(struct qemud_driver *driver,
+                                       virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+void qemuDomainObjExitAgentWithDriver(struct qemud_driver *driver,
+                                      virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+
 void qemuDomainObjEnterRemoteWithDriver(struct qemud_driver *driver,
                                         virDomainObjPtr obj)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
