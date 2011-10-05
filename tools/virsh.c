@@ -3850,6 +3850,7 @@ static const vshCmdInfo info_shutdown[] = {
 
 static const vshCmdOptDef opts_shutdown[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"mode", VSH_OT_STRING, VSH_OFLAG_NONE, N_("shutdown mode: acpi|agent")},
     {NULL, 0, 0, NULL}
 };
 
@@ -3859,14 +3860,37 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     bool ret = true;
     const char *name;
+    const char *mode = NULL;
+    int flags = 0;
+    int rv;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
 
+    if (vshCommandOptString(cmd, "mode", &mode) < 0) {
+        vshError(ctl, "%s", _("Invalid type"));
+        return false;
+    }
+
+    if (mode) {
+        if (STREQ(mode, "acpi")) {
+            flags |= VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN;
+        } else if (STREQ(mode, "agent")) {
+            flags |= VIR_DOMAIN_SHUTDOWN_GUEST_AGENT;
+        } else {
+            vshError(ctl, _("Unknown mode %s value, expecting 'acpi' or 'agent'"), mode);
+            return false;
+        }
+    }
+
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
-    if (virDomainShutdown(dom) == 0) {
+    if (flags)
+        rv = virDomainShutdownFlags(dom, flags);
+    else
+        rv = virDomainShutdown(dom);
+    if (rv == 0) {
         vshPrint(ctl, _("Domain %s is being shutdown\n"), name);
     } else {
         vshError(ctl, _("Failed to shutdown domain %s"), name);
@@ -3888,6 +3912,7 @@ static const vshCmdInfo info_reboot[] = {
 
 static const vshCmdOptDef opts_reboot[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"mode", VSH_OT_STRING, VSH_OFLAG_NONE, N_("shutdown mode: acpi|agent")},
     {NULL, 0, 0, NULL}
 };
 
@@ -3897,14 +3922,32 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     bool ret = true;
     const char *name;
+    const char *mode = NULL;
+    int flags = 0;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
 
+    if (vshCommandOptString(cmd, "mode", &mode) < 0) {
+        vshError(ctl, "%s", _("Invalid type"));
+        return false;
+    }
+
+    if (mode) {
+        if (STREQ(mode, "acpi")) {
+            flags |= VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN;
+        } else if (STREQ(mode, "agent")) {
+            flags |= VIR_DOMAIN_SHUTDOWN_GUEST_AGENT;
+        } else {
+            vshError(ctl, _("Unknown mode %s value, expecting 'acpi' or 'agent'"), mode);
+            return false;
+        }
+    }
+
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
-    if (virDomainReboot(dom, 0) == 0) {
+    if (virDomainReboot(dom, flags) == 0) {
         vshPrint(ctl, _("Domain %s is being rebooted\n"), name);
     } else {
         vshError(ctl, _("Failed to reboot domain %s"), name);

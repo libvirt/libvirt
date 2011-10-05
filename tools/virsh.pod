@@ -807,7 +807,7 @@ If I<--live> is specified, set scheduler information of a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.
 If I<--current> is specified, affect the current guest state.
 
-=item B<reboot> I<domain-id>
+=item B<reboot> I<domain-id> [I<--mode acpi|agent>]
 
 Reboot a domain.  This acts just as if the domain had the B<reboot>
 command run from the console.  The command returns as soon as it has
@@ -816,6 +816,10 @@ domain actually reboots.
 
 The exact behavior of a domain when it reboots is set by the
 I<on_reboot> parameter in the domain's XML definition.
+
+By default the hypervisor will try to pick a suitable shutdown
+method. To specify an alternative method, the I<--mode> parameter
+can specify C<acpi> or C<agent>.
 
 =item B<reset> I<domain-id>
 
@@ -1190,7 +1194,7 @@ The I<--maximum> flag controls the maximum number of virtual cpus that can
 be hot-plugged the next time the domain is booted.  As such, it must only be
 used with the I<--config> flag, and not with the I<--live> flag.
 
-=item B<shutdown> I<domain-id>
+=item B<shutdown> I<domain-id> [I<--mode acpi|agent>]
 
 Gracefully shuts down a domain.  This coordinates with the domain OS
 to perform graceful shutdown, so there is no guarantee that it will
@@ -1204,6 +1208,10 @@ If I<domain-id> is transient, then the metadata of any snapshots will
 be lost once the guest stops running, but the snapshot contents still
 exist, and a new domain with the same name and UUID can restore the
 snapshot metadata with B<snapshot-create>.
+
+By default the hypervisor will try to pick a suitable shutdown
+method. To specify an alternative method, the I<--mode> parameter
+can specify C<acpi> or C<agent>.
 
 =item B<start> I<domain-name> [I<--console>] [I<--paused>] [I<--autodestroy>]
 [I<--bypass-cache>] [I<--force-boot>]
