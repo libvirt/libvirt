@@ -47,6 +47,7 @@
 
 
 #include "qemu_driver.h"
+#include "qemu_agent.h"
 #include "qemu_conf.h"
 #include "qemu_capabilities.h"
 #include "qemu_command.h"
@@ -1512,12 +1513,15 @@ cleanup:
     return ret;
 }
 
-
-static int qemuDomainShutdown(virDomainPtr dom) {
+static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
+    bool useAgent = false;
+
+    virCheckFlags(VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN |
+                  VIR_DOMAIN_SHUTDOWN_GUEST_AGENT, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1529,6 +1533,26 @@ static int qemuDomainShutdown(virDomainPtr dom) {
         qemuReportError(VIR_ERR_NO_DOMAIN,
                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if ((flags & VIR_DOMAIN_SHUTDOWN_GUEST_AGENT) ||
+        (!(flags & VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN) &&
+         priv->agent))
+        useAgent = true;
+
+    if (useAgent) {
+        if (priv->agentError) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("QEMU guest agent is not available due to an error"));
+            goto endjob;
+        }
+        if (!priv->agent) {
+            qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                            _("QEMU guest agent is not configured"));
+            goto endjob;
+        }
     }
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
@@ -1540,12 +1564,17 @@ static int qemuDomainShutdown(virDomainPtr dom) {
         goto endjob;
     }
 
-    qemuDomainSetFakeReboot(driver, vm, false);
+    if (useAgent) {
+        qemuDomainObjEnterAgent(driver, vm);
+        ret = qemuAgentShutdown(priv->agent, QEMU_AGENT_SHUTDOWN_POWERDOWN);
+        qemuDomainObjExitAgent(driver, vm);
+    } else {
+        qemuDomainSetFakeReboot(driver, vm, false);
 
-    priv = vm->privateData;
-    qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorSystemPowerdown(priv->mon);
-    qemuDomainObjExitMonitor(driver, vm);
+        qemuDomainObjEnterMonitor(driver, vm);
+        ret = qemuMonitorSystemPowerdown(priv->mon);
+        qemuDomainObjExitMonitor(driver, vm);
+    }
 
 endjob:
     if (qemuDomainObjEndJob(driver, vm) == 0)
@@ -1557,14 +1586,20 @@ cleanup:
     return ret;
 }
 
+static int qemuDomainShutdown(virDomainPtr dom) {
+    return qemuDomainShutdownFlags(dom, 0);
+}
+
 
 static int qemuDomainReboot(virDomainPtr dom, unsigned int flags) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
+    bool useAgent = false;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN |
+                  VIR_DOMAIN_SHUTDOWN_GUEST_AGENT , -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1580,36 +1615,65 @@ static int qemuDomainReboot(virDomainPtr dom, unsigned int flags) {
 
     priv = vm->privateData;
 
-    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON)) {
-        if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
+    if ((flags & VIR_DOMAIN_SHUTDOWN_GUEST_AGENT) ||
+        (!(flags & VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN) &&
+         priv->agent))
+        useAgent = true;
+
+    if (useAgent) {
+        if (priv->agentError) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("QEMU guest agent is not available due to an error"));
+            goto cleanup;
+        }
+        if (!priv->agent) {
+            qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                            _("QEMU guest agent is not configured"));
+            goto cleanup;
+        }
+    } else {
+#if HAVE_YAJL
+        if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON)) {
+            if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
+                qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                                _("Reboot is not supported with this QEMU binary"));
+                goto cleanup;
+            }
+        } else {
+#endif
             qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                            _("Reboot is not supported with this QEMU binary"));
+                            _("Reboot is not supported without the JSON monitor"));
             goto cleanup;
+#if HAVE_YAJL
         }
+#endif
+    }
 
-        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
-            goto cleanup;
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
 
-        if (!virDomainObjIsActive(vm)) {
-            qemuReportError(VIR_ERR_OPERATION_INVALID,
-                            "%s", _("domain is not running"));
-            goto endjob;
-        }
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto endjob;
+    }
 
+    if (useAgent) {
+        qemuDomainObjEnterAgent(driver, vm);
+        ret = qemuAgentShutdown(priv->agent, QEMU_AGENT_SHUTDOWN_REBOOT);
+        qemuDomainObjExitAgent(driver, vm);
+    } else {
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorSystemPowerdown(priv->mon);
         qemuDomainObjExitMonitor(driver, vm);
 
         if (ret == 0)
             qemuDomainSetFakeReboot(driver, vm, true);
-
-    endjob:
-        if (qemuDomainObjEndJob(driver, vm) == 0)
-            vm = NULL;
-    } else {
-        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                        _("Reboot is not supported without the JSON monitor"));
     }
+
+endjob:
+    if (qemuDomainObjEndJob(driver, vm) == 0)
+        vm = NULL;
 
 cleanup:
     if (vm)
@@ -11627,6 +11691,7 @@ static virDriver qemuDriver = {
     .domainSuspend = qemudDomainSuspend, /* 0.2.0 */
     .domainResume = qemudDomainResume, /* 0.2.0 */
     .domainShutdown = qemuDomainShutdown, /* 0.2.0 */
+    .domainShutdownFlags = qemuDomainShutdownFlags, /* 0.9.10 */
     .domainReboot = qemuDomainReboot, /* 0.9.3 */
     .domainReset = qemuDomainReset, /* 0.9.7 */
     .domainDestroy = qemuDomainDestroy, /* 0.2.0 */
