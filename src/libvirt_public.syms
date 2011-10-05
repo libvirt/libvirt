@@ -516,4 +516,8 @@ LIBVIRT_0.9.9 {
         virDomainSetNumaParameters;
 } LIBVIRT_0.9.8;
 
+LIBVIRT_0.9.10 {
+    global:
+        virDomainShutdownFlags;
+} LIBVIRT_0.9.9;
 # .... define new API here using predicted next version number ....

@@ -851,18 +851,27 @@ xenUnifiedDomainResume (virDomainPtr dom)
 }
 
 static int
-xenUnifiedDomainShutdown (virDomainPtr dom)
+xenUnifiedDomainShutdownFlags(virDomainPtr dom,
+                              unsigned int flags)
 {
     GET_PRIVATE(dom->conn);
     int i;
 
+    virCheckFlags(0, -1);
+
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] &&
             drivers[i]->xenDomainShutdown &&
-            drivers[i]->xenDomainShutdown (dom) == 0)
+            drivers[i]->xenDomainShutdown(dom) == 0)
             return 0;
 
     return -1;
+}
+
+static int
+xenUnifiedDomainShutdown(virDomainPtr dom)
+{
+    return xenUnifiedDomainShutdownFlags(dom, 0);
 }
 
 static int
@@ -2187,6 +2196,7 @@ static virDriver xenUnifiedDriver = {
     .domainSuspend = xenUnifiedDomainSuspend, /* 0.0.3 */
     .domainResume = xenUnifiedDomainResume, /* 0.0.3 */
     .domainShutdown = xenUnifiedDomainShutdown, /* 0.0.3 */
+    .domainShutdownFlags = xenUnifiedDomainShutdownFlags, /* 0.9.10 */
     .domainReboot = xenUnifiedDomainReboot, /* 0.1.0 */
     .domainDestroy = xenUnifiedDomainDestroy, /* 0.0.3 */
     .domainDestroyFlags = xenUnifiedDomainDestroyFlags, /* 0.9.4 */

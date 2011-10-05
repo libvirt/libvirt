@@ -1513,11 +1513,14 @@ cleanup:
 }
 
 
-static int umlDomainShutdown(virDomainPtr dom) {
+static int umlDomainShutdownFlags(virDomainPtr dom,
+                                  unsigned int flags) {
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *info = NULL;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     umlDriverLock(driver);
     vm = virDomainFindByID(&driver->domains, dom->id);
@@ -1544,6 +1547,11 @@ cleanup:
     return ret;
 }
 
+static int
+umlDomainShutdown(virDomainPtr dom)
+{
+    return umlDomainShutdownFlags(dom, 0);
+}
 
 static int
 umlDomainDestroyFlags(virDomainPtr dom,
@@ -2533,6 +2541,7 @@ static virDriver umlDriver = {
     .domainLookupByUUID = umlDomainLookupByUUID, /* 0.5.0 */
     .domainLookupByName = umlDomainLookupByName, /* 0.5.0 */
     .domainShutdown = umlDomainShutdown, /* 0.5.0 */
+    .domainShutdownFlags = umlDomainShutdownFlags, /* 0.9.10 */
     .domainDestroy = umlDomainDestroy, /* 0.5.0 */
     .domainDestroyFlags = umlDomainDestroyFlags, /* 0.9.4 */
     .domainGetOSType = umlDomainGetOSType, /* 0.5.0 */

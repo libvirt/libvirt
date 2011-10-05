@@ -980,6 +980,7 @@ static virDriver vmwareDriver = {
     .domainSuspend = vmwareDomainSuspend, /* 0.8.7 */
     .domainResume = vmwareDomainResume, /* 0.8.7 */
     .domainShutdown = vmwareDomainShutdown, /* 0.8.7 */
+    .domainShutdownFlags = vmwareDomainShutdownFlags, /* 0.9.10 */
     .domainReboot = vmwareDomainReboot, /* 0.8.7 */
     .domainDestroy = vmwareDomainShutdown, /* 0.8.7 */
     .domainDestroyFlags = vmwareDomainShutdownFlags, /* 0.9.4 */

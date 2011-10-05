@@ -783,12 +783,15 @@ xenapiDomainResume (virDomainPtr dom)
  * Returns 0 on success or -1 in case of error
  */
 static int
-xenapiDomainShutdown (virDomainPtr dom)
+xenapiDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
 {
     /* vm.clean_shutdown */
     xen_vm vm;
     xen_vm_set *vms;
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
+
+    virCheckFlags(0, -1);
+
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
             xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
@@ -809,6 +812,12 @@ xenapiDomainShutdown (virDomainPtr dom)
     if (vms) xen_vm_set_free(vms);
     xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
+}
+
+static int
+xenapiDomainShutdown(virDomainPtr dom)
+{
+    return xenapiDomainShutdownFlags(dom, 0);
 }
 
 /*
@@ -1928,6 +1937,7 @@ static virDriver xenapiDriver = {
     .domainSuspend = xenapiDomainSuspend, /* 0.8.0 */
     .domainResume = xenapiDomainResume, /* 0.8.0 */
     .domainShutdown = xenapiDomainShutdown, /* 0.8.0 */
+    .domainShutdownFlags = xenapiDomainShutdownFlags, /* 0.9.10 */
     .domainReboot = xenapiDomainReboot, /* 0.8.0 */
     .domainDestroy = xenapiDomainDestroy, /* 0.8.0 */
     .domainDestroyFlags = xenapiDomainDestroyFlags, /* 0.9.4 */

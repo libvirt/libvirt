@@ -2349,6 +2349,11 @@ struct remote_node_suspend_for_duration_args {
     unsigned int flags;
 };
 
+struct remote_domain_shutdown_flags_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
 
 /*----- Protocol. -----*/
 
@@ -2654,7 +2659,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_SET_NUMA_PARAMETERS = 254, /* autogen autogen */
     REMOTE_PROC_DOMAIN_GET_NUMA_PARAMETERS = 255, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_SET_INTERFACE_PARAMETERS = 256, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_GET_INTERFACE_PARAMETERS = 257 /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_GET_INTERFACE_PARAMETERS = 257, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_SHUTDOWN_FLAGS = 258 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

@@ -1832,6 +1832,10 @@ struct remote_node_suspend_for_duration_args {
         uint64_t                   duration;
         u_int                      flags;
 };
+struct remote_domain_shutdown_flags_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
 enum remote_procedure {
         REMOTE_PROC_OPEN = 1,
         REMOTE_PROC_CLOSE = 2,
@@ -2090,4 +2094,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_GET_NUMA_PARAMETERS = 255,
         REMOTE_PROC_DOMAIN_SET_INTERFACE_PARAMETERS = 256,
         REMOTE_PROC_DOMAIN_GET_INTERFACE_PARAMETERS = 257,
+        REMOTE_PROC_DOMAIN_SHUTDOWN_FLAGS = 258,
 };

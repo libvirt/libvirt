@@ -793,6 +793,10 @@ typedef int
                                   virTypedParameterPtr params,
                                   int *nparams,
                                   unsigned int flags);
+typedef int
+    (*virDrvDomainShutdownFlags)(virDomainPtr domain,
+                                 unsigned int flags);
+
 
 /**
  * _virDriver:
@@ -829,6 +833,7 @@ struct _virDriver {
     virDrvDomainSuspend		domainSuspend;
     virDrvDomainResume		domainResume;
     virDrvDomainShutdown		domainShutdown;
+    virDrvDomainShutdownFlags   domainShutdownFlags;
     virDrvDomainReboot		domainReboot;
     virDrvDomainReset       domainReset;
     virDrvDomainDestroy		domainDestroy;

@@ -3106,13 +3106,86 @@ error:
 }
 
 /**
+ * virDomainShutdownFlags:
+ * @domain: a domain object
+ * @flags: bitwise-OR of virDomainShutdownFlagValues
+ *
+ * Shutdown a domain, the domain object is still usable thereafter but
+ * the domain OS is being stopped. Note that the guest OS may ignore the
+ * request.  For guests that react to a shutdown request, the differences
+ * from virDomainDestroy() are that the guest's disk storage will be in a
+ * stable state rather than having the (virtual) power cord pulled, and
+ * this command returns as soon as the shutdown request is issued rather
+ * than blocking until the guest is no longer running.
+ *
+ * If the domain is transient and has any snapshot metadata (see
+ * virDomainSnapshotNum()), then that metadata will automatically
+ * be deleted when the domain quits.
+ *
+ * If @flags is set to zero, then the hypervisor will choose the
+ * method of shutdown it considers best. To have greater control
+ * pass exactly one of the virDomainShutdownFlagValues.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    /* At most one of these two flags should be set.  */
+    if ((flags & VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN) &&
+        (flags & VIR_DOMAIN_SHUTDOWN_GUEST_AGENT)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    conn = domain->conn;
+
+    if (conn->driver->domainShutdownFlags) {
+        int ret;
+        ret = conn->driver->domainShutdownFlags(domain, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
  * virDomainReboot:
  * @domain: a domain object
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virDomainRebootFlagValues
  *
  * Reboot a domain, the domain object is still usable there after but
  * the domain OS is being stopped for a restart.
  * Note that the guest OS may ignore the request.
+ *
+ * If @flags is set to zero, then the hypervisor will choose the
+ * method of shutdown it considers best. To have greater control
+ * pass exactly one of the virDomainRebootFlagValues.
+ *
+ * To use guest agent (VIR_DOMAIN_REBOOT_GUEST_AGENT) the domain XML
+ * must have <channel> configured.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -3132,6 +3205,13 @@ virDomainReboot(virDomainPtr domain, unsigned int flags)
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    /* At most one of these two flags should be set.  */
+    if ((flags & VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN) &&
+        (flags & VIR_DOMAIN_SHUTDOWN_GUEST_AGENT)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 

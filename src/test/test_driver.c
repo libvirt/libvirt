@@ -1542,12 +1542,15 @@ cleanup:
     return ret;
 }
 
-static int testShutdownDomain (virDomainPtr domain)
+static int testShutdownDomainFlags(virDomainPtr domain,
+                                   unsigned int flags)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     virDomainEventPtr event = NULL;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     testDriverLock(privconn);
     privdom = virDomainFindByName(&privconn->domains,
@@ -1583,6 +1586,11 @@ cleanup:
         testDomainEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
+}
+
+static int testShutdownDomain (virDomainPtr domain)
+{
+    return testShutdownDomainFlags(domain, 0);
 }
 
 /* Similar behaviour as shutdown */
@@ -5523,6 +5531,7 @@ static virDriver testDriver = {
     .domainSuspend = testPauseDomain, /* 0.1.1 */
     .domainResume = testResumeDomain, /* 0.1.1 */
     .domainShutdown = testShutdownDomain, /* 0.1.1 */
+    .domainShutdownFlags = testShutdownDomainFlags, /* 0.9.10 */
     .domainReboot = testRebootDomain, /* 0.1.1 */
     .domainDestroy = testDestroyDomain, /* 0.1.1 */
     .domainGetOSType = testGetOSType, /* 0.1.9 */

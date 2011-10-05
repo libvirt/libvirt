@@ -1693,6 +1693,7 @@ static virDriver openvzDriver = {
     .domainSuspend = openvzDomainSuspend, /* 0.8.3 */
     .domainResume = openvzDomainResume, /* 0.8.3 */
     .domainShutdown = openvzDomainShutdown, /* 0.3.1 */
+    .domainShutdownFlags = openvzDomainShutdownFlags, /* 0.9.10 */
     .domainReboot = openvzDomainReboot, /* 0.3.1 */
     .domainDestroy = openvzDomainShutdown, /* 0.3.1 */
     .domainDestroyFlags = openvzDomainShutdownFlags, /* 0.9.4 */

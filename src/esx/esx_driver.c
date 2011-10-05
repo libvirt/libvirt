@@ -1887,13 +1887,15 @@ esxDomainResume(virDomainPtr domain)
 
 
 static int
-esxDomainShutdown(virDomainPtr domain)
+esxDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
 {
     int result = -1;
     esxPrivate *priv = domain->conn->privateData;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_VirtualMachinePowerState powerState;
+
+    virCheckFlags(0, -1);
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
@@ -1927,6 +1929,12 @@ esxDomainShutdown(virDomainPtr domain)
     return result;
 }
 
+
+static int
+esxDomainShutdown(virDomainPtr domain)
+{
+    return esxDomainShutdownFlags(domain, 0);
+}
 
 
 static int
@@ -4953,6 +4961,7 @@ static virDriver esxDriver = {
     .domainSuspend = esxDomainSuspend, /* 0.7.0 */
     .domainResume = esxDomainResume, /* 0.7.0 */
     .domainShutdown = esxDomainShutdown, /* 0.7.0 */
+    .domainShutdownFlags = esxDomainShutdownFlags, /* 0.9.10 */
     .domainReboot = esxDomainReboot, /* 0.7.0 */
     .domainDestroy = esxDomainDestroy, /* 0.7.0 */
     .domainDestroyFlags = esxDomainDestroyFlags, /* 0.9.4 */
