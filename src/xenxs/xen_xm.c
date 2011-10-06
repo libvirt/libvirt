@@ -680,8 +680,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 }
             }
 
-            if (bridge[0] || STREQ(script, "vif-bridge") ||
-                STREQ(script, "vif-vnic")) {
+            if (bridge[0] || STREQ_NULLABLE(script, "vif-bridge") ||
+                STREQ_NULLABLE(script, "vif-vnic")) {
                 net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
             } else {
                 net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
@@ -698,7 +698,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                     !(net->data.bridge.ipaddr = strdup(ip)))
                     goto no_memory;
             } else {
-                if (script[0] &&
+                if (script && script[0] &&
                     !(net->data.ethernet.script = strdup(script)))
                     goto no_memory;
                 if (ip[0] &&
