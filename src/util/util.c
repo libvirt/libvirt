@@ -2546,8 +2546,10 @@ OVERWRITTEN AND LOST. Changes to this xml configuration should be made using:\n\
 or other application using the libvirt API.\n\
 -->\n\n";
 
-    if (fd < 0 || !name || !cmd)
+    if (fd < 0 || !name || !cmd) {
+        errno = EINVAL;
         return -1;
+    }
 
     len = strlen(prologue);
     if (safewrite(fd, prologue, len) != len)

@@ -1300,6 +1300,7 @@ virKeycodeValueTranslate;
 # xml.h
 virXMLParseHelper;
 virXMLPropString;
+virXMLSaveFile;
 virXPathBoolean;
 virXPathInt;
 virXPathLong;

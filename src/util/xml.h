@@ -138,4 +138,9 @@ xmlDocPtr      virXMLParseHelper(int domcode,
 # define virXMLParseFileCtxt(filename, pctxt)                           \
     virXMLParseHelper(VIR_FROM_THIS, filename, NULL, NULL, pctxt)
 
+int virXMLSaveFile(const char *path,
+                   const char *warnName,
+                   const char *warnCommand,
+                   const char *xml);
+
 #endif                          /* __VIR_XML_H__ */
