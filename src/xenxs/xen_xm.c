@@ -174,21 +174,38 @@ static int xenXMConfigCopyStringOpt(virConfPtr conf,
 /* Convenience method to grab a string UUID from the config file object */
 static int xenXMConfigGetUUID(virConfPtr conf, const char *name, unsigned char *uuid) {
     virConfValuePtr val;
-    if (!uuid || !name || !conf)
-        return (-1);
-    if (!(val = virConfGetValue(conf, name))) {
-        return (-1);
+
+    if (!uuid || !name || !conf) {
+        XENXS_ERROR(VIR_ERR_INVALID_ARG,
+                   _("Arguments must be non null"));
+        return -1;
     }
 
-    if (val->type != VIR_CONF_STRING)
-        return (-1);
-    if (!val->str)
-        return (-1);
+    if (!(val = virConfGetValue(conf, name))) {
+        XENXS_ERROR(VIR_ERR_CONF_SYNTAX,
+                   _("config value %s was missing"), name);
+        return -1;
+    }
 
-    if (virUUIDParse(val->str, uuid) < 0)
-        return (-1);
+    if (val->type != VIR_CONF_STRING) {
+        XENXS_ERROR(VIR_ERR_CONF_SYNTAX,
+                   _("config value %s not a string"), name);
+        return -1;
+    }
 
-    return (0);
+    if (!val->str) {
+        XENXS_ERROR(VIR_ERR_CONF_SYNTAX,
+                   _("%s can't be empty"), name);
+        return -1;
+    }
+
+    if (virUUIDParse(val->str, uuid) < 0) {
+        XENXS_ERROR(VIR_ERR_CONF_SYNTAX,
+                   _("%s not parseable"), val->str);
+        return -1;
+    }
+
+    return 0;
 }
 
 #define MAX_VFB 1024
