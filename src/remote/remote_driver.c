@@ -3315,7 +3315,6 @@ remoteDomainBuildEventControlError(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
         return;
 
     event = virDomainEventControlErrorNewFromDom(dom);
-    xdr_free ((xdrproc_t) &xdr_remote_domain_event_control_error_msg, (char *) &msg);
 
     virDomainFree(dom);
 
