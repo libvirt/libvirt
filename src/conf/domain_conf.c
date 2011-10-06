@@ -11713,25 +11713,6 @@ virDomainSnapshotDefParseString(const char *xmlStr,
 
     def->description = virXPathString("string(./description)", ctxt);
 
-    if ((i = virXPathNodeSet("./disks/*", ctxt, &nodes)) < 0)
-        goto cleanup;
-    if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_DISKS) {
-        def->ndisks = i;
-        if (def->ndisks && VIR_ALLOC_N(def->disks, def->ndisks) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-        for (i = 0; i < def->ndisks; i++) {
-            if (virDomainSnapshotDiskDefParseXML(nodes[i], &def->disks[i]) < 0)
-                goto cleanup;
-        }
-        VIR_FREE(nodes);
-    } else if (i) {
-        virDomainReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                             _("unable to handle disk requests in snapshot"));
-        goto cleanup;
-    }
-
     if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE) {
         if (virXPathLongLong("string(./creationTime)", ctxt,
                              &def->creationTime) < 0) {
@@ -11747,13 +11728,13 @@ virDomainSnapshotDefParseString(const char *xmlStr,
             /* there was no state in an existing snapshot; this
              * should never happen
              */
-            virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+            virDomainReportError(VIR_ERR_XML_ERROR, "%s",
                                  _("missing state from existing snapshot"));
             goto cleanup;
         }
         def->state = virDomainSnapshotStateTypeFromString(state);
         if (def->state < 0) {
-            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+            virDomainReportError(VIR_ERR_XML_ERROR,
                                  _("Invalid state '%s' in domain snapshot XML"),
                                  state);
             goto cleanup;
@@ -11783,6 +11764,27 @@ virDomainSnapshotDefParseString(const char *xmlStr,
         }
     } else {
         def->creationTime = tv.tv_sec;
+    }
+
+    if ((i = virXPathNodeSet("./disks/*", ctxt, &nodes)) < 0)
+        goto cleanup;
+    if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_DISKS ||
+        (flags & VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE &&
+         def->state == VIR_DOMAIN_DISK_SNAPSHOT)) {
+        def->ndisks = i;
+        if (def->ndisks && VIR_ALLOC_N(def->disks, def->ndisks) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        for (i = 0; i < def->ndisks; i++) {
+            if (virDomainSnapshotDiskDefParseXML(nodes[i], &def->disks[i]) < 0)
+                goto cleanup;
+        }
+        VIR_FREE(nodes);
+    } else if (i) {
+        virDomainReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                             _("unable to handle disk requests in snapshot"));
+        goto cleanup;
     }
 
     if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL) {
