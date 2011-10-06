@@ -12817,6 +12817,45 @@ cleanup:
     return ret;
 }
 
+/* Helper for resolving {--current | --ARG name} into a snapshot
+ * belonging to DOM.  If EXCLUSIVE, fail if both --current and arg are
+ * present.  On success, populate *SNAP and *NAME, before returning 0.
+ * On failure, return -1 after issuing an error message.  */
+static int
+vshLookupSnapshot(vshControl *ctl, const vshCmd *cmd,
+                  const char *arg, bool exclusive, virDomainPtr dom,
+                  virDomainSnapshotPtr *snap, const char **name)
+{
+    bool current = vshCommandOptBool(cmd, "current");
+    const char *snapname = NULL;
+
+    if (vshCommandOptString(cmd, arg, &snapname) < 0) {
+        vshError(ctl, _("invalid argument for --%s"), arg);
+        return -1;
+    }
+
+    if (exclusive && current && snapname) {
+        vshError(ctl, _("--%s and --current are mutually exclusive"), arg);
+        return -1;
+    }
+
+    if (snapname) {
+        *snap = virDomainSnapshotLookupByName(dom, snapname, 0);
+    } else if (current) {
+        *snap = virDomainSnapshotCurrent(dom, 0);
+    } else {
+        vshError(ctl, _("--%s or --current is required"), arg);
+        return -1;
+    }
+    if (!*snap) {
+        virshReportError(ctl);
+        return -1;
+    }
+
+    *name = virDomainSnapshotGetName(*snap);
+    return 0;
+}
+
 /*
  * "snapshot-edit" command
  */
@@ -12828,7 +12867,7 @@ static const vshCmdInfo info_snapshot_edit[] = {
 
 static const vshCmdOptDef opts_snapshot_edit[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"snapshotname", VSH_OT_DATA, VSH_OFLAG_REQ, N_("snapshot name")},
+    {"snapshotname", VSH_OT_DATA, 0, N_("snapshot name")},
     {"current", VSH_OT_BOOL, 0, N_("also set edited snapshot as current")},
     {"rename", VSH_OT_BOOL, 0, N_("allow renaming an existing snapshot")},
     {"clone", VSH_OT_BOOL, 0, N_("allow cloning to new name")},
@@ -12858,21 +12897,19 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (vshCommandOptBool(cmd, "current"))
+    if (vshCommandOptBool(cmd, "current") &&
+        vshCommandOptBool(cmd, "snapshotname"))
         define_flags |= VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
 
-    if (vshCommandOptString(cmd, "snapshotname", &name) <= 0)
-        goto cleanup;
-
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
         goto cleanup;
 
-    snapshot = virDomainSnapshotLookupByName(dom, name, 0);
-    if (snapshot == NULL)
+    if (vshLookupSnapshot(ctl, cmd, "snapshotname", false, dom,
+                          &snapshot, &name) < 0)
         goto cleanup;
 
     /* Get the XML configuration of the snapshot.  */
@@ -13147,6 +13184,8 @@ static const vshCmdOptDef opts_snapshot_list[] = {
      N_("list only snapshots that have metadata that would prevent undefine")},
     {"tree", VSH_OT_BOOL, 0, N_("list snapshots in a tree")},
     {"from", VSH_OT_DATA, 0, N_("limit list to children of given snapshot")},
+    {"current", VSH_OT_BOOL, 0,
+     N_("limit list to children of current snapshot")},
     {"descendants", VSH_OT_BOOL, 0, N_("with --from, list all descendants")},
     {NULL, 0, 0, NULL}
 };
@@ -13180,10 +13219,17 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     int start_index = -1;
     bool descendants = false;
 
-    if (vshCommandOptString(cmd, "from", &from) < 0) {
-        vshError(ctl, _("invalid from argument '%s'"), from);
+    if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
-    }
+
+    dom = vshCommandOptDomain(ctl, cmd, NULL);
+    if (dom == NULL)
+        goto cleanup;
+
+    if ((vshCommandOptBool(cmd, "from") ||
+         vshCommandOptBool(cmd, "current")) &&
+        vshLookupSnapshot(ctl, cmd, "from", true, dom, &start, &from) < 0)
+        goto cleanup;
 
     if (vshCommandOptBool(cmd, "parent")) {
         if (vshCommandOptBool(cmd, "roots")) {
@@ -13214,18 +13260,8 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_SNAPSHOT_LIST_METADATA;
     }
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
-
-    dom = vshCommandOptDomain(ctl, cmd, NULL);
-    if (dom == NULL)
-        goto cleanup;
-
     if (from) {
         descendants = vshCommandOptBool(cmd, "descendants");
-        start = virDomainSnapshotLookupByName(dom, from, 0);
-        if (!start)
-            goto cleanup;
         if (descendants || tree) {
             flags |= VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
         }
@@ -13556,7 +13592,8 @@ static const vshCmdInfo info_snapshot_parent[] = {
 
 static const vshCmdOptDef opts_snapshot_parent[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"snapshotname", VSH_OT_DATA, VSH_OFLAG_REQ, N_("snapshot name")},
+    {"snapshotname", VSH_OT_DATA, 0, N_("find parent of snapshot name")},
+    {"current", VSH_OT_BOOL, 0, N_("find parent of current snapshot")},
     {NULL, 0, 0, NULL}
 };
 
@@ -13576,11 +13613,8 @@ cmdSnapshotParent(vshControl *ctl, const vshCmd *cmd)
     if (dom == NULL)
         goto cleanup;
 
-    if (vshCommandOptString(cmd, "snapshotname", &name) <= 0)
-        goto cleanup;
-
-    snapshot = virDomainSnapshotLookupByName(dom, name, 0);
-    if (snapshot == NULL)
+    if (vshLookupSnapshot(ctl, cmd, "snapshotname", true, dom,
+                          &snapshot, &name) < 0)
         goto cleanup;
 
     if (vshGetSnapshotParent(ctl, snapshot, &parent) < 0)
@@ -13615,7 +13649,8 @@ static const vshCmdInfo info_snapshot_revert[] = {
 
 static const vshCmdOptDef opts_snapshot_revert[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"snapshotname", VSH_OT_DATA, VSH_OFLAG_REQ, N_("snapshot name")},
+    {"snapshotname", VSH_OT_DATA, 0, N_("snapshot name")},
+    {"current", VSH_OT_BOOL, 0, N_("revert to current snapshot")},
     {"running", VSH_OT_BOOL, 0, N_("after reverting, change state to running")},
     {"paused", VSH_OT_BOOL, 0, N_("after reverting, change state to paused")},
     {"force", VSH_OT_BOOL, 0, N_("try harder on risky reverts")},
@@ -13651,11 +13686,8 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
     if (dom == NULL)
         goto cleanup;
 
-    if (vshCommandOptString(cmd, "snapshotname", &name) <= 0)
-        goto cleanup;
-
-    snapshot = virDomainSnapshotLookupByName(dom, name, 0);
-    if (snapshot == NULL)
+    if (vshLookupSnapshot(ctl, cmd, "snapshotname", true, dom,
+                          &snapshot, &name) < 0)
         goto cleanup;
 
     result = virDomainRevertToSnapshot(snapshot, flags);
@@ -13691,7 +13723,8 @@ static const vshCmdInfo info_snapshot_delete[] = {
 
 static const vshCmdOptDef opts_snapshot_delete[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"snapshotname", VSH_OT_DATA, VSH_OFLAG_REQ, N_("snapshot name")},
+    {"snapshotname", VSH_OT_DATA, 0, N_("snapshot name")},
+    {"current", VSH_OT_BOOL, 0, N_("delete current snapshot")},
     {"children", VSH_OT_BOOL, 0, N_("delete snapshot and all children")},
     {"children-only", VSH_OT_BOOL, 0, N_("delete children but not snapshot")},
     {"metadata", VSH_OT_BOOL, 0,
@@ -13715,7 +13748,8 @@ cmdSnapshotDelete(vshControl *ctl, const vshCmd *cmd)
     if (dom == NULL)
         goto cleanup;
 
-    if (vshCommandOptString(cmd, "snapshotname", &name) <= 0)
+    if (vshLookupSnapshot(ctl, cmd, "snapshotname", true, dom,
+                          &snapshot, &name) < 0)
         goto cleanup;
 
     if (vshCommandOptBool(cmd, "children"))
@@ -13724,10 +13758,6 @@ cmdSnapshotDelete(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY;
     if (vshCommandOptBool(cmd, "metadata"))
         flags |= VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY;
-
-    snapshot = virDomainSnapshotLookupByName(dom, name, 0);
-    if (snapshot == NULL)
-        goto cleanup;
 
     /* XXX If we wanted, we could emulate DELETE_CHILDREN_ONLY even on
      * older servers that reject the flag, by manually computing the

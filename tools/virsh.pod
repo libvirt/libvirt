@@ -1951,12 +1951,14 @@ the XML.
 With I<snapshotname>, this is a request to make the existing named
 snapshot become the current snapshot, without reverting the domain.
 
-=item B<snapshot-edit> I<domain> I<snapshotname> [I<--current>]
+=item B<snapshot-edit> I<domain> [I<snapshotname>] [I<--current>]
 {[I<--rename>] | [I<--clone>]}
 
 Edit the XML configuration file for I<snapshotname> of a domain.  If
-I<--current> is specified, also force the edited snapshot to become
-the current snapshot.
+both I<snapshotname> and I<--current> are specified, also force the
+edited snapshot to become the current snapshot.  If I<snapshotname>
+is omitted, then I<--current> must be supplied, to edit the current
+snapshot.
 
 This is equivalent to:
 
@@ -1978,7 +1980,7 @@ snapshots, such as internal snapshots within a single qcow2 file, are
 accessible only from the original name.
 
 =item B<snapshot-list> I<domain> [{I<--parent> | I<--roots> | I<--tree>}]
-[I<--metadata>] [[I<--from>] B<snapshot> [I<--descendants>]]
+[I<--metadata>] [{[I<--from>] B<snapshot> | I<--current>} [I<--descendants>]]
 
 List all of the available snapshots for the given domain, defaulting
 to show columns for the snapshot name, creation time, and domain state.
@@ -1990,7 +1992,8 @@ If I<--tree> is specified, the output will be in a tree format, listing
 just snapshot names.  These three options are mutually exclusive.
 
 If I<--from> is provided, filter the list to snapshots which are
-children of the given B<snapshot>.  When used in isolation or with
+children of the given B<snapshot>; or if I<--current> is provided,
+start at the current snapshot.  When used in isolation or with
 I<--parent>, the list is limited to direct children unless
 I<--descendants> is also present.  When used with I<--tree>, the
 use of I<--descendants> is implied.  This option is not compatible
@@ -2005,15 +2008,18 @@ a transient domain.
 
 Output the snapshot XML for the domain's snapshot named I<snapshot>.
 Using I<--security-info> will also include security sensitive information.
+Use B<snapshot-current> to easily access the XML of the current snapshot.
 
-=item B<snapshot-parent> I<domain> I<snapshot>
+=item B<snapshot-parent> I<domain> {I<snapshot> | I<--current>}
 
-Output the name of the parent snapshot for the given I<snapshot>, if any.
+Output the name of the parent snapshot, if any, for the given
+I<snapshot>, or for the current snapshot with I<--current>.
 
-=item B<snapshot-revert> I<domain> I<snapshot> [{I<--running> | I<--paused>}]
-[I<--force>]
+=item B<snapshot-revert> I<domain> {I<snapshot> | I<--current>}
+[{I<--running> | I<--paused>}] [I<--force>]
 
-Revert the given domain to the snapshot specified by I<snapshot>.  Be aware
+Revert the given domain to the snapshot specified by I<snapshot>, or to
+the current snapshot with I<--current>.  Be aware
 that this is a destructive action; any changes in the domain since the last
 snapshot was taken will be lost.  Also note that the state of the domain after
 snapshot-revert is complete will be the state of the domain at the time
@@ -2043,10 +2049,11 @@ snapshot that uses a provably incompatible configuration, as well as
 with an inactive snapshot that is combined with the I<--start> or
 I<--pause> flag.
 
-=item B<snapshot-delete> I<domain> I<snapshot> [I<--metadata>]
+=item B<snapshot-delete> I<domain> {I<snapshot> | I<--current>} [I<--metadata>]
 [{I<--children> | I<--children-only>}]
 
-Delete the snapshot for the domain named I<snapshot>.  If this snapshot
+Delete the snapshot for the domain named I<snapshot>, or the current
+snapshot with I<--current>.  If this snapshot
 has child snapshots, changes from this snapshot will be merged into the
 children.  If I<--children> is passed, then delete this snapshot and any
 children of this snapshot.  If I<--children-only> is passed, then delete
