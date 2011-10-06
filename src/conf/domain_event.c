@@ -547,6 +547,18 @@ virDomainEventQueuePtr virDomainEventQueueNew(void)
     return ret;
 }
 
+static void
+virDomainEventStateLock(virDomainEventStatePtr state)
+{
+    virMutexLock(&state->lock);
+}
+
+static void
+virDomainEventStateUnlock(virDomainEventStatePtr state)
+{
+    virMutexUnlock(&state->lock);
+}
+
 /**
  * virDomainEventStateFree:
  * @list: virDomainEventStatePtr to free
@@ -564,6 +576,8 @@ virDomainEventStateFree(virDomainEventStatePtr state)
 
     if (state->timer != -1)
         virEventRemoveTimeout(state->timer);
+
+    virMutexDestroy(&state->lock);
     VIR_FREE(state);
 }
 
@@ -587,6 +601,13 @@ virDomainEventStateNew(virEventTimeoutCallback timeout_cb,
 
     if (VIR_ALLOC(state) < 0) {
         virReportOOMError();
+        goto error;
+    }
+
+    if (virMutexInit(&state->lock) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("unable to initialize state mutex"));
+        VIR_FREE(state);
         goto error;
     }
 
@@ -1166,6 +1187,8 @@ virDomainEventStateQueue(virDomainEventStatePtr state,
         return;
     }
 
+    virDomainEventStateLock(state);
+
     if (virDomainEventQueuePush(state->queue, event) < 0) {
         VIR_DEBUG("Error adding event to queue");
         virDomainEventFree(event);
@@ -1173,6 +1196,7 @@ virDomainEventStateQueue(virDomainEventStatePtr state,
 
     if (state->queue->count == 1)
         virEventUpdateTimeout(state->timer, 0);
+    virDomainEventStateUnlock(state);
 }
 
 void
@@ -1182,6 +1206,7 @@ virDomainEventStateFlush(virDomainEventStatePtr state,
 {
     virDomainEventQueue tempQueue;
 
+    virDomainEventStateLock(state);
     state->isDispatching = true;
 
     /* Copy the queue, so we're reentrant safe when dispatchFunc drops the
@@ -1190,17 +1215,20 @@ virDomainEventStateFlush(virDomainEventStatePtr state,
     tempQueue.events = state->queue->events;
     state->queue->count = 0;
     state->queue->events = NULL;
-
     virEventUpdateTimeout(state->timer, -1);
+    virDomainEventStateUnlock(state);
+
     virDomainEventQueueDispatch(&tempQueue,
                                 state->callbacks,
                                 dispatchFunc,
                                 opaque);
 
     /* Purge any deleted callbacks */
+    virDomainEventStateLock(state);
     virDomainEventCallbackListPurgeMarked(state->callbacks);
 
     state->isDispatching = false;
+    virDomainEventStateUnlock(state);
 }
 
 int
@@ -1208,11 +1236,16 @@ virDomainEventStateDeregister(virConnectPtr conn,
                               virDomainEventStatePtr state,
                               virConnectDomainEventCallback callback)
 {
+    int ret;
+
+    virDomainEventStateLock(state);
     if (state->isDispatching)
-        return virDomainEventCallbackListMarkDelete(conn,
-                                                    state->callbacks, callback);
+        ret = virDomainEventCallbackListMarkDelete(conn,
+                                                   state->callbacks, callback);
     else
-        return virDomainEventCallbackListRemove(conn, state->callbacks, callback);
+        ret = virDomainEventCallbackListRemove(conn, state->callbacks, callback);
+    virDomainEventStateUnlock(state);
+    return ret;
 }
 
 int
@@ -1220,10 +1253,15 @@ virDomainEventStateDeregisterAny(virConnectPtr conn,
                                  virDomainEventStatePtr state,
                                  int callbackID)
 {
+    int ret;
+
+    virDomainEventStateLock(state);
     if (state->isDispatching)
-        return virDomainEventCallbackListMarkDeleteID(conn,
-                                                      state->callbacks, callbackID);
+        ret = virDomainEventCallbackListMarkDeleteID(conn,
+                                                     state->callbacks, callbackID);
     else
-        return virDomainEventCallbackListRemoveID(conn,
-                                                  state->callbacks, callbackID);
+        ret = virDomainEventCallbackListRemoveID(conn,
+                                                 state->callbacks, callbackID);
+    virDomainEventStateUnlock(state);
+    return ret;
 }

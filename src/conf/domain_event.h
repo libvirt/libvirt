@@ -61,6 +61,7 @@ struct _virDomainEventState {
     int timer;
     /* Flag if we're in process of dispatching */
     bool isDispatching;
+    virMutex lock;
 };
 typedef struct _virDomainEventState virDomainEventState;
 typedef virDomainEventState *virDomainEventStatePtr;
