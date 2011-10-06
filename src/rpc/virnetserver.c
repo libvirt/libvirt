@@ -134,10 +134,25 @@ static void virNetServerHandleJob(void *jobOpaque, void *opaque)
               srv, job->client, job->msg, job->prog);
 
     if (!job->prog) {
-        if (virNetServerProgramUnknownError(job->client,
-                                            job->msg,
-                                            &job->msg->header) < 0)
-            goto error;
+        /* Only send back an error for type == CALL. Other
+         * message types are not expecting replies, so we
+         * must just log it & drop them
+         */
+        if (job->msg->header.type == VIR_NET_CALL) {
+            if (virNetServerProgramUnknownError(job->client,
+                                                job->msg,
+                                                &job->msg->header) < 0)
+                goto error;
+        } else {
+            VIR_INFO("Dropping client mesage, unknown program %d version %d type %d proc %d",
+                     job->msg->header.prog, job->msg->header.vers,
+                     job->msg->header.type, job->msg->header.proc);
+            /* Send a dummy reply to free up 'msg' & unblock client rx */
+            virNetMessageClear(job->msg);
+            job->msg->header.type = VIR_NET_REPLY;
+            if (virNetServerClientSendMessage(job->client, job->msg) < 0)
+                goto error;
+        }
         goto cleanup;
     }
 

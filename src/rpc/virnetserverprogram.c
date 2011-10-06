@@ -314,7 +314,18 @@ int virNetServerProgramDispatch(virNetServerProgramPtr prog,
     return ret;
 
 error:
-    ret = virNetServerProgramSendReplyError(prog, client, msg, &rerr, &msg->header);
+    if (msg->header.type == VIR_NET_CALL) {
+        ret = virNetServerProgramSendReplyError(prog, client, msg, &rerr, &msg->header);
+    } else {
+        /* Send a dummy reply to free up 'msg' & unblock client rx */
+        virNetMessageClear(msg);
+        msg->header.type = VIR_NET_REPLY;
+        if (virNetServerClientSendMessage(client, msg) < 0) {
+            ret = -1;
+            goto cleanup;
+        }
+        ret = 0;
+    }
 
 cleanup:
     return ret;
