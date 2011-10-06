@@ -496,6 +496,13 @@ following semantically named macros
 
 
 
+- To avoid having to check if a or b are NULL:
+
+  STREQ_NULLABLE(a, b)
+  STRNEQ_NULLABLE(a, b)
+
+
+
 
 
 

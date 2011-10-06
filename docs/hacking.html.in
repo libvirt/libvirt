@@ -587,6 +587,12 @@
   STRPREFIX(a,b)
 </pre>
       </li>
+      <li><p>To avoid having to check if a or b are NULL:</p>
+<pre>
+  STREQ_NULLABLE(a, b)
+  STRNEQ_NULLABLE(a, b)
+</pre>
+      </li>
     </ul>
 
 
