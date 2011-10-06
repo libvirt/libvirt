@@ -11244,8 +11244,10 @@ qemuDomainOpenConsole(virDomainPtr dom,
     int ret = -1;
     int i;
     virDomainChrDefPtr chr = NULL;
+    qemuDomainObjPrivatePtr priv;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_CONSOLE_SAFE |
+                  VIR_DOMAIN_CONSOLE_FORCE, -1);
 
     qemuDriverLock(driver);
     virUUIDFormat(dom->uuid, uuidstr);
@@ -11261,6 +11263,8 @@ qemuDomainOpenConsole(virDomainPtr dom,
                         "%s", _("domain is not running"));
         goto cleanup;
     }
+
+    priv = vm->privateData;
 
     if (dev_name) {
         for (i = 0 ; !chr && i < vm->def->nconsoles ; i++) {
@@ -11297,11 +11301,18 @@ qemuDomainOpenConsole(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virFDStreamOpenFile(st, chr->source.data.file.path,
-                            0, 0, O_RDWR) < 0)
-        goto cleanup;
+    /* handle mutually exclusive access to console devices */
+    ret = virConsoleOpen(priv->cons,
+                         chr->source.data.file.path,
+                         st,
+                         (flags & VIR_DOMAIN_CONSOLE_FORCE) != 0);
 
-    ret = 0;
+    if (ret == 1) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("Active console session exists for this domain"));
+        ret = -1;
+    }
+
 cleanup:
     if (vm)
         virDomainObjUnlock(vm);
