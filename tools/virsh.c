@@ -12869,6 +12869,10 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
     virDomainSnapshotFree(snapshot);
     snapshot = NULL;
 
+    /* strstr is safe here, since xml came from libvirt API and not user */
+    if (strstr(doc, "<state>disk-snapshot</state>"))
+        define_flags |= VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY;
+
     /* Create and open the temporary file.  */
     tmp = editWriteToTempFile(ctl, doc);
     if (!tmp)
@@ -12978,6 +12982,9 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
         xml = virDomainSnapshotGetXMLDesc(snapshot, VIR_DOMAIN_XML_SECURE);
         if (!xml)
             goto cleanup;
+        /* strstr is safe here, since xml came from libvirt API and not user */
+        if (strstr(xml, "<state>disk-snapshot</state>"))
+            flags |= VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY;
         snapshot2 = virDomainSnapshotCreateXML(dom, xml, flags);
         if (snapshot2 == NULL)
             goto cleanup;
