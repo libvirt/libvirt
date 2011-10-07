@@ -931,7 +931,9 @@ virNetTLSContextPtr virNetTLSContextNewClient(const char *cacert,
 
 void virNetTLSContextRef(virNetTLSContextPtr ctxt)
 {
+    virMutexLock(&ctxt->lock);
     ctxt->refs++;
+    virMutexUnlock(&ctxt->lock);
 }
 
 
