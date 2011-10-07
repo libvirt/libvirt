@@ -143,7 +143,8 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
 
     VIR_DEBUG("st=%p events=%d EOF=%d closed=%d", st, events, stream->recvEOF, stream->closed);
 
-    if (events & VIR_STREAM_EVENT_WRITABLE) {
+    if (!stream->closed &&
+        (events & VIR_STREAM_EVENT_WRITABLE)) {
         if (daemonStreamHandleWrite(client, stream) < 0) {
             daemonRemoveClientStream(client, stream);
             virNetServerClientClose(client);
@@ -151,9 +152,9 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
         }
     }
 
-    if (!stream->recvEOF &&
-        (events & (VIR_STREAM_EVENT_READABLE | VIR_STREAM_EVENT_HANGUP))) {
-        events = events & ~(VIR_STREAM_EVENT_READABLE | VIR_STREAM_EVENT_HANGUP);
+    if (!stream->closed && !stream->recvEOF &&
+        (events & (VIR_STREAM_EVENT_READABLE))) {
+        events = events & ~(VIR_STREAM_EVENT_READABLE);
         if (daemonStreamHandleRead(client, stream) < 0) {
             daemonRemoveClientStream(client, stream);
             virNetServerClientClose(client);
@@ -187,6 +188,37 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
                 goto cleanup;
             }
             break;
+        }
+    }
+
+
+    /* If we got HANGUP, we need to only send an empty
+     * packet so the client sees an EOF and cleans up
+     */
+    if (!stream->closed && !stream->recvEOF &&
+        (events & VIR_STREAM_EVENT_HANGUP)) {
+        virNetMessagePtr msg;
+        events &= ~(VIR_STREAM_EVENT_HANGUP);
+        stream->tx = 0;
+        stream->recvEOF = 1;
+        if (!(msg = virNetMessageNew(false))) {
+            daemonRemoveClientStream(client, stream);
+            virNetServerClientClose(client);
+            goto cleanup;
+        }
+        msg->cb = daemonStreamMessageFinished;
+        msg->opaque = stream;
+        stream->refs++;
+        if (virNetServerProgramSendStreamData(remoteProgram,
+                                              client,
+                                              msg,
+                                              stream->procedure,
+                                              stream->serial,
+                                              "", 0) < 0) {
+            virNetMessageFree(msg);
+            daemonRemoveClientStream(client, stream);
+            virNetServerClientClose(client);
+            goto cleanup;
         }
     }
 
