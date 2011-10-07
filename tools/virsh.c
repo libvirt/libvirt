@@ -13209,6 +13209,8 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     if (actual < 0)
         goto cleanup;
 
+    qsort(&names[0], actual, sizeof(char*), namesorter);
+
     if (tree) {
         char indentBuf[INDENT_BUFLEN];
         char **parents = vshMalloc(ctl, sizeof(char *) * actual);
@@ -13245,8 +13247,6 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         ret = true;
         goto cleanup;
     } else {
-        qsort(&names[0], actual, sizeof(char*), namesorter);
-
         for (i = 0; i < actual; i++) {
             /* free up memory from previous iterations of the loop */
             VIR_FREE(parent);
