@@ -726,7 +726,7 @@ exclude_file_name_regexp--sc_prohibit_readlink = ^src/util/util\.c$$
 exclude_file_name_regexp--sc_prohibit_setuid = ^src/util/util\.c$$
 
 exclude_file_name_regexp--sc_prohibit_sprintf = \
-  ^(docs/hacking\.html\.in)|(src/dtrace2systemtap\.pl)|(src/rpc/gensystemtap\.pl)$$
+  ^(docs/hacking\.html\.in)|(examples/systemtap/.*stp)|(src/dtrace2systemtap\.pl)|(src/rpc/gensystemtap\.pl)$$
 
 exclude_file_name_regexp--sc_prohibit_strncpy = \
   ^(src/util/util|tools/virsh)\.c$$

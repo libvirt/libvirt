@@ -1,0 +1,133 @@
+#!/usr/bin/stap
+#
+# Copyright (C) 2011 Red Hat, Inc.
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#
+# Author: Daniel P. Berrange <berrange@redhat.com>
+#
+# This script will monitor all operation of the libvirt event loop
+# in both client and server. Example output is:
+#
+#  0.000 begin
+#  2.359 18185 + handle 1 4 1
+#  2.360 18185 + handle 2 6 1
+#  2.360 18185 * handle 2 0
+#  2.360 14370 > handle 3 1
+#  2.360 14370 + handle 33 16 1
+#  2.361 14370 ~ 7 -1
+#  2.361 14370 > handle 33 1
+#  2.361 14370 * handle 33 1
+#  2.361 14370 * handle 33 1
+#  2.361 14370 * handle 33 3
+#  2.361 14370 ~ 7 -1
+#  2.361 14370 > handle 1 1
+#  2.361 14370 ~ 7 -1
+#  2.361 14370 > handle 33 2
+#  2.361 14370 * handle 33 1
+#  2.361 14370 ~ 7 -1
+#  2.361 18185 * handle 2 1
+#  2.362 18185 * handle 2 0
+#  2.362 14370 > handle 33 1
+#  2.362 14370 * handle 33 1
+#  2.362 14370 * handle 33 1
+#  2.362 14370 ~ 7 -1
+#  2.367 14370 * handle 33 3
+#  2.367 14370 > handle 1 1
+#  2.367 14370 ~ 7 -1
+#  2.367 14370 > handle 33 2
+#  2.367 14370 * handle 33 1
+#  2.367 14370 ~ 7 -1
+#  2.370 18185 - timeout 1
+#  2.370 14370 ! handle 33
+#  2.371 14370 - handle 33
+#  2.371 14370 ~ 6 -1
+#
+# Legend:
+#   +   Add
+#   -   Remove
+#   *   Update
+#   >   dispatch
+#   !   purge
+#   ~   Iterate
+#
+#
+
+# Show all updates to registered timeouts/handles
+global showUpdates = 1
+
+# Show when handles/timeouts are dispatched
+global showDispatch = 1
+
+# Show iterations of the event loop
+global showIter = 1
+
+global start
+
+# Print a string, with a timestamp relative to the start of the script
+function print_ts(msg)
+{
+  now = gettimeofday_ns() / (1000*1000)
+  delta = (now - start)
+
+  printf("%3d.%03d %s\n", (delta / 1000), (delta % 1000), msg);
+}
+
+probe begin {
+  start = gettimeofday_ns() / (1000*1000)
+  print_ts("begin");
+}
+
+probe libvirt.event_poll.add_handle {
+  print_ts(sprintf("%d + handle %d %d %d", pid(), watch, fd, events));
+}
+probe libvirt.event_poll.remove_handle {
+  print_ts(sprintf("%d - handle %d", pid(), watch));
+}
+probe libvirt.event_poll.update_handle {
+  if (showUpdates)
+    print_ts(sprintf("%d * handle %d %d", pid(), watch, events));
+}
+probe libvirt.event_poll.purge_handle {
+  print_ts(sprintf("%d ! handle %d", pid(), watch));
+}
+probe libvirt.event_poll.dispatch_handle {
+  if (showDispatch)
+    print_ts(sprintf("%d > handle %d %d", pid(), watch, events));
+}
+
+probe libvirt.event_poll.add_timeout {
+  print_ts(sprintf("%d + timeout %d %d", pid(), timer, frequency));
+}
+probe libvirt.event_poll.remove_timeout {
+  print_ts(sprintf("%d - timeout %d", pid(), timer));
+}
+probe libvirt.event_poll.update_timeout {
+  if (showUpdates)
+    print_ts(sprintf("%d * timeout %d %d", pid(), timer, frequency));
+}
+probe libvirt.event_poll.purge_timeout {
+  print_ts(sprintf("%d ! timeout %d", pid(), timer));
+}
+
+probe libvirt.event_poll.dispatch_timeout {
+  if (showDispatch)
+    print_ts(sprintf("%d > timeout %d", pid(), timer));
+}
+
+probe libvirt.event_poll.run {
+  if (showIter)
+    print_ts(sprintf("%d ~ %d %d", pid(), nfds, timeout));
+}
