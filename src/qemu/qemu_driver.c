@@ -376,6 +376,10 @@ static void qemuDomainSnapshotLoad(void *payload,
         vm->current_snapshot = NULL;
     }
 
+    if (virDomainSnapshotUpdateRelations(&vm->snapshots) < 0)
+        VIR_ERROR(_("Snapshots have inconsistent relations for domain %s"),
+                  vm->def->name);
+
     /* FIXME: qemu keeps internal track of snapshots.  We can get access
      * to this info via the "info snapshots" monitor command for running
      * domains, or via "qemu-img snapshot -l" for shutoff domains.  It would
@@ -9148,6 +9152,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     virDomainSnapshotDefPtr def = NULL;
     bool update_current = true;
     unsigned int parse_flags = 0;
+    virDomainSnapshotObjPtr other = NULL;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE |
                   VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT |
@@ -9190,8 +9195,6 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         goto cleanup;
 
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) {
-        virDomainSnapshotObjPtr other = NULL;
-
         /* Prevent circular chains */
         if (def->parent) {
             if (STREQ(def->name, def->parent)) {
@@ -9267,7 +9270,12 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                 update_current = true;
                 vm->current_snapshot = NULL;
             }
-            virDomainSnapshotObjListRemove(&vm->snapshots, other);
+            /* Drop and rebuild the parent relationship, but keep all
+             * child relations by reusing snap.  */
+            virDomainSnapshotDropParent(&vm->snapshots, other);
+            virDomainSnapshotDefFree(other->def);
+            other->def = NULL;
+            snap = other;
         }
         if (def->state == VIR_DOMAIN_DISK_SNAPSHOT && def->dom) {
             if (virDomainSnapshotAlignDisks(def,
@@ -9309,7 +9317,9 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         }
     }
 
-    if (!(snap = virDomainSnapshotAssignDef(&vm->snapshots, def)))
+    if (snap)
+        snap->def = def;
+    else if (!(snap = virDomainSnapshotAssignDef(&vm->snapshots, def)))
         goto cleanup;
     def = NULL;
 
@@ -9366,11 +9376,25 @@ cleanup:
     if (vm) {
         if (snapshot && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
             if (qemuDomainSnapshotWriteMetadata(vm, snap,
-                                                driver->snapshotDir) < 0)
+                                                driver->snapshotDir) < 0) {
                 VIR_WARN("unable to save metadata for snapshot %s",
                          snap->def->name);
-            else if (update_current)
-                vm->current_snapshot = snap;
+            } else {
+                if (update_current)
+                    vm->current_snapshot = snap;
+                if (snap->def->parent) {
+                    other = virDomainSnapshotFindByName(&vm->snapshots,
+                                                        snap->def->parent);
+                    snap->parent = other;
+                    other->nchildren++;
+                    snap->sibling = other->first_child;
+                    other->first_child = snap;
+                } else {
+                    vm->snapshots.nroots++;
+                    snap->sibling = vm->snapshots.first_root;
+                    vm->snapshots.first_root = snap;
+                }
+            }
         } else if (snap) {
             virDomainSnapshotObjListRemove(&vm->snapshots, snap);
         }
@@ -10062,9 +10086,10 @@ cleanup:
 
 struct snap_reparent {
     struct qemud_driver *driver;
-    const char *parent;
+    virDomainSnapshotObjPtr parent;
     virDomainObjPtr vm;
     int err;
+    virDomainSnapshotObjPtr last;
 };
 
 static void
@@ -10080,9 +10105,10 @@ qemuDomainSnapshotReparentChildren(void *payload,
     }
 
     VIR_FREE(snap->def->parent);
+    snap->parent = rep->parent;
 
-    if (rep->parent != NULL) {
-        snap->def->parent = strdup(rep->parent);
+    if (rep->parent) {
+        snap->def->parent = strdup(rep->parent->def->name);
 
         if (snap->def->parent == NULL) {
             virReportOOMError();
@@ -10090,6 +10116,9 @@ qemuDomainSnapshotReparentChildren(void *payload,
             return;
         }
     }
+
+    if (!snap->sibling)
+        rep->last = snap;
 
     rep->err = qemuDomainSnapshotWriteMetadata(rep->vm, snap,
                                                rep->driver->snapshotDir);
@@ -10175,22 +10204,37 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
             }
             vm->current_snapshot = snap;
         }
-    } else {
+    } else if (snap->nchildren) {
         rep.driver = driver;
-        rep.parent = snap->def->parent;
+        rep.parent = snap->parent;
         rep.vm = vm;
         rep.err = 0;
+        rep.last = NULL;
         virDomainSnapshotForEachChild(&vm->snapshots, snap,
                                       qemuDomainSnapshotReparentChildren,
                                       &rep);
         if (rep.err < 0)
             goto endjob;
+        /* Can't modify siblings during ForEachChild, so do it now.  */
+        if (snap->parent) {
+            snap->parent->nchildren += snap->nchildren;
+            rep.last->sibling = snap->parent->first_child;
+            snap->parent->first_child = snap->first_child;
+        } else {
+            vm->snapshots.nroots += snap->nchildren;
+            rep.last->sibling = vm->snapshots.first_root;
+            vm->snapshots.first_root = snap->first_child;
+        }
     }
 
-    if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)
+    if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) {
+        snap->nchildren = 0;
+        snap->first_child = NULL;
         ret = 0;
-    else
+    } else {
+        virDomainSnapshotDropParent(&vm->snapshots, snap);
         ret = qemuDomainSnapshotDiscard(driver, vm, snap, true, metadata_only);
+    }
 
 endjob:
     if (qemuDomainObjEndJob(driver, vm) == 0)
