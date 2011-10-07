@@ -1952,6 +1952,7 @@ With I<snapshotname>, this is a request to make the existing named
 snapshot become the current snapshot, without reverting the domain.
 
 =item B<snapshot-edit> I<domain> I<snapshotname> [I<--current>]
+{[I<--rename>] | [I<--clone>]}
 
 Edit the XML configuration file for I<snapshotname> of a domain.  If
 I<--current> is specified, also force the edited snapshot to become
@@ -1967,6 +1968,14 @@ except that it does some error checking.
 
 The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
 variables, and defaults to C<vi>.
+
+If I<--rename> is specified, then the edits can change the snapshot
+name.  If I<--clone> is specified, then changing the snapshot name
+will create a clone of the snapshot metadata.  If neither is specified,
+then the edits must not change the snapshot name.  Note that changing
+a snapshot name must be done with care, since the contents of some
+snapshots, such as internal snapshots within a single qcow2 file, are
+accessible only from the original name.
 
 =item B<snapshot-list> I<domain> [{I<--parent> | I<--roots> | I<--tree>}]
 [I<--metadata>]

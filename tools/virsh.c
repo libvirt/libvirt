@@ -12830,6 +12830,8 @@ static const vshCmdOptDef opts_snapshot_edit[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"snapshotname", VSH_OT_DATA, VSH_OFLAG_REQ, N_("snapshot name")},
     {"current", VSH_OT_BOOL, 0, N_("also set edited snapshot as current")},
+    {"rename", VSH_OT_BOOL, 0, N_("allow renaming an existing snapshot")},
+    {"clone", VSH_OT_BOOL, 0, N_("allow cloning to new name")},
     {NULL, 0, 0, NULL}
 };
 
@@ -12838,13 +12840,23 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     virDomainSnapshotPtr snapshot = NULL;
+    virDomainSnapshotPtr edited = NULL;
     const char *name;
+    const char *edited_name;
     bool ret = false;
     char *tmp = NULL;
     char *doc = NULL;
     char *doc_edited = NULL;
     unsigned int getxml_flags = VIR_DOMAIN_XML_SECURE;
     unsigned int define_flags = VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
+    bool rename_okay = vshCommandOptBool(cmd, "rename");
+    bool clone_okay = vshCommandOptBool(cmd, "clone");
+
+    if (rename_okay && clone_okay) {
+        vshError(ctl, "%s",
+                 _("--rename and --clone are mutually exclusive"));
+        return false;
+    }
 
     if (vshCommandOptBool(cmd, "current"))
         define_flags |= VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT;
@@ -12867,8 +12879,6 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
     doc = virDomainSnapshotGetXMLDesc(snapshot, getxml_flags);
     if (!doc)
         goto cleanup;
-    virDomainSnapshotFree(snapshot);
-    snapshot = NULL;
 
     /* strstr is safe here, since xml came from libvirt API and not user */
     if (strstr(doc, "<state>disk-snapshot</state>"))
@@ -12899,13 +12909,36 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
     }
 
     /* Everything checks out, so redefine the xml.  */
-    snapshot = virDomainSnapshotCreateXML(dom, doc_edited, define_flags);
-    if (!snapshot) {
+    edited = virDomainSnapshotCreateXML(dom, doc_edited, define_flags);
+    if (!edited) {
         vshError(ctl, _("Failed to update %s"), name);
         goto cleanup;
     }
 
-    vshPrint(ctl, _("Snapshot %s edited.\n"), name);
+    edited_name = virDomainSnapshotGetName(edited);
+    if (STREQ(name, edited_name)) {
+        vshPrint(ctl, _("Snapshot %s edited.\n"), name);
+    } else if (clone_okay) {
+        vshPrint(ctl, _("Snapshot %s cloned to %s.\n"), name,
+                 edited_name);
+    } else {
+        unsigned int delete_flags;
+
+        delete_flags = VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY;
+        if (virDomainSnapshotDelete(rename_okay ? snapshot : edited,
+                                    delete_flags) < 0) {
+            virshReportError(ctl);
+            vshError(ctl, _("Failed to clean up %s"),
+                     rename_okay ? name : edited_name);
+            goto cleanup;
+        }
+        if (!rename_okay) {
+            vshError(ctl, _("Must use --rename or --clone to change %s to %s"),
+                     name, edited_name);
+            goto cleanup;
+        }
+    }
+
     ret = true;
 
 cleanup:
@@ -12917,6 +12950,8 @@ cleanup:
     }
     if (snapshot)
         virDomainSnapshotFree(snapshot);
+    if (edited)
+        virDomainSnapshotFree(edited);
     if (dom)
         virDomainFree(dom);
     return ret;
