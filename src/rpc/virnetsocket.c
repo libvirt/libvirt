@@ -655,6 +655,14 @@ int virNetSocketNewConnectExternal(const char **cmdargv,
 }
 
 
+void virNetSocketRef(virNetSocketPtr sock)
+{
+    virMutexLock(&sock->lock);
+    sock->refs++;
+    virMutexUnlock(&sock->lock);
+}
+
+
 void virNetSocketFree(virNetSocketPtr sock)
 {
     if (!sock)
@@ -1187,20 +1195,19 @@ int virNetSocketAddIOCallback(virNetSocketPtr sock,
 {
     int ret = -1;
 
+    virNetSocketRef(sock);
     virMutexLock(&sock->lock);
     if (sock->watch > 0) {
         VIR_DEBUG("Watch already registered on socket %p", sock);
         goto cleanup;
     }
 
-    sock->refs++;
     if ((sock->watch = virEventAddHandle(sock->fd,
                                          events,
                                          virNetSocketEventHandle,
                                          sock,
                                          virNetSocketEventFree)) < 0) {
         VIR_DEBUG("Failed to register watch on socket %p", sock);
-        sock->refs--;
         goto cleanup;
     }
     sock->func = func;
@@ -1211,6 +1218,8 @@ int virNetSocketAddIOCallback(virNetSocketPtr sock,
 
 cleanup:
     virMutexUnlock(&sock->lock);
+    if (ret != 0)
+        virNetSocketFree(sock);
     return ret;
 }
 

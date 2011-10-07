@@ -101,6 +101,7 @@ void virNetSocketSetSASLSession(virNetSocketPtr sock,
                                 virNetSASLSessionPtr sess);
 # endif
 bool virNetSocketHasCachedData(virNetSocketPtr sock);
+void virNetSocketRef(virNetSocketPtr sock);
 void virNetSocketFree(virNetSocketPtr sock);
 
 const char *virNetSocketLocalAddrString(virNetSocketPtr sock);
