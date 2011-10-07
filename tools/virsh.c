@@ -1897,8 +1897,9 @@ cmdDefine(vshControl *ctl, const vshCmd *cmd)
  * "undefine" command
  */
 static const vshCmdInfo info_undefine[] = {
-    {"help", N_("undefine an inactive domain")},
-    {"desc", N_("Undefine the configuration for an inactive domain.")},
+    {"help", N_("undefine a domain")},
+    {"desc",
+     N_("Undefine an inactive domain, or convert persistent to transient.")},
     {NULL, NULL}
 };
 
