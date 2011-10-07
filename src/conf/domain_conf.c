@@ -12163,10 +12163,21 @@ int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
                                      char **const names, int maxnames,
                                      unsigned int flags)
 {
-    struct virDomainSnapshotNameData data = { 0, 0, maxnames, names, flags };
+    struct virDomainSnapshotNameData data = { 0, 0, maxnames, names, 0 };
     int i;
 
-    virHashForEach(snapshots->objs, virDomainSnapshotObjListCopyNames, &data);
+    data.flags = flags & ~VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
+
+    if (!(flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS)) {
+        virHashForEach(snapshots->objs, virDomainSnapshotObjListCopyNames,
+                       &data);
+    } else {
+        virDomainSnapshotObjPtr root = snapshots->first_root;
+        while (root) {
+            virDomainSnapshotObjListCopyNames(root, root->def->name, &data);
+            root = root->sibling;
+        }
+    }
     if (data.oom) {
         virReportOOMError();
         goto cleanup;
@@ -12231,9 +12242,21 @@ static void virDomainSnapshotObjListCount(void *payload,
 int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
                                 unsigned int flags)
 {
-    struct virDomainSnapshotNumData data = { 0, flags };
+    struct virDomainSnapshotNumData data = { 0, 0 };
 
-    virHashForEach(snapshots->objs, virDomainSnapshotObjListCount, &data);
+    data.flags = flags & ~VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
+
+    if (!(flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS)) {
+        virHashForEach(snapshots->objs, virDomainSnapshotObjListCount, &data);
+    } else if (data.flags) {
+        virDomainSnapshotObjPtr root = snapshots->first_root;
+        while (root) {
+            virDomainSnapshotObjListCount(root, root->def->name, &data);
+            root = root->sibling;
+        }
+    } else {
+        data.count = snapshots->nroots;
+    }
 
     return data.count;
 }
@@ -12251,9 +12274,11 @@ virDomainSnapshotObjListNumFrom(virDomainSnapshotObjPtr snapshot,
         virDomainSnapshotForEachDescendant(snapshots, snapshot,
                                            virDomainSnapshotObjListCount,
                                            &data);
-    else
+    else if (data.flags)
         virDomainSnapshotForEachChild(snapshots, snapshot,
                                       virDomainSnapshotObjListCount, &data);
+    else
+        data.count = snapshot->nchildren;
 
     return data.count;
 }
@@ -12271,97 +12296,23 @@ void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
     virHashRemoveEntry(snapshots->objs, snapshot->def->name);
 }
 
-struct snapshot_act_on_child {
-    char *parent;
-    int number;
-    virHashIterator iter;
-    void *data;
-};
-
-static void
-virDomainSnapshotActOnChild(void *payload,
-                            const void *name,
-                            void *data)
-{
-    virDomainSnapshotObjPtr obj = payload;
-    struct snapshot_act_on_child *curr = data;
-
-    if (obj->def->parent && STREQ(curr->parent, obj->def->parent)) {
-        curr->number++;
-        if (curr->iter)
-            (curr->iter)(payload, name, curr->data);
-    }
-}
-
 /* Run iter(data) on all direct children of snapshot, while ignoring all
  * other entries in snapshots.  Return the number of children
  * visited.  No particular ordering is guaranteed.  */
 int
-virDomainSnapshotForEachChild(virDomainSnapshotObjListPtr snapshots,
+virDomainSnapshotForEachChild(virDomainSnapshotObjListPtr snapshots ATTRIBUTE_UNUSED,
                               virDomainSnapshotObjPtr snapshot,
                               virHashIterator iter,
                               void *data)
 {
-    struct snapshot_act_on_child act;
+    virDomainSnapshotObjPtr child = snapshot->first_child;
 
-    act.parent = snapshot->def->name;
-    act.number = 0;
-    act.iter = iter;
-    act.data = data;
-    virHashForEach(snapshots->objs, virDomainSnapshotActOnChild, &act);
-
-    return act.number;
-}
-typedef enum {
-    MARK_NONE,       /* No relation determined yet */
-    MARK_DESCENDANT, /* Descendant of target */
-    MARK_OTHER,      /* Not a descendant of target */
-} snapshot_mark;
-
-struct snapshot_mark_descendant {
-    const char *name; /* Parent's name on round 1, NULL on other rounds.  */
-    virDomainSnapshotObjListPtr snapshots;
-    bool marked; /* True if descendants were found in this round */
-};
-
-/* To be called in a loop until no more descendants are found.
- * Additionally marking known unrelated snapshots reduces the number
- * of total hash searches needed.  */
-static void
-virDomainSnapshotMarkDescendant(void *payload,
-                                const void *name ATTRIBUTE_UNUSED,
-                                void *data)
-{
-    virDomainSnapshotObjPtr obj = payload;
-    struct snapshot_mark_descendant *curr = data;
-    virDomainSnapshotObjPtr parent = NULL;
-
-    /* Learned on a previous pass.  */
-    if (obj->mark)
-        return;
-
-    if (curr->name) {
-        /* First round can only find root nodes and direct children.  */
-        if (!obj->def->parent) {
-            obj->mark = MARK_OTHER;
-        } else if (STREQ(obj->def->parent, curr->name)) {
-            obj->mark = MARK_DESCENDANT;
-            curr->marked = true;
-        }
-    } else {
-        /* All remaining rounds propagate marks from parents to children.  */
-        parent = virDomainSnapshotFindByName(curr->snapshots, obj->def->parent);
-        if (!parent) {
-            VIR_WARN("snapshot hash table is inconsistent!");
-            obj->mark = MARK_OTHER;
-            return;
-        }
-        if (parent->mark) {
-            obj->mark = parent->mark;
-            if (obj->mark == MARK_DESCENDANT)
-                curr->marked = true;
-        }
+    while (child) {
+        (iter)(child, child->def->name, data);
+        child = child->sibling;
     }
+
+    return snapshot->nchildren;
 }
 
 struct snapshot_act_on_descendant {
@@ -12378,40 +12329,28 @@ virDomainSnapshotActOnDescendant(void *payload,
     virDomainSnapshotObjPtr obj = payload;
     struct snapshot_act_on_descendant *curr = data;
 
-    if (obj->mark == MARK_DESCENDANT) {
-        curr->number++;
-        (curr->iter)(payload, name, curr->data);
-    }
-    obj->mark = MARK_NONE;
+    (curr->iter)(payload, name, curr->data);
+    curr->number += 1 + virDomainSnapshotForEachDescendant(NULL, obj,
+                                                           curr->iter,
+                                                           curr->data);
 }
 
 /* Run iter(data) on all descendants of snapshot, while ignoring all
  * other entries in snapshots.  Return the number of descendants
  * visited.  No particular ordering is guaranteed.  */
 int
-virDomainSnapshotForEachDescendant(virDomainSnapshotObjListPtr snapshots,
+virDomainSnapshotForEachDescendant(virDomainSnapshotObjListPtr snapshots ATTRIBUTE_UNUSED,
                                    virDomainSnapshotObjPtr snapshot,
                                    virHashIterator iter,
                                    void *data)
 {
-    struct snapshot_mark_descendant mark;
     struct snapshot_act_on_descendant act;
 
-    /* virHashForEach does not support nested traversal, so we must
-     * instead iterate until no more snapshots get marked.  We
-     * guarantee that on exit, all marks have been cleared again.  */
-    mark.name = snapshot->def->name;
-    mark.snapshots = snapshots;
-    mark.marked = true;
-    while (mark.marked) {
-        mark.marked = false;
-        virHashForEach(snapshots->objs, virDomainSnapshotMarkDescendant, &mark);
-        mark.name = NULL;
-    }
     act.number = 0;
     act.iter = iter;
     act.data = data;
-    virHashForEach(snapshots->objs, virDomainSnapshotActOnDescendant, &act);
+    virDomainSnapshotForEachChild(NULL, snapshot,
+                                  virDomainSnapshotActOnDescendant, &act);
 
     return act.number;
 }
