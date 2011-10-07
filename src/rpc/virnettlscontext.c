@@ -383,24 +383,11 @@ static int
 virNetTLSContextCheckCertDN(gnutls_x509_crt_t cert,
                             const char *certFile,
                             const char *hostname,
+                            const char *dname,
                             const char *const* whitelist)
 {
-    int ret;
-    char name[256];
-    size_t namesize = sizeof name;
-
-    memset(name, 0, namesize);
-
-    ret = gnutls_x509_crt_get_dn(cert, name, &namesize);
-    if (ret != 0) {
-        virNetError(VIR_ERR_SYSTEM_ERROR,
-                    _("Failed to get certificate %s distinguished name: %s"),
-                    certFile, gnutls_strerror(ret));
-        return -1;
-    }
-    VIR_DEBUG("Peer DN is %s", name);
-    if (whitelist &&
-        virNetTLSContextCheckCertDNWhitelist(name, whitelist) <= 0)
+    if (whitelist && dname &&
+        virNetTLSContextCheckCertDNWhitelist(dname, whitelist) <= 0)
         return -1;
 
     if (hostname &&
@@ -955,6 +942,10 @@ static int virNetTLSContextValidCertificate(virNetTLSContextPtr ctxt,
     unsigned int status;
     const gnutls_datum_t *certs;
     unsigned int nCerts, i;
+    char dname[256];
+    size_t dnamesize = sizeof(dname);
+
+    memset(dname, 0, dnamesize);
 
     if ((ret = gnutls_certificate_verify_peers2(sess->session, &status)) < 0){
         virNetError(VIR_ERR_SYSTEM_ERROR,
@@ -1021,7 +1012,16 @@ static int virNetTLSContextValidCertificate(virNetTLSContextPtr ctxt,
         }
 
         if (i == 0) {
-            if (virNetTLSContextCheckCertDN(cert, "[session]", sess->hostname,
+            ret = gnutls_x509_crt_get_dn(cert, dname, &dnamesize);
+            if (ret != 0) {
+                virNetError(VIR_ERR_SYSTEM_ERROR,
+                            _("Failed to get certificate %s distinguished name: %s"),
+                            "[session]", gnutls_strerror(ret));
+                goto authfail;
+            }
+            VIR_DEBUG("Peer DN is %s", dname);
+
+            if (virNetTLSContextCheckCertDN(cert, "[session]", sess->hostname, dname,
                                             ctxt->x509dnWhitelist) < 0) {
                 gnutls_x509_crt_deinit(cert);
                 goto authdeny;
