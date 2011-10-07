@@ -13133,19 +13133,19 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "parent")) {
         if (vshCommandOptBool(cmd, "roots")) {
             vshError(ctl, "%s",
-                     _("--parent and --roots are mutually exlusive"));
+                     _("--parent and --roots are mutually exclusive"));
             return false;
         }
         if (tree) {
             vshError(ctl, "%s",
-                     _("--parent and --tree are mutually exlusive"));
+                     _("--parent and --tree are mutually exclusive"));
             return false;
         }
         parent_filter = 1;
     } else if (vshCommandOptBool(cmd, "roots")) {
         if (tree) {
             vshError(ctl, "%s",
-                     _("--roots and --tree are mutually exlusive"));
+                     _("--roots and --tree are mutually exclusive"));
             return false;
         }
         flags |= VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
