@@ -1711,6 +1711,10 @@ int virStoragePoolSourceFindDuplicate(virStoragePoolObjListPtr pools,
         if (def->type != pool->def->type)
             continue;
 
+        /* Don't mach against ourself if re-defining existing pool ! */
+        if (STREQ(pool->def->name, def->name))
+            continue;
+
         virStoragePoolObjLock(pool);
 
         switch (pool->def->type) {
