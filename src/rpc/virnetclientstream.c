@@ -268,6 +268,9 @@ int virNetClientStreamSetError(virNetClientStreamPtr st,
     st->err.int1 = err.int1;
     st->err.int2 = err.int2;
 
+    st->incomingEOF = true;
+    virNetClientStreamEventTimerUpdate(st);
+
     ret = 0;
 
 cleanup:
