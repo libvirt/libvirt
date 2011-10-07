@@ -1460,6 +1460,11 @@ typedef virDomainSnapshotObj *virDomainSnapshotObjPtr;
 struct _virDomainSnapshotObj {
     virDomainSnapshotDefPtr def;
 
+    virDomainSnapshotObjPtr parent; /* NULL if root */
+    virDomainSnapshotObjPtr sibling; /* NULL if last child of parent */
+    size_t nchildren;
+    virDomainSnapshotObjPtr first_child; /* NULL if no children */
+
     /* Internal use only */
     int mark; /* Used in identifying descendents. */
 };
@@ -1470,6 +1475,9 @@ struct _virDomainSnapshotObjList {
     /* name string -> virDomainSnapshotObj  mapping
      * for O(1), lockless lookup-by-name */
     virHashTable *objs;
+
+    size_t nroots;
+    virDomainSnapshotObjPtr first_root;
 };
 
 typedef enum {
@@ -1510,8 +1518,6 @@ virDomainSnapshotObjPtr virDomainSnapshotFindByName(const virDomainSnapshotObjLi
                                                     const char *name);
 void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
                                     virDomainSnapshotObjPtr snapshot);
-int virDomainSnapshotHasChildren(virDomainSnapshotObjPtr snap,
-                                virDomainSnapshotObjListPtr snapshots);
 int virDomainSnapshotForEachChild(virDomainSnapshotObjListPtr snapshots,
                                   virDomainSnapshotObjPtr snapshot,
                                   virHashIterator iter,
@@ -1520,6 +1526,9 @@ int virDomainSnapshotForEachDescendant(virDomainSnapshotObjListPtr snapshots,
                                        virDomainSnapshotObjPtr snapshot,
                                        virHashIterator iter,
                                        void *data);
+int virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots);
+void virDomainSnapshotDropParent(virDomainSnapshotObjListPtr snapshots,
+                                 virDomainSnapshotObjPtr snapshot);
 
 /* Guest VM runtime state */
 typedef struct _virDomainStateReason virDomainStateReason;

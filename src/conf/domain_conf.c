@@ -12312,13 +12312,6 @@ virDomainSnapshotForEachChild(virDomainSnapshotObjListPtr snapshots,
 
     return act.number;
 }
-
-int virDomainSnapshotHasChildren(virDomainSnapshotObjPtr snap,
-                                 virDomainSnapshotObjListPtr snapshots)
-{
-    return virDomainSnapshotForEachChild(snapshots, snap, NULL, NULL);
-}
-
 typedef enum {
     MARK_NONE,       /* No relation determined yet */
     MARK_DESCENDANT, /* Descendant of target */
@@ -12422,6 +12415,111 @@ virDomainSnapshotForEachDescendant(virDomainSnapshotObjListPtr snapshots,
 
     return act.number;
 }
+
+/* Struct and callback function used as a hash table callback; each call
+ * inspects the pre-existing snapshot->def->parent field, and adjusts
+ * the snapshot->parent field as well as the parent's child fields to
+ * wire up the hierarchical relations for the given snapshot.  The error
+ * indicator gets set if a parent is missing or a requested parent would
+ * cause a circular parent chain.  */
+struct snapshot_set_relation {
+    virDomainSnapshotObjListPtr snapshots;
+    int err;
+};
+static void
+virDomainSnapshotSetRelations(void *payload,
+                              const void *name ATTRIBUTE_UNUSED,
+                              void *data)
+{
+    virDomainSnapshotObjPtr obj = payload;
+    struct snapshot_set_relation *curr = data;
+    virDomainSnapshotObjPtr tmp;
+
+    if (obj->def->parent) {
+        obj->parent = virDomainSnapshotFindByName(curr->snapshots,
+                                                  obj->def->parent);
+        if (!obj->parent) {
+            curr->err = -1;
+            VIR_WARN("snapshot %s lacks parent", obj->def->name);
+        } else {
+            tmp = obj->parent;
+            while (tmp) {
+                if (tmp == obj) {
+                    curr->err = -1;
+                    obj->parent = NULL;
+                    VIR_WARN("snapshot %s in circular chain", obj->def->name);
+                    break;
+                }
+                tmp = tmp->parent;
+            }
+            if (!tmp) {
+                obj->parent->nchildren++;
+                obj->sibling = obj->parent->first_child;
+                obj->parent->first_child = obj;
+            }
+        }
+    } else {
+        curr->snapshots->nroots++;
+        obj->sibling = curr->snapshots->first_root;
+        curr->snapshots->first_root = obj;
+    }
+}
+
+/* Populate parent link and child count of all snapshots, with all
+ * relations starting as 0/NULL.  Return 0 on success, -1 if a parent
+ * is missing or if a circular relationship was requested.  */
+int
+virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots)
+{
+    struct snapshot_set_relation act = { snapshots, 0 };
+
+    virHashForEach(snapshots->objs, virDomainSnapshotSetRelations, &act);
+    return act.err;
+}
+
+/* Prepare to reparent or delete snapshot, by removing it from its
+ * current listed parent.  Note that when bulk removing all children
+ * of a parent, it is faster to just 0 the count rather than calling
+ * this function on each child.  */
+void
+virDomainSnapshotDropParent(virDomainSnapshotObjListPtr snapshots,
+                            virDomainSnapshotObjPtr snapshot)
+{
+    virDomainSnapshotObjPtr prev = NULL;
+    virDomainSnapshotObjPtr curr = NULL;
+    size_t *count;
+    virDomainSnapshotObjPtr *first;
+
+    if (snapshot->parent) {
+        count = &snapshot->parent->nchildren;
+        first = &snapshot->parent->first_child;
+    } else {
+        count = &snapshots->nroots;
+        first = &snapshots->first_root;
+    }
+
+    if (!*count || !*first) {
+        VIR_WARN("inconsistent snapshot relations");
+        return;
+    }
+    (*count)--;
+    curr = *first;
+    while (curr != snapshot) {
+        if (!curr) {
+            VIR_WARN("inconsistent snapshot relations");
+            return;
+        }
+        prev = curr;
+        curr = curr->sibling;
+    }
+    if (prev)
+        prev->sibling = snapshot->sibling;
+    else
+        *first = snapshot->sibling;
+    snapshot->parent = NULL;
+    snapshot->sibling = NULL;
+}
+
 
 int virDomainChrDefForeach(virDomainDefPtr def,
                            bool abortOnError,
