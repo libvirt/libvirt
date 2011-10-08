@@ -12170,7 +12170,9 @@ static void virDomainSnapshotObjListCopyNames(void *payload,
 
     if (data->oom)
         return;
-    if ((data->flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS) && obj->def->parent)
+    /* LIST_ROOTS/LIST_DESCENDANTS was handled by caller,
+     * LIST_METADATA is a no-op if we get this far.  */
+    if ((data->flags & VIR_DOMAIN_SNAPSHOT_LIST_LEAVES) && obj->nchildren)
         return;
 
     if (data->numnames < data->maxnames) {
@@ -12255,7 +12257,9 @@ static void virDomainSnapshotObjListCount(void *payload,
     virDomainSnapshotObjPtr obj = payload;
     struct virDomainSnapshotNumData *data = opaque;
 
-    if ((data->flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS) && obj->def->parent)
+    /* LIST_ROOTS/LIST_DESCENDANTS was handled by caller,
+     * LIST_METADATA is a no-op if we get this far.  */
+    if ((data->flags & VIR_DOMAIN_SNAPSHOT_LIST_LEAVES) && obj->nchildren)
         return;
     data->count++;
 }

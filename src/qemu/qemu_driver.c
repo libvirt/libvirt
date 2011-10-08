@@ -9415,7 +9415,8 @@ static int qemuDomainSnapshotListNames(virDomainPtr domain, char **names,
     int n = -1;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
-                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA |
+                  VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
@@ -9445,7 +9446,8 @@ static int qemuDomainSnapshotNum(virDomainPtr domain,
     int n = -1;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
-                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA |
+                  VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
@@ -9482,7 +9484,8 @@ qemuDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
     int n = -1;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
-                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA |
+                  VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, snapshot->domain->uuid);
@@ -9521,7 +9524,8 @@ qemuDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
     int n = -1;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
-                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA |
+                  VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, snapshot->domain->uuid);
