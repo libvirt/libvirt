@@ -40,6 +40,7 @@
 #include "datatypes.h"
 #include "virterror_internal.h"
 #include "json.h"
+#include "ignore-value.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -1418,7 +1419,8 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
         /* Don't check for success here, because 'tray-open' is presented iff
          * medium is ejected.
          */
-        virJSONValueObjectGetBoolean(dev, "tray-open", &info->tray_open);
+        ignore_value(virJSONValueObjectGetBoolean(dev, "tray-open",
+                                                  &info->tray_open));
 
         break;
     }
