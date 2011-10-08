@@ -2161,17 +2161,19 @@ esxVI_GetVirtualMachineIdentity(esxVI_ObjectContent *virtualMachine,
 
 int
 esxVI_GetNumberOfSnapshotTrees
-  (esxVI_VirtualMachineSnapshotTree *snapshotTreeList, bool recurse)
+  (esxVI_VirtualMachineSnapshotTree *snapshotTreeList, bool recurse,
+   bool leaves)
 {
     int count = 0;
     esxVI_VirtualMachineSnapshotTree *snapshotTree;
 
     for (snapshotTree = snapshotTreeList; snapshotTree != NULL;
          snapshotTree = snapshotTree->_next) {
-        count++;
+        if (!(leaves && snapshotTree->childSnapshotList))
+            count++;
         if (recurse)
             count += esxVI_GetNumberOfSnapshotTrees
-                (snapshotTree->childSnapshotList, true);
+                (snapshotTree->childSnapshotList, true, leaves);
     }
 
     return count;
@@ -2181,7 +2183,8 @@ esxVI_GetNumberOfSnapshotTrees
 
 int
 esxVI_GetSnapshotTreeNames(esxVI_VirtualMachineSnapshotTree *snapshotTreeList,
-                           char **names, int nameslen, bool recurse)
+                           char **names, int nameslen, bool recurse,
+                           bool leaves)
 {
     int count = 0;
     int result;
@@ -2191,14 +2194,16 @@ esxVI_GetSnapshotTreeNames(esxVI_VirtualMachineSnapshotTree *snapshotTreeList,
     for (snapshotTree = snapshotTreeList;
          snapshotTree != NULL && count < nameslen;
          snapshotTree = snapshotTree->_next) {
-        names[count] = strdup(snapshotTree->name);
+        if (!(leaves && snapshotTree->childSnapshotList)) {
+            names[count] = strdup(snapshotTree->name);
 
-        if (names[count] == NULL) {
-            virReportOOMError();
-            goto failure;
+            if (names[count] == NULL) {
+                virReportOOMError();
+                goto failure;
+            }
+
+            count++;
         }
-
-        count++;
 
         if (count >= nameslen) {
             break;
@@ -2208,7 +2213,7 @@ esxVI_GetSnapshotTreeNames(esxVI_VirtualMachineSnapshotTree *snapshotTreeList,
             result = esxVI_GetSnapshotTreeNames(snapshotTree->childSnapshotList,
                                                 names + count,
                                                 nameslen - count,
-                                                true);
+                                                true, leaves);
 
             if (result < 0) {
                 goto failure;

@@ -4359,11 +4359,14 @@ esxDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
     esxPrivate *priv = domain->conn->privateData;
     esxVI_VirtualMachineSnapshotTree *rootSnapshotTreeList = NULL;
     bool recurse;
+    bool leaves;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
-                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA |
+                  VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, -1);
 
     recurse = (flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS) == 0;
+    leaves = (flags & VIR_DOMAIN_SNAPSHOT_LIST_LEAVES) != 0;
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
@@ -4378,7 +4381,8 @@ esxDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
         return -1;
     }
 
-    count = esxVI_GetNumberOfSnapshotTrees(rootSnapshotTreeList, recurse);
+    count = esxVI_GetNumberOfSnapshotTrees(rootSnapshotTreeList, recurse,
+                                           leaves);
 
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotTreeList);
 
@@ -4395,11 +4399,14 @@ esxDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
     esxPrivate *priv = domain->conn->privateData;
     esxVI_VirtualMachineSnapshotTree *rootSnapshotTreeList = NULL;
     bool recurse;
+    bool leaves;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
-                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA |
+                  VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, -1);
 
     recurse = (flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS) == 0;
+    leaves = (flags & VIR_DOMAIN_SNAPSHOT_LIST_LEAVES) != 0;
 
     if (names == NULL || nameslen < 0) {
         ESX_ERROR(VIR_ERR_INVALID_ARG, "%s", _("Invalid argument"));
@@ -4420,7 +4427,7 @@ esxDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
     }
 
     result = esxVI_GetSnapshotTreeNames(rootSnapshotTreeList, names, nameslen,
-                                        recurse);
+                                        recurse, leaves);
 
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotTreeList);
 
@@ -4437,11 +4444,14 @@ esxDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot, unsigned int flags)
     esxVI_VirtualMachineSnapshotTree *rootSnapshotTreeList = NULL;
     esxVI_VirtualMachineSnapshotTree *snapshotTree = NULL;
     bool recurse;
+    bool leaves;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
-                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA |
+                  VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, -1);
 
     recurse = (flags & VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS) != 0;
+    leaves = (flags & VIR_DOMAIN_SNAPSHOT_LIST_LEAVES) != 0;
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
@@ -4462,7 +4472,7 @@ esxDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot, unsigned int flags)
     }
 
     count = esxVI_GetNumberOfSnapshotTrees(snapshotTree->childSnapshotList,
-                                           recurse);
+                                           recurse, leaves);
 
 cleanup:
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotTreeList);
@@ -4482,11 +4492,14 @@ esxDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
     esxVI_VirtualMachineSnapshotTree *rootSnapshotTreeList = NULL;
     esxVI_VirtualMachineSnapshotTree *snapshotTree = NULL;
     bool recurse;
+    bool leaves;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
-                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA, -1);
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA |
+                  VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, -1);
 
     recurse = (flags & VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS) != 0;
+    leaves = (flags & VIR_DOMAIN_SNAPSHOT_LIST_LEAVES) != 0;
 
     if (names == NULL || nameslen < 0) {
         ESX_ERROR(VIR_ERR_INVALID_ARG, "%s", _("Invalid argument"));
@@ -4516,7 +4529,7 @@ esxDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
     }
 
     result = esxVI_GetSnapshotTreeNames(snapshotTree->childSnapshotList,
-                                        names, nameslen, recurse);
+                                        names, nameslen, recurse, leaves);
 
 cleanup:
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotTreeList);

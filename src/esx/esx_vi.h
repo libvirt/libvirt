@@ -359,11 +359,11 @@ int esxVI_GetVirtualMachineIdentity(esxVI_ObjectContent *virtualMachine,
 
 int esxVI_GetNumberOfSnapshotTrees
       (esxVI_VirtualMachineSnapshotTree *snapshotTreeList,
-       bool recurse);
+       bool recurse, bool leaves);
 
 int esxVI_GetSnapshotTreeNames
       (esxVI_VirtualMachineSnapshotTree *snapshotTreeList, char **names,
-       int nameslen, bool recurse);
+       int nameslen, bool recurse, bool leaves);
 
 int esxVI_GetSnapshotTreeByName
       (esxVI_VirtualMachineSnapshotTree *snapshotTreeList, const char *name,
