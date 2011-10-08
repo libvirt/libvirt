@@ -210,7 +210,7 @@ static int lxcSetupLoopDevices(virDomainDefPtr def, size_t *nloopDevs, int **loo
             virReportOOMError();
             goto cleanup;
         }
-        (*loopDevs)[*nloopDevs++] = fd;
+        (*loopDevs)[(*nloopDevs)++] = fd;
     }
 
     VIR_DEBUG("Setup all loop devices");
