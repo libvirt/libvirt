@@ -10179,7 +10179,7 @@ static virDomainPtr qemuDomainAttach(virConnectPtr conn,
     virDomainPtr dom = NULL;
     virDomainChrSourceDefPtr monConfig = NULL;
     bool monJSON = false;
-    char *pidfile;
+    char *pidfile = NULL;
 
     virCheckFlags(0, NULL);
 
