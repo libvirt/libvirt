@@ -2960,7 +2960,7 @@ qemuMonitorJSONDiskSnapshot(qemuMonitorPtr mon, const char *device,
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
 
-    cmd = qemuMonitorJSONMakeCommand("snapshot-blkdev-sync",
+    cmd = qemuMonitorJSONMakeCommand("blockdev-snapshot-sync",
                                      "s:device", device,
                                      "s:snapshot-file", file,
                                      NULL);
@@ -2972,7 +2972,7 @@ qemuMonitorJSONDiskSnapshot(qemuMonitorPtr mon, const char *device,
 
     if (qemuMonitorJSONHasError(reply, "CommandNotFound") &&
         qemuMonitorCheckHMP(mon, "snapshot_blkdev")) {
-        VIR_DEBUG("snapshot-blkdev-sync command not found, trying HMP");
+        VIR_DEBUG("blockdev-snapshot-sync command not found, trying HMP");
         ret = qemuMonitorTextDiskSnapshot(mon, device, file);
         goto cleanup;
     }
