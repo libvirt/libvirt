@@ -180,6 +180,8 @@ mymain(void)
     DO_TEST("fv-net-ioemu", "fv-net-ioemu", 1);
     DO_TEST("fv-net-netfront", "fv-net-netfront", 1);
 
+    DO_TEST("fv-empty-kernel", "fv-empty-kernel", 1);
+
     DO_TEST("boot-grub", "boot-grub", 1);
 
     virCapabilitiesFree(caps);
