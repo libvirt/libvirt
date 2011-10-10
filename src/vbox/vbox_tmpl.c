@@ -537,7 +537,7 @@ vboxIIDIsEqual_v3_x(vboxGlobalData *data, vboxIID_v3_x *iid1,
     unsigned char uuid2[VIR_UUID_BUFLEN];
 
     /* Note: we can't directly compare the utf8 strings here
-     * cause the two UUID's may have seperators as space or '-'
+     * cause the two UUID's may have separators as space or '-'
      * or mixture of both and we don't want to fail here by
      * using direct string comparison. Here virUUIDParse() takes
      * care of these cases. */

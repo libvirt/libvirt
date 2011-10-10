@@ -1117,7 +1117,7 @@ cleanup:
     VIR_FORCE_CLOSE(argv->handshakefd);
 
     if (ret == 0) {
-        /* this function will only return if an error occured */
+        /* this function will only return if an error occurred */
         ret = virCommandExec(cmd);
     }
 

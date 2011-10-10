@@ -120,7 +120,7 @@ virHashComputeKey(virHashTablePtr table, const void *name)
  *
  * Create a new virHashTablePtr.
  *
- * Returns the newly created object, or NULL if an error occured.
+ * Returns the newly created object, or NULL if an error occurred.
  */
 virHashTablePtr virHashCreateFull(int size,
                                   virHashDataFree dataFree,

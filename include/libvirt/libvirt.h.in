@@ -2173,8 +2173,8 @@ typedef enum {
 /**
  * virConnectDomainEventCallback:
  * @conn: virConnect connection
- * @dom: The domain on which the event occured
- * @event: The specfic virDomainEventType which occured
+ * @dom: The domain on which the event occurred
+ * @event: The specfic virDomainEventType which occurred
  * @detail: event specific detail information
  * @opaque: opaque user data
  *

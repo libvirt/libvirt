@@ -276,7 +276,7 @@ esxParseVMXFileName(const char *fileName, void *opaque)
  *
  * Firstly parse the datastore path. Then use the datastore name to lookup the
  * datastore and it's mount path. Finally concatenate the mount path, directory
- * and file name to an absolute path and return it. Detect the seperator type
+ * and file name to an absolute path and return it. Detect the separator type
  * based on the mount path.
  */
 static char *

@@ -445,7 +445,7 @@
       <strong>Note:</strong> if the command has been daemonized
       this will only block &amp; wait for the intermediate process,
       not the real command. <code>virCommandRun</code> will
-      report on any errors that have occured upon this point
+      report on any errors that have occurred upon this point
       with all previous API calls. If the command fails to
       run, or exits with non-zero status an error will be
       reported via normal libvirt error infrastructure. If a

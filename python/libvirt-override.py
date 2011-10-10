@@ -179,8 +179,8 @@ def virEventAddHandle(fd, events, cb, opaque):
 
     Example callback prototype is:
         def cb(watch,   # int id of the handle
-               fd,      # int file descriptor the event occured on
-               events,  # int bitmap of events that have occured
+               fd,      # int file descriptor the event occurred on
+               events,  # int bitmap of events that have occurred
                opaque): # opaque data passed to eventAddHandle
     """
     cbData = {"cb" : cb, "opaque" : opaque}

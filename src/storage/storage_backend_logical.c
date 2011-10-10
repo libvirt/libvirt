@@ -167,7 +167,7 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
         goto cleanup;
     }
 
-    /* Now parse the "devices" feild seperately */
+    /* Now parse the "devices" field separately */
     regex = strdup(regex_unit);
 
     for (i = 1; i < nextents; i++) {
@@ -175,7 +175,7 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
             virReportOOMError();
             goto cleanup;
         }
-        /* "," is the seperator of "devices" field */
+        /* "," is the separator of "devices" field */
         strcat(regex, ",");
         strncat(regex, regex_unit, strlen(regex_unit));
     }
