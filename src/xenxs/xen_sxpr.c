@@ -125,6 +125,12 @@ xenParseSxprOS(const struct sexpr *node,
         STREQ(def->os.kernel, def->os.loader)) {
         VIR_FREE(def->os.kernel);
     }
+    /* Drop kernel argument that has no value */
+    if (hvm &&
+        def->os.kernel && *def->os.kernel == '\0' &&
+        def->os.loader) {
+        VIR_FREE(def->os.kernel);
+    }
 
     if (!def->os.kernel &&
         hvm) {
