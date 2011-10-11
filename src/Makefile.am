@@ -1188,18 +1188,23 @@ if WITH_NETWORK
 USED_SYM_FILES += libvirt_network.syms
 endif
 
+if HAVE_SASL
+USED_SYM_FILES += libvirt_sasl.syms
+endif
+
 EXTRA_DIST += \
   libvirt_public.syms		\
   libvirt_private.syms		\
   libvirt_driver_modules.syms	\
   libvirt_bridge.syms		\
+  libvirt_daemon.syms		\
   libvirt_linux.syms		\
   libvirt_macvtap.syms		\
-  libvirt_daemon.syms		\
-  libvirt_nwfilter.syms	\
+  libvirt_network.syms		\
+  libvirt_nwfilter.syms		\
+  libvirt_sasl.syms		\
   libvirt_vmx.syms		\
-  libvirt_xenxs.syms		\
-  libvirt_network.syms
+  libvirt_xenxs.syms
 
 GENERATED_SYM_FILES = libvirt.syms libvirt.def libvirt_qemu.def
 

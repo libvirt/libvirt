@@ -1178,20 +1178,6 @@ virNetMessageQueueServe;
 virNetMessageSaveError;
 
 
-# virnetsaslcontext.h
-virNetSASLContextCheckIdentity;
-virNetSASLContextNewServer;
-virNetSASLSessionExtKeySize;
-virNetSASLSessionFree;
-virNetSASLSessionGetIdentity;
-virNetSASLSessionGetKeySize;
-virNetSASLSessionListMechanisms;
-virNetSASLSessionNewServer;
-virNetSASLSessionSecProps;
-virNetSASLSessionServerStart;
-virNetSASLSessionServerStep;
-
-
 # virnetserver.h
 virNetServerAddProgram;
 virNetServerAddService;
@@ -1232,7 +1218,6 @@ virNetServerClientSendMessage;
 virNetServerClientSetCloseHook;
 virNetServerClientSetIdentity;
 virNetServerClientSetPrivateData;
-virNetServerClientSetSASLSession;
 
 
 # virnetserverprogram.h
