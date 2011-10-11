@@ -250,6 +250,9 @@ typedef struct __vshControl {
                                    virDomainGetState is not supported */
     bool useSnapshotOld;        /* cannot use virDomainSnapshotGetParent or
                                    virDomainSnapshotNumChildren */
+    virThread eventLoop;
+    bool eventLoopStarted;
+    bool quit;
 } __vshControl;
 
 typedef struct vshCmdGrp {
@@ -16636,6 +16639,19 @@ vshError(vshControl *ctl, const char *format, ...)
 }
 
 
+static void
+vshEventLoop(void *opaque)
+{
+    vshControl *ctl = opaque;
+
+    while (!ctl->quit) {
+        if (virEventRunDefaultImpl() < 0) {
+            virshReportError(ctl);
+        }
+    }
+}
+
+
 /*
  * Initialize connection.
  */
@@ -16680,6 +16696,10 @@ vshInit(vshControl *ctl)
 
     if (virEventRegisterDefaultImpl() < 0)
         return false;
+
+    if (virThreadCreate(&ctl->eventLoop, true, vshEventLoop, ctl) < 0)
+        return false;
+    ctl->eventLoopStarted = true;
 
     if (ctl->name) {
         ctl->conn = virConnectOpenAuth(ctl->name,
@@ -17069,6 +17089,7 @@ vshReadline (vshControl *ctl, const char *prompt)
 static bool
 vshDeinit(vshControl *ctl)
 {
+    ctl->quit = true;
     vshReadlineDeinit(ctl);
     vshCloseLogFile(ctl);
     VIR_FREE(ctl->name);
@@ -17079,6 +17100,16 @@ vshDeinit(vshControl *ctl)
         }
     }
     virResetLastError();
+
+    if (ctl->eventLoopStarted) {
+        /* HACK: Add a dummy timeout to break event loop */
+        int timer = virEventAddTimeout(-1, NULL, NULL, NULL);
+        if (timer != -1)
+            virEventRemoveTimeout(timer);
+
+        virThreadJoin(&ctl->eventLoop);
+        ctl->eventLoopStarted = false;
+    }
 
     return true;
 }

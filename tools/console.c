@@ -41,6 +41,7 @@
 # include "util.h"
 # include "virfile.h"
 # include "memory.h"
+# include "threads.h"
 # include "virterror_internal.h"
 
 
@@ -60,6 +61,8 @@ typedef virConsole *virConsolePtr;
 struct virConsole {
     virStreamPtr st;
     bool quit;
+    virMutex lock;
+    virCond cond;
 
     int stdinWatch;
     int stdoutWatch;
@@ -89,7 +92,6 @@ cfmakeraw (struct termios *attr)
 static void
 virConsoleShutdown(virConsolePtr con)
 {
-    con->quit = true;
     if (con->st) {
         virStreamEventRemoveCallback(con->st);
         virStreamAbort(con->st);
@@ -101,6 +103,8 @@ virConsoleShutdown(virConsolePtr con)
         virEventRemoveHandle(con->stdoutWatch);
     con->stdinWatch = -1;
     con->stdoutWatch = -1;
+    con->quit = true;
+    virCondSignal(&con->cond);
 }
 
 static void
@@ -334,6 +338,9 @@ int vshRunConsole(virDomainPtr dom, const char *dev_name)
     if (virDomainOpenConsole(dom, dev_name, con->st, 0) < 0)
         goto cleanup;
 
+    if (virCondInit(&con->cond) < 0 || virMutexInit(&con->lock) < 0)
+        goto cleanup;
+
     con->stdinWatch = virEventAddHandle(STDIN_FILENO,
                                         VIR_EVENT_HANDLE_READABLE,
                                         virConsoleEventOnStdin,
@@ -352,8 +359,10 @@ int vshRunConsole(virDomainPtr dom, const char *dev_name)
                               NULL);
 
     while (!con->quit) {
-        if (virEventRunDefaultImpl() < 0)
-            break;
+        if (virCondWait(&con->cond, &con->lock) < 0) {
+            VIR_ERROR(_("unable to wait on console condition"));
+            goto cleanup;
+        }
     }
 
     ret = 0;
@@ -363,6 +372,8 @@ int vshRunConsole(virDomainPtr dom, const char *dev_name)
     if (con) {
         if (con->st)
             virStreamFree(con->st);
+        virMutexDestroy(&con->lock);
+        ignore_value(virCondDestroy(&con->cond));
         VIR_FREE(con);
     }
 
