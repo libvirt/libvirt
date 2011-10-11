@@ -29,6 +29,11 @@ INCLUDES += \
 	-DTEST_DRIVER_DIR=\"$(top_builddir)/src/.libs\"
 endif
 
+PROBES_O =
+if WITH_DTRACE
+PROBES_O += ../src/probes.o
+endif
+
 LDADDS = \
 	$(STATIC_BINARIES) \
 	$(LIBXML_LIBS) \
@@ -39,6 +44,7 @@ LDADDS = \
         $(YAJL_LIBS) \
         $(WARN_CFLAGS) \
 	../src/libvirt_test.la \
+	$(PROBES_O) \
 	../gnulib/lib/libgnu.la \
 	$(LIBSOCKET) \
         $(COVERAGE_LDFLAGS)
