@@ -368,6 +368,15 @@ enum virDomainFSType {
     VIR_DOMAIN_FS_TYPE_LAST
 };
 
+/* Filesystem driver type */
+enum virDomainFSDriverType {
+    VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT = 0,
+    VIR_DOMAIN_FS_DRIVER_TYPE_PATH,
+    VIR_DOMAIN_FS_DRIVER_TYPE_HANDLE,
+
+    VIR_DOMAIN_FS_DRIVER_TYPE_LAST
+};
+
 /* Filesystem mount access mode  */
 enum virDomainFSAccessMode {
     VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH,
@@ -381,6 +390,7 @@ typedef struct _virDomainFSDef virDomainFSDef;
 typedef virDomainFSDef *virDomainFSDefPtr;
 struct _virDomainFSDef {
     int type;
+    int fsdriver;
     int accessmode;
     char *src;
     char *dst;
@@ -1865,6 +1875,7 @@ VIR_ENUM_DECL(virDomainController)
 VIR_ENUM_DECL(virDomainControllerModelSCSI)
 VIR_ENUM_DECL(virDomainControllerModelUSB)
 VIR_ENUM_DECL(virDomainFS)
+VIR_ENUM_DECL(virDomainFSDriverType)
 VIR_ENUM_DECL(virDomainFSAccessMode)
 VIR_ENUM_DECL(virDomainNet)
 VIR_ENUM_DECL(virDomainNetBackend)

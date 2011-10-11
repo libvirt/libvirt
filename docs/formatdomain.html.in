@@ -1156,6 +1156,7 @@
       &lt;target dir='/'/&gt;
     &lt;/filesystem&gt;
     &lt;filesystem type='mount' accessmode='passthrough'&gt;
+      &lt;driver type='path'/&gt;
       &lt;source dir='/export/to/guest'/&gt;
       &lt;target dir='/import/from/host'/&gt;
       &lt;readonly/&gt;
@@ -1178,6 +1179,11 @@
         OpenVZ <span class="since">(since 0.6.2)</span>
         and QEMU/KVM <span class="since">(since 0.8.5)</span>.
         This is the default <code>type</code> if one is not specified.
+        This mode also has an optional
+        sub-element <code>driver</code>, with an
+        attribute <code>type='path'</code>
+        or <code>type='handle'</code> <span class="since">(since
+        0.9.7)</span>.
         </dd>
         <dt><code>type='template'</code></dt>
         <dd>

@@ -238,6 +238,11 @@ VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
               "file",
               "template")
 
+VIR_ENUM_IMPL(virDomainFSDriverType, VIR_DOMAIN_FS_DRIVER_TYPE_LAST,
+              "default",
+              "path",
+              "handle")
+
 VIR_ENUM_IMPL(virDomainFSAccessMode, VIR_DOMAIN_FS_ACCESSMODE_LAST,
               "passthrough",
               "mapped",
@@ -2828,6 +2833,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
     virDomainFSDefPtr def;
     xmlNodePtr cur;
     char *type = NULL;
+    char *fsdriver = NULL;
     char *source = NULL;
     char *target = NULL;
     char *accessmode = NULL;
@@ -2878,9 +2884,19 @@ virDomainFSDefParseXML(xmlNodePtr node,
                 target = virXMLPropString(cur, "dir");
             } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
                 def->readonly = 1;
+            } else if ((fsdriver == NULL) && (xmlStrEqual(cur->name, BAD_CAST "driver"))) {
+                fsdriver = virXMLPropString(cur, "type");
             }
         }
         cur = cur->next;
+    }
+
+    if (fsdriver) {
+        if ((def->fsdriver = virDomainFSDriverTypeTypeFromString(fsdriver)) <= 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("unknown fs driver type '%s'"), fsdriver);
+            goto error;
+        }
     }
 
     if (source == NULL) {
@@ -2905,6 +2921,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
 
 cleanup:
     VIR_FREE(type);
+    VIR_FREE(fsdriver);
     VIR_FREE(target);
     VIR_FREE(source);
     VIR_FREE(accessmode);
@@ -9351,6 +9368,7 @@ virDomainFSDefFormat(virBufferPtr buf,
 {
     const char *type = virDomainFSTypeToString(def->type);
     const char *accessmode = virDomainFSAccessModeTypeToString(def->accessmode);
+    const char *fsdriver = virDomainFSDriverTypeTypeToString(def->fsdriver);
 
     if (!type) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -9368,6 +9386,10 @@ virDomainFSDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf,
                       "    <filesystem type='%s' accessmode='%s'>\n",
                       type, accessmode);
+
+    if (def->fsdriver) {
+        virBufferAsprintf(buf, "      <driver type='%s'/>\n", fsdriver);
+    }
 
     if (def->src) {
         switch (def->type) {

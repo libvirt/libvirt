@@ -995,9 +995,12 @@
           </interleave>
         </group>
         <group>
-          <attribute name="type">
-            <value>mount</value>
-          </attribute>
+          <!-- type='mount' is default -->
+          <optional>
+            <attribute name="type">
+              <value>mount</value>
+            </attribute>
+          </optional>
           <interleave>
             <element name="source">
               <attribute name="dir">
@@ -1005,6 +1008,17 @@
               </attribute>
               <empty/>
             </element>
+            <optional>
+              <element name="driver">
+                <attribute name="type">
+                  <choice>
+                    <value>path</value>
+                    <value>handle</value>
+                  </choice>
+                </attribute>
+                <empty/>
+              </element>
+            </optional>
             <ref name="filesystemtgt"/>
           </interleave>
         </group>
@@ -1024,7 +1038,6 @@
         </group>
       </choice>
       <optional>
-        <ref name="address"/>
         <attribute name="accessmode">
         <choice>
           <value>passthrough</value>
@@ -1036,12 +1049,17 @@
     </element>
   </define>
   <define name="filesystemtgt">
-    <element name="target">
-      <attribute name="dir">
-        <ref name="absDirPath"/>
-      </attribute>
-      <empty/>
-    </element>
+    <interleave>
+      <optional>
+        <ref name="address"/>
+      </optional>
+      <element name="target">
+        <attribute name="dir">
+          <ref name="absDirPath"/>
+        </attribute>
+        <empty/>
+      </element>
+    </interleave>
   </define>
   <!--
       An interface description can either be of type bridge in which case

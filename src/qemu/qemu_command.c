@@ -100,6 +100,12 @@ VIR_ENUM_IMPL(qemuControllerModelUSB, VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST,
               "vt82c686b-usb-uhci",
               "pci-ohci");
 
+VIR_ENUM_DECL(qemuDomainFSDriver)
+VIR_ENUM_IMPL(qemuDomainFSDriver, VIR_DOMAIN_FS_DRIVER_TYPE_LAST,
+              "local",
+              "local",
+              "handle");
+
 
 static void
 uname_normalize (struct utsname *ut)
@@ -1811,6 +1817,7 @@ char *qemuBuildFSStr(virDomainFSDefPtr fs,
                      virBitmapPtr qemuCaps ATTRIBUTE_UNUSED)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
+    const char *driver = qemuDomainFSDriverTypeToString(fs->fsdriver);
 
     if (fs->type != VIR_DOMAIN_FS_TYPE_MOUNT) {
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -1818,7 +1825,13 @@ char *qemuBuildFSStr(virDomainFSDefPtr fs,
         goto error;
     }
 
-    virBufferAddLit(&opt, "local");
+    if (!driver) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("Filesystem driver type not supported"));
+        goto error;
+    }
+    virBufferAdd(&opt, driver, -1);
+
     if (fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_MAPPED) {
         virBufferAddLit(&opt, ",security_model=mapped");
     } else if(fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH) {
