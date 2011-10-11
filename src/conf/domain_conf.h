@@ -1464,9 +1464,6 @@ struct _virDomainSnapshotObj {
     virDomainSnapshotObjPtr sibling; /* NULL if last child of parent */
     size_t nchildren;
     virDomainSnapshotObjPtr first_child; /* NULL if no children */
-
-    /* Internal use only */
-    int mark; /* Used in identifying descendents. */
 };
 
 typedef struct _virDomainSnapshotObjList virDomainSnapshotObjList;
@@ -1508,22 +1505,18 @@ int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
 int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
                                 unsigned int flags);
 int virDomainSnapshotObjListGetNamesFrom(virDomainSnapshotObjPtr snapshot,
-                                         virDomainSnapshotObjListPtr snapshots,
                                          char **const names, int maxnames,
                                          unsigned int flags);
 int virDomainSnapshotObjListNumFrom(virDomainSnapshotObjPtr snapshot,
-                                    virDomainSnapshotObjListPtr snapshots,
                                     unsigned int flags);
 virDomainSnapshotObjPtr virDomainSnapshotFindByName(const virDomainSnapshotObjListPtr snapshots,
                                                     const char *name);
 void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
                                     virDomainSnapshotObjPtr snapshot);
-int virDomainSnapshotForEachChild(virDomainSnapshotObjListPtr snapshots,
-                                  virDomainSnapshotObjPtr snapshot,
+int virDomainSnapshotForEachChild(virDomainSnapshotObjPtr snapshot,
                                   virHashIterator iter,
                                   void *data);
-int virDomainSnapshotForEachDescendant(virDomainSnapshotObjListPtr snapshots,
-                                       virDomainSnapshotObjPtr snapshot,
+int virDomainSnapshotForEachDescendant(virDomainSnapshotObjPtr snapshot,
                                        virHashIterator iter,
                                        void *data);
 int virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots);

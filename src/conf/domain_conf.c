@@ -12192,7 +12192,6 @@ cleanup:
 }
 
 int virDomainSnapshotObjListGetNamesFrom(virDomainSnapshotObjPtr snapshot,
-                                         virDomainSnapshotObjListPtr snapshots,
                                          char **const names, int maxnames,
                                          unsigned int flags)
 {
@@ -12202,11 +12201,11 @@ int virDomainSnapshotObjListGetNamesFrom(virDomainSnapshotObjPtr snapshot,
     data.flags = flags & ~VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
 
     if (flags & VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS)
-        virDomainSnapshotForEachDescendant(snapshots, snapshot,
+        virDomainSnapshotForEachDescendant(snapshot,
                                            virDomainSnapshotObjListCopyNames,
                                            &data);
     else
-        virDomainSnapshotForEachChild(snapshots, snapshot,
+        virDomainSnapshotForEachChild(snapshot,
                                       virDomainSnapshotObjListCopyNames, &data);
 
     if (data.oom) {
@@ -12263,7 +12262,6 @@ int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
 
 int
 virDomainSnapshotObjListNumFrom(virDomainSnapshotObjPtr snapshot,
-                                virDomainSnapshotObjListPtr snapshots,
                                 unsigned int flags)
 {
     struct virDomainSnapshotNumData data = { 0, 0 };
@@ -12271,11 +12269,11 @@ virDomainSnapshotObjListNumFrom(virDomainSnapshotObjPtr snapshot,
     data.flags = flags & ~VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
 
     if (flags & VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS)
-        virDomainSnapshotForEachDescendant(snapshots, snapshot,
+        virDomainSnapshotForEachDescendant(snapshot,
                                            virDomainSnapshotObjListCount,
                                            &data);
     else if (data.flags)
-        virDomainSnapshotForEachChild(snapshots, snapshot,
+        virDomainSnapshotForEachChild(snapshot,
                                       virDomainSnapshotObjListCount, &data);
     else
         data.count = snapshot->nchildren;
@@ -12300,8 +12298,7 @@ void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
  * other entries in snapshots.  Return the number of children
  * visited.  No particular ordering is guaranteed.  */
 int
-virDomainSnapshotForEachChild(virDomainSnapshotObjListPtr snapshots ATTRIBUTE_UNUSED,
-                              virDomainSnapshotObjPtr snapshot,
+virDomainSnapshotForEachChild(virDomainSnapshotObjPtr snapshot,
                               virHashIterator iter,
                               void *data)
 {
@@ -12330,7 +12327,7 @@ virDomainSnapshotActOnDescendant(void *payload,
     struct snapshot_act_on_descendant *curr = data;
 
     (curr->iter)(payload, name, curr->data);
-    curr->number += 1 + virDomainSnapshotForEachDescendant(NULL, obj,
+    curr->number += 1 + virDomainSnapshotForEachDescendant(obj,
                                                            curr->iter,
                                                            curr->data);
 }
@@ -12339,8 +12336,7 @@ virDomainSnapshotActOnDescendant(void *payload,
  * other entries in snapshots.  Return the number of descendants
  * visited.  No particular ordering is guaranteed.  */
 int
-virDomainSnapshotForEachDescendant(virDomainSnapshotObjListPtr snapshots ATTRIBUTE_UNUSED,
-                                   virDomainSnapshotObjPtr snapshot,
+virDomainSnapshotForEachDescendant(virDomainSnapshotObjPtr snapshot,
                                    virHashIterator iter,
                                    void *data)
 {
@@ -12349,7 +12345,7 @@ virDomainSnapshotForEachDescendant(virDomainSnapshotObjListPtr snapshots ATTRIBU
     act.number = 0;
     act.iter = iter;
     act.data = data;
-    virDomainSnapshotForEachChild(NULL, snapshot,
+    virDomainSnapshotForEachChild(snapshot,
                                   virDomainSnapshotActOnDescendant, &act);
 
     return act.number;

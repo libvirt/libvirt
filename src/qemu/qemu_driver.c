@@ -9502,8 +9502,7 @@ qemuDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    n = virDomainSnapshotObjListGetNamesFrom(snap, &vm->snapshots,
-                                             names, nameslen, flags);
+    n = virDomainSnapshotObjListGetNamesFrom(snap, names, nameslen, flags);
 
 cleanup:
     if (vm)
@@ -9546,7 +9545,7 @@ qemuDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
      * VIR_DOMAIN_SNAPSHOT_LIST_METADATA makes no difference to our
      * answer.  */
 
-    n = virDomainSnapshotObjListNumFrom(snap, &vm->snapshots, flags);
+    n = virDomainSnapshotObjListNumFrom(snap, flags);
 
 cleanup:
     if (vm)
@@ -10163,7 +10162,7 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
             snap->def->state == VIR_DOMAIN_DISK_SNAPSHOT)
             external++;
         if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN)
-            virDomainSnapshotForEachDescendant(&vm->snapshots, snap,
+            virDomainSnapshotForEachDescendant(snap,
                                                qemuDomainSnapshotCountExternal,
                                                &external);
         if (external) {
@@ -10184,8 +10183,7 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         rem.metadata_only = metadata_only;
         rem.err = 0;
         rem.current = false;
-        virDomainSnapshotForEachDescendant(&vm->snapshots,
-                                           snap,
+        virDomainSnapshotForEachDescendant(snap,
                                            qemuDomainSnapshotDiscardAll,
                                            &rem);
         if (rem.err < 0)
@@ -10210,7 +10208,7 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         rep.vm = vm;
         rep.err = 0;
         rep.last = NULL;
-        virDomainSnapshotForEachChild(&vm->snapshots, snap,
+        virDomainSnapshotForEachChild(snap,
                                       qemuDomainSnapshotReparentChildren,
                                       &rep);
         if (rep.err < 0)
