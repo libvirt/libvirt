@@ -1328,6 +1328,7 @@ $(builddir)/locking/%-sanlock.conf: $(srcdir)/locking/sanlock.conf
 if WITH_QEMU
 conf_DATA += locking/qemu-sanlock.conf
 BUILT_SOURCES += locking/qemu-sanlock.conf
+DISTCLEANFILES += locking/qemu-sanlock.conf
 endif
 else
 EXTRA_DIST += $(LOCK_DRIVER_SANLOCK_SOURCES)
