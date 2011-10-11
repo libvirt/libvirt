@@ -1897,9 +1897,18 @@ static int qemuDomainInjectNMI(virDomainPtr domain, unsigned int flags)
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto endjob;
+    }
+
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorInjectNMI(priv->mon);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+endjob:
     if (qemuDomainObjEndJob(driver, vm) == 0) {
         vm = NULL;
         goto cleanup;
@@ -4331,7 +4340,7 @@ static char *qemuDomainGetXMLDesc(virDomainPtr dom,
     virDomainObjPtr vm;
     char *ret = NULL;
     unsigned long balloon;
-    int err;
+    int err = 0;
 
     /* Flags checked by virDomainDefFormat */
 
@@ -4357,9 +4366,17 @@ static char *qemuDomainGetXMLDesc(virDomainPtr dom,
             if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_QUERY) < 0)
                 goto cleanup;
 
+            if (!virDomainObjIsActive(vm)) {
+                qemuReportError(VIR_ERR_OPERATION_INVALID,
+                                "%s", _("domain is not running"));
+                goto endjob;
+            }
+
             qemuDomainObjEnterMonitorWithDriver(driver, vm);
             err = qemuMonitorGetBalloonInfo(priv->mon, &balloon);
             qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+endjob:
             if (qemuDomainObjEndJob(driver, vm) == 0) {
                 vm = NULL;
                 goto cleanup;
@@ -7097,6 +7114,12 @@ qemudDomainBlockStatsFlags (virDomainPtr dom,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
         goto cleanup;
 
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto endjob;
+    }
+
     qemuDomainObjEnterMonitor(driver, vm);
     tmp = *nparams;
     ret = qemuMonitorGetBlockStatsParamsNumber(priv->mon, nparams);
@@ -8609,6 +8632,12 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
         if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MIGRATION_OP) < 0)
             goto cleanup;
 
+        if (!virDomainObjIsActive(vm)) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("domain is not running"));
+            goto endjob;
+        }
+
         VIR_DEBUG("Setting migration bandwidth to %luMbs", bandwidth);
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorSetMigrationSpeed(priv->mon, bandwidth);
@@ -8617,6 +8646,7 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
         if (ret == 0)
             priv->migMaxBandwidth = bandwidth;
 
+endjob:
         if (qemuDomainObjEndJob(driver, vm) == 0)
             vm = NULL;
     } else {
@@ -8711,6 +8741,12 @@ qemuDomainSnapshotCreateActive(virConnectPtr conn,
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         return -1;
 
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto endjob;
+    }
+
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         /* savevm monitor command pauses the domain emitting an event which
          * confuses libvirt since it's not notified when qemu resumes the
@@ -8760,6 +8796,7 @@ cleanup:
                         _("resuming after snapshot failed"));
     }
 
+endjob:
     if (vm && qemuDomainObjEndJob(driver, vm) == 0) {
         /* Only possible if a transient vm quit while our locks were down,
          * in which case we don't want to save snapshot metadata.  */
@@ -8982,6 +9019,13 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         return -1;
 
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         /* In qemu, snapshot_blkdev on a single disk will pause cpus,
          * but this confuses libvirt since notifications are not given
@@ -9064,12 +9108,14 @@ cleanup:
             (persist &&
              virDomainSaveConfig(driver->configDir, vm->newDef) < 0))
             ret = -1;
-        if (qemuDomainObjEndJob(driver, vm) == 0) {
+    }
+
+endjob:
+    if (vm && (qemuDomainObjEndJob(driver, vm) == 0)) {
             /* Only possible if a transient vm quit while our locks were down,
              * in which case we don't want to save snapshot metadata.  */
             *vmptr = NULL;
             ret = -1;
-        }
     }
 
     return ret;
@@ -10009,20 +10055,28 @@ static int qemuDomainMonitorCommand(virDomainPtr domain, const char *cmd,
         goto cleanup;
    }
 
+    if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("domain is not running"));
+        goto endjob;
+    }
+
     priv = vm->privateData;
 
     qemuDomainObjTaint(driver, vm, VIR_DOMAIN_TAINT_CUSTOM_MONITOR, -1);
 
     hmp = !!(flags & VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP);
 
-    if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
-        goto cleanup;
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorArbitraryCommand(priv->mon, cmd, result, hmp);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+endjob:
     if (qemuDomainObjEndJob(driver, vm) == 0) {
         vm = NULL;
-        goto cleanup;
     }
 
 cleanup:
@@ -10259,10 +10313,19 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path,
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("domain is not running"));
+        goto endjob;
+    }
+
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     priv = vm->privateData;
     ret = qemuMonitorBlockJob(priv->mon, device, bandwidth, info, mode);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+endjob:
     if (qemuDomainObjEndJob(driver, vm) == 0) {
         vm = NULL;
         goto cleanup;
