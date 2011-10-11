@@ -25,6 +25,7 @@ AM_LDFLAGS = $(COVERAGE_LDFLAGS)
 EXTRA_DIST = $(conf_DATA) util/keymaps.csv
 
 BUILT_SOURCES =
+DISTCLEANFILES =
 
 if WITH_NETWORK
 UUID=$(shell uuidgen 2>/dev/null)
@@ -1294,6 +1295,7 @@ $(builddir)/locking/%-sanlock.conf: $(srcdir)/locking/sanlock.conf
 if WITH_QEMU
 conf_DATA += locking/qemu-sanlock.conf
 BUILT_SOURCES += locking/qemu-sanlock.conf
+DISTCLEANFILES += locking/qemu-sanlock.conf
 endif
 else
 EXTRA_DIST += $(LOCK_DRIVER_SANLOCK_SOURCES)
@@ -1546,5 +1548,5 @@ endif
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt" ||:
 
 CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
-DISTCLEANFILES = $(GENERATED_SYM_FILES)
+DISTCLEANFILES += $(GENERATED_SYM_FILES)
 MAINTAINERCLEANFILES = $(REMOTE_DRIVER_GENERATED) $(VIR_NET_RPC_GENERATED) $(ESX_DRIVER_GENERATED)
