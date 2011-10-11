@@ -470,8 +470,12 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                                              NULL)))
         goto error;
 
-    if (virNetServerAddService(srv, svc, NULL) < 0)
+    if (virNetServerAddService(srv, svc,
+                               config->mdns_adv && !ipsock ?
+                               "_libvirt._tcp" :
+                               NULL) < 0)
         goto error;
+
     if (svcRO &&
         virNetServerAddService(srv, svcRO, NULL) < 0)
         goto error;
