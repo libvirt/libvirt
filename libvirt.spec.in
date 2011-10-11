@@ -89,6 +89,7 @@
 # Xen is available only on i386 x86_64 ia64
 %ifnarch i386 i586 i686 x86_64 ia64
 %define with_xen 0
+%define with_libxl 0
 %endif
 
 # Numactl is not available on s390[x]
