@@ -1253,7 +1253,8 @@ libvirt_la_CFLAGS = -DIN_LIBVIRT $(AM_CFLAGS)
 libvirt_la_DEPENDENCIES = $(libvirt_la_BUILT_LIBADD) $(LIBVIRT_SYMBOL_FILE)
 
 if WITH_DTRACE
-libvirt_la_LIBADD += probes.o
+libvirt_la_BUILT_LIBADD += probes.o
+libvirt_la_DEPENDENCIES += probes.o
 nodist_libvirt_la_SOURCES = probes.h
 
 BUILT_SOURCES += probes.h libvirt_probes.stp libvirt_functions.stp
