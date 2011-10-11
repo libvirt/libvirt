@@ -4,7 +4,7 @@
 INCLUDES = \
 	-I../include -I$(top_srcdir)/include \
 	-I$(top_srcdir)/gnulib/lib -I../gnulib/lib	\
-	-I$(top_srcdir)/src				\
+	-I$(top_srcdir)/src -I../src			\
 	-I$(top_srcdir)/src/util			\
 	-I$(top_srcdir)					\
 	$(GETTEXT_CPPFLAGS)
