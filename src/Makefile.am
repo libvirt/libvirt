@@ -1342,9 +1342,11 @@ noinst_LTLIBRARIES += \
 	libvirt-net-rpc-client.la
 
 EXTRA_DIST += \
-       rpc/virnetprotocol.x \
-       rpc/gendispatch.pl \
-       rpc/genprotocol.pl
+	dtrace2systemtap.pl \
+	rpc/gendispatch.pl \
+	rpc/genprotocol.pl \
+	rpc/gensystemtap.pl \
+	rpc/virnetprotocol.x
 
 VIR_NET_RPC_GENERATED = \
 	$(srcdir)/rpc/virnetprotocol.h \
