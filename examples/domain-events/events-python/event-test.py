@@ -469,9 +469,9 @@ def myDomainEventIOErrorCallback(conn, dom, srcpath, devalias, action, opaque):
 def myDomainEventGraphicsCallback(conn, dom, phase, localAddr, remoteAddr, authScheme, subject, opaque):
     print "myDomainEventGraphicsCallback: Domain %s(%s) %d %s" % (dom.name(), dom.ID(), phase, authScheme)
 
-def usage():
-        print "usage: "+os.path.basename(sys.argv[0])+" [uri]"
-        print "   uri will default to qemu:///system"
+def usage(out=sys.stderr):
+    print >>out, "usage: "+os.path.basename(sys.argv[0])+" [uri]"
+    print >>out, "   uri will default to qemu:///system"
 
 def main():
     try:
@@ -483,7 +483,7 @@ def main():
         sys.exit(2)
     for o, a in opts:
         if o in ("-h", "--help"):
-            usage()
+            usage(sys.stdout)
             sys.exit()
 
     if len(args) >= 1:
