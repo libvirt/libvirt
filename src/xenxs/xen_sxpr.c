@@ -397,14 +397,20 @@ xenParseSxprDisks(virDomainDefPtr def,
                     goto error;
                 }
 
-                if (VIR_ALLOC_N(disk->driverName, (offset-src)+1) < 0)
-                    goto no_memory;
-                if (virStrncpy(disk->driverName, src, offset-src,
-                              (offset-src)+1) == NULL) {
-                    XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                                 _("Driver name %s too big for destination"),
-                                 src);
-                    goto error;
+                if (sexpr_lookup(node, "device/tap2") &&
+                    STRPREFIX(src, "tap:")) {
+                    if (!(disk->driverName = strdup("tap2")))
+                        goto no_memory;
+                } else {
+                    if (VIR_ALLOC_N(disk->driverName, (offset-src)+1) < 0)
+                        goto no_memory;
+                    if (virStrncpy(disk->driverName, src, offset-src,
+                                   (offset-src)+1) == NULL) {
+                        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
+                                    _("Driver name %s too big for destination"),
+                                    src);
+                        goto error;
+                    }
                 }
 
                 src = offset + 1;
