@@ -486,8 +486,8 @@ def main():
             usage()
             sys.exit()
 
-    if len(sys.argv) > 1:
-        uri = sys.argv[1]
+    if len(args) >= 1:
+        uri = args[0]
     else:
         uri = "qemu:///system"
 
