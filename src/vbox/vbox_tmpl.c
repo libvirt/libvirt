@@ -300,7 +300,7 @@ static void nsIDtoChar(unsigned char *uuid, const nsID *iid) {
     }
 
     uuidstrdst[VIR_UUID_STRING_BUFLEN-1] = '\0';
-    virUUIDParse(uuidstrdst, uuid);
+    ignore_value(virUUIDParse(uuidstrdst, uuid));
 }
 
 static void nsIDFromChar(nsID *iid, const unsigned char *uuid) {
@@ -339,7 +339,7 @@ static void nsIDFromChar(nsID *iid, const unsigned char *uuid) {
     }
 
     uuidstrdst[VIR_UUID_STRING_BUFLEN-1] = '\0';
-    virUUIDParse(uuidstrdst, uuidinterim);
+    ignore_value(virUUIDParse(uuidstrdst, uuidinterim));
     memcpy(iid, uuidinterim, VIR_UUID_BUFLEN);
 }
 
@@ -511,7 +511,7 @@ vboxIIDToUUID_v3_x(vboxGlobalData *data, vboxIID_v3_x *iid,
 
     data->pFuncs->pfnUtf16ToUtf8(iid->value, &utf8);
 
-    virUUIDParse(utf8, uuid);
+    ignore_value(virUUIDParse(utf8, uuid));
 
     data->pFuncs->pfnUtf8Free(utf8);
 }
@@ -6558,7 +6558,7 @@ vboxCallbackOnMachineStateChange(IVirtualBoxCallback *pThis ATTRIBUTE_UNUSED,
         unsigned char uuid[VIR_UUID_BUFLEN];
 
         g_pVBoxGlobalData->pFuncs->pfnUtf16ToUtf8(machineId, &machineIdUtf8);
-        virUUIDParse(machineIdUtf8, uuid);
+        ignore_value(virUUIDParse(machineIdUtf8, uuid));
 
         dom = vboxDomainLookupByUUID(g_pVBoxGlobalData->conn, uuid);
         if (dom) {
@@ -6686,7 +6686,7 @@ vboxCallbackOnMachineRegistered(IVirtualBoxCallback *pThis ATTRIBUTE_UNUSED,
         unsigned char uuid[VIR_UUID_BUFLEN];
 
         g_pVBoxGlobalData->pFuncs->pfnUtf16ToUtf8(machineId, &machineIdUtf8);
-        virUUIDParse(machineIdUtf8, uuid);
+        ignore_value(virUUIDParse(machineIdUtf8, uuid));
 
         dom = vboxDomainLookupByUUID(g_pVBoxGlobalData->conn, uuid);
         if (dom) {
@@ -7983,7 +7983,7 @@ static virStoragePoolPtr vboxStoragePoolLookupByName(virConnectPtr conn, const c
         unsigned char uuid[VIR_UUID_BUFLEN];
         const char *uuidstr = "1deff1ff-1481-464f-967f-a50fe8936cc4";
 
-        virUUIDParse(uuidstr, uuid);
+        ignore_value(virUUIDParse(uuidstr, uuid));
 
         ret = virGetStoragePool(conn, name, uuid);
     }

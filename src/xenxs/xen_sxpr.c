@@ -1094,7 +1094,8 @@ xenParseSxpr(const struct sexpr *root,
                      "%s", _("domain information incomplete, missing name"));
         goto error;
     }
-    virUUIDParse(tmp, def->uuid);
+    if (virUUIDParse(tmp, def->uuid) < 0)
+        goto error;
 
     if (sexpr_node_copy(root, "domain/description", &def->description) < 0)
         goto no_memory;

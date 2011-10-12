@@ -40,6 +40,7 @@
 #include "xenapi_driver.h"
 #include "xenapi_driver_private.h"
 #include "xenapi_utils.h"
+#include "ignore-value.h"
 
 #define VIR_FROM_THIS VIR_FROM_XENAPI
 
@@ -528,7 +529,7 @@ xenapiDomainCreateXML (virConnectPtr conn,
     virDomainDefFree(defPtr);
     if (record) {
         unsigned char raw_uuid[VIR_UUID_BUFLEN];
-        virUUIDParse(record->uuid, raw_uuid);
+        ignore_value(virUUIDParse(record->uuid, raw_uuid));
         if (vm) {
             if (xen_vm_start(session, vm, false, false)) {
                 domP = virGetDomain(conn, record->name_label, raw_uuid);
@@ -574,13 +575,13 @@ xenapiDomainLookupByID (virConnectPtr conn, int id)
     xen_session_get_this_host(session, &host, session);
     if (host != NULL && session->ok) {
         xen_host_get_resident_vms(session, &result, host);
-        if (result != NULL ) {
+        if (result != NULL) {
             for (i = 0; i < result->size; i++) {
                 xen_vm_get_domid(session, &domID, result->contents[i]);
                 if (domID == id) {
                     xen_vm_get_record(session, &record, result->contents[i]);
                     xen_vm_get_uuid(session, &uuid, result->contents[i]);
-                    virUUIDParse(uuid, raw_uuid);
+                    ignore_value(virUUIDParse(uuid, raw_uuid));
                     domP = virGetDomain(conn, record->name_label, raw_uuid);
                     if (domP) {
                         int64_t domid = -1;
@@ -672,7 +673,7 @@ xenapiDomainLookupByName (virConnectPtr conn,
         vm = vms->contents[0];
         xen_vm_get_uuid(session, &uuid, vm);
         if (uuid!=NULL) {
-            virUUIDParse(uuid, raw_uuid);
+            ignore_value(virUUIDParse(uuid, raw_uuid));
             domP = virGetDomain(conn, name, raw_uuid);
             if (domP != NULL) {
                 int64_t domid = -1;
@@ -1683,7 +1684,7 @@ xenapiDomainDefineXML (virConnectPtr conn, const char *xml)
     }
     if (record != NULL) {
         unsigned char raw_uuid[VIR_UUID_BUFLEN];
-        virUUIDParse(record->uuid, raw_uuid);
+        ignore_value(virUUIDParse(record->uuid, raw_uuid));
         domP = virGetDomain(conn, record->name_label, raw_uuid);
         if (!domP && !session->ok)
             xenapiSessionErrorHandler(conn, VIR_ERR_NO_DOMAIN, NULL);

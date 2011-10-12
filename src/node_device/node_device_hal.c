@@ -38,6 +38,7 @@
 #include "pci.h"
 #include "logging.h"
 #include "node_device_driver.h"
+#include "ignore-value.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
@@ -299,7 +300,7 @@ static int gather_system_cap(LibHalContext *ctx, const char *udi,
     (void)get_str_prop(ctx, udi, "system.hardware.serial",
                        &d->system.hardware.serial);
     if (get_str_prop(ctx, udi, "system.hardware.uuid", &uuidstr) == 0) {
-        (void)virUUIDParse(uuidstr, d->system.hardware.uuid);
+        ignore_value(virUUIDParse(uuidstr, d->system.hardware.uuid));
         VIR_FREE(uuidstr);
     }
     (void)get_str_prop(ctx, udi, "system.firmware.vendor",

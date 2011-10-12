@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007, 2008, 2009, 2010 Red Hat, Inc.
+ * Copyright (C) 2007-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -128,9 +128,6 @@ int
 virUUIDParse(const char *uuidstr, unsigned char *uuid) {
     const char *cur;
     int i;
-
-    if ((uuidstr == NULL) || (uuid == NULL))
-        return(-1);
 
     /*
      * do a liberal scan allowing '-' and ' ' anywhere between character
