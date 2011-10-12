@@ -3749,7 +3749,19 @@ int                     virNWFilterGetUUIDString (virNWFilterPtr nwfilter,
                                                   char *buf);
 char *                  virNWFilterGetXMLDesc    (virNWFilterPtr nwfilter,
                                                   unsigned int flags);
+/**
+ * virDomainConsoleFlags
+ *
+ * Since 0.9.10
+ */
+typedef enum {
 
+    VIR_DOMAIN_CONSOLE_FORCE = (1 << 0), /* abort a (possibly) active console
+                                            connection to force a new
+                                            connection */
+    VIR_DOMAIN_CONSOLE_SAFE = (1 << 1), /* check if the console driver supports
+                                           safe console operations */
+} virDomainConsoleFlags;
 
 int virDomainOpenConsole(virDomainPtr dom,
                          const char *devname,

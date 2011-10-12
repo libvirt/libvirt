@@ -17771,7 +17771,7 @@ virDomainSnapshotFree(virDomainSnapshotPtr snapshot)
  * @dom: a domain object
  * @dev_name: the console, serial or parallel port device alias, or NULL
  * @st: a stream to associate with the console
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virDomainConsoleFlags
  *
  * This opens the backend associated with a console, serial or
  * parallel port device on a guest, if the backend is supported.
@@ -17780,7 +17780,21 @@ virDomainSnapshotFree(virDomainSnapshotPtr snapshot)
  * in @st stream, which should have been opened in non-blocking
  * mode for bi-directional I/O.
  *
- * returns 0 if the console was opened, -1 on error
+ * By default, when @flags is 0, the open will fail if libvirt
+ * detects that the console is already in use by another client;
+ * passing VIR_DOMAIN_CONSOLE_FORCE will cause libvirt to forcefully
+ * remove the other client prior to opening this console.
+ *
+ * If flag VIR_DOMAIN_CONSOLE_SAFE the console is opened only in the
+ * case where the hypervisor driver supports safe (mutually exclusive)
+ * console handling.
+ *
+ * Older servers did not support either flag, and also did not forbid
+ * simultaneous clients on a console, with potentially confusing results.
+ * When passing @flags of 0 in order to support a wider range of server
+ * versions, it is up to the client to ensure mutual exclusion.
+ *
+ * Returns 0 if the console was opened, -1 on error
  */
 int virDomainOpenConsole(virDomainPtr dom,
                          const char *dev_name,
