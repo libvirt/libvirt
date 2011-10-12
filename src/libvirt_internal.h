@@ -1,7 +1,7 @@
 /*
  * libvirt.h: publically exported APIs, not for public use
  *
- * Copyright (C) 2006-2008 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -83,7 +83,12 @@ enum {
     /*
      * Support for file descriptor passing
      */
-    VIR_DRV_FEATURE_FD_PASSING = 8
+    VIR_DRV_FEATURE_FD_PASSING = 8,
+
+    /*
+     * Support for VIR_TYPED_PARAM_STRING
+     */
+    VIR_DRV_FEATURE_TYPED_PARAM_STRING = 9,
 };
 
 

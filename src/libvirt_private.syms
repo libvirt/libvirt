@@ -1162,6 +1162,7 @@ virStrncpy;
 virTimeMs;
 virTimestamp;
 virTrimSpaces;
+virTypedParameterArrayClear;
 virVasprintf;
 
 

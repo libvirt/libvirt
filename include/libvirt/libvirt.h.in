@@ -200,11 +200,14 @@ typedef virDomainControlInfo *virDomainControlInfoPtr;
  * current domain state. VIR_DOMAIN_AFFECT_LIVE requires a running
  * domain, and VIR_DOMAIN_AFFECT_CONFIG requires a persistent domain
  * (whether or not it is running).
+ *
+ * These enums should not conflict with those of virTypedParameterFlags.
  */
 typedef enum {
     VIR_DOMAIN_AFFECT_CURRENT = 0,      /* Affect current domain state.  */
     VIR_DOMAIN_AFFECT_LIVE    = 1 << 0, /* Affect running domain state.  */
     VIR_DOMAIN_AFFECT_CONFIG  = 1 << 1, /* Affect persistent domain state.  */
+    /* 1 << 2 is reserved for virTypedParameterFlags */
 } virDomainModificationImpact;
 
 /**
@@ -489,8 +492,34 @@ typedef enum {
     VIR_TYPED_PARAM_LLONG   = 3, /* long long case */
     VIR_TYPED_PARAM_ULLONG  = 4, /* unsigned long long case */
     VIR_TYPED_PARAM_DOUBLE  = 5, /* double case */
-    VIR_TYPED_PARAM_BOOLEAN = 6  /* boolean(character) case */
+    VIR_TYPED_PARAM_BOOLEAN = 6, /* boolean(character) case */
+    VIR_TYPED_PARAM_STRING  = 7, /* string case */
 } virTypedParameterType;
+
+/**
+ * virTypedParameterFlags:
+ *
+ * Flags related to libvirt APIs that use virTypedParameter.
+ *
+ * These enums should not conflict with those of virDomainModificationImpact.
+ */
+typedef enum {
+    /* 1 << 0 is reserved for virDomainModificationImpact */
+    /* 1 << 1 is reserved for virDomainModificationImpact */
+
+    /* Older servers lacked the ability to handle string typed
+     * parameters.  Attempts to set a string parameter with an older
+     * server will fail at the client, but attempts to retrieve
+     * parameters must not return strings from a new server to an
+     * older client, so this flag exists to identify newer clients to
+     * newer servers.  This flag is automatically set when needed, so
+     * the user does not have to worry about it; however, manually
+     * setting the flag can be used to reject servers that cannot
+     * return typed strings, even if no strings would be returned.
+     */
+    VIR_TYPED_PARAM_STRING_OKAY = 1 << 2,
+
+} virTypedParameterFlags;
 
 /**
  * VIR_TYPED_PARAM_FIELD_LENGTH:
@@ -520,6 +549,7 @@ struct _virTypedParameter {
         unsigned long long int ul;  /* type is ULLONG */
         double d;                   /* type is DOUBLE */
         char b;                     /* type is BOOLEAN */
+        char *s;                    /* type is STRING, may not be NULL */
     } value; /* parameter value */
 };
 

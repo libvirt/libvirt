@@ -258,4 +258,6 @@ bool virIsDevMapperDevice(const char *dev_name) ATTRIBUTE_NONNULL(1);
 int virEmitXMLWarning(int fd,
                       const char *name,
                       const char *cmd) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+
+void virTypedParameterArrayClear(virTypedParameterPtr params, int nparams);
 #endif /* __VIR_UTIL_H__ */

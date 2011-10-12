@@ -3583,6 +3583,50 @@ error:
     return -1;
 }
 
+/* Helper function called to validate incoming client array on any
+ * interface that sets typed parameters in the hypervisor.  */
+static int
+virTypedParameterValidateSet(virDomainPtr domain,
+                             virTypedParameterPtr params,
+                             int nparams)
+{
+    bool string_okay;
+    int i;
+
+    string_okay = VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver,
+                                           domain->conn,
+                                           VIR_DRV_FEATURE_TYPED_PARAM_STRING);
+    for (i = 0; i < nparams; i++) {
+        if (strnlen(params[i].field, VIR_TYPED_PARAM_FIELD_LENGTH) ==
+            VIR_TYPED_PARAM_FIELD_LENGTH) {
+            virLibDomainError(VIR_ERR_INVALID_ARG,
+                              _("string parameter name '%.*s' too long"),
+                              VIR_TYPED_PARAM_FIELD_LENGTH,
+                              params[i].field);
+            virDispatchError(NULL);
+            return -1;
+        }
+        if (params[i].type == VIR_TYPED_PARAM_STRING) {
+            if (string_okay) {
+                if (!params[i].value.s) {
+                    virLibDomainError(VIR_ERR_INVALID_ARG,
+                                      _("NULL string parameter '%s'"),
+                                      params[i].field);
+                    virDispatchError(NULL);
+                    return -1;
+                }
+            } else {
+                virLibDomainError(VIR_ERR_INVALID_ARG,
+                                  _("string parameter '%s' unsupported"),
+                                  params[i].field);
+                virDispatchError(NULL);
+                return -1;
+            }
+        }
+    }
+    return 0;
+}
+
 /**
  * virDomainSetMemoryParameters:
  * @domain: pointer to domain object
@@ -3621,6 +3665,9 @@ virDomainSetMemoryParameters(virDomainPtr domain,
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
+    if (virTypedParameterValidateSet(domain, params, nparams) < 0)
+        return -1;
+
     conn = domain->conn;
 
     if (conn->driver->domainSetMemoryParameters) {
@@ -3644,7 +3691,7 @@ error:
  * @params: pointer to memory parameter object
  *          (return value, allocated by the caller)
  * @nparams: pointer to number of memory parameters; input and output
- * @flags: one of virDomainModificationImpact
+ * @flags: bitwise-OR of virDomainModificationImpact and virTypedParameterFlags
  *
  * Get all memory parameters.  On input, @nparams gives the size of the
  * @params array; on output, @nparams gives how many slots were filled
@@ -3695,6 +3742,9 @@ virDomainGetMemoryParameters(virDomainPtr domain,
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
+    if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                 VIR_DRV_FEATURE_TYPED_PARAM_STRING))
+        flags |= VIR_TYPED_PARAM_STRING_OKAY;
     conn = domain->conn;
 
     if (conn->driver->domainGetMemoryParameters) {
@@ -3717,7 +3767,7 @@ error:
  * @params: pointer to blkio parameter objects
  * @nparams: number of blkio parameters (this value can be the same or
  *          less than the number of parameters supported)
- * @flags: an OR'ed set of virDomainModificationImpact
+ * @flags: bitwise-OR of virDomainModificationImpact
  *
  * Change all or a subset of the blkio tunables.
  * This function may require privileged access to the hypervisor.
@@ -3749,6 +3799,9 @@ virDomainSetBlkioParameters(virDomainPtr domain,
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
+    if (virTypedParameterValidateSet(domain, params, nparams) < 0)
+        return -1;
+
     conn = domain->conn;
 
     if (conn->driver->domainSetBlkioParameters) {
@@ -3772,7 +3825,7 @@ error:
  * @params: pointer to blkio parameter object
  *          (return value, allocated by the caller)
  * @nparams: pointer to number of blkio parameters; input and output
- * @flags: an OR'ed set of virDomainModificationImpact
+ * @flags: bitwise-OR of virDomainModificationImpact and virTypedParameterFlags
  *
  * Get all blkio parameters.  On input, @nparams gives the size of the
  * @params array; on output, @nparams gives how many slots were filled
@@ -3814,6 +3867,9 @@ virDomainGetBlkioParameters(virDomainPtr domain,
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
+    if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                 VIR_DRV_FEATURE_TYPED_PARAM_STRING))
+        flags |= VIR_TYPED_PARAM_STRING_OKAY;
     conn = domain->conn;
 
     if (conn->driver->domainGetBlkioParameters) {
@@ -6410,7 +6466,7 @@ error:
  * @nparams: pointer to number of scheduler parameter
  *          (this value should be same than the returned value
  *           nparams of virDomainGetSchedulerType()); input and output
- * @flags: one of virDomainModificationImpact
+ * @flags: bitwise-OR of virDomainModificationImpact and virTypedParameterFlags
  *
  * Get all scheduler parameters.  On input, @nparams gives the size of the
  * @params array; on output, @nparams gives how many slots were filled
@@ -6456,6 +6512,9 @@ virDomainGetSchedulerParametersFlags(virDomainPtr domain,
         goto error;
     }
 
+    if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                 VIR_DRV_FEATURE_TYPED_PARAM_STRING))
+        flags |= VIR_TYPED_PARAM_STRING_OKAY;
     conn = domain->conn;
 
     if (conn->driver->domainGetSchedulerParametersFlags) {
@@ -6505,15 +6564,17 @@ virDomainSetSchedulerParameters(virDomainPtr domain,
         return -1;
     }
 
-    if (params == NULL || nparams < 0) {
-        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        goto error;
-    }
-
     if (domain->conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
+    if (params == NULL || nparams < 0) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    if (virTypedParameterValidateSet(domain, params, nparams) < 0)
+        return -1;
+
     conn = domain->conn;
 
     if (conn->driver->domainSetSchedulerParameters) {
@@ -6568,15 +6629,17 @@ virDomainSetSchedulerParametersFlags(virDomainPtr domain,
         return -1;
     }
 
-    if (params == NULL || nparams < 0) {
-        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        goto error;
-    }
-
     if (domain->conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
+    if (params == NULL || nparams < 0) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    if (virTypedParameterValidateSet(domain, params, nparams) < 0)
+        return -1;
+
     conn = domain->conn;
 
     if (conn->driver->domainSetSchedulerParametersFlags) {
@@ -6665,7 +6728,7 @@ error:
  * @params: pointer to block stats parameter object
  *          (return value)
  * @nparams: pointer to number of block stats; input and output
- * @flags: unused, always pass 0
+ * @flags: bitwise-OR of virTypedParameterFlags
  *
  * This function is to get block stats parameters for block
  * devices attached to the domain.
@@ -6715,6 +6778,9 @@ int virDomainBlockStatsFlags(virDomainPtr dom,
         virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
+    if (VIR_DRV_SUPPORTS_FEATURE(dom->conn->driver, dom->conn,
+                                 VIR_DRV_FEATURE_TYPED_PARAM_STRING))
+        flags |= VIR_TYPED_PARAM_STRING_OKAY;
     conn = dom->conn;
 
     if (conn->driver->domainBlockStatsFlags) {

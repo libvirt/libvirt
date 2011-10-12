@@ -2607,3 +2607,17 @@ or other application using the libvirt API.\n\
 
     return 0;
 }
+
+void
+virTypedParameterArrayClear(virTypedParameterPtr params, int nparams)
+{
+    int i;
+
+    if (!params)
+        return;
+
+    for (i = 0; i < nparams; i++) {
+        if (params[i].type == VIR_TYPED_PARAM_STRING)
+            VIR_FREE(params[i].value.s);
+    }
+}
