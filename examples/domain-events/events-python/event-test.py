@@ -470,12 +470,15 @@ def myDomainEventGraphicsCallback(conn, dom, phase, localAddr, remoteAddr, authS
     print "myDomainEventGraphicsCallback: Domain %s(%s) %d %s" % (dom.name(), dom.ID(), phase, authScheme)
 
 def usage(out=sys.stderr):
-    print >>out, "usage: "+os.path.basename(sys.argv[0])+" [uri]"
+    print >>out, "usage: "+os.path.basename(sys.argv[0])+" [-hdl] [uri]"
     print >>out, "   uri will default to qemu:///system"
+    print >>out, "   --help, -h   Print this help message"
+    print >>out, "   --debug, -d  Print debug output"
+    print >>out, "   --loop, -l   Toggle event-loop-implementation"
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "h", ["help"] )
+        opts, args = getopt.getopt(sys.argv[1:], "hdl", ["help", "debug", "loop"])
     except getopt.GetoptError, err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
@@ -485,6 +488,12 @@ def main():
         if o in ("-h", "--help"):
             usage(sys.stdout)
             sys.exit()
+        if o in ("-d", "--debug"):
+            global do_debug
+            do_debug = True
+        if o in ("-l", "--loop"):
+            global use_pure_python_event_loop
+            use_pure_python_event_loop ^= True
 
     if len(args) >= 1:
         uri = args[0]
