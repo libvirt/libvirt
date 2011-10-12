@@ -160,6 +160,8 @@ virtTestRun(const char *title, int nloops, int (*body)(const void *data), const 
                         virtTestCountAverage(ts, nloops));
             else if (ret == 0)
                 fprintf(stderr, "OK\n");
+            else if (ret == EXIT_AM_SKIP)
+                fprintf(stderr, "SKIP\n");
             else
                 fprintf(stderr, "FAILED\n");
         } else {
@@ -170,6 +172,8 @@ virtTestRun(const char *title, int nloops, int (*body)(const void *data), const 
             }
             if (ret == 0)
                 fprintf(stderr, ".");
+            else if (ret == EXIT_AM_SKIP)
+                fprintf(stderr, "_");
             else
                 fprintf(stderr, "!");
         }
