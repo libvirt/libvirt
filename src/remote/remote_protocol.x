@@ -317,6 +317,8 @@ union remote_typed_param_value switch (int type) {
      double d;
  case VIR_TYPED_PARAM_BOOLEAN:
      int b;
+ case VIR_TYPED_PARAM_STRING:
+     remote_nonnull_string s;
 };
 
 struct remote_typed_param {

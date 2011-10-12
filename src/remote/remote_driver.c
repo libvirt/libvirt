@@ -1244,8 +1244,11 @@ remoteFreeTypedParameters(remote_typed_param *args_params_val,
     if (args_params_val == NULL)
         return;
 
-    for (i = 0; i < args_params_len; i++)
+    for (i = 0; i < args_params_len; i++) {
         VIR_FREE(args_params_val[i].field);
+        if (args_params_val[i].value.type == VIR_TYPED_PARAM_STRING)
+            VIR_FREE(args_params_val[i].value.remote_typed_param_value_u.s);
+    }
 
     VIR_FREE(args_params_val);
 }
@@ -1294,6 +1297,13 @@ remoteSerializeTypedParameters(virTypedParameterPtr params,
         case VIR_TYPED_PARAM_BOOLEAN:
             val[i].value.remote_typed_param_value_u.b = params[i].value.b;
             break;
+        case VIR_TYPED_PARAM_STRING:
+            val[i].value.remote_typed_param_value_u.s = strdup(params[i].value.s);
+            if (val[i].value.remote_typed_param_value_u.s == NULL) {
+                virReportOOMError();
+                goto cleanup;
+            }
+            break;
         default:
             remoteError(VIR_ERR_RPC, _("unknown parameter type: %d"),
                 params[i].type);
@@ -1318,7 +1328,7 @@ remoteDeserializeTypedParameters(remote_typed_param *ret_params_val,
                                  virTypedParameterPtr params,
                                  int *nparams)
 {
-    int i;
+    int i = 0;
     int rv = -1;
 
     /* Check the length of the returned list carefully. */
@@ -1365,6 +1375,14 @@ remoteDeserializeTypedParameters(remote_typed_param *ret_params_val,
             params[i].value.b =
                 ret_params_val[i].value.remote_typed_param_value_u.b;
             break;
+        case VIR_TYPED_PARAM_STRING:
+            params[i].value.s =
+                strdup(ret_params_val[i].value.remote_typed_param_value_u.s);
+            if (params[i].value.s == NULL) {
+                virReportOOMError();
+                goto cleanup;
+            }
+            break;
         default:
             remoteError(VIR_ERR_RPC, _("unknown parameter type: %d"),
                         params[i].type);
@@ -1375,6 +1393,12 @@ remoteDeserializeTypedParameters(remote_typed_param *ret_params_val,
     rv = 0;
 
 cleanup:
+    if (rv < 0) {
+        int j;
+        for (j = 0; j < i; j++)
+            if (params[j].type == VIR_TYPED_PARAM_STRING)
+                VIR_FREE(params[j].value.s);
+    }
     return rv;
 }
 

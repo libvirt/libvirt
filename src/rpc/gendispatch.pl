@@ -439,7 +439,8 @@ elsif ($opt_b) {
                                         "                                                   $2,\n" .
                                         "                                                   &n$1)) == NULL)\n" .
                                         "        goto cleanup;\n");
-                    push(@free_list, "    VIR_FREE(params);");
+                    push(@free_list, "    virTypedParameterArrayClear($1, n$1);");
+                    push(@free_list, "    VIR_FREE($1);");
                 } elsif ($args_member =~ m/<\S+>;/ or $args_member =~ m/\[\S+\];/) {
                     # just make all other array types fail
                     die "unhandled type for argument value: $args_member";
