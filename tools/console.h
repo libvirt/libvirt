@@ -27,7 +27,8 @@
 
 int vshRunConsole(virDomainPtr dom,
                   const char *dev_name,
-                  const char *escape_seq);
+                  const char *escape_seq,
+                  unsigned int flags);
 
 # endif /* !WIN32 */
 

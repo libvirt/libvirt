@@ -421,12 +421,18 @@ Configure a domain to be automatically started at boot.
 
 The option I<--disable> disables autostarting.
 
-=item B<console> I<domain-id> [I<devname>]
+=item B<console> I<domain-id> [I<devname>] [I<--safe>] [I<--force>]
 
 Connect the virtual serial console for the guest. The optional
 I<devname> parameter refers to the device alias of an alternate
 console, serial or parallel device configured for the guest.
 If omitted, the primary console will be opened.
+
+If the flag I<--safe> is specified, the connection is only attempted
+if the driver supports safe console handling. This flag specifies that
+the server has to ensure exclusive access to console devices. Optionally
+the I<--force> flag may be specified, requesting to disconnect any existing
+sessions, such as in a case of a broken connection.
 
 =item B<create> I<FILE> [I<--console>] [I<--paused>] [I<--autodestroy>]
 

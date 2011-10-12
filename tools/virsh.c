@@ -819,11 +819,17 @@ static const vshCmdInfo info_console[] = {
 static const vshCmdOptDef opts_console[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"devname", VSH_OT_STRING, 0, N_("character device name")},
+    {"force", VSH_OT_BOOL, 0,
+      N_("force console connection (disconnect already connected sessions)")},
+    {"safe", VSH_OT_BOOL, 0,
+      N_("only connect if safe console handling is supported")},
     {NULL, 0, 0, NULL}
 };
 
 static bool
-cmdRunConsole(vshControl *ctl, virDomainPtr dom, const char *name)
+cmdRunConsole(vshControl *ctl, virDomainPtr dom,
+              const char *name,
+              unsigned int flags)
 {
     bool ret = false;
     int state;
@@ -846,7 +852,7 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom, const char *name)
     vshPrintExtra(ctl, _("Connected to domain %s\n"), virDomainGetName(dom));
     vshPrintExtra(ctl, _("Escape character is %s\n"), ctl->escapeChar);
     fflush(stdout);
-    if (vshRunConsole(dom, name, ctl->escapeChar) == 0)
+    if (vshRunConsole(dom, name, ctl->escapeChar, flags) == 0)
         ret = true;
 
  cleanup:
@@ -859,6 +865,9 @@ cmdConsole(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     bool ret = false;
+    bool force = vshCommandOptBool(cmd, "force");
+    bool safe = vshCommandOptBool(cmd, "safe");
+    unsigned int flags = 0;
     const char *name = NULL;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
@@ -872,7 +881,12 @@ cmdConsole(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    ret = cmdRunConsole(ctl, dom, name);
+    if (force)
+        flags |= VIR_DOMAIN_CONSOLE_FORCE;
+    if (safe)
+        flags |= VIR_DOMAIN_CONSOLE_SAFE;
+
+    ret = cmdRunConsole(ctl, dom, name, flags);
 
 cleanup:
     virDomainFree(dom);
@@ -2626,7 +2640,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
                  virDomainGetName(dom), from);
 #ifndef WIN32
         if (console)
-            cmdRunConsole(ctl, dom, NULL);
+            cmdRunConsole(ctl, dom, NULL, 0);
 #endif
         virDomainFree(dom);
     } else {
@@ -3131,7 +3145,7 @@ started:
     vshPrint(ctl, _("Domain %s started\n"),
              virDomainGetName(dom));
 #ifndef WIN32
-    if (console && !cmdRunConsole(ctl, dom, NULL))
+    if (console && !cmdRunConsole(ctl, dom, NULL, 0))
         goto cleanup;
 #endif
 
