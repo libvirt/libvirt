@@ -1858,10 +1858,10 @@ char *virIndexToDiskName(int idx, const char *prefix)
  *     try to resolve this to a fully-qualified name.  Therefore we pass it
  *     to getaddrinfo().  There are two possible responses:
  *     a)  getaddrinfo() resolves to a FQDN - return the FQDN
- *     b)  getaddrinfo() resolves to localhost - in this case, the data we got
- *         from gethostname() is actually more useful than what we got from
- *         getaddrinfo().  Return the value from gethostname() and hope for
- *         the best.
+ *     b)  getaddrinfo() files or resolves to localhost - in this case, the
+ *         data we got from gethostname() is actually more useful than what
+ *         we got from getaddrinfo().  Return the value from gethostname()
+ *         and hope for the best.
  */
 char *virGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
@@ -1897,10 +1897,10 @@ char *virGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
     hints.ai_family = AF_UNSPEC;
     r = getaddrinfo(hostname, NULL, &hints, &info);
     if (r != 0) {
-        virUtilError(VIR_ERR_INTERNAL_ERROR,
-                     _("getaddrinfo failed for '%s': %s"),
-                     hostname, gai_strerror(r));
-        return NULL;
+        VIR_WARN("getaddrinfo failed for '%s': %s",
+                 hostname, gai_strerror(r));
+        result = strdup(hostname);
+        goto check_and_return;
     }
 
     /* Tell static analyzers about getaddrinfo semantics.  */
