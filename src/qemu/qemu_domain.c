@@ -761,8 +761,13 @@ retry:
     qemuDomainObjResetJob(priv);
 
     if (job != QEMU_JOB_ASYNC) {
+        VIR_DEBUG("Starting job: %s (async=%s)",
+                   qemuDomainJobTypeToString(job),
+                   qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
         priv->job.active = job;
     } else {
+        VIR_DEBUG("Starting async job: %s",
+                  qemuDomainAsyncJobTypeToString(asyncJob));
         qemuDomainObjResetAsyncJob(priv);
         priv->job.asyncJob = asyncJob;
         priv->job.start = now;
@@ -873,6 +878,10 @@ int qemuDomainObjEndJob(struct qemud_driver *driver, virDomainObjPtr obj)
 
     priv->jobs_queued--;
 
+    VIR_DEBUG("Stopping job: %s (async=%s)",
+              qemuDomainJobTypeToString(priv->job.active),
+              qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
+
     qemuDomainObjResetJob(priv);
     qemuDomainObjSaveJob(driver, obj);
     virCondSignal(&priv->job.cond);
@@ -886,6 +895,9 @@ qemuDomainObjEndAsyncJob(struct qemud_driver *driver, virDomainObjPtr obj)
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
     priv->jobs_queued--;
+
+    VIR_DEBUG("Stopping async job: %s",
+              qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
 
     qemuDomainObjResetAsyncJob(priv);
     qemuDomainObjSaveJob(driver, obj);
