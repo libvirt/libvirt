@@ -6327,13 +6327,13 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
         } else {
             def->os.bios.useserial = VIR_DOMAIN_BIOS_USESERIAL_NO;
         }
-        VIR_FREE(useserial);
     }
 
     *bootCount = deviceBoot;
     ret = 0;
 
 cleanup:
+    VIR_FREE(useserial);
     VIR_FREE(nodes);
     return ret;
 }
