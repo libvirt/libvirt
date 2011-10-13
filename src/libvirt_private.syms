@@ -1181,6 +1181,7 @@ virFileDirectFdFree;
 virFileDirectFdNew;
 virFileFclose;
 virFileFdopen;
+virFileRewrite;
 
 
 # virnetmessage.h

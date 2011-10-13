@@ -68,4 +68,10 @@ void virFileDirectFdFree(virFileDirectFdPtr dfd);
 int virFileLock(int fd, bool shared, off_t start, off_t len);
 int virFileUnlock(int fd, off_t start, off_t len);
 
+typedef int (*virFileRewriteFunc)(int fd, void *opaque);
+int virFileRewrite(const char *path,
+                   mode_t mode,
+                   virFileRewriteFunc rewrite,
+                   void *opaque);
+
 #endif /* __VIR_FILES_H */

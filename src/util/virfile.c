@@ -334,3 +334,59 @@ int virFileUnlock(int fd ATTRIBUTE_UNUSED,
     return -ENOSYS;
 }
 #endif
+
+int
+virFileRewrite(const char *path,
+               mode_t mode,
+               virFileRewriteFunc rewrite,
+               void *opaque)
+{
+    char *newfile = NULL;
+    int fd = -1;
+    int ret = -1;
+
+    if (virAsprintf(&newfile, "%s.new", path) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((fd = open(newfile, O_WRONLY | O_CREAT | O_TRUNC, mode)) < 0) {
+        virReportSystemError(errno, _("cannot create file '%s'"),
+                             newfile);
+        goto cleanup;
+    }
+
+    if (rewrite(fd, opaque) < 0) {
+        virReportSystemError(errno, _("cannot write data to file '%s'"),
+                             newfile);
+        goto cleanup;
+    }
+
+    if (fsync(fd) < 0) {
+        virReportSystemError(errno, _("cannot sync file '%s'"),
+                             newfile);
+        goto cleanup;
+    }
+
+    if (VIR_CLOSE(fd) < 0) {
+        virReportSystemError(errno, _("cannot save file '%s'"),
+                             newfile);
+        goto cleanup;
+    }
+
+    if (rename(newfile, path) < 0) {
+        virReportSystemError(errno, _("cannot rename file '%s' as '%s'"),
+                             newfile, path);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    if (newfile) {
+        unlink(newfile);
+        VIR_FREE(newfile);
+    }
+    return ret;
+}
