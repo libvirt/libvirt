@@ -468,6 +468,7 @@ qemuMigrationCookieGraphicsXMLParse(xmlXPathContextPtr ctxt)
         VIR_FREE(tmp);
         goto error;
     }
+    VIR_FREE(tmp);
     if (virXPathInt("string(./graphics/@port)", ctxt, &grap->port) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("missing port attribute in migration data"));
