@@ -993,7 +993,7 @@ doPortProfileOp8021Qbh(const char *ifname,
 
 # else /* IFLA_VF_PORT_MAX */
 
-    char *physfndev;
+    char *physfndev = NULL;
     unsigned char hostuuid[VIR_UUID_BUFLEN];
     int32_t vf;
     bool nltarget_kernel = true;
@@ -1059,6 +1059,7 @@ doPortProfileOp8021Qbh(const char *ifname,
     }
 
 err_exit:
+    VIR_FREE(physfndev);
 
 # endif /* IFLA_VF_PORT_MAX */
 
