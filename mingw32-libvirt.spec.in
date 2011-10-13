@@ -110,7 +110,7 @@ rm -rf $RPM_BUILD_ROOT
 
 make DESTDIR=$RPM_BUILD_ROOT install
 
-rm -rf $RPM_BUILD_ROOT%{_mingw32_sysconfdir}/libvirt
+rm -rf $RPM_BUILD_ROOT%{_mingw32_sysconfdir}/libvirt/nwfilter
 rm -rf $RPM_BUILD_ROOT%{_mingw32_datadir}/doc/*
 rm -rf $RPM_BUILD_ROOT%{_mingw32_datadir}/gtk-doc/*
 
@@ -126,6 +126,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
+%config(noreplace) %{_mingw32_sysconfdir}/libvirt/libvirt.conf
+
 %{_mingw32_bindir}/libvirt-0.dll
 %{_mingw32_bindir}/virsh.exe
 %{_mingw32_bindir}/virt-xml-validate

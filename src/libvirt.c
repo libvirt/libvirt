@@ -40,6 +40,7 @@
 #include "memory.h"
 #include "configmake.h"
 #include "intprops.h"
+#include "conf.h"
 #include "rpc/virnettlscontext.h"
 
 #ifndef WITH_DRIVER_MODULES
@@ -968,6 +969,126 @@ error:
     return -1;
 }
 
+static char *
+virConnectConfigFile(void)
+{
+    char *path;
+    if (geteuid() == 0) {
+        if (virAsprintf(&path, "%s/libvirt/libvirt.conf",
+                        SYSCONFDIR) < 0)
+            goto no_memory;
+    } else {
+        char *userdir = virGetUserDirectory(geteuid());
+        if (!userdir)
+            goto error;
+
+        if (virAsprintf(&path, "%s/.libvirt/libvirt.conf",
+                        userdir) < 0)
+            goto no_memory;
+    }
+
+    return path;
+
+no_memory:
+    virReportOOMError();
+error:
+    return NULL;
+}
+
+#define URI_ALIAS_CHARS "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
+
+static int
+virConnectOpenFindURIAliasMatch(virConfValuePtr value, const char *alias, char **uri)
+{
+    virConfValuePtr entry;
+    if (value->type != VIR_CONF_LIST) {
+        virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Expected a list for 'uri_aliases' config parameter"));
+        return -1;
+    }
+
+    entry = value->list;
+    while (entry) {
+        char *offset;
+        size_t safe;
+
+        if (entry->type != VIR_CONF_STRING) {
+            virLibConnError(VIR_ERR_CONF_SYNTAX, "%s",
+                            _("Expected a string for 'uri_aliases' config parameter list entry"));
+            return -1;
+        }
+
+        if (!(offset = strchr(entry->str, '='))) {
+            virLibConnError(VIR_ERR_CONF_SYNTAX,
+                            _("Malformed 'uri_aliases' config entry '%s', expected 'alias=uri://host/path'"),
+                            entry->str);
+            return -1;
+        }
+
+        safe  = strspn(entry->str, URI_ALIAS_CHARS);
+        if (safe < (offset - entry->str)) {
+            virLibConnError(VIR_ERR_CONF_SYNTAX,
+                            _("Malformed 'uri_aliases' config entry '%s', aliases may only container 'a-Z, 0-9, _, -'"),
+                            entry->str);
+            return -1;
+        }
+
+        if (STREQLEN(entry->str, alias, offset-entry->str)) {
+            VIR_DEBUG("Resolved alias '%s' to '%s'",
+                      alias, offset+1);
+            if (!(*uri = strdup(offset+1))) {
+                virReportOOMError();
+                return -1;
+            }
+            return 0;
+        }
+
+        entry = entry->next;
+    }
+
+    VIR_DEBUG("No alias found for '%s', passing through to drivers",
+              alias);
+    return 0;
+}
+
+static int
+virConnectOpenResolveURIAlias(const char *alias, char **uri)
+{
+    char *config = NULL;
+    int ret = -1;
+    virConfPtr conf = NULL;
+    virConfValuePtr value = NULL;
+
+    *uri = NULL;
+
+    /* Short circuit to avoid doing URI alias resolution
+     * when it clearly isn't an valid alias */
+    if (strspn(alias, URI_ALIAS_CHARS) != strlen(alias))
+        return 0;
+
+    if (!(config = virConnectConfigFile()))
+        goto cleanup;
+
+    if (!virFileExists(config)) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Loading config file '%s'", config);
+    if (!(conf = virConfReadFile(config, 0)))
+        goto cleanup;
+
+    if ((value = virConfGetValue(conf, "uri_aliases")))
+        ret = virConnectOpenFindURIAliasMatch(value, alias, uri);
+    else
+        ret = 0;
+
+cleanup:
+    virConfFree(conf);
+    VIR_FREE(config);
+    return ret;
+}
+
 static virConnectPtr
 do_open (const char *name,
          virConnectAuthPtr auth,
@@ -998,6 +1119,7 @@ do_open (const char *name,
     }
 
     if (name) {
+        char *alias = NULL;
         /* Convert xen -> xen:/// for back compat */
         if (STRCASEEQ(name, "xen"))
             name = "xen:///";
@@ -1008,26 +1130,34 @@ do_open (const char *name,
         if (STREQ (name, "xen://"))
             name = "xen:///";
 
-        ret->uri = xmlParseURI (name);
+        if (!(flags & VIR_CONNECT_NO_ALIASES) &&
+            virConnectOpenResolveURIAlias(name, &alias) < 0)
+            goto failed;
+
+        ret->uri = xmlParseURI (alias ? alias : name);
         if (!ret->uri) {
             virLibConnError(VIR_ERR_INVALID_ARG,
-                            _("could not parse connection URI"));
+                            _("could not parse connection URI %s"),
+                            alias ? alias : name);
+            VIR_FREE(alias);
             goto failed;
         }
 
         VIR_DEBUG("name \"%s\" to URI components:\n"
-              "  scheme %s\n"
-              "  opaque %s\n"
-              "  authority %s\n"
-              "  server %s\n"
-              "  user %s\n"
-              "  port %d\n"
-              "  path %s\n",
-              name,
-              NULLSTR(ret->uri->scheme), NULLSTR(ret->uri->opaque),
-              NULLSTR(ret->uri->authority), NULLSTR(ret->uri->server),
-              NULLSTR(ret->uri->user), ret->uri->port,
-              NULLSTR(ret->uri->path));
+                  "  scheme %s\n"
+                  "  opaque %s\n"
+                  "  authority %s\n"
+                  "  server %s\n"
+                  "  user %s\n"
+                  "  port %d\n"
+                  "  path %s\n",
+                  alias ? alias : name,
+                  NULLSTR(ret->uri->scheme), NULLSTR(ret->uri->opaque),
+                  NULLSTR(ret->uri->authority), NULLSTR(ret->uri->server),
+                  NULLSTR(ret->uri->user), ret->uri->port,
+                  NULLSTR(ret->uri->path));
+
+        VIR_FREE(alias);
     } else {
         VIR_DEBUG("no name, allowing driver auto-select");
     }

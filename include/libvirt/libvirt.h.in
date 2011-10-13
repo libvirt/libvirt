@@ -844,7 +844,8 @@ typedef virNodeMemoryStats *virNodeMemoryStatsPtr;
  * Flags when opening a connection to a hypervisor
  */
 typedef enum {
-    VIR_CONNECT_RO = 1,    /* A readonly connection */
+    VIR_CONNECT_RO         = (1 << 0),  /* A readonly connection */
+    VIR_CONNECT_NO_ALIASES = (1 << 1),  /* Don't try to resolve URI aliases */
 } virConnectFlags;
 
 

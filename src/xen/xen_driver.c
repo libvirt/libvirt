@@ -296,17 +296,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
                 conn->uri->server)
                 return VIR_DRV_OPEN_DECLINED;
         } else {
-            /* Special case URI for Xen driver only:
-             *
-             * Treat a plain path as a Xen UNIX socket path, and give
-             * error unless path is absolute
-             */
-            if (!conn->uri->path || conn->uri->path[0] != '/') {
-                xenUnifiedError(VIR_ERR_INTERNAL_ERROR,
-                                _("unexpected Xen URI path '%s', try ///var/lib/xen/xend-socket"),
-                                NULLSTR(conn->uri->path));
-                return VIR_DRV_OPEN_ERROR;
-            }
+            return VIR_DRV_OPEN_DECLINED;
         }
     }
 

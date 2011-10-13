@@ -39,7 +39,7 @@ moddir = $(libdir)/libvirt/connection-driver
 mod_LTLIBRARIES =
 
 confdir = $(sysconfdir)/libvirt
-conf_DATA =
+conf_DATA = libvirt.conf
 
 augeasdir = $(datadir)/augeas/lenses
 augeas_DATA =

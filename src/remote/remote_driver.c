@@ -313,6 +313,11 @@ doRemoteOpen (virConnectPtr conn,
     if (conn->uri) {
         if (!conn->uri->scheme) {
             /* This is the ///var/lib/xen/xend-socket local path style */
+            if (!conn->uri->path)
+                return VIR_DRV_OPEN_DECLINED;
+            if (conn->uri->path[0] != '/')
+                return VIR_DRV_OPEN_DECLINED;
+
             transport = trans_unix;
         } else {
             transport_str = get_transport_from_scheme (conn->uri->scheme);

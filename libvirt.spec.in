@@ -1084,6 +1084,7 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %defattr(-, root, root)
 %doc AUTHORS ChangeLog.gz NEWS README COPYING.LIB TODO
 
+%config(noreplace) %{_sysconfdir}/libvirt/libvirt.conf
 %{_mandir}/man1/virsh.1*
 %{_mandir}/man1/virt-xml-validate.1*
 %{_mandir}/man1/virt-pki-validate.1*

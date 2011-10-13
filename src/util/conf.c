@@ -808,10 +808,8 @@ int
 virConfFree(virConfPtr conf)
 {
     virConfEntryPtr tmp;
-    if (conf == NULL) {
-        virConfError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return(-1);
-    }
+    if (conf == NULL)
+        return 0;
 
     tmp = conf->entries;
     while (tmp) {
