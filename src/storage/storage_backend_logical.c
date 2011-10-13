@@ -236,6 +236,7 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
         if (virStrToLong_ull(offset_str, NULL, 10, &offset) < 0) {
             virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                   _("malformed volume extent offset value"));
+            VIR_FREE(offset_str);
             goto cleanup;
         }
 
