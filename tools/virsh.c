@@ -12322,7 +12322,7 @@ static const vshCmdOptDef opts_echo[] = {
  * quotes for later evaluation.
  */
 static bool
-cmdEcho (vshControl *ctl ATTRIBUTE_UNUSED, const vshCmd *cmd)
+cmdEcho (vshControl *ctl, const vshCmd *cmd)
 {
     bool shell = false;
     bool xml = false;
@@ -12337,34 +12337,31 @@ cmdEcho (vshControl *ctl ATTRIBUTE_UNUSED, const vshCmd *cmd)
         xml = true;
 
     while ((opt = vshCommandOptArgv(cmd, opt))) {
-        bool close_quote = false;
-        char *q;
+        char *str;
+        virBuffer xmlbuf = VIR_BUFFER_INITIALIZER;
 
         arg = opt->data;
+
         if (count)
             virBufferAddChar(&buf, ' ');
-        /* Add outer '' only if arg included shell metacharacters.  */
-        if (shell &&
-            (strpbrk(arg, "\r\t\n !\"#$&'()*;<>?[\\]^`{|}~") || !*arg)) {
-            virBufferAddChar(&buf, '\'');
-            close_quote = true;
-        }
+
         if (xml) {
-            virBufferEscapeString(&buf, "%s", arg);
-        } else {
-            if (shell && (q = strchr(arg, '\''))) {
-                do {
-                    virBufferAdd(&buf, arg, q - arg);
-                    virBufferAddLit(&buf, "'\\''");
-                    arg = q + 1;
-                    q = strchr(arg, '\'');
-                } while (q);
+            virBufferEscapeString(&xmlbuf, "%s", arg);
+            if (virBufferError(&buf)) {
+                vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
+                return false;
             }
-            virBufferAdd(&buf, arg, strlen(arg));
+            str = virBufferContentAndReset(&xmlbuf);
+        } else {
+            str = vshStrdup(ctl, arg);
         }
-        if (close_quote)
-            virBufferAddChar(&buf, '\'');
+
+        if (shell)
+            virBufferEscapeShell(&buf, str);
+        else
+            virBufferAdd(&buf, str, -1);
         count++;
+        VIR_FREE(str);
     }
 
     if (virBufferError(&buf)) {
