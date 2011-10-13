@@ -2023,16 +2023,16 @@ static int qemuDomainSendKey(virDomainPtr domain,
     if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorSendKey(priv->mon, holdtime, keycodes, nkeycodes);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
-    if (qemuDomainObjEndJob(driver, vm) == 0) {
+
+endjob:
+    if (qemuDomainObjEndJob(driver, vm) == 0)
         vm = NULL;
-        goto cleanup;
-    }
 
 cleanup:
     if (vm)
@@ -7221,7 +7221,7 @@ qemudDomainBlockStatsFlags (virDomainPtr dom,
             if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES) == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("Field write bytes too long for destination"));
-                goto cleanup;
+                goto endjob;
             }
             param->type = VIR_TYPED_PARAM_LLONG;
             param->value.l = wr_bytes;
@@ -7231,7 +7231,7 @@ qemudDomainBlockStatsFlags (virDomainPtr dom,
             if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_WRITE_REQ) == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("Field write requests too long for destination"));
-                goto cleanup;
+                goto endjob;
             }
             param->type = VIR_TYPED_PARAM_LLONG;
             param->value.l = wr_req;
@@ -7241,7 +7241,7 @@ qemudDomainBlockStatsFlags (virDomainPtr dom,
             if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_READ_BYTES) == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("Field read bytes too long for destination"));
-                goto cleanup;
+                goto endjob;
             }
             param->type = VIR_TYPED_PARAM_LLONG;
             param->value.l = rd_bytes;
@@ -7251,7 +7251,7 @@ qemudDomainBlockStatsFlags (virDomainPtr dom,
             if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_READ_REQ) == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("Field read requests too long for destination"));
-                goto cleanup;
+                goto endjob;
             }
             param->type = VIR_TYPED_PARAM_LLONG;
             param->value.l = rd_req;
@@ -7261,7 +7261,7 @@ qemudDomainBlockStatsFlags (virDomainPtr dom,
             if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_FLUSH_REQ) == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("Field flush requests too long for destination"));
-                goto cleanup;
+                goto endjob;
             }
             param->type = VIR_TYPED_PARAM_LLONG;
             param->value.l = flush_req;
@@ -7271,7 +7271,7 @@ qemudDomainBlockStatsFlags (virDomainPtr dom,
             if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_WRITE_TOTAL_TIMES) == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("Field write total times too long for destination"));
-                goto cleanup;
+                goto endjob;
             }
             param->type = VIR_TYPED_PARAM_LLONG;
             param->value.l = wr_total_times;
@@ -7281,7 +7281,7 @@ qemudDomainBlockStatsFlags (virDomainPtr dom,
             if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES) == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("Field read total times too long for destination"));
-                goto cleanup;
+                goto endjob;
             }
             param->type = VIR_TYPED_PARAM_LLONG;
             param->value.l = rd_total_times;
@@ -7291,7 +7291,7 @@ qemudDomainBlockStatsFlags (virDomainPtr dom,
             if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES) == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("Field flush total times too long for destination"));
-                goto cleanup;
+                goto endjob;
             }
             param->type = VIR_TYPED_PARAM_LLONG;
             param->value.l = flush_total_times;
