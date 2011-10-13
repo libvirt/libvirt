@@ -69,6 +69,49 @@ qemuGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
     return list;
 }
 
+static pciDeviceList *
+qemuGetActivePciHostDeviceList(struct qemud_driver *driver,
+                               virDomainHostdevDefPtr *hostdevs,
+                               int nhostdevs)
+{
+    pciDeviceList *list;
+    int i;
+
+    if (!(list = pciDeviceListNew()))
+        return NULL;
+
+    for (i = 0 ; i < nhostdevs ; i++) {
+        virDomainHostdevDefPtr hostdev = hostdevs[i];
+        pciDevice *dev;
+        pciDevice *activeDev;
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+            continue;
+
+        dev = pciGetDevice(hostdev->source.subsys.u.pci.domain,
+                           hostdev->source.subsys.u.pci.bus,
+                           hostdev->source.subsys.u.pci.slot,
+                           hostdev->source.subsys.u.pci.function);
+        if (!dev) {
+            pciDeviceListFree(list);
+            return NULL;
+        }
+
+        if ((activeDev = pciDeviceListFind(driver->activePciHostdevs, dev))) {
+            if (pciDeviceListAdd(list, activeDev) < 0) {
+                pciFreeDevice(dev);
+                pciDeviceListFree(list);
+                return NULL;
+            }
+        }
+
+        pciFreeDevice(dev);
+    }
+
+    return list;
+}
 
 int qemuUpdateActivePciHostdevs(struct qemud_driver *driver,
                                 virDomainDefPtr def)
@@ -304,7 +347,9 @@ void qemuDomainReAttachHostdevDevices(struct qemud_driver *driver,
     pciDeviceList *pcidevs;
     int i;
 
-    if (!(pcidevs = qemuGetPciHostDeviceList(hostdevs, nhostdevs))) {
+    if (!(pcidevs = qemuGetActivePciHostDeviceList(driver,
+                                                   hostdevs,
+                                                   nhostdevs))) {
         virErrorPtr err = virGetLastError();
         VIR_ERROR(_("Failed to allocate pciDeviceList: %s"),
                   err ? err->message : _("unknown error"));
@@ -314,7 +359,6 @@ void qemuDomainReAttachHostdevDevices(struct qemud_driver *driver,
 
     /* Again 3 loops; mark all devices as inactive before reset
      * them and reset all the devices before re-attach */
-
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
         pciDevice *activeDev = NULL;
@@ -327,7 +371,8 @@ void qemuDomainReAttachHostdevDevices(struct qemud_driver *driver,
             STRNEQ_NULLABLE(name, pciDeviceGetUsedBy(activeDev)))
             continue;
 
-        pciDeviceListDel(driver->activePciHostdevs, dev);
+        /* pciDeviceListFree() will take care of freeing the dev. */
+        pciDeviceListSteal(driver->activePciHostdevs, dev);
     }
 
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
