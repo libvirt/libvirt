@@ -189,6 +189,11 @@ REMOTE_DRIVER_GENERATED = \
 		$(srcdir)/remote/qemu_protocol.h		\
 		$(srcdir)/remote/qemu_client_bodies.h
 
+# The remote RPC driver needs probes.h
+if WITH_DTRACE
+REMOTE_DRIVER_GENERATED += $(srcdir)/probes.h
+endif
+
 REMOTE_PROTOCOL = $(srcdir)/remote/remote_protocol.x
 QEMU_PROTOCOL = $(srcdir)/remote/qemu_protocol.x
 REMOTE_DRIVER_PROTOCOL = $(REMOTE_PROTOCOL) $(QEMU_PROTOCOL)
