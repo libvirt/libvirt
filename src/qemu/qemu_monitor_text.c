@@ -817,19 +817,19 @@ int qemuMonitorTextGetBlockInfo(qemuMonitorPtr mon,
                     if (virStrToLong_i(p, &dummy, 10, &tmp) == -1)
                         VIR_DEBUG("error reading removable: %s", p);
                     else
-                        info->removable = p != NULL;
+                        info->removable = (tmp != 0);
                 } else if (STRPREFIX(p, "locked=")) {
                     p += strlen("locked=");
                     if (virStrToLong_i(p, &dummy, 10, &tmp) == -1)
                         VIR_DEBUG("error reading locked: %s", p);
                     else
-                        info->locked = p ? true : false;
+                        info->locked = (tmp != 0);
                 } else if (STRPREFIX(p, "tray_open=")) {
                     p += strlen("tray_open=");
                     if (virStrToLong_i(p, &dummy, 10, &tmp) == -1)
                         VIR_DEBUG("error reading tray_open: %s", p);
                     else
-                        info->tray_open = p ? true : false;
+                        info->tray_open = (tmp != 0);
                 } else {
                     /* ignore because we don't parse all options */
                 }
