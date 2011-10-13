@@ -268,6 +268,10 @@ virFDStreamClose(virStreamPtr st)
         virCommandFree(fdst->cmd);
         fdst->cmd = NULL;
     }
+
+    if (VIR_CLOSE(fdst->errfd) < 0)
+        VIR_DEBUG("ignoring failed close on fd %d", fdst->errfd);
+
     st->privateData = NULL;
 
     if (fdst->dispatching) {
