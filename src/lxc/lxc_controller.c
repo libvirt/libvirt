@@ -877,7 +877,7 @@ lxcControllerRun(virDomainDefPtr def,
             goto cleanup;
         }
 
-        VIR_DEBUG("Mouting 'devpts' on %s", devpts);
+        VIR_DEBUG("Mounting 'devpts' on %s", devpts);
         if (mount("devpts", devpts, "devpts", 0,
                   "newinstance,ptmxmode=0666,mode=0620,gid=5") < 0) {
             virReportSystemError(errno,
