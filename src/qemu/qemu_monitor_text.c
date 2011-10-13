@@ -1036,26 +1036,23 @@ int qemuMonitorTextGetBlockStatsParamsNumber(qemuMonitorPtr mon,
      * "floppy0: ")
      */
     p = strchr(p, ' ');
-    p++;
 
-    while (*p) {
-            if (STRPREFIX (p, "rd_bytes=") ||
-                STRPREFIX (p, "wr_bytes=") ||
-                STRPREFIX (p, "rd_operations=") ||
-                STRPREFIX (p, "wr_operations=") ||
-                STRPREFIX (p, "rd_total_times_ns=") ||
-                STRPREFIX (p, "wr_total_times_ns=") ||
-                STRPREFIX (p, "flush_operations=") ||
-                STRPREFIX (p, "flush_total_times_ns=")) {
-                num++;
-            } else {
-                VIR_DEBUG ("unknown block stat near %s", p);
-            }
+    while (p && p < eol) {
+        if (STRPREFIX (p, " rd_bytes=") ||
+            STRPREFIX (p, " wr_bytes=") ||
+            STRPREFIX (p, " rd_operations=") ||
+            STRPREFIX (p, " wr_operations=") ||
+            STRPREFIX (p, " rd_total_times_ns=") ||
+            STRPREFIX (p, " wr_total_times_ns=") ||
+            STRPREFIX (p, " flush_operations=") ||
+            STRPREFIX (p, " flush_total_times_ns=")) {
+            num++;
+        } else {
+            VIR_DEBUG ("unknown block stat near %s", p);
+        }
 
-            /* Skip to next label. */
-            p = strchr (p, ' ');
-            if (!p || p >= eol) break;
-            p++;
+        /* Skip to next label. */
+        p = strchr(p + 1, ' ');
     }
 
     *nparams = num;
