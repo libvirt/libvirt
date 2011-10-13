@@ -62,6 +62,7 @@ struct _pciDevice {
     char          name[PCI_ADDR_LEN]; /* domain:bus:slot.function */
     char          id[PCI_ID_LEN];     /* product vendor */
     char          *path;
+    const char    *used_by;           /* The domain which uses the device */
     int           fd;
 
     unsigned      initted;
@@ -1377,6 +1378,12 @@ pciFreeDevice(pciDevice *dev)
     VIR_FREE(dev);
 }
 
+const char *
+pciDeviceGetName(pciDevice *dev)
+{
+    return dev->name;
+}
+
 void pciDeviceSetManaged(pciDevice *dev, unsigned managed)
 {
     dev->managed = !!managed;
@@ -1385,6 +1392,18 @@ void pciDeviceSetManaged(pciDevice *dev, unsigned managed)
 unsigned pciDeviceGetManaged(pciDevice *dev)
 {
     return dev->managed;
+}
+
+void
+pciDeviceSetUsedBy(pciDevice *dev, const char *name)
+{
+    dev->used_by = name;
+}
+
+const char *
+pciDeviceGetUsedBy(pciDevice *dev)
+{
+    return dev->used_by;
 }
 
 void pciDeviceReAttachInit(pciDevice *pci)

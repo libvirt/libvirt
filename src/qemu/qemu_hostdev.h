@@ -30,12 +30,14 @@
 int qemuUpdateActivePciHostdevs(struct qemud_driver *driver,
                                 virDomainDefPtr def);
 int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
+                                 const char *name,
                                  virDomainHostdevDefPtr *hostdevs,
                                  int nhostdevs);
 int qemuPrepareHostDevices(struct qemud_driver *driver,
                            virDomainDefPtr def);
 void qemuReattachPciDevice(pciDevice *dev, struct qemud_driver *driver);
 void qemuDomainReAttachHostdevDevices(struct qemud_driver *driver,
+                                      const char *name,
                                       virDomainHostdevDefPtr *hostdevs,
                                       int nhostdevs);
 void qemuDomainReAttachHostDevices(struct qemud_driver *driver,

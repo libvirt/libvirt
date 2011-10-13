@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009, 2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,6 +39,7 @@ pciDevice *pciGetDevice      (unsigned       domain,
                               unsigned       slot,
                               unsigned       function);
 void       pciFreeDevice     (pciDevice     *dev);
+const char *pciDeviceGetName (pciDevice     *dev);
 int        pciDettachDevice  (pciDevice     *dev, pciDeviceList *activeDevs);
 int        pciReAttachDevice (pciDevice     *dev, pciDeviceList *activeDevs);
 int        pciResetDevice    (pciDevice     *dev,
@@ -47,6 +48,9 @@ int        pciResetDevice    (pciDevice     *dev,
 void      pciDeviceSetManaged(pciDevice     *dev,
                               unsigned       managed);
 unsigned  pciDeviceGetManaged(pciDevice     *dev);
+void      pciDeviceSetUsedBy(pciDevice     *dev,
+                             const char *used_by);
+const char *pciDeviceGetUsedBy(pciDevice   *dev);
 void      pciDeviceReAttachInit(pciDevice   *dev);
 
 pciDeviceList *pciDeviceListNew  (void);
