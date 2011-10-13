@@ -507,15 +507,20 @@ virBufferEscapeShell(virBufferPtr buf, const char *str)
         return;
 
     /* Only quote if str includes shell metacharacters. */
-    if (!strpbrk(str, "\r\t\n !\"#$&'()*;<>?[\\]^`{|}~")) {
+    if (*str && !strpbrk(str, "\r\t\n !\"#$&'()*;<>?[\\]^`{|}~")) {
         virBufferAdd(buf, str, -1);
         return;
     }
 
-    len = strlen(str);
-    if (xalloc_oversized(4, len) ||
-        VIR_ALLOC_N(escaped, 4 * len + 3) < 0) {
-        virBufferSetError(buf);
+    if (*str) {
+        len = strlen(str);
+        if (xalloc_oversized(4, len) ||
+            VIR_ALLOC_N(escaped, 4 * len + 3) < 0) {
+            virBufferSetError(buf);
+            return;
+        }
+    } else {
+        virBufferAdd(buf, "''", 2);
         return;
     }
 
