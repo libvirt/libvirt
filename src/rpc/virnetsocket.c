@@ -612,7 +612,10 @@ int virNetSocketNewConnectSSH(const char *nodename,
                               const char *path,
                               virNetSocketPtr *retsock)
 {
+    char *quoted;
     virCommandPtr cmd;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
     *retsock = NULL;
 
     cmd = virCommandNew(binary ? binary : "ssh");
@@ -639,6 +642,14 @@ int virNetSocketNewConnectSSH(const char *nodename,
         netcat = "nc";
 
     virCommandAddArgList(cmd, nodename, "sh", "-c", NULL);
+
+    virBufferEscapeShell(&buf, netcat);
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    quoted = virBufferContentAndReset(&buf);
     /*
      * This ugly thing is a shell script to detect availability of
      * the -q option for 'nc': debian and suse based distros need this
@@ -650,14 +661,15 @@ int virNetSocketNewConnectSSH(const char *nodename,
      * behavior.
      */
     virCommandAddArgFormat(cmd,
-         "'if %s -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+         "'if '%s' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
              "ARG=-q0;"
          "else "
              "ARG=;"
          "fi;"
-         "%s $ARG -U %s'",
-         netcat, netcat, path);
+         "'%s' $ARG -U %s'",
+         quoted, quoted, path);
 
+    VIR_FREE(quoted);
     return virNetSocketNewConnectCommand(cmd, retsock);
 }
 
