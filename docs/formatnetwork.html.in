@@ -58,7 +58,7 @@
     <pre>
         ...
         &lt;bridge name="virbr0" stp="on" delay="5"/&gt;
-        &lt;domain name="example"/&gt;
+        &lt;domain name="example.com"/&gt;
         &lt;forward mode="nat" dev="eth0"/&gt;
         ...</pre>
 
@@ -214,7 +214,7 @@
         As mentioned above, a <code>&lt;forward&gt;</code> element can
         have multiple <code>&lt;interface&gt;</code> subelements, each
         one giving the name of a physical interface that can be used
-        for this network<span class="since">Since 0.9.4</span>:
+        for this network <span class="since">Since 0.9.4</span>:
         <pre>
 ...
   &lt;forward mode='passthrough'&gt;
@@ -301,9 +301,11 @@
 ...</pre>
 
     <p>
+      <span class="since">Since 0.9.4</span>
       A portgroup provides a method of easily putting guest
       connections to the network into different classes, with each
-      class potentially having a different level/type of service. Each
+      class potentially having a different level/type of service.
+      <span class="since">Since 0.9.4</span> Each
       network can have multiple portgroup elements (and one of those
       can optionally be designated as the 'default' portgroup for the
       network), and each portgroup has a name, as well as various
@@ -340,8 +342,12 @@
     <pre>
         ...
         &lt;mac address='00:16:3E:5D:C7:9E'/&gt;
+        &lt;domain name="example.com"/&gt;
         &lt;dns&gt;
           &lt;txt name="example" value="example value" /&gt;
+          &lt;host ip='192.168.122.2'&gt;
+            &lt;hostname&gt;myhost&lt;/hostname&gt;
+            &lt;hostname&gt;myhostalias&lt;/hostname&gt;
         &lt;/dns&gt;
         &lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
           &lt;dhcp&gt;
@@ -542,6 +548,7 @@
     <h3><a name="examplesBridge">Using an existing host bridge</a></h3>
 
     <p>
+      <span class="since">Since 0.9.4</span>
       This shows how to use a pre-existing host bridge "br0". The
       guests will effectively be directly connected to the physical
       network (i.e. their IP addresses will all be on the subnet of
@@ -559,6 +566,8 @@
     <h3><a name="examplesDirect">Using a macvtap "direct" connection</a></h3>
 
     <p>
+      <span class="since">Since 0.9.4, QEMU and KVM only, requires
+      Linux kernel 2.6.34 or newer</span>
       This shows how to use macvtap to connect to the physical network
       directly through one of a group of physical devices (without
       using a host bridge device). As with the host bridge network,
