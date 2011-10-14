@@ -964,7 +964,11 @@ getPhysfnDev(const char *linkdev,
          */
 
         *vf = PORT_SELF_VF;
-        *physfndev = (char *)linkdev;
+        *physfndev = strdup(linkdev);
+        if (!*physfndev) {
+            virReportOOMError();
+            rc = -1;
+        }
     }
 
     return rc;
