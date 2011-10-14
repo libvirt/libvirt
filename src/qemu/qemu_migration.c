@@ -993,6 +993,7 @@ qemuDomainMigrateGraphicsRelocate(struct qemud_driver *driver,
 char *qemuMigrationBegin(struct qemud_driver *driver,
                          virDomainObjPtr vm,
                          const char *xmlin,
+                         const char *dname,
                          char **cookieout,
                          int *cookieoutlen)
 {
@@ -1001,8 +1002,10 @@ char *qemuMigrationBegin(struct qemud_driver *driver,
     virDomainDefPtr def = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    VIR_DEBUG("driver=%p, vm=%p, xmlin=%s, cookieout=%p, cookieoutlen=%p",
-              driver, vm, NULLSTR(xmlin), cookieout, cookieoutlen);
+    VIR_DEBUG("driver=%p, vm=%p, xmlin=%s, dname=%s,"
+              " cookieout=%p, cookieoutlen=%p",
+              driver, vm, NULLSTR(xmlin), NULLSTR(dname),
+              cookieout, cookieoutlen);
 
     /* Only set the phase if we are inside QEMU_ASYNC_JOB_MIGRATION_OUT.
      * Otherwise we will start the async job later in the perform phase losing
@@ -1027,6 +1030,14 @@ char *qemuMigrationBegin(struct qemud_driver *driver,
                                             QEMU_EXPECTED_VIRT_TYPES,
                                             VIR_DOMAIN_XML_INACTIVE)))
             goto cleanup;
+
+        if (STRNEQ(def->name, vm->def->name) &&
+            STRNEQ_NULLABLE(def->name, dname)) {
+            qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                            _("target domain name doesn't match source name"
+                              " nor destination name"));
+            goto cleanup;
+        }
 
         if (!virDomainDefCheckABIStability(vm->def, def))
             goto cleanup;
@@ -2012,7 +2023,7 @@ static int doPeer2PeerMigrate3(struct qemud_driver *driver,
      * bit here, because we are already running inside the context of
      * a single job.  */
 
-    dom_xml = qemuMigrationBegin(driver, vm, xmlin,
+    dom_xml = qemuMigrationBegin(driver, vm, xmlin, dname,
                                  &cookieout, &cookieoutlen);
     if (!dom_xml)
         goto cleanup;

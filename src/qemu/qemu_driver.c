@@ -8043,7 +8043,7 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
                         char **cookieout,
                         int *cookieoutlen,
                         unsigned long flags,
-                        const char *dname ATTRIBUTE_UNUSED,
+                        const char *dname,
                         unsigned long resource ATTRIBUTE_UNUSED)
 {
     struct qemud_driver *driver = domain->conn->privateData;
@@ -8083,7 +8083,7 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
     if (qemuDomainCheckEjectableMedia(driver, vm) < 0)
         goto endjob;
 
-    if (!(xml = qemuMigrationBegin(driver, vm, xmlin,
+    if (!(xml = qemuMigrationBegin(driver, vm, xmlin, dname,
                                    cookieout, cookieoutlen)))
         goto endjob;
 

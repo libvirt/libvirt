@@ -79,6 +79,7 @@ int qemuMigrationSetOffline(struct qemud_driver *driver,
 char *qemuMigrationBegin(struct qemud_driver *driver,
                          virDomainObjPtr vm,
                          const char *xmlin,
+                         const char *dname,
                          char **cookieout,
                          int *cookieoutlen);
 
