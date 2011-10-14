@@ -17,6 +17,14 @@
 # include "capabilities.h"
 # include "driver.h"
 
+/* See xenHypervisorInit() for details. */
+struct xenHypervisorVersions {
+    int hv; /* u16 major,minor hypervisor version */
+    int hypervisor; /* -1,0,1,2,3 */
+    int sys_interface; /* -1,2,3,4,6,7,8 */
+    int dom_interface; /* -1,3,4,5,6,7 */
+};
+
 extern struct xenUnifiedDriver xenHypervisorDriver;
 int    xenHypervisorInit                 (void);
 
