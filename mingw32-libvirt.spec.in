@@ -10,7 +10,8 @@
 # libraries exist.
 %define with_phyp          0%{!?_without_phyp:1}
 %define with_esx           0%{!?_without_esx:1}
-%define with_hyperv        0%{!?_without_hyperv:0} # missing libwsman
+# missing libwsman, so can't build hyper-v
+%define with_hyperv        0%{!?_without_hyperv:0}
 %define with_xenapi        0%{!?_without_xenapi:1}
 
 # RHEL ships ESX but not PowerHypervisor, HyperV, or libxenserver (xenapi)
