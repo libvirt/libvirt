@@ -1858,7 +1858,7 @@ char *virIndexToDiskName(int idx, const char *prefix)
  *     try to resolve this to a fully-qualified name.  Therefore we pass it
  *     to getaddrinfo().  There are two possible responses:
  *     a)  getaddrinfo() resolves to a FQDN - return the FQDN
- *     b)  getaddrinfo() files or resolves to localhost - in this case, the
+ *     b)  getaddrinfo() fails or resolves to localhost - in this case, the
  *         data we got from gethostname() is actually more useful than what
  *         we got from getaddrinfo().  Return the value from gethostname()
  *         and hope for the best.
