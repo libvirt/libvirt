@@ -2018,7 +2018,10 @@ pciDeviceNetName(char *device_link_sysfs_path, char **netname)
 
             /* Assume a single directory entry */
             *netname = strdup(entry->d_name);
-            ret = 0;
+            if (!*netname)
+                virReportOOMError();
+            else
+                ret = 0;
             break;
      }
 
