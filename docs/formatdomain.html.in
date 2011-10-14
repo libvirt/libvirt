@@ -1411,7 +1411,15 @@
         "subsystem" and <code>type</code> is "usb" for a USB device and "pci"
         for a PCI device. When <code>managed</code> is "yes" for a PCI
         device, it is detached from the host before being passed on to
-        the guest.</dd>
+        the guest, and reattached to the host after the guest exits.
+        If <code>managed</code> is omitted or "no", and for USB
+        devices, the user is responsible to
+        call <code>virNodeDeviceDettach</code> (or <code>virsh
+        nodedev-dettach</code>) before starting the guest or
+        hot-plugging the device,
+        and <code>virNodeDeviceReAttach</code> (or <code>virsh
+        nodedev-reattach</code>) after hot-unplug or stopping the
+        guest.</dd>
       <dt><code>source</code></dt>
       <dd>The source element describes the device as seen from the host.
       The USB device can either be addressed by vendor / product id using the
