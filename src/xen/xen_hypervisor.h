@@ -26,7 +26,7 @@ struct xenHypervisorVersions {
 };
 
 extern struct xenUnifiedDriver xenHypervisorDriver;
-int    xenHypervisorInit                 (void);
+int xenHypervisorInit(struct xenHypervisorVersions *override_versions);
 
 virCapsPtr xenHypervisorMakeCapabilities (virConnectPtr conn);
 

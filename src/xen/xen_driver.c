@@ -2272,7 +2272,7 @@ int
 xenRegister (void)
 {
     /* Ignore failures here. */
-    (void) xenHypervisorInit ();
+    (void) xenHypervisorInit (NULL);
 
 #ifdef WITH_LIBVIRTD
     if (virRegisterStateDriver (&state_driver) == -1) return -1;

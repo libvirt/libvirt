@@ -145,11 +145,21 @@ static int testXenppc64(const void *data ATTRIBUTE_UNUSED) {
 }
 
 
+/* Fake initialization data for xenHypervisorInit(). Must be initialized
+ * explicitly before the implicit call via virInitialize(). */
+static struct xenHypervisorVersions hv_versions = {
+    .hv = 0,
+    .hypervisor = 2,
+    .sys_interface = -1,
+    .dom_interface = -1,
+};
+
 static int
 mymain(void)
 {
     int ret = 0;
 
+    xenHypervisorInit(&hv_versions);
     virInitialize();
 
     if (virtTestRun("Capabilities for i686, no PAE, no HVM",

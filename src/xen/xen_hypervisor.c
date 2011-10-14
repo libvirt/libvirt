@@ -1951,12 +1951,16 @@ virXen_getvcpusinfo(int handle, int id, unsigned int vcpu, virVcpuInfoPtr ipt,
 
 /**
  * xenHypervisorInit:
+ * @override_versions: pointer to optional struct xenHypervisorVersions with
+ *     version information used instead of automatic version detection.
  *
  * Initialize the hypervisor layer. Try to detect the kind of interface
  * used i.e. pre or post changeset 10277
+ *
+ * Returns 0 or -1 in case of failure
  */
 int
-xenHypervisorInit(void)
+xenHypervisorInit(struct xenHypervisorVersions *override_versions)
 {
     int fd, ret, cmd, errcode;
     hypercall_t hc;
@@ -2005,6 +2009,12 @@ xenHypervisorInit(void)
         virXenError(VIR_ERR_INTERNAL_ERROR, "%s", error);
         in_init = 0;
         return -1;
+    }
+
+    if (override_versions) {
+      hv_versions = *override_versions;
+      in_init = 0;
+      return 0;
     }
 
     /* Xen hypervisor version detection begins. */
@@ -2188,7 +2198,7 @@ xenHypervisorOpen(virConnectPtr conn,
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (initialized == 0)
-        if (xenHypervisorInit() == -1)
+        if (xenHypervisorInit(NULL) == -1)
             return -1;
 
     priv->handle = -1;
