@@ -191,7 +191,7 @@ REMOTE_DRIVER_GENERATED = \
 
 # The remote RPC driver needs probes.h
 if WITH_DTRACE
-REMOTE_DRIVER_GENERATED += $(srcdir)/probes.h
+REMOTE_DRIVER_GENERATED += probes.h
 endif
 
 REMOTE_PROTOCOL = $(srcdir)/remote/remote_protocol.x
