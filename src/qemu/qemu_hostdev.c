@@ -322,19 +322,20 @@ void qemuReattachPciDevice(pciDevice *dev, struct qemud_driver *driver)
 {
     int retries = 100;
 
+    if (!pciDeviceGetManaged(dev))
+        return;
+
     while (pciWaitForDeviceCleanup(dev, "kvm_assigned_device")
            && retries) {
         usleep(100*1000);
         retries--;
     }
 
-    if (pciDeviceGetManaged(dev)) {
-        if (pciReAttachDevice(dev, driver->activePciHostdevs) < 0) {
-            virErrorPtr err = virGetLastError();
-            VIR_ERROR(_("Failed to re-attach PCI device: %s"),
-                      err ? err->message : _("unknown error"));
-            virResetError(err);
-        }
+    if (pciReAttachDevice(dev, driver->activePciHostdevs) < 0) {
+        virErrorPtr err = virGetLastError();
+        VIR_ERROR(_("Failed to re-attach PCI device: %s"),
+                  err ? err->message : _("unknown error"));
+        virResetError(err);
     }
 }
 
