@@ -665,6 +665,17 @@
       </interleave>
     </element>
   </define>
+
+  <define name="startupPolicy">
+    <attribute name="startupPolicy">
+      <choice>
+        <value>mandatory</value>
+        <value>requisite</value>
+        <value>optional</value>
+      </choice>
+    </attribute>
+  </define>
+
   <!--
       A disk description can be either of type file or block
       The name of the attribute on the source element depends on the type
@@ -692,9 +703,14 @@
           <interleave>
             <optional>
               <element name="source">
-                <attribute name="file">
-                  <ref name="absFilePath"/>
-                </attribute>
+                <optional>
+                  <attribute name="file">
+                    <ref name="absFilePath"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <ref name="startupPolicy"/>
+                </optional>
                 <empty/>
               </element>
             </optional>

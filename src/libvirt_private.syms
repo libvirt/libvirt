@@ -430,6 +430,8 @@ virDomainSnapshotUpdateRelations;
 virDomainSoundDefFree;
 virDomainSoundModelTypeFromString;
 virDomainSoundModelTypeToString;
+virDomainStartupPolicyTypeFromString;
+virDomainStartupPolicyTypeToString;
 virDomainStateReasonFromString;
 virDomainStateReasonToString;
 virDomainStateTypeFromString;

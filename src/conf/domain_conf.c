@@ -578,6 +578,12 @@ VIR_ENUM_IMPL(virDomainNumatuneMemMode, VIR_DOMAIN_NUMATUNE_MEM_LAST,
               "preferred",
               "interleave");
 
+VIR_ENUM_IMPL(virDomainStartupPolicy, VIR_DOMAIN_STARTUP_POLICY_LAST,
+              "default",
+              "mandatory",
+              "requisite",
+              "optional");
+
 #define virDomainReportError(code, ...)                              \
     virReportErrorHelper(VIR_FROM_DOMAIN, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
@@ -2319,6 +2325,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     char *devaddr = NULL;
     virStorageEncryptionPtr encryption = NULL;
     char *serial = NULL;
+    char *startupPolicy = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -2347,6 +2354,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                 switch (def->type) {
                 case VIR_DOMAIN_DISK_TYPE_FILE:
                     source = virXMLPropString(cur, "file");
+                    startupPolicy = virXMLPropString(cur, "startupPolicy");
                     break;
                 case VIR_DOMAIN_DISK_TYPE_BLOCK:
                     source = virXMLPropString(cur, "dev");
@@ -2646,6 +2654,27 @@ virDomainDiskDefParseXML(virCapsPtr caps,
             goto error;
     }
 
+    if (startupPolicy) {
+        int i;
+
+        if ((i = virDomainStartupPolicyTypeFromString(startupPolicy)) < 0) {
+            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                 _("unknown startupPolicy value '%s'"),
+                                 startupPolicy);
+            goto error;
+        }
+
+        if (def->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
+            def->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
+            virDomainReportError(VIR_ERR_INVALID_ARG,
+                                 _("Setting disk %s is allowed only for "
+                                   "cdrom or floppy"),
+                                 startupPolicy);
+            goto error;
+        }
+        def->startupPolicy = i;
+    }
+
     def->src = source;
     source = NULL;
     def->dst = target;
@@ -2701,6 +2730,7 @@ cleanup:
     VIR_FREE(devaddr);
     VIR_FREE(serial);
     virStorageEncryptionFree(encryption);
+    VIR_FREE(startupPolicy);
 
     return def;
 
@@ -9176,6 +9206,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     const char *iomode = virDomainDiskIoTypeToString(def->iomode);
     const char *ioeventfd = virDomainIoEventFdTypeToString(def->ioeventfd);
     const char *event_idx = virDomainVirtioEventIdxTypeToString(def->event_idx);
+    const char *startupPolicy = virDomainStartupPolicyTypeToString(def->startupPolicy);
 
     if (!type) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -9234,11 +9265,17 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, "/>\n");
     }
 
-    if (def->src || def->nhosts > 0) {
+    if (def->src || def->nhosts > 0 ||
+        def->startupPolicy) {
         switch (def->type) {
         case VIR_DOMAIN_DISK_TYPE_FILE:
-            virBufferEscapeString(buf, "      <source file='%s'/>\n",
-                                  def->src);
+            virBufferAsprintf(buf,"      <source");
+            if (def->src)
+                virBufferEscapeString(buf, " file='%s'", def->src);
+            if (def->startupPolicy)
+                virBufferEscapeString(buf, " startupPolicy='%s'",
+                                      startupPolicy);
+            virBufferAsprintf(buf, "/>\n");
             break;
         case VIR_DOMAIN_DISK_TYPE_BLOCK:
             virBufferEscapeString(buf, "      <source dev='%s'/>\n",

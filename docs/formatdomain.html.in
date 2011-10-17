@@ -891,7 +891,7 @@
   &lt;devices&gt;
     &lt;disk type='file' snapshot='external'&gt;
       &lt;driver name="tap" type="aio" cache="default"/&gt;
-      &lt;source file='/var/lib/xen/images/fv0'/&gt;
+      &lt;source file='/var/lib/xen/images/fv0'/ startupPolicy='optional'&gt;
       &lt;target dev='hda' bus='ide'/&gt;
       &lt;boot order='2'/&gt;
       &lt;encryption type='...'&gt;
@@ -962,7 +962,29 @@
         "network", the <code>source</code> may have zero or
         more <code>host</code> sub-elements used to specify the hosts
         to connect.
-        <span class="since">Since 0.0.3</span></dd>
+        <span class="since">Since 0.0.3</span>
+        For "file" disk type which represents cdrom or floppy
+        (the <code>device</code> attribute) it is possible to define
+        policy what to do with disk if source is not accessible.
+        This is done by <code>startupPolicy</code> attribute accepting
+        these values:
+        <table class="top_table">
+          <tr>
+            <td> mandatory </td>
+            <td> fail if missing for any reason (the default) </td>
+          </tr>
+          <tr>
+            <td> requisite </td>
+            <td> fail if missing on boot up,
+                 drop if missing on migrate/restore/revert </td>
+          </tr>
+          <tr>
+            <td> optional </td>
+            <td> drop if missing at any start attempt </td>
+          </tr>
+        </table>
+        <span class="since">Since 0.9.7</span>
+        </dd>
       <dt><code>target</code></dt>
       <dd>The <code>target</code> element controls the bus / device
         under which the disk is exposed to the guest

@@ -269,6 +269,15 @@ enum virDomainSnapshotState {
     VIR_DOMAIN_DISK_SNAPSHOT = VIR_DOMAIN_LAST,
 };
 
+enum virDomainStartupPolicy {
+    VIR_DOMAIN_STARTUP_POLICY_DEFAULT = 0,
+    VIR_DOMAIN_STARTUP_POLICY_MANDATORY,
+    VIR_DOMAIN_STARTUP_POLICY_REQUISITE,
+    VIR_DOMAIN_STARTUP_POLICY_OPTIONAL,
+
+    VIR_DOMAIN_STARTUP_POLICY_LAST
+};
+
 /* Stores the virtual disk configuration */
 typedef struct _virDomainDiskDef virDomainDiskDef;
 typedef virDomainDiskDef *virDomainDiskDefPtr;
@@ -292,6 +301,7 @@ struct _virDomainDiskDef {
     int ioeventfd;
     int event_idx;
     int snapshot; /* enum virDomainDiskSnapshot */
+    int startupPolicy; /* enum virDomainStartupPolicy */
     unsigned int readonly : 1;
     unsigned int shared : 1;
     unsigned int transient : 1;
@@ -1938,4 +1948,5 @@ VIR_ENUM_DECL(virDomainTimerTrack)
 VIR_ENUM_DECL(virDomainTimerTickpolicy)
 VIR_ENUM_DECL(virDomainTimerMode)
 
+VIR_ENUM_DECL(virDomainStartupPolicy)
 #endif /* __DOMAIN_CONF_H */
