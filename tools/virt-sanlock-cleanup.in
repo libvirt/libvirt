@@ -64,8 +64,8 @@ active.
 
 =head1 EXIT STATUS
 
-Upon successful processing of leases cleanup, the exit status
-will be 0 will be set. Upon fatal error a non-zero status will
+Upon successful processing of leases cleanup, an exit status
+of 0 will be set. Upon fatal error a non-zero status will
 be set.
 
 =head1 AUTHOR
@@ -91,6 +91,6 @@ PURPOSE
 
 =head1 SEE ALSO
 
-C<virsh(1)>, online instructions C<http://libvirt.org/locksanlock.html>
+C<virsh(1)>, online instructions C<http://libvirt.org/locking.html>
 
 =cut
