@@ -671,6 +671,67 @@ virFileIsExecutable(const char *file)
 }
 
 #ifndef WIN32
+/* Check that a file is accessible under certain
+ * user & gid.
+ * @mode can be F_OK, or a bitwise combination of R_OK, W_OK, and X_OK.
+ * see 'man access' for more details.
+ * Returns 0 on success, -1 on fail with errno set.
+ */
+int
+virFileAccessibleAs(const char *path, int mode,
+                    uid_t uid, gid_t gid)
+{
+    pid_t pid = 0;
+    int status, ret = 0;
+    int forkRet = 0;
+
+    if (uid == getuid() &&
+        gid == getgid())
+        return access(path, mode);
+
+    forkRet = virFork(&pid);
+
+    if (pid < 0) {
+        return -1;
+    }
+
+    if (pid) { /* parent */
+        if (virPidWait(pid, &status) < 0) {
+            /* virPidWait() already
+             * reported error */
+                return -1;
+        }
+
+        errno = status;
+        return -1;
+    }
+
+    /* child.
+     * Return positive value here. Parent
+     * will change it to negative one. */
+
+    if (forkRet < 0) {
+        ret = errno;
+        goto childerror;
+    }
+
+    if (virSetUIDGID(uid, gid) < 0) {
+        ret = errno;
+        goto childerror;
+    }
+
+    if (access(path, mode) < 0)
+        ret = errno;
+
+childerror:
+    if ((ret & 0xFF) != ret) {
+        VIR_WARN("unable to pass desired return value %d", ret);
+        ret = 0xFF;
+    }
+
+    _exit(ret);
+}
+
 /* return -errno on failure, or 0 on success */
 static int
 virFileOpenAsNoFork(const char *path, int openflags, mode_t mode,
@@ -992,6 +1053,18 @@ childerror:
 }
 
 #else /* WIN32 */
+
+int
+virFileAccessibleAs(const char *path,
+                    int mode,
+                    uid_t uid ATTRIBUTE_UNUSED,
+                    git_t gid ATTRIBUTE_UNUSED)
+{
+
+    VIR_WARN("Ignoring uid/gid due to WIN32");
+
+    return access(path, mode);
+}
 
 /* return -errno on failure, or 0 on success */
 int virFileOpenAs(const char *path ATTRIBUTE_UNUSED,

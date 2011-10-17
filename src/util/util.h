@@ -93,6 +93,9 @@ enum {
     VIR_FILE_OPEN_AS_UID      = (1 << 0),
     VIR_FILE_OPEN_FORCE_PERMS = (1 << 1),
 };
+int virFileAccessibleAs(const char *path, int mode,
+                        uid_t uid, gid_t gid)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 int virFileOpenAs(const char *path, int openflags, mode_t mode,
                   uid_t uid, gid_t gid,
                   unsigned int flags)
