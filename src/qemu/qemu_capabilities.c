@@ -1018,9 +1018,9 @@ qemuCapsComputeCmdFlags(const char *help,
 
     /* Do not use -no-shutdown if qemu doesn't support it or SIGTERM handling
      * is most likely buggy when used with -no-shutdown (which applies for qemu
-     * 0.14.* and <0.15.50)
+     * 0.14.* and 0.15.0)
      */
-    if (strstr(help, "-no-shutdown") && (version < 14000 || version >= 15050))
+    if (strstr(help, "-no-shutdown") && (version < 14000 || version > 15000))
         qemuCapsSet(flags, QEMU_CAPS_NO_SHUTDOWN);
 
     /*
