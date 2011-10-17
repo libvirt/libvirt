@@ -79,7 +79,7 @@ class libvirtError(Exception):
 # register the libvirt global error handler
 #
 def registerErrorHandler(f, ctx):
-    """Register a Python written function to for error reporting.
+    """Register a Python function for error reporting.
        The function is called back as f(ctx, error), with error
        being a list of information about the error being raised.
        Returns 1 in case of success."""

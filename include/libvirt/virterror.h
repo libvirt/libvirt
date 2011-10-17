@@ -206,7 +206,7 @@ typedef enum {
     VIR_ERR_INVALID_STORAGE_VOL = 47,	/* invalid storage vol object */
     VIR_WAR_NO_STORAGE = 48,		/* failed to start storage */
     VIR_ERR_NO_STORAGE_POOL = 49,	/* storage pool not found */
-    VIR_ERR_NO_STORAGE_VOL = 50,	/* storage pool not found */
+    VIR_ERR_NO_STORAGE_VOL = 50,	/* storage volume not found */
     VIR_WAR_NO_NODE = 51,		/* failed to start node driver */
     VIR_ERR_INVALID_NODE_DEVICE = 52,	/* invalid node device object */
     VIR_ERR_NO_NODE_DEVICE = 53,	/* node device not found */
