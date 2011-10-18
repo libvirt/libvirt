@@ -75,6 +75,7 @@ EXTRA_DIST =		\
 	qemuhelpdata \
 	qemuxml2argvdata \
 	qemuxml2xmloutdata \
+	qemuxmlnsdata \
 	schematestutils.sh \
 	sexpr2xmldata \
 	storagepoolschematest \
@@ -108,7 +109,7 @@ check_PROGRAMS += xml2sexprtest sexpr2xmltest \
 	xmconfigtest xencapstest statstest reconnect
 endif
 if WITH_QEMU
-check_PROGRAMS += qemuxml2argvtest qemuxml2xmltest qemuargv2xmltest qemuhelptest
+check_PROGRAMS += qemuxml2argvtest qemuxml2xmltest qemuxmlnstest qemuargv2xmltest qemuhelptest
 endif
 
 if WITH_OPENVZ
@@ -233,7 +234,7 @@ TESTS += xml2sexprtest \
 endif
 
 if WITH_QEMU
-TESTS += qemuxml2argvtest qemuxml2xmltest qemuargv2xmltest qemuhelptest
+TESTS += qemuxml2argvtest qemuxml2xmltest qemuxmlnstest qemuargv2xmltest qemuhelptest
 TESTS += nwfilterxml2xmltest
 endif
 
@@ -349,6 +350,11 @@ qemuxml2xmltest_SOURCES = \
 	testutils.c testutils.h
 qemuxml2xmltest_LDADD = $(qemu_LDADDS) $(LDADDS)
 
+qemuxmlnstest_SOURCES = \
+	qemuxmlnstest.c testutilsqemu.c testutilsqemu.h \
+	testutils.c testutils.h
+qemuxmlnstest_LDADD = $(qemu_LDADDS)  $(LDADDS)
+
 qemuargv2xmltest_SOURCES = \
 	qemuargv2xmltest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
@@ -357,7 +363,7 @@ qemuargv2xmltest_LDADD = $(qemu_LDADDS) $(LDADDS)
 qemuhelptest_SOURCES = qemuhelptest.c testutils.c testutils.h
 qemuhelptest_LDADD = $(qemu_LDADDS) $(LDADDS)
 else
-EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c qemuargv2xmltest.c qemuhelptest.c testutilsqemu.c testutilsqemu.h
+EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c qemuxmlnstest.c qemuargv2xmltest.c qemuhelptest.c testutilsqemu.c testutilsqemu.h
 endif
 
 if WITH_OPENVZ
