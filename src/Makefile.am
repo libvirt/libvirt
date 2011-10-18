@@ -776,10 +776,14 @@ noinst_LTLIBRARIES += libvirt_driver_qemu.la
 #libvirt_la_BUILT_LIBADD += libvirt_driver_qemu.la
 endif
 libvirt_driver_qemu_la_CFLAGS = $(NUMACTL_CFLAGS) \
+                                $(GNUTLS_CFLAGS) \
+                                $(LIBXML_CFLAGS) \
 		-I@top_srcdir@/src/conf $(AM_CFLAGS)
 libvirt_driver_qemu_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_qemu_la_LIBADD = $(NUMACTL_LIBS) \
-				$(CAPNG_LIBS)
+				$(CAPNG_LIBS) \
+                                $(GNUTLS_LIBS) \
+                                $(LIBXML_LIBS)
 if WITH_DRIVER_MODULES
 libvirt_driver_qemu_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_qemu_la_LDFLAGS += -module -avoid-version
