@@ -35,6 +35,7 @@
 #include "ignore-value.h"
 #include "uuid.h"
 #include "virfile.h"
+#include "domain_event.h"
 
 #include <sys/time.h>
 #include <fcntl.h>
@@ -1619,6 +1620,7 @@ qemuDomainCheckDiskPresence(struct qemud_driver *driver,
     int accessRet;
     virDomainDiskDefPtr disk;
     char uuid[VIR_UUID_STRING_BUFLEN] ATTRIBUTE_UNUSED;
+    virDomainEventPtr event = NULL;
 
     virUUIDFormat(vm->def->uuid, uuid);
 
@@ -1665,6 +1667,11 @@ qemuDomainCheckDiskPresence(struct qemud_driver *driver,
         VIR_DEBUG("Droping disk '%s' on domain '%s' (UUID '%s') "
                   "due to not accessible source '%s'",
                   disk->dst, vm->def->name, uuid, disk->src);
+
+        event = virDomainEventDiskChangeNewFromObj(vm, disk->src, NULL, disk->info.alias,
+                                                   VIR_DOMAIN_DISK_CHANGE_MISSING_ON_START);
+        if (event)
+            qemuDomainEventQueue(driver, event);
 
         VIR_FREE(disk->src);
     }

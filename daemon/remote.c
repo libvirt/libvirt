@@ -451,6 +451,56 @@ static int remoteRelayDomainEventControlError(virConnectPtr conn ATTRIBUTE_UNUSE
 }
 
 
+static int remoteRelayDomainEventDiskChange(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                            virDomainPtr dom,
+                                            const char *oldSrcPath,
+                                            const char *newSrcPath,
+                                            const char *devAlias,
+                                            int reason,
+                                            void *opaque)
+{
+    virNetServerClientPtr client = opaque;
+    remote_domain_event_disk_change_msg data;
+    char **oldSrcPath_p = NULL, **newSrcPath_p = NULL;
+
+    if (!client)
+        return -1;
+
+    VIR_DEBUG("Relaying domain %s %d disk change %s %s %s %d",
+              dom->name, dom->id, oldSrcPath, newSrcPath, devAlias, reason);
+
+    /* build return data */
+    memset(&data, 0, sizeof data);
+    if (oldSrcPath &&
+        ((VIR_ALLOC(oldSrcPath_p) < 0) ||
+         !(*oldSrcPath_p = strdup(oldSrcPath))))
+        goto mem_error;
+
+    if (newSrcPath &&
+        ((VIR_ALLOC(newSrcPath_p) < 0) ||
+         !(*newSrcPath_p = strdup(newSrcPath))))
+        goto mem_error;
+
+    data.oldSrcPath = oldSrcPath_p;
+    data.newSrcPath = newSrcPath_p;
+    if (!(data.devAlias = strdup(devAlias)))
+        goto mem_error;
+    data.reason = reason;
+
+    make_nonnull_domain(&data.dom, dom);
+
+    remoteDispatchDomainEventSend(client, remoteProgram,
+                                  REMOTE_PROC_DOMAIN_EVENT_DISK_CHANGE,
+                                  (xdrproc_t)xdr_remote_domain_event_disk_change_msg, &data);
+
+    return 0;
+
+mem_error:
+    virReportOOMError();
+    return -1;
+}
+
+
 static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventReboot),
@@ -461,6 +511,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventIOErrorReason),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventControlError),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventBlockJob),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventDiskChange),
 };
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

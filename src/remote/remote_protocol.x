@@ -2010,6 +2010,14 @@ struct remote_domain_event_block_job_msg {
     int status;
 };
 
+struct remote_domain_event_disk_change_msg {
+    remote_nonnull_domain dom;
+    remote_string oldSrcPath;
+    remote_string newSrcPath;
+    remote_nonnull_string devAlias;
+    int reason;
+};
+
 struct remote_domain_managed_save_args {
     remote_nonnull_domain dom;
     unsigned int flags;
@@ -2546,7 +2554,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_SNAPSHOT_GET_PARENT = 244, /* autogen autogen priority:high */
     REMOTE_PROC_DOMAIN_RESET = 245, /* autogen autogen */
     REMOTE_PROC_DOMAIN_SNAPSHOT_NUM_CHILDREN = 246, /* autogen autogen priority:high */
-    REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_CHILDREN_NAMES = 247 /* autogen autogen priority:high */
+    REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_CHILDREN_NAMES = 247, /* autogen autogen priority:high */
+    REMOTE_PROC_DOMAIN_EVENT_DISK_CHANGE = 248 /* skipgen skipgen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

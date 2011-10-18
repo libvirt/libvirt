@@ -1509,6 +1509,13 @@ struct remote_domain_event_block_job_msg {
         int                        type;
         int                        status;
 };
+struct remote_domain_event_disk_change_msg {
+        remote_nonnull_domain      dom;
+        remote_string              oldSrcPath;
+        remote_string              newSrcPath;
+        remote_nonnull_string      devAlias;
+        int                        reason;
+};
 struct remote_domain_managed_save_args {
         remote_nonnull_domain      dom;
         u_int                      flags;

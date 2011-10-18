@@ -481,6 +481,8 @@ virDomainEventCallbackListRemoveConn;
 virDomainEventCallbackListRemoveID;
 virDomainEventControlErrorNewFromDom;
 virDomainEventControlErrorNewFromObj;
+virDomainEventDiskChangeNewFromDom;
+virDomainEventDiskChangeNewFromObj;
 virDomainEventDispatch;
 virDomainEventDispatchDefaultFunc;
 virDomainEventFree;

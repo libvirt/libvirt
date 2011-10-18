@@ -88,6 +88,12 @@ struct _virDomainEvent {
             int type;
             int status;
         } blockJob;
+        struct {
+            char *oldSrcPath;
+            char *newSrcPath;
+            char *devAlias;
+            int reason;
+        } diskChange;
     } data;
 };
 
@@ -508,6 +514,12 @@ void virDomainEventFree(virDomainEventPtr event)
 
     case VIR_DOMAIN_EVENT_ID_BLOCK_JOB:
         VIR_FREE(event->data.blockJob.path);
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_DISK_CHANGE:
+        VIR_FREE(event->data.diskChange.oldSrcPath);
+        VIR_FREE(event->data.diskChange.newSrcPath);
+        VIR_FREE(event->data.diskChange.devAlias);
         break;
     }
 
@@ -961,6 +973,61 @@ virDomainEventPtr virDomainEventControlErrorNewFromObj(virDomainObjPtr obj)
     return ev;
 }
 
+static virDomainEventPtr
+virDomainEventDiskChangeNew(int id, const char *name,
+                            unsigned char *uuid,
+                            const char *oldSrcPath,
+                            const char *newSrcPath,
+                            const char *devAlias, int reason)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_DISK_CHANGE,
+                                  id, name, uuid);
+
+    if (ev) {
+        if (!(ev->data.diskChange.devAlias = strdup(devAlias)))
+            goto error;
+
+        if (oldSrcPath &&
+            !(ev->data.diskChange.oldSrcPath = strdup(oldSrcPath)))
+            goto error;
+
+        if (newSrcPath &&
+            !(ev->data.diskChange.newSrcPath = strdup(newSrcPath)))
+            goto error;
+
+        ev->data.diskChange.reason = reason;
+    }
+
+    return ev;
+
+error:
+    virReportOOMError();
+    virDomainEventFree(ev);
+    return NULL;
+}
+
+virDomainEventPtr virDomainEventDiskChangeNewFromObj(virDomainObjPtr obj,
+                                                     const char *oldSrcPath,
+                                                     const char *newSrcPath,
+                                                     const char *devAlias,
+                                                     int reason)
+{
+    return virDomainEventDiskChangeNew(obj->def->id, obj->def->name,
+                                       obj->def->uuid, oldSrcPath,
+                                       newSrcPath, devAlias, reason);
+}
+
+virDomainEventPtr virDomainEventDiskChangeNewFromDom(virDomainPtr dom,
+                                                     const char *oldSrcPath,
+                                                     const char *newSrcPath,
+                                                     const char *devAlias,
+                                                     int reason)
+{
+    return virDomainEventDiskChangeNew(dom->id, dom->name, dom->uuid,
+                                       oldSrcPath, newSrcPath,
+                                       devAlias, reason);
+}
 
 /**
  * virDomainEventQueuePop:
@@ -1102,6 +1169,15 @@ void virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                                     event->data.blockJob.type,
                                                     event->data.blockJob.status,
                                                     cbopaque);
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_DISK_CHANGE:
+        ((virConnectDomainEventDiskChangeCallback)cb)(conn, dom,
+                                                      event->data.diskChange.oldSrcPath,
+                                                      event->data.diskChange.newSrcPath,
+                                                      event->data.diskChange.devAlias,
+                                                      event->data.diskChange.reason,
+                                                      cbopaque);
         break;
 
     default:

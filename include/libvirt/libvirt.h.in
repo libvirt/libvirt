@@ -2996,6 +2996,41 @@ typedef void (*virConnectDomainEventBlockJobCallback)(virConnectPtr conn,
                                                       void *opaque);
 
 /**
+ * virConnectDomainEventDisChangeReason:
+ *
+ * The reason describing why this callback is called
+ */
+typedef enum {
+    VIR_DOMAIN_DISK_CHANGE_MISSING_ON_START = 0, /* oldSrcPath is set */
+} virConnectDomainEventDiskChangeReason;
+
+/**
+ * virConnectDomainEventDiskChangeCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @oldSrcPath: old source path
+ * @newSrcPath: new source path
+ * @reason: reason why this callback was called; any of
+ *          virConnectDomainEventDiskChangeReason
+ * @opaque: application specified data
+ *
+ * This callback occurs when disk gets changed. However,
+ * not all @reason will cause both @oldSrcPath and @newSrcPath
+ * to be non-NULL. Please see virConnectDomainEventDiskChangeReason
+ * for more details.
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_IO_ERROR with virConnectDomainEventRegisterAny()
+ */
+typedef void (*virConnectDomainEventDiskChangeCallback)(virConnectPtr conn,
+                                                       virDomainPtr dom,
+                                                       const char *oldSrcPath,
+                                                       const char *newSrcPath,
+                                                       const char *devAlias,
+                                                       int reason,
+                                                       void *opaque);
+
+/**
  * VIR_DOMAIN_EVENT_CALLBACK:
  *
  * Used to cast the event specific callback into the generic one
@@ -3014,6 +3049,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON = 6, /* virConnectDomainEventIOErrorReasonCallback */
     VIR_DOMAIN_EVENT_ID_CONTROL_ERROR = 7,   /* virConnectDomainEventGenericCallback */
     VIR_DOMAIN_EVENT_ID_BLOCK_JOB = 8,       /* virConnectDomainEventBlockJobCallback */
+    VIR_DOMAIN_EVENT_ID_DISK_CHANGE = 9,     /* virConnectDomainEventDiskChangeCallback */
 
     /*
      * NB: this enum value will increase over time as new events are

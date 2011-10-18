@@ -2880,13 +2880,6 @@ int qemuProcessStart(virConnectPtr conn,
                                NULL) < 0)
         goto cleanup;
 
-    if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)
-        goto cleanup;
-
-    VIR_DEBUG("Checking for CDROM and floppy presence");
-    if (qemuDomainCheckDiskPresence(driver, vm, migrateFrom != NULL) < 0)
-        goto cleanup;
-
     /* If you are using a SecurityDriver with dynamic labelling,
        then generate a security label for isolation */
     VIR_DEBUG("Generating domain security label (if required)");
@@ -2954,6 +2947,13 @@ int qemuProcessStart(virConnectPtr conn,
     if (qemuCapsExtractVersionInfo(vm->def->emulator, vm->def->os.arch,
                                    NULL,
                                    &priv->qemuCaps) < 0)
+        goto cleanup;
+
+    if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Checking for CDROM and floppy presence");
+    if (qemuDomainCheckDiskPresence(driver, vm, migrateFrom != NULL) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting up domain cgroup (if required)");

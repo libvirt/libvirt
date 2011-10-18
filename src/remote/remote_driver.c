@@ -228,6 +228,11 @@ remoteDomainBuildEventBlockJob(virNetClientProgramPtr prog,
                                virNetClientPtr client,
                                void *evdata, void *opaque);
 
+static void
+remoteDomainBuildEventDiskChange(virNetClientProgramPtr prog,
+                                 virNetClientPtr client,
+                                 void *evdata, void *opaque);
+
 static virNetClientProgramEvent remoteDomainEvents[] = {
     { REMOTE_PROC_DOMAIN_EVENT_RTC_CHANGE,
       remoteDomainBuildEventRTCChange,
@@ -265,6 +270,10 @@ static virNetClientProgramEvent remoteDomainEvents[] = {
       remoteDomainBuildEventBlockJob,
       sizeof(remote_domain_event_block_job_msg),
       (xdrproc_t)xdr_remote_domain_event_block_job_msg },
+    { REMOTE_PROC_DOMAIN_EVENT_DISK_CHANGE,
+      remoteDomainBuildEventDiskChange,
+      sizeof(remote_domain_event_disk_change_msg),
+      (xdrproc_t)xdr_remote_domain_event_disk_change_msg },
 };
 
 enum virDrvOpenRemoteFlags {
@@ -3320,6 +3329,33 @@ remoteDomainBuildEventControlError(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
         return;
 
     event = virDomainEventControlErrorNewFromDom(dom);
+
+    virDomainFree(dom);
+
+    remoteDomainEventQueue(priv, event);
+}
+
+
+static void
+remoteDomainBuildEventDiskChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                 virNetClientPtr client ATTRIBUTE_UNUSED,
+                                 void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    struct private_data *priv = conn->privateData;
+    remote_domain_event_disk_change_msg *msg = evdata;
+    virDomainPtr dom;
+    virDomainEventPtr event = NULL;
+
+    dom = get_nonnull_domain(conn, msg->dom);
+    if (!dom)
+        return;
+
+    event = virDomainEventDiskChangeNewFromDom(dom,
+                                               msg->oldSrcPath ? *msg->oldSrcPath : NULL,
+                                               msg->newSrcPath ? *msg->newSrcPath : NULL,
+                                               msg->devAlias,
+                                               msg->reason);
 
     virDomainFree(dom);
 
