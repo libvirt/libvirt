@@ -778,7 +778,7 @@
             The guest clock will have an arbitrary offset applied
             relative to UTC. The delta relative to UTC is specified
             in seconds, using the <code>adjustment</code> attribute.
-            The guest is free to adjust the RTC over time an expect
+            The guest is free to adjust the RTC over time and expect
             that it will be honoured at next reboot. This is in
             contrast to 'utc' mode, where the RTC adjustments are
             lost at each reboot. <span class="since">Since 0.7.7</span>
