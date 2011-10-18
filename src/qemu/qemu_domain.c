@@ -484,31 +484,20 @@ qemuDomainDefNamespaceFree(void *nsdata)
 }
 
 static int
-qemuDomainDefNamespaceParse(xmlDocPtr xml,
-                            xmlNodePtr root,
+qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
+                            xmlNodePtr root ATTRIBUTE_UNUSED,
                             xmlXPathContextPtr ctxt,
                             void **data)
 {
     qemuDomainCmdlineDefPtr cmd = NULL;
-    xmlNsPtr ns;
+    bool uses_qemu_ns = false;
     xmlNodePtr *nodes = NULL;
     int n, i;
 
-    ns = xmlSearchNs(xml, root, BAD_CAST "qemu");
-    if (!ns)
-        /* this is fine; it just means there was no qemu namespace listed */
-        return 0;
-
-    if (STRNEQ((const char *)ns->href, QEMU_NAMESPACE_HREF)) {
+    if (xmlXPathRegisterNs(ctxt, BAD_CAST "qemu", BAD_CAST QEMU_NAMESPACE_HREF) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Found namespace '%s' doesn't match expected '%s'"),
-                        ns->href, QEMU_NAMESPACE_HREF);
-        return -1;
-    }
-
-    if (xmlXPathRegisterNs(ctxt, ns->prefix, ns->href) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Failed to register xml namespace '%s'"), ns->href);
+                        _("Failed to register xml namespace '%s'"),
+                        QEMU_NAMESPACE_HREF);
         return -1;
     }
 
@@ -521,6 +510,7 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml,
     n = virXPathNodeSet("./qemu:commandline/qemu:arg", ctxt, &nodes);
     if (n < 0)
         goto error;
+    uses_qemu_ns |= n > 0;
 
     if (n && VIR_ALLOC_N(cmd->args, n) < 0)
         goto no_memory;
@@ -541,6 +531,7 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml,
     n = virXPathNodeSet("./qemu:commandline/qemu:env", ctxt, &nodes);
     if (n < 0)
         goto error;
+    uses_qemu_ns |= n > 0;
 
     if (n && VIR_ALLOC_N(cmd->env_name, n) < 0)
         goto no_memory;
@@ -582,7 +573,10 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml,
 
     VIR_FREE(nodes);
 
-    *data = cmd;
+    if (uses_qemu_ns)
+        *data = cmd;
+    else
+        VIR_FREE(cmd);
 
     return 0;
 
