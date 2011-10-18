@@ -59,6 +59,7 @@
 #include "threads.h"
 #include "command.h"
 #include "virkeycode.h"
+#include "network.h"
 
 static char *progname;
 
@@ -11228,15 +11229,54 @@ static const vshCmdOptDef opts_attach_interface[] = {
     {"script", VSH_OT_DATA, 0, N_("script used to bridge network interface")},
     {"model", VSH_OT_DATA, 0, N_("model type")},
     {"persistent", VSH_OT_BOOL, 0, N_("persist interface attachment")},
+    {"inbound", VSH_OT_DATA, VSH_OFLAG_NONE, N_("control domain's incoming traffics")},
+    {"outbound", VSH_OT_DATA, VSH_OFLAG_NONE, N_("control domain's outgoing traffics")},
     {NULL, 0, 0, NULL}
 };
+
+/* parse inbound and outbound which are in the format of
+ * 'average,peak,burst', in which peak and burst are optional,
+ * thus 'average,,burst' and 'average,peak' are also legal. */
+static int parseRateStr(const char *rateStr, virRatePtr rate)
+{
+    const char *average = NULL;
+    char *peak = NULL, *burst = NULL;
+
+    average = rateStr;
+    if (!average)
+        return -1;
+    if (virStrToLong_ull(average, &peak, 10, &rate->average) < 0)
+        return -1;
+
+    /* peak will be updated to point to the end of rateStr in case
+     * of 'average' */
+    if (peak && *peak != '\0') {
+        burst = strchr(peak + 1, ',');
+        if (!(burst && (burst - peak == 1))) {
+            if (virStrToLong_ull(peak + 1, &burst, 10, &rate->peak) < 0)
+                return -1;
+        }
+
+        /* burst will be updated to point to the end of rateStr in case
+         * of 'average,peak' */
+        if (burst && *burst != '\0') {
+            if (virStrToLong_ull(burst + 1, NULL, 10, &rate->burst) < 0)
+                return -1;
+        }
+    }
+
+
+    return 0;
+}
 
 static bool
 cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     const char *mac = NULL, *target = NULL, *script = NULL,
-                *type = NULL, *source = NULL, *model = NULL;
+                *type = NULL, *source = NULL, *model = NULL,
+                *inboundStr = NULL, *outboundStr = NULL;
+    virRate inbound, outbound;
     int typ;
     int ret;
     bool functionReturn = false;
@@ -11257,7 +11297,9 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptString(cmd, "target", &target) < 0 ||
         vshCommandOptString(cmd, "mac", &mac) < 0 ||
         vshCommandOptString(cmd, "script", &script) < 0 ||
-        vshCommandOptString(cmd, "model", &model) < 0) {
+        vshCommandOptString(cmd, "model", &model) < 0 ||
+        vshCommandOptString(cmd, "inbound", &inboundStr) < 0 ||
+        vshCommandOptString(cmd, "outbound", &outboundStr) < 0) {
         vshError(ctl, "missing argument");
         goto cleanup;
     }
@@ -11271,6 +11313,29 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, _("No support for %s in command 'attach-interface'"),
                  type);
         goto cleanup;
+    }
+
+    if (inboundStr) {
+        memset(&inbound, 0, sizeof(inbound));
+        if (parseRateStr(inboundStr, &inbound) < 0) {
+            vshError(ctl, _("inbound format is incorrect"));
+            goto cleanup;
+        }
+        if (inbound.average == 0) {
+            vshError(ctl, _("inbound average is mandatory"));
+            goto cleanup;
+        }
+    }
+    if (outboundStr) {
+        memset(&outbound, 0, sizeof(outbound));
+        if (parseRateStr(outboundStr, &outbound) < 0) {
+            vshError(ctl, _("outbound format is incorrect"));
+            goto cleanup;
+        }
+        if (outbound.average == 0) {
+            vshError(ctl, _("outbound average is mandatory"));
+            goto cleanup;
+        }
     }
 
     /* Make XML of interface */
@@ -11289,6 +11354,27 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
         virBufferAsprintf(&buf, "  <script path='%s'/>\n", script);
     if (model != NULL)
         virBufferAsprintf(&buf, "  <model type='%s'/>\n", model);
+
+    if (inboundStr || outboundStr) {
+        virBufferAsprintf(&buf, "  <bandwidth>\n");
+        if (inboundStr && inbound.average > 0) {
+            virBufferAsprintf(&buf, "    <inbound average='%llu'", inbound.average);
+            if (inbound.peak > 0)
+                virBufferAsprintf(&buf, " peak='%llu'", inbound.peak);
+            if (inbound.burst > 0)
+                virBufferAsprintf(&buf, " burst='%llu'", inbound.burst);
+            virBufferAsprintf(&buf, "/>\n");
+        }
+        if (outboundStr && outbound.average > 0) {
+            virBufferAsprintf(&buf, "    <outbound average='%llu'", outbound.average);
+            if (outbound.peak > 0)
+                virBufferAsprintf(&buf, " peak='%llu'", outbound.peak);
+            if (outbound.burst > 0)
+                virBufferAsprintf(&buf, " burst='%llu'", outbound.burst);
+            virBufferAsprintf(&buf, "/>\n");
+        }
+        virBufferAsprintf(&buf, "  </bandwidth>\n");
+    }
 
     virBufferAddLit(&buf, "</interface>\n");
 
