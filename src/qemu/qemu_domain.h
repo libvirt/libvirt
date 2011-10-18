@@ -280,4 +280,8 @@ void qemuDomainSetFakeReboot(struct qemud_driver *driver,
 
 bool qemuDomainJobAllowed(qemuDomainObjPrivatePtr priv,
                           enum qemuDomainJob job);
+
+int qemuDomainCheckDiskPresence(struct qemud_driver *driver,
+                                virDomainObjPtr vm,
+                                bool start_with_state);
 #endif /* __QEMU_DOMAIN_H__ */

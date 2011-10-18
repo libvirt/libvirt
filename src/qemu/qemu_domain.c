@@ -1608,3 +1608,69 @@ qemuDomainSetFakeReboot(struct qemud_driver *driver,
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         VIR_WARN("Failed to save status on vm %s", vm->def->name);
 }
+
+int
+qemuDomainCheckDiskPresence(struct qemud_driver *driver,
+                            virDomainObjPtr vm,
+                            bool start_with_state)
+{
+    int ret = -1;
+    int i;
+    int accessRet;
+    virDomainDiskDefPtr disk;
+    char uuid[VIR_UUID_STRING_BUFLEN] ATTRIBUTE_UNUSED;
+
+    virUUIDFormat(vm->def->uuid, uuid);
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        disk = vm->def->disks[i];
+
+        if (!disk->startupPolicy || !disk->src)
+            continue;
+
+        if ((accessRet = virFileAccessibleAs(disk->src, F_OK,
+                                             driver->user,
+                                             driver->group)) >= 0) {
+            /* disk accessible or virFileAccessibleAs()
+             * terminated with signal*/
+            continue;
+        }
+
+        switch ((enum virDomainStartupPolicy) disk->startupPolicy) {
+            case VIR_DOMAIN_STARTUP_POLICY_OPTIONAL:
+                break;
+
+            case VIR_DOMAIN_STARTUP_POLICY_MANDATORY:
+                virReportSystemError(-accessRet,
+                                     _("cannot access file '%s'"),
+                                     disk->src);
+                goto cleanup;
+                break;
+
+            case VIR_DOMAIN_STARTUP_POLICY_REQUISITE:
+                if (!start_with_state) {
+                    virReportSystemError(-accessRet,
+                                         _("cannot access file '%s'"),
+                                         disk->src);
+                    goto cleanup;
+                }
+                break;
+
+            case VIR_DOMAIN_STARTUP_POLICY_DEFAULT:
+            case VIR_DOMAIN_STARTUP_POLICY_LAST:
+                /* this should never happen */
+                break;
+        }
+
+        VIR_DEBUG("Droping disk '%s' on domain '%s' (UUID '%s') "
+                  "due to not accessible source '%s'",
+                  disk->dst, vm->def->name, uuid, disk->src);
+
+        VIR_FREE(disk->src);
+    }
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
