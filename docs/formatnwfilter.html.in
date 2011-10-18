@@ -258,11 +258,19 @@
     </p>
     <ul>
      <li>
-        action -- mandatory; must either be <code>drop</code>,
-        <code>reject</code><span class="since">(since 0.9.0)</span>,
-        or <code>accept</code> if
-        the evaluation of the filtering rule is supposed to drop,
-        reject (using ICMP message), or accept a packet
+        action -- mandatory; must either be <code>drop</code>
+        (matching the rule silently discards the packet with no
+        further analysis),
+        <code>reject</code> (matching the rule generates an ICMP
+        reject message with no further analysis) <span class="since">(since
+        0.9.0)</span>, <code>accept</code> (matching the rule accepts
+        the packet with no further analysis), <code>return</code>
+        (matching the rule passes this filter, but returns control to
+        the calling filter for further
+        analysis) <span class="since">(since 0.9.7)</span>,
+        or <code>continue<code> (matching the rule goes on to the next
+        rule for further analysis) <span class="since">(since
+        0.9.7)</span>.
      </li>
      <li>
         direction -- mandatory; must either be <code>in</code>, <code>out</code> or

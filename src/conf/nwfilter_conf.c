@@ -55,12 +55,16 @@
 VIR_ENUM_IMPL(virNWFilterRuleAction, VIR_NWFILTER_RULE_ACTION_LAST,
               "drop",
               "accept",
-              "reject");
+              "reject",
+              "return",
+              "continue");
 
 VIR_ENUM_IMPL(virNWFilterJumpTarget, VIR_NWFILTER_RULE_ACTION_LAST,
               "DROP",
               "ACCEPT",
-              "REJECT");
+              "REJECT",
+              "RETURN",
+              "CONTINUE");
 
 VIR_ENUM_IMPL(virNWFilterRuleDirection, VIR_NWFILTER_RULE_DIRECTION_LAST,
               "in",
