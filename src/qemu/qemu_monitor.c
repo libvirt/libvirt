@@ -139,48 +139,6 @@ char *qemuMonitorEscapeArg(const char *in)
     return out;
 }
 
-char *qemuMonitorEscapeShell(const char *in)
-{
-    int len = 2; /* leading and trailing single quote */
-    int i, j;
-    char *out;
-
-    for (i = 0; in[i] != '\0'; i++) {
-        switch(in[i]) {
-        case '\'':
-            len += 4; /* '\'' */
-            break;
-        default:
-            len += 1;
-            break;
-        }
-    }
-
-    if (VIR_ALLOC_N(out, len + 1) < 0)
-        return NULL;
-
-    j = 0;
-    out[j++] = '\'';
-    for (i = 0; in[i] != '\0'; i++) {
-        switch(in[i]) {
-        case '\'':
-            out[j++] = '\'';
-            out[j++] = '\\';
-            out[j++] = '\'';
-            out[j++] = '\'';
-            break;
-        default:
-            out[j++] = in[i];
-            break;
-        }
-    }
-    out[j++] = '\'';
-    out[j] = '\0';
-
-    return out;
-}
-
-
 #if DEBUG_RAW_IO
 # include <c-ctype.h>
 static char * qemuMonitorEscapeNonPrintable(const char *text)
@@ -1734,6 +1692,7 @@ int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
     char *dest = NULL;
     int ret = -1;
     char *safe_target = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     VIR_DEBUG("mon=%p argv=%p target=%s offset=%llu flags=%x",
           mon, argv, target, offset, flags);
 
@@ -1757,11 +1716,13 @@ int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
     }
 
     /* Migrate to file */
-    safe_target = qemuMonitorEscapeShell(target);
-    if (!safe_target) {
+    virBufferEscapeShell(&buf, target);
+    if (virBufferError(&buf)) {
         virReportOOMError();
+        virBufferFreeAndReset(&buf);
         goto cleanup;
     }
+    safe_target = virBufferContentAndReset(&buf);
 
     /* Two dd processes, sharing the same stdout, are necessary to
      * allow starting at an alignment of 512, but without wasting
