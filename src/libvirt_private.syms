@@ -888,6 +888,7 @@ pciDeviceIsVirtualFunction;
 pciDeviceListAdd;
 pciDeviceListCount;
 pciDeviceListDel;
+pciDeviceListFind;
 pciDeviceListFree;
 pciDeviceListGet;
 pciDeviceListNew;
