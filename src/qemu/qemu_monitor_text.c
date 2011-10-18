@@ -3064,7 +3064,8 @@ qemuMonitorTextDiskSnapshot(qemuMonitorPtr mon, const char *device,
         goto cleanup;
     }
 
-    if (strstr(reply, "error while creating qcow2") != NULL) {
+    if (strstr(reply, "error while creating qcow2") != NULL ||
+        strstr(reply, "unknown command:") != NULL) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         _("Failed to take snapshot: %s"), reply);
         goto cleanup;

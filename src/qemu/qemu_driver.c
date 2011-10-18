@@ -9027,7 +9027,6 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
             VIR_WARN("Unable to release lock on %s", source);
         goto cleanup;
     }
-    need_unlink = false;
 
     disk->src = origsrc;
     origsrc = NULL;
@@ -9041,6 +9040,7 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
         goto cleanup;
 
     /* Update vm in place to match changes.  */
+    need_unlink = false;
     VIR_FREE(disk->src);
     disk->src = source;
     source = NULL;
