@@ -524,13 +524,13 @@ virBufferEscapeShell(virBufferPtr buf, const char *str)
 
     *out++ = '\'';
     while (*cur != 0) {
-        *out++ = *cur++;
         if (*cur == '\'') {
+            *out++ = '\'';
             /* Replace literal ' with a close ', a \', and a open ' */
             *out++ = '\\';
             *out++ = '\'';
-            *out++ = '\'';
         }
+        *out++ = *cur++;
     }
     *out++ = '\'';
     *out = 0;
