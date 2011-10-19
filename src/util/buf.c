@@ -520,7 +520,7 @@ virBufferEscapeShell(virBufferPtr buf, const char *str)
             return;
         }
     } else {
-        virBufferAdd(buf, "''", 2);
+        virBufferAddLit(buf, "''");
         return;
     }
 
