@@ -1104,21 +1104,16 @@ int virFileOpenTty(int *ttymaster,
                    char **ttyName,
                    int rawmode)
 {
-    return virFileOpenTtyAt("/dev/ptmx",
-                            ttymaster,
-                            ttyName,
-                            rawmode);
-}
-
-#ifdef __linux__
-int virFileOpenTtyAt(const char *ptmx,
-                     int *ttymaster,
-                     char **ttyName,
-                     int rawmode)
-{
     int rc = -1;
 
-    if ((*ttymaster = open(ptmx, O_RDWR|O_NOCTTY|O_NONBLOCK)) < 0)
+#ifdef WIN32
+    /* mingw completely lacks pseudo-terminals, and the gnulib
+     * replacements are not (yet) license compatible.  */
+    errno = ENOSYS;
+
+#else /* !WIN32 */
+
+    if ((*ttymaster = posix_openpt(O_RDWR|O_NOCTTY|O_NONBLOCK)) < 0)
         goto cleanup;
 
     if (unlockpt(*ttymaster) < 0)
@@ -1156,19 +1151,9 @@ cleanup:
     if (rc != 0)
         VIR_FORCE_CLOSE(*ttymaster);
 
+#endif /* !WIN32 */
     return rc;
-
 }
-#else
-int virFileOpenTtyAt(const char *ptmx ATTRIBUTE_UNUSED,
-                     int *ttymaster ATTRIBUTE_UNUSED,
-                     char **ttyName ATTRIBUTE_UNUSED,
-                     int rawmode ATTRIBUTE_UNUSED)
-{
-    return -1;
-}
-#endif
-
 
 /*
  * Creates an absolute path for a potentially relative path.

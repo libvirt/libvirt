@@ -41,6 +41,8 @@
 #include <locale.h>
 #include <linux/loop.h>
 #include <dirent.h>
+#include <grp.h>
+#include <sys/stat.h>
 
 #if HAVE_CAPNG
 # include <cap-ng.h>
@@ -780,6 +782,50 @@ static int lxcSetPersonality(virDomainDefPtr def)
 # define MS_SLAVE              (1<<19)
 #endif
 
+/* Create a private tty using the private devpts at PTMX, returning
+ * the master in *TTYMASTER and the name of the slave, _from the
+ * perspective of the guest after remounting file systems_, in
+ * *TTYNAME.  Heavily borrowed from glibc, but doesn't require that
+ * devpts == "/dev/pts" */
+static int
+lxcCreateTty(char *ptmx, int *ttymaster, char **ttyName)
+{
+    int ret = -1;
+    int ptyno;
+    int unlock = 0;
+
+    if ((*ttymaster = open(ptmx, O_RDWR|O_NOCTTY|O_NONBLOCK)) < 0)
+        goto cleanup;
+
+    if (ioctl(*ttymaster, TIOCSPTLCK, &unlock) < 0)
+        goto cleanup;
+
+    if (ioctl(*ttymaster, TIOCGPTN, &ptyno) < 0)
+        goto cleanup;
+
+    /* If mount() succeeded at honoring newinstance, then the kernel
+     * was new enough to also honor the mode=0620,gid=5 options, which
+     * guarantee that the new pty already has correct permissions; so
+     * while glibc has to fstat(), fchmod(), and fchown() for older
+     * kernels, we can skip those steps.  ptyno shouldn't currently be
+     * anything other than 0, but let's play it safe.  */
+    if (virAsprintf(ttyName, "/dev/pts/%d", ptyno) < 0) {
+        virReportOOMError();
+        errno = ENOMEM;
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    if (ret != 0) {
+        VIR_FORCE_CLOSE(*ttymaster);
+        VIR_FREE(*ttyName);
+    }
+
+    return ret;
+}
+
 static int
 lxcControllerRun(virDomainDefPtr def,
                  unsigned int nveths,
@@ -877,6 +923,8 @@ lxcControllerRun(virDomainDefPtr def,
             goto cleanup;
         }
 
+        /* XXX should we support gid=X for X!=5 for distros which use
+         * a different gid for tty?  */
         VIR_DEBUG("Mounting 'devpts' on %s", devpts);
         if (mount("devpts", devpts, "devpts", 0,
                   "newinstance,ptmxmode=0666,mode=0620,gid=5") < 0) {
@@ -894,10 +942,7 @@ lxcControllerRun(virDomainDefPtr def,
 
     if (devptmx) {
         VIR_DEBUG("Opening tty on private %s", devptmx);
-        if (virFileOpenTtyAt(devptmx,
-                             &containerPty,
-                             &containerPtyPath,
-                             0) < 0) {
+        if (lxcCreateTty(devptmx, &containerPty, &containerPtyPath) < 0) {
             virReportSystemError(errno, "%s",
                                  _("Failed to allocate tty"));
             goto cleanup;
