@@ -74,6 +74,7 @@
 /tests/networkxml2argvtest
 /tests/nwfilterxml2xmltest
 /tests/openvzutilstest
+/tests/qemuxmlnstest
 /tests/shunloadtest
 /update.log
 Makefile
