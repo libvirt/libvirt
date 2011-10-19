@@ -2852,13 +2852,24 @@ qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev,
                                 virBitmapPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE)
+    switch (dev->deviceType) {
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
         virBufferAddLit(&buf, "virtconsole");
-    else if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC) &&
-             dev->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC)
-        virBufferAddLit(&buf, "spicevmc");
-    else
-        virBufferAddLit(&buf, "virtserialport");
+        break;
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
+        /* Legacy syntax  '-device spicevmc' */
+        if (dev->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC &&
+            qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC)) {
+            virBufferAddLit(&buf, "spicevmc");
+        } else {
+            virBufferAddLit(&buf, "virtserialport");
+        }
+        break;
+    default:
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("Cannot use virtio serial for parallel/serial devices"));
+        return NULL;
+    }
 
     if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
         /* Check it's a virtio-serial address */
@@ -2879,7 +2890,8 @@ qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev,
                           dev->info.addr.vioserial.port);
     }
 
-    if (dev->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC &&
+    if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
+        dev->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC &&
         dev->target.name &&
         STRNEQ(dev->target.name, "com.redhat.spice.0")) {
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -2887,15 +2899,18 @@ qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev,
                         dev->target.name);
         goto error;
     }
-    if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC) &&
-        dev->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
-        virBufferAsprintf(&buf, ",id=%s", dev->info.alias);
-    } else {
+
+    if (!(dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
+          dev->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC &&
+          qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC))) {
         virBufferAsprintf(&buf, ",chardev=char%s,id=%s",
                           dev->info.alias, dev->info.alias);
-        if (dev->target.name) {
+        if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
+            dev->target.name) {
             virBufferAsprintf(&buf, ",name=%s", dev->target.name);
         }
+    } else {
+        virBufferAsprintf(&buf, ",id=%s", dev->info.alias);
     }
     if (virBufferError(&buf)) {
         virReportOOMError();
