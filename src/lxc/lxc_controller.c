@@ -797,20 +797,19 @@ error:
  */
 static int lxcControllerMain(int serverFd,
                              int clientFd,
-                             int hostFd,
-                             int contFd,
+                             int *hostFds,
+                             int *contFds,
+                             size_t nFds,
                              pid_t container)
 {
-    struct lxcConsole console = {
-        .hostFd = hostFd,
-        .contFd = contFd,
-    };
+    struct lxcConsole *consoles;
     struct lxcMonitor monitor = {
         .serverFd = serverFd,
         .clientFd = clientFd,
     };
     virErrorPtr err;
     int rc = -1;
+    size_t i;
 
     if (virMutexInit(&lock) < 0)
         goto cleanup2;
@@ -837,8 +836,8 @@ static int lxcControllerMain(int serverFd,
         goto cleanup;
     }
 
-    VIR_DEBUG("serverFd=%d clientFd=%d hostFd=%d contFd=%d",
-              serverFd, clientFd, hostFd, contFd);
+    VIR_DEBUG("serverFd=%d clientFd=%d",
+              serverFd, clientFd);
     virResetLastError();
 
     if ((monitor.serverWatch = virEventAddHandle(monitor.serverFd,
@@ -862,24 +861,34 @@ static int lxcControllerMain(int serverFd,
         goto cleanup;
     }
 
-    if ((console.hostWatch = virEventAddHandle(console.hostFd,
-                                               VIR_EVENT_HANDLE_READABLE,
-                                               lxcConsoleIO,
-                                               &console,
-                                               NULL)) < 0) {
-        lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("Unable to watch host console PTY"));
+    if (VIR_ALLOC_N(consoles, nFds) < 0) {
+        virReportOOMError();
         goto cleanup;
     }
 
-    if ((console.contWatch = virEventAddHandle(console.contFd,
-                                               VIR_EVENT_HANDLE_READABLE,
-                                               lxcConsoleIO,
-                                               &console,
-                                               NULL)) < 0) {
-        lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("Unable to watch host console PTY"));
-        goto cleanup;
+    for (i = 0 ; i < nFds ; i++) {
+        consoles[i].hostFd = hostFds[i];
+        consoles[i].contFd = contFds[i];
+
+        if ((consoles[i].hostWatch = virEventAddHandle(consoles[i].hostFd,
+                                                       VIR_EVENT_HANDLE_READABLE,
+                                                       lxcConsoleIO,
+                                                       &consoles[i],
+                                                       NULL)) < 0) {
+            lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Unable to watch host console PTY"));
+            goto cleanup;
+        }
+
+        if ((consoles[i].contWatch = virEventAddHandle(consoles[i].contFd,
+                                                       VIR_EVENT_HANDLE_READABLE,
+                                                       lxcConsoleIO,
+                                                       &consoles[i],
+                                                       NULL)) < 0) {
+            lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Unable to watch host console PTY"));
+            goto cleanup;
+        }
     }
 
     virMutexLock(&lock);
@@ -899,10 +908,9 @@ cleanup:
     virMutexDestroy(&lock);
     signal(SIGCHLD, SIG_DFL);
 cleanup2:
-    VIR_FORCE_CLOSE(console.hostFd);
-    VIR_FORCE_CLOSE(console.contFd);
     VIR_FORCE_CLOSE(monitor.serverFd);
     VIR_FORCE_CLOSE(monitor.clientFd);
+    VIR_FREE(consoles);
     return rc;
 }
 
@@ -1027,14 +1035,15 @@ lxcControllerRun(virDomainDefPtr def,
                  char **veths,
                  int monitor,
                  int client,
-                 int appPty,
+                 int *ttyFDs,
+                 size_t nttyFDs,
                  int handshakefd)
 {
     int rc = -1;
     int control[2] = { -1, -1};
     int containerhandshake[2] = { -1, -1 };
-    int containerPty = -1;
-    char *containerPtyPath = NULL;
+    int *containerTtyFDs = NULL;
+    char **containerTtyPaths = NULL;
     pid_t container = -1;
     virDomainFSDefPtr root;
     char *devpts = NULL;
@@ -1042,6 +1051,15 @@ lxcControllerRun(virDomainDefPtr def,
     size_t nloopDevs = 0;
     int *loopDevs = NULL;
     size_t i;
+
+    if (VIR_ALLOC_N(containerTtyFDs, nttyFDs) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    if (VIR_ALLOC_N(containerTtyPaths, nttyFDs) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
 
     if (socketpair(PF_UNIX, SOCK_STREAM, 0, control) < 0) {
         virReportSystemError(errno, "%s",
@@ -1133,23 +1151,33 @@ lxcControllerRun(virDomainDefPtr def,
             VIR_WARN("Kernel does not support private devpts, using shared devpts");
             VIR_FREE(devptmx);
         }
-    }
-
-    if (devptmx) {
-        VIR_DEBUG("Opening tty on private %s", devptmx);
-        if (lxcCreateTty(devptmx, &containerPty, &containerPtyPath) < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("Failed to allocate tty"));
+    } else {
+        if (nttyFDs != -1) {
+            lxcError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                     _("Expected exactly one TTY fd"));
             goto cleanup;
         }
-    } else {
-        VIR_DEBUG("Opening tty on shared /dev/ptmx");
-        if (virFileOpenTty(&containerPty,
-                           &containerPtyPath,
-                           0) < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("Failed to allocate tty"));
-            goto cleanup;
+    }
+
+    for (i = 0 ; i < nttyFDs ; i++) {
+        if (devptmx) {
+            VIR_DEBUG("Opening tty on private %s", devptmx);
+            if (lxcCreateTty(devptmx,
+                             &containerTtyFDs[i],
+                             &containerTtyPaths[i]) < 0) {
+                virReportSystemError(errno, "%s",
+                                     _("Failed to allocate tty"));
+                goto cleanup;
+            }
+        } else {
+            VIR_DEBUG("Opening tty on shared /dev/ptmx");
+            if (virFileOpenTty(&containerTtyFDs[i],
+                               &containerTtyPaths[i],
+                               0) < 0) {
+                virReportSystemError(errno, "%s",
+                                     _("Failed to allocate tty"));
+                goto cleanup;
+            }
         }
     }
 
@@ -1161,7 +1189,8 @@ lxcControllerRun(virDomainDefPtr def,
                                        veths,
                                        control[1],
                                        containerhandshake[1],
-                                       containerPtyPath)) < 0)
+                                       containerTtyPaths,
+                                       nttyFDs)) < 0)
         goto cleanup;
     VIR_FORCE_CLOSE(control[1]);
     VIR_FORCE_CLOSE(containerhandshake[1]);
@@ -1200,33 +1229,41 @@ lxcControllerRun(virDomainDefPtr def,
     VIR_FORCE_CLOSE(handshakefd);
 
     if (virSetBlocking(monitor, false) < 0 ||
-        virSetBlocking(client, false) < 0 ||
-        virSetBlocking(appPty, false) < 0 ||
-        virSetBlocking(containerPty, false) < 0) {
+        virSetBlocking(client, false) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to set file descriptor non blocking"));
         goto cleanup;
     }
+    for (i = 0 ; i < nttyFDs ; i++) {
+        if (virSetBlocking(ttyFDs[i], false) < 0 ||
+            virSetBlocking(containerTtyFDs[i], false) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Unable to set file descriptor non blocking"));
+            goto cleanup;
+        }
+    }
 
-    rc = lxcControllerMain(monitor, client, appPty, containerPty, container);
-    monitor = client = appPty = containerPty = -1;
+    rc = lxcControllerMain(monitor, client, ttyFDs, containerTtyFDs, nttyFDs, container);
+    monitor = client = -1;
 
 cleanup:
     VIR_FREE(devptmx);
     VIR_FREE(devpts);
     VIR_FORCE_CLOSE(control[0]);
     VIR_FORCE_CLOSE(control[1]);
-    VIR_FREE(containerPtyPath);
-    VIR_FORCE_CLOSE(containerPty);
     VIR_FORCE_CLOSE(handshakefd);
     VIR_FORCE_CLOSE(containerhandshake[0]);
     VIR_FORCE_CLOSE(containerhandshake[1]);
 
-    if (loopDevs) {
-        for (i = 0 ; i < nloopDevs ; i++)
-            VIR_FORCE_CLOSE(loopDevs[i]);
-    }
+    for (i = 0 ; i < nttyFDs ; i++)
+        VIR_FREE(containerTtyPaths[i]);
+    VIR_FREE(containerTtyPaths);
+    for (i = 0 ; i < nttyFDs ; i++)
+        VIR_FORCE_CLOSE(containerTtyFDs[i]);
+    VIR_FREE(containerTtyFDs);
 
+    for (i = 0 ; i < nloopDevs ; i++)
+        VIR_FORCE_CLOSE(loopDevs[i]);
     VIR_FREE(loopDevs);
 
     if (container > 1) {
@@ -1250,7 +1287,6 @@ int main(int argc, char *argv[])
     int nveths = 0;
     char **veths = NULL;
     int monitor = -1;
-    int appPty = -1;
     int handshakefd = -1;
     int bg = 0;
     virCapsPtr caps = NULL;
@@ -1266,6 +1302,8 @@ int main(int argc, char *argv[])
         { "help", 0, NULL, 'h' },
         { 0, 0, 0, 0 },
     };
+    int *ttyFDs = NULL;
+    size_t nttyFDs = 0;
 
     if (setlocale(LC_ALL, "") == NULL ||
         bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
@@ -1307,7 +1345,11 @@ int main(int argc, char *argv[])
             break;
 
         case 'c':
-            if (virStrToLong_i(optarg, NULL, 10, &appPty) < 0) {
+            if (VIR_REALLOC_N(ttyFDs, nttyFDs + 1) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+            if (virStrToLong_i(optarg, NULL, 10, &ttyFDs[nttyFDs++]) < 0) {
                 fprintf(stderr, "malformed --console argument '%s'", optarg);
                 goto cleanup;
             }
@@ -1342,11 +1384,6 @@ int main(int argc, char *argv[])
 
     if (name == NULL) {
         fprintf(stderr, "%s: missing --name argument for configuration\n", argv[0]);
-        goto cleanup;
-    }
-
-    if (appPty < 0) {
-        fprintf(stderr, "%s: missing --console argument for container PTY\n", argv[0]);
         goto cleanup;
     }
 
@@ -1429,8 +1466,8 @@ int main(int argc, char *argv[])
         goto cleanup;
     }
 
-    rc = lxcControllerRun(def, nveths, veths, monitor, client, appPty,
-                          handshakefd);
+    rc = lxcControllerRun(def, nveths, veths, monitor, client,
+                          ttyFDs, nttyFDs, handshakefd);
 
 
 cleanup:

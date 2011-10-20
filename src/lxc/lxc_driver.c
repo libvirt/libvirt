@@ -1447,11 +1447,12 @@ lxcBuildControllerCmd(lxc_driver_t *driver,
                       virDomainObjPtr vm,
                       int nveths,
                       char **veths,
-                      int appPty,
+                      int *ttyFDs,
+                      size_t nttyFDs,
                       int logfile,
                       int handshakefd)
 {
-    int i;
+    size_t i;
     char *filterstr;
     char *outputstr;
     virCommandPtr cmd;
@@ -1492,8 +1493,12 @@ lxcBuildControllerCmd(lxc_driver_t *driver,
                                virLogGetDefaultPriority());
     }
 
-    virCommandAddArgList(cmd, "--name", vm->def->name, "--console", NULL);
-    virCommandAddArgFormat(cmd, "%d", appPty);
+    virCommandAddArgList(cmd, "--name", vm->def->name, NULL);
+    for (i = 0 ; i < nttyFDs ; i++) {
+        virCommandAddArg(cmd, "--console");
+        virCommandAddArgFormat(cmd, "%d", ttyFDs[i]);
+        virCommandPreserveFD(cmd, ttyFDs[i]);
+    }
     virCommandAddArg(cmd, "--handshake");
     virCommandAddArgFormat(cmd, "%d", handshakefd);
     virCommandAddArg(cmd, "--background");
@@ -1518,7 +1523,6 @@ lxcBuildControllerCmd(lxc_driver_t *driver,
             goto cleanup;
     }
 
-    virCommandPreserveFD(cmd, appPty);
     virCommandPreserveFD(cmd, handshakefd);
     virCommandSetOutputFD(cmd, &logfile);
     virCommandSetErrorFD(cmd, &logfile);
@@ -1621,9 +1625,9 @@ static int lxcVmStart(virConnectPtr conn,
                       virDomainRunningReason reason)
 {
     int rc = -1, r;
-    unsigned int i;
-    int parentTty;
-    char *parentTtyPath = NULL;
+    size_t nttyFDs = 0;
+    int *ttyFDs = NULL;
+    size_t i;
     char *logfile = NULL;
     int logfd = -1;
     unsigned int nveths = 0;
@@ -1674,26 +1678,34 @@ static int lxcVmStart(virConnectPtr conn,
         return -1;
     }
 
-    /* open parent tty */
-    if (virFileOpenTty(&parentTty, &parentTtyPath, 1) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to allocate tty"));
+    /* Here we open all the PTYs we need on the host OS side.
+     * The LXC controller will open the guest OS side PTYs
+     * and forward I/O between them.
+     */
+    nttyFDs = vm->def->nconsoles;
+    if (VIR_ALLOC_N(ttyFDs, nttyFDs) < 0) {
+        virReportOOMError();
         goto cleanup;
     }
-    if (vm->def->nconsoles) {
-        if (vm->def->nconsoles > 1) {
+    for (i = 0 ; i < vm->def->nconsoles ; i++)
+        ttyFDs[i] = -1;
+
+    for (i = 0 ; i < vm->def->nconsoles ; i++) {
+        char *ttyPath;
+        if (vm->def->consoles[i]->source.type != VIR_DOMAIN_CHR_TYPE_PTY) {
             lxcError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                     _("Only one console supported"));
+                     _("Only PTY console types are supported"));
             goto cleanup;
         }
-        if (vm->def->consoles[0]->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
-            VIR_FREE(vm->def->consoles[0]->source.data.file.path);
-            vm->def->consoles[0]->source.data.file.path = parentTtyPath;
-        } else {
-            VIR_FREE(parentTtyPath);
+
+        if (virFileOpenTty(&ttyFDs[i], &ttyPath, 1) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Failed to allocate tty"));
+            goto cleanup;
         }
-    } else {
-        VIR_FREE(parentTtyPath);
+
+        VIR_FREE(vm->def->consoles[i]->source.data.file.path);
+        vm->def->consoles[i]->source.data.file.path = ttyPath;
     }
 
     if (lxcSetupInterfaces(conn, vm->def, &nveths, &veths) != 0)
@@ -1720,7 +1732,8 @@ static int lxcVmStart(virConnectPtr conn,
     if (!(cmd = lxcBuildControllerCmd(driver,
                                       vm,
                                       nveths, veths,
-                                      parentTty, logfd, handshakefds[1])))
+                                      ttyFDs, nttyFDs,
+                                      logfd, handshakefds[1])))
         goto cleanup;
 
     /* Log timestamp */
@@ -1822,7 +1835,8 @@ cleanup:
         VIR_FORCE_CLOSE(priv->monitor);
         virDomainConfVMNWFilterTeardown(vm);
     }
-    VIR_FORCE_CLOSE(parentTty);
+    for (i = 0 ; i < nttyFDs ; i++)
+        VIR_FORCE_CLOSE(ttyFDs[i]);
     VIR_FORCE_CLOSE(handshakefds[0]);
     VIR_FORCE_CLOSE(handshakefds[1]);
     VIR_FREE(logfile);

@@ -94,7 +94,8 @@ struct __lxc_child_argv {
     unsigned int nveths;
     char **veths;
     int monitor;
-    char *ttyPath;
+    char **ttyPaths;
+    size_t nttyPaths;
     int handshakefd;
 };
 
@@ -526,9 +527,9 @@ static int lxcContainerMountDevFS(virDomainFSDefPtr root)
     return rc;
 }
 
-static int lxcContainerPopulateDevices(void)
+static int lxcContainerPopulateDevices(char **ttyPaths, size_t nttyPaths)
 {
-    int i;
+    size_t i;
     const struct {
         int maj;
         int min;
@@ -570,21 +571,28 @@ static int lxcContainerPopulateDevices(void)
         }
     }
 
-    /* XXX we should allow multiple consoles per container
-     * for tty2, tty3, etc, but the domain XML does not
-     * handle this yet
-     */
-    if (symlink("/dev/pts/0", "/dev/tty1") < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to symlink /dev/pts/0 to /dev/tty1"));
-        return -1;
+    for (i = 0 ; i < nttyPaths ; i++) {
+        char *tty;
+        if (virAsprintf(&tty, "/dev/tty%zu", i+1) < 0) {
+            virReportOOMError();
+            return -1;
+        }
+        if (symlink(ttyPaths[i], tty) < 0) {
+            VIR_FREE(tty);
+            virReportSystemError(errno,
+                                 _("Failed to symlink %s to %s"),
+                                 ttyPaths[i], tty);
+            return -1;
+        }
+        VIR_FREE(tty);
+        if (i == 0 &&
+            symlink(ttyPaths[i], "/dev/console") < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to symlink %s to /dev/console"),
+                                 ttyPaths[i]);
+            return -1;
+        }
     }
-    if (symlink("/dev/pts/0", "/dev/console") < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to symlink /dev/pts/0 to /dev/console"));
-        return -1;
-    }
-
     return 0;
 }
 
@@ -1043,7 +1051,9 @@ cleanup:
  * this is based on this thread http://lkml.org/lkml/2008/3/5/29
  */
 static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
-                                      virDomainFSDefPtr root)
+                                      virDomainFSDefPtr root,
+                                      char **ttyPaths,
+                                      size_t nttyPaths)
 {
     /* Gives us a private root, leaving all parent OS mounts on /.oldroot */
     if (lxcContainerPivotRoot(root) < 0)
@@ -1058,7 +1068,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
         return -1;
 
     /* Populates device nodes in /dev/ */
-    if (lxcContainerPopulateDevices() < 0)
+    if (lxcContainerPopulateDevices(ttyPaths, nttyPaths) < 0)
         return -1;
 
     /* Sets up any non-root mounts from guest config */
@@ -1102,10 +1112,12 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef)
 }
 
 static int lxcContainerSetupMounts(virDomainDefPtr vmDef,
-                                   virDomainFSDefPtr root)
+                                   virDomainFSDefPtr root,
+                                   char **ttyPaths,
+                                   size_t nttyPaths)
 {
     if (root)
-        return lxcContainerSetupPivotRoot(vmDef, root);
+        return lxcContainerSetupPivotRoot(vmDef, root, ttyPaths, nttyPaths);
     else
         return lxcContainerSetupExtraMounts(vmDef);
 }
@@ -1189,17 +1201,25 @@ static int lxcContainerChild( void *data )
 
     root = virDomainGetRootFilesystem(vmDef);
 
-    if (root) {
-        if (virAsprintf(&ttyPath, "%s%s", root->src, argv->ttyPath) < 0) {
-            virReportOOMError();
-            goto cleanup;
+    if (argv->nttyPaths) {
+        if (root) {
+            if (virAsprintf(&ttyPath, "%s%s", root->src, argv->ttyPaths[0]) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        } else {
+            if (!(ttyPath = strdup(argv->ttyPaths[0]))) {
+                virReportOOMError();
+                goto cleanup;
+            }
         }
     } else {
-        if (!(ttyPath = strdup(argv->ttyPath))) {
+        if (!(ttyPath = strdup("/dev/null"))) {
             virReportOOMError();
             goto cleanup;
         }
     }
+
     VIR_DEBUG("Container TTY path: %s", ttyPath);
 
     ttyfd = open(ttyPath, O_RDWR|O_NOCTTY);
@@ -1210,7 +1230,7 @@ static int lxcContainerChild( void *data )
         goto cleanup;
     }
 
-    if (lxcContainerSetupMounts(vmDef, root) < 0)
+    if (lxcContainerSetupMounts(vmDef, root, argv->ttyPaths, argv->nttyPaths) < 0)
         goto cleanup;
 
     if (!virFileExists(vmDef->os.init)) {
@@ -1314,14 +1334,15 @@ int lxcContainerStart(virDomainDefPtr def,
                       char **veths,
                       int control,
                       int handshakefd,
-                      char *ttyPath)
+                      char **ttyPaths,
+                      size_t nttyPaths)
 {
     pid_t pid;
     int cflags;
     int stacksize = getpagesize() * 4;
     char *stack, *stacktop;
-    lxc_child_argv_t args = { def, nveths, veths, control, ttyPath,
-                              handshakefd};
+    lxc_child_argv_t args = { def, nveths, veths, control,
+                              ttyPaths, nttyPaths, handshakefd};
 
     /* allocate a stack for the container */
     if (VIR_ALLOC_N(stack, stacksize) < 0) {
