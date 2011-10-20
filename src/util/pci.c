@@ -1394,6 +1394,42 @@ unsigned pciDeviceGetManaged(pciDevice *dev)
     return dev->managed;
 }
 
+unsigned
+pciDeviceGetUnbindFromStub(pciDevice *dev)
+{
+    return dev->unbind_from_stub;
+}
+
+void
+pciDeviceSetUnbindFromStub(pciDevice *dev, unsigned unbind)
+{
+    dev->unbind_from_stub = !!unbind;
+}
+
+unsigned
+pciDeviceGetRemoveSlot(pciDevice *dev)
+{
+    return dev->remove_slot;
+}
+
+void
+pciDeviceSetRemoveSlot(pciDevice *dev, unsigned remove_slot)
+{
+    dev->remove_slot = !!remove_slot;
+}
+
+unsigned
+pciDeviceGetReprobe(pciDevice *dev)
+{
+    return dev->reprobe;
+}
+
+void
+pciDeviceSetReprobe(pciDevice *dev, unsigned reprobe)
+{
+    dev->reprobe = !!reprobe;
+}
+
 void
 pciDeviceSetUsedBy(pciDevice *dev, const char *name)
 {

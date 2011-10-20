@@ -116,32 +116,45 @@ qemuGetActivePciHostDeviceList(struct qemud_driver *driver,
 int qemuUpdateActivePciHostdevs(struct qemud_driver *driver,
                                 virDomainDefPtr def)
 {
-    pciDeviceList *pcidevs;
-    int ret = -1;
+    virDomainHostdevDefPtr hostdev = NULL;
+    int i;
 
     if (!def->nhostdevs)
         return 0;
 
-    if (!(pcidevs = qemuGetPciHostDeviceList(def->hostdevs, def->nhostdevs)))
-        return -1;
+    for (i = 0; i < def->nhostdevs; i++) {
+        pciDevice *dev = NULL;
+        hostdev = def->hostdevs[i];
 
-    while (pciDeviceListCount(pcidevs) > 0) {
-        pciDevice *dev = pciDeviceListGet(pcidevs, 0);
-        pciDeviceListSteal(pcidevs, dev);
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+            continue;
+
+        dev = pciGetDevice(hostdev->source.subsys.u.pci.domain,
+                           hostdev->source.subsys.u.pci.bus,
+                           hostdev->source.subsys.u.pci.slot,
+                           hostdev->source.subsys.u.pci.function);
+
+        if (!dev)
+            return -1;
+
+        pciDeviceSetManaged(dev, hostdev->managed);
+        pciDeviceSetUsedBy(dev, def->name);
+
+        /* Setup the original states for the PCI device */
+        pciDeviceSetUnbindFromStub(dev, hostdev->origstates.states.pci.unbind_from_stub);
+        pciDeviceSetRemoveSlot(dev, hostdev->origstates.states.pci.remove_slot);
+        pciDeviceSetReprobe(dev, hostdev->origstates.states.pci.reprobe);
+
         if (pciDeviceListAdd(driver->activePciHostdevs, dev) < 0) {
             pciFreeDevice(dev);
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
-
-cleanup:
-    pciDeviceListFree(pcidevs);
-    return ret;
+    return 0;
 }
-
-
 
 int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
                                  const char *name,
@@ -155,7 +168,7 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
     if (!(pcidevs = qemuGetPciHostDeviceList(hostdevs, nhostdevs)))
         return -1;
 
-    /* We have to use 6 loops here. *All* devices must
+    /* We have to use 7 loops here. *All* devices must
      * be detached before we reset any of them, because
      * in some cases you have to reset the whole PCI,
      * which impacts all devices on it. Also, all devices
@@ -232,7 +245,39 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
         pciDeviceSetUsedBy(activeDev, name);
     }
 
-    /* Loop 6: Now steal all the devices from pcidevs */
+    /* Loop 6: Now set the original states for hostdev def */
+    for (i = 0; i < nhostdevs; i++) {
+        pciDevice *dev;
+        pciDevice *pcidev;
+        virDomainHostdevDefPtr hostdev = hostdevs[i];
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+            continue;
+
+        dev = pciGetDevice(hostdev->source.subsys.u.pci.domain,
+                           hostdev->source.subsys.u.pci.bus,
+                           hostdev->source.subsys.u.pci.slot,
+                           hostdev->source.subsys.u.pci.function);
+
+        /* original states "unbind_from_stub", "remove_slot",
+         * "reprobe" were already set by pciDettachDevice in
+         * loop 2.
+         */
+        if ((pcidev = pciDeviceListFind(pcidevs, dev))) {
+            hostdev->origstates.states.pci.unbind_from_stub =
+                pciDeviceGetUnbindFromStub(pcidev);
+            hostdev->origstates.states.pci.remove_slot =
+                pciDeviceGetRemoveSlot(pcidev);
+            hostdev->origstates.states.pci.reprobe =
+                pciDeviceGetReprobe(pcidev);
+        }
+
+        pciFreeDevice(dev);
+    }
+
+    /* Loop 7: Now steal all the devices from pcidevs */
     while (pciDeviceListCount(pcidevs) > 0) {
         pciDevice *dev = pciDeviceListGet(pcidevs, 0);
         pciDeviceListSteal(pcidevs, dev);

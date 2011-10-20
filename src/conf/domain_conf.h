@@ -153,6 +153,31 @@ struct _virDomainDeviceInfo {
     } master;
 };
 
+typedef struct _virDomainHostdevOrigStates virDomainHostdevOrigStates;
+typedef virDomainHostdevOrigStates *virDomainHostdevOrigStatesPtr;
+struct _virDomainHostdevOrigStates {
+    union {
+        struct {
+            /* Does the device need to unbind from stub when
+             * reattaching to host?
+             */
+            unsigned int unbind_from_stub : 1;
+
+            /* Does it need to use remove_slot when reattaching
+             * the device to host?
+             */
+            unsigned int remove_slot : 1;
+
+            /* Does it need to reprobe driver for the device when
+             * reattaching to host?
+             */
+            unsigned int reprobe :1;
+        } pci;
+
+        /* Perhaps 'usb' in future */
+    } states;
+};
+
 typedef struct _virDomainLeaseDef virDomainLeaseDef;
 typedef virDomainLeaseDef *virDomainLeaseDefPtr;
 struct _virDomainLeaseDef {
@@ -1021,6 +1046,7 @@ struct _virDomainHostdevDef {
     int bootIndex;
     virDomainDeviceInfo info; /* Guest address */
     int rombar;               /* enum virDomainPciRombarMode */
+    virDomainHostdevOrigStates origstates;
 };
 
 enum virDomainRedirdevBus {

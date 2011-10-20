@@ -51,6 +51,15 @@ unsigned  pciDeviceGetManaged(pciDevice     *dev);
 void      pciDeviceSetUsedBy(pciDevice     *dev,
                              const char *used_by);
 const char *pciDeviceGetUsedBy(pciDevice   *dev);
+unsigned  pciDeviceGetUnbindFromStub(pciDevice *dev);
+void      pciDeviceSetUnbindFromStub(pciDevice     *dev,
+                                     unsigned      unbind);
+unsigned  pciDeviceGetRemoveSlot(pciDevice *dev);
+void      pciDeviceSetRemoveSlot(pciDevice     *dev,
+                                 unsigned      remove_slot);
+unsigned  pciDeviceGetReprobe(pciDevice *dev);
+void      pciDeviceSetReprobe(pciDevice     *dev,
+                              unsigned      reprobe);
 void      pciDeviceReAttachInit(pciDevice   *dev);
 
 pciDeviceList *pciDeviceListNew  (void);

@@ -60,8 +60,12 @@ verify(VIR_DOMAIN_VIRT_LAST <= 32);
 /* Private flags used internally by virDomainSaveStatus and
  * virDomainLoadStatus. */
 typedef enum {
-   VIR_DOMAIN_XML_INTERNAL_STATUS = (1<<16), /* dump internal domain status information */
-   VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET = (1<<17), /* dump/parse <actual> element */
+   /* dump internal domain status information */
+   VIR_DOMAIN_XML_INTERNAL_STATUS = (1<<16),
+   /* dump/parse <actual> element */
+   VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET = (1<<17),
+   /* dump/parse original states of host PCI device */
+   VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES = (1<<18),
 } virDomainXMLInternalFlags;
 
 VIR_ENUM_IMPL(virDomainTaint, VIR_DOMAIN_TAINT_LAST,
@@ -5538,13 +5542,47 @@ out:
     return ret;
 }
 
+/* The internal XML for host PCI device's original states:
+ *
+ * <origstates>
+ *   <unbind/>
+ *   <removeslot/>
+ *   <reprobe/>
+ * </origstates>
+ */
+static int
+virDomainHostdevSubsysPciOrigStatesDefParseXML(const xmlNodePtr node,
+                                               virDomainHostdevOrigStatesPtr def)
+{
+    xmlNodePtr cur;
+    cur = node->children;
+
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (xmlStrEqual(cur->name, BAD_CAST "unbind")) {
+                def->states.pci.unbind_from_stub = 1;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "removeslot")) {
+                def->states.pci.remove_slot = 1;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "reprobe")) {
+                def->states.pci.reprobe = 1;
+            } else {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     _("unsupported element '%s' of 'origstates'"),
+                                     cur->name);
+                return -1;
+            }
+        }
+        cur = cur->next;
+    }
+
+    return 0;
+}
 
 static int
 virDomainHostdevSubsysPciDefParseXML(const xmlNodePtr node,
                                      virDomainHostdevDefPtr def,
                                      unsigned int flags)
 {
-
     int ret = -1;
     xmlNodePtr cur;
 
@@ -5571,6 +5609,11 @@ virDomainHostdevSubsysPciDefParseXML(const xmlNodePtr node,
                     goto out;
                 }
                 def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+            } else if ((flags & VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES) &&
+                       xmlStrEqual(cur->name, BAD_CAST "origstates")) {
+                virDomainHostdevOrigStatesPtr states = &def->origstates;
+                if (virDomainHostdevSubsysPciOrigStatesDefParseXML(cur, states) < 0)
+                    goto out;
             } else {
                 virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                      _("unknown pci source type '%s'"),
@@ -10565,7 +10608,9 @@ virDomainHostdevDefFormat(virBufferPtr buf,
     }
 
     type = virDomainHostdevSubsysTypeToString(def->source.subsys.type);
-    if (!type || (def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB && def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) ) {
+    if (!type ||
+        (def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
+         def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                              _("unexpected hostdev type %d"),
                              def->source.subsys.type);
@@ -10595,6 +10640,20 @@ virDomainHostdevDefFormat(virBufferPtr buf,
                           def->source.subsys.u.pci.bus,
                           def->source.subsys.u.pci.slot,
                           def->source.subsys.u.pci.function);
+
+        if ((flags & VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES) &&
+            (def->origstates.states.pci.unbind_from_stub ||
+             def->origstates.states.pci.remove_slot ||
+             def->origstates.states.pci.reprobe)) {
+            virBufferAddLit(buf, "        <origstates>\n");
+            if (def->origstates.states.pci.unbind_from_stub)
+                virBufferAddLit(buf, "          <unbind/>\n");
+            if (def->origstates.states.pci.remove_slot)
+                virBufferAddLit(buf, "          <removeslot/>\n");
+            if (def->origstates.states.pci.reprobe)
+                virBufferAddLit(buf, "          <reprobe/>\n");
+            virBufferAddLit(buf, "        </origstates>\n");
+        }
     }
 
     virBufferAddLit(buf, "      </source>\n");
@@ -10675,7 +10734,8 @@ virDomainHubDefFormat(virBufferPtr buf,
      VIR_DOMAIN_XML_UPDATE_CPU)
 
 verify(((VIR_DOMAIN_XML_INTERNAL_STATUS |
-         VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET)
+         VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
+         VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES)
         & DUMPXML_FLAGS) == 0);
 
 /* This internal version can accept VIR_DOMAIN_XML_INTERNAL_*,
@@ -10694,7 +10754,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     virCheckFlags(DUMPXML_FLAGS |
                   VIR_DOMAIN_XML_INTERNAL_STATUS |
-                  VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET,
+                  VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
+                  VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES,
                   -1);
 
     if (!(type = virDomainVirtTypeToString(def->virtType))) {
@@ -11239,7 +11300,8 @@ int virDomainSaveStatus(virCapsPtr caps,
 {
     unsigned int flags = (VIR_DOMAIN_XML_SECURE |
                           VIR_DOMAIN_XML_INTERNAL_STATUS |
-                          VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET);
+                          VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
+                          VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES);
 
     int ret = -1;
     char *xml;
@@ -11338,7 +11400,8 @@ static virDomainObjPtr virDomainLoadStatus(virCapsPtr caps,
 
     if (!(obj = virDomainObjParseFile(caps, statusFile, expectedVirtTypes,
                                       VIR_DOMAIN_XML_INTERNAL_STATUS |
-                                      VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET)))
+                                      VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
+                                      VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES)))
         goto error;
 
     virUUIDFormat(obj->def->uuid, uuidstr);
