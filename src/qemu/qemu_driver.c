@@ -4511,6 +4511,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
     virDomainDefPtr def = NULL;
     virDomainChrSourceDef monConfig;
     virBitmapPtr qemuCaps = NULL;
+    bool monitor_json = false;
     virCommandPtr cmd = NULL;
     char *ret = NULL;
     int i;
@@ -4608,11 +4609,13 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
                                    &qemuCaps) < 0)
         goto cleanup;
 
+    monitor_json = qemuCapsGet(qemuCaps, QEMU_CAPS_MONITOR_JSON);
+
     if (qemuProcessPrepareMonitorChr(driver, &monConfig, def->name) < 0)
         goto cleanup;
 
     if (!(cmd = qemuBuildCommandLine(conn, driver, def,
-                                     &monConfig, false, qemuCaps,
+                                     &monConfig, monitor_json, qemuCaps,
                                      NULL, -1, NULL, VIR_VM_OP_NO_OP)))
         goto cleanup;
 
