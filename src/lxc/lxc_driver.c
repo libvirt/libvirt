@@ -1678,6 +1678,14 @@ static int lxcVmStart(virConnectPtr conn,
         return -1;
     }
 
+    /* Do this up front, so any part of the startup process can add
+     * runtime state to vm->def that won't be persisted. This let's us
+     * report implicit runtime defaults in the XML, like vnc listen/socket
+     */
+    VIR_DEBUG("Setting current domain def as transient");
+    if (virDomainObjSetDefTransient(driver->caps, vm, true) < 0)
+        goto cleanup;
+
     /* Here we open all the PTYs we need on the host OS side.
      * The LXC controller will open the guest OS side PTYs
      * and forward I/O between them.
@@ -1706,6 +1714,12 @@ static int lxcVmStart(virConnectPtr conn,
 
         VIR_FREE(vm->def->consoles[i]->source.data.file.path);
         vm->def->consoles[i]->source.data.file.path = ttyPath;
+
+        VIR_FREE(vm->def->consoles[i]->info.alias);
+        if (virAsprintf(&vm->def->consoles[i]->info.alias, "console%zu", i) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
     }
 
     if (lxcSetupInterfaces(conn, vm->def, &nveths, &veths) != 0)
@@ -3024,6 +3038,7 @@ lxcDomainOpenConsole(virDomainPtr dom,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     int ret = -1;
     virDomainChrDefPtr chr = NULL;
+    size_t i;
 
     virCheckFlags(0, -1);
 
@@ -3043,10 +3058,13 @@ lxcDomainOpenConsole(virDomainPtr dom,
     }
 
     if (dev_name) {
-        /* XXX support device aliases in future */
-        lxcError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                 _("Named device aliases are not supported"));
-        goto cleanup;
+        for (i = 0 ; i < vm->def->nconsoles ; i++) {
+            if (vm->def->consoles[i]->info.alias &&
+                STREQ(vm->def->consoles[i]->info.alias, dev_name)) {
+                chr = vm->def->consoles[i];
+                break;
+            }
+        }
     } else {
         if (vm->def->nconsoles)
             chr = vm->def->consoles[0];
@@ -3055,8 +3073,9 @@ lxcDomainOpenConsole(virDomainPtr dom,
     }
 
     if (!chr) {
-        lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("cannot find default console device"));
+        lxcError(VIR_ERR_INTERNAL_ERROR,
+                 _("cannot find console device '%s'"),
+                 dev_name ? dev_name : _("default"));
         goto cleanup;
     }
 
