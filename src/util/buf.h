@@ -24,15 +24,16 @@ typedef struct _virBuffer virBuffer;
 typedef virBuffer *virBufferPtr;
 
 # ifndef __VIR_BUFFER_C__
-#  define VIR_BUFFER_INITIALIZER { 0, 0, 0, NULL }
+#  define VIR_BUFFER_INITIALIZER { 0, 0, 0, 0, NULL }
 
-/* This struct must be kept in syn with the real struct
+/* This struct must be kept in sync with the real struct
    in the buf.c impl file */
 struct _virBuffer {
     unsigned int a;
     unsigned int b;
     unsigned int c;
-    char *d;
+    int d;
+    char *e;
 };
 # endif
 
@@ -59,5 +60,8 @@ void virBufferURIEncodeString(virBufferPtr buf, const char *str);
 
 # define virBufferAddLit(buf_, literal_string_) \
     virBufferAdd(buf_, "" literal_string_ "", sizeof literal_string_ - 1)
+
+void virBufferAdjustIndent(virBufferPtr buf, int indent);
+int virBufferGetIndent(const virBufferPtr buf, bool dynamic);
 
 #endif /* __VIR_BUFFER_H__ */
