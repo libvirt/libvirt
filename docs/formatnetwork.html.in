@@ -134,12 +134,12 @@
             attribute is set, firewall rules will restrict forwarding
             to the named device only. This presumes that the local LAN
             router has suitable routing table entries to return
-            traffic to this host. Firewall rules are also installed
-            that prevent incoming sessions from the physical network
-            to the guests, but outgoing sessions are unrestricted (as
-            are sessions from the host to the guests, and between
-            guests on the same network.)<span class="since">Since
-            0.4.2</span>
+            traffic to this host. All incoming and outgoing sessions
+            to guest on these networks are unrestricted. (To restrict
+            incoming traffic to a guest on a routed network, you can
+            configure <a href="formatnwfilter.html">nwfilter rules</a>
+            on the guest's interfaces.)
+            <span class="since">Since 0.4.2</span>
           </dd>
 
           <dt><code>bridge</code></dt>
