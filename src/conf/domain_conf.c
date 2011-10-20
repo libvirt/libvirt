@@ -3997,6 +3997,7 @@ virDomainChrDefParseXML(virCapsPtr caps,
     const char *nodeName;
     virDomainChrDefPtr def;
     int remaining;
+    bool seenTarget = false;
 
     if (!(def = virDomainChrDefNew()))
         return NULL;
@@ -4026,6 +4027,7 @@ virDomainChrDefParseXML(virCapsPtr caps,
         while (cur != NULL) {
             if (cur->type == XML_ELEMENT_NODE) {
                 if (xmlStrEqual(cur->name, BAD_CAST "target")) {
+                    seenTarget = true;
                     if (virDomainChrDefParseTargetXML(caps, def, cur) < 0) {
                         goto error;
                     }
@@ -4034,6 +4036,10 @@ virDomainChrDefParseXML(virCapsPtr caps,
             cur = cur->next;
         }
     }
+
+    if (!seenTarget &&
+        ((def->targetType = virDomainChrDefaultTargetType(caps, def->deviceType)) < 0))
+        goto cleanup;
 
     if (def->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
         if (def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO) {
