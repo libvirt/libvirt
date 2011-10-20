@@ -1099,19 +1099,12 @@ virFileBuildPath(const char *dir, const char *name, const char *ext)
     return path;
 }
 
-
+#ifndef WIN32
 int virFileOpenTty(int *ttymaster,
                    char **ttyName,
                    int rawmode)
 {
     int rc = -1;
-
-#ifdef WIN32
-    /* mingw completely lacks pseudo-terminals, and the gnulib
-     * replacements are not (yet) license compatible.  */
-    errno = ENOSYS;
-
-#else /* !WIN32 */
 
     if ((*ttymaster = posix_openpt(O_RDWR|O_NOCTTY|O_NONBLOCK)) < 0)
         goto cleanup;
@@ -1151,9 +1144,19 @@ cleanup:
     if (rc != 0)
         VIR_FORCE_CLOSE(*ttymaster);
 
-#endif /* !WIN32 */
     return rc;
 }
+#else /* WIN32 */
+int virFileOpenTty(int *ttymaster ATTRIBUTE_UNUSED,
+                   char **ttyName ATTRIBUTE_UNUSED,
+                   int rawmode ATTRIBUTE_UNUSED)
+{
+    /* mingw completely lacks pseudo-terminals, and the gnulib
+     * replacements are not (yet) license compatible.  */
+    errno = ENOSYS;
+    return -1;
+}
+#endif /* WIN32 */
 
 /*
  * Creates an absolute path for a potentially relative path.
