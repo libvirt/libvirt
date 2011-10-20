@@ -1545,9 +1545,7 @@ static int qemuDomainReboot(virDomainPtr dom, unsigned int flags) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
-#if HAVE_YAJL
     qemuDomainObjPrivatePtr priv;
-#endif
 
     virCheckFlags(0, -1);
 
@@ -1563,7 +1561,6 @@ static int qemuDomainReboot(virDomainPtr dom, unsigned int flags) {
         goto cleanup;
     }
 
-#if HAVE_YAJL
     priv = vm->privateData;
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON)) {
@@ -1593,12 +1590,9 @@ static int qemuDomainReboot(virDomainPtr dom, unsigned int flags) {
         if (qemuDomainObjEndJob(driver, vm) == 0)
             vm = NULL;
     } else {
-#endif
         qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
                         _("Reboot is not supported without the JSON monitor"));
-#if HAVE_YAJL
     }
-#endif
 
 cleanup:
     if (vm)

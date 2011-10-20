@@ -56,6 +56,11 @@ static int testHelpStrParsing(const void *data)
                              &version, &is_kvm, &kvm_version) == -1)
         goto cleanup;
 
+# ifndef HAVE_YAJL
+    if (qemuCapsGet(info->flags, QEMU_CAPS_MONITOR_JSON))
+        qemuCapsSet(flags, QEMU_CAPS_MONITOR_JSON);
+# endif
+
     if (qemuCapsGet(info->flags, QEMU_CAPS_DEVICE)) {
         VIR_FREE(path);
         VIR_FREE(help);

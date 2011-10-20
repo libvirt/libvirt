@@ -2969,11 +2969,9 @@ int qemuProcessStart(virConnectPtr conn,
     if (qemuProcessPrepareMonitorChr(driver, priv->monConfig, vm->def->name) < 0)
         goto cleanup;
 
-#if HAVE_YAJL
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON))
         priv->monJSON = 1;
     else
-#endif
         priv->monJSON = 0;
 
     priv->monError = false;

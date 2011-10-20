@@ -1060,8 +1060,10 @@ qemuCapsComputeCmdFlags(const char *help,
      * two features. The benefits of JSON mode now outweigh
      * the downside.
      */
+#if HAVE_YAJL
      if (version >= 13000)
         qemuCapsSet(flags, QEMU_CAPS_MONITOR_JSON);
+#endif
 
     if (version >= 13000)
         qemuCapsSet(flags, QEMU_CAPS_PCI_MULTIFUNCTION);

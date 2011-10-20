@@ -174,7 +174,6 @@ struct testInfo {
     virBitmapPtr extraFlags;
     const char *migrateFrom;
     int migrateFd;
-    bool json;
     bool expectError;
 };
 
@@ -194,7 +193,9 @@ testCompareXMLToArgvHelper(const void *data)
 
     result = testCompareXMLToArgvFiles(xml, args, info->extraFlags,
                                        info->migrateFrom, info->migrateFd,
-                                       info->json, info->expectError);
+                                       qemuCapsGet(info->extraFlags,
+                                                   QEMU_CAPS_MONITOR_JSON),
+                                       info->expectError);
 
 cleanup:
     free(xml);
@@ -209,7 +210,6 @@ mymain(void)
 {
     int ret = 0;
     char *map = NULL;
-    bool json = false;
 
     abs_top_srcdir = getenv("abs_top_srcdir");
     if (!abs_top_srcdir)
@@ -237,7 +237,7 @@ mymain(void)
 # define DO_TEST_FULL(name, migrateFrom, migrateFd, expectError, ...)   \
     do {                                                                \
         struct testInfo info = {                                        \
-            name, NULL, migrateFrom, migrateFd, json, expectError       \
+            name, NULL, migrateFrom, migrateFd, expectError             \
         };                                                              \
         if (!(info.extraFlags = qemuCapsNew()))                         \
             return EXIT_FAILURE;                                        \
@@ -588,13 +588,11 @@ mymain(void)
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_PCI_MULTIFUNCTION);
 
-    json = true;
     DO_TEST("monitor-json", false, QEMU_CAPS_DEVICE,
             QEMU_CAPS_CHARDEV, QEMU_CAPS_MONITOR_JSON, QEMU_CAPS_NODEFCONFIG);
     DO_TEST("no-shutdown", false, QEMU_CAPS_DEVICE,
             QEMU_CAPS_CHARDEV, QEMU_CAPS_MONITOR_JSON, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_NO_SHUTDOWN);
-    json = false;
 
     free(driver.stateDir);
     virCapabilitiesFree(driver.caps);
