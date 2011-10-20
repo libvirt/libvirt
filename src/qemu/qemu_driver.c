@@ -4621,6 +4621,9 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
     if (qemuProcessPrepareMonitorChr(driver, &monConfig, def->name) < 0)
         goto cleanup;
 
+    if (qemuAssignDeviceAliases(def, qemuCaps) < 0)
+        goto cleanup;
+
     if (!(cmd = qemuBuildCommandLine(conn, driver, def,
                                      &monConfig, monitor_json, qemuCaps,
                                      NULL, -1, NULL, VIR_VM_OP_NO_OP)))

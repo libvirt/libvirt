@@ -118,6 +118,9 @@ static int testCompareXMLToArgvFiles(const char *xml,
         qemuCapsSet(extraFlags, QEMU_CAPS_PCI_MULTIBUS);
     }
 
+    if (qemuAssignDeviceAliases(vmdef, extraFlags) < 0)
+        goto fail;
+
     if (!(cmd = qemuBuildCommandLine(conn, &driver,
                                      vmdef, &monitor_chr, json, extraFlags,
                                      migrateFrom, migrateFd, NULL,

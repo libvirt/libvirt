@@ -656,7 +656,7 @@ qemuAssignDeviceControllerAlias(virDomainControllerDefPtr controller)
 }
 
 
-static int
+int
 qemuAssignDeviceAliases(virDomainDefPtr def, virBitmapPtr qemuCaps)
 {
     int i;
@@ -3283,9 +3283,6 @@ qemuBuildCommandLine(virConnectPtr conn,
     int usbcontroller = 0;
     bool usblegacy = false;
     uname_normalize(&ut);
-
-    if (qemuAssignDeviceAliases(def, qemuCaps) < 0)
-        return NULL;
 
     virUUIDFormat(def->uuid, uuid);
 

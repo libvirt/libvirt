@@ -3015,6 +3015,9 @@ int qemuProcessStart(virConnectPtr conn,
         priv->persistentAddrs = 0;
     }
 
+    if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)
+        goto cleanup;
+
     VIR_DEBUG("Building emulator command line");
     if (!(cmd = qemuBuildCommandLine(conn, driver, vm->def, priv->monConfig,
                                      priv->monJSON != 0, priv->qemuCaps,
