@@ -152,6 +152,11 @@ static void testDomainObjPrivateFree(void *data)
 }
 
 
+static int testDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED)
+{
+    return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+}
+
 static virCapsPtr
 testBuildCapabilities(virConnectPtr conn) {
     testConnPtr privconn = conn->privateData;
@@ -162,6 +167,8 @@ testBuildCapabilities(virConnectPtr conn) {
 
     if ((caps = virCapabilitiesNew(TEST_MODEL, 0, 0)) == NULL)
         goto no_memory;
+
+    caps->defaultConsoleTargetType = testDefaultConsoleType;
 
     if (virCapabilitiesAddHostFeature(caps, "pae") < 0)
         goto no_memory;

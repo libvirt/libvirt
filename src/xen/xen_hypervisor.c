@@ -2276,6 +2276,14 @@ struct guest_arch {
 };
 
 
+static int xenDefaultConsoleType(const char *ostype)
+{
+    if (STREQ(ostype, "hvm"))
+        return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+    else
+        return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
+}
+
 static virCapsPtr
 xenHypervisorBuildCapabilities(virConnectPtr conn,
                                const char *hostmachine,
@@ -2405,7 +2413,7 @@ xenHypervisorBuildCapabilities(virConnectPtr conn,
 
     }
 
-    caps->defaultConsoleTargetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
+    caps->defaultConsoleTargetType = xenDefaultConsoleType;
 
     return caps;
 

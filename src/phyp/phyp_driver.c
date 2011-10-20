@@ -291,6 +291,13 @@ phypGetVIOSPartitionID(virConnectPtr conn)
     return id;
 }
 
+
+static int phypDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED)
+{
+    return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+}
+
+
 static virCapsPtr
 phypCapsInit(void)
 {
@@ -327,6 +334,8 @@ phypCapsInit(void)
     if (virCapabilitiesAddGuestDomain(guest,
                                       "phyp", NULL, NULL, 0, NULL) == NULL)
         goto no_memory;
+
+    caps->defaultConsoleTargetType = phypDefaultConsoleType;
 
     return caps;
 

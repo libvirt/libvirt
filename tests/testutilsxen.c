@@ -4,6 +4,15 @@
 #include <stdlib.h>
 
 #include "testutilsxen.h"
+#include "domain_conf.h"
+
+static int testXenDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED)
+{
+    if (STREQ(ostype, "hvm"))
+        return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+    else
+        return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
+}
 
 virCapsPtr testXenCapsInit(void) {
     struct utsname utsname;
@@ -22,6 +31,8 @@ virCapsPtr testXenCapsInit(void) {
     if ((caps = virCapabilitiesNew(utsname.machine,
                                    0, 0)) == NULL)
         return NULL;
+
+    caps->defaultConsoleTargetType = testXenDefaultConsoleType;
 
     nmachines = ARRAY_CARDINALITY(x86_machines);
     if ((machines = virCapabilitiesAllocMachines(x86_machines, nmachines)) == NULL)

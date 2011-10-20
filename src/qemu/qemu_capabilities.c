@@ -807,6 +807,12 @@ error:
 }
 
 
+static int qemuDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED)
+{
+    return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+}
+
+
 virCapsPtr qemuCapsInit(virCapsPtr old_caps)
 {
     struct utsname utsname;
@@ -874,7 +880,7 @@ virCapsPtr qemuCapsInit(virCapsPtr old_caps)
     /* QEMU Requires an emulator in the XML */
     virCapabilitiesSetEmulatorRequired(caps);
 
-    caps->defaultConsoleTargetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+    caps->defaultConsoleTargetType = qemuDefaultConsoleType;
 
     return caps;
 

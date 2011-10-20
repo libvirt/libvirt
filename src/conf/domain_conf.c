@@ -295,7 +295,9 @@ VIR_ENUM_IMPL(virDomainChrConsoleTarget,
               "serial",
               "xen",
               "uml",
-              "virtio")
+              "virtio",
+              "lxc",
+              "openvz")
 
 VIR_ENUM_IMPL(virDomainChrDevice, VIR_DOMAIN_CHR_DEVICE_TYPE_LAST,
               "parallel",
@@ -3578,7 +3580,9 @@ error:
 }
 
 static int
-virDomainChrDefaultTargetType(virCapsPtr caps, int devtype) {
+virDomainChrDefaultTargetType(virCapsPtr caps,
+                              virDomainDefPtr def,
+                              int devtype) {
 
     int target = -1;
 
@@ -3590,7 +3594,12 @@ virDomainChrDefaultTargetType(virCapsPtr caps, int devtype) {
         break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
-        target = caps->defaultConsoleTargetType;
+        if (!caps->defaultConsoleTargetType) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("Driver does not have a default console type set"));
+            return -1;
+        }
+        target = caps->defaultConsoleTargetType(def->os.type);
         break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
@@ -3606,6 +3615,7 @@ virDomainChrDefaultTargetType(virCapsPtr caps, int devtype) {
 
 static int
 virDomainChrTargetTypeFromString(virCapsPtr caps,
+                                 virDomainDefPtr def,
                                  int devtype,
                                  const char *targetType)
 {
@@ -3613,7 +3623,7 @@ virDomainChrTargetTypeFromString(virCapsPtr caps,
     int target = 0;
 
     if (!targetType) {
-        target = virDomainChrDefaultTargetType(caps, devtype);
+        target = virDomainChrDefaultTargetType(caps, def, devtype);
         goto out;
     }
 
@@ -3640,6 +3650,7 @@ out:
 
 static int
 virDomainChrDefParseTargetXML(virCapsPtr caps,
+                              virDomainDefPtr vmdef,
                               virDomainChrDefPtr def,
                               xmlNodePtr cur)
 {
@@ -3650,8 +3661,8 @@ virDomainChrDefParseTargetXML(virCapsPtr caps,
     const char *portStr = NULL;
 
     if ((def->targetType =
-        virDomainChrTargetTypeFromString(caps,
-                                         def->deviceType, targetType)) < 0) {
+         virDomainChrTargetTypeFromString(caps, vmdef,
+                                          def->deviceType, targetType)) < 0) {
         goto error;
     }
 
@@ -3989,6 +4000,7 @@ virDomainChrDefNew(void) {
  */
 static virDomainChrDefPtr
 virDomainChrDefParseXML(virCapsPtr caps,
+                        virDomainDefPtr vmdef,
                         xmlNodePtr node,
                         unsigned int flags)
 {
@@ -4028,7 +4040,7 @@ virDomainChrDefParseXML(virCapsPtr caps,
             if (cur->type == XML_ELEMENT_NODE) {
                 if (xmlStrEqual(cur->name, BAD_CAST "target")) {
                     seenTarget = true;
-                    if (virDomainChrDefParseTargetXML(caps, def, cur) < 0) {
+                    if (virDomainChrDefParseTargetXML(caps, vmdef, def, cur) < 0) {
                         goto error;
                     }
                 }
@@ -4038,7 +4050,7 @@ virDomainChrDefParseXML(virCapsPtr caps,
     }
 
     if (!seenTarget &&
-        ((def->targetType = virDomainChrDefaultTargetType(caps, def->deviceType)) < 0))
+        ((def->targetType = virDomainChrDefaultTargetType(caps, vmdef, def->deviceType)) < 0))
         goto cleanup;
 
     if (def->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
@@ -7167,6 +7179,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     for (i = 0 ; i < n ; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(caps,
+                                                         def,
                                                          nodes[i],
                                                          flags);
         if (!chr)
@@ -7193,6 +7206,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     for (i = 0 ; i < n ; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(caps,
+                                                         def,
                                                          nodes[i],
                                                          flags);
         if (!chr)
@@ -7221,6 +7235,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     for (i = 0 ; i < n ; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(caps,
+                                                         def,
                                                          nodes[i],
                                                          flags);
         if (!chr)
@@ -7285,6 +7300,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     for (i = 0 ; i < n ; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(caps,
+                                                         def,
                                                          nodes[i],
                                                          flags);
         if (!chr)

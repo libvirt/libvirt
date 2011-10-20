@@ -55,6 +55,11 @@ static virCapsGuestMachinePtr *testQemuAllocNewerMachines(int *nmachines)
     return machines;
 }
 
+static int testQemuDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED)
+{
+    return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+}
+
 virCapsPtr testQemuCapsInit(void) {
     virCapsPtr caps;
     virCapsGuestPtr guest;
@@ -95,6 +100,8 @@ virCapsPtr testQemuCapsInit(void) {
     if ((caps = virCapabilitiesNew(host_cpu.arch,
                                    0, 0)) == NULL)
         return NULL;
+
+    caps->defaultConsoleTargetType = testQemuDefaultConsoleType;
 
     if ((caps->host.cpu = virCPUDefCopy(&host_cpu)) == NULL ||
         (machines = testQemuAllocMachines(&nmachines)) == NULL)

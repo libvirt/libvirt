@@ -54,6 +54,13 @@
 #define umlLog(level, msg, ...)                                     \
         virLogMessage(__FILE__, level, 0, msg, __VA_ARGS__)
 
+
+static int umlDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED)
+{
+    return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_UML;
+}
+
+
 virCapsPtr umlCapsInit(void) {
     struct utsname utsname;
     virCapsPtr caps;
@@ -99,7 +106,7 @@ virCapsPtr umlCapsInit(void) {
                                       NULL) == NULL)
         goto error;
 
-    caps->defaultConsoleTargetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_UML;
+    caps->defaultConsoleTargetType = umlDefaultConsoleType;
 
     return caps;
 

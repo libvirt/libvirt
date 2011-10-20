@@ -48,6 +48,16 @@
         virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,       \
                              __FUNCTION__, __LINE__, __VA_ARGS__)
 
+
+static int xenapiDefaultConsoleType(const char *ostype)
+{
+    if (STREQ(ostype, "hvm"))
+        return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+    else
+        return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
+}
+
+
 /*
  * getCapsObject
  *
@@ -77,6 +87,8 @@ getCapsObject (void)
     domain2 = virCapabilitiesAddGuestDomain(guest2, "xen", "", "", 0, NULL);
     if (!domain2)
         goto error_cleanup;
+
+    caps->defaultConsoleTargetType = xenapiDefaultConsoleType;
 
     return caps;
 

@@ -114,6 +114,15 @@ libxlNextFreeVncPort(libxlDriverPrivatePtr driver, int startPort)
     return -1;
 }
 
+
+static int libxlDefaultConsoleType(const char *ostype)
+{
+    if (STREQ(ostype, "hvm"))
+        return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+    else
+        return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
+}
+
 static virCapsPtr
 libxlBuildCapabilities(const char *hostmachine,
                        int host_pae,
@@ -206,7 +215,7 @@ libxlBuildCapabilities(const char *hostmachine,
         }
     }
 
-    caps->defaultConsoleTargetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
+    caps->defaultConsoleTargetType = libxlDefaultConsoleType;
 
     return caps;
 

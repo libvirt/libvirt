@@ -40,6 +40,12 @@
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
+static int lxcDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED)
+{
+    return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LXC;
+}
+
+
 /* Functions */
 virCapsPtr lxcCapsInit(void)
 {
@@ -53,6 +59,8 @@ virCapsPtr lxcCapsInit(void)
     if ((caps = virCapabilitiesNew(utsname.machine,
                                    0, 0)) == NULL)
         goto error;
+
+    caps->defaultConsoleTargetType = lxcDefaultConsoleType;
 
     /* Some machines have problematic NUMA toplogy causing
      * unexpected failures. We don't want to break the QEMU

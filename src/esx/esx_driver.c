@@ -588,6 +588,11 @@ esxLookupHostSystemBiosUuid(esxPrivate *priv, unsigned char *uuid)
 }
 
 
+static int esxDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED)
+{
+    return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+}
+
 
 static virCapsPtr
 esxCapsInit(esxPrivate *priv)
@@ -615,6 +620,7 @@ esxCapsInit(esxPrivate *priv)
     virCapabilitiesAddHostMigrateTransport(caps, "vpxmigr");
 
     caps->hasWideScsiBus = true;
+    caps->defaultConsoleTargetType = esxDefaultConsoleType;
 
     if (esxLookupHostSystemBiosUuid(priv, caps->host.host_uuid) < 0) {
         goto failure;

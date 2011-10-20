@@ -129,6 +129,11 @@ int openvzExtractVersion(struct openvz_driver *driver)
 }
 
 
+static int openvzDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED)
+{
+    return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_OPENVZ;
+}
+
 virCapsPtr openvzCapsInit(void)
 {
     struct utsname utsname;
@@ -165,6 +170,7 @@ virCapsPtr openvzCapsInit(void)
         goto no_memory;
 
     caps->defaultInitPath = "/sbin/init";
+    caps->defaultConsoleTargetType = openvzDefaultConsoleType;
 
     return caps;
 no_memory:

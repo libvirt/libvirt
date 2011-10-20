@@ -49,6 +49,13 @@ vmwareFreeDriver(struct vmware_driver *driver)
     VIR_FREE(driver);
 }
 
+
+static int vmwareDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED)
+{
+    return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+}
+
+
 virCapsPtr
 vmwareCapsInit(void)
 {
@@ -116,6 +123,8 @@ vmwareCapsInit(void)
                                           NULL, NULL, 0, NULL) == NULL)
             goto error;
     }
+
+    caps->defaultConsoleTargetType = vmwareDefaultConsoleType;
 
 cleanup:
     virCPUDefFree(cpu);
