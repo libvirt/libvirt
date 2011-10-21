@@ -258,6 +258,16 @@ int virNetClientDupFD(virNetClientPtr client, bool cloexec)
 }
 
 
+bool virNetClientHasPassFD(virNetClientPtr client)
+{
+    bool hasPassFD;
+    virNetClientLock(client);
+    hasPassFD = virNetSocketHasPassFD(client->sock);
+    virNetClientUnlock(client);
+    return hasPassFD;
+}
+
+
 void virNetClientFree(virNetClientPtr client)
 {
     int i;
@@ -684,6 +694,7 @@ static int virNetClientCallDispatchStream(virNetClientPtr client)
 static int
 virNetClientCallDispatch(virNetClientPtr client)
 {
+    size_t i;
     if (virNetMessageDecodeHeader(&client->msg) < 0)
         return -1;
 
@@ -695,6 +706,15 @@ virNetClientCallDispatch(virNetClientPtr client)
 
     switch (client->msg.header.type) {
     case VIR_NET_REPLY: /* Normal RPC replies */
+        return virNetClientCallDispatchReply(client);
+
+    case VIR_NET_REPLY_WITH_FDS: /* Normal RPC replies with FDs */
+        if (virNetMessageDecodeNumFDs(&client->msg) < 0)
+            return -1;
+        for (i = 0 ; i < client->msg.nfds ; i++) {
+            if ((client->msg.fds[i] = virNetSocketRecvFD(client->sock)) < 0)
+                return -1;
+        }
         return virNetClientCallDispatchReply(client);
 
     case VIR_NET_MESSAGE: /* Async notifications */
@@ -728,6 +748,11 @@ virNetClientIOWriteMessage(virNetClientPtr client,
     thecall->msg->bufferOffset += ret;
 
     if (thecall->msg->bufferOffset == thecall->msg->bufferLength) {
+        size_t i;
+        for (i = 0 ; i < thecall->msg->nfds ; i++) {
+            if (virNetSocketSendFD(client->sock, thecall->msg->fds[i]) < 0)
+                return -1;
+        }
         thecall->msg->bufferOffset = thecall->msg->bufferLength = 0;
         if (thecall->expectReply)
             thecall->mode = VIR_NET_CLIENT_MODE_WAIT_RX;

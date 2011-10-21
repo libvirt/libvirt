@@ -4152,6 +4152,7 @@ call (virConnectPtr conn ATTRIBUTE_UNUSED,
                                  client,
                                  counter,
                                  proc_nr,
+                                 0, NULL, NULL, NULL,
                                  args_filter, args,
                                  ret_filter, ret);
     remoteDriverLock(priv);

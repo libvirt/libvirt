@@ -22,6 +22,8 @@
 
 #include <config.h>
 
+#include <unistd.h>
+
 #include "virnetclientprogram.h"
 #include "virnetclient.h"
 #include "virnetprotocol.h"
@@ -29,6 +31,8 @@
 #include "memory.h"
 #include "virterror_internal.h"
 #include "logging.h"
+#include "util.h"
+#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 #define virNetError(code, ...)                                    \
@@ -267,10 +271,20 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
                             virNetClientPtr client,
                             unsigned serial,
                             int proc,
+                            size_t noutfds,
+                            int *outfds,
+                            size_t *ninfds,
+                            int **infds,
                             xdrproc_t args_filter, void *args,
                             xdrproc_t ret_filter, void *ret)
 {
     virNetMessagePtr msg;
+    size_t i;
+
+    if (infds)
+        *infds = NULL;
+    if (ninfds)
+        *ninfds = 0;
 
     if (!(msg = virNetMessageNew(false)))
         return -1;
@@ -278,11 +292,36 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
     msg->header.prog = prog->program;
     msg->header.vers = prog->version;
     msg->header.status = VIR_NET_OK;
-    msg->header.type = VIR_NET_CALL;
+    msg->header.type = noutfds ? VIR_NET_CALL_WITH_FDS : VIR_NET_CALL;
     msg->header.serial = serial;
     msg->header.proc = proc;
+    msg->nfds = noutfds;
+    if (VIR_ALLOC_N(msg->fds, msg->nfds) < 0) {
+        virReportOOMError();
+        goto error;
+    }
+    for (i = 0 ; i < msg->nfds ; i++)
+        msg->fds[i] = -1;
+    for (i = 0 ; i < msg->nfds ; i++) {
+        if ((msg->fds[i] = dup(outfds[i])) < 0) {
+            virReportSystemError(errno,
+                                 _("Cannot duplicate FD %d"),
+                                 outfds[i]);
+            goto error;
+        }
+        if (virSetInherit(msg->fds[i], false) < 0) {
+            virReportSystemError(errno,
+                                 _("Cannot set close-on-exec %d"),
+                                 msg->fds[i]);
+            goto error;
+        }
+    }
 
     if (virNetMessageEncodeHeader(msg) < 0)
+        goto error;
+
+    if (msg->nfds &&
+        virNetMessageEncodeNumFDs(msg) < 0)
         goto error;
 
     if (virNetMessageEncodePayload(msg, args_filter, args) < 0)
@@ -295,7 +334,8 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
      * virNetClientSend should have validated the reply,
      * but it doesn't hurt to check again.
      */
-    if (msg->header.type != VIR_NET_REPLY) {
+    if (msg->header.type != VIR_NET_REPLY &&
+        msg->header.type != VIR_NET_REPLY_WITH_FDS) {
         virNetError(VIR_ERR_INTERNAL_ERROR,
                     _("Unexpected message type %d"), msg->header.type);
         goto error;
@@ -315,6 +355,30 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
 
     switch (msg->header.status) {
     case VIR_NET_OK:
+        if (infds && ninfds) {
+            *ninfds = msg->nfds;
+            if (VIR_ALLOC_N(*infds, *ninfds) < 0) {
+                virReportOOMError();
+                goto error;
+            }
+            for (i = 0 ; i < *ninfds ; i++)
+                *infds[i] = -1;
+            for (i = 0 ; i < *ninfds ; i++) {
+                if ((*infds[i] = dup(msg->fds[i])) < 0) {
+                    virReportSystemError(errno,
+                                         _("Cannot duplicate FD %d"),
+                                         msg->fds[i]);
+                    goto error;
+                }
+                if (virSetInherit(*infds[i], false) < 0) {
+                    virReportSystemError(errno,
+                                         _("Cannot set close-on-exec %d"),
+                                         *infds[i]);
+                    goto error;
+                }
+            }
+
+        }
         if (virNetMessageDecodePayload(msg, ret_filter, ret) < 0)
             goto error;
         break;
@@ -335,5 +399,9 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
 
 error:
     virNetMessageFree(msg);
+    if (infds && ninfds) {
+        for (i = 0 ; i < *ninfds ; i++)
+            VIR_FORCE_CLOSE(*infds[i]);
+    }
     return -1;
 }

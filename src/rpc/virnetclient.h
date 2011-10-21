@@ -56,6 +56,8 @@ void virNetClientRef(virNetClientPtr client);
 int virNetClientGetFD(virNetClientPtr client);
 int virNetClientDupFD(virNetClientPtr client, bool cloexec);
 
+bool virNetClientHasPassFD(virNetClientPtr client);
+
 int virNetClientAddProgram(virNetClientPtr client,
                            virNetClientProgramPtr prog);
 

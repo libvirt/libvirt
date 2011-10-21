@@ -77,6 +77,10 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
                             virNetClientPtr client,
                             unsigned serial,
                             int proc,
+                            size_t noutfds,
+                            int *outfds,
+                            size_t *ninfds,
+                            int **infds,
                             xdrproc_t args_filter, void *args,
                             xdrproc_t ret_filter, void *ret);
 

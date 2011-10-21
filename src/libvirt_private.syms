@@ -1184,6 +1184,10 @@ virFileFdopen;
 virFileRewrite;
 
 
+# virnetclient.h
+virNetClientHasPassFD;
+
+
 # virnetmessage.h
 virNetMessageClear;
 virNetMessageDecodeNumFDs;
