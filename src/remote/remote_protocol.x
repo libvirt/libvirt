@@ -2348,7 +2348,7 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS = 57, /* skipgen autogen */
     REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS = 58, /* autogen autogen */
     REMOTE_PROC_GET_HOSTNAME = 59, /* autogen autogen priority:high */
-    REMOTE_PROC_SUPPORTS_FEATURE = 60, /* autogen autogen priority:high */
+    REMOTE_PROC_SUPPORTS_FEATURE = 60, /* skipgen autogen priority:high */
 
     REMOTE_PROC_DOMAIN_MIGRATE_PREPARE = 61, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_MIGRATE_PERFORM = 62, /* autogen autogen */

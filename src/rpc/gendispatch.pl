@@ -298,7 +298,7 @@ elsif ($opt_b) {
 	print "static int ${name}(\n";
 	print "    virNetServerPtr server,\n";
 	print "    virNetServerClientPtr client,\n";
-	print "    virNetMessageHeaderPtr hdr,\n";
+	print "    virNetMessagePtr msg,\n";
 	print "    virNetMessageErrorPtr rerr";
 	if ($argtype ne "void") {
 	    print ",\n    $argtype *args";
@@ -315,13 +315,13 @@ elsif ($opt_b) {
 	print "static int ${name}Helper(\n";
 	print "    virNetServerPtr server,\n";
 	print "    virNetServerClientPtr client,\n";
-	print "    virNetMessageHeaderPtr hdr,\n";
+	print "    virNetMessagePtr msg,\n";
 	print "    virNetMessageErrorPtr rerr,\n";
 	print "    void *args$argann,\n";
 	print "    void *ret$retann)\n";
 	print "{\n";
-	print "  VIR_DEBUG(\"server=%p client=%p hdr=%p rerr=%p args=%p ret=%p\", server, client, hdr, rerr, args, ret);\n";
-	print "  return $name(server, client, hdr, rerr";
+	print "  VIR_DEBUG(\"server=%p client=%p msg=%p rerr=%p args=%p ret=%p\", server, client, msg, rerr, args, ret);\n";
+	print "  return $name(server, client, msg, rerr";
 	if ($argtype ne "void") {
 	    print ", args";
 	}
@@ -750,7 +750,7 @@ elsif ($opt_b) {
 	print "static int $name(\n";
 	print "    virNetServerPtr server ATTRIBUTE_UNUSED,\n";
 	print "    virNetServerClientPtr client,\n";
-	print "    virNetMessageHeaderPtr hdr ATTRIBUTE_UNUSED,\n";
+	print "    virNetMessagePtr msg ATTRIBUTE_UNUSED,\n";
 	print "    virNetMessageErrorPtr rerr";
         if ($argtype ne "void") {
 	    print ",\n    $argtype *args";
@@ -809,7 +809,7 @@ elsif ($opt_b) {
             print "    if (!(st = virStreamNew(priv->conn, VIR_STREAM_NONBLOCK)))\n";
             print "        goto cleanup;\n";
             print "\n";
-            print "    if (!(stream = daemonCreateClientStream(client, st, remoteProgram, hdr)))\n";
+            print "    if (!(stream = daemonCreateClientStream(client, st, remoteProgram, &msg->header)))\n";
             print "        goto cleanup;\n";
             print "\n";
         }

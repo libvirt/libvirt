@@ -138,7 +138,8 @@ static void virNetServerHandleJob(void *jobOpaque, void *opaque)
          * message types are not expecting replies, so we
          * must just log it & drop them
          */
-        if (job->msg->header.type == VIR_NET_CALL) {
+        if (job->msg->header.type == VIR_NET_CALL ||
+            job->msg->header.type == VIR_NET_CALL_WITH_FDS) {
             if (virNetServerProgramUnknownError(job->client,
                                                 job->msg,
                                                 &job->msg->header) < 0)

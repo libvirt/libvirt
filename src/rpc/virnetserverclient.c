@@ -770,12 +770,27 @@ readmore:
         /* Grab the completed message */
         virNetMessagePtr msg = virNetMessageQueueServe(&client->rx);
         virNetServerClientFilterPtr filter;
+        size_t i;
 
         /* Decode the header so we can use it for routing decisions */
         if (virNetMessageDecodeHeader(msg) < 0) {
             virNetMessageFree(msg);
             client->wantClose = true;
             return;
+        }
+
+        if (msg->header.type == VIR_NET_CALL_WITH_FDS &&
+            virNetMessageDecodeNumFDs(msg) < 0) {
+            virNetMessageFree(msg);
+            client->wantClose = true;
+            return;
+        }
+        for (i = 0 ; i < msg->nfds ; i++) {
+            if ((msg->fds[i] = virNetSocketRecvFD(client->sock)) < 0) {
+                virNetMessageFree(msg);
+                client->wantClose = true;
+                return;
+            }
         }
 
         PROBE(RPC_SERVER_CLIENT_MSG_RX,
@@ -883,6 +898,15 @@ virNetServerClientDispatchWrite(virNetServerClientPtr client)
 
         if (client->tx->bufferOffset == client->tx->bufferLength) {
             virNetMessagePtr msg;
+            size_t i;
+
+            for (i = 0 ; i < client->tx->nfds ; i++) {
+                if (virNetSocketSendFD(client->sock, client->tx->fds[i]) < 0) {
+                    client->wantClose = true;
+                    return;
+                }
+            }
+
 #if HAVE_SASL
             /* Completed this 'tx' operation, so now read for all
              * future rx/tx to be under a SASL SSF layer

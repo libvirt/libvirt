@@ -41,7 +41,7 @@ typedef virNetServerProgramProc *virNetServerProgramProcPtr;
 
 typedef int (*virNetServerProgramDispatchFunc)(virNetServerPtr server,
                                                virNetServerClientPtr client,
-                                               virNetMessageHeaderPtr hdr,
+                                               virNetMessagePtr msg,
                                                virNetMessageErrorPtr rerr,
                                                void *args,
                                                void *ret);

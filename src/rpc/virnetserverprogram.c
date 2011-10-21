@@ -29,6 +29,7 @@
 #include "memory.h"
 #include "virterror_internal.h"
 #include "logging.h"
+#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 #define virNetError(code, ...)                                    \
@@ -284,6 +285,7 @@ int virNetServerProgramDispatch(virNetServerProgramPtr prog,
 
     switch (msg->header.type) {
     case VIR_NET_CALL:
+    case VIR_NET_CALL_WITH_FDS:
         ret = virNetServerProgramDispatchCall(prog, server, client, msg);
         break;
 
@@ -314,7 +316,8 @@ int virNetServerProgramDispatch(virNetServerProgramPtr prog,
     return ret;
 
 error:
-    if (msg->header.type == VIR_NET_CALL) {
+    if (msg->header.type == VIR_NET_CALL ||
+        msg->header.type == VIR_NET_CALL_WITH_FDS) {
         ret = virNetServerProgramSendReplyError(prog, client, msg, &rerr, &msg->header);
     } else {
         /* Send a dummy reply to free up 'msg' & unblock client rx */
@@ -355,6 +358,7 @@ virNetServerProgramDispatchCall(virNetServerProgramPtr prog,
     int rv = -1;
     virNetServerProgramProcPtr dispatcher;
     virNetMessageError rerr;
+    size_t i;
 
     memset(&rerr, 0, sizeof(rerr));
 
@@ -409,7 +413,20 @@ virNetServerProgramDispatchCall(virNetServerProgramPtr prog,
      *
      *   'args and 'ret'
      */
-    rv = (dispatcher->func)(server, client, &msg->header, &rerr, arg, ret);
+    rv = (dispatcher->func)(server, client, msg, &rerr, arg, ret);
+
+    /*
+     * Clear out the FDs we got from the client, we don't
+     * want to send them back !
+     *
+     * XXX we don't have a way to let dispatcher->func
+     * return any FDs. Fortunately we don't need this
+     * capability just yet
+     */
+    for (i = 0 ; i < msg->nfds ; i++)
+        VIR_FORCE_CLOSE(msg->fds[i]);
+    VIR_FREE(msg->fds);
+    msg->nfds = 0;
 
     xdr_free(dispatcher->arg_filter, arg);
 
@@ -421,11 +438,17 @@ virNetServerProgramDispatchCall(virNetServerProgramPtr prog,
     /*msg->header.prog = msg->header.prog;*/
     /*msg->header.vers = msg->header.vers;*/
     /*msg->header.proc = msg->header.proc;*/
-    msg->header.type = VIR_NET_REPLY;
+    msg->header.type = msg->nfds ? VIR_NET_REPLY_WITH_FDS : VIR_NET_REPLY;
     /*msg->header.serial = msg->header.serial;*/
     msg->header.status = VIR_NET_OK;
 
     if (virNetMessageEncodeHeader(msg) < 0) {
+        xdr_free(dispatcher->ret_filter, ret);
+        goto error;
+    }
+
+    if (msg->nfds &&
+        virNetMessageEncodeNumFDs(msg) < 0) {
         xdr_free(dispatcher->ret_filter, ret);
         goto error;
     }
