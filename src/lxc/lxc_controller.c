@@ -59,6 +59,7 @@
 #include "util.h"
 #include "virfile.h"
 #include "virpidfile.h"
+#include "command.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -1266,14 +1267,8 @@ cleanup:
         VIR_FORCE_CLOSE(loopDevs[i]);
     VIR_FREE(loopDevs);
 
-    if (container > 1) {
-        int status;
-        kill(container, SIGTERM);
-        if (!(waitpid(container, &status, WNOHANG) == 0 &&
-            WIFEXITED(status)))
-            kill(container, SIGKILL);
-        waitpid(container, NULL, 0);
-    }
+    virPidAbort(container);
+
     return rc;
 }
 
