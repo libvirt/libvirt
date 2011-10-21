@@ -631,8 +631,13 @@ static int virStorageBackendQEMUImgBackingFormat(const char *qemuimg)
     if (virCommandRun(cmd, &exitstatus) < 0)
         goto cleanup;
 
-    start = strstr(help, " create ");
-    end = strstr(start, "\n");
+    if ((start = strstr(help, " create ")) == NULL ||
+        (end = strstr(start, "\n")) == NULL) {
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+                              _("unable to parse qemu-img output '%s'"),
+                              help);
+        goto cleanup;
+    }
     if (((tmp = strstr(start, "-F fmt")) && tmp < end) ||
         ((tmp = strstr(start, "-F backing_fmt")) && tmp < end))
         ret = QEMU_IMG_BACKING_FORMAT_FLAG;
