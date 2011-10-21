@@ -611,6 +611,7 @@ cleanup:
     VIR_FREE(targets);
     VIR_FREE(portal);
     virStoragePoolSourceFree(source);
+    VIR_FREE(source);
     return ret;
 }
 
