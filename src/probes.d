@@ -19,6 +19,8 @@ provider libvirt {
 	# file: src/rpc/virnetsocket.c
 	# prefix: rpc
 	probe rpc_socket_new(void *sock, int refs, int fd, int errfd, int pid, const char *localAddr, const char *remoteAddr);
+	probe rpc_socket_send_fd(void *sock, int fd);
+	probe rpc_socket_recv_fd(void *sock, int fd);
 	probe rpc_socket_ref(void *sock, int refs);
 	probe rpc_socket_free(void *sock, int refs);
 

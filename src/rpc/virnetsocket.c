@@ -43,6 +43,8 @@
 #include "event.h"
 #include "threads.h"
 
+#include "passfd.h"
+
 #define VIR_FROM_THIS VIR_FROM_RPC
 
 #define virNetError(code, ...)                                    \
@@ -791,6 +793,17 @@ bool virNetSocketIsLocal(virNetSocketPtr sock)
 }
 
 
+bool virNetSocketHasPassFD(virNetSocketPtr sock)
+{
+    bool hasPassFD = false;
+    virMutexLock(&sock->lock);
+    if (sock->localAddr.data.sa.sa_family == AF_UNIX)
+        hasPassFD = true;
+    virMutexUnlock(&sock->lock);
+    return hasPassFD;
+}
+
+
 int virNetSocketGetPort(virNetSocketPtr sock)
 {
     int port;
@@ -1123,6 +1136,55 @@ ssize_t virNetSocketWrite(virNetSocketPtr sock, const char *buf, size_t len)
     else
 #endif
         ret = virNetSocketWriteWire(sock, buf, len);
+    virMutexUnlock(&sock->lock);
+    return ret;
+}
+
+
+int virNetSocketSendFD(virNetSocketPtr sock, int fd)
+{
+    int ret = -1;
+    if (!virNetSocketHasPassFD(sock)) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    _("Sending file descriptors is not supported on this socket"));
+        return -1;
+    }
+    virMutexLock(&sock->lock);
+    PROBE(RPC_SOCKET_SEND_FD,
+          "sock=%p fd=%d", sock, fd);
+    if (sendfd(sock->fd, fd) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to send file descriptor %d"),
+                             fd);
+        goto cleanup;
+    }
+    ret = 0;
+
+cleanup:
+    virMutexUnlock(&sock->lock);
+    return ret;
+}
+
+
+int virNetSocketRecvFD(virNetSocketPtr sock)
+{
+    int ret = -1;
+    if (!virNetSocketHasPassFD(sock)) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    _("Receiving file descriptors is not supported on this socket"));
+        return -1;
+    }
+    virMutexLock(&sock->lock);
+
+    if ((ret = recvfd(sock->fd, O_CLOEXEC)) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Failed to recv file descriptor"));
+        goto cleanup;
+    }
+    PROBE(RPC_SOCKET_RECV_FD,
+          "sock=%p fd=%d", sock, ret);
+
+cleanup:
     virMutexUnlock(&sock->lock);
     return ret;
 }

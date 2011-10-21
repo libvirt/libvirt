@@ -155,3 +155,13 @@ probe libvirt.rpc.server_client_free {
      delete serverSocks[pid(), client];
    }
 }
+
+
+probe libvirt.rpc.socket_send_fd {
+      print_ts(sprintf("=   %-16p send fd=%d", sock, fd));
+}
+
+
+probe libvirt.rpc.socket_recv_fd {
+      print_ts(sprintf("=   %-16p recv fd=%d", sock, fd));
+}

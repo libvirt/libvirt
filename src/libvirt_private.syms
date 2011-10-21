@@ -1253,9 +1253,13 @@ virNetServerProgramSendStreamError;
 virNetSocketDupFD;
 virNetSocketFree;
 virNetSocketGetFD;
+virNetSocketHasPassFD;
+virNetSocketIsLocal;
 virNetSocketListen;
 virNetSocketNewConnectTCP;
 virNetSocketNewListenUNIX;
+virNetSocketRecvFD;
+virNetSocketSendFD;
 
 
 # virnettlscontext.h
