@@ -1186,8 +1186,10 @@ virFileRewrite;
 
 # virnetmessage.h
 virNetMessageClear;
+virNetMessageDecodeNumFDs;
 virNetMessageEncodeHeader;
 virNetMessageEncodePayload;
+virNetMessageEncodeNumFDs;
 virNetMessageFree;
 virNetMessageNew;
 virNetMessageQueuePush;

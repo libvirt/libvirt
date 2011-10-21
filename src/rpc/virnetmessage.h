@@ -46,6 +46,9 @@ struct _virNetMessage {
     virNetMessageFreeCallback cb;
     void *opaque;
 
+    size_t nfds;
+    int *fds;
+
     virNetMessagePtr next;
 };
 
@@ -78,6 +81,9 @@ int virNetMessageDecodePayload(virNetMessagePtr msg,
                                void *data)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
+int virNetMessageEncodeNumFDs(virNetMessagePtr msg);
+int virNetMessageDecodeNumFDs(virNetMessagePtr msg);
+
 int virNetMessageEncodePayloadRaw(virNetMessagePtr msg,
                                   const char *buf,
                                   size_t len)
@@ -87,5 +93,8 @@ int virNetMessageEncodePayloadEmpty(virNetMessagePtr msg)
 
 void virNetMessageSaveError(virNetMessageErrorPtr rerr)
     ATTRIBUTE_NONNULL(1);
+
+int virNetMessageDupFD(virNetMessagePtr msg,
+                       size_t slot);
 
 #endif /* __VIR_NET_MESSAGE_H__ */

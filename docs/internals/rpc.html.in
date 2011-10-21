@@ -163,13 +163,27 @@
 
     <ul>
       <li>type=call: the in parameters for the method call, XDR encoded</li>
+      <li>type=call-with-fds: number of file handles, then the in parameters for the method call, XDR encoded, followed by the file handles</li>
       <li>type=reply+status=ok: the return value and/or out parameters for the method call, XDR encoded</li>
       <li>type=reply+status=error: the error information for the method, a virErrorPtr XDR encoded</li>
+      <li>type=reply-with-fds+status=ok: number of file handles, the return value and/or out parameters for the method call, XDR encoded, followed by the file handles</li>
+      <li>type=reply-with-fds+status=error: number of file handles, the error information for the method, a virErrorPtr XDR encoded, followed by the file handles</li>
       <li>type=event: the parameters for the event, XDR encoded</li>
       <li>type=stream+status=ok: no payload</li>
       <li>type=stream+status=error: the error information for the method, a virErrorPtr XDR encoded</li>
       <li>type=stream+status=continue: the raw bytes of data for the stream. No XDR encoding</li>
     </ul>
+
+    <p>
+      With the two packet types that support passing file descriptors, in
+      between the header and the payload there will be a 4-byte integer
+      specifying the number of file descriptors which are being sent.
+      The actual file handles are sent after the payload has been sent.
+      Each file handle has a single dummy byte transmitted as a carrier
+      for the out of band file descriptor. While the sender should always
+      send '\0' as the dummy byte value, the receiver ought to ignore the
+      value for the sake of robustness.
+    </p>
 
     <p>
       For the exact payload information for each procedure, consult the XDR protocol
@@ -336,6 +350,27 @@
           +--+-----------------------+--------+
           +--+-----------------------+--------+
    C &lt;--  |32| 8 | 1 | 3 | 1 | 4 | 0 | .o.oOo |  &lt;-- S  (reply 4)
+          +--+-----------------------+--------+
+    </pre>
+
+    <h4><a name="wireexamplescallfd">Method call with passed FD</a></h4>
+
+    <p>
+      A single method call with 2 passed file descriptors and successful
+      reply, for a program=8, version=1, procedure=3, which 10 bytes worth
+      of input args, and 4 bytes worth of return values. The number of
+      file descriptors is encoded as a 32-bit int. Each file descriptor
+      then has a 1 byte dummy payload. The overall input
+      packet length is 4 + 24 + 4 + 2 + 10 == 44, and output packet length 32.
+    </p>
+
+    <pre>
+          +--+-----------------------+---------------+-------+
+   C --&gt;  |44| 8 | 1 | 3 | 0 | 1 | 0 | 2 | .o.oOo.o. | 0 | 0 |  --&gt; S  (call)
+          +--+-----------------------+---------------+-------+
+
+          +--+-----------------------+--------+
+   C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
           +--+-----------------------+--------+
     </pre>
 

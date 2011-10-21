@@ -21,11 +21,14 @@
 #include <config.h>
 
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "virnetmessage.h"
 #include "memory.h"
 #include "virterror_internal.h"
 #include "logging.h"
+#include "virfile.h"
+#include "util.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 #define virNetError(code, ...)                                    \
@@ -51,6 +54,13 @@ virNetMessagePtr virNetMessageNew(bool tracked)
 void virNetMessageClear(virNetMessagePtr msg)
 {
     bool tracked = msg->tracked;
+    size_t i;
+
+    VIR_DEBUG("msg=%p nfds=%zu", msg, msg->nfds);
+
+    for (i = 0 ; i < msg->nfds ; i++)
+        VIR_FORCE_CLOSE(msg->fds[i]);
+    VIR_FREE(msg->fds);
     memset(msg, 0, sizeof(*msg));
     msg->tracked = tracked;
 }
@@ -58,14 +68,18 @@ void virNetMessageClear(virNetMessagePtr msg)
 
 void virNetMessageFree(virNetMessagePtr msg)
 {
+    size_t i;
     if (!msg)
         return;
+
+    VIR_DEBUG("msg=%p nfds=%zu cb=%p", msg, msg->nfds, msg->cb);
 
     if (msg->cb)
         msg->cb(msg, msg->opaque);
 
-    VIR_DEBUG("msg=%p", msg);
-
+    for (i = 0 ; i < msg->nfds ; i++)
+        VIR_FORCE_CLOSE(msg->fds[i]);
+    VIR_FREE(msg->fds);
     VIR_FREE(msg);
 }
 
@@ -239,6 +253,78 @@ cleanup:
 }
 
 
+int virNetMessageEncodeNumFDs(virNetMessagePtr msg)
+{
+    XDR xdr;
+    unsigned int numFDs = msg->nfds;
+    int ret = -1;
+
+    xdrmem_create(&xdr, msg->buffer + msg->bufferOffset,
+                  msg->bufferLength - msg->bufferOffset, XDR_ENCODE);
+
+    if (numFDs > VIR_NET_MESSAGE_NUM_FDS_MAX) {
+        virNetError(VIR_ERR_RPC,
+                    _("Too many FDs to send %d, expected %d maximum"),
+                    numFDs, VIR_NET_MESSAGE_NUM_FDS_MAX);
+        goto cleanup;
+    }
+
+    if (!xdr_u_int(&xdr, &numFDs)) {
+        virNetError(VIR_ERR_RPC, "%s", _("Unable to encode number of FDs"));
+        goto cleanup;
+    }
+    msg->bufferOffset += xdr_getpos(&xdr);
+
+    VIR_DEBUG("Send %zu FDs to peer", msg->nfds);
+
+    ret = 0;
+
+cleanup:
+    xdr_destroy(&xdr);
+    return ret;
+}
+
+
+int virNetMessageDecodeNumFDs(virNetMessagePtr msg)
+{
+    XDR xdr;
+    unsigned int numFDs;
+    int ret = -1;
+    size_t i;
+
+    xdrmem_create(&xdr, msg->buffer + msg->bufferOffset,
+                  msg->bufferLength - msg->bufferOffset, XDR_DECODE);
+    if (!xdr_u_int(&xdr, &numFDs)) {
+        virNetError(VIR_ERR_RPC, "%s", _("Unable to decode number of FDs"));
+        goto cleanup;
+    }
+    msg->bufferOffset += xdr_getpos(&xdr);
+
+    if (numFDs > VIR_NET_MESSAGE_NUM_FDS_MAX) {
+        virNetError(VIR_ERR_RPC,
+                    _("Received too many FDs %d, expected %d maximum"),
+                    numFDs, VIR_NET_MESSAGE_NUM_FDS_MAX);
+        goto cleanup;
+    }
+
+    msg->nfds = numFDs;
+    if (VIR_ALLOC_N(msg->fds, msg->nfds) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    for (i = 0 ; i < msg->nfds ; i++)
+        msg->fds[i] = -1;
+
+    VIR_DEBUG("Got %zu FDs from peer", msg->nfds);
+
+    ret = 0;
+
+cleanup:
+    xdr_destroy(&xdr);
+    return ret;
+}
+
+
 int virNetMessageEncodePayload(virNetMessagePtr msg,
                                xdrproc_t filter,
                                void *data)
@@ -402,4 +488,32 @@ void virNetMessageSaveError(virNetMessageErrorPtr rerr)
         if (rerr->message) *rerr->message = strdup(_("Library function returned error but did not set virError"));
         rerr->level = VIR_ERR_ERROR;
     }
+}
+
+
+int virNetMessageDupFD(virNetMessagePtr msg,
+                       size_t slot)
+{
+    int fd;
+
+    if (slot >= msg->nfds) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    _("No FD available at slot %zu"), slot);
+        return -1;
+    }
+
+    if ((fd = dup(msg->fds[slot])) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to duplicate FD %d"),
+                             msg->fds[slot]);
+        return -1;
+    }
+    if (virSetInherit(fd, false) < 0) {
+        VIR_FORCE_CLOSE(fd);
+        virReportSystemError(errno,
+                             _("Cannot set close-on-exec %d"),
+                             fd);
+        return -1;
+    }
+    return fd;
 }

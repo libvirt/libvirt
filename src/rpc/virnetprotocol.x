@@ -62,6 +62,11 @@ const VIR_NET_MESSAGE_LEN_MAX = 4;
  */
 const VIR_NET_MESSAGE_STRING_MAX = 65536;
 
+/* Limit on number of File Descriptors allowed to be
+ * passed per message
+ */
+const VIR_NET_MESSAGE_NUM_FDS_MAX = 32;
+
 /*
  * RPC wire format
  *
@@ -126,6 +131,18 @@ const VIR_NET_MESSAGE_STRING_MAX = 65536;
  *          remote_error error information
  *     * status == VIR_NET_OK
  *          <empty>
+ *
+ *  - type == VIR_NET_CALL_WITH_FDS
+ *          int8 - number of FDs
+ *          XXX_args  for procedure
+ *
+ *  - type == VIR_NET_REPLY_WITH_FDS
+ *          int8 - number of FDs
+ *     * status == VIR_NET_OK
+ *          XXX_ret         for procedure
+ *     * status == VIR_NET_ERROR
+ *          remote_error    Error information
+ *
  */
 enum virNetMessageType {
     /* client -> server. args from a method call */
@@ -135,7 +152,11 @@ enum virNetMessageType {
     /* either direction. async notification */
     VIR_NET_MESSAGE = 2,
     /* either direction. stream data packet */
-    VIR_NET_STREAM = 3
+    VIR_NET_STREAM = 3,
+    /* client -> server. args from a method call, with passed FDs */
+    VIR_NET_CALL_WITH_FDS = 4,
+    /* server -> client. reply/error from a method call, with passed FDs */
+    VIR_NET_REPLY_WITH_FDS = 5
 };
 
 enum virNetMessageStatus {
