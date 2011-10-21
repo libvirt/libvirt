@@ -430,8 +430,7 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
 
  cleanup:
     for (i = 0; i < sourceList.nsources; i++)
-        virStoragePoolSourceFree(&sourceList.sources[i]);
-
+        virStoragePoolSourceClear(&sourceList.sources[i]);
     VIR_FREE(sourceList.sources);
 
     return retval;

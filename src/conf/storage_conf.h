@@ -1,7 +1,7 @@
 /*
  * storage_conf.h: config handling for storage driver
  *
- * Copyright (C) 2006-2008, 2010 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2010-2011 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -372,6 +372,7 @@ int virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
 int virStoragePoolObjDeleteDef(virStoragePoolObjPtr pool);
 
 void virStorageVolDefFree(virStorageVolDefPtr def);
+void virStoragePoolSourceClear(virStoragePoolSourcePtr source);
 void virStoragePoolSourceFree(virStoragePoolSourcePtr source);
 void virStoragePoolDefFree(virStoragePoolDefPtr def);
 void virStoragePoolObjFree(virStoragePoolObjPtr pool);

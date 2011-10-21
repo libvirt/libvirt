@@ -4088,7 +4088,6 @@ testStorageFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 cleanup:
     virStoragePoolSourceFree(source);
-    VIR_FREE(source);
     return ret;
 }
 

@@ -269,7 +269,8 @@ virStorageVolDefFree(virStorageVolDefPtr def) {
 }
 
 void
-virStoragePoolSourceFree(virStoragePoolSourcePtr source) {
+virStoragePoolSourceClear(virStoragePoolSourcePtr source)
+{
     int i;
 
     if (!source)
@@ -295,13 +296,20 @@ virStoragePoolSourceFree(virStoragePoolSourcePtr source) {
 }
 
 void
+virStoragePoolSourceFree(virStoragePoolSourcePtr source)
+{
+    virStoragePoolSourceClear(source);
+    VIR_FREE(source);
+}
+
+void
 virStoragePoolDefFree(virStoragePoolDefPtr def) {
     if (!def)
         return;
 
     VIR_FREE(def->name);
 
-    virStoragePoolSourceFree(&def->source);
+    virStoragePoolSourceClear(&def->source);
 
     VIR_FREE(def->target.path);
     VIR_FREE(def->target.perms.label);
@@ -529,7 +537,6 @@ virStoragePoolDefParseSourceString(const char *srcSpec,
     def = NULL;
 cleanup:
     virStoragePoolSourceFree(def);
-    VIR_FREE(def);
     xmlFreeDoc(doc);
     xmlXPathFreeContext(xpath_ctxt);
 
