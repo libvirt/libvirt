@@ -730,9 +730,11 @@ esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
         if (priv->host->productVersion != esxVI_ProductVersion_ESX35 &&
             priv->host->productVersion != esxVI_ProductVersion_ESX40 &&
             priv->host->productVersion != esxVI_ProductVersion_ESX41 &&
-            priv->host->productVersion != esxVI_ProductVersion_ESX4x) {
+            priv->host->productVersion != esxVI_ProductVersion_ESX4x &&
+            priv->host->productVersion != esxVI_ProductVersion_ESX50 &&
+            priv->host->productVersion != esxVI_ProductVersion_ESX5x) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("%s is neither an ESX 3.5 host nor an ESX 4.x host"),
+                      _("%s is neither an ESX 3.5, 4.x nor 5.x host"),
                       hostname);
             goto cleanup;
         }
@@ -857,10 +859,12 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
     if (priv->vCenter->productVersion != esxVI_ProductVersion_VPX25 &&
         priv->vCenter->productVersion != esxVI_ProductVersion_VPX40 &&
         priv->vCenter->productVersion != esxVI_ProductVersion_VPX41 &&
-        priv->vCenter->productVersion != esxVI_ProductVersion_VPX4x) {
+        priv->vCenter->productVersion != esxVI_ProductVersion_VPX4x &&
+        priv->vCenter->productVersion != esxVI_ProductVersion_VPX50 &&
+        priv->vCenter->productVersion != esxVI_ProductVersion_VPX5x) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("%s is neither a vCenter 2.5 server nor a vCenter "
-                    "4.x server"), hostname);
+                  _("%s is neither a vCenter 2.5, 4.x nor 5.x server"),
+                  hostname);
         goto cleanup;
     }
 

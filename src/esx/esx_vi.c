@@ -675,10 +675,17 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
 
             VIR_WARN("Found untested VI API major/minor version '%s'",
                      ctx->service->about->apiVersion);
+        } else if (STRPREFIX(ctx->service->about->apiVersion, "5.0")) {
+            ctx->apiVersion = esxVI_APIVersion_50;
+        } else if (STRPREFIX(ctx->service->about->apiVersion, "5.")) {
+            ctx->apiVersion = esxVI_APIVersion_5x;
+
+            VIR_WARN("Found untested VI API major/minor version '%s'",
+                     ctx->service->about->apiVersion);
         } else {
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                         _("Expecting VI API major/minor version '2.5' or '4.x' "
-                           "but found '%s'"), ctx->service->about->apiVersion);
+                         _("Expecting VI API major/minor version '2.5', '4.x' or "
+                           "'5.x' but found '%s'"), ctx->service->about->apiVersion);
             return -1;
         }
 
@@ -704,10 +711,17 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
 
                 VIR_WARN("Found untested ESX major/minor version '%s'",
                          ctx->service->about->version);
+            } else if (STRPREFIX(ctx->service->about->version, "5.0")) {
+                ctx->productVersion = esxVI_ProductVersion_ESX50;
+            } else if (STRPREFIX(ctx->service->about->version, "5.")) {
+                ctx->productVersion = esxVI_ProductVersion_ESX5x;
+
+                VIR_WARN("Found untested ESX major/minor version '%s'",
+                         ctx->service->about->version);
             } else {
                 ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                             _("Expecting ESX major/minor version '3.5' or "
-                               "'4.x' but found '%s'"),
+                             _("Expecting ESX major/minor version '3.5', "
+                               "'4.x' or '5.x' but found '%s'"),
                              ctx->service->about->version);
                 return -1;
             }
@@ -723,10 +737,18 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
 
                 VIR_WARN("Found untested VPX major/minor version '%s'",
                          ctx->service->about->version);
+            } else if (STRPREFIX(ctx->service->about->version, "5.0")) {
+                ctx->productVersion = esxVI_ProductVersion_VPX50;
+            } else if (STRPREFIX(ctx->service->about->version, "5.")) {
+                ctx->productVersion = esxVI_ProductVersion_VPX5x;
+
+                VIR_WARN("Found untested VPX major/minor version '%s'",
+                         ctx->service->about->version);
             } else {
                 ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                             _("Expecting VPX major/minor version '2.5' or '4.x' "
-                               "but found '%s'"), ctx->service->about->version);
+                             _("Expecting VPX major/minor version '2.5', '4.x' "
+                               "or '5.x' but found '%s'"),
+                               ctx->service->about->version);
                 return -1;
             }
         } else {
@@ -3897,11 +3919,12 @@ esxVI_ProductVersionToDefaultVirtualHWVersion(esxVI_ProductVersion productVersio
     /*
      * virtualHW.version compatibility matrix:
      *
-     *              4 7    API
-     *   ESX 3.5    +      2.5
-     *   ESX 4.0    + +    4.0
-     *   ESX 4.1    + +    4.1
-     *   GSX 2.0    + +    2.5
+     *              4 7 8   API
+     *   ESX 3.5    +       2.5
+     *   ESX 4.0    + +     4.0
+     *   ESX 4.1    + +     4.1
+     *   ESX 5.0    + + +   5.0
+     *   GSX 2.0    + +     2.5
      */
     switch (productVersion) {
       case esxVI_ProductVersion_ESX35:
@@ -3918,6 +3941,14 @@ esxVI_ProductVersionToDefaultVirtualHWVersion(esxVI_ProductVersion productVersio
       case esxVI_ProductVersion_ESX4x:
       case esxVI_ProductVersion_VPX4x:
         return 7;
+
+      case esxVI_ProductVersion_ESX50:
+      case esxVI_ProductVersion_VPX50:
+        return 8;
+
+      case esxVI_ProductVersion_ESX5x:
+      case esxVI_ProductVersion_VPX5x:
+        return 8;
 
       default:
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
