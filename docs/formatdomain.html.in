@@ -1196,7 +1196,9 @@
         </dd>
         <dt><code>type='block'</code></dt>
         <dd>
-        Currently unused.
+        A host block device to mount in the guest. The filesystem
+        format will be autodetected. Only used by LXC driver
+        <span class="since">(since 0.9.5)</span>.
         </dd>
         </dl>
 
