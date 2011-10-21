@@ -44,6 +44,7 @@
 #include "intprops.h"
 #include "virnetserverservice.h"
 #include "virnetserver.h"
+#include "virfile.h"
 
 #include "remote_protocol.h"
 #include "qemu_protocol.h"
@@ -3210,6 +3211,48 @@ static int remoteDispatchSupportsFeature(
 cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
+    return rv;
+}
+
+
+static int
+remoteDispatchDomainOpenGraphics(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                 virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                 virNetMessagePtr msg,
+                                 virNetMessageErrorPtr rerr,
+                                 remote_domain_open_graphics_args *args)
+{
+    virDomainPtr dom = NULL;
+    int rv = -1;
+    int fd = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+
+    if ((fd = virNetMessageDupFD(msg, 0)) < 0)
+        goto cleanup;
+
+    if (virDomainOpenGraphics(dom,
+                              args->idx,
+                              fd,
+                              args->flags) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (dom)
+        virDomainFree(dom);
     return rv;
 }
 

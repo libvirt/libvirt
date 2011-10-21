@@ -2261,6 +2261,12 @@ struct remote_domain_get_control_info_ret { /* insert@1 */
     unsigned hyper stateTime;
 };
 
+struct remote_domain_open_graphics_args {
+    remote_nonnull_domain dom;
+    unsigned int idx;
+    unsigned int flags;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -2555,7 +2561,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_RESET = 245, /* autogen autogen */
     REMOTE_PROC_DOMAIN_SNAPSHOT_NUM_CHILDREN = 246, /* autogen autogen priority:high */
     REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_CHILDREN_NAMES = 247, /* autogen autogen priority:high */
-    REMOTE_PROC_DOMAIN_EVENT_DISK_CHANGE = 248 /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_EVENT_DISK_CHANGE = 248, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_OPEN_GRAPHICS = 249 /* skipgen skipgen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

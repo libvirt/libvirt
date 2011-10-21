@@ -103,10 +103,14 @@ static void remoteDriverUnlock(struct private_data *driver)
     virMutexUnlock(&driver->lock);
 }
 
-static int call (virConnectPtr conn, struct private_data *priv,
-                 unsigned int flags, int proc_nr,
-                 xdrproc_t args_filter, char *args,
-                 xdrproc_t ret_filter, char *ret);
+static int call(virConnectPtr conn, struct private_data *priv,
+                unsigned int flags, int proc_nr,
+                xdrproc_t args_filter, char *args,
+                xdrproc_t ret_filter, char *ret);
+static int callWithFD(virConnectPtr conn, struct private_data *priv,
+                      unsigned int flags, int fd, int proc_nr,
+                      xdrproc_t args_filter, char *args,
+                      xdrproc_t ret_filter, char *ret);
 static int remoteAuthenticate (virConnectPtr conn, struct private_data *priv,
                                virConnectAuthPtr auth, const char *authtype);
 #if HAVE_SASL
@@ -4122,6 +4126,36 @@ done:
 }
 
 
+static int
+remoteDomainOpenGraphics(virDomainPtr dom,
+                         unsigned int idx,
+                         int fd,
+                         unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_open_graphics_args args;
+    struct private_data *priv = dom->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, dom);
+    args.idx = idx;
+    args.flags = flags;
+
+    if (callWithFD(dom->conn, priv, 0, fd, REMOTE_PROC_DOMAIN_OPEN_GRAPHICS,
+                   (xdrproc_t) xdr_remote_domain_open_graphics_args, (char *) &args,
+                   (xdrproc_t) xdr_void, NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+
+    return rv;
+}
+
+
 #include "remote_client_bodies.h"
 #include "qemu_client_bodies.h"
 
@@ -4130,17 +4164,20 @@ done:
  * send that to the server and wait for reply
  */
 static int
-call (virConnectPtr conn ATTRIBUTE_UNUSED,
-      struct private_data *priv,
-      unsigned int flags,
-      int proc_nr,
-      xdrproc_t args_filter, char *args,
-      xdrproc_t ret_filter, char *ret)
+callWithFD(virConnectPtr conn ATTRIBUTE_UNUSED,
+           struct private_data *priv,
+           unsigned int flags,
+           int fd,
+           int proc_nr,
+           xdrproc_t args_filter, char *args,
+           xdrproc_t ret_filter, char *ret)
 {
     int rv;
     virNetClientProgramPtr prog = flags & REMOTE_CALL_QEMU ? priv->qemuProgram : priv->remoteProgram;
     int counter = priv->counter++;
     virNetClientPtr client = priv->client;
+    int fds[] = { fd };
+    size_t nfds = fd == -1 ? 0 : 1;
     priv->localUses++;
 
     /* Unlock, so that if we get any async events/stream data
@@ -4152,13 +4189,26 @@ call (virConnectPtr conn ATTRIBUTE_UNUSED,
                                  client,
                                  counter,
                                  proc_nr,
-                                 0, NULL, NULL, NULL,
+                                 nfds, nfds ? fds : NULL, NULL, NULL,
                                  args_filter, args,
                                  ret_filter, ret);
     remoteDriverLock(priv);
     priv->localUses--;
 
     return rv;
+}
+
+static int
+call (virConnectPtr conn,
+      struct private_data *priv,
+      unsigned int flags,
+      int proc_nr,
+      xdrproc_t args_filter, char *args,
+      xdrproc_t ret_filter, char *ret)
+{
+    return callWithFD(conn, priv, flags, -1, proc_nr,
+                      args_filter, args,
+                      ret_filter, ret);
 }
 
 
@@ -4463,6 +4513,7 @@ static virDriver remote_driver = {
     .qemuDomainMonitorCommand = remoteQemuDomainMonitorCommand, /* 0.8.3 */
     .qemuDomainAttach = qemuDomainAttach, /* 0.9.4 */
     .domainOpenConsole = remoteDomainOpenConsole, /* 0.8.6 */
+    .domainOpenGraphics = remoteDomainOpenGraphics, /* 0.9.7 */
     .domainInjectNMI = remoteDomainInjectNMI, /* 0.9.2 */
     .domainMigrateBegin3 = remoteDomainMigrateBegin3, /* 0.9.2 */
     .domainMigratePrepare3 = remoteDomainMigratePrepare3, /* 0.9.2 */
