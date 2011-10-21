@@ -250,4 +250,9 @@ int qemuMonitorJSONSetLink(qemuMonitorPtr mon,
                            const char *name,
                            enum virDomainNetInterfaceLinkState state);
 
+int qemuMonitorJSONOpenGraphics(qemuMonitorPtr mon,
+                                const char *protocol,
+                                const char *fdname,
+                                bool skipauth);
+
 #endif /* QEMU_MONITOR_JSON_H */

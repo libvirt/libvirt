@@ -515,6 +515,12 @@ int qemuMonitorBlockJob(qemuMonitorPtr mon,
                         virDomainBlockJobInfoPtr info,
                         int mode);
 
+int qemuMonitorOpenGraphics(qemuMonitorPtr mon,
+                            const char *protocol,
+                            int fd,
+                            const char *fdname,
+                            bool skipauth);
+
 /**
  * When running two dd process and using <> redirection, we need a
  * shell that will not truncate files.  These two strings serve that

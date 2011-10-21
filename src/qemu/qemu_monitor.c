@@ -2616,3 +2616,36 @@ int qemuMonitorVMStatusToPausedReason(const char *status)
     }
     return VIR_DOMAIN_PAUSED_UNKNOWN;
 }
+
+
+int qemuMonitorOpenGraphics(qemuMonitorPtr mon,
+                            const char *protocol,
+                            int fd,
+                            const char *fdname,
+                            bool skipauth)
+{
+    VIR_DEBUG("mon=%p protocol=%s fd=%d fdname=%s skipauth=%d",
+              mon, protocol, fd, NULLSTR(fdname), skipauth);
+    int ret;
+
+    if (!mon) {
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (qemuMonitorSendFileHandle(mon, fdname, fd) < 0)
+        return -1;
+
+    if (mon->json)
+        ret = qemuMonitorJSONOpenGraphics(mon, protocol, fdname, skipauth);
+    else
+        ret = qemuMonitorTextOpenGraphics(mon, protocol, fdname, skipauth);
+
+    if (ret < 0) {
+        if (qemuMonitorCloseFileHandle(mon, fdname) < 0)
+            VIR_WARN("failed to close device handle '%s'", fdname);
+    }
+
+    return ret;
+}

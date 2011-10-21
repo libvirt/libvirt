@@ -243,4 +243,9 @@ int qemuMonitorTextSetLink(qemuMonitorPtr mon,
                            const char *name,
                            enum virDomainNetInterfaceLinkState state);
 
+int qemuMonitorTextOpenGraphics(qemuMonitorPtr mon,
+                                const char *protocol,
+                                const char *fdname,
+                                bool skipauth);
+
 #endif /* QEMU_MONITOR_TEXT_H */
