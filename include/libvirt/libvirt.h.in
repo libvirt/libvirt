@@ -3140,6 +3140,15 @@ int virDomainOpenConsole(virDomainPtr dom,
                          virStreamPtr st,
                          unsigned int flags);
 
+typedef enum {
+    VIR_DOMAIN_OPEN_GRAPHICS_SKIPAUTH = (1 << 0),
+} virDomainOpenGraphicsFlags;
+
+int virDomainOpenGraphics(virDomainPtr dom,
+                          unsigned int idx,
+                          int fd,
+                          unsigned int flags);
+
 int virDomainInjectNMI(virDomainPtr domain, unsigned int flags);
 
 

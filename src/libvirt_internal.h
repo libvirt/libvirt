@@ -79,6 +79,11 @@ enum {
      * to domain configuration, i.e., starting from Begin3 and not Perform3.
      */
     VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION = 7,
+
+    /*
+     * Support for file descriptor passing
+     */
+    VIR_DRV_FEATURE_FD_PASSING = 8
 };
 
 

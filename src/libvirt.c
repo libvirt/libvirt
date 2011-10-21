@@ -16964,3 +16964,88 @@ error:
     virDispatchError(dom->conn);
     return -1;
 }
+
+
+/**
+ * virDomainOpenGraphics:
+ * @dom: pointer to domain object
+ * @idx: index of graphics config to open
+ * @fd: file descriptor to attach graphics to
+ * @flags: flags to control open operation
+ *
+ * This will attempt to connect the file descriptor @fd, to
+ * the graphics backend of @dom. If @dom has multiple graphics
+ * backends configured, then @idx will determine which one is
+ * opened, starting from @idx 0.
+ *
+ * To disable any authentication, pass the VIR_DOMAIN_OPEN_GRAPHICS_SKIPAUTH
+ * constant for @flags.
+ *
+ * The caller should use an anonymous socketpair to open
+ * @fd before invocation.
+ *
+ * This method can only be used when connected to a local
+ * libvirt hypervisor, over a UNIX domain socket. Attempts
+ * to use this method over a TCP connection will always fail
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int virDomainOpenGraphics(virDomainPtr dom,
+                          unsigned int idx,
+                          int fd,
+                          unsigned int flags)
+{
+    struct stat sb;
+    VIR_DOMAIN_DEBUG(dom, "idx=%u, fd=%d, flags=%x",
+                     idx, fd, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_DOMAIN(dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (fd < 0) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (fstat(fd, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to access file descriptor %d"), fd);
+        goto error;
+    }
+
+    if (!S_ISSOCK(sb.st_mode)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                          _("File descriptor %d must be a socket"), fd);
+        goto error;
+    }
+
+    if (dom->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (!VIR_DRV_SUPPORTS_FEATURE(dom->conn->driver, dom->conn,
+                                  VIR_DRV_FEATURE_FD_PASSING)) {
+        virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        goto error;
+    }
+
+    if (dom->conn->driver->domainOpenGraphics) {
+        int ret;
+        ret = dom->conn->driver->domainOpenGraphics(dom, idx, fd, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dom->conn);
+    return -1;
+}

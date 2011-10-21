@@ -491,6 +491,7 @@ LIBVIRT_0.9.5 {
 
 LIBVIRT_0.9.7 {
     global:
+        virDomainOpenGraphics;
         virDomainReset;
         virDomainSnapshotGetParent;
         virDomainSnapshotListChildrenNames;
