@@ -505,7 +505,8 @@ int qemuDomainAttachSCSIDisk(struct qemud_driver *driver,
             /* XXX we should probably validate that the addr matches
              * our existing defined addr instead of overwriting */
             disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
-            memcpy(&disk->info.addr.drive, &driveAddr, sizeof(driveAddr));
+            disk->info.addr.drive.bus = driveAddr.bus;
+            disk->info.addr.drive.unit = driveAddr.unit;
         }
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
