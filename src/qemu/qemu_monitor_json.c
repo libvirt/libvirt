@@ -619,8 +619,8 @@ static void qemuMonitorJSONHandleIOError(qemuMonitorPtr mon, virJSONValuePtr dat
 
 
 VIR_ENUM_DECL(qemuMonitorGraphicsAddressFamily)
-VIR_ENUM_IMPL(qemuMonitorGraphicsAddressFamily, VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_IPV6 + 1,
-              "ipv4", "ipv6");
+VIR_ENUM_IMPL(qemuMonitorGraphicsAddressFamily, VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_UNIX + 1,
+              "ipv4", "ipv6", "unix");
 
 static void qemuMonitorJSONHandleVNC(qemuMonitorPtr mon, virJSONValuePtr data, int phase)
 {

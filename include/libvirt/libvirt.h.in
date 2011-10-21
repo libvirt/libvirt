@@ -2894,6 +2894,7 @@ typedef enum {
 typedef enum {
     VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_IPV4,  /* IPv4 address */
     VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_IPV6,  /* IPv6 address */
+    VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_UNIX,  /* UNIX socket path */
 } virDomainEventGraphicsAddressType;
 
 
@@ -2905,8 +2906,8 @@ typedef enum {
  */
 struct _virDomainEventGraphicsAddress {
     int family;               /* Address family, virDomainEventGraphicsAddressType */
-    const char *node;         /* Address of node (eg IP address) */
-    const char *service;      /* Service name/number (eg TCP port) */
+    const char *node;         /* Address of node (eg IP address, or UNIX path) */
+    const char *service;      /* Service name/number (eg TCP port, or NULL) */
 };
 typedef struct _virDomainEventGraphicsAddress virDomainEventGraphicsAddress;
 typedef virDomainEventGraphicsAddress *virDomainEventGraphicsAddressPtr;
