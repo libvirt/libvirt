@@ -33,6 +33,7 @@
 #include "virterror_internal.h"
 #include "buf.h"
 #include "logging.h"
+#include "command.h"
 
 #if TEST_OOM_TRACE
 # include <execinfo.h>
@@ -309,7 +310,8 @@ virtTestCaptureProgramOutput(const char *const argv[], char **buf, int maxlen)
         VIR_FORCE_CLOSE(pipefd[1]);
         len = virFileReadLimFD(pipefd[0], maxlen, buf);
         VIR_FORCE_CLOSE(pipefd[0]);
-        waitpid(pid, NULL, 0);
+        if (virPidWait(pid, NULL) < 0)
+            return -1;
 
         return len;
     }
@@ -674,8 +676,7 @@ int virtTestMain(int argc,
             } else {
                 int i, status;
                 for (i = 0 ; i < mp ; i++) {
-                    waitpid(workers[i], &status, 0);
-                    if (WEXITSTATUS(status) != EXIT_SUCCESS)
+                    if (virPidWait(workers[i], NULL) < 0)
                         ret = EXIT_FAILURE;
                 }
                 VIR_FREE(workers);

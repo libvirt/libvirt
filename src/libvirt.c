@@ -42,6 +42,7 @@
 #include "intprops.h"
 #include "conf.h"
 #include "rpc/virnettlscontext.h"
+#include "command.h"
 
 #ifndef WITH_DRIVER_MODULES
 # ifdef WITH_TEST
@@ -108,34 +109,22 @@ static int initialized = 0;
 
 #if defined(POLKIT_AUTH)
 static int virConnectAuthGainPolkit(const char *privilege) {
-    const char *const args[] = {
-        POLKIT_AUTH, "--obtain", privilege, NULL
-    };
-    int childpid, status, ret;
+    virCommandPtr cmd;
+    int status;
+    int ret = -1;
 
-    /* Root has all rights */
     if (getuid() == 0)
         return 0;
 
-    if ((childpid = fork()) < 0)
-        return -1;
+    cmd = virCommandNewArgList(POLKIT_AUTH, "--obtain", privilege, NULL);
+    if (virCommandRun(cmd, &status) < 0 ||
+        status > 1)
+        goto cleanup;
 
-    if (!childpid) {
-        execvp(args[0], (char **)args);
-        _exit(-1);
-    }
-
-    while ((ret = waitpid(childpid, &status, 0) == -1) && errno == EINTR);
-    if (ret == -1) {
-        return -1;
-    }
-
-    if (!WIFEXITED(status) ||
-        (WEXITSTATUS(status) != 0 && WEXITSTATUS(status) != 1)) {
-        return -1;
-    }
-
-    return 0;
+    ret = 0;
+cleanup:
+    virCommandFree(cmd);
+    return ret;
 }
 #endif
 

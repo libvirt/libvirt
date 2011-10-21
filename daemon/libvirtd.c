@@ -232,18 +232,14 @@ static int daemonForkIntoBackground(const char *argv0)
 
     default:
         {
-            int got, exitstatus = 0;
             int ret;
             char status;
 
             VIR_FORCE_CLOSE(statuspipe[1]);
 
             /* We wait to make sure the first child forked successfully */
-            if ((got = waitpid(pid, &exitstatus, 0)) < 0 ||
-                got != pid ||
-                exitstatus != 0) {
+            if (virPidWait(pid, NULL) < 0)
                 return -1;
-            }
 
             /* Now block until the second child initializes successfully */
         again:
