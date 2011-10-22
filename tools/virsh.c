@@ -9540,9 +9540,22 @@ cmdVolInfo(vshControl *ctl, const vshCmd *cmd)
     if (virStorageVolGetInfo(vol, &info) == 0) {
         double val;
         const char *unit;
-        vshPrint(ctl, "%-15s %s\n", _("Type:"),
-                 info.type == VIR_STORAGE_VOL_FILE ?
-                 _("file") : _("block"));
+        switch(info.type) {
+        case VIR_STORAGE_VOL_FILE:
+            vshPrint(ctl, "%-15s %s\n", _("Type:"), _("file"));
+            break;
+
+        case VIR_STORAGE_VOL_BLOCK:
+            vshPrint(ctl, "%-15s %s\n", _("Type:"), _("block"));
+            break;
+
+        case VIR_STORAGE_VOL_DIR:
+            vshPrint(ctl, "%-15s %s\n", _("Type:"), _("dir"));
+            break;
+
+        default:
+            vshPrint(ctl, "%-15s %s\n", _("Type:"), _("unknown"));
+        }
 
         val = prettyCapacity(info.capacity, &unit);
         vshPrint(ctl, "%-15s %2.2lf %s\n", _("Capacity:"), val, unit);
