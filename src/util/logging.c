@@ -628,6 +628,7 @@ virLogFormatTimestamp(void)
     gettimeofday(&cur_time, NULL);
     localtime_r(&cur_time.tv_sec, &time_info);
     time_info.tm_year += 1900;
+    time_info.tm_mon += 1;
 
     if (virAsprintf(&str, "%4d-%02d-%02d %02d:%02d:%02d.%03d",
                     time_info.tm_year, time_info.tm_mon, time_info.tm_mday,
