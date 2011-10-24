@@ -15216,8 +15216,8 @@ vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
         if (pool)
             vshError(ctl, _("failed to get vol '%s'"), n);
         else
-            vshError(ctl, _("failed to get vol '%s', specifying --pool "
-                            "might help"), n);
+            vshError(ctl, _("failed to get vol '%s', specifying --%s "
+                            "might help"), n, pooloptname);
     }
 
     if (pool)
