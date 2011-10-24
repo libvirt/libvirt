@@ -183,6 +183,8 @@ static void qemuMonitorFree(qemuMonitorPtr mon)
 int qemuMonitorRef(qemuMonitorPtr mon)
 {
     mon->refs++;
+    PROBE(QEMU_MONITOR_REF,
+          "mon=%p refs=%d", mon, mon->refs);
     return mon->refs;
 }
 
@@ -190,6 +192,8 @@ int qemuMonitorUnref(qemuMonitorPtr mon)
 {
     mon->refs--;
 
+    PROBE(QEMU_MONITOR_UNREF,
+          "mon=%p refs=%d", mon, mon->refs);
     if (mon->refs == 0) {
         qemuMonitorUnlock(mon);
         qemuMonitorFree(mon);
@@ -305,6 +309,9 @@ qemuMonitorIOProcess(qemuMonitorPtr mon)
 # endif
 #endif
 
+    PROBE(QEMU_MONITOR_IO_PROCESS,
+          "mon=%p buf=%s len=%zu", mon, mon->buffer, mon->bufferOffset);
+
     if (mon->json)
         len = qemuMonitorJSONIOProcess(mon,
                                        mon->buffer, mon->bufferOffset,
@@ -402,6 +409,18 @@ qemuMonitorIOWrite(qemuMonitorPtr mon)
                                         mon->msg->txBuffer + mon->msg->txOffset,
                                         mon->msg->txLength - mon->msg->txOffset,
                                         mon->msg->txFD);
+
+    PROBE(QEMU_MONITOR_IO_WRITE,
+          "mon=%p buf=%s len=%d ret=%d errno=%d",
+          mon,
+          mon->msg->txBuffer + mon->msg->txOffset,
+          mon->msg->txLength - mon->msg->txOffset,
+          done, errno);
+
+    if (mon->msg->txFD != -1)
+        PROBE(QEMU_MONITOR_IO_SEND_FD,
+              "mon=%p fd=%d ret=%d errno=%d",
+              mon, mon->msg->txFD, done, errno);
 
     if (done < 0) {
         if (errno == EAGAIN)
@@ -696,7 +715,9 @@ qemuMonitorOpen(virDomainObjPtr vm,
     }
     qemuMonitorRef(mon);
 
-    VIR_DEBUG("New mon %p fd =%d watch=%d", mon, mon->fd, mon->watch);
+    PROBE(QEMU_MONITOR_NEW,
+          "mon=%p refs=%d fd=%d",
+          mon, mon->refs, mon->fd);
     qemuMonitorUnlock(mon);
 
     return mon;
@@ -719,9 +740,9 @@ void qemuMonitorClose(qemuMonitorPtr mon)
     if (!mon)
         return;
 
-    VIR_DEBUG("mon=%p", mon);
-
     qemuMonitorLock(mon);
+    PROBE(QEMU_MONITOR_CLOSE,
+          "mon=%p refs=%d", mon, mon->refs);
 
     if (mon->fd >= 0) {
         if (mon->watch)
@@ -761,6 +782,10 @@ int qemuMonitorSend(qemuMonitorPtr mon,
 
     mon->msg = msg;
     qemuMonitorUpdateWatch(mon);
+
+    PROBE(QEMU_MONITOR_SEND_MSG,
+          "mon=%p msg=%s fd=%d",
+          mon, mon->msg->txBuffer, mon->msg->txFD);
 
     while (!mon->msg->finished) {
         if (virCondWait(&mon->notify, &mon->lock) < 0) {

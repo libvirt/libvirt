@@ -31,6 +31,10 @@ my $file;
 my @files;
 my %files;
 
+my $bindir = shift @ARGV;
+my $sbindir = shift @ARGV;
+my $libdir = shift @ARGV;
+
 my $probe;
 my $args;
 
@@ -41,12 +45,18 @@ while (<>) {
     next if /^\s*provider\s+\w+\s*{\s*$/;
     next if /^\s*};\s*$/;
 
-    if (m,^\s*\#\s*file:\s*(\S+)\s*$,) {
-	$file = $1;
-	push @files, $file;
-	$files{$file} = { prefix => undef, probes => [] };
-    } elsif (m,^\s*\#\s*prefix:\s*(\S+)\s*$,) {
-	$files{$file}->{prefix} = $1;
+    if (m,^\s*\#,) {
+	if (m,^\s*\#\s*file:\s*(\S+)\s*$,) {
+	    $file = $1;
+	    push @files, $file;
+	    $files{$file} = { prefix => undef, probes => [] };
+	} elsif (m,^\s*\#\s*prefix:\s*(\S+)\s*$,) {
+	    $files{$file}->{prefix} = $1;
+	} elsif (m,^\s*\#\s*binary:\s*(\S+)\s*$,) {
+	    $files{$file}->{binary} = $1;
+	} else {
+	    # ignore unknown comments
+	}
     } else {
 	if (m,\s*probe\s+([a-zA-Z0-9_]+)\((.*?)(\);)?$,) {
 	    $probe = $1;
@@ -84,7 +94,12 @@ foreach my $file (@files) {
 	my $pname = $name;
 	$pname =~ s/${prefix}_/libvirt.$prefix./;
 
-	print "probe $pname = process(\"libvirt.so\").mark(\"$name\") {\n";
+	my $binary = "$libdir/libvirt.so";
+	if (exists $files{$file}->{binary}) {
+	    $binary = $sbindir . "/" . $files{$file}->{binary};
+	}
+
+	print "probe $pname = process(\"$binary\").mark(\"$name\") {\n";
 
 	my @args = split /,/, $args;
 	for (my $i = 0 ; $i <= $#args ; $i++) {

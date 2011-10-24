@@ -1,0 +1,80 @@
+#!/usr/bin/stap
+#
+# Copyright (C) 2011 Red Hat, Inc.
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#
+# Author: Daniel P. Berrange <berrange@redhat.com>
+#
+# This script will monitor all messages sent/received between libvirt
+# and the QEMU monitor
+#
+# stap qemu-monitor.stp
+#  0.000 begin
+#  3.848 ! 0x7f2dc00017b0 {"timestamp": {"seconds": 1319466931, "microseconds": 187755}, "event": "SHUTDOWN"}
+#  5.773 > 0x7f2dc0007960 {"execute":"qmp_capabilities","id":"libvirt-1"}
+#  5.774 < 0x7f2dc0007960 {"return": {}, "id": "libvirt-1"}
+#  5.774 > 0x7f2dc0007960 {"execute":"query-commands","id":"libvirt-2"}
+#  5.777 < 0x7f2dc0007960 {"return": [{"name": "quit"}, {"name": ....snip....
+#  5.777 > 0x7f2dc0007960 {"execute":"query-chardev","id":"libvirt-3"}
+#  5.778 < 0x7f2dc0007960 {"return": [{"filename": ....snip....
+#  5.779 > 0x7f2dc0007960 {"execute":"query-cpus","id":"libvirt-4"}
+#  5.780 < 0x7f2dc0007960 {"return": [{"current": true, "CPU": 0, "pc": 1048560, "halted": false, "thread_id": 13299}], "id": "libvirt-4"}
+#  5.780 > 0x7f2dc0007960 {"execute":"set_password","arguments":{"protocol":"vnc","password":"123456","connected":"keep"},"id":"libvirt-5"}
+#  5.782 < 0x7f2dc0007960 {"return": {}, "id": "libvirt-5"}
+#  5.782 > 0x7f2dc0007960 {"execute":"expire_password","arguments":{"protocol":"vnc","time":"never"},"id":"libvirt-6"}
+#  5.783 < 0x7f2dc0007960 {"return": {}, "id": "libvirt-6"}
+#  5.783 > 0x7f2dc0007960 {"execute":"balloon","arguments":{"value":224395264},"id":"libvirt-7"}
+#  5.785 < 0x7f2dc0007960 {"return": {}, "id": "libvirt-7"}
+#  5.785 > 0x7f2dc0007960 {"execute":"cont","id":"libvirt-8"}
+#  5.789 ! 0x7f2dc0007960 {"timestamp": {"seconds": 1319466933, "microseconds": 129980}, "event": "RESUME"}
+#  5.789 < 0x7f2dc0007960 {"return": {}, "id": "libvirt-8"}
+#  7.537 ! 0x7f2dc0007960 {"timestamp": {"seconds": 1319466934, "microseconds": 881214}, "event": "SHUTDOWN"}
+#
+
+
+global start
+
+# Print a string, with a timestamp relative to the start of the script
+function print_ts(msg)
+{
+  now = gettimeofday_ns() / (1000*1000)
+  delta = (now - start)
+
+  printf("%3d.%03d %s\n", (delta / 1000), (delta % 1000), msg);
+}
+
+
+# Just so we know the script is now running
+probe begin {
+  start = gettimeofday_ns() / (1000*1000)
+  print_ts("begin")
+}
+
+probe libvirt.qemu.monitor_send_msg {
+  if (fd != -1) {
+    print_ts(sprintf("> %p %s (fd=%d)", mon, substr(msg, 0, strlen(msg)-2), fd));
+  } else {
+    print_ts(sprintf("> %p %s", mon, substr(msg, 0, strlen(msg)-2)));
+  }
+}
+
+probe libvirt.qemu.monitor_recv_reply {
+  print_ts(sprintf("< %p %s", mon, reply));
+}
+
+probe libvirt.qemu.monitor_recv_event {
+  print_ts(sprintf("! %p %s", mon, event));
+}

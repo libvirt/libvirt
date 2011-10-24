@@ -198,6 +198,9 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                 VIR_DEBUG("Finished 0 byte reply");
 #endif
             }
+            PROBE(QEMU_MONITOR_RECV_REPLY,
+                  "mon=%p reply=%s",
+                  mon, msg->rxBuffer);
             msg->finished = 1;
             used += end - (data + used);
             used += strlen(BASIC_PROMPT);

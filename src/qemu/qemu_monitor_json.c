@@ -126,9 +126,13 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
     if (virJSONValueObjectHasKey(obj, "QMP") == 1) {
         ret = 0;
     } else if (virJSONValueObjectHasKey(obj, "event") == 1) {
+        PROBE(QEMU_MONITOR_RECV_EVENT,
+              "mon=%p event=%s", mon, line);
         ret = qemuMonitorJSONIOProcessEvent(mon, obj);
     } else if (virJSONValueObjectHasKey(obj, "error") == 1 ||
                virJSONValueObjectHasKey(obj, "return") == 1) {
+        PROBE(QEMU_MONITOR_RECV_REPLY,
+              "mon=%p reply=%s", mon, line);
         if (msg) {
             msg->rxObject = obj;
             msg->finished = 1;

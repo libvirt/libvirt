@@ -1288,7 +1288,7 @@ libvirt_functions.stp: $(RPC_PROBE_FILES) $(srcdir)/rpc/gensystemtap.pl
 	$(AM_V_GEN)perl -w $(srcdir)/rpc/gensystemtap.pl $(RPC_PROBE_FILES) > $@
 
 libvirt_probes.stp: probes.d $(srcdir)/dtrace2systemtap.pl
-	$(AM_V_GEN)perl -w $(srcdir)/dtrace2systemtap.pl $< > $@
+	$(AM_V_GEN)perl -w $(srcdir)/dtrace2systemtap.pl $(bindir) $(sbindir) $(libdir) $< > $@
 
 CLEANFILES += probes.h probes.o libvirt_functions.stp libvirt_probes.stp
 endif
