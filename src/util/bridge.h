@@ -106,6 +106,15 @@ int     brGetEnableSTP          (brControl *ctl,
                                  const char *bridge,
                                  int *enable);
 
+int     brCreateTap             (brControl *ctl,
+                                 char **ifname,
+                                 int vnet_hdr,
+                                 int *tapfd);
+
+int     brSetInterfaceMac       (brControl *ctl,
+                                 const char *ifname,
+                                 const unsigned char *macaddr);
+
 # endif /* WITH_BRIDGE */
 
 #endif /* __QEMUD_BRIDGE_H__ */

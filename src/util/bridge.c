@@ -278,7 +278,7 @@ brDeleteInterface(brControl *ctl ATTRIBUTE_UNUSED,
 # endif
 
 /**
- * ifSetInterfaceMac:
+ * brSetInterfaceMac:
  * @ctl: bridge control pointer
  * @ifname: interface name to set MTU for
  * @macaddr: MAC address (VIR_MAC_BUFLEN in size)
@@ -288,8 +288,9 @@ brDeleteInterface(brControl *ctl ATTRIBUTE_UNUSED,
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-static int ifSetInterfaceMac(brControl *ctl, const char *ifname,
-                             const unsigned char *macaddr)
+int
+brSetInterfaceMac(brControl *ctl, const char *ifname,
+                  const unsigned char *macaddr)
 {
     struct ifreq ifr;
 
@@ -478,32 +479,12 @@ brAddTap(brControl *ctl,
          bool up,
          int *tapfd)
 {
-    int fd;
-    struct ifreq ifr;
-
     if (!ctl || !ctl->fd || !bridge || !ifname)
         return EINVAL;
 
-    if ((fd = open("/dev/net/tun", O_RDWR)) < 0)
-      return errno;
+    errno = brCreateTap(ctl, ifname, vnet_hdr, tapfd);
 
-    memset(&ifr, 0, sizeof(ifr));
-
-    ifr.ifr_flags = IFF_TAP|IFF_NO_PI;
-
-# ifdef IFF_VNET_HDR
-    if (vnet_hdr && brProbeVnetHdr(fd))
-        ifr.ifr_flags |= IFF_VNET_HDR;
-# else
-    (void) vnet_hdr;
-# endif
-
-    if (virStrcpyStatic(ifr.ifr_name, *ifname) == NULL) {
-        errno = EINVAL;
-        goto error;
-    }
-
-    if (ioctl(fd, TUNSETIFF, &ifr) < 0)
+    if (*tapfd < 0 || errno)
         goto error;
 
     /* We need to set the interface MAC before adding it
@@ -512,32 +493,22 @@ brAddTap(brControl *ctl,
      * seeing the kernel allocate random MAC for the TAP
      * device before we set our static MAC.
      */
-    if ((errno = ifSetInterfaceMac(ctl, ifr.ifr_name, macaddr)))
+    if ((errno = brSetInterfaceMac(ctl, *ifname, macaddr)))
         goto error;
     /* We need to set the interface MTU before adding it
      * to the bridge, because the bridge will have its
      * MTU adjusted automatically when we add the new interface.
      */
-    if ((errno = brSetInterfaceMtu(ctl, bridge, ifr.ifr_name)))
+    if ((errno = brSetInterfaceMtu(ctl, bridge, *ifname)))
         goto error;
-    if ((errno = brAddInterface(ctl, bridge, ifr.ifr_name)))
+    if ((errno = brAddInterface(ctl, bridge, *ifname)))
         goto error;
-    if (up && ((errno = brSetInterfaceUp(ctl, ifr.ifr_name, 1))))
+    if (up && ((errno = brSetInterfaceUp(ctl, *ifname, 1))))
         goto error;
-    if (!tapfd &&
-        (errno = ioctl(fd, TUNSETPERSIST, 1)))
-        goto error;
-    VIR_FREE(*ifname);
-    if (!(*ifname = strdup(ifr.ifr_name)))
-        goto error;
-    if (tapfd)
-        *tapfd = fd;
-    else
-        VIR_FORCE_CLOSE(fd);
     return 0;
 
  error:
-    VIR_FORCE_CLOSE(fd);
+    VIR_FORCE_CLOSE(*tapfd);
 
     return errno;
 }
@@ -801,6 +772,72 @@ brSetEnableSTP(brControl *ctl ATTRIBUTE_UNUSED,
 cleanup:
     virCommandFree(cmd);
     return ret;
+}
+
+/**
+ * brCreateTap:
+ * @ctl: bridge control pointer
+ * @ifname: the interface name
+ * @vnet_hr: whether to try enabling IFF_VNET_HDR
+ * @tapfd: file descriptor return value for the new tap device
+ *
+ * Creates a tap interface.
+ * If the @tapfd parameter is supplied, the open tap device file
+ * descriptor will be returned, otherwise the TAP device will be made
+ * persistent and closed. The caller must use brDeleteTap to remove
+ * a persistent TAP devices when it is no longer needed.
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
+
+int
+brCreateTap(brControl *ctl ATTRIBUTE_UNUSED,
+            char **ifname,
+            int vnet_hdr ATTRIBUTE_UNUSED,
+            int *tapfd)
+{
+    int fd;
+    struct ifreq ifr;
+
+    if (!ifname)
+        return EINVAL;
+
+    if ((fd = open("/dev/net/tun", O_RDWR)) < 0)
+        return errno;
+
+    memset(&ifr, 0, sizeof(ifr));
+
+    ifr.ifr_flags = IFF_TAP|IFF_NO_PI;
+
+# ifdef IFF_VNET_HDR
+    if (vnet_hdr && brProbeVnetHdr(fd))
+        ifr.ifr_flags |= IFF_VNET_HDR;
+# endif
+
+    if (virStrcpyStatic(ifr.ifr_name, *ifname) == NULL) {
+        errno = EINVAL;
+        goto error;
+    }
+
+    if (ioctl(fd, TUNSETIFF, &ifr) < 0)
+        goto error;
+
+    if (!tapfd &&
+        (errno = ioctl(fd, TUNSETPERSIST, 1)))
+        goto error;
+    VIR_FREE(*ifname);
+    if (!(*ifname = strdup(ifr.ifr_name)))
+        goto error;
+    if(tapfd)
+        *tapfd = fd;
+    else
+        VIR_FORCE_CLOSE(fd);
+    return 0;
+
+ error:
+    VIR_FORCE_CLOSE(fd);
+
+    return errno;
 }
 
 #endif /* WITH_BRIDGE */
