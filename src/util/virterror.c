@@ -1289,7 +1289,7 @@ void virReportSystemErrorFull(int domcode,
 
     virRaiseErrorFull(filename, funcname, linenr,
                       domcode, VIR_ERR_SYSTEM_ERROR, VIR_ERR_ERROR,
-                      msg, msgDetail, NULL, -1, -1, msg, msgDetail);
+                      msg, msgDetail, NULL, theerrno, -1, msg, msgDetail);
     errno = save_errno;
 }
 
