@@ -866,6 +866,8 @@
       <value>drop</value>
       <value>accept</value>
       <value>reject</value>
+      <value>continue</value>
+      <value>return</value>
     </choice>
   </define>
 
