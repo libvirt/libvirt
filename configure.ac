@@ -687,8 +687,9 @@ fi
 if test "$with_lxc" = "yes" || test "$with_lxc" = "check"; then
     AC_TRY_LINK([
         #include <sched.h>
+        #include <linux/loop.h>
     ], [
-        unshare (1);
+        unshare (!LO_FLAGS_AUTOCLEAR);
     ], [
         with_lxc=yes
     ], [
