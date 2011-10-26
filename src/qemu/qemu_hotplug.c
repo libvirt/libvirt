@@ -246,7 +246,7 @@ int qemuDomainAttachPciDiskDevice(struct qemud_driver *driver,
             }
         }
     } else {
-        virDomainDevicePCIAddress guestAddr;
+        virDomainDevicePCIAddress guestAddr = disk->info.addr.pci;
         ret = qemuMonitorAddPCIDisk(priv->mon,
                                     disk->src,
                                     type,
@@ -775,6 +775,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
             goto try_remove;
         }
     } else {
+        guestAddr = net->info.addr.pci;
         if (qemuMonitorAddPCINetwork(priv->mon, nicstr,
                                      &guestAddr) < 0) {
             qemuDomainObjExitMonitorWithDriver(driver, vm);
@@ -929,7 +930,7 @@ int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
                                          configfd, configfd_name);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     } else {
-        virDomainDevicePCIAddress guestAddr;
+        virDomainDevicePCIAddress guestAddr = hostdev->info.addr.pci;
 
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         ret = qemuMonitorAddPCIHostDevice(priv->mon,
