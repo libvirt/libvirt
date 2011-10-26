@@ -9245,7 +9245,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
 
     if (def->driverName || def->driverType || def->cachemode ||
         def->ioeventfd || def->event_idx) {
-        virBufferAsprintf(buf, "      <driver");
+        virBufferAddLit(buf, "      <driver");
         if (def->driverName)
             virBufferAsprintf(buf, " name='%s'", def->driverName);
         if (def->driverType)
@@ -9262,7 +9262,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
             virBufferAsprintf(buf, " ioeventfd='%s'", ioeventfd);
         if (def->event_idx)
             virBufferAsprintf(buf, " event_idx='%s'", event_idx);
-        virBufferAsprintf(buf, "/>\n");
+        virBufferAddLit(buf, "/>\n");
     }
 
     if (def->src || def->nhosts > 0 ||
@@ -9292,18 +9292,18 @@ virDomainDiskDefFormat(virBufferPtr buf,
                 virBufferEscapeString(buf, " name='%s'", def->src);
             }
             if (def->nhosts == 0) {
-                virBufferAsprintf(buf, "/>\n");
+                virBufferAddLit(buf, "/>\n");
             } else {
                 int i;
 
-                virBufferAsprintf(buf, ">\n");
+                virBufferAddLit(buf, ">\n");
                 for (i = 0; i < def->nhosts; i++) {
                     virBufferEscapeString(buf, "        <host name='%s'",
                                           def->hosts[i].name);
                     virBufferEscapeString(buf, " port='%s'/>\n",
                                           def->hosts[i].port);
                 }
-                virBufferAsprintf(buf, "      </source>\n");
+                virBufferAddLit(buf, "      </source>\n");
             }
             break;
         default:
@@ -9325,9 +9325,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "      <shareable/>\n");
     if (def->transient)
         virBufferAddLit(buf, "      <transient/>\n");
-    if (def->serial)
-        virBufferEscapeString(buf, "      <serial>%s</serial>\n",
-                              def->serial);
+    virBufferEscapeString(buf, "      <serial>%s</serial>\n", def->serial);
     if (def->encryption) {
         virBufferAdjustIndent(buf, 6);
         if (virStorageEncryptionFormat(buf, def->encryption) < 0)
@@ -9511,10 +9509,8 @@ virDomainActualNetDefFormat(virBufferPtr buf,
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        if (def->data.bridge.brname) {
-            virBufferEscapeString(buf, "        <source bridge='%s'/>\n",
-                                  def->data.bridge.brname);
-        }
+        virBufferEscapeString(buf, "        <source bridge='%s'/>\n",
+                              def->data.bridge.brname);
         break;
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
@@ -9575,10 +9571,8 @@ virDomainNetDefFormat(virBufferPtr buf,
     case VIR_DOMAIN_NET_TYPE_NETWORK:
         virBufferEscapeString(buf, "      <source network='%s'",
                               def->data.network.name);
-        if (def->data.network.portgroup) {
-           virBufferEscapeString(buf, " portgroup='%s'",
-                                 def->data.network.portgroup);
-        }
+        virBufferEscapeString(buf, " portgroup='%s'",
+                              def->data.network.portgroup);
         virBufferAddLit(buf, "/>\n");
         virBufferAdjustIndent(buf, 6);
         virVirtualPortProfileFormat(buf, def->data.network.virtPortProfile);
@@ -9589,15 +9583,13 @@ virDomainNetDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        if (def->data.ethernet.dev)
-            virBufferEscapeString(buf, "      <source dev='%s'/>\n",
-                                  def->data.ethernet.dev);
+        virBufferEscapeString(buf, "      <source dev='%s'/>\n",
+                              def->data.ethernet.dev);
         if (def->data.ethernet.ipaddr)
             virBufferAsprintf(buf, "      <ip address='%s'/>\n",
                               def->data.ethernet.ipaddr);
-        if (def->data.ethernet.script)
-            virBufferEscapeString(buf, "      <script path='%s'/>\n",
-                                  def->data.ethernet.script);
+        virBufferEscapeString(buf, "      <script path='%s'/>\n",
+                              def->data.ethernet.script);
         break;
 
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
@@ -9606,9 +9598,8 @@ virDomainNetDefFormat(virBufferPtr buf,
         if (def->data.bridge.ipaddr)
             virBufferAsprintf(buf, "      <ip address='%s'/>\n",
                               def->data.bridge.ipaddr);
-        if (def->data.bridge.script)
-            virBufferEscapeString(buf, "      <script path='%s'/>\n",
-                                  def->data.bridge.script);
+        virBufferEscapeString(buf, "      <script path='%s'/>\n",
+                              def->data.bridge.script);
         break;
 
     case VIR_DOMAIN_NET_TYPE_SERVER:
@@ -9631,7 +9622,7 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferEscapeString(buf, "      <source dev='%s'",
                               def->data.direct.linkdev);
         virBufferAsprintf(buf, " mode='%s'",
-                   virMacvtapModeTypeToString(def->data.direct.mode));
+                          virMacvtapModeTypeToString(def->data.direct.mode));
         virBufferAddLit(buf, "/>\n");
         virBufferAdjustIndent(buf, 6);
         virVirtualPortProfileFormat(buf, def->data.direct.virtPortProfile);
@@ -9688,7 +9679,8 @@ virDomainNetDefFormat(virBufferPtr buf,
 
     if (def->tune.sndbuf_specified) {
         virBufferAddLit(buf,   "      <tune>\n");
-        virBufferAsprintf(buf, "        <sndbuf>%lu</sndbuf>\n", def->tune.sndbuf);
+        virBufferAsprintf(buf, "        <sndbuf>%lu</sndbuf>\n",
+                          def->tune.sndbuf);
         virBufferAddLit(buf,   "      </tune>\n");
     }
 
@@ -9726,7 +9718,7 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    /* Compat with legacy  <console tty='/dev/pts/5'/> syntax */
+    /* Compat with legacy <console tty='/dev/pts/5'/> syntax */
     virBufferAsprintf(buf, " type='%s'", type);
     if (tty_compat) {
         virBufferEscapeString(buf, " tty='%s'",
@@ -9897,8 +9889,7 @@ virDomainChrDefFormat(virBufferPtr buf,
             return -1;
     }
 
-    virBufferAsprintf(buf, "    </%s>\n",
-                      elementName);
+    virBufferAsprintf(buf, "    </%s>\n", elementName);
 
     return ret;
 }
@@ -9932,9 +9923,8 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
         for (i = 0; i < VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES; i++)
             virBufferEscapeString(buf, "      <certificate>%s</certificate>\n",
                                   def->data.cert.file[i]);
-        if (def->data.cert.database)
-            virBufferEscapeString(buf, "      <database>%s</database>\n",
-                                  def->data.cert.database);
+        virBufferEscapeString(buf, "      <database>%s</database>\n",
+                              def->data.cert.database);
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
@@ -9967,8 +9957,7 @@ virDomainSoundDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "    <sound model='%s'",
-                      model);
+    virBufferAsprintf(buf, "    <sound model='%s'",  model);
 
     if (virDomainDeviceInfoIsSet(&def->info, flags)) {
         virBufferAddLit(buf, ">\n");
@@ -9996,8 +9985,7 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "    <memballoon model='%s'",
-                      model);
+    virBufferAsprintf(buf, "    <memballoon model='%s'", model);
 
     if (virDomainDeviceInfoIsSet(&def->info, flags)) {
         virBufferAddLit(buf, ">\n");
@@ -10211,7 +10199,8 @@ virDomainTimerDefFormat(virBufferPtr buf,
         && (def->catchup.limit == 0)) {
         virBufferAddLit(buf, "/>\n");
     } else {
-        virBufferAddLit(buf, ">\n      <catchup ");
+        virBufferAddLit(buf, ">\n");
+        virBufferAddLit(buf, "      <catchup ");
         if (def->catchup.threshold > 0) {
             virBufferAsprintf(buf, " threshold='%lu'", def->catchup.threshold);
         }
@@ -10221,7 +10210,8 @@ virDomainTimerDefFormat(virBufferPtr buf,
         if (def->catchup.limit > 0) {
             virBufferAsprintf(buf, " limit='%lu'", def->catchup.limit);
         }
-        virBufferAddLit(buf, "/>\n    </timer>\n");
+        virBufferAddLit(buf, "/>\n");
+        virBufferAddLit(buf, "    </timer>\n");
     }
 
     return 0;
@@ -10509,7 +10499,8 @@ virDomainHostdevDefFormat(virBufferPtr buf,
                               def->source.subsys.u.usb.bus,
                               def->source.subsys.u.usb.device);
     } else if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
-        virBufferAsprintf(buf, "        <address domain='0x%.4x' bus='0x%.2x' slot='0x%.2x' function='0x%.1x'/>\n",
+        virBufferAsprintf(buf, "        <address domain='0x%.4x' bus='0x%.2x' "
+                          "slot='0x%.2x' function='0x%.1x'/>\n",
                           def->source.subsys.u.pci.domain,
                           def->source.subsys.u.pci.bus,
                           def->source.subsys.u.pci.slot,
@@ -10562,8 +10553,8 @@ virDomainRedirdevDefFormat(virBufferPtr buf,
 
 static int
 virDomainHubDefFormat(virBufferPtr buf,
-                        virDomainHubDefPtr def,
-                        unsigned int flags)
+                      virDomainHubDefPtr def,
+                      unsigned int flags)
 {
     const char *type = virDomainHubTypeToString(def->type);
 
@@ -10638,9 +10629,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     virUUIDFormat(uuid, uuidstr);
     virBufferAsprintf(buf, "  <uuid>%s</uuid>\n", uuidstr);
 
-    if (def->description)
-        virBufferEscapeString(buf, "  <description>%s</description>\n",
-                              def->description);
+    virBufferEscapeString(buf, "  <description>%s</description>\n",
+                          def->description);
 
     virBufferAsprintf(buf, "  <memory>%lu</memory>\n", def->mem.max_balloon);
     virBufferAsprintf(buf, "  <currentMemory>%lu</currentMemory>\n",
@@ -10648,16 +10638,16 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     /* add blkiotune only if there are any */
     if (def->blkio.weight) {
-        virBufferAsprintf(buf, "  <blkiotune>\n");
+        virBufferAddLit(buf, "  <blkiotune>\n");
         virBufferAsprintf(buf, "    <weight>%u</weight>\n",
                           def->blkio.weight);
-        virBufferAsprintf(buf, "  </blkiotune>\n");
+        virBufferAddLit(buf, "  </blkiotune>\n");
     }
 
     /* add memtune only if there are any */
     if (def->mem.hard_limit || def->mem.soft_limit || def->mem.min_guarantee ||
         def->mem.swap_hard_limit)
-        virBufferAsprintf(buf, "  <memtune>\n");
+        virBufferAddLit(buf, "  <memtune>\n");
     if (def->mem.hard_limit) {
         virBufferAsprintf(buf, "    <hard_limit>%lu</hard_limit>\n",
                           def->mem.hard_limit);
@@ -10676,12 +10666,13 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     }
     if (def->mem.hard_limit || def->mem.soft_limit || def->mem.min_guarantee ||
         def->mem.swap_hard_limit)
-        virBufferAsprintf(buf, "  </memtune>\n");
+        virBufferAddLit(buf, "  </memtune>\n");
 
     if (def->mem.hugepage_backed) {
-        virBufferAddLit(buf, "  <memoryBacking>\n");
-        virBufferAddLit(buf, "    <hugepages/>\n");
-        virBufferAddLit(buf, "  </memoryBacking>\n");
+        virBufferStrcat(buf,
+                        "  <memoryBacking>\n",
+                        "    <hugepages/>\n",
+                        "  </memoryBacking>\n", NULL);
     }
 
     for (n = 0 ; n < def->cpumasklen ; n++)
@@ -10739,27 +10730,25 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         def->cputune.period || def->cputune.quota)
         virBufferAddLit(buf, "  </cputune>\n");
 
-    if (def->numatune.memory.nodemask)
-        virBufferAddLit(buf, "  <numatune>\n");
-
     if (def->numatune.memory.nodemask) {
+        const char *mode;
         char *nodemask = NULL;
+
+        virBufferAddLit(buf, "  <numatune>\n");
         nodemask = virDomainCpuSetFormat(def->numatune.memory.nodemask,
                                          VIR_DOMAIN_CPUMASK_LEN);
         if (nodemask == NULL) {
-            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("failed to format nodeset for NUMA memory tuning"));
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                          _("failed to format nodeset for NUMA memory tuning"));
             goto cleanup;
         }
 
+        mode = virDomainNumatuneMemModeTypeToString(def->numatune.memory.mode);
         virBufferAsprintf(buf, "    <memory mode='%s' nodeset='%s'/>\n",
-                          virDomainNumatuneMemModeTypeToString(def->numatune.memory.mode),
-                          nodemask);
+                          mode, nodemask);
         VIR_FREE(nodemask);
-    }
-
-    if (def->numatune.memory.nodemask)
         virBufferAddLit(buf, "  </numatune>\n");
+    }
 
     if (def->sysinfo)
         virDomainSysinfoDefFormat(buf, def->sysinfo);
@@ -10767,12 +10756,12 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     if (def->os.bootloader) {
         virBufferEscapeString(buf, "  <bootloader>%s</bootloader>\n",
                               def->os.bootloader);
-        if (def->os.bootloaderArgs)
-            virBufferEscapeString(buf, "  <bootloader_args>%s</bootloader_args>\n",
-                                  def->os.bootloaderArgs);
+        virBufferEscapeString(buf,
+                              "  <bootloader_args>%s</bootloader_args>\n",
+                              def->os.bootloaderArgs);
     }
-    virBufferAddLit(buf, "  <os>\n");
 
+    virBufferAddLit(buf, "  <os>\n");
     virBufferAddLit(buf, "    <type");
     if (def->os.arch)
         virBufferAsprintf(buf, " arch='%s'", def->os.arch);
@@ -10789,24 +10778,18 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     else
         virBufferAsprintf(buf, ">%s</type>\n", def->os.type);
 
-    if (def->os.init)
-        virBufferEscapeString(buf, "    <init>%s</init>\n",
-                              def->os.init);
-    if (def->os.loader)
-        virBufferEscapeString(buf, "    <loader>%s</loader>\n",
-                              def->os.loader);
-    if (def->os.kernel)
-        virBufferEscapeString(buf, "    <kernel>%s</kernel>\n",
-                              def->os.kernel);
-    if (def->os.initrd)
-        virBufferEscapeString(buf, "    <initrd>%s</initrd>\n",
-                              def->os.initrd);
-    if (def->os.cmdline)
-        virBufferEscapeString(buf, "    <cmdline>%s</cmdline>\n",
-                              def->os.cmdline);
-    if (def->os.root)
-        virBufferEscapeString(buf, "    <root>%s</root>\n",
-                              def->os.root);
+    virBufferEscapeString(buf, "    <init>%s</init>\n",
+                          def->os.init);
+    virBufferEscapeString(buf, "    <loader>%s</loader>\n",
+                          def->os.loader);
+    virBufferEscapeString(buf, "    <kernel>%s</kernel>\n",
+                          def->os.kernel);
+    virBufferEscapeString(buf, "    <initrd>%s</initrd>\n",
+                          def->os.initrd);
+    virBufferEscapeString(buf, "    <cmdline>%s</cmdline>\n",
+                          def->os.cmdline);
+    virBufferEscapeString(buf, "    <root>%s</root>\n",
+                          def->os.root);
 
     if (!def->os.bootloader) {
         for (n = 0 ; n < def->os.nBootDevs ; n++) {
@@ -10876,7 +10859,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                       virDomainClockOffsetTypeToString(def->clock.offset));
     switch (def->clock.offset) {
     case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
-        virBufferAsprintf(buf, " adjustment='%lld'", def->clock.data.adjustment);
+        virBufferAsprintf(buf, " adjustment='%lld'",
+                          def->clock.data.adjustment);
         break;
     case VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE:
         virBufferEscapeString(buf, " timezone='%s'", def->clock.data.timezone);
@@ -10908,9 +10892,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     virBufferAddLit(buf, "  <devices>\n");
 
-    if (def->emulator)
-        virBufferEscapeString(buf, "    <emulator>%s</emulator>\n",
-                              def->emulator);
+    virBufferEscapeString(buf, "    <emulator>%s</emulator>\n",
+                          def->emulator);
 
     for (n = 0 ; n < def->ndisks ; n++)
         if (virDomainDiskDefFormat(buf, def->disks[n], flags) < 0)
@@ -11006,10 +10989,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             goto cleanup;
 
     if (def->watchdog)
-        virDomainWatchdogDefFormat (buf, def->watchdog, flags);
+        virDomainWatchdogDefFormat(buf, def->watchdog, flags);
 
     if (def->memballoon)
-        virDomainMemballoonDefFormat (buf, def->memballoon, flags);
+        virDomainMemballoonDefFormat(buf, def->memballoon, flags);
 
     virBufferAddLit(buf, "  </devices>\n");
 
@@ -11023,18 +11006,19 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             (flags & VIR_DOMAIN_XML_INACTIVE)) {
             /* This is the default for inactive xml, so nothing to output.  */
         } else {
-            virBufferAsprintf(buf, "  <seclabel type='%s' model='%s' relabel='%s'>\n",
+            virBufferAsprintf(buf, "  <seclabel type='%s' model='%s' "
+                              "relabel='%s'>\n",
                               sectype, def->seclabel.model,
                               def->seclabel.norelabel ? "no" : "yes");
-            if (def->seclabel.label)
-                virBufferEscapeString(buf, "    <label>%s</label>\n",
-                                      def->seclabel.label);
-            if (!def->seclabel.norelabel && def->seclabel.imagelabel)
-                virBufferEscapeString(buf, "    <imagelabel>%s</imagelabel>\n",
+            virBufferEscapeString(buf, "    <label>%s</label>\n",
+                                  def->seclabel.label);
+            if (!def->seclabel.norelabel)
+                virBufferEscapeString(buf,
+                                      "    <imagelabel>%s</imagelabel>\n",
                                       def->seclabel.imagelabel);
-            if (def->seclabel.baselabel &&
-                (def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC))
-                virBufferEscapeString(buf, "    <baselabel>%s</baselabel>\n",
+            if (def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC)
+                virBufferEscapeString(buf,
+                                      "    <baselabel>%s</baselabel>\n",
                                       def->seclabel.baselabel);
             virBufferAddLit(buf, "  </seclabel>\n");
         }
