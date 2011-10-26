@@ -497,6 +497,8 @@ static int remoteRelayDomainEventDiskChange(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 
 mem_error:
+    VIR_FREE(oldSrcPath_p);
+    VIR_FREE(newSrcPath_p);
     virReportOOMError();
     return -1;
 }

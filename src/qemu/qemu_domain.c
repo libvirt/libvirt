@@ -1602,9 +1602,8 @@ qemuDomainCheckDiskPresence(struct qemud_driver *driver,
 {
     int ret = -1;
     int i;
-    int accessRet;
     virDomainDiskDefPtr disk;
-    char uuid[VIR_UUID_STRING_BUFLEN] ATTRIBUTE_UNUSED;
+    char uuid[VIR_UUID_STRING_BUFLEN];
     virDomainEventPtr event = NULL;
 
     virUUIDFormat(vm->def->uuid, uuid);
@@ -1615,11 +1614,10 @@ qemuDomainCheckDiskPresence(struct qemud_driver *driver,
         if (!disk->startupPolicy || !disk->src)
             continue;
 
-        if ((accessRet = virFileAccessibleAs(disk->src, F_OK,
-                                             driver->user,
-                                             driver->group)) >= 0) {
-            /* disk accessible or virFileAccessibleAs()
-             * terminated with signal*/
+        if (virFileAccessibleAs(disk->src, F_OK,
+                                driver->user,
+                                driver->group) >= 0) {
+            /* disk accessible */
             continue;
         }
 
@@ -1628,7 +1626,7 @@ qemuDomainCheckDiskPresence(struct qemud_driver *driver,
                 break;
 
             case VIR_DOMAIN_STARTUP_POLICY_MANDATORY:
-                virReportSystemError(-accessRet,
+                virReportSystemError(errno,
                                      _("cannot access file '%s'"),
                                      disk->src);
                 goto cleanup;
@@ -1636,7 +1634,7 @@ qemuDomainCheckDiskPresence(struct qemud_driver *driver,
 
             case VIR_DOMAIN_STARTUP_POLICY_REQUISITE:
                 if (!start_with_state) {
-                    virReportSystemError(-accessRet,
+                    virReportSystemError(errno,
                                          _("cannot access file '%s'"),
                                          disk->src);
                     goto cleanup;
@@ -1649,8 +1647,8 @@ qemuDomainCheckDiskPresence(struct qemud_driver *driver,
                 break;
         }
 
-        VIR_DEBUG("Droping disk '%s' on domain '%s' (UUID '%s') "
-                  "due to not accessible source '%s'",
+        VIR_DEBUG("Dropping disk '%s' on domain '%s' (UUID '%s') "
+                  "due to inaccessible source '%s'",
                   disk->dst, vm->def->name, uuid, disk->src);
 
         event = virDomainEventDiskChangeNewFromObj(vm, disk->src, NULL, disk->info.alias,

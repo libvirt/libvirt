@@ -2726,7 +2726,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     if (startupPolicy) {
         int i;
 
-        if ((i = virDomainStartupPolicyTypeFromString(startupPolicy)) < 0) {
+        if ((i = virDomainStartupPolicyTypeFromString(startupPolicy)) <= 0) {
             virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                  _("unknown startupPolicy value '%s'"),
                                  startupPolicy);
