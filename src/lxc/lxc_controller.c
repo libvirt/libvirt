@@ -208,7 +208,6 @@ static int lxcSetupLoopDevices(virDomainDefPtr def, size_t *nloopDevs, int **loo
 
         VIR_DEBUG("Saving loop fd %d", fd);
         if (VIR_REALLOC_N(*loopDevs, *nloopDevs+1) < 0) {
-            *nloopDevs = 0;
             VIR_FORCE_CLOSE(fd);
             virReportOOMError();
             goto cleanup;
