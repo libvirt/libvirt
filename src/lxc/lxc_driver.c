@@ -2671,6 +2671,7 @@ static int
 lxcDomainInterfaceStats(virDomainPtr dom,
                         const char *path ATTRIBUTE_UNUSED,
                         struct _virDomainInterfaceStats *stats ATTRIBUTE_UNUSED)
+{
     lxcError(VIR_ERR_NO_SUPPORT, "%s", __FUNCTION__);
     return -1;
 }
