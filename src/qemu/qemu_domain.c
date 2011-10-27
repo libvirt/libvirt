@@ -1337,7 +1337,6 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
                                 virDomainSnapshotObjPtr snapshot,
                                 char *snapshotDir)
 {
-    int fd = -1;
     char *newxml = NULL;
     int ret = -1;
     char *snapDir = NULL;
@@ -1367,33 +1366,19 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
         virReportOOMError();
         goto cleanup;
     }
-    fd = open(snapFile, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR);
-    if (fd < 0) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("failed to create snapshot file '%s'"), snapFile);
-        goto cleanup;
-    }
 
     if (virAsprintf(&tmp, "snapshot-edit %s", vm->def->name) < 0) {
         virReportOOMError();
         goto cleanup;
     }
-    virEmitXMLWarning(fd, snapshot->def->name, tmp);
+
+    ret = virXMLSaveFile(snapFile, snapshot->def->name, tmp, newxml);
     VIR_FREE(tmp);
-
-    if (safewrite(fd, newxml, strlen(newxml)) != strlen(newxml)) {
-        virReportSystemError(errno, _("Failed to write snapshot data to %s"),
-                             snapFile);
-        goto cleanup;
-    }
-
-    ret = 0;
 
 cleanup:
     VIR_FREE(snapFile);
     VIR_FREE(snapDir);
     VIR_FREE(newxml);
-    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 

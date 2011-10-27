@@ -11105,8 +11105,7 @@ int virDomainSaveXML(const char *configDir,
                      const char *xml)
 {
     char *configFile = NULL;
-    int fd = -1, ret = -1;
-    size_t towrite;
+    int ret = -1;
 
     if ((configFile = virDomainConfigFile(configDir, def->name)) == NULL)
         goto cleanup;
@@ -11118,36 +11117,9 @@ int virDomainSaveXML(const char *configDir,
         goto cleanup;
     }
 
-    if ((fd = open(configFile,
-                   O_WRONLY | O_CREAT | O_TRUNC,
-                   S_IRUSR | S_IWUSR )) < 0) {
-        virReportSystemError(errno,
-                             _("cannot create config file '%s'"),
-                             configFile);
-        goto cleanup;
-    }
+    ret = virXMLSaveFile(configFile, def->name, "edit", xml);
 
-    virEmitXMLWarning(fd, def->name, "edit");
-
-    towrite = strlen(xml);
-    if (safewrite(fd, xml, towrite) < 0) {
-        virReportSystemError(errno,
-                             _("cannot write config file '%s'"),
-                             configFile);
-        goto cleanup;
-    }
-
-    if (VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno,
-                             _("cannot save config file '%s'"),
-                             configFile);
-        goto cleanup;
-    }
-
-    ret = 0;
  cleanup:
-    VIR_FORCE_CLOSE(fd);
-
     VIR_FREE(configFile);
     return ret;
 }
