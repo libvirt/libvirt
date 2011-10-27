@@ -1058,7 +1058,7 @@ int
 virFileAccessibleAs(const char *path,
                     int mode,
                     uid_t uid ATTRIBUTE_UNUSED,
-                    git_t gid ATTRIBUTE_UNUSED)
+                    gid_t gid ATTRIBUTE_UNUSED)
 {
 
     VIR_WARN("Ignoring uid/gid due to WIN32");
