@@ -1319,14 +1319,20 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
             goto error;
     }
 
-    /* Disks (VirtIO only for now */
+    /* Disks (VirtIO only for now) */
     for (i = 0; i < def->ndisks ; i++) {
-        if (def->disks[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
-            continue;
-
         /* Only VirtIO disks use PCI addrs */
         if (def->disks[i]->bus != VIR_DOMAIN_DISK_BUS_VIRTIO)
             continue;
+
+        if (def->disks[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
+            continue;
+
+        if (def->disks[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                          _("virtio only support device address type 'PCI'"));
+            goto error;
+        }
 
         if (qemuDomainPCIAddressSetNextAddr(addrs, &def->disks[i]->info) < 0)
             goto error;
