@@ -55,6 +55,7 @@ virSecretDefFree(virSecretDefPtr def)
 
     case VIR_SECRET_USAGE_TYPE_CEPH:
         VIR_FREE(def->usage.ceph);
+        break;
 
     default:
         VIR_ERROR(_("unexpected secret usage type %d"), def->usage_type);
