@@ -42,6 +42,7 @@ struct _virSecretDef {
     int usage_type;
     union {
         char *volume;               /* May be NULL */
+        char *ceph;
     } usage;
 };
 
