@@ -930,6 +930,8 @@ virSecretDefFormat;
 virSecretDefFree;
 virSecretDefParseFile;
 virSecretDefParseString;
+virSecretUsageTypeTypeFromString;
+virSecretUsageTypeTypeToString;
 
 
 # security_driver.h

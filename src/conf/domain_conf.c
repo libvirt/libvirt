@@ -49,6 +49,7 @@
 #include "virfile.h"
 #include "bitmap.h"
 #include "count-one-bits.h"
+#include "secret_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -184,6 +185,11 @@ VIR_ENUM_IMPL(virDomainDiskProtocol, VIR_DOMAIN_DISK_PROTOCOL_LAST,
               "nbd",
               "rbd",
               "sheepdog")
+
+VIR_ENUM_IMPL(virDomainDiskSecretType, VIR_DOMAIN_DISK_SECRET_TYPE_LAST,
+              "none",
+              "uuid",
+              "usage")
 
 VIR_ENUM_IMPL(virDomainDiskIo, VIR_DOMAIN_DISK_IO_LAST,
               "default",
@@ -788,6 +794,9 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
     VIR_FREE(def->dst);
     VIR_FREE(def->driverName);
     VIR_FREE(def->driverType);
+    VIR_FREE(def->auth.username);
+    if (def->auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_USAGE)
+        VIR_FREE(def->auth.secret.usage);
     virStorageEncryptionFree(def->encryption);
     virDomainDeviceInfoClear(&def->info);
 
@@ -2304,7 +2313,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                          unsigned int flags)
 {
     virDomainDiskDefPtr def;
-    xmlNodePtr cur, host;
+    xmlNodePtr cur, child;
     char *type = NULL;
     char *device = NULL;
     char *snapshot = NULL;
@@ -2326,6 +2335,10 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     virStorageEncryptionPtr encryption = NULL;
     char *serial = NULL;
     char *startupPolicy = NULL;
+    char *authUsername = NULL;
+    char *authUsage = NULL;
+    char *authUUID = NULL;
+    char *usageType = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -2382,10 +2395,10 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                                              _("missing name for disk source"));
                         goto error;
                     }
-                    host = cur->children;
-                    while (host != NULL) {
-                        if (host->type == XML_ELEMENT_NODE &&
-                            xmlStrEqual(host->name, BAD_CAST "host")) {
+                    child = cur->children;
+                    while (child != NULL) {
+                        if (child->type == XML_ELEMENT_NODE &&
+                            xmlStrEqual(child->name, BAD_CAST "host")) {
                             if (VIR_REALLOC_N(hosts, nhosts + 1) < 0) {
                                 virReportOOMError();
                                 goto error;
@@ -2394,20 +2407,20 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                             hosts[nhosts].port = NULL;
                             nhosts++;
 
-                            hosts[nhosts - 1].name = virXMLPropString(host, "name");
+                            hosts[nhosts - 1].name = virXMLPropString(child, "name");
                             if (!hosts[nhosts - 1].name) {
                                 virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                                      "%s", _("missing name for host"));
                                 goto error;
                             }
-                            hosts[nhosts - 1].port = virXMLPropString(host, "port");
+                            hosts[nhosts - 1].port = virXMLPropString(child, "port");
                             if (!hosts[nhosts - 1].port) {
                                 virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                                      "%s", _("missing port for host"));
                                 goto error;
                             }
                         }
-                        host = host->next;
+                        child = child->next;
                     }
                     break;
                 default:
@@ -2444,6 +2457,58 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                 iotag = virXMLPropString(cur, "io");
                 ioeventfd = virXMLPropString(cur, "ioeventfd");
                 event_idx = virXMLPropString(cur, "event_idx");
+            } else if (xmlStrEqual(cur->name, BAD_CAST "auth")) {
+                authUsername = virXMLPropString(cur, "username");
+                if (authUsername == NULL) {
+                    virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                         _("missing username for auth"));
+                    goto error;
+                }
+
+                def->auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_NONE;
+                child = cur->children;
+                while (child != NULL) {
+                    if (child->type == XML_ELEMENT_NODE &&
+                        xmlStrEqual(child->name, BAD_CAST "secret")) {
+                        usageType = virXMLPropString(child, "type");
+                        if (usageType == NULL) {
+                            virDomainReportError(VIR_ERR_XML_ERROR,
+                                                 _("missing type for secret"));
+                            goto error;
+                        }
+                        if (virSecretUsageTypeTypeFromString(usageType) !=
+                            VIR_SECRET_USAGE_TYPE_CEPH) {
+                            virDomainReportError(VIR_ERR_XML_ERROR,
+                                                 _("invalid secret type %s"),
+                                                 usageType);
+                            goto error;
+                        }
+
+                        authUUID = virXMLPropString(child, "uuid");
+                        authUsage = virXMLPropString(child, "usage");
+
+                        if (authUUID != NULL && authUsage != NULL) {
+                            virDomainReportError(VIR_ERR_XML_ERROR,
+                                                 _("only one of uuid and usage can be specfied"));
+                            goto error;
+                        }
+                        if (authUUID != NULL) {
+                            def->auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_UUID;
+                            if (virUUIDParse(authUUID,
+                                             def->auth.secret.uuid) < 0) {
+                                virDomainReportError(VIR_ERR_XML_ERROR,
+                                                     _("malformed uuid %s"),
+                                                     authUUID);
+                                goto error;
+                            }
+                        } else if (authUsage != NULL) {
+                            def->auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_USAGE;
+                            def->auth.secret.usage = authUsage;
+                            authUsage = NULL;
+                        }
+                    }
+                    child = child->next;
+                }
             } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
                 def->readonly = 1;
             } else if (xmlStrEqual(cur->name, BAD_CAST "shareable")) {
@@ -2683,6 +2748,8 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     hosts = NULL;
     def->nhosts = nhosts;
     nhosts = 0;
+    def->auth.username = authUsername;
+    authUsername = NULL;
     def->driverName = driverName;
     driverName = NULL;
     def->driverType = driverType;
@@ -2719,6 +2786,10 @@ cleanup:
     VIR_FREE(hosts);
     VIR_FREE(protocol);
     VIR_FREE(device);
+    VIR_FREE(authUsername);
+    VIR_FREE(usageType);
+    VIR_FREE(authUUID);
+    VIR_FREE(authUsage);
     VIR_FREE(driverType);
     VIR_FREE(driverName);
     VIR_FREE(cachetag);
@@ -9208,6 +9279,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
     const char *event_idx = virDomainVirtioEventIdxTypeToString(def->event_idx);
     const char *startupPolicy = virDomainStartupPolicyTypeToString(def->startupPolicy);
 
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
     if (!type) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                              _("unexpected disk type %d"), def->type);
@@ -9263,6 +9336,23 @@ virDomainDiskDefFormat(virBufferPtr buf,
         if (def->event_idx)
             virBufferAsprintf(buf, " event_idx='%s'", event_idx);
         virBufferAddLit(buf, "/>\n");
+    }
+
+    if (def->auth.username) {
+        virBufferEscapeString(buf, "      <auth username='%s'>\n",
+                              def->auth.username);
+        if (def->auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_UUID) {
+            virUUIDFormat(def->auth.secret.uuid, uuidstr);
+            virBufferAsprintf(buf,
+                              "        <secret type='ceph' uuid='%s'/>\n",
+                              uuidstr);
+        }
+        if (def->auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_USAGE) {
+            virBufferEscapeString(buf,
+                                  "        <secret type='ceph' usage='%s'/>\n",
+                                  def->auth.secret.usage);
+        }
+        virBufferAddLit(buf, "      </auth>\n");
     }
 
     if (def->src || def->nhosts > 0 ||

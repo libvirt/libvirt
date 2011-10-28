@@ -278,6 +278,14 @@ enum virDomainStartupPolicy {
     VIR_DOMAIN_STARTUP_POLICY_LAST
 };
 
+enum virDomainDiskSecretType {
+    VIR_DOMAIN_DISK_SECRET_TYPE_NONE,
+    VIR_DOMAIN_DISK_SECRET_TYPE_UUID,
+    VIR_DOMAIN_DISK_SECRET_TYPE_USAGE,
+
+    VIR_DOMAIN_DISK_SECRET_TYPE_LAST
+};
+
 /* Stores the virtual disk configuration */
 typedef struct _virDomainDiskDef virDomainDiskDef;
 typedef virDomainDiskDef *virDomainDiskDefPtr;
@@ -290,6 +298,14 @@ struct _virDomainDiskDef {
     int protocol;
     int nhosts;
     virDomainDiskHostDefPtr hosts;
+    struct {
+        char *username;
+        int secretType; /* enum virDomainDiskSecretType */
+        union {
+            unsigned char uuid[VIR_UUID_BUFLEN];
+            char *usage;
+        } secret;
+    } auth;
     char *driverName;
     char *driverType;
     char *serial;
@@ -1881,6 +1897,7 @@ VIR_ENUM_DECL(virDomainDiskCache)
 VIR_ENUM_DECL(virDomainDiskErrorPolicy)
 VIR_ENUM_DECL(virDomainDiskProtocol)
 VIR_ENUM_DECL(virDomainDiskIo)
+VIR_ENUM_DECL(virDomainDiskSecretType)
 VIR_ENUM_DECL(virDomainDiskSnapshot)
 VIR_ENUM_DECL(virDomainIoEventFd)
 VIR_ENUM_DECL(virDomainVirtioEventIdx)

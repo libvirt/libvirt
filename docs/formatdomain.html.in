@@ -913,6 +913,16 @@
       &lt;transient/&gt;
       &lt;address type='drive' controller='0' bus='1' unit='0'/&gt;
     &lt;/disk&gt;
+    &lt;disk type='network'&gt;
+      &lt;driver name="qemu" type="raw"/&gt;
+      &lt;source protocol="rbd" name="image_name2"&gt;
+        &lt;host name="hostname" port="7000"/&gt;
+      &lt;/source&gt;
+      &lt;target dev="hdd" bus="ide"/&gt;
+      &lt;auth username='myuser'&gt;
+        &lt;secret type='ceph' usage='mypassid'/&gt;
+      &lt;/auth&gt;
+    &lt;/disk&gt;
     &lt;disk type='block' device='cdrom'&gt;
       &lt;driver name='qemu' type='raw'/&gt;
       &lt;target def='hdc' bus='ide'/&gt;
@@ -1160,7 +1170,24 @@
         "drive" controller, additional attributes
         <code>controller</code>, <code>bus</code>,
         and <code>unit</code> are available, each defaulting to 0.
-
+      </dd>
+      <dt><code>auth</code></dt>
+      <dd>If present, the <code>auth</code> element provides the
+        authentication credentials needed to access the source.  It
+        includes a mandatory attribute <code>username</code>, which
+        identifies the username to use during authentication, as well
+        as a sub-element <code>secret</code> with mandatory
+        attribute <code>type</code>, to tie back to
+        a <a href="formatsecret.html">libvirt secret object</a> that
+        holds the actual password or other credentials (the domain XML
+        intentionally does not expose the password, only the reference
+        to the object that does manage the password).  For now, the
+        only known secret <code>type</code> is "ceph", for Ceph RBD
+        network sources, and requires either an
+        attribute <code>uuid</code> with the UUID of the Ceph secret
+        object, or an attribute <code>usage</code> with the name
+        associated with the Ceph secret
+        object.  <span class="since">libvirt 0.9.7</span>
       </dd>
     </dl>
 

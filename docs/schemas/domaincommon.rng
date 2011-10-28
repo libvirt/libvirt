@@ -602,6 +602,9 @@
     <optional>
       <ref name="driver"/>
     </optional>
+    <optional>
+      <ref name="diskAuth"/>
+    </optional>
     <ref name="target"/>
     <optional>
       <ref name="deviceBoot"/>
@@ -2533,6 +2536,32 @@
         <ref name="positiveInteger"/>
       </attribute>
       <empty/>
+    </element>
+  </define>
+  <define name="diskAuth">
+    <element name="auth">
+      <attribute name="username">
+        <ref name="genericName"/>
+      </attribute>
+      <ref name="diskAuthSecret"/>
+    </element>
+  </define>
+
+  <define name='diskAuthSecret'>
+    <element name='secret'>
+      <attribute name='type'>
+        <choice>
+          <value>ceph</value>
+        </choice>
+      </attribute>
+      <choice>
+        <attribute name='uuid'>
+          <ref name="UUID"/>
+        </attribute>
+        <attribute name="usage">
+          <ref name="genericName"/>
+        </attribute>
+      </choice>
     </element>
   </define>
 
