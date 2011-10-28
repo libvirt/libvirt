@@ -3804,6 +3804,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                         goto error;
 
                     virCommandAddArg(cmd, devstr);
+                    VIR_FREE(devstr);
                 }
             } else if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
                 def->controllers[i]->model == -1 &&
