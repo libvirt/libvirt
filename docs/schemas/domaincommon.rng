@@ -2558,8 +2558,8 @@
         <attribute name='uuid'>
           <ref name="UUID"/>
         </attribute>
-        <attribute name="usage">
-          <ref name="genericName"/>
+        <attribute name='usage'>
+          <ref name='genericName'/>
         </attribute>
       </choice>
     </element>
@@ -2658,11 +2658,6 @@
   <define name="diskSerial">
     <data type="string">
       <param name="pattern">[A-Za-z0-9_\.\+\-]+</param>
-    </data>
-  </define>
-  <define name="genericName">
-    <data type="string">
-      <param name="pattern">[a-zA-Z0-9_\+\-]+</param>
     </data>
   </define>
   <define name="bridgeMode">
