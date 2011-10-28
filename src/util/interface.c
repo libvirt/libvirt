@@ -1016,7 +1016,7 @@ ifaceMacvtapLinkDump(bool nltarget_kernel ATTRIBUTE_UNUSED,
  * Get the nth parent interface of the given interface. 0 is the interface
  * itself.
  *
- * Return 0 on success, != 0 otherwise
+ * Return 0 on success, < 0 otherwise
  */
 #if defined(__linux__) && WITH_MACVTAP
 int
@@ -1037,7 +1037,7 @@ ifaceGetNthParent(int ifindex, const char *ifname, unsigned int nthParent,
 
     while (!end && i <= nthParent) {
         rc = ifaceMacvtapLinkDump(true, ifname, ifindex, tb, &recvbuf, NULL);
-        if (rc)
+        if (rc < 0)
             break;
 
         if (tb[IFLA_IFNAME]) {
@@ -1244,7 +1244,7 @@ ifaceIsVirtualFunction(const char *ifname)
     char *if_sysfs_device_link = NULL;
     int ret = -1;
 
-    if (ifaceSysfsFile(&if_sysfs_device_link, ifname, "device"))
+    if (ifaceSysfsFile(&if_sysfs_device_link, ifname, "device") < 0)
         return ret;
 
     ret = pciDeviceIsVirtualFunction(if_sysfs_device_link);
@@ -1272,10 +1272,10 @@ ifaceGetVirtualFunctionIndex(const char *pfname, const char *vfname,
     char *pf_sysfs_device_link = NULL, *vf_sysfs_device_link = NULL;
     int ret = -1;
 
-    if (ifaceSysfsFile(&pf_sysfs_device_link, pfname, "device"))
+    if (ifaceSysfsFile(&pf_sysfs_device_link, pfname, "device") < 0)
         return ret;
 
-    if (ifaceSysfsFile(&vf_sysfs_device_link, vfname, "device")) {
+    if (ifaceSysfsFile(&vf_sysfs_device_link, vfname, "device") < 0) {
         VIR_FREE(pf_sysfs_device_link);
         return ret;
     }
@@ -1306,7 +1306,7 @@ ifaceGetPhysicalFunction(const char *ifname, char **pfname)
     char *physfn_sysfs_path = NULL;
     int ret = -1;
 
-    if (ifaceSysfsDeviceFile(&physfn_sysfs_path, ifname, "physfn"))
+    if (ifaceSysfsDeviceFile(&physfn_sysfs_path, ifname, "physfn") < 0)
         return ret;
 
     ret = pciDeviceNetName(physfn_sysfs_path, pfname);

@@ -210,8 +210,11 @@ configMacvtapTap(int tapfd, int vnet_hdr)
         rc_on_fail = -1;
         errmsg = _("cannot clean IFF_VNET_HDR flag on macvtap tap");
     } else if ((ifreq.ifr_flags & IFF_VNET_HDR) == 0 && vnet_hdr) {
-        if (ioctl(tapfd, TUNGETFEATURES, &features) != 0)
-            return errno;
+        if (ioctl(tapfd, TUNGETFEATURES, &features) < 0) {
+            virReportSystemError(errno, "%s",
+                   _("cannot get feature flags on macvtap tap"));
+            return -1;
+        }
         if ((features & IFF_VNET_HDR)) {
             new_flags = ifreq.ifr_flags | IFF_VNET_HDR;
             errmsg = _("cannot set IFF_VNET_HDR flag on macvtap tap");
@@ -292,7 +295,7 @@ openMacvtapTap(const char *tgifname,
      * emulate their switch in firmware.
      */
     if (mode == VIR_MACVTAP_MODE_PASSTHRU) {
-        if (ifaceReplaceMacAddress(macaddress, linkdev, stateDir) != 0) {
+        if (ifaceReplaceMacAddress(macaddress, linkdev, stateDir) < 0) {
             return -1;
         }
     }
@@ -335,7 +338,7 @@ create_name:
                                  macaddress,
                                  linkdev,
                                  virtPortProfile,
-                                 vmuuid, vmOp) != 0) {
+                                 vmuuid, vmOp) < 0) {
         rc = -1;
         goto link_del_exit;
     }
@@ -352,7 +355,6 @@ create_name:
     }
 
     rc = openTap(cr_ifname, 10);
-
     if (rc >= 0) {
         if (configMacvtapTap(rc, vnet_hdr) < 0) {
             VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
@@ -471,7 +473,7 @@ getLldpadPid(void) {
  * status: pointer to a uint16 where the status will be written into
  *
  * Get the status from the IFLA_PORT_RESPONSE field; Returns 0 in
- * case of success, != 0 otherwise with error having been reported
+ * case of success, < 0 otherwise with error having been reported
  */
 static int
 getPortProfileStatus(struct nlattr **tb, int32_t vf,
@@ -480,7 +482,7 @@ getPortProfileStatus(struct nlattr **tb, int32_t vf,
                      bool is8021Qbg,
                      uint16_t *status)
 {
-    int rc = 1;
+    int rc = -1;
     const char *msg = NULL;
     struct nlattr *tb_port[IFLA_PORT_MAX + 1] = { NULL, };
 
@@ -572,7 +574,7 @@ doPortProfileOpSetLink(bool nltarget_kernel,
                        int32_t vf,
                        uint8_t op)
 {
-    int rc = 0;
+    int rc = -1;
     struct nlmsghdr *resp;
     struct nlmsgerr *err;
     struct ifinfomsg ifinfo = {
@@ -588,7 +590,7 @@ doPortProfileOpSetLink(bool nltarget_kernel,
     nl_msg = nlmsg_alloc_simple(RTM_SETLINK, NLM_F_REQUEST);
     if (!nl_msg) {
         virReportOOMError();
-        return -1;
+        return rc;
     }
 
     if (nlmsg_append(nl_msg,  &ifinfo, sizeof(ifinfo), NLMSG_ALIGNTO) < 0)
@@ -690,16 +692,12 @@ doPortProfileOpSetLink(bool nltarget_kernel,
 
     if (!nltarget_kernel) {
         pid = getLldpadPid();
-        if (pid == 0) {
-            rc = -1;
+        if (pid == 0)
             goto err_exit;
-        }
     }
 
-    if (nlComm(nl_msg, &recvbuf, &recvbuflen, pid) < 0) {
-        rc = -1;
+    if (nlComm(nl_msg, &recvbuf, &recvbuflen, pid) < 0)
         goto err_exit;
-    }
 
     if (recvbuflen < NLMSG_LENGTH(0) || recvbuf == NULL)
         goto malformed_resp;
@@ -716,7 +714,7 @@ doPortProfileOpSetLink(bool nltarget_kernel,
             virReportSystemError(-err->error,
                 _("error during virtual port configuration of ifindex %d"),
                 ifindex);
-            rc = -1;
+            goto err_exit;
         }
         break;
 
@@ -726,6 +724,8 @@ doPortProfileOpSetLink(bool nltarget_kernel,
     default:
         goto malformed_resp;
     }
+
+    rc = 0;
 
 err_exit:
     nlmsg_free(nl_msg);
@@ -740,17 +740,18 @@ malformed_resp:
     macvtapError(VIR_ERR_INTERNAL_ERROR, "%s",
                  _("malformed netlink response message"));
     VIR_FREE(recvbuf);
-    return -1;
+    return rc;
 
 buffer_too_small:
     nlmsg_free(nl_msg);
 
     macvtapError(VIR_ERR_INTERNAL_ERROR, "%s",
                  _("allocated netlink buffer is too small"));
-    return -1;
+    return rc;
 }
 
 
+/* Returns 0 on success, -1 on general failure, and -2 on timeout */
 static int
 doPortProfileOpCommon(bool nltarget_kernel,
                       const char *ifname, int ifindex,
@@ -780,8 +781,7 @@ doPortProfileOpCommon(bool nltarget_kernel,
                                 hostUUID,
                                 vf,
                                 op);
-
-    if (rc) {
+    if (rc < 0) {
         macvtapError(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("sending of PortProfileRequest failed."));
         return rc;
@@ -790,11 +790,12 @@ doPortProfileOpCommon(bool nltarget_kernel,
     while (--repeats >= 0) {
         rc = ifaceMacvtapLinkDump(nltarget_kernel, NULL, ifindex, tb,
                                   &recvbuf, getLldpadPid);
-        if (rc)
+        if (rc < 0)
             goto err_exit;
+
         rc = getPortProfileStatus(tb, vf, instanceId, nltarget_kernel,
                                   is8021Qbg, &status);
-        if (rc)
+        if (rc < 0)
             goto err_exit;
         if (status == PORT_PROFILE_RESPONSE_SUCCESS ||
             status == PORT_VDP_RESPONSE_SUCCESS) {
@@ -806,7 +807,7 @@ doPortProfileOpCommon(bool nltarget_kernel,
                     _("error %d during port-profile setlink on "
                       "interface %s (%d)"),
                     status, ifname, ifindex);
-            rc = 1;
+            rc = -1;
             break;
         }
 
@@ -818,7 +819,7 @@ doPortProfileOpCommon(bool nltarget_kernel,
     if (status == PORT_PROFILE_RESPONSE_INPROGRESS) {
         macvtapError(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("port-profile setlink timed out"));
-        rc = -ETIMEDOUT;
+        rc = -2;
     }
 
 err_exit:
@@ -843,7 +844,7 @@ getPhysdevAndVlan(const char *ifname, int *root_ifindex, char *root_ifname,
     *vlanid = -1;
     while (1) {
         if ((ret = ifaceGetNthParent(ifindex, ifname, 1,
-                                     root_ifindex, root_ifname, &nth)))
+                                     root_ifindex, root_ifname, &nth)) < 0)
             return ret;
         if (nth == 0)
             break;
@@ -861,13 +862,14 @@ getPhysdevAndVlan(const char *ifname, int *root_ifindex, char *root_ifname,
 
 # endif
 
+/* Returns 0 on success, -1 on general failure, and -2 on timeout */
 static int
 doPortProfileOp8021Qbg(const char *ifname,
                        const unsigned char *macaddr,
                        const virVirtualPortProfileParamsPtr virtPort,
                        enum virVirtualPortOp virtPortOp)
 {
-    int rc;
+    int rc = 0;
 
 # ifndef IFLA_VF_PORT_MAX
 
@@ -877,7 +879,7 @@ doPortProfileOp8021Qbg(const char *ifname,
     (void)virtPortOp;
     macvtapError(VIR_ERR_INTERNAL_ERROR, "%s",
                  _("Kernel VF Port support was missing at compile time."));
-    rc = 1;
+    rc = -1;
 
 # else /* IFLA_VF_PORT_MAX */
 
@@ -893,8 +895,8 @@ doPortProfileOp8021Qbg(const char *ifname,
     int vf = PORT_SELF_VF;
 
     if (getPhysdevAndVlan(ifname, &physdev_ifindex, physdev_ifname,
-                          &vlanid) != 0) {
-        rc = 1;
+                          &vlanid) < 0) {
+        rc = -1;
         goto err_exit;
     }
 
@@ -918,7 +920,7 @@ doPortProfileOp8021Qbg(const char *ifname,
     default:
         macvtapError(VIR_ERR_INTERNAL_ERROR,
                      _("operation type %d not supported"), virtPortOp);
-        rc = 1;
+        rc = -1;
         goto err_exit;
     }
 
@@ -947,10 +949,9 @@ getPhysfnDev(const char *linkdev,
              int32_t *vf,
              char **physfndev)
 {
-    int rc = 0;
+    int rc = -1;
 
-    if (ifaceIsVirtualFunction(linkdev)) {
-
+    if (ifaceIsVirtualFunction(linkdev) == 1) {
         /* if linkdev is SR-IOV VF, then set vf = VF index */
         /* and set linkdev = PF device */
 
@@ -967,14 +968,18 @@ getPhysfnDev(const char *linkdev,
         *physfndev = strdup(linkdev);
         if (!*physfndev) {
             virReportOOMError();
-            rc = -1;
+            goto err_exit;
         }
+        rc = 0;
     }
+
+err_exit:
 
     return rc;
 }
 # endif /* IFLA_VF_PORT_MAX */
 
+/* Returns 0 on success, -1 on general failure, and -2 on timeout */
 static int
 doPortProfileOp8021Qbh(const char *ifname,
                        const unsigned char *macaddr,
@@ -982,7 +987,7 @@ doPortProfileOp8021Qbh(const char *ifname,
                        const unsigned char *vm_uuid,
                        enum virVirtualPortOp virtPortOp)
 {
-    int rc;
+    int rc = 0;
 
 # ifndef IFLA_VF_PORT_MAX
 
@@ -993,7 +998,7 @@ doPortProfileOp8021Qbh(const char *ifname,
     (void)virtPortOp;
     macvtapError(VIR_ERR_INTERNAL_ERROR, "%s",
                  _("Kernel VF Port support was missing at compile time."));
-    rc = 1;
+    rc = -1;
 
 # else /* IFLA_VF_PORT_MAX */
 
@@ -1005,20 +1010,21 @@ doPortProfileOp8021Qbh(const char *ifname,
     int vlanid = -1;
 
     rc = getPhysfnDev(ifname, &vf, &physfndev);
-    if (rc)
+    if (rc < 0)
         goto err_exit;
 
-    if (ifaceGetIndex(true, physfndev, &ifindex) < 0) {
-        rc = 1;
+    rc = ifaceGetIndex(true, physfndev, &ifindex);
+    if (rc < 0)
         goto err_exit;
-    }
 
     switch (virtPortOp) {
     case PREASSOCIATE_RR:
     case ASSOCIATE:
-        rc = virGetHostUUID(hostuuid);
-        if (rc)
+        errno = virGetHostUUID(hostuuid);
+        if (errno) {
+            rc = -1;
             goto err_exit;
+        }
 
         rc = doPortProfileOpCommon(nltarget_kernel, NULL, ifindex,
                                    macaddr,
@@ -1031,7 +1037,7 @@ doPortProfileOp8021Qbh(const char *ifname,
                                    (virtPortOp == PREASSOCIATE_RR) ?
                                     PORT_REQUEST_PREASSOCIATE_RR
                                     : PORT_REQUEST_ASSOCIATE);
-        if (rc == -ETIMEDOUT)
+        if (rc == -2)
             /* Association timed out, disassociate */
             doPortProfileOpCommon(nltarget_kernel, NULL, ifindex,
                                   NULL,
@@ -1059,7 +1065,7 @@ doPortProfileOp8021Qbh(const char *ifname,
     default:
         macvtapError(VIR_ERR_INTERNAL_ERROR,
                      _("operation type %d not supported"), virtPortOp);
-        rc = 1;
+        rc = -1;
     }
 
 err_exit:
@@ -1084,7 +1090,7 @@ err_exit:
  * by the user, then this function returns without doing
  * anything.
  *
- * Returns 0 in case of success, != 0 otherwise with error
+ * Returns 0 in case of success, < 0 otherwise with error
  * having been reported.
  */
 int

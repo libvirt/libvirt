@@ -1707,9 +1707,9 @@ int pciDeviceIsAssignable(pciDevice *dev,
 #ifdef __linux__
 
 /*
- * returns 1 if equal and 0 if not
+ * returns true if equal
  */
-static int
+static bool
 pciConfigAddressEqual(struct pci_config_address *bdf1,
                       struct pci_config_address *bdf2)
 {
@@ -1959,11 +1959,11 @@ pciGetVirtualFunctionIndex(const char *pf_sysfs_device_link,
     struct pci_config_address **virt_fns = NULL;
 
     if (pciGetPciConfigAddressFromSysfsDeviceLink(vf_sysfs_device_link,
-        &vf_bdf))
+        &vf_bdf) < 0)
         return ret;
 
     if (pciGetVirtualFunctions(pf_sysfs_device_link, &virt_fns,
-        &num_virt_fns)) {
+        &num_virt_fns) < 0) {
         pciReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Error getting physical function's '%s' "
                       "virtual_functions"), pf_sysfs_device_link);

@@ -2527,7 +2527,7 @@ qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def) {
                                          virDomainNetGetActualDirectDev(net),
                                          virDomainNetGetActualDirectVirtPortProfile(net),
                                          def->uuid,
-                                         VIR_VM_OP_MIGRATE_IN_FINISH) != 0)
+                                         VIR_VM_OP_MIGRATE_IN_FINISH) < 0)
                 goto err_exit;
         }
         last_good_net = i;
