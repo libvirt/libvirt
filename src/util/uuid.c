@@ -80,7 +80,7 @@ virUUIDGeneratePseudoRandomBytes(unsigned char *buf,
                                  int buflen)
 {
     while (buflen > 0) {
-        *buf = virRandom(256);
+        *buf++ = virRandom(256);
         buflen--;
     }
 
