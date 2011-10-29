@@ -68,6 +68,8 @@
 # include "vbox_CAPI_v3_2.h"
 #elif VBOX_API_VERSION == 4000
 # include "vbox_CAPI_v4_0.h"
+#elif VBOX_API_VERSION == 4001
+# include "vbox_CAPI_v4_1.h"
 #else
 # error "Unsupport VBOX_API_VERSION"
 #endif
@@ -2207,6 +2209,9 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 #endif /* VBOX_API_VERSION >= 4000 */
             IAudioAdapter *audioAdapter         = NULL;
             IUSBController *USBController       = NULL;
+#if VBOX_API_VERSION >= 4001
+            PRUint32 chipsetType                = ChipsetType_Null;
+#endif /* VBOX_API_VERSION >= 4001 */
             ISystemProperties *systemProperties = NULL;
 
 
@@ -2218,11 +2223,19 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
             machine->vtbl->GetMemorySize(machine, &memorySize);
             def->mem.cur_balloon = memorySize * 1024;
 
+#if VBOX_API_VERSION >= 4001
+            machine->vtbl->GetChipsetType(machine, &chipsetType);
+#endif /* VBOX_API_VERSION >= 4001 */
+
             data->vboxObj->vtbl->GetSystemProperties(data->vboxObj, &systemProperties);
             if (systemProperties) {
                 systemProperties->vtbl->GetMaxGuestRAM(systemProperties, &maxMemorySize);
                 systemProperties->vtbl->GetMaxBootPosition(systemProperties, &maxBootPosition);
+#if VBOX_API_VERSION < 4001
                 systemProperties->vtbl->GetNetworkAdapterCount(systemProperties, &netAdpCnt);
+#else  /* VBOX_API_VERSION >= 4000 */
+                systemProperties->vtbl->GetMaxNetworkAdapters(systemProperties, chipsetType, &netAdpCnt);
+#endif /* VBOX_API_VERSION >= 4000 */
                 systemProperties->vtbl->GetSerialPortCount(systemProperties, &serialPortCount);
                 systemProperties->vtbl->GetParallelPortCount(systemProperties, &parallelPortCount);
                 VBOX_RELEASE(systemProperties);
@@ -2888,7 +2901,11 @@ sharedFoldersCleanup:
 
                             def->nets[netAdpIncCnt]->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
 
+#if VBOX_API_VERSION < 4001
                             adapter->vtbl->GetHostInterface(adapter, &hostIntUtf16);
+#else /* VBOX_API_VERSION >= 4001 */
+                            adapter->vtbl->GetBridgedInterface(adapter, &hostIntUtf16);
+#endif /* VBOX_API_VERSION >= 4001 */
 
                             VBOX_UTF16_TO_UTF8(hostIntUtf16, &hostInt);
                             def->nets[netAdpIncCnt]->data.bridge.brname = strdup(hostInt);
@@ -2916,7 +2933,11 @@ sharedFoldersCleanup:
 
                             def->nets[netAdpIncCnt]->type = VIR_DOMAIN_NET_TYPE_NETWORK;
 
+#if VBOX_API_VERSION < 4001
                             adapter->vtbl->GetHostInterface(adapter, &hostIntUtf16);
+#else /* VBOX_API_VERSION >= 4001 */
+                            adapter->vtbl->GetHostOnlyInterface(adapter, &hostIntUtf16);
+#endif /* VBOX_API_VERSION >= 4001 */
 
                             VBOX_UTF16_TO_UTF8(hostIntUtf16, &hostInt);
                             def->nets[netAdpIncCnt]->data.network.name = strdup(hostInt);
@@ -4134,12 +4155,18 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 } else {
                     rc = 0;
                 }
-# else /* VBOX_API_VERSION >= 4000 */
+# elif VBOX_API_VERSION == 4000
                 rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj,
                                                      mediumFileUtf16,
                                                      deviceType, accessMode,
                                                      &medium);
-# endif /* VBOX_API_VERSION >= 4000 */
+# elif VBOX_API_VERSION >= 4001
+                rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj,
+                                                     mediumFileUtf16,
+                                                     deviceType, accessMode,
+                                                     false,
+                                                     &medium);
+# endif /* VBOX_API_VERSION >= 4001 */
 
                 VBOX_UTF16_FREE(mediumEmpty);
             }
@@ -4268,13 +4295,25 @@ static void
 vboxAttachNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 {
     ISystemProperties *systemProperties = NULL;
+#if VBOX_API_VERSION >= 4001
+    PRUint32 chipsetType                = ChipsetType_Null;
+#endif /* VBOX_API_VERSION >= 4001 */
     PRUint32 networkAdapterCount        = 0;
     int i = 0;
 
+#if VBOX_API_VERSION >= 4001
+    machine->vtbl->GetChipsetType(machine, &chipsetType);
+#endif /* VBOX_API_VERSION >= 4001 */
+
     data->vboxObj->vtbl->GetSystemProperties(data->vboxObj, &systemProperties);
     if (systemProperties) {
+#if VBOX_API_VERSION < 4001
         systemProperties->vtbl->GetNetworkAdapterCount(systemProperties,
                                                        &networkAdapterCount);
+#else  /* VBOX_API_VERSION >= 4000 */
+        systemProperties->vtbl->GetMaxNetworkAdapters(systemProperties, chipsetType,
+                                                      &networkAdapterCount);
+#endif /* VBOX_API_VERSION >= 4000 */
         VBOX_RELEASE(systemProperties);
         systemProperties = NULL;
     }
@@ -4347,19 +4386,31 @@ vboxAttachNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 PRUnichar *hostInterface = NULL;
                 /* Bridged Network */
 
+#if VBOX_API_VERSION < 4001
                 adapter->vtbl->AttachToBridgedInterface(adapter);
+#else /* VBOX_API_VERSION >= 4001 */
+                adapter->vtbl->SetAttachmentType(adapter, NetworkAttachmentType_Bridged);
+#endif /* VBOX_API_VERSION >= 4001 */
 
                 if (def->nets[i]->data.bridge.brname) {
                     VBOX_UTF8_TO_UTF16(def->nets[i]->data.bridge.brname,
                                        &hostInterface);
+#if VBOX_API_VERSION < 4001
                     adapter->vtbl->SetHostInterface(adapter, hostInterface);
+#else /* VBOX_API_VERSION >= 4001 */
+                    adapter->vtbl->SetBridgedInterface(adapter, hostInterface);
+#endif /* VBOX_API_VERSION >= 4001 */
                     VBOX_UTF16_FREE(hostInterface);
                 }
             } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_INTERNAL) {
                 PRUnichar *internalNetwork = NULL;
                 /* Internal Network */
 
+#if VBOX_API_VERSION < 4001
                 adapter->vtbl->AttachToInternalNetwork(adapter);
+#else /* VBOX_API_VERSION >= 4001 */
+                adapter->vtbl->SetAttachmentType(adapter, NetworkAttachmentType_Internal);
+#endif /* VBOX_API_VERSION >= 4001 */
 
                 if (def->nets[i]->data.internal.name) {
                     VBOX_UTF8_TO_UTF16(def->nets[i]->data.internal.name,
@@ -4373,22 +4424,38 @@ vboxAttachNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                  * on *nix and mac, on windows you can create and configure
                  * as many as you want)
                  */
+#if VBOX_API_VERSION < 4001
                 adapter->vtbl->AttachToHostOnlyInterface(adapter);
+#else /* VBOX_API_VERSION >= 4001 */
+                adapter->vtbl->SetAttachmentType(adapter, NetworkAttachmentType_HostOnly);
+#endif /* VBOX_API_VERSION >= 4001 */
 
                 if (def->nets[i]->data.network.name) {
                     VBOX_UTF8_TO_UTF16(def->nets[i]->data.network.name,
                                        &hostInterface);
+#if VBOX_API_VERSION < 4001
                     adapter->vtbl->SetHostInterface(adapter, hostInterface);
+#else /* VBOX_API_VERSION >= 4001 */
+                    adapter->vtbl->SetHostOnlyInterface(adapter, hostInterface);
+#endif /* VBOX_API_VERSION >= 4001 */
                     VBOX_UTF16_FREE(hostInterface);
                 }
             } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_USER) {
                 /* NAT */
+#if VBOX_API_VERSION < 4001
                 adapter->vtbl->AttachToNAT(adapter);
+#else /* VBOX_API_VERSION >= 4001 */
+                adapter->vtbl->SetAttachmentType(adapter, NetworkAttachmentType_NAT);
+#endif /* VBOX_API_VERSION >= 4001 */
             } else {
                 /* else always default to NAT if we don't understand
                  * what option is been passed to us
                  */
+#if VBOX_API_VERSION < 4001
                 adapter->vtbl->AttachToNAT(adapter);
+#else /* VBOX_API_VERSION >= 4001 */
+                adapter->vtbl->SetAttachmentType(adapter, NetworkAttachmentType_NAT);
+#endif /* VBOX_API_VERSION >= 4001 */
             }
 
             VBOX_UTF8_TO_UTF16(macaddrvbox, &MACAddress);
@@ -6674,9 +6741,10 @@ cleanup:
     return ret;
 }
 
-#if VBOX_API_VERSION == 2002 || VBOX_API_VERSION == 4000
+#if VBOX_API_VERSION <= 2002 || VBOX_API_VERSION >= 4000
     /* No Callback support for VirtualBox 2.2.* series */
-#else /* !(VBOX_API_VERSION == 2002) && !(VBOX_API_VERSION == 4000) */
+    /* No Callback support for VirtualBox 4.* series */
+#else /* !(VBOX_API_VERSION == 2002 || VBOX_API_VERSION >= 4000) */
 
 /* Functions needed for Callbacks */
 static nsresult PR_COM_METHOD
@@ -7238,7 +7306,7 @@ static int vboxDomainEventDeregisterAny(virConnectPtr conn,
     return ret;
 }
 
-#endif /* !(VBOX_API_VERSION == 2002) && !(VBOX_API_VERSION == 4000) */
+#endif /* !(VBOX_API_VERSION == 2002 || VBOX_API_VERSION >= 4000) */
 
 /**
  * The Network Functions here on
@@ -8914,7 +8982,7 @@ static char *vboxStorageVolGetPath(virStorageVolPtr vol) {
     return ret;
 }
 
-#if VBOX_API_VERSION == 4000
+#if VBOX_API_VERSION >= 4000
 static char *
 vboxDomainScreenshot(virDomainPtr dom,
                      virStreamPtr st,
@@ -9038,7 +9106,7 @@ endjob:
     vboxIIDUnalloc(&iid);
     return ret;
 }
-#endif /* VBOX_API_VERSION == 4000 */
+#endif /* VBOX_API_VERSION >= 4000 */
 
 /**
  * Function Tables
@@ -9090,10 +9158,10 @@ virDriver NAME(Driver) = {
     .domainUpdateDeviceFlags = vboxDomainUpdateDeviceFlags, /* 0.8.0 */
     .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory, /* 0.6.5 */
     .nodeGetFreeMemory = nodeGetFreeMemory, /* 0.6.5 */
-#if VBOX_API_VERSION == 4000
+#if VBOX_API_VERSION >= 4000
     .domainScreenshot = vboxDomainScreenshot, /* 0.9.2 */
 #endif
-#if VBOX_API_VERSION != 2002 && VBOX_API_VERSION != 4000
+#if VBOX_API_VERSION > 2002 && VBOX_API_VERSION < 4000
     .domainEventRegister = vboxDomainEventRegister, /* 0.7.0 */
     .domainEventDeregister = vboxDomainEventDeregister, /* 0.7.0 */
 #endif
@@ -9102,7 +9170,7 @@ virDriver NAME(Driver) = {
     .domainIsActive = vboxDomainIsActive, /* 0.7.3 */
     .domainIsPersistent = vboxDomainIsPersistent, /* 0.7.3 */
     .domainIsUpdated = vboxDomainIsUpdated, /* 0.8.6 */
-#if VBOX_API_VERSION != 2002 && VBOX_API_VERSION != 4000
+#if VBOX_API_VERSION > 2002 && VBOX_API_VERSION < 4000
     .domainEventRegisterAny = vboxDomainEventRegisterAny, /* 0.8.0 */
     .domainEventDeregisterAny = vboxDomainEventDeregisterAny, /* 0.8.0 */
 #endif

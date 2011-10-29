@@ -60,6 +60,9 @@ extern virStorageDriver vbox32StorageDriver;
 extern virDriver vbox40Driver;
 extern virNetworkDriver vbox40NetworkDriver;
 extern virStorageDriver vbox40StorageDriver;
+extern virDriver vbox41Driver;
+extern virNetworkDriver vbox41NetworkDriver;
+extern virStorageDriver vbox41StorageDriver;
 
 static virDriver vboxDriverDummy;
 
@@ -122,10 +125,14 @@ int vboxRegister(void) {
             driver        = &vbox40Driver;
             networkDriver = &vbox40NetworkDriver;
             storageDriver = &vbox40StorageDriver;
+        } else if (uVersion >= 4000051 && uVersion < 4001051) {
+            VIR_DEBUG("VirtualBox API version: 4.1");
+            driver        = &vbox41Driver;
+            networkDriver = &vbox41NetworkDriver;
+            storageDriver = &vbox41StorageDriver;
         } else {
-            VIR_DEBUG("Unsupport VirtualBox API version");
+            VIR_DEBUG("Unsupported VirtualBox API version: %u", uVersion);
         }
-
     } else {
         VIR_DEBUG("VBoxCGlueInit failed, using dummy driver");
     }
