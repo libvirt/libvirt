@@ -4995,6 +4995,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                 }
 
                 if (sound->model == VIR_DOMAIN_SOUND_MODEL_ICH6) {
+                    VIR_FREE(modstr);
                     qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                     _("this QEMU binary lacks hda support"));
                     goto error;
