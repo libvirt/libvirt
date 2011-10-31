@@ -6059,12 +6059,6 @@ static int qemuDomainGetBlkioParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if ((*nparams) != QEMU_NB_BLKIO_PARAM) {
-        qemuReportError(VIR_ERR_INVALID_ARG,
-                        "%s", _("Invalid parameter count"));
-        goto cleanup;
-    }
-
     isActive = virDomainObjIsActive(vm);
 
     if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
@@ -6104,7 +6098,7 @@ static int qemuDomainGetBlkioParameters(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        for (i = 0; i < *nparams; i++) {
+        for (i = 0; i < *nparams && i < QEMU_NB_BLKIO_PARAM; i++) {
             virTypedParameterPtr param = &params[i];
             val = 0;
             param->value.ui = 0;
@@ -6120,7 +6114,8 @@ static int qemuDomainGetBlkioParameters(virDomainPtr dom,
                 }
                 if (virStrcpyStatic(param->field, VIR_DOMAIN_BLKIO_WEIGHT) == NULL) {
                     qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                    "%s", _("Field blkio weight too long for destination"));
+                                    _("Field name '%s' too long"),
+                                    VIR_DOMAIN_BLKIO_WEIGHT);
                     goto cleanup;
                 }
                 param->value.ui = val;
@@ -6132,7 +6127,7 @@ static int qemuDomainGetBlkioParameters(virDomainPtr dom,
             }
         }
     } else if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        for (i = 0; i < *nparams; i++) {
+        for (i = 0; i < *nparams && i < QEMU_NB_BLKIO_PARAM; i++) {
             virTypedParameterPtr param = &params[i];
             val = 0;
             param->value.ui = 0;
@@ -6142,7 +6137,8 @@ static int qemuDomainGetBlkioParameters(virDomainPtr dom,
             case 0: /* fill blkio weight here */
                 if (virStrcpyStatic(param->field, VIR_DOMAIN_BLKIO_WEIGHT) == NULL) {
                     qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                    "%s", _("Field blkio weight too long for destination"));
+                                    _("Field name '%s' too long"),
+                                    VIR_DOMAIN_BLKIO_WEIGHT);
                     goto cleanup;
                 }
                 param->value.ui = persistentDef->blkio.weight;
@@ -6155,6 +6151,8 @@ static int qemuDomainGetBlkioParameters(virDomainPtr dom,
         }
     }
 
+    if (QEMU_NB_BLKIO_PARAM < *nparams)
+        *nparams = QEMU_NB_BLKIO_PARAM;
     ret = 0;
 
 cleanup:
@@ -6395,14 +6393,8 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if ((*nparams) < QEMU_NB_MEM_PARAM) {
-        qemuReportError(VIR_ERR_INVALID_ARG,
-                        "%s", _("Invalid parameter count"));
-        goto cleanup;
-    }
-
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        for (i = 0; i < *nparams; i++) {
+        for (i = 0; i < *nparams && i < QEMU_NB_MEM_PARAM; i++) {
             virMemoryParameterPtr param = &params[i];
             val = 0;
             param->value.ul = 0;
@@ -6412,7 +6404,8 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
             case 0: /* fill memory hard limit here */
                 if (virStrcpyStatic(param->field, VIR_DOMAIN_MEMORY_HARD_LIMIT) == NULL) {
                     qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                    "%s", _("Field memory hard limit too long for destination"));
+                                    _("Field name '%s' too long"),
+                                    VIR_DOMAIN_MEMORY_HARD_LIMIT);
                     goto cleanup;
                 }
                 param->value.ul = persistentDef->mem.hard_limit;
@@ -6421,7 +6414,8 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
             case 1: /* fill memory soft limit here */
                 if (virStrcpyStatic(param->field, VIR_DOMAIN_MEMORY_SOFT_LIMIT) == NULL) {
                     qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                    "%s", _("Field memory soft limit too long for destination"));
+                                    _("Field name '%s' too long"),
+                                    VIR_DOMAIN_MEMORY_SOFT_LIMIT);
                     goto cleanup;
                 }
                 param->value.ul = persistentDef->mem.soft_limit;
@@ -6430,7 +6424,8 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
             case 2: /* fill swap hard limit here */
                 if (virStrcpyStatic(param->field, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT) == NULL) {
                     qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                    "%s", _("Field swap hard limit too long for destination"));
+                                    _("Field name '%s' too long"),
+                                    VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT);
                     goto cleanup;
                 }
                 param->value.ul = persistentDef->mem.swap_hard_limit;
@@ -6444,7 +6439,7 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
         goto out;
     }
 
-    for (i = 0; i < QEMU_NB_MEM_PARAM; i++) {
+    for (i = 0; i < *nparams && i < QEMU_NB_MEM_PARAM; i++) {
         virTypedParameterPtr param = &params[i];
         val = 0;
         param->value.ul = 0;
@@ -6463,7 +6458,8 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
             }
             if (virStrcpyStatic(param->field, VIR_DOMAIN_MEMORY_HARD_LIMIT) == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s", _("Field memory hard limit too long for destination"));
+                                _("Field name '%s' too long"),
+                                VIR_DOMAIN_MEMORY_HARD_LIMIT);
                 goto cleanup;
             }
             param->value.ul = val;
@@ -6478,7 +6474,8 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
             }
             if (virStrcpyStatic(param->field, VIR_DOMAIN_MEMORY_SOFT_LIMIT) == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s", _("Field memory soft limit too long for destination"));
+                                _("Field name '%s' too long"),
+                                VIR_DOMAIN_MEMORY_SOFT_LIMIT);
                 goto cleanup;
             }
             param->value.ul = val;
@@ -6493,7 +6490,8 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
             }
             if (virStrcpyStatic(param->field, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT) == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s", _("Field swap hard limit too long for destination"));
+                                _("Field name '%s' too long"),
+                                VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT);
                 goto cleanup;
             }
             param->value.ul = val;
@@ -6506,7 +6504,8 @@ static int qemuDomainGetMemoryParameters(virDomainPtr dom,
     }
 
 out:
-    *nparams = QEMU_NB_MEM_PARAM;
+    if (QEMU_NB_MEM_PARAM < *nparams)
+        *nparams = QEMU_NB_MEM_PARAM;
     ret = 0;
 
 cleanup:
@@ -6894,12 +6893,6 @@ qemuGetSchedulerParametersFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (*nparams < 1) {
-        qemuReportError(VIR_ERR_INVALID_ARG,
-                        "%s", _("Invalid parameter count"));
-        goto cleanup;
-    }
-
     if (*nparams > 1) {
         rc = qemuGetCpuBWStatus(driver->cgroup);
         if (rc < 0)
@@ -6988,9 +6981,11 @@ qemuGetSchedulerParametersFlags(virDomainPtr dom,
 out:
     params[0].value.ul = shares;
     params[0].type = VIR_TYPED_PARAM_ULLONG;
+    /* XXX make these field names public in libvirt.h */
     if (virStrcpyStatic(params[0].field, "cpu_shares") == NULL) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("Field cpu_shares too long for destination"));
+                        _("Field name '%s' too long"),
+                        "cpu_shares");
         goto cleanup;
     }
 
@@ -7002,8 +6997,8 @@ out:
             params[1].type = VIR_TYPED_PARAM_ULLONG;
             if (virStrcpyStatic(params[1].field, "vcpu_period") == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s",
-                                _("Field vcpu_period too long for destination"));
+                                _("Field name '%s' too long"),
+                                "vcpu_period");
                 goto cleanup;
             }
             saved_nparams++;
@@ -7014,8 +7009,8 @@ out:
             params[2].type = VIR_TYPED_PARAM_LLONG;
             if (virStrcpyStatic(params[2].field, "vcpu_quota") == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s",
-                                _("Field vcpu_quota too long for destination"));
+                                _("Field name '%s' too long"),
+                                "vcpu_quota");
                 goto cleanup;
             }
             saved_nparams++;
@@ -7048,9 +7043,9 @@ qemuGetSchedulerParameters(virDomainPtr dom,
  * not supported we detect this and return the appropriate error.
  */
 static int
-qemudDomainBlockStats (virDomainPtr dom,
-                       const char *path,
-                       struct _virDomainBlockStats *stats)
+qemuDomainBlockStats(virDomainPtr dom,
+                     const char *path,
+                     struct _virDomainBlockStats *stats)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     int i, ret = -1;
@@ -7129,11 +7124,11 @@ cleanup:
 }
 
 static int
-qemudDomainBlockStatsFlags (virDomainPtr dom,
-                            const char *path,
-                            virTypedParameterPtr params,
-                            int *nparams,
-                            unsigned int flags)
+qemuDomainBlockStatsFlags(virDomainPtr dom,
+                          const char *path,
+                          virTypedParameterPtr params,
+                          int *nparams,
+                          unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     int i, tmp, ret = -1;
@@ -7142,6 +7137,7 @@ qemudDomainBlockStatsFlags (virDomainPtr dom,
     qemuDomainObjPrivatePtr priv;
     long long rd_req, rd_bytes, wr_req, wr_bytes, rd_total_times;
     long long wr_total_times, flush_req, flush_total_times, errs;
+    virTypedParameterPtr param;
 
     virCheckFlags(0, -1);
 
@@ -7178,7 +7174,8 @@ qemudDomainBlockStatsFlags (virDomainPtr dom,
 
         if (!disk->info.alias) {
              qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                             _("missing disk device alias name for %s"), disk->dst);
+                             _("missing disk device alias name for %s"),
+                             disk->dst);
              goto cleanup;
         }
     }
@@ -7199,7 +7196,7 @@ qemudDomainBlockStatsFlags (virDomainPtr dom,
     tmp = *nparams;
     ret = qemuMonitorGetBlockStatsParamsNumber(priv->mon, nparams);
 
-    if (tmp == 0) {
+    if (tmp == 0 || ret < 0) {
         qemuDomainObjExitMonitor(driver, vm);
         goto endjob;
     }
@@ -7221,96 +7218,118 @@ qemudDomainBlockStatsFlags (virDomainPtr dom,
     if (ret < 0)
         goto endjob;
 
-    /* Field 'errs' is meaningless for QEMU, won't set it. */
-    for (i = 0; i < *nparams; i++) {
-        virTypedParameterPtr param = &params[i];
+    tmp = 0;
+    ret = -1;
 
-        switch (i) {
-        case 0: /* fill write_bytes here */
-            if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES) == NULL) {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s", _("Field write bytes too long for destination"));
-                goto endjob;
-            }
-            param->type = VIR_TYPED_PARAM_LLONG;
-            param->value.l = wr_bytes;
-            break;
-
-        case 1: /* fill wr_operations here */
-            if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_WRITE_REQ) == NULL) {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s", _("Field write requests too long for destination"));
-                goto endjob;
-            }
-            param->type = VIR_TYPED_PARAM_LLONG;
-            param->value.l = wr_req;
-            break;
-
-        case 2: /* fill read_bytes here */
-            if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_READ_BYTES) == NULL) {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s", _("Field read bytes too long for destination"));
-                goto endjob;
-            }
-            param->type = VIR_TYPED_PARAM_LLONG;
-            param->value.l = rd_bytes;
-            break;
-
-        case 3: /* fill rd_operations here */
-            if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_READ_REQ) == NULL) {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s", _("Field read requests too long for destination"));
-                goto endjob;
-            }
-            param->type = VIR_TYPED_PARAM_LLONG;
-            param->value.l = rd_req;
-            break;
-
-        case 4: /* fill flush_operations here */
-            if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_FLUSH_REQ) == NULL) {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s", _("Field flush requests too long for destination"));
-                goto endjob;
-            }
-            param->type = VIR_TYPED_PARAM_LLONG;
-            param->value.l = flush_req;
-            break;
-
-        case 5: /* fill wr_total_times_ns here */
-            if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_WRITE_TOTAL_TIMES) == NULL) {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s", _("Field write total times too long for destination"));
-                goto endjob;
-            }
-            param->type = VIR_TYPED_PARAM_LLONG;
-            param->value.l = wr_total_times;
-            break;
-
-        case 6: /* fill rd_total_times_ns here */
-            if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES) == NULL) {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s", _("Field read total times too long for destination"));
-                goto endjob;
-            }
-            param->type = VIR_TYPED_PARAM_LLONG;
-            param->value.l = rd_total_times;
-            break;
-
-        case 7: /* fill flush_total_times_ns here */
-            if (virStrcpyStatic(param->field, VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES) == NULL) {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s", _("Field flush total times too long for destination"));
-                goto endjob;
-            }
-            param->type = VIR_TYPED_PARAM_LLONG;
-            param->value.l = flush_total_times;
-            break;
-
-        default:
-            break;
-            /* should not hit here */
+    if (tmp < *nparams && wr_bytes != -1) {
+        param = &params[tmp];
+        if (virStrcpyStatic(param->field,
+                            VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES) == NULL) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Field name '%s' too long"),
+                            VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES);
+            goto endjob;
         }
+        param->type = VIR_TYPED_PARAM_LLONG;
+        param->value.l = wr_bytes;
+        tmp++;
     }
+
+    if (tmp < *nparams && wr_req != -1) {
+        if (virStrcpyStatic(param->field,
+                            VIR_DOMAIN_BLOCK_STATS_WRITE_REQ) == NULL) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Field name '%s' too long"),
+                            VIR_DOMAIN_BLOCK_STATS_WRITE_REQ);
+            goto endjob;
+        }
+        param->type = VIR_TYPED_PARAM_LLONG;
+        param->value.l = wr_req;
+        tmp++;
+    }
+
+    if (tmp < *nparams && rd_bytes != -1) {
+        if (virStrcpyStatic(param->field,
+                            VIR_DOMAIN_BLOCK_STATS_READ_BYTES) == NULL) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Field name '%s' too long"),
+                            VIR_DOMAIN_BLOCK_STATS_READ_BYTES);
+            goto endjob;
+        }
+        param->type = VIR_TYPED_PARAM_LLONG;
+        param->value.l = rd_bytes;
+        tmp++;
+    }
+
+    if (tmp < *nparams && rd_req != -1) {
+        if (virStrcpyStatic(param->field,
+                            VIR_DOMAIN_BLOCK_STATS_READ_REQ) == NULL) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Field name '%s' too long"),
+                            VIR_DOMAIN_BLOCK_STATS_READ_REQ);
+            goto endjob;
+        }
+        param->type = VIR_TYPED_PARAM_LLONG;
+        param->value.l = rd_req;
+        tmp++;
+    }
+
+    if (tmp < *nparams && flush_req != -1) {
+        if (virStrcpyStatic(param->field,
+                            VIR_DOMAIN_BLOCK_STATS_FLUSH_REQ) == NULL) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Field name '%s' too long"),
+                            VIR_DOMAIN_BLOCK_STATS_FLUSH_REQ);
+            goto endjob;
+        }
+        param->type = VIR_TYPED_PARAM_LLONG;
+        param->value.l = flush_req;
+        tmp++;
+    }
+
+    if (tmp < *nparams && wr_total_times != -1) {
+        if (virStrcpyStatic(param->field,
+                            VIR_DOMAIN_BLOCK_STATS_WRITE_TOTAL_TIMES) == NULL) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Field name '%s' too long"),
+                            VIR_DOMAIN_BLOCK_STATS_WRITE_TOTAL_TIMES);
+            goto endjob;
+        }
+        param->type = VIR_TYPED_PARAM_LLONG;
+        param->value.l = wr_total_times;
+        tmp++;
+    }
+
+    if (tmp < *nparams && rd_total_times != -1) {
+        if (virStrcpyStatic(param->field,
+                            VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES) == NULL) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Field name '%s' too long"),
+                            VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES);
+            goto endjob;
+        }
+        param->type = VIR_TYPED_PARAM_LLONG;
+        param->value.l = rd_total_times;
+        tmp++;
+    }
+
+    if (tmp < *nparams && flush_total_times != -1) {
+        if (virStrcpyStatic(param->field,
+                            VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES) == NULL) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Field name '%s' too long"),
+                            VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES);
+            goto endjob;
+        }
+        param->type = VIR_TYPED_PARAM_LLONG;
+        param->value.l = flush_total_times;
+        tmp++;
+    }
+
+    /* Field 'errs' is meaningless for QEMU, won't set it. */
+
+    ret = 0;
+    *nparams = tmp;
 
 endjob:
     if (qemuDomainObjEndJob(driver, vm) == 0)
@@ -10811,8 +10830,8 @@ static virDriver qemuDriver = {
     .domainSetSchedulerParameters = qemuSetSchedulerParameters, /* 0.7.0 */
     .domainSetSchedulerParametersFlags = qemuSetSchedulerParametersFlags, /* 0.9.2 */
     .domainMigratePerform = qemudDomainMigratePerform, /* 0.5.0 */
-    .domainBlockStats = qemudDomainBlockStats, /* 0.4.1 */
-    .domainBlockStatsFlags = qemudDomainBlockStatsFlags, /* 0.9.5 */
+    .domainBlockStats = qemuDomainBlockStats, /* 0.4.1 */
+    .domainBlockStatsFlags = qemuDomainBlockStatsFlags, /* 0.9.5 */
     .domainInterfaceStats = qemudDomainInterfaceStats, /* 0.4.1 */
     .domainMemoryStats = qemudDomainMemoryStats, /* 0.7.5 */
     .domainBlockPeek = qemudDomainBlockPeek, /* 0.4.4 */
