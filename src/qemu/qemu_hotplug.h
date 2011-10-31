@@ -1,7 +1,7 @@
 /*
  * qemu_hotplug.h: QEMU device hotplug management
  *
- * Copyright (C) 2006-2007, 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -33,16 +33,19 @@ int qemuDomainChangeEjectableMedia(struct qemud_driver *driver,
                                    bool force);
 int qemuDomainCheckEjectableMedia(struct qemud_driver *driver,
                                   virDomainObjPtr vm);
-int qemuDomainAttachPciDiskDevice(struct qemud_driver *driver,
+int qemuDomainAttachPciDiskDevice(virConnectPtr conn,
+                                  struct qemud_driver *driver,
                                   virDomainObjPtr vm,
                                   virDomainDiskDefPtr disk);
 int qemuDomainAttachPciControllerDevice(struct qemud_driver *driver,
                                         virDomainObjPtr vm,
                                         virDomainControllerDefPtr controller);
-int qemuDomainAttachSCSIDisk(struct qemud_driver *driver,
+int qemuDomainAttachSCSIDisk(virConnectPtr conn,
+                             struct qemud_driver *driver,
                              virDomainObjPtr vm,
                              virDomainDiskDefPtr disk);
-int qemuDomainAttachUsbMassstorageDevice(struct qemud_driver *driver,
+int qemuDomainAttachUsbMassstorageDevice(virConnectPtr conn,
+                                         struct qemud_driver *driver,
                                          virDomainObjPtr vm,
                                          virDomainDiskDefPtr disk);
 int qemuDomainAttachNetDevice(virConnectPtr conn,

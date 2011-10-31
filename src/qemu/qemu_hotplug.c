@@ -185,7 +185,8 @@ cleanup:
 }
 
 
-int qemuDomainAttachPciDiskDevice(struct qemud_driver *driver,
+int qemuDomainAttachPciDiskDevice(virConnectPtr conn,
+                                  struct qemud_driver *driver,
                                   virDomainObjPtr vm,
                                   virDomainDiskDefPtr disk)
 {
@@ -221,7 +222,7 @@ int qemuDomainAttachPciDiskDevice(struct qemud_driver *driver,
         if (qemuAssignDeviceDiskAlias(disk, priv->qemuCaps) < 0)
             goto error;
 
-        if (!(drivestr = qemuBuildDriveStr(disk, false, priv->qemuCaps)))
+        if (!(drivestr = qemuBuildDriveStr(conn, disk, false, priv->qemuCaps)))
             goto error;
 
         if (!(devstr = qemuBuildDriveDevStr(disk, 0, priv->qemuCaps)))
@@ -414,7 +415,8 @@ qemuDomainFindOrCreateSCSIDiskController(struct qemud_driver *driver,
 }
 
 
-int qemuDomainAttachSCSIDisk(struct qemud_driver *driver,
+int qemuDomainAttachSCSIDisk(virConnectPtr conn,
+                             struct qemud_driver *driver,
                              virDomainObjPtr vm,
                              virDomainDiskDefPtr disk)
 {
@@ -458,7 +460,7 @@ int qemuDomainAttachSCSIDisk(struct qemud_driver *driver,
             goto error;
     }
 
-    if (!(drivestr = qemuBuildDriveStr(disk, false, priv->qemuCaps)))
+    if (!(drivestr = qemuBuildDriveStr(conn, disk, false, priv->qemuCaps)))
         goto error;
 
     for (i = 0 ; i <= disk->info.addr.drive.controller ; i++) {
@@ -538,7 +540,8 @@ error:
 }
 
 
-int qemuDomainAttachUsbMassstorageDevice(struct qemud_driver *driver,
+int qemuDomainAttachUsbMassstorageDevice(virConnectPtr conn,
+                                         struct qemud_driver *driver,
                                          virDomainObjPtr vm,
                                          virDomainDiskDefPtr disk)
 {
@@ -575,7 +578,7 @@ int qemuDomainAttachUsbMassstorageDevice(struct qemud_driver *driver,
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceDiskAlias(disk, priv->qemuCaps) < 0)
             goto error;
-        if (!(drivestr = qemuBuildDriveStr(disk, false, priv->qemuCaps)))
+        if (!(drivestr = qemuBuildDriveStr(conn, disk, false, priv->qemuCaps)))
             goto error;
         if (!(devstr = qemuBuildDriveDevStr(disk, 0, priv->qemuCaps)))
             goto error;

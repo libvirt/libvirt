@@ -5046,7 +5046,8 @@ qemudDomainUndefine(virDomainPtr dom)
 }
 
 static int
-qemuDomainAttachDeviceDiskLive(struct qemud_driver *driver,
+qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
+                               struct qemud_driver *driver,
                                virDomainObjPtr vm,
                                virDomainDeviceDefPtr dev)
 {
@@ -5078,12 +5079,12 @@ qemuDomainAttachDeviceDiskLive(struct qemud_driver *driver,
         break;
     case VIR_DOMAIN_DISK_DEVICE_DISK:
         if (disk->bus == VIR_DOMAIN_DISK_BUS_USB)
-            ret = qemuDomainAttachUsbMassstorageDevice(driver, vm,
+            ret = qemuDomainAttachUsbMassstorageDevice(conn, driver, vm,
                                                        disk);
         else if (disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO)
-            ret = qemuDomainAttachPciDiskDevice(driver, vm, disk);
+            ret = qemuDomainAttachPciDiskDevice(conn, driver, vm, disk);
         else if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI)
-            ret = qemuDomainAttachSCSIDisk(driver, vm, disk);
+            ret = qemuDomainAttachSCSIDisk(conn, driver, vm, disk);
         else
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             _("disk bus '%s' cannot be hotplugged."),
@@ -5139,7 +5140,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, -1);
-        ret = qemuDomainAttachDeviceDiskLive(driver, vm, dev);
+        ret = qemuDomainAttachDeviceDiskLive(dom->conn, driver, vm, dev);
         if (!ret)
             dev->data.disk = NULL;
         break;

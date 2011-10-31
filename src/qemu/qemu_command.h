@@ -75,7 +75,8 @@ char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk,
                                virBitmapPtr qemuCaps);
 
 /* Both legacy & current support */
-char *qemuBuildDriveStr(virDomainDiskDefPtr disk,
+char *qemuBuildDriveStr(virConnectPtr conn,
+                        virDomainDiskDefPtr disk,
                         bool bootable,
                         virBitmapPtr qemuCaps);
 char *qemuBuildFSStr(virDomainFSDefPtr fs,
