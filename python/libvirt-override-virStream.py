@@ -90,7 +90,7 @@
                                    "nonblocking stream")
 
     def recv(self, nbytes):
-        """Write a series of bytes to the stream. This method may
+        """Reads a series of bytes from the stream. This method may
         block the calling application for an arbitrary amount
         of time.
 
