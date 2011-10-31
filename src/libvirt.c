@@ -3643,15 +3643,17 @@ error:
  * @domain: pointer to domain object
  * @params: pointer to memory parameter object
  *          (return value, allocated by the caller)
- * @nparams: pointer to number of memory parameters
+ * @nparams: pointer to number of memory parameters; input and output
  * @flags: one of virDomainModificationImpact
  *
- * Get all memory parameters, the @params array will be filled with the values
- * equal to the number of parameters suggested by @nparams
+ * Get all memory parameters.  On input, @nparams gives the size of the
+ * @params array; on output, @nparams gives how many slots were filled
+ * with parameter information, which might be less but will not exceed
+ * the input value.
  *
- * As the value of @nparams is dynamic, call the API setting @nparams to 0 and
- * @params as NULL, the API returns the number of parameters supported by the
- * HV by updating @nparams on SUCCESS. The caller should then allocate @params
+ * As a special case, calling with @params as NULL and @nparams as 0 on
+ * input will cause @nparams on output to contain the number of parameters
+ * supported by the hypervisor. The caller should then allocate @params
  * array, i.e. (sizeof(@virTypedParameter) * @nparams) bytes and call the API
  * again.
  *
@@ -3769,12 +3771,21 @@ error:
  * @domain: pointer to domain object
  * @params: pointer to blkio parameter object
  *          (return value, allocated by the caller)
- * @nparams: pointer to number of blkio parameters
+ * @nparams: pointer to number of blkio parameters; input and output
  * @flags: an OR'ed set of virDomainModificationImpact
  *
- * Get all blkio parameters, the @params array will be filled with the values
- * equal to the number of parameters suggested by @nparams.
- * See virDomainGetMemoryParameters for an equivalent usage example.
+ * Get all blkio parameters.  On input, @nparams gives the size of the
+ * @params array; on output, @nparams gives how many slots were filled
+ * with parameter information, which might be less but will not exceed
+ * the input value.
+ *
+ * As a special case, calling with @params as NULL and @nparams as 0 on
+ * input will cause @nparams on output to contain the number of parameters
+ * supported by the hypervisor. The caller should then allocate @params
+ * array, i.e. (sizeof(@virTypedParameter) * @nparams) bytes and call the API
+ * again.
+ *
+ * See virDomainGetMemoryParameters() for an equivalent usage example.
  *
  * This function may require privileged access to the hypervisor. This function
  * expects the caller to allocate the @params.
@@ -6339,14 +6350,17 @@ error:
  * @params: pointer to scheduler parameter objects
  *          (return value)
  * @nparams: pointer to number of scheduler parameter objects
- *          (this value must be at least as large as the returned value
- *           nparams of virDomainGetSchedulerType)
+ *          (this value should generally be as large as the returned value
+ *           nparams of virDomainGetSchedulerType()); input and output
  *
- * Get all scheduler parameters, the @params array will be filled with the
- * values and @nparams will be updated to the number of valid elements in
- * @params.  It is hypervisor specific whether this returns the live or
+ * Get all scheduler parameters.  On input, @nparams gives the size of the
+ * @params array; on output, @nparams gives how many slots were filled
+ * with parameter information, which might be less but will not exceed
+ * the input value.  @nparams cannot be 0.
+ *
+ * It is hypervisor specific whether this returns the live or
  * persistent state; for more control, use
- * virDomainGetSchedulerParametersFlags.
+ * virDomainGetSchedulerParametersFlags().
  *
  * Returns -1 in case of error, 0 in case of success.
  */
@@ -6395,14 +6409,27 @@ error:
  *          (return value)
  * @nparams: pointer to number of scheduler parameter
  *          (this value should be same than the returned value
- *           nparams of virDomainGetSchedulerType)
+ *           nparams of virDomainGetSchedulerType()); input and output
  * @flags: one of virDomainModificationImpact
  *
- * Get the scheduler parameters, the @params array will be filled with the
- * values.
+ * Get all scheduler parameters.  On input, @nparams gives the size of the
+ * @params array; on output, @nparams gives how many slots were filled
+ * with parameter information, which might be less but will not exceed
+ * the input value.  @nparams cannot be 0.
  *
  * The value of @flags can be exactly VIR_DOMAIN_AFFECT_CURRENT,
  * VIR_DOMAIN_AFFECT_LIVE, or VIR_DOMAIN_AFFECT_CONFIG.
+ *
+ * Here is a sample code snippet:
+ *
+ * char *ret = virDomainGetSchedulerType(dom, &nparams);
+ * if (ret && nparams != 0) {
+ *     if ((params = malloc(sizeof(*params) * nparams)) == NULL)
+ *         goto error;
+ *     memset(params, 0, sizeof(*params) * nparams);
+ *     if (virDomainGetSchedulerParametersFlags(dom, params, &nparams, 0))
+ *         goto error;
+ * }
  *
  * Returns -1 in case of error, 0 in case of success.
  */
@@ -6637,8 +6664,8 @@ error:
  * @path: path to the block device
  * @params: pointer to block stats parameter object
  *          (return value)
- * @nparams: pointer to number of block stats
- * @flags: unused, always passes 0
+ * @nparams: pointer to number of block stats; input and output
+ * @flags: unused, always pass 0
  *
  * This function is to get block stats parameters for block
  * devices attached to the domain.
@@ -6650,24 +6677,26 @@ error:
  * Domains may have more than one block device.  To get stats for
  * each you should make multiple calls to this function.
  *
- * The @params array will be filled with the value equal to the number of
- * parameters suggested by @nparams.
+ * On input, @nparams gives the size of the @params array; on output,
+ * @nparams gives how many slots were filled with parameter
+ * information, which might be less but will not exceed the input
+ * value.
  *
- * As the value of @nparams is dynamic, call the API setting @nparams to 0 and
- * @params as NULL, the API returns the number of parameters supported by the
- * HV by updating @nparams on SUCCESS. (Note that block device of different type
- * might support different parameters numbers, so it might be necessary to compute
- * @nparams for each block device type). The caller should then allocate @params
+ * As a special case, calling with @params as NULL and @nparams as 0 on
+ * input will cause @nparams on output to contain the number of parameters
+ * supported by the hypervisor. (Note that block devices of different types
+ * might support different parameters, so it might be necessary to compute
+ * @nparams for each block device). The caller should then allocate @params
  * array, i.e. (sizeof(@virTypedParameter) * @nparams) bytes and call the API
- * again. See virDomainGetMemoryParameters for more details.
+ * again. See virDomainGetMemoryParameters() for more details.
  *
  * Returns -1 in case of error, 0 in case of success.
  */
-int virDomainBlockStatsFlags (virDomainPtr dom,
-                              const char *path,
-                              virTypedParameterPtr params,
-                              int *nparams,
-                              unsigned int flags)
+int virDomainBlockStatsFlags(virDomainPtr dom,
+                             const char *path,
+                             virTypedParameterPtr params,
+                             int *nparams,
+                             unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -6681,7 +6710,8 @@ int virDomainBlockStatsFlags (virDomainPtr dom,
         virDispatchError(NULL);
         return -1;
     }
-    if (!path || (nparams == NULL) || (*nparams < 0)) {
+    if (!path || (nparams == NULL) || (*nparams < 0) ||
+        (params == NULL && *nparams != 0)) {
         virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
