@@ -700,7 +700,7 @@ retry:
         /*
          * /etc/filesystems is only allowed to contain '*' on the last line
          */
-        if (gotStar) {
+        if (gotStar && !tryProc) {
             lxcError(VIR_ERR_INTERNAL_ERROR,
                      _("%s has unexpected '*' before last line"),
                      fslist);
