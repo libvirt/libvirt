@@ -1495,6 +1495,10 @@ libvirt_lxc_CFLAGS =				\
 		$(AUDIT_CFLAGS)			\
 		-I@top_srcdir@/src/conf		\
 		$(AM_CFLAGS)
+if HAVE_LIBBLKID
+libvirt_lxc_CFLAGS += $(BLKID_CFLAGS)
+libvirt_lxc_LDADD += $(BLKID_LIBS)
+endif
 endif
 endif
 EXTRA_DIST += $(LXC_CONTROLLER_SOURCES)

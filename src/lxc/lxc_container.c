@@ -47,6 +47,10 @@
 # include <cap-ng.h>
 #endif
 
+#if HAVE_LIBBLKID
+# include <blkid/blkid.h>
+#endif
+
 #include "virterror_internal.h"
 #include "logging.h"
 #include "lxc_container.h"
@@ -627,6 +631,87 @@ cleanup:
 }
 
 
+#ifdef HAVE_LIBBLKID
+static int
+lxcContainerMountDetectFilesystem(const char *src, char **type)
+{
+    int fd;
+    int ret = -1;
+    int rc;
+    const char *data = NULL;
+    blkid_probe blkid = NULL;
+
+    *type = NULL;
+
+    if ((fd = open(src, O_RDONLY)) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to open filesystem %s"), src);
+        return -1;
+    }
+
+    if (!(blkid = blkid_new_probe())) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to create blkid library handle"));
+        goto cleanup;
+    }
+    if (blkid_probe_set_device(blkid, fd, 0, 0) < 0) {
+        virReportSystemError(EINVAL,
+                             _("Unable to associate device %s with blkid library"),
+                             src);
+        goto cleanup;
+    }
+
+    blkid_probe_enable_superblocks(blkid, 1);
+
+    blkid_probe_set_superblocks_flags(blkid, BLKID_SUBLKS_TYPE);
+
+    rc = blkid_do_safeprobe(blkid);
+    if (rc != 0) {
+        if (rc == 1) /* Nothing found, return success with *type == NULL */
+            goto done;
+
+        if (rc == -2) {
+            virReportSystemError(EINVAL,
+                                 _("Too many filesystems detected for %s"),
+                                 src);
+        } else {
+            virReportSystemError(errno,
+                                 _("Unable to detect filesystem for %s"),
+                                 src);
+        }
+        goto cleanup;
+    }
+
+    if (blkid_probe_lookup_value(blkid, "TYPE", &data, NULL) < 0) {
+        virReportSystemError(ENOENT,
+                             _("Unable to find filesystem type for %s"),
+                             src);
+        goto cleanup;
+    }
+
+    if (!(*type = strdup(data))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+done:
+    ret = 0;
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    if (blkid)
+        blkid_free_probe(blkid);
+    return ret;
+}
+#else /* ! HAVE_LIBBLKID */
+static int
+lxcContainerMountDetectFilesystem(const char *src ATTRIBUTE_UNUSED,
+                                  char **type)
+{
+    /* No libblkid, so just return success with no detected type */
+    *type = NULL;
+    return 0;
+}
+#endif /* ! HAVE_LIBBLKID */
 
 /*
  * This functions attempts to do automatic detection of filesystem
@@ -771,6 +856,8 @@ static int lxcContainerMountFSBlockHelper(virDomainFSDefPtr fs,
 {
     int fsflags = 0;
     int ret = -1;
+    char *format = NULL;
+
     if (fs->readonly)
         fsflags |= MS_RDONLY;
 
@@ -781,7 +868,21 @@ static int lxcContainerMountFSBlockHelper(virDomainFSDefPtr fs,
         goto cleanup;
     }
 
-    ret = lxcContainerMountFSBlockAuto(fs, fsflags, src, srcprefix);
+    if (lxcContainerMountDetectFilesystem(src, &format) < 0)
+        goto cleanup;
+
+    if (format) {
+        VIR_DEBUG("Mount %s with detected format %s", src, format);
+        if (mount(src, fs->dst, format, fsflags, NULL) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to mount device %s to %s as %s"),
+                                 src, fs->dst, format);
+            goto cleanup;
+        }
+        ret = 0;
+    } else {
+        ret = lxcContainerMountFSBlockAuto(fs, fsflags, src, srcprefix);
+    }
 
 cleanup:
     return ret;
