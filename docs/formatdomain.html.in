@@ -925,7 +925,7 @@
     &lt;/disk&gt;
     &lt;disk type='block' device='cdrom'&gt;
       &lt;driver name='qemu' type='raw'/&gt;
-      &lt;target def='hdc' bus='ide'/&gt;
+      &lt;target dev='hdc' bus='ide'/&gt;
       &lt;readonly/&gt;
     &lt;/disk&gt;
   &lt;/devices&gt;
