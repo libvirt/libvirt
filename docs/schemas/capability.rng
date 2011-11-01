@@ -302,6 +302,11 @@
           <empty/>
         </element>
       </optional>
+      <optional>
+        <element name='deviceboot'>
+          <empty/>
+        </element>
+      </optional>
     </element>
   </define>
 
