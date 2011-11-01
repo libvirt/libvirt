@@ -1522,6 +1522,7 @@ EXTRA_DIST += $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
 install-data-local:
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/cache/libvirt"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/images"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/filesystems"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/boot"
 if HAVE_SANLOCK
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/sanlock"
@@ -1567,6 +1568,7 @@ endif
 uninstall-local::
 	rmdir "$(DESTDIR)$(localstatedir)/cache/libvirt" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/images" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/filesystems" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/boot" ||:
 if HAVE_SANLOCK
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/sanlock" ||:

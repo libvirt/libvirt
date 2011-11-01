@@ -1001,6 +1001,7 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %dir %{_localstatedir}/run/libvirt/
 
 %dir %attr(0711, root, root) %{_localstatedir}/lib/libvirt/images/
+%dir %attr(0711, root, root) %{_localstatedir}/lib/libvirt/filesystems/
 %dir %attr(0711, root, root) %{_localstatedir}/lib/libvirt/boot/
 %dir %attr(0711, root, root) %{_localstatedir}/cache/libvirt/
 
