@@ -533,6 +533,70 @@ typedef virTypedParameter *virTypedParameterPtr;
 
 /* Management of scheduler parameters */
 
+/**
+ * VIR_DOMAIN_SCHEDULER_CPU_SHARES:
+ *
+ * Macro represents proportional weight of the scheduler used on the
+ * host cpu, when using the posix scheduler, as a ullong.
+ */
+#define VIR_DOMAIN_SCHEDULER_CPU_SHARES "cpu_shares"
+
+/**
+ * VIR_DOMAIN_SCHEDULER_VCPU_PERIOD:
+ *
+ * Macro represents the enforcement period for a quota, in microseconds,
+ * when using the posix scheduler, as a ullong.
+ */
+#define VIR_DOMAIN_SCHEDULER_VCPU_PERIOD "vcpu_period"
+
+/**
+ * VIR_DOMAIN_SCHEDULER_VCPU_QUOTA:
+ *
+ * Macro represents the maximum bandwidth to be used within a period,
+ * when using the posix scheduler, as an llong.
+ */
+#define VIR_DOMAIN_SCHEDULER_VCPU_QUOTA "vcpu_quota"
+
+/**
+ * VIR_DOMAIN_SCHEDULER_WEIGHT:
+ *
+ * Macro represents the relative weight,  when using the credit
+ * scheduler, as a uint.
+ */
+#define VIR_DOMAIN_SCHEDULER_WEIGHT "weight"
+
+/**
+ * VIR_DOMAIN_SCHEDULER_CAP:
+ *
+ * Macro represents the maximum scheduler cap, when using the credit
+ * scheduler, as a uint.
+ */
+#define VIR_DOMAIN_SCHEDULER_CAP "cap"
+
+/**
+ * VIR_DOMAIN_SCHEDULER_RESERVATION:
+ *
+ * Macro represents the scheduler reservation value, when using the
+ * allocation scheduler, as an llong.
+ */
+#define VIR_DOMAIN_SCHEDULER_RESERVATION "reservation"
+
+/**
+ * VIR_DOMAIN_SCHEDULER_LIMIT:
+ *
+ * Macro represents the scheduler limit value, when using the
+ * allocation scheduler, as an llong.
+ */
+#define VIR_DOMAIN_SCHEDULER_LIMIT "limit"
+
+/**
+ * VIR_DOMAIN_SCHEDULER_SHARES:
+ *
+ * Macro represents the scheduler shares value, when using the
+ * allocation scheduler, as an int.
+ */
+#define VIR_DOMAIN_SCHEDULER_SHARES "shares"
+
 /*
  * Fetch scheduler parameters, caller allocates 'params' field of size 'nparams'
  */
@@ -586,15 +650,16 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
 /**
  * VIR_DOMAIN_BLOCK_STATS_FIELD_LENGTH:
  *
- * Macro providing the field length of virDomainBlockStatsFlagsStruct
+ * Macro providing the field length of parameter names when using
+ * virDomainBlockStatsFlags().
  */
-#define VIR_DOMAIN_BLOCK_STATS_FIELD_LENGTH 80
+#define VIR_DOMAIN_BLOCK_STATS_FIELD_LENGTH VIR_TYPED_PARAM_FIELD_LENGTH
 
 /**
  * VIR_DOMAIN_BLOCK_STATS_READ_BYTES:
  *
  * Macro represents the total number of read bytes of the
- * block device.
+ * block device, as an llong.
  */
 #define VIR_DOMAIN_BLOCK_STATS_READ_BYTES "rd_bytes"
 
@@ -602,7 +667,7 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  * VIR_DOMAIN_BLOCK_STATS_READ_REQ:
  *
  * Macro represents the total read requests of the
- * block device.
+ * block device, as an llong.
  */
 #define VIR_DOMAIN_BLOCK_STATS_READ_REQ "rd_operations"
 
@@ -610,7 +675,7 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  * VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES:
  *
  * Macro represents the total time spend on cache reads in
- * nano-seconds of the block device.
+ * nano-seconds of the block device, as an llong.
  */
 #define VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES "rd_total_times"
 
@@ -618,7 +683,7 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  * VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES:
  *
  * Macro represents the total number of write bytes of the
- * block device.
+ * block device, as an llong.
  */
 #define VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES "wr_bytes"
 
@@ -626,7 +691,7 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  * VIR_DOMAIN_BLOCK_STATS_WRITE_REQ:
  *
  * Macro represents the total write requests of the
- * block device.
+ * block device, as an llong.
  */
 #define VIR_DOMAIN_BLOCK_STATS_WRITE_REQ "wr_operations"
 
@@ -634,7 +699,7 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  * VIR_DOMAIN_BLOCK_STATS_WRITE_TOTAL_TIMES:
  *
  * Macro represents the total time spend on cache writes in
- * nano-seconds of the block device.
+ * nano-seconds of the block device, as an llong.
  */
 #define VIR_DOMAIN_BLOCK_STATS_WRITE_TOTAL_TIMES "wr_total_times"
 
@@ -642,7 +707,7 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  * VIR_DOMAIN_BLOCK_STATS_FLUSH_REQ:
  *
  * Macro represents the total flush requests of the
- * block device.
+ * block device, as an llong.
  */
 #define VIR_DOMAIN_BLOCK_STATS_FLUSH_REQ "flush_operations"
 
@@ -650,14 +715,14 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  * VIR_DOMAIN_BLOCK_STATS_FLUSH_TOTAL_TIMES:
  *
  * Macro represents the total time spend on cache flushing in
- * nano-seconds of the block device.
+ * nano-seconds of the block device, as an llong.
  */
 #define VIR_DOMAIN_BLOCK_STATS_FLUSH_TOTAL_TIMES "flush_total_times"
 
 /**
  * VIR_DOMAIN_BLOCK_STATS_ERRS:
  *
- * In Xen this returns the mysterious 'oo_req'
+ * In Xen this returns the mysterious 'oo_req', as an llong.
  */
 #define VIR_DOMAIN_BLOCK_STATS_ERRS "errs"
 
@@ -1136,7 +1201,7 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
  * VIR_DOMAIN_BLKIO_WEIGHT:
  *
  * Macro for the Blkio tunable weight: it represents the io weight
- * the guest can use.
+ * the guest can use, as a uint.
  */
 
 #define VIR_DOMAIN_BLKIO_WEIGHT "weight"
@@ -1163,7 +1228,7 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  * VIR_DOMAIN_MEMORY_HARD_LIMIT:
  *
  * Macro for the memory tunable hard_limit: it represents the maximum memory
- * the guest can use.
+ * the guest can use, as a ullong.
  */
 
 #define VIR_DOMAIN_MEMORY_HARD_LIMIT "hard_limit"
@@ -1172,7 +1237,7 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  * VIR_DOMAIN_MEMORY_SOFT_LIMIT:
  *
  * Macro for the memory tunable soft_limit: it represents the memory upper
- * limit enforced during memory contention.
+ * limit enforced during memory contention, as a ullong.
  */
 
 #define VIR_DOMAIN_MEMORY_SOFT_LIMIT "soft_limit"
@@ -1181,7 +1246,7 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  * VIR_DOMAIN_MEMORY_MIN_GUARANTEE:
  *
  * Macro for the memory tunable min_guarantee: it represents the minimum
- * memory guaranteed to be reserved for the guest.
+ * memory guaranteed to be reserved for the guest, as a ullong.
  */
 
 #define VIR_DOMAIN_MEMORY_MIN_GUARANTEE "min_guarantee"
@@ -1190,7 +1255,7 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  * VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT:
  *
  * Macro for the swap tunable swap_hard_limit: it represents the maximum swap
- * plus memory the guest can use. This limit has to be more than
+ * plus memory the guest can use, as a ullong. This limit has to be more than
  * VIR_DOMAIN_MEMORY_HARD_LIMIT.
  */
 

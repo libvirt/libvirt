@@ -3661,7 +3661,7 @@ esxDomainGetSchedulerParametersFlags(virDomainPtr domain,
         if (STREQ(dynamicProperty->name, "config.cpuAllocation.reservation") &&
             ! (mask & (1 << 0))) {
             snprintf (params[i].field, VIR_TYPED_PARAM_FIELD_LENGTH, "%s",
-                      "reservation");
+                      VIR_DOMAIN_SCHEDULER_RESERVATION);
 
             params[i].type = VIR_TYPED_PARAM_LLONG;
 
@@ -3677,7 +3677,7 @@ esxDomainGetSchedulerParametersFlags(virDomainPtr domain,
                          "config.cpuAllocation.limit") &&
                    ! (mask & (1 << 1))) {
             snprintf (params[i].field, VIR_TYPED_PARAM_FIELD_LENGTH, "%s",
-                      "limit");
+                      VIR_DOMAIN_SCHEDULER_LIMIT);
 
             params[i].type = VIR_TYPED_PARAM_LLONG;
 
@@ -3693,7 +3693,7 @@ esxDomainGetSchedulerParametersFlags(virDomainPtr domain,
                          "config.cpuAllocation.shares") &&
                    ! (mask & (1 << 2))) {
             snprintf (params[i].field, VIR_TYPED_PARAM_FIELD_LENGTH, "%s",
-                      "shares");
+                      VIR_DOMAIN_SCHEDULER_SHARES);
 
             params[i].type = VIR_TYPED_PARAM_INT;
 
@@ -3783,7 +3783,7 @@ esxDomainSetSchedulerParametersFlags(virDomainPtr domain,
     }
 
     for (i = 0; i < nparams; ++i) {
-        if (STREQ (params[i].field, "reservation") &&
+        if (STREQ (params[i].field, VIR_DOMAIN_SCHEDULER_RESERVATION) &&
             params[i].type == VIR_TYPED_PARAM_LLONG) {
             if (esxVI_Long_Alloc(&spec->cpuAllocation->reservation) < 0) {
                 goto cleanup;
@@ -3797,7 +3797,7 @@ esxDomainSetSchedulerParametersFlags(virDomainPtr domain,
             }
 
             spec->cpuAllocation->reservation->value = params[i].value.l;
-        } else if (STREQ (params[i].field, "limit") &&
+        } else if (STREQ (params[i].field, VIR_DOMAIN_SCHEDULER_LIMIT) &&
                    params[i].type == VIR_TYPED_PARAM_LLONG) {
             if (esxVI_Long_Alloc(&spec->cpuAllocation->limit) < 0) {
                 goto cleanup;
@@ -3812,7 +3812,7 @@ esxDomainSetSchedulerParametersFlags(virDomainPtr domain,
             }
 
             spec->cpuAllocation->limit->value = params[i].value.l;
-        } else if (STREQ (params[i].field, "shares") &&
+        } else if (STREQ (params[i].field, VIR_DOMAIN_SCHEDULER_SHARES) &&
                    params[i].type == VIR_TYPED_PARAM_INT) {
             if (esxVI_SharesInfo_Alloc(&sharesInfo) < 0 ||
                 esxVI_Int_Alloc(&sharesInfo->shares) < 0) {

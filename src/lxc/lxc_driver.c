@@ -2524,7 +2524,7 @@ lxcSetSchedulerParametersFlags(virDomainPtr domain,
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
 
-        if (STRNEQ(param->field, "cpu_shares")) {
+        if (STRNEQ(param->field, VIR_DOMAIN_SCHEDULER_CPU_SHARES)) {
             lxcError(VIR_ERR_INVALID_ARG,
                      _("Invalid parameter `%s'"), param->field);
             goto cleanup;
@@ -2603,7 +2603,8 @@ lxcGetSchedulerParametersFlags(virDomainPtr domain,
     if (virCgroupGetCpuShares(group, &val) != 0)
         goto cleanup;
     params[0].value.ul = val;
-    if (virStrcpyStatic(params[0].field, "cpu_shares") == NULL) {
+    if (virStrcpyStatic(params[0].field,
+                        VIR_DOMAIN_SCHEDULER_CPU_SHARES) == NULL) {
         lxcError(VIR_ERR_INTERNAL_ERROR,
                  "%s", _("Field cpu_shares too big for destination"));
         goto cleanup;

@@ -6297,7 +6297,8 @@ static int qemuDomainSetMemoryParameters(virDomainPtr dom,
             }
         } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_MIN_GUARANTEE)) {
             qemuReportError(VIR_ERR_INVALID_ARG,
-                            _("Memory tunable `%s' not implemented"), param->field);
+                            _("Memory tunable `%s' not implemented"),
+                            param->field);
             ret = -1;
         } else {
             qemuReportError(VIR_ERR_INVALID_ARG,
@@ -6696,7 +6697,7 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
 
-        if (STREQ(param->field, "cpu_shares")) {
+        if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_CPU_SHARES)) {
             if (param->type != VIR_TYPED_PARAM_ULLONG) {
                 qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                                 _("invalid type for cpu_shares tunable, expected a 'ullong'"));
@@ -6717,7 +6718,7 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
                 vmdef->cputune.shares = params[i].value.ul;
             }
-        } else if (STREQ(param->field, "vcpu_period")) {
+        } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_PERIOD)) {
             if (param->type != VIR_TYPED_PARAM_ULLONG) {
                 qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                                 _("invalid type for vcpu_period tunable,"
@@ -6737,7 +6738,7 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
                 vmdef->cputune.period = params[i].value.ul;
             }
-        } else if (STREQ(param->field, "vcpu_quota")) {
+        } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_QUOTA)) {
             if (param->type != VIR_TYPED_PARAM_LLONG) {
                 qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                                 _("invalid type for vcpu_quota tunable,"
@@ -6981,11 +6982,11 @@ qemuGetSchedulerParametersFlags(virDomainPtr dom,
 out:
     params[0].value.ul = shares;
     params[0].type = VIR_TYPED_PARAM_ULLONG;
-    /* XXX make these field names public in libvirt.h */
-    if (virStrcpyStatic(params[0].field, "cpu_shares") == NULL) {
+    if (virStrcpyStatic(params[0].field,
+                        VIR_DOMAIN_SCHEDULER_CPU_SHARES) == NULL) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("Field name '%s' too long"),
-                        "cpu_shares");
+                        VIR_DOMAIN_SCHEDULER_CPU_SHARES);
         goto cleanup;
     }
 
@@ -6995,10 +6996,11 @@ out:
         if (*nparams > saved_nparams) {
             params[1].value.ul = period;
             params[1].type = VIR_TYPED_PARAM_ULLONG;
-            if (virStrcpyStatic(params[1].field, "vcpu_period") == NULL) {
+            if (virStrcpyStatic(params[1].field,
+                                VIR_DOMAIN_SCHEDULER_VCPU_PERIOD) == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 _("Field name '%s' too long"),
-                                "vcpu_period");
+                                VIR_DOMAIN_SCHEDULER_VCPU_PERIOD);
                 goto cleanup;
             }
             saved_nparams++;
@@ -7007,10 +7009,11 @@ out:
         if (*nparams > saved_nparams) {
             params[2].value.ul = quota;
             params[2].type = VIR_TYPED_PARAM_LLONG;
-            if (virStrcpyStatic(params[2].field, "vcpu_quota") == NULL) {
+            if (virStrcpyStatic(params[2].field,
+                                VIR_DOMAIN_SCHEDULER_VCPU_QUOTA) == NULL) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 _("Field name '%s' too long"),
-                                "vcpu_quota");
+                                VIR_DOMAIN_SCHEDULER_VCPU_QUOTA);
                 goto cleanup;
             }
             saved_nparams++;

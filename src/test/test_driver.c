@@ -2713,7 +2713,7 @@ testDomainGetSchedulerParamsFlags(virDomainPtr domain,
         testError(VIR_ERR_INVALID_ARG, "%s", _("Invalid parameter count"));
         goto cleanup;
     }
-    strcpy(params[0].field, "weight");
+    strcpy(params[0].field, VIR_DOMAIN_SCHEDULER_WEIGHT);
     params[0].type = VIR_TYPED_PARAM_UINT;
     /* XXX */
     /*params[0].value.ui = privdom->weight;*/
@@ -2759,7 +2759,7 @@ testDomainSetSchedulerParamsFlags(virDomainPtr domain,
     }
 
     for (i = 0; i < nparams; i++) {
-        if (STRNEQ(params[i].field, "weight")) {
+        if (STRNEQ(params[i].field, VIR_DOMAIN_SCHEDULER_WEIGHT)) {
             testError(VIR_ERR_INVALID_ARG, "field");
             goto cleanup;
         }

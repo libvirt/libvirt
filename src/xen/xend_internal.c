@@ -3554,9 +3554,6 @@ error:
 
 }
 
-static const char *str_weight = "weight";
-static const char *str_cap = "cap";
-
 /**
  * xenDaemonGetSchedulerParameters:
  * @domain: pointer to the Domain block
@@ -3635,18 +3632,21 @@ xenDaemonGetSchedulerParameters(virDomainPtr domain,
                 goto error;
             }
 
-            if (virStrcpyStatic(params[0].field, str_weight) == NULL) {
+            if (virStrcpyStatic(params[0].field,
+                                VIR_DOMAIN_SCHEDULER_WEIGHT) == NULL) {
                 virXendError(VIR_ERR_INTERNAL_ERROR,
                              _("Weight %s too big for destination"),
-                             str_weight);
+                             VIR_DOMAIN_SCHEDULER_WEIGHT);
                 goto error;
             }
             params[0].type = VIR_TYPED_PARAM_UINT;
             params[0].value.ui = sexpr_int(root, "domain/cpu_weight");
 
-            if (virStrcpyStatic(params[1].field, str_cap) == NULL) {
+            if (virStrcpyStatic(params[1].field,
+                                VIR_DOMAIN_SCHEDULER_CAP) == NULL) {
                 virXendError(VIR_ERR_INTERNAL_ERROR,
-                             _("Cap %s too big for destination"), str_cap);
+                             _("Cap %s too big for destination"),
+                             VIR_DOMAIN_SCHEDULER_CAP);
                 goto error;
             }
             params[1].type = VIR_TYPED_PARAM_UINT;
@@ -3727,10 +3727,10 @@ xenDaemonSetSchedulerParameters(virDomainPtr domain,
             memset(&buf_weight, 0, VIR_UUID_BUFLEN);
             memset(&buf_cap, 0, VIR_UUID_BUFLEN);
             for (i = 0; i < nparams; i++) {
-                if (STREQ (params[i].field, str_weight) &&
+                if (STREQ (params[i].field, VIR_DOMAIN_SCHEDULER_WEIGHT) &&
                     params[i].type == VIR_TYPED_PARAM_UINT) {
                     snprintf(buf_weight, sizeof(buf_weight), "%u", params[i].value.ui);
-                } else if (STREQ (params[i].field, str_cap) &&
+                } else if (STREQ (params[i].field, VIR_DOMAIN_SCHEDULER_CAP) &&
                     params[i].type == VIR_TYPED_PARAM_UINT) {
                     snprintf(buf_cap, sizeof(buf_cap), "%u", params[i].value.ui);
                 } else {

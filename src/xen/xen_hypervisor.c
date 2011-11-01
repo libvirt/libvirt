@@ -1203,9 +1203,6 @@ xenHypervisorGetSchedulerType(virDomainPtr domain, int *nparams)
     return schedulertype;
 }
 
-static const char *str_weight = "weight";
-static const char *str_cap = "cap";
-
 /**
  * xenHypervisorGetSchedulerParameters:
  * @domain: pointer to the Xen Hypervisor block
@@ -1291,17 +1288,21 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
                 if (ret < 0)
                     return(-1);
 
-                if (virStrcpyStatic(params[0].field, str_weight) == NULL) {
+                if (virStrcpyStatic(params[0].field,
+                                    VIR_DOMAIN_SCHEDULER_WEIGHT) == NULL) {
                     virXenError(VIR_ERR_INTERNAL_ERROR,
-                                "Weight %s too big for destination", str_weight);
+                                "Weight %s too big for destination",
+                                VIR_DOMAIN_SCHEDULER_WEIGHT);
                     return -1;
                 }
                 params[0].type = VIR_TYPED_PARAM_UINT;
                 params[0].value.ui = op_dom.u.getschedinfo.u.credit.weight;
 
-                if (virStrcpyStatic(params[1].field, str_cap) == NULL) {
+                if (virStrcpyStatic(params[1].field,
+                                    VIR_DOMAIN_SCHEDULER_CAP) == NULL) {
                     virXenError(VIR_ERR_INTERNAL_ERROR,
-                                "Cap %s too big for destination", str_cap);
+                                "Cap %s too big for destination",
+                                VIR_DOMAIN_SCHEDULER_CAP);
                     return -1;
                 }
                 params[1].type = VIR_TYPED_PARAM_UINT;
@@ -1402,7 +1403,7 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
 
             for (i = 0; i < nparams; i++) {
                 memset(&buf, 0, sizeof(buf));
-                if (STREQ (params[i].field, str_weight) &&
+                if (STREQ (params[i].field, VIR_DOMAIN_SCHEDULER_WEIGHT) &&
                     params[i].type == VIR_TYPED_PARAM_UINT) {
                     val = params[i].value.ui;
                     if ((val < 1) || (val > USHRT_MAX)) {
@@ -1411,7 +1412,7 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
                         return(-1);
                     }
                     op_dom.u.getschedinfo.u.credit.weight = val;
-                } else if (STREQ (params[i].field, str_cap) &&
+                } else if (STREQ (params[i].field, VIR_DOMAIN_SCHEDULER_CAP) &&
                     params[i].type == VIR_TYPED_PARAM_UINT) {
                     val = params[i].value.ui;
                     if (val >= USHRT_MAX) {
