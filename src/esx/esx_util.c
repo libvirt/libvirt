@@ -51,7 +51,6 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, xmlURIPtr uri)
     int noVerify;
     int autoAnswer;
     char *tmp;
-    char *saveptr;
 
     if (parsedUri == NULL || *parsedUri != NULL) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -184,26 +183,13 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, xmlURIPtr uri)
         }
     }
 
-    /* Expected format: [/]<datacenter>/<computeresource>[/<hostsystem>] */
     if (uri->path != NULL) {
-        tmp = strdup(uri->path);
+        (*parsedUri)->path = strdup(uri->path);
 
-        if (tmp == NULL) {
+        if ((*parsedUri)->path == NULL) {
             virReportOOMError();
             goto cleanup;
         }
-
-        if (esxVI_String_DeepCopyValue(&(*parsedUri)->path_datacenter,
-                                       strtok_r(tmp, "/", &saveptr)) < 0 ||
-            esxVI_String_DeepCopyValue(&(*parsedUri)->path_computeResource,
-                                       strtok_r(NULL, "/", &saveptr)) < 0 ||
-            esxVI_String_DeepCopyValue(&(*parsedUri)->path_hostSystem,
-                                       strtok_r(NULL, "", &saveptr)) < 0) {
-            VIR_FREE(tmp);
-            goto cleanup;
-        }
-
-        VIR_FREE(tmp);
     }
 
     if ((*parsedUri)->transport == NULL) {
@@ -242,9 +228,7 @@ esxUtil_FreeParsedUri(esxUtil_ParsedUri **parsedUri)
     VIR_FREE((*parsedUri)->transport);
     VIR_FREE((*parsedUri)->vCenter);
     VIR_FREE((*parsedUri)->proxy_hostname);
-    VIR_FREE((*parsedUri)->path_datacenter);
-    VIR_FREE((*parsedUri)->path_computeResource);
-    VIR_FREE((*parsedUri)->path_hostSystem);
+    VIR_FREE((*parsedUri)->path);
 
     VIR_FREE(*parsedUri);
 }

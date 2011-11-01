@@ -722,7 +722,7 @@ esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
     if (esxVI_Context_Alloc(&priv->host) < 0 ||
         esxVI_Context_Connect(priv->host, url, ipAddress, username, password,
                               priv->parsedUri) < 0 ||
-        esxVI_Context_LookupObjectsByPath(priv->host, priv->parsedUri) < 0) {
+        esxVI_Context_LookupManagedObjects(priv->host) < 0) {
         goto cleanup;
     }
 
@@ -804,8 +804,7 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
     char *url = NULL;
 
     if (hostSystemIpAddress == NULL &&
-        (priv->parsedUri->path_datacenter == NULL ||
-         priv->parsedUri->path_computeResource == NULL)) {
+        (priv->parsedUri->path == NULL || STREQ(priv->parsedUri->path, "/"))) {
         ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
                   _("Path has to specify the datacenter and compute resource"));
         return -1;
@@ -869,13 +868,13 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
     }
 
     if (hostSystemIpAddress != NULL) {
-        if (esxVI_Context_LookupObjectsByHostSystemIp(priv->vCenter,
-                                                      hostSystemIpAddress) < 0) {
+        if (esxVI_Context_LookupManagedObjectsByHostSystemIp
+              (priv->vCenter, hostSystemIpAddress) < 0) {
             goto cleanup;
         }
     } else {
-        if (esxVI_Context_LookupObjectsByPath(priv->vCenter,
-                                              priv->parsedUri) < 0) {
+        if (esxVI_Context_LookupManagedObjectsByPath(priv->vCenter,
+                                                     priv->parsedUri->path) < 0) {
             goto cleanup;
         }
     }
@@ -894,8 +893,8 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
 
 
 /*
- * URI format: {vpx|esx|gsx}://[<username>@]<hostname>[:<port>]/[<path>][?<query parameter> ...]
- *             <path> = <datacenter>/<computeresource>[/<hostsystem>]
+ * URI format: {vpx|esx|gsx}://[<username>@]<hostname>[:<port>]/[<path>][?<query parameter>...]
+ *             <path> = [<folder>/...]<datacenter>/[<folder>/...]<computeresource>[/<hostsystem>]
  *
  * If no port is specified the default port is set dependent on the scheme and
  * transport parameter:
@@ -909,7 +908,8 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
  * For a vpx:// connection <path> references a host managed by the vCenter.
  * In case the host is part of a cluster then <computeresource> is the cluster
  * name. Otherwise <computeresource> and <hostsystem> are equal and the later
- * can be omitted.
+ * can be omitted. As datacenters and computeresources can be organized in
+ * folders those have to be included in <path>.
  *
  * Optional query parameters:
  * - transport={http|https}
@@ -975,6 +975,12 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth,
                   _("Transport '%s' in URI scheme is not supported, try again "
                     "without the transport part"), plus + 1);
         return VIR_DRV_OPEN_ERROR;
+    }
+
+    if (STRCASENEQ(conn->uri->scheme, "vpx") &&
+        conn->uri->path != NULL && STRNEQ(conn->uri->path, "/")) {
+        VIR_WARN("Ignoring unexpected path '%s' for non-vpx scheme '%s'",
+                 conn->uri->path, conn->uri->scheme);
     }
 
     /* Require server part */
@@ -2769,7 +2775,7 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
                       domain->conn->uri->server, domain->conn->uri->port);
     virBufferURIEncodeString(&buffer, directoryAndFileName);
     virBufferAddLit(&buffer, "?dcPath=");
-    virBufferURIEncodeString(&buffer, priv->primary->datacenter->name);
+    virBufferURIEncodeString(&buffer, priv->primary->datacenterPath);
     virBufferAddLit(&buffer, "&dsName=");
     virBufferURIEncodeString(&buffer, datastoreName);
 
@@ -3237,7 +3243,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
 
     virBufferURIEncodeString(&buffer, escapedName);
     virBufferAddLit(&buffer, ".vmx?dcPath=");
-    virBufferURIEncodeString(&buffer, priv->primary->datacenter->name);
+    virBufferURIEncodeString(&buffer, priv->primary->datacenterPath);
     virBufferAddLit(&buffer, "&dsName=");
     virBufferURIEncodeString(&buffer, datastoreName);
 

@@ -204,8 +204,11 @@ struct _esxVI_Context {
     esxVI_UserSession *session; /* ... except the session ... */
     virMutexPtr sessionLock; /* ... that is protected by this mutex */
     esxVI_Datacenter *datacenter;
+    char *datacenterPath; /* including folders */
     esxVI_ComputeResource *computeResource;
+    char *computeResourcePath; /* including folders */
     esxVI_HostSystem *hostSystem;
+    char *hostSystemName;
     esxVI_SelectionSpec *selectSet_folderToChildEntity;
     esxVI_SelectionSpec *selectSet_hostSystemToParent;
     esxVI_SelectionSpec *selectSet_hostSystemToVm;
@@ -221,10 +224,10 @@ void esxVI_Context_Free(esxVI_Context **ctx);
 int esxVI_Context_Connect(esxVI_Context *ctx, const char *ipAddress,
                           const char *url, const char *username,
                           const char *password, esxUtil_ParsedUri *parsedUri);
-int esxVI_Context_LookupObjectsByPath(esxVI_Context *ctx,
-                                      esxUtil_ParsedUri *parsedUri);
-int esxVI_Context_LookupObjectsByHostSystemIp(esxVI_Context *ctx,
-                                              const char *hostSystemIpAddress);
+int esxVI_Context_LookupManagedObjects(esxVI_Context *ctx);
+int esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path);
+int esxVI_Context_LookupManagedObjectsByHostSystemIp(esxVI_Context *ctx,
+                                                     const char *hostSystemIpAddress);
 int esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
                           const char *request, esxVI_Response **response,
                           esxVI_Occurrence occurrence);

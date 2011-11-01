@@ -37,9 +37,7 @@ struct _esxUtil_ParsedUri {
     int proxy_type;
     char *proxy_hostname;
     int proxy_port;
-    char *path_datacenter;
-    char *path_computeResource;
-    char *path_hostSystem;
+    char *path;
 };
 
 int esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, xmlURIPtr uri);

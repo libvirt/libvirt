@@ -755,6 +755,10 @@ managed object Datacenter            extends ManagedEntity
 end
 
 
+managed object Folder                extends ManagedEntity
+end
+
+
 managed object HostSystem            extends ManagedEntity
     HostConfigManager                        configManager                  r
 end

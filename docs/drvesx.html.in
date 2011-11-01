@@ -56,7 +56,7 @@ esx://example-esx.com/?no_verify=1     (ESX over HTTPS, but doesn't verify the s
         URIs have this general form (<code>[...]</code> marks an optional part).
     </p>
 <pre>
-type://[username@]hostname[:port]/[datacenter[/cluster]/server][?extraparameters]
+type://[username@]hostname[:port]/[[folder/...]datacenter/[folder/...][cluster/]server][?extraparameters]
 </pre>
     <p>
         The <code>type://</code> is either <code>esx://</code> or
@@ -79,6 +79,14 @@ type://[username@]hostname[:port]/[datacenter[/cluster]/server][?extraparameters
     </p>
 <pre>
 vpx://example-vcenter.com/dc1/cluster1/example-esx.com
+</pre>
+    <p>
+        Datacenters and clusters can be organized in folders, those have to be
+        specified as well. The driver can handle folders
+        <span class="since">since 0.9.7</span>.
+    </p>
+<pre>
+vpx://example-vcenter.com/folder1/dc1/folder2/example-esx.com
 </pre>
 
 

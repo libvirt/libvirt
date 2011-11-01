@@ -616,8 +616,11 @@ ESX_VI__TEMPLATE__FREE(Context,
     esxVI_UserSession_Free(&item->session);
     VIR_FREE(item->sessionLock);
     esxVI_Datacenter_Free(&item->datacenter);
+    VIR_FREE(item->datacenterPath);
     esxVI_ComputeResource_Free(&item->computeResource);
+    VIR_FREE(item->computeResourcePath);
     esxVI_HostSystem_Free(&item->hostSystem);
+    VIR_FREE(item->hostSystemName);
     esxVI_SelectionSpec_Free(&item->selectSet_folderToChildEntity);
     esxVI_SelectionSpec_Free(&item->selectSet_hostSystemToParent);
     esxVI_SelectionSpec_Free(&item->selectSet_hostSystemToVm);
@@ -789,21 +792,25 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
 }
 
 int
-esxVI_Context_LookupObjectsByPath(esxVI_Context *ctx,
-                                  esxUtil_ParsedUri *parsedUri)
+esxVI_Context_LookupManagedObjects(esxVI_Context *ctx)
 {
-    char *hostSystemName = NULL;
     /* Lookup Datacenter */
-    if (esxVI_LookupDatacenter(ctx, parsedUri->path_datacenter,
-                               ctx->service->rootFolder, NULL, &ctx->datacenter,
+    if (esxVI_LookupDatacenter(ctx, NULL, ctx->service->rootFolder, NULL,
+                               &ctx->datacenter,
                                esxVI_Occurrence_RequiredItem) < 0) {
         return -1;
     }
 
+    ctx->datacenterPath = strdup(ctx->datacenter->name);
+
+    if (ctx->datacenterPath == NULL) {
+        virReportOOMError();
+        return -1;
+    }
+
     /* Lookup (Cluster)ComputeResource */
-    if (esxVI_LookupComputeResource(ctx, parsedUri->path_computeResource,
-                                    ctx->datacenter->hostFolder, NULL,
-                                    &ctx->computeResource,
+    if (esxVI_LookupComputeResource(ctx, NULL, ctx->datacenter->hostFolder,
+                                    NULL, &ctx->computeResource,
                                     esxVI_Occurrence_RequiredItem) < 0) {
         return -1;
     }
@@ -814,29 +821,24 @@ esxVI_Context_LookupObjectsByPath(esxVI_Context *ctx,
         return -1;
     }
 
-    /* Lookup HostSystem */
-    if (parsedUri->path_hostSystem == NULL &&
-        STREQ(ctx->computeResource->_reference->type,
-              "ClusterComputeResource")) {
-        ESX_VI_ERROR(VIR_ERR_INVALID_ARG, "%s",
-                     _("Path has to specify the host system"));
+    ctx->computeResourcePath = strdup(ctx->computeResource->name);
+
+    if (ctx->computeResourcePath == NULL) {
+        virReportOOMError();
         return -1;
     }
 
-    if (parsedUri->path_hostSystem != NULL ||
-        (parsedUri->path_computeResource != NULL &&
-         parsedUri->path_hostSystem == NULL)) {
-        if (parsedUri->path_hostSystem != NULL) {
-            hostSystemName = parsedUri->path_hostSystem;
-        } else {
-            hostSystemName = parsedUri->path_computeResource;
-        }
+    /* Lookup HostSystem */
+    if (esxVI_LookupHostSystem(ctx, NULL, ctx->computeResource->_reference,
+                               NULL, &ctx->hostSystem,
+                               esxVI_Occurrence_RequiredItem) < 0) {
+        return -1;
     }
 
-    if (esxVI_LookupHostSystem(ctx, hostSystemName,
-                               ctx->computeResource->_reference, NULL,
-                               &ctx->hostSystem,
-                               esxVI_Occurrence_RequiredItem) < 0) {
+    ctx->hostSystemName = strdup(ctx->hostSystem->name);
+
+    if (ctx->hostSystemName == NULL) {
+        virReportOOMError();
         return -1;
     }
 
@@ -844,8 +846,215 @@ esxVI_Context_LookupObjectsByPath(esxVI_Context *ctx,
 }
 
 int
-esxVI_Context_LookupObjectsByHostSystemIp(esxVI_Context *ctx,
-                                          const char *hostSystemIpAddress)
+esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path)
+{
+    int result = -1;
+    char *tmp = NULL;
+    char *saveptr = NULL;
+    char *previousItem = NULL;
+    char *item = NULL;
+    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    esxVI_ManagedObjectReference *root = NULL;
+    esxVI_Folder *folder = NULL;
+
+    tmp = strdup(path);
+
+    if (tmp == NULL) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* Lookup Datacenter */
+    item = strtok_r(tmp, "/", &saveptr);
+
+    if (item == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INVALID_ARG,
+                     _("Path '%s' does not specify a datacenter"), path);
+        goto cleanup;
+    }
+
+    root = ctx->service->rootFolder;
+
+    while (ctx->datacenter == NULL && item != NULL) {
+        esxVI_Folder_Free(&folder);
+
+        /* Try to lookup item as a folder */
+        if (esxVI_LookupFolder(ctx, item, root, NULL, &folder,
+                               esxVI_Occurrence_OptionalItem) < 0) {
+            goto cleanup;
+        }
+
+        if (folder != NULL) {
+            /* It's a folder, use it as new lookup root */
+            if (root != ctx->service->rootFolder) {
+                esxVI_ManagedObjectReference_Free(&root);
+            }
+
+            root = folder->_reference;
+            folder->_reference = NULL;
+        } else {
+            /* Try to lookup item as a datacenter */
+            if (esxVI_LookupDatacenter(ctx, item, root, NULL, &ctx->datacenter,
+                                       esxVI_Occurrence_OptionalItem) < 0) {
+                goto cleanup;
+            }
+        }
+
+        /* Build datacenter path */
+        if (virBufferUse(&buffer) > 0) {
+            virBufferAddChar(&buffer, '/');
+        }
+
+        virBufferAdd(&buffer, item, -1);
+
+        previousItem = item;
+        item = strtok_r(NULL, "/", &saveptr);
+    }
+
+    if (ctx->datacenter == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("Could not find datacenter specified in '%s'"), path);
+        goto cleanup;
+    }
+
+    if (virBufferError(&buffer)) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ctx->datacenterPath = virBufferContentAndReset(&buffer);
+
+    /* Lookup (Cluster)ComputeResource */
+    if (item == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INVALID_ARG,
+                     _("Path '%s' does not specify a compute resource"), path);
+        goto cleanup;
+    }
+
+    if (root != ctx->service->rootFolder) {
+        esxVI_ManagedObjectReference_Free(&root);
+    }
+
+    root = ctx->datacenter->hostFolder;
+
+    while (ctx->computeResource == NULL && item != NULL) {
+        esxVI_Folder_Free(&folder);
+
+        /* Try to lookup item as a folder */
+        if (esxVI_LookupFolder(ctx, item, root, NULL, &folder,
+                               esxVI_Occurrence_OptionalItem) < 0) {
+            goto cleanup;
+        }
+
+        if (folder != NULL) {
+            /* It's a folder, use it as new lookup root */
+            if (root != ctx->datacenter->hostFolder) {
+                esxVI_ManagedObjectReference_Free(&root);
+            }
+
+            root = folder->_reference;
+            folder->_reference = NULL;
+        } else {
+            /* Try to lookup item as a compute resource */
+            if (esxVI_LookupComputeResource(ctx, item, root, NULL,
+                                            &ctx->computeResource,
+                                            esxVI_Occurrence_OptionalItem) < 0) {
+                goto cleanup;
+            }
+        }
+
+        /* Build compute resource path */
+        if (virBufferUse(&buffer) > 0) {
+            virBufferAddChar(&buffer, '/');
+        }
+
+        virBufferAdd(&buffer, item, -1);
+
+        previousItem = item;
+        item = strtok_r(NULL, "/", &saveptr);
+    }
+
+    if (ctx->computeResource == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("Could not find compute resource specified in '%s'"),
+                     path);
+        goto cleanup;
+    }
+
+    if (ctx->computeResource->resourcePool == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Could not retrieve resource pool"));
+        goto cleanup;
+    }
+
+    if (virBufferError(&buffer)) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ctx->computeResourcePath = virBufferContentAndReset(&buffer);
+
+    /* Lookup HostSystem */
+    if (STREQ(ctx->computeResource->_reference->type,
+              "ClusterComputeResource")) {
+        if (item == NULL) {
+            ESX_VI_ERROR(VIR_ERR_INVALID_ARG,
+                         _("Path '%s' does not specify a host system"), path);
+            goto cleanup;
+        }
+
+        /* The path specified a cluster, it has to specify a host system too */
+        previousItem = item;
+        item = strtok_r(NULL, "/", &saveptr);
+    }
+
+    if (item != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INVALID_ARG,
+                     _("Path '%s' ends with an excess item"), path);
+        goto cleanup;
+    }
+
+    ctx->hostSystemName = strdup(previousItem);
+
+    if (ctx->hostSystemName == NULL) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (esxVI_LookupHostSystem(ctx, ctx->hostSystemName,
+                               ctx->computeResource->_reference, NULL,
+                               &ctx->hostSystem,
+                               esxVI_Occurrence_OptionalItem) < 0) {
+        goto cleanup;
+    }
+
+    if (ctx->hostSystem == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("Could not find host system specified in '%s'"), path);
+        goto cleanup;
+    }
+
+    result = 0;
+
+  cleanup:
+    if (result < 0) {
+        virBufferFreeAndReset(&buffer);
+    }
+
+    if (root != ctx->service->rootFolder &&
+        (ctx->datacenter == NULL || root != ctx->datacenter->hostFolder)) {
+        esxVI_ManagedObjectReference_Free(&root);
+    }
+
+    VIR_FREE(tmp);
+    esxVI_Folder_Free(&folder);
+
+    return result;
+}
+
+int
+esxVI_Context_LookupManagedObjectsByHostSystemIp(esxVI_Context *ctx,
+                                                 const char *hostSystemIpAddress)
 {
     int result = -1;
     esxVI_ManagedObjectReference *managedObjectReference = NULL;
@@ -1491,8 +1700,7 @@ esxVI_BuildSelectSetCollection(esxVI_Context *ctx)
     /* Folder -> childEntity (ManagedEntity) */
     if (esxVI_BuildSelectSet(&ctx->selectSet_folderToChildEntity,
                              "folderToChildEntity",
-                             "Folder", "childEntity",
-                             "folderToChildEntity\0") < 0) {
+                             "Folder", "childEntity", NULL) < 0) {
         return -1;
     }
 
@@ -1689,9 +1897,10 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
     objectSpec->obj = root;
     objectSpec->skip = esxVI_Boolean_False;
 
-    if (STRNEQ(root->type, type)) {
+    if (STRNEQ(root->type, type) || STREQ(root->type, "Folder")) {
         if (STREQ(root->type, "Folder")) {
-            if (STREQ(type, "Datacenter") || STREQ(type, "ComputeResource") ||
+            if (STREQ(type, "Folder") || STREQ(type, "Datacenter") ||
+                STREQ(type, "ComputeResource") ||
                 STREQ(type, "ClusterComputeResource")) {
                 objectSpec->selectSet = ctx->selectSet_folderToChildEntity;
             } else {
