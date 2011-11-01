@@ -224,8 +224,13 @@ int lxcContainerWaitForContinue(int control)
     int readLen;
 
     readLen = saferead(control, &msg, sizeof(msg));
-    if (readLen != sizeof(msg) ||
-        msg != LXC_CONTINUE_MSG) {
+    if (readLen != sizeof(msg)) {
+        if (readLen >= 0)
+            errno = EIO;
+        return -1;
+    }
+    if (msg != LXC_CONTINUE_MSG) {
+        errno = EINVAL;
         return -1;
     }
 
