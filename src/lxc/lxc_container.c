@@ -860,6 +860,9 @@ static int lxcContainerUnmountOldFS(void)
     FILE *procmnt;
     int i;
     char mntbuf[1024];
+    int saveErrno;
+    const char *failedUmount = NULL;
+    int ret = -1;
 
     if (!(procmnt = setmntent("/proc/mounts", "r"))) {
         virReportSystemError(errno, "%s",
@@ -872,17 +875,15 @@ static int lxcContainerUnmountOldFS(void)
             continue;
 
         if (VIR_REALLOC_N(mounts, nmounts+1) < 0) {
-            endmntent(procmnt);
             virReportOOMError();
-            return -1;
+            goto cleanup;
         }
         if (!(mounts[nmounts++] = strdup(mntent.mnt_dir))) {
-            endmntent(procmnt);
             virReportOOMError();
-            return -1;
+            goto cleanup;
         }
+        VIR_DEBUG("Grabbed %s", mntent.mnt_dir);
     }
-    endmntent(procmnt);
 
     if (mounts)
         qsort(mounts, nmounts, sizeof(mounts[0]),
@@ -891,16 +892,42 @@ static int lxcContainerUnmountOldFS(void)
     for (i = 0 ; i < nmounts ; i++) {
         VIR_DEBUG("Umount %s", mounts[i]);
         if (umount(mounts[i]) < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to unmount '%s'"),
-                                 mounts[i]);
-            return -1;
+            char ebuf[1024];
+            failedUmount = mounts[i];
+            saveErrno = errno;
+            VIR_WARN("Failed to unmount '%s', trying to detach root '%s': %s",
+                     failedUmount, mounts[nmounts-1],
+                     virStrerror(errno, ebuf, sizeof(ebuf)));
+            break;
         }
-        VIR_FREE(mounts[i]);
     }
+
+    if (failedUmount) {
+        /* This detaches the old root filesystem */
+        if (umount2(mounts[nmounts-1], MNT_DETACH) < 0) {
+            virReportSystemError(saveErrno,
+                                 _("Failed to unmount '%s' and could not detach old root '%s'"),
+                                 failedUmount, mounts[nmounts-1]);
+            goto cleanup;
+        }
+        /* This unmounts the tmpfs on which the old root filesystem was hosted */
+        if (umount(mounts[nmounts-1]) < 0) {
+            virReportSystemError(saveErrno,
+                                 _("Failed to unmount '%s' and could not unmount old root '%s'"),
+                                 failedUmount, mounts[nmounts-1]);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    for (i = 0 ; i < nmounts ; i++)
+        VIR_FREE(mounts[i]);
+    endmntent(procmnt);
     VIR_FREE(mounts);
 
-    return 0;
+    return ret;
 }
 
 
