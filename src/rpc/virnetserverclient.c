@@ -72,6 +72,8 @@ struct _virNetServerClient
 #if HAVE_SASL
     virNetSASLSessionPtr sasl;
 #endif
+    int sockTimer; /* Timer to be fired upon cached data,
+                    * so we jump out from poll() immediately */
 
     /* Count of messages in the 'tx' queue,
      * and the server worker pool queue
@@ -103,6 +105,7 @@ struct _virNetServerClient
 
 static void virNetServerClientDispatchEvent(virNetSocketPtr sock, int events, void *opaque);
 static void virNetServerClientUpdateEvent(virNetServerClientPtr client);
+static void virNetServerClientDispatchRead(virNetServerClientPtr client);
 
 static void virNetServerClientLock(virNetServerClientPtr client)
 {
@@ -204,6 +207,9 @@ static void virNetServerClientUpdateEvent(virNetServerClientPtr client)
     mode = virNetServerClientCalculateHandleMode(client);
 
     virNetSocketUpdateIOCallback(client->sock, mode);
+
+    if (client->rx && virNetSocketHasCachedData(client->sock))
+        virEventUpdateTimeout(client->sockTimer, 0);
 }
 
 
@@ -293,6 +299,19 @@ virNetServerClientCheckAccess(virNetServerClientPtr client)
     return 0;
 }
 
+static void virNetServerClientSockTimerFunc(int timer,
+                                            void *opaque)
+{
+    virNetServerClientPtr client = opaque;
+    virNetServerClientLock(client);
+    virEventUpdateTimeout(timer, -1);
+    /* Although client->rx != NULL when this timer is enabled, it might have
+     * changed since the client was unlocked in the meantime. */
+    if (client->rx)
+        virNetServerClientDispatchRead(client);
+    virNetServerClientUnlock(client);
+}
+
 
 virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
                                             int auth,
@@ -318,6 +337,11 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
     client->readonly = readonly;
     client->tlsCtxt = tls;
     client->nrequests_max = nrequests_max;
+
+    client->sockTimer = virEventAddTimeout(-1, virNetServerClientSockTimerFunc,
+                                           client, NULL);
+    if (client->sockTimer < 0)
+        goto error;
 
     if (tls)
         virNetTLSContextRef(tls);
@@ -557,6 +581,8 @@ void virNetServerClientFree(virNetServerClientPtr client)
 #if HAVE_SASL
     virNetSASLSessionFree(client->sasl);
 #endif
+    if (client->sockTimer > 0)
+        virEventRemoveTimeout(client->sockTimer);
     virNetTLSSessionFree(client->tls);
     virNetTLSContextFree(client->tlsCtxt);
     virNetSocketFree(client->sock);
@@ -990,7 +1016,8 @@ virNetServerClientDispatchEvent(virNetSocketPtr sock, int events, void *opaque)
         } else {
             if (events & VIR_EVENT_HANDLE_WRITABLE)
                 virNetServerClientDispatchWrite(client);
-            if (events & VIR_EVENT_HANDLE_READABLE)
+            if (events & VIR_EVENT_HANDLE_READABLE &&
+                client->rx)
                 virNetServerClientDispatchRead(client);
         }
     }
