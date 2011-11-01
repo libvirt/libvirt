@@ -990,6 +990,8 @@ static int
 virConnectOpenFindURIAliasMatch(virConfValuePtr value, const char *alias, char **uri)
 {
     virConfValuePtr entry;
+    size_t alias_len;
+
     if (value->type != VIR_CONF_LIST) {
         virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("Expected a list for 'uri_aliases' config parameter"));
@@ -997,6 +999,7 @@ virConnectOpenFindURIAliasMatch(virConfValuePtr value, const char *alias, char *
     }
 
     entry = value->list;
+    alias_len = strlen(alias);
     while (entry) {
         char *offset;
         size_t safe;
@@ -1022,7 +1025,8 @@ virConnectOpenFindURIAliasMatch(virConfValuePtr value, const char *alias, char *
             return -1;
         }
 
-        if (STREQLEN(entry->str, alias, offset-entry->str)) {
+        if (alias_len == (offset - entry->str) &&
+            STREQLEN(entry->str, alias, alias_len)) {
             VIR_DEBUG("Resolved alias '%s' to '%s'",
                       alias, offset+1);
             if (!(*uri = strdup(offset+1))) {
