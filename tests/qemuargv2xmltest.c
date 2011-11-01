@@ -173,6 +173,8 @@ mymain(void)
     DO_TEST("disk-drive-cache-unsafe");
     DO_TEST("disk-drive-network-nbd");
     DO_TEST("disk-drive-network-rbd");
+    /* older format using CEPH_ARGS env var */
+    DO_TEST("disk-drive-network-rbd-ceph-env");
     DO_TEST("disk-drive-network-sheepdog");
     DO_TEST("disk-usb");
     DO_TEST("graphics-vnc");

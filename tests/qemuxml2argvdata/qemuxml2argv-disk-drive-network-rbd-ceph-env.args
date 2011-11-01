@@ -1,0 +1,6 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test CEPH_ARGS=-m \
+mon1.example.org:6321,mon2.example.org:6322,mon3.example.org:6322 \
+/usr/bin/qemu -S -M pc -m 214 -smp 1 -nographic -monitor \
+unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -drive \
+file=/dev/HostVG/QEMUGuest1,if=ide,bus=0,unit=0 -drive file=rbd:pool/image,\
+if=virtio,format=raw -net none -serial none -parallel none -usb
