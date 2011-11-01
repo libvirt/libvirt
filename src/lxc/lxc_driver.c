@@ -1638,6 +1638,7 @@ static int lxcVmStart(virConnectPtr conn,
     char *timestamp;
     virCommandPtr cmd = NULL;
     lxcDomainObjPrivatePtr priv = vm->privateData;
+    virErrorPtr err = NULL;
 
     if (!lxc_driver->cgroup) {
         lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1769,8 +1770,7 @@ static int lxcVmStart(virConnectPtr conn,
                      _("guest failed to start: %s"), out);
         }
 
-        lxcVmTerminate(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
-        goto cleanup;
+        goto error;
     }
 
     if ((priv->monitorWatch = virEventAddHandle(
@@ -1778,31 +1778,32 @@ static int lxcVmStart(virConnectPtr conn,
              VIR_EVENT_HANDLE_ERROR | VIR_EVENT_HANDLE_HANGUP,
              lxcMonitorEvent,
              vm, NULL)) < 0) {
-        lxcVmTerminate(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
-        goto cleanup;
+        goto error;
     }
 
     if (autoDestroy &&
         lxcProcessAutoDestroyAdd(driver, vm, conn) < 0)
-        goto cleanup;
+        goto error;
 
     /*
      * Again, need to save the live configuration, because the function
      * requires vm->def->id != -1 to save tty info surely.
      */
     if (virDomainSaveConfig(driver->stateDir, vm->def) < 0)
-        goto cleanup;
+        goto error;
 
     if (virDomainObjSetDefTransient(driver->caps, vm, false) < 0)
-        goto cleanup;
+        goto error;
 
     /* Write domain status to disk. */
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
-        goto cleanup;
+        goto error;
 
     rc = 0;
 
 cleanup:
+    if (rc != 0 && !err)
+        err = virSaveLastError();
     virCommandFree(cmd);
     if (VIR_CLOSE(logfd) < 0) {
         virReportSystemError(errno, "%s", _("could not close logfile"));
@@ -1821,7 +1822,18 @@ cleanup:
     VIR_FORCE_CLOSE(handshakefds[0]);
     VIR_FORCE_CLOSE(handshakefds[1]);
     VIR_FREE(logfile);
+
+    if (err) {
+        virSetError(err);
+        virResetError(err);
+    }
+
     return rc;
+
+error:
+    err = virSaveLastError();
+    lxcVmTerminate(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
+    goto cleanup;
 }
 
 /**
