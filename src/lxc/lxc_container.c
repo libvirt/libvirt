@@ -725,7 +725,7 @@ retry:
                 continue;
 
             virReportSystemError(errno,
-                                 _("Failed to bind mount directory %s to %s"),
+                                 _("Failed to mount device %s to %s"),
                                  src, fs->dst);
             goto cleanup;
         }
@@ -744,6 +744,12 @@ retry:
         VIR_FREE(fslist);
         VIR_FORCE_FCLOSE(fp);
         goto retry;
+    }
+
+    if (ret != 0) {
+        virReportSystemError(ENODEV,
+                             _("Failed to mount device %s to %s, unable to detect filesystem"),
+                             src, fs->dst);
     }
 
     VIR_DEBUG("Done mounting filesystem ret=%d tryProc=%d", ret, tryProc);
