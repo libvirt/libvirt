@@ -142,11 +142,11 @@ struct _virNetDevVPortProfile {
     } u;
 };
 
-int
-virNetDevVPortProfileParse(xmlNodePtr node,
-                           virNetDevVPortProfilePtr *def);
 
-void
+virNetDevVPortProfilePtr
+virNetDevVPortProfileParse(xmlNodePtr node);
+
+int
 virNetDevVPortProfileFormat(virNetDevVPortProfilePtr virtPort,
                             virBufferPtr buf);
 

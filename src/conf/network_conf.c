@@ -790,10 +790,8 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
 
     virtPortNode = virXPathNode("./virtualport", ctxt);
     if (virtPortNode &&
-        (virNetDevVPortProfileParse(virtPortNode,
-                                    &def->virtPortProfile) < 0)) {
+        (!(def->virtPortProfile = virNetDevVPortProfileParse(virtPortNode))))
         goto error;
-    }
 
     bandwidth_node = virXPathNode("./bandwidth", ctxt);
     if (bandwidth_node &&
@@ -894,10 +892,8 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
 
     virtPortNode = virXPathNode("./virtualport", ctxt);
     if (virtPortNode &&
-        (virNetDevVPortProfileParse(virtPortNode,
-                                    &def->virtPortProfile) < 0)) {
+        (!(def->virtPortProfile = virNetDevVPortProfileParse(virtPortNode))))
         goto error;
-    }
 
     nPortGroups = virXPathNodeSet("./portgroup", ctxt, &portGroupNodes);
     if (nPortGroups < 0)
@@ -1258,7 +1254,7 @@ error:
     return result;
 }
 
-static void
+static int
 virPortGroupDefFormat(virBufferPtr buf,
                       const virPortGroupDefPtr def)
 {
@@ -1268,10 +1264,12 @@ virPortGroupDefFormat(virBufferPtr buf,
     }
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 4);
-    virNetDevVPortProfileFormat(def->virtPortProfile, buf);
+    if (virNetDevVPortProfileFormat(def->virtPortProfile, buf) < 0)
+        return -1;
     virNetDevBandwidthFormat(def->bandwidth, buf);
     virBufferAdjustIndent(buf, -4);
     virBufferAddLit(buf, "  </portgroup>\n");
+    return 0;
 }
 
 char *virNetworkDefFormat(const virNetworkDefPtr def)
@@ -1354,11 +1352,13 @@ char *virNetworkDefFormat(const virNetworkDefPtr def)
     }
 
     virBufferAdjustIndent(&buf, 2);
-    virNetDevVPortProfileFormat(def->virtPortProfile, &buf);
+    if (virNetDevVPortProfileFormat(def->virtPortProfile, &buf) < 0)
+        goto error;
     virBufferAdjustIndent(&buf, -2);
 
     for (ii = 0; ii < def->nPortGroups; ii++)
-        virPortGroupDefFormat(&buf, &def->portGroups[ii]);
+        if (virPortGroupDefFormat(&buf, &def->portGroups[ii]) < 0)
+            goto error;
 
     virBufferAddLit(&buf, "</network>\n");
 

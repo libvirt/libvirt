@@ -684,11 +684,10 @@ VIR_ENUM_IMPL(virNetDevVPort, VIR_NETDEV_VPORT_PROFILE_LAST,
               "802.1Qbg",
               "802.1Qbh")
 
-int
-virNetDevVPortProfileParse(xmlNodePtr node,
-                           virNetDevVPortProfilePtr *def)
+
+virNetDevVPortProfilePtr
+virNetDevVPortProfileParse(xmlNodePtr node)
 {
-    int ret = -1;
     char *virtPortType;
     char *virtPortManagerID = NULL;
     char *virtPortTypeID = NULL;
@@ -700,13 +699,19 @@ virNetDevVPortProfileParse(xmlNodePtr node,
 
     if (VIR_ALLOC(virtPort) < 0) {
         virReportOOMError();
-        return -1;
+        return NULL;
     }
 
     virtPortType = virXMLPropString(node, "type");
     if (!virtPortType) {
         virSocketError(VIR_ERR_XML_ERROR, "%s",
-                             _("missing virtualportprofile type"));
+                       _("missing virtualportprofile type"));
+        goto error;
+    }
+
+    if ((virtPort->virtPortType = virNetDevVPortTypeFromString(virtPortType)) <= 0) {
+        virSocketError(VIR_ERR_XML_ERROR,
+                       _("unknown virtualportprofile type %s"), virtPortType);
         goto error;
     }
 
@@ -725,10 +730,7 @@ virNetDevVPortProfileParse(xmlNodePtr node,
         cur = cur->next;
     }
 
-    virtPort->virtPortType = VIR_NETDEV_VPORT_PROFILE_NONE;
-
-    switch (virNetDevVPortTypeFromString(virtPortType)) {
-
+    switch (virtPort->virtPortType) {
     case VIR_NETDEV_VPORT_PROFILE_8021QBG:
         if (virtPortManagerID     != NULL && virtPortTypeID     != NULL &&
             virtPortTypeIDVersion != NULL) {
@@ -798,7 +800,7 @@ virNetDevVPortProfileParse(xmlNodePtr node,
                                          _("a parameter is missing for 802.1Qbg description"));
             goto error;
         }
-    break;
+        break;
 
     case VIR_NETDEV_VPORT_PROFILE_8021QBH:
         if (virtPortProfileID != NULL) {
@@ -815,23 +817,15 @@ virNetDevVPortProfileParse(xmlNodePtr node,
                                  _("profileid parameter is missing for 802.1Qbh descripion"));
             goto error;
         }
-    break;
-
+        break;
 
     default:
-    case VIR_NETDEV_VPORT_PROFILE_NONE:
-    case VIR_NETDEV_VPORT_PROFILE_LAST:
-         virSocketError(VIR_ERR_XML_ERROR, "%s",
-                              _("unknown virtualport type"));
+        virSocketError(VIR_ERR_XML_ERROR,
+                       _("unexpected virtualport type %d"), virtPort->virtPortType);
         goto error;
-    break;
     }
 
-    ret = 0;
-    *def = virtPort;
-    virtPort = NULL;
-error:
-    VIR_FREE(virtPort);
+cleanup:
     VIR_FREE(virtPortManagerID);
     VIR_FREE(virtPortTypeID);
     VIR_FREE(virtPortTypeIDVersion);
@@ -839,7 +833,11 @@ error:
     VIR_FREE(virtPortProfileID);
     VIR_FREE(virtPortType);
 
-    return ret;
+    return virtPort;
+
+error:
+    VIR_FREE(virtPort);
+    goto cleanup;
 }
 
 bool
@@ -879,23 +877,20 @@ virNetDevVPortProfileEqual(virNetDevVPortProfilePtr a, virNetDevVPortProfilePtr 
     return true;
 }
 
-void
+
+int
 virNetDevVPortProfileFormat(virNetDevVPortProfilePtr virtPort,
                             virBufferPtr buf)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (!virtPort || virtPort->virtPortType == VIR_NETDEV_VPORT_PROFILE_NONE)
-        return;
+        return 0;
 
     virBufferAsprintf(buf, "<virtualport type='%s'>\n",
                       virNetDevVPortTypeToString(virtPort->virtPortType));
 
     switch (virtPort->virtPortType) {
-    case VIR_NETDEV_VPORT_PROFILE_NONE:
-    case VIR_NETDEV_VPORT_PROFILE_LAST:
-        break;
-
     case VIR_NETDEV_VPORT_PROFILE_8021QBG:
         virUUIDFormat(virtPort->u.virtPort8021Qbg.instanceID,
                       uuidstr);
@@ -913,9 +908,15 @@ virNetDevVPortProfileFormat(virNetDevVPortProfilePtr virtPort,
                           "  <parameters profileid='%s'/>\n",
                           virtPort->u.virtPort8021Qbh.profileID);
         break;
+
+    default:
+        virSocketError(VIR_ERR_XML_ERROR,
+                       _("unexpected virtualport type %d"), virtPort->virtPortType);
+        return -1;
     }
 
     virBufferAddLit(buf, "</virtualport>\n");
+    return 0;
 }
 
 static int
