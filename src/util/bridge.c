@@ -52,6 +52,7 @@
 # include "logging.h"
 # include "network.h"
 # include "virterror_internal.h"
+# include "intprops.h"
 
 # define JIFFIES_TO_MS(j) (((j)*1000)/HZ)
 # define MS_TO_JIFFIES(ms) (((ms)*HZ)/1000)
@@ -97,6 +98,112 @@ static int virNetDevSetupControl(const char *ifname,
                                  struct ifreq *ifr)
 {
     return virNetDevSetupControlFull(ifname, ifr, AF_PACKET, SOCK_DGRAM);
+}
+
+# define SYSFS_NET_DIR "/sys/class/net"
+/*
+ * Bridge parameters can be set via sysfs on newish kernels,
+ * or by  ioctl on older kernels. Perhaps we could just use
+ * ioctl for every kernel, but its not clear what the long
+ * term lifespan of the ioctl interface is...
+ */
+static int virNetDevBridgeSet(const char *brname,
+                              const char *paramname,  /* sysfs param name */
+                              unsigned long value,    /* new value */
+                              int fd,                 /* control socket */
+                              struct ifreq *ifr)      /* pre-filled bridge name */
+{
+    char *path = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&path, "%s/%s/bridge/%s", SYSFS_NET_DIR, brname, paramname) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (virFileExists(path)) {
+        char valuestr[INT_BUFSIZE_BOUND(value)];
+        snprintf(valuestr, sizeof(valuestr), "%lu", value);
+        if (virFileWriteStr(path, valuestr, 0) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to set bridge %s %s"), brname, paramname);
+            goto cleanup;
+        }
+    } else {
+        unsigned long paramid;
+        if (STREQ(paramname, "stp_state")) {
+            paramid = BRCTL_SET_BRIDGE_STP_STATE;
+        } else if (STREQ(paramname, "forward_delay")) {
+            paramid = BRCTL_SET_BRIDGE_FORWARD_DELAY;
+        } else {
+            virReportSystemError(EINVAL,
+                                 _("Unable to set bridge %s %s"), brname, paramname);
+            goto cleanup;
+        }
+        unsigned long args[] = { paramid, value, 0, 0 };
+        ifr->ifr_data = (char*)&args;
+        if (ioctl(fd, SIOCDEVPRIVATE, ifr) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to set bridge %s %s"), brname, paramname);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(path);
+    return ret;
+}
+
+
+static int virNetDevBridgeGet(const char *brname,
+                              const char *paramname,  /* sysfs param name */
+                              unsigned long *value,   /* current value */
+                              int fd,                 /* control socket */
+                              struct ifreq *ifr)      /* pre-filled bridge name */
+{
+    char *path = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&path, "%s/%s/bridge/%s", SYSFS_NET_DIR, brname, paramname) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (virFileExists(path)) {
+        char *valuestr;
+        if (virFileReadAll(path, INT_BUFSIZE_BOUND(unsigned long), &valuestr) < 0)
+            goto cleanup;
+
+        if (virStrToLong_ul(valuestr, NULL, 10, value) < 0) {
+            virReportSystemError(EINVAL,
+                                 _("Unable to get bridge %s %s"), brname, paramname);
+        }
+    } else {
+        struct __bridge_info info;
+        unsigned long args[] = { BRCTL_GET_BRIDGE_INFO, (unsigned long)&info, 0, 0 };
+        ifr->ifr_data = (char*)&args;
+        if (ioctl(fd, SIOCDEVPRIVATE, ifr) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to get bridge %s %s"), brname, paramname);
+            goto cleanup;
+        }
+
+        if (STREQ(paramname, "stp_state")) {
+            *value = info.stp_enabled;
+        } else if (STREQ(paramname, "forward_delay")) {
+            *value = info.forward_delay;
+        } else {
+            virReportSystemError(EINVAL,
+                                 _("Unable to get bridge %s %s"), brname, paramname);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(path);
+    return ret;
 }
 
 
@@ -817,21 +924,53 @@ cleanup:
 int virNetDevBridgeSetSTPDelay(const char *brname,
                                int delay)
 {
-    virCommandPtr cmd;
+    int fd = -1;
     int ret = -1;
+    struct ifreq ifr;
 
-    cmd = virCommandNew(BRCTL);
-    virCommandAddArgList(cmd, "setfd", brname, NULL);
-    virCommandAddArgFormat(cmd, "%d", delay);
-
-    if (virCommandRun(cmd, NULL) < 0)
+    if ((fd = virNetDevSetupControl(brname, &ifr)) < 0)
         goto cleanup;
 
-    ret = 0;
+    ret = virNetDevBridgeSet(brname, "stp_state", MS_TO_JIFFIES(delay),
+                             fd, &ifr);
+
 cleanup:
-    virCommandFree(cmd);
+    VIR_FORCE_CLOSE(fd);
     return ret;
 }
+
+
+/**
+ * virNetDevBridgeGetSTPDelay:
+ * @brname: the bridge device name
+ * @delayms: the forward delay in milliseconds
+ *
+ * Retrives the forward delay for the bridge device @brname
+ * storing it in @delayms. The forward delay is only meaningful
+ * if STP is enabled
+ *
+ * Returns 0 on success, -1 on error+
+ */
+int virNetDevBridgeGetSTPDelay(const char *brname,
+                               int *delayms)
+{
+    int fd = -1;
+    int ret = -1;
+    struct ifreq ifr;
+    unsigned long i;
+
+    if ((fd = virNetDevSetupControl(brname, &ifr)) < 0)
+        goto cleanup;
+
+    ret = virNetDevBridgeGet(brname, "stp_state", &i,
+                             fd, &ifr);
+    *delayms = JIFFIES_TO_MS(i);
+
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+
 
 /**
  * virNetDevBridgeSetSTP:
@@ -846,22 +985,52 @@ cleanup:
 int virNetDevBridgeSetSTP(const char *brname,
                           bool enable)
 {
-    virCommandPtr cmd;
+    int fd = -1;
     int ret = -1;
+    struct ifreq ifr;
 
-    cmd = virCommandNew(BRCTL);
-    virCommandAddArgList(cmd, "stp", brname,
-                         enable ? "on" : "off",
-                         NULL);
-
-    if (virCommandRun(cmd, NULL) < 0)
+    if ((fd = virNetDevSetupControl(brname, &ifr)) < 0)
         goto cleanup;
 
-    ret = 0;
+    ret = virNetDevBridgeSet(brname, "stp_state", enable ? 1 : 0,
+                             fd, &ifr);
+
 cleanup:
-    virCommandFree(cmd);
+    VIR_FORCE_CLOSE(fd);
     return ret;
 }
+
+
+/**
+ * virNetDevBridgeGetSTP:
+ * @brname: the bridge device name
+ * @enabled: returns the STP state
+ *
+ * Determine the state of the spanning tree protocol on
+ * the device @brname, returning the state in @enabled
+ *
+ * Returns 0 on success, -1 on error
+ */
+int virNetDevBridgeGetSTP(const char *brname,
+                          bool *enabled)
+{
+    int fd = -1;
+    int ret = -1;
+    struct ifreq ifr;
+    unsigned long i;
+
+    if ((fd = virNetDevSetupControl(brname, &ifr)) < 0)
+        goto cleanup;
+
+    ret = virNetDevBridgeGet(brname, "stp_state", &i,
+                             fd, &ifr);
+    *enabled = i ? true : false;
+
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+
 
 /**
  * brCreateTap:

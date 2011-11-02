@@ -251,7 +251,6 @@ Requires: %{name}-client = %{version}-%{release}
 # Used by many of the drivers, so turn it on whenever the
 # daemon is present
 %if %{with_libvirtd}
-Requires: bridge-utils
 # for modprobe of pci devices
 Requires: module-init-tools
 # for /sbin/ip & /sbin/tc
@@ -380,7 +379,6 @@ BuildRequires: radvd
 %if %{with_nwfilter}
 BuildRequires: ebtables
 %endif
-BuildRequires: bridge-utils
 BuildRequires: module-init-tools
 %if %{with_sasl}
 BuildRequires: cyrus-sasl-devel

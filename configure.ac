@@ -197,8 +197,6 @@ AC_DEFINE_UNQUOTED([DNSMASQ],["$DNSMASQ"],
         [Location or name of the dnsmasq program])
 AC_DEFINE_UNQUOTED([RADVD],["$RADVD"],
         [Location or name of the radvd program])
-AC_DEFINE_UNQUOTED([BRCTL],["$BRCTL"],
-        [Location or name of the brctl program (see bridge-utils)])
 AC_DEFINE_UNQUOTED([TC],["$TC"],
         [Location or name of the tc profram (see iproute2)])
 if test -n "$UDEVADM"; then
