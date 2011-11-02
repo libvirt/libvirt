@@ -47,6 +47,7 @@
 #include "netlink.h"
 #include "pci.h"
 #include "logging.h"
+#include "virnetdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_NET
 
@@ -249,118 +250,6 @@ ifaceGetVlanID(const char *vlanifname ATTRIBUTE_UNUSED,
 
     return -ENOSYS;
 }
-#endif /* __linux__ */
-
-/**
- * ifaceGetMacAddress:
- * @ifname: interface name to set MTU for
- * @macaddr: MAC address (VIR_MAC_BUFLEN in size)
- *
- * This function gets the @macaddr for a given interface @ifname.
- *
- * Returns 0 on success, -errno on failure.
- */
-#ifdef __linux__
-int
-ifaceGetMacAddress(const char *ifname,
-                   unsigned char *macaddr)
-{
-    struct ifreq ifr;
-    int fd;
-    int rc = 0;
-
-    if (!ifname)
-        return -EINVAL;
-
-    fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (fd < 0)
-        return -errno;
-
-    memset(&ifr, 0, sizeof(struct ifreq));
-    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL) {
-        rc = -EINVAL;
-        goto cleanup;
-    }
-
-    if (ioctl(fd, SIOCGIFHWADDR, (char *)&ifr) != 0) {
-        rc = -errno;
-        goto cleanup;
-    }
-
-    memcpy(macaddr, ifr.ifr_ifru.ifru_hwaddr.sa_data, VIR_MAC_BUFLEN);
-
-cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return rc;
-}
-
-#else
-
-int
-ifaceGetMacAddress(const char *ifname ATTRIBUTE_UNUSED,
-                   unsigned char *macaddr ATTRIBUTE_UNUSED)
-{
-    return -ENOSYS;
-}
-
-#endif /* __linux__ */
-
-/**
- * ifaceSetMacAddress:
- * @ifname: interface name to set MTU for
- * @macaddr: MAC address (VIR_MAC_BUFLEN in size)
- *
- * This function sets the @macaddr for a given interface @ifname. This
- * gets rid of the kernel's automatically assigned random MAC.
- *
- * Returns 0 on success, -errno on failure.
- */
-#ifdef __linux__
-int
-ifaceSetMacAddress(const char *ifname,
-                   const unsigned char *macaddr)
-{
-    struct ifreq ifr;
-    int fd;
-    int rc = 0;
-
-    if (!ifname)
-        return -EINVAL;
-
-    fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (fd < 0)
-        return -errno;
-
-    memset(&ifr, 0, sizeof(struct ifreq));
-    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL) {
-        rc = -EINVAL;
-        goto cleanup;
-    }
-
-    /* To fill ifr.ifr_hdaddr.sa_family field */
-    if (ioctl(fd, SIOCGIFHWADDR, &ifr) != 0) {
-        rc = -errno;
-        goto cleanup;
-    }
-
-    memcpy(ifr.ifr_hwaddr.sa_data, macaddr, VIR_MAC_BUFLEN);
-
-    rc = ioctl(fd, SIOCSIFHWADDR, &ifr) == 0 ? 0 : -errno;
-
-cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return rc;
-}
-
-#else
-
-int
-ifaceSetMacAddress(const char *ifname ATTRIBUTE_UNUSED,
-                   const unsigned char *macaddr ATTRIBUTE_UNUSED)
-{
-    return -ENOSYS;
-}
-
 #endif /* __linux__ */
 
 
@@ -945,7 +834,7 @@ ifaceGetNthParent(int ifindex ATTRIBUTE_UNUSED,
  * @linkdev: name of interface
  * @stateDir: directory to store old MAC address
  *
- * Returns 0 on success, -errno on failure.
+ * Returns 0 on success, -1 on failure
  *
  */
 int
@@ -954,46 +843,30 @@ ifaceReplaceMacAddress(const unsigned char *macaddress,
                        const char *stateDir)
 {
     unsigned char oldmac[6];
-    int rc;
+    char *path = NULL;
+    char macstr[VIR_MAC_STRING_BUFLEN];
 
-    rc = ifaceGetMacAddress(linkdev, oldmac);
+    if (virNetDevGetMAC(linkdev, oldmac) < 0)
+        return -1;
 
-    if (rc < 0) {
-        virReportSystemError(rc,
-                             _("Getting MAC address from '%s' "
-                               "to '%02x:%02x:%02x:%02x:%02x:%02x' failed."),
-                             linkdev,
-                             oldmac[0], oldmac[1], oldmac[2],
-                             oldmac[3], oldmac[4], oldmac[5]);
-    } else {
-        char *path = NULL;
-        char macstr[VIR_MAC_STRING_BUFLEN];
 
-        if (virAsprintf(&path, "%s/%s",
-                        stateDir,
-                        linkdev) < 0) {
-            virReportOOMError();
-            return -errno;
-        }
-        virFormatMacAddr(oldmac, macstr);
-        if (virFileWriteStr(path, macstr, O_CREAT|O_TRUNC|O_WRONLY) < 0) {
-            virReportSystemError(errno, _("Unable to preserve mac for %s"),
-                                 linkdev);
-            return -errno;
-        }
+    if (virAsprintf(&path, "%s/%s",
+                    stateDir,
+                    linkdev) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+    virFormatMacAddr(oldmac, macstr);
+    if (virFileWriteStr(path, macstr, O_CREAT|O_TRUNC|O_WRONLY) < 0) {
+        virReportSystemError(errno, _("Unable to preserve mac for %s"),
+                             linkdev);
+        return -1;
     }
 
-    rc = ifaceSetMacAddress(linkdev, macaddress);
-    if (rc < 0) {
-        virReportSystemError(rc,
-                             _("Setting MAC address on  '%s' to "
-                               "'%02x:%02x:%02x:%02x:%02x:%02x' failed."),
-                             linkdev,
-                             macaddress[0], macaddress[1], macaddress[2],
-                             macaddress[3], macaddress[4], macaddress[5]);
-    }
+    if (virNetDevSetMAC(linkdev, macaddress) < 0)
+        return -1;
 
-    return rc;
+    return 0;
 }
 
 /**
@@ -1018,31 +891,22 @@ ifaceRestoreMacAddress(const char *linkdev,
                     stateDir,
                     linkdev) < 0) {
         virReportOOMError();
-        return -errno;
+        return -1;
     }
 
-    if (virFileReadAll(path, VIR_MAC_STRING_BUFLEN, &macstr) < 0) {
-        return -errno;
-    }
+    if (virFileReadAll(path, VIR_MAC_STRING_BUFLEN, &macstr) < 0)
+        return -1;
 
     if (virParseMacAddr(macstr, &oldmac[0]) != 0) {
         ifaceError(VIR_ERR_INTERNAL_ERROR,
                    _("Cannot parse MAC address from '%s'"),
                    oldmacname);
         VIR_FREE(macstr);
-        return -EINVAL;
+        return -1;
     }
 
     /*reset mac and remove file-ignore results*/
-    rc = ifaceSetMacAddress(linkdev, oldmac);
-    if (rc < 0) {
-        virReportSystemError(rc,
-                             _("Setting MAC address on  '%s' to "
-                               "'%02x:%02x:%02x:%02x:%02x:%02x' failed."),
-                             linkdev,
-                             oldmac[0], oldmac[1], oldmac[2],
-                             oldmac[3], oldmac[4], oldmac[5]);
-    }
+    rc = virNetDevSetMAC(linkdev, oldmac);
     ignore_value(unlink(path));
     VIR_FREE(macstr);
 

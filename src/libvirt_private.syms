@@ -577,7 +577,6 @@ virHookPresent;
 # interface.h
 ifaceCheck;
 ifaceGetIndex;
-ifaceGetMacAddress;
 ifaceGetIPAddress;
 ifaceGetNthParent;
 ifaceGetPhysicalFunction;
@@ -589,7 +588,6 @@ ifaceMacvtapLinkAdd;
 ifaceMacvtapLinkDump;
 ifaceReplaceMacAddress;
 ifaceRestoreMacAddress;
-ifaceSetMacAddress;
 
 
 # interface_conf.h
