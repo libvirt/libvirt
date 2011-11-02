@@ -58,10 +58,10 @@
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
-static int brSetupControlFull(const char *ifname,
-                              struct ifreq *ifr,
-                              int domain,
-                              int type)
+static int virNetDevSetupControlFull(const char *ifname,
+                                     struct ifreq *ifr,
+                                     int domain,
+                                     int type)
 {
     int fd;
 
@@ -93,15 +93,15 @@ static int brSetupControlFull(const char *ifname,
 }
 
 
-static int brSetupControl(const char *ifname,
-                          struct ifreq *ifr)
+static int virNetDevSetupControl(const char *ifname,
+                                 struct ifreq *ifr)
 {
-    return brSetupControlFull(ifname, ifr, AF_PACKET, SOCK_DGRAM);
+    return virNetDevSetupControlFull(ifname, ifr, AF_PACKET, SOCK_DGRAM);
 }
 
 
 /**
- * brAddBridge:
+ * virNetDevBridgeCreate:
  * @brname: the bridge name
  *
  * This function register a new bridge
@@ -109,13 +109,12 @@ static int brSetupControl(const char *ifname,
  * Returns 0 in case of success or -1 on failure
  */
 # ifdef SIOCBRADDBR
-int
-brAddBridge(const char *brname)
+int virNetDevBridgeCreate(const char *brname)
 {
     int fd = -1;
     int ret = -1;
 
-    if ((fd = brSetupControl(NULL, NULL)) < 0)
+    if ((fd = virNetDevSetupControl(NULL, NULL)) < 0)
         return -1;
 
     if (ioctl(fd, SIOCBRADDBR, brname) < 0) {
@@ -131,7 +130,7 @@ cleanup:
     return ret;
 }
 # else
-int brAddBridge(const char *brname)
+int virNetDevBridgeCreate(const char *brname)
 {
     virReportSystemError(ENOSYS,
                          _("Unable to create bridge %s"), brname);
@@ -141,21 +140,20 @@ int brAddBridge(const char *brname)
 
 # ifdef SIOCBRDELBR
 /**
- * brHasBridge:
- * @brname
+ * virNetDevExists:
+ * @ifname
  *
- * Check if the bridge @brname exists
+ * Check if the network device @ifname exists
  *
  * Returns 1 if it exists, 0 if it does not, -1 on error
  */
-int
-brHasBridge(const char *brname)
+int virNetDevExists(const char *ifname)
 {
     int fd = -1;
     int ret = -1;
     struct ifreq ifr;
 
-    if ((fd = brSetupControl(brname, &ifr)) < 0)
+    if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
 
     if (ioctl(fd, SIOCGIFFLAGS, &ifr)) {
@@ -163,7 +161,7 @@ brHasBridge(const char *brname)
             ret = 0;
         else
             virReportSystemError(errno,
-                                 _("Unable to get bridge %s flags"), brname);
+                                 _("Unable to check interface flags for %s"), ifname);
         goto cleanup;
     }
 
@@ -174,17 +172,16 @@ cleanup:
     return ret;
 }
 # else
-int
-brHasBridge(const char *brname)
+int virNetDevExists(const char *ifname)
 {
     virReportSystemError(ENOSYS,
-                         _("Unable to check bridge %s"), brname);
+                         _("Unable to check interface %s"), ifname);
     return -1;
 }
 # endif
 
 /**
- * brDeleteBridge:
+ * virNetDevBridgeDelete:
  * @brname: the bridge name
  *
  * Remove a bridge from the layer.
@@ -192,13 +189,12 @@ brHasBridge(const char *brname)
  * Returns 0 in case of success or an errno code in case of failure.
  */
 # ifdef SIOCBRDELBR
-int
-brDeleteBridge(const char *brname)
+int virNetDevBridgeDelete(const char *brname)
 {
     int fd = -1;
     int ret = -1;
 
-    if ((fd = brSetupControl(NULL, NULL)) < 0)
+    if ((fd = virNetDevSetupControl(NULL, NULL)) < 0)
         return -1;
 
     if (ioctl(fd, SIOCBRDELBR, brname) < 0) {
@@ -214,8 +210,7 @@ cleanup:
     return ret;
 }
 # else
-int
-brDeleteBridge(const char *brname ATTRIBUTE_UNUSED)
+int virNetDevBridgeDelete(const char *brname ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS,
                          _("Unable to delete bridge %s"), brname);
@@ -224,7 +219,7 @@ brDeleteBridge(const char *brname ATTRIBUTE_UNUSED)
 # endif
 
 /**
- * brAddInterface:
+ * virNetDevBridgeAddPort:
  * @brname: the bridge name
  * @ifname: the network interface name
  *
@@ -233,15 +228,14 @@ brDeleteBridge(const char *brname ATTRIBUTE_UNUSED)
  * Returns 0 in case of success or an errno code in case of failure.
  */
 # ifdef SIOCBRADDIF
-int
-brAddInterface(const char *brname,
-               const char *ifname)
+int virNetDevBridgeAddPort(const char *brname,
+                           const char *ifname)
 {
     int fd = -1;
     int ret = -1;
     struct ifreq ifr;
 
-    if ((fd = brSetupControl(brname, &ifr)) < 0)
+    if ((fd = virNetDevSetupControl(brname, &ifr)) < 0)
         return -1;
 
     if (!(ifr.ifr_ifindex = if_nametoindex(ifname))) {
@@ -262,9 +256,8 @@ cleanup:
     return ret;
 }
 # else
-int
-brAddInterface(const char *brname,
-               const char *ifname)
+int virNetDevBridgeAddPort(const char *brname,
+                           const char *ifname)
 {
     virReportSystemError(ENOSYS,
                          _("Unable to add bridge %s port %s"), brname, ifname);
@@ -273,7 +266,7 @@ brAddInterface(const char *brname,
 # endif
 
 /**
- * brDeleteInterface:
+ * virNetDevBridgeRemovePort:
  * @brname: the bridge name
  * @ifname: the network interface name
  *
@@ -282,15 +275,14 @@ brAddInterface(const char *brname,
  * Returns 0 in case of success or an errno code in case of failure.
  */
 # ifdef SIOCBRDELIF
-int
-brDeleteInterface(const char *brname,
-                  const char *ifname)
+int virNetDevBridgeRemovePort(const char *brname,
+                              const char *ifname)
 {
     int fd = -1;
     int ret = -1;
     struct ifreq ifr;
 
-    if ((fd = brSetupControl(brname, &ifr)) < 0)
+    if ((fd = virNetDevSetupControl(brname, &ifr)) < 0)
         return -1;
 
     if (!(ifr.ifr_ifindex = if_nametoindex(ifname))) {
@@ -312,9 +304,8 @@ cleanup:
     return ret;
 }
 # else
-int
-brDeleteInterface(const char *brname,
-                  const char *ifname)
+int virNetDevBridgeRemovePort(const char *brname,
+                              const char *ifname)
 {
     virReportSystemError(errno,
                          _("Unable to remove bridge %s port %s"), brname, ifname);
@@ -323,7 +314,7 @@ brDeleteInterface(const char *brname,
 # endif
 
 /**
- * brSetInterfaceMac:
+ * virNetDevSetMAC:
  * @ifname: interface name to set MTU for
  * @macaddr: MAC address (VIR_MAC_BUFLEN in size)
  *
@@ -332,15 +323,14 @@ brDeleteInterface(const char *brname,
  *
  * Returns 0 in case of success or -1 on failure
  */
-int
-brSetInterfaceMac(const char *ifname,
-                  const unsigned char *macaddr)
+int virNetDevSetMAC(const char *ifname,
+                    const unsigned char *macaddr)
 {
     int fd = -1;
     int ret = -1;
     struct ifreq ifr;
 
-    if ((fd = brSetupControl(ifname, &ifr)) < 0)
+    if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
 
     /* To fill ifr.ifr_hdaddr.sa_family field */
@@ -368,20 +358,20 @@ cleanup:
 }
 
 /**
- * ifGetMtu
+ * virNetDevGetMTU:
  * @ifname: interface name get MTU for
  *
  * This function gets the @mtu value set for a given interface @ifname.
  *
  * Returns the MTU value in case of success, or -1 on failure.
  */
-static int ifGetMtu(const char *ifname)
+static int virNetDevGetMTU(const char *ifname)
 {
     int fd = -1;
     int ret = -1;
     struct ifreq ifr;
 
-    if ((fd = brSetupControl(ifname, &ifr)) < 0)
+    if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
 
     if (ioctl(fd, SIOCGIFMTU, &ifr) < 0) {
@@ -399,7 +389,7 @@ cleanup:
 }
 
 /**
- * ifSetMtu:
+ * virNetDevSetMTU:
  * @ifname: interface name to set MTU for
  * @mtu: MTU value
  *
@@ -408,13 +398,13 @@ cleanup:
  *
  * Returns 0 in case of success, or -1 on failure
  */
-static int ifSetMtu(const char *ifname, int mtu)
+static int virNetDevSetMTU(const char *ifname, int mtu)
 {
     int fd = -1;
     int ret = -1;
     struct ifreq ifr;
 
-    if ((fd = brSetupControl(ifname, &ifr)) < 0)
+    if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
 
     ifr.ifr_mtu = mtu;
@@ -442,19 +432,19 @@ cleanup:
  *
  * Returns 0 in case of success, or -1 on failure
  */
-static int brSetInterfaceMtu(const char *brname,
-                             const char *ifname)
+static int virNetDevSetMTUFromDevice(const char *brname,
+                                     const char *ifname)
 {
-    int mtu = ifGetMtu(brname);
+    int mtu = virNetDevGetMTU(brname);
 
     if (mtu < 0)
         return -1;
 
-    return ifSetMtu(ifname, mtu);
+    return virNetDevSetMTU(ifname, mtu);
 }
 
 /**
- * brProbeVnetHdr:
+ * virNetDevProbeVnetHdr:
  * @tapfd: a tun/tap file descriptor
  *
  * Check whether it is safe to enable the IFF_VNET_HDR flag on the
@@ -474,7 +464,7 @@ static int brSetInterfaceMtu(const char *brname,
  */
 # ifdef IFF_VNET_HDR
 static int
-brProbeVnetHdr(int tapfd)
+virNetDevProbeVnetHdr(int tapfd)
 {
 #  if defined(IFF_VNET_HDR) && defined(TUNGETFEATURES) && defined(TUNGETIFF)
     unsigned int features;
@@ -530,15 +520,14 @@ brProbeVnetHdr(int tapfd)
  *
  * Returns 0 in case of success or -1 on failure
  */
-int
-brAddTap(const char *brname,
-         char **ifname,
-         const unsigned char *macaddr,
-         int vnet_hdr,
-         bool up,
-         int *tapfd)
+int virNetDevTapCreateInBridgePort(const char *brname,
+                                   char **ifname,
+                                   const unsigned char *macaddr,
+                                   int vnet_hdr,
+                                   bool up,
+                                   int *tapfd)
 {
-    if (brCreateTap(ifname, vnet_hdr, tapfd) < 0)
+    if (virNetDevTapCreate(ifname, vnet_hdr, tapfd) < 0)
         return -1;
 
     /* We need to set the interface MAC before adding it
@@ -547,20 +536,20 @@ brAddTap(const char *brname,
      * seeing the kernel allocate random MAC for the TAP
      * device before we set our static MAC.
      */
-    if (brSetInterfaceMac(*ifname, macaddr) < 0)
+    if (virNetDevSetMAC(*ifname, macaddr) < 0)
         goto error;
 
     /* We need to set the interface MTU before adding it
      * to the bridge, because the bridge will have its
      * MTU adjusted automatically when we add the new interface.
      */
-    if (brSetInterfaceMtu(brname, *ifname) < 0)
+    if (virNetDevSetMTUFromDevice(brname, *ifname) < 0)
         goto error;
 
-    if (brAddInterface(brname, *ifname) < 0)
+    if (virNetDevBridgeAddPort(brname, *ifname) < 0)
         goto error;
 
-    if (brSetInterfaceUp(*ifname, up) < 0)
+    if (virNetDevSetOnline(*ifname, up) < 0)
         goto error;
 
     return 0;
@@ -571,7 +560,7 @@ error:
     return -1;
 }
 
-int brDeleteTap(const char *ifname)
+int virNetDevTapDelete(const char *ifname)
 {
     struct ifreq try;
     int fd;
@@ -614,7 +603,7 @@ cleanup:
 
 
 /**
- * brSetInterfaceUp:
+ * virNetDevSetOnline:
  * @ifname: the interface name
  * @up: 1 for up, 0 for down
  *
@@ -622,16 +611,15 @@ cleanup:
  *
  * Returns 0 in case of success or -1 on error.
  */
-int
-brSetInterfaceUp(const char *ifname,
-                 int up)
+int virNetDevSetOnline(const char *ifname,
+                       int up)
 {
     int fd = -1;
     int ret = -1;
     struct ifreq ifr;
     int ifflags;
 
-    if ((fd = brSetupControl(ifname, &ifr)) < 0)
+    if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
 
     if (ioctl(fd, SIOCGIFFLAGS, &ifr) < 0) {
@@ -664,7 +652,7 @@ cleanup:
 }
 
 /**
- * brGetInterfaceUp:
+ * virNetDevIsOnline:
  * @ifname: the interface name
  * @up: where to store the status
  *
@@ -672,15 +660,14 @@ cleanup:
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-int
-brGetInterfaceUp(const char *ifname,
-                 int *up)
+int virNetDevIsOnline(const char *ifname,
+                      int *up)
 {
     int fd = -1;
     int ret = -1;
     struct ifreq ifr;
 
-    if ((fd = brSetupControl(ifname, &ifr)) < 0)
+    if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
 
     if (ioctl(fd, SIOCGIFFLAGS, &ifr) < 0) {
@@ -699,7 +686,7 @@ cleanup:
 }
 
 /**
- * brAddInetAddress:
+ * virNetDevSetIPv4Address:
  * @ifname: the interface name
  * @addr: the IP address (IPv4 or IPv6)
  * @prefix: number of 1 bits in the netmask
@@ -711,10 +698,9 @@ cleanup:
  * Returns 0 in case of success or -1 in case of error.
  */
 
-int
-brAddInetAddress(const char *ifname,
-                 virSocketAddr *addr,
-                 unsigned int prefix)
+int virNetDevSetIPv4Address(const char *ifname,
+                            virSocketAddr *addr,
+                            unsigned int prefix)
 {
     virCommandPtr cmd = NULL;
     char *addrstr = NULL, *bcaststr = NULL;
@@ -748,7 +734,7 @@ cleanup:
 }
 
 /**
- * brDelInetAddress:
+ * virNetDevClearIPv4Address:
  * @ifname: the interface name
  * @addr: the IP address (IPv4 or IPv6)
  * @prefix: number of 1 bits in the netmask
@@ -758,10 +744,9 @@ cleanup:
  * Returns 0 in case of success or -1 in case of error.
  */
 
-int
-brDelInetAddress(const char *ifname,
-                 virSocketAddr *addr,
-                 unsigned int prefix)
+int virNetDevClearIPv4Address(const char *ifname,
+                              virSocketAddr *addr,
+                              unsigned int prefix)
 {
     virCommandPtr cmd = NULL;
     char *addrstr;
@@ -785,7 +770,7 @@ cleanup:
 }
 
 /**
- * brSetForwardDelay:
+ * virNetDevBridgeSetSTPDelay:
  * @brname: the bridge name
  * @delay: delay in seconds
  *
@@ -794,9 +779,8 @@ cleanup:
  * Returns 0 in case of success or -1 on failure
  */
 
-int
-brSetForwardDelay(const char *brname,
-                  int delay)
+int virNetDevBridgeSetSTPDelay(const char *brname,
+                               int delay)
 {
     virCommandPtr cmd;
     int ret = -1;
@@ -815,7 +799,7 @@ cleanup:
 }
 
 /**
- * brSetEnableSTP:
+ * virNetDevBridgeSetSTP:
  * @brname: the bridge name
  * @enable: 1 to enable, 0 to disable
  *
@@ -824,9 +808,8 @@ cleanup:
  *
  * Returns 0 in case of success or -1 on failure
  */
-int
-brSetEnableSTP(const char *brname,
-               int enable)
+int virNetDevBridgeSetSTP(const char *brname,
+                          int enable)
 {
     virCommandPtr cmd;
     int ret = -1;
@@ -860,10 +843,9 @@ cleanup:
  * Returns 0 in case of success or an errno code in case of failure.
  */
 
-int
-brCreateTap(char **ifname,
-            int vnet_hdr ATTRIBUTE_UNUSED,
-            int *tapfd)
+int virNetDevTapCreate(char **ifname,
+                       int vnet_hdr ATTRIBUTE_UNUSED,
+                       int *tapfd)
 {
     int fd;
     struct ifreq ifr;
@@ -880,7 +862,7 @@ brCreateTap(char **ifname,
     ifr.ifr_flags = IFF_TAP|IFF_NO_PI;
 
 # ifdef IFF_VNET_HDR
-    if (vnet_hdr && brProbeVnetHdr(fd))
+    if (vnet_hdr && virNetDevProbeVnetHdr(fd))
         ifr.ifr_flags |= IFF_VNET_HDR;
 # endif
 

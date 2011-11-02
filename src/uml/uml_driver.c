@@ -962,7 +962,7 @@ static void umlCleanupTapDevices(virDomainObjPtr vm) {
             def->type != VIR_DOMAIN_NET_TYPE_NETWORK)
             continue;
 
-        ignore_value(brDeleteTap(def->ifname));
+        ignore_value(virNetDevTapDelete(def->ifname));
     }
 }
 

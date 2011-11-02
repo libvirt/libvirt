@@ -211,7 +211,7 @@ networkFindActiveConfigs(struct network_driver *driver) {
 
         /* If bridge exists, then mark it active */
         if (obj->def->bridge &&
-            brHasBridge(obj->def->bridge) == 0) {
+            virNetDevExists(obj->def->bridge) == 0) {
             obj->active = 1;
 
             /* Try and read dnsmasq/radvd pids if any */
@@ -1677,8 +1677,8 @@ networkAddAddrToBridge(virNetworkObjPtr network,
         return -1;
     }
 
-    if (brAddInetAddress(network->def->bridge,
-                         &ipdef->address, prefix) < 0)
+    if (virNetDevSetIPv4Address(network->def->bridge,
+                                &ipdef->address, prefix) < 0)
         return -1;
 
     return 0;
@@ -1699,7 +1699,7 @@ networkStartNetworkVirtual(struct network_driver *driver,
         return -1;
 
     /* Create and configure the bridge device */
-    if (brAddBridge(network->def->bridge) < 0)
+    if (virNetDevBridgeCreate(network->def->bridge) < 0)
         return -1;
 
     if (network->def->mac_specified) {
@@ -1714,20 +1714,20 @@ networkStartNetworkVirtual(struct network_driver *driver,
             virReportOOMError();
             goto err0;
         }
-        if (brAddTap(network->def->bridge,
-                     &macTapIfName, network->def->mac, 0, false, NULL) < 0) {
+        if (virNetDevTapCreateInBridgePort(network->def->bridge,
+                                           &macTapIfName, network->def->mac, 0, false, NULL) < 0) {
             VIR_FREE(macTapIfName);
             goto err0;
         }
     }
 
     /* Set bridge options */
-    if (brSetForwardDelay(network->def->bridge,
+    if (virNetDevBridgeSetSTPDelay(network->def->bridge,
                           network->def->delay) < 0)
         goto err1;
 
-    if (brSetEnableSTP(network->def->bridge,
-                       network->def->stp ? 1 : 0) < 0)
+    if (virNetDevBridgeSetSTP(network->def->bridge,
+                              network->def->stp ? 1 : 0) < 0)
         goto err1;
 
     /* Disable IPv6 on the bridge if there are no IPv6 addresses
@@ -1755,7 +1755,7 @@ networkStartNetworkVirtual(struct network_driver *driver,
     }
 
     /* Bring up the bridge interface */
-    if (brSetInterfaceUp(network->def->bridge, 1) < 0)
+    if (virNetDevSetOnline(network->def->bridge, 1) < 0)
         goto err2;
 
     /* If forwardType != NONE, turn on global IP forwarding */
@@ -1804,7 +1804,7 @@ networkStartNetworkVirtual(struct network_driver *driver,
  err3:
     if (!save_err)
         save_err = virSaveLastError();
-    ignore_value(brSetInterfaceUp(network->def->bridge, 0));
+    ignore_value(virNetDevSetOnline(network->def->bridge, 0));
 
  err2:
     if (!save_err)
@@ -1815,13 +1815,13 @@ networkStartNetworkVirtual(struct network_driver *driver,
     if (!save_err)
         save_err = virSaveLastError();
 
-    ignore_value(brDeleteTap(macTapIfName));
+    ignore_value(virNetDevTapDelete(macTapIfName));
     VIR_FREE(macTapIfName);
 
  err0:
     if (!save_err)
         save_err = virSaveLastError();
-    ignore_value(brDeleteBridge(network->def->bridge));
+    ignore_value(virNetDevBridgeDelete(network->def->bridge));
 
     if (save_err) {
         virSetError(save_err);
@@ -1859,16 +1859,16 @@ static int networkShutdownNetworkVirtual(struct network_driver *driver,
         if (!macTapIfName) {
             virReportOOMError();
         } else {
-            ignore_value(brDeleteTap(macTapIfName));
+            ignore_value(virNetDevTapDelete(macTapIfName));
             VIR_FREE(macTapIfName);
         }
     }
 
-    ignore_value(brSetInterfaceUp(network->def->bridge, 0));
+    ignore_value(virNetDevSetOnline(network->def->bridge, 0));
 
     networkRemoveIptablesRules(driver, network);
 
-    ignore_value(brDeleteBridge(network->def->bridge));
+    ignore_value(virNetDevBridgeDelete(network->def->bridge));
 
     /* See if its still alive and really really kill it */
     if (network->dnsmasqPid > 0 &&

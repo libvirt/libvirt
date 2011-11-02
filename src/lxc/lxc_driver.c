@@ -1269,7 +1269,7 @@ static int lxcSetupInterfaces(virConnectPtr conn,
                 goto error_exit;
         }
 
-        if (brAddInterface(bridge, parentVeth) < 0)
+        if (virNetDevBridgeAddPort(bridge, parentVeth) < 0)
             goto error_exit;
 
         if (vethInterfaceUpOrDown(parentVeth, 1) < 0)

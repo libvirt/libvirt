@@ -42,19 +42,19 @@
  */
 #  define BR_INET_ADDR_MAXLEN INET_ADDRSTRLEN
 
-int     brAddBridge             (const char *brname)
+int virNetDevBridgeCreate(const char *brname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
-int     brDeleteBridge          (const char *brname)
+int virNetDevBridgeDelete(const char *brname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
-int     brHasBridge             (const char *brname)
+int virNetDevExists(const char *brname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
-int     brAddInterface          (const char *brname,
-                                 const char *ifname)
+int virNetDevBridgeAddPort(const char *brname,
+                           const char *ifname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
-int     brDeleteInterface       (const char *brname,
-                                 const char *ifname)
+int virNetDevBridgeRemovePort(const char *brname,
+                              const char *ifname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 enum {
@@ -62,55 +62,55 @@ enum {
     BR_TAP_PERSIST =  (1 << 1),
 };
 
-int     brAddTap                (const char *brname,
-                                 char **ifname,
-                                 const unsigned char *macaddr,
-                                 int vnet_hdr,
-                                 bool up,
-                                 int *tapfd)
+int virNetDevTapCreateInBridgePort(const char *brname,
+                                   char **ifname,
+                                   const unsigned char *macaddr,
+                                   int vnet_hdr,
+                                   bool up,
+                                   int *tapfd)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_RETURN_CHECK;
 
 
-int     brDeleteTap             (const char *ifname)
+int virNetDevTapDelete(const char *ifname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
-int     brSetInterfaceUp        (const char *ifname,
-                                 int up)
+int virNetDevSetOnline(const char *ifname,
+                       int up)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
-int     brGetInterfaceUp        (const char *ifname,
-                                 int *up)
+int virNetDevIsOnline(const char *ifname,
+                      int *up)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
-int     brAddInetAddress        (const char *ifname,
-                                 virSocketAddr *addr,
-                                 unsigned int prefix)
+int virNetDevSetIPv4Address(const char *ifname,
+                            virSocketAddr *addr,
+                            unsigned int prefix)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
-int     brDelInetAddress        (const char *ifname,
-                                 virSocketAddr *addr,
-                                 unsigned int prefix)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
-
-int     brSetForwardDelay       (const char *brname,
-                                 int delay)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
-int     brGetForwardDelay       (const char *brname,
-                                 int *delay)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
-int     brSetEnableSTP          (const char *brname,
-                                 int enable)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
-int     brGetEnableSTP          (const char *brname,
-                                 int *enable)
+int virNetDevClearIPv4Address(const char *ifname,
+                              virSocketAddr *addr,
+                              unsigned int prefix)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
-int     brCreateTap             (char **ifname,
-                                 int vnet_hdr,
-                                 int *tapfd)
+int virNetDevBridgeSetSTPDelay(const char *brname,
+                               int delay)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+int virNetDevBridgeGetSTPDelay(const char *brname,
+                               int *delay)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+int virNetDevBridgeSetSTP(const char *brname,
+                          int enable)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+int virNetDevBridgeGetSTP(const char *brname,
+                          int *enable)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
+int virNetDevTapCreate(char **ifname,
+                       int vnet_hdr,
+                       int *tapfd)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
-int     brSetInterfaceMac       (const char *ifname,
-                                 const unsigned char *macaddr)
+int virNetDevSetMAC(const char *ifname,
+                    const unsigned char *macaddr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 # endif /* WITH_BRIDGE */
