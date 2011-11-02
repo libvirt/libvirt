@@ -901,11 +901,6 @@ static int lxcDomainGetMemoryParameters(virDomainPtr dom,
         ret = 0;
         goto cleanup;
     }
-    if ((*nparams) < LXC_NB_MEM_PARAM) {
-        lxcError(VIR_ERR_INVALID_ARG,
-                 "%s", _("Invalid parameter count"));
-        goto cleanup;
-    }
 
     if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
         lxcError(VIR_ERR_INTERNAL_ERROR,
@@ -913,7 +908,7 @@ static int lxcDomainGetMemoryParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    for (i = 0; i < LXC_NB_MEM_PARAM; i++) {
+    for (i = 0; i < LXC_NB_MEM_PARAM && i < *nparams; i++) {
         virTypedParameterPtr param = &params[i];
         val = 0;
         param->value.ul = 0;
@@ -971,7 +966,8 @@ static int lxcDomainGetMemoryParameters(virDomainPtr dom,
         }
     }
 
-    *nparams = LXC_NB_MEM_PARAM;
+    if (*nparams > LXC_NB_MEM_PARAM)
+        *nparams = LXC_NB_MEM_PARAM;
     ret = 0;
 
 cleanup:
@@ -2579,12 +2575,6 @@ lxcGetSchedulerParametersFlags(virDomainPtr domain,
 
     if (driver->cgroup == NULL)
         return -1;
-
-    if (*nparams < 1) {
-        lxcError(VIR_ERR_INVALID_ARG,
-                 "%s", _("Invalid parameter count"));
-        return -1;
-    }
 
     lxcDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
