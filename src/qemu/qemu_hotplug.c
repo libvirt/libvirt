@@ -1910,11 +1910,12 @@ int qemuDomainDetachNetDevice(struct qemud_driver *driver,
     virDomainConfNWFilterTeardown(detach);
 
     if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_DIRECT) {
-        ignore_value(virNetDevMacVLanDelete(detach->ifname, detach->mac,
-                                            virDomainNetGetActualDirectDev(detach),
-                                            virDomainNetGetActualDirectMode(detach),
-                                            virDomainNetGetActualDirectVirtPortProfile(detach),
-                                            driver->stateDir));
+        ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
+                         detach->ifname, detach->mac,
+                         virDomainNetGetActualDirectDev(detach),
+                         virDomainNetGetActualDirectMode(detach),
+                         virDomainNetGetActualDirectVirtPortProfile(detach),
+                         driver->stateDir));
         VIR_FREE(detach->ifname);
     }
 

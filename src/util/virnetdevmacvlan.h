@@ -39,26 +39,26 @@ enum virNetDevMacVLanMode {
 };
 VIR_ENUM_DECL(virNetDevMacVLanMode)
 
-int virNetDevMacVLanCreate(const char *ifname,
-                           const unsigned char *macaddress,
-                           const char *linkdev,
-                           enum virNetDevMacVLanMode mode,
-                           int vnet_hdr,
-                           const unsigned char *vmuuid,
-                           virNetDevVPortProfilePtr virtPortProfile,
-                           char **res_ifname,
-                           enum virNetDevVPortProfileOp vmop,
-                           char *stateDir,
-                           virNetDevBandwidthPtr bandwidth)
+int virNetDevMacVLanCreateWithVPortProfile(const char *ifname,
+                                           const unsigned char *macaddress,
+                                           const char *linkdev,
+                                           enum virNetDevMacVLanMode mode,
+                                           int vnet_hdr,
+                                           const unsigned char *vmuuid,
+                                           virNetDevVPortProfilePtr virtPortProfile,
+                                           char **res_ifname,
+                                           enum virNetDevVPortProfileOp vmop,
+                                           char *stateDir,
+                                           virNetDevBandwidthPtr bandwidth)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(6)
     ATTRIBUTE_NONNULL(8) ATTRIBUTE_NONNULL(10) ATTRIBUTE_RETURN_CHECK;
 
-int virNetDevMacVLanDelete(const char *ifname,
-                           const unsigned char *macaddress,
-                           const char *linkdev,
-                           int mode,
-                           virNetDevVPortProfilePtr virtPortProfile,
-                           char *stateDir)
+int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
+                                           const unsigned char *macaddress,
+                                           const char *linkdev,
+                                           int mode,
+                                           virNetDevVPortProfilePtr virtPortProfile,
+                                           char *stateDir)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(6) ATTRIBUTE_RETURN_CHECK;
 

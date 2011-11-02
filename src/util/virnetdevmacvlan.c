@@ -215,7 +215,7 @@ static const uint32_t modeMap[VIR_NETDEV_MACVLAN_MODE_LAST] = {
 };
 
 /**
- * virNetDevMacVLanCreate:
+ * virNetDevMacVLanCreateWithVPortProfile:
  * Create an instance of a macvtap device and open its tap character
  * device.
  * @tgifname: Interface name that the macvtap is supposed to have. May
@@ -234,17 +234,17 @@ static const uint32_t modeMap[VIR_NETDEV_MACVLAN_MODE_LAST] = {
  * negative value otherwise with error reported.
  *
  */
-int virNetDevMacVLanCreate(const char *tgifname,
-                           const unsigned char *macaddress,
-                           const char *linkdev,
-                           enum virNetDevMacVLanMode mode,
-                           int vnet_hdr,
-                           const unsigned char *vmuuid,
-                           virNetDevVPortProfilePtr virtPortProfile,
-                           char **res_ifname,
-                           enum virNetDevVPortProfileOp vmOp,
-                           char *stateDir,
-                           virNetDevBandwidthPtr bandwidth)
+int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
+                                           const unsigned char *macaddress,
+                                           const char *linkdev,
+                                           enum virNetDevMacVLanMode mode,
+                                           int vnet_hdr,
+                                           const unsigned char *vmuuid,
+                                           virNetDevVPortProfilePtr virtPortProfile,
+                                           char **res_ifname,
+                                           enum virNetDevVPortProfileOp vmOp,
+                                           char *stateDir,
+                                           virNetDevBandwidthPtr bandwidth)
 {
     const char *type = "macvtap";
     int c, rc;
@@ -357,7 +357,7 @@ link_del_exit:
 
 
 /**
- * delMacvtap:
+ * virNetDevMacVLanDeleteWithVPortProfile:
  * @ifname : The name of the macvtap interface
  * @linkdev: The interface name of the NIC to connect to the external bridge
  * @virtPortProfile: pointer to object holding the virtual port profile data
@@ -366,12 +366,12 @@ link_del_exit:
  * it with the switch if port profile parameters
  * were provided.
  */
-int virNetDevMacVLanDelete(const char *ifname,
-                           const unsigned char *macaddr,
-                           const char *linkdev,
-                           int mode,
-                           virNetDevVPortProfilePtr virtPortProfile,
-                           char *stateDir)
+int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
+                                           const unsigned char *macaddr,
+                                           const char *linkdev,
+                                           int mode,
+                                           virNetDevVPortProfilePtr virtPortProfile,
+                                           char *stateDir)
 {
     int ret = 0;
     if (mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) {
@@ -392,29 +392,29 @@ int virNetDevMacVLanDelete(const char *ifname,
 }
 
 #else /* ! WITH_MACVTAP */
-int virNetDevMacVLanCreate(const char *ifname ATTRIBUTE_UNUSED,
-                           const unsigned char *macaddress ATTRIBUTE_UNUSED,
-                           const char *linkdev ATTRIBUTE_UNUSED,
-                           enum virNetDevMacVLanMode mode ATTRIBUTE_UNUSED,
-                           int vnet_hdr ATTRIBUTE_UNUSED,
-                           const unsigned char *vmuuid ATTRIBUTE_UNUSED,
-                           virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
-                           char **res_ifname ATTRIBUTE_UNUSED,
-                           enum virNetDevVPortProfileOp vmop ATTRIBUTE_UNUSED,
-                           char *stateDir ATTRIBUTE_UNUSED,
-                           virNetDevBandwidthPtr bandwidth ATTRIBUTE_UNUSED)
+int virNetDevMacVLanCreateWithVPortProfile(const char *ifname ATTRIBUTE_UNUSED,
+                                           const unsigned char *macaddress ATTRIBUTE_UNUSED,
+                                           const char *linkdev ATTRIBUTE_UNUSED,
+                                           enum virNetDevMacVLanMode mode ATTRIBUTE_UNUSED,
+                                           int vnet_hdr ATTRIBUTE_UNUSED,
+                                           const unsigned char *vmuuid ATTRIBUTE_UNUSED,
+                                           virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
+                                           char **res_ifname ATTRIBUTE_UNUSED,
+                                           enum virNetDevVPortProfileOp vmop ATTRIBUTE_UNUSED,
+                                           char *stateDir ATTRIBUTE_UNUSED,
+                                           virNetDevBandwidthPtr bandwidth ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));
     return -1;
 }
 
-int virNetDevMacVLanDelete(const char *ifname ATTRIBUTE_UNUSED,
-                           const unsigned char *macaddress ATTRIBUTE_UNUSED,
-                           const char *linkdev ATTRIBUTE_UNUSED,
-                           int mode ATTRIBUTE_UNUSED,
-                           virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
-                           char *stateDir ATTRIBUTE_UNUSED)
+int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname ATTRIBUTE_UNUSED,
+                                           const unsigned char *macaddress ATTRIBUTE_UNUSED,
+                                           const char *linkdev ATTRIBUTE_UNUSED,
+                                           int mode ATTRIBUTE_UNUSED,
+                                           virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
+                                           char *stateDir ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));

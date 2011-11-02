@@ -3411,11 +3411,12 @@ void qemuProcessStop(struct qemud_driver *driver,
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
         if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
-            ignore_value(virNetDevMacVLanDelete(net->ifname, net->mac,
-                                                virDomainNetGetActualDirectDev(net),
-                                                virDomainNetGetActualDirectMode(net),
-                                                virDomainNetGetActualDirectVirtPortProfile(net),
-                                                driver->stateDir));
+            ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
+                             net->ifname, net->mac,
+                             virDomainNetGetActualDirectDev(net),
+                             virDomainNetGetActualDirectMode(net),
+                             virDomainNetGetActualDirectVirtPortProfile(net),
+                             driver->stateDir));
             VIR_FREE(net->ifname);
         }
         /* release the physical device (or any other resources used by
