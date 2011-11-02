@@ -3631,11 +3631,6 @@ libxlDomainGetSchedulerParametersFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (*nparams < XEN_SCHED_CREDIT_NPARAM) {
-        libxlError(VIR_ERR_INVALID_ARG, "%s", _("Invalid parameter count"));
-        goto cleanup;
-    }
-
     if (libxl_sched_credit_domain_get(&priv->ctx, dom->id, &sc_info) != 0) {
         libxlError(VIR_ERR_INTERNAL_ERROR,
                    _("Failed to get scheduler parameters for domain '%d'"
@@ -3653,16 +3648,20 @@ libxlDomainGetSchedulerParametersFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    params[1].value.ui = sc_info.cap;
-    params[1].type = VIR_TYPED_PARAM_UINT;
-    if (virStrcpyStatic(params[1].field, VIR_DOMAIN_SCHEDULER_CAP) == NULL) {
-        libxlError(VIR_ERR_INTERNAL_ERROR,
-                   _("Field name '%s' too long"),
-                   VIR_DOMAIN_SCHEDULER_CAP);
-        goto cleanup;
+    if (*nparams > 1) {
+        params[1].value.ui = sc_info.cap;
+        params[1].type = VIR_TYPED_PARAM_UINT;
+        if (virStrcpyStatic(params[1].field,
+                            VIR_DOMAIN_SCHEDULER_CAP) == NULL) {
+            libxlError(VIR_ERR_INTERNAL_ERROR,
+                       _("Field name '%s' too long"),
+                       VIR_DOMAIN_SCHEDULER_CAP);
+            goto cleanup;
+        }
     }
 
-    *nparams = XEN_SCHED_CREDIT_NPARAM;
+    if (*nparams > XEN_SCHED_CREDIT_NPARAM)
+        *nparams = XEN_SCHED_CREDIT_NPARAM;
     ret = 0;
 
 cleanup:
