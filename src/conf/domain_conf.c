@@ -862,7 +862,7 @@ virDomainActualNetDefFree(virDomainActualNetDefPtr def)
         break;
     }
 
-    virBandwidthDefFree(def->bandwidth);
+    virNetDevBandwidthFree(def->bandwidth);
 
     VIR_FREE(def);
 }
@@ -921,7 +921,7 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     VIR_FREE(def->filter);
     virNWFilterHashTableFree(def->filterparams);
 
-    virBandwidthDefFree(def->bandwidth);
+    virNetDevBandwidthFree(def->bandwidth);
 
     VIR_FREE(def);
 }
@@ -3120,7 +3120,7 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
 
     bandwidth_node = virXPathNode("./bandwidth", ctxt);
     if (bandwidth_node &&
-        !(actual->bandwidth = virBandwidthDefParseNode(bandwidth_node)))
+        !(actual->bandwidth = virNetDevBandwidthParse(bandwidth_node)))
         goto error;
 
     *def = actual;
@@ -3278,7 +3278,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
                 if (virDomainActualNetDefParseXML(cur, ctxt, &actual) < 0)
                     goto error;
             } else if (xmlStrEqual(cur->name, BAD_CAST "bandwidth")) {
-                if (!(def->bandwidth = virBandwidthDefParseNode(cur)))
+                if (!(def->bandwidth = virNetDevBandwidthParse(cur)))
                     goto error;
             }
         }
@@ -9730,7 +9730,7 @@ virDomainActualNetDefFormat(virBufferPtr buf,
     }
 
     virBufferAdjustIndent(buf, 8);
-    if (virBandwidthDefFormat(buf, def->bandwidth) < 0)
+    if (virNetDevBandwidthFormat(def->bandwidth, buf) < 0)
         goto error;
     virBufferAdjustIndent(buf, -8);
 
@@ -9883,7 +9883,7 @@ virDomainNetDefFormat(virBufferPtr buf,
                           virDomainNetInterfaceLinkStateTypeToString(def->linkstate));
 
     virBufferAdjustIndent(buf, 6);
-    if (virBandwidthDefFormat(buf, def->bandwidth) < 0)
+    if (virNetDevBandwidthFormat(def->bandwidth, buf) < 0)
         return -1;
     virBufferAdjustIndent(buf, -6);
 
@@ -13091,7 +13091,7 @@ virDomainNetGetActualDirectVirtPortProfile(virDomainNetDefPtr iface)
     return iface->data.network.actual->data.direct.virtPortProfile;
 }
 
-virBandwidthPtr
+virNetDevBandwidthPtr
 virDomainNetGetActualBandwidth(virDomainNetDefPtr iface)
 {
     if ((iface->type == VIR_DOMAIN_NET_TYPE_NETWORK) &&

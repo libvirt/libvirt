@@ -17,6 +17,7 @@
 #include "util.h"
 #include "virterror_internal.h"
 #include "command.h"
+#include "ignore-value.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 #define virSocketError(code, ...)                                       \
@@ -918,7 +919,7 @@ virVirtualPortProfileFormat(virBufferPtr buf,
 }
 
 static int
-virBandwidthParseChildDefNode(xmlNodePtr node, virRatePtr rate)
+virNetDevBandwidthParseRate(xmlNodePtr node, virNetDevBandwidthRatePtr rate)
 {
     int ret = -1;
     char *average = NULL;
@@ -973,17 +974,17 @@ cleanup:
 }
 
 /**
- * virBandwidthDefParseNode:
+ * virNetDevBandwidthParse:
  * @node: XML node
  *
  * Parse bandwidth XML and return pointer to structure
  *
  * Returns !NULL on success, NULL on error.
  */
-virBandwidthPtr
-virBandwidthDefParseNode(xmlNodePtr node)
+virNetDevBandwidthPtr
+virNetDevBandwidthParse(xmlNodePtr node)
 {
-    virBandwidthPtr def = NULL;
+    virNetDevBandwidthPtr def = NULL;
     xmlNodePtr cur = node->children;
     xmlNodePtr in = NULL, out = NULL;
 
@@ -1028,7 +1029,7 @@ virBandwidthDefParseNode(xmlNodePtr node)
             goto error;
         }
 
-        if (virBandwidthParseChildDefNode(in, def->in) < 0) {
+        if (virNetDevBandwidthParseRate(in, def->in) < 0) {
             /* helper reported error for us */
             goto error;
         }
@@ -1040,7 +1041,7 @@ virBandwidthDefParseNode(xmlNodePtr node)
             goto error;
         }
 
-        if (virBandwidthParseChildDefNode(out, def->out) < 0) {
+        if (virNetDevBandwidthParseRate(out, def->out) < 0) {
             /* helper reported error for us */
             goto error;
         }
@@ -1049,12 +1050,12 @@ virBandwidthDefParseNode(xmlNodePtr node)
     return def;
 
 error:
-    virBandwidthDefFree(def);
+    virNetDevBandwidthFree(def);
     return NULL;
 }
 
 void
-virBandwidthDefFree(virBandwidthPtr def)
+virNetDevBandwidthFree(virNetDevBandwidthPtr def)
 {
     if (!def)
         return;
@@ -1065,9 +1066,9 @@ virBandwidthDefFree(virBandwidthPtr def)
 }
 
 static int
-virBandwidthChildDefFormat(virBufferPtr buf,
-                           virRatePtr def,
-                           const char *elem_name)
+virNetDevBandwidthRateFormat(virNetDevBandwidthRatePtr def,
+                             virBufferPtr buf,
+                             const char *elem_name)
 {
     if (!buf || !elem_name)
         return -1;
@@ -1090,9 +1091,9 @@ virBandwidthChildDefFormat(virBufferPtr buf,
 }
 
 /**
- * virBandwidthDefFormat:
- * @buf: Buffer to print to
+ * virNetDevBandwidthDefFormat:
  * @def: Data source
+ * @buf: Buffer to print to
  *
  * Formats bandwidth and prepend each line with @indent.
  * @buf may use auto-indentation.
@@ -1100,8 +1101,7 @@ virBandwidthChildDefFormat(virBufferPtr buf,
  * Returns 0 on success, else -1.
  */
 int
-virBandwidthDefFormat(virBufferPtr buf,
-                      virBandwidthPtr def)
+virNetDevBandwidthFormat(virNetDevBandwidthPtr def, virBufferPtr buf)
 {
     int ret = -1;
 
@@ -1114,8 +1114,8 @@ virBandwidthDefFormat(virBufferPtr buf,
     }
 
     virBufferAddLit(buf, "<bandwidth>\n");
-    if (virBandwidthChildDefFormat(buf, def->in, "inbound") < 0 ||
-        virBandwidthChildDefFormat(buf, def->out, "outbound") < 0)
+    if (virNetDevBandwidthRateFormat(def->in, buf, "inbound") < 0 ||
+        virNetDevBandwidthRateFormat(def->out, buf, "outbound") < 0)
         goto cleanup;
     virBufferAddLit(buf, "</bandwidth>\n");
 
@@ -1126,9 +1126,9 @@ cleanup:
 }
 
 /**
- * virBandwidthEnable:
- * @bandwidth: rates to set
- * @iface: on which interface
+ * virNetDevBandwidthSet:
+ * @ifname: on which interface
+ * @bandwidth: rates to set (may be NULL)
  *
  * This function enables QoS on specified interface
  * and set given traffic limits for both, incoming
@@ -1138,8 +1138,8 @@ cleanup:
  * Return 0 on success, -1 otherwise.
  */
 int
-virBandwidthEnable(virBandwidthPtr bandwidth,
-                   const char *iface)
+virNetDevBandwidthSet(const char *ifname,
+                      virNetDevBandwidthPtr bandwidth)
 {
     int ret = -1;
     virCommandPtr cmd = NULL;
@@ -1147,17 +1147,13 @@ virBandwidthEnable(virBandwidthPtr bandwidth,
     char *peak = NULL;
     char *burst = NULL;
 
-    if (!iface)
-        return -1;
-
     if (!bandwidth) {
         /* nothing to be enabled */
         ret = 0;
         goto cleanup;
     }
 
-    if (virBandwidthDisable(iface, true) < 0)
-        goto cleanup;
+    ignore_value(virNetDevBandwidthClear(ifname));
 
     if (bandwidth->in) {
         if (virAsprintf(&average, "%llukbps", bandwidth->in->average) < 0)
@@ -1170,14 +1166,14 @@ virBandwidthEnable(virBandwidthPtr bandwidth,
             goto cleanup;
 
         cmd = virCommandNew(TC);
-        virCommandAddArgList(cmd, "qdisc", "add", "dev", iface, "root",
+        virCommandAddArgList(cmd, "qdisc", "add", "dev", ifname, "root",
                              "handle", "1:", "htb", "default", "1", NULL);
         if (virCommandRun(cmd, NULL) < 0)
             goto cleanup;
 
         virCommandFree(cmd);
         cmd = virCommandNew(TC);
-            virCommandAddArgList(cmd,"class", "add", "dev", iface, "parent",
+            virCommandAddArgList(cmd,"class", "add", "dev", ifname, "parent",
                                  "1:", "classid", "1:1", "htb", NULL);
         virCommandAddArgList(cmd, "rate", average, NULL);
 
@@ -1191,7 +1187,7 @@ virBandwidthEnable(virBandwidthPtr bandwidth,
 
         virCommandFree(cmd);
         cmd = virCommandNew(TC);
-            virCommandAddArgList(cmd,"filter", "add", "dev", iface, "parent",
+            virCommandAddArgList(cmd,"filter", "add", "dev", ifname, "parent",
                                  "1:0", "protocol", "ip", "handle", "1", "fw",
                                  "flowid", "1", NULL);
 
@@ -1212,7 +1208,7 @@ virBandwidthEnable(virBandwidthPtr bandwidth,
 
         virCommandFree(cmd);
         cmd = virCommandNew(TC);
-            virCommandAddArgList(cmd, "qdisc", "add", "dev", iface,
+            virCommandAddArgList(cmd, "qdisc", "add", "dev", ifname,
                                  "ingress", NULL);
 
         if (virCommandRun(cmd, NULL) < 0)
@@ -1220,7 +1216,7 @@ virBandwidthEnable(virBandwidthPtr bandwidth,
 
         virCommandFree(cmd);
         cmd = virCommandNew(TC);
-        virCommandAddArgList(cmd, "filter", "add", "dev", iface, "parent",
+        virCommandAddArgList(cmd, "filter", "add", "dev", ifname, "parent",
                              "ffff:", "protocol", "ip", "u32", "match", "ip",
                              "src", "0.0.0.0/0", "police", "rate", average,
                              "burst", burst, "mtu", burst, "drop", "flowid",
@@ -1241,9 +1237,8 @@ cleanup:
 }
 
 /**
- * virBandwidthDisable:
- * @iface: on which interface
- * @may_fail: should be unsuccessful disable considered fatal?
+ * virNetDevBandwidthClear:
+ * @ifname: on which interface
  *
  * This function tries to disable QoS on specified interface
  * by deleting root and ingress qdisc. However, this may fail
@@ -1252,58 +1247,42 @@ cleanup:
  * Return 0 on success, -1 otherwise.
  */
 int
-virBandwidthDisable(const char *iface,
-                    bool may_fail)
+virNetDevBandwidthClear(const char *ifname)
 {
-    int ret = -1;
-    int status;
+    int ret = 0;
     virCommandPtr cmd = NULL;
 
-    if (!iface)
-        return -1;
-
     cmd = virCommandNew(TC);
-    virCommandAddArgList(cmd, "qdisc", "del", "dev", iface, "root", NULL);
+    virCommandAddArgList(cmd, "qdisc", "del", "dev", ifname, "root", NULL);
 
-    if ((virCommandRun(cmd, &status) < 0) ||
-        (!may_fail && status))
-        goto cleanup;
+    if (virCommandRun(cmd, NULL) < 0)
+        ret = -1;
 
     virCommandFree(cmd);
 
     cmd = virCommandNew(TC);
-    virCommandAddArgList(cmd, "qdisc",  "del", "dev", iface, "ingress", NULL);
+    virCommandAddArgList(cmd, "qdisc",  "del", "dev", ifname, "ingress", NULL);
 
-    if ((virCommandRun(cmd, &status) < 0) ||
-        (!may_fail && status))
-        goto cleanup;
-
-    ret = 0;
-
-cleanup:
+    if (virCommandRun(cmd, NULL) < 0)
+        ret = -1;
     virCommandFree(cmd);
+
     return ret;
 }
 
 /*
- * virBandwidthCopy:
+ * virNetDevBandwidthCopy:
  * @dest: destination
- * @src:  source
+ * @src:  source (may be NULL)
  *
  * Returns -1 on OOM error (which gets reported),
  * 0 otherwise.
  */
 int
-virBandwidthCopy(virBandwidthPtr *dest,
-                 const virBandwidthPtr src)
+virNetDevBandwidthCopy(virNetDevBandwidthPtr *dest,
+                       const virNetDevBandwidthPtr src)
 {
     int ret = -1;
-
-    if (!dest) {
-        virSocketError(VIR_ERR_INVALID_ARG, "%s",
-                       _("invalid argument supplied"));
-        return -1;
-    }
 
     *dest = NULL;
     if (!src) {
@@ -1337,15 +1316,15 @@ virBandwidthCopy(virBandwidthPtr *dest,
 
 cleanup:
     if (ret < 0) {
-        virBandwidthDefFree(*dest);
+        virNetDevBandwidthFree(*dest);
         *dest = NULL;
     }
     return ret;
 }
 
 bool
-virBandwidthEqual(virBandwidthPtr a,
-                  virBandwidthPtr b)
+virNetDevBandwidthEqual(virNetDevBandwidthPtr a,
+                        virNetDevBandwidthPtr b)
 {
         if (!a && !b)
             return true;

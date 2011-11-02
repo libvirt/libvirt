@@ -511,7 +511,7 @@ struct _virDomainActualNetDef {
             virVirtualPortProfileParamsPtr virtPortProfile;
         } direct;
     } data;
-    virBandwidthPtr bandwidth;
+    virNetDevBandwidthPtr bandwidth;
 };
 
 /* Stores the virtual network interface configuration */
@@ -576,7 +576,7 @@ struct _virDomainNetDef {
     virDomainDeviceInfo info;
     char *filter;
     virNWFilterHashTablePtr filterparams;
-    virBandwidthPtr bandwidth;
+    virNetDevBandwidthPtr bandwidth;
     int linkstate;
 };
 
@@ -1797,7 +1797,7 @@ char *virDomainNetGetActualDirectDev(virDomainNetDefPtr iface);
 int virDomainNetGetActualDirectMode(virDomainNetDefPtr iface);
 virVirtualPortProfileParamsPtr
 virDomainNetGetActualDirectVirtPortProfile(virDomainNetDefPtr iface);
-virBandwidthPtr
+virNetDevBandwidthPtr
 virDomainNetGetActualBandwidth(virDomainNetDefPtr iface);
 
 int virDomainControllerInsert(virDomainDefPtr def,

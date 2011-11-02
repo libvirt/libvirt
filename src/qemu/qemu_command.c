@@ -298,8 +298,8 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
     }
 
     if (tapfd >= 0 &&
-        virBandwidthEnable(virDomainNetGetActualBandwidth(net),
-                           net->ifname) < 0) {
+        virNetDevBandwidthSet(net->ifname,
+                              virDomainNetGetActualBandwidth(net)) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("cannot set bandwidth limits on %s"),
                         net->ifname);

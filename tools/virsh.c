@@ -11250,7 +11250,7 @@ static const vshCmdOptDef opts_attach_interface[] = {
 /* parse inbound and outbound which are in the format of
  * 'average,peak,burst', in which peak and burst are optional,
  * thus 'average,,burst' and 'average,peak' are also legal. */
-static int parseRateStr(const char *rateStr, virRatePtr rate)
+static int parseRateStr(const char *rateStr, virNetDevBandwidthRatePtr rate)
 {
     const char *average = NULL;
     char *peak = NULL, *burst = NULL;
@@ -11289,7 +11289,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     const char *mac = NULL, *target = NULL, *script = NULL,
                 *type = NULL, *source = NULL, *model = NULL,
                 *inboundStr = NULL, *outboundStr = NULL;
-    virRate inbound, outbound;
+    virNetDevBandwidthRate inbound, outbound;
     int typ;
     int ret;
     bool functionReturn = false;

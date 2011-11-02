@@ -764,13 +764,13 @@ nlComm;
 
 
 # network.h
-virBandwidthCopy;
-virBandwidthDefFormat;
-virBandwidthDefFree;
-virBandwidthDefParseNode;
-virBandwidthDisable;
-virBandwidthEnable;
-virBandwidthEqual;
+virNetDevBandwidthClear;
+virNetDevBandwidthCopy;
+virNetDevBandwidthEqual;
+virNetDevBandwidthFormat;
+virNetDevBandwidthFree;
+virNetDevBandwidthParse;
+virNetDevBandwidthSet;
 virSocketAddrBroadcast;
 virSocketAddrBroadcastByPrefix;
 virSocketAddrCheckNetmask;

@@ -123,7 +123,7 @@ struct _virPortGroupDef {
     char *name;
     bool isDefault;
     virVirtualPortProfileParamsPtr virtPortProfile;
-    virBandwidthPtr bandwidth;
+    virNetDevBandwidthPtr bandwidth;
 };
 
 typedef struct _virNetworkDef virNetworkDef;
@@ -155,7 +155,7 @@ struct _virNetworkDef {
 
     size_t nPortGroups;
     virPortGroupDefPtr portGroups;
-    virBandwidthPtr bandwidth;
+    virNetDevBandwidthPtr bandwidth;
 };
 
 typedef struct _virNetworkObj virNetworkObj;

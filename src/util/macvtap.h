@@ -63,7 +63,7 @@ int openMacvtapTap(const char *ifname,
                    char **res_ifname,
                    enum virVMOperationType vmop,
                    char *stateDir,
-                   virBandwidthPtr bandwidth);
+                   virNetDevBandwidthPtr bandwidth);
 
 void delMacvtap(const char *ifname,
                 const unsigned char *macaddress,

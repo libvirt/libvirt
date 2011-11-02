@@ -1778,7 +1778,7 @@ networkStartNetworkVirtual(struct network_driver *driver,
     if (v6present && networkStartRadvd(network) < 0)
         goto err4;
 
-    if (virBandwidthEnable(network->def->bandwidth, network->def->bridge) < 0) {
+    if (virNetDevBandwidthSet(network->def->bridge, network->def->bandwidth) < 0) {
         networkReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot set bandwidth limits on %s"),
                            network->def->bridge);
@@ -1790,10 +1790,7 @@ networkStartNetworkVirtual(struct network_driver *driver,
     return 0;
 
  err5:
-    if (virBandwidthDisable(network->def->bridge, true) < 0) {
-        VIR_WARN("Failed to disable QoS on %s",
-                 network->def->bridge);
-    }
+    ignore_value(virNetDevBandwidthClear(network->def->bridge));
 
  err4:
     if (!save_err)
@@ -1836,10 +1833,7 @@ networkStartNetworkVirtual(struct network_driver *driver,
 static int networkShutdownNetworkVirtual(struct network_driver *driver,
                                         virNetworkObjPtr network)
 {
-    if (virBandwidthDisable(network->def->bridge, true) < 0) {
-        VIR_WARN("Failed to disable QoS on %s",
-                 network->def->name);
-    }
+    ignore_value(virNetDevBandwidthClear(network->def->bridge));
 
     if (network->radvdPid > 0) {
         char *radvdpidbase;
@@ -2733,10 +2727,9 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
             goto cleanup;
         }
 
-        if (virBandwidthCopy(&iface->data.network.actual->bandwidth,
-                             portgroup->bandwidth) < 0) {
+        if (virNetDevBandwidthCopy(&iface->data.network.actual->bandwidth,
+                                   portgroup->bandwidth) < 0)
             goto cleanup;
-        }
     }
 
     if ((netdef->forwardType == VIR_NETWORK_FORWARD_NONE) ||

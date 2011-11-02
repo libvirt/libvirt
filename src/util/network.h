@@ -48,19 +48,19 @@ typedef struct {
 
 typedef virSocketAddr *virSocketAddrPtr;
 
-typedef struct {
+typedef struct _virNetDevBandwidthRate virNetDevBandwidthRate;
+typedef virNetDevBandwidthRate *virNetDevBandwidthRatePtr;
+struct _virNetDevBandwidthRate {
     unsigned long long average;  /* kbytes/s */
     unsigned long long peak;     /* kbytes/s */
     unsigned long long burst;    /* kbytes */
-} virRate;
+};
 
-typedef virRate *virRatePtr;
-
-typedef struct {
-    virRatePtr in, out;
-} virBandwidth;
-
-typedef virBandwidth *virBandwidthPtr;
+typedef struct _virNetDevBandwidth virNetDevBandwidth;
+typedef virNetDevBandwidth *virNetDevBandwidthPtr;
+struct _virNetDevBandwidth {
+    virNetDevBandwidthRatePtr in, out;
+};
 
 int virSocketAddrParse(virSocketAddrPtr addr,
                        const char *val,
@@ -152,16 +152,21 @@ virVirtualPortProfileFormat(virBufferPtr buf,
 bool virVirtualPortProfileEqual(virVirtualPortProfileParamsPtr a,
                                 virVirtualPortProfileParamsPtr b);
 
-virBandwidthPtr virBandwidthDefParseNode(xmlNodePtr node);
-void virBandwidthDefFree(virBandwidthPtr def);
-int virBandwidthDefFormat(virBufferPtr buf,
-                          virBandwidthPtr def);
+virNetDevBandwidthPtr virNetDevBandwidthParse(xmlNodePtr node)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+void virNetDevBandwidthFree(virNetDevBandwidthPtr def);
+int virNetDevBandwidthFormat(virNetDevBandwidthPtr def,
+                             virBufferPtr buf)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int virBandwidthEnable(virBandwidthPtr bandwidth, const char *iface);
-int virBandwidthDisable(const char *iface, bool may_fail);
-int virBandwidthCopy(virBandwidthPtr *dest, const virBandwidthPtr src);
+int virNetDevBandwidthSet(const char *ifname, virNetDevBandwidthPtr bandwidth)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+int virNetDevBandwidthClear(const char *ifname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+int virNetDevBandwidthCopy(virNetDevBandwidthPtr *dest, const virNetDevBandwidthPtr src)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
-bool virBandwidthEqual(virBandwidthPtr a, virBandwidthPtr b);
+bool virNetDevBandwidthEqual(virNetDevBandwidthPtr a, virNetDevBandwidthPtr b);
 
 
 #endif /* __VIR_NETWORK_H__ */

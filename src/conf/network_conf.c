@@ -92,7 +92,7 @@ virPortGroupDefClear(virPortGroupDefPtr def)
 {
     VIR_FREE(def->name);
     VIR_FREE(def->virtPortProfile);
-    virBandwidthDefFree(def->bandwidth);
+    virNetDevBandwidthFree(def->bandwidth);
     def->bandwidth = NULL;
 }
 
@@ -171,7 +171,7 @@ void virNetworkDefFree(virNetworkDefPtr def)
 
     VIR_FREE(def->virtPortProfile);
 
-    virBandwidthDefFree(def->bandwidth);
+    virNetDevBandwidthFree(def->bandwidth);
 
     VIR_FREE(def);
 }
@@ -797,7 +797,7 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
 
     bandwidth_node = virXPathNode("./bandwidth", ctxt);
     if (bandwidth_node &&
-        !(def->bandwidth = virBandwidthDefParseNode(bandwidth_node))) {
+        !(def->bandwidth = virNetDevBandwidthParse(bandwidth_node))) {
         goto error;
     }
 
@@ -863,7 +863,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     def->domain = virXPathString("string(./domain[1]/@name)", ctxt);
 
     if ((bandwidthNode = virXPathNode("./bandwidth", ctxt)) != NULL &&
-        (def->bandwidth = virBandwidthDefParseNode(bandwidthNode)) == NULL)
+        (def->bandwidth = virNetDevBandwidthParse(bandwidthNode)) == NULL)
         goto error;
 
     /* Parse bridge information */
@@ -1269,7 +1269,7 @@ virPortGroupDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 4);
     virVirtualPortProfileFormat(buf, def->virtPortProfile);
-    virBandwidthDefFormat(buf, def->bandwidth);
+    virNetDevBandwidthFormat(def->bandwidth, buf);
     virBufferAdjustIndent(buf, -4);
     virBufferAddLit(buf, "  </portgroup>\n");
 }
@@ -1344,7 +1344,7 @@ char *virNetworkDefFormat(const virNetworkDefPtr def)
         goto error;
 
     virBufferAdjustIndent(&buf, 2);
-    if (virBandwidthDefFormat(&buf, def->bandwidth) < 0)
+    if (virNetDevBandwidthFormat(def->bandwidth, &buf) < 0)
         goto error;
     virBufferAdjustIndent(&buf, -2);
 
