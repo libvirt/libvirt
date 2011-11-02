@@ -3635,12 +3635,6 @@ esxDomainGetSchedulerParametersFlags(virDomainPtr domain,
 
     virCheckFlags(0, -1);
 
-    if (*nparams < 3) {
-        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
-                  _("Parameter array must have space for 3 items"));
-        return -1;
-    }
-
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
     }
@@ -3656,7 +3650,7 @@ esxDomainGetSchedulerParametersFlags(virDomainPtr domain,
     }
 
     for (dynamicProperty = virtualMachine->propSet;
-         dynamicProperty != NULL && mask != 7 && i < 3;
+         dynamicProperty != NULL && mask != 7 && i < 3 && i < *nparams;
          dynamicProperty = dynamicProperty->_next) {
         if (STREQ(dynamicProperty->name, "config.cpuAllocation.reservation") &&
             ! (mask & (1 << 0))) {
@@ -4884,12 +4878,6 @@ esxDomainGetMemoryParameters(virDomainPtr domain, virTypedParameterPtr params,
     if (*nparams == 0) {
         *nparams = 1; /* min_guarantee */
         return 0;
-    }
-
-    if (*nparams < 1) {
-        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
-                  _("Parameter array must have space for 1 item"));
-        return -1;
     }
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
