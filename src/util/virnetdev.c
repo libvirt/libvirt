@@ -32,8 +32,12 @@
 #ifdef HAVE_NET_IF_H
 # include <net/if.h>
 #endif
+#include <fcntl.h>
 
 #define VIR_FROM_THIS VIR_FROM_NONE
+#define virNetDevError(code, ...)                                      \
+    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,                \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #ifdef HAVE_NET_IF_H
 static int virNetDevSetupControlFull(const char *ifname,
@@ -221,6 +225,93 @@ int virNetDevGetMAC(const char *ifname,
     return -1;
 }
 #endif
+
+
+
+/**
+ * virNetDevReplaceMacAddress:
+ * @macaddress: new MAC address for interface
+ * @linkdev: name of interface
+ * @stateDir: directory to store old MAC address
+ *
+ * Returns 0 on success, -1 on failure
+ *
+ */
+int
+virNetDevReplaceMacAddress(const char *linkdev,
+                           const unsigned char *macaddress,
+                           const char *stateDir)
+{
+    unsigned char oldmac[6];
+    char *path = NULL;
+    char macstr[VIR_MAC_STRING_BUFLEN];
+
+    if (virNetDevGetMAC(linkdev, oldmac) < 0)
+        return -1;
+
+
+    if (virAsprintf(&path, "%s/%s",
+                    stateDir,
+                    linkdev) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+    virFormatMacAddr(oldmac, macstr);
+    if (virFileWriteStr(path, macstr, O_CREAT|O_TRUNC|O_WRONLY) < 0) {
+        virReportSystemError(errno, _("Unable to preserve mac for %s"),
+                             linkdev);
+        return -1;
+    }
+
+    if (virNetDevSetMAC(linkdev, macaddress) < 0)
+        return -1;
+
+    return 0;
+}
+
+/**
+ * virNetDevRestoreMacAddress:
+ * @linkdev: name of interface
+ * @stateDir: directory containing old MAC address
+ *
+ * Returns 0 on success, -errno on failure.
+ *
+ */
+int
+virNetDevRestoreMacAddress(const char *linkdev,
+                           const char *stateDir)
+{
+    int rc;
+    char *oldmacname = NULL;
+    char *macstr = NULL;
+    char *path = NULL;
+    unsigned char oldmac[6];
+
+    if (virAsprintf(&path, "%s/%s",
+                    stateDir,
+                    linkdev) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (virFileReadAll(path, VIR_MAC_STRING_BUFLEN, &macstr) < 0)
+        return -1;
+
+    if (virParseMacAddr(macstr, &oldmac[0]) != 0) {
+        virNetDevError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot parse MAC address from '%s'"),
+                       oldmacname);
+        VIR_FREE(macstr);
+        return -1;
+    }
+
+    /*reset mac and remove file-ignore results*/
+    rc = virNetDevSetMAC(linkdev, oldmac);
+    ignore_value(unlink(path));
+    VIR_FREE(macstr);
+
+    return rc;
+}
 
 
 #ifdef SIOCGIFMTU

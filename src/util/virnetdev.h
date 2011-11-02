@@ -51,6 +51,18 @@ int virNetDevSetMAC(const char *ifname,
 int virNetDevGetMAC(const char *ifname,
                     unsigned char *macaddr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
+int virNetDevReplaceMacAddress(const char *linkdev,
+                               const unsigned char *macaddress,
+                               const char *stateDir)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_RETURN_CHECK;
+
+int virNetDevRestoreMacAddress(const char *linkdev,
+                               const char *stateDir)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
+
 int virNetDevSetMTU(const char *ifname,
                     int mtu)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
