@@ -576,8 +576,6 @@ virHookPresent;
 
 # interface.h
 ifaceCheck;
-ifaceCtrl;
-ifaceGetFlags;
 ifaceGetIndex;
 ifaceGetMacAddress;
 ifaceGetIPAddress;
@@ -585,7 +583,6 @@ ifaceGetNthParent;
 ifaceGetPhysicalFunction;
 ifaceGetVirtualFunctionIndex;
 ifaceGetVlanID;
-ifaceIsUp;
 ifaceIsVirtualFunction;
 ifaceLinkDel;
 ifaceMacvtapLinkAdd;

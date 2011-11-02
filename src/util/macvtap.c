@@ -50,6 +50,7 @@
 
 #include "util.h"
 #include "macvtap.h"
+#include "virnetdev.h"
 
 VIR_ENUM_IMPL(virMacvtapMode, VIR_MACVTAP_MODE_LAST,
               "vepa",
@@ -342,13 +343,7 @@ create_name:
         goto link_del_exit;
     }
 
-    rc = ifaceUp(cr_ifname);
-    if (rc < 0) {
-        virReportSystemError(errno,
-                             _("cannot 'up' interface %s -- another "
-                             "macvtap device may be 'up' and have the same "
-                             "MAC address"),
-                             cr_ifname);
+    if (virNetDevSetOnline(cr_ifname, true) < 0) {
         rc = -1;
         goto disassociate_exit;
     }
@@ -1129,8 +1124,11 @@ vpAssociatePortProfileId(const char *macvtap_ifname,
                                     (vmOp == VIR_VM_OP_MIGRATE_IN_START)
                                     ? VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE_RR
                                     : VIR_NETDEV_VPORT_PROFILE_LINK_OP_ASSOCIATE);
-        if (vmOp != VIR_VM_OP_MIGRATE_IN_START && !rc)
-            ifaceUp(linkdev);
+        if (vmOp != VIR_VM_OP_MIGRATE_IN_START && !rc) {
+            /* XXX bogus error handling */
+            ignore_value(virNetDevSetOnline(linkdev, true));
+        }
+
         break;
     }
 
@@ -1180,7 +1178,7 @@ vpDisassociatePortProfileId(const char *macvtap_ifname,
         /* avoid disassociating twice */
         if (vmOp == VIR_VM_OP_MIGRATE_IN_FINISH)
             break;
-        ifaceDown(linkdev);
+        ignore_value(virNetDevSetOnline(linkdev, false));
         rc = doPortProfileOp8021Qbh(linkdev, macvtap_macaddr,
                                     virtPort, NULL,
                                     VIR_NETDEV_VPORT_PROFILE_LINK_OP_DISASSOCIATE);

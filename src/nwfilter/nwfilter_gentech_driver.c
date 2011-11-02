@@ -34,7 +34,7 @@
 #include "nwfilter_gentech_driver.h"
 #include "nwfilter_ebiptables_driver.h"
 #include "nwfilter_learnipaddr.h"
-
+#include "virnetdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
@@ -963,7 +963,7 @@ virNWFilterInstantiateFilterLate(virConnectPtr conn,
     if (rc) {
         /* something went wrong... 'DOWN' the interface */
         if ((ifaceCheck(false, ifname, NULL, ifindex) < 0) ||
-            (ifaceDown(ifname) < 0)) {
+            (virNetDevSetOnline(ifname, false) < 0)) {
             /* assuming interface disappeared... */
             _virNWFilterTeardownFilter(ifname);
         }

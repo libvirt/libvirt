@@ -29,18 +29,6 @@ struct nlattr;
 
 # define NET_SYSFS "/sys/class/net/"
 
-int ifaceGetFlags(const char *name, short *flags);
-int ifaceIsUp(const char *name, bool *up);
-
-int ifaceCtrl(const char *name, bool up);
-
-static inline int ifaceUp(const char *name) {
-    return ifaceCtrl(name, true);
-}
-
-static inline int ifaceDown(const char *name) {
-    return ifaceCtrl(name, false);
-}
 
 int ifaceCheck(bool reportError, const char *ifname,
                const unsigned char *macaddr, int ifindex);
