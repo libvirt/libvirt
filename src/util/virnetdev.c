@@ -461,12 +461,12 @@ int virNetDevSetIPv4Address(const char *ifname,
     virSocketAddr broadcast;
     int ret = -1;
 
-    if (!(addrstr = virSocketFormatAddr(addr)))
+    if (!(addrstr = virSocketAddrFormat(addr)))
         goto cleanup;
     /* format up a broadcast address if this is IPv4 */
-    if ((VIR_SOCKET_IS_FAMILY(addr, AF_INET)) &&
+    if ((VIR_SOCKET_ADDR_IS_FAMILY(addr, AF_INET)) &&
         ((virSocketAddrBroadcastByPrefix(addr, prefix, &broadcast) < 0) ||
-         !(bcaststr = virSocketFormatAddr(&broadcast)))) {
+         !(bcaststr = virSocketAddrFormat(&broadcast)))) {
         goto cleanup;
     }
     cmd = virCommandNew(IP_PATH);
@@ -506,7 +506,7 @@ int virNetDevClearIPv4Address(const char *ifname,
     char *addrstr;
     int ret = -1;
 
-    if (!(addrstr = virSocketFormatAddr(addr)))
+    if (!(addrstr = virSocketAddrFormat(addr)))
         goto cleanup;
     cmd = virCommandNew(IP_PATH);
     virCommandAddArgList(cmd, "addr", "del", NULL);

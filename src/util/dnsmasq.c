@@ -95,7 +95,7 @@ addnhostsAdd(dnsmasqAddnHostsfile *addnhostsfile,
     int idx = -1;
     int i;
 
-    if (!(ipstr = virSocketFormatAddr(ip)))
+    if (!(ipstr = virSocketAddrFormat(ip)))
         return -1;
 
     for (i = 0; i < addnhostsfile->nhosts; i++) {
@@ -300,7 +300,7 @@ hostsfileAdd(dnsmasqHostsfile *hostsfile,
     if (VIR_REALLOC_N(hostsfile->hosts, hostsfile->nhosts + 1) < 0)
         goto alloc_error;
 
-    if (!(ipstr = virSocketFormatAddr(ip)))
+    if (!(ipstr = virSocketAddrFormat(ip)))
         return -1;
 
     if (name) {

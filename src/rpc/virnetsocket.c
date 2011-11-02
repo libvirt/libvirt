@@ -163,11 +163,11 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
 
 
     if (localAddr &&
-        !(sock->localAddrStr = virSocketFormatAddrFull(localAddr, true, ";")))
+        !(sock->localAddrStr = virSocketAddrFormatFull(localAddr, true, ";")))
         goto error;
 
     if (remoteAddr &&
-        !(sock->remoteAddrStr = virSocketFormatAddrFull(remoteAddr, true, ";")))
+        !(sock->remoteAddrStr = virSocketAddrFormatFull(remoteAddr, true, ";")))
         goto error;
 
     sock->client = isClient;
@@ -809,7 +809,7 @@ int virNetSocketGetPort(virNetSocketPtr sock)
 {
     int port;
     virMutexLock(&sock->lock);
-    port = virSocketGetPort(&sock->localAddr);
+    port = virSocketAddrGetPort(&sock->localAddr);
     virMutexUnlock(&sock->lock);
     return port;
 }

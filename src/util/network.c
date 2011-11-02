@@ -27,12 +27,12 @@
  * Helpers to extract the IP arrays from the virSocketAddrPtr
  * That part is the less portable of the module
  */
-typedef unsigned char virIPv4Addr[4];
-typedef virIPv4Addr *virIPv4AddrPtr;
-typedef unsigned short virIPv6Addr[8];
-typedef virIPv6Addr *virIPv6AddrPtr;
+typedef unsigned char virSocketAddrIPv4[4];
+typedef virSocketAddrIPv4 *virSocketAddrIPv4Ptr;
+typedef unsigned short virSocketAddrIPv6[8];
+typedef virSocketAddrIPv6 *virSocketAddrIPv6Ptr;
 
-static int getIPv4Addr(virSocketAddrPtr addr, virIPv4AddrPtr tab) {
+static int virSocketAddrGetIPv4Addr(virSocketAddrPtr addr, virSocketAddrIPv4Ptr tab) {
     unsigned long val;
     int i;
 
@@ -49,7 +49,7 @@ static int getIPv4Addr(virSocketAddrPtr addr, virIPv4AddrPtr tab) {
     return(0);
 }
 
-static int getIPv6Addr(virSocketAddrPtr addr, virIPv6AddrPtr tab) {
+static int virSocketAddrGetIPv6Addr(virSocketAddrPtr addr, virSocketAddrIPv6Ptr tab) {
     int i;
 
     if ((addr == NULL) || (tab == NULL) || (addr->data.stor.ss_family != AF_INET6))
@@ -64,7 +64,7 @@ static int getIPv6Addr(virSocketAddrPtr addr, virIPv6AddrPtr tab) {
 }
 
 /**
- * virSocketParseAddr:
+ * virSocketAddrParse:
  * @val: a numeric network address IPv4 or IPv6
  * @addr: where to store the return value, optional.
  * @family: address family to pass down to getaddrinfo
@@ -74,8 +74,7 @@ static int getIPv6Addr(virSocketAddrPtr addr, virIPv6AddrPtr tab) {
  *
  * Returns the length of the network address or -1 in case of error.
  */
-int
-virSocketParseAddr(const char *val, virSocketAddrPtr addr, int family) {
+int virSocketAddrParse(virSocketAddrPtr addr, const char *val, int family) {
     int len;
     struct addrinfo hints;
     struct addrinfo *res = NULL;
@@ -114,7 +113,7 @@ virSocketParseAddr(const char *val, virSocketAddrPtr addr, int family) {
 }
 
 /*
- * virSocketParseIpv4Addr:
+ * virSocketAddrParseIPv4:
  * @val: an IPv4 numeric address
  * @addr: the location to store the result
  *
@@ -123,12 +122,12 @@ virSocketParseAddr(const char *val, virSocketAddrPtr addr, int family) {
  * Returns the length of the network address or -1 in case of error.
  */
 int
-virSocketParseIpv4Addr(const char *val, virSocketAddrPtr addr) {
-    return(virSocketParseAddr(val, addr, AF_INET));
+virSocketAddrParseIPv4(virSocketAddrPtr addr, const char *val) {
+    return virSocketAddrParse(addr, val, AF_INET);
 }
 
 /*
- * virSocketParseIpv6Addr:
+ * virSocketAddrParseIPv6:
  * @val: an IPv6 numeric address
  * @addr: the location to store the result
  *
@@ -137,12 +136,12 @@ virSocketParseIpv4Addr(const char *val, virSocketAddrPtr addr) {
  * Returns the length of the network address or -1 in case of error.
  */
 int
-virSocketParseIpv6Addr(const char *val, virSocketAddrPtr addr) {
-    return(virSocketParseAddr(val, addr, AF_INET6));
+virSocketAddrParseIPv6(virSocketAddrPtr addr, const char *val) {
+    return virSocketAddrParse(addr, val, AF_INET6);
 }
 
 /*
- * virSocketFormatAddr:
+ * virSocketAddrFormat:
  * @addr: an initialized virSocketAddrPtr
  *
  * Returns a string representation of the given address
@@ -150,13 +149,13 @@ virSocketParseIpv6Addr(const char *val, virSocketAddrPtr addr) {
  * Caller must free the returned string
  */
 char *
-virSocketFormatAddr(virSocketAddrPtr addr) {
-    return virSocketFormatAddrFull(addr, false, NULL);
+virSocketAddrFormat(virSocketAddrPtr addr) {
+    return virSocketAddrFormatFull(addr, false, NULL);
 }
 
 
 /*
- * virSocketFormatAddrFull:
+ * virSocketAddrFormatFull:
  * @addr: an initialized virSocketAddrPtr
  * @withService: if true, then service info is appended
  * @separator: separator between hostname & service.
@@ -166,7 +165,7 @@ virSocketFormatAddr(virSocketAddrPtr addr) {
  * Caller must free the returned string
  */
 char *
-virSocketFormatAddrFull(virSocketAddrPtr addr,
+virSocketAddrFormatFull(virSocketAddrPtr addr,
                         bool withService,
                         const char *separator)
 {
@@ -221,7 +220,7 @@ no_memory:
 
 
 /*
- * virSocketSetPort:
+ * virSocketAddrSetPort:
  * @addr: an initialized virSocketAddrPtr
  * @port: the port number to set
  *
@@ -230,7 +229,7 @@ no_memory:
  * Returns 0 on success, -1 on failure
  */
 int
-virSocketSetPort(virSocketAddrPtr addr, int port) {
+virSocketAddrSetPort(virSocketAddrPtr addr, int port) {
     if (addr == NULL)
         return -1;
 
@@ -259,7 +258,7 @@ virSocketSetPort(virSocketAddrPtr addr, int port) {
  * Returns -1 if @addr is invalid
  */
 int
-virSocketGetPort(virSocketAddrPtr addr) {
+virSocketAddrGetPort(virSocketAddrPtr addr) {
     if (addr == NULL)
         return -1;
 
@@ -283,7 +282,7 @@ virSocketGetPort(virSocketAddrPtr addr) {
  * Returns 0 in case of success and -1 in case of error
  */
 int virSocketAddrIsNetmask(virSocketAddrPtr netmask) {
-    int n = virSocketGetNumNetmaskBits(netmask);
+    int n = virSocketAddrGetNumNetmaskBits(netmask);
     if (n < 0)
         return -1;
     return 0;
@@ -429,8 +428,8 @@ virSocketAddrBroadcastByPrefix(const virSocketAddrPtr addr,
  * Returns 1 in case of success and 0 in case of failure and
  *         -1 in case of error
  */
-int virSocketCheckNetmask(virSocketAddrPtr addr1, virSocketAddrPtr addr2,
-                          virSocketAddrPtr netmask) {
+int virSocketAddrCheckNetmask(virSocketAddrPtr addr1, virSocketAddrPtr addr2,
+                              virSocketAddrPtr netmask) {
     int i;
 
     if ((addr1 == NULL) || (addr2 == NULL) || (netmask == NULL))
@@ -443,11 +442,11 @@ int virSocketCheckNetmask(virSocketAddrPtr addr1, virSocketAddrPtr addr2,
         return(-1);
 
     if (addr1->data.stor.ss_family == AF_INET) {
-        virIPv4Addr t1, t2, tm;
+        virSocketAddrIPv4 t1, t2, tm;
 
-        if ((getIPv4Addr(addr1, &t1) < 0) ||
-            (getIPv4Addr(addr2, &t2) < 0) ||
-            (getIPv4Addr(netmask, &tm) < 0))
+        if ((virSocketAddrGetIPv4Addr(addr1, &t1) < 0) ||
+            (virSocketAddrGetIPv4Addr(addr2, &t2) < 0) ||
+            (virSocketAddrGetIPv4Addr(netmask, &tm) < 0))
             return(-1);
 
         for (i = 0;i < 4;i++) {
@@ -456,11 +455,11 @@ int virSocketCheckNetmask(virSocketAddrPtr addr1, virSocketAddrPtr addr2,
         }
 
     } else if (addr1->data.stor.ss_family == AF_INET6) {
-        virIPv6Addr t1, t2, tm;
+        virSocketAddrIPv6 t1, t2, tm;
 
-        if ((getIPv6Addr(addr1, &t1) < 0) ||
-            (getIPv6Addr(addr2, &t2) < 0) ||
-            (getIPv6Addr(netmask, &tm) < 0))
+        if ((virSocketAddrGetIPv6Addr(addr1, &t1) < 0) ||
+            (virSocketAddrGetIPv6Addr(addr2, &t2) < 0) ||
+            (virSocketAddrGetIPv6Addr(netmask, &tm) < 0))
             return(-1);
 
         for (i = 0;i < 8;i++) {
@@ -486,7 +485,7 @@ int virSocketCheckNetmask(virSocketAddrPtr addr1, virSocketAddrPtr addr2,
  *
  * Returns the size of the range or -1 in case of failure
  */
-int virSocketGetRange(virSocketAddrPtr start, virSocketAddrPtr end) {
+int virSocketAddrGetRange(virSocketAddrPtr start, virSocketAddrPtr end) {
     int ret = 0, i;
 
     if ((start == NULL) || (end == NULL))
@@ -495,10 +494,10 @@ int virSocketGetRange(virSocketAddrPtr start, virSocketAddrPtr end) {
         return(-1);
 
     if (start->data.stor.ss_family == AF_INET) {
-        virIPv4Addr t1, t2;
+        virSocketAddrIPv4 t1, t2;
 
-        if ((getIPv4Addr(start, &t1) < 0) ||
-            (getIPv4Addr(end, &t2) < 0))
+        if ((virSocketAddrGetIPv4Addr(start, &t1) < 0) ||
+            (virSocketAddrGetIPv4Addr(end, &t2) < 0))
             return(-1);
 
         for (i = 0;i < 2;i++) {
@@ -510,10 +509,10 @@ int virSocketGetRange(virSocketAddrPtr start, virSocketAddrPtr end) {
             return(-1);
         ret++;
     } else if (start->data.stor.ss_family == AF_INET6) {
-        virIPv6Addr t1, t2;
+        virSocketAddrIPv6 t1, t2;
 
-        if ((getIPv6Addr(start, &t1) < 0) ||
-            (getIPv6Addr(end, &t2) < 0))
+        if ((virSocketAddrGetIPv6Addr(start, &t1) < 0) ||
+            (virSocketAddrGetIPv6Addr(end, &t2) < 0))
             return(-1);
 
         for (i = 0;i < 7;i++) {
@@ -532,7 +531,7 @@ int virSocketGetRange(virSocketAddrPtr start, virSocketAddrPtr end) {
 
 
 /**
- * virGetNumNetmaskBits
+ * virSocketAddrGetNumNetmaskBits
  * @netmask: the presumed netmask
  *
  * Get the number of netmask bits in a netmask.
@@ -540,16 +539,16 @@ int virSocketGetRange(virSocketAddrPtr start, virSocketAddrPtr end) {
  * Returns the number of bits in the netmask or -1 if an error occurred
  * or the netmask is invalid.
  */
-int virSocketGetNumNetmaskBits(const virSocketAddrPtr netmask)
+int virSocketAddrGetNumNetmaskBits(const virSocketAddrPtr netmask)
 {
     int i, j;
     int c = 0;
 
     if (netmask->data.stor.ss_family == AF_INET) {
-        virIPv4Addr tm;
+        virSocketAddrIPv4 tm;
         uint8_t bit;
 
-        if (getIPv4Addr(netmask, &tm) < 0)
+        if (virSocketAddrGetIPv4Addr(netmask, &tm) < 0)
             return -1;
 
         for (i = 0; i < 4; i++)
@@ -580,10 +579,10 @@ int virSocketGetNumNetmaskBits(const virSocketAddrPtr netmask)
 
         return c;
     } else if (netmask->data.stor.ss_family == AF_INET6) {
-        virIPv6Addr tm;
+        virSocketAddrIPv6 tm;
         uint16_t bit;
 
-        if (getIPv6Addr(netmask, &tm) < 0)
+        if (virSocketAddrGetIPv6Addr(netmask, &tm) < 0)
             return -1;
 
         for (i = 0; i < 8; i++)

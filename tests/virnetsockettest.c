@@ -25,6 +25,7 @@
 #ifdef HAVE_IFADDRS_H
 # include <ifaddrs.h>
 #endif
+#include <netdb.h>
 
 #include "testutils.h"
 #include "util.h"

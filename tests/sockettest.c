@@ -40,7 +40,7 @@ static int testParse(virSocketAddr *addr, const char *addrstr, int family, bool 
 {
     int rc;
 
-    rc = virSocketParseAddr(addrstr, addr, family);
+    rc = virSocketAddrParse(addr, addrstr, family);
 
     if (rc < 0)
         return pass ? -1 : 0;
@@ -52,7 +52,7 @@ static int testFormat(virSocketAddr *addr, const char *addrstr, bool pass)
 {
     char *newaddrstr;
 
-    newaddrstr = virSocketFormatAddr(addr);
+    newaddrstr = virSocketAddrFormat(addr);
     if (!newaddrstr)
         return pass ? -1 : 0;
 
@@ -95,12 +95,12 @@ static int testRange(const char *saddrstr, const char *eaddrstr, int size, bool 
     virSocketAddr saddr;
     virSocketAddr eaddr;
 
-    if (virSocketParseAddr(saddrstr, &saddr, AF_UNSPEC) < 0)
+    if (virSocketAddrParse(&saddr, saddrstr, AF_UNSPEC) < 0)
         return -1;
-    if (virSocketParseAddr(eaddrstr, &eaddr, AF_UNSPEC) < 0)
+    if (virSocketAddrParse(&eaddr, eaddrstr, AF_UNSPEC) < 0)
         return -1;
 
-    int gotsize = virSocketGetRange(&saddr, &eaddr);
+    int gotsize = virSocketAddrGetRange(&saddr, &eaddr);
     VIR_DEBUG("Size want %d vs got %d", size, gotsize);
     if (gotsize < 0 || gotsize != size) {
         return pass ? -1 : 0;
@@ -129,14 +129,14 @@ static int testNetmask(const char *addr1str, const char *addr2str,
     virSocketAddr addr2;
     virSocketAddr netmask;
 
-    if (virSocketParseAddr(addr1str, &addr1, AF_UNSPEC) < 0)
+    if (virSocketAddrParse(&addr1, addr1str, AF_UNSPEC) < 0)
         return -1;
-    if (virSocketParseAddr(addr2str, &addr2, AF_UNSPEC) < 0)
+    if (virSocketAddrParse(&addr2, addr2str, AF_UNSPEC) < 0)
         return -1;
-    if (virSocketParseAddr(netmaskstr, &netmask, AF_UNSPEC) < 0)
+    if (virSocketAddrParse(&netmask, netmaskstr, AF_UNSPEC) < 0)
         return -1;
 
-    int ret = virSocketCheckNetmask(&addr1, &addr2, &netmask);
+    int ret = virSocketAddrCheckNetmask(&addr1, &addr2, &netmask);
 
     if (ret <= 0) {
         return pass ? -1 : 0;

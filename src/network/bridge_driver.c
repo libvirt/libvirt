@@ -432,7 +432,7 @@ networkBuildDnsmasqHostsfile(dnsmasqContext *dctx,
 
     for (i = 0; i < ipdef->nhosts; i++) {
         virNetworkDHCPHostDefPtr host = &(ipdef->hosts[i]);
-        if ((host->mac) && VIR_SOCKET_HAS_ADDR(&host->ip))
+        if ((host->mac) && VIR_SOCKET_ADDR_VALID(&host->ip))
             if (dnsmasqAddDhcpHost(dctx, host->mac, &host->ip, host->name) < 0)
                 return -1;
     }
@@ -440,7 +440,7 @@ networkBuildDnsmasqHostsfile(dnsmasqContext *dctx,
     if (dnsdef) {
         for (i = 0; i < dnsdef->nhosts; i++) {
             virNetworkDNSHostsDefPtr host = &(dnsdef->hosts[i]);
-            if (VIR_SOCKET_HAS_ADDR(&host->ip)) {
+            if (VIR_SOCKET_ADDR_VALID(&host->ip)) {
                 for (j = 0; j < host->nnames; j++)
                     if (dnsmasqAddHost(dctx, &host->ip, host->names[j]) < 0)
                         return -1;
@@ -543,7 +543,7 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
     for (ii = 0;
          (tmpipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
          ii++) {
-        char *ipaddr = virSocketFormatAddr(&tmpipdef->address);
+        char *ipaddr = virSocketAddrFormat(&tmpipdef->address);
         if (!ipaddr)
             goto cleanup;
         virCommandAddArgList(cmd, "--listen-address", ipaddr, NULL);
@@ -552,10 +552,10 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
 
     if (ipdef) {
         for (r = 0 ; r < ipdef->nranges ; r++) {
-            char *saddr = virSocketFormatAddr(&ipdef->ranges[r].start);
+            char *saddr = virSocketAddrFormat(&ipdef->ranges[r].start);
             if (!saddr)
                 goto cleanup;
-            char *eaddr = virSocketFormatAddr(&ipdef->ranges[r].end);
+            char *eaddr = virSocketAddrFormat(&ipdef->ranges[r].end);
             if (!eaddr) {
                 VIR_FREE(saddr);
                 goto cleanup;
@@ -564,8 +564,8 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
             virCommandAddArgFormat(cmd, "%s,%s", saddr, eaddr);
             VIR_FREE(saddr);
             VIR_FREE(eaddr);
-            nbleases += virSocketGetRange(&ipdef->ranges[r].start,
-                                          &ipdef->ranges[r].end);
+            nbleases += virSocketAddrGetRange(&ipdef->ranges[r].start,
+                                              &ipdef->ranges[r].end);
         }
 
         /*
@@ -574,7 +574,7 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
          * dnsmasq.
          */
         if (!ipdef->nranges && ipdef->nhosts) {
-            char *bridgeaddr = virSocketFormatAddr(&ipdef->address);
+            char *bridgeaddr = virSocketAddrFormat(&ipdef->address);
             if (!bridgeaddr)
                 goto cleanup;
             virCommandAddArg(cmd, "--dhcp-range");
@@ -615,8 +615,8 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         }
         if (ipdef->bootfile) {
             virCommandAddArg(cmd, "--dhcp-boot");
-            if (VIR_SOCKET_HAS_ADDR(&ipdef->bootserver)) {
-                char *bootserver = virSocketFormatAddr(&ipdef->bootserver);
+            if (VIR_SOCKET_ADDR_VALID(&ipdef->bootserver)) {
+                char *bootserver = virSocketAddrFormat(&ipdef->bootserver);
 
                 if (!bootserver)
                     goto cleanup;
@@ -815,7 +815,7 @@ networkStartRadvd(virNetworkObjPtr network)
                                network->def->bridge);
             goto cleanup;
         }
-        if (!(netaddr = virSocketFormatAddr(&ipdef->address)))
+        if (!(netaddr = virSocketAddrFormat(&ipdef->address)))
             goto cleanup;
         virBufferAsprintf(&configbuf,
                           "  prefix %s/%d\n"
@@ -1389,9 +1389,9 @@ networkAddIpSpecificIptablesRules(struct network_driver *driver,
      */
 
     if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT) {
-        if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET))
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET))
             return networkAddMasqueradingIptablesRules(driver, network, ipdef);
-        else if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET6))
+        else if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
             return networkAddRoutingIptablesRules(driver, network, ipdef);
     } else if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE) {
         return networkAddRoutingIptablesRules(driver, network, ipdef);
@@ -1405,9 +1405,9 @@ networkRemoveIpSpecificIptablesRules(struct network_driver *driver,
                                      virNetworkIpDefPtr ipdef)
 {
     if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT) {
-        if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET))
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET))
             networkRemoveMasqueradingIptablesRules(driver, network, ipdef);
-        else if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET6))
+        else if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
             networkRemoveRoutingIptablesRules(driver, network, ipdef);
     } else if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE) {
         networkRemoveRoutingIptablesRules(driver, network, ipdef);
@@ -1746,9 +1746,9 @@ networkStartNetworkVirtual(struct network_driver *driver,
     for (ii = 0;
          (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
          ii++) {
-        if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET))
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET))
             v4present = true;
-        if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET6))
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
             v6present = true;
 
         /* Add the IP address/netmask to the bridge */
@@ -2302,7 +2302,7 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
     for (ii = 0;
          (ipdef = virNetworkDefGetIpByIndex(def, AF_UNSPEC, ii));
          ii++) {
-        if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET)) {
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET)) {
             if (ipdef->nranges || ipdef->nhosts) {
                 if (ipv4def) {
                     networkReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -2366,10 +2366,10 @@ static int networkUndefine(virNetworkPtr net) {
     for (ii = 0;
          (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
          ii++) {
-        if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET)) {
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET)) {
             if (ipdef->nranges || ipdef->nhosts)
                 dhcp_present = true;
-        } else if (VIR_SOCKET_IS_FAMILY(&ipdef->address, AF_INET6)) {
+        } else if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6)) {
             v6present = true;
         }
     }
@@ -3165,7 +3165,7 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
     }
 
     if (addrptr &&
-        (*netaddr = virSocketFormatAddr(addrptr))) {
+        (*netaddr = virSocketAddrFormat(addrptr))) {
         ret = 0;
     }
 

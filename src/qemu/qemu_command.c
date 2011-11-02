@@ -4440,10 +4440,10 @@ qemuBuildCommandLine(virConnectPtr conn,
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
 
-            addr = virSocketFormatAddr(channel->target.addr);
+            addr = virSocketAddrFormat(channel->target.addr);
             if (!addr)
                 goto error;
-            port = virSocketGetPort(channel->target.addr);
+            port = virSocketAddrGetPort(channel->target.addr);
 
             virCommandAddArg(cmd, "-netdev");
             virCommandAddArgFormat(cmd,

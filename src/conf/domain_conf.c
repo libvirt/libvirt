@@ -3685,7 +3685,7 @@ virDomainChrDefParseTargetXML(virCapsPtr caps,
                 goto error;
             }
 
-            if (virSocketParseAddr(addrStr, def->target.addr, AF_UNSPEC) < 0)
+            if (virSocketAddrParse(def->target.addr, addrStr, AF_UNSPEC) < 0)
                 goto error;
 
             if (def->target.addr->data.stor.ss_family != AF_INET) {
@@ -3709,7 +3709,7 @@ virDomainChrDefParseTargetXML(virCapsPtr caps,
                 goto error;
             }
 
-            virSocketSetPort(def->target.addr, port);
+            virSocketAddrSetPort(def->target.addr, port);
             break;
 
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
@@ -8379,8 +8379,8 @@ static bool virDomainChannelDefCheckABIStability(virDomainChrDefPtr src,
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
         if (memcmp(src->target.addr, dst->target.addr,
                    sizeof(*src->target.addr)) != 0) {
-            char *saddr = virSocketFormatAddrFull(src->target.addr, true, ":");
-            char *daddr = virSocketFormatAddrFull(dst->target.addr, true, ":");
+            char *saddr = virSocketAddrFormatFull(src->target.addr, true, ":");
+            char *daddr = virSocketAddrFormatFull(dst->target.addr, true, ":");
             virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                  _("Target channel addr %s does not match source %s"),
                                  NULLSTR(daddr), NULLSTR(saddr));
@@ -10035,14 +10035,14 @@ virDomainChrDefFormat(virBufferPtr buf,
 
         switch (def->targetType) {
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD: {
-            int port = virSocketGetPort(def->target.addr);
+            int port = virSocketAddrGetPort(def->target.addr);
             if (port < 0) {
                 virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                      _("Unable to format guestfwd port"));
                 return -1;
             }
 
-            const char *addr = virSocketFormatAddr(def->target.addr);
+            const char *addr = virSocketAddrFormat(def->target.addr);
             if (addr == NULL)
                 return -1;
 

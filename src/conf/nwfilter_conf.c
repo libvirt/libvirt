@@ -1523,8 +1523,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                         break;
 
                         case DATATYPE_IPADDR:
-                            if (virSocketParseIpv4Addr(prop,
-                                                       &item->u.ipaddr) < 0)
+                            if (virSocketAddrParseIPv4(&item->u.ipaddr, prop) < 0)
                                 rc = -1;
                             found = 1;
                         break;
@@ -1539,10 +1538,10 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                                 } else
                                     rc = -1;
                             } else {
-                                if (virSocketParseIpv4Addr(prop, &ipaddr) < 0) {
+                                if (virSocketAddrParseIPv4(&ipaddr, prop) < 0) {
                                     rc = -1;
                                 } else {
-                                    int_val = virSocketGetNumNetmaskBits(&ipaddr);
+                                    int_val = virSocketAddrGetNumNetmaskBits(&ipaddr);
                                     if (int_val >= 0)
                                         item->u.u8 = int_val;
                                     else
@@ -1571,8 +1570,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                         break;
 
                         case DATATYPE_IPV6ADDR:
-                            if (virSocketParseIpv6Addr(prop,
-                                                       &item->u.ipaddr) < 0)
+                            if (virSocketAddrParseIPv6(&item->u.ipaddr, prop) < 0)
                                 rc = -1;
                             found = 1;
                         break;
@@ -1587,10 +1585,10 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                                 } else
                                     rc = -1;
                             } else {
-                                if (virSocketParseIpv6Addr(prop, &ipaddr) < 0) {
+                                if (virSocketAddrParseIPv6(&ipaddr, prop) < 0) {
                                     rc = -1;
                                 } else {
-                                    int_val = virSocketGetNumNetmaskBits(&ipaddr);
+                                    int_val = virSocketAddrGetNumNetmaskBits(&ipaddr);
                                     if (int_val >= 0)
                                         item->u.u8 = int_val;
                                     else
@@ -2596,7 +2594,7 @@ virNWFilterObjDeleteDef(virNWFilterObjPtr nwfilter)
 static void
 virNWIPAddressFormat(virBufferPtr buf, virSocketAddrPtr ipaddr)
 {
-    char *output = virSocketFormatAddr(ipaddr);
+    char *output = virSocketAddrFormat(ipaddr);
 
     if (output) {
         virBufferAdd(buf, output, -1);

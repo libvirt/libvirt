@@ -231,7 +231,7 @@ testTLSGenerateCert(struct testTLSCertReq *req)
         virSocketAddr addr;
         char *data;
         int len;
-        if (virSocketParseAddr(req->ipaddr1, &addr, 0) < 0) {
+        if (virSocketAddrParse(&addr, req->ipaddr1, 0) < 0) {
             VIR_WARN("Cannot parse %s", req->ipaddr1);
             abort();
         }
@@ -254,7 +254,7 @@ testTLSGenerateCert(struct testTLSCertReq *req)
         virSocketAddr addr;
         char *data;
         int len;
-        if (virSocketParseAddr(req->ipaddr2, &addr, 0) < 0) {
+        if (virSocketAddrParse(&addr, req->ipaddr2, 0) < 0) {
             VIR_WARN("Cannot parse %s", req->ipaddr2);
             abort();
         }

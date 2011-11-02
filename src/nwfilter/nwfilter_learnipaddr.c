@@ -630,7 +630,7 @@ learnIPAddressThread(void *arg)
         sa.data.inet4.sin_addr.s_addr = vmaddr;
         char *inetaddr;
 
-        if ((inetaddr = virSocketFormatAddr(&sa))!= NULL) {
+        if ((inetaddr = virSocketAddrFormat(&sa))!= NULL) {
             virNWFilterAddIpAddrForIfname(req->ifname, inetaddr);
 
             ret = virNWFilterInstantiateFilterLate(NULL,

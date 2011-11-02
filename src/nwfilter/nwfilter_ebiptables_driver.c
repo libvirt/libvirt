@@ -196,7 +196,7 @@ _printDataType(virNWFilterHashTablePtr vars,
 
     switch (item->datatype) {
     case DATATYPE_IPADDR:
-        data = virSocketFormatAddr(&item->u.ipaddr);
+        data = virSocketAddrFormat(&item->u.ipaddr);
         if (!data)
             return 1;
         if (snprintf(buf, bufsize, "%s", data) >= bufsize) {
@@ -209,7 +209,7 @@ _printDataType(virNWFilterHashTablePtr vars,
     break;
 
     case DATATYPE_IPV6ADDR:
-        data = virSocketFormatAddr(&item->u.ipaddr);
+        data = virSocketAddrFormat(&item->u.ipaddr);
         if (!data)
             return 1;
 
