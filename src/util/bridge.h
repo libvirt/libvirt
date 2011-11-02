@@ -112,6 +112,9 @@ int virNetDevTapCreate(char **ifname,
 int virNetDevSetMAC(const char *ifname,
                     const unsigned char *macaddr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+int virNetDevGetMAC(const char *ifname,
+                    unsigned char *macaddr)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 int virNetDevSetMTU(const char *ifname,
                     int mtu)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;

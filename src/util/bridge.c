@@ -358,6 +358,41 @@ cleanup:
 }
 
 /**
+ * virNetDevGetMAC:
+ * @ifname: interface name to set MTU for
+ * @macaddr: MAC address (VIR_MAC_BUFLEN in size)
+ *
+ * This function gets the @macaddr for a given interface @ifname.
+ *
+ * Returns 0 in case of success or -1 on failure
+ */
+int virNetDevGetMAC(const char *ifname,
+                    unsigned char *macaddr)
+{
+    int fd = -1;
+    int ret = -1;
+    struct ifreq ifr;
+
+    if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
+        return -1;
+
+    if (ioctl(fd, SIOCGIFHWADDR, &ifr) < 0) {
+        virReportSystemError(errno,
+                             _("Cannot get interface MAC on '%s'"),
+                             ifname);
+        goto cleanup;
+    }
+
+    memcpy(macaddr, ifr.ifr_hwaddr.sa_data, VIR_MAC_BUFLEN);
+
+    ret = 0;
+
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+
+/**
  * virNetDevGetMTU:
  * @ifname: interface name get MTU for
  *
