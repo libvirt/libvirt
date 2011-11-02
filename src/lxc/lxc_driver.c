@@ -1194,7 +1194,6 @@ static int lxcSetupInterfaces(virConnectPtr conn,
 {
     int rc = -1, i;
     char *bridge = NULL;
-    int ret;
 
     for (i = 0 ; i < def->nnets ; i++) {
         char *parentVeth;
@@ -1270,12 +1269,8 @@ static int lxcSetupInterfaces(virConnectPtr conn,
                 goto error_exit;
         }
 
-        if ((ret = brAddInterface(bridge, parentVeth)) != 0) {
-            virReportSystemError(ret,
-                                 _("Failed to add %s device to %s"),
-                                 parentVeth, bridge);
+        if (brAddInterface(bridge, parentVeth) < 0)
             goto error_exit;
-        }
 
         if (vethInterfaceUpOrDown(parentVeth, 1) < 0)
             goto error_exit;

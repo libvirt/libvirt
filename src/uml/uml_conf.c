@@ -122,7 +122,6 @@ umlConnectTapDevice(virConnectPtr conn,
                     const char *bridge)
 {
     bool template_ifname = false;
-    int err;
     unsigned char tapmac[VIR_MAC_BUFLEN];
 
     if (!net->ifname ||
@@ -137,31 +136,8 @@ umlConnectTapDevice(virConnectPtr conn,
 
     memcpy(tapmac, net->mac, VIR_MAC_BUFLEN);
     tapmac[0] = 0xFE; /* Discourage bridge from using TAP dev MAC */
-    if ((err = brAddTap(bridge,
-                        &net->ifname,
-                        tapmac,
-                        0,
-                        true,
-                        NULL))) {
-        if (err == ENOTSUP) {
-            /* In this particular case, give a better diagnostic. */
-            umlReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to add tap interface to bridge. "
-                             "%s is not a bridge device"), bridge);
-        } else if (err == ENOENT) {
-            virReportSystemError(err, "%s",
-                    _("Failed to add tap interface to bridge. Your kernel "
-                      "is missing the 'tun' module or CONFIG_TUN, or you need "
-                      "to add the /dev/net/tun device node."));
-        } else if (template_ifname) {
-            virReportSystemError(err,
-                                 _("Failed to add tap interface to bridge '%s'"),
-                                 bridge);
-        } else {
-            virReportSystemError(err,
-                                 _("Failed to add tap interface '%s' to bridge '%s'"),
-                                 net->ifname, bridge);
-        }
+    if (brAddTap(bridge, &net->ifname, tapmac,
+                 0, true, NULL) < 0) {
         if (template_ifname)
             VIR_FREE(net->ifname);
         goto error;

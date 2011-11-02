@@ -1678,12 +1678,8 @@ networkAddAddrToBridge(virNetworkObjPtr network,
     }
 
     if (brAddInetAddress(network->def->bridge,
-                         &ipdef->address, prefix) < 0) {
-        networkReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot set IP address on bridge '%s'"),
-                           network->def->bridge);
+                         &ipdef->address, prefix) < 0)
         return -1;
-    }
 
     return 0;
 }
@@ -1692,7 +1688,7 @@ static int
 networkStartNetworkVirtual(struct network_driver *driver,
                           virNetworkObjPtr network)
 {
-    int ii, err;
+    int ii;
     bool v4present = false, v6present = false;
     virErrorPtr save_err = NULL;
     virNetworkIpDefPtr ipdef;
@@ -1703,12 +1699,8 @@ networkStartNetworkVirtual(struct network_driver *driver,
         return -1;
 
     /* Create and configure the bridge device */
-    if ((err = brAddBridge(network->def->bridge))) {
-        virReportSystemError(err,
-                             _("cannot create bridge '%s'"),
-                             network->def->bridge);
+    if (brAddBridge(network->def->bridge) < 0)
         return -1;
-    }
 
     if (network->def->mac_specified) {
         /* To set a mac for the bridge, we need to define a dummy tap
@@ -1722,12 +1714,8 @@ networkStartNetworkVirtual(struct network_driver *driver,
             virReportOOMError();
             goto err0;
         }
-        if ((err = brAddTap(network->def->bridge,
-                            &macTapIfName, network->def->mac, 0, false, NULL))) {
-            virReportSystemError(err,
-                                 _("cannot create dummy tap device '%s' to set mac"
-                                   " address on bridge '%s'"),
-                                 macTapIfName, network->def->bridge);
+        if (brAddTap(network->def->bridge,
+                     &macTapIfName, network->def->mac, 0, false, NULL) < 0) {
             VIR_FREE(macTapIfName);
             goto err0;
         }
@@ -1735,20 +1723,12 @@ networkStartNetworkVirtual(struct network_driver *driver,
 
     /* Set bridge options */
     if (brSetForwardDelay(network->def->bridge,
-                          network->def->delay)) {
-        networkReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot set forward delay on bridge '%s'"),
-                           network->def->bridge);
+                          network->def->delay) < 0)
         goto err1;
-    }
 
     if (brSetEnableSTP(network->def->bridge,
-                       network->def->stp ? 1 : 0)) {
-        networkReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot set STP '%s' on bridge '%s'"),
-                           network->def->stp ? "on" : "off", network->def->bridge);
+                       network->def->stp ? 1 : 0) < 0)
         goto err1;
-    }
 
     /* Disable IPv6 on the bridge if there are no IPv6 addresses
      * defined, and set other IPv6 sysctl tunables appropriately.
@@ -1775,12 +1755,8 @@ networkStartNetworkVirtual(struct network_driver *driver,
     }
 
     /* Bring up the bridge interface */
-    if ((err = brSetInterfaceUp(network->def->bridge, 1))) {
-        virReportSystemError(err,
-                             _("failed to bring the bridge '%s' up"),
-                             network->def->bridge);
+    if (brSetInterfaceUp(network->def->bridge, 1) < 0)
         goto err2;
-    }
 
     /* If forwardType != NONE, turn on global IP forwarding */
     if (network->def->forwardType != VIR_NETWORK_FORWARD_NONE &&
@@ -1828,11 +1804,7 @@ networkStartNetworkVirtual(struct network_driver *driver,
  err3:
     if (!save_err)
         save_err = virSaveLastError();
-    if ((err = brSetInterfaceUp(network->def->bridge, 0))) {
-        char ebuf[1024];
-        VIR_WARN("Failed to bring down bridge '%s' : %s",
-                 network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
-    }
+    ignore_value(brSetInterfaceUp(network->def->bridge, 0));
 
  err2:
     if (!save_err)
@@ -1843,22 +1815,13 @@ networkStartNetworkVirtual(struct network_driver *driver,
     if (!save_err)
         save_err = virSaveLastError();
 
-    if ((err = brDeleteTap(macTapIfName))) {
-        char ebuf[1024];
-        VIR_WARN("Failed to delete dummy tap device '%s' on bridge '%s' : %s",
-                 macTapIfName, network->def->bridge,
-                 virStrerror(err, ebuf, sizeof ebuf));
-    }
+    ignore_value(brDeleteTap(macTapIfName));
     VIR_FREE(macTapIfName);
 
  err0:
     if (!save_err)
         save_err = virSaveLastError();
-    if ((err = brDeleteBridge(network->def->bridge))) {
-        char ebuf[1024];
-        VIR_WARN("Failed to delete bridge '%s' : %s",
-                 network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
-    }
+    ignore_value(brDeleteBridge(network->def->bridge));
 
     if (save_err) {
         virSetError(save_err);
@@ -1870,9 +1833,6 @@ networkStartNetworkVirtual(struct network_driver *driver,
 static int networkShutdownNetworkVirtual(struct network_driver *driver,
                                         virNetworkObjPtr network)
 {
-    int err;
-    char ebuf[1024];
-
     if (virBandwidthDisable(network->def->bridge, true) < 0) {
         VIR_WARN("Failed to disable QoS on %s",
                  network->def->name);
@@ -1899,26 +1859,16 @@ static int networkShutdownNetworkVirtual(struct network_driver *driver,
         if (!macTapIfName) {
             virReportOOMError();
         } else {
-            if ((err = brDeleteTap(macTapIfName))) {
-                VIR_WARN("Failed to delete dummy tap device '%s' on bridge '%s' : %s",
-                         macTapIfName, network->def->bridge,
-                         virStrerror(err, ebuf, sizeof ebuf));
-            }
+            ignore_value(brDeleteTap(macTapIfName));
             VIR_FREE(macTapIfName);
         }
     }
 
-    if ((err = brSetInterfaceUp(network->def->bridge, 0))) {
-        VIR_WARN("Failed to bring down bridge '%s' : %s",
-                 network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
-    }
+    ignore_value(brSetInterfaceUp(network->def->bridge, 0));
 
     networkRemoveIptablesRules(driver, network);
 
-    if ((err = brDeleteBridge(network->def->bridge))) {
-        VIR_WARN("Failed to delete bridge '%s' : %s",
-                 network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
-    }
+    ignore_value(brDeleteBridge(network->def->bridge));
 
     /* See if its still alive and really really kill it */
     if (network->dnsmasqPid > 0 &&

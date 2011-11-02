@@ -952,11 +952,8 @@ error:
 }
 
 
-static int umlCleanupTapDevices(virDomainObjPtr vm) {
+static void umlCleanupTapDevices(virDomainObjPtr vm) {
     int i;
-    int err;
-    int ret = 0;
-    VIR_ERROR(_("Cleanup tap"));
 
     for (i = 0 ; i < vm->def->nnets ; i++) {
         virDomainNetDefPtr def = vm->def->nets[i];
@@ -965,15 +962,8 @@ static int umlCleanupTapDevices(virDomainObjPtr vm) {
             def->type != VIR_DOMAIN_NET_TYPE_NETWORK)
             continue;
 
-        VIR_ERROR(_("Cleanup '%s'"), def->ifname);
-        err = brDeleteTap(def->ifname);
-        if (err) {
-            VIR_ERROR(_("Cleanup failed %d"), err);
-            ret = -1;
-        }
+        ignore_value(brDeleteTap(def->ifname));
     }
-    VIR_ERROR(_("Cleanup tap done"));
-    return ret;
 }
 
 static int umlStartVMDaemon(virConnectPtr conn,

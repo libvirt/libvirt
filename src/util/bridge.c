@@ -51,10 +51,12 @@
 # include "util.h"
 # include "logging.h"
 # include "network.h"
+# include "virterror_internal.h"
 
 # define JIFFIES_TO_MS(j) (((j)*1000)/HZ)
 # define MS_TO_JIFFIES(ms) (((ms)*HZ)/1000)
 
+# define VIR_FROM_THIS VIR_FROM_NONE
 
 static int brSetupControlFull(const char *ifname,
                               struct ifreq *ifr,
@@ -67,15 +69,22 @@ static int brSetupControlFull(const char *ifname,
         memset(ifr, 0, sizeof(*ifr));
 
         if (virStrcpyStatic(ifr->ifr_name, ifname) == NULL) {
-            errno = EINVAL;
+            virReportSystemError(ERANGE,
+                                 _("Network interface name '%s' is too long"),
+                                 ifname);
             return -1;
         }
     }
 
-    if ((fd = socket(domain, type, 0)) < 0)
+    if ((fd = socket(domain, type, 0)) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Cannot open network interface control socket"));
         return -1;
+    }
 
     if (virSetInherit(fd, false) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Cannot set close-on-exec flag for socket"));
         VIR_FORCE_CLOSE(fd);
         return -1;
     }
@@ -97,7 +106,7 @@ static int brSetupControl(const char *ifname,
  *
  * This function register a new bridge
  *
- * Returns 0 in case of success or an errno code in case of failure.
+ * Returns 0 in case of success or -1 on failure
  */
 # ifdef SIOCBRADDBR
 int
@@ -107,10 +116,11 @@ brAddBridge(const char *brname)
     int ret = -1;
 
     if ((fd = brSetupControl(NULL, NULL)) < 0)
-        return errno;
+        return -1;
 
     if (ioctl(fd, SIOCBRADDBR, brname) < 0) {
-        ret = errno;
+        virReportSystemError(errno,
+                             _("Unable to create bridge %s"), brname);
         goto cleanup;
     }
 
@@ -121,13 +131,23 @@ cleanup:
     return ret;
 }
 # else
-int brAddBridge (const char *brname ATTRIBUTE_UNUSED)
+int brAddBridge(const char *brname)
 {
-    return EINVAL;
+    virReportSystemError(ENOSYS,
+                         _("Unable to create bridge %s"), brname);
+    return -1;
 }
 # endif
 
 # ifdef SIOCBRDELBR
+/**
+ * brHasBridge:
+ * @brname
+ *
+ * Check if the bridge @brname exists
+ *
+ * Returns 1 if it exists, 0 if it does not, -1 on error
+ */
 int
 brHasBridge(const char *brname)
 {
@@ -136,12 +156,18 @@ brHasBridge(const char *brname)
     struct ifreq ifr;
 
     if ((fd = brSetupControl(brname, &ifr)) < 0)
-        return errno;
+        return -1;
 
-    if (ioctl(fd, SIOCGIFFLAGS, &ifr))
+    if (ioctl(fd, SIOCGIFFLAGS, &ifr)) {
+        if (errno == ENODEV)
+            ret = 0;
+        else
+            virReportSystemError(errno,
+                                 _("Unable to get bridge %s flags"), brname);
         goto cleanup;
+    }
 
-    ret = 0;
+    ret = 1;
 
 cleanup:
     VIR_FORCE_CLOSE(fd);
@@ -149,9 +175,11 @@ cleanup:
 }
 # else
 int
-brHasBridge(const char *brname ATTRIBUTE_UNUSED)
+brHasBridge(const char *brname)
 {
-    return EINVAL;
+    virReportSystemError(ENOSYS,
+                         _("Unable to check bridge %s"), brname);
+    return -1;
 }
 # endif
 
@@ -171,10 +199,11 @@ brDeleteBridge(const char *brname)
     int ret = -1;
 
     if ((fd = brSetupControl(NULL, NULL)) < 0)
-        return errno;
+        return -1;
 
     if (ioctl(fd, SIOCBRDELBR, brname) < 0) {
-        ret = errno;
+        virReportSystemError(errno,
+                             _("Unable to delete bridge %s"), brname);
         goto cleanup;
     }
 
@@ -188,7 +217,9 @@ cleanup:
 int
 brDeleteBridge(const char *brname ATTRIBUTE_UNUSED)
 {
-    return EINVAL;
+    virReportSystemError(ENOSYS,
+                         _("Unable to delete bridge %s"), brname);
+    return -1;
 }
 # endif
 
@@ -211,15 +242,17 @@ brAddInterface(const char *brname,
     struct ifreq ifr;
 
     if ((fd = brSetupControl(brname, &ifr)) < 0)
-        return errno;
+        return -1;
 
     if (!(ifr.ifr_ifindex = if_nametoindex(ifname))) {
-        ret = errno;
+        virReportSystemError(ENODEV,
+                             _("Unable to get interface index for %s"), ifname);
         goto cleanup;
     }
 
     if (ioctl(fd, SIOCBRADDIF, &ifr) < 0) {
-        ret = errno;
+        virReportSystemError(errno,
+                             _("Unable to add bridge %s port %s"), brname, ifname);
         goto cleanup;
     }
 
@@ -230,10 +263,12 @@ cleanup:
 }
 # else
 int
-brAddInterface(const char *brname ATTRIBUTE_UNUSED,
-               const char *ifname ATTRIBUTE_UNUSED)
+brAddInterface(const char *brname,
+               const char *ifname)
 {
-    return EINVAL;
+    virReportSystemError(ENOSYS,
+                         _("Unable to add bridge %s port %s"), brname, ifname);
+    return -1;
 }
 # endif
 
@@ -256,15 +291,18 @@ brDeleteInterface(const char *brname,
     struct ifreq ifr;
 
     if ((fd = brSetupControl(brname, &ifr)) < 0)
-        return errno;
+        return -1;
 
     if (!(ifr.ifr_ifindex = if_nametoindex(ifname))) {
-        ret = errno;
+        virReportSystemError(ENODEV,
+                             _("Unable to get interface index for %s"), ifname);
+
         goto cleanup;
     }
 
     if (ioctl(fd, SIOCBRDELIF, &ifr) < 0) {
-        ret = errno;
+        virReportSystemError(errno,
+                             _("Unable to remove bridge %s port %s"), brname, ifname);
         goto cleanup;
     }
 
@@ -275,10 +313,12 @@ cleanup:
 }
 # else
 int
-brDeleteInterface(const char *brname ATTRIBUTE_UNUSED,
-                  const char *ifname ATTRIBUTE_UNUSED)
+brDeleteInterface(const char *brname,
+                  const char *ifname)
 {
-    return EINVAL;
+    virReportSystemError(errno,
+                         _("Unable to remove bridge %s port %s"), brname, ifname);
+    return -1;
 }
 # endif
 
@@ -290,7 +330,7 @@ brDeleteInterface(const char *brname ATTRIBUTE_UNUSED,
  * This function sets the @macaddr for a given interface @ifname. This
  * gets rid of the kernel's automatically assigned random MAC.
  *
- * Returns 0 in case of success or an errno code in case of failure.
+ * Returns 0 in case of success or -1 on failure
  */
 int
 brSetInterfaceMac(const char *ifname,
@@ -301,18 +341,22 @@ brSetInterfaceMac(const char *ifname,
     struct ifreq ifr;
 
     if ((fd = brSetupControl(ifname, &ifr)) < 0)
-        return errno;
+        return -1;
 
     /* To fill ifr.ifr_hdaddr.sa_family field */
     if (ioctl(fd, SIOCGIFHWADDR, &ifr) < 0) {
-        ret = errno;
+        virReportSystemError(errno,
+                             _("Cannot get interface MAC on '%s'"),
+                             ifname);
         goto cleanup;
     }
 
     memcpy(ifr.ifr_hwaddr.sa_data, macaddr, VIR_MAC_BUFLEN);
 
     if (ioctl(fd, SIOCSIFHWADDR, &ifr) < 0) {
-        ret = errno;
+        virReportSystemError(errno,
+                             _("Cannot set interface MAC on '%s'"),
+                             ifname);
         goto cleanup;
     }
 
@@ -329,8 +373,7 @@ cleanup:
  *
  * This function gets the @mtu value set for a given interface @ifname.
  *
- * Returns the MTU value in case of success.
- * On error, returns -1 and sets errno accordingly
+ * Returns the MTU value in case of success, or -1 on failure.
  */
 static int ifGetMtu(const char *ifname)
 {
@@ -341,8 +384,12 @@ static int ifGetMtu(const char *ifname)
     if ((fd = brSetupControl(ifname, &ifr)) < 0)
         return -1;
 
-    if (ioctl(fd, SIOCGIFMTU, &ifr) < 0)
+    if (ioctl(fd, SIOCGIFMTU, &ifr) < 0) {
+        virReportSystemError(errno,
+                             _("Cannot get interface MTU on '%s'"),
+                             ifname);
         goto cleanup;
+    }
 
     ret = ifr.ifr_mtu;
 
@@ -359,7 +406,7 @@ cleanup:
  * This function sets the @mtu for a given interface @ifname.  Typically
  * used on a tap device to set up for Jumbo Frames.
  *
- * Returns 0 in case of success or an errno code in case of failure.
+ * Returns 0 in case of success, or -1 on failure
  */
 static int ifSetMtu(const char *ifname, int mtu)
 {
@@ -368,12 +415,14 @@ static int ifSetMtu(const char *ifname, int mtu)
     struct ifreq ifr;
 
     if ((fd = brSetupControl(ifname, &ifr)) < 0)
-        return errno;
+        return -1;
 
     ifr.ifr_mtu = mtu;
 
     if (ioctl(fd, SIOCSIFMTU, &ifr) < 0) {
-        ret = errno;
+        virReportSystemError(errno,
+                             _("Cannot set interface MTU on '%s'"),
+                             ifname);
         goto cleanup;
     }
 
@@ -391,7 +440,7 @@ cleanup:
  *
  * Sets the interface mtu to the same MTU of the bridge
  *
- * Returns 0 in case of success or an errno code in case of failure.
+ * Returns 0 in case of success, or -1 on failure
  */
 static int brSetInterfaceMtu(const char *brname,
                              const char *ifname)
@@ -399,7 +448,7 @@ static int brSetInterfaceMtu(const char *brname,
     int mtu = ifGetMtu(brname);
 
     if (mtu < 0)
-        return errno;
+        return -1;
 
     return ifSetMtu(ifname, mtu);
 }
@@ -421,7 +470,7 @@ static int brSetInterfaceMtu(const char *brname,
  * kernel implements the TUNGETIFF ioctl(), which qemu needs to query
  * the supplied tapfd.
  *
- * Returns 0 in case of success or an errno code in case of failure.
+ * Returns 1 if VnetHdr is supported, 0 if not supported
  */
 # ifdef IFF_VNET_HDR
 static int
@@ -479,7 +528,7 @@ brProbeVnetHdr(int tapfd)
  * persistent and closed. The caller must use brDeleteTap to remove
  * a persistent TAP devices when it is no longer needed.
  *
- * Returns 0 in case of success or an errno code in case of failure.
+ * Returns 0 in case of success or -1 on failure
  */
 int
 brAddTap(const char *brname,
@@ -489,11 +538,8 @@ brAddTap(const char *brname,
          bool up,
          int *tapfd)
 {
-    errno = brCreateTap(ifname, vnet_hdr, tapfd);
-
-    /* fd has been closed in brCreateTap() when it failed. */
-    if (errno)
-        goto error;
+    if (brCreateTap(ifname, vnet_hdr, tapfd) < 0)
+        return -1;
 
     /* We need to set the interface MAC before adding it
      * to the bridge, because the bridge assumes the lowest
@@ -501,53 +547,69 @@ brAddTap(const char *brname,
      * seeing the kernel allocate random MAC for the TAP
      * device before we set our static MAC.
      */
-    if ((errno = brSetInterfaceMac(*ifname, macaddr)))
-        goto close_fd;
+    if (brSetInterfaceMac(*ifname, macaddr) < 0)
+        goto error;
+
     /* We need to set the interface MTU before adding it
      * to the bridge, because the bridge will have its
      * MTU adjusted automatically when we add the new interface.
      */
-    if ((errno = brSetInterfaceMtu(brname, *ifname)))
-        goto close_fd;
-    if ((errno = brAddInterface(brname, *ifname)))
-        goto close_fd;
-    if (up && ((errno = brSetInterfaceUp(*ifname, 1))))
-        goto close_fd;
+    if (brSetInterfaceMtu(brname, *ifname) < 0)
+        goto error;
+
+    if (brAddInterface(brname, *ifname) < 0)
+        goto error;
+
+    if (brSetInterfaceUp(*ifname, up) < 0)
+        goto error;
 
     return 0;
 
-close_fd:
+error:
     if (tapfd)
         VIR_FORCE_CLOSE(*tapfd);
-error:
-    return errno;
+    return -1;
 }
 
 int brDeleteTap(const char *ifname)
 {
     struct ifreq try;
     int fd;
+    int ret = -1;
 
-    if ((fd = open("/dev/net/tun", O_RDWR)) < 0)
-        return errno;
+    if ((fd = open("/dev/net/tun", O_RDWR)) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to open /dev/net/tun, is tun module loaded?"));
+        return -1;
+    }
 
     memset(&try, 0, sizeof(struct ifreq));
     try.ifr_flags = IFF_TAP|IFF_NO_PI;
 
     if (virStrcpyStatic(try.ifr_name, ifname) == NULL) {
-        errno = EINVAL;
-        goto error;
+        virReportSystemError(ERANGE,
+                             _("Network interface name '%s' is too long"),
+                             ifname);
+        goto cleanup;
     }
 
-    if (ioctl(fd, TUNSETIFF, &try) == 0) {
-        if ((errno = ioctl(fd, TUNSETPERSIST, 0)))
-            goto error;
+    if (ioctl(fd, TUNSETIFF, &try) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to associate TAP device"));
+        goto cleanup;
     }
 
- error:
+    if (ioctl(fd, TUNSETPERSIST, 0) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to make TAP device non-persistent"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
     VIR_FORCE_CLOSE(fd);
-
-    return errno;
+    return ret;
 }
 
 
@@ -558,7 +620,7 @@ int brDeleteTap(const char *ifname)
  *
  * Function to control if an interface is activated (up, 1) or not (down, 0)
  *
- * Returns 0 in case of success or an errno code in case of failure.
+ * Returns 0 in case of success or -1 on error.
  */
 int
 brSetInterfaceUp(const char *ifname,
@@ -570,10 +632,12 @@ brSetInterfaceUp(const char *ifname,
     int ifflags;
 
     if ((fd = brSetupControl(ifname, &ifr)) < 0)
-        return errno;
+        return -1;
 
     if (ioctl(fd, SIOCGIFFLAGS, &ifr) < 0) {
-        ret = errno;
+        virReportSystemError(errno,
+                             _("Cannot get interface flags on '%s'"),
+                             ifname);
         goto cleanup;
     }
 
@@ -585,7 +649,9 @@ brSetInterfaceUp(const char *ifname,
     if (ifr.ifr_flags != ifflags) {
         ifr.ifr_flags = ifflags;
         if (ioctl(fd, SIOCSIFFLAGS, &ifr) < 0) {
-            ret = errno;
+            virReportSystemError(errno,
+                                 _("Cannot set interface flags on '%s'"),
+                                 ifname);
             goto cleanup;
         }
     }
@@ -615,10 +681,12 @@ brGetInterfaceUp(const char *ifname,
     struct ifreq ifr;
 
     if ((fd = brSetupControl(ifname, &ifr)) < 0)
-        return errno;
+        return -1;
 
     if (ioctl(fd, SIOCGIFFLAGS, &ifr) < 0) {
-        ret = errno;
+        virReportSystemError(errno,
+                             _("Cannot get interface flags on '%s'"),
+                             ifname);
         goto cleanup;
     }
 
@@ -799,9 +867,13 @@ brCreateTap(char **ifname,
 {
     int fd;
     struct ifreq ifr;
+    int ret = -1;
 
-    if ((fd = open("/dev/net/tun", O_RDWR)) < 0)
-        return errno;
+    if ((fd = open("/dev/net/tun", O_RDWR)) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to open /dev/net/tun, is tun module loaded?"));
+        return -1;
+    }
 
     memset(&ifr, 0, sizeof(ifr));
 
@@ -813,29 +885,45 @@ brCreateTap(char **ifname,
 # endif
 
     if (virStrcpyStatic(ifr.ifr_name, *ifname) == NULL) {
-        errno = EINVAL;
-        goto error;
+        virReportSystemError(ERANGE,
+                             _("Network interface name '%s' is too long"),
+                             *ifname);
+        goto cleanup;
+
     }
 
-    if (ioctl(fd, TUNSETIFF, &ifr) < 0)
-        goto error;
+    if (ioctl(fd, TUNSETIFF, &ifr) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to create tap device %s"),
+                             NULLSTR(*ifname));
+        goto cleanup;
+    }
 
     if (!tapfd &&
-        (errno = ioctl(fd, TUNSETPERSIST, 1)))
-        goto error;
+        (errno = ioctl(fd, TUNSETPERSIST, 1))) {
+        virReportSystemError(errno,
+                             _("Unable to set tap device %s to persistent"),
+                             NULLSTR(*ifname));
+        goto cleanup;
+    }
+
     VIR_FREE(*ifname);
-    if (!(*ifname = strdup(ifr.ifr_name)))
-        goto error;
-    if(tapfd)
+    if (!(*ifname = strdup(ifr.ifr_name))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    if (tapfd)
         *tapfd = fd;
     else
         VIR_FORCE_CLOSE(fd);
-    return 0;
 
- error:
-    VIR_FORCE_CLOSE(fd);
+    ret = 0;
 
-    return errno;
+cleanup:
+    if (ret < 0)
+        VIR_FORCE_CLOSE(fd);
+
+    return ret;
 }
 
 #endif /* WITH_BRIDGE */
