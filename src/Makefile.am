@@ -96,6 +96,7 @@ UTIL_SOURCES =							\
 		util/virnetdevbandwidth.h util/virnetdevbandwidth.c \
 		util/virnetdevbridge.h util/virnetdevbridge.c	\
 		util/virnetdevtap.h util/virnetdevtap.c		\
+		util/virnetdevveth.h util/virnetdevveth.c \
 		util/virnetdevvportprofile.h util/virnetdevvportprofile.c \
 		util/virsocketaddr.h util/virsocketaddr.c
 
@@ -320,14 +321,12 @@ endif
 LXC_DRIVER_SOURCES =						\
 		lxc/lxc_conf.c lxc/lxc_conf.h			\
 		lxc/lxc_container.c lxc/lxc_container.h		\
-		lxc/lxc_driver.c lxc/lxc_driver.h		\
-		lxc/veth.c lxc/veth.h
+		lxc/lxc_driver.c lxc/lxc_driver.h
 
 LXC_CONTROLLER_SOURCES =					\
 		lxc/lxc_conf.c lxc/lxc_conf.h			\
 		lxc/lxc_container.c lxc/lxc_container.h		\
-		lxc/lxc_controller.c				\
-		lxc/veth.c lxc/veth.h
+		lxc/lxc_controller.c
 
 SECURITY_DRIVER_APPARMOR_HELPER_SOURCES =			\
 		security/virt-aa-helper.c

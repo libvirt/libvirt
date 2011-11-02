@@ -59,5 +59,9 @@ int virNetDevSetMTUFromDevice(const char *ifname,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 int virNetDevGetMTU(const char *ifname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+int virNetDevSetNamespace(const char *ifname, int pidInNs)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+int virNetDevSetName(const char *ifname, const char *newifname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 #endif /* __VIR_NETDEV_H__ */

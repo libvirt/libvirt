@@ -44,7 +44,7 @@
 #include "memory.h"
 #include "util.h"
 #include "virnetdevbridge.h"
-#include "veth.h"
+#include "virnetdevveth.h"
 #include "nodeinfo.h"
 #include "uuid.h"
 #include "stats_linux.h"

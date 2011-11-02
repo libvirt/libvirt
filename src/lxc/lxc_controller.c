@@ -54,7 +54,8 @@
 
 #include "lxc_conf.h"
 #include "lxc_container.h"
-#include "veth.h"
+#include "virnetdev.h"
+#include "virnetdevveth.h"
 #include "memory.h"
 #include "util.h"
 #include "virfile.h"

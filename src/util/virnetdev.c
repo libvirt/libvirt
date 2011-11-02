@@ -332,6 +332,87 @@ int virNetDevSetMTUFromDevice(const char *ifname,
 }
 
 
+/**
+ * virNetDevSetNamespace:
+ * @ifname: name of device
+ * @pidInNs: PID of process in target net namespace
+ *
+ * Moves the given device into the target net namespace specified by the given
+ * pid using this command:
+ *     ip link set @iface netns @pidInNs
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+int virNetDevSetNamespace(const char *ifname, int pidInNs)
+{
+    int rc;
+    char *pid = NULL;
+    const char *argv[] = {
+        "ip", "link", "set", ifname, "netns", NULL, NULL
+    };
+
+    if (virAsprintf(&pid, "%d", pidInNs) == -1) {
+        virReportOOMError();
+        return -1;
+    }
+
+    argv[5] = pid;
+    rc = virRun(argv, NULL);
+
+    VIR_FREE(pid);
+    return rc;
+}
+
+#ifdef SIOCSIFNAME
+/**
+ * virNetDevSetName:
+ * @ifname: name of device
+ * @newifname: new name of @ifname
+ *
+ * Changes the name of the given device.
+ *
+ * Returns 0 on success, -1 on error
+ */
+int virNetDevSetName(const char* ifname, const char *newifname)
+{
+    int fd = -1;
+    int ret = -1;
+    struct ifreq ifr;
+
+    if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
+        return -1;
+
+    if (virStrcpyStatic(ifr.ifr_newname, newifname) == NULL) {
+        virReportSystemError(ERANGE,
+                             _("Network interface name '%s' is too long"),
+                             newifname);
+        goto cleanup;
+    }
+
+    if (ioctl(fd, SIOCSIFNAME, &ifr)) {
+        virReportSystemError(errno,
+                             _("Unable to rename '%s' to '%s'"),
+                             ifname, newifname);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+#else
+int virNetDevSetName(const char* ifname, const char *newifname)
+{
+    virReportSystemError(ENOSYS,
+                         _("Cannot rename interface '%s' to '%s' on this platform"),
+                         ifname, newifname);
+    return -1;
+}
+#endif
+
+
 #ifdef SIOCSIFFLAGS
 /**
  * virNetDevSetOnline:

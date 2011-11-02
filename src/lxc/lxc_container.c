@@ -55,7 +55,7 @@
 #include "lxc_container.h"
 #include "util.h"
 #include "memory.h"
-#include "veth.h"
+#include "virnetdevveth.h"
 #include "uuid.h"
 #include "virfile.h"
 #include "command.h"

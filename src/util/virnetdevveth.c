@@ -1,32 +1,35 @@
 /*
- * veth.c: Tools for managing veth pairs
- *
  * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
- * See COPYING.LIB for the License of this software
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
  * Authors:
- *  David L. Leskovec <dlesko at linux.vnet.ibm.com>
+ *     David L. Leskovec <dlesko at linux.vnet.ibm.com>
+ *     Daniel P. Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
 
-#include <linux/sockios.h>
-#include <net/if.h>
-#include <string.h>
-#include <stdio.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 
-#include "veth.h"
-#include "internal.h"
-#include "logging.h"
+#include "virnetdevveth.h"
 #include "memory.h"
+#include "logging.h"
 #include "command.h"
 #include "virterror_internal.h"
-#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -183,68 +186,4 @@ int virNetDevVethDelete(const char *veth)
     }
 
     return rc;
-}
-
-
-/**
- * virNetDevSetNamespace:
- * @ifname: name of device
- * @pidInNs: PID of process in target net namespace
- *
- * Moves the given device into the target net namespace specified by the given
- * pid using this command:
- *     ip link set @iface netns @pidInNs
- *
- * Returns 0 on success or -1 in case of error
- */
-int virNetDevSetNamespace(const char* ifname, int pidInNs)
-{
-    int rc;
-    char *pid = NULL;
-    const char *argv[] = {
-        "ip", "link", "set", ifname, "netns", NULL, NULL
-    };
-
-    if (virAsprintf(&pid, "%d", pidInNs) == -1) {
-        virReportOOMError();
-        return -1;
-    }
-
-    argv[5] = pid;
-    rc = virRun(argv, NULL);
-
-    VIR_FREE(pid);
-    return rc;
-}
-
-/**
- * virNetDevSetName:
- * @ifname: name of device
- * @new: new name of @ifname
- *
- * Changes the name of the given device.
- *
- * Returns 0 on success, -1 on failure with errno set.
- */
-int virNetDevSetName(const char* ifname, const char* new)
-{
-    struct ifreq ifr;
-    int fd = socket(PF_PACKET, SOCK_DGRAM, 0);
-
-    memset(&ifr, 0, sizeof(struct ifreq));
-
-    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL) {
-        errno = EINVAL;
-        return -1;
-    }
-
-    if (virStrcpyStatic(ifr.ifr_newname, new) == NULL) {
-        errno = EINVAL;
-        return -1;
-    }
-
-    if (ioctl(fd, SIOCSIFNAME, &ifr))
-        return -1;
-
-    return 0;
 }
