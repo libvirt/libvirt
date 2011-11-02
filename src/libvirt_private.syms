@@ -586,8 +586,8 @@ ifaceIsVirtualFunction;
 virNetDevMacVLanCreate;
 virNetDevMacVLanDelete;
 ifaceMacvtapLinkDump;
-ifaceReplaceMacAddress;
-ifaceRestoreMacAddress;
+virNetDevReplaceMacAddress;
+virNetDevRestoreMacAddress;
 
 
 # interface_conf.h

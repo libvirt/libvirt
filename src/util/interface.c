@@ -554,7 +554,7 @@ ifaceGetNthParent(int ifindex ATTRIBUTE_UNUSED,
 #endif
 
 /**
- * ifaceReplaceMacAddress:
+ * virNetDevReplaceMacAddress:
  * @macaddress: new MAC address for interface
  * @linkdev: name of interface
  * @stateDir: directory to store old MAC address
@@ -563,9 +563,9 @@ ifaceGetNthParent(int ifindex ATTRIBUTE_UNUSED,
  *
  */
 int
-ifaceReplaceMacAddress(const unsigned char *macaddress,
-                       const char *linkdev,
-                       const char *stateDir)
+virNetDevReplaceMacAddress(const char *linkdev,
+                           const unsigned char *macaddress,
+                           const char *stateDir)
 {
     unsigned char oldmac[6];
     char *path = NULL;
@@ -595,7 +595,7 @@ ifaceReplaceMacAddress(const unsigned char *macaddress,
 }
 
 /**
- * ifaceRestoreMacAddress:
+ * virNetDevRestoreMacAddress:
  * @linkdev: name of interface
  * @stateDir: directory containing old MAC address
  *
@@ -603,8 +603,8 @@ ifaceReplaceMacAddress(const unsigned char *macaddress,
  *
  */
 int
-ifaceRestoreMacAddress(const char *linkdev,
-                       const char *stateDir)
+virNetDevRestoreMacAddress(const char *linkdev,
+                           const char *stateDir)
 {
     int rc;
     char *oldmacname = NULL;

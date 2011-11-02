@@ -49,12 +49,15 @@ int ifaceGetNthParent(int ifindex, const char *ifname, unsigned int nthParent,
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5)
     ATTRIBUTE_NONNULL(6);
 
-int ifaceReplaceMacAddress(const unsigned char *macaddress,
-                           const char *linkdev,
-                           const char *stateDir);
+int virNetDevReplaceMacAddress(const char *linkdev,
+                               const unsigned char *macaddress,
+                               const char *stateDir)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_RETURN_CHECK;
 
-int ifaceRestoreMacAddress(const char *linkdev,
-                           const char *stateDir);
+int virNetDevRestoreMacAddress(const char *linkdev,
+                               const char *stateDir)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 int ifaceIsVirtualFunction(const char *ifname);
 

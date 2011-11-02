@@ -497,9 +497,8 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
      * emulate their switch in firmware.
      */
     if (mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) {
-        if (ifaceReplaceMacAddress(macaddress, linkdev, stateDir) < 0) {
+        if (virNetDevReplaceMacAddress(linkdev, macaddress, stateDir) < 0)
             return -1;
-        }
     }
 
     if (tgifname) {
@@ -604,7 +603,7 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
 {
     int ret = 0;
     if (mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) {
-        ifaceRestoreMacAddress(linkdev, stateDir);
+        ignore_value(virNetDevRestoreMacAddress(linkdev, stateDir));
     }
 
     if (ifname) {
