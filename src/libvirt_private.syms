@@ -739,8 +739,8 @@ virLogUnlock;
 
 
 # macvtap.h
-virVMOperationTypeFromString;
-virVMOperationTypeToString;
+virNetDevVPortProfileOpTypeFromString;
+virNetDevVPortProfileOpTypeToString;
 
 
 # memory.h

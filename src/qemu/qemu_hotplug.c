@@ -678,7 +678,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
         if ((tapfd = qemuPhysIfaceConnect(vm->def, driver, net,
                                           priv->qemuCaps,
-                                          VIR_VM_OP_CREATE)) < 0)
+                                          VIR_NETDEV_VPORT_PROFILE_OP_CREATE)) < 0)
             goto cleanup;
         iface_connected = true;
         if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, &vhostfd) < 0)
@@ -1911,11 +1911,11 @@ int qemuDomainDetachNetDevice(struct qemud_driver *driver,
 
 #if WITH_MACVTAP
     if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_DIRECT) {
-        delMacvtap(detach->ifname, detach->mac,
-                   virDomainNetGetActualDirectDev(detach),
-                   virDomainNetGetActualDirectMode(detach),
-                   virDomainNetGetActualDirectVirtPortProfile(detach),
-                   driver->stateDir);
+        ignore_value(virNetDevMacVLanDelete(detach->ifname, detach->mac,
+                                            virDomainNetGetActualDirectDev(detach),
+                                            virDomainNetGetActualDirectMode(detach),
+                                            virDomainNetGetActualDirectVirtPortProfile(detach),
+                                            driver->stateDir));
         VIR_FREE(detach->ifname);
     }
 #endif

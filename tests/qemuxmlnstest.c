@@ -124,7 +124,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (!(cmd = qemuBuildCommandLine(conn, &driver,
                                      vmdef, &monitor_chr, json, extraFlags,
                                      migrateFrom, migrateFd, NULL,
-                                     VIR_VM_OP_NO_OP)))
+                                     VIR_NETDEV_VPORT_PROFILE_OP_NO_OP)))
         goto fail;
 
     if (!!virGetLastError() != expectError) {

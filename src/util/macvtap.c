@@ -52,7 +52,7 @@
 #include "macvtap.h"
 #include "virnetdev.h"
 
-VIR_ENUM_IMPL(virMacvtapMode, VIR_MACVTAP_MODE_LAST,
+VIR_ENUM_IMPL(virNetDevMacVLanMode, VIR_NETDEV_MACVLAN_MODE_LAST,
               "vepa",
               "private",
               "bridge",
@@ -101,15 +101,17 @@ enum virNetDevVPortProfileLinkOp {
 
 # if WITH_MACVTAP
 
-/* Open the macvtap's tap device.
+/**
+ * virNetDevMacVLanTapOpen:
+ * Open the macvtap's tap device.
  * @ifname: Name of the macvtap interface
  * @retries : Number of retries in case udev for example may need to be
  *            waited for to create the tap chardev
  * Returns negative value in case of error, the file descriptor otherwise.
  */
 static
-int openTap(const char *ifname,
-            int retries)
+int virNetDevMacVLanTapOpen(const char *ifname,
+                            int retries)
 {
     FILE *file;
     char path[64];
@@ -173,7 +175,7 @@ int openTap(const char *ifname,
 
 
 /**
- * configMacvtapTap:
+ * virNetDevMacVLanTapSetup:
  * @tapfd: file descriptor of the macvtap tap
  * @vnet_hdr: 1 to enable IFF_VNET_HDR, 0 to disable it
  *
@@ -187,7 +189,7 @@ int openTap(const char *ifname,
  * macvtap device should not be used.
  */
 static int
-configMacvtapTap(int tapfd, int vnet_hdr)
+virNetDevMacVLanTapSetup(int tapfd, int vnet_hdr)
 {
     unsigned int features;
     struct ifreq ifreq;
@@ -233,15 +235,15 @@ configMacvtapTap(int tapfd, int vnet_hdr)
 }
 
 
-static const uint32_t modeMap[VIR_MACVTAP_MODE_LAST] = {
-    [VIR_MACVTAP_MODE_VEPA] = MACVLAN_MODE_VEPA,
-    [VIR_MACVTAP_MODE_PRIVATE] = MACVLAN_MODE_PRIVATE,
-    [VIR_MACVTAP_MODE_BRIDGE] = MACVLAN_MODE_BRIDGE,
-    [VIR_MACVTAP_MODE_PASSTHRU] = MACVLAN_MODE_PASSTHRU,
+static const uint32_t modeMap[VIR_NETDEV_MACVLAN_MODE_LAST] = {
+    [VIR_NETDEV_MACVLAN_MODE_VEPA] = MACVLAN_MODE_VEPA,
+    [VIR_NETDEV_MACVLAN_MODE_PRIVATE] = MACVLAN_MODE_PRIVATE,
+    [VIR_NETDEV_MACVLAN_MODE_BRIDGE] = MACVLAN_MODE_BRIDGE,
+    [VIR_NETDEV_MACVLAN_MODE_PASSTHRU] = MACVLAN_MODE_PASSTHRU,
 };
 
 /**
- * openMacvtapTap:
+ * virNetDevMacVLanCreate:
  * Create an instance of a macvtap device and open its tap character
  * device.
  * @tgifname: Interface name that the macvtap is supposed to have. May
@@ -260,18 +262,17 @@ static const uint32_t modeMap[VIR_MACVTAP_MODE_LAST] = {
  * negative value otherwise with error reported.
  *
  */
-int
-openMacvtapTap(const char *tgifname,
-               const unsigned char *macaddress,
-               const char *linkdev,
-               enum virMacvtapMode mode,
-               int vnet_hdr,
-               const unsigned char *vmuuid,
-               virNetDevVPortProfilePtr virtPortProfile,
-               char **res_ifname,
-               enum virVMOperationType vmOp,
-               char *stateDir,
-               virNetDevBandwidthPtr bandwidth)
+int virNetDevMacVLanCreate(const char *tgifname,
+                           const unsigned char *macaddress,
+                           const char *linkdev,
+                           enum virNetDevMacVLanMode mode,
+                           int vnet_hdr,
+                           const unsigned char *vmuuid,
+                           virNetDevVPortProfilePtr virtPortProfile,
+                           char **res_ifname,
+                           enum virNetDevVPortProfileOp vmOp,
+                           char *stateDir,
+                           virNetDevBandwidthPtr bandwidth)
 {
     const char *type = "macvtap";
     int c, rc;
@@ -285,7 +286,7 @@ openMacvtapTap(const char *tgifname,
 
     *res_ifname = NULL;
 
-    VIR_DEBUG("%s: VM OPERATION: %s", __FUNCTION__, virVMOperationTypeToString(vmOp));
+    VIR_DEBUG("%s: VM OPERATION: %s", __FUNCTION__, virNetDevVPortProfileOpTypeToString(vmOp));
 
     /** Note: When using PASSTHROUGH mode with MACVTAP devices the link
      * device's MAC address must be set to the VMs MAC address. In
@@ -294,7 +295,7 @@ openMacvtapTap(const char *tgifname,
      * This is especially important when using SRIOV capable cards that
      * emulate their switch in firmware.
      */
-    if (mode == VIR_MACVTAP_MODE_PASSTHRU) {
+    if (mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) {
         if (ifaceReplaceMacAddress(macaddress, linkdev, stateDir) < 0) {
             return -1;
         }
@@ -334,11 +335,11 @@ create_name:
         cr_ifname = ifname;
     }
 
-    if (vpAssociatePortProfileId(cr_ifname,
-                                 macaddress,
-                                 linkdev,
-                                 virtPortProfile,
-                                 vmuuid, vmOp) < 0) {
+    if (virNetDevVPortProfileAssociate(cr_ifname,
+                                       virtPortProfile,
+                                       macaddress,
+                                       linkdev,
+                                       vmuuid, vmOp) < 0) {
         rc = -1;
         goto link_del_exit;
     }
@@ -348,9 +349,9 @@ create_name:
         goto disassociate_exit;
     }
 
-    rc = openTap(cr_ifname, 10);
+    rc = virNetDevMacVLanTapOpen(cr_ifname, 10);
     if (rc >= 0) {
-        if (configMacvtapTap(rc, vnet_hdr) < 0) {
+        if (virNetDevMacVLanTapSetup(rc, vnet_hdr) < 0) {
             VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
             goto disassociate_exit;
         }
@@ -370,11 +371,11 @@ create_name:
     return rc;
 
 disassociate_exit:
-    vpDisassociatePortProfileId(cr_ifname,
-                                macaddress,
-                                linkdev,
-                                virtPortProfile,
-                                vmOp);
+    ignore_value(virNetDevVPortProfileDisassociate(cr_ifname,
+                                                   virtPortProfile,
+                                                   macaddress,
+                                                   linkdev,
+                                                   vmOp));
 
 link_del_exit:
     ifaceLinkDel(cr_ifname);
@@ -393,25 +394,29 @@ link_del_exit:
  * it with the switch if port profile parameters
  * were provided.
  */
-void
-delMacvtap(const char *ifname,
-           const unsigned char *macaddr,
-           const char *linkdev,
-           int mode,
-           virNetDevVPortProfilePtr virtPortProfile,
-           char *stateDir)
+int virNetDevMacVLanDelete(const char *ifname,
+                           const unsigned char *macaddr,
+                           const char *linkdev,
+                           int mode,
+                           virNetDevVPortProfilePtr virtPortProfile,
+                           char *stateDir)
 {
-    if (mode == VIR_MACVTAP_MODE_PASSTHRU) {
+    int ret = 0;
+    if (mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) {
         ifaceRestoreMacAddress(linkdev, stateDir);
     }
 
     if (ifname) {
-        vpDisassociatePortProfileId(ifname, macaddr,
-                                    linkdev,
-                                    virtPortProfile,
-                                    VIR_VM_OP_DESTROY);
-        ifaceLinkDel(ifname);
+        if (virNetDevVPortProfileDisassociate(ifname,
+                                              virtPortProfile,
+                                              macaddr,
+                                              linkdev,
+                                              VIR_NETDEV_VPORT_PROFILE_OP_DESTROY) < 0)
+            ret = -1;
+        if (ifaceLinkDel(ifname) < 0)
+            ret = -1;
     }
+    return ret;
 }
 
 # endif /* WITH_MACVTAP */
@@ -425,7 +430,7 @@ static struct nla_policy ifla_port_policy[IFLA_PORT_MAX + 1] =
 
 
 static uint32_t
-getLldpadPid(void) {
+virNetDevVPortProfileGetLldpadPid(void) {
     int fd;
     uint32_t pid = 0;
 
@@ -458,7 +463,7 @@ getLldpadPid(void) {
 
 
 /**
- * getPortProfileStatus
+ * virNetDevVPortProfileGetStatus:
  *
  * tb: top level netlink response attributes + values
  * vf: The virtual function used in the request
@@ -470,11 +475,11 @@ getLldpadPid(void) {
  * case of success, < 0 otherwise with error having been reported
  */
 static int
-getPortProfileStatus(struct nlattr **tb, int32_t vf,
-                     const unsigned char *instanceId,
-                     bool nltarget_kernel,
-                     bool is8021Qbg,
-                     uint16_t *status)
+virNetDevVPortProfileGetStatus(struct nlattr **tb, int32_t vf,
+                               const unsigned char *instanceId,
+                               bool nltarget_kernel,
+                               bool is8021Qbg,
+                               uint16_t *status)
 {
     int rc = -1;
     const char *msg = NULL;
@@ -557,16 +562,16 @@ err_exit:
 
 
 static int
-doPortProfileOpSetLink(bool nltarget_kernel,
-                       const char *ifname, int ifindex,
-                       const unsigned char *macaddr,
-                       int vlanid,
-                       const char *profileId,
-                       struct ifla_port_vsi *portVsi,
-                       const unsigned char *instanceId,
-                       const unsigned char *hostUUID,
-                       int32_t vf,
-                       uint8_t op)
+virNetDevVPortProfileOpSetLink(const char *ifname, int ifindex,
+                               bool nltarget_kernel,
+                               const unsigned char *macaddr,
+                               int vlanid,
+                               const char *profileId,
+                               struct ifla_port_vsi *portVsi,
+                               const unsigned char *instanceId,
+                               const unsigned char *hostUUID,
+                               int32_t vf,
+                               uint8_t op)
 {
     int rc = -1;
     struct nlmsghdr *resp;
@@ -685,7 +690,7 @@ doPortProfileOpSetLink(bool nltarget_kernel,
     }
 
     if (!nltarget_kernel) {
-        pid = getLldpadPid();
+        pid = virNetDevVPortProfileGetLldpadPid();
         if (pid == 0)
             goto err_exit;
     }
@@ -747,16 +752,16 @@ buffer_too_small:
 
 /* Returns 0 on success, -1 on general failure, and -2 on timeout */
 static int
-doPortProfileOpCommon(bool nltarget_kernel,
-                      const char *ifname, int ifindex,
-                      const unsigned char *macaddr,
-                      int vlanid,
-                      const char *profileId,
-                      struct ifla_port_vsi *portVsi,
-                      const unsigned char *instanceId,
-                      const unsigned char *hostUUID,
-                      int32_t vf,
-                      uint8_t op)
+virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
+                              bool nltarget_kernel,
+                              const unsigned char *macaddr,
+                              int vlanid,
+                              const char *profileId,
+                              struct ifla_port_vsi *portVsi,
+                              const unsigned char *instanceId,
+                              const unsigned char *hostUUID,
+                              int32_t vf,
+                              uint8_t op)
 {
     int rc;
     unsigned char *recvbuf = NULL;
@@ -765,16 +770,16 @@ doPortProfileOpCommon(bool nltarget_kernel,
     uint16_t status = 0;
     bool is8021Qbg = (profileId == NULL);
 
-    rc = doPortProfileOpSetLink(nltarget_kernel,
-                                ifname, ifindex,
-                                macaddr,
-                                vlanid,
-                                profileId,
-                                portVsi,
-                                instanceId,
-                                hostUUID,
-                                vf,
-                                op);
+    rc = virNetDevVPortProfileOpSetLink(ifname, ifindex,
+                                        nltarget_kernel,
+                                        macaddr,
+                                        vlanid,
+                                        profileId,
+                                        portVsi,
+                                        instanceId,
+                                        hostUUID,
+                                        vf,
+                                        op);
     if (rc < 0) {
         macvtapError(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("sending of PortProfileRequest failed."));
@@ -783,12 +788,12 @@ doPortProfileOpCommon(bool nltarget_kernel,
 
     while (--repeats >= 0) {
         rc = ifaceMacvtapLinkDump(nltarget_kernel, NULL, ifindex, tb,
-                                  &recvbuf, getLldpadPid);
+                                  &recvbuf, virNetDevVPortProfileGetLldpadPid);
         if (rc < 0)
             goto err_exit;
 
-        rc = getPortProfileStatus(tb, vf, instanceId, nltarget_kernel,
-                                  is8021Qbg, &status);
+        rc = virNetDevVPortProfileGetStatus(tb, vf, instanceId, nltarget_kernel,
+                                            is8021Qbg, &status);
         if (rc < 0)
             goto err_exit;
         if (status == PORT_PROFILE_RESPONSE_SUCCESS ||
@@ -828,8 +833,8 @@ err_exit:
 # ifdef IFLA_VF_PORT_MAX
 
 static int
-getPhysdevAndVlan(const char *ifname, int *root_ifindex, char *root_ifname,
-                  int *vlanid)
+virNetDevVPortProfileGetPhysdevAndVlan(const char *ifname, int *root_ifindex, char *root_ifname,
+                                       int *vlanid)
 {
     int ret;
     unsigned int nth;
@@ -858,10 +863,10 @@ getPhysdevAndVlan(const char *ifname, int *root_ifindex, char *root_ifname,
 
 /* Returns 0 on success, -1 on general failure, and -2 on timeout */
 static int
-doPortProfileOp8021Qbg(const char *ifname,
-                       const unsigned char *macaddr,
-                       const virNetDevVPortProfilePtr virtPort,
-                       enum virNetDevVPortProfileLinkOp virtPortOp)
+virNetDevVPortProfileOp8021Qbg(const char *ifname,
+                               const unsigned char *macaddr,
+                               const virNetDevVPortProfilePtr virtPort,
+                               enum virNetDevVPortProfileLinkOp virtPortOp)
 {
     int rc = 0;
 
@@ -888,8 +893,8 @@ doPortProfileOp8021Qbg(const char *ifname,
     char physdev_ifname[IFNAMSIZ] = { 0, };
     int vf = PORT_SELF_VF;
 
-    if (getPhysdevAndVlan(ifname, &physdev_ifindex, physdev_ifname,
-                          &vlanid) < 0) {
+    if (virNetDevVPortProfileGetPhysdevAndVlan(ifname, &physdev_ifindex, physdev_ifname,
+                                               &vlanid) < 0) {
         rc = -1;
         goto err_exit;
     }
@@ -918,16 +923,16 @@ doPortProfileOp8021Qbg(const char *ifname,
         goto err_exit;
     }
 
-    rc = doPortProfileOpCommon(nltarget_kernel,
-                               physdev_ifname, physdev_ifindex,
-                               macaddr,
-                               vlanid,
-                               NULL,
-                               &portVsi,
-                               virtPort->u.virtPort8021Qbg.instanceID,
-                               NULL,
-                               vf,
-                               op);
+    rc = virNetDevVPortProfileOpCommon(physdev_ifname, physdev_ifindex,
+                                       nltarget_kernel,
+                                       macaddr,
+                                       vlanid,
+                                       NULL,
+                                       &portVsi,
+                                       virtPort->u.virtPort8021Qbg.instanceID,
+                                       NULL,
+                                       vf,
+                                       op);
 
 err_exit:
 
@@ -939,9 +944,9 @@ err_exit:
 
 # ifdef IFLA_VF_PORT_MAX
 static int
-getPhysfnDev(const char *linkdev,
-             int32_t *vf,
-             char **physfndev)
+virNetDevVPortProfileGetPhysfnDev(const char *linkdev,
+                                  int32_t *vf,
+                                  char **physfndev)
 {
     int rc = -1;
 
@@ -975,11 +980,11 @@ err_exit:
 
 /* Returns 0 on success, -1 on general failure, and -2 on timeout */
 static int
-doPortProfileOp8021Qbh(const char *ifname,
-                       const unsigned char *macaddr,
-                       const virNetDevVPortProfilePtr virtPort,
-                       const unsigned char *vm_uuid,
-                       enum virNetDevVPortProfileLinkOp virtPortOp)
+virNetDevVPortProfileOp8021Qbh(const char *ifname,
+                               const unsigned char *macaddr,
+                               const virNetDevVPortProfilePtr virtPort,
+                               const unsigned char *vm_uuid,
+                               enum virNetDevVPortProfileLinkOp virtPortOp)
 {
     int rc = 0;
 
@@ -1003,7 +1008,7 @@ doPortProfileOp8021Qbh(const char *ifname,
     int ifindex;
     int vlanid = -1;
 
-    rc = getPhysfnDev(ifname, &vf, &physfndev);
+    rc = virNetDevVPortProfileGetPhysfnDev(ifname, &vf, &physfndev);
     if (rc < 0)
         goto err_exit;
 
@@ -1020,40 +1025,43 @@ doPortProfileOp8021Qbh(const char *ifname,
             goto err_exit;
         }
 
-        rc = doPortProfileOpCommon(nltarget_kernel, NULL, ifindex,
-                                   macaddr,
-                                   vlanid,
-                                   virtPort->u.virtPort8021Qbh.profileID,
-                                   NULL,
-                                   vm_uuid,
-                                   hostuuid,
-                                   vf,
-                                   (virtPortOp == VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE_RR) ?
-                                    PORT_REQUEST_PREASSOCIATE_RR
-                                    : PORT_REQUEST_ASSOCIATE);
+        rc = virNetDevVPortProfileOpCommon(NULL, ifindex,
+                                           nltarget_kernel,
+                                           macaddr,
+                                           vlanid,
+                                           virtPort->u.virtPort8021Qbh.profileID,
+                                           NULL,
+                                           vm_uuid,
+                                           hostuuid,
+                                           vf,
+                                           (virtPortOp == VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE_RR) ?
+                                           PORT_REQUEST_PREASSOCIATE_RR
+                                           : PORT_REQUEST_ASSOCIATE);
         if (rc == -2)
             /* Association timed out, disassociate */
-            doPortProfileOpCommon(nltarget_kernel, NULL, ifindex,
-                                  NULL,
-                                  vlanid,
-                                  NULL,
-                                  NULL,
-                                  NULL,
-                                  NULL,
-                                  vf,
-                                  PORT_REQUEST_DISASSOCIATE);
+            virNetDevVPortProfileOpCommon(NULL, ifindex,
+                                          nltarget_kernel,
+                                          NULL,
+                                          vlanid,
+                                          NULL,
+                                          NULL,
+                                          NULL,
+                                          NULL,
+                                          vf,
+                                          PORT_REQUEST_DISASSOCIATE);
         break;
 
     case VIR_NETDEV_VPORT_PROFILE_LINK_OP_DISASSOCIATE:
-        rc = doPortProfileOpCommon(nltarget_kernel, NULL, ifindex,
-                                   NULL,
-                                   vlanid,
-                                   NULL,
-                                   NULL,
-                                   NULL,
-                                   NULL,
-                                   vf,
-                                   PORT_REQUEST_DISASSOCIATE);
+        rc = virNetDevVPortProfileOpCommon(NULL, ifindex,
+                                           nltarget_kernel,
+                                           NULL,
+                                           vlanid,
+                                           NULL,
+                                           NULL,
+                                           NULL,
+                                           NULL,
+                                           vf,
+                                           PORT_REQUEST_DISASSOCIATE);
         break;
 
     default:
@@ -1071,7 +1079,7 @@ err_exit:
 }
 
 /**
- * vpAssociatePortProfile
+ * virNetDevVPortProfileAssociate:
  *
  * @macvtap_ifname: The name of the macvtap device
  * @virtPort: pointer to the object holding port profile parameters
@@ -1088,21 +1096,21 @@ err_exit:
  * having been reported.
  */
 int
-vpAssociatePortProfileId(const char *macvtap_ifname,
-                         const unsigned char *macvtap_macaddr,
-                         const char *linkdev,
-                         const virNetDevVPortProfilePtr virtPort,
-                         const unsigned char *vmuuid,
-                         enum virVMOperationType vmOp)
+virNetDevVPortProfileAssociate(const char *macvtap_ifname,
+                               const virNetDevVPortProfilePtr virtPort,
+                               const unsigned char *macvtap_macaddr,
+                               const char *linkdev,
+                               const unsigned char *vmuuid,
+                               enum virNetDevVPortProfileOp vmOp)
 {
     int rc = 0;
 
     VIR_DEBUG("Associating port profile '%p' on link device '%s'",
               virtPort, macvtap_ifname);
 
-    VIR_DEBUG("%s: VM OPERATION: %s", __FUNCTION__, virVMOperationTypeToString(vmOp));
+    VIR_DEBUG("%s: VM OPERATION: %s", __FUNCTION__, virNetDevVPortProfileOpTypeToString(vmOp));
 
-    if (!virtPort || vmOp == VIR_VM_OP_NO_OP)
+    if (!virtPort || vmOp == VIR_NETDEV_VPORT_PROFILE_OP_NO_OP)
         return 0;
 
     switch (virtPort->virtPortType) {
@@ -1111,20 +1119,20 @@ vpAssociatePortProfileId(const char *macvtap_ifname,
         break;
 
     case VIR_NETDEV_VPORT_PROFILE_8021QBG:
-        rc = doPortProfileOp8021Qbg(macvtap_ifname, macvtap_macaddr,
-                                    virtPort,
-                                    (vmOp == VIR_VM_OP_MIGRATE_IN_START)
-                                    ? VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE
-                                    : VIR_NETDEV_VPORT_PROFILE_LINK_OP_ASSOCIATE);
+        rc = virNetDevVPortProfileOp8021Qbg(macvtap_ifname, macvtap_macaddr,
+                                            virtPort,
+                                            (vmOp == VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_START)
+                                            ? VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE
+                                            : VIR_NETDEV_VPORT_PROFILE_LINK_OP_ASSOCIATE);
         break;
 
     case VIR_NETDEV_VPORT_PROFILE_8021QBH:
-        rc = doPortProfileOp8021Qbh(linkdev, macvtap_macaddr,
-                                    virtPort, vmuuid,
-                                    (vmOp == VIR_VM_OP_MIGRATE_IN_START)
-                                    ? VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE_RR
-                                    : VIR_NETDEV_VPORT_PROFILE_LINK_OP_ASSOCIATE);
-        if (vmOp != VIR_VM_OP_MIGRATE_IN_START && !rc) {
+        rc = virNetDevVPortProfileOp8021Qbh(linkdev, macvtap_macaddr,
+                                            virtPort, vmuuid,
+                                            (vmOp == VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_START)
+                                            ? VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE_RR
+                                            : VIR_NETDEV_VPORT_PROFILE_LINK_OP_ASSOCIATE);
+        if (vmOp != VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_START && !rc) {
             /* XXX bogus error handling */
             ignore_value(virNetDevSetOnline(linkdev, true));
         }
@@ -1137,7 +1145,7 @@ vpAssociatePortProfileId(const char *macvtap_ifname,
 
 
 /**
- * vpDisassociatePortProfile
+ * virNetDevVPortProfileDisassociate:
  *
  * @macvtap_ifname: The name of the macvtap device
  * @macvtap_macaddr : The MAC address of the macvtap
@@ -1148,18 +1156,18 @@ vpAssociatePortProfileId(const char *macvtap_ifname,
  * having been reported.
  */
 int
-vpDisassociatePortProfileId(const char *macvtap_ifname,
-                            const unsigned char *macvtap_macaddr,
-                            const char *linkdev,
-                            const virNetDevVPortProfilePtr virtPort,
-                            enum virVMOperationType vmOp)
+virNetDevVPortProfileDisassociate(const char *macvtap_ifname,
+                                  const virNetDevVPortProfilePtr virtPort,
+                                  const unsigned char *macvtap_macaddr,
+                                  const char *linkdev,
+                                  enum virNetDevVPortProfileOp vmOp)
 {
     int rc = 0;
 
     VIR_DEBUG("Disassociating port profile id '%p' on link device '%s' ",
               virtPort, macvtap_ifname);
 
-    VIR_DEBUG("%s: VM OPERATION: %s", __FUNCTION__, virVMOperationTypeToString(vmOp));
+    VIR_DEBUG("%s: VM OPERATION: %s", __FUNCTION__, virNetDevVPortProfileOpTypeToString(vmOp));
 
     if (!virtPort)
        return 0;
@@ -1170,18 +1178,18 @@ vpDisassociatePortProfileId(const char *macvtap_ifname,
         break;
 
     case VIR_NETDEV_VPORT_PROFILE_8021QBG:
-        rc = doPortProfileOp8021Qbg(macvtap_ifname, macvtap_macaddr,
-                                    virtPort, VIR_NETDEV_VPORT_PROFILE_LINK_OP_DISASSOCIATE);
+        rc = virNetDevVPortProfileOp8021Qbg(macvtap_ifname, macvtap_macaddr,
+                                            virtPort, VIR_NETDEV_VPORT_PROFILE_LINK_OP_DISASSOCIATE);
         break;
 
     case VIR_NETDEV_VPORT_PROFILE_8021QBH:
         /* avoid disassociating twice */
-        if (vmOp == VIR_VM_OP_MIGRATE_IN_FINISH)
+        if (vmOp == VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_FINISH)
             break;
         ignore_value(virNetDevSetOnline(linkdev, false));
-        rc = doPortProfileOp8021Qbh(linkdev, macvtap_macaddr,
-                                    virtPort, NULL,
-                                    VIR_NETDEV_VPORT_PROFILE_LINK_OP_DISASSOCIATE);
+        rc = virNetDevVPortProfileOp8021Qbh(linkdev, macvtap_macaddr,
+                                            virtPort, NULL,
+                                            VIR_NETDEV_VPORT_PROFILE_LINK_OP_DISASSOCIATE);
         break;
     }
 
@@ -1190,12 +1198,12 @@ vpDisassociatePortProfileId(const char *macvtap_ifname,
 
 #endif /* WITH_MACVTAP || WITH_VIRTUALPORT */
 
-VIR_ENUM_IMPL(virVMOperation, VIR_VM_OP_LAST,
-    "create",
-    "save",
-    "restore",
-    "destroy",
-    "migrate out",
-    "migrate in start",
-    "migrate in finish",
-    "no-op")
+VIR_ENUM_IMPL(virNetDevVPortProfileOp, VIR_NETDEV_VPORT_PROFILE_OP_LAST,
+              "create",
+              "save",
+              "restore",
+              "destroy",
+              "migrate out",
+              "migrate in start",
+              "migrate in finish",
+              "no-op")

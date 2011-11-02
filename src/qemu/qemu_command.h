@@ -50,7 +50,7 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    const char *migrateFrom,
                                    int migrateFd,
                                    virDomainSnapshotObjPtr current_snapshot,
-                                   enum virVMOperationType vmop)
+                                   enum virNetDevVPortProfileOp vmop)
     ATTRIBUTE_NONNULL(1);
 
 /* With vlan == -1, use netdev syntax, else old hostnet */
@@ -135,7 +135,7 @@ int qemuPhysIfaceConnect(virDomainDefPtr def,
                          struct qemud_driver *driver,
                          virDomainNetDefPtr net,
                          virBitmapPtr qemuCaps,
-                         enum virVMOperationType vmop);
+                         enum virNetDevVPortProfileOp vmop);
 
 int qemuOpenVhostNet(virDomainDefPtr def,
                      virDomainNetDefPtr net,

@@ -139,7 +139,7 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
                      struct qemud_driver *driver,
                      virDomainNetDefPtr net,
                      virBitmapPtr qemuCaps,
-                     enum virVMOperationType vmop)
+                     enum virNetDevVPortProfileOp vmop)
 {
     int rc;
 #if WITH_MACVTAP
@@ -150,14 +150,14 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
         net->model && STREQ(net->model, "virtio"))
         vnet_hdr = 1;
 
-    rc = openMacvtapTap(net->ifname, net->mac,
-                        virDomainNetGetActualDirectDev(net),
-                        virDomainNetGetActualDirectMode(net),
-                        vnet_hdr, def->uuid,
-                        virDomainNetGetActualDirectVirtPortProfile(net),
-                        &res_ifname,
-                        vmop, driver->stateDir,
-                        virDomainNetGetActualBandwidth(net));
+    rc = virNetDevMacVLanCreate(net->ifname, net->mac,
+                                virDomainNetGetActualDirectDev(net),
+                                virDomainNetGetActualDirectMode(net),
+                                vnet_hdr, def->uuid,
+                                virDomainNetGetActualDirectVirtPortProfile(net),
+                                &res_ifname,
+                                vmop, driver->stateDir,
+                                virDomainNetGetActualBandwidth(net));
     if (rc >= 0) {
         virDomainAuditNetDevice(def, net, res_ifname, true);
         VIR_FREE(net->ifname);
@@ -3479,7 +3479,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                      const char *migrateFrom,
                      int migrateFd,
                      virDomainSnapshotObjPtr snapshot,
-                     enum virVMOperationType vmop)
+                     enum virNetDevVPortProfileOp vmop)
 {
     int i;
     struct utsname ut;

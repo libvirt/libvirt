@@ -29,65 +29,73 @@
 # include "virnetdevvportprofile.h"
 
 /* the mode type for macvtap devices */
-enum virMacvtapMode {
-    VIR_MACVTAP_MODE_VEPA,
-    VIR_MACVTAP_MODE_PRIVATE,
-    VIR_MACVTAP_MODE_BRIDGE,
-    VIR_MACVTAP_MODE_PASSTHRU,
+enum virNetDevMacVLanMode {
+    VIR_NETDEV_MACVLAN_MODE_VEPA,
+    VIR_NETDEV_MACVLAN_MODE_PRIVATE,
+    VIR_NETDEV_MACVLAN_MODE_BRIDGE,
+    VIR_NETDEV_MACVLAN_MODE_PASSTHRU,
 
-    VIR_MACVTAP_MODE_LAST,
+    VIR_NETDEV_MACVLAN_MODE_LAST,
 };
 
-enum virVMOperationType {
-    VIR_VM_OP_CREATE,
-    VIR_VM_OP_SAVE,
-    VIR_VM_OP_RESTORE,
-    VIR_VM_OP_DESTROY,
-    VIR_VM_OP_MIGRATE_OUT,
-    VIR_VM_OP_MIGRATE_IN_START,
-    VIR_VM_OP_MIGRATE_IN_FINISH,
-    VIR_VM_OP_NO_OP,
+enum virNetDevVPortProfileOp {
+    VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
+    VIR_NETDEV_VPORT_PROFILE_OP_SAVE,
+    VIR_NETDEV_VPORT_PROFILE_OP_RESTORE,
+    VIR_NETDEV_VPORT_PROFILE_OP_DESTROY,
+    VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_OUT,
+    VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_START,
+    VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_FINISH,
+    VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
 
-    VIR_VM_OP_LAST
+    VIR_NETDEV_VPORT_PROFILE_OP_LAST
 };
 
 # if WITH_MACVTAP
 
-int openMacvtapTap(const char *ifname,
-                   const unsigned char *macaddress,
-                   const char *linkdev,
-                   enum virMacvtapMode mode,
-                   int vnet_hdr,
-                   const unsigned char *vmuuid,
-                   virNetDevVPortProfilePtr virtPortProfile,
-                   char **res_ifname,
-                   enum virVMOperationType vmop,
-                   char *stateDir,
-                   virNetDevBandwidthPtr bandwidth);
+int virNetDevMacVLanCreate(const char *ifname,
+                           const unsigned char *macaddress,
+                           const char *linkdev,
+                           enum virNetDevMacVLanMode mode,
+                           int vnet_hdr,
+                           const unsigned char *vmuuid,
+                           virNetDevVPortProfilePtr virtPortProfile,
+                           char **res_ifname,
+                           enum virNetDevVPortProfileOp vmop,
+                           char *stateDir,
+                           virNetDevBandwidthPtr bandwidth)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(6)
+    ATTRIBUTE_NONNULL(8) ATTRIBUTE_NONNULL(10) ATTRIBUTE_RETURN_CHECK;
 
-void delMacvtap(const char *ifname,
-                const unsigned char *macaddress,
-                const char *linkdev,
-                int mode,
-                virNetDevVPortProfilePtr virtPortProfile,
-                char *stateDir);
+int virNetDevMacVLanDelete(const char *ifname,
+                           const unsigned char *macaddress,
+                           const char *linkdev,
+                           int mode,
+                           virNetDevVPortProfilePtr virtPortProfile,
+                           char *stateDir)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(6) ATTRIBUTE_RETURN_CHECK;
 
-int vpAssociatePortProfileId(const char *macvtap_ifname,
-                             const unsigned char *macvtap_macaddr,
-                             const char *linkdev,
-                             const virNetDevVPortProfilePtr virtPort,
-                             const unsigned char *vmuuid,
-                             enum virVMOperationType vmOp);
+int virNetDevVPortProfileAssociate(const char *ifname,
+                                   const virNetDevVPortProfilePtr virtPort,
+                                   const unsigned char *macaddr,
+                                   const char *linkdev,
+                                   const unsigned char *vmuuid,
+                                   enum virNetDevVPortProfileOp vmOp)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
+    ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
 
-int vpDisassociatePortProfileId(const char *macvtap_ifname,
-                                const unsigned char *macvtap_macaddr,
-                                const char *linkdev,
-                                const virNetDevVPortProfilePtr virtPort,
-                                enum virVMOperationType vmOp);
+int virNetDevVPortProfileDisassociate(const char *ifname,
+                                      const virNetDevVPortProfilePtr virtPort,
+                                      const unsigned char *macaddr,
+                                      const char *linkdev,
+                                      enum virNetDevVPortProfileOp vmOp)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
+    ATTRIBUTE_RETURN_CHECK;
 
 # endif /* WITH_MACVTAP */
 
-VIR_ENUM_DECL(virVMOperation)
-VIR_ENUM_DECL(virMacvtapMode)
+VIR_ENUM_DECL(virNetDevVPortProfileOp)
+VIR_ENUM_DECL(virNetDevMacVLanMode)
 
 #endif /* __UTIL_MACVTAP_H__ */

@@ -2816,7 +2816,7 @@ int qemuProcessStart(virConnectPtr conn,
                      int stdin_fd,
                      const char *stdin_path,
                      virDomainSnapshotObjPtr snapshot,
-                     enum virVMOperationType vmop)
+                     enum virNetDevVPortProfileOp vmop)
 {
     int ret;
     off_t pos = -1;
@@ -3412,11 +3412,11 @@ void qemuProcessStop(struct qemud_driver *driver,
         virDomainNetDefPtr net = def->nets[i];
 #if WITH_MACVTAP
         if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
-            delMacvtap(net->ifname, net->mac,
-                       virDomainNetGetActualDirectDev(net),
-                       virDomainNetGetActualDirectMode(net),
-                       virDomainNetGetActualDirectVirtPortProfile(net),
-                       driver->stateDir);
+            ignore_value(virNetDevMacVLanDelete(net->ifname, net->mac,
+                                                virDomainNetGetActualDirectDev(net),
+                                                virDomainNetGetActualDirectMode(net),
+                                                virDomainNetGetActualDirectVirtPortProfile(net),
+                                                driver->stateDir));
             VIR_FREE(net->ifname);
         }
 #endif

@@ -1147,7 +1147,7 @@ qemuMigrationPrepareAny(struct qemud_driver *driver,
      */
     if (qemuProcessStart(dconn, driver, vm, migrateFrom, true,
                          true, dataFD[0], NULL, NULL,
-                         VIR_VM_OP_MIGRATE_IN_START) < 0) {
+                         VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_START) < 0) {
         virDomainAuditStart(vm, "migrated", false);
         /* Note that we don't set an error here because qemuProcessStart
          * should have already done that.
@@ -2522,12 +2522,12 @@ qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def) {
     for (i = 0; i < def->nnets; i++) {
         net = def->nets[i];
         if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
-            if (vpAssociatePortProfileId(net->ifname,
-                                         net->mac,
-                                         virDomainNetGetActualDirectDev(net),
-                                         virDomainNetGetActualDirectVirtPortProfile(net),
-                                         def->uuid,
-                                         VIR_VM_OP_MIGRATE_IN_FINISH) < 0)
+            if (virNetDevVPortProfileAssociate(net->ifname,
+                                               virDomainNetGetActualDirectVirtPortProfile(net),
+                                               net->mac,
+                                               virDomainNetGetActualDirectDev(net),
+                                               def->uuid,
+                                               VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_FINISH) < 0)
                 goto err_exit;
         }
         last_good_net = i;
@@ -2539,11 +2539,11 @@ err_exit:
     for (i = 0; i < last_good_net; i++) {
         net = def->nets[i];
         if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
-            vpDisassociatePortProfileId(net->ifname,
-                                        net->mac,
-                                        virDomainNetGetActualDirectDev(net),
-                                        virDomainNetGetActualDirectVirtPortProfile(net),
-                                        VIR_VM_OP_MIGRATE_IN_FINISH);
+            ignore_value(virNetDevVPortProfileDisassociate(net->ifname,
+                                                           virDomainNetGetActualDirectVirtPortProfile(net),
+                                                           net->mac,
+                                                           virDomainNetGetActualDirectDev(net),
+                                                           VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_FINISH));
         }
     }
 }

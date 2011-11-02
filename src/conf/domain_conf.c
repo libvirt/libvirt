@@ -3102,7 +3102,7 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
         mode = virXPathString("string(./source[1]/@mode)", ctxt);
         if (mode) {
             int m;
-            if ((m = virMacvtapModeTypeFromString(mode)) < 0) {
+            if ((m = virNetDevMacVLanModeTypeFromString(mode)) < 0) {
                 virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                      _("Unkown mode '%s' in interface <actual> element"),
                                      mode);
@@ -3416,14 +3416,14 @@ virDomainNetDefParseXML(virCapsPtr caps,
 
         if (mode != NULL) {
             int m;
-            if ((m = virMacvtapModeTypeFromString(mode)) < 0) {
+            if ((m = virNetDevMacVLanModeTypeFromString(mode)) < 0) {
                 virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                      _("Unkown mode has been specified"));
                 goto error;
             }
             def->data.direct.mode = m;
         } else
-            def->data.direct.mode = VIR_MACVTAP_MODE_VEPA;
+            def->data.direct.mode = VIR_NETDEV_MACVLAN_MODE_VEPA;
 
         def->data.direct.virtPortProfile = virtPort;
         virtPort = NULL;
@@ -9720,7 +9720,7 @@ virDomainActualNetDefFormat(virBufferPtr buf,
             virBufferEscapeString(buf, " dev='%s'",
                                   def->data.direct.linkdev);
 
-        mode = virMacvtapModeTypeToString(def->data.direct.mode);
+        mode = virNetDevMacVLanModeTypeToString(def->data.direct.mode);
         if (!mode) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                  _("unexpected source mode %d"),
@@ -9825,7 +9825,7 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferEscapeString(buf, "      <source dev='%s'",
                               def->data.direct.linkdev);
         virBufferAsprintf(buf, " mode='%s'",
-                          virMacvtapModeTypeToString(def->data.direct.mode));
+                          virNetDevMacVLanModeTypeToString(def->data.direct.mode));
         virBufferAddLit(buf, "/>\n");
         virBufferAdjustIndent(buf, 6);
         if (virNetDevVPortProfileFormat(def->data.direct.virtPortProfile, buf) < 0)

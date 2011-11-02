@@ -2781,16 +2781,16 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         iface->data.network.actual->type = VIR_DOMAIN_NET_TYPE_DIRECT;
         switch (netdef->forwardType) {
         case VIR_NETWORK_FORWARD_BRIDGE:
-            iface->data.network.actual->data.direct.mode = VIR_MACVTAP_MODE_BRIDGE;
+            iface->data.network.actual->data.direct.mode = VIR_NETDEV_MACVLAN_MODE_BRIDGE;
             break;
         case VIR_NETWORK_FORWARD_PRIVATE:
-            iface->data.network.actual->data.direct.mode = VIR_MACVTAP_MODE_PRIVATE;
+            iface->data.network.actual->data.direct.mode = VIR_NETDEV_MACVLAN_MODE_PRIVATE;
             break;
         case VIR_NETWORK_FORWARD_VEPA:
-            iface->data.network.actual->data.direct.mode = VIR_MACVTAP_MODE_VEPA;
+            iface->data.network.actual->data.direct.mode = VIR_NETDEV_MACVLAN_MODE_VEPA;
             break;
         case VIR_NETWORK_FORWARD_PASSTHROUGH:
-            iface->data.network.actual->data.direct.mode = VIR_MACVTAP_MODE_PASSTHRU;
+            iface->data.network.actual->data.direct.mode = VIR_NETDEV_MACVLAN_MODE_PASSTHRU;
             break;
         }
 
