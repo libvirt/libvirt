@@ -115,7 +115,6 @@ src/util/iohelper.c
 src/util/interface.c
 src/util/iptables.c
 src/util/json.c
-src/util/macvtap.c
 src/util/netlink.c
 src/util/pci.c
 src/util/processinfo.c
@@ -128,7 +127,9 @@ src/util/viraudit.c
 src/util/virfile.c
 src/util/virnetdev.c
 src/util/virnetdevbridge.c
+src/util/virnetdevmacvlan.c
 src/util/virnetdevtap.c
+src/util/virnetdevvportprofile.c
 src/util/virpidfile.c
 src/util/virsocketaddr.c
 src/util/virterror.c

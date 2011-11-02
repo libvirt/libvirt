@@ -2512,7 +2512,6 @@ qemuMigrationPerform(struct qemud_driver *driver,
     }
 }
 
-#if WITH_MACVTAP
 static void
 qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def) {
     int i;
@@ -2547,10 +2546,6 @@ err_exit:
         }
     }
 }
-#else /* !WITH_MACVTAP */
-static void
-qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def ATTRIBUTE_UNUSED) { }
-#endif /* WITH_MACVTAP */
 
 
 virDomainPtr

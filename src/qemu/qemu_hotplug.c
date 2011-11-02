@@ -1909,7 +1909,6 @@ int qemuDomainDetachNetDevice(struct qemud_driver *driver,
 
     virDomainConfNWFilterTeardown(detach);
 
-#if WITH_MACVTAP
     if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_DIRECT) {
         ignore_value(virNetDevMacVLanDelete(detach->ifname, detach->mac,
                                             virDomainNetGetActualDirectDev(detach),
@@ -1918,7 +1917,6 @@ int qemuDomainDetachNetDevice(struct qemud_driver *driver,
                                             driver->stateDir));
         VIR_FREE(detach->ifname);
     }
-#endif
 
     if ((driver->macFilter) && (detach->ifname != NULL)) {
         if ((errno = networkDisallowMacOnPort(driver,

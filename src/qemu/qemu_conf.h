@@ -39,7 +39,6 @@
 # include "cpu_conf.h"
 # include "driver.h"
 # include "bitmap.h"
-# include "macvtap.h"
 # include "command.h"
 # include "threadpool.h"
 # include "locking/lock_manager.h"

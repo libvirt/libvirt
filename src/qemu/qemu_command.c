@@ -142,7 +142,6 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
                      enum virNetDevVPortProfileOp vmop)
 {
     int rc;
-#if WITH_MACVTAP
     char *res_ifname = NULL;
     int vnet_hdr = 0;
 
@@ -164,16 +163,6 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
         net->ifname = res_ifname;
     }
 
-#else
-    (void)def;
-    (void)net;
-    (void)qemuCaps;
-    (void)driver;
-    (void)vmop;
-    qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                    "%s", _("No support for macvtap device"));
-    rc = -1;
-#endif
     return rc;
 }
 

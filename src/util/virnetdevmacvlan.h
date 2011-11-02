@@ -37,21 +37,7 @@ enum virNetDevMacVLanMode {
 
     VIR_NETDEV_MACVLAN_MODE_LAST,
 };
-
-enum virNetDevVPortProfileOp {
-    VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
-    VIR_NETDEV_VPORT_PROFILE_OP_SAVE,
-    VIR_NETDEV_VPORT_PROFILE_OP_RESTORE,
-    VIR_NETDEV_VPORT_PROFILE_OP_DESTROY,
-    VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_OUT,
-    VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_START,
-    VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_FINISH,
-    VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
-
-    VIR_NETDEV_VPORT_PROFILE_OP_LAST
-};
-
-# if WITH_MACVTAP
+VIR_ENUM_DECL(virNetDevMacVLanMode)
 
 int virNetDevMacVLanCreate(const char *ifname,
                            const unsigned char *macaddress,
@@ -75,27 +61,5 @@ int virNetDevMacVLanDelete(const char *ifname,
                            char *stateDir)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(6) ATTRIBUTE_RETURN_CHECK;
-
-int virNetDevVPortProfileAssociate(const char *ifname,
-                                   const virNetDevVPortProfilePtr virtPort,
-                                   const unsigned char *macaddr,
-                                   const char *linkdev,
-                                   const unsigned char *vmuuid,
-                                   enum virNetDevVPortProfileOp vmOp)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
-    ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
-
-int virNetDevVPortProfileDisassociate(const char *ifname,
-                                      const virNetDevVPortProfilePtr virtPort,
-                                      const unsigned char *macaddr,
-                                      const char *linkdev,
-                                      enum virNetDevVPortProfileOp vmOp)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
-    ATTRIBUTE_RETURN_CHECK;
-
-# endif /* WITH_MACVTAP */
-
-VIR_ENUM_DECL(virNetDevVPortProfileOp)
-VIR_ENUM_DECL(virNetDevMacVLanMode)
 
 #endif /* __UTIL_MACVTAP_H__ */

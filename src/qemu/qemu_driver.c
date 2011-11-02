@@ -77,7 +77,6 @@
 #include "libvirt_internal.h"
 #include "xml.h"
 #include "cpu/cpu.h"
-#include "macvtap.h"
 #include "sysinfo.h"
 #include "domain_nwfilter.h"
 #include "hooks.h"

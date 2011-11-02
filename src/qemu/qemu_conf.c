@@ -49,7 +49,6 @@
 #include "xml.h"
 #include "nodeinfo.h"
 #include "logging.h"
-#include "macvtap.h"
 #include "cpu/cpu.h"
 #include "domain_nwfilter.h"
 #include "virfile.h"

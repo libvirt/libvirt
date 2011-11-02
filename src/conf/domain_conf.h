@@ -38,7 +38,7 @@
 # include "virsocketaddr.h"
 # include "nwfilter_params.h"
 # include "nwfilter_conf.h"
-# include "macvtap.h"
+# include "virnetdevmacvlan.h"
 # include "sysinfo.h"
 # include "virnetdevvportprofile.h"
 # include "virnetdevbandwidth.h"

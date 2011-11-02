@@ -3410,7 +3410,6 @@ void qemuProcessStop(struct qemud_driver *driver,
     def = vm->def;
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
-#if WITH_MACVTAP
         if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
             ignore_value(virNetDevMacVLanDelete(net->ifname, net->mac,
                                                 virDomainNetGetActualDirectDev(net),
@@ -3419,7 +3418,6 @@ void qemuProcessStop(struct qemud_driver *driver,
                                                 driver->stateDir));
             VIR_FREE(net->ifname);
         }
-#endif
         /* release the physical device (or any other resources used by
          * this interface in the network driver
          */

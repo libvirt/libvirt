@@ -67,7 +67,6 @@ UTIL_SOURCES =							\
 		util/dnsmasq.c util/dnsmasq.h                   \
 		util/json.c util/json.h				\
 		util/logging.c util/logging.h			\
-		util/macvtap.c util/macvtap.h			\
 		util/memory.c util/memory.h			\
 		util/netlink.c util/netlink.h			\
 		util/pci.c util/pci.h				\
@@ -95,6 +94,7 @@ UTIL_SOURCES =							\
 		util/virnetdev.h util/virnetdev.c		\
 		util/virnetdevbandwidth.h util/virnetdevbandwidth.c \
 		util/virnetdevbridge.h util/virnetdevbridge.c	\
+		util/virnetdevmacvlan.c util/virnetdevmacvlan.h	\
 		util/virnetdevtap.h util/virnetdevtap.c		\
 		util/virnetdevveth.h util/virnetdevveth.c \
 		util/virnetdevvportprofile.h util/virnetdevvportprofile.c \
