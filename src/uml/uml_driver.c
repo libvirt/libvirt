@@ -62,6 +62,7 @@
 #include "virfile.h"
 #include "fdstream.h"
 #include "configmake.h"
+#include "virnetdevtap.h"
 
 #define VIR_FROM_THIS VIR_FROM_UML
 

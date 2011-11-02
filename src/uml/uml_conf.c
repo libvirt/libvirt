@@ -43,11 +43,11 @@
 #include "util.h"
 #include "memory.h"
 #include "nodeinfo.h"
-#include "bridge.h"
 #include "logging.h"
 #include "domain_nwfilter.h"
 #include "virfile.h"
 #include "command.h"
+#include "virnetdevtap.h"
 
 #define VIR_FROM_THIS VIR_FROM_UML
 

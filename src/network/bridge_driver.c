@@ -42,6 +42,7 @@
 #include <stdio.h>
 #include <sys/wait.h>
 #include <sys/ioctl.h>
+#include <net/if.h>
 
 #include "virterror_internal.h"
 #include "datatypes.h"
@@ -55,13 +56,15 @@
 #include "memory.h"
 #include "uuid.h"
 #include "iptables.h"
-#include "bridge.h"
 #include "interface.h"
 #include "logging.h"
 #include "dnsmasq.h"
 #include "util/network.h"
 #include "configmake.h"
 #include "ignore-value.h"
+#include "virnetdev.h"
+#include "virnetdevbridge.h"
+#include "virnetdevtap.h"
 
 #define NETWORK_PID_DIR LOCALSTATEDIR "/run/libvirt/network"
 #define NETWORK_STATE_DIR LOCALSTATEDIR "/lib/libvirt/network"

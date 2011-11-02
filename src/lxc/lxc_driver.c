@@ -43,7 +43,7 @@
 #include "lxc_driver.h"
 #include "memory.h"
 #include "util.h"
-#include "bridge.h"
+#include "virnetdevbridge.h"
 #include "veth.h"
 #include "nodeinfo.h"
 #include "uuid.h"

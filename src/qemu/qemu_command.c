@@ -38,6 +38,7 @@
 #include "domain_audit.h"
 #include "domain_conf.h"
 #include "network/bridge_driver.h"
+#include "virnetdevtap.h"
 
 #include <sys/utsname.h>
 #include <sys/stat.h>

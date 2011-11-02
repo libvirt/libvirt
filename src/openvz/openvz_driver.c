@@ -54,7 +54,6 @@
 #include "openvz_conf.h"
 #include "nodeinfo.h"
 #include "memory.h"
-#include "bridge.h"
 #include "virfile.h"
 #include "logging.h"
 #include "command.h"

@@ -54,7 +54,6 @@ augeastest_DATA =
 UTIL_SOURCES =							\
 		util/authhelper.c util/authhelper.h		\
 		util/bitmap.c util/bitmap.h			\
-		util/bridge.c util/bridge.h			\
 		util/buf.c util/buf.h				\
 		util/command.c util/command.h			\
 		util/conf.c util/conf.h				\
@@ -93,7 +92,10 @@ UTIL_SOURCES =							\
 		util/xml.c util/xml.h				\
 		util/virterror.c util/virterror_internal.h	\
 		util/virkeycode.c util/virkeycode.h		\
-		util/virkeymaps.h
+		util/virkeymaps.h				\
+		util/virnetdev.h util/virnetdev.c		\
+		util/virnetdevbridge.h util/virnetdevbridge.c	\
+		util/virnetdevtap.h util/virnetdevtap.c
 
 EXTRA_DIST += $(srcdir)/util/virkeymaps.h $(srcdir)/util/keymaps.csv \
 		$(srcdir)/util/virkeycode-mapgen.py
