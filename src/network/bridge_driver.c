@@ -1727,7 +1727,7 @@ networkStartNetworkVirtual(struct network_driver *driver,
         goto err1;
 
     if (virNetDevBridgeSetSTP(network->def->bridge,
-                              network->def->stp ? 1 : 0) < 0)
+                              network->def->stp ? true : false) < 0)
         goto err1;
 
     /* Disable IPv6 on the bridge if there are no IPv6 addresses

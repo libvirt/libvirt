@@ -76,10 +76,10 @@ int virNetDevTapDelete(const char *ifname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevSetOnline(const char *ifname,
-                       int up)
+                       bool online)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 int virNetDevIsOnline(const char *ifname,
-                      int *up)
+                      bool *online)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevSetIPv4Address(const char *ifname,
@@ -98,10 +98,10 @@ int virNetDevBridgeGetSTPDelay(const char *brname,
                                int *delay)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 int virNetDevBridgeSetSTP(const char *brname,
-                          int enable)
+                          bool enable)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 int virNetDevBridgeGetSTP(const char *brname,
-                          int *enable)
+                          bool *enable)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevTapCreate(char **ifname,

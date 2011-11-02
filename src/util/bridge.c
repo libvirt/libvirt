@@ -605,14 +605,14 @@ cleanup:
 /**
  * virNetDevSetOnline:
  * @ifname: the interface name
- * @up: 1 for up, 0 for down
+ * @online: true for up, false for down
  *
- * Function to control if an interface is activated (up, 1) or not (down, 0)
+ * Function to control if an interface is activated (up, true) or not (down, false)
  *
  * Returns 0 in case of success or -1 on error.
  */
 int virNetDevSetOnline(const char *ifname,
-                       int up)
+                       bool online)
 {
     int fd = -1;
     int ret = -1;
@@ -629,7 +629,7 @@ int virNetDevSetOnline(const char *ifname,
         goto cleanup;
     }
 
-    if (up)
+    if (online)
         ifflags = ifr.ifr_flags | IFF_UP;
     else
         ifflags = ifr.ifr_flags & ~IFF_UP;
@@ -654,14 +654,14 @@ cleanup:
 /**
  * virNetDevIsOnline:
  * @ifname: the interface name
- * @up: where to store the status
+ * @online: where to store the status
  *
- * Function to query if an interface is activated (1) or not (0)
+ * Function to query if an interface is activated (true) or not (false)
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
 int virNetDevIsOnline(const char *ifname,
-                      int *up)
+                      bool *online)
 {
     int fd = -1;
     int ret = -1;
@@ -677,7 +677,7 @@ int virNetDevIsOnline(const char *ifname,
         goto cleanup;
     }
 
-    *up = (ifr.ifr_flags & IFF_UP) ? 1 : 0;
+    *online = (ifr.ifr_flags & IFF_UP) ? true : false;
     ret = 0;
 
 cleanup:
@@ -809,7 +809,7 @@ cleanup:
  * Returns 0 in case of success or -1 on failure
  */
 int virNetDevBridgeSetSTP(const char *brname,
-                          int enable)
+                          bool enable)
 {
     virCommandPtr cmd;
     int ret = -1;
