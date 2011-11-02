@@ -2709,11 +2709,12 @@ testDomainGetSchedulerParamsFlags(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (*nparams < 1) {
-        testError(VIR_ERR_INVALID_ARG, "%s", _("Invalid parameter count"));
+    if (virStrcpyStatic(params[0].field,
+                        VIR_DOMAIN_SCHEDULER_WEIGHT) == NULL) {
+        testError(VIR_ERR_INTERNAL_ERROR, _("Field name '%s' too long"),
+                  VIR_DOMAIN_SCHEDULER_WEIGHT);
         goto cleanup;
     }
-    strcpy(params[0].field, VIR_DOMAIN_SCHEDULER_WEIGHT);
     params[0].type = VIR_TYPED_PARAM_UINT;
     /* XXX */
     /*params[0].value.ui = privdom->weight;*/
