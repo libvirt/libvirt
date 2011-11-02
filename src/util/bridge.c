@@ -365,7 +365,7 @@ cleanup:
  *
  * Returns the MTU value in case of success, or -1 on failure.
  */
-static int virNetDevGetMTU(const char *ifname)
+int virNetDevGetMTU(const char *ifname)
 {
     int fd = -1;
     int ret = -1;
@@ -398,7 +398,7 @@ cleanup:
  *
  * Returns 0 in case of success, or -1 on failure
  */
-static int virNetDevSetMTU(const char *ifname, int mtu)
+int virNetDevSetMTU(const char *ifname, int mtu)
 {
     int fd = -1;
     int ret = -1;
@@ -424,18 +424,18 @@ cleanup:
 }
 
 /**
- * brSetInterfaceMtu
- * @brname: name of the bridge interface
+ * virNetDevSetMTUFromDevice:
  * @ifname: name of the interface whose MTU we want to set
+ * @otherifname: name of the interface whose MTU we want to copy
  *
- * Sets the interface mtu to the same MTU of the bridge
+ * Sets the interface mtu to the same MTU as another interface
  *
  * Returns 0 in case of success, or -1 on failure
  */
-static int virNetDevSetMTUFromDevice(const char *brname,
-                                     const char *ifname)
+int virNetDevSetMTUFromDevice(const char *ifname,
+                              const char *otherifname)
 {
-    int mtu = virNetDevGetMTU(brname);
+    int mtu = virNetDevGetMTU(otherifname);
 
     if (mtu < 0)
         return -1;
@@ -543,7 +543,7 @@ int virNetDevTapCreateInBridgePort(const char *brname,
      * to the bridge, because the bridge will have its
      * MTU adjusted automatically when we add the new interface.
      */
-    if (virNetDevSetMTUFromDevice(brname, *ifname) < 0)
+    if (virNetDevSetMTUFromDevice(*ifname, brname) < 0)
         goto error;
 
     if (virNetDevBridgeAddPort(brname, *ifname) < 0)
