@@ -1194,14 +1194,7 @@ static int lxcSetupInterfaces(virConnectPtr conn,
 {
     int rc = -1, i;
     char *bridge = NULL;
-    brControl *brctl = NULL;
     int ret;
-
-    if ((ret = brInit(&brctl)) != 0) {
-        virReportSystemError(ret, "%s",
-                             _("Unable to initialize bridging"));
-        return -1;
-    }
 
     for (i = 0 ; i < def->nnets ; i++) {
         char *parentVeth;
@@ -1277,7 +1270,7 @@ static int lxcSetupInterfaces(virConnectPtr conn,
                 goto error_exit;
         }
 
-        if ((ret = brAddInterface(brctl, bridge, parentVeth)) != 0) {
+        if ((ret = brAddInterface(bridge, parentVeth)) != 0) {
             virReportSystemError(ret,
                                  _("Failed to add %s device to %s"),
                                  parentVeth, bridge);
@@ -1303,7 +1296,6 @@ static int lxcSetupInterfaces(virConnectPtr conn,
     rc = 0;
 
 error_exit:
-    brShutdown(brctl);
     if (rc != 0) {
         for (i = 0 ; i < def->nnets ; i++)
             networkReleaseActualDevice(def->nets[i]);

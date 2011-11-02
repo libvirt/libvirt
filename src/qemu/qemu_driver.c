@@ -815,9 +815,6 @@ qemudShutdown(void) {
     /* Free domain callback list */
     virDomainEventStateFree(qemu_driver->domainEventState);
 
-    if (qemu_driver->brctl)
-        brShutdown(qemu_driver->brctl);
-
     virCgroupFree(&qemu_driver->cgroup);
 
     virLockManagerPluginUnref(qemu_driver->lockManager);

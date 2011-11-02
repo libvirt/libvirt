@@ -55,61 +55,45 @@
 # define JIFFIES_TO_MS(j) (((j)*1000)/HZ)
 # define MS_TO_JIFFIES(ms) (((ms)*HZ)/1000)
 
-struct _brControl {
-    int fd;
-};
 
-/**
- * brInit:
- * @ctlp: pointer to bridge control return value
- *
- * Initialize a new bridge layer. In case of success
- * @ctlp will contain a pointer to the new bridge structure.
- *
- * Returns 0 in case of success, an error code otherwise.
- */
-int
-brInit(brControl **ctlp)
+static int brSetupControlFull(const char *ifname,
+                              struct ifreq *ifr,
+                              int domain,
+                              int type)
 {
     int fd;
 
-    if (!ctlp || *ctlp)
-        return EINVAL;
+    if (ifname && ifr) {
+        memset(ifr, 0, sizeof(*ifr));
 
-    fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (fd < 0 ||
-        virSetCloseExec(fd) < 0 ||
-        VIR_ALLOC(*ctlp) < 0) {
-        VIR_FORCE_CLOSE(fd);
-        return errno;
+        if (virStrcpyStatic(ifr->ifr_name, ifname) == NULL) {
+            errno = EINVAL;
+            return -1;
+        }
     }
 
-    (*ctlp)->fd = fd;
+    if ((fd = socket(domain, type, 0)) < 0)
+        return -1;
 
-    return 0;
+    if (virSetInherit(fd, false) < 0) {
+        VIR_FORCE_CLOSE(fd);
+        return -1;
+    }
+
+    return fd;
 }
 
-/**
- * brShutdown:
- * @ctl: pointer to a bridge control
- *
- * Shutdown the bridge layer and deallocate the associated structures
- */
-void
-brShutdown(brControl *ctl)
+
+static int brSetupControl(const char *ifname,
+                          struct ifreq *ifr)
 {
-    if (!ctl)
-        return;
-
-    VIR_FORCE_CLOSE(ctl->fd);
-
-    VIR_FREE(ctl);
+    return brSetupControlFull(ifname, ifr, AF_PACKET, SOCK_DGRAM);
 }
+
 
 /**
  * brAddBridge:
- * @ctl: bridge control pointer
- * @name: the bridge name
+ * @brname: the bridge name
  *
  * This function register a new bridge
  *
@@ -117,20 +101,27 @@ brShutdown(brControl *ctl)
  */
 # ifdef SIOCBRADDBR
 int
-brAddBridge(brControl *ctl,
-            const char *name)
+brAddBridge(const char *brname)
 {
-    if (!ctl || !ctl->fd || !name)
-        return EINVAL;
+    int fd = -1;
+    int ret = -1;
 
-    if (ioctl(ctl->fd, SIOCBRADDBR, name) == 0)
-        return 0;
+    if ((fd = brSetupControl(NULL, NULL)) < 0)
+        return errno;
 
-    return errno;
+    if (ioctl(fd, SIOCBRADDBR, brname) < 0) {
+        ret = errno;
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
 }
 # else
-int brAddBridge (brControl *ctl ATTRIBUTE_UNUSED,
-                 const char *name ATTRIBUTE_UNUSED)
+int brAddBridge (const char *brname ATTRIBUTE_UNUSED)
 {
     return EINVAL;
 }
@@ -138,32 +129,27 @@ int brAddBridge (brControl *ctl ATTRIBUTE_UNUSED,
 
 # ifdef SIOCBRDELBR
 int
-brHasBridge(brControl *ctl,
-            const char *name)
+brHasBridge(const char *brname)
 {
+    int fd = -1;
+    int ret = -1;
     struct ifreq ifr;
 
-    if (!ctl || !name) {
-        errno = EINVAL;
-        return -1;
-    }
+    if ((fd = brSetupControl(brname, &ifr)) < 0)
+        return errno;
 
-    memset(&ifr, 0, sizeof(struct ifreq));
+    if (ioctl(fd, SIOCGIFFLAGS, &ifr))
+        goto cleanup;
 
-    if (virStrcpyStatic(ifr.ifr_name, name) == NULL) {
-        errno = EINVAL;
-        return -1;
-    }
+    ret = 0;
 
-    if (ioctl(ctl->fd, SIOCGIFFLAGS, &ifr))
-        return -1;
-
-    return 0;
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
 }
 # else
 int
-brHasBridge(brControl *ctl ATTRIBUTE_UNUSED,
-            const char *name ATTRIBUTE_UNUSED)
+brHasBridge(const char *brname ATTRIBUTE_UNUSED)
 {
     return EINVAL;
 }
@@ -171,8 +157,7 @@ brHasBridge(brControl *ctl ATTRIBUTE_UNUSED,
 
 /**
  * brDeleteBridge:
- * @ctl: bridge control pointer
- * @name: the bridge name
+ * @brname: the bridge name
  *
  * Remove a bridge from the layer.
  *
@@ -180,52 +165,37 @@ brHasBridge(brControl *ctl ATTRIBUTE_UNUSED,
  */
 # ifdef SIOCBRDELBR
 int
-brDeleteBridge(brControl *ctl,
-               const char *name)
+brDeleteBridge(const char *brname)
 {
-    if (!ctl || !ctl->fd || !name)
-        return EINVAL;
+    int fd = -1;
+    int ret = -1;
 
-    return ioctl(ctl->fd, SIOCBRDELBR, name) == 0 ? 0 : errno;
+    if ((fd = brSetupControl(NULL, NULL)) < 0)
+        return errno;
+
+    if (ioctl(fd, SIOCBRDELBR, brname) < 0) {
+        ret = errno;
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
 }
 # else
 int
-brDeleteBridge(brControl *ctl ATTRIBUTE_UNUSED,
-               const char *name ATTRIBUTE_UNUSED)
+brDeleteBridge(const char *brname ATTRIBUTE_UNUSED)
 {
     return EINVAL;
 }
 # endif
 
-# if defined(SIOCBRADDIF) && defined(SIOCBRDELIF)
-static int
-brAddDelInterface(brControl *ctl,
-                  int cmd,
-                  const char *bridge,
-                  const char *iface)
-{
-    struct ifreq ifr;
-
-    if (!ctl || !ctl->fd || !bridge || !iface)
-        return EINVAL;
-
-    memset(&ifr, 0, sizeof(struct ifreq));
-
-    if (virStrcpyStatic(ifr.ifr_name, bridge) == NULL)
-        return EINVAL;
-
-    if (!(ifr.ifr_ifindex = if_nametoindex(iface)))
-        return ENODEV;
-
-    return ioctl(ctl->fd, cmd, &ifr) == 0 ? 0 : errno;
-}
-# endif
-
 /**
  * brAddInterface:
- * @ctl: bridge control pointer
- * @bridge: the bridge name
- * @iface: the network interface name
+ * @brname: the bridge name
+ * @ifname: the network interface name
  *
  * Adds an interface to a bridge
  *
@@ -233,17 +203,35 @@ brAddDelInterface(brControl *ctl,
  */
 # ifdef SIOCBRADDIF
 int
-brAddInterface(brControl *ctl,
-               const char *bridge,
-               const char *iface)
+brAddInterface(const char *brname,
+               const char *ifname)
 {
-    return brAddDelInterface(ctl, SIOCBRADDIF, bridge, iface);
+    int fd = -1;
+    int ret = -1;
+    struct ifreq ifr;
+
+    if ((fd = brSetupControl(brname, &ifr)) < 0)
+        return errno;
+
+    if (!(ifr.ifr_ifindex = if_nametoindex(ifname))) {
+        ret = errno;
+        goto cleanup;
+    }
+
+    if (ioctl(fd, SIOCBRADDIF, &ifr) < 0) {
+        ret = errno;
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
 }
 # else
 int
-brAddInterface(brControl *ctl ATTRIBUTE_UNUSED,
-               const char *bridge ATTRIBUTE_UNUSED,
-               const char *iface ATTRIBUTE_UNUSED)
+brAddInterface(const char *brname ATTRIBUTE_UNUSED,
+               const char *ifname ATTRIBUTE_UNUSED)
 {
     return EINVAL;
 }
@@ -251,9 +239,8 @@ brAddInterface(brControl *ctl ATTRIBUTE_UNUSED,
 
 /**
  * brDeleteInterface:
- * @ctl: bridge control pointer
- * @bridge: the bridge name
- * @iface: the network interface name
+ * @brname: the bridge name
+ * @ifname: the network interface name
  *
  * Removes an interface from a bridge
  *
@@ -261,17 +248,35 @@ brAddInterface(brControl *ctl ATTRIBUTE_UNUSED,
  */
 # ifdef SIOCBRDELIF
 int
-brDeleteInterface(brControl *ctl,
-                  const char *bridge,
-                  const char *iface)
+brDeleteInterface(const char *brname,
+                  const char *ifname)
 {
-    return brAddDelInterface(ctl, SIOCBRDELIF, bridge, iface);
+    int fd = -1;
+    int ret = -1;
+    struct ifreq ifr;
+
+    if ((fd = brSetupControl(brname, &ifr)) < 0)
+        return errno;
+
+    if (!(ifr.ifr_ifindex = if_nametoindex(ifname))) {
+        ret = errno;
+        goto cleanup;
+    }
+
+    if (ioctl(fd, SIOCBRDELIF, &ifr) < 0) {
+        ret = errno;
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
 }
 # else
 int
-brDeleteInterface(brControl *ctl ATTRIBUTE_UNUSED,
-                  const char *bridge ATTRIBUTE_UNUSED,
-                  const char *iface ATTRIBUTE_UNUSED)
+brDeleteInterface(const char *brname ATTRIBUTE_UNUSED,
+                  const char *ifname ATTRIBUTE_UNUSED)
 {
     return EINVAL;
 }
@@ -279,7 +284,6 @@ brDeleteInterface(brControl *ctl ATTRIBUTE_UNUSED,
 
 /**
  * brSetInterfaceMac:
- * @ctl: bridge control pointer
  * @ifname: interface name to set MTU for
  * @macaddr: MAC address (VIR_MAC_BUFLEN in size)
  *
@@ -289,30 +293,38 @@ brDeleteInterface(brControl *ctl ATTRIBUTE_UNUSED,
  * Returns 0 in case of success or an errno code in case of failure.
  */
 int
-brSetInterfaceMac(brControl *ctl, const char *ifname,
+brSetInterfaceMac(const char *ifname,
                   const unsigned char *macaddr)
 {
+    int fd = -1;
+    int ret = -1;
     struct ifreq ifr;
 
-    if (!ctl || !ifname)
-        return EINVAL;
-
-    memset(&ifr, 0, sizeof(struct ifreq));
-    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL)
-        return EINVAL;
+    if ((fd = brSetupControl(ifname, &ifr)) < 0)
+        return errno;
 
     /* To fill ifr.ifr_hdaddr.sa_family field */
-    if (ioctl(ctl->fd, SIOCGIFHWADDR, &ifr) != 0)
-        return errno;
+    if (ioctl(fd, SIOCGIFHWADDR, &ifr) < 0) {
+        ret = errno;
+        goto cleanup;
+    }
 
     memcpy(ifr.ifr_hwaddr.sa_data, macaddr, VIR_MAC_BUFLEN);
 
-    return ioctl(ctl->fd, SIOCSIFHWADDR, &ifr) == 0 ? 0 : errno;
+    if (ioctl(fd, SIOCSIFHWADDR, &ifr) < 0) {
+        ret = errno;
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
 }
 
 /**
  * ifGetMtu
- * @ctl: bridge control pointer
  * @ifname: interface name get MTU for
  *
  * This function gets the @mtu value set for a given interface @ifname.
@@ -320,32 +332,27 @@ brSetInterfaceMac(brControl *ctl, const char *ifname,
  * Returns the MTU value in case of success.
  * On error, returns -1 and sets errno accordingly
  */
-static int ifGetMtu(brControl *ctl, const char *ifname)
+static int ifGetMtu(const char *ifname)
 {
+    int fd = -1;
+    int ret = -1;
     struct ifreq ifr;
 
-    if (!ctl || !ifname) {
-        errno = EINVAL;
-        return -1;
-    }
-
-    memset(&ifr, 0, sizeof(struct ifreq));
-
-    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL) {
-        errno = EINVAL;
-        return -1;
-    }
-
-    if (ioctl(ctl->fd, SIOCGIFMTU, &ifr))
+    if ((fd = brSetupControl(ifname, &ifr)) < 0)
         return -1;
 
-    return ifr.ifr_mtu;
+    if (ioctl(fd, SIOCGIFMTU, &ifr) < 0)
+        goto cleanup;
 
+    ret = ifr.ifr_mtu;
+
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
 }
 
 /**
  * ifSetMtu:
- * @ctl: bridge control pointer
  * @ifname: interface name to set MTU for
  * @mtu: MTU value
  *
@@ -354,42 +361,47 @@ static int ifGetMtu(brControl *ctl, const char *ifname)
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-static int ifSetMtu(brControl *ctl, const char *ifname, int mtu)
+static int ifSetMtu(const char *ifname, int mtu)
 {
+    int fd = -1;
+    int ret = -1;
     struct ifreq ifr;
 
-    if (!ctl || !ifname)
-        return EINVAL;
+    if ((fd = brSetupControl(ifname, &ifr)) < 0)
+        return errno;
 
-    memset(&ifr, 0, sizeof(struct ifreq));
-
-    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL)
-        return EINVAL;
     ifr.ifr_mtu = mtu;
 
-    return ioctl(ctl->fd, SIOCSIFMTU, &ifr) == 0 ? 0 : errno;
+    if (ioctl(fd, SIOCSIFMTU, &ifr) < 0) {
+        ret = errno;
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
 }
 
 /**
  * brSetInterfaceMtu
- * @ctl: bridge control pointer
- * @bridge: name of the bridge interface
+ * @brname: name of the bridge interface
  * @ifname: name of the interface whose MTU we want to set
  *
  * Sets the interface mtu to the same MTU of the bridge
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-static int brSetInterfaceMtu(brControl *ctl,
-                             const char *bridge,
+static int brSetInterfaceMtu(const char *brname,
                              const char *ifname)
 {
-    int mtu = ifGetMtu(ctl, bridge);
+    int mtu = ifGetMtu(brname);
 
     if (mtu < 0)
         return errno;
 
-    return ifSetMtu(ctl, ifname, mtu);
+    return ifSetMtu(ifname, mtu);
 }
 
 /**
@@ -453,8 +465,7 @@ brProbeVnetHdr(int tapfd)
 
 /**
  * brAddTap:
- * @ctl: bridge control pointer
- * @bridge: the bridge name
+ * @brname: the bridge name
  * @ifname: the interface name (or name template)
  * @macaddr: desired MAC address (VIR_MAC_BUFLEN long)
  * @vnet_hdr: whether to try enabling IFF_VNET_HDR
@@ -471,18 +482,14 @@ brProbeVnetHdr(int tapfd)
  * Returns 0 in case of success or an errno code in case of failure.
  */
 int
-brAddTap(brControl *ctl,
-         const char *bridge,
+brAddTap(const char *brname,
          char **ifname,
          const unsigned char *macaddr,
          int vnet_hdr,
          bool up,
          int *tapfd)
 {
-    if (!ctl || !ctl->fd || !bridge || !ifname)
-        return EINVAL;
-
-    errno = brCreateTap(ctl, ifname, vnet_hdr, tapfd);
+    errno = brCreateTap(ifname, vnet_hdr, tapfd);
 
     /* fd has been closed in brCreateTap() when it failed. */
     if (errno)
@@ -494,18 +501,19 @@ brAddTap(brControl *ctl,
      * seeing the kernel allocate random MAC for the TAP
      * device before we set our static MAC.
      */
-    if ((errno = brSetInterfaceMac(ctl, *ifname, macaddr)))
+    if ((errno = brSetInterfaceMac(*ifname, macaddr)))
         goto close_fd;
     /* We need to set the interface MTU before adding it
      * to the bridge, because the bridge will have its
      * MTU adjusted automatically when we add the new interface.
      */
-    if ((errno = brSetInterfaceMtu(ctl, bridge, *ifname)))
+    if ((errno = brSetInterfaceMtu(brname, *ifname)))
         goto close_fd;
-    if ((errno = brAddInterface(ctl, bridge, *ifname)))
+    if ((errno = brAddInterface(brname, *ifname)))
         goto close_fd;
-    if (up && ((errno = brSetInterfaceUp(ctl, *ifname, 1))))
+    if (up && ((errno = brSetInterfaceUp(*ifname, 1))))
         goto close_fd;
+
     return 0;
 
 close_fd:
@@ -515,14 +523,10 @@ error:
     return errno;
 }
 
-int brDeleteTap(brControl *ctl,
-                const char *ifname)
+int brDeleteTap(const char *ifname)
 {
     struct ifreq try;
     int fd;
-
-    if (!ctl || !ctl->fd || !ifname)
-        return EINVAL;
 
     if ((fd = open("/dev/net/tun", O_RDWR)) < 0)
         return errno;
@@ -549,7 +553,6 @@ int brDeleteTap(brControl *ctl,
 
 /**
  * brSetInterfaceUp:
- * @ctl: bridge control pointer
  * @ifname: the interface name
  * @up: 1 for up, 0 for down
  *
@@ -558,39 +561,44 @@ int brDeleteTap(brControl *ctl,
  * Returns 0 in case of success or an errno code in case of failure.
  */
 int
-brSetInterfaceUp(brControl *ctl,
-                 const char *ifname,
+brSetInterfaceUp(const char *ifname,
                  int up)
 {
+    int fd = -1;
+    int ret = -1;
     struct ifreq ifr;
     int ifflags;
 
-    if (!ctl || !ifname)
-        return EINVAL;
-
-    memset(&ifr, 0, sizeof(struct ifreq));
-
-    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL)
-        return EINVAL;
-
-    if (ioctl(ctl->fd, SIOCGIFFLAGS, &ifr) < 0)
+    if ((fd = brSetupControl(ifname, &ifr)) < 0)
         return errno;
 
-    ifflags = up ? (ifr.ifr_flags | IFF_UP) : (ifr.ifr_flags & ~IFF_UP);
+    if (ioctl(fd, SIOCGIFFLAGS, &ifr) < 0) {
+        ret = errno;
+        goto cleanup;
+    }
+
+    if (up)
+        ifflags = ifr.ifr_flags | IFF_UP;
+    else
+        ifflags = ifr.ifr_flags & ~IFF_UP;
 
     if (ifr.ifr_flags != ifflags) {
         ifr.ifr_flags = ifflags;
-
-        if (ioctl(ctl->fd, SIOCSIFFLAGS, &ifr) < 0)
-            return errno;
+        if (ioctl(fd, SIOCSIFFLAGS, &ifr) < 0) {
+            ret = errno;
+            goto cleanup;
+        }
     }
 
-    return 0;
+    ret = 0;
+
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
 }
 
 /**
  * brGetInterfaceUp:
- * @ctl: bridge control pointer
  * @ifname: the interface name
  * @up: where to store the status
  *
@@ -599,31 +607,31 @@ brSetInterfaceUp(brControl *ctl,
  * Returns 0 in case of success or an errno code in case of failure.
  */
 int
-brGetInterfaceUp(brControl *ctl,
-                 const char *ifname,
+brGetInterfaceUp(const char *ifname,
                  int *up)
 {
+    int fd = -1;
+    int ret = -1;
     struct ifreq ifr;
 
-    if (!ctl || !ifname || !up)
-        return EINVAL;
-
-    memset(&ifr, 0, sizeof(struct ifreq));
-
-    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL)
-        return EINVAL;
-
-    if (ioctl(ctl->fd, SIOCGIFFLAGS, &ifr) < 0)
+    if ((fd = brSetupControl(ifname, &ifr)) < 0)
         return errno;
 
-    *up = (ifr.ifr_flags & IFF_UP) ? 1 : 0;
+    if (ioctl(fd, SIOCGIFFLAGS, &ifr) < 0) {
+        ret = errno;
+        goto cleanup;
+    }
 
-    return 0;
+    *up = (ifr.ifr_flags & IFF_UP) ? 1 : 0;
+    ret = 0;
+
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
 }
 
 /**
  * brAddInetAddress:
- * @ctl: bridge control pointer
  * @ifname: the interface name
  * @addr: the IP address (IPv4 or IPv6)
  * @prefix: number of 1 bits in the netmask
@@ -636,8 +644,7 @@ brGetInterfaceUp(brControl *ctl,
  */
 
 int
-brAddInetAddress(brControl *ctl ATTRIBUTE_UNUSED,
-                 const char *ifname,
+brAddInetAddress(const char *ifname,
                  virSocketAddr *addr,
                  unsigned int prefix)
 {
@@ -674,7 +681,6 @@ cleanup:
 
 /**
  * brDelInetAddress:
- * @ctl: bridge control pointer
  * @ifname: the interface name
  * @addr: the IP address (IPv4 or IPv6)
  * @prefix: number of 1 bits in the netmask
@@ -685,8 +691,7 @@ cleanup:
  */
 
 int
-brDelInetAddress(brControl *ctl ATTRIBUTE_UNUSED,
-                 const char *ifname,
+brDelInetAddress(const char *ifname,
                  virSocketAddr *addr,
                  unsigned int prefix)
 {
@@ -713,8 +718,7 @@ cleanup:
 
 /**
  * brSetForwardDelay:
- * @ctl: bridge control pointer
- * @bridge: the bridge name
+ * @brname: the bridge name
  * @delay: delay in seconds
  *
  * Set the bridge forward delay
@@ -723,15 +727,14 @@ cleanup:
  */
 
 int
-brSetForwardDelay(brControl *ctl ATTRIBUTE_UNUSED,
-                  const char *bridge,
+brSetForwardDelay(const char *brname,
                   int delay)
 {
     virCommandPtr cmd;
     int ret = -1;
 
     cmd = virCommandNew(BRCTL);
-    virCommandAddArgList(cmd, "setfd", bridge, NULL);
+    virCommandAddArgList(cmd, "setfd", brname, NULL);
     virCommandAddArgFormat(cmd, "%d", delay);
 
     if (virCommandRun(cmd, NULL) < 0)
@@ -745,8 +748,7 @@ cleanup:
 
 /**
  * brSetEnableSTP:
- * @ctl: bridge control pointer
- * @bridge: the bridge name
+ * @brname: the bridge name
  * @enable: 1 to enable, 0 to disable
  *
  * Control whether the bridge participates in the spanning tree protocol,
@@ -755,15 +757,14 @@ cleanup:
  * Returns 0 in case of success or -1 on failure
  */
 int
-brSetEnableSTP(brControl *ctl ATTRIBUTE_UNUSED,
-               const char *bridge,
+brSetEnableSTP(const char *brname,
                int enable)
 {
     virCommandPtr cmd;
     int ret = -1;
 
     cmd = virCommandNew(BRCTL);
-    virCommandAddArgList(cmd, "stp", bridge,
+    virCommandAddArgList(cmd, "stp", brname,
                          enable ? "on" : "off",
                          NULL);
 
@@ -778,7 +779,6 @@ cleanup:
 
 /**
  * brCreateTap:
- * @ctl: bridge control pointer
  * @ifname: the interface name
  * @vnet_hr: whether to try enabling IFF_VNET_HDR
  * @tapfd: file descriptor return value for the new tap device
@@ -793,16 +793,12 @@ cleanup:
  */
 
 int
-brCreateTap(brControl *ctl ATTRIBUTE_UNUSED,
-            char **ifname,
+brCreateTap(char **ifname,
             int vnet_hdr ATTRIBUTE_UNUSED,
             int *tapfd)
 {
     int fd;
     struct ifreq ifr;
-
-    if (!ifname)
-        return EINVAL;
 
     if ((fd = open("/dev/net/tun", O_RDWR)) < 0)
         return errno;

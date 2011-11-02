@@ -627,9 +627,6 @@ umlShutdown(void) {
 
     umlProcessAutoDestroyShutdown(uml_driver);
 
-    if (uml_driver->brctl)
-        brShutdown(uml_driver->brctl);
-
     umlDriverUnlock(uml_driver);
     virMutexDestroy(&uml_driver->lock);
     VIR_FREE(uml_driver);
@@ -959,10 +956,7 @@ static int umlCleanupTapDevices(virDomainObjPtr vm) {
     int i;
     int err;
     int ret = 0;
-    brControl *brctl = NULL;
     VIR_ERROR(_("Cleanup tap"));
-    if (brInit(&brctl) < 0)
-        return -1;
 
     for (i = 0 ; i < vm->def->nnets ; i++) {
         virDomainNetDefPtr def = vm->def->nets[i];
@@ -972,14 +966,13 @@ static int umlCleanupTapDevices(virDomainObjPtr vm) {
             continue;
 
         VIR_ERROR(_("Cleanup '%s'"), def->ifname);
-        err = brDeleteTap(brctl, def->ifname);
+        err = brDeleteTap(def->ifname);
         if (err) {
             VIR_ERROR(_("Cleanup failed %d"), err);
             ret = -1;
         }
     }
     VIR_ERROR(_("Cleanup tap done"));
-    brShutdown(brctl);
     return ret;
 }
 

@@ -42,78 +42,76 @@
  */
 #  define BR_INET_ADDR_MAXLEN INET_ADDRSTRLEN
 
-typedef struct _brControl brControl;
+int     brAddBridge             (const char *brname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+int     brDeleteBridge          (const char *brname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+int     brHasBridge             (const char *brname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
-int     brInit                  (brControl **ctl);
-void    brShutdown              (brControl *ctl);
+int     brAddInterface          (const char *brname,
+                                 const char *ifname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
-int     brAddBridge             (brControl *ctl,
-                                 const char *name);
-int     brDeleteBridge          (brControl *ctl,
-                                 const char *name);
-int     brHasBridge             (brControl *ctl,
-                                 const char *name);
-
-int     brAddInterface          (brControl *ctl,
-                                 const char *bridge,
-                                 const char *iface);
-int     brDeleteInterface       (brControl *ctl,
-                                 const char *bridge,
-                                 const char *iface);
+int     brDeleteInterface       (const char *brname,
+                                 const char *ifname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 enum {
     BR_TAP_VNET_HDR = (1 << 0),
     BR_TAP_PERSIST =  (1 << 1),
 };
 
-int     brAddTap                (brControl *ctl,
-                                 const char *bridge,
+int     brAddTap                (const char *brname,
                                  char **ifname,
                                  const unsigned char *macaddr,
                                  int vnet_hdr,
                                  bool up,
-                                 int *tapfd);
+                                 int *tapfd)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_RETURN_CHECK;
 
-int     brDeleteTap             (brControl *ctl,
-                                 const char *ifname);
 
-int     brSetInterfaceUp        (brControl *ctl,
-                                 const char *ifname,
-                                 int up);
-int     brGetInterfaceUp        (brControl *ctl,
-                                 const char *ifname,
-                                 int *up);
+int     brDeleteTap             (const char *ifname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
-int     brAddInetAddress        (brControl *ctl,
-                                 const char *ifname,
+int     brSetInterfaceUp        (const char *ifname,
+                                 int up)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+int     brGetInterfaceUp        (const char *ifname,
+                                 int *up)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
+int     brAddInetAddress        (const char *ifname,
                                  virSocketAddr *addr,
-                                 unsigned int prefix);
-int     brDelInetAddress        (brControl *ctl,
-                                 const char *ifname,
+                                 unsigned int prefix)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+int     brDelInetAddress        (const char *ifname,
                                  virSocketAddr *addr,
-                                 unsigned int prefix);
+                                 unsigned int prefix)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
-int     brSetForwardDelay       (brControl *ctl,
-                                 const char *bridge,
-                                 int delay);
-int     brGetForwardDelay       (brControl *ctl,
-                                 const char *bridge,
-                                 int *delay);
-int     brSetEnableSTP          (brControl *ctl,
-                                 const char *bridge,
-                                 int enable);
-int     brGetEnableSTP          (brControl *ctl,
-                                 const char *bridge,
-                                 int *enable);
+int     brSetForwardDelay       (const char *brname,
+                                 int delay)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+int     brGetForwardDelay       (const char *brname,
+                                 int *delay)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+int     brSetEnableSTP          (const char *brname,
+                                 int enable)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+int     brGetEnableSTP          (const char *brname,
+                                 int *enable)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
-int     brCreateTap             (brControl *ctl,
-                                 char **ifname,
+int     brCreateTap             (char **ifname,
                                  int vnet_hdr,
-                                 int *tapfd);
+                                 int *tapfd)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
-int     brSetInterfaceMac       (brControl *ctl,
-                                 const char *ifname,
-                                 const unsigned char *macaddr);
+int     brSetInterfaceMac       (const char *ifname,
+                                 const unsigned char *macaddr)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 # endif /* WITH_BRIDGE */
 

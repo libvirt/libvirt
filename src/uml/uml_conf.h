@@ -52,7 +52,6 @@ struct uml_driver {
 
     virDomainObjList domains;
 
-    brControl *brctl;
     char *configDir;
     char *autostartDir;
     char *logDir;

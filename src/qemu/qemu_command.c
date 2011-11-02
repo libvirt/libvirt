@@ -261,12 +261,6 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         return -1;
     }
 
-    if (!driver->brctl && (err = brInit(&driver->brctl))) {
-        virReportSystemError(err, "%s",
-                             _("cannot initialize bridge support"));
-        goto cleanup;
-    }
-
     if (!net->ifname ||
         STRPREFIX(net->ifname, VIR_NET_GENERATED_PREFIX) ||
         strchr(net->ifname, '%')) {
@@ -285,7 +279,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
 
     memcpy(tapmac, net->mac, VIR_MAC_BUFLEN);
     tapmac[0] = 0xFE; /* Discourage bridge from using TAP dev MAC */
-    err = brAddTap(driver->brctl, brname, &net->ifname, tapmac,
+    err = brAddTap(brname, &net->ifname, tapmac,
                    vnet_hdr, true, &tapfd);
     virDomainAuditNetDevice(def, net, "/dev/net/tun", tapfd >= 0);
     if (err) {

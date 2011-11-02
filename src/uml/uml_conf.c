@@ -121,16 +121,9 @@ umlConnectTapDevice(virConnectPtr conn,
                     virDomainNetDefPtr net,
                     const char *bridge)
 {
-    brControl *brctl = NULL;
     bool template_ifname = false;
     int err;
     unsigned char tapmac[VIR_MAC_BUFLEN];
-
-    if ((err = brInit(&brctl))) {
-        virReportSystemError(err, "%s",
-                             _("cannot initialize bridge support"));
-        goto error;
-    }
 
     if (!net->ifname ||
         STRPREFIX(net->ifname, VIR_NET_GENERATED_PREFIX) ||
@@ -144,8 +137,7 @@ umlConnectTapDevice(virConnectPtr conn,
 
     memcpy(tapmac, net->mac, VIR_MAC_BUFLEN);
     tapmac[0] = 0xFE; /* Discourage bridge from using TAP dev MAC */
-    if ((err = brAddTap(brctl,
-                        bridge,
+    if ((err = brAddTap(bridge,
                         &net->ifname,
                         tapmac,
                         0,
@@ -183,14 +175,11 @@ umlConnectTapDevice(virConnectPtr conn,
         }
     }
 
-    brShutdown(brctl);
-
     return 0;
 
 no_memory:
     virReportOOMError();
 error:
-    brShutdown(brctl);
     return -1;
 }
 

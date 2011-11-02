@@ -69,7 +69,6 @@ struct qemud_driver {
 
     virDomainObjList domains;
 
-    brControl *brctl;
     /* These four directories are ones libvirtd uses (so must be root:root
      * to avoid security risk from QEMU processes */
     char *configDir;
