@@ -23,7 +23,7 @@
 #ifndef __VIR_NETDEV_H__
 # define __VIR_NETDEV_H__
 
-# include "network.h"
+# include "virsocketaddr.h"
 
 int virNetDevExists(const char *brname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;

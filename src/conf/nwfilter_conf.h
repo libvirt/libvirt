@@ -35,7 +35,7 @@
 # include "hash.h"
 # include "xml.h"
 # include "buf.h"
-# include "network.h"
+# include "virsocketaddr.h"
 
 /* XXX
  * The config parser/structs should not be using platform specific

@@ -25,7 +25,7 @@ struct nlattr;
 # endif
 
 # include "datatypes.h"
-# include "network.h"
+# include "virsocketaddr.h"
 
 # define NET_SYSFS "/sys/class/net/"
 

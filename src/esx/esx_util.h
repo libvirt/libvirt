@@ -23,7 +23,7 @@
 # define __ESX_UTIL_H__
 
 # include <libxml/uri.h>
-
+# include <netdb.h>
 # include "internal.h"
 
 typedef struct _esxUtil_ParsedUri esxUtil_ParsedUri;

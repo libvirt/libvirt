@@ -33,7 +33,6 @@
 # include "qemu_protocol.h"
 # include "logging.h"
 # include "threads.h"
-# include "network.h"
 # if HAVE_SASL
 #  include "virnetsaslcontext.h"
 # endif

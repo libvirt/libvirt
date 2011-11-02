@@ -42,7 +42,6 @@
 #include "buf.h"
 #include "c-ctype.h"
 #include "logging.h"
-#include "network.h"
 #include "nwfilter_conf.h"
 #include "ignore-value.h"
 #include "storage_file.h"
@@ -50,6 +49,8 @@
 #include "bitmap.h"
 #include "count-one-bits.h"
 #include "secret_conf.h"
+#include "netdev_vport_profile_conf.h"
+#include "netdev_bandwidth_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 

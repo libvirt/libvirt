@@ -23,7 +23,10 @@
 #ifndef __UTIL_MACVTAP_H__
 # define __UTIL_MACVTAP_H__
 
-# include <config.h>
+# include "internal.h"
+# include "virsocketaddr.h"
+# include "virnetdevbandwidth.h"
+# include "virnetdevvportprofile.h"
 
 /* the mode type for macvtap devices */
 enum virMacvtapMode {
@@ -49,9 +52,6 @@ enum virVMOperationType {
 };
 
 # if WITH_MACVTAP
-
-#  include "internal.h"
-#  include "network.h"
 
 int openMacvtapTap(const char *ifname,
                    const unsigned char *macaddress,

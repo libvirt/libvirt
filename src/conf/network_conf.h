@@ -30,7 +30,9 @@
 
 # include "internal.h"
 # include "threads.h"
-# include "network.h"
+# include "virsocketaddr.h"
+# include "virnetdevbandwidth.h"
+# include "virnetdevvportprofile.h"
 # include "util.h"
 
 enum virNetworkForwardType {

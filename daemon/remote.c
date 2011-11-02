@@ -38,7 +38,6 @@
 #include "util.h"
 #include "stream.h"
 #include "uuid.h"
-#include "network.h"
 #include "libvirt/libvirt-qemu.h"
 #include "command.h"
 #include "intprops.h"

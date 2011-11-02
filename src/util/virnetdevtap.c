@@ -30,6 +30,7 @@
 #include "virterror_internal.h"
 #include "memory.h"
 #include "logging.h"
+#include "util.h"
 
 #include <sys/ioctl.h>
 #ifdef HAVE_NET_IF_H

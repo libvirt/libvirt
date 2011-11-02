@@ -35,11 +35,13 @@
 # include "util.h"
 # include "threads.h"
 # include "hash.h"
-# include "network.h"
+# include "virsocketaddr.h"
 # include "nwfilter_params.h"
 # include "nwfilter_conf.h"
 # include "macvtap.h"
 # include "sysinfo.h"
+# include "virnetdevvportprofile.h"
+# include "virnetdevbandwidth.h"
 
 /* Different types of hypervisor */
 /* NB: Keep in sync with virDomainVirtTypeToString impl */

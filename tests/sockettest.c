@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "network.h"
+#include "virsocketaddr.h"
 #include "testutils.h"
 #include "logging.h"
 #include "memory.h"

@@ -58,7 +58,6 @@
 #include "interface.h"
 #include "logging.h"
 #include "dnsmasq.h"
-#include "util/network.h"
 #include "configmake.h"
 #include "ignore-value.h"
 #include "virnetdev.h"

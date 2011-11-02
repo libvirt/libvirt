@@ -29,6 +29,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <fcntl.h>
+#include <netdb.h>
 
 #ifdef HAVE_NETINET_TCP_H
 # include <netinet/tcp.h>

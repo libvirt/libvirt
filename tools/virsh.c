@@ -59,7 +59,7 @@
 #include "threads.h"
 #include "command.h"
 #include "virkeycode.h"
-#include "network.h"
+#include "virnetdevbandwidth.h"
 
 static char *progname;
 

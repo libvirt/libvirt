@@ -22,7 +22,7 @@
 #ifndef __QEMUD_IPTABLES_H__
 # define __QEMUD_IPTABLES_H__
 
-# include "network.h"
+# include "virsocketaddr.h"
 
 typedef struct _iptablesContext iptablesContext;
 

@@ -33,7 +33,7 @@
 #include "logging.h"
 #include "virfile.h"
 #include "command.h"
-#include "network.h"
+#include "virsocketaddr.h"
 #include "gnutls_1_0_compat.h"
 
 #if !defined WIN32 && HAVE_LIBTASN1_H && !defined GNUTLS_1_0_COMPAT

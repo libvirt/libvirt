@@ -73,7 +73,6 @@ UTIL_SOURCES =							\
 		util/pci.c util/pci.h				\
 		util/processinfo.c util/processinfo.h		\
 		util/hostusb.c util/hostusb.h			\
-		util/network.c util/network.h			\
 		util/interface.c util/interface.h		\
 		util/qparams.c util/qparams.h			\
 		util/sexpr.c util/sexpr.h			\
@@ -94,8 +93,11 @@ UTIL_SOURCES =							\
 		util/virkeycode.c util/virkeycode.h		\
 		util/virkeymaps.h				\
 		util/virnetdev.h util/virnetdev.c		\
+		util/virnetdevbandwidth.h util/virnetdevbandwidth.c \
 		util/virnetdevbridge.h util/virnetdevbridge.c	\
-		util/virnetdevtap.h util/virnetdevtap.c
+		util/virnetdevtap.h util/virnetdevtap.c		\
+		util/virnetdevvportprofile.h util/virnetdevvportprofile.c \
+		util/virsocketaddr.h util/virsocketaddr.c
 
 EXTRA_DIST += $(srcdir)/util/virkeymaps.h $(srcdir)/util/keymaps.csv \
 		$(srcdir)/util/virkeycode-mapgen.py
@@ -125,6 +127,10 @@ DRIVER_SOURCES =						\
 LOCK_DRIVER_SANLOCK_SOURCES = \
 		locking/lock_driver_sanlock.c
 
+
+NETDEV_CONF_SOURCES =						\
+		conf/netdev_bandwidth_conf.h conf/netdev_bandwidth_conf.c \
+		conf/netdev_vport_profile_conf.h conf/netdev_vport_profile_conf.c
 
 # XML configuration format handling sources
 # Domain driver generic impl APIs
@@ -173,6 +179,7 @@ CPU_CONF_SOURCES =						\
 		conf/cpu_conf.c conf/cpu_conf.h
 
 CONF_SOURCES =							\
+		$(NETDEV_CONF_SOURCES)				\
 		$(DOMAIN_CONF_SOURCES)				\
 		$(DOMAIN_EVENT_SOURCES)				\
 		$(NETWORK_CONF_SOURCES)				\
@@ -1479,6 +1486,7 @@ libvirt_lxc_SOURCES =						\
 		$(UTIL_SOURCES)					\
 		$(NODE_INFO_SOURCES)				\
 		$(ENCRYPTION_CONF_SOURCES)			\
+		$(NETDEV_CONF_SOURCES)				\
 		$(DOMAIN_CONF_SOURCES)				\
 		$(SECRET_CONF_SOURCES)				\
 		$(CPU_CONF_SOURCES)				\

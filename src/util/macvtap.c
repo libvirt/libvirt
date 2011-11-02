@@ -50,7 +50,6 @@
 
 #include "util.h"
 #include "macvtap.h"
-#include "network.h"
 
 VIR_ENUM_IMPL(virMacvtapMode, VIR_MACVTAP_MODE_LAST,
               "vepa",

@@ -22,7 +22,7 @@
 #ifndef __DNSMASQ_H__
 # define __DNSMASQ_H__
 
-# include "network.h"
+# include "virsocketaddr.h"
 
 typedef struct
 {
