@@ -7236,6 +7236,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     }
 
     if (tmp < *nparams && wr_req != -1) {
+        param = &params[tmp];
         if (virStrcpyStatic(param->field,
                             VIR_DOMAIN_BLOCK_STATS_WRITE_REQ) == NULL) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -7249,6 +7250,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     }
 
     if (tmp < *nparams && rd_bytes != -1) {
+        param = &params[tmp];
         if (virStrcpyStatic(param->field,
                             VIR_DOMAIN_BLOCK_STATS_READ_BYTES) == NULL) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -7262,6 +7264,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     }
 
     if (tmp < *nparams && rd_req != -1) {
+        param = &params[tmp];
         if (virStrcpyStatic(param->field,
                             VIR_DOMAIN_BLOCK_STATS_READ_REQ) == NULL) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -7275,6 +7278,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     }
 
     if (tmp < *nparams && flush_req != -1) {
+        param = &params[tmp];
         if (virStrcpyStatic(param->field,
                             VIR_DOMAIN_BLOCK_STATS_FLUSH_REQ) == NULL) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -7288,6 +7292,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     }
 
     if (tmp < *nparams && wr_total_times != -1) {
+        param = &params[tmp];
         if (virStrcpyStatic(param->field,
                             VIR_DOMAIN_BLOCK_STATS_WRITE_TOTAL_TIMES) == NULL) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -7301,6 +7306,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     }
 
     if (tmp < *nparams && rd_total_times != -1) {
+        param = &params[tmp];
         if (virStrcpyStatic(param->field,
                             VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES) == NULL) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -7314,6 +7320,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     }
 
     if (tmp < *nparams && flush_total_times != -1) {
+        param = &params[tmp];
         if (virStrcpyStatic(param->field,
                             VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES) == NULL) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
