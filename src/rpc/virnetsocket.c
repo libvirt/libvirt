@@ -327,7 +327,8 @@ int virNetSocketNewListenUNIX(const char *path,
 
     addr.data.un.sun_family = AF_UNIX;
     if (virStrcpyStatic(addr.data.un.sun_path, path) == NULL) {
-        virReportSystemError(ENOMEM, _("Path %s too long for unix socket"), path);
+        virReportSystemError(ENAMETOOLONG,
+                             _("Path %s too long for unix socket"), path);
         goto error;
     }
     if (addr.data.un.sun_path[0] == '@')
