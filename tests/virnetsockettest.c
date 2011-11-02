@@ -202,16 +202,18 @@ static int testSocketUNIXAccept(const void *data ATTRIBUTE_UNUSED)
     int ret = -1;
 
     char *path;
-    if (progname[0] == '/') {
-        if (virAsprintf(&path, "%s-test.sock", progname) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    } else {
-        if (virAsprintf(&path, "%s/%s-test.sock", abs_builddir, progname) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
+    char *tmpdir;
+    char template[] = "/tmp/libvirt_XXXXXX";
+
+    tmpdir = mkdtemp(template);
+    if (tmpdir == NULL) {
+        virReportSystemError(errno, "%s",
+                             _("Failed to create temporary directory"));
+        goto cleanup;
+    }
+    if (virAsprintf(&path, "%s/test.sock", tmpdir) < 0) {
+        virReportOOMError();
+        goto cleanup;
     }
 
     if (virNetSocketNewListenUNIX(path, 0700, -1, getgid(), &lsock) < 0)
@@ -239,6 +241,8 @@ cleanup:
     VIR_FREE(path);
     virNetSocketFree(lsock);
     virNetSocketFree(ssock);
+    if (tmpdir)
+        rmdir(tmpdir);
     return ret;
 }
 
@@ -251,16 +255,18 @@ static int testSocketUNIXAddrs(const void *data ATTRIBUTE_UNUSED)
     int ret = -1;
 
     char *path;
-    if (progname[0] == '/') {
-        if (virAsprintf(&path, "%s-test.sock", progname) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    } else {
-        if (virAsprintf(&path, "%s/%s-test.sock", abs_builddir, progname) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
+    char *tmpdir;
+    char template[] = "/tmp/libvirt_XXXXXX";
+
+    tmpdir = mkdtemp(template);
+    if (tmpdir == NULL) {
+        virReportSystemError(errno, "%s",
+                             _("Failed to create temporary directory"));
+        goto cleanup;
+    }
+    if (virAsprintf(&path, "%s/test.sock", tmpdir) < 0) {
+        virReportOOMError();
+        goto cleanup;
     }
 
     if (virNetSocketNewListenUNIX(path, 0700, -1, getgid(), &lsock) < 0)
@@ -317,6 +323,8 @@ cleanup:
     virNetSocketFree(lsock);
     virNetSocketFree(ssock);
     virNetSocketFree(csock);
+    if (tmpdir)
+        rmdir(tmpdir);
     return ret;
 }
 
