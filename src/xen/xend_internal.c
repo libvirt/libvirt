@@ -3614,12 +3614,6 @@ xenDaemonGetSchedulerParameters(virDomainPtr domain,
             TODO
             goto error;
         case XEN_SCHED_CRED_NPARAM:
-            if (*nparams < XEN_SCHED_CRED_NPARAM) {
-                virXendError(VIR_ERR_INVALID_ARG,
-                             "%s", _("Invalid parameter count"));
-                goto error;
-            }
-
             /* get cpu_weight/cpu_cap from xend/domain */
             if (sexpr_node(root, "domain/cpu_weight") == NULL) {
                 virXendError(VIR_ERR_INTERNAL_ERROR,
@@ -3642,16 +3636,20 @@ xenDaemonGetSchedulerParameters(virDomainPtr domain,
             params[0].type = VIR_TYPED_PARAM_UINT;
             params[0].value.ui = sexpr_int(root, "domain/cpu_weight");
 
-            if (virStrcpyStatic(params[1].field,
-                                VIR_DOMAIN_SCHEDULER_CAP) == NULL) {
-                virXendError(VIR_ERR_INTERNAL_ERROR,
-                             _("Cap %s too big for destination"),
-                             VIR_DOMAIN_SCHEDULER_CAP);
-                goto error;
+            if (*nparams > 1) {
+                if (virStrcpyStatic(params[1].field,
+                                    VIR_DOMAIN_SCHEDULER_CAP) == NULL) {
+                    virXendError(VIR_ERR_INTERNAL_ERROR,
+                                 _("Cap %s too big for destination"),
+                                 VIR_DOMAIN_SCHEDULER_CAP);
+                    goto error;
+                }
+                params[1].type = VIR_TYPED_PARAM_UINT;
+                params[1].value.ui = sexpr_int(root, "domain/cpu_cap");
             }
-            params[1].type = VIR_TYPED_PARAM_UINT;
-            params[1].value.ui = sexpr_int(root, "domain/cpu_cap");
-            *nparams = XEN_SCHED_CRED_NPARAM;
+
+            if (*nparams > XEN_SCHED_CRED_NPARAM)
+                *nparams = XEN_SCHED_CRED_NPARAM;
             ret = 0;
             break;
         default:

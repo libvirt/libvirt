@@ -1274,11 +1274,6 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
                 TODO
                 return(-1);
             case XEN_SCHEDULER_CREDIT:
-                if (*nparams < XEN_SCHED_CRED_NPARAM) {
-                    virXenError(VIR_ERR_INVALID_ARG,
-                                "%s", _("Invalid parameter count"));
-                    return -1;
-                }
                 memset(&op_dom, 0, sizeof(op_dom));
                 op_dom.cmd = XEN_V2_OP_SCHEDULER;
                 op_dom.domain = (domid_t) domain->id;
@@ -1298,17 +1293,20 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
                 params[0].type = VIR_TYPED_PARAM_UINT;
                 params[0].value.ui = op_dom.u.getschedinfo.u.credit.weight;
 
-                if (virStrcpyStatic(params[1].field,
-                                    VIR_DOMAIN_SCHEDULER_CAP) == NULL) {
-                    virXenError(VIR_ERR_INTERNAL_ERROR,
-                                "Cap %s too big for destination",
-                                VIR_DOMAIN_SCHEDULER_CAP);
-                    return -1;
+                if (*nparams > 1) {
+                    if (virStrcpyStatic(params[1].field,
+                                        VIR_DOMAIN_SCHEDULER_CAP) == NULL) {
+                        virXenError(VIR_ERR_INTERNAL_ERROR,
+                                    "Cap %s too big for destination",
+                                    VIR_DOMAIN_SCHEDULER_CAP);
+                        return -1;
+                    }
+                    params[1].type = VIR_TYPED_PARAM_UINT;
+                    params[1].value.ui = op_dom.u.getschedinfo.u.credit.cap;
                 }
-                params[1].type = VIR_TYPED_PARAM_UINT;
-                params[1].value.ui = op_dom.u.getschedinfo.u.credit.cap;
 
-                *nparams = XEN_SCHED_CRED_NPARAM;
+                if (*nparams > XEN_SCHED_CRED_NPARAM)
+                    *nparams = XEN_SCHED_CRED_NPARAM;
                 break;
             default:
                 virXenErrorFunc(VIR_ERR_INVALID_ARG, __FUNCTION__,
