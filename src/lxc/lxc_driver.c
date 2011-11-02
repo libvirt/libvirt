@@ -55,6 +55,7 @@
 #include "domain_audit.h"
 #include "domain_nwfilter.h"
 #include "network/bridge_driver.h"
+#include "virnetdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -1152,8 +1153,8 @@ static void lxcVmCleanup(lxc_driver_t *driver,
     priv->monitorWatch = -1;
 
     for (i = 0 ; i < vm->def->nnets ; i++) {
-        vethInterfaceUpOrDown(vm->def->nets[i]->ifname, 0);
-        vethDelete(vm->def->nets[i]->ifname);
+        ignore_value(virNetDevSetOnline(vm->def->nets[i]->ifname, false));
+        ignore_value(virNetDevVethDelete(vm->def->nets[i]->ifname));
 
         networkReleaseActualDevice(vm->def->nets[i]);
     }
@@ -1246,7 +1247,7 @@ static int lxcSetupInterfaces(virConnectPtr conn,
 
         VIR_DEBUG("calling vethCreate()");
         parentVeth = def->nets[i]->ifname;
-        if (vethCreate(&parentVeth, &containerVeth) < 0)
+        if (virNetDevVethCreate(&parentVeth, &containerVeth) < 0)
             goto error_exit;
         VIR_DEBUG("parentVeth: %s, containerVeth: %s", parentVeth, containerVeth);
 
@@ -1262,17 +1263,13 @@ static int lxcSetupInterfaces(virConnectPtr conn,
         (*veths)[(*nveths)] = containerVeth;
         (*nveths)++;
 
-        {
-            char macaddr[VIR_MAC_STRING_BUFLEN];
-            virFormatMacAddr(def->nets[i]->mac, macaddr);
-            if (setMacAddr(containerVeth, macaddr) < 0)
-                goto error_exit;
-        }
+        if (virNetDevSetMAC(containerVeth, def->nets[i]->mac) < 0)
+            goto error_exit;
 
         if (virNetDevBridgeAddPort(bridge, parentVeth) < 0)
             goto error_exit;
 
-        if (vethInterfaceUpOrDown(parentVeth, 1) < 0)
+        if (virNetDevSetOnline(parentVeth, true) < 0)
             goto error_exit;
 
         if (virNetDevBandwidthSet(def->nets[i]->ifname,
@@ -1828,7 +1825,7 @@ cleanup:
     }
     for (i = 0 ; i < nveths ; i++) {
         if (rc != 0)
-            vethDelete(veths[i]);
+            ignore_value(virNetDevVethDelete(veths[i]));
         VIR_FREE(veths[i]);
     }
     if (rc != 0) {

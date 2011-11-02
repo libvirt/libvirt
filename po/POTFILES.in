@@ -42,7 +42,6 @@ src/lxc/lxc_container.c
 src/lxc/lxc_conf.c
 src/lxc/lxc_controller.c
 src/lxc/lxc_driver.c
-src/lxc/veth.c
 src/libxl/libxl_driver.c
 src/libxl/libxl_conf.c
 src/network/bridge_driver.c

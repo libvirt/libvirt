@@ -59,6 +59,7 @@
 #include "uuid.h"
 #include "virfile.h"
 #include "command.h"
+#include "virnetdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -268,12 +269,12 @@ static int lxcContainerRenameAndEnableInterfaces(unsigned int nveths,
         }
 
         VIR_DEBUG("Renaming %s to %s", veths[i], newname);
-        rc = setInterfaceName(veths[i], newname);
+        rc = virNetDevSetName(veths[i], newname);
         if (rc < 0)
             goto error_out;
 
         VIR_DEBUG("Enabling %s", newname);
-        rc = vethInterfaceUpOrDown(newname, 1);
+        rc = virNetDevSetOnline(newname, true);
         if (rc < 0)
             goto error_out;
 
@@ -282,7 +283,7 @@ static int lxcContainerRenameAndEnableInterfaces(unsigned int nveths,
 
     /* enable lo device only if there were other net devices */
     if (veths)
-        rc = vethInterfaceUpOrDown("lo", 1);
+        rc = virNetDevSetOnline("lo", true);
 
 error_out:
     VIR_FREE(newname);

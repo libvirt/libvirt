@@ -933,7 +933,7 @@ static int lxcControllerMoveInterfaces(unsigned int nveths,
 {
     unsigned int i;
     for (i = 0 ; i < nveths ; i++)
-        if (moveInterfaceToNetNs(veths[i], container) < 0)
+        if (virNetDevSetNamespace(veths[i], container) < 0)
             return -1;
 
     return 0;
@@ -954,7 +954,7 @@ static int lxcControllerCleanupInterfaces(unsigned int nveths,
 {
     unsigned int i;
     for (i = 0 ; i < nveths ; i++)
-        vethDelete(veths[i]);
+        ignore_value(virNetDevVethDelete(veths[i]));
 
     return 0;
 }

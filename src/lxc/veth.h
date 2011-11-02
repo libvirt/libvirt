@@ -17,17 +17,13 @@
 # include "internal.h"
 
 /* Function declarations */
-int vethCreate(char** veth1, char** veth2)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-int vethDelete(const char* veth)
-    ATTRIBUTE_NONNULL(1);
-int vethInterfaceUpOrDown(const char* veth, int upOrDown)
-    ATTRIBUTE_NONNULL(1);
-int moveInterfaceToNetNs(const char *iface, int pidInNs)
-    ATTRIBUTE_NONNULL(1);
-int setMacAddr(const char* iface, const char* macaddr)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-int setInterfaceName(const char* iface, const char* new)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+int virNetDevVethCreate(char **veth1, char **veth2)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+int virNetDevVethDelete(const char *veth)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+int virNetDevSetNamespace(const char *ifname, int pidInNs)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+int virNetDevSetName(const char *ifname, const char *newifname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 #endif /* VETH_H */
