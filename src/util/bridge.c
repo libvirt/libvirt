@@ -484,7 +484,8 @@ brAddTap(brControl *ctl,
 
     errno = brCreateTap(ctl, ifname, vnet_hdr, tapfd);
 
-    if (*tapfd < 0 || errno)
+    /* fd has been closed in brCreateTap() when it failed. */
+    if (errno)
         goto error;
 
     /* We need to set the interface MAC before adding it
@@ -494,22 +495,23 @@ brAddTap(brControl *ctl,
      * device before we set our static MAC.
      */
     if ((errno = brSetInterfaceMac(ctl, *ifname, macaddr)))
-        goto error;
+        goto close_fd;
     /* We need to set the interface MTU before adding it
      * to the bridge, because the bridge will have its
      * MTU adjusted automatically when we add the new interface.
      */
     if ((errno = brSetInterfaceMtu(ctl, bridge, *ifname)))
-        goto error;
+        goto close_fd;
     if ((errno = brAddInterface(ctl, bridge, *ifname)))
-        goto error;
+        goto close_fd;
     if (up && ((errno = brSetInterfaceUp(ctl, *ifname, 1))))
-        goto error;
+        goto close_fd;
     return 0;
 
- error:
-    VIR_FORCE_CLOSE(*tapfd);
-
+close_fd:
+    if (tapfd)
+        VIR_FORCE_CLOSE(*tapfd);
+error:
     return errno;
 }
 
