@@ -39,18 +39,6 @@ int ifaceGetVlanID(const char *vlanifname, int *vlanid);
 
 int ifaceGetIPAddress(const char *ifname, virSocketAddrPtr addr);
 
-int virNetDevMacVLanCreate(const char *ifname,
-                           const char *type,
-                           const unsigned char *macaddress,
-                           const char *srcdev,
-                           uint32_t macvlan_mode,
-                           int *retry)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
-    ATTRIBUTE_RETURN_CHECK;
-
-int virNetDevMacVLanDelete(const char *ifname)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
-
 int ifaceMacvtapLinkDump(bool nltarget_kernel, const char *ifname, int ifindex,
                          struct nlattr **tb, unsigned char **recvbuf,
                          uint32_t (*getPidFunc)(void));
