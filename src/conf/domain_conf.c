@@ -3112,8 +3112,8 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
 
         virtPortNode = virXPathNode("./virtualport", ctxt);
         if (virtPortNode &&
-            virVirtualPortProfileParseXML(virtPortNode,
-                                                &actual->data.direct.virtPortProfile) < 0) {
+            virNetDevVPortProfileParse(virtPortNode,
+                                       &actual->data.direct.virtPortProfile) < 0) {
             goto error;
         }
     }
@@ -3169,7 +3169,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
     char *mode = NULL;
     char *linkstate = NULL;
     virNWFilterHashTablePtr filterparams = NULL;
-    virVirtualPortProfileParamsPtr virtPort = NULL;
+    virNetDevVPortProfilePtr virtPort = NULL;
     virDomainActualNetDefPtr actual = NULL;
     xmlNodePtr oldnode = ctxt->node;
     int ret;
@@ -3221,7 +3221,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
                        ((def->type == VIR_DOMAIN_NET_TYPE_DIRECT) ||
                         (def->type == VIR_DOMAIN_NET_TYPE_NETWORK)) &&
                        xmlStrEqual(cur->name, BAD_CAST "virtualport")) {
-                if (virVirtualPortProfileParseXML(cur, &virtPort) < 0)
+                if (virNetDevVPortProfileParse(cur, &virtPort) < 0)
                     goto error;
             } else if ((network == NULL) &&
                        ((def->type == VIR_DOMAIN_NET_TYPE_SERVER) ||
@@ -9722,7 +9722,7 @@ virDomainActualNetDefFormat(virBufferPtr buf,
         }
         virBufferAsprintf(buf, " mode='%s'/>\n", mode);
         virBufferAdjustIndent(buf, 8);
-        virVirtualPortProfileFormat(buf, def->data.direct.virtPortProfile);
+        virNetDevVPortProfileFormat(def->data.direct.virtPortProfile, buf);
         virBufferAdjustIndent(buf, -8);
         break;
     default:
@@ -9769,7 +9769,7 @@ virDomainNetDefFormat(virBufferPtr buf,
                               def->data.network.portgroup);
         virBufferAddLit(buf, "/>\n");
         virBufferAdjustIndent(buf, 6);
-        virVirtualPortProfileFormat(buf, def->data.network.virtPortProfile);
+        virNetDevVPortProfileFormat(def->data.network.virtPortProfile, buf);
         virBufferAdjustIndent(buf, -6);
         if ((flags & VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET) &&
             (virDomainActualNetDefFormat(buf, def->data.network.actual) < 0))
@@ -9819,7 +9819,7 @@ virDomainNetDefFormat(virBufferPtr buf,
                           virMacvtapModeTypeToString(def->data.direct.mode));
         virBufferAddLit(buf, "/>\n");
         virBufferAdjustIndent(buf, 6);
-        virVirtualPortProfileFormat(buf, def->data.direct.virtPortProfile);
+        virNetDevVPortProfileFormat(def->data.direct.virtPortProfile, buf);
         virBufferAdjustIndent(buf, -6);
         break;
 
@@ -13079,7 +13079,7 @@ virDomainNetGetActualDirectMode(virDomainNetDefPtr iface)
     return iface->data.network.actual->data.direct.mode;
 }
 
-virVirtualPortProfileParamsPtr
+virNetDevVPortProfilePtr
 virDomainNetGetActualDirectVirtPortProfile(virDomainNetDefPtr iface)
 {
     if (iface->type == VIR_DOMAIN_NET_TYPE_DIRECT)

@@ -114,21 +114,21 @@ int virSocketAddrPrefixToNetmask(unsigned int prefix,
 #  define LIBVIRT_IFLA_VF_PORT_PROFILE_MAX 40
 # endif
 
-enum virVirtualPortType {
-    VIR_VIRTUALPORT_NONE,
-    VIR_VIRTUALPORT_8021QBG,
-    VIR_VIRTUALPORT_8021QBH,
+enum virNetDevVPortProfile {
+    VIR_NETDEV_VPORT_PROFILE_NONE,
+    VIR_NETDEV_VPORT_PROFILE_8021QBG,
+    VIR_NETDEV_VPORT_PROFILE_8021QBH,
 
-    VIR_VIRTUALPORT_TYPE_LAST,
+    VIR_NETDEV_VPORT_PROFILE_LAST,
 };
 
-VIR_ENUM_DECL(virVirtualPort)
+VIR_ENUM_DECL(virNetDevVPort)
 
 /* profile data for macvtap (VEPA) */
-typedef struct _virVirtualPortProfileParams virVirtualPortProfileParams;
-typedef virVirtualPortProfileParams *virVirtualPortProfileParamsPtr;
-struct _virVirtualPortProfileParams {
-    enum virVirtualPortType   virtPortType;
+typedef struct _virNetDevVPortProfile virNetDevVPortProfile;
+typedef virNetDevVPortProfile *virNetDevVPortProfilePtr;
+struct _virNetDevVPortProfile {
+    enum virNetDevVPortProfile   virtPortType;
     union {
         struct {
             uint8_t       managerID;
@@ -143,14 +143,15 @@ struct _virVirtualPortProfileParams {
 };
 
 int
-virVirtualPortProfileParseXML(xmlNodePtr node,
-                              virVirtualPortProfileParamsPtr *virtPort);
-void
-virVirtualPortProfileFormat(virBufferPtr buf,
-                            virVirtualPortProfileParamsPtr virtPort);
+virNetDevVPortProfileParse(xmlNodePtr node,
+                           virNetDevVPortProfilePtr *def);
 
-bool virVirtualPortProfileEqual(virVirtualPortProfileParamsPtr a,
-                                virVirtualPortProfileParamsPtr b);
+void
+virNetDevVPortProfileFormat(virNetDevVPortProfilePtr virtPort,
+                            virBufferPtr buf);
+
+bool virNetDevVPortProfileEqual(virNetDevVPortProfilePtr a,
+                                virNetDevVPortProfilePtr b);
 
 virNetDevBandwidthPtr virNetDevBandwidthParse(xmlNodePtr node)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;

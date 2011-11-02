@@ -508,7 +508,7 @@ struct _virDomainActualNetDef {
         struct {
             char *linkdev;
             int mode; /* enum virMacvtapMode from util/macvtap.h */
-            virVirtualPortProfileParamsPtr virtPortProfile;
+            virNetDevVPortProfilePtr virtPortProfile;
         } direct;
     } data;
     virNetDevBandwidthPtr bandwidth;
@@ -542,7 +542,7 @@ struct _virDomainNetDef {
         struct {
             char *name;
             char *portgroup;
-            virVirtualPortProfileParamsPtr virtPortProfile;
+            virNetDevVPortProfilePtr virtPortProfile;
             /* actual has info about the currently used physical
              * device (if the network is of type
              * bridge/private/vepa/passthrough). This is saved in the
@@ -564,7 +564,7 @@ struct _virDomainNetDef {
         struct {
             char *linkdev;
             int mode; /* enum virMacvtapMode from util/macvtap.h */
-            virVirtualPortProfileParamsPtr virtPortProfile;
+            virNetDevVPortProfilePtr virtPortProfile;
         } direct;
     } data;
     struct {
@@ -1795,7 +1795,7 @@ int virDomainNetGetActualType(virDomainNetDefPtr iface);
 char *virDomainNetGetActualBridgeName(virDomainNetDefPtr iface);
 char *virDomainNetGetActualDirectDev(virDomainNetDefPtr iface);
 int virDomainNetGetActualDirectMode(virDomainNetDefPtr iface);
-virVirtualPortProfileParamsPtr
+virNetDevVPortProfilePtr
 virDomainNetGetActualDirectVirtPortProfile(virDomainNetDefPtr iface);
 virNetDevBandwidthPtr
 virDomainNetGetActualBandwidth(virDomainNetDefPtr iface);

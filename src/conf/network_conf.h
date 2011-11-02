@@ -122,7 +122,7 @@ typedef virPortGroupDef *virPortGroupDefPtr;
 struct _virPortGroupDef {
     char *name;
     bool isDefault;
-    virVirtualPortProfileParamsPtr virtPortProfile;
+    virNetDevVPortProfilePtr virtPortProfile;
     virNetDevBandwidthPtr bandwidth;
 };
 
@@ -151,7 +151,7 @@ struct _virNetworkDef {
     virNetworkIpDefPtr ips; /* ptr to array of IP addresses on this network */
 
     virNetworkDNSDefPtr dns; /* ptr to dns related configuration */
-    virVirtualPortProfileParamsPtr virtPortProfile;
+    virNetDevVPortProfilePtr virtPortProfile;
 
     size_t nPortGroups;
     virPortGroupDefPtr portGroups;

@@ -89,11 +89,11 @@ VIR_ENUM_IMPL(virMacvtapMode, VIR_MACVTAP_MODE_LAST,
 # define LLDPAD_PID_FILE  "/var/run/lldpad.pid"
 
 
-enum virVirtualPortOp {
-    ASSOCIATE = 0x1,
-    DISASSOCIATE = 0x2,
-    PREASSOCIATE = 0x3,
-    PREASSOCIATE_RR = 0x4,
+enum virNetDevVPortProfileLinkOp {
+    VIR_NETDEV_VPORT_PROFILE_LINK_OP_ASSOCIATE = 0x1,
+    VIR_NETDEV_VPORT_PROFILE_LINK_OP_DISASSOCIATE = 0x2,
+    VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE = 0x3,
+    VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE_RR = 0x4,
 };
 
 
@@ -267,7 +267,7 @@ openMacvtapTap(const char *tgifname,
                enum virMacvtapMode mode,
                int vnet_hdr,
                const unsigned char *vmuuid,
-               virVirtualPortProfileParamsPtr virtPortProfile,
+               virNetDevVPortProfilePtr virtPortProfile,
                char **res_ifname,
                enum virVMOperationType vmOp,
                char *stateDir,
@@ -404,7 +404,7 @@ delMacvtap(const char *ifname,
            const unsigned char *macaddr,
            const char *linkdev,
            int mode,
-           virVirtualPortProfileParamsPtr virtPortProfile,
+           virNetDevVPortProfilePtr virtPortProfile,
            char *stateDir)
 {
     if (mode == VIR_MACVTAP_MODE_PASSTHRU) {
@@ -866,8 +866,8 @@ getPhysdevAndVlan(const char *ifname, int *root_ifindex, char *root_ifname,
 static int
 doPortProfileOp8021Qbg(const char *ifname,
                        const unsigned char *macaddr,
-                       const virVirtualPortProfileParamsPtr virtPort,
-                       enum virVirtualPortOp virtPortOp)
+                       const virNetDevVPortProfilePtr virtPort,
+                       enum virNetDevVPortProfileLinkOp virtPortOp)
 {
     int rc = 0;
 
@@ -908,13 +908,13 @@ doPortProfileOp8021Qbg(const char *ifname,
     portVsi.vsi_type_id[0] = virtPort->u.virtPort8021Qbg.typeID;
 
     switch (virtPortOp) {
-    case PREASSOCIATE:
+    case VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE:
         op = PORT_REQUEST_PREASSOCIATE;
         break;
-    case ASSOCIATE:
+    case VIR_NETDEV_VPORT_PROFILE_LINK_OP_ASSOCIATE:
         op = PORT_REQUEST_ASSOCIATE;
         break;
-    case DISASSOCIATE:
+    case VIR_NETDEV_VPORT_PROFILE_LINK_OP_DISASSOCIATE:
         op = PORT_REQUEST_DISASSOCIATE;
         break;
     default:
@@ -983,9 +983,9 @@ err_exit:
 static int
 doPortProfileOp8021Qbh(const char *ifname,
                        const unsigned char *macaddr,
-                       const virVirtualPortProfileParamsPtr virtPort,
+                       const virNetDevVPortProfilePtr virtPort,
                        const unsigned char *vm_uuid,
-                       enum virVirtualPortOp virtPortOp)
+                       enum virNetDevVPortProfileLinkOp virtPortOp)
 {
     int rc = 0;
 
@@ -1018,8 +1018,8 @@ doPortProfileOp8021Qbh(const char *ifname,
         goto err_exit;
 
     switch (virtPortOp) {
-    case PREASSOCIATE_RR:
-    case ASSOCIATE:
+    case VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE_RR:
+    case VIR_NETDEV_VPORT_PROFILE_LINK_OP_ASSOCIATE:
         errno = virGetHostUUID(hostuuid);
         if (errno) {
             rc = -1;
@@ -1034,7 +1034,7 @@ doPortProfileOp8021Qbh(const char *ifname,
                                    vm_uuid,
                                    hostuuid,
                                    vf,
-                                   (virtPortOp == PREASSOCIATE_RR) ?
+                                   (virtPortOp == VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE_RR) ?
                                     PORT_REQUEST_PREASSOCIATE_RR
                                     : PORT_REQUEST_ASSOCIATE);
         if (rc == -2)
@@ -1050,7 +1050,7 @@ doPortProfileOp8021Qbh(const char *ifname,
                                   PORT_REQUEST_DISASSOCIATE);
         break;
 
-    case DISASSOCIATE:
+    case VIR_NETDEV_VPORT_PROFILE_LINK_OP_DISASSOCIATE:
         rc = doPortProfileOpCommon(nltarget_kernel, NULL, ifindex,
                                    NULL,
                                    vlanid,
@@ -1097,7 +1097,7 @@ int
 vpAssociatePortProfileId(const char *macvtap_ifname,
                          const unsigned char *macvtap_macaddr,
                          const char *linkdev,
-                         const virVirtualPortProfileParamsPtr virtPort,
+                         const virNetDevVPortProfilePtr virtPort,
                          const unsigned char *vmuuid,
                          enum virVMOperationType vmOp)
 {
@@ -1112,24 +1112,24 @@ vpAssociatePortProfileId(const char *macvtap_ifname,
         return 0;
 
     switch (virtPort->virtPortType) {
-    case VIR_VIRTUALPORT_NONE:
-    case VIR_VIRTUALPORT_TYPE_LAST:
+    case VIR_NETDEV_VPORT_PROFILE_NONE:
+    case VIR_NETDEV_VPORT_PROFILE_LAST:
         break;
 
-    case VIR_VIRTUALPORT_8021QBG:
+    case VIR_NETDEV_VPORT_PROFILE_8021QBG:
         rc = doPortProfileOp8021Qbg(macvtap_ifname, macvtap_macaddr,
                                     virtPort,
                                     (vmOp == VIR_VM_OP_MIGRATE_IN_START)
-                                      ? PREASSOCIATE
-                                      : ASSOCIATE);
+                                    ? VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE
+                                    : VIR_NETDEV_VPORT_PROFILE_LINK_OP_ASSOCIATE);
         break;
 
-    case VIR_VIRTUALPORT_8021QBH:
+    case VIR_NETDEV_VPORT_PROFILE_8021QBH:
         rc = doPortProfileOp8021Qbh(linkdev, macvtap_macaddr,
                                     virtPort, vmuuid,
                                     (vmOp == VIR_VM_OP_MIGRATE_IN_START)
-                                      ? PREASSOCIATE_RR
-                                      : ASSOCIATE);
+                                    ? VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE_RR
+                                    : VIR_NETDEV_VPORT_PROFILE_LINK_OP_ASSOCIATE);
         if (vmOp != VIR_VM_OP_MIGRATE_IN_START && !rc)
             ifaceUp(linkdev);
         break;
@@ -1154,7 +1154,7 @@ int
 vpDisassociatePortProfileId(const char *macvtap_ifname,
                             const unsigned char *macvtap_macaddr,
                             const char *linkdev,
-                            const virVirtualPortProfileParamsPtr virtPort,
+                            const virNetDevVPortProfilePtr virtPort,
                             enum virVMOperationType vmOp)
 {
     int rc = 0;
@@ -1168,22 +1168,23 @@ vpDisassociatePortProfileId(const char *macvtap_ifname,
        return 0;
 
     switch (virtPort->virtPortType) {
-    case VIR_VIRTUALPORT_NONE:
-    case VIR_VIRTUALPORT_TYPE_LAST:
+    case VIR_NETDEV_VPORT_PROFILE_NONE:
+    case VIR_NETDEV_VPORT_PROFILE_LAST:
         break;
 
-    case VIR_VIRTUALPORT_8021QBG:
+    case VIR_NETDEV_VPORT_PROFILE_8021QBG:
         rc = doPortProfileOp8021Qbg(macvtap_ifname, macvtap_macaddr,
-                                    virtPort, DISASSOCIATE);
+                                    virtPort, VIR_NETDEV_VPORT_PROFILE_LINK_OP_DISASSOCIATE);
         break;
 
-    case VIR_VIRTUALPORT_8021QBH:
+    case VIR_NETDEV_VPORT_PROFILE_8021QBH:
         /* avoid disassociating twice */
         if (vmOp == VIR_VM_OP_MIGRATE_IN_FINISH)
             break;
         ifaceDown(linkdev);
         rc = doPortProfileOp8021Qbh(linkdev, macvtap_macaddr,
-                                    virtPort, NULL, DISASSOCIATE);
+                                    virtPort, NULL,
+                                    VIR_NETDEV_VPORT_PROFILE_LINK_OP_DISASSOCIATE);
         break;
     }
 

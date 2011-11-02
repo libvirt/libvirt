@@ -679,14 +679,14 @@ error:
 
 /* virtualPortProfile utilities */
 
-VIR_ENUM_IMPL(virVirtualPort, VIR_VIRTUALPORT_TYPE_LAST,
+VIR_ENUM_IMPL(virNetDevVPort, VIR_NETDEV_VPORT_PROFILE_LAST,
               "none",
               "802.1Qbg",
               "802.1Qbh")
 
 int
-virVirtualPortProfileParseXML(xmlNodePtr node,
-                              virVirtualPortProfileParamsPtr *def)
+virNetDevVPortProfileParse(xmlNodePtr node,
+                           virNetDevVPortProfilePtr *def)
 {
     int ret = -1;
     char *virtPortType;
@@ -695,7 +695,7 @@ virVirtualPortProfileParseXML(xmlNodePtr node,
     char *virtPortTypeIDVersion = NULL;
     char *virtPortInstanceID = NULL;
     char *virtPortProfileID = NULL;
-    virVirtualPortProfileParamsPtr virtPort = NULL;
+    virNetDevVPortProfilePtr virtPort = NULL;
     xmlNodePtr cur = node->children;
 
     if (VIR_ALLOC(virtPort) < 0) {
@@ -725,11 +725,11 @@ virVirtualPortProfileParseXML(xmlNodePtr node,
         cur = cur->next;
     }
 
-    virtPort->virtPortType = VIR_VIRTUALPORT_NONE;
+    virtPort->virtPortType = VIR_NETDEV_VPORT_PROFILE_NONE;
 
-    switch (virVirtualPortTypeFromString(virtPortType)) {
+    switch (virNetDevVPortTypeFromString(virtPortType)) {
 
-    case VIR_VIRTUALPORT_8021QBG:
+    case VIR_NETDEV_VPORT_PROFILE_8021QBG:
         if (virtPortManagerID     != NULL && virtPortTypeID     != NULL &&
             virtPortTypeIDVersion != NULL) {
             unsigned int val;
@@ -791,7 +791,7 @@ virVirtualPortProfileParseXML(xmlNodePtr node,
                 }
             }
 
-            virtPort->virtPortType = VIR_VIRTUALPORT_8021QBG;
+            virtPort->virtPortType = VIR_NETDEV_VPORT_PROFILE_8021QBG;
 
         } else {
                     virSocketError(VIR_ERR_XML_ERROR, "%s",
@@ -800,11 +800,11 @@ virVirtualPortProfileParseXML(xmlNodePtr node,
         }
     break;
 
-    case VIR_VIRTUALPORT_8021QBH:
+    case VIR_NETDEV_VPORT_PROFILE_8021QBH:
         if (virtPortProfileID != NULL) {
             if (virStrcpyStatic(virtPort->u.virtPort8021Qbh.profileID,
                                 virtPortProfileID) != NULL) {
-                virtPort->virtPortType = VIR_VIRTUALPORT_8021QBH;
+                virtPort->virtPortType = VIR_NETDEV_VPORT_PROFILE_8021QBH;
             } else {
                 virSocketError(VIR_ERR_XML_ERROR, "%s",
                                      _("profileid parameter too long"));
@@ -819,8 +819,8 @@ virVirtualPortProfileParseXML(xmlNodePtr node,
 
 
     default:
-    case VIR_VIRTUALPORT_NONE:
-    case VIR_VIRTUALPORT_TYPE_LAST:
+    case VIR_NETDEV_VPORT_PROFILE_NONE:
+    case VIR_NETDEV_VPORT_PROFILE_LAST:
          virSocketError(VIR_ERR_XML_ERROR, "%s",
                               _("unknown virtualport type"));
         goto error;
@@ -843,7 +843,7 @@ error:
 }
 
 bool
-virVirtualPortProfileEqual(virVirtualPortProfileParamsPtr a, virVirtualPortProfileParamsPtr b)
+virNetDevVPortProfileEqual(virNetDevVPortProfilePtr a, virNetDevVPortProfilePtr b)
 {
     /* NULL resistant */
     if (!a && !b)
@@ -856,10 +856,10 @@ virVirtualPortProfileEqual(virVirtualPortProfileParamsPtr a, virVirtualPortProfi
         return false;
 
     switch (a->virtPortType) {
-    case VIR_VIRTUALPORT_NONE:
+    case VIR_NETDEV_VPORT_PROFILE_NONE:
         break;
 
-    case VIR_VIRTUALPORT_8021QBG:
+    case VIR_NETDEV_VPORT_PROFILE_8021QBG:
         if (a->u.virtPort8021Qbg.managerID != b->u.virtPort8021Qbg.managerID ||
             a->u.virtPort8021Qbg.typeID != b->u.virtPort8021Qbg.typeID ||
             a->u.virtPort8021Qbg.typeIDVersion != b->u.virtPort8021Qbg.typeIDVersion ||
@@ -867,7 +867,7 @@ virVirtualPortProfileEqual(virVirtualPortProfileParamsPtr a, virVirtualPortProfi
             return false;
         break;
 
-    case VIR_VIRTUALPORT_8021QBH:
+    case VIR_NETDEV_VPORT_PROFILE_8021QBH:
         if (STRNEQ(a->u.virtPort8021Qbh.profileID, b->u.virtPort8021Qbh.profileID))
             return false;
         break;
@@ -880,23 +880,23 @@ virVirtualPortProfileEqual(virVirtualPortProfileParamsPtr a, virVirtualPortProfi
 }
 
 void
-virVirtualPortProfileFormat(virBufferPtr buf,
-                            virVirtualPortProfileParamsPtr virtPort)
+virNetDevVPortProfileFormat(virNetDevVPortProfilePtr virtPort,
+                            virBufferPtr buf)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    if (!virtPort || virtPort->virtPortType == VIR_VIRTUALPORT_NONE)
+    if (!virtPort || virtPort->virtPortType == VIR_NETDEV_VPORT_PROFILE_NONE)
         return;
 
     virBufferAsprintf(buf, "<virtualport type='%s'>\n",
-                      virVirtualPortTypeToString(virtPort->virtPortType));
+                      virNetDevVPortTypeToString(virtPort->virtPortType));
 
     switch (virtPort->virtPortType) {
-    case VIR_VIRTUALPORT_NONE:
-    case VIR_VIRTUALPORT_TYPE_LAST:
+    case VIR_NETDEV_VPORT_PROFILE_NONE:
+    case VIR_NETDEV_VPORT_PROFILE_LAST:
         break;
 
-    case VIR_VIRTUALPORT_8021QBG:
+    case VIR_NETDEV_VPORT_PROFILE_8021QBG:
         virUUIDFormat(virtPort->u.virtPort8021Qbg.instanceID,
                       uuidstr);
         virBufferAsprintf(buf,
@@ -908,7 +908,7 @@ virVirtualPortProfileFormat(virBufferPtr buf,
                           uuidstr);
         break;
 
-    case VIR_VIRTUALPORT_8021QBH:
+    case VIR_NETDEV_VPORT_PROFILE_8021QBH:
         virBufferAsprintf(buf,
                           "  <parameters profileid='%s'/>\n",
                           virtPort->u.virtPort8021Qbh.profileID);

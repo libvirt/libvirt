@@ -790,8 +790,8 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
 
     virtPortNode = virXPathNode("./virtualport", ctxt);
     if (virtPortNode &&
-        (virVirtualPortProfileParseXML(virtPortNode,
-                                       &def->virtPortProfile) < 0)) {
+        (virNetDevVPortProfileParse(virtPortNode,
+                                    &def->virtPortProfile) < 0)) {
         goto error;
     }
 
@@ -894,8 +894,8 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
 
     virtPortNode = virXPathNode("./virtualport", ctxt);
     if (virtPortNode &&
-        (virVirtualPortProfileParseXML(virtPortNode,
-                                       &def->virtPortProfile) < 0)) {
+        (virNetDevVPortProfileParse(virtPortNode,
+                                    &def->virtPortProfile) < 0)) {
         goto error;
     }
 
@@ -1268,7 +1268,7 @@ virPortGroupDefFormat(virBufferPtr buf,
     }
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 4);
-    virVirtualPortProfileFormat(buf, def->virtPortProfile);
+    virNetDevVPortProfileFormat(def->virtPortProfile, buf);
     virNetDevBandwidthFormat(def->bandwidth, buf);
     virBufferAdjustIndent(buf, -4);
     virBufferAddLit(buf, "  </portgroup>\n");
@@ -1354,7 +1354,7 @@ char *virNetworkDefFormat(const virNetworkDefPtr def)
     }
 
     virBufferAdjustIndent(&buf, 2);
-    virVirtualPortProfileFormat(&buf, def->virtPortProfile);
+    virNetDevVPortProfileFormat(def->virtPortProfile, &buf);
     virBufferAdjustIndent(&buf, -2);
 
     for (ii = 0; ii < def->nPortGroups; ii++)

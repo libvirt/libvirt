@@ -786,9 +786,9 @@ virSocketAddrParseIPv4;
 virSocketAddrParseIPv6;
 virSocketAddrPrefixToNetmask;
 virSocketAddrSetPort;
-virVirtualPortProfileEqual;
-virVirtualPortProfileFormat;
-virVirtualPortProfileParseXML;
+virNetDevVPortProfileEqual;
+virNetDevVPortProfileFormat;
+virNetDevVPortProfileParse;
 
 
 # network_conf.h

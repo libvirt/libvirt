@@ -2766,7 +2766,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                (netdef->forwardType == VIR_NETWORK_FORWARD_PRIVATE) ||
                (netdef->forwardType == VIR_NETWORK_FORWARD_VEPA) ||
                (netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH)) {
-        virVirtualPortProfileParamsPtr virtport = NULL;
+        virNetDevVPortProfilePtr virtport = NULL;
 
         /* <forward type='bridge|private|vepa|passthrough'> are all
          * VIR_DOMAIN_NET_TYPE_DIRECT.
@@ -2838,7 +2838,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                 ((netdef->forwardType == VIR_NETWORK_FORWARD_PRIVATE) &&
                  iface->data.network.actual->data.direct.virtPortProfile &&
                  (iface->data.network.actual->data.direct.virtPortProfile->virtPortType
-                  == VIR_VIRTUALPORT_8021QBH))) {
+                  == VIR_NETDEV_VPORT_PROFILE_8021QBH))) {
                 /* pick first dev with 0 usageCount */
 
                 for (ii = 0; ii < netdef->nForwardIfs; ii++) {
@@ -2965,7 +2965,7 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
              ((netdef->forwardType == VIR_NETWORK_FORWARD_PRIVATE) &&
               iface->data.network.actual->data.direct.virtPortProfile &&
               (iface->data.network.actual->data.direct.virtPortProfile->virtPortType
-               == VIR_VIRTUALPORT_8021QBH)))) {
+               == VIR_NETDEV_VPORT_PROFILE_8021QBH)))) {
             networkReportError(VIR_ERR_INTERNAL_ERROR,
                                _("network '%s' claims dev='%s' is already in use by a different domain"),
                                netdef->name, actualDev);
