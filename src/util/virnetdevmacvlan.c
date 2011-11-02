@@ -284,8 +284,8 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
             return -1;
         }
         cr_ifname = tgifname;
-        rc = ifaceMacvtapLinkAdd(type, macaddress, 6, tgifname, linkdev,
-                                 macvtapMode, &do_retry);
+        rc = virNetDevMacVLanCreate(tgifname, type, macaddress, linkdev,
+                                    macvtapMode, &do_retry);
         if (rc < 0)
             return -1;
     } else {
@@ -294,8 +294,8 @@ create_name:
         for (c = 0; c < 8192; c++) {
             snprintf(ifname, sizeof(ifname), MACVTAP_NAME_PATTERN, c);
             if (ifaceGetIndex(false, ifname, &ifindex) == -ENODEV) {
-                rc = ifaceMacvtapLinkAdd(type, macaddress, 6, ifname, linkdev,
-                                         macvtapMode, &do_retry);
+                rc = virNetDevMacVLanCreate(ifname, type, macaddress, linkdev,
+                                            macvtapMode, &do_retry);
                 if (rc == 0)
                     break;
 
@@ -350,7 +350,7 @@ disassociate_exit:
                                                    vmOp));
 
 link_del_exit:
-    ifaceLinkDel(cr_ifname);
+    ignore_value(virNetDevMacVLanDelete(cr_ifname));
 
     return rc;
 }
@@ -385,7 +385,7 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
                                               linkdev,
                                               VIR_NETDEV_VPORT_PROFILE_OP_DESTROY) < 0)
             ret = -1;
-        if (ifaceLinkDel(ifname) < 0)
+        if (virNetDevMacVLanDelete(ifname) < 0)
             ret = -1;
     }
     return ret;

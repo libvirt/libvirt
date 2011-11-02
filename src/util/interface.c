@@ -313,12 +313,11 @@ ifaceGetIPAddress(const char *ifname ATTRIBUTE_UNUSED,
 #endif /* __linux__ */
 
 /**
- * ifaceLinkAdd
+ * virNetDevMacVLanCreate:
  *
+ * @ifname: The name the interface is supposed to have; optional parameter
  * @type: The type of device, i.e., "macvtap"
  * @macaddress: The MAC address of the device
- * @macaddrsize: The size of the MAC address, typically '6'
- * @ifname: The name the interface is supposed to have; optional parameter
  * @srcdev: The name of the 'link' device
  * @macvlan_mode: The macvlan mode to use
  * @retry: Pointer to integer that will be '1' upon return if an interface
@@ -331,12 +330,12 @@ ifaceGetIPAddress(const char *ifname ATTRIBUTE_UNUSED,
  */
 #if defined(__linux__) && WITH_MACVTAP
 int
-ifaceMacvtapLinkAdd(const char *type,
-                    const unsigned char *macaddress, int macaddrsize,
-                    const char *ifname,
-                    const char *srcdev,
-                    uint32_t macvlan_mode,
-                    int *retry)
+virNetDevMacVLanCreate(const char *ifname,
+                       const char *type,
+                       const unsigned char *macaddress,
+                       const char *srcdev,
+                       uint32_t macvlan_mode,
+                       int *retry)
 {
     int rc = 0;
     struct nlmsghdr *resp;
@@ -366,7 +365,7 @@ ifaceMacvtapLinkAdd(const char *type,
     if (nla_put_u32(nl_msg, IFLA_LINK, ifindex) < 0)
         goto buffer_too_small;
 
-    if (nla_put(nl_msg, IFLA_ADDRESS, macaddrsize, macaddress) < 0)
+    if (nla_put(nl_msg, IFLA_ADDRESS, VIR_MAC_BUFLEN, macaddress) < 0)
         goto buffer_too_small;
 
     if (ifname &&
@@ -458,14 +457,12 @@ buffer_too_small:
 
 #else
 
-int
-ifaceMacvtapLinkAdd(const char *type ATTRIBUTE_UNUSED,
-                    const unsigned char *macaddress ATTRIBUTE_UNUSED,
-                    int macaddrsize ATTRIBUTE_UNUSED,
-                    const char *ifname ATTRIBUTE_UNUSED,
-                    const char *srcdev ATTRIBUTE_UNUSED,
-                    uint32_t macvlan_mode ATTRIBUTE_UNUSED,
-                    int *retry ATTRIBUTE_UNUSED)
+int virNetDevMacVLanCreate(const char *ifname ATTRIBUTE_UNUSED,
+                           const char *type ATTRIBUTE_UNUSED,
+                           const unsigned char *macaddress ATTRIBUTE_UNUSED,
+                           const char *srcdev ATTRIBUTE_UNUSED,
+                           uint32_t macvlan_mode ATTRIBUTE_UNUSED,
+                           int *retry ATTRIBUTE_UNUSED)
 {
     ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
 # if defined(__linux__) && !WITH_MACVTAP
@@ -483,7 +480,7 @@ ifaceMacvtapLinkAdd(const char *type ATTRIBUTE_UNUSED,
 
 
 /**
- * ifaceLinkDel
+ * virNetDevMacVLanDelete:
  *
  * @ifname: Name of the interface
  *
@@ -492,8 +489,7 @@ ifaceMacvtapLinkAdd(const char *type ATTRIBUTE_UNUSED,
  * Returns 0 on success, -1 on fatal error.
  */
 #if defined( __linux__) && WITH_MACVTAP
-int
-ifaceLinkDel(const char *ifname)
+int virNetDevMacVLanDelete(const char *ifname)
 {
     int rc = 0;
     struct nlmsghdr *resp;
@@ -572,8 +568,7 @@ buffer_too_small:
 
 #else
 
-int
-ifaceLinkDel(const char *ifname ATTRIBUTE_UNUSED)
+int virNetDevMacVLanDelete(const char *ifname ATTRIBUTE_UNUSED)
 {
     ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
 # if defined(__linux__) && !WITH_MACVTAP
