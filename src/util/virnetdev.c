@@ -803,3 +803,56 @@ cleanup:
     virCommandFree(cmd);
     return ret;
 }
+
+
+/**
+ * virNetDevGetIPv4Address:
+ * @ifname: name of the interface whose IP address we want
+ * @addr: filled with the IPv4 address
+ *
+ * This function gets the IPv4 address for the interface @ifname
+ * and stores it in @addr
+ *
+ * Returns 0 on success, -errno on failure.
+ */
+#ifdef __linux__
+int virNetDevGetIPv4Address(const char *ifname,
+                            virSocketAddrPtr addr)
+{
+    int fd = -1;
+    int ret = -1;
+    struct ifreq ifr;
+
+    memset(addr, 0, sizeof(*addr));
+    addr->data.stor.ss_family = AF_UNSPEC;
+
+    if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
+        return -1;
+
+    if (ioctl(fd, SIOCGIFADDR, (char *)&ifr) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to get IPv4 address for interface %s"), ifname);
+        goto cleanup;
+    }
+
+    addr->data.stor.ss_family = AF_INET;
+    addr->len = sizeof(addr->data.inet4);
+    memcpy(&addr->data.inet4, &ifr.ifr_addr, addr->len);
+    ret = 0;
+
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+
+#else
+
+int virNetDevGetIPv4Address(const char *ifname ATTRIBUTE_UNUSED,
+                            virSocketAddrPtr addr ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to get IPv4 address on this platform"));
+    return -1;
+}
+
+#endif /* __linux__ */

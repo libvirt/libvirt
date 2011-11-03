@@ -141,69 +141,6 @@ ifaceCheck(bool reportError ATTRIBUTE_UNUSED,
 #endif /* __linux__ */
 
 
-/**
- * virNetDevGetIPv4Address:
- * @ifname: name of the interface whose IP address we want
- * @addr: filled with the IPv4 address
- *
- * This function gets the IPv4 address for the interface @ifname
- * and stores it in @addr
- *
- * Returns 0 on success, -errno on failure.
- */
-#ifdef __linux__
-int virNetDevGetIPv4Address(const char *ifname,
-                            virSocketAddrPtr addr)
-{
-    struct ifreq ifr;
-    int fd;
-    int rc = 0;
-
-    memset (addr, 0, sizeof(*addr));
-    addr->data.stor.ss_family = AF_UNSPEC;
-
-    fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (fd < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to open control socket"));
-        return -1;
-    }
-
-    memset(&ifr, 0, sizeof(struct ifreq));
-    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL) {
-        virReportSystemError(ERANGE,
-                             _("invalid interface name %s"),
-                             ifname);
-        goto cleanup;
-    }
-
-    if (ioctl(fd, SIOCGIFADDR, (char *)&ifr) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to get IPv4 address for interface %s"), ifname);
-        goto cleanup;
-    }
-
-    addr->data.stor.ss_family = AF_INET;
-    addr->len = sizeof(addr->data.inet4);
-    memcpy(&addr->data.inet4, &ifr.ifr_addr, addr->len);
-
-cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return rc;
-}
-
-#else
-
-int virNetDevGetIPv4Address(const char *ifname ATTRIBUTE_UNUSED,
-                            virSocketAddrPtr addr ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Unable to get IPv4 address on this platform"));
-    return -1;
-}
-
-#endif /* __linux__ */
-
 
 #if defined(__linux__) && defined(IFLA_PORT_MAX)
 
