@@ -40,11 +40,15 @@ int ifaceGetNthParent(int ifindex, const char *ifname, unsigned int nthParent,
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5)
     ATTRIBUTE_NONNULL(6);
 
-int ifaceIsVirtualFunction(const char *ifname);
+int virNetDevIsVirtualFunction(const char *ifname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
-int ifaceGetVirtualFunctionIndex(const char *pfname, const char *vfname,
-                                 int *vf_index);
+int virNetDevGetVirtualFunctionIndex(const char *pfname, const char *vfname,
+                                     int *vf_index)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_RETURN_CHECK;
 
-int ifaceGetPhysicalFunction(const char *ifname, char **pfname);
+int virNetDevGetPhysicalFunction(const char *ifname, char **pfname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 #endif /* __VIR_INTERFACE_H__ */

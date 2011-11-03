@@ -299,7 +299,7 @@ ifaceGetNthParent(int ifindex ATTRIBUTE_UNUSED,
 
 #ifdef __linux__
 static int
-ifaceSysfsFile(char **pf_sysfs_device_link, const char *ifname,
+virNetDevSysfsFile(char **pf_sysfs_device_link, const char *ifname,
                const char *file)
 {
 
@@ -313,7 +313,7 @@ ifaceSysfsFile(char **pf_sysfs_device_link, const char *ifname,
 }
 
 static int
-ifaceSysfsDeviceFile(char **pf_sysfs_device_link, const char *ifname,
+virNetDevSysfsDeviceFile(char **pf_sysfs_device_link, const char *ifname,
                      const char *file)
 {
 
@@ -327,8 +327,7 @@ ifaceSysfsDeviceFile(char **pf_sysfs_device_link, const char *ifname,
 }
 
 /**
- * ifaceIsVirtualFunction
- *
+ * virNetDevIsVirtualFunction:
  * @ifname : name of the interface
  *
  * Checks if an interface is a SRIOV virtual function.
@@ -337,12 +336,12 @@ ifaceSysfsDeviceFile(char **pf_sysfs_device_link, const char *ifname,
  *
  */
 int
-ifaceIsVirtualFunction(const char *ifname)
+virNetDevIsVirtualFunction(const char *ifname)
 {
     char *if_sysfs_device_link = NULL;
     int ret = -1;
 
-    if (ifaceSysfsFile(&if_sysfs_device_link, ifname, "device") < 0)
+    if (virNetDevSysfsFile(&if_sysfs_device_link, ifname, "device") < 0)
         return ret;
 
     ret = pciDeviceIsVirtualFunction(if_sysfs_device_link);
@@ -353,7 +352,7 @@ ifaceIsVirtualFunction(const char *ifname)
 }
 
 /**
- * ifaceGetVirtualFunctionIndex
+ * virNetDevGetVirtualFunctionIndex
  *
  * @pfname : name of the physical function interface name
  * @vfname : name of the virtual function interface name
@@ -364,16 +363,16 @@ ifaceIsVirtualFunction(const char *ifname)
  *
  */
 int
-ifaceGetVirtualFunctionIndex(const char *pfname, const char *vfname,
-                             int *vf_index)
+virNetDevGetVirtualFunctionIndex(const char *pfname, const char *vfname,
+                                 int *vf_index)
 {
     char *pf_sysfs_device_link = NULL, *vf_sysfs_device_link = NULL;
     int ret = -1;
 
-    if (ifaceSysfsFile(&pf_sysfs_device_link, pfname, "device") < 0)
+    if (virNetDevSysfsFile(&pf_sysfs_device_link, pfname, "device") < 0)
         return ret;
 
-    if (ifaceSysfsFile(&vf_sysfs_device_link, vfname, "device") < 0) {
+    if (virNetDevSysfsFile(&vf_sysfs_device_link, vfname, "device") < 0) {
         VIR_FREE(pf_sysfs_device_link);
         return ret;
     }
@@ -389,7 +388,7 @@ ifaceGetVirtualFunctionIndex(const char *pfname, const char *vfname,
 }
 
 /**
- * ifaceGetPhysicalFunction
+ * virNetDevGetPhysicalFunction
  *
  * @ifname : name of the physical function interface name
  * @pfname : Contains sriov physical function for interface ifname
@@ -399,12 +398,12 @@ ifaceGetVirtualFunctionIndex(const char *pfname, const char *vfname,
  *
  */
 int
-ifaceGetPhysicalFunction(const char *ifname, char **pfname)
+virNetDevGetPhysicalFunction(const char *ifname, char **pfname)
 {
     char *physfn_sysfs_path = NULL;
     int ret = -1;
 
-    if (ifaceSysfsDeviceFile(&physfn_sysfs_path, ifname, "physfn") < 0)
+    if (virNetDevSysfsDeviceFile(&physfn_sysfs_path, ifname, "physfn") < 0)
         return ret;
 
     ret = pciDeviceNetName(physfn_sysfs_path, pfname);
@@ -413,34 +412,31 @@ ifaceGetPhysicalFunction(const char *ifname, char **pfname)
 
     return ret;
 }
-#else
+#else /* !__linux__ */
 int
-ifaceIsVirtualFunction(const char *ifname ATTRIBUTE_UNUSED)
+virNetDevIsVirtualFunction(const char *ifname ATTRIBUTE_UNUSED)
 {
-    ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
-               _("ifaceIsVirtualFunction is not supported on non-linux "
-               "platforms"));
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to check virtual function status on this platfornm"));
     return -1;
 }
 
 int
-ifaceGetVirtualFunctionIndex(const char *pfname ATTRIBUTE_UNUSED,
+virNetDevGetVirtualFunctionIndex(const char *pfname ATTRIBUTE_UNUSED,
                              const char *vfname ATTRIBUTE_UNUSED,
                              int *vf_index ATTRIBUTE_UNUSED)
 {
-    ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
-               _("ifaceGetVirtualFunctionIndex is not supported on non-linux "
-               "platforms"));
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to get virtual function index on this platfornm"));
     return -1;
 }
 
 int
-ifaceGetPhysicalFunction(const char *ifname ATTRIBUTE_UNUSED,
-                         char **pfname ATTRIBUTE_UNUSED)
+virNetDevGetPhysicalFunction(const char *ifname ATTRIBUTE_UNUSED,
+                             char **pfname ATTRIBUTE_UNUSED)
 {
-    ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
-               _("ifaceGetPhysicalFunction is not supported on non-linux "
-               "platforms"));
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to get physical function status on this platfornm"));
     return -1;
 }
-#endif /* __linux__ */
+#endif /* !__linux__ */

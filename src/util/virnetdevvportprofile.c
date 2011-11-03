@@ -630,13 +630,13 @@ virNetDevVPortProfileGetPhysfnDev(const char *linkdev,
 {
     int rc = -1;
 
-    if (ifaceIsVirtualFunction(linkdev) == 1) {
+    if (virNetDevIsVirtualFunction(linkdev) == 1) {
         /* if linkdev is SR-IOV VF, then set vf = VF index */
         /* and set linkdev = PF device */
 
-        rc = ifaceGetPhysicalFunction(linkdev, physfndev);
+        rc = virNetDevGetPhysicalFunction(linkdev, physfndev);
         if (!rc)
-            rc = ifaceGetVirtualFunctionIndex(*physfndev, linkdev, vf);
+            rc = virNetDevGetVirtualFunctionIndex(*physfndev, linkdev, vf);
     } else {
 
         /* Not SR-IOV VF: physfndev is linkdev and VF index
