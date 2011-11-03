@@ -856,3 +856,80 @@ int virNetDevGetIPv4Address(const char *ifname ATTRIBUTE_UNUSED,
 }
 
 #endif /* __linux__ */
+
+
+/**
+ * virNetDevValidateConfig:
+ * @ifname: Name of the interface
+ * @macaddr: expected MAC address of the interface; not checked if NULL
+ * @ifindex: expected index of the interface; not checked if '-1'
+ *
+ * Determine whether a given interface is still available. If so,
+ * it must have the given MAC address and if an interface index is
+ * passed, it must also match the interface index.
+ *
+ * Returns 1 if the config matches, 0 if the config does not match, or interface does not exist, -1 on error
+ */
+#ifdef __linux__
+int virNetDevValidateConfig(const char *ifname,
+                            const unsigned char *macaddr, int ifindex)
+{
+    int fd = -1;
+    int ret = -1;
+    struct ifreq ifr;
+    int idx;
+    int rc;
+
+    if ((rc = virNetDevExists(ifname)) < 0)
+        return -1;
+    if (rc == 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (macaddr != NULL) {
+        if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
+            return -1;
+
+        if (ioctl(fd, SIOCGIFHWADDR, &ifr) < 0) {
+            if (errno == ENODEV) {
+                ret = 0;
+                goto cleanup;
+            }
+            virReportSystemError(errno,
+                                 _("coud not get MAC address of interface %s"),
+                                 ifname);
+            goto cleanup;
+        }
+
+        if (memcmp(&ifr.ifr_hwaddr.sa_data, macaddr, VIR_MAC_BUFLEN) != 0) {
+            ret = 0;
+            goto cleanup;
+        }
+    }
+
+    if (ifindex != -1) {
+        if (virNetDevGetIndex(ifname, &idx) < 0)
+            goto cleanup;
+        else if (idx != ifindex) {
+            ret = 0;
+            goto cleanup;
+        }
+    }
+
+    ret = 1;
+
+ cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+#else /* ! __linux__ */
+int virNetDevValidateConfig(const char *ifname ATTRIBUTE_UNUSED,
+                            const unsigned char *macaddr ATTRIBUTE_UNUSED,
+                            int ifindex ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to check interface config on this platform"));
+    return -1;
+}
+#endif /* ! __linux__ */
