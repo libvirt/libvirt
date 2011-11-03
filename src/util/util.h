@@ -121,11 +121,6 @@ int virFileAbsPath(const char *path,
 int virFileOpenTty(int *ttymaster,
                    char **ttyName,
                    int rawmode);
-int virFileOpenTtyAt(const char *ptmx,
-                     int *ttymaster,
-                     char **ttyName,
-                     int rawmode);
-
 
 char *virArgvToString(const char *const *argv);
 
