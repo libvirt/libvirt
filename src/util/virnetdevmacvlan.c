@@ -64,7 +64,6 @@ VIR_ENUM_IMPL(virNetDevMacVLanMode, VIR_NETDEV_MACVLAN_MODE_LAST,
 
 # include "memory.h"
 # include "logging.h"
-# include "interface.h"
 # include "uuid.h"
 # include "virfile.h"
 # include "netlink.h"

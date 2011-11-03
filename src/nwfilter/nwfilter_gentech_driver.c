@@ -28,13 +28,13 @@
 
 #include "memory.h"
 #include "logging.h"
-#include "interface.h"
 #include "domain_conf.h"
 #include "virterror_internal.h"
 #include "nwfilter_gentech_driver.h"
 #include "nwfilter_ebiptables_driver.h"
 #include "nwfilter_learnipaddr.h"
 #include "virnetdev.h"
+#include "datatypes.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 

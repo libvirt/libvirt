@@ -55,7 +55,6 @@
 #include "memory.h"
 #include "uuid.h"
 #include "iptables.h"
-#include "interface.h"
 #include "logging.h"
 #include "dnsmasq.h"
 #include "configmake.h"

@@ -578,14 +578,12 @@ virHookPresent;
 virNetDevValidateConfig;
 virNetDevGetIndex;
 virNetDevGetIPv4Address;
-ifaceGetNthParent;
 virNetDevGetPhysicalFunction;
 virNetDevGetVirtualFunctionIndex;
 virNetDevGetVLanID;
 virNetDevIsVirtualFunction;
 virNetDevMacVLanCreate;
 virNetDevMacVLanDelete;
-ifaceMacvtapLinkDump;
 virNetDevReplaceMacAddress;
 virNetDevRestoreMacAddress;
 
