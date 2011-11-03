@@ -115,8 +115,9 @@ ifaceCheck(bool reportError, const char *ifname,
     }
 
     if (ifindex != -1) {
-        rc = ifaceGetIndex(reportError, ifname, &idx);
-        if (rc == 0 && idx != ifindex)
+        if (virNetDevGetIndex(ifname, &idx) < 0)
+            virResetLastError();
+        else if (idx != ifindex)
             rc = -ENODEV;
     }
 
@@ -141,114 +142,112 @@ ifaceCheck(bool reportError ATTRIBUTE_UNUSED,
 
 
 /**
- * ifaceGetIndex
- *
- * @reportError: whether to report errors or keep silent
+ * virNetDevGetIndex
  * @ifname : Name of the interface whose index is to be found
  * @ifindex: Pointer to int where the index will be written into
  *
  * Get the index of an interface given its name.
  *
- * Returns 0 on success, -errno on failure.
- *   -ENODEV : if interface with given name does not exist
- *   -EINVAL : if interface name is invalid (too long)
+ * Returns 0 on success, -1 on failure
  */
 #ifdef __linux__
 int
-ifaceGetIndex(bool reportError, const char *ifname, int *ifindex)
+virNetDevGetIndex(const char *ifname, int *ifindex)
 {
-    int rc = 0;
+    int ret = -1;
     struct ifreq ifreq;
     int fd = socket(PF_PACKET, SOCK_DGRAM, 0);
 
-    if (fd < 0)
-        return -errno;
+    if (fd < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to open control socket"));
+        return -1;
+    }
 
     memset(&ifreq, 0, sizeof(ifreq));
 
     if (virStrncpy(ifreq.ifr_name, ifname, strlen(ifname),
                    sizeof(ifreq.ifr_name)) == NULL) {
-        if (reportError)
-            ifaceError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid interface name %s"),
-                       ifname);
-        rc = -EINVAL;
+        virReportSystemError(ERANGE,
+                             _("invalid interface name %s"),
+                             ifname);
         goto cleanup;
     }
 
-    if (ioctl(fd, SIOCGIFINDEX, &ifreq) >= 0)
-        *ifindex = ifreq.ifr_ifindex;
-    else {
-        if (reportError)
-            ifaceError(VIR_ERR_INTERNAL_ERROR,
-                       _("interface %s does not exist"),
-                       ifname);
-        rc = -ENODEV;
+    if (ioctl(fd, SIOCGIFINDEX, &ifreq) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to get index for interface %s"), ifname);
+        goto cleanup;
     }
+
+    *ifindex = ifreq.ifr_ifindex;
+    ret = 0;
 
 cleanup:
     VIR_FORCE_CLOSE(fd);
-
-    return rc;
+    return ret;
 }
 
 #else
 
 int
-ifaceGetIndex(bool reportError,
-              const char *ifname ATTRIBUTE_UNUSED,
-              int *ifindex ATTRIBUTE_UNUSED)
+virNetDevGetIndex(const char *ifname ATTRIBUTE_UNUSED,
+                  int *ifindex ATTRIBUTE_UNUSED)
 {
-    if (reportError) {
-        ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("ifaceGetIndex is not supported on non-linux platforms"));
-    }
-
-    return -ENOSYS;
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to get interface index on this platform"));
+    return -1;
 }
 
 #endif /* __linux__ */
 
 #ifdef __linux__
 int
-ifaceGetVlanID(const char *vlanifname, int *vlanid) {
+virNetDevGetVLanID(const char *ifname, int *vlanid)
+{
     struct vlan_ioctl_args vlanargs = {
       .cmd = GET_VLAN_VID_CMD,
     };
-    int rc = 0;
+    int ret = -1;
     int fd = socket(PF_PACKET, SOCK_DGRAM, 0);
 
-    if (fd < 0)
-        return -errno;
+    if (fd < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to open control socket"));
+        return -1;
+    }
 
-    if (virStrcpyStatic(vlanargs.device1, vlanifname) == NULL) {
-        rc = -EINVAL;
+    if (virStrcpyStatic(vlanargs.device1, ifname) == NULL) {
+        virReportSystemError(ERANGE,
+                             _("invalid interface name %s"),
+                             ifname);
         goto cleanup;
     }
 
     if (ioctl(fd, SIOCGIFVLAN, &vlanargs) != 0) {
-        rc = -errno;
+        virReportSystemError(errno,
+                             _("Unable to get VLAN for interface %s"), ifname);
         goto cleanup;
     }
 
     *vlanid = vlanargs.u.VID;
+    ret = 0;
 
  cleanup:
     VIR_FORCE_CLOSE(fd);
 
-    return rc;
+    return ret;
 }
 
 #else
 
 int
-ifaceGetVlanID(const char *vlanifname ATTRIBUTE_UNUSED,
-               int *vlanid ATTRIBUTE_UNUSED) {
-
-    ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
-               _("ifaceGetVlanID is not supported on non-linux platforms"));
-
-    return -ENOSYS;
+virNetDevGetVLanID(const char *ifname ATTRIBUTE_UNUSED,
+                   int *vlanid ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to get VLAN on this platform"));
+    return -1;
 }
 #endif /* __linux__ */
 
@@ -496,7 +495,7 @@ ifaceGetNthParent(int ifindex, const char *ifname, unsigned int nthParent,
 
     *nth = 0;
 
-    if (ifindex <= 0 && ifaceGetIndex(true, ifname, &ifindex) < 0)
+    if (ifindex <= 0 && virNetDevGetIndex(ifname, &ifindex) < 0)
         return -1;
 
     while (!end && i <= nthParent) {

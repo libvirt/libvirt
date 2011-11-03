@@ -544,8 +544,10 @@ virNetDevVPortProfileGetPhysdevAndVlan(const char *ifname, int *root_ifindex, ch
         if (nth == 0)
             break;
         if (*vlanid == -1) {
-            if (ifaceGetVlanID(root_ifname, vlanid) < 0)
+            if (virNetDevGetVLanID(root_ifname, vlanid) < 0) {
+                virResetLastError();
                 *vlanid = -1;
+            }
         }
 
         ifindex = *root_ifindex;
@@ -676,7 +678,7 @@ virNetDevVPortProfileOp8021Qbh(const char *ifname,
     if (rc < 0)
         goto err_exit;
 
-    rc = ifaceGetIndex(true, physfndev, &ifindex);
+    rc = virNetDevGetIndex(physfndev, &ifindex);
     if (rc < 0)
         goto err_exit;
 

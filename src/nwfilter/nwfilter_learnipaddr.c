@@ -252,20 +252,22 @@ virNWFilterTerminateLearnReq(const char *ifname) {
     int ifindex;
     virNWFilterIPAddrLearnReqPtr req;
 
-    if (ifaceGetIndex(false, ifname, &ifindex) == 0) {
-
-        IFINDEX2STR(ifindex_str, ifindex);
-
-        virMutexLock(&pendingLearnReqLock);
-
-        req = virHashLookup(pendingLearnReq, ifindex_str);
-        if (req) {
-            rc = 0;
-            req->terminate = true;
-        }
-
-        virMutexUnlock(&pendingLearnReqLock);
+    if (virNetDevGetIndex(ifname, &ifindex) < 0) {
+        virResetLastError();
+        return rc;
     }
+
+    IFINDEX2STR(ifindex_str, ifindex);
+
+    virMutexLock(&pendingLearnReqLock);
+
+    req = virHashLookup(pendingLearnReq, ifindex_str);
+    if (req) {
+        rc = 0;
+        req->terminate = true;
+    }
+
+    virMutexUnlock(&pendingLearnReqLock);
 
     return rc;
 }

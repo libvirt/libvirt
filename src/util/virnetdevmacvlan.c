@@ -107,7 +107,7 @@ virNetDevMacVLanCreate(const char *ifname,
     struct nl_msg *nl_msg;
     struct nlattr *linkinfo, *info_data;
 
-    if (ifaceGetIndex(true, srcdev, &ifindex) < 0)
+    if (virNetDevGetIndex(srcdev, &ifindex) < 0)
         return -1;
 
     *retry = 0;
@@ -481,7 +481,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
     int retries, do_retry = 0;
     uint32_t macvtapMode;
     const char *cr_ifname;
-    int ifindex;
+    int ret;
 
     macvtapMode = modeMap[mode];
 
@@ -502,13 +502,16 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
     }
 
     if (tgifname) {
-        if(ifaceGetIndex(false, tgifname, &ifindex) == 0) {
+        if ((ret = virNetDevExists(tgifname)) < 0)
+            return -1;
+
+        if (ret) {
             if (STRPREFIX(tgifname,
                           MACVTAP_NAME_PREFIX)) {
                 goto create_name;
             }
-            virReportSystemError(errno,
-                                 _("Interface %s already exists"), tgifname);
+            virReportSystemError(EEXIST,
+                                 _("Unable to create macvlan device %s"), tgifname);
             return -1;
         }
         cr_ifname = tgifname;
@@ -521,7 +524,9 @@ create_name:
         retries = 5;
         for (c = 0; c < 8192; c++) {
             snprintf(ifname, sizeof(ifname), MACVTAP_NAME_PATTERN, c);
-            if (ifaceGetIndex(false, ifname, &ifindex) == -ENODEV) {
+            if ((ret = virNetDevExists(ifname)) < 0)
+                return -1;
+            if (!ret) {
                 rc = virNetDevMacVLanCreate(ifname, type, macaddress, linkdev,
                                             macvtapMode, &do_retry);
                 if (rc == 0)

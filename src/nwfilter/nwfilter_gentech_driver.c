@@ -903,9 +903,11 @@ _virNWFilterInstantiateFilter(virConnectPtr conn,
     /* after grabbing the filter update lock check for the interface; if
        it's not there anymore its filters will be or are being removed
        (while holding the lock) and we don't want to build new ones */
-    if (ifaceGetIndex(false, net->ifname, &ifindex) < 0) {
+    if (virNetDevExists(net->ifname) != 1 ||
+        virNetDevGetIndex(net->ifname, &ifindex) < 0) {
         /* interfaces / VMs can disappear during filter instantiation;
            don't mark it as an error */
+        virResetLastError();
         rc = 0;
         goto cleanup;
     }
@@ -1021,8 +1023,9 @@ int virNWFilterRollbackUpdateFilter(virConnectPtr conn,
     }
 
     /* don't tear anything while the address is being learned */
-    if (ifaceGetIndex(true, net->ifname, &ifindex) == 0 &&
-        virNWFilterLookupLearnReq(ifindex) != NULL)
+    if (virNetDevGetIndex(net->ifname, &ifindex) < 0)
+        virResetLastError();
+    else if (virNWFilterLookupLearnReq(ifindex) != NULL)
         return 0;
 
     return techdriver->tearNewRules(conn, net->ifname);
@@ -1047,8 +1050,9 @@ virNWFilterTearOldFilter(virConnectPtr conn,
     }
 
     /* don't tear anything while the address is being learned */
-    if (ifaceGetIndex(true, net->ifname, &ifindex) == 0 &&
-        virNWFilterLookupLearnReq(ifindex) != NULL)
+    if (virNetDevGetIndex(net->ifname, &ifindex) < 0)
+        virResetLastError();
+    else if (virNWFilterLookupLearnReq(ifindex) != NULL)
         return 0;
 
     return techdriver->tearOldRules(conn, net->ifname);

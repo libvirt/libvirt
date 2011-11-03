@@ -576,12 +576,12 @@ virHookPresent;
 
 # interface.h
 ifaceCheck;
-ifaceGetIndex;
+virNetDevGetIndex;
 ifaceGetIPAddress;
 ifaceGetNthParent;
 ifaceGetPhysicalFunction;
 ifaceGetVirtualFunctionIndex;
-ifaceGetVlanID;
+virNetDevGetVLanID;
 ifaceIsVirtualFunction;
 virNetDevMacVLanCreate;
 virNetDevMacVLanDelete;
