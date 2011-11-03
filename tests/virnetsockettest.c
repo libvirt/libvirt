@@ -207,14 +207,11 @@ static int testSocketUNIXAccept(const void *data ATTRIBUTE_UNUSED)
 
     tmpdir = mkdtemp(template);
     if (tmpdir == NULL) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to create temporary directory"));
+        VIR_WARN("Failed to create temporary directory");
         goto cleanup;
     }
-    if (virAsprintf(&path, "%s/test.sock", tmpdir) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&path, "%s/test.sock", tmpdir) < 0)
         goto cleanup;
-    }
 
     if (virNetSocketNewListenUNIX(path, 0700, -1, getgid(), &lsock) < 0)
         goto cleanup;
@@ -260,14 +257,11 @@ static int testSocketUNIXAddrs(const void *data ATTRIBUTE_UNUSED)
 
     tmpdir = mkdtemp(template);
     if (tmpdir == NULL) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to create temporary directory"));
+        VIR_WARN("Failed to create temporary directory");
         goto cleanup;
     }
-    if (virAsprintf(&path, "%s/test.sock", tmpdir) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&path, "%s/test.sock", tmpdir) < 0)
         goto cleanup;
-    }
 
     if (virNetSocketNewListenUNIX(path, 0700, -1, getgid(), &lsock) < 0)
         goto cleanup;
