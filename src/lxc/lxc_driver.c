@@ -1449,7 +1449,6 @@ lxcBuildControllerCmd(lxc_driver_t *driver,
                       char **veths,
                       int *ttyFDs,
                       size_t nttyFDs,
-                      int logfile,
                       int handshakefd)
 {
     size_t i;
@@ -1524,8 +1523,6 @@ lxcBuildControllerCmd(lxc_driver_t *driver,
     }
 
     virCommandPreserveFD(cmd, handshakefd);
-    virCommandSetOutputFD(cmd, &logfile);
-    virCommandSetErrorFD(cmd, &logfile);
 
     return cmd;
 cleanup:
@@ -1747,8 +1744,10 @@ static int lxcVmStart(virConnectPtr conn,
                                       vm,
                                       nveths, veths,
                                       ttyFDs, nttyFDs,
-                                      logfd, handshakefds[1])))
+                                      handshakefds[1])))
         goto cleanup;
+    virCommandSetOutputFD(cmd, &logfd);
+    virCommandSetErrorFD(cmd, &logfd);
 
     /* Log timestamp */
     if ((timestamp = virTimestamp()) == NULL) {
