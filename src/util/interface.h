@@ -27,8 +27,6 @@ struct nlattr;
 # include "datatypes.h"
 # include "virsocketaddr.h"
 
-# define NET_SYSFS "/sys/class/net/"
-
 
 int ifaceMacvtapLinkDump(bool nltarget_kernel, const char *ifname, int ifindex,
                          struct nlattr **tb, unsigned char **recvbuf,
@@ -39,16 +37,5 @@ int ifaceGetNthParent(int ifindex, const char *ifname, unsigned int nthParent,
                       unsigned int *nth)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5)
     ATTRIBUTE_NONNULL(6);
-
-int virNetDevIsVirtualFunction(const char *ifname)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
-
-int virNetDevGetVirtualFunctionIndex(const char *pfname, const char *vfname,
-                                     int *vf_index)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_RETURN_CHECK;
-
-int virNetDevGetPhysicalFunction(const char *ifname, char **pfname)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 #endif /* __VIR_INTERFACE_H__ */

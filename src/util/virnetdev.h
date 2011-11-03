@@ -88,5 +88,15 @@ int virNetDevValidateConfig(const char *ifname,
                             const unsigned char *macaddr, int ifindex)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
+int virNetDevIsVirtualFunction(const char *ifname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+
+int virNetDevGetVirtualFunctionIndex(const char *pfname, const char *vfname,
+                                     int *vf_index)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_RETURN_CHECK;
+
+int virNetDevGetPhysicalFunction(const char *ifname, char **pfname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 #endif /* __VIR_NETDEV_H__ */
