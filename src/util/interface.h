@@ -33,12 +33,6 @@ struct nlattr;
 int ifaceCheck(bool reportError, const char *ifname,
                const unsigned char *macaddr, int ifindex);
 
-int virNetDevGetIndex(const char *ifname, int *ifindex)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
-
-int virNetDevGetVLanID(const char *ifname, int *vlanid)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
-
 int ifaceGetIPAddress(const char *ifname, virSocketAddrPtr addr);
 
 int ifaceMacvtapLinkDump(bool nltarget_kernel, const char *ifname, int ifindex,

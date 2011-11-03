@@ -46,6 +46,7 @@
 #include "logging.h"
 #include "datatypes.h"
 #include "interface.h"
+#include "virnetdev.h"
 #include "virterror_internal.h"
 #include "threads.h"
 #include "conf/nwfilter_params.h"

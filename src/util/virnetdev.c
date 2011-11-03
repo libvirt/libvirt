@@ -34,6 +34,11 @@
 #endif
 #include <fcntl.h>
 
+#ifdef __linux__
+# include <linux/sockios.h>
+# include <linux/if_vlan.h>
+#endif
+
 #define VIR_FROM_THIS VIR_FROM_NONE
 #define virNetDevError(code, ...)                                      \
     virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,                \
@@ -609,6 +614,110 @@ int virNetDevIsOnline(const char *ifname,
     return -1;
 }
 #endif
+
+
+/**
+ * virNetDevGetIndex:
+ * @ifname : Name of the interface whose index is to be found
+ * @ifindex: Pointer to int where the index will be written into
+ *
+ * Get the index of an interface given its name.
+ *
+ * Returns 0 on success, -1 on failure
+ */
+#ifdef __linux__
+int virNetDevGetIndex(const char *ifname, int *ifindex)
+{
+    int ret = -1;
+    struct ifreq ifreq;
+    int fd = socket(PF_PACKET, SOCK_DGRAM, 0);
+
+    if (fd < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to open control socket"));
+        return -1;
+    }
+
+    memset(&ifreq, 0, sizeof(ifreq));
+
+    if (virStrncpy(ifreq.ifr_name, ifname, strlen(ifname),
+                   sizeof(ifreq.ifr_name)) == NULL) {
+        virReportSystemError(ERANGE,
+                             _("invalid interface name %s"),
+                             ifname);
+        goto cleanup;
+    }
+
+    if (ioctl(fd, SIOCGIFINDEX, &ifreq) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to get index for interface %s"), ifname);
+        goto cleanup;
+    }
+
+    *ifindex = ifreq.ifr_ifindex;
+    ret = 0;
+
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+#else /* ! __linux__ */
+int virNetDevGetIndex(const char *ifname ATTRIBUTE_UNUSED,
+                      int *ifindex ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to get interface index on this platform"));
+    return -1;
+}
+#endif /* ! __linux__ */
+
+
+#ifdef __linux__
+int virNetDevGetVLanID(const char *ifname, int *vlanid)
+{
+    struct vlan_ioctl_args vlanargs = {
+      .cmd = GET_VLAN_VID_CMD,
+    };
+    int ret = -1;
+    int fd = socket(PF_PACKET, SOCK_DGRAM, 0);
+
+    if (fd < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to open control socket"));
+        return -1;
+    }
+
+    if (virStrcpyStatic(vlanargs.device1, ifname) == NULL) {
+        virReportSystemError(ERANGE,
+                             _("invalid interface name %s"),
+                             ifname);
+        goto cleanup;
+    }
+
+    if (ioctl(fd, SIOCGIFVLAN, &vlanargs) != 0) {
+        virReportSystemError(errno,
+                             _("Unable to get VLAN for interface %s"), ifname);
+        goto cleanup;
+    }
+
+    *vlanid = vlanargs.u.VID;
+    ret = 0;
+
+ cleanup:
+    VIR_FORCE_CLOSE(fd);
+
+    return ret;
+}
+#else /* ! __linux__ */
+int virNetDevGetVLanID(const char *ifname ATTRIBUTE_UNUSED,
+                       int *vlanid ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to get VLAN on this platform"));
+    return -1;
+}
+#endif /* ! __linux__ */
+
 
 
 /**
