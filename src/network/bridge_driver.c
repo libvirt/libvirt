@@ -3148,13 +3148,10 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
     }
 
     if (dev_name) {
-        if (ifaceGetIPAddress(dev_name, &addr)) {
-            virReportSystemError(errno,
-                                 _("Failed to get IP address for '%s' (network '%s')"),
-                                 dev_name, netdef->name);
-        } else {
-            addrptr = &addr;
-        }
+        if (virNetDevGetIPv4Address(dev_name, &addr) < 0)
+            goto cleanup;
+
+        addrptr = &addr;
     }
 
     if (addrptr &&

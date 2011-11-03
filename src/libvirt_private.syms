@@ -577,7 +577,7 @@ virHookPresent;
 # interface.h
 ifaceCheck;
 virNetDevGetIndex;
-ifaceGetIPAddress;
+virNetDevGetIPv4Address;
 ifaceGetNthParent;
 ifaceGetPhysicalFunction;
 ifaceGetVirtualFunctionIndex;
