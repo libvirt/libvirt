@@ -715,7 +715,8 @@ virNWFilterInstantiate(virConnectPtr conn,
         if (teardownOld && rc == 0)
             techdriver->tearOldRules(conn, ifname);
 
-        if (rc == 0 && (ifaceCheck(false, ifname, NULL, ifindex) < 0)) {
+        if (rc == 0 && (virNetDevValidateConfig(ifname, NULL, ifindex) <= 0)) {
+            virResetLastError();
             /* interface changed/disppeared */
             techdriver->allTeardown(ifname);
             rc = 1;
@@ -964,8 +965,9 @@ virNWFilterInstantiateFilterLate(virConnectPtr conn,
                                         &foundNewFilter);
     if (rc) {
         /* something went wrong... 'DOWN' the interface */
-        if ((ifaceCheck(false, ifname, NULL, ifindex) < 0) ||
+        if ((virNetDevValidateConfig(ifname, NULL, ifindex) <= 0) ||
             (virNetDevSetOnline(ifname, false) < 0)) {
+            virResetLastError();
             /* assuming interface disappeared... */
             _virNWFilterTeardownFilter(ifname);
         }

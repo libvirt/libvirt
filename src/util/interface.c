@@ -56,9 +56,7 @@
                              __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /**
- * ifaceCheck
- *
- * @reportError: whether to report errors or keep silent
+ * virNetDevValidateConfig:
  * @ifname: Name of the interface
  * @macaddr: expected MAC address of the interface; not checked if NULL
  * @ifindex: expected index of the interface; not checked if '-1'
@@ -67,78 +65,83 @@
  * it must have the given MAC address and if an interface index is
  * passed, it must also match the interface index.
  *
- * Returns 0 on success, -errno on failure.
- *   -ENODEV : if interface with given name does not exist or its interface
- *             index is different than the one passed
- *   -EINVAL : if interface name is invalid (too long)
+ * Returns 1 if the config matches, 0 if the config does not match, or interface does not exist, -1 on error
  */
 #ifdef __linux__
-int
-ifaceCheck(bool reportError, const char *ifname,
-           const unsigned char *macaddr, int ifindex)
+int virNetDevValidateConfig(const char *ifname,
+                            const unsigned char *macaddr, int ifindex)
 {
-    struct ifreq ifr;
     int fd = -1;
-    int rc = 0;
+    int ret = -1;
+    struct ifreq ifr;
     int idx;
+    int rc;
+
+    if ((rc = virNetDevExists(ifname)) < 0)
+        return -1;
+    if (rc == 0) {
+        ret = 0;
+        goto cleanup;
+    }
 
     if (macaddr != NULL) {
         fd = socket(PF_PACKET, SOCK_DGRAM, 0);
-        if (fd < 0)
-            return -errno;
+        if (fd < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Unable to open control socket"));
+            return -1;
+        }
 
         memset(&ifr, 0, sizeof(ifr));
 
         if (virStrncpy(ifr.ifr_name,
                        ifname, strlen(ifname), sizeof(ifr.ifr_name)) == NULL) {
-            if (reportError)
-                ifaceError(VIR_ERR_INTERNAL_ERROR,
-                           _("invalid interface name %s"),
-                           ifname);
-            rc = -EINVAL;
+            virReportSystemError(ERANGE,
+                                 _("invalid interface name %s"),
+                                 ifname);
             goto cleanup;
         }
 
         if (ioctl(fd, SIOCGIFHWADDR, &ifr) < 0) {
-            if (reportError)
-                ifaceError(VIR_ERR_INTERNAL_ERROR,
-                           _("coud not get MAC address of interface %s"),
-                           ifname);
-            rc = -errno;
+            if (errno == ENODEV) {
+                ret = 0;
+                goto cleanup;
+            }
+            virReportSystemError(errno,
+                                 _("coud not get MAC address of interface %s"),
+                                 ifname);
             goto cleanup;
         }
 
         if (memcmp(&ifr.ifr_hwaddr.sa_data, macaddr, VIR_MAC_BUFLEN) != 0) {
-            rc = -ENODEV;
+            ret = 0;
             goto cleanup;
         }
     }
 
     if (ifindex != -1) {
         if (virNetDevGetIndex(ifname, &idx) < 0)
-            virResetLastError();
-        else if (idx != ifindex)
-            rc = -ENODEV;
+            goto cleanup;
+        else if (idx != ifindex) {
+            ret = 0;
+            goto cleanup;
+        }
     }
+
+    ret = 1;
 
  cleanup:
     VIR_FORCE_CLOSE(fd);
-
-    return rc;
+    return ret;
 }
-
-#else
-
-int
-ifaceCheck(bool reportError ATTRIBUTE_UNUSED,
-           const char *ifname ATTRIBUTE_UNUSED,
-           const unsigned char *macaddr ATTRIBUTE_UNUSED,
-           int ifindex ATTRIBUTE_UNUSED)
+#else /* ! __linux__ */
+int virNetDevValidateConfig(const char *ifname ATTRIBUTE_UNUSED,
+                            const unsigned char *macaddr ATTRIBUTE_UNUSED,
+                            int ifindex ATTRIBUTE_UNUSED)
 {
     return -ENOSYS;
 }
-
-#endif /* __linux__ */
+#endif /* ! __linux__ */
 
 
 
