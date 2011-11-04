@@ -3069,12 +3069,12 @@ typedef void (*virConnectDomainEventBlockJobCallback)(virConnectPtr conn,
                                                       void *opaque);
 
 /**
- * virConnectDomainEventDisChangeReason:
+ * virConnectDomainEventDiskChangeReason:
  *
  * The reason describing why this callback is called
  */
 typedef enum {
-    VIR_DOMAIN_DISK_CHANGE_MISSING_ON_START = 0, /* oldSrcPath is set */
+    VIR_DOMAIN_EVENT_DISK_CHANGE_MISSING_ON_START = 0, /* oldSrcPath is set */
 } virConnectDomainEventDiskChangeReason;
 
 /**

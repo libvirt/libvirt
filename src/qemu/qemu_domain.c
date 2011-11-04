@@ -1652,7 +1652,7 @@ qemuDomainCheckDiskPresence(struct qemud_driver *driver,
                   disk->dst, vm->def->name, uuid, disk->src);
 
         event = virDomainEventDiskChangeNewFromObj(vm, disk->src, NULL, disk->info.alias,
-                                                   VIR_DOMAIN_DISK_CHANGE_MISSING_ON_START);
+                                                   VIR_DOMAIN_EVENT_DISK_CHANGE_MISSING_ON_START);
         if (event)
             qemuDomainEventQueue(driver, event);
 
