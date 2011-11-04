@@ -377,7 +377,7 @@ doRemoteOpen (virConnectPtr conn,
      */
     char *name = NULL, *command = NULL, *sockname = NULL, *netcat = NULL;
     char *port = NULL, *authtype = NULL, *username = NULL;
-    bool sanity = true, verify = true, tty = true;
+    bool sanity = true, verify = true, tty ATTRIBUTE_UNUSED = true;
     char *pkipath = NULL, *keyfile = NULL;
 
     /* Return code from this function, and the private data. */
