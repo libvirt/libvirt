@@ -141,9 +141,9 @@ AC_CHECK_FUNCS_ONCE([cfmakeraw geteuid getgid getgrnam_r getmntent_r \
 
 dnl Availability of pthread functions (if missing, win32 threading is
 dnl assumed).  Because of $LIB_PTHREAD, we cannot use AC_CHECK_FUNCS_ONCE.
-dnl LIB_PTHREAD was set during gl_INIT by gnulib.
+dnl LIB_PTHREAD and LIBMULTITHREAD were set during gl_INIT by gnulib.
 old_LIBS=$LIBS
-LIBS="$LIBS $LIB_PTHREAD"
+LIBS="$LIBS $LIB_PTHREAD $LIBMULTITHREAD"
 AC_CHECK_FUNCS([pthread_mutexattr_init])
 LIBS=$old_libs
 
