@@ -1142,6 +1142,9 @@ ssize_t virNetSocketWrite(virNetSocketPtr sock, const char *buf, size_t len)
 }
 
 
+/*
+ * Returns 1 if an FD was sent, 0 if it would block, -1 on error
+ */
 int virNetSocketSendFD(virNetSocketPtr sock, int fd)
 {
     int ret = -1;
@@ -1154,12 +1157,15 @@ int virNetSocketSendFD(virNetSocketPtr sock, int fd)
     PROBE(RPC_SOCKET_SEND_FD,
           "sock=%p fd=%d", sock, fd);
     if (sendfd(sock->fd, fd) < 0) {
-        virReportSystemError(errno,
-                             _("Failed to send file descriptor %d"),
-                             fd);
+        if (errno == EAGAIN)
+            ret = 0;
+        else
+            virReportSystemError(errno,
+                                 _("Failed to send file descriptor %d"),
+                                 fd);
         goto cleanup;
     }
-    ret = 0;
+    ret = 1;
 
 cleanup:
     virMutexUnlock(&sock->lock);
@@ -1167,9 +1173,15 @@ cleanup:
 }
 
 
-int virNetSocketRecvFD(virNetSocketPtr sock)
+/*
+ * Returns 1 if an FD was read, 0 if it would block, -1 on error
+ */
+int virNetSocketRecvFD(virNetSocketPtr sock, int *fd)
 {
     int ret = -1;
+
+    *fd = -1;
+
     if (!virNetSocketHasPassFD(sock)) {
         virNetError(VIR_ERR_INTERNAL_ERROR,
                     _("Receiving file descriptors is not supported on this socket"));
@@ -1177,13 +1189,17 @@ int virNetSocketRecvFD(virNetSocketPtr sock)
     }
     virMutexLock(&sock->lock);
 
-    if ((ret = recvfd(sock->fd, O_CLOEXEC)) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to recv file descriptor"));
+    if ((*fd = recvfd(sock->fd, O_CLOEXEC)) < 0) {
+        if (errno == EAGAIN)
+            ret = 0;
+        else
+            virReportSystemError(errno, "%s",
+                                 _("Failed to recv file descriptor"));
         goto cleanup;
     }
     PROBE(RPC_SOCKET_RECV_FD,
-          "sock=%p fd=%d", sock, ret);
+          "sock=%p fd=%d", sock, *fd);
+    ret = 1;
 
 cleanup:
     virMutexUnlock(&sock->lock);

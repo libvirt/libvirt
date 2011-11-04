@@ -694,10 +694,6 @@ static int virNetClientCallDispatchStream(virNetClientPtr client)
 static int
 virNetClientCallDispatch(virNetClientPtr client)
 {
-    size_t i;
-    if (virNetMessageDecodeHeader(&client->msg) < 0)
-        return -1;
-
     PROBE(RPC_CLIENT_MSG_RX,
           "client=%p len=%zu prog=%u vers=%u proc=%u type=%u status=%u serial=%u",
           client, client->msg.bufferLength,
@@ -706,15 +702,7 @@ virNetClientCallDispatch(virNetClientPtr client)
 
     switch (client->msg.header.type) {
     case VIR_NET_REPLY: /* Normal RPC replies */
-        return virNetClientCallDispatchReply(client);
-
     case VIR_NET_REPLY_WITH_FDS: /* Normal RPC replies with FDs */
-        if (virNetMessageDecodeNumFDs(&client->msg) < 0)
-            return -1;
-        for (i = 0 ; i < client->msg.nfds ; i++) {
-            if ((client->msg.fds[i] = virNetSocketRecvFD(client->sock)) < 0)
-                return -1;
-        }
         return virNetClientCallDispatchReply(client);
 
     case VIR_NET_MESSAGE: /* Async notifications */
@@ -737,22 +725,29 @@ static ssize_t
 virNetClientIOWriteMessage(virNetClientPtr client,
                            virNetClientCallPtr thecall)
 {
-    ssize_t ret;
+    ssize_t ret = 0;
 
-    ret = virNetSocketWrite(client->sock,
-                            thecall->msg->buffer + thecall->msg->bufferOffset,
-                            thecall->msg->bufferLength - thecall->msg->bufferOffset);
-    if (ret <= 0)
-        return ret;
+    if (thecall->msg->bufferOffset < thecall->msg->bufferLength) {
+        ret = virNetSocketWrite(client->sock,
+                                thecall->msg->buffer + thecall->msg->bufferOffset,
+                                thecall->msg->bufferLength - thecall->msg->bufferOffset);
+        if (ret <= 0)
+            return ret;
 
-    thecall->msg->bufferOffset += ret;
+        thecall->msg->bufferOffset += ret;
+    }
 
     if (thecall->msg->bufferOffset == thecall->msg->bufferLength) {
         size_t i;
-        for (i = 0 ; i < thecall->msg->nfds ; i++) {
-            if (virNetSocketSendFD(client->sock, thecall->msg->fds[i]) < 0)
+        for (i = thecall->msg->donefds ; i < thecall->msg->nfds ; i++) {
+            int rv;
+            if ((rv = virNetSocketSendFD(client->sock, thecall->msg->fds[i])) < 0)
                 return -1;
+            if (rv == 0) /* Blocking */
+                return 0;
+            thecall->msg->donefds++;
         }
+        thecall->msg->donefds = 0;
         thecall->msg->bufferOffset = thecall->msg->bufferLength = 0;
         if (thecall->expectReply)
             thecall->mode = VIR_NET_CLIENT_MODE_WAIT_RX;
@@ -821,12 +816,16 @@ virNetClientIOHandleInput(virNetClientPtr client)
      * EAGAIN
      */
     for (;;) {
-        ssize_t ret = virNetClientIOReadMessage(client);
+        ssize_t ret;
 
-        if (ret < 0)
-            return -1;
-        if (ret == 0)
-            return 0;  /* Blocking on read */
+        if (client->msg.nfds == 0) {
+            ret = virNetClientIOReadMessage(client);
+
+            if (ret < 0)
+                return -1;
+            if (ret == 0)
+                return 0;  /* Blocking on read */
+        }
 
         /* Check for completion of our goal */
         if (client->msg.bufferOffset == client->msg.bufferLength) {
@@ -842,6 +841,33 @@ virNetClientIOHandleInput(virNetClientPtr client)
                  * next iteration.
                  */
             } else {
+                if (virNetMessageDecodeHeader(&client->msg) < 0)
+                    return -1;
+
+                if (client->msg.header.type == VIR_NET_REPLY_WITH_FDS) {
+                    size_t i;
+                    if (virNetMessageDecodeNumFDs(&client->msg) < 0)
+                        return -1;
+
+                    for (i = client->msg.donefds ; i < client->msg.nfds ; i++) {
+                        int rv;
+                        if ((rv = virNetSocketRecvFD(client->sock, &(client->msg.fds[i]))) < 0)
+                            return -1;
+                        if (rv == 0) /* Blocking */
+                            break;
+                        client->msg.donefds++;
+                    }
+
+                    if (client->msg.donefds < client->msg.nfds) {
+                        /* Because DecodeHeader/NumFDs reset bufferOffset, we
+                         * put it back to what it was, so everything works
+                         * again next time we run this method
+                         */
+                        client->msg.bufferOffset = client->msg.bufferLength;
+                        return 0; /* Blocking on more fds */
+                    }
+                }
+
                 ret = virNetClientCallDispatch(client);
                 client->msg.bufferOffset = client->msg.bufferLength = 0;
                 /*
@@ -1257,6 +1283,7 @@ int virNetClientSend(virNetClientPtr client,
         goto cleanup;
     }
 
+    msg->donefds = 0;
     if (msg->bufferLength)
         call->mode = VIR_NET_CLIENT_MODE_WAIT_TX;
     else

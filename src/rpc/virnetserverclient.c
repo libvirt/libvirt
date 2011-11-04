@@ -771,9 +771,11 @@ static ssize_t virNetServerClientRead(virNetServerClientPtr client)
 static void virNetServerClientDispatchRead(virNetServerClientPtr client)
 {
 readmore:
-    if (virNetServerClientRead(client) < 0) {
-        client->wantClose = true;
-        return; /* Error */
+    if (client->rx->nfds == 0) {
+        if (virNetServerClientRead(client) < 0) {
+            client->wantClose = true;
+            return; /* Error */
+        }
     }
 
     if (client->rx->bufferOffset < client->rx->bufferLength)
@@ -794,7 +796,7 @@ readmore:
         goto readmore;
     } else {
         /* Grab the completed message */
-        virNetMessagePtr msg = virNetMessageQueueServe(&client->rx);
+        virNetMessagePtr msg = client->rx;
         virNetServerClientFilterPtr filter;
         size_t i;
 
@@ -805,20 +807,40 @@ readmore:
             return;
         }
 
+        /* Now figure out if we need to read more data to get some
+         * file descriptors */
         if (msg->header.type == VIR_NET_CALL_WITH_FDS &&
             virNetMessageDecodeNumFDs(msg) < 0) {
             virNetMessageFree(msg);
             client->wantClose = true;
-            return;
+            return; /* Error */
         }
-        for (i = 0 ; i < msg->nfds ; i++) {
-            if ((msg->fds[i] = virNetSocketRecvFD(client->sock)) < 0) {
+
+        /* Try getting the file descriptors (may fail if blocking) */
+        for (i = msg->donefds ; i < msg->nfds ; i++) {
+            int rv;
+            if ((rv = virNetSocketRecvFD(client->sock, &(msg->fds[i]))) < 0) {
                 virNetMessageFree(msg);
                 client->wantClose = true;
                 return;
             }
+            if (rv == 0) /* Blocking */
+                break;
+            msg->donefds++;
         }
 
+        /* Need to poll() until FDs arrive */
+        if (msg->donefds < msg->nfds) {
+            /* Because DecodeHeader/NumFDs reset bufferOffset, we
+             * put it back to what it was, so everything works
+             * again next time we run this method
+             */
+            client->rx->bufferOffset = client->rx->bufferLength;
+            return;
+        }
+
+        /* Definitely finished reading, so remove from queue */
+        virNetMessageQueueServe(&client->rx);
         PROBE(RPC_SERVER_CLIENT_MSG_RX,
               "client=%p len=%zu prog=%u vers=%u proc=%u type=%u status=%u serial=%u",
               client, msg->bufferLength,
@@ -912,25 +934,30 @@ static void
 virNetServerClientDispatchWrite(virNetServerClientPtr client)
 {
     while (client->tx) {
-        ssize_t ret;
-
-        ret = virNetServerClientWrite(client);
-        if (ret < 0) {
-            client->wantClose = true;
-            return;
+        if (client->tx->bufferOffset < client->tx->bufferLength) {
+            ssize_t ret;
+            ret = virNetServerClientWrite(client);
+            if (ret < 0) {
+                client->wantClose = true;
+                return;
+            }
+            if (ret == 0)
+                return; /* Would block on write EAGAIN */
         }
-        if (ret == 0)
-            return; /* Would block on write EAGAIN */
 
         if (client->tx->bufferOffset == client->tx->bufferLength) {
             virNetMessagePtr msg;
             size_t i;
 
-            for (i = 0 ; i < client->tx->nfds ; i++) {
-                if (virNetSocketSendFD(client->sock, client->tx->fds[i]) < 0) {
+            for (i = client->tx->donefds ; i < client->tx->nfds ; i++) {
+                int rv;
+                if ((rv = virNetSocketSendFD(client->sock, client->tx->fds[i])) < 0) {
                     client->wantClose = true;
                     return;
                 }
+                if (rv == 0) /* Blocking */
+                    return;
+                client->tx->donefds++;
             }
 
 #if HAVE_SASL
@@ -1041,6 +1068,7 @@ int virNetServerClientSendMessage(virNetServerClientPtr client,
               msg->bufferLength, msg->bufferOffset);
     virNetServerClientLock(client);
 
+    msg->donefds = 0;
     if (client->sock && !client->wantClose) {
         PROBE(RPC_SERVER_CLIENT_MSG_TX_QUEUE,
               "client=%p len=%zu prog=%u vers=%u proc=%u type=%u status=%u serial=%u",

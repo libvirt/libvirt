@@ -48,6 +48,7 @@ struct _virNetMessage {
 
     size_t nfds;
     int *fds;
+    size_t donefds;
 
     virNetMessagePtr next;
 };
