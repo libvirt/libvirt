@@ -6430,7 +6430,8 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
 {
     xmlNodePtr *nodes = NULL;
     int i, n;
-    char *bootstr, *useserial;
+    char *bootstr;
+    char *useserial = NULL;
     int ret = -1;
     unsigned long deviceBoot, serialPorts;
 
