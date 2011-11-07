@@ -1465,6 +1465,18 @@ resort to a name instead).
 
 =over 4
 
+=item B<iface-bridge> I<interface> I<bridge> [I<--no-stp>] [I<delay>]
+[I<--no-start>]
+
+Create a bridge device named I<bridge>, and attach the existing
+network device I<interface> to the new bridge.  The new bridge
+defaults to starting immediately, with STP enabled and a delay of 0;
+these settings can be altered with I<--no-stp>, I<--no-start>, and an
+integer number of seconds for I<delay>. All IP address configuration
+of I<interface> will be moved to the new bridge device.
+
+See also B<iface-unbridge> for undoing this operation.
+
 =item B<iface-define> I<file>
 
 Define a host interface from an XML I<file>, the interface is just defined but
@@ -1518,6 +1530,16 @@ I<interface> specifies the interface name.
 =item B<iface-start> I<interface>
 
 Start a (previously defined) host interface, such as by running "if-up".
+
+=item B<iface-unbridge> I<bridge> [I<--no-start>]
+
+Tear down a bridge device named I<bridge>, releasing its underlying
+interface back to normal usage, and moving all IP address
+configuration from the bridge device to the underlying device.  The
+underlying interface is restarted unless I<--no-start> is present;
+this flag is present for symmetry, but generally not recommended.
+
+See also B<iface-bridge> for creating a bridge.
 
 =item B<iface-undefine> I<interface>
 
