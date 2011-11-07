@@ -685,6 +685,11 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
     return rc;
 }
 
+static int aaDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED)
+{
+    return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+}
+
 static int
 get_definition(vahControl * ctl, const char *xmlStr)
 {
@@ -702,6 +707,8 @@ get_definition(vahControl * ctl, const char *xmlStr)
         vah_error(ctl, 0, _("could not allocate memory"));
         goto exit;
     }
+
+    ctl->caps->defaultConsoleTargetType = aaDefaultConsoleType;
 
     if ((guest = virCapabilitiesAddGuest(ctl->caps,
                                          ctl->hvm,
