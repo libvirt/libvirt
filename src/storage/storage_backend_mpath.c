@@ -1,7 +1,7 @@
 /*
  * storage_backend_mpath.c: storage backend for multipath handling
  *
- * Copyright (C) 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2009-2011 Red Hat, Inc.
  * Copyright (C) 2009-2008 Dave Allan
  *
  * This library is free software; you can redistribute it and/or
@@ -25,7 +25,6 @@
 
 #include <unistd.h>
 #include <stdio.h>
-#include <dirent.h>
 #include <fcntl.h>
 
 #include <libdevmapper.h>
