@@ -73,6 +73,10 @@ int virNetClientSendWithReply(virNetClientPtr client,
 int virNetClientSendNoReply(virNetClientPtr client,
                             virNetMessagePtr msg);
 
+int virNetClientSendNonBlock(virNetClientPtr client,
+                             virNetMessagePtr msg);
+
+
 # ifdef HAVE_SASL
 void virNetClientSetSASLSession(virNetClientPtr client,
                                 virNetSASLSessionPtr sasl);

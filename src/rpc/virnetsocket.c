@@ -932,6 +932,19 @@ bool virNetSocketHasCachedData(virNetSocketPtr sock ATTRIBUTE_UNUSED)
 }
 
 
+bool virNetSocketHasPendingData(virNetSocketPtr sock ATTRIBUTE_UNUSED)
+{
+    bool hasPending = false;
+    virMutexLock(&sock->lock);
+#if HAVE_SASL
+    if (sock->saslEncoded)
+        hasPending = true;
+#endif
+    virMutexUnlock(&sock->lock);
+    return hasPending;
+}
+
+
 static ssize_t virNetSocketReadWire(virNetSocketPtr sock, char *buf, size_t len)
 {
     char *errout = NULL;

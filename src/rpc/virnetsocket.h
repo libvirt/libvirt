@@ -106,6 +106,7 @@ void virNetSocketSetSASLSession(virNetSocketPtr sock,
                                 virNetSASLSessionPtr sess);
 # endif
 bool virNetSocketHasCachedData(virNetSocketPtr sock);
+bool virNetSocketHasPendingData(virNetSocketPtr sock);
 void virNetSocketRef(virNetSocketPtr sock);
 void virNetSocketFree(virNetSocketPtr sock);
 
