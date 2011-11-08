@@ -55,6 +55,10 @@ int virCgroupAddTask(virCgroupPtr group, pid_t pid);
 int virCgroupSetBlkioWeight(virCgroupPtr group, unsigned int weight);
 int virCgroupGetBlkioWeight(virCgroupPtr group, unsigned int *weight);
 
+int virCgroupSetBlkioDeviceWeight(virCgroupPtr group,
+                                  const char *path,
+                                  unsigned int weight);
+
 int virCgroupSetMemory(virCgroupPtr group, unsigned long long kb);
 int virCgroupGetMemoryUsage(virCgroupPtr group, unsigned long *kb);
 

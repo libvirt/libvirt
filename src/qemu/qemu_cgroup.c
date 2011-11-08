@@ -309,6 +309,28 @@ int qemuSetupCgroup(struct qemud_driver *driver,
         } else {
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             _("Block I/O tuning is not available on this host"));
+            goto cleanup;
+        }
+    }
+
+    if (vm->def->blkio.ndevices) {
+        if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
+            for (i = 0; i < vm->def->blkio.ndevices; i++) {
+                virBlkioDeviceWeightPtr dw = &vm->def->blkio.devices[i];
+                rc = virCgroupSetBlkioDeviceWeight(cgroup, dw->path,
+                                                   dw->weight);
+                if (rc != 0) {
+                    virReportSystemError(-rc,
+                                         _("Unable to set io device weight "
+                                           "for domain %s"),
+                                         vm->def->name);
+                    goto cleanup;
+                }
+            }
+        } else {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("Block I/O tuning is not available on this host"));
+            goto cleanup;
         }
     }
 

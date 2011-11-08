@@ -89,6 +89,7 @@ virCgroupKillRecursive;
 virCgroupMounted;
 virCgroupPathOfController;
 virCgroupRemove;
+virCgroupSetBlkioDeviceWeight;
 virCgroupSetBlkioWeight;
 virCgroupSetCpuShares;
 virCgroupSetCpuCfsPeriod;

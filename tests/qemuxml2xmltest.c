@@ -184,6 +184,7 @@ mymain(void)
     DO_TEST("encrypted-disk");
     DO_TEST("memtune");
     DO_TEST("blkiotune");
+    DO_TEST("blkiotune-device");
     DO_TEST("cputune");
 
     DO_TEST("smp");

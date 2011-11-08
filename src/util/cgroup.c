@@ -982,6 +982,57 @@ int virCgroupGetBlkioWeight(virCgroupPtr group, unsigned int *weight)
 }
 
 /**
+ * virCgroupSetBlkioDeviceWeight:
+ *
+ * @group: The cgroup to change io device weight device for
+ * @path: The device with a weight to alter
+ * @weight: The new device weight (100-1000), or 0 to clear
+ *
+ * device_weight is treated as a write-only parameter, so
+ * there isn't a getter counterpart.
+ *
+ * Returns: 0 on success, -errno on failure
+ */
+#if defined(major) && defined(minor)
+int virCgroupSetBlkioDeviceWeight(virCgroupPtr group,
+                                  const char *path,
+                                  unsigned int weight)
+{
+    char *str;
+    struct stat sb;
+    int ret;
+
+    if (weight && (weight > 1000 || weight < 100))
+        return -EINVAL;
+
+    if (stat(path, &sb) < 0)
+        return -errno;
+
+    if (!S_ISBLK(sb.st_mode))
+        return -EINVAL;
+
+    if (virAsprintf(&str, "%d:%d %d", major(sb.st_rdev), minor(sb.st_rdev),
+                    weight) < 0)
+        return -errno;
+
+    ret = virCgroupSetValueStr(group,
+                               VIR_CGROUP_CONTROLLER_BLKIO,
+                               "blkio.weight_device",
+                               str);
+    VIR_FREE(str);
+    return ret;
+}
+#else
+        int
+ virCgroupSetBlkioDeviceWeight(virCgroupPtr group ATTRIBUTE_UNUSED,
+                                  const char *path ATTRIBUTE_UNUSED,
+                                  unsigned int weight ATTRIBUTE_UNUSED)
+{
+    return -ENOSYS;
+}
+#endif
+
+/**
  * virCgroupSetMemory:
  *
  * @group: The cgroup to change memory for

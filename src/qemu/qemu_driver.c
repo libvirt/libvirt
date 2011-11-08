@@ -112,7 +112,7 @@
 # define KVM_CAP_NR_VCPUS 9       /* returns max vcpus per vm */
 #endif
 
-#define QEMU_NB_BLKIO_PARAM  1
+#define QEMU_NB_BLKIO_PARAM  2
 
 static void processWatchdogEvent(void *data, void *opaque);
 
@@ -5883,6 +5883,88 @@ cleanup:
     return ret;
 }
 
+/* deviceWeightStr in the form of /device/path,weight,/device/path,weight
+ * for example, /dev/disk/by-path/pci-0000:00:1f.2-scsi-0:0:0:0,800
+ */
+static int
+parseBlkioWeightDeviceStr(char *deviceWeightStr,
+                          virBlkioDeviceWeightPtr *dw, int *size)
+{
+    char *temp;
+    int ndevices = 0;
+    int nsep = 0;
+    int i;
+    virBlkioDeviceWeightPtr result = NULL;
+
+    temp = deviceWeightStr;
+    while (temp) {
+        temp = strchr(temp, ',');
+        if (temp) {
+            temp++;
+            nsep++;
+        }
+    }
+
+    /* A valid string must have even number of fields, hence an odd
+     * number of commas.  */
+    if (!(nsep & 1))
+        goto error;
+
+    ndevices = (nsep + 1) / 2;
+
+    if (VIR_ALLOC_N(result, ndevices) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    i = 0;
+    temp = deviceWeightStr;
+    while (temp) {
+        char *p = temp;
+
+        /* device path */
+        p = strchr(p, ',');
+        if (!p)
+            goto error;
+
+        result[i].path = strndup(temp, p - temp);
+        if (!result[i].path) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        /* weight */
+        temp = p + 1;
+
+        if (virStrToLong_ui(temp, &p, 10, &result[i].weight) < 0)
+            goto error;
+
+        i++;
+
+        if (*p == '\0')
+            break;
+        else if (*p != ',')
+            goto error;
+        temp = p + 1;
+    }
+
+    if (!i)
+        VIR_FREE(result);
+
+    *dw = result;
+    *size = i;
+
+    return 0;
+
+error:
+    qemuReportError(VIR_ERR_INVALID_ARG,
+                    _("unable to parse %s"), deviceWeightStr);
+cleanup:
+    virBlkioDeviceWeightArrayClear(result, ndevices);
+    VIR_FREE(result);
+    return -1;
+}
+
 static int qemuDomainSetBlkioParameters(virDomainPtr dom,
                                          virTypedParameterPtr params,
                                          int nparams,
@@ -5949,10 +6031,10 @@ static int qemuDomainSetBlkioParameters(virDomainPtr dom,
     ret = 0;
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         for (i = 0; i < nparams; i++) {
+            int rc;
             virTypedParameterPtr param = &params[i];
 
             if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
-                int rc;
                 if (param->type != VIR_TYPED_PARAM_UINT) {
                     qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                                     _("invalid type for blkio weight tunable, expected a 'unsigned int'"));
@@ -5973,6 +6055,44 @@ static int qemuDomainSetBlkioParameters(virDomainPtr dom,
                                          _("unable to set blkio weight tunable"));
                     ret = -1;
                 }
+            } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT)) {
+                int ndevices;
+                virBlkioDeviceWeightPtr devices = NULL;
+                if (param->type != VIR_TYPED_PARAM_STRING) {
+                    qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                    _("invalid type for device_weight tunable, "
+                                      "expected a 'char *'"));
+                    ret = -1;
+                    continue;
+                }
+
+                if (parseBlkioWeightDeviceStr(params[i].value.s,
+                                              &devices,
+                                              &ndevices) < 0) {
+                    ret = -1;
+                    continue;
+                }
+                for (i = 0; i < ndevices; i++) {
+                    rc = virCgroupSetBlkioDeviceWeight(group,
+                                                       devices[i].path,
+                                                       devices[i].weight);
+                    if (rc < 0) {
+                        virReportSystemError(-rc,
+                                             _("Unable to set io device weight "
+                                               "for path %s"),
+                                             devices[i].path);
+                        break;
+                    }
+                }
+                if (i != ndevices) {
+                    ret = -1;
+                    continue;
+                }
+                virBlkioDeviceWeightArrayClear(vm->def->blkio.devices,
+                                               vm->def->blkio.ndevices);
+                VIR_FREE(vm->def->blkio.devices);
+                vm->def->blkio.devices = devices;
+                vm->def->blkio.ndevices = ndevices;
             } else {
                 qemuReportError(VIR_ERR_INVALID_ARG,
                                 _("Parameter `%s' not supported"), param->field);
@@ -6005,9 +6125,31 @@ static int qemuDomainSetBlkioParameters(virDomainPtr dom,
                 }
 
                 persistentDef->blkio.weight = params[i].value.ui;
+            } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT)) {
+                virBlkioDeviceWeightPtr devices = NULL;
+                int ndevices;
+                if (param->type != VIR_TYPED_PARAM_STRING) {
+                    qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                    _("invalid type for device_weight tunable, "
+                                      "expected a 'char *'"));
+                    ret = -1;
+                    continue;
+                }
+                if (parseBlkioWeightDeviceStr(params[i].value.s,
+                                              &devices,
+                                              &ndevices) < 0) {
+                    ret = -1;
+                    continue;
+                }
+                virBlkioDeviceWeightArrayClear(persistentDef->blkio.devices,
+                                               persistentDef->blkio.ndevices);
+                VIR_FREE(persistentDef->blkio.devices);
+                persistentDef->blkio.devices = devices;
+                persistentDef->blkio.ndevices = ndevices;
             } else {
                 qemuReportError(VIR_ERR_INVALID_ARG,
-                                _("Parameter `%s' not supported"), param->field);
+                                _("Parameter `%s' not supported"),
+                                param->field);
                 ret = -1;
             }
         }
@@ -6030,7 +6172,7 @@ static int qemuDomainGetBlkioParameters(virDomainPtr dom,
                                          unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
-    int i;
+    int i, j;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr persistentDef = NULL;
@@ -6044,7 +6186,9 @@ static int qemuDomainGetBlkioParameters(virDomainPtr dom,
                   VIR_TYPED_PARAM_STRING_OKAY, -1);
     qemuDriverLock(driver);
 
-    /* We don't return strings, and thus trivially support this flag.  */
+    /* We blindly return a string, and let libvirt.c and
+     * remote_driver.c do the filtering on behalf of older clients
+     * that can't parse it.  */
     flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
 
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -6123,6 +6267,43 @@ static int qemuDomainGetBlkioParameters(virDomainPtr dom,
                 }
                 param->value.ui = val;
                 break;
+            case 1: /* blkiotune.device_weight */
+                if (vm->def->blkio.ndevices > 0) {
+                    virBuffer buf = VIR_BUFFER_INITIALIZER;
+                    bool comma = false;
+                    for (j = 0; j < vm->def->blkio.ndevices; j++) {
+                        if (!vm->def->blkio.devices[j].weight)
+                            continue;
+                        if (comma)
+                            virBufferAddChar(&buf, ',');
+                        else
+                            comma = true;
+                        virBufferAsprintf(&buf, "%s,%u",
+                                          vm->def->blkio.devices[j].path,
+                                          vm->def->blkio.devices[j].weight);
+                    }
+                    if (virBufferError(&buf)) {
+                        virReportOOMError();
+                        goto cleanup;
+                    }
+                    param->value.s = virBufferContentAndReset(&buf);
+                }
+                if (!param->value.s) {
+                    param->value.s = strdup("");
+                    if (!param->value.s) {
+                        virReportOOMError();
+                        goto cleanup;
+                    }
+                }
+                param->type = VIR_TYPED_PARAM_STRING;
+                if (virStrcpyStatic(param->field,
+                                    VIR_DOMAIN_BLKIO_DEVICE_WEIGHT) == NULL) {
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                    _("Field name '%s' too long"),
+                                    VIR_DOMAIN_BLKIO_DEVICE_WEIGHT);
+                    goto cleanup;
+                }
+                break;
 
             default:
                 break;
@@ -6145,6 +6326,38 @@ static int qemuDomainGetBlkioParameters(virDomainPtr dom,
                     goto cleanup;
                 }
                 param->value.ui = persistentDef->blkio.weight;
+                break;
+
+            case 1: /* blkiotune.device_weight */
+                if (persistentDef->blkio.ndevices > 0) {
+                    virBuffer buf = VIR_BUFFER_INITIALIZER;
+                    for (j = 0; j < persistentDef->blkio.ndevices; j++) {
+                        if (j)
+                            virBufferAddChar(&buf, ',');
+                        virBufferAsprintf(&buf, "%s,%u",
+                                          persistentDef->blkio.devices[j].path,
+                                          persistentDef->blkio.devices[j].weight);
+                    }
+                    if (virBufferError(&buf)) {
+                        virReportOOMError();
+                        goto cleanup;
+                    }
+                    param->value.s = virBufferContentAndReset(&buf);
+                } else {
+                    param->value.s = strdup("");
+                    if (!param->value.s) {
+                        virReportOOMError();
+                        goto cleanup;
+                    }
+                }
+                param->type = VIR_TYPED_PARAM_STRING;
+                if (virStrcpyStatic(param->field,
+                                    VIR_DOMAIN_BLKIO_DEVICE_WEIGHT) == NULL) {
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                    _("Field name '%s' too long"),
+                                    VIR_DOMAIN_BLKIO_DEVICE_WEIGHT);
+                    goto cleanup;
+                }
                 break;
 
             default:
