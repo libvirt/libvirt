@@ -601,6 +601,67 @@ VIR_ENUM_IMPL(virDomainStartupPolicy, VIR_DOMAIN_STARTUP_POLICY_LAST,
 #define VIR_DOMAIN_XML_WRITE_FLAGS  VIR_DOMAIN_XML_SECURE
 #define VIR_DOMAIN_XML_READ_FLAGS   VIR_DOMAIN_XML_INACTIVE
 
+
+void
+virBlkioDeviceWeightArrayClear(virBlkioDeviceWeightPtr deviceWeights,
+                               int ndevices)
+{
+    int i;
+
+    for (i = 0; i < ndevices; i++)
+        VIR_FREE(deviceWeights[i].path);
+}
+
+/**
+ * virDomainBlkioDeviceWeightParseXML
+ *
+ * this function parses a XML node:
+ *
+ *   <device>
+ *     <path>/fully/qualified/device/path</path>
+ *     <weight>weight</weight>
+ *   </device>
+ *
+ * and fills a virBlkioDeviceWeight struct.
+ */
+static int
+virDomainBlkioDeviceWeightParseXML(xmlNodePtr root,
+                                   virBlkioDeviceWeightPtr dw)
+{
+    char *c;
+    xmlNodePtr node;
+
+    node = root->children;
+    while (node) {
+        if (node->type == XML_ELEMENT_NODE) {
+            if (xmlStrEqual(node->name, BAD_CAST "path") && !dw->path) {
+                dw->path = (char *)xmlNodeGetContent(node);
+            } else if (xmlStrEqual(node->name, BAD_CAST "weight")) {
+                c = (char *)xmlNodeGetContent(node);
+                if (virStrToLong_ui(c, NULL, 10, &dw->weight) < 0) {
+                    virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                         _("could not parse weight %s"),
+                                         c);
+                    VIR_FREE(c);
+                    VIR_FREE(dw->path);
+                    return -1;
+                }
+                VIR_FREE(c);
+            }
+        }
+        node = node->next;
+    }
+    if (!dw->path) {
+        virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                             _("missing per-device path"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+
 static void
 virDomainObjListDataFree(void *payload, const void *name ATTRIBUTE_UNUSED)
 {
@@ -1396,6 +1457,10 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->cpumask);
     VIR_FREE(def->emulator);
     VIR_FREE(def->description);
+
+    virBlkioDeviceWeightArrayClear(def->blkio.devices,
+                                   def->blkio.ndevices);
+    VIR_FREE(def->blkio.devices);
 
     virDomainWatchdogDefFree(def->watchdog);
 
@@ -6834,6 +6899,22 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                      &def->blkio.weight) < 0)
         def->blkio.weight = 0;
 
+    if ((n = virXPathNodeSet("./blkiotune/device", ctxt, &nodes)) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("cannot extract blkiotune nodes"));
+        goto error;
+    }
+    if (n && VIR_ALLOC_N(def->blkio.devices, n) < 0)
+        goto no_memory;
+
+    for (i = 0; i < n; i++) {
+        if (virDomainBlkioDeviceWeightParseXML(nodes[i],
+                                               &def->blkio.devices[i]) < 0)
+            goto error;
+        def->blkio.ndevices++;
+    }
+    VIR_FREE(nodes);
+
     /* Extract other memory tunables */
     if (virXPathULong("string(./memtune/hard_limit)", ctxt,
                       &def->mem.hard_limit) < 0)
@@ -10956,6 +11037,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     const char *type = NULL;
     int n, allones = 1;
+    bool blkio = false;
 
     virCheckFlags(DUMPXML_FLAGS |
                   VIR_DOMAIN_XML_INTERNAL_STATUS |
@@ -10994,9 +11076,34 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     /* add blkiotune only if there are any */
     if (def->blkio.weight) {
+        blkio = true;
+    } else {
+        for (n = 0; n < def->blkio.ndevices; n++) {
+            if (def->blkio.devices[n].weight) {
+                blkio = true;
+                break;
+            }
+        }
+    }
+
+    if (blkio) {
         virBufferAddLit(buf, "  <blkiotune>\n");
-        virBufferAsprintf(buf, "    <weight>%u</weight>\n",
-                          def->blkio.weight);
+
+        if (def->blkio.weight)
+            virBufferAsprintf(buf, "    <weight>%u</weight>\n",
+                              def->blkio.weight);
+
+        for (n = 0; n < def->blkio.ndevices; n++) {
+            if (def->blkio.devices[n].weight == 0)
+                continue;
+            virBufferAddLit(buf, "    <device>\n");
+            virBufferEscapeString(buf, "      <path>%s</path>\n",
+                                  def->blkio.devices[n].path);
+            virBufferAsprintf(buf, "      <weight>%u</weight>\n",
+                              def->blkio.devices[n].weight);
+            virBufferAddLit(buf, "    </device>\n");
+        }
+
         virBufferAddLit(buf, "  </blkiotune>\n");
     }
 

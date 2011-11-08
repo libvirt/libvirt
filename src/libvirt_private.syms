@@ -231,6 +231,7 @@ virDomainAuditVcpu;
 
 
 # domain_conf.h
+virBlkioDeviceWeightArrayClear;
 virDiskNameToBusDeviceIndex;
 virDiskNameToIndex;
 virDomainActualNetDefFree;

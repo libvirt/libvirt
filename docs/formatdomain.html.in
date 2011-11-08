@@ -505,6 +505,14 @@
   ...
   &lt;blkiotune&gt;
     &lt;weight&gt;800&lt;/weight&gt;
+    &lt;device&gt;
+      &lt;path&gt;/dev/sda&lt;/path&gt;
+      &lt;weight&gt;1000&lt;/weight&gt;
+    &lt;/device&gt;
+    &lt;device&gt;
+      &lt;path&gt;/dev/sdb&lt;/path&gt;
+      &lt;weight&gt;500&lt;/weight&gt;
+    &lt;/device&gt;
   &lt;/blkiotune&gt;
   ...
 &lt;/domain&gt;
@@ -514,10 +522,25 @@
       <dt><code>blkiotune</code></dt>
       <dd> The optional <code>blkiotune</code> element provides the ability
         to tune Blkio cgroup tunable parameters for the domain. If this is
-        omitted, it defaults to the OS provided defaults.</dd>
+        omitted, it defaults to the OS provided
+        defaults. <span class="since">Since 0.8.8</span></dd>
       <dt><code>weight</code></dt>
-      <dd> The optional <code>weight</code> element is the I/O weight of the
-        guest. The value should be in range [100, 1000].</dd>
+      <dd> The optional <code>weight</code> element is the overall I/O
+        weight of the guest. The value should be in the range [100,
+        1000].</dd>
+      <dt><code>device</code></dt>
+      <dd>The domain may have multiple <code>device</code> elements
+        that further tune the weights for each host block device in
+        use by the domain.  Note that
+        multiple <a href="#elementsDisks">guest disks</a> can share a
+        single host block device, if they are backed by files within
+        the same host file system, which is why this tuning parameter
+        is at the global domain level rather than associated with each
+        guest disk device.  Each <code>device</code> element has two
+        mandatory sub-elements, <code>path</code> describing the
+        absolute path of the device, and <code>weight</code> giving
+        the relative weight of that device, in the range [100,
+        1000].  <span class="since">Since 0.9.8</span></dd>
     </dl>
 
 

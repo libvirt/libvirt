@@ -1360,6 +1360,17 @@ struct _virDomainNumatuneDef {
     /* Future NUMA tuning related stuff should go here. */
 };
 
+typedef struct _virBlkioDeviceWeight virBlkioDeviceWeight;
+typedef virBlkioDeviceWeight *virBlkioDeviceWeightPtr;
+struct _virBlkioDeviceWeight {
+    char *path;
+    unsigned int weight;
+};
+
+void virBlkioDeviceWeightArrayClear(virBlkioDeviceWeightPtr deviceWeights,
+                                    int ndevices);
+
+
 /*
  * Guest VM main configuration
  *
@@ -1377,6 +1388,9 @@ struct _virDomainDef {
 
     struct {
         unsigned int weight;
+
+        size_t ndevices;
+        virBlkioDeviceWeightPtr devices;
     } blkio;
 
     struct {

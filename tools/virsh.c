@@ -4653,6 +4653,8 @@ static const vshCmdOptDef opts_blkiotune[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"weight", VSH_OT_INT, VSH_OFLAG_NONE,
      N_("IO Weight in range [100, 1000]")},
+    {"device-weights", VSH_OT_STRING, VSH_OFLAG_NONE,
+     N_("per-device IO Weights, in the form of /path/to/device,weight,...")},
     {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
     {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
     {"current", VSH_OT_BOOL, 0, N_("affect current domain")},
@@ -4663,6 +4665,7 @@ static bool
 cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
 {
     virDomainPtr dom;
+    const char *device_weight = NULL;
     int weight = 0;
     int nparams = 0;
     int rv = 0;
@@ -4705,6 +4708,16 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
             vshError(ctl, _("Invalid value of %d for I/O weight"), weight);
             goto cleanup;
         }
+    }
+
+    rv = vshCommandOptString(cmd, "device-weights", &device_weight);
+    if (rv < 0) {
+        vshError(ctl, "%s",
+                 _("Unable to parse string parameter"));
+        goto cleanup;
+    }
+    if (rv > 0) {
+        nparams++;
     }
 
     if (nparams == 0) {
@@ -4754,12 +4767,14 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
                     vshPrint(ctl, "%-15s: %d\n", params[i].field,
                              params[i].value.b);
                     break;
+                case VIR_TYPED_PARAM_STRING:
+                    vshPrint(ctl, "%-15s: %s\n", params[i].field,
+                             params[i].value.s);
+                    break;
                 default:
                     vshPrint(ctl, "unimplemented blkio parameter type\n");
             }
         }
-
-        ret = true;
     } else {
         /* set the blkio parameters */
         params = vshCalloc(ctl, nparams, sizeof(*params));
@@ -4770,18 +4785,30 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
 
             if (weight) {
                 temp->value.ui = weight;
-                strncpy(temp->field, VIR_DOMAIN_BLKIO_WEIGHT,
-                        sizeof(temp->field));
-                weight = 0;
+                if (!virStrcpy(temp->field, VIR_DOMAIN_BLKIO_WEIGHT,
+                               sizeof(temp->field)))
+                    goto cleanup;
+            }
+
+            if (device_weight) {
+                temp->value.s = vshStrdup(ctl, device_weight);
+                temp->type = VIR_TYPED_PARAM_STRING;
+                if (!virStrcpy(temp->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT,
+                               sizeof(temp->field)))
+                    goto cleanup;
             }
         }
-        if (virDomainSetBlkioParameters(dom, params, nparams, flags) != 0)
+
+        if (virDomainSetBlkioParameters(dom, params, nparams, flags) < 0) {
             vshError(ctl, "%s", _("Unable to change blkio parameters"));
-        else
-            ret = true;
+            goto cleanup;
+        }
     }
 
+    ret = true;
+
   cleanup:
+    virTypedParameterArrayClear(params, nparams);
     VIR_FREE(params);
     virDomainFree(dom);
     return ret;

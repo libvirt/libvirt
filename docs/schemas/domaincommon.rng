@@ -327,12 +327,26 @@
       <!-- The Blkio cgroup related tunables would go in the blkiotune -->
       <optional>
         <element name="blkiotune">
-          <!-- I/O weight the VM can use -->
-          <optional>
-            <element name="weight">
-              <ref name="weight"/>
-            </element>
-          </optional>
+          <interleave>
+            <!-- I/O weight the VM can use -->
+            <optional>
+              <element name="weight">
+                <ref name="weight"/>
+              </element>
+            </optional>
+            <zeroOrMore>
+              <element name="device">
+                <interleave>
+                  <element name="path">
+                    <ref name="absFilePath"/>
+                  </element>
+                  <element name="weight">
+                    <ref name="weight"/>
+                  </element>
+                </interleave>
+              </element>
+            </zeroOrMore>
+          </interleave>
         </element>
       </optional>
 

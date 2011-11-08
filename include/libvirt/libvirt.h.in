@@ -1252,6 +1252,16 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
 
 #define VIR_DOMAIN_BLKIO_WEIGHT "weight"
 
+/**
+ * VIR_DOMAIN_BLKIO_DEVICE_WEIGHT:
+ *
+ * Macro for the blkio tunable weight_device: it represents the
+ * per-device weight, as a string.  The string is parsed as a
+ * series of /path/to/device,weight elements, separated by ','.
+ */
+
+#define VIR_DOMAIN_BLKIO_DEVICE_WEIGHT "device_weight"
+
 /* Set Blkio tunables for the domain*/
 int     virDomainSetBlkioParameters(virDomainPtr domain,
                                     virTypedParameterPtr params,
