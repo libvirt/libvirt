@@ -11569,7 +11569,8 @@ static const vshCmdInfo info_attach_disk[] = {
 
 static const vshCmdOptDef opts_attach_disk[] = {
     {"domain",  VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"source",  VSH_OT_DATA, VSH_OFLAG_REQ, N_("source of disk device")},
+    {"source",  VSH_OT_DATA, VSH_OFLAG_REQ | VSH_OFLAG_EMPTY_OK,
+     N_("source of disk device")},
     {"target",  VSH_OT_DATA, VSH_OFLAG_REQ, N_("target of disk device")},
     {"driver",    VSH_OT_STRING, 0, N_("driver of disk device")},
     {"subdriver", VSH_OT_STRING, 0, N_("subdriver of disk device")},
@@ -11754,6 +11755,10 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptString(cmd, "source", &source) <= 0)
         goto cleanup;
+    /* Allow empty string as a placeholder that implies no source, for
+     * use in adding a cdrom drive with no disk.  */
+    if (!*source)
+        source = NULL;
 
     if (vshCommandOptString(cmd, "target", &target) <= 0)
         goto cleanup;
@@ -11808,9 +11813,10 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     if (driver || subdriver || cache)
         virBufferAddLit(&buf, "/>\n");
 
-    virBufferAsprintf(&buf, "  <source %s='%s'/>\n",
-                      (isFile) ? "file" : "dev",
-                      source);
+    if (source)
+        virBufferAsprintf(&buf, "  <source %s='%s'/>\n",
+                          (isFile) ? "file" : "dev",
+                          source);
     virBufferAsprintf(&buf, "  <target dev='%s'/>\n", target);
     if (mode)
         virBufferAsprintf(&buf, "  <%s/>\n", mode);
