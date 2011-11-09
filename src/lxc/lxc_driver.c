@@ -1857,7 +1857,7 @@ cleanup:
 
     if (err) {
         virSetError(err);
-        virResetError(err);
+        virFreeError(err);
     }
 
     return rc;
