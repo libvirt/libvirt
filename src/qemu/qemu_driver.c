@@ -5212,8 +5212,8 @@ qemuDomainDetachDeviceDiskLive(struct qemud_driver *driver,
         break;
     default:
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                        _("device type '%s' cannot be detached"),
-                        virDomainDeviceTypeToString(dev->type));
+                        _("disk device type '%s' cannot be detached"),
+                        virDomainDiskDeviceTypeToString(disk->type));
         break;
     }
     return ret;
