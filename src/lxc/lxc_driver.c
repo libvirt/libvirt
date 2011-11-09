@@ -1850,6 +1850,7 @@ cleanup:
     }
     for (i = 0 ; i < nttyFDs ; i++)
         VIR_FORCE_CLOSE(ttyFDs[i]);
+    VIR_FREE(ttyFDs);
     VIR_FORCE_CLOSE(handshakefds[0]);
     VIR_FORCE_CLOSE(handshakefds[1]);
     VIR_FREE(logfile);
