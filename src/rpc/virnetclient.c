@@ -722,7 +722,9 @@ static int virNetClientCallDispatchStream(virNetClientPtr client)
         VIR_DEBUG("No stream found for packet with prog=%d vers=%d serial=%u proc=%u",
                   client->msg.header.prog, client->msg.header.vers,
                   client->msg.header.serial, client->msg.header.proc);
-        return -1;
+        /* Don't return -1, because we expect to see further stream packets
+         * after we've shut it down sometimes */
+        return 0;
     }
 
     /* Finish/Abort are synchronous, so also see if there's an
