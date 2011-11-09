@@ -627,6 +627,7 @@ ifeq (0,$(MAKELEVEL))
       test -f po/Makevars || { echo 1; exit; };				\
       actual=$$(git submodule status | $(_submodule_hash);		\
 		git hash-object bootstrap.conf;				\
+		git ls-tree -d HEAD gnulib/local | awk '{print $$3}';	\
 		git diff .gnulib);					\
       stamp="$$($(_submodule_hash) $(_curr_status) 2>/dev/null)";	\
       test "$$stamp" = "$$actual"; echo $$?)

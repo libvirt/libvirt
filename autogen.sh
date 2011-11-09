@@ -41,10 +41,13 @@ fi
 # is required.  The first is just the SHA1 that selects a gnulib snapshot.
 # The second ensures that whenever we change the set of gnulib modules used
 # by this package, we rerun bootstrap to pull in the matching set of files.
+# The third ensures that whenever we change the set of local gnulib diffs,
+# we rerun bootstrap to pull in those diffs.
 bootstrap_hash()
 {
     git submodule status | sed 's/^[ +-]//;s/ .*//'
     git hash-object bootstrap.conf
+    git ls-tree -d HEAD gnulib/local | awk '{print $3}'
 }
 
 # Ensure that whenever we pull in a gnulib update or otherwise change to a
