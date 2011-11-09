@@ -40,6 +40,7 @@
 #include "nwfilter_ebiptables_driver.h"
 #include "virfile.h"
 #include "command.h"
+#include "configmake.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
@@ -2482,28 +2483,16 @@ ebiptablesDisplayRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
  * NULL in case of error with the error reported.
  *
  * Write the string into a temporary file and return the name of
- * the temporary file. The string is assumed to contain executable
- * commands. A line '#!/bin/sh' will automatically be written
- * as the first line in the file. The permissions of the file are
- * set so that the file can be run as an executable script.
+ * the temporary file. The file can then be read as a /bin/sh script.
+ * No '#!/bin/sh' header is needed, since the file will be read and not
+ * directly executed.
  */
 static char *
 ebiptablesWriteToTempFile(const char *string) {
-    char filename[] = "/tmp/virtdXXXXXX";
-    int len;
+    char filename[] = LOCALSTATEDIR "/run/libvirt/nwfilt-XXXXXX";
+    size_t len;
     char *filnam;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *header;
     size_t written;
-
-    virBufferAddLit(&buf, "#!/bin/sh\n");
-
-    if (virBufferError(&buf)) {
-        virBufferFreeAndReset(&buf);
-        virReportOOMError();
-        return NULL;
-    }
-    header = virBufferContentAndReset(&buf);
 
     int fd = mkstemp(filename);
 
@@ -2511,22 +2500,6 @@ ebiptablesWriteToTempFile(const char *string) {
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s",
                                _("cannot create temporary file"));
-        goto err_exit;
-    }
-
-    if (fchmod(fd, S_IXUSR| S_IRUSR | S_IWUSR) < 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s",
-                               _("cannot change permissions on temp. file"));
-        goto err_exit;
-    }
-
-    len = strlen(header);
-    written = safewrite(fd, header, len);
-    if (written != len) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s",
-                               _("cannot write string to file"));
         goto err_exit;
     }
 
@@ -2539,18 +2512,22 @@ ebiptablesWriteToTempFile(const char *string) {
         goto err_exit;
     }
 
+    if (VIR_CLOSE(fd) < 0) {
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s",
+                               _("cannot write string to file"));
+        goto err_exit;
+    }
+
     filnam = strdup(filename);
     if (!filnam) {
         virReportOOMError();
         goto err_exit;
     }
 
-    VIR_FREE(header);
-    VIR_FORCE_CLOSE(fd);
     return filnam;
 
 err_exit:
-    VIR_FREE(header);
     VIR_FORCE_CLOSE(fd);
     unlink(filename);
     return NULL;
@@ -2564,7 +2541,7 @@ err_exit:
  * @status: Pointer to an integer for returning the WEXITSTATUS of the
  *        commands executed via the script the was run.
  *
- * Returns 0 in case of success, != 0 in case of an error. The returned
+ * Returns 0 in case of success, < 0 in case of an error. The returned
  * value is NOT the result of running the commands inside the shell
  * script.
  *
@@ -2577,52 +2554,41 @@ ebiptablesExecCLI(virBufferPtr buf,
 {
     char *cmds;
     char *filename;
-    int rc;
-    const char *argv[] = {NULL, NULL};
+    int rc = -1;
+    virCommandPtr cmd;
 
     if (virBufferError(buf)) {
         virReportOOMError();
         virBufferFreeAndReset(buf);
-        return 1;
+        return -1;
     }
 
     *status = 0;
 
     cmds = virBufferContentAndReset(buf);
-
     VIR_DEBUG("%s", NULLSTR(cmds));
-
     if (!cmds)
         return 0;
 
     filename = ebiptablesWriteToTempFile(cmds);
-    VIR_FREE(cmds);
-
     if (!filename)
-        return 1;
+        goto cleanup;
 
-    argv[0] = filename;
+    cmd = virCommandNew("/bin/sh");
+    virCommandAddArg(cmd, filename);
 
     virMutexLock(&execCLIMutex);
 
-    rc = virRun(argv, status);
+    rc = virCommandRun(cmd, status);
 
     virMutexUnlock(&execCLIMutex);
 
-    if (rc == 0) {
-        if (WIFEXITED(*status)) {
-            *status = WEXITSTATUS(*status);
-        } else {
-            rc = -1;
-            *status = 1;
-        }
-    }
-
-    VIR_DEBUG("rc = %d, status = %d", rc, *status);
-
     unlink(filename);
-
     VIR_FREE(filename);
+
+cleanup:
+    VIR_FREE(cmds);
+    virCommandFree(cmd);
 
     return rc;
 }
