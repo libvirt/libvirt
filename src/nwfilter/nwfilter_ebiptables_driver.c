@@ -2476,65 +2476,6 @@ ebiptablesDisplayRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 /**
- * ebiptablesWriteToTempFile:
- * @string : the string to write into the file
- *
- * Returns the tempory filename where the string was written into,
- * NULL in case of error with the error reported.
- *
- * Write the string into a temporary file and return the name of
- * the temporary file. The file can then be read as a /bin/sh script.
- * No '#!/bin/sh' header is needed, since the file will be read and not
- * directly executed.
- */
-static char *
-ebiptablesWriteToTempFile(const char *string) {
-    char filename[] = LOCALSTATEDIR "/run/libvirt/nwfilt-XXXXXX";
-    size_t len;
-    char *filnam;
-    size_t written;
-
-    int fd = mkstemp(filename);
-
-    if (fd < 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s",
-                               _("cannot create temporary file"));
-        goto err_exit;
-    }
-
-    len = strlen(string);
-    written = safewrite(fd, string, len);
-    if (written != len) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s",
-                               _("cannot write string to file"));
-        goto err_exit;
-    }
-
-    if (VIR_CLOSE(fd) < 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s",
-                               _("cannot write string to file"));
-        goto err_exit;
-    }
-
-    filnam = strdup(filename);
-    if (!filnam) {
-        virReportOOMError();
-        goto err_exit;
-    }
-
-    return filnam;
-
-err_exit:
-    VIR_FORCE_CLOSE(fd);
-    unlink(filename);
-    return NULL;
-}
-
-
-/**
  * ebiptablesExecCLI:
  * @buf : pointer to virBuffer containing the string with the commands to
  *        execute.
@@ -2546,36 +2487,22 @@ err_exit:
  * script.
  *
  * Execute a sequence of commands (held in the given buffer) as a /bin/sh
- * script and return the status of the execution.
+ * script and return the status of the execution in *status (if status is
+ * NULL, then the script must exit with status 0).
  */
 static int
 ebiptablesExecCLI(virBufferPtr buf,
                   int *status)
 {
-    char *cmds;
-    char *filename;
     int rc = -1;
     virCommandPtr cmd;
 
-    if (virBufferError(buf)) {
-        virReportOOMError();
-        virBufferFreeAndReset(buf);
-        return -1;
-    }
-
     *status = 0;
-
-    cmds = virBufferContentAndReset(buf);
-    VIR_DEBUG("%s", NULLSTR(cmds));
-    if (!cmds)
+    if (!virBufferError(buf) && !virBufferUse(buf))
         return 0;
 
-    filename = ebiptablesWriteToTempFile(cmds);
-    if (!filename)
-        goto cleanup;
-
-    cmd = virCommandNew("/bin/sh");
-    virCommandAddArg(cmd, filename);
+    cmd = virCommandNewArgList("/bin/sh", "-c", NULL);
+    virCommandAddArgBuffer(cmd, buf);
 
     virMutexLock(&execCLIMutex);
 
@@ -2583,11 +2510,6 @@ ebiptablesExecCLI(virBufferPtr buf,
 
     virMutexUnlock(&execCLIMutex);
 
-    unlink(filename);
-    VIR_FREE(filename);
-
-cleanup:
-    VIR_FREE(cmds);
     virCommandFree(cmd);
 
     return rc;
