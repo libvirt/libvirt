@@ -66,6 +66,8 @@
 #include "virfile.h"
 #include "virpidfile.h"
 #include "command.h"
+#include "processinfo.h"
+#include "nodeinfo.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -322,6 +324,64 @@ static int lxcSetContainerNUMAPolicy(virDomainDefPtr def)
 }
 #endif
 
+
+/*
+ * To be run while still single threaded
+ */
+static int lxcSetContainerCpuAffinity(virDomainDefPtr def)
+{
+    int i, hostcpus, maxcpu = CPU_SETSIZE;
+    virNodeInfo nodeinfo;
+    unsigned char *cpumap;
+    int cpumaplen;
+
+    VIR_DEBUG("Setting CPU affinity");
+
+    if (nodeGetInfo(NULL, &nodeinfo) < 0)
+        return -1;
+
+    /* setaffinity fails if you set bits for CPUs which
+     * aren't present, so we have to limit ourselves */
+    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
+    if (maxcpu > hostcpus)
+        maxcpu = hostcpus;
+
+    cpumaplen = VIR_CPU_MAPLEN(maxcpu);
+    if (VIR_ALLOC_N(cpumap, cpumaplen) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (def->cpumask) {
+        /* XXX why don't we keep 'cpumask' in the libvirt cpumap
+         * format to start with ?!?! */
+        for (i = 0 ; i < maxcpu && i < def->cpumasklen ; i++)
+            if (def->cpumask[i])
+                VIR_USE_CPU(cpumap, i);
+    } else {
+        /* You may think this is redundant, but we can't assume libvirtd
+         * itself is running on all pCPUs, so we need to explicitly set
+         * the spawned LXC instance to all pCPUs if no map is given in
+         * its config file */
+        for (i = 0 ; i < maxcpu ; i++)
+            VIR_USE_CPU(cpumap, i);
+    }
+
+    /* We are pressuming we are running between fork/exec of LXC
+     * so use '0' to indicate our own process ID. No threads are
+     * running at this point
+     */
+    if (virProcessInfoSetAffinity(0, /* Self */
+                                  cpumap, cpumaplen, maxcpu) < 0) {
+        VIR_FREE(cpumap);
+        return -1;
+    }
+    VIR_FREE(cpumap);
+
+    return 0;
+}
+
+
 /**
  * lxcSetContainerResources
  * @def: pointer to virtual machine structure
@@ -346,6 +406,9 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_TTY},
         {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_PTMX},
         {0,   0, 0}};
+
+    if (lxcSetContainerCpuAffinity(def) < 0)
+        return -1;
 
     if (lxcSetContainerNUMAPolicy(def) < 0)
         return -1;
