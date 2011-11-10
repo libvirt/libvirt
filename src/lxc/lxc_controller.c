@@ -382,6 +382,42 @@ static int lxcSetContainerCpuAffinity(virDomainDefPtr def)
 }
 
 
+static int lxcSetContainerCpuTune(virCgroupPtr cgroup, virDomainDefPtr def)
+{
+    int ret = -1;
+    if (def->cputune.shares != 0) {
+        int rc = virCgroupSetCpuShares(cgroup, def->cputune.shares);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to set io cpu shares for domain %s"),
+                                 def->name);
+            goto cleanup;
+        }
+    }
+    if (def->cputune.quota != 0) {
+        int rc = virCgroupSetCpuCfsQuota(cgroup, def->cputune.quota);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to set io cpu quota for domain %s"),
+                                 def->name);
+            goto cleanup;
+        }
+    }
+    if (def->cputune.period != 0) {
+        int rc = virCgroupSetCpuCfsPeriod(cgroup, def->cputune.period);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to set io cpu period for domain %s"),
+                                 def->name);
+            goto cleanup;
+        }
+    }
+    ret = 0;
+cleanup:
+    return ret;
+}
+
+
 /**
  * lxcSetContainerResources
  * @def: pointer to virtual machine structure
@@ -432,21 +468,14 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         goto cleanup;
     }
 
+    if (lxcSetContainerCpuTune(cgroup, def) < 0)
+        goto cleanup;
+
     if (def->blkio.weight) {
         rc = virCgroupSetBlkioWeight(cgroup, def->blkio.weight);
         if (rc != 0) {
             virReportSystemError(-rc,
                                  _("Unable to set Blkio weight for domain %s"),
-                                 def->name);
-            goto cleanup;
-        }
-    }
-
-    if (def->cputune.shares) {
-        rc = virCgroupSetCpuShares(cgroup, def->cputune.shares);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set cpu shares for domain %s"),
                                  def->name);
             goto cleanup;
         }

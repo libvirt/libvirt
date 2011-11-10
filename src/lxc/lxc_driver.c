@@ -2602,84 +2602,328 @@ static int lxcVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned long *versio
     return 0;
 }
 
-static char *lxcGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED,
-                                 int *nparams)
+
+/*
+ * check whether the host supports CFS bandwidth
+ *
+ * Return 1 when CFS bandwidth is supported, 0 when CFS bandwidth is not
+ * supported, -1 on error.
+ */
+static int lxcGetCpuBWStatus(virCgroupPtr cgroup)
 {
-    char *schedulerType = NULL;
+    char *cfs_period_path = NULL;
+    int ret = -1;
 
-    if (nparams)
-        *nparams = 1;
+    if (!cgroup)
+        return 0;
 
-    schedulerType = strdup("posix");
+    if (virCgroupPathOfController(cgroup, VIR_CGROUP_CONTROLLER_CPU,
+                                  "cpu.cfs_period_us", &cfs_period_path) < 0) {
+        VIR_INFO("cannot get the path of cgroup CPU controller");
+        ret = 0;
+        goto cleanup;
+    }
 
-    if (schedulerType == NULL)
-        virReportOOMError();
+    if (access(cfs_period_path, F_OK) < 0) {
+        ret = 0;
+    } else {
+        ret = 1;
+    }
 
-    return schedulerType;
+cleanup:
+    VIR_FREE(cfs_period_path);
+    return ret;
 }
 
+
+static bool lxcCgroupControllerActive(lxc_driver_t *driver,
+                                      int controller)
+{
+    if (driver->cgroup == NULL)
+        return false;
+    if (controller < 0 || controller >= VIR_CGROUP_CONTROLLER_LAST)
+        return false;
+    if (!virCgroupMounted(driver->cgroup, controller))
+        return false;
+#if 0
+    if (driver->cgroupControllers & (1 << controller))
+        return true;
+#endif
+    return false;
+}
+
+
+
+static char *lxcGetSchedulerType(virDomainPtr domain,
+                                 int *nparams)
+{
+    lxc_driver_t *driver = domain->conn->privateData;
+    char *ret = NULL;
+    int rc;
+
+    lxcDriverLock(driver);
+    if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
+        lxcError(VIR_ERR_OPERATION_INVALID,
+                 "%s", _("cgroup CPU controller is not mounted"));
+        goto cleanup;
+    }
+
+    if (nparams) {
+        rc = lxcGetCpuBWStatus(driver->cgroup);
+        if (rc < 0)
+            goto cleanup;
+        else if (rc == 0)
+            *nparams = 1;
+        else
+            *nparams = 3;
+    }
+
+    ret = strdup("posix");
+    if (!ret)
+        virReportOOMError();
+
+cleanup:
+    lxcDriverUnlock(driver);
+    return ret;
+}
+
+
 static int
-lxcSetSchedulerParametersFlags(virDomainPtr domain,
+lxcGetVcpuBWLive(virCgroupPtr cgroup, unsigned long long *period,
+                 long long *quota)
+{
+    int rc;
+
+    rc = virCgroupGetCpuCfsPeriod(cgroup, period);
+    if (rc < 0) {
+        virReportSystemError(-rc, "%s",
+                             _("unable to get cpu bandwidth period tunable"));
+        return -1;
+    }
+
+    rc = virCgroupGetCpuCfsQuota(cgroup, quota);
+    if (rc < 0) {
+        virReportSystemError(-rc, "%s",
+                             _("unable to get cpu bandwidth tunable"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int lxcSetVcpuBWLive(virCgroupPtr cgroup, unsigned long long period,
+                            long long quota)
+{
+    int rc;
+    unsigned long long old_period;
+
+    if (period == 0 && quota == 0)
+        return 0;
+
+    if (period) {
+        /* get old period, and we can rollback if set quota failed */
+        rc = virCgroupGetCpuCfsPeriod(cgroup, &old_period);
+        if (rc < 0) {
+            virReportSystemError(-rc,
+                                 "%s", _("Unable to get cpu bandwidth period"));
+            return -1;
+        }
+
+        rc = virCgroupSetCpuCfsPeriod(cgroup, period);
+        if (rc < 0) {
+            virReportSystemError(-rc,
+                                 "%s", _("Unable to set cpu bandwidth period"));
+            return -1;
+        }
+    }
+
+    if (quota) {
+        rc = virCgroupSetCpuCfsQuota(cgroup, quota);
+        if (rc < 0) {
+            virReportSystemError(-rc,
+                                 "%s", _("Unable to set cpu bandwidth quota"));
+            goto cleanup;
+        }
+    }
+
+    return 0;
+
+cleanup:
+    if (period) {
+        rc = virCgroupSetCpuCfsPeriod(cgroup, old_period);
+        if (rc < 0)
+            virReportSystemError(-rc,
+                                 _("%s"),
+                                 "Unable to rollback cpu bandwidth period");
+    }
+
+    return -1;
+}
+
+
+static int
+lxcSetSchedulerParametersFlags(virDomainPtr dom,
                                virTypedParameterPtr params,
                                int nparams,
                                unsigned int flags)
 {
-    lxc_driver_t *driver = domain->conn->privateData;
+    lxc_driver_t *driver = dom->conn->privateData;
     int i;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
+    virDomainDefPtr vmdef = NULL;
     int ret = -1;
+    bool isActive;
+    int rc;
 
-    virCheckFlags(0, -1);
-
-    if (driver->cgroup == NULL)
-        return -1;
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, domain->uuid);
+
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (vm == NULL) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(domain->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        lxcError(VIR_ERR_INTERNAL_ERROR,
+                 _("No such domain %s"), dom->uuid);
         goto cleanup;
     }
 
-    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0)
-        goto cleanup;
+    isActive = virDomainObjIsActive(vm);
+
+    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
+        if (isActive)
+            flags = VIR_DOMAIN_AFFECT_LIVE;
+        else
+            flags = VIR_DOMAIN_AFFECT_CONFIG;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (!vm->persistent) {
+            lxcError(VIR_ERR_OPERATION_INVALID, "%s",
+                     _("cannot change persistent config of a transient domain"));
+            goto cleanup;
+        }
+
+        /* Make a copy for updated domain. */
+        vmdef = virDomainObjCopyPersistentDef(driver->caps, vm);
+        if (!vmdef)
+            goto cleanup;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (!isActive) {
+            lxcError(VIR_ERR_OPERATION_INVALID,
+                     "%s", _("domain is not running"));
+            goto cleanup;
+        }
+
+        if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
+            lxcError(VIR_ERR_OPERATION_INVALID,
+                     "%s", _("cgroup CPU controller is not mounted"));
+            goto cleanup;
+        }
+        if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+            lxcError(VIR_ERR_INTERNAL_ERROR,
+                     _("cannot find cgroup for domain %s"),
+                     vm->def->name);
+            goto cleanup;
+        }
+    }
 
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
 
-        if (STRNEQ(param->field, VIR_DOMAIN_SCHEDULER_CPU_SHARES)) {
+        if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_CPU_SHARES)) {
+            if (param->type != VIR_TYPED_PARAM_ULLONG) {
+                lxcError(VIR_ERR_INVALID_ARG, "%s",
+                         _("invalid type for cpu_shares tunable, expected a 'ullong'"));
+                goto cleanup;
+            }
+
+            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+                rc = virCgroupSetCpuShares(group, params[i].value.ul);
+                if (rc != 0) {
+                    virReportSystemError(-rc, "%s",
+                                         _("unable to set cpu shares tunable"));
+                    goto cleanup;
+                }
+
+                vm->def->cputune.shares = params[i].value.ul;
+            }
+
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+                vmdef->cputune.shares = params[i].value.ul;
+            }
+        } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_PERIOD)) {
+            if (param->type != VIR_TYPED_PARAM_ULLONG) {
+                lxcError(VIR_ERR_INVALID_ARG, "%s",
+                         _("invalid type for vcpu_period tunable,"
+                           " expected a 'ullong'"));
+                goto cleanup;
+            }
+
+            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+                rc = lxcSetVcpuBWLive(group, params[i].value.ul, 0);
+                if (rc != 0)
+                    goto cleanup;
+
+                if (params[i].value.ul)
+                    vm->def->cputune.period = params[i].value.ul;
+            }
+
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+                vmdef->cputune.period = params[i].value.ul;
+            }
+        } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_QUOTA)) {
+            if (param->type != VIR_TYPED_PARAM_LLONG) {
+                lxcError(VIR_ERR_INVALID_ARG, "%s",
+                         _("invalid type for vcpu_quota tunable,"
+                           " expected a 'llong'"));
+                goto cleanup;
+            }
+
+            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+                rc = lxcSetVcpuBWLive(group, 0, params[i].value.l);
+                if (rc != 0)
+                    goto cleanup;
+
+                if (params[i].value.l)
+                    vm->def->cputune.quota = params[i].value.l;
+            }
+
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+                vmdef->cputune.quota = params[i].value.l;
+            }
+        } else {
             lxcError(VIR_ERR_INVALID_ARG,
                      _("Invalid parameter `%s'"), param->field);
             goto cleanup;
         }
-
-        if (param->type != VIR_TYPED_PARAM_ULLONG) {
-            lxcError(VIR_ERR_INVALID_ARG, "%s",
-                 _("Invalid type for cpu_shares tunable, expected a 'ullong'"));
-            goto cleanup;
-        }
-
-        int rc = virCgroupSetCpuShares(group, params[i].value.ul);
-        if (rc != 0) {
-            virReportSystemError(-rc, _("failed to set cpu_shares=%llu"),
-                                 params[i].value.ul);
-            goto cleanup;
-        }
-
-        vm->def->cputune.shares = params[i].value.ul;
     }
+
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+        goto cleanup;
+
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        rc = virDomainSaveConfig(driver->configDir, vmdef);
+        if (rc < 0)
+            goto cleanup;
+
+        virDomainObjAssignDef(vm, vmdef, false);
+        vmdef = NULL;
+    }
+
     ret = 0;
 
 cleanup:
-    lxcDriverUnlock(driver);
+    virDomainDefFree(vmdef);
     virCgroupFree(&group);
     if (vm)
         virDomainObjUnlock(vm);
+    lxcDriverUnlock(driver);
     return ret;
 }
 
@@ -2692,55 +2936,170 @@ lxcSetSchedulerParameters(virDomainPtr domain,
 }
 
 static int
-lxcGetSchedulerParametersFlags(virDomainPtr domain,
+lxcGetSchedulerParametersFlags(virDomainPtr dom,
                                virTypedParameterPtr params,
                                int *nparams,
                                unsigned int flags)
 {
-    lxc_driver_t *driver = domain->conn->privateData;
+    lxc_driver_t *driver = dom->conn->privateData;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
-    unsigned long long val;
+    unsigned long long shares = 0;
+    unsigned long long period = 0;
+    long long quota = 0;
     int ret = -1;
+    int rc;
+    bool isActive;
+    bool cpu_bw_status = false;
+    int saved_nparams = 0;
 
-    virCheckFlags(0, -1);
-
-    if (driver->cgroup == NULL)
-        return -1;
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, domain->uuid);
 
-    if (vm == NULL) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(domain->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+    if ((flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) ==
+        (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) {
+        lxcError(VIR_ERR_INVALID_ARG, "%s",
+                 _("cannot query live and config together"));
         goto cleanup;
     }
 
-    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0)
-        goto cleanup;
+    if (*nparams > 1) {
+        rc = lxcGetCpuBWStatus(driver->cgroup);
+        if (rc < 0)
+            goto cleanup;
+        cpu_bw_status = !!rc;
+    }
 
-    if (virCgroupGetCpuShares(group, &val) != 0)
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (vm == NULL) {
+        lxcError(VIR_ERR_INTERNAL_ERROR,
+                 _("No such domain %s"), dom->uuid);
         goto cleanup;
-    params[0].value.ul = val;
+    }
+
+    isActive = virDomainObjIsActive(vm);
+
+    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
+        if (isActive)
+            flags = VIR_DOMAIN_AFFECT_LIVE;
+        else
+            flags = VIR_DOMAIN_AFFECT_CONFIG;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (!vm->persistent) {
+            lxcError(VIR_ERR_OPERATION_INVALID, "%s",
+                     _("cannot query persistent config of a transient domain"));
+            goto cleanup;
+        }
+
+        if (isActive) {
+            virDomainDefPtr persistentDef;
+
+            persistentDef = virDomainObjGetPersistentDef(driver->caps, vm);
+            if (!persistentDef) {
+                lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("can't get persistentDef"));
+                goto cleanup;
+            }
+            shares = persistentDef->cputune.shares;
+            if (*nparams > 1 && cpu_bw_status) {
+                period = persistentDef->cputune.period;
+                quota = persistentDef->cputune.quota;
+            }
+        } else {
+            shares = vm->def->cputune.shares;
+            if (*nparams > 1 && cpu_bw_status) {
+                period = vm->def->cputune.period;
+                quota = vm->def->cputune.quota;
+            }
+        }
+        goto out;
+    }
+
+    if (!isActive) {
+        lxcError(VIR_ERR_OPERATION_INVALID, "%s",
+                 _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
+        lxcError(VIR_ERR_OPERATION_INVALID,
+                 "%s", _("cgroup CPU controller is not mounted"));
+        goto cleanup;
+    }
+
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+        lxcError(VIR_ERR_INTERNAL_ERROR,
+                 _("cannot find cgroup for domain %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    rc = virCgroupGetCpuShares(group, &shares);
+    if (rc != 0) {
+        virReportSystemError(-rc, "%s",
+                             _("unable to get cpu shares tunable"));
+        goto cleanup;
+    }
+
+    if (*nparams > 1 && cpu_bw_status) {
+        rc = lxcGetVcpuBWLive(group, &period, &quota);
+        if (rc != 0)
+            goto cleanup;
+    }
+out:
+    params[0].value.ul = shares;
+    params[0].type = VIR_TYPED_PARAM_ULLONG;
     if (virStrcpyStatic(params[0].field,
                         VIR_DOMAIN_SCHEDULER_CPU_SHARES) == NULL) {
         lxcError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("Field cpu_shares too big for destination"));
+                 _("Field name '%s' too long"),
+                 VIR_DOMAIN_SCHEDULER_CPU_SHARES);
         goto cleanup;
     }
-    params[0].type = VIR_TYPED_PARAM_ULLONG;
 
-    *nparams = 1;
+    saved_nparams++;
+
+    if (cpu_bw_status) {
+        if (*nparams > saved_nparams) {
+            params[1].value.ul = period;
+            params[1].type = VIR_TYPED_PARAM_ULLONG;
+            if (virStrcpyStatic(params[1].field,
+                                VIR_DOMAIN_SCHEDULER_VCPU_PERIOD) == NULL) {
+                lxcError(VIR_ERR_INTERNAL_ERROR,
+                         _("Field name '%s' too long"),
+                         VIR_DOMAIN_SCHEDULER_VCPU_PERIOD);
+                goto cleanup;
+            }
+            saved_nparams++;
+        }
+
+        if (*nparams > saved_nparams) {
+            params[2].value.ul = quota;
+            params[2].type = VIR_TYPED_PARAM_LLONG;
+            if (virStrcpyStatic(params[2].field,
+                                VIR_DOMAIN_SCHEDULER_VCPU_QUOTA) == NULL) {
+                lxcError(VIR_ERR_INTERNAL_ERROR,
+                         _("Field name '%s' too long"),
+                         VIR_DOMAIN_SCHEDULER_VCPU_QUOTA);
+                goto cleanup;
+            }
+            saved_nparams++;
+        }
+    }
+
+    *nparams = saved_nparams;
+
     ret = 0;
 
 cleanup:
-    lxcDriverUnlock(driver);
     virCgroupFree(&group);
     if (vm)
         virDomainObjUnlock(vm);
+    lxcDriverUnlock(driver);
     return ret;
 }
 
