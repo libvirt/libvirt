@@ -135,7 +135,6 @@ uname_normalize (struct utsname *ut)
  */
 int
 qemuPhysIfaceConnect(virDomainDefPtr def,
-                     virConnectPtr conn,
                      struct qemud_driver *driver,
                      virDomainNetDefPtr net,
                      virBitmapPtr qemuCaps,
@@ -145,7 +144,6 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
 #if WITH_MACVTAP
     char *res_ifname = NULL;
     int vnet_hdr = 0;
-    int err;
 
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_VNET_HDR) &&
         net->model && STREQ(net->model, "virtio"))
@@ -165,28 +163,6 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
         net->ifname = res_ifname;
     }
 
-    if (rc >=0 && driver->macFilter) {
-        if ((err = networkAllowMacOnPort(driver, net->ifname, net->mac))) {
-            virReportSystemError(err,
-                 _("failed to add ebtables rule to allow MAC address on  '%s'"),
-                                 net->ifname);
-        }
-    }
-
-    if (rc >= 0) {
-        if ((net->filter) && (net->ifname)) {
-            err = virDomainConfNWFilterInstantiate(conn, net);
-            if (err) {
-                VIR_FORCE_CLOSE(rc);
-                delMacvtap(net->ifname, net->mac,
-                           virDomainNetGetActualDirectDev(net),
-                           virDomainNetGetActualDirectMode(net),
-                           virDomainNetGetActualDirectVirtPortProfile(net),
-                           driver->stateDir);
-                VIR_FREE(net->ifname);
-            }
-        }
-    }
 #else
     (void)def;
     (void)conn;
@@ -4173,7 +4149,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                              tapfd) >= sizeof(tapfd_name))
                     goto no_memory;
             } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
-                int tapfd = qemuPhysIfaceConnect(def, conn, driver, net,
+                int tapfd = qemuPhysIfaceConnect(def, driver, net,
                                                  qemuCaps, vmop);
                 if (tapfd < 0)
                     goto error;

@@ -676,7 +676,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, &vhostfd) < 0)
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
-        if ((tapfd = qemuPhysIfaceConnect(vm->def, conn, driver, net,
+        if ((tapfd = qemuPhysIfaceConnect(vm->def, driver, net,
                                           priv->qemuCaps,
                                           VIR_VM_OP_CREATE)) < 0)
             goto cleanup;

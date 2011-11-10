@@ -132,7 +132,6 @@ int qemuNetworkIfaceConnect(virDomainDefPtr def,
     ATTRIBUTE_NONNULL(2);
 
 int qemuPhysIfaceConnect(virDomainDefPtr def,
-                         virConnectPtr conn,
                          struct qemud_driver *driver,
                          virDomainNetDefPtr net,
                          virBitmapPtr qemuCaps,
