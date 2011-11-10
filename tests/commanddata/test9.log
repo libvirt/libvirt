@@ -2,8 +2,10 @@ ARG:-version
 ARG:-log=bar.log
 ARG:arg1
 ARG:arg2
-ARG:arg3
+ARG:
 ARG:arg4
+ARG:arg5
+ARG:arg6
 ENV:DISPLAY=:0.0
 ENV:HOME=/home/test
 ENV:HOSTNAME=test

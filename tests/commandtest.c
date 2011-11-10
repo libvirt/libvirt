@@ -352,11 +352,22 @@ static int test9(const void *unused ATTRIBUTE_UNUSED)
 {
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
     const char* const args[] = { "arg1", "arg2", NULL };
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virCommandAddArg(cmd, "-version");
     virCommandAddArgPair(cmd, "-log", "bar.log");
     virCommandAddArgSet(cmd, args);
-    virCommandAddArgList(cmd, "arg3", "arg4", NULL);
+    virCommandAddArgBuffer(cmd, &buf);
+    virBufferAddLit(&buf, "arg4");
+    virCommandAddArgBuffer(cmd, &buf);
+    virCommandAddArgList(cmd, "arg5", "arg6", NULL);
+
+    if (virBufferUse(&buf)) {
+        printf("Buffer not transferred\n");
+        virBufferFreeAndReset(&buf);
+        virCommandFree(cmd);
+        return -1;
+    }
 
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();

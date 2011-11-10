@@ -983,6 +983,10 @@ virCommandAddEnvBuffer(virCommandPtr cmd, virBufferPtr buf)
         virBufferFreeAndReset(buf);
         return;
     }
+    if (!virBufferUse(buf)) {
+        cmd->has_error = EINVAL;
+        return;
+    }
 
     cmd->env[cmd->nenv++] = virBufferContentAndReset(buf);
 }
@@ -1092,7 +1096,14 @@ virCommandAddArgBuffer(virCommandPtr cmd, virBufferPtr buf)
         return;
     }
 
-    cmd->args[cmd->nargs++] = virBufferContentAndReset(buf);
+    cmd->args[cmd->nargs] = virBufferContentAndReset(buf);
+    if (!cmd->args[cmd->nargs])
+        cmd->args[cmd->nargs] = strdup("");
+    if (!cmd->args[cmd->nargs]) {
+        cmd->has_error = ENOMEM;
+        return;
+    }
+    cmd->nargs++;
 }
 
 
