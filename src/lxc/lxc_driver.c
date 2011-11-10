@@ -1230,6 +1230,73 @@ cleanup:
     return ret;
 }
 
+
+static int lxcSetupInterfaceDirect(virConnectPtr conn,
+                                   virDomainDefPtr def,
+                                   virDomainNetDefPtr net,
+                                   unsigned int *nveths,
+                                   char ***veths)
+{
+    int ret = 0;
+    char *res_ifname = NULL;
+    lxc_driver_t *driver = conn->privateData;
+    virNetDevBandwidthPtr bw;
+    virNetDevVPortProfilePtr prof;
+
+    /* XXX how todo bandwidth controls ?
+     * Since the 'net-ifname' is about to be moved to a different
+     * namespace & renamed, there will be no host side visible
+     * interface for the container to attach rules to
+     */
+    bw = virDomainNetGetActualBandwidth(net);
+    if (bw) {
+        lxcError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                 _("Unable to set network bandwidth on direct interfaces"));
+        return -1;
+    }
+
+    /* XXX how todo port profiles ?
+     * Although we can do the association during container
+     * startup, at shutdown we are unable to disassociate
+     * because the macvlan device was moved to the container
+     * and automagically dies when the container dies. So
+     * we have no dev to perform disassociation with.
+     */
+    prof = virDomainNetGetActualDirectVirtPortProfile(net);
+    if (prof) {
+        lxcError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                 _("Unable to set port profile on direct interfaces"));
+        return -1;
+    }
+
+    if (VIR_REALLOC_N(*veths, (*nveths)+1) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+    (*veths)[(*nveths)] = NULL;
+
+    if (virNetDevMacVLanCreateWithVPortProfile(
+            net->ifname, net->mac,
+            virDomainNetGetActualDirectDev(net),
+            virDomainNetGetActualDirectMode(net),
+            false, false, def->uuid,
+            virDomainNetGetActualDirectVirtPortProfile(net),
+            &res_ifname,
+            VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
+            driver->stateDir,
+            virDomainNetGetActualBandwidth(net)) < 0)
+        goto cleanup;
+
+    (*veths)[(*nveths)] = res_ifname;
+    (*nveths)++;
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
+
 /**
  * lxcSetupInterfaces:
  * @conn: pointer to connection
@@ -1299,13 +1366,21 @@ static int lxcSetupInterfaces(virConnectPtr conn,
                 goto cleanup;
         }   break;
 
+        case VIR_DOMAIN_NET_TYPE_DIRECT:
+            if (lxcSetupInterfaceDirect(conn,
+                                        def,
+                                        def->nets[i],
+                                        nveths,
+                                        veths) < 0)
+                goto cleanup;
+            break;
+
         case VIR_DOMAIN_NET_TYPE_USER:
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
         case VIR_DOMAIN_NET_TYPE_SERVER:
         case VIR_DOMAIN_NET_TYPE_CLIENT:
         case VIR_DOMAIN_NET_TYPE_MCAST:
         case VIR_DOMAIN_NET_TYPE_INTERNAL:
-        case VIR_DOMAIN_NET_TYPE_DIRECT:
         case VIR_DOMAIN_NET_TYPE_LAST:
             lxcError(VIR_ERR_INTERNAL_ERROR,
                      _("Unsupported network type %s"),
