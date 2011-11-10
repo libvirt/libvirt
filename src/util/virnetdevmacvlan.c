@@ -72,11 +72,14 @@ VIR_ENUM_IMPL(virNetDevMacVLanMode, VIR_NETDEV_MACVLAN_MODE_LAST,
 # define MACVTAP_NAME_PREFIX	"macvtap"
 # define MACVTAP_NAME_PATTERN	"macvtap%d"
 
+# define MACVLAN_NAME_PREFIX	"macvlan"
+# define MACVLAN_NAME_PATTERN	"macvlan%d"
+
 /**
  * virNetDevMacVLanCreate:
  *
  * @ifname: The name the interface is supposed to have; optional parameter
- * @type: The type of device, i.e., "macvtap"
+ * @type: The type of device, i.e., "macvtap", "macvlan"
  * @macaddress: The MAC address of the device
  * @srcdev: The name of the 'link' device
  * @macvlan_mode: The macvlan mode to use
@@ -458,14 +461,14 @@ static const uint32_t modeMap[VIR_NETDEV_MACVLAN_MODE_LAST] = {
  *     interface will be stored into if everything succeeded. It is up
  *     to the caller to free the string.
  *
- * Returns file descriptor of the tap device in case of success,
- * negative value otherwise with error reported.
- *
+ * Returns file descriptor of the tap device in case of success with @withTap,
+ * otherwise returns 0; returns -1 on error.
  */
 int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
                                            const unsigned char *macaddress,
                                            const char *linkdev,
                                            enum virNetDevMacVLanMode mode,
+                                           bool withTap,
                                            int vnet_hdr,
                                            const unsigned char *vmuuid,
                                            virNetDevVPortProfilePtr virtPortProfile,
@@ -474,7 +477,9 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
                                            char *stateDir,
                                            virNetDevBandwidthPtr bandwidth)
 {
-    const char *type = "macvtap";
+    const char *type = withTap ? "macvtap" : "macvlan";
+    const char *prefix = withTap ? MACVTAP_NAME_PREFIX : MACVLAN_NAME_PREFIX;
+    const char *pattern = withTap ? MACVTAP_NAME_PATTERN : MACVLAN_NAME_PATTERN;
     int c, rc;
     char ifname[IFNAMSIZ];
     int retries, do_retry = 0;
@@ -505,8 +510,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
             return -1;
 
         if (ret) {
-            if (STRPREFIX(tgifname,
-                          MACVTAP_NAME_PREFIX)) {
+            if (STRPREFIX(tgifname, prefix)) {
                 goto create_name;
             }
             virReportSystemError(EEXIST,
@@ -522,7 +526,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
 create_name:
         retries = 5;
         for (c = 0; c < 8192; c++) {
-            snprintf(ifname, sizeof(ifname), MACVTAP_NAME_PATTERN, c);
+            snprintf(ifname, sizeof(ifname), pattern, c);
             if ((ret = virNetDevExists(ifname)) < 0)
                 return -1;
             if (!ret) {
@@ -553,15 +557,26 @@ create_name:
         goto disassociate_exit;
     }
 
-    rc = virNetDevMacVLanTapOpen(cr_ifname, 10);
-    if (rc >= 0) {
+    if (withTap) {
+        if ((rc = virNetDevMacVLanTapOpen(cr_ifname, 10)) < 0)
+            goto disassociate_exit;
+
         if (virNetDevMacVLanTapSetup(rc, vnet_hdr) < 0) {
             VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
             goto disassociate_exit;
         }
-        *res_ifname = strdup(cr_ifname);
-    } else
-        goto disassociate_exit;
+        if (!(*res_ifname = strdup(cr_ifname))) {
+            VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
+            virReportOOMError();
+            goto disassociate_exit;
+        }
+    } else {
+        if (!(*res_ifname = strdup(cr_ifname))) {
+            virReportOOMError();
+            goto disassociate_exit;
+        }
+        rc = 0;
+    }
 
     if (virNetDevBandwidthSet(cr_ifname, bandwidth) < 0) {
         virNetDevError(VIR_ERR_INTERNAL_ERROR,

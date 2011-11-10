@@ -55,6 +55,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *ifname,
                                            const unsigned char *macaddress,
                                            const char *linkdev,
                                            enum virNetDevMacVLanMode mode,
+                                           bool withTap,
                                            int vnet_hdr,
                                            const unsigned char *vmuuid,
                                            virNetDevVPortProfilePtr virtPortProfile,
@@ -62,8 +63,8 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *ifname,
                                            enum virNetDevVPortProfileOp vmop,
                                            char *stateDir,
                                            virNetDevBandwidthPtr bandwidth)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(6)
-    ATTRIBUTE_NONNULL(8) ATTRIBUTE_NONNULL(10) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(7)
+    ATTRIBUTE_NONNULL(9) ATTRIBUTE_NONNULL(11) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
                                            const unsigned char *macaddress,
