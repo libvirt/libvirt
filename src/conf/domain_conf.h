@@ -1794,8 +1794,8 @@ int virDomainGraphicsListenSetNetwork(virDomainGraphicsDefPtr def,
             ATTRIBUTE_NONNULL(1);
 
 int virDomainNetGetActualType(virDomainNetDefPtr iface);
-char *virDomainNetGetActualBridgeName(virDomainNetDefPtr iface);
-char *virDomainNetGetActualDirectDev(virDomainNetDefPtr iface);
+const char *virDomainNetGetActualBridgeName(virDomainNetDefPtr iface);
+const char *virDomainNetGetActualDirectDev(virDomainNetDefPtr iface);
 int virDomainNetGetActualDirectMode(virDomainNetDefPtr iface);
 virNetDevVPortProfilePtr
 virDomainNetGetActualDirectVirtPortProfile(virDomainNetDefPtr iface);

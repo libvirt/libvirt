@@ -2899,7 +2899,7 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
     struct network_driver *driver = driverState;
     virNetworkObjPtr network;
     virNetworkDefPtr netdef;
-    char *actualDev;
+    const char *actualDev;
     int ret = -1;
 
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
@@ -2925,8 +2925,8 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
     if (!actualDev) {
         networkReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("the interface uses a direct mode, but has no source dev"));
-            goto cleanup;
-        }
+        goto cleanup;
+    }
 
     netdef = network->def;
     if (netdef->nForwardIfs == 0) {
@@ -2999,7 +2999,7 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
     struct network_driver *driver = driverState;
     virNetworkObjPtr network = NULL;
     virNetworkDefPtr netdef;
-    char *actualDev;
+    const char *actualDev;
     int ret = -1;
 
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
@@ -3026,8 +3026,8 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
     if (!actualDev) {
         networkReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("the interface uses a direct mode, but has no source dev"));
-            goto cleanup;
-        }
+        goto cleanup;
+    }
 
     netdef = network->def;
     if (netdef->nForwardIfs == 0) {

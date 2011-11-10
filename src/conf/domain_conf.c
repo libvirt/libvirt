@@ -13064,7 +13064,7 @@ virDomainNetGetActualType(virDomainNetDefPtr iface)
     return iface->data.network.actual->type;
 }
 
-char *
+const char *
 virDomainNetGetActualBridgeName(virDomainNetDefPtr iface)
 {
     if (iface->type == VIR_DOMAIN_NET_TYPE_BRIDGE)
@@ -13076,7 +13076,7 @@ virDomainNetGetActualBridgeName(virDomainNetDefPtr iface)
     return iface->data.network.actual->data.bridge.brname;
 }
 
-char *
+const char *
 virDomainNetGetActualDirectDev(virDomainNetDefPtr iface)
 {
     if (iface->type == VIR_DOMAIN_NET_TYPE_DIRECT)
