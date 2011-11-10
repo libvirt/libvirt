@@ -438,61 +438,10 @@ cleanup:
 }
 
 
-/**
- * lxcSetContainerResources
- * @def: pointer to virtual machine structure
- *
- * Creates a cgroup for the container, moves the task inside,
- * and sets resource limits
- *
- * Returns 0 on success or -1 in case of error
- */
-static int lxcSetContainerResources(virDomainDefPtr def)
+static int lxcSetContainerMemTune(virCgroupPtr cgroup, virDomainDefPtr def)
 {
-    virCgroupPtr driver;
-    virCgroupPtr cgroup;
-    int rc = -1;
-    int i;
-    struct cgroup_device_policy devices[] = {
-        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_NULL},
-        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_ZERO},
-        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_FULL},
-        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_RANDOM},
-        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_URANDOM},
-        {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_TTY},
-        {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_PTMX},
-        {0,   0, 0}};
-
-    if (lxcSetContainerCpuAffinity(def) < 0)
-        return -1;
-
-    if (lxcSetContainerNUMAPolicy(def) < 0)
-        return -1;
-
-    rc = virCgroupForDriver("lxc", &driver, 1, 0);
-    if (rc != 0) {
-        /* Skip all if no driver cgroup is configured */
-        if (rc == -ENXIO || rc == -ENOENT)
-            return 0;
-
-        virReportSystemError(-rc, "%s",
-                             _("Unable to get cgroup for driver"));
-        return rc;
-    }
-
-    rc = virCgroupForDomain(driver, def->name, &cgroup, 1);
-    if (rc != 0) {
-        virReportSystemError(-rc,
-                             _("Unable to create cgroup for domain %s"),
-                             def->name);
-        goto cleanup;
-    }
-
-    if (lxcSetContainerCpuTune(cgroup, def) < 0)
-        goto cleanup;
-
-    if (lxcSetContainerBlkioTune(cgroup, def) < 0)
-        goto cleanup;
+    int ret = -1;
+    int rc;
 
     rc = virCgroupSetMemory(cgroup, def->mem.max_balloon);
     if (rc != 0) {
@@ -532,6 +481,27 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         }
     }
 
+    ret = 0;
+cleanup:
+    return ret;
+}
+
+
+static int lxcSetContainerDeviceACL(virCgroupPtr cgroup, virDomainDefPtr def)
+{
+    int ret = -1;
+    int rc;
+    size_t i;
+    static const struct cgroup_device_policy devices[] = {
+        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_NULL},
+        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_ZERO},
+        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_FULL},
+        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_RANDOM},
+        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_URANDOM},
+        {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_TTY},
+        {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_PTMX},
+        {0,   0, 0}};
+
     rc = virCgroupDenyAllDevices(cgroup);
     if (rc != 0) {
         virReportSystemError(-rc,
@@ -541,7 +511,7 @@ static int lxcSetContainerResources(virDomainDefPtr def)
     }
 
     for (i = 0; devices[i].type != 0; i++) {
-        struct cgroup_device_policy *dev = &devices[i];
+        const struct cgroup_device_policy *dev = &devices[i];
         rc = virCgroupAllowDevice(cgroup,
                                   dev->type,
                                   dev->major,
@@ -580,6 +550,64 @@ static int lxcSetContainerResources(virDomainDefPtr def)
                              def->name);
         goto cleanup;
     }
+
+    ret = 0;
+cleanup:
+    return ret;
+}
+
+
+/**
+ * lxcSetContainerResources
+ * @def: pointer to virtual machine structure
+ *
+ * Creates a cgroup for the container, moves the task inside,
+ * and sets resource limits
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int lxcSetContainerResources(virDomainDefPtr def)
+{
+    virCgroupPtr driver;
+    virCgroupPtr cgroup;
+    int rc = -1;
+
+    if (lxcSetContainerCpuAffinity(def) < 0)
+        return -1;
+
+    if (lxcSetContainerNUMAPolicy(def) < 0)
+        return -1;
+
+    rc = virCgroupForDriver("lxc", &driver, 1, 0);
+    if (rc != 0) {
+        /* Skip all if no driver cgroup is configured */
+        if (rc == -ENXIO || rc == -ENOENT)
+            return 0;
+
+        virReportSystemError(-rc, "%s",
+                             _("Unable to get cgroup for driver"));
+        return rc;
+    }
+
+    rc = virCgroupForDomain(driver, def->name, &cgroup, 1);
+    if (rc != 0) {
+        virReportSystemError(-rc,
+                             _("Unable to create cgroup for domain %s"),
+                             def->name);
+        goto cleanup;
+    }
+
+    if (lxcSetContainerCpuTune(cgroup, def) < 0)
+        goto cleanup;
+
+    if (lxcSetContainerBlkioTune(cgroup, def) < 0)
+        goto cleanup;
+
+    if (lxcSetContainerMemTune(cgroup, def) < 0)
+        goto cleanup;
+
+    if (lxcSetContainerDeviceACL(cgroup, def) < 0)
+        goto cleanup;
 
     rc = virCgroupAddTask(cgroup, getpid());
     if (rc != 0) {
