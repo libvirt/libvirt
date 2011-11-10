@@ -48,6 +48,11 @@
 # include <cap-ng.h>
 #endif
 
+#if HAVE_NUMACTL
+# define NUMA_VERSION1_COMPATIBILITY 1
+# include <numa.h>
+#endif
+
 #include "virterror_internal.h"
 #include "logging.h"
 #include "util.h"
@@ -224,6 +229,99 @@ cleanup:
     return ret;
 }
 
+#if HAVE_NUMACTL
+static int lxcSetContainerNUMAPolicy(virDomainDefPtr def)
+{
+    nodemask_t mask;
+    int mode = -1;
+    int node = -1;
+    int ret = -1;
+    int i = 0;
+    int maxnode = 0;
+    bool warned = false;
+
+    if (!def->numatune.memory.nodemask)
+        return 0;
+
+    VIR_DEBUG("Setting NUMA memory policy");
+
+    if (numa_available() < 0) {
+        lxcError(VIR_ERR_CONFIG_UNSUPPORTED,
+                 "%s", _("Host kernel is not aware of NUMA."));
+        return -1;
+    }
+
+    maxnode = numa_max_node() + 1;
+
+    /* Convert nodemask to NUMA bitmask. */
+    nodemask_zero(&mask);
+    for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++) {
+        if (def->numatune.memory.nodemask[i]) {
+            if (i > NUMA_NUM_NODES) {
+                lxcError(VIR_ERR_CONFIG_UNSUPPORTED,
+                         _("Host cannot support NUMA node %d"), i);
+                return -1;
+            }
+            if (i > maxnode && !warned) {
+                VIR_WARN("nodeset is out of range, there is only %d NUMA "
+                         "nodes on host", maxnode);
+                warned = true;
+            }
+            nodemask_set(&mask, i);
+        }
+    }
+
+    mode = def->numatune.memory.mode;
+
+    if (mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
+        numa_set_bind_policy(1);
+        numa_set_membind(&mask);
+        numa_set_bind_policy(0);
+    } else if (mode == VIR_DOMAIN_NUMATUNE_MEM_PREFERRED) {
+        int nnodes = 0;
+        for (i = 0; i < NUMA_NUM_NODES; i++) {
+            if (nodemask_isset(&mask, i)) {
+                node = i;
+                nnodes++;
+            }
+        }
+
+        if (nnodes != 1) {
+            lxcError(VIR_ERR_CONFIG_UNSUPPORTED,
+                     "%s", _("NUMA memory tuning in 'preferred' mode "
+                             "only supports single node"));
+            goto cleanup;
+        }
+
+        numa_set_bind_policy(0);
+        numa_set_preferred(node);
+    } else if (mode == VIR_DOMAIN_NUMATUNE_MEM_INTERLEAVE) {
+        numa_set_interleave_mask(&mask);
+    } else {
+        lxcError(VIR_ERR_CONFIG_UNSUPPORTED,
+                 _("Unable to set NUMA policy %s"),
+                 virDomainNumatuneMemModeTypeToString(mode));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+#else
+static int lxcSetContainerNUMAPolicy(virDomainDefPtr def)
+{
+    if (def->numatune.memory.nodemask) {
+        lxcError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                 _("NUMA policy is not available on this platform"));
+        return -1;
+    }
+
+    return 0;
+}
+#endif
+
 /**
  * lxcSetContainerResources
  * @def: pointer to virtual machine structure
@@ -248,6 +346,9 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_TTY},
         {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_PTMX},
         {0,   0, 0}};
+
+    if (lxcSetContainerNUMAPolicy(def) < 0)
+        return -1;
 
     rc = virCgroupForDriver("lxc", &driver, 1, 0);
     if (rc != 0) {
