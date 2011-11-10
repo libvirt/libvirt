@@ -126,6 +126,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
+%dir %{_mingw32_sysconfdir}/libvirt/
 %config(noreplace) %{_mingw32_sysconfdir}/libvirt/libvirt.conf
 
 %{_mingw32_bindir}/libvirt-0.dll
