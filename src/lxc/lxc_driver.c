@@ -1175,6 +1175,61 @@ static void lxcVmCleanup(lxc_driver_t *driver,
     }
 }
 
+
+static int lxcSetupInterfaceBridged(virConnectPtr conn,
+                                    virDomainNetDefPtr net,
+                                    const char *brname,
+                                    unsigned int *nveths,
+                                    char ***veths)
+{
+    int ret = -1;
+    char *parentVeth;
+    char *containerVeth = NULL;
+
+    VIR_DEBUG("calling vethCreate()");
+    parentVeth = net->ifname;
+    if (virNetDevVethCreate(&parentVeth, &containerVeth) < 0)
+        goto cleanup;
+    VIR_DEBUG("parentVeth: %s, containerVeth: %s", parentVeth, containerVeth);
+
+    if (net->ifname == NULL)
+        net->ifname = parentVeth;
+
+    if (VIR_REALLOC_N(*veths, (*nveths)+1) < 0) {
+        virReportOOMError();
+        VIR_FREE(containerVeth);
+        goto cleanup;
+    }
+    (*veths)[(*nveths)] = containerVeth;
+    (*nveths)++;
+
+    if (virNetDevSetMAC(containerVeth, net->mac) < 0)
+        goto cleanup;
+
+    if (virNetDevBridgeAddPort(brname, parentVeth) < 0)
+        goto cleanup;
+
+    if (virNetDevSetOnline(parentVeth, true) < 0)
+        goto cleanup;
+
+    if (virNetDevBandwidthSet(net->ifname,
+                              virDomainNetGetActualBandwidth(net)) < 0) {
+        lxcError(VIR_ERR_INTERNAL_ERROR,
+                 _("cannot set bandwidth limits on %s"),
+                 net->ifname);
+        goto cleanup;
+    }
+
+    if (net->filter &&
+        virDomainConfNWFilterInstantiate(conn, net) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
 /**
  * lxcSetupInterfaces:
  * @conn: pointer to connection
@@ -1193,39 +1248,56 @@ static int lxcSetupInterfaces(virConnectPtr conn,
                               unsigned int *nveths,
                               char ***veths)
 {
-    int rc = -1, i;
-    char *bridge = NULL;
+    int ret = -1;
+    size_t i;
 
     for (i = 0 ; i < def->nnets ; i++) {
-        char *parentVeth;
-        char *containerVeth = NULL;
-
         /* If appropriate, grab a physical device from the configured
          * network's pool of devices, or resolve bridge device name
          * to the one defined in the network definition.
          */
         if (networkAllocateActualDevice(def->nets[i]) < 0)
-            goto error_exit;
+            goto cleanup;
 
         switch (virDomainNetGetActualType(def->nets[i])) {
-        case VIR_DOMAIN_NET_TYPE_NETWORK:
-        {
+        case VIR_DOMAIN_NET_TYPE_NETWORK: {
             virNetworkPtr network;
+            char *brname = NULL;
 
-            network = virNetworkLookupByName(conn,
-                                             def->nets[i]->data.network.name);
-            if (!network) {
-                goto error_exit;
-            }
+            if (!(network = virNetworkLookupByName(conn,
+                                                   def->nets[i]->data.network.name)))
+                goto cleanup;
 
-            bridge = virNetworkGetBridgeName(network);
-
+            brname = virNetworkGetBridgeName(network);
             virNetworkFree(network);
+            if (!brname)
+                goto cleanup;
+
+            if (lxcSetupInterfaceBridged(conn,
+                                         def->nets[i],
+                                         brname,
+                                         nveths,
+                                         veths) < 0) {
+                VIR_FREE(brname);
+                goto cleanup;
+            }
+            VIR_FREE(brname);
             break;
         }
-        case VIR_DOMAIN_NET_TYPE_BRIDGE:
-            bridge = virDomainNetGetActualBridgeName(def->nets[i]);
-            break;
+        case VIR_DOMAIN_NET_TYPE_BRIDGE: {
+            const char *brname = virDomainNetGetActualBridgeName(def->nets[i]);
+            if (!brname) {
+                lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("No bridge name specified"));
+                goto cleanup;
+            }
+            if (lxcSetupInterfaceBridged(conn,
+                                         def->nets[i],
+                                         brname,
+                                         nveths,
+                                         veths) < 0)
+                goto cleanup;
+        }   break;
 
         case VIR_DOMAIN_NET_TYPE_USER:
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -1235,64 +1307,23 @@ static int lxcSetupInterfaces(virConnectPtr conn,
         case VIR_DOMAIN_NET_TYPE_INTERNAL:
         case VIR_DOMAIN_NET_TYPE_DIRECT:
         case VIR_DOMAIN_NET_TYPE_LAST:
-            break;
-        }
-
-        VIR_DEBUG("bridge: %s", bridge);
-        if (NULL == bridge) {
             lxcError(VIR_ERR_INTERNAL_ERROR,
-                     "%s", _("Failed to get bridge for interface"));
-            goto error_exit;
+                     _("Unsupported network type %s"),
+                     virDomainNetTypeToString(
+                         virDomainNetGetActualType(def->nets[i])
+                         ));
+            goto cleanup;
         }
-
-        VIR_DEBUG("calling vethCreate()");
-        parentVeth = def->nets[i]->ifname;
-        if (virNetDevVethCreate(&parentVeth, &containerVeth) < 0)
-            goto error_exit;
-        VIR_DEBUG("parentVeth: %s, containerVeth: %s", parentVeth, containerVeth);
-
-        if (NULL == def->nets[i]->ifname) {
-            def->nets[i]->ifname = parentVeth;
-        }
-
-        if (VIR_REALLOC_N(*veths, (*nveths)+1) < 0) {
-            virReportOOMError();
-            VIR_FREE(containerVeth);
-            goto error_exit;
-        }
-        (*veths)[(*nveths)] = containerVeth;
-        (*nveths)++;
-
-        if (virNetDevSetMAC(containerVeth, def->nets[i]->mac) < 0)
-            goto error_exit;
-
-        if (virNetDevBridgeAddPort(bridge, parentVeth) < 0)
-            goto error_exit;
-
-        if (virNetDevSetOnline(parentVeth, true) < 0)
-            goto error_exit;
-
-        if (virNetDevBandwidthSet(def->nets[i]->ifname,
-                                  virDomainNetGetActualBandwidth(def->nets[i])) < 0) {
-            lxcError(VIR_ERR_INTERNAL_ERROR,
-                     _("cannot set bandwidth limits on %s"),
-                     def->nets[i]->ifname);
-            goto error_exit;
-        }
-
-        if (def->nets[i]->filter &&
-            virDomainConfNWFilterInstantiate(conn, def->nets[i]) < 0)
-            goto error_exit;
     }
 
-    rc = 0;
+    ret= 0;
 
-error_exit:
-    if (rc != 0) {
+cleanup:
+    if (ret != 0) {
         for (i = 0 ; i < def->nnets ; i++)
             networkReleaseActualDevice(def->nets[i]);
     }
-    return rc;
+    return ret;
 }
 
 
