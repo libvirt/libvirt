@@ -92,8 +92,8 @@
 %define with_libxl 0
 %endif
 
-# Numactl is not available on s390[x]
-%ifarch s390 s390x
+# Numactl is not available on s390[x] and ARM
+%ifarch s390 s390x %{arm}
 %define with_numactl 0
 %endif
 
