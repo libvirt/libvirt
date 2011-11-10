@@ -418,6 +418,26 @@ cleanup:
 }
 
 
+static int lxcSetContainerBlkioTune(virCgroupPtr cgroup, virDomainDefPtr def)
+{
+    int ret = -1;
+
+    if (def->blkio.weight) {
+        int rc = virCgroupSetBlkioWeight(cgroup, def->blkio.weight);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to set Blkio weight for domain %s"),
+                                 def->name);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+cleanup:
+    return ret;
+}
+
+
 /**
  * lxcSetContainerResources
  * @def: pointer to virtual machine structure
@@ -471,15 +491,8 @@ static int lxcSetContainerResources(virDomainDefPtr def)
     if (lxcSetContainerCpuTune(cgroup, def) < 0)
         goto cleanup;
 
-    if (def->blkio.weight) {
-        rc = virCgroupSetBlkioWeight(cgroup, def->blkio.weight);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set Blkio weight for domain %s"),
-                                 def->name);
-            goto cleanup;
-        }
-    }
+    if (lxcSetContainerBlkioTune(cgroup, def) < 0)
+        goto cleanup;
 
     rc = virCgroupSetMemory(cgroup, def->mem.max_balloon);
     if (rc != 0) {

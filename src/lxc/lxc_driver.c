@@ -3111,6 +3111,287 @@ lxcGetSchedulerParameters(virDomainPtr domain,
     return lxcGetSchedulerParametersFlags(domain, params, nparams, 0);
 }
 
+
+static int lxcDomainSetBlkioParameters(virDomainPtr dom,
+                                       virTypedParameterPtr params,
+                                       int nparams,
+                                       unsigned int flags)
+{
+    lxc_driver_t *driver = dom->conn->privateData;
+    int i;
+    virCgroupPtr group = NULL;
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr persistentDef = NULL;
+    int ret = -1;
+    bool isActive;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+    lxcDriverLock(driver);
+
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (vm == NULL) {
+        lxcError(VIR_ERR_INTERNAL_ERROR,
+                        _("No such domain %s"), dom->uuid);
+        goto cleanup;
+    }
+
+    isActive = virDomainObjIsActive(vm);
+
+    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
+        if (isActive)
+            flags = VIR_DOMAIN_AFFECT_LIVE;
+        else
+            flags = VIR_DOMAIN_AFFECT_CONFIG;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (!isActive) {
+            lxcError(VIR_ERR_OPERATION_INVALID,
+                     "%s", _("domain is not running"));
+            goto cleanup;
+        }
+
+        if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
+            lxcError(VIR_ERR_OPERATION_INVALID, _("blkio cgroup isn't mounted"));
+            goto cleanup;
+        }
+
+        if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+            lxcError(VIR_ERR_INTERNAL_ERROR,
+                     _("cannot find cgroup for domain %s"), vm->def->name);
+            goto cleanup;
+        }
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (!vm->persistent) {
+            lxcError(VIR_ERR_OPERATION_INVALID, "%s",
+                     _("cannot change persistent config of a transient domain"));
+            goto cleanup;
+        }
+        if (!(persistentDef = virDomainObjGetPersistentDef(driver->caps, vm)))
+            goto cleanup;
+    }
+
+    ret = 0;
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        for (i = 0; i < nparams; i++) {
+            virTypedParameterPtr param = &params[i];
+
+            if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
+                int rc;
+                if (param->type != VIR_TYPED_PARAM_UINT) {
+                    lxcError(VIR_ERR_INVALID_ARG, "%s",
+                             _("invalid type for blkio weight tunable, expected a 'unsigned int'"));
+                    ret = -1;
+                    continue;
+                }
+
+                if (params[i].value.ui > 1000 || params[i].value.ui < 100) {
+                    lxcError(VIR_ERR_INVALID_ARG, "%s",
+                             _("out of blkio weight range."));
+                    ret = -1;
+                    continue;
+                }
+
+                rc = virCgroupSetBlkioWeight(group, params[i].value.ui);
+                if (rc != 0) {
+                    virReportSystemError(-rc, "%s",
+                                         _("unable to set blkio weight tunable"));
+                    ret = -1;
+                }
+            } else {
+                lxcError(VIR_ERR_INVALID_ARG,
+                         _("Parameter `%s' not supported"), param->field);
+                ret = -1;
+            }
+        }
+    } else if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        /* Clang can't see that if we get here, persistentDef was set.  */
+        sa_assert(persistentDef);
+
+        for (i = 0; i < nparams; i++) {
+            virTypedParameterPtr param = &params[i];
+
+            if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
+                if (param->type != VIR_TYPED_PARAM_UINT) {
+                    lxcError(VIR_ERR_INVALID_ARG, "%s",
+                             _("invalid type for blkio weight tunable, expected a 'unsigned int'"));
+                    ret = -1;
+                    continue;
+                }
+
+                if (params[i].value.ui > 1000 || params[i].value.ui < 100) {
+                    lxcError(VIR_ERR_INVALID_ARG, "%s",
+                             _("out of blkio weight range."));
+                    ret = -1;
+                    continue;
+                }
+
+                persistentDef->blkio.weight = params[i].value.ui;
+            } else {
+                lxcError(VIR_ERR_INVALID_ARG,
+                         _("Parameter `%s' not supported"), param->field);
+                ret = -1;
+            }
+        }
+
+        if (virDomainSaveConfig(driver->configDir, persistentDef) < 0)
+            ret = -1;
+    }
+
+cleanup:
+    virCgroupFree(&group);
+    if (vm)
+        virDomainObjUnlock(vm);
+    lxcDriverUnlock(driver);
+    return ret;
+}
+
+
+#define LXC_NB_BLKIO_PARAM  1
+static int lxcDomainGetBlkioParameters(virDomainPtr dom,
+                                       virTypedParameterPtr params,
+                                       int *nparams,
+                                       unsigned int flags)
+{
+    lxc_driver_t *driver = dom->conn->privateData;
+    int i;
+    virCgroupPtr group = NULL;
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr persistentDef = NULL;
+    unsigned int val;
+    int ret = -1;
+    int rc;
+    bool isActive;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+    lxcDriverLock(driver);
+
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (vm == NULL) {
+        lxcError(VIR_ERR_INTERNAL_ERROR,
+                 _("No such domain %s"), dom->uuid);
+        goto cleanup;
+    }
+
+    if ((*nparams) == 0) {
+        /* Current number of blkio parameters supported by cgroups */
+        *nparams = LXC_NB_BLKIO_PARAM;
+        ret = 0;
+        goto cleanup;
+    }
+
+    isActive = virDomainObjIsActive(vm);
+
+    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
+        if (isActive)
+            flags = VIR_DOMAIN_AFFECT_LIVE;
+        else
+            flags = VIR_DOMAIN_AFFECT_CONFIG;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (!isActive) {
+            lxcError(VIR_ERR_OPERATION_INVALID,
+                     "%s", _("domain is not running"));
+            goto cleanup;
+        }
+
+        if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
+            lxcError(VIR_ERR_OPERATION_INVALID, _("blkio cgroup isn't mounted"));
+            goto cleanup;
+        }
+
+        if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+            lxcError(VIR_ERR_INTERNAL_ERROR,
+                     _("cannot find cgroup for domain %s"), vm->def->name);
+            goto cleanup;
+        }
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (!vm->persistent) {
+            lxcError(VIR_ERR_OPERATION_INVALID, "%s",
+                     _("cannot change persistent config of a transient domain"));
+            goto cleanup;
+        }
+        if (!(persistentDef = virDomainObjGetPersistentDef(driver->caps, vm)))
+            goto cleanup;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        for (i = 0; i < *nparams && i < LXC_NB_BLKIO_PARAM; i++) {
+            virTypedParameterPtr param = &params[i];
+            val = 0;
+            param->value.ui = 0;
+            param->type = VIR_TYPED_PARAM_UINT;
+
+            switch (i) {
+            case 0: /* fill blkio weight here */
+                rc = virCgroupGetBlkioWeight(group, &val);
+                if (rc != 0) {
+                    virReportSystemError(-rc, "%s",
+                                         _("unable to get blkio weight"));
+                    goto cleanup;
+                }
+                if (virStrcpyStatic(param->field, VIR_DOMAIN_BLKIO_WEIGHT) == NULL) {
+                    lxcError(VIR_ERR_INTERNAL_ERROR,
+                             _("Field name '%s' too long"),
+                             VIR_DOMAIN_BLKIO_WEIGHT);
+                    goto cleanup;
+                }
+                param->value.ui = val;
+                break;
+
+            default:
+                break;
+                /* should not hit here */
+            }
+        }
+    } else if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        for (i = 0; i < *nparams && i < LXC_NB_BLKIO_PARAM; i++) {
+            virTypedParameterPtr param = &params[i];
+            val = 0;
+            param->value.ui = 0;
+            param->type = VIR_TYPED_PARAM_UINT;
+
+            switch (i) {
+            case 0: /* fill blkio weight here */
+                if (virStrcpyStatic(param->field, VIR_DOMAIN_BLKIO_WEIGHT) == NULL) {
+                    lxcError(VIR_ERR_INTERNAL_ERROR,
+                             _("Field name '%s' too long"),
+                             VIR_DOMAIN_BLKIO_WEIGHT);
+                    goto cleanup;
+                }
+                param->value.ui = persistentDef->blkio.weight;
+                break;
+
+            default:
+                break;
+                /* should not hit here */
+            }
+        }
+    }
+
+    if (LXC_NB_BLKIO_PARAM < *nparams)
+        *nparams = LXC_NB_BLKIO_PARAM;
+    ret = 0;
+
+cleanup:
+    if (group)
+        virCgroupFree(&group);
+    if (vm)
+        virDomainObjUnlock(vm);
+    lxcDriverUnlock(driver);
+    return ret;
+}
+
+
 #ifdef __linux__
 static int
 lxcDomainInterfaceStats(virDomainPtr dom,
@@ -3606,6 +3887,8 @@ static virDriver lxcDriver = {
     .domainSetMemory = lxcDomainSetMemory, /* 0.7.2 */
     .domainSetMemoryParameters = lxcDomainSetMemoryParameters, /* 0.8.5 */
     .domainGetMemoryParameters = lxcDomainGetMemoryParameters, /* 0.8.5 */
+    .domainSetBlkioParameters = lxcDomainSetBlkioParameters, /* 0.9.8 */
+    .domainGetBlkioParameters = lxcDomainGetBlkioParameters, /* 0.9.8 */
     .domainGetInfo = lxcDomainGetInfo, /* 0.4.2 */
     .domainGetState = lxcDomainGetState, /* 0.9.2 */
     .domainGetXMLDesc = lxcDomainGetXMLDesc, /* 0.4.2 */
