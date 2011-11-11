@@ -1337,9 +1337,9 @@ done:
 }
 
 
-int virNetClientSend(virNetClientPtr client,
-                     virNetMessagePtr msg,
-                     bool expectReply)
+static int virNetClientSendInternal(virNetClientPtr client,
+                                    virNetMessagePtr msg,
+                                    bool expectReply)
 {
     virNetClientCallPtr call;
     int ret = -1;
@@ -1386,4 +1386,43 @@ cleanup:
     VIR_FREE(call);
     virNetClientUnlock(client);
     return ret;
+}
+
+/*
+ * @msg: a message allocated on heap or stack
+ *
+ * Send a message synchronously, and wait for the reply synchronously
+ *
+ * The caller is responsible for free'ing @msg if it was allocated
+ * on the heap
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int virNetClientSendWithReply(virNetClientPtr client,
+                              virNetMessagePtr msg)
+{
+    int ret = virNetClientSendInternal(client, msg, true);
+    if (ret < 0)
+        return -1;
+    return 0;
+}
+
+
+/*
+ * @msg: a message allocated on heap or stack
+ *
+ * Send a message synchronously, without any reply
+ *
+ * The caller is responsible for free'ing @msg if it was allocated
+ * on the heap
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int virNetClientSendNoReply(virNetClientPtr client,
+                            virNetMessagePtr msg)
+{
+    int ret = virNetClientSendInternal(client, msg, false);
+    if (ret < 0)
+        return -1;
+    return 0;
 }

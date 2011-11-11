@@ -327,7 +327,7 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
     if (virNetMessageEncodePayload(msg, args_filter, args) < 0)
         goto error;
 
-    if (virNetClientSend(client, msg, true) < 0)
+    if (virNetClientSendWithReply(client, msg) < 0)
         goto error;
 
     /* None of these 3 should ever happen here, because
