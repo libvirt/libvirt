@@ -1176,6 +1176,17 @@ error:
 }
 
 
+static void virNetClientIOUpdateCallback(virNetClientPtr client,
+                                         bool enableCallback)
+{
+    int events = 0;
+    if (enableCallback)
+        events |= VIR_EVENT_HANDLE_READABLE;
+
+    virNetSocketUpdateIOCallback(client->sock, events);
+}
+
+
 /*
  * This function sends a message to remote server and awaits a reply
  *
@@ -1284,12 +1295,12 @@ static int virNetClientIO(virNetClientPtr client,
      * cause the event loop thread to be blocked on the
      * mutex for the duration of the call
      */
-    virNetSocketUpdateIOCallback(client->sock, 0);
+    virNetClientIOUpdateCallback(client, false);
 
     virResetLastError();
     rv = virNetClientIOEventLoop(client, thiscall);
 
-    virNetSocketUpdateIOCallback(client->sock, VIR_EVENT_HANDLE_READABLE);
+    virNetClientIOUpdateCallback(client, true);
 
     if (rv == 0 &&
         virGetLastError())
