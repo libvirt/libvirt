@@ -88,6 +88,8 @@ struct _virNetClient {
 
     /* List of threads currently waiting for dispatch */
     virNetClientCallPtr waitDispatch;
+    /* True if a thread holds the buck */
+    bool haveTheBuck;
 
     size_t nstreams;
     virNetClientStreamPtr *streams;
@@ -1218,11 +1220,12 @@ static int virNetClientIO(virNetClientPtr client,
               thiscall->msg->bufferLength,
               client->waitDispatch);
 
+    /* Stick ourselves on the end of the wait queue */
+    virNetClientCallQueue(&client->waitDispatch, thiscall);
+
     /* Check to see if another thread is dispatching */
-    if (client->waitDispatch) {
+    if (client->haveTheBuck) {
         char ignore = 1;
-        /* Stick ourselves on the end of the wait queue */
-        virNetClientCallQueue(&client->waitDispatch, thiscall);
 
         /* Force other thread to wakeup from poll */
         if (safewrite(client->wakeupSendFD, &ignore, sizeof(ignore)) != sizeof(ignore)) {
@@ -1259,12 +1262,11 @@ static int virNetClientIO(virNetClientPtr client,
         }
 
         /* Grr, someone passed the buck onto us ... */
-    } else {
-        /* We're the first to arrive */
-        virNetClientCallQueue(&client->waitDispatch, thiscall);
     }
 
     VIR_DEBUG("We have the buck %p %p", client->waitDispatch, thiscall);
+    client->haveTheBuck = true;
+
     /*
      * The buck stops here!
      *
@@ -1290,6 +1292,8 @@ static int virNetClientIO(virNetClientPtr client,
         virGetLastError())
         rv = -1;
 
+    client->haveTheBuck = false;
+
 cleanup:
     VIR_DEBUG("All done with our call %p %p %d", client->waitDispatch, thiscall, rv);
     return rv;
@@ -1308,7 +1312,7 @@ void virNetClientIncomingEvent(virNetSocketPtr sock,
         goto done;
 
     /* This should be impossible, but it doesn't hurt to check */
-    if (client->waitDispatch)
+    if (client->haveTheBuck)
         goto done;
 
     VIR_DEBUG("Event fired %p %d", sock, events);
