@@ -1025,6 +1025,23 @@ static bool virNetClientIOEventLoopRemoveDone(virNetClientCallPtr call,
     return true;
 }
 
+
+static void virNetClientIOEventLoopPassTheBuck(virNetClientPtr client, virNetClientCallPtr thiscall)
+{
+    VIR_DEBUG("Giving up the buck %p", thiscall);
+    virNetClientCallPtr tmp = client->waitDispatch;
+    /* See if someone else is still waiting
+     * and if so, then pass the buck ! */
+    while (tmp) {
+        if (tmp != thiscall) {
+            VIR_DEBUG("Passing the buck to %p", tmp);
+            virCondSignal(&tmp->cond);
+            break;
+        }
+        tmp = tmp->next;
+    }
+}
+
 /*
  * Process all calls pending dispatch/receive until we
  * get a reply to our own call. Then quit and pass the buck
@@ -1139,15 +1156,7 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
         /* Now see if *we* are done */
         if (thiscall->mode == VIR_NET_CLIENT_MODE_COMPLETE) {
             virNetClientCallRemove(&client->waitDispatch, thiscall);
-
-            VIR_DEBUG("Giving up the buck %p %p", thiscall, client->waitDispatch);
-
-            /* See if someone else is still waiting
-             * and if so, then pass the buck ! */
-            if (client->waitDispatch) {
-                VIR_DEBUG("Passing the buck to %p", client->waitDispatch);
-                virCondSignal(&client->waitDispatch->cond);
-            }
+            virNetClientIOEventLoopPassTheBuck(client, thiscall);
             return 0;
         }
 
@@ -1162,13 +1171,7 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
 
 error:
     virNetClientCallRemove(&client->waitDispatch, thiscall);
-    VIR_DEBUG("Giving up the buck due to I/O error %p %p", thiscall, client->waitDispatch);
-    /* See if someone else is still waiting
-     * and if so, then pass the buck ! */
-    if (client->waitDispatch) {
-        VIR_DEBUG("Passing the buck to %p", client->waitDispatch);
-        virCondSignal(&client->waitDispatch->cond);
-    }
+    virNetClientIOEventLoopPassTheBuck(client, thiscall);
     return -1;
 }
 
