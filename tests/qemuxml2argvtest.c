@@ -638,6 +638,8 @@ mymain(void)
     DO_TEST("cpu-exact1", false, NONE);
     DO_TEST("cpu-exact2", false, NONE);
     DO_TEST("cpu-strict1", false, NONE);
+    DO_TEST("cpu-numa1", false, NONE);
+    DO_TEST("cpu-numa2", false, QEMU_CAPS_SMP_TOPOLOGY);
 
     DO_TEST("memtune", false, QEMU_CAPS_NAME);
     DO_TEST("blkiotune", false, QEMU_CAPS_NAME);

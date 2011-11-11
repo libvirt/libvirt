@@ -3401,6 +3401,65 @@ qemuBuildSmpArgStr(const virDomainDefPtr def,
     return virBufferContentAndReset(&buf);
 }
 
+static void
+qemuBuildNumaCPUArgStr(char *cpumask, virBufferPtr buf)
+{
+    int i, first, last;
+    int cpuSet = 0;
+
+    for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++) {
+        if (cpumask[i]) {
+            if (cpuSet) {
+                last = i;
+            } else {
+                first = last = i;
+                cpuSet = 1;
+            }
+        } else {
+            if (!cpuSet)
+                continue;
+            if (first == last)
+                virBufferAsprintf(buf, "%d,", first);
+            else
+                virBufferAsprintf(buf, "%d-%d,", first, last);
+            cpuSet = 0;
+        }
+    }
+
+    if (cpuSet) {
+        if (first == last)
+            virBufferAsprintf(buf, "%d,", first);
+        else
+            virBufferAsprintf(buf, "%d-%d,", first, last);
+    }
+}
+
+static int
+qemuBuildNumaArgStr(const virDomainDefPtr def, virCommandPtr cmd)
+{
+    int i;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    for (i = 0; i < def->cpu->ncells; i++) {
+        virCommandAddArg(cmd, "-numa");
+        virBufferAsprintf(&buf, "node,nodeid=%d", def->cpu->cells[i].cellid);
+        virBufferAddLit(&buf, ",cpus=");
+        qemuBuildNumaCPUArgStr(def->cpu->cells[i].cpumask, &buf);
+        virBufferAsprintf(&buf, "mem=%d",
+            VIR_DIV_UP(def->cpu->cells[i].mem, 1024));
+
+        if (virBufferError(&buf))
+            goto error;
+
+        virCommandAddArgBuffer(cmd, &buf);
+    }
+    return 0;
+
+error:
+    virBufferFreeAndReset(&buf);
+    virReportOOMError();
+    return -1;
+}
 
 /*
  * Constructs a argv suitable for launching qemu with config defined
@@ -3561,6 +3620,10 @@ qemuBuildCommandLine(virConnectPtr conn,
         goto error;
     virCommandAddArg(cmd, smp);
     VIR_FREE(smp);
+
+    if (def->cpu && def->cpu->ncells)
+        if (qemuBuildNumaArgStr(def, cmd) < 0)
+            goto error;
 
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_NAME)) {
         virCommandAddArg(cmd, "-name");

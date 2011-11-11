@@ -352,11 +352,12 @@ virCPUDefParseXML(const xmlNodePtr node,
 
             ret  = virStrToLong_ui(memory, NULL, 10, &def->cells[i].mem);
             if (ret == -1) {
+                virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("Invalid 'memory' attribute in NUMA cell"));
                 VIR_FREE(cpus);
                 VIR_FREE(memory);
                 goto error;
             }
-
             VIR_FREE(cpus);
             VIR_FREE(memory);
         }

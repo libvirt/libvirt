@@ -1,0 +1,5 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test ./qemu.sh -S -M pc \
+-m 214 -smp 16 -numa node,nodeid=0,cpus=0-7,mem=107 \
+-numa node,nodeid=1,cpus=8-15,mem=107 -nographic -monitor \
+unix:/tmp/test-monitor,server,nowait -no-acpi -boot n -net none -serial none \
+-parallel none -usb
