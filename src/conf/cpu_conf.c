@@ -28,6 +28,7 @@
 #include "util.h"
 #include "buf.h"
 #include "cpu_conf.h"
+#include "domain_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
@@ -66,6 +67,12 @@ virCPUDefFree(virCPUDefPtr def)
     for (i = 0 ; i < def->nfeatures ; i++)
         VIR_FREE(def->features[i].name);
     VIR_FREE(def->features);
+
+    for (i = 0 ; i < def->ncells ; i++) {
+        VIR_FREE(def->cells[i].cpumask);
+        VIR_FREE(def->cells[i].cpustr);
+    }
+    VIR_FREE(def->cells);
 
     VIR_FREE(def);
 }
@@ -108,7 +115,6 @@ no_memory:
     virCPUDefFree(copy);
     return NULL;
 }
-
 
 virCPUDefPtr
 virCPUDefParseXML(const xmlNodePtr node,
@@ -289,9 +295,75 @@ virCPUDefParseXML(const xmlNodePtr node,
         def->features[i].policy = policy;
     }
 
+    if (virXPathNode("./numa[1]", ctxt)) {
+        VIR_FREE(nodes);
+        n = virXPathNodeSet("./numa[1]/cell", ctxt, &nodes);
+        if (n <= 0) {
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("NUMA topology defined without NUMA cells"));
+            goto error;
+        }
+
+        if (VIR_RESIZE_N(def->cells, def->ncells_max,
+                         def->ncells, n) < 0)
+            goto no_memory;
+
+        def->ncells = n;
+
+        for (i = 0 ; i < n ; i++) {
+            char *cpus, *cpus_parse, *memory;
+            int cpumasklen = VIR_DOMAIN_CPUMASK_LEN;
+            int ret, ncpus = 0;
+
+            def->cells[i].cellid = i;
+            cpus = cpus_parse = virXMLPropString(nodes[i], "cpus");
+            if (!cpus) {
+                virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("Missing 'cpus' attribute in NUMA cell"));
+                goto error;
+            }
+
+            def->cells[i].cpustr = strdup(cpus);
+            if (!def->cells[i].cpustr) {
+                VIR_FREE(cpus);
+                goto no_memory;
+            }
+
+            if (VIR_ALLOC_N(def->cells[i].cpumask, cpumasklen) < 0) {
+                VIR_FREE(cpus);
+                goto no_memory;
+            }
+
+            ncpus = virDomainCpuSetParse((const char **)&cpus_parse,
+                                 0, def->cells[i].cpumask, cpumasklen);
+            if (ncpus <= 0) {
+                VIR_FREE(cpus);
+                goto error;
+            }
+            def->cells_cpus += ncpus;
+
+            memory = virXMLPropString(nodes[i], "memory");
+            if (!memory) {
+                virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("Missing 'memory' attribute in NUMA cell"));
+                VIR_FREE(cpus);
+                goto error;
+            }
+
+            ret  = virStrToLong_ui(memory, NULL, 10, &def->cells[i].mem);
+            if (ret == -1) {
+                VIR_FREE(cpus);
+                VIR_FREE(memory);
+                goto error;
+            }
+
+            VIR_FREE(cpus);
+            VIR_FREE(memory);
+        }
+    }
+
 cleanup:
     VIR_FREE(nodes);
-
     return def;
 
 no_memory:
@@ -414,6 +486,16 @@ virCPUDefFormatBuf(virBufferPtr buf,
         }
     }
 
+    if (def->ncells) {
+        virBufferAddLit(buf, "<numa>\n");
+        for (i = 0; i < def->ncells; i++) {
+            virBufferAddLit(buf, "  <cell");
+            virBufferAsprintf(buf, " cpus='%s'", def->cells[i].cpustr);
+            virBufferAsprintf(buf, " memory='%d'", def->cells[i].mem);
+            virBufferAddLit(buf, "/>\n");
+        }
+        virBufferAddLit(buf, "</numa>\n");
+    }
     return 0;
 }
 

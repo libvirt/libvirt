@@ -2297,7 +2297,16 @@
   <define name="cpu">
     <element name="cpu">
       <choice>
-        <ref name="cpuTopology"/>
+        <group>
+          <interleave>
+            <optional>
+              <ref name="cpuTopology"/>
+            </optional>
+            <optional>
+              <ref name="cpuNuma"/>
+            </optional>
+          </interleave>
+        </group>
         <group>
           <ref name="cpuMatch"/>
           <interleave>
@@ -2311,6 +2320,9 @@
             <zeroOrMore>
               <ref name="cpuFeature"/>
             </zeroOrMore>
+            <optional>
+              <ref name="cpuNuma"/>
+            </optional>
           </interleave>
         </group>
       </choice>
@@ -2367,6 +2379,25 @@
       </attribute>
       <attribute name="threads">
         <ref name="positiveInteger"/>
+      </attribute>
+    </element>
+  </define>
+
+  <define name="cpuNuma">
+    <element name="numa">
+      <oneOrMore>
+        <ref name="numaCell"/>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="numaCell">
+    <element name="cell">
+      <attribute name="cpus">
+        <ref name="cpuset"/>
+      </attribute>
+      <attribute name="memory">
+        <ref name="memoryKB"/>
       </attribute>
     </element>
   </define>

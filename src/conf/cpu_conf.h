@@ -67,6 +67,15 @@ struct _virCPUFeatureDef {
     int policy;         /* enum virCPUFeaturePolicy */
 };
 
+typedef struct _virCellDef virCellDef;
+typedef virCellDef *virCellDefPtr;
+struct _virCellDef {
+   int cellid;
+   char *cpumask;	/* CPUs that are part of this node */
+   char *cpustr;	/* CPUs stored in string form for dumpxml */
+   unsigned int mem;	/* Node memory in kB */
+};
+
 typedef struct _virCPUDef virCPUDef;
 typedef virCPUDef *virCPUDefPtr;
 struct _virCPUDef {
@@ -81,6 +90,10 @@ struct _virCPUDef {
     size_t nfeatures;
     size_t nfeatures_max;
     virCPUFeatureDefPtr features;
+    size_t ncells;
+    size_t ncells_max;
+    virCellDefPtr cells;
+    unsigned int cells_cpus;
 };
 
 

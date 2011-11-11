@@ -7572,6 +7572,13 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
         if (def->cpu == NULL)
             goto error;
+
+        if (def->cpu->cells_cpus > def->maxvcpus) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("Number of CPUs in <numa> exceeds the"
+                                   " <vcpu> count"));
+            goto error;
+        }
     }
 
     if ((node = virXPathNode("./sysinfo[1]", ctxt)) != NULL) {

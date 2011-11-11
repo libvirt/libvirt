@@ -628,6 +628,35 @@
       </dd>
     </dl>
 
+    <p>
+      Guest NUMA topology can be specifed using the <code>numa</code> element.
+      <span class="since">Since 0.9.8</span>
+    </p>
+
+<pre>
+  ...
+  &lt;cpu&gt;
+    ...
+    &lt;numa&gt;
+      &lt;cell cpus='0-3' memory='512000'/&gt;
+      &lt;cell cpus='4-7' memory='512000'/&gt;
+    &lt;/numa&gt;
+    ...
+  &lt;/cpu&gt;
+  ...</pre>
+
+    <p>
+      Each <code>cell</code> element specifies a NUMA cell or a NUMA node.
+      <code>cpus</code> specifies the CPU or range of CPUs that are part of
+      the node. <code>memory</code> specifies the node memory in kilobytes
+      (i.e. blocks of 1024 bytes). Each cell or node is assigned cellid
+      or nodeid in the increasing order starting from 0.
+    </p>
+
+    <p>
+      This guest NUMA specification is currently available only for QEMU/KVM.
+    </p>
+
     <h3><a name="elementsLifecycle">Lifecycle control</a></h3>
 
     <p>
