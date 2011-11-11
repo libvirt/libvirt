@@ -1196,7 +1196,7 @@ xenapiDomainGetVcpus (virDomainPtr dom,
     xen_vm_set *vms = NULL;
     xen_vm vm = NULL;
     xen_string_string_map *vcpu_params = NULL;
-    int nvcpus = 0, cpus = 0, i;
+    int nvcpus = 0, i;
     virDomainInfo domInfo;
     virNodeInfo nodeInfo;
     virVcpuInfoPtr ifptr;
@@ -1211,9 +1211,7 @@ xenapiDomainGetVcpus (virDomainPtr dom,
                                   _("Couldn't fetch Domain Information"));
         return -1;
     }
-    if (xenapiNodeGetInfo(dom->conn, &nodeInfo) == 0)
-        cpus = nodeInfo.cpus;
-    else {
+    if (xenapiNodeGetInfo(dom->conn, &nodeInfo) != 0) {
         xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
                                   _("Couldn't fetch Node Information"));
         return -1;
