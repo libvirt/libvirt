@@ -1195,6 +1195,35 @@ virFileRewrite;
 # virnetclient.h
 virNetClientHasPassFD;
 
+# virnetdev.h
+virNetDevClearIPv4Address;
+virNetDevExists;
+virNetDevGetMAC;
+virNetDevGetMTU;
+virNetDevIsOnline;
+virNetDevSetIPv4Address;
+virNetDevSetMAC;
+virNetDevSetMTU;
+virNetDevSetMTUFromDevice;
+virNetDevSetOnline;
+
+
+# virnetdevbridge.h
+virNetDevBridgeAddPort;
+virNetDevBridgeCreate;
+virNetDevBridgeDelete;
+virNetDevBridgeGetSTP;
+virNetDevBridgeGetSTPDelay;
+virNetDevBridgeRemovePort;
+virNetDevBridgeSetSTP;
+virNetDevBridgeSetSTPDelay;
+
+
+# virnetdevtap.h
+virNetDevTapCreate;
+virNetDevTapCreateInBridgePort;
+virNetDevTapDelete;
+
 
 # virnetmessage.h
 virNetMessageClear;
