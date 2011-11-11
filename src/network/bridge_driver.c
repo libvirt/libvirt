@@ -213,7 +213,7 @@ networkFindActiveConfigs(struct network_driver *driver) {
 
         /* If bridge exists, then mark it active */
         if (obj->def->bridge &&
-            virNetDevExists(obj->def->bridge) == 0) {
+            virNetDevExists(obj->def->bridge) == 1) {
             obj->active = 1;
 
             /* Try and read dnsmasq/radvd pids if any */
@@ -1814,8 +1814,10 @@ networkStartNetworkVirtual(struct network_driver *driver,
     if (!save_err)
         save_err = virSaveLastError();
 
-    ignore_value(virNetDevTapDelete(macTapIfName));
-    VIR_FREE(macTapIfName);
+    if (macTapIfName) {
+        ignore_value(virNetDevTapDelete(macTapIfName));
+        VIR_FREE(macTapIfName);
+    }
 
  err0:
     if (!save_err)
