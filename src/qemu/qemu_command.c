@@ -126,10 +126,10 @@ uname_normalize (struct utsname *ut)
 /**
  * qemuPhysIfaceConnect:
  * @def: the definition of the VM (needed by 802.1Qbh and audit)
- * @conn: pointer to virConnect object
  * @driver: pointer to the qemud_driver
  * @net: pointer to he VM's interface description with direct device type
  * @qemuCaps: flags for qemu
+ * @vmop: VM operation type
  *
  * Returns a filedescriptor on success or -1 in case of error.
  */
@@ -165,7 +165,6 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
 
 #else
     (void)def;
-    (void)conn;
     (void)net;
     (void)qemuCaps;
     (void)driver;
