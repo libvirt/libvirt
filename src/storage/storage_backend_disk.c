@@ -335,6 +335,40 @@ virStorageBackendDiskRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 /**
+ * Check for a valid disk label (partition table) on device
+ *
+ * return: 0 - valid disk label found
+ *        >0 - no or unrecognized disk label
+ *        <0 - error finding the disk label
+ */
+static int
+virStorageBackendDiskFindLabel(const char* device)
+{
+    const char *const args[] = {
+        device, "print", "--script", NULL,
+    };
+    virCommandPtr cmd = virCommandNew(PARTED);
+    char *output = NULL;
+    int ret = -1;
+
+    virCommandAddArgSet(cmd, args);
+    virCommandAddEnvString(cmd, "LC_ALL=C");
+    virCommandSetOutputBuffer(cmd, &output);
+
+    /* if parted succeeds we have a valid partition table */
+    ret = virCommandRun(cmd, NULL);
+    if (ret < 0) {
+        if (strstr (output, "unrecognised disk label"))
+            ret = 1;
+    }
+
+    virCommandFree(cmd);
+    VIR_FREE(output);
+    return ret;
+}
+
+
+/**
  * Write a new partition table header
  */
 static int
@@ -342,6 +376,8 @@ virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                virStoragePoolObjPtr pool,
                                unsigned int flags)
 {
+    bool ok_to_mklabel = false;
+    int ret = -1;
     /* eg parted /dev/sda mklabel msdos */
     const char *prog[] = {
         PARTED,
@@ -353,12 +389,40 @@ virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         NULL,
     };
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_STORAGE_POOL_BUILD_OVERWRITE |
+                  VIR_STORAGE_POOL_BUILD_NO_OVERWRITE, ret);
 
-    if (virRun(prog, NULL) < 0)
-        return -1;
+    if (flags == (VIR_STORAGE_POOL_BUILD_OVERWRITE |
+                  VIR_STORAGE_POOL_BUILD_NO_OVERWRITE)) {
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
+                              _("Overwrite and no overwrite flags"
+                                " are mutually exclusive"));
+        goto error;
+    }
 
-    return 0;
+    if (flags & VIR_STORAGE_POOL_BUILD_OVERWRITE)
+        ok_to_mklabel = true;
+    else {
+        int check;
+
+        check = virStorageBackendDiskFindLabel (
+                    pool->def->source.devices[0].path);
+        if (check > 0) {
+            ok_to_mklabel = true;
+        } else if (check < 0) {
+            virStorageReportError(VIR_ERR_OPERATION_FAILED,
+                                  _("Error checking for disk label"));
+        } else {
+            virStorageReportError(VIR_ERR_OPERATION_INVALID,
+                                  _("Disk label already present"));
+        }
+    }
+
+    if (ok_to_mklabel)
+        ret = virRun(prog, NULL);
+
+error:
+    return ret;
 }
 
 /**
