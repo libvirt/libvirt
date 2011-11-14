@@ -1335,6 +1335,7 @@ virNetClientKeepAliveStart;
 virNetClientKeepAliveStop;
 virNetClientLocalAddrString;
 virNetClientNewExternal;
+virNetClientNewLibSSH2;
 virNetClientNewSSH;
 virNetClientNewTCP;
 virNetClientNewUNIX;

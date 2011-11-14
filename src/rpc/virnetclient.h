@@ -1,7 +1,7 @@
 /*
  * virnetclient.h: generic network RPC client
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -49,6 +49,17 @@ virNetClientPtr virNetClientNewSSH(const char *nodename,
                                    const char *netcat,
                                    const char *keyfile,
                                    const char *path);
+
+virNetClientPtr virNetClientNewLibSSH2(const char *host,
+                                       const char *port,
+                                       const char *username,
+                                       const char *privkeyPath,
+                                       const char *knownHostsPath,
+                                       const char *knownHostsVerify,
+                                       const char *authMethods,
+                                       const char *netcatPath,
+                                       const char *socketPath,
+                                       virConnectAuthPtr authPtr);
 
 virNetClientPtr virNetClientNewExternal(const char **cmdargv);
 
