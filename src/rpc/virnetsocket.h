@@ -78,6 +78,18 @@ int virNetSocketNewConnectSSH(const char *nodename,
                               const char *path,
                               virNetSocketPtr *addr);
 
+int virNetSocketNewConnectLibSSH2(const char *host,
+                                  const char *port,
+                                  const char *username,
+                                  const char *password,
+                                  const char *privkey,
+                                  const char *knownHosts,
+                                  const char *knownHostsVerify,
+                                  const char *authMethods,
+                                  const char *command,
+                                  virConnectAuthPtr auth,
+                                  virNetSocketPtr *retsock);
+
 int virNetSocketNewConnectExternal(const char **cmdargv,
                                    virNetSocketPtr *addr);
 
@@ -106,6 +118,7 @@ int virNetSocketRecvFD(virNetSocketPtr sock, int *fd);
 
 void virNetSocketSetTLSSession(virNetSocketPtr sock,
                                virNetTLSSessionPtr sess);
+
 # ifdef HAVE_SASL
 void virNetSocketSetSASLSession(virNetSocketPtr sock,
                                 virNetSASLSessionPtr sess);

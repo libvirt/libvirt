@@ -1595,6 +1595,7 @@ virNetSocketListen;
 virNetSocketLocalAddrString;
 virNetSocketNewConnectCommand;
 virNetSocketNewConnectExternal;
+virNetSocketNewConnectLibSSH2;
 virNetSocketNewConnectSSH;
 virNetSocketNewConnectTCP;
 virNetSocketNewConnectUNIX;
