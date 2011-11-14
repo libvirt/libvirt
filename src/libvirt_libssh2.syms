@@ -1,0 +1,18 @@
+#
+# ssh session - specific symbols
+#
+
+# virnetsshsession.h
+#
+virNetSSHChannelRead;
+virNetSSHChannelWrite;
+virNetSSHSessionAuthAddAgentAuth;
+virNetSSHSessionAuthAddKeyboardAuth;
+virNetSSHSessionAuthAddPasswordAuth;
+virNetSSHSessionAuthAddPrivKeyAuth;
+virNetSSHSessionAuthReset;
+virNetSSHSessionAuthSetCallback;
+virNetSSHSessionConnect;
+virNetSSHSessionHasCachedData;
+virNetSSHSessionSetChannelCommand;
+virNetSSHSessionSetHostKeyVerification;

@@ -1323,6 +1323,10 @@ if HAVE_SASL
 USED_SYM_FILES += libvirt_sasl.syms
 endif
 
+if HAVE_LIBSSH2
+USED_SYM_FILES += libvirt_libssh2.syms
+endif
+
 if WITH_ATOMIC_OPS_PTHREAD
 USED_SYM_FILES += libvirt_atomic.syms
 endif
@@ -1339,7 +1343,8 @@ EXTRA_DIST += \
   libvirt_qemu.syms		\
   libvirt_sasl.syms		\
   libvirt_vmx.syms		\
-  libvirt_xenxs.syms
+  libvirt_xenxs.syms	\
+  libvirt_libssh2.syms
 
 GENERATED_SYM_FILES = libvirt.syms libvirt.def libvirt_qemu.def
 
@@ -1518,6 +1523,13 @@ libvirt_net_rpc_la_SOURCES = \
 	rpc/virnettlscontext.h rpc/virnettlscontext.c \
 	rpc/virkeepaliveprotocol.h rpc/virkeepaliveprotocol.c \
 	rpc/virkeepalive.h rpc/virkeepalive.c
+if HAVE_LIBSSH2
+libvirt_net_rpc_la_SOURCES += \
+	rpc/virnetsshsession.h rpc/virnetsshsession.c
+else
+EXTRA_DIST += \
+	rpc/virnetsshsession.h rpc/virnetsshsession.c
+endif
 if HAVE_SASL
 libvirt_net_rpc_la_SOURCES += \
 	rpc/virnetsaslcontext.h rpc/virnetsaslcontext.c
@@ -1528,11 +1540,13 @@ endif
 libvirt_net_rpc_la_CFLAGS = \
 			$(GNUTLS_CFLAGS) \
 			$(SASL_CFLAGS) \
+			$(LIBSSH2_CFLAGS) \
 			$(XDR_CFLAGS) \
 			$(AM_CFLAGS)
 libvirt_net_rpc_la_LDFLAGS = \
 			$(GNUTLS_LIBS) \
 			$(SASL_LIBS) \
+			$(LIBSSH2_LIBS)\
 			$(AM_LDFLAGS) \
 			$(CYGWIN_EXTRA_LDFLAGS) \
 			$(MINGW_EXTRA_LDFLAGS)

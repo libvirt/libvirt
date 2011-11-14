@@ -112,6 +112,8 @@ typedef enum {
     VIR_FROM_PARALLELS = 48,    /* Error from Parallels */
     VIR_FROM_DEVICE = 49,       /* Error from Device */
 
+    VIR_FROM_SSH = 50,       /* Error from libssh2 connection transport */
+
 # ifdef VIR_ENUM_SENTINELS
     VIR_ERR_DOMAIN_LAST
 # endif
@@ -280,6 +282,7 @@ typedef enum {
     VIR_ERR_BLOCK_COPY_ACTIVE = 83,     /* action prevented by block copy job */
     VIR_ERR_OPERATION_UNSUPPORTED = 84, /* The requested operation is not
                                            supported */
+    VIR_ERR_SSH = 85,                   /* error in ssh transport driver */
 } virErrorNumber;
 
 /**

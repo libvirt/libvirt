@@ -112,6 +112,7 @@ OPENWSMAN_REQUIRED="2.2.3"
 LIBPCAP_REQUIRED="1.0.0"
 LIBNL_REQUIRED="1.1"
 LIBSSH2_REQUIRED="1.0"
+LIBSSH2_TRANSPORT_REQUIRED="1.3"
 LIBBLKID_REQUIRED="2.17"
 DBUS_REQUIRED="1.0.0"
 
@@ -440,6 +441,8 @@ AC_ARG_WITH([console-lock-files],
                   (use auto for default paths on some platforms)
                   @<:@default=auto@:>@]),
   [],[with_console_lock_files=auto])
+AC_ARG_WITH([libssh2_transport],
+  AC_HELP_STRING([--with-libssh2_transport], [libssh2 location @<:@default=check@:>@]),[],[with_libssh2_transport=check])
 
 dnl
 dnl in case someone want to build static binaries
@@ -1748,21 +1751,45 @@ AM_CONDITIONAL([WITH_UML], [test "$with_uml" = "yes"])
 
 
 dnl
-dnl check for libssh2 (PHYP)
+dnl check for libssh2 (PHYP and libssh2 transport)
 dnl
 
 LIBSSH2_CFLAGS=""
 LIBSSH2_LIBS=""
 
-if test "$with_phyp" = "yes" || test "$with_phyp" = "check"; then
+if test "$with_phyp" = "yes" || test "$with_phyp" = "check" ||
+   test "$with_libssh2_transport" = "yes"  || test "$with_libssh2_transport" = "check"; then
     PKG_CHECK_MODULES([LIBSSH2], [libssh2 >= $LIBSSH2_REQUIRED], [
-        with_phyp=yes
+        if test "$with_phyp" = "check"; then
+            with_phyp=yes
+        fi
+        if $PKG_CONFIG "libssh2 >= $LIBSSH2_TRANSPORT_REQUIRED"; then
+            if test "$with_libssh2_transport" = "check"; then
+                with_libssh2_transport=yes
+            fi
+        else
+            if test "$with_libssh2_transport" = "check"; then
+                with_libssh2_transport=no
+                AC_MSG_NOTICE([libssh2 >= $LIBSSH2_TRANSPORT_REQUIRED is required for libssh2 transport])
+            fi
+            if test "$with_libssh2_transport" = "yes"; then
+                AC_MSG_ERROR([libssh2 >= $LIBSSH2_TRANSPORT_REQUIRED is required for libssh2 transport])
+            fi
+        fi
     ], [
         if test "$with_phyp" = "check"; then
             with_phyp=no
             AC_MSG_NOTICE([libssh2 is required for Phyp driver, disabling it])
-        else
+        fi
+        if test "$with_phyp" = "yes"; then
             AC_MSG_ERROR([libssh2 >= $LIBSSH2_REQUIRED is required for Phyp driver])
+        fi
+        if test "$with_libssh2_transport" = "check"; then
+            with_libssh2_transport=no
+            AC_MSG_NOTICE([libssh2 >= $LIBSSH2_TRANSPORT_REQUIRED is required for libssh2 transport])
+        fi
+        if test "$with_libssh2_transport" = "yes"; then
+            AC_MSG_ERROR([libssh2 >= $LIBSSH2_TRANSPORT_REQUIRED is required for libssh2 transport])
         fi
     ])
 fi
@@ -1770,7 +1797,12 @@ fi
 if test "$with_phyp" = "yes"; then
     AC_DEFINE_UNQUOTED([WITH_PHYP], 1, [whether IBM HMC / IVM driver is enabled])
 fi
+if test "$with_libssh2_transport" = "yes"; then
+    AC_DEFINE_UNQUOTED([HAVE_LIBSSH2], 1, [whether libssh2 transport is enabled])
+fi
+
 AM_CONDITIONAL([WITH_PHYP],[test "$with_phyp" = "yes"])
+AM_CONDITIONAL([HAVE_LIBSSH2], [test "$with_libssh2_transport" = "yes"])
 
 AC_SUBST([LIBSSH2_CFLAGS])
 AC_SUBST([LIBSSH2_LIBS])

@@ -113,7 +113,9 @@ VIR_ENUM_IMPL(virErrorDomain, VIR_ERR_DOMAIN_LAST,
               "Authentication Utils",
               "DBus Utils",
               "Parallels Cloud Server",
-              "Device Config"
+              "Device Config",
+
+              "SSH transport layer" /* 50 */
     )
 
 
@@ -1192,6 +1194,11 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("Operation not supported: %s");
             break;
+        case VIR_ERR_SSH:
+            if (info == NULL)
+                errmsg = _("SSH transport error");
+            else
+                errmsg = _("SSH transport error: %s");
     }
     return errmsg;
 }
