@@ -6226,6 +6226,249 @@ cmdNetworkAutostart(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "blkdeviotune" command
+ */
+static const vshCmdInfo info_blkdeviotune[] = {
+    {"help", N_("Set or query a block device I/O tuning parameters.")},
+    {"desc", N_("Set or query disk I/O parameters such as block throttling.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_blkdeviotune[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"device", VSH_OT_DATA, VSH_OFLAG_REQ, N_("block device")},
+    {"total_bytes_sec", VSH_OT_INT, VSH_OFLAG_NONE,
+     N_("total throughput limit in bytes per second")},
+    {"read_bytes_sec", VSH_OT_INT, VSH_OFLAG_NONE,
+     N_("read throughput limit in bytes per second")},
+    {"write_bytes_sec", VSH_OT_INT, VSH_OFLAG_NONE,
+     N_("write throughput limit in bytes per second")},
+    {"total_iops_sec", VSH_OT_INT, VSH_OFLAG_NONE,
+     N_("total I/O operations limit per second")},
+    {"read_iops_sec", VSH_OT_INT, VSH_OFLAG_NONE,
+     N_("read I/O operations limit per second")},
+    {"write_iops_sec", VSH_OT_INT, VSH_OFLAG_NONE,
+     N_("write I/O operations limit per second")},
+    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
+    {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
+    {"current", VSH_OT_BOOL, 0, N_("affect current domain")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    const char *name, *disk;
+    unsigned long long total_bytes_sec = 0, read_bytes_sec = 0, write_bytes_sec = 0;
+    unsigned long long total_iops_sec = 0, read_iops_sec = 0, write_iops_sec = 0;
+    int nparams = 0;
+    virTypedParameterPtr params = NULL, temp = NULL;
+    unsigned int flags = 0, i = 0;
+    int rv = 0;
+    int current = vshCommandOptBool(cmd, "current");
+    int config = vshCommandOptBool(cmd, "config");
+    int live = vshCommandOptBool(cmd, "live");
+    bool ret = false;
+
+    if (current) {
+        if (live || config) {
+            vshError(ctl, "%s", _("--current must be specified exclusively"));
+            return false;
+        }
+        flags = VIR_DOMAIN_AFFECT_CURRENT;
+    } else {
+        if (config)
+            flags |= VIR_DOMAIN_AFFECT_CONFIG;
+        if (live)
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
+    }
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        goto cleanup;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
+        goto cleanup;
+
+    if (vshCommandOptString(cmd, "device", &disk) < 0)
+        goto cleanup;
+
+    if ((rv = vshCommandOptULongLong(cmd, "total_bytes_sec", &total_bytes_sec)) < 0) {
+        vshError(ctl, "%s",
+                 _("Unable to parse integer parameter"));
+        goto cleanup;
+    } else if (rv > 0) {
+        nparams++;
+    }
+
+    if ((rv = vshCommandOptULongLong(cmd, "read_bytes_sec", &read_bytes_sec)) < 0) {
+        vshError(ctl, "%s",
+                 _("Unable to parse integer parameter"));
+        goto cleanup;
+    } else if (rv > 0) {
+        nparams++;
+    }
+
+    if ((rv = vshCommandOptULongLong(cmd, "write_bytes_sec", &write_bytes_sec)) < 0) {
+        vshError(ctl, "%s",
+                 _("Unable to parse integer parameter"));
+        goto cleanup;
+    } else if (rv > 0) {
+        nparams++;
+    }
+
+    if ((rv = vshCommandOptULongLong(cmd, "total_iops_sec", &total_iops_sec)) < 0) {
+        vshError(ctl, "%s",
+                 _("Unable to parse integer parameter"));
+        goto cleanup;
+    } else if (rv > 0) {
+        nparams++;
+    }
+
+    if ((rv = vshCommandOptULongLong(cmd, "read_iops_sec", &read_iops_sec)) < 0) {
+        vshError(ctl, "%s",
+                 _("Unable to parse integer parameter"));
+        goto cleanup;
+    } else if (rv > 0) {
+        nparams++;
+    }
+
+    if ((rv = vshCommandOptULongLong(cmd, "write_iops_sec", &write_iops_sec)) < 0) {
+        vshError(ctl, "%s",
+                 _("Unable to parse integer parameter"));
+        goto cleanup;
+    } else if (rv > 0) {
+        nparams++;
+    }
+
+    if (nparams == 0) {
+
+        if ((virDomainGetBlockIoTune(dom, NULL, NULL, &nparams, flags)) != 0) {
+            vshError(ctl, "%s",
+                     _("Unable to get number of block I/O throttle parameters"));
+            goto cleanup;
+        }
+
+        if (nparams == 0) {
+            ret = true;
+            goto cleanup;
+        }
+
+        params = vshCalloc(ctl, nparams, sizeof(*params));
+
+        if ((virDomainGetBlockIoTune(dom, disk, params, &nparams, flags)) != 0) {
+            vshError(ctl, "%s",
+                     _("Unable to get block I/O throttle parameters"));
+            goto cleanup;
+        }
+
+        for (i = 0; i < nparams; i++) {
+            switch(params[i].type) {
+                case VIR_TYPED_PARAM_INT:
+                    vshPrint(ctl, "%-15s: %d\n", params[i].field,
+                             params[i].value.i);
+                    break;
+                case VIR_TYPED_PARAM_UINT:
+                    vshPrint(ctl, "%-15s: %u\n", params[i].field,
+                             params[i].value.ui);
+                    break;
+                case VIR_TYPED_PARAM_LLONG:
+                    vshPrint(ctl, "%-15s: %lld\n", params[i].field,
+                             params[i].value.l);
+                    break;
+                case VIR_TYPED_PARAM_ULLONG:
+                    vshPrint(ctl, "%-15s: %llu\n", params[i].field,
+                             params[i].value.ul);
+                    break;
+                case VIR_TYPED_PARAM_DOUBLE:
+                    vshPrint(ctl, "%-15s: %f\n", params[i].field,
+                             params[i].value.d);
+                    break;
+                case VIR_TYPED_PARAM_BOOLEAN:
+                    vshPrint(ctl, "%-15s: %d\n", params[i].field,
+                             params[i].value.b);
+                    break;
+                default:
+                    vshPrint(ctl, "unimplemented block I/O throttle parameter type\n");
+            }
+        }
+
+        virDomainFree(dom);
+        return true;
+    } else {
+        /* Set the block I/O throttle, match by opt since parameters can be 0 */
+        params = vshCalloc(ctl, nparams, sizeof(*params));
+        i = 0;
+
+        if ((i < nparams) && (vshCommandOptBool(cmd, "total_bytes_sec"))) {
+            temp = &params[i];
+            temp->type = VIR_TYPED_PARAM_ULLONG;
+            strncpy(temp->field, VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC,
+                    sizeof(temp->field));
+            temp->value.ul = total_bytes_sec;
+            i++;
+        }
+
+        if ((i < nparams) && (vshCommandOptBool(cmd, "read_bytes_sec"))) {
+            temp = &params[i];
+            temp->type = VIR_TYPED_PARAM_ULLONG;
+            strncpy(temp->field, VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC,
+                    sizeof(temp->field));
+            temp->value.ul = read_bytes_sec;
+            i++;
+        }
+
+        if ((i < nparams) && (vshCommandOptBool(cmd, "write_bytes_sec"))) {
+            temp = &params[i];
+            temp->type = VIR_TYPED_PARAM_ULLONG;
+            strncpy(temp->field, VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC,
+                    sizeof(temp->field));
+            temp->value.ul = write_bytes_sec;
+            i++;
+        }
+
+        if ((i < nparams) && (vshCommandOptBool(cmd, "total_iops_sec"))) {
+            temp = &params[i];
+            temp->type = VIR_TYPED_PARAM_ULLONG;
+            strncpy(temp->field, VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC,
+                    sizeof(temp->field));
+            temp->value.ul = total_iops_sec;
+            i++;
+        }
+
+        if ((i < nparams) && (vshCommandOptBool(cmd, "read_iops_sec"))) {
+            temp = &params[i];
+            temp->type = VIR_TYPED_PARAM_ULLONG;
+            strncpy(temp->field, VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC,
+                    sizeof(temp->field));
+            temp->value.ul = read_iops_sec;
+            i++;
+        }
+
+        if ((i < nparams) && (vshCommandOptBool(cmd, "write_iops_sec"))) {
+            temp = &params[i];
+            temp->type = VIR_TYPED_PARAM_ULLONG;
+            strncpy(temp->field, VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC,
+                    sizeof(temp->field));
+            temp->value.ul = write_iops_sec;
+        }
+
+        if ((virDomainSetBlockIoTune(dom, disk, params, nparams, flags)) < 0) {
+            vshError(ctl, "%s",
+                     _("Unable to change block I/O throttle"));
+            goto cleanup;
+        }
+    }
+
+    ret = true;
+
+cleanup:
+    VIR_FREE(params);
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "net-create" command
  */
 static const vshCmdInfo info_network_create[] = {
@@ -14842,6 +15085,7 @@ static const vshCmdDef domManagementCmds[] = {
     {"attach-interface", cmdAttachInterface, opts_attach_interface,
      info_attach_interface, 0},
     {"autostart", cmdAutostart, opts_autostart, info_autostart, 0},
+    {"blkdeviotune", cmdBlkdeviotune, opts_blkdeviotune, info_blkdeviotune, 0},
     {"blkiotune", cmdBlkiotune, opts_blkiotune, info_blkiotune, 0},
     {"blockpull", cmdBlockPull, opts_block_pull, info_block_pull, 0},
     {"blockjob", cmdBlockJob, opts_block_job, info_block_job, 0},

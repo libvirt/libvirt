@@ -579,6 +579,36 @@ operation can be checked with B<blockjob>.
 I<path> specifies fully-qualified path of the disk.
 I<bandwidth> specifies copying bandwidth limit in Mbps.
 
+=item B<blkdeviotune> I<domain> I<device>
+[[I<--config>] [I<--live>] | [I<--current>]]
+[[I<total_bytes_sec>] | [I<read_bytes_sec>] [I<write_bytes_sec>]]
+[[I<total_iops_sec>] | [I<read_iops_sec>] [I<write_iops_sec>]]
+
+Set or query the block disk io parameters for a block device of I<domain>.
+I<device> specifies a unique target name (<target dev='name'/>) or source
+file (<source file='name'/>) for one of the disk devices attached to
+I<domain> (see also B<domblklist> for listing these names).
+
+If no limit is specified, it will query current I/O limits setting.
+Otherwise, alter the limits with these flags:
+I<--total_bytes_sec> specifies total throughput limit in bytes per second.
+I<--read_bytes_sec> specifies read throughput limit in bytes per second.
+I<--write_bytes_sec> specifies write throughput limit in bytes per second.
+I<--total_iops_sec> specifies total I/O operations limit per second.
+I<--read_iops_sec> specifies read I/O operations limit per second.
+I<--write_iops_sec> specifies write I/O operations limit per second.
+
+When setting any value, all remaining values are reset to unlimited,
+an explicit 0 also clears any limit.  A non-zero value for a given total
+cannot be mixed with non-zero values for read or write.
+
+If I<--live> is specified, affect a running guest.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified, affect the current guest state.
+Both I<--live> and I<--current> flags may be given, but I<--current> is
+exclusive. If no flag is specified, behavior is different depending
+on hypervisor.
+
 =item B<blockjob> I<domain> I<path> [I<--abort>] [I<--info>] [I<bandwidth>]
 
 Manage active block operations.
