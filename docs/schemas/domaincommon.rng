@@ -618,42 +618,47 @@
     </element>
   </define>
   <define name="diskspec">
-    <optional>
-      <ref name="driver"/>
-    </optional>
-    <optional>
-      <ref name="diskAuth"/>
-    </optional>
-    <ref name="target"/>
-    <optional>
-      <ref name="deviceBoot"/>
-    </optional>
-    <optional>
-      <element name="readonly">
-        <empty/>
-      </element>
-    </optional>
-    <optional>
-      <element name="shareable">
-        <empty/>
-      </element>
-    </optional>
-    <optional>
-      <element name="transient">
-        <empty/>
-      </element>
-    </optional>
-    <optional>
-      <element name="serial">
-        <ref name="diskSerial"/>
-      </element>
-    </optional>
-    <optional>
-      <ref name="encryption"/>
-    </optional>
-    <optional>
-      <ref name="address"/>
-    </optional>
+    <interleave>
+      <optional>
+        <ref name="driver"/>
+      </optional>
+      <optional>
+        <ref name="diskAuth"/>
+      </optional>
+      <ref name="target"/>
+      <optional>
+        <ref name="deviceBoot"/>
+      </optional>
+      <optional>
+        <element name="readonly">
+          <empty/>
+        </element>
+      </optional>
+      <optional>
+        <element name="shareable">
+          <empty/>
+        </element>
+      </optional>
+      <optional>
+        <element name="transient">
+          <empty/>
+        </element>
+      </optional>
+      <optional>
+        <element name="serial">
+          <ref name="diskSerial"/>
+        </element>
+      </optional>
+      <optional>
+        <ref name="encryption"/>
+      </optional>
+      <optional>
+        <ref name="diskIoTune"/>
+      </optional>
+      <optional>
+        <ref name="address"/>
+      </optional>
+    </interleave>
   </define>
   <define name="snapshot">
     <attribute name="snapshot">
@@ -2612,6 +2617,51 @@
           <ref name='genericName'/>
         </attribute>
       </choice>
+    </element>
+  </define>
+
+  <define name='diskIoTune'>
+    <element name="iotune">
+      <interleave>
+        <choice>
+          <element name="total_bytes_sec">
+            <data type="unsignedLong"/>
+          </element>
+          <group>
+            <interleave>
+              <optional>
+                <element name="read_bytes_sec">
+                  <data type="unsignedLong"/>
+                </element>
+              </optional>
+              <optional>
+                <element name="write_bytes_sec">
+                  <data type="unsignedLong"/>
+                </element>
+              </optional>
+            </interleave>
+          </group>
+        </choice>
+        <choice>
+          <element name="total_iops_sec">
+            <data type="unsignedLong"/>
+          </element>
+          <group>
+            <interleave>
+              <optional>
+                <element name="read_iops_sec">
+                  <data type="unsignedLong"/>
+                </element>
+              </optional>
+              <optional>
+                <element name="write_iops_sec">
+                  <data type="unsignedLong"/>
+                </element>
+              </optional>
+            </interleave>
+          </group>
+        </choice>
+      </interleave>
     </element>
   </define>
 

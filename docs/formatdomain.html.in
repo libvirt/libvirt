@@ -536,7 +536,11 @@
         single host block device, if they are backed by files within
         the same host file system, which is why this tuning parameter
         is at the global domain level rather than associated with each
-        guest disk device.  Each <code>device</code> element has two
+        guest disk device (contrast this to
+        the <a href="#elementsDisks"><code>&lt;iotune&gt;</code></a>
+        element which can apply to an
+        individual <code>&lt;disk&gt;</code>).
+        Each <code>device</code> element has two
         mandatory sub-elements, <code>path</code> describing the
         absolute path of the device, and <code>weight</code> giving
         the relative weight of that device, in the range [100,
@@ -945,6 +949,11 @@
       &lt;driver name="tap" type="aio" cache="default"/&gt;
       &lt;source file='/var/lib/xen/images/fv0'/ startupPolicy='optional'&gt;
       &lt;target dev='hda' bus='ide'/&gt;
+      &lt;iotune&gt;
+        &lt;total_bytes_sec&gt;10000000&lt;/total_bytes_sec&gt;
+        &lt;read_iops_sec&gt;400000&lt;/read_iops_sec&gt;
+        &lt;write_iops_sec&gt;100000&lt;/write_iops_sec&gt;
+      &lt;/iotune&gt;
       &lt;boot order='2'/&gt;
       &lt;encryption type='...'&gt;
         ...
@@ -1062,6 +1071,40 @@
         <span class="since">Since 0.0.3; <code>bus</code> attribute since 0.4.3;
         "usb" attribute value since after 0.4.4; "sata" attribute value since
         0.9.7</span></dd>
+      <dt><code>iotune</code></dt>
+      <dd>The optional <code>iotune</code> element provides the
+        ability to provide additional per-device I/O tuning, with
+        values that can vary for each device (contrast this to
+        the <a href="#elementsBlockTuning"><code>&lt;blkiotune&gt;</code></a>
+        element, which applies globally to the domain).  Currently,
+        the only tuning available is Block I/O throttling for qemu.
+        This element has optional sub-elements; any sub-element not
+        specified or given with a value of 0 implies no
+        limit.  <span class="since">Since 0.9.8</span>
+        <dl>
+          <dt><code>total_bytes_sec</code></dt>
+          <dd>The optional <code>total_bytes_sec</code> element is the
+            total throughput limit in bytes per second.  This cannot
+            appear with <code>read_bytes_sec</code>
+            or <code>write_bytes_sec</code>.</dd>
+          <dt><code>read_bytes_sec</code></dt>
+          <dd>The optional <code>read_bytes_sec</code> element is the
+            read throughput limit in bytes per second.</dd>
+          <dt><code>write_bytes_sec</code></dt>
+          <dd>The optional <code>write_bytes_sec</code> element is the
+            write throughput limit in bytes per second.</dd>
+          <dt><code>total_iops_sec</code></dt>
+          <dd>The optional <code>total_iops_sec</code> element is the
+            total I/O operations per second.  This cannot
+            appear with <code>read_iops_sec</code>
+            or <code>write_iops_sec</code>.</dd>
+          <dt><code>read_iops_sec</code></dt>
+          <dd>The optional <code>read_iops_sec</code> element is the
+            read I/O operations per second.</dd>
+          <dt><code>write_iops_sec</code></dt>
+          <dd>The optional <code>write_iops_sec</code> element is the
+            write I/O operations per second.</dd>
+        </dl>
       <dt><code>driver</code></dt>
       <dd>
         The optional driver element allows specifying further details

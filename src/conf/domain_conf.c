@@ -2507,11 +2507,13 @@ cleanup:
 static virDomainDiskDefPtr
 virDomainDiskDefParseXML(virCapsPtr caps,
                          xmlNodePtr node,
+                         xmlXPathContextPtr ctxt,
                          virBitmapPtr bootMap,
                          unsigned int flags)
 {
     virDomainDiskDefPtr def;
     xmlNodePtr cur, child;
+    xmlNodePtr save_ctxt = ctxt->node;
     char *type = NULL;
     char *device = NULL;
     char *snapshot = NULL;
@@ -2542,6 +2544,8 @@ virDomainDiskDefParseXML(virCapsPtr caps,
         virReportOOMError();
         return NULL;
     }
+
+    ctxt->node = node;
 
     type = virXMLPropString(node, "type");
     if (type) {
@@ -2706,6 +2710,62 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                         }
                     }
                     child = child->next;
+                }
+            } else if (xmlStrEqual(cur->name, BAD_CAST "iotune")) {
+                if (virXPathULongLong("string(./iotune/total_bytes_sec)",
+                                      ctxt,
+                                      &def->blkdeviotune.total_bytes_sec) < 0) {
+                    def->blkdeviotune.total_bytes_sec = 0;
+                }
+
+                if (virXPathULongLong("string(./iotune/read_bytes_sec)",
+                                      ctxt,
+                                      &def->blkdeviotune.read_bytes_sec) < 0) {
+                    def->blkdeviotune.read_bytes_sec = 0;
+                }
+
+                if (virXPathULongLong("string(./iotune/write_bytes_sec)",
+                                      ctxt,
+                                      &def->blkdeviotune.write_bytes_sec) < 0) {
+                    def->blkdeviotune.write_bytes_sec = 0;
+                }
+
+                if (virXPathULongLong("string(./iotune/total_iops_sec)",
+                                      ctxt,
+                                      &def->blkdeviotune.total_iops_sec) < 0) {
+                    def->blkdeviotune.total_iops_sec = 0;
+                }
+
+                if (virXPathULongLong("string(./iotune/read_iops_sec)",
+                                      ctxt,
+                                      &def->blkdeviotune.read_iops_sec) < 0) {
+                    def->blkdeviotune.read_iops_sec = 0;
+                }
+
+                if (virXPathULongLong("string(./iotune/write_iops_sec)",
+                                      ctxt,
+                                      &def->blkdeviotune.write_iops_sec) < 0) {
+                    def->blkdeviotune.write_iops_sec = 0;
+                }
+
+                if ((def->blkdeviotune.total_bytes_sec &&
+                     def->blkdeviotune.read_bytes_sec) ||
+                    (def->blkdeviotune.total_bytes_sec &&
+                     def->blkdeviotune.write_bytes_sec)) {
+                    virDomainReportError(VIR_ERR_XML_ERROR,
+                                         _("total and read/write bytes_sec "
+                                           "cannot be set at the same time"));
+                    goto error;
+                }
+
+                if ((def->blkdeviotune.total_iops_sec &&
+                     def->blkdeviotune.read_iops_sec) ||
+                    (def->blkdeviotune.total_iops_sec &&
+                     def->blkdeviotune.write_iops_sec)) {
+                    virDomainReportError(VIR_ERR_XML_ERROR,
+                                         _("total and read/write iops_sec "
+                                           "cannot be set at the same time"));
+                    goto error;
                 }
             } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
                 def->readonly = 1;
@@ -3001,6 +3061,7 @@ cleanup:
     virStorageEncryptionFree(encryption);
     VIR_FREE(startupPolicy);
 
+    ctxt->node = save_ctxt;
     return def;
 
 no_memory:
@@ -6191,7 +6252,7 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
 
     if (xmlStrEqual(node->name, BAD_CAST "disk")) {
         dev->type = VIR_DOMAIN_DEVICE_DISK;
-        if (!(dev->data.disk = virDomainDiskDefParseXML(caps, node,
+        if (!(dev->data.disk = virDomainDiskDefParseXML(caps, node, ctxt,
                                                         NULL, flags)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "lease")) {
@@ -7277,6 +7338,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     for (i = 0 ; i < n ; i++) {
         virDomainDiskDefPtr disk = virDomainDiskDefParseXML(caps,
                                                             nodes[i],
+                                                            ctxt,
                                                             bootMap,
                                                             flags);
         if (!disk)
@@ -9732,6 +9794,48 @@ virDomainDiskDefFormat(virBufferPtr buf,
 
     virBufferAsprintf(buf, "      <target dev='%s' bus='%s'/>\n",
                       def->dst, bus);
+
+    /*disk I/O throttling*/
+    if (def->blkdeviotune.total_bytes_sec ||
+        def->blkdeviotune.read_bytes_sec ||
+        def->blkdeviotune.write_bytes_sec ||
+        def->blkdeviotune.total_iops_sec ||
+        def->blkdeviotune.read_iops_sec ||
+        def->blkdeviotune.write_iops_sec) {
+        virBufferAddLit(buf, "      <iotune>\n");
+        if (def->blkdeviotune.total_bytes_sec) {
+            virBufferAsprintf(buf, "        <total_bytes_sec>%llu</total_bytes_sec>\n",
+                              def->blkdeviotune.total_bytes_sec);
+        }
+
+        if (def->blkdeviotune.read_bytes_sec) {
+            virBufferAsprintf(buf, "        <read_bytes_sec>%llu</read_bytes_sec>\n",
+                              def->blkdeviotune.read_bytes_sec);
+
+        }
+
+        if (def->blkdeviotune.write_bytes_sec) {
+            virBufferAsprintf(buf, "        <write_bytes_sec>%llu</write_bytes_sec>\n",
+                              def->blkdeviotune.write_bytes_sec);
+        }
+
+        if (def->blkdeviotune.total_iops_sec) {
+            virBufferAsprintf(buf, "        <total_iops_sec>%llu</total_iops_sec>\n",
+                              def->blkdeviotune.total_iops_sec);
+        }
+
+        if (def->blkdeviotune.read_iops_sec) {
+            virBufferAsprintf(buf, "        <read_iops_sec>%llu</read_iops_sec>",
+                              def->blkdeviotune.read_iops_sec);
+        }
+
+        if (def->blkdeviotune.write_iops_sec) {
+            virBufferAsprintf(buf, "        <write_iops_sec>%llu</write_iops_sec>",
+                              def->blkdeviotune.write_iops_sec);
+        }
+
+        virBufferAddLit(buf, "      </iotune>\n");
+    }
 
     if (def->bootIndex)
         virBufferAsprintf(buf, "      <boot order='%d'/>\n", def->bootIndex);

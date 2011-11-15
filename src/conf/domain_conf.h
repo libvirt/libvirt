@@ -310,6 +310,17 @@ enum virDomainDiskSecretType {
     VIR_DOMAIN_DISK_SECRET_TYPE_LAST
 };
 
+typedef struct _virDomainBlockIoTuneInfo virDomainBlockIoTuneInfo;
+struct _virDomainBlockIoTuneInfo {
+    unsigned long long total_bytes_sec;
+    unsigned long long read_bytes_sec;
+    unsigned long long write_bytes_sec;
+    unsigned long long total_iops_sec;
+    unsigned long long read_iops_sec;
+    unsigned long long write_iops_sec;
+};
+typedef virDomainBlockIoTuneInfo *virDomainBlockIoTuneInfoPtr;
+
 /* Stores the virtual disk configuration */
 typedef struct _virDomainDiskDef virDomainDiskDef;
 typedef virDomainDiskDef *virDomainDiskDefPtr;
@@ -332,6 +343,9 @@ struct _virDomainDiskDef {
     } auth;
     char *driverName;
     char *driverType;
+
+    virDomainBlockIoTuneInfo blkdeviotune;
+
     char *serial;
     int cachemode;
     int error_policy;  /* enum virDomainDiskErrorPolicy */
