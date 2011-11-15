@@ -23,6 +23,8 @@
 #ifndef __VIR_NETDEV_VPORT_PROFILE_H__
 # define __VIR_NETDEV_VPORT_PROFILE_H__
 
+# include <stdint.h>
+
 # include "internal.h"
 # include "uuid.h"
 # include "util.h"
