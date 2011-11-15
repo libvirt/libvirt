@@ -17441,3 +17441,158 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
+
+/**
+ * virDomainSetBlockIoTune:
+ * @dom: pointer to domain object
+ * @disk: path to the block device, or device shorthand
+ * @params: Pointer to blkio parameter objects
+ * @nparams: Number of blkio parameters (this value can be the same or
+ *           less than the number of parameters supported)
+ * @flags: An OR'ed set of virDomainModificationImpact
+ *
+ * Change all or a subset of the per-device block IO tunables.
+ *
+ * The @disk parameter is either an unambiguous source name of the
+ * block device (the <source file='...'/> sub-element, such as
+ * "/path/to/image"), or the device target shorthand (the <target
+ * dev='...'/> sub-element, such as "xvda").  Valid names can be found
+ * by calling virDomainGetXMLDesc() and inspecting elements
+ * within //domain/devices/disk.
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ */
+int virDomainSetBlockIoTune(virDomainPtr dom,
+                            const char *disk,
+                            virTypedParameterPtr params,
+                            int nparams,
+                            unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "disk=%p, params=%p, nparams=%d, flags=%x",
+                     disk, params, nparams, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (dom->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (!disk || (nparams <= 0) || (params == NULL)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (virTypedParameterValidateSet(dom, params, nparams) < 0)
+        return -1;
+
+    conn = dom->conn;
+
+    if (conn->driver->domainSetBlockIoTune) {
+        int ret;
+        ret = conn->driver->domainSetBlockIoTune(dom, disk, params, nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
+/**
+ * virDomainGetBlockIoTune:
+ * @dom: pointer to domain object
+ * @disk: path to the block device, or device shorthand
+ * @params: Pointer to blkio parameter object
+ *          (return value, allocated by the caller)
+ * @nparams: Pointer to number of blkio parameters
+ * @flags: An OR'ed set of virDomainModificationImpact
+ *
+ * Get all block IO tunable parameters for a given device.  On input,
+ * @nparams gives the size of the @params array; on output, @nparams
+ * gives how many slots were filled with parameter information, which
+ * might be less but will not exceed the input value.
+ *
+ * As a special case, calling with @params as NULL and @nparams as 0
+ * on input will cause @nparams on output to contain the number of
+ * parameters supported by the hypervisor, either for the given @disk
+ * (note that block devices of different types might support different
+ * parameters), or if @disk is NULL, for all possible disks. The
+ * caller should then allocate @params array,
+ * i.e. (sizeof(@virTypedParameter) * @nparams) bytes and call the API
+ * again.  See virDomainGetMemoryParameters() for more details.
+ *
+ * The @disk parameter is either an unambiguous source name of the
+ * block device (the <source file='...'/> sub-element, such as
+ * "/path/to/image"), or the device target shorthand (the <target
+ * dev='...'/> sub-element, such as "xvda").  Valid names can be found
+ * by calling virDomainGetXMLDesc() and inspecting elements
+ * within //domain/devices/disk.  This parameter cannot be NULL
+ * unless @nparams is 0 on input.
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ */
+int virDomainGetBlockIoTune(virDomainPtr dom,
+                            const char *disk,
+                            virTypedParameterPtr params,
+                            int *nparams,
+                            unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "disk=%p, params=%p, nparams=%d, flags=%x",
+                     NULLSTR(disk), params, (nparams) ? *nparams : -1, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (nparams == NULL || *nparams < 0 ||
+        ((params == NULL || disk == NULL) && *nparams != 0)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (VIR_DRV_SUPPORTS_FEATURE(dom->conn->driver, dom->conn,
+                                 VIR_DRV_FEATURE_TYPED_PARAM_STRING))
+        flags |= VIR_TYPED_PARAM_STRING_OKAY;
+
+    /* At most one of these two flags should be set.  */
+    if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
+        (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    conn = dom->conn;
+
+    if (conn->driver->domainGetBlockIoTune) {
+        int ret;
+        ret = conn->driver->domainGetBlockIoTune(dom, disk, params, nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dom->conn);
+    return -1;
+}

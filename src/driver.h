@@ -757,6 +757,19 @@ typedef int
                           int interval,
                           unsigned int count);
 
+typedef int
+    (*virDrvDomainSetBlockIoTune)(virDomainPtr dom,
+                                  const char *disk,
+                                  virTypedParameterPtr params,
+                                  int nparams,
+                                  unsigned int flags);
+typedef int
+    (*virDrvDomainGetBlockIoTune)(virDomainPtr dom,
+                                  const char *disk,
+                                  virTypedParameterPtr params,
+                                  int *nparams,
+                                  unsigned int flags);
+
 /**
  * _virDriver:
  *
@@ -919,6 +932,8 @@ struct _virDriver {
     virDrvSetKeepAlive setKeepAlive;
     virDrvConnectIsAlive isAlive;
     virDrvNodeSuspendForDuration nodeSuspendForDuration;
+    virDrvDomainSetBlockIoTune domainSetBlockIoTune;
+    virDrvDomainGetBlockIoTune domainGetBlockIoTune;
 };
 
 typedef int

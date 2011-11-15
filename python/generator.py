@@ -470,6 +470,9 @@ skip_function = (
     "virNWFilterGetConnect",
     "virStoragePoolGetConnect",
     "virStorageVolGetConnect",
+
+    "virDomainGetBlockIoTune", # not implemented yet
+    "virDomainSetBlockIoTune", # not implemented yet
 )
 
 qemu_skip_function = (
