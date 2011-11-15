@@ -732,6 +732,12 @@ typedef int
                            int nkeycodes,
                            unsigned int flags);
 
+typedef int
+    (*virDrvDomainSendProcessSignal)(virDomainPtr dom,
+                                     long long pid_value,
+                                     unsigned int signum,
+                                     unsigned int flags);
+
 typedef char *
     (*virDrvDomainMigrateBegin3)
                     (virDomainPtr domain,
@@ -1100,6 +1106,7 @@ struct _virDriver {
     virDrvNodeSetMemoryParameters       nodeSetMemoryParameters;
     virDrvNodeGetCPUMap                 nodeGetCPUMap;
     virDrvDomainFSTrim                  domainFSTrim;
+    virDrvDomainSendProcessSignal       domainSendProcessSignal;
 };
 
 typedef int

@@ -8590,6 +8590,85 @@ error:
     return -1;
 }
 
+
+/**
+ * virDomainSendProcessSignal:
+ * @domain: pointer to domain object
+ * @pid_value: a positive integer process ID, or negative integer process group ID
+ * @signum: a signal from the virDomainProcessSignal enum
+ * @flags: one of the virDomainProcessSignalFlag values
+ *
+ * Send a signal to the designated process in the guest
+ *
+ * The signal numbers must be taken from the virDomainProcessSignal
+ * enum. These will be translated to the corresponding signal
+ * number for the guest OS, by the guest agent delivering the
+ * signal. If there is no mapping from virDomainProcessSignal to
+ * the native OS signals, this API will report an error.
+ *
+ * If @pid_value is an integer greater than zero, it is
+ * treated as a process ID. If @pid_value is an integer
+ * less than zero, it is treated as a process group ID.
+ * All the @pid_value numbers are from the container/guest
+ * namespace. The value zero is not valid.
+ *
+ * Not all hypervisors will support sending signals to
+ * arbitrary processes or process groups. If this API is
+ * implemented the minimum requirement is to be able to
+ * use @pid_value==1 (i.e. kill init). No other value is
+ * required to be supported.
+ *
+ * If the @signum is VIR_DOMAIN_PROCESS_SIGNAL_NOP then this
+ * API will simply report whether the process is running in
+ * the container/guest.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int virDomainSendProcessSignal(virDomainPtr domain,
+                               long long pid_value,
+                               unsigned int signum,
+                               unsigned int flags)
+{
+    virConnectPtr conn;
+    VIR_DOMAIN_DEBUG(domain, "pid=%lld, signum=%u flags=%x",
+                     pid_value, signum, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    virCheckNonZeroArgGoto(pid_value, error);
+
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    conn = domain->conn;
+
+    if (conn->driver->domainSendProcessSignal) {
+        int ret;
+        ret = conn->driver->domainSendProcessSignal(domain,
+                                                    pid_value,
+                                                    signum,
+                                                    flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
 /**
  * virDomainSetVcpus:
  * @domain: pointer to domain object, or NULL for Domain0

@@ -577,6 +577,7 @@ LIBVIRT_1.0.0 {
 LIBVIRT_1.0.1 {
     global:
         virDomainFSTrim;
+        virDomainSendProcessSignal;
 } LIBVIRT_1.0.0;
 
 # .... define new API here using predicted next version number ....
