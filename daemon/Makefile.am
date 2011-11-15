@@ -156,6 +156,10 @@ endif
 if WITH_NWFILTER
     libvirtd_LDADD += ../src/libvirt_driver_nwfilter.la
 endif
+
+if HAVE_POLKIT0
+    libvirtd_LDADD += ../src/libvirt_driver_remote.la
+endif
 endif
 
 libvirtd_LDADD += ../src/libvirt.la
