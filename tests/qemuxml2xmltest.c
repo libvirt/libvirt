@@ -192,6 +192,7 @@ mymain(void)
     DO_TEST("event_idx");
 
     DO_TEST("usb-redir");
+    DO_TEST("blkdeviotune");
 
     /* These tests generate different XML */
     DO_TEST_DIFFERENT("balloon-device-auto");

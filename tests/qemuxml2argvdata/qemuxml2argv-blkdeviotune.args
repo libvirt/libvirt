@@ -1,0 +1,10 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M \
+pc -m 214 -smp 1 -name QEMUGuest1 -nographic -nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \
+-drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-ide0-0-0,cache=off,\
+bps=5000,iops=6000 -device \
+ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
+-drive file=/dev/HostVG/QEMUGuest2,if=none,id=drive-ide0-0-1,cache=off,\
+bps_rd=5000,bps_wr=5000,iops=7000 -device \
+ide-drive,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \
+-usb -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
