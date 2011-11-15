@@ -466,7 +466,11 @@ virBufferEscape(virBufferPtr buf, const char *toescape,
     cur = str;
     out = escaped;
     while (*cur != 0) {
-        if (strchr(toescape, *cur))
+        /* strchr work-around for gcc 4.3 & 4.4 bug with -Wlogical-op
+         * http://gcc.gnu.org/bugzilla/show_bug.cgi?id=36513
+         */
+        char needle[2] = { *cur, 0 };
+        if (strstr(toescape, needle))
             *out++ = '\\';
         *out++ = *cur;
         cur++;
