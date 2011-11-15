@@ -6124,6 +6124,7 @@ static virDriver remote_driver = {
     .domainMigrateFinish3 = remoteDomainMigrateFinish3, /* 0.9.2 */
     .domainMigrateConfirm3 = remoteDomainMigrateConfirm3, /* 0.9.2 */
     .domainSendKey = remoteDomainSendKey, /* 0.9.3 */
+    .domainSendProcessSignal = remoteDomainSendProcessSignal, /* 1.0.1 */
     .domainBlockJobAbort = remoteDomainBlockJobAbort, /* 0.9.4 */
     .domainGetBlockJobInfo = remoteDomainGetBlockJobInfo, /* 0.9.4 */
     .domainBlockJobSetSpeed = remoteDomainBlockJobSetSpeed, /* 0.9.4 */

@@ -1019,6 +1019,13 @@ struct remote_domain_send_key_args {
     unsigned int flags;
 };
 
+struct remote_domain_send_process_signal_args {
+    remote_nonnull_domain dom;
+    hyper pid_value;
+    unsigned int signum;
+    unsigned int flags;
+};
+
 struct remote_domain_set_vcpus_args {
     remote_nonnull_domain dom;
     unsigned int nvcpus;
@@ -3034,7 +3041,8 @@ enum remote_procedure {
     REMOTE_PROC_NETWORK_UPDATE = 291, /* autogen autogen priority:high */
     REMOTE_PROC_DOMAIN_EVENT_PMSUSPEND_DISK = 292, /* autogen autogen */
     REMOTE_PROC_NODE_GET_CPU_MAP = 293, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_FSTRIM = 294 /* autogen autogen */
+    REMOTE_PROC_DOMAIN_FSTRIM = 294, /* autogen autogen */
+    REMOTE_PROC_DOMAIN_SEND_PROCESS_SIGNAL = 295 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

@@ -672,6 +672,12 @@ struct remote_domain_send_key_args {
         } keycodes;
         u_int                      flags;
 };
+struct remote_domain_send_process_signal_args {
+        remote_nonnull_domain      dom;
+        int64_t                    pid_value;
+        u_int                      signum;
+        u_int                      flags;
+};
 struct remote_domain_set_vcpus_args {
         remote_nonnull_domain      dom;
         u_int                      nvcpus;
@@ -2440,4 +2446,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT_PMSUSPEND_DISK = 292,
         REMOTE_PROC_NODE_GET_CPU_MAP = 293,
         REMOTE_PROC_DOMAIN_FSTRIM = 294,
+        REMOTE_PROC_DOMAIN_SEND_PROCESS_SIGNAL = 295,
 };
