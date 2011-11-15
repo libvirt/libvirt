@@ -3742,6 +3742,13 @@ virDomainGetMemoryParameters(virDomainPtr domain,
     if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                  VIR_DRV_FEATURE_TYPED_PARAM_STRING))
         flags |= VIR_TYPED_PARAM_STRING_OKAY;
+
+    /* At most one of these two flags should be set.  */
+    if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
+        (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
     conn = domain->conn;
 
     if (conn->driver->domainGetMemoryParameters) {
@@ -3867,6 +3874,13 @@ virDomainGetBlkioParameters(virDomainPtr domain,
     if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                  VIR_DRV_FEATURE_TYPED_PARAM_STRING))
         flags |= VIR_TYPED_PARAM_STRING_OKAY;
+
+    /* At most one of these two flags should be set.  */
+    if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
+        (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
     conn = domain->conn;
 
     if (conn->driver->domainGetBlkioParameters) {
@@ -6573,6 +6587,13 @@ virDomainGetSchedulerParametersFlags(virDomainPtr domain,
     if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                  VIR_DRV_FEATURE_TYPED_PARAM_STRING))
         flags |= VIR_TYPED_PARAM_STRING_OKAY;
+
+    /* At most one of these two flags should be set.  */
+    if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
+        (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
     conn = domain->conn;
 
     if (conn->driver->domainGetSchedulerParametersFlags) {
@@ -8056,7 +8077,8 @@ virDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
     }
 
     /* At most one of these two flags should be set.  */
-    if ((flags & VIR_DOMAIN_AFFECT_LIVE) && (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
+    if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
+        (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
@@ -8153,7 +8175,7 @@ error:
  *      underlying virtualization system (Xen...).
  *      If maplen < size, missing bytes are set to zero.
  *      If maplen > size, failure code is returned.
- * @flags: bitwise-OR of virDomainModificationImpac
+ * @flags: bitwise-OR of virDomainModificationImpact
  *
  * Dynamically change the real CPUs which can be allocated to a virtual CPU.
  * This function may require privileged access to the hypervisor.
@@ -8244,8 +8266,8 @@ error:
  * -1 in case of failure.
  */
 int
-virDomainGetVcpuPinInfo (virDomainPtr domain, int ncpumaps,
-                         unsigned char *cpumaps, int maplen, unsigned int flags)
+virDomainGetVcpuPinInfo(virDomainPtr domain, int ncpumaps,
+                        unsigned char *cpumaps, int maplen, unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -8266,6 +8288,12 @@ virDomainGetVcpuPinInfo (virDomainPtr domain, int ncpumaps,
         goto error;
     }
 
+    /* At most one of these two flags should be set.  */
+    if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
+        (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
     conn = domain->conn;
 
     if (conn->driver->domainGetVcpuPinInfo) {
