@@ -414,6 +414,8 @@ skip_impl = (
     'virDomainGetBlockJobInfo',
     'virDomainMigrateGetMaxSpeed',
     'virDomainBlockStatsFlags',
+    'virDomainSetBlockIoTune',
+    'virDomainGetBlockIoTune',
 )
 
 qemu_skip_impl = (
@@ -470,9 +472,6 @@ skip_function = (
     "virNWFilterGetConnect",
     "virStoragePoolGetConnect",
     "virStorageVolGetConnect",
-
-    "virDomainGetBlockIoTune", # not implemented yet
-    "virDomainSetBlockIoTune", # not implemented yet
 )
 
 qemu_skip_function = (

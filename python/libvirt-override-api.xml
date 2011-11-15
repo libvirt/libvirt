@@ -375,5 +375,21 @@
       <arg name='flags' type='unsigned int' info='flags, currently unused, pass 0.'/>
       <return type='unsigned long' info='current max migration speed, or None in case of error'/>
     </function>
+    <function name='virDomainSetBlockIoTune' file='python'>
+      <info>Change the I/O tunables for a block device</info>
+      <arg name='dom' type='virDomainPtr' info='pointer to the domain'/>
+      <arg name='disk' type='const char *' info='disk name'/>
+      <arg name='params' type='virTypedParameterPtr' info='Pointer to blkio tuning params object'/>
+      <arg name='flags' type='unsigned int' info='an OR&apos;ed set of virDomainModificationImpact'/>
+      <return type='int' info='0 in case of success, -1 in case of failure'/>
+    </function>
+    <function name='virDomainGetBlockIoTune' file='python'>
+      <info>Get the I/O tunables for a block device</info>
+      <arg name='dom' type='virDomainPtr' info='pointer to the domain'/>
+      <arg name='disk' type='const char *' info='disk name'/>
+      <arg name='params' type='virTypedParameterPtr' info='Pointer to blkio tuning params object'/>
+      <arg name='flags' type='unsigned int' info='an OR&apos;ed set of virDomainModificationImpact'/>
+      <return type='int' info='0 in case of success, -1 in case of failure'/>
+    </function>
   </symbols>
 </api>
