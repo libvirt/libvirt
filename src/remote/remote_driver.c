@@ -2200,6 +2200,61 @@ done:
     return rv;
 }
 
+static int remoteDomainGetBlockIoTune(virDomainPtr domain,
+                                      const char *disk,
+                                      virTypedParameterPtr params,
+                                      int *nparams,
+                                      unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_get_block_io_tune_args args;
+    remote_domain_get_block_io_tune_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, domain);
+    args.disk = disk ? (char **)&disk : NULL;
+    args.nparams = *nparams;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+
+
+    if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_BLOCK_IO_TUNE,
+             (xdrproc_t) xdr_remote_domain_get_block_io_tune_args,
+               (char *) &args,
+             (xdrproc_t) xdr_remote_domain_get_block_io_tune_ret,
+               (char *) &ret) == -1) {
+        goto done;
+    }
+
+    /* Handle the case when the caller does not know the number of parameters
+     * and is asking for the number of parameters supported
+     */
+    if (*nparams == 0) {
+        *nparams = ret.nparams;
+        rv = 0;
+        goto cleanup;
+    }
+
+    if (remoteDeserializeTypedParameters(ret.params.params_val,
+                                         ret.params.params_len,
+                                         REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX,
+                                         params,
+                                         nparams) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+cleanup:
+    xdr_free ((xdrproc_t) xdr_remote_domain_get_block_io_tune_ret,
+              (char *) &ret);
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
@@ -4620,6 +4675,8 @@ static virDriver remote_driver = {
     .setKeepAlive = remoteSetKeepAlive, /* 0.9.8 */
     .isAlive = remoteIsAlive, /* 0.9.8 */
     .nodeSuspendForDuration = remoteNodeSuspendForDuration, /* 0.9.8 */
+    .domainSetBlockIoTune = remoteDomainSetBlockIoTune, /* 0.9.8 */
+    .domainGetBlockIoTune = remoteDomainGetBlockIoTune, /* 0.9.8 */
 };
 
 static virNetworkDriver network_driver = {

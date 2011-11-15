@@ -765,6 +765,28 @@ struct remote_domain_block_pull_args {
         uint64_t                   bandwidth;
         u_int                      flags;
 };
+struct remote_domain_set_block_io_tune_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      disk;
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        u_int                      flags;
+};
+struct remote_domain_get_block_io_tune_args {
+        remote_nonnull_domain      dom;
+        remote_string              disk;
+        int                        nparams;
+        u_int                      flags;
+};
+struct remote_domain_get_block_io_tune_ret {
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        int                        nparams;
+};
 struct remote_num_of_networks_ret {
         int                        num;
 };
@@ -2020,4 +2042,6 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_OPEN_GRAPHICS = 249,
         REMOTE_PROC_NODE_SUSPEND_FOR_DURATION = 250,
         REMOTE_PROC_DOMAIN_BLOCK_RESIZE = 251,
+        REMOTE_PROC_DOMAIN_SET_BLOCK_IO_TUNE = 252,
+        REMOTE_PROC_DOMAIN_GET_BLOCK_IO_TUNE = 253,
 };
