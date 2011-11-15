@@ -1163,11 +1163,22 @@ qemuProcessFindCharDevicePTYs(virDomainObjPtr vm,
 
     for (i = 0 ; i < vm->def->nconsoles ; i++) {
         virDomainChrDefPtr chr = vm->def->consoles[i];
-        if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
-            chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO) {
-            if ((ret = qemuProcessExtractTTYPath(output, &offset,
-                                                 &chr->source.data.file.path)) != 0)
+        /* For historical reasons, console[0] can be just an alias
+         * for serial[0]; That's why we need to update it as well */
+        if (i == 0 && vm->def->nserials &&
+            chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+            chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL) {
+            if ((ret = virDomainChrSourceDefCopy(&chr->source,
+                                                 &((vm->def->serials[0])->source))) != 0)
                 return ret;
+            chr->source.type = VIR_DOMAIN_CHR_TYPE_PTY;
+        } else {
+            if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
+                chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO) {
+                if ((ret = qemuProcessExtractTTYPath(output, &offset,
+                                                     &chr->source.data.file.path)) != 0)
+                    return ret;
+            }
         }
     }
 

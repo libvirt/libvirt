@@ -956,6 +956,82 @@ virDomainChrSourceDefClear(virDomainChrSourceDefPtr def)
     }
 }
 
+/* Deep copies the contents of src into dest.  Return -1 and report
+ * error on failure.  */
+int
+virDomainChrSourceDefCopy(virDomainChrSourceDefPtr dest,
+                          virDomainChrSourceDefPtr src)
+{
+    if (!dest || !src)
+        return -1;
+
+    virDomainChrSourceDefClear(dest);
+
+    switch (src->type) {
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+        if (src->data.file.path &&
+            !(dest->data.file.path = strdup(src->data.file.path))) {
+            virReportOOMError();
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_UDP:
+        if (src->data.udp.bindHost &&
+            !(dest->data.udp.bindHost = strdup(src->data.udp.bindHost))) {
+            virReportOOMError();
+            return -1;
+        }
+
+        if (src->data.udp.bindService &&
+            !(dest->data.udp.bindService = strdup(src->data.udp.bindService))) {
+            virReportOOMError();
+            return -1;
+        }
+
+        if (src->data.udp.connectHost &&
+            !(dest->data.udp.connectHost = strdup(src->data.udp.connectHost))) {
+            virReportOOMError();
+            return -1;
+        }
+
+
+        if (src->data.udp.connectService &&
+            !(dest->data.udp.connectService = strdup(src->data.udp.connectService))) {
+            virReportOOMError();
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_TCP:
+        if (src->data.tcp.host &&
+            !(dest->data.tcp.host = strdup(src->data.tcp.host))) {
+            virReportOOMError();
+            return -1;
+        }
+
+        if (src->data.tcp.service &&
+            !(dest->data.tcp.service = strdup(src->data.tcp.service))) {
+            virReportOOMError();
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        if (src->data.nix.path &&
+            !(dest->data.nix.path = strdup(src->data.nix.path))) {
+            virReportOOMError();
+            return -1;
+        }
+        break;
+    }
+
+    return 0;
+}
+
 void virDomainChrSourceDefFree(virDomainChrSourceDefPtr def)
 {
     if (!def)
