@@ -2666,6 +2666,85 @@ cleanup:
     return ret;
 }
 
+
+static int
+lxcDomainSendProcessSignal(virDomainPtr dom,
+                           long long pid_value,
+                           unsigned int signum,
+                           unsigned int flags)
+{
+    virLXCDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    virLXCDomainObjPrivatePtr priv;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    pid_t victim;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (signum >= VIR_DOMAIN_PROCESS_SIGNAL_LAST) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("signum value %d is out of range"),
+                       signum);
+        return -1;
+    }
+
+    lxcDriverLock(driver);
+    virUUIDFormat(dom->uuid, uuidstr);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    lxcDriverUnlock(driver);
+    if (!vm) {
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+    priv = vm->privateData;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    /*
+     * XXX if the kernel has /proc/$PID/ns/pid we can
+     * switch into container namespace & that way be
+     * able to kill any PID. Alternatively if there
+     * is a way to find a mapping of guest<->host PIDs
+     * we can kill that way.
+     */
+    if (pid_value != 1) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Only the init process may be killed"));
+        goto cleanup;
+    }
+
+    if (!priv->initpid) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Init pid is not yet available"));
+        goto cleanup;
+    }
+    victim = priv->initpid;
+
+    /* We're relying on fact libvirt header signal numbers
+     * are taken from Linux, to avoid mapping
+     */
+    if (kill(victim, signum) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to send %d signal to process %d"),
+                             signum, victim);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+
 static int
 lxcListAllDomains(virConnectPtr conn,
                   virDomainPtr **domains,
@@ -2751,6 +2830,7 @@ static virDriver lxcDriver = {
     .nodeSuspendForDuration = nodeSuspendForDuration, /* 0.9.8 */
     .nodeGetMemoryParameters = nodeGetMemoryParameters, /* 0.10.2 */
     .nodeSetMemoryParameters = nodeSetMemoryParameters, /* 0.10.2 */
+    .domainSendProcessSignal = lxcDomainSendProcessSignal, /* 1.0.1 */
 };
 
 static virStateDriver lxcStateDriver = {
