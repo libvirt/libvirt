@@ -1393,6 +1393,37 @@ B<Examples>
   # send a tab, held for 1 second
   virsh send-key --holdtime 1000 0xf
 
+=item B<send-process-signal> I<domain-id> I<pid> I<signame>
+
+Send a signal I<signame> to the process identified by I<pid> running in
+the virtual domain I<domain-id>. The I<pid> is a process ID in the virtual
+domain namespace.
+
+The I<signame> argument may be either an integer signal constant number,
+or one of the symbolic names:
+
+    "nop", "hup", "int", "quit", "ill",
+    "trap", "abrt", "bus", "fpe", "kill",
+    "usr1", "segv", "usr2", "pipe", "alrm",
+    "term", "stkflt", "chld", "cont", "stop",
+    "tstp", "ttin", "ttou", "urg", "xcpu",
+    "xfsz", "vtalrm", "prof", "winch", "poll",
+    "pwr", "sys", "rt0", "rt1", "rt2", "rt3",
+    "rt4", "rt5", "rt6", "rt7", "rt8", "rt9",
+    "rt10", "rt11", "rt12", "rt13", "rt14", "rt15",
+    "rt16", "rt17", "rt18", "rt19", "rt20", "rt21",
+    "rt22", "rt23", "rt24", "rt25", "rt26", "rt27",
+    "rt28", "rt29", "rt30", "rt31", "rt32"
+
+The symbol name may optionally be prefixed with 'sig' or 'sig_' and
+may be in uppercase or lowercase.
+
+B<Examples>
+  virsh send-process-signal myguest 1 15
+  virsh send-process-signal myguest 1 term
+  virsh send-process-signal myguest 1 sigterm
+  virsh send-process-signal myguest 1 SIG_HUP
+
 =item B<setmem> I<domain> B<size> [[I<--config>] [I<--live>] |
 [I<--current>]]
 

@@ -5901,6 +5901,109 @@ cleanup:
 }
 
 /*
+ * "send-process-signal" command
+ */
+static const vshCmdInfo info_send_process_signal[] = {
+    {"help", N_("Send signals to processes") },
+    {"desc", N_("Send signals to processes in the guest") },
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_send_process_signal[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"pid", VSH_OT_DATA, VSH_OFLAG_REQ, N_("the process ID") },
+    {"signame", VSH_OT_DATA, VSH_OFLAG_REQ, N_("the signal number or name") },
+    {NULL, 0, 0, NULL}
+};
+
+VIR_ENUM_DECL(virDomainProcessSignal)
+VIR_ENUM_IMPL(virDomainProcessSignal,
+              VIR_DOMAIN_PROCESS_SIGNAL_LAST,
+              "nop", "hup", "int", "quit", "ill", /* 0-4 */
+              "trap", "abrt", "bus", "fpe", "kill", /* 5-9 */
+              "usr1", "segv", "usr2", "pipe", "alrm", /* 10-14 */
+              "term", "stkflt", "chld", "cont", "stop", /* 15-19 */
+              "tstp", "ttin", "ttou", "urg", "xcpu", /* 20-24 */
+              "xfsz", "vtalrm", "prof", "winch", "poll", /* 25-29 */
+              "pwr", "sys", "rt0","rt1", "rt2",  /* 30-34 */
+              "rt3", "rt4", "rt5", "rt6", "rt7",  /* 35-39 */
+              "rt8", "rt9", "rt10", "rt11", "rt12",  /* 40-44 */
+              "rt13", "rt14", "rt15", "rt16", "rt17",  /* 45-49 */
+              "rt18", "rt19", "rt20", "rt21", "rt22",  /* 50-54 */
+              "rt23", "rt24", "rt25", "rt26", "rt27",  /* 55-59 */
+              "rt28", "rt29", "rt30", "rt31", "rt32")  /* 60-64 */
+
+static int getSignalNumber(vshControl *ctl, const char *signame)
+{
+    size_t i;
+    int signum;
+    char *lower = vshStrdup(ctl, signame);
+    char *tmp = lower;
+
+    for (i = 0 ; signame[i] ; i++)
+        lower[i] = c_tolower(signame[i]);
+
+    if (virStrToLong_i(lower, NULL, 10, &signum) >= 0)
+        goto cleanup;
+
+    if (STRPREFIX(lower, "sig_"))
+        lower += 4;
+    else if (STRPREFIX(lower, "sig"))
+        lower += 3;
+
+    if ((signum = virDomainProcessSignalTypeFromString(lower)) >= 0)
+        goto cleanup;
+
+    signum = -1;
+cleanup:
+    VIR_FREE(tmp);
+    return signum;
+}
+
+static bool
+cmdSendProcessSignal(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    int ret = false;
+    const char *pidstr;
+    const char *signame;
+    long long pid_value;
+    int signum;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptString(cmd, "pid", &pidstr) <= 0) {
+        vshError(ctl, "%s", _("missing argument"));
+        return false;
+    }
+
+    if (vshCommandOptString(cmd, "signame", &signame) <= 0) {
+        vshError(ctl, "%s", _("missing argument"));
+        return false;
+    }
+
+    if (virStrToLong_ll(pidstr, NULL, 10, &pid_value) < 0) {
+        vshError(ctl, _("malformed PID value: %s"), pidstr);
+        goto cleanup;
+    }
+
+    if ((signum = getSignalNumber(ctl, signame)) < 0) {
+        vshError(ctl, _("malformed signal name: %s"), signame);
+        goto cleanup;
+    }
+
+    if (virDomainSendProcessSignal(dom, pid_value, signum, 0) < 0)
+        goto cleanup;
+
+    ret = true;
+
+cleanup:
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "setmem" command
  */
 static const vshCmdInfo info_setmem[] = {
@@ -8398,6 +8501,7 @@ const vshCmdDef domManagementCmds[] = {
     {"edit", cmdEdit, opts_edit, info_edit, 0},
     {"inject-nmi", cmdInjectNMI, opts_inject_nmi, info_inject_nmi, 0},
     {"send-key", cmdSendKey, opts_send_key, info_send_key, 0},
+    {"send-process-signal", cmdSendProcessSignal, opts_send_process_signal, info_send_process_signal, 0},
     {"managedsave", cmdManagedSave, opts_managedsave, info_managedsave, 0},
     {"managedsave-remove", cmdManagedSaveRemove, opts_managedsaveremove,
      info_managedsaveremove, 0},
