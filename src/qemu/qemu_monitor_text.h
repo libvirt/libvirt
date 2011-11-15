@@ -250,4 +250,12 @@ int qemuMonitorTextOpenGraphics(qemuMonitorPtr mon,
                                 const char *fdname,
                                 bool skipauth);
 
+int qemuMonitorTextSetBlockIoThrottle(qemuMonitorPtr mon,
+                                      const char *device,
+                                      virDomainBlockIoTuneInfoPtr info);
+
+int qemuMonitorTextGetBlockIoThrottle(qemuMonitorPtr mon,
+                                      const char *device,
+                                      virDomainBlockIoTuneInfoPtr reply);
+
 #endif /* QEMU_MONITOR_TEXT_H */

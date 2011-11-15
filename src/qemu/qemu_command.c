@@ -1866,6 +1866,37 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
         }
     }
 
+    /* block I/O throttling */
+    if (disk->blkdeviotune.total_bytes_sec) {
+        virBufferAsprintf(&opt, ",bps=%llu",
+                          disk->blkdeviotune.total_bytes_sec);
+    }
+
+    if (disk->blkdeviotune.read_bytes_sec) {
+        virBufferAsprintf(&opt, ",bps_rd=%llu",
+                          disk->blkdeviotune.read_bytes_sec);
+    }
+
+    if (disk->blkdeviotune.write_bytes_sec) {
+        virBufferAsprintf(&opt, ",bps_wr=%llu",
+                          disk->blkdeviotune.write_bytes_sec);
+    }
+
+    if (disk->blkdeviotune.total_iops_sec) {
+        virBufferAsprintf(&opt, ",iops=%llu",
+                          disk->blkdeviotune.total_iops_sec);
+    }
+
+    if (disk->blkdeviotune.read_iops_sec) {
+        virBufferAsprintf(&opt, ",iops_rd=%llu",
+                          disk->blkdeviotune.read_iops_sec);
+    }
+
+    if (disk->blkdeviotune.write_iops_sec) {
+        virBufferAsprintf(&opt, ",iops_wr=%llu",
+                          disk->blkdeviotune.write_iops_sec);
+    }
+
     if (virBufferError(&opt)) {
         virReportOOMError();
         goto error;

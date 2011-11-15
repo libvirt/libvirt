@@ -257,4 +257,12 @@ int qemuMonitorJSONOpenGraphics(qemuMonitorPtr mon,
                                 const char *fdname,
                                 bool skipauth);
 
+int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
+                                      const char *device,
+                                      virDomainBlockIoTuneInfoPtr info);
+
+int qemuMonitorJSONGetBlockIoThrottle(qemuMonitorPtr mon,
+                                      const char *device,
+                                      virDomainBlockIoTuneInfoPtr reply);
+
 #endif /* QEMU_MONITOR_JSON_H */

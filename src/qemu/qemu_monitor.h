@@ -522,6 +522,14 @@ int qemuMonitorOpenGraphics(qemuMonitorPtr mon,
                             const char *fdname,
                             bool skipauth);
 
+int qemuMonitorSetBlockIoThrottle(qemuMonitorPtr mon,
+                                  const char *device,
+                                  virDomainBlockIoTuneInfoPtr info);
+
+int qemuMonitorGetBlockIoThrottle(qemuMonitorPtr mon,
+                                  const char *device,
+                                  virDomainBlockIoTuneInfoPtr reply);
+
 /**
  * When running two dd process and using <> redirection, we need a
  * shell that will not truncate files.  These two strings serve that
