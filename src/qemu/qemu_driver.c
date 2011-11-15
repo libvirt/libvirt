@@ -5979,7 +5979,10 @@ static int qemuDomainSetBlkioParameters(virDomainPtr dom,
                 ret = -1;
             }
         }
-    } else if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+    }
+    if (ret < 0)
+        goto cleanup;
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         /* Clang can't see that if we get here, persistentDef was set.  */
         sa_assert(persistentDef);
 
