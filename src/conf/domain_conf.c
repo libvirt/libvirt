@@ -12203,7 +12203,8 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
 
     qsort(&def->disks[0], def->ndisks, sizeof(def->disks[0]), disksorter);
 
-    /* Generate any default external file names.  */
+    /* Generate any default external file names, but only if the
+     * backing file is a regular file.  */
     for (i = 0; i < def->ndisks; i++) {
         virDomainSnapshotDiskDefPtr disk = &def->disks[i];
 
@@ -12211,14 +12212,24 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
             !disk->file) {
             const char *original = def->dom->disks[i]->src;
             const char *tmp;
+            struct stat sb;
 
             if (!original) {
                 virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                     _("cannot generate external backup name "
+                                     _("cannot generate external snapshot name "
                                        "for disk '%s' without source"),
                                      disk->name);
                 goto cleanup;
             }
+            if (stat(original, &sb) < 0 || !S_ISREG(sb.st_mode)) {
+                virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                     _("source for disk '%s' is not a regular "
+                                       "file; refusing to generate external "
+                                       "snapshot name"),
+                                     disk->name);
+                goto cleanup;
+            }
+
             tmp = strrchr(original, '.');
             if (!tmp || strchr(tmp, '/')) {
                 ignore_value(virAsprintf(&disk->file, "%s.%s",
