@@ -1201,7 +1201,17 @@ virNetDevSetIPv4Address;
 virNetDevSetMAC;
 virNetDevSetMTU;
 virNetDevSetMTUFromDevice;
+virNetDevSetName;
+virNetDevSetNamespace;
 virNetDevSetOnline;
+
+
+# virnetdevbandwidth.h
+virNetDevBandwidthClear;
+virNetDevBandwidthCopy;
+virNetDevBandwidthEqual;
+virNetDevBandwidthFree;
+virNetDevBandwidthSet;
 
 
 # virnetdevbridge.h
@@ -1219,6 +1229,15 @@ virNetDevBridgeSetSTPDelay;
 virNetDevTapCreate;
 virNetDevTapCreateInBridgePort;
 virNetDevTapDelete;
+
+
+# virnetdevveth.h
+virNetDevVethCreate;
+virNetDevVethDelete;
+
+
+# virnetdevvportprofile.h
+virNetDevVPortProfileEqual;
 
 
 # virnetmessage.h
