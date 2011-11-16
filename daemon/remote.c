@@ -710,7 +710,7 @@ remoteSerializeTypedParameters(virTypedParameterPtr params,
             goto cleanup;
         }
         val[j].value.type = params[i].type;
-        switch (params[j].type) {
+        switch (params[i].type) {
         case VIR_TYPED_PARAM_INT:
             val[j].value.remote_typed_param_value_u.i = params[i].value.i;
             break;
