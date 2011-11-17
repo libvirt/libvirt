@@ -9,6 +9,7 @@
 #include "hash.h"
 #include "hashdata.h"
 #include "testutils.h"
+#include "memory.h"
 
 
 #define testError(...)                                          \
@@ -491,6 +492,90 @@ cleanup:
 
 
 static int
+testHashGetItemsCompKey(const virHashKeyValuePairPtr a,
+                        const virHashKeyValuePairPtr b)
+{
+    return strcmp (a->key, b->key);
+}
+
+static int
+testHashGetItemsCompValue(const virHashKeyValuePairPtr a,
+                          const virHashKeyValuePairPtr b)
+{
+    return strcmp (a->value, b->value);
+}
+
+static int
+testHashGetItems(const void *data ATTRIBUTE_UNUSED)
+{
+    virHashTablePtr hash;
+    virHashKeyValuePairPtr array = NULL;
+    int ret = -1;
+    char keya[] = "a";
+    char keyb[] = "b";
+    char keyc[] = "c";
+    char value1[] = "1";
+    char value2[] = "2";
+    char value3[] = "3";
+
+    if (!(hash = virHashCreate(0, NULL)) ||
+        virHashAddEntry(hash, keya, value3) < 0 ||
+        virHashAddEntry(hash, keyc, value1) < 0 ||
+        virHashAddEntry(hash, keyb, value2) < 0) {
+        if (virTestGetVerbose()) {
+            testError("\nfailed to create hash");
+        }
+        goto cleanup;
+    }
+
+    if (!(array = virHashGetItems(hash, NULL)) ||
+        array[3].key || array[3].value) {
+        if (virTestGetVerbose()) {
+            testError("\nfailed to get items with NULL sort");
+        }
+        goto cleanup;
+    }
+    VIR_FREE(array);
+
+    if (!(array = virHashGetItems(hash, testHashGetItemsCompKey)) ||
+        STRNEQ(array[0].key, "a") ||
+        STRNEQ(array[0].value, "3") ||
+        STRNEQ(array[1].key, "b") ||
+        STRNEQ(array[1].value, "2") ||
+        STRNEQ(array[2].key, "c") ||
+        STRNEQ(array[2].value, "1") ||
+        array[3].key || array[3].value) {
+        if (virTestGetVerbose()) {
+            testError("\nfailed to get items with key sort");
+        }
+        goto cleanup;
+    }
+    VIR_FREE(array);
+
+    if (!(array = virHashGetItems(hash, testHashGetItemsCompValue)) ||
+        STRNEQ(array[0].key, "c") ||
+        STRNEQ(array[0].value, "1") ||
+        STRNEQ(array[1].key, "b") ||
+        STRNEQ(array[1].value, "2") ||
+        STRNEQ(array[2].key, "a") ||
+        STRNEQ(array[2].value, "3") ||
+        array[3].key || array[3].value) {
+        if (virTestGetVerbose()) {
+            testError("\nfailed to get items with value sort");
+        }
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(array);
+    virHashFree(hash);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -526,6 +611,7 @@ mymain(void)
     DO_TEST("Forbidden ops in ForEach", ForEach);
     DO_TEST("RemoveSet", RemoveSet);
     DO_TEST("Search", Search);
+    DO_TEST("GetItems", GetItems);
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
