@@ -5432,8 +5432,6 @@ qemuBuildCommandLine(virConnectPtr conn,
     virReportOOMError();
  error:
     /* free up any resources in the network driver */
-    for (i = 0 ; i < def->nnets ; i++)
-        networkReleaseActualDevice(def->nets[i]);
     for (i = 0; i <= last_good_net; i++)
         virDomainConfNWFilterTeardown(def->nets[i]);
     virCommandFree(cmd);
