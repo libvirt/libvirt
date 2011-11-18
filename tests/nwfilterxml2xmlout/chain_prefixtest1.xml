@@ -1,0 +1,21 @@
+<filter name='testcase' chain='arp-testme' priority='-650'>
+  <uuid>e5700920-a333-4c05-8016-b669e46b7599</uuid>
+  <rule action='accept' direction='out' priority='500'>
+    <arp srcmacaddr='01:02:03:04:05:06' srcmacmask='ff:ff:ff:ff:ff:ff' dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff' hwtype='12' protocoltype='34' opcode='Request' arpsrcmacaddr='01:02:03:04:05:06' arpdstmacaddr='0a:0b:0c:0d:0e:0f'/>
+  </rule>
+  <rule action='accept' direction='out' priority='500'>
+    <arp srcmacaddr='01:02:03:04:05:06' srcmacmask='ff:ff:ff:ff:ff:ff' hwtype='255' protocoltype='255' opcode='Request'/>
+  </rule>
+  <rule action='accept' direction='out' priority='500'>
+    <arp srcmacaddr='01:02:03:04:05:06' srcmacmask='ff:ff:ff:ff:ff:ff' hwtype='256' protocoltype='256' opcode='11'/>
+  </rule>
+  <rule action='accept' direction='out' priority='500'>
+    <arp srcmacaddr='01:02:03:04:05:06' srcmacmask='ff:ff:ff:ff:ff:ff' hwtype='65535' protocoltype='65535' opcode='65535'/>
+  </rule>
+  <rule action='accept' direction='out' priority='500'>
+    <arp srcmacaddr='01:02:03:04:05:06' srcmacmask='ff:ff:ff:ff:ff:ff'/>
+  </rule>
+  <rule action='accept' direction='in' priority='500'>
+    <arp gratuitous='true'/>
+  </rule>
+</filter>
