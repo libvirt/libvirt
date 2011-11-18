@@ -222,6 +222,210 @@ virNWFilterVarValueAddValue(virNWFilterVarValuePtr val, char *value)
     return rc;
 }
 
+void
+virNWFilterVarCombIterFree(virNWFilterVarCombIterPtr ci)
+{
+    unsigned int i;
+
+    if (!ci)
+        return;
+
+    for (i = 0; i < ci->nIter; i++)
+        VIR_FREE(ci->iter[i].varNames);
+
+    VIR_FREE(ci);
+}
+
+static int
+virNWFilterVarCombIterGetIndexByIterId(virNWFilterVarCombIterPtr ci,
+                                       unsigned int iterId)
+{
+    unsigned int i;
+
+    for (i = 0; i < ci->nIter; i++)
+        if (ci->iter[i].iterId == iterId)
+            return i;
+
+    return -1;
+}
+
+static void
+virNWFilterVarCombIterEntryInit(virNWFilterVarCombIterEntryPtr cie,
+                                unsigned int iterId)
+{
+    memset(cie, 0, sizeof(*cie));
+    cie->iterId = iterId;
+}
+
+static int
+virNWFilterVarCombIterAddVariable(virNWFilterVarCombIterEntryPtr cie,
+                                  virNWFilterHashTablePtr hash,
+                                  const char *varName)
+{
+    virNWFilterVarValuePtr varValue;
+    unsigned int cardinality;
+
+    varValue = virHashLookup(hash->hashTable, varName);
+    if (varValue == NULL) {
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Could not find value for variable '%s'"),
+                               varName);
+        return -1;
+    }
+
+    cardinality = virNWFilterVarValueGetCardinality(varValue);
+
+    if (cie->nVarNames == 0) {
+        cie->maxValue = cardinality - 1;
+    } else {
+        if (cie->maxValue != cardinality - 1) {
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("Cardinality of list items must be "
+                                     "the same for processing them in "
+                                     "parallel"));
+            return -1;
+        }
+    }
+
+    if (VIR_EXPAND_N(cie->varNames, cie->nVarNames, 1) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    cie->varNames[cie->nVarNames - 1] = varName;
+
+    return 0;
+}
+
+/*
+ * Create an iterator over the contents of the given variables. All variables
+ * must have entries in the hash table.
+ * The iterator that is created processes all given variables in parallel,
+ * meaning it will access $ITEM1[0] and $ITEM2[0] then $ITEM1[1] and $ITEM2[1]
+ * up to $ITEM1[n] and $ITEM2[n]. For this to work, the cardinality of all
+ * processed lists must be the same.
+ * The notation $ITEM1 and $ITEM2 (in one rule) therefore will always have to
+ * process the items in parallel. This will be an implicit notation for
+ * $ITEM1[@0] and $ITEM2[@0] to 'lock' the two together. Future notations of
+ * $ITEM1[@1] and $ITEM2[@2] will make them be processed independently,
+ * which then would cause all combinations of the items of the two lists to
+ * be created.
+ */
+virNWFilterVarCombIterPtr
+virNWFilterVarCombIterCreate(virNWFilterHashTablePtr hash,
+                             char * const *vars, unsigned int nVars)
+{
+    virNWFilterVarCombIterPtr res;
+    unsigned int i, iterId;
+    int iterIndex;
+
+    if (VIR_ALLOC_VAR(res, virNWFilterVarCombIterEntry, 1) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    res->hashTable = hash;
+
+    /* create the default iterator to support @0 */
+    iterId = 0;
+
+    res->nIter = 1;
+    virNWFilterVarCombIterEntryInit(&res->iter[0], iterId);
+
+    for (i = 0; i < nVars; i++) {
+
+        /* currently always access @0 */
+        iterId = 0;
+
+        iterIndex = virNWFilterVarCombIterGetIndexByIterId(res, iterId);
+        if (iterIndex < 0) {
+            /* future: create new iterator. for now it's a bug */
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("Could not find iterator with id %u"),
+                                   iterId);
+            goto err_exit;
+        }
+
+        if (virNWFilterVarCombIterAddVariable(&res->iter[iterIndex],
+                                              hash, vars[i]) < 0)
+            goto err_exit;
+    }
+
+    return res;
+
+err_exit:
+    virNWFilterVarCombIterFree(res);
+    return NULL;
+}
+
+virNWFilterVarCombIterPtr
+virNWFilterVarCombIterNext(virNWFilterVarCombIterPtr ci)
+{
+    unsigned int i;
+
+    for (i = 0; i < ci->nIter; i++) {
+        ci->iter[i].curValue++;
+        if (ci->iter[i].curValue <= ci->iter[i].maxValue)
+            break;
+        else
+            ci->iter[i].curValue = 0;
+    }
+
+    if (ci->nIter == i) {
+        virNWFilterVarCombIterFree(ci);
+        return NULL;
+    }
+
+    return ci;
+}
+
+const char *
+virNWFilterVarCombIterGetVarValue(virNWFilterVarCombIterPtr ci,
+                                  const char *varName)
+{
+    unsigned int i;
+    bool found = false;
+    const char *res = NULL;
+    virNWFilterVarValuePtr value;
+    unsigned int iterIndex;
+
+    /* currently always accessing iter @0 */
+    iterIndex = 0;
+
+    for (i = 0; i < ci->iter[iterIndex].nVarNames; i++) {
+        if (STREQ(ci->iter[iterIndex].varNames[i], varName)) {
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Could not find variable '%s' in iterator"),
+                               varName);
+        return NULL;
+    }
+
+    value = virHashLookup(ci->hashTable->hashTable, varName);
+    if (!value) {
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Could not find value for variable '%s'"),
+                               varName);
+        return NULL;
+    }
+
+    res = virNWFilterVarValueGetNthValue(value, ci->iter[iterIndex].curValue);
+    if (!res) {
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Could not get nth (%u) value of "
+                               "variable '%s'"),
+                               ci->iter[iterIndex].curValue, varName);
+        return NULL;
+    }
+
+    return res;
+}
+
 static void
 hashDataFree(void *payload, const void *name ATTRIBUTE_UNUSED)
 {

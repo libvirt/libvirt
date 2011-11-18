@@ -88,4 +88,31 @@ int virNWFilterHashTablePutAll(virNWFilterHashTablePtr src,
 # define VALID_VARVALUE \
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.:"
 
+typedef struct _virNWFilterVarCombIterEntry virNWFilterVarCombIterEntry;
+typedef virNWFilterVarCombIterEntry *virNWFilterVarCombIterEntryPtr;
+struct _virNWFilterVarCombIterEntry {
+    unsigned int iterId;
+    const char **varNames;
+    size_t nVarNames;
+    unsigned int maxValue;
+    unsigned int curValue;
+};
+
+typedef struct _virNWFilterVarCombIter virNWFilterVarCombIter;
+typedef virNWFilterVarCombIter *virNWFilterVarCombIterPtr;
+struct _virNWFilterVarCombIter {
+    virNWFilterHashTablePtr hashTable;
+    size_t nIter;
+    virNWFilterVarCombIterEntry iter[0];
+};
+virNWFilterVarCombIterPtr virNWFilterVarCombIterCreate(
+                             virNWFilterHashTablePtr hash,
+                             char * const *vars, unsigned int nVars);
+
+void virNWFilterVarCombIterFree(virNWFilterVarCombIterPtr ci);
+virNWFilterVarCombIterPtr virNWFilterVarCombIterNext(
+                                virNWFilterVarCombIterPtr ci);
+const char *virNWFilterVarCombIterGetVarValue(virNWFilterVarCombIterPtr ci,
+                                              const char *varname);
+
 #endif /* NWFILTER_PARAMS_H */

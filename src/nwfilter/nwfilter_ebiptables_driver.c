@@ -208,7 +208,7 @@ static const struct ushort_map l3_protocols[] = {
 
 
 static int
-printVar(virNWFilterHashTablePtr vars,
+printVar(virNWFilterVarCombIterPtr vars,
          char *buf, int bufsize,
          nwItemDescPtr item,
          int *done)
@@ -216,22 +216,11 @@ printVar(virNWFilterHashTablePtr vars,
     *done = 0;
 
     if ((item->flags & NWFILTER_ENTRY_ITEM_FLAG_HAS_VAR)) {
-        virNWFilterVarValuePtr varval;
         const char *val;
 
-        varval = virHashLookup(vars->hashTable, item->var);
-        if (!varval) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("cannot find value for '%s'"),
-                                   item->var);
-            return 1;
-        }
-
-        val = virNWFilterVarValueGetSimple(varval);
+        val = virNWFilterVarCombIterGetVarValue(vars, item->var);
         if (!val) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("cannot get simple value of '%s'"),
-                                   item->var);
+            /* error has been reported */
             return 1;
         }
 
@@ -250,7 +239,7 @@ printVar(virNWFilterHashTablePtr vars,
 
 
 static int
-_printDataType(virNWFilterHashTablePtr vars,
+_printDataType(virNWFilterVarCombIterPtr vars,
                char *buf, int bufsize,
                nwItemDescPtr item,
                bool asHex)
@@ -345,7 +334,7 @@ _printDataType(virNWFilterHashTablePtr vars,
 
 
 static int
-printDataType(virNWFilterHashTablePtr vars,
+printDataType(virNWFilterVarCombIterPtr vars,
               char *buf, int bufsize,
               nwItemDescPtr item)
 {
@@ -354,7 +343,7 @@ printDataType(virNWFilterHashTablePtr vars,
 
 
 static int
-printDataTypeAsHex(virNWFilterHashTablePtr vars,
+printDataTypeAsHex(virNWFilterVarCombIterPtr vars,
                    char *buf, int bufsize,
                    nwItemDescPtr item)
 {
@@ -422,7 +411,7 @@ ebiptablesAddRuleInst(virNWFilterRuleInstPtr res,
 
 static int
 ebtablesHandleEthHdr(virBufferPtr buf,
-                     virNWFilterHashTablePtr vars,
+                     virNWFilterVarCombIterPtr vars,
                      ethHdrDataDefPtr ethHdr,
                      bool reverse)
 {
@@ -900,7 +889,7 @@ iptablesInstCommand(virBufferPtr buf,
 
 static int
 iptablesHandleSrcMacAddr(virBufferPtr buf,
-                         virNWFilterHashTablePtr vars,
+                         virNWFilterVarCombIterPtr vars,
                          nwItemDescPtr srcMacAddr,
                          int directionIn,
                          bool *srcmacskipped)
@@ -937,7 +926,7 @@ err_exit:
 static int
 iptablesHandleIpHdr(virBufferPtr buf,
                     virBufferPtr afterStateMatch,
-                    virNWFilterHashTablePtr vars,
+                    virNWFilterVarCombIterPtr vars,
                     ipHdrDataDefPtr ipHdr,
                     int directionIn,
                     bool *skipRule, bool *skipMatch,
@@ -1111,7 +1100,7 @@ err_exit:
 
 static int
 iptablesHandlePortData(virBufferPtr buf,
-                       virNWFilterHashTablePtr vars,
+                       virNWFilterVarCombIterPtr vars,
                        portDataDefPtr portData,
                        int directionIn)
 {
@@ -1217,7 +1206,7 @@ _iptablesCreateRuleInstance(int directionIn,
                             virNWFilterDefPtr nwfilter,
                             virNWFilterRuleDefPtr rule,
                             const char *ifname,
-                            virNWFilterHashTablePtr vars,
+                            virNWFilterVarCombIterPtr vars,
                             virNWFilterRuleInstPtr res,
                             const char *match, bool defMatch,
                             const char *accept_target,
@@ -1703,7 +1692,7 @@ static int
 iptablesCreateRuleInstanceStateCtrl(virNWFilterDefPtr nwfilter,
                                     virNWFilterRuleDefPtr rule,
                                     const char *ifname,
-                                    virNWFilterHashTablePtr vars,
+                                    virNWFilterVarCombIterPtr vars,
                                     virNWFilterRuleInstPtr res,
                                     bool isIPv6)
 {
@@ -1828,7 +1817,7 @@ static int
 iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
                            virNWFilterRuleDefPtr rule,
                            const char *ifname,
-                           virNWFilterHashTablePtr vars,
+                           virNWFilterVarCombIterPtr vars,
                            virNWFilterRuleInstPtr res,
                            bool isIPv6)
 {
@@ -1953,7 +1942,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
                            virNWFilterDefPtr nwfilter,
                            virNWFilterRuleDefPtr rule,
                            const char *ifname,
-                           virNWFilterHashTablePtr vars,
+                           virNWFilterVarCombIterPtr vars,
                            virNWFilterRuleInstPtr res,
                            bool reverse)
 {
@@ -2445,7 +2434,7 @@ ebiptablesCreateRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
                              virNWFilterDefPtr nwfilter,
                              virNWFilterRuleDefPtr rule,
                              const char *ifname,
-                             virNWFilterHashTablePtr vars,
+                             virNWFilterVarCombIterPtr vars,
                              virNWFilterRuleInstPtr res)
 {
     int rc = 0;
@@ -2529,6 +2518,44 @@ ebiptablesCreateRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
     return rc;
 }
 
+static int
+ebiptablesCreateRuleInstanceIterate(
+                             virConnectPtr conn ATTRIBUTE_UNUSED,
+                             enum virDomainNetType nettype ATTRIBUTE_UNUSED,
+                             virNWFilterDefPtr nwfilter,
+                             virNWFilterRuleDefPtr rule,
+                             const char *ifname,
+                             virNWFilterHashTablePtr vars,
+                             virNWFilterRuleInstPtr res)
+{
+    int rc = 0;
+    virNWFilterVarCombIterPtr vciter;
+
+    /* rule->vars holds all the variables names that this rule will access.
+     * iterate over all combinations of the variables' values and instantiate
+     * the filtering rule with each combination.
+     */
+    vciter = virNWFilterVarCombIterCreate(vars, rule->vars, rule->nvars);
+    if (!vciter)
+        return 1;
+
+    do {
+        rc = ebiptablesCreateRuleInstance(conn,
+                                          nettype,
+                                          nwfilter,
+                                          rule,
+                                          ifname,
+                                          vciter,
+                                          res);
+        if (rc)
+            break;
+        vciter = virNWFilterVarCombIterNext(vciter);
+    } while (vciter != NULL);
+
+    virNWFilterVarCombIterFree(vciter);
+
+    return rc;
+}
 
 static int
 ebiptablesFreeRuleInstance(void *_inst)
@@ -3796,7 +3823,7 @@ virNWFilterTechDriver ebiptables_driver = {
     .init     = ebiptablesDriverInit,
     .shutdown = ebiptablesDriverShutdown,
 
-    .createRuleInstance  = ebiptablesCreateRuleInstance,
+    .createRuleInstance  = ebiptablesCreateRuleInstanceIterate,
     .applyNewRules       = ebiptablesApplyNewRules,
     .tearNewRules        = ebiptablesTearNewRules,
     .tearOldRules        = ebiptablesTearOldRules,
