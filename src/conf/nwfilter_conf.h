@@ -446,6 +446,9 @@ enum virNWFilterChainSuffixType {
     VIR_NWFILTER_CHAINSUFFIX_LAST,
 };
 
+# define VALID_CHAINNAME \
+  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.:-"
+
 typedef int32_t virNWFilterChainPriority;
 
 typedef struct _virNWFilterDef virNWFilterDef;

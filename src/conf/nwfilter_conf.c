@@ -2007,6 +2007,84 @@ err_exit:
     goto cleanup;
 }
 
+static bool
+virNWFilterIsValidChainName(const char *chainname)
+{
+    if (strlen(chainname) > MAX_CHAIN_SUFFIX_SIZE) {
+        virNWFilterReportError(VIR_ERR_INVALID_ARG,
+                               _("Name of chain is longer than "
+                                 "%u characters"),
+                               MAX_CHAIN_SUFFIX_SIZE);
+        return false;
+    }
+
+    if (chainname[strspn(chainname, VALID_CHAINNAME)] != 0) {
+        virNWFilterReportError(VIR_ERR_INVALID_ARG,
+                               _("Chain name contains invalid characters"));
+        return false;
+    }
+
+    return true;
+}
+
+/*
+ * Test whether the name of the chain is supported.
+ * It current has to have a prefix of either one of the strings found in
+ * virNWFilterChainSuffixTypeToString().
+ */
+static const char *
+virNWFilterIsAllowedChain(const char *chainname)
+{
+    enum virNWFilterChainSuffixType i;
+    const char *name, *msg;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    bool printed = false;
+
+    if (!virNWFilterIsValidChainName(chainname))
+        return NULL;
+
+    for (i = 0; i < VIR_NWFILTER_CHAINSUFFIX_LAST; i++) {
+        name = virNWFilterChainSuffixTypeToString(i);
+        if (i == VIR_NWFILTER_CHAINSUFFIX_ROOT) {
+            /* allow 'root' as a complete name but not as a prefix */
+            if (STREQ(chainname, name))
+                return name;
+            if (STRPREFIX(chainname, name))
+                return NULL;
+        }
+        if (STRPREFIX(chainname, name))
+            return name;
+    }
+
+    virBufferAsprintf(&buf,
+                      _("Invalid chain name '%s'. Please use a chain name "
+                      "called '%s' or any of the following prefixes: "),
+                      chainname,
+                      virNWFilterChainSuffixTypeToString(
+                          VIR_NWFILTER_CHAINSUFFIX_ROOT));
+    for (i = 0; i < VIR_NWFILTER_CHAINSUFFIX_LAST; i++) {
+        if (i == VIR_NWFILTER_CHAINSUFFIX_ROOT)
+            continue;
+        if (printed)
+            virBufferAddLit(&buf, ", ");
+        virBufferAdd(&buf, virNWFilterChainSuffixTypeToString(i), -1);
+        printed = true;
+    }
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        virBufferFreeAndReset(&buf);
+        goto err_exit;
+    }
+
+    msg = virBufferContentAndReset(&buf);
+
+    virNWFilterReportError(VIR_ERR_INVALID_ARG, "%s", msg);
+    VIR_FREE(msg);
+
+err_exit:
+    return NULL;
+}
 
 static virNWFilterDefPtr
 virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
@@ -2017,6 +2095,7 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
     char *chain_pri_s = NULL;
     virNWFilterEntryPtr entry;
     int chain_priority;
+    const char *name_prefix;
 
     if (VIR_ALLOC(ret) < 0) {
         virReportOOMError();
@@ -2052,19 +2131,19 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
 
     chain = virXPathString("string(./@chain)", ctxt);
     if (chain) {
-        if (virNWFilterChainSuffixTypeFromString(chain) < 0) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("unknown chain suffix '%s'"), chain);
+        name_prefix = virNWFilterIsAllowedChain(chain);
+        if (name_prefix == NULL)
             goto cleanup;
-        }
         ret->chainsuffix = chain;
 
         if (chain_pri_s) {
             ret->chainPriority = chain_priority;
         } else {
             /* assign default priority if none can be found via lookup */
-            if (!intMapGetByString(chain_priorities, chain, 0,
+            if (!name_prefix ||
+                !intMapGetByString(chain_priorities, name_prefix, 0,
                                    &ret->chainPriority)) {
+                /* assign default chain priority */
                 ret->chainPriority = (NWFILTER_MAX_FILTER_PRIORITY +
                                       NWFILTER_MIN_FILTER_PRIORITY) / 2;
             }

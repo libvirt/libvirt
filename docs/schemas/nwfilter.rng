@@ -286,10 +286,18 @@
       <attribute name="chain">
         <choice>
           <value>root</value>
-          <value>arp</value>
-          <value>rarp</value>
-          <value>ipv4</value>
-          <value>ipv6</value>
+          <data type="string">
+            <param name="pattern">arp[a-zA-Z0-9_\.:-]{0,9}</param>
+          </data>
+          <data type="string">
+            <param name="pattern">rarp[a-zA-Z0-9_\.:-]{0,8}</param>
+          </data>
+          <data type="string">
+            <param name="pattern">ipv4[a-zA-Z0-9_\.:-]{0,8}</param>
+          </data>
+          <data type="string">
+            <param name="pattern">ipv6[a-zA-Z0-9_\.:-]{0,8}</param>
+          </data>
         </choice>
       </attribute>
     </optional>
