@@ -140,6 +140,11 @@ enum l3_proto_idx {
 
 #define USHORTMAP_ENTRY_IDX(IDX, ATT, VAL) [IDX] = { .attr = ATT, .val = VAL }
 
+/* A lookup table for translating ethernet protocol IDs to human readable
+ * strings. None of the human readable strings must be found as a prefix
+ * in another entry here (example 'ab' would be found in 'abc') to allow
+ * for prefix matching.
+ */
 static const struct ushort_map l3_protocols[] = {
     USHORTMAP_ENTRY_IDX(L3_PROTO_IPV4_IDX, ETHERTYPE_IP    , "ipv4"),
     USHORTMAP_ENTRY_IDX(L3_PROTO_IPV6_IDX, ETHERTYPE_IPV6  , "ipv6"),
@@ -2662,6 +2667,7 @@ ebtablesCreateTmpSubChain(virBufferPtr buf,
                           int incoming,
                           const char *ifname,
                           enum l3_proto_idx protoidx,
+                          const char *filtername,
                           int stopOnError)
 {
     char rootchain[MAX_CHAINNAME_LENGTH], chain[MAX_CHAINNAME_LENGTH];
@@ -2669,7 +2675,8 @@ ebtablesCreateTmpSubChain(virBufferPtr buf,
                                   : CHAINPREFIX_HOST_OUT_TEMP;
 
     PRINT_ROOT_CHAIN(rootchain, chainPrefix, ifname);
-    PRINT_CHAIN(chain, chainPrefix, ifname, l3_protocols[protoidx].val);
+    PRINT_CHAIN(chain, chainPrefix, ifname,
+                (filtername) ? filtername : l3_protocols[protoidx].val);
 
     virBufferAsprintf(buf,
                       CMD_DEF("%s -t %s -N %s") CMD_SEPARATOR
@@ -3176,6 +3183,14 @@ ebiptablesRuleOrderSort(const void *a, const void *b)
     return ((*insta)->priority - (*instb)->priority);
 }
 
+static int
+ebiptablesFilterOrderSort(const virHashKeyValuePairPtr a,
+                          const virHashKeyValuePairPtr b)
+{
+    /* elements' values has been limited to range [-1000, 1000] */
+    return *(virNWFilterChainPriority *)a->value -
+           *(virNWFilterChainPriority *)b->value;
+}
 
 static void
 iptablesCheckBridgeNFCallEnabled(bool isIPv6)
@@ -3215,6 +3230,54 @@ iptablesCheckBridgeNFCallEnabled(bool isIPv6)
     }
 }
 
+/*
+ * Given a filtername determine the protocol it is used for evaluating
+ * We do prefix-matching to determine the protocol.
+ */
+static enum l3_proto_idx
+ebtablesGetProtoIdxByFiltername(const char *filtername)
+{
+    enum l3_proto_idx idx;
+
+    for (idx = 0; idx < L3_PROTO_LAST_IDX; idx++) {
+        if (STRPREFIX(filtername, l3_protocols[idx].val)) {
+            return idx;
+        }
+    }
+
+    return -1;
+}
+
+static int
+ebtablesCreateTmpRootAndSubChains(virBufferPtr buf,
+                                  const char *ifname,
+                                  virHashTablePtr chains, int direction)
+{
+    int rc = 0, i;
+    virHashKeyValuePairPtr filter_names;
+
+    if (ebtablesCreateTmpRootChain(buf, direction, ifname, 1) < 0)
+        return -1;
+
+    filter_names = virHashGetItems(chains,
+                                   ebiptablesFilterOrderSort);
+    if (filter_names == NULL)
+        return -1;
+
+    for (i = 0; filter_names[i].key; i++) {
+        enum l3_proto_idx idx = ebtablesGetProtoIdxByFiltername(
+                                  filter_names[i].key);
+        if ((int)idx < 0)
+            continue;
+        rc = ebtablesCreateTmpSubChain(buf, direction, ifname, idx,
+                                       filter_names[i].key, 1);
+        if (rc < 0)
+            break;
+    }
+
+    VIR_FREE(filter_names);
+    return rc;
+}
 
 static int
 ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
@@ -3225,24 +3288,43 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
     int i;
     int cli_status;
     ebiptablesRuleInstPtr *inst = (ebiptablesRuleInstPtr *)_inst;
-    int chains_in = 0, chains_out = 0;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virHashTablePtr chains_in_set  = virHashCreate(10, NULL);
+    virHashTablePtr chains_out_set = virHashCreate(10, NULL);
     bool haveIptables = false;
     bool haveIp6tables = false;
+
+    if (!chains_in_set || !chains_out_set) {
+        virReportOOMError();
+        goto exit_free_sets;
+    }
 
     if (nruleInstances > 1 && inst)
         qsort(inst, nruleInstances, sizeof(inst[0]), ebiptablesRuleOrderSort);
 
+    /* scan the rules to see which chains need to be created */
     for (i = 0; i < nruleInstances; i++) {
         sa_assert (inst);
         if (inst[i]->ruleType == RT_EBTABLES) {
-            if (inst[i]->chainprefix == CHAINPREFIX_HOST_IN_TEMP)
-                chains_in  |= (1 << inst[i]->neededProtocolChain);
-            else
-                chains_out |= (1 << inst[i]->neededProtocolChain);
+            const char *name = virNWFilterChainSuffixTypeToString(
+                                      inst[i]->neededProtocolChain);
+            if (inst[i]->chainprefix == CHAINPREFIX_HOST_IN_TEMP) {
+                if (virHashUpdateEntry(chains_in_set, name,
+                                       &inst[i]->chainPriority)) {
+                    virReportOOMError();
+                    goto exit_free_sets;
+                }
+            } else {
+                if (virHashUpdateEntry(chains_out_set, name,
+                                       &inst[i]->chainPriority)) {
+                    virReportOOMError();
+                    goto exit_free_sets;
+                }
+            }
         }
     }
 
+    /* cleanup whatever may exist */
     if (ebtables_cmd_path) {
         ebtablesUnlinkTmpRootChain(&buf, 1, ifname);
         ebtablesUnlinkTmpRootChain(&buf, 0, ifname);
@@ -3252,30 +3334,11 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
         ebiptablesExecCLI(&buf, &cli_status);
     }
 
-    if (chains_in != 0)
-        ebtablesCreateTmpRootChain(&buf, 1, ifname, 1);
-    if (chains_out != 0)
-        ebtablesCreateTmpRootChain(&buf, 0, ifname, 1);
-
-    if (chains_in  & (1 << VIR_NWFILTER_CHAINSUFFIX_IPv4))
-        ebtablesCreateTmpSubChain(&buf, 1, ifname, L3_PROTO_IPV4_IDX, 1);
-    if (chains_out & (1 << VIR_NWFILTER_CHAINSUFFIX_IPv4))
-        ebtablesCreateTmpSubChain(&buf, 0, ifname, L3_PROTO_IPV4_IDX, 1);
-
-    if (chains_in  & (1 << VIR_NWFILTER_CHAINSUFFIX_IPv6))
-        ebtablesCreateTmpSubChain(&buf, 1, ifname, L3_PROTO_IPV6_IDX, 1);
-    if (chains_out & (1 << VIR_NWFILTER_CHAINSUFFIX_IPv6))
-        ebtablesCreateTmpSubChain(&buf, 0, ifname, L3_PROTO_IPV6_IDX, 1);
-
-    /* keep arp,rarp as last */
-    if (chains_in  & (1 << VIR_NWFILTER_CHAINSUFFIX_ARP))
-        ebtablesCreateTmpSubChain(&buf, 1, ifname, L3_PROTO_ARP_IDX, 1);
-    if (chains_out & (1 << VIR_NWFILTER_CHAINSUFFIX_ARP))
-        ebtablesCreateTmpSubChain(&buf, 0, ifname, L3_PROTO_ARP_IDX, 1);
-    if (chains_in  & (1 << VIR_NWFILTER_CHAINSUFFIX_RARP))
-        ebtablesCreateTmpSubChain(&buf, 1, ifname, L3_PROTO_RARP_IDX, 1);
-    if (chains_out & (1 << VIR_NWFILTER_CHAINSUFFIX_RARP))
-        ebtablesCreateTmpSubChain(&buf, 0, ifname, L3_PROTO_RARP_IDX, 1);
+    /* create needed chains */
+    if (ebtablesCreateTmpRootAndSubChains(&buf, ifname, chains_in_set , 1) ||
+        ebtablesCreateTmpRootAndSubChains(&buf, ifname, chains_out_set, 0)) {
+        goto tear_down_tmpebchains;
+    }
 
     if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
         goto tear_down_tmpebchains;
@@ -3365,13 +3428,16 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
         iptablesCheckBridgeNFCallEnabled(true);
     }
 
-    if (chains_in != 0)
+    if (virHashSize(chains_in_set) != 0)
         ebtablesLinkTmpRootChain(&buf, 1, ifname, 1);
-    if (chains_out != 0)
+    if (virHashSize(chains_out_set) != 0)
         ebtablesLinkTmpRootChain(&buf, 0, ifname, 1);
 
     if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
         goto tear_down_ebsubchains_and_unlink;
+
+    virHashFree(chains_in_set);
+    virHashFree(chains_out_set);
 
     return 0;
 
@@ -3406,6 +3472,10 @@ tear_down_tmpebchains:
                            _("Some rules could not be created for "
                              "interface %s."),
                            ifname);
+
+exit_free_sets:
+    virHashFree(chains_in_set);
+    virHashFree(chains_out_set);
 
     return 1;
 }
