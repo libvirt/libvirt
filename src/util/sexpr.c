@@ -519,7 +519,7 @@ int sexpr_node_copy(const struct sexpr *sexpr, const char *node, char **dst)
 {
     const char *val = sexpr_node(sexpr, node);
 
-    if (val) {
+    if (val && *val) {
         *dst = strdup(val);
         if (!(*dst))
             return -1;
