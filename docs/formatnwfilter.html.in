@@ -109,40 +109,49 @@
       <br/><br/>
     </p>
 
-    <h3><a name="nwfconceptsvars">Usage of variables in filters</a></h3>
+    <h3><a name="nwfconceptschains">Filtering chains</a></h3>
     <p>
-
-      Two variables names have so far been reserved for usage by the
-      network traffic filtering subsystem: <code>MAC</code> and
-      <code>IP</code>.
-      <br/><br/>
-      <code>MAC</code> is the MAC address of the
-      network interface. A filtering rule that references this variable
-      will automatically be instantiated with the MAC address of the
-      interface. This works without the user having to explicitly provide
-      the MAC parameter. Even though it is possible to specify the MAC
-      parameter similar to the IP parameter above, it is discouraged
-      since libvirt knows what MAC address an interface will be using.
-      <br/><br/>
-      The parameter <code>IP</code> represents the IP address
-      that the operating system inside the virtual machine is expected
-      to use on the given interface. The <code>IP</code> parameter
-      is special in so far as the libvirt daemon will try to determine
-      the IP address (and thus the IP parameter's value) that is being
-      used on an interface if the parameter
-      is not explicitly provided but referenced.
-      For current limitations on IP address detection, consult the
-      <a href="#nwflimits">section on limitations</a> on how to use this
-      feature and what to expect when using it.
-      <br/><br/>
-      The following is the XML description of the network filer
-      <code>no-arp-spoofing</code>. It serves as an example for
-      a network filter XML referencing the <code>MAC</code> and
-      <code>IP</code> parameters. This particular filter is referenced by the
-      <code>clean-traffic</code> filter.
+      Filtering rules are organized in filter chains. These chains can be
+      thought of as having a tree structure with packet
+      filtering rules as entries in individual chains (branches). <br>
+      Packets start their filter evaluation in the <code>root</code> chain
+      and can then continue their evaluation in other chains, return from
+      those chains back into the <code>root</code> chain or be
+      dropped or accepted by a filtering rule in one of the traversed chains.
+      <br/>
+      Libvirt's network filtering system automatically creates individual
+      <code>root</code> chains for every virtual machine's network interface
+      on which the user chooses to activate traffic filtering.
+      The user may write filtering rules that are either directly instantiated
+      in the <code>root</code> chain or may create protocol-specific
+      filtering chains for efficient evaluation of protocol-specific rules.
+      The following chains exist:
+    </p>
+    <ul>
+     <li>root</li>
+     <li>mac <span class="since">(since 0.9.8)</span></li>
+     <li>stp (spanning tree protocol)
+         <span class="since">(since 0.9.8)</span></li>
+     <li>vlan (802.1Q) <span class="since">(since 0.9.8)</span></li>
+     <li>arp, rarp</li>
+     <li>ipv4</li>
+     <li>ipv6</li>
+    </ul>
+    <p>
+      <span class="since">Since 0.9.8</span> multiple chains evaluating the
+      <code>mac</code>, <code>stp</code>, <code>vlan</code>,
+      <code>arp</code>, <code>rarp</code>, <code>ipv4</code>, or
+      <code>ipv6</code> protocol can be created using
+      the protocol name only as a prefix in the chain's name. This for
+      examples allows chains with names <code>arp-xyz</code> or
+      <code>arp-test</code> to be specified and have ARP protocol packets
+      evaluated in those chains.
+    <br/><br/>
+      The following filter shows an example of filtering ARP traffic
+      in the <code>arp</code> chain.
     </p>
 <pre>
-&lt;filter name='no-arp-spoofing' chain='arp'&gt;
+&lt;filter name='no-arp-spoofing' chain='arp' priority='-500'&gt;
   &lt;uuid&gt;f88f1932-debf-4aa1-9fbe-f10d3aa4bc95&lt;/uuid&gt;
   &lt;rule action='drop' direction='out' priority='300'&gt;
     &lt;mac match='no' srcmacaddr='$MAC'/&gt;
@@ -169,8 +178,93 @@
   &lt;rule action='drop' direction='inout' priority='1000'/&gt;
 &lt;/filter&gt;
 </pre>
-
     <p>
+      The consequence of putting ARP-specific rules in the <code>arp</code>
+      chain, rather than for example in the <code>root</code> chain, is that
+      packets for any other protocol than ARP do not need to be evaluated by
+      ARP protocol-specific rules. This improves the efficiency
+      of the traffic filtering. However, one must then pay attention to only
+      put filtering rules for the given protocol into the chain since
+      any other rules will not be evaluated, i.e., an IPv4 rule will not
+      be evaluated in the ARP chain since no IPv4 protocol packets will
+      traverse the ARP chain.
+      <br/><br/>
+    </p>
+    <h3><a name="nwfconceptschainpriorities">Filtering chain priorities</a></h3>
+    <p>
+      All chains are connected to the <code>root</code> chain. The order in
+      which those chains are accessed is influenced by the priority of the
+      chain. The following table shows the chains that can be assigned a
+      priority and their default priorities.
+    </p>
+      <table class="top_table">
+       <tr>
+         <th> Chain (prefix) </th>
+         <th> Default priority </th>
+       </tr>
+       <tr>
+         <td>stp</td><td>-810</td>
+       </tr>
+       <tr>
+         <td>mac</td><td>-800</td>
+       </tr>
+       <tr>
+         <td>vlan</td><td>-750</td>
+       </tr>
+       <tr>
+         <td>ipv4</td><td>-700</td>
+       </tr>
+       <tr>
+         <td>ipv6</td><td>-600</td>
+       </tr>
+       <tr>
+         <td>arp</td><td>-500</td>
+       </tr>
+       <tr>
+         <td>rarp</td><td>-400</td>
+       </tr>
+      </table>
+    <p>
+      A chain with a lower priority value is accessed before one with a
+      higher value.
+      <br><br>
+      <span class="since">Since 0.9.8</span> the above listed chains
+      can be assigned custom priorities by writing a value in the
+      range [-1000, 1000] into the priority (XML) attribute in the filter
+      node. The above example filter shows the default priority of -500
+      for <code>arp</code> chains.
+    </p>
+    <h3><a name="nwfconceptsvars">Usage of variables in filters</a></h3>
+    <p>
+
+      Two variables names have so far been reserved for usage by the
+      network traffic filtering subsystem: <code>MAC</code> and
+      <code>IP</code>.
+      <br/><br/>
+      <code>MAC</code> is the MAC address of the
+      network interface. A filtering rule that references this variable
+      will automatically be instantiated with the MAC address of the
+      interface. This works without the user having to explicitly provide
+      the MAC parameter. Even though it is possible to specify the MAC
+      parameter similar to the IP parameter above, it is discouraged
+      since libvirt knows what MAC address an interface will be using.
+      <br/><br/>
+      The parameter <code>IP</code> represents the IP address
+      that the operating system inside the virtual machine is expected
+      to use on the given interface. The <code>IP</code> parameter
+      is special in so far as the libvirt daemon will try to determine
+      the IP address (and thus the IP parameter's value) that is being
+      used on an interface if the parameter
+      is not explicitly provided but referenced.
+      For current limitations on IP address detection, consult the
+      <a href="#nwflimits">section on limitations</a> on how to use this
+      feature and what to expect when using it.
+      <br/><br/>
+      The above-shown network filer <code>no-arp-spoofing</code>
+      is an example of
+      a network filter XML referencing the <code>MAC</code> and
+      <code>IP</code> variables.
+      <br/><br/>
       Note that referenced variables are always prefixed with the
       $ (dollar) sign. The format of the value of a variable
       must be of the type expected by the filter attribute in the
@@ -182,7 +276,38 @@
       interface from attaching when hotplugging is used. The types
       that are expected for each XML attribute are shown
       below.
+      <br/><br/>
+      <span class="since">Since 0.9.8</span> variables can contain lists of
+      elements, e.g., the variable <code>IP</code> can contain multiple IP
+      addresses that are valid on a particular interface. The notation for
+      providing multiple elements for the IP variable is:
     </p>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='bridge'&gt;
+      &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
+      &lt;filterref filter='clean-traffic'&gt;
+        &lt;parameter name='IP' value='10.0.0.1'/&gt;
+        &lt;parameter name='IP' value='10.0.0.2'/&gt;
+        &lt;parameter name='IP' value='10.0.0.3'/&gt;
+      &lt;/filterref&gt;
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...</pre>
+    <p>
+      This then allows filters to enable multiple IP addresses
+      per interface. Therefore, with the list
+      of IP address shown above, the following rule will create 3
+      individual filtering rules, one for each IP address.
+    </p>
+<pre>
+  ...
+  &lt;rule action='accept' direction='in' priority='500'&gt;
+    &lt;tcp srpipaddr='$IP'/&gt;
+  &lt;/rule&gt;
+  ...
+</pre>
 
     <h2><a name="nwfelems">Element and attribute overview</a></h2>
 
@@ -280,10 +405,21 @@
      <li>
         priority -- optional; the priority of the rule controls the order in
         which the rule will be instantiated relative to other rules.
-        Rules with lower value will be instantiated and therefore evaluated
-        before rules with higher value.
-        Valid values are in the range of 0 to 1000. If this attribute is not
-        provided, the value 500 will automatically be assigned.
+        Rules with lower value will be instantiated before rules with higher
+        values.
+        Valid values are in the range of 0 to 1000.
+        <span class="since">Since 0.9.8</span> this has been extended to cover
+        the range of -1000 to 1000. If this attribute is not
+        provided, priority 500 will automatically be assigned.
+        <br>
+        Note that filtering rules in the <code>root</code> chain are sorted
+        with filters connected to the <code>root</code> chain following
+        their priorities. This allows to interleave filtering rules with
+        access to filter chains.
+        (See also section on
+         <a href="#nwfconceptschainpriorities">
+           filtering chain priorities
+         </a>.)
      </li>
      <li>
         statematch -- optional; possible values are '0' or 'false' to
@@ -501,6 +637,7 @@
     <h5><a name="nwfelemsRulesProtoIP">IPv4</a></h5>
     <p>
       Protocol ID: <code>ip</code>
+      <br/>
       Note: Rules of this type should either go into the
       <code>root</code> or <code>ipv4</code> chain.
     </p>
@@ -591,6 +728,7 @@
     <h5><a name="nwfelemsRulesProtoIPv6">IPv6</a></h5>
     <p>
       Protocol ID: <code>ipv6</code>
+      <br/>
       Note: Rules of this type should either go into the
       <code>root</code> or <code>ipv6</code> chain.
     </p>
@@ -1431,8 +1569,10 @@
     </p>
     <ul>
      <li>mac</li>
+     <li>stp (spanning tree protocol)</li>
+     <li>vlan (802.1Q)</li>
      <li>arp, rarp</li>
-     <li>ip</li>
+     <li>ipv4</li>
      <li>ipv6</li>
     </ul>
 
@@ -1444,19 +1584,26 @@
     filter subsystem first passes through the filtering support implemented
     by ebtables and only then through iptables or ip6tables filters. If
     a filter tree has rules with the protocols <code>mac</code>,
-    <code>arp</code>, <code>rarp</code>, <code>ip</code>, or <code>ipv6</code>
-    ebtables rules will automatically be instantiated.
+    <code>stp</code>, <code>vlan</code>
+    <code>arp</code>, <code>rarp</code>, <code>ipv4</code>,
+    or <code>ipv6</code> ebtables rules will automatically be instantiated.
     <br/>
     The role of the <code>chain</code> attribute in the network filter
     XML is that internally a new user-defined ebtables table is created
     that then for example receives all <code>arp</code> traffic coming
-    from or going to a virtual machine, if the chain <code>arp</code>
+    from or going to a virtual machine if the chain <code>arp</code>
     has been specified. Further, a rule is generated in an interface's
     <code>root</code> chain that directs all ipv4 traffic into the
     user-defined chain. Therefore, all ARP traffic rules should then be
     placed into filters specifying this chain. This type of branching
     into user-defined tables is only supported with filtering on the ebtables
     layer.
+    <br/>
+    <span class="since">Since 0.9.8</span> multiple chains for the same
+    protocol can be created. For this the name of the chain must have
+    a prefix of one of the previously enumerated protocols. To create an
+    additional chain for handling of ARP traffic, a chain with name
+    <code>arp-test</code> can be specified.
     <br/>
     As an example, it is
     possible to filter on UDP traffic by source and destination ports using
@@ -1803,6 +1950,13 @@
       0.8.1 or later in order not to lose the network traffic filters
       associated with an interface.
      </p>
-
+    <h3><a name="nwflimitsvlan">VLAN filtering on Linux</a></h3>
+     <p>
+      VLAN (802.1Q) packets, if sent by a virtual machine, cannot be filtered
+      with rules for protocol IDs <code>arp</code>, <code>rarp</code>,
+      <code>ipv4</code> and <code>ipv6</code> but only
+      with protocol IDs <code>mac</code> and <code>vlan</code>. Therefore,
+      the example filter <code>clean-traffic</code> will not work as expected.
+     </p>
   </body>
 </html>
