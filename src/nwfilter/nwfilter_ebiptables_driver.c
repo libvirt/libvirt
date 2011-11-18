@@ -216,10 +216,21 @@ printVar(virNWFilterHashTablePtr vars,
     *done = 0;
 
     if ((item->flags & NWFILTER_ENTRY_ITEM_FLAG_HAS_VAR)) {
-        char *val = (char *)virHashLookup(vars->hashTable, item->var);
-        if (!val) {
+        virNWFilterVarValuePtr varval;
+        const char *val;
+
+        varval = virHashLookup(vars->hashTable, item->var);
+        if (!varval) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("cannot find value for '%s'"),
+                                   item->var);
+            return 1;
+        }
+
+        val = virNWFilterVarValueGetSimple(varval);
+        if (!val) {
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("cannot get simple value of '%s'"),
                                    item->var);
             return 1;
         }

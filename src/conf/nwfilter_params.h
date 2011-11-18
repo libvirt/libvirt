@@ -26,6 +26,36 @@
 # include "hash.h"
 # include "buf.h"
 
+enum virNWFilterVarValueType {
+    NWFILTER_VALUE_TYPE_SIMPLE,
+    NWFILTER_VALUE_TYPE_ARRAY,
+
+    NWFILTER_VALUE_TYPE_LAST
+};
+
+typedef struct _virNWFilterVarValue virNWFilterVarValue;
+typedef virNWFilterVarValue *virNWFilterVarValuePtr;
+struct _virNWFilterVarValue {
+    enum virNWFilterVarValueType valType;
+    union {
+        struct {
+            char *value;
+        } simple;
+        struct {
+            char **values;
+            size_t nValues;
+        } array;
+    } u;
+};
+
+virNWFilterVarValuePtr virNWFilterVarValueCreateSimple(char *);
+virNWFilterVarValuePtr virNWFilterVarValueCreateSimpleCopyValue(const char *);
+const char *virNWFilterVarValueGetSimple(const virNWFilterVarValuePtr val);
+const char *virNWFilterVarValueGetNthValue(virNWFilterVarValuePtr val,
+                                           unsigned int idx);
+unsigned int virNWFilterVarValueGetCardinality(const virNWFilterVarValuePtr);
+int virNWFilterVarValueAddValue(virNWFilterVarValuePtr val, char *value);
+
 typedef struct _virNWFilterHashTable virNWFilterHashTable;
 typedef virNWFilterHashTable *virNWFilterHashTablePtr;
 struct _virNWFilterHashTable {
@@ -45,7 +75,7 @@ virNWFilterHashTablePtr virNWFilterHashTableCreate(int n);
 void virNWFilterHashTableFree(virNWFilterHashTablePtr table);
 int virNWFilterHashTablePut(virNWFilterHashTablePtr table,
                             const char *name,
-                            char *val,
+                            virNWFilterVarValuePtr val,
                             int freeName);
 int virNWFilterHashTableRemoveEntry(virNWFilterHashTablePtr table,
                                     const char *name);

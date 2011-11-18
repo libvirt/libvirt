@@ -34,10 +34,198 @@
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
+static bool isValidVarValue(const char *value);
+
+
+static void
+virNWFilterVarValueFree(virNWFilterVarValuePtr val)
+{
+    unsigned i;
+
+    if (!val)
+        return;
+
+    switch (val->valType) {
+    case NWFILTER_VALUE_TYPE_SIMPLE:
+        VIR_FREE(val->u.simple.value);
+        break;
+    case NWFILTER_VALUE_TYPE_ARRAY:
+        for (i = 0; i < val->u.array.nValues; i++)
+            VIR_FREE(val->u.array.values[i]);
+        VIR_FREE(val->u.array.values);
+        break;
+    case NWFILTER_VALUE_TYPE_LAST:
+        break;
+    }
+    VIR_FREE(val);
+}
+
+static virNWFilterVarValuePtr
+virNWFilterVarValueCopy(const virNWFilterVarValuePtr val)
+{
+    virNWFilterVarValuePtr res;
+    unsigned i;
+    char *str;
+
+    if (VIR_ALLOC(res) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+    res->valType = val->valType;
+
+    switch (res->valType) {
+    case NWFILTER_VALUE_TYPE_SIMPLE:
+        if (val->u.simple.value) {
+            res->u.simple.value = strdup(val->u.simple.value);
+            if (!res->u.simple.value)
+                goto err_exit;
+        }
+        break;
+    case NWFILTER_VALUE_TYPE_ARRAY:
+        if (VIR_ALLOC_N(res->u.array.values, val->u.array.nValues))
+            goto err_exit;
+        res->u.array.nValues = val->u.array.nValues;
+        for (i = 0; i < val->u.array.nValues; i++) {
+            str = strdup(val->u.array.values[i]);
+            if (!str)
+                goto err_exit;
+            res->u.array.values[i] = str;
+        }
+        break;
+    case NWFILTER_VALUE_TYPE_LAST:
+        break;
+    }
+
+    return res;
+
+err_exit:
+    virReportOOMError();
+    virNWFilterVarValueFree(res);
+    return NULL;
+}
+
+virNWFilterVarValuePtr
+virNWFilterVarValueCreateSimple(char *value)
+{
+    virNWFilterVarValuePtr val;
+
+    if (!isValidVarValue(value)) {
+        virNWFilterReportError(VIR_ERR_INVALID_ARG,
+                               _("Variable value contains invalid character"));
+        return NULL;
+    }
+
+    if (VIR_ALLOC(val) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    val->valType = NWFILTER_VALUE_TYPE_SIMPLE;
+    val->u.simple.value = value;
+
+    return val;
+}
+
+virNWFilterVarValuePtr
+virNWFilterVarValueCreateSimpleCopyValue(const char *value)
+{
+    char *val = strdup(value);
+
+    if (!val) {
+        virReportOOMError();
+        return NULL;
+    }
+    return virNWFilterVarValueCreateSimple(val);
+}
+
+const char *
+virNWFilterVarValueGetSimple(const virNWFilterVarValuePtr val)
+{
+    if (val->valType == NWFILTER_VALUE_TYPE_SIMPLE)
+        return val->u.simple.value;
+    return NULL;
+}
+
+const char *
+virNWFilterVarValueGetNthValue(virNWFilterVarValuePtr val, unsigned int idx)
+{
+    const char *res = NULL;
+
+    switch (val->valType) {
+    case NWFILTER_VALUE_TYPE_SIMPLE:
+        if (idx == 0)
+            res = val->u.simple.value;
+        break;
+    case NWFILTER_VALUE_TYPE_ARRAY:
+        if (idx < val->u.array.nValues)
+            res = val->u.array.values[idx];
+        break;
+    case NWFILTER_VALUE_TYPE_LAST:
+        break;
+    }
+
+    return res;
+}
+
+unsigned int
+virNWFilterVarValueGetCardinality(const virNWFilterVarValuePtr val)
+{
+    switch (val->valType) {
+    case NWFILTER_VALUE_TYPE_SIMPLE:
+        return 1;
+        break;
+    case NWFILTER_VALUE_TYPE_ARRAY:
+        return val->u.array.nValues;
+        break;
+    case NWFILTER_VALUE_TYPE_LAST:
+        return 0;
+    }
+    return 0;
+}
+
+int
+virNWFilterVarValueAddValue(virNWFilterVarValuePtr val, char *value)
+{
+    char *tmp;
+    int rc = -1;
+
+    switch (val->valType) {
+    case NWFILTER_VALUE_TYPE_SIMPLE:
+        /* switch to array */
+        tmp = val->u.simple.value;
+        if (VIR_ALLOC_N(val->u.array.values, 2) < 0) {
+            val->u.simple.value = tmp;
+            virReportOOMError();
+            return -1;
+        }
+        val->valType = NWFILTER_VALUE_TYPE_ARRAY;
+        val->u.array.nValues = 2;
+        val->u.array.values[0] = tmp;
+        val->u.array.values[1] = value;
+        rc  = 0;
+        break;
+
+    case NWFILTER_VALUE_TYPE_ARRAY:
+        if (VIR_EXPAND_N(val->u.array.values,
+                         val->u.array.nValues, 1) < 0) {
+            virReportOOMError();
+            return -1;
+        }
+        val->u.array.values[val->u.array.nValues - 1] = value;
+        rc = 0;
+        break;
+
+    case NWFILTER_VALUE_TYPE_LAST:
+        break;
+    }
+
+    return rc;
+}
+
 static void
 hashDataFree(void *payload, const void *name ATTRIBUTE_UNUSED)
 {
-    VIR_FREE(payload);
+    virNWFilterVarValueFree(payload);
 }
 
 
@@ -56,7 +244,7 @@ hashDataFree(void *payload, const void *name ATTRIBUTE_UNUSED)
 int
 virNWFilterHashTablePut(virNWFilterHashTablePtr table,
                         const char *name,
-                        char *val,
+                        virNWFilterVarValuePtr val,
                         int copyName)
 {
     if (!virHashLookup(table->hashTable, name)) {
@@ -160,12 +348,12 @@ static void
 addToTable(void *payload, const void *name, void *data)
 {
     struct addToTableStruct *atts = (struct addToTableStruct *)data;
-    char *val;
+    virNWFilterVarValuePtr val;
 
     if (atts->errOccurred)
         return;
 
-    val = strdup((char *)payload);
+    val = virNWFilterVarValueCopy((virNWFilterVarValuePtr)payload);
     if (!val) {
         virReportOOMError();
         atts->errOccurred = 1;
@@ -177,7 +365,7 @@ addToTable(void *payload, const void *name, void *data)
                                _("Could not put variable '%s' into hashmap"),
                                (const char *)name);
         atts->errOccurred = 1;
-        VIR_FREE(val);
+        virNWFilterVarValueFree(val);
     }
 }
 
@@ -215,11 +403,17 @@ isValidVarValue(const char *value)
     return value[strspn(value, VALID_VARVALUE)] == 0;
 }
 
+static virNWFilterVarValuePtr
+virNWFilterParseVarValue(const char *val)
+{
+    return virNWFilterVarValueCreateSimpleCopyValue(val);
+}
 
 virNWFilterHashTablePtr
 virNWFilterParseParamAttributes(xmlNodePtr cur)
 {
     char *nam, *val;
+    virNWFilterVarValuePtr value;
 
     virNWFilterHashTablePtr table = virNWFilterHashTableCreate(0);
     if (!table) {
@@ -234,20 +428,24 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
             if (xmlStrEqual(cur->name, BAD_CAST "parameter")) {
                 nam = virXMLPropString(cur, "name");
                 val = virXMLPropString(cur, "value");
+                value = NULL;
                 if (nam != NULL && val != NULL) {
                     if (!isValidVarName(nam))
                         goto skip_entry;
-                    if (!isValidVarValue(nam))
+                    value = virNWFilterParseVarValue(val);
+                    if (!value)
                         goto skip_entry;
-                    if (virNWFilterHashTablePut(table, nam, val, 1)) {
+                    if (virNWFilterHashTablePut(table, nam, value, 1)) {
                         VIR_FREE(nam);
                         VIR_FREE(val);
+                        virNWFilterVarValueFree(value);
                         virNWFilterHashTableFree(table);
                         return NULL;
                     }
-                    val = NULL;
+                    value = NULL;
                 }
 skip_entry:
+                virNWFilterVarValueFree(value);
                 VIR_FREE(nam);
                 VIR_FREE(val);
             }

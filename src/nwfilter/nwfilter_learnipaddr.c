@@ -315,10 +315,14 @@ virNWFilterDeregisterLearnReq(int ifindex) {
 static int
 virNWFilterAddIpAddrForIfname(const char *ifname, char *addr) {
     int ret;
+    virNWFilterVarValuePtr val = virNWFilterVarValueCreateSimple(addr);
+
+    if (!val)
+        return 1;
 
     virMutexLock(&ipAddressMapLock);
 
-    ret = virNWFilterHashTablePut(ipAddressMap, ifname, addr, 1);
+    ret = virNWFilterHashTablePut(ipAddressMap, ifname, val, 1);
 
     virMutexUnlock(&ipAddressMapLock);
 
@@ -341,7 +345,7 @@ virNWFilterDelIpAddrForIfname(const char *ifname) {
 
 const char *
 virNWFilterGetIpAddrForIfname(const char *ifname) {
-    const char *res;
+    virNWFilterVarValuePtr res;
 
     virMutexLock(&ipAddressMapLock);
 
@@ -349,7 +353,10 @@ virNWFilterGetIpAddrForIfname(const char *ifname) {
 
     virMutexUnlock(&ipAddressMapLock);
 
-    return res;
+    if (res)
+        return virNWFilterVarValueGetSimple(res);
+
+    return NULL;
 }
 
 

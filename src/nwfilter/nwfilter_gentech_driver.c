@@ -147,10 +147,16 @@ virNWFilterVarHashmapAddStdValues(virNWFilterHashTablePtr table,
                                   char *macaddr,
                                   char *ipaddr)
 {
+    virNWFilterVarValue *val;
+
     if (macaddr) {
+        val = virNWFilterVarValueCreateSimple(macaddr);
+        if (!val)
+            return 1;
+
         if (virHashAddEntry(table->hashTable,
                             NWFILTER_STD_VAR_MAC,
-                            macaddr) < 0) {
+                            val) < 0) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                    "%s", _("Could not add variable 'MAC' to hashmap"));
             return 1;
@@ -158,9 +164,13 @@ virNWFilterVarHashmapAddStdValues(virNWFilterHashTablePtr table,
     }
 
     if (ipaddr) {
+        val = virNWFilterVarValueCreateSimple(ipaddr);
+        if (!val)
+            return 1;
+
         if (virHashAddEntry(table->hashTable,
                             NWFILTER_STD_VAR_IP,
-                            ipaddr) < 0) {
+                            val) < 0) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                    "%s", _("Could not add variable 'IP' to hashmap"));
             return 1;
@@ -491,6 +501,7 @@ virNWFilterDetermineMissingVarsRec(virConnectPtr conn,
     int rc = 0;
     int i, j;
     virNWFilterDefPtr next_filter;
+    virNWFilterVarValuePtr val;
 
     for (i = 0; i < filter->nentries; i++) {
         virNWFilterRuleDefPtr    rule = filter->filterEntries[i]->rule;
@@ -499,10 +510,17 @@ virNWFilterDetermineMissingVarsRec(virConnectPtr conn,
             /* check all variables of this rule */
             for (j = 0; j < rule->nvars; j++) {
                 if (!virHashLookup(vars->hashTable, rule->vars[j])) {
+                    val = virNWFilterVarValueCreateSimpleCopyValue("1");
+                    if (!val) {
+                        rc = 1;
+                        break;
+                    }
                     virNWFilterHashTablePut(missing_vars, rule->vars[j],
-                                            strdup("1"), 1);
+                                            val, 1);
                 }
             }
+            if (rc)
+                break;
         } else if (inc) {
             VIR_DEBUG("Following filter %s\n", inc->filterref);
             obj = virNWFilterObjFindByName(&driver->nwfilters, inc->filterref);

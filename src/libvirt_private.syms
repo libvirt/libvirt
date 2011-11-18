@@ -840,6 +840,9 @@ virNWFilterHashTableFree;
 virNWFilterHashTablePut;
 virNWFilterHashTablePutAll;
 virNWFilterHashTableRemoveEntry;
+virNWFilterVarValueCreateSimple;
+virNWFilterVarValueCreateSimpleCopyValue;
+virNWFilterVarValueGetSimple;
 
 
 # pci.h
