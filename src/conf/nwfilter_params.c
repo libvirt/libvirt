@@ -604,7 +604,7 @@ isValidVarName(const char *var)
 static bool
 isValidVarValue(const char *value)
 {
-    return value[strspn(value, VALID_VARVALUE)] == 0;
+    return (value[strspn(value, VALID_VARVALUE)] == 0) && (strlen(value) != 0);
 }
 
 static virNWFilterVarValuePtr
@@ -636,15 +636,22 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
                 if (nam != NULL && val != NULL) {
                     if (!isValidVarName(nam))
                         goto skip_entry;
-                    value = virNWFilterParseVarValue(val);
-                    if (!value)
+                    if (!isValidVarValue(val))
                         goto skip_entry;
-                    if (virNWFilterHashTablePut(table, nam, value, 1)) {
-                        VIR_FREE(nam);
-                        VIR_FREE(val);
-                        virNWFilterVarValueFree(value);
-                        virNWFilterHashTableFree(table);
-                        return NULL;
+                    value = virHashLookup(table->hashTable, nam);
+                    if (value) {
+                        /* add value to existing value -> list */
+                        if (virNWFilterVarValueAddValue(value, val) < 0) {
+                            value = NULL;
+                            goto err_exit;
+                        }
+                        val = NULL;
+                    } else {
+                        value = virNWFilterParseVarValue(val);
+                        if (!value)
+                            goto skip_entry;
+                        if (virNWFilterHashTablePut(table, nam, value, 1))
+                            goto err_exit;
                     }
                     value = NULL;
                 }
@@ -657,39 +664,66 @@ skip_entry:
         cur = cur->next;
     }
     return table;
+
+err_exit:
+    VIR_FREE(nam);
+    VIR_FREE(val);
+    virNWFilterVarValueFree(value);
+    virNWFilterHashTableFree(table);
+    return NULL;
 }
 
 
-static void
-_formatParameterAttrs(void *payload, const void *name, void *data)
+static int
+virNWFilterFormatParameterNameSorter(const virHashKeyValuePairPtr a,
+                                     const virHashKeyValuePairPtr b)
 {
-    virBufferPtr buf = data;
-
-    virBufferAsprintf(buf, "  <parameter name='%s' value='%s'/>\n",
-                      (const char *)name,
-                      (char *)payload);
+    return strcmp((const char *)a->key, (const char *)b->key);
 }
-
 
 int
 virNWFilterFormatParamAttributes(virBufferPtr buf,
                                  virNWFilterHashTablePtr table,
                                  const char *filterref)
 {
-    int count = virHashSize(table->hashTable);
+    virHashKeyValuePairPtr items;
+    int i, j, card, numKeys;
 
-    if (count < 0) {
+    numKeys = virHashSize(table->hashTable);
+
+    if (numKeys < 0) {
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("missing filter parameter table"));
         return -1;
     }
+
+    items = virHashGetItems(table->hashTable,
+                            virNWFilterFormatParameterNameSorter);
+    if (!items)
+        return -1;
+
     virBufferAsprintf(buf, "<filterref filter='%s'", filterref);
-    if (count) {
+    if (numKeys) {
         virBufferAddLit(buf, ">\n");
-        virHashForEach(table->hashTable, _formatParameterAttrs, buf);
+        for (i = 0; i < numKeys; i++) {
+            const virNWFilterVarValuePtr value =
+                (const virNWFilterVarValuePtr)items[i].value;
+
+            card = virNWFilterVarValueGetCardinality(value);
+
+            for (j = 0; j < card; j++)
+                virBufferAsprintf(buf,
+                                  "  <parameter name='%s' value='%s'/>\n",
+                                  (const char *)items[i].key,
+                                  virNWFilterVarValueGetNthValue(value, j));
+
+        }
         virBufferAddLit(buf, "</filterref>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
     }
+
+    VIR_FREE(items);
+
     return 0;
 }
