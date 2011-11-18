@@ -1140,8 +1140,7 @@ xenParseSxpr(const struct sexpr *root,
             goto error;
         }
 
-        if (virDomainCpuSetParse(&cpus,
-                                 0, def->cpumask,
+        if (virDomainCpuSetParse(cpus, 0, def->cpumask,
                                  def->cpumasklen) < 0) {
             XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
                          _("invalid CPU mask %s"), cpus);

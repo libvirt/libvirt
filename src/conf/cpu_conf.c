@@ -311,42 +311,32 @@ virCPUDefParseXML(const xmlNodePtr node,
         def->ncells = n;
 
         for (i = 0 ; i < n ; i++) {
-            char *cpus, *cpus_parse, *memory;
+            char *cpus, *memory;
             int cpumasklen = VIR_DOMAIN_CPUMASK_LEN;
             int ret, ncpus = 0;
 
             def->cells[i].cellid = i;
-            cpus = cpus_parse = virXMLPropString(nodes[i], "cpus");
+            cpus = virXMLPropString(nodes[i], "cpus");
             if (!cpus) {
                 virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("Missing 'cpus' attribute in NUMA cell"));
                 goto error;
             }
+            def->cells[i].cpustr = cpus;
 
-            def->cells[i].cpustr = strdup(cpus);
-            if (!def->cells[i].cpustr) {
-                VIR_FREE(cpus);
+            if (VIR_ALLOC_N(def->cells[i].cpumask, cpumasklen) < 0)
                 goto no_memory;
-            }
 
-            if (VIR_ALLOC_N(def->cells[i].cpumask, cpumasklen) < 0) {
-                VIR_FREE(cpus);
-                goto no_memory;
-            }
-
-            ncpus = virDomainCpuSetParse((const char **)&cpus_parse,
-                                 0, def->cells[i].cpumask, cpumasklen);
-            if (ncpus <= 0) {
-                VIR_FREE(cpus);
+            ncpus = virDomainCpuSetParse(cpus, 0, def->cells[i].cpumask,
+                                         cpumasklen);
+            if (ncpus <= 0)
                 goto error;
-            }
             def->cells_cpus += ncpus;
 
             memory = virXMLPropString(nodes[i], "memory");
             if (!memory) {
                 virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("Missing 'memory' attribute in NUMA cell"));
-                VIR_FREE(cpus);
                 goto error;
             }
 
@@ -354,11 +344,9 @@ virCPUDefParseXML(const xmlNodePtr node,
             if (ret == -1) {
                 virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("Invalid 'memory' attribute in NUMA cell"));
-                VIR_FREE(cpus);
                 VIR_FREE(memory);
                 goto error;
             }
-            VIR_FREE(cpus);
             VIR_FREE(memory);
         }
     }

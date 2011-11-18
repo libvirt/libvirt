@@ -6636,8 +6636,7 @@ virDomainVcpuPinDefParseXML(const xmlNodePtr node,
             virReportOOMError();
             goto error;
         }
-        if (virDomainCpuSetParse((const char **)&set,
-                                 0, def->cpumask,
+        if (virDomainCpuSetParse(set, 0, def->cpumask,
                                  cpumasklen) < 0)
            goto error;
         VIR_FREE(tmp);
@@ -6850,8 +6849,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         if (VIR_ALLOC_N(def->cpumask, def->cpumasklen) < 0) {
             goto no_memory;
         }
-        if (virDomainCpuSetParse((const char **)&set,
-                                 0, def->cpumask,
+        if (virDomainCpuSetParse(set, 0, def->cpumask,
                                  def->cpumasklen) < 0)
             goto error;
         VIR_FREE(tmp);
@@ -6921,8 +6919,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             }
 
             /* "nodeset" leads same syntax with "cpuset". */
-            if (virDomainCpuSetParse((const char **)&set,
-                                     0, def->numatune.memory.nodemask,
+            if (virDomainCpuSetParse(set, 0, def->numatune.memory.nodemask,
                                      nodemasklen) < 0)
                goto error;
             VIR_FREE(tmp);
@@ -9155,7 +9152,7 @@ virDomainCpuSetFormat(char *cpuset, int maxcpu)
 /**
  * virDomainCpuSetParse:
  * @conn: connection
- * @str: pointer to a CPU set string pointer
+ * @str: a CPU set string pointer
  * @sep: potential character used to mark the end of string if not 0
  * @cpuset: pointer to a char array for the CPU set
  * @maxcpu: number of elements available in @cpuset
@@ -9166,10 +9163,9 @@ virDomainCpuSetFormat(char *cpuset, int maxcpu)
  *
  * Returns the number of CPU found in that set, or -1 in case of error.
  *         @cpuset is modified accordingly to the value parsed.
- *         @str is updated to the end of the part parsed
  */
 int
-virDomainCpuSetParse(const char **str, char sep,
+virDomainCpuSetParse(const char *str, char sep,
                      char *cpuset, int maxcpu)
 {
     const char *cur;
@@ -9181,7 +9177,7 @@ virDomainCpuSetParse(const char **str, char sep,
         (maxcpu > 100000))
         return (-1);
 
-    cur = *str;
+    cur = str;
     virSkipSpaces(&cur);
     if (*cur == 0)
         goto parse_error;
@@ -9246,7 +9242,6 @@ virDomainCpuSetParse(const char **str, char sep,
         } else
             goto parse_error;
     }
-    *str = cur;
     return (ret);
 
   parse_error:

@@ -338,7 +338,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
         if (VIR_ALLOC_N(def->cpumask, def->cpumasklen) < 0)
             goto no_memory;
 
-        if (virDomainCpuSetParse(&str, 0,
+        if (virDomainCpuSetParse(str, 0,
                                  def->cpumask, def->cpumasklen) < 0)
             goto cleanup;
     }

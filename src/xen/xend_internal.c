@@ -1153,7 +1153,7 @@ sexpr_to_xend_topology(const struct sexpr *root,
             for (cpu = 0; cpu < numCpus; cpu++)
                 cpuset[cpu] = 0;
         } else {
-            nb_cpus = virDomainCpuSetParse(&cur, 'n', cpuset, numCpus);
+            nb_cpus = virDomainCpuSetParse(cur, 'n', cpuset, numCpus);
             if (nb_cpus < 0)
                 goto error;
         }

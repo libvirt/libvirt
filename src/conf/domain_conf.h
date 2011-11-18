@@ -1747,7 +1747,7 @@ int virDomainDefFormatInternal(virDomainDefPtr def,
                                unsigned int flags,
                                virBufferPtr buf);
 
-int virDomainCpuSetParse(const char **str,
+int virDomainCpuSetParse(const char *str,
                          char sep,
                          char *cpuset,
                          int maxcpu);

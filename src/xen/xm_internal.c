@@ -893,8 +893,7 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
         virReportOOMError();
         goto cleanup;
     }
-    if (virDomainCpuSetParse((const char **)&mapstr, 0,
-                             cpuset, maxcpu) < 0)
+    if (virDomainCpuSetParse(mapstr, 0, cpuset, maxcpu) < 0)
         goto cleanup;
 
     VIR_FREE(entry->def->cpumask);
