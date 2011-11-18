@@ -121,7 +121,14 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
         }
     }
 
-    if (groups[1] && !STREQ(groups[1], "")) {
+    /* Skips the backingStore of lv created with "--virtualsize",
+     * its original device "/dev/$vgname/$lvname_vorigin" is
+     * just for lvm internal use, one should never use it.
+     *
+     * (lvs outputs "[$lvname_vorigin] for field "origin" if the
+     *  lv is created with "--virtualsize").
+     */
+    if (groups[1] && !STREQ(groups[1], "") && (groups[1][0] != '[')) {
         if (virAsprintf(&vol->backingStore.path, "%s/%s",
                         pool->def->target.path, groups[1]) < 0) {
             virReportOOMError();
