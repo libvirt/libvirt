@@ -574,20 +574,6 @@ virHookInitialize;
 virHookPresent;
 
 
-# interface.h
-virNetDevValidateConfig;
-virNetDevGetIndex;
-virNetDevGetIPv4Address;
-virNetDevGetPhysicalFunction;
-virNetDevGetVirtualFunctionIndex;
-virNetDevGetVLanID;
-virNetDevIsVirtualFunction;
-virNetDevMacVLanCreate;
-virNetDevMacVLanDelete;
-virNetDevReplaceMacAddress;
-virNetDevRestoreMacAddress;
-
-
 # interface_conf.h
 virInterfaceAssignDef;
 virInterfaceDefFormat;
@@ -736,11 +722,6 @@ virLogStartup;
 virLogUnlock;
 
 
-# macvtap.h
-virNetDevVPortProfileOpTypeFromString;
-virNetDevVPortProfileOpTypeToString;
-
-
 # memory.h
 virAlloc;
 virAllocN;
@@ -756,30 +737,12 @@ virShrinkN;
 nlComm;
 
 
-# network.h
-virNetDevBandwidthClear;
-virNetDevBandwidthCopy;
-virNetDevBandwidthEqual;
+# netdev_bandwidth_conf.h
 virNetDevBandwidthFormat;
-virNetDevBandwidthFree;
 virNetDevBandwidthParse;
-virNetDevBandwidthSet;
-virSocketAddrBroadcast;
-virSocketAddrBroadcastByPrefix;
-virSocketAddrCheckNetmask;
-virSocketAddrFormat;
-virSocketAddrFormatFull;
-virSocketAddrGetPort;
-virSocketAddrGetRange;
-virSocketAddrIsNetmask;
-virSocketAddrMask;
-virSocketAddrMaskByPrefix;
-virSocketAddrParse;
-virSocketAddrParseIPv4;
-virSocketAddrParseIPv6;
-virSocketAddrPrefixToNetmask;
-virSocketAddrSetPort;
-virNetDevVPortProfileEqual;
+
+
+# netdev_vportprofile_conf.h
 virNetDevVPortProfileFormat;
 virNetDevVPortProfileParse;
 
@@ -1189,12 +1152,21 @@ virFileRewrite;
 # virnetclient.h
 virNetClientHasPassFD;
 
+
 # virnetdev.h
 virNetDevClearIPv4Address;
 virNetDevExists;
+virNetDevGetIndex;
+virNetDevGetIPv4Address;
 virNetDevGetMAC;
 virNetDevGetMTU;
+virNetDevGetPhysicalFunction;
+virNetDevGetVirtualFunctionIndex;
+virNetDevGetVLanID;
 virNetDevIsOnline;
+virNetDevIsVirtualFunction;
+virNetDevReplaceMacAddress;
+virNetDevRestoreMacAddress;
 virNetDevSetIPv4Address;
 virNetDevSetMAC;
 virNetDevSetMTU;
@@ -1202,6 +1174,7 @@ virNetDevSetMTUFromDevice;
 virNetDevSetName;
 virNetDevSetNamespace;
 virNetDevSetOnline;
+virNetDevValidateConfig;
 
 
 # virnetdevbandwidth.h
@@ -1223,6 +1196,13 @@ virNetDevBridgeSetSTP;
 virNetDevBridgeSetSTPDelay;
 
 
+# virnetdevmacvlan.h
+virNetDevMacVLanCreate;
+virNetDevMacVLanDelete;
+virNetDevMacVLanCreateWithVPortProfile;
+virNetDevMacVLanDeleteWithVPortProfile;
+
+
 # virnetdevtap.h
 virNetDevTapCreate;
 virNetDevTapCreateInBridgePort;
@@ -1235,7 +1215,11 @@ virNetDevVethDelete;
 
 
 # virnetdevvportprofile.h
+virNetDevVPortProfileAssociate;
+virNetDevVPortProfileDisassociate;
 virNetDevVPortProfileEqual;
+virNetDevVPortProfileOpTypeFromString;
+virNetDevVPortProfileOpTypeToString;
 
 
 # virnetmessage.h
@@ -1340,6 +1324,24 @@ virPidFileWrite;
 virPidFileWritePath;
 virPidFileDelete;
 virPidFileDeletePath;
+
+
+# virsocketaddr.h
+virSocketAddrBroadcast;
+virSocketAddrBroadcastByPrefix;
+virSocketAddrCheckNetmask;
+virSocketAddrFormat;
+virSocketAddrFormatFull;
+virSocketAddrGetPort;
+virSocketAddrGetRange;
+virSocketAddrIsNetmask;
+virSocketAddrMask;
+virSocketAddrMaskByPrefix;
+virSocketAddrParse;
+virSocketAddrParseIPv4;
+virSocketAddrParseIPv6;
+virSocketAddrPrefixToNetmask;
+virSocketAddrSetPort;
 
 
 # virterror_internal.h
