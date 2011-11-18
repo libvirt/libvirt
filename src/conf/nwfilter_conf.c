@@ -124,6 +124,14 @@ struct int_map {
 #define INTMAP_ENTRY(ATT, VAL) { .attr = ATT, .val = VAL }
 #define INTMAP_ENTRY_LAST      { .val = NULL }
 
+static const struct int_map chain_priorities[] = {
+    INTMAP_ENTRY(NWFILTER_ROOT_FILTER_PRI, "root"),
+    INTMAP_ENTRY(NWFILTER_IPV4_FILTER_PRI, "ipv4"),
+    INTMAP_ENTRY(NWFILTER_IPV6_FILTER_PRI, "ipv6"),
+    INTMAP_ENTRY(NWFILTER_ARP_FILTER_PRI , "arp" ),
+    INTMAP_ENTRY(NWFILTER_RARP_FILTER_PRI, "rarp"),
+    INTMAP_ENTRY_LAST,
+};
 
 /*
  * only one filter update allowed
@@ -2027,6 +2035,12 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("unknown chain suffix '%s'"), chain);
             goto cleanup;
+        }
+        /* assign an implicit priority -- support XML attribute later */
+        if (!intMapGetByString(chain_priorities, chain, 0,
+                               &ret->chainPriority)) {
+            ret->chainPriority = (NWFILTER_MAX_FILTER_PRIORITY +
+                                  NWFILTER_MIN_FILTER_PRIORITY) / 2;
         }
     }
 

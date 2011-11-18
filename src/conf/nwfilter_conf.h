@@ -357,7 +357,17 @@ enum virNWFilterEbtablesTableType {
 };
 
 
+# define MIN_RULE_PRIORITY  0
 # define MAX_RULE_PRIORITY  1000
+
+# define NWFILTER_MIN_FILTER_PRIORITY -1000
+# define NWFILTER_MAX_FILTER_PRIORITY MAX_RULE_PRIORITY
+
+# define NWFILTER_ROOT_FILTER_PRI 0
+# define NWFILTER_IPV4_FILTER_PRI -700
+# define NWFILTER_IPV6_FILTER_PRI -600
+# define NWFILTER_ARP_FILTER_PRI  -500
+# define NWFILTER_RARP_FILTER_PRI -400
 
 enum virNWFilterRuleFlags {
     RULE_FLAG_NO_STATEMATCH      = (1 << 0),
@@ -436,6 +446,7 @@ enum virNWFilterChainSuffixType {
     VIR_NWFILTER_CHAINSUFFIX_LAST,
 };
 
+typedef int32_t virNWFilterChainPriority;
 
 typedef struct _virNWFilterDef virNWFilterDef;
 typedef virNWFilterDef *virNWFilterDefPtr;
@@ -445,6 +456,7 @@ struct _virNWFilterDef {
     unsigned char uuid[VIR_UUID_BUFLEN];
 
     int chainsuffix; /*enum virNWFilterChainSuffixType */
+    virNWFilterChainPriority chainPriority;
 
     int nentries;
     virNWFilterEntryPtr *filterEntries;

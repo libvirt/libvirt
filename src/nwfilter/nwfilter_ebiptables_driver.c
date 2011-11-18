@@ -328,6 +328,7 @@ static int
 ebiptablesAddRuleInst(virNWFilterRuleInstPtr res,
                       char *commandTemplate,
                       enum virNWFilterChainSuffixType neededChain,
+                      virNWFilterChainPriority chainPriority,
                       char chainprefix,
                       unsigned int priority,
                       enum RuleType ruleType)
@@ -341,6 +342,7 @@ ebiptablesAddRuleInst(virNWFilterRuleInstPtr res,
 
     inst->commandTemplate = commandTemplate;
     inst->neededProtocolChain = neededChain;
+    inst->chainPriority = chainPriority;
     inst->chainprefix = chainprefix;
     inst->priority = priority;
     inst->ruleType = ruleType;
@@ -1589,6 +1591,7 @@ _iptablesCreateRuleInstance(int directionIn,
     return ebiptablesAddRuleInst(res,
                                  virBufferContentAndReset(final),
                                  nwfilter->chainsuffix,
+                                 nwfilter->chainPriority,
                                  '\0',
                                  rule->priority,
                                  (isIPv6) ? RT_IP6TABLES : RT_IPTABLES);
@@ -2338,6 +2341,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
     return ebiptablesAddRuleInst(res,
                                  virBufferContentAndReset(&buf),
                                  nwfilter->chainsuffix,
+                                 nwfilter->chainPriority,
                                  chainPrefix,
                                  rule->priority,
                                  RT_EBTABLES);
