@@ -2014,7 +2014,9 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
     xmlNodePtr curr = ctxt->node;
     char *uuid = NULL;
     char *chain = NULL;
+    char *chain_pri_s = NULL;
     virNWFilterEntryPtr entry;
+    int chain_priority;
 
     if (VIR_ALLOC(ret) < 0) {
         virReportOOMError();
@@ -2028,6 +2030,26 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
         goto cleanup;
     }
 
+    chain_pri_s = virXPathString("string(./@priority)", ctxt);
+    if (chain_pri_s) {
+        if (virStrToLong_i(chain_pri_s, NULL, 10, &chain_priority) < 0) {
+            virNWFilterReportError(VIR_ERR_INVALID_ARG,
+                                   _("Could not parse chain priority '%s'"),
+                                   chain_pri_s);
+            goto cleanup;
+        }
+        if (chain_priority < NWFILTER_MIN_FILTER_PRIORITY ||
+            chain_priority > NWFILTER_MAX_FILTER_PRIORITY) {
+            virNWFilterReportError(VIR_ERR_INVALID_ARG,
+                                   _("Priority '%d' is outside valid "
+                                   "range of [%d,%d]"),
+                                   chain_priority,
+                                   NWFILTER_MIN_FILTER_PRIORITY,
+                                   NWFILTER_MAX_FILTER_PRIORITY);
+            goto cleanup;
+        }
+    }
+
     chain = virXPathString("string(./@chain)", ctxt);
     if (chain) {
         if (virNWFilterChainSuffixTypeFromString(chain) < 0) {
@@ -2036,11 +2058,16 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
             goto cleanup;
         }
         ret->chainsuffix = chain;
-        /* assign an implicit priority -- support XML attribute later */
-        if (!intMapGetByString(chain_priorities, chain, 0,
-                               &ret->chainPriority)) {
-            ret->chainPriority = (NWFILTER_MAX_FILTER_PRIORITY +
-                                  NWFILTER_MIN_FILTER_PRIORITY) / 2;
+
+        if (chain_pri_s) {
+            ret->chainPriority = chain_priority;
+        } else {
+            /* assign default priority if none can be found via lookup */
+            if (!intMapGetByString(chain_priorities, chain, 0,
+                                   &ret->chainPriority)) {
+                ret->chainPriority = (NWFILTER_MAX_FILTER_PRIORITY +
+                                      NWFILTER_MIN_FILTER_PRIORITY) / 2;
+            }
         }
         chain = NULL;
     } else {
@@ -2097,6 +2124,7 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
     }
 
     VIR_FREE(chain);
+    VIR_FREE(chain_pri_s);
 
     return ret;
 
@@ -2104,6 +2132,7 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
     virNWFilterDefFree(ret);
     VIR_FREE(chain);
     VIR_FREE(uuid);
+    VIR_FREE(chain_pri_s);
     return NULL;
 }
 
@@ -2852,6 +2881,9 @@ virNWFilterDefFormat(virNWFilterDefPtr def)
     virBufferAsprintf(&buf, "<filter name='%s' chain='%s'",
                       def->name,
                       def->chainsuffix);
+    if (def->chainPriority != 0)
+        virBufferAsprintf(&buf, " priority='%d'",
+                          def->chainPriority);
     virBufferAddLit(&buf, ">\n");
 
     virUUIDFormat(def->uuid, uuid);

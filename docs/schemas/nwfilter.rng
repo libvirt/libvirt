@@ -293,6 +293,11 @@
         </choice>
       </attribute>
     </optional>
+    <optional>
+      <attribute name="priority">
+        <ref name='priority-type'/>
+      </attribute>
+    </optional>
   </define>
 
   <define name="filterref-node-attributes">
@@ -881,7 +886,7 @@
 
   <define name='priority-type'>
       <data type="int">
-        <param name="minInclusive">0</param>
+        <param name="minInclusive">-1000</param>
         <param name="maxInclusive">1000</param>
       </data>
   </define>
