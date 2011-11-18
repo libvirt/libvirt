@@ -130,6 +130,28 @@ void *virHashLookup(virHashTablePtr table, const void *name);
  */
 void *virHashSteal(virHashTablePtr table, const void *name);
 
+/*
+ * Get the hash table's key/value pairs and have them optionally sorted.
+ * The returned array contains virHashSize() elements. Additionally,
+ * an empty element has been added to the end of the array (with key == NULL)
+ * to indicate the end of the array.
+ * The key/value pairs are only valid as long as the underlying hash
+ * table is not modified, i.e., no keys are removed or inserted, and
+ * the hash table is not deleted.
+ * The caller must only free the returned array using VIR_FREE().
+ * The caller must make copies of all returned keys and values if they are
+ * to be used somewhere else.
+ */
+typedef struct _virHashKeyValuePair virHashKeyValuePair;
+typedef virHashKeyValuePair *virHashKeyValuePairPtr;
+struct _virHashKeyValuePair {
+    const void *key;
+    const void *value;
+};
+typedef int (*virHashKeyComparator)(const virHashKeyValuePairPtr,
+                                    const virHashKeyValuePairPtr);
+virHashKeyValuePairPtr virHashGetItems(virHashTablePtr table,
+                                       virHashKeyComparator compar);
 
 /*
  * Iterators

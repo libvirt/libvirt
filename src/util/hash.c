@@ -618,3 +618,48 @@ void *virHashSearch(virHashTablePtr table,
 
     return NULL;
 }
+
+struct getKeysIter
+{
+    virHashKeyValuePair *sortArray;
+    unsigned arrayIdx;
+};
+
+static void virHashGetKeysIterator(void *payload,
+                                   const void *key, void *data)
+{
+    struct getKeysIter *iter = data;
+
+    iter->sortArray[iter->arrayIdx].key = key;
+    iter->sortArray[iter->arrayIdx].value = payload;
+
+    iter->arrayIdx++;
+}
+
+typedef int (*qsort_comp)(const void *, const void *);
+
+virHashKeyValuePairPtr virHashGetItems(virHashTablePtr table,
+                                       virHashKeyComparator compar)
+{
+    int numElems = virHashSize(table);
+    struct getKeysIter iter = {
+        .arrayIdx = 0,
+        .sortArray = NULL,
+    };
+
+    if (numElems < 0)
+        return NULL;
+
+    if (VIR_ALLOC_N(iter.sortArray, numElems + 1)) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    virHashForEach(table, virHashGetKeysIterator, &iter);
+
+    if (compar)
+        qsort(&iter.sortArray[0], numElems, sizeof(iter.sortArray[0]),
+              (qsort_comp)compar);
+
+    return iter.sortArray;
+}
