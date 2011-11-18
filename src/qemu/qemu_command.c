@@ -3407,6 +3407,7 @@ qemuBuildNumaCPUArgStr(char *cpumask, virBufferPtr buf)
     int i, first, last;
     int cpuSet = 0;
 
+    first = last = 0;
     for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++) {
         if (cpumask[i]) {
             if (cpuSet) {
