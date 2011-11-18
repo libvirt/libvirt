@@ -309,6 +309,7 @@ virNWFilterDefFree(virNWFilterDefPtr def) {
         virNWFilterEntryFree(def->filterEntries[i]);
 
     VIR_FREE(def->filterEntries);
+    VIR_FREE(def->chainsuffix);
 
     VIR_FREE(def);
 }
@@ -2027,20 +2028,27 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
         goto cleanup;
     }
 
-    ret->chainsuffix = VIR_NWFILTER_CHAINSUFFIX_ROOT;
     chain = virXPathString("string(./@chain)", ctxt);
     if (chain) {
-        if ((ret->chainsuffix =
-             virNWFilterChainSuffixTypeFromString(chain)) < 0) {
+        if (virNWFilterChainSuffixTypeFromString(chain) < 0) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("unknown chain suffix '%s'"), chain);
             goto cleanup;
         }
+        ret->chainsuffix = chain;
         /* assign an implicit priority -- support XML attribute later */
         if (!intMapGetByString(chain_priorities, chain, 0,
                                &ret->chainPriority)) {
             ret->chainPriority = (NWFILTER_MAX_FILTER_PRIORITY +
                                   NWFILTER_MIN_FILTER_PRIORITY) / 2;
+        }
+        chain = NULL;
+    } else {
+        ret->chainsuffix = strdup(virNWFilterChainSuffixTypeToString(
+                                  VIR_NWFILTER_CHAINSUFFIX_ROOT));
+        if (ret->chainsuffix == NULL) {
+            virReportOOMError();
+            goto cleanup;
         }
     }
 
@@ -2843,7 +2851,7 @@ virNWFilterDefFormat(virNWFilterDefPtr def)
 
     virBufferAsprintf(&buf, "<filter name='%s' chain='%s'",
                       def->name,
-                      virNWFilterChainSuffixTypeToString(def->chainsuffix));
+                      def->chainsuffix);
     virBufferAddLit(&buf, ">\n");
 
     virUUIDFormat(def->uuid, uuid);

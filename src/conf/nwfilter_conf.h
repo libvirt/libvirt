@@ -455,7 +455,7 @@ struct _virNWFilterDef {
     char *name;
     unsigned char uuid[VIR_UUID_BUFLEN];
 
-    int chainsuffix; /*enum virNWFilterChainSuffixType */
+    char *chainsuffix;
     virNWFilterChainPriority chainPriority;
 
     int nentries;

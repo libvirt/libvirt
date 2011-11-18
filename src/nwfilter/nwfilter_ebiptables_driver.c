@@ -385,7 +385,7 @@ ebiptablesRuleInstFree(ebiptablesRuleInstPtr inst)
 static int
 ebiptablesAddRuleInst(virNWFilterRuleInstPtr res,
                       char *commandTemplate,
-                      enum virNWFilterChainSuffixType neededChain,
+                      const char *neededChain,
                       virNWFilterChainPriority chainPriority,
                       char chainprefix,
                       unsigned int priority,
@@ -1961,11 +1961,13 @@ ebtablesCreateRuleInstance(char chainPrefix,
         goto err_exit;
     }
 
-    if (nwfilter->chainsuffix == VIR_NWFILTER_CHAINSUFFIX_ROOT)
+    if (STREQ(nwfilter->chainsuffix,
+              virNWFilterChainSuffixTypeToString(
+                  VIR_NWFILTER_CHAINSUFFIX_ROOT)))
         PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
     else
         PRINT_CHAIN(chain, chainPrefix, ifname,
-                    virNWFilterChainSuffixTypeToString(nwfilter->chainsuffix));
+                    nwfilter->chainsuffix);
 
 
     switch (rule->prtclType) {
@@ -2532,7 +2534,7 @@ ebiptablesDisplayRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
     ebiptablesRuleInstPtr inst = (ebiptablesRuleInstPtr)_inst;
     VIR_INFO("Command Template: '%s', Needed protocol: '%s'",
              inst->commandTemplate,
-             virNWFilterChainSuffixTypeToString(inst->neededProtocolChain));
+             inst->neededProtocolChain);
     return 0;
 }
 
@@ -3350,8 +3352,7 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
     for (i = 0; i < nruleInstances; i++) {
         sa_assert (inst);
         if (inst[i]->ruleType == RT_EBTABLES) {
-            const char *name = virNWFilterChainSuffixTypeToString(
-                                      inst[i]->neededProtocolChain);
+            const char *name = inst[i]->neededProtocolChain;
             if (inst[i]->chainprefix == CHAINPREFIX_HOST_IN_TEMP) {
                 if (virHashUpdateEntry(chains_in_set, name,
                                        &inst[i]->chainPriority)) {
