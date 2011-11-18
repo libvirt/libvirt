@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/utsname.h>
 
 #include "stats_linux.h"
 #include "internal.h"
@@ -47,8 +48,14 @@ mymain(void)
     int ret = 0;
     int status;
     virCommandPtr cmd;
+    struct utsname ut;
 
-    /* skip test if xend is not running */
+    /* Skip test if xend is not running.  Calling xend on a non-xen
+       kernel causes some versions of xend to issue a crash report, so
+       we first probe uname results.  */
+    uname(&ut);
+    if (strstr(ut.release, "xen") == NULL)
+        return EXIT_AM_SKIP;
     cmd = virCommandNewArgList("/usr/sbin/xend", "status", NULL);
     if (virCommandRun(cmd, &status) != 0 || status != 0) {
         virCommandFree(cmd);
