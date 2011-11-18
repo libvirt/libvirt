@@ -388,7 +388,7 @@ ebiptablesAddRuleInst(virNWFilterRuleInstPtr res,
                       const char *neededChain,
                       virNWFilterChainPriority chainPriority,
                       char chainprefix,
-                      unsigned int priority,
+                      virNWFilterRulePriority priority,
                       enum RuleType ruleType)
 {
     ebiptablesRuleInstPtr inst;

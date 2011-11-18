@@ -38,7 +38,7 @@ struct _ebiptablesRuleInst {
     const char *neededProtocolChain;
     virNWFilterChainPriority chainPriority;
     char chainprefix;    /* I for incoming, O for outgoing */
-    unsigned int priority;
+    virNWFilterRulePriority priority;
     enum RuleType ruleType;
 };
 

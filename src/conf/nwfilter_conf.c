@@ -1897,7 +1897,7 @@ virNWFilterRuleParse(xmlNodePtr node)
     char *statematch;
     int found;
     int found_i = 0;
-    unsigned int priority;
+    int priority;
 
     xmlNodePtr cur;
     virNWFilterRuleDefPtr ret;
@@ -1943,8 +1943,9 @@ virNWFilterRuleParse(xmlNodePtr node)
     ret->priority = MAX_RULE_PRIORITY / 2;
 
     if (prio) {
-        if (virStrToLong_ui(prio, NULL, 10, &priority) >= 0) {
-            if (priority <= MAX_RULE_PRIORITY)
+        if (virStrToLong_i(prio, NULL, 10, &priority) >= 0) {
+            if (priority <= MAX_RULE_PRIORITY &&
+                priority >= MIN_RULE_PRIORITY)
                 ret->priority = priority;
         }
     }

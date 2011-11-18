@@ -357,7 +357,7 @@ enum virNWFilterEbtablesTableType {
 };
 
 
-# define MIN_RULE_PRIORITY  0
+# define MIN_RULE_PRIORITY  -1000
 # define MAX_RULE_PRIORITY  1000
 
 # define NWFILTER_MIN_FILTER_PRIORITY -1000
@@ -389,10 +389,12 @@ enum virNWFilterRuleFlags {
 void virNWFilterPrintStateMatchFlags(virBufferPtr buf, const char *prefix,
                                      int32_t flags, bool disp_none);
 
+typedef int32_t virNWFilterRulePriority;
+
 typedef struct _virNWFilterRuleDef  virNWFilterRuleDef;
 typedef virNWFilterRuleDef *virNWFilterRuleDefPtr;
 struct _virNWFilterRuleDef {
-    unsigned int priority;
+    virNWFilterRulePriority priority;
     enum virNWFilterRuleFlags flags;
     int action; /*enum virNWFilterRuleActionType*/
     int tt; /*enum virNWFilterRuleDirectionType*/
