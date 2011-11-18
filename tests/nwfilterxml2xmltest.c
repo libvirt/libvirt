@@ -150,6 +150,8 @@ mymain(void)
 
     DO_TEST("chain_prefixtest1", true); /* derived from arp-test */
 
+    DO_TEST("attr-value-test", false);
+
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 

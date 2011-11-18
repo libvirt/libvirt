@@ -1,0 +1,27 @@
+<filter name='testcase'>
+  <uuid>83011800-f663-96d6-8841-fd836b4318c6</uuid>
+  <filterref filter='clean-traffic'>
+     <parameter name='a' value='1.2.3.4'/>
+     <parameter name='a' value='1.2.3.5'/>
+     <parameter name='c' value='1.1.1.1'/>
+     <parameter name='b' value='1.2.3.10'/>
+     <parameter name='a' value='1.2.3.6'/>
+     <parameter name='b' value='1.2.3.11'/>
+     <parameter name='c' value='2.2.2.2'/>
+     <parameter name='b' value='1.2.3.12'/>
+  </filterref>
+  <rule action='accept' direction='out'>
+     <mac srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+     protocolid='arp'/>
+  </rule>
+  <rule action='accept' direction='out'>
+     <tcp srcmacaddr='1:2:3:4:5:6'
+          dstipaddr='10.1.2.3' dstipmask='255.255.255.255'
+          dscp='2'/>
+  </rule>
+  <rule action='accept' direction='out'>
+     <udp-ipv6 srcmacaddr='1:2:3:4:5:6'
+               dstipaddr='a:b:c::d:e:f' dstipmask='128'
+               dscp='2'/>
+  </rule>
+</filter>
