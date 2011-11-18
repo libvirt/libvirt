@@ -2718,13 +2718,18 @@ ebtablesUnlinkTmpRootChain(virBufferPtr buf,
 
 
 static int
-ebtablesCreateTmpSubChain(virBufferPtr buf,
+ebtablesCreateTmpSubChain(ebiptablesRuleInstPtr *inst,
+                          int *nRuleInstances,
                           int incoming,
                           const char *ifname,
                           enum l3_proto_idx protoidx,
                           const char *filtername,
-                          int stopOnError)
+                          int stopOnError,
+                          virNWFilterChainPriority priority)
 {
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    ebiptablesRuleInstPtr tmp = *inst;
+    size_t count = *nRuleInstances;
     char rootchain[MAX_CHAINNAME_LENGTH], chain[MAX_CHAINNAME_LENGTH];
     char chainPrefix = (incoming) ? CHAINPREFIX_HOST_IN_TEMP
                                   : CHAINPREFIX_HOST_OUT_TEMP;
@@ -2733,14 +2738,21 @@ ebtablesCreateTmpSubChain(virBufferPtr buf,
     PRINT_CHAIN(chain, chainPrefix, ifname,
                 (filtername) ? filtername : l3_protocols[protoidx].val);
 
-    virBufferAsprintf(buf,
+    virBufferAsprintf(&buf,
+                      CMD_DEF("%s -t %s -F %s") CMD_SEPARATOR
+                      CMD_EXEC
+                      CMD_DEF("%s -t %s -X %s") CMD_SEPARATOR
+                      CMD_EXEC
                       CMD_DEF("%s -t %s -N %s") CMD_SEPARATOR
                       CMD_EXEC
                       "%s"
-                      CMD_DEF("%s -t %s -A %s -p 0x%x -j %s") CMD_SEPARATOR
+                      CMD_DEF("%s -t %s -%%c %s %%s -p 0x%x -j %s")
+                          CMD_SEPARATOR
                       CMD_EXEC
                       "%s",
 
+                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain,
+                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain,
                       ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain,
 
                       CMD_STOPONERR(stopOnError),
@@ -2749,6 +2761,22 @@ ebtablesCreateTmpSubChain(virBufferPtr buf,
                       rootchain, l3_protocols[protoidx].attr, chain,
 
                       CMD_STOPONERR(stopOnError));
+
+    if (virBufferError(&buf) ||
+        VIR_EXPAND_N(tmp, count, 1) < 0) {
+        virReportOOMError();
+        virBufferFreeAndReset(&buf);
+        return -1;
+    }
+
+    *nRuleInstances = count;
+    *inst = tmp;
+
+    tmp[*nRuleInstances - 1].priority = priority;
+    tmp[*nRuleInstances - 1].commandTemplate =
+        virBufferContentAndReset(&buf);
+    tmp[*nRuleInstances - 1].neededProtocolChain =
+        virNWFilterChainSuffixTypeToString(VIR_NWFILTER_CHAINSUFFIX_ROOT);
 
     return 0;
 }
@@ -3224,9 +3252,35 @@ static int ebtablesCleanAll(const char *ifname)
 static int
 ebiptablesRuleOrderSort(const void *a, const void *b)
 {
+    const ebiptablesRuleInstPtr insta = (const ebiptablesRuleInstPtr)a;
+    const ebiptablesRuleInstPtr instb = (const ebiptablesRuleInstPtr)b;
+    const char *root = virNWFilterChainSuffixTypeToString(
+                                     VIR_NWFILTER_CHAINSUFFIX_ROOT);
+    bool root_a = STREQ(insta->neededProtocolChain, root);
+    bool root_b = STREQ(instb->neededProtocolChain, root);
+
+    /* ensure root chain commands appear before all others since
+       we will need them to create the child chains */
+    if (root_a) {
+        if (root_b) {
+            goto normal;
+        }
+        return -1; /* a before b */
+    }
+    if (root_b) {
+        return 1; /* b before a */
+    }
+normal:
+    /* priorities are limited to range [-1000, 1000] */
+    return (insta->priority - instb->priority);
+}
+
+static int
+ebiptablesRuleOrderSortPtr(const void *a, const void *b)
+{
     const ebiptablesRuleInstPtr *insta = a;
     const ebiptablesRuleInstPtr *instb = b;
-    return ((*insta)->priority - (*instb)->priority);
+    return ebiptablesRuleOrderSort(*insta, *instb);
 }
 
 static int
@@ -3297,10 +3351,13 @@ ebtablesGetProtoIdxByFiltername(const char *filtername)
 static int
 ebtablesCreateTmpRootAndSubChains(virBufferPtr buf,
                                   const char *ifname,
-                                  virHashTablePtr chains, int direction)
+                                  virHashTablePtr chains, int direction,
+                                  ebiptablesRuleInstPtr *inst,
+                                  int *nRuleInstances)
 {
     int rc = 0, i;
     virHashKeyValuePairPtr filter_names;
+    const virNWFilterChainPriority *priority;
 
     if (ebtablesCreateTmpRootChain(buf, direction, ifname, 1) < 0)
         return -1;
@@ -3315,8 +3372,11 @@ ebtablesCreateTmpRootAndSubChains(virBufferPtr buf,
                                   filter_names[i].key);
         if ((int)idx < 0)
             continue;
-        rc = ebtablesCreateTmpSubChain(buf, direction, ifname, idx,
-                                       filter_names[i].key, 1);
+        priority = (const virNWFilterChainPriority *)filter_names[i].value;
+        rc = ebtablesCreateTmpSubChain(inst, nRuleInstances,
+                                       direction, ifname, idx,
+                                       filter_names[i].key, 1,
+                                       *priority);
         if (rc < 0)
             break;
     }
@@ -3331,7 +3391,7 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
                         int nruleInstances,
                         void **_inst)
 {
-    int i;
+    int i, j;
     int cli_status;
     ebiptablesRuleInstPtr *inst = (ebiptablesRuleInstPtr *)_inst;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -3339,6 +3399,8 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
     virHashTablePtr chains_out_set = virHashCreate(10, NULL);
     bool haveIptables = false;
     bool haveIp6tables = false;
+    ebiptablesRuleInstPtr ebtChains = NULL;
+    int nEbtChains = 0;
 
     if (!chains_in_set || !chains_out_set) {
         virReportOOMError();
@@ -3346,7 +3408,8 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     if (nruleInstances > 1 && inst)
-        qsort(inst, nruleInstances, sizeof(inst[0]), ebiptablesRuleOrderSort);
+        qsort(inst, nruleInstances, sizeof(inst[0]),
+              ebiptablesRuleOrderSortPtr);
 
     /* scan the rules to see which chains need to be created */
     for (i = 0; i < nruleInstances; i++) {
@@ -3380,18 +3443,33 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     /* create needed chains */
-    if (ebtablesCreateTmpRootAndSubChains(&buf, ifname, chains_in_set , 1) ||
-        ebtablesCreateTmpRootAndSubChains(&buf, ifname, chains_out_set, 0)) {
+    if (ebtablesCreateTmpRootAndSubChains(&buf, ifname, chains_in_set , 1,
+                                          &ebtChains, &nEbtChains) ||
+        ebtablesCreateTmpRootAndSubChains(&buf, ifname, chains_out_set, 0,
+                                          &ebtChains, &nEbtChains)) {
         goto tear_down_tmpebchains;
     }
+
+    if (nEbtChains > 0)
+        qsort(&ebtChains[0], nEbtChains, sizeof(ebtChains[0]),
+              ebiptablesRuleOrderSort);
 
     if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
         goto tear_down_tmpebchains;
 
+    /* process ebtables commands; interleave commands from filters with
+       commands for creating and connecting ebtables chains */
+    j = 0;
     for (i = 0; i < nruleInstances; i++) {
         sa_assert (inst);
         switch (inst[i]->ruleType) {
         case RT_EBTABLES:
+            while (j < nEbtChains &&
+                   ebtChains[j].priority <= inst[i]->priority) {
+                ebiptablesInstCommand(&buf,
+                                      ebtChains[j++].commandTemplate,
+                                      'A', -1, 1);
+            }
             ebiptablesInstCommand(&buf,
                                   inst[i]->commandTemplate,
                                   'A', -1, 1);
@@ -3404,6 +3482,11 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
         break;
         }
     }
+
+    while (j < nEbtChains)
+        ebiptablesInstCommand(&buf,
+                              ebtChains[j++].commandTemplate,
+                              'A', -1, 1);
 
     if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
         goto tear_down_tmpebchains;
@@ -3484,6 +3567,10 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
     virHashFree(chains_in_set);
     virHashFree(chains_out_set);
 
+    for (i = 0; i < nEbtChains; i++)
+        VIR_FREE(ebtChains[i].commandTemplate);
+    VIR_FREE(ebtChains);
+
     return 0;
 
 tear_down_ebsubchains_and_unlink:
@@ -3521,6 +3608,10 @@ tear_down_tmpebchains:
 exit_free_sets:
     virHashFree(chains_in_set);
     virHashFree(chains_out_set);
+
+    for (i = 0; i < nEbtChains; i++)
+        VIR_FREE(ebtChains[i].commandTemplate);
+    VIR_FREE(ebtChains);
 
     return 1;
 }
