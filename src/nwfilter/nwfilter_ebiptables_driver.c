@@ -92,6 +92,59 @@ static char *gawk_cmd_path;
 #define PRINT_CHAIN(buf, prefix, ifname, suffix) \
     snprintf(buf, sizeof(buf), "%c-%s-%s", prefix, ifname, suffix)
 
+/* The collect_chains() script recursively determines all names
+ * of ebtables (nat) chains that are 'children' of a given 'root' chain.
+ * The typical output of an ebtables call is as follows:
+ *
+ * #> ebtables -t nat -L libvirt-I-tck-test205002
+ * Bridge table: nat
+ *
+ * Bridge chain: libvirt-I-tck-test205002, entries: 5, policy: ACCEPT
+ * -p IPv4 -j I-tck-test205002-ipv4
+ * -p ARP -j I-tck-test205002-arp
+ * -p 0x8035 -j I-tck-test205002-rarp
+ * -p 0x835 -j ACCEPT
+ * -j DROP
+ */
+static const char ebtables_script_func_collect_chains[] =
+    "collect_chains()\n"
+    "{\n"
+    "  for tmp2 in $*; do\n"
+    "    for tmp in $(%s -t %s -L $tmp2 | \\\n"
+    "      sed -n \"/Bridge chain/,\\$ s/.*-j \\\\([%s]-.*\\\\)/\\\\1/p\");\n"
+    "    do\n"
+    "      echo $tmp\n"
+    "      collect_chains $tmp\n"
+    "    done\n"
+    "  done\n"
+    "}\n";
+
+static const char ebiptables_script_func_rm_chains[] =
+    "rm_chains()\n"
+    "{\n"
+    "  for tmp in $*; do %s -t %s -F $tmp; done\n"
+    "  for tmp in $*; do %s -t %s -X $tmp; done\n"
+    "}\n";
+
+static const char ebiptables_script_func_rename_chains[] =
+    "rename_chains()\n"
+    "{\n"
+    "  for tmp in $*; do\n"
+    "    case $tmp in\n"
+    "      %c*) %s -t %s -E $tmp %c${tmp#?} ;;\n"
+    "      %c*) %s -t %s -E $tmp %c${tmp#?} ;;\n"
+    "    esac\n"
+    "  done\n"
+    "}\n";
+
+static const char ebiptables_script_set_ifs[] =
+    "tmp='\n'\n"
+    "IFS=' ''\t'$tmp\n";
+
+#define NWFILTER_FUNC_COLLECT_CHAINS ebtables_script_func_collect_chains
+#define NWFILTER_FUNC_RM_CHAINS ebiptables_script_func_rm_chains
+#define NWFILTER_FUNC_RENAME_CHAINS ebiptables_script_func_rename_chains
+#define NWFILTER_FUNC_SET_IFS ebiptables_script_set_ifs
 
 #define VIRT_IN_CHAIN      "libvirt-in"
 #define VIRT_OUT_CHAIN     "libvirt-out"
@@ -2698,94 +2751,65 @@ ebtablesCreateTmpSubChain(virBufferPtr buf,
     return 0;
 }
 
-
 static int
-_ebtablesRemoveSubChain(virBufferPtr buf,
-                        int incoming,
-                        const char *ifname,
-                        enum l3_proto_idx protoidx,
-                        int isTempChain)
+_ebtablesRemoveSubChains(virBufferPtr buf,
+                         const char *ifname,
+                         const char *chains)
 {
-    char rootchain[MAX_CHAINNAME_LENGTH], chain[MAX_CHAINNAME_LENGTH];
-    char chainPrefix;
+    char rootchain[MAX_CHAINNAME_LENGTH];
+    unsigned i;
 
-    if (isTempChain) {
-        chainPrefix =(incoming) ? CHAINPREFIX_HOST_IN_TEMP
-                                : CHAINPREFIX_HOST_OUT_TEMP;
-    } else {
-        chainPrefix =(incoming) ? CHAINPREFIX_HOST_IN
-                                : CHAINPREFIX_HOST_OUT;
-    }
-
-    PRINT_ROOT_CHAIN(rootchain, chainPrefix, ifname);
-    PRINT_CHAIN(chain, chainPrefix, ifname, l3_protocols[protoidx].val);
-
-    virBufferAsprintf(buf,
-                      "%s -t %s -D %s -p 0x%x -j %s" CMD_SEPARATOR
-                      "%s -t %s -F %s" CMD_SEPARATOR
-                      "%s -t %s -X %s" CMD_SEPARATOR,
+    virBufferAsprintf(buf, NWFILTER_FUNC_COLLECT_CHAINS,
+                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chains);
+    virBufferAsprintf(buf, NWFILTER_FUNC_RM_CHAINS,
                       ebtables_cmd_path, EBTABLES_DEFAULT_TABLE,
-                      rootchain, l3_protocols[protoidx].attr, chain,
+                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE);
 
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain,
+    virBufferAsprintf(buf, NWFILTER_FUNC_SET_IFS);
+    virBufferAddLit(buf, "chains=\"$(collect_chains");
+    for (i = 0; chains[i] != 0; i++) {
+        PRINT_ROOT_CHAIN(rootchain, chains[i], ifname);
+        virBufferAsprintf(buf, " %s", rootchain);
+    }
+    virBufferAddLit(buf, ")\"\n");
 
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain);
+    for (i = 0; chains[i] != 0; i++) {
+        PRINT_ROOT_CHAIN(rootchain, chains[i], ifname);
+        virBufferAsprintf(buf,
+                          "%s -t %s -F %s\n",
+                          ebtables_cmd_path, EBTABLES_DEFAULT_TABLE,
+                          rootchain);
+    }
+    virBufferAddLit(buf, "rm_chains $chains\n");
 
     return 0;
 }
-
-
-static int
-ebtablesRemoveSubChain(virBufferPtr buf,
-                       int incoming,
-                       const char *ifname,
-                       enum l3_proto_idx protoidx)
-{
-    return _ebtablesRemoveSubChain(buf,
-                                   incoming, ifname, protoidx, 0);
-}
-
 
 static int
 ebtablesRemoveSubChains(virBufferPtr buf,
                         const char *ifname)
 {
-    enum l3_proto_idx i;
+    char chains[3] = {
+        CHAINPREFIX_HOST_IN,
+        CHAINPREFIX_HOST_OUT,
+        0
+    };
 
-    for (i = 0; i < L3_PROTO_LAST_IDX; i++) {
-        ebtablesRemoveSubChain(buf, 1, ifname, i);
-        ebtablesRemoveSubChain(buf, 0, ifname, i);
-    }
-
-    return 0;
+    return _ebtablesRemoveSubChains(buf, ifname, chains);
 }
-
-
-static int
-ebtablesRemoveTmpSubChain(virBufferPtr buf,
-                          int incoming,
-                          const char *ifname,
-                          enum l3_proto_idx protoidx)
-{
-    return _ebtablesRemoveSubChain(buf,
-                                   incoming, ifname, protoidx, 1);
-}
-
 
 static int
 ebtablesRemoveTmpSubChains(virBufferPtr buf,
                            const char *ifname)
 {
-    enum l3_proto_idx i;
+    char chains[3] = {
+        CHAINPREFIX_HOST_IN_TEMP,
+        CHAINPREFIX_HOST_OUT_TEMP,
+        0
+    };
 
-    for (i = 0; i < L3_PROTO_LAST_IDX; i++) {
-        ebtablesRemoveTmpSubChain(buf, 1, ifname, i);
-        ebtablesRemoveTmpSubChain(buf, 0, ifname, i);
-    }
-
-    return 0;
+    return _ebtablesRemoveSubChains(buf, ifname, chains);
 }
-
 
 static int
 ebtablesRenameTmpSubChain(virBufferPtr buf,
@@ -2813,22 +2837,6 @@ ebtablesRenameTmpSubChain(virBufferPtr buf,
     return 0;
 }
 
-
-static int
-ebtablesRenameTmpSubChains(virBufferPtr buf,
-                           const char *ifname)
-{
-    enum l3_proto_idx i;
-
-    for (i = 0; i < L3_PROTO_LAST_IDX; i++) {
-        ebtablesRenameTmpSubChain (buf, 1, ifname, l3_protocols[i].val);
-        ebtablesRenameTmpSubChain (buf, 0, ifname, l3_protocols[i].val);
-    }
-
-    return 0;
-}
-
-
 static int
 ebtablesRenameTmpRootChain(virBufferPtr buf,
                            int incoming,
@@ -2837,6 +2845,42 @@ ebtablesRenameTmpRootChain(virBufferPtr buf,
     return ebtablesRenameTmpSubChain(buf, incoming, ifname, NULL);
 }
 
+static int
+ebtablesRenameTmpSubAndRootChains(virBufferPtr buf,
+                                  const char *ifname)
+{
+    char rootchain[MAX_CHAINNAME_LENGTH];
+    unsigned i;
+    char chains[3] = {
+        CHAINPREFIX_HOST_IN_TEMP,
+        CHAINPREFIX_HOST_OUT_TEMP,
+        0};
+
+    virBufferAsprintf(buf, NWFILTER_FUNC_COLLECT_CHAINS,
+                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chains);
+    virBufferAsprintf(buf, NWFILTER_FUNC_RENAME_CHAINS,
+                      CHAINPREFIX_HOST_IN_TEMP,
+                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE,
+                      CHAINPREFIX_HOST_IN,
+                      CHAINPREFIX_HOST_OUT_TEMP,
+                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE,
+                      CHAINPREFIX_HOST_OUT);
+
+    virBufferAsprintf(buf, NWFILTER_FUNC_SET_IFS);
+    virBufferAddLit(buf, "chains=\"$(collect_chains");
+    for (i = 0; chains[i] != 0; i++) {
+        PRINT_ROOT_CHAIN(rootchain, chains[i], ifname);
+        virBufferAsprintf(buf, " %s", rootchain);
+    }
+    virBufferAddLit(buf, ")\"\n");
+
+    virBufferAddLit(buf, "rename_chains $chains\n");
+
+    ebtablesRenameTmpRootChain(buf, 1, ifname);
+    ebtablesRenameTmpRootChain(buf, 0, ifname);
+
+    return 0;
+}
 
 static void
 ebiptablesInstCommand(virBufferPtr buf,
@@ -3546,9 +3590,7 @@ ebiptablesTearOldRules(virConnectPtr conn ATTRIBUTE_UNUSED,
         ebtablesRemoveRootChain(&buf, 1, ifname);
         ebtablesRemoveRootChain(&buf, 0, ifname);
 
-        ebtablesRenameTmpSubChains(&buf, ifname);
-        ebtablesRenameTmpRootChain(&buf, 1, ifname);
-        ebtablesRenameTmpRootChain(&buf, 0, ifname);
+        ebtablesRenameTmpSubAndRootChains(&buf, ifname);
 
         ebiptablesExecCLI(&buf, &cli_status);
     }
@@ -3633,12 +3675,11 @@ ebiptablesAllTeardown(const char *ifname)
         ebtablesUnlinkRootChain(&buf, 1, ifname);
         ebtablesUnlinkRootChain(&buf, 0, ifname);
 
+        ebtablesRemoveSubChains(&buf, ifname);
+
         ebtablesRemoveRootChain(&buf, 1, ifname);
         ebtablesRemoveRootChain(&buf, 0, ifname);
-
-        ebtablesRemoveSubChains(&buf, ifname);
     }
-
     ebiptablesExecCLI(&buf, &cli_status);
 
     return 0;
