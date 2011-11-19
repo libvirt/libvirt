@@ -55,6 +55,9 @@
 # ifndef ETHERTYPE_IPV6
 #  define ETHERTYPE_IPV6          0x86dd
 # endif
+# ifndef ETHERTYPE_VLAN
+#  define ETHERTYPE_VLAN          0x8100
+# endif
 
 /**
  * Chain suffix size is:
@@ -147,6 +150,16 @@ typedef ethHdrFilterDef *ethHdrFilterDefPtr;
 struct _ethHdrFilterDef {
     ethHdrDataDef ethHdr;
     nwItemDesc dataProtocolID;
+    nwItemDesc dataComment;
+};
+
+
+typedef struct _vlanHdrFilterDef  vlanHdrFilterDef;
+typedef vlanHdrFilterDef *vlanHdrFilterDefPtr;
+struct _vlanHdrFilterDef {
+    ethHdrDataDef ethHdr;
+    nwItemDesc dataVlanID;
+    nwItemDesc dataVlanEncap;
     nwItemDesc dataComment;
 };
 
@@ -323,6 +336,7 @@ enum virNWFilterChainPolicyType {
 enum virNWFilterRuleProtocolType {
     VIR_NWFILTER_RULE_PROTOCOL_NONE = 0,
     VIR_NWFILTER_RULE_PROTOCOL_MAC,
+    VIR_NWFILTER_RULE_PROTOCOL_VLAN,
     VIR_NWFILTER_RULE_PROTOCOL_ARP,
     VIR_NWFILTER_RULE_PROTOCOL_RARP,
     VIR_NWFILTER_RULE_PROTOCOL_IP,
@@ -364,6 +378,7 @@ enum virNWFilterEbtablesTableType {
 # define NWFILTER_MAX_FILTER_PRIORITY MAX_RULE_PRIORITY
 
 # define NWFILTER_ROOT_FILTER_PRI 0
+# define NWFILTER_VLAN_FILTER_PRI -750
 # define NWFILTER_IPV4_FILTER_PRI -700
 # define NWFILTER_IPV6_FILTER_PRI -600
 # define NWFILTER_ARP_FILTER_PRI  -500
@@ -401,6 +416,7 @@ struct _virNWFilterRuleDef {
     enum virNWFilterRuleProtocolType prtclType;
     union {
         ethHdrFilterDef  ethHdrFilter;
+        vlanHdrFilterDef vlanHdrFilter;
         arpHdrFilterDef  arpHdrFilter; /* also used for rarp */
         ipHdrFilterDef   ipHdrFilter;
         ipv6HdrFilterDef ipv6HdrFilter;
@@ -440,6 +456,7 @@ struct _virNWFilterEntry {
 
 enum virNWFilterChainSuffixType {
     VIR_NWFILTER_CHAINSUFFIX_ROOT = 0,
+    VIR_NWFILTER_CHAINSUFFIX_VLAN,
     VIR_NWFILTER_CHAINSUFFIX_ARP,
     VIR_NWFILTER_CHAINSUFFIX_RARP,
     VIR_NWFILTER_CHAINSUFFIX_IPv4,

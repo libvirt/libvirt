@@ -82,6 +82,7 @@ VIR_ENUM_IMPL(virNWFilterEbtablesTable, VIR_NWFILTER_EBTABLES_TABLE_LAST,
 
 VIR_ENUM_IMPL(virNWFilterChainSuffix, VIR_NWFILTER_CHAINSUFFIX_LAST,
               "root",
+              "vlan",
               "arp",
               "rarp",
               "ipv4",
@@ -90,6 +91,7 @@ VIR_ENUM_IMPL(virNWFilterChainSuffix, VIR_NWFILTER_CHAINSUFFIX_LAST,
 VIR_ENUM_IMPL(virNWFilterRuleProtocol, VIR_NWFILTER_RULE_PROTOCOL_LAST,
               "none",
               "mac",
+              "vlan",
               "arp",
               "rarp",
               "ip",
@@ -126,6 +128,7 @@ struct int_map {
 
 static const struct int_map chain_priorities[] = {
     INTMAP_ENTRY(NWFILTER_ROOT_FILTER_PRI, "root"),
+    INTMAP_ENTRY(NWFILTER_VLAN_FILTER_PRI, "vlan"),
     INTMAP_ENTRY(NWFILTER_IPV4_FILTER_PRI, "ipv4"),
     INTMAP_ENTRY(NWFILTER_IPV6_FILTER_PRI, "ipv6"),
     INTMAP_ENTRY(NWFILTER_ARP_FILTER_PRI , "arp" ),
@@ -459,6 +462,7 @@ static const struct int_map macProtoMap[] = {
     INTMAP_ENTRY(ETHERTYPE_REVARP, "rarp"),
     INTMAP_ENTRY(ETHERTYPE_IP    , "ipv4"),
     INTMAP_ENTRY(ETHERTYPE_IPV6  , "ipv6"),
+    INTMAP_ENTRY(ETHERTYPE_VLAN  , "vlan"),
     INTMAP_ENTRY_LAST
 };
 
@@ -512,6 +516,75 @@ macProtocolIDFormatter(virBufferPtr buf,
     return 1;
 }
 
+
+static bool
+checkVlanVlanID(enum attrDatatype datatype, union data *value,
+                virNWFilterRuleDefPtr nwf,
+                nwItemDesc *item ATTRIBUTE_UNUSED)
+{
+    int32_t res;
+
+    res = value->ui;
+    if (res < 0 || res > 4095) {
+        res = -1;
+    }
+
+    if (res != -1) {
+        nwf->p.vlanHdrFilter.dataVlanID.u.u16 = res;
+        nwf->p.vlanHdrFilter.dataVlanID.datatype = datatype;
+        return true;
+    }
+
+    return false;
+}
+
+static bool
+checkVlanProtocolID(enum attrDatatype datatype, union data *value,
+                    virNWFilterRuleDefPtr nwf,
+                    nwItemDesc *item ATTRIBUTE_UNUSED)
+{
+    int32_t res = -1;
+
+    if (datatype == DATATYPE_STRING) {
+        if (intMapGetByString(macProtoMap, value->c, 1, &res) == 0)
+            res = -1;
+        datatype = DATATYPE_UINT16;
+    } else if (datatype == DATATYPE_UINT16 ||
+               datatype == DATATYPE_UINT16_HEX) {
+        res = value->ui;
+        if (res < 0x3c)
+            res = -1;
+    }
+
+    if (res != -1) {
+        nwf->p.vlanHdrFilter.dataVlanEncap.u.u16 = res;
+        nwf->p.vlanHdrFilter.dataVlanEncap.datatype = datatype;
+        return true;
+    }
+
+    return false;
+}
+
+static bool
+vlanProtocolIDFormatter(virBufferPtr buf,
+                        virNWFilterRuleDefPtr nwf,
+                        nwItemDesc *item ATTRIBUTE_UNUSED)
+{
+    const char *str = NULL;
+    bool asHex = true;
+
+    if (intMapGetByInt(macProtoMap,
+                       nwf->p.vlanHdrFilter.dataVlanEncap.u.u16,
+                       &str)) {
+        virBufferAdd(buf, str, -1);
+    } else {
+        if (nwf->p.vlanHdrFilter.dataVlanEncap.datatype == DATATYPE_UINT16)
+            asHex = false;
+        virBufferAsprintf(buf, asHex ? "0x%x" : "%d",
+                          nwf->p.vlanHdrFilter.dataVlanEncap.u.u16);
+    }
+    return true;
+}
 
 /* generic function to check for a valid (ipv4,ipv6, mac) mask
  * A mask is valid of there is a sequence of 1's followed by a sequence
@@ -946,6 +1019,27 @@ static const virXMLAttr2Struct macAttributes[] = {
         .formatter= macProtocolIDFormatter,
     },
     COMMENT_PROP(ethHdrFilter),
+    {
+        .name = NULL,
+    }
+};
+
+static const virXMLAttr2Struct vlanAttributes[] = {
+    COMMON_MAC_PROPS(ethHdrFilter),
+    {
+        .name = "vlanid",
+        .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.vlanHdrFilter.dataVlanID),
+        .validator = checkVlanVlanID,
+    },
+    {
+        .name = "encap-protocol",
+        .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX | DATATYPE_STRING,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.vlanHdrFilter.dataVlanEncap),
+        .validator = checkVlanProtocolID,
+        .formatter = vlanProtocolIDFormatter,
+    },
+    COMMENT_PROP(vlanHdrFilter),
     {
         .name = NULL,
     }
@@ -1408,6 +1502,7 @@ static const virAttributes virAttr[] = {
     PROTOCOL_ENTRY("arp"    , arpAttributes    , VIR_NWFILTER_RULE_PROTOCOL_ARP),
     PROTOCOL_ENTRY("rarp"   , arpAttributes    , VIR_NWFILTER_RULE_PROTOCOL_RARP),
     PROTOCOL_ENTRY("mac"    , macAttributes    , VIR_NWFILTER_RULE_PROTOCOL_MAC),
+    PROTOCOL_ENTRY("vlan"   , vlanAttributes   , VIR_NWFILTER_RULE_PROTOCOL_VLAN),
     PROTOCOL_ENTRY("ip"     , ipAttributes     , VIR_NWFILTER_RULE_PROTOCOL_IP),
     PROTOCOL_ENTRY("ipv6"   , ipv6Attributes   , VIR_NWFILTER_RULE_PROTOCOL_IPV6),
     PROTOCOL_ENTRY("tcp"    , tcpAttributes    , VIR_NWFILTER_RULE_PROTOCOL_TCP),
@@ -1733,6 +1828,13 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
                       rule->p.ethHdrFilter.ethHdr.dataSrcMACAddr);
         COPY_NEG_SIGN(rule->p.ethHdrFilter.ethHdr.dataDstMACMask,
                       rule->p.ethHdrFilter.ethHdr.dataDstMACAddr);
+    break;
+
+    case VIR_NWFILTER_RULE_PROTOCOL_VLAN:
+        COPY_NEG_SIGN(rule->p.vlanHdrFilter.ethHdr.dataSrcMACMask,
+                      rule->p.vlanHdrFilter.ethHdr.dataSrcMACAddr);
+        COPY_NEG_SIGN(rule->p.vlanHdrFilter.ethHdr.dataDstMACMask,
+                      rule->p.vlanHdrFilter.ethHdr.dataDstMACAddr);
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_IP:

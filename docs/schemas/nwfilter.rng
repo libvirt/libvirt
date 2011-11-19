@@ -30,6 +30,16 @@
             </optional>
             <optional>
               <zeroOrMore>
+                <element name="vlan">
+                  <ref name="match-attribute"/>
+                  <ref name="common-l2-attributes"/>
+                  <ref name="vlan-attributes"/>
+                  <ref name="comment-attribute"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
                 <element name="arp">
                   <ref name="match-attribute"/>
                   <ref name="common-l2-attributes"/>
@@ -286,6 +296,9 @@
       <attribute name="chain">
         <choice>
           <value>root</value>
+          <data type="string">
+            <param name="pattern">vlan[a-zA-Z0-9_\.:-]{0,8}</param>
+          </data>
           <data type="string">
             <param name="pattern">arp[a-zA-Z0-9_\.:-]{0,9}</param>
           </data>
@@ -557,6 +570,21 @@
     </interleave>
   </define>
 
+  <define name="vlan-attributes">
+    <interleave>
+      <optional>
+        <attribute name="vlanid">
+          <ref name="vlan-vlanid"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="encap-protocol">
+          <ref name="mac-protocolid"/>
+        </attribute>
+      </optional>
+    </interleave>
+  </define>
+
   <define name="arp-attributes">
     <interleave>
       <optional>
@@ -762,7 +790,26 @@
         <value>rarp</value>
         <value>ipv4</value>
         <value>ipv6</value>
+        <value>vlan</value>
       </choice>
+    </choice>
+  </define>
+
+  <define name="vlan-vlanid">
+    <choice>
+      <!-- variable -->
+      <data type="string">
+        <param name="pattern">$[a-zA-Z0-9_]+</param>
+      </data>
+
+      <data type="string">
+        <param name="pattern">0x([0-9a-fA-F]{1,3})</param>
+      </data>
+
+      <data type="int">
+        <param name="minInclusive">0</param>
+        <param name="maxInclusive">4095</param>
+      </data>
     </choice>
   </define>
 

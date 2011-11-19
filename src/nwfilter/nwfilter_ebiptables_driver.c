@@ -188,6 +188,7 @@ enum l3_proto_idx {
     L3_PROTO_IPV6_IDX,
     L3_PROTO_ARP_IDX,
     L3_PROTO_RARP_IDX,
+    L2_PROTO_VLAN_IDX,
     L3_PROTO_LAST_IDX
 };
 
@@ -203,6 +204,7 @@ static const struct ushort_map l3_protocols[] = {
     USHORTMAP_ENTRY_IDX(L3_PROTO_IPV6_IDX, ETHERTYPE_IPV6  , "ipv6"),
     USHORTMAP_ENTRY_IDX(L3_PROTO_ARP_IDX , ETHERTYPE_ARP   , "arp"),
     USHORTMAP_ENTRY_IDX(L3_PROTO_RARP_IDX, ETHERTYPE_REVARP, "rarp"),
+    USHORTMAP_ENTRY_IDX(L2_PROTO_VLAN_IDX, ETHERTYPE_VLAN  , "vlan"),
     USHORTMAP_ENTRY_IDX(L3_PROTO_LAST_IDX, 0               , NULL),
 };
 
@@ -1996,6 +1998,38 @@ ebtablesCreateRuleInstance(char chainPrefix,
         }
     break;
 
+    case VIR_NWFILTER_RULE_PROTOCOL_VLAN:
+
+        virBufferAsprintf(&buf,
+                          CMD_DEF_PRE "%s -t %s -%%c %s %%s",
+                          ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain);
+
+
+        if (ebtablesHandleEthHdr(&buf,
+                                 vars,
+                                 &rule->p.vlanHdrFilter.ethHdr,
+                                 reverse))
+            goto err_exit;
+
+        virBufferAddLit(&buf,
+                        " -p 0x8100");
+
+#define INST_ITEM(STRUCT, ITEM, CLI) \
+        if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM)) { \
+            if (printDataType(vars, \
+                              number, sizeof(number), \
+                              &rule->p.STRUCT.ITEM)) \
+                goto err_exit; \
+            virBufferAsprintf(&buf, \
+                          " " CLI " %s %s", \
+                          ENTRY_GET_NEG_SIGN(&rule->p.STRUCT.ITEM), \
+                          number); \
+        }
+
+        INST_ITEM(vlanHdrFilter, dataVlanID, "--vlan-id")
+        INST_ITEM(vlanHdrFilter, dataVlanEncap, "--vlan-encap")
+    break;
+
     case VIR_NWFILTER_RULE_PROTOCOL_ARP:
     case VIR_NWFILTER_RULE_PROTOCOL_RARP:
 
@@ -2443,6 +2477,7 @@ ebiptablesCreateRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
     switch (rule->prtclType) {
     case VIR_NWFILTER_RULE_PROTOCOL_IP:
     case VIR_NWFILTER_RULE_PROTOCOL_MAC:
+    case VIR_NWFILTER_RULE_PROTOCOL_VLAN:
     case VIR_NWFILTER_RULE_PROTOCOL_ARP:
     case VIR_NWFILTER_RULE_PROTOCOL_RARP:
     case VIR_NWFILTER_RULE_PROTOCOL_NONE:
