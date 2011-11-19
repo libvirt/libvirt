@@ -108,6 +108,7 @@ mymain(void)
     } while (0)
 
     DO_TEST("mac-test", true);
+    DO_TEST("vlan-test", true);
     DO_TEST("arp-test", true);
     DO_TEST("rarp-test", true);
     DO_TEST("ip-test", true);

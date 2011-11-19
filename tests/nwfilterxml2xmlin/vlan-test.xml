@@ -1,0 +1,45 @@
+<filter name='testcase'>
+  <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
+  <rule action='continue' direction='inout'>
+     <vlan srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+           dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff'
+           vlanid='0x123'
+     />
+  </rule>
+
+  <rule action='return' direction='inout'>
+     <vlan srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+           dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff'
+           vlanid='1234'
+     />
+  </rule>
+
+  <rule action='reject' direction='in'>
+     <vlan srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+           dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff'
+           vlanid='0x123'
+     />
+  </rule>
+
+  <rule action='accept' direction='in'>
+     <vlan srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+           dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff'
+           vlanid='0xffff'
+     />
+  </rule>
+
+  <rule action='drop' direction='out'>
+     <vlan srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+           dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff'
+           encap-protocol='arp'
+     />
+  </rule>
+
+  <rule action='accept' direction='out'>
+     <vlan srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+           dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff'
+           encap-protocol='0x1234'
+     />
+  </rule>
+
+</filter>
