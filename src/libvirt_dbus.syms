@@ -1,0 +1,2 @@
+# virnetserver.h
+virNetServerGetDBusConn;

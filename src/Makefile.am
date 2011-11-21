@@ -1175,16 +1175,12 @@ if WITH_DRIVER_MODULES
 USED_SYM_FILES += libvirt_driver_modules.syms
 endif
 
-if WITH_BRIDGE
-USED_SYM_FILES += libvirt_bridge.syms
-endif
-
 if WITH_LINUX
 USED_SYM_FILES += libvirt_linux.syms
 endif
 
-if WITH_MACVTAP
-USED_SYM_FILES += libvirt_macvtap.syms
+if HAVE_DBUS
+USED_SYM_FILES += libvirt_dbus.syms
 endif
 
 if WITH_LIBVIRTD

@@ -1252,7 +1252,6 @@ virNetServerAddSignalHandler;
 virNetServerAutoShutdown;
 virNetServerClose;
 virNetServerFree;
-virNetServerGetDBusConn;
 virNetServerIsPrivileged;
 virNetServerNew;
 virNetServerQuit;
