@@ -1211,10 +1211,9 @@ EXTRA_DIST += \
   libvirt_public.syms		\
   libvirt_private.syms		\
   libvirt_driver_modules.syms	\
-  libvirt_bridge.syms		\
   libvirt_daemon.syms		\
   libvirt_linux.syms		\
-  libvirt_macvtap.syms		\
+  libvirt_dbus.syms		\
   libvirt_network.syms		\
   libvirt_nwfilter.syms		\
   libvirt_sasl.syms		\
