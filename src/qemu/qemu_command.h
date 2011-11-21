@@ -53,6 +53,12 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    enum virNetDevVPortProfileOp vmop)
     ATTRIBUTE_NONNULL(1);
 
+/* Generate string for arch-specific '-device' parameter */
+char *
+qemuBuildChrDeviceStr (virDomainChrDefPtr serial,
+                       char *os_arch,
+                       char *machine);
+
 /* With vlan == -1, use netdev syntax, else old hostnet */
 char * qemuBuildHostNetStr(virDomainNetDefPtr net,
                            char type_sep,

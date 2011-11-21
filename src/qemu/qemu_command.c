@@ -4581,8 +4581,11 @@ qemuBuildCommandLine(virConnectPtr conn,
                 VIR_FREE(devstr);
 
                 virCommandAddArg(cmd, "-device");
-                virCommandAddArgFormat(cmd, "isa-serial,chardev=char%s,id=%s",
-                                       serial->info.alias, serial->info.alias);
+                if (!(devstr = qemuBuildChrDeviceStr(serial, def->os.arch,
+                                                     def->os.machine)))
+                   goto error;
+                virCommandAddArg(cmd, devstr);
+                VIR_FREE(devstr);
             } else {
                 virCommandAddArg(cmd, "-serial");
                 if (!(devstr = qemuBuildChrArgStr(&serial->source, NULL)))
@@ -5469,6 +5472,34 @@ qemuBuildCommandLine(virConnectPtr conn,
     return NULL;
 }
 
+/* This function generates the correct '-device' string for character
+ * devices of each architecture.
+ */
+char *
+qemuBuildChrDeviceStr(virDomainChrDefPtr serial,
+                       char *os_arch,
+                       char *machine)
+{
+    virBuffer cmd = VIR_BUFFER_INITIALIZER;
+
+    if (STREQ(os_arch, "ppc64") && STREQ(machine, "pseries"))
+        virBufferAsprintf(&cmd, "spapr-vty,chardev=char%s",
+                          serial->info.alias);
+    else
+        virBufferAsprintf(&cmd, "isa-serial,chardev=char%s,id=%s",
+                          serial->info.alias, serial->info.alias);
+
+    if (virBufferError(&cmd)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    return virBufferContentAndReset(&cmd);
+
+ error:
+    virBufferFreeAndReset(&cmd);
+    return NULL;
+}
 
 /*
  * This method takes a string representing a QEMU command line ARGV set
@@ -6680,8 +6711,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
     def->maxvcpus = 1;
     def->vcpus = 1;
     def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
-    def->features = (1 << VIR_DOMAIN_FEATURE_ACPI)
-        /*| (1 << VIR_DOMAIN_FEATURE_APIC)*/;
+
     def->onReboot = VIR_DOMAIN_LIFECYCLE_RESTART;
     def->onCrash = VIR_DOMAIN_LIFECYCLE_DESTROY;
     def->onPoweroff = VIR_DOMAIN_LIFECYCLE_DESTROY;
@@ -6716,6 +6746,9 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
     if (!def->os.arch)
         goto no_memory;
 
+    if (STREQ(def->os.arch, "i686")||STREQ(def->os.arch, "x86_64"))
+        def->features = (1 << VIR_DOMAIN_FEATURE_ACPI)
+        /*| (1 << VIR_DOMAIN_FEATURE_APIC)*/;
 #define WANT_VALUE()                                                   \
     const char *val = progargv[++i];                                   \
     if (!val) {                                                        \
