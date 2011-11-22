@@ -775,20 +775,40 @@ virStorageBackendLogicalDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virStorageVolDefPtr vol,
                                   unsigned int flags)
 {
-    const char *cmdargv[] = {
-        LVREMOVE, "-f", vol->target.path, NULL
-    };
+    int ret = -1;
+
+    virCommandPtr lvchange_cmd = NULL;
+    virCommandPtr lvremove_cmd = NULL;
 
     virCheckFlags(0, -1);
 
     virFileWaitForDevices();
 
-    if (virRun(cmdargv, NULL) < 0)
-        return -1;
+    lvchange_cmd = virCommandNewArgList(LVCHANGE,
+                                        "-aln",
+                                        vol->target.path,
+                                        NULL);
 
-    return 0;
+    lvremove_cmd = virCommandNewArgList(LVREMOVE,
+                                        "-f",
+                                        vol->target.path,
+                                        NULL);
+
+    if (virCommandRun(lvremove_cmd, NULL) < 0) {
+        if (virCommandRun(lvchange_cmd, NULL) < 0) {
+            goto cleanup;
+        } else {
+            if (virCommandRun(lvremove_cmd, NULL) < 0)
+                goto cleanup;
+        }
+    }
+
+    ret = 0;
+cleanup:
+    virCommandFree(lvchange_cmd);
+    virCommandFree(lvremove_cmd);
+    return ret;
 }
-
 
 virStorageBackend virStorageBackendLogical = {
     .type = VIR_STORAGE_POOL_LOGICAL,

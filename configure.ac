@@ -1715,6 +1715,7 @@ if test "$with_storage_lvm" = "yes" || test "$with_storage_lvm" = "check"; then
   AC_PATH_PROG([PVREMOVE], [pvremove], [], [$PATH:/sbin:/usr/sbin])
   AC_PATH_PROG([VGREMOVE], [vgremove], [], [$PATH:/sbin:/usr/sbin])
   AC_PATH_PROG([LVREMOVE], [lvremove], [], [$PATH:/sbin:/usr/sbin])
+  AC_PATH_PROG([LVCHANGE], [lvchange], [], [$PATH:/sbin:/usr/sbin])
   AC_PATH_PROG([VGCHANGE], [vgchange], [], [$PATH:/sbin:/usr/sbin])
   AC_PATH_PROG([VGSCAN], [vgscan], [], [$PATH:/sbin:/usr/sbin])
   AC_PATH_PROG([PVS], [pvs], [], [$PATH:/sbin:/usr/sbin])
@@ -1728,6 +1729,7 @@ if test "$with_storage_lvm" = "yes" || test "$with_storage_lvm" = "check"; then
     if test -z "$PVREMOVE" ; then AC_MSG_ERROR([We need pvremove for LVM storage driver]) ; fi
     if test -z "$VGREMOVE" ; then AC_MSG_ERROR([We need vgremove for LVM storage driver]) ; fi
     if test -z "$LVREMOVE" ; then AC_MSG_ERROR([We need lvremove for LVM storage driver]) ; fi
+    if test -z "$LVCHANGE" ; then AC_MSG_ERROR([We need lvchange for LVM storage driver]) ; fi
     if test -z "$VGCHANGE" ; then AC_MSG_ERROR([We need vgchange for LVM storage driver]) ; fi
     if test -z "$VGSCAN" ; then AC_MSG_ERROR([We need vgscan for LVM storage driver]) ; fi
     if test -z "$PVS" ; then AC_MSG_ERROR([We need pvs for LVM storage driver]) ; fi
@@ -1740,6 +1742,7 @@ if test "$with_storage_lvm" = "yes" || test "$with_storage_lvm" = "check"; then
     if test -z "$PVREMOVE" ; then with_storage_lvm=no ; fi
     if test -z "$VGREMOVE" ; then with_storage_lvm=no ; fi
     if test -z "$LVREMOVE" ; then with_storage_lvm=no ; fi
+    if test -z "$LVCHANGE" ; then with_storage_lvm=no ; fi
     if test -z "$VGCHANGE" ; then with_storage_lvm=no ; fi
     if test -z "$VGSCAN" ; then with_storage_lvm=no ; fi
     if test -z "$PVS" ; then with_storage_lvm=no ; fi
@@ -1757,6 +1760,7 @@ if test "$with_storage_lvm" = "yes" || test "$with_storage_lvm" = "check"; then
     AC_DEFINE_UNQUOTED([PVREMOVE],["$PVREMOVE"],[Location of pvremove program])
     AC_DEFINE_UNQUOTED([VGREMOVE],["$VGREMOVE"],[Location of vgremove program])
     AC_DEFINE_UNQUOTED([LVREMOVE],["$LVREMOVE"],[Location of lvremove program])
+    AC_DEFINE_UNQUOTED([LVCHANGE],["$LVCHANGE"],[Location of lvchange program])
     AC_DEFINE_UNQUOTED([VGCHANGE],["$VGCHANGE"],[Location of vgchange program])
     AC_DEFINE_UNQUOTED([VGSCAN],["$VGSCAN"],[Location of vgscan program])
     AC_DEFINE_UNQUOTED([PVS],["$PVS"],[Location of pvs program])
