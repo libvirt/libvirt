@@ -1054,11 +1054,6 @@ virConnectOpenResolveURIAlias(const char *alias, char **uri)
 
     *uri = NULL;
 
-    /* Short circuit to avoid doing URI alias resolution
-     * when it clearly isn't an valid alias */
-    if (strspn(alias, URI_ALIAS_CHARS) != strlen(alias))
-        return 0;
-
     if (!(config = virConnectConfigFile()))
         goto cleanup;
 
