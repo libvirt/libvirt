@@ -47,7 +47,6 @@
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
 
-#define EBTABLES_DEFAULT_TABLE  "nat"
 #define EBTABLES_CHAIN_INCOMING "PREROUTING"
 #define EBTABLES_CHAIN_OUTGOING "POSTROUTING"
 
@@ -87,7 +86,6 @@ static char *ip6tables_cmd_path;
 static char *grep_cmd_path;
 static char *gawk_cmd_path;
 
-
 #define PRINT_ROOT_CHAIN(buf, prefix, ifname) \
     snprintf(buf, sizeof(buf), "libvirt-%c-%s", prefix, ifname)
 #define PRINT_CHAIN(buf, prefix, ifname, suffix) \
@@ -111,7 +109,7 @@ static const char ebtables_script_func_collect_chains[] =
     "collect_chains()\n"
     "{\n"
     "  for tmp2 in $*; do\n"
-    "    for tmp in $(%s -t %s -L $tmp2 | \\\n"
+    "    for tmp in $($EBT -t nat -L $tmp2 | \\\n"
     "      sed -n \"/Bridge chain/,\\$ s/.*-j \\\\([%s]-.*\\\\)/\\\\1/p\");\n"
     "    do\n"
     "      echo $tmp\n"
@@ -123,8 +121,8 @@ static const char ebtables_script_func_collect_chains[] =
 static const char ebiptables_script_func_rm_chains[] =
     "rm_chains()\n"
     "{\n"
-    "  for tmp in $*; do %s -t %s -F $tmp; done\n"
-    "  for tmp in $*; do %s -t %s -X $tmp; done\n"
+    "  for tmp in $*; do $EBT -t nat -F $tmp; done\n"
+    "  for tmp in $*; do $EBT -t nat -X $tmp; done\n"
     "}\n";
 
 static const char ebiptables_script_func_rename_chains[] =
@@ -132,8 +130,8 @@ static const char ebiptables_script_func_rename_chains[] =
     "{\n"
     "  for tmp in $*; do\n"
     "    case $tmp in\n"
-    "      %c*) %s -t %s -E $tmp %c${tmp#?} ;;\n"
-    "      %c*) %s -t %s -E $tmp %c${tmp#?} ;;\n"
+    "      %c*) $EBT -t nat -E $tmp %c${tmp#?} ;;\n"
+    "      %c*) $EBT -t nat -E $tmp %c${tmp#?} ;;\n"
     "    esac\n"
     "  done\n"
     "}\n";
@@ -146,6 +144,9 @@ static const char ebiptables_script_set_ifs[] =
 #define NWFILTER_FUNC_RM_CHAINS ebiptables_script_func_rm_chains
 #define NWFILTER_FUNC_RENAME_CHAINS ebiptables_script_func_rename_chains
 #define NWFILTER_FUNC_SET_IFS ebiptables_script_set_ifs
+
+#define NWFILTER_SET_EBTABLES_SHELLVAR(BUFPTR) \
+    virBufferAsprintf(BUFPTR, "EBT=%s\n", ebtables_cmd_path);
 
 #define VIRT_IN_CHAIN      "libvirt-in"
 #define VIRT_OUT_CHAIN     "libvirt-out"
@@ -1995,9 +1996,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
     case VIR_NWFILTER_RULE_PROTOCOL_MAC:
 
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "%s -t %s -%%c %s %%s",
-                          ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain);
-
+                          CMD_DEF_PRE "$EBT -t nat -%%c %s %%s",
+                          chain);
 
         if (ebtablesHandleEthHdr(&buf,
                                  vars,
@@ -2020,8 +2020,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
     case VIR_NWFILTER_RULE_PROTOCOL_VLAN:
 
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "%s -t %s -%%c %s %%s",
-                          ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain);
+                          CMD_DEF_PRE "$EBT -t nat -%%c %s %%s",
+                          chain);
 
 
         if (ebtablesHandleEthHdr(&buf,
@@ -2087,8 +2087,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
         }
 
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "%s -t %s -%%c %s %%s",
-                          ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain);
+                          CMD_DEF_PRE "$EBT -t nat -%%c %s %%s",
+                          chain);
 
 
         if (ebtablesHandleEthHdr(&buf,
@@ -2125,8 +2125,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
     case VIR_NWFILTER_RULE_PROTOCOL_RARP:
 
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "%s -t %s -%%c %s %%s",
-                          ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain);
+                          CMD_DEF_PRE "$EBT -t nat -%%c %s %%s",
+                          chain);
 
         if (ebtablesHandleEthHdr(&buf,
                                  vars,
@@ -2234,8 +2234,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
 
     case VIR_NWFILTER_RULE_PROTOCOL_IP:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "%s -t %s -%%c %s %%s",
-                          ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain);
+                          CMD_DEF_PRE "$EBT -t nat -%%c %s %%s",
+                          chain);
 
         if (ebtablesHandleEthHdr(&buf,
                                  vars,
@@ -2370,8 +2370,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
 
     case VIR_NWFILTER_RULE_PROTOCOL_IPV6:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "%s -t %s -%%c %s %%s",
-                          ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain);
+                          CMD_DEF_PRE "$EBT -t nat -%%c %s %%s",
+                          chain);
 
         if (ebtablesHandleEthHdr(&buf,
                                  vars,
@@ -2494,8 +2494,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
 
     case VIR_NWFILTER_RULE_PROTOCOL_NONE:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "%s -t %s -%%c %s %%s",
-                          ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain);
+                          CMD_DEF_PRE "$EBT -t nat -%%c %s %%s",
+                          chain);
     break;
 
     default:
@@ -2768,10 +2768,10 @@ ebtablesCreateTmpRootChain(virBufferPtr buf,
     PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
     virBufferAsprintf(buf,
-                      CMD_DEF("%s -t %s -N %s") CMD_SEPARATOR
+                      CMD_DEF("$EBT -t nat -N %s") CMD_SEPARATOR
                       CMD_EXEC
                       "%s",
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain,
+                      chain,
                       CMD_STOPONERR(stopOnError));
 
     return 0;
@@ -2791,10 +2791,9 @@ ebtablesLinkTmpRootChain(virBufferPtr buf,
     PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
     virBufferAsprintf(buf,
-                      CMD_DEF("%s -t %s -A %s -%c %s -j %s") CMD_SEPARATOR
+                      CMD_DEF("$EBT -t nat -A %s -%c %s -j %s") CMD_SEPARATOR
                       CMD_EXEC
                       "%s",
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE,
                       (incoming) ? EBTABLES_CHAIN_INCOMING
                                  : EBTABLES_CHAIN_OUTGOING,
                       iodev, ifname, chain,
@@ -2822,10 +2821,10 @@ _ebtablesRemoveRootChain(virBufferPtr buf,
     PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
     virBufferAsprintf(buf,
-                      "%s -t %s -F %s" CMD_SEPARATOR
-                      "%s -t %s -X %s" CMD_SEPARATOR,
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain,
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain);
+                      "$EBT -t nat -F %s" CMD_SEPARATOR
+                      "$EBT -t nat -X %s" CMD_SEPARATOR,
+                      chain,
+                      chain);
 
     return 0;
 }
@@ -2867,8 +2866,7 @@ _ebtablesUnlinkRootChain(virBufferPtr buf,
     PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
     virBufferAsprintf(buf,
-                      "%s -t %s -D %s -%c %s -j %s" CMD_SEPARATOR,
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE,
+                      "$EBT -t nat -D %s -%c %s -j %s" CMD_SEPARATOR,
                       (incoming) ? EBTABLES_CHAIN_INCOMING
                                  : EBTABLES_CHAIN_OUTGOING,
                       iodev, ifname, chain);
@@ -2933,25 +2931,24 @@ ebtablesCreateTmpSubChain(ebiptablesRuleInstPtr *inst,
     }
 
     virBufferAsprintf(&buf,
-                      CMD_DEF("%s -t %s -F %s") CMD_SEPARATOR
+                      CMD_DEF("$EBT -t nat -F %s") CMD_SEPARATOR
                       CMD_EXEC
-                      CMD_DEF("%s -t %s -X %s") CMD_SEPARATOR
+                      CMD_DEF("$EBT -t nat -X %s") CMD_SEPARATOR
                       CMD_EXEC
-                      CMD_DEF("%s -t %s -N %s") CMD_SEPARATOR
+                      CMD_DEF("$EBT -t nat -N %s") CMD_SEPARATOR
                       CMD_EXEC
                       "%s"
-                      CMD_DEF("%s -t %s -%%c %s %%s %s-j %s")
+                      CMD_DEF("$EBT -t nat -%%c %s %%s %s-j %s")
                           CMD_SEPARATOR
                       CMD_EXEC
                       "%s",
 
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain,
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain,
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain,
+                      chain,
+                      chain,
+                      chain,
 
                       CMD_STOPONERR(stopOnError),
 
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE,
                       rootchain, protostr, chain,
 
                       CMD_STOPONERR(stopOnError));
@@ -2985,11 +2982,11 @@ _ebtablesRemoveSubChains(virBufferPtr buf,
     char rootchain[MAX_CHAINNAME_LENGTH];
     unsigned i;
 
+    NWFILTER_SET_EBTABLES_SHELLVAR(buf);
+
     virBufferAsprintf(buf, NWFILTER_FUNC_COLLECT_CHAINS,
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chains);
-    virBufferAsprintf(buf, NWFILTER_FUNC_RM_CHAINS,
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE,
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE);
+                      chains);
+    virBufferAdd(buf, NWFILTER_FUNC_RM_CHAINS, -1);
 
     virBufferAsprintf(buf, NWFILTER_FUNC_SET_IFS);
     virBufferAddLit(buf, "chains=\"$(collect_chains");
@@ -3002,8 +2999,7 @@ _ebtablesRemoveSubChains(virBufferPtr buf,
     for (i = 0; chains[i] != 0; i++) {
         PRINT_ROOT_CHAIN(rootchain, chains[i], ifname);
         virBufferAsprintf(buf,
-                          "%s -t %s -F %s\n",
-                          ebtables_cmd_path, EBTABLES_DEFAULT_TABLE,
+                          "$EBT -t nat -F %s\n",
                           rootchain);
     }
     virBufferAddLit(buf, "rm_chains $chains\n");
@@ -3058,8 +3054,8 @@ ebtablesRenameTmpSubChain(virBufferPtr buf,
     }
 
     virBufferAsprintf(buf,
-                      "%s -t %s -E %s %s" CMD_SEPARATOR,
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, tmpchain, chain);
+                      "$EBT -t nat -E %s %s" CMD_SEPARATOR,
+                      tmpchain, chain);
     return 0;
 }
 
@@ -3082,14 +3078,14 @@ ebtablesRenameTmpSubAndRootChains(virBufferPtr buf,
         CHAINPREFIX_HOST_OUT_TEMP,
         0};
 
+    NWFILTER_SET_EBTABLES_SHELLVAR(buf);
+
     virBufferAsprintf(buf, NWFILTER_FUNC_COLLECT_CHAINS,
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chains);
+                      chains);
     virBufferAsprintf(buf, NWFILTER_FUNC_RENAME_CHAINS,
                       CHAINPREFIX_HOST_IN_TEMP,
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE,
                       CHAINPREFIX_HOST_IN,
                       CHAINPREFIX_HOST_OUT_TEMP,
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE,
                       CHAINPREFIX_HOST_OUT);
 
     virBufferAsprintf(buf, NWFILTER_FUNC_SET_IFS);
@@ -3168,40 +3164,41 @@ ebtablesApplyBasicRules(const char *ifname,
 
     ebiptablesAllTeardown(ifname);
 
+    NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
+
     ebtablesCreateTmpRootChain(&buf, 1, ifname, 1);
 
     PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
     virBufferAsprintf(&buf,
-                      CMD_DEF("%s -t %s -A %s -s ! %s -j DROP") CMD_SEPARATOR
+                      CMD_DEF("$EBT -t nat -A %s -s ! %s -j DROP") CMD_SEPARATOR
                       CMD_EXEC
                       "%s",
 
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE,
                       chain, macaddr_str,
                       CMD_STOPONERR(1));
 
     virBufferAsprintf(&buf,
-                      CMD_DEF("%s -t %s -A %s -p IPv4 -j ACCEPT") CMD_SEPARATOR
+                      CMD_DEF("$EBT -t nat -A %s -p IPv4 -j ACCEPT") CMD_SEPARATOR
                       CMD_EXEC
                       "%s",
 
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain,
+                      chain,
                       CMD_STOPONERR(1));
 
     virBufferAsprintf(&buf,
-                      CMD_DEF("%s -t %s -A %s -p ARP -j ACCEPT") CMD_SEPARATOR
+                      CMD_DEF("$EBT -t nat -A %s -p ARP -j ACCEPT") CMD_SEPARATOR
                       CMD_EXEC
                       "%s",
 
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain,
+                      chain,
                       CMD_STOPONERR(1));
 
     virBufferAsprintf(&buf,
-                      CMD_DEF("%s -t %s -A %s -j DROP") CMD_SEPARATOR
+                      CMD_DEF("$EBT -t nat -A %s -j DROP") CMD_SEPARATOR
                       CMD_EXEC
                       "%s",
 
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain,
+                      chain,
                       CMD_STOPONERR(1));
 
     ebtablesLinkTmpRootChain(&buf, 1, ifname, 1);
@@ -3266,6 +3263,8 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
 
     ebiptablesAllTeardown(ifname);
 
+    NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
+
     ebtablesCreateTmpRootChain(&buf, 1, ifname, 1);
     ebtablesCreateTmpRootChain(&buf, 0, ifname, 1);
 
@@ -3273,7 +3272,7 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
     PRINT_ROOT_CHAIN(chain_out, CHAINPREFIX_HOST_OUT_TEMP, ifname);
 
     virBufferAsprintf(&buf,
-                      CMD_DEF("%s -t %s -A %s"
+                      CMD_DEF("$EBT -t nat -A %s"
                               " -s %s -d Broadcast "
                               " -p ipv4 --ip-protocol udp"
                               " --ip-src 0.0.0.0 --ip-dst 255.255.255.255"
@@ -3282,20 +3281,20 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
                       CMD_EXEC
                       "%s",
 
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain_in,
+                      chain_in,
                       macaddr_str,
                       CMD_STOPONERR(1));
 
     virBufferAsprintf(&buf,
-                      CMD_DEF("%s -t %s -A %s -j DROP") CMD_SEPARATOR
+                      CMD_DEF("$EBT -t nat -A %s -j DROP") CMD_SEPARATOR
                       CMD_EXEC
                       "%s",
 
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain_in,
+                      chain_in,
                       CMD_STOPONERR(1));
 
     virBufferAsprintf(&buf,
-                      CMD_DEF("%s -t %s -A %s"
+                      CMD_DEF("$EBT -t nat -A %s"
                               " -d %s"
                               " -p ipv4 --ip-protocol udp"
                               " %s"
@@ -3304,17 +3303,17 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
                       CMD_EXEC
                       "%s",
 
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain_out,
+                      chain_out,
                       macaddr_str,
                       srcIPParam != NULL ? srcIPParam : "",
                       CMD_STOPONERR(1));
 
     virBufferAsprintf(&buf,
-                      CMD_DEF("%s -t %s -A %s -j DROP") CMD_SEPARATOR
+                      CMD_DEF("$EBT -t nat -A %s -j DROP") CMD_SEPARATOR
                       CMD_EXEC
                       "%s",
 
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain_out,
+                      chain_out,
                       CMD_STOPONERR(1));
 
     ebtablesLinkTmpRootChain(&buf, 1, ifname, 1);
@@ -3367,6 +3366,8 @@ ebtablesApplyDropAllRules(const char *ifname)
 
     ebiptablesAllTeardown(ifname);
 
+    NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
+
     ebtablesCreateTmpRootChain(&buf, 1, ifname, 1);
     ebtablesCreateTmpRootChain(&buf, 0, ifname, 1);
 
@@ -3374,19 +3375,19 @@ ebtablesApplyDropAllRules(const char *ifname)
     PRINT_ROOT_CHAIN(chain_out, CHAINPREFIX_HOST_OUT_TEMP, ifname);
 
     virBufferAsprintf(&buf,
-                      CMD_DEF("%s -t %s -A %s -j DROP") CMD_SEPARATOR
+                      CMD_DEF("$EBT -t nat -A %s -j DROP") CMD_SEPARATOR
                       CMD_EXEC
                       "%s",
 
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain_in,
+                      chain_in,
                       CMD_STOPONERR(1));
 
     virBufferAsprintf(&buf,
-                      CMD_DEF("%s -t %s -A %s -j DROP") CMD_SEPARATOR
+                      CMD_DEF("$EBT -t nat -A %s -j DROP") CMD_SEPARATOR
                       CMD_EXEC
                       "%s",
 
-                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain_out,
+                      chain_out,
                       CMD_STOPONERR(1));
 
     ebtablesLinkTmpRootChain(&buf, 1, ifname, 1);
@@ -3424,6 +3425,8 @@ static int ebtablesCleanAll(const char *ifname)
 
     if (!ebtables_cmd_path)
         return 0;
+
+    NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
 
     ebtablesUnlinkRootChain(&buf, 1, ifname);
     ebtablesUnlinkRootChain(&buf, 0, ifname);
@@ -3626,8 +3629,11 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
         }
     }
 
+
     /* cleanup whatever may exist */
     if (ebtables_cmd_path) {
+        NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
+
         ebtablesUnlinkTmpRootChain(&buf, 1, ifname);
         ebtablesUnlinkTmpRootChain(&buf, 0, ifname);
         ebtablesRemoveTmpSubChains(&buf, ifname);
@@ -3635,6 +3641,8 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
         ebtablesRemoveTmpRootChain(&buf, 0, ifname);
         ebiptablesExecCLI(&buf, &cli_status, NULL);
     }
+
+    NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
 
     /* create needed chains */
     if (ebtablesCreateTmpRootAndSubChains(&buf, ifname, chains_in_set , 1,
@@ -3650,6 +3658,8 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0)
         goto tear_down_tmpebchains;
+
+    NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
 
     /* process ebtables commands; interleave commands from filters with
        commands for creating and connecting ebtables chains */
@@ -3750,6 +3760,8 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
         iptablesCheckBridgeNFCallEnabled(true);
     }
 
+    NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
+
     if (virHashSize(chains_in_set) != 0)
         ebtablesLinkTmpRootChain(&buf, 1, ifname, 1);
     if (virHashSize(chains_out_set) != 0)
@@ -3771,6 +3783,8 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 tear_down_ebsubchains_and_unlink:
     if (ebtables_cmd_path) {
+        NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
+
         ebtablesUnlinkTmpRootChain(&buf, 1, ifname);
         ebtablesUnlinkTmpRootChain(&buf, 0, ifname);
     }
@@ -3789,6 +3803,8 @@ tear_down_tmpiptchains:
 
 tear_down_tmpebchains:
     if (ebtables_cmd_path) {
+        NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
+
         ebtablesRemoveTmpSubChains(&buf, ifname);
         ebtablesRemoveTmpRootChain(&buf, 1, ifname);
         ebtablesRemoveTmpRootChain(&buf, 0, ifname);
@@ -3835,6 +3851,8 @@ ebiptablesTearNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     if (ebtables_cmd_path) {
+        NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
+
         ebtablesUnlinkTmpRootChain(&buf, 1, ifname);
         ebtablesUnlinkTmpRootChain(&buf, 0, ifname);
 
@@ -3874,6 +3892,8 @@ ebiptablesTearOldRules(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     if (ebtables_cmd_path) {
+        NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
+
         ebtablesUnlinkRootChain(&buf, 1, ifname);
         ebtablesUnlinkRootChain(&buf, 0, ifname);
 
@@ -3914,6 +3934,8 @@ ebiptablesRemoveRules(virConnectPtr conn ATTRIBUTE_UNUSED,
     int i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     ebiptablesRuleInstPtr *inst = (ebiptablesRuleInstPtr *)_inst;
+
+    NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
 
     for (i = 0; i < nruleInstances; i++)
         ebiptablesInstCommand(&buf,
@@ -3964,6 +3986,8 @@ ebiptablesAllTeardown(const char *ifname)
     }
 
     if (ebtables_cmd_path) {
+        NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
+
         ebtablesUnlinkRootChain(&buf, 1, ifname);
         ebtablesUnlinkRootChain(&buf, 0, ifname);
 
@@ -4018,12 +4042,12 @@ ebiptablesDriverInit(bool privileged)
 
     ebtables_cmd_path = virFindFileInPath("ebtables");
     if (ebtables_cmd_path) {
+        NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
         /* basic probing */
         virBufferAsprintf(&buf,
-                          CMD_DEF("%s -t %s -L") CMD_SEPARATOR
+                          CMD_DEF("$EBT -t nat -L") CMD_SEPARATOR
                           CMD_EXEC
                           "%s",
-                          ebtables_cmd_path, EBTABLES_DEFAULT_TABLE,
                           CMD_STOPONERR(1));
 
         if (ebiptablesExecCLI(&buf, NULL, NULL) < 0)
