@@ -1102,7 +1102,7 @@ static void virNetClientIOEventLoopPassTheBuck(virNetClientPtr client, virNetCli
         if (tmp != thiscall && tmp->haveThread) {
             VIR_DEBUG("Passing the buck to %p", tmp);
             virCondSignal(&tmp->cond);
-            break;
+            return;
         }
         tmp = tmp->next;
     }
