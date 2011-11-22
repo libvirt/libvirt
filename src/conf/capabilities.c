@@ -23,6 +23,8 @@
 
 #include <config.h>
 
+#include <strings.h>
+
 #include "capabilities.h"
 #include "buf.h"
 #include "memory.h"
