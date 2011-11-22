@@ -92,6 +92,11 @@ option of the B<connect> command.
 
 Output elapsed time information for each command.
 
+=item B<-e>, B<--escape> I<string>
+
+Set alternative escape sequence for I<console> command. By default,
+telnet's B<^]> is used.
+
 =back
 
 =head1 NOTES

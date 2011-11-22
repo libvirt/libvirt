@@ -76,6 +76,9 @@ static char *progname;
         ((((int) ((T)->tv_sec - (U)->tv_sec)) * 1000000.0 + \
           ((int) ((T)->tv_usec - (U)->tv_usec))) / 1000.0)
 
+/* Default escape char Ctrl-] as per telnet */
+#define CTRL_CLOSE_BRACKET "^]"
+
 /**
  * The log configuration
  */
@@ -254,6 +257,9 @@ typedef struct __vshControl {
     virMutex lock;
     bool eventLoopStarted;
     bool quit;
+
+    const char *escapeChar;     /* String representation of
+                                   console escape character */
 } __vshControl;
 
 typedef struct vshCmdGrp {
@@ -801,8 +807,8 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom, const char *name)
     }
 
     vshPrintExtra(ctl, _("Connected to domain %s\n"), virDomainGetName(dom));
-    vshPrintExtra(ctl, "%s", _("Escape character is ^]\n"));
-    if (vshRunConsole(dom, name) == 0)
+    vshPrintExtra(ctl, _("Escape character is %s\n"), ctl->escapeChar);
+    if (vshRunConsole(dom, name, ctl->escapeChar) == 0)
         ret = true;
 
  cleanup:
@@ -17544,15 +17550,17 @@ vshUsage(void)
     fprintf(stdout, _("\n%s [options]... [<command_string>]"
                       "\n%s [options]... <command> [args...]\n\n"
                       "  options:\n"
-                      "    -c | --connect <uri>    hypervisor connection URI\n"
+                      "    -c | --connect=URI      hypervisor connection URI\n"
                       "    -r | --readonly         connect readonly\n"
-                      "    -d | --debug <num>      debug level [0-4]\n"
+                      "    -d | --debug=NUM        debug level [0-4]\n"
                       "    -h | --help             this help\n"
                       "    -q | --quiet            quiet mode\n"
                       "    -t | --timing           print timing information\n"
-                      "    -l | --log <file>       output logging to file\n"
-                      "    -v | --version[=short]  program version\n"
-                      "    -V | --version=long     version and full options\n\n"
+                      "    -l | --log=FILE         output logging to file\n"
+                      "    -v                      short version\n"
+                      "    -V                      long version\n"
+                      "         --version[=TYPE]   version, TYPE is short or long (default short)\n"
+                      "    -e | --escape <char>    set escape sequence for console\n\n"
                       "  commands (non interactive mode):\n\n"), progname, progname);
 
     for (grp = cmdGroups; grp->name; grp++) {
@@ -17703,7 +17711,7 @@ static bool
 vshParseArgv(vshControl *ctl, int argc, char **argv)
 {
     bool help = false;
-    int arg;
+    int arg, len;
     struct option opt[] = {
         {"debug", required_argument, NULL, 'd'},
         {"help", no_argument, NULL, 'h'},
@@ -17713,13 +17721,14 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
         {"connect", required_argument, NULL, 'c'},
         {"readonly", no_argument, NULL, 'r'},
         {"log", required_argument, NULL, 'l'},
+        {"escape", required_argument, NULL, 'e'},
         {NULL, 0, NULL, 0}
     };
 
     /* Standard (non-command) options. The leading + ensures that no
      * argument reordering takes place, so that command options are
      * not confused with top-level virsh options. */
-    while ((arg = getopt_long(argc, argv, "+d:hqtc:vVrl:", opt, NULL)) != -1) {
+    while ((arg = getopt_long(argc, argv, "+d:hqtc:vVrl:e:", opt, NULL)) != -1) {
         switch (arg) {
         case 'd':
             if (virStrToLong_i(optarg, NULL, 10, &ctl->debug) < 0) {
@@ -17753,6 +17762,18 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
             break;
         case 'l':
             ctl->logfile = vshStrdup(ctl, optarg);
+            break;
+        case 'e':
+            len = strlen(optarg);
+
+            if ((len == 2 && *optarg == '^') ||
+                (len == 1 && *optarg != '^')) {
+                ctl->escapeChar = optarg;
+            } else {
+                vshError(ctl, _("Invalid string '%s' for escape sequence"),
+                         optarg);
+                exit(EXIT_FAILURE);
+            }
             break;
         default:
             vshError(ctl, _("unsupported option '-%c'. See --help."), arg);
@@ -17795,6 +17816,8 @@ main(int argc, char **argv)
     ctl->imode = true;          /* default is interactive mode */
     ctl->log_fd = -1;           /* Initialize log file descriptor */
     ctl->debug = VSH_DEBUG_DEFAULT;
+    ctl->escapeChar = CTRL_CLOSE_BRACKET;
+
 
     if (!setlocale(LC_ALL, "")) {
         perror("setlocale");

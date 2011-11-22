@@ -44,9 +44,11 @@
 # include "threads.h"
 # include "virterror_internal.h"
 
-
-/* ie  Ctrl-]  as per telnet */
-# define CTRL_CLOSE_BRACKET '\35'
+/*
+ * Convert given character to control character.
+ * Basically, we assume ASCII, and take lower 6 bits.
+ */
+# define CONTROL(c) ((c) ^ 0x40)
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -69,6 +71,8 @@ struct virConsole {
 
     struct virConsoleBuffer streamToTerminal;
     struct virConsoleBuffer terminalToStream;
+
+    char escapeChar;
 };
 
 static int got_signal = 0;
@@ -219,7 +223,7 @@ virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
             virConsoleShutdown(con);
             return;
         }
-        if (con->terminalToStream.data[con->terminalToStream.offset] == CTRL_CLOSE_BRACKET) {
+        if (con->terminalToStream.data[con->terminalToStream.offset] == con->escapeChar) {
             virConsoleShutdown(con);
             return;
         }
@@ -282,7 +286,18 @@ virConsoleEventOnStdout(int watch ATTRIBUTE_UNUSED,
 }
 
 
-int vshRunConsole(virDomainPtr dom, const char *dev_name)
+static char
+vshGetEscapeChar(const char *s)
+{
+    if (*s == '^')
+        return CONTROL(s[1]);
+
+    return *s;
+}
+
+int vshRunConsole(virDomainPtr dom,
+                  const char *dev_name,
+                  const char *escape_seq)
 {
     int ret = -1;
     struct termios ttyattr, rawattr;
@@ -330,6 +345,7 @@ int vshRunConsole(virDomainPtr dom, const char *dev_name)
         goto cleanup;
     }
 
+    con->escapeChar = vshGetEscapeChar(escape_seq);
     con->st = virStreamNew(virDomainGetConnect(dom),
                            VIR_STREAM_NONBLOCK);
     if (!con->st)
