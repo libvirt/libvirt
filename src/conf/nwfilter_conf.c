@@ -84,6 +84,7 @@ VIR_ENUM_IMPL(virNWFilterChainSuffix, VIR_NWFILTER_CHAINSUFFIX_LAST,
               "root",
               "mac",
               "vlan",
+              "stp",
               "arp",
               "rarp",
               "ipv4",
@@ -93,6 +94,7 @@ VIR_ENUM_IMPL(virNWFilterRuleProtocol, VIR_NWFILTER_RULE_PROTOCOL_LAST,
               "none",
               "mac",
               "vlan",
+              "stp",
               "arp",
               "rarp",
               "ip",
@@ -1047,6 +1049,138 @@ static const virXMLAttr2Struct vlanAttributes[] = {
     }
 };
 
+/* STP is documented by IEEE 802.1D; for a synopsis,
+ * see http://www.javvin.com/protocolSTP.html */
+static const virXMLAttr2Struct stpAttributes[] = {
+    /* spanning tree uses a special destination MAC address */
+    {
+        .name = SRCMACADDR,
+        .datatype = DATATYPE_MACADDR,
+        .dataIdx = offsetof(virNWFilterRuleDef,
+                            p.stpHdrFilter.ethHdr.dataSrcMACAddr),
+    },
+    {
+        .name = SRCMACMASK,
+        .datatype = DATATYPE_MACMASK,
+        .dataIdx = offsetof(virNWFilterRuleDef,
+                            p.stpHdrFilter.ethHdr.dataSrcMACMask),
+    },
+    {
+        .name = "type",
+        .datatype = DATATYPE_UINT8 | DATATYPE_UINT8_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataType),
+    },
+    {
+        .name = "flags",
+        .datatype = DATATYPE_UINT8 | DATATYPE_UINT8_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataFlags),
+    },
+    {
+        .name = "root-priority",
+        .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataRootPri),
+    },
+    {
+        .name = "root-priority-hi",
+        .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataRootPriHi),
+    },
+    {
+        .name = "root-address",
+        .datatype = DATATYPE_MACADDR,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataRootAddr),
+    },
+    {
+        .name = "root-address-mask",
+        .datatype = DATATYPE_MACMASK,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataRootAddrMask),
+    },
+    {
+        .name = "root-cost",
+        .datatype = DATATYPE_UINT32 | DATATYPE_UINT32_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataRootCost),
+    },
+    {
+        .name = "root-cost-hi",
+        .datatype = DATATYPE_UINT32 | DATATYPE_UINT32_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataRootCostHi),
+    },
+    {
+        .name = "sender-priority",
+        .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataSndrPrio),
+    },
+    {
+        .name = "sender-priority-hi",
+        .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataSndrPrioHi),
+    },
+    {
+        .name = "sender-address",
+        .datatype = DATATYPE_MACADDR,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataSndrAddr),
+    },
+    {
+        .name = "sender-address-mask",
+        .datatype = DATATYPE_MACMASK,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataSndrAddrMask),
+    },
+    {
+        .name = "port",
+        .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataPort),
+    },
+    {
+        .name = "port-hi",
+        .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataPortHi),
+    },
+    {
+        .name = "age",
+        .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataAge),
+    },
+    {
+        .name = "age-hi",
+        .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataAgeHi),
+    },
+    {
+        .name = "max-age",
+        .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataMaxAge),
+    },
+    {
+        .name = "max-age-hi",
+        .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataMaxAgeHi),
+    },
+    {
+        .name = "hello-time",
+        .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataHelloTime),
+    },
+    {
+        .name = "hello-time-hi",
+        .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataHelloTimeHi),
+    },
+    {
+        .name = "forward-delay",
+        .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataFwdDelay),
+    },
+    {
+        .name = "forward-delay-hi",
+        .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.stpHdrFilter.dataFwdDelayHi),
+    },
+    COMMENT_PROP(stpHdrFilter),
+    {
+        .name = NULL,
+    }
+};
+
 static const virXMLAttr2Struct arpAttributes[] = {
     COMMON_MAC_PROPS(arpHdrFilter),
     {
@@ -1505,6 +1639,7 @@ static const virAttributes virAttr[] = {
     PROTOCOL_ENTRY("rarp"   , arpAttributes    , VIR_NWFILTER_RULE_PROTOCOL_RARP),
     PROTOCOL_ENTRY("mac"    , macAttributes    , VIR_NWFILTER_RULE_PROTOCOL_MAC),
     PROTOCOL_ENTRY("vlan"   , vlanAttributes   , VIR_NWFILTER_RULE_PROTOCOL_VLAN),
+    PROTOCOL_ENTRY("stp"    , stpAttributes   ,  VIR_NWFILTER_RULE_PROTOCOL_STP),
     PROTOCOL_ENTRY("ip"     , ipAttributes     , VIR_NWFILTER_RULE_PROTOCOL_IP),
     PROTOCOL_ENTRY("ipv6"   , ipv6Attributes   , VIR_NWFILTER_RULE_PROTOCOL_IPV6),
     PROTOCOL_ENTRY("tcp"    , tcpAttributes    , VIR_NWFILTER_RULE_PROTOCOL_TCP),
@@ -1624,6 +1759,18 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                                     data.ui = uint_val;
                                 } else
                                     rc = -1;
+                            } else
+                                rc = -1;
+                        break;
+
+                        case DATATYPE_UINT32_HEX:
+                            base = 16;
+                            /* fallthrough */
+                        case DATATYPE_UINT32:
+                            if (virStrToLong_ui(prop, NULL, base, &uint_val) >= 0) {
+                                item->u.u32 = uint_val;
+                                found = 1;
+                                data.ui = uint_val;
                             } else
                                 rc = -1;
                         break;
@@ -1837,6 +1984,31 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
                       rule->p.vlanHdrFilter.ethHdr.dataSrcMACAddr);
         COPY_NEG_SIGN(rule->p.vlanHdrFilter.ethHdr.dataDstMACMask,
                       rule->p.vlanHdrFilter.ethHdr.dataDstMACAddr);
+    break;
+
+    case VIR_NWFILTER_RULE_PROTOCOL_STP:
+        COPY_NEG_SIGN(rule->p.stpHdrFilter.ethHdr.dataSrcMACMask,
+                      rule->p.stpHdrFilter.ethHdr.dataSrcMACAddr);
+        COPY_NEG_SIGN(rule->p.stpHdrFilter.dataRootPriHi,
+                      rule->p.stpHdrFilter.dataRootPri);
+        COPY_NEG_SIGN(rule->p.stpHdrFilter.dataRootAddrMask,
+                      rule->p.stpHdrFilter.dataRootAddr);
+        COPY_NEG_SIGN(rule->p.stpHdrFilter.dataRootCostHi,
+                      rule->p.stpHdrFilter.dataRootCost);
+        COPY_NEG_SIGN(rule->p.stpHdrFilter.dataSndrPrioHi,
+                      rule->p.stpHdrFilter.dataSndrPrio);
+        COPY_NEG_SIGN(rule->p.stpHdrFilter.dataSndrAddrMask,
+                      rule->p.stpHdrFilter.dataSndrAddr);
+        COPY_NEG_SIGN(rule->p.stpHdrFilter.dataPortHi,
+                      rule->p.stpHdrFilter.dataPort);
+        COPY_NEG_SIGN(rule->p.stpHdrFilter.dataAgeHi,
+                      rule->p.stpHdrFilter.dataAge);
+        COPY_NEG_SIGN(rule->p.stpHdrFilter.dataMaxAgeHi,
+                      rule->p.stpHdrFilter.dataMaxAge);
+        COPY_NEG_SIGN(rule->p.stpHdrFilter.dataHelloTimeHi,
+                      rule->p.stpHdrFilter.dataHelloTime);
+        COPY_NEG_SIGN(rule->p.stpHdrFilter.dataFwdDelayHi,
+                      rule->p.stpHdrFilter.dataFwdDelay);
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_IP:
@@ -2919,6 +3091,14 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
                case DATATYPE_UINT16:
                    virBufferAsprintf(buf, asHex ? "0x%x" : "%d",
                                      item->u.u16);
+               break;
+
+               case DATATYPE_UINT32_HEX:
+                   asHex = true;
+                   /* fallthrough */
+               case DATATYPE_UINT32:
+                   virBufferAsprintf(buf, asHex ? "0x%x" : "%u",
+                                     item->u.u32);
                break;
 
                case DATATYPE_IPADDR:

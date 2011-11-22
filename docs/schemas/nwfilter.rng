@@ -40,6 +40,16 @@
             </optional>
             <optional>
               <zeroOrMore>
+                <element name="stp">
+                  <ref name="match-attribute"/>
+                  <ref name="srcmacandmask-attributes"/>
+                  <ref name="stp-attributes"/>
+                  <ref name="comment-attribute"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
                 <element name="arp">
                   <ref name="match-attribute"/>
                   <ref name="common-l2-attributes"/>
@@ -300,6 +310,9 @@
             <param name="pattern">mac[a-zA-Z0-9_\.:-]{0,9}</param>
           </data>
           <data type="string">
+            <param name="pattern">stp[a-zA-Z0-9_\.:-]{0,9}</param>
+          </data>
+          <data type="string">
             <param name="pattern">vlan[a-zA-Z0-9_\.:-]{0,8}</param>
           </data>
           <data type="string">
@@ -382,7 +395,7 @@
     </interleave>
   </define>
 
-  <define name="common-l2-attributes">
+  <define name="srcmacandmask-attributes">
     <interleave>
       <ref name="srcmac-attribute"/>
       <optional>
@@ -390,6 +403,12 @@
            <ref name="addrMAC"/>
          </attribute>
       </optional>
+    </interleave>
+  </define>
+
+  <define name="common-l2-attributes">
+    <interleave>
+      <ref name="srcmacandmask-attributes"/>
       <optional>
          <attribute name="dstmacaddr">
            <ref name="addrMAC"/>
@@ -586,6 +605,119 @@
         </attribute>
       </optional>
     </interleave>
+  </define>
+
+  <define name="stp-attributes">
+    <optional>
+      <attribute name="type">
+        <ref name="uint8range"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="flags">
+        <ref name="uint8range"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="root-priority">
+        <ref name="uint16range"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="root-priority-hi">
+        <ref name="uint16range"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="root-address">
+        <ref name="addrMAC"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="root-address-mask">
+        <ref name="addrMAC"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="root-cost">
+        <ref name="uint32range"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="root-cost-hi">
+        <ref name="uint32range"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="sender-priority">
+        <ref name="uint16range"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="sender-priority-hi">
+        <ref name="uint16range"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="sender-address">
+        <ref name="addrMAC"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="sender-address-mask">
+        <ref name="addrMAC"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="port">
+        <ref name="uint16range"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="port-hi">
+        <ref name="uint16range"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="age">
+        <ref name="uint16range"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="age-hi">
+        <ref name="uint16range"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="max-age">
+        <ref name="uint16range"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="max-age-hi">
+        <ref name="uint16range"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="hello-time">
+        <ref name="uint16range"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="hello-time-hi">
+        <ref name="uint16range"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="forward-delay">
+        <ref name="uint16range"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="forward-delay-hi">
+        <ref name="uint16range"/>
+      </attribute>
+    </optional>
   </define>
 
   <define name="arp-attributes">
@@ -848,6 +980,24 @@
       <data type="int">
         <param name="minInclusive">0</param>
         <param name="maxInclusive">65535</param>
+      </data>
+    </choice>
+  </define>
+
+  <define name="uint32range">
+    <choice>
+      <!-- variable -->
+      <data type="string">
+        <param name="pattern">$[a-zA-Z0-9_]+</param>
+      </data>
+
+      <data type="string">
+        <param name="pattern">0x[0-9a-fA-F]{1,8}</param>
+      </data>
+
+      <data type="int">
+        <param name="minInclusive">0</param>
+        <param name="maxInclusive">4294967295</param>
       </data>
     </choice>
   </define>

@@ -41,6 +41,7 @@
 #include "virfile.h"
 #include "command.h"
 #include "configmake.h"
+#include "intprops.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
@@ -190,6 +191,7 @@ enum l3_proto_idx {
     L3_PROTO_RARP_IDX,
     L2_PROTO_MAC_IDX,
     L2_PROTO_VLAN_IDX,
+    L2_PROTO_STP_IDX,
     L3_PROTO_LAST_IDX
 };
 
@@ -206,6 +208,7 @@ static const struct ushort_map l3_protocols[] = {
     USHORTMAP_ENTRY_IDX(L3_PROTO_ARP_IDX , ETHERTYPE_ARP   , "arp"),
     USHORTMAP_ENTRY_IDX(L3_PROTO_RARP_IDX, ETHERTYPE_REVARP, "rarp"),
     USHORTMAP_ENTRY_IDX(L2_PROTO_VLAN_IDX, ETHERTYPE_VLAN  , "vlan"),
+    USHORTMAP_ENTRY_IDX(L2_PROTO_STP_IDX,  0               , "stp"),
     USHORTMAP_ENTRY_IDX(L2_PROTO_MAC_IDX,  0               , "mac"),
     USHORTMAP_ENTRY_IDX(L3_PROTO_LAST_IDX, 0               , NULL),
 };
@@ -302,6 +305,16 @@ _printDataType(virNWFilterVarCombIterPtr vars,
                      item->u.u8) >= bufsize) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("Buffer too small for uint8 type"));
+            return 1;
+        }
+    break;
+
+    case DATATYPE_UINT32:
+    case DATATYPE_UINT32_HEX:
+        if (snprintf(buf, bufsize, asHex ? "0x%x" : "%u",
+                     item->u.u32) >= bufsize) {
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("Buffer too small for uint32 type"));
             return 1;
         }
     break;
@@ -937,7 +950,8 @@ iptablesHandleIpHdr(virBufferPtr buf,
                     virBufferPtr prefix)
 {
     char ipaddr[INET6_ADDRSTRLEN],
-         number[20];
+         number[MAX(INT_BUFSIZE_BOUND(uint32_t),
+                    INT_BUFSIZE_BOUND(int))];
     const char *src = "--source";
     const char *dst = "--destination";
     const char *srcrange = "--src-range";
@@ -1218,7 +1232,8 @@ _iptablesCreateRuleInstance(int directionIn,
                             bool maySkipICMP)
 {
     char chain[MAX_CHAINNAME_LENGTH];
-    char number[20];
+    char number[MAX(INT_BUFSIZE_BOUND(uint32_t),
+                    INT_BUFSIZE_BOUND(int))];
     virBuffer prefix = VIR_BUFFER_INITIALIZER;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virBuffer afterStateMatch = VIR_BUFFER_INITIALIZER;
@@ -1953,7 +1968,9 @@ ebtablesCreateRuleInstance(char chainPrefix,
     char macaddr[VIR_MAC_STRING_BUFLEN],
          ipaddr[INET_ADDRSTRLEN],
          ipv6addr[INET6_ADDRSTRLEN],
-         number[20];
+         number[MAX(INT_BUFSIZE_BOUND(uint32_t),
+                    INT_BUFSIZE_BOUND(int))],
+         field[MAX(VIR_MAC_STRING_BUFLEN, INET6_ADDRSTRLEN)];
     char chain[MAX_CHAINNAME_LENGTH];
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *target;
@@ -2019,17 +2036,89 @@ ebtablesCreateRuleInstance(char chainPrefix,
 #define INST_ITEM(STRUCT, ITEM, CLI) \
         if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM)) { \
             if (printDataType(vars, \
-                              number, sizeof(number), \
+                              field, sizeof(field), \
                               &rule->p.STRUCT.ITEM)) \
                 goto err_exit; \
             virBufferAsprintf(&buf, \
                           " " CLI " %s %s", \
                           ENTRY_GET_NEG_SIGN(&rule->p.STRUCT.ITEM), \
-                          number); \
+                          field); \
         }
+
+#define INST_ITEM_2PARMS(STRUCT, ITEM, ITEM_HI, CLI, SEP) \
+        if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM)) { \
+            if (printDataType(vars, \
+                              field, sizeof(field), \
+                              &rule->p.STRUCT.ITEM)) \
+                goto err_exit; \
+            virBufferAsprintf(&buf, \
+                          " " CLI " %s %s", \
+                          ENTRY_GET_NEG_SIGN(&rule->p.STRUCT.ITEM), \
+                          field); \
+            if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM_HI)) { \
+                if (printDataType(vars, \
+                                  field, sizeof(field), \
+                                  &rule->p.STRUCT.ITEM_HI)) \
+                    goto err_exit; \
+                virBufferAsprintf(&buf, SEP "%s", field); \
+            } \
+        }
+#define INST_ITEM_RANGE(S, I, I_HI, C) \
+    INST_ITEM_2PARMS(S, I, I_HI, C, ":")
+#define INST_ITEM_MASK(S, I, MASK, C) \
+    INST_ITEM_2PARMS(S, I, MASK, C, "/")
 
         INST_ITEM(vlanHdrFilter, dataVlanID, "--vlan-id")
         INST_ITEM(vlanHdrFilter, dataVlanEncap, "--vlan-encap")
+    break;
+
+    case VIR_NWFILTER_RULE_PROTOCOL_STP:
+
+        /* cannot handle inout direction with srcmask set in reverse dir.
+           since this clashes with -d below... */
+        if (reverse &&
+            HAS_ENTRY_ITEM(&rule->p.stpHdrFilter.ethHdr.dataSrcMACAddr)) {
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("STP filtering in %s direction with "
+                                   "source MAC address set is not supported"),
+                                   virNWFilterRuleDirectionTypeToString(
+                                       VIR_NWFILTER_RULE_DIRECTION_INOUT));
+            return -1;
+        }
+
+        virBufferAsprintf(&buf,
+                          CMD_DEF_PRE "%s -t %s -%%c %s %%s",
+                          ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain);
+
+
+        if (ebtablesHandleEthHdr(&buf,
+                                 vars,
+                                 &rule->p.stpHdrFilter.ethHdr,
+                                 reverse))
+            goto err_exit;
+
+        virBufferAddLit(&buf, " -d " NWFILTER_MAC_BGA);
+
+        INST_ITEM(stpHdrFilter, dataType, "--stp-type")
+        INST_ITEM(stpHdrFilter, dataFlags, "--stp-flags")
+        INST_ITEM_RANGE(stpHdrFilter, dataRootPri, dataRootPriHi,
+                        "--stp-root-pri");
+        INST_ITEM_MASK( stpHdrFilter, dataRootAddr, dataRootAddrMask,
+                       "--stp-root-addr");
+        INST_ITEM_RANGE(stpHdrFilter, dataRootCost, dataRootCostHi,
+                        "--stp-root-cost");
+        INST_ITEM_RANGE(stpHdrFilter, dataSndrPrio, dataSndrPrioHi,
+                        "--stp-sender-prio");
+        INST_ITEM_MASK( stpHdrFilter, dataSndrAddr, dataSndrAddrMask,
+                        "--stp-sender-addr");
+        INST_ITEM_RANGE(stpHdrFilter, dataPort, dataPortHi, "--stp-port");
+        INST_ITEM_RANGE(stpHdrFilter, dataAge, dataAgeHi, "--stp-msg-age");
+        INST_ITEM_RANGE(stpHdrFilter, dataMaxAge, dataMaxAgeHi,
+                        "--stp-max-age");
+        INST_ITEM_RANGE(stpHdrFilter, dataHelloTime, dataHelloTimeHi,
+                        "--stp-hello-time");
+        INST_ITEM_RANGE(stpHdrFilter, dataFwdDelay, dataFwdDelayHi,
+                        "--stp-forward-delay");
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_ARP:
@@ -2480,6 +2569,7 @@ ebiptablesCreateRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
     case VIR_NWFILTER_RULE_PROTOCOL_IP:
     case VIR_NWFILTER_RULE_PROTOCOL_MAC:
     case VIR_NWFILTER_RULE_PROTOCOL_VLAN:
+    case VIR_NWFILTER_RULE_PROTOCOL_STP:
     case VIR_NWFILTER_RULE_PROTOCOL_ARP:
     case VIR_NWFILTER_RULE_PROTOCOL_RARP:
     case VIR_NWFILTER_RULE_PROTOCOL_NONE:
@@ -2817,6 +2907,9 @@ ebtablesCreateTmpSubChain(ebiptablesRuleInstPtr *inst,
     switch (protoidx) {
     case L2_PROTO_MAC_IDX:
         protostr = strdup("");
+        break;
+    case L2_PROTO_STP_IDX:
+        virAsprintf(&protostr, "-d " NWFILTER_MAC_BGA " ");
         break;
     default:
         virAsprintf(&protostr, "-p 0x%04x ", l3_protocols[protoidx].attr);

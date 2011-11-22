@@ -830,6 +830,7 @@ virNWFilterPrintStateMatchFlags;
 virNWFilterPrintTCPFlags;
 virNWFilterRegisterCallbackDriver;
 virNWFilterRuleActionTypeToString;
+virNWFilterRuleDirectionTypeToString;
 virNWFilterRuleProtocolTypeToString;
 virNWFilterTestUnassignDef;
 virNWFilterUnlockFilterUpdates;

@@ -101,9 +101,13 @@ enum attrDatatype {
     DATATYPE_IPV6MASK         = (1 << 10),
     DATATYPE_STRINGCOPY       = (1 << 11),
     DATATYPE_BOOLEAN          = (1 << 12),
+    DATATYPE_UINT32           = (1 << 13),
+    DATATYPE_UINT32_HEX       = (1 << 14),
 
-    DATATYPE_LAST             = (1 << 13),
+    DATATYPE_LAST             = (1 << 15),
 };
+
+# define NWFILTER_MAC_BGA "01:80:c2:00:00:00"
 
 
 typedef struct _nwMACAddress nwMACAddress;
@@ -125,6 +129,7 @@ struct _nwItemDesc {
         bool         boolean;
         uint8_t      u8;
         uint16_t     u16;
+        uint32_t     u32;
         char         protocolID[10];
         char         *string;
         struct {
@@ -160,6 +165,36 @@ struct _vlanHdrFilterDef {
     ethHdrDataDef ethHdr;
     nwItemDesc dataVlanID;
     nwItemDesc dataVlanEncap;
+    nwItemDesc dataComment;
+};
+
+
+typedef struct _stpHdrFilterDef  stpHdrFilterDef;
+typedef stpHdrFilterDef *stpHdrFilterDefPtr;
+struct _stpHdrFilterDef {
+    ethHdrDataDef ethHdr;
+    nwItemDesc dataType;
+    nwItemDesc dataFlags;
+    nwItemDesc dataRootPri;
+    nwItemDesc dataRootPriHi;
+    nwItemDesc dataRootAddr;
+    nwItemDesc dataRootAddrMask;
+    nwItemDesc dataRootCost;
+    nwItemDesc dataRootCostHi;
+    nwItemDesc dataSndrPrio;
+    nwItemDesc dataSndrPrioHi;
+    nwItemDesc dataSndrAddr;
+    nwItemDesc dataSndrAddrMask;
+    nwItemDesc dataPort;
+    nwItemDesc dataPortHi;
+    nwItemDesc dataAge;
+    nwItemDesc dataAgeHi;
+    nwItemDesc dataMaxAge;
+    nwItemDesc dataMaxAgeHi;
+    nwItemDesc dataHelloTime;
+    nwItemDesc dataHelloTimeHi;
+    nwItemDesc dataFwdDelay;
+    nwItemDesc dataFwdDelayHi;
     nwItemDesc dataComment;
 };
 
@@ -337,6 +372,7 @@ enum virNWFilterRuleProtocolType {
     VIR_NWFILTER_RULE_PROTOCOL_NONE = 0,
     VIR_NWFILTER_RULE_PROTOCOL_MAC,
     VIR_NWFILTER_RULE_PROTOCOL_VLAN,
+    VIR_NWFILTER_RULE_PROTOCOL_STP,
     VIR_NWFILTER_RULE_PROTOCOL_ARP,
     VIR_NWFILTER_RULE_PROTOCOL_RARP,
     VIR_NWFILTER_RULE_PROTOCOL_IP,
@@ -378,6 +414,7 @@ enum virNWFilterEbtablesTableType {
 # define NWFILTER_MAX_FILTER_PRIORITY MAX_RULE_PRIORITY
 
 # define NWFILTER_ROOT_FILTER_PRI 0
+# define NWFILTER_STP_FILTER_PRI  -810
 # define NWFILTER_MAC_FILTER_PRI  -800
 # define NWFILTER_VLAN_FILTER_PRI -750
 # define NWFILTER_IPV4_FILTER_PRI -700
@@ -418,6 +455,7 @@ struct _virNWFilterRuleDef {
     union {
         ethHdrFilterDef  ethHdrFilter;
         vlanHdrFilterDef vlanHdrFilter;
+        stpHdrFilterDef stpHdrFilter;
         arpHdrFilterDef  arpHdrFilter; /* also used for rarp */
         ipHdrFilterDef   ipHdrFilter;
         ipv6HdrFilterDef ipv6HdrFilter;
@@ -459,6 +497,7 @@ enum virNWFilterChainSuffixType {
     VIR_NWFILTER_CHAINSUFFIX_ROOT = 0,
     VIR_NWFILTER_CHAINSUFFIX_MAC,
     VIR_NWFILTER_CHAINSUFFIX_VLAN,
+    VIR_NWFILTER_CHAINSUFFIX_STP,
     VIR_NWFILTER_CHAINSUFFIX_ARP,
     VIR_NWFILTER_CHAINSUFFIX_RARP,
     VIR_NWFILTER_CHAINSUFFIX_IPv4,
