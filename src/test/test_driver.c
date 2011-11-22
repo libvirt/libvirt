@@ -2803,7 +2803,7 @@ static int testDomainBlockStats(virDomainPtr domain,
     virDomainObjPtr privdom;
     struct timeval tv;
     unsigned long long statbase;
-    int i, found = 0, ret = -1;
+    int ret = -1;
 
     testDriverLock(privconn);
     privdom = virDomainFindByName(&privconn->domains,
@@ -2815,14 +2815,7 @@ static int testDomainBlockStats(virDomainPtr domain,
         goto error;
     }
 
-    for (i = 0 ; i < privdom->def->ndisks ; i++) {
-        if (STREQ(path, privdom->def->disks[i]->dst)) {
-            found = 1;
-            break;
-        }
-    }
-
-    if (!found) {
+    if (virDomainDiskIndexByName(privdom->def, path, false) < 0) {
         testError(VIR_ERR_INVALID_ARG,
                   _("invalid path: %s"), path);
         goto error;

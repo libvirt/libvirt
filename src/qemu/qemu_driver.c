@@ -7082,18 +7082,12 @@ qemuDomainBlockStats(virDomainPtr dom,
         goto cleanup;
     }
 
-    for (i = 0 ; i < vm->def->ndisks ; i++) {
-        if (STREQ(path, vm->def->disks[i]->dst)) {
-            disk = vm->def->disks[i];
-            break;
-        }
-    }
-
-    if (!disk) {
+    if ((i = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
         qemuReportError(VIR_ERR_INVALID_ARG,
                         _("invalid path: %s"), path);
         goto cleanup;
     }
+    disk = vm->def->disks[i];
 
     if (!disk->info.alias) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -7174,18 +7168,12 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     }
 
     if (*nparams != 0) {
-        for (i = 0 ; i < vm->def->ndisks ; i++) {
-            if (STREQ(path, vm->def->disks[i]->dst)) {
-                disk = vm->def->disks[i];
-                break;
-            }
-        }
-
-        if (!disk) {
+        if ((i = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
             qemuReportError(VIR_ERR_INVALID_ARG,
                             _("invalid path: %s"), path);
             goto cleanup;
         }
+        disk = vm->def->disks[i];
 
         if (!disk->info.alias) {
              qemuReportError(VIR_ERR_INTERNAL_ERROR,

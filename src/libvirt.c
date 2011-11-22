@@ -6659,16 +6659,19 @@ error:
 /**
  * virDomainBlockStats:
  * @dom: pointer to the domain object
- * @path: path to the block device
+ * @path: path to the block device, or device shorthand
  * @stats: block device stats (returned)
  * @size: size of stats structure
  *
  * This function returns block device (disk) stats for block
  * devices attached to the domain.
  *
- * The path parameter is the name of the block device.  Get this
- * by calling virDomainGetXMLDesc and finding the <target dev='...'>
- * attribute within //domain/devices/disk.  (For example, "xvda").
+ * The @path parameter is either the device target shorthand (the
+ * <target dev='...'/> sub-element, such as "xvda"), or (since 0.9.8)
+ * an unambiguous source name of the block device (the <source
+ * file='...'/> sub-element, such as "/path/to/image").  Valid names
+ * can be found by calling virDomainGetXMLDesc() and inspecting
+ * elements within //domain/devices/disk.
  *
  * Domains may have more than one block device.  To get stats for
  * each you should make multiple calls to this function.
@@ -6719,7 +6722,7 @@ error:
 /**
  * virDomainBlockStatsFlags:
  * @dom: pointer to domain object
- * @path: path to the block device
+ * @path: path to the block device, or device shorthand
  * @params: pointer to block stats parameter object
  *          (return value)
  * @nparams: pointer to number of block stats; input and output
@@ -6728,9 +6731,12 @@ error:
  * This function is to get block stats parameters for block
  * devices attached to the domain.
  *
- * The @path is the name of the block device.  Get this
- * by calling virDomainGetXMLDesc and finding the <target dev='...'>
- * attribute within //domain/devices/disk.  (For example, "xvda").
+ * The @path parameter is either the device target shorthand (the
+ * <target dev='...'/> sub-element, such as "xvda"), or (since 0.9.8)
+ * an unambiguous source name of the block device (the <source
+ * file='...'/> sub-element, such as "/path/to/image").  Valid names
+ * can be found by calling virDomainGetXMLDesc() and inspecting
+ * elements within //domain/devices/disk.
  *
  * Domains may have more than one block device.  To get stats for
  * each you should make multiple calls to this function.
@@ -6927,7 +6933,7 @@ error:
 /**
  * virDomainBlockPeek:
  * @dom: pointer to the domain object
- * @path: path to the block device
+ * @path: path to the block device, or device shorthand
  * @offset: offset within block device
  * @size: size to read
  * @buffer: return buffer (must be at least size bytes)
@@ -6946,10 +6952,12 @@ error:
  * remote case, nor if you don't have sufficient permission.
  * Hence the need for this call).
  *
- * 'path' must be a device or file corresponding to the domain.
- * In other words it must be the precise string returned in
- * a <disk><source dev='...'/></disk> from
- * virDomainGetXMLDesc.
+ * The @path parameter is either an unambiguous source name of the
+ * block device (the <source file='...'/> sub-element, such as
+ * "/path/to/image"), or (since 0.9.5) the device target shorthand
+ * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
+ * can be found by calling virDomainGetXMLDesc() and inspecting
+ * elements within //domain/devices/disk.
  *
  * 'offset' and 'size' represent an area which must lie entirely
  * within the device or file.  'size' may be 0 to test if the
@@ -7133,16 +7141,24 @@ error:
 /**
  * virDomainGetBlockInfo:
  * @domain: a domain object
- * @path: path to the block device or file
+ * @path: path to the block device, or device shorthand
  * @info: pointer to a virDomainBlockInfo structure allocated by the user
  * @flags: currently unused, pass zero
  *
  * Extract information about a domain's block device.
  *
+ * The @path parameter is either an unambiguous source name of the
+ * block device (the <source file='...'/> sub-element, such as
+ * "/path/to/image"), or (since 0.9.5) the device target shorthand
+ * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
+ * can be found by calling virDomainGetXMLDesc() and inspecting
+ * elements within //domain/devices/disk.
+ *
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
-virDomainGetBlockInfo(virDomainPtr domain, const char *path, virDomainBlockInfoPtr info, unsigned int flags)
+virDomainGetBlockInfo(virDomainPtr domain, const char *path,
+                      virDomainBlockInfoPtr info, unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -16837,10 +16853,17 @@ error:
 /**
  * virDomainBlockJobAbort:
  * @dom: pointer to domain object
- * @path: fully-qualified filename of disk
+ * @path: path to the block device, or device shorthand
  * @flags: currently unused, for future extension
  *
  * Cancel the active block job on the given disk.
+ *
+ * The @path parameter is either an unambiguous source name of the
+ * block device (the <source file='...'/> sub-element, such as
+ * "/path/to/image"), or (since 0.9.5) the device target shorthand
+ * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
+ * can be found by calling virDomainGetXMLDesc() and inspecting
+ * elements within //domain/devices/disk.
  *
  * Returns -1 in case of failure, 0 when successful.
  */
@@ -16889,12 +16912,19 @@ error:
 /**
  * virDomainGetBlockJobInfo:
  * @dom: pointer to domain object
- * @path: fully-qualified filename of disk
+ * @path: path to the block device, or device shorthand
  * @info: pointer to a virDomainBlockJobInfo structure
  * @flags: currently unused, for future extension
  *
  * Request block job information for the given disk.  If an operation is active
  * @info will be updated with the current progress.
+ *
+ * The @path parameter is either an unambiguous source name of the
+ * block device (the <source file='...'/> sub-element, such as
+ * "/path/to/image"), or (since 0.9.5) the device target shorthand
+ * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
+ * can be found by calling virDomainGetXMLDesc() and inspecting
+ * elements within //domain/devices/disk.
  *
  * Returns -1 in case of failure, 0 when nothing found, 1 when info was found.
  */
@@ -16944,12 +16974,19 @@ error:
 /**
  * virDomainBlockJobSetSpeed:
  * @dom: pointer to domain object
- * @path: fully-qualified filename of disk
+ * @path: path to the block device, or device shorthand
  * @bandwidth: specify bandwidth limit in Mbps
  * @flags: currently unused, for future extension
  *
  * Set the maximimum allowable bandwidth that a block job may consume.  If
  * bandwidth is 0, the limit will revert to the hypervisor default.
+ *
+ * The @path parameter is either an unambiguous source name of the
+ * block device (the <source file='...'/> sub-element, such as
+ * "/path/to/image"), or (since 0.9.5) the device target shorthand
+ * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
+ * can be found by calling virDomainGetXMLDesc() and inspecting
+ * elements within //domain/devices/disk.
  *
  * Returns -1 in case of failure, 0 when successful.
  */
@@ -16999,7 +17036,7 @@ error:
 /**
  * virDomainBlockPull:
  * @dom: pointer to domain object
- * @path: Fully-qualified filename of disk
+ * @path: path to the block device, or device shorthand
  * @bandwidth: (optional) specify copy bandwidth limit in Mbps
  * @flags: currently unused, for future extension
  *
@@ -17009,6 +17046,13 @@ error:
  * Progress of the operation can be checked with virDomainGetBlockJobInfo() and
  * the operation can be aborted with virDomainBlockJobAbort().  When finished,
  * an asynchronous event is raised to indicate the final status.
+ *
+ * The @path parameter is either an unambiguous source name of the
+ * block device (the <source file='...'/> sub-element, such as
+ * "/path/to/image"), or (since 0.9.5) the device target shorthand
+ * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
+ * can be found by calling virDomainGetXMLDesc() and inspecting
+ * elements within //domain/devices/disk.
  *
  * The maximum bandwidth (in Mbps) that will be used to do the copy can be
  * specified with the bandwidth parameter.  If set to 0, libvirt will choose a
