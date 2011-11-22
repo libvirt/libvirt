@@ -3191,6 +3191,9 @@ tear_down_tmpebchains:
  *    interface
  * @dhcpserver: The DHCP server from which the VM may receive traffic
  *    from; may be NULL
+ * @leaveTemporary: Whether to leave the table names with their temporary
+ *    names (true) or also perform the renaming to their final names as
+ *    part of this call (false)
  *
  * Returns 0 on success, 1 on failure with the rules removed
  *
@@ -3200,7 +3203,8 @@ tear_down_tmpebchains:
 static int
 ebtablesApplyDHCPOnlyRules(const char *ifname,
                            const unsigned char *macaddr,
-                           const char *dhcpserver)
+                           const char *dhcpserver,
+                           bool leaveTemporary)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char chain_in [MAX_CHAINNAME_LENGTH],
@@ -3281,8 +3285,11 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
 
     ebtablesLinkTmpRootChain(&buf, 1, ifname, 1);
     ebtablesLinkTmpRootChain(&buf, 0, ifname, 1);
-    ebtablesRenameTmpRootChain(&buf, 1, ifname);
-    ebtablesRenameTmpRootChain(&buf, 0, ifname);
+
+    if (!leaveTemporary) {
+        ebtablesRenameTmpRootChain(&buf, 1, ifname);
+        ebtablesRenameTmpRootChain(&buf, 0, ifname);
+    }
 
     if (ebiptablesExecCLI(&buf, NULL, NULL) < 0)
         goto tear_down_tmpebchains;

@@ -460,7 +460,7 @@ learnIPAddressThread(void *arg)
     case DETECT_DHCP:
         if (techdriver->applyDHCPOnlyRules(req->ifname,
                                            req->macaddr,
-                                           NULL)) {
+                                           NULL, false)) {
             req->status = EINVAL;
             goto done;
         }
