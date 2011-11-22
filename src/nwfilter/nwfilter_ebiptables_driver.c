@@ -188,6 +188,7 @@ enum l3_proto_idx {
     L3_PROTO_IPV6_IDX,
     L3_PROTO_ARP_IDX,
     L3_PROTO_RARP_IDX,
+    L2_PROTO_MAC_IDX,
     L2_PROTO_VLAN_IDX,
     L3_PROTO_LAST_IDX
 };
@@ -205,6 +206,7 @@ static const struct ushort_map l3_protocols[] = {
     USHORTMAP_ENTRY_IDX(L3_PROTO_ARP_IDX , ETHERTYPE_ARP   , "arp"),
     USHORTMAP_ENTRY_IDX(L3_PROTO_RARP_IDX, ETHERTYPE_REVARP, "rarp"),
     USHORTMAP_ENTRY_IDX(L2_PROTO_VLAN_IDX, ETHERTYPE_VLAN  , "vlan"),
+    USHORTMAP_ENTRY_IDX(L2_PROTO_MAC_IDX,  0               , "mac"),
     USHORTMAP_ENTRY_IDX(L3_PROTO_LAST_IDX, 0               , NULL),
 };
 
@@ -2806,10 +2808,25 @@ ebtablesCreateTmpSubChain(ebiptablesRuleInstPtr *inst,
     char rootchain[MAX_CHAINNAME_LENGTH], chain[MAX_CHAINNAME_LENGTH];
     char chainPrefix = (incoming) ? CHAINPREFIX_HOST_IN_TEMP
                                   : CHAINPREFIX_HOST_OUT_TEMP;
+    char *protostr = NULL;
 
     PRINT_ROOT_CHAIN(rootchain, chainPrefix, ifname);
     PRINT_CHAIN(chain, chainPrefix, ifname,
                 (filtername) ? filtername : l3_protocols[protoidx].val);
+
+    switch (protoidx) {
+    case L2_PROTO_MAC_IDX:
+        protostr = strdup("");
+        break;
+    default:
+        virAsprintf(&protostr, "-p 0x%04x ", l3_protocols[protoidx].attr);
+        break;
+    }
+
+    if (!protostr) {
+        virReportOOMError();
+        return -1;
+    }
 
     virBufferAsprintf(&buf,
                       CMD_DEF("%s -t %s -F %s") CMD_SEPARATOR
@@ -2819,7 +2836,7 @@ ebtablesCreateTmpSubChain(ebiptablesRuleInstPtr *inst,
                       CMD_DEF("%s -t %s -N %s") CMD_SEPARATOR
                       CMD_EXEC
                       "%s"
-                      CMD_DEF("%s -t %s -%%c %s %%s -p 0x%x -j %s")
+                      CMD_DEF("%s -t %s -%%c %s %%s %s-j %s")
                           CMD_SEPARATOR
                       CMD_EXEC
                       "%s",
@@ -2831,9 +2848,11 @@ ebtablesCreateTmpSubChain(ebiptablesRuleInstPtr *inst,
                       CMD_STOPONERR(stopOnError),
 
                       ebtables_cmd_path, EBTABLES_DEFAULT_TABLE,
-                      rootchain, l3_protocols[protoidx].attr, chain,
+                      rootchain, protostr, chain,
 
                       CMD_STOPONERR(stopOnError));
+
+    VIR_FREE(protostr);
 
     if (virBufferError(&buf) ||
         VIR_EXPAND_N(tmp, count, 1) < 0) {

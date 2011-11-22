@@ -297,6 +297,9 @@
         <choice>
           <value>root</value>
           <data type="string">
+            <param name="pattern">mac[a-zA-Z0-9_\.:-]{0,9}</param>
+          </data>
+          <data type="string">
             <param name="pattern">vlan[a-zA-Z0-9_\.:-]{0,8}</param>
           </data>
           <data type="string">

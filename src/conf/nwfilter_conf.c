@@ -82,6 +82,7 @@ VIR_ENUM_IMPL(virNWFilterEbtablesTable, VIR_NWFILTER_EBTABLES_TABLE_LAST,
 
 VIR_ENUM_IMPL(virNWFilterChainSuffix, VIR_NWFILTER_CHAINSUFFIX_LAST,
               "root",
+              "mac",
               "vlan",
               "arp",
               "rarp",
@@ -128,6 +129,7 @@ struct int_map {
 
 static const struct int_map chain_priorities[] = {
     INTMAP_ENTRY(NWFILTER_ROOT_FILTER_PRI, "root"),
+    INTMAP_ENTRY(NWFILTER_MAC_FILTER_PRI,  "mac"),
     INTMAP_ENTRY(NWFILTER_VLAN_FILTER_PRI, "vlan"),
     INTMAP_ENTRY(NWFILTER_IPV4_FILTER_PRI, "ipv4"),
     INTMAP_ENTRY(NWFILTER_IPV6_FILTER_PRI, "ipv6"),
