@@ -1256,7 +1256,12 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
         /* We're not done, but we're non-blocking */
         if (thiscall->nonBlock) {
             virNetClientIOEventLoopPassTheBuck(client, thiscall);
-            return thiscall->sentSomeData ? 1 : 0;
+            if (thiscall->sentSomeData) {
+                return 1;
+            } else {
+                virNetClientCallRemove(&client->waitDispatch, thiscall);
+                return 0;
+            }
         }
 
         if (fds[0].revents & (POLLHUP | POLLERR)) {
