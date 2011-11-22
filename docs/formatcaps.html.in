@@ -64,25 +64,32 @@ BIOS you will see</p>
   &lt;/guest&gt;</span>
   ...
 &lt;/capabilities&gt;</pre>
-        <p>The first block (in red) indicates the host hardware capabilities, currently
-it is limited to the CPU properties and the power management features of
-the host platform, but other information may be available, it shows the CPU architecture,
-topology, model name, and additional features which are not included in the model but the
-CPU provides them. Features of the chip are shown within the feature block (the block is
-similar to what you will find in a Xen fully virtualized domain description). Further,
-the power management features supported by the host are shown, such as Suspend-to-RAM (S3)
-and Suspend-to-Disk (S4). In case the query for power management features succeeded but the
-host does not support any such feature, then an empty &lt;power_management/&gt;
-tag will be shown. Otherwise, if the query itself failed, no such tag will
-be displayed (i.e., there will not be any power_management block or empty tag in the XML).</p>
-        <p>The second block (in blue) indicates the paravirtualization support of the
-Xen support, you will see the os_type of xen to indicate a paravirtual
-kernel, then architecture information and potential features.</p>
-        <p>The third block (in green) gives similar information but when running a
-32 bit OS fully virtualized with Xen using the hvm support.</p>
-        <p>This section is likely to be updated and augmented in the future, see <a href="https://www.redhat.com/archives/libvir-list/2007-March/msg00215.html">the
-discussion</a> which led to the capabilities format in the mailing-list
-archives.</p>
+        <p>The first block (in red) indicates the host hardware
+          capabilities, such as CPU properties and the power
+          management features of the host platform.  CPU models are
+          shown as additional features relative to the closest base
+          model, within a feature block (the block is similar to what
+          you will find in a Xen fully virtualized domain
+          description). Further, the power management features
+          supported by the host are shown, such as Suspend-to-RAM (S3)
+          and Suspend-to-Disk (S4). In case the query for power
+          management features succeeded but the host does not support
+          any such feature, then an empty &lt;power_management/&gt;
+          tag will be shown. Otherwise, if the query itself failed, no
+          such tag will be displayed (i.e., there will not be any
+          power_management block or empty tag in the XML).</p>
+        <p>The second block (in blue) indicates the paravirtualization
+          support of the Xen support, you will see the os_type of xen
+          to indicate a paravirtual kernel, then architecture
+          information and potential features.</p>
+        <p>The third block (in green) gives similar information but
+          when running a 32 bit OS fully virtualized with Xen using
+          the hvm support.</p>
+        <p>This section is likely to be updated and augmented in the
+          future,
+          see <a href="https://www.redhat.com/archives/libvir-list/2007-March/msg00215.html">the
+          discussion</a> which led to the capabilities format in the
+          mailing-list archives.</p>
 
   </body>
 </html>
