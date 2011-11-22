@@ -353,7 +353,9 @@ int main(int argc, char **argv)
     virEventRegisterDefaultImpl();
 
     virConnectPtr dconn = NULL;
-    dconn = virConnectOpenReadOnly (argv[1] ? argv[1] : NULL);
+    dconn = virConnectOpenAuth(argc > 1 ? argv[1] : NULL,
+                               virConnectAuthPtrDefault,
+                               VIR_CONNECT_RO);
     if (!dconn) {
         printf("error opening\n");
         return -1;
