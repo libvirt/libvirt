@@ -35,6 +35,9 @@
         </optional>
       </element>
       <optional>
+        <ref name='power_management'/>
+      </optional>
+      <optional>
         <ref name='migration'/>
       </optional>
       <optional>
@@ -103,6 +106,23 @@
         <empty/>
       </element>
     </zeroOrMore>
+  </define>
+
+  <define name='power_management'>
+    <element name='power_management'>
+      <interleave>
+        <optional>
+          <element name='S3'>
+            <empty/>
+          </element>
+        </optional>
+        <optional>
+          <element name='S4'>
+            <empty/>
+          </element>
+        </optional>
+      </interleave>
+    </element>
   </define>
 
   <define name='migration'>

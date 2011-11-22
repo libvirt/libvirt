@@ -175,6 +175,9 @@ static const char *virErrorDomainName(virErrorDomain domain) {
         case VIR_FROM_HYPERV:
             dom = "Hyper-V ";
             break;
+        case VIR_FROM_CAPABILITIES:
+            dom = "Capabilities ";
+            break;
     }
     return(dom);
 }

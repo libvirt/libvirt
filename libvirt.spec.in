@@ -506,6 +506,8 @@ Requires: nc
 Requires: gettext
 # Needed by virt-pki-validate script.
 Requires: gnutls-utils
+# Needed for probing the power management features of the host.
+Requires: pm-utils
 %if %{with_sasl}
 Requires: cyrus-sasl
 # Not technically required, but makes 'out-of-box' config

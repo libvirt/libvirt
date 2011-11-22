@@ -105,6 +105,10 @@ struct _virCapsHost {
     size_t nfeatures;
     size_t nfeatures_max;
     char **features;
+    bool powerMgmt_valid;
+    unsigned int powerMgmt;    /* Bitmask of the PM capabilities.
+                                * See enum virHostPMCapability.
+                                */
     int offlineMigrate;
     int liveMigrate;
     size_t nmigrateTrans;

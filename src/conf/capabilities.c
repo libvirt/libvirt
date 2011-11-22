@@ -29,6 +29,13 @@
 #include "util.h"
 #include "uuid.h"
 #include "cpu_conf.h"
+#include "virterror_internal.h"
+
+
+#define VIR_FROM_THIS VIR_FROM_CAPABILITIES
+
+VIR_ENUM_IMPL(virHostPMCapability, VIR_HOST_PM_LAST,
+              "S3", "S4")
 
 /**
  * virCapabilitiesNew:
@@ -200,7 +207,6 @@ virCapabilitiesAddHostFeature(virCapsPtr caps,
 
     return 0;
 }
-
 
 /**
  * virCapabilitiesAddHostMigrateTransport:
@@ -686,6 +692,25 @@ virCapabilitiesFormatXML(virCapsPtr caps)
     virBufferAdjustIndent(&xml, -6);
 
     virBufferAddLit(&xml, "    </cpu>\n");
+
+    if (caps->host.powerMgmt_valid) {
+        /* The PM query was successful. */
+        if (caps->host.powerMgmt) {
+            /* The host supports some PM features. */
+            unsigned int pm = caps->host.powerMgmt;
+            virBufferAddLit(&xml, "    <power_management>\n");
+            while (pm) {
+                int bit = ffs(pm) - 1;
+                virBufferAsprintf(&xml, "      <%s/>\n",
+                    virHostPMCapabilityTypeToString(bit));
+                pm &= ~(1U << bit);
+            }
+            virBufferAddLit(&xml, "    </power_management>\n");
+        } else {
+            /* The host does not support any PM feature. */
+            virBufferAddLit(&xml, "    <power_management/>\n");
+        }
+    }
 
     if (caps->host.offlineMigrate) {
         virBufferAddLit(&xml, "    <migration_features>\n");

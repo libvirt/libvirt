@@ -260,4 +260,18 @@ int virEmitXMLWarning(int fd,
                       const char *cmd) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 void virTypedParameterArrayClear(virTypedParameterPtr params, int nparams);
+
+/* Power Management Capabilities of the host system */
+
+enum virHostPMCapability {
+    VIR_HOST_PM_S3,  /* Suspend-to-RAM */
+    VIR_HOST_PM_S4,  /* Suspend-to-Disk */
+
+    VIR_HOST_PM_LAST
+};
+
+VIR_ENUM_DECL(virHostPMCapability)
+
+int virGetPMCapabilities(unsigned int *);
+
 #endif /* __VIR_UTIL_H__ */

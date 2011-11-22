@@ -2621,3 +2621,53 @@ virTypedParameterArrayClear(virTypedParameterPtr params, int nparams)
             VIR_FREE(params[i].value.s);
     }
 }
+
+/**
+ * Get the Power Management Capabilities of the host system.
+ * The script 'pm-is-supported' (from the pm-utils package) is run
+ * to find out all the power management features supported by the host,
+ * such as Suspend-to-RAM (S3) and Suspend-to-Disk (S4).
+ *
+ * @bitmask: Pointer to the bitmask which will be set appropriately to
+ *           indicate all the supported host power management features.
+ *
+ * Returns 0 if the query was successful, -1 upon failure.
+ */
+int
+virGetPMCapabilities(unsigned int *bitmask)
+{
+    int ret = -1;
+    int status;
+    virCommandPtr cmd;
+
+    *bitmask = 0;
+
+    /* Check support for Suspend-to-RAM (S3) */
+    cmd = virCommandNewArgList("pm-is-supported", "--suspend", NULL);
+    if (virCommandRun(cmd, &status) < 0)
+        goto cleanup;
+
+    /* Check return code of command == 0 for success
+     * (i.e., the PM capability is supported)
+     */
+    if (status == 0)
+        *bitmask |= 1U << VIR_HOST_PM_S3;
+    virCommandFree(cmd);
+
+    /* Check support for Suspend-to-Disk (S4) */
+    cmd = virCommandNewArgList("pm-is-supported", "--hibernate", NULL);
+    if (virCommandRun(cmd, &status) < 0)
+        goto cleanup;
+
+    /* Check return code of command == 0 for success
+     * (i.e., the PM capability is supported)
+     */
+    if (status == 0)
+        *bitmask |= 1U << VIR_HOST_PM_S4;
+
+    ret = 0;
+
+cleanup:
+    virCommandFree(cmd);
+    return ret;
+}
