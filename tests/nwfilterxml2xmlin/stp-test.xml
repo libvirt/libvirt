@@ -1,0 +1,26 @@
+<filter name='testcase' chain='stp-xyz'>
+  <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
+  <rule action='continue' direction='in'>
+     <stp srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+          type='0x12' flags='0x44'/>
+  </rule>
+
+  <rule action='return' direction='out'>
+     <stp srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+          root-priority='0x1234' root-priority-hi='0x2345'
+          root-address="6:5:4:3:2:1" root-address-mask='ff:ff:ff:ff:ff:ff'
+          root-cost='0x11223344' root-cost-hi='0x22334455' />
+  </rule>
+
+  <rule action='reject' direction='in'>
+     <stp srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+          sender-priority='0x1234'
+          sender-address="6:5:4:3:2:1"
+          port='123' port-hi='234'
+          age='5544' age-hi='5555'
+          max-age='7777'  max-age-hi='8888'
+          hello-time='12345' hello-time-hi='12346'
+          forward-delay='54321' forward-delay-hi='65432'/>
+  </rule>
+
+</filter>
