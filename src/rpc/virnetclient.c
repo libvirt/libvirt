@@ -1040,6 +1040,7 @@ static bool virNetClientIOEventLoopRemoveDone(virNetClientCallPtr call,
         VIR_DEBUG("Waking up sleep %p", call);
         virCondSignal(&call->cond);
     } else {
+        VIR_DEBUG("Removing completed call %p", call);
         if (call->expectReply)
             VIR_WARN("Got a call expecting a reply but without a waiting thread");
         ignore_value(virCondDestroy(&call->cond));
@@ -1070,6 +1071,8 @@ static bool virNetClientIOEventLoopRemoveNonBlocking(virNetClientCallPtr call,
         if (call->haveThread) {
             VIR_DEBUG("Waking up sleep %p", call);
             virCondSignal(&call->cond);
+        } else {
+            VIR_DEBUG("Keeping unfinished call %p in the list", call);
         }
         return false;
     } else {
@@ -1081,6 +1084,7 @@ static bool virNetClientIOEventLoopRemoveNonBlocking(virNetClientCallPtr call,
             VIR_DEBUG("Waking up sleep %p", call);
             virCondSignal(&call->cond);
         } else {
+            VIR_DEBUG("Removing call %p", call);
             if (call->expectReply)
                 VIR_WARN("Got a call expecting a reply but without a waiting thread");
             ignore_value(virCondDestroy(&call->cond));
