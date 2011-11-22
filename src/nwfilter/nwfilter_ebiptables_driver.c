@@ -147,6 +147,10 @@ static const char ebiptables_script_set_ifs[] =
 
 #define NWFILTER_SET_EBTABLES_SHELLVAR(BUFPTR) \
     virBufferAsprintf(BUFPTR, "EBT=%s\n", ebtables_cmd_path);
+#define NWFILTER_SET_IPTABLES_SHELLVAR(BUFPTR) \
+    virBufferAsprintf(BUFPTR, "IPT=%s\n", iptables_cmd_path);
+#define NWFILTER_SET_IP6TABLES_SHELLVAR(BUFPTR) \
+    virBufferAsprintf(BUFPTR, "IPT=%s\n", ip6tables_cmd_path);
 
 #define VIRT_IN_CHAIN      "libvirt-in"
 #define VIRT_OUT_CHAIN     "libvirt-out"
@@ -494,66 +498,60 @@ ebtablesHandleEthHdr(virBufferPtr buf,
 
 /************************ iptables support ************************/
 
-static int iptablesLinkIPTablesBaseChain(const char *iptables_cmd,
-                                         virBufferPtr buf,
+static int iptablesLinkIPTablesBaseChain(virBufferPtr buf,
                                          const char *udchain,
                                          const char *syschain,
                                          unsigned int pos,
                                          int stopOnError)
 {
     virBufferAsprintf(buf,
-                      "res=$(%s -L %s -n --line-number | "
+                      "res=$($IPT -L %s -n --line-number | "
                           "%s \" %s \")\n"
                       "if [ $? -ne 0 ]; then\n"
-                      "  %s -I %s %d -j %s\n"
+                      "  $IPT -I %s %d -j %s\n"
                       "else\n"
                       "  r=$(echo $res | %s '{print $1}')\n"
                       "  if [ \"${r}\" != \"%d\" ]; then\n"
-                      "    " CMD_DEF("%s -I %s %d -j %s") CMD_SEPARATOR
+                      "    " CMD_DEF("$IPT -I %s %d -j %s") CMD_SEPARATOR
                       "    " CMD_EXEC
                       "    %s"
                       "    r=$(( $r + 1 ))\n"
-                      "    " CMD_DEF("%s -D %s ${r}") CMD_SEPARATOR
+                      "    " CMD_DEF("$IPT -D %s ${r}") CMD_SEPARATOR
                       "    " CMD_EXEC
                       "    %s"
                       "  fi\n"
                       "fi\n",
 
-                      iptables_cmd, syschain,
+                      syschain,
                       grep_cmd_path, udchain,
 
-                      iptables_cmd, syschain, pos, udchain,
+                      syschain, pos, udchain,
                       gawk_cmd_path,
 
                       pos,
 
-                      iptables_cmd, syschain, pos, udchain,
+                      syschain, pos, udchain,
                       CMD_STOPONERR(stopOnError),
 
-                      iptables_cmd, syschain,
+                      syschain,
                       CMD_STOPONERR(stopOnError));
     return 0;
 }
 
 
-static int iptablesCreateBaseChains(const char *iptables_cmd,
-                                    virBufferPtr buf)
+static int iptablesCreateBaseChains(virBufferPtr buf)
 {
-    virBufferAsprintf(buf,"%s -N " VIRT_IN_CHAIN      CMD_SEPARATOR
-                          "%s -N " VIRT_OUT_CHAIN     CMD_SEPARATOR
-                          "%s -N " VIRT_IN_POST_CHAIN CMD_SEPARATOR
-                          "%s -N " HOST_IN_CHAIN      CMD_SEPARATOR,
-                          iptables_cmd,
-                          iptables_cmd,
-                          iptables_cmd,
-                          iptables_cmd);
-    iptablesLinkIPTablesBaseChain(iptables_cmd, buf,
+    virBufferAddLit(buf, "$IPT -N " VIRT_IN_CHAIN      CMD_SEPARATOR
+                         "$IPT -N " VIRT_OUT_CHAIN     CMD_SEPARATOR
+                         "$IPT -N " VIRT_IN_POST_CHAIN CMD_SEPARATOR
+                         "$IPT -N " HOST_IN_CHAIN      CMD_SEPARATOR);
+    iptablesLinkIPTablesBaseChain(buf,
                                   VIRT_IN_CHAIN     , "FORWARD", 1, 1);
-    iptablesLinkIPTablesBaseChain(iptables_cmd, buf,
+    iptablesLinkIPTablesBaseChain(buf,
                                   VIRT_OUT_CHAIN    , "FORWARD", 2, 1);
-    iptablesLinkIPTablesBaseChain(iptables_cmd, buf,
+    iptablesLinkIPTablesBaseChain(buf,
                                   VIRT_IN_POST_CHAIN, "FORWARD", 3, 1);
-    iptablesLinkIPTablesBaseChain(iptables_cmd, buf,
+    iptablesLinkIPTablesBaseChain(buf,
                                   HOST_IN_CHAIN     , "INPUT"  , 1, 1);
 
     return 0;
@@ -561,8 +559,7 @@ static int iptablesCreateBaseChains(const char *iptables_cmd,
 
 
 static int
-iptablesCreateTmpRootChain(const char *iptables_cmd,
-                           virBufferPtr buf,
+iptablesCreateTmpRootChain(virBufferPtr buf,
                            char prefix,
                            int incoming, const char *ifname,
                            int stopOnError)
@@ -577,10 +574,9 @@ iptablesCreateTmpRootChain(const char *iptables_cmd,
     PRINT_IPT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
     virBufferAsprintf(buf,
-                      CMD_DEF("%s -N %s") CMD_SEPARATOR
+                      CMD_DEF("$IPT -N %s") CMD_SEPARATOR
                       CMD_EXEC
                       "%s",
-                      iptables_cmd,
                       chain,
                       CMD_STOPONERR(stopOnError));
 
@@ -589,20 +585,18 @@ iptablesCreateTmpRootChain(const char *iptables_cmd,
 
 
 static int
-iptablesCreateTmpRootChains(const char *iptables_cmd,
-                            virBufferPtr buf,
+iptablesCreateTmpRootChains(virBufferPtr buf,
                             const char *ifname)
 {
-    iptablesCreateTmpRootChain(iptables_cmd, buf, 'F', 0, ifname, 1);
-    iptablesCreateTmpRootChain(iptables_cmd, buf, 'F', 1, ifname, 1);
-    iptablesCreateTmpRootChain(iptables_cmd, buf, 'H', 1, ifname, 1);
+    iptablesCreateTmpRootChain(buf, 'F', 0, ifname, 1);
+    iptablesCreateTmpRootChain(buf, 'F', 1, ifname, 1);
+    iptablesCreateTmpRootChain(buf, 'H', 1, ifname, 1);
     return 0;
 }
 
 
 static int
-_iptablesRemoveRootChain(const char *iptables_cmd,
-                         virBufferPtr buf,
+_iptablesRemoveRootChain(virBufferPtr buf,
                          char prefix,
                          int incoming, const char *ifname,
                          int isTempChain)
@@ -622,66 +616,60 @@ _iptablesRemoveRootChain(const char *iptables_cmd,
     PRINT_IPT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
     virBufferAsprintf(buf,
-                      "%s -F %s" CMD_SEPARATOR
-                      "%s -X %s" CMD_SEPARATOR,
-                      iptables_cmd, chain,
-                      iptables_cmd, chain);
+                      "$IPT -F %s" CMD_SEPARATOR
+                      "$IPT -X %s" CMD_SEPARATOR,
+                      chain,
+                      chain);
 
     return 0;
 }
 
 
 static int
-iptablesRemoveRootChain(const char *iptables_cmd,
-                        virBufferPtr buf,
+iptablesRemoveRootChain(virBufferPtr buf,
                         char prefix,
                         int incoming,
                         const char *ifname)
 {
-    return _iptablesRemoveRootChain(iptables_cmd,
-                                    buf, prefix, incoming, ifname, 0);
+    return _iptablesRemoveRootChain(buf, prefix, incoming, ifname, 0);
 }
 
 
 static int
-iptablesRemoveTmpRootChain(const char *iptables_cmd,
-                           virBufferPtr buf,
+iptablesRemoveTmpRootChain(virBufferPtr buf,
                            char prefix,
                            int incoming,
                            const char *ifname)
 {
-    return _iptablesRemoveRootChain(iptables_cmd, buf, prefix,
+    return _iptablesRemoveRootChain(buf, prefix,
                                     incoming, ifname, 1);
 }
 
 
 static int
-iptablesRemoveTmpRootChains(const char *iptables_cmd,
-                            virBufferPtr buf,
+iptablesRemoveTmpRootChains(virBufferPtr buf,
                             const char *ifname)
 {
-    iptablesRemoveTmpRootChain(iptables_cmd, buf, 'F', 0, ifname);
-    iptablesRemoveTmpRootChain(iptables_cmd, buf, 'F', 1, ifname);
-    iptablesRemoveTmpRootChain(iptables_cmd, buf, 'H', 1, ifname);
+    iptablesRemoveTmpRootChain(buf, 'F', 0, ifname);
+    iptablesRemoveTmpRootChain(buf, 'F', 1, ifname);
+    iptablesRemoveTmpRootChain(buf, 'H', 1, ifname);
     return 0;
 }
 
 
 static int
-iptablesRemoveRootChains(const char *iptables_cmd,
-                         virBufferPtr buf,
+iptablesRemoveRootChains(virBufferPtr buf,
                          const char *ifname)
 {
-    iptablesRemoveRootChain(iptables_cmd, buf, 'F', 0, ifname);
-    iptablesRemoveRootChain(iptables_cmd, buf, 'F', 1, ifname);
-    iptablesRemoveRootChain(iptables_cmd, buf, 'H', 1, ifname);
+    iptablesRemoveRootChain(buf, 'F', 0, ifname);
+    iptablesRemoveRootChain(buf, 'F', 1, ifname);
+    iptablesRemoveRootChain(buf, 'H', 1, ifname);
     return 0;
 }
 
 
 static int
-iptablesLinkTmpRootChain(const char *iptables_cmd,
-                         virBufferPtr buf,
+iptablesLinkTmpRootChain(virBufferPtr buf,
                          const char *basechain,
                          char prefix,
                          int incoming, const char *ifname,
@@ -699,11 +687,10 @@ iptablesLinkTmpRootChain(const char *iptables_cmd,
     PRINT_IPT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
     virBufferAsprintf(buf,
-                      CMD_DEF("%s -A %s "
+                      CMD_DEF("$IPT -A %s "
                               "%s %s -g %s") CMD_SEPARATOR
                       CMD_EXEC
                       "%s",
-                      iptables_cmd,
                       basechain,
                       match, ifname, chain,
 
@@ -714,37 +701,33 @@ iptablesLinkTmpRootChain(const char *iptables_cmd,
 
 
 static int
-iptablesLinkTmpRootChains(const char *cmd,
-                          virBufferPtr buf,
+iptablesLinkTmpRootChains(virBufferPtr buf,
                           const char *ifname)
 {
-    iptablesLinkTmpRootChain(cmd, buf, VIRT_OUT_CHAIN, 'F', 0, ifname, 1);
-    iptablesLinkTmpRootChain(cmd, buf, VIRT_IN_CHAIN , 'F', 1, ifname, 1);
-    iptablesLinkTmpRootChain(cmd, buf, HOST_IN_CHAIN , 'H', 1, ifname, 1);
+    iptablesLinkTmpRootChain(buf, VIRT_OUT_CHAIN, 'F', 0, ifname, 1);
+    iptablesLinkTmpRootChain(buf, VIRT_IN_CHAIN , 'F', 1, ifname, 1);
+    iptablesLinkTmpRootChain(buf, HOST_IN_CHAIN , 'H', 1, ifname, 1);
 
     return 0;
 }
 
 
 static int
-iptablesSetupVirtInPost(const char *iptables_cmd,
-                        virBufferPtr buf,
+iptablesSetupVirtInPost(virBufferPtr buf,
                         const char *ifname)
 {
     const char *match = MATCH_PHYSDEV_IN;
     virBufferAsprintf(buf,
-                      "res=$(%s -n -L " VIRT_IN_POST_CHAIN
+                      "res=$($IPT -n -L " VIRT_IN_POST_CHAIN
                       " | grep \"\\%s %s\")\n"
                       "if [ \"${res}\" = \"\" ]; then "
-                        CMD_DEF("%s"
+                        CMD_DEF("$IPT"
                         " -A " VIRT_IN_POST_CHAIN
                         " %s %s -j ACCEPT") CMD_SEPARATOR
                         CMD_EXEC
                         "%s"
                       "fi\n",
-                      iptables_cmd,
                       PHYSDEV_IN, ifname,
-                      iptables_cmd,
                       match, ifname,
                       CMD_STOPONERR(1));
     return 0;
@@ -752,22 +735,19 @@ iptablesSetupVirtInPost(const char *iptables_cmd,
 
 
 static int
-iptablesClearVirtInPost(const char *iptables_cmd,
-                        virBufferPtr buf,
+iptablesClearVirtInPost(virBufferPtr buf,
                         const char *ifname)
 {
     const char *match = MATCH_PHYSDEV_IN;
     virBufferAsprintf(buf,
-                      "%s -D " VIRT_IN_POST_CHAIN
+                      "$IPT -D " VIRT_IN_POST_CHAIN
                       " %s %s -j ACCEPT" CMD_SEPARATOR,
-                      iptables_cmd,
                       match, ifname);
     return 0;
 }
 
 static int
-_iptablesUnlinkRootChain(const char *iptables_cmd,
-                         virBufferPtr buf,
+_iptablesUnlinkRootChain(virBufferPtr buf,
                          const char *basechain,
                          char prefix,
                          int incoming, const char *ifname,
@@ -789,9 +769,8 @@ _iptablesUnlinkRootChain(const char *iptables_cmd,
     PRINT_IPT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
     virBufferAsprintf(buf,
-                      "%s -D %s "
+                      "$IPT -D %s "
                       "%s %s -g %s" CMD_SEPARATOR,
-                      iptables_cmd,
                       basechain,
                       match, ifname, chain);
 
@@ -800,57 +779,52 @@ _iptablesUnlinkRootChain(const char *iptables_cmd,
 
 
 static int
-iptablesUnlinkRootChain(const char *iptables_cmd,
-                        virBufferPtr buf,
+iptablesUnlinkRootChain(virBufferPtr buf,
                         const char *basechain,
                         char prefix,
                         int incoming, const char *ifname)
 {
-    return _iptablesUnlinkRootChain(iptables_cmd, buf,
+    return _iptablesUnlinkRootChain(buf,
                                     basechain, prefix, incoming, ifname, 0);
 }
 
 
 static int
-iptablesUnlinkTmpRootChain(const char *iptables_cmd,
-                           virBufferPtr buf,
+iptablesUnlinkTmpRootChain(virBufferPtr buf,
                            const char *basechain,
                            char prefix,
                            int incoming, const char *ifname)
 {
-    return _iptablesUnlinkRootChain(iptables_cmd, buf,
+    return _iptablesUnlinkRootChain(buf,
                                     basechain, prefix, incoming, ifname, 1);
 }
 
 
 static int
-iptablesUnlinkRootChains(const char *cmd,
-                         virBufferPtr buf,
+iptablesUnlinkRootChains(virBufferPtr buf,
                          const char *ifname)
 {
-    iptablesUnlinkRootChain(cmd, buf, VIRT_OUT_CHAIN, 'F', 0, ifname);
-    iptablesUnlinkRootChain(cmd, buf, VIRT_IN_CHAIN , 'F', 1, ifname);
-    iptablesUnlinkRootChain(cmd, buf, HOST_IN_CHAIN , 'H', 1, ifname);
+    iptablesUnlinkRootChain(buf, VIRT_OUT_CHAIN, 'F', 0, ifname);
+    iptablesUnlinkRootChain(buf, VIRT_IN_CHAIN , 'F', 1, ifname);
+    iptablesUnlinkRootChain(buf, HOST_IN_CHAIN , 'H', 1, ifname);
 
     return 0;
 }
 
 
 static int
-iptablesUnlinkTmpRootChains(const char *cmd,
-                            virBufferPtr buf,
+iptablesUnlinkTmpRootChains(virBufferPtr buf,
                             const char *ifname)
 {
-    iptablesUnlinkTmpRootChain(cmd, buf, VIRT_OUT_CHAIN, 'F', 0, ifname);
-    iptablesUnlinkTmpRootChain(cmd, buf, VIRT_IN_CHAIN , 'F', 1, ifname);
-    iptablesUnlinkTmpRootChain(cmd, buf, HOST_IN_CHAIN , 'H', 1, ifname);
+    iptablesUnlinkTmpRootChain(buf, VIRT_OUT_CHAIN, 'F', 0, ifname);
+    iptablesUnlinkTmpRootChain(buf, VIRT_IN_CHAIN , 'F', 1, ifname);
+    iptablesUnlinkTmpRootChain(buf, HOST_IN_CHAIN , 'H', 1, ifname);
     return 0;
 }
 
 
 static int
-iptablesRenameTmpRootChain(const char *iptables_cmd,
-                           virBufferPtr buf,
+iptablesRenameTmpRootChain(virBufferPtr buf,
                            char prefix,
                            int incoming,
                            const char *ifname)
@@ -871,8 +845,7 @@ iptablesRenameTmpRootChain(const char *iptables_cmd,
     PRINT_IPT_ROOT_CHAIN(   chain,    chainPrefix, ifname);
 
     virBufferAsprintf(buf,
-                      "%s -E %s %s" CMD_SEPARATOR,
-                      iptables_cmd,
+                      "$IPT -E %s %s" CMD_SEPARATOR,
                       tmpchain,
                       chain);
     return 0;
@@ -880,13 +853,12 @@ iptablesRenameTmpRootChain(const char *iptables_cmd,
 
 
 static int
-iptablesRenameTmpRootChains(const char *iptables_cmd,
-                            virBufferPtr buf,
+iptablesRenameTmpRootChains(virBufferPtr buf,
                             const char *ifname)
 {
-    iptablesRenameTmpRootChain(iptables_cmd, buf, 'F', 0, ifname);
-    iptablesRenameTmpRootChain(iptables_cmd, buf, 'F', 1, ifname);
-    iptablesRenameTmpRootChain(iptables_cmd, buf, 'H', 1, ifname);
+    iptablesRenameTmpRootChain(buf, 'F', 0, ifname);
+    iptablesRenameTmpRootChain(buf, 'F', 1, ifname);
+    iptablesRenameTmpRootChain(buf, 'H', 1, ifname);
     return 0;
 }
 
@@ -1262,8 +1234,7 @@ _iptablesCreateRuleInstance(int directionIn,
     case VIR_NWFILTER_RULE_PROTOCOL_TCP:
     case VIR_NWFILTER_RULE_PROTOCOL_TCPoIPV6:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "%s -%%c %s %%s",
-                          iptables_cmd,
+                          CMD_DEF_PRE "$IPT -%%c %s %%s",
                           chain);
 
         virBufferAddLit(&buf, " -p tcp");
@@ -1318,8 +1289,7 @@ _iptablesCreateRuleInstance(int directionIn,
     case VIR_NWFILTER_RULE_PROTOCOL_UDP:
     case VIR_NWFILTER_RULE_PROTOCOL_UDPoIPV6:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "%s -%%c %s %%s",
-                          iptables_cmd,
+                          CMD_DEF_PRE "$IPT -%%c %s %%s",
                           chain);
 
         virBufferAddLit(&buf, " -p udp");
@@ -1352,8 +1322,7 @@ _iptablesCreateRuleInstance(int directionIn,
     case VIR_NWFILTER_RULE_PROTOCOL_UDPLITE:
     case VIR_NWFILTER_RULE_PROTOCOL_UDPLITEoIPV6:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "%s -%%c %s %%s",
-                          iptables_cmd,
+                          CMD_DEF_PRE "$IPT -%%c %s %%s",
                           chain);
 
         virBufferAddLit(&buf, " -p udplite");
@@ -1381,8 +1350,7 @@ _iptablesCreateRuleInstance(int directionIn,
     case VIR_NWFILTER_RULE_PROTOCOL_ESP:
     case VIR_NWFILTER_RULE_PROTOCOL_ESPoIPV6:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "%s -%%c %s %%s",
-                          iptables_cmd,
+                          CMD_DEF_PRE "$IPT -%%c %s %%s",
                           chain);
 
         virBufferAddLit(&buf, " -p esp");
@@ -1410,8 +1378,7 @@ _iptablesCreateRuleInstance(int directionIn,
     case VIR_NWFILTER_RULE_PROTOCOL_AH:
     case VIR_NWFILTER_RULE_PROTOCOL_AHoIPV6:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "%s -%%c %s %%s",
-                          iptables_cmd,
+                          CMD_DEF_PRE "$IPT -%%c %s %%s",
                           chain);
 
         virBufferAddLit(&buf, " -p ah");
@@ -1439,8 +1406,7 @@ _iptablesCreateRuleInstance(int directionIn,
     case VIR_NWFILTER_RULE_PROTOCOL_SCTP:
     case VIR_NWFILTER_RULE_PROTOCOL_SCTPoIPV6:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "%s -%%c %s %%s",
-                          iptables_cmd,
+                          CMD_DEF_PRE "$IPT -%%c %s %%s",
                           chain);
 
         virBufferAddLit(&buf, " -p sctp");
@@ -1473,8 +1439,7 @@ _iptablesCreateRuleInstance(int directionIn,
     case VIR_NWFILTER_RULE_PROTOCOL_ICMP:
     case VIR_NWFILTER_RULE_PROTOCOL_ICMPV6:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "%s -%%c %s %%s",
-                          iptables_cmd,
+                          CMD_DEF_PRE "$IPT -%%c %s %%s",
                           chain);
 
         if (rule->prtclType == VIR_NWFILTER_RULE_PROTOCOL_ICMP)
@@ -1539,8 +1504,7 @@ _iptablesCreateRuleInstance(int directionIn,
 
     case VIR_NWFILTER_RULE_PROTOCOL_IGMP:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "%s -%%c %s %%s",
-                          iptables_cmd,
+                          CMD_DEF_PRE "$IPT -%%c %s %%s",
                           chain);
 
         virBufferAddLit(&buf, " -p igmp");
@@ -1568,8 +1532,7 @@ _iptablesCreateRuleInstance(int directionIn,
     case VIR_NWFILTER_RULE_PROTOCOL_ALL:
     case VIR_NWFILTER_RULE_PROTOCOL_ALLoIPV6:
         virBufferAsprintf(&buf,
-                          CMD_DEF_PRE "%s -%%c %s %%s",
-                          iptables_cmd,
+                          CMD_DEF_PRE "$IPT -%%c %s %%s",
                           chain);
 
         virBufferAddLit(&buf, " -p all");
@@ -3696,23 +3659,31 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto tear_down_tmpebchains;
 
     if (haveIptables) {
-        iptablesUnlinkTmpRootChains(iptables_cmd_path, &buf, ifname);
-        iptablesRemoveTmpRootChains(iptables_cmd_path, &buf, ifname);
+        NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
 
-        iptablesCreateBaseChains(iptables_cmd_path, &buf);
+        iptablesUnlinkTmpRootChains(&buf, ifname);
+        iptablesRemoveTmpRootChains(&buf, ifname);
+
+        iptablesCreateBaseChains(&buf);
 
         if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0)
             goto tear_down_tmpebchains;
 
-        iptablesCreateTmpRootChains(iptables_cmd_path, &buf, ifname);
+        NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
+
+        iptablesCreateTmpRootChains(&buf, ifname);
 
         if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0)
            goto tear_down_tmpiptchains;
 
-        iptablesLinkTmpRootChains(iptables_cmd_path, &buf, ifname);
-        iptablesSetupVirtInPost(iptables_cmd_path, &buf, ifname);
+        NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
+
+        iptablesLinkTmpRootChains(&buf, ifname);
+        iptablesSetupVirtInPost(&buf, ifname);
         if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0)
            goto tear_down_tmpiptchains;
+
+        NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
 
         for (i = 0; i < nruleInstances; i++) {
             sa_assert (inst);
@@ -3729,23 +3700,31 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     if (haveIp6tables) {
-        iptablesUnlinkTmpRootChains(ip6tables_cmd_path, &buf, ifname);
-        iptablesRemoveTmpRootChains(ip6tables_cmd_path, &buf, ifname);
+        NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
 
-        iptablesCreateBaseChains(ip6tables_cmd_path, &buf);
+        iptablesUnlinkTmpRootChains(&buf, ifname);
+        iptablesRemoveTmpRootChains(&buf, ifname);
+
+        iptablesCreateBaseChains(&buf);
 
         if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0)
             goto tear_down_tmpiptchains;
 
-        iptablesCreateTmpRootChains(ip6tables_cmd_path, &buf, ifname);
+        NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
+
+        iptablesCreateTmpRootChains(&buf, ifname);
 
         if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0)
            goto tear_down_tmpip6tchains;
 
-        iptablesLinkTmpRootChains(ip6tables_cmd_path, &buf, ifname);
-        iptablesSetupVirtInPost(ip6tables_cmd_path, &buf, ifname);
+        NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
+
+        iptablesLinkTmpRootChains(&buf, ifname);
+        iptablesSetupVirtInPost(&buf, ifname);
         if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0)
            goto tear_down_tmpip6tchains;
+
+        NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
 
         for (i = 0; i < nruleInstances; i++) {
             if (inst[i]->ruleType == RT_IP6TABLES)
@@ -3791,14 +3770,18 @@ tear_down_ebsubchains_and_unlink:
 
 tear_down_tmpip6tchains:
     if (haveIp6tables) {
-        iptablesUnlinkTmpRootChains(ip6tables_cmd_path, &buf, ifname);
-        iptablesRemoveTmpRootChains(ip6tables_cmd_path, &buf, ifname);
+        NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
+
+        iptablesUnlinkTmpRootChains(&buf, ifname);
+        iptablesRemoveTmpRootChains(&buf, ifname);
     }
 
 tear_down_tmpiptchains:
     if (haveIptables) {
-        iptablesUnlinkTmpRootChains(iptables_cmd_path, &buf, ifname);
-        iptablesRemoveTmpRootChains(iptables_cmd_path, &buf, ifname);
+        NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
+
+        iptablesUnlinkTmpRootChains(&buf, ifname);
+        iptablesRemoveTmpRootChains(&buf, ifname);
     }
 
 tear_down_tmpebchains:
@@ -3841,13 +3824,17 @@ ebiptablesTearNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (iptables_cmd_path) {
-        iptablesUnlinkTmpRootChains(iptables_cmd_path, &buf, ifname);
-        iptablesRemoveTmpRootChains(iptables_cmd_path, &buf, ifname);
+        NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
+
+        iptablesUnlinkTmpRootChains(&buf, ifname);
+        iptablesRemoveTmpRootChains(&buf, ifname);
     }
 
     if (ip6tables_cmd_path) {
-        iptablesUnlinkTmpRootChains(ip6tables_cmd_path, &buf, ifname);
-        iptablesRemoveTmpRootChains(ip6tables_cmd_path, &buf, ifname);
+        NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
+
+        iptablesUnlinkTmpRootChains(&buf, ifname);
+        iptablesRemoveTmpRootChains(&buf, ifname);
     }
 
     if (ebtables_cmd_path) {
@@ -3876,18 +3863,22 @@ ebiptablesTearOldRules(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     /* switch to new iptables user defined chains */
     if (iptables_cmd_path) {
-        iptablesUnlinkRootChains(iptables_cmd_path, &buf, ifname);
-        iptablesRemoveRootChains(iptables_cmd_path, &buf, ifname);
+        NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
 
-        iptablesRenameTmpRootChains(iptables_cmd_path, &buf, ifname);
+        iptablesUnlinkRootChains(&buf, ifname);
+        iptablesRemoveRootChains(&buf, ifname);
+
+        iptablesRenameTmpRootChains(&buf, ifname);
         ebiptablesExecCLI(&buf, &cli_status, NULL);
     }
 
     if (ip6tables_cmd_path) {
-        iptablesUnlinkRootChains(ip6tables_cmd_path, &buf, ifname);
-        iptablesRemoveRootChains(ip6tables_cmd_path, &buf, ifname);
+        NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
 
-        iptablesRenameTmpRootChains(ip6tables_cmd_path, &buf, ifname);
+        iptablesUnlinkRootChains(&buf, ifname);
+        iptablesRemoveRootChains(&buf, ifname);
+
+        iptablesRenameTmpRootChains(&buf, ifname);
         ebiptablesExecCLI(&buf, &cli_status, NULL);
     }
 
@@ -3974,15 +3965,19 @@ ebiptablesAllTeardown(const char *ifname)
     int cli_status;
 
     if (iptables_cmd_path) {
-        iptablesUnlinkRootChains(iptables_cmd_path, &buf, ifname);
-        iptablesClearVirtInPost (iptables_cmd_path, &buf, ifname);
-        iptablesRemoveRootChains(iptables_cmd_path, &buf, ifname);
+        NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
+
+        iptablesUnlinkRootChains(&buf, ifname);
+        iptablesClearVirtInPost (&buf, ifname);
+        iptablesRemoveRootChains(&buf, ifname);
     }
 
     if (ip6tables_cmd_path) {
-        iptablesUnlinkRootChains(ip6tables_cmd_path, &buf, ifname);
-        iptablesClearVirtInPost (ip6tables_cmd_path, &buf, ifname);
-        iptablesRemoveRootChains(ip6tables_cmd_path, &buf, ifname);
+        NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
+
+        iptablesUnlinkRootChains(&buf, ifname);
+        iptablesClearVirtInPost (&buf, ifname);
+        iptablesRemoveRootChains(&buf, ifname);
     }
 
     if (ebtables_cmd_path) {
@@ -4056,11 +4051,12 @@ ebiptablesDriverInit(bool privileged)
 
     iptables_cmd_path = virFindFileInPath("iptables");
     if (iptables_cmd_path) {
+        NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
+
         virBufferAsprintf(&buf,
-                          CMD_DEF("%s -n -L FORWARD") CMD_SEPARATOR
+                          CMD_DEF("$IPT -n -L FORWARD") CMD_SEPARATOR
                           CMD_EXEC
                           "%s",
-                          iptables_cmd_path,
                           CMD_STOPONERR(1));
 
         if (ebiptablesExecCLI(&buf, NULL, NULL) < 0)
@@ -4069,11 +4065,12 @@ ebiptablesDriverInit(bool privileged)
 
     ip6tables_cmd_path = virFindFileInPath("ip6tables");
     if (ip6tables_cmd_path) {
+        NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
+
         virBufferAsprintf(&buf,
-                          CMD_DEF("%s -n -L FORWARD") CMD_SEPARATOR
+                          CMD_DEF("$IPT -n -L FORWARD") CMD_SEPARATOR
                           CMD_EXEC
                           "%s",
-                          ip6tables_cmd_path,
                           CMD_STOPONERR(1));
 
         if (ebiptablesExecCLI(&buf, NULL, NULL) < 0)
