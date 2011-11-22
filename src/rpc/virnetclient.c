@@ -1595,7 +1595,7 @@ int virNetClientSendNoReply(virNetClientPtr client,
  * Send a message asynchronously, without any reply
  *
  * The caller is responsible for free'ing @msg, *except* if
- * this method returns -1.
+ * this method returns 1.
  *
  * Returns 2 on full send, 1 on partial send, 0 on no send, -1 on error
  */
