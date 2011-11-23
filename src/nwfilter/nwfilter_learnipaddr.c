@@ -323,7 +323,7 @@ virNWFilterDeregisterLearnReq(int ifindex) {
 static int
 virNWFilterAddIpAddrForIfname(const char *ifname, char *addr)
 {
-    int ret;
+    int ret = -1;
     virNWFilterVarValuePtr val;
 
     virMutexLock(&ipAddressMapLock);
@@ -333,17 +333,21 @@ virNWFilterAddIpAddrForIfname(const char *ifname, char *addr)
         val = virNWFilterVarValueCreateSimple(addr);
         if (!val) {
             virReportOOMError();
-            ret = -1;
-            goto err_exit;
+            goto cleanup;
         }
         ret = virNWFilterHashTablePut(ipAddressMap, ifname, val, 1);
+        /* FIXME: fix when return code of virNWFilterHashTablePut changes */
+        if (ret)
+            ret = -1;
+        goto cleanup;
     } else {
         if (virNWFilterVarValueAddValue(val, addr) < 0)
-            ret = -1;
-        ret = 0;
+            goto cleanup;
     }
 
-err_exit:
+    ret = 0;
+
+cleanup:
     virMutexUnlock(&ipAddressMapLock);
 
     return ret;
