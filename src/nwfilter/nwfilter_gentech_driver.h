@@ -42,14 +42,11 @@ int virNWFilterInstantiateFilter(virConnectPtr conn,
 int virNWFilterUpdateInstantiateFilter(virConnectPtr conn,
                                        const virDomainNetDefPtr net,
                                        bool *skipIface);
-int virNWFilterRollbackUpdateFilter(virConnectPtr conn,
-                                    const virDomainNetDefPtr net);
+int virNWFilterRollbackUpdateFilter(const virDomainNetDefPtr net);
 
-int virNWFilterTearOldFilter(virConnectPtr conn,
-                             const virDomainNetDefPtr net);
+int virNWFilterTearOldFilter(const virDomainNetDefPtr net);
 
-int virNWFilterInstantiateFilterLate(virConnectPtr conn,
-                                     const char *ifname,
+int virNWFilterInstantiateFilterLate(const char *ifname,
                                      int ifindex,
                                      const char *linkdev,
                                      enum virDomainNetType nettype,

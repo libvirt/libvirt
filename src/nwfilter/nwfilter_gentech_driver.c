@@ -98,8 +98,7 @@ virNWFilterTechDriverForName(const char *name) {
  * for bidirectional traffic and data needs to be added to the incoming
  * and outgoing chains.
  *
- * Returns 0 in case of success, 1 in case of an error with the error
- * message attached to the virConnect object.
+ * Returns 0 in case of success, 1 in case of an error.
  */
 int
 virNWFilterRuleInstAddData(virNWFilterRuleInstPtr res,
@@ -190,8 +189,7 @@ virNWFilterVarHashmapAddStdValues(virNWFilterHashTablePtr table,
  * Create a hashmap used for evaluating the firewall rules. Initializes
  * it with the standard variable 'MAC' and 'IP' if provided.
  *
- * Returns pointer to hashmap, NULL if an error occcurred and error message
- * is attached to the virConnect object.
+ * Returns pointer to hashmap, NULL if an error occcurred.
  */
 virNWFilterHashTablePtr
 virNWFilterCreateVarHashmap(char *macaddr,
@@ -274,7 +272,6 @@ virNWFilterPrintVars(virHashTablePtr vars,
 
 /**
  * virNWFilterRuleInstantiate:
- * @conn: pointer to virConnect object
  * @techdriver: the driver to use for instantiation
  * @filter: The filter the rule is part of
  * @rule : The rule that is to be instantiated
@@ -289,8 +286,7 @@ virNWFilterPrintVars(virHashTablePtr vars,
  * from the instantiation. Returns NULL on error with error reported.
  */
 static virNWFilterRuleInstPtr
-virNWFilterRuleInstantiate(virConnectPtr conn,
-                           virNWFilterTechDriverPtr techdriver,
+virNWFilterRuleInstantiate(virNWFilterTechDriverPtr techdriver,
                            enum virDomainNetType nettype,
                            virNWFilterDefPtr filter,
                            virNWFilterRuleDefPtr rule,
@@ -308,7 +304,7 @@ virNWFilterRuleInstantiate(virConnectPtr conn,
 
     ret->techdriver = techdriver;
 
-    rc = techdriver->createRuleInstance(conn, nettype, filter,
+    rc = techdriver->createRuleInstance(nettype, filter,
                                         rule, ifname, vars, ret);
 
     if (rc) {
@@ -359,7 +355,6 @@ err_exit:
 
 /**
  * _virNWFilterInstantiateRec:
- * @conn: pointer to virConnect object
  * @techdriver: The driver to use for instantiation
  * @filter: The filter to instantiate
  * @ifname: The name of the interface to apply the rules to
@@ -382,8 +377,7 @@ err_exit:
  * resolved -- among other reasons.
  */
 static int
-_virNWFilterInstantiateRec(virConnectPtr conn,
-                           virNWFilterTechDriverPtr techdriver,
+_virNWFilterInstantiateRec(virNWFilterTechDriverPtr techdriver,
                            enum virDomainNetType nettype,
                            virNWFilterDefPtr filter,
                            const char *ifname,
@@ -403,8 +397,7 @@ _virNWFilterInstantiateRec(virConnectPtr conn,
         virNWFilterRuleDefPtr    rule = filter->filterEntries[i]->rule;
         virNWFilterIncludeDefPtr inc  = filter->filterEntries[i]->include;
         if (rule) {
-            inst = virNWFilterRuleInstantiate(conn,
-                                              techdriver,
+            inst = virNWFilterRuleInstantiate(techdriver,
                                               nettype,
                                               filter,
                                               rule,
@@ -461,8 +454,7 @@ _virNWFilterInstantiateRec(virConnectPtr conn,
                 break;
                 }
 
-                rc = _virNWFilterInstantiateRec(conn,
-                                                techdriver,
+                rc = _virNWFilterInstantiateRec(techdriver,
                                                 nettype,
                                                 next_filter,
                                                 ifname,
@@ -491,8 +483,7 @@ _virNWFilterInstantiateRec(virConnectPtr conn,
 
 
 static int
-virNWFilterDetermineMissingVarsRec(virConnectPtr conn,
-                                   virNWFilterDefPtr filter,
+virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
                                    virNWFilterHashTablePtr vars,
                                    virNWFilterHashTablePtr missing_vars,
                                    int useNewFilter,
@@ -559,8 +550,7 @@ virNWFilterDetermineMissingVarsRec(virConnectPtr conn,
                 break;
                 }
 
-                rc = virNWFilterDetermineMissingVarsRec(conn,
-                                                        next_filter,
+                rc = virNWFilterDetermineMissingVarsRec(next_filter,
                                                         tmpvars,
                                                         missing_vars,
                                                         useNewFilter,
@@ -617,7 +607,6 @@ virNWFilterRuleInstancesToArray(int nEntries,
 
 /**
  * virNWFilterInstantiate:
- * @conn: pointer to virConnect object
  * @techdriver: The driver to use for instantiation
  * @filter: The filter to instantiate
  * @ifname: The name of the interface to apply the rules to
@@ -636,8 +625,7 @@ virNWFilterRuleInstancesToArray(int nEntries,
  * Call this function while holding the NWFilter filter update lock
  */
 static int
-virNWFilterInstantiate(virConnectPtr conn,
-                       virNWFilterTechDriverPtr techdriver,
+virNWFilterInstantiate(virNWFilterTechDriverPtr techdriver,
                        enum virDomainNetType nettype,
                        virNWFilterDefPtr filter,
                        const char *ifname,
@@ -665,8 +653,7 @@ virNWFilterInstantiate(virConnectPtr conn,
         goto err_exit;
     }
 
-    rc = virNWFilterDetermineMissingVarsRec(conn,
-                                            filter,
+    rc = virNWFilterDetermineMissingVarsRec(filter,
                                             vars,
                                             missing_vars,
                                             useNewFilter,
@@ -697,8 +684,7 @@ virNWFilterInstantiate(virConnectPtr conn,
         goto err_exit;
     }
 
-    rc = _virNWFilterInstantiateRec(conn,
-                                    techdriver,
+    rc = _virNWFilterInstantiateRec(techdriver,
                                     nettype,
                                     filter,
                                     ifname,
@@ -729,10 +715,10 @@ virNWFilterInstantiate(virConnectPtr conn,
         if (virNWFilterLockIface(ifname))
             goto err_exit;
 
-        rc = techdriver->applyNewRules(conn, ifname, nptrs, ptrs);
+        rc = techdriver->applyNewRules(ifname, nptrs, ptrs);
 
         if (teardownOld && rc == 0)
-            techdriver->tearOldRules(conn, ifname);
+            techdriver->tearOldRules(ifname);
 
         if (rc == 0 && (virNetDevValidateConfig(ifname, NULL, ifindex) <= 0)) {
             virResetLastError();
@@ -775,8 +761,7 @@ err_unresolvable_vars:
  * Call this function while holding the NWFilter filter update lock
  */
 static int
-__virNWFilterInstantiateFilter(virConnectPtr conn,
-                               bool teardownOld,
+__virNWFilterInstantiateFilter(bool teardownOld,
                                const char *ifname,
                                int ifindex,
                                const char *linkdev,
@@ -868,8 +853,7 @@ __virNWFilterInstantiateFilter(virConnectPtr conn,
     break;
     }
 
-    rc = virNWFilterInstantiate(conn,
-                                techdriver,
+    rc = virNWFilterInstantiate(techdriver,
                                 nettype,
                                 filter,
                                 ifname,
@@ -924,8 +908,7 @@ _virNWFilterInstantiateFilter(virConnectPtr conn,
         goto cleanup;
     }
 
-    rc = __virNWFilterInstantiateFilter(conn,
-                                        teardownOld,
+    rc = __virNWFilterInstantiateFilter(teardownOld,
                                         net->ifname,
                                         ifindex,
                                         linkdev,
@@ -946,8 +929,7 @@ cleanup:
 
 
 int
-virNWFilterInstantiateFilterLate(virConnectPtr conn,
-                                 const char *ifname,
+virNWFilterInstantiateFilterLate(const char *ifname,
                                  int ifindex,
                                  const char *linkdev,
                                  enum virDomainNetType nettype,
@@ -961,8 +943,7 @@ virNWFilterInstantiateFilterLate(virConnectPtr conn,
 
     virNWFilterLockFilterUpdates();
 
-    rc = __virNWFilterInstantiateFilter(conn,
-                                        1,
+    rc = __virNWFilterInstantiateFilter(true,
                                         ifname,
                                         ifindex,
                                         linkdev,
@@ -1019,8 +1000,7 @@ virNWFilterUpdateInstantiateFilter(virConnectPtr conn,
     return rc;
 }
 
-int virNWFilterRollbackUpdateFilter(virConnectPtr conn,
-                                    const virDomainNetDefPtr net)
+int virNWFilterRollbackUpdateFilter(const virDomainNetDefPtr net)
 {
     const char *drvname = EBIPTABLES_DRIVER_ID;
     int ifindex;
@@ -1041,13 +1021,12 @@ int virNWFilterRollbackUpdateFilter(virConnectPtr conn,
     else if (virNWFilterLookupLearnReq(ifindex) != NULL)
         return 0;
 
-    return techdriver->tearNewRules(conn, net->ifname);
+    return techdriver->tearNewRules(net->ifname);
 }
 
 
 int
-virNWFilterTearOldFilter(virConnectPtr conn,
-                         virDomainNetDefPtr net)
+virNWFilterTearOldFilter(virDomainNetDefPtr net)
 {
     const char *drvname = EBIPTABLES_DRIVER_ID;
     int ifindex;
@@ -1068,7 +1047,7 @@ virNWFilterTearOldFilter(virConnectPtr conn,
     else if (virNWFilterLookupLearnReq(ifindex) != NULL)
         return 0;
 
-    return techdriver->tearOldRules(conn, net->ifname);
+    return techdriver->tearOldRules(net->ifname);
 }
 
 
@@ -1141,14 +1120,13 @@ virNWFilterDomainFWUpdateCB(void *payload,
 
                 case STEP_TEAR_NEW:
                     if ( !virHashLookup(cb->skipInterfaces, net->ifname)) {
-                        cb->err = virNWFilterRollbackUpdateFilter(cb->conn,
-                                                                  net);
+                        cb->err = virNWFilterRollbackUpdateFilter(net);
                     }
                     break;
 
                 case STEP_TEAR_OLD:
                     if ( !virHashLookup(cb->skipInterfaces, net->ifname)) {
-                        cb->err = virNWFilterTearOldFilter(cb->conn, net);
+                        cb->err = virNWFilterTearOldFilter(net);
                     }
                     break;
                 }

@@ -1188,8 +1188,7 @@ iptablesEnforceDirection(int directionIn,
  * Convert a single rule into its representation for later instantiation
  *
  * Returns 0 in case of success with the result stored in the data structure
- * pointed to by res, != 0 otherwise with the error message stored in the
- * virConnect object.
+ * pointed to by res, != 0 otherwise.
  */
 static int
 _iptablesCreateRuleInstance(int directionIn,
@@ -1917,8 +1916,7 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
  * Convert a single rule into its representation for later instantiation
  *
  * Returns 0 in case of success with the result stored in the data structure
- * pointed to by res, != 0 otherwise with the error message stored in the
- * virConnect object.
+ * pointed to by res, != 0 otherwise.
  */
 static int
 ebtablesCreateRuleInstance(char chainPrefix,
@@ -2503,7 +2501,6 @@ err_exit:
 
 /*
  * ebiptablesCreateRuleInstance:
- * @conn : Pointer to a virConnect object
  * @nwfilter : The filter
  * @rule: The rule of the filter to convert
  * @ifname : The name of the interface to apply the rule to
@@ -2513,12 +2510,10 @@ err_exit:
  * Convert a single rule into its representation for later instantiation
  *
  * Returns 0 in case of success with the result stored in the data structure
- * pointed to by res, != 0 otherwise with the error message stored in the
- * virConnect object.
+ * pointed to by res, != 0 otherwise.
  */
 static int
-ebiptablesCreateRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
-                             enum virDomainNetType nettype ATTRIBUTE_UNUSED,
+ebiptablesCreateRuleInstance(enum virDomainNetType nettype ATTRIBUTE_UNUSED,
                              virNWFilterDefPtr nwfilter,
                              virNWFilterRuleDefPtr rule,
                              const char *ifname,
@@ -2610,7 +2605,6 @@ ebiptablesCreateRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 static int
 ebiptablesCreateRuleInstanceIterate(
-                             virConnectPtr conn ATTRIBUTE_UNUSED,
                              enum virDomainNetType nettype ATTRIBUTE_UNUSED,
                              virNWFilterDefPtr nwfilter,
                              virNWFilterRuleDefPtr rule,
@@ -2630,8 +2624,7 @@ ebiptablesCreateRuleInstanceIterate(
         return 1;
 
     do {
-        rc = ebiptablesCreateRuleInstance(conn,
-                                          nettype,
+        rc = ebiptablesCreateRuleInstance(nettype,
                                           nwfilter,
                                           rule,
                                           ifname,
@@ -2656,8 +2649,7 @@ ebiptablesFreeRuleInstance(void *_inst)
 
 
 static int
-ebiptablesDisplayRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
-                              void *_inst)
+ebiptablesDisplayRuleInstance(void *_inst)
 {
     ebiptablesRuleInstPtr inst = (ebiptablesRuleInstPtr)_inst;
     VIR_INFO("Command Template: '%s', Needed protocol: '%s'",
@@ -3096,7 +3088,6 @@ ebiptablesCanApplyBasicRules(void) {
 /**
  * ebtablesApplyBasicRules
  *
- * @conn: virConnect object
  * @ifname: name of the backend-interface to which to apply the rules
  * @macaddr: MAC address the VM is using in packets sent through the
  *    interface
@@ -3552,8 +3543,7 @@ ebtablesCreateTmpRootAndSubChains(virBufferPtr buf,
 }
 
 static int
-ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
-                        const char *ifname,
+ebiptablesApplyNewRules(const char *ifname,
                         int nruleInstances,
                         void **_inst)
 {
@@ -3824,8 +3814,7 @@ exit_free_sets:
 
 
 static int
-ebiptablesTearNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
-                       const char *ifname)
+ebiptablesTearNewRules(const char *ifname)
 {
     int cli_status;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -3862,8 +3851,7 @@ ebiptablesTearNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-ebiptablesTearOldRules(virConnectPtr conn ATTRIBUTE_UNUSED,
-                       const char *ifname)
+ebiptablesTearOldRules(const char *ifname)
 {
     int cli_status;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -3911,7 +3899,6 @@ ebiptablesTearOldRules(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 /**
  * ebiptablesRemoveRules:
- * @conn : pointer to virConnect object
  * @ifname : the name of the interface to which the rules apply
  * @nRuleInstance : the number of given rules
  * @_inst : array of rule instantiation data
@@ -3922,8 +3909,7 @@ ebiptablesTearOldRules(virConnectPtr conn ATTRIBUTE_UNUSED,
  * commands failed.
  */
 static int
-ebiptablesRemoveRules(virConnectPtr conn ATTRIBUTE_UNUSED,
-                      const char *ifname ATTRIBUTE_UNUSED,
+ebiptablesRemoveRules(const char *ifname ATTRIBUTE_UNUSED,
                       int nruleInstances,
                       void **_inst)
 {

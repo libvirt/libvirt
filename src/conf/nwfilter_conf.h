@@ -592,27 +592,22 @@ typedef void (*virNWFilterTechDrvShutdown)(void);
 
 enum virDomainNetType;
 
-typedef int (*virNWFilterRuleCreateInstance)(virConnectPtr conn,
-                                             enum virDomainNetType nettype,
+typedef int (*virNWFilterRuleCreateInstance)(enum virDomainNetType nettype,
                                              virNWFilterDefPtr filter,
                                              virNWFilterRuleDefPtr rule,
                                              const char *ifname,
                                              virNWFilterHashTablePtr vars,
                                              virNWFilterRuleInstPtr res);
 
-typedef int (*virNWFilterRuleApplyNewRules)(virConnectPtr conn,
-                                            const char *ifname,
+typedef int (*virNWFilterRuleApplyNewRules)(const char *ifname,
                                             int nruleInstances,
                                             void **_inst);
 
-typedef int (*virNWFilterRuleTeardownNewRules)(virConnectPtr conn,
-                                               const char *ifname);
+typedef int (*virNWFilterRuleTeardownNewRules)(const char *ifname);
 
-typedef int (*virNWFilterRuleTeardownOldRules)(virConnectPtr conn,
-                                               const char *ifname);
+typedef int (*virNWFilterRuleTeardownOldRules)(const char *ifname);
 
-typedef int (*virNWFilterRuleRemoveRules)(virConnectPtr conn,
-                                          const char *ifname,
+typedef int (*virNWFilterRuleRemoveRules)(const char *ifname,
                                           int nruleInstances,
                                           void **_inst);
 
@@ -620,8 +615,7 @@ typedef int (*virNWFilterRuleAllTeardown)(const char *ifname);
 
 typedef int (*virNWFilterRuleFreeInstanceData)(void * _inst);
 
-typedef int (*virNWFilterRuleDisplayInstanceData)(virConnectPtr conn,
-                                                  void *_inst);
+typedef int (*virNWFilterRuleDisplayInstanceData)(void *_inst);
 
 typedef int (*virNWFilterCanApplyBasicRules)(void);
 
