@@ -120,7 +120,7 @@ virNetDevVPortProfileEqual(virNetDevVPortProfilePtr a, virNetDevVPortProfilePtr 
 }
 
 
-#ifdef WITH_VIRTUALPORT
+#if WITH_VIRTUALPORT
 
 static struct nla_policy ifla_port_policy[IFLA_PORT_MAX + 1] =
 {
