@@ -10565,8 +10565,9 @@ cleanup:
     return ret;
 }
 
-static const char *
-qemuDiskPathToAlias(virDomainObjPtr vm, const char *path) {
+static char *
+qemuDiskPathToAlias(virDomainObjPtr vm, const char *path)
+{
     int i;
     char *ret = NULL;
     virDomainDiskDefPtr disk;
@@ -10605,7 +10606,7 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path,
     virDomainObjPtr vm = NULL;
     qemuDomainObjPrivatePtr priv;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    const char *device = NULL;
+    char *device = NULL;
     int ret = -1;
 
     qemuDriverLock(driver);
