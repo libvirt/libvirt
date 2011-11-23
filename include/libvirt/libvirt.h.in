@@ -1362,11 +1362,11 @@ char *                  virConnectDomainXMLToNative(virConnectPtr conn,
                                                     unsigned int flags);
 
 int                     virDomainBlockStats     (virDomainPtr dom,
-                                                 const char *path,
+                                                 const char *disk,
                                                  virDomainBlockStatsPtr stats,
                                                  size_t size);
 int                     virDomainBlockStatsFlags (virDomainPtr dom,
-                                                  const char *path,
+                                                  const char *disk,
                                                   virTypedParameterPtr params,
                                                   int *nparams,
                                                   unsigned int flags);
@@ -1379,7 +1379,7 @@ int                     virDomainMemoryStats (virDomainPtr dom,
                                               unsigned int nr_stats,
                                               unsigned int flags);
 int                     virDomainBlockPeek (virDomainPtr dom,
-                                            const char *path,
+                                            const char *disk,
                                             unsigned long long offset,
                                             size_t size,
                                             void *buffer,
@@ -1417,7 +1417,7 @@ struct _virDomainBlockInfo {
 };
 
 int                     virDomainGetBlockInfo(virDomainPtr dom,
-                                              const char *path,
+                                              const char *disk,
                                               virDomainBlockInfoPtr info,
                                               unsigned int flags);
 
@@ -1659,15 +1659,15 @@ struct _virDomainBlockJobInfo {
 };
 typedef virDomainBlockJobInfo *virDomainBlockJobInfoPtr;
 
-int       virDomainBlockJobAbort(virDomainPtr dom, const char *path,
+int       virDomainBlockJobAbort(virDomainPtr dom, const char *disk,
                                  unsigned int flags);
-int     virDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
+int     virDomainGetBlockJobInfo(virDomainPtr dom, const char *disk,
                                  virDomainBlockJobInfoPtr info,
                                  unsigned int flags);
-int    virDomainBlockJobSetSpeed(virDomainPtr dom, const char *path,
+int    virDomainBlockJobSetSpeed(virDomainPtr dom, const char *disk,
                                  unsigned long bandwidth, unsigned int flags);
 
-int           virDomainBlockPull(virDomainPtr dom, const char *path,
+int           virDomainBlockPull(virDomainPtr dom, const char *disk,
                                  unsigned long bandwidth, unsigned int flags);
 
 
@@ -3093,7 +3093,7 @@ typedef enum {
  */
 typedef void (*virConnectDomainEventBlockJobCallback)(virConnectPtr conn,
                                                       virDomainPtr dom,
-                                                      const char *path,
+                                                      const char *disk,
                                                       int type,
                                                       int status,
                                                       void *opaque);

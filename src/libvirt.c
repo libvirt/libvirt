@@ -6659,14 +6659,14 @@ error:
 /**
  * virDomainBlockStats:
  * @dom: pointer to the domain object
- * @path: path to the block device, or device shorthand
+ * @disk: path to the block device, or device shorthand
  * @stats: block device stats (returned)
  * @size: size of stats structure
  *
  * This function returns block device (disk) stats for block
  * devices attached to the domain.
  *
- * The @path parameter is either the device target shorthand (the
+ * The @disk parameter is either the device target shorthand (the
  * <target dev='...'/> sub-element, such as "xvda"), or (since 0.9.8)
  * an unambiguous source name of the block device (the <source
  * file='...'/> sub-element, such as "/path/to/image").  Valid names
@@ -6683,13 +6683,13 @@ error:
  * Returns: 0 in case of success or -1 in case of failure.
  */
 int
-virDomainBlockStats (virDomainPtr dom, const char *path,
-                     virDomainBlockStatsPtr stats, size_t size)
+virDomainBlockStats(virDomainPtr dom, const char *disk,
+                    virDomainBlockStatsPtr stats, size_t size)
 {
     virConnectPtr conn;
     struct _virDomainBlockStats stats2 = { -1, -1, -1, -1, -1 };
 
-    VIR_DOMAIN_DEBUG(dom, "path=%s, stats=%p, size=%zi", path, stats, size);
+    VIR_DOMAIN_DEBUG(dom, "disk=%s, stats=%p, size=%zi", disk, stats, size);
 
     virResetLastError();
 
@@ -6698,14 +6698,14 @@ virDomainBlockStats (virDomainPtr dom, const char *path,
         virDispatchError(NULL);
         return -1;
     }
-    if (!path || !stats || size > sizeof stats2) {
+    if (!disk || !stats || size > sizeof stats2) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
     conn = dom->conn;
 
     if (conn->driver->domainBlockStats) {
-        if (conn->driver->domainBlockStats (dom, path, &stats2) == -1)
+        if (conn->driver->domainBlockStats (dom, disk, &stats2) == -1)
             goto error;
 
         memcpy (stats, &stats2, size);
@@ -6722,7 +6722,7 @@ error:
 /**
  * virDomainBlockStatsFlags:
  * @dom: pointer to domain object
- * @path: path to the block device, or device shorthand
+ * @disk: path to the block device, or device shorthand
  * @params: pointer to block stats parameter object
  *          (return value)
  * @nparams: pointer to number of block stats; input and output
@@ -6731,7 +6731,7 @@ error:
  * This function is to get block stats parameters for block
  * devices attached to the domain.
  *
- * The @path parameter is either the device target shorthand (the
+ * The @disk parameter is either the device target shorthand (the
  * <target dev='...'/> sub-element, such as "xvda"), or (since 0.9.8)
  * an unambiguous source name of the block device (the <source
  * file='...'/> sub-element, such as "/path/to/image").  Valid names
@@ -6757,15 +6757,15 @@ error:
  * Returns -1 in case of error, 0 in case of success.
  */
 int virDomainBlockStatsFlags(virDomainPtr dom,
-                             const char *path,
+                             const char *disk,
                              virTypedParameterPtr params,
                              int *nparams,
                              unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(dom, "path=%s, params=%p, nparams=%d, flags=%x",
-                     path, params, nparams ? *nparams : -1, flags);
+    VIR_DOMAIN_DEBUG(dom, "disk=%s, params=%p, nparams=%d, flags=%x",
+                     disk, params, nparams ? *nparams : -1, flags);
 
     virResetLastError();
 
@@ -6774,7 +6774,7 @@ int virDomainBlockStatsFlags(virDomainPtr dom,
         virDispatchError(NULL);
         return -1;
     }
-    if (!path || (nparams == NULL) || (*nparams < 0) ||
+    if (!disk || (nparams == NULL) || (*nparams < 0) ||
         (params == NULL && *nparams != 0)) {
         virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
@@ -6786,7 +6786,7 @@ int virDomainBlockStatsFlags(virDomainPtr dom,
 
     if (conn->driver->domainBlockStatsFlags) {
         int ret;
-        ret = conn->driver->domainBlockStatsFlags(dom, path, params, nparams, flags);
+        ret = conn->driver->domainBlockStatsFlags(dom, disk, params, nparams, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -6933,7 +6933,7 @@ error:
 /**
  * virDomainBlockPeek:
  * @dom: pointer to the domain object
- * @path: path to the block device, or device shorthand
+ * @disk: path to the block device, or device shorthand
  * @offset: offset within block device
  * @size: size to read
  * @buffer: return buffer (must be at least size bytes)
@@ -6952,7 +6952,7 @@ error:
  * remote case, nor if you don't have sufficient permission.
  * Hence the need for this call).
  *
- * The @path parameter is either an unambiguous source name of the
+ * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
  * "/path/to/image"), or (since 0.9.5) the device target shorthand
  * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
@@ -6973,7 +6973,7 @@ error:
  */
 int
 virDomainBlockPeek (virDomainPtr dom,
-                    const char *path,
+                    const char *disk,
                     unsigned long long offset /* really 64 bits */,
                     size_t size,
                     void *buffer,
@@ -6981,8 +6981,8 @@ virDomainBlockPeek (virDomainPtr dom,
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(dom, "path=%s, offset=%lld, size=%zi, buffer=%p, flags=%x",
-                     path, offset, size, buffer, flags);
+    VIR_DOMAIN_DEBUG(dom, "disk=%s, offset=%lld, size=%zi, buffer=%p, flags=%x",
+                     disk, offset, size, buffer, flags);
 
     virResetLastError();
 
@@ -6998,9 +6998,9 @@ virDomainBlockPeek (virDomainPtr dom,
         goto error;
     }
 
-    if (!path) {
+    if (!disk) {
         virLibDomainError(VIR_ERR_INVALID_ARG,
-                           _("path is NULL"));
+                          _("disk is NULL"));
         goto error;
     }
 
@@ -7013,7 +7013,7 @@ virDomainBlockPeek (virDomainPtr dom,
 
     if (conn->driver->domainBlockPeek) {
         int ret;
-        ret =conn->driver->domainBlockPeek (dom, path, offset, size,
+        ret = conn->driver->domainBlockPeek(dom, disk, offset, size,
                                             buffer, flags);
         if (ret < 0)
             goto error;
@@ -7141,13 +7141,13 @@ error:
 /**
  * virDomainGetBlockInfo:
  * @domain: a domain object
- * @path: path to the block device, or device shorthand
+ * @disk: path to the block device, or device shorthand
  * @info: pointer to a virDomainBlockInfo structure allocated by the user
  * @flags: currently unused, pass zero
  *
  * Extract information about a domain's block device.
  *
- * The @path parameter is either an unambiguous source name of the
+ * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
  * "/path/to/image"), or (since 0.9.5) the device target shorthand
  * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
@@ -7157,7 +7157,7 @@ error:
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
-virDomainGetBlockInfo(virDomainPtr domain, const char *path,
+virDomainGetBlockInfo(virDomainPtr domain, const char *disk,
                       virDomainBlockInfoPtr info, unsigned int flags)
 {
     virConnectPtr conn;
@@ -7171,7 +7171,7 @@ virDomainGetBlockInfo(virDomainPtr domain, const char *path,
         virDispatchError(NULL);
         return -1;
     }
-    if (path == NULL || info == NULL) {
+    if (disk == NULL || info == NULL) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
@@ -7182,7 +7182,7 @@ virDomainGetBlockInfo(virDomainPtr domain, const char *path,
 
     if (conn->driver->domainGetBlockInfo) {
         int ret;
-        ret = conn->driver->domainGetBlockInfo (domain, path, info, flags);
+        ret = conn->driver->domainGetBlockInfo (domain, disk, info, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -16853,12 +16853,12 @@ error:
 /**
  * virDomainBlockJobAbort:
  * @dom: pointer to domain object
- * @path: path to the block device, or device shorthand
+ * @disk: path to the block device, or device shorthand
  * @flags: currently unused, for future extension
  *
  * Cancel the active block job on the given disk.
  *
- * The @path parameter is either an unambiguous source name of the
+ * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
  * "/path/to/image"), or (since 0.9.5) the device target shorthand
  * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
@@ -16867,12 +16867,12 @@ error:
  *
  * Returns -1 in case of failure, 0 when successful.
  */
-int virDomainBlockJobAbort(virDomainPtr dom, const char *path,
+int virDomainBlockJobAbort(virDomainPtr dom, const char *disk,
                            unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(dom, "path=%p, flags=%x", path, flags);
+    VIR_DOMAIN_DEBUG(dom, "disk=%p, flags=%x", disk, flags);
 
     virResetLastError();
 
@@ -16888,15 +16888,15 @@ int virDomainBlockJobAbort(virDomainPtr dom, const char *path,
         goto error;
     }
 
-    if (!path) {
+    if (!disk) {
         virLibDomainError(VIR_ERR_INVALID_ARG,
-                           _("path is NULL"));
+                          _("disk is NULL"));
         goto error;
     }
 
     if (conn->driver->domainBlockJobAbort) {
         int ret;
-        ret = conn->driver->domainBlockJobAbort(dom, path, flags);
+        ret = conn->driver->domainBlockJobAbort(dom, disk, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -16912,14 +16912,14 @@ error:
 /**
  * virDomainGetBlockJobInfo:
  * @dom: pointer to domain object
- * @path: path to the block device, or device shorthand
+ * @disk: path to the block device, or device shorthand
  * @info: pointer to a virDomainBlockJobInfo structure
  * @flags: currently unused, for future extension
  *
  * Request block job information for the given disk.  If an operation is active
  * @info will be updated with the current progress.
  *
- * The @path parameter is either an unambiguous source name of the
+ * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
  * "/path/to/image"), or (since 0.9.5) the device target shorthand
  * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
@@ -16928,12 +16928,12 @@ error:
  *
  * Returns -1 in case of failure, 0 when nothing found, 1 when info was found.
  */
-int virDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
+int virDomainGetBlockJobInfo(virDomainPtr dom, const char *disk,
                              virDomainBlockJobInfoPtr info, unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(dom, "path=%p, info=%p, flags=%x", path, info, flags);
+    VIR_DOMAIN_DEBUG(dom, "disk=%p, info=%p, flags=%x", disk, info, flags);
 
     virResetLastError();
 
@@ -16944,9 +16944,9 @@ int virDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
     }
     conn = dom->conn;
 
-    if (!path) {
+    if (!disk) {
         virLibDomainError(VIR_ERR_INVALID_ARG,
-                           _("path is NULL"));
+                          _("disk is NULL"));
         goto error;
     }
 
@@ -16958,7 +16958,7 @@ int virDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
 
     if (conn->driver->domainGetBlockJobInfo) {
         int ret;
-        ret = conn->driver->domainGetBlockJobInfo(dom, path, info, flags);
+        ret = conn->driver->domainGetBlockJobInfo(dom, disk, info, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -16974,14 +16974,14 @@ error:
 /**
  * virDomainBlockJobSetSpeed:
  * @dom: pointer to domain object
- * @path: path to the block device, or device shorthand
+ * @disk: path to the block device, or device shorthand
  * @bandwidth: specify bandwidth limit in Mbps
  * @flags: currently unused, for future extension
  *
  * Set the maximimum allowable bandwidth that a block job may consume.  If
  * bandwidth is 0, the limit will revert to the hypervisor default.
  *
- * The @path parameter is either an unambiguous source name of the
+ * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
  * "/path/to/image"), or (since 0.9.5) the device target shorthand
  * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
@@ -16990,13 +16990,13 @@ error:
  *
  * Returns -1 in case of failure, 0 when successful.
  */
-int virDomainBlockJobSetSpeed(virDomainPtr dom, const char *path,
+int virDomainBlockJobSetSpeed(virDomainPtr dom, const char *disk,
                               unsigned long bandwidth, unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(dom, "path=%p, bandwidth=%lu, flags=%x",
-                     path, bandwidth, flags);
+    VIR_DOMAIN_DEBUG(dom, "disk=%p, bandwidth=%lu, flags=%x",
+                     disk, bandwidth, flags);
 
     virResetLastError();
 
@@ -17012,15 +17012,15 @@ int virDomainBlockJobSetSpeed(virDomainPtr dom, const char *path,
         goto error;
     }
 
-    if (!path) {
+    if (!disk) {
         virLibDomainError(VIR_ERR_INVALID_ARG,
-                           _("path is NULL"));
+                          _("disk is NULL"));
         goto error;
     }
 
     if (conn->driver->domainBlockJobSetSpeed) {
         int ret;
-        ret = conn->driver->domainBlockJobSetSpeed(dom, path, bandwidth, flags);
+        ret = conn->driver->domainBlockJobSetSpeed(dom, disk, bandwidth, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -17036,7 +17036,7 @@ error:
 /**
  * virDomainBlockPull:
  * @dom: pointer to domain object
- * @path: path to the block device, or device shorthand
+ * @disk: path to the block device, or device shorthand
  * @bandwidth: (optional) specify copy bandwidth limit in Mbps
  * @flags: currently unused, for future extension
  *
@@ -17047,7 +17047,7 @@ error:
  * the operation can be aborted with virDomainBlockJobAbort().  When finished,
  * an asynchronous event is raised to indicate the final status.
  *
- * The @path parameter is either an unambiguous source name of the
+ * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
  * "/path/to/image"), or (since 0.9.5) the device target shorthand
  * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
@@ -17061,13 +17061,13 @@ error:
  *
  * Returns 0 if the operation has started, -1 on failure.
  */
-int virDomainBlockPull(virDomainPtr dom, const char *path,
+int virDomainBlockPull(virDomainPtr dom, const char *disk,
                        unsigned long bandwidth, unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(dom, "path=%p, bandwidth=%lu, flags=%x",
-                     path, bandwidth, flags);
+    VIR_DOMAIN_DEBUG(dom, "disk=%p, bandwidth=%lu, flags=%x",
+                     disk, bandwidth, flags);
 
     virResetLastError();
 
@@ -17083,15 +17083,15 @@ int virDomainBlockPull(virDomainPtr dom, const char *path,
         goto error;
     }
 
-    if (!path) {
+    if (!disk) {
         virLibDomainError(VIR_ERR_INVALID_ARG,
-                           _("path is NULL"));
+                          _("disk is NULL"));
         goto error;
     }
 
     if (conn->driver->domainBlockPull) {
         int ret;
-        ret = conn->driver->domainBlockPull(dom, path, bandwidth, flags);
+        ret = conn->driver->domainBlockPull(dom, disk, bandwidth, flags);
         if (ret < 0)
             goto error;
         return ret;
