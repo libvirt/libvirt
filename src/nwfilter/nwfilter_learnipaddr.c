@@ -310,41 +310,99 @@ virNWFilterDeregisterLearnReq(int ifindex) {
     return res;
 }
 
-
-
+/* Add an IP address to the list of IP addresses an interface is
+ * known to use. This function feeds the per-interface cache that
+ * is used to instantiate filters with variable '$IP'.
+ *
+ * @ifname: The name of the (tap) interface
+ * @addr: An IPv4 address in dotted decimal format that the (tap)
+ *        interface is known to use.
+ *
+ * This function returns 0 on success, -1 otherwise
+ */
 static int
-virNWFilterAddIpAddrForIfname(const char *ifname, char *addr) {
+virNWFilterAddIpAddrForIfname(const char *ifname, char *addr)
+{
     int ret;
-    virNWFilterVarValuePtr val = virNWFilterVarValueCreateSimple(addr);
-
-    if (!val)
-        return 1;
+    virNWFilterVarValuePtr val;
 
     virMutexLock(&ipAddressMapLock);
 
-    ret = virNWFilterHashTablePut(ipAddressMap, ifname, val, 1);
+    val = virHashLookup(ipAddressMap->hashTable, ifname);
+    if (!val) {
+        val = virNWFilterVarValueCreateSimple(addr);
+        if (!val) {
+            virReportOOMError();
+            ret = -1;
+            goto err_exit;
+        }
+        ret = virNWFilterHashTablePut(ipAddressMap, ifname, val, 1);
+    } else {
+        if (virNWFilterVarValueAddValue(val, addr) < 0)
+            ret = -1;
+    }
 
+err_exit:
     virMutexUnlock(&ipAddressMapLock);
 
     return ret;
 }
 #endif
 
-
-void
-virNWFilterDelIpAddrForIfname(const char *ifname) {
+/* Delete all or a specific IP address from an interface. After this
+ * call either all or the given IP address will not be associated
+ * with the interface anymore.
+ *
+ * @ifname: The name of the (tap) interface
+ * @addr: An IPv4 address in dotted decimal format that the (tap)
+ *        interface is not using anymore; provide NULL to remove all IP
+ *        addresses associated with the given interface
+ *
+ * This function returns the number of IP addresses that are still
+ * known to be associated with this interface, in case of an error
+ * -1 is returned. Error conditions are:
+ * - IP addresses is not known to be associated with the interface
+ */
+int
+virNWFilterDelIpAddrForIfname(const char *ifname, const char *ipaddr)
+{
+    int ret = -1;
+    virNWFilterVarValuePtr val = NULL;
 
     virMutexLock(&ipAddressMapLock);
 
-    if (virHashLookup(ipAddressMap->hashTable, ifname))
-        virNWFilterHashTableRemoveEntry(ipAddressMap, ifname);
+    if (ipaddr != NULL) {
+        val = virHashLookup(ipAddressMap->hashTable, ifname);
+        if (val) {
+            if (virNWFilterVarValueGetCardinality(val) == 1 &&
+                STREQ(ipaddr,
+                      virNWFilterVarValueGetNthValue(val, 0)))
+                goto remove_entry;
+            virNWFilterVarValueDelValue(val, ipaddr);
+            ret = virNWFilterVarValueGetCardinality(val);
+        }
+    } else {
+remove_entry:
+        /* remove whole entry */
+        val = virNWFilterHashTableRemoveEntry(ipAddressMap, ifname);
+        virNWFilterVarValueFree(val);
+        ret = 0;
+    }
 
     virMutexUnlock(&ipAddressMapLock);
+
+    return ret;
 }
 
-
-const char *
-virNWFilterGetIpAddrForIfname(const char *ifname) {
+/* Get the list of IP addresses known to be in use by an interface
+ *
+ * This function returns NULL in case no IP address is known to be
+ * associated with the interface, a virNWFilterVarValuePtr otherwise
+ * that then can contain one or multiple entries.
+ */
+virNWFilterVarValuePtr
+virNWFilterGetIpAddrForIfname(const char *ifname)
+{
     virNWFilterVarValuePtr res;
 
     virMutexLock(&ipAddressMapLock);
@@ -353,10 +411,7 @@ virNWFilterGetIpAddrForIfname(const char *ifname) {
 
     virMutexUnlock(&ipAddressMapLock);
 
-    if (res)
-        return virNWFilterVarValueGetSimple(res);
-
-    return NULL;
+    return res;
 }
 
 
@@ -642,7 +697,10 @@ learnIPAddressThread(void *arg)
         char *inetaddr;
 
         if ((inetaddr = virSocketAddrFormat(&sa))!= NULL) {
-            virNWFilterAddIpAddrForIfname(req->ifname, inetaddr);
+            if (virNWFilterAddIpAddrForIfname(req->ifname, inetaddr) < 0) {
+                VIR_ERROR(_("Failed to add IP address %s to IP address "
+                          "cache for interface %s"), inetaddr, req->ifname);
+            }
 
             ret = virNWFilterInstantiateFilterLate(NULL,
                                                    req->ifname,

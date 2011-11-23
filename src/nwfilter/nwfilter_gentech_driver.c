@@ -145,7 +145,7 @@ virNWFilterRuleInstFree(virNWFilterRuleInstPtr inst)
 static int
 virNWFilterVarHashmapAddStdValues(virNWFilterHashTablePtr table,
                                   char *macaddr,
-                                  char *ipaddr)
+                                  const virNWFilterVarValuePtr ipaddr)
 {
     virNWFilterVarValue *val;
 
@@ -164,7 +164,7 @@ virNWFilterVarHashmapAddStdValues(virNWFilterHashTablePtr table,
     }
 
     if (ipaddr) {
-        val = virNWFilterVarValueCreateSimple(ipaddr);
+        val = virNWFilterVarValueCopy(ipaddr);
         if (!val)
             return 1;
 
@@ -194,7 +194,8 @@ virNWFilterVarHashmapAddStdValues(virNWFilterHashTablePtr table,
  * is attached to the virConnect object.
  */
 virNWFilterHashTablePtr
-virNWFilterCreateVarHashmap(char *macaddr, char *ipaddr) {
+virNWFilterCreateVarHashmap(char *macaddr,
+                            const virNWFilterVarValuePtr ipaddr) {
     virNWFilterHashTablePtr table = virNWFilterHashTableCreate(0);
     if (!table) {
         virReportOOMError();
@@ -796,7 +797,7 @@ __virNWFilterInstantiateFilter(virConnectPtr conn,
     virNWFilterDefPtr filter;
     char vmmacaddr[VIR_MAC_STRING_BUFLEN] = {0};
     char *str_macaddr = NULL;
-    const char *ipaddr;
+    virNWFilterVarValuePtr ipaddr;
     char *str_ipaddr = NULL;
 
     techdriver = virNWFilterTechDriverForName(drvname);
@@ -836,16 +837,8 @@ __virNWFilterInstantiateFilter(virConnectPtr conn,
     }
 
     ipaddr = virNWFilterGetIpAddrForIfname(ifname);
-    if (ipaddr) {
-        str_ipaddr = strdup(ipaddr);
-        if (!str_ipaddr) {
-            virReportOOMError();
-            rc = 1;
-            goto err_exit;
-        }
-    }
 
-    vars1 = virNWFilterCreateVarHashmap(str_macaddr, str_ipaddr);
+    vars1 = virNWFilterCreateVarHashmap(str_macaddr, ipaddr);
     if (!vars1) {
         rc = 1;
         goto err_exit;
@@ -1101,7 +1094,7 @@ _virNWFilterTeardownFilter(const char *ifname)
 
     techdriver->allTeardown(ifname);
 
-    virNWFilterDelIpAddrForIfname(ifname);
+    virNWFilterDelIpAddrForIfname(ifname, NULL);
 
     virNWFilterUnlockIface(ifname);
 

@@ -846,8 +846,14 @@ virNWFilterVarCombIterCreate;
 virNWFilterVarCombIterFree;
 virNWFilterVarCombIterGetVarValue;
 virNWFilterVarCombIterNext;
+virNWFilterVarValueAddValue;
+virNWFilterVarValueCopy;
 virNWFilterVarValueCreateSimple;
 virNWFilterVarValueCreateSimpleCopyValue;
+virNWFilterVarValueDelValue;
+virNWFilterVarValueFree;
+virNWFilterVarValueGetCardinality;
+virNWFilterVarValueGetNthValue;
 virNWFilterVarValueGetSimple;
 
 

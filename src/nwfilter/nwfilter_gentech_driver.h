@@ -61,7 +61,7 @@ int virNWFilterInstantiateFilterLate(virConnectPtr conn,
 int virNWFilterTeardownFilter(const virDomainNetDefPtr net);
 
 virNWFilterHashTablePtr virNWFilterCreateVarHashmap(char *macaddr,
-                                                    char *ipaddr);
+                                       const virNWFilterVarValuePtr);
 
 void virNWFilterDomainFWUpdateCB(void *payload,
                                  const void *name,

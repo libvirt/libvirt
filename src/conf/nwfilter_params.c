@@ -37,7 +37,7 @@
 static bool isValidVarValue(const char *value);
 
 
-static void
+void
 virNWFilterVarValueFree(virNWFilterVarValuePtr val)
 {
     unsigned i;
@@ -60,7 +60,7 @@ virNWFilterVarValueFree(virNWFilterVarValuePtr val)
     VIR_FREE(val);
 }
 
-static virNWFilterVarValuePtr
+virNWFilterVarValuePtr
 virNWFilterVarValueCopy(const virNWFilterVarValuePtr val)
 {
     virNWFilterVarValuePtr res;
@@ -220,6 +220,56 @@ virNWFilterVarValueAddValue(virNWFilterVarValuePtr val, char *value)
     }
 
     return rc;
+}
+
+static int
+virNWFilterVarValueDelNthValue(virNWFilterVarValuePtr val, unsigned int pos)
+{
+    switch (val->valType) {
+    case NWFILTER_VALUE_TYPE_SIMPLE:
+        return -1;
+
+    case NWFILTER_VALUE_TYPE_ARRAY:
+        if (pos < val->u.array.nValues) {
+            VIR_FREE(val->u.array.values[pos]);
+            val->u.array.nValues--;
+
+            if (pos < val->u.array.nValues)
+                memmove(&val->u.array.values[pos],
+                        &val->u.array.values[pos + 1],
+                        sizeof(val->u.array.values[0]) *
+                            (val->u.array.nValues - pos));
+            return 0;
+        }
+        break;
+
+    case NWFILTER_VALUE_TYPE_LAST:
+        break;
+    }
+
+    return -1;
+}
+
+int
+virNWFilterVarValueDelValue(virNWFilterVarValuePtr val, const char *value)
+{
+    unsigned int i;
+
+    switch (val->valType) {
+    case NWFILTER_VALUE_TYPE_SIMPLE:
+        return -1;
+
+    case NWFILTER_VALUE_TYPE_ARRAY:
+        for (i = 0; i < val->u.array.nValues; i++)
+            if (STREQ(value, val->u.array.values[i]))
+                return virNWFilterVarValueDelNthValue(val, i);
+        break;
+
+    case NWFILTER_VALUE_TYPE_LAST:
+        break;
+    }
+
+    return -1;
 }
 
 void
@@ -521,14 +571,14 @@ virNWFilterHashTableCreate(int n) {
 }
 
 
-int
+void *
 virNWFilterHashTableRemoveEntry(virNWFilterHashTablePtr ht,
                                 const char *entry)
 {
     int i;
-    int rc = virHashRemoveEntry(ht->hashTable, entry);
+    void *value = virHashSteal(ht->hashTable, entry);
 
-    if (rc == 0) {
+    if (value) {
         for (i = 0; i < ht->nNames; i++) {
             if (STREQ(ht->names[i], entry)) {
                 VIR_FREE(ht->names[i]);
@@ -538,7 +588,7 @@ virNWFilterHashTableRemoveEntry(virNWFilterHashTablePtr ht,
             }
         }
     }
-    return rc;
+    return value;
 }
 
 

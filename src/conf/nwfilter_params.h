@@ -50,11 +50,14 @@ struct _virNWFilterVarValue {
 
 virNWFilterVarValuePtr virNWFilterVarValueCreateSimple(char *);
 virNWFilterVarValuePtr virNWFilterVarValueCreateSimpleCopyValue(const char *);
+virNWFilterVarValuePtr virNWFilterVarValueCopy(const virNWFilterVarValuePtr);
+void virNWFilterVarValueFree(virNWFilterVarValuePtr val);
 const char *virNWFilterVarValueGetSimple(const virNWFilterVarValuePtr val);
 const char *virNWFilterVarValueGetNthValue(virNWFilterVarValuePtr val,
                                            unsigned int idx);
 unsigned int virNWFilterVarValueGetCardinality(const virNWFilterVarValuePtr);
 int virNWFilterVarValueAddValue(virNWFilterVarValuePtr val, char *value);
+int virNWFilterVarValueDelValue(virNWFilterVarValuePtr val, const char *value);
 
 typedef struct _virNWFilterHashTable virNWFilterHashTable;
 typedef virNWFilterHashTable *virNWFilterHashTablePtr;
@@ -77,8 +80,8 @@ int virNWFilterHashTablePut(virNWFilterHashTablePtr table,
                             const char *name,
                             virNWFilterVarValuePtr val,
                             int freeName);
-int virNWFilterHashTableRemoveEntry(virNWFilterHashTablePtr table,
-                                    const char *name);
+void *virNWFilterHashTableRemoveEntry(virNWFilterHashTablePtr table,
+                                      const char *name);
 int virNWFilterHashTablePutAll(virNWFilterHashTablePtr src,
                                virNWFilterHashTablePtr dest);
 
