@@ -340,6 +340,7 @@ virNWFilterAddIpAddrForIfname(const char *ifname, char *addr)
     } else {
         if (virNWFilterVarValueAddValue(val, addr) < 0)
             ret = -1;
+        ret = 0;
     }
 
 err_exit:
