@@ -247,14 +247,15 @@ EXTRA_DIST +=  $(REMOTE_DRIVER_PROTOCOL) \
 # The alternation of the following regexps matches both cases.
 r1 = /\* \d+ \*/
 r2 = /\* <[[:xdigit:]]+> \S+:\d+ \*/
+struct_prefix = (remote_|qemu_|virNet|keepalive_)
 
 PDWTAGS = \
 	$(AM_V_GEN)if (pdwtags --help) > /dev/null 2>&1; then		\
 	  pdwtags --verbose $(<:.lo=.$(OBJEXT))				\
 	    | perl -0777 -n						\
 		-e 'foreach my $$p (split m!\n*(?:$(r1)|$(r2))\n!) {'	\
-		-e '  if ($$p =~ /^(struct|enum) (remote_|qemu_|virNet)/ ||' \
-		-e '      $$p =~ /^enum {/) {' \
+		-e '  if ($$p =~ /^(struct|enum) $(struct_prefix)/ ||'	\
+		-e '      $$p =~ /^enum {/) {'				\
 		-e '    $$p =~ s!\t*/\*.*?\*/!!sg;'			\
 		-e '    $$p =~ s!\s+\n!\n!sg;'				\
 		-e '    $$p =~ s!\s+$$!!;'				\
@@ -267,7 +268,7 @@ PDWTAGS = \
 		-e '  print "/* -*- c -*- */\n";'			\
 		-e '}'							\
 		-e 'END {'						\
-		-e '  if ($$n < 3) {'					\
+		-e '  if ($$n < 1) {'					\
 		-e '    warn "WARNING: your pdwtags program is too old\n";' \
 		-e '    warn "WARNING: skipping the $@ test\n";'	\
 		-e '    warn "WARNING: install dwarves-1.3 or newer\n";' \
@@ -295,6 +296,7 @@ $(srcdir)/%_protocol-structs: libvirt_driver_remote_la-%_protocol.lo
 $(srcdir)/virnetprotocol-structs: libvirt_net_rpc_la-virnetprotocol.lo
 	$(PDWTAGS)
 $(srcdir)/virkeepaliveprotocol-structs: libvirt_net_rpc_la-virkeepaliveprotocol.lo
+	$(PDWTAGS)
 else !WITH_REMOTE
 # These generated files must live in git, because they cannot be re-generated
 # when configured --without-remote.
