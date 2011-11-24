@@ -98,7 +98,7 @@ runIO(const char *path, int fd, int oflags, unsigned long long length)
         goto cleanup;
     }
     base = buf;
-    buf = (char *) (((intptr_t) base + alignMask) & alignMask);
+    buf = (char *) (((intptr_t) base + alignMask) & ~alignMask);
 #endif
 
     switch (oflags & O_ACCMODE) {
