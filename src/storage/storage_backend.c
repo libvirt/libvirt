@@ -1013,9 +1013,24 @@ virStorageBackendVolOpenCheckMode(const char *path, unsigned int flags)
     struct stat sb;
     char *base = last_component(path);
 
+    if (lstat(path, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("cannot stat file '%s'"),
+                             path);
+        return -1;
+    }
+
+    if (S_ISFIFO(sb.st_mode)) {
+        VIR_WARN("ignoring FIFO '%s'", path);
+        return -2;
+    } else if (S_ISSOCK(sb.st_mode)) {
+        VIR_WARN("ignoring socket '%s'", path);
+        return -2;
+    }
+
     if ((fd = open(path, O_RDONLY|O_NONBLOCK|O_NOCTTY)) < 0) {
         if ((errno == ENOENT || errno == ELOOP) &&
-            lstat(path, &sb) == 0) {
+            S_ISLNK(sb.st_mode)) {
             VIR_WARN("ignoring dangling symlink '%s'", path);
             return -2;
         }
@@ -1023,14 +1038,6 @@ virStorageBackendVolOpenCheckMode(const char *path, unsigned int flags)
         virReportSystemError(errno,
                              _("cannot open volume '%s'"),
                              path);
-        return -1;
-    }
-
-    if (fstat(fd, &sb) < 0) {
-        virReportSystemError(errno,
-                             _("cannot stat file '%s'"),
-                             path);
-        VIR_FORCE_CLOSE(fd);
         return -1;
     }
 
