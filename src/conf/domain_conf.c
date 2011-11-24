@@ -1042,6 +1042,57 @@ void virDomainChrSourceDefFree(virDomainChrSourceDefPtr def)
     VIR_FREE(def);
 }
 
+/* virDomainChrSourceDefIsEqual:
+ * @src: Source
+ * @tgt: Target
+ *
+ * Compares source and target if they contain
+ * the same information.
+ */
+static bool
+virDomainChrSourceDefIsEqual(const virDomainChrSourceDef *src,
+                             const virDomainChrSourceDef *tgt)
+{
+    if (tgt->type != src->type)
+        return false;
+
+    switch (src->type) {
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+        return STREQ_NULLABLE(src->data.file.path, tgt->data.file.path);
+        break;
+    case VIR_DOMAIN_CHR_TYPE_UDP:
+        return STREQ_NULLABLE(src->data.udp.bindHost, tgt->data.udp.bindHost) &&
+            STREQ_NULLABLE(src->data.udp.bindService, tgt->data.udp.bindService) &&
+            STREQ_NULLABLE(src->data.udp.connectHost, tgt->data.udp.connectHost) &&
+            STREQ_NULLABLE(src->data.udp.connectService, tgt->data.udp.connectService);
+        break;
+    case VIR_DOMAIN_CHR_TYPE_TCP:
+        return src->data.tcp.listen == tgt->data.tcp.listen &&
+            src->data.tcp.protocol == tgt->data.tcp.protocol &&
+            STREQ_NULLABLE(src->data.tcp.host, tgt->data.tcp.host) &&
+            STREQ_NULLABLE(src->data.tcp.service, tgt->data.tcp.service);
+        break;
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        return src->data.nix.listen == tgt->data.nix.listen &&
+            STREQ_NULLABLE(src->data.nix.path, tgt->data.nix.path);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_VC:
+    case VIR_DOMAIN_CHR_TYPE_STDIO:
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+        /* nada */
+        return true;
+    }
+
+    /* This should happen only on new,
+     * yet unhandled type */
+
+    return false;
+}
+
 void virDomainChrDefFree(virDomainChrDefPtr def)
 {
     if (!def)
@@ -7308,6 +7359,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto no_memory;
 
     for (i = 0 ; i < n ; i++) {
+        bool create_stub = true;
         virDomainChrDefPtr chr = virDomainChrDefParseXML(caps,
                                                          def,
                                                          nodes[i],
@@ -7325,7 +7377,9 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
          * So if we see that this console device should
          * be a serial device, then we move the config
          * over to def->serials[0] (or discard it if
-         * that already exists
+         * that already exists). However, given console
+         * can already be filled with aliased data of
+         * def->serials[0]. Keep it then.
          *
          * We then fill def->consoles[0] with a stub
          * just so we get sequencing correct for consoles
@@ -7341,7 +7395,13 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
             /* Either discard or move this chr to the serial config */
             if (def->nserials != 0) {
-                virDomainChrDefFree(chr);
+                if (virDomainChrSourceDefIsEqual(&def->serials[0]->source,
+                                                 &chr->source)) {
+                    /* Alias to def->serial[0]. Skip it */
+                    create_stub = false;
+                } else {
+                    virDomainChrDefFree(chr);
+                }
             } else {
                 if (VIR_ALLOC_N(def->serials, 1) < 0) {
                     virDomainChrDefFree(chr);
@@ -7353,11 +7413,13 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                 chr->target.port = 0;
             }
 
-            /* And create a stub placeholder */
-            if (VIR_ALLOC(chr) < 0)
-                goto no_memory;
-            chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
-            chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+            if (create_stub) {
+                /* And create a stub placeholder */
+                if (VIR_ALLOC(chr) < 0)
+                    goto no_memory;
+                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
+                chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+            }
         }
 
         chr->target.port = i;
