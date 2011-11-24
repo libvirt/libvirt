@@ -5629,7 +5629,7 @@ static virDriver testDriver = {
     .domainIsUpdated = testDomainIsUpdated, /* 0.8.6 */
     .domainEventRegisterAny = testDomainEventRegisterAny, /* 0.8.0 */
     .domainEventDeregisterAny = testDomainEventDeregisterAny, /* 0.8.0 */
-    .isAlive = testIsAlive, /* 0.9.7 */
+    .isAlive = testIsAlive, /* 0.9.8 */
 };
 
 static virNetworkDriver testNetworkDriver = {

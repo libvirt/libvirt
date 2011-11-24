@@ -1718,7 +1718,7 @@ static virDriver openvzDriver = {
     .domainIsActive = openvzDomainIsActive, /* 0.7.3 */
     .domainIsPersistent = openvzDomainIsPersistent, /* 0.7.3 */
     .domainIsUpdated = openvzDomainIsUpdated, /* 0.8.6 */
-    .isAlive = openvzIsAlive, /* 0.9.7 */
+    .isAlive = openvzIsAlive, /* 0.9.8 */
 };
 
 int openvzRegister(void) {

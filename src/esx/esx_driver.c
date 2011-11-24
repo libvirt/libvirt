@@ -5013,7 +5013,7 @@ static virDriver esxDriver = {
     .domainSnapshotCurrent = esxDomainSnapshotCurrent, /* 0.8.0 */
     .domainRevertToSnapshot = esxDomainRevertToSnapshot, /* 0.8.0 */
     .domainSnapshotDelete = esxDomainSnapshotDelete, /* 0.8.0 */
-    .isAlive = esxIsAlive, /* 0.9.7 */
+    .isAlive = esxIsAlive, /* 0.9.8 */
 };
 
 

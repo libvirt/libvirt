@@ -996,7 +996,7 @@ static virDriver vmwareDriver = {
     .domainUndefineFlags = vmwareDomainUndefineFlags, /* 0.9.4 */
     .domainIsActive = vmwareDomainIsActive, /* 0.8.7 */
     .domainIsPersistent = vmwareDomainIsPersistent, /* 0.8.7 */
-    .isAlive = vmwareIsAlive, /* 0.9.7 */
+    .isAlive = vmwareIsAlive, /* 0.9.8 */
 };
 
 int

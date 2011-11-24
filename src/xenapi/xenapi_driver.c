@@ -1956,7 +1956,7 @@ static virDriver xenapiDriver = {
     .nodeGetCellsFreeMemory = xenapiNodeGetCellsFreeMemory, /* 0.8.0 */
     .nodeGetFreeMemory = xenapiNodeGetFreeMemory, /* 0.8.0 */
     .domainIsUpdated = xenapiDomainIsUpdated, /* 0.8.6 */
-    .isAlive = xenapiIsAlive, /* 0.9.7 */
+    .isAlive = xenapiIsAlive, /* 0.9.8 */
 };
 
 /**

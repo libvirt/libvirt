@@ -2256,7 +2256,7 @@ static virDriver xenUnifiedDriver = {
     .domainEventRegisterAny = xenUnifiedDomainEventRegisterAny, /* 0.8.0 */
     .domainEventDeregisterAny = xenUnifiedDomainEventDeregisterAny, /* 0.8.0 */
     .domainOpenConsole = xenUnifiedDomainOpenConsole, /* 0.8.6 */
-    .isAlive = xenUnifiedIsAlive, /* 0.9.7 */
+    .isAlive = xenUnifiedIsAlive, /* 0.9.8 */
 };
 
 /**

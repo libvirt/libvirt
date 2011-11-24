@@ -3279,7 +3279,7 @@ static virDriver lxcDriver = {
     .domainEventRegisterAny = lxcDomainEventRegisterAny, /* 0.8.0 */
     .domainEventDeregisterAny = lxcDomainEventDeregisterAny, /* 0.8.0 */
     .domainOpenConsole = lxcDomainOpenConsole, /* 0.8.6 */
-    .isAlive = lxcIsAlive, /* 0.9.7 */
+    .isAlive = lxcIsAlive, /* 0.9.8 */
 };
 
 static virStateDriver lxcStateDriver = {

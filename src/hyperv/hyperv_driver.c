@@ -1293,7 +1293,7 @@ static virDriver hypervDriver = {
     .domainManagedSave = hypervDomainManagedSave, /* 0.9.5 */
     .domainHasManagedSaveImage = hypervDomainHasManagedSaveImage, /* 0.9.5 */
     .domainManagedSaveRemove = hypervDomainManagedSaveRemove, /* 0.9.5 */
-    .isAlive = hypervIsAlive, /* 0.9.7 */
+    .isAlive = hypervIsAlive, /* 0.9.8 */
 };
 
 

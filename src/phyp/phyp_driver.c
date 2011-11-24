@@ -3812,7 +3812,7 @@ static virDriver phypDriver = {
     .isEncrypted = phypIsEncrypted, /* 0.7.3 */
     .isSecure = phypIsSecure, /* 0.7.3 */
     .domainIsUpdated = phypIsUpdated, /* 0.8.6 */
-    .isAlive = phypIsAlive, /* 0.9.7 */
+    .isAlive = phypIsAlive, /* 0.9.8 */
 };
 
 static virStorageDriver phypStorageDriver = {

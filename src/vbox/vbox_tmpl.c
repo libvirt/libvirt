@@ -9199,7 +9199,7 @@ virDriver NAME(Driver) = {
     .domainSnapshotCurrent = vboxDomainSnapshotCurrent, /* 0.8.0 */
     .domainRevertToSnapshot = vboxDomainRevertToSnapshot, /* 0.8.0 */
     .domainSnapshotDelete = vboxDomainSnapshotDelete, /* 0.8.0 */
-    .isAlive = vboxIsAlive, /* 0.9.7 */
+    .isAlive = vboxIsAlive, /* 0.9.8 */
 };
 
 virNetworkDriver NAME(NetworkDriver) = {

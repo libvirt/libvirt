@@ -3957,7 +3957,7 @@ static virDriver libxlDriver = {
     .domainIsUpdated = libxlDomainIsUpdated, /* 0.9.0 */
     .domainEventRegisterAny = libxlDomainEventRegisterAny, /* 0.9.0 */
     .domainEventDeregisterAny = libxlDomainEventDeregisterAny, /* 0.9.0 */
-    .isAlive = libxlIsAlive, /* 0.9.7 */
+    .isAlive = libxlIsAlive, /* 0.9.8 */
 };
 
 static virStateDriver libxlStateDriver = {

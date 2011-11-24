@@ -10912,7 +10912,7 @@ static virDriver qemuDriver = {
     .domainGetBlockJobInfo = qemuDomainGetBlockJobInfo, /* 0.9.4 */
     .domainBlockJobSetSpeed = qemuDomainBlockJobSetSpeed, /* 0.9.4 */
     .domainBlockPull = qemuDomainBlockPull, /* 0.9.4 */
-    .isAlive = qemuIsAlive, /* 0.9.7 */
+    .isAlive = qemuIsAlive, /* 0.9.8 */
 };
 
 
