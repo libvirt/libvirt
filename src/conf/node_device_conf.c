@@ -1204,8 +1204,10 @@ virNodeDeviceDefParseNode(xmlDocPtr xml,
     virNodeDeviceDefPtr def = NULL;
 
     if (!xmlStrEqual(root->name, BAD_CAST "device")) {
-        virNodeDeviceReportError(VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("incorrect root element"));
+        virNodeDeviceReportError(VIR_ERR_XML_ERROR,
+                                 _("unexpected root element <%s> "
+                                   "expecting <device>"),
+                                 root->name);
         return NULL;
     }
 

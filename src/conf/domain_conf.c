@@ -7932,8 +7932,10 @@ virDomainDefPtr virDomainDefParseNode(virCapsPtr caps,
     virDomainDefPtr def = NULL;
 
     if (!xmlStrEqual(root->name, BAD_CAST "domain")) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("incorrect root element"));
+        virDomainReportError(VIR_ERR_XML_ERROR,
+                             _("unexpected root element <%s>, "
+                               "expecting <domain>"),
+                             root->name);
         goto cleanup;
     }
 
@@ -7963,8 +7965,10 @@ virDomainObjParseNode(virCapsPtr caps,
     virDomainObjPtr obj = NULL;
 
     if (!xmlStrEqual(root->name, BAD_CAST "domstatus")) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("incorrect root element"));
+        virDomainReportError(VIR_ERR_XML_ERROR,
+                             _("unexpected root element <%s>, "
+                               "expecting <domstatus>"),
+                             root->name);
         goto cleanup;
     }
 

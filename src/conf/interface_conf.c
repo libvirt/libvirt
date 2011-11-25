@@ -838,8 +838,10 @@ virInterfaceDefPtr virInterfaceDefParseNode(xmlDocPtr xml,
     virInterfaceDefPtr def = NULL;
 
     if (!xmlStrEqual(root->name, BAD_CAST "interface")) {
-        virInterfaceReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("incorrect root element"));
+        virInterfaceReportError(VIR_ERR_XML_ERROR,
+                                _("unexpected root element <%s>, "
+                                  "expecting <interface>"),
+                                root->name);
         return NULL;
     }
 

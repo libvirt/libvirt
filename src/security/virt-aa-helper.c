@@ -644,7 +644,7 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
     }
 
     if (!xmlStrEqual(ctxt->node->name, BAD_CAST "domain")) {
-        vah_error(NULL, 0, _("incorrect root element"));
+        vah_error(NULL, 0, _("unexpected root element, expecting <domain>"));
         goto cleanup;
     }
 

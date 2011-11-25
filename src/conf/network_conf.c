@@ -1107,8 +1107,10 @@ virNetworkDefPtr virNetworkDefParseNode(xmlDocPtr xml,
     virNetworkDefPtr def = NULL;
 
     if (!xmlStrEqual(root->name, BAD_CAST "network")) {
-        virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("incorrect root element"));
+        virNetworkReportError(VIR_ERR_XML_ERROR,
+                              _("unexpected root element <%s>, "
+                                "expecting <network>"),
+                              root->name);
         return NULL;
     }
 
