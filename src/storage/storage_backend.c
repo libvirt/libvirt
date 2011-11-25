@@ -1041,6 +1041,14 @@ virStorageBackendVolOpenCheckMode(const char *path, unsigned int flags)
         return -1;
     }
 
+    if (fstat(fd, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("cannot stat file '%s'"),
+                             path);
+        VIR_FORCE_CLOSE(fd);
+        return -1;
+    }
+
     if (S_ISREG(sb.st_mode))
         mode = VIR_STORAGE_VOL_OPEN_REG;
     else if (S_ISCHR(sb.st_mode))
