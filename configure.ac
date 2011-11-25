@@ -336,6 +336,12 @@ AC_ARG_WITH([remote],
   AC_HELP_STRING([--with-remote], [add remote driver support @<:@default=yes@:>@]),[],[with_remote=yes])
 AC_ARG_WITH([libvirtd],
   AC_HELP_STRING([--with-libvirtd], [add libvirtd support @<:@default=yes@:>@]),[],[with_libvirtd=yes])
+AC_ARG_WITH([console-lock-files],
+  AC_HELP_STRING([--with-console-lock-files],
+                 [location for UUCP style lock files for console PTYs
+                  (use auto for default paths on some platforms)
+                  @<:@default=auto@:>@]),
+  [],[with_console_lock_files=auto])
 
 dnl
 dnl in case someone want to build static binaries
@@ -1205,6 +1211,26 @@ fi
 AM_CONDITIONAL([HAVE_AUDIT], [test "$with_audit" = "yes"])
 AC_SUBST([AUDIT_CFLAGS])
 AC_SUBST([AUDIT_LIBS])
+
+dnl UUCP style file locks for PTY consoles
+if test "$with_console_lock_files" != "no"; then
+  case $with_console_lock_files in
+  yes | auto)
+    dnl Default locations for platforms, or disable if unknown
+    if test "$with_linux" = "yes"; then
+      with_console_lock_files=/var/lock
+    elif test "$with_console_lock_files" = "auto"; then
+      with_console_lock_files=no
+    fi ;;
+  esac
+  if test "$with_console_lock_files" = "yes"; then
+    AC_MSG_ERROR([You must specify path for the lock files on this
+platform])
+  fi
+  AC_DEFINE_UNQUOTED([VIR_PTY_LOCK_FILE_PATH], "$with_console_lock_files",
+                      [path to directory containing UUCP pty lock files])
+fi
+AM_CONDITIONAL([VIR_PTY_LOCK_FILE_PATH], [test "$with_console_lock_files" != "no"])
 
 
 dnl SELinux
@@ -2742,6 +2768,7 @@ AC_MSG_NOTICE([       Python: $with_python])
 AC_MSG_NOTICE([       DTrace: $with_dtrace])
 AC_MSG_NOTICE([  XML Catalog: $XML_CATALOG_FILE])
 AC_MSG_NOTICE([  Init script: $with_init_script])
+AC_MSG_NOTICE([Console locks: $with_console_lock_files])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Privileges])
 AC_MSG_NOTICE([])

@@ -1157,6 +1157,12 @@ virAuditOpen;
 virAuditSend;
 
 
+# virconsole.h
+virConsoleAlloc;
+virConsoleFree;
+virConsoleOpen;
+
+
 # virfile.h
 virFileClose;
 virFileDirectFdFlag;

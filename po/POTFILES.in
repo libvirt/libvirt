@@ -17,6 +17,7 @@ src/conf/nwfilter_params.c
 src/conf/secret_conf.c
 src/conf/storage_conf.c
 src/conf/storage_encryption_conf.c
+src/conf/virconsole.c
 src/cpu/cpu.c
 src/cpu/cpu_generic.c
 src/cpu/cpu_map.c
