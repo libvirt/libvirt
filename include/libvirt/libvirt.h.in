@@ -375,9 +375,11 @@ struct _virNodeInfo {
 /**
  * VIR_NODE_CPU_STATS_ALL_CPUS:
  *
- * Macro for the total CPU time/utilization
+ * Value for specifying request for the total CPU time/utilization
  */
-#define VIR_NODE_CPU_STATS_ALL_CPUS (-1)
+typedef enum {
+    VIR_NODE_CPU_STATS_ALL_CPUS = -1,
+} virNodeGetCPUStatsAllCPUs;
 
 /**
  * VIR_NODE_CPU_STATS_KERNEL:

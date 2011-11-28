@@ -77,6 +77,13 @@
       <return type='int *' info='the list of information or None in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
+    <function name='virNodeGetCPUStats' file='python'>
+      <info>Extract node's CPU statistics.</info>
+      <return type='virNodeCPUStats' info='dictionary mapping field names to values or None in case of error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
+      <arg name='cpuNum' type='int' info='number of node cpu. (VIR_NODE_CPU_STATS_ALL_CPUS means total cpu statistics)'/>
+      <arg name='flags' type='unsigned int' info='additional flags'/>
+    </function>
     <function name='virDomainGetUUID' file='python'>
       <info>Extract the UUID unique Identifier of a domain.</info>
       <return type='char *' info='the 16 bytes string or None in case of error'/>

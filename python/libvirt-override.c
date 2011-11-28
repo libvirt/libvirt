@@ -2256,6 +2256,52 @@ libvirt_virNodeGetCellsFreeMemory(PyObject *self ATTRIBUTE_UNUSED, PyObject *arg
     return(py_retval);
 }
 
+static PyObject *
+libvirt_virNodeGetCPUStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
+{
+    PyObject *ret;
+    PyObject *pyobj_conn;
+    virConnectPtr conn;
+    unsigned int flags;
+    int cpuNum, c_retval, i;
+    int nparams = 0;
+    virNodeCPUStatsPtr stats = NULL;
+
+    if (!PyArg_ParseTuple(args, (char *)"Oii:virNodeGetCPUStats", &pyobj_conn, &cpuNum, &flags))
+        return(NULL);
+    conn = (virConnectPtr)(PyvirConnect_Get(pyobj_conn));
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virNodeGetCPUStats(conn, cpuNum, NULL, &nparams, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    if (nparams) {
+        if (!(stats = malloc(sizeof(*stats) * nparams)))
+            return VIR_PY_NONE;
+
+        LIBVIRT_BEGIN_ALLOW_THREADS;
+        c_retval = virNodeGetCPUStats(conn, cpuNum, stats, &nparams, flags);
+        LIBVIRT_END_ALLOW_THREADS;
+        if (c_retval < 0) {
+            free(stats);
+            return VIR_PY_NONE;
+        }
+    }
+    if (!(ret = PyDict_New())) {
+        free(stats);
+        return VIR_PY_NONE;
+    }
+    for (i = 0; i < nparams; i++) {
+        PyDict_SetItem(ret,
+                       libvirt_constcharPtrWrap(stats[i].field),
+                       libvirt_ulonglongWrap(stats[i].value));
+    }
+
+    free(stats);
+    return ret;
+}
 
 static PyObject *
 libvirt_virConnectListStoragePools(PyObject *self ATTRIBUTE_UNUSED,
@@ -4949,6 +4995,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainGetControlInfo", libvirt_virDomainGetControlInfo, METH_VARARGS, NULL},
     {(char *) "virDomainGetBlockInfo", libvirt_virDomainGetBlockInfo, METH_VARARGS, NULL},
     {(char *) "virNodeGetInfo", libvirt_virNodeGetInfo, METH_VARARGS, NULL},
+    {(char *) "virNodeGetCPUStats", libvirt_virNodeGetCPUStats, METH_VARARGS, NULL},
     {(char *) "virDomainGetUUID", libvirt_virDomainGetUUID, METH_VARARGS, NULL},
     {(char *) "virDomainGetUUIDString", libvirt_virDomainGetUUIDString, METH_VARARGS, NULL},
     {(char *) "virDomainLookupByUUID", libvirt_virDomainLookupByUUID, METH_VARARGS, NULL},
