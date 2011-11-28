@@ -880,40 +880,6 @@ struct xenUnifiedDriver xenHypervisorDriver = {
                                  __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /**
- * virXenErrorFunc:
- * @error: the error number
- * @func: the function failing
- * @info: extra information string
- * @value: extra information number
- *
- * Handle an error at the xend daemon interface
- */
-static void
-virXenErrorFunc(virErrorNumber error, const char *func, const char *info,
-                int value)
-{
-    char fullinfo[1000];
-    const char *errmsg;
-
-    if ((error == VIR_ERR_OK) || (in_init != 0))
-        return;
-
-
-    errmsg =virErrorMsg(error, info);
-    if (func != NULL) {
-        snprintf(fullinfo, 999, "%s: %s", func, info);
-        fullinfo[999] = 0;
-        virRaiseError(NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
-                        errmsg, fullinfo, NULL, value, 0, errmsg, fullinfo,
-                        value);
-    } else {
-        virRaiseError(NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
-                        errmsg, info, NULL, value, 0, errmsg, info,
-                        value);
-    }
-}
-
-/**
  * xenHypervisorDoV0Op:
  * @handle: the handle to the Xen hypervisor
  * @op: pointer to the hypervisor operation structure
@@ -1195,15 +1161,15 @@ xenHypervisorGetSchedulerType(virDomainPtr domain, int *nparams)
     xenUnifiedPrivatePtr priv;
 
     if (domain->conn == NULL) {
-        virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                        "domain or conn is NULL", 0);
+        virXenError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("domain or conn is NULL"));
         return NULL;
     }
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
     if (priv->handle < 0) {
-        virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                        "priv->handle invalid", 0);
+        virXenError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("priv->handle invalid"));
         return NULL;
     }
     if (domain->id < 0) {
@@ -1218,8 +1184,8 @@ xenHypervisorGetSchedulerType(virDomainPtr domain, int *nparams)
      * TODO: check on Xen 3.0.3
      */
     if (hv_versions.dom_interface < 5) {
-        virXenErrorFunc(VIR_ERR_NO_XEN, __FUNCTION__,
-                        "unsupported in dom interface < 5", 0);
+        virXenError(VIR_ERR_NO_XEN, "%s",
+                    _("unsupported in dom interface < 5"));
         return NULL;
     }
 
@@ -1276,15 +1242,15 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
     xenUnifiedPrivatePtr priv;
 
     if (domain->conn == NULL) {
-        virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                        "domain or conn is NULL", 0);
+        virXenError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("domain or conn is NULL"));
         return -1;
     }
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
     if (priv->handle < 0) {
-        virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                        "priv->handle invalid", 0);
+        virXenError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("priv->handle invalid"));
         return -1;
     }
     if (domain->id < 0) {
@@ -1299,8 +1265,8 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
      * TODO: check on Xen 3.0.3
      */
     if (hv_versions.dom_interface < 5) {
-        virXenErrorFunc(VIR_ERR_NO_XEN, __FUNCTION__,
-                        "unsupported in dom interface < 5", 0);
+        virXenError(VIR_ERR_NO_XEN, "%s",
+                    _("unsupported in dom interface < 5"));
         return -1;
     }
 
@@ -1353,8 +1319,9 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
                     *nparams = XEN_SCHED_CRED_NPARAM;
                 break;
             default:
-                virXenErrorFunc(VIR_ERR_INVALID_ARG, __FUNCTION__,
-                        "Unknown scheduler", op_sys.u.getschedulerid.sched_id);
+                virXenError(VIR_ERR_INVALID_ARG,
+                            _("Unknown scheduler %d"),
+                            op_sys.u.getschedulerid.sched_id);
                 return -1;
         }
     }
@@ -1381,8 +1348,8 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
     char buf[256];
 
     if (domain->conn == NULL) {
-        virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                        "domain or conn is NULL", 0);
+        virXenError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("domain or conn is NULL"));
         return -1;
     }
 
@@ -1401,8 +1368,8 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
     if (priv->handle < 0) {
-        virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                        "priv->handle invalid", 0);
+        virXenError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("priv->handle invalid"));
         return -1;
     }
     if (domain->id < 0) {
@@ -1417,8 +1384,8 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
      * TODO: check on Xen 3.0.3
      */
     if (hv_versions.dom_interface < 5) {
-        virXenErrorFunc(VIR_ERR_NO_XEN, __FUNCTION__,
-                        "unsupported in dom interface < 5", 0);
+        virXenError(VIR_ERR_NO_XEN, "%s",
+                    _("unsupported in dom interface < 5"));
         return -1;
     }
 
@@ -1456,16 +1423,18 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
                 if (STREQ(params[i].field, VIR_DOMAIN_SCHEDULER_WEIGHT)) {
                     val = params[i].value.ui;
                     if ((val < 1) || (val > USHRT_MAX)) {
-                        snprintf(buf, sizeof(buf), _("Credit scheduler weight parameter (%d) is out of range (1-65535)"), val);
-                        virXenErrorFunc(VIR_ERR_INVALID_ARG, __FUNCTION__, buf, val);
+                        virXenError(VIR_ERR_INVALID_ARG,
+                                    _("Credit scheduler weight parameter (%d) "
+                                      "is out of range (1-65535)"), val);
                         return(-1);
                     }
                     op_dom.u.getschedinfo.u.credit.weight = val;
                 } else if (STREQ(params[i].field, VIR_DOMAIN_SCHEDULER_CAP)) {
                     val = params[i].value.ui;
                     if (val >= USHRT_MAX) {
-                        snprintf(buf, sizeof(buf), _("Credit scheduler cap parameter (%d) is out of range (0-65534)"), val);
-                        virXenErrorFunc(VIR_ERR_INVALID_ARG, __FUNCTION__, buf, val);
+                        virXenError(VIR_ERR_INVALID_ARG,
+                                    _("Credit scheduler cap parameter (%d) is "
+                                      "out of range (0-65534)"), val);
                         return(-1);
                     }
                     op_dom.u.getschedinfo.u.credit.cap = val;
@@ -1478,8 +1447,9 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
             break;
         }
         default:
-            virXenErrorFunc(VIR_ERR_INVALID_ARG, __FUNCTION__,
-                        "Unknown scheduler", op_sys.u.getschedulerid.sched_id);
+            virXenError(VIR_ERR_INVALID_ARG,
+                        _("Unknown scheduler %d"),
+                        op_sys.u.getschedulerid.sched_id);
             return -1;
         }
     }
@@ -1504,9 +1474,8 @@ xenHypervisorDomainBlockStats (virDomainPtr dom,
     xenUnifiedUnlock(priv);
     return ret;
 #else
-    virXenErrorFunc(VIR_ERR_OPERATION_INVALID, __FUNCTION__,
-                    "block statistics not supported on this platform",
-                    dom->id);
+    virXenError(VIR_ERR_OPERATION_INVALID, "%s",
+                _("block statistics not supported on this platform"));
     return -1;
 #endif
 }
@@ -1529,21 +1498,21 @@ xenHypervisorDomainInterfaceStats (virDomainPtr dom,
     /* Verify that the vif requested is one belonging to the current
      * domain.
      */
-    if (sscanf (path, "vif%d.%d", &rqdomid, &device) != 2) {
-        virXenErrorFunc(VIR_ERR_INVALID_ARG, __FUNCTION__,
-                        "invalid path, should be vif<domid>.<n>.", 0);
+    if (sscanf(path, "vif%d.%d", &rqdomid, &device) != 2) {
+        virXenError(VIR_ERR_INVALID_ARG, "%s",
+                    _("invalid path, should be vif<domid>.<n>."));
         return -1;
     }
     if (rqdomid != dom->id) {
-        virXenErrorFunc(VIR_ERR_INVALID_ARG, __FUNCTION__,
-                        "invalid path, vif<domid> should match this domain ID", 0);
+        virXenError(VIR_ERR_INVALID_ARG, "%s",
+                    _("invalid path, vif<domid> should match this domain ID"));
         return -1;
     }
 
     return linuxDomainInterfaceStats(path, stats);
 #else
-    virXenErrorFunc(VIR_ERR_OPERATION_INVALID, __FUNCTION__,
-                    "/proc/net/dev: Interface not found", 0);
+    virXenError(VIR_ERR_OPERATION_INVALID, "%s",
+                _("/proc/net/dev: Interface not found"));
     return -1;
 #endif
 }
@@ -2953,30 +2922,30 @@ xenHypervisorDomainGetOSType (virDomainPtr dom)
 
     priv = (xenUnifiedPrivatePtr) dom->conn->privateData;
     if (priv->handle < 0) {
-        virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                        _("domain shut off or invalid"), 0);
+        virXenError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("domain shut off or invalid"));
         return (NULL);
     }
 
     /* HV's earlier than 3.1.0 don't include the HVM flags in guests status*/
     if (hv_versions.hypervisor < 2 ||
         hv_versions.dom_interface < 4) {
-        virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                        _("unsupported in dom interface < 4"), 0);
+        virXenError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("unsupported in dom interface < 4"));
         return (NULL);
     }
 
     XEN_GETDOMAININFO_CLEAR(dominfo);
 
     if (virXen_getdomaininfo(priv->handle, dom->id, &dominfo) < 0) {
-        virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                        _("cannot get domain details"), 0);
+        virXenError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("cannot get domain details"));
         return (NULL);
     }
 
     if (XEN_GETDOMAININFO_DOMAIN(dominfo) != dom->id) {
-        virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                        _("cannot get domain details"), 0);
+        virXenError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("cannot get domain details"));
         return (NULL);
     }
 
@@ -3375,22 +3344,21 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *free
     xenUnifiedPrivatePtr priv;
 
     if (conn == NULL) {
-        virXenErrorFunc(VIR_ERR_INVALID_ARG, __FUNCTION__,
-                        "invalid argument", 0);
+        virXenError(VIR_ERR_INVALID_ARG, "%s", _("invalid argument"));
         return -1;
     }
 
     priv = conn->privateData;
 
     if (priv->nbNodeCells < 0) {
-        virXenErrorFunc(VIR_ERR_XEN_CALL, __FUNCTION__,
-                        "cannot determine actual number of cells",0);
+        virXenError(VIR_ERR_XEN_CALL, "%s",
+                    _("cannot determine actual number of cells"));
         return(-1);
     }
 
     if ((maxCells < 1) || (startCell >= priv->nbNodeCells)) {
-        virXenErrorFunc(VIR_ERR_INVALID_ARG, __FUNCTION__,
-                        "invalid argument", 0);
+        virXenError(VIR_ERR_INVALID_ARG, "%s",
+                    _("invalid argument"));
         return -1;
     }
 
@@ -3398,14 +3366,14 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *free
      * Support only hv_versions.sys_interface >=4
      */
     if (hv_versions.sys_interface < SYS_IFACE_MIN_VERS_NUMA) {
-        virXenErrorFunc(VIR_ERR_XEN_CALL, __FUNCTION__,
-                        "unsupported in sys interface < 4", 0);
+        virXenError(VIR_ERR_XEN_CALL, "%s",
+                    _("unsupported in sys interface < 4"));
         return -1;
     }
 
     if (priv->handle < 0) {
-        virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                        "priv->handle invalid", 0);
+        virXenError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("priv->handle invalid"));
         return -1;
     }
 
@@ -3646,13 +3614,13 @@ xenHypervisorGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
     if (priv->handle < 0 || (domain->id < 0) ||
         (info == NULL) || (maxinfo < 1) ||
         (sizeof(cpumap_t) & 7)) {
-        virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                        _("domain shut off or invalid"), 0);
+        virXenError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("domain shut off or invalid"));
         return (-1);
     }
     if ((cpumaps != NULL) && (maplen < 1)) {
-        virXenErrorFunc(VIR_ERR_INVALID_ARG, __FUNCTION__,
-                        "invalid argument", 0);
+        virXenError(VIR_ERR_INVALID_ARG, "%s",
+                    _("invalid argument"));
         return -1;
     }
     /* first get the number of virtual CPUs in this domain */
@@ -3661,8 +3629,8 @@ xenHypervisorGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
                                &dominfo);
 
     if ((ret < 0) || (XEN_GETDOMAININFO_DOMAIN(dominfo) != domain->id)) {
-        virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                        _("cannot get domain details"), 0);
+        virXenError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("cannot get domain details"));
         return (-1);
     }
     nbinfo = XEN_GETDOMAININFO_CPUCOUNT(dominfo) + 1;
@@ -3678,16 +3646,16 @@ xenHypervisorGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
                                       (unsigned char *)VIR_GET_CPUMAP(cpumaps, maplen, i),
                                       maplen);
             if (ret < 0) {
-                virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                                _("cannot get VCPUs info"), 0);
+                virXenError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("cannot get VCPUs info"));
                 return(-1);
             }
         } else {
             ret = virXen_getvcpusinfo(priv->handle, domain->id, i,
                                       ipt, NULL, 0);
             if (ret < 0) {
-                virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                                _("cannot get VCPUs info"), 0);
+                virXenError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("cannot get VCPUs info"));
                 return(-1);
             }
         }

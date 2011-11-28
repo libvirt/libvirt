@@ -756,7 +756,7 @@ virRaiseErrorFull(const char *filename ATTRIBUTE_UNUSED,
  *
  * Returns the constant string associated to @error
  */
-const char *
+static const char *
 virErrorMsg(virErrorNumber error, const char *info)
 {
     const char *errmsg = NULL;

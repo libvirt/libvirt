@@ -47,14 +47,6 @@ void virRaiseErrorFull(const char *filename,
                        const char *fmt, ...)
     ATTRIBUTE_FMT_PRINTF(12, 13);
 
-/* Includes 'dom' and 'net' for compatbility, but they're ignored */
-# define virRaiseError(dom, net, domain, code, level,              \
-                      str1, str2, str3, int1, int2, msg, ...)           \
-    virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__,           \
-                      domain, code, level, str1, str2, str3, int1, int2, \
-                      msg, __VA_ARGS__)
-
-const char *virErrorMsg(virErrorNumber error, const char *info);
 void virReportErrorHelper(int domcode, int errcode,
                           const char *filename,
                           const char *funcname,

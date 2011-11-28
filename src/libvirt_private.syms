@@ -1388,7 +1388,6 @@ virSocketAddrSetPort;
 
 # virterror_internal.h
 virDispatchError;
-virErrorMsg;
 virRaiseErrorFull;
 virReportErrorHelper;
 virReportOOMErrorFull;

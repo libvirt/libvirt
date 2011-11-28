@@ -89,27 +89,23 @@ struct _virConf {
  *
  * Handle an error at the xend daemon interface
  */
+#define virConfError(ctxt, error, info) \
+    virConfErrorHelper(__FILE__, __FUNCTION__, __LINE__, ctxt, error, info)
 static void
-virConfError(virConfParserCtxtPtr ctxt,
-             virErrorNumber error, const char *info)
+virConfErrorHelper(const char *file, const char *func, size_t line,
+                   virConfParserCtxtPtr ctxt,
+                   virErrorNumber error, const char *info)
 {
-    const char *format;
-
     if (error == VIR_ERR_OK)
         return;
 
     /* Construct the string 'filename:line: info' if we have that. */
     if (ctxt && ctxt->filename) {
-        virRaiseError(NULL, NULL, VIR_FROM_CONF, error, VIR_ERR_ERROR,
-                        info, ctxt->filename, NULL,
-                        ctxt->line, 0,
-                        "%s:%d: %s", ctxt->filename, ctxt->line, info);
+        virReportErrorHelper(VIR_FROM_CONF, error, file, func, line,
+                             _("%s:%d: %s"), ctxt->filename, ctxt->line, info);
     } else {
-        format = virErrorMsg(error, info);
-        virRaiseError(NULL, NULL, VIR_FROM_CONF, error, VIR_ERR_ERROR,
-                        info, NULL, NULL,
-                        ctxt ? ctxt->line : 0, 0,
-                        format, info);
+        virReportErrorHelper(VIR_FROM_CONF, error, file, func, line,
+                             "%s", info);
     }
 }
 
