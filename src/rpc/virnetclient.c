@@ -1381,6 +1381,16 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
                                      _("read on wakeup fd failed"));
                 goto error;
             }
+
+            /* If we were woken up because a new non-blocking call was queued,
+             * we need to re-poll to check if we can send it.
+             */
+            if (virNetClientCallMatchPredicate(client->waitDispatch,
+                                               virNetClientIOEventLoopWantNonBlock,
+                                               NULL)) {
+                VIR_DEBUG("New non-blocking call arrived; repolling");
+                continue;
+            }
         }
 
         if (ret < 0) {
