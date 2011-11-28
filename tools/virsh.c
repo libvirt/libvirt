@@ -5202,6 +5202,69 @@ cmdNodeMemStats(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "nodesuspend" command
+ */
+static const vshCmdInfo info_nodesuspend[] = {
+    {"help", N_("suspend the host node for a given time duration")},
+    {"desc", N_("Suspend the host node for a given time duration "
+                               "and attempt to resume thereafter.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_node_suspend[] = {
+    {"target", VSH_OT_DATA, VSH_OFLAG_REQ, N_("mem(Suspend-to-RAM), "
+                                               "disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)")},
+    {"duration", VSH_OT_INT, VSH_OFLAG_REQ, N_("Suspend duration in seconds")},
+    {"flags", VSH_OT_INT, VSH_OFLAG_NONE, N_("Suspend flags, 0 for default")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdNodeSuspend(vshControl *ctl, const vshCmd *cmd)
+{
+    const char *target = NULL;
+    unsigned int suspendTarget;
+    long long duration;
+    unsigned int flags = 0;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (vshCommandOptString(cmd, "target", &target) < 0)
+        return false;
+
+    if (vshCommandOptLongLong(cmd, "duration", &duration) < 0)
+        return false;
+
+    if (vshCommandOptUInt(cmd, "flags", &flags) < 0)
+        return false;
+
+    if (STREQ(target, "mem"))
+        suspendTarget = VIR_NODE_SUSPEND_TARGET_MEM;
+    else if (STREQ(target, "disk"))
+        suspendTarget = VIR_NODE_SUSPEND_TARGET_DISK;
+    else if (STREQ(target, "hybrid"))
+        suspendTarget = VIR_NODE_SUSPEND_TARGET_HYBRID;
+    else {
+        vshError(ctl, "%s", _("Invalid target"));
+        return false;
+    }
+
+    if (duration <= 0) {
+        vshError(ctl, "%s", _("Invalid duration"));
+        return false;
+    }
+
+    if (virNodeSuspendForDuration(ctl->conn, suspendTarget, duration,
+                                  flags) < 0) {
+        vshError(ctl, "%s", _("The host was not suspended"));
+        return false;
+    }
+    return true;
+}
+
+
+/*
  * "capabilities" command
  */
 static const vshCmdInfo info_capabilities[] = {
@@ -14973,6 +15036,7 @@ static const vshCmdDef hostAndHypervisorCmds[] = {
     {"nodecpustats", cmdNodeCpuStats, opts_node_cpustats, info_nodecpustats, 0},
     {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo, 0},
     {"nodememstats", cmdNodeMemStats, opts_node_memstats, info_nodememstats, 0},
+    {"nodesuspend", cmdNodeSuspend, opts_node_suspend, info_nodesuspend, 0},
     {"qemu-attach", cmdQemuAttach, opts_qemu_attach, info_qemu_attach},
     {"qemu-monitor-command", cmdQemuMonitorCommand, opts_qemu_monitor_command,
      info_qemu_monitor_command, 0},
