@@ -85,13 +85,10 @@ VIR_ENUM_IMPL(virDomainVirt, VIR_DOMAIN_VIRT_LAST,
               "lxc",
               "uml",
               "openvz",
-              "vserver",
-              "ldom",
               "test",
               "vmware",
               "hyperv",
               "vbox",
-              "one",
               "phyp")
 
 VIR_ENUM_IMPL(virDomainBoot, VIR_DOMAIN_BOOT_LAST,
