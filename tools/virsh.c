@@ -11556,6 +11556,9 @@ vshNodeIsSuperset(xmlNodePtr n1, xmlNodePtr n2)
     if (n1_child_size < n2_child_size)
         return false;
 
+    if (n1_child_size == 0 && n2_child_size == 0)
+        return true;
+
     if (!(bitmap = virBitmapAlloc(n1_child_size))) {
         virReportOOMError();
         return false;
