@@ -84,6 +84,13 @@
       <arg name='cpuNum' type='int' info='number of node cpu. (VIR_NODE_CPU_STATS_ALL_CPUS means total cpu statistics)'/>
       <arg name='flags' type='unsigned int' info='additional flags'/>
     </function>
+    <function name='virNodeGetMemoryStats' file='python'>
+      <info>Extract node's memory statistics.</info>
+      <return type='virNodeMemoryStats' info='dictionary mapping field names to values or None in case of error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
+      <arg name='cellNum' type='int' info='number of node cell. (VIR_NODE_MEMORY_STATS_ALL_CELLS means total cell statistics)'/>
+      <arg name='flags' type='unsigned int' info='additional flags'/>
+    </function>
     <function name='virDomainGetUUID' file='python'>
       <info>Extract the UUID unique Identifier of a domain.</info>
       <return type='char *' info='the 16 bytes string or None in case of error'/>

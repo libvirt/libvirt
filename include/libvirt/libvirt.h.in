@@ -445,9 +445,11 @@ struct _virNodeCPUStats {
 /**
  * VIR_NODE_MEMORY_STATS_ALL_CELLS:
  *
- * Macro for the total memory of all cells.
+ * Value for specifying request for the total memory of all cells.
  */
-#define VIR_NODE_MEMORY_STATS_ALL_CELLS (-1)
+typedef enum {
+    VIR_NODE_MEMORY_STATS_ALL_CELLS = -1,
+} virNodeGetMemoryStatsAllCells;
 
 /**
  * VIR_NODE_MEMORY_STATS_TOTAL:
