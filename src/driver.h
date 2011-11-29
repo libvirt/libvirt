@@ -723,6 +723,11 @@ typedef int
                      unsigned long flags,
                      int cancelled);
 
+typedef int
+    (*virDrvNodeSuspendForDuration)(virConnectPtr conn, unsigned int target,
+                                     unsigned long long duration,
+                                     unsigned int flags);
+
 
 typedef int
     (*virDrvDomainBlockJobAbort)(virDomainPtr dom, const char *path,
@@ -907,6 +912,7 @@ struct _virDriver {
     virDrvDomainBlockPull domainBlockPull;
     virDrvSetKeepAlive setKeepAlive;
     virDrvConnectIsAlive isAlive;
+    virDrvNodeSuspendForDuration nodeSuspendForDuration;
 };
 
 typedef int

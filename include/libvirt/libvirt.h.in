@@ -250,6 +250,17 @@ typedef enum {
 } virDomainCreateFlags;
 
 
+/**
+ * virNodeSuspendTarget:
+ *
+ * Flags to indicate which system-wide sleep state the host must be
+ * transitioned to.
+ */
+typedef enum {
+    VIR_NODE_SUSPEND_TARGET_MEM     = (1 << 0),
+    VIR_NODE_SUSPEND_TARGET_DISK    = (1 << 1),
+    VIR_NODE_SUSPEND_TARGET_HYBRID  = (1 << 2),
+} virNodeSuspendTarget;
 
 /**
  * virStream:
@@ -1084,6 +1095,11 @@ unsigned long long      virNodeGetFreeMemory    (virConnectPtr conn);
 
 int                     virNodeGetSecurityModel (virConnectPtr conn,
                                                  virSecurityModelPtr secmodel);
+
+int                     virNodeSuspendForDuration (virConnectPtr conn,
+                                                   unsigned int target,
+                                                   unsigned long long duration,
+                                                   unsigned int flags);
 
 /*
  * Gather list of running domains

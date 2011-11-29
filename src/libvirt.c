@@ -6354,6 +6354,67 @@ error:
 }
 
 /**
+ * virNodeSuspendForDuration:
+ * @conn: pointer to the hypervisor connection
+ * @target: the state to which the host must be suspended to,
+ *         such as: VIR_NODE_SUSPEND_TARGET_MEM (Suspend-to-RAM)
+ *                  VIR_NODE_SUSPEND_TARGET_DISK (Suspend-to-Disk)
+ *                  VIR_NODE_SUSPEND_TARGET_HYBRID (Hybrid-Suspend,
+ *                  which is a combination of the former modes).
+ * @duration: the time duration in seconds for which the host
+ *            has to be suspended
+ * @flags: any flag values that might need to be passed;
+ *         currently unused (0).
+ *
+ * Attempt to suspend the node (host machine) for the given duration of
+ * time in the specified state (Suspend-to-RAM, Suspend-to-Disk or
+ * Hybrid-Suspend). Schedule the node's Real-Time-Clock interrupt to
+ * resume the node after the duration is complete.
+ *
+ * Returns 0 on success (i.e., the node will be suspended after a short
+ * delay), -1 on failure (the operation is not supported, or an attempted
+ * suspend is already underway).
+ */
+int
+virNodeSuspendForDuration(virConnectPtr conn,
+                          unsigned int target,
+                          unsigned long long duration,
+                          unsigned int flags)
+{
+
+    VIR_DEBUG("conn=%p, target=%d, duration=%lld", conn, target, duration);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->nodeSuspendForDuration) {
+        int ret;
+        ret = conn->driver->nodeSuspendForDuration(conn, target,
+                                                   duration, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
+/**
  * virDomainGetSchedulerType:
  * @domain: pointer to domain object
  * @nparams: pointer to number of scheduler parameters, can be NULL

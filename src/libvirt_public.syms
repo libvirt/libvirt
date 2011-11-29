@@ -502,6 +502,7 @@ LIBVIRT_0.9.8 {
     global:
         virConnectIsAlive;
         virConnectSetKeepAlive;
+        virNodeSuspendForDuration;
 } LIBVIRT_0.9.7;
 
 # .... define new API here using predicted next version number ....
