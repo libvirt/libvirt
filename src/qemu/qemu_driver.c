@@ -7056,6 +7056,96 @@ qemuGetSchedulerParameters(virDomainPtr dom,
                                            VIR_DOMAIN_AFFECT_CURRENT);
 }
 
+/**
+ * Resize a block device while a guest is running. Resize to a lower size
+ * is supported, but should be used with extreme caution.  Note that it
+ * only supports to resize image files, it can't resize block devices
+ * like LVM volumes.
+ */
+static int
+qemuDomainBlockResize (virDomainPtr dom,
+                       const char *path,
+                       unsigned long long size,
+                       unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    qemuDomainObjPrivatePtr priv;
+    int ret = -1, i;
+    char *device = NULL;
+    virDomainDiskDefPtr disk = NULL;
+
+    virCheckFlags(0, -1);
+
+    if (path[0] == '\0') {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        "%s", _("empty path"));
+        return -1;
+    }
+
+    if (size > ULLONG_MAX / 1024) {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        _("size must be less than %llu"),
+                        ULLONG_MAX / 1024);
+        return -1;
+    }
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+    if ((i = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        _("invalid path: %s"), path);
+        goto cleanup;
+    }
+    disk = vm->def->disks[i];
+
+    if (virAsprintf(&device, "%s%s", QEMU_DRIVE_HOST_PREFIX,
+                    disk->info.alias) < 0) {
+        virReportOOMError();
+        goto endjob;
+    }
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuMonitorBlockResize(priv->mon, device, size) < 0) {
+        qemuDomainObjExitMonitor(driver, vm);
+        goto endjob;
+    }
+    qemuDomainObjExitMonitor(driver, vm);
+
+    ret = 0;
+
+endjob:
+    if (qemuDomainObjEndJob(driver, vm) == 0)
+        vm = NULL;
+
+cleanup:
+    VIR_FREE(device);
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
 /* This uses the 'info blockstats' monitor command which was
  * integrated into both qemu & kvm in late 2007.  If the command is
  * not supported we detect this and return the appropriate error.
@@ -10849,6 +10939,7 @@ static virDriver qemuDriver = {
     .domainSetSchedulerParameters = qemuSetSchedulerParameters, /* 0.7.0 */
     .domainSetSchedulerParametersFlags = qemuSetSchedulerParametersFlags, /* 0.9.2 */
     .domainMigratePerform = qemudDomainMigratePerform, /* 0.5.0 */
+    .domainBlockResize = qemuDomainBlockResize, /* 0.9.8 */
     .domainBlockStats = qemuDomainBlockStats, /* 0.4.1 */
     .domainBlockStatsFlags = qemuDomainBlockStatsFlags, /* 0.9.5 */
     .domainInterfaceStats = qemudDomainInterfaceStats, /* 0.4.1 */
