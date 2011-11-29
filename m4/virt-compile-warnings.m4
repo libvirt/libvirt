@@ -55,8 +55,8 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
         # Things like virAsprintf mean we can't use this
         dontwarn="$dontwarn -Wformat-nonliteral"
 
-        # We might fundamentally need some of these disabled forever, but ideally
-        # we'd turn many of them on
+        # We might fundamentally need some of these disabled forever, but
+        # ideally we'd turn many of them on
         dontwarn="$dontwarn -Wfloat-equal"
         dontwarn="$dontwarn -Wdeclaration-after-statement"
         dontwarn="$dontwarn -Wcast-qual"
@@ -87,6 +87,10 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
         # GNULIB expects this to be part of -Wc++-compat, but we turn
         # that one off, so we need to manually enable this again
         gl_WARN_ADD([-Wjump-misses-init])
+
+        # GNULIB turns on -Wformat=2 which implies -Wformat-nonliteral,
+        # so we need to manually re-exclude it.
+        gl_WARN_ADD([-Wno-format-nonliteral])
 
         # This should be < 256 really. Currently we're down to 4096,
         # but using 1024 bytes sized buffers (mostly for virStrerror)

@@ -36,6 +36,9 @@ generated_files = \
   $(srcdir)/src/remote/*_protocol.[ch] \
   $(srcdir)/gnulib/lib/*.[ch]
 
+# We haven't converted all scripts to using gnulib's init.sh yet.
+_test_script_regex = \<\(init\|test-lib\)\.sh\>
+
 # Tests not to run as part of "make distcheck".
 local-checks-to-skip =			\
   changelog-check			\

@@ -65,7 +65,7 @@ for args in \
     '--count=2 test' \
 ; do
   virsh -d0 -c $test_url setvcpus $args >out 2>>err || fail=1
-  LC_ALL=C sort out | compare - exp-out || fail=1
+  LC_ALL=C sort out | compare exp-out - || fail=1
 done
 
 # Another complex parsing example
@@ -84,7 +84,7 @@ EOF
 virsh -q -c $test_url snapshot-create-as --print-xml test \
   --diskspec 'vda,file=a&b,,c,snapshot=external' --description '1<2' \
   --diskspec vdb >out 2>>err || fail=1
-compare out exp-out || fail=1
+compare exp-out out || fail=1
 
 cat <<\EOF > exp-out || framework_failure
 <domainsnapshot>
@@ -98,7 +98,7 @@ cat <<\EOF > exp-out || framework_failure
 EOF
 virsh -q -c $test_url snapshot-create-as  --print-xml test name vda vdb \
   >out 2>>err || fail=1
-compare out exp-out || fail=1
+compare exp-out out || fail=1
 
 cat <<\EOF > exp-out || framework_failure
 <domainsnapshot>
@@ -122,7 +122,7 @@ for args in \
 ; do
   virsh -q -c $test_url snapshot-create-as --print-xml $args \
     >out 2>>err || fail=1
-  compare out exp-out || fail=1
+  compare exp-out out || fail=1
 done
 
 test -s err && fail=1
@@ -133,6 +133,6 @@ error: this function is not supported by the connection driver: virDomainQemuMon
 EOF
 virsh -q -c $test_url qemu-monitor-command test a >out 2>err && fail=1
 test -s out && fail=1
-compare err exp-err || fail=1
+compare exp-err err || fail=1
 
 (exit $fail); exit $fail

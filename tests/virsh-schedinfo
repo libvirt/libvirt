@@ -1,7 +1,7 @@
 #!/bin/sh
 # Ensure that virsh schedinfo --set invalid=val fails
 
-# Copyright (C) 2010 Red Hat, Inc.
+# Copyright (C) 2010-2011 Red Hat, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ fail=0
 test_url=test:///default
 
 virsh -c $test_url schedinfo 1 --set j=k >out 2>err && fail=1
-compare out exp-out || fail=1
-compare err exp-err || fail=1
+compare exp-out out || fail=1
+compare exp-err err || fail=1
 
 (exit $fail); exit $fail
