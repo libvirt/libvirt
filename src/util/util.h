@@ -263,7 +263,7 @@ void virTypedParameterArrayClear(virTypedParameterPtr params, int nparams);
 
 /* Power Management Capabilities of the host system */
 
-int virDiscoverHostPMFeature(unsigned int feature, bool *supported);
-int virGetPMCapabilities(unsigned int *bitmask);
+int virNodeSuspendSupportsTarget(unsigned int target, bool *supported);
+int virNodeSuspendGetTargetMask(unsigned int *bitmask);
 
 #endif /* __VIR_UTIL_H__ */

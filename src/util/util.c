@@ -2623,8 +2623,8 @@ virTypedParameterArrayClear(virTypedParameterPtr params, int nparams)
 }
 
 /**
- * virDiscoverHostPMFeature:
- * @feature: The power management feature to check whether it is supported
+ * virNodeSuspendSupportsTarget:
+ * @target: The power management target to check whether it is supported
  *           by the host. Values could be:
  *           VIR_NODE_SUSPEND_TARGET_MEM
  *           VIR_NODE_SUSPEND_TARGET_DISK
@@ -2632,12 +2632,12 @@ virTypedParameterArrayClear(virTypedParameterPtr params, int nparams)
  * @supported: set to true if supported, false otherwise
  *
  * Run the script 'pm-is-supported' (from the pm-utils package)
- * to find out if @feature is supported by the host.
+ * to find out if @target is supported by the host.
  *
  * Returns 0 if the query was successful, -1 on failure.
  */
 int
-virDiscoverHostPMFeature(unsigned int feature, bool *supported)
+virNodeSuspendSupportsTarget(unsigned int target, bool *supported)
 {
     virCommandPtr cmd;
     int status;
@@ -2645,7 +2645,7 @@ virDiscoverHostPMFeature(unsigned int feature, bool *supported)
 
     *supported = false;
 
-    switch (feature) {
+    switch (target) {
     case VIR_NODE_SUSPEND_TARGET_MEM:
         cmd = virCommandNewArgList("pm-is-supported", "--suspend", NULL);
         break;
@@ -2675,19 +2675,19 @@ cleanup:
 }
 
 /**
- * virGetPMCapabilities:
+ * virNodeSuspendGetTargetMask:
  *
  * Get the Power Management Capabilities that the host system supports,
  * such as Suspend-to-RAM (S3), Suspend-to-Disk (S4) and Hybrid-Suspend
  * (a combination of S3 and S4).
  *
  * @bitmask: Pointer to the bitmask which will be set appropriately to
- *           indicate all the supported host power management features.
+ *           indicate all the supported host power management targets.
  *
  * Returns 0 if the query was successful, -1 on failure.
  */
 int
-virGetPMCapabilities(unsigned int *bitmask)
+virNodeSuspendGetTargetMask(unsigned int *bitmask)
 {
     int ret;
     bool supported;
@@ -2695,21 +2695,21 @@ virGetPMCapabilities(unsigned int *bitmask)
     *bitmask = 0;
 
     /* Check support for Suspend-to-RAM (S3) */
-    ret = virDiscoverHostPMFeature(VIR_NODE_SUSPEND_TARGET_MEM, &supported);
+    ret = virNodeSuspendSupportsTarget(VIR_NODE_SUSPEND_TARGET_MEM, &supported);
     if (ret < 0)
         return -1;
     if (supported)
         *bitmask |= (1 << VIR_NODE_SUSPEND_TARGET_MEM);
 
     /* Check support for Suspend-to-Disk (S4) */
-    ret = virDiscoverHostPMFeature(VIR_NODE_SUSPEND_TARGET_DISK, &supported);
+    ret = virNodeSuspendSupportsTarget(VIR_NODE_SUSPEND_TARGET_DISK, &supported);
     if (ret < 0)
         return -1;
     if (supported)
         *bitmask |= (1 << VIR_NODE_SUSPEND_TARGET_DISK);
 
     /* Check support for Hybrid-Suspend */
-    ret = virDiscoverHostPMFeature(VIR_NODE_SUSPEND_TARGET_HYBRID, &supported);
+    ret = virNodeSuspendSupportsTarget(VIR_NODE_SUSPEND_TARGET_HYBRID, &supported);
     if (ret < 0)
         return -1;
     if (supported)

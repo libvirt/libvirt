@@ -81,7 +81,7 @@ int virNodeSuspendInit(void)
 
     /* Get the power management capabilities supported by the host */
     hostPMFeatures = 0;
-    if (virGetPMCapabilities(&hostPMFeatures) < 0) {
+    if (virNodeSuspendGetTargetMask(&hostPMFeatures) < 0) {
         if (geteuid() == 0)
             VIR_ERROR(_("Failed to get host power management features"));
     }

@@ -850,7 +850,7 @@ virCapsPtr qemuCapsInit(virCapsPtr old_caps)
 
     /* Add the power management features of the host */
 
-    if (virGetPMCapabilities(&caps->host.powerMgmt) < 0) {
+    if (virNodeSuspendGetTargetMask(&caps->host.powerMgmt) < 0) {
         VIR_WARN("Failed to get host power management capabilities");
         caps->host.powerMgmt_valid = false;
     } else
