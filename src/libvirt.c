@@ -974,8 +974,11 @@ virConnectConfigFile(void)
             goto error;
 
         if (virAsprintf(&path, "%s/.libvirt/libvirt.conf",
-                        userdir) < 0)
+                        userdir) < 0) {
+            VIR_FREE(userdir);
             goto no_memory;
+        }
+        VIR_FREE(userdir);
     }
 
     return path;
