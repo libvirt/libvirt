@@ -264,14 +264,16 @@ void virTypedParameterArrayClear(virTypedParameterPtr params, int nparams);
 /* Power Management Capabilities of the host system */
 
 enum virHostPMCapability {
-    VIR_HOST_PM_S3,  /* Suspend-to-RAM */
-    VIR_HOST_PM_S4,  /* Suspend-to-Disk */
+    VIR_HOST_PM_S3,              /* Suspend-to-RAM */
+    VIR_HOST_PM_S4,              /* Suspend-to-Disk */
+    VIR_HOST_PM_HYBRID_SUSPEND,  /* Hybrid-Suspend */
 
     VIR_HOST_PM_LAST
 };
 
 VIR_ENUM_DECL(virHostPMCapability)
 
-int virGetPMCapabilities(unsigned int *);
+int virDiscoverHostPMFeature(unsigned int *bitmask, unsigned int feature);
+int virGetPMCapabilities(unsigned int *bitmask);
 
 #endif /* __VIR_UTIL_H__ */

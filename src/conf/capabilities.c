@@ -37,7 +37,7 @@
 #define VIR_FROM_THIS VIR_FROM_CAPABILITIES
 
 VIR_ENUM_IMPL(virHostPMCapability, VIR_HOST_PM_LAST,
-              "S3", "S4")
+              "S3", "S4", "Hybrid-Suspend")
 
 /**
  * virCapabilitiesNew:

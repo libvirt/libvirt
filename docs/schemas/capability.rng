@@ -121,6 +121,11 @@
             <empty/>
           </element>
         </optional>
+        <optional>
+          <element name='Hybrid-Suspend'>
+            <empty/>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

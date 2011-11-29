@@ -31,6 +31,7 @@ BIOS you will see</p>
     &lt;power_management&gt;
       &lt;S3/&gt;
       &lt;S4/&gt;
+      &lt;Hybrid-Suspend/&gt;
     &lt;power_management/&gt;
   &lt;/host&gt;</span>
 
@@ -71,8 +72,9 @@ BIOS you will see</p>
           model, within a feature block (the block is similar to what
           you will find in a Xen fully virtualized domain
           description). Further, the power management features
-          supported by the host are shown, such as Suspend-to-RAM (S3)
-          and Suspend-to-Disk (S4). In case the query for power
+          supported by the host are shown, such as Suspend-to-RAM (S3),
+          Suspend-to-Disk (S4) and Hybrid-Suspend (a combination of S3
+          and S4). In case the query for power
           management features succeeded but the host does not support
           any such feature, then an empty &lt;power_management/&gt;
           tag will be shown. Otherwise, if the query itself failed, no
