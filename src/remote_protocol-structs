@@ -264,6 +264,12 @@ struct remote_domain_get_memory_parameters_ret {
         } params;
         int                        nparams;
 };
+struct remote_domain_block_resize_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      disk;
+        uint64_t                   size;
+        u_int                      flags;
+};
 struct remote_domain_block_stats_args {
         remote_nonnull_domain      dom;
         remote_nonnull_string      path;
@@ -2013,4 +2019,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT_DISK_CHANGE = 248,
         REMOTE_PROC_DOMAIN_OPEN_GRAPHICS = 249,
         REMOTE_PROC_NODE_SUSPEND_FOR_DURATION = 250,
+        REMOTE_PROC_NODE_SUSPEND_FOR_DURATION = 251,
 };
