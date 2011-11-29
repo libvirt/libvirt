@@ -1131,8 +1131,6 @@ virStrToLong_ul;
 virStrToLong_ull;
 virStrcpy;
 virStrncpy;
-virTimeMs;
-virTimestamp;
 virTrimSpaces;
 virVasprintf;
 

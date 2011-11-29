@@ -35,6 +35,7 @@
 #include "ignore-value.h"
 #include "uuid.h"
 #include "virfile.h"
+#include "virtime.h"
 
 #include <sys/time.h>
 #include <fcntl.h>
@@ -717,7 +718,7 @@ qemuDomainObjBeginJobInternal(struct qemud_driver *driver,
 
     priv->jobs_queued++;
 
-    if (virTimeMs(&now) < 0)
+    if (virTimeMillisNow(&now) < 0)
         return -1;
     then = now + QEMU_JOB_WAIT_TIME;
 
@@ -911,7 +912,7 @@ qemuDomainObjEnterMonitorInternal(struct qemud_driver *driver,
 
     qemuMonitorLock(priv->mon);
     qemuMonitorRef(priv->mon);
-    ignore_value(virTimeMs(&priv->monStart));
+    ignore_value(virTimeMillisNow(&priv->monStart));
     virDomainObjUnlock(obj);
     if (driver_locked)
         qemuDriverUnlock(driver);

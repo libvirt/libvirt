@@ -54,6 +54,7 @@
 #include "fdstream.h"
 #include "domain_audit.h"
 #include "domain_nwfilter.h"
+#include "virtime.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -1580,7 +1581,7 @@ static int lxcVmStart(virConnectPtr conn,
         goto cleanup;
 
     /* Log timestamp */
-    if ((timestamp = virTimestamp()) == NULL) {
+    if ((timestamp = virTimeStringNow()) == NULL) {
         virReportOOMError();
         goto cleanup;
     }

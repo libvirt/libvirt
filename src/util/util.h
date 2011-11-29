@@ -251,10 +251,6 @@ void virFileWaitForDevices(void);
 # define virBuildPath(path, ...) virBuildPathInternal(path, __VA_ARGS__, NULL)
 int virBuildPathInternal(char **path, ...) ATTRIBUTE_SENTINEL;
 
-char *virTimestamp(void);
-
-int virTimeMs(unsigned long long *ms) ATTRIBUTE_NONNULL(1);
-
 bool virIsDevMapperDevice(const char *dev_name) ATTRIBUTE_NONNULL(1);
 
 int virEmitXMLWarning(int fd,

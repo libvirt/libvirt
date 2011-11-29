@@ -60,6 +60,7 @@
 #include "locking/domain_lock.h"
 #include "network/bridge_driver.h"
 #include "uuid.h"
+#include "virtime.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -845,7 +846,7 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
      * deleted while the monitor is active */
     virDomainObjRef(vm);
 
-    ignore_value(virTimeMs(&priv->monStart));
+    ignore_value(virTimeMillisNow(&priv->monStart));
     virDomainObjUnlock(vm);
     qemuDriverUnlock(driver);
 
@@ -3012,7 +3013,7 @@ int qemuProcessStart(virConnectPtr conn,
             goto cleanup;
     }
 
-    if ((timestamp = virTimestamp()) == NULL) {
+    if ((timestamp = virTimeStringNow()) == NULL) {
         virReportOOMError();
         goto cleanup;
     } else {
@@ -3290,7 +3291,7 @@ void qemuProcessStop(struct qemud_driver *driver,
         VIR_WARN("Unable to open logfile: %s",
                   virStrerror(errno, ebuf, sizeof ebuf));
     } else {
-        if ((timestamp = virTimestamp()) == NULL) {
+        if ((timestamp = virTimeStringNow()) == NULL) {
             virReportOOMError();
         } else {
             if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
@@ -3560,7 +3561,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         priv->persistentAddrs = 0;
     }
 
-    if ((timestamp = virTimestamp()) == NULL) {
+    if ((timestamp = virTimeStringNow()) == NULL) {
         virReportOOMError();
         goto cleanup;
     } else {
