@@ -78,7 +78,9 @@ int qemuMonitorTextGetBlockStatsParamsNumber(qemuMonitorPtr mon,
 int qemuMonitorTextGetBlockExtent(qemuMonitorPtr mon,
                                   const char *dev_name,
                                   unsigned long long *extent);
-
+int qemuMonitorTextBlockResize(qemuMonitorPtr mon,
+                               const char *device,
+                               unsigned long long size);
 int qemuMonitorTextSetVNCPassword(qemuMonitorPtr mon,
                                   const char *password);
 int qemuMonitorTextSetPassword(qemuMonitorPtr mon,

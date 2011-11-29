@@ -81,7 +81,9 @@ int qemuMonitorJSONGetBlockStatsParamsNumber(qemuMonitorPtr mon,
 int qemuMonitorJSONGetBlockExtent(qemuMonitorPtr mon,
                                   const char *dev_name,
                                   unsigned long long *extent);
-
+int qemuMonitorJSONBlockResize(qemuMonitorPtr mon,
+                               const char *devce,
+                               unsigned long long size);
 
 int qemuMonitorJSONSetVNCPassword(qemuMonitorPtr mon,
                                   const char *password);

@@ -1307,6 +1307,21 @@ int qemuMonitorGetBlockExtent(qemuMonitorPtr mon,
     return ret;
 }
 
+int qemuMonitorBlockResize(qemuMonitorPtr mon,
+                           const char *device,
+                           unsigned long long size)
+{
+    int ret;
+    VIR_DEBUG("mon=%p, fd=%d, devname=%p size=%llu",
+              mon, mon->fd, device, size);
+
+    if (mon->json)
+        ret = qemuMonitorJSONBlockResize(mon, device, size);
+    else
+        ret = qemuMonitorTextBlockResize(mon, device, size);
+
+    return ret;
+}
 
 int qemuMonitorSetVNCPassword(qemuMonitorPtr mon,
                               const char *password)
