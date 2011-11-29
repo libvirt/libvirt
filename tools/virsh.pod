@@ -977,7 +977,7 @@ Change the maximum memory allocation limit for a guest domain.
 If I<--live> is specified, affect a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.
 If I<--current> is specified, affect the current guest state.
-Both I<--live> and I<--current> flags may be given, but I<--current> is
+Both I<--live> and I<--config> flags may be given, but I<--current> is
 exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
 
@@ -1003,7 +1003,7 @@ I<--min-guarantee> is supported only by ESX hypervisor.
 If I<--live> is specified, affect a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.
 If I<--current> is specified, affect the current guest state.
-Both I<--live> and I<--current> flags may be given, but I<--current> is
+Both I<--live> and I<--config> flags may be given, but I<--current> is
 exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
 
@@ -1048,7 +1048,7 @@ I<--weight> is in range [100, 1000].
 If I<--live> is specified, affect a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.
 If I<--current> is specified, affect the current guest state.
-Both I<--live> and I<--current> flags may be given, but I<--current> is
+Both I<--live> and I<--config> flags may be given, but I<--current> is
 exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
 
