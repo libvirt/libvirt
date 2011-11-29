@@ -57,6 +57,7 @@
 #include "network/bridge_driver.h"
 #include "virnetdev.h"
 #include "virnodesuspend.h"
+#include "virtime.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -1847,7 +1848,7 @@ static int lxcVmStart(virConnectPtr conn,
     virCommandSetErrorFD(cmd, &logfd);
 
     /* Log timestamp */
-    if ((timestamp = virTimestamp()) == NULL) {
+    if ((timestamp = virTimeStringNow()) == NULL) {
         virReportOOMError();
         goto cleanup;
     }

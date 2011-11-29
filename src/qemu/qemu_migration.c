@@ -42,6 +42,7 @@
 #include "datatypes.h"
 #include "fdstream.h"
 #include "uuid.h"
+#include "virtime.h"
 #include "locking/domain_lock.h"
 #include "rpc/virnetsocket.h"
 
@@ -866,7 +867,7 @@ qemuMigrationUpdateJobStatus(struct qemud_driver *driver,
                                         &memTotal);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    if (ret < 0 || virTimeMs(&priv->job.info.timeElapsed) < 0) {
+    if (ret < 0 || virTimeMillisNow(&priv->job.info.timeElapsed) < 0) {
         priv->job.info.type = VIR_DOMAIN_JOB_FAILED;
         return -1;
     }
@@ -1098,7 +1099,7 @@ qemuMigrationPrepareAny(struct qemud_driver *driver,
     bool tunnel = !!st;
     char *origname = NULL;
 
-    if (virTimeMs(&now) < 0)
+    if (virTimeMillisNow(&now) < 0)
         return -1;
 
     if (!(def = virDomainDefParseString(driver->caps, dom_xml,

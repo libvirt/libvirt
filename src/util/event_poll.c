@@ -39,6 +39,7 @@
 #include "virfile.h"
 #include "ignore-value.h"
 #include "virterror_internal.h"
+#include "virtime.h"
 
 #define EVENT_DEBUG(fmt, ...) VIR_DEBUG(fmt, __VA_ARGS__)
 
@@ -214,7 +215,7 @@ int virEventPollAddTimeout(int frequency,
     unsigned long long now;
     int ret;
 
-    if (virTimeMs(&now) < 0) {
+    if (virTimeMillisNow(&now) < 0) {
         return -1;
     }
 
@@ -262,7 +263,7 @@ void virEventPollUpdateTimeout(int timer, int frequency)
         return;
     }
 
-    if (virTimeMs(&now) < 0) {
+    if (virTimeMillisNow(&now) < 0) {
         return;
     }
 
@@ -337,7 +338,7 @@ static int virEventPollCalculateTimeout(int *timeout) {
     if (then > 0) {
         unsigned long long now;
 
-        if (virTimeMs(&now) < 0)
+        if (virTimeMillisNow(&now) < 0)
             return -1;
 
         *timeout = then - now;
@@ -413,7 +414,7 @@ static int virEventPollDispatchTimeouts(void)
     int ntimeouts = eventLoop.timeoutsCount;
     VIR_DEBUG("Dispatch %d", ntimeouts);
 
-    if (virTimeMs(&now) < 0)
+    if (virTimeMillisNow(&now) < 0)
         return -1;
 
     for (i = 0 ; i < ntimeouts ; i++) {

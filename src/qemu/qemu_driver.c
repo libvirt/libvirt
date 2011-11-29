@@ -89,6 +89,7 @@
 #include "locking/domain_lock.h"
 #include "virkeycode.h"
 #include "virnodesuspend.h"
+#include "virtime.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -2201,12 +2202,12 @@ qemuDomainGetControlInfo(virDomainPtr dom,
     } else if (priv->job.active) {
         if (!priv->monStart) {
             info->state = VIR_DOMAIN_CONTROL_JOB;
-            if (virTimeMs(&info->stateTime) < 0)
+            if (virTimeMillisNow(&info->stateTime) < 0)
                 goto cleanup;
             info->stateTime -= priv->job.start;
         } else {
             info->state = VIR_DOMAIN_CONTROL_OCCUPIED;
-            if (virTimeMs(&info->stateTime) < 0)
+            if (virTimeMillisNow(&info->stateTime) < 0)
                 goto cleanup;
             info->stateTime -= priv->monStart;
         }
@@ -8879,7 +8880,7 @@ static int qemuDomainGetJobInfo(virDomainPtr dom,
              * of incoming migration which we don't currently
              * monitor actively in the background thread
              */
-            if (virTimeMs(&info->timeElapsed) < 0)
+            if (virTimeMillisNow(&info->timeElapsed) < 0)
                 goto cleanup;
             info->timeElapsed -= priv->job.start;
         } else {
