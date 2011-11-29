@@ -590,6 +590,12 @@ If I<--info> is specified, the active job information on the specified
 disk will be printed.
 I<bandwidth> can be used to set bandwidth limit for the active job.
 
+=item B<blockresize> I<domain> I<--path> I<--size>
+
+Resize a block device of domain while the domain is running, I<--path>
+specifies the absolute path of the block device, I<--size> specifies the
+new size in kilobytes
+
 =item B<dominfo> I<domain-id>
 
 Returns basic information about the domain.

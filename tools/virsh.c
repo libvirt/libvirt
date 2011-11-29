@@ -6091,6 +6091,63 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
     return true;
 }
 
+/*
+ * "blockresize" command
+ */
+static const vshCmdInfo info_block_resize[] = {
+    {"help", N_("Resize block device of domain.")},
+    {"desc", N_("Resize block device of domain.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_block_resize[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"path", VSH_OT_DATA, VSH_OFLAG_REQ, N_("Fully-qualified path of block device")},
+    {"size", VSH_OT_INT, VSH_OFLAG_REQ, N_("New size of the block device in kilobytes, "
+                                           "the size must be integer")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdBlockResize(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    const char *path = NULL;
+    unsigned long long size = 0;
+    unsigned int flags = 0;
+    int ret = false;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (vshCommandOptString(cmd, "path", (const char **) &path) < 0) {
+        vshError(ctl, "%s", _("Path must not be empty"));
+        return false;
+    }
+
+    if (vshCommandOptULongLong(cmd, "size", &size) < 0) {
+        vshError(ctl, "%s", _("Unable to parse integer"));
+        return false;
+    }
+
+    if (size > ULLONG_MAX / 1024) {
+        vshError(ctl, _("Size must be less than %llu"), ULLONG_MAX / 1024);
+        return false;
+    }
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (virDomainBlockResize(dom, path, size, flags) < 0) {
+        vshError(ctl, _("Failed to resize block device '%s'"), path);
+    } else {
+        vshPrint(ctl, _("Block device '%s' is resized"), path);
+        ret = true;
+    }
+
+    virDomainFree(dom);
+    return ret;
+}
 
 /*
  * "net-autostart" command
@@ -14761,6 +14818,7 @@ static const vshCmdDef domManagementCmds[] = {
     {"blkiotune", cmdBlkiotune, opts_blkiotune, info_blkiotune, 0},
     {"blockpull", cmdBlockPull, opts_block_pull, info_block_pull, 0},
     {"blockjob", cmdBlockJob, opts_block_job, info_block_job, 0},
+    {"blockresize", cmdBlockResize, opts_block_resize, info_block_resize, 0},
 #ifndef WIN32
     {"console", cmdConsole, opts_console, info_console, 0},
 #endif
