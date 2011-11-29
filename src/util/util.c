@@ -2628,9 +2628,9 @@ virTypedParameterArrayClear(virTypedParameterPtr params, int nparams)
  *           the query
  * @feature: The power management feature to check whether it is supported
  *           by the host. Values could be:
- *           VIR_HOST_PM_S3 for Suspend-to-RAM
- *           VIR_HOST_PM_S4 for Suspend-to-Disk
- *           VIR_HOST_PM_HYBRID_SUSPEND for Hybrid-Suspend
+ *           VIR_NODE_SUSPEND_TARGET_MEM
+ *           VIR_NODE_SUSPEND_TARGET_DISK
+ *           VIR_NODE_SUSPEND_TARGET_HYBRID
  *
  * Run the script 'pm-is-supported' (from the pm-utils package)
  * to find out if @feature is supported by the host.
@@ -2645,13 +2645,13 @@ virDiscoverHostPMFeature(unsigned int *bitmask, unsigned int feature)
     int ret = -1;
 
     switch (feature) {
-    case VIR_HOST_PM_S3:
+    case VIR_NODE_SUSPEND_TARGET_MEM:
         cmd = virCommandNewArgList("pm-is-supported", "--suspend", NULL);
         break;
-    case VIR_HOST_PM_S4:
+    case VIR_NODE_SUSPEND_TARGET_DISK:
         cmd = virCommandNewArgList("pm-is-supported", "--hibernate", NULL);
         break;
-    case VIR_HOST_PM_HYBRID_SUSPEND:
+    case VIR_NODE_SUSPEND_TARGET_HYBRID:
         cmd = virCommandNewArgList("pm-is-supported", "--suspend-hybrid", NULL);
         break;
     default:
@@ -2695,17 +2695,17 @@ virGetPMCapabilities(unsigned int *bitmask)
     *bitmask = 0;
 
     /* Check support for Suspend-to-RAM (S3) */
-    ret = virDiscoverHostPMFeature(bitmask, VIR_HOST_PM_S3);
+    ret = virDiscoverHostPMFeature(bitmask, VIR_NODE_SUSPEND_TARGET_MEM);
     if (ret < 0)
         return -1;
 
     /* Check support for Suspend-to-Disk (S4) */
-    ret = virDiscoverHostPMFeature(bitmask, VIR_HOST_PM_S4);
+    ret = virDiscoverHostPMFeature(bitmask, VIR_NODE_SUSPEND_TARGET_DISK);
     if (ret < 0)
         return -1;
 
     /* Check support for Hybrid-Suspend */
-    ret = virDiscoverHostPMFeature(bitmask, VIR_HOST_PM_HYBRID_SUSPEND);
+    ret = virDiscoverHostPMFeature(bitmask, VIR_NODE_SUSPEND_TARGET_HYBRID);
     if (ret < 0)
         return -1;
 
