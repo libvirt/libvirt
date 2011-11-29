@@ -202,7 +202,6 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
                             _("Suspend operation already in progress"));
         goto cleanup;
     }
-    aboutToSuspend = true;
 
     /* Check if the host supports the requested suspend target */
     switch (target) {
@@ -245,6 +244,7 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
+    aboutToSuspend = true;
     ret = 0;
 cleanup:
     virNodeSuspendUnlock();
