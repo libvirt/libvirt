@@ -46,9 +46,10 @@
  * Bitmask to hold the Power Management features supported by the host,
  * such as Suspend-to-RAM, Suspend-to-Disk, Hybrid-Suspend etc.
  */
-static unsigned int hostPMFeatures;
+static unsigned int nodeSuspendTargetMask;
+static bool nodeSuspendTargetMaskInit;
 
-virMutex virNodeSuspendMutex;
+static virMutex virNodeSuspendMutex;
 
 static bool aboutToSuspend;
 
@@ -75,16 +76,8 @@ static void virNodeSuspendUnlock(void)
  */
 int virNodeSuspendInit(void)
 {
-
     if (virMutexInit(&virNodeSuspendMutex) < 0)
         return -1;
-
-    /* Get the power management capabilities supported by the host */
-    hostPMFeatures = 0;
-    if (virNodeSuspendGetTargetMask(&hostPMFeatures) < 0) {
-        if (geteuid() == 0)
-            VIR_ERROR(_("Failed to get host power management features"));
-    }
 
     return 0;
 }
@@ -191,8 +184,13 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     static virThread thread;
     char *cmdString = NULL;
+    int ret = -1;
+    unsigned int supported;
 
     virCheckFlags(0, -1);
+
+    if (virNodeSuspendGetTargetMask(&supported) < 0)
+        return -1;
 
     /*
      * Ensure that we are the only ones trying to suspend.
@@ -202,18 +200,16 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (aboutToSuspend) {
         /* A suspend operation is already in progress */
-        virNodeSuspendUnlock();
-        return -1;
-    } else {
-        aboutToSuspend = true;
+        virNodeSuspendError(VIR_ERR_OPERATION_INVALID, "%s",
+                            _("Suspend operation already in progress"));
+        goto cleanup;
     }
-
-    virNodeSuspendUnlock();
+    aboutToSuspend = true;
 
     /* Check if the host supports the requested suspend target */
     switch (target) {
     case VIR_NODE_SUSPEND_TARGET_MEM:
-        if (hostPMFeatures & (1 << VIR_NODE_SUSPEND_TARGET_MEM)) {
+        if (supported & (1 << VIR_NODE_SUSPEND_TARGET_MEM)) {
             cmdString = strdup("pm-suspend");
             if (cmdString == NULL) {
                 virReportOOMError();
@@ -225,7 +221,7 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
 
     case VIR_NODE_SUSPEND_TARGET_DISK:
-        if (hostPMFeatures & (1 << VIR_NODE_SUSPEND_TARGET_DISK)) {
+        if (supported & (1 << VIR_NODE_SUSPEND_TARGET_DISK)) {
             cmdString = strdup("pm-hibernate");
             if (cmdString == NULL) {
                 virReportOOMError();
@@ -237,7 +233,7 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
 
     case VIR_NODE_SUSPEND_TARGET_HYBRID:
-        if (hostPMFeatures & (1 << VIR_NODE_SUSPEND_TARGET_HYBRID)) {
+        if (supported & (1 << VIR_NODE_SUSPEND_TARGET_HYBRID)) {
             cmdString = strdup("pm-suspend-hybrid");
             if (cmdString == NULL) {
                 virReportOOMError();
@@ -263,11 +259,11 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    return 0;
-
+    ret = 0;
 cleanup:
+    virNodeSuspendUnlock();
     VIR_FREE(cmdString);
-    return -1;
+    return ret;
 }
 
 
@@ -338,35 +334,40 @@ cleanup:
 int
 virNodeSuspendGetTargetMask(unsigned int *bitmask)
 {
-    int ret;
-    bool supported;
+    int ret = -1;
 
     *bitmask = 0;
 
-    /* Check support for Suspend-to-RAM (S3) */
-    ret = virNodeSuspendSupportsTarget(VIR_NODE_SUSPEND_TARGET_MEM, &supported);
-    if (ret < 0)
-        goto error;
-    if (supported)
-        *bitmask |= (1 << VIR_NODE_SUSPEND_TARGET_MEM);
+    virNodeSuspendLock();
+    /* Get the power management capabilities supported by the host */
+    if (!nodeSuspendTargetMaskInit) {
+        bool supported;
+        nodeSuspendTargetMask = 0;
 
-    /* Check support for Suspend-to-Disk (S4) */
-    ret = virNodeSuspendSupportsTarget(VIR_NODE_SUSPEND_TARGET_DISK, &supported);
-    if (ret < 0)
-        goto error;
-    if (supported)
-        *bitmask |= (1 << VIR_NODE_SUSPEND_TARGET_DISK);
+        /* Check support for Suspend-to-RAM (S3) */
+        if (virNodeSuspendSupportsTarget(VIR_NODE_SUSPEND_TARGET_MEM, &supported) < 0)
+            goto cleanup;
+        if (supported)
+            nodeSuspendTargetMask |= (1 << VIR_NODE_SUSPEND_TARGET_MEM);
 
-    /* Check support for Hybrid-Suspend */
-    ret = virNodeSuspendSupportsTarget(VIR_NODE_SUSPEND_TARGET_HYBRID, &supported);
-    if (ret < 0)
-        goto error;
-    if (supported)
-        *bitmask |= (1 << VIR_NODE_SUSPEND_TARGET_HYBRID);
+        /* Check support for Suspend-to-Disk (S4) */
+        if (virNodeSuspendSupportsTarget(VIR_NODE_SUSPEND_TARGET_DISK, &supported) < 0)
+            goto cleanup;
+        if (supported)
+            nodeSuspendTargetMask |= (1 << VIR_NODE_SUSPEND_TARGET_DISK);
 
-    return 0;
+        /* Check support for Hybrid-Suspend */
+        if (virNodeSuspendSupportsTarget(VIR_NODE_SUSPEND_TARGET_HYBRID, &supported) < 0)
+            goto cleanup;
+        if (supported)
+            nodeSuspendTargetMask |= (1 << VIR_NODE_SUSPEND_TARGET_HYBRID);
 
-error:
-    *bitmask = 0;
-    return -1;
+        nodeSuspendTargetMaskInit = true;
+    }
+
+    *bitmask = nodeSuspendTargetMask;
+    ret = 0;
+cleanup:
+    virNodeSuspendUnlock();
+    return ret;
 }
