@@ -43,6 +43,7 @@
 #include "buf.h"
 #include "threads.h"
 #include "virfile.h"
+#include "virtime.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -618,26 +619,6 @@ cleanup:
     return ret;
 }
 
-static char *
-virLogFormatTimestamp(void)
-{
-    struct timeval cur_time;
-    struct tm time_info;
-    char *str = NULL;
-
-    gettimeofday(&cur_time, NULL);
-    localtime_r(&cur_time.tv_sec, &time_info);
-    time_info.tm_year += 1900;
-    time_info.tm_mon += 1;
-
-    if (virAsprintf(&str, "%4d-%02d-%02d %02d:%02d:%02d.%03d",
-                    time_info.tm_year, time_info.tm_mon, time_info.tm_mday,
-                    time_info.tm_hour, time_info.tm_min, time_info.tm_sec,
-                    (int) (cur_time.tv_usec / 1000)) < 0)
-        return NULL;
-
-    return str;
-}
 
 static int
 virLogFormatString(char **msg,
@@ -705,7 +686,7 @@ void virLogMessage(const char *category, int priority, const char *funcname,
     static bool logVersionStderr = true;
     char *str = NULL;
     char *msg = NULL;
-    char *timestamp = NULL;
+    char timestamp[VIR_TIME_STRING_BUFLEN];
     int fprio, i, ret;
     int saved_errno = errno;
     int emit = 1;
@@ -746,8 +727,8 @@ void virLogMessage(const char *category, int priority, const char *funcname,
     if (ret < 0)
         goto cleanup;
 
-    if (!(timestamp = virLogFormatTimestamp()))
-        goto cleanup;
+    if (virTimeStringNowRaw(timestamp) < 0)
+        timestamp[0] = '\0';
 
     /*
      * Log based on defaults, first store in the history buffer,
@@ -799,7 +780,6 @@ void virLogMessage(const char *category, int priority, const char *funcname,
 
 cleanup:
     VIR_FREE(msg);
-    VIR_FREE(timestamp);
     errno = saved_errno;
 }
 
