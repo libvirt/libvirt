@@ -261,9 +261,4 @@ int virEmitXMLWarning(int fd,
 
 void virTypedParameterArrayClear(virTypedParameterPtr params, int nparams);
 
-/* Power Management Capabilities of the host system */
-
-int virNodeSuspendSupportsTarget(unsigned int target, bool *supported);
-int virNodeSuspendGetTargetMask(unsigned int *bitmask);
-
 #endif /* __VIR_UTIL_H__ */

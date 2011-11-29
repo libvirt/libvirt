@@ -34,6 +34,7 @@
 #include "domain_conf.h"
 #include "qemu_conf.h"
 #include "command.h"
+#include "virnodesuspend.h"
 
 #include <sys/stat.h>
 #include <unistd.h>
