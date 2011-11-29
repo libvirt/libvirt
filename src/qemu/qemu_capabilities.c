@@ -144,6 +144,9 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "ich9-ahci",
               "no-acpi",
               "fsdev-readonly",
+
+              "virtio-blk-pci.scsi",
+              "blk-sg-io",
     );
 
 struct qemu_feature_flags {
@@ -1149,6 +1152,9 @@ qemuCapsComputeCmdFlags(const char *help,
     if (version >= 10000)
         qemuCapsSet(flags, QEMU_CAPS_0_10);
 
+    if (version >= 11000)
+        qemuCapsSet(flags, QEMU_CAPS_VIRTIO_BLK_SG_IO);
+
     /* While JSON mode was available in 0.12.0, it was too
      * incomplete to contemplate using. The 0.13.0 release
      * is good enough to use, even though it lacks one or
@@ -1386,6 +1392,8 @@ qemuCapsParseDeviceStr(const char *str, virBitmapPtr flags)
         qemuCapsSet(flags, QEMU_CAPS_VIRTIO_BLK_EVENT_IDX);
     if (strstr(str, "virtio-net-pci.event_idx"))
         qemuCapsSet(flags, QEMU_CAPS_VIRTIO_NET_EVENT_IDX);
+    if (strstr(str, "virtio-blk-pci.scsi"))
+        qemuCapsSet(flags, QEMU_CAPS_VIRTIO_BLK_SCSI);
 
     return 0;
 }

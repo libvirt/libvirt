@@ -118,6 +118,9 @@ enum qemuCapsFlags {
     QEMU_CAPS_NO_ACPI		= 78, /* -no-acpi */
     QEMU_CAPS_FSDEV_READONLY    =79, /* -fsdev readonly supported */
 
+    QEMU_CAPS_VIRTIO_BLK_SCSI    = 80, /* virtio-blk-pci.scsi */
+    QEMU_CAPS_VIRTIO_BLK_SG_IO   = 81, /* support for SG_IO commands, reportedly added in 0.11 */
+
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
 
