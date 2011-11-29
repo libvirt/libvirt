@@ -4552,6 +4552,7 @@ static virDriver remote_driver = {
     .domainMigratePrepare = remoteDomainMigratePrepare, /* 0.3.2 */
     .domainMigratePerform = remoteDomainMigratePerform, /* 0.3.2 */
     .domainMigrateFinish = remoteDomainMigrateFinish, /* 0.3.2 */
+    .domainBlockResize = remoteDomainBlockResize, /* 0.9.8 */
     .domainBlockStats = remoteDomainBlockStats, /* 0.3.2 */
     .domainBlockStatsFlags = remoteDomainBlockStatsFlags, /* 0.9.5 */
     .domainInterfaceStats = remoteDomainInterfaceStats, /* 0.3.2 */

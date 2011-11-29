@@ -537,6 +537,13 @@ struct remote_domain_get_memory_parameters_ret {
     int nparams;
 };
 
+struct remote_domain_block_resize_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string disk;
+    unsigned hyper size;
+    unsigned int flags;
+};
+
 struct remote_domain_block_stats_args {
     remote_nonnull_domain dom;
     remote_nonnull_string path;
@@ -2572,7 +2579,9 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_CHILDREN_NAMES = 247, /* autogen autogen priority:high */
     REMOTE_PROC_DOMAIN_EVENT_DISK_CHANGE = 248, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_OPEN_GRAPHICS = 249, /* skipgen skipgen */
-    REMOTE_PROC_NODE_SUSPEND_FOR_DURATION = 250 /* autogen autogen */
+    REMOTE_PROC_NODE_SUSPEND_FOR_DURATION = 250, /* autogen autogen */
+
+    REMOTE_PROC_DOMAIN_BLOCK_RESIZE = 251 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
