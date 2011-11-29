@@ -263,8 +263,6 @@ void virTypedParameterArrayClear(virTypedParameterPtr params, int nparams);
 
 /* Power Management Capabilities of the host system */
 
-VIR_ENUM_DECL(virHostPMCapability)
-
 int virDiscoverHostPMFeature(unsigned int *bitmask, unsigned int feature);
 int virGetPMCapabilities(unsigned int *bitmask);
 

@@ -36,7 +36,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_CAPABILITIES
 
-VIR_ENUM_IMPL(virHostPMCapability, VIR_NODE_SUSPEND_TARGET_LAST,
+VIR_ENUM_DECL(virCapsHostPMTarget)
+VIR_ENUM_IMPL(virCapsHostPMTarget, VIR_NODE_SUSPEND_TARGET_LAST,
               "suspend_mem", "suspend_disk", "suspend_hybrid");
 
 /**
@@ -704,7 +705,7 @@ virCapabilitiesFormatXML(virCapsPtr caps)
             while (pm) {
                 int bit = ffs(pm) - 1;
                 virBufferAsprintf(&xml, "      <%s/>\n",
-                    virHostPMCapabilityTypeToString(bit));
+                    virCapsHostPMTargetTypeToString(bit));
                 pm &= ~(1U << bit);
             }
             virBufferAddLit(&xml, "    </power_management>\n");
