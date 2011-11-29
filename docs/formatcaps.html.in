@@ -29,9 +29,9 @@ BIOS you will see</p>
       ...
     &lt;/cpu&gt;
     &lt;power_management&gt;
-      &lt;S3/&gt;
-      &lt;S4/&gt;
-      &lt;Hybrid-Suspend/&gt;
+      &lt;suspend_mem/&gt;
+      &lt;suspend_disk/&gt;
+      &lt;suspend_hybrid/&gt;
     &lt;power_management/&gt;
   &lt;/host&gt;</span>
 

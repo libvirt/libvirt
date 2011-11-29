@@ -37,7 +37,7 @@
 #define VIR_FROM_THIS VIR_FROM_CAPABILITIES
 
 VIR_ENUM_IMPL(virHostPMCapability, VIR_NODE_SUSPEND_TARGET_LAST,
-              "S3", "S4", "Hybrid-Suspend")
+              "suspend_mem", "suspend_disk", "suspend_hybrid");
 
 /**
  * virCapabilitiesNew:

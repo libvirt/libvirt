@@ -112,17 +112,17 @@
     <element name='power_management'>
       <interleave>
         <optional>
-          <element name='S3'>
+          <element name='suspend_mem'>
             <empty/>
           </element>
         </optional>
         <optional>
-          <element name='S4'>
+          <element name='suspend_disk'>
             <empty/>
           </element>
         </optional>
         <optional>
-          <element name='Hybrid-Suspend'>
+          <element name='suspend_hybrid'>
             <empty/>
           </element>
         </optional>
