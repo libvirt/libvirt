@@ -90,8 +90,8 @@ virNetDevBandwidthSet(const char *ifname,
 
         virCommandFree(cmd);
         cmd = virCommandNew(TC);
-            virCommandAddArgList(cmd,"class", "add", "dev", ifname, "parent",
-                                 "1:", "classid", "1:1", "htb", NULL);
+        virCommandAddArgList(cmd,"class", "add", "dev", ifname, "parent",
+                             "1:", "classid", "1:1", "htb", NULL);
         virCommandAddArgList(cmd, "rate", average, NULL);
 
         if (peak)
@@ -104,9 +104,9 @@ virNetDevBandwidthSet(const char *ifname,
 
         virCommandFree(cmd);
         cmd = virCommandNew(TC);
-            virCommandAddArgList(cmd,"filter", "add", "dev", ifname, "parent",
-                                 "1:0", "protocol", "ip", "handle", "1", "fw",
-                                 "flowid", "1", NULL);
+        virCommandAddArgList(cmd,"filter", "add", "dev", ifname, "parent",
+                             "1:0", "protocol", "ip", "handle", "1", "fw",
+                             "flowid", "1", NULL);
 
         if (virCommandRun(cmd, NULL) < 0)
             goto cleanup;
@@ -243,23 +243,23 @@ bool
 virNetDevBandwidthEqual(virNetDevBandwidthPtr a,
                         virNetDevBandwidthPtr b)
 {
-        if (!a && !b)
-            return true;
-
-        if (!a || !b)
-            return false;
-
-        /* in */
-        if (a->in->average != b->in->average ||
-            a->in->peak != b->in->peak ||
-            a->in->burst != b->in->burst)
-            return false;
-
-        /*out*/
-        if (a->out->average != b->out->average ||
-            a->out->peak != b->out->peak ||
-            a->out->burst != b->out->burst)
-            return false;
-
+    if (!a && !b)
         return true;
+
+    if (!a || !b)
+        return false;
+
+    /* in */
+    if (a->in->average != b->in->average ||
+        a->in->peak != b->in->peak ||
+        a->in->burst != b->in->burst)
+        return false;
+
+    /*out*/
+    if (a->out->average != b->out->average ||
+        a->out->peak != b->out->peak ||
+        a->out->burst != b->out->burst)
+        return false;
+
+    return true;
 }
