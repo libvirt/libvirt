@@ -4,7 +4,7 @@
      of applications using libvirt. To use this with virsh, run something
      like:
 
-      virsh -connect test:////path/to/this/dir/testnode.xml nodeinfo
+      virsh -c test://absolute/path/to/this/dir/testnode.xml nodeinfo
 
      -->
   <domain file="testdomfv0.xml"/>
