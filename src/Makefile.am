@@ -98,7 +98,8 @@ UTIL_SOURCES =							\
 		util/virnetdevtap.h util/virnetdevtap.c		\
 		util/virnetdevveth.h util/virnetdevveth.c \
 		util/virnetdevvportprofile.h util/virnetdevvportprofile.c \
-		util/virsocketaddr.h util/virsocketaddr.c
+		util/virsocketaddr.h util/virsocketaddr.c \
+		util/virtime.h util/virtime.c
 
 EXTRA_DIST += $(srcdir)/util/virkeymaps.h $(srcdir)/util/keymaps.csv \
 		$(srcdir)/util/virkeycode-mapgen.py
@@ -562,7 +563,8 @@ libvirt_util_la_SOURCES =					\
 libvirt_util_la_CFLAGS = $(CAPNG_CFLAGS) $(YAJL_CFLAGS) $(LIBNL_CFLAGS) \
 		$(AM_CFLAGS) $(AUDIT_CFLAGS) $(DEVMAPPER_CFLAGS)
 libvirt_util_la_LIBADD = $(CAPNG_LIBS) $(YAJL_LIBS) $(LIBNL_LIBS) \
-		$(THREAD_LIBS) $(AUDIT_LIBS) $(DEVMAPPER_LIBS)
+		$(THREAD_LIBS) $(AUDIT_LIBS) $(DEVMAPPER_LIBS) \
+		$(RT_LIBS)
 
 
 noinst_LTLIBRARIES += libvirt_conf.la
@@ -1501,6 +1503,7 @@ libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(AM_LDFLAGS)
 libvirt_lxc_LDADD = $(CAPNG_LIBS) $(YAJL_LIBS) \
 		$(LIBXML_LIBS) $(NUMACTL_LIBS) $(THREAD_LIBS) \
 		$(LIBNL_LIBS) $(AUDIT_LIBS) $(DEVMAPPER_LIBS) \
+		$(RT_LIBS) \
 		../gnulib/lib/libgnu.la
 if WITH_DTRACE
 libvirt_lxc_LDADD += probes.o

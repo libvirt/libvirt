@@ -1387,6 +1387,17 @@ virKeycodeSetTypeFromString;
 virKeycodeValueFromString;
 virKeycodeValueTranslate;
 
+
+# virtime.h
+virTimeMillisNow;
+virTimeFieldsNow;
+virTimeFieldsThen;
+virTimeStringNow;
+virTimeStringThen;
+virTimeStringNewNow;
+virTimeStringNewThen;
+
+
 # xml.h
 virXMLParseHelper;
 virXMLPropString;

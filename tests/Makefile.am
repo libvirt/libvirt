@@ -96,7 +96,8 @@ check_PROGRAMS = virshtest conftest sockettest \
 	nodeinfotest qparamtest virbuftest \
 	commandtest commandhelper seclabeltest \
 	hashtest virnetmessagetest virnetsockettest ssh \
-	utiltest virnettlscontexttest shunloadtest
+	utiltest virnettlscontexttest shunloadtest \
+	virtimetest
 
 check_LTLIBRARIES = libshunload.la
 
@@ -217,6 +218,7 @@ TESTS = virshtest \
 	virnetmessagetest \
 	virnetsockettest \
 	virnettlscontexttest \
+	virtimetest \
 	shunloadtest \
 	utiltest \
 	$(test_scripts)
@@ -494,6 +496,11 @@ virnettlscontexttest_LDADD += -ltasn1
 else
 EXTRA_DIST += pkix_asn1_tab.c
 endif
+
+virtimetest_SOURCES = \
+	virtimetest.c testutils.h testutils.c
+virtimetest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
+virtimetest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
 
 
 seclabeltest_SOURCES = \
