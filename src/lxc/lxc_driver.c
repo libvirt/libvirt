@@ -2959,13 +2959,6 @@ lxcGetSchedulerParametersFlags(virDomainPtr dom,
 
     lxcDriverLock(driver);
 
-    if ((flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) ==
-        (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) {
-        lxcError(VIR_ERR_INVALID_ARG, "%s",
-                 _("cannot query live and config together"));
-        goto cleanup;
-    }
-
     if (*nparams > 1) {
         rc = lxcGetCpuBWStatus(driver->cgroup);
         if (rc < 0)
