@@ -414,8 +414,10 @@ void qemuDomainReAttachHostdevDevices(struct qemud_driver *driver,
          */
         activeDev = pciDeviceListFind(driver->activePciHostdevs, dev);
         if (activeDev &&
-            STRNEQ_NULLABLE(name, pciDeviceGetUsedBy(activeDev)))
+            STRNEQ_NULLABLE(name, pciDeviceGetUsedBy(activeDev))) {
+            pciDeviceListSteal(pcidevs, dev);
             continue;
+        }
 
         /* pciDeviceListFree() will take care of freeing the dev. */
         pciDeviceListSteal(driver->activePciHostdevs, dev);
