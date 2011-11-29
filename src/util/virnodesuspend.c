@@ -346,23 +346,27 @@ virNodeSuspendGetTargetMask(unsigned int *bitmask)
     /* Check support for Suspend-to-RAM (S3) */
     ret = virNodeSuspendSupportsTarget(VIR_NODE_SUSPEND_TARGET_MEM, &supported);
     if (ret < 0)
-        return -1;
+        goto error;
     if (supported)
         *bitmask |= (1 << VIR_NODE_SUSPEND_TARGET_MEM);
 
     /* Check support for Suspend-to-Disk (S4) */
     ret = virNodeSuspendSupportsTarget(VIR_NODE_SUSPEND_TARGET_DISK, &supported);
     if (ret < 0)
-        return -1;
+        goto error;
     if (supported)
         *bitmask |= (1 << VIR_NODE_SUSPEND_TARGET_DISK);
 
     /* Check support for Hybrid-Suspend */
     ret = virNodeSuspendSupportsTarget(VIR_NODE_SUSPEND_TARGET_HYBRID, &supported);
     if (ret < 0)
-        return -1;
+        goto error;
     if (supported)
         *bitmask |= (1 << VIR_NODE_SUSPEND_TARGET_HYBRID);
 
     return 0;
+
+error:
+    *bitmask = 0;
+    return -1;
 }

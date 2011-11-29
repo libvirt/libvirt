@@ -74,12 +74,9 @@ BIOS you will see</p>
           description). Further, the power management features
           supported by the host are shown, such as Suspend-to-RAM (S3),
           Suspend-to-Disk (S4) and Hybrid-Suspend (a combination of S3
-          and S4). In case the query for power
-          management features succeeded but the host does not support
+          and S4). In case the host does not support
           any such feature, then an empty &lt;power_management/&gt;
-          tag will be shown. Otherwise, if the query itself failed, no
-          such tag will be displayed (i.e., there will not be any
-          power_management block or empty tag in the XML).</p>
+          tag will be shown. </p>
         <p>The second block (in blue) indicates the paravirtualization
           support of the Xen support, you will see the os_type of xen
           to indicate a paravirtual kernel, then architecture

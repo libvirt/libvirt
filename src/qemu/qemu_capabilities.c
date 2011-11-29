@@ -851,11 +851,8 @@ virCapsPtr qemuCapsInit(virCapsPtr old_caps)
 
     /* Add the power management features of the host */
 
-    if (virNodeSuspendGetTargetMask(&caps->host.powerMgmt) < 0) {
+    if (virNodeSuspendGetTargetMask(&caps->host.powerMgmt) < 0)
         VIR_WARN("Failed to get host power management capabilities");
-        caps->host.powerMgmt_valid = false;
-    } else
-        caps->host.powerMgmt_valid = true; /* The PM query succeeded. */
 
     virCapabilitiesAddHostMigrateTransport(caps,
                                            "tcp");

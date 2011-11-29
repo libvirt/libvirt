@@ -696,23 +696,21 @@ virCapabilitiesFormatXML(virCapsPtr caps)
 
     virBufferAddLit(&xml, "    </cpu>\n");
 
-    if (caps->host.powerMgmt_valid) {
-        /* The PM query was successful. */
-        if (caps->host.powerMgmt) {
-            /* The host supports some PM features. */
-            unsigned int pm = caps->host.powerMgmt;
-            virBufferAddLit(&xml, "    <power_management>\n");
-            while (pm) {
-                int bit = ffs(pm) - 1;
-                virBufferAsprintf(&xml, "      <%s/>\n",
-                    virCapsHostPMTargetTypeToString(bit));
-                pm &= ~(1U << bit);
-            }
-            virBufferAddLit(&xml, "    </power_management>\n");
-        } else {
-            /* The host does not support any PM feature. */
-            virBufferAddLit(&xml, "    <power_management/>\n");
+    /* The PM query was successful. */
+    if (caps->host.powerMgmt) {
+        /* The host supports some PM features. */
+        unsigned int pm = caps->host.powerMgmt;
+        virBufferAddLit(&xml, "    <power_management>\n");
+        while (pm) {
+            int bit = ffs(pm) - 1;
+            virBufferAsprintf(&xml, "      <%s/>\n",
+                              virCapsHostPMTargetTypeToString(bit));
+            pm &= ~(1U << bit);
         }
+        virBufferAddLit(&xml, "    </power_management>\n");
+    } else {
+        /* The host does not support any PM feature. */
+        virBufferAddLit(&xml, "    <power_management/>\n");
     }
 
     if (caps->host.offlineMigrate) {
