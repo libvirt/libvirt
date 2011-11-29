@@ -37,6 +37,8 @@
 #include "uuid.h"
 #include "configmake.h"
 #include "lxc_container.h"
+#include "virnodesuspend.h"
+
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -70,6 +72,9 @@ virCapsPtr lxcCapsInit(void)
         virCapabilitiesFreeNUMAInfo(caps);
         VIR_WARN("Failed to query host NUMA topology, disabling NUMA capabilities");
     }
+
+    if (virNodeSuspendGetTargetMask(&caps->host.powerMgmt) < 0)
+        VIR_WARN("Failed to get host power management capabilities");
 
     if (virGetHostUUID(caps->host.host_uuid)) {
         lxcError(VIR_ERR_INTERNAL_ERROR,

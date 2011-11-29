@@ -47,6 +47,8 @@
 #include "virfile.h"
 #include "command.h"
 #include "virnetdevtap.h"
+#include "virnodesuspend.h"
+
 
 #define VIR_FROM_THIS VIR_FROM_UML
 
@@ -80,6 +82,9 @@ virCapsPtr umlCapsInit(void) {
         virCapabilitiesFreeNUMAInfo(caps);
         VIR_WARN("Failed to query host NUMA topology, disabling NUMA capabilities");
     }
+
+    if (virNodeSuspendGetTargetMask(&caps->host.powerMgmt) < 0)
+        VIR_WARN("Failed to get host power management capabilities");
 
     if (virGetHostUUID(caps->host.host_uuid)) {
         umlReportError(VIR_ERR_INTERNAL_ERROR,

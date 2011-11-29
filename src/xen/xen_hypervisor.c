@@ -66,6 +66,7 @@
 #include "capabilities.h"
 #include "memory.h"
 #include "virfile.h"
+#include "virnodesuspend.h"
 
 #define VIR_FROM_THIS VIR_FROM_XEN
 
@@ -2742,6 +2743,9 @@ xenHypervisorMakeCapabilities(virConnectPtr conn)
                                                  utsname.machine,
                                                  cpuinfo,
                                                  capabilities);
+
+    if (virNodeSuspendGetTargetMask(&caps->host.powerMgmt) < 0)
+        VIR_WARN("Failed to get host power management capabilities");
 
     VIR_FORCE_FCLOSE(cpuinfo);
     VIR_FORCE_FCLOSE(capabilities);

@@ -7,6 +7,7 @@
         <vmx/>
       </features>
     </cpu>
+    <power_management/>
     <migration_features>
       <live/>
       <uri_transports>

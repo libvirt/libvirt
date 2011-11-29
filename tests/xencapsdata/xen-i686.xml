@@ -4,6 +4,7 @@
     <cpu>
       <arch>i686</arch>
     </cpu>
+    <power_management/>
     <migration_features>
       <live/>
       <uri_transports>
