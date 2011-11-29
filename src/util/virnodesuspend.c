@@ -127,9 +127,7 @@ cleanup:
  */
 static void virNodeSuspend(void *cmdString)
 {
-    virCommandPtr suspendCmd = virCommandNew((char *)cmdString);
-
-    VIR_FREE(cmdString);
+    virCommandPtr suspendCmd = virCommandNew((const char *)cmdString);
 
     /*
      * Delay for sometime so that the function nodeSuspendForDuration()
@@ -183,7 +181,7 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
                            unsigned int flags)
 {
     static virThread thread;
-    char *cmdString = NULL;
+    const char *cmdString = NULL;
     int ret = -1;
     unsigned int supported;
 
@@ -209,40 +207,28 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
     /* Check if the host supports the requested suspend target */
     switch (target) {
     case VIR_NODE_SUSPEND_TARGET_MEM:
-        if (supported & (1 << VIR_NODE_SUSPEND_TARGET_MEM)) {
-            cmdString = strdup("pm-suspend");
-            if (cmdString == NULL) {
-                virReportOOMError();
-                goto cleanup;
-            }
-            break;
+        if (!(supported & (1 << VIR_NODE_SUSPEND_TARGET_MEM))) {
+            virNodeSuspendError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s", _("Suspend-to-RAM"));
+            goto cleanup;
         }
-        virNodeSuspendError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s", _("Suspend-to-RAM"));
-        goto cleanup;
+        cmdString = "pm-suspend";
+        break;
 
     case VIR_NODE_SUSPEND_TARGET_DISK:
-        if (supported & (1 << VIR_NODE_SUSPEND_TARGET_DISK)) {
-            cmdString = strdup("pm-hibernate");
-            if (cmdString == NULL) {
-                virReportOOMError();
-                goto cleanup;
-            }
-            break;
+        if (!(supported & (1 << VIR_NODE_SUSPEND_TARGET_DISK))) {
+            virNodeSuspendError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s", _("Suspend-to-Disk"));
+            goto cleanup;
         }
-        virNodeSuspendError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s", _("Suspend-to-Disk"));
-        goto cleanup;
+        cmdString = "pm-hibernate";
+        break;
 
     case VIR_NODE_SUSPEND_TARGET_HYBRID:
-        if (supported & (1 << VIR_NODE_SUSPEND_TARGET_HYBRID)) {
-            cmdString = strdup("pm-suspend-hybrid");
-            if (cmdString == NULL) {
-                virReportOOMError();
-                goto cleanup;
-            }
-            break;
+        if (!(supported & (1 << VIR_NODE_SUSPEND_TARGET_HYBRID))) {
+            virNodeSuspendError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s", _("Hybrid-Suspend"));
+            goto cleanup;
         }
-        virNodeSuspendError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s", _("Hybrid-Suspend"));
-        goto cleanup;
+        cmdString = "pm-suspend-hybrid";
+        break;
 
     default:
         virNodeSuspendError(VIR_ERR_INVALID_ARG, "%s", _("Invalid suspend target"));
@@ -262,7 +248,6 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
     ret = 0;
 cleanup:
     virNodeSuspendUnlock();
-    VIR_FREE(cmdString);
     return ret;
 }
 
