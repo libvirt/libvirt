@@ -150,6 +150,16 @@ LIBS="$LIBS $LIB_PTHREAD"
 AC_CHECK_FUNCS([pthread_mutexattr_init])
 LIBS=$old_libs
 
+old_LIBS=$LIBS
+RT_LIBS=
+LIBS="$LIBS $LIB_PTHREAD -lrt"
+AC_CHECK_FUNC([clock_gettime],[
+     AC_DEFINE([HAVE_CLOCK_GETTIME],[],[Defined if clock_gettime() exists in librt.so])
+     RT_LIBS=-lrt
+])
+LIBS=$old_libs
+AC_SUBST(RT_LIBS)
+
 dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([pwd.h paths.h regex.h sys/un.h \
   sys/poll.h syslog.h mntent.h net/ethernet.h linux/magic.h \

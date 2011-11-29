@@ -88,7 +88,8 @@ UTIL_SOURCES =							\
 		util/xml.c util/xml.h				\
 		util/virterror.c util/virterror_internal.h	\
 		util/virkeycode.c util/virkeycode.h		\
-		util/virkeymaps.h
+		util/virkeymaps.h				\
+		util/virtime.h util/virtime.c
 
 EXTRA_DIST += $(srcdir)/util/virkeymaps.h $(srcdir)/util/keymaps.csv \
 		$(srcdir)/util/virkeycode-mapgen.py
@@ -539,7 +540,8 @@ libvirt_util_la_SOURCES =					\
 libvirt_util_la_CFLAGS = $(CAPNG_CFLAGS) $(YAJL_CFLAGS) $(LIBNL_CFLAGS) \
 		$(AM_CFLAGS) $(AUDIT_CFLAGS) $(DEVMAPPER_CFLAGS)
 libvirt_util_la_LIBADD = $(CAPNG_LIBS) $(YAJL_LIBS) $(LIBNL_LIBS) \
-		$(LIB_PTHREAD) $(AUDIT_LIBS) $(DEVMAPPER_LIBS)
+		$(LIB_PTHREAD) $(AUDIT_LIBS) $(DEVMAPPER_LIBS) \
+		$(RT_LIBS)
 
 
 noinst_LTLIBRARIES += libvirt_conf.la
@@ -1428,6 +1430,7 @@ libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(AM_LDFLAGS)
 libvirt_lxc_LDADD = $(CAPNG_LIBS) $(YAJL_LIBS) \
 		$(LIBXML_LIBS) $(NUMACTL_LIBS) $(LIB_PTHREAD) \
 		$(LIBNL_LIBS) $(AUDIT_LIBS) $(DEVMAPPER_LIBS) \
+		$(RT_LIBS) \
 		../gnulib/lib/libgnu.la
 libvirt_lxc_CFLAGS =				\
 		$(LIBPARTED_CFLAGS)		\
