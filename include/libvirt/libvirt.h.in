@@ -257,9 +257,12 @@ typedef enum {
  * transitioned to.
  */
 typedef enum {
-    VIR_NODE_SUSPEND_TARGET_MEM     = (1 << 0),
-    VIR_NODE_SUSPEND_TARGET_DISK    = (1 << 1),
-    VIR_NODE_SUSPEND_TARGET_HYBRID  = (1 << 2),
+    VIR_NODE_SUSPEND_TARGET_MEM     = 0,
+    VIR_NODE_SUSPEND_TARGET_DISK    = 1,
+    VIR_NODE_SUSPEND_TARGET_HYBRID  = 2,
+
+    /* This constant is subject to change */
+    VIR_NODE_SUSPEND_TARGET_LAST,
 } virNodeSuspendTarget;
 
 /**

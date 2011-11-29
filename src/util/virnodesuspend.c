@@ -213,7 +213,7 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
     /* Check if the host supports the requested suspend target */
     switch (target) {
     case VIR_NODE_SUSPEND_TARGET_MEM:
-        if (hostPMFeatures & VIR_NODE_SUSPEND_TARGET_MEM) {
+        if (hostPMFeatures & (1 << VIR_NODE_SUSPEND_TARGET_MEM)) {
             cmdString = strdup("pm-suspend");
             if (cmdString == NULL) {
                 virReportOOMError();
@@ -225,7 +225,7 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
 
     case VIR_NODE_SUSPEND_TARGET_DISK:
-        if (hostPMFeatures & VIR_NODE_SUSPEND_TARGET_DISK) {
+        if (hostPMFeatures & (1 << VIR_NODE_SUSPEND_TARGET_DISK)) {
             cmdString = strdup("pm-hibernate");
             if (cmdString == NULL) {
                 virReportOOMError();
@@ -237,7 +237,7 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
 
     case VIR_NODE_SUSPEND_TARGET_HYBRID:
-        if (hostPMFeatures & VIR_NODE_SUSPEND_TARGET_HYBRID) {
+        if (hostPMFeatures & (1 << VIR_NODE_SUSPEND_TARGET_HYBRID)) {
             cmdString = strdup("pm-suspend-hybrid");
             if (cmdString == NULL) {
                 virReportOOMError();
