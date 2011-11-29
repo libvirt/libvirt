@@ -1960,6 +1960,7 @@ int qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int i, ret;
     pciDevice *pci;
+    pciDevice *activePci;
 
     for (i = 0 ; i < vm->def->nhostdevs ; i++) {
         if (vm->def->hostdevs[i]->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
@@ -2019,16 +2020,16 @@ int qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
                        detach->source.subsys.u.pci.bus,
                        detach->source.subsys.u.pci.slot,
                        detach->source.subsys.u.pci.function);
-    if (!pci)
-        ret = -1;
-    else {
-        pciDeviceSetManaged(pci, detach->managed);
-        pciDeviceListDel(driver->activePciHostdevs, pci);
-        if (pciResetDevice(pci, driver->activePciHostdevs, NULL) < 0)
+    if (pci) {
+        activePci = pciDeviceListSteal(driver->activePciHostdevs, pci);
+        if (pciResetDevice(activePci, driver->activePciHostdevs, NULL))
+            qemuReattachPciDevice(activePci, driver);
+        else
             ret = -1;
-        pciDeviceReAttachInit(pci);
-        qemuReattachPciDevice(pci, driver);
         pciFreeDevice(pci);
+        pciFreeDevice(activePci);
+    } else {
+        ret = -1;
     }
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
