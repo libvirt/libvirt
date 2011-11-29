@@ -56,6 +56,7 @@
 #include "domain_nwfilter.h"
 #include "network/bridge_driver.h"
 #include "virnetdev.h"
+#include "virnodesuspend.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -3922,6 +3923,7 @@ static virDriver lxcDriver = {
     .domainEventDeregisterAny = lxcDomainEventDeregisterAny, /* 0.8.0 */
     .domainOpenConsole = lxcDomainOpenConsole, /* 0.8.6 */
     .isAlive = lxcIsAlive, /* 0.9.8 */
+    .nodeSuspendForDuration = nodeSuspendForDuration, /* 0.9.8 */
 };
 
 static virStateDriver lxcStateDriver = {

@@ -130,6 +130,7 @@ src/util/virnetdevbridge.c
 src/util/virnetdevmacvlan.c
 src/util/virnetdevtap.c
 src/util/virnetdevvportprofile.c
+src/util/virnodesuspend.c
 src/util/virpidfile.c
 src/util/virsocketaddr.c
 src/util/virterror.c

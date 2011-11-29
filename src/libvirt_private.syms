@@ -1329,6 +1329,11 @@ virNetTLSContextNewServer;
 virNetTLSContextNewServerPath;
 
 
+# virnodesuspend.h
+nodeSuspendForDuration;
+virNodeSuspendInit;
+
+
 # virpidfile.h
 virPidFileAcquire;
 virPidFileAcquirePath;

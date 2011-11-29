@@ -88,6 +88,7 @@
 #include "locking/lock_manager.h"
 #include "locking/domain_lock.h"
 #include "virkeycode.h"
+#include "virnodesuspend.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -10913,6 +10914,7 @@ static virDriver qemuDriver = {
     .domainBlockJobSetSpeed = qemuDomainBlockJobSetSpeed, /* 0.9.4 */
     .domainBlockPull = qemuDomainBlockPull, /* 0.9.4 */
     .isAlive = qemuIsAlive, /* 0.9.8 */
+    .nodeSuspendForDuration = nodeSuspendForDuration, /* 0.9.8 */
 };
 
 

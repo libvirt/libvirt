@@ -85,6 +85,7 @@ UTIL_SOURCES =							\
 		util/util.c util/util.h				\
 		util/viraudit.c util/viraudit.h			\
 		util/virfile.c util/virfile.h			\
+		util/virnodesuspend.c util/virnodesuspend.h	\
 		util/virpidfile.c util/virpidfile.h		\
 		util/xml.c util/xml.h				\
 		util/virterror.c util/virterror_internal.h	\

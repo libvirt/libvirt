@@ -62,6 +62,7 @@
 #include "fdstream.h"
 #include "configmake.h"
 #include "virnetdevtap.h"
+#include "virnodesuspend.h"
 
 #define VIR_FROM_THIS VIR_FROM_UML
 
@@ -2604,6 +2605,7 @@ static virDriver umlDriver = {
     .domainEventDeregisterAny = umlDomainEventDeregisterAny, /* 0.9.4 */
     .domainOpenConsole = umlDomainOpenConsole, /* 0.8.6 */
     .isAlive = umlIsAlive, /* 0.9.8 */
+    .nodeSuspendForDuration = nodeSuspendForDuration, /* 0.9.8 */
 };
 
 static int

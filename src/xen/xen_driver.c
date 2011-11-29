@@ -51,6 +51,7 @@
 #include "fdstream.h"
 #include "virfile.h"
 #include "command.h"
+#include "virnodesuspend.h"
 
 #define VIR_FROM_THIS VIR_FROM_XEN
 
@@ -2257,6 +2258,7 @@ static virDriver xenUnifiedDriver = {
     .domainEventDeregisterAny = xenUnifiedDomainEventDeregisterAny, /* 0.8.0 */
     .domainOpenConsole = xenUnifiedDomainOpenConsole, /* 0.8.6 */
     .isAlive = xenUnifiedIsAlive, /* 0.9.8 */
+    .nodeSuspendForDuration = nodeSuspendForDuration, /* 0.9.8 */
 };
 
 /**

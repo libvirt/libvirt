@@ -43,6 +43,7 @@
 #include "conf.h"
 #include "rpc/virnettlscontext.h"
 #include "command.h"
+#include "virnodesuspend.h"
 
 #ifndef WITH_DRIVER_MODULES
 # ifdef WITH_TEST
@@ -399,7 +400,8 @@ virInitialize(void)
 
     if (virThreadInitialize() < 0 ||
         virErrorInitialize() < 0 ||
-        virRandomInitialize(time(NULL) ^ getpid()))
+        virRandomInitialize(time(NULL) ^ getpid()) ||
+        virNodeSuspendInit() < 0)
         return -1;
 
     gcry_control(GCRYCTL_SET_THREAD_CBS, &virTLSThreadImpl);
