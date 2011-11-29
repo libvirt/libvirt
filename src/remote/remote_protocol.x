@@ -2269,6 +2269,13 @@ struct remote_domain_open_graphics_args {
     unsigned int flags;
 };
 
+struct remote_node_suspend_for_duration_args {
+    unsigned int target;
+    unsigned hyper duration;
+    unsigned int flags;
+};
+
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -2564,7 +2571,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_SNAPSHOT_NUM_CHILDREN = 246, /* autogen autogen priority:high */
     REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_CHILDREN_NAMES = 247, /* autogen autogen priority:high */
     REMOTE_PROC_DOMAIN_EVENT_DISK_CHANGE = 248, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_OPEN_GRAPHICS = 249 /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_OPEN_GRAPHICS = 249, /* skipgen skipgen */
+    REMOTE_PROC_NODE_SUSPEND_FOR_DURATION = 250 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
