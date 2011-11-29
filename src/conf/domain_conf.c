@@ -6969,10 +6969,20 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto no_memory;
 
     for (i = 0; i < n; i++) {
+        int j;
         if (virDomainBlkioDeviceWeightParseXML(nodes[i],
                                                &def->blkio.devices[i]) < 0)
             goto error;
         def->blkio.ndevices++;
+        for (j = 0; j < i; j++) {
+            if (STREQ(def->blkio.devices[j].path,
+                      def->blkio.devices[i].path)) {
+                virDomainReportError(VIR_ERR_XML_ERROR,
+                                     _("duplicate device weight path '%s'"),
+                                     def->blkio.devices[i].path);
+                goto error;
+            }
+        }
     }
     VIR_FREE(nodes);
 
