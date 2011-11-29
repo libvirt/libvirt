@@ -5890,8 +5890,8 @@ cleanup:
  * for example, /dev/disk/by-path/pci-0000:00:1f.2-scsi-0:0:0:0,800
  */
 static int
-parseBlkioWeightDeviceStr(char *deviceWeightStr,
-                          virBlkioDeviceWeightPtr *dw, int *size)
+qemuDomainParseDeviceWeightStr(char *deviceWeightStr,
+                               virBlkioDeviceWeightPtr *dw, size_t *size)
 {
     char *temp;
     int ndevices = 0;
@@ -5966,6 +5966,41 @@ cleanup:
     virBlkioDeviceWeightArrayClear(result, ndevices);
     VIR_FREE(result);
     return -1;
+}
+
+/* Modify def to reflect all device weight changes described in tmp.  */
+static int
+qemuDomainMergeDeviceWeights(virBlkioDeviceWeightPtr *def, size_t *def_size,
+                             virBlkioDeviceWeightPtr tmp, size_t tmp_size)
+{
+    int i, j;
+    virBlkioDeviceWeightPtr dw;
+
+    for (i = 0; i < tmp_size; i++) {
+        bool found = false;
+
+        dw = &tmp[i];
+        for (j = 0; j < *def_size; j++) {
+            if (STREQ(dw->path, (*def)[j].path)) {
+                found = true;
+                (*def)[j].weight = dw->weight;
+                break;
+            }
+        }
+        if (!found) {
+            if (!dw->weight)
+                continue;
+            if (VIR_EXPAND_N(*def, *def_size, 1) < 0) {
+                virReportOOMError();
+                return -1;
+            }
+            (*def)[*def_size - 1].path = dw->path;
+            (*def)[*def_size - 1].weight = dw->weight;
+            dw->path = NULL;
+        }
+    }
+
+    return 0;
 }
 
 static int qemuDomainSetBlkioParameters(virDomainPtr dom,
@@ -6059,7 +6094,7 @@ static int qemuDomainSetBlkioParameters(virDomainPtr dom,
                     ret = -1;
                 }
             } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT)) {
-                int ndevices;
+                size_t ndevices;
                 virBlkioDeviceWeightPtr devices = NULL;
                 if (param->type != VIR_TYPED_PARAM_STRING) {
                     qemuReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -6069,9 +6104,9 @@ static int qemuDomainSetBlkioParameters(virDomainPtr dom,
                     continue;
                 }
 
-                if (parseBlkioWeightDeviceStr(params[i].value.s,
-                                              &devices,
-                                              &ndevices) < 0) {
+                if (qemuDomainParseDeviceWeightStr(params[i].value.s,
+                                                   &devices,
+                                                   &ndevices) < 0) {
                     ret = -1;
                     continue;
                 }
@@ -6091,14 +6126,16 @@ static int qemuDomainSetBlkioParameters(virDomainPtr dom,
                     ret = -1;
                     continue;
                 }
-                virBlkioDeviceWeightArrayClear(vm->def->blkio.devices,
-                                               vm->def->blkio.ndevices);
-                VIR_FREE(vm->def->blkio.devices);
-                vm->def->blkio.devices = devices;
-                vm->def->blkio.ndevices = ndevices;
+                if (qemuDomainMergeDeviceWeights(&vm->def->blkio.devices,
+                                                 &vm->def->blkio.ndevices,
+                                                 devices, ndevices) < 0)
+                    ret = -1;
+                virBlkioDeviceWeightArrayClear(devices, ndevices);
+                VIR_FREE(devices);
             } else {
                 qemuReportError(VIR_ERR_INVALID_ARG,
-                                _("Parameter `%s' not supported"), param->field);
+                                _("Parameter `%s' not supported"),
+                                param->field);
                 ret = -1;
             }
         }
@@ -6130,7 +6167,7 @@ static int qemuDomainSetBlkioParameters(virDomainPtr dom,
                 persistentDef->blkio.weight = params[i].value.ui;
             } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT)) {
                 virBlkioDeviceWeightPtr devices = NULL;
-                int ndevices;
+                size_t ndevices;
                 if (param->type != VIR_TYPED_PARAM_STRING) {
                     qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                                     _("invalid type for device_weight tunable, "
@@ -6138,17 +6175,18 @@ static int qemuDomainSetBlkioParameters(virDomainPtr dom,
                     ret = -1;
                     continue;
                 }
-                if (parseBlkioWeightDeviceStr(params[i].value.s,
-                                              &devices,
-                                              &ndevices) < 0) {
+                if (qemuDomainParseDeviceWeightStr(params[i].value.s,
+                                                   &devices,
+                                                   &ndevices) < 0) {
                     ret = -1;
                     continue;
                 }
-                virBlkioDeviceWeightArrayClear(persistentDef->blkio.devices,
-                                               persistentDef->blkio.ndevices);
-                VIR_FREE(persistentDef->blkio.devices);
-                persistentDef->blkio.devices = devices;
-                persistentDef->blkio.ndevices = ndevices;
+                if (qemuDomainMergeDeviceWeights(&vm->def->blkio.devices,
+                                                 &vm->def->blkio.ndevices,
+                                                 devices, ndevices) < 0)
+                    ret = -1;
+                virBlkioDeviceWeightArrayClear(devices, ndevices);
+                VIR_FREE(devices);
             } else {
                 qemuReportError(VIR_ERR_INVALID_ARG,
                                 _("Parameter `%s' not supported"),
