@@ -377,7 +377,12 @@ typedef int
                      unsigned long long offset, size_t size,
                      void *buffer,
                      unsigned int flags);
-
+typedef int
+    (*virDrvDomainBlockResize)
+                    (virDomainPtr domain,
+                     const char *path,
+                     unsigned long long size,
+                     unsigned int flags);
 typedef int
     (*virDrvDomainMemoryPeek)
                     (virDomainPtr domain,
@@ -846,6 +851,7 @@ struct _virDriver {
     virDrvDomainMigratePrepare	domainMigratePrepare;
     virDrvDomainMigratePerform	domainMigratePerform;
     virDrvDomainMigrateFinish	domainMigrateFinish;
+    virDrvDomainBlockResize     domainBlockResize;
     virDrvDomainBlockStats      domainBlockStats;
     virDrvDomainBlockStatsFlags domainBlockStatsFlags;
     virDrvDomainInterfaceStats  domainInterfaceStats;

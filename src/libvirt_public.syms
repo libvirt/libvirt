@@ -503,6 +503,7 @@ LIBVIRT_0.9.8 {
         virConnectIsAlive;
         virConnectSetKeepAlive;
         virNodeSuspendForDuration;
+        virDomainBlockResize;
 } LIBVIRT_0.9.7;
 
 # .... define new API here using predicted next version number ....

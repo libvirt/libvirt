@@ -1400,7 +1400,10 @@ int                     virDomainBlockPeek (virDomainPtr dom,
                                             size_t size,
                                             void *buffer,
                                             unsigned int flags);
-
+int                     virDomainBlockResize (virDomainPtr dom,
+                                              const char *disk,
+                                              unsigned long long size,
+                                              unsigned int flags);
 
 /** virDomainBlockInfo:
  *

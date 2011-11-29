@@ -7091,6 +7091,74 @@ error:
 }
 
 /**
+ * virDomainBlockResize:
+ * @dom: pointer to the domain object
+ * @disk: path to the block image, or shorthand
+ * @size: new size of the block image in kilobytes
+ * @flags: unused, always pass 0
+ *
+ * Note that this call may fail if the underlying virtualization hypervisor
+ * does not support it. And this call requires privileged access to the
+ * hypervisor.
+ *
+ * The @disk parameter is either an unambiguous source name of the
+ * block device (the <source file='...'/> sub-element, such as
+ * "/path/to/image"), or (since 0.9.5) the device target shorthand
+ * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
+ * can be found by calling virDomainGetXMLDesc() and inspecting
+ * elements within //domain/devices/disk.
+ *
+ * Resize a block device of domain while the domain is running.
+ *
+ * Returns: 0 in case of success or -1 in case of failure.
+ */
+
+int
+virDomainBlockResize (virDomainPtr dom,
+                      const char *disk,
+                      unsigned long long size,
+                      unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "disk=%s, size=%llu, flags=%x", disk, size, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    conn = dom->conn;
+
+    if (dom->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (!disk) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                           _("disk is NULL"));
+        goto error;
+    }
+
+    if (conn->driver->domainBlockResize) {
+        int ret;
+        ret =conn->driver->domainBlockResize(dom, disk, size, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
+/**
  * virDomainMemoryPeek:
  * @dom: pointer to the domain object
  * @start: start of memory to peek
