@@ -1334,6 +1334,7 @@ virNetTLSContextNewServerPath;
 # virnodesuspend.h
 nodeSuspendForDuration;
 virNodeSuspendInit;
+virNodeSuspendGetTargetMask;
 
 
 # virpidfile.h
