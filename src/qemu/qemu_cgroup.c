@@ -317,6 +317,8 @@ int qemuSetupCgroup(struct qemud_driver *driver,
         if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
             for (i = 0; i < vm->def->blkio.ndevices; i++) {
                 virBlkioDeviceWeightPtr dw = &vm->def->blkio.devices[i];
+                if (!dw->weight)
+                    continue;
                 rc = virCgroupSetBlkioDeviceWeight(cgroup, dw->path,
                                                    dw->weight);
                 if (rc != 0) {

@@ -6312,6 +6312,7 @@ static int qemuDomainGetBlkioParameters(virDomainPtr dom,
                 if (vm->def->blkio.ndevices > 0) {
                     virBuffer buf = VIR_BUFFER_INITIALIZER;
                     bool comma = false;
+
                     for (j = 0; j < vm->def->blkio.ndevices; j++) {
                         if (!vm->def->blkio.devices[j].weight)
                             continue;
@@ -6372,9 +6373,15 @@ static int qemuDomainGetBlkioParameters(virDomainPtr dom,
             case 1: /* blkiotune.device_weight */
                 if (persistentDef->blkio.ndevices > 0) {
                     virBuffer buf = VIR_BUFFER_INITIALIZER;
+                    bool comma = false;
+
                     for (j = 0; j < persistentDef->blkio.ndevices; j++) {
-                        if (j)
+                        if (!persistentDef->blkio.devices[j].weight)
+                            continue;
+                        if (comma)
                             virBufferAddChar(&buf, ',');
+                        else
+                            comma = true;
                         virBufferAsprintf(&buf, "%s,%u",
                                           persistentDef->blkio.devices[j].path,
                                           persistentDef->blkio.devices[j].weight);
@@ -6384,7 +6391,8 @@ static int qemuDomainGetBlkioParameters(virDomainPtr dom,
                         goto cleanup;
                     }
                     param->value.s = virBufferContentAndReset(&buf);
-                } else {
+                }
+                if (!param->value.s) {
                     param->value.s = strdup("");
                     if (!param->value.s) {
                         virReportOOMError();
