@@ -333,7 +333,7 @@ qcowXGetBackingStore(char **res,
      * between the end of the header (QCOW2_HDR_TOTAL_SIZE)
      * and the start of the backingStoreName (offset)
      */
-    if (isQCow2)
+    if (isQCow2 && format)
         qcow2GetBackingStoreFormat(format, buf, buf_size, QCOW2_HDR_TOTAL_SIZE, offset);
 
     return BACKING_STORE_OK;
