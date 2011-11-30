@@ -431,19 +431,13 @@ cleanup:
 
 
 static void
-qemuProcessShutdownOrReboot(virDomainObjPtr vm)
+qemuProcessShutdownOrReboot(struct qemud_driver *driver,
+                            virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (priv->gotShutdown) {
-        VIR_DEBUG("Ignoring repeated SHUTDOWN event from domain %s",
-                  vm->def->name);
-        return;
-    }
-
-    priv->gotShutdown = true;
     if (priv->fakeReboot) {
-        qemuDomainSetFakeReboot(qemu_driver, vm, false);
+        qemuDomainSetFakeReboot(driver, vm, false);
         virDomainObjRef(vm);
         virThread th;
         if (virThreadCreate(&th,
@@ -464,11 +458,47 @@ static int
 qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                           virDomainObjPtr vm)
 {
+    struct qemud_driver *driver = qemu_driver;
+    qemuDomainObjPrivatePtr priv;
+    virDomainEventPtr event = NULL;
+
     VIR_DEBUG("vm=%p", vm);
 
     virDomainObjLock(vm);
-    qemuProcessShutdownOrReboot(vm);
+
+    priv = vm->privateData;
+    if (priv->gotShutdown) {
+        VIR_DEBUG("Ignoring repeated SHUTDOWN event from domain %s",
+                  vm->def->name);
+        goto unlock;
+    }
+    priv->gotShutdown = true;
+
+    VIR_DEBUG("Transitioned guest %s to shutdown state",
+              vm->def->name);
+    virDomainObjSetState(vm,
+                         VIR_DOMAIN_SHUTDOWN,
+                         VIR_DOMAIN_SHUTDOWN_UNKNOWN);
+    event = virDomainEventNewFromObj(vm,
+                                     VIR_DOMAIN_EVENT_SHUTDOWN,
+                                     VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED);
+
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
+        VIR_WARN("Unable to save status on vm %s after state change",
+                 vm->def->name);
+    }
+
+    qemuProcessShutdownOrReboot(driver, vm);
+
+unlock:
     virDomainObjUnlock(vm);
+
+    if (event) {
+        qemuDriverLock(driver);
+        qemuDomainEventQueue(driver, event);
+        qemuDriverUnlock(driver);
+    }
+
     return 0;
 }
 
@@ -479,22 +509,20 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 {
     struct qemud_driver *driver = qemu_driver;
     virDomainEventPtr event = NULL;
-    virDomainPausedReason reason = VIR_DOMAIN_PAUSED_UNKNOWN;
 
     virDomainObjLock(vm);
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
 
         if (priv->gotShutdown) {
-            VIR_DEBUG("Got STOP event after SHUTDOWN, assuming we are stopping"
-                      " for shutdown");
-            reason = VIR_DOMAIN_PAUSED_SHUTTING_DOWN;
+            VIR_DEBUG("Ignoring STOP event after SHUTDOWN");
+            goto unlock;
         }
 
-        VIR_DEBUG("Transitioned guest %s to paused state, reason=%s",
-                  vm->def->name, virDomainPausedReasonTypeToString(reason));
+        VIR_DEBUG("Transitioned guest %s to paused state",
+                  vm->def->name);
 
-        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, reason);
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_UNKNOWN);
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
@@ -509,12 +537,13 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                      vm->def->name);
         }
     }
+
+unlock:
     virDomainObjUnlock(vm);
 
     if (event) {
         qemuDriverLock(driver);
-        if (event)
-            qemuDomainEventQueue(driver, event);
+        qemuDomainEventQueue(driver, event);
         qemuDriverUnlock(driver);
     }
 
@@ -2338,7 +2367,10 @@ qemuProcessUpdateState(struct qemud_driver *driver, virDomainObjPtr vm)
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainState state;
     virDomainPausedReason reason;
+    virDomainState newState = VIR_DOMAIN_NOSTATE;
+    int newReason;
     bool running;
+    char *msg = NULL;
     int ret;
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
@@ -2351,19 +2383,40 @@ qemuProcessUpdateState(struct qemud_driver *driver, virDomainObjPtr vm)
     state = virDomainObjGetState(vm, NULL);
 
     if (state == VIR_DOMAIN_PAUSED && running) {
-        VIR_DEBUG("Domain %s was unpaused while its monitor was disconnected;"
-                  " changing state to running", vm->def->name);
-        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
-                             VIR_DOMAIN_RUNNING_UNPAUSED);
+        newState = VIR_DOMAIN_RUNNING;
+        newReason = VIR_DOMAIN_RUNNING_UNPAUSED;
+        msg = strdup("was unpaused");
     } else if (state == VIR_DOMAIN_RUNNING && !running) {
-        VIR_DEBUG("Domain %s was paused (%s) while its monitor was"
-                  " disconnected; changing state to paused",
-                  vm->def->name, virDomainPausedReasonTypeToString(reason));
-        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, reason);
+        if (reason == VIR_DOMAIN_PAUSED_SHUTTING_DOWN) {
+            newState = VIR_DOMAIN_SHUTDOWN;
+            newReason = VIR_DOMAIN_SHUTDOWN_UNKNOWN;
+            msg = strdup("shutdown");
+        } else {
+            newState = VIR_DOMAIN_PAUSED;
+            newReason = reason;
+            virAsprintf(&msg, "was paused (%s)",
+                        virDomainPausedReasonTypeToString(reason));
+        }
     } else if (state == VIR_DOMAIN_SHUTOFF && running) {
-        VIR_DEBUG("Domain %s finished booting; changing state to running",
-                  vm->def->name);
-        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_BOOTED);
+        newState = VIR_DOMAIN_RUNNING;
+        newReason = VIR_DOMAIN_RUNNING_BOOTED;
+        msg = strdup("finished booting");
+    }
+
+    if (newState != VIR_DOMAIN_NOSTATE) {
+        if (!msg) {
+            virReportOOMError();
+            return -1;
+        }
+
+        VIR_DEBUG("Domain %s %s while its monitor was disconnected;"
+                  " changing state to %s (%s)",
+                  vm->def->name,
+                  msg,
+                  virDomainStateTypeToString(newState),
+                  virDomainStateReasonToString(newState, newReason));
+        VIR_FREE(msg);
+        virDomainObjSetState(vm, newState, newReason);
     }
 
     return 0;
@@ -2637,15 +2690,16 @@ qemuProcessReconnect(void *opaque)
                                    &priv->qemuCaps) < 0)
         goto error;
 
-    /* In case the domain was paused for shutdown while we were not running,
+    /* In case the domain shutdown while we were not running,
      * we need to finish the shutdown process. And we need to do it after
      * we have qemuCaps filled in.
      */
-    if (state == VIR_DOMAIN_PAUSED
-        && reason == VIR_DOMAIN_PAUSED_SHUTTING_DOWN) {
-        VIR_DEBUG("Domain %s shut down while we were not running;"
-                  " finishing shutdown sequence", obj->def->name);
-        qemuProcessShutdownOrReboot(obj);
+    if (state == VIR_DOMAIN_SHUTDOWN ||
+        (state == VIR_DOMAIN_PAUSED &&
+         reason == VIR_DOMAIN_PAUSED_SHUTTING_DOWN)) {
+        VIR_DEBUG("Finishing shutdown sequence for domain %s",
+                  obj->def->name);
+        qemuProcessShutdownOrReboot(driver, obj);
         goto endjob;
     }
 

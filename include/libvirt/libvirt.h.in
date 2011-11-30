@@ -2292,6 +2292,7 @@ typedef enum {
       VIR_DOMAIN_EVENT_SUSPENDED = 3,
       VIR_DOMAIN_EVENT_RESUMED = 4,
       VIR_DOMAIN_EVENT_STOPPED = 5,
+      VIR_DOMAIN_EVENT_SHUTDOWN = 6,
 } virDomainEventType;
 
 /**
@@ -2365,6 +2366,15 @@ typedef enum {
     VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT = 6, /* offline snapshot loaded */
 } virDomainEventStoppedDetailType;
 
+
+/**
+ * virDomainEventShutdownDetailType:
+ *
+ * Details about the 'shutdown' lifecycle event
+ */
+typedef enum {
+    VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED = 0, /* Guest finished shutdown sequence */
+} virDomainEventShutdownDetailType;
 
 /**
  * virConnectDomainEventCallback:
