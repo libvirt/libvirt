@@ -582,7 +582,10 @@ create_name:
         virNetDevError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot set bandwidth limits on %s"),
                        cr_ifname);
-        rc = -1;
+        if (withTap)
+            VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
+        else
+            rc = -1;
         goto disassociate_exit;
     }
 
