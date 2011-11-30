@@ -251,6 +251,7 @@ typedef struct __vshControl {
     bool useSnapshotOld;        /* cannot use virDomainSnapshotGetParent or
                                    virDomainSnapshotNumChildren */
     virThread eventLoop;
+    virMutex lock;
     bool eventLoopStarted;
     bool quit;
 } __vshControl;
@@ -17040,10 +17041,17 @@ vshEventLoop(void *opaque)
 {
     vshControl *ctl = opaque;
 
-    while (!ctl->quit) {
-        if (virEventRunDefaultImpl() < 0) {
+    while (1) {
+        bool quit;
+        virMutexLock(&ctl->lock);
+        quit = ctl->quit;
+        virMutexUnlock(&ctl->lock);
+
+        if (quit)
+            break;
+
+        if (virEventRunDefaultImpl() < 0)
             virshReportError(ctl);
-        }
     }
 }
 
@@ -17479,13 +17487,18 @@ vshReadline (vshControl *ctl, const char *prompt)
 
 #endif /* !USE_READLINE */
 
+static void
+vshDeinitTimer(int timer ATTRIBUTE_UNUSED, void *opaque ATTRIBUTE_UNUSED)
+{
+    /* nothing to be done here */
+}
+
 /*
  * Deinitialize virsh
  */
 static bool
 vshDeinit(vshControl *ctl)
 {
-    ctl->quit = true;
     vshReadlineDeinit(ctl);
     vshCloseLogFile(ctl);
     VIR_FREE(ctl->name);
@@ -17498,14 +17511,23 @@ vshDeinit(vshControl *ctl)
     virResetLastError();
 
     if (ctl->eventLoopStarted) {
+        int timer;
+
+        virMutexLock(&ctl->lock);
+        ctl->quit = true;
         /* HACK: Add a dummy timeout to break event loop */
-        int timer = virEventAddTimeout(-1, NULL, NULL, NULL);
+        timer = virEventAddTimeout(0, vshDeinitTimer, NULL, NULL);
+        virMutexUnlock(&ctl->lock);
+
+        virThreadJoin(&ctl->eventLoop);
+
         if (timer != -1)
             virEventRemoveTimeout(timer);
 
-        virThreadJoin(&ctl->eventLoop);
         ctl->eventLoopStarted = false;
     }
+
+    virMutexDestroy(&ctl->lock);
 
     return true;
 }
@@ -17784,6 +17806,11 @@ main(int argc, char **argv)
     }
     if (!textdomain(PACKAGE)) {
         perror("textdomain");
+        return EXIT_FAILURE;
+    }
+
+    if (virMutexInit(&ctl->lock) < 0) {
+        vshError(ctl, "%s", _("Failed to initialize mutex"));
         return EXIT_FAILURE;
     }
 
