@@ -1708,7 +1708,7 @@ static int virNetClientSendInternal(virNetClientPtr client,
     if (!client->sock || client->wantClose) {
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
                     _("client socket is closed"));
-        goto unlock;
+        goto cleanup;
     }
 
     if (virCondInit(&call->cond) < 0) {
@@ -1729,16 +1729,16 @@ static int virNetClientSendInternal(virNetClientPtr client,
 
     ret = virNetClientIO(client, call);
 
-cleanup:
     /* If partially sent, then the call is still on the dispatch queue */
     if (ret == 1) {
         call->haveThread = false;
     } else {
         ignore_value(virCondDestroy(&call->cond));
-        VIR_FREE(call);
     }
 
-unlock:
+cleanup:
+    if (ret != 1)
+        VIR_FREE(call);
     virNetClientUnlock(client);
     return ret;
 }
