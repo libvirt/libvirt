@@ -1745,7 +1745,7 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
         VIR_FREE(source);
     }
 
-    ret = 0;
+    ret = true;
 
 cleanup:
     VIR_FREE(disks);
