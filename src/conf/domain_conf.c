@@ -7540,6 +7540,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             if (i != 0) {
                 virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                      _("Only the first console can be a serial port"));
+                virDomainChrDefFree(chr);
                 goto error;
             }
 
