@@ -2278,19 +2278,6 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
         virNetworkSetBridgeMacAddr(def);
     }
 
-    if (!(network = virNetworkAssignDef(&driver->networks,
-                                        def)))
-        goto cleanup;
-    freeDef = false;
-
-    network->persistent = 1;
-
-    if (virNetworkSaveConfig(driver->networkConfigDir, def) < 0) {
-        virNetworkRemoveInactive(&driver->networks, network);
-        network = NULL;
-        goto cleanup;
-    }
-
     /* We only support dhcp on one IPv4 address per defined network */
     for (ii = 0;
          (ipdef = virNetworkDefGetIpByIndex(def, AF_UNSPEC, ii));
@@ -2307,6 +2294,20 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
             }
         }
     }
+
+    if (!(network = virNetworkAssignDef(&driver->networks,
+                                        def)))
+        goto cleanup;
+    freeDef = false;
+
+    network->persistent = 1;
+
+    if (virNetworkSaveConfig(driver->networkConfigDir, def) < 0) {
+        virNetworkRemoveInactive(&driver->networks, network);
+        network = NULL;
+        goto cleanup;
+    }
+
     if (ipv4def) {
         dctx = dnsmasqContextNew(def->name, DNSMASQ_STATE_DIR);
         if (dctx == NULL ||
