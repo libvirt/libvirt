@@ -1225,7 +1225,7 @@ qemuProcessWaitForMonitor(struct qemud_driver* driver,
 
         if (VIR_ALLOC_N(buf, buf_size) < 0) {
             virReportOOMError();
-            return -1;
+            goto closelog;
         }
 
         if (qemuProcessReadLogOutput(vm, logfd, buf, buf_size,
