@@ -161,13 +161,18 @@ static int virNetDevBridgeGet(const char *brname,
 
     if (virFileExists(path)) {
         char *valuestr;
-        if (virFileReadAll(path, INT_BUFSIZE_BOUND(unsigned long), &valuestr) < 0)
+        if (virFileReadAll(path, INT_BUFSIZE_BOUND(unsigned long),
+                           &valuestr) < 0)
             goto cleanup;
 
         if (virStrToLong_ul(valuestr, NULL, 10, value) < 0) {
             virReportSystemError(EINVAL,
-                                 _("Unable to get bridge %s %s"), brname, paramname);
+                                 _("Unable to get bridge %s %s"),
+                                 brname, paramname);
+            VIR_FREE(valuestr);
+            goto cleanup;
         }
+        VIR_FREE(valuestr);
     } else {
         struct __bridge_info info;
         unsigned long args[] = { BRCTL_GET_BRIDGE_INFO, (unsigned long)&info, 0, 0 };
