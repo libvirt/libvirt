@@ -992,31 +992,31 @@ fi
 %{_datadir}/libvirt/networks/default.xml
 %endif
 
-%dir %{_localstatedir}/run/libvirt/
+%ghost %dir %{_localstatedir}/run/libvirt/
 
 %dir %attr(0711, root, root) %{_localstatedir}/lib/libvirt/images/
 %dir %attr(0711, root, root) %{_localstatedir}/lib/libvirt/boot/
 %dir %attr(0711, root, root) %{_localstatedir}/cache/libvirt/
 
 %if %{with_qemu}
-%dir %attr(0700, root, root) %{_localstatedir}/run/libvirt/qemu/
+%ghost %dir %attr(0700, root, root) %{_localstatedir}/run/libvirt/qemu/
 %dir %attr(0750, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/
 %dir %attr(0750, %{qemu_user}, %{qemu_group}) %{_localstatedir}/cache/libvirt/qemu/
 %endif
 %if %{with_lxc}
-%dir %{_localstatedir}/run/libvirt/lxc/
+%ghost %dir %{_localstatedir}/run/libvirt/lxc/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/lxc/
 %endif
 %if %{with_uml}
-%dir %{_localstatedir}/run/libvirt/uml/
+%ghost %dir %{_localstatedir}/run/libvirt/uml/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/uml/
 %endif
 %if %{with_libxl}
-%dir %{_localstatedir}/run/libvirt/libxl/
+%ghost %dir %{_localstatedir}/run/libvirt/libxl/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/
 %endif
 %if %{with_network}
-%dir %{_localstatedir}/run/libvirt/network/
+%ghost %dir %{_localstatedir}/run/libvirt/network/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/network/
 %dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/dnsmasq/
 %endif
