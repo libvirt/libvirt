@@ -1040,12 +1040,8 @@ static int umlStartVMDaemon(virConnectPtr conn,
         return -1;
     }
 
-    if (!(cmd = umlBuildCommandLine(conn, driver, vm))) {
-        VIR_FORCE_CLOSE(logfd);
-        virDomainConfVMNWFilterTeardown(vm);
-        umlCleanupTapDevices(vm);
-        return -1;
-    }
+    if (!(cmd = umlBuildCommandLine(conn, driver, vm)))
+        goto cleanup;
 
     for (i = 0 ; i < vm->def->nconsoles ; i++) {
         VIR_FREE(vm->def->consoles[i]->info.alias);
@@ -1065,16 +1061,16 @@ static int umlStartVMDaemon(virConnectPtr conn,
     virCommandDaemonize(cmd);
 
     ret = virCommandRun(cmd, NULL);
-    VIR_FORCE_CLOSE(logfd);
     if (ret < 0)
         goto cleanup;
 
     if (autoDestroy &&
-        umlProcessAutoDestroyAdd(driver, vm, conn) < 0)
+        (ret = umlProcessAutoDestroyAdd(driver, vm, conn)) < 0)
         goto cleanup;
 
     ret = virDomainObjSetDefTransient(driver->caps, vm, false);
 cleanup:
+    VIR_FORCE_CLOSE(logfd);
     virCommandFree(cmd);
 
     if (ret < 0) {
