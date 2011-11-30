@@ -4788,14 +4788,14 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
                 if (!virStrcpy(temp->field, VIR_DOMAIN_BLKIO_WEIGHT,
                                sizeof(temp->field)))
                     goto cleanup;
-            }
-
-            if (device_weight) {
+                weight = 0;
+            } else if (device_weight) {
                 temp->value.s = vshStrdup(ctl, device_weight);
                 temp->type = VIR_TYPED_PARAM_STRING;
                 if (!virStrcpy(temp->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT,
                                sizeof(temp->field)))
                     goto cleanup;
+                device_weight = NULL;
             }
         }
 
