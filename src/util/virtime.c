@@ -113,6 +113,9 @@ const unsigned short int __mon_yday[2][13] = {
     { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366 }
 };
 
+#define is_leap_year(y) \
+    ((y) % 4 == 0 && ((y) % 100 != 0 || (y) % 400 == 0))
+
 /**
  * virTimeFieldsThenRaw:
  * @when: the time to convert in milliseconds
@@ -152,7 +155,7 @@ int virTimeFieldsThenRaw(unsigned long long when, struct tm *fields)
         fields->tm_wday += 7;
     y = 1970;
 
-    while (days < 0 || days >= (__isleap (y) ? 366 : 365)) {
+    while (days < 0 || days >= (is_leap_year(y) ? 366 : 365)) {
         /* Guess a corrected year, assuming 365 days per year.  */
         long int yg = y + days / 365 - (days % 365 < 0);
 
@@ -165,7 +168,7 @@ int virTimeFieldsThenRaw(unsigned long long when, struct tm *fields)
     fields->tm_year = y - 1900;
 
     fields->tm_yday = days;
-    ip = __mon_yday[__isleap(y)];
+    ip = __mon_yday[is_leap_year(y)];
     for (y = 11; days < (long int) ip[y]; --y)
         continue;
     days -= ip[y];
