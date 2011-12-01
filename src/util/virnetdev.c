@@ -45,7 +45,7 @@
     virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,                \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
-#ifdef HAVE_NET_IF_H
+#if defined(HAVE_STRUCT_IFREQ)
 static int virNetDevSetupControlFull(const char *ifname,
                                      struct ifreq *ifr,
                                      int domain,
@@ -87,7 +87,7 @@ static int virNetDevSetupControl(const char *ifname,
 #endif
 
 
-#ifdef SIOCGIFFLAGS
+#if defined(SIOCGIFFLAGS) && defined(HAVE_STRUCT_IFREQ)
 /**
  * virNetDevExists:
  * @ifname
@@ -130,7 +130,7 @@ int virNetDevExists(const char *ifname)
 #endif
 
 
-#ifdef SIOCGIFHWADDR
+#if defined(SIOCGIFHWADDR) && defined(HAVE_STRUCT_IFREQ)
 /**
  * virNetDevSetMAC:
  * @ifname: interface name to set MTU for
@@ -186,7 +186,7 @@ int virNetDevSetMAC(const char *ifname,
 #endif
 
 
-#ifdef SIOCGIFHWADDR
+#if defined(SIOCGIFHWADDR) && defined(HAVE_STRUCT_IFREQ)
 /**
  * virNetDevGetMAC:
  * @ifname: interface name to set MTU for
@@ -320,7 +320,7 @@ virNetDevRestoreMacAddress(const char *linkdev,
 }
 
 
-#ifdef SIOCGIFMTU
+#if defined(SIOCGIFMTU) && defined(HAVE_STRUCT_IFREQ)
 /**
  * virNetDevGetMTU:
  * @ifname: interface name get MTU for
@@ -362,7 +362,7 @@ int virNetDevGetMTU(const char *ifname)
 #endif
 
 
-#ifdef SIOCSIFMTU
+#if defined(SIOCSIFMTU) && defined(HAVE_STRUCT_IFREQ)
 /**
  * virNetDevSetMTU:
  * @ifname: interface name to set MTU for
@@ -460,7 +460,7 @@ int virNetDevSetNamespace(const char *ifname, int pidInNs)
     return rc;
 }
 
-#ifdef SIOCSIFNAME
+#if defined(SIOCSIFNAME) && defined(HAVE_STRUCT_IFREQ)
 /**
  * virNetDevSetName:
  * @ifname: name of device
@@ -510,7 +510,7 @@ int virNetDevSetName(const char* ifname, const char *newifname)
 #endif
 
 
-#ifdef SIOCSIFFLAGS
+#if defined(SIOCSIFFLAGS) && defined(HAVE_STRUCT_IFREQ)
 /**
  * virNetDevSetOnline:
  * @ifname: the interface name
@@ -571,7 +571,7 @@ int virNetDevSetOnline(const char *ifname,
 #endif
 
 
-#ifdef SIOCGIFFLAGS
+#if defined(SIOCGIFFLAGS) && defined(HAVE_STRUCT_IFREQ)
 /**
  * virNetDevIsOnline:
  * @ifname: the interface name
@@ -626,7 +626,7 @@ int virNetDevIsOnline(const char *ifname,
  *
  * Returns 0 on success, -1 on failure
  */
-#ifdef __linux__
+#if defined(SIOCGIFINDEX) && defined(HAVE_STRUCT_IFREQ)
 int virNetDevGetIndex(const char *ifname, int *ifindex)
 {
     int ret = -1;
@@ -662,7 +662,7 @@ cleanup:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
-#else /* ! __linux__ */
+#else /* ! SIOCGIFINDEX */
 int virNetDevGetIndex(const char *ifname ATTRIBUTE_UNUSED,
                       int *ifindex ATTRIBUTE_UNUSED)
 {
@@ -670,10 +670,10 @@ int virNetDevGetIndex(const char *ifname ATTRIBUTE_UNUSED,
                          _("Unable to get interface index on this platform"));
     return -1;
 }
-#endif /* ! __linux__ */
+#endif /* ! SIOCGIFINDEX */
 
 
-#ifdef __linux__
+#if defined(SIOCGIFVLAN) && defined(HAVE_STRUCT_IFREQ)
 int virNetDevGetVLanID(const char *ifname, int *vlanid)
 {
     struct vlan_ioctl_args vlanargs = {
@@ -709,7 +709,7 @@ int virNetDevGetVLanID(const char *ifname, int *vlanid)
 
     return ret;
 }
-#else /* ! __linux__ */
+#else /* ! SIOCGIFVLAN */
 int virNetDevGetVLanID(const char *ifname ATTRIBUTE_UNUSED,
                        int *vlanid ATTRIBUTE_UNUSED)
 {
@@ -717,7 +717,7 @@ int virNetDevGetVLanID(const char *ifname ATTRIBUTE_UNUSED,
                          _("Unable to get VLAN on this platform"));
     return -1;
 }
-#endif /* ! __linux__ */
+#endif /* ! SIOCGIFVLAN */
 
 
 
@@ -816,7 +816,7 @@ cleanup:
  *
  * Returns 0 on success, -errno on failure.
  */
-#ifdef __linux__
+#if defined(SIOCGIFADDR) && defined(HAVE_STRUCT_IFREQ)
 int virNetDevGetIPv4Address(const char *ifname,
                             virSocketAddrPtr addr)
 {
@@ -846,7 +846,7 @@ cleanup:
     return ret;
 }
 
-#else
+#else /* ! SIOCGIFADDR */
 
 int virNetDevGetIPv4Address(const char *ifname ATTRIBUTE_UNUSED,
                             virSocketAddrPtr addr ATTRIBUTE_UNUSED)
@@ -856,7 +856,7 @@ int virNetDevGetIPv4Address(const char *ifname ATTRIBUTE_UNUSED,
     return -1;
 }
 
-#endif /* __linux__ */
+#endif /* ! SIOCGIFADDR */
 
 
 /**
@@ -871,7 +871,7 @@ int virNetDevGetIPv4Address(const char *ifname ATTRIBUTE_UNUSED,
  *
  * Returns 1 if the config matches, 0 if the config does not match, or interface does not exist, -1 on error
  */
-#ifdef __linux__
+#if defined(HAVE_STRUCT_IFREQ)
 int virNetDevValidateConfig(const char *ifname,
                             const unsigned char *macaddr, int ifindex)
 {
@@ -924,7 +924,7 @@ int virNetDevValidateConfig(const char *ifname,
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
-#else /* ! __linux__ */
+#else /* ! HAVE_STRUCT_IFREQ */
 int virNetDevValidateConfig(const char *ifname ATTRIBUTE_UNUSED,
                             const unsigned char *macaddr ATTRIBUTE_UNUSED,
                             int ifindex ATTRIBUTE_UNUSED)
@@ -933,7 +933,7 @@ int virNetDevValidateConfig(const char *ifname ATTRIBUTE_UNUSED,
                          _("Unable to check interface config on this platform"));
     return -1;
 }
-#endif /* ! __linux__ */
+#endif /* ! HAVE_STRUCT_IFREQ */
 
 
 #ifdef __linux__

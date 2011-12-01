@@ -163,6 +163,20 @@ AC_CHECK_HEADERS([pwd.h paths.h regex.h sys/un.h \
   sys/un.h sys/syscall.h netinet/tcp.h ifaddrs.h libtasn1.h \
   net/if.h])
 
+AC_MSG_CHECKING([for struct ifreq in net/if.h])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+   [[
+     #include <net/if.h>
+   ]],
+   [[
+     struct ifreq ifr;
+   ]])],[
+     AC_DEFINE([HAVE_STRUCT_IFREQ],[],[Defined if struct ifreq existsin net/if.h])
+     AC_MSG_RESULT([yes])
+   ],[
+     AC_MSG_RESULT([yes])
+   ])
+
 dnl Our only use of libtasn1.h is in the testsuite, and can be skipped
 dnl if the header is not present.  Assume -ltasn1 is present if the
 dnl header could be found.
