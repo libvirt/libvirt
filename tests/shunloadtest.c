@@ -102,7 +102,7 @@ int main(int argc ATTRIBUTE_UNUSED, char **argv)
     fprintf(stderr, "      .%*s 1   ", 39, "");
     signal(SIGSEGV, sigHandler);
 
-    if (!(lib = dlopen("./.libs/libshunload.so", RTLD_NOW))) {
+    if (!(lib = dlopen("./.libs/libshunload.so", RTLD_LAZY))) {
         fprintf(stderr, "Cannot load ./.libs/libshunload.so %s\n", dlerror());
         return 1;
     }
