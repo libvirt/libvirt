@@ -144,6 +144,7 @@ int main(int argc ATTRIBUTE_UNUSED, char **argv)
 }
 
 #else
+# include "testutils.h"
 
 int main(void)
 {
