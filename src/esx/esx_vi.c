@@ -3955,7 +3955,7 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
                 if (taskInfo->cancelable == esxVI_Boolean_True) {
                     if (esxVI_CancelTask(ctx, task) < 0 && blocked) {
                         VIR_ERROR(_("Cancelable task is blocked by an "
-                                     "unanswered question but cancelation "
+                                     "unanswered question but cancellation "
                                      "failed"));
                     }
                 } else if (blocked) {

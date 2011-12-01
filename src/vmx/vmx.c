@@ -3513,7 +3513,7 @@ virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
             STRCASENEQ(def->model, "vmxnet3") &&
             STRCASENEQ(def->model, "e1000")) {
             VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("Expecting domain XML entry 'devices/interfase/model' "
+                      _("Expecting domain XML entry 'devices/interface/model' "
                         "to be 'vlance' or 'vmxnet' or 'vmxnet2' or 'vmxnet3' "
                         "or 'e1000' but found '%s'"), def->model);
             return -1;

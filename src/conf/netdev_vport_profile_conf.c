@@ -167,7 +167,7 @@ virNetDevVPortProfileParse(xmlNodePtr node)
             }
         } else {
             virNetDevError(VIR_ERR_XML_ERROR, "%s",
-                                 _("profileid parameter is missing for 802.1Qbh descripion"));
+                                 _("profileid parameter is missing for 802.1Qbh description"));
             goto error;
         }
         break;

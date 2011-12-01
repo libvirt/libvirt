@@ -2,7 +2,7 @@
 /*
  * esx_util.c: utility functions for the VMware ESX driver
  *
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2009-2011 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2009 Maximilian Wilhelm <max@rfc2324.org>
  *
@@ -384,7 +384,7 @@ esxUtil_ResolveHostname(const char *hostname,
 
     if (errcode != 0) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Formating IP address for host '%s' failed: %s"), hostname,
+                  _("Formatting IP address for host '%s' failed: %s"), hostname,
                   gai_strerror(errcode));
         freeaddrinfo(result);
         return -1;

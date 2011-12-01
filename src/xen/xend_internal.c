@@ -2217,7 +2217,7 @@ xenDaemonDomainSetVcpusFlags(virDomainPtr domain, unsigned int vcpus,
     flags |= VIR_DOMAIN_VCPU_MAXIMUM;
     if ((max = xenDaemonDomainGetVcpusFlags(domain, flags)) < 0) {
         virXendError(VIR_ERR_OPERATION_INVALID, "%s",
-                     _("could not determin max vcpus for the domain"));
+                     _("could not determine max vcpus for the domain"));
         return -1;
     }
     if (vcpus > max) {

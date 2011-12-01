@@ -677,7 +677,7 @@ virLogVersionString(char **msg)
  * @fmt: the string format
  * @...: the arguments
  *
- * Call the libvirt logger with some informations. Based on the configuration
+ * Call the libvirt logger with some information. Based on the configuration
  * the message may be stored, sent to output or just discarded
  */
 void virLogMessage(const char *category, int priority, const char *funcname,

@@ -188,12 +188,12 @@ umlBuildCommandLineNet(virConnectPtr conn,
         }
         if (def->data.ethernet.ipaddr) {
             umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("IP address not supported for ethernet inteface"));
+                           _("IP address not supported for ethernet interface"));
             goto error;
         }
         if (def->data.ethernet.script) {
             umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("script execution not supported for ethernet inteface"));
+                           _("script execution not supported for ethernet interface"));
             goto error;
         }
         break;

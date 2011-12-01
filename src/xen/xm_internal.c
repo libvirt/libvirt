@@ -728,7 +728,7 @@ xenXMDomainSetVcpusFlags(virDomainPtr domain, unsigned int vcpus,
     /* Hypervisor maximum. */
     if ((max = xenUnifiedGetMaxVcpus(domain->conn, NULL)) < 0) {
         xenXMError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("could not determin max vcpus for the domain"));
+                   _("could not determine max vcpus for the domain"));
         goto cleanup;
     }
     /* Can't specify a current larger than stored maximum; but

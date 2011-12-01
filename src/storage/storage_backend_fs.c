@@ -706,7 +706,7 @@ error:
 /**
  * @conn connection to report errors against
  * @pool storage pool to build
- * @flags controls the pool formating behaviour
+ * @flags controls the pool formatting behaviour
  *
  * Build a directory or FS based storage pool.
  *
