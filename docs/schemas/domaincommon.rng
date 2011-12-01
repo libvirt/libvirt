@@ -192,6 +192,7 @@
           <ref name="hvmmips"/>
           <ref name="hvmsparc"/>
           <ref name="hvmppc"/>
+          <ref name="hvmppc64"/>
         </choice>
       </optional>
       <value>hvm</value>
@@ -257,6 +258,22 @@
             <value>g3beige</value>
             <value>mac99</value>
             <value>prep</value>
+          </choice>
+        </attribute>
+      </optional>
+    </group>
+  </define>
+  <define name="hvmppc64">
+    <group>
+      <optional>
+        <attribute name="arch">
+          <value>ppc64</value>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="machine">
+          <choice>
+            <value>pseries</value>
           </choice>
         </attribute>
       </optional>
