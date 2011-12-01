@@ -11233,9 +11233,9 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         ret = qemuMonitorSetBlockIoThrottle(priv->mon, device, &info);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
+        if (ret < 0)
+            goto endjob;
     }
-    if (ret < 0)
-        goto endjob;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         sa_assert(persistentDef && idx >= 0);
