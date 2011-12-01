@@ -6650,7 +6650,7 @@ cmdNetworkDumpXML(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_network_info[] = {
     {"help", N_("network information")},
-    {"desc", "Returns basic information about the network"},
+    {"desc", N_("Returns basic information about the network")},
     {NULL, NULL}
 };
 
