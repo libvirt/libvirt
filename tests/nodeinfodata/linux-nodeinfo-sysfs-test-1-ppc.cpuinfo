@@ -1,0 +1,9 @@
+processor	: 0
+cpu		: POWER7 (raw), altivec supported
+clock		: 8.388608MHz
+revision	: 2.3 (pvr 003f 0203)
+
+processor	: 1
+cpu		: POWER7 (raw), altivec supported
+clock		: 8.388608MHz
+revision	: 2.3 (pvr 003f 0203)

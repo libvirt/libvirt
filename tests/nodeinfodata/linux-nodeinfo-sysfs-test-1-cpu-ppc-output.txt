@@ -1,0 +1,1 @@
+CPUs: 2, MHz: 8, Nodes: 1, Cores: 2
