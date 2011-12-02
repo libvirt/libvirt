@@ -1545,6 +1545,7 @@ static int virNetClientIO(virNetClientPtr client,
     virNetClientCallQueue(&client->waitDispatch, thiscall);
 
     /* Check to see if another thread is dispatching */
+recheck:
     if (client->haveTheBuck) {
         char ignore = 1;
 
@@ -1592,7 +1593,13 @@ static int virNetClientIO(virNetClientPtr client,
             goto cleanup;
         }
 
-        /* Grr, someone passed the buck onto us ... */
+        /* Grr, someone might have passed the buck onto us ... */
+
+        /* We need to re-check if the buck has been passed to this thread
+         * as this thread might have been signalled to wake up, but another
+         * call might acquire the lock before this thread manages to wake up.
+         * This could cause that two threads claim they have the buck */
+        goto recheck;
     }
 
     VIR_DEBUG("We have the buck %p %p", client->waitDispatch, thiscall);
