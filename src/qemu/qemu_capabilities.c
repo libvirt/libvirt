@@ -1147,14 +1147,17 @@ int qemuCapsParseHelpStr(const char *qemu,
     ++p;
 
     minor = virParseNumber(&p);
-    if (minor == -1 || *p != '.')
+    if (minor == -1)
         goto fail;
 
-    ++p;
-
-    micro = virParseNumber(&p);
-    if (micro == -1)
-        goto fail;
+    if (*p != '.') {
+        micro = 0;
+    } else {
+        ++p;
+        micro = virParseNumber(&p);
+        if (micro == -1)
+            goto fail;
+    }
 
     SKIP_BLANKS(p);
 
