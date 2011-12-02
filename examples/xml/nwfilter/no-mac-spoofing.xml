@@ -1,5 +1,10 @@
-<filter name='no-mac-spoofing' chain='ipv4'>
-  <rule action='drop' direction='out' priority='10'>
-      <mac match='no' srcmacaddr='$MAC' />
+<filter name='no-mac-spoofing' chain='mac' priority='-800'>
+  <!-- return packets with VM's MAC address as source address -->
+  <rule direction='out' action='return'>
+    <mac srcmacaddr='$MAC'/>
+  </rule>
+  <!-- drop everything else -->
+  <rule direction='out' action='drop'>
+    <mac/>
   </rule>
 </filter>

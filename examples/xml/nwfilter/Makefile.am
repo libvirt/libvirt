@@ -9,6 +9,8 @@ FILTERS = \
 	allow-ipv4.xml \
 	clean-traffic.xml \
 	no-arp-spoofing.xml \
+	no-arp-ip-spoofing.xml \
+	no-arp-mac-spoofing.xml \
 	no-ip-multicast.xml \
 	no-ip-spoofing.xml \
 	no-mac-broadcast.xml \

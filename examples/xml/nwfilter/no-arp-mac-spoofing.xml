@@ -1,0 +1,7 @@
+<filter name='no-arp-mac-spoofing' chain='arp-mac' priority='-520'>
+   <rule action='return' direction='out' priority='350' >
+      <arp match='yes' arpsrcmacaddr='$MAC'/>
+   </rule>
+   <!-- drop everything else -->
+   <rule action='drop' direction='out' priority='1000' />
+</filter>

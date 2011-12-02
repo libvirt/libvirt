@@ -1,7 +1,14 @@
-<filter name='no-ip-spoofing' chain='ipv4'>
+<filter name='no-ip-spoofing' chain='ipv4-ip' priority='-710'>
+  <!-- allow DHCP requests -->
+  <rule action='accept' direction='out' priority='100'>
+    <ip srcipaddr='0.0.0.0' protocol='udp' srcportstart='68' srcportend='68'/>
+  </rule>
 
-    <!-- drop if srcipaddr is not the IP address of the guest -->
-    <rule action='drop' direction='out'>
-        <ip match='no' srcipaddr='$IP' />
-    </rule>
+  <!-- allow all known IP addresses -->
+  <rule direction='out' action='return' priority='500'>
+    <ip srcipaddr='$IP'/>
+  </rule>
+
+  <!-- drop everything else -->
+  <rule direction='out' action='drop' priority='1000'/>
 </filter>

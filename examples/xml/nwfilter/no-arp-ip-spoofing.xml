@@ -1,0 +1,9 @@
+<filter name='no-arp-ip-spoofing' chain='arp-ip' priority='-510'>
+  <!-- no arp spoofing -->
+  <!-- drop if ipaddr does not belong to guest -->
+  <rule action='return' direction='out' priority='400' >
+    <arp match='yes' arpsrcipaddr='$IP' />
+  </rule>
+  <!-- drop everything else -->
+  <rule action='drop' direction='out' priority='1000' />
+</filter>

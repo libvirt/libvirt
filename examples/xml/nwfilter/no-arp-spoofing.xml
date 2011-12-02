@@ -1,36 +1,4 @@
-<filter name='no-arp-spoofing' chain='arp'>
-   <uuid>f88f1932-debf-4aa1-9fbe-f10d3aa4bc95</uuid>
-   <rule action='drop' direction='out' priority='300' >
-       <mac match='no' srcmacaddr='$MAC'/>
-   </rule>
-
-   <!-- no arp spoofing -->
-   <!-- drop if ipaddr or macaddr does not belong to guest -->
-   <rule action='drop' direction='out' priority='350' >
-       <arp match='no' arpsrcmacaddr='$MAC'/>
-   </rule>
-   <rule action='drop' direction='out' priority='400' >
-       <arp match='no' arpsrcipaddr='$IP' />
-   </rule>
-   <!-- allow gratuitous arp -->
-   <rule action='accept' direction='in' priority='425'>
-       <arp gratuitous='true'/>
-   </rule>
-   <!-- drop if ipaddr or macaddr does not belong to guest -->
-   <rule action='drop' direction='in' priority='450' >
-       <arp match='no' arpdstmacaddr='$MAC'/>
-       <arp opcode='reply'/>
-   </rule>
-   <rule action='drop' direction='in' priority='500' >
-       <arp match='no' arpdstipaddr='$IP' />
-   </rule>
-   <!-- accept only request or reply packets -->
-   <rule action='accept' direction='inout' priority='600' >
-       <arp opcode='request'/>
-   </rule>
-   <rule action='accept' direction='inout' priority='650' >
-       <arp opcode='reply'/>
-   </rule>
-   <!-- drop everything else -->
-   <rule action='drop' direction='inout' priority='1000' />
+<filter name='no-arp-spoofing' chain='root'>
+  <filterref filter='no-arp-mac-spoofing'/>
+  <filterref filter='no-arp-ip-spoofing'/>
 </filter>
