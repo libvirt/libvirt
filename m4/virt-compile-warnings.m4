@@ -116,6 +116,14 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
         gl_WARN_ADD([-fdiagnostics-show-option])
         gl_WARN_ADD([-funit-at-a-time])
 
+        # Need -fipa-pure-const in order to make -Wsuggest-attribute=pure
+        # fire even without -O.
+        gl_WARN_ADD([-fipa-pure-const])
+        # We should eventually enable this, but right now there are at
+        # least 75 functions triggering warnings.
+        gl_WARN_ADD([-Wno-suggest-attribute=pure])
+        gl_WARN_ADD([-Wno-suggest-attribute=const])
+
         if test "$enable_compile_warnings" = "error"
         then
           gl_WARN_ADD([-Werror])
