@@ -38,6 +38,7 @@
 #include "virfile.h"
 #include "configmake.h"
 #include "command.h"
+#include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 #define SECURITY_APPARMOR_VOID_DOI      "0"
@@ -791,9 +792,9 @@ AppArmorSetImageFDLabel(virSecurityManagerPtr mgr,
     }
 
     if (virFileResolveLink(proc, &fd_path) < 0) {
-        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("could not find path for descriptor"));
-        return rc;
+        /* it's a deleted file, presumably.  Ignore? */
+        VIR_WARN("could not find path for descriptor %s, skipping", proc);
+        return 0;
     }
 
     return reload_profile(mgr, vm, fd_path, true);
