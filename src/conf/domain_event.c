@@ -1070,7 +1070,7 @@ virDomainEventQueuePop(virDomainEventQueuePtr evtQueue)
  * @evtQueue: the dom event queue
  * @event: the event to add
  *
- * Internal function to push onto the back of an virDomainEventQueue
+ * Internal function to push onto the back of a virDomainEventQueue
  *
  * Returns: 0 on success, -1 on failure
  */

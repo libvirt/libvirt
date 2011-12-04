@@ -267,7 +267,7 @@ esxParseVMXFileName(const char *fileName, void *opaque)
 
 
 /*
- * This function does the inverse of esxParseVMXFileName. It takes an file name
+ * This function does the inverse of esxParseVMXFileName. It takes a file name
  * in datastore path format or in absolute format and converts it to a file
  * name that can be used in a .vmx file.
  *

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2010 Red Hat, Inc.
+ * Copyright (C) 2007-2011 Red Hat, Inc.
  * Copyright (C) 2010 Satoru SATOH <satoru.satoh@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -461,7 +461,7 @@ dnsmasqContextNew(const char *network_name,
  * dnsmasqContextFree:
  * @ctx: pointer to the dnsmasq context
  *
- * Free the resources associated with an dnsmasq context
+ * Free the resources associated with a dnsmasq context
  */
 void
 dnsmasqContextFree(dnsmasqContext *ctx)

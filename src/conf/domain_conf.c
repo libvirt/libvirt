@@ -4555,7 +4555,7 @@ error:
 }
 
 
-/* Parse the XML definition for an hub device */
+/* Parse the XML definition for a hub device */
 static virDomainHubDefPtr
 virDomainHubDefParseXML(xmlNodePtr node, unsigned int flags)
 {

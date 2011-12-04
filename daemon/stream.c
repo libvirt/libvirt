@@ -1,7 +1,7 @@
 /*
  * stream.c: APIs for managing client streams
  *
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009, 2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -556,7 +556,7 @@ daemonStreamHandleWriteData(virNetServerClientPtr client,
 
 
 /*
- * Process an finish handshake from the client.
+ * Process a finish handshake from the client.
  *
  * Returns a VIR_NET_OK confirmation if successful, or a VIR_NET_ERROR
  * if there was a stream error

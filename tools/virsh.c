@@ -13233,7 +13233,7 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
     if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    /* add an separate container around the xml */
+    /* add a separate container around the xml */
     virBufferStrcat(&buf, "<container>", buffer, "</container>", NULL);
     if (virBufferError(&buf))
         goto no_memory;

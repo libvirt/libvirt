@@ -2369,7 +2369,7 @@ xenDaemonDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
  * @domain: pointer to domain object, or NULL for Domain0
  * @info: pointer to an array of virVcpuInfo structures (OUT)
  * @maxinfo: number of structures in info array
- * @cpumaps: pointer to an bit map of real CPUs for all vcpus of this domain (in 8-bit bytes) (OUT)
+ * @cpumaps: pointer to a bit map of real CPUs for all vcpus of this domain (in 8-bit bytes) (OUT)
  *	If cpumaps is NULL, then no cpumap information is returned by the API.
  *	It's assumed there is <maxinfo> cpumap in cpumaps array.
  *	The memory allocated to cpumaps must be (maxinfo * maplen) bytes

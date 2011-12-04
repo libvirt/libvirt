@@ -1701,7 +1701,7 @@ static int virNetClientSendInternal(virNetClientPtr client,
 
     if (expectReply && nonBlock) {
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("Attempt to send an non-blocking message with a synchronous reply"));
+                    _("Attempt to send a non-blocking message with a synchronous reply"));
         return -1;
     }
 

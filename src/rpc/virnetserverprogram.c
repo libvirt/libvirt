@@ -340,7 +340,7 @@ cleanup:
  * @client: the unlocked client object
  * @msg: the complete incoming method call, with header already decoded
  *
- * This method is used to dispatch an message representing an
+ * This method is used to dispatch a message representing an
  * incoming method call from a client. It decodes the payload
  * to obtain method call arguments, invokves the method and
  * then sends a reply packet with the return values

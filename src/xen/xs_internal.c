@@ -355,7 +355,7 @@ xenStoreClose(virConnectPtr conn)
  * @domain: pointer to the domain block
  * @info: the place where information should be stored
  *
- * Do an hypervisor call to get the related set of domain information.
+ * Do a hypervisor call to get the related set of domain information.
  *
  * Returns 0 in case of success, -1 in case of error.
  */

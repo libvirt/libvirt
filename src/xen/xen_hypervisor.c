@@ -556,7 +556,7 @@ typedef struct xen_v0_domainop xen_v0_domainop;
 #define XEN_V2_OP_UNPAUSEDOMAIN	4
 
 /*
- * The information for an setmaxmem system hypercall
+ * The information for a setmaxmem system hypercall
  */
 #define XEN_V0_OP_SETMAXMEM	28
 #define XEN_V1_OP_SETMAXMEM	28
@@ -580,7 +580,7 @@ struct xen_v2d5_setmaxmem {
 typedef struct xen_v2d5_setmaxmem xen_v2d5_setmaxmem;
 
 /*
- * The information for an setmaxvcpu system hypercall
+ * The information for a setmaxvcpu system hypercall
  */
 #define XEN_V0_OP_SETMAXVCPU	41
 #define XEN_V1_OP_SETMAXVCPU	41
@@ -599,7 +599,7 @@ struct xen_v2_setmaxvcpu {
 typedef struct xen_v2_setmaxvcpu xen_v2_setmaxvcpu;
 
 /*
- * The information for an setvcpumap system hypercall
+ * The information for a setvcpumap system hypercall
  * Note that between 1 and 2 the limitation to 64 physical CPU was lifted
  * hence the difference in structures
  */
@@ -647,7 +647,7 @@ struct xen_v2d5_setvcpumap {
 typedef struct xen_v2d5_setvcpumap xen_v2d5_setvcpumap;
 
 /*
- * The information for an vcpuinfo system hypercall
+ * The information for a vcpuinfo system hypercall
  */
 #define XEN_V0_OP_GETVCPUINFO   43
 #define XEN_V1_OP_GETVCPUINFO	43
@@ -866,8 +866,8 @@ virXenErrorFunc(virErrorNumber error, const char *func, const char *info,
  * @handle: the handle to the Xen hypervisor
  * @op: pointer to the hypervisor operation structure
  *
- * Do an hypervisor operation though the old interface,
- * this leads to an hypervisor call through ioctl.
+ * Do a hypervisor operation though the old interface,
+ * this leads to a hypervisor call through ioctl.
  *
  * Returns 0 in case of success and -1 in case of error.
  */
@@ -908,7 +908,7 @@ xenHypervisorDoV0Op(int handle, xen_op_v0 * op)
  * @handle: the handle to the Xen hypervisor
  * @op: pointer to the hypervisor operation structure
  *
- * Do an hypervisor v1 operation, this leads to an hypervisor call through
+ * Do a hypervisor v1 operation, this leads to a hypervisor call through
  * ioctl.
  *
  * Returns 0 in case of success and -1 in case of error.
@@ -951,7 +951,7 @@ xenHypervisorDoV1Op(int handle, xen_op_v1* op)
  * @handle: the handle to the Xen hypervisor
  * @op: pointer to the hypervisor operation structure
  *
- * Do an hypervisor v2 system operation, this leads to an hypervisor
+ * Do a hypervisor v2 system operation, this leads to a hypervisor
  * call through ioctl.
  *
  * Returns 0 in case of success and -1 in case of error.
@@ -994,7 +994,7 @@ xenHypervisorDoV2Sys(int handle, xen_op_v2_sys* op)
  * @handle: the handle to the Xen hypervisor
  * @op: pointer to the hypervisor domain operation structure
  *
- * Do an hypervisor v2 domain operation, this leads to an hypervisor
+ * Do a hypervisor v2 domain operation, this leads to a hypervisor
  * call through ioctl.
  *
  * Returns 0 in case of success and -1 in case of error.
@@ -3155,7 +3155,7 @@ xenHypervisorGetMaxMemory(virDomainPtr domain)
  * @id: the domain ID
  * @info: the place where information should be stored
  *
- * Do an hypervisor call to get the related set of domain information.
+ * Do a hypervisor call to get the related set of domain information.
  *
  * Returns 0 in case of success, -1 in case of error.
  */
@@ -3238,7 +3238,7 @@ xenHypervisorGetDomInfo(virConnectPtr conn, int id, virDomainInfoPtr info)
  * @domain: pointer to the domain block
  * @info: the place where information should be stored
  *
- * Do an hypervisor call to get the related set of domain information.
+ * Do a hypervisor call to get the related set of domain information.
  *
  * Returns 0 in case of success, -1 in case of error.
  */
@@ -3382,7 +3382,7 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *free
  * xenHypervisorPauseDomain:
  * @domain: pointer to the domain block
  *
- * Do an hypervisor call to pause the given domain
+ * Do a hypervisor call to pause the given domain
  *
  * Returns 0 in case of success, -1 in case of error.
  */
@@ -3409,7 +3409,7 @@ xenHypervisorPauseDomain(virDomainPtr domain)
  * xenHypervisorResumeDomain:
  * @domain: pointer to the domain block
  *
- * Do an hypervisor call to resume the given domain
+ * Do a hypervisor call to resume the given domain
  *
  * Returns 0 in case of success, -1 in case of error.
  */
@@ -3437,7 +3437,7 @@ xenHypervisorResumeDomain(virDomainPtr domain)
  * @domain: pointer to the domain block
  * @flags: an OR'ed set of virDomainDestroyFlagsValues
  *
- * Do an hypervisor call to destroy the given domain
+ * Do a hypervisor call to destroy the given domain
  *
  * Calling this function with no @flags set (equal to zero)
  * is equivalent to calling xenHypervisorDestroyDomain.
@@ -3471,7 +3471,7 @@ xenHypervisorDestroyDomainFlags(virDomainPtr domain,
  * @domain: pointer to the domain block
  * @memory: the max memory size in kilobytes.
  *
- * Do an hypervisor call to change the maximum amount of memory used
+ * Do a hypervisor call to change the maximum amount of memory used
  *
  * Returns 0 in case of success, -1 in case of error.
  */
@@ -3563,7 +3563,7 @@ xenHypervisorPinVcpu(virDomainPtr domain, unsigned int vcpu,
  * @domain: pointer to domain object, or NULL for Domain0
  * @info: pointer to an array of virVcpuInfo structures (OUT)
  * @maxinfo: number of structures in info array
- * @cpumaps: pointer to an bit map of real CPUs for all vcpus of this domain (in 8-bit bytes) (OUT)
+ * @cpumaps: pointer to a bit map of real CPUs for all vcpus of this domain (in 8-bit bytes) (OUT)
  *	If cpumaps is NULL, then no cpumap information is returned by the API.
  *	It's assumed there is <maxinfo> cpumap in cpumaps array.
  *	The memory allocated to cpumaps must be (maxinfo * maplen) bytes

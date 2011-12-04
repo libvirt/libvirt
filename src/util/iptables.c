@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2010 Red Hat, Inc.
+ * Copyright (C) 2007-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -891,7 +891,7 @@ iptablesOutputFixUdpChecksum(iptablesContext *ctx,
  * @iface: the interface name
  * @port: the UDP port to match
  *
- * Add an rule to the mangle table's POSTROUTING chain that fixes up the
+ * Add a rule to the mangle table's POSTROUTING chain that fixes up the
  * checksum of packets with the given destination @port.
  * the given @iface interface for TCP packets.
  *
