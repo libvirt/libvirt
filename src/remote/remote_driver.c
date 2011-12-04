@@ -678,10 +678,8 @@ doRemoteOpen (virConnectPtr conn,
         rc = call(conn, priv, 0, REMOTE_PROC_SUPPORTS_FEATURE,
                   (xdrproc_t)xdr_remote_supports_feature_args, (char *) &args,
                   (xdrproc_t)xdr_remote_supports_feature_ret, (char *) &ret);
-        if (rc == -1)
-            goto failed;
 
-        if (ret.supported) {
+        if (rc != -1 && ret.supported) {
             priv->serverKeepAlive = true;
         } else {
             VIR_INFO("Disabling keepalive protocol since it is not supported"
