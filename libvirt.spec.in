@@ -326,6 +326,8 @@ Requires: device-mapper
 %if %{with_cgconfig}
 Requires: libcgroup
 %endif
+# For virConnectGetSysinfo
+Requires: dmidecode
 
 # All build-time requirements
 BuildRequires: python-devel
