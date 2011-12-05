@@ -40,7 +40,7 @@ void usage(const char *pname);
 
 const char *eventToString(int event) {
     const char *ret = "";
-    switch(event) {
+    switch ((virDomainEventType) event) {
         case VIR_DOMAIN_EVENT_DEFINED:
             ret ="Defined";
             break;
@@ -59,13 +59,16 @@ const char *eventToString(int event) {
         case VIR_DOMAIN_EVENT_STOPPED:
             ret ="Stopped";
             break;
+        case VIR_DOMAIN_EVENT_SHUTDOWN:
+            ret = "Shutdown";
+            break;
     }
     return ret;
 }
 
 static const char *eventDetailToString(int event, int detail) {
     const char *ret = "";
-    switch(event) {
+    switch ((virDomainEventType) event) {
         case VIR_DOMAIN_EVENT_DEFINED:
             if (detail == VIR_DOMAIN_EVENT_DEFINED_ADDED)
                 ret = "Added";
@@ -77,7 +80,7 @@ static const char *eventDetailToString(int event, int detail) {
                 ret = "Removed";
             break;
         case VIR_DOMAIN_EVENT_STARTED:
-            switch (detail) {
+            switch ((virDomainEventStartedDetailType) detail) {
             case VIR_DOMAIN_EVENT_STARTED_BOOTED:
                 ret = "Booted";
                 break;
@@ -93,7 +96,7 @@ static const char *eventDetailToString(int event, int detail) {
             }
             break;
         case VIR_DOMAIN_EVENT_SUSPENDED:
-            switch (detail) {
+            switch ((virDomainEventSuspendedDetailType) detail) {
             case VIR_DOMAIN_EVENT_SUSPENDED_PAUSED:
                 ret = "Paused";
                 break;
@@ -115,7 +118,7 @@ static const char *eventDetailToString(int event, int detail) {
             }
             break;
         case VIR_DOMAIN_EVENT_RESUMED:
-            switch (detail) {
+            switch ((virDomainEventResumedDetailType) detail) {
             case VIR_DOMAIN_EVENT_RESUMED_UNPAUSED:
                 ret = "Unpaused";
                 break;
@@ -128,7 +131,7 @@ static const char *eventDetailToString(int event, int detail) {
             }
             break;
         case VIR_DOMAIN_EVENT_STOPPED:
-            switch (detail) {
+            switch ((virDomainEventStoppedDetailType) detail) {
             case VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN:
                 ret = "Shutdown";
                 break;
@@ -149,6 +152,13 @@ static const char *eventDetailToString(int event, int detail) {
                 break;
             case VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT:
                 ret = "Snapshot";
+                break;
+            }
+            break;
+        case VIR_DOMAIN_EVENT_SHUTDOWN:
+            switch ((virDomainEventShutdownDetailType) detail) {
+            case VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED:
+                ret = "Finished";
                 break;
             }
             break;
