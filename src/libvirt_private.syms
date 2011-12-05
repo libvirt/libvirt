@@ -1387,13 +1387,16 @@ virKeycodeValueTranslate;
 
 
 # virtime.h
-virTimeMillisNow;
 virTimeFieldsNow;
+virTimeFieldsNowRaw;
 virTimeFieldsThen;
+virTimeFieldsThenRaw;
+virTimeMillisNow;
+virTimeMillisNowRaw;
 virTimeStringNow;
+virTimeStringNowRaw;
 virTimeStringThen;
-virTimeStringNewNow;
-virTimeStringNewThen;
+virTimeStringThenRaw;
 
 
 # xml.h
