@@ -332,6 +332,15 @@ Requires: device-mapper
 %if %{with_cgconfig}
 Requires: libcgroup
 %endif
+# For virConnectGetSysinfo
+Requires: dmidecode
+# For service management
+%if %{with_systemd}
+Requires(post): systemd-units
+Requires(post): systemd-sysv
+Requires(preun): systemd-units
+Requires(postun): systemd-units
+%endif
 
 # All build-time requirements
 BuildRequires: python-devel
@@ -481,13 +490,6 @@ BuildRequires: nfs-utils
 
 # Fedora build root suckage
 BuildRequires: gawk
-
-%if %{with_systemd}
-Requires(post): systemd-units
-Requires(post): systemd-sysv
-Requires(preun): systemd-units
-Requires(postun): systemd-units
-%endif
 
 %description
 Libvirt is a C toolkit to interact with the virtualization capabilities
