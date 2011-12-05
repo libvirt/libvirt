@@ -5,6 +5,11 @@
 %define __find_provides %{_mingw32_findprovides}
 %define __debug_install_post %{_mingw32_debug_install_post}
 
+# Default to skipping autoreconf.  Distros can change just this one line
+# (or provide a command-line override) if they backport any patches that
+# touch configure.ac or Makefile.am.
+%{!?enable_autotools:%define enable_autotools 0}
+
 # The mingw build is client only.  Set up defaults for hypervisor drivers
 # that talk via a native remote protocol, and for which prereq mingw
 # libraries exist.
@@ -44,6 +49,12 @@ BuildRequires:  mingw32-portablexdr
 BuildRequires:  pkgconfig
 # Need native version for msgfmt
 BuildRequires:  gettext
+%if 0%{?enable_autotools}
+BuildRequires: autoconf
+BuildRequires: automake
+BuildRequires: gettext-devel
+BuildRequires: libtool
+%endif
 
 %if %{with_phyp}
 BuildRequires: mingw32-libssh2
@@ -81,6 +92,9 @@ MinGW Windows libvirt virtualization library.
 %define _without_xenapi --without-xenapi
 %endif
 
+%if 0%{?enable_autotools}
+autoreconf -if
+%endif
 # XXX enable SASL in future
 %{_mingw32_configure} \
   --without-xen \
