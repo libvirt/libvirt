@@ -22,6 +22,8 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
 
         # Don't care about C++ compiler compat
         dontwarn="$dontwarn -Wc++-compat"
+        dontwarn="$dontwarn -Wabi"
+        dontwarn="$dontwarn -Wdeprecated"
         # Don't care about ancient C standard compat
         dontwarn="$dontwarn -Wtraditional"
         # Don't care about ancient C standard compat
