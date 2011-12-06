@@ -846,8 +846,7 @@ getent passwd qemu >/dev/null || \
 # We want to install the default network for initial RPM installs
 # or on the first upgrade from a non-network aware libvirt only.
 # We check this by looking to see if the daemon is already installed
-/sbin/chkconfig --list libvirtd 1>/dev/null 2>&1
-if test $? != 0 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml
+if ! /sbin/chkconfig libvirtd && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml
 then
     UUID=`/usr/bin/uuidgen`
     sed -e "s,</name>,</name>\n  <uuid>$UUID</uuid>," \
@@ -934,8 +933,7 @@ fi
 /sbin/chkconfig --add libvirt-guests
 if [ $1 -ge 1 ]; then
     level=$(/sbin/runlevel | /bin/cut -d ' ' -f 2)
-    if /sbin/chkconfig --list libvirt-guests 2>/dev/null \
-        | /bin/grep -q $level:on ; then
+    if /sbin/chkconfig --levels $level libvirt-guests; then
         # this doesn't do anything but allowing for libvirt-guests to be
         # stopped on the first shutdown
         /sbin/service libvirt-guests start > /dev/null 2>&1 || true
