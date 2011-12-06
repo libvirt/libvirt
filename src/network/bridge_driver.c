@@ -1480,14 +1480,22 @@ networkReloadIptablesRules(struct network_driver *driver)
     VIR_INFO("Reloading iptables rules");
 
     for (i = 0 ; i < driver->networks.count ; i++) {
-        virNetworkObjLock(driver->networks.objs[i]);
-        if (virNetworkObjIsActive(driver->networks.objs[i])) {
-            networkRemoveIptablesRules(driver, driver->networks.objs[i]);
-            if (networkAddIptablesRules(driver, driver->networks.objs[i]) < 0) {
+        virNetworkObjPtr network = driver->networks.objs[i];
+
+        virNetworkObjLock(network);
+        if (virNetworkObjIsActive(network) &&
+            ((network->def->forwardType == VIR_NETWORK_FORWARD_NONE) ||
+             (network->def->forwardType == VIR_NETWORK_FORWARD_NAT) ||
+             (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE))) {
+            /* Only the three L3 network types that are configured by libvirt
+             * need to have iptables rules reloaded.
+             */
+            networkRemoveIptablesRules(driver, network);
+            if (networkAddIptablesRules(driver, network) < 0) {
                 /* failed to add but already logged */
             }
         }
-        virNetworkObjUnlock(driver->networks.objs[i]);
+        virNetworkObjUnlock(network);
     }
 }
 
