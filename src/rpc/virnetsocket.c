@@ -481,6 +481,12 @@ int virNetSocketNewConnectUNIX(const char *path,
 
     remoteAddr.len = sizeof(remoteAddr.data.un);
 
+    if (spawnDaemon && !binary) {
+        virNetError(VIR_ERR_INTERNAL_ERROR,
+                    _("Auto-spawn of daemon requested, but no binary specified"));
+        return -1;
+    }
+
     if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
         virReportSystemError(errno, "%s", _("Failed to create socket"));
         goto error;

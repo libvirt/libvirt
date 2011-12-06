@@ -321,6 +321,7 @@ doRemoteOpen (virConnectPtr conn,
         trans_ext,
         trans_tcp,
     } transport;
+    const char *daemonPath;
 
     /* We handle *ALL*  URIs here. The caller has rejected any
      * URIs we don't care about */
@@ -588,9 +589,14 @@ doRemoteOpen (virConnectPtr conn,
             VIR_DEBUG("Proceeding with sockname %s", sockname);
         }
 
+        if (!(daemonPath = remoteFindDaemonPath())) {
+            remoteError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Unable to locate libvirtd daemon in $PATH"));
+            goto failed;
+        }
         if (!(priv->client = virNetClientNewUNIX(sockname,
                                                  flags & VIR_DRV_OPEN_REMOTE_AUTOSTART,
-                                                 remoteFindDaemonPath())))
+                                                 daemonPath)))
             goto failed;
 
         priv->is_secure = 1;
