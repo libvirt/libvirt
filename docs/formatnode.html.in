@@ -126,6 +126,7 @@
               <dd>A network protocol exposed by the device, where the
                 attribute <code>type</code> can be "80203" for IEEE
                 802.3, or "80211" for various flavors of IEEE 802.11.
+              </dd>
             </dl>
           </dd>
           <dt><code>scsi_host</code></dt>
@@ -133,6 +134,12 @@
             <dl>
               <dt><code>host</code></dt>
               <dd>The SCSI host number.</dd>
+              <dt><code>capability</code></dt>
+              <dd>Current capabilities include "vports_ops" (indicates
+                vport operations are supported) and "fc_host", the later
+                implies following sub-elements: <code>wwnn</code>,
+                <code>wwpn</code>, <code>fabric_wwn</code>.
+              </dd>
             </dl>
           </dd>
           <dt><code>scsi</code></dt>

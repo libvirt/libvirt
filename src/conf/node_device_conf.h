@@ -141,6 +141,7 @@ struct _virNodeDevCapsDef {
             unsigned int host;
             char *wwnn;
             char *wwpn;
+            char *fabric_wwn;
             unsigned int flags;
         } scsi_host;
         struct {

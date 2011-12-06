@@ -396,6 +396,8 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def)
                                       data->scsi_host.wwnn);
                 virBufferEscapeString(&buf, "      <wwpn>%s</wwpn>\n",
                                       data->scsi_host.wwpn);
+                virBufferEscapeString(&buf, "      <fabric_wwn>%s</fabric_wwn>\n",
+                                      data->scsi_host.fabric_wwn);
                 virBufferAddLit(&buf, "    </capability>\n");
             }
             if (data->scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS) {
@@ -1378,6 +1380,7 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
     case VIR_NODE_DEV_CAP_SCSI_HOST:
         VIR_FREE(data->scsi_host.wwnn);
         VIR_FREE(data->scsi_host.wwpn);
+        VIR_FREE(data->scsi_host.fabric_wwn);
         break;
     case VIR_NODE_DEV_CAP_SCSI_TARGET:
         VIR_FREE(data->scsi_target.name);

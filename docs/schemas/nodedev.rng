@@ -216,6 +216,35 @@
     </attribute>
   </define>
 
+  <define name='wwn'>
+    <data type='string'>
+      <param name='pattern'>(0-9a-fA-F){16}</param>
+    </data>
+  </define>
+
+  <define name='capsfchost'>
+    <attribute name='type'>
+      <value>fc_host</value>
+    </attribute>
+
+    <element name='wwnn'>
+      <ref name='wwn'/>
+    </element>
+
+    <element name='wwpn'>
+      <ref name='wwn'/>
+    </element>
+
+    <element name='fabric_wwn'>
+      <ref name='wwn'/>
+    </element>
+  </define>
+
+  <define name='capsvports'>
+    <attribute name='type'>
+      <value>vports_ops</value>
+    </attribute>
+  </define>
 
   <define name='capscsihost'>
     <attribute name='type'>
@@ -225,6 +254,17 @@
     <element name='host'>
       <ref name='uint'/>
     </element>
+
+    <optional>
+      <zeroOrMore>
+        <element name='capability'>
+          <choice>
+            <ref name='capsfchost'/>
+            <ref name='capsvports'/>
+          </choice>
+        </element>
+      </zeroOrMore>
+    </optional>
   </define>
 
   <define name='capscsi'>

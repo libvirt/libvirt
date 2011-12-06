@@ -149,10 +149,20 @@ int check_fc_host_linux(union _virNodeDevCapData *d)
         retval = -1;
     }
 
+    if (read_wwn(d->scsi_host.host,
+                 "fabric_name",
+                 &d->scsi_host.fabric_wwn) == -1) {
+        VIR_ERROR(_("Failed to read fabric WWN for host%d"),
+                  d->scsi_host.host);
+        retval = -1;
+        goto out;
+    }
+
 out:
     if (retval == -1) {
         VIR_FREE(d->scsi_host.wwnn);
         VIR_FREE(d->scsi_host.wwpn);
+        VIR_FREE(d->scsi_host.fabric_wwn);
     }
     VIR_FREE(sysfs_path);
     return retval;
