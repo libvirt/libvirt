@@ -3609,7 +3609,8 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (virSecurityManagerGetProcessLabel(driver->securityManager,
                                           vm, seclabel) < 0)
         goto cleanup;
-    if (!(vm->def->seclabel.model = strdup(driver->caps->host.secModel.model)))
+    if (driver->caps->host.secModel.model &&
+        !(vm->def->seclabel.model = strdup(driver->caps->host.secModel.model)))
         goto no_memory;
     if (!(vm->def->seclabel.label = strdup(seclabel->label)))
         goto no_memory;
