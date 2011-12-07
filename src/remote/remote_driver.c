@@ -321,7 +321,9 @@ doRemoteOpen (virConnectPtr conn,
         trans_ext,
         trans_tcp,
     } transport;
+#ifndef WIN32
     const char *daemonPath;
+#endif
 
     /* We handle *ALL*  URIs here. The caller has rejected any
      * URIs we don't care about */
