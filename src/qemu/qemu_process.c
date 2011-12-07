@@ -471,6 +471,10 @@ qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         VIR_DEBUG("Ignoring repeated SHUTDOWN event from domain %s",
                   vm->def->name);
         goto unlock;
+    } else if (!virDomainObjIsActive(vm)) {
+        VIR_DEBUG("Ignoring SHUTDOWN event from inactive domain %s",
+                  vm->def->name);
+        goto unlock;
     }
     priv->gotShutdown = true;
 
