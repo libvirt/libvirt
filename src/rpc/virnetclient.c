@@ -1265,6 +1265,7 @@ static void virNetClientIOEventLoopPassTheBuck(virNetClientPtr client, virNetCli
         }
         tmp = tmp->next;
     }
+    client->haveTheBuck = false;
 
     VIR_DEBUG("No thread to pass the buck to");
     if (client->wantClose) {
@@ -1593,10 +1594,11 @@ static int virNetClientIO(virNetClientPtr client,
         }
 
         /* Grr, someone passed the buck onto us ... */
+    } else {
+        client->haveTheBuck = true;
     }
 
     VIR_DEBUG("We have the buck %p %p", client->waitDispatch, thiscall);
-    client->haveTheBuck = true;
 
     /*
      * The buck stops here!
@@ -1623,8 +1625,6 @@ static int virNetClientIO(virNetClientPtr client,
     if (rv == 0 &&
         virGetLastError())
         rv = -1;
-
-    client->haveTheBuck = false;
 
 cleanup:
     VIR_DEBUG("All done with our call %p %p %d", client->waitDispatch, thiscall, rv);
