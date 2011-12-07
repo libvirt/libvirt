@@ -1023,21 +1023,24 @@
         path to the file holding the disk. If the disk
         <code>type</code> is "block", then the <code>dev</code>
         attribute specifies the path to the host device to serve as
-        the disk. If the disk <code>type</code> is "network", then
-        the <code>protocol</code> attribute specifies the protocol to
-        access to the requested image; possible values are "nbd",
-        "rbd", and "sheepdog".  If the <code>protocol</code> attribute
-        is "rbd" or "sheepdog", an additional
+        the disk. If the disk <code>type</code> is "dir", then the
+        <code>dir</code> attribute specifies the fully-qualified path
+        to the directory to use as the disk. If the disk <code>type</code>
+        is "network", then the <code>protocol</code> attribute specifies
+        the protocol to access to the requested image; possible values
+        are "nbd", "rbd", and "sheepdog".  If the <code>protocol</code>
+        attribute is "rbd" or "sheepdog", an additional
         attribute <code>name</code> is mandatory to specify which
         image to be used.  When the disk <code>type</code> is
         "network", the <code>source</code> may have zero or
         more <code>host</code> sub-elements used to specify the hosts
         to connect.
-        <span class="since">Since 0.0.3</span>
-        For "file" disk type which represents cdrom or floppy
-        (the <code>device</code> attribute) it is possible to define
-        policy what to do with disk if source is not accessible.
-        This is done by <code>startupPolicy</code> attribute accepting
+        <span class="since">Since 0.0.3; <code>type='dir'</code> since
+        0.7.5; <code>type='network'</code> since 0.8.7</span><br/>
+        For a "file" disk type which represents a cdrom or floppy
+        (the <code>device</code> attribute), it is possible to define
+        policy what to do with the disk if the source file is not accessible.
+        This is done by the <code>startupPolicy</code> attribute, accepting
         these values:
         <table class="top_table">
           <tr>
