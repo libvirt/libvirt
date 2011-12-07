@@ -2391,7 +2391,7 @@ error:
  * @domain: a domain object
  *
  * Resume a suspended domain, the process is restarted from the state where
- * it was frozen by calling virSuspendDomain().
+ * it was frozen by calling virDomainSuspend().
  * This function may require privileged access
  *
  * Returns 0 in case of success and -1 in case of failure.
