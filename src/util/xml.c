@@ -833,3 +833,23 @@ virXMLSaveFile(const char *path,
 
     return virFileRewrite(path, S_IRUSR | S_IWUSR, virXMLRewriteFile, &data);
 }
+
+/* Returns the number of children of node, or -1 on error.  */
+long
+virXMLChildElementCount(xmlNodePtr node)
+{
+    long ret = 0;
+    xmlNodePtr cur = NULL;
+
+    /* xmlChildElementCount returns 0 on error, which isn't helpful;
+     * besides, it is not available in libxml2 2.6.  */
+    if (!node || node->type != XML_ELEMENT_NODE)
+        return -1;
+    cur = node->children;
+    while (cur) {
+        if (cur->type == XML_ELEMENT_NODE)
+            ret++;
+        cur = cur->next;
+    }
+    return ret;
+}

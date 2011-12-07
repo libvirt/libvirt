@@ -11919,7 +11919,7 @@ vshNodeIsSuperset(xmlNodePtr n1, xmlNodePtr n2)
     bool found;
     bool visited;
     bool ret = false;
-    unsigned long n1_child_size, n2_child_size, n1_iter;
+    long n1_child_size, n2_child_size, n1_iter;
     virBitmapPtr bitmap;
 
     if (!n1 && !n2)
@@ -11948,9 +11948,10 @@ vshNodeIsSuperset(xmlNodePtr n1, xmlNodePtr n2)
         attr = attr->next;
     }
 
-    n1_child_size = xmlChildElementCount(n1);
-    n2_child_size = xmlChildElementCount(n2);
-    if (n1_child_size < n2_child_size)
+    n1_child_size = virXMLChildElementCount(n1);
+    n2_child_size = virXMLChildElementCount(n2);
+    if (n1_child_size < 0 || n2_child_size < 0 ||
+        n1_child_size < n2_child_size)
         return false;
 
     if (n1_child_size == 0 && n2_child_size == 0)

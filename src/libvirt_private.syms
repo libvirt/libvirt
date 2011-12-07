@@ -1400,6 +1400,7 @@ virTimeStringThenRaw;
 
 
 # xml.h
+virXMLChildElementCount;
 virXMLParseHelper;
 virXMLPropString;
 virXMLSaveFile;
