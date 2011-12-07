@@ -1861,6 +1861,8 @@ testDomainRestoreFlags(virConnectPtr conn,
         return -1;
     }
 
+    testDriverLock(privconn);
+
     if ((fd = open(path, O_RDONLY)) < 0) {
         virReportSystemError(errno,
                              _("cannot read domain image '%s'"),
@@ -1900,7 +1902,6 @@ testDomainRestoreFlags(virConnectPtr conn,
     }
     xml[len] = '\0';
 
-    testDriverLock(privconn);
     def = virDomainDefParseString(privconn->caps, xml,
                                   1 << VIR_DOMAIN_VIRT_TEST,
                                   VIR_DOMAIN_XML_INACTIVE);
