@@ -56,6 +56,7 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
 /* Generate string for arch-specific '-device' parameter */
 char *
 qemuBuildChrDeviceStr (virDomainChrDefPtr serial,
+                       virBitmapPtr qemuCaps,
                        char *os_arch,
                        char *machine);
 

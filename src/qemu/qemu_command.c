@@ -4586,7 +4586,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                 VIR_FREE(devstr);
 
                 virCommandAddArg(cmd, "-device");
-                if (!(devstr = qemuBuildChrDeviceStr(serial, def->os.arch,
+                if (!(devstr = qemuBuildChrDeviceStr(serial, qemuCaps,
+                                                     def->os.arch,
                                                      def->os.machine)))
                    goto error;
                 virCommandAddArg(cmd, devstr);
@@ -5482,15 +5483,18 @@ qemuBuildCommandLine(virConnectPtr conn,
  */
 char *
 qemuBuildChrDeviceStr(virDomainChrDefPtr serial,
+                       virBitmapPtr qemuCaps,
                        char *os_arch,
                        char *machine)
 {
     virBuffer cmd = VIR_BUFFER_INITIALIZER;
 
-    if (STREQ(os_arch, "ppc64") && STREQ(machine, "pseries"))
+    if (STREQ(os_arch, "ppc64") && STREQ(machine, "pseries")) {
         virBufferAsprintf(&cmd, "spapr-vty,chardev=char%s",
                           serial->info.alias);
-    else
+        if (qemuBuildDeviceAddressStr(&cmd, &serial->info, qemuCaps) < 0)
+            goto error;
+    } else
         virBufferAsprintf(&cmd, "isa-serial,chardev=char%s,id=%s",
                           serial->info.alias, serial->info.alias);
 
