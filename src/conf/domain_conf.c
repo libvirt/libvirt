@@ -3385,6 +3385,9 @@ error:
     return ret;
 }
 
+#define NET_MODEL_CHARS \
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ091234567890_-"
+
 /* Parse the XML definition for a network interface
  * @param node XML nodeset to parse for net definition
  * @return 0 on success, -1 on failure
@@ -3699,16 +3702,13 @@ virDomainNetDefParseXML(virCapsPtr caps,
      * reasonable, not that it is a supported NIC type.  FWIW kvm
      * supports these types as of April 2008:
      * i82551 i82557b i82559er ne2k_pci pcnet rtl8139 e1000 virtio
+     * QEMU PPC64 supports spapr-vlan
      */
     if (model != NULL) {
-        int i;
-        for (i = 0 ; i < strlen(model) ; i++) {
-            int char_ok = c_isalnum(model[i]) || model[i] == '_';
-            if (!char_ok) {
-                virDomainReportError(VIR_ERR_INVALID_ARG, "%s",
-                                     _("Model name contains invalid characters"));
-                goto error;
-            }
+        if (strspn(model, NET_MODEL_CHARS) < strlen(model)) {
+            virDomainReportError(VIR_ERR_INVALID_ARG, "%s",
+                                 _("Model name contains invalid characters"));
+            goto error;
         }
         def->model = model;
         model = NULL;
