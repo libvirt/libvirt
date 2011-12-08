@@ -1253,6 +1253,17 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %endif
 
 %changelog
+* Thu Dec  8 2011 Daniel Veillard <veillard@redhat.com> - 0.9.8-1
+- Add support for QEMU 1.0
+- Add preliminary PPC cpu driver
+- Add new API virDomain{Set, Get}BlockIoTune
+- block_resize: Define the new API
+- Add a public API to invoke suspend/resume on the host
+- various improvements for LXC containers
+- Define keepalive protocol and add virConnectIsAlive API
+- Add support for STP and VLAN filtering
+- many improvements and bug fixes
+
 * Tue Nov  8 2011 Daniel Veillard <veillard@redhat.com> - 0.9.7-1
 - esx: support vSphere 5.x
 - vbox: support for VirtualBox 4.1
