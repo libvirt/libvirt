@@ -6400,8 +6400,8 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
             }
         }
 
-        virDomainFree(dom);
-        return true;
+        ret =  true;
+        goto cleanup;
     } else {
         /* Set the block I/O throttle, match by opt since parameters can be 0 */
         params = vshCalloc(ctl, nparams, sizeof(*params));
