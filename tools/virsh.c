@@ -1541,6 +1541,7 @@ cmdDomIfGetLink (vshControl *ctl, const vshCmd *cmd)
                     VIR_FREE(mac);
                     goto hit;
                 }
+                VIR_FREE(mac);
             }
             cur = cur->next;
         }
@@ -6400,7 +6401,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
             }
         }
 
-        ret =  true;
+        ret = true;
         goto cleanup;
     } else {
         /* Set the block I/O throttle, match by opt since parameters can be 0 */
