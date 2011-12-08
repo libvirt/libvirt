@@ -329,7 +329,7 @@ int qemuDomainAttachPciControllerDevice(struct qemud_driver *driver,
             goto cleanup;
         }
 
-        if (!(devstr = qemuBuildControllerDevStr(controller, priv->qemuCaps, NULL))) {
+        if (!(devstr = qemuBuildControllerDevStr(vm->def, controller, priv->qemuCaps, NULL))) {
             goto cleanup;
         }
     }

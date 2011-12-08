@@ -95,7 +95,8 @@ char * qemuBuildDriveDevStr(virDomainDiskDefPtr disk,
 char * qemuBuildFSDevStr(virDomainFSDefPtr fs,
                          virBitmapPtr qemuCaps);
 /* Current, best practice */
-char * qemuBuildControllerDevStr(virDomainControllerDefPtr def,
+char * qemuBuildControllerDevStr(virDomainDefPtr domainDef,
+                                 virDomainControllerDefPtr def,
                                  virBitmapPtr qemuCaps,
                                  int *nusbcontroller);
 

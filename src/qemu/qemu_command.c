@@ -2117,7 +2117,8 @@ qemuBuildUSBControllerDevStr(virDomainControllerDefPtr def,
 }
 
 char *
-qemuBuildControllerDevStr(virDomainControllerDefPtr def,
+qemuBuildControllerDevStr(virDomainDefPtr domainDef,
+                          virDomainControllerDefPtr def,
                           virBitmapPtr qemuCaps,
                           int *nusbcontroller)
 {
@@ -2125,7 +2126,12 @@ qemuBuildControllerDevStr(virDomainControllerDefPtr def,
 
     switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
-        virBufferAddLit(&buf, "lsi");
+        if (STREQ(domainDef->os.arch, "ppc64") &&
+            STREQ(domainDef->os.machine, "pseries")) {
+            virBufferAddLit(&buf, "spapr-vscsi");
+        } else {
+            virBufferAddLit(&buf, "lsi");
+        }
         virBufferAsprintf(&buf, ",id=scsi%d", def->idx);
         break;
 
@@ -4039,7 +4045,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                     char *devstr;
 
                     virCommandAddArg(cmd, "-device");
-                    if (!(devstr = qemuBuildControllerDevStr(cont, qemuCaps, NULL)))
+                    if (!(devstr = qemuBuildControllerDevStr(def, cont, qemuCaps, NULL)))
                         goto error;
 
                     virCommandAddArg(cmd, devstr);
@@ -4058,7 +4064,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                 virCommandAddArg(cmd, "-device");
 
                 char *devstr;
-                if (!(devstr = qemuBuildControllerDevStr(def->controllers[i], qemuCaps,
+                if (!(devstr = qemuBuildControllerDevStr(def, def->controllers[i], qemuCaps,
                                                          &usbcontroller)))
                     goto error;
 
