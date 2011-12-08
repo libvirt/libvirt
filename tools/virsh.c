@@ -1759,6 +1759,9 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
 cleanup:
     VIR_FREE(disks);
     virDomainFree(dom);
+    VIR_FREE(xml);
+    xmlFreeDoc(xmldoc);
+    xmlXPathFreeContext(ctxt);
     return ret;
 }
 
