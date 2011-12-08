@@ -810,6 +810,10 @@ cleanup:
     return ret;
 }
 
+int qemuDomainAssignAddresses(virDomainDefPtr def)
+{
+    return qemuDomainAssignPCIAddresses(def);
+}
 
 static void
 qemuDomainPCIAddressSetFreeEntry(void *payload,

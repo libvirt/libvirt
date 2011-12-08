@@ -174,6 +174,8 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
                                         virDomainChrSourceDefPtr *monConfig,
                                         bool *monJSON);
 
+int qemuDomainAssignAddresses(virDomainDefPtr def);
+
 int qemuDomainAssignPCIAddresses(virDomainDefPtr def);
 qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def);
 int qemuDomainPCIAddressReserveFunction(qemuDomainPCIAddressSetPtr addrs,
