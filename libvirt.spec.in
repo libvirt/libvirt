@@ -147,7 +147,7 @@
 %endif
 
 # Fedora doesn't have new enough Xen for libxl until F16
-%if 0%{?fedora} < 16
+%if 0%{?fedora} && 0%{?fedora} < 16
 %define with_libxl 0
 %endif
 
@@ -948,7 +948,7 @@ fi
 %if %{with_cgconfig}
 # Starting with Fedora 16, systemd automounts all cgroups, and cgconfig is
 # no longer a necessary service.
-%if 0%{?fedora} <= 15 || 0%{?rhel} <= 6
+%if 0%{?rhel} || (0%{?fedora} && 0%{?fedora} < 16)
 if [ "$1" -eq "1" ]; then
 /sbin/chkconfig cgconfig on
 fi
