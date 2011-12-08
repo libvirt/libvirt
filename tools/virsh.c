@@ -1568,6 +1568,7 @@ hit:
     /* attribute not found */
     vshPrint(ctl, "%s default", iface);
 
+    ret = true;
 cleanup:
     xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
