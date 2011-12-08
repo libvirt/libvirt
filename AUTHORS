@@ -29,6 +29,7 @@ The primary maintainers and people with commit access rights:
   Wen Congyang         <wency@cn.fujitsu.com>
   Michal Prívozník     <mprivozn@redhat.com>
   Peter Krempa         <pkrempa@redhat.com>
+  Christophe Fergeau   <cfergeau@redhat.com>
 
 Previous maintainers:
   Karel Zak            <kzak@redhat.com>
@@ -157,7 +158,6 @@ Patches have also been contributed by:
   Zdenek Styblik       <stybla@turnovfree.net>
   Gui Jianfeng         <guijianfeng@cn.fujitsu.com>
   Michal Novotny       <minovotn@redhat.com>
-  Christophe Fergeau   <cfergeau@redhat.com>
   Markus Groß          <gross@univention.de>
   Phil Petty           <phpetty@cisco.com>
   Taku Izumi           <izumi.taku@jp.fujitsu.com>
