@@ -100,6 +100,12 @@
     <feature name='pni'> <!-- CPUID_EXT_SSE3 -->
       <cpuid function='0x00000001' ecx='0x00000001'/>
     </feature>
+    <feature name='pclmuldq'>
+      <cpuid function='0x00000001' ecx='0x00000002'/>
+    </feature>
+    <feature name='dtes64'>
+      <cpuid function='0x00000001' ecx='0x00000004'/>
+    </feature>
     <feature name='monitor'> <!-- CPUID_EXT_MONITOR -->
       <cpuid function='0x00000001' ecx='0x00000008'/>
     </feature>
@@ -108,6 +114,9 @@
     </feature>
     <feature name='vmx'> <!-- CPUID_EXT_VMX -->
       <cpuid function='0x00000001' ecx='0x00000020'/>
+    </feature>
+     <feature name='smx'>
+      <cpuid function='0x00000001' ecx='0x00000040'/>
     </feature>
     <feature name='est'> <!-- CPUID_EXT_EST -->
       <cpuid function='0x00000001' ecx='0x00000080'/>
@@ -121,11 +130,17 @@
     <feature name='cid'> <!-- CPUID_EXT_CID -->
       <cpuid function='0x00000001' ecx='0x00000400'/>
     </feature>
+    <feature name='fma'>
+      <cpuid function='0x00000001' ecx='0x00001000'/>
+    </feature>
     <feature name='cx16'> <!-- CPUID_EXT_CX16 -->
       <cpuid function='0x00000001' ecx='0x00002000'/>
     </feature>
     <feature name='xtpr'> <!-- CPUID_EXT_XTPR -->
       <cpuid function='0x00000001' ecx='0x00004000'/>
+    </feature>
+    <feature name='pdcm'>
+      <cpuid function='0x00000001' ecx='0x00008000'/>
     </feature>
     <feature name='dca'> <!-- CPUID_EXT_DCA -->
       <cpuid function='0x00000001' ecx='0x00040000'/>
@@ -139,11 +154,23 @@
     <feature name='x2apic'> <!-- CPUID_EXT_X2APIC -->
       <cpuid function='0x00000001' ecx='0x00200000'/>
     </feature>
+    <feature name='movbe'>
+      <cpuid function='0x00000001' ecx='0x00400000'/>
+    </feature>
     <feature name='popcnt'> <!-- CPUID_EXT_POPCNT -->
       <cpuid function='0x00000001' ecx='0x00800000'/>
     </feature>
     <feature name='aes'>
       <cpuid function='0x00000001' ecx='0x02000000'/>
+    </feature>
+    <feature name='xsave'>
+      <cpuid function='0x00000001' ecx='0x04000000'/>
+    </feature>
+    <feature name='osxsave'>
+      <cpuid function='0x00000001' ecx='0x08000000'/>
+    </feature>
+    <feature name='avx'>
+      <cpuid function='0x00000001' ecx='0x10000000'/>
     </feature>
     <feature name='hypervisor'> <!-- CPUID_EXT_HYPERVISOR -->
       <cpuid function='0x00000001' ecx='0x80000000'/>
