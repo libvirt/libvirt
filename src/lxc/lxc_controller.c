@@ -1388,9 +1388,9 @@ lxcControllerRun(virDomainDefPtr def,
             VIR_FREE(devptmx);
         }
     } else {
-        if (nttyFDs != -1) {
-            lxcError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                     _("Expected exactly one TTY fd"));
+        if (nttyFDs != 1) {
+            lxcError(VIR_ERR_CONFIG_UNSUPPORTED,
+                     _("Expected exactly one TTY fd, but got %zu"), nttyFDs);
             goto cleanup;
         }
     }
