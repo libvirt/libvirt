@@ -776,7 +776,7 @@ gzip -9 ChangeLog
 %install
 rm -fr %{buildroot}
 
-%makeinstall SYSTEMD_UNIT_DIR=%{_unitdir}
+%makeinstall SYSTEMD_UNIT_DIR=%{buildroot}%{_unitdir}
 for i in domain-events/events-c dominfo domsuspend hellolibvirt openauth python xml/nwfilter systemtap
 do
   (cd examples/$i ; make clean ; rm -rf .deps .libs Makefile Makefile.in)
