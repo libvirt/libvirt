@@ -128,14 +128,18 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     qemuDriverLock(driver);
     virDomainObjLock(vm);
 
-    if (!virDomainObjIsActive(vm)) {
-        VIR_DEBUG("Domain %p is not active, ignoring EOF", vm);
-        virDomainObjUnlock(vm);
-        qemuDriverUnlock(driver);
-        return;
+    priv = vm->privateData;
+
+    if (priv->beingDestroyed) {
+        VIR_DEBUG("Domain is being destroyed, EOF is expected");
+        goto unlock;
     }
 
-    priv = vm->privateData;
+    if (!virDomainObjIsActive(vm)) {
+        VIR_DEBUG("Domain %p is not active, ignoring EOF", vm);
+        goto unlock;
+    }
+
     if (priv->monJSON && !priv->gotShutdown) {
         VIR_DEBUG("Monitor connection to '%s' closed without SHUTDOWN event; "
                   "assuming the domain crashed", vm->def->name);
@@ -150,11 +154,15 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     qemuProcessStop(driver, vm, 0, stopReason);
     virDomainAuditStop(vm, auditReason);
 
-    if (!vm->persistent)
+    if (!vm->persistent) {
         qemuDomainRemoveInactive(driver, vm);
-    else
-        virDomainObjUnlock(vm);
+        goto cleanup;
+    }
 
+unlock:
+    virDomainObjUnlock(vm);
+
+cleanup:
     if (event)
         qemuDomainEventQueue(driver, event);
     qemuDriverUnlock(driver);

@@ -1678,6 +1678,7 @@ qemuDomainDestroyFlags(virDomainPtr dom,
     virDomainObjPtr vm;
     int ret = -1;
     virDomainEventPtr event = NULL;
+    qemuDomainObjPrivatePtr priv;
 
     virCheckFlags(0, -1);
 
@@ -1691,6 +1692,8 @@ qemuDomainDestroyFlags(virDomainPtr dom,
         goto cleanup;
     }
 
+    priv = vm->privateData;
+
     qemuDomainSetFakeReboot(driver, vm, false);
 
     /* Although qemuProcessStop does this already, there may
@@ -1700,8 +1703,15 @@ qemuDomainDestroyFlags(virDomainPtr dom,
      */
     qemuProcessKill(vm, false);
 
+    /* We need to prevent monitor EOF callback from doing our work (and sending
+     * misleading events) while the vm is unlocked inside BeginJob API
+     */
+    priv->beingDestroyed = true;
+
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_DESTROY) < 0)
         goto cleanup;
+
+    priv->beingDestroyed = false;
 
     if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,

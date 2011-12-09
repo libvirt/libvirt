@@ -110,6 +110,7 @@ struct _qemuDomainObjPrivate {
     bool monError;
     unsigned long long monStart;
     bool gotShutdown;
+    bool beingDestroyed;
     char *pidfile;
 
     int nvcpupids;
