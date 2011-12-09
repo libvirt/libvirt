@@ -88,8 +88,14 @@ void virMutexUnlock(virMutexPtr m);
 int virCondInit(virCondPtr c) ATTRIBUTE_RETURN_CHECK;
 int virCondDestroy(virCondPtr c) ATTRIBUTE_RETURN_CHECK;
 
+/* virCondWait, virCondWaitUntil:
+ * These functions can return without the associated predicate
+ * changing value. Therefore in nearly all cases they
+ * should be enclosed in a while loop that checks the predicate.
+ */
 int virCondWait(virCondPtr c, virMutexPtr m) ATTRIBUTE_RETURN_CHECK;
 int virCondWaitUntil(virCondPtr c, virMutexPtr m, unsigned long long whenms) ATTRIBUTE_RETURN_CHECK;
+
 void virCondSignal(virCondPtr c);
 void virCondBroadcast(virCondPtr c);
 
