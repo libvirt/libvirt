@@ -214,23 +214,24 @@ static const char state_str[]        = "state";
  * @attr: The attribute to look up
  * @res: Pointer to string pointer for result
  *
- * Returns 1 if value was found with result returned, 0 otherwise.
+ * Returns 0 if value was found with result returned, -1 otherwise.
  *
  * lookup a map entry given the integer.
  */
-static bool
+static int
 intMapGetByInt(const struct int_map *intmap, int32_t attr, const char **res)
 {
     int i = 0;
-    bool found = 0;
+    bool found = false;
+
     while (intmap[i].val && !found) {
         if (intmap[i].attr == attr) {
             *res = intmap[i].val;
-            found = 1;
+            found = true;
         }
         i++;
     }
-    return found;
+    return (found) ? 0 : -1;
 }
 
 
@@ -241,26 +242,27 @@ intMapGetByInt(const struct int_map *intmap, int32_t attr, const char **res)
  * @casecmp : Whether to ignore case when doing string matching
  * @result: Pointer to int for result
  *
- * Returns 0 if no entry was found, 1 otherwise.
+ * Returns 0 if entry was found, -1 otherwise.
  *
  * Do a lookup in the map trying to find an integer key using the string
- * value. Returns 1 if entry was found with result returned, 0 otherwise.
+ * value. Returns 0 if entry was found with result returned, -1 otherwise.
  */
-static bool
+static int
 intMapGetByString(const struct int_map *intmap, const char *str, int casecmp,
                   int32_t *result)
 {
     int i = 0;
-    bool found = 0;
+    bool found = false;
+
     while (intmap[i].val && !found) {
         if ( (casecmp && STRCASEEQ(intmap[i].val, str)) ||
                          STREQ    (intmap[i].val, str)    ) {
             *result = intmap[i].attr;
-            found = 1;
+            found = true;
         }
         i++;
     }
-    return found;
+    return (found) ? 0 : -1;
 }
 
 
@@ -367,14 +369,14 @@ virNWFilterRuleDefAddVar(virNWFilterRuleDefPtr nwf,
 
     if (VIR_REALLOC_N(nwf->vars, nwf->nvars+1) < 0) {
         virReportOOMError();
-        return 1;
+        return -1;
     }
 
     nwf->vars[nwf->nvars] = strdup(var);
 
     if (!nwf->vars[nwf->nvars]) {
         virReportOOMError();
-        return 1;
+        return -1;
     }
 
     item->var = nwf->vars[nwf->nvars++];
@@ -479,7 +481,7 @@ checkMacProtocolID(enum attrDatatype datatype, union data *value,
     int32_t res = -1;
 
     if (datatype == DATATYPE_STRING) {
-        if (intMapGetByString(macProtoMap, value->c, 1, &res) == 0)
+        if (intMapGetByString(macProtoMap, value->c, 1, &res) < 0)
             res = -1;
         datatype = DATATYPE_UINT16;
     } else if (datatype == DATATYPE_UINT16 ||
@@ -492,10 +494,10 @@ checkMacProtocolID(enum attrDatatype datatype, union data *value,
     if (res != -1) {
         nwf->p.ethHdrFilter.dataProtocolID.u.u16 = res;
         nwf->p.ethHdrFilter.dataProtocolID.datatype = datatype;
-        return 1;
+        return true;
     }
 
-    return 0;
+    return false;
 }
 
 
@@ -509,7 +511,7 @@ macProtocolIDFormatter(virBufferPtr buf,
 
     if (intMapGetByInt(macProtoMap,
                        nwf->p.ethHdrFilter.dataProtocolID.u.u16,
-                       &str)) {
+                       &str) == 0) {
         virBufferAdd(buf, str, -1);
     } else {
         if (nwf->p.ethHdrFilter.dataProtocolID.datatype == DATATYPE_UINT16)
@@ -517,7 +519,7 @@ macProtocolIDFormatter(virBufferPtr buf,
         virBufferAsprintf(buf, asHex ? "0x%x" : "%d",
                           nwf->p.ethHdrFilter.dataProtocolID.u.u16);
     }
-    return 1;
+    return true;
 }
 
 
@@ -550,7 +552,7 @@ checkVlanProtocolID(enum attrDatatype datatype, union data *value,
     int32_t res = -1;
 
     if (datatype == DATATYPE_STRING) {
-        if (intMapGetByString(macProtoMap, value->c, 1, &res) == 0)
+        if (intMapGetByString(macProtoMap, value->c, 1, &res) < 0)
             res = -1;
         datatype = DATATYPE_UINT16;
     } else if (datatype == DATATYPE_UINT16 ||
@@ -579,7 +581,7 @@ vlanProtocolIDFormatter(virBufferPtr buf,
 
     if (intMapGetByInt(macProtoMap,
                        nwf->p.vlanHdrFilter.dataVlanEncap.u.u16,
-                       &str)) {
+                       &str) == 0) {
         virBufferAdd(buf, str, -1);
     } else {
         if (nwf->p.vlanHdrFilter.dataVlanEncap.datatype == DATATYPE_UINT16)
@@ -607,7 +609,7 @@ checkValidMask(unsigned char *data, int len)
                 checkones = 0;
         } else {
             if ((data[idx>>3] & mask))
-                return 0;
+                return false;
         }
 
         idx++;
@@ -615,7 +617,7 @@ checkValidMask(unsigned char *data, int len)
         if (!mask)
             mask = 0x80;
     }
-    return 1;
+    return true;
 }
 
 
@@ -655,7 +657,7 @@ arpOpcodeValidator(enum attrDatatype datatype,
     int32_t res = -1;
 
     if (datatype == DATATYPE_STRING) {
-        if (intMapGetByString(arpOpcodeMap, value->c, 1, &res) == 0)
+        if (intMapGetByString(arpOpcodeMap, value->c, 1, &res) < 0)
             res = -1;
         datatype = DATATYPE_UINT16;
     } else if (datatype == DATATYPE_UINT16 ||
@@ -666,9 +668,9 @@ arpOpcodeValidator(enum attrDatatype datatype,
     if (res != -1) {
         nwf->p.arpHdrFilter.dataOpcode.u.u16 = res;
         nwf->p.arpHdrFilter.dataOpcode.datatype = datatype;
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 
@@ -681,12 +683,12 @@ arpOpcodeFormatter(virBufferPtr buf,
 
     if (intMapGetByInt(arpOpcodeMap,
                        nwf->p.arpHdrFilter.dataOpcode.u.u16,
-                       &str)) {
+                       &str) == 0) {
         virBufferAdd(buf, str, -1);
     } else {
         virBufferAsprintf(buf, "%d", nwf->p.arpHdrFilter.dataOpcode.u.u16);
     }
-    return 1;
+    return true;
 }
 
 
@@ -708,15 +710,16 @@ static const struct int_map ipProtoMap[] = {
 };
 
 
-static bool checkIPProtocolID(enum attrDatatype datatype,
-                              union data *value,
-                              virNWFilterRuleDefPtr nwf,
-                              nwItemDesc *item ATTRIBUTE_UNUSED)
+static bool
+checkIPProtocolID(enum attrDatatype datatype,
+                  union data *value,
+                  virNWFilterRuleDefPtr nwf,
+                  nwItemDesc *item ATTRIBUTE_UNUSED)
 {
     int32_t res = -1;
 
     if (datatype == DATATYPE_STRING) {
-        if (intMapGetByString(ipProtoMap, value->c, 1, &res) == 0)
+        if (intMapGetByString(ipProtoMap, value->c, 1, &res) < 0)
             res = -1;
         datatype = DATATYPE_UINT8_HEX;
     } else if (datatype == DATATYPE_UINT8 ||
@@ -727,9 +730,9 @@ static bool checkIPProtocolID(enum attrDatatype datatype,
     if (res != -1) {
         nwf->p.ipHdrFilter.ipHdr.dataProtocolID.u.u8 = res;
         nwf->p.ipHdrFilter.ipHdr.dataProtocolID.datatype = datatype;
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 
@@ -743,7 +746,7 @@ formatIPProtocolID(virBufferPtr buf,
 
     if (intMapGetByInt(ipProtoMap,
                        nwf->p.ipHdrFilter.ipHdr.dataProtocolID.u.u8,
-                       &str)) {
+                       &str) == 0) {
         virBufferAdd(buf, str, -1);
     } else {
         if (nwf->p.ipHdrFilter.ipHdr.dataProtocolID.datatype == DATATYPE_UINT8)
@@ -751,7 +754,7 @@ formatIPProtocolID(virBufferPtr buf,
         virBufferAsprintf(buf, asHex ? "0x%x" : "%d",
                           nwf->p.ipHdrFilter.ipHdr.dataProtocolID.u.u8);
     }
-    return 1;
+    return true;
 }
 
 
@@ -762,11 +765,11 @@ dscpValidator(enum attrDatatype datatype, union data *val,
 {
     uint8_t dscp = val->ui;
     if (dscp > 63)
-        return 0;
+        return false;
 
     nwf->p.ipHdrFilter.ipHdr.dataDSCP.datatype = datatype;
 
-    return 1;
+    return true;
 }
 
 
@@ -805,7 +808,7 @@ parseStringItems(const struct int_map *int_map,
             }
         }
         if (!found) {
-            rc = 1;
+            rc = -1;
             break;
         }
     }
@@ -874,15 +877,15 @@ stateValidator(enum attrDatatype datatype ATTRIBUTE_UNUSED, union data *val,
     char *input = val->c;
     int32_t flags = 0;
 
-    if (parseStateMatch(input, &flags))
-        return 0;
+    if (parseStateMatch(input, &flags) < 0)
+        return false;
 
     item->u.u16 = flags;
     nwf->flags |= flags;
 
     item->datatype = DATATYPE_UINT16;
 
-    return 1;
+    return true;
 }
 
 
@@ -929,8 +932,8 @@ tcpFlagsValidator(enum attrDatatype datatype ATTRIBUTE_UNUSED, union data *val,
 
     *sep = '\0';
 
-    if (!parseStringItems(tcpFlags, s_mask , &mask , ',') &&
-        !parseStringItems(tcpFlags, s_flags, &flags, ',')) {
+    if (parseStringItems(tcpFlags, s_mask , &mask , ',') == 0 &&
+        parseStringItems(tcpFlags, s_flags, &flags, ',') == 0 ) {
         item->u.tcpFlags.mask  = mask  & 0x3f;
         item->u.tcpFlags.flags = flags & 0x3f;
         rc = true;
@@ -1663,13 +1666,11 @@ static const virAttributes virAttr[] = {
 };
 
 
-static bool
+static int
 virNWMACAddressParser(const char *input,
                       nwMACAddressPtr output)
 {
-    if (virParseMacAddr(input, &output->addr[0]) == 0)
-        return 1;
-    return 0;
+    return virParseMacAddr(input, &output->addr[0]);
 }
 
 
@@ -1714,7 +1715,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                 flags_set |= NWFILTER_ENTRY_ITEM_FLAG_HAS_VAR;
                 if (virNWFilterRuleDefAddVar(nwf,
                                              item,
-                                             &prop[1]))
+                                             &prop[1]) < 0)
                     rc = -1;
                 found = 1;
             }
@@ -1805,8 +1806,8 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                         break;
 
                         case DATATYPE_MACADDR:
-                            if (!virNWMACAddressParser(prop,
-                                                       &item->u.macaddr)) {
+                            if (virNWMACAddressParser(prop,
+                                                      &item->u.macaddr) < 0) {
                                 rc = -1;
                             }
                             found = 1;
@@ -1814,8 +1815,8 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
 
                         case DATATYPE_MACMASK:
                             validator = checkMACMask;
-                            if (!virNWMACAddressParser(prop,
-                                                       &item->u.macaddr)) {
+                            if (virNWMACAddressParser(prop,
+                                                      &item->u.macaddr) < 0) {
                                 rc = -1;
                             }
                             data.v = &item->u.macaddr;
@@ -2418,8 +2419,8 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
         } else {
             /* assign default priority if none can be found via lookup */
             if (!name_prefix ||
-                !intMapGetByString(chain_priorities, name_prefix, 0,
-                                   &ret->chainPriority)) {
+                 intMapGetByString(chain_priorities, name_prefix, 0,
+                                   &ret->chainPriority) < 0) {
                 /* assign default chain priority */
                 ret->chainPriority = (NWFILTER_MAX_FILTER_PRIORITY +
                                       NWFILTER_MIN_FILTER_PRIORITY) / 2;
@@ -2620,7 +2621,7 @@ int virNWFilterSaveConfig(const char *configDir,
     if (!(xml = virNWFilterDefFormat(def)))
         goto cleanup;
 
-    if (virNWFilterSaveXML(configDir, def, xml))
+    if (virNWFilterSaveXML(configDir, def, xml) < 0)
         goto cleanup;
 
     ret = 0;
@@ -2649,7 +2650,7 @@ _virNWFilterDefLoopDetect(virConnectPtr conn,
         if (entry->include) {
 
             if (STREQ(filtername, entry->include->filterref)) {
-                rc = 1;
+                rc = -1;
                 break;
             }
 
@@ -2660,8 +2661,8 @@ _virNWFilterDefLoopDetect(virConnectPtr conn,
                                                obj->def, filtername);
 
                 virNWFilterObjUnlock(obj);
-                if (rc)
-                   break;
+                if (rc < 0)
+                    break;
             }
         }
     }
@@ -2679,7 +2680,7 @@ _virNWFilterDefLoopDetect(virConnectPtr conn,
  * Detect a loop introduced through the filters being able to
  * reference each other.
  *
- * Returns 0 in case no loop was detected, 1 otherwise.
+ * Returns 0 in case no loop was detected, -1 otherwise.
  */
 static int
 virNWFilterDefLoopDetect(virConnectPtr conn,
@@ -2736,7 +2737,7 @@ virNWFilterTriggerVMFilterRebuild(virConnectPtr conn)
     };
 
     if (!cb.skipInterfaces)
-        return 1;
+        return -1;
 
     for (i = 0; i < nCallbackDriver; i++) {
         callbackDrvArray[i]->vmFilterRebuild(conn,
@@ -2778,7 +2779,7 @@ virNWFilterTestUnassignDef(virConnectPtr conn,
     nwfilter->wantRemoved = 1;
     /* trigger the update on VMs referencing the filter */
     if (virNWFilterTriggerVMFilterRebuild(conn))
-        rc = 1;
+        rc = -1;
 
     nwfilter->wantRemoved = 0;
 
@@ -2807,7 +2808,7 @@ virNWFilterObjAssignDef(virConnectPtr conn,
         virNWFilterObjUnlock(nwfilter);
     }
 
-    if (virNWFilterDefLoopDetect(conn, nwfilters, def)) {
+    if (virNWFilterDefLoopDetect(conn, nwfilters, def) < 0) {
         virNWFilterReportError(VIR_ERR_OPERATION_FAILED,
                               "%s", _("filter would introduce a loop"));
         return NULL;
@@ -3297,8 +3298,8 @@ int virNWFilterConfLayerInit(virHashIterator domUpdateCB)
 
     initialized = true;
 
-    if (virMutexInitRecursive(&updateMutex))
-        return 1;
+    if (virMutexInitRecursive(&updateMutex) < 0)
+        return -1;
 
     return 0;
 }

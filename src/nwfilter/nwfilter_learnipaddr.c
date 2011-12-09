@@ -149,7 +149,7 @@ virNWFilterLockIface(const char *ifname) {
             goto err_exit;
         }
 
-        if (virMutexInitRecursive(&ifaceLock->lock)) {
+        if (virMutexInitRecursive(&ifaceLock->lock) < 0) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("mutex initialization failed"));
             VIR_FREE(ifaceLock);
@@ -184,7 +184,7 @@ virNWFilterLockIface(const char *ifname) {
  err_exit:
     virMutexUnlock(&ifaceMapLock);
 
-    return 1;
+    return -1;
 }
 
 
@@ -248,7 +248,7 @@ virNWFilterRegisterLearnReq(virNWFilterIPAddrLearnReqPtr req) {
 
 int
 virNWFilterTerminateLearnReq(const char *ifname) {
-    int rc = 1;
+    int rc = -1;
     int ifindex;
     virNWFilterIPAddrLearnReqPtr req;
 
@@ -336,9 +336,6 @@ virNWFilterAddIpAddrForIfname(const char *ifname, char *addr)
             goto cleanup;
         }
         ret = virNWFilterHashTablePut(ipAddressMap, ifname, val, 1);
-        /* FIXME: fix when return code of virNWFilterHashTablePut changes */
-        if (ret)
-            ret = -1;
         goto cleanup;
     } else {
         if (virNWFilterVarValueAddValue(val, addr) < 0)
@@ -494,7 +491,7 @@ learnIPAddressThread(void *arg)
     enum howDetect howDetected = 0;
     virNWFilterTechDriverPtr techdriver = req->techdriver;
 
-    if (virNWFilterLockIface(req->ifname))
+    if (virNWFilterLockIface(req->ifname) < 0)
        goto err_no_lock;
 
     req->status = 0;
@@ -520,7 +517,7 @@ learnIPAddressThread(void *arg)
     case DETECT_DHCP:
         if (techdriver->applyDHCPOnlyRules(req->ifname,
                                            req->macaddr,
-                                           NULL, false)) {
+                                           NULL, false) < 0) {
             req->status = EINVAL;
             goto done;
         }
@@ -530,7 +527,7 @@ learnIPAddressThread(void *arg)
         break;
     default:
         if (techdriver->applyBasicRules(req->ifname,
-                                        req->macaddr)) {
+                                        req->macaddr) < 0) {
             req->status = EINVAL;
             goto done;
         }
@@ -701,7 +698,7 @@ learnIPAddressThread(void *arg)
         sa.data.inet4.sin_addr.s_addr = vmaddr;
         char *inetaddr;
 
-        if ((inetaddr = virSocketAddrFormat(&sa))!= NULL) {
+        if ((inetaddr = virSocketAddrFormat(&sa)) != NULL) {
             if (virNWFilterAddIpAddrForIfname(req->ifname, inetaddr) < 0) {
                 VIR_ERROR(_("Failed to add IP address %s to IP address "
                           "cache for interface %s"), inetaddr, req->ifname);
@@ -781,14 +778,14 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
     virNWFilterHashTablePtr ht = NULL;
 
     if (howDetect == 0)
-        return 1;
+        return -1;
 
     if ( !techdriver->canApplyBasicRules()) {
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("IP parameter must be provided since "
                                  "snooping the IP address does not work "
                                  "possibly due to missing tools"));
-        return 1;
+        return -1;
     }
 
     if (VIR_ALLOC(req) < 0) {
@@ -802,7 +799,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
         goto err_free_req;
     }
 
-    if (virNWFilterHashTablePutAll(filterparams, ht))
+    if (virNWFilterHashTablePutAll(filterparams, ht) < 0)
         goto err_free_ht;
 
     req->filtername = strdup(filtername);
@@ -838,7 +835,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
 
     rc = virNWFilterRegisterLearnReq(req);
 
-    if (rc)
+    if (rc < 0)
         goto err_free_req;
 
     if (pthread_create(&req->thread,
@@ -856,7 +853,7 @@ err_free_ht:
 err_free_req:
     virNWFilterIPAddrLearnReqFree(req);
 err_no_req:
-    return 1;
+    return -1;
 }
 
 #else
@@ -876,7 +873,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver ATTRIBUTE_UNUSED,
                            _("IP parameter must be given since libvirt "
                              "was not compiled with IP address learning "
                              "support"));
-    return 1;
+    return -1;
 }
 #endif /* HAVE_LIBPCAP */
 
@@ -895,35 +892,35 @@ virNWFilterLearnInit(void) {
 
     pendingLearnReq = virHashCreate(0, freeLearnReqEntry);
     if (!pendingLearnReq) {
-        return 1;
+        return -1;
     }
 
-    if (virMutexInit(&pendingLearnReqLock)) {
+    if (virMutexInit(&pendingLearnReqLock) < 0) {
         virNWFilterLearnShutdown();
-        return 1;
+        return -1;
     }
 
     ipAddressMap = virNWFilterHashTableCreate(0);
     if (!ipAddressMap) {
         virReportOOMError();
         virNWFilterLearnShutdown();
-        return 1;
+        return -1;
     }
 
-    if (virMutexInit(&ipAddressMapLock)) {
+    if (virMutexInit(&ipAddressMapLock) < 0) {
         virNWFilterLearnShutdown();
-        return 1;
+        return -1;
     }
 
     ifaceLockMap = virHashCreate(0, freeIfaceLock);
     if (!ifaceLockMap) {
         virNWFilterLearnShutdown();
-        return 1;
+        return -1;
     }
 
-    if (virMutexInit(&ifaceMapLock)) {
+    if (virMutexInit(&ifaceMapLock) < 0) {
         virNWFilterLearnShutdown();
-        return 1;
+        return -1;
     }
 
     return 0;

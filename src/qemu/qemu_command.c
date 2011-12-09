@@ -275,8 +275,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
 
     if (tapfd >= 0) {
         if ((net->filter) && (net->ifname)) {
-            err = virDomainConfNWFilterInstantiate(conn, net);
-            if (err)
+            if (virDomainConfNWFilterInstantiate(conn, net) < 0)
                 VIR_FORCE_CLOSE(tapfd);
         }
     }

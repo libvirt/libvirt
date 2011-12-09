@@ -233,15 +233,15 @@ printVar(virNWFilterVarCombIterPtr vars,
         val = virNWFilterVarCombIterGetVarValue(vars, item->var);
         if (!val) {
             /* error has been reported */
-            return 1;
+            return -1;
         }
 
         if (!virStrcpy(buf, val, bufsize)) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Buffer to small to print MAC address "
+                                   _("Buffer too small to print MAC address "
                                    "'%s' into"),
                                    item->var);
-            return 1;
+            return -1;
         }
 
         *done = 1;
@@ -259,8 +259,8 @@ _printDataType(virNWFilterVarCombIterPtr vars,
     int done;
     char *data;
 
-    if (printVar(vars, buf, bufsize, item, &done))
-        return 1;
+    if (printVar(vars, buf, bufsize, item, &done) < 0)
+        return -1;
 
     if (done)
         return 0;
@@ -269,12 +269,12 @@ _printDataType(virNWFilterVarCombIterPtr vars,
     case DATATYPE_IPADDR:
         data = virSocketAddrFormat(&item->u.ipaddr);
         if (!data)
-            return 1;
+            return -1;
         if (snprintf(buf, bufsize, "%s", data) >= bufsize) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("buffer too small for IP address"));
             VIR_FREE(data);
-            return 1;
+            return -1;
         }
         VIR_FREE(data);
     break;
@@ -282,13 +282,13 @@ _printDataType(virNWFilterVarCombIterPtr vars,
     case DATATYPE_IPV6ADDR:
         data = virSocketAddrFormat(&item->u.ipaddr);
         if (!data)
-            return 1;
+            return -1;
 
         if (snprintf(buf, bufsize, "%s", data) >= bufsize) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("buffer too small for IPv6 address"));
             VIR_FREE(data);
-            return 1;
+            return -1;
         }
         VIR_FREE(data);
     break;
@@ -298,7 +298,7 @@ _printDataType(virNWFilterVarCombIterPtr vars,
         if (bufsize < VIR_MAC_STRING_BUFLEN) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("Buffer too small for MAC address"));
-            return 1;
+            return -1;
         }
 
         virFormatMacAddr(item->u.macaddr.addr, buf);
@@ -310,7 +310,7 @@ _printDataType(virNWFilterVarCombIterPtr vars,
                      item->u.u8) >= bufsize) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("Buffer too small for uint8 type"));
-            return 1;
+            return -1;
         }
     break;
 
@@ -320,7 +320,7 @@ _printDataType(virNWFilterVarCombIterPtr vars,
                      item->u.u32) >= bufsize) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("Buffer too small for uint32 type"));
-            return 1;
+            return -1;
         }
     break;
 
@@ -330,7 +330,7 @@ _printDataType(virNWFilterVarCombIterPtr vars,
                      item->u.u16) >= bufsize) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("Buffer too small for uint16 type"));
-            return 1;
+            return -1;
         }
     break;
 
@@ -340,14 +340,14 @@ _printDataType(virNWFilterVarCombIterPtr vars,
                      item->u.u8) >= bufsize) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("Buffer too small for uint8 type"));
-            return 1;
+            return -1;
         }
     break;
 
     default:
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unhandled datatype %x"), item->datatype);
-        return 1;
+        return -1;
     break;
     }
 
@@ -417,7 +417,7 @@ ebiptablesAddRuleInst(virNWFilterRuleInstPtr res,
 
     if (VIR_ALLOC(inst) < 0) {
         virReportOOMError();
-        return 1;
+        return -1;
     }
 
     inst->commandTemplate = commandTemplate;
@@ -442,7 +442,7 @@ ebtablesHandleEthHdr(virBufferPtr buf,
     if (HAS_ENTRY_ITEM(&ethHdr->dataSrcMACAddr)) {
         if (printDataType(vars,
                           macaddr, sizeof(macaddr),
-                          &ethHdr->dataSrcMACAddr))
+                          &ethHdr->dataSrcMACAddr) < 0)
             goto err_exit;
 
         virBufferAsprintf(buf,
@@ -454,7 +454,7 @@ ebtablesHandleEthHdr(virBufferPtr buf,
         if (HAS_ENTRY_ITEM(&ethHdr->dataSrcMACMask)) {
             if (printDataType(vars,
                               macaddr, sizeof(macaddr),
-                              &ethHdr->dataSrcMACMask))
+                              &ethHdr->dataSrcMACMask) < 0)
                 goto err_exit;
 
             virBufferAsprintf(buf,
@@ -466,7 +466,7 @@ ebtablesHandleEthHdr(virBufferPtr buf,
     if (HAS_ENTRY_ITEM(&ethHdr->dataDstMACAddr)) {
         if (printDataType(vars,
                           macaddr, sizeof(macaddr),
-                          &ethHdr->dataDstMACAddr))
+                          &ethHdr->dataDstMACAddr) < 0)
             goto err_exit;
 
         virBufferAsprintf(buf,
@@ -478,7 +478,7 @@ ebtablesHandleEthHdr(virBufferPtr buf,
         if (HAS_ENTRY_ITEM(&ethHdr->dataDstMACMask)) {
             if (printDataType(vars,
                               macaddr, sizeof(macaddr),
-                              &ethHdr->dataDstMACMask))
+                              &ethHdr->dataDstMACMask) < 0)
                 goto err_exit;
 
             virBufferAsprintf(buf,
@@ -492,7 +492,7 @@ ebtablesHandleEthHdr(virBufferPtr buf,
  err_exit:
     virBufferFreeAndReset(buf);
 
-    return 1;
+    return -1;
 }
 
 
@@ -895,7 +895,7 @@ iptablesHandleSrcMacAddr(virBufferPtr buf,
 
         if (printDataType(vars,
                           macaddr, sizeof(macaddr),
-                          srcMacAddr))
+                          srcMacAddr) < 0)
             goto err_exit;
 
         virBufferAsprintf(buf,
@@ -909,7 +909,7 @@ iptablesHandleSrcMacAddr(virBufferPtr buf,
 err_exit:
     virBufferFreeAndReset(buf);
 
-    return 1;
+    return -1;
 }
 
 
@@ -940,7 +940,7 @@ iptablesHandleIpHdr(virBufferPtr buf,
 
         if (printDataType(vars,
                           ipaddr, sizeof(ipaddr),
-                          &ipHdr->dataSrcIPAddr))
+                          &ipHdr->dataSrcIPAddr) < 0)
             goto err_exit;
 
         virBufferAsprintf(buf,
@@ -953,7 +953,7 @@ iptablesHandleIpHdr(virBufferPtr buf,
 
             if (printDataType(vars,
                               number, sizeof(number),
-                              &ipHdr->dataSrcIPMask))
+                              &ipHdr->dataSrcIPMask) < 0)
                 goto err_exit;
 
             virBufferAsprintf(buf,
@@ -964,7 +964,7 @@ iptablesHandleIpHdr(virBufferPtr buf,
 
         if (printDataType(vars,
                           ipaddr, sizeof(ipaddr),
-                          &ipHdr->dataSrcIPFrom))
+                          &ipHdr->dataSrcIPFrom) < 0)
             goto err_exit;
 
         virBufferAsprintf(buf,
@@ -977,7 +977,7 @@ iptablesHandleIpHdr(virBufferPtr buf,
 
             if (printDataType(vars,
                               ipaddr, sizeof(ipaddr),
-                              &ipHdr->dataSrcIPTo))
+                              &ipHdr->dataSrcIPTo) < 0)
                 goto err_exit;
 
             virBufferAsprintf(buf,
@@ -990,7 +990,7 @@ iptablesHandleIpHdr(virBufferPtr buf,
 
         if (printDataType(vars,
                           ipaddr, sizeof(ipaddr),
-                          &ipHdr->dataDstIPAddr))
+                          &ipHdr->dataDstIPAddr) < 0)
            goto err_exit;
 
         virBufferAsprintf(buf,
@@ -1003,7 +1003,7 @@ iptablesHandleIpHdr(virBufferPtr buf,
 
             if (printDataType(vars,
                               number, sizeof(number),
-                              &ipHdr->dataDstIPMask))
+                              &ipHdr->dataDstIPMask) < 0)
                 goto err_exit;
 
             virBufferAsprintf(buf,
@@ -1015,7 +1015,7 @@ iptablesHandleIpHdr(virBufferPtr buf,
 
         if (printDataType(vars,
                           ipaddr, sizeof(ipaddr),
-                          &ipHdr->dataDstIPFrom))
+                          &ipHdr->dataDstIPFrom) < 0)
             goto err_exit;
 
         virBufferAsprintf(buf,
@@ -1028,7 +1028,7 @@ iptablesHandleIpHdr(virBufferPtr buf,
 
             if (printDataType(vars,
                               ipaddr, sizeof(ipaddr),
-                              &ipHdr->dataDstIPTo))
+                              &ipHdr->dataDstIPTo) < 0)
                 goto err_exit;
 
             virBufferAsprintf(buf,
@@ -1041,7 +1041,7 @@ iptablesHandleIpHdr(virBufferPtr buf,
 
         if (printDataType(vars,
                           number, sizeof(number),
-                          &ipHdr->dataDSCP))
+                          &ipHdr->dataDSCP) < 0)
            goto err_exit;
 
         virBufferAsprintf(buf,
@@ -1057,7 +1057,7 @@ iptablesHandleIpHdr(virBufferPtr buf,
         } else {
             if (printDataType(vars,
                               number, sizeof(number),
-                              &ipHdr->dataConnlimitAbove))
+                              &ipHdr->dataConnlimitAbove) < 0)
                goto err_exit;
 
             /* place connlimit after potential -m state --state ...
@@ -1085,7 +1085,7 @@ err_exit:
     virBufferFreeAndReset(buf);
     virBufferFreeAndReset(afterStateMatch);
 
-    return 1;
+    return -1;
 }
 
 
@@ -1106,7 +1106,7 @@ iptablesHandlePortData(virBufferPtr buf,
     if (HAS_ENTRY_ITEM(&portData->dataSrcPortStart)) {
         if (printDataType(vars,
                           portstr, sizeof(portstr),
-                          &portData->dataSrcPortStart))
+                          &portData->dataSrcPortStart) < 0)
             goto err_exit;
 
         virBufferAsprintf(buf,
@@ -1118,7 +1118,7 @@ iptablesHandlePortData(virBufferPtr buf,
         if (HAS_ENTRY_ITEM(&portData->dataSrcPortEnd)) {
             if (printDataType(vars,
                               portstr, sizeof(portstr),
-                              &portData->dataSrcPortEnd))
+                              &portData->dataSrcPortEnd) < 0)
                 goto err_exit;
 
              virBufferAsprintf(buf,
@@ -1130,7 +1130,7 @@ iptablesHandlePortData(virBufferPtr buf,
     if (HAS_ENTRY_ITEM(&portData->dataDstPortStart)) {
         if (printDataType(vars,
                           portstr, sizeof(portstr),
-                          &portData->dataDstPortStart))
+                          &portData->dataDstPortStart) < 0)
             goto err_exit;
 
         virBufferAsprintf(buf,
@@ -1142,7 +1142,7 @@ iptablesHandlePortData(virBufferPtr buf,
         if (HAS_ENTRY_ITEM(&portData->dataDstPortEnd)) {
             if (printDataType(vars,
                               portstr, sizeof(portstr),
-                              &portData->dataDstPortEnd))
+                              &portData->dataDstPortEnd) < 0)
                 goto err_exit;
 
              virBufferAsprintf(buf,
@@ -1154,7 +1154,7 @@ iptablesHandlePortData(virBufferPtr buf,
     return 0;
 
 err_exit:
-    return 1;
+    return -1;
 }
 
 
@@ -1244,7 +1244,7 @@ _iptablesCreateRuleInstance(int directionIn,
                                      vars,
                                      &rule->p.tcpHdrFilter.dataSrcMACAddr,
                                      directionIn,
-                                     &srcMacSkipped))
+                                     &srcMacSkipped) < 0)
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
@@ -1253,7 +1253,7 @@ _iptablesCreateRuleInstance(int directionIn,
                                 &rule->p.tcpHdrFilter.ipHdr,
                                 directionIn,
                                 &skipRule, &skipMatch,
-                                &prefix))
+                                &prefix) < 0)
             goto err_exit;
 
         if (HAS_ENTRY_ITEM(&rule->p.tcpHdrFilter.dataTCPFlags)) {
@@ -1268,13 +1268,13 @@ _iptablesCreateRuleInstance(int directionIn,
         if (iptablesHandlePortData(&buf,
                                    vars,
                                    &rule->p.tcpHdrFilter.portData,
-                                   directionIn))
+                                   directionIn) < 0)
             goto err_exit;
 
         if (HAS_ENTRY_ITEM(&rule->p.tcpHdrFilter.dataTCPOption)) {
             if (printDataType(vars,
                               number, sizeof(number),
-                              &rule->p.tcpHdrFilter.dataTCPOption))
+                              &rule->p.tcpHdrFilter.dataTCPOption) < 0)
                 goto err_exit;
 
             virBufferAsprintf(&buf,
@@ -1299,7 +1299,7 @@ _iptablesCreateRuleInstance(int directionIn,
                                      vars,
                                      &rule->p.udpHdrFilter.dataSrcMACAddr,
                                      directionIn,
-                                     &srcMacSkipped))
+                                     &srcMacSkipped) < 0)
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
@@ -1308,13 +1308,13 @@ _iptablesCreateRuleInstance(int directionIn,
                                 &rule->p.udpHdrFilter.ipHdr,
                                 directionIn,
                                 &skipRule, &skipMatch,
-                                &prefix))
+                                &prefix) < 0)
             goto err_exit;
 
         if (iptablesHandlePortData(&buf,
                                    vars,
                                    &rule->p.udpHdrFilter.portData,
-                                   directionIn))
+                                   directionIn) < 0)
             goto err_exit;
     break;
 
@@ -1332,7 +1332,7 @@ _iptablesCreateRuleInstance(int directionIn,
                                      vars,
                                      &rule->p.udpliteHdrFilter.dataSrcMACAddr,
                                      directionIn,
-                                     &srcMacSkipped))
+                                     &srcMacSkipped) < 0)
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
@@ -1341,7 +1341,7 @@ _iptablesCreateRuleInstance(int directionIn,
                                 &rule->p.udpliteHdrFilter.ipHdr,
                                 directionIn,
                                 &skipRule, &skipMatch,
-                                &prefix))
+                                &prefix) < 0)
             goto err_exit;
 
     break;
@@ -1360,7 +1360,7 @@ _iptablesCreateRuleInstance(int directionIn,
                                      vars,
                                      &rule->p.espHdrFilter.dataSrcMACAddr,
                                      directionIn,
-                                     &srcMacSkipped))
+                                     &srcMacSkipped) < 0)
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
@@ -1369,7 +1369,7 @@ _iptablesCreateRuleInstance(int directionIn,
                                 &rule->p.espHdrFilter.ipHdr,
                                 directionIn,
                                 &skipRule, &skipMatch,
-                                &prefix))
+                                &prefix) < 0)
             goto err_exit;
 
     break;
@@ -1388,7 +1388,7 @@ _iptablesCreateRuleInstance(int directionIn,
                                      vars,
                                      &rule->p.ahHdrFilter.dataSrcMACAddr,
                                      directionIn,
-                                     &srcMacSkipped))
+                                     &srcMacSkipped) < 0)
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
@@ -1397,7 +1397,7 @@ _iptablesCreateRuleInstance(int directionIn,
                                 &rule->p.ahHdrFilter.ipHdr,
                                 directionIn,
                                 &skipRule, &skipMatch,
-                                &prefix))
+                                &prefix) < 0)
             goto err_exit;
 
     break;
@@ -1416,7 +1416,7 @@ _iptablesCreateRuleInstance(int directionIn,
                                      vars,
                                      &rule->p.sctpHdrFilter.dataSrcMACAddr,
                                      directionIn,
-                                     &srcMacSkipped))
+                                     &srcMacSkipped) < 0)
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
@@ -1425,13 +1425,13 @@ _iptablesCreateRuleInstance(int directionIn,
                                 &rule->p.sctpHdrFilter.ipHdr,
                                 directionIn,
                                 &skipRule, &skipMatch,
-                                &prefix))
+                                &prefix) < 0)
             goto err_exit;
 
         if (iptablesHandlePortData(&buf,
                                    vars,
                                    &rule->p.sctpHdrFilter.portData,
-                                   directionIn))
+                                   directionIn) < 0)
             goto err_exit;
     break;
 
@@ -1452,7 +1452,7 @@ _iptablesCreateRuleInstance(int directionIn,
                                      vars,
                                      &rule->p.icmpHdrFilter.dataSrcMACAddr,
                                      directionIn,
-                                     &srcMacSkipped))
+                                     &srcMacSkipped) < 0)
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
@@ -1461,7 +1461,7 @@ _iptablesCreateRuleInstance(int directionIn,
                                 &rule->p.icmpHdrFilter.ipHdr,
                                 directionIn,
                                 &skipRule, &skipMatch,
-                                &prefix))
+                                &prefix) < 0)
             goto err_exit;
 
         if (HAS_ENTRY_ITEM(&rule->p.icmpHdrFilter.dataICMPType)) {
@@ -1479,7 +1479,7 @@ _iptablesCreateRuleInstance(int directionIn,
 
             if (printDataType(vars,
                               number, sizeof(number),
-                              &rule->p.icmpHdrFilter.dataICMPType))
+                              &rule->p.icmpHdrFilter.dataICMPType) < 0)
                 goto err_exit;
 
             virBufferAsprintf(&buf,
@@ -1491,7 +1491,7 @@ _iptablesCreateRuleInstance(int directionIn,
             if (HAS_ENTRY_ITEM(&rule->p.icmpHdrFilter.dataICMPCode)) {
                 if (printDataType(vars,
                                   number, sizeof(number),
-                                  &rule->p.icmpHdrFilter.dataICMPCode))
+                                  &rule->p.icmpHdrFilter.dataICMPCode) < 0)
                     goto err_exit;
 
                  virBufferAsprintf(&buf,
@@ -1514,7 +1514,7 @@ _iptablesCreateRuleInstance(int directionIn,
                                      vars,
                                      &rule->p.igmpHdrFilter.dataSrcMACAddr,
                                      directionIn,
-                                     &srcMacSkipped))
+                                     &srcMacSkipped) < 0)
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
@@ -1523,7 +1523,7 @@ _iptablesCreateRuleInstance(int directionIn,
                                 &rule->p.igmpHdrFilter.ipHdr,
                                 directionIn,
                                 &skipRule, &skipMatch,
-                                &prefix))
+                                &prefix) < 0)
             goto err_exit;
 
     break;
@@ -1542,7 +1542,7 @@ _iptablesCreateRuleInstance(int directionIn,
                                      vars,
                                      &rule->p.allHdrFilter.dataSrcMACAddr,
                                      directionIn,
-                                     &srcMacSkipped))
+                                     &srcMacSkipped) < 0)
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
@@ -1551,7 +1551,7 @@ _iptablesCreateRuleInstance(int directionIn,
                                 &rule->p.allHdrFilter.ipHdr,
                                 directionIn,
                                 &skipRule, &skipMatch,
-                                &prefix))
+                                &prefix) < 0)
             goto err_exit;
 
     break;
@@ -1664,7 +1664,7 @@ printStateMatchFlags(int32_t flags, char **bufptr)
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
-        return 1;
+        return -1;
     }
     *bufptr = virBufferContentAndReset(&buf);
     return 0;
@@ -1704,8 +1704,8 @@ iptablesCreateRuleInstanceStateCtrl(virNWFilterDefPtr nwfilter,
     }
 
     if (create && (rule->flags & IPTABLES_STATE_FLAGS)) {
-        if (printStateMatchFlags(rule->flags, &matchState))
-            return 1;
+        if (printStateMatchFlags(rule->flags, &matchState) < 0)
+            return -1;
     }
 
     chainPrefix[1] = CHAINPREFIX_HOST_IN_TEMP;
@@ -1723,7 +1723,7 @@ iptablesCreateRuleInstanceStateCtrl(virNWFilterDefPtr nwfilter,
                                          maySkipICMP);
 
         VIR_FREE(matchState);
-        if (rc)
+        if (rc < 0)
             return rc;
     }
 
@@ -1736,8 +1736,8 @@ iptablesCreateRuleInstanceStateCtrl(virNWFilterDefPtr nwfilter,
     }
 
     if (create && (rule->flags & IPTABLES_STATE_FLAGS)) {
-        if (printStateMatchFlags(rule->flags, &matchState))
-            return 1;
+        if (printStateMatchFlags(rule->flags, &matchState) < 0)
+            return -1;
     }
 
     chainPrefix[1] = CHAINPREFIX_HOST_OUT_TEMP;
@@ -1756,7 +1756,7 @@ iptablesCreateRuleInstanceStateCtrl(virNWFilterDefPtr nwfilter,
 
         VIR_FREE(matchState);
 
-        if (rc)
+        if (rc < 0)
             return rc;
     }
 
@@ -1769,8 +1769,8 @@ iptablesCreateRuleInstanceStateCtrl(virNWFilterDefPtr nwfilter,
             create = false;
     } else {
         if ((rule->flags & IPTABLES_STATE_FLAGS)) {
-            if (printStateMatchFlags(rule->flags, &matchState))
-                return 1;
+            if (printStateMatchFlags(rule->flags, &matchState) < 0)
+                return -1;
         }
     }
 
@@ -1852,7 +1852,7 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
                                      "RETURN",
                                      isIPv6,
                                      maySkipICMP);
-    if (rc)
+    if (rc < 0)
         return rc;
 
 
@@ -1874,7 +1874,7 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
                                      "ACCEPT",
                                      isIPv6,
                                      maySkipICMP);
-    if (rc)
+    if (rc < 0)
         return rc;
 
     maySkipICMP = directionIn;
@@ -1963,13 +1963,13 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (ebtablesHandleEthHdr(&buf,
                                  vars,
                                  &rule->p.ethHdrFilter.ethHdr,
-                                 reverse))
+                                 reverse) < 0)
             goto err_exit;
 
         if (HAS_ENTRY_ITEM(&rule->p.ethHdrFilter.dataProtocolID)) {
             if (printDataTypeAsHex(vars,
                                    number, sizeof(number),
-                                   &rule->p.ethHdrFilter.dataProtocolID))
+                                   &rule->p.ethHdrFilter.dataProtocolID) < 0)
                 goto err_exit;
             virBufferAsprintf(&buf,
                           " -p %s %s",
@@ -1988,7 +1988,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (ebtablesHandleEthHdr(&buf,
                                  vars,
                                  &rule->p.vlanHdrFilter.ethHdr,
-                                 reverse))
+                                 reverse) < 0)
             goto err_exit;
 
         virBufferAddLit(&buf,
@@ -1998,7 +1998,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM)) { \
             if (printDataType(vars, \
                               field, sizeof(field), \
-                              &rule->p.STRUCT.ITEM)) \
+                              &rule->p.STRUCT.ITEM) < 0) \
                 goto err_exit; \
             virBufferAsprintf(&buf, \
                           " " CLI " %s %s", \
@@ -2010,7 +2010,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM)) { \
             if (printDataType(vars, \
                               field, sizeof(field), \
-                              &rule->p.STRUCT.ITEM)) \
+                              &rule->p.STRUCT.ITEM) < 0) \
                 goto err_exit; \
             virBufferAsprintf(&buf, \
                           " " CLI " %s %s", \
@@ -2019,7 +2019,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
             if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM_HI)) { \
                 if (printDataType(vars, \
                                   field, sizeof(field), \
-                                  &rule->p.STRUCT.ITEM_HI)) \
+                                  &rule->p.STRUCT.ITEM_HI) < 0) \
                     goto err_exit; \
                 virBufferAsprintf(&buf, SEP "%s", field); \
             } \
@@ -2055,7 +2055,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (ebtablesHandleEthHdr(&buf,
                                  vars,
                                  &rule->p.stpHdrFilter.ethHdr,
-                                 reverse))
+                                 reverse) < 0)
             goto err_exit;
 
         virBufferAddLit(&buf, " -d " NWFILTER_MAC_BGA);
@@ -2092,7 +2092,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (ebtablesHandleEthHdr(&buf,
                                  vars,
                                  &rule->p.arpHdrFilter.ethHdr,
-                                 reverse))
+                                 reverse) < 0)
             goto err_exit;
 
         virBufferAsprintf(&buf, " -p 0x%x",
@@ -2103,7 +2103,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataHWType)) {
              if (printDataType(vars,
                                number, sizeof(number),
-                               &rule->p.arpHdrFilter.dataHWType))
+                               &rule->p.arpHdrFilter.dataHWType) < 0)
                 goto err_exit;
            virBufferAsprintf(&buf,
                           " --arp-htype %s %s",
@@ -2114,7 +2114,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataOpcode)) {
             if (printDataType(vars,
                               number, sizeof(number),
-                              &rule->p.arpHdrFilter.dataOpcode))
+                              &rule->p.arpHdrFilter.dataOpcode) < 0)
                 goto err_exit;
             virBufferAsprintf(&buf,
                           " --arp-opcode %s %s",
@@ -2125,7 +2125,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataProtocolType)) {
             if (printDataTypeAsHex(vars,
                                    number, sizeof(number),
-                                   &rule->p.arpHdrFilter.dataProtocolType))
+                                   &rule->p.arpHdrFilter.dataProtocolType) < 0)
                 goto err_exit;
             virBufferAsprintf(&buf,
                           " --arp-ptype %s %s",
@@ -2136,7 +2136,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataARPSrcIPAddr)) {
             if (printDataType(vars,
                               ipaddr, sizeof(ipaddr),
-                              &rule->p.arpHdrFilter.dataARPSrcIPAddr))
+                              &rule->p.arpHdrFilter.dataARPSrcIPAddr) < 0)
                 goto err_exit;
 
             virBufferAsprintf(&buf,
@@ -2149,7 +2149,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataARPDstIPAddr)) {
             if (printDataType(vars,
                               ipaddr, sizeof(ipaddr),
-                              &rule->p.arpHdrFilter.dataARPDstIPAddr))
+                              &rule->p.arpHdrFilter.dataARPDstIPAddr) < 0)
                 goto err_exit;
 
             virBufferAsprintf(&buf,
@@ -2162,7 +2162,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataARPSrcMACAddr)) {
             if (printDataType(vars,
                               macaddr, sizeof(macaddr),
-                              &rule->p.arpHdrFilter.dataARPSrcMACAddr))
+                              &rule->p.arpHdrFilter.dataARPSrcMACAddr) < 0)
                 goto err_exit;
 
             virBufferAsprintf(&buf,
@@ -2175,7 +2175,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataARPDstMACAddr)) {
             if (printDataType(vars,
                               macaddr, sizeof(macaddr),
-                              &rule->p.arpHdrFilter.dataARPDstMACAddr))
+                              &rule->p.arpHdrFilter.dataARPDstMACAddr) < 0)
                 goto err_exit;
 
             virBufferAsprintf(&buf,
@@ -2201,7 +2201,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (ebtablesHandleEthHdr(&buf,
                                  vars,
                                  &rule->p.ipHdrFilter.ethHdr,
-                                 reverse))
+                                 reverse) < 0)
             goto err_exit;
 
         virBufferAddLit(&buf,
@@ -2210,7 +2210,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (HAS_ENTRY_ITEM(&rule->p.ipHdrFilter.ipHdr.dataSrcIPAddr)) {
             if (printDataType(vars,
                               ipaddr, sizeof(ipaddr),
-                              &rule->p.ipHdrFilter.ipHdr.dataSrcIPAddr))
+                              &rule->p.ipHdrFilter.ipHdr.dataSrcIPAddr) < 0)
                 goto err_exit;
 
             virBufferAsprintf(&buf,
@@ -2222,7 +2222,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
             if (HAS_ENTRY_ITEM(&rule->p.ipHdrFilter.ipHdr.dataSrcIPMask)) {
                 if (printDataType(vars,
                                   number, sizeof(number),
-                                  &rule->p.ipHdrFilter.ipHdr.dataSrcIPMask))
+                                  &rule->p.ipHdrFilter.ipHdr.dataSrcIPMask)
+                    < 0)
                     goto err_exit;
                 virBufferAsprintf(&buf,
                              "/%s",
@@ -2234,7 +2235,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
 
             if (printDataType(vars,
                               ipaddr, sizeof(ipaddr),
-                              &rule->p.ipHdrFilter.ipHdr.dataDstIPAddr))
+                              &rule->p.ipHdrFilter.ipHdr.dataDstIPAddr) < 0)
                 goto err_exit;
 
             virBufferAsprintf(&buf,
@@ -2246,7 +2247,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
             if (HAS_ENTRY_ITEM(&rule->p.ipHdrFilter.ipHdr.dataDstIPMask)) {
                 if (printDataType(vars,
                                   number, sizeof(number),
-                                  &rule->p.ipHdrFilter.ipHdr.dataDstIPMask))
+                                  &rule->p.ipHdrFilter.ipHdr.dataDstIPMask)
+                    < 0)
                     goto err_exit;
                 virBufferAsprintf(&buf,
                                   "/%s",
@@ -2257,7 +2259,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (HAS_ENTRY_ITEM(&rule->p.ipHdrFilter.ipHdr.dataProtocolID)) {
             if (printDataType(vars,
                               number, sizeof(number),
-                              &rule->p.ipHdrFilter.ipHdr.dataProtocolID))
+                              &rule->p.ipHdrFilter.ipHdr.dataProtocolID) < 0)
                 goto err_exit;
 
             virBufferAsprintf(&buf,
@@ -2270,7 +2272,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
 
             if (printDataType(vars,
                               number, sizeof(number),
-                              &rule->p.ipHdrFilter.portData.dataSrcPortStart))
+                              &rule->p.ipHdrFilter.portData.dataSrcPortStart)
+                < 0)
                 goto err_exit;
 
             virBufferAsprintf(&buf,
@@ -2282,7 +2285,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
             if (HAS_ENTRY_ITEM(&rule->p.ipHdrFilter.portData.dataSrcPortEnd)) {
                 if (printDataType(vars,
                                   number, sizeof(number),
-                                  &rule->p.ipHdrFilter.portData.dataSrcPortEnd))
+                                  &rule->p.ipHdrFilter.portData.dataSrcPortEnd)
+                    < 0)
                     goto err_exit;
 
                 virBufferAsprintf(&buf,
@@ -2295,7 +2299,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
 
             if (printDataType(vars,
                               number, sizeof(number),
-                              &rule->p.ipHdrFilter.portData.dataDstPortStart))
+                              &rule->p.ipHdrFilter.portData.dataDstPortStart)
+                < 0)
                 goto err_exit;
 
             virBufferAsprintf(&buf,
@@ -2307,7 +2312,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
             if (HAS_ENTRY_ITEM(&rule->p.ipHdrFilter.portData.dataDstPortEnd)) {
                 if (printDataType(vars,
                                 number, sizeof(number),
-                                &rule->p.ipHdrFilter.portData.dataDstPortEnd))
+                                &rule->p.ipHdrFilter.portData.dataDstPortEnd)
+                    < 0)
                     goto err_exit;
 
                 virBufferAsprintf(&buf,
@@ -2319,7 +2325,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (HAS_ENTRY_ITEM(&rule->p.ipHdrFilter.ipHdr.dataDSCP)) {
             if (printDataTypeAsHex(vars,
                                    number, sizeof(number),
-                                   &rule->p.ipHdrFilter.ipHdr.dataDSCP))
+                                   &rule->p.ipHdrFilter.ipHdr.dataDSCP) < 0)
                 goto err_exit;
 
             virBufferAsprintf(&buf,
@@ -2337,7 +2343,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (ebtablesHandleEthHdr(&buf,
                                  vars,
                                  &rule->p.ipv6HdrFilter.ethHdr,
-                                 reverse))
+                                 reverse) < 0)
             goto err_exit;
 
         virBufferAddLit(&buf,
@@ -2346,7 +2352,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.ipHdr.dataSrcIPAddr)) {
             if (printDataType(vars,
                               ipv6addr, sizeof(ipv6addr),
-                              &rule->p.ipv6HdrFilter.ipHdr.dataSrcIPAddr))
+                              &rule->p.ipv6HdrFilter.ipHdr.dataSrcIPAddr) < 0)
                 goto err_exit;
 
             virBufferAsprintf(&buf,
@@ -2358,7 +2364,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
             if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.ipHdr.dataSrcIPMask)) {
                 if (printDataType(vars,
                                   number, sizeof(number),
-                                  &rule->p.ipv6HdrFilter.ipHdr.dataSrcIPMask))
+                                  &rule->p.ipv6HdrFilter.ipHdr.dataSrcIPMask)
+                    < 0)
                     goto err_exit;
                 virBufferAsprintf(&buf,
                              "/%s",
@@ -2370,7 +2377,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
 
             if (printDataType(vars,
                               ipv6addr, sizeof(ipv6addr),
-                              &rule->p.ipv6HdrFilter.ipHdr.dataDstIPAddr))
+                              &rule->p.ipv6HdrFilter.ipHdr.dataDstIPAddr) < 0)
                 goto err_exit;
 
             virBufferAsprintf(&buf,
@@ -2382,7 +2389,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
             if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.ipHdr.dataDstIPMask)) {
                 if (printDataType(vars,
                                   number, sizeof(number),
-                                  &rule->p.ipv6HdrFilter.ipHdr.dataDstIPMask))
+                                  &rule->p.ipv6HdrFilter.ipHdr.dataDstIPMask)
+                    < 0)
                     goto err_exit;
                 virBufferAsprintf(&buf,
                                   "/%s",
@@ -2393,7 +2401,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
         if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.ipHdr.dataProtocolID)) {
             if (printDataType(vars,
                               number, sizeof(number),
-                              &rule->p.ipv6HdrFilter.ipHdr.dataProtocolID))
+                              &rule->p.ipv6HdrFilter.ipHdr.dataProtocolID) < 0)
                 goto err_exit;
 
             virBufferAsprintf(&buf,
@@ -2406,7 +2414,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
 
             if (printDataType(vars,
                               number, sizeof(number),
-                              &rule->p.ipv6HdrFilter.portData.dataSrcPortStart))
+                              &rule->p.ipv6HdrFilter.portData.dataSrcPortStart)
+                < 0)
                 goto err_exit;
 
             virBufferAsprintf(&buf,
@@ -2418,7 +2427,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
             if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.portData.dataSrcPortEnd)) {
                 if (printDataType(vars,
                                   number, sizeof(number),
-                                  &rule->p.ipv6HdrFilter.portData.dataSrcPortEnd))
+                                  &rule->p.ipv6HdrFilter.portData.dataSrcPortEnd)
+                    < 0)
                     goto err_exit;
 
                 virBufferAsprintf(&buf,
@@ -2431,7 +2441,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
 
             if (printDataType(vars,
                               number, sizeof(number),
-                              &rule->p.ipv6HdrFilter.portData.dataDstPortStart))
+                              &rule->p.ipv6HdrFilter.portData.dataDstPortStart)
+                < 0)
                 goto err_exit;
 
             virBufferAsprintf(&buf,
@@ -2443,7 +2454,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
             if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.portData.dataDstPortEnd)) {
                 if (printDataType(vars,
                                   number, sizeof(number),
-                                  &rule->p.ipv6HdrFilter.portData.dataDstPortEnd))
+                                  &rule->p.ipv6HdrFilter.portData.dataDstPortEnd)
+                    < 0)
                     goto err_exit;
 
                 virBufferAsprintf(&buf,
@@ -2510,7 +2522,7 @@ err_exit:
  * Convert a single rule into its representation for later instantiation
  *
  * Returns 0 in case of success with the result stored in the data structure
- * pointed to by res, != 0 otherwise.
+ * pointed to by res, -1 otherwise
  */
 static int
 ebiptablesCreateRuleInstance(enum virDomainNetType nettype ATTRIBUTE_UNUSED,
@@ -2542,7 +2554,7 @@ ebiptablesCreateRuleInstance(enum virDomainNetType nettype ATTRIBUTE_UNUSED,
                                             vars,
                                             res,
                                             rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT);
-            if (rc)
+            if (rc < 0)
                 return rc;
         }
 
@@ -2596,7 +2608,7 @@ ebiptablesCreateRuleInstance(enum virDomainNetType nettype ATTRIBUTE_UNUSED,
     case VIR_NWFILTER_RULE_PROTOCOL_LAST:
         virNWFilterReportError(VIR_ERR_OPERATION_FAILED,
                                "%s", _("illegal protocol type"));
-        rc = 1;
+        rc = -1;
     break;
     }
 
@@ -2621,7 +2633,7 @@ ebiptablesCreateRuleInstanceIterate(
      */
     vciter = virNWFilterVarCombIterCreate(vars, rule->vars, rule->nvars);
     if (!vciter)
-        return 1;
+        return -1;
 
     do {
         rc = ebiptablesCreateRuleInstance(nettype,
@@ -2630,7 +2642,7 @@ ebiptablesCreateRuleInstanceIterate(
                                           ifname,
                                           vciter,
                                           res);
-        if (rc)
+        if (rc < 0)
             break;
         vciter = virNWFilterVarCombIterNext(vciter);
     } while (vciter != NULL);
@@ -3092,7 +3104,7 @@ ebiptablesCanApplyBasicRules(void) {
  * @macaddr: MAC address the VM is using in packets sent through the
  *    interface
  *
- * Returns 0 on success, 1 on failure with the rules removed
+ * Returns 0 on success, -1 on failure with the rules removed
  *
  * Apply basic filtering rules on the given interface
  * - filtering for MAC address spoofing
@@ -3111,7 +3123,7 @@ ebtablesApplyBasicRules(const char *ifname,
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("cannot create rules since ebtables tool is "
                                  "missing."));
-        return 1;
+        return -1;
     }
 
     virFormatMacAddr(macaddr, macaddr_str);
@@ -3170,7 +3182,7 @@ tear_down_tmpebchains:
                            "%s",
                            _("Some rules could not be created."));
 
-    return 1;
+    return -1;
 }
 
 
@@ -3186,7 +3198,7 @@ tear_down_tmpebchains:
  *    names (true) or also perform the renaming to their final names as
  *    part of this call (false)
  *
- * Returns 0 on success, 1 on failure with the rules removed
+ * Returns 0 on success, -1 on failure with the rules removed
  *
  * Apply filtering rules so that the VM can only send and receive
  * DHCP traffic and nothing else.
@@ -3207,13 +3219,15 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("cannot create rules since ebtables tool is "
                                  "missing."));
-        return 1;
+        return -1;
     }
 
     if (dhcpserver) {
         virBufferAsprintf(&buf, " --ip-src %s", dhcpserver);
-        if (virBufferError(&buf))
-            return 1;
+        if (virBufferError(&buf)) {
+            virBufferFreeAndReset(&buf);
+            return -1;
+        }
         srcIPParam = virBufferContentAndReset(&buf);
     }
 
@@ -3298,7 +3312,7 @@ tear_down_tmpebchains:
 
     VIR_FREE(srcIPParam);
 
-    return 1;
+    return -1;
 }
 
 
@@ -3307,7 +3321,7 @@ tear_down_tmpebchains:
  *
  * @ifname: name of the backend-interface to which to apply the rules
  *
- * Returns 0 on success, 1 on failure with the rules removed
+ * Returns 0 on success, -1 on failure with the rules removed
  *
  * Apply filtering rules so that the VM cannot receive or send traffic.
  */
@@ -3322,7 +3336,7 @@ ebtablesApplyDropAllRules(const char *ifname)
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("cannot create rules since ebtables tool is "
                                  "missing."));
-        return 1;
+        return -1;
     }
 
     ebiptablesAllTeardown(ifname);
@@ -3368,7 +3382,7 @@ tear_down_tmpebchains:
                            "%s",
                            _("Some rules could not be created."));
 
-    return 1;
+    return -1;
 }
 
 
@@ -3575,13 +3589,13 @@ ebiptablesApplyNewRules(const char *ifname,
             const char *name = inst[i]->neededProtocolChain;
             if (inst[i]->chainprefix == CHAINPREFIX_HOST_IN_TEMP) {
                 if (virHashUpdateEntry(chains_in_set, name,
-                                       &inst[i]->chainPriority)) {
+                                       &inst[i]->chainPriority) < 0) {
                     virReportOOMError();
                     goto exit_free_sets;
                 }
             } else {
                 if (virHashUpdateEntry(chains_out_set, name,
-                                       &inst[i]->chainPriority)) {
+                                       &inst[i]->chainPriority) < 0) {
                     virReportOOMError();
                     goto exit_free_sets;
                 }
@@ -3606,9 +3620,9 @@ ebiptablesApplyNewRules(const char *ifname,
 
     /* create needed chains */
     if (ebtablesCreateTmpRootAndSubChains(&buf, ifname, chains_in_set , 1,
-                                          &ebtChains, &nEbtChains) ||
+                                          &ebtChains, &nEbtChains) < 0 ||
         ebtablesCreateTmpRootAndSubChains(&buf, ifname, chains_out_set, 0,
-                                          &ebtChains, &nEbtChains)) {
+                                          &ebtChains, &nEbtChains) < 0) {
         goto tear_down_tmpebchains;
     }
 
@@ -3809,7 +3823,7 @@ exit_free_sets:
 
     VIR_FREE(errmsg);
 
-    return 1;
+    return -1;
 }
 
 
@@ -3905,7 +3919,7 @@ ebiptablesTearOldRules(const char *ifname)
  *
  * Remove all rules one after the other
  *
- * Return 0 on success, 1 if execution of one or more cleanup
+ * Return 0 on success, -1 if execution of one or more cleanup
  * commands failed.
  */
 static int
@@ -3927,14 +3941,14 @@ ebiptablesRemoveRules(const char *ifname ATTRIBUTE_UNUSED,
                               'D', -1,
                               0);
 
-    if (ebiptablesExecCLI(&buf, &cli_status, NULL))
+    if (ebiptablesExecCLI(&buf, &cli_status, NULL) < 0)
         goto err_exit;
 
     if (cli_status) {
         virNWFilterReportError(VIR_ERR_BUILD_FIREWALL,
                                "%s",
                                _("error while executing CLI commands"));
-        rc = 1;
+        rc = -1;
     }
 
 err_exit:
@@ -4022,8 +4036,8 @@ ebiptablesDriverInit(bool privileged)
     if (!privileged)
         return 0;
 
-    if (virMutexInit(&execCLIMutex))
-        return EINVAL;
+    if (virMutexInit(&execCLIMutex) < 0)
+        return -EINVAL;
 
     gawk_cmd_path = virFindFileInPath("gawk");
     grep_cmd_path = virFindFileInPath("grep");
@@ -4086,7 +4100,7 @@ ebiptablesDriverInit(bool privileged)
                                _("firewall tools were not found or "
                                  "cannot be used"));
         ebiptablesDriverShutdown();
-        return ENOTSUP;
+        return -ENOTSUP;
     }
 
     ebiptables_driver.flags = TECHDRV_FLAG_INITIALIZED;

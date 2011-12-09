@@ -384,7 +384,7 @@ nwfilterUndefine(virNWFilterPtr obj) {
         goto cleanup;
     }
 
-    if (virNWFilterTestUnassignDef(obj->conn, nwfilter)) {
+    if (virNWFilterTestUnassignDef(obj->conn, nwfilter) < 0) {
         virNWFilterReportError(VIR_ERR_OPERATION_INVALID,
                                "%s",
                                _("nwfilter is in use"));

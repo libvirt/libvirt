@@ -42,9 +42,6 @@ int virNWFilterInstantiateFilter(virConnectPtr conn,
 int virNWFilterUpdateInstantiateFilter(virConnectPtr conn,
                                        const virDomainNetDefPtr net,
                                        bool *skipIface);
-int virNWFilterRollbackUpdateFilter(const virDomainNetDefPtr net);
-
-int virNWFilterTearOldFilter(const virDomainNetDefPtr net);
 
 int virNWFilterInstantiateFilterLate(const char *ifname,
                                      int ifindex,

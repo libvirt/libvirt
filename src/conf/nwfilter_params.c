@@ -82,7 +82,7 @@ virNWFilterVarValueCopy(const virNWFilterVarValuePtr val)
         }
         break;
     case NWFILTER_VALUE_TYPE_ARRAY:
-        if (VIR_ALLOC_N(res->u.array.values, val->u.array.nValues))
+        if (VIR_ALLOC_N(res->u.array.values, val->u.array.nValues) < 0)
             goto err_exit;
         res->u.array.nValues = val->u.array.nValues;
         for (i = 0; i < val->u.array.nValues; i++) {
@@ -490,7 +490,7 @@ hashDataFree(void *payload, const void *name ATTRIBUTE_UNUSED)
  * @val: The value associated with the key
  * @freeName: Whether the name must be freed on table destruction
  *
- * Returns 0 on success, 1 on failure.
+ * Returns 0 on success, -1 on failure.
  *
  * Put an entry into the hashmap replacing and freeing an existing entry
  * if one existed.
@@ -504,26 +504,28 @@ virNWFilterHashTablePut(virNWFilterHashTablePtr table,
     if (!virHashLookup(table->hashTable, name)) {
         if (copyName) {
             name = strdup(name);
-            if (!name)
-                return 1;
+            if (!name) {
+                virReportOOMError();
+                return -1;
+            }
 
             if (VIR_REALLOC_N(table->names, table->nNames + 1) < 0) {
                 VIR_FREE(name);
-                return 1;
+                return -1;
             }
             table->names[table->nNames++] = (char *)name;
         }
 
-        if (virHashAddEntry(table->hashTable, name, val) != 0) {
+        if (virHashAddEntry(table->hashTable, name, val) < 0) {
             if (copyName) {
                 VIR_FREE(name);
                 table->nNames--;
             }
-            return 1;
+            return -1;
         }
     } else {
-        if (virHashUpdateEntry(table->hashTable, name, val) != 0) {
-            return 1;
+        if (virHashUpdateEntry(table->hashTable, name, val) < 0) {
+            return -1;
         }
     }
     return 0;
@@ -614,7 +616,7 @@ addToTable(void *payload, const void *name, void *data)
         return;
     }
 
-    if (virNWFilterHashTablePut(atts->target, (const char *)name, val, 1) != 0) {
+    if (virNWFilterHashTablePut(atts->target, (const char *)name, val, 1) < 0){
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Could not put variable '%s' into hashmap"),
                                (const char *)name);
@@ -640,7 +642,7 @@ virNWFilterHashTablePutAll(virNWFilterHashTablePtr src,
     return 0;
 
 err_exit:
-    return 1;
+    return -1;
 }
 
 
@@ -700,7 +702,7 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
                         value = virNWFilterParseVarValue(val);
                         if (!value)
                             goto skip_entry;
-                        if (virNWFilterHashTablePut(table, nam, value, 1))
+                        if (virNWFilterHashTablePut(table, nam, value, 1) < 0)
                             goto err_exit;
                     }
                     value = NULL;
