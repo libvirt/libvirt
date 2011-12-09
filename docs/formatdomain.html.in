@@ -1404,12 +1404,90 @@
       </dd>
     </dl>
 
+    <h4><a name="elementsAddress">Device Addresses</a></h4>
+
+    <p>
+      Many devices have an optional <code>&lt;address&gt;</code>
+      sub-element to describe where the device is placed on the
+      virtual bus presented to the guest.  If an address (or any
+      optional attribute within an address) is omitted on
+      input, libvirt will generate an appropriate address; but an
+      explicit address is required if more control over layout is
+      required.  See below for device examples including an address
+      element.
+    </p>
+
+    <p>
+      Every address has a mandatory attribute <code>type</code> that
+      describes which bus the device is on.  The choice of which
+      address to use for a given device is constrained in part by the
+      device and the architecture of the guest.  For example,
+      a <code>&lt;disk&gt;</code> device
+      uses <code>type='disk'</code>, while
+      a <code>&lt;console&gt;</code> device would
+      use <code>type='pci'</code> on i686 or x86_64 guests,
+      or <code>type='spapr-vio'</code> on PowerPC64 pseries guests.
+      Each address type has further optional attributes that control
+      where on the bus the device will be placed:
+    </p>
+
+    <dl>
+      <dt><code>type='pci'</code></dt>
+      <dd>PCI addresses have the following additional
+        attributes: <code>domain</code> (a 2-byte hex integer, not
+        currently used by qemu), <code>bus</code> (a hex value between
+        0 and 0xff, inclusive), <code>slot</code> (a hex value between
+        0x0 and 0x1f, inclusive), and <code>function</code> (a value
+        between 0 and 7, inclusive).  Also available is
+        the <code>multifunction</code> attribute, which controls
+        turning on the multifunction bit for a particular
+        slot/function in the PCI control register
+        (<span class="since">since 0.9.7, requires QEMU
+        0.13</span>). <code>multifunction</code> defaults to 'off',
+        but should be set to 'on' for function 0 of a slot that will
+        have multiple functions used.
+      </dd>
+      <dt><code>type='drive'</code></dt>
+      <dd>Drive addresses have the following additional
+        attributes: <code>controller</code> (a 2-digit controller
+        number), <code>bus</code> (a 2-digit bus number),
+        and <code>unit</code> (a 2-digit unit number on the bus).
+      </dd>
+      <dt><code>type='virtio-serial'</code></dt>
+      <dd>Each virtio-serial address has the following additional
+        attributes: <code>controller</code> (a 2-digit controller
+        number), <code>bus</code> (a 2-digit bus number),
+        and <code>slot</code> (a 2-digit slot within the bus).
+      </dd>
+      <dt><code>type='ccid'</code></dt>
+      <dd>A CCID address, for smart-cards, has the following
+        additional attributes: <code>bus</code> (a 2-digit bus
+        number), and <code>slot</code> attribute (a 2-digit slot
+        within the bus).  <span class="since">Since 0.8.8.</span>
+      <dt><code>type='usb'</code></dt>
+      <dd>USB addresses have the following additional
+        attributes: <code>bus</code> (a hex value between 0 and 0xfff,
+        inclusive), and <code>port</code> (a dotted notation of up to
+        four octets, such as 1.2 or 2.1.3.1).
+      </dd>
+      <dt><code>type='spapr-vio'</code></dt>
+      <dd>On PowerPC pseries guests, devices can be assigned to the
+        SPAPR-VIO bus.  It has a flat 64-bit address space; by
+        convention, devices are generally assigned at a non-zero
+        multiple of 0x1000, but other addresses are valid and
+        permitted by libvirt.  Each address has the following
+        additional attribute: <code>reg</code> (the hex value address
+        of the starting register).  <span class="since">Since
+        0.9.9.</span>
+      </dd>
+    </dl>
+
     <h4><a name="elementsControllers">Controllers</a></h4>
 
     <p>
-      Many devices that have an <code>&lt;address&gt;</code>
-      sub-element are designed to work with a controller to manage
-      related devices.  Normally, libvirt can automatically infer such
+      Depending on the guest architecture, some device busses can
+      appear more than once, with a group of virtual devices tied to a
+      virtual controller.  Normally, libvirt can automatically infer such
       controllers without requiring explicit XML markup, but sometimes
       it is necessary to provide an explicit controller element.
     </p>
@@ -1443,15 +1521,15 @@
       A "usb" controller has an optional attribute <code>model</code>,
       which is one of "piix3-uhci", "piix4-uhci", "ehci",
       "ich9-ehci1", "ich9-uhci1", "ich9-uhci2", "ich9-uhci3",
-      "vt82c686b-uhci" or "pci-ohci".
+      "vt82c686b-uhci" or "pci-ohci".  The PowerPC64 "spapr-vio"
+      addresses do not have an associated controller.
     </p>
 
     <p>
       For controllers that are themselves devices on a PCI or USB bus,
       an optional sub-element <code>&lt;address&gt;</code> can specify
       the exact relationship of the controller to its master bus, with
-      semantics like any other device's <code>address</code>
-      sub-element.
+      semantics <a href="#elementsAddress">given above</a>.
     </p>
 
     <p>
@@ -1608,19 +1686,9 @@
       (starting with 0x) or octal (starting with 0) form.
       For PCI devices the element carries 3 attributes allowing to designate
       the device as can be found with the <code>lspci</code> or
-      with <code>virsh nodedev-list</code>. The
-      <code>bus</code> attribute allows the hexadecimal values 0 to ff, the
-      <code>slot</code> attribute allows the hexadecimal values 0 to 1f, and
-      the <code>function</code> attribute allows the hexadecimal values 0 to 7.
-      The <code>multifunction</code> attribute controls turning on the
-      multifunction bit for a particular slot/function in the PCI
-      control register<span class="since">since 0.9.7, requires QEMU
-      0.13</span>. <code>multifunction</code> defaults to 'off', but
-      should be set to 'on' for function 0 of a slot that will have
-      multiple functions used.
-      There is also an optional <code>domain</code> attribute for
-      the PCI domain, with hexadecimal values 0 to ffff, but it is
-      currently not used by qemu.</dd>
+      with <code>virsh
+      nodedev-list</code>. <a href="#elementsAddress">See above</a> for
+      more details on the address element.
     </dl>
 
     <h4><a name="elementsRedir">Redirected devices</a></h4>
@@ -1756,12 +1824,9 @@
     <p>
       Each mode supports an optional
       sub-element <code>&lt;address&gt;</code>, which fine-tunes the
-      correlation between the smartcard and a ccid bus controller.
-      If present, the element must have an attribute
-      of <code>type='ccid'</code> as well as a <code>bus</code>
-      attribute listing the index of the bus that the smartcard
-      utilizes.  An optional <code>slot</code> attribute lists which
-      slot within the bus.  For now, qemu only supports at most one
+      correlation between the smartcard and a ccid bus
+      controller, <a href="#elementsAddress">documented above</a>.
+      For now, qemu only supports at most one
       smartcard, with an address of bus=0 slot=0.
     </p>
 
@@ -1786,10 +1851,8 @@
       each <code>&lt;interface&gt;</code> element has an
       optional <code>&lt;address&gt;</code> sub-element that can tie
       the interface to a particular pci slot, with
-      attribute <code>type='pci'</code> and additional
-      attributes <code>domain</code>, <code>bus</code>, <code>slot</code>,
-      <code>function</code>, and <code>multifunction</code>
-      <span class="since">since 0.9.7, requires QEMU 0.13</span> as appropriate.
+      attribute <code>type='pci'</code>
+      as <a href="#elementsAddress">documented above</a>.
     </p>
 
     <h5><a name="elementsNICSVirtual">Virtual network</a></h5>
@@ -2387,7 +2450,8 @@ qemu-kvm -net nic,model=? /dev/null
     <p>
       The <code>input</code> element has an optional
       sub-element <code>&lt;address&gt;</code> which can tie the
-      device to a particular PCI slot.
+      device to a particular PCI
+      slot, <a href="#elementsAddress">documented above</a>.
     </p>
 
     <h4><a name="elementsHub">Hub devices</a></h4>
@@ -2413,8 +2477,10 @@ qemu-kvm -net nic,model=? /dev/null
 
     <p>
       The <code>hub</code> element has an optional
-      sub-element <code>&lt;address&gt;</code> which can tie the
-      device to a particular controller.
+      sub-element <code>&lt;address&gt;</code>
+      with <code>type='usb'</code>which can tie the device to a
+      particular controller, <a href="#elementsAddress">documented
+      above</a>.
     </p>
 
     <h4><a name="elementsGraphics">Graphical framebuffers</a></h4>
@@ -2876,7 +2942,8 @@ qemu-kvm -net nic,model=? /dev/null
         /dev/virtio-ports/$name (for more info, please see
         <a href="http://fedoraproject.org/wiki/Features/VirtioSerial">http://fedoraproject.org/wiki/Features/VirtioSerial</a>). The
         optional element <code>address</code> can tie the channel to a
-        particular <code>type='virtio-serial'</code> controller.
+        particular <code>type='virtio-serial'</code>
+        controller, <a href="#elementsAddress">documented above</a>.
         <span class="since">Since 0.7.7</span></dd>
 
       <dt><code>spicevmc</code></dt>
@@ -3152,7 +3219,8 @@ qemu-kvm -net nic,model=? /dev/null
     <p>
       Each <code>sound</code> element has an optional
       sub-element <code>&lt;address&gt;</code> which can tie the
-      device to a particular PCI slot.
+      device to a particular PCI
+      slot, <a href="#elementsAddress">documented above</a>.
     </p>
 
     <h4><a name="elementsWatchdog">Watchdog device</a></h4>
