@@ -443,8 +443,10 @@ qemuCapsParseX86Models(const char *output,
         if (retcpus) {
             unsigned int len;
 
-            if (VIR_REALLOC_N(cpus, count + 1) < 0)
+            if (VIR_REALLOC_N(cpus, count + 1) < 0) {
+                virReportOOMError();
                 goto error;
+            }
 
             if (next)
                 len = next - p - 1;
@@ -456,8 +458,10 @@ qemuCapsParseX86Models(const char *output,
                 len -= 2;
             }
 
-            if (!(cpus[count] = strndup(p, len)))
+            if (!(cpus[count] = strndup(p, len))) {
+                virReportOOMError();
                 goto error;
+            }
         }
         count++;
     } while ((p = next));
@@ -491,12 +495,7 @@ qemuCapsParsePPCModels(const char *output,
     const char *next;
     unsigned int count = 0;
     const char **cpus = NULL;
-    int i;
-
-    if (!retcpus) {
-        VIR_DEBUG("No retcpus specified");
-        return -1;
-    }
+    int i, ret = -1;
 
     do {
         const char *t;
@@ -523,32 +522,36 @@ qemuCapsParsePPCModels(const char *output,
         if (retcpus) {
             unsigned int len;
 
-            if (VIR_REALLOC_N(cpus, count + 1) < 0)
+            if (VIR_REALLOC_N(cpus, count + 1) < 0) {
                 virReportOOMError();
-                goto error;
+                goto cleanup;
+            }
 
             len = t - p - 1;
 
-            if (!(cpus[count] = strndup(p, len)))
+            if (!(cpus[count] = strndup(p, len))) {
                 virReportOOMError();
-                goto error;
+                goto cleanup;
+            }
         }
         count++;
     } while ((p = next));
 
     if (retcount)
         *retcount = count;
-    if (retcpus)
+    if (retcpus) {
         *retcpus = cpus;
-    return 0;
+        cpus = NULL;
+    }
+    ret = 0;
 
-error:
+cleanup:
     if (cpus) {
         for (i = 0; i < count; i++)
             VIR_FREE(cpus[i]);
+        VIR_FREE(cpus);
     }
-    VIR_FREE(cpus);
-    return -1;
+    return ret;
 }
 
 int
@@ -587,10 +590,8 @@ qemuCapsProbeCPUModels(const char *qemu,
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
-    if (parse(output, count, cpus) < 0) {
-        virReportOOMError();
+    if (parse(output, count, cpus) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 
