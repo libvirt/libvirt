@@ -607,6 +607,7 @@ virNWFilterRuleInstancesToArray(int nEntries,
 
 /**
  * virNWFilterInstantiate:
+ * @vmuuid: The UUID of the VM
  * @techdriver: The driver to use for instantiation
  * @filter: The filter to instantiate
  * @ifname: The name of the interface to apply the rules to
@@ -625,7 +626,8 @@ virNWFilterRuleInstancesToArray(int nEntries,
  * Call this function while holding the NWFilter filter update lock
  */
 static int
-virNWFilterInstantiate(virNWFilterTechDriverPtr techdriver,
+virNWFilterInstantiate(const unsigned char *vmuuid ATTRIBUTE_UNUSED,
+                       virNWFilterTechDriverPtr techdriver,
                        enum virDomainNetType nettype,
                        virNWFilterDefPtr filter,
                        const char *ifname,
@@ -761,7 +763,8 @@ err_unresolvable_vars:
  * Call this function while holding the NWFilter filter update lock
  */
 static int
-__virNWFilterInstantiateFilter(bool teardownOld,
+__virNWFilterInstantiateFilter(const unsigned char *vmuuid,
+                               bool teardownOld,
                                const char *ifname,
                                int ifindex,
                                const char *linkdev,
@@ -853,7 +856,8 @@ __virNWFilterInstantiateFilter(bool teardownOld,
     break;
     }
 
-    rc = virNWFilterInstantiate(techdriver,
+    rc = virNWFilterInstantiate(vmuuid,
+                                techdriver,
                                 nettype,
                                 filter,
                                 ifname,
@@ -883,6 +887,7 @@ err_exit:
 
 static int
 _virNWFilterInstantiateFilter(virConnectPtr conn,
+                              const unsigned char *vmuuid,
                               const virDomainNetDefPtr net,
                               bool teardownOld,
                               enum instCase useNewFilter,
@@ -908,7 +913,8 @@ _virNWFilterInstantiateFilter(virConnectPtr conn,
         goto cleanup;
     }
 
-    rc = __virNWFilterInstantiateFilter(teardownOld,
+    rc = __virNWFilterInstantiateFilter(vmuuid,
+                                        teardownOld,
                                         net->ifname,
                                         ifindex,
                                         linkdev,
@@ -929,7 +935,8 @@ cleanup:
 
 
 int
-virNWFilterInstantiateFilterLate(const char *ifname,
+virNWFilterInstantiateFilterLate(const unsigned char *vmuuid,
+                                 const char *ifname,
                                  int ifindex,
                                  const char *linkdev,
                                  enum virDomainNetType nettype,
@@ -943,7 +950,8 @@ virNWFilterInstantiateFilterLate(const char *ifname,
 
     virNWFilterLockFilterUpdates();
 
-    rc = __virNWFilterInstantiateFilter(true,
+    rc = __virNWFilterInstantiateFilter(vmuuid,
+                                        true,
                                         ifname,
                                         ifindex,
                                         linkdev,
@@ -973,11 +981,12 @@ virNWFilterInstantiateFilterLate(const char *ifname,
 
 int
 virNWFilterInstantiateFilter(virConnectPtr conn,
+                             const unsigned char *vmuuid,
                              const virDomainNetDefPtr net)
 {
     bool foundNewFilter = false;
 
-    return _virNWFilterInstantiateFilter(conn, net,
+    return _virNWFilterInstantiateFilter(conn, vmuuid, net,
                                          1,
                                          INSTANTIATE_ALWAYS,
                                          &foundNewFilter);
@@ -986,12 +995,13 @@ virNWFilterInstantiateFilter(virConnectPtr conn,
 
 int
 virNWFilterUpdateInstantiateFilter(virConnectPtr conn,
+                                   const unsigned char *vmuuid,
                                    const virDomainNetDefPtr net,
                                    bool *skipIface)
 {
     bool foundNewFilter = false;
 
-    int rc = _virNWFilterInstantiateFilter(conn, net,
+    int rc = _virNWFilterInstantiateFilter(conn, vmuuid, net,
                                            0,
                                            INSTANTIATE_FOLLOW_NEWFILTER,
                                            &foundNewFilter);
@@ -1109,6 +1119,7 @@ virNWFilterDomainFWUpdateCB(void *payload,
                 switch (cb->step) {
                 case STEP_APPLY_NEW:
                     cb->err = virNWFilterUpdateInstantiateFilter(cb->conn,
+                                                                 vm->uuid,
                                                                  net,
                                                                  &skipIface);
                     if (cb->err == 0 && skipIface) {

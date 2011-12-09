@@ -443,8 +443,10 @@ cleanup:
 
 static int
 nwfilterInstantiateFilter(virConnectPtr conn,
-                          virDomainNetDefPtr net) {
-    return virNWFilterInstantiateFilter(conn, net);
+                          const unsigned char *vmuuid,
+                          virDomainNetDefPtr net)
+{
+    return virNWFilterInstantiateFilter(conn, vmuuid, net);
 }
 
 

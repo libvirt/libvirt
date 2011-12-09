@@ -704,7 +704,8 @@ learnIPAddressThread(void *arg)
                           "cache for interface %s"), inetaddr, req->ifname);
             }
 
-            ret = virNWFilterInstantiateFilterLate(req->ifname,
+            ret = virNWFilterInstantiateFilterLate(NULL,
+                                                   req->ifname,
                                                    req->ifindex,
                                                    req->linkdev,
                                                    req->nettype,

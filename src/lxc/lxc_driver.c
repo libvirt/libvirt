@@ -1185,6 +1185,7 @@ static void lxcVmCleanup(lxc_driver_t *driver,
 
 
 static int lxcSetupInterfaceBridged(virConnectPtr conn,
+                                    virDomainDefPtr vm,
                                     virDomainNetDefPtr net,
                                     const char *brname,
                                     unsigned int *nveths,
@@ -1229,7 +1230,7 @@ static int lxcSetupInterfaceBridged(virConnectPtr conn,
     }
 
     if (net->filter &&
-        virDomainConfNWFilterInstantiate(conn, net) < 0)
+        virDomainConfNWFilterInstantiate(conn, vm->uuid, net) < 0)
         goto cleanup;
 
     ret = 0;
@@ -1349,6 +1350,7 @@ static int lxcSetupInterfaces(virConnectPtr conn,
                 goto cleanup;
 
             if (lxcSetupInterfaceBridged(conn,
+                                         def,
                                          def->nets[i],
                                          brname,
                                          nveths,
@@ -1367,6 +1369,7 @@ static int lxcSetupInterfaces(virConnectPtr conn,
                 goto cleanup;
             }
             if (lxcSetupInterfaceBridged(conn,
+                                         def,
                                          def->nets[i],
                                          brname,
                                          nveths,

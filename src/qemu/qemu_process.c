@@ -2355,7 +2355,7 @@ qemuProcessFiltersInstantiate(virConnectPtr conn,
     for (i = 0 ; i < def->nnets ; i++) {
         virDomainNetDefPtr net = def->nets[i];
         if ((net->filter) && (net->ifname)) {
-           if (virDomainConfNWFilterInstantiate(conn, net) < 0) {
+           if (virDomainConfNWFilterInstantiate(conn, def->uuid, net) < 0) {
                 err = 1;
                 break;
             }
