@@ -173,23 +173,24 @@ endif
 install-data-local: install-init-redhat install-init-systemd install-init-upstart \
 		install-data-sasl install-data-polkit \
 		install-logrotate install-sysctl
-	mkdir -p $(DESTDIR)$(localstatedir)/log/libvirt
-	mkdir -p $(DESTDIR)$(localstatedir)/run/libvirt
-	mkdir -p $(DESTDIR)$(localstatedir)/lib/libvirt
+	$(MKDIR_P) $(DESTDIR)$(localstatedir)/log/libvirt \
+		   $(DESTDIR)$(localstatedir)/run/libvirt \
+		   $(DESTDIR)$(localstatedir)/lib/libvirt
 
 uninstall-local:: uninstall-init-redhat uninstall-init-systemd uninstall-init-upstart \
 		uninstall-data-sasl uninstall-data-polkit \
-		uninstall-sysctl
+		uninstall-logrotate uninstall-sysctl
 	rmdir $(DESTDIR)$(localstatedir)/log/libvirt || :
 	rmdir $(DESTDIR)$(localstatedir)/run/libvirt || :
 	rmdir $(DESTDIR)$(localstatedir)/lib/libvirt || :
 
 if HAVE_POLKIT
 install-data-polkit::
-	mkdir -p $(DESTDIR)$(policydir)
+	$(MKDIR_P) $(DESTDIR)$(policydir)
 	$(INSTALL_DATA) $(srcdir)/$(policyfile) $(DESTDIR)$(policydir)/org.libvirt.unix.policy
 uninstall-data-polkit::
 	rm -f $(DESTDIR)$(policydir)/org.libvirt.unix.policy
+	rmdir $(DESTDIR)$(policydir) || :
 else
 install-data-polkit::
 uninstall-data-polkit::
@@ -228,41 +229,54 @@ libvirtd.uml.logrotate: libvirtd.uml.logrotate.in
 	    mv $@-t $@
 
 install-logrotate: $(LOGROTATE_CONFS)
-	mkdir -p $(DESTDIR)$(localstatedir)/log/libvirt/qemu/
-	mkdir -p $(DESTDIR)$(localstatedir)/log/libvirt/lxc/
-	mkdir -p $(DESTDIR)$(localstatedir)/log/libvirt/uml/
-	mkdir -p $(DESTDIR)$(sysconfdir)/logrotate.d/
+	$(MKDIR_P) $(DESTDIR)$(localstatedir)/log/libvirt/qemu/ \
+		   $(DESTDIR)$(localstatedir)/log/libvirt/lxc/ \
+		   $(DESTDIR)$(localstatedir)/log/libvirt/uml/ \
+		   $(DESTDIR)$(sysconfdir)/logrotate.d/
 	$(INSTALL_DATA) libvirtd.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd
 	$(INSTALL_DATA) libvirtd.qemu.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.qemu
 	$(INSTALL_DATA) libvirtd.lxc.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.lxc
 	$(INSTALL_DATA) libvirtd.uml.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.uml
 
+uninstall-logrotate:
+	rm -f $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd \
+	      $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.qemu \
+	      $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.lxc \
+	      $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.uml
+	rmdir $(DESTDIR)$(localstatedir)/log/libvirt/qemu || :
+	rmdir $(DESTDIR)$(localstatedir)/log/libvirt/lxc || :
+	rmdir $(DESTDIR)$(localstatedir)/log/libvirt/uml || :
+	rmdir $(DESTDIR)$(sysconfdir)/logrotate.d || :
+
 install-sysconfig:
-	mkdir -p $(DESTDIR)$(sysconfdir)/sysconfig
+	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sysconfig
 	$(INSTALL_DATA) $(srcdir)/libvirtd.sysconf \
 	  $(DESTDIR)$(sysconfdir)/sysconfig/libvirtd
 uninstall-sysconfig:
 	rm -f $(DESTDIR)$(sysconfdir)/sysconfig/libvirtd
+	rmdir $(DESTDIR)$(sysconfdir)/sysconfig || :
 
 install-sysctl:
-	mkdir -p $(DESTDIR)$(sysconfdir)/sysctl.d
+	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sysctl.d
 	$(INSTALL_DATA) $(srcdir)/libvirtd.sysctl \
 	  $(DESTDIR)$(sysconfdir)/sysctl.d/libvirtd
 
 uninstall-sysctl:
 	rm -f $(DESTDIR)$(sysconfdir)/sysctl.d/libvirtd
+	rmdir $(DESTDIR)$(sysconfdir)/sysctl.d || :
 
 if LIBVIRT_INIT_SCRIPT_RED_HAT
 
 BUILT_SOURCES += libvirtd.init
 
 install-init-redhat: install-sysconfig libvirtd.init
-	mkdir -p $(DESTDIR)$(sysconfdir)/rc.d/init.d
+	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/rc.d/init.d
 	$(INSTALL_SCRIPT) libvirtd.init \
 	  $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
 
 uninstall-init-redhat: uninstall-sysconfig
 	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
+	rmdir $(DESTDIR)$(sysconfdir)/rc.d/init.d || :
 else
 install-init-redhat:
 uninstall-init-redhat:
@@ -272,12 +286,13 @@ endif # LIBVIRT_INIT_SCRIPT_RED_HAT
 if LIBVIRT_INIT_SCRIPT_UPSTART
 
 install-init-upstart: install-sysconfig
-	mkdir -p $(DESTDIR)$(sysconfdir)/event.d
+	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/event.d
 	$(INSTALL_SCRIPT) libvirtd.upstart \
 	  $(DESTDIR)$(sysconfdir)/event.d/libvirtd
 
 uninstall-init-upstart: uninstall-sysconfig
 	rm -f $(DESTDIR)$(sysconfdir)/event.d/libvirtd
+	rmdir $(DESTDIR)$(sysconfdir)/event.d || :
 else
 install-init-upstart:
 uninstall-init-upstart:
@@ -291,12 +306,13 @@ SYSTEMD_UNIT_DIR = /lib/systemd/system
 BUILT_SOURCES += libvirtd.service
 
 install-init-systemd: install-sysconfig libvirtd.service
-	mkdir -p $(DESTDIR)$(SYSTEMD_UNIT_DIR)
+	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR)
 	$(INSTALL_SCRIPT) libvirtd.service \
 	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirtd.service
 
 uninstall-init-systemd: uninstall-sysconfig
 	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirtd.service
+	rmdir $(DESTDIR)$(SYSTEMD_UNIT_DIR) || :
 else
 install-init-systemd:
 uninstall-init-systemd:
@@ -346,7 +362,7 @@ $(srcdir)/libvirtd.8.in: libvirtd.pod.in
 # the WITH_LIBVIRTD conditional
 if HAVE_SASL
 install-data-sasl:
-	mkdir -p $(DESTDIR)$(sysconfdir)/sasl2/
+	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sasl2/
 	$(INSTALL_DATA) $(srcdir)/libvirtd.sasl $(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
 
 uninstall-data-sasl:
