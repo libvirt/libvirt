@@ -68,7 +68,7 @@
 
 /* NB, this is not static as we need to call it from the testsuite */
 int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
-                             char *sysfs_cpudir,
+                             const char *sysfs_cpudir,
                              virNodeInfoPtr nodeinfo);
 
 static int linuxNodeGetCPUStats(FILE *procstat,
@@ -199,7 +199,7 @@ static int parse_core(unsigned int cpu)
 }
 
 int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
-                             char *sysfs_cpudir,
+                             const char *sysfs_cpudir,
                              virNodeInfoPtr nodeinfo)
 {
     char line[1024];
@@ -597,9 +597,12 @@ int nodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED, virNodeInfoPtr nodeinfo) {
 
     ret = linuxNodeInfoCPUPopulate(cpuinfo, sysfs_cpuinfo, nodeinfo);
     VIR_FORCE_FCLOSE(cpuinfo);
-    if (ret < 0)
+    if (ret < 0) {
+        VIR_FREE(sysfs_cpuinfo);
         return -1;
+    }
 
+    VIR_FREE(sysfs_cpuinfo);
     /* Convert to KB. */
     nodeinfo->memory = physmem_total () / 1024;
 
