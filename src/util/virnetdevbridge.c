@@ -395,7 +395,7 @@ int virNetDevBridgeSetSTPDelay(const char *brname,
     if ((fd = virNetDevSetupControl(brname, &ifr)) < 0)
         goto cleanup;
 
-    ret = virNetDevBridgeSet(brname, "stp_state", MS_TO_JIFFIES(delay),
+    ret = virNetDevBridgeSet(brname, "forward_delay", MS_TO_JIFFIES(delay),
                              fd, &ifr);
 
 cleanup:
@@ -426,7 +426,7 @@ int virNetDevBridgeGetSTPDelay(const char *brname,
     if ((fd = virNetDevSetupControl(brname, &ifr)) < 0)
         goto cleanup;
 
-    ret = virNetDevBridgeGet(brname, "stp_state", &i,
+    ret = virNetDevBridgeGet(brname, "forward_delay", &i,
                              fd, &ifr);
     *delayms = JIFFIES_TO_MS(i);
 
