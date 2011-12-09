@@ -5,7 +5,7 @@
   <currentMemory>524288</currentMemory>
   <vcpu>1</vcpu>
   <os>
-    <type arch='i686' machine='fedora-13'>hvm</type>
+    <type arch='i686' machine='pc-0.13'>hvm</type>
     <boot dev='hd'/>
   </os>
   <clock offset='utc'/>
