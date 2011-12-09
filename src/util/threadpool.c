@@ -258,7 +258,7 @@ void virThreadPoolFree(virThreadPoolPtr pool)
         virCondBroadcast(&pool->prioCond);
     }
 
-    if (pool->nWorkers > 0 || pool->nPrioWorkers > 0)
+    while (pool->nWorkers > 0 || pool->nPrioWorkers > 0)
         ignore_value(virCondWait(&pool->quit_cond, &pool->mutex));
 
     while ((job = pool->jobList.head)) {
