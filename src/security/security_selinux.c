@@ -636,6 +636,9 @@ SELinuxSetSecurityImageLabel(virSecurityManagerPtr mgr,
     if (secdef->norelabel)
         return 0;
 
+    if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK)
+        return 0;
+
     return virDomainDiskDefForeachPath(disk,
                                        allowDiskFormatProbing,
                                        true,

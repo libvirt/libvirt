@@ -606,6 +606,9 @@ AppArmorRestoreSecurityImageLabel(virSecurityManagerPtr mgr,
                                   virDomainObjPtr vm,
                                   virDomainDiskDefPtr disk ATTRIBUTE_UNUSED)
 {
+    if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK)
+        return 0;
+
     return reload_profile(mgr, vm, NULL, false);
 }
 
