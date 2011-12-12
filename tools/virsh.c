@@ -3097,6 +3097,7 @@ cleanup:
     if (st)
         virStreamFree(st);
     VIR_FORCE_CLOSE(fd);
+    VIR_FREE(mime);
     return ret;
 }
 
