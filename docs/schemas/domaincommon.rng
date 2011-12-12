@@ -2199,6 +2199,13 @@
       <ref name="usbPort"/>
     </attribute>
   </define>
+  <define name="spaprvioaddress">
+    <optional>
+      <attribute name="reg">
+        <ref name="spaprvioReg"/>
+      </attribute>
+    </optional>
+  </define>
   <define name="pciaddress">
     <optional>
       <attribute name="domain">
@@ -2577,6 +2584,12 @@
           </attribute>
           <ref name="usbportaddress"/>
         </group>
+        <group>
+          <attribute name="type">
+            <value>spapr-vio</value>
+          </attribute>
+          <ref name="spaprvioaddress"/>
+        </group>
       </choice>
     </element>
   </define>
@@ -2864,6 +2877,11 @@
   <define name="filter-param-value">
     <data type="string">
       <param name="pattern">[a-zA-Z0-9_\.:]+</param>
+    </data>
+  </define>
+  <define name="spaprvioReg">
+    <data type="string">
+      <param name="pattern">(0x)?[0-9a-fA-F]{1,16}</param>
     </data>
   </define>
 </grammar>
