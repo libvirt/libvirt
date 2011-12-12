@@ -683,6 +683,89 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virBitmapPtr qemuCaps)
     return -1;
 }
 
+static int
+qemuSpaprVIOFindByReg(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                      virDomainDeviceInfoPtr info, void *opaque)
+{
+    virDomainDeviceInfoPtr target = opaque;
+
+    if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO)
+        return 0;
+
+    /* Match a dev that has a reg, is not us, and has a matching reg */
+    if (info->addr.spaprvio.has_reg && info != target &&
+        info->addr.spaprvio.reg == target->addr.spaprvio.reg)
+        /* Has to be < 0 so virDomainDeviceInfoIterate() will exit */
+        return -1;
+
+    return 0;
+}
+
+static int
+qemuAssignSpaprVIOAddress(virDomainDefPtr def, virDomainDeviceInfoPtr info,
+                          unsigned long long default_reg)
+{
+    bool user_reg;
+    int rc;
+
+    if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO)
+        return 0;
+
+    /* Check if the user has assigned the reg already, if so use it */
+    user_reg = info->addr.spaprvio.has_reg;
+    if (!user_reg) {
+        info->addr.spaprvio.reg = default_reg;
+        info->addr.spaprvio.has_reg = true;
+    }
+
+    rc = virDomainDeviceInfoIterate(def, qemuSpaprVIOFindByReg, info);
+    while (rc != 0) {
+        if (user_reg) {
+            qemuReportError(VIR_ERR_XML_ERROR,
+                            _("spapr-vio address %#llx already in use"),
+                            info->addr.spaprvio.reg);
+            return -EEXIST;
+        }
+
+        /* We assigned the reg, so try a new value */
+        info->addr.spaprvio.reg += 0x1000;
+        rc = virDomainDeviceInfoIterate(def, qemuSpaprVIOFindByReg, info);
+    }
+
+    return 0;
+}
+
+static int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
+{
+    int i, rc;
+
+    /* Default values match QEMU. See spapr_(llan|vscsi|vty).c */
+
+    for (i = 0 ; i < def->nnets; i++) {
+        rc = qemuAssignSpaprVIOAddress(def, &def->nets[i]->info,
+                                       0x1000ul);
+        if (rc)
+            return rc;
+    }
+
+    for (i = 0 ; i < def->ncontrollers; i++) {
+        rc = qemuAssignSpaprVIOAddress(def, &def->controllers[i]->info,
+                                       0x2000ul);
+        if (rc)
+            return rc;
+    }
+
+    for (i = 0 ; i < def->nserials; i++) {
+        rc = qemuAssignSpaprVIOAddress(def, &def->serials[i]->info,
+                                       0x30000000ul);
+        if (rc)
+            return rc;
+    }
+
+    /* No other devices are currently supported on spapr-vio */
+
+    return 0;
+}
 
 #define QEMU_PCI_ADDRESS_LAST_SLOT 31
 #define QEMU_PCI_ADDRESS_LAST_FUNCTION 8
@@ -812,6 +895,12 @@ cleanup:
 
 int qemuDomainAssignAddresses(virDomainDefPtr def)
 {
+    int rc;
+
+    rc = qemuDomainAssignSpaprVIOAddresses(def);
+    if (rc)
+        return rc;
+
     return qemuDomainAssignPCIAddresses(def);
 }
 
