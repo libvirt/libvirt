@@ -2103,7 +2103,6 @@ testDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
     virDomainObjPtr vm;
     virDomainDefPtr def;
     int ret = -1;
-    bool active;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -2121,37 +2120,11 @@ testDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
         goto cleanup;
     }
 
-    active = virDomainObjIsActive(vm);
+    if (virDomainLiveConfigHelperMethod(privconn->caps, vm, &flags, &def) < 0)
+        goto cleanup;
 
-    if ((flags & (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG)) == 0) {
-        if (active)
-            flags |= VIR_DOMAIN_VCPU_LIVE;
-        else
-            flags |= VIR_DOMAIN_VCPU_CONFIG;
-    }
-    if ((flags & VIR_DOMAIN_AFFECT_LIVE) && (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
-        testError(VIR_ERR_INVALID_ARG,
-                  _("invalid flag combination: (0x%x)"), flags);
-        return -1;
-    }
-
-
-
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (!active) {
-            testError(VIR_ERR_OPERATION_INVALID, "%s",
-                      _("domain not active"));
-            goto cleanup;
-        }
+    if (flags & VIR_DOMAIN_AFFECT_LIVE)
         def = vm->def;
-    } else {
-        if (!vm->persistent) {
-            testError(VIR_ERR_OPERATION_INVALID, "%s",
-                      _("domain is transient"));
-            goto cleanup;
-        }
-        def = vm->newDef ? vm->newDef : vm->def;
-    }
 
     ret = (flags & VIR_DOMAIN_VCPU_MAXIMUM) ? def->maxvcpus : def->vcpus;
 

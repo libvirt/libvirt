@@ -1737,6 +1737,13 @@ int virDomainObjSetDefTransient(virCapsPtr caps,
 virDomainDefPtr
 virDomainObjGetPersistentDef(virCapsPtr caps,
                              virDomainObjPtr domain);
+
+int
+virDomainLiveConfigHelperMethod(virCapsPtr caps,
+                                virDomainObjPtr dom,
+                                unsigned int *flags,
+                                virDomainDefPtr *persistentDef);
+
 virDomainDefPtr
 virDomainObjCopyPersistentDef(virCapsPtr caps, virDomainObjPtr dom);
 

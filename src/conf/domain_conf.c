@@ -1670,6 +1670,58 @@ virDomainObjGetPersistentDef(virCapsPtr caps,
 }
 
 /*
+ * Helper method for --current, --live, and --config options, and check
+ * whether domain is active or can get persistent domain configuration.
+ *
+ * Return 0 if success, also change the flags and get the persistent
+ * domain configuration if needed. Return -1 on error.
+ */
+int
+virDomainLiveConfigHelperMethod(virCapsPtr caps,
+                                virDomainObjPtr dom,
+                                unsigned int *flags,
+                                virDomainDefPtr *persistentDef)
+{
+    bool isActive;
+    int ret = -1;
+
+    isActive = virDomainObjIsActive(dom);
+
+    if ((*flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) ==
+        VIR_DOMAIN_AFFECT_CURRENT) {
+        if (isActive)
+            *flags |= VIR_DOMAIN_AFFECT_LIVE;
+        else
+            *flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    }
+
+    if (!isActive && (*flags & VIR_DOMAIN_AFFECT_LIVE)) {
+        virDomainReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                             _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (*flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (!dom->persistent) {
+            virDomainReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                                 _("cannot change persistent config of a "
+                                   "transient domain"));
+            goto cleanup;
+        }
+        if (!(*persistentDef = virDomainObjGetPersistentDef(caps, dom))) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("Get persistent config failed"));
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
+/*
  * The caller must hold a lock on the driver owning 'doms',
  * and must also have locked 'dom', to ensure no one else
  * is either waiting for 'dom' or still using it
