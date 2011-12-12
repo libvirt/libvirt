@@ -51,7 +51,7 @@ virStorageBackendLogicalSetActive(virStoragePoolObjPtr pool,
     const char *cmdargv[4];
 
     cmdargv[0] = VGCHANGE;
-    cmdargv[1] = on ? "-ay" : "-an";
+    cmdargv[1] = on ? "-aly" : "-aln";
     cmdargv[2] = pool->def->source.name;
     cmdargv[3] = NULL;
 
