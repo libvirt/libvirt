@@ -69,6 +69,7 @@ enum virDomainDeviceAddressType {
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO,
 
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST
 };
@@ -121,6 +122,13 @@ struct _virDomainDeviceUSBAddress {
     char *port;
 };
 
+typedef struct _virDomainDeviceSpaprVioAddress virDomainDeviceSpaprVioAddress;
+typedef virDomainDeviceSpaprVioAddress *virDomainDeviceSpaprVioAddressPtr;
+struct _virDomainDeviceSpaprVioAddress {
+    unsigned long long reg;
+    bool has_reg;
+};
+
 enum virDomainControllerMaster {
     VIR_DOMAIN_CONTROLLER_MASTER_NONE,
     VIR_DOMAIN_CONTROLLER_MASTER_USB,
@@ -145,6 +153,7 @@ struct _virDomainDeviceInfo {
         virDomainDeviceVirtioSerialAddress vioserial;
         virDomainDeviceCcidAddress ccid;
         virDomainDeviceUSBAddress usb;
+        virDomainDeviceSpaprVioAddress spaprvio;
     } addr;
     int mastertype;
     union {

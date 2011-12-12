@@ -1256,6 +1256,8 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
             def->controllers[i]->idx == 0)
             continue;
 
+        if (def->controllers[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO)
+            continue;
         if (def->controllers[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             continue;
         if (qemuDomainPCIAddressSetNextAddr(addrs, &def->controllers[i]->info) < 0)
@@ -1406,6 +1408,9 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
         virBufferAsprintf(buf, ",bus=");
         qemuUsbId(buf, info->addr.usb.bus);
         virBufferAsprintf(buf, ".0,port=%s", info->addr.usb.port);
+    } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO) {
+        if (info->addr.spaprvio.has_reg)
+            virBufferAsprintf(buf, ",reg=0x%llx", info->addr.spaprvio.reg);
     }
 
     return 0;

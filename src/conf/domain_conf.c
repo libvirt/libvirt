@@ -139,7 +139,8 @@ VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "drive",
               "virtio-serial",
               "ccid",
-              "usb")
+              "usb",
+              "spapr-vio")
 
 VIR_ENUM_IMPL(virDomainDeviceAddressPciMulti,
               VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_LAST,
@@ -1961,6 +1962,11 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
                           info->addr.usb.port);
         break;
 
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:
+        if (info->addr.spaprvio.has_reg)
+            virBufferAsprintf(buf, " reg='0x%llx'", info->addr.spaprvio.reg);
+        break;
+
     default:
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                              _("unknown address type '%d'"), info->type);
@@ -2220,6 +2226,33 @@ cleanup:
 }
 
 static int
+virDomainDeviceSpaprVioAddressParseXML(xmlNodePtr node,
+                                      virDomainDeviceSpaprVioAddressPtr addr)
+{
+    char *reg;
+    int ret;
+
+    memset(addr, 0, sizeof(*addr));
+
+    reg = virXMLPropString(node, "reg");
+    if (reg) {
+        if (virStrToLong_ull(reg, NULL, 16, &addr->reg) < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("Cannot parse <address> 'reg' attribute"));
+            ret = -1;
+            goto cleanup;
+        }
+
+        addr->has_reg = true;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(reg);
+    return ret;
+}
+
+static int
 virDomainDeviceUSBMasterParseXML(xmlNodePtr node,
                                  virDomainDeviceUSBMasterPtr master)
 {
@@ -2329,6 +2362,11 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
         if (virDomainDeviceUSBAddressParseXML(address, &info->addr.usb) < 0)
+            goto cleanup;
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:
+        if (virDomainDeviceSpaprVioAddressParseXML(address, &info->addr.spaprvio) < 0)
             goto cleanup;
         break;
 
@@ -3226,6 +3264,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     }
 
     if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                              _("Controllers must use the 'pci' address type"));
@@ -3618,6 +3657,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
     /* XXX what about ISA/USB based NIC models - once we support
      * them we should make sure address type is correct */
     if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                              _("Network interfaces must use 'pci' address type"));
