@@ -497,7 +497,8 @@ B<Example>
 =item B<define> I<FILE>
 
 Define a domain from an XML <file>. The domain definition is registered
-but not started.
+but not started.  If domain is already running, the changes will take
+effect on the next boot.
 
 =item B<destroy> I<domain-id>
 
@@ -717,11 +718,12 @@ specified, then the output will be escaped for use in XML.
 
 =item B<edit> I<domain-id>
 
-Edit the XML configuration file for a domain.
+Edit the XML configuration file for a domain, which will affect the
+next boot of the guest.
 
 This is equivalent to:
 
- virsh dumpxml domain > domain.xml
+ virsh dumpxml --inactive --security-info domain > domain.xml
  vi domain.xml (or make changes with your other text editor)
  virsh define domain.xml
 
