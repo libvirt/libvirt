@@ -431,10 +431,7 @@ qemudStartup(int privileged) {
         goto out_of_memory;
 
     /* Init domain events */
-    qemu_driver->domainEventState = virDomainEventStateNew(qemuDomainEventFlush,
-                                                           qemu_driver,
-                                                           NULL,
-                                                           true);
+    qemu_driver->domainEventState = virDomainEventStateNew(true);
     if (!qemu_driver->domainEventState)
         goto error;
 

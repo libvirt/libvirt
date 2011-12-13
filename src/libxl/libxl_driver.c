@@ -111,30 +111,6 @@ libxlDomainObjPrivateFree(void *data)
     VIR_FREE(priv);
 }
 
-static void
-libxlDomainEventDispatchFunc(virConnectPtr conn, virDomainEventPtr event,
-                             virConnectDomainEventGenericCallback cb,
-                             void *cbopaque, void *opaque)
-{
-    libxlDriverPrivatePtr driver = opaque;
-
-    /* Drop the lock whle dispatching, for sake of re-entrancy */
-    libxlDriverUnlock(driver);
-    virDomainEventDispatchDefaultFunc(conn, event, cb, cbopaque, NULL);
-    libxlDriverLock(driver);
-}
-
-static void
-libxlDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
-{
-    libxlDriverPrivatePtr driver = opaque;
-
-    libxlDriverLock(driver);
-    virDomainEventStateFlush(driver->domainEventState,
-                             libxlDomainEventDispatchFunc,
-                             driver);
-    libxlDriverUnlock(driver);
-}
 
 /* driver must be locked before calling */
 static void
@@ -952,11 +928,7 @@ libxlStartup(int privileged) {
     }
     VIR_FREE(log_file);
 
-    libxl_driver->domainEventState = virDomainEventStateNew(
-                                                        libxlDomainEventFlush,
-                                                        libxl_driver,
-                                                        NULL,
-                                                        false);
+    libxl_driver->domainEventState = virDomainEventStateNew(true);
     if (!libxl_driver->domainEventState)
         goto error;
 

@@ -117,7 +117,6 @@ static const virNodeInfo defaultNodeInfo = {
                              __FUNCTION__, __LINE__, __VA_ARGS__)
 
 static int testClose(virConnectPtr conn);
-static void testDomainEventFlush(int timer, void *opaque);
 static void testDomainEventQueue(testConnPtr driver,
                                  virDomainEventPtr event);
 
@@ -1138,10 +1137,7 @@ static virDrvOpenStatus testOpen(virConnectPtr conn,
     privconn = conn->privateData;
     testDriverLock(privconn);
 
-    privconn->domainEventState = virDomainEventStateNew(testDomainEventFlush,
-                                                        privconn,
-                                                        NULL,
-                                                        false);
+    privconn->domainEventState = virDomainEventStateNew(false);
     if (!privconn->domainEventState) {
         testDriverUnlock(privconn);
         testClose(conn);
@@ -5466,32 +5462,6 @@ testDomainEventDeregisterAny(virConnectPtr conn,
     testDriverUnlock(driver);
 
     return ret;
-}
-
-
-static void testDomainEventDispatchFunc(virConnectPtr conn,
-                                        virDomainEventPtr event,
-                                        virConnectDomainEventGenericCallback cb,
-                                        void *cbopaque,
-                                        void *opaque)
-{
-    testConnPtr driver = opaque;
-
-    /* Drop the lock whle dispatching, for sake of re-entrancy */
-    testDriverUnlock(driver);
-    virDomainEventDispatchDefaultFunc(conn, event, cb, cbopaque, NULL);
-    testDriverLock(driver);
-}
-
-static void testDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
-{
-    testConnPtr driver = opaque;
-
-    testDriverLock(driver);
-    virDomainEventStateFlush(driver->domainEventState,
-                             testDomainEventDispatchFunc,
-                             driver);
-    testDriverUnlock(driver);
 }
 
 

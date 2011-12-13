@@ -109,7 +109,6 @@ static void lxcDomainObjPrivateFree(void *data)
 }
 
 
-static void lxcDomainEventFlush(int timer, void *opaque);
 static void lxcDomainEventQueue(lxc_driver_t *driver,
                                 virDomainEventPtr event);
 
@@ -2192,33 +2191,6 @@ lxcDomainEventDeregisterAny(virConnectPtr conn,
 }
 
 
-static void lxcDomainEventDispatchFunc(virConnectPtr conn,
-                                       virDomainEventPtr event,
-                                       virConnectDomainEventGenericCallback cb,
-                                       void *cbopaque,
-                                       void *opaque)
-{
-    lxc_driver_t *driver = opaque;
-
-    /* Drop the lock whle dispatching, for sake of re-entrancy */
-    lxcDriverUnlock(driver);
-    virDomainEventDispatchDefaultFunc(conn, event, cb, cbopaque, NULL);
-    lxcDriverLock(driver);
-}
-
-
-static void lxcDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
-{
-    lxc_driver_t *driver = opaque;
-
-    lxcDriverLock(driver);
-    virDomainEventStateFlush(driver->domainEventState,
-                             lxcDomainEventDispatchFunc,
-                             driver);
-    lxcDriverUnlock(driver);
-}
-
-
 /* driver must be locked before calling */
 static void lxcDomainEventQueue(lxc_driver_t *driver,
                                  virDomainEventPtr event)
@@ -2446,10 +2418,7 @@ static int lxcStartup(int privileged)
     if (virDomainObjListInit(&lxc_driver->domains) < 0)
         goto cleanup;
 
-    lxc_driver->domainEventState = virDomainEventStateNew(lxcDomainEventFlush,
-                                                          lxc_driver,
-                                                          NULL,
-                                                          true);
+    lxc_driver->domainEventState = virDomainEventStateNew(true);
     if (!lxc_driver->domainEventState)
         goto cleanup;
 

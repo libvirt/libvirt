@@ -145,7 +145,6 @@ static void make_nonnull_storage_vol (remote_nonnull_storage_vol *vol_dst, virSt
 static void make_nonnull_secret (remote_nonnull_secret *secret_dst, virSecretPtr secret_src);
 static void make_nonnull_nwfilter (remote_nonnull_nwfilter *nwfilter_dst, virNWFilterPtr nwfilter_src);
 static void make_nonnull_domain_snapshot (remote_nonnull_domain_snapshot *snapshot_dst, virDomainSnapshotPtr snapshot_src);
-static void remoteDomainEventQueueFlush(int timer, void *opaque);
 static void remoteDomainEventQueue(struct private_data *priv, virDomainEventPtr event);
 /*----------------------------------------------------------------------*/
 
@@ -727,10 +726,7 @@ doRemoteOpen (virConnectPtr conn,
         }
     }
 
-    if (!(priv->domainEventState = virDomainEventStateNew(remoteDomainEventQueueFlush,
-                                                          conn,
-                                                          NULL,
-                                                          false)))
+    if (!(priv->domainEventState = virDomainEventStateNew(false)))
         goto failed;
 
     /* Successful. */
@@ -4351,37 +4347,6 @@ call (virConnectPtr conn,
                       ret_filter, ret);
 }
 
-
-static void remoteDomainEventDispatchFunc(virConnectPtr conn,
-                                          virDomainEventPtr event,
-                                          virConnectDomainEventGenericCallback cb,
-                                          void *cbopaque,
-                                          void *opaque)
-{
-    struct private_data *priv = opaque;
-
-    /* Drop the lock whle dispatching, for sake of re-entrancy */
-    remoteDriverUnlock(priv);
-    VIR_DEBUG("Dispatch event %p %p", event, conn);
-    virDomainEventDispatchDefaultFunc(conn, event, cb, cbopaque, NULL);
-    remoteDriverLock(priv);
-}
-
-static void
-remoteDomainEventQueueFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
-{
-    virConnectPtr conn = opaque;
-    struct private_data *priv = conn->privateData;
-
-
-    remoteDriverLock(priv);
-    VIR_DEBUG("Event queue flush %p", conn);
-
-    virDomainEventStateFlush(priv->domainEventState,
-                             remoteDomainEventDispatchFunc,
-                             priv);
-    remoteDriverUnlock(priv);
-}
 
 static void
 remoteDomainEventQueue(struct private_data *priv, virDomainEventPtr event)

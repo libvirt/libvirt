@@ -114,31 +114,6 @@ qemuDomainAsyncJobPhaseFromString(enum qemuDomainAsyncJob job,
         return -1;
 }
 
-static void qemuDomainEventDispatchFunc(virConnectPtr conn,
-                                        virDomainEventPtr event,
-                                        virConnectDomainEventGenericCallback cb,
-                                        void *cbopaque,
-                                        void *opaque)
-{
-    struct qemud_driver *driver = opaque;
-
-    /* Drop the lock whle dispatching, for sake of re-entrancy */
-    qemuDriverUnlock(driver);
-    virDomainEventDispatchDefaultFunc(conn, event, cb, cbopaque, NULL);
-    qemuDriverLock(driver);
-}
-
-void qemuDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
-{
-    struct qemud_driver *driver = opaque;
-
-    qemuDriverLock(driver);
-    virDomainEventStateFlush(driver->domainEventState,
-                             qemuDomainEventDispatchFunc,
-                             driver);
-    qemuDriverUnlock(driver);
-}
-
 
 /* driver must be locked before calling */
 void qemuDomainEventQueue(struct qemud_driver *driver,

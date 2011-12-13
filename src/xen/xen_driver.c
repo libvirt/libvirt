@@ -63,7 +63,6 @@ static int
 xenUnifiedDomainGetVcpus (virDomainPtr dom,
                           virVcpuInfoPtr info, int maxinfo,
                           unsigned char *cpumaps, int maplen);
-static void xenDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque);
 
 
 /* The five Xen drivers below us. */
@@ -326,10 +325,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if (!(priv->domainEvents = virDomainEventStateNew(xenDomainEventFlush,
-                                                      priv,
-                                                      NULL,
-                                                      false))) {
+    if (!(priv->domainEvents = virDomainEventStateNew(true))) {
         virMutexDestroy(&priv->lock);
         VIR_FREE(priv);
         return VIR_DRV_OPEN_ERROR;
@@ -2385,40 +2381,6 @@ xenUnifiedRemoveDomainInfo(xenUnifiedDomainInfoListPtr list,
         }
     }
     return -1;
-}
-
-
-static void
-xenUnifiedDomainEventDispatchFunc(virConnectPtr conn,
-                                  virDomainEventPtr event,
-                                  virConnectDomainEventGenericCallback cb,
-                                  void *cbopaque,
-                                  void *opaque)
-{
-    xenUnifiedPrivatePtr priv = opaque;
-
-    /*
-     * Release the lock while the callback is running so that
-     * we're re-entrant safe for callback work - the callback
-     * may want to invoke other virt functions & we have already
-     * protected the one piece of state we have - the callback
-     * list
-     */
-    xenUnifiedUnlock(priv);
-    virDomainEventDispatchDefaultFunc(conn, event, cb, cbopaque, NULL);
-    xenUnifiedLock(priv);
-}
-
-static void xenDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
-{
-    virConnectPtr conn = opaque;
-    xenUnifiedPrivatePtr priv = conn->privateData;
-
-    xenUnifiedLock(priv);
-    virDomainEventStateFlush(priv->domainEvents,
-                             xenUnifiedDomainEventDispatchFunc,
-                             priv);
-    xenUnifiedUnlock(priv);
 }
 
 

@@ -119,41 +119,11 @@ void virDomainEventFree(virDomainEventPtr event);
 
 void virDomainEventStateFree(virDomainEventStatePtr state);
 virDomainEventStatePtr
-virDomainEventStateNew(virEventTimeoutCallback timeout_cb,
-                       void *timeout_opaque,
-                       virFreeCallback timeout_free,
-                       bool requireTimer)
-    ATTRIBUTE_NONNULL(1);
-
-typedef void (*virDomainEventDispatchFunc)(virConnectPtr conn,
-                                           virDomainEventPtr event,
-                                           virConnectDomainEventGenericCallback cb,
-                                           void *cbopaque,
-                                           void *opaque);
-void virDomainEventDispatchDefaultFunc(virConnectPtr conn,
-                                       virDomainEventPtr event,
-                                       virConnectDomainEventGenericCallback cb,
-                                       void *cbopaque,
-                                       void *opaque);
-
-void virDomainEventDispatch(virDomainEventPtr event,
-                            virDomainEventCallbackListPtr cbs,
-                            virDomainEventDispatchFunc dispatch,
-                            void *opaque);
-void virDomainEventQueueDispatch(virDomainEventQueuePtr queue,
-                                 virDomainEventCallbackListPtr cbs,
-                                 virDomainEventDispatchFunc dispatch,
-                                 void *opaque);
-
+virDomainEventStateNew(bool requireTimer);
 
 void
 virDomainEventStateQueue(virDomainEventStatePtr state,
                          virDomainEventPtr event)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-void
-virDomainEventStateFlush(virDomainEventStatePtr state,
-                         virDomainEventDispatchFunc dispatchFunc,
-                         void *opaque)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int virDomainEventStateRegister(virConnectPtr conn,
                                 virDomainEventStatePtr state,

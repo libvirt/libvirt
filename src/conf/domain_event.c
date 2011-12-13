@@ -619,21 +619,26 @@ virDomainEventStateFree(virDomainEventStatePtr state)
     VIR_FREE(state);
 }
 
+
+static void virDomainEventStateFlush(virDomainEventStatePtr state);
+
+static void
+virDomainEventTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
+{
+    virDomainEventStatePtr state = opaque;
+
+    virDomainEventStateFlush(state);
+}
+
 /**
  * virDomainEventStateNew:
- * @timeout_cb: virEventTimeoutCallback to call when timer expires
- * @timeout_opaque: Data for timeout_cb
- * @timeout_free: Optional virFreeCallback for freeing timeout_opaque
  * @requireTimer: If true, return an error if registering the timer fails.
  *                This is fatal for drivers that sit behind the daemon
  *                (qemu, lxc), since there should always be a event impl
  *                registered.
  */
 virDomainEventStatePtr
-virDomainEventStateNew(virEventTimeoutCallback timeout_cb,
-                       void *timeout_opaque,
-                       virFreeCallback timeout_free,
-                       bool requireTimer)
+virDomainEventStateNew(bool requireTimer)
 {
     virDomainEventStatePtr state = NULL;
 
@@ -659,9 +664,9 @@ virDomainEventStateNew(virEventTimeoutCallback timeout_cb,
     }
 
     if ((state->timer = virEventAddTimeout(-1,
-                                           timeout_cb,
-                                           timeout_opaque,
-                                           timeout_free)) < 0) {
+                                           virDomainEventTimer,
+                                           state,
+                                           NULL)) < 0) {
         if (requireTimer == false) {
             VIR_DEBUG("virEventAddTimeout failed: No addTimeoutImpl defined. "
                       "continuing without events.");
@@ -1086,11 +1091,19 @@ virDomainEventQueuePush(virDomainEventQueuePtr evtQueue,
 }
 
 
-void virDomainEventDispatchDefaultFunc(virConnectPtr conn,
-                                       virDomainEventPtr event,
-                                       virConnectDomainEventGenericCallback cb,
-                                       void *cbopaque,
-                                       void *opaque ATTRIBUTE_UNUSED)
+typedef void (*virDomainEventDispatchFunc)(virConnectPtr conn,
+                                           virDomainEventPtr event,
+                                           virConnectDomainEventGenericCallback cb,
+                                           void *cbopaque,
+                                           void *opaque);
+
+
+static void
+virDomainEventDispatchDefaultFunc(virConnectPtr conn,
+                                  virDomainEventPtr event,
+                                  virConnectDomainEventGenericCallback cb,
+                                  void *cbopaque,
+                                  void *opaque ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom = virGetDomain(conn, event->dom.name, event->dom.uuid);
     if (!dom)
@@ -1206,10 +1219,12 @@ static int virDomainEventDispatchMatchCallback(virDomainEventPtr event,
     }
 }
 
-void virDomainEventDispatch(virDomainEventPtr event,
-                            virDomainEventCallbackListPtr callbacks,
-                            virDomainEventDispatchFunc dispatch,
-                            void *opaque)
+
+static void
+virDomainEventDispatch(virDomainEventPtr event,
+                       virDomainEventCallbackListPtr callbacks,
+                       virDomainEventDispatchFunc dispatch,
+                       void *opaque)
 {
     int i;
     /* Cache this now, since we may be dropping the lock,
@@ -1230,10 +1245,11 @@ void virDomainEventDispatch(virDomainEventPtr event,
 }
 
 
-void virDomainEventQueueDispatch(virDomainEventQueuePtr queue,
-                                 virDomainEventCallbackListPtr callbacks,
-                                 virDomainEventDispatchFunc dispatch,
-                                 void *opaque)
+static void
+virDomainEventQueueDispatch(virDomainEventQueuePtr queue,
+                            virDomainEventCallbackListPtr callbacks,
+                            virDomainEventDispatchFunc dispatch,
+                            void *opaque)
 {
     int i;
 
@@ -1266,10 +1282,25 @@ virDomainEventStateQueue(virDomainEventStatePtr state,
     virDomainEventStateUnlock(state);
 }
 
-void
-virDomainEventStateFlush(virDomainEventStatePtr state,
-                         virDomainEventDispatchFunc dispatchFunc,
-                         void *opaque)
+
+static void
+virDomainEventStateDispatchFunc(virConnectPtr conn,
+                                virDomainEventPtr event,
+                                virConnectDomainEventGenericCallback cb,
+                                void *cbopaque,
+                                void *opaque)
+{
+    virDomainEventStatePtr state = opaque;
+
+    /* Drop the lock whle dispatching, for sake of re-entrancy */
+    virDomainEventStateUnlock(state);
+    virDomainEventDispatchDefaultFunc(conn, event, cb, cbopaque, NULL);
+    virDomainEventStateLock(state);
+}
+
+
+static void
+virDomainEventStateFlush(virDomainEventStatePtr state)
 {
     virDomainEventQueue tempQueue;
 
@@ -1287,8 +1318,8 @@ virDomainEventStateFlush(virDomainEventStatePtr state,
 
     virDomainEventQueueDispatch(&tempQueue,
                                 state->callbacks,
-                                dispatchFunc,
-                                opaque);
+                                virDomainEventStateDispatchFunc,
+                                state);
 
     /* Purge any deleted callbacks */
     virDomainEventStateLock(state);
@@ -1312,11 +1343,12 @@ virDomainEventStateFlush(virDomainEventStatePtr state,
  *
  * Returns: the number of lifecycle callbacks now registered, or -1 on error
  */
-int virDomainEventStateRegister(virConnectPtr conn,
-                                virDomainEventStatePtr state,
-                                virConnectDomainEventCallback callback,
-                                void *opaque,
-                                virFreeCallback freecb)
+int
+virDomainEventStateRegister(virConnectPtr conn,
+                            virDomainEventStatePtr state,
+                            virConnectDomainEventCallback callback,
+                            void *opaque,
+                            virFreeCallback freecb)
 {
     int ret;
     virDomainEventStateLock(state);
@@ -1342,14 +1374,15 @@ int virDomainEventStateRegister(virConnectPtr conn,
  *
  * Returns: the number of callbacks now registered, or -1 on error
  */
-int virDomainEventStateRegisterID(virConnectPtr conn,
-                                  virDomainEventStatePtr state,
-                                  virDomainPtr dom,
-                                  int eventID,
-                                  virConnectDomainEventGenericCallback cb,
-                                  void *opaque,
-                                  virFreeCallback freecb,
-                                  int *callbackID)
+int
+virDomainEventStateRegisterID(virConnectPtr conn,
+                              virDomainEventStatePtr state,
+                              virDomainPtr dom,
+                              int eventID,
+                              virConnectDomainEventGenericCallback cb,
+                              void *opaque,
+                              virFreeCallback freecb,
+                              int *callbackID)
 {
     int ret;
     virDomainEventStateLock(state);

@@ -970,46 +970,6 @@ static void vboxUninitialize(vboxGlobalData *data) {
 }
 
 
-#if VBOX_API_VERSION == 2002
-    /* No domainEventCallbacks in 2.2.* version */
-#else  /* !(VBOX_API_VERSION == 2002) */
-
-static void
-vboxDomainEventDispatchFunc(virConnectPtr conn,
-                            virDomainEventPtr event,
-                            virConnectDomainEventGenericCallback cb,
-                            void *cbopaque,
-                            void *opaque)
-{
-    vboxGlobalData *data = opaque;
-
-    /*
-     * Release the lock while the callback is running so that
-     * we're re-entrant safe for callback work - the callback
-     * may want to invoke other virt functions & we have already
-     * protected the one piece of state we have - the callback
-     * list
-     */
-    vboxDriverUnlock(data);
-    virDomainEventDispatchDefaultFunc(conn, event, cb, cbopaque, NULL);
-    vboxDriverLock(data);
-}
-
-
-static void vboxDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
-{
-    virConnectPtr conn = opaque;
-    vboxGlobalData *data = conn->privateData;
-
-    vboxDriverLock(data);
-    virDomainEventStateFlush(data->domainEvents,
-                             vboxDomainEventDispatchFunc,
-                             data);
-    vboxDriverUnlock(data);
-}
-#endif /* !(VBOX_API_VERSION == 2002) */
-
-
 static virDrvOpenStatus vboxOpen(virConnectPtr conn,
                                  virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                  unsigned int flags)
@@ -1074,10 +1034,7 @@ static virDrvOpenStatus vboxOpen(virConnectPtr conn,
 
 #else  /* !(VBOX_API_VERSION == 2002) */
 
-    if (!(data->domainEvents = virDomainEventStateNew(vboxDomainEventFlush,
-                                                      data,
-                                                      NULL,
-                                                      true))) {
+    if (!(data->domainEvents = virDomainEventStateNew(true))) {
         vboxUninitialize(data);
         return VIR_DRV_OPEN_ERROR;
     }
