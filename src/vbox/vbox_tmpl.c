@@ -7188,12 +7188,12 @@ static int vboxDomainEventRegister (virConnectPtr conn,
              * later you can iterate over them
              */
 
-            ret = virDomainEventCallbackListAdd(conn, data->domainEvents->callbacks,
-                                                callback, opaque, freecb);
-            VIR_DEBUG("virDomainEventCallbackListAdd (ret = %d) ( conn: %p, "
-                  "data->domainEvents->callbacks: %p, callback: %p, opaque: %p, "
-                  "freecb: %p )", ret, conn, data->domainEvents->callbacks, callback,
-                  opaque, freecb);
+            ret = virDomainEventStateRegister(conn, data->domainEvents,
+                                              callback, opaque, freecb);
+            VIR_DEBUG("virDomainEventStateRegister (ret = %d) ( conn: %p, "
+                      "callback: %p, opaque: %p, "
+                      "freecb: %p )", ret, conn, callback,
+                      opaque, freecb);
         }
     }
 
@@ -7280,13 +7280,13 @@ static int vboxDomainEventRegisterAny(virConnectPtr conn,
              * later you can iterate over them
              */
 
-            if (virDomainEventCallbackListAddID(conn, data->domainEvents->callbacks,
-                                                dom, eventID,
-                                                callback, opaque, freecb, &ret) < 0)
+            if (virDomainEventStateRegisterID(conn, data->domainEvents,
+                                              dom, eventID,
+                                              callback, opaque, freecb, &ret) < 0)
                 ret = -1;
-            VIR_DEBUG("virDomainEventCallbackListAddID (ret = %d) ( conn: %p, "
-                      "data->domainEvents->callbacks: %p, callback: %p, opaque: %p, "
-                      "freecb: %p )", ret, conn, data->domainEvents->callbacks, callback,
+            VIR_DEBUG("virDomainEventStateRegisterID (ret = %d) ( conn: %p, "
+                      "callback: %p, opaque: %p, "
+                      "freecb: %p )", ret, conn, callback,
                       opaque, freecb);
         }
     }

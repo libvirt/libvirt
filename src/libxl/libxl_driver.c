@@ -1115,8 +1115,8 @@ libxlClose(virConnectPtr conn ATTRIBUTE_UNUSED)
     libxlDriverPrivatePtr driver = conn->privateData;
 
     libxlDriverLock(driver);
-    virDomainEventCallbackListRemoveConn(conn,
-                                         driver->domainEventState->callbacks);
+    virDomainEventStateDeregisterConn(conn,
+                                      driver->domainEventState);
     libxlDriverUnlock(driver);
     conn->privateData = NULL;
     return 0;
@@ -3404,9 +3404,9 @@ libxlDomainEventRegister(virConnectPtr conn,
     int ret;
 
     libxlDriverLock(driver);
-    ret = virDomainEventCallbackListAdd(conn,
-                                        driver->domainEventState->callbacks,
-                                        callback, opaque, freecb);
+    ret = virDomainEventStateRegister(conn,
+                                      driver->domainEventState,
+                                      callback, opaque, freecb);
     libxlDriverUnlock(driver);
 
     return ret;
@@ -3851,10 +3851,10 @@ libxlDomainEventRegisterAny(virConnectPtr conn, virDomainPtr dom, int eventID,
     int ret;
 
     libxlDriverLock(driver);
-    if (virDomainEventCallbackListAddID(conn,
-                                        driver->domainEventState->callbacks,
-                                        dom, eventID, callback, opaque,
-                                        freecb, &ret) < 0)
+    if (virDomainEventStateRegisterID(conn,
+                                      driver->domainEventState,
+                                      dom, eventID, callback, opaque,
+                                      freecb, &ret) < 0)
         ret = -1;
     libxlDriverUnlock(driver);
 

@@ -179,8 +179,8 @@ static int lxcClose(virConnectPtr conn)
     lxc_driver_t *driver = conn->privateData;
 
     lxcDriverLock(driver);
-    virDomainEventCallbackListRemoveConn(conn,
-                                         driver->domainEventState->callbacks);
+    virDomainEventStateDeregisterConn(conn,
+                                      driver->domainEventState);
     lxcProcessAutoDestroyRun(driver, conn);
     lxcDriverUnlock(driver);
 
@@ -2126,9 +2126,9 @@ lxcDomainEventRegister(virConnectPtr conn,
     int ret;
 
     lxcDriverLock(driver);
-    ret = virDomainEventCallbackListAdd(conn,
-                                        driver->domainEventState->callbacks,
-                                        callback, opaque, freecb);
+    ret = virDomainEventStateRegister(conn,
+                                      driver->domainEventState,
+                                      callback, opaque, freecb);
     lxcDriverUnlock(driver);
 
     return ret;
@@ -2164,10 +2164,10 @@ lxcDomainEventRegisterAny(virConnectPtr conn,
     int ret;
 
     lxcDriverLock(driver);
-    if (virDomainEventCallbackListAddID(conn,
-                                        driver->domainEventState->callbacks,
-                                        dom, eventID,
-                                        callback, opaque, freecb, &ret) < 0)
+    if (virDomainEventStateRegisterID(conn,
+                                      driver->domainEventState,
+                                      dom, eventID,
+                                      callback, opaque, freecb, &ret) < 0)
         ret = -1;
     lxcDriverUnlock(driver);
 

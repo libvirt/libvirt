@@ -3124,13 +3124,8 @@ static int remoteDomainEventRegister(virConnectPtr conn,
 
     remoteDriverLock(priv);
 
-    if (priv->domainEventState->timer < 0) {
-         remoteError(VIR_ERR_NO_SUPPORT, "%s", _("no event support"));
-         goto done;
-    }
-
-    if ((count = virDomainEventCallbackListAdd(conn, priv->domainEventState->callbacks,
-                                               callback, opaque, freecb)) < 0) {
+    if ((count = virDomainEventStateRegister(conn, priv->domainEventState,
+                                             callback, opaque, freecb)) < 0) {
          remoteError(VIR_ERR_RPC, "%s", _("adding cb to list"));
          goto done;
     }
@@ -3155,17 +3150,16 @@ static int remoteDomainEventDeregister(virConnectPtr conn,
 {
     struct private_data *priv = conn->privateData;
     int rv = -1;
+    int count;
 
     remoteDriverLock(priv);
 
-    if (virDomainEventStateDeregister(conn,
-                                      priv->domainEventState,
-                                      callback) < 0)
+    if ((count = virDomainEventStateDeregister(conn,
+                                               priv->domainEventState,
+                                               callback)) < 0)
         goto done;
 
-    if (virDomainEventCallbackListCountID(conn,
-                                          priv->domainEventState->callbacks,
-                                          VIR_DOMAIN_EVENT_ID_LIFECYCLE) == 0) {
+    if (count == 0) {
         /* Tell the server when we are the last callback deregistering */
         if (call (conn, priv, 0, REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER,
                   (xdrproc_t) xdr_void, (char *) NULL,
@@ -3763,16 +3757,11 @@ static int remoteDomainEventRegisterAny(virConnectPtr conn,
 
     remoteDriverLock(priv);
 
-    if (priv->domainEventState->timer < 0) {
-         remoteError(VIR_ERR_NO_SUPPORT, "%s", _("no event support"));
-         goto done;
-    }
-
-    if ((count = virDomainEventCallbackListAddID(conn,
-                                                 priv->domainEventState->callbacks,
-                                                 dom, eventID,
-                                                 callback, opaque, freecb,
-                                                 &callbackID)) < 0) {
+    if ((count = virDomainEventStateRegisterID(conn,
+                                               priv->domainEventState,
+                                               dom, eventID,
+                                               callback, opaque, freecb,
+                                               &callbackID)) < 0) {
         remoteError(VIR_ERR_RPC, "%s", _("adding cb to list"));
         goto done;
     }
@@ -3785,9 +3774,9 @@ static int remoteDomainEventRegisterAny(virConnectPtr conn,
         if (call (conn, priv, 0, REMOTE_PROC_DOMAIN_EVENTS_REGISTER_ANY,
                   (xdrproc_t) xdr_remote_domain_events_register_any_args, (char *) &args,
                   (xdrproc_t) xdr_void, (char *)NULL) == -1) {
-            virDomainEventCallbackListRemoveID(conn,
-                                               priv->domainEventState->callbacks,
-                                               callbackID);
+            virDomainEventStateDeregisterID(conn,
+                                            priv->domainEventState,
+                                            callbackID);
             goto done;
         }
     }
@@ -3807,27 +3796,28 @@ static int remoteDomainEventDeregisterAny(virConnectPtr conn,
     int rv = -1;
     remote_domain_events_deregister_any_args args;
     int eventID;
+    int count;
 
     remoteDriverLock(priv);
 
-    if ((eventID = virDomainEventCallbackListEventID(conn,
-                                                     priv->domainEventState->callbacks,
-                                                     callbackID)) < 0) {
+    if ((eventID = virDomainEventStateEventID(conn,
+                                              priv->domainEventState,
+                                              callbackID)) < 0) {
         remoteError(VIR_ERR_RPC, _("unable to find callback ID %d"), callbackID);
         goto done;
     }
 
-    if (virDomainEventStateDeregisterID(conn,
-                                        priv->domainEventState,
-                                        callbackID) < 0)
+    if ((count = virDomainEventStateDeregisterID(conn,
+                                                 priv->domainEventState,
+                                                 callbackID)) < 0) {
+        remoteError(VIR_ERR_RPC, _("unable to find callback ID %d"), callbackID);
         goto done;
+    }
 
     /* If that was the last callback for this eventID, we need to disable
      * events on the server */
-    if (virDomainEventCallbackListCountID(conn,
-                                          priv->domainEventState->callbacks,
-                                          eventID) == 0) {
-        args.eventID = eventID;
+    if (count == 0) {
+        args.eventID = callbackID;
 
         if (call (conn, priv, 0, REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER_ANY,
                   (xdrproc_t) xdr_remote_domain_events_deregister_any_args, (char *) &args,

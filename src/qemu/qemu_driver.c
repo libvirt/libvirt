@@ -900,8 +900,8 @@ static int qemudClose(virConnectPtr conn) {
 
     /* Get rid of callbacks registered for this conn */
     qemuDriverLock(driver);
-    virDomainEventCallbackListRemoveConn(conn,
-                                         driver->domainEventState->callbacks);
+    virDomainEventStateDeregisterConn(conn,
+                                      driver->domainEventState);
     qemuProcessAutoDestroyRun(driver, conn);
     qemuDriverUnlock(driver);
 
@@ -7959,9 +7959,9 @@ qemuDomainEventRegister(virConnectPtr conn,
     int ret;
 
     qemuDriverLock(driver);
-    ret = virDomainEventCallbackListAdd(conn,
-                                        driver->domainEventState->callbacks,
-                                        callback, opaque, freecb);
+    ret = virDomainEventStateRegister(conn,
+                                      driver->domainEventState,
+                                      callback, opaque, freecb);
     qemuDriverUnlock(driver);
 
     return ret;
@@ -7997,10 +7997,10 @@ qemuDomainEventRegisterAny(virConnectPtr conn,
     int ret;
 
     qemuDriverLock(driver);
-    if (virDomainEventCallbackListAddID(conn,
-                                        driver->domainEventState->callbacks,
-                                        dom, eventID,
-                                        callback, opaque, freecb, &ret) < 0)
+    if (virDomainEventStateRegisterID(conn,
+                                      driver->domainEventState,
+                                      dom, eventID,
+                                      callback, opaque, freecb, &ret) < 0)
         ret = -1;
     qemuDriverUnlock(driver);
 

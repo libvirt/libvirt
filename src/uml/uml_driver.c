@@ -1194,8 +1194,8 @@ static int umlClose(virConnectPtr conn) {
     struct uml_driver *driver = conn->privateData;
 
     umlDriverLock(driver);
-    virDomainEventCallbackListRemoveConn(conn,
-                                         driver->domainEventState->callbacks);
+    virDomainEventStateDeregisterConn(conn,
+                                      driver->domainEventState);
     umlProcessAutoDestroyRun(driver, conn);
     umlDriverUnlock(driver);
 
@@ -2447,9 +2447,9 @@ umlDomainEventRegister(virConnectPtr conn,
     int ret;
 
     umlDriverLock(driver);
-    ret = virDomainEventCallbackListAdd(conn,
-                                        driver->domainEventState->callbacks,
-                                        callback, opaque, freecb);
+    ret = virDomainEventStateRegister(conn,
+                                      driver->domainEventState,
+                                      callback, opaque, freecb);
     umlDriverUnlock(driver);
 
     return ret;
@@ -2483,10 +2483,10 @@ umlDomainEventRegisterAny(virConnectPtr conn,
     int ret;
 
     umlDriverLock(driver);
-    if (virDomainEventCallbackListAddID(conn,
-                                        driver->domainEventState->callbacks,
-                                        dom, eventID,
-                                        callback, opaque, freecb, &ret) < 0)
+    if (virDomainEventStateRegisterID(conn,
+                                      driver->domainEventState,
+                                      dom, eventID,
+                                      callback, opaque, freecb, &ret) < 0)
         ret = -1;
     umlDriverUnlock(driver);
 

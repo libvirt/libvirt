@@ -5404,9 +5404,9 @@ testDomainEventRegister(virConnectPtr conn,
     int ret;
 
     testDriverLock(driver);
-    ret = virDomainEventCallbackListAdd(conn,
-                                        driver->domainEventState->callbacks,
-                                        callback, opaque, freecb);
+    ret = virDomainEventStateRegister(conn,
+                                      driver->domainEventState,
+                                      callback, opaque, freecb);
     testDriverUnlock(driver);
 
     return ret;
@@ -5442,10 +5442,10 @@ testDomainEventRegisterAny(virConnectPtr conn,
     int ret;
 
     testDriverLock(driver);
-    if (virDomainEventCallbackListAddID(conn,
-                                        driver->domainEventState->callbacks,
-                                        dom, eventID,
-                                        callback, opaque, freecb, &ret) < 0)
+    if (virDomainEventStateRegisterID(conn,
+                                      driver->domainEventState,
+                                      dom, eventID,
+                                      callback, opaque, freecb, &ret) < 0)
         ret = -1;
     testDriverUnlock(driver);
 
