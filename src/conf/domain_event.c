@@ -43,6 +43,29 @@ struct _virDomainMeta {
 typedef struct _virDomainMeta virDomainMeta;
 typedef virDomainMeta *virDomainMetaPtr;
 
+struct _virDomainEventCallbackList {
+    unsigned int nextID;
+    unsigned int count;
+    virDomainEventCallbackPtr *callbacks;
+};
+
+struct _virDomainEventQueue {
+    unsigned int count;
+    virDomainEventPtr *events;
+};
+
+struct _virDomainEventState {
+    /* The list of domain event callbacks */
+    virDomainEventCallbackListPtr callbacks;
+    /* The queue of domain events */
+    virDomainEventQueuePtr queue;
+    /* Timer for flushing events queue */
+    int timer;
+    /* Flag if we're in process of dispatching */
+    bool isDispatching;
+    virMutex lock;
+};
+
 struct _virDomainEventCallback {
     int callbackID;
     int eventID;

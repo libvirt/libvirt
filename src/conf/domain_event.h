@@ -30,11 +30,6 @@
 typedef struct _virDomainEventCallback virDomainEventCallback;
 typedef virDomainEventCallback *virDomainEventCallbackPtr;
 
-struct _virDomainEventCallbackList {
-    unsigned int nextID;
-    unsigned int count;
-    virDomainEventCallbackPtr *callbacks;
-};
 typedef struct _virDomainEventCallbackList virDomainEventCallbackList;
 typedef virDomainEventCallbackList *virDomainEventCallbackListPtr;
 
@@ -45,24 +40,9 @@ typedef virDomainEventCallbackList *virDomainEventCallbackListPtr;
 typedef struct _virDomainEvent virDomainEvent;
 typedef virDomainEvent *virDomainEventPtr;
 
-struct _virDomainEventQueue {
-    unsigned int count;
-    virDomainEventPtr *events;
-};
 typedef struct _virDomainEventQueue virDomainEventQueue;
 typedef virDomainEventQueue *virDomainEventQueuePtr;
 
-struct _virDomainEventState {
-    /* The list of domain event callbacks */
-    virDomainEventCallbackListPtr callbacks;
-    /* The queue of domain events */
-    virDomainEventQueuePtr queue;
-    /* Timer for flushing events queue */
-    int timer;
-    /* Flag if we're in process of dispatching */
-    bool isDispatching;
-    virMutex lock;
-};
 typedef struct _virDomainEventState virDomainEventState;
 typedef virDomainEventState *virDomainEventStatePtr;
 
