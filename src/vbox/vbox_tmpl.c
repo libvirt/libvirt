@@ -7280,13 +7280,14 @@ static int vboxDomainEventRegisterAny(virConnectPtr conn,
              * later you can iterate over them
              */
 
-            ret = virDomainEventCallbackListAddID(conn, data->domainEvents->callbacks,
-                                                  dom, eventID,
-                                                  callback, opaque, freecb);
+            if (virDomainEventCallbackListAddID(conn, data->domainEvents->callbacks,
+                                                dom, eventID,
+                                                callback, opaque, freecb, &ret) < 0)
+                ret = -1;
             VIR_DEBUG("virDomainEventCallbackListAddID (ret = %d) ( conn: %p, "
-                  "data->domainEvents->callbacks: %p, callback: %p, opaque: %p, "
-                  "freecb: %p )", ret, conn, data->domainEvents->callbacks, callback,
-                  opaque, freecb);
+                      "data->domainEvents->callbacks: %p, callback: %p, opaque: %p, "
+                      "freecb: %p )", ret, conn, data->domainEvents->callbacks, callback,
+                      opaque, freecb);
         }
     }
 
@@ -7312,8 +7313,8 @@ static int vboxDomainEventDeregisterAny(virConnectPtr conn,
      */
     vboxDriverLock(data);
 
-    cnt = virDomainEventStateDeregisterAny(conn, data->domainEvents,
-                                           callbackID);
+    cnt = virDomainEventStateDeregisterID(conn, data->domainEvents,
+                                          callbackID);
 
     if (data->vboxCallback && cnt == 0) {
         data->vboxObj->vtbl->UnregisterCallback(data->vboxObj, data->vboxCallback);

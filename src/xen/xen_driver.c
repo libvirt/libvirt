@@ -1897,9 +1897,10 @@ xenUnifiedDomainEventRegisterAny(virConnectPtr conn,
         return -1;
     }
 
-    ret = virDomainEventCallbackListAddID(conn, priv->domainEvents->callbacks,
-                                          dom, eventID,
-                                          callback, opaque, freefunc);
+    if (virDomainEventCallbackListAddID(conn, priv->domainEvents->callbacks,
+                                        dom, eventID,
+                                        callback, opaque, freefunc, &ret) < 0)
+        ret = -1;
 
     xenUnifiedUnlock(priv);
     return (ret);
@@ -1919,9 +1920,9 @@ xenUnifiedDomainEventDeregisterAny(virConnectPtr conn,
         return -1;
     }
 
-    ret = virDomainEventStateDeregisterAny(conn,
-                                           priv->domainEvents,
-                                           callbackID);
+    ret = virDomainEventStateDeregisterID(conn,
+                                          priv->domainEvents,
+                                          callbackID);
 
     xenUnifiedUnlock(priv);
     return ret;

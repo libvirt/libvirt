@@ -7997,10 +7997,11 @@ qemuDomainEventRegisterAny(virConnectPtr conn,
     int ret;
 
     qemuDriverLock(driver);
-    ret = virDomainEventCallbackListAddID(conn,
-                                          driver->domainEventState->callbacks,
-                                          dom, eventID,
-                                          callback, opaque, freecb);
+    if (virDomainEventCallbackListAddID(conn,
+                                        driver->domainEventState->callbacks,
+                                        dom, eventID,
+                                        callback, opaque, freecb, &ret) < 0)
+        ret = -1;
     qemuDriverUnlock(driver);
 
     return ret;
@@ -8015,9 +8016,9 @@ qemuDomainEventDeregisterAny(virConnectPtr conn,
     int ret;
 
     qemuDriverLock(driver);
-    ret = virDomainEventStateDeregisterAny(conn,
-                                           driver->domainEventState,
-                                           callbackID);
+    ret = virDomainEventStateDeregisterID(conn,
+                                          driver->domainEventState,
+                                          callbackID);
     qemuDriverUnlock(driver);
 
     return ret;

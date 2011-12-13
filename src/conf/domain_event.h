@@ -80,7 +80,8 @@ int virDomainEventCallbackListAddID(virConnectPtr conn,
                                     int eventID,
                                     virConnectDomainEventGenericCallback cb,
                                     void *opaque,
-                                    virFreeCallback freecb)
+                                    virFreeCallback freecb,
+                                    int *callbackID)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(5);
 
 
@@ -242,9 +243,9 @@ virDomainEventStateDeregister(virConnectPtr conn,
                               virConnectDomainEventCallback callback)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 int
-virDomainEventStateDeregisterAny(virConnectPtr conn,
-                                 virDomainEventStatePtr state,
-                                 int callbackID)
+virDomainEventStateDeregisterID(virConnectPtr conn,
+                                virDomainEventStatePtr state,
+                                int callbackID)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 #endif

@@ -2483,10 +2483,11 @@ umlDomainEventRegisterAny(virConnectPtr conn,
     int ret;
 
     umlDriverLock(driver);
-    ret = virDomainEventCallbackListAddID(conn,
-                                          driver->domainEventState->callbacks,
-                                          dom, eventID,
-                                          callback, opaque, freecb);
+    if (virDomainEventCallbackListAddID(conn,
+                                        driver->domainEventState->callbacks,
+                                        dom, eventID,
+                                        callback, opaque, freecb, &ret) < 0)
+        ret = -1;
     umlDriverUnlock(driver);
 
     return ret;
@@ -2501,9 +2502,9 @@ umlDomainEventDeregisterAny(virConnectPtr conn,
     int ret;
 
     umlDriverLock(driver);
-    ret = virDomainEventStateDeregisterAny(conn,
-                                           driver->domainEventState,
-                                           callbackID);
+    ret = virDomainEventStateDeregisterID(conn,
+                                          driver->domainEventState,
+                                          callbackID);
     umlDriverUnlock(driver);
 
     return ret;

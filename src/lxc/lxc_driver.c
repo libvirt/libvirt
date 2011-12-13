@@ -2164,10 +2164,11 @@ lxcDomainEventRegisterAny(virConnectPtr conn,
     int ret;
 
     lxcDriverLock(driver);
-    ret = virDomainEventCallbackListAddID(conn,
-                                          driver->domainEventState->callbacks,
-                                          dom, eventID,
-                                          callback, opaque, freecb);
+    if (virDomainEventCallbackListAddID(conn,
+                                        driver->domainEventState->callbacks,
+                                        dom, eventID,
+                                        callback, opaque, freecb, &ret) < 0)
+        ret = -1;
     lxcDriverUnlock(driver);
 
     return ret;
@@ -2182,9 +2183,9 @@ lxcDomainEventDeregisterAny(virConnectPtr conn,
     int ret;
 
     lxcDriverLock(driver);
-    ret = virDomainEventStateDeregisterAny(conn,
-                                           driver->domainEventState,
-                                           callbackID);
+    ret = virDomainEventStateDeregisterID(conn,
+                                          driver->domainEventState,
+                                          callbackID);
     lxcDriverUnlock(driver);
 
     return ret;

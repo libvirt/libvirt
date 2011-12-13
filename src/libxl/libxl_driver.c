@@ -3851,10 +3851,11 @@ libxlDomainEventRegisterAny(virConnectPtr conn, virDomainPtr dom, int eventID,
     int ret;
 
     libxlDriverLock(driver);
-    ret = virDomainEventCallbackListAddID(conn,
-                                          driver->domainEventState->callbacks,
-                                          dom, eventID, callback, opaque,
-                                          freecb);
+    if (virDomainEventCallbackListAddID(conn,
+                                        driver->domainEventState->callbacks,
+                                        dom, eventID, callback, opaque,
+                                        freecb, &ret) < 0)
+        ret = -1;
     libxlDriverUnlock(driver);
 
     return ret;
@@ -3868,9 +3869,9 @@ libxlDomainEventDeregisterAny(virConnectPtr conn, int callbackID)
     int ret;
 
     libxlDriverLock(driver);
-    ret = virDomainEventStateDeregisterAny(conn,
-                                           driver->domainEventState,
-                                           callbackID);
+    ret = virDomainEventStateDeregisterID(conn,
+                                          driver->domainEventState,
+                                          callbackID);
     libxlDriverUnlock(driver);
 
     return ret;

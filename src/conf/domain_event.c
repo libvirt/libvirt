@@ -357,7 +357,7 @@ virDomainEventCallbackListAdd(virConnectPtr conn,
     return virDomainEventCallbackListAddID(conn, cbList, NULL,
                                            VIR_DOMAIN_EVENT_ID_LIFECYCLE,
                                            VIR_DOMAIN_EVENT_CALLBACK(callback),
-                                           opaque, freecb);
+                                           opaque, freecb, NULL);
 }
 
 
@@ -368,6 +368,7 @@ virDomainEventCallbackListAdd(virConnectPtr conn,
  * @eventID: the event ID
  * @callback: the callback to add
  * @opaque: opaque data tio pass to callback
+ * @callbackID: filled with callback ID
  *
  * Internal function to add a callback from a virDomainEventCallbackListPtr
  */
@@ -378,10 +379,12 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
                                 int eventID,
                                 virConnectDomainEventGenericCallback callback,
                                 void *opaque,
-                                virFreeCallback freecb)
+                                virFreeCallback freecb,
+                                int *callbackID)
 {
     virDomainEventCallbackPtr event;
     int i;
+    int ret = 0;
 
     /* Check incoming */
     if ( !cbList ) {
@@ -427,7 +430,17 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
 
     event->callbackID = cbList->nextID++;
 
-    return event->callbackID;
+    for (i = 0 ; i < cbList->count ; i++) {
+        if (cbList->callbacks[i]->eventID == VIR_DOMAIN_EVENT_ID_LIFECYCLE &&
+            cbList->callbacks[i]->conn == conn &&
+            !cbList->callbacks[i]->deleted)
+            ret++;
+    }
+
+    if (callbackID)
+        *callbackID = event->callbackID;
+
+    return ret;
 
 no_memory:
     virReportOOMError();
@@ -1358,20 +1371,20 @@ virDomainEventStateDeregister(virConnectPtr conn,
 
 
 /**
- * virDomainEventStateDeregisterAny:
+ * virDomainEventStateDeregisterID:
  * @state: domain event state
  * @conn: connection to associate with callback
  * @callbackID: ID of the function to remove from event
  *
  * Unregister the function @callbackID with connection @conn,
- * from @state, for lifecycle events.
+ * from @state, for events.
  *
- * Returns: the number of lifecycle callbacks still registered, or -1 on error
+ * Returns: the number of callbacks still registered, or -1 on error
  */
 int
-virDomainEventStateDeregisterAny(virConnectPtr conn,
-                                 virDomainEventStatePtr state,
-                                 int callbackID)
+virDomainEventStateDeregisterID(virConnectPtr conn,
+                                virDomainEventStatePtr state,
+                                int callbackID)
 {
     int ret;
 
