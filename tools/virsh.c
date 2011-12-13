@@ -5270,14 +5270,20 @@ cmdNodeSuspend(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
 
-    if (vshCommandOptString(cmd, "target", &target) < 0)
+    if (vshCommandOptString(cmd, "target", &target) < 0) {
+        vshError(ctl, _("Invalid target argument"));
         return false;
+    }
 
-    if (vshCommandOptLongLong(cmd, "duration", &duration) < 0)
+    if (vshCommandOptLongLong(cmd, "duration", &duration) < 0) {
+        vshError(ctl, _("Invalid duration argument"));
         return false;
+    }
 
-    if (vshCommandOptUInt(cmd, "flags", &flags) < 0)
+    if (vshCommandOptUInt(cmd, "flags", &flags) < 0) {
+        vshError(ctl, _("Invalid flags argument"));
         return false;
+    }
 
     if (STREQ(target, "mem"))
         suspendTarget = VIR_NODE_SUSPEND_TARGET_MEM;
