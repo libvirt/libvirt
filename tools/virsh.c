@@ -12667,6 +12667,8 @@ static const vshCmdOptDef opts_attach_disk[] = {
     {"serial", VSH_OT_STRING, 0, N_("serial of disk device")},
     {"shareable", VSH_OT_BOOL, 0, N_("shareable between domains")},
     {"address", VSH_OT_STRING, 0, N_("address of disk device")},
+    {"multifunction", VSH_OT_BOOL, 0,
+     N_("use multifunction pci under specified address")},
     {NULL, 0, 0, NULL}
 };
 
@@ -12922,9 +12924,12 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
             if (diskAddr.type == DISK_ADDR_TYPE_PCI) {
                 virBufferAsprintf(&buf,
                                   "  <address type='pci' domain='0x%04x'"
-                                  " bus ='0x%02x' slot='0x%02x' function='0x%0x' />\n",
+                                  " bus ='0x%02x' slot='0x%02x' function='0x%0x'",
                                   diskAddr.addr.pci.domain, diskAddr.addr.pci.bus,
                                   diskAddr.addr.pci.slot, diskAddr.addr.pci.function);
+                if (vshCommandOptBool(cmd, "multifunction"))
+                    virBufferAddLit(&buf, " multifunction='on'");
+                virBufferAddLit(&buf, "/>\n");
             } else {
                 vshError(ctl, "%s", _("expecting a pci:0000.00.00.00 address."));
                 goto cleanup;

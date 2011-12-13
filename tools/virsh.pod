@@ -1276,6 +1276,7 @@ the device does not use managed mode.
 [I<--driver driver>] [I<--subdriver subdriver>] [I<--cache cache>]
 [I<--type type>] [I<--mode mode>] [I<--persistent>] [I<--sourcetype soucetype>]
 [I<--serial serial>] [I<--shareable>] [I<--address address>]
+[I<--multifunction>]
 
 Attach a new disk device to the domain.
 I<source> and I<target> are paths for the files and devices.
@@ -1293,6 +1294,8 @@ I<serial> is the serial of disk device. I<shareable> indicates the disk device
 is shareable between domains.
 I<address> is the address of disk device in the form of pci:domain.bus.slot.function,
 scsi:controller.bus.unit or ide:controller.bus.unit.
+I<multifunction> indicates specified pci address is a multifunction pci device
+address.
 
 =item B<attach-interface> I<domain-id> I<type> I<source>
 [I<--target target>] [I<--mac mac>] [I<--script script>] [I<--model model>]
