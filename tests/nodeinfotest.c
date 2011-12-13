@@ -119,6 +119,7 @@ linuxTestNodeInfo(const void *data)
 cleanup:
     free(cpuinfo);
     free(output);
+    free(sysfs_cpuinfo);
 
     return result;
 }
