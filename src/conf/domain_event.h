@@ -237,6 +237,21 @@ virDomainEventStateFlush(virDomainEventStatePtr state,
                          virDomainEventDispatchFunc dispatchFunc,
                          void *opaque)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+int virDomainEventStateRegister(virConnectPtr conn,
+                                virDomainEventStatePtr state,
+                                virConnectDomainEventCallback callback,
+                                void *opaque,
+                                virFreeCallback freecb)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+int virDomainEventStateRegisterID(virConnectPtr conn,
+                                  virDomainEventStatePtr state,
+                                  virDomainPtr dom,
+                                  int eventID,
+                                  virConnectDomainEventGenericCallback cb,
+                                  void *opaque,
+                                  virFreeCallback freecb,
+                                  int *callbackID)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
 int
 virDomainEventStateDeregister(virConnectPtr conn,
                               virDomainEventStatePtr state,
@@ -246,6 +261,15 @@ int
 virDomainEventStateDeregisterID(virConnectPtr conn,
                                 virDomainEventStatePtr state,
                                 int callbackID)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+int
+virDomainEventStateDeregisterConn(virConnectPtr conn,
+                                  virDomainEventStatePtr state)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+int
+virDomainEventStateEventID(virConnectPtr conn,
+                           virDomainEventStatePtr state,
+                           int callbackID)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 #endif

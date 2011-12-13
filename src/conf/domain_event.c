@@ -1342,9 +1342,71 @@ virDomainEventStateFlush(virDomainEventStatePtr state,
 
 
 /**
- * virDomainEventStateDeregister:
- * @state: domain event state
+ * virDomainEventStateRegister:
  * @conn: connection to associate with callback
+ * @state: domain event state
+ * @callback: function to remove from event
+ * @opaque: data blob to pass to callback
+ * @freecb: callback to free @opaque
+ *
+ * Register the function @callback with connection @conn,
+ * from @state, for lifecycle events.
+ *
+ * Returns: the number of lifecycle callbacks now registered, or -1 on error
+ */
+int virDomainEventStateRegister(virConnectPtr conn,
+                                virDomainEventStatePtr state,
+                                virConnectDomainEventCallback callback,
+                                void *opaque,
+                                virFreeCallback freecb)
+{
+    int ret;
+    virDomainEventStateLock(state);
+    ret = virDomainEventCallbackListAdd(conn, state->callbacks,
+                                        callback, opaque, freecb);
+    virDomainEventStateUnlock(state);
+    return ret;
+}
+
+
+/**
+ * virDomainEventStateRegisterID:
+ * @conn: connection to associate with callback
+ * @state: domain event state
+ * @eventID: ID of the event type to register for
+ * @cb: function to remove from event
+ * @opaque: data blob to pass to callback
+ * @freecb: callback to free @opaque
+ * @callbackID: filled with callback ID
+ *
+ * Register the function @callbackID with connection @conn,
+ * from @state, for events of type @eventID.
+ *
+ * Returns: the number of callbacks now registered, or -1 on error
+ */
+int virDomainEventStateRegisterID(virConnectPtr conn,
+                                  virDomainEventStatePtr state,
+                                  virDomainPtr dom,
+                                  int eventID,
+                                  virConnectDomainEventGenericCallback cb,
+                                  void *opaque,
+                                  virFreeCallback freecb,
+                                  int *callbackID)
+{
+    int ret;
+    virDomainEventStateLock(state);
+    ret = virDomainEventCallbackListAddID(conn, state->callbacks,
+                                          dom, eventID, cb, opaque, freecb,
+                                          callbackID);
+    virDomainEventStateUnlock(state);
+    return ret;
+}
+
+
+/**
+ * virDomainEventStateDeregister:
+ * @conn: connection to associate with callback
+ * @state: domain event state
  * @callback: function to remove from event
  *
  * Unregister the function @callback with connection @conn,
@@ -1372,8 +1434,8 @@ virDomainEventStateDeregister(virConnectPtr conn,
 
 /**
  * virDomainEventStateDeregisterID:
- * @state: domain event state
  * @conn: connection to associate with callback
+ * @state: domain event state
  * @callbackID: ID of the function to remove from event
  *
  * Unregister the function @callbackID with connection @conn,
@@ -1395,6 +1457,54 @@ virDomainEventStateDeregisterID(virConnectPtr conn,
     else
         ret = virDomainEventCallbackListRemoveID(conn,
                                                  state->callbacks, callbackID);
+    virDomainEventStateUnlock(state);
+    return ret;
+}
+
+
+/**
+ * virDomainEventStateDeregisterConn:
+ * @conn: connection to associate with callbacks
+ * @state: domain event state
+ *
+ * Remove all callbacks from @state associated with the
+ * connection @conn
+ *
+ * Returns 0 on success, -1 on error
+ */
+int
+virDomainEventStateDeregisterConn(virConnectPtr conn,
+                                  virDomainEventStatePtr state)
+{
+    int ret;
+    virDomainEventStateLock(state);
+    ret = virDomainEventCallbackListRemoveConn(conn, state->callbacks);
+    virDomainEventStateUnlock(state);
+    return ret;
+}
+
+
+/**
+ * virDomainEventStateEventID:
+ * @conn: connection associated with the callback
+ * @state: domain event state
+ * @callbackID: the callback to query
+ *
+ * Query what event ID type is associated with the
+ * callback @callbackID for connection @conn
+ *
+ * Returns 0 on success, -1 on error
+ */
+int
+virDomainEventStateEventID(virConnectPtr conn,
+                           virDomainEventStatePtr state,
+                           int callbackID)
+{
+    int ret;
+
+    virDomainEventStateLock(state);
+    ret = virDomainEventCallbackListEventID(conn,
+                                            state->callbacks, callbackID);
     virDomainEventStateUnlock(state);
     return ret;
 }
