@@ -133,6 +133,7 @@ virDomainEventCallbackListRemove(virConnectPtr conn,
                                  virDomainEventCallbackListPtr cbList,
                                  virConnectDomainEventCallback callback)
 {
+    int ret = 0;
     int i;
     for (i = 0 ; i < cbList->count ; i++) {
         if (cbList->callbacks[i]->cb == VIR_DOMAIN_EVENT_CALLBACK(callback) &&
@@ -156,7 +157,11 @@ virDomainEventCallbackListRemove(virConnectPtr conn,
             }
             cbList->count--;
 
-            return 0;
+            for (i = 0 ; i < cbList->count ; i++) {
+                if (!cbList->callbacks[i]->deleted)
+                    ret++;
+            }
+            return ret;
         }
     }
 
@@ -179,6 +184,7 @@ virDomainEventCallbackListRemoveID(virConnectPtr conn,
                                    virDomainEventCallbackListPtr cbList,
                                    int callbackID)
 {
+    int ret = 0;
     int i;
     for (i = 0 ; i < cbList->count ; i++) {
         if (cbList->callbacks[i]->callbackID == callbackID &&
@@ -201,7 +207,11 @@ virDomainEventCallbackListRemoveID(virConnectPtr conn,
             }
             cbList->count--;
 
-            return 0;
+            for (i = 0 ; i < cbList->count ; i++) {
+                if (!cbList->callbacks[i]->deleted)
+                    ret++;
+            }
+            return ret;
         }
     }
 
@@ -254,13 +264,18 @@ int virDomainEventCallbackListMarkDelete(virConnectPtr conn,
                                          virDomainEventCallbackListPtr cbList,
                                          virConnectDomainEventCallback callback)
 {
+    int ret = 0;
     int i;
     for (i = 0 ; i < cbList->count ; i++) {
         if (cbList->callbacks[i]->cb == VIR_DOMAIN_EVENT_CALLBACK(callback) &&
             cbList->callbacks[i]->eventID == VIR_DOMAIN_EVENT_ID_LIFECYCLE &&
             cbList->callbacks[i]->conn == conn) {
             cbList->callbacks[i]->deleted = 1;
-            return 0;
+            for (i = 0 ; i < cbList->count ; i++) {
+                if (!cbList->callbacks[i]->deleted)
+                    ret++;
+            }
+            return ret;
         }
     }
 
@@ -274,12 +289,17 @@ int virDomainEventCallbackListMarkDeleteID(virConnectPtr conn,
                                            virDomainEventCallbackListPtr cbList,
                                            int callbackID)
 {
+    int ret = 0;
     int i;
     for (i = 0 ; i < cbList->count ; i++) {
         if (cbList->callbacks[i]->callbackID == callbackID &&
             cbList->callbacks[i]->conn == conn) {
             cbList->callbacks[i]->deleted = 1;
-            return 0;
+            for (i = 0 ; i < cbList->count ; i++) {
+                if (!cbList->callbacks[i]->deleted)
+                    ret++;
+            }
+            return ret;
         }
     }
 
@@ -1307,6 +1327,18 @@ virDomainEventStateFlush(virDomainEventStatePtr state,
     virDomainEventStateUnlock(state);
 }
 
+
+/**
+ * virDomainEventStateDeregister:
+ * @state: domain event state
+ * @conn: connection to associate with callback
+ * @callback: function to remove from event
+ *
+ * Unregister the function @callback with connection @conn,
+ * from @state, for lifecycle events.
+ *
+ * Returns: the number of lifecycle callbacks still registered, or -1 on error
+ */
 int
 virDomainEventStateDeregister(virConnectPtr conn,
                               virDomainEventStatePtr state,
@@ -1324,6 +1356,18 @@ virDomainEventStateDeregister(virConnectPtr conn,
     return ret;
 }
 
+
+/**
+ * virDomainEventStateDeregisterAny:
+ * @state: domain event state
+ * @conn: connection to associate with callback
+ * @callbackID: ID of the function to remove from event
+ *
+ * Unregister the function @callbackID with connection @conn,
+ * from @state, for lifecycle events.
+ *
+ * Returns: the number of lifecycle callbacks still registered, or -1 on error
+ */
 int
 virDomainEventStateDeregisterAny(virConnectPtr conn,
                                  virDomainEventStatePtr state,

@@ -183,9 +183,7 @@ struct _xenUnifiedPrivate {
     int nbNodeCells;
     int nbNodeCpus;
 
-    /* An list of callbacks */
-    virDomainEventCallbackListPtr domainEventCallbacks;
-    int domainEventDispatching;
+    virDomainEventStatePtr domainEvents;
 
     /* Location of config files, either /etc
      * or /var/lib/xen */

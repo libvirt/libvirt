@@ -63,6 +63,8 @@ static int
 xenUnifiedDomainGetVcpus (virDomainPtr dom,
                           virVcpuInfoPtr info, int maxinfo,
                           unsigned char *cpumaps, int maplen);
+static void xenDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque);
+
 
 /* The five Xen drivers below us. */
 static struct xenUnifiedDriver const * const drivers[XEN_UNIFIED_NR_DRIVERS] = {
@@ -248,12 +250,13 @@ xenUnifiedXendProbe (void)
 }
 #endif
 
+
+
 static virDrvOpenStatus
 xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
 {
     int i, ret = VIR_DRV_OPEN_DECLINED;
     xenUnifiedPrivatePtr priv;
-    virDomainEventCallbackListPtr cbList;
 
 #ifdef __sun
     /*
@@ -323,16 +326,15 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
         return VIR_DRV_OPEN_ERROR;
     }
 
-    /* Allocate callback list */
-    if (VIR_ALLOC(cbList) < 0) {
-        virReportOOMError();
+    if (!(priv->domainEvents = virDomainEventStateNew(xenDomainEventFlush,
+                                                      priv,
+                                                      NULL,
+                                                      false))) {
         virMutexDestroy(&priv->lock);
         VIR_FREE(priv);
         return VIR_DRV_OPEN_ERROR;
     }
     conn->privateData = priv;
-
-    priv->domainEventCallbacks = cbList;
 
     priv->handle = -1;
     priv->xendConfigVersion = -1;
@@ -423,7 +425,7 @@ xenUnifiedClose (virConnectPtr conn)
     int i;
 
     virCapabilitiesFree(priv->caps);
-    virDomainEventCallbackListFree(priv->domainEventCallbacks);
+    virDomainEventStateFree(priv->domainEvents);
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i])
@@ -1845,7 +1847,7 @@ xenUnifiedDomainEventRegister(virConnectPtr conn,
         return -1;
     }
 
-    ret = virDomainEventCallbackListAdd(conn, priv->domainEventCallbacks,
+    ret = virDomainEventCallbackListAdd(conn, priv->domainEvents->callbacks,
                                         callback, opaque, freefunc);
 
     xenUnifiedUnlock(priv);
@@ -1867,12 +1869,9 @@ xenUnifiedDomainEventDeregister(virConnectPtr conn,
         return -1;
     }
 
-    if (priv->domainEventDispatching)
-        ret = virDomainEventCallbackListMarkDelete(conn, priv->domainEventCallbacks,
-                                                   callback);
-    else
-        ret = virDomainEventCallbackListRemove(conn, priv->domainEventCallbacks,
-                                               callback);
+    ret = virDomainEventStateDeregister(conn,
+                                        priv->domainEvents,
+                                        callback);
 
     xenUnifiedUnlock(priv);
     return ret;
@@ -1898,7 +1897,7 @@ xenUnifiedDomainEventRegisterAny(virConnectPtr conn,
         return -1;
     }
 
-    ret = virDomainEventCallbackListAddID(conn, priv->domainEventCallbacks,
+    ret = virDomainEventCallbackListAddID(conn, priv->domainEvents->callbacks,
                                           dom, eventID,
                                           callback, opaque, freefunc);
 
@@ -1920,12 +1919,9 @@ xenUnifiedDomainEventDeregisterAny(virConnectPtr conn,
         return -1;
     }
 
-    if (priv->domainEventDispatching)
-        ret = virDomainEventCallbackListMarkDeleteID(conn, priv->domainEventCallbacks,
-                                                     callbackID);
-    else
-        ret = virDomainEventCallbackListRemoveID(conn, priv->domainEventCallbacks,
-                                                 callbackID);
+    ret = virDomainEventStateDeregisterAny(conn,
+                                           priv->domainEvents,
+                                           callbackID);
 
     xenUnifiedUnlock(priv);
     return ret;
@@ -2390,6 +2386,7 @@ xenUnifiedRemoveDomainInfo(xenUnifiedDomainInfoListPtr list,
     return -1;
 }
 
+
 static void
 xenUnifiedDomainEventDispatchFunc(virConnectPtr conn,
                                   virDomainEventPtr event,
@@ -2411,6 +2408,19 @@ xenUnifiedDomainEventDispatchFunc(virConnectPtr conn,
     xenUnifiedLock(priv);
 }
 
+static void xenDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    xenUnifiedPrivatePtr priv = conn->privateData;
+
+    xenUnifiedLock(priv);
+    virDomainEventStateFlush(priv->domainEvents,
+                             xenUnifiedDomainEventDispatchFunc,
+                             priv);
+    xenUnifiedUnlock(priv);
+}
+
+
 /**
  * xenUnifiedDomainEventDispatch:
  * @priv: the connection to dispatch events on
@@ -2427,21 +2437,7 @@ void xenUnifiedDomainEventDispatch (xenUnifiedPrivatePtr priv,
     if (!priv)
         return;
 
-    priv->domainEventDispatching = 1;
-
-    if (priv->domainEventCallbacks) {
-        virDomainEventDispatch(event,
-                               priv->domainEventCallbacks,
-                               xenUnifiedDomainEventDispatchFunc,
-                               priv);
-
-        /* Purge any deleted callbacks */
-        virDomainEventCallbackListPurgeMarked(priv->domainEventCallbacks);
-    }
-
-    virDomainEventFree(event);
-
-    priv->domainEventDispatching = 0;
+    virDomainEventStateQueue(priv->domainEvents, event);
 }
 
 void xenUnifiedLock(xenUnifiedPrivatePtr priv)

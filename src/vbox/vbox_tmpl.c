@@ -188,11 +188,9 @@ typedef struct {
 
 #else /* !(VBOX_API_VERSION == 2002) */
 
-    /* An array of callbacks */
-    virDomainEventCallbackListPtr domainEventCallbacks;
-
+    /* Async event handling */
+    virDomainEventStatePtr domainEvents;
     int fdWatch;
-    int domainEventDispatching;
 
 # if VBOX_API_VERSION <= 3002
     /* IVirtualBoxCallback is used in VirtualBox 3.x only */
@@ -966,10 +964,51 @@ static void vboxUninitialize(vboxGlobalData *data) {
 #if VBOX_API_VERSION == 2002
     /* No domainEventCallbacks in 2.2.* version */
 #else  /* !(VBOX_API_VERSION == 2002) */
-    VIR_FREE(data->domainEventCallbacks);
+    virDomainEventStateFree(data->domainEvents);
 #endif /* !(VBOX_API_VERSION == 2002) */
     VIR_FREE(data);
 }
+
+
+#if VBOX_API_VERSION == 2002
+    /* No domainEventCallbacks in 2.2.* version */
+#else  /* !(VBOX_API_VERSION == 2002) */
+
+static void
+vboxDomainEventDispatchFunc(virConnectPtr conn,
+                            virDomainEventPtr event,
+                            virConnectDomainEventGenericCallback cb,
+                            void *cbopaque,
+                            void *opaque)
+{
+    vboxGlobalData *data = opaque;
+
+    /*
+     * Release the lock while the callback is running so that
+     * we're re-entrant safe for callback work - the callback
+     * may want to invoke other virt functions & we have already
+     * protected the one piece of state we have - the callback
+     * list
+     */
+    vboxDriverUnlock(data);
+    virDomainEventDispatchDefaultFunc(conn, event, cb, cbopaque, NULL);
+    vboxDriverLock(data);
+}
+
+
+static void vboxDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    vboxGlobalData *data = conn->privateData;
+
+    vboxDriverLock(data);
+    virDomainEventStateFlush(data->domainEvents,
+                             vboxDomainEventDispatchFunc,
+                             data);
+    vboxDriverUnlock(data);
+}
+#endif /* !(VBOX_API_VERSION == 2002) */
+
 
 static virDrvOpenStatus vboxOpen(virConnectPtr conn,
                                  virConnectAuthPtr auth ATTRIBUTE_UNUSED,
@@ -1035,8 +1074,11 @@ static virDrvOpenStatus vboxOpen(virConnectPtr conn,
 
 #else  /* !(VBOX_API_VERSION == 2002) */
 
-    if (VIR_ALLOC(data->domainEventCallbacks) < 0) {
-        virReportOOMError();
+    if (!(data->domainEvents = virDomainEventStateNew(vboxDomainEventFlush,
+                                                      data,
+                                                      NULL,
+                                                      true))) {
+        vboxUninitialize(data);
         return VIR_DRV_OPEN_ERROR;
     }
 
@@ -6770,7 +6812,6 @@ vboxCallbackOnMachineStateChange(IVirtualBoxCallback *pThis ATTRIBUTE_UNUSED,
     int event        = 0;
     int detail       = 0;
 
-    g_pVBoxGlobalData->domainEventDispatching = 1;
     vboxDriverLock(g_pVBoxGlobalData);
 
     VIR_DEBUG("IVirtualBoxCallback: %p, State: %d", pThis, state);
@@ -6818,20 +6859,12 @@ vboxCallbackOnMachineStateChange(IVirtualBoxCallback *pThis ATTRIBUTE_UNUSED,
 
             ev = virDomainEventNewFromDom(dom, event, detail);
 
-            if (ev) {
-                virDomainEventDispatch(ev,
-                                       g_pVBoxGlobalData->domainEventCallbacks,
-                                       virDomainEventDispatchDefaultFunc,
-                                       NULL);
-                virDomainEventFree(ev);
-            }
+            if (ev)
+                virDomainEventStateQueue(g_pVBoxGlobalData->domainEvents, ev);
         }
     }
 
-    virDomainEventCallbackListPurgeMarked(g_pVBoxGlobalData->domainEventCallbacks);
-
     vboxDriverUnlock(g_pVBoxGlobalData);
-    g_pVBoxGlobalData->domainEventDispatching = 0;
 
     return NS_OK;
 }
@@ -6898,7 +6931,6 @@ vboxCallbackOnMachineRegistered(IVirtualBoxCallback *pThis ATTRIBUTE_UNUSED,
     int event        = 0;
     int detail       = 0;
 
-    g_pVBoxGlobalData->domainEventDispatching = 1;
     vboxDriverLock(g_pVBoxGlobalData);
 
     VIR_DEBUG("IVirtualBoxCallback: %p, registered: %s", pThis, registered ? "true" : "false");
@@ -6931,20 +6963,12 @@ vboxCallbackOnMachineRegistered(IVirtualBoxCallback *pThis ATTRIBUTE_UNUSED,
 
             ev = virDomainEventNewFromDom(dom, event, detail);
 
-            if (ev) {
-                virDomainEventDispatch(ev,
-                                       g_pVBoxGlobalData->domainEventCallbacks,
-                                       virDomainEventDispatchDefaultFunc,
-                                       NULL);
-                virDomainEventFree(ev);
-            }
+            if (ev)
+                virDomainEventStateQueue(g_pVBoxGlobalData->domainEvents, ev);
         }
     }
 
-    virDomainEventCallbackListPurgeMarked(g_pVBoxGlobalData->domainEventCallbacks);
-
     vboxDriverUnlock(g_pVBoxGlobalData);
-    g_pVBoxGlobalData->domainEventDispatching = 0;
 
     return NS_OK;
 }
@@ -7164,11 +7188,11 @@ static int vboxDomainEventRegister (virConnectPtr conn,
              * later you can iterate over them
              */
 
-            ret = virDomainEventCallbackListAdd(conn, data->domainEventCallbacks,
+            ret = virDomainEventCallbackListAdd(conn, data->domainEvents->callbacks,
                                                 callback, opaque, freecb);
             VIR_DEBUG("virDomainEventCallbackListAdd (ret = %d) ( conn: %p, "
-                  "data->domainEventCallbacks: %p, callback: %p, opaque: %p, "
-                  "freecb: %p )", ret, conn, data->domainEventCallbacks, callback,
+                  "data->domainEvents->callbacks: %p, callback: %p, opaque: %p, "
+                  "freecb: %p )", ret, conn, data->domainEvents->callbacks, callback,
                   opaque, freecb);
         }
     }
@@ -7188,31 +7212,23 @@ static int vboxDomainEventRegister (virConnectPtr conn,
 static int vboxDomainEventDeregister (virConnectPtr conn,
                                       virConnectDomainEventCallback callback) {
     VBOX_OBJECT_CHECK(conn, int, -1);
+    int cnt;
 
     /* Locking has to be there as callbacks are not
      * really fully thread safe
      */
     vboxDriverLock(data);
 
-    if (data->domainEventDispatching)
-        ret = virDomainEventCallbackListMarkDelete(conn, data->domainEventCallbacks,
-                                                   callback);
-    else
-        ret = virDomainEventCallbackListRemove(conn, data->domainEventCallbacks,
-                                               callback);
+    cnt = virDomainEventStateDeregister(conn, data->domainEvents,
+                                        callback);
 
-    if (data->vboxCallback) {
-        /* check count here of how many times register was called
-         * and only on the last de-register do the un-register call
-         */
-        if (data->domainEventCallbacks && virDomainEventCallbackListCount(data->domainEventCallbacks) == 0) {
-            data->vboxObj->vtbl->UnregisterCallback(data->vboxObj, data->vboxCallback);
-            VBOX_RELEASE(data->vboxCallback);
+    if (data->vboxCallback && cnt == 0) {
+        data->vboxObj->vtbl->UnregisterCallback(data->vboxObj, data->vboxCallback);
+        VBOX_RELEASE(data->vboxCallback);
 
-            /* Remove the Event file handle on which we are listening as well */
-            virEventRemoveHandle(data->fdWatch);
-            data->fdWatch = -1;
-        }
+        /* Remove the Event file handle on which we are listening as well */
+        virEventRemoveHandle(data->fdWatch);
+        data->fdWatch = -1;
     }
 
     vboxDriverUnlock(data);
@@ -7264,12 +7280,12 @@ static int vboxDomainEventRegisterAny(virConnectPtr conn,
              * later you can iterate over them
              */
 
-            ret = virDomainEventCallbackListAddID(conn, data->domainEventCallbacks,
+            ret = virDomainEventCallbackListAddID(conn, data->domainEvents->callbacks,
                                                   dom, eventID,
                                                   callback, opaque, freecb);
             VIR_DEBUG("virDomainEventCallbackListAddID (ret = %d) ( conn: %p, "
-                  "data->domainEventCallbacks: %p, callback: %p, opaque: %p, "
-                  "freecb: %p )", ret, conn, data->domainEventCallbacks, callback,
+                  "data->domainEvents->callbacks: %p, callback: %p, opaque: %p, "
+                  "freecb: %p )", ret, conn, data->domainEvents->callbacks, callback,
                   opaque, freecb);
         }
     }
@@ -7289,31 +7305,23 @@ static int vboxDomainEventRegisterAny(virConnectPtr conn,
 static int vboxDomainEventDeregisterAny(virConnectPtr conn,
                                         int callbackID) {
     VBOX_OBJECT_CHECK(conn, int, -1);
+    int cnt;
 
     /* Locking has to be there as callbacks are not
      * really fully thread safe
      */
     vboxDriverLock(data);
 
-    if (data->domainEventDispatching)
-        ret = virDomainEventCallbackListMarkDeleteID(conn, data->domainEventCallbacks,
-                                                     callbackID);
-    else
-        ret = virDomainEventCallbackListRemoveID(conn, data->domainEventCallbacks,
-                                                 callbackID);
+    cnt = virDomainEventStateDeregisterAny(conn, data->domainEvents,
+                                           callbackID);
 
-    if (data->vboxCallback) {
-        /* check count here of how many times register was called
-         * and only on the last de-register do the un-register call
-         */
-        if (data->domainEventCallbacks && virDomainEventCallbackListCount(data->domainEventCallbacks) == 0) {
-            data->vboxObj->vtbl->UnregisterCallback(data->vboxObj, data->vboxCallback);
-            VBOX_RELEASE(data->vboxCallback);
+    if (data->vboxCallback && cnt == 0) {
+        data->vboxObj->vtbl->UnregisterCallback(data->vboxObj, data->vboxCallback);
+        VBOX_RELEASE(data->vboxCallback);
 
-            /* Remove the Event file handle on which we are listening as well */
-            virEventRemoveHandle(data->fdWatch);
-            data->fdWatch = -1;
-        }
+        /* Remove the Event file handle on which we are listening as well */
+        virEventRemoveHandle(data->fdWatch);
+        data->fdWatch = -1;
     }
 
     vboxDriverUnlock(data);
