@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2024,6 +2024,22 @@ out:
     VIR_FREE(vf_bdf);
 
     return ret;
+}
+
+/*
+ * Returns a path to the PCI sysfs file given the BDF of the PCI function
+ */
+
+int
+pciSysfsFile(char *pciDeviceName, char **pci_sysfs_device_link)
+{
+    if (virAsprintf(pci_sysfs_device_link, PCI_SYSFS "devices/%s",
+                    pciDeviceName) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    return 0;
 }
 
 /*
