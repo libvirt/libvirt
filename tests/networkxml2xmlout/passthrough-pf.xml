@@ -1,0 +1,9 @@
+<network>
+  <name>local</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a9b</uuid>
+  <forward mode='passthrough'>
+    <pf dev='eth0'/>
+  </forward>
+  <ip address='192.168.122.1' netmask='255.255.255.0'>
+  </ip>
+</network>

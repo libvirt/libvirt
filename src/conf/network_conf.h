@@ -1,7 +1,7 @@
 /*
  * network_conf.h: network XML handling
  *
- * Copyright (C) 2006-2008 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2012 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -162,6 +162,9 @@ struct _virNetworkDef {
     /* If there are multiple forward devices (i.e. a pool of
      * interfaces), they will be listed here.
      */
+    size_t nForwardPfs;
+    virNetworkForwardIfDefPtr forwardPfs;
+
     size_t nForwardIfs;
     virNetworkForwardIfDefPtr forwardIfs;
 

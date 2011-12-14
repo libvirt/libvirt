@@ -1,7 +1,7 @@
 /*
  * network_conf.c: network XML handling
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -161,6 +161,11 @@ void virNetworkDefFree(virNetworkDefPtr def)
     VIR_FREE(def->name);
     VIR_FREE(def->bridge);
     VIR_FREE(def->domain);
+
+    for (ii = 0 ; ii < def->nForwardPfs && def->forwardPfs ; ii++) {
+        virNetworkForwardIfDefClear(&def->forwardPfs[ii]);
+    }
+    VIR_FREE(def->forwardPfs);
 
     for (ii = 0 ; ii < def->nForwardIfs && def->forwardIfs ; ii++) {
         virNetworkForwardIfDefClear(&def->forwardIfs[ii]);
@@ -929,10 +934,11 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     xmlNodePtr *ipNodes = NULL;
     xmlNodePtr *portGroupNodes = NULL;
     xmlNodePtr *forwardIfNodes = NULL;
+    xmlNodePtr *forwardPfNodes = NULL;
     xmlNodePtr dnsNode = NULL;
     xmlNodePtr virtPortNode = NULL;
     xmlNodePtr forwardNode = NULL;
-    int nIps, nPortGroups, nForwardIfs;
+    int nIps, nPortGroups, nForwardIfs, nForwardPfs;
     char *forwardDev = NULL;
     xmlNodePtr save = ctxt->node;
     xmlNodePtr bandwidthNode = NULL;
@@ -1074,10 +1080,44 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
 
         /* all of these modes can use a pool of physical interfaces */
         nForwardIfs = virXPathNodeSet("./interface", ctxt, &forwardIfNodes);
-        if (nForwardIfs < 0)
-            goto error;
+        nForwardPfs = virXPathNodeSet("./pf", ctxt, &forwardPfNodes);
 
-        if ((nForwardIfs > 0) || forwardDev) {
+        if (nForwardIfs < 0 || nForwardPfs < 0) {
+            virNetworkReportError(VIR_ERR_XML_ERROR,
+                                  _("No interface pool or SRIOV physical device given"));
+            goto error;
+        }
+
+        if (nForwardPfs == 1) {
+            if (VIR_ALLOC_N(def->forwardPfs, nForwardPfs) < 0) {
+                virReportOOMError();
+                goto error;
+            }
+
+            if (forwardDev) {
+                virNetworkReportError(VIR_ERR_XML_ERROR,
+                                      _("A forward Dev should not be used when using a SRIOV PF"));
+                goto error;
+            }
+
+            forwardDev = virXMLPropString(*forwardPfNodes, "dev");
+            if (!forwardDev) {
+                virNetworkReportError(VIR_ERR_XML_ERROR,
+                                      _("Missing required dev attribute in network '%s' pf element"),
+                                      def->name);
+                goto error;
+            }
+
+            def->forwardPfs->usageCount = 0;
+            def->forwardPfs->dev = forwardDev;
+            forwardDev = NULL;
+            def->nForwardPfs++;
+        } else if (nForwardPfs > 1) {
+            virNetworkReportError(VIR_ERR_XML_ERROR,
+                                  _("Use of more than one physical interface is not allowed"));
+            goto error;
+        }
+        if (nForwardIfs > 0 || forwardDev) {
             int ii;
 
             /* allocate array to hold all the portgroups */
@@ -1123,6 +1163,8 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
                 def->nForwardIfs++;
             }
         }
+        VIR_FREE(forwardDev);
+        VIR_FREE(forwardPfNodes);
         VIR_FREE(forwardIfNodes);
 
         switch (def->forwardType) {
@@ -1178,6 +1220,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     VIR_FREE(ipNodes);
     VIR_FREE(portGroupNodes);
     VIR_FREE(forwardIfNodes);
+    VIR_FREE(forwardPfNodes);
     VIR_FREE(forwardDev);
     ctxt->node = save;
     return NULL;
@@ -1420,7 +1463,9 @@ char *virNetworkDefFormat(const virNetworkDefPtr def)
     virBufferAsprintf(&buf, "  <uuid>%s</uuid>\n", uuidstr);
 
     if (def->forwardType != VIR_NETWORK_FORWARD_NONE) {
-        const char *dev = virNetworkDefForwardIf(def, 0);
+        const char *dev = NULL;
+        if (!def->nForwardPfs)
+            dev = virNetworkDefForwardIf(def, 0);
         const char *mode = virNetworkForwardTypeToString(def->forwardType);
 
         if (!mode) {
@@ -1430,20 +1475,23 @@ char *virNetworkDefFormat(const virNetworkDefPtr def)
             goto error;
         }
         virBufferAddLit(&buf, "  <forward");
-        if (dev)
-            virBufferEscapeString(&buf, " dev='%s'", dev);
+        virBufferEscapeString(&buf, " dev='%s'", dev);
         virBufferAsprintf(&buf, " mode='%s'%s>\n", mode,
-                          def->nForwardIfs ? "" : "/");
+                          (def->nForwardIfs || def->nForwardPfs) ? "" : "/");
+
+        /* For now, hard-coded to at most 1 forwardPfs */
+        if (def->nForwardPfs)
+            virBufferEscapeString(&buf, "    <pf dev='%s'/>\n",
+                                  def->forwardPfs[0].dev);
 
         if (def->nForwardIfs) {
             for (ii = 0; ii < def->nForwardIfs; ii++) {
-                if (def->forwardIfs[ii].dev) {
-                    virBufferEscapeString(&buf, "    <interface dev='%s'/>\n",
-                                          def->forwardIfs[ii].dev);
-                }
+                virBufferEscapeString(&buf, "    <interface dev='%s'/>\n",
+                                      def->forwardIfs[ii].dev);
             }
-            virBufferAddLit(&buf, "  </forward>\n");
         }
+        if (def->nForwardPfs || def->nForwardIfs)
+            virBufferAddLit(&buf, "  </forward>\n");
     }
 
     if (def->forwardType == VIR_NETWORK_FORWARD_NONE ||

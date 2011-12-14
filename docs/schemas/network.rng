@@ -85,13 +85,22 @@
                 </choice>
               </attribute>
             </optional>
-            <zeroOrMore>
-              <element name='interface'>
-                <attribute name='dev'>
-                  <ref name='deviceName'/>
-                </attribute>
-              </element>
-            </zeroOrMore>
+            <interleave>
+              <zeroOrMore>
+                <element name='interface'>
+                  <attribute name='dev'>
+                    <ref name='deviceName'/>
+                  </attribute>
+                </element>
+              </zeroOrMore>
+              <optional>
+                <element name='pf'>
+                  <attribute name='dev'>
+                    <ref name='deviceName'/>
+                  </attribute>
+                </element>
+              </optional>
+            </interleave>
           </element>
         </optional>
 

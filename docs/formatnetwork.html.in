@@ -226,7 +226,21 @@
   &lt;/forward&gt;
 ...
         </pre>
-        When a guest interface is being constructed, libvirt will pick
+        Additionally, <span class="since">since 0.9.10</span>, libvirt
+        allows a shorthand for specifying all virtual interfaces
+        associated with a single physical function, by using
+        the <code>&lt;pf&gt;</code> subelement to call out the
+        corresponding physical interface associated with multiple
+        virtual interfaces:
+        <pre>
+...
+  &lt;forward mode='passthrough'&gt;
+    &lt;pf dev='eth0'/&gt;
+  &lt;/forward&gt;
+...
+        </pre>
+
+        <p>When a guest interface is being constructed, libvirt will pick
         an interface from this list to use for the connection. In
         modes where physical interfaces can be shared by multiple
         guest interfaces, libvirt will choose the interface that
@@ -234,7 +248,7 @@
         that do not allow sharing of the physical device (in
         particular, 'passthrough' mode, and 'private' mode when using
         802.1Qbh), libvirt will choose an unused physical interface
-        or, if it can't find an unused interface, fail the operation.
+        or, if it can't find an unused interface, fail the operation.</p>
       </dd>
     </dl>
     <h5><a name="elementQoS">Quality of service</a></h5>
