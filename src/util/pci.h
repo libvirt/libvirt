@@ -112,4 +112,10 @@ int pciDeviceNetName(char *device_link_sysfs_path, char **netname);
 int pciSysfsFile(char *pciDeviceName, char **pci_sysfs_device_link)
     ATTRIBUTE_RETURN_CHECK;
 
+int pciGetDeviceAddrString(unsigned domain,
+                           unsigned bus,
+                           unsigned slot,
+                           unsigned function,
+                           char **pciConfigAddr)
+    ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
 #endif /* __VIR_PCI_H__ */

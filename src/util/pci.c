@@ -1293,6 +1293,30 @@ pciReadDeviceID(pciDevice *dev, const char *id_name)
     return id_str;
 }
 
+int
+pciGetDeviceAddrString(unsigned domain,
+                       unsigned bus,
+                       unsigned slot,
+                       unsigned function,
+                       char **pciConfigAddr)
+{
+    pciDevice *dev = NULL;
+    int ret = -1;
+
+    dev = pciGetDevice(domain, bus, slot, function);
+    if (dev != NULL) {
+        if ((*pciConfigAddr = strdup(dev->name)) == NULL) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        ret = 0;
+    }
+
+cleanup:
+    pciFreeDevice(dev);
+    return ret;
+}
+
 pciDevice *
 pciGetDevice(unsigned domain,
              unsigned bus,

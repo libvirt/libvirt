@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2011 Red Hat, Inc.
+ * Copyright (C) 2007-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -98,5 +98,11 @@ int virNetDevGetVirtualFunctionIndex(const char *pfname, const char *vfname,
 
 int virNetDevGetPhysicalFunction(const char *ifname, char **pfname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
+int virNetDevGetVirtualFunctions(const char *pfname,
+                                 char ***vfname,
+                                 unsigned int *n_vfname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_RETURN_CHECK;
 
 #endif /* __VIR_NETDEV_H__ */
