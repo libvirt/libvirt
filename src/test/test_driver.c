@@ -1,7 +1,7 @@
 /*
  * test.c: A "mock" hypervisor for use by application unit tests
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -3233,7 +3233,7 @@ static char *testNetworkGetXMLDesc(virNetworkPtr network,
         goto cleanup;
     }
 
-    ret = virNetworkDefFormat(privnet->def);
+    ret = virNetworkDefFormat(privnet->def, flags);
 
 cleanup:
     if (privnet)

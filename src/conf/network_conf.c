@@ -1448,7 +1448,7 @@ virPortGroupDefFormat(virBufferPtr buf,
     return 0;
 }
 
-char *virNetworkDefFormat(const virNetworkDefPtr def)
+char *virNetworkDefFormat(const virNetworkDefPtr def, unsigned int flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned char *uuid;
@@ -1484,7 +1484,8 @@ char *virNetworkDefFormat(const virNetworkDefPtr def)
             virBufferEscapeString(&buf, "    <pf dev='%s'/>\n",
                                   def->forwardPfs[0].dev);
 
-        if (def->nForwardIfs) {
+        if (def->nForwardIfs &&
+            (!def->nForwardPfs || !(flags & VIR_NETWORK_XML_INACTIVE))) {
             for (ii = 0; ii < def->nForwardIfs; ii++) {
                 virBufferEscapeString(&buf, "    <interface dev='%s'/>\n",
                                       def->forwardIfs[ii].dev);
@@ -1601,7 +1602,7 @@ int virNetworkSaveConfig(const char *configDir,
     int ret = -1;
     char *xml;
 
-    if (!(xml = virNetworkDefFormat(def)))
+    if (!(xml = virNetworkDefFormat(def, 0)))
         goto cleanup;
 
     if (virNetworkSaveXML(configDir, def, xml))

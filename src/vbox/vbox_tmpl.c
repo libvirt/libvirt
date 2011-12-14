@@ -8098,7 +8098,7 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network,
     VBOX_UTF16_FREE(networkInterfaceNameUtf16);
     VBOX_RELEASE(host);
 
-    ret = virNetworkDefFormat(def);
+    ret = virNetworkDefFormat(def, 0);
 
 cleanup:
     virNetworkDefFree(def);

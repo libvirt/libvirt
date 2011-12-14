@@ -14,7 +14,8 @@
 #include "testutilsqemu.h"
 
 static int
-testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
+testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
+                         unsigned int flags)
 {
     char *inXmlData = NULL;
     char *outXmlData = NULL;
@@ -30,7 +31,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
     if (!(dev = virNetworkDefParseString(inXmlData)))
         goto fail;
 
-    if (!(actual = virNetworkDefFormat(dev)))
+    if (!(actual = virNetworkDefFormat(dev, flags)))
         goto fail;
 
     if (STRNEQ(outXmlData, actual)) {
@@ -48,21 +49,27 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
     return ret;
 }
 
+struct testInfo {
+    const char *name;
+    unsigned int flags;
+};
+
 static int
 testCompareXMLToXMLHelper(const void *data)
 {
+    const struct testInfo *info = data;
     int result = -1;
     char *inxml = NULL;
     char *outxml = NULL;
 
     if (virAsprintf(&inxml, "%s/networkxml2xmlin/%s.xml",
-                    abs_srcdir, (const char*)data) < 0 ||
+                    abs_srcdir, info->name) < 0 ||
         virAsprintf(&outxml, "%s/networkxml2xmlout/%s.xml",
-                    abs_srcdir, (const char*)data) < 0) {
+                    abs_srcdir, info->name) < 0) {
         goto cleanup;
     }
 
-    result = testCompareXMLToXMLFiles(inxml, outxml);
+    result = testCompareXMLToXMLFiles(inxml, outxml, info->flags);
 
 cleanup:
     free(inxml);
@@ -76,10 +83,14 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST(name) \
-    if (virtTestRun("Network XML-2-XML " name, \
-                    1, testCompareXMLToXMLHelper, (name)) < 0) \
-        ret = -1
+#define DO_TEST_FULL(name, flags)                                       \
+    do {                                                                \
+        const struct testInfo info = {name, flags};                     \
+        if (virtTestRun("Network XML-2-XML " name,                      \
+                        1, testCompareXMLToXMLHelper, &info) < 0)       \
+            ret = -1;                                                   \
+    } while (0)
+#define DO_TEST(name) DO_TEST_FULL(name, 0)
 
     DO_TEST("isolated-network");
     DO_TEST("routed-network");
@@ -93,6 +104,7 @@ mymain(void)
     DO_TEST("host-bridge-net");
     DO_TEST("vepa-net");
     DO_TEST("bandwidth-network");
+    DO_TEST_FULL("passthrough-pf", VIR_NETWORK_XML_INACTIVE);
 
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

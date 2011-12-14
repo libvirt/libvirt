@@ -1882,6 +1882,10 @@ int                      virNodeGetCellsFreeMemory(virConnectPtr conn,
  * Virtual Networks API
  */
 
+typedef enum {
+    VIR_NETWORK_XML_INACTIVE = (1 << 0), /* dump inactive network information */
+} virNetworkXMLFlags;
+
 /**
  * virNetwork:
  *

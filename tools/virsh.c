@@ -7286,6 +7286,7 @@ static const vshCmdInfo info_network_dumpxml[] = {
 
 static const vshCmdOptDef opts_network_dumpxml[] = {
     {"network", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network name or uuid")},
+    {"inactive", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("network information of an inactive domain")},
     {NULL, 0, 0, NULL}
 };
 
@@ -7295,6 +7296,8 @@ cmdNetworkDumpXML(vshControl *ctl, const vshCmd *cmd)
     virNetworkPtr network;
     bool ret = true;
     char *dump;
+    unsigned int flags = 0;
+    int inactive;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -7302,7 +7305,12 @@ cmdNetworkDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (!(network = vshCommandOptNetwork(ctl, cmd, NULL)))
         return false;
 
-    dump = virNetworkGetXMLDesc(network, 0);
+    inactive = vshCommandOptBool (cmd, "inactive");
+    if (inactive)
+        flags |= VIR_NETWORK_XML_INACTIVE;
+
+    dump = virNetworkGetXMLDesc(network, flags);
+
     if (dump != NULL) {
         vshPrint(ctl, "%s", dump);
         VIR_FREE(dump);

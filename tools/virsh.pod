@@ -1523,9 +1523,11 @@ not instantiated.
 Destroy (stop) a given virtual network specified by its name or UUID. This
 takes effect immediately.
 
-=item B<net-dumpxml> I<network>
+=item B<net-dumpxml> I<network> [I<--inactive>]
 
 Output the virtual network information as an XML dump to stdout.
+If I<--inactive> is specified, then physical functions are not
+expanded into their associated virtual functions.
 
 =item B<net-edit> I<network>
 

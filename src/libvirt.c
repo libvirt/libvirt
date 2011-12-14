@@ -9835,10 +9835,15 @@ error:
 /**
  * virNetworkGetXMLDesc:
  * @network: a network object
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virNetworkXMLFlags
  *
  * Provide an XML description of the network. The description may be reused
  * later to relaunch the network with virNetworkCreateXML().
+ *
+ * Normally, if a network included a physical function, the output includes
+ * all virtual functions tied to that physical interface.  If @flags includes
+ * VIR_NETWORK_XML_INACTIVE, then the expansion of virtual interfaces is
+ * not performed.
  *
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
  *         the caller must free() the returned value.
