@@ -119,7 +119,7 @@ void virDomainEventFree(virDomainEventPtr event);
 
 void virDomainEventStateFree(virDomainEventStatePtr state);
 virDomainEventStatePtr
-virDomainEventStateNew(bool requireTimer);
+virDomainEventStateNew(void);
 
 void
 virDomainEventStateQueue(virDomainEventStatePtr state,

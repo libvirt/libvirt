@@ -1137,7 +1137,7 @@ static virDrvOpenStatus testOpen(virConnectPtr conn,
     privconn = conn->privateData;
     testDriverLock(privconn);
 
-    privconn->domainEventState = virDomainEventStateNew(false);
+    privconn->domainEventState = virDomainEventStateNew();
     if (!privconn->domainEventState) {
         testDriverUnlock(privconn);
         testClose(conn);

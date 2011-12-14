@@ -2418,7 +2418,7 @@ static int lxcStartup(int privileged)
     if (virDomainObjListInit(&lxc_driver->domains) < 0)
         goto cleanup;
 
-    lxc_driver->domainEventState = virDomainEventStateNew(true);
+    lxc_driver->domainEventState = virDomainEventStateNew();
     if (!lxc_driver->domainEventState)
         goto cleanup;
 

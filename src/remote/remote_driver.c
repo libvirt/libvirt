@@ -726,7 +726,7 @@ doRemoteOpen (virConnectPtr conn,
         }
     }
 
-    if (!(priv->domainEventState = virDomainEventStateNew(false)))
+    if (!(priv->domainEventState = virDomainEventStateNew()))
         goto failed;
 
     /* Successful. */

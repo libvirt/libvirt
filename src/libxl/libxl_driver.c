@@ -928,7 +928,7 @@ libxlStartup(int privileged) {
     }
     VIR_FREE(log_file);
 
-    libxl_driver->domainEventState = virDomainEventStateNew(true);
+    libxl_driver->domainEventState = virDomainEventStateNew();
     if (!libxl_driver->domainEventState)
         goto error;
 

@@ -1034,7 +1034,7 @@ static virDrvOpenStatus vboxOpen(virConnectPtr conn,
 
 #else  /* !(VBOX_API_VERSION == 2002) */
 
-    if (!(data->domainEvents = virDomainEventStateNew(true))) {
+    if (!(data->domainEvents = virDomainEventStateNew())) {
         vboxUninitialize(data);
         return VIR_DRV_OPEN_ERROR;
     }

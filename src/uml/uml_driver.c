@@ -413,7 +413,7 @@ umlStartup(int privileged)
     if (virDomainObjListInit(&uml_driver->domains) < 0)
         goto error;
 
-    uml_driver->domainEventState = virDomainEventStateNew(true);
+    uml_driver->domainEventState = virDomainEventStateNew();
     if (!uml_driver->domainEventState)
         goto error;
 

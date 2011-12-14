@@ -632,13 +632,9 @@ virDomainEventTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
 
 /**
  * virDomainEventStateNew:
- * @requireTimer: If true, return an error if registering the timer fails.
- *                This is fatal for drivers that sit behind the daemon
- *                (qemu, lxc), since there should always be a event impl
- *                registered.
  */
 virDomainEventStatePtr
-virDomainEventStateNew(bool requireTimer)
+virDomainEventStateNew(void)
 {
     virDomainEventStatePtr state = NULL;
 
@@ -659,23 +655,10 @@ virDomainEventStateNew(bool requireTimer)
         goto error;
     }
 
-    if (!(state->queue = virDomainEventQueueNew())) {
+    if (!(state->queue = virDomainEventQueueNew()))
         goto error;
-    }
 
-    if ((state->timer = virEventAddTimeout(-1,
-                                           virDomainEventTimer,
-                                           state,
-                                           NULL)) < 0) {
-        if (requireTimer == false) {
-            VIR_DEBUG("virEventAddTimeout failed: No addTimeoutImpl defined. "
-                      "continuing without events.");
-        } else {
-            eventReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                             _("could not initialize domain event timer"));
-            goto error;
-        }
-    }
+    state->timer = -1;
 
     return state;
 
@@ -1314,7 +1297,6 @@ virDomainEventStateFlush(virDomainEventStatePtr state)
     state->queue->count = 0;
     state->queue->events = NULL;
     virEventUpdateTimeout(state->timer, -1);
-    virDomainEventStateUnlock(state);
 
     virDomainEventQueueDispatch(&tempQueue,
                                 state->callbacks,
@@ -1322,7 +1304,6 @@ virDomainEventStateFlush(virDomainEventStatePtr state)
                                 state);
 
     /* Purge any deleted callbacks */
-    virDomainEventStateLock(state);
     virDomainEventCallbackListPurgeMarked(state->callbacks);
 
     state->isDispatching = false;
@@ -1350,10 +1331,32 @@ virDomainEventStateRegister(virConnectPtr conn,
                             void *opaque,
                             virFreeCallback freecb)
 {
-    int ret;
+    int ret = -1;
+
     virDomainEventStateLock(state);
+
+    if ((state->callbacks->count == 0) &&
+        (state->timer == -1) &&
+        (state->timer = virEventAddTimeout(-1,
+                                           virDomainEventTimer,
+                                           state,
+                                           NULL)) < 0) {
+        eventReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("could not initialize domain event timer"));
+        goto cleanup;
+    }
+
     ret = virDomainEventCallbackListAdd(conn, state->callbacks,
                                         callback, opaque, freecb);
+
+    if (ret == -1 &&
+        state->callbacks->count == 0 &&
+        state->timer != -1) {
+        virEventRemoveTimeout(state->timer);
+        state->timer = -1;
+    }
+
+cleanup:
     virDomainEventStateUnlock(state);
     return ret;
 }
@@ -1384,11 +1387,33 @@ virDomainEventStateRegisterID(virConnectPtr conn,
                               virFreeCallback freecb,
                               int *callbackID)
 {
-    int ret;
+    int ret = -1;
+
     virDomainEventStateLock(state);
+
+    if ((state->callbacks->count == 0) &&
+        (state->timer == -1) &&
+        (state->timer = virEventAddTimeout(-1,
+                                           virDomainEventTimer,
+                                           state,
+                                           NULL)) < 0) {
+        eventReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("could not initialize domain event timer"));
+        goto cleanup;
+    }
+
     ret = virDomainEventCallbackListAddID(conn, state->callbacks,
                                           dom, eventID, cb, opaque, freecb,
                                           callbackID);
+
+    if (ret == -1 &&
+        state->callbacks->count == 0 &&
+        state->timer != -1) {
+        virEventRemoveTimeout(state->timer);
+        state->timer = -1;
+    }
+
+cleanup:
     virDomainEventStateUnlock(state);
     return ret;
 }
@@ -1418,6 +1443,13 @@ virDomainEventStateDeregister(virConnectPtr conn,
                                                    state->callbacks, callback);
     else
         ret = virDomainEventCallbackListRemove(conn, state->callbacks, callback);
+
+    if (state->callbacks->count == 0 &&
+        state->timer != -1) {
+        virEventRemoveTimeout(state->timer);
+        state->timer = -1;
+    }
+
     virDomainEventStateUnlock(state);
     return ret;
 }
@@ -1448,6 +1480,13 @@ virDomainEventStateDeregisterID(virConnectPtr conn,
     else
         ret = virDomainEventCallbackListRemoveID(conn,
                                                  state->callbacks, callbackID);
+
+    if (state->callbacks->count == 0 &&
+        state->timer != -1) {
+        virEventRemoveTimeout(state->timer);
+        state->timer = -1;
+    }
+
     virDomainEventStateUnlock(state);
     return ret;
 }
