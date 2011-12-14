@@ -750,6 +750,27 @@ void qemuMonitorClose(qemuMonitorPtr mon)
         VIR_FORCE_CLOSE(mon->fd);
     }
 
+    /* In case another thread is waiting for its monitor command to be
+     * processed, we need to wake it up with appropriate error set.
+     */
+    if (mon->msg) {
+        if (mon->lastError.code == VIR_ERR_OK) {
+            virErrorPtr err = virSaveLastError();
+
+            qemuReportError(VIR_ERR_OPERATION_FAILED,
+                            _("Qemu monitor was closed"));
+            virCopyLastError(&mon->lastError);
+            if (err) {
+                virSetError(err);
+                virFreeError(err);
+            } else {
+                virResetLastError();
+            }
+        }
+        mon->msg->finished = 1;
+        virCondSignal(&mon->notify);
+    }
+
     if (qemuMonitorUnref(mon) > 0)
         qemuMonitorUnlock(mon);
 }
