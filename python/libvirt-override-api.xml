@@ -405,5 +405,22 @@
       <arg name='flags' type='unsigned int' info='an OR&apos;ed set of virDomainModificationImpact'/>
       <return type='int' info='0 in case of success, -1 in case of failure'/>
     </function>
+    <function name='virDomainBlockPeek' file='python'>
+      <info>Read the contents of domain's disk device</info>
+      <arg name='dom' type='virDomainPtr' info='pointer to the domain'/>
+      <arg name='disk' type='const char *' info='disk name'/>
+      <arg name='offset' type='unsigned long long' info='offset within block device'/>
+      <arg name='size' type='size_t' info='size to read'/>
+      <arg name='flags' type='unsigned int' info='unused, always pass 0'/>
+      <return type='char *' info='the returned buffer or None in case of error'/>
+    </function>
+    <function name='virDomainMemoryPeek' file='python'>
+      <info>Read the contents of domain's memory</info>
+      <arg name='dom' type='virDomainPtr' info='pointer to the domain'/>
+      <arg name='start' type='unsigned long long' info='start of memory to peek'/>
+      <arg name='size' type='size_t' info='size of memory to peek'/>
+      <arg name='flags' type='unsigned int' info='an OR&apos;ed set of virDomainMemoryFlags'/>
+      <return type='char *' info='the returned buffer or None in case of error'/>
+    </function>
   </symbols>
 </api>

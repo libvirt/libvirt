@@ -5017,6 +5017,77 @@ libvirt_virDomainMigrateGetMaxSpeed(PyObject *self ATTRIBUTE_UNUSED, PyObject *a
     return(py_retval);
 }
 
+static PyObject *
+libvirt_virDomainBlockPeek(PyObject *self ATTRIBUTE_UNUSED,
+                           PyObject *args) {
+    PyObject *py_retval = NULL;
+    int c_retval;
+    virDomainPtr domain;
+    PyObject *pyobj_domain;
+    const char *disk;
+    unsigned long long offset;
+    size_t size;
+    char *buf;
+    unsigned int flags;
+
+    if (!PyArg_ParseTuple(args, (char *)"OzLni:virDomainBlockPeek", &pyobj_domain,
+                          &disk, &offset, &size, &flags))
+        return(NULL);
+
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    if ((buf = malloc(size)) == NULL)
+        return VIR_PY_NONE;
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virDomainBlockPeek(domain, disk, offset, size, buf, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_retval < 0)
+        goto cleanup;
+
+    py_retval = PyString_FromStringAndSize(buf, size);
+
+cleanup:
+    free(buf);
+    return py_retval;
+}
+
+static PyObject *
+libvirt_virDomainMemoryPeek(PyObject *self ATTRIBUTE_UNUSED,
+                            PyObject *args) {
+    PyObject *py_retval = NULL;
+    int c_retval;
+    virDomainPtr domain;
+    PyObject *pyobj_domain;
+    unsigned long long start;
+    size_t size;
+    char *buf;
+    unsigned int flags;
+
+    if (!PyArg_ParseTuple(args, (char *)"OLni:virDomainMemoryPeek", &pyobj_domain,
+                          &start, &size, &flags))
+        return(NULL);
+
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    if ((buf = malloc(size)) == NULL)
+        return VIR_PY_NONE;
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virDomainMemoryPeek(domain, start, size, buf, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_retval < 0)
+        goto cleanup;
+
+    py_retval = PyString_FromStringAndSize(buf, size);
+
+cleanup:
+    free(buf);
+    return py_retval;
+}
+
 /************************************************************************
  *									*
  *			The registration stuff				*
@@ -5113,6 +5184,8 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainGetBlockIoTune", libvirt_virDomainGetBlockIoTune, METH_VARARGS, NULL},
     {(char *) "virDomainSendKey", libvirt_virDomainSendKey, METH_VARARGS, NULL},
     {(char *) "virDomainMigrateGetMaxSpeed", libvirt_virDomainMigrateGetMaxSpeed, METH_VARARGS, NULL},
+    {(char *) "virDomainBlockPeek", libvirt_virDomainBlockPeek, METH_VARARGS, NULL},
+    {(char *) "virDomainMemoryPeek", libvirt_virDomainMemoryPeek, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 
