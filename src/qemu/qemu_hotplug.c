@@ -1952,9 +1952,11 @@ cleanup:
     return ret;
 }
 
-int qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
-                                  virDomainObjPtr vm,
-                                  virDomainDeviceDefPtr dev)
+static int
+qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
+                              virDomainObjPtr vm,
+                              virDomainDeviceDefPtr dev,
+                              virDomainHostdevDefPtr *detach_ret)
 {
     virDomainHostdevDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -2050,14 +2052,19 @@ int qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
         VIR_FREE(vm->def->hostdevs);
         vm->def->nhostdevs = 0;
     }
-    virDomainHostdevDefFree(detach);
+    if (detach_ret)
+        *detach_ret = detach;
+    else
+        virDomainHostdevDefFree(detach);
 
     return ret;
 }
 
-int qemuDomainDetachHostUsbDevice(struct qemud_driver *driver,
-                                  virDomainObjPtr vm,
-                                  virDomainDeviceDefPtr dev)
+static int
+qemuDomainDetachHostUsbDevice(struct qemud_driver *driver,
+                              virDomainObjPtr vm,
+                              virDomainDeviceDefPtr dev,
+                              virDomainHostdevDefPtr *detach_ret)
 {
     virDomainHostdevDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -2129,7 +2136,10 @@ int qemuDomainDetachHostUsbDevice(struct qemud_driver *driver,
         VIR_FREE(vm->def->hostdevs);
         vm->def->nhostdevs = 0;
     }
-    virDomainHostdevDefFree(detach);
+    if (detach_ret)
+        *detach_ret = detach;
+    else
+        virDomainHostdevDefFree(detach);
 
     return ret;
 }
@@ -2139,6 +2149,7 @@ int qemuDomainDetachHostDevice(struct qemud_driver *driver,
                                virDomainDeviceDefPtr dev)
 {
     virDomainHostdevDefPtr hostdev = dev->data.hostdev;
+    virDomainHostdevDefPtr detach = NULL;
     int ret;
 
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
@@ -2150,10 +2161,10 @@ int qemuDomainDetachHostDevice(struct qemud_driver *driver,
 
     switch (hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        ret = qemuDomainDetachHostPciDevice(driver, vm, dev);
+        ret = qemuDomainDetachHostPciDevice(driver, vm, dev, &detach);
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-        ret = qemuDomainDetachHostUsbDevice(driver, vm, dev);
+        ret = qemuDomainDetachHostUsbDevice(driver, vm, dev, &detach);
         break;
     default:
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -2162,9 +2173,12 @@ int qemuDomainDetachHostDevice(struct qemud_driver *driver,
         return -1;
     }
 
-    if (virSecurityManagerRestoreHostdevLabel(driver->securityManager,
-                                              vm, dev->data.hostdev) < 0)
+    if (ret == 0 &&
+        virSecurityManagerRestoreHostdevLabel(driver->securityManager,
+                                              vm, detach) < 0)
         VIR_WARN("Failed to restore host device labelling");
+
+    virDomainHostdevDefFree(detach);
 
     return ret;
 }
