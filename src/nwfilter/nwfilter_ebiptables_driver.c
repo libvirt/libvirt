@@ -3619,10 +3619,12 @@ ebiptablesApplyNewRules(const char *ifname,
     NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
 
     /* create needed chains */
-    if (ebtablesCreateTmpRootAndSubChains(&buf, ifname, chains_in_set , 1,
-                                          &ebtChains, &nEbtChains) < 0 ||
-        ebtablesCreateTmpRootAndSubChains(&buf, ifname, chains_out_set, 0,
-                                          &ebtChains, &nEbtChains) < 0) {
+    if ((virHashSize(chains_in_set) > 0 &&
+         ebtablesCreateTmpRootAndSubChains(&buf, ifname, chains_in_set , 1,
+                                           &ebtChains, &nEbtChains) < 0) ||
+        (virHashSize(chains_out_set) > 0 &&
+         ebtablesCreateTmpRootAndSubChains(&buf, ifname, chains_out_set, 0,
+                                           &ebtChains, &nEbtChains) < 0)) {
         goto tear_down_tmpebchains;
     }
 
