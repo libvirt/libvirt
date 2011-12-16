@@ -241,6 +241,8 @@ typedef enum {
     VIR_ERR_STORAGE_POOL_BUILT = 76,	/* storage pool already built */
     VIR_ERR_SNAPSHOT_REVERT_RISKY = 77,	/* force was not requested for a
                                            risky domain snapshot revert */
+    VIR_ERR_OPERATION_ABORTED = 78,     /* operation on a domain was
+                                           canceled/aborted by user */
 } virErrorNumber;
 
 /**

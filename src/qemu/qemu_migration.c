@@ -905,7 +905,7 @@ qemuMigrationUpdateJobStatus(struct qemud_driver *driver,
 
     case QEMU_MONITOR_MIGRATION_STATUS_CANCELLED:
         priv->job.info.type = VIR_DOMAIN_JOB_CANCELLED;
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
+        qemuReportError(VIR_ERR_OPERATION_ABORTED,
                         _("%s: %s"), job, _("canceled by client"));
         break;
     }
