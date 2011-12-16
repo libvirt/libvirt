@@ -3852,6 +3852,15 @@ qemuDomainSaveImageOpen(struct qemud_driver *driver,
         goto error;
 
     if (saferead(fd, &header, sizeof(header)) != sizeof(header)) {
+        if (unlink_corrupt) {
+            if (VIR_CLOSE(fd) < 0 || unlink(path) < 0) {
+                virReportSystemError(errno,
+                                     _("cannot remove corrupt file: %s"),
+                                     path);
+                goto error;
+            }
+            return -3;
+        }
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("failed to read qemu header"));
         goto error;
