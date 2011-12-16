@@ -2187,6 +2187,56 @@ static char *virGetUserEnt(uid_t uid,
     return ret;
 }
 
+static char *virGetGroupEnt(gid_t gid)
+{
+    char *strbuf;
+    char *ret;
+    struct group grbuf;
+    struct group *gr = NULL;
+    long val = sysconf(_SC_GETGR_R_SIZE_MAX);
+    size_t strbuflen = val;
+    int rc;
+
+    /* sysconf is a hint; if it fails, fall back to a reasonable size */
+    if (val < 0)
+        strbuflen = 1024;
+
+    if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    /*
+     * From the manpage (terrifying but true):
+     *
+     * ERRORS
+     *  0 or ENOENT or ESRCH or EBADF or EPERM or ...
+     *        The given name or gid was not found.
+     */
+    while ((rc = getgrgid_r(gid, &grbuf, strbuf, strbuflen, &gr)) == ERANGE) {
+        if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0) {
+            virReportOOMError();
+            VIR_FREE(strbuf);
+            return NULL;
+        }
+    }
+    if (rc != 0 || gr == NULL) {
+        virReportSystemError(rc,
+                             _("Failed to find group record for gid '%u'"),
+                             (unsigned int) gid);
+        VIR_FREE(strbuf);
+        return NULL;
+    }
+
+    ret = strdup(gr->gr_name);
+
+    VIR_FREE(strbuf);
+    if (!ret)
+        virReportOOMError();
+
+    return ret;
+}
+
 char *virGetUserDirectory(uid_t uid)
 {
     return virGetUserEnt(uid, VIR_USER_ENT_DIRECTORY);
@@ -2195,6 +2245,11 @@ char *virGetUserDirectory(uid_t uid)
 char *virGetUserName(uid_t uid)
 {
     return virGetUserEnt(uid, VIR_USER_ENT_NAME);
+}
+
+char *virGetGroupName(gid_t gid)
+{
+    return virGetGroupEnt(gid);
 }
 
 

@@ -236,6 +236,7 @@ int virKillProcess(pid_t pid, int sig);
 
 char *virGetUserDirectory(uid_t uid);
 char *virGetUserName(uid_t uid);
+char *virGetGroupName(gid_t gid);
 int virGetUserID(const char *name,
                  uid_t *uid) ATTRIBUTE_RETURN_CHECK;
 int virGetGroupID(const char *name,
