@@ -2198,7 +2198,6 @@ remoteSASLFinish(virNetServerClientPtr client)
 
     VIR_DEBUG("Authentication successful %d", virNetServerClientGetFD(client));
 
-    identity = virNetSASLSessionGetIdentity(priv->sasl);
     PROBE(RPC_SERVER_CLIENT_AUTH_ALLOW,
           "client=%p auth=%d identity=%s",
           client, REMOTE_AUTH_SASL, identity);
