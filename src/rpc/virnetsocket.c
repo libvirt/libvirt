@@ -826,6 +826,7 @@ int virNetSocketGetPort(virNetSocketPtr sock)
 #ifdef SO_PEERCRED
 int virNetSocketGetLocalIdentity(virNetSocketPtr sock,
                                  uid_t *uid,
+                                 gid_t *gid,
                                  pid_t *pid)
 {
     struct ucred cr;
@@ -841,6 +842,7 @@ int virNetSocketGetLocalIdentity(virNetSocketPtr sock,
 
     *pid = cr.pid;
     *uid = cr.uid;
+    *gid = cr.gid;
 
     virMutexUnlock(&sock->lock);
     return 0;
@@ -848,6 +850,7 @@ int virNetSocketGetLocalIdentity(virNetSocketPtr sock,
 #else
 int virNetSocketGetLocalIdentity(virNetSocketPtr sock ATTRIBUTE_UNUSED,
                                  uid_t *uid ATTRIBUTE_UNUSED,
+                                 gid_t *gid ATTRIBUTE_UNUSED,
                                  pid_t *pid ATTRIBUTE_UNUSED)
 {
     /* XXX Many more OS support UNIX socket credentials we could port to. See dbus ....*/

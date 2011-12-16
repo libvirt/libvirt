@@ -2030,6 +2030,7 @@ remoteDispatchAuthList(virNetServerPtr server ATTRIBUTE_UNUSED,
     int rv = -1;
     int auth = virNetServerClientGetAuth(client);
     uid_t callerUid;
+    gid_t callerGid;
     pid_t callerPid;
 
     /* If the client is root then we want to bypass the
@@ -2037,7 +2038,7 @@ remoteDispatchAuthList(virNetServerPtr server ATTRIBUTE_UNUSED,
      * some piece of polkit isn't present/running
      */
     if (auth == VIR_NET_SERVER_SERVICE_AUTH_POLKIT) {
-        if (virNetServerClientGetLocalIdentity(client, &callerUid, &callerPid) < 0) {
+        if (virNetServerClientGetLocalIdentity(client, &callerUid, &callerGid, &callerPid) < 0) {
             /* Don't do anything on error - it'll be validated at next
              * phase of auth anyway */
             virResetLastError();
@@ -2463,6 +2464,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
                          remote_auth_polkit_ret *ret)
 {
     pid_t callerPid = -1;
+    gid_t callerGid = -1;
     uid_t callerUid = -1;
     const char *action;
     int status = -1;
@@ -2493,7 +2495,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto authfail;
     }
 
-    if (virNetServerClientGetLocalIdentity(client, &callerUid, &callerPid) < 0) {
+    if (virNetServerClientGetLocalIdentity(client, &callerUid, &callerGid, &callerPid) < 0) {
         goto authfail;
     }
 
@@ -2563,6 +2565,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server,
                          remote_auth_polkit_ret *ret)
 {
     pid_t callerPid;
+    gid_t callerGid;
     uid_t callerUid;
     PolKitCaller *pkcaller = NULL;
     PolKitAction *pkaction = NULL;
@@ -2590,7 +2593,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server,
         goto authfail;
     }
 
-    if (virNetServerClientGetLocalIdentity(client, &callerUid, &callerPid) < 0) {
+    if (virNetServerClientGetLocalIdentity(client, &callerUid, &callerGid, &callerPid) < 0) {
         VIR_ERROR(_("cannot get peer socket identity"));
         goto authfail;
     }
