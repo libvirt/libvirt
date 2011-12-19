@@ -75,7 +75,8 @@ if [ -x /usr/bin/i686-pc-mingw32-gcc ]; then
     --host=i686-pc-mingw32 \
     --prefix="$AUTOBUILD_INSTALL_ROOT/i686-pc-mingw32/sys-root/mingw" \
     --enable-compile-warnings=error \
-    --without-libvirtd
+    --without-libvirtd \
+    --without-python
 
   make
   make install
