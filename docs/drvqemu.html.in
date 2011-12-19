@@ -513,6 +513,73 @@ $ virsh domxml-to-native qemu-argv demo.xml
   -serial none -parallel none -usb
 </pre>
 
+    <h2><a name="qemucommand">Pass-through of arbitrary qemu
+    commands</a></h2>
+
+    <p>Libvirt provides an XML namespace and an optional
+      library <code>libvirt-qemu.so</code> for dealing specifically
+      with qemu.  When used correctly, these extensions allow testing
+      specific qemu features that have not yet been ported to the
+      generic libvirt XML and API interfaces.  However, they
+      are <b>unsupported</b>, in that the library is not guaranteed to
+      have a stable API, abusing the library or XML may result in
+      inconsistent state the crashes libvirtd, and upgrading either
+      qemu-kvm or libvirtd may break behavior of a domain that was
+      relying on a qemu-specific pass-through.  If you find yourself
+      needing to use them to access a particular qemu feature, then
+      please post an RFE to the libvirt mailing list to get that
+      feature incorporated into the stable libvirt XML and API
+      interfaces.
+    </p>
+    <p>The library provides two
+      API: <code>virDomainQemuMonitorCommand</code>, for sending an
+      arbitrary monitor command (in either HMP or QMP format) to a
+      qemu guest (<span class="since">Since 0.8.3</span>),
+      and <code>virDomainQemuAttach</code>, for registering a qemu
+      domain that was manually started so that it can then be managed
+      by libvirtd (<span class="since">Since 0.9.4</span>).
+    </p>
+    <p>Additionally, the following XML additions allow fine-tuning of
+      the command line given to qemu when starting a domain
+      (<span class="since">Since 0.8.3</span>).  In order to use the
+      XML additions, it is necessary to issue an XML namespace request
+      (the special <code>xmlns:<i>name</i></code> attribute) that
+      pulls in <code>http://libirt.org/schemas/domain/qemu/1.0</code>;
+      typically, the namespace is given the name
+      of <code>qemu</code>.  With the namespace in place, it is then
+      possible to add an element <code>&lt;qemu:commandline&gt;</code>
+      under <code>driver</code>, with the following sub-elements
+      repeated as often as needed:
+      <dl>
+        <dt><code>qemu:arg</code></dt>
+        <dd>Add an additional command-line argument to the qemu
+          process when starting the domain, given by the value of the
+          attribute <code>value</code>.
+        </dd>
+        <dt><code>qemu:env</code></dt>
+        <dd>Add an additional environment variable to the qemu
+          process when starting the domain, given with the name-value
+          pair recorded in the attributes <code>name</code>
+          and optional <code>value</code>.</dd>
+      </dl>
+
+      <p>Example:</p><pre>
+&lt;domain type='qemu' xmlns:qemu='http://libirt.org/schemas/domain/qemu/1.0'&gt;
+  &lt;name&gt;QEmu-fedora-i686&lt;/name&gt;
+  &lt;memory&gt;219200&lt;/memory&gt;
+  &lt;os&gt;
+    &lt;type arch='i686' machine='pc'&gt;hvm&lt;/type&gt;
+  &lt;/os&gt;
+  &lt;devices&gt;
+    &lt;emulator&gt;/usr/bin/qemu-system-x86_64&lt;/emulator&gt;
+  &lt;/devices&gt;
+  &lt;qemu:commandline&gt;
+    &lt;qemu:arg value='-newarg'/&gt;
+    &lt;qemu:env name='QEMU_ENV' value='VAL'/&gt;
+  &lt;/qemu:commandline&gt;
+&lt;/domain&gt;
+</pre>
+
     <h2><a name="xmlconfig">Example domain XML config</a></h2>
 
     <h3>QEMU emulated guest on x86_64</h3>
