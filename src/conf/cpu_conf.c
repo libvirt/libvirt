@@ -108,6 +108,27 @@ virCPUDefCopy(const virCPUDefPtr cpu)
             goto no_memory;
     }
 
+    if (cpu->ncells) {
+        if (VIR_ALLOC_N(copy->cells, cpu->ncells) < 0)
+            goto no_memory;
+        copy->ncells_max = copy->ncells = cpu->ncells;
+
+        for (i = 0; i < cpu->ncells; i++) {
+            copy->cells[i].cellid = cpu->cells[i].cellid;
+            copy->cells[i].mem = cpu->cells[i].mem;
+
+            if (VIR_ALLOC_N(copy->cells[i].cpumask,
+                            VIR_DOMAIN_CPUMASK_LEN) < 0)
+                goto no_memory;
+            memcpy(copy->cells[i].cpumask, cpu->cells[i].cpumask,
+                   VIR_DOMAIN_CPUMASK_LEN);
+
+            if (!(copy->cells[i].cpustr = strdup(cpu->cells[i].cpustr)))
+                goto no_memory;
+        }
+        copy->cells_cpus = cpu->cells_cpus;
+    }
+
     return copy;
 
 no_memory:
