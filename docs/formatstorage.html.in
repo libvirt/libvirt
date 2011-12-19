@@ -13,7 +13,7 @@
       volumes. Some may have constraints on volume size, or placement.
     </p>
     <p>
-      The is the top level tag for a storage pool document is 'pool'. It has
+      The top level tag for a storage pool document is 'pool'. It has
       a single attribute <code>type</code>, which is one of <code>dir</code>,
       <code>fs</code>,<code>netfs</code>,<code>disk</code>,<code>iscsi</code>,
       <code>logical</code>. This corresponds to the storage backend drivers
