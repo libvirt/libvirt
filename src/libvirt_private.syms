@@ -181,9 +181,11 @@ cpuUpdate;
 # cpu_conf.h
 virCPUDefAddFeature;
 virCPUDefCopy;
+virCPUDefCopyModel;
 virCPUDefFormat;
 virCPUDefFormatBuf;
 virCPUDefFree;
+virCPUDefFreeModel;
 virCPUDefParseXML;
 
 

@@ -61,6 +61,19 @@ VIR_ENUM_IMPL(virCPUFeaturePolicy, VIR_CPU_FEATURE_LAST,
               "forbid")
 
 
+void ATTRIBUTE_NONNULL(1)
+virCPUDefFreeModel(virCPUDefPtr def)
+{
+    unsigned int i;
+
+    VIR_FREE(def->model);
+    VIR_FREE(def->vendor);
+
+    for (i = 0; i < def->nfeatures; i++)
+        VIR_FREE(def->features[i].name);
+    VIR_FREE(def->features);
+}
+
 void
 virCPUDefFree(virCPUDefPtr def)
 {
@@ -69,13 +82,8 @@ virCPUDefFree(virCPUDefPtr def)
     if (!def)
         return;
 
-    VIR_FREE(def->model);
     VIR_FREE(def->arch);
-    VIR_FREE(def->vendor);
-
-    for (i = 0 ; i < def->nfeatures ; i++)
-        VIR_FREE(def->features[i].name);
-    VIR_FREE(def->features);
+    virCPUDefFreeModel(def);
 
     for (i = 0 ; i < def->ncells ; i++) {
         VIR_FREE(def->cells[i].cpumask);
@@ -87,6 +95,42 @@ virCPUDefFree(virCPUDefPtr def)
 }
 
 
+int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+virCPUDefCopyModel(virCPUDefPtr dst,
+                   const virCPUDefPtr src,
+                   bool resetPolicy)
+{
+    unsigned int i;
+
+    if ((src->model && !(dst->model = strdup(src->model)))
+        || (src->vendor && !(dst->vendor = strdup(src->vendor)))
+        || VIR_ALLOC_N(dst->features, src->nfeatures) < 0)
+        goto no_memory;
+    dst->nfeatures_max = dst->nfeatures = src->nfeatures;
+
+    for (i = 0; i < dst->nfeatures; i++) {
+        if (dst->type != src->type && resetPolicy) {
+            if (dst->type == VIR_CPU_TYPE_HOST)
+                dst->features[i].policy = -1;
+            else if (src->features[i].policy == -1)
+                dst->features[i].policy = VIR_CPU_FEATURE_REQUIRE;
+            else
+                dst->features[i].policy = src->features[i].policy;
+        } else {
+            dst->features[i].policy = src->features[i].policy;
+        }
+
+        if (!(dst->features[i].name = strdup(src->features[i].name)))
+            goto no_memory;
+    }
+
+    return 0;
+
+no_memory:
+    virReportOOMError();
+    return -1;
+}
+
 virCPUDefPtr
 virCPUDefCopy(const virCPUDefPtr cpu)
 {
@@ -96,13 +140,8 @@ virCPUDefCopy(const virCPUDefPtr cpu)
     if (!cpu)
         return NULL;
 
-    if (VIR_ALLOC(copy) < 0
-        || (cpu->arch && !(copy->arch = strdup(cpu->arch)))
-        || (cpu->model && !(copy->model = strdup(cpu->model)))
-        || (cpu->vendor && !(copy->vendor = strdup(cpu->vendor)))
-        || VIR_ALLOC_N(copy->features, cpu->nfeatures) < 0)
+    if (VIR_ALLOC(copy) < 0)
         goto no_memory;
-    copy->nfeatures_max = cpu->nfeatures;
 
     copy->type = cpu->type;
     copy->mode = cpu->mode;
@@ -111,13 +150,12 @@ virCPUDefCopy(const virCPUDefPtr cpu)
     copy->sockets = cpu->sockets;
     copy->cores = cpu->cores;
     copy->threads = cpu->threads;
-    copy->nfeatures = cpu->nfeatures;
 
-    for (i = 0; i < copy->nfeatures; i++) {
-        copy->features[i].policy = cpu->features[i].policy;
-        if (!(copy->features[i].name = strdup(cpu->features[i].name)))
-            goto no_memory;
-    }
+    if (cpu->arch && !(copy->arch = strdup(cpu->arch)))
+        goto no_memory;
+
+    if (virCPUDefCopyModel(copy, cpu, false) < 0)
+        goto error;
 
     if (cpu->ncells) {
         if (VIR_ALLOC_N(copy->cells, cpu->ncells) < 0)
@@ -144,6 +182,7 @@ virCPUDefCopy(const virCPUDefPtr cpu)
 
 no_memory:
     virReportOOMError();
+error:
     virCPUDefFree(copy);
     return NULL;
 }

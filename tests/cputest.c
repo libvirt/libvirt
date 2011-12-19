@@ -162,7 +162,8 @@ error:
 static int
 cpuTestCompareXML(const char *arch,
                   const virCPUDefPtr cpu,
-                  const char *name)
+                  const char *name,
+                  unsigned int flags)
 {
     char *xml = NULL;
     char *expected = NULL;
@@ -176,7 +177,7 @@ cpuTestCompareXML(const char *arch,
     if (virtTestLoadFile(xml, &expected) < 0)
         goto cleanup;
 
-    if (!(actual = virCPUDefFormat(cpu, 0)))
+    if (!(actual = virCPUDefFormat(cpu, flags)))
         goto cleanup;
 
     if (STRNEQ(expected, actual)) {
@@ -310,7 +311,7 @@ cpuTestGuestData(const void *arg)
     }
     result = virBufferContentAndReset(&buf);
 
-    ret = cpuTestCompareXML(data->arch, guest, result);
+    ret = cpuTestCompareXML(data->arch, guest, result, 0);
 
 cleanup:
     VIR_FREE(result);
@@ -354,7 +355,7 @@ cpuTestBaseline(const void *arg)
     if (virAsprintf(&result, "%s-result", data->name) < 0)
         goto cleanup;
 
-    if (cpuTestCompareXML(data->arch, baseline, result) < 0)
+    if (cpuTestCompareXML(data->arch, baseline, result, 0) < 0)
         goto cleanup;
 
     for (i = 0; i < ncpus; i++) {
@@ -406,7 +407,8 @@ cpuTestUpdate(const void *arg)
     if (virAsprintf(&result, "%s+%s", data->host, data->name) < 0)
         goto cleanup;
 
-    ret = cpuTestCompareXML(data->arch, cpu, result);
+    ret = cpuTestCompareXML(data->arch, cpu, result,
+                            VIR_DOMAIN_XML_UPDATE_CPU);
 
 cleanup:
     virCPUDefFree(host);
@@ -592,6 +594,9 @@ mymain(void)
     DO_TEST_UPDATE("x86", "host", "min", IDENTICAL);
     DO_TEST_UPDATE("x86", "host", "pentium3", IDENTICAL);
     DO_TEST_UPDATE("x86", "host", "guest", SUPERSET);
+    DO_TEST_UPDATE("x86", "host", "host-model", IDENTICAL);
+    DO_TEST_UPDATE("x86", "host", "host-model-nofallback", IDENTICAL);
+    DO_TEST_UPDATE("x86", "host", "host-passthrough", IDENTICAL);
 
     /* computing baseline CPUs */
     DO_TEST_BASELINE("x86", "incompatible-vendors", -1);
@@ -622,6 +627,9 @@ mymain(void)
     DO_TEST_GUESTDATA("x86", "host", "guest", models, "qemu64", 0);
     DO_TEST_GUESTDATA("x86", "host", "guest", nomodel, NULL, -1);
     DO_TEST_GUESTDATA("x86", "host", "guest-nofallback", models, "Penryn", -1);
+    DO_TEST_GUESTDATA("x86", "host", "host+host-model", models, "Penryn", 0);
+    DO_TEST_GUESTDATA("x86", "host", "host+host-model-nofallback",
+                      models, "Penryn", -1);
 
     free(map);
     return (ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE);

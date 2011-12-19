@@ -1,0 +1,4 @@
+<cpu mode='host-model'>
+  <model fallback='forbid'/>
+  <topology sockets='1' cores='2' threads='1'/>
+</cpu>

@@ -1050,20 +1050,20 @@ char *qemuDomainDefFormatXML(struct qemud_driver *driver,
 {
     char *ret = NULL;
     virCPUDefPtr cpu = NULL;
-    virCPUDefPtr def_cpu;
-
-    def_cpu = def->cpu;
+    virCPUDefPtr def_cpu = def->cpu;
 
     /* Update guest CPU requirements according to host CPU */
-    if ((flags & VIR_DOMAIN_XML_UPDATE_CPU) && def_cpu && def_cpu->model) {
+    if ((flags & VIR_DOMAIN_XML_UPDATE_CPU) &&
+        def_cpu &&
+        (def_cpu->mode != VIR_CPU_MODE_CUSTOM || def_cpu->model)) {
         if (!driver->caps || !driver->caps->host.cpu) {
             qemuReportError(VIR_ERR_OPERATION_FAILED,
                             "%s", _("cannot get host CPU capabilities"));
             goto cleanup;
         }
 
-        if (!(cpu = virCPUDefCopy(def_cpu))
-            || cpuUpdate(cpu, driver->caps->host.cpu))
+        if (!(cpu = virCPUDefCopy(def_cpu)) ||
+            cpuUpdate(cpu, driver->caps->host.cpu) < 0)
             goto cleanup;
         def->cpu = cpu;
     }

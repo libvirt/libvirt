@@ -118,8 +118,16 @@ struct _virCPUDef {
 };
 
 
+void ATTRIBUTE_NONNULL(1)
+virCPUDefFreeModel(virCPUDefPtr def);
+
 void
 virCPUDefFree(virCPUDefPtr def);
+
+int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+virCPUDefCopyModel(virCPUDefPtr dst,
+                   const virCPUDefPtr src,
+                   bool resetPolicy);
 
 virCPUDefPtr
 virCPUDefCopy(const virCPUDefPtr cpu);

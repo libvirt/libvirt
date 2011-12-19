@@ -1686,8 +1686,8 @@ error:
 
 
 static int
-x86Update(virCPUDefPtr guest,
-          const virCPUDefPtr host)
+x86UpdateCustom(virCPUDefPtr guest,
+                const virCPUDefPtr host)
 {
     int ret = -1;
     unsigned int i;
@@ -1729,6 +1729,32 @@ cleanup:
     x86MapFree(map);
     x86ModelFree(host_model);
     return ret;
+}
+
+static int
+x86Update(virCPUDefPtr guest,
+          const virCPUDefPtr host)
+{
+    switch ((enum virCPUMode) guest->mode) {
+    case VIR_CPU_MODE_CUSTOM:
+        return x86UpdateCustom(guest, host);
+
+    case VIR_CPU_MODE_HOST_MODEL:
+    case VIR_CPU_MODE_HOST_PASSTHROUGH:
+        if (guest->mode == VIR_CPU_MODE_HOST_MODEL)
+            guest->match = VIR_CPU_MATCH_EXACT;
+        else
+            guest->match = VIR_CPU_MATCH_MINIMUM;
+        virCPUDefFreeModel(guest);
+        return virCPUDefCopyModel(guest, host, true);
+
+    case VIR_CPU_MODE_LAST:
+        break;
+    }
+
+    virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                      _("Unexpected CPU mode: %d"), guest->mode);
+    return -1;
 }
 
 static int x86HasFeature(const union cpuData *data,
