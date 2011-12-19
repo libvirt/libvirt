@@ -387,7 +387,8 @@ static bool vshConnectionUsability(vshControl *ctl, virConnectPtr conn);
 static virTypedParameterPtr vshFindTypedParamByName(const char *name,
                                                     virTypedParameterPtr list,
                                                     int count);
-static char *vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item);
+static char *vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 static char *editWriteToTempFile (vshControl *ctl, const char *doc);
 static int   editFile (vshControl *ctl, const char *filename);
@@ -1186,8 +1187,7 @@ cmdDomblkstat (vshControl *ctl, const vshCmd *cmd)
                                                 nparams)))
                 continue;
 
-            if (!(value = vshGetTypedParamValue(ctl, par)))
-                continue;
+            value = vshGetTypedParamValue(ctl, par);
 
             /* to print other not supported fields, mark the already printed */
             par->field[0] = '\0'; /* set the name to empty string */
@@ -1214,9 +1214,7 @@ cmdDomblkstat (vshControl *ctl, const vshCmd *cmd)
             if (!*params[i].field)
                 continue;
 
-            if (!(value = vshGetTypedParamValue(ctl, params+i)))
-                continue;
-
+            value = vshGetTypedParamValue(ctl, params+i);
             vshPrint(ctl, "%s %s %s\n", device, params[i].field, value);
             VIR_FREE(value);
         }
@@ -2975,28 +2973,9 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
 
         ret_val = true;
         for (i = 0; i < nparams; i++) {
-            switch (params[i].type) {
-            case VIR_TYPED_PARAM_INT:
-                 vshPrint(ctl, "%-15s: %d\n",  params[i].field, params[i].value.i);
-                 break;
-            case VIR_TYPED_PARAM_UINT:
-                 vshPrint(ctl, "%-15s: %u\n",  params[i].field, params[i].value.ui);
-                 break;
-            case VIR_TYPED_PARAM_LLONG:
-                 vshPrint(ctl, "%-15s: %lld\n",  params[i].field, params[i].value.l);
-                 break;
-            case VIR_TYPED_PARAM_ULLONG:
-                 vshPrint(ctl, "%-15s: %llu\n",  params[i].field, params[i].value.ul);
-                 break;
-            case VIR_TYPED_PARAM_DOUBLE:
-                 vshPrint(ctl, "%-15s: %f\n",  params[i].field, params[i].value.d);
-                 break;
-            case VIR_TYPED_PARAM_BOOLEAN:
-                 vshPrint(ctl, "%-15s: %d\n",  params[i].field, params[i].value.b);
-                 break;
-            default:
-                 vshPrint(ctl, "not implemented scheduler parameter type\n");
-            }
+            char *str = vshGetTypedParamValue(ctl, &params[i]);
+            vshPrint(ctl, "%-15s: %s\n", params[i].field, str);
+            VIR_FREE(str);
         }
     }
 
@@ -4935,38 +4914,9 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
         }
 
         for (i = 0; i < nparams; i++) {
-            switch (params[i].type) {
-                case VIR_TYPED_PARAM_INT:
-                    vshPrint(ctl, "%-15s: %d\n", params[i].field,
-                             params[i].value.i);
-                    break;
-                case VIR_TYPED_PARAM_UINT:
-                    vshPrint(ctl, "%-15s: %u\n", params[i].field,
-                             params[i].value.ui);
-                    break;
-                case VIR_TYPED_PARAM_LLONG:
-                    vshPrint(ctl, "%-15s: %lld\n", params[i].field,
-                             params[i].value.l);
-                    break;
-                case VIR_TYPED_PARAM_ULLONG:
-                    vshPrint(ctl, "%-15s: %llu\n", params[i].field,
-                                 params[i].value.ul);
-                    break;
-                case VIR_TYPED_PARAM_DOUBLE:
-                    vshPrint(ctl, "%-15s: %f\n", params[i].field,
-                             params[i].value.d);
-                    break;
-                case VIR_TYPED_PARAM_BOOLEAN:
-                    vshPrint(ctl, "%-15s: %d\n", params[i].field,
-                             params[i].value.b);
-                    break;
-                case VIR_TYPED_PARAM_STRING:
-                    vshPrint(ctl, "%-15s: %s\n", params[i].field,
-                             params[i].value.s);
-                    break;
-                default:
-                    vshPrint(ctl, "unimplemented blkio parameter type\n");
-            }
+            char *str = vshGetTypedParamValue(ctl, &params[i]);
+            vshPrint(ctl, "%-15s: %s\n", params[i].field, str);
+            VIR_FREE(str);
         }
     } else {
         /* set the blkio parameters */
@@ -5112,36 +5062,13 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
         }
 
         for (i = 0; i < nparams; i++) {
-            switch (params[i].type) {
-                case VIR_TYPED_PARAM_INT:
-                    vshPrint(ctl, "%-15s: %d\n", params[i].field,
-                             params[i].value.i);
-                    break;
-                case VIR_TYPED_PARAM_UINT:
-                    vshPrint(ctl, "%-15s: %u\n", params[i].field,
-                             params[i].value.ui);
-                    break;
-                case VIR_TYPED_PARAM_LLONG:
-                    vshPrint(ctl, "%-15s: %lld\n", params[i].field,
-                             params[i].value.l);
-                    break;
-                case VIR_TYPED_PARAM_ULLONG:
-                    if (params[i].value.ul == VIR_DOMAIN_MEMORY_PARAM_UNLIMITED)
-                        vshPrint(ctl, "%-15s: unlimited\n", params[i].field);
-                    else
-                        vshPrint(ctl, "%-15s: %llu kB\n", params[i].field,
-                                 params[i].value.ul);
-                    break;
-                case VIR_TYPED_PARAM_DOUBLE:
-                    vshPrint(ctl, "%-15s: %f\n", params[i].field,
-                             params[i].value.d);
-                    break;
-                case VIR_TYPED_PARAM_BOOLEAN:
-                    vshPrint(ctl, "%-15s: %d\n", params[i].field,
-                             params[i].value.b);
-                    break;
-                default:
-                    vshPrint(ctl, "unimplemented memory parameter type\n");
+            if (params[i].type == VIR_TYPED_PARAM_ULLONG &&
+                params[i].value.ul == VIR_DOMAIN_MEMORY_PARAM_UNLIMITED) {
+                vshPrint(ctl, "%-15s: %s\n", params[i].field, _("unlimited"));
+            } else {
+                char *str = vshGetTypedParamValue(ctl, &params[i]);
+                vshPrint(ctl, "%-15s: %s\n", params[i].field, str);
+                VIR_FREE(str);
             }
         }
 
@@ -6562,34 +6489,9 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
         }
 
         for (i = 0; i < nparams; i++) {
-            switch(params[i].type) {
-                case VIR_TYPED_PARAM_INT:
-                    vshPrint(ctl, "%-15s: %d\n", params[i].field,
-                             params[i].value.i);
-                    break;
-                case VIR_TYPED_PARAM_UINT:
-                    vshPrint(ctl, "%-15s: %u\n", params[i].field,
-                             params[i].value.ui);
-                    break;
-                case VIR_TYPED_PARAM_LLONG:
-                    vshPrint(ctl, "%-15s: %lld\n", params[i].field,
-                             params[i].value.l);
-                    break;
-                case VIR_TYPED_PARAM_ULLONG:
-                    vshPrint(ctl, "%-15s: %llu\n", params[i].field,
-                             params[i].value.ul);
-                    break;
-                case VIR_TYPED_PARAM_DOUBLE:
-                    vshPrint(ctl, "%-15s: %f\n", params[i].field,
-                             params[i].value.d);
-                    break;
-                case VIR_TYPED_PARAM_BOOLEAN:
-                    vshPrint(ctl, "%-15s: %d\n", params[i].field,
-                             params[i].value.b);
-                    break;
-                default:
-                    vshPrint(ctl, "unimplemented block I/O throttle parameter type\n");
-            }
+            char *str = vshGetTypedParamValue(ctl, &params[i]);
+            vshPrint(ctl, "%-15s: %s\n", params[i].field, str);
+            VIR_FREE(str);
         }
 
         ret = true;
@@ -17052,14 +16954,13 @@ vshDomainStateReasonToString(int state, int reason)
     return N_("unknown");
 }
 
+/* Return a non-NULL string representation of a typed parameter; exit
+ * if we are out of memory.  */
 static char *
 vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item)
 {
     int ret = 0;
     char *str = NULL;
-
-    if (!ctl || !item)
-        return NULL;
 
     switch(item->type) {
     case VIR_TYPED_PARAM_INT:
@@ -17086,12 +16987,18 @@ vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item)
         ret = virAsprintf(&str, "%s", item->value.b ? _("yes") : _("no"));
         break;
 
+    case VIR_TYPED_PARAM_STRING:
+        str = vshStrdup(ctl, item->value.s);
+        break;
+
     default:
-        vshError(ctl, _("unimplemented block statistics parameter type"));
+        vshError(ctl, _("unimplemented parameter type %d"), item->type);
     }
 
-    if (ret < 0)
+    if (ret < 0) {
         vshError(ctl, "%s", _("Out of memory"));
+        exit(EXIT_FAILURE);
+    }
     return str;
 }
 
