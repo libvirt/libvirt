@@ -128,6 +128,9 @@ const REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX = 16;
 /* Upper limit on list of blockio tuning parameters. */
 const REMOTE_DOMAIN_BLOCK_IO_TUNE_PARAMETERS_MAX = 16;
 
+/* Upper limit on list of numa parameters. */
+const REMOTE_DOMAIN_NUMA_PARAMETERS_MAX = 16;
+
 /* Upper limit on list of node cpu stats. */
 const REMOTE_NODE_CPU_STATS_MAX = 16;
 
@@ -545,6 +548,23 @@ struct remote_domain_block_resize_args {
     remote_nonnull_string disk;
     unsigned hyper size;
     unsigned int flags;
+};
+
+struct remote_domain_set_numa_parameters_args {
+    remote_nonnull_domain dom;
+    remote_typed_param params<REMOTE_DOMAIN_NUMA_PARAMETERS_MAX>;
+    unsigned int flags;
+};
+
+struct remote_domain_get_numa_parameters_args {
+    remote_nonnull_domain dom;
+    int nparams;
+    unsigned int flags;
+};
+
+struct remote_domain_get_numa_parameters_ret {
+    remote_typed_param params<REMOTE_DOMAIN_NUMA_PARAMETERS_MAX>;
+    int nparams;
 };
 
 struct remote_domain_block_stats_args {
@@ -2605,7 +2625,9 @@ enum remote_procedure {
 
     REMOTE_PROC_DOMAIN_BLOCK_RESIZE = 251, /* autogen autogen */
     REMOTE_PROC_DOMAIN_SET_BLOCK_IO_TUNE = 252, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_GET_BLOCK_IO_TUNE = 253 /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_GET_BLOCK_IO_TUNE = 253, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_SET_NUMA_PARAMETERS = 254, /* autogen autogen */
+    REMOTE_PROC_DOMAIN_GET_NUMA_PARAMETERS = 255 /* skipgen skipgen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

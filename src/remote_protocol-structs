@@ -270,6 +270,26 @@ struct remote_domain_block_resize_args {
         uint64_t                   size;
         u_int                      flags;
 };
+struct remote_domain_set_numa_parameters_args {
+        remote_nonnull_domain      dom;
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        u_int                      flags;
+};
+struct remote_domain_get_numa_parameters_args {
+        remote_nonnull_domain      dom;
+        int                        nparams;
+        u_int                      flags;
+};
+struct remote_domain_get_numa_parameters_ret {
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        int                        nparams;
+};
 struct remote_domain_block_stats_args {
         remote_nonnull_domain      dom;
         remote_nonnull_string      path;
@@ -2044,4 +2064,6 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_BLOCK_RESIZE = 251,
         REMOTE_PROC_DOMAIN_SET_BLOCK_IO_TUNE = 252,
         REMOTE_PROC_DOMAIN_GET_BLOCK_IO_TUNE = 253,
+        REMOTE_PROC_DOMAIN_SET_NUMA_PARAMETERS = 254,
+        REMOTE_PROC_DOMAIN_GET_NUMA_PARAMETERS = 255,
 };
