@@ -7453,7 +7453,7 @@ qemuDomainBlockResize (virDomainPtr dom,
     if ((i = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
         qemuReportError(VIR_ERR_INVALID_ARG,
                         _("invalid path: %s"), path);
-        goto cleanup;
+        goto endjob;
     }
     disk = vm->def->disks[i];
 
