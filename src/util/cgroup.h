@@ -119,6 +119,9 @@ int virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage);
 int virCgroupSetFreezerState(virCgroupPtr group, const char *state);
 int virCgroupGetFreezerState(virCgroupPtr group, char **state);
 
+int virCgroupSetCpusetMems(virCgroupPtr group, const char *mems);
+int virCgroupGetCpusetMems(virCgroupPtr group, char **mems);
+
 int virCgroupRemove(virCgroupPtr group);
 
 void virCgroupFree(virCgroupPtr *group);

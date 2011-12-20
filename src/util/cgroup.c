@@ -1205,6 +1205,38 @@ int virCgroupGetMemSwapHardLimit(virCgroupPtr group, unsigned long long *kb)
 }
 
 /**
+ * virCgroupSetCpusetMems:
+ *
+ * @group: The cgroup to set cpuset.mems for
+ * @mems: the numa nodes to set
+ *
+ * Returns: 0 on success
+ */
+int virCgroupSetCpusetMems(virCgroupPtr group, const char *mems)
+{
+    return virCgroupSetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_CPUSET,
+                                "cpuset.mems",
+                                mems);
+}
+
+/**
+ * virCgroupGetCpusetMems:
+ *
+ * @group: The cgroup to get cpuset.mems for
+ * @mems: the numa nodes to get
+ *
+ * Returns: 0 on success
+ */
+int virCgroupGetCpusetMems(virCgroupPtr group, char **mems)
+{
+    return virCgroupGetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_CPUSET,
+                                "cpuset.mems",
+                                mems);
+}
+
+/**
  * virCgroupDenyAllDevices:
  *
  * @group: The cgroup to deny all permissions, for all devices
