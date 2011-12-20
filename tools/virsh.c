@@ -395,6 +395,29 @@ static char *editWriteToTempFile (vshControl *ctl, const char *doc);
 static int   editFile (vshControl *ctl, const char *filename);
 static char *editReadBackFile (vshControl *ctl, const char *filename);
 
+/* Typedefs, function prototypes for job progress reporting.
+ * There are used by some long lingering commands like
+ * migrate, dump, save, managedsave.
+ */
+typedef struct __vshCtrlData {
+    vshControl *ctl;
+    const vshCmd *cmd;
+    int writefd;
+} vshCtrlData;
+
+typedef void (*jobWatchTimeoutFunc) (vshControl *ctl, virDomainPtr dom,
+                                     void *opaque);
+
+static bool
+vshWatchJob(vshControl *ctl,
+            virDomainPtr dom,
+            bool verbose,
+            int pipe_fd,
+            int timeout,
+            jobWatchTimeoutFunc timeout_func,
+            void *opaque,
+            const char *label);
+
 static void *_vshMalloc(vshControl *ctl, size_t sz, const char *filename, int line);
 #define vshMalloc(_ctl, _sz)    _vshMalloc(_ctl, _sz, __FILE__, __LINE__)
 
@@ -5881,12 +5904,6 @@ static const vshCmdOptDef opts_migrate[] = {
     {NULL, 0, 0, NULL}
 };
 
-typedef struct __vshCtrlData {
-    vshControl *ctl;
-    const vshCmd *cmd;
-    int writefd;
-} vshCtrlData;
-
 static void
 doMigrate (void *opaque)
 {
@@ -6019,28 +6036,115 @@ print_job_progress(const char *label, unsigned long long remaining,
     fflush(stderr);
 }
 
+static void
+vshMigrationTimeout(vshControl *ctl,
+                    virDomainPtr dom,
+                    void *opaque ATTRIBUTE_UNUSED)
+{
+    vshDebug(ctl, VSH_ERR_DEBUG, "suspending the domain, "
+             "since migration timed out\n");
+    virDomainSuspend(dom);
+}
+
+static bool
+vshWatchJob(vshControl *ctl,
+            virDomainPtr dom,
+            bool verbose,
+            int pipe_fd,
+            int timeout,
+            jobWatchTimeoutFunc timeout_func,
+            void *opaque,
+            const char *label)
+{
+    struct sigaction sig_action;
+    struct sigaction old_sig_action;
+    struct pollfd pollfd;
+    struct timeval start, curr;
+    virDomainJobInfo jobinfo;
+    int ret = -1;
+    char retchar;
+    bool functionReturn = false;
+    sigset_t sigmask, oldsigmask;
+
+    sigemptyset(&sigmask);
+    sigaddset(&sigmask, SIGINT);
+
+    intCaught = 0;
+    sig_action.sa_sigaction = vshCatchInt;
+    sig_action.sa_flags = SA_SIGINFO;
+    sigemptyset(&sig_action.sa_mask);
+    sigaction(SIGINT, &sig_action, &old_sig_action);
+
+    pollfd.fd = pipe_fd;
+    pollfd.events = POLLIN;
+    pollfd.revents = 0;
+
+    GETTIMEOFDAY(&start);
+    while (1) {
+repoll:
+        ret = poll(&pollfd, 1, 500);
+        if (ret > 0) {
+            if (pollfd.revents & POLLIN &&
+                saferead(pipe_fd, &retchar, sizeof(retchar)) > 0 &&
+                retchar == '0') {
+                    if (verbose) {
+                        /* print [100 %] */
+                        print_job_progress(label, 0, 1);
+                    }
+                    break;
+            }
+            goto cleanup;
+        }
+
+        if (ret < 0) {
+            if (errno == EINTR) {
+                if (intCaught) {
+                    virDomainAbortJob(dom);
+                    intCaught = 0;
+                } else
+                    goto repoll;
+            }
+            goto cleanup;
+        }
+
+        GETTIMEOFDAY(&curr);
+        if ( timeout && ((int)(curr.tv_sec - start.tv_sec)  * 1000 + \
+                         (int)(curr.tv_usec - start.tv_usec) / 1000) > timeout * 1000 ) {
+            /* suspend the domain when migration timeouts. */
+            vshDebug(ctl, VSH_ERR_DEBUG, "%s timeout", label);
+            if (timeout_func)
+                (timeout_func)(ctl, dom, opaque);
+            timeout = 0;
+        }
+
+        if (verbose) {
+            pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask);
+            ret = virDomainGetJobInfo(dom, &jobinfo);
+            pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
+            if (ret == 0)
+                print_job_progress(label, jobinfo.dataRemaining,
+                                   jobinfo.dataTotal);
+        }
+    }
+
+    functionReturn = true;
+
+cleanup:
+    sigaction(SIGINT, &old_sig_action, NULL);
+    return functionReturn;
+}
+
 static bool
 cmdMigrate (vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     int p[2] = {-1, -1};
-    int ret = -1;
-    bool functionReturn = false;
     virThread workerThread;
-    struct pollfd pollfd;
-    char retchar;
-    struct sigaction sig_action;
-    struct sigaction old_sig_action;
-    virDomainJobInfo jobinfo;
     bool verbose = false;
+    bool functionReturn = false;
     int timeout = 0;
-    struct timeval start, curr;
     bool live_flag = false;
     vshCtrlData data;
-    sigset_t sigmask, oldsigmask;
-
-    sigemptyset(&sigmask);
-    sigaddset(&sigmask, SIGINT);
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -6080,69 +6184,8 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
                         doMigrate,
                         &data) < 0)
         goto cleanup;
-
-    intCaught = 0;
-    sig_action.sa_sigaction = vshCatchInt;
-    sig_action.sa_flags = SA_SIGINFO;
-    sigemptyset(&sig_action.sa_mask);
-    sigaction(SIGINT, &sig_action, &old_sig_action);
-
-    pollfd.fd = p[0];
-    pollfd.events = POLLIN;
-    pollfd.revents = 0;
-
-    GETTIMEOFDAY(&start);
-    while (1) {
-repoll:
-        ret = poll(&pollfd, 1, 500);
-        if (ret > 0) {
-            if (saferead(p[0], &retchar, sizeof(retchar)) > 0) {
-                if (retchar == '0') {
-                    functionReturn = true;
-                    if (verbose) {
-                        /* print [100 %] */
-                        print_job_progress("Migration", 0, 1);
-                    }
-                } else
-                    functionReturn = false;
-            } else
-                functionReturn = false;
-            break;
-        }
-
-        if (ret < 0) {
-            if (errno == EINTR) {
-                if (intCaught) {
-                    virDomainAbortJob(dom);
-                    intCaught = 0;
-                } else
-                    goto repoll;
-            }
-            functionReturn = false;
-            break;
-        }
-
-        GETTIMEOFDAY(&curr);
-        if ( timeout && ((int)(curr.tv_sec - start.tv_sec)  * 1000 + \
-                         (int)(curr.tv_usec - start.tv_usec) / 1000) > timeout * 1000 ) {
-            /* suspend the domain when migration timeouts. */
-            vshDebug(ctl, VSH_ERR_DEBUG,
-                     "suspend the domain when migration timeouts\n");
-            virDomainSuspend(dom);
-            timeout = 0;
-        }
-
-        if (verbose) {
-            pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask);
-            ret = virDomainGetJobInfo(dom, &jobinfo);
-            pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
-            if (ret == 0)
-                print_job_progress("Migration", jobinfo.dataRemaining,
-                                   jobinfo.dataTotal);
-        }
-    }
-
-    sigaction(SIGINT, &old_sig_action, NULL);
+    functionReturn = vshWatchJob(ctl, dom, verbose, p[0], timeout,
+                                 vshMigrationTimeout, NULL, _("Migration"));
 
     virThreadJoin(&workerThread);
 
