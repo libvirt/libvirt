@@ -142,6 +142,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "cache-unsafe", /* 75 */
               "rombar",
               "ich9-ahci",
+              "no-acpi",
     );
 
 struct qemu_feature_flags {
@@ -1066,6 +1067,8 @@ qemuCapsComputeCmdFlags(const char *help,
         qemuCapsSet(flags, QEMU_CAPS_RTC_TD_HACK);
     if (strstr(help, "-no-hpet"))
         qemuCapsSet(flags, QEMU_CAPS_NO_HPET);
+    if (strstr(help, "-no-acpi"))
+        qemuCapsSet(flags, QEMU_CAPS_NO_ACPI);
     if (strstr(help, "-no-kvm-pit-reinjection"))
         qemuCapsSet(flags, QEMU_CAPS_NO_KVM_PIT);
     if (strstr(help, "-tdf"))

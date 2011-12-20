@@ -3941,8 +3941,10 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (monitor_json && qemuCapsGet(qemuCaps, QEMU_CAPS_NO_SHUTDOWN))
         virCommandAddArg(cmd, "-no-shutdown");
 
-    if (!(def->features & (1 << VIR_DOMAIN_FEATURE_ACPI)))
-        virCommandAddArg(cmd, "-no-acpi");
+    if (qemuCapsGet(qemuCaps, QEMU_CAPS_NO_ACPI)) {
+        if (!(def->features & (1 << VIR_DOMAIN_FEATURE_ACPI)))
+            virCommandAddArg(cmd, "-no-acpi");
+    }
 
     if (!def->os.bootloader) {
         /*

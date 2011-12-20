@@ -89,6 +89,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     qemuCapsSetList(extraFlags,
                     QEMU_CAPS_VNC_COLON,
                     QEMU_CAPS_NO_REBOOT,
+                    QEMU_CAPS_NO_ACPI,
                     QEMU_CAPS_LAST);
 
     if (qemudCanonicalizeMachine(&driver, vmdef) < 0)
