@@ -898,7 +898,7 @@ have also reverted all storage volumes back to the same contents as when
 the state file was created.
 
 =item B<save> I<domain-id> I<state-file> [I<--bypass-cache>] [I<--xml> B<file>]
-[{I<--running> | I<--paused>}]
+[{I<--running> | I<--paused>}] [I<--verbose>]
 
 Saves a running domain (RAM, but not disk state) to a state file so that
 it can be restored
@@ -909,9 +909,9 @@ If I<--bypass-cache> is specified, the save will avoid the file system
 cache, although this may slow down the operation.
 
 The progress may be monitored using B<domjobinfo> virsh command and canceled
-with B<domjobabort> command (sent by another virsh instance). Interrupting
-(usually with C<Ctrl-C>) the virsh process which runs B<save> command is not
-enough to actually cancel the operation.
+with B<domjobabort> command (sent by another virsh instance). Another option
+is to send SIGINT (usually with C<Ctrl-C>) to the virsh process running
+B<save> command. I<--verbose> displays the progress of save.
 
 This is roughly equivalent to doing a hibernate on a running computer,
 with all the same limitations.  Open network connections may be

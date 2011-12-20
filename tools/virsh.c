@@ -2409,25 +2409,35 @@ static const vshCmdOptDef opts_save[] = {
      N_("filename containing updated XML for the target")},
     {"running", VSH_OT_BOOL, 0, N_("set domain to be running on restore")},
     {"paused", VSH_OT_BOOL, 0, N_("set domain to be paused on restore")},
+    {"verbose", VSH_OT_BOOL, 0, N_("display the progress of save")},
     {NULL, 0, 0, NULL}
 };
 
-static bool
-cmdSave(vshControl *ctl, const vshCmd *cmd)
+static void
+doSave(void *opaque)
 {
-    virDomainPtr dom;
+    vshCtrlData *data = opaque;
+    vshControl *ctl = data->ctl;
+    const vshCmd *cmd = data->cmd;
+    char ret = '1';
+    virDomainPtr dom = NULL;
     const char *name = NULL;
     const char *to = NULL;
-    bool ret = false;
     unsigned int flags = 0;
     const char *xmlfile = NULL;
     char *xml = NULL;
+    sigset_t sigmask, oldsigmask;
+
+    sigemptyset(&sigmask);
+    sigaddset(&sigmask, SIGINT);
+    if (pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask) < 0)
+        goto out_sig;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
+        goto out;
 
     if (vshCommandOptString(cmd, "file", &to) <= 0)
-        return false;
+        goto out;
 
     if (vshCommandOptBool(cmd, "bypass-cache"))
         flags |= VIR_DOMAIN_SAVE_BYPASS_CACHE;
@@ -2438,29 +2448,77 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptString(cmd, "xml", &xmlfile) < 0) {
         vshError(ctl, "%s", _("malformed xml argument"));
-        return false;
+        goto out;
     }
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
-        return false;
+        goto out;
 
     if (xmlfile &&
         virFileReadAll(xmlfile, 8192, &xml) < 0)
-        goto cleanup;
+        goto out;
 
     if (((flags || xml)
          ? virDomainSaveFlags(dom, to, xml, flags)
          : virDomainSave(dom, to)) < 0) {
         vshError(ctl, _("Failed to save domain %s to %s"), name, to);
-        goto cleanup;
+        goto out;
     }
 
-    vshPrint(ctl, _("Domain %s saved to %s\n"), name, to);
-    ret = true;
+    ret = '0';
+
+out:
+    pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
+out_sig:
+    if (dom) virDomainFree (dom);
+    VIR_FREE(xml);
+    ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));
+}
+
+static bool
+cmdSave(vshControl *ctl, const vshCmd *cmd)
+{
+    bool ret = false;
+    virDomainPtr dom = NULL;
+    int p[2] = {-1. -1};
+    virThread workerThread;
+    bool verbose = false;
+    vshCtrlData data;
+    const char *to = NULL;
+    const char *name = NULL;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
+        return false;
+
+    if (vshCommandOptString(cmd, "file", &to) <= 0)
+        goto cleanup;
+
+    if (vshCommandOptBool (cmd, "verbose"))
+        verbose = true;
+
+    if (pipe(p) < 0)
+        goto cleanup;
+
+    data.ctl = ctl;
+    data.cmd = cmd;
+    data.writefd = p[1];
+
+    if (virThreadCreate(&workerThread,
+                        true,
+                        doSave,
+                        &data) < 0)
+        goto cleanup;
+
+    ret = vshWatchJob(ctl, dom, verbose, p[0], 0, NULL, NULL, _("Save"));
+
+    virThreadJoin(&workerThread);
+
+    if (ret)
+        vshPrint(ctl, _("\nDomain %s saved to %s\n"), name, to);
 
 cleanup:
-    VIR_FREE(xml);
-    virDomainFree(dom);
+    if (dom)
+        virDomainFree(dom);
     return ret;
 }
 
