@@ -267,7 +267,8 @@ virLastErrorObject(void)
     if (!err) {
         if (VIR_ALLOC(err) < 0)
             return NULL;
-        virThreadLocalSet(&virLastErr, err);
+        if (virThreadLocalSet(&virLastErr, err) < 0)
+            VIR_FREE(err);
     }
     return err;
 }
@@ -612,7 +613,7 @@ virDispatchError(virConnectPtr conn)
     virErrorFunc handler = virErrorHandler;
     void *userData = virUserData;
 
-    /* Should never happen, but doesn't hurt to check */
+    /* Can only happen on OOM.  */
     if (!err)
         return;
 

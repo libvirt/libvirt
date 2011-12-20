@@ -104,7 +104,7 @@ typedef void (*virThreadLocalCleanup)(void *);
 int virThreadLocalInit(virThreadLocalPtr l,
                        virThreadLocalCleanup c) ATTRIBUTE_RETURN_CHECK;
 void *virThreadLocalGet(virThreadLocalPtr l);
-void virThreadLocalSet(virThreadLocalPtr l, void*);
+int virThreadLocalSet(virThreadLocalPtr l, void*) ATTRIBUTE_RETURN_CHECK;
 
 # ifdef WIN32
 #  include "threads-win32.h"

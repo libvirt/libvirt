@@ -154,8 +154,11 @@ struct virThreadArgs {
 static void *virThreadHelper(void *data)
 {
     struct virThreadArgs *args = data;
-    args->func(args->opaque);
+    struct virThreadArgs local = *args;
+
+    /* Free args early, rather than tying it up during the entire thread.  */
     VIR_FREE(args);
+    local.func(local.opaque);
     return NULL;
 }
 
@@ -249,7 +252,12 @@ void *virThreadLocalGet(virThreadLocalPtr l)
     return pthread_getspecific(l->key);
 }
 
-void virThreadLocalSet(virThreadLocalPtr l, void *val)
+int virThreadLocalSet(virThreadLocalPtr l, void *val)
 {
-    pthread_setspecific(l->key, val);
+    int err = pthread_setspecific(l->key, val);
+    if (err) {
+        errno = err;
+        return -1;
+    }
+    return 0;
 }
