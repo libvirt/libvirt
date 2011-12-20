@@ -61,6 +61,7 @@
 #include "virkeycode.h"
 #include "virnetdevbandwidth.h"
 #include "util/bitmap.h"
+#include "conf/domain_conf.h"
 
 static char *progname;
 
@@ -5120,6 +5121,164 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
     }
 
   cleanup:
+    VIR_FREE(params);
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
+ * "numatune" command
+ */
+static const vshCmdInfo info_numatune[] = {
+    {"help", N_("Get or set numa parameters")},
+    {"desc", N_("Get or set the current numa parameters for a guest" \
+                " domain.\n" \
+                "    To get the numa parameters use following command: \n\n" \
+                "    virsh # numatune <domain>")},
+    {NULL, NULL}
+
+};
+
+static const vshCmdOptDef opts_numatune[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"mode", VSH_OT_DATA, VSH_OFLAG_NONE,
+     N_("NUMA mode, one of strict, preferred and interleave")},
+    {"nodeset", VSH_OT_DATA, VSH_OFLAG_NONE,
+     N_("NUMA node selections to set")},
+    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
+    {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
+    {"current", VSH_OT_BOOL, 0, N_("affect current domain")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdNumatune(vshControl * ctl, const vshCmd * cmd)
+{
+    virDomainPtr dom;
+    int nparams = 0;
+    unsigned int i = 0;
+    virTypedParameterPtr params = NULL, temp = NULL;
+    const char *nodeset = NULL;
+    bool ret = false;
+    unsigned int flags = 0;
+    int current = vshCommandOptBool(cmd, "current");
+    int config = vshCommandOptBool(cmd, "config");
+    int live = vshCommandOptBool(cmd, "live");
+    const char *mode = NULL;
+
+    if (current) {
+        if (live || config) {
+            vshError(ctl, "%s", _("--current must be specified exclusively"));
+            return false;
+        }
+        flags = VIR_DOMAIN_AFFECT_CURRENT;
+    } else {
+        if (config)
+            flags |= VIR_DOMAIN_AFFECT_CONFIG;
+        if (live)
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
+    }
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptString(cmd, "nodeset", &nodeset) < 0) {
+        vshError(ctl, "%s", _("Unable to parse nodeset."));
+        virDomainFree(dom);
+        return false;
+    }
+    if (nodeset)
+        nparams++;
+    if (vshCommandOptString(cmd, "mode", &mode) < 0) {
+        vshError(ctl, "%s", _("Unable to parse mode."));
+        virDomainFree(dom);
+        return false;
+    }
+    if (mode)
+        nparams++;
+
+    if (nparams == 0) {
+        /* get the number of numa parameters */
+        if (virDomainGetNumaParameters(dom, NULL, &nparams, flags) != 0) {
+            vshError(ctl, "%s",
+                     _("Unable to get number of memory parameters"));
+            goto cleanup;
+        }
+
+        if (nparams == 0) {
+            /* nothing to output */
+            ret = true;
+            goto cleanup;
+        }
+
+        /* now go get all the numa parameters */
+        params = vshCalloc(ctl, nparams, sizeof(*params));
+        if (virDomainGetNumaParameters(dom, params, &nparams, flags) != 0) {
+            vshError(ctl, "%s", _("Unable to get numa parameters"));
+            goto cleanup;
+        }
+
+        for (i = 0; i < nparams; i++) {
+            if (params[i].type == VIR_TYPED_PARAM_INT &&
+                STREQ(params[i].field, VIR_DOMAIN_NUMA_MODE)) {
+                vshPrint(ctl, "%-15s: %s\n", params[i].field,
+                         virDomainNumatuneMemModeTypeToString(params[i].value.i));
+            } else {
+                char *str = vshGetTypedParamValue(ctl, &params[i]);
+                vshPrint(ctl, "%-15s: %s\n", params[i].field, str);
+                VIR_FREE(str);
+            }
+        }
+
+        ret = true;
+    } else {
+        /* set the numa parameters */
+        params = vshCalloc(ctl, nparams, sizeof(*params));
+
+        for (i = 0; i < nparams; i++) {
+            temp = &params[i];
+
+            /*
+             * Some magic here, this is used to fill the params structure with
+             * the valid arguments passed, after filling the particular
+             * argument we purposely make them 0, so on the next pass it goes
+             * to the next valid argument and so on.
+             */
+            if (mode) {
+                /* Accept string or integer, in case server
+                 * understands newer integer than what strings we were
+                 * compiled with */
+                if ((temp->value.i =
+                    virDomainNumatuneMemModeTypeFromString(mode)) < 0 &&
+                    virStrToLong_i(mode, NULL, 0, &temp->value.i) < 0) {
+                    vshError(ctl, _("Invalid mode: %s"), mode);
+                    goto cleanup;
+                }
+                if (!virStrcpy(temp->field, VIR_DOMAIN_NUMA_MODE,
+                               sizeof(temp->field)))
+                    goto cleanup;
+                temp->type = VIR_TYPED_PARAM_INT;
+                mode = NULL;
+            } else if (nodeset) {
+                temp->value.s = vshStrdup(ctl, nodeset);
+                temp->type = VIR_TYPED_PARAM_STRING;
+                if (!virStrcpy(temp->field, VIR_DOMAIN_NUMA_NODESET,
+                               sizeof(temp->field)))
+                    goto cleanup;
+                nodeset = NULL;
+            }
+        }
+        if (virDomainSetNumaParameters(dom, params, nparams, flags) != 0)
+            vshError(ctl, "%s", _("Unable to change numa parameters"));
+        else
+            ret = true;
+    }
+
+  cleanup:
+    virTypedParameterArrayClear(params, nparams);
     VIR_FREE(params);
     virDomainFree(dom);
     return ret;
@@ -15237,6 +15396,7 @@ static const vshCmdDef domManagementCmds[] = {
      opts_migrate_setspeed, info_migrate_setspeed, 0},
     {"migrate-getspeed", cmdMigrateGetMaxSpeed,
      opts_migrate_getspeed, info_migrate_getspeed, 0},
+    {"numatune", cmdNumatune, opts_numatune, info_numatune, 0},
     {"reboot", cmdReboot, opts_reboot, info_reboot, 0},
     {"reset", cmdReset, opts_reset, info_reset, 0},
     {"restore", cmdRestore, opts_restore, info_restore, 0},
