@@ -67,12 +67,12 @@ while (<RPCGEN>) {
 	# Note: The body of the function is in @function.
 
 	# Remove decl of buf, if buf isn't used in the function.
-	my @uses = grep /\bbuf\b/, @function;
-	@function = grep !/\bbuf\b/, @function if @uses == 1;
+	my @uses = grep /[^.>]\bbuf\b/, @function;
+	@function = grep !/[^.>]\bbuf\b/, @function if @uses == 1;
 
 	# Remove decl of i, if i isn't used in the function.
-	@uses = grep /\bi\b/, @function;
-	@function = grep !/\bi\b/, @function if @uses == 1;
+	@uses = grep /[^.>]\bi\b/, @function;
+	@function = grep !/[^.>]\bi\b/, @function if @uses == 1;
 
 	# (char **)&objp->... gives:
 	# warning: dereferencing type-punned pointer will break

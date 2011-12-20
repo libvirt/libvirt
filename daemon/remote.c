@@ -759,7 +759,7 @@ cleanup:
     if (val) {
         for (i = 0; i < nparams; i++) {
             VIR_FREE(val[i].field);
-            if (params[i].type == VIR_TYPED_PARAM_STRING)
+            if (val[i].value.type == VIR_TYPED_PARAM_STRING)
                 VIR_FREE(val[i].value.remote_typed_param_value_u.s);
         }
         VIR_FREE(val);
@@ -898,9 +898,10 @@ remoteDispatchDomainGetSchedulerParameters(virNetServerPtr server ATTRIBUTE_UNUS
 cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
+    virTypedParameterArrayClear(params, nparams);
+    VIR_FREE(params);
     if (dom)
         virDomainFree(dom);
-    VIR_FREE(params);
     return rv;
 
 no_memory:
@@ -953,9 +954,10 @@ remoteDispatchDomainGetSchedulerParametersFlags(virNetServerPtr server ATTRIBUTE
 cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
+    virTypedParameterArrayClear(params, nparams);
+    VIR_FREE(params);
     if (dom)
         virDomainFree(dom);
-    VIR_FREE(params);
     return rv;
 
 no_memory:
@@ -1092,7 +1094,6 @@ remoteDispatchDomainBlockStatsFlags(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     virTypedParameterPtr params = NULL;
     virDomainPtr dom = NULL;
-    int i;
     const char *path = args->path;
     int nparams = args->nparams;
     unsigned int flags;
@@ -1140,17 +1141,12 @@ success:
     rv = 0;
 
 cleanup:
-    if (rv < 0) {
+    if (rv < 0)
         virNetMessageSaveError(rerr);
-        if (ret->params.params_val) {
-            for (i = 0; i < nparams; i++)
-                VIR_FREE(ret->params.params_val[i].field);
-            VIR_FREE(ret->params.params_val);
-        }
-    }
+    virTypedParameterArrayClear(params, nparams);
+    VIR_FREE(params);
     if (dom)
         virDomainFree(dom);
-    VIR_FREE(params);
     return rv;
 }
 
@@ -1623,9 +1619,10 @@ success:
 cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
+    virTypedParameterArrayClear(params, nparams);
+    VIR_FREE(params);
     if (dom)
         virDomainFree(dom);
-    VIR_FREE(params);
     return rv;
 }
 
