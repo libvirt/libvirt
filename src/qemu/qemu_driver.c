@@ -97,6 +97,8 @@
 
 #define QEMU_NB_BLOCK_IO_TUNE_PARAM  6
 
+#define QEMU_NB_NUMA_PARAM 2
+
 #if HAVE_LINUX_KVM_H
 # include <linux/kvm.h>
 #endif
@@ -6602,6 +6604,276 @@ cleanup:
 }
 
 static int
+qemuDomainSetNumaParameters(virDomainPtr dom,
+                            virTypedParameterPtr params,
+                            int nparams,
+                            unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    int i;
+    virDomainDefPtr persistentDef = NULL;
+    virCgroupPtr group = NULL;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    qemuDriverLock(driver);
+
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (vm == NULL) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("No such domain %s"), dom->uuid);
+        goto cleanup;
+    }
+
+    if (virDomainLiveConfigHelperMethod(driver->caps, vm, &flags,
+                                        &persistentDef) < 0)
+        goto cleanup;
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPUSET)) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("cgroup cpuset controller is not mounted"));
+            goto cleanup;
+        }
+
+        if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("cannot find cgroup for domain %s"),
+                            vm->def->name);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+    for (i = 0; i < nparams; i++) {
+        virTypedParameterPtr param = &params[i];
+
+        if (STREQ(param->field, VIR_DOMAIN_NUMA_MODE)) {
+            if (param->type != VIR_TYPED_PARAM_INT) {
+                qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                _("invalid type for numa strict tunable, "
+                                  "expected an 'int'"));
+                ret = -1;
+                continue;
+            }
+
+            if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
+                vm->def->numatune.memory.mode != params[i].value.i) {
+                qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                                _("can't change numa mode for running domain"));
+                ret = -1;
+                goto cleanup;
+            }
+
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+                persistentDef->numatune.memory.mode = params[i].value.i;
+            }
+        } else if (STREQ(param->field, VIR_DOMAIN_NUMA_NODESET)) {
+            int rc;
+            char oldnodemask[VIR_DOMAIN_CPUMASK_LEN];
+            if (param->type != VIR_TYPED_PARAM_STRING) {
+                qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                _("invalid type for numa nodeset tunable, "
+                                  "expected a 'string'"));
+                ret = -1;
+                continue;
+            }
+
+            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+                if (vm->def->numatune.memory.mode !=
+                    VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
+                    qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                                    _("change of nodeset for running domain "
+                                      "requires strict numa mode"));
+                    ret = -1;
+                    continue;
+                }
+                rc = virCgroupSetCpusetMems(group, params[i].value.s);
+                if (rc != 0) {
+                    virReportSystemError(-rc, "%s",
+                                         _("unable to set numa tunable"));
+                    ret = -1;
+                    continue;
+                }
+
+                /* update vm->def here so that dumpxml can read the new
+                 * values from vm->def. */
+                memcpy(oldnodemask, vm->def->numatune.memory.nodemask,
+                       VIR_DOMAIN_CPUMASK_LEN);
+                if (virDomainCpuSetParse(params[i].value.s,
+                                         0,
+                                         vm->def->numatune.memory.nodemask,
+                                         VIR_DOMAIN_CPUMASK_LEN) < 0) {
+                    memcpy(vm->def->numatune.memory.nodemask,
+                           oldnodemask, VIR_DOMAIN_CPUMASK_LEN);
+                    ret = -1;
+                    continue;
+                }
+            }
+
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+                memcpy(oldnodemask, persistentDef->numatune.memory.nodemask,
+                       VIR_DOMAIN_CPUMASK_LEN);
+                if (virDomainCpuSetParse(params[i].value.s,
+                                         0,
+                                         persistentDef->numatune.memory.nodemask,
+                                         VIR_DOMAIN_CPUMASK_LEN) < 0) {
+                    memcpy(persistentDef->numatune.memory.nodemask,
+                           oldnodemask, VIR_DOMAIN_CPUMASK_LEN);
+                    ret = -1;
+                    continue;
+                }
+            }
+        } else {
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("Parameter `%s' not supported"), param->field);
+            ret = -1;
+        }
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (virDomainSaveConfig(driver->configDir, persistentDef) < 0)
+            ret = -1;
+    }
+
+cleanup:
+    virCgroupFree(&group);
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
+static int
+qemuDomainGetNumaParameters(virDomainPtr dom,
+                            virTypedParameterPtr params,
+                            int *nparams,
+                            unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    int i;
+    virCgroupPtr group = NULL;
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr persistentDef = NULL;
+    char *nodeset = NULL;
+    int ret = -1;
+    int rc;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
+                  VIR_TYPED_PARAM_STRING_OKAY, -1);
+
+    qemuDriverLock(driver);
+
+    /* We blindly return a string, and let libvirt.c and
+     * remote_driver.c do the filtering on behalf of older clients
+     * that can't parse it.  */
+    flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
+
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (vm == NULL) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("No such domain %s"), dom->uuid);
+        goto cleanup;
+    }
+
+    if (virDomainLiveConfigHelperMethod(driver->caps, vm, &flags,
+                                        &persistentDef) < 0)
+        goto cleanup;
+
+    if ((*nparams) == 0) {
+        *nparams = QEMU_NB_NUMA_PARAM;
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_MEMORY)) {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("cgroup memory controller is not mounted"));
+            goto cleanup;
+        }
+
+        if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("cannot find cgroup for domain %s"),
+                            vm->def->name);
+            goto cleanup;
+        }
+    }
+
+    for (i = 0; i < QEMU_NB_NUMA_PARAM && i < *nparams; i++) {
+        virMemoryParameterPtr param = &params[i];
+
+        switch (i) {
+        case 0: /* fill numa mode here */
+            if (!virStrcpyStatic(param->field, VIR_DOMAIN_NUMA_MODE)) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("Field '%s' too long for destination"),
+                                VIR_DOMAIN_NUMA_MODE);
+                goto cleanup;
+            }
+            param->type = VIR_TYPED_PARAM_INT;
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+                param->value.i = persistentDef->numatune.memory.mode;
+            else
+                param->value.i = vm->def->numatune.memory.mode;
+            break;
+
+        case 1: /* fill numa nodeset here */
+            if (!virStrcpyStatic(param->field, VIR_DOMAIN_NUMA_NODESET)) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("Field '%s' too long for destination"),
+                                VIR_DOMAIN_NUMA_NODESET);
+                goto cleanup;
+            }
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+                char *mask = persistentDef->numatune.memory.nodemask;
+                if (mask)
+                    nodeset = virDomainCpuSetFormat(mask,
+                                                    VIR_DOMAIN_CPUMASK_LEN);
+                else
+                    nodeset = strdup("");
+            } else {
+                rc = virCgroupGetCpusetMems(group, &nodeset);
+                if (rc != 0) {
+                    virReportSystemError(-rc, "%s",
+                                         _("unable to get numa nodeset"));
+                    goto cleanup;
+                }
+            }
+            if (!nodeset) {
+                virReportOOMError();
+                goto cleanup;
+            }
+            param->type = VIR_TYPED_PARAM_STRING;
+            param->value.s = nodeset;
+            break;
+
+        default:
+            break;
+            /* should not hit here */
+        }
+    }
+
+    if (*nparams > QEMU_NB_NUMA_PARAM)
+        *nparams = QEMU_NB_NUMA_PARAM;
+    ret = 0;
+
+cleanup:
+    virCgroupFree(&group);
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
+static int
 qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
                    unsigned long long period, long long quota)
 {
@@ -11362,6 +11634,8 @@ static virDriver qemuDriver = {
     .nodeSuspendForDuration = nodeSuspendForDuration, /* 0.9.8 */
     .domainSetBlockIoTune = qemuDomainSetBlockIoTune, /* 0.9.8 */
     .domainGetBlockIoTune = qemuDomainGetBlockIoTune, /* 0.9.8 */
+    .domainSetNumaParameters = qemuDomainSetNumaParameters, /* 0.9.9 */
+    .domainGetNumaParameters = qemuDomainGetNumaParameters, /* 0.9.9 */
 };
 
 
