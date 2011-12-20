@@ -670,12 +670,16 @@ seconds elapsed since the control interface entered its current state.
 =item B<domxml-from-native> I<format> I<config>
 
 Convert the file I<config> in the native guest configuration format
-named by I<format> to a domain XML format.
+named by I<format> to a domain XML format. For QEMU/KVM hypervisor,
+the I<format> argument must be B<qemu-argv>. For Xen hypervisor, the
+I<format> argument may be B<xen-xm> or B<xen-sxpr>.
 
 =item B<domxml-to-native> I<format> I<xml>
 
 Convert the file I<xml> in domain XML format to the native guest
-configuration format named by I<format>.
+configuration format named by I<format>. For QEMU/KVM hypervisor,
+the I<format> argument must be B<qemu-argv>. For Xen hypervisor, the
+I<format> argument may be B<xen-xm> or B<xen-sxpr>.
 
 =item B<dump> I<domain-id> I<corefilepath> [I<--bypass-cache>]
 { [I<--live>] | [I<--crash>] | [I<--reset>] }
