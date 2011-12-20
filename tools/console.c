@@ -1,7 +1,7 @@
 /*
  * console.c: A dumb serial console client
  *
- * Copyright (C) 2007, 2008, 2010 Red Hat, Inc.
+ * Copyright (C) 2007-2008, 2010-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -101,6 +101,8 @@ virConsoleShutdown(virConsolePtr con)
         virStreamAbort(con->st);
         virStreamFree(con->st);
     }
+    VIR_FREE(con->streamToTerminal.data);
+    VIR_FREE(con->terminalToStream.data);
     if (con->stdinWatch != -1)
         virEventRemoveHandle(con->stdinWatch);
     if (con->stdoutWatch != -1)
