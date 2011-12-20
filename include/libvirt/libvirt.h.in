@@ -1344,6 +1344,45 @@ typedef enum {
 } virDomainMemoryModFlags;
 
 
+/* Manage numa parameters */
+
+/**
+ * virDomainNumatuneMemMode:
+ * Representation of the various modes in the <numatune> element of
+ * a domain.
+ */
+typedef enum {
+    VIR_DOMAIN_NUMATUNE_MEM_STRICT      = 0,
+    VIR_DOMAIN_NUMATUNE_MEM_PREFERRED   = 1,
+    VIR_DOMAIN_NUMATUNE_MEM_INTERLEAVE  = 2,
+
+    /* This constant is subject to change */
+    VIR_DOMAIN_NUMATUNE_MEM_LAST
+} virDomainNumatuneMemMode;
+
+/**
+ * VIR_DOMAIN_NUMA_NODESET:
+ *
+ * Macro for typed parameter name that lists the numa nodeset of a
+ * domain, as a string.
+ */
+#define VIR_DOMAIN_NUMA_NODESET "numa_nodeset"
+
+/**
+ * VIR_DOMAIN_NUMA_MODE:
+ *
+ * Macro for typed parameter name that lists the numa mode of a domain,
+ * as an int containing a virDomainNumatuneMemMode value.
+ */
+#define VIR_DOMAIN_NUMA_MODE "numa_mode"
+
+int     virDomainSetNumaParameters(virDomainPtr domain,
+                                   virTypedParameterPtr params,
+                                   int nparams, unsigned int flags);
+int     virDomainGetNumaParameters(virDomainPtr domain,
+                                   virTypedParameterPtr params,
+                                   int *nparams, unsigned int flags);
+
 /*
  * Dynamic control of domains
  */

@@ -508,4 +508,10 @@ LIBVIRT_0.9.8 {
         virNodeSuspendForDuration;
 } LIBVIRT_0.9.7;
 
+LIBVIRT_0.9.9 {
+    global:
+        virDomainGetNumaParameters;
+        virDomainSetNumaParameters;
+} LIBVIRT_0.9.8;
+
 # .... define new API here using predicted next version number ....

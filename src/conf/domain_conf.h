@@ -1355,14 +1355,6 @@ virDomainVcpuPinDefPtr virDomainVcpuPinFindByVcpu(virDomainVcpuPinDefPtr *def,
                                                   int nvcpupin,
                                                   int vcpu);
 
-enum virDomainNumatuneMemMode {
-    VIR_DOMAIN_NUMATUNE_MEM_STRICT,
-    VIR_DOMAIN_NUMATUNE_MEM_PREFERRED,
-    VIR_DOMAIN_NUMATUNE_MEM_INTERLEAVE,
-
-    VIR_DOMAIN_NUMATUNE_MEM_LAST
-};
-
 typedef struct _virDomainNumatuneDef virDomainNumatuneDef;
 typedef virDomainNumatuneDef *virDomainNumatuneDefPtr;
 struct _virDomainNumatuneDef {

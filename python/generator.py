@@ -383,6 +383,8 @@ skip_impl = (
     'virDomainGetBlkioParameters',
     'virDomainSetMemoryParameters',
     'virDomainGetMemoryParameters',
+    'virDomainSetNumaParameters',
+    'virDomainGetNumaParameters',
     'virDomainGetVcpus',
     'virDomainPinVcpu',
     'virDomainPinVcpuFlags',

@@ -3769,6 +3769,135 @@ error:
 }
 
 /**
+ * virDomainSetNumaParameters:
+ * @domain: pointer to domain object
+ * @params: pointer to numa parameter objects
+ * @nparams: number of numa parameters (this value can be the same or
+ *          less than the number of parameters supported)
+ * @flags: bitwise-OR of virDomainModificationImpact
+ *
+ * Change all or a subset of the numa tunables.
+ * This function may require privileged access to the hypervisor.
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ */
+int
+virDomainSetNumaParameters(virDomainPtr domain,
+                           virTypedParameterPtr params,
+                           int nparams, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d, flags=%x",
+                     params, nparams, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+    if ((nparams <= 0) || (params == NULL)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    if (virTypedParameterValidateSet(domain, params, nparams) < 0)
+        return -1;
+
+    conn = domain->conn;
+
+    if (conn->driver->domainSetNumaParameters) {
+        int ret;
+        ret = conn->driver->domainSetNumaParameters(domain, params, nparams,
+                                                    flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
+ * virDomainGetNumaParameters:
+ * @domain: pointer to domain object
+ * @params: pointer to numa parameter object
+ *          (return value, allocated by the caller)
+ * @nparams: pointer to number of numa parameters
+ * @flags: bitwise-OR of virDomainModificationImpact and virTypedParameterFlags
+ *
+ * Get all numa parameters.  On input, @nparams gives the size of the
+ * @params array; on output, @nparams gives how many slots were filled
+ * with parameter information, which might be less but will not exceed
+ * the input value.
+ *
+ * As a special case, calling with @params as NULL and @nparams as 0 on
+ * input will cause @nparams on output to contain the number of parameters
+ * supported by the hypervisor. The caller should then allocate @params
+ * array, i.e. (sizeof(@virTypedParameter) * @nparams) bytes and call the API
+ * again.
+ *
+ * See virDomainGetMemoryParameters() for an equivalent usage example.
+ *
+ * This function may require privileged access to the hypervisor. This function
+ * expects the caller to allocate the @params.
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ */
+
+int
+virDomainGetNumaParameters(virDomainPtr domain,
+                           virTypedParameterPtr params,
+                           int *nparams, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d, flags=%x",
+                     params, (nparams) ? *nparams : -1, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if ((nparams == NULL) || (*nparams < 0) ||
+        (params == NULL && *nparams != 0)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                 VIR_DRV_FEATURE_TYPED_PARAM_STRING))
+        flags |= VIR_TYPED_PARAM_STRING_OKAY;
+
+    conn = domain->conn;
+
+    if (conn->driver->domainGetNumaParameters) {
+        int ret;
+        ret = conn->driver->domainGetNumaParameters(domain, params, nparams,
+                                                    flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
  * virDomainSetBlkioParameters:
  * @domain: pointer to domain object
  * @params: pointer to blkio parameter objects

@@ -158,6 +158,19 @@ typedef int
                                          int *nparams,
                                          unsigned int flags);
 typedef int
+        (*virDrvDomainSetNumaParameters)
+                                        (virDomainPtr domain,
+                                         virTypedParameterPtr params,
+                                         int nparams,
+                                         unsigned int flags);
+typedef int
+        (*virDrvDomainGetNumaParameters)
+                                        (virDomainPtr domain,
+                                         virTypedParameterPtr params,
+                                         int *nparams,
+                                         unsigned int flags);
+
+typedef int
         (*virDrvDomainSetBlkioParameters)
                                         (virDomainPtr domain,
                                          virTypedParameterPtr params,
@@ -816,6 +829,8 @@ struct _virDriver {
     virDrvDomainSetMemoryFlags  domainSetMemoryFlags;
     virDrvDomainSetMemoryParameters domainSetMemoryParameters;
     virDrvDomainGetMemoryParameters domainGetMemoryParameters;
+    virDrvDomainSetNumaParameters domainSetNumaParameters;
+    virDrvDomainGetNumaParameters domainGetNumaParameters;
     virDrvDomainSetBlkioParameters domainSetBlkioParameters;
     virDrvDomainGetBlkioParameters domainGetBlkioParameters;
     virDrvDomainGetInfo		domainGetInfo;
