@@ -682,7 +682,7 @@ the I<format> argument must be B<qemu-argv>. For Xen hypervisor, the
 I<format> argument may be B<xen-xm> or B<xen-sxpr>.
 
 =item B<dump> I<domain-id> I<corefilepath> [I<--bypass-cache>]
-{ [I<--live>] | [I<--crash>] | [I<--reset>] }
+{ [I<--live>] | [I<--crash>] | [I<--reset>] } [I<--verbose>]
 
 Dumps the core of a domain to a file for analysis.
 If I<--live> is specified, the domain continues to run until the core
@@ -695,9 +695,9 @@ If I<--bypass-cache> is specified, the save will avoid the file system
 cache, although this may slow down the operation.
 
 The progress may be monitored using B<domjobinfo> virsh command and canceled
-with B<domjobabort> command (sent by another virsh instance). Interrupting
-(usually with C<Ctrl-C>) the virsh process which runs B<dump> command is not
-enough to actually cancel the operation.
+with B<domjobabort> command (sent by another virsh instance). Another option
+is to send SIGINT (usually with C<Ctrl-C>) to the virsh process running
+B<dump> command. I<--verbose> displays the progress of dump.
 
 NOTE: Some hypervisors may require the user to manually ensure proper
 permissions on file and path specified by argument I<corefilepath>.
