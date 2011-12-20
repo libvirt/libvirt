@@ -2738,19 +2738,29 @@ static const vshCmdOptDef opts_managedsave[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"running", VSH_OT_BOOL, 0, N_("set domain to be running on next start")},
     {"paused", VSH_OT_BOOL, 0, N_("set domain to be paused on next start")},
+    {"verbose", VSH_OT_BOOL, 0, N_("display the progress of save")},
     {NULL, 0, 0, NULL}
 };
 
-static bool
-cmdManagedSave(vshControl *ctl, const vshCmd *cmd)
+static void
+doManagedsave(void *opaque)
 {
-    virDomainPtr dom;
+    char ret = '1';
+    vshCtrlData *data = opaque;
+    vshControl *ctl = data->ctl;
+    const vshCmd *cmd = data->cmd;
+    virDomainPtr dom = NULL;
     const char *name;
-    bool ret = false;
     unsigned int flags = 0;
+    sigset_t sigmask, oldsigmask;
+
+    sigemptyset(&sigmask);
+    sigaddset(&sigmask, SIGINT);
+    if (pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask) < 0)
+        goto out_sig;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
+        goto out;
 
     if (vshCommandOptBool(cmd, "bypass-cache"))
         flags |= VIR_DOMAIN_SAVE_BYPASS_CACHE;
@@ -2760,18 +2770,64 @@ cmdManagedSave(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_SAVE_PAUSED;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
-        return false;
+        goto out;
 
     if (virDomainManagedSave(dom, flags) < 0) {
         vshError(ctl, _("Failed to save domain %s state"), name);
-        goto cleanup;
+        goto out;
     }
 
-    vshPrint(ctl, _("Domain %s state saved by libvirt\n"), name);
-    ret = true;
+    ret = '0';
+out:
+    pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
+out_sig:
+    if (dom)
+        virDomainFree (dom);
+    ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));
+}
+
+static bool
+cmdManagedSave(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    int p[2] = { -1, -1};
+    bool ret = false;
+    bool verbose = false;
+    const char *name = NULL;
+    vshCtrlData data;
+    virThread workerThread;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
+        return false;
+
+    if (vshCommandOptBool (cmd, "verbose"))
+        verbose = true;
+
+    if (pipe(p) < 0)
+        goto cleanup;
+
+    data.ctl = ctl;
+    data.cmd = cmd;
+    data.writefd = p[1];
+
+    if (virThreadCreate(&workerThread,
+                        true,
+                        doManagedsave,
+                        &data) < 0)
+        goto cleanup;
+
+    ret = vshWatchJob(ctl, dom, verbose, p[0], 0,
+                      NULL, NULL, _("Managedsave"));
+
+    virThreadJoin(&workerThread);
+
+    if (ret)
+        vshPrint(ctl, _("\nDomain %s state saved by libvirt\n"), name);
 
 cleanup:
     virDomainFree(dom);
+    VIR_FORCE_CLOSE(p[0]);
+    VIR_FORCE_CLOSE(p[1]);
     return ret;
 }
 
