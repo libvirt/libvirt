@@ -5699,6 +5699,7 @@ cmdDomXMLFromNative(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
+    VIR_FREE(configData);
     return ret;
 }
 
@@ -5745,6 +5746,7 @@ cmdDomXMLToNative(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
+    VIR_FREE(xmlData);
     return ret;
 }
 
