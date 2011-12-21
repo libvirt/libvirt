@@ -49,6 +49,12 @@ struct _usbDevice {
     char          name[USB_ADDR_LEN]; /* domain:bus:slot.function */
     char          id[USB_ID_LEN];     /* product vendor */
     char          *path;
+    const char    *used_by;           /* name of the domain using this dev */
+};
+
+struct _usbDeviceList {
+    unsigned int count;
+    usbDevice **devs;
 };
 
 /* For virReportOOMError()  and virReportSystemError() */
@@ -225,6 +231,22 @@ usbFreeDevice(usbDevice *dev)
 }
 
 
+void usbDeviceSetUsedBy(usbDevice *dev,
+                        const char *name)
+{
+    dev->used_by = name;
+}
+
+const char * usbDeviceGetUsedBy(usbDevice *dev)
+{
+    return dev->used_by;
+}
+
+const char *usbDeviceGetName(usbDevice *dev)
+{
+    return dev->name;
+}
+
 unsigned usbDeviceGetBus(usbDevice *dev)
 {
     return dev->bus;
@@ -242,4 +264,122 @@ int usbDeviceFileIterate(usbDevice *dev,
                          void *opaque)
 {
     return (actor)(dev, dev->path, opaque);
+}
+
+usbDeviceList *
+usbDeviceListNew(void)
+{
+    usbDeviceList *list;
+
+    if (VIR_ALLOC(list) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    return list;
+}
+
+void
+usbDeviceListFree(usbDeviceList *list)
+{
+    int i;
+
+    if (!list)
+        return;
+
+    for (i = 0; i < list->count; i++)
+        usbFreeDevice(list->devs[i]);
+
+    VIR_FREE(list->devs);
+    VIR_FREE(list);
+}
+
+int
+usbDeviceListAdd(usbDeviceList *list,
+                 usbDevice *dev)
+{
+    if (usbDeviceListFind(list, dev)) {
+        usbReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Device %s is already in use"),
+                       dev->name);
+        return -1;
+    }
+
+    if (VIR_REALLOC_N(list->devs, list->count+1) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    list->devs[list->count++] = dev;
+
+    return 0;
+}
+
+usbDevice *
+usbDeviceListGet(usbDeviceList *list,
+                 int idx)
+{
+    if (idx >= list->count ||
+        idx < 0)
+        return NULL;
+
+    return list->devs[idx];
+}
+
+int
+usbDeviceListCount(usbDeviceList *list)
+{
+    return list->count;
+}
+
+usbDevice *
+usbDeviceListSteal(usbDeviceList *list,
+                   usbDevice *dev)
+{
+    usbDevice *ret = NULL;
+    int i;
+
+    for (i = 0; i < list->count; i++) {
+        if (list->devs[i]->bus != dev->bus ||
+            list->devs[i]->dev != dev->dev)
+            continue;
+
+        ret = list->devs[i];
+
+        if (i != list->count--)
+            memmove(&list->devs[i],
+                    &list->devs[i+1],
+                    sizeof(*list->devs) * (list->count - i));
+
+        if (VIR_REALLOC_N(list->devs, list->count) < 0) {
+            ; /* not fatal */
+        }
+
+        break;
+    }
+    return ret;
+}
+
+void
+usbDeviceListDel(usbDeviceList *list,
+                 usbDevice *dev)
+{
+    usbDevice *ret = usbDeviceListSteal(list, dev);
+    if (ret)
+        usbFreeDevice(ret);
+}
+
+usbDevice *
+usbDeviceListFind(usbDeviceList *list,
+                  usbDevice *dev)
+{
+    int i;
+
+    for (i = 0; i < list->count; i++) {
+        if (list->devs[i]->bus == dev->bus &&
+            list->devs[i]->dev == dev->dev)
+            return list->devs[i];
+    }
+
+    return NULL;
 }

@@ -1097,6 +1097,9 @@ int qemuDomainAttachHostDevice(struct qemud_driver *driver,
     /* Resolve USB product/vendor to bus/device */
     if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
         hostdev->source.subsys.u.usb.vendor) {
+        if (qemuPrepareHostdevUSBDevices(driver, vm->def->name, &hostdev, 1) < 0)
+            goto error;
+
         usbDevice *usb
             = usbFindDevice(hostdev->source.subsys.u.usb.vendor,
                             hostdev->source.subsys.u.usb.product);
@@ -2068,6 +2071,7 @@ qemuDomainDetachHostUsbDevice(struct qemud_driver *driver,
 {
     virDomainHostdevDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    usbDevice *usb;
     int i, ret;
 
     for (i = 0 ; i < vm->def->nhostdevs ; i++) {
@@ -2123,6 +2127,17 @@ qemuDomainDetachHostUsbDevice(struct qemud_driver *driver,
     if (ret < 0)
         return -1;
 
+    usb = usbGetDevice(detach->source.subsys.u.usb.bus,
+                       detach->source.subsys.u.usb.device);
+    if (usb) {
+        usbDeviceListDel(driver->activeUsbHostdevs, usb);
+        usbFreeDevice(usb);
+    } else {
+        VIR_WARN("Unable to find device %03d.%03d in list of used USB devices",
+                 detach->source.subsys.u.usb.bus,
+                 detach->source.subsys.u.usb.device);
+    }
+
     if (vm->def->nhostdevs > 1) {
         memmove(vm->def->hostdevs + i,
                 vm->def->hostdevs + i + 1,
@@ -2162,7 +2177,7 @@ int qemuDomainDetachHostDevice(struct qemud_driver *driver,
     switch (hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         ret = qemuDomainDetachHostPciDevice(driver, vm, dev, &detach);
-        break;
+       break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         ret = qemuDomainDetachHostUsbDevice(driver, vm, dev, &detach);
         break;

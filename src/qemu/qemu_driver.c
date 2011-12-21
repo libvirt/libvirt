@@ -583,6 +583,9 @@ qemudStartup(int privileged) {
     if ((qemu_driver->activePciHostdevs = pciDeviceListNew()) == NULL)
         goto error;
 
+    if ((qemu_driver->activeUsbHostdevs = usbDeviceListNew()) == NULL)
+        goto error;
+
     if (privileged) {
         if (chown(qemu_driver->libDir, qemu_driver->user, qemu_driver->group) < 0) {
             virReportSystemError(errno,
@@ -773,6 +776,7 @@ qemudShutdown(void) {
 
     qemuDriverLock(qemu_driver);
     pciDeviceListFree(qemu_driver->activePciHostdevs);
+    usbDeviceListFree(qemu_driver->activeUsbHostdevs);
     virCapabilitiesFree(qemu_driver->caps);
 
     virDomainObjListDeinit(&qemu_driver->domains);
