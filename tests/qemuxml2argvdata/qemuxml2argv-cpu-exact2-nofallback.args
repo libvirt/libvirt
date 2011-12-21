@@ -1,0 +1,4 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test ./qemu.sh -S -M pc \
+-cpu core2duo,+lahf_lm,+3dnowext,+xtpr,+ds_cpl,+tm,+ht,+ds,-nx -m 214 -smp 6 \
+-nographic -monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot n -net \
+none -serial none -parallel none -usb

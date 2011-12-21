@@ -44,6 +44,10 @@ VIR_ENUM_IMPL(virCPUMatch, VIR_CPU_MATCH_LAST,
               "exact",
               "strict")
 
+VIR_ENUM_IMPL(virCPUFallback, VIR_CPU_FALLBACK_LAST,
+              "allow",
+              "forbid")
+
 VIR_ENUM_IMPL(virCPUFeaturePolicy, VIR_CPU_FEATURE_LAST,
               "force",
               "require",
@@ -97,6 +101,7 @@ virCPUDefCopy(const virCPUDefPtr cpu)
 
     copy->type = cpu->type;
     copy->match = cpu->match;
+    copy->fallback = cpu->fallback;
     copy->sockets = cpu->sockets;
     copy->cores = cpu->cores;
     copy->threads = cpu->threads;
@@ -207,6 +212,21 @@ virCPUDefParseXML(const xmlNodePtr node,
         virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                 "%s", _("Missing CPU model name"));
         goto error;
+    }
+
+    if (def->model && def->type == VIR_CPU_TYPE_GUEST) {
+        const char *fallback;
+
+        fallback = virXPathString("string(./model[1]/@fallback)", ctxt);
+        if (fallback) {
+            def->fallback = virCPUFallbackTypeFromString(fallback);
+            VIR_FREE(fallback);
+            if (def->fallback < 0) {
+                virCPUReportError(VIR_ERR_XML_ERROR, "%s",
+                                  _("Invalid fallback attribute"));
+                goto error;
+            }
+        }
     }
 
     def->vendor = virXPathString("string(./vendor[1])", ctxt);
@@ -455,8 +475,22 @@ virCPUDefFormatBuf(virBufferPtr buf,
         return -1;
     }
 
-    if (def->model)
-        virBufferAsprintf(buf, "<model>%s</model>\n", def->model);
+    if (def->model) {
+        virBufferAddLit(buf, "<model");
+        if (def->type == VIR_CPU_TYPE_GUEST) {
+            const char *fallback;
+
+            fallback = virCPUFallbackTypeToString(def->fallback);
+            if (!fallback) {
+                virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                                  _("Unexpected CPU fallback value: %d"),
+                                  def->fallback);
+                return -1;
+            }
+            virBufferAsprintf(buf, " fallback='%s'", fallback);
+        }
+        virBufferAsprintf(buf, ">%s</model>\n", def->model);
+    }
 
     if (def->vendor) {
         virBufferAsprintf(buf, "<vendor>%s</vendor>\n", def->vendor);

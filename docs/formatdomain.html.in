@@ -559,7 +559,7 @@
 <pre>
   ...
   &lt;cpu match='exact'&gt;
-    &lt;model&gt;core2duo&lt;/model&gt;
+    &lt;model fallback='allow'&gt;core2duo&lt;/model&gt;
     &lt;vendor&gt;Intel&lt;/vendor&gt;
     &lt;topology sockets='1' cores='2' threads='1'/&gt;
     &lt;feature policy='disable' name='lahf_lm'/&gt;
@@ -609,7 +609,15 @@
       <dd>The content of the <code>model</code> element specifies CPU model
         requested by the guest. The list of available CPU models and their
         definition can be found in <code>cpu_map.xml</code> file installed
-        in libvirt's data directory.</dd>
+        in libvirt's data directory. If a hypervisor is not able to use the
+        exact CPU model, libvirt automatically falls back to a closest model
+        supported by the hypervisor while maintaining the list of CPU
+        features. <span class="since">Since 0.9.10</span>, an optional
+        <code>fallback</code> attribute can be used to forbid this behavior,
+        in which case an attempt to start a domain requesting an unsupported
+        CPU model will fail. Supported values for <code>fallback</code>
+        attribute are: <code>allow</code> (this is the default), and
+        <code>forbid</code>.</dd>
 
       <dt><code>vendor</code></dt>
       <dd><span class="since">Since 0.8.3</span> the content of the

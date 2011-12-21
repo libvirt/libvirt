@@ -84,7 +84,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *migrateFrom,
                                      int migrateFd,
                                      bool json,
-                                     bool expectError)
+                                     bool expectError,
+                                     bool expectFailure)
 {
     char *expectargv = NULL;
     int len;
@@ -98,19 +99,13 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virCommandPtr cmd = NULL;
 
     if (!(conn = virGetConnect()))
-        goto fail;
+        goto out;
     conn->secretDriver = &fakeSecretDriver;
-
-    len = virtTestLoadFile(cmdline, &expectargv);
-    if (len < 0)
-        goto fail;
-    if (len && expectargv[len - 1] == '\n')
-        expectargv[len - 1] = '\0';
 
     if (!(vmdef = virDomainDefParseFile(driver.caps, xml,
                                         QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_XML_INACTIVE)))
-        goto fail;
+        goto out;
 
     /*
      * For test purposes, we may want to fake emulator's output by providing
@@ -124,12 +119,12 @@ static int testCompareXMLToArgvFiles(const char *xml,
      */
     if (vmdef->emulator && STRPREFIX(vmdef->emulator, "/.")) {
         if (!(emulator = strdup(vmdef->emulator + 1)))
-            goto fail;
+            goto out;
         free(vmdef->emulator);
         vmdef->emulator = NULL;
         if (virAsprintf(&vmdef->emulator, "%s/qemuxml2argvdata/%s",
                         abs_srcdir, emulator) < 0)
-            goto fail;
+            goto out;
     }
 
     if (qemuCapsGet(extraFlags, QEMU_CAPS_DOMID))
@@ -149,7 +144,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
                     QEMU_CAPS_LAST);
 
     if (qemudCanonicalizeMachine(&driver, vmdef) < 0)
-        goto fail;
+        goto out;
 
     if (qemuCapsGet(extraFlags, QEMU_CAPS_DEVICE)) {
         qemuDomainPCIAddressSetPtr pciaddrs;
@@ -157,14 +152,14 @@ static int testCompareXMLToArgvFiles(const char *xml,
         if (qemuDomainAssignSpaprVIOAddresses(vmdef)) {
             if (expectError)
                 goto ok;
-            goto fail;
+            goto out;
         }
 
         if (!(pciaddrs = qemuDomainPCIAddressSetCreate(vmdef)))
-            goto fail;
+            goto out;
 
         if (qemuAssignDevicePCISlots(vmdef, pciaddrs) < 0)
-            goto fail;
+            goto out;
 
         qemuDomainPCIAddressSetFree(pciaddrs);
     }
@@ -183,35 +178,50 @@ static int testCompareXMLToArgvFiles(const char *xml,
     }
 
     if (qemuAssignDeviceAliases(vmdef, extraFlags) < 0)
-        goto fail;
+        goto out;
 
     if (!(cmd = qemuBuildCommandLine(conn, &driver,
                                      vmdef, &monitor_chr, json, extraFlags,
                                      migrateFrom, migrateFd, NULL,
-                                     VIR_NETDEV_VPORT_PROFILE_OP_NO_OP)))
-        goto fail;
+                                     VIR_NETDEV_VPORT_PROFILE_OP_NO_OP))) {
+        if (expectFailure) {
+            ret = 0;
+            virResetLastError();
+        }
+        goto out;
+    } else if (expectFailure) {
+        if (virTestGetDebug())
+            fprintf(stderr, "qemuBuildCommandLine should have failed\n");
+        goto out;
+    }
 
     if (!!virGetLastError() != expectError) {
         if (virTestGetDebug() && (log = virtTestLogContentAndReset()))
             fprintf(stderr, "\n%s", log);
-        goto fail;
+        goto out;
     }
 
     if (!(actualargv = virCommandToString(cmd)))
-        goto fail;
+        goto out;
 
     if (emulator) {
         /* Skip the abs_srcdir portion of replacement emulator.  */
         char *start_skip = strstr(actualargv, abs_srcdir);
         char *end_skip = strstr(actualargv, emulator);
         if (!start_skip || !end_skip)
-            goto fail;
+            goto out;
         memmove(start_skip, end_skip, strlen(end_skip) + 1);
     }
 
+    len = virtTestLoadFile(cmdline, &expectargv);
+    if (len < 0)
+        goto out;
+    if (len && expectargv[len - 1] == '\n')
+        expectargv[len - 1] = '\0';
+
     if (STRNEQ(expectargv, actualargv)) {
         virtTestDifference(stderr, expectargv, actualargv);
-        goto fail;
+        goto out;
     }
 
  ok:
@@ -222,7 +232,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     ret = 0;
 
- fail:
+out:
     free(log);
     free(emulator);
     free(expectargv);
@@ -240,6 +250,7 @@ struct testInfo {
     const char *migrateFrom;
     int migrateFd;
     bool expectError;
+    bool expectFailure;
 };
 
 static int
@@ -260,7 +271,8 @@ testCompareXMLToArgvHelper(const void *data)
                                        info->migrateFrom, info->migrateFd,
                                        qemuCapsGet(info->extraFlags,
                                                    QEMU_CAPS_MONITOR_JSON),
-                                       info->expectError);
+                                       info->expectError,
+                                       info->expectFailure);
 
 cleanup:
     free(xml);
@@ -299,10 +311,12 @@ mymain(void)
         return EXIT_FAILURE;
     }
 
-# define DO_TEST_FULL(name, migrateFrom, migrateFd, expectError, ...)   \
+# define DO_TEST_FULL(name, migrateFrom, migrateFd,                     \
+                      expectError, expectFailure, ...)                  \
     do {                                                                \
         struct testInfo info = {                                        \
-            name, NULL, migrateFrom, migrateFd, expectError             \
+            name, NULL, migrateFrom, migrateFd,                         \
+            expectError, expectFailure                                  \
         };                                                              \
         if (!(info.extraFlags = qemuCapsNew()))                         \
             return EXIT_FAILURE;                                        \
@@ -314,7 +328,10 @@ mymain(void)
     } while (0)
 
 # define DO_TEST(name, expectError, ...)                                \
-    DO_TEST_FULL(name, NULL, -1, expectError, __VA_ARGS__)
+    DO_TEST_FULL(name, NULL, -1, expectError, false, __VA_ARGS__)
+
+# define DO_TEST_FAILURE(name, ...)                                     \
+    DO_TEST_FULL(name, NULL, -1, false, true, __VA_ARGS__)
 
 # define NONE QEMU_CAPS_LAST
 
@@ -643,17 +660,17 @@ mymain(void)
     DO_TEST("hostdev-pci-address-device", false,
             QEMU_CAPS_PCIDEVICE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
 
-    DO_TEST_FULL("restore-v1", "stdio", 7, false,
+    DO_TEST_FULL("restore-v1", "stdio", 7, false, false,
             QEMU_CAPS_MIGRATE_KVM_STDIO);
-    DO_TEST_FULL("restore-v2", "stdio", 7, false,
+    DO_TEST_FULL("restore-v2", "stdio", 7, false, false,
             QEMU_CAPS_MIGRATE_QEMU_EXEC);
-    DO_TEST_FULL("restore-v2", "exec:cat", 7, false,
+    DO_TEST_FULL("restore-v2", "exec:cat", 7, false, false,
             QEMU_CAPS_MIGRATE_QEMU_EXEC);
-    DO_TEST_FULL("restore-v2-fd", "stdio", 7, false,
+    DO_TEST_FULL("restore-v2-fd", "stdio", 7, false, false,
             QEMU_CAPS_MIGRATE_QEMU_FD);
-    DO_TEST_FULL("restore-v2-fd", "fd:7", 7, false,
+    DO_TEST_FULL("restore-v2-fd", "fd:7", 7, false, false,
             QEMU_CAPS_MIGRATE_QEMU_FD);
-    DO_TEST_FULL("migrate", "tcp:10.0.0.1:5000", -1, false,
+    DO_TEST_FULL("migrate", "tcp:10.0.0.1:5000", -1, false, false,
             QEMU_CAPS_MIGRATE_QEMU_TCP);
 
     DO_TEST("qemu-ns", false, NONE);
@@ -667,6 +684,9 @@ mymain(void)
     DO_TEST("cpu-minimum2", false, NONE);
     DO_TEST("cpu-exact1", false, NONE);
     DO_TEST("cpu-exact2", false, NONE);
+    DO_TEST("cpu-exact2-nofallback", false, NONE);
+    DO_TEST("cpu-fallback", false, NONE);
+    DO_TEST_FAILURE("cpu-nofallback", NONE);
     DO_TEST("cpu-strict1", false, NONE);
     DO_TEST("cpu-numa1", false, NONE);
     DO_TEST("cpu-numa2", false, QEMU_CAPS_SMP_TOPOLOGY);

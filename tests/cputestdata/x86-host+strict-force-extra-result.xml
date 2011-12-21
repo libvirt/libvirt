@@ -1,6 +1,6 @@
 <cpu match='exact'>
   <arch>x86_64</arch>
-  <model>Penryn</model>
+  <model fallback='allow'>Penryn</model>
   <feature policy='require' name='3dnow'/>
   <feature policy='require' name='dca'/>
   <feature policy='require' name='xtpr'/>

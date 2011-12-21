@@ -48,6 +48,15 @@ enum virCPUMatch {
 
 VIR_ENUM_DECL(virCPUMatch)
 
+enum virCPUFallback {
+    VIR_CPU_FALLBACK_ALLOW,
+    VIR_CPU_FALLBACK_FORBID,
+
+    VIR_CPU_FALLBACK_LAST
+};
+
+VIR_ENUM_DECL(virCPUFallback)
+
 enum virCPUFeaturePolicy {
     VIR_CPU_FEATURE_FORCE,
     VIR_CPU_FEATURE_REQUIRE,
@@ -83,6 +92,7 @@ struct _virCPUDef {
     int match;          /* enum virCPUMatch */
     char *arch;
     char *model;
+    int fallback;       /* enum virCPUFallback */
     char *vendor;
     unsigned int sockets;
     unsigned int cores;

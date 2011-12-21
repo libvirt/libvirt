@@ -3511,6 +3511,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
             preferred = def->cpu->model;
 
         guest->type = VIR_CPU_TYPE_GUEST;
+        guest->fallback = def->cpu->fallback;
         if (cpuDecode(guest, data, cpus, ncpus, preferred) < 0)
             goto cleanup;
 

@@ -1,6 +1,6 @@
 <cpu match='exact'>
   <arch>x86_64</arch>
-  <model>core2duo</model>
+  <model fallback='allow'>core2duo</model>
   <feature policy='require' name='lahf_lm'/>
   <feature policy='require' name='popcnt'/>
   <feature policy='require' name='sse4.2'/>

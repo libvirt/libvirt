@@ -149,7 +149,6 @@ mymain(void)
     DO_TEST("graphics-sdl-fullscreen");
     DO_TEST("graphics-spice");
     DO_TEST("graphics-spice-compression");
-    DO_TEST("graphics-spice-timeout");
     DO_TEST("graphics-spice-qxl-vga");
     DO_TEST("input-usbmouse");
     DO_TEST("input-usbtablet");
@@ -209,6 +208,7 @@ mymain(void)
     DO_TEST_DIFFERENT("console-virtio");
     DO_TEST_DIFFERENT("serial-target-port-auto");
     DO_TEST_DIFFERENT("graphics-listen-network2");
+    DO_TEST_DIFFERENT("graphics-spice-timeout");
 
     virCapabilitiesFree(driver.caps);
 

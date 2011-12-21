@@ -1,6 +1,6 @@
 <cpu match='exact'>
   <arch>x86_64</arch>
-  <model>pentium3</model>
+  <model fallback='allow'>pentium3</model>
   <feature policy='require' name='lahf_lm'/>
   <feature policy='require' name='lm'/>
   <feature policy='require' name='nx'/>

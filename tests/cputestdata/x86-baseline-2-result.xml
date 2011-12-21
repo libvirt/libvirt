@@ -1,4 +1,4 @@
 <cpu match='exact'>
-  <model>core2duo</model>
+  <model fallback='allow'>core2duo</model>
   <feature policy='disable' name='nx'/>
 </cpu>

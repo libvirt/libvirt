@@ -1,5 +1,5 @@
 <cpu match='exact'>
-  <model>Penryn</model>
+  <model fallback='allow'>Penryn</model>
   <topology sockets='2' cores='4' threads='1'/>
   <feature policy='require' name='dca'/>
   <feature policy='require' name='xtpr'/>

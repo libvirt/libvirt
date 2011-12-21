@@ -2571,6 +2571,14 @@
 
   <define name="cpuModel">
     <element name="model">
+      <optional>
+        <attribute name="fallback">
+          <choice>
+            <value>allow</value>
+            <value>forbid</value>
+          </choice>
+        </attribute>
+      </optional>
       <text/>
     </element>
   </define>

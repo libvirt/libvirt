@@ -1294,8 +1294,21 @@ x86Decode(virCPUDefPtr cpu,
         }
 
         if (!allowed) {
-            VIR_DEBUG("CPU model %s not allowed by hypervisor; ignoring",
-                      candidate->name);
+            if (preferred && STREQ(candidate->name, preferred)) {
+                if (cpu->fallback != VIR_CPU_FALLBACK_ALLOW) {
+                    virCPUReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("CPU model %s is not supported by hypervisor"),
+                            preferred);
+                    goto out;
+                } else {
+                    VIR_WARN("Preferred CPU model %s not allowed by"
+                             " hypervisor; closest supported model will be"
+                             " used", preferred);
+                }
+            } else {
+                VIR_DEBUG("CPU model %s not allowed by hypervisor; ignoring",
+                          candidate->name);
+            }
             goto next;
         }
 

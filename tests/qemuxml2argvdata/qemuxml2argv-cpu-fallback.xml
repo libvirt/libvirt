@@ -9,14 +9,11 @@
     <boot dev='network'/>
   </os>
   <cpu match='exact'>
-    <model fallback='allow'>qemu64</model>
-    <feature policy='disable' name='svm'/>
-    <feature policy='disable' name='lm'/>
-    <feature policy='disable' name='nx'/>
-    <feature policy='disable' name='syscall'/>
-    <feature policy='disable' name='clflush'/>
-    <feature policy='disable' name='pse36'/>
-    <feature policy='disable' name='mca'/>
+    <model>Westmere</model>
+    <feature policy='disable' name='sse4.1'/>
+    <feature policy='disable' name='sse4.2'/>
+    <feature policy='disable' name='popcnt'/>
+    <feature policy='disable' name='aes'/>
   </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
