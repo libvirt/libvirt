@@ -7,7 +7,7 @@ case $* in
     faked_machine
     ;;
 "-cpu ?")
-    faked_cpu
+    faked_cpu | grep -Fv '['
     ;;
 *)
     real_qemu "$@"

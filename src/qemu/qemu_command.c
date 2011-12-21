@@ -3458,10 +3458,12 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
                    virBitmapPtr qemuCaps,
                    const struct utsname *ut,
                    char **opt,
-                   bool *hasHwVirt)
+                   bool *hasHwVirt,
+                   bool migrating)
 {
     const virCPUDefPtr host = driver->caps->host.cpu;
     virCPUDefPtr guest = NULL;
+    virCPUDefPtr cpu = NULL;
     unsigned int ncpus = 0;
     const char **cpus = NULL;
     union cpuData *data = NULL;
@@ -3471,7 +3473,21 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
 
     *hasHwVirt = false;
 
-    if (def->cpu && def->cpu->model) {
+    if (def->cpu &&
+        (def->cpu->mode != VIR_CPU_MODE_CUSTOM || def->cpu->model)) {
+        if (!(cpu = virCPUDefCopy(def->cpu)))
+            goto cleanup;
+        if (cpu->mode != VIR_CPU_MODE_CUSTOM &&
+            !migrating &&
+            cpuUpdate(cpu, host) < 0)
+            goto cleanup;
+    }
+
+    if (cpu) {
+        virCPUCompareResult cmp;
+        const char *preferred;
+        int hasSVM;
+
         if (host &&
             qemuCapsProbeCPUModels(emulator, qemuCaps, host->arch,
                                    &ncpus, &cpus) < 0)
@@ -3482,18 +3498,12 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
                             _("CPU specification not supported by hypervisor"));
             goto cleanup;
         }
-    }
 
-    if (ncpus > 0 && host) {
-        virCPUCompareResult cmp;
-        const char *preferred;
-        int hasSVM;
-
-        cmp = cpuGuestData(host, def->cpu, &data);
+        cmp = cpuGuestData(host, cpu, &data);
         switch (cmp) {
         case VIR_CPU_COMPARE_INCOMPATIBLE:
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            "%s", _("guest CPU is not compatible with host CPU"));
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("guest CPU is not compatible with host CPU"));
             /* fall through */
         case VIR_CPU_COMPARE_ERROR:
             goto cleanup;
@@ -3502,39 +3512,55 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
             break;
         }
 
-        if (VIR_ALLOC(guest) < 0 || !(guest->arch = strdup(host->arch)))
-            goto no_memory;
-
-        if (def->cpu->match == VIR_CPU_MATCH_MINIMUM)
-            preferred = host->model;
-        else
-            preferred = def->cpu->model;
-
-        guest->type = VIR_CPU_TYPE_GUEST;
-        guest->fallback = def->cpu->fallback;
-        if (cpuDecode(guest, data, cpus, ncpus, preferred) < 0)
-            goto cleanup;
-
         /* Only 'svm' requires --enable-nesting. The nested
          * 'vmx' patches now simply hook off the CPU features
          */
-        hasSVM = cpuHasFeature(guest->arch, data, "svm");
+        hasSVM = cpuHasFeature(host->arch, data, "svm");
         if (hasSVM < 0)
             goto cleanup;
         *hasHwVirt = hasSVM > 0 ? true : false;
 
-        virBufferAdd(&buf, guest->model, -1);
-        for (i = 0; i < guest->nfeatures; i++) {
-            char sign;
-            if (guest->features[i].policy == VIR_CPU_FEATURE_DISABLE)
-                sign = '-';
-            else
-                sign = '+';
+        if (cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH) {
+            const char *mode = virCPUModeTypeToString(cpu->mode);
+            if (!qemuCapsGet(qemuCaps, QEMU_CAPS_CPU_HOST)) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                _("CPU mode '%s' is not supported by QEMU"
+                                  " binary"), mode);
+                goto cleanup;
+            }
+            if (def->virtType != VIR_DOMAIN_VIRT_KVM) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                _("CPU mode '%s' is only supported with kvm"),
+                                mode);
+                goto cleanup;
+            }
+            virBufferAddLit(&buf, "host");
+        } else {
+            if (VIR_ALLOC(guest) < 0 || !(guest->arch = strdup(host->arch)))
+                goto no_memory;
 
-            virBufferAsprintf(&buf, ",%c%s", sign, guest->features[i].name);
+            if (cpu->match == VIR_CPU_MATCH_MINIMUM)
+                preferred = host->model;
+            else
+                preferred = cpu->model;
+
+            guest->type = VIR_CPU_TYPE_GUEST;
+            guest->fallback = cpu->fallback;
+            if (cpuDecode(guest, data, cpus, ncpus, preferred) < 0)
+                goto cleanup;
+
+            virBufferAdd(&buf, guest->model, -1);
+            for (i = 0; i < guest->nfeatures; i++) {
+                char sign;
+                if (guest->features[i].policy == VIR_CPU_FEATURE_DISABLE)
+                    sign = '-';
+                else
+                    sign = '+';
+
+                virBufferAsprintf(&buf, ",%c%s", sign, guest->features[i].name);
+            }
         }
-    }
-    else {
+    } else {
         /*
          * Need to force a 32-bit guest CPU type if
          *
@@ -3565,6 +3591,7 @@ cleanup:
     if (guest)
         cpuDataFree(guest->arch, data);
     virCPUDefFree(guest);
+    virCPUDefFree(cpu);
 
     if (cpus) {
         for (i = 0; i < ncpus; i++)
@@ -3787,7 +3814,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         virCommandAddArgList(cmd, "-M", def->os.machine, NULL);
 
     if (qemuBuildCpuArgStr(driver, def, emulator, qemuCaps,
-                           &ut, &cpu, &hasHwVirt) < 0)
+                           &ut, &cpu, &hasHwVirt, !!migrateFrom) < 0)
         goto error;
 
     if (cpu) {

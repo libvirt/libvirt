@@ -1,0 +1,19 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+./qemu-supported-cpus.sh \
+-S \
+-M pc \
+-cpu Penryn,+xtpr,+tm2,+est,+vmx,+ds_cpl,+monitor,+pbe,+tm,+ht,+ss,+acpi,+ds,+vme,-sse4.1 \
+-m 214 \
+-smp 6 \
+-nographic \
+-monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi \
+-boot n \
+-net none \
+-serial none \
+-parallel none \
+-usb

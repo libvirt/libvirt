@@ -187,6 +187,7 @@ virCPUDefFormatBuf;
 virCPUDefFree;
 virCPUDefFreeModel;
 virCPUDefParseXML;
+virCPUModeTypeToString;
 
 
 # datatypes.h

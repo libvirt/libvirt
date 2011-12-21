@@ -690,6 +690,13 @@ mymain(void)
     DO_TEST("cpu-strict1", false, NONE);
     DO_TEST("cpu-numa1", false, NONE);
     DO_TEST("cpu-numa2", false, QEMU_CAPS_SMP_TOPOLOGY);
+    DO_TEST("cpu-host-model", false, NONE);
+    DO_TEST("cpu-host-model-fallback", false, NONE);
+    DO_TEST_FAILURE("cpu-host-model-nofallback", NONE);
+    DO_TEST("cpu-host-passthrough", false, QEMU_CAPS_KVM, QEMU_CAPS_CPU_HOST);
+    DO_TEST_FAILURE("cpu-host-passthrough", NONE);
+    DO_TEST_FAILURE("cpu-qemu-host-passthrough",
+                    QEMU_CAPS_KVM, QEMU_CAPS_CPU_HOST);
 
     DO_TEST("memtune", false, QEMU_CAPS_NAME);
     DO_TEST("blkiotune", false, QEMU_CAPS_NAME);

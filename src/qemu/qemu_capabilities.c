@@ -145,9 +145,10 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "no-acpi",
               "fsdev-readonly",
 
-              "virtio-blk-pci.scsi",
+              "virtio-blk-pci.scsi", /* 80 */
               "blk-sg-io",
               "drive-copy-on-read",
+              "cpu-host",
     );
 
 struct qemu_feature_flags {
@@ -1184,6 +1185,9 @@ qemuCapsComputeCmdFlags(const char *help,
      */
     if (version >= 12000)
         qemuCapsSet(flags, QEMU_CAPS_PCI_ROMBAR);
+
+    if (version >= 11000)
+        qemuCapsSet(flags, QEMU_CAPS_CPU_HOST);
 }
 
 /* We parse the output of 'qemu -help' to get the QEMU
