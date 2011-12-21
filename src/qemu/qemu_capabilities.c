@@ -143,6 +143,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "rombar",
               "ich9-ahci",
               "no-acpi",
+              "fsdev-readonly",
     );
 
 struct qemu_feature_flags {
@@ -981,6 +982,7 @@ qemuCapsComputeCmdFlags(const char *help,
                         virBitmapPtr flags)
 {
     const char *p;
+    const char *fsdev;
 
     if (strstr(help, "-no-kqemu"))
         qemuCapsSet(flags, QEMU_CAPS_KQEMU);
@@ -1077,8 +1079,11 @@ qemuCapsComputeCmdFlags(const char *help,
         qemuCapsSet(flags, QEMU_CAPS_NESTING);
     if (strstr(help, ",menu=on"))
         qemuCapsSet(flags, QEMU_CAPS_BOOT_MENU);
-    if (strstr(help, "-fsdev"))
+    if ((fsdev = strstr(help, "-fsdev"))) {
         qemuCapsSet(flags, QEMU_CAPS_FSDEV);
+        if (strstr(fsdev, "readonly"))
+            qemuCapsSet(flags, QEMU_CAPS_FSDEV_READONLY);
+    }
     if (strstr(help, "-smbios type"))
         qemuCapsSet(flags, QEMU_CAPS_SMBIOS_TYPE);
 

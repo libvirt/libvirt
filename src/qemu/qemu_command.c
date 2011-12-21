@@ -2108,6 +2108,17 @@ char *qemuBuildFSStr(virDomainFSDefPtr fs,
     virBufferAsprintf(&opt, ",id=%s%s", QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
     virBufferAsprintf(&opt, ",path=%s", fs->src);
 
+    if (fs->readonly) {
+        if (qemuCapsGet(qemuCaps, QEMU_CAPS_FSDEV_READONLY)) {
+            virBufferAddLit(&opt, ",readonly");
+        } else {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("readonly filesystem is not supported by this "
+                              "QEMU binary"));
+            goto error;
+        }
+    }
+
     if (virBufferError(&opt)) {
         virReportOOMError();
         goto error;

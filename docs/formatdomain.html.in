@@ -1399,8 +1399,9 @@
 
       <dt><code>readonly</code></dt>
       <dd>
-      An optional <code>readonly</code> attribute is available but currently
-      unused.
+        Enables exporting filesytem as a readonly mount for guest, by
+        default read-write access is given (currently only works for
+        QEMU/KVM driver).
       </dd>
     </dl>
 
