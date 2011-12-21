@@ -3245,9 +3245,8 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
 
     virBufferAsprintf(&buf,
                       CMD_DEF("$EBT -t nat -A %s"
-                              " -s %s -d Broadcast "
+                              " -s %s"
                               " -p ipv4 --ip-protocol udp"
-                              " --ip-src 0.0.0.0 --ip-dst 255.255.255.255"
                               " --ip-sport 68 --ip-dport 67"
                               " -j ACCEPT") CMD_SEPARATOR
                       CMD_EXEC
