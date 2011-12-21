@@ -13,7 +13,7 @@ for dir in $DIRS
 do
   XML=`find $abs_srcdir/$dir -name '*.xml'` || exit 1
 
-  for xml in $XML
+  for xml in `echo $XML | sort`
   do
     n=`expr $n + 1`
     cmd="xmllint --relaxng $SCHEMA --noout $xml"
