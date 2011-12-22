@@ -105,6 +105,7 @@ struct qemud_driver {
     unsigned int setProcessName : 1;
 
     int maxProcesses;
+    int maxFiles;
 
     int max_queued;
 

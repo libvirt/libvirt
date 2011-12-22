@@ -2166,14 +2166,26 @@ qemuProcessPrepareChardevDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
 static int
 qemuProcessLimits(struct qemud_driver *driver)
 {
-    if (driver->maxProcesses > 0) {
-        struct rlimit rlim;
+    struct rlimit rlim;
 
+    if (driver->maxProcesses > 0) {
         rlim.rlim_cur = rlim.rlim_max = driver->maxProcesses;
         if (setrlimit(RLIMIT_NPROC, &rlim) < 0) {
             virReportSystemError(errno,
                                  _("cannot limit number of processes to %d"),
                                  driver->maxProcesses);
+            return -1;
+        }
+    }
+
+    if (driver->maxFiles > 0) {
+        /* Max number of opened files is one greater than
+         * actual limit. See man setrlimit */
+        rlim.rlim_cur = rlim.rlim_max = driver->maxFiles + 1;
+        if (setrlimit(RLIMIT_NOFILE, &rlim) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot set max opened files to %d"),
+                                 driver->maxFiles);
             return -1;
         }
     }

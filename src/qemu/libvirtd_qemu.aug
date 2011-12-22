@@ -50,6 +50,7 @@ module Libvirtd_qemu =
                  | bool_entry "allow_disk_format_probing"
                  | bool_entry "set_process_name"
                  | int_entry "max_processes"
+                 | int_entry "max_files"
                  | str_entry "lock_manager"
                  | int_entry "max_queued"
                  | int_entry "keepalive_interval"

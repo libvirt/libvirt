@@ -443,6 +443,10 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     CHECK_TYPE("max_processes", VIR_CONF_LONG);
     if (p) driver->maxProcesses = p->l;
 
+    p = virConfGetValue(conf, "max_files");
+    CHECK_TYPE("max_files", VIR_CONF_LONG);
+    if (p) driver->maxFiles = p->l;
+
     p = virConfGetValue (conf, "lock_manager");
     CHECK_TYPE ("lock_manager", VIR_CONF_STRING);
     if (p && p->str) {
