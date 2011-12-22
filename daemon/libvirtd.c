@@ -190,6 +190,7 @@ static int daemonForkIntoBackground(const char *argv0)
     switch (pid) {
     case 0:
         {
+            /* intermediate child */
             int stdinfd = -1;
             int stdoutfd = -1;
             int nextpid;
@@ -206,9 +207,9 @@ static int daemonForkIntoBackground(const char *argv0)
                 goto cleanup;
             if (dup2(stdoutfd, STDERR_FILENO) != STDERR_FILENO)
                 goto cleanup;
-            if (VIR_CLOSE(stdinfd) < 0)
+            if (stdinfd > STDERR_FILENO && VIR_CLOSE(stdinfd) < 0)
                 goto cleanup;
-            if (VIR_CLOSE(stdoutfd) < 0)
+            if (stdoutfd > STDERR_FILENO && VIR_CLOSE(stdoutfd) < 0)
                 goto cleanup;
 
             if (setsid() < 0)
@@ -216,26 +217,28 @@ static int daemonForkIntoBackground(const char *argv0)
 
             nextpid = fork();
             switch (nextpid) {
-            case 0:
+            case 0: /* grandchild */
                 return statuspipe[1];
-            case -1:
-                return -1;
-            default:
-                _exit(0);
+            case -1: /* error */
+                goto cleanup;
+            default: /* intermediate child succeeded */
+                _exit(EXIT_SUCCESS);
             }
 
         cleanup:
             VIR_FORCE_CLOSE(stdoutfd);
             VIR_FORCE_CLOSE(stdinfd);
-            return -1;
+            VIR_FORCE_CLOSE(statuspipe[1]);
+            _exit(EXIT_FAILURE);
 
         }
 
-    case -1:
-        return -1;
+    case -1: /* error in parent */
+        goto error;
 
     default:
         {
+            /* parent */
             int ret;
             char status;
 
@@ -243,23 +246,41 @@ static int daemonForkIntoBackground(const char *argv0)
 
             /* We wait to make sure the first child forked successfully */
             if (virPidWait(pid, NULL) < 0)
-                return -1;
+                goto error;
 
-            /* Now block until the second child initializes successfully */
+            /* If we get here, then the grandchild was spawned, so we
+             * must exit.  Block until the second child initializes
+             * successfully */
         again:
             ret = read(statuspipe[0], &status, 1);
             if (ret == -1 && errno == EINTR)
                 goto again;
 
-            if (ret == 1 && status != 0) {
+            VIR_FORCE_CLOSE(statuspipe[0]);
+
+            if (ret != 1) {
+                char ebuf[1024];
+
                 fprintf(stderr,
-                        _("%s: error: %s. Check /var/log/messages or run without "
-                          "--daemon for more info.\n"), argv0,
+                        _("%s: error: unable to determine if daemon is "
+                          "running: %s\n"), argv0,
+                        virStrerror(errno, ebuf, sizeof(ebuf)));
+                exit(EXIT_FAILURE);
+            } else if (status != 0) {
+                fprintf(stderr,
+                        _("%s: error: %s. Check /var/log/messages or run "
+                          "without --daemon for more info.\n"), argv0,
                         virDaemonErrTypeToString(status));
+                exit(EXIT_FAILURE);
             }
-            _exit(ret == 1 && status == 0 ? 0 : 1);
+            _exit(EXIT_SUCCESS);
         }
     }
+
+error:
+    VIR_FORCE_CLOSE(statuspipe[0]);
+    VIR_FORCE_CLOSE(statuspipe[1]);
+    return -1;
 }
 
 
