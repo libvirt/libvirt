@@ -947,7 +947,7 @@
   &lt;devices&gt;
     &lt;disk type='file' snapshot='external'&gt;
       &lt;driver name="tap" type="aio" cache="default"/&gt;
-      &lt;source file='/var/lib/xen/images/fv0'/ startupPolicy='optional'&gt;
+      &lt;source file='/var/lib/xen/images/fv0'/ startupPolicy='optional'/&gt;
       &lt;target dev='hda' bus='ide'/&gt;
       &lt;iotune&gt;
         &lt;total_bytes_sec&gt;10000000&lt;/total_bytes_sec&gt;
@@ -2980,7 +2980,7 @@ qemu-kvm -net nic,model=? /dev/null
   ...
   &lt;devices&gt;
     &lt;console type='stdio'&gt;
-      &lt;target port='1'&gt;
+      &lt;target port='1'/&gt;
     &lt;/console&gt;
   &lt;/devices&gt;
   ...</pre>
