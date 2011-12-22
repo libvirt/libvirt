@@ -647,7 +647,8 @@ mymain(void)
             QEMU_CAPS_NO_SHUTDOWN,
             QEMU_CAPS_PCI_ROMBAR,
             QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_NO_ACPI);
+            QEMU_CAPS_NO_ACPI,
+            QEMU_CAPS_FSDEV_READONLY);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
