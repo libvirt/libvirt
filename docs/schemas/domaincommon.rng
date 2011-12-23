@@ -50,30 +50,70 @@
   </define>
   <define name="seclabel">
     <element name="seclabel">
-      <attribute name="model">
-        <text/>
-      </attribute>
-      <attribute name="type">
-        <choice>
-          <value>dynamic</value>
-          <value>static</value>
-        </choice>
-      </attribute>
-      <attribute name="relabel">
-        <choice>
-          <value>yes</value>
-          <value>no</value>
-        </choice>
-      </attribute>
-      <element name="label">
-        <text/>
-      </element>
-      <element name="imagelabel">
-        <text/>
-      </element>
-      <element name="baselabel">
-        <text/>
-      </element>
+      <optional>
+        <attribute name='model'>
+          <text/>
+        </attribute>
+      </optional>
+      <choice>
+        <group>
+          <!-- with dynamic label (default), relabel must be yes, baselabel
+               is optional, and label and imagelabel are output-only -->
+          <optional>
+            <attribute name='type'>
+              <value>dynamic</value>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name='relabel'>
+              <value>yes</value>
+            </attribute>
+          </optional>
+          <interleave>
+            <optional>
+              <element name='label'>
+                <text/>
+              </element>
+            </optional>
+            <optional>
+              <element name='imagelabel'>
+                <text/>
+              </element>
+            </optional>
+            <optional>
+              <element name='baselabel'>
+                <text/>
+              </element>
+            </optional>
+          </interleave>
+        </group>
+        <group>
+          <!-- with static label, relabel can be either format (default
+               no), label is required, imagelabel is output-only, and no
+               baselabel is present -->
+          <attribute name='type'>
+            <value>static</value>
+          </attribute>
+          <optional>
+            <attribute name='relabel'>
+              <choice>
+                <value>yes</value>
+                <value>no</value>
+              </choice>
+            </attribute>
+          </optional>
+          <interleave>
+            <element name='label'>
+              <text/>
+            </element>
+            <optional>
+              <element name='imagelabel'>
+                <text/>
+              </element>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
     </element>
   </define>
   <define name="hvs">

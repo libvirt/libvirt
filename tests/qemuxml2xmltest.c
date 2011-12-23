@@ -194,6 +194,9 @@ mymain(void)
     DO_TEST("usb-redir");
     DO_TEST("blkdeviotune");
 
+    DO_TEST("seclabel-dynamic-baselabel");
+    DO_TEST("seclabel-static");
+
     /* These tests generate different XML */
     DO_TEST_DIFFERENT("balloon-device-auto");
     DO_TEST_DIFFERENT("channel-virtio-auto");
