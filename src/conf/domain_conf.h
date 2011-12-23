@@ -357,6 +357,7 @@ struct _virDomainDiskDef {
     int device;
     int bus;
     char *src;
+    virSecurityLabelDefPtr seclabel;
     char *dst;
     int protocol;
     int nhosts;

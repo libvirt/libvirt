@@ -797,6 +797,15 @@ virSecurityLabelDefClear(virSecurityLabelDefPtr def)
     VIR_FREE(def->baselabel);
 }
 
+static void
+virSecurityLabelDefFree(virSecurityLabelDefPtr def)
+{
+    if (!def)
+        return;
+    virSecurityLabelDefClear(def);
+    VIR_FREE(def);
+}
+
 void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
 {
     int ii;
@@ -866,6 +875,7 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
 
     VIR_FREE(def->serial);
     VIR_FREE(def->src);
+    virSecurityLabelDefFree(def->seclabel);
     VIR_FREE(def->dst);
     VIR_FREE(def->driverName);
     VIR_FREE(def->driverType);
@@ -2517,14 +2527,92 @@ virDomainDiskDefAssignAddress(virCapsPtr caps, virDomainDiskDefPtr def)
     return 0;
 }
 
+/* Parse the portion of a SecurityLabel that is common to both the
+ * top-level <seclabel> and to a per-device override.
+ * default_seclabel is NULL for top-level, or points to the top-level
+ * when parsing an override.  */
+static int
+virSecurityLabelDefParseXMLHelper(virSecurityLabelDefPtr def,
+                                  xmlNodePtr node,
+                                  xmlXPathContextPtr ctxt,
+                                  virSecurityLabelDefPtr default_seclabel,
+                                  unsigned int flags)
+{
+    char *p;
+    xmlNodePtr save_ctxt = ctxt->node;
+    int ret = -1;
+
+    ctxt->node = node;
+
+    /* Can't use overrides if top-level doesn't allow relabeling.  */
+    if (default_seclabel && default_seclabel->norelabel) {
+        virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                             _("label overrides require relabeling to be "
+                               "enabled at the domain level"));
+            goto cleanup;
+    }
+
+    p = virXPathStringLimit("string(./@relabel)",
+                            VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
+    if (p != NULL) {
+        if (STREQ(p, "yes")) {
+            def->norelabel = false;
+        } else if (STREQ(p, "no")) {
+            def->norelabel = true;
+        } else {
+            virDomainReportError(VIR_ERR_XML_ERROR,
+                                 _("invalid security relabel value %s"), p);
+            VIR_FREE(p);
+            goto cleanup;
+        }
+        VIR_FREE(p);
+        if (!default_seclabel &&
+            def->type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
+            def->norelabel) {
+            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                 "%s", _("dynamic label type must use resource relabeling"));
+            goto cleanup;
+        }
+    } else {
+        if (!default_seclabel &&  def->type == VIR_DOMAIN_SECLABEL_STATIC)
+            def->norelabel = true;
+        else
+            def->norelabel = false;
+    }
+
+    /* Only parse label, if using static labels, or
+     * if the 'live' VM XML is requested, or if this is a device override
+     */
+    if (def->type == VIR_DOMAIN_SECLABEL_STATIC ||
+        !(flags & VIR_DOMAIN_XML_INACTIVE) ||
+        (default_seclabel && !def->norelabel)) {
+        p = virXPathStringLimit("string(./label[1])",
+                                VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
+        if (p == NULL) {
+            virDomainReportError(VIR_ERR_XML_ERROR,
+                                 "%s", _("security label is missing"));
+            goto cleanup;
+        }
+
+        def->label = p;
+    }
+
+    ret = 0;
+cleanup:
+    ctxt->node = save_ctxt;
+    return ret;
+}
+
+/* Parse the top-level <seclabel>, if present.  */
 static int
 virSecurityLabelDefParseXML(virSecurityLabelDefPtr def,
                             xmlXPathContextPtr ctxt,
                             unsigned int flags)
 {
     char *p;
+    xmlNodePtr node = virXPathNode("./seclabel", ctxt);
 
-    if (virXPathNode("./seclabel", ctxt) == NULL)
+    if (node == NULL)
         return 0;
 
     p = virXPathStringLimit("string(./seclabel/@type)",
@@ -2541,48 +2629,9 @@ virSecurityLabelDefParseXML(virSecurityLabelDefPtr def,
                              "%s", _("invalid security type"));
         goto error;
     }
-    p = virXPathStringLimit("string(./seclabel/@relabel)",
-                            VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-    if (p != NULL) {
-        if (STREQ(p, "yes")) {
-            def->norelabel = false;
-        } else if (STREQ(p, "no")) {
-            def->norelabel = true;
-        } else {
-            virDomainReportError(VIR_ERR_XML_ERROR,
-                                 _("invalid security relabel value %s"), p);
-            VIR_FREE(p);
-            goto error;
-        }
-        VIR_FREE(p);
-        if (def->type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
-            def->norelabel) {
-            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                 "%s", _("dynamic label type must use resource relabeling"));
-            goto error;
-        }
-    } else {
-        if (def->type == VIR_DOMAIN_SECLABEL_STATIC)
-            def->norelabel = true;
-        else
-            def->norelabel = false;
-    }
 
-    /* Only parse label, if using static labels, or
-     * if the 'live' VM XML is requested
-     */
-    if (def->type == VIR_DOMAIN_SECLABEL_STATIC ||
-        !(flags & VIR_DOMAIN_XML_INACTIVE)) {
-        p = virXPathStringLimit("string(./seclabel/label[1])",
-                                VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-        if (p == NULL) {
-            virDomainReportError(VIR_ERR_XML_ERROR,
-                                 "%s", _("security label is missing"));
-            goto error;
-        }
-
-        def->label = p;
-    }
+    if (virSecurityLabelDefParseXMLHelper(def, node, ctxt, NULL, flags) < 0)
+        goto error;
 
     /* Only parse imagelabel, if requested live XML with relabeling */
     if (!def->norelabel &&
@@ -2709,6 +2758,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                          xmlNodePtr node,
                          xmlXPathContextPtr ctxt,
                          virBitmapPtr bootMap,
+                         virSecurityLabelDefPtr default_seclabel,
                          unsigned int flags)
 {
     virDomainDiskDefPtr def;
@@ -3014,6 +3064,16 @@ virDomainDiskDefParseXML(virCapsPtr caps,
         virDomainReportError(VIR_ERR_NO_SOURCE,
                              target ? "%s" : NULL, target);
         goto error;
+    }
+
+    /* If source is present, check for an optional seclabel override.  */
+    if (source) {
+        xmlNodePtr seclabel = virXPathNode("./source/seclabel", ctxt);
+        if (seclabel &&
+            (VIR_ALLOC(def->seclabel) < 0 ||
+             virSecurityLabelDefParseXMLHelper(def->seclabel, seclabel, ctxt,
+                                               default_seclabel, flags) < 0))
+            goto error;
     }
 
     if (target == NULL) {
@@ -6344,7 +6404,8 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
     if (xmlStrEqual(node->name, BAD_CAST "disk")) {
         dev->type = VIR_DOMAIN_DEVICE_DISK;
         if (!(dev->data.disk = virDomainDiskDefParseXML(caps, node, ctxt,
-                                                        NULL, flags)))
+                                                        NULL, &def->seclabel,
+                                                        flags)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "lease")) {
         dev->type = VIR_DOMAIN_DEVICE_LEASE;
@@ -7446,6 +7507,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                                                             nodes[i],
                                                             ctxt,
                                                             bootMap,
+                                                            &def->seclabel,
                                                             flags);
         if (!disk)
             goto error;
@@ -9749,23 +9811,32 @@ virSecurityLabelDefFormat(virBufferPtr buf, virSecurityLabelDefPtr def,
     if (!sectype)
         goto cleanup;
 
-    if (def->type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
+    if (def->model &&
+        def->type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
         !def->baselabel &&
         (flags & VIR_DOMAIN_XML_INACTIVE)) {
         /* This is the default for inactive xml, so nothing to output.  */
     } else {
-        virBufferAsprintf(buf, "<seclabel type='%s' model='%s' relabel='%s'>\n",
-                          sectype, def->model,
+        virBufferAddLit(buf, "<seclabel");
+        if (def->model)
+            virBufferAsprintf(buf, " type='%s' model='%s'",
+                              sectype, def->model);
+        virBufferAsprintf(buf, " relabel='%s'",
                           def->norelabel ? "no" : "yes");
-        virBufferEscapeString(buf, "  <label>%s</label>\n",
-                              def->label);
-        if (!def->norelabel)
-            virBufferEscapeString(buf, "  <imagelabel>%s</imagelabel>\n",
-                                  def->imagelabel);
-        if (def->type == VIR_DOMAIN_SECLABEL_DYNAMIC)
-            virBufferEscapeString(buf, "  <baselabel>%s</baselabel>\n",
-                                  def->baselabel);
-        virBufferAddLit(buf, "</seclabel>\n");
+        if (def->label || def->baselabel) {
+            virBufferAddLit(buf, ">\n");
+            virBufferEscapeString(buf, "  <label>%s</label>\n",
+                                  def->label);
+            if (!def->norelabel)
+                virBufferEscapeString(buf, "  <imagelabel>%s</imagelabel>\n",
+                                      def->imagelabel);
+            if (def->type == VIR_DOMAIN_SECLABEL_DYNAMIC)
+                virBufferEscapeString(buf, "  <baselabel>%s</baselabel>\n",
+                                      def->baselabel);
+            virBufferAddLit(buf, "</seclabel>\n");
+        } else {
+            virBufferAddLit(buf, "/>\n");
+        }
     }
     ret = 0;
 cleanup:
@@ -9885,17 +9956,36 @@ virDomainDiskDefFormat(virBufferPtr buf,
         def->startupPolicy) {
         switch (def->type) {
         case VIR_DOMAIN_DISK_TYPE_FILE:
-            virBufferAsprintf(buf,"      <source");
+            virBufferAddLit(buf, "      <source");
             if (def->src)
                 virBufferEscapeString(buf, " file='%s'", def->src);
             if (def->startupPolicy)
                 virBufferEscapeString(buf, " startupPolicy='%s'",
                                       startupPolicy);
-            virBufferAsprintf(buf, "/>\n");
+            if (def->seclabel) {
+                virBufferAddLit(buf, ">\n");
+                virBufferAdjustIndent(buf, 8);
+                if (virSecurityLabelDefFormat(buf, def->seclabel, flags) < 0)
+                    return -1;
+                virBufferAdjustIndent(buf, -8);
+                virBufferAddLit(buf, "      </source>\n");
+            } else {
+                virBufferAddLit(buf, "/>\n");
+            }
             break;
         case VIR_DOMAIN_DISK_TYPE_BLOCK:
-            virBufferEscapeString(buf, "      <source dev='%s'/>\n",
-                                  def->src);
+            if (def->src && def->seclabel) {
+                virBufferEscapeString(buf, "      <source dev='%s'>\n",
+                                      def->src);
+                virBufferAdjustIndent(buf, 8);
+                if (virSecurityLabelDefFormat(buf, def->seclabel, flags) < 0)
+                    return -1;
+                virBufferAdjustIndent(buf, -8);
+                virBufferAddLit(buf, "      </source>\n");
+            } else {
+                virBufferEscapeString(buf, "      <source dev='%s'/>\n",
+                                      def->src);
+            }
             break;
         case VIR_DOMAIN_DISK_TYPE_DIR:
             virBufferEscapeString(buf, "      <source dir='%s'/>\n",

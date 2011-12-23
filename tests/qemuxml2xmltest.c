@@ -195,6 +195,7 @@ mymain(void)
     DO_TEST("blkdeviotune");
 
     DO_TEST("seclabel-dynamic-baselabel");
+    DO_TEST("seclabel-dynamic-override");
     DO_TEST("seclabel-static");
 
     /* These tests generate different XML */
