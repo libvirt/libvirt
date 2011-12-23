@@ -116,6 +116,27 @@
       </choice>
     </element>
   </define>
+  <define name="devSeclabel">
+    <element name="seclabel">
+      <!-- A per-device seclabel override is more limited, either
+           relabel=no or a <label> must be present.  -->
+      <choice>
+        <attribute name='relabel'>
+          <value>no</value>
+        </attribute>
+        <group>
+          <optional>
+            <attribute name='relabel'>
+              <value>yes</value>
+            </attribute>
+          </optional>
+          <element name='label'>
+            <text/>
+          </element>
+        </group>
+      </choice>
+    </element>
+  </define>
   <define name="hvs">
     <attribute name="type">
       <choice>
@@ -795,7 +816,9 @@
                 <optional>
                   <ref name="startupPolicy"/>
                 </optional>
-                <empty/>
+                <optional>
+                  <ref name='devSeclabel'/>
+                </optional>
               </element>
             </optional>
             <ref name="diskspec"/>
@@ -811,7 +834,9 @@
                 <attribute name="dev">
                   <ref name="absFilePath"/>
                 </attribute>
-                <empty/>
+                <optional>
+                  <ref name='devSeclabel'/>
+                </optional>
               </element>
             </optional>
             <ref name="diskspec"/>

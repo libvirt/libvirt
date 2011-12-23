@@ -947,7 +947,9 @@
   &lt;devices&gt;
     &lt;disk type='file' snapshot='external'&gt;
       &lt;driver name="tap" type="aio" cache="default"/&gt;
-      &lt;source file='/var/lib/xen/images/fv0' startupPolicy='optional'/&gt;
+      &lt;source file='/var/lib/xen/images/fv0'/ startupPolicy='optional'&gt;
+        &lt;seclabel relabel='no'/&gt;
+      &lt;/source&gt;
       &lt;target dev='hda' bus='ide'/&gt;
       &lt;iotune&gt;
         &lt;total_bytes_sec&gt;10000000&lt;/total_bytes_sec&gt;
@@ -1023,7 +1025,11 @@
         path to the file holding the disk. If the disk
         <code>type</code> is "block", then the <code>dev</code>
         attribute specifies the path to the host device to serve as
-        the disk. If the disk <code>type</code> is "dir", then the
+        the disk. With both "file" and "block", an optional
+        sub-element <code>seclabel</code>, <a href="#seclabel">described
+        below</a> (and <span class="since">since 0.9.9</span>), can be
+        used to override the domain security labeling policy for just
+        that source file.  If the disk <code>type</code> is "dir", then the
         <code>dir</code> attribute specifies the fully-qualified path
         to the directory to use as the disk. If the disk <code>type</code>
         is "network", then the <code>protocol</code> attribute specifies
@@ -1031,7 +1037,7 @@
         are "nbd", "rbd", and "sheepdog".  If the <code>protocol</code>
         attribute is "rbd" or "sheepdog", an additional
         attribute <code>name</code> is mandatory to specify which
-        image to be used.  When the disk <code>type</code> is
+        image will be used.  When the disk <code>type</code> is
         "network", the <code>source</code> may have zero or
         more <code>host</code> sub-elements used to specify the hosts
         to connect.
@@ -3372,11 +3378,11 @@ qemu-kvm -net nic,model=? /dev/null
       With static label assignment, by default, the administrator
       or application must ensure labels are set correctly on any
       resources, however, automatic relabeling can be enabled
-      if desired
+      if desired.
     </p>
 
     <p>
-      Valid input XML configurations for the security label
+      Valid input XML configurations for the top-level security label
       are:
     </p>
 
@@ -3434,6 +3440,19 @@ qemu-kvm -net nic,model=? /dev/null
         The format of the content depends on the security driver in use
       </dd>
     </dl>
+
+    <p>When relabeling is in effect, it is also possible to fine-tune
+      the labeling done for specific source file names, by either
+      disabling the labeling (useful if the file lives on NFS or other
+      file system that lacks security labeling) or requesting an
+      alternate label (useful when a management application creates a
+      special label to allow sharing of some, but not all, resources
+      between domains), <span class="since">since 0.9.9</span>.  When
+      a <code>seclabel</code> element is attached to a specific path
+      rather than the top-level domain assignment, only the
+      attribute <code>relabel</code> or the
+      sub-element <code>label</code> are supported.
+    </p>
 
     <h2><a name="examples">Example configs</a></h2>
 
