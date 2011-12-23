@@ -161,6 +161,25 @@ struct _virDomainDeviceInfo {
     } master;
 };
 
+enum virDomainSeclabelType {
+    VIR_DOMAIN_SECLABEL_DYNAMIC,
+    VIR_DOMAIN_SECLABEL_STATIC,
+
+    VIR_DOMAIN_SECLABEL_LAST,
+};
+
+/* Security configuration for domain */
+typedef struct _virSecurityLabelDef virSecurityLabelDef;
+typedef virSecurityLabelDef *virSecurityLabelDefPtr;
+struct _virSecurityLabelDef {
+    char *model;        /* name of security model */
+    char *label;        /* security label string */
+    char *imagelabel;   /* security image label string */
+    char *baselabel;    /* base name of label string */
+    int type;           /* virDomainSeclabelType */
+    bool norelabel;
+};
+
 typedef struct _virDomainHostdevOrigStates virDomainHostdevOrigStates;
 typedef virDomainHostdevOrigStates *virDomainHostdevOrigStatesPtr;
 struct _virDomainHostdevOrigStates {
@@ -1236,25 +1255,6 @@ struct _virDomainOSDef {
     char *bootloaderArgs;
     int smbios_mode;
     virDomainBIOSDef bios;
-};
-
-enum virDomainSeclabelType {
-    VIR_DOMAIN_SECLABEL_DYNAMIC,
-    VIR_DOMAIN_SECLABEL_STATIC,
-
-    VIR_DOMAIN_SECLABEL_LAST,
-};
-
-/* Security configuration for domain */
-typedef struct _virSecurityLabelDef virSecurityLabelDef;
-typedef virSecurityLabelDef *virSecurityLabelDefPtr;
-struct _virSecurityLabelDef {
-    char *model;        /* name of security model */
-    char *label;        /* security label string */
-    char *imagelabel;   /* security image label string */
-    char *baselabel;    /* base name of label string */
-    int type;           /* virDomainSeclabelType */
-    bool norelabel;
 };
 
 enum virDomainTimerNameType {
