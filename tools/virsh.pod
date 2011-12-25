@@ -322,87 +322,6 @@ running B<virsh suspend>.  When in a paused state the domain will still
 consume allocated resources like memory, but will not be eligible for
 scheduling by the hypervisor.
 
-=item B<send-key> I<domain-id> [I<--codeset> B<codeset>]
-[I<--holdtime> B<holdtime>] I<keycode>...
-
-Parse the I<keycode> sequence as keystrokes to send to I<domain-id>.
-Each I<keycode> can either be a numeric value or a symbolic name from
-the corresponding codeset.  If I<--holdtime> is given, each keystroke
-will be held for that many milliseconds.  The default codeset is
-B<linux>, but use of the I<--codeset> option allows other codesets to
-be chosen.
-
-=over 4
-
-=item B<linux>
-
-The numeric values are those defined by the Linux generic input
-event subsystem. The symbolic names match the corresponding
-Linux key constant macro names.
-
-=item B<xt>
-
-The numeric values are those defined by the original XT keyboard
-controller. No symbolic names are provided
-
-=item B<atset1>
-
-The numeric values are those defined by the AT keyboard controller,
-set 1 (aka XT compatible set). Extended keycoes from B<atset1>
-may differ from extended keycodes in the B<xt> codeset. No symbolic
-names are provided
-
-=item B<atset2>
-
-The numeric values are those defined by the AT keyboard controller,
-set 2. No symbolic names are provided
-
-=item B<atset3>
-
-The numeric values are those defined by the AT keyboard controller,
-set 3 (aka PS/2 compatible set). No symbolic names are provided
-
-=item B<os_x>
-
-The numeric values are those defined by the OS-X keyboard input
-subsystem. The symbolic names match the corresponding OS-X key
-constant macro names
-
-=item B<xt_kbd>
-
-The numeric values are those defined by the Linux KBD device.
-These are a variant on the original XT codeset, but often with
-different encoding for extended keycodes. No symbolic names are
-provided.
-
-=item B<win32>
-
-The numeric values are those defined by the Win32 keyboard input
-subsystem. The symbolic names match the corresponding Win32 key
-constant macro names
-
-=item B<usb>
-
-The numeric values are those defined by the USB HID specification
-for keyboard input. No symbolic names are provided
-
-=item B<rfb>
-
-The numeric values are those defined by the RFB extension for sending
-raw keycodes. These are a variant on the XT codeset, but extended
-keycodes have the low bit of the second byte set, instead of the high
-bit of the first byte. No symbolic names are provided.
-
-=back
-
-B<Examples>
-  # send three strokes 'k', 'e', 'y', using xt codeset
-  virsh send-key dom --codeset xt 37 18 21
-  # send one stroke 'right-ctrl+C'
-  virsh send-key dom KEY_RIGHTCTRL KEY_C
-  # send a tab, held for 1 second
-  virsh send-key --holdtime 1000 0xf
-
 =item B<shutdown>
 
 The domain is in the process of shutting down, i.e. the guest operating system
@@ -1016,6 +935,87 @@ allows to specify which screen will be captured. It is the sequential number
 of screen. In case of multiple graphics cards, heads are enumerated before
 devices, e.g. having two graphics cards, both with four heads, screen ID 5
 addresses the second head on the second card.
+
+=item B<send-key> I<domain-id> [I<--codeset> B<codeset>]
+[I<--holdtime> B<holdtime>] I<keycode>...
+
+Parse the I<keycode> sequence as keystrokes to send to I<domain-id>.
+Each I<keycode> can either be a numeric value or a symbolic name from
+the corresponding codeset.  If I<--holdtime> is given, each keystroke
+will be held for that many milliseconds.  The default codeset is
+B<linux>, but use of the I<--codeset> option allows other codesets to
+be chosen.
+
+=over 4
+
+=item B<linux>
+
+The numeric values are those defined by the Linux generic input
+event subsystem. The symbolic names match the corresponding
+Linux key constant macro names.
+
+=item B<xt>
+
+The numeric values are those defined by the original XT keyboard
+controller. No symbolic names are provided
+
+=item B<atset1>
+
+The numeric values are those defined by the AT keyboard controller,
+set 1 (aka XT compatible set). Extended keycoes from B<atset1>
+may differ from extended keycodes in the B<xt> codeset. No symbolic
+names are provided
+
+=item B<atset2>
+
+The numeric values are those defined by the AT keyboard controller,
+set 2. No symbolic names are provided
+
+=item B<atset3>
+
+The numeric values are those defined by the AT keyboard controller,
+set 3 (aka PS/2 compatible set). No symbolic names are provided
+
+=item B<os_x>
+
+The numeric values are those defined by the OS-X keyboard input
+subsystem. The symbolic names match the corresponding OS-X key
+constant macro names
+
+=item B<xt_kbd>
+
+The numeric values are those defined by the Linux KBD device.
+These are a variant on the original XT codeset, but often with
+different encoding for extended keycodes. No symbolic names are
+provided.
+
+=item B<win32>
+
+The numeric values are those defined by the Win32 keyboard input
+subsystem. The symbolic names match the corresponding Win32 key
+constant macro names
+
+=item B<usb>
+
+The numeric values are those defined by the USB HID specification
+for keyboard input. No symbolic names are provided
+
+=item B<rfb>
+
+The numeric values are those defined by the RFB extension for sending
+raw keycodes. These are a variant on the XT codeset, but extended
+keycodes have the low bit of the second byte set, instead of the high
+bit of the first byte. No symbolic names are provided.
+
+=back
+
+B<Examples>
+  # send three strokes 'k', 'e', 'y', using xt codeset
+  virsh send-key dom --codeset xt 37 18 21
+  # send one stroke 'right-ctrl+C'
+  virsh send-key dom KEY_RIGHTCTRL KEY_C
+  # send a tab, held for 1 second
+  virsh send-key --holdtime 1000 0xf
 
 =item B<setmem> I<domain-id> B<kilobytes> [[I<--config>] [I<--live>] |
 [I<--current>]]
