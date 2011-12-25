@@ -373,6 +373,13 @@ guest CPU definition is the <cpu> element and its contents from domain XML
 definition. For more information on guest CPU definition see:
 L<http://libvirt.org/formatdomain.html#elementsCPU>
 
+=item B<echo> [I<--shell>] [I<--xml>] [I<arg>...]
+
+Echo back each I<arg>, separated by space.  If I<--shell> is
+specified, then the output will be single-quoted where needed, so that
+it is suitable for reuse in a shell context.  If I<--xml> is
+specified, then the output will be escaped for use in XML.
+
 =back
 
 =head1 DOMAIN COMMANDS
@@ -631,13 +638,6 @@ on next start of the domain as opposed to the current domain configuration.
 Using I<--security-info> will also include security sensitive information
 in the XML dump. I<--update-cpu> updates domain CPU requirements according to
 host CPU.
-
-=item B<echo> [I<--shell>] [I<--xml>] [I<arg>...]
-
-Echo back each I<arg>, separated by space.  If I<--shell> is
-specified, then the output will be single-quoted where needed, so that
-it is suitable for reuse in a shell context.  If I<--xml> is
-specified, then the output will be escaped for use in XML.
 
 =item B<edit> I<domain-id>
 
