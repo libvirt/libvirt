@@ -15641,7 +15641,6 @@ static const vshCmdDef domManagementCmds[] = {
     {"vcpucount", cmdVcpucount, opts_vcpucount, info_vcpucount, 0},
     {"vcpuinfo", cmdVcpuinfo, opts_vcpuinfo, info_vcpuinfo, 0},
     {"vcpupin", cmdVcpuPin, opts_vcpupin, info_vcpupin, 0},
-    {"version", cmdVersion, opts_version, info_version, 0},
     {"vncdisplay", cmdVNCDisplay, opts_vncdisplay, info_vncdisplay, 0},
     {NULL, NULL, NULL, NULL, 0}
 };
@@ -15856,6 +15855,7 @@ static const vshCmdDef hostAndHypervisorCmds[] = {
      info_qemu_monitor_command, 0},
     {"sysinfo", cmdSysinfo, NULL, info_sysinfo, 0},
     {"uri", cmdURI, NULL, info_uri, 0},
+    {"version", cmdVersion, opts_version, info_version, 0},
     {NULL, NULL, NULL, NULL, 0}
 };
 
