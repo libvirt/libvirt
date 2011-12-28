@@ -5982,6 +5982,8 @@ static int qemuDomainSetBlkioParameters(virDomainPtr dom,
             } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT)) {
                 size_t ndevices;
                 virBlkioDeviceWeightPtr devices = NULL;
+                int j;
+
                 if (param->type != VIR_TYPED_PARAM_STRING) {
                     qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                                     _("invalid type for device_weight tunable, "
@@ -5996,19 +5998,19 @@ static int qemuDomainSetBlkioParameters(virDomainPtr dom,
                     ret = -1;
                     continue;
                 }
-                for (i = 0; i < ndevices; i++) {
+                for (j = 0; j < ndevices; i++) {
                     rc = virCgroupSetBlkioDeviceWeight(group,
-                                                       devices[i].path,
-                                                       devices[i].weight);
+                                                       devices[j].path,
+                                                       devices[j].weight);
                     if (rc < 0) {
                         virReportSystemError(-rc,
                                              _("Unable to set io device weight "
                                                "for path %s"),
-                                             devices[i].path);
+                                             devices[j].path);
                         break;
                     }
                 }
-                if (i != ndevices) {
+                if (j != ndevices) {
                     ret = -1;
                     continue;
                 }
