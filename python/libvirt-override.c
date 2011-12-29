@@ -3301,7 +3301,7 @@ libvirt_virDomainSetBlockIoTune(PyObject *self ATTRIBUTE_UNUSED,
     int nparams = 0, i;
     int c_ret;
 
-    if (!PyArg_ParseTuple(args, (char *)"Ozi:virDomainSetBlockIoTune",
+    if (!PyArg_ParseTuple(args, (char *)"OzOi:virDomainSetBlockIoTune",
                           &pyobj_domain, &disk, &pyinfo, &flags))
         return(NULL);
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
@@ -3395,7 +3395,7 @@ libvirt_virDomainGetBlockIoTune(PyObject *self ATTRIBUTE_UNUSED,
     virTypedParameterPtr params;
     int c_ret;
 
-    if (!PyArg_ParseTuple(args, (char *)"Oi:virDomainGetBlockIoTune",
+    if (!PyArg_ParseTuple(args, (char *)"Ozi:virDomainGetBlockIoTune",
                           &pyobj_domain, &disk, &flags))
         return(NULL);
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);

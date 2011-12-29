@@ -401,9 +401,8 @@
       <info>Get the I/O tunables for a block device</info>
       <arg name='dom' type='virDomainPtr' info='pointer to the domain'/>
       <arg name='disk' type='const char *' info='disk name'/>
-      <arg name='params' type='virTypedParameterPtr' info='Pointer to blkio tuning params object'/>
       <arg name='flags' type='unsigned int' info='an OR&apos;ed set of virDomainModificationImpact'/>
-      <return type='int' info='0 in case of success, -1 in case of failure'/>
+      <return type='virTypedParameterPtr' info='the I/O tunables value or None in case of error'/>
     </function>
     <function name='virDomainBlockPeek' file='python'>
       <info>Read the contents of domain's disk device</info>
