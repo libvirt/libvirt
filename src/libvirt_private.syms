@@ -308,6 +308,7 @@ virDomainDiskSnapshotTypeFromString;
 virDomainDiskSnapshotTypeToString;
 virDomainDiskTypeFromString;
 virDomainDiskTypeToString;
+virDomainNetFind;
 virDomainFSDefFree;
 virDomainFSTypeFromString;
 virDomainFSTypeToString;

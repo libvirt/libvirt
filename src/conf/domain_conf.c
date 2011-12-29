@@ -13726,3 +13726,42 @@ virDomainGraphicsListenSetNetwork(virDomainGraphicsDefPtr def,
 
     return 0;
 }
+
+/**
+ * virDomainNetFind:
+ * @def: domain's def
+ * @device: could be the interface name or MAC address
+ *
+ * Finds a domain's net def, given the interface name or MAC address
+ *
+ * Returns a pointer to the net def or NULL if not found.
+ */
+virDomainNetDefPtr
+virDomainNetFind(virDomainDefPtr def, const char *device)
+{
+    bool isMac = false;
+    virDomainNetDefPtr net = NULL;
+    unsigned char mac[VIR_MAC_BUFLEN];
+    int i;
+
+    if (virParseMacAddr(device, mac) == 0)
+        isMac = true;
+
+    if (isMac) {
+        for (i = 0; i < def->nnets; i++) {
+            if (memcmp(mac, def->nets[i]->mac, VIR_MAC_BUFLEN) == 0) {
+                net = def->nets[i];
+                break;
+            }
+        }
+    } else { /* ifname */
+        for (i = 0; i < def->nnets; i++) {
+            if (STREQ_NULLABLE(device, def->nets[i]->ifname)) {
+                net = def->nets[i];
+                break;
+            }
+        }
+    }
+
+    return net;
+}

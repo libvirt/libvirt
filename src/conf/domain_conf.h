@@ -2033,4 +2033,7 @@ VIR_ENUM_DECL(virDomainTimerTickpolicy)
 VIR_ENUM_DECL(virDomainTimerMode)
 
 VIR_ENUM_DECL(virDomainStartupPolicy)
+
+virDomainNetDefPtr virDomainNetFind(virDomainDefPtr def,
+                                    const char *device);
 #endif /* __DOMAIN_CONF_H */
