@@ -119,6 +119,8 @@
 
 #define QEMU_NB_BLKIO_PARAM  2
 
+#define QEMU_NB_BANDWIDTH_PARAM 6
+
 static void processWatchdogEvent(void *data, void *opaque);
 
 static int qemudShutdown(void);
@@ -7852,6 +7854,353 @@ qemudDomainInterfaceStats (virDomainPtr dom,
 #endif
 
 static int
+qemuDomainSetInterfaceParameters(virDomainPtr dom,
+                                 const char *device,
+                                 virTypedParameterPtr params,
+                                 int nparams,
+                                 unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    int i;
+    virCgroupPtr group = NULL;
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr persistentDef = NULL;
+    int ret = -1;
+    virDomainNetDefPtr net = NULL, persistentNet = NULL;
+    virNetDevBandwidthPtr bandwidth = NULL;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+    qemuDriverLock(driver);
+
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (vm == NULL) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("No such domain %s"), dom->uuid);
+        goto cleanup;
+    }
+
+    if (virDomainLiveConfigHelperMethod(driver->caps, vm, &flags,
+                                        &persistentDef) < 0)
+        goto cleanup;
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        net = virDomainNetFind(vm->def, device);
+        if (!net) {
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("Can't find device %s"), device);
+            goto cleanup;
+        }
+    }
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        persistentNet = virDomainNetFind(persistentDef, device);
+        if (!persistentNet) {
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("Can't find device %s"), device);
+            goto cleanup;
+        }
+    }
+
+    if (VIR_ALLOC(bandwidth) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    if (VIR_ALLOC(bandwidth->in) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    memset(bandwidth->in, 0, sizeof(*bandwidth->in));
+    if (VIR_ALLOC(bandwidth->out) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    memset(bandwidth->out, 0, sizeof(*bandwidth->out));
+
+    for (i = 0; i < nparams; i++) {
+        virTypedParameterPtr param = &params[i];
+
+        if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_AVERAGE)) {
+            if (param->type != VIR_TYPED_PARAM_UINT) {
+                qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                _("invalid type for bandwidth average tunable, expected a 'unsigned int'"));
+                goto cleanup;
+            }
+
+            bandwidth->in->average = params[i].value.ui;
+        } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_PEAK)) {
+            if (param->type != VIR_TYPED_PARAM_UINT) {
+                qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                _("invalid type for bandwidth peak tunable, expected a 'unsigned int'"));
+                goto cleanup;
+            }
+
+            bandwidth->in->peak = params[i].value.ui;
+        } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_BURST)) {
+            if (param->type != VIR_TYPED_PARAM_UINT) {
+                qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                _("invalid type for bandwidth burst tunable, expected a 'unsigned int'"));
+                goto cleanup;
+            }
+
+            bandwidth->in->burst = params[i].value.ui;
+        } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE)) {
+            if (param->type != VIR_TYPED_PARAM_UINT) {
+                qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                _("invalid type for bandwidth average tunable, expected a 'unsigned int'"));
+                goto cleanup;
+            }
+
+            bandwidth->out->average = params[i].value.ui;
+        } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_OUT_PEAK)) {
+            if (param->type != VIR_TYPED_PARAM_UINT) {
+                qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                _("invalid type for bandwidth peak tunable, expected a 'unsigned int'"));
+                goto cleanup;
+            }
+
+            bandwidth->out->peak = params[i].value.ui;
+        } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_OUT_BURST)) {
+            if (param->type != VIR_TYPED_PARAM_UINT) {
+                qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                                _("invalid type for bandwidth burst tunable, expected a 'unsigned int'"));
+                goto cleanup;
+            }
+
+            bandwidth->out->burst = params[i].value.ui;
+        } else {
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("Parameter `%s' not supported"),
+                            param->field);
+            goto cleanup;
+        }
+    }
+
+    /* average is mandatory, peak and burst is optional. So if no
+     * average is given, we free inbound/outbound here which causes
+     * inbound/outbound won't be set. */
+    if (!bandwidth->in->average) {
+        VIR_FREE(bandwidth->in);
+        bandwidth->in = NULL;
+    }
+    if (!bandwidth->out->average) {
+        VIR_FREE(bandwidth->out);
+        bandwidth->out = NULL;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        virNetDevBandwidthPtr newBandwidth;
+
+        if (VIR_ALLOC(newBandwidth) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        memset(newBandwidth, 0, sizeof(newBandwidth));
+
+        /* virNetDevBandwidthSet() will clear any previous value of
+         * bandwidth parameters, so merge with old bandwidth parameters
+         * here to prevent them from losing. */
+        if (bandwidth->in || net->bandwidth->in) {
+            if (VIR_ALLOC(newBandwidth->in) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+            if (bandwidth->in)
+                memcpy(newBandwidth->in, bandwidth->in, sizeof(*newBandwidth->in));
+            else if (net->bandwidth->in)
+                memcpy(newBandwidth->in, net->bandwidth->in, sizeof(*newBandwidth->in));
+        }
+        if (bandwidth->out || net->bandwidth->out) {
+            if (VIR_ALLOC(newBandwidth->out) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+            if (bandwidth->out)
+                memcpy(newBandwidth->out, bandwidth->out, sizeof(*newBandwidth->out));
+            else if (net->bandwidth->out)
+                memcpy(newBandwidth->out, net->bandwidth->out, sizeof(*newBandwidth->out));
+        }
+
+        if (virNetDevBandwidthSet(net->ifname, newBandwidth) < 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("cannot set bandwidth limits on %s"),
+                            device);
+            goto cleanup;
+        }
+
+        virNetDevBandwidthFree(net->bandwidth);
+        net->bandwidth = newBandwidth;
+    }
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (!persistentNet->bandwidth) {
+            persistentNet->bandwidth = bandwidth;
+            bandwidth = NULL;
+        } else {
+            if (bandwidth->in) {
+                VIR_FREE(persistentNet->bandwidth->in);
+                persistentNet->bandwidth->in = bandwidth->in;
+                bandwidth->in = NULL;
+            }
+            if (bandwidth->out) {
+                VIR_FREE(persistentNet->bandwidth->out);
+                persistentNet->bandwidth->out = bandwidth->out;
+                bandwidth->out = NULL;
+            }
+        }
+
+        if (virDomainSaveConfig(driver->configDir, persistentDef) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    virNetDevBandwidthFree(bandwidth);
+    virCgroupFree(&group);
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
+static int
+qemuDomainGetInterfaceParameters(virDomainPtr dom,
+                                 const char *device,
+                                 virTypedParameterPtr params,
+                                 int *nparams,
+                                 unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    int i;
+    virCgroupPtr group = NULL;
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr def = NULL;
+    virDomainDefPtr persistentDef = NULL;
+    virDomainNetDefPtr net = NULL;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
+                  VIR_TYPED_PARAM_STRING_OKAY, -1);
+
+    qemuDriverLock(driver);
+
+    flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
+
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (vm == NULL) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("No such domain %s"), dom->uuid);
+        goto cleanup;
+    }
+
+    if (virDomainLiveConfigHelperMethod(driver->caps, vm, &flags,
+                                        &persistentDef) < 0)
+        goto cleanup;
+
+    if ((*nparams) == 0) {
+        *nparams = QEMU_NB_BANDWIDTH_PARAM;
+        ret = 0;
+        goto cleanup;
+    }
+
+    def = persistentDef;
+    if (!def)
+        def = vm->def;
+
+    net = virDomainNetFind(def, device);
+    if (!net) {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        _("Can't find device %s"), device);
+        goto cleanup;
+    }
+
+    for (i = 0; i < *nparams && i < QEMU_NB_BANDWIDTH_PARAM; i++) {
+        params[i].value.ui = 0;
+        params[i].type = VIR_TYPED_PARAM_UINT;
+
+        switch(i) {
+        case 0: /* inbound.average */
+            if (virStrcpyStatic(params[i].field, VIR_DOMAIN_BANDWIDTH_IN_AVERAGE) == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("Field name '%s' too long"),
+                                VIR_DOMAIN_BANDWIDTH_IN_AVERAGE);
+                goto cleanup;
+            }
+            if (net->bandwidth && net->bandwidth->in)
+                params[i].value.ui = net->bandwidth->in->average;
+            break;
+        case 1: /* inbound.peak */
+            if (virStrcpyStatic(params[i].field, VIR_DOMAIN_BANDWIDTH_IN_PEAK) == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("Field name '%s' too long"),
+                                VIR_DOMAIN_BANDWIDTH_IN_PEAK);
+                goto cleanup;
+            }
+            if (net->bandwidth && net->bandwidth->in)
+                params[i].value.ui = net->bandwidth->in->peak;
+            break;
+        case 2: /* inbound.burst */
+            if (virStrcpyStatic(params[i].field, VIR_DOMAIN_BANDWIDTH_IN_BURST) == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("Field name '%s' too long"),
+                                VIR_DOMAIN_BANDWIDTH_IN_BURST);
+                goto cleanup;
+            }
+            if (net->bandwidth && net->bandwidth->in)
+                params[i].value.ui = net->bandwidth->in->burst;
+            break;
+        case 3: /* outbound.average */
+            if (virStrcpyStatic(params[i].field, VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE) == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("Field name '%s' too long"),
+                                VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE);
+                goto cleanup;
+            }
+            if (net->bandwidth && net->bandwidth->out)
+                params[i].value.ui = net->bandwidth->out->average;
+            break;
+        case 4: /* outbound.peak */
+            if (virStrcpyStatic(params[i].field, VIR_DOMAIN_BANDWIDTH_OUT_PEAK) == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("Field name '%s' too long"),
+                                VIR_DOMAIN_BANDWIDTH_OUT_PEAK);
+                goto cleanup;
+            }
+            if (net->bandwidth && net->bandwidth->out)
+                params[i].value.ui = net->bandwidth->out->peak;
+            break;
+        case 5: /* outbound.burst */
+            if (virStrcpyStatic(params[i].field, VIR_DOMAIN_BANDWIDTH_OUT_BURST) == NULL) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("Field name '%s' too long"),
+                                VIR_DOMAIN_BANDWIDTH_OUT_BURST);
+                goto cleanup;
+            }
+            if (net->bandwidth && net->bandwidth->out)
+                params[i].value.ui = net->bandwidth->out->burst;
+            break;
+        default:
+            break;
+            /* should not hit here */
+        }
+    }
+
+    if (*nparams > QEMU_NB_BANDWIDTH_PARAM)
+        *nparams = QEMU_NB_BANDWIDTH_PARAM;
+    ret = 0;
+
+cleanup:
+    if (group)
+        virCgroupFree(&group);
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
+static int
 qemudDomainMemoryStats (virDomainPtr dom,
                         struct _virDomainMemoryStat *stats,
                         unsigned int nr_stats,
@@ -11642,6 +11991,8 @@ static virDriver qemuDriver = {
     .domainGetBlockIoTune = qemuDomainGetBlockIoTune, /* 0.9.8 */
     .domainSetNumaParameters = qemuDomainSetNumaParameters, /* 0.9.9 */
     .domainGetNumaParameters = qemuDomainGetNumaParameters, /* 0.9.9 */
+    .domainGetInterfaceParameters = qemuDomainGetInterfaceParameters, /* 0.9.9 */
+    .domainSetInterfaceParameters = qemuDomainSetInterfaceParameters, /* 0.9.9 */
 };
 
 
