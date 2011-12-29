@@ -1616,7 +1616,7 @@ static PyObject *
 libvirt_virConnectListDomainsID(PyObject *self ATTRIBUTE_UNUSED,
                                PyObject *args) {
     PyObject *py_retval;
-    int ids[500], c_retval, i;
+    int *ids = NULL, c_retval, i;
     virConnectPtr conn;
     PyObject *pyobj_conn;
 
@@ -1626,14 +1626,33 @@ libvirt_virConnectListDomainsID(PyObject *self ATTRIBUTE_UNUSED,
     conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
-    c_retval = virConnectListDomains(conn, &ids[0], 500);
+    c_retval = virConnectNumOfDomains(conn);
     LIBVIRT_END_ALLOW_THREADS;
     if (c_retval < 0)
         return VIR_PY_NONE;
-    py_retval = PyList_New(c_retval);
-    for (i = 0;i < c_retval;i++) {
-        PyList_SetItem(py_retval, i, libvirt_intWrap(ids[i]));
+
+    if (c_retval) {
+        ids = malloc(sizeof(*ids) * c_retval);
+        if (!ids)
+            return VIR_PY_NONE;
+
+        LIBVIRT_BEGIN_ALLOW_THREADS;
+        c_retval = virConnectListDomains(conn, ids, c_retval);
+        LIBVIRT_END_ALLOW_THREADS;
+        if (c_retval < 0) {
+            free(ids);
+            return VIR_PY_NONE;
+        }
     }
+    py_retval = PyList_New(c_retval);
+
+    if (ids) {
+        for (i = 0;i < c_retval;i++) {
+            PyList_SetItem(py_retval, i, libvirt_intWrap(ids[i]));
+        }
+        free(ids);
+    }
+
     return(py_retval);
 }
 
