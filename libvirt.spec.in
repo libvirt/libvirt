@@ -272,6 +272,9 @@ Requires: %{name}-client = %{version}-%{release}
 Requires: module-init-tools
 # for /sbin/ip & /sbin/tc
 Requires: iproute
+%if %{with_avahi}
+Requires: avahi
+%endif
 %endif
 %if %{with_network}
 Requires: dnsmasq >= 2.41
