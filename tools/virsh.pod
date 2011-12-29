@@ -480,6 +480,27 @@ configuration of the domain is modified.
 Query link state of the domain's virtual interface. If --persistent
 is specified, query the persistent configuration.
 
+=item B<domiftune> I<domain> I<interface-device>
+[[I<--config>] [I<--live>] | [I<--current>]]
+[I<--inbound average,peak,burst>]
+[I<--outbound average,peak,burst>]
+
+Set or query the domain's network interface's bandwidth parameters.
+I<interface-device> can be the interface's target name (<target dev='name'/>),
+or the MAC address.
+
+If no I<--inbound> or I<--outbound> is specified, this command will
+query and show the bandwidth settings. Otherwise, it will set the
+inbound or outbound bandwidth. I<average,peak,burst> is the same as
+in command I<attach-interface>.
+
+If I<--live> is specified, affect a running guest.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified, affect the current guest state.
+Both I<--live> and I<--current> flags may be given, but I<--current> is
+exclusive. If no flag is specified, behavior is different depending
+on hypervisor.
+
 =item B<dommemstat> I<domain>
 
 Get memory stats for a running domain.

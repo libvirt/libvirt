@@ -427,6 +427,8 @@ static void *_vshCalloc(vshControl *ctl, size_t nmemb, size_t sz, const char *fi
 static char *_vshStrdup(vshControl *ctl, const char *s, const char *filename, int line);
 #define vshStrdup(_ctl, _s)    _vshStrdup(_ctl, _s, __FILE__, __LINE__)
 
+static int parseRateStr(const char *rateStr, virNetDevBandwidthRatePtr rate);
+
 static void *
 _vshMalloc(vshControl *ctl, size_t size, const char *filename, int line)
 {
@@ -1598,6 +1600,201 @@ cleanup:
     if (dom)
         virDomainFree(dom);
 
+    return ret;
+}
+
+/* "domiftune" command
+ */
+static const vshCmdInfo info_domiftune[] = {
+    {"help", N_("get/set parameters of a virtual interface")},
+    {"desc", N_("Get/set parameters of a domain's virtual interface.")},
+    {NULL,NULL}
+};
+
+static const vshCmdOptDef opts_domiftune[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, N_("interface device")},
+    {"inbound", VSH_OT_DATA, VSH_OFLAG_NONE, N_("control domain's incoming traffics")},
+    {"outbound", VSH_OT_DATA, VSH_OFLAG_NONE, N_("control domain's outgoing traffics")},
+    {"config", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("affect next boot")},
+    {"live", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("affect running domain")},
+    {"current", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("affect current domain")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    const char *name = NULL, *device = NULL,
+               *inboundStr = NULL, *outboundStr = NULL;
+    unsigned int flags = 0;
+    int nparams = 0;
+    virTypedParameterPtr params = NULL;
+    bool ret = false;
+    int current = vshCommandOptBool(cmd, "current");
+    int config = vshCommandOptBool(cmd, "config");
+    int live = vshCommandOptBool(cmd, "live");
+    virNetDevBandwidthRate inbound, outbound;
+    int i;
+
+    if (current) {
+        if (live || config) {
+            vshError(ctl, "%s", _("--current must be specified exclusively"));
+            return false;
+        }
+        flags = VIR_DOMAIN_AFFECT_CURRENT;
+    } else {
+        if (config)
+            flags |= VIR_DOMAIN_AFFECT_CONFIG;
+        if (live)
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
+    }
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
+        return false;
+
+    if (vshCommandOptString(cmd, "interface", &device) <= 0) {
+        virDomainFree(dom);
+        return false;
+    }
+
+    if (vshCommandOptString(cmd, "inbound", &inboundStr) < 0 ||
+        vshCommandOptString(cmd, "outbound", &outboundStr) < 0) {
+        vshError(ctl, "missing argument");
+        goto cleanup;
+    }
+
+    memset(&inbound, 0, sizeof(inbound));
+    memset(&outbound, 0, sizeof(outbound));
+
+    if (inboundStr) {
+        if (parseRateStr(inboundStr, &inbound) < 0) {
+            vshError(ctl, _("inbound format is incorrect"));
+            goto cleanup;
+        }
+        if (inbound.average == 0) {
+            vshError(ctl, _("inbound average is mandatory"));
+            goto cleanup;
+        }
+        nparams++; /* average */
+        if (inbound.peak) nparams++;
+        if (inbound.burst) nparams++;
+    }
+    if (outboundStr) {
+        if (parseRateStr(outboundStr, &outbound) < 0) {
+            vshError(ctl, _("outbound format is incorrect"));
+            goto cleanup;
+        }
+        if (outbound.average == 0) {
+            vshError(ctl, _("outbound average is mandatory"));
+            goto cleanup;
+        }
+        nparams++; /* average */
+        if (outbound.peak) nparams++;
+        if (outbound.burst) nparams++;
+    }
+
+    if (nparams == 0) {
+        /* get the number of interface parameters */
+        if (virDomainGetInterfaceParameters(dom, device, NULL, &nparams, flags) != 0) {
+            vshError(ctl, "%s",
+                     _("Unable to get number of interface parameters"));
+            goto cleanup;
+        }
+
+        if (nparams == 0) {
+            /* nothing to output */
+            ret = true;
+            goto cleanup;
+        }
+
+        /* get all interface parameters */
+        params = vshCalloc(ctl, nparams, sizeof(*params));
+        if (!params) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        if (virDomainGetInterfaceParameters(dom, device, params, &nparams, flags) != 0) {
+            vshError(ctl, "%s", _("Unable to get interface parameters"));
+            goto cleanup;
+        }
+
+        for (i = 0; i < nparams; i++) {
+            char *str = vshGetTypedParamValue(ctl, &params[i]);
+            vshPrint(ctl, "%-15s: %s\n", params[i].field, str);
+            VIR_FREE(str);
+        }
+    } else {
+        /* set the interface parameters */
+        params = vshCalloc(ctl, nparams, sizeof(*params));
+        if (!params) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        for (i = 0; i < nparams; i++)
+            params[i].type = VIR_TYPED_PARAM_UINT;
+
+        i = 0;
+        if (inbound.average && i < nparams) {
+            if (!virStrcpy(params[i].field, VIR_DOMAIN_BANDWIDTH_IN_AVERAGE,
+                           sizeof(params[i].field)))
+                goto cleanup;
+            params[i].value.ui = inbound.average;
+            i++;
+        }
+        if (inbound.peak && i < nparams) {
+            if (!virStrcpy(params[i].field, VIR_DOMAIN_BANDWIDTH_IN_PEAK,
+                           sizeof(params[i].field)))
+                goto cleanup;
+            params[i].value.ui = inbound.peak;
+            i++;
+        }
+        if (inbound.burst && i < nparams) {
+            if (!virStrcpy(params[i].field, VIR_DOMAIN_BANDWIDTH_IN_BURST,
+                           sizeof(params[i].field)))
+                goto cleanup;
+            params[i].value.ui = inbound.burst;
+            i++;
+        }
+        if (outbound.average && i < nparams) {
+            if (!virStrcpy(params[i].field, VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE,
+                           sizeof(params[i].field)))
+                goto cleanup;
+            params[i].value.ui = outbound.average;
+            i++;
+        }
+        if (outbound.peak && i < nparams) {
+            if (!virStrcpy(params[i].field, VIR_DOMAIN_BANDWIDTH_OUT_PEAK,
+                           sizeof(params[i].field)))
+                goto cleanup;
+            params[i].value.ui = outbound.peak;
+            i++;
+        }
+        if (outbound.burst && i < nparams) {
+            if (!virStrcpy(params[i].field, VIR_DOMAIN_BANDWIDTH_OUT_BURST,
+                           sizeof(params[i].field)))
+                goto cleanup;
+            params[i].value.ui = outbound.burst;
+            i++;
+        }
+
+        if (virDomainSetInterfaceParameters(dom, device, params, nparams, flags) != 0) {
+            vshError(ctl, "%s", _("Unable to set interface parameters"));
+            goto cleanup;
+        }
+    }
+
+    ret = true;
+
+cleanup:
+    virTypedParameterArrayClear(params, nparams);
+    VIR_FREE(params);
+    virDomainFree(dom);
     return ret;
 }
 
@@ -15589,6 +15786,7 @@ static const vshCmdDef domManagementCmds[] = {
      info_detach_interface, 0},
     {"domid", cmdDomid, opts_domid, info_domid, 0},
     {"domif-setlink", cmdDomIfSetLink, opts_domif_setlink, info_domif_setlink, 0},
+    {"domiftune", cmdDomIftune, opts_domiftune, info_domiftune, 0},
     {"domjobabort", cmdDomjobabort, opts_domjobabort, info_domjobabort, 0},
     {"domjobinfo", cmdDomjobinfo, opts_domjobinfo, info_domjobinfo, 0},
     {"domname", cmdDomname, opts_domname, info_domname, 0},
