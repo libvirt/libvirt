@@ -512,6 +512,8 @@ LIBVIRT_0.9.9 {
     global:
         virDomainGetNumaParameters;
         virDomainSetNumaParameters;
+        virDomainGetInterfaceParameters;
+        virDomainSetInterfaceParameters;
 } LIBVIRT_0.9.8;
 
 # .... define new API here using predicted next version number ....
