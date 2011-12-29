@@ -4396,6 +4396,56 @@ call (virConnectPtr conn,
 }
 
 
+static int
+remoteDomainGetInterfaceParameters (virDomainPtr domain,
+                                    const char *device,
+                                    virTypedParameterPtr params, int *nparams,
+                                    unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_get_interface_parameters_args args;
+    remote_domain_get_interface_parameters_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+    args.device = (char *)device;
+    args.nparams = *nparams;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_INTERFACE_PARAMETERS,
+              (xdrproc_t) xdr_remote_domain_get_interface_parameters_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_get_interface_parameters_ret, (char *) &ret) == -1)
+        goto done;
+
+    /* Handle the case when the caller does not know the number of parameters
+     * and is asking for the number of parameters supported
+     */
+    if (*nparams == 0) {
+        *nparams = ret.nparams;
+        rv = 0;
+        goto cleanup;
+    }
+
+    if (remoteDeserializeTypedParameters(ret.params.params_val,
+                                         ret.params.params_len,
+                                         REMOTE_DOMAIN_INTERFACE_PARAMETERS_MAX,
+                                         params,
+                                         nparams) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+cleanup:
+    xdr_free ((xdrproc_t) xdr_remote_domain_get_interface_parameters_ret,
+              (char *) &ret);
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 static void
 remoteDomainEventQueue(struct private_data *priv, virDomainEventPtr event)
 {
@@ -4619,6 +4669,8 @@ static virDriver remote_driver = {
     .domainBlockStats = remoteDomainBlockStats, /* 0.3.2 */
     .domainBlockStatsFlags = remoteDomainBlockStatsFlags, /* 0.9.5 */
     .domainInterfaceStats = remoteDomainInterfaceStats, /* 0.3.2 */
+    .domainSetInterfaceParameters = remoteDomainSetInterfaceParameters, /* 0.9.9 */
+    .domainGetInterfaceParameters = remoteDomainGetInterfaceParameters, /* 0.9.9 */
     .domainMemoryStats = remoteDomainMemoryStats, /* 0.7.5 */
     .domainBlockPeek = remoteDomainBlockPeek, /* 0.4.2 */
     .domainMemoryPeek = remoteDomainMemoryPeek, /* 0.4.2 */

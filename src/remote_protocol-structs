@@ -328,6 +328,28 @@ struct remote_domain_interface_stats_ret {
         int64_t                    tx_errs;
         int64_t                    tx_drop;
 };
+struct remote_domain_set_interface_parameters_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      device;
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        u_int                      flags;
+};
+struct remote_domain_get_interface_parameters_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      device;
+        int                        nparams;
+        u_int                      flags;
+};
+struct remote_domain_get_interface_parameters_ret {
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        int                        nparams;
+};
 struct remote_domain_memory_stats_args {
         remote_nonnull_domain      dom;
         u_int                      maxStats;
@@ -2066,4 +2088,6 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_GET_BLOCK_IO_TUNE = 253,
         REMOTE_PROC_DOMAIN_SET_NUMA_PARAMETERS = 254,
         REMOTE_PROC_DOMAIN_GET_NUMA_PARAMETERS = 255,
+        REMOTE_PROC_DOMAIN_SET_INTERFACE_PARAMETERS = 256,
+        REMOTE_PROC_DOMAIN_GET_INTERFACE_PARAMETERS = 257,
 };
