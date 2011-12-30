@@ -1025,7 +1025,7 @@ virConnectOpenFindURIAliasMatch(virConfValuePtr value, const char *alias, char *
         safe  = strspn(entry->str, URI_ALIAS_CHARS);
         if (safe < (offset - entry->str)) {
             virLibConnError(VIR_ERR_CONF_SYNTAX,
-                            _("Malformed 'uri_aliases' config entry '%s', aliases may only container 'a-Z, 0-9, _, -'"),
+                            _("Malformed 'uri_aliases' config entry '%s', aliases may only contain 'a-Z, 0-9, _, -'"),
                             entry->str);
             return -1;
         }
@@ -10659,10 +10659,10 @@ virInterfaceFree(virInterfacePtr iface)
  * @conn: pointer to hypervisor connection
  * @flags: flags, not used yet
  *
- * This functions creates a restore point to which one can return
+ * This function creates a restore point to which one can return
  * later by calling virInterfaceChangeRollback(). This function should
  * be called before any transaction with interface configuration.
- * Once knowing, new configuration works, it can be commited via
+ * Once it is known that a new configuration works, it can be committed via
  * virInterfaceChangeCommit(), which frees the restore point.
  *
  * If virInterfaceChangeBegin() is called when a transaction is

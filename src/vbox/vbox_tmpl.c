@@ -948,7 +948,7 @@ static int vboxExtractVersion(vboxGlobalData *data) {
 
     if (ret != 0)
         vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("Cound not extract VirtualBox version"));
+                  _("Could not extract VirtualBox version"));
 
     return ret;
 }

@@ -7337,7 +7337,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       from virsh (Saori Fukuta), Coverage files (Daniel Berrange),
       Solaris fixes (Mark Johnson), avoid [r]index calls (Richard Jones),
       release information in Xen backend, virsh cpupin command cleanups
-      (Masayuki Sunou), xen:/// suppport as standard Xen URI (Richard Jones and
+      (Masayuki Sunou), xen:/// support as standard Xen URI (Richard Jones and
       Daniel Berrange), improve driver selection/decline mechanism (Richard
       Jones), error reporting on XML dump (Richard Jones), Remove unused
       virDomainKernel structure (Richard Jones), daemon event loop event

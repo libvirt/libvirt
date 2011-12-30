@@ -892,7 +892,7 @@ qemuDomainObjEnterMonitorInternal(struct qemud_driver *driver,
     if (asyncJob != QEMU_ASYNC_JOB_NONE) {
         if (asyncJob != priv->job.asyncJob) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("unepxected async job %d"), asyncJob);
+                            _("unexpected async job %d"), asyncJob);
             return -1;
         }
         if (qemuDomainObjBeginJobInternal(driver, driver_locked, obj,

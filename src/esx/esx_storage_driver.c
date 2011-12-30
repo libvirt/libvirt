@@ -834,7 +834,7 @@ esxStorageVolumeLookupByKey(virConnectPtr conn, const char *key)
 
     if (!priv->primary->hasQueryVirtualDiskUuid) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("QueryVirtualDiskUuid not avialable, cannot lookup storage "
+                  _("QueryVirtualDiskUuid not available, cannot lookup storage "
                     "volume by UUID"));
         return NULL;
     }

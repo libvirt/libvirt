@@ -3555,7 +3555,7 @@ static int testInterfaceChangeCommit(virConnectPtr conn,
 
     if (!privconn->transaction_running) {
         testError(VIR_ERR_OPERATION_INVALID, _("no transaction running, "
-                  "nothing to be commited."));
+                  "nothing to be committed."));
         goto cleanup;
     }
 

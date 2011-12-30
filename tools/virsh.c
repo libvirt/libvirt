@@ -1803,7 +1803,7 @@ cleanup:
  */
 static const vshCmdInfo info_dommemstat[] = {
     {"help", N_("get memory statistics for a domain")},
-    {"desc", N_("Get memory statistics for a runnng domain.")},
+    {"desc", N_("Get memory statistics for a running domain.")},
     {NULL,NULL}
 };
 
@@ -6774,7 +6774,7 @@ static const vshCmdInfo info_block_job[] = {
 static const vshCmdOptDef opts_block_job[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"path", VSH_OT_DATA, VSH_OFLAG_REQ, N_("Fully-qualified path of disk")},
-    {"abort", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("Abort the active job on the speficied disk")},
+    {"abort", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("Abort the active job on the specified disk")},
     {"info", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("Get active job information for the specified disk")},
     {"bandwidth", VSH_OT_DATA, VSH_OFLAG_NONE, N_("Set the Bandwidth limit in MB/s")},
     {NULL, 0, 0, NULL}
@@ -8125,7 +8125,7 @@ cmdInterfaceDestroy(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_interface_begin[] = {
     {"help", N_("create a snapshot of current interfaces settings, "
-                "which can be later commited (iface-commit) or "
+                "which can be later committed (iface-commit) or "
                 "restored (iface-rollback)")},
     {"desc", N_("Create a restore point for interfaces settings")},
     {NULL, NULL}
@@ -8508,7 +8508,7 @@ cmdInterfaceUnbridge(vshControl *ctl, const vshCmd *cmd)
     }
 
     if ((if_node = virXPathNode("./bridge/interface[2]", ctxt))) {
-        vshError(ctl, "%s", _("Multiple interfaecs attached to bridge"));
+        vshError(ctl, "%s", _("Multiple interfaces attached to bridge"));
         goto cleanup;
     }
 

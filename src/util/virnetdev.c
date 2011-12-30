@@ -900,7 +900,7 @@ int virNetDevValidateConfig(const char *ifname,
                 goto cleanup;
             }
             virReportSystemError(errno,
-                                 _("coud not get MAC address of interface %s"),
+                                 _("could not get MAC address of interface %s"),
                                  ifname);
             goto cleanup;
         }
@@ -1060,7 +1060,7 @@ int
 virNetDevIsVirtualFunction(const char *ifname ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
-                         _("Unable to check virtual function status on this platfornm"));
+                         _("Unable to check virtual function status on this platform"));
     return -1;
 }
 
@@ -1070,7 +1070,7 @@ virNetDevGetVirtualFunctionIndex(const char *pfname ATTRIBUTE_UNUSED,
                              int *vf_index ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
-                         _("Unable to get virtual function index on this platfornm"));
+                         _("Unable to get virtual function index on this platform"));
     return -1;
 }
 
@@ -1079,7 +1079,7 @@ virNetDevGetPhysicalFunction(const char *ifname ATTRIBUTE_UNUSED,
                              char **pfname ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
-                         _("Unable to get physical function status on this platfornm"));
+                         _("Unable to get physical function status on this platform"));
     return -1;
 }
 #endif /* !__linux__ */

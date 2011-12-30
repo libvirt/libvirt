@@ -2338,7 +2338,7 @@ int qemuMonitorJSONAddUSBDisk(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                               const char *path ATTRIBUTE_UNUSED)
 {
     qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("usb_add not suppported in JSON mode"));
+                    _("usb_add not supported in JSON mode"));
     return -1;
 }
 
@@ -2348,7 +2348,7 @@ int qemuMonitorJSONAddUSBDeviceExact(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                      int dev ATTRIBUTE_UNUSED)
 {
     qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("usb_add not suppported in JSON mode"));
+                    _("usb_add not supported in JSON mode"));
     return -1;
 }
 
@@ -2358,7 +2358,7 @@ int qemuMonitorJSONAddUSBDeviceMatch(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                      int product ATTRIBUTE_UNUSED)
 {
     qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("usb_add not suppported in JSON mode"));
+                    _("usb_add not supported in JSON mode"));
     return -1;
 }
 
@@ -2368,7 +2368,7 @@ int qemuMonitorJSONAddPCIHostDevice(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                     virDomainDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
 {
     qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("pci_add not suppported in JSON mode"));
+                    _("pci_add not supported in JSON mode"));
     return -1;
 }
 
@@ -2379,7 +2379,7 @@ int qemuMonitorJSONAddPCIDisk(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                               virDomainDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
 {
     qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("pci_add not suppported in JSON mode"));
+                    _("pci_add not supported in JSON mode"));
     return -1;
 }
 
@@ -2389,7 +2389,7 @@ int qemuMonitorJSONAddPCINetwork(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                  virDomainDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
 {
     qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("pci_add not suppported in JSON mode"));
+                    _("pci_add not supported in JSON mode"));
     return -1;
 }
 
@@ -2398,7 +2398,7 @@ int qemuMonitorJSONRemovePCIDevice(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                    virDomainDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
 {
     qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("pci_del not suppported in JSON mode"));
+                    _("pci_del not supported in JSON mode"));
     return -1;
 }
 
@@ -2655,7 +2655,7 @@ int qemuMonitorJSONAttachPCIDiskController(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                            virDomainDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
 {
     qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("pci_add not suppported in JSON mode"));
+                    _("pci_add not supported in JSON mode"));
     return -1;
 }
 
@@ -2732,7 +2732,7 @@ int qemuMonitorJSONGetAllPCIAddresses(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                       qemuMonitorPCIAddress **addrs ATTRIBUTE_UNUSED)
 {
     qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("query-pci not suppported in JSON mode"));
+                    _("query-pci not supported in JSON mode"));
     return -1;
 }
 
@@ -3196,7 +3196,7 @@ static int qemuMonitorJSONGetBlockJobInfo(virJSONValuePtr reply,
 
     if (data->type != VIR_JSON_TYPE_ARRAY) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("urecognized format of block job information"));
+                        _("unrecognized format of block job information"));
         return -1;
     }
 

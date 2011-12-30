@@ -2941,7 +2941,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
 
                         if (authUUID != NULL && authUsage != NULL) {
                             virDomainReportError(VIR_ERR_XML_ERROR,
-                                                 _("only one of uuid and usage can be specfied"));
+                                                 _("only one of uuid and usage can be specified"));
                             goto error;
                         }
                         if (authUUID != NULL) {
