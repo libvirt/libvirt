@@ -249,6 +249,7 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                 /* Accept trailing fractional part.  */
                 && (*p == '\0' || *p == '.' || c_isspace(*p)))
                 nodeinfo->mhz = ui;
+        }
 # elif defined(__powerpc__) || \
       defined(__powerpc64__)
         if (STRPREFIX(buf, "clock")) {
@@ -271,10 +272,10 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
              * identification and machine, but we don't want it to be caught
              * and parsed in next iteration, because it is not in expected
              * format and thus lead to error. */
+        }
 # else
 #  warning Parser for /proc/cpuinfo needs to be adapted for your architecture
 # endif
-        }
     }
 
     /* OK, we've parsed clock speed out of /proc/cpuinfo. Get the core, socket
