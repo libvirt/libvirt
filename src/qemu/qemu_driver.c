@@ -7864,7 +7864,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
     virDomainDefPtr persistentDef = NULL;
     int ret = -1;
     virDomainNetDefPtr net = NULL, persistentNet = NULL;
-    virNetDevBandwidthPtr bandwidth = NULL;
+    virNetDevBandwidthPtr bandwidth = NULL, newBandwidth = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -7986,27 +7986,25 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        virNetDevBandwidthPtr newBandwidth;
-
         if (VIR_ALLOC(newBandwidth) < 0) {
             virReportOOMError();
             goto cleanup;
         }
 
-        memset(newBandwidth, 0, sizeof(newBandwidth));
-
         /* virNetDevBandwidthSet() will clear any previous value of
          * bandwidth parameters, so merge with old bandwidth parameters
-         * here to prevent them from losing. */
+         * here to prevent them from being lost. */
         if (bandwidth->in || net->bandwidth->in) {
             if (VIR_ALLOC(newBandwidth->in) < 0) {
                 virReportOOMError();
                 goto cleanup;
             }
             if (bandwidth->in)
-                memcpy(newBandwidth->in, bandwidth->in, sizeof(*newBandwidth->in));
+                memcpy(newBandwidth->in, bandwidth->in,
+                       sizeof(*newBandwidth->in));
             else if (net->bandwidth->in)
-                memcpy(newBandwidth->in, net->bandwidth->in, sizeof(*newBandwidth->in));
+                memcpy(newBandwidth->in, net->bandwidth->in,
+                       sizeof(*newBandwidth->in));
         }
         if (bandwidth->out || net->bandwidth->out) {
             if (VIR_ALLOC(newBandwidth->out) < 0) {
@@ -8014,9 +8012,11 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
                 goto cleanup;
             }
             if (bandwidth->out)
-                memcpy(newBandwidth->out, bandwidth->out, sizeof(*newBandwidth->out));
+                memcpy(newBandwidth->out, bandwidth->out,
+                       sizeof(*newBandwidth->out));
             else if (net->bandwidth->out)
-                memcpy(newBandwidth->out, net->bandwidth->out, sizeof(*newBandwidth->out));
+                memcpy(newBandwidth->out, net->bandwidth->out,
+                       sizeof(*newBandwidth->out));
         }
 
         if (virNetDevBandwidthSet(net->ifname, newBandwidth) < 0) {
@@ -8053,6 +8053,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
     ret = 0;
 cleanup:
     virNetDevBandwidthFree(bandwidth);
+    virNetDevBandwidthFree(newBandwidth);
     virCgroupFree(&group);
     if (vm)
         virDomainObjUnlock(vm);
