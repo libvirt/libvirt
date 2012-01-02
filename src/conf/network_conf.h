@@ -24,7 +24,7 @@
 #ifndef __NETWORK_CONF_H__
 # define __NETWORK_CONF_H__
 
- #define DNS_RECORD_LENGTH_SRV  (512 - 30)  /* Limit minus overhead as mentioned in RFC-2782 */
+# define DNS_RECORD_LENGTH_SRV  (512 - 30)  /* Limit minus overhead as mentioned in RFC-2782 */
 
 # include <libxml/parser.h>
 # include <libxml/tree.h>
