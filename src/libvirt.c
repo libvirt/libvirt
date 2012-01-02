@@ -2,7 +2,7 @@
  * libvirt.c: Main interfaces for the libvirt library to handle virtualization
  *           domains from a process running in domain 0
  *
- * Copyright (C) 2005-2006, 2008-2011 Red Hat, Inc.
+ * Copyright (C) 2005-2006, 2008-2012 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -7084,7 +7084,12 @@ error:
  *          less than the number of parameters supported)
  * @flags: bitwise-OR of virDomainModificationImpact
  *
- * Currently this function sets bandwidth parameters of interface.
+ * Change a subset or all parameters of interface; currently this
+ * includes bandwidth parameters.  The value of @flags should be
+ * either VIR_DOMAIN_AFFECT_CURRENT, or a bitwise-or of values from
+ * VIR_DOMAIN_AFFECT_LIVE and VIR_DOMAIN_AFFECT_CURRENT, although
+ * hypervisors vary in which flags are supported.
+ *
  * This function may require privileged access to the hypervisor.
  *
  * Returns -1 in case of error, 0 in case of success.
@@ -7122,7 +7127,9 @@ virDomainSetInterfaceParameters(virDomainPtr domain,
 
     if (conn->driver->domainSetInterfaceParameters) {
         int ret;
-        ret = conn->driver->domainSetInterfaceParameters(domain, device, params, nparams, flags);
+        ret = conn->driver->domainSetInterfaceParameters(domain, device,
+                                                         params, nparams,
+                                                         flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -7141,8 +7148,8 @@ error:
  * @device: the interface name or mac address
  * @params: pointer to interface parameter objects
  *          (return value, allocated by the caller)
- * @nparams: pointer to number of interface parameter
- * @flags: one of virDomainModificationImpact
+ * @nparams: pointer to number of interface parameter; input and output
+ * @flags: bitwise-OR of virDomainModificationImpact and virTypedParameterFlags
  *
  * Get all interface parameters. On input, @nparams gives the size of
  * the @params array; on output, @nparams gives how many slots were
@@ -7193,7 +7200,9 @@ virDomainGetInterfaceParameters(virDomainPtr domain,
 
     if (conn->driver->domainGetInterfaceParameters) {
         int ret;
-        ret = conn->driver->domainGetInterfaceParameters (domain, device, params, nparams, flags);
+        ret = conn->driver->domainGetInterfaceParameters(domain, device,
+                                                         params, nparams,
+                                                         flags);
         if (ret < 0)
             goto error;
         return ret;

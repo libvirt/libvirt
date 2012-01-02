@@ -1,7 +1,7 @@
 /*
  * qemu_driver.c: core driver methods for managing qemu guests
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -7920,7 +7920,8 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_AVERAGE)) {
             if (param->type != VIR_TYPED_PARAM_UINT) {
                 qemuReportError(VIR_ERR_INVALID_ARG, "%s",
-                                _("invalid type for bandwidth average tunable, expected a 'unsigned int'"));
+                                _("invalid type for bandwidth average tunable, "
+                                  "expected an 'unsigned int'"));
                 goto cleanup;
             }
 
@@ -7928,7 +7929,8 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_PEAK)) {
             if (param->type != VIR_TYPED_PARAM_UINT) {
                 qemuReportError(VIR_ERR_INVALID_ARG, "%s",
-                                _("invalid type for bandwidth peak tunable, expected a 'unsigned int'"));
+                                _("invalid type for bandwidth peak tunable, "
+                                  "expected an 'unsigned int'"));
                 goto cleanup;
             }
 
@@ -7936,7 +7938,8 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_BURST)) {
             if (param->type != VIR_TYPED_PARAM_UINT) {
                 qemuReportError(VIR_ERR_INVALID_ARG, "%s",
-                                _("invalid type for bandwidth burst tunable, expected a 'unsigned int'"));
+                                _("invalid type for bandwidth burst tunable, "
+                                  "expected an 'unsigned int'"));
                 goto cleanup;
             }
 
@@ -7944,7 +7947,8 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE)) {
             if (param->type != VIR_TYPED_PARAM_UINT) {
                 qemuReportError(VIR_ERR_INVALID_ARG, "%s",
-                                _("invalid type for bandwidth average tunable, expected a 'unsigned int'"));
+                                _("invalid type for bandwidth average tunable, "
+                                  "expected an 'unsigned int'"));
                 goto cleanup;
             }
 
@@ -7952,7 +7956,8 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_OUT_PEAK)) {
             if (param->type != VIR_TYPED_PARAM_UINT) {
                 qemuReportError(VIR_ERR_INVALID_ARG, "%s",
-                                _("invalid type for bandwidth peak tunable, expected a 'unsigned int'"));
+                                _("invalid type for bandwidth peak tunable, "
+                                  "expected an 'unsigned int'"));
                 goto cleanup;
             }
 
@@ -7960,7 +7965,8 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_OUT_BURST)) {
             if (param->type != VIR_TYPED_PARAM_UINT) {
                 qemuReportError(VIR_ERR_INVALID_ARG, "%s",
-                                _("invalid type for bandwidth burst tunable, expected a 'unsigned int'"));
+                                _("invalid type for bandwidth burst tunable, "
+                                  "expected an 'unsigned int'"));
                 goto cleanup;
             }
 
@@ -7973,9 +7979,9 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         }
     }
 
-    /* average is mandatory, peak and burst is optional. So if no
+    /* average is mandatory, peak and burst are optional. So if no
      * average is given, we free inbound/outbound here which causes
-     * inbound/outbound won't be set. */
+     * inbound/outbound to not be set. */
     if (!bandwidth->in->average) {
         VIR_FREE(bandwidth->in);
         bandwidth->in = NULL;

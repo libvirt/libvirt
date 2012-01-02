@@ -1,7 +1,7 @@
 /*
  * remote.c: handlers for RPC method calls
  *
- * Copyright (C) 2007-2011 Red Hat, Inc.
+ * Copyright (C) 2007-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -3495,9 +3495,10 @@ success:
 cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
+    virTypedParameterArrayClear(params, nparams);
+    VIR_FREE(params);
     if (dom)
         virDomainFree(dom);
-    VIR_FREE(params);
     return rv;
 }
 

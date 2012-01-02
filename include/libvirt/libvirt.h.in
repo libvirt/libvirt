@@ -4,7 +4,7 @@
  * Description: Provides the interfaces of the libvirt library to handle
  *              virtualized domains
  *
- * Copy:  Copyright (C) 2005-2006, 2010-2011 Red Hat, Inc.
+ * Copy:  Copyright (C) 2005-2006, 2010-2012 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -644,48 +644,6 @@ typedef virTypedParameter *virTypedParameterPtr;
  * allocation scheduler, as an int.
  */
 #define VIR_DOMAIN_SCHEDULER_SHARES "shares"
-
-/**
- * VIR_DOMAIN_BANDWIDTH_IN_AVERAGE:
- *
- * Macro represents the inbound average of NIC bandwidth.
- */
-#define VIR_DOMAIN_BANDWIDTH_IN_AVERAGE "inbound.average"
-
-/**
- * VIR_DOMAIN_BANDWIDTH_IN_PEAK:
- *
- * Macro represents the inbound peak of NIC bandwidth.
- */
-#define VIR_DOMAIN_BANDWIDTH_IN_PEAK "inbound.peak"
-
-/**
- * VIR_DOMAIN_BANDWIDTH_IN_BURST:
- *
- * Macro represents the inbound burst of NIC bandwidth.
- */
-#define VIR_DOMAIN_BANDWIDTH_IN_BURST "inbound.burst"
-
-/**
- * VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE:
- *
- * Macro represents the outbound average of NIC bandwidth.
- */
-#define VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE "outbound.average"
-
-/**
- * VIR_DOMAIN_BANDWIDTH_OUT_PEAK:
- *
- * Macro represents the outbound peak of NIC bandwidth.
- */
-#define VIR_DOMAIN_BANDWIDTH_OUT_PEAK "outbound.peak"
-
-/**
- * VIR_DOMAIN_BANDWIDTH_OUT_BURST:
- *
- * Macro represents the outbound burst of NIC bandwidth.
- */
-#define VIR_DOMAIN_BANDWIDTH_OUT_BURST "outbound.burst"
 
 /*
  * Fetch scheduler parameters, caller allocates 'params' field of size 'nparams'
@@ -1488,6 +1446,51 @@ int                     virDomainInterfaceStats (virDomainPtr dom,
                                                  const char *path,
                                                  virDomainInterfaceStatsPtr stats,
                                                  size_t size);
+
+/* Management of interface parameters */
+
+/**
+ * VIR_DOMAIN_BANDWIDTH_IN_AVERAGE:
+ *
+ * Macro represents the inbound average of NIC bandwidth, as a uint.
+ */
+#define VIR_DOMAIN_BANDWIDTH_IN_AVERAGE "inbound.average"
+
+/**
+ * VIR_DOMAIN_BANDWIDTH_IN_PEAK:
+ *
+ * Macro represents the inbound peak of NIC bandwidth, as a uint.
+ */
+#define VIR_DOMAIN_BANDWIDTH_IN_PEAK "inbound.peak"
+
+/**
+ * VIR_DOMAIN_BANDWIDTH_IN_BURST:
+ *
+ * Macro represents the inbound burst of NIC bandwidth, as a uint.
+ */
+#define VIR_DOMAIN_BANDWIDTH_IN_BURST "inbound.burst"
+
+/**
+ * VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE:
+ *
+ * Macro represents the outbound average of NIC bandwidth, as a uint.
+ */
+#define VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE "outbound.average"
+
+/**
+ * VIR_DOMAIN_BANDWIDTH_OUT_PEAK:
+ *
+ * Macro represents the outbound peak of NIC bandwidth, as a uint.
+ */
+#define VIR_DOMAIN_BANDWIDTH_OUT_PEAK "outbound.peak"
+
+/**
+ * VIR_DOMAIN_BANDWIDTH_OUT_BURST:
+ *
+ * Macro represents the outbound burst of NIC bandwidth, as a uint.
+ */
+#define VIR_DOMAIN_BANDWIDTH_OUT_BURST "outbound.burst"
+
 int                     virDomainSetInterfaceParameters (virDomainPtr dom,
                                                         const char *device,
                                                         virTypedParameterPtr params,
@@ -1496,10 +1499,9 @@ int                     virDomainGetInterfaceParameters (virDomainPtr dom,
                                                         const char *device,
                                                         virTypedParameterPtr params,
                                                         int *nparams, unsigned int flags);
-int                     virDomainMemoryStats (virDomainPtr dom,
-                                              virDomainMemoryStatPtr stats,
-                                              unsigned int nr_stats,
-                                              unsigned int flags);
+
+/* Management of domain block devices */
+
 int                     virDomainBlockPeek (virDomainPtr dom,
                                             const char *disk,
                                             unsigned long long offset,
@@ -1546,7 +1548,15 @@ int                     virDomainGetBlockInfo(virDomainPtr dom,
                                               virDomainBlockInfoPtr info,
                                               unsigned int flags);
 
+/* Management of domain memory */
+
+int                     virDomainMemoryStats (virDomainPtr dom,
+                                              virDomainMemoryStatPtr stats,
+                                              unsigned int nr_stats,
+                                              unsigned int flags);
+
 /* Memory peeking flags. */
+
 typedef enum {
   VIR_MEMORY_VIRTUAL              = 1, /* addresses are virtual addresses */
   VIR_MEMORY_PHYSICAL             = 2, /* addresses are physical addresses */
