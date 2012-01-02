@@ -24,6 +24,8 @@
 #ifndef __NETWORK_CONF_H__
 # define __NETWORK_CONF_H__
 
+ #define DNS_RECORD_LENGTH_SRV  (512 - 30)  /* Limit minus overhead as mentioned in RFC-2782 */
+
 # include <libxml/parser.h>
 # include <libxml/tree.h>
 # include <libxml/xpath.h>
@@ -69,6 +71,18 @@ struct _virNetworkDNSTxtRecordsDef {
     char *value;
 };
 
+typedef struct _virNetworkDNSSrvRecordsDef virNetworkDNSSrvRecordsDef;
+typedef virNetworkDNSSrvRecordsDef *virNetworkDNSSrvRecordsDefPtr;
+struct _virNetworkDNSSrvRecordsDef {
+    char *domain;
+    char *service;
+    char *protocol;
+    char *target;
+    int port;
+    int priority;
+    int weight;
+};
+
 struct _virNetworkDNSHostsDef {
     virSocketAddr ip;
     int nnames;
@@ -82,6 +96,8 @@ struct _virNetworkDNSDef {
     virNetworkDNSTxtRecordsDefPtr txtrecords;
     unsigned int nhosts;
     virNetworkDNSHostsDefPtr hosts;
+    unsigned int nsrvrecords;
+    virNetworkDNSSrvRecordsDefPtr srvrecords;
 };
 
 typedef struct _virNetworkDNSDef *virNetworkDNSDefPtr;

@@ -120,6 +120,8 @@ mymain(void)
     DO_TEST("netboot-network");
     DO_TEST("netboot-proxy-network");
     DO_TEST("nat-network-dns-txt-record");
+    DO_TEST("nat-network-dns-srv-record");
+    DO_TEST("nat-network-dns-srv-record-minimal");
     DO_TEST("nat-network-dns-hosts");
 
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);

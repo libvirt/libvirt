@@ -345,6 +345,7 @@
         &lt;domain name="example.com"/&gt;
         &lt;dns&gt;
           &lt;txt name="example" value="example value" /&gt;
+          &lt;srv service='name' protocol='tcp' domain='test-domain-name' target='.' port='1024' priority='10' weight='10'/&gt;
           &lt;host ip='192.168.122.2'&gt;
             &lt;hostname&gt;myhost&lt;/hostname&gt;
             &lt;hostname&gt;myhostalias&lt;/hostname&gt;
@@ -394,6 +395,17 @@
             for that IP address are identified in the <code>hostname</code>
             sub-elements of the <code>host</code> element.
             <span class="since">Since 0.9.3</span>
+          </dd>
+        </dl>
+        <dl>
+          <dt><code>srv</code></dt>
+          <dd>The <code>dns</code> element can have also 0 or more <code>srv</code>
+            record elements. Each <code>srv</code> record element defines a DNS SRV record
+            and has 2 mandatory and 5 optional attributes. The mandatory attributes
+            are service name and protocol (tcp, udp) and the optional attributes are
+            target, port, priority, weight and domain as defined in DNS server SRV
+            RFC (RFC 2782).
+            <span class="since">Since 0.9.9</span>
           </dd>
         </dl>
       </dd>

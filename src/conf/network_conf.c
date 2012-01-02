@@ -138,6 +138,15 @@ static void virNetworkDNSDefFree(virNetworkDNSDefPtr def)
             }
         }
         VIR_FREE(def->hosts);
+        if (def->nsrvrecords) {
+            while (def->nsrvrecords--) {
+                VIR_FREE(def->srvrecords[def->nsrvrecords].domain);
+                VIR_FREE(def->srvrecords[def->nsrvrecords].service);
+                VIR_FREE(def->srvrecords[def->nsrvrecords].protocol);
+                VIR_FREE(def->srvrecords[def->nsrvrecords].target);
+            }
+        }
+        VIR_FREE(def->srvrecords);
         VIR_FREE(def);
     }
 }
@@ -553,8 +562,103 @@ error:
 }
 
 static int
+virNetworkDNSSrvDefParseXML(virNetworkDNSDefPtr def,
+                            xmlNodePtr cur,
+                            xmlXPathContextPtr ctxt)
+{
+    char *domain;
+    char *service;
+    char *protocol;
+    char *target;
+    int port;
+    int priority;
+    int weight;
+    int ret = 0;
+
+    if (!(service = virXMLPropString(cur, "service"))) {
+        virNetworkReportError(VIR_ERR_XML_DETAIL,
+                              "%s", _("Missing required service attribute in dns srv record"));
+        goto error;
+    }
+
+    if (strlen(service) > DNS_RECORD_LENGTH_SRV) {
+        char *name = NULL;
+
+        virAsprintf(&name, _("Service name is too long, limit is %d bytes"), DNS_RECORD_LENGTH_SRV);
+        virNetworkReportError(VIR_ERR_XML_DETAIL,
+                              "%s", name);
+        free(name);
+        goto error;
+    }
+
+    if (!(protocol = virXMLPropString(cur, "protocol"))) {
+        virNetworkReportError(VIR_ERR_XML_DETAIL,
+                              _("Missing required protocol attribute in dns srv record '%s'"), service);
+        goto error;
+    }
+
+    /* Check whether protocol value is the supported one */
+    if (STRNEQ(protocol, "tcp") && (STRNEQ(protocol, "udp"))) {
+        virNetworkReportError(VIR_ERR_XML_DETAIL,
+                              _("Invalid protocol attribute value '%s'"), protocol);
+        goto error;
+    }
+
+    if (VIR_REALLOC_N(def->srvrecords, def->nsrvrecords + 1) < 0) {
+        virReportOOMError();
+        goto error;
+    }
+
+    def->srvrecords[def->nsrvrecords].service = service;
+    def->srvrecords[def->nsrvrecords].protocol = protocol;
+    def->srvrecords[def->nsrvrecords].domain = NULL;
+    def->srvrecords[def->nsrvrecords].target = NULL;
+    def->srvrecords[def->nsrvrecords].port = 0;
+    def->srvrecords[def->nsrvrecords].priority = 0;
+    def->srvrecords[def->nsrvrecords].weight = 0;
+
+    /* Following attributes are optional but we had to make sure they're NULL above */
+    if ((target = virXMLPropString(cur, "target")) && (domain = virXMLPropString(cur, "domain"))) {
+        xmlNodePtr save_ctxt = ctxt->node;
+
+        ctxt->node = cur;
+        if (virXPathInt("string(./@port)", ctxt, &port))
+            def->srvrecords[def->nsrvrecords].port = port;
+
+        if (virXPathInt("string(./@priority)", ctxt, &priority))
+            def->srvrecords[def->nsrvrecords].priority = priority;
+
+        if (virXPathInt("string(./@weight)", ctxt, &weight))
+            def->srvrecords[def->nsrvrecords].weight = weight;
+        ctxt->node = save_ctxt;
+
+        def->srvrecords[def->nsrvrecords].domain = domain;
+        def->srvrecords[def->nsrvrecords].target = target;
+        def->srvrecords[def->nsrvrecords].port = port;
+        def->srvrecords[def->nsrvrecords].priority = priority;
+        def->srvrecords[def->nsrvrecords].weight = weight;
+    }
+
+    def->nsrvrecords++;
+
+    goto cleanup;
+
+error:
+    VIR_FREE(domain);
+    VIR_FREE(service);
+    VIR_FREE(protocol);
+    VIR_FREE(target);
+
+    ret = -1;
+
+cleanup:
+    return ret;
+}
+
+static int
 virNetworkDNSDefParseXML(virNetworkDNSDefPtr *dnsdef,
-                         xmlNodePtr node)
+                         xmlNodePtr node,
+                         xmlXPathContextPtr ctxt)
 {
     xmlNodePtr cur;
     int ret = -1;
@@ -598,6 +702,11 @@ virNetworkDNSDefParseXML(virNetworkDNSDefPtr *dnsdef,
             def->ntxtrecords++;
             name = NULL;
             value = NULL;
+        } else if (cur->type == XML_ELEMENT_NODE &&
+            xmlStrEqual(cur->name, BAD_CAST "srv")) {
+            ret = virNetworkDNSSrvDefParseXML(def, cur, ctxt);
+            if (ret < 0)
+                goto error;
         } else if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "host")) {
             ret = virNetworkDNSHostsDefParseXML(def, cur);
@@ -887,7 +996,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
 
     dnsNode = virXPathNode("./dns", ctxt);
     if (dnsNode != NULL) {
-        if (virNetworkDNSDefParseXML(&def->dns, dnsNode) < 0)
+        if (virNetworkDNSDefParseXML(&def->dns, dnsNode, ctxt) < 0)
             goto error;
     }
 
@@ -1144,6 +1253,27 @@ virNetworkDNSDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, "    <txt name='%s' value='%s' />\n",
                               def->txtrecords[i].name,
                               def->txtrecords[i].value);
+    }
+
+    for (i = 0 ; i < def->nsrvrecords ; i++) {
+        if (def->srvrecords[i].service && def->srvrecords[i].protocol) {
+            virBufferAsprintf(buf, "    <srv service='%s' protocol='%s'",
+                                  def->srvrecords[i].service,
+                                  def->srvrecords[i].protocol);
+
+            if (def->srvrecords[i].domain)
+                virBufferAsprintf(buf, " domain='%s'", def->srvrecords[i].domain);
+            if (def->srvrecords[i].target)
+                virBufferAsprintf(buf, " target='%s'", def->srvrecords[i].target);
+            if (def->srvrecords[i].port)
+                virBufferAsprintf(buf, " port='%d'", def->srvrecords[i].port);
+            if (def->srvrecords[i].priority)
+                virBufferAsprintf(buf, " priority='%d'", def->srvrecords[i].priority);
+            if (def->srvrecords[i].weight)
+                virBufferAsprintf(buf, " weight='%d'", def->srvrecords[i].weight);
+
+            virBufferAsprintf(buf, "/>\n");
+        }
     }
 
     if (def->nhosts) {

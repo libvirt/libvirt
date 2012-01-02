@@ -138,6 +138,19 @@
                 </element>
               </zeroOrMore>
               <zeroOrMore>
+                <element name="srv">
+                  <attribute name="service"><text/></attribute>
+                  <attribute name="protocol"><ref name="protocol"/></attribute>
+                  <optional>
+                    <attribute name="domain"><ref name="dnsName"/></attribute>
+                    <attribute name="target"><text/></attribute>
+                    <attribute name="port"><ref name="unsignedShort"/></attribute>
+                    <attribute name="priority"><ref name="unsignedShort"/></attribute>
+                    <attribute name="weight"><ref name="unsignedShort"/></attribute>
+                  </optional>
+                </element>
+              </zeroOrMore>
+              <zeroOrMore>
                 <element name="host">
                   <attribute name="ip"><ref name="ipv4Addr"/></attribute>
                   <oneOrMore>
@@ -216,11 +229,4 @@
       </interleave>
     </element>
   </define>
-
-  <define name='addr-family'>
-    <data type='string'>
-      <param name="pattern">(ipv4)|(ipv6)</param>
-    </data>
-  </define>
-
 </grammar>

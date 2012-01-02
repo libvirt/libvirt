@@ -527,6 +527,49 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
             virCommandAddArgPair(cmd, "--txt-record", record);
             VIR_FREE(record);
         }
+
+        for (i = 0; i < dns->nsrvrecords; i++) {
+            char *record = NULL;
+            char *recordPort = NULL;
+            char *recordPriority = NULL;
+            char *recordWeight = NULL;
+
+            if (dns->srvrecords[i].service && dns->srvrecords[i].protocol) {
+                if (dns->srvrecords[i].port) {
+                    if (virAsprintf(&recordPort, "%d", dns->srvrecords[i].port) < 0) {
+                        virReportOOMError();
+                        goto cleanup;
+                    }
+                }
+                if (dns->srvrecords[i].priority) {
+                    if (virAsprintf(&recordPriority, "%d", dns->srvrecords[i].priority) < 0) {
+                        virReportOOMError();
+                        goto cleanup;
+                    }
+                }
+                if (dns->srvrecords[i].weight) {
+                    if (virAsprintf(&recordWeight, "%d", dns->srvrecords[i].weight) < 0) {
+                        virReportOOMError();
+                        goto cleanup;
+                    }
+                }
+
+                if (virAsprintf(&record, "%s.%s.%s,%s,%s,%s,%s",
+                                dns->srvrecords[i].service,
+                                dns->srvrecords[i].protocol,
+                                dns->srvrecords[i].domain   ? dns->srvrecords[i].domain : "",
+                                dns->srvrecords[i].target   ? dns->srvrecords[i].target : "",
+                                recordPort                  ? recordPort                : "",
+                                recordPriority              ? recordPriority            : "",
+                                recordWeight                ? recordWeight              : "") < 0) {
+                    virReportOOMError();
+                    goto cleanup;
+                }
+
+                virCommandAddArgPair(cmd, "--srv-host", record);
+                VIR_FREE(record);
+            }
+        }
     }
 
     /*

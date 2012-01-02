@@ -95,4 +95,21 @@
       <param name="minInclusive">1</param>
     </data>
   </define>
+
+  <define name='unsignedShort'>
+    <data type='integer'>
+      <param name="minInclusive">0</param>
+      <param name="maxInclusive">65535</param>
+    </data>
+  </define>
+  <define name='protocol'>
+    <data type='string'>
+      <param name='pattern'>(tcp)|(udp)</param>
+    </data>
+  </define>
+  <define name='addr-family'>
+    <data type='string'>
+      <param name="pattern">(ipv4)|(ipv6)</param>
+    </data>
+  </define>
 </grammar>
