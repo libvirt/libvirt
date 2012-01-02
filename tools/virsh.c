@@ -62,6 +62,7 @@
 #include "virnetdevbandwidth.h"
 #include "util/bitmap.h"
 #include "conf/domain_conf.h"
+#include "virtypedparam.h"
 
 static char *progname;
 

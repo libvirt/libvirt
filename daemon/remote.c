@@ -44,6 +44,7 @@
 #include "virnetserverservice.h"
 #include "virnetserver.h"
 #include "virfile.h"
+#include "virtypedparam.h"
 
 #include "remote_protocol.h"
 #include "qemu_protocol.h"

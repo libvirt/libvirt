@@ -1,7 +1,7 @@
 /*
  * utils.c: common, generic utility functions
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
@@ -2629,18 +2629,4 @@ or other application using the libvirt API.\n\
         return -1;
 
     return 0;
-}
-
-void
-virTypedParameterArrayClear(virTypedParameterPtr params, int nparams)
-{
-    int i;
-
-    if (!params)
-        return;
-
-    for (i = 0; i < nparams; i++) {
-        if (params[i].type == VIR_TYPED_PARAM_STRING)
-            VIR_FREE(params[i].value.s);
-    }
 }

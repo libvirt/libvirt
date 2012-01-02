@@ -1,7 +1,7 @@
 /*
  * utils.h: common, generic utility functions
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
  *
@@ -257,7 +257,5 @@ bool virIsDevMapperDevice(const char *dev_name) ATTRIBUTE_NONNULL(1);
 int virEmitXMLWarning(int fd,
                       const char *name,
                       const char *cmd) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-
-void virTypedParameterArrayClear(virTypedParameterPtr params, int nparams);
 
 #endif /* __VIR_UTIL_H__ */

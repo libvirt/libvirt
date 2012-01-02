@@ -1146,7 +1146,6 @@ virStrToLong_ull;
 virStrcpy;
 virStrncpy;
 virTrimSpaces;
-virTypedParameterArrayClear;
 virVasprintf;
 
 
@@ -1175,6 +1174,13 @@ virFileDirectFdNew;
 virFileFclose;
 virFileFdopen;
 virFileRewrite;
+
+
+# virkeycode.h
+virKeycodeSetTypeFromString;
+virKeycodeSetTypeToString;
+virKeycodeValueFromString;
+virKeycodeValueTranslate;
 
 
 # virnetclient.h
@@ -1391,12 +1397,6 @@ virSetError;
 virSetErrorLogPriorityFunc;
 virStrerror;
 
-# virkeycode.h
-virKeycodeSetTypeToString;
-virKeycodeSetTypeFromString;
-virKeycodeValueFromString;
-virKeycodeValueTranslate;
-
 
 # virtime.h
 virTimeFieldsNow;
@@ -1409,6 +1409,12 @@ virTimeStringNow;
 virTimeStringNowRaw;
 virTimeStringThen;
 virTimeStringThenRaw;
+
+
+# virtypedparam.h
+virTypedParameterArrayClear;
+virTypedParameterArrayValidate;
+virTypedParameterAssign;
 
 
 # xml.h

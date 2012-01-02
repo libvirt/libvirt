@@ -135,6 +135,7 @@ src/util/virpidfile.c
 src/util/virsocketaddr.c
 src/util/virterror.c
 src/util/virtime.c
+src/util/virtypedparam.c
 src/util/xml.c
 src/vbox/vbox_MSCOMGlue.c
 src/vbox/vbox_XPCOMCGlue.c
