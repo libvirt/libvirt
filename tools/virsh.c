@@ -17041,18 +17041,20 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
         if (enable_timing)
             GETTIMEOFDAY(&after);
 
+        /* try to automatically catch disconnections */
+        if (!ret &&
+            ((last_error != NULL) &&
+             (((last_error->code == VIR_ERR_SYSTEM_ERROR) &&
+               (last_error->domain == VIR_FROM_REMOTE)) ||
+              (last_error->code == VIR_ERR_RPC) ||
+              (last_error->code == VIR_ERR_NO_CONNECT) ||
+              (last_error->code == VIR_ERR_INVALID_CONN))))
+            disconnected++;
+
         if (!ret)
             virshReportError(ctl);
 
-        /* try to automatically catch disconnections */
-        if (!ret &&
-            ((disconnected != 0) ||
-             ((last_error != NULL) &&
-              (((last_error->code == VIR_ERR_SYSTEM_ERROR) &&
-                (last_error->domain == VIR_FROM_REMOTE)) ||
-               (last_error->code == VIR_ERR_RPC) ||
-               (last_error->code == VIR_ERR_NO_CONNECT) ||
-               (last_error->code == VIR_ERR_INVALID_CONN)))))
+        if (!ret && disconnected != 0)
             vshReconnect(ctl);
 
         if (STREQ(cmd->def->name, "quit"))        /* hack ... */
