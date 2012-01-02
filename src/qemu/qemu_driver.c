@@ -7025,7 +7025,6 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     virDomainDefPtr vmdef = NULL;
     int ret = -1;
-    bool isActive;
     int rc;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -7041,22 +7040,11 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    isActive = virDomainObjIsActive(vm);
-
-    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
-        if (isActive)
-            flags = VIR_DOMAIN_AFFECT_LIVE;
-        else
-            flags = VIR_DOMAIN_AFFECT_CONFIG;
-    }
+    if (virDomainLiveConfigHelperMethod(driver->caps, vm, &flags,
+                                        &vmdef) < 0)
+        goto cleanup;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (!vm->persistent) {
-            qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                            _("cannot change persistent config of a transient domain"));
-            goto cleanup;
-        }
-
         /* Make a copy for updated domain. */
         vmdef = virDomainObjCopyPersistentDef(driver->caps, vm);
         if (!vmdef)
@@ -7064,12 +7052,6 @@ static int qemuSetSchedulerParametersFlags(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (!isActive) {
-            qemuReportError(VIR_ERR_OPERATION_INVALID,
-                            "%s", _("domain is not running"));
-            goto cleanup;
-        }
-
         if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
             qemuReportError(VIR_ERR_OPERATION_INVALID,
                             "%s", _("cgroup CPU controller is not mounted"));
@@ -7267,9 +7249,9 @@ qemuGetSchedulerParametersFlags(virDomainPtr dom,
     long long quota;
     int ret = -1;
     int rc;
-    bool isActive;
     bool cpu_bw_status = false;
     int saved_nparams = 0;
+    virDomainDefPtr persistentDef;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -7295,50 +7277,17 @@ qemuGetSchedulerParametersFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    isActive = virDomainObjIsActive(vm);
-
-    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
-        if (isActive)
-            flags = VIR_DOMAIN_AFFECT_LIVE;
-        else
-            flags = VIR_DOMAIN_AFFECT_CONFIG;
-    }
+    if (virDomainLiveConfigHelperMethod(driver->caps, vm, &flags,
+                                        &persistentDef) < 0)
+        goto cleanup;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (!vm->persistent) {
-            qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                            _("cannot query persistent config of a transient domain"));
-            goto cleanup;
-        }
-
-        if (isActive) {
-            virDomainDefPtr persistentDef;
-
-            persistentDef = virDomainObjGetPersistentDef(driver->caps, vm);
-            if (!persistentDef) {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                _("can't get persistentDef"));
-                goto cleanup;
-            }
-            shares = persistentDef->cputune.shares;
-            if (*nparams > 1 && cpu_bw_status) {
-                period = persistentDef->cputune.period;
-                quota = persistentDef->cputune.quota;
-            }
-        } else {
-            shares = vm->def->cputune.shares;
-            if (*nparams > 1 && cpu_bw_status) {
-                period = vm->def->cputune.period;
-                quota = vm->def->cputune.quota;
-            }
+        shares = persistentDef->cputune.shares;
+        if (*nparams > 1 && cpu_bw_status) {
+            period = persistentDef->cputune.period;
+            quota = persistentDef->cputune.quota;
         }
         goto out;
-    }
-
-    if (!isActive) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                        _("domain is not running"));
-        goto cleanup;
     }
 
     if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
