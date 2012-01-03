@@ -852,6 +852,25 @@ char *          xenStoreDomainGetConsolePath(virConnectPtr conn, int domid) {
   return virDomainDoStoreQuery(conn, domid, "console/tty");
 }
 
+/**
+ * xenStoreDomainGetSerailConsolePath:
+ * @conn: the hypervisor connection
+ * @domid: id of the domain
+ *
+ * Return the path to the pseudo TTY on which the guest domain's
+ * serial console is attached.
+ *
+ * Returns the path to the serial console. It is the callers
+ * responsibilty to free() the return string. Returns NULL
+ * on error
+ *
+ * The caller must hold the lock on the privateData
+ * associated with the 'conn' parameter.
+ */
+char * xenStoreDomainGetSerialConsolePath(virConnectPtr conn, int domid) {
+    return virDomainDoStoreQuery(conn, domid, "serial/0/tty");
+}
+
 
 /*
  * xenStoreDomainGetNetworkID:

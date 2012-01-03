@@ -45,6 +45,8 @@ int             xenStoreDomainGetVNCPort(virConnectPtr conn,
                                          int domid);
 char *          xenStoreDomainGetConsolePath(virConnectPtr conn,
                                          int domid);
+char *          xenStoreDomainGetSerialConsolePath(virConnectPtr conn,
+                                         int domid);
 char *		xenStoreDomainGetNetworkID(virConnectPtr conn,
                                          int id,
                                          const char *mac);

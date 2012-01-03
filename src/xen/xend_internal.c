@@ -1761,7 +1761,10 @@ xenDaemonDomainFetch(virConnectPtr conn,
 
     id = xenGetDomIdFromSxpr(root, priv->xendConfigVersion);
     xenUnifiedLock(priv);
-    tty = xenStoreDomainGetConsolePath(conn, id);
+    if (sexpr_lookup(root, "domain/image/hvm"))
+        tty = xenStoreDomainGetSerialConsolePath(conn, id);
+    else
+        tty = xenStoreDomainGetConsolePath(conn, id);
     vncport = xenStoreDomainGetVNCPort(conn, id);
     xenUnifiedUnlock(priv);
     if (!(def = xenParseSxpr(root,
