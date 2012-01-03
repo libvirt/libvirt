@@ -1604,16 +1604,19 @@ virCommandProcessIO(virCommandPtr cmd)
         if (infd != -1) {
             fds[nfds].fd = infd;
             fds[nfds].events = POLLOUT;
+            fds[nfds].revents = 0;
             nfds++;
         }
         if (outfd != -1) {
             fds[nfds].fd = outfd;
             fds[nfds].events = POLLIN;
+            fds[nfds].revents = 0;
             nfds++;
         }
         if (errfd != -1) {
             fds[nfds].fd = errfd;
             fds[nfds].events = POLLIN;
+            fds[nfds].revents = 0;
             nfds++;
         }
 
@@ -1629,8 +1632,8 @@ virCommandProcessIO(virCommandPtr cmd)
         }
 
         for (i = 0; i < nfds ; i++) {
-            if (fds[i].fd == errfd ||
-                fds[i].fd == outfd) {
+            if (fds[i].revents & POLLIN &&
+                (fds[i].fd == errfd || fds[i].fd == outfd)) {
                 char data[1024];
                 char **buf;
                 size_t *len;
@@ -1668,7 +1671,10 @@ virCommandProcessIO(virCommandPtr cmd)
                     memcpy(*buf + *len, data, done);
                     *len += done;
                 }
-            } else {
+            }
+
+            if (fds[i].revents & POLLOUT &&
+                fds[i].fd == infd) {
                 int done;
 
                 /* Coverity 5.3.0 can't see that we only get here if
@@ -1693,6 +1699,18 @@ virCommandProcessIO(virCommandPtr cmd)
                 }
             }
 
+            if (fds[i].revents & (POLLHUP | POLLERR)) {
+                if (fds[i].fd == errfd) {
+                    VIR_DEBUG("hangup on stderr");
+                    errfd = -1;
+                } else if (fds[i].fd == outfd) {
+                    VIR_DEBUG("hangup on stdout");
+                    outfd = -1;
+                } else {
+                    VIR_DEBUG("hangup on stdin");
+                    infd = -1;
+                }
+            }
         }
     }
 
