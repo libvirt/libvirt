@@ -3121,6 +3121,14 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv,
     };
     VIR_DEBUG("Client initialize PolicyKit-0 authentication");
 
+    /* Check auth first and if it succeeds we are done. */
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_AUTH_POLKIT,
+              (xdrproc_t) xdr_void, (char *)NULL,
+              (xdrproc_t) xdr_remote_auth_polkit_ret, (char *) &ret) == 0)
+        goto out;
+
+    /* Auth failed.  Ask client to obtain it and check again. */
     if (auth && auth->cb) {
         /* Check if the necessary credential type for PolicyKit is supported */
         for (i = 0 ; i < auth->ncredtype ; i++) {
@@ -3138,9 +3146,11 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv,
             }
         } else {
             VIR_DEBUG("Client auth callback does not support PolicyKit");
+            return -1;
         }
     } else {
         VIR_DEBUG("No auth callback provided");
+        return -1;
     }
 
     memset (&ret, 0, sizeof ret);
@@ -3150,6 +3160,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv,
         return -1; /* virError already set by call */
     }
 
+out:
     VIR_DEBUG("PolicyKit-0 authentication complete");
     return 0;
 }

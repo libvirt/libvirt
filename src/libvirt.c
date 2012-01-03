@@ -119,7 +119,7 @@ static int virConnectAuthGainPolkit(const char *privilege) {
 
     cmd = virCommandNewArgList(POLKIT_AUTH, "--obtain", privilege, NULL);
     if (virCommandRun(cmd, &status) < 0 ||
-        status > 1)
+        status > 0)
         goto cleanup;
 
     ret = 0;
