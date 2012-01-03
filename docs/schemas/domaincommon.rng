@@ -2921,7 +2921,7 @@
   </define>
   <define name="featureName">
     <data type="string">
-      <param name='pattern'>[a-zA-Z0-9\-_]+</param>
+      <param name='pattern'>[a-zA-Z0-9\-_\.]+</param>
     </data>
   </define>
   <define name="timeDelta">
