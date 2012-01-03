@@ -7763,10 +7763,10 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     if (tmp < *nparams && flush_total_times != -1) {
         param = &params[tmp];
         if (virStrcpyStatic(param->field,
-                            VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES) == NULL) {
+                            VIR_DOMAIN_BLOCK_STATS_FLUSH_TOTAL_TIMES) == NULL) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("Field name '%s' too long"),
-                            VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES);
+                            VIR_DOMAIN_BLOCK_STATS_FLUSH_TOTAL_TIMES);
             goto endjob;
         }
         param->type = VIR_TYPED_PARAM_LLONG;
