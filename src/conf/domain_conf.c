@@ -1,7 +1,7 @@
 /*
  * domain_conf.c: domain XML processing
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -2541,6 +2541,7 @@ virSecurityLabelDefParseXMLHelper(virSecurityLabelDefPtr def,
     char *p;
     xmlNodePtr save_ctxt = ctxt->node;
     int ret = -1;
+    int type = default_seclabel ? default_seclabel->type : def->type;
 
     ctxt->node = node;
 
@@ -2567,14 +2568,15 @@ virSecurityLabelDefParseXMLHelper(virSecurityLabelDefPtr def,
         }
         VIR_FREE(p);
         if (!default_seclabel &&
-            def->type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
+            type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
             def->norelabel) {
-            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                 "%s", _("dynamic label type must use resource relabeling"));
+            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                 _("dynamic label type must use resource "
+                                   "relabeling"));
             goto cleanup;
         }
     } else {
-        if (!default_seclabel &&  def->type == VIR_DOMAIN_SECLABEL_STATIC)
+        if (!default_seclabel && type == VIR_DOMAIN_SECLABEL_STATIC)
             def->norelabel = true;
         else
             def->norelabel = false;
@@ -2583,12 +2585,12 @@ virSecurityLabelDefParseXMLHelper(virSecurityLabelDefPtr def,
     /* Only parse label, if using static labels, or
      * if the 'live' VM XML is requested, or if this is a device override
      */
-    if (def->type == VIR_DOMAIN_SECLABEL_STATIC ||
+    if (type == VIR_DOMAIN_SECLABEL_STATIC ||
         !(flags & VIR_DOMAIN_XML_INACTIVE) ||
         (default_seclabel && !def->norelabel)) {
         p = virXPathStringLimit("string(./label[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-        if (p == NULL) {
+        if (p == NULL && !(default_seclabel && def->norelabel)) {
             virDomainReportError(VIR_ERR_XML_ERROR,
                                  "%s", _("security label is missing"));
             goto cleanup;
