@@ -180,6 +180,8 @@ cpuTestCompareXML(const char *arch,
         goto cleanup;
 
     if (STRNEQ(expected, actual)) {
+        if (virTestGetVerbose())
+            fprintf(stderr, "\nCompared to %s-%s.xml", arch, name);
         virtTestDifference(stderr, expected, actual);
         goto cleanup;
     }
