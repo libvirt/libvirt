@@ -6679,6 +6679,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
             }
         } else if (STREQ(param->field, VIR_DOMAIN_NUMA_NODESET)) {
             int rc;
+            bool savedmask;
             char oldnodemask[VIR_DOMAIN_CPUMASK_LEN];
             if (param->type != VIR_TYPED_PARAM_STRING) {
                 qemuReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -6707,28 +6708,56 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
 
                 /* update vm->def here so that dumpxml can read the new
                  * values from vm->def. */
-                memcpy(oldnodemask, vm->def->numatune.memory.nodemask,
-                       VIR_DOMAIN_CPUMASK_LEN);
+                savedmask = false;
+                if (!vm->def->numatune.memory.nodemask) {
+                    if (VIR_ALLOC_N(vm->def->numatune.memory.nodemask,
+                                    VIR_DOMAIN_CPUMASK_LEN) < 0) {
+                        virReportOOMError();
+                        ret = -1;
+                        goto cleanup;
+                    }
+                } else {
+                    memcpy(oldnodemask, vm->def->numatune.memory.nodemask,
+                           VIR_DOMAIN_CPUMASK_LEN);
+                    savedmask = true;
+                }
                 if (virDomainCpuSetParse(params[i].value.s,
                                          0,
                                          vm->def->numatune.memory.nodemask,
                                          VIR_DOMAIN_CPUMASK_LEN) < 0) {
-                    memcpy(vm->def->numatune.memory.nodemask,
-                           oldnodemask, VIR_DOMAIN_CPUMASK_LEN);
+                    if (savedmask)
+                        memcpy(vm->def->numatune.memory.nodemask,
+                               oldnodemask, VIR_DOMAIN_CPUMASK_LEN);
+                    else
+                        VIR_FREE(vm->def->numatune.memory.nodemask);
                     ret = -1;
                     continue;
                 }
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                memcpy(oldnodemask, persistentDef->numatune.memory.nodemask,
-                       VIR_DOMAIN_CPUMASK_LEN);
+                savedmask = false;
+                if (!persistentDef->numatune.memory.nodemask) {
+                    if (VIR_ALLOC_N(persistentDef->numatune.memory.nodemask,
+                                    VIR_DOMAIN_CPUMASK_LEN) < 0) {
+                        virReportOOMError();
+                        ret = -1;
+                        goto cleanup;
+                    }
+                } else {
+                    memcpy(oldnodemask, persistentDef->numatune.memory.nodemask,
+                           VIR_DOMAIN_CPUMASK_LEN);
+                    savedmask = true;
+                }
                 if (virDomainCpuSetParse(params[i].value.s,
                                          0,
                                          persistentDef->numatune.memory.nodemask,
                                          VIR_DOMAIN_CPUMASK_LEN) < 0) {
-                    memcpy(persistentDef->numatune.memory.nodemask,
-                           oldnodemask, VIR_DOMAIN_CPUMASK_LEN);
+                    if (savedmask)
+                        memcpy(persistentDef->numatune.memory.nodemask,
+                               oldnodemask, VIR_DOMAIN_CPUMASK_LEN);
+                    else
+                        VIR_FREE(persistentDef->numatune.memory.nodemask);
                     ret = -1;
                     continue;
                 }
