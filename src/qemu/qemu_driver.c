@@ -8034,6 +8034,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
 
         virNetDevBandwidthFree(net->bandwidth);
         net->bandwidth = newBandwidth;
+        newBandwidth = NULL;
     }
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         if (!persistentNet->bandwidth) {
