@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright (C) 2005-2011 Red Hat, Inc.
+dnl Copyright (C) 2005-2012 Red Hat, Inc.
 dnl See COPYING.LIB for the License of this software
 
 AC_INIT([libvirt], [0.9.8], [libvir-list@redhat.com], [], [http://libvirt.org])
@@ -85,10 +85,6 @@ gl_EARLY
 gl_INIT
 
 AC_TYPE_UID_T
-
-dnl Make sure we have an ANSI compiler
-AM_C_PROTOTYPES
-test "x$U" != "x" && AC_MSG_ERROR([Compiler not ANSI compliant])
 
 dnl Support building Win32 DLLs (must appear *before* AM_PROG_LIBTOOL)
 AC_LIBTOOL_WIN32_DLL
