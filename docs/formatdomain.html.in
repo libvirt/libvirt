@@ -1001,8 +1001,17 @@
         "block", "dir", or "network"
         and refers to the underlying source for the disk. The optional
         <code>device</code> attribute indicates how the disk is to be exposed
-        to the guest OS. Possible values for this attribute are "floppy", "disk"
-        and "cdrom", defaulting to "disk".  The
+        to the guest OS. Possible values for this attribute are
+        "floppy", "disk", "cdrom", and "lun", defaulting to
+        "disk". "lun" (<span class="since">since 0.9.10</span>) is only
+        valid when type is "block" and the target element's "bus"
+        attribute is "virtio", and behaves identically to "disk",
+        except that generic SCSI commands from the guest are accepted
+        and passed through to the physical device
+        - also note that device='lun' will only be recognized for
+        actual raw devices, never for individual partitions or LVM
+        partitions (in those cases, the kernel will reject the generic
+        SCSI commands, making it identical to device='disk').  The
         optional <code>snapshot</code> attribute indicates the default
         behavior of the disk during disk snapshots: "internal"
         requires a file format such as qcow2 that can store both the

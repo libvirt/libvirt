@@ -342,12 +342,15 @@ mymain(void)
             QEMU_CAPS_BOOT_MENU, QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE,
             QEMU_CAPS_BOOTINDEX);
     DO_TEST("boot-order", false,
-            QEMU_CAPS_BOOTINDEX, QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE);
+            QEMU_CAPS_BOOTINDEX, QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE,
+            QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
     DO_TEST("boot-complex", false,
-            QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_BOOT);
+            QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_BOOT,
+            QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
     DO_TEST("boot-complex-bootindex", false,
             QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_BOOT,
-            QEMU_CAPS_BOOTINDEX);
+            QEMU_CAPS_BOOTINDEX,
+            QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
     DO_TEST("bootloader", true, QEMU_CAPS_DOMID);
     DO_TEST("bios", false, QEMU_CAPS_DEVICE, QEMU_CAPS_SGA);
     DO_TEST("clock-utc", false, NONE);
@@ -365,7 +368,8 @@ mymain(void)
     DO_TEST("disk-many", false, NONE);
     DO_TEST("disk-virtio", false, QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("disk-order", false,
-            QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE_BOOT);
+            QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE_BOOT,
+            QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
     DO_TEST("disk-xenvbd", false, QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("disk-drive-boot-disk", false,
             QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_BOOT);
@@ -433,14 +437,20 @@ mymain(void)
             QEMU_CAPS_DRIVE_CACHE_V2, QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("disk-ioeventfd", false,
             QEMU_CAPS_DRIVE, QEMU_CAPS_VIRTIO_IOEVENTFD,
-            QEMU_CAPS_VIRTIO_TX_ALG, QEMU_CAPS_DEVICE);
+            QEMU_CAPS_VIRTIO_TX_ALG, QEMU_CAPS_DEVICE,
+            QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
     DO_TEST("disk-snapshot", false,
             QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_CACHE_V2, QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("event_idx", false,
             QEMU_CAPS_DRIVE,
             QEMU_CAPS_VIRTIO_BLK_EVENT_IDX,
             QEMU_CAPS_VIRTIO_NET_EVENT_IDX,
-            QEMU_CAPS_DEVICE);
+            QEMU_CAPS_DEVICE,
+            QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
+    DO_TEST("virtio-lun", false,
+            QEMU_CAPS_DRIVE,
+            QEMU_CAPS_DEVICE,
+            QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
 
     DO_TEST("graphics-vnc", false, NONE);
     DO_TEST("graphics-vnc-socket", false, NONE);

@@ -4987,6 +4987,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
         ret = qemuDomainChangeEjectableMedia(driver, vm, disk, false);
         break;
     case VIR_DOMAIN_DISK_DEVICE_DISK:
+    case VIR_DOMAIN_DISK_DEVICE_LUN:
         if (disk->bus == VIR_DOMAIN_DISK_BUS_USB)
             ret = qemuDomainAttachUsbMassstorageDevice(conn, driver, vm,
                                                        disk);
@@ -5109,6 +5110,7 @@ qemuDomainDetachDeviceDiskLive(struct qemud_driver *driver,
 
     switch (disk->device) {
     case VIR_DOMAIN_DISK_DEVICE_DISK:
+    case VIR_DOMAIN_DISK_DEVICE_LUN:
         if (disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO)
             ret = qemuDomainDetachPciDiskDevice(driver, vm, dev);
         else if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI)
@@ -9586,9 +9588,9 @@ static int qemuDomainSnapshotIsAllowed(virDomainObjPtr vm)
      * that succeed as well
      */
     for (i = 0; i < vm->def->ndisks; i++) {
-        if (vm->def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
-            (!vm->def->disks[i]->driverType ||
-             STRNEQ(vm->def->disks[i]->driverType, "qcow2"))) {
+        if ((vm->def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_LUN) ||
+            (vm->def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
+             STRNEQ_NULLABLE(vm->def->disks[i]->driverType, "qcow2"))) {
             qemuReportError(VIR_ERR_OPERATION_INVALID,
                             _("Disk '%s' does not support snapshotting"),
                             vm->def->disks[i]->src);

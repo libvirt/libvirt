@@ -794,6 +794,7 @@
             <value>floppy</value>
             <value>disk</value>
             <value>cdrom</value>
+            <value>lun</value>
           </choice>
         </attribute>
       </optional>

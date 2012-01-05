@@ -157,7 +157,8 @@ VIR_ENUM_IMPL(virDomainDisk, VIR_DOMAIN_DISK_TYPE_LAST,
 VIR_ENUM_IMPL(virDomainDiskDevice, VIR_DOMAIN_DISK_DEVICE_LAST,
               "disk",
               "cdrom",
-              "floppy")
+              "floppy",
+              "lun")
 
 VIR_ENUM_IMPL(virDomainDiskBus, VIR_DOMAIN_DISK_BUS_LAST,
               "ide",
@@ -3094,7 +3095,8 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     if (def->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
         def->readonly = 1;
 
-    if (def->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
+    if ((def->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
+         def->device == VIR_DOMAIN_DISK_DEVICE_LUN) &&
         !STRPREFIX((const char *)target, "hd") &&
         !STRPREFIX((const char *)target, "sd") &&
         !STRPREFIX((const char *)target, "vd") &&

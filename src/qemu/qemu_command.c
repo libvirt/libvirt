@@ -1878,7 +1878,8 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
     if (bootable &&
         qemuCapsGet(qemuCaps, QEMU_CAPS_DRIVE_BOOT) &&
-        disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
+        (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
+         disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) &&
         disk->bus != VIR_DOMAIN_DISK_BUS_IDE)
         virBufferAddLit(&opt, ",boot=on");
     if (disk->readonly &&
@@ -2024,6 +2025,29 @@ qemuBuildDriveDevStr(virDomainDiskDefPtr disk,
         goto error;
     }
 
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+        /* make sure that both the bus and the qemu binary support
+         *  type='lun' (SG_IO).
+         */
+        if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("disk device='lun' is not supported for bus='%s'"),
+                            bus);
+            goto error;
+        }
+        if (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("disk device='lun' is not supported for type='%s'"),
+                            virDomainDiskTypeToString(disk->type));
+            goto error;
+        }
+        if (!qemuCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SG_IO)) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("disk device='lun' is not supported by this QEMU"));
+            goto error;
+        }
+    }
+
     switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_IDE:
         virBufferAddLit(&opt, "ide-drive");
@@ -2051,6 +2075,14 @@ qemuBuildDriveDevStr(virDomainDiskDefPtr disk,
             qemuCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_EVENT_IDX)) {
             virBufferAsprintf(&opt, ",event_idx=%s",
                               virDomainVirtioEventIdxTypeToString(disk->event_idx));
+        }
+        if (qemuCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SCSI)) {
+            /* if sg_io is true but the scsi option isn't supported,
+             * that means it's just always on in this version of qemu.
+             */
+            virBufferAsprintf(&opt, ",scsi=%s",
+                              (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN)
+                              ? "on" : "off");
         }
         if (qemuBuildDeviceAddressStr(&opt, &disk->info, qemuCaps) < 0)
             goto error;
@@ -4251,6 +4283,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                 bootFloppy = 0;
                 break;
             case VIR_DOMAIN_DISK_DEVICE_DISK:
+            case VIR_DOMAIN_DISK_DEVICE_LUN:
                 bootindex = bootDisk;
                 bootDisk = 0;
                 break;

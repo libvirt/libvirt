@@ -162,8 +162,10 @@ qemuDomainCheckEjectableMedia(struct qemud_driver *driver,
         virDomainDiskDefPtr disk = vm->def->disks[i];
         struct qemuDomainDiskInfo info;
 
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
+            disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
                  continue;
+        }
 
         memset(&info, 0, sizeof(info));
 
