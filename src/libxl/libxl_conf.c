@@ -618,9 +618,16 @@ libxlMakeNic(virDomainDefPtr def, virDomainNetDefPtr l_nic,
             virReportOOMError();
             return -1;
         }
-        if (l_nic->data.bridge.script &&
-            (x_nic->script = strdup(l_nic->data.bridge.script)) == NULL) {
+        if (l_nic->script &&
+            (x_nic->script = strdup(l_nic->script)) == NULL) {
             virReportOOMError();
+            return -1;
+        }
+    } else {
+        if (l_nic->script) {
+            libxlError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("scripts are not supported on interfaces of type %s"),
+                       virDomainNetTypeToString(l_nic->type));
             return -1;
         }
     }

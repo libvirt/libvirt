@@ -4470,8 +4470,8 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
                 memset(net, 0, sizeof *net);
 
                 net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
+                net->script = NULL;
                 net->data.ethernet.dev = brnamecopy;
-                net->data.ethernet.script = NULL;
                 net->data.ethernet.ipaddr = NULL;
             } else {
                 /* actualType is either NETWORK or DIRECT. In either
@@ -4481,8 +4481,8 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
                 memset(net, 0, sizeof *net);
 
                 net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
+                net->script = NULL;
                 net->data.ethernet.dev = NULL;
-                net->data.ethernet.script = NULL;
                 net->data.ethernet.ipaddr = NULL;
             }
         } else if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
@@ -4492,19 +4492,19 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
             memset(net, 0, sizeof *net);
 
             net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
+            net->script = NULL;
             net->data.ethernet.dev = NULL;
-            net->data.ethernet.script = NULL;
             net->data.ethernet.ipaddr = NULL;
         } else if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+            char *script = net->script;
             char *brname = net->data.bridge.brname;
-            char *script = net->data.bridge.script;
             char *ipaddr = net->data.bridge.ipaddr;
 
             memset(net, 0, sizeof *net);
 
             net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
+            net->script = script;
             net->data.ethernet.dev = brname;
-            net->data.ethernet.script = script;
             net->data.ethernet.ipaddr = ipaddr;
         }
         net->bootIndex = bootIndex;

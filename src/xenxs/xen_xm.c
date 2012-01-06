@@ -708,20 +708,18 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 if (bridge[0] &&
                     !(net->data.bridge.brname = strdup(bridge)))
                     goto no_memory;
-                if (script[0] &&
-                    !(net->data.bridge.script = strdup(script)))
-                    goto no_memory;
                 if (ip[0] &&
                     !(net->data.bridge.ipaddr = strdup(ip)))
                     goto no_memory;
             } else {
-                if (script && script[0] &&
-                    !(net->data.ethernet.script = strdup(script)))
-                    goto no_memory;
                 if (ip[0] &&
                     !(net->data.ethernet.ipaddr = strdup(ip)))
                     goto no_memory;
             }
+
+            if (script && script[0] &&
+                !(net->script = strdup(script)))
+               goto no_memory;
 
             if (model[0] &&
                 !(net->model = strdup(model)))
@@ -1282,8 +1280,8 @@ static int xenFormatXMNet(virConnectPtr conn,
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        if (net->data.ethernet.script)
-            virBufferAsprintf(&buf, ",script=%s", net->data.ethernet.script);
+        if (net->script)
+            virBufferAsprintf(&buf, ",script=%s", net->script);
         if (net->data.ethernet.ipaddr)
             virBufferAsprintf(&buf, ",ip=%s", net->data.ethernet.ipaddr);
         break;

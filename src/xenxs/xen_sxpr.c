@@ -549,7 +549,7 @@ xenParseSxprNets(virDomainDefPtr def,
                     goto no_memory;
                 if (tmp2 &&
                     net->type == VIR_DOMAIN_NET_TYPE_BRIDGE &&
-                    !(net->data.bridge.script = strdup(tmp2)))
+                    !(net->script = strdup(tmp2)))
                     goto no_memory;
                 tmp = sexpr_node(node, "device/vif/ip");
                 if (tmp &&
@@ -558,7 +558,7 @@ xenParseSxprNets(virDomainDefPtr def,
             } else {
                 net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
                 if (tmp2 &&
-                    !(net->data.ethernet.script = strdup(tmp2)))
+                    !(net->script = strdup(tmp2)))
                     goto no_memory;
                 tmp = sexpr_node(node, "device/vif/ip");
                 if (tmp &&
@@ -1786,6 +1786,14 @@ xenFormatSxprNet(virConnectPtr conn,
                      _("unsupported network type %d"), def->type);
         return -1;
     }
+    if (def->script &&
+        def->type != VIR_DOMAIN_NET_TYPE_BRIDGE &&
+        def->type != VIR_DOMAIN_NET_TYPE_ETHERNET) {
+        XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
+                    _("scripts are not supported on interfaces of type %s"),
+                    virDomainNetTypeToString(def->type));
+        return -1;
+    }
 
     if (!isAttach)
         virBufferAddLit(buf, "(device ");
@@ -1800,8 +1808,8 @@ xenFormatSxprNet(virConnectPtr conn,
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
         virBufferEscapeSexpr(buf, "(bridge '%s')", def->data.bridge.brname);
-        if (def->data.bridge.script)
-            script = def->data.bridge.script;
+        if (def->script)
+            script = def->script;
 
         virBufferEscapeSexpr(buf, "(script '%s')", script);
         if (def->data.bridge.ipaddr != NULL)
@@ -1835,9 +1843,9 @@ xenFormatSxprNet(virConnectPtr conn,
     break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        if (def->data.ethernet.script)
+        if (def->script)
             virBufferEscapeSexpr(buf, "(script '%s')",
-                                 def->data.ethernet.script);
+                                 def->script);
         if (def->data.ethernet.ipaddr != NULL)
             virBufferEscapeSexpr(buf, "(ip '%s')", def->data.ethernet.ipaddr);
         break;

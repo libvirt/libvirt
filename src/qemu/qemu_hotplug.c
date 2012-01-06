@@ -1219,7 +1219,7 @@ int qemuDomainChangeNet(struct qemud_driver *driver,
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
         if (STRNEQ_NULLABLE(olddev->data.ethernet.dev, dev->data.ethernet.dev) ||
-            STRNEQ_NULLABLE(olddev->data.ethernet.script, dev->data.ethernet.script) ||
+            STRNEQ_NULLABLE(olddev->script, dev->script) ||
             STRNEQ_NULLABLE(olddev->data.ethernet.ipaddr, dev->data.ethernet.ipaddr)) {
             qemuReportError(VIR_ERR_NO_SUPPORT,
                             _("cannot modify ethernet network device configuration"));

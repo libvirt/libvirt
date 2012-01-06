@@ -574,7 +574,6 @@ struct _virDomainNetDef {
     union {
         struct {
             char *dev;
-            char *script;
             char *ipaddr;
         } ethernet;
         struct {
@@ -597,7 +596,6 @@ struct _virDomainNetDef {
         } network;
         struct {
             char *brname;
-            char *script;
             char *ipaddr;
         } bridge;
         struct {
@@ -613,6 +611,7 @@ struct _virDomainNetDef {
         bool sndbuf_specified;
         unsigned long sndbuf;
     } tune;
+    char *script;
     char *ifname;
     int bootIndex;
     virDomainDeviceInfo info;

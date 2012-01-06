@@ -1167,10 +1167,12 @@ void qemuDomainObjCheckNetTaint(struct qemud_driver *driver,
                                 virDomainNetDefPtr net,
                                 int logFD)
 {
-    if ((net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
-         net->data.ethernet.script != NULL) ||
-        (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE &&
-         net->data.bridge.script != NULL))
+    /* script is only useful for NET_TYPE_ETHERNET (qemu) and
+     * NET_TYPE_BRIDGE (xen), but could be (incorrectly) specified for
+     * any interface type. In any case, it's adding user sauce into
+     * the soup, so it should taint the domain.
+     */
+    if (net->script != NULL)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_SHELL_SCRIPTS, logFD);
 }
 

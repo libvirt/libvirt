@@ -193,11 +193,6 @@ umlBuildCommandLineNet(virConnectPtr conn,
                            _("IP address not supported for ethernet interface"));
             goto error;
         }
-        if (def->data.ethernet.script) {
-            umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("script execution not supported for ethernet interface"));
-            goto error;
-        }
         break;
 
     case VIR_DOMAIN_NET_TYPE_SERVER:
@@ -263,6 +258,12 @@ umlBuildCommandLineNet(virConnectPtr conn,
 
     case VIR_DOMAIN_NET_TYPE_LAST:
         break;
+    }
+
+    if (def->script) {
+        umlReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("interface script execution not supported by this driver"));
+        goto error;
     }
 
     virBufferAsprintf(&buf, ",%02x:%02x:%02x:%02x:%02x:%02x",

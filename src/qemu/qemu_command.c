@@ -2420,8 +2420,16 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
 {
     bool is_tap = false;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    enum virDomainNetType netType = virDomainNetGetActualType(net);
 
-    switch (virDomainNetGetActualType(net)) {
+    if (net->script && netType != VIR_DOMAIN_NET_TYPE_ETHERNET) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("scripts are not supported on interfaces of type %s"),
+                        virDomainNetTypeToString(netType));
+        return NULL;
+    }
+
+    switch (netType) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_DIRECT:
@@ -2437,9 +2445,9 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
             virBufferAsprintf(&buf, "%cifname=%s", type_sep, net->ifname);
             type_sep = ',';
         }
-        if (net->data.ethernet.script) {
+        if (net->script) {
             virBufferAsprintf(&buf, "%cscript=%s", type_sep,
-                              net->data.ethernet.script);
+                              net->script);
             type_sep = ',';
         }
         is_tap = true;
@@ -2449,7 +2457,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_MCAST:
         virBufferAddLit(&buf, "socket");
-        switch (virDomainNetGetActualType(net)) {
+        switch (netType) {
         case VIR_DOMAIN_NET_TYPE_CLIENT:
             virBufferAsprintf(&buf, "%cconnect=%s:%d",
                               type_sep,
@@ -6255,7 +6263,7 @@ qemuParseCommandLineNet(virCapsPtr caps,
             }
         } else if (def->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
                    STREQ(keywords[i], "script") && STRNEQ(values[i], "")) {
-            def->data.ethernet.script = values[i];
+            def->script = values[i];
             values[i] = NULL;
         } else if (def->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
                    STREQ(keywords[i], "ifname")) {
