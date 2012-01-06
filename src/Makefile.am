@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2011 Red Hat, Inc.
+## Copyright (C) 2005-2012 Red Hat, Inc.
 ## See COPYING.LIB for the License of this software
 
 # No libraries with the exception of LIBXML should be listed
@@ -248,8 +248,12 @@ struct_prefix = (remote_|qemu_|virNet|keepalive_)
 
 PDWTAGS = \
 	$(AM_V_GEN)if (pdwtags --help) > /dev/null 2>&1; then		\
-	  pdwtags --verbose $(<:.lo=.$(OBJEXT))				\
-	    | perl -0777 -n						\
+	  pdwtags --verbose $(<:.lo=.$(OBJEXT))	> $(@F)-t1 2> $(@F)-t2;	\
+	  if test -s $(@F)-t2; then					\
+	    rm -rf $(@F)-t?;						\
+	    echo 'WARNING: pdwtags appears broken; skipping the $@ test' >&2;\
+	  else								\
+	    perl -0777 -n						\
 		-e 'foreach my $$p (split m!\n*(?:$(r1)|$(r2))\n!) {'	\
 		-e '  if ($$p =~ /^(struct|enum) $(struct_prefix)/ ||'	\
 		-e '      $$p =~ /^enum {/) {'				\
@@ -272,9 +276,10 @@ PDWTAGS = \
 		-e '    exit 8;'					\
 		-e '  }'						\
 		-e '}'							\
-		> $(@F)-t;						\
-	  case $$? in 8) exit 0;; 0) ;; *) exit 1;; esac;		\
-	  diff -u $(@F)-t $@; st=$$?; rm -f $(@F)-t; exit $$st;		\
+		< $(@F)-t1 > $(@F)-t3;					\
+	    case $$? in 8) rm -f $(@F)-t?; exit 0;; 0) ;; *) exit 1;; esac;\
+	    diff -u $(@F)-t3 $@; st=$$?; rm -f $(@F)-t?; exit $$st;	\
+	  fi;								\
 	else								\
 	  echo 'WARNING: you lack pdwtags; skipping the $@ test' >&2;	\
 	  echo 'WARNING: install the dwarves package to get pdwtags' >&2; \
