@@ -784,6 +784,22 @@ mymain(void)
     setpgid(0, 0);
     setsid();
 
+    /* Our test expects particular fd values; to get that, we must not
+     * leak fds that we inherited from a lazy parent.  At the same
+     * time, virInitialize may open some fds (perhaps via third-party
+     * libraries that it uses), and we must not kill off an fd that
+     * this process opens as it might break expectations of a
+     * pthread_atfork handler, as well as interfering with our tests
+     * trying to ensure we aren't leaking to our children.  The
+     * solution is to do things in two phases - reserve the fds we
+     * want by overwriting any externally inherited fds, then
+     * initialize, then clear the slots for testing.  */
+    if ((fd = open("/dev/null", O_RDONLY)) < 0 ||
+        dup2(fd, 3) < 0 ||
+        dup2(fd, 4) < 0 ||
+        dup2(fd, 5) < 0 ||
+        (fd > 5 && VIR_CLOSE(fd) < 0))
+        return EXIT_FAILURE;
 
     /* Prime the debug/verbose settings from the env vars,
      * since we're about to reset 'environ' */
@@ -791,8 +807,8 @@ mymain(void)
     virTestGetVerbose();
 
     virInitialize();
-    /* Kill off any inherited fds that might interfere with our
-     * testing.  */
+
+    /* Phase two of killing interfering fds; see above.  */
     fd = 3;
     VIR_FORCE_CLOSE(fd);
     fd = 4;
