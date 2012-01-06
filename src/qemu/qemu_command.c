@@ -1709,9 +1709,11 @@ static int qemuParseRBDString(virDomainDiskDefPtr disk)
 
         p = next;
     }
+    VIR_FREE(options);
     return 0;
 
 no_memory:
+    VIR_FREE(options);
     virReportOOMError();
     return -1;
 }
