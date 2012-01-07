@@ -43,7 +43,7 @@
 #include "libxl_driver.h"
 #include "libxl_conf.h"
 #include "xen_xm.h"
-
+#include "virtypedparam.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
@@ -3610,26 +3610,14 @@ libxlDomainGetSchedulerParametersFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    params[0].value.ui = sc_info.weight;
-    params[0].type = VIR_TYPED_PARAM_UINT;
-    if (virStrcpyStatic(params[0].field,
-                        VIR_DOMAIN_SCHEDULER_WEIGHT) == NULL) {
-        libxlError(VIR_ERR_INTERNAL_ERROR,
-                   _("Field name '%s' too long"),
-                   VIR_DOMAIN_SCHEDULER_WEIGHT);
+    if (virTypedParameterAssign(&params[0], VIR_DOMAIN_SCHEDULER_WEIGHT,
+                                VIR_TYPED_PARAM_UINT, sc_info.weight) < 0)
         goto cleanup;
-    }
 
     if (*nparams > 1) {
-        params[1].value.ui = sc_info.cap;
-        params[1].type = VIR_TYPED_PARAM_UINT;
-        if (virStrcpyStatic(params[1].field,
-                            VIR_DOMAIN_SCHEDULER_CAP) == NULL) {
-            libxlError(VIR_ERR_INTERNAL_ERROR,
-                       _("Field name '%s' too long"),
-                       VIR_DOMAIN_SCHEDULER_CAP);
+        if (virTypedParameterAssign(&params[0], VIR_DOMAIN_SCHEDULER_CAP,
+                                    VIR_TYPED_PARAM_UINT, sc_info.cap) < 0)
             goto cleanup;
-        }
     }
 
     if (*nparams > XEN_SCHED_CREDIT_NPARAM)
@@ -3664,6 +3652,13 @@ libxlDomainSetSchedulerParametersFlags(virDomainPtr dom,
     int ret = -1;
 
     virCheckFlags(0, -1);
+    if (virTypedParameterArrayValidate(params, nparams,
+                                       VIR_DOMAIN_SCHEDULER_WEIGHT,
+                                       VIR_TYPED_PARAM_UINT,
+                                       VIR_DOMAIN_SCHEDULER_CAP,
+                                       VIR_TYPED_PARAM_UINT,
+                                       NULL) < 0)
+        return -1;
 
     libxlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -3705,24 +3700,9 @@ libxlDomainSetSchedulerParametersFlags(virDomainPtr dom,
         virTypedParameterPtr param = &params[i];
 
         if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_WEIGHT)) {
-            if (param->type != VIR_TYPED_PARAM_UINT) {
-                libxlError(VIR_ERR_INVALID_ARG, "%s",
-                           _("invalid type for weight tunable, expected a 'uint'"));
-                goto cleanup;
-            }
             sc_info.weight = params[i].value.ui;
-
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_CAP)) {
-            if (param->type != VIR_TYPED_PARAM_UINT) {
-                libxlError(VIR_ERR_INVALID_ARG, "%s",
-                           _("invalid type for cap tunable, expected a 'uint'"));
-                goto cleanup;
-            }
             sc_info.cap = params[i].value.ui;
-        } else {
-            libxlError(VIR_ERR_INVALID_ARG,
-                       _("Invalid parameter '%s'"), param->field);
-            goto cleanup;
         }
     }
 

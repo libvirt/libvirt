@@ -32,6 +32,7 @@
 #include "logging.h"
 #include "uuid.h"
 #include "vmx.h"
+#include "virtypedparam.h"
 #include "esx_driver.h"
 #include "esx_interface_driver.h"
 #include "esx_network_driver.h"
@@ -3660,43 +3661,38 @@ esxDomainGetSchedulerParametersFlags(virDomainPtr domain,
          dynamicProperty = dynamicProperty->_next) {
         if (STREQ(dynamicProperty->name, "config.cpuAllocation.reservation") &&
             ! (mask & (1 << 0))) {
-            snprintf (params[i].field, VIR_TYPED_PARAM_FIELD_LENGTH, "%s",
-                      VIR_DOMAIN_SCHEDULER_RESERVATION);
-
-            params[i].type = VIR_TYPED_PARAM_LLONG;
-
             if (esxVI_AnyType_ExpectType(dynamicProperty->val,
                                          esxVI_Type_Long) < 0) {
                 goto cleanup;
             }
-
-            params[i].value.l = dynamicProperty->val->int64;
+            if (virTypedParameterAssign(&params[i],
+                                        VIR_DOMAIN_SCHEDULER_RESERVATION,
+                                        VIR_TYPED_PARAM_LLONG,
+                                        dynamicProperty->val->int64) < 0)
+                goto cleanup;
             mask |= 1 << 0;
             ++i;
         } else if (STREQ(dynamicProperty->name,
                          "config.cpuAllocation.limit") &&
                    ! (mask & (1 << 1))) {
-            snprintf (params[i].field, VIR_TYPED_PARAM_FIELD_LENGTH, "%s",
-                      VIR_DOMAIN_SCHEDULER_LIMIT);
-
-            params[i].type = VIR_TYPED_PARAM_LLONG;
-
             if (esxVI_AnyType_ExpectType(dynamicProperty->val,
                                          esxVI_Type_Long) < 0) {
                 goto cleanup;
             }
-
-            params[i].value.l = dynamicProperty->val->int64;
+            if (virTypedParameterAssign(&params[i],
+                                        VIR_DOMAIN_SCHEDULER_LIMIT,
+                                        VIR_TYPED_PARAM_LLONG,
+                                        dynamicProperty->val->int64) < 0)
+                goto cleanup;
             mask |= 1 << 1;
             ++i;
         } else if (STREQ(dynamicProperty->name,
                          "config.cpuAllocation.shares") &&
                    ! (mask & (1 << 2))) {
-            snprintf (params[i].field, VIR_TYPED_PARAM_FIELD_LENGTH, "%s",
-                      VIR_DOMAIN_SCHEDULER_SHARES);
-
-            params[i].type = VIR_TYPED_PARAM_INT;
-
+            if (virTypedParameterAssign(&params[i],
+                                        VIR_DOMAIN_SCHEDULER_SHARES,
+                                        VIR_TYPED_PARAM_INT, 0) < 0)
+                goto cleanup;
             if (esxVI_SharesInfo_CastFromAnyType(dynamicProperty->val,
                                                  &sharesInfo) < 0) {
                 goto cleanup;
@@ -3769,6 +3765,15 @@ esxDomainSetSchedulerParametersFlags(virDomainPtr domain,
     int i;
 
     virCheckFlags(0, -1);
+    if (virTypedParameterArrayValidate(params, nparams,
+                                       VIR_DOMAIN_SCHEDULER_RESERVATION,
+                                       VIR_TYPED_PARAM_LLONG,
+                                       VIR_DOMAIN_SCHEDULER_LIMIT,
+                                       VIR_TYPED_PARAM_LLONG,
+                                       VIR_DOMAIN_SCHEDULER_SHARES,
+                                       VIR_TYPED_PARAM_INT,
+                                       NULL) < 0)
+        return -1;
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
@@ -3783,8 +3788,7 @@ esxDomainSetSchedulerParametersFlags(virDomainPtr domain,
     }
 
     for (i = 0; i < nparams; ++i) {
-        if (STREQ (params[i].field, VIR_DOMAIN_SCHEDULER_RESERVATION) &&
-            params[i].type == VIR_TYPED_PARAM_LLONG) {
+        if (STREQ(params[i].field, VIR_DOMAIN_SCHEDULER_RESERVATION)) {
             if (esxVI_Long_Alloc(&spec->cpuAllocation->reservation) < 0) {
                 goto cleanup;
             }
@@ -3797,8 +3801,7 @@ esxDomainSetSchedulerParametersFlags(virDomainPtr domain,
             }
 
             spec->cpuAllocation->reservation->value = params[i].value.l;
-        } else if (STREQ (params[i].field, VIR_DOMAIN_SCHEDULER_LIMIT) &&
-                   params[i].type == VIR_TYPED_PARAM_LLONG) {
+        } else if(STREQ (params[i].field, VIR_DOMAIN_SCHEDULER_LIMIT)) {
             if (esxVI_Long_Alloc(&spec->cpuAllocation->limit) < 0) {
                 goto cleanup;
             }
@@ -3812,8 +3815,7 @@ esxDomainSetSchedulerParametersFlags(virDomainPtr domain,
             }
 
             spec->cpuAllocation->limit->value = params[i].value.l;
-        } else if (STREQ (params[i].field, VIR_DOMAIN_SCHEDULER_SHARES) &&
-                   params[i].type == VIR_TYPED_PARAM_INT) {
+        } else if(STREQ (params[i].field, VIR_DOMAIN_SCHEDULER_SHARES)) {
             if (esxVI_SharesInfo_Alloc(&sharesInfo) < 0 ||
                 esxVI_Int_Alloc(&sharesInfo->shares) < 0) {
                 goto cleanup;
@@ -3851,10 +3853,6 @@ esxDomainSetSchedulerParametersFlags(virDomainPtr domain,
                     goto cleanup;
                 }
             }
-        } else {
-            ESX_ERROR(VIR_ERR_INVALID_ARG, _("Unknown field '%s'"),
-                      params[i].field);
-            goto cleanup;
         }
     }
 
@@ -4828,6 +4826,11 @@ esxDomainSetMemoryParameters(virDomainPtr domain, virTypedParameterPtr params,
     int i;
 
     virCheckFlags(0, -1);
+    if (virTypedParameterArrayValidate(params, nparams,
+                                       VIR_DOMAIN_MEMORY_MIN_GUARANTEE,
+                                       VIR_TYPED_PARAM_ULLONG,
+                                       NULL) < 0)
+        return -1;
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
@@ -4842,18 +4845,13 @@ esxDomainSetMemoryParameters(virDomainPtr domain, virTypedParameterPtr params,
     }
 
     for (i = 0; i < nparams; ++i) {
-        if (STREQ (params[i].field, VIR_DOMAIN_MEMORY_MIN_GUARANTEE) &&
-            params[i].type == VIR_TYPED_PARAM_ULLONG) {
+        if (STREQ(params[i].field, VIR_DOMAIN_MEMORY_MIN_GUARANTEE)) {
             if (esxVI_Long_Alloc(&spec->memoryAllocation->reservation) < 0) {
                 goto cleanup;
             }
 
             spec->memoryAllocation->reservation->value =
               VIR_DIV_UP(params[i].value.ul, 1024); /* Scale from kilobytes to megabytes */
-        } else {
-            ESX_ERROR(VIR_ERR_INVALID_ARG, _("Unknown field '%s'"),
-                      params[i].field);
-            goto cleanup;
         }
     }
 
@@ -4917,16 +4915,11 @@ esxDomainGetMemoryParameters(virDomainPtr domain, virTypedParameterPtr params,
         goto cleanup;
     }
 
-    if (virStrcpyStatic(params[0].field,
-                        VIR_DOMAIN_MEMORY_MIN_GUARANTEE) == NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Field %s too big for destination"),
-                  VIR_DOMAIN_MEMORY_MIN_GUARANTEE);
+    /* Scale from megabytes to kilobytes */
+    if (virTypedParameterAssign(params, VIR_DOMAIN_MEMORY_MIN_GUARANTEE,
+                                VIR_TYPED_PARAM_ULLONG,
+                                reservation->value * 1024) < 0)
         goto cleanup;
-    }
-
-    params[0].type = VIR_TYPED_PARAM_ULLONG;
-    params[0].value.ul = reservation->value * 1024; /* Scale from megabytes to kilobytes */
 
     *nparams = 1;
     result = 0;

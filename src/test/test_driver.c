@@ -50,6 +50,7 @@
 #include "threads.h"
 #include "logging.h"
 #include "virfile.h"
+#include "virtypedparam.h"
 
 #define VIR_FROM_THIS VIR_FROM_TEST
 
@@ -2691,16 +2692,11 @@ testDomainGetSchedulerParamsFlags(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (virStrcpyStatic(params[0].field,
-                        VIR_DOMAIN_SCHEDULER_WEIGHT) == NULL) {
-        testError(VIR_ERR_INTERNAL_ERROR, _("Field name '%s' too long"),
-                  VIR_DOMAIN_SCHEDULER_WEIGHT);
+    if (virTypedParameterAssign(params, VIR_DOMAIN_SCHEDULER_WEIGHT,
+                                VIR_TYPED_PARAM_UINT, 50) < 0)
         goto cleanup;
-    }
-    params[0].type = VIR_TYPED_PARAM_UINT;
     /* XXX */
     /*params[0].value.ui = privdom->weight;*/
-    params[0].value.ui = 50;
 
     *nparams = 1;
     ret = 0;
@@ -2730,6 +2726,11 @@ testDomainSetSchedulerParamsFlags(virDomainPtr domain,
     int ret = -1, i;
 
     virCheckFlags(0, -1);
+    if (virTypedParameterArrayValidate(params, nparams,
+                                       VIR_DOMAIN_SCHEDULER_WEIGHT,
+                                       VIR_TYPED_PARAM_UINT,
+                                       NULL) < 0)
+        return -1;
 
     testDriverLock(privconn);
     privdom = virDomainFindByName(&privconn->domains,
@@ -2742,16 +2743,10 @@ testDomainSetSchedulerParamsFlags(virDomainPtr domain,
     }
 
     for (i = 0; i < nparams; i++) {
-        if (STRNEQ(params[i].field, VIR_DOMAIN_SCHEDULER_WEIGHT)) {
-            testError(VIR_ERR_INVALID_ARG, "field");
-            goto cleanup;
+        if (STREQ(params[i].field, VIR_DOMAIN_SCHEDULER_WEIGHT)) {
+            /* XXX */
+            /*privdom->weight = params[i].value.ui;*/
         }
-        if (params[i].type != VIR_TYPED_PARAM_UINT) {
-            testError(VIR_ERR_INVALID_ARG, "type");
-            goto cleanup;
-        }
-        /* XXX */
-        /*privdom->weight = params[i].value.ui;*/
     }
 
     ret = 0;

@@ -1,7 +1,7 @@
 /*
  * xen_internal.c: direct access to Xen hypervisor level
  *
- * Copyright (C) 2005-2011 Red Hat, Inc.
+ * Copyright (C) 2005-2012 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -67,6 +67,7 @@
 #include "memory.h"
 #include "virfile.h"
 #include "virnodesuspend.h"
+#include "virtypedparam.h"
 
 #define VIR_FROM_THIS VIR_FROM_XEN
 
@@ -1335,27 +1336,18 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
                 if (ret < 0)
                     return(-1);
 
-                if (virStrcpyStatic(params[0].field,
-                                    VIR_DOMAIN_SCHEDULER_WEIGHT) == NULL) {
-                    virXenError(VIR_ERR_INTERNAL_ERROR,
-                                "Weight %s too big for destination",
-                                VIR_DOMAIN_SCHEDULER_WEIGHT);
+                if (virTypedParameterAssign(&params[0],
+                                            VIR_DOMAIN_SCHEDULER_WEIGHT,
+                                            VIR_TYPED_PARAM_UINT,
+                                            op_dom.u.getschedinfo.u.credit.weight) < 0)
                     return -1;
-                }
-                params[0].type = VIR_TYPED_PARAM_UINT;
-                params[0].value.ui = op_dom.u.getschedinfo.u.credit.weight;
 
-                if (*nparams > 1) {
-                    if (virStrcpyStatic(params[1].field,
-                                        VIR_DOMAIN_SCHEDULER_CAP) == NULL) {
-                        virXenError(VIR_ERR_INTERNAL_ERROR,
-                                    "Cap %s too big for destination",
-                                    VIR_DOMAIN_SCHEDULER_CAP);
+                if (*nparams > 1 &&
+                    virTypedParameterAssign(&params[1],
+                                            VIR_DOMAIN_SCHEDULER_CAP,
+                                            VIR_TYPED_PARAM_UINT,
+                                            op_dom.u.getschedinfo.u.credit.cap) < 0)
                         return -1;
-                    }
-                    params[1].type = VIR_TYPED_PARAM_UINT;
-                    params[1].value.ui = op_dom.u.getschedinfo.u.credit.cap;
-                }
 
                 if (*nparams > XEN_SCHED_CRED_NPARAM)
                     *nparams = XEN_SCHED_CRED_NPARAM;
@@ -1398,6 +1390,14 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
         /* nothing to do, exit early */
         return 0;
     }
+
+    if (virTypedParameterArrayValidate(params, nparams,
+                                       VIR_DOMAIN_SCHEDULER_WEIGHT,
+                                       VIR_TYPED_PARAM_UINT,
+                                       VIR_DOMAIN_SCHEDULER_CAP,
+                                       VIR_TYPED_PARAM_UINT,
+                                       NULL) < 0)
+        return -1;
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
     if (priv->handle < 0) {
@@ -1453,8 +1453,7 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
 
             for (i = 0; i < nparams; i++) {
                 memset(&buf, 0, sizeof(buf));
-                if (STREQ (params[i].field, VIR_DOMAIN_SCHEDULER_WEIGHT) &&
-                    params[i].type == VIR_TYPED_PARAM_UINT) {
+                if (STREQ(params[i].field, VIR_DOMAIN_SCHEDULER_WEIGHT)) {
                     val = params[i].value.ui;
                     if ((val < 1) || (val > USHRT_MAX)) {
                         snprintf(buf, sizeof(buf), _("Credit scheduler weight parameter (%d) is out of range (1-65535)"), val);
@@ -1462,8 +1461,7 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
                         return(-1);
                     }
                     op_dom.u.getschedinfo.u.credit.weight = val;
-                } else if (STREQ (params[i].field, VIR_DOMAIN_SCHEDULER_CAP) &&
-                    params[i].type == VIR_TYPED_PARAM_UINT) {
+                } else if (STREQ(params[i].field, VIR_DOMAIN_SCHEDULER_CAP)) {
                     val = params[i].value.ui;
                     if (val >= USHRT_MAX) {
                         snprintf(buf, sizeof(buf), _("Credit scheduler cap parameter (%d) is out of range (0-65534)"), val);
@@ -1471,11 +1469,6 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
                         return(-1);
                     }
                     op_dom.u.getschedinfo.u.credit.cap = val;
-                } else {
-                    virXenErrorFunc(VIR_ERR_INVALID_ARG, __FUNCTION__,
-                                    "Credit scheduler accepts 'cap' and 'weight' integer parameters",
-                                    0);
-                    return(-1);
                 }
             }
 
