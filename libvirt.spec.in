@@ -1270,6 +1270,13 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %endif
 
 %changelog
+* Sat Jan  7 2012 Daniel Veillard <veillard@redhat.com> - 0.9.9-1
+- Add API virDomain{S,G}etInterfaceParameters
+- Add API virDomain{G, S}etNumaParameters
+- Add support for ppc64 qemu
+- Support Xen domctl v8
+- many improvements and bug fixes
+
 * Thu Dec  8 2011 Daniel Veillard <veillard@redhat.com> - 0.9.8-1
 - Add support for QEMU 1.0
 - Add preliminary PPC cpu driver

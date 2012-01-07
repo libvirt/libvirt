@@ -8,6 +8,169 @@
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
 
+    <h3>0.9.9: Jan 7 2012</h3>
+    <ul>
+      <li> Features:<br/>
+      Add new API virDomain{S,G}etInterfaceParameters (Hu Tao),<br/>
+      Add new API virDomain{G,S}etNumaParameters (Hu Tao),<br/>
+      Add support for ppc64 qemu (Prerna Saxena, Bharata B Rao, Michael Ellerman),<br/>
+      Support Xen domctl v8 (Jim Fehlig)<br/>
+      </li>
+
+      <li> Documentation:<br/>
+      Fix typos in messages. (Yuri Chornoivan),<br/>
+      docs: re-fix stray / (Eric Blake),<br/>
+      virsh: move version command to host group (Lai Jiangshan),<br/>
+      docs: Move 'echo' command description into the generic commands section (Satoru SATOH),<br/>
+      docs: Move 'send-key' command description into the domain commands section (Satoru SATOH),<br/>
+      docs: remove stray / (Eric Blake),<br/>
+      docs: fix missing / in xml examples (Eric Blake),<br/>
+      docs: improve virsh domxml-*-native command docs (Alex Jia),<br/>
+      docs: document &lt;qemu:commandline&gt; xml (Eric Blake),<br/>
+      Fix typo in storage pool documentation (Christophe Fergeau),<br/>
+      docs: tweak 'virsh edit' wording (Eric Blake),<br/>
+      docs: document &lt;address&gt; elements in one place (Eric Blake),<br/>
+      threads: Document spurious wakeups on virCondWait (Michal Privoznik)<br/>
+      </li>
+
+      <li> Portability:<br/>
+      build: fix mingw virCommand build (Eric Blake),<br/>
+      tests: avoid test failure on rawhide gnutls (Eric Blake),<br/>
+      build: drop check for ANSI compiler (Eric Blake),<br/>
+      Fix build on s390(x) and other stange arches (Daniel Veillard),<br/>
+      Require avahi as an rpm dependancy (Daniel Veillard),<br/>
+      Disable python explicitly in mingw32 autobuild (Daniel P. Berrange),<br/>
+      build: disable dtrace on non-Linux builds (Eric Blake),<br/>
+      build: let autobuild check more code (Eric Blake),<br/>
+      maint: allow bootstrap in a sandbox (Eric Blake)<br/>
+      </li>
+
+      <li> Bug Fixes:<br/>
+      qemu: Avoid memory leaks on qemuParseRBDString (Alex Jia),<br/>
+      qemu: fix a bug in numatune (Hu Tao),<br/>
+      qemu: fix use-after-free regression (Eric Blake),<br/>
+      seclabel: fix regression in libvirtd restart (Eric Blake),<br/>
+      command: Discard FD_SETSIZE limit for opened files (Michal Privoznik),<br/>
+      Fix xenstore serial console path for HVM guests (Jim Fehlig),<br/>
+      schemas: Allow '.' in CPU feature name (Jiri Denemark),<br/>
+      virCommand: Properly handle POLLHUP (Michal Privoznik),<br/>
+      virCPUDefCopy forgot to copy NUMA topology (Jiri Denemark),<br/>
+      qemu: fix block stat naming (Eric Blake),<br/>
+      domiftune: clean up previous patches (Eric Blake),<br/>
+      virsh: Fix checking for reconnect conditions (Peter Krempa),<br/>
+      qemu: Fix bandwidth memory leak on failure (Alex Jia),<br/>
+      qemu: fix blkio memory leak on failure (Eric Blake),<br/>
+      remove a static limit on max domains in python bindings (Daniel Veillard),<br/>
+      python: Fix problems of virDomain{Set, Get}BlockIoTune bindings (Alex Jia),<br/>
+      qemu: fix inf-loop in blkio parameters (Eric Blake),<br/>
+      qemu: Keep list of USB devices attached to domains (Michal Privoznik),<br/>
+      qemu: Release the lock on domobj if fails on finding the disk path (Osier Yang),<br/>
+      virsh: plug mem leaks in domxml-*-native (Alex Jia),<br/>
+      console: plug memory leaks (Alex Jia),<br/>
+      rpc: handle param_int, plug memory leaks (Eric Blake),<br/>
+      python: plug memory leak on libvirt_virConnectOpenAuth (Alex Jia),<br/>
+      Only add the timer when a callback is registered (Daniel P. Berrange),<br/>
+      qemu: detect truncated file as invalid save image (Eric Blake),<br/>
+      qemu: Don't drop hostdev config until security label restore (Michal Privoznik),<br/>
+      Fix default migration speed in qemu driver (Jim Fehlig),<br/>
+      qemu: Fix race between async and query jobs (Jiri Denemark),<br/>
+      qemu: Do not free the device from activePciHostdevs if it's in use (Osier Yang),<br/>
+      qemu: Honor the original properties of PCI device when detaching (Osier Yang),<br/>
+      spec: fix inverted logic on sanlock (Wen Congyang),<br/>
+      tests: plug memory leak on linuxTestNodeInfo (Alex Jia),<br/>
+      storage: Fix a potential crash when creating vol object (Osier Yang),<br/>
+      qemu: Disable EOF processing during qemuDomainDestroy (Jiri Denemark),<br/>
+      virsh: Free returned MIME type string (Michal Privoznik),<br/>
+      storage: Activate/deactivate logical volumes only on local node (Rommer),<br/>
+      security: don't try to label network disks (Josh Durgin),<br/>
+      test: replace deprecated "fedora-13" machine with "pc-0.13" (Laine Stump),<br/>
+      network: don't add iptables rules for externally managed networks (Laine Stump),<br/>
+      threadpool: Use while loop on virCondWait (Michal Privoznik),<br/>
+      virsh: plug memory leak on cmdDomblklist (Alex Jia),<br/>
+      fix error when parsing ppc64 models on x86 host (Stefan Berger),<br/>
+      fix memory leak in src/nodeinfo.c (Stefan Berger),<br/>
+      threadpool: Don't wait on condition if pool has no workers (Michal Privoznik),<br/>
+      bridge: Fix forward delay APIs (Jiri Denemark),<br/>
+      virsh: return correct value from cmdDomIfGetLink (Peter Krempa),<br/>
+      virsh: plug memory leak on cmdDomIfGetLink() sucessful path (Alex Jia),<br/>
+      virsh: plug memory leak on cmdBlkdeviotune() sucessful path (Alex Jia),<br/>
+      test: fix potential lock corruption in test driver (Laine Stump),<br/>
+      spec: fix logic bug in deciding to turn on cgconfig (Eric Blake),<br/>
+      When checking nttyFDs to see if it is != 1, be sure to use '1' and not '-1' (Daniel P. Berrange),<br/>
+      Fix installation of libvirt-guests.service (Daniel P. Berrange)<br/>
+      </li>
+
+      <li> Improvements:<br/>
+      Implement DNS SRV record into the bridge driver (Michal Novotny),<br/>
+      seclabel: honor device override in selinux (Eric Blake),<br/>
+      seclabel: allow a seclabel override on a disk src (Eric Blake),<br/>
+      seclabel: extend XML to allow per-disk label overrides (Eric Blake),<br/>
+      seclabel: move seclabel stuff earlier (Eric Blake),<br/>
+      seclabel: refactor existing domain_conf usage (Eric Blake),<br/>
+      schema: rewrite seclabel rng to match code (Eric Blake),<br/>
+      domiftune: Enable the virDomain{S,G}etInterfaceParameters in virsh (Hu Tao),<br/>
+      domiftune: Add virDomain{S,G}etInterfaceParameters support to qemu driver (Hu Tao),<br/>
+      domiftune: Add a util function virDomainNetFind (Hu Tao),<br/>
+      domiftune: Add support of new APIs to the remote driver (Hu Tao),<br/>
+      domiftune: virDomain{S,G}etInterfaceParameters: the main entry points (Hu Tao),<br/>
+      daemon: clean up daemonization (Eric Blake),<br/>
+      tests: fix schema checks sorting (Eric Blake),<br/>
+      qemu: Support for overriding NOFILE limit (Michal Privoznik),<br/>
+      virsh: Use vshWatchJob in cmdManagedSave (Michal Privoznik),<br/>
+      virsh: Use vshWatchJob in cmdSave (Michal Privoznik),<br/>
+      virsh: Use vshWatchJob in cmdDump (Michal Privoznik),<br/>
+      virsh: Move job watch code to a separate function (Michal Privoznik),<br/>
+      qemuhelptest: Add new qemuCap flag (Michal Privoznik),<br/>
+      qemu: Support readonly filesystem passthrough (Osier Yang),<br/>
+      nwfilter: Do not require DHCP requests to be broadcasted (Stefan Berger),<br/>
+      tests: run schema checks in sorted order (Eric Blake),<br/>
+      tests: Add fake PPC64 emulator for QEMU testing (Michael Ellerman),<br/>
+      qemu: Add spapr-vio address assignment (Michael Ellerman),<br/>
+      Add New address type spapr-vio to domain.rng (Bharata B Rao),<br/>
+      Add address type for SPAPR VIO devices (Michael Ellerman),<br/>
+      qemu: Add a capability flag for -no-acpi (Michael Ellerman),<br/>
+      add new command numatune to virsh (Hu Tao),<br/>
+      Implement virDomain{G, S}etNumaParameters for the qemu driver (Hu Tao),<br/>
+      Add virDomain{G, S}etNumaParameters support to the remote driver (Hu Tao),<br/>
+      use cpuset to manage numa (Hu Tao),<br/>
+      Add functions to set/get cgroup cpuset parameters (Hu Tao),<br/>
+      virsh: simplify printing of typed parameters (Eric Blake),<br/>
+      Hide use of timers for domain event dispatch (Daniel P. Berrange),<br/>
+      Remove decl of all APIs related to domain event callbacks &amp; queues (Daniel P. Berrange),<br/>
+      Remove all domain event structs from header (Daniel P. Berrange),<br/>
+      Convert drivers to thread safe APIs for adding callbacks (Daniel P. Berrange),<br/>
+      Add APIs to allow management of callbacks purely with virDomainEventState (Daniel P. Berrange),<br/>
+      Return count of callbacks when registering callbacks (Daniel P. Berrange),<br/>
+      Convert Xen &amp; VBox drivers to use virDomainEventState (Daniel P. Berrange),<br/>
+      nwfilter: do not create ebtables chain unnecessarily (Stefan Berger),<br/>
+      migration: Add more specific error code/message on migration abort (Peter Krempa),<br/>
+      virsh: Add option to undefine storage with domains (Peter Krempa),<br/>
+      python: Expose blockPeek and memoryPeek in Python binding (Osier Yang),<br/>
+      virsh: support multifunction in attach-disk (KAMEZAWA Hiroyuki),<br/>
+      python: Fix export of virDomainSnapshotListChildrenNames (Peter Krempa),<br/>
+      Provide a helper method virDomainLiveConfigHelperMethod (Lei Li),<br/>
+      virsh: Print error message if argument parsing fails for cmdNodesuspend (Peter Krempa),<br/>
+      build: follow directory install conventions (Eric Blake),<br/>
+      Fix make uninstall (Dave Allan),<br/>
+      qemu: Prepare to cater for more general address assignment (Michael Ellerman),<br/>
+      qemu: Add address in qemuBuildChrDeviceStr() on pseries (Michael Ellerman),<br/>
+      qemu: Use spapr-vscsi on pseries machine type (Michael Ellerman),<br/>
+      network: allow '-' in model name (Eric Blake),<br/>
+      cpu: Add cpu flags supported by newest qemu (Peter Krempa),<br/>
+      Pass the VM's UUID into the nwfilter subsystem (Stefan Berger),<br/>
+      nwfilter: cleanup return codes in nwfilter subsystem (Stefan Berger),<br/>
+      spec: make it easier to autoreconf when building rpm (Eric Blake),<br/>
+      Ensure to prefix %{buildroot} when overriding systemd install location (Daniel P. Berrange),<br/>
+      Add ppc64 specific definitions to domain.rng (Bharata B Rao),<br/>
+      Clean up qemuBuildCommandLine to remove x86-specific (Prerna Saxena),<br/>
+      Modify the tests/nodeinfotest.c to use sysfs in addition (Prerna Saxena),<br/>
+      Use sysfs to gather host topology, in place of (Prerna Saxena)<br/>
+      </li>
+
+      <li> Cleanups:<br/>
+      network_conf: Fix whitespace to pass syntax-check (Peter Krempa)<br/>
+      </li>
+    </ul>
     <h3>0.9.8: Dec 8 2011</h3>
     <ul>
       <li> Features:<br/>
