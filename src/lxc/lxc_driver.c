@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_driver.c: linux container driver functions
@@ -2749,7 +2749,6 @@ lxcSetSchedulerParametersFlags(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     virDomainDefPtr vmdef = NULL;
     int ret = -1;
-    bool isActive;
     int rc;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -2765,22 +2764,11 @@ lxcSetSchedulerParametersFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    isActive = virDomainObjIsActive(vm);
-
-    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
-        if (isActive)
-            flags = VIR_DOMAIN_AFFECT_LIVE;
-        else
-            flags = VIR_DOMAIN_AFFECT_CONFIG;
-    }
+    if (virDomainLiveConfigHelperMethod(driver->caps, vm, &flags,
+                                        &vmdef) < 0)
+        goto cleanup;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (!vm->persistent) {
-            lxcError(VIR_ERR_OPERATION_INVALID, "%s",
-                     _("cannot change persistent config of a transient domain"));
-            goto cleanup;
-        }
-
         /* Make a copy for updated domain. */
         vmdef = virDomainObjCopyPersistentDef(driver->caps, vm);
         if (!vmdef)
@@ -2788,12 +2776,6 @@ lxcSetSchedulerParametersFlags(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (!isActive) {
-            lxcError(VIR_ERR_OPERATION_INVALID,
-                     "%s", _("domain is not running"));
-            goto cleanup;
-        }
-
         if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
             lxcError(VIR_ERR_OPERATION_INVALID,
                      "%s", _("cgroup CPU controller is not mounted"));
@@ -2919,12 +2901,12 @@ lxcGetSchedulerParametersFlags(virDomainPtr dom,
     lxc_driver_t *driver = dom->conn->privateData;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
+    virDomainDefPtr persistentDef;
     unsigned long long shares = 0;
     unsigned long long period = 0;
     long long quota = 0;
     int ret = -1;
     int rc;
-    bool isActive;
     bool cpu_bw_status = false;
     int saved_nparams = 0;
 
@@ -2948,50 +2930,17 @@ lxcGetSchedulerParametersFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    isActive = virDomainObjIsActive(vm);
-
-    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
-        if (isActive)
-            flags = VIR_DOMAIN_AFFECT_LIVE;
-        else
-            flags = VIR_DOMAIN_AFFECT_CONFIG;
-    }
+    if (virDomainLiveConfigHelperMethod(driver->caps, vm, &flags,
+                                        &persistentDef) < 0)
+        goto cleanup;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (!vm->persistent) {
-            lxcError(VIR_ERR_OPERATION_INVALID, "%s",
-                     _("cannot query persistent config of a transient domain"));
-            goto cleanup;
-        }
-
-        if (isActive) {
-            virDomainDefPtr persistentDef;
-
-            persistentDef = virDomainObjGetPersistentDef(driver->caps, vm);
-            if (!persistentDef) {
-                lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                         _("can't get persistentDef"));
-                goto cleanup;
-            }
-            shares = persistentDef->cputune.shares;
-            if (*nparams > 1 && cpu_bw_status) {
-                period = persistentDef->cputune.period;
-                quota = persistentDef->cputune.quota;
-            }
-        } else {
-            shares = vm->def->cputune.shares;
-            if (*nparams > 1 && cpu_bw_status) {
-                period = vm->def->cputune.period;
-                quota = vm->def->cputune.quota;
-            }
+        shares = persistentDef->cputune.shares;
+        if (*nparams > 1 && cpu_bw_status) {
+            period = persistentDef->cputune.period;
+            quota = persistentDef->cputune.quota;
         }
         goto out;
-    }
-
-    if (!isActive) {
-        lxcError(VIR_ERR_OPERATION_INVALID, "%s",
-                 _("domain is not running"));
-        goto cleanup;
     }
 
     if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
@@ -3091,7 +3040,6 @@ static int lxcDomainSetBlkioParameters(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     virDomainDefPtr persistentDef = NULL;
     int ret = -1;
-    bool isActive;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -3105,22 +3053,11 @@ static int lxcDomainSetBlkioParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    isActive = virDomainObjIsActive(vm);
-
-    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
-        if (isActive)
-            flags = VIR_DOMAIN_AFFECT_LIVE;
-        else
-            flags = VIR_DOMAIN_AFFECT_CONFIG;
-    }
+    if (virDomainLiveConfigHelperMethod(driver->caps, vm, &flags,
+                                        &persistentDef) < 0)
+        goto cleanup;
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (!isActive) {
-            lxcError(VIR_ERR_OPERATION_INVALID,
-                     "%s", _("domain is not running"));
-            goto cleanup;
-        }
-
         if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
             lxcError(VIR_ERR_OPERATION_INVALID, _("blkio cgroup isn't mounted"));
             goto cleanup;
@@ -3131,20 +3068,7 @@ static int lxcDomainSetBlkioParameters(virDomainPtr dom,
                      _("cannot find cgroup for domain %s"), vm->def->name);
             goto cleanup;
         }
-    }
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (!vm->persistent) {
-            lxcError(VIR_ERR_OPERATION_INVALID, "%s",
-                     _("cannot change persistent config of a transient domain"));
-            goto cleanup;
-        }
-        if (!(persistentDef = virDomainObjGetPersistentDef(driver->caps, vm)))
-            goto cleanup;
-    }
-
-    ret = 0;
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         for (i = 0; i < nparams; i++) {
             virTypedParameterPtr param = &params[i];
 
@@ -3153,30 +3077,29 @@ static int lxcDomainSetBlkioParameters(virDomainPtr dom,
                 if (param->type != VIR_TYPED_PARAM_UINT) {
                     lxcError(VIR_ERR_INVALID_ARG, "%s",
                              _("invalid type for blkio weight tunable, expected a 'unsigned int'"));
-                    ret = -1;
-                    continue;
+                    goto cleanup;
                 }
 
                 if (params[i].value.ui > 1000 || params[i].value.ui < 100) {
                     lxcError(VIR_ERR_INVALID_ARG, "%s",
                              _("out of blkio weight range."));
-                    ret = -1;
-                    continue;
+                    goto cleanup;
                 }
 
                 rc = virCgroupSetBlkioWeight(group, params[i].value.ui);
                 if (rc != 0) {
                     virReportSystemError(-rc, "%s",
                                          _("unable to set blkio weight tunable"));
-                    ret = -1;
+                    goto cleanup;
                 }
             } else {
                 lxcError(VIR_ERR_INVALID_ARG,
                          _("Parameter `%s' not supported"), param->field);
-                ret = -1;
+                goto cleanup;
             }
         }
-    } else if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+    }
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         /* Clang can't see that if we get here, persistentDef was set.  */
         sa_assert(persistentDef);
 
@@ -3187,29 +3110,28 @@ static int lxcDomainSetBlkioParameters(virDomainPtr dom,
                 if (param->type != VIR_TYPED_PARAM_UINT) {
                     lxcError(VIR_ERR_INVALID_ARG, "%s",
                              _("invalid type for blkio weight tunable, expected a 'unsigned int'"));
-                    ret = -1;
-                    continue;
+                    goto cleanup;
                 }
 
                 if (params[i].value.ui > 1000 || params[i].value.ui < 100) {
                     lxcError(VIR_ERR_INVALID_ARG, "%s",
                              _("out of blkio weight range."));
-                    ret = -1;
-                    continue;
+                    goto cleanup;
                 }
 
                 persistentDef->blkio.weight = params[i].value.ui;
             } else {
                 lxcError(VIR_ERR_INVALID_ARG,
                          _("Parameter `%s' not supported"), param->field);
-                ret = -1;
+                goto cleanup;
             }
         }
 
         if (virDomainSaveConfig(driver->configDir, persistentDef) < 0)
-            ret = -1;
+            goto cleanup;
     }
 
+    ret = 0;
 cleanup:
     virCgroupFree(&group);
     if (vm)
@@ -3233,7 +3155,6 @@ static int lxcDomainGetBlkioParameters(virDomainPtr dom,
     unsigned int val;
     int ret = -1;
     int rc;
-    bool isActive;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -3254,22 +3175,11 @@ static int lxcDomainGetBlkioParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    isActive = virDomainObjIsActive(vm);
-
-    if (flags == VIR_DOMAIN_AFFECT_CURRENT) {
-        if (isActive)
-            flags = VIR_DOMAIN_AFFECT_LIVE;
-        else
-            flags = VIR_DOMAIN_AFFECT_CONFIG;
-    }
+    if (virDomainLiveConfigHelperMethod(driver->caps, vm, &flags,
+                                        &persistentDef) < 0)
+        goto cleanup;
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (!isActive) {
-            lxcError(VIR_ERR_OPERATION_INVALID,
-                     "%s", _("domain is not running"));
-            goto cleanup;
-        }
-
         if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
             lxcError(VIR_ERR_OPERATION_INVALID, _("blkio cgroup isn't mounted"));
             goto cleanup;
@@ -3280,19 +3190,7 @@ static int lxcDomainGetBlkioParameters(virDomainPtr dom,
                      _("cannot find cgroup for domain %s"), vm->def->name);
             goto cleanup;
         }
-    }
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (!vm->persistent) {
-            lxcError(VIR_ERR_OPERATION_INVALID, "%s",
-                     _("cannot change persistent config of a transient domain"));
-            goto cleanup;
-        }
-        if (!(persistentDef = virDomainObjGetPersistentDef(driver->caps, vm)))
-            goto cleanup;
-    }
-
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         for (i = 0; i < *nparams && i < LXC_NB_BLKIO_PARAM; i++) {
             virTypedParameterPtr param = &params[i];
             val = 0;
