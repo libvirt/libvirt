@@ -1,7 +1,7 @@
 /*
  * command.c: Child command execution
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -105,32 +105,6 @@ struct _virCommand {
     bool reap;
 };
 
-#ifndef WIN32
-
-# if HAVE_CAPNG
-static int virClearCapabilities(void)
-{
-    int ret;
-
-    capng_clear(CAPNG_SELECT_BOTH);
-
-    if ((ret = capng_apply(CAPNG_SELECT_BOTH)) < 0) {
-        virCommandError(VIR_ERR_INTERNAL_ERROR,
-                        _("cannot clear process capabilities %d"), ret);
-        return -1;
-    }
-
-    return 0;
-}
-# else
-static int virClearCapabilities(void)
-{
-//    VIR_WARN("libcap-ng support not compiled in, unable to clear "
-//             "capabilities");
-    return 0;
-}
-# endif
-
 /*
  * virCommandFDIsSet:
  * @fd: FD to test
@@ -190,6 +164,32 @@ virCommandFDSet(int fd,
 
     return 0;
 }
+
+#ifndef WIN32
+
+# if HAVE_CAPNG
+static int virClearCapabilities(void)
+{
+    int ret;
+
+    capng_clear(CAPNG_SELECT_BOTH);
+
+    if ((ret = capng_apply(CAPNG_SELECT_BOTH)) < 0) {
+        virCommandError(VIR_ERR_INTERNAL_ERROR,
+                        _("cannot clear process capabilities %d"), ret);
+        return -1;
+    }
+
+    return 0;
+}
+# else
+static int virClearCapabilities(void)
+{
+//    VIR_WARN("libcap-ng support not compiled in, unable to clear "
+//             "capabilities");
+    return 0;
+}
+# endif
 
 /**
  * virFork:
