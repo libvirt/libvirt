@@ -348,5 +348,16 @@
       </dd>
     </dl>
 
+    <h2><a name="mobile">Mobile applications</a></h2>
+
+    <dl>
+      <dt><a href="https://market.android.com/details?id=vm.manager">VM Manager</a></dt>
+      <dd>
+        VM Manager is VM (libvirt) manager (over SSH) application. VM Manager
+        is an application for libvirt VM / Domain management over SSH.
+        Please keep in mind that this software is under heavy development.
+      </dd>
+    </dl>
+
   </body>
 </html>
