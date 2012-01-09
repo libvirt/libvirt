@@ -3031,6 +3031,17 @@ int qemuProcessStart(virConnectPtr conn,
     if ((logfile = qemuDomainCreateLog(driver, vm, false)) < 0)
         goto cleanup;
 
+    if (vm->def->virtType == VIR_DOMAIN_VIRT_KVM) {
+        VIR_DEBUG("Checking for KVM availability");
+        if (access("/dev/kvm", F_OK) != 0) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("Domain requires KVM, but it is not available. "
+                              "Check that virtualization is enabled in the host BIOS, "
+                              "and host configuration is setup to load the kvm modules."));
+            goto cleanup;
+        }
+    }
+
     VIR_DEBUG("Determining emulator version");
     qemuCapsFree(priv->qemuCaps);
     priv->qemuCaps = NULL;
