@@ -16517,7 +16517,20 @@ virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
  * inconsistent (as if power had been pulled), and specifying this
  * with the VIR_DOMAIN_SNAPSHOT_CREATE_HALT flag risks data loss.
  *
+ * By default, if the snapshot involves external files, and any of the
+ * destination files already exist as a regular file, the snapshot is
+ * rejected to avoid losing contents of those files.  However, if
+ * @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT, then existing
+ * destination files are instead truncated and reused.
+ *
  * Returns an (opaque) virDomainSnapshotPtr on success, NULL on failure.
+ * Be aware that although libvirt prefers to report errors up front with
+ * no other effect, there are certain types of failures where a failure
+ * can occur even though the guest configuration was changed (for
+ * example, if a disk snapshot request over two disks only fails on the
+ * second disk, leaving the first disk altered); so after getting a NULL
+ * return, it can be wise to use virDomainGetXMLDesc() to determine if
+ * any partial changes occurred.
  */
 virDomainSnapshotPtr
 virDomainSnapshotCreateXML(virDomainPtr domain,

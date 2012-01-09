@@ -2024,7 +2024,7 @@ used to represent properties of snapshots.
 =over 4
 
 =item B<snapshot-create> I<domain> [I<xmlfile>] {[I<--redefine> [I<--current>]]
-| [I<--no-metadata>] [I<--halt>] [I<--disk-only>]}
+| [I<--no-metadata>] [I<--halt>] [I<--disk-only>] [I<--reuse-external]}
 
 Create a snapshot for domain I<domain> with the properties specified in
 I<xmlfile>.  Normally, the only properties settable for a domain snapshot
@@ -2061,14 +2061,19 @@ treat the snapshot as current, and cannot revert to the snapshot
 unless I<--redefine> is later used to teach libvirt about the
 metadata again).
 
+If I<--reuse-external> is specified, and the snapshot XML requests an
+external snapshot with a destination of an existing file, then the
+existing file is truncated and reused; otherwise, a snapshot is refused
+to avoid losing contents of the existing files.
+
 Existence of snapshot metadata will prevent attempts to B<undefine>
 a persistent domain.  However, for transient domains, snapshot
 metadata is silently lost when the domain quits running (whether
 by command such as B<destroy> or by internal guest action).
 
 =item B<snapshot-create-as> I<domain> {[I<--print-xml>]
-| [I<--no-metadata>] [I<--halt>]} [I<name>] [I<description>]
-[I<--disk-only> [[I<--diskspec>] B<diskspec>]...
+| [I<--no-metadata>] [I<--halt>] [I<--reuse-existing>]} [I<name>]
+[I<description>] [I<--disk-only> [[I<--diskspec>] B<diskspec>]...]
 
 Create a snapshot for domain I<domain> with the given <name> and
 <description>; if either value is omitted, libvirt will choose a
@@ -2090,6 +2095,11 @@ results in the following XML:
   <disk name='vda' snapshot='external'>
     <source file='/path/to,new'/>
   </disk>
+
+If I<--reuse-external> is specified, and the domain XML or I<diskspec>
+option requests an external snapshot with a destination of an existing
+file, then the existing file is truncated and reused; otherwise, a
+snapshot is refused to avoid losing contents of the existing files.
 
 If I<--no-metadata> is specified, then the snapshot data is created,
 but any metadata is immediately discarded (that is, libvirt does not

@@ -1,7 +1,7 @@
 /*
  * virsh.c: a shell to exercise the libvirt API
  *
- * Copyright (C) 2005, 2007-2011 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2012 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -14462,6 +14462,7 @@ static const vshCmdOptDef opts_snapshot_create[] = {
     {"no-metadata", VSH_OT_BOOL, 0, N_("take snapshot but create no metadata")},
     {"halt", VSH_OT_BOOL, 0, N_("halt domain after snapshot is created")},
     {"disk-only", VSH_OT_BOOL, 0, N_("capture disk state but not vm state")},
+    {"reuse-external", VSH_OT_BOOL, 0, N_("reuse any existing external files")},
     {NULL, 0, 0, NULL}
 };
 
@@ -14484,6 +14485,8 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_HALT;
     if (vshCommandOptBool(cmd, "disk-only"))
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY;
+    if (vshCommandOptBool(cmd, "reuse-external"))
+        flags |= VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -14592,6 +14595,7 @@ static const vshCmdOptDef opts_snapshot_create_as[] = {
     {"no-metadata", VSH_OT_BOOL, 0, N_("take snapshot but create no metadata")},
     {"halt", VSH_OT_BOOL, 0, N_("halt domain after snapshot is created")},
     {"disk-only", VSH_OT_BOOL, 0, N_("capture disk state but not vm state")},
+    {"reuse-external", VSH_OT_BOOL, 0, N_("reuse any existing external files")},
     {"diskspec", VSH_OT_ARGV, 0,
      N_("disk attributes: disk[,snapshot=type][,driver=type][,file=name]")},
     {NULL, 0, 0, NULL}
@@ -14615,6 +14619,8 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_HALT;
     if (vshCommandOptBool(cmd, "disk-only"))
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY;
+    if (vshCommandOptBool(cmd, "reuse-external"))
+        flags |= VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;

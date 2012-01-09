@@ -9693,7 +9693,8 @@ endjob:
 }
 
 static int
-qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def)
+qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
+                              bool allow_reuse)
 {
     int ret = -1;
     int i;
@@ -9746,7 +9747,7 @@ qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def)
                                          disk->name, disk->file);
                     goto cleanup;
                 }
-            } else if (!S_ISBLK(st.st_mode)) {
+            } else if (!(S_ISBLK(st.st_mode) || allow_reuse)) {
                 qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                 _("external snapshot file for disk %s already "
                                   "exists and is not a block device: %s"),
@@ -10026,7 +10027,8 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                   VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT |
                   VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA |
                   VIR_DOMAIN_SNAPSHOT_CREATE_HALT |
-                  VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY, NULL);
+                  VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT, NULL);
 
     if (((flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) &&
          !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) ||
@@ -10162,11 +10164,14 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
             goto cleanup;
 
         if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
+            bool allow_reuse;
+
+            allow_reuse = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
             if (virDomainSnapshotAlignDisks(def,
                                             VIR_DOMAIN_DISK_SNAPSHOT_EXTERNAL,
                                             false) < 0)
                 goto cleanup;
-            if (qemuDomainSnapshotDiskPrepare(vm, def) < 0)
+            if (qemuDomainSnapshotDiskPrepare(vm, def, allow_reuse) < 0)
                 goto cleanup;
             def->state = VIR_DOMAIN_DISK_SNAPSHOT;
         } else {

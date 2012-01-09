@@ -2990,6 +2990,8 @@ typedef enum {
                                                           after snapshot */
     VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY   = (1 << 4), /* disk snapshot, not
                                                           system checkpoint */
+    VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT   = (1 << 5), /* reuse any existing
+                                                          external files */
 } virDomainSnapshotCreateFlags;
 
 /* Take a snapshot of the current VM state */
