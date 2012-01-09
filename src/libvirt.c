@@ -12682,6 +12682,55 @@ error:
 
 
 /**
+ * virStorageVolWipePattern:
+ * @vol: pointer to storage volume
+ * @algorithm: one of virStorageVolWipeAlgorithm
+ * @flags: future flags, use 0 for now
+ *
+ * Similar to virStorageVolWipe, but one can choose
+ * between different wiping algorithms.
+ *
+ * Returns 0 on success, or -1 on error.
+ */
+int
+virStorageVolWipePattern(virStorageVolPtr vol,
+                         unsigned int algorithm,
+                         unsigned int flags)
+{
+    virConnectPtr conn;
+    VIR_DEBUG("vol=%p, algorithm=%u, flags=%x", vol, algorithm, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_STORAGE_VOL(vol)) {
+        virLibStorageVolError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = vol->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibStorageVolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->storageDriver && conn->storageDriver->volWipePattern) {
+        int ret;
+        ret = conn->storageDriver->volWipePattern(vol, algorithm, flags);
+        if (ret < 0) {
+            goto error;
+        }
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(vol->conn);
+    return -1;
+}
+
+/**
  * virStorageVolFree:
  * @vol: pointer to storage volume
  *

@@ -1801,14 +1801,17 @@ out:
 
 
 static int
-storageVolumeWipeInternal(virStorageVolDefPtr def)
+storageVolumeWipeInternal(virStorageVolDefPtr def,
+                          unsigned int algorithm)
 {
     int ret = -1, fd = -1;
     struct stat st;
     char *writebuf = NULL;
     size_t bytes_wiped = 0;
+    virCommandPtr cmd = NULL;
 
-    VIR_DEBUG("Wiping volume with path '%s'", def->target.path);
+    VIR_DEBUG("Wiping volume with path '%s' and algorithm %u",
+              def->target.path, algorithm);
 
     fd = open(def->target.path, O_RDWR);
     if (fd == -1) {
@@ -1825,36 +1828,83 @@ storageVolumeWipeInternal(virStorageVolDefPtr def)
         goto out;
     }
 
-    if (S_ISREG(st.st_mode) && st.st_blocks < (st.st_size / DEV_BSIZE)) {
-        ret = storageVolumeZeroSparseFile(def, st.st_size, fd);
-    } else {
-
-        if (VIR_ALLOC_N(writebuf, st.st_blksize) != 0) {
-            virReportOOMError();
-            goto out;
+    if (algorithm != VIR_STORAGE_VOL_WIPE_ALG_ZERO) {
+        const char *alg_char ATTRIBUTE_UNUSED = NULL;
+        switch (algorithm) {
+#ifdef SCRUB
+        case VIR_STORAGE_VOL_WIPE_ALG_NNSA:
+            alg_char = "nnsa";
+            break;
+        case VIR_STORAGE_VOL_WIPE_ALG_DOD:
+            alg_char = "dod";
+            break;
+        case VIR_STORAGE_VOL_WIPE_ALG_BSI:
+            alg_char = "bsi";
+            break;
+        case VIR_STORAGE_VOL_WIPE_ALG_GUTMANN:
+            alg_char = "gutmann";
+            break;
+        case VIR_STORAGE_VOL_WIPE_ALG_SCHNEIER:
+            alg_char = "shneier";
+            break;
+        case VIR_STORAGE_VOL_WIPE_ALG_PFITZNER7:
+            alg_char = "pfitzner7";
+            break;
+        case VIR_STORAGE_VOL_WIPE_ALG_PFITZNER33:
+            alg_char = " pfitzner33";
+            break;
+        case VIR_STORAGE_VOL_WIPE_ALG_RANDOM:
+            alg_char = "random";
+            break;
+#endif
+        default:
+            virStorageReportError(VIR_ERR_INVALID_ARG,
+                                  _("unsupported algorithm %d"),
+                                  algorithm);
         }
+#ifdef SCRUB
+        cmd = virCommandNew(SCRUB);
+        virCommandAddArgList(cmd, "-f", "-p", alg_char,
+                             def->target.path, NULL);
 
-        ret = storageWipeExtent(def,
-                                fd,
-                                0,
-                                def->allocation,
-                                writebuf,
-                                st.st_blksize,
-                                &bytes_wiped);
+        if (virCommandRun(cmd, NULL) < 0)
+            goto out;
+
+        ret = 0;
+#endif
+        goto out;
+    } else {
+        if (S_ISREG(st.st_mode) && st.st_blocks < (st.st_size / DEV_BSIZE)) {
+            ret = storageVolumeZeroSparseFile(def, st.st_size, fd);
+        } else {
+
+            if (VIR_ALLOC_N(writebuf, st.st_blksize) != 0) {
+                virReportOOMError();
+                goto out;
+            }
+
+            ret = storageWipeExtent(def,
+                                    fd,
+                                    0,
+                                    def->allocation,
+                                    writebuf,
+                                    st.st_blksize,
+                                    &bytes_wiped);
+        }
     }
 
 out:
+    virCommandFree(cmd);
     VIR_FREE(writebuf);
-
     VIR_FORCE_CLOSE(fd);
-
     return ret;
 }
 
 
 static int
-storageVolumeWipe(virStorageVolPtr obj,
-                  unsigned int flags)
+storageVolumeWipePattern(virStorageVolPtr obj,
+                         unsigned int algorithm,
+                         unsigned int flags)
 {
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool = NULL;
@@ -1862,6 +1912,13 @@ storageVolumeWipe(virStorageVolPtr obj,
     int ret = -1;
 
     virCheckFlags(0, -1);
+
+    if (algorithm >= VIR_STORAGE_VOL_WIPE_ALG_LAST) {
+        virStorageReportError(VIR_ERR_INVALID_ARG,
+                              _("wiping algorithm %d not supported"),
+                              algorithm);
+        return -1;
+    }
 
     storageDriverLock(driver);
     pool = virStoragePoolObjFindByName(&driver->pools, obj->pool);
@@ -1895,7 +1952,7 @@ storageVolumeWipe(virStorageVolPtr obj,
         goto out;
     }
 
-    if (storageVolumeWipeInternal(vol) == -1) {
+    if (storageVolumeWipeInternal(vol, algorithm) == -1) {
         goto out;
     }
 
@@ -1908,6 +1965,13 @@ out:
 
     return ret;
 
+}
+
+static int
+storageVolumeWipe(virStorageVolPtr obj,
+                  unsigned int flags)
+{
+    return storageVolumeWipePattern(obj, VIR_STORAGE_VOL_WIPE_ALG_ZERO, flags);
 }
 
 static int
@@ -2175,6 +2239,7 @@ static virStorageDriver storageDriver = {
     .volUpload = storageVolumeUpload, /* 0.9.0 */
     .volDelete = storageVolumeDelete, /* 0.4.0 */
     .volWipe = storageVolumeWipe, /* 0.8.0 */
+    .volWipePattern = storageVolumeWipePattern, /* 0.9.10 */
     .volGetInfo = storageVolumeGetInfo, /* 0.4.0 */
     .volGetXMLDesc = storageVolumeGetXMLDesc, /* 0.4.0 */
     .volGetPath = storageVolumeGetPath, /* 0.4.0 */

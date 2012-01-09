@@ -4833,6 +4833,7 @@ static virStorageDriver storage_driver = {
     .volUpload = remoteStorageVolUpload, /* 0.9.0 */
     .volDelete = remoteStorageVolDelete, /* 0.4.1 */
     .volWipe = remoteStorageVolWipe, /* 0.8.0 */
+    .volWipePattern = remoteStorageVolWipePattern, /* 0.9.10 */
     .volGetInfo = remoteStorageVolGetInfo, /* 0.4.1 */
     .volGetXMLDesc = remoteStorageVolGetXMLDesc, /* 0.4.1 */
     .volGetPath = remoteStorageVolGetPath, /* 0.4.1 */

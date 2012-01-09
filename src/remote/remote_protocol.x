@@ -1643,6 +1643,12 @@ struct remote_storage_vol_wipe_args {
     unsigned int flags;
 };
 
+struct remote_storage_vol_wipe_pattern_args {
+    remote_nonnull_storage_vol vol;
+    unsigned int algorithm;
+    unsigned int flags;
+};
+
 struct remote_storage_vol_get_xml_desc_args {
     remote_nonnull_storage_vol vol;
     unsigned int flags;
@@ -2660,7 +2666,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_GET_NUMA_PARAMETERS = 255, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_SET_INTERFACE_PARAMETERS = 256, /* autogen autogen */
     REMOTE_PROC_DOMAIN_GET_INTERFACE_PARAMETERS = 257, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_SHUTDOWN_FLAGS = 258 /* autogen autogen */
+    REMOTE_PROC_DOMAIN_SHUTDOWN_FLAGS = 258, /* autogen autogen */
+    REMOTE_PROC_STORAGE_VOL_WIPE_PATTERN = 259 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

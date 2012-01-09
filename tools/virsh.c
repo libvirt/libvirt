@@ -11160,15 +11160,24 @@ static const vshCmdInfo info_vol_wipe[] = {
 static const vshCmdOptDef opts_vol_wipe[] = {
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("vol name, key or path")},
     {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
+    {"algorithm", VSH_OT_STRING, 0, N_("perform selected wiping algorithm")},
     {NULL, 0, 0, NULL}
 };
+
+VIR_ENUM_DECL(virStorageVolWipeAlgorithm)
+VIR_ENUM_IMPL(virStorageVolWipeAlgorithm, VIR_STORAGE_VOL_WIPE_ALG_LAST,
+              "zero", "nnsa", "dod", "bsi", "gutmann", "schneier",
+              "pfitzner7", "pfitzner33", "random");
 
 static bool
 cmdVolWipe(vshControl *ctl, const vshCmd *cmd)
 {
     virStorageVolPtr vol;
-    bool ret = true;
+    bool ret = false;
     const char *name;
+    const char *algorithm_str = NULL;
+    int algorithm = VIR_STORAGE_VOL_WIPE_ALG_ZERO;
+    int funcRet;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -11177,13 +11186,31 @@ cmdVolWipe(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (virStorageVolWipe(vol, 0) == 0) {
-        vshPrint(ctl, _("Vol %s wiped\n"), name);
-    } else {
-        vshError(ctl, _("Failed to wipe vol %s"), name);
-        ret = false;
+    if (vshCommandOptString(cmd, "algorithm", &algorithm_str) < 0) {
+        vshError(ctl, "%s", _("missing argument"));
+        goto out;
     }
 
+    if (algorithm_str &&
+        (algorithm = virStorageVolWipeAlgorithmTypeFromString(algorithm_str)) < 0) {
+        vshError(ctl, _("Unsupported algorithm '%s'"), algorithm_str);
+        goto out;
+    }
+
+    if ((funcRet = virStorageVolWipePattern(vol, algorithm, 0)) < 0) {
+        if (last_error->code == VIR_ERR_NO_SUPPORT &&
+            algorithm == VIR_STORAGE_VOL_WIPE_ALG_ZERO)
+            funcRet = virStorageVolWipe(vol, 0);
+    }
+
+    if (funcRet < 0) {
+        vshError(ctl, _("Failed to wipe vol %s"), name);
+        goto out;
+    }
+
+    vshPrint(ctl, _("Vol %s wiped\n"), name);
+    ret = true;
+out:
     virStorageVolFree(vol);
     return ret;
 }

@@ -1234,6 +1234,11 @@ struct remote_storage_vol_wipe_args {
         remote_nonnull_storage_vol vol;
         u_int                      flags;
 };
+struct remote_storage_vol_wipe_pattern_args {
+        remote_nonnull_storage_vol vol;
+        u_int                      algorithm;
+        u_int                      flags;
+};
 struct remote_storage_vol_get_xml_desc_args {
         remote_nonnull_storage_vol vol;
         u_int                      flags;
@@ -2095,4 +2100,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_SET_INTERFACE_PARAMETERS = 256,
         REMOTE_PROC_DOMAIN_GET_INTERFACE_PARAMETERS = 257,
         REMOTE_PROC_DOMAIN_SHUTDOWN_FLAGS = 258,
+        REMOTE_PROC_STORAGE_VOL_WIPE_PATTERN = 259,
 };

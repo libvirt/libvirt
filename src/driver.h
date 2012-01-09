@@ -1230,6 +1230,10 @@ typedef int
 typedef int
     (*virDrvStorageVolWipe)                  (virStorageVolPtr vol,
                                               unsigned int flags);
+typedef int
+    (*virDrvStorageVolWipePattern)           (virStorageVolPtr vol,
+                                              unsigned int algorithm,
+                                              unsigned int flags);
 
 typedef int
     (*virDrvStorageVolGetInfo)               (virStorageVolPtr vol,
@@ -1315,6 +1319,7 @@ struct _virStorageDriver {
     virDrvStorageVolUpload volUpload;
     virDrvStorageVolDelete volDelete;
     virDrvStorageVolWipe volWipe;
+    virDrvStorageVolWipePattern volWipePattern;
     virDrvStorageVolGetInfo volGetInfo;
     virDrvStorageVolGetXMLDesc volGetXMLDesc;
     virDrvStorageVolGetPath volGetPath;

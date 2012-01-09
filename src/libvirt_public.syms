@@ -519,5 +519,7 @@ LIBVIRT_0.9.9 {
 LIBVIRT_0.9.10 {
     global:
         virDomainShutdownFlags;
+        virStorageVolWipePattern;
 } LIBVIRT_0.9.9;
+
 # .... define new API here using predicted next version number ....

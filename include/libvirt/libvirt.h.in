@@ -2207,6 +2207,35 @@ typedef enum {
   VIR_STORAGE_VOL_DELETE_ZEROED = 1 << 0,  /* Clear all data to zeros (slow) */
 } virStorageVolDeleteFlags;
 
+typedef enum {
+  VIR_STORAGE_VOL_WIPE_ALG_ZERO = 0, /* 1-pass, all zeroes */
+  VIR_STORAGE_VOL_WIPE_ALG_NNSA = 1, /* 4-pass  NNSA Policy Letter
+                                        NAP-14.1-C (XVI-8) */
+  VIR_STORAGE_VOL_WIPE_ALG_DOD = 2, /* 4-pass DoD 5220.22-M section
+                                       8-306 procedure */
+  VIR_STORAGE_VOL_WIPE_ALG_BSI = 3, /* 9-pass method recommended by the
+                                       German Center of Security in
+                                       Information Technologies */
+  VIR_STORAGE_VOL_WIPE_ALG_GUTMANN = 4, /* The canonical 35-pass sequence */
+  VIR_STORAGE_VOL_WIPE_ALG_SCHNEIER = 5, /* 7-pass method described by
+                                             Bruce Schneier in "Applied
+                                             Cryptography" (1996) */
+  VIR_STORAGE_VOL_WIPE_ALG_PFITZNER7 = 6, /* 7-pass random */
+
+  VIR_STORAGE_VOL_WIPE_ALG_PFITZNER33 = 7, /* 33-pass random */
+
+  VIR_STORAGE_VOL_WIPE_ALG_RANDOM = 8, /* 1-pass random */
+
+#ifdef VIR_ENUM_SENTINELS
+  /*
+   * NB: this enum value will increase over time as new algorithms are
+   * added to the libvirt API. It reflects the last algorithm supported
+   * by this version of the libvirt API.
+   */
+  VIR_STORAGE_VOL_WIPE_ALG_LAST
+#endif
+} virStorageVolWipeAlgorithm;
+
 typedef struct _virStorageVolInfo virStorageVolInfo;
 
 struct _virStorageVolInfo {
@@ -2343,6 +2372,9 @@ int                     virStorageVolUpload             (virStorageVolPtr vol,
 int                     virStorageVolDelete             (virStorageVolPtr vol,
                                                          unsigned int flags);
 int                     virStorageVolWipe               (virStorageVolPtr vol,
+                                                         unsigned int flags);
+int                     virStorageVolWipePattern        (virStorageVolPtr vol,
+                                                         unsigned int algorithm,
                                                          unsigned int flags);
 int                     virStorageVolRef                (virStorageVolPtr vol);
 int                     virStorageVolFree               (virStorageVolPtr vol);
