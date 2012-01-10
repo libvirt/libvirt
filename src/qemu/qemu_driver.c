@@ -6002,7 +6002,7 @@ static int qemuDomainSetBlkioParameters(virDomainPtr dom,
                     ret = -1;
                     continue;
                 }
-                for (j = 0; j < ndevices; i++) {
+                for (j = 0; j < ndevices; j++) {
                     rc = virCgroupSetBlkioDeviceWeight(group,
                                                        devices[j].path,
                                                        devices[j].weight);
