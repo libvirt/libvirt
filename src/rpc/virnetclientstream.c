@@ -408,7 +408,7 @@ int virNetClientStreamRecvPacket(virNetClientStreamPtr st,
 
         VIR_DEBUG("Dummy packet to wait for stream data");
         virMutexUnlock(&st->lock);
-        ret = virNetClientSendWithReply(client, msg);
+        ret = virNetClientSendWithReplyStream(client, msg, st);
         virMutexLock(&st->lock);
         virNetMessageFree(msg);
 
@@ -529,4 +529,9 @@ int virNetClientStreamEventRemoveCallback(virNetClientStreamPtr st)
 cleanup:
     virMutexUnlock(&st->lock);
     return ret;
+}
+
+bool virNetClientStreamEOF(virNetClientStreamPtr st)
+{
+    return st->incomingEOF;
 }
