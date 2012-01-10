@@ -30,14 +30,18 @@ EXTRA_DIST = \
 DISTCLEANFILES =
 
 bin_SCRIPTS = virt-xml-validate virt-pki-validate
-bin_PROGRAMS = virsh
+bin_PROGRAMS = virsh virt-host-validate
 
 if HAVE_SANLOCK
 sbin_SCRIPTS = virt-sanlock-cleanup
 DISTCLEANFILES += virt-sanlock-cleanup
 endif
 
-dist_man1_MANS = virt-xml-validate.1 virt-pki-validate.1 virsh.1
+dist_man1_MANS = \
+		virt-host-validate.1 \
+		virt-pki-validate.1 \
+		virt-xml-validate.1 \
+		virsh.1
 if HAVE_SANLOCK
 dist_man8_MANS = virt-sanlock-cleanup.8
 endif
@@ -56,6 +60,9 @@ virt-pki-validate: virt-pki-validate.in Makefile
 virt-pki-validate.1: virt-pki-validate.in
 	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@
 
+virt-host-validate.1: virt-host-validate.c
+	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@
+
 virt-sanlock-cleanup: virt-sanlock-cleanup.in Makefile
 	$(AM_V_GEN)sed -e 's,[@]SYSCONFDIR@,$(sysconfdir),' \
 	    -e 's,[@]LOCALSTATEDIR@,$(localstatedir),' < $< > $@ \
@@ -63,6 +70,28 @@ virt-sanlock-cleanup: virt-sanlock-cleanup.in Makefile
 
 virt-sanlock-cleanup.8: virt-sanlock-cleanup.in
 	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@
+
+virt_host_validate_SOURCES = \
+		virt-host-validate.c \
+		virt-host-validate-common.c virt-host-validate-common.h \
+		virt-host-validate-qemu.c virt-host-validate-qemu.h \
+		virt-host-validate-lxc.c virt-host-validate-lxc.h \
+		$(NULL)
+
+virt_host_validate_LDFLAGS = \
+		$(WARN_LDFLAGS) \
+		$(COVERAGE_LDFLAGS) \
+		$(NULL)
+
+virt_host_validate_LDADD = \
+		../src/libvirt.la				\
+		../gnulib/lib/libgnu.la				\
+		$(NULL)
+
+virt_host_validate_CFLAGS = \
+		$(WARN_CFLAGS)					\
+		$(COVERAGE_CFLAGS)				\
+		$(NULL)
 
 virsh_SOURCES =							\
 		console.c console.h				\

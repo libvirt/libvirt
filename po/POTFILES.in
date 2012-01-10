@@ -159,3 +159,7 @@ src/xenxs/xen_xm.c
 tools/console.c
 tools/libvirt-guests.init.sh
 tools/virsh.c
+tools/virt-host-validate-common.c
+tools/virt-host-validate-lxc.c
+tools/virt-host-validate-qemu.c
+tools/virt-host-validate.c

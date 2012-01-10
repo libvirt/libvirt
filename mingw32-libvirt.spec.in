@@ -147,6 +147,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mingw32_bindir}/virsh.exe
 %{_mingw32_bindir}/virt-xml-validate
 %{_mingw32_bindir}/virt-pki-validate
+%{_mingw32_bindir}/virt-host-validate.exe
 %{_mingw32_bindir}/libvirt-qemu-0.dll
 
 %{_mingw32_libdir}/libvirt.dll.a
