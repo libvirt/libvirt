@@ -1,7 +1,7 @@
 /*
  * qemu_command.c: QEMU command generation
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -2132,12 +2132,23 @@ char *qemuBuildFSStr(virDomainFSDefPtr fs,
     }
     virBufferAdd(&opt, driver, -1);
 
-    if (fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_MAPPED) {
-        virBufferAddLit(&opt, ",security_model=mapped");
-    } else if(fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH) {
-        virBufferAddLit(&opt, ",security_model=passthrough");
-    } else if(fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_SQUASH) {
-        virBufferAddLit(&opt, ",security_model=none");
+    if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_PATH ||
+        fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT) {
+        if (fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_MAPPED) {
+            virBufferAddLit(&opt, ",security_model=mapped");
+        } else if(fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH) {
+            virBufferAddLit(&opt, ",security_model=passthrough");
+        } else if(fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_SQUASH) {
+            virBufferAddLit(&opt, ",security_model=none");
+        }
+    } else {
+        /* For other fs drivers, default(passthru) should always
+         * be supported */
+        if (fs->accessmode != VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("only supports passthrough accessmode"));
+            goto error;
+        }
     }
     virBufferAsprintf(&opt, ",id=%s%s", QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
     virBufferAsprintf(&opt, ",path=%s", fs->src);
