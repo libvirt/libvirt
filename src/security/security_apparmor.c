@@ -479,7 +479,7 @@ AppArmorSetSecurityAllLabel(virSecurityManagerPtr mgr,
 static int
 AppArmorGetSecurityProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                 virDomainDefPtr def,
-                                pid_t pid,
+                                pid_t pid ATTRIBUTE_UNUSED,
                                 virSecurityLabelPtr sec)
 {
     int rc = -1;
