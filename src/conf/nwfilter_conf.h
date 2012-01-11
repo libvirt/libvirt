@@ -121,7 +121,7 @@ typedef struct _nwItemDesc nwItemDesc;
 typedef nwItemDesc *nwItemDescPtr;
 struct _nwItemDesc {
     enum virNWFilterEntryItemFlags flags;
-    char *var;
+    virNWFilterVarAccessPtr varAccess;
     enum attrDatatype datatype;
     union {
         nwMACAddress macaddr;
@@ -470,8 +470,8 @@ struct _virNWFilterRuleDef {
         sctpHdrFilterDef sctpHdrFilter;
     } p;
 
-    int nvars;
-    char **vars;
+    size_t nVarAccess;
+    virNWFilterVarAccessPtr *varAccess;
 
     int nstrings;
     char **strings;

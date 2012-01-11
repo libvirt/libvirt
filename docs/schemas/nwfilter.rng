@@ -811,12 +811,15 @@
     </choice>
   </define>
 
+  <define name="variable-name-type">
+    <data type="string">
+      <param name="pattern">$[a-zA-Z0-9_]+(\[[ ]*[@]?[0-9]+[ ]*\])?</param>
+    </data>
+  </define>
+
   <define name="addrMAC">
     <choice>
-      <!-- variable -->
-      <data type="string">
-        <param name="pattern">$[a-zA-Z0-9_]+</param>
-      </data>
+      <ref name="variable-name-type"/>
 
       <data type="string">
         <param name="pattern">([a-fA-F0-9]{1,2}:){5}[a-fA-F0-9]{1,2}</param>
@@ -826,10 +829,7 @@
 
   <define name="addrIP">
     <choice>
-      <!-- variable -->
-      <data type="string">
-        <param name="pattern">$[a-zA-Z0-9_]+</param>
-      </data>
+      <ref name="variable-name-type"/>
 
       <data type="string">
         <param name="pattern">([0-2]?[0-9]?[0-9]\.){3}[0-2]?[0-9]?[0-9]</param>
@@ -839,10 +839,7 @@
 
   <define name="addrIPv6">
     <choice>
-      <!-- variable -->
-      <data type="string">
-        <param name="pattern">$[a-zA-Z0-9_]+</param>
-      </data>
+      <ref name="variable-name-type"/>
 
       <data type="string">
         <param name="pattern">([a-fA-F0-9]{0,4}:){2,7}([a-fA-F0-9]*)(([0-2]?[0-9]?[0-9]\.){3}[0-2]?[0-9]?[0-9])?</param>
@@ -852,10 +849,7 @@
 
   <define name="addrMask">
     <choice>
-      <!-- variable -->
-      <data type="string">
-        <param name="pattern">$[a-zA-Z0-9_]+</param>
-      </data>
+      <ref name="variable-name-type"/>
 
       <data type="int">
         <param name="minInclusive">0</param>
@@ -870,10 +864,7 @@
 
   <define name="addrMaskv6">
     <choice>
-      <!-- variable -->
-      <data type="string">
-        <param name="pattern">$[a-zA-Z0-9_]+</param>
-      </data>
+      <ref name="variable-name-type"/>
 
       <data type="int">
         <param name="minInclusive">0</param>
@@ -892,10 +883,7 @@
         <param name="pattern">0x([0-3][0-9a-fA-F]|[0-9a-fA-F])</param>
       </data>
 
-      <!-- variable -->
-      <data type="string">
-        <param name="pattern">$[a-zA-Z0-9_]+</param>
-      </data>
+      <ref name="variable-name-type"/>
 
       <data type="int">
         <param name="minInclusive">0</param>
@@ -906,10 +894,7 @@
 
   <define name="mac-protocolid">
     <choice>
-      <!-- variable -->
-      <data type="string">
-        <param name="pattern">$[a-zA-Z0-9_]+</param>
-      </data>
+      <ref name="variable-name-type"/>
 
       <data type="string">
         <param name="pattern">0x([6-9a-fA-F][0-9a-fA-F]{2}|[0-9a-fA-F]{4})</param>
@@ -932,10 +917,7 @@
 
   <define name="vlan-vlanid">
     <choice>
-      <!-- variable -->
-      <data type="string">
-        <param name="pattern">$[a-zA-Z0-9_]+</param>
-      </data>
+      <ref name="variable-name-type"/>
 
       <data type="string">
         <param name="pattern">0x([0-9a-fA-F]{1,3})</param>
@@ -950,10 +932,7 @@
 
   <define name="uint8range">
     <choice>
-      <!-- variable -->
-      <data type="string">
-        <param name="pattern">$[a-zA-Z0-9_]+</param>
-      </data>
+      <ref name="variable-name-type"/>
 
       <data type="string">
         <param name="pattern">0x[0-9a-fA-F]{1,2}</param>
@@ -968,10 +947,7 @@
 
   <define name="uint16range">
     <choice>
-      <!-- variable -->
-      <data type="string">
-        <param name="pattern">$[a-zA-Z0-9_]+</param>
-      </data>
+      <ref name="variable-name-type"/>
 
       <data type="string">
         <param name="pattern">0x[0-9a-fA-F]{1,4}</param>
@@ -986,10 +962,7 @@
 
   <define name="uint32range">
     <choice>
-      <!-- variable -->
-      <data type="string">
-        <param name="pattern">$[a-zA-Z0-9_]+</param>
-      </data>
+      <ref name="variable-name-type"/>
 
       <data type="string">
         <param name="pattern">0x[0-9a-fA-F]{1,8}</param>
@@ -1015,10 +988,7 @@
 
   <define name="arpOpcodeType">
     <choice>
-      <!-- variable -->
-      <data type="string">
-        <param name="pattern">$[a-zA-Z0-9_]+</param>
-      </data>
+      <ref name="variable-name-type"/>
 
       <data type="int">
         <param name="minInclusive">0</param>
@@ -1034,10 +1004,7 @@
 
   <define name="ipProtocolType">
     <choice>
-      <!-- variable -->
-      <data type="string">
-        <param name="pattern">$[a-zA-Z0-9_]+</param>
-      </data>
+      <ref name="variable-name-type"/>
 
       <data type="string">
         <param name="pattern">0x[0-9a-fA-F]{1,2}</param>

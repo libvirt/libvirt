@@ -310,10 +310,11 @@ virNWFilterVarCombIterEntryInit(virNWFilterVarCombIterEntryPtr cie,
 static int
 virNWFilterVarCombIterAddVariable(virNWFilterVarCombIterEntryPtr cie,
                                   virNWFilterHashTablePtr hash,
-                                  const char *varName)
+                                  const virNWFilterVarAccessPtr varAccess)
 {
     virNWFilterVarValuePtr varValue;
     unsigned int cardinality;
+    const char *varName = virNWFilterVarAccessGetVarName(varAccess);
 
     varValue = virHashLookup(hash->hashTable, varName);
     if (varValue == NULL) {
@@ -409,13 +410,14 @@ virNWFilterVarCombIterEntryAreUniqueEntries(virNWFilterVarCombIterEntryPtr cie,
  */
 virNWFilterVarCombIterPtr
 virNWFilterVarCombIterCreate(virNWFilterHashTablePtr hash,
-                             char * const *vars, unsigned int nVars)
+                             const virNWFilterVarAccessPtr *varAccess,
+                             size_t nVarAccess)
 {
     virNWFilterVarCombIterPtr res;
     unsigned int i, iterId;
-    int iterIndex;
+    int iterIndex = -1;
 
-    if (VIR_ALLOC_VAR(res, virNWFilterVarCombIterEntry, 1) < 0) {
+    if (VIR_ALLOC_VAR(res, virNWFilterVarCombIterEntry, 1 + nVarAccess) < 0) {
         virReportOOMError();
         return NULL;
     }
@@ -428,22 +430,24 @@ virNWFilterVarCombIterCreate(virNWFilterHashTablePtr hash,
     res->nIter = 1;
     virNWFilterVarCombIterEntryInit(&res->iter[0], iterId);
 
-    for (i = 0; i < nVars; i++) {
-
-        /* currently always access @0 */
-        iterId = 0;
-
-        iterIndex = virNWFilterVarCombIterGetIndexByIterId(res, iterId);
-        if (iterIndex < 0) {
-            /* future: create new iterator. for now it's a bug */
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Could not find iterator with id %u"),
-                                   iterId);
-            goto err_exit;
+    for (i = 0; i < nVarAccess; i++) {
+        switch (virNWFilterVarAccessGetType(varAccess[i])) {
+        case VIR_NWFILTER_VAR_ACCESS_ITERATOR:
+            iterId = virNWFilterVarAccessGetIterId(varAccess[i]);
+            iterIndex = virNWFilterVarCombIterGetIndexByIterId(res, iterId);
+            if (iterIndex < 0) {
+                iterIndex = res->nIter;
+                virNWFilterVarCombIterEntryInit(&res->iter[iterIndex], iterId);
+                res->nIter++;
+            }
+            break;
+        case VIR_NWFILTER_VAR_ACCESS_ELEMENT:
+        case VIR_NWFILTER_VAR_ACCESS_LAST:
+            break;
         }
 
         if (virNWFilterVarCombIterAddVariable(&res->iter[iterIndex],
-                                              hash, vars[i]) < 0)
+                                              hash, varAccess[i]) < 0)
             goto err_exit;
     }
 
@@ -482,16 +486,33 @@ next:
 
 const char *
 virNWFilterVarCombIterGetVarValue(virNWFilterVarCombIterPtr ci,
-                                  const char *varName)
+                                  const virNWFilterVarAccessPtr vap)
 {
-    unsigned int i;
+    unsigned int i, iterId;
     bool found = false;
     const char *res = NULL;
     virNWFilterVarValuePtr value;
-    unsigned int iterIndex;
+    int iterIndex = -1;
+    const char *varName = virNWFilterVarAccessGetVarName(vap);
 
-    /* currently always accessing iter @0 */
-    iterIndex = 0;
+    switch (virNWFilterVarAccessGetType(vap)) {
+    case VIR_NWFILTER_VAR_ACCESS_ITERATOR:
+        iterId = virNWFilterVarAccessGetIterId(vap);
+        iterIndex = virNWFilterVarCombIterGetIndexByIterId(ci, iterId);
+        if (iterIndex < 0) {
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("Could not get iterator index for "
+                                     "iterator ID %u"), iterId);
+            return NULL;
+        }
+        break;
+    case VIR_NWFILTER_VAR_ACCESS_ELEMENT:
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Element access via index is not possible"));
+        return NULL;
+    case VIR_NWFILTER_VAR_ACCESS_LAST:
+        return NULL;
+    }
 
     for (i = 0; i < ci->iter[iterIndex].nVarNames; i++) {
         if (STREQ(ci->iter[iterIndex].varNames[i], varName)) {
@@ -829,4 +850,179 @@ virNWFilterFormatParamAttributes(virBufferPtr buf,
     VIR_FREE(items);
 
     return 0;
+}
+
+void
+virNWFilterVarAccessFree(virNWFilterVarAccessPtr varAccess)
+{
+    if (!varAccess)
+        return;
+
+    VIR_FREE(varAccess->varName);
+    VIR_FREE(varAccess);
+}
+
+bool
+virNWFilterVarAccessEqual(const virNWFilterVarAccessPtr a,
+                          const virNWFilterVarAccessPtr b)
+{
+    if (a->accessType != b->accessType)
+        return false;
+
+    if (STRNEQ(a->varName, b->varName))
+        return false;
+
+    switch (a->accessType) {
+    case VIR_NWFILTER_VAR_ACCESS_ELEMENT:
+        return (a->u.index == b->u.index);
+        break;
+    case VIR_NWFILTER_VAR_ACCESS_ITERATOR:
+        return (a->u.iterId == b->u.iterId);
+        break;
+    case VIR_NWFILTER_VAR_ACCESS_LAST:
+        break;
+    }
+    return false;
+}
+
+/*
+ * Parse a variable access like
+ * IP, IP[@2], IP[3]
+ */
+virNWFilterVarAccessPtr
+virNWFilterVarAccessParse(const char *varAccess)
+{
+    size_t idx, varNameLen;
+    virNWFilterVarAccessPtr dest;
+    const char *input = varAccess;
+
+    if (VIR_ALLOC(dest) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    idx = strspn(input, VALID_VARNAME);
+
+    if (input[idx] == '\0') {
+        /* in the form 'IP', which is equivalent to IP[@0] */
+        dest->varName = strndup(input, idx);
+        if (!dest->varName) {
+            virReportOOMError();
+            goto err_exit;
+        }
+        dest->accessType = VIR_NWFILTER_VAR_ACCESS_ITERATOR;
+        dest->u.iterId = 0;
+        return dest;
+    }
+
+    if (input[idx] == '[') {
+        char *end_ptr;
+        unsigned int result;
+        bool parseError = false;
+
+        varNameLen = idx;
+
+        dest->varName = strndup(input, varNameLen);
+        if (!dest->varName) {
+            virReportOOMError();
+            goto err_exit;
+        }
+
+        input += idx + 1;
+        virSkipSpaces(&input);
+
+        if (*input == '@') {
+            /* in the form 'IP[@<number>] -> iterator */
+            dest->accessType = VIR_NWFILTER_VAR_ACCESS_ITERATOR;
+            input++;
+        } else {
+            /* in the form 'IP[<number>] -> element */
+            dest->accessType = VIR_NWFILTER_VAR_ACCESS_ELEMENT;
+            /* not supported (yet) */
+            virNWFilterReportError(VIR_ERR_INVALID_ARG,
+                                   _("Variable access in the form "
+                                     "var[<index>] is not supported"));
+            goto err_exit;
+        }
+
+        if (virStrToLong_ui(input, &end_ptr, 10, &result) < 0)
+            parseError = true;
+        if (!parseError) {
+            input = end_ptr;
+            virSkipSpaces(&input);
+            if (*input != ']')
+                parseError = true;
+        }
+        if (parseError) {
+            if (dest->accessType == VIR_NWFILTER_VAR_ACCESS_ELEMENT)
+                virNWFilterReportError(VIR_ERR_INVALID_ARG,
+                                       _("Malformatted array index"));
+            else
+                virNWFilterReportError(VIR_ERR_INVALID_ARG,
+                                       _("Malformatted iterator id"));
+            goto err_exit;
+        }
+
+        switch (dest->accessType) {
+        case VIR_NWFILTER_VAR_ACCESS_ELEMENT:
+            dest->u.index = result;
+            break;
+        case VIR_NWFILTER_VAR_ACCESS_ITERATOR:
+            if (result > VIR_NWFILTER_MAX_ITERID) {
+                virNWFilterReportError(VIR_ERR_INVALID_ARG,
+                                       _("Iterator ID exceeds maximum ID "
+                                         "of %u"), VIR_NWFILTER_MAX_ITERID);
+                goto err_exit;
+            }
+            dest->u.iterId = result;
+            break;
+        case VIR_NWFILTER_VAR_ACCESS_LAST:
+            goto err_exit;
+        }
+
+        return dest;
+    } else {
+        virNWFilterReportError(VIR_ERR_INVALID_ARG,
+                               _("Malformatted variable"));
+    }
+
+err_exit:
+    virNWFilterVarAccessFree(dest);
+
+    return NULL;
+}
+
+void
+virNWFilterVarAccessPrint(virNWFilterVarAccessPtr vap, virBufferPtr buf)
+{
+    virBufferAdd(buf, vap->varName, -1);
+    switch (vap->accessType) {
+    case VIR_NWFILTER_VAR_ACCESS_ELEMENT:
+        virBufferAsprintf(buf, "[%u]", vap->u.index);
+        break;
+    case VIR_NWFILTER_VAR_ACCESS_ITERATOR:
+        if (vap->u.iterId != 0)
+            virBufferAsprintf(buf, "[@%u]", vap->u.iterId);
+        break;
+    case VIR_NWFILTER_VAR_ACCESS_LAST:
+        break;
+    }
+}
+
+const char *
+virNWFilterVarAccessGetVarName(const virNWFilterVarAccessPtr vap)
+{
+    return vap->varName;
+}
+
+enum virNWFilterVarAccessType
+virNWFilterVarAccessGetType(const virNWFilterVarAccessPtr vap)
+{
+    return vap->accessType;
+}
+
+unsigned int
+virNWFilterVarAccessGetIterId(const virNWFilterVarAccessPtr vap)
+{
+    return vap->u.iterId;
 }

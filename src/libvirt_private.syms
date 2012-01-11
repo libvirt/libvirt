@@ -832,6 +832,7 @@ virNWFilterHashTableFree;
 virNWFilterHashTablePut;
 virNWFilterHashTablePutAll;
 virNWFilterHashTableRemoveEntry;
+virNWFilterVarAccessGetVarName;
 virNWFilterVarCombIterCreate;
 virNWFilterVarCombIterFree;
 virNWFilterVarCombIterGetVarValue;

@@ -272,13 +272,13 @@ virNWFilterRuleDefFree(virNWFilterRuleDefPtr def) {
     if (!def)
         return;
 
-    for (i = 0; i < def->nvars; i++)
-        VIR_FREE(def->vars[i]);
+    for (i = 0; i < def->nVarAccess; i++)
+        virNWFilterVarAccessFree(def->varAccess[i]);
 
     for (i = 0; i < def->nstrings; i++)
         VIR_FREE(def->strings[i]);
 
-    VIR_FREE(def->vars);
+    VIR_FREE(def->varAccess);
     VIR_FREE(def->strings);
 
     VIR_FREE(def);
@@ -358,28 +358,28 @@ virNWFilterRuleDefAddVar(virNWFilterRuleDefPtr nwf,
                          const char *var)
 {
     int i = 0;
+    virNWFilterVarAccessPtr varAccess;
 
-    if (nwf->vars) {
-        for (i = 0; i < nwf->nvars; i++)
-            if (STREQ(nwf->vars[i], var)) {
-                item->var = nwf->vars[i];
+    varAccess = virNWFilterVarAccessParse(var);
+    if (varAccess == NULL)
+        return -1;
+
+    if (nwf->varAccess) {
+        for (i = 0; i < nwf->nVarAccess; i++)
+            if (virNWFilterVarAccessEqual(nwf->varAccess[i], varAccess)) {
+                virNWFilterVarAccessFree(varAccess);
+                item->varAccess = nwf->varAccess[i];
                 return 0;
             }
     }
 
-    if (VIR_REALLOC_N(nwf->vars, nwf->nvars+1) < 0) {
+    if (VIR_EXPAND_N(nwf->varAccess, nwf->nVarAccess, 1) < 0) {
         virReportOOMError();
         return -1;
     }
 
-    nwf->vars[nwf->nvars] = strdup(var);
-
-    if (!nwf->vars[nwf->nvars]) {
-        virReportOOMError();
-        return -1;
-    }
-
-    item->var = nwf->vars[nwf->nvars++];
+    nwf->varAccess[nwf->nVarAccess - 1] = varAccess;
+    item->varAccess = varAccess;
 
     return 0;
 }
@@ -3069,7 +3069,8 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
                    goto err_exit;
                }
             } else if ((flags & NWFILTER_ENTRY_ITEM_FLAG_HAS_VAR)) {
-                virBufferAsprintf(buf, "$%s", item->var);
+                virBufferAddChar(buf, '$');
+                virNWFilterVarAccessPrint(item->varAccess, buf);
             } else {
                asHex = false;
 

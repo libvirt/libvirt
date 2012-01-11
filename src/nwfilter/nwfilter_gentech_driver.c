@@ -500,14 +500,16 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
         virNWFilterIncludeDefPtr inc  = filter->filterEntries[i]->include;
         if (rule) {
             /* check all variables of this rule */
-            for (j = 0; j < rule->nvars; j++) {
-                if (!virHashLookup(vars->hashTable, rule->vars[j])) {
+            for (j = 0; j < rule->nVarAccess; j++) {
+                const char *varName;
+                varName = virNWFilterVarAccessGetVarName(rule->varAccess[j]);
+                if (!virHashLookup(vars->hashTable, varName)) {
                     val = virNWFilterVarValueCreateSimpleCopyValue("1");
                     if (!val) {
                         rc = -1;
                         break;
                     }
-                    virNWFilterHashTablePut(missing_vars, rule->vars[j],
+                    virNWFilterHashTablePut(missing_vars, varName,
                                             val, 1);
                 }
             }
