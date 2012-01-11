@@ -555,18 +555,23 @@ static int lxcContainerPopulateDevices(char **ttyPaths, size_t nttyPaths)
         }
     }
 
-    dev_t dev = makedev(LXC_DEV_MAJ_TTY, LXC_DEV_MIN_PTMX);
-    if (mknod("/dev/ptmx", S_IFCHR, dev) < 0 ||
-        chmod("/dev/ptmx", 0666)) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to make device /dev/ptmx"));
-        return -1;
-    }
-
     if (access("/dev/pts/ptmx", W_OK) == 0) {
+        /* We have private devpts capability, so bind that */
+        if (virFileTouch("/dev/ptmx", 0666) < 0)
+            return -1;
+
         if (mount("/dev/pts/ptmx", "/dev/ptmx", "ptmx", MS_BIND, NULL) < 0) {
             virReportSystemError(errno, "%s",
-                                 _("Failed to bind-mount /dev/ptmx to /dev/pts/ptmx"));
+                                 _("Failed to bind /dev/pts/ptmx on to /dev/ptmx"));
+            return -1;
+        }
+    } else {
+        /* Legacy devpts, so we need to just use shared one */
+        dev_t dev = makedev(LXC_DEV_MAJ_TTY, LXC_DEV_MIN_PTMX);
+        if (mknod("/dev/ptmx", S_IFCHR, dev) < 0 ||
+            chmod("/dev/ptmx", 0666)) {
+            virReportSystemError(errno, "%s",
+                                 _("Failed to make device /dev/ptmx"));
             return -1;
         }
     }
