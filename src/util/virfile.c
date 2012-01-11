@@ -390,3 +390,24 @@ cleanup:
     }
     return ret;
 }
+
+
+int virFileTouch(const char *path, mode_t mode)
+{
+    int fd = -1;
+
+    if ((fd = open(path, O_WRONLY | O_CREAT, mode)) < 0) {
+        virReportSystemError(errno, _("cannot create file '%s'"),
+                             path);
+        return -1;
+    }
+
+    if (VIR_CLOSE(fd) < 0) {
+        virReportSystemError(errno, _("cannot save file '%s'"),
+                             path);
+        VIR_FORCE_CLOSE(fd);
+        return -1;
+    }
+
+    return 0;
+}

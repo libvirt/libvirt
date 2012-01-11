@@ -74,4 +74,6 @@ int virFileRewrite(const char *path,
                    virFileRewriteFunc rewrite,
                    void *opaque);
 
+int virFileTouch(const char *path, mode_t mode);
+
 #endif /* __VIR_FILES_H */

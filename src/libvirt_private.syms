@@ -1174,6 +1174,7 @@ virFileDirectFdNew;
 virFileFclose;
 virFileFdopen;
 virFileRewrite;
+virFileTouch;
 
 
 # virkeycode.h
