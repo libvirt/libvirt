@@ -348,6 +348,52 @@ virNWFilterVarCombIterAddVariable(virNWFilterVarCombIterEntryPtr cie,
 }
 
 /*
+ * Test whether the iterator entry points to a distinguished set of entries
+ * that have not been seen before at one of the previous iterations.
+ *
+ * The point of this function is to eliminate duplicates.
+ * Example with two lists:
+ *
+ * list1 = [1,2,1]
+ * list2 = [1,3,1]
+ *
+ * The 1st iteration would take the 1st items of each list -> 1,1
+ * The 2nd iteration would take the 2nd items of each list -> 2,3
+ * The 3rd iteration would take the 3rd items of each list -> 1,1 but
+ * skip them since this pair has already been encountered in the 1st iteration
+ */
+static bool
+virNWFilterVarCombIterEntryAreUniqueEntries(virNWFilterVarCombIterEntryPtr cie,
+                                            virNWFilterHashTablePtr hash)
+{
+    unsigned int i, j;
+    virNWFilterVarValuePtr varValue, tmp;
+    const char *value;
+
+    varValue = virHashLookup(hash->hashTable, cie->varNames[0]);
+
+    value = virNWFilterVarValueGetNthValue(varValue, cie->curValue);
+
+    for (i = 0; i < cie->curValue; i++) {
+        if (STREQ(value, virNWFilterVarValueGetNthValue(varValue, i))) {
+            bool isSame = true;
+            for (j = 1; j < cie->nVarNames; j++) {
+                tmp = virHashLookup(hash->hashTable, cie->varNames[j]);
+                if (!STREQ(virNWFilterVarValueGetNthValue(tmp, cie->curValue),
+                           virNWFilterVarValueGetNthValue(tmp, i))) {
+                    isSame = false;
+                    break;
+                }
+            }
+            if (isSame)
+                return false;
+        }
+    }
+
+    return true;
+}
+
+/*
  * Create an iterator over the contents of the given variables. All variables
  * must have entries in the hash table.
  * The iterator that is created processes all given variables in parallel,
@@ -414,11 +460,16 @@ virNWFilterVarCombIterNext(virNWFilterVarCombIterPtr ci)
     unsigned int i;
 
     for (i = 0; i < ci->nIter; i++) {
+next:
         ci->iter[i].curValue++;
-        if (ci->iter[i].curValue <= ci->iter[i].maxValue)
+        if (ci->iter[i].curValue <= ci->iter[i].maxValue) {
+            if (!virNWFilterVarCombIterEntryAreUniqueEntries(
+                                              &ci->iter[i], ci->hashTable))
+                goto next;
             break;
-        else
+        } else {
             ci->iter[i].curValue = 0;
+        }
     }
 
     if (ci->nIter == i) {
