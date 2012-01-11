@@ -1,0 +1,12 @@
+<filter name='testcase' chain='root'>
+  <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
+  <rule action='accept' direction='out' priority='500'>
+    <tcp srcipaddr='$A[0]' dscp='1' srcportstart='$B'/>
+  </rule>
+  <rule action='accept' direction='out' priority='500'>
+    <udp srcipaddr='$A[1]' dscp='2' srcportstart='$B[@2]'/>
+  </rule>
+  <rule action='accept' direction='out' priority='500'>
+    <sctp srcipaddr='$A[1]' dscp='3' srcportstart='$B[2]' dstportstart='$C[2]'/>
+  </rule>
+</filter>
