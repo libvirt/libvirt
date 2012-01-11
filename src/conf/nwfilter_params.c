@@ -1,7 +1,7 @@
 /*
  * nwfilter_params.c: parsing and data maintenance of filter parameters
  *
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -316,7 +316,7 @@ virNWFilterVarCombIterAddVariable(virNWFilterVarCombIterEntryPtr cie,
                                   const virNWFilterVarAccessPtr varAccess)
 {
     virNWFilterVarValuePtr varValue;
-    unsigned int maxValue, minValue;
+    unsigned int maxValue = 0, minValue = 0;
     const char *varName = virNWFilterVarAccessGetVarName(varAccess);
 
     varValue = virHashLookup(hash->hashTable, varName);
