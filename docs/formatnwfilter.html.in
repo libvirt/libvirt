@@ -308,7 +308,69 @@
   &lt;/rule&gt;
   ...
 </pre>
+    <p>
+      <span class="since">Since 0.9.10</span> it is possible to access
+      individual elements of a variable holding a list of elements.
+      A filtering rule like the following accesses the 2nd element
+      of the variable DSTPORTS.
+    </p>
+<pre>
+  ...
+  &lt;rule action='accept' direction='in' priority='500'&gt;
+    &lt;udp dstportstart='$DSTPORTS[1]'/&gt;
+  &lt;/rule&gt;
+  ...
+</pre>
+    <p>
+      <span class="since">Since 0.9.10</span> it is possible to create
+      filtering rules that instantiate all combinations of rules from
+      different lists using the notation of
+      <code>$VARIABLE[@&lt;iterator ID&gt;]</code>.
+      The following rule allows a virtual machine to
+      receive traffic on a set of ports, which are specified in DSTPORTS,
+      from the set of source IP address specified in SRCIPADDRESSES.
+      The rule generates all combinations of elements of the variable
+      DSTPORT with those of SRCIPADDRESSES by using two independent
+      iterators to access their elements.
+    </p>
+<pre>
+  ...
+  &lt;rule action='accept' direction='in' priority='500'&gt;
+    &lt;ip srcipaddr='$SRCIPADDRESSES[@1]' dstportstart='$DSTPORTS[@2]'/&gt;
+  &lt;/rule&gt;
+  ...
+</pre>
 
+    <p>
+      In an example we assign concrete values to SRCIPADDRESSES and DSTPORTS
+    </p>
+<pre>
+  SRCIPADDRESSES = [ 10.0.0.1, 11.1.2.3 ]
+  DSTPORTS = [ 80, 8080 ]
+</pre>
+    <p>
+      Accessing the variables using $SRCIPADDRESSES[@1] and $DSTPORTS[@2] would
+      then result in all combinations of addresses and ports being created:
+    </p>
+<pre>
+  10.0.0.1, 80
+  10.0.0.1, 8080
+  11.1.2.3, 80
+  11.1.2.3, 8080
+</pre>
+    <p>
+      Accessing the same variables using a single iterator, for example by using
+      the notation $SRCIPADDRESSES[@1] and $DSTPORTS[@1], would result in
+      parallel access to both lists and result in the following combinations:
+    </p>
+<pre>
+  10.0.0.1, 80
+  11.1.2.3, 8080
+</pre>
+    <p>
+      Further, the notation of $VARIABLE is short-hand for $VARIABLE[@0]. The
+      former notation always assumes the iterator with Id '0'.
+    <p>
     <h2><a name="nwfelems">Element and attribute overview</a></h2>
 
     <p>
