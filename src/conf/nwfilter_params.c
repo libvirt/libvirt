@@ -35,7 +35,10 @@
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
 static bool isValidVarValue(const char *value);
-
+static void virNWFilterVarAccessSetIntIterId(virNWFilterVarAccessPtr,
+                                             unsigned int);
+static unsigned int virNWFilterVarAccessGetIntIterId(
+                                             const virNWFilterVarAccessPtr);
 
 void
 virNWFilterVarValueFree(virNWFilterVarValuePtr val)
@@ -313,7 +316,7 @@ virNWFilterVarCombIterAddVariable(virNWFilterVarCombIterEntryPtr cie,
                                   const virNWFilterVarAccessPtr varAccess)
 {
     virNWFilterVarValuePtr varValue;
-    unsigned int cardinality;
+    unsigned int maxValue, minValue;
     const char *varName = virNWFilterVarAccessGetVarName(varAccess);
 
     varValue = virHashLookup(hash->hashTable, varName);
@@ -324,12 +327,25 @@ virNWFilterVarCombIterAddVariable(virNWFilterVarCombIterEntryPtr cie,
         return -1;
     }
 
-    cardinality = virNWFilterVarValueGetCardinality(varValue);
+    switch (virNWFilterVarAccessGetType(varAccess)) {
+    case VIR_NWFILTER_VAR_ACCESS_ELEMENT:
+        maxValue = virNWFilterVarAccessGetIndex(varAccess);
+        minValue = maxValue;
+        break;
+    case VIR_NWFILTER_VAR_ACCESS_ITERATOR:
+        maxValue = virNWFilterVarValueGetCardinality(varValue) - 1;
+        minValue = 0;
+        break;
+    case VIR_NWFILTER_VAR_ACCESS_LAST:
+        return -1;
+    }
 
     if (cie->nVarNames == 0) {
-        cie->maxValue = cardinality - 1;
+        cie->maxValue = maxValue;
+        cie->minValue = minValue;
+        cie->curValue = minValue;
     } else {
-        if (cie->maxValue != cardinality - 1) {
+        if (cie->maxValue != maxValue) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("Cardinality of list items must be "
                                      "the same for processing them in "
@@ -410,12 +426,13 @@ virNWFilterVarCombIterEntryAreUniqueEntries(virNWFilterVarCombIterEntryPtr cie,
  */
 virNWFilterVarCombIterPtr
 virNWFilterVarCombIterCreate(virNWFilterHashTablePtr hash,
-                             const virNWFilterVarAccessPtr *varAccess,
+                             virNWFilterVarAccessPtr *varAccess,
                              size_t nVarAccess)
 {
     virNWFilterVarCombIterPtr res;
     unsigned int i, iterId;
     int iterIndex = -1;
+    unsigned int nextIntIterId = VIR_NWFILTER_MAX_ITERID + 1;
 
     if (VIR_ALLOC_VAR(res, virNWFilterVarCombIterEntry, 1 + nVarAccess) < 0) {
         virReportOOMError();
@@ -442,6 +459,13 @@ virNWFilterVarCombIterCreate(virNWFilterHashTablePtr hash,
             }
             break;
         case VIR_NWFILTER_VAR_ACCESS_ELEMENT:
+            iterIndex = res->nIter;
+            virNWFilterVarAccessSetIntIterId(varAccess[i], nextIntIterId);
+            virNWFilterVarCombIterEntryInit(&res->iter[iterIndex],
+                                            nextIntIterId);
+            nextIntIterId++;
+            res->nIter++;
+            break;
         case VIR_NWFILTER_VAR_ACCESS_LAST:
             break;
         }
@@ -472,7 +496,7 @@ next:
                 goto next;
             break;
         } else {
-            ci->iter[i].curValue = 0;
+            ci->iter[i].curValue = ci->iter[i].minValue;
         }
     }
 
@@ -507,9 +531,15 @@ virNWFilterVarCombIterGetVarValue(virNWFilterVarCombIterPtr ci,
         }
         break;
     case VIR_NWFILTER_VAR_ACCESS_ELEMENT:
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Element access via index is not possible"));
-        return NULL;
+        iterId = virNWFilterVarAccessGetIntIterId(vap);
+        iterIndex = virNWFilterVarCombIterGetIndexByIterId(ci, iterId);
+        if (iterIndex < 0) {
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("Could not get iterator index for "
+                                     "(internal) iterator ID %u"), iterId);
+            return NULL;
+        }
+        break;
     case VIR_NWFILTER_VAR_ACCESS_LAST:
         return NULL;
     }
@@ -874,7 +904,8 @@ virNWFilterVarAccessEqual(const virNWFilterVarAccessPtr a,
 
     switch (a->accessType) {
     case VIR_NWFILTER_VAR_ACCESS_ELEMENT:
-        return (a->u.index == b->u.index);
+        return (a->u.index.index == b->u.index.index &&
+                a->u.index.intIterId == b->u.index.intIterId);
         break;
     case VIR_NWFILTER_VAR_ACCESS_ITERATOR:
         return (a->u.iterId == b->u.iterId);
@@ -938,11 +969,6 @@ virNWFilterVarAccessParse(const char *varAccess)
         } else {
             /* in the form 'IP[<number>] -> element */
             dest->accessType = VIR_NWFILTER_VAR_ACCESS_ELEMENT;
-            /* not supported (yet) */
-            virNWFilterReportError(VIR_ERR_INVALID_ARG,
-                                   _("Variable access in the form "
-                                     "var[<index>] is not supported"));
-            goto err_exit;
         }
 
         if (virStrToLong_ui(input, &end_ptr, 10, &result) < 0)
@@ -965,7 +991,8 @@ virNWFilterVarAccessParse(const char *varAccess)
 
         switch (dest->accessType) {
         case VIR_NWFILTER_VAR_ACCESS_ELEMENT:
-            dest->u.index = result;
+            dest->u.index.index = result;
+            dest->u.index.intIterId = ~0;
             break;
         case VIR_NWFILTER_VAR_ACCESS_ITERATOR:
             if (result > VIR_NWFILTER_MAX_ITERID) {
@@ -998,7 +1025,7 @@ virNWFilterVarAccessPrint(virNWFilterVarAccessPtr vap, virBufferPtr buf)
     virBufferAdd(buf, vap->varName, -1);
     switch (vap->accessType) {
     case VIR_NWFILTER_VAR_ACCESS_ELEMENT:
-        virBufferAsprintf(buf, "[%u]", vap->u.index);
+        virBufferAsprintf(buf, "[%u]", vap->u.index.index);
         break;
     case VIR_NWFILTER_VAR_ACCESS_ITERATOR:
         if (vap->u.iterId != 0)
@@ -1025,4 +1052,23 @@ unsigned int
 virNWFilterVarAccessGetIterId(const virNWFilterVarAccessPtr vap)
 {
     return vap->u.iterId;
+}
+
+unsigned int
+virNWFilterVarAccessGetIndex(const virNWFilterVarAccessPtr vap)
+{
+    return vap->u.index.index;
+}
+
+static void
+virNWFilterVarAccessSetIntIterId(virNWFilterVarAccessPtr vap,
+                                 unsigned int intIterId)
+{
+    vap->u.index.intIterId = intIterId;
+}
+
+static unsigned int
+virNWFilterVarAccessGetIntIterId(const virNWFilterVarAccessPtr vap)
+{
+    return vap->u.index.intIterId;
 }

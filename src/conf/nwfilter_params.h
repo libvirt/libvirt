@@ -103,7 +103,10 @@ typedef virNWFilterVarAccess *virNWFilterVarAccessPtr;
 struct  _virNWFilterVarAccess {
     enum virNWFilterVarAccessType accessType;
     union {
-        unsigned int index;
+        struct {
+            unsigned int index;
+            unsigned int intIterId;
+        } index;
         unsigned int iterId;
     } u;
     char *varName;
@@ -121,6 +124,7 @@ const char *virNWFilterVarAccessGetVarName(const virNWFilterVarAccessPtr vap);
 enum virNWFilterVarAccessType virNWFilterVarAccessGetType(
                                            const virNWFilterVarAccessPtr vap);
 unsigned int virNWFilterVarAccessGetIterId(const virNWFilterVarAccessPtr vap);
+unsigned int virNWFilterVarAccessGetIndex(const virNWFilterVarAccessPtr vap);
 
 
 typedef struct _virNWFilterVarCombIterEntry virNWFilterVarCombIterEntry;
@@ -131,6 +135,7 @@ struct _virNWFilterVarCombIterEntry {
     size_t nVarNames;
     unsigned int maxValue;
     unsigned int curValue;
+    unsigned int minValue;
 };
 
 typedef struct _virNWFilterVarCombIter virNWFilterVarCombIter;
@@ -142,7 +147,7 @@ struct _virNWFilterVarCombIter {
 };
 virNWFilterVarCombIterPtr virNWFilterVarCombIterCreate(
                              virNWFilterHashTablePtr hash,
-                             const virNWFilterVarAccessPtr *vars,
+                             virNWFilterVarAccessPtr *vars,
                              size_t nVars);
 
 void virNWFilterVarCombIterFree(virNWFilterVarCombIterPtr ci);
