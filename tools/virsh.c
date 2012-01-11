@@ -1985,6 +1985,103 @@ cleanup:
 }
 
 /*
+ * "domiflist" command
+ */
+static const vshCmdInfo info_domiflist[] = {
+    {"help", N_("list all domain virtual interfaces")},
+    {"desc", N_("Get the summary of virtual interfaces for a domain.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_domiflist[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"inactive", VSH_OT_BOOL, 0,
+     N_("get inactive rather than running configuration")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    bool ret = false;
+    unsigned int flags = 0;
+    char *xml = NULL;
+    xmlDocPtr xmldoc = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    int ninterfaces;
+    xmlNodePtr *interfaces = NULL;
+    int i;
+
+    if (vshCommandOptBool(cmd, "inactive"))
+        flags |= VIR_DOMAIN_XML_INACTIVE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    xml = virDomainGetXMLDesc(dom, flags);
+    if (!xml)
+        goto cleanup;
+
+    xmldoc = virXMLParseStringCtxt(xml, _("(domain_definition)"), &ctxt);
+    if (!xmldoc)
+        goto cleanup;
+
+    ninterfaces = virXPathNodeSet("./devices/interface", ctxt, &interfaces);
+    if (ninterfaces < 0)
+        goto cleanup;
+
+    vshPrint(ctl, "%-10s %-10s %-10s %-11s %s\n", _("Type"), _("Source"),
+             _("Target"), _("Model"), _("MAC"));
+    vshPrint(ctl, "-------------------------------------------------------\n");
+
+    for (i = 0; i < ninterfaces; i++) {
+        char *type = NULL;
+        char *source = NULL;
+        char *target = NULL;
+        char *model = NULL;
+        char *mac = NULL;
+
+        ctxt->node = interfaces[i];
+        type = virXPathString("string(./@type)", ctxt);
+
+        source = virXPathString("string(./source/@bridge"
+                                "|./source/@dev"
+                                "|./source/@network"
+                                "|./source/@name)", ctxt);
+
+        target = virXPathString("string(./target/@dev)", ctxt);
+        model = virXPathString("string(./model/@type)", ctxt);
+        mac = virXPathString("string(./mac/@address)", ctxt);
+
+        vshPrint(ctl, "%-10s %-10s %-10s %-11s %-10s\n", type,
+                 source ? source : "-",
+                 target ? target : "-",
+                 model ? model : "-",
+                 mac ? mac : "-");
+
+        VIR_FREE(type);
+        VIR_FREE(source);
+        VIR_FREE(target);
+        VIR_FREE(model);
+        VIR_FREE(mac);
+    }
+
+    ret = true;
+
+cleanup:
+    VIR_FREE(interfaces);
+    virDomainFree(dom);
+    VIR_FREE(xml);
+    xmlFreeDoc(xmldoc);
+    xmlXPathFreeContext(ctxt);
+    return ret;
+}
+
+/*
  * "suspend" command
  */
 static const vshCmdInfo info_suspend[] = {
@@ -15864,6 +15961,7 @@ static const vshCmdDef domMonitoringCmds[] = {
     {"domblkstat", cmdDomblkstat, opts_domblkstat, info_domblkstat, 0},
     {"domcontrol", cmdDomControl, opts_domcontrol, info_domcontrol, 0},
     {"domif-getlink", cmdDomIfGetLink, opts_domif_getlink, info_domif_getlink, 0},
+    {"domiflist", cmdDomiflist, opts_domiflist, info_domiflist, 0},
     {"domifstat", cmdDomIfstat, opts_domifstat, info_domifstat, 0},
     {"dominfo", cmdDominfo, opts_dominfo, info_dominfo, 0},
     {"dommemstat", cmdDomMemStat, opts_dommemstat, info_dommemstat, 0},

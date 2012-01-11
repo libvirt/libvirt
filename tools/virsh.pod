@@ -522,6 +522,15 @@ domain.  Other contexts that require a block device name (such as
 I<domblkinfo> or I<snapshot-create> for disk snapshots) will accept
 either target or unique source names printed by this command.
 
+=item B<domiflist> I<domain> [I<--inactive>]
+
+Print a table showing the brief information of all virtual interfaces
+associated with I<domain>. If I<--inactive> is specified, query the
+virtual interfaces that will be used on the next boot, rather than those
+currently in use by a running domain. Other contexts that require a MAC
+address of virtual interface (such as I<detach-interface> or
+I<domif-setlink>) will accept the MAC address printed by this command.
+
 =item B<blockpull> I<domain> I<path> [I<bandwidth>]
 
 Populate a disk from its backing image. Once all data from its backing
