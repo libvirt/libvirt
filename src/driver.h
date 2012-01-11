@@ -8,6 +8,7 @@
 
 # include "config.h"
 
+# include <unistd.h>
 # include <libxml/uri.h>
 
 # include "internal.h"
