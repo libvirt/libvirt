@@ -1072,3 +1072,32 @@ virNWFilterVarAccessGetIntIterId(const virNWFilterVarAccessPtr vap)
 {
     return vap->u.index.intIterId;
 }
+
+bool
+virNWFilterVarAccessIsAvailable(const virNWFilterVarAccessPtr varAccess,
+                                const virNWFilterHashTablePtr hash)
+{
+    const char *varName = virNWFilterVarAccessGetVarName(varAccess);
+    const char *res;
+    unsigned int idx;
+    virNWFilterVarValuePtr varValue;
+
+    varValue = virHashLookup(hash->hashTable, varName);
+    if (!varValue)
+        return false;
+
+    switch (virNWFilterVarAccessGetType(varAccess)) {
+    case VIR_NWFILTER_VAR_ACCESS_ELEMENT:
+        idx = virNWFilterVarAccessGetIndex(varAccess);
+        res = virNWFilterVarValueGetNthValue(varValue, idx);
+        if (res == NULL)
+            return false;
+        break;
+    case VIR_NWFILTER_VAR_ACCESS_ITERATOR:
+        break;
+    case VIR_NWFILTER_VAR_ACCESS_LAST:
+        return false;
+    }
+
+    return true;
+}

@@ -125,7 +125,8 @@ enum virNWFilterVarAccessType virNWFilterVarAccessGetType(
                                            const virNWFilterVarAccessPtr vap);
 unsigned int virNWFilterVarAccessGetIterId(const virNWFilterVarAccessPtr vap);
 unsigned int virNWFilterVarAccessGetIndex(const virNWFilterVarAccessPtr vap);
-
+bool virNWFilterVarAccessIsAvailable(const virNWFilterVarAccessPtr vap,
+                                     const virNWFilterHashTablePtr hash);
 
 typedef struct _virNWFilterVarCombIterEntry virNWFilterVarCombIterEntry;
 typedef virNWFilterVarCombIterEntry *virNWFilterVarCombIterEntryPtr;

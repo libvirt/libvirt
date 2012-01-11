@@ -501,16 +501,29 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
         if (rule) {
             /* check all variables of this rule */
             for (j = 0; j < rule->nVarAccess; j++) {
-                const char *varName;
-                varName = virNWFilterVarAccessGetVarName(rule->varAccess[j]);
-                if (!virHashLookup(vars->hashTable, varName)) {
-                    val = virNWFilterVarValueCreateSimpleCopyValue("1");
-                    if (!val) {
+                if (!virNWFilterVarAccessIsAvailable(rule->varAccess[j],
+                                                     vars)) {
+                    const char *varAccess;
+                    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+                    virNWFilterVarAccessPrint(rule->varAccess[j], &buf);
+                    if (virBufferError(&buf)) {
+                        virReportOOMError();
                         rc = -1;
                         break;
                     }
-                    virNWFilterHashTablePut(missing_vars, varName,
+
+                    val = virNWFilterVarValueCreateSimpleCopyValue("1");
+                    if (!val) {
+                        virBufferFreeAndReset(&buf);
+                        rc = -1;
+                        break;
+                    }
+
+                    varAccess = virBufferContentAndReset(&buf);
+                    virNWFilterHashTablePut(missing_vars, varAccess,
                                             val, 1);
+                    VIR_FREE(varAccess);
                 }
             }
             if (rc)
@@ -752,7 +765,7 @@ err_unresolvable_vars:
     if (buf) {
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                    _("Cannot instantiate filter due to unresolvable "
-                     "variables: %s"), buf);
+                     "variables or unavailable list elements: %s"), buf);
         VIR_FREE(buf);
     }
 
