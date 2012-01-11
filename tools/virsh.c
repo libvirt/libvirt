@@ -6338,9 +6338,10 @@ doMigrate (void *opaque)
         flags |= VIR_MIGRATE_CHANGE_PROTECTION;
 
     if (xmlfile &&
-        virFileReadAll(xmlfile, 8192, &xml) < 0)
+        virFileReadAll(xmlfile, 8192, &xml) < 0) {
+        vshError(ctl, _("file '%s' doesn't exist"), xmlfile);
         goto out;
-
+    }
 
     if ((flags & VIR_MIGRATE_PEER2PEER) ||
         vshCommandOptBool (cmd, "direct")) {
