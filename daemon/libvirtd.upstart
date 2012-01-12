@@ -31,6 +31,11 @@ script
         ulimit -c "$DAEMON_COREFILE_LIMIT"
     fi
 
+    # LIBVIRTD_NOFILES_LIMIT from /etc/sysconfig/libvirtd is not handled
+    # automatically
+    if [ -n "$LIBVIRTD_NOFILES_LIMIT" ]; then
+        ulimit -n "$LIBVIRTD_NOFILES_LIMIT"
+    fi
     mkdir -p /var/cache/libvirt
     rm -rf /var/cache/libvirt/*
 

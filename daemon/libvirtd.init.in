@@ -60,6 +60,13 @@ start() {
     echo -n $"Starting $SERVICE daemon: "
     mkdir -p @localstatedir@/cache/libvirt
     rm -rf @localstatedir@/cache/libvirt/*
+
+    # LIBVIRTD_NOFILES_LIMIT from /etc/sysconfig/libvirtd is not handled
+    # automatically
+    if [ -n "$LIBVIRTD_NOFILES_LIMIT" ]; then
+        ulimit -n "$LIBVIRTD_NOFILES_LIMIT"
+    fi
+
     KRB5_KTNAME=$KRB5_KTNAME daemon --pidfile $PIDFILE --check $SERVICE $PROCESS --daemon $LIBVIRTD_CONFIG_ARGS $LIBVIRTD_ARGS
     RETVAL=$?
     echo

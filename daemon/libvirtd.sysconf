@@ -19,3 +19,6 @@
 #QEMU_AUDIO_DRV=sdl
 #
 #SDL_AUDIODRIVER=pulse
+
+# Override the maximum number of opened files
+#LIBVIRTD_NOFILES_LIMIT=2048
