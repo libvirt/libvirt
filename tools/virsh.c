@@ -944,8 +944,8 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             qsort(&names[0], maxname, sizeof(char*), namesorter);
         }
     }
-    vshPrintExtra(ctl, "%3s %-20s %s\n", _("Id"), _("Name"), _("State"));
-    vshPrintExtra(ctl, "----------------------------------\n");
+    vshPrintExtra(ctl, " %-5s %-30s %s\n", _("Id"), _("Name"), _("State"));
+    vshPrintExtra(ctl, "----------------------------------------------------\n");
 
     for (i = 0; i < maxid; i++) {
         virDomainPtr dom = virDomainLookupByID(ctl->conn, ids[i]);
@@ -954,7 +954,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         if (!dom)
             continue;
 
-        vshPrint(ctl, "%3d %-20s %s\n",
+        vshPrint(ctl, " %-5d %-30s %s\n",
                  virDomainGetID(dom),
                  virDomainGetName(dom),
                  _(vshDomainStateToString(vshDomainState(ctl, dom, NULL))));
@@ -974,7 +974,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             virDomainHasManagedSaveImage(dom, 0) > 0)
             state = -2;
 
-        vshPrint(ctl, "%3s %-20s %s\n",
+        vshPrint(ctl, " %-5s %-30s %s\n",
                  "-",
                  names[i],
                  state == -2 ? _("saved") : _(vshDomainStateToString(state)));
