@@ -8010,6 +8010,14 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         if (def->cpu == NULL)
             goto error;
 
+        if (def->cpu->sockets &&
+            def->maxvcpus >
+            def->cpu->sockets * def->cpu->cores * def->cpu->threads) {
+            virDomainReportError(VIR_ERR_XML_DETAIL, "%s",
+                                 _("Maximum CPUs greater than topology limit"));
+            goto error;
+        }
+
         if (def->cpu->cells_cpus > def->maxvcpus) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                  _("Number of CPUs in <numa> exceeds the"
