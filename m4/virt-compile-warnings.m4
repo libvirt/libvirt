@@ -100,8 +100,13 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
         gl_WARN_ADD([-Wframe-larger-than=4096])
         dnl gl_WARN_ADD([-Wframe-larger-than=256])
 
+        # Silence certain warnings in gnulib, and use improved glibc headers
+        AC_DEFINE([lint], [1],
+          [Define to 1 if the compiler is checking for lint.])
+        AC_DEFINE([_FORTIFY_SOURCE], [2],
+          [enable compile-time and run-time bounds-checking, and some warnings])
+
         # Extra special flags
-        gl_WARN_ADD([-Wp,-D_FORTIFY_SOURCE=2])
         dnl -fstack-protector stuff passes gl_WARN_ADD with gcc
         dnl on Mingw32, but fails when actually used
         case $host in
