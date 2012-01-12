@@ -13554,6 +13554,7 @@ done:
 int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
                                 bool allowProbing,
                                 bool ignoreOpenFailure,
+                                uid_t uid, gid_t gid,
                                 virDomainDiskDefPathIterator iter,
                                 void *opaque)
 {
@@ -13610,15 +13611,14 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
             goto cleanup;
         }
 
-        if ((fd = open(path, O_RDONLY)) < 0) {
+        if ((fd = virFileOpenAs(path, O_RDONLY, 0, uid, gid, 0)) < 0) {
             if (ignoreOpenFailure) {
                 char ebuf[1024];
                 VIR_WARN("Ignoring open failure on %s: %s", path,
-                         virStrerror(errno, ebuf, sizeof(ebuf)));
+                         virStrerror(-fd, ebuf, sizeof(ebuf)));
                 break;
             } else {
-                virReportSystemError(errno,
-                                     _("unable to open disk path %s"),
+                virReportSystemError(-fd, _("unable to open disk path %s"),
                                      path);
                 goto cleanup;
             }

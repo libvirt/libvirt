@@ -96,6 +96,7 @@ int qemuSetupDiskCgroup(struct qemud_driver *driver,
     return virDomainDiskDefForeachPath(disk,
                                        driver->allowDiskFormatProbing,
                                        true,
+                                       driver->user, driver->group,
                                        qemuSetupDiskPathAllow,
                                        &data);
 }
@@ -137,6 +138,7 @@ int qemuTeardownDiskCgroup(struct qemud_driver *driver,
     return virDomainDiskDefForeachPath(disk,
                                        driver->allowDiskFormatProbing,
                                        true,
+                                       driver->user, driver->group,
                                        qemuTeardownDiskPathDeny,
                                        &data);
 }

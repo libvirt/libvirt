@@ -186,6 +186,7 @@ virSecurityDACSetSecurityImageLabel(virSecurityManagerPtr mgr,
     return virDomainDiskDefForeachPath(disk,
                                        virSecurityManagerGetAllowDiskFormatProbing(mgr),
                                        false,
+                                       priv->user, priv->group,
                                        virSecurityDACSetSecurityFileLabel,
                                        mgr);
 }
