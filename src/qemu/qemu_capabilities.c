@@ -147,6 +147,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
 
               "virtio-blk-pci.scsi",
               "blk-sg-io",
+              "drive-copy-on-read",
     );
 
 struct qemu_feature_flags {
@@ -1026,6 +1027,8 @@ qemuCapsComputeCmdFlags(const char *help,
             qemuCapsSet(flags, QEMU_CAPS_DRIVE_READONLY);
         if (strstr(help, "aio=threads|native"))
             qemuCapsSet(flags, QEMU_CAPS_DRIVE_AIO);
+        if (strstr(help, "copy-on-read=on|off"))
+            qemuCapsSet(flags, QEMU_CAPS_DRIVE_COPY_ON_READ);
     }
     if ((p = strstr(help, "-vga")) && !strstr(help, "-std-vga")) {
         const char *nl = strstr(p, "\n");

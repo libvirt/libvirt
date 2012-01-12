@@ -1929,6 +1929,17 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
         virBufferAddLit(&opt, ",cache=off");
     }
 
+    if (disk->copy_on_read) {
+        if (qemuCapsGet(qemuCaps, QEMU_CAPS_DRIVE_COPY_ON_READ)) {
+            virBufferAsprintf(&opt, ",copy-on-read=%s",
+                              virDomainDiskCopyOnReadTypeToString(disk->copy_on_read));
+        } else {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("copy_on_read is not supported by this QEMU binary"));
+            goto error;
+        }
+    }
+
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_MONITOR_JSON)) {
         const char *wpolicy = NULL, *rpolicy = NULL;
 

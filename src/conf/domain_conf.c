@@ -209,6 +209,11 @@ VIR_ENUM_IMPL(virDomainVirtioEventIdx, VIR_DOMAIN_VIRTIO_EVENT_IDX_LAST,
               "on",
               "off")
 
+VIR_ENUM_IMPL(virDomainDiskCopyOnRead, VIR_DOMAIN_DISK_COPY_ON_READ_LAST,
+              "default",
+              "on",
+              "off")
+
 VIR_ENUM_IMPL(virDomainDiskSnapshot, VIR_DOMAIN_DISK_SNAPSHOT_LAST,
               "default",
               "no",
@@ -2783,6 +2788,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     char *iotag = NULL;
     char *ioeventfd = NULL;
     char *event_idx = NULL;
+    char *copy_on_read = NULL;
     char *devaddr = NULL;
     virStorageEncryptionPtr encryption = NULL;
     char *serial = NULL;
@@ -2911,6 +2917,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                 iotag = virXMLPropString(cur, "io");
                 ioeventfd = virXMLPropString(cur, "ioeventfd");
                 event_idx = virXMLPropString(cur, "event_idx");
+                copy_on_read = virXMLPropString(cur, "copy_on_read");
             } else if (xmlStrEqual(cur->name, BAD_CAST "auth")) {
                 authUsername = virXMLPropString(cur, "username");
                 if (authUsername == NULL) {
@@ -3226,6 +3233,17 @@ virDomainDiskDefParseXML(virCapsPtr caps,
         def->event_idx = idx;
     }
 
+    if (copy_on_read) {
+        int cor;
+        if ((cor = virDomainDiskCopyOnReadTypeFromString(copy_on_read)) <= 0) {
+            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                 _("unknown disk copy_on_read mode '%s'"),
+                                 copy_on_read);
+            goto error;
+        }
+        def->copy_on_read = cor;
+    }
+
     if (devaddr) {
         if (virDomainParseLegacyDeviceAddress(devaddr,
                                               &def->info.addr.pci) < 0) {
@@ -3319,6 +3337,7 @@ cleanup:
     VIR_FREE(iotag);
     VIR_FREE(ioeventfd);
     VIR_FREE(event_idx);
+    VIR_FREE(copy_on_read);
     VIR_FREE(devaddr);
     VIR_FREE(serial);
     virStorageEncryptionFree(encryption);
@@ -9878,6 +9897,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     const char *iomode = virDomainDiskIoTypeToString(def->iomode);
     const char *ioeventfd = virDomainIoEventFdTypeToString(def->ioeventfd);
     const char *event_idx = virDomainVirtioEventIdxTypeToString(def->event_idx);
+    const char *copy_on_read = virDomainVirtioEventIdxTypeToString(def->copy_on_read);
     const char *startupPolicy = virDomainStartupPolicyTypeToString(def->startupPolicy);
 
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -9918,7 +9938,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, ">\n");
 
     if (def->driverName || def->driverType || def->cachemode ||
-        def->ioeventfd || def->event_idx) {
+        def->ioeventfd || def->event_idx || def->copy_on_read) {
         virBufferAddLit(buf, "      <driver");
         if (def->driverName)
             virBufferAsprintf(buf, " name='%s'", def->driverName);
@@ -9936,6 +9956,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
             virBufferAsprintf(buf, " ioeventfd='%s'", ioeventfd);
         if (def->event_idx)
             virBufferAsprintf(buf, " event_idx='%s'", event_idx);
+        if (def->copy_on_read)
+            virBufferAsprintf(buf, " copy_on_read='%s'", copy_on_read);
         virBufferAddLit(buf, "/>\n");
     }
 

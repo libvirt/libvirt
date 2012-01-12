@@ -1,0 +1,11 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S -M pc-0.13 -m 1024 -smp 1 -nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait -no-acpi \
+-boot dc -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x6 \
+-drive file=/var/lib/libvirt/images/f14.img,if=none,id=drive-virtio-disk0,copy-on-read=on \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,id=virtio-disk0 \
+-drive file=/var/lib/libvirt/Fedora-14-x86_64-Live-KDE.iso,if=none,media=cdrom,id=drive-ide0-1-0 \
+-device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \
+-device virtio-net-pci,tx=bh,vlan=0,id=net0,mac=52:54:00:e5:48:58,bus=pci.0,addr=0x3 \
+-net user,vlan=0,name=hostnet0 -serial pty -usb -vnc 127.0.0.1:-809 -std-vga \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x5

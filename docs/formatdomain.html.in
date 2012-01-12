@@ -1202,6 +1202,15 @@
             <b>In general you should leave this option alone, unless you
             are very certain you know what you are doing.</b>
           </li>
+          <li>
+            The optional <code>copy_on_read</code> attribute controls
+            wether to copy read backing file into the image file. The
+            value can be either "on" or "off".
+            Copy-on-read avoids accessing the same backing file sectors
+            repeatedly and is useful when the backing file is over a slow
+            network. By default copy-on-read is off.
+            <span class='since'>Since 0.9.10 (QEMU and KVM only)</span>
+          </li>
         </ul>
       </dd>
       <dt><code>boot</code></dt>

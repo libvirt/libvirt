@@ -592,7 +592,8 @@ mymain(void)
             QEMU_CAPS_PCI_ROMBAR,
             QEMU_CAPS_NO_ACPI,
             QEMU_CAPS_VIRTIO_BLK_SCSI,
-            QEMU_CAPS_VIRTIO_BLK_SG_IO);
+            QEMU_CAPS_VIRTIO_BLK_SG_IO,
+            QEMU_CAPS_DRIVE_COPY_ON_READ);
     DO_TEST("qemu-1.0", 1000000, 0, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,

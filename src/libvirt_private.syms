@@ -290,6 +290,8 @@ virDomainDeviceTypeToString;
 virDomainDiskBusTypeToString;
 virDomainDiskCacheTypeFromString;
 virDomainDiskCacheTypeToString;
+virDomainDiskCopyOnReadTypeFromString;
+virDomainDiskCopyOnReadTypeToString;
 virDomainDiskDefAssignAddress;
 virDomainDiskDefForeachPath;
 virDomainDiskDefFree;

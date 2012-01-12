@@ -958,6 +958,9 @@
       <optional>
         <ref name="event_idx"/>
       </optional>
+      <optional>
+        <ref name="copy_on_read"/>
+      </optional>
       <empty/>
     </element>
   </define>
@@ -1019,6 +1022,14 @@
   </define>
   <define name="event_idx">
     <attribute name="event_idx">
+      <choice>
+        <value>on</value>
+        <value>off</value>
+      </choice>
+    </attribute>
+  </define>
+  <define name="copy_on_read">
+    <attribute name='copy_on_read'>
       <choice>
         <value>on</value>
         <value>off</value>

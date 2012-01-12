@@ -308,6 +308,14 @@ enum virDomainVirtioEventIdx {
     VIR_DOMAIN_VIRTIO_EVENT_IDX_LAST
 };
 
+enum virDomainDiskCopyOnRead {
+    VIR_DOMAIN_DISK_COPY_ON_READ_DEFAULT = 0,
+    VIR_DOMAIN_DISK_COPY_ON_READ_ON,
+    VIR_DOMAIN_DISK_COPY_ON_READ_OFF,
+
+    VIR_DOMAIN_DISK_COPY_ON_READ_LAST
+};
+
 enum virDomainDiskSnapshot {
     VIR_DOMAIN_DISK_SNAPSHOT_DEFAULT = 0,
     VIR_DOMAIN_DISK_SNAPSHOT_NO,
@@ -384,6 +392,7 @@ struct _virDomainDiskDef {
     int iomode;
     int ioeventfd;
     int event_idx;
+    int copy_on_read;
     int snapshot; /* enum virDomainDiskSnapshot */
     int startupPolicy; /* enum virDomainStartupPolicy */
     unsigned int readonly : 1;
@@ -1969,6 +1978,7 @@ VIR_ENUM_DECL(virDomainDiskSecretType)
 VIR_ENUM_DECL(virDomainDiskSnapshot)
 VIR_ENUM_DECL(virDomainIoEventFd)
 VIR_ENUM_DECL(virDomainVirtioEventIdx)
+VIR_ENUM_DECL(virDomainDiskCopyOnRead)
 VIR_ENUM_DECL(virDomainController)
 VIR_ENUM_DECL(virDomainControllerModelSCSI)
 VIR_ENUM_DECL(virDomainControllerModelUSB)
