@@ -2060,8 +2060,8 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
     if (ninterfaces < 0)
         goto cleanup;
 
-    vshPrint(ctl, "%-10s %-10s %-10s %-11s %s\n", _("Type"), _("Source"),
-             _("Target"), _("Model"), _("MAC"));
+    vshPrint(ctl, "%-10s %-10s %-10s %-11s %s\n", _("Interface"), _("Type"),
+             _("Source"), _("Model"), _("MAC"));
     vshPrint(ctl, "-------------------------------------------------------\n");
 
     for (i = 0; i < ninterfaces; i++) {
@@ -2083,9 +2083,10 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
         model = virXPathString("string(./model/@type)", ctxt);
         mac = virXPathString("string(./mac/@address)", ctxt);
 
-        vshPrint(ctl, "%-10s %-10s %-10s %-11s %-10s\n", type,
-                 source ? source : "-",
+        vshPrint(ctl, "%-10s %-10s %-10s %-11s %-10s\n",
                  target ? target : "-",
+                 type,
+                 source ? source : "-",
                  model ? model : "-",
                  mac ? mac : "-");
 
