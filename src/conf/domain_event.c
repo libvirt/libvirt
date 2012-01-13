@@ -397,7 +397,7 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
     /* check if we already have this callback on our list */
     for (i = 0 ; i < cbList->count ; i++) {
         if (cbList->callbacks[i]->cb == VIR_DOMAIN_EVENT_CALLBACK(callback) &&
-            cbList->callbacks[i]->eventID == VIR_DOMAIN_EVENT_ID_LIFECYCLE &&
+            cbList->callbacks[i]->eventID == eventID &&
             cbList->callbacks[i]->conn == conn) {
             eventReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                              _("event callback already tracked"));
@@ -434,7 +434,7 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
     event->callbackID = cbList->nextID++;
 
     for (i = 0 ; i < cbList->count ; i++) {
-        if (cbList->callbacks[i]->eventID == VIR_DOMAIN_EVENT_ID_LIFECYCLE &&
+        if (cbList->callbacks[i]->eventID == eventID &&
             cbList->callbacks[i]->conn == conn &&
             !cbList->callbacks[i]->deleted)
             ret++;
