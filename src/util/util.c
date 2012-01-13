@@ -70,6 +70,7 @@
 #include "logging.h"
 #include "buf.h"
 #include "util.h"
+#include "storage_file.h"
 #include "memory.h"
 #include "threads.h"
 #include "verify.h"
@@ -753,53 +754,306 @@ childerror:
     _exit(ret);
 }
 
-/* return -errno on failure, or 0 on success */
+/* virFileOpenForceOwnerMode() - an internal utility function called
+ * only by virFileOpenAs().  Sets the owner and mode of the file
+ * opened as "fd" if it's not correct AND the flags say it should be
+ * forced. */
 static int
-virFileOpenAsNoFork(const char *path, int openflags, mode_t mode,
-                    uid_t uid, gid_t gid, unsigned int flags)
+virFileOpenForceOwnerMode(const char *path, int fd, mode_t mode,
+                          uid_t uid, gid_t gid, unsigned int flags)
 {
-    int fd = -1;
     int ret = 0;
+    struct stat st;
 
-    if ((fd = open(path, openflags, mode)) < 0) {
+    if (!(flags & (VIR_FILE_OPEN_FORCE_OWNER | VIR_FILE_OPEN_FORCE_MODE)))
+        return 0;
+
+    if (fstat(fd, &st) == -1) {
         ret = -errno;
-        virReportSystemError(errno, _("failed to create file '%s'"),
-                             path);
-        goto error;
+        virReportSystemError(errno, _("stat of '%s' failed"), path);
+        return ret;
     }
-
-    /* VIR_FILE_OPEN_AS_UID in flags means we are running in a child process
-     * owned by uid and gid */
-    if (!(flags & VIR_FILE_OPEN_AS_UID)) {
-        struct stat st;
-
-        if (fstat(fd, &st) == -1) {
-            ret = -errno;
-            virReportSystemError(errno, _("stat of '%s' failed"), path);
-            goto error;
-        }
-        if (((st.st_uid != uid) || (st.st_gid != gid))
-            && (openflags & O_CREAT)
-            && (fchown(fd, uid, gid) < 0)) {
-            ret = -errno;
-            virReportSystemError(errno, _("cannot chown '%s' to (%u, %u)"),
-                                 path, (unsigned int) uid, (unsigned int) gid);
-            goto error;
-        }
+    /* NB: uid:gid are never "-1" (default) at this point - the caller
+     * has always changed -1 to the value of get[gu]id().
+    */
+    if ((flags & VIR_FILE_OPEN_FORCE_OWNER) &&
+        ((st.st_uid != uid) || (st.st_gid != gid)) &&
+        (fchown(fd, uid, gid) < 0)) {
+        ret = -errno;
+        virReportSystemError(errno,
+                             _("cannot chown '%s' to (%u, %u)"),
+                             path, (unsigned int) uid,
+                             (unsigned int) gid);
+        return ret;
     }
-
-    if ((flags & VIR_FILE_OPEN_FORCE_PERMS)
-        && (fchmod(fd, mode) < 0)) {
+    if ((flags & VIR_FILE_OPEN_FORCE_MODE) &&
+        ((mode & (S_IRWXU|S_IRWXG|S_IRWXO)) !=
+         (st.st_mode & (S_IRWXU|S_IRWXG|S_IRWXO))) &&
+        (fchmod(fd, mode) < 0)) {
         ret = -errno;
         virReportSystemError(errno,
                              _("cannot set mode of '%s' to %04o"),
                              path, mode);
-        goto error;
+        return ret;
     }
+    return ret;
+}
+
+/* virFileOpenForked() - an internal utility function called only by
+ * virFileOpenAs(). It forks, then the child does setuid+setgid to
+ * given uid:gid and attempts to open the file, while the parent just
+ * calls recvfd to get the open fd back from the child. returns the
+ * fd, or -errno if there is an error. */
+static int
+virFileOpenForked(const char *path, int openflags, mode_t mode,
+                  uid_t uid, gid_t gid, unsigned int flags)
+{
+    pid_t pid;
+    int waitret, status, ret = 0;
+    int fd = -1;
+    int pair[2] = { -1, -1 };
+    int forkRet;
+
+    /* parent is running as root, but caller requested that the
+     * file be opened as some other user and/or group). The
+     * following dance avoids problems caused by root-squashing
+     * NFS servers. */
+
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, pair) < 0) {
+        ret = -errno;
+        virReportSystemError(errno,
+                             _("failed to create socket needed for '%s'"),
+                             path);
+        return ret;
+    }
+
+    forkRet = virFork(&pid);
+    if (pid < 0)
+        return -errno;
+
+    if (pid == 0) {
+
+        /* child */
+
+        VIR_FORCE_CLOSE(pair[0]); /* preserves errno */
+        if (forkRet < 0) {
+            /* error encountered and logged in virFork() after the fork. */
+            ret = -errno;
+            goto childerror;
+        }
+
+        /* set desired uid/gid, then attempt to create the file */
+
+        if (virSetUIDGID(uid, gid) < 0) {
+            ret = -errno;
+            goto childerror;
+        }
+
+        if ((fd = open(path, openflags, mode)) < 0) {
+            ret = -errno;
+            virReportSystemError(errno,
+                                 _("child process failed to create file '%s'"),
+                                 path);
+            goto childerror;
+        }
+
+        /* File is successfully open. Set permissions if requested. */
+        ret = virFileOpenForceOwnerMode(path, fd, mode, uid, gid, flags);
+        if (ret < 0)
+            goto childerror;
+
+        do {
+            ret = sendfd(pair[1], fd);
+        } while (ret < 0 && errno == EINTR);
+
+        if (ret < 0) {
+            ret = -errno;
+            virReportSystemError(errno, "%s",
+                                 _("child process failed to send fd to parent"));
+            goto childerror;
+        }
+
+    childerror:
+        /* ret tracks -errno on failure, but exit value must be positive.
+         * If the child exits with EACCES, then the parent tries again.  */
+        /* XXX This makes assumptions about errno being < 255, which is
+         * not true on Hurd.  */
+        VIR_FORCE_CLOSE(pair[1]);
+        if (ret < 0) {
+            VIR_FORCE_CLOSE(fd);
+        }
+        ret = -ret;
+        if ((ret & 0xff) != ret) {
+            VIR_WARN("unable to pass desired return value %d", ret);
+            ret = 0xff;
+        }
+        _exit(ret);
+    }
+
+    /* parent */
+
+    VIR_FORCE_CLOSE(pair[1]);
+
+    do {
+        fd = recvfd(pair[0], 0);
+    } while (fd < 0 && errno == EINTR);
+    VIR_FORCE_CLOSE(pair[0]); /* NB: this preserves errno */
+
+    if (fd < 0 && errno != EACCES) {
+        ret = -errno;
+        while (waitpid(pid, NULL, 0) == -1 && errno == EINTR);
+        return ret;
+    }
+
+    /* wait for child to complete, and retrieve its exit code */
+    while ((waitret = waitpid(pid, &status, 0) == -1)
+           && (errno == EINTR));
+    if (waitret == -1) {
+        ret = -errno;
+        virReportSystemError(errno,
+                             _("failed to wait for child creating '%s'"),
+                             path);
+        VIR_FORCE_CLOSE(fd);
+        return ret;
+    }
+    if (!WIFEXITED(status) || (ret = -WEXITSTATUS(status)) == -EACCES ||
+        fd == -1) {
+        /* fall back to the simpler method, which works better in
+         * some cases */
+        VIR_FORCE_CLOSE(fd);
+        if (flags & VIR_FILE_OPEN_NOFORK) {
+            /* If we had already tried opening w/o fork+setuid and
+             * failed, no sense trying again. Just set return the
+             * original errno that we got at that time (by
+             * definition, always either EACCES or EPERM - EACCES
+             * is close enough).
+             */
+            return -EACCES;
+        }
+        if ((fd = open(path, openflags, mode)) < 0)
+            return -errno;
+        ret = virFileOpenForceOwnerMode(path, fd, mode, uid, gid, flags);
+        if (ret < 0) {
+            VIR_FORCE_CLOSE(fd);
+            return ret;
+        }
+    }
+    return fd;
+}
+
+/**
+ * virFileOpenAs:
+ * @path: file to open or create
+ * @openflags: flags to pass to open
+ * @mode: mode to use on creation or when forcing permissions
+ * @uid: uid that should own file on creation
+ * @gid: gid that should own file
+ * @flags: bit-wise or of VIR_FILE_OPEN_* flags
+ *
+ * Open @path, and return an fd to the open file. @openflags contains
+ * the flags normally passed to open(2), while those in @flags are
+ * used internally. If @flags includes VIR_FILE_OPEN_NOFORK, then try
+ * opening the file while executing with the current uid:gid
+ * (i.e. don't fork+setuid+setgid before the call to open()).  If
+ * @flags includes VIR_FILE_OPEN_FORK, then try opening the file while
+ * the effective user id is @uid (by forking a child process); this
+ * allows one to bypass root-squashing NFS issues; NOFORK is always
+ * tried before FORK (the absence of both flags is treated identically
+ * to (VIR_FILE_OPEN_NOFORK | VIR_FILE_OPEN_FORK)). If @flags includes
+ * VIR_FILE_OPEN_FORCE_OWNER, then ensure that @path is owned by
+ * uid:gid before returning (even if it already existed with a
+ * different owner). If @flags includes VIR_FILE_OPEN_FORCE_MODE,
+ * ensure it has those permissions before returning (again, even if
+ * the file already existed with different permissions).  The return
+ * value (if non-negative) is the file descriptor, left open.  Returns
+ * -errno on failure.  */
+int
+virFileOpenAs(const char *path, int openflags, mode_t mode,
+              uid_t uid, gid_t gid, unsigned int flags)
+{
+    int ret = 0, fd = -1;
+
+    /* allow using -1 to mean "current value" */
+    if (uid == (uid_t) -1)
+       uid = getuid();
+    if (gid == (gid_t) -1)
+       gid = getgid();
+
+    /* treat absence of both flags as presence of both for simpler
+     * calling. */
+    if (!(flags & (VIR_FILE_OPEN_NOFORK|VIR_FILE_OPEN_FORK)))
+       flags |= VIR_FILE_OPEN_NOFORK|VIR_FILE_OPEN_FORK;
+
+    if ((flags & VIR_FILE_OPEN_NOFORK)
+        || (getuid() != 0)
+        || ((uid == 0) && (gid == 0))) {
+
+        if ((fd = open(path, openflags, mode)) < 0) {
+            ret = -errno;
+        } else {
+            ret = virFileOpenForceOwnerMode(path, fd, mode, uid, gid, flags);
+            if (ret < 0)
+                goto error;
+        }
+    }
+
+    /* If we either 1) didn't try opening as current user at all, or
+     * 2) failed, and errno/virStorageFileIsSharedFS indicate we might
+     * be successful if we try as a different uid, then try doing
+     * fork+setuid+setgid before opening.
+     */
+    if ((fd < 0) && (flags & VIR_FILE_OPEN_FORK)) {
+
+        if (ret < 0) {
+            /* An open(2) that failed due to insufficient permissions
+             * could return one or the other of these depending on OS
+             * version and circumstances. Any other errno indicates a
+             * problem that couldn't be remedied by fork+setuid
+             * anyway. */
+            if (ret != -EACCES && ret != -EPERM)
+                goto error;
+
+            /* On Linux we can also verify the FS-type of the
+             * directory.  (this is a NOP on other platforms). */
+            switch (virStorageFileIsSharedFS(path)) {
+            case 1:
+                /* it was on a network share, so we'll re-try */
+                break;
+            case -1:
+                /* failure detecting fstype */
+                virReportSystemError(errno, _("couldn't determine fs type of"
+                                              "of mount containing '%s'"), path);
+                goto error;
+            case 0:
+            default:
+                /* file isn't on a recognized network FS */
+                goto error;
+            }
+        }
+
+        /* passed all prerequisites - retry the open w/fork+setuid */
+        if ((fd = virFileOpenForked(path, openflags, mode, uid, gid, flags)) < 0) {
+            ret = fd;
+            fd = -1;
+            goto error;
+        }
+    }
+
+    /* File is successfully opened */
+
     return fd;
 
 error:
-    VIR_FORCE_CLOSE(fd);
+    if (fd < 0) {
+        /* whoever failed the open last has already set ret = -errno */
+        virReportSystemError(-ret, openflags & O_CREAT
+                             ? _("failed to create file '%s'")
+                             : _("failed to open file '%s'"),
+                             path);
+    } else {
+        /* some other failure after the open succeeded */
+        VIR_FORCE_CLOSE(fd);
+    }
     return ret;
 }
 
@@ -839,149 +1093,6 @@ static int virDirCreateNoFork(const char *path, mode_t mode, uid_t uid, gid_t gi
     }
 error:
     return ret;
-}
-
-/**
- * virFileOpenAs:
- * @path: file to open or create
- * @openflags: flags to pass to open
- * @mode: mode to use on creation or when forcing permissions
- * @uid: uid that should own file on creation
- * @gid: gid that should own file
- * @flags: bit-wise or of VIR_FILE_OPEN_* flags
- *
- * Open @path, and execute an optional callback @hook on the open file
- * description.  @hook must return 0 on success, or -errno on failure.
- * If @flags includes VIR_FILE_OPEN_AS_UID, then open the file while the
- * effective user id is @uid (by using a child process); this allows
- * one to bypass root-squashing NFS issues.  If @flags includes
- * VIR_FILE_OPEN_FORCE_PERMS, then ensure that @path has those
- * permissions before the callback, even if the file already existed
- * with different permissions.  The return value (if non-negative)
- * is the file descriptor, left open.  Return -errno on failure.  */
-int
-virFileOpenAs(const char *path, int openflags, mode_t mode,
-              uid_t uid, gid_t gid, unsigned int flags)
-{
-    pid_t pid;
-    int waitret, status, ret = 0;
-    int fd = -1;
-    int pair[2] = { -1, -1 };
-    int forkRet;
-
-    if ((!(flags & VIR_FILE_OPEN_AS_UID))
-        || (getuid() != 0)
-        || ((uid == 0) && (gid == 0))) {
-        flags &= ~VIR_FILE_OPEN_AS_UID;
-        return virFileOpenAsNoFork(path, openflags, mode, uid, gid, flags);
-    }
-
-    /* parent is running as root, but caller requested that the
-     * file be created as some other user and/or group). The
-     * following dance avoids problems caused by root-squashing
-     * NFS servers. */
-
-    if (socketpair(AF_UNIX, SOCK_STREAM, 0, pair) < 0) {
-        ret = -errno;
-        virReportSystemError(errno,
-                             _("failed to create socket needed for '%s'"),
-                             path);
-        return ret;
-    }
-
-    forkRet = virFork(&pid);
-
-    if (pid < 0) {
-        ret = -errno;
-        return ret;
-    }
-
-    if (pid) { /* parent */
-        VIR_FORCE_CLOSE(pair[1]);
-
-        do {
-            ret = recvfd(pair[0], 0);
-        } while (ret < 0 && errno == EINTR);
-
-        if (ret < 0 && errno != EACCES) {
-            ret = -errno;
-            VIR_FORCE_CLOSE(pair[0]);
-            while (waitpid(pid, NULL, 0) == -1 && errno == EINTR);
-            goto parenterror;
-        } else {
-            fd = ret;
-        }
-        VIR_FORCE_CLOSE(pair[0]);
-
-        /* wait for child to complete, and retrieve its exit code */
-        while ((waitret = waitpid(pid, &status, 0) == -1)
-               && (errno == EINTR));
-        if (waitret == -1) {
-            ret = -errno;
-            virReportSystemError(errno,
-                                 _("failed to wait for child creating '%s'"),
-                                 path);
-            VIR_FORCE_CLOSE(fd);
-            goto parenterror;
-        }
-        if (!WIFEXITED(status) || (ret = -WEXITSTATUS(status)) == -EACCES ||
-            fd == -1) {
-            /* fall back to the simpler method, which works better in
-             * some cases */
-            VIR_FORCE_CLOSE(fd);
-            flags &= ~VIR_FILE_OPEN_AS_UID;
-            return virFileOpenAsNoFork(path, openflags, mode, uid, gid, flags);
-        }
-        if (!ret)
-            ret = fd;
-parenterror:
-        return ret;
-    }
-
-
-    /* child */
-
-    if (forkRet < 0) {
-        /* error encountered and logged in virFork() after the fork. */
-        ret = -errno;
-        goto childerror;
-    }
-    VIR_FORCE_CLOSE(pair[0]);
-
-    /* set desired uid/gid, then attempt to create the file */
-
-    if (virSetUIDGID(uid, gid) < 0) {
-        ret = -errno;
-        goto childerror;
-    }
-
-    ret = virFileOpenAsNoFork(path, openflags, mode, uid, gid, flags);
-    if (ret < 0)
-        goto childerror;
-    fd = ret;
-
-    do {
-        ret = sendfd(pair[1], fd);
-    } while (ret < 0 && errno == EINTR);
-
-    if (ret < 0) {
-        ret = -errno;
-        goto childerror;
-    }
-
-childerror:
-    /* ret tracks -errno on failure, but exit value must be positive.
-     * If the child exits with EACCES, then the parent tries again.  */
-    /* XXX This makes assumptions about errno being < 255, which is
-     * not true on Hurd.  */
-    VIR_FORCE_CLOSE(pair[1]);
-    ret = -ret;
-    if ((ret & 0xff) != ret) {
-        VIR_WARN("unable to pass desired return value %d", ret);
-        ret = 0xff;
-    }
-    _exit(ret);
-
 }
 
 /* return -errno on failure, or 0 on success */

@@ -216,7 +216,7 @@ libxlSaveImageOpen(libxlDriverPrivatePtr driver, const char *from,
     libxlSavefileHeader hdr;
     char *xml = NULL;
 
-    if ((fd = virFileOpenAs(from, O_RDONLY, 0, getuid(), getgid(), 0)) < 0) {
+    if ((fd = virFileOpenAs(from, O_RDONLY, 0, -1, -1, 0)) < 0) {
         libxlError(VIR_ERR_OPERATION_FAILED,
                    "%s", _("cannot read domain image"));
         goto error;
@@ -1836,7 +1836,7 @@ libxlDoDomainSave(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     }
 
     if ((fd = virFileOpenAs(to, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR,
-                            getuid(), getgid(), 0)) < 0) {
+                            -1, -1, 0)) < 0) {
         virReportSystemError(-fd,
                              _("Failed to create domain save file '%s'"), to);
         goto cleanup;

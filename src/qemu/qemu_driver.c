@@ -2398,6 +2398,7 @@ qemuOpenFile(struct qemud_driver *driver, const char *path, int oflags,
     bool is_reg = true;
     bool need_unlink = false;
     bool bypass_security = false;
+    unsigned int vfoflags = 0;
     int fd = -1;
     uid_t uid = getuid();
     gid_t gid = getgid();
@@ -2407,6 +2408,7 @@ qemuOpenFile(struct qemud_driver *driver, const char *path, int oflags,
      * in the failure case */
     if (oflags & O_CREAT) {
         need_unlink = true;
+        vfoflags |= VIR_FILE_OPEN_FORCE_OWNER;
         if (stat(path, &sb) == 0) {
             is_reg = !!S_ISREG(sb.st_mode);
             /* If the path is regular file which exists
@@ -2427,8 +2429,8 @@ qemuOpenFile(struct qemud_driver *driver, const char *path, int oflags,
             goto cleanup;
         }
     } else {
-        if ((fd = virFileOpenAs(path, oflags, S_IRUSR | S_IWUSR,
-                                uid, gid, 0)) < 0) {
+        if ((fd = virFileOpenAs(path, oflags, S_IRUSR | S_IWUSR, uid, gid,
+                                vfoflags | VIR_FILE_OPEN_NOFORK)) < 0) {
             /* If we failed as root, and the error was permission-denied
                (EACCES or EPERM), assume it's on a network-connected share
                where root access is restricted (eg, root-squashed NFS). If the
@@ -2472,7 +2474,7 @@ qemuOpenFile(struct qemud_driver *driver, const char *path, int oflags,
             if ((fd = virFileOpenAs(path, oflags,
                                     S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP,
                                     driver->user, driver->group,
-                                    VIR_FILE_OPEN_AS_UID)) < 0) {
+                                    vfoflags | VIR_FILE_OPEN_FORK)) < 0) {
                 virReportSystemError(-fd,
                                    _("Error from child process creating '%s'"),
                                      path);

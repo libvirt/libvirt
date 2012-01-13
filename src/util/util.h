@@ -92,8 +92,10 @@ char *virFileSanitizePath(const char *path);
 
 enum {
     VIR_FILE_OPEN_NONE        = 0,
-    VIR_FILE_OPEN_AS_UID      = (1 << 0),
-    VIR_FILE_OPEN_FORCE_PERMS = (1 << 1),
+    VIR_FILE_OPEN_NOFORK      = (1 << 0),
+    VIR_FILE_OPEN_FORK        = (1 << 1),
+    VIR_FILE_OPEN_FORCE_MODE  = (1 << 2),
+    VIR_FILE_OPEN_FORCE_OWNER = (1 << 3),
 };
 int virFileAccessibleAs(const char *path, int mode,
                         uid_t uid, gid_t gid)
