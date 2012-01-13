@@ -481,16 +481,17 @@ def->parallels[0]...
 #define VMX_BUILD_NAME(_suffix)                                               \
     VMX_BUILD_NAME_EXTRA(_suffix, #_suffix)
 
-/* directly map the virDomainControllerModel to virVMXSCSIControllerModel,
- * this is good enough for now because all virDomainControllerModel values
- * are actually SCSI controller models in the ESX case */
+/* directly map the virDomainControllerModel to virVMXSCSIControllerModel.
+ * Using an uppercase name for unused values ensures that they will never
+ * be used.  */
 VIR_ENUM_DECL(virVMXControllerModelSCSI)
 VIR_ENUM_IMPL(virVMXControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
               "auto", /* just to match virDomainControllerModel, will never be used */
               "buslogic",
               "lsilogic",
               "lsisas1068",
-              "pvscsi");
+              "pvscsi",
+              "UNUSED ibmvscsi");
 
 
 
