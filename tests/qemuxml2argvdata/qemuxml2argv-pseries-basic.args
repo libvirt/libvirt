@@ -1,0 +1,1 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu-system-ppc64 -S -M pseries -m 512 -smp 1 -nographic -nodefconfig -nodefaults -chardev socket,id=charmonitor,path=/tmp/test-monitor,server,nowait -mon chardev=charmonitor,id=monitor,mode=readline -no-acpi -boot c -chardev pty,id=charserial0 -device spapr-vty,chardev=charserial0,reg=0x30000000 -usb

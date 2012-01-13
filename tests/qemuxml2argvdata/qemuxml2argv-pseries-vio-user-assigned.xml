@@ -1,0 +1,42 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>2754dd7b-ac8a-4850-aec0-1f3fcd43235b</uuid>
+  <memory>524288</memory>
+  <vcpu>1</vcpu>
+  <os>
+    <type arch='ppc64' machine='pseries'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <devices>
+    <emulator>/usr/bin/qemu-system-ppc64</emulator>
+    <console type='pty'>
+      <address type="spapr-vio"/>
+    </console>
+
+    <!-- Two serials, first is the console -->
+    <serial type="pty">
+      <address type="spapr-vio" reg="0x20000000"/>
+    </serial>
+    <serial type="pty">
+      <address type="spapr-vio"/>
+    </serial>
+
+    <!-- One disk -->
+    <disk type="file" device="disk">
+      <driver name="qemu" type="raw"/>
+      <source file="/tmp/scsidisk.img"/>
+      <target dev="sda" bus="scsi"/>
+      <address type="drive" controller="1"/>
+    </disk>
+
+    <!-- Two SCSI controllers -->
+    <controller type="scsi" index="1">
+      <address type="spapr-vio" reg="0x30000000"/>
+    </controller>
+    <controller type="scsi" index="0">
+      <address type="spapr-vio"/>
+    </controller>
+
+    <memballoon model="none"/>
+  </devices>
+</domain>
