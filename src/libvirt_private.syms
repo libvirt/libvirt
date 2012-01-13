@@ -1177,13 +1177,14 @@ virNetClientHasPassFD;
 # virnetdev.h
 virNetDevClearIPv4Address;
 virNetDevExists;
-virNetDevGetIndex;
 virNetDevGetIPv4Address;
+virNetDevGetIndex;
 virNetDevGetMAC;
 virNetDevGetMTU;
 virNetDevGetPhysicalFunction;
-virNetDevGetVirtualFunctionIndex;
 virNetDevGetVLanID;
+virNetDevGetVirtualFunctionIndex;
+virNetDevGetVirtualFunctions;
 virNetDevIsOnline;
 virNetDevIsVirtualFunction;
 virNetDevReplaceMacAddress;
