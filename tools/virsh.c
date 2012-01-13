@@ -1906,7 +1906,7 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_domblklist[] = {
     {"help", N_("list all domain blocks")},
-    {"desc", N_("Get the names of block devices for a domain.")},
+    {"desc", N_("Get the summary of block devices for a domain.")},
     {NULL, NULL}
 };
 
@@ -1914,6 +1914,8 @@ static const vshCmdOptDef opts_domblklist[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"inactive", VSH_OT_BOOL, 0,
      N_("get inactive rather than running configuration")},
+    {"details", VSH_OT_BOOL, 0,
+     N_("additionally display the type and device value")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1929,9 +1931,12 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     int ndisks;
     xmlNodePtr *disks = NULL;
     int i;
+    bool details = false;
 
     if (vshCommandOptBool(cmd, "inactive"))
         flags |= VIR_DOMAIN_XML_INACTIVE;
+
+    details = vshCommandOptBool(cmd, "details");
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -1951,14 +1956,27 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     if (ndisks < 0)
         goto cleanup;
 
-    vshPrint(ctl, "%-10s %s\n", _("Target"), _("Source"));
+    if (details)
+        vshPrint(ctl, "%-10s %-10s %-10s %s\n", _("Type"),
+                 _("Device"), _("Target"), _("Source"));
+    else
+        vshPrint(ctl, "%-10s %s\n", _("Target"), _("Source"));
+
     vshPrint(ctl, "------------------------------------------------\n");
 
     for (i = 0; i < ndisks; i++) {
+        char *type;
+        char *device;
         char *target;
         char *source;
 
         ctxt->node = disks[i];
+
+        if (details) {
+            type = virXPathString("string(./@type)", ctxt);
+            device = virXPathString("string(./@device)", ctxt);
+        }
+
         target = virXPathString("string(./target/@dev)", ctxt);
         if (!target) {
             vshError(ctl, "unable to query block list");
@@ -1968,7 +1986,15 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
                                 "|./source/@dev"
                                 "|./source/@dir"
                                 "|./source/@name)", ctxt);
-        vshPrint(ctl, "%-10s %s\n", target, source ? source : "-");
+        if (details) {
+            vshPrint(ctl, "%-10s %-10s %-10s %s\n", type, device,
+                     target, source ? source : "-");
+            VIR_FREE(type);
+            VIR_FREE(device);
+        } else {
+            vshPrint(ctl, "%-10s %s\n", target, source ? source : "-");
+        }
+
         VIR_FREE(target);
         VIR_FREE(source);
     }
