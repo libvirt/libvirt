@@ -2320,9 +2320,11 @@
         <ref name="driveBus"/>
       </attribute>
     </optional>
-    <attribute name="unit">
-      <ref name="driveUnit"/>
-    </attribute>
+    <optional>
+      <attribute name="unit">
+        <ref name="driveUnit"/>
+      </attribute>
+    </optional>
   </define>
   <define name="virtioserialaddress">
     <attribute name="controller">
