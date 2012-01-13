@@ -650,7 +650,10 @@ pulled, the disk no longer depends on that portion of the backing chain.
 It pulls data for the entire disk in the background, the process of the
 operation can be checked with B<blockjob>.
 
-I<path> specifies fully-qualified path of the disk.
+I<path> specifies fully-qualified path of the disk; it corresponds
+to a unique target name (<target dev='name'/>) or source file (<source
+file='name'/>) for one of the disk devices attached to I<domain> (see
+also B<domblklist> for listing these names).
 I<bandwidth> specifies copying bandwidth limit in Mbps.
 
 =item B<blkdeviotune> I<domain> I<device>
@@ -687,13 +690,21 @@ Both I<--live> and I<--current> flags may be given, but I<--current> is
 exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
 
-=item B<blockjob> I<domain> I<path> [I<--abort>] [I<--info>] [I<bandwidth>]
+=item B<blockjob> I<domain> I<path> { [I<--abort>] [I<--async>] |
+[I<--info>] | [I<bandwidth>] }
 
-Manage active block operations.
+Manage active block operations.  There are three modes: I<--info>,
+I<bandwidth>, and I<--abort>; I<--info> is default except that I<--async>
+implies I<--abort>.
 
-I<path> specifies fully-qualified path of the disk.
+I<path> specifies fully-qualified path of the disk; it corresponds
+to a unique target name (<target dev='name'/>) or source file (<source
+file='name'/>) for one of the disk devices attached to I<domain> (see
+also B<domblklist> for listing these names).
+
 If I<--abort> is specified, the active job on the specified disk will
-be aborted.
+be aborted.  If I<--async> is also specified, this command will return
+immediately, rather than waiting for the cancelation to complete.
 If I<--info> is specified, the active job information on the specified
 disk will be printed.
 I<bandwidth> can be used to set bandwidth limit for the active job.
@@ -701,11 +712,15 @@ I<bandwidth> can be used to set bandwidth limit for the active job.
 =item B<blockresize> I<domain> I<path> I<size>
 
 Resize a block device of domain while the domain is running, I<path>
-specifies the absolute path of the block device, I<size> is a scaled
-integer (see B<NOTES> above) which defaults to KiB (blocks of 1024 bytes)
-if there is no suffix.  You must use a suffix of "B" to get bytes (note
-that for historical reasons, this differs from B<vol-resize> which
-defaults to bytes without a suffix).
+specifies the absolute path of the block device; it corresponds
+to a unique target name (<target dev='name'/>) or source file (<source
+file='name'/>) for one of the disk devices attached to I<domain> (see
+also B<domblklist> for listing these names).
+
+I<size> is a scaled integer (see B<NOTES> above) which defaults to KiB
+(blocks of 1024 bytes) if there is no suffix.  You must use a suffix of
+"B" to get bytes (note that for historical reasons, this differs from
+B<vol-resize> which defaults to bytes without a suffix).
 
 =item B<dominfo> I<domain-id>
 

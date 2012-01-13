@@ -7525,6 +7525,7 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
     const char *name, *path;
     unsigned long bandwidth = 0;
     int ret = -1;
+    unsigned int flags = 0;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -7541,7 +7542,9 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
     }
 
     if (mode == VSH_CMD_BLOCK_JOB_ABORT) {
-        ret = virDomainBlockJobAbort(dom, path, 0);
+        if (vshCommandOptBool(cmd, "async"))
+            flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
+        ret = virDomainBlockJobAbort(dom, path, flags);
     } else if (mode == VSH_CMD_BLOCK_JOB_INFO) {
         ret = virDomainGetBlockJobInfo(dom, path, info, 0);
     } else if (mode == VSH_CMD_BLOCK_JOB_SPEED) {
@@ -7589,20 +7592,25 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
- * "blockjobinfo" command
+ * "blockjob" command
  */
 static const vshCmdInfo info_block_job[] = {
-    {"help", N_("Manage active block operations.")},
-    {"desc", N_("Manage active block operations.")},
+    {"help", N_("Manage active block operations")},
+    {"desc", N_("Query, adjust speed, or cancel active block operations.")},
     {NULL, NULL}
 };
 
 static const vshCmdOptDef opts_block_job[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"path", VSH_OT_DATA, VSH_OFLAG_REQ, N_("Fully-qualified path of disk")},
-    {"abort", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("Abort the active job on the specified disk")},
-    {"info", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("Get active job information for the specified disk")},
-    {"bandwidth", VSH_OT_DATA, VSH_OFLAG_NONE, N_("Set the Bandwidth limit in MB/s")},
+    {"abort", VSH_OT_BOOL, VSH_OFLAG_NONE,
+     N_("Abort the active job on the specified disk")},
+    {"async", VSH_OT_BOOL, VSH_OFLAG_NONE,
+     N_("don't wait for --abort to complete")},
+    {"info", VSH_OT_BOOL, VSH_OFLAG_NONE,
+     N_("Get active job information for the specified disk")},
+    {"bandwidth", VSH_OT_DATA, VSH_OFLAG_NONE,
+     N_("Set the Bandwidth limit in MB/s")},
     {NULL, 0, 0, NULL}
 };
 
@@ -7613,18 +7621,23 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
     virDomainBlockJobInfo info;
     const char *type;
     int ret;
+    bool abortMode = (vshCommandOptBool(cmd, "abort") ||
+                      vshCommandOptBool(cmd, "async"));
+    bool infoMode = vshCommandOptBool(cmd, "info");
+    bool bandwidth = vshCommandOptBool(cmd, "bandwidth");
 
-    if (vshCommandOptBool (cmd, "abort")) {
-        mode = VSH_CMD_BLOCK_JOB_ABORT;
-    } else if (vshCommandOptBool (cmd, "info")) {
-        mode = VSH_CMD_BLOCK_JOB_INFO;
-    } else if (vshCommandOptBool (cmd, "bandwidth")) {
-        mode = VSH_CMD_BLOCK_JOB_SPEED;
-    } else {
+    if (abortMode + infoMode + bandwidth > 1) {
         vshError(ctl, "%s",
-                 _("One of --abort, --info, or --bandwidth is required"));
+                 _("conflict between --abort, --info, and --bandwidth modes"));
         return false;
     }
+
+    if (abortMode)
+        mode = VSH_CMD_BLOCK_JOB_ABORT;
+    else if (bandwidth)
+        mode = VSH_CMD_BLOCK_JOB_SPEED;
+    else
+        mode = VSH_CMD_BLOCK_JOB_INFO;
 
     ret = blockJobImpl(ctl, cmd, &info, mode);
     if (ret < 0)
@@ -7634,13 +7647,13 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
         return true;
 
     if (info.type == VIR_DOMAIN_BLOCK_JOB_TYPE_PULL)
-        type = "Block Pull";
+        type = _("Block Pull");
     else
-        type = "Unknown job";
+        type = _("Unknown job");
 
     print_job_progress(type, info.end - info.cur, info.end);
     if (info.bandwidth != 0)
-        vshPrint(ctl, "    Bandwidth limit: %lu MB/s\n", info.bandwidth);
+        vshPrint(ctl, _("    Bandwidth limit: %lu MB/s\n"), info.bandwidth);
     return true;
 }
 
@@ -17115,8 +17128,8 @@ static const vshCmdDef domManagementCmds[] = {
     {"autostart", cmdAutostart, opts_autostart, info_autostart, 0},
     {"blkdeviotune", cmdBlkdeviotune, opts_blkdeviotune, info_blkdeviotune, 0},
     {"blkiotune", cmdBlkiotune, opts_blkiotune, info_blkiotune, 0},
-    {"blockpull", cmdBlockPull, opts_block_pull, info_block_pull, 0},
     {"blockjob", cmdBlockJob, opts_block_job, info_block_job, 0},
+    {"blockpull", cmdBlockPull, opts_block_pull, info_block_pull, 0},
     {"blockresize", cmdBlockResize, opts_block_resize, info_block_resize, 0},
     {"change-media", cmdChangeMedia, opts_change_media, info_change_media, 0},
 #ifndef WIN32

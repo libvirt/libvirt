@@ -1946,6 +1946,15 @@ typedef enum {
 #endif
 } virDomainBlockJobType;
 
+/**
+ * virDomainBlockJobAbortFlags:
+ *
+ * VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC: Request only, do not wait for completion
+ */
+typedef enum {
+    VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC = 1 << 0,
+} virDomainBlockJobAbortFlags;
+
 /* An iterator for monitoring block job operations */
 typedef unsigned long long virDomainBlockJobCursor;
 
@@ -3617,6 +3626,7 @@ typedef void (*virConnectDomainEventGraphicsCallback)(virConnectPtr conn,
 typedef enum {
     VIR_DOMAIN_BLOCK_JOB_COMPLETED = 0,
     VIR_DOMAIN_BLOCK_JOB_FAILED = 1,
+    VIR_DOMAIN_BLOCK_JOB_CANCELED = 2,
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_BLOCK_JOB_LAST

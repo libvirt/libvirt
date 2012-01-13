@@ -17902,7 +17902,7 @@ error:
  * virDomainBlockJobAbort:
  * @dom: pointer to domain object
  * @disk: path to the block device, or device shorthand
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virDomainBlockJobAbortFlags
  *
  * Cancel the active block job on the given disk.
  *
@@ -17912,6 +17912,17 @@ error:
  * (the <target dev='...'/> sub-element, such as "xvda").  Valid names
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
+ *
+ * By default, this function performs a synchronous operation and the caller
+ * may assume that the operation has completed when 0 is returned.  However,
+ * BlockJob operations may take a long time to cancel, and during this time
+ * further domain interactions may be unresponsive.  To avoid this problem,
+ * pass VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC in the @flags argument to enable
+ * asynchronous behavior, returning as soon as possible.  When the job has
+ * been canceled, a BlockJob event will be emitted, with status
+ * VIR_DOMAIN_BLOCK_JOB_CANCELED (even if the ABORT_ASYNC flag was not
+ * used); it is also possible to poll virDomainBlockJobInfo() to see if
+ * the job cancellation is still pending.
  *
  * Returns -1 in case of failure, 0 when successful.
  */
