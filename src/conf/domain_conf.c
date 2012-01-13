@@ -1766,10 +1766,10 @@ int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
         return virDomainDevicePCIAddressIsValid(&info->addr.pci);
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
-        return virDomainDeviceDriveAddressIsValid(&info->addr.drive);
+        return 1;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
-        return virDomainDeviceUSBAddressIsValid(&info->addr.usb);
+        return 1;
     }
 
     return 0;
@@ -1785,24 +1785,6 @@ int virDomainDevicePCIAddressIsValid(virDomainDevicePCIAddressPtr addr)
 }
 
 
-int virDomainDeviceDriveAddressIsValid(virDomainDeviceDriveAddressPtr addr ATTRIBUTE_UNUSED)
-{
-    /*return addr->controller || addr->bus || addr->unit;*/
-    return 1; /* 0 is valid for all fields, so any successfully parsed addr is valid */
-}
-
-int virDomainDeviceUSBAddressIsValid(virDomainDeviceUSBAddressPtr addr ATTRIBUTE_UNUSED)
-{
-    return 1; /* FIXME.. any successfully parsed addr is valid */
-}
-
-int virDomainDeviceVirtioSerialAddressIsValid(
-    virDomainDeviceVirtioSerialAddressPtr addr ATTRIBUTE_UNUSED)
-{
-    return 1; /* 0 is valid for all fields, so any successfully parsed addr is valid */
-}
-
-
 static int
 virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info, unsigned int flags)
 {
@@ -1812,7 +1794,6 @@ virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info, unsigned int flags)
         return 1;
     return 0;
 }
-
 
 void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
 {
@@ -2098,12 +2079,6 @@ virDomainDeviceDriveAddressParseXML(xmlNodePtr node,
         goto cleanup;
     }
 
-    if (!virDomainDeviceDriveAddressIsValid(addr)) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                             _("Insufficient specification for drive address"));
-        goto cleanup;
-    }
-
     ret = 0;
 
 cleanup:
@@ -2147,13 +2122,6 @@ virDomainDeviceVirtioSerialAddressParseXML(
         virStrToLong_ui(port, NULL, 10, &addr->port) < 0) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                              _("Cannot parse <address> 'port' attribute"));
-        goto cleanup;
-    }
-
-    if (!virDomainDeviceVirtioSerialAddressIsValid(addr)) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                             _("Insufficient specification for "
-                               "virtio serial address"));
         goto cleanup;
     }
 
