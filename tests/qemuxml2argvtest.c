@@ -153,6 +153,13 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     if (qemuCapsGet(extraFlags, QEMU_CAPS_DEVICE)) {
         qemuDomainPCIAddressSetPtr pciaddrs;
+
+        if (qemuDomainAssignSpaprVIOAddresses(vmdef)) {
+            if (expectError)
+                goto ok;
+            goto fail;
+        }
+
         if (!(pciaddrs = qemuDomainPCIAddressSetCreate(vmdef)))
             goto fail;
 
@@ -190,11 +197,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto fail;
     }
 
-    if (expectError) {
-        /* need to suppress the errors */
-        virResetLastError();
-    }
-
     if (!(actualargv = virCommandToString(cmd)))
         goto fail;
 
@@ -210,6 +212,12 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (STRNEQ(expectargv, actualargv)) {
         virtTestDifference(stderr, expectargv, actualargv);
         goto fail;
+    }
+
+ ok:
+    if (expectError) {
+        /* need to suppress the errors */
+        virResetLastError();
     }
 
     ret = 0;

@@ -735,7 +735,7 @@ qemuAssignSpaprVIOAddress(virDomainDefPtr def, virDomainDeviceInfoPtr info,
     return 0;
 }
 
-static int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
+int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
 {
     int i, rc;
 
