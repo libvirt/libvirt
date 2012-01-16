@@ -519,6 +519,9 @@ mymain(void)
     DO_TEST("net-eth", false, NONE);
     DO_TEST("net-eth-ifname", false, NONE);
     DO_TEST("net-eth-names", false, QEMU_CAPS_NET_NAME);
+    DO_TEST("net-client", false, NONE);
+    DO_TEST("net-server", false, NONE);
+    DO_TEST("net-mcast", false, NONE);
 
     DO_TEST("serial-vc", false, NONE);
     DO_TEST("serial-pty", false, NONE);

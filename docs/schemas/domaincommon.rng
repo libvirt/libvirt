@@ -1322,6 +1322,59 @@
             <ref name="interface-options"/>
           </interleave>
         </group>
+        <group>
+          <attribute name="type">
+            <choice>
+              <value>mcast</value>
+              <value>client</value>
+            </choice>
+          </attribute>
+          <interleave>
+            <element name="source">
+              <attribute name="address">
+                <ref name="ipv4Addr"/>
+              </attribute>
+              <attribute name="port">
+                <ref name="PortNumber"/>
+              </attribute>
+              <empty/>
+            </element>
+            <optional>
+              <element name="mac">
+                <attribute name="address">
+                  <ref name="macAddr"/>
+                </attribute>
+                <empty/>
+              </element>
+            </optional>
+          </interleave>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>server</value>
+          </attribute>
+          <interleave>
+            <element name="source">
+              <optional>
+                <attribute name="address">
+                  <ref name="ipv4Addr"/>
+                </attribute>
+              </optional>
+              <attribute name="port">
+                <ref name="PortNumber"/>
+              </attribute>
+              <empty/>
+            </element>
+            <optional>
+              <element name="mac">
+                <attribute name="address">
+                  <ref name="macAddr"/>
+                </attribute>
+                <empty/>
+              </element>
+            </optional>
+          </interleave>
+        </group>
       </choice>
     </element>
   </define>

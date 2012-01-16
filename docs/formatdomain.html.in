@@ -2189,6 +2189,7 @@
 <pre>
   ...
   &lt;devices&gt;
+    &lt;mac address='52:54:00:6d:90:01'&gt;
     &lt;interface type='mcast'&gt;
       &lt;source address='230.0.0.1' port='5558'/&gt;
     &lt;/interface&gt;
@@ -2210,10 +2211,12 @@
   ...
   &lt;devices&gt;
     &lt;interface type='server'&gt;
+    &lt;mac address='52:54:00:22:c9:42'&gt;
       &lt;source address='192.168.0.1' port='5558'/&gt;
     &lt;/interface&gt;
     ...
     &lt;interface type='client'&gt;
+    &lt;mac address='52:54:00:8b:c9:51'&gt;
     &lt;source address='192.168.0.1' port='5558'/&gt;
     &lt;/interface&gt;
   &lt;/devices&gt;
