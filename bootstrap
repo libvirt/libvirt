@@ -1,6 +1,6 @@
 #! /bin/sh
 # Print a version string.
-scriptversion=2012-01-06.07; # UTC
+scriptversion=2012-01-16.17; # UTC
 
 # Bootstrap this package from checked-out sources.
 
@@ -758,7 +758,7 @@ fi
 # Autoreconf runs aclocal before libtoolize, which causes spurious
 # warnings if the initial aclocal is confused by the libtoolized
 # (or worse out-of-date) macro directory.
-if grep '^[    ]*LT_INIT' configure.ac >/dev/null; then
+if test $use_libtool = 1; then
   echo "running: $LIBTOOLIZE --copy --install"
   $LIBTOOLIZE --copy --install
 fi
@@ -820,10 +820,14 @@ find "$m4_base" "$source_base" \
   -type l -xtype l -delete > /dev/null 2>&1
 
 # Tell autoreconf not to invoke autopoint or libtoolize; they were run above.
+no_recursive=
+case $($AUTORECONF --help) in
+  *--no-recursive*) no_recursive=--no-recursive;;
+esac
 echo "running: AUTOPOINT=true LIBTOOLIZE=true " \
-    "$AUTORECONF --verbose --install --no-recursive -I $m4_base $ACLOCAL_FLAGS"
+    "$AUTORECONF --verbose --install $no_recursive -I $m4_base $ACLOCAL_FLAGS"
 AUTOPOINT=true LIBTOOLIZE=true \
-    $AUTORECONF --verbose --install --no-recursive -I $m4_base $ACLOCAL_FLAGS \
+    $AUTORECONF --verbose --install $no_recursive -I $m4_base $ACLOCAL_FLAGS \
   || exit 1
 
 # Get some extra files from gnulib, overriding existing files.
