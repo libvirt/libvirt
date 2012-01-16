@@ -734,6 +734,9 @@
         <ref name="diskIoTune"/>
       </optional>
       <optional>
+        <ref name="alias"/>
+      </optional>
+      <optional>
         <ref name="address"/>
       </optional>
     </interleave>
@@ -1099,6 +1102,9 @@
         <ref name="usbmaster"/>
       </optional>
       <optional>
+        <ref name="alias"/>
+      </optional>
+      <optional>
         <ref name="address"/>
       </optional>
     </element>
@@ -1195,6 +1201,9 @@
   </define>
   <define name="filesystemtgt">
     <interleave>
+      <optional>
+        <ref name="alias"/>
+      </optional>
       <optional>
         <ref name="address"/>
       </optional>
@@ -1394,6 +1403,9 @@
           </optional>
           <empty/>
         </element>
+      </optional>
+      <optional>
+        <ref name="alias"/>
       </optional>
       <optional>
         <ref name="address"/>
@@ -1811,6 +1823,9 @@
         </element>
       </optional>
       <optional>
+        <ref name="alias"/>
+      </optional>
+      <optional>
         <ref name="address"/>
       </optional>
     </element>
@@ -1892,6 +1907,9 @@
       <ref name="qemucdevSrcDef"/>
       <optional>
         <ref name="qemucdevTgtDef"/>
+      </optional>
+      <optional>
+        <ref name="alias"/>
       </optional>
       <optional>
         <ref name="address"/>
@@ -2012,6 +2030,9 @@
         </choice>
       </attribute>
       <optional>
+        <ref name="alias"/>
+      </optional>
+      <optional>
         <ref name="address"/>
       </optional>
     </element>
@@ -2037,6 +2058,9 @@
         </attribute>
       </optional>
       <optional>
+        <ref name="alias"/>
+      </optional>
+      <optional>
         <ref name="address"/>
       </optional>
     </element>
@@ -2050,6 +2074,9 @@
           <value>none</value>
         </choice>
       </attribute>
+      <optional>
+        <ref name="alias"/>
+      </optional>
       <optional>
         <ref name="address"/>
       </optional>
@@ -2094,6 +2121,9 @@
           <ref name="virtioTarget"/>
         </choice>
         <optional>
+          <ref name="alias"/>
+        </optional>
+        <optional>
           <ref name="address"/>
         </optional>
       </interleave>
@@ -2135,6 +2165,9 @@
         </group>
       </choice>
       <optional>
+        <ref name="alias"/>
+      </optional>
+      <optional>
         <ref name="address"/>
       </optional>
     </element>
@@ -2162,6 +2195,9 @@
         </attribute>
       </optional>
       <optional>
+        <ref name="alias"/>
+      </optional>
+      <optional>
         <ref name="address"/>
       </optional>
     </element>
@@ -2173,6 +2209,9 @@
           <value>usb</value>
         </choice>
       </attribute>
+      <optional>
+        <ref name="alias"/>
+      </optional>
       <optional>
         <ref name="address"/>
       </optional>
@@ -2189,6 +2228,9 @@
         <ref name="qemucdevSrcTypeChoice"/>
       </attribute>
       <ref name="qemucdevSrcDef"/>
+      <optional>
+        <ref name="alias"/>
+      </optional>
       <optional>
         <ref name="address"/>
       </optional>
@@ -2236,6 +2278,9 @@
       </group>
       <optional>
         <ref name="deviceBoot"/>
+      </optional>
+      <optional>
+        <ref name="alias"/>
       </optional>
       <optional>
         <ref name="address"/>
@@ -2356,12 +2401,6 @@
       </attribute>
     </optional>
   </define>
-  <!--
-      Devices attached to a domain.
-      Sub-elements such as <alias> are not documented here, as they
-      can only exist when generated for a live domain and are ignored
-      when defining a domain.
-    -->
   <define name="devices">
     <element name="devices">
       <interleave>
@@ -2969,5 +3008,18 @@
     <data type="string">
       <param name="pattern">(0x)?[0-9a-fA-F]{1,16}</param>
     </data>
+  </define>
+  <define name='aliasName'>
+    <data type="string">
+      <param name="pattern">[a-zA-Z0-9_-]+</param>
+    </data>
+  </define>
+  <define name='alias'>
+    <element name='alias'>
+      <attribute name='name'>
+        <ref name='aliasName'/>
+      </attribute>
+    </element>
+    <empty/>
   </define>
 </grammar>
