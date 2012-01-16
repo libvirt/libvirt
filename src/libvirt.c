@@ -5188,8 +5188,8 @@ error:
  * if @dxml would cause any guest-visible changes.  Pass NULL
  * if no changes are needed to the XML between source and destination.
  * @dxml cannot be used to rename the domain during migration (use
- * @dname for that purpose).  Domain name in @dxml must either match the
- * original domain name or @dname if it was specified.
+ * @dname for that purpose).  Domain name in @dxml must match the
+ * original domain name.
  *
  * Returns the new domain object if the migration was successful,
  *   or NULL in case of error.  Note that the new domain object

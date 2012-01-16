@@ -1046,11 +1046,9 @@ char *qemuMigrationBegin(struct qemud_driver *driver,
                                             VIR_DOMAIN_XML_INACTIVE)))
             goto cleanup;
 
-        if (STRNEQ(def->name, vm->def->name) &&
-            STRNEQ_NULLABLE(def->name, dname)) {
+        if (STRNEQ(def->name, vm->def->name)) {
             qemuReportError(VIR_ERR_INVALID_ARG, "%s",
-                            _("target domain name doesn't match source name"
-                              " nor destination name"));
+                            _("target domain name doesn't match source name"));
             goto cleanup;
         }
 
