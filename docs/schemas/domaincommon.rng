@@ -1186,6 +1186,11 @@
         </choice>
         </attribute>
       </optional>
+      <optional>
+        <element name='readonly'>
+          <empty/>
+        </element>
+      </optional>
     </element>
   </define>
   <define name="filesystemtgt">
