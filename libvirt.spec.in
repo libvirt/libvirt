@@ -346,8 +346,10 @@ Requires: device-mapper
 %if %{with_cgconfig}
 Requires: libcgroup
 %endif
+%ifarch i386 i586 i686 x86_64 ia64
 # For virConnectGetSysinfo
 Requires: dmidecode
+%endif
 # For service management
 %if %{with_systemd}
 Requires(post): systemd-units
