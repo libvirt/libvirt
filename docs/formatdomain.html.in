@@ -1396,7 +1396,7 @@
       &lt;target dir='/'/&gt;
     &lt;/filesystem&gt;
     &lt;filesystem type='mount' accessmode='passthrough'&gt;
-      &lt;driver type='path'/&gt;
+      &lt;driver type='path' wrpolicy='immediate'/&gt;
       &lt;source dir='/export/to/guest'/&gt;
       &lt;target dir='/import/from/host'/&gt;
       &lt;readonly/&gt;
@@ -1423,7 +1423,12 @@
         sub-element <code>driver</code>, with an
         attribute <code>type='path'</code>
         or <code>type='handle'</code> <span class="since">(since
-        0.9.7)</span>.
+        0.9.7)</span>. The driver block has an optional attribute
+        <code>wrpolicy</code> that further controls interaction with
+        the host page cache; omitting the attribute gives default behavior,
+        while the value <code>immediate</code> means that a host writeback
+        is immediately triggered for all pages touched during a guest file
+        write operation <span class="since">(since 0.9.10)</span>.
         </dd>
         <dt><code>type='template'</code></dt>
         <dd>

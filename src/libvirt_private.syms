@@ -316,6 +316,8 @@ virDomainDiskTypeToString;
 virDomainFSDefFree;
 virDomainFSTypeFromString;
 virDomainFSTypeToString;
+virDomainFSWrpolicyTypeFromString;
+virDomainFSWrpolicyTypeToString;
 virDomainFindByID;
 virDomainFindByName;
 virDomainFindByUUID;

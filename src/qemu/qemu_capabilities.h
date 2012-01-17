@@ -1,7 +1,7 @@
 /*
  * qemu_capabilities.h: QEMU capabilities generation
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -122,6 +122,7 @@ enum qemuCapsFlags {
     QEMU_CAPS_VIRTIO_BLK_SG_IO   = 81, /* support for SG_IO commands, reportedly added in 0.11 */
     QEMU_CAPS_DRIVE_COPY_ON_READ = 82, /* -drive copy-on-read */
     QEMU_CAPS_CPU_HOST          = 83, /* support for -cpu host */
+    QEMU_CAPS_FSDEV_WRITEOUT     = 84, /* -fsdev writeout supported */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

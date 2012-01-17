@@ -651,7 +651,8 @@ mymain(void)
     DO_TEST("sound-device", false,
             QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_HDA_DUPLEX);
     DO_TEST("fs9p", false,
-            QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_FSDEV);
+            QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_FSDEV,
+            QEMU_CAPS_FSDEV_WRITEOUT);
 
     DO_TEST("hostdev-usb-address", false, NONE);
     DO_TEST("hostdev-usb-address-device", false,

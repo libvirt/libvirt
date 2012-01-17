@@ -2138,6 +2138,7 @@ char *qemuBuildFSStr(virDomainFSDefPtr fs,
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     const char *driver = qemuDomainFSDriverTypeToString(fs->fsdriver);
+    const char *wrpolicy = virDomainFSWrpolicyTypeToString(fs->wrpolicy);
 
     if (fs->type != VIR_DOMAIN_FS_TYPE_MOUNT) {
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -2170,6 +2171,17 @@ char *qemuBuildFSStr(virDomainFSDefPtr fs,
             goto error;
         }
     }
+
+    if (fs->wrpolicy) {
+       if (qemuCapsGet(qemuCaps, QEMU_CAPS_FSDEV_WRITEOUT)) {
+           virBufferAsprintf(&opt, ",writeout=%s", wrpolicy);
+       } else {
+           qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                          _("filesystem writeout not supported"));
+           goto error;
+       }
+    }
+
     virBufferAsprintf(&opt, ",id=%s%s", QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
     virBufferAsprintf(&opt, ",path=%s", fs->src);
 

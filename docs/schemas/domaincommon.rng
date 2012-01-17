@@ -1162,6 +1162,11 @@
                     <value>handle</value>
                   </choice>
                 </attribute>
+                <optional>
+                  <attribute name="wrpolicy">
+                    <value>immediate</value>
+                  </attribute>
+                </optional>
                 <empty/>
               </element>
             </optional>

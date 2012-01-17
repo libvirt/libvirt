@@ -1,7 +1,7 @@
 /*
  * qemu_capabilities.c: QEMU capabilities generation
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -149,6 +149,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "blk-sg-io",
               "drive-copy-on-read",
               "cpu-host",
+              "fsdev-writeout",
     );
 
 struct qemu_feature_flags {
@@ -1090,6 +1091,8 @@ qemuCapsComputeCmdFlags(const char *help,
         qemuCapsSet(flags, QEMU_CAPS_FSDEV);
         if (strstr(fsdev, "readonly"))
             qemuCapsSet(flags, QEMU_CAPS_FSDEV_READONLY);
+        if (strstr(fsdev, "writeout"))
+            qemuCapsSet(flags, QEMU_CAPS_FSDEV_WRITEOUT);
     }
     if (strstr(help, "-smbios type"))
         qemuCapsSet(flags, QEMU_CAPS_SMBIOS_TYPE);

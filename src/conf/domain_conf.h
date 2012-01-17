@@ -491,12 +491,21 @@ enum virDomainFSAccessMode {
     VIR_DOMAIN_FS_ACCESSMODE_LAST
 };
 
+/* Filesystem Write policy */
+enum virDomainFSWrpolicy {
+    VIR_DOMAIN_FS_WRPOLICY_DEFAULT = 0,
+    VIR_DOMAIN_FS_WRPOLICY_IMMEDIATE,
+
+    VIR_DOMAIN_FS_WRPOLICY_LAST
+};
+
 typedef struct _virDomainFSDef virDomainFSDef;
 typedef virDomainFSDef *virDomainFSDefPtr;
 struct _virDomainFSDef {
     int type;
     int fsdriver;
     int accessmode;
+    int wrpolicy; /* enum virDomainFSWrpolicy */
     char *src;
     char *dst;
     unsigned int readonly : 1;
@@ -1985,6 +1994,7 @@ VIR_ENUM_DECL(virDomainControllerModelUSB)
 VIR_ENUM_DECL(virDomainFS)
 VIR_ENUM_DECL(virDomainFSDriverType)
 VIR_ENUM_DECL(virDomainFSAccessMode)
+VIR_ENUM_DECL(virDomainFSWrpolicy)
 VIR_ENUM_DECL(virDomainNet)
 VIR_ENUM_DECL(virDomainNetBackend)
 VIR_ENUM_DECL(virDomainNetVirtioTxMode)

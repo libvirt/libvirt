@@ -266,6 +266,9 @@ VIR_ENUM_IMPL(virDomainFSAccessMode, VIR_DOMAIN_FS_ACCESSMODE_LAST,
               "mapped",
               "squash")
 
+VIR_ENUM_IMPL(virDomainFSWrpolicy, VIR_DOMAIN_FS_WRPOLICY_LAST,
+              "default",
+              "immediate")
 
 VIR_ENUM_IMPL(virDomainNet, VIR_DOMAIN_NET_TYPE_LAST,
               "user",
@@ -3460,6 +3463,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
     char *source = NULL;
     char *target = NULL;
     char *accessmode = NULL;
+    char *wrpolicy = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -3509,6 +3513,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
                 def->readonly = 1;
             } else if ((fsdriver == NULL) && (xmlStrEqual(cur->name, BAD_CAST "driver"))) {
                 fsdriver = virXMLPropString(cur, "type");
+                wrpolicy = virXMLPropString(cur, "wrpolicy");
             }
         }
         cur = cur->next;
@@ -3520,6 +3525,16 @@ virDomainFSDefParseXML(xmlNodePtr node,
                                  _("unknown fs driver type '%s'"), fsdriver);
             goto error;
         }
+    }
+
+    if (wrpolicy) {
+        if ((def->wrpolicy = virDomainFSWrpolicyTypeFromString(wrpolicy)) <= 0) {
+            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                 _("unknown filesystem write policy '%s'"), wrpolicy);
+            goto error;
+        }
+    } else {
+        def->wrpolicy = VIR_DOMAIN_FS_WRPOLICY_DEFAULT;
     }
 
     if (source == NULL) {
@@ -3548,6 +3563,7 @@ cleanup:
     VIR_FREE(target);
     VIR_FREE(source);
     VIR_FREE(accessmode);
+    VIR_FREE(wrpolicy);
 
     return def;
 
@@ -10166,6 +10182,7 @@ virDomainFSDefFormat(virBufferPtr buf,
     const char *type = virDomainFSTypeToString(def->type);
     const char *accessmode = virDomainFSAccessModeTypeToString(def->accessmode);
     const char *fsdriver = virDomainFSDriverTypeTypeToString(def->fsdriver);
+    const char *wrpolicy = virDomainFSWrpolicyTypeToString(def->wrpolicy);
 
     if (!type) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -10185,7 +10202,14 @@ virDomainFSDefFormat(virBufferPtr buf,
                       type, accessmode);
 
     if (def->fsdriver) {
-        virBufferAsprintf(buf, "      <driver type='%s'/>\n", fsdriver);
+        virBufferAsprintf(buf, "      <driver type='%s'", fsdriver);
+
+        /* Don't generate anything if wrpolicy is set to default */
+        if (def->wrpolicy) {
+            virBufferAsprintf(buf, " wrpolicy='%s'", wrpolicy);
+        }
+
+        virBufferAddLit(buf, "/>\n");
     }
 
     if (def->src) {
