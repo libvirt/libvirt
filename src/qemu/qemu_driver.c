@@ -9244,6 +9244,7 @@ qemudNodeDeviceReAttach (virNodeDevicePtr dev)
 {
     struct qemud_driver *driver = dev->conn->privateData;
     pciDevice *pci;
+    pciDevice *other;
     unsigned domain, bus, slot, function;
     int ret = -1;
 
@@ -9253,6 +9254,20 @@ qemudNodeDeviceReAttach (virNodeDevicePtr dev)
     pci = pciGetDevice(domain, bus, slot, function);
     if (!pci)
         return -1;
+
+    other = pciDeviceListFind(driver->activePciHostdevs, pci);
+    if (other) {
+        const char *other_name = pciDeviceGetUsedBy(other);
+
+        if (other_name)
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            _("PCI device %s is still in use by domain %s"),
+                            pciDeviceGetName(pci), other_name);
+        else
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            _("PCI device %s is still in use"),
+                            pciDeviceGetName(pci));
+    }
 
     pciDeviceReAttachInit(pci);
 
