@@ -1111,11 +1111,34 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef)
     return 0;
 }
 
+
+static int lxcContainerResolveSymlinks(virDomainDefPtr vmDef)
+{
+    char *newroot;
+    size_t i;
+
+    for (i = 0 ; i < vmDef->nfss ; i++) {
+        virDomainFSDefPtr fs = vmDef->fss[i];
+        if (virFileResolveAllLinks(fs->src, &newroot) < 0)
+            return -1;
+
+        VIR_DEBUG("Resolved '%s' to %s", fs->src, newroot);
+
+        VIR_FREE(fs->src);
+        fs->src = newroot;
+    }
+
+    return 0;
+}
+
 static int lxcContainerSetupMounts(virDomainDefPtr vmDef,
                                    virDomainFSDefPtr root,
                                    char **ttyPaths,
                                    size_t nttyPaths)
 {
+    if (lxcContainerResolveSymlinks(vmDef) < 0)
+        return -1;
+
     if (root)
         return lxcContainerSetupPivotRoot(vmDef, root, ttyPaths, nttyPaths);
     else

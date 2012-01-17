@@ -1101,6 +1101,7 @@ virFileOpenAs;
 virFileOpenTty;
 virFileReadAll;
 virFileReadLimFD;
+virFileResolveAllLinks;
 virFileResolveLink;
 virFileSanitizePath;
 virFileStripSuffix;

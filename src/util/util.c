@@ -536,16 +536,10 @@ int virFileLinkPointsTo(const char *checkLink,
 
 
 
-/*
- * Attempt to resolve a symbolic link, returning an
- * absolute path where only the last component is guaranteed
- * not to be a symlink.
- *
- * Return 0 if path was not a symbolic, or the link was
- * resolved. Return -1 with errno set upon error
- */
-int virFileResolveLink(const char *linkpath,
-                       char **resultpath)
+static int
+virFileResolveLinkHelper(const char *linkpath,
+                         bool intermediatePaths,
+                         char **resultpath)
 {
     struct stat st;
 
@@ -554,7 +548,7 @@ int virFileResolveLink(const char *linkpath,
     /* We don't need the full canonicalization of intermediate
      * directories, if linkpath is absolute and the basename is
      * already a non-symlink.  */
-    if (IS_ABSOLUTE_FILE_NAME(linkpath)) {
+    if (IS_ABSOLUTE_FILE_NAME(linkpath) && !intermediatePaths) {
         if (lstat(linkpath, &st) < 0)
             return -1;
 
@@ -570,6 +564,33 @@ int virFileResolveLink(const char *linkpath,
     return *resultpath == NULL ? -1 : 0;
 }
 
+/*
+ * Attempt to resolve a symbolic link, returning an
+ * absolute path where only the last component is guaranteed
+ * not to be a symlink.
+ *
+ * Return 0 if path was not a symbolic, or the link was
+ * resolved. Return -1 with errno set upon error
+ */
+int virFileResolveLink(const char *linkpath,
+                       char **resultpath)
+{
+    return virFileResolveLinkHelper(linkpath, false, resultpath);
+}
+
+/*
+ * Attempt to resolve a symbolic link, returning an
+ * absolute path where every component is guaranteed
+ * not to be a symlink.
+ *
+ * Return 0 if path was not a symbolic, or the link was
+ * resolved. Return -1 with errno set upon error
+ */
+int virFileResolveAllLinks(const char *linkpath,
+                           char **resultpath)
+{
+    return virFileResolveLinkHelper(linkpath, true, resultpath);
+}
 
 /*
  * Check whether the given file is a link.
