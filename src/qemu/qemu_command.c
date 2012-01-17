@@ -1206,7 +1206,6 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
     int i;
     bool reservedIDE = false;
     bool reservedUSB = false;
-    bool reservedVGA = false;
     int function;
 
     /* Host bridge */
@@ -1287,19 +1286,29 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
             }
             /* If TYPE==PCI, then qemuCollectPCIAddress() function
              * has already reserved the address, so we must skip */
-            reservedVGA = true;
         } else {
             def->videos[0]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
             def->videos[0]->info.addr.pci.domain = 0;
             def->videos[0]->info.addr.pci.bus = 0;
             def->videos[0]->info.addr.pci.slot = 2;
             def->videos[0]->info.addr.pci.function = 0;
+            if (qemuDomainPCIAddressReserveSlot(addrs, 2) < 0)
+                goto error;
+        }
+    } else {
+        virDomainDeviceInfo dev;
+        memset(&dev, 0, sizeof(dev));
+        dev.addr.pci.slot = 2;
+
+        if (qemuDomainPCIAddressCheckSlot(addrs, &dev) < 0) {
+            VIR_DEBUG("PCI address 0:0:2.0 in use, future addition of a video"
+                      " device will not be possible without manual"
+                      " intervention");
+            virResetLastError();
+        } else if (qemuDomainPCIAddressReserveSlot(addrs, 2) < 0) {
+            goto error;
         }
     }
-
-    if (!reservedVGA
-        && qemuDomainPCIAddressReserveSlot(addrs, 2) < 0)
-        goto error;
 
     for (i = 0; i < def->nfss ; i++) {
         if (def->fss[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
