@@ -1,8 +1,8 @@
 /*
  * xen_sxpr.c: Xen SEXPR parsing functions
  *
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2011 Univention GmbH
- * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2005 Anthony Liguori <aliguori@us.ibm.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -37,7 +37,7 @@
 #include "xenxs_private.h"
 #include "xen_sxpr.h"
 
-/* Get a domain id from a sexpr string */
+/* Get a domain id from a S-expression string */
 int xenGetDomIdFromSxprString(const char *sexpr, int xendConfigVersion)
 {
     struct sexpr *root = string2sexpr(sexpr);
@@ -50,7 +50,7 @@ int xenGetDomIdFromSxprString(const char *sexpr, int xendConfigVersion)
     return id;
 }
 
-/* Get a domain id from a sexpr */
+/* Get a domain id from a S-expression */
 int xenGetDomIdFromSxpr(const struct sexpr *root, int xendConfigVersion)
 {
     int id = -1;
@@ -66,16 +66,15 @@ int xenGetDomIdFromSxpr(const struct sexpr *root, int xendConfigVersion)
 
 /*****************************************************************
  ******
- ****** Parsing of SEXPR into virDomainDef objects
+ ****** Parsing of S-Expression into virDomainDef objects
  ******
  *****************************************************************/
 
 /**
- * xenParseSxprOS
+ * xenParseSxprOS:
  * @node: the root of the parsed S-Expression
  * @def: the domain config
- * @hvm: true or 1 if no contains HVM S-Expression
- * @bootloader: true or 1 if a bootloader is defined
+ * @hvm: true or 1 if node contains HVM S-Expression
  *
  * Parse the xend sexp for description of os and append it to buf.
  *
@@ -166,6 +165,16 @@ no_memory:
     return -1;
 }
 
+
+/**
+  * xenParseSxprChar:
+  * @value: A string describing a character device.
+  * @tty: the console pty path
+  *
+  * Parse the xend S-expression for description of a character device.
+  *
+  * Returns a character device object or NULL in case of failure.
+  */
 virDomainChrDefPtr
 xenParseSxprChar(const char *value,
                  const char *tty)
@@ -316,13 +325,15 @@ error:
     return NULL;
 }
 
+
 /**
- * xend_parse_sexp_desc_disks
- * @conn: connection
- * @root: root sexpr
+ * xenParseSxprDisks:
+ * @def: the domain config
+ * @root: root S-expression
+ * @hvm: true or 1 if node contains HVM S-Expression
  * @xendConfigVersion: version of xend
  *
- * This parses out block devices from the domain sexpr
+ * This parses out block devices from the domain S-expression
  *
  * Returns 0 if successful or -1 if failed.
  */
@@ -518,6 +529,15 @@ error:
 }
 
 
+/**
+ * xenParseSxprNets:
+ * @def: the domain config
+ * @root: root S-expression
+ *
+ * This parses out network devices from the domain S-expression
+ *
+ * Returns 0 if successful or -1 if failed.
+ */
 static int
 xenParseSxprNets(virDomainDefPtr def,
                  const struct sexpr *root)
@@ -614,6 +634,15 @@ cleanup:
 }
 
 
+/**
+ * xenParseSxprSound:
+ * @def: the domain config
+ * @str: comma separated list of sound models
+ *
+ * This parses out sound devices from the domain S-expression
+ *
+ * Returns 0 if successful or -1 if failed.
+ */
 int
 xenParseSxprSound(virDomainDefPtr def,
                   const char *str)
@@ -692,6 +721,15 @@ error:
 }
 
 
+/**
+ * xenParseSxprUSB:
+ * @def: the domain config
+ * @root: root S-expression
+ *
+ * This parses out USB devices from the domain S-expression
+ *
+ * Returns 0 if successful or -1 if failed.
+ */
 static int
 xenParseSxprUSB(virDomainDefPtr def,
                 const struct sexpr *root)
@@ -733,6 +771,19 @@ no_memory:
     return -1;
 }
 
+
+/*
+ * xenParseSxprGraphicsOld:
+ * @def: the domain config
+ * @root: root S-expression
+ * @hvm: true or 1 if root contains HVM S-Expression
+ * @xendConfigVersion: version of xend
+ * @vncport: VNC port number
+ *
+ * This parses out VNC devices from the domain S-expression
+ *
+ * Returns 0 if successful or -1 if failed.
+ */
 static int
 xenParseSxprGraphicsOld(virDomainDefPtr def,
                         const struct sexpr *root,
@@ -821,6 +872,16 @@ error:
 }
 
 
+/*
+ * xenParseSxprGraphicsNew:
+ * @def: the domain config
+ * @root: root S-expression
+ * @vncport: VNC port number
+ *
+ * This parses out VNC devices from the domain S-expression
+ *
+ * Returns 0 if successful or -1 if failed.
+ */
 static int
 xenParseSxprGraphicsNew(virDomainDefPtr def,
                         const struct sexpr *root, int vncport)
@@ -918,11 +979,13 @@ error:
     return -1;
 }
 
+
 /**
- * xenParseSxprPCI
+ * xenParseSxprPCI:
+ * @def: the domain config
  * @root: root sexpr
  *
- * This parses out block devices from the domain sexpr
+ * This parses out PCI devices from the domain sexpr
  *
  * Returns 0 if successful or -1 if failed.
  */
@@ -1044,16 +1107,17 @@ error:
 
 /**
  * xenParseSxpr:
- * @conn: the connection associated with the XML
  * @root: the root of the parsed S-Expression
  * @xendConfigVersion: version of xend
  * @cpus: set of cpus the domain may be pinned to
+ * @tty: the console pty path
+ * @vncport: VNC port number
  *
- * Parse the xend sexp description and turn it into the XML format similar
- * to the one unsed for creation.
+ * Parse the xend S-expression description and turn it into a virDomainDefPtr
+ * representing these settings as closely as is practical.
  *
- * Returns the 0 terminated XML string or NULL in case of error.
- *         the caller must free() the returned value.
+ * Returns the domain config or NULL in case of error.
+ *         The caller must free() the returned value.
  */
 virDomainDefPtr
 xenParseSxpr(const struct sexpr *root,
@@ -1424,6 +1488,20 @@ error:
     return NULL;
 }
 
+
+/**
+ * xenParseSxprString:
+ * @sexpr: the root of the parsed S-Expression
+ * @xendConfigVersion: version of xend
+ * @tty: the console pty path
+ * @vncport: VNC port number
+ *
+ * Parse the xend S-expression description and turn it into a virDomainDefPtr
+ * representing these settings as closely as is practical.
+ *
+ * Returns the domain config or NULL in case of error.
+ *         The caller must free() the returned value.
+ */
 virDomainDefPtr
 xenParseSxprString(const char *sexpr,
                          int xendConfigVersion, char *tty, int vncport)
@@ -1449,15 +1527,12 @@ xenParseSxprString(const char *sexpr,
 
 
 /**
- * virtDomainParseXMLGraphicsDescVFB:
- * @conn: pointer to the hypervisor connection
- * @node: node containing graphics description
- * @buf: a buffer for the result S-Expr
+ * xenFormatSxprGraphicsNew:
+ * @def: the domain config
+ * @buf: a buffer for the result S-expression
  *
- * Parse the graphics part of the XML description and add it to the S-Expr
- * in buf.  This is a temporary interface as the S-Expr interface will be
- * replaced by XML-RPC in the future. However the XML format should stay
- * valid over time.
+ * Convert the graphics part of the domain description into a S-expression
+ * in buf. (HVM > 3.0.4 or PV > 3.0.3)
  *
  * Returns 0 in case of success, -1 in case of error
  */
@@ -1508,6 +1583,17 @@ xenFormatSxprGraphicsNew(virDomainGraphicsDefPtr def,
 }
 
 
+/**
+ * xenFormatSxprGraphicsOld:
+ * @def: the domain config
+ * @buf: a buffer for the result S-expression
+ * @xendConfigVersion: version of xend
+ *
+ * Convert the graphics part of the domain description into a S-expression
+ * in buf. (HVM <= 3.0.4 or PV <= 3.0.3)
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
 static int
 xenFormatSxprGraphicsOld(virDomainGraphicsDefPtr def,
                          virBufferPtr buf,
@@ -1553,6 +1639,17 @@ xenFormatSxprGraphicsOld(virDomainGraphicsDefPtr def,
     return 0;
 }
 
+
+/**
+ * xenFormatSxprChr:
+ * @def: the domain config
+ * @buf: a buffer for the result S-expression
+ *
+ * Convert the character device part of the domain config into a S-expression
+ * in buf.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
 int
 xenFormatSxprChr(virDomainChrDefPtr def,
                  virBufferPtr buf)
@@ -1631,15 +1728,14 @@ xenFormatSxprChr(virDomainChrDefPtr def,
 
 
 /**
- * virDomainParseXMLDiskDesc:
- * @node: node containing disk description
- * @buf: a buffer for the result S-Expr
+ * xenFormatSxprDisk:
+ * @node: node containing the disk description
+ * @buf: a buffer for the result S-expression
+ * @hvm: true or 1 if domain is HVM
  * @xendConfigVersion: xend configuration file format
+ * @isAttach: create expression for device attach (1).
  *
- * Parse the one disk in the XML description and add it to the S-Expr in buf
- * This is a temporary interface as the S-Expr interface
- * will be replaced by XML-RPC in the future. However the XML format should
- * stay valid over time.
+ * Convert the disk device part of the domain config into a S-expresssion in buf.
  *
  * Returns 0 in case of success, -1 in case of error.
  */
@@ -1757,12 +1853,15 @@ xenFormatSxprDisk(virDomainDiskDefPtr def,
 }
 
 /**
- * xenFormatSxprNet
- * @node: node containing the interface description
- * @buf: a buffer for the result S-Expr
+ * xenFormatSxprNet:
+ * @conn: connection
+ * @def: the domain config
+ * @buf: a buffer for the result S-expression
+ * @hvm: true or 1 if domain is HVM
  * @xendConfigVersion: xend configuration file format
+ * @isAttach: create expression for device attach (1).
  *
- * Parse the one interface the XML description and add it to the S-Expr in buf
+ * Convert the interface description of the domain config into a S-expression in buf.
  * This is a temporary interface as the S-Expr interface
  * will be replaced by XML-RPC in the future. However the XML format should
  * stay valid over time.
@@ -1893,6 +1992,15 @@ xenFormatSxprNet(virConnectPtr conn,
 }
 
 
+/**
+ * xenFormatSxprPCI:
+ * @def: the device config
+ * @buf: a buffer for the result S-expression
+ *
+ * Convert a single PCI device part of the domain config into a S-expresssion in buf.
+ *
+ * Returns 0 in case of success, -1 in case of error.
+ */
 static void
 xenFormatSxprPCI(virDomainHostdevDefPtr def,
                  virBufferPtr buf)
@@ -1904,6 +2012,17 @@ xenFormatSxprPCI(virDomainHostdevDefPtr def,
                       def->source.subsys.u.pci.function);
 }
 
+
+/**
+ * xenFormatSxprOnePCI:
+ * @def: the device config
+ * @buf: a buffer for the result S-expression
+ * @detach: create expression for device detach (1).
+ *
+ * Convert a single PCI device part of the domain config into a S-expresssion in buf.
+ *
+ * Returns 0 in case of success, -1 in case of error.
+ */
 int
 xenFormatSxprOnePCI(virDomainHostdevDefPtr def,
                     virBufferPtr buf,
@@ -1926,6 +2045,16 @@ xenFormatSxprOnePCI(virDomainHostdevDefPtr def,
     return 0;
 }
 
+
+/**
+ * xenFormatSxprAllPCI:
+ * @def: the domain config
+ * @buf: a buffer for the result S-expression
+ *
+ * Convert all PCI device parts of the domain config into a S-expresssion in buf.
+ *
+ * Returns 0 in case of success, -1 in case of error.
+ */
 static int
 xenFormatSxprAllPCI(virDomainDefPtr def,
                     virBufferPtr buf)
@@ -1973,6 +2102,16 @@ xenFormatSxprAllPCI(virDomainDefPtr def,
     return 0;
 }
 
+
+/**
+ * xenFormatSxprSound:
+ * @def: the domain config
+ * @buf: a buffer for the result S-expression
+ *
+ * Convert all sound device parts of the domain config into S-expression in buf.
+ *
+ * Returns 0 if successful or -1 if failed.
+ */
 int
 xenFormatSxprSound(virDomainDefPtr def,
                    virBufferPtr buf)
@@ -2001,6 +2140,15 @@ xenFormatSxprSound(virDomainDefPtr def,
 }
 
 
+/**
+ * xenFormatSxprInput:
+ * @input: the input config
+ * @buf: a buffer for the result S-expression
+ *
+ * Convert all input device parts of the domain config into S-expression in buf.
+ *
+ * Returns 0 if successful or -1 if failed.
+ */
 static int
 xenFormatSxprInput(virDomainInputDefPtr input,
                    virBufferPtr buf)
@@ -2033,7 +2181,7 @@ verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
  * @def: domain config definition
  * @xendConfigVersion: xend configuration file format
  *
- * Generate an SEXPR representing the domain configuration.
+ * Generate an S-expression representing the domain configuration.
  *
  * Returns the 0 terminated S-Expr string or NULL in case of error.
  *         the caller must free() the returned value.
