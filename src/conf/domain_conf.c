@@ -10050,12 +10050,12 @@ virDomainDiskDefFormat(virBufferPtr buf,
         }
 
         if (def->blkdeviotune.read_iops_sec) {
-            virBufferAsprintf(buf, "        <read_iops_sec>%llu</read_iops_sec>",
+            virBufferAsprintf(buf, "        <read_iops_sec>%llu</read_iops_sec>\n",
                               def->blkdeviotune.read_iops_sec);
         }
 
         if (def->blkdeviotune.write_iops_sec) {
-            virBufferAsprintf(buf, "        <write_iops_sec>%llu</write_iops_sec>",
+            virBufferAsprintf(buf, "        <write_iops_sec>%llu</write_iops_sec>\n",
                               def->blkdeviotune.write_iops_sec);
         }
 
