@@ -1985,7 +1985,7 @@ xenUnifiedNodeDeviceDettach (virNodeDevicePtr dev)
     if (!pci)
         return -1;
 
-    if (pciDettachDevice(pci, NULL) < 0)
+    if (pciDettachDevice(pci, NULL, NULL) < 0)
         goto out;
 
     ret = 0;
@@ -2075,7 +2075,7 @@ xenUnifiedNodeDeviceReAttach (virNodeDevicePtr dev)
         goto out;
     }
 
-    if (pciReAttachDevice(pci, NULL) < 0)
+    if (pciReAttachDevice(pci, NULL, NULL) < 0)
         goto out;
 
     ret = 0;

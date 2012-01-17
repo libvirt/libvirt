@@ -588,6 +588,9 @@ qemudStartup(int privileged) {
     if ((qemu_driver->activeUsbHostdevs = usbDeviceListNew()) == NULL)
         goto error;
 
+    if ((qemu_driver->inactivePciHostdevs = pciDeviceListNew()) == NULL)
+        goto error;
+
     if (privileged) {
         if (chown(qemu_driver->libDir, qemu_driver->user, qemu_driver->group) < 0) {
             virReportSystemError(errno,
@@ -778,6 +781,7 @@ qemudShutdown(void) {
 
     qemuDriverLock(qemu_driver);
     pciDeviceListFree(qemu_driver->activePciHostdevs);
+    pciDeviceListFree(qemu_driver->inactivePciHostdevs);
     usbDeviceListFree(qemu_driver->activeUsbHostdevs);
     virCapabilitiesFree(qemu_driver->caps);
 
@@ -9211,6 +9215,7 @@ qemudNodeDeviceDettach (virNodeDevicePtr dev)
     pciDevice *pci;
     unsigned domain, bus, slot, function;
     int ret = -1;
+    bool in_inactive_list = false;
 
     if (qemudNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
@@ -9220,13 +9225,17 @@ qemudNodeDeviceDettach (virNodeDevicePtr dev)
         return -1;
 
     qemuDriverLock(driver);
-    if (pciDettachDevice(pci, driver->activePciHostdevs) < 0)
+    in_inactive_list = pciDeviceListFind(driver->inactivePciHostdevs, pci);
+
+    if (pciDettachDevice(pci, driver->activePciHostdevs,
+                         driver->inactivePciHostdevs) < 0)
         goto out;
 
     ret = 0;
 out:
     qemuDriverUnlock(driver);
-    pciFreeDevice(pci);
+    if (in_inactive_list)
+        pciFreeDevice(pci);
     return ret;
 }
 
@@ -9248,7 +9257,8 @@ qemudNodeDeviceReAttach (virNodeDevicePtr dev)
     pciDeviceReAttachInit(pci);
 
     qemuDriverLock(driver);
-    if (pciReAttachDevice(pci, driver->activePciHostdevs) < 0)
+    if (pciReAttachDevice(pci, driver->activePciHostdevs,
+                          driver->inactivePciHostdevs) < 0)
         goto out;
 
     ret = 0;
@@ -9275,7 +9285,8 @@ qemudNodeDeviceReset (virNodeDevicePtr dev)
 
     qemuDriverLock(driver);
 
-    if (pciResetDevice(pci, driver->activePciHostdevs, NULL) < 0)
+    if (pciResetDevice(pci, driver->activePciHostdevs,
+                       driver->inactivePciHostdevs) < 0)
         goto out;
 
     ret = 0;

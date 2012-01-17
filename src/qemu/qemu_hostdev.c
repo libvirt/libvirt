@@ -1,7 +1,7 @@
 /*
  * qemu_hostdev.c: QEMU hostdev management
  *
- * Copyright (C) 2006-2007, 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -212,7 +212,7 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
         if (pciDeviceGetManaged(dev) &&
-            pciDettachDevice(dev, driver->activePciHostdevs) < 0)
+            pciDettachDevice(dev, driver->activePciHostdevs, NULL) < 0)
             goto reattachdevs;
     }
 
@@ -220,7 +220,8 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
      * can safely reset them */
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
-        if (pciResetDevice(dev, driver->activePciHostdevs, pcidevs) < 0)
+        if (pciResetDevice(dev, driver->activePciHostdevs,
+                           driver->inactivePciHostdevs) < 0)
             goto reattachdevs;
     }
 
@@ -233,7 +234,13 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
         }
     }
 
-    /* Loop 5: Now set the used_by_domain of the device in
+    /* Loop 5: Now remove the devices from inactive list. */
+    for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
+         pciDevice *dev = pciDeviceListGet(pcidevs, i);
+         pciDeviceListDel(driver->inactivePciHostdevs, dev);
+    }
+
+    /* Loop 6: Now set the used_by_domain of the device in
      * driver->activePciHostdevs as domain name.
      */
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
@@ -245,7 +252,7 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
         pciDeviceSetUsedBy(activeDev, name);
     }
 
-    /* Loop 6: Now set the original states for hostdev def */
+    /* Loop 7: Now set the original states for hostdev def */
     for (i = 0; i < nhostdevs; i++) {
         pciDevice *dev;
         pciDevice *pcidev;
@@ -277,7 +284,7 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
         pciFreeDevice(dev);
     }
 
-    /* Loop 7: Now steal all the devices from pcidevs */
+    /* Loop 8: Now steal all the devices from pcidevs */
     while (pciDeviceListCount(pcidevs) > 0) {
         pciDevice *dev = pciDeviceListGet(pcidevs, 0);
         pciDeviceListSteal(pcidevs, dev);
@@ -298,7 +305,7 @@ inactivedevs:
 reattachdevs:
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
-        pciReAttachDevice(dev, driver->activePciHostdevs);
+        pciReAttachDevice(dev, driver->activePciHostdevs, NULL);
     }
 
 cleanup:
@@ -445,8 +452,13 @@ void qemuReattachPciDevice(pciDevice *dev, struct qemud_driver *driver)
 {
     int retries = 100;
 
-    if (!pciDeviceGetManaged(dev))
+    /* If the device is not managed and was attached to guest
+     * successfully, it must have been inactive.
+     */
+    if (!pciDeviceGetManaged(dev)) {
+        pciDeviceListAdd(driver->inactivePciHostdevs, dev);
         return;
+    }
 
     while (pciWaitForDeviceCleanup(dev, "kvm_assigned_device")
            && retries) {
@@ -454,7 +466,8 @@ void qemuReattachPciDevice(pciDevice *dev, struct qemud_driver *driver)
         retries--;
     }
 
-    if (pciReAttachDevice(dev, driver->activePciHostdevs) < 0) {
+    if (pciReAttachDevice(dev, driver->activePciHostdevs,
+                          driver->inactivePciHostdevs) < 0) {
         virErrorPtr err = virGetLastError();
         VIR_ERROR(_("Failed to re-attach PCI device: %s"),
                   err ? err->message : _("unknown error"));
@@ -503,7 +516,8 @@ void qemuDomainReAttachHostdevDevices(struct qemud_driver *driver,
 
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
-        if (pciResetDevice(dev, driver->activePciHostdevs, pcidevs) < 0) {
+        if (pciResetDevice(dev, driver->activePciHostdevs,
+                           driver->inactivePciHostdevs) < 0) {
             virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to reset PCI device: %s"),
                       err ? err->message : _("unknown error"));

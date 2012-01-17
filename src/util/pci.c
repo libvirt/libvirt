@@ -1117,7 +1117,9 @@ cleanup:
 }
 
 int
-pciDettachDevice(pciDevice *dev, pciDeviceList *activeDevs)
+pciDettachDevice(pciDevice *dev,
+                 pciDeviceList *activeDevs,
+                 pciDeviceList *inactiveDevs)
 {
     const char *driver = pciFindStubDriver();
     if (!driver) {
@@ -1132,11 +1134,22 @@ pciDettachDevice(pciDevice *dev, pciDeviceList *activeDevs)
         return -1;
     }
 
-    return pciBindDeviceToStub(dev, driver);
+    if (pciBindDeviceToStub(dev, driver) < 0)
+        return -1;
+
+    /* Add the dev into list inactiveDevs */
+    if (inactiveDevs && !pciDeviceListFind(inactiveDevs, dev)) {
+        if (pciDeviceListAdd(inactiveDevs, dev) < 0)
+            return -1;
+    }
+
+    return 0;
 }
 
 int
-pciReAttachDevice(pciDevice *dev, pciDeviceList *activeDevs)
+pciReAttachDevice(pciDevice *dev,
+                  pciDeviceList *activeDevs,
+                  pciDeviceList *inactiveDevs)
 {
     const char *driver = pciFindStubDriver();
     if (!driver) {
@@ -1151,7 +1164,14 @@ pciReAttachDevice(pciDevice *dev, pciDeviceList *activeDevs)
         return -1;
     }
 
-    return pciUnbindDeviceFromStub(dev, driver);
+    if (pciUnbindDeviceFromStub(dev, driver) < 0)
+        return -1;
+
+    /* Steal the dev from list inactiveDevs */
+    if (inactiveDevs)
+        pciDeviceListSteal(inactiveDevs, dev);
+
+    return 0;
 }
 
 /* Certain hypervisors (like qemu/kvm) map the PCI bar(s) on

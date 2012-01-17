@@ -40,8 +40,12 @@ pciDevice *pciGetDevice      (unsigned       domain,
                               unsigned       function);
 void       pciFreeDevice     (pciDevice     *dev);
 const char *pciDeviceGetName (pciDevice     *dev);
-int        pciDettachDevice  (pciDevice     *dev, pciDeviceList *activeDevs);
-int        pciReAttachDevice (pciDevice     *dev, pciDeviceList *activeDevs);
+int        pciDettachDevice  (pciDevice     *dev,
+                              pciDeviceList *activeDevs,
+                              pciDeviceList *inactiveDevs);
+int        pciReAttachDevice (pciDevice     *dev,
+                              pciDeviceList *activeDevs,
+                              pciDeviceList *inactiveDevs);
 int        pciResetDevice    (pciDevice     *dev,
                               pciDeviceList *activeDevs,
                               pciDeviceList *inactiveDevs);
