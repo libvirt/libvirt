@@ -1,7 +1,7 @@
 <filter name='no-ip-spoofing' chain='ipv4-ip' priority='-710'>
-  <!-- allow DHCP requests -->
-  <rule action='accept' direction='out' priority='100'>
-    <ip srcipaddr='0.0.0.0' protocol='udp' srcportstart='68' srcportend='68'/>
+  <!-- allow UDP sent from 0.0.0.0 (DHCP); filter more exact later -->
+  <rule action='return' direction='out' priority='100'>
+    <ip srcipaddr='0.0.0.0' protocol='udp'/>
   </rule>
 
   <!-- allow all known IP addresses -->
