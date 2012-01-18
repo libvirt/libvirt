@@ -2632,6 +2632,11 @@
               <empty/>
             </element>
           </optional>
+          <optional>
+            <element name="privnet">
+              <empty/>
+            </element>
+          </optional>
         </interleave>
       </element>
     </optional>

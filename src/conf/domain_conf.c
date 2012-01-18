@@ -106,7 +106,8 @@ VIR_ENUM_IMPL(virDomainFeature, VIR_DOMAIN_FEATURE_LAST,
               "apic",
               "pae",
               "hap",
-              "viridian")
+              "viridian",
+              "privnet")
 
 VIR_ENUM_IMPL(virDomainLifecycle, VIR_DOMAIN_LIFECYCLE_LAST,
               "destroy",

@@ -261,7 +261,8 @@ int lxcContainerWaitForContinue(int control)
  *
  * Returns 0 on success or nonzero in case of error
  */
-static int lxcContainerRenameAndEnableInterfaces(unsigned int nveths,
+static int lxcContainerRenameAndEnableInterfaces(bool privNet,
+                                                 unsigned int nveths,
                                                  char **veths)
 {
     int rc = 0;
@@ -289,7 +290,7 @@ static int lxcContainerRenameAndEnableInterfaces(unsigned int nveths,
     }
 
     /* enable lo device only if there were other net devices */
-    if (veths)
+    if (veths || privNet)
         rc = virNetDevSetOnline("lo", true);
 
 error_out:
@@ -1343,7 +1344,9 @@ static int lxcContainerChild( void *data )
     VIR_DEBUG("Received container continue message");
 
     /* rename and enable interfaces */
-    if (lxcContainerRenameAndEnableInterfaces(argv->nveths,
+    if (lxcContainerRenameAndEnableInterfaces(!!(vmDef->features &
+                                                 (1 << VIR_DOMAIN_FEATURE_PRIVNET)),
+                                              argv->nveths,
                                               argv->veths) < 0) {
         goto cleanup;
     }
@@ -1458,7 +1461,8 @@ int lxcContainerStart(virDomainDefPtr def,
         cflags |= CLONE_NEWUSER;
     }
 
-    if (def->nets != NULL) {
+    if (def->nets != NULL ||
+        (def->features & (1 << VIR_DOMAIN_FEATURE_PRIVNET))) {
         VIR_DEBUG("Enable network namespaces");
         cflags |= CLONE_NEWNET;
     }

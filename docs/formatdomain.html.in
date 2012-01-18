@@ -897,6 +897,7 @@
     &lt;acpi/&gt;
     &lt;apic/&gt;
     &lt;hap/&gt;
+    &lt;privnet/&gt;
   &lt;/features&gt;
   ...</pre>
 
@@ -923,6 +924,12 @@
       <dt><code>viridian</code></dt>
       <dd>Enable Viridian hypervisor extensions for paravirtualizing
         guest operating systems
+      </dd>
+      <dt><code>privnet</code></dt>
+      <dd>Always create a private network namespace. This is
+        automatically set if any interface devices are defined.
+        This feature is only relevant for container based
+        virtualization drivers, such as LXC.
       </dd>
     </dl>
 
