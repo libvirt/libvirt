@@ -16037,6 +16037,83 @@ cleanup:
 }
 
 /*
+ * "domblkerror" command
+ */
+static const char *
+vshDomainIOErrorToString(int error)
+{
+    switch ((virDomainDiskErrorCode) error) {
+    case VIR_DOMAIN_DISK_ERROR_NONE:
+        return _("no error");
+    case VIR_DOMAIN_DISK_ERROR_UNSPEC:
+        return _("unspecified error");
+    case VIR_DOMAIN_DISK_ERROR_NO_SPACE:
+        return _("no space");
+    case VIR_DOMAIN_DISK_ERROR_LAST:
+        ;
+    }
+
+    return _("unknown error");
+}
+
+static const vshCmdInfo info_domblkerror[] = {
+    {"help", N_("Show errors on block devices")},
+    {"desc", N_("Show block device errors")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_domblkerror[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id, or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdDomBlkError(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    virDomainDiskErrorPtr disks = NULL;
+    unsigned int ndisks;
+    int i;
+    int count;
+    bool ret = false;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if ((count = virDomainGetDiskErrors(dom, NULL, 0, 0)) < 0)
+        goto cleanup;
+    ndisks = count;
+
+    if (ndisks) {
+        if (VIR_ALLOC_N(disks, ndisks) < 0)
+            goto cleanup;
+
+        if ((count = virDomainGetDiskErrors(dom, disks, ndisks, 0)) == -1)
+            goto cleanup;
+    }
+
+    if (count == 0) {
+        vshPrint(ctl, _("No errors found\n"));
+    } else {
+        for (i = 0; i < count; i++) {
+            vshPrint(ctl, "%s: %s\n",
+                     disks[i].disk,
+                     vshDomainIOErrorToString(disks[i].error));
+        }
+    }
+
+    ret = true;
+
+cleanup:
+    VIR_FREE(disks);
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "qemu-monitor-command" command
  */
 static const vshCmdInfo info_qemu_monitor_command[] = {
@@ -16236,6 +16313,7 @@ static const vshCmdDef domManagementCmds[] = {
 };
 
 static const vshCmdDef domMonitoringCmds[] = {
+    {"domblkerror", cmdDomBlkError, opts_domblkerror, info_domblkerror, 0},
     {"domblkinfo", cmdDomblkinfo, opts_domblkinfo, info_domblkinfo, 0},
     {"domblklist", cmdDomblklist, opts_domblklist, info_domblklist, 0},
     {"domblkstat", cmdDomblkstat, opts_domblkstat, info_domblkstat, 0},

@@ -507,6 +507,13 @@ on hypervisor.
 
 Get memory stats for a running domain.
 
+=item B<domblkerror> I<domain-id>
+
+Show errors on block devices.  This command usually comes handy when
+B<domstate> command says that a domain was paused due to I/O error.
+The B<domblkerror> command lists all block devices in error state and
+the error seen on each of them.
+
 =item B<domblkinfo> I<domain> I<block-device>
 
 Get block device size info for a domain.  A I<block-device> corresponds
