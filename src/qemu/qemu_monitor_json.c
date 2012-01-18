@@ -1357,11 +1357,9 @@ cleanup:
 
 
 int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
-                                const char *devname,
-                                struct qemuDomainDiskInfo *info)
+                                virHashTablePtr table)
 {
-    int ret = 0;
-    bool found = false;
+    int ret;
     int i;
 
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-block",
@@ -1389,6 +1387,7 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
 
     for (i = 0; i < virJSONValueArraySize(devices); i++) {
         virJSONValuePtr dev = virJSONValueArrayGet(devices, i);
+        struct qemuDomainDiskInfo *info;
         const char *thisdev;
 
         if (!dev || dev->type != VIR_JSON_TYPE_OBJECT) {
@@ -1406,10 +1405,16 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
         if (STRPREFIX(thisdev, QEMU_DRIVE_HOST_PREFIX))
             thisdev += strlen(QEMU_DRIVE_HOST_PREFIX);
 
-        if (STRNEQ(thisdev, devname))
-            continue;
+        if (VIR_ALLOC(info) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
 
-        found = true;
+        if (virHashAddEntry(table, thisdev, info) < 0) {
+            VIR_FREE(info);
+            goto cleanup;
+        }
+
         if (virJSONValueObjectGetBoolean(dev, "removable", &info->removable) < 0) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("cannot read %s value"),
@@ -1429,15 +1434,6 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
          */
         ignore_value(virJSONValueObjectGetBoolean(dev, "tray-open",
                                                   &info->tray_open));
-
-        break;
-    }
-
-    if (!found) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("cannot find info for device '%s'"),
-                        devname);
-        goto cleanup;
     }
 
     ret = 0;

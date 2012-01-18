@@ -235,9 +235,12 @@ int qemuMonitorGetBalloonInfo(qemuMonitorPtr mon,
 int qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
                               virDomainMemoryStatPtr stats,
                               unsigned int nr_stats);
-int qemuMonitorGetBlockInfo(qemuMonitorPtr mon,
-                            const char *devname,
-                            struct qemuDomainDiskInfo *info);
+
+virHashTablePtr qemuMonitorGetBlockInfo(qemuMonitorPtr mon);
+struct qemuDomainDiskInfo *
+qemuMonitorBlockInfoLookup(virHashTablePtr blockInfo,
+                           const char *devname);
+
 int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
                                  const char *dev_name,
                                  long long *rd_req,

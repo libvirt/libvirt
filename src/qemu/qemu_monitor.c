@@ -1227,24 +1227,51 @@ int qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorGetBlockInfo(qemuMonitorPtr mon,
-                            const char *devname,
-                            struct qemuDomainDiskInfo *info)
+virHashTablePtr
+qemuMonitorGetBlockInfo(qemuMonitorPtr mon)
 {
     int ret;
+    virHashTablePtr table;
 
-    VIR_DEBUG("mon=%p dev=%p info=%p", mon, devname, info);
+    VIR_DEBUG("mon=%p", mon);
+
     if (!mon) {
         qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                         _("monitor must not be NULL"));
-        return -1;
+        return NULL;
     }
 
+    if (!(table = virHashCreate(32, (virHashDataFree) free)))
+        return NULL;
+
     if (mon->json)
-        ret = qemuMonitorJSONGetBlockInfo(mon, devname, info);
+        ret = qemuMonitorJSONGetBlockInfo(mon, table);
     else
-        ret = qemuMonitorTextGetBlockInfo(mon, devname, info);
-    return ret;
+        ret = qemuMonitorTextGetBlockInfo(mon, table);
+
+    if (ret < 0) {
+        virHashFree(table);
+        return NULL;
+    }
+
+    return table;
+}
+
+struct qemuDomainDiskInfo *
+qemuMonitorBlockInfoLookup(virHashTablePtr blockInfo,
+                           const char *devname)
+{
+    struct qemuDomainDiskInfo *info;
+
+    VIR_DEBUG("blockInfo=%p dev=%s", blockInfo, NULLSTR(devname));
+
+    if (!(info = virHashLookup(blockInfo, devname))) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("cannot find info for device '%s'"),
+                        NULLSTR(devname));
+    }
+
+    return info;
 }
 
 int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,

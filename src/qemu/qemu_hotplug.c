@@ -155,34 +155,38 @@ qemuDomainCheckEjectableMedia(struct qemud_driver *driver,
                              virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virHashTablePtr table;
     int ret = -1;
     int i;
 
+    qemuDomainObjEnterMonitor(driver, vm);
+    table = qemuMonitorGetBlockInfo(priv->mon);
+    qemuDomainObjExitMonitor(driver, vm);
+
+    if (!table)
+        goto cleanup;
+
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
-        struct qemuDomainDiskInfo info;
+        struct qemuDomainDiskInfo *info;
 
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
             disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
                  continue;
         }
 
-        memset(&info, 0, sizeof(info));
-
-        qemuDomainObjEnterMonitor(driver, vm);
-        if (qemuMonitorGetBlockInfo(priv->mon, disk->info.alias, &info) < 0) {
-            qemuDomainObjExitMonitor(driver, vm);
+        info = qemuMonitorBlockInfoLookup(table, disk->info.alias);
+        if (!info)
             goto cleanup;
-        }
-        qemuDomainObjExitMonitor(driver, vm);
 
-        if (info.tray_open && disk->src)
+        if (info->tray_open && disk->src)
             VIR_FREE(disk->src);
     }
 
     ret = 0;
 
 cleanup:
+    virHashFree(table);
     return ret;
 }
 

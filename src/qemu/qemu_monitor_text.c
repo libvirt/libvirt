@@ -772,14 +772,14 @@ int qemuMonitorTextGetMemoryStats(qemuMonitorPtr mon,
 
 
 int qemuMonitorTextGetBlockInfo(qemuMonitorPtr mon,
-                                const char *devname,
-                                struct qemuDomainDiskInfo *info)
+                                virHashTablePtr table)
 {
+    struct qemuDomainDiskInfo *info;
     char *reply = NULL;
     int ret = -1;
     char *dummy;
-    const char *p, *eol;
-    int devnamelen = strlen(devname);
+    char *p, *eol;
+    char *dev;
     int tmp;
 
     if (qemuMonitorHMPCommand(mon, "info block", &reply) < 0) {
@@ -805,16 +805,22 @@ int qemuMonitorTextGetBlockInfo(qemuMonitorPtr mon,
         if (STRPREFIX(p, QEMU_DRIVE_HOST_PREFIX))
             p += strlen(QEMU_DRIVE_HOST_PREFIX);
 
-        if (STREQLEN(p, devname, devnamelen) &&
-            p[devnamelen] == ':' && p[devnamelen+1] == ' ') {
+        eol = strchr(p, '\n');
+        if (!eol)
+            eol = p + strlen(p) - 1;
 
-            eol = strchr(p, '\n');
-            if (!eol)
-                eol = p + strlen(p);
+        dev = p;
+        p = strchr(p, ':');
+        if (p && p < eol && *(p + 1) == ' ') {
+            if (VIR_ALLOC(info) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
 
-            p += devnamelen + 2; /* Skip to first label. */
+            *p = '\0';
+            p += 2;
 
-            while (*p) {
+            while (p < eol) {
                 if (STRPREFIX(p, "removable=")) {
                     p += strlen("removable=");
                     if (virStrToLong_i(p, &dummy, 10, &tmp) == -1)
@@ -839,24 +845,25 @@ int qemuMonitorTextGetBlockInfo(qemuMonitorPtr mon,
 
                 /* skip to next label */
                 p = strchr(p, ' ');
-                if (!p || p >= eol) break;
+                if (!p)
+                    break;
                 p++;
             }
 
-            ret = 0;
-            goto cleanup;
+            if (virHashAddEntry(table, dev, info) < 0)
+                goto cleanup;
+            else
+                info = NULL;
         }
 
-        /* skip to next line */
-        p = strchr(p, '\n');
-        if (!p) break;
-        p++;
+        /* skip to the next line */
+        p = eol + 1;
     }
 
-    qemuReportError(VIR_ERR_INVALID_ARG,
-                    _("no info for device '%s'"), devname);
+    ret = 0;
 
 cleanup:
+    VIR_FREE(info);
     VIR_FREE(reply);
     return ret;
 }

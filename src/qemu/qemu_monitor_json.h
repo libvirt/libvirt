@@ -63,8 +63,7 @@ int qemuMonitorJSONGetMemoryStats(qemuMonitorPtr mon,
                                   virDomainMemoryStatPtr stats,
                                   unsigned int nr_stats);
 int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
-                                const char *devname,
-                                struct qemuDomainDiskInfo *info);
+                                virHashTablePtr table);
 int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
                                      const char *dev_name,
                                      long long *rd_req,
