@@ -2038,7 +2038,7 @@ remoteDispatchAuthList(virNetServerPtr server ATTRIBUTE_UNUSED,
      * some piece of polkit isn't present/running
      */
     if (auth == VIR_NET_SERVER_SERVICE_AUTH_POLKIT) {
-        if (virNetServerClientGetLocalIdentity(client, &callerUid, &callerGid, &callerPid) < 0) {
+        if (virNetServerClientGetUNIXIdentity(client, &callerUid, &callerGid, &callerPid) < 0) {
             /* Don't do anything on error - it'll be validated at next
              * phase of auth anyway */
             virResetLastError();
@@ -2494,7 +2494,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto authfail;
     }
 
-    if (virNetServerClientGetLocalIdentity(client, &callerUid, &callerGid, &callerPid) < 0) {
+    if (virNetServerClientGetUNIXIdentity(client, &callerUid, &callerGid, &callerPid) < 0) {
         goto authfail;
     }
 
@@ -2592,7 +2592,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server,
         goto authfail;
     }
 
-    if (virNetServerClientGetLocalIdentity(client, &callerUid, &callerGid, &callerPid) < 0) {
+    if (virNetServerClientGetUNIXIdentity(client, &callerUid, &callerGid, &callerPid) < 0) {
         VIR_ERROR(_("cannot get peer socket identity"));
         goto authfail;
     }

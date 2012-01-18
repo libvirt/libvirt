@@ -447,13 +447,13 @@ int virNetServerClientGetFD(virNetServerClientPtr client)
     return fd;
 }
 
-int virNetServerClientGetLocalIdentity(virNetServerClientPtr client,
-                                       uid_t *uid, gid_t *gid, pid_t *pid)
+int virNetServerClientGetUNIXIdentity(virNetServerClientPtr client,
+                                      uid_t *uid, gid_t *gid, pid_t *pid)
 {
     int ret = -1;
     virNetServerClientLock(client);
     if (client->sock)
-        ret = virNetSocketGetLocalIdentity(client->sock, uid, gid, pid);
+        ret = virNetSocketGetUNIXIdentity(client->sock, uid, gid, pid);
     virNetServerClientUnlock(client);
     return ret;
 }
