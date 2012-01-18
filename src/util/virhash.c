@@ -28,6 +28,8 @@
 #include "virhash.h"
 #include "memory.h"
 #include "logging.h"
+#include "virhashcode.h"
+#include "virrandom.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -57,6 +59,7 @@ struct _virHashEntry {
  */
 struct _virHashTable {
     virHashEntryPtr *table;
+    uint32_t seed;
     size_t size;
     size_t nbElems;
     /* True iff we are iterating over hash entries. */
@@ -70,20 +73,9 @@ struct _virHashTable {
     virHashKeyFree keyFree;
 };
 
-static uint32_t virHashStrCode(const void *name)
+static uint32_t virHashStrCode(const void *name, uint32_t seed)
 {
-    const char *str = name;
-    uint32_t value = 0L;
-    char ch;
-
-    if (str != NULL) {
-        value += 30 * (*str);
-        while ((ch = *str++) != 0) {
-            value =
-                value ^ ((value << 5) + (value >> 3) + (uint32_t) ch);
-        }
-    }
-    return value;
+    return virHashCodeGen(name, strlen(name), seed);
 }
 
 static bool virHashStrEqual(const void *namea, const void *nameb)
@@ -105,7 +97,7 @@ static void virHashStrFree(void *name)
 static size_t
 virHashComputeKey(virHashTablePtr table, const void *name)
 {
-    uint32_t value = table->keyCode(name);
+    uint32_t value = table->keyCode(name, table->seed);
     return (value % table->size);
 }
 
@@ -139,6 +131,7 @@ virHashTablePtr virHashCreateFull(ssize_t size,
         return NULL;
     }
 
+    table->seed = virRandomBits(32);
     table->size = size;
     table->nbElems = 0;
     table->dataFree = dataFree;

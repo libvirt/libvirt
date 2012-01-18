@@ -33,6 +33,7 @@
 #include "logging.h"
 #include "virfile.h"
 #include "virhash.h"
+#include "virhashcode.h"
 
 #define CGROUP_MAX_VAL 512
 
@@ -1636,9 +1637,10 @@ cleanup:
 }
 
 
-static uint32_t virCgroupPidCode(const void *name)
+static uint32_t virCgroupPidCode(const void *name, uint32_t seed)
 {
-    return (uint32_t)(intptr_t)name;
+    unsigned long pid = (unsigned long)(intptr_t)name;
+    return virHashCodeGen(&pid, sizeof(pid), seed);
 }
 static bool virCgroupPidEqual(const void *namea, const void *nameb)
 {

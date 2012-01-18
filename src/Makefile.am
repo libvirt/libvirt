@@ -90,6 +90,7 @@ UTIL_SOURCES =							\
 		util/xml.c util/xml.h				\
 		util/virterror.c util/virterror_internal.h	\
 		util/virhash.c util/virhash.h			\
+		util/virhashcode.c util/virhashcode.h           \
 		util/virkeycode.c util/virkeycode.h		\
 		util/virkeymaps.h				\
 		util/virnetdev.h util/virnetdev.c		\

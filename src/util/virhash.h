@@ -56,12 +56,15 @@ typedef int (*virHashSearcher) (const void *payload, const void *name,
 /**
  * virHashKeyCode:
  * @name: the hash key
+ * @seed: random seed
  *
- * Compute the hash code corresponding to the key @name
+ * Compute the hash code corresponding to the key @name, using
+ * @seed to perturb the hashing algorithm
  *
  * Returns the hash code
  */
-typedef uint32_t (*virHashKeyCode)(const void *name);
+typedef uint32_t (*virHashKeyCode)(const void *name,
+                                   uint32_t seed);
 /**
  * virHashKeyEqual:
  * @namea: the first hash key
