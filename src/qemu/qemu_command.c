@@ -1987,6 +1987,19 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     /* block I/O throttling */
+    if ((disk->blkdeviotune.total_bytes_sec ||
+         disk->blkdeviotune.read_bytes_sec ||
+         disk->blkdeviotune.write_bytes_sec ||
+         disk->blkdeviotune.total_iops_sec ||
+         disk->blkdeviotune.read_iops_sec ||
+         disk->blkdeviotune.write_iops_sec) &&
+        !qemuCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE)) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("block I/O throttling not supported with this "
+                          "QEMU binary"));
+        goto error;
+    }
+
     if (disk->blkdeviotune.total_bytes_sec) {
         virBufferAsprintf(&opt, ",bps=%llu",
                           disk->blkdeviotune.total_bytes_sec);

@@ -150,6 +150,8 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "drive-copy-on-read",
               "cpu-host",
               "fsdev-writeout",
+
+              "drive-iotune", /* 85 */
     );
 
 struct qemu_feature_flags {
@@ -1031,6 +1033,8 @@ qemuCapsComputeCmdFlags(const char *help,
             qemuCapsSet(flags, QEMU_CAPS_DRIVE_AIO);
         if (strstr(help, "copy-on-read=on|off"))
             qemuCapsSet(flags, QEMU_CAPS_DRIVE_COPY_ON_READ);
+        if (strstr(help, "bps="))
+            qemuCapsSet(flags, QEMU_CAPS_DRIVE_IOTUNE);
     }
     if ((p = strstr(help, "-vga")) && !strstr(help, "-std-vga")) {
         const char *nl = strstr(p, "\n");

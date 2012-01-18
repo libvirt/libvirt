@@ -124,6 +124,8 @@ enum qemuCapsFlags {
     QEMU_CAPS_CPU_HOST          = 83, /* support for -cpu host */
     QEMU_CAPS_FSDEV_WRITEOUT     = 84, /* -fsdev writeout supported */
 
+    QEMU_CAPS_DRIVE_IOTUNE       = 85, /* -drive bps= and friends ({b,io}ps{_rd,_wr,}) */
+
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
 
