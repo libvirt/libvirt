@@ -839,6 +839,21 @@ int qemuMonitorTextGetBlockInfo(qemuMonitorPtr mon,
                         VIR_DEBUG("error reading tray_open: %s", p);
                     else
                         info->tray_open = (tmp != 0);
+                } else if (STRPREFIX(p, "io-status=")) {
+                    char *end;
+                    char c;
+
+                    p += strlen("io-status=");
+                    end = strchr(p, ' ');
+                    if (!end || end > eol)
+                        end = eol;
+
+                    c = *end;
+                    *end = '\0';
+                    info->io_status = qemuMonitorBlockIOStatusToError(p);
+                    *end = c;
+                    if (info->io_status < 0)
+                        goto cleanup;
                 } else {
                     /* ignore because we don't parse all options */
                 }

@@ -11728,6 +11728,91 @@ cleanup:
     return ret;
 }
 
+static int
+qemuDomainGetDiskErrors(virDomainPtr dom,
+                        virDomainDiskErrorPtr errors,
+                        unsigned int nerrors,
+                        unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    qemuDomainObjPrivatePtr priv;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virHashTablePtr table = NULL;
+    int ret = -1;
+    int i;
+    int n = 0;
+
+    virCheckFlags(0, -1);
+
+    qemuDriverLock(driver);
+    virUUIDFormat(dom->uuid, uuidstr);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (!vm) {
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+    if (!errors) {
+        ret = vm->def->ndisks;
+        goto endjob;
+    }
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    table = qemuMonitorGetBlockInfo(priv->mon);
+    qemuDomainObjExitMonitor(driver, vm);
+    if (!table)
+        goto endjob;
+
+    for (i = n = 0; i < vm->def->ndisks; i++) {
+        struct qemuDomainDiskInfo *info;
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+
+        if ((info = virHashLookup(table, disk->info.alias)) &&
+            info->io_status != VIR_DOMAIN_DISK_ERROR_NONE) {
+            if (n == nerrors)
+                break;
+
+            if (!(errors[n].disk = strdup(disk->dst))) {
+                virReportOOMError();
+                goto endjob;
+            }
+            errors[n].error = info->io_status;
+            n++;
+        }
+    }
+
+    ret = n;
+
+endjob:
+    if (qemuDomainObjEndJob(driver, vm) == 0)
+        vm = NULL;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    virHashFree(table);
+    if (ret < 0) {
+        for (i = 0; i < n; i++)
+            VIR_FREE(errors[i].disk);
+    }
+    return ret;
+}
+
 static virDriver qemuDriver = {
     .no = VIR_DRV_QEMU,
     .name = "QEMU",
@@ -11881,6 +11966,7 @@ static virDriver qemuDriver = {
     .domainGetNumaParameters = qemuDomainGetNumaParameters, /* 0.9.9 */
     .domainGetInterfaceParameters = qemuDomainGetInterfaceParameters, /* 0.9.9 */
     .domainSetInterfaceParameters = qemuDomainSetInterfaceParameters, /* 0.9.9 */
+    .domainGetDiskErrors = qemuDomainGetDiskErrors, /* 0.9.10 */
 };
 
 

@@ -175,6 +175,7 @@ struct qemuDomainDiskInfo {
     bool removable;
     bool locked;
     bool tray_open;
+    int io_status;
 };
 
 #endif /* __QEMUD_CONF_H */

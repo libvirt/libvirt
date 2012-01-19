@@ -87,6 +87,20 @@ VIR_ENUM_IMPL(qemuMonitorVMStatus,
               "postmigrate", "prelaunch", "finish-migrate", "restore-vm",
               "running", "save-vm", "shutdown", "watchdog")
 
+typedef enum {
+    QEMU_MONITOR_BLOCK_IO_STATUS_OK,
+    QEMU_MONITOR_BLOCK_IO_STATUS_FAILED,
+    QEMU_MONITOR_BLOCK_IO_STATUS_NOSPACE,
+
+    QEMU_MONITOR_BLOCK_IO_STATUS_LAST
+} qemuMonitorBlockIOStatus;
+
+VIR_ENUM_DECL(qemuMonitorBlockIOStatus)
+
+VIR_ENUM_IMPL(qemuMonitorBlockIOStatus,
+              QEMU_MONITOR_BLOCK_IO_STATUS_LAST,
+              "ok", "failed", "nospace")
+
 char *qemuMonitorEscapeArg(const char *in)
 {
     int len = 0;
@@ -1225,6 +1239,32 @@ int qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
     else
         ret = qemuMonitorTextGetMemoryStats(mon, stats, nr_stats);
     return ret;
+}
+
+int
+qemuMonitorBlockIOStatusToError(const char *status)
+{
+    int st = qemuMonitorBlockIOStatusTypeFromString(status);
+
+    if (st < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("unknown block IO status: %s"), status);
+        return -1;
+    }
+
+    switch ((qemuMonitorBlockIOStatus) st) {
+    case QEMU_MONITOR_BLOCK_IO_STATUS_OK:
+        return VIR_DOMAIN_DISK_ERROR_NONE;
+    case QEMU_MONITOR_BLOCK_IO_STATUS_FAILED:
+        return VIR_DOMAIN_DISK_ERROR_UNSPEC;
+    case QEMU_MONITOR_BLOCK_IO_STATUS_NOSPACE:
+        return VIR_DOMAIN_DISK_ERROR_NO_SPACE;
+
+    /* unreachable */
+    case QEMU_MONITOR_BLOCK_IO_STATUS_LAST:
+        break;
+    }
+    return -1;
 }
 
 virHashTablePtr

@@ -1389,6 +1389,7 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
         virJSONValuePtr dev = virJSONValueArrayGet(devices, i);
         struct qemuDomainDiskInfo *info;
         const char *thisdev;
+        const char *status;
 
         if (!dev || dev->type != VIR_JSON_TYPE_OBJECT) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1434,6 +1435,13 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
          */
         ignore_value(virJSONValueObjectGetBoolean(dev, "tray-open",
                                                   &info->tray_open));
+
+        /* Missing io-status indicates no error */
+        if ((status = virJSONValueObjectGetString(dev, "io-status"))) {
+            info->io_status = qemuMonitorBlockIOStatusToError(status);
+            if (info->io_status < 0)
+                goto cleanup;
+        }
     }
 
     ret = 0;
