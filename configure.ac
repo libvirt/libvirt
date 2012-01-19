@@ -734,16 +734,17 @@ if test "$with_lxc" = "yes" || test "$with_lxc" = "check"; then
     AC_TRY_LINK([
         #include <sched.h>
         #include <linux/loop.h>
+        #include <sys/epoll.h>
     ], [
-        unshare (!LO_FLAGS_AUTOCLEAR);
+        unshare (!(LO_FLAGS_AUTOCLEAR + EPOLL_CLOEXEC));
     ], [
         with_lxc=yes
     ], [
         if test "$with_lxc" = "check"; then
             with_lxc=no
-            AC_MSG_NOTICE([Function unshare() not present in <sched.h> header but required for LXC driver, disabling it])
+            AC_MSG_NOTICE([Required kernel features were not found, disabling LXC])
         else
-            AC_MSG_ERROR([Function unshare() not present in <sched.h> header, but required for LXC driver])
+            AC_MSG_ERROR([Required kernel features for LXC were not found])
         fi
     ])
 fi
