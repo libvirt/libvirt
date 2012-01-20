@@ -790,6 +790,13 @@ SECURITY_DRIVER_APPARMOR_SOURCES =				\
 		security/security_apparmor.h security/security_apparmor.c
 
 
+ACCESS_DRIVER_SOURCES = \
+		access/viraccessperm.h access/viraccessperm.c \
+		access/viraccessmanager.h access/viraccessmanager.c \
+		access/viraccessdriver.h \
+		access/viraccessdrivernop.h access/viraccessdrivernop.c \
+		access/viraccessdriverstack.h access/viraccessdriverstack.c
+
 NODE_DEVICE_DRIVER_SOURCES =					\
 		node_device/node_device_driver.c		\
 		node_device/node_device_driver.h		\
@@ -1375,6 +1382,15 @@ if WITH_SECDRIVER_APPARMOR
 libvirt_security_manager_la_SOURCES += $(SECURITY_DRIVER_APPARMOR_SOURCES)
 libvirt_security_manager_la_CFLAGS += $(APPARMOR_CFLAGS)
 endif
+
+libvirt_driver_access_la_SOURCES = $(ACCESS_DRIVER_SOURCES)
+noinst_LTLIBRARIES += libvirt_driver_access.la
+libvirt_la_BUILT_LIBADD += libvirt_driver_access.la
+libvirt_driver_access_la_CFLAGS = \
+		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
+libvirt_driver_access_la_LDFLAGS = $(AM_LDFLAGS)
+libvirt_driver_access_la_LIBADD =
+
 
 # Add all conditional sources just in case...
 EXTRA_DIST +=							\

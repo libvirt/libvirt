@@ -121,6 +121,8 @@ VIR_ENUM_IMPL(virErrorDomain, VIR_ERR_DOMAIN_LAST,
               "Init control",
               "Identity",
               "Cgroup",
+
+              "Access Manager", /* 55 */
     )
 
 
@@ -1234,6 +1236,12 @@ virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = _("resource busy");
             else
                 errmsg = _("resource busy %s");
+            break;
+        case VIR_ERR_ACCESS_DENIED:
+            if (info == NULL)
+                errmsg = _("access denied");
+            else
+                errmsg = _("access denied: %s");
             break;
     }
     return errmsg;

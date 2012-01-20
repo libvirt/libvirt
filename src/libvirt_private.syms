@@ -5,6 +5,43 @@
 # Keep this file sorted by header name, then by symbols with each header.
 #
 
+# access/viraccessmanager.h
+virAccessManagerCheckConnect;
+virAccessManagerCheckDomain;
+virAccessManagerCheckInterface;
+virAccessManagerCheckNetwork;
+virAccessManagerCheckNodeDevice;
+virAccessManagerCheckNWFilter;
+virAccessManagerCheckSecret;
+virAccessManagerCheckStoragePool;
+virAccessManagerCheckStorageVol;
+virAccessManagerGetDefault;
+virAccessManagerNew;
+virAccessManagerNewStack;
+virAccessManagerSetDefault;
+
+
+# access/viraccessperm.h
+virAccessPermConnectTypeFromString;
+virAccessPermConnectTypeToString;
+virAccessPermDomainTypeFromString;
+virAccessPermDomainTypeToString;
+virAccessPermInterfaceTypeFromString;
+virAccessPermInterfaceTypeToString;
+virAccessPermNetworkTypeFromString;
+virAccessPermNetworkTypeToString;
+virAccessPermNodeDeviceTypeFromString;
+virAccessPermNodeDeviceTypeToString;
+virAccessPermNWFilterTypeFromString;
+virAccessPermNWFilterTypeToString;
+virAccessPermSecretTypeFromString;
+virAccessPermSecretTypeToString;
+virAccessPermStoragePoolTypeFromString;
+virAccessPermStoragePoolTypeToString;
+virAccessPermStorageVolTypeFromString;
+virAccessPermStorageVolTypeToString;
+
+
 # conf/capabilities.h
 virCapabilitiesAddGuest;
 virCapabilitiesAddGuestDomain;
