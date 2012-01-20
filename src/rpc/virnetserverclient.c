@@ -64,7 +64,6 @@ struct _virNetServerClient
     virNetSocketPtr sock;
     int auth;
     bool readonly;
-    char *identity;
 #if WITH_GNUTLS
     virNetTLSContextPtr tlsCtxt;
     virNetTLSSessionPtr tls;
@@ -442,7 +441,6 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr objec
     virJSONValuePtr child;
     virNetServerClientPtr client = NULL;
     virNetSocketPtr sock;
-    const char *identity = NULL;
     int auth;
     bool readonly;
     unsigned int nrequests_max;
@@ -461,12 +459,6 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr objec
                                         (unsigned int *)&nrequests_max) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing nrequests_client_max field in JSON state document"));
-        return NULL;
-    }
-    if (virJSONValueObjectHasKey(object, "identity") &&
-        (!(identity = virJSONValueObjectGetString(object, "identity")))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing identity field in JSON state document"));
         return NULL;
     }
 
@@ -492,10 +484,6 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr objec
         return NULL;
     }
     virObjectUnref(sock);
-
-    if (identity &&
-        virNetServerClientSetIdentity(client, identity) < 0)
-        goto error;
 
     if (privNew) {
         if (!(child = virJSONValueObjectGet(object, "privateData"))) {
@@ -536,10 +524,6 @@ virJSONValuePtr virNetServerClientPreExecRestart(virNetServerClientPtr client)
     if (virJSONValueObjectAppendNumberUint(object, "nrequests_max", client->nrequests_max) < 0)
         goto error;
 
-    if (client->identity &&
-        virJSONValueObjectAppendString(object, "identity", client->identity) < 0)
-        goto error;
-
     if (!(child = virNetSocketPreExecRestart(client->sock)))
         goto error;
 
@@ -574,6 +558,13 @@ int virNetServerClientGetAuth(virNetServerClientPtr client)
     auth = client->auth;
     virObjectUnlock(client);
     return auth;
+}
+
+void virNetServerClientSetAuth(virNetServerClientPtr client, int auth)
+{
+    virObjectLock(client);
+    client->auth = auth;
+    virObjectUnlock(client);
 }
 
 bool virNetServerClientGetReadonly(virNetServerClientPtr client)
@@ -663,32 +654,6 @@ void virNetServerClientSetSASLSession(virNetServerClientPtr client,
 #endif
 
 
-int virNetServerClientSetIdentity(virNetServerClientPtr client,
-                                  const char *identity)
-{
-    int ret = -1;
-    virObjectLock(client);
-    if (!(client->identity = strdup(identity))) {
-        virReportOOMError();
-        goto error;
-    }
-    ret = 0;
-
-error:
-    virObjectUnlock(client);
-    return ret;
-}
-
-const char *virNetServerClientGetIdentity(virNetServerClientPtr client)
-{
-    const char *identity;
-    virObjectLock(client);
-    identity = client->identity;
-    virObjectUnlock(client);
-    return identity;
-}
-
-
 void *virNetServerClientGetPrivateData(virNetServerClientPtr client)
 {
     void *data;
@@ -743,7 +708,6 @@ void virNetServerClientDispose(void *obj)
         client->privateDataFreeFunc)
         client->privateDataFreeFunc(client->privateData);
 
-    VIR_FREE(client->identity);
 #if WITH_SASL
     virObjectUnref(client->sasl);
 #endif
@@ -1319,7 +1283,7 @@ bool virNetServerClientNeedAuth(virNetServerClientPtr client)
 {
     bool need = false;
     virObjectLock(client);
-    if (client->auth && !client->identity)
+    if (client->auth)
         need = true;
     virObjectUnlock(client);
     return need;

@@ -852,7 +852,6 @@ virNetServerClientClose;
 virNetServerClientDelayedClose;
 virNetServerClientGetAuth;
 virNetServerClientGetFD;
-virNetServerClientGetIdentity;
 virNetServerClientGetPrivateData;
 virNetServerClientGetReadonly;
 virNetServerClientGetTLSKeySize;
@@ -871,9 +870,9 @@ virNetServerClientPreExecRestart;
 virNetServerClientRemoteAddrString;
 virNetServerClientRemoveFilter;
 virNetServerClientSendMessage;
+virNetServerClientSetAuth;
 virNetServerClientSetCloseHook;
 virNetServerClientSetDispatcher;
-virNetServerClientSetIdentity;
 virNetServerClientStartKeepAlive;
 virNetServerClientWantClose;
 

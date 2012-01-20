@@ -76,6 +76,7 @@ void virNetServerClientRemoveFilter(virNetServerClientPtr client,
                                     int filterID);
 
 int virNetServerClientGetAuth(virNetServerClientPtr client);
+void virNetServerClientSetAuth(virNetServerClientPtr client, int auth);
 bool virNetServerClientGetReadonly(virNetServerClientPtr client);
 
 # ifdef WITH_GNUTLS
@@ -91,10 +92,6 @@ void virNetServerClientSetSASLSession(virNetServerClientPtr client,
 int virNetServerClientGetFD(virNetServerClientPtr client);
 
 bool virNetServerClientIsSecure(virNetServerClientPtr client);
-
-int virNetServerClientSetIdentity(virNetServerClientPtr client,
-                                  const char *identity);
-const char *virNetServerClientGetIdentity(virNetServerClientPtr client);
 
 int virNetServerClientGetUNIXIdentity(virNetServerClientPtr client,
                                       uid_t *uid, gid_t *gid, pid_t *pid);

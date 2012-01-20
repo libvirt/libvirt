@@ -2391,10 +2391,8 @@ remoteDispatchAuthList(virNetServerPtr server ATTRIBUTE_UNUSED,
                 goto cleanup;
             }
             VIR_INFO("Bypass polkit auth for privileged client %s", ident);
-            if (virNetServerClientSetIdentity(client, ident) < 0)
-                virResetLastError();
-            else
-                auth = VIR_NET_SERVER_SERVICE_AUTH_NONE;
+            virNetServerClientSetAuth(client, 0);
+            auth = VIR_NET_SERVER_SERVICE_AUTH_NONE;
             VIR_FREE(ident);
         }
     }
@@ -2535,9 +2533,7 @@ remoteSASLFinish(virNetServerClientPtr client)
     if (!virNetSASLContextCheckIdentity(saslCtxt, identity))
         return -2;
 
-    if (virNetServerClientSetIdentity(client, identity) < 0)
-        goto error;
-
+    virNetServerClientSetAuth(client, 0);
     virNetServerClientSetSASLSession(client, priv->sasl);
 
     VIR_DEBUG("Authentication successful %d", virNetServerClientGetFD(client));
@@ -2869,7 +2865,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
              action, (long long) callerPid, callerUid);
     ret->complete = 1;
 
-    virNetServerClientSetIdentity(client, ident);
+    virNetServerClientSetAuth(client, 0);
     virMutexUnlock(&priv->lock);
     virCommandFree(cmd);
     VIR_FREE(pkout);
@@ -3024,8 +3020,8 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
              action, (long long) callerPid, callerUid,
              polkit_result_to_string_representation(pkresult));
     ret->complete = 1;
-    virNetServerClientSetIdentity(client, ident);
 
+    virNetServerClientSetAuth(client, 0);
     virMutexUnlock(&priv->lock);
     VIR_FREE(ident);
     return 0;
