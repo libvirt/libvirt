@@ -2764,6 +2764,8 @@ xenHypervisorMakeCapabilities(virConnectPtr conn)
                                                  utsname.machine,
                                                  cpuinfo,
                                                  capabilities);
+    if (caps == NULL)
+        return NULL;
 
     if (virNodeSuspendGetTargetMask(&caps->host.powerMgmt) < 0)
         VIR_WARN("Failed to get host power management capabilities");
