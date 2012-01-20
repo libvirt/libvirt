@@ -1,7 +1,7 @@
 /*
  * domain_conf.h: domain XML processing
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -328,6 +328,7 @@ enum virDomainDiskSnapshot {
 enum virDomainSnapshotState {
     /* Inherit the VIR_DOMAIN_* states from virDomainState.  */
     VIR_DOMAIN_DISK_SNAPSHOT = VIR_DOMAIN_LAST,
+    VIR_DOMAIN_SNAPSHOT_STATE_LAST
 };
 
 enum virDomainStartupPolicy {

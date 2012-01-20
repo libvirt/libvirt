@@ -500,7 +500,7 @@ VIR_ENUM_IMPL(virDomainState, VIR_DOMAIN_LAST,
               "crashed")
 
 /* virDomainSnapshotState is really virDomainState plus one extra state */
-VIR_ENUM_IMPL(virDomainSnapshotState, VIR_DOMAIN_DISK_SNAPSHOT+1,
+VIR_ENUM_IMPL(virDomainSnapshotState, VIR_DOMAIN_SNAPSHOT_STATE_LAST,
               "nostate",
               "running",
               "blocked",

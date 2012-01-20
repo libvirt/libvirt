@@ -1,5 +1,5 @@
 # Customize Makefile.maint.                           -*- makefile -*-
-# Copyright (C) 2008-2011 Red Hat, Inc.
+# Copyright (C) 2008-2012 Red Hat, Inc.
 # Copyright (C) 2003-2008 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -609,6 +609,17 @@ sc_prohibit_gettext_markup:
 	@prohibit='\<VIR_(WARN|INFO|DEBUG) *\(_\('			\
 	halt='do not mark these strings for translation'		\
 	  $(_sc_search_regexp)
+
+# When converting an enum to a string, make sure that we track any new
+# elements added to the enum by using a _LAST marker.
+sc_require_enum_last_marker:
+	@grep -A1 -nE '^[^#]*VIR_ENUM_IMPL *\(' $$($(VC_LIST_EXCEPT))	\
+	   | sed -ne '/VIR_ENUM_IMPL[^,]*,$$/N'				\
+	     -e '/VIR_ENUM_IMPL[^,]*,[^,]*[^_,][^L,][^A,][^S,][^T,],/p'	\
+	     -e '/VIR_ENUM_IMPL[^,]*,[^,]\{0,4\},/p'			\
+	   | grep . &&							\
+	  { echo '$(ME): enum impl needs to use _LAST marker' 1>&2;	\
+	    exit 1; } || :
 
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null

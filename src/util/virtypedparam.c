@@ -35,7 +35,7 @@
                              __FUNCTION__, __LINE__, __VA_ARGS__)
 
 VIR_ENUM_DECL(virTypedParameter)
-VIR_ENUM_IMPL(virTypedParameter, VIR_TYPED_PARAM_STRING + 1,
+VIR_ENUM_IMPL(virTypedParameter, VIR_TYPED_PARAM_LAST,
               "unknown",
               "int",
               "uint",
