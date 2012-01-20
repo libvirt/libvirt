@@ -81,20 +81,27 @@ bool virNetServerClientGetReadonly(virNetServerClientPtr client);
 
 # ifdef WITH_GNUTLS
 bool virNetServerClientHasTLSSession(virNetServerClientPtr client);
+virNetTLSSessionPtr virNetServerClientGetTLSSession(virNetServerClientPtr client);
 int virNetServerClientGetTLSKeySize(virNetServerClientPtr client);
 # endif
 
 # ifdef WITH_SASL
 void virNetServerClientSetSASLSession(virNetServerClientPtr client,
                                       virNetSASLSessionPtr sasl);
+virNetSASLSessionPtr virNetServerClientGetSASLSession(virNetServerClientPtr client);
 # endif
 
 int virNetServerClientGetFD(virNetServerClientPtr client);
 
 bool virNetServerClientIsSecure(virNetServerClientPtr client);
 
+bool virNetServerClientIsLocal(virNetServerClientPtr client);
+
 int virNetServerClientGetUNIXIdentity(virNetServerClientPtr client,
                                       uid_t *uid, gid_t *gid, pid_t *pid);
+
+int virNetServerClientGetSecurityContext(virNetServerClientPtr client,
+                                         char **context);
 
 void *virNetServerClientGetPrivateData(virNetServerClientPtr client);
 

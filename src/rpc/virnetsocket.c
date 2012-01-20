@@ -40,6 +40,10 @@
 #endif
 
 #include "c-ctype.h"
+#ifdef HAVE_SELINUX
+# include <selinux/selinux.h>
+#endif
+
 #include "virnetsocket.h"
 #include "virutil.h"
 #include "viralloc.h"
@@ -1153,6 +1157,46 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock ATTRIBUTE_UNUSED,
     virReportSystemError(ENOSYS, "%s",
                          _("Client socket identity not available"));
     return -1;
+}
+#endif
+
+#ifdef HAVE_SELINUX
+int virNetSocketGetSecurityContext(virNetSocketPtr sock,
+                                   char **context)
+{
+    security_context_t seccon = NULL;
+    int ret = -1;
+
+    *context = NULL;
+
+    virMutexLock(&sock->lock);
+    if (getpeercon(sock->fd, &seccon) < 0) {
+        if (errno == ENOSYS) {
+            ret = 0;
+            goto cleanup;
+        }
+        virReportSystemError(errno, "%s",
+                             _("Unable to query peer security context"));
+        goto cleanup;
+    }
+
+    if (!(*context = strdup(seccon))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    freecon(seccon);
+    virMutexUnlock(&sock->lock);
+    return ret;
+}
+#else
+int virNetSocketGetSecurityContext(virNetSocketPtr sock ATTRIBUTE_UNUSED,
+                                   char **context)
+{
+    *context = NULL;
+    return 0;
 }
 #endif
 

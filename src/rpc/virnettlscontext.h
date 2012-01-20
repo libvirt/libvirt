@@ -94,4 +94,6 @@ virNetTLSSessionGetHandshakeStatus(virNetTLSSessionPtr sess);
 
 int virNetTLSSessionGetKeySize(virNetTLSSessionPtr sess);
 
+const char *virNetTLSSessionGetX509DName(virNetTLSSessionPtr sess);
+
 #endif

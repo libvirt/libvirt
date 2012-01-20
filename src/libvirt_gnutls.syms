@@ -13,6 +13,7 @@ virNetServerSetTLSContext;
 
 # rpc/virnetserverclient.h
 virNetServerClientGetTLSKeySize;
+virNetServerClientGetTLSSession;
 virNetServerClientHasTLSSession;
 
 
@@ -33,6 +34,7 @@ virNetTLSContextNewServerPath;
 virNetTLSInit;
 virNetTLSSessionGetHandshakeStatus;
 virNetTLSSessionGetKeySize;
+virNetTLSSessionGetX509DName;
 virNetTLSSessionHandshake;
 virNetTLSSessionNew;
 virNetTLSSessionRead;

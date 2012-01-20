@@ -587,6 +587,16 @@ bool virNetServerClientHasTLSSession(virNetServerClientPtr client)
     return has;
 }
 
+
+virNetTLSSessionPtr virNetServerClientGetTLSSession(virNetServerClientPtr client)
+{
+    virNetTLSSessionPtr tls;
+    virObjectLock(client);
+    tls = client->tls;
+    virObjectUnlock(client);
+    return tls;
+}
+
 int virNetServerClientGetTLSKeySize(virNetServerClientPtr client)
 {
     int size = 0;
@@ -608,6 +618,18 @@ int virNetServerClientGetFD(virNetServerClientPtr client)
     return fd;
 }
 
+
+bool virNetServerClientIsLocal(virNetServerClientPtr client)
+{
+    bool local = false;
+    virObjectLock(client);
+    if (client->sock)
+        local = virNetSocketIsLocal(client->sock);
+    virObjectUnlock(client);
+    return local;
+}
+
+
 int virNetServerClientGetUNIXIdentity(virNetServerClientPtr client,
                                       uid_t *uid, gid_t *gid, pid_t *pid)
 {
@@ -618,6 +640,20 @@ int virNetServerClientGetUNIXIdentity(virNetServerClientPtr client,
     virObjectUnlock(client);
     return ret;
 }
+
+
+int virNetServerClientGetSecurityContext(virNetServerClientPtr client,
+                                         char **context)
+{
+    int ret = 0;
+    *context = NULL;
+    virObjectLock(client);
+    if (client->sock)
+        ret = virNetSocketGetSecurityContext(client->sock, context);
+    virObjectUnlock(client);
+    return ret;
+}
+
 
 bool virNetServerClientIsSecure(virNetServerClientPtr client)
 {
@@ -650,6 +686,16 @@ void virNetServerClientSetSASLSession(virNetServerClientPtr client,
     virObjectLock(client);
     client->sasl = virObjectRef(sasl);
     virObjectUnlock(client);
+}
+
+
+virNetSASLSessionPtr virNetServerClientGetSASLSession(virNetServerClientPtr client)
+{
+    virNetSASLSessionPtr sasl;
+    virObjectLock(client);
+    sasl = client->sasl;
+    virObjectUnlock(client);
+    return sasl;
 }
 #endif
 
