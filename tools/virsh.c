@@ -1344,8 +1344,11 @@ cmdDomIfSetLink (vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     const char *iface;
     const char *state;
-    const char *mac;
+    const char *value;
     const char *desc;
+    unsigned char macaddr[VIR_MAC_BUFLEN];
+    const char *element;
+    const char *attr;
     bool persistent;
     bool ret = false;
     unsigned int flags = 0;
@@ -1405,26 +1408,34 @@ cmdDomIfSetLink (vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
+    if (virParseMacAddr(iface, macaddr) == 0) {
+        element = "mac";
+        attr = "address";
+    } else {
+        element = "target";
+        attr = "dev";
+    }
+
     /* find interface with matching mac addr */
     for (i = 0; i < obj->nodesetval->nodeNr; i++) {
         cur = obj->nodesetval->nodeTab[i]->children;
 
         while (cur) {
             if (cur->type == XML_ELEMENT_NODE &&
-                xmlStrEqual(cur->name, BAD_CAST "mac")) {
-                mac = virXMLPropString(cur, "address");
+                xmlStrEqual(cur->name, BAD_CAST element)) {
+                value = virXMLPropString(cur, attr);
 
-                if (STRCASEEQ(mac, iface)) {
-                    VIR_FREE(mac);
+                if (STRCASEEQ(value, iface)) {
+                    VIR_FREE(value);
                     goto hit;
                 }
-                VIR_FREE(mac);
+                VIR_FREE(value);
             }
             cur = cur->next;
         }
     }
 
-    vshError(ctl, _("interface with address '%s' not found"), iface);
+    vshError(ctl, _("interface (%s: %s) not found"), element, iface);
     goto cleanup;
 
 hit:
@@ -1509,7 +1520,10 @@ cmdDomIfGetLink (vshControl *ctl, const vshCmd *cmd)
     const char *iface = NULL;
     int flags = 0;
     char *state = NULL;
-    char *mac = NULL;
+    char *value = NULL;
+    unsigned char macaddr[VIR_MAC_BUFLEN];
+    const char *element;
+    const char *attr;
     bool ret = false;
     int i;
     char *desc;
@@ -1552,27 +1566,35 @@ cmdDomIfGetLink (vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
+    if (virParseMacAddr(iface, macaddr) == 0) {
+        element = "mac";
+        attr = "address";
+    } else {
+        element = "target";
+        attr = "dev";
+    }
+
     /* find interface with matching mac addr */
     for (i = 0; i < obj->nodesetval->nodeNr; i++) {
         cur = obj->nodesetval->nodeTab[i]->children;
 
         while (cur) {
             if (cur->type == XML_ELEMENT_NODE &&
-                xmlStrEqual(cur->name, BAD_CAST "mac")) {
+                xmlStrEqual(cur->name, BAD_CAST element)) {
 
-                mac = virXMLPropString(cur, "address");
+                value = virXMLPropString(cur, attr);
 
-                if (STRCASEEQ(mac, iface)){
-                    VIR_FREE(mac);
+                if (STRCASEEQ(value, iface)) {
+                    VIR_FREE(value);
                     goto hit;
                 }
-                VIR_FREE(mac);
+                VIR_FREE(value);
             }
             cur = cur->next;
         }
     }
 
-    vshError(ctl, _("Interface with address '%s' not found."), iface);
+    vshError(ctl, _("Interface (%s: %s) not found."), element, iface);
     goto cleanup;
 
 hit:

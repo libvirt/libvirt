@@ -469,16 +469,18 @@ B<Explanation of fields> (fields appear in the folowing order):
 
 Get network interface stats for a running domain.
 
-=item B<domif-setlink> I<domain> I<interface-MAC> I<state> I<--persistent>
+=item B<domif-setlink> I<domain> I<interface-device> I<state> I<--persistent>
 
 Modify link state of the domain's virtual interface. Possible values for
 state are "up" and "down. If --persistent is specified, only the persistent
 configuration of the domain is modified.
+I<interface-device> can be the interface's target name or the MAC address.
 
-=item B<domif-getlink> I<domain> I<interface-MAC> I<--persistent>
+=item B<domif-getlink> I<domain> I<interface-device> I<--persistent>
 
 Query link state of the domain's virtual interface. If --persistent
 is specified, query the persistent configuration.
+I<interface-device> can be the interface's target name or the MAC address.
 
 =item B<domiftune> I<domain> I<interface-device>
 [[I<--config>] [I<--live>] | [I<--current>]]
