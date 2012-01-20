@@ -43,6 +43,12 @@ extern "C" {
 # define VIR_EXPORT_VAR extern
 #endif
 
+/* General note - throughout this file, any linear enumeration which
+ * might be expanded in the future has an optional *_LAST value that
+ * gives the size of the enum at the time of compilation, if the user
+ * defines VIR_ENUM_SENTINELS.  Enumerations for bit values do not
+ * have a *_LAST value, but additional bits may be defined.  */
+
 /**
  * virConnect:
  *
@@ -88,16 +94,22 @@ typedef enum {
      VIR_DOMAIN_SHUTOFF = 5, /* the domain is shut off */
      VIR_DOMAIN_CRASHED = 6, /* the domain is crashed */
 
+#ifdef VIR_ENUM_SENTINELS
     /*
      * NB: this enum value will increase over time as new events are
      * added to the libvirt API. It reflects the last state supported
      * by this version of the libvirt API.
      */
      VIR_DOMAIN_LAST
+#endif
 } virDomainState;
 
 typedef enum {
     VIR_DOMAIN_NOSTATE_UNKNOWN = 0,
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_NOSTATE_LAST
+#endif
 } virDomainNostateReason;
 
 typedef enum {
@@ -109,10 +121,18 @@ typedef enum {
     VIR_DOMAIN_RUNNING_UNPAUSED = 5,        /* returned from paused state */
     VIR_DOMAIN_RUNNING_MIGRATION_CANCELED = 6,  /* returned from migration */
     VIR_DOMAIN_RUNNING_SAVE_CANCELED = 7,   /* returned from failed save process */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_RUNNING_LAST
+#endif
 } virDomainRunningReason;
 
 typedef enum {
     VIR_DOMAIN_BLOCKED_UNKNOWN = 0,     /* the reason is unknown */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_BLOCKED_LAST
+#endif
 } virDomainBlockedReason;
 
 typedef enum {
@@ -125,11 +145,19 @@ typedef enum {
     VIR_DOMAIN_PAUSED_WATCHDOG = 6,     /* paused due to a watchdog event */
     VIR_DOMAIN_PAUSED_FROM_SNAPSHOT = 7, /* paused after restoring from snapshot */
     VIR_DOMAIN_PAUSED_SHUTTING_DOWN = 8, /* paused during shutdown process */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_PAUSED_LAST
+#endif
 } virDomainPausedReason;
 
 typedef enum {
     VIR_DOMAIN_SHUTDOWN_UNKNOWN = 0,    /* the reason is unknown */
     VIR_DOMAIN_SHUTDOWN_USER = 1,       /* shutting down on user request */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_SHUTDOWN_LAST
+#endif
 } virDomainShutdownReason;
 
 typedef enum {
@@ -142,10 +170,17 @@ typedef enum {
     VIR_DOMAIN_SHUTOFF_FAILED = 6,      /* domain failed to start */
     VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT = 7, /* restored from a snapshot which was
                                            * taken while domain was shutoff */
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_SHUTOFF_LAST
+#endif
 } virDomainShutoffReason;
 
 typedef enum {
     VIR_DOMAIN_CRASHED_UNKNOWN = 0,     /* crashed for unknown reason */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_CRASHED_LAST
+#endif
 } virDomainCrashedReason;
 
 
@@ -161,6 +196,10 @@ typedef enum {
                                         limited set of commands may be allowed */
     VIR_DOMAIN_CONTROL_OCCUPIED = 2, /* occupied by a running command */
     VIR_DOMAIN_CONTROL_ERROR = 3,    /* unusable, domain cannot be fully operated */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_CONTROL_LAST
+#endif
 } virDomainControlState;
 
 /**
@@ -261,8 +300,10 @@ typedef enum {
     VIR_NODE_SUSPEND_TARGET_DISK    = 1,
     VIR_NODE_SUSPEND_TARGET_HYBRID  = 2,
 
+#ifdef VIR_ENUM_SENTINELS
     /* This constant is subject to change */
-    VIR_NODE_SUSPEND_TARGET_LAST,
+    VIR_NODE_SUSPEND_TARGET_LAST
+#endif
 } virNodeSuspendTarget;
 
 /**
@@ -512,6 +553,10 @@ typedef enum {
     VIR_TYPED_PARAM_DOUBLE  = 5, /* double case */
     VIR_TYPED_PARAM_BOOLEAN = 6, /* boolean(character) case */
     VIR_TYPED_PARAM_STRING  = 7, /* string case */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_TYPED_PARAM_LAST
+#endif
 } virTypedParameterType;
 
 /**
@@ -844,6 +889,10 @@ typedef enum {
      * To add new statistics, add them to the enum and increase this value.
      */
     VIR_DOMAIN_MEMORY_STAT_NR              = 7,
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_MEMORY_STAT_LAST = VIR_DOMAIN_MEMORY_STAT_NR
+#endif
 } virDomainMemoryStatTags;
 
 typedef struct _virDomainMemoryStat virDomainMemoryStatStruct;
@@ -973,7 +1022,10 @@ typedef enum {
     VIR_CRED_REALM = 8,        /* Authentication realm */
     VIR_CRED_EXTERNAL = 9,     /* Externally managed credential */
 
+#ifdef VIR_ENUM_SENTINELS
     /* More may be added - expect the unexpected */
+    VIR_CRED_LAST
+#endif
 } virConnectCredentialType;
 
 struct _virConnectCredential {
@@ -1356,8 +1408,10 @@ typedef enum {
     VIR_DOMAIN_NUMATUNE_MEM_PREFERRED   = 1,
     VIR_DOMAIN_NUMATUNE_MEM_INTERLEAVE  = 2,
 
+#ifdef VIR_ENUM_SENTINELS
     /* This constant is subject to change */
     VIR_DOMAIN_NUMATUNE_MEM_LAST
+#endif
 } virDomainNumatuneMemMode;
 
 /**
@@ -1558,8 +1612,8 @@ int                     virDomainMemoryStats (virDomainPtr dom,
 /* Memory peeking flags. */
 
 typedef enum {
-  VIR_MEMORY_VIRTUAL              = 1, /* addresses are virtual addresses */
-  VIR_MEMORY_PHYSICAL             = 2, /* addresses are physical addresses */
+  VIR_MEMORY_VIRTUAL            = 1 << 0, /* addresses are virtual addresses */
+  VIR_MEMORY_PHYSICAL           = 1 << 1, /* addresses are physical addresses */
 } virDomainMemoryFlags;
 
 int                     virDomainMemoryPeek (virDomainPtr dom,
@@ -1609,6 +1663,10 @@ typedef enum {
     VIR_VCPU_OFFLINE    = 0,    /* the virtual CPU is offline */
     VIR_VCPU_RUNNING    = 1,    /* the virtual CPU is running */
     VIR_VCPU_BLOCKED    = 2,    /* the virtual CPU is blocked on resource */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_VCPU_LAST
+#endif
 } virVcpuState;
 
 typedef struct _virVcpuInfo virVcpuInfo;
@@ -1774,6 +1832,10 @@ int virDomainUpdateDeviceFlags(virDomainPtr domain,
 typedef enum {
     VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN = 0,
     VIR_DOMAIN_BLOCK_JOB_TYPE_PULL = 1,
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_BLOCK_JOB_TYPE_LAST
+#endif
 } virDomainBlockJobType;
 
 /* An iterator for monitoring block job operations */
@@ -2018,7 +2080,7 @@ const char*             virInterfaceGetName       (virInterfacePtr iface);
 const char*             virInterfaceGetMACString  (virInterfacePtr iface);
 
 typedef enum {
-    VIR_INTERFACE_XML_INACTIVE = 1 /* dump inactive interface information */
+    VIR_INTERFACE_XML_INACTIVE = 1 << 0 /* dump inactive interface information */
 } virInterfaceXMLFlags;
 
 char *                  virInterfaceGetXMLDesc    (virInterfacePtr iface,
@@ -2062,25 +2124,29 @@ typedef virStoragePool *virStoragePoolPtr;
 
 
 typedef enum {
-  VIR_STORAGE_POOL_INACTIVE = 0, /* Not running */
-  VIR_STORAGE_POOL_BUILDING = 1, /* Initializing pool, not available */
-  VIR_STORAGE_POOL_RUNNING = 2,  /* Running normally */
-  VIR_STORAGE_POOL_DEGRADED = 3, /* Running degraded */
-  VIR_STORAGE_POOL_INACCESSIBLE = 4, /* Running, but not accessible */
+    VIR_STORAGE_POOL_INACTIVE = 0, /* Not running */
+    VIR_STORAGE_POOL_BUILDING = 1, /* Initializing pool, not available */
+    VIR_STORAGE_POOL_RUNNING = 2,  /* Running normally */
+    VIR_STORAGE_POOL_DEGRADED = 3, /* Running degraded */
+    VIR_STORAGE_POOL_INACCESSIBLE = 4, /* Running, but not accessible */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_STORAGE_POOL_STATE_LAST
+#endif
 } virStoragePoolState;
 
 
 typedef enum {
-  VIR_STORAGE_POOL_BUILD_NEW  = 0,   /* Regular build from scratch */
-  VIR_STORAGE_POOL_BUILD_REPAIR = (1 << 0), /* Repair / reinitialize */
-  VIR_STORAGE_POOL_BUILD_RESIZE = (1 << 1),  /* Extend existing pool */
-  VIR_STORAGE_POOL_BUILD_NO_OVERWRITE = (1 << 2),  /* Do not overwrite existing pool */
-  VIR_STORAGE_POOL_BUILD_OVERWRITE = (1 << 3),  /* Overwrite data */
+    VIR_STORAGE_POOL_BUILD_NEW  = 0,   /* Regular build from scratch */
+    VIR_STORAGE_POOL_BUILD_REPAIR = (1 << 0), /* Repair / reinitialize */
+    VIR_STORAGE_POOL_BUILD_RESIZE = (1 << 1),  /* Extend existing pool */
+    VIR_STORAGE_POOL_BUILD_NO_OVERWRITE = (1 << 2),  /* Do not overwrite existing pool */
+    VIR_STORAGE_POOL_BUILD_OVERWRITE = (1 << 3),  /* Overwrite data */
 } virStoragePoolBuildFlags;
 
 typedef enum {
   VIR_STORAGE_POOL_DELETE_NORMAL = 0, /* Delete metadata only    (fast) */
-  VIR_STORAGE_POOL_DELETE_ZEROED = 1,  /* Clear all data to zeros (slow) */
+  VIR_STORAGE_POOL_DELETE_ZEROED = 1 << 0,  /* Clear all data to zeros (slow) */
 } virStoragePoolDeleteFlags;
 
 typedef struct _virStoragePoolInfo virStoragePoolInfo;
@@ -2115,11 +2181,15 @@ typedef enum {
   VIR_STORAGE_VOL_FILE = 0,     /* Regular file based volumes */
   VIR_STORAGE_VOL_BLOCK = 1,    /* Block based volumes */
   VIR_STORAGE_VOL_DIR = 2,      /* Directory-passthrough based volume */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_STORAGE_VOL_LAST
+#endif
 } virStorageVolType;
 
 typedef enum {
   VIR_STORAGE_VOL_DELETE_NORMAL = 0, /* Delete metadata only    (fast) */
-  VIR_STORAGE_VOL_DELETE_ZEROED = 1,  /* Clear all data to zeros (slow) */
+  VIR_STORAGE_VOL_DELETE_ZEROED = 1 << 0,  /* Clear all data to zeros (slow) */
 } virStorageVolDeleteFlags;
 
 typedef struct _virStorageVolInfo virStorageVolInfo;
@@ -2286,12 +2356,14 @@ typedef enum {
     VIR_KEYCODE_SET_WIN32          = 8,
     VIR_KEYCODE_SET_RFB            = 9,
 
+#ifdef VIR_ENUM_SENTINELS
     /*
      * NB: this enum value will increase over time as new events are
      * added to the libvirt API. It reflects the last keycode set supported
      * by this version of the libvirt API.
      */
-    VIR_KEYCODE_SET_LAST,
+    VIR_KEYCODE_SET_LAST
+#endif
 } virKeycodeSet;
 
 /**
@@ -2389,13 +2461,17 @@ int                     virNodeDeviceDestroy    (virNodeDevicePtr dev);
  * a virDomainEventType is emitted during domain lifecycle events
  */
 typedef enum {
-      VIR_DOMAIN_EVENT_DEFINED = 0,
-      VIR_DOMAIN_EVENT_UNDEFINED = 1,
-      VIR_DOMAIN_EVENT_STARTED = 2,
-      VIR_DOMAIN_EVENT_SUSPENDED = 3,
-      VIR_DOMAIN_EVENT_RESUMED = 4,
-      VIR_DOMAIN_EVENT_STOPPED = 5,
-      VIR_DOMAIN_EVENT_SHUTDOWN = 6,
+    VIR_DOMAIN_EVENT_DEFINED = 0,
+    VIR_DOMAIN_EVENT_UNDEFINED = 1,
+    VIR_DOMAIN_EVENT_STARTED = 2,
+    VIR_DOMAIN_EVENT_SUSPENDED = 3,
+    VIR_DOMAIN_EVENT_RESUMED = 4,
+    VIR_DOMAIN_EVENT_STOPPED = 5,
+    VIR_DOMAIN_EVENT_SHUTDOWN = 6,
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_LAST
+#endif
 } virDomainEventType;
 
 /**
@@ -2406,6 +2482,10 @@ typedef enum {
 typedef enum {
     VIR_DOMAIN_EVENT_DEFINED_ADDED = 0,     /* Newly created config file */
     VIR_DOMAIN_EVENT_DEFINED_UPDATED = 1,   /* Changed config file */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_DEFINED_LAST
+#endif
 } virDomainEventDefinedDetailType;
 
 /**
@@ -2415,6 +2495,10 @@ typedef enum {
  */
 typedef enum {
     VIR_DOMAIN_EVENT_UNDEFINED_REMOVED = 0, /* Deleted the config file */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_UNDEFINED_LAST
+#endif
 } virDomainEventUndefinedDetailType;
 
 /**
@@ -2427,6 +2511,10 @@ typedef enum {
     VIR_DOMAIN_EVENT_STARTED_MIGRATED = 1, /* Incoming migration from another host */
     VIR_DOMAIN_EVENT_STARTED_RESTORED = 2, /* Restored from a state file */
     VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT = 3, /* Restored from snapshot */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_STARTED_LAST
+#endif
 } virDomainEventStartedDetailType;
 
 /**
@@ -2441,6 +2529,10 @@ typedef enum {
     VIR_DOMAIN_EVENT_SUSPENDED_WATCHDOG = 3,  /* Suspended due to a watchdog firing */
     VIR_DOMAIN_EVENT_SUSPENDED_RESTORED = 4,  /* Restored from paused state file */
     VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT = 5, /* Restored from paused snapshot */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_SUSPENDED_LAST
+#endif
 } virDomainEventSuspendedDetailType;
 
 /**
@@ -2452,6 +2544,10 @@ typedef enum {
     VIR_DOMAIN_EVENT_RESUMED_UNPAUSED = 0,   /* Normal resume due to admin unpause */
     VIR_DOMAIN_EVENT_RESUMED_MIGRATED = 1,   /* Resumed for completion of migration */
     VIR_DOMAIN_EVENT_RESUMED_FROM_SNAPSHOT = 2, /* Resumed from snapshot */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_RESUMED_LAST
+#endif
 } virDomainEventResumedDetailType;
 
 /**
@@ -2467,6 +2563,10 @@ typedef enum {
     VIR_DOMAIN_EVENT_STOPPED_SAVED = 4,     /* Saved to a state file */
     VIR_DOMAIN_EVENT_STOPPED_FAILED = 5,    /* Host emulator/mgmt failed */
     VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT = 6, /* offline snapshot loaded */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_STOPPED_LAST
+#endif
 } virDomainEventStoppedDetailType;
 
 
@@ -2477,6 +2577,10 @@ typedef enum {
  */
 typedef enum {
     VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED = 0, /* Guest finished shutdown sequence */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_SHUTDOWN_LAST
+#endif
 } virDomainEventShutdownDetailType;
 
 /**
@@ -2690,12 +2794,14 @@ typedef enum {
     VIR_SECRET_USAGE_TYPE_VOLUME = 1,
     VIR_SECRET_USAGE_TYPE_CEPH = 2,
 
+#ifdef VIR_ENUM_SENTINELS
     /*
      * NB: this enum value will increase over time as new events are
      * added to the libvirt API. It reflects the last secret owner ID
      * supported by this version of the libvirt API.
      */
     VIR_SECRET_USAGE_TYPE_LAST
+#endif
 } virSecretUsageType;
 
 virConnectPtr           virSecretGetConnect     (virSecretPtr secret);
@@ -2877,7 +2983,11 @@ typedef enum {
     VIR_CPU_COMPARE_ERROR           = -1,
     VIR_CPU_COMPARE_INCOMPATIBLE    = 0,
     VIR_CPU_COMPARE_IDENTICAL       = 1,
-    VIR_CPU_COMPARE_SUPERSET        = 2
+    VIR_CPU_COMPARE_SUPERSET        = 2,
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_CPU_COMPARE_LAST
+#endif
 } virCPUCompareResult;
 
 /**
@@ -2921,6 +3031,10 @@ typedef enum {
     VIR_DOMAIN_JOB_COMPLETED = 3, /* Job has finished, but isn't cleaned up */
     VIR_DOMAIN_JOB_FAILED    = 4, /* Job hit error, but isn't cleaned up */
     VIR_DOMAIN_JOB_CANCELLED = 5, /* Job was aborted, but isn't cleaned up */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_JOB_LAST
+#endif
 } virDomainJobType;
 
 typedef struct _virDomainJobInfo virDomainJobInfo;
@@ -3121,6 +3235,10 @@ typedef enum {
     VIR_DOMAIN_EVENT_WATCHDOG_POWEROFF, /* Guest is forcably powered off */
     VIR_DOMAIN_EVENT_WATCHDOG_SHUTDOWN, /* Guest is requested to gracefully shutdown */
     VIR_DOMAIN_EVENT_WATCHDOG_DEBUG,    /* No action, a debug message logged */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_WATCHDOG_LAST
+#endif
 } virDomainEventWatchdogAction;
 
 /**
@@ -3148,6 +3266,10 @@ typedef enum {
     VIR_DOMAIN_EVENT_IO_ERROR_NONE = 0,  /* No action, IO error ignored */
     VIR_DOMAIN_EVENT_IO_ERROR_PAUSE,     /* Guest CPUs are pausde */
     VIR_DOMAIN_EVENT_IO_ERROR_REPORT,    /* IO error reported to guest OS */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_IO_ERROR_LAST
+#endif
 } virDomainEventIOErrorAction;
 
 
@@ -3201,6 +3323,10 @@ typedef enum {
     VIR_DOMAIN_EVENT_GRAPHICS_CONNECT = 0,  /* Initial socket connection established */
     VIR_DOMAIN_EVENT_GRAPHICS_INITIALIZE,   /* Authentication & setup completed */
     VIR_DOMAIN_EVENT_GRAPHICS_DISCONNECT,   /* Final socket disconnection */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_GRAPHICS_LAST
+#endif
 } virDomainEventGraphicsPhase;
 
 /**
@@ -3212,6 +3338,10 @@ typedef enum {
     VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_IPV4,  /* IPv4 address */
     VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_IPV6,  /* IPv6 address */
     VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_UNIX,  /* UNIX socket path */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_LAST
+#endif
 } virDomainEventGraphicsAddressType;
 
 
@@ -3293,6 +3423,10 @@ typedef void (*virConnectDomainEventGraphicsCallback)(virConnectPtr conn,
 typedef enum {
     VIR_DOMAIN_BLOCK_JOB_COMPLETED = 0,
     VIR_DOMAIN_BLOCK_JOB_FAILED = 1,
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_BLOCK_JOB_LAST
+#endif
 } virConnectDomainEventBlockJobStatus;
 
 /**
@@ -3320,6 +3454,10 @@ typedef void (*virConnectDomainEventBlockJobCallback)(virConnectPtr conn,
  */
 typedef enum {
     VIR_DOMAIN_EVENT_DISK_CHANGE_MISSING_ON_START = 0, /* oldSrcPath is set */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_DISK_CHANGE_LAST
+#endif
 } virConnectDomainEventDiskChangeReason;
 
 /**
@@ -3369,12 +3507,14 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_BLOCK_JOB = 8,       /* virConnectDomainEventBlockJobCallback */
     VIR_DOMAIN_EVENT_ID_DISK_CHANGE = 9,     /* virConnectDomainEventDiskChangeCallback */
 
+#ifdef VIR_ENUM_SENTINELS
     /*
      * NB: this enum value will increase over time as new events are
      * added to the libvirt API. It reflects the last event ID supported
      * by this version of the libvirt API.
      */
     VIR_DOMAIN_EVENT_ID_LAST
+#endif
 } virDomainEventID;
 
 

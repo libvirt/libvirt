@@ -22,7 +22,11 @@
  * variables, so effectively undefine the deprecated attribute
  * which would otherwise be defined in libvirt.h.
  */
+# undef VIR_DEPRECATED
 # define VIR_DEPRECATED /*empty*/
+
+/* The library itself needs to know enum sizes.  */
+# define VIR_ENUM_SENTINELS
 
 /* All uses of _() within the library should pick up translations from
  * libvirt's message files, rather than from the package that is

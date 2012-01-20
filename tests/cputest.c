@@ -1,7 +1,7 @@
 /*
  * cputest.c: Test the libvirtd internal CPU APIs
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -205,6 +205,7 @@ cpuTestCompResStr(virCPUCompareResult result)
     case VIR_CPU_COMPARE_INCOMPATIBLE:  return "INCOMPATIBLE";
     case VIR_CPU_COMPARE_IDENTICAL:     return "IDENTICAL";
     case VIR_CPU_COMPARE_SUPERSET:      return "SUPERSET";
+    case VIR_CPU_COMPARE_LAST:          break;
     }
 
     return "unknown";

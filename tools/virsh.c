@@ -17574,6 +17574,7 @@ vshDomainStateReasonToString(int state, int reason)
     case VIR_DOMAIN_NOSTATE:
         switch ((virDomainNostateReason) reason) {
         case VIR_DOMAIN_NOSTATE_UNKNOWN:
+        case VIR_DOMAIN_NOSTATE_LAST:
             ;
         }
         break;
@@ -17595,6 +17596,7 @@ vshDomainStateReasonToString(int state, int reason)
         case VIR_DOMAIN_RUNNING_SAVE_CANCELED:
             return N_("save canceled");
         case VIR_DOMAIN_RUNNING_UNKNOWN:
+        case VIR_DOMAIN_RUNNING_LAST:
             ;
         }
         break;
@@ -17602,6 +17604,7 @@ vshDomainStateReasonToString(int state, int reason)
     case VIR_DOMAIN_BLOCKED:
         switch ((virDomainBlockedReason) reason) {
         case VIR_DOMAIN_BLOCKED_UNKNOWN:
+        case VIR_DOMAIN_BLOCKED_LAST:
             ;
         }
         break;
@@ -17625,6 +17628,7 @@ vshDomainStateReasonToString(int state, int reason)
         case VIR_DOMAIN_PAUSED_SHUTTING_DOWN:
             return N_("shutting down");
         case VIR_DOMAIN_PAUSED_UNKNOWN:
+        case VIR_DOMAIN_PAUSED_LAST:
             ;
         }
         break;
@@ -17634,6 +17638,7 @@ vshDomainStateReasonToString(int state, int reason)
         case VIR_DOMAIN_SHUTDOWN_USER:
             return N_("user");
         case VIR_DOMAIN_SHUTDOWN_UNKNOWN:
+        case VIR_DOMAIN_SHUTDOWN_LAST:
             ;
         }
         break;
@@ -17655,6 +17660,7 @@ vshDomainStateReasonToString(int state, int reason)
         case VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT:
             return N_("from snapshot");
         case VIR_DOMAIN_SHUTOFF_UNKNOWN:
+        case VIR_DOMAIN_SHUTOFF_LAST:
             ;
         }
         break;
@@ -17662,11 +17668,12 @@ vshDomainStateReasonToString(int state, int reason)
     case VIR_DOMAIN_CRASHED:
         switch ((virDomainCrashedReason) reason) {
         case VIR_DOMAIN_CRASHED_UNKNOWN:
+        case VIR_DOMAIN_CRASHED_LAST:
             ;
         }
         break;
 
-    default:
+    case VIR_DOMAIN_LAST:
         ;
     }
 
@@ -17753,6 +17760,8 @@ vshDomainControlStateToString(int state)
         return N_("occupied");
     case VIR_DOMAIN_CONTROL_ERROR:
         return N_("error");
+    default:
+        ;
     }
 
     return N_("unknown");

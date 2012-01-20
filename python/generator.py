@@ -205,7 +205,8 @@ def enum(type, name, value):
         value = 1
     elif value == 'VIR_DOMAIN_AFFECT_CONFIG':
         value = 2
-    enums[type][name] = value
+    if name[-5:] != '_LAST':
+        enums[type][name] = value
 
 def qemu_enum(type, name, value):
     if not qemu_enums.has_key(type):
