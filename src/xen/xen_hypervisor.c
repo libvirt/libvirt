@@ -2598,7 +2598,7 @@ xenHypervisorMakeCapabilitiesInternal(virConnectPtr conn,
                                &line[subs[1].rm_so],
                                subs[1].rm_eo-subs[1].rm_so,
                                sizeof(hvm_type)) == NULL)
-                    return NULL;
+                    goto no_memory;
             } else if (regexec (&flags_pae_rec, line, 0, NULL, 0) == 0)
                 host_pae = 1;
         }
