@@ -151,6 +151,7 @@ src/util/vireventpoll.c
 src/util/virfile.c
 src/util/virhash.c
 src/util/virhook.c
+src/util/viridentity.c
 src/util/virinitctl.c
 src/util/viriptables.c
 src/util/virjson.c

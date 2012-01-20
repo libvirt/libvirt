@@ -180,6 +180,7 @@
 /tests/virdrivermoduletest
 /tests/virendiantest
 /tests/virhashtest
+/tests/viridentitytest
 /tests/virkeyfiletest
 /tests/virlockspacetest
 /tests/virnet*test

@@ -1288,6 +1288,13 @@ virHookInitialize;
 virHookPresent;
 
 
+# util/viridentity.h
+virIdentityGetAttr;
+virIdentityIsEqual;
+virIdentityNew;
+virIdentitySetAttr;
+
+
 # util/virinitctl.h
 virInitctlSetRunLevel;
 

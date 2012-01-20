@@ -1,0 +1,178 @@
+/*
+ * viridentity.c: helper APIs for managing user identities
+ *
+ * Copyright (C) 2012-2013 Red Hat, Inc.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library;  If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ */
+
+#include <config.h>
+
+#include "internal.h"
+#include "viralloc.h"
+#include "virerror.h"
+#include "viridentity.h"
+#include "virlog.h"
+#include "virobject.h"
+#include "virthread.h"
+
+#define VIR_FROM_THIS VIR_FROM_IDENTITY
+
+
+struct _virIdentity {
+    virObject parent;
+
+    char *attrs[VIR_IDENTITY_ATTR_LAST];
+};
+
+static virClassPtr virIdentityClass;
+
+static void virIdentityDispose(void *obj);
+
+static int virIdentityOnceInit(void)
+{
+    if (!(virIdentityClass = virClassNew(virClassForObject(),
+                                         "virIdentity",
+                                         sizeof(virIdentity),
+                                         virIdentityDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virIdentity)
+
+
+/**
+ * virIdentityNew:
+ *
+ * Creates a new empty identity object. After creating, one or
+ * more identifying attributes should be set on the identity.
+ *
+ * Returns: a new empty identity
+ */
+virIdentityPtr virIdentityNew(void)
+{
+    virIdentityPtr ident;
+
+    if (virIdentityInitialize() < 0)
+        return NULL;
+
+    if (!(ident = virObjectNew(virIdentityClass)))
+        return NULL;
+
+    return ident;
+}
+
+
+static void virIdentityDispose(void *object)
+{
+    virIdentityPtr ident = object;
+    size_t i;
+
+    for (i = 0 ; i < VIR_IDENTITY_ATTR_LAST ; i++)
+        VIR_FREE(ident->attrs[i]);
+}
+
+
+/**
+ * virIdentitySetAttr:
+ * @ident: the identity to modify
+ * @attr: the attribute type to set
+ * @value: the identifying value to associate with @attr
+ *
+ * Sets an identifying attribute @attr on @ident. Each
+ * @attr type can only be set once.
+ *
+ * Returns: 0 on success, or -1 on error
+ */
+int virIdentitySetAttr(virIdentityPtr ident,
+                       unsigned int attr,
+                       const char *value)
+{
+    int ret = -1;
+    VIR_DEBUG("ident=%p attribute=%u value=%s", ident, attr, value);
+
+    if (ident->attrs[attr]) {
+        virReportError(VIR_ERR_OPERATION_DENIED, "%s",
+                        _("Identity attribute is already set"));
+        goto cleanup;
+    }
+
+    if (!(ident->attrs[attr] = strdup(value))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
+
+/**
+ * virIdentityGetAttr:
+ * @ident: the identity to query
+ * @attr: the attribute to read
+ * @value: filled with the attribute value
+ *
+ * Fills @value with a pointer to the value associated
+ * with the identifying attribute @attr in @ident. If
+ * @attr is not set, then it will simply be initialized
+ * to NULL and considered as a successful read
+ *
+ * Returns 0 on success, -1 on error
+ */
+int virIdentityGetAttr(virIdentityPtr ident,
+                       unsigned int attr,
+                       const char **value)
+{
+    VIR_DEBUG("ident=%p attribute=%d value=%p", ident, attr, value);
+
+    *value = ident->attrs[attr];
+
+    return 0;
+}
+
+
+/**
+ * virIdentityIsEqual:
+ * @identA: the first identity
+ * @identB: the second identity
+ *
+ * Compares every attribute in @identA and @identB
+ * to determine if they refer to the same identity
+ *
+ * Returns true if they are equal, false if not equal
+ */
+bool virIdentityIsEqual(virIdentityPtr identA,
+                        virIdentityPtr identB)
+{
+    bool ret = false;
+    size_t i;
+    VIR_DEBUG("identA=%p identB=%p", identA, identB);
+
+    for (i = 0 ; i < VIR_IDENTITY_ATTR_LAST ; i++) {
+        if (STRNEQ_NULLABLE(identA->attrs[i],
+                            identB->attrs[i]))
+            goto cleanup;
+    }
+
+    ret = true;
+cleanup:
+    return ret;
+}

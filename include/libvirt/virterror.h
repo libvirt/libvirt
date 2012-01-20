@@ -115,6 +115,7 @@ typedef enum {
     VIR_FROM_SSH = 50,          /* Error from libssh2 connection transport */
     VIR_FROM_LOCKSPACE = 51,    /* Error from lockspace */
     VIR_FROM_INITCTL = 52,      /* Error from initctl device communication */
+    VIR_FROM_IDENTITY = 53,     /* Error from identity code */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_ERR_DOMAIN_LAST
