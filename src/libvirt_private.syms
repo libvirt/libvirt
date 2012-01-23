@@ -852,6 +852,7 @@ virNetServerClientClose;
 virNetServerClientDelayedClose;
 virNetServerClientGetAuth;
 virNetServerClientGetFD;
+virNetServerClientGetIdentity;
 virNetServerClientGetPrivateData;
 virNetServerClientGetReadonly;
 virNetServerClientGetSecurityContext;

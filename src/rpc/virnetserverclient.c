@@ -74,6 +74,9 @@ struct _virNetServerClient
     int sockTimer; /* Timer to be fired upon cached data,
                     * so we jump out from poll() immediately */
 
+
+    virIdentityPtr identity;
+
     /* Count of messages in the 'tx' queue,
      * and the server worker pool queue
      * ie RPC calls in progress. Does not count
@@ -642,6 +645,128 @@ int virNetServerClientGetUNIXIdentity(virNetServerClientPtr client,
 }
 
 
+static virIdentityPtr
+virNetServerClientCreateIdentity(virNetServerClientPtr client)
+{
+    char *processid = NULL;
+    char *username = NULL;
+    char *groupname = NULL;
+#if WITH_SASL
+    char *saslname = NULL;
+#endif
+    char *x509dname = NULL;
+    char *seccontext = NULL;
+    virIdentityPtr ret = NULL;
+
+    if (client->sock && virNetSocketIsLocal(client->sock)) {
+        gid_t gid;
+        uid_t uid;
+        pid_t pid;
+        if (virNetSocketGetUNIXIdentity(client->sock, &uid, &gid, &pid) < 0)
+            goto cleanup;
+
+        if (!(username = virGetUserName(uid)))
+            goto cleanup;
+        if (!(groupname = virGetGroupName(gid)))
+            goto cleanup;
+        if (virAsprintf(&processid, "%lld",
+                        (long long)pid) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+#if WITH_SASL
+    if (client->sasl) {
+        const char *identity = virNetSASLSessionGetIdentity(client->sasl);
+        if (identity &&
+            !(saslname = strdup(identity))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+#endif
+
+    if (client->tls) {
+        const char *identity = virNetTLSSessionGetX509DName(client->tls);
+        if (identity &&
+            !(x509dname = strdup(identity))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    if (client->sock &&
+        virNetSocketGetSecurityContext(client->sock, &seccontext) < 0)
+        goto cleanup;
+
+    if (!(ret = virIdentityNew()))
+        goto cleanup;
+
+    if (username &&
+        virIdentitySetAttr(ret,
+                           VIR_IDENTITY_ATTR_UNIX_USER_NAME,
+                           username) < 0)
+        goto error;
+    if (groupname &&
+        virIdentitySetAttr(ret,
+                           VIR_IDENTITY_ATTR_UNIX_GROUP_NAME,
+                           groupname) < 0)
+        goto error;
+    if (processid &&
+        virIdentitySetAttr(ret,
+                           VIR_IDENTITY_ATTR_UNIX_PROCESS_ID,
+                           processid) < 0)
+        goto error;
+#if HAVE_SASL
+    if (saslname &&
+        virIdentitySetAttr(ret,
+                           VIR_IDENTITY_ATTR_SASL_USER_NAME,
+                           saslname) < 0)
+        goto error;
+#endif
+    if (x509dname &&
+        virIdentitySetAttr(ret,
+                           VIR_IDENTITY_ATTR_X509_DISTINGUISHED_NAME,
+                           x509dname) < 0)
+        goto error;
+    if (seccontext &&
+        virIdentitySetAttr(ret,
+                           VIR_IDENTITY_ATTR_SECURITY_CONTEXT,
+                           seccontext) < 0)
+        goto error;
+
+cleanup:
+    VIR_FREE(username);
+    VIR_FREE(groupname);
+    VIR_FREE(processid);
+    VIR_FREE(seccontext);
+#if HAVE_SASL
+    VIR_FREE(saslname);
+#endif
+    VIR_FREE(x509dname);
+    return ret;
+
+error:
+    virObjectUnref(ret);
+    ret = NULL;
+    goto cleanup;
+}
+
+
+virIdentityPtr virNetServerClientGetIdentity(virNetServerClientPtr client)
+{
+    virIdentityPtr ret = NULL;
+    virObjectLock(client);
+    if (!client->identity)
+        client->identity = virNetServerClientCreateIdentity(client);
+    if (client->identity)
+        ret = virObjectRef(client->identity);
+    virObjectUnlock(client);
+    return ret;
+}
+
+
 int virNetServerClientGetSecurityContext(virNetServerClientPtr client,
                                          char **context)
 {
@@ -752,6 +877,8 @@ void virNetServerClientDispose(void *obj)
 
     PROBE(RPC_SERVER_CLIENT_DISPOSE,
           "client=%p", client);
+
+    virObjectUnref(client->identity);
 
     if (client->privateData &&
         client->privateDataFreeFunc)

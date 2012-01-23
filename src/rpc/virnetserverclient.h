@@ -24,6 +24,7 @@
 #ifndef __VIR_NET_SERVER_CLIENT_H__
 # define __VIR_NET_SERVER_CLIENT_H__
 
+# include "viridentity.h"
 # include "virnetsocket.h"
 # include "virnetmessage.h"
 # include "virobject.h"
@@ -102,6 +103,8 @@ int virNetServerClientGetUNIXIdentity(virNetServerClientPtr client,
 
 int virNetServerClientGetSecurityContext(virNetServerClientPtr client,
                                          char **context);
+
+virIdentityPtr virNetServerClientGetIdentity(virNetServerClientPtr client);
 
 void *virNetServerClientGetPrivateData(virNetServerClientPtr client);
 
