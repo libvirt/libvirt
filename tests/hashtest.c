@@ -574,6 +574,84 @@ cleanup:
     return ret;
 }
 
+static int
+testHashEqualCompValue(const void *value1, const void *value2)
+{
+    return c_strcasecmp(value1, value2);
+}
+
+static int
+testHashEqual(const void *data ATTRIBUTE_UNUSED)
+{
+    virHashTablePtr hash1, hash2;
+    int ret = -1;
+    char keya[] = "a";
+    char keyb[] = "b";
+    char keyc[] = "c";
+    char value1_l[] = "m";
+    char value2_l[] = "n";
+    char value3_l[] = "o";
+    char value1_u[] = "M";
+    char value2_u[] = "N";
+    char value3_u[] = "O";
+    char value4_u[] = "P";
+
+    if (!(hash1 = virHashCreate(0, NULL)) ||
+        !(hash2 = virHashCreate(0, NULL)) ||
+        virHashAddEntry(hash1, keya, value1_l) < 0 ||
+        virHashAddEntry(hash1, keyb, value2_l) < 0 ||
+        virHashAddEntry(hash1, keyc, value3_l) < 0 ||
+        virHashAddEntry(hash2, keya, value1_u) < 0 ||
+        virHashAddEntry(hash2, keyb, value2_u) < 0) {
+        if (virTestGetVerbose()) {
+            testError("\nfailed to create hashes");
+        }
+        goto cleanup;
+    }
+
+    if (virHashEqual(hash1, hash2, testHashEqualCompValue)) {
+        if (virTestGetVerbose()) {
+            testError("\nfailed equal test for different number of elements");
+        }
+        goto cleanup;
+    }
+
+    if (virHashAddEntry(hash2, keyc, value4_u) < 0) {
+        if (virTestGetVerbose()) {
+            testError("\nfailed to add element to hash2");
+        }
+        goto cleanup;
+    }
+
+    if (virHashEqual(hash1, hash2, testHashEqualCompValue)) {
+        if (virTestGetVerbose()) {
+            testError("\nfailed equal test for same number of elements");
+        }
+        goto cleanup;
+    }
+
+    if (virHashUpdateEntry(hash2, keyc, value3_u) < 0) {
+        if (virTestGetVerbose()) {
+            testError("\nfailed to update element in hash2");
+        }
+        goto cleanup;
+    }
+
+    if (!virHashEqual(hash1, hash2, testHashEqualCompValue)) {
+        if (virTestGetVerbose()) {
+            testError("\nfailed equal test for equal hash tables");
+        }
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    virHashFree(hash1);
+    virHashFree(hash2);
+    return ret;
+}
+
 
 static int
 mymain(void)
@@ -612,6 +690,7 @@ mymain(void)
     DO_TEST("RemoveSet", RemoveSet);
     DO_TEST("Search", Search);
     DO_TEST("GetItems", GetItems);
+    DO_TEST("Equal", Equal);
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
