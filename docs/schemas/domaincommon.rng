@@ -3030,7 +3030,7 @@
   </define>
   <define name="domainName">
     <data type="string">
-      <param name="pattern">[A-Za-z0-9_\.\+\-&amp;:/]+</param>
+      <param name="pattern">[^\n]+</param>
     </data>
   </define>
   <define name="diskSerial">
