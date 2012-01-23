@@ -6,6 +6,7 @@ daemon/remote_dispatch.h
 daemon/stream.c
 gnulib/lib/gai_strerror.c
 gnulib/lib/regcomp.c
+src/access/viraccessdriverpolkit.c
 src/access/viraccessmanager.c
 src/conf/cpu_conf.c
 src/conf/device_conf.c

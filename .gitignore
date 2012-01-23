@@ -103,6 +103,7 @@
 /run
 /sc_*
 /src/.*.stamp
+/src/access/org.libvirt.api.policy
 /src/esx/*.generated.*
 /src/hyperv/*.generated.*
 /src/libvirt*.def

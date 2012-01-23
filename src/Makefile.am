@@ -797,6 +797,13 @@ ACCESS_DRIVER_SOURCES = \
 		access/viraccessdrivernop.h access/viraccessdrivernop.c \
 		access/viraccessdriverstack.h access/viraccessdriverstack.c
 
+ACCESS_DRIVER_POLKIT_SOURCES = \
+		access/viraccessdriverpolkit.h access/viraccessdriverpolkit.c
+
+ACCESS_DRIVER_POLKIT_POLICY = \
+		access/org.libvirt.api.policy
+
+
 NODE_DEVICE_DRIVER_SOURCES =					\
 		node_device/node_device_driver.c		\
 		node_device/node_device_driver.h		\
@@ -1391,6 +1398,24 @@ libvirt_driver_access_la_CFLAGS = \
 libvirt_driver_access_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_access_la_LIBADD =
 
+EXTRA_DIST += access/genpolkit.pl
+
+if WITH_POLKIT1
+libvirt_driver_access_la_SOURCES += $(ACCESS_DRIVER_POLKIT_SOURCES)
+
+polkitactiondir = $(datadir)/polkit-1/actions
+polkitaction_DATA = $(ACCESS_DRIVER_POLKIT_POLICY)
+
+$(ACCESS_DRIVER_POLKIT_POLICY): $(srcdir)/access/viraccessperm.h \
+    $(srcdir)/access/genpolkit.pl Makefile.am
+	$(AM_V_GEN)$(PERL) $(srcdir)/access/genpolkit.pl < $< > $@ || rm -f $@
+
+CLEANFILES += $(ACCESS_DRIVER_POLKIT_POLICY)
+BUILT_SOURCES += $(ACCESS_DRIVER_POLKIT_POLICY)
+else
+EXTRA_DIST += $(ACCESS_DRIVER_POLKIT_SOURCES)
+endif
+
 
 # Add all conditional sources just in case...
 EXTRA_DIST +=							\
@@ -1430,7 +1455,8 @@ EXTRA_DIST +=							\
 		$(SECRET_DRIVER_SOURCES)			\
 		$(VBOX_DRIVER_EXTRA_DIST)			\
 		$(VMWARE_DRIVER_SOURCES)			\
-		$(XENXS_SOURCES)
+		$(XENXS_SOURCES)				\
+		$(ACCESS_DRIVER_POLKIT_POLICY)
 
 check-local: check-augeas
 

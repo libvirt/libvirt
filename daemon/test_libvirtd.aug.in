@@ -18,6 +18,7 @@ module Test_libvirtd =
         { "auth_tcp" = "sasl" }
         { "auth_tls" = "none" }
         { "access_drivers"
+             { "1" = "polkit" }
         }
         { "key_file" = "/etc/pki/libvirt/private/serverkey.pem" }
         { "cert_file" = "/etc/pki/libvirt/servercert.pem" }
