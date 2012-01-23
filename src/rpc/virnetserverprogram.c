@@ -375,6 +375,7 @@ virNetServerProgramDispatchCall(virNetServerProgramPtr prog,
     virNetServerProgramProcPtr dispatcher;
     virNetMessageError rerr;
     size_t i;
+    virIdentityPtr identity = NULL;
 
     memset(&rerr, 0, sizeof(rerr));
 
@@ -419,6 +420,12 @@ virNetServerProgramDispatchCall(virNetServerProgramPtr prog,
     if (virNetMessageDecodePayload(msg, dispatcher->arg_filter, arg) < 0)
         goto error;
 
+    if (!(identity = virNetServerClientGetIdentity(client)))
+        goto error;
+
+    if (virIdentitySetCurrent(identity) < 0)
+        goto error;
+
     /*
      * When the RPC handler is called:
      *
@@ -430,6 +437,9 @@ virNetServerProgramDispatchCall(virNetServerProgramPtr prog,
      *   'args and 'ret'
      */
     rv = (dispatcher->func)(server, client, msg, &rerr, arg, ret);
+
+    if (virIdentitySetCurrent(NULL) < 0)
+        goto error;
 
     /*
      * If rv == 1, this indicates the dispatch func has
@@ -481,6 +491,7 @@ virNetServerProgramDispatchCall(virNetServerProgramPtr prog,
     VIR_FREE(arg);
     VIR_FREE(ret);
 
+    virObjectUnref(identity);
     /* Put reply on end of tx queue to send out  */
     return virNetServerClientSendMessage(client, msg);
 
@@ -491,6 +502,7 @@ error:
 
     VIR_FREE(arg);
     VIR_FREE(ret);
+    virObjectUnref(identity);
 
     return rv;
 }
