@@ -692,6 +692,29 @@ virLogVersionString(char **msg)
 void virLogMessage(const char *category, int priority, const char *funcname,
                    long long linenr, unsigned int flags, const char *fmt, ...)
 {
+    va_list ap;
+    va_start(ap, fmt);
+    virLogVMessage(category, priority, funcname, linenr, flags, fmt, ap);
+    va_end(ap);
+}
+
+/**
+ * virLogVMessage:
+ * @category: where is that message coming from
+ * @priority: the priority level
+ * @funcname: the function emitting the (debug) message
+ * @linenr: line where the message was emitted
+ * @flags: extra flags, 1 if coming from the error handler
+ * @fmt: the string format
+ * @vargs: format args
+ *
+ * Call the libvirt logger with some information. Based on the configuration
+ * the message may be stored, sent to output or just discarded
+ */
+void virLogVMessage(const char *category, int priority, const char *funcname,
+                    long long linenr, unsigned int flags, const char *fmt,
+                    va_list vargs)
+{
     static bool logVersionStderr = true;
     char *str = NULL;
     char *msg = NULL;
@@ -699,7 +722,6 @@ void virLogMessage(const char *category, int priority, const char *funcname,
     int fprio, i, ret;
     int saved_errno = errno;
     int emit = 1;
-    va_list ap;
     unsigned int filterflags = 0;
 
     if (!virLogInitialized)
@@ -725,12 +747,9 @@ void virLogMessage(const char *category, int priority, const char *funcname,
     /*
      * serialize the error message, add level and timestamp
      */
-    va_start(ap, fmt);
-    if (virVasprintf(&str, fmt, ap) < 0) {
-        va_end(ap);
+    if (virVasprintf(&str, fmt, vargs) < 0) {
         goto cleanup;
     }
-    va_end(ap);
 
     ret = virLogFormatString(&msg, funcname, linenr, priority, str);
     VIR_FREE(str);
