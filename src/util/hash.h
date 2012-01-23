@@ -154,6 +154,18 @@ virHashKeyValuePairPtr virHashGetItems(virHashTablePtr table,
                                        virHashKeyComparator compar);
 
 /*
+ * Compare two tables for equality: the lookup of a key's value in
+ * both tables must result in an equivalent value.
+ * The caller must pass in a comparator function for comparing the values
+ * of two keys.
+ */
+typedef int (*virHashValueComparator)(const void *value1, const void *value2);
+bool virHashEqual(const virHashTablePtr table1,
+                  const virHashTablePtr table2,
+                  virHashValueComparator compar);
+
+
+/*
  * Iterators
  */
 int virHashForEach(virHashTablePtr table, virHashIterator iter, void *data);

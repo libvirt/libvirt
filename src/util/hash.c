@@ -663,3 +663,49 @@ virHashKeyValuePairPtr virHashGetItems(virHashTablePtr table,
 
     return iter.sortArray;
 }
+
+struct virHashEqualData
+{
+    bool equal;
+    const virHashTablePtr table2;
+    virHashValueComparator compar;
+};
+
+static int virHashEqualSearcher(const void *payload, const void *name,
+                                const void *data)
+{
+    struct virHashEqualData *vhed = (void *)data;
+    const void *value;
+
+    value = virHashLookup(vhed->table2, name);
+    if (!value ||
+        vhed->compar(value, payload) != 0) {
+        /* key is missing in 2nd table or values are different */
+        vhed->equal = false;
+        /* stop 'iteration' */
+        return 1;
+    }
+    return 0;
+}
+
+bool virHashEqual(const virHashTablePtr table1,
+                  const virHashTablePtr table2,
+                  virHashValueComparator compar)
+{
+    struct virHashEqualData data = {
+        .equal = true,
+        .table2 = table2,
+        .compar = compar,
+    };
+
+    if (table1 == table2)
+        return true;
+
+    if (!table1 || !table2 ||
+        virHashSize(table1) != virHashSize(table2))
+        return false;
+
+    virHashSearch(table1, virHashEqualSearcher, &data);
+
+    return data.equal;
+}
