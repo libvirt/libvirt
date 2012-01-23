@@ -236,6 +236,11 @@ void virThreadJoin(virThreadPtr thread)
     pthread_join(thread->thread, NULL);
 }
 
+void virThreadCancel(virThreadPtr thread)
+{
+    pthread_cancel(thread->thread);
+}
+
 int virThreadLocalInit(virThreadLocalPtr l,
                        virThreadLocalCleanup c)
 {
