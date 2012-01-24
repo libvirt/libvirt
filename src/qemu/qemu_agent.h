@@ -66,4 +66,7 @@ typedef enum {
 int qemuAgentShutdown(qemuAgentPtr mon,
                       qemuAgentShutdownMode mode);
 
+int qemuAgentFSFreeze(qemuAgentPtr mon);
+int qemuAgentFSThaw(qemuAgentPtr mon);
+
 #endif /* __QEMU_AGENT_H__ */

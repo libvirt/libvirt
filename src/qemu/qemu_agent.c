@@ -1110,3 +1110,77 @@ int qemuAgentShutdown(qemuAgentPtr mon,
     virJSONValueFree(reply);
     return ret;
 }
+
+/*
+ * qemuAgentFSFreeze:
+ * @mon: Agent
+ *
+ * Issue guest-fsfreeze-freeze command to guest agent,
+ * which freezes all mounted file systems and returns
+ * number of frozen file systems on success.
+ *
+ * Returns: number of file system frozen on success,
+ *          -1 on error.
+ */
+int qemuAgentFSFreeze(qemuAgentPtr mon)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    cmd = qemuAgentMakeCommand("guest-fsfreeze-freeze", NULL);
+
+    if (!cmd)
+        return -1;
+
+    if (qemuAgentCommand(mon, cmd, &reply) < 0 ||
+        qemuAgentCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    if (virJSONValueObjectGetNumberInt(reply, "return", &ret) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("malformed return value"));
+    }
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+/*
+ * qemuAgentFSThaw:
+ * @mon: Agent
+ *
+ * Issue guest-fsfreeze-thaw command to guest agent,
+ * which unfreezes all mounted file systems and returns
+ * number of thawed file systems on success.
+ *
+ * Returns: number of file system thawed on success,
+ *          -1 on error.
+ */
+int qemuAgentFSThaw(qemuAgentPtr mon)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    cmd = qemuAgentMakeCommand("guest-fsfreeze-thaw", NULL);
+
+    if (!cmd)
+        return -1;
+
+    if (qemuAgentCommand(mon, cmd, &reply) < 0 ||
+        qemuAgentCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    if (virJSONValueObjectGetNumberInt(reply, "return", &ret) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("malformed return value"));
+    }
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
