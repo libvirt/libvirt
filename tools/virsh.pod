@@ -2046,7 +2046,8 @@ used to represent properties of snapshots.
 =over 4
 
 =item B<snapshot-create> I<domain> [I<xmlfile>] {[I<--redefine> [I<--current>]]
-| [I<--no-metadata>] [I<--halt>] [I<--disk-only>] [I<--reuse-external]}
+| [I<--no-metadata>] [I<--halt>] [I<--disk-only>] [I<--reuse-external]
+[I<--quiesce>]}
 
 Create a snapshot for domain I<domain> with the properties specified in
 I<xmlfile>.  Normally, the only properties settable for a domain snapshot
@@ -2088,6 +2089,11 @@ external snapshot with a destination of an existing file, then the
 existing file is truncated and reused; otherwise, a snapshot is refused
 to avoid losing contents of the existing files.
 
+If I<--quiesce> is specified, libvirt will try to use guest agent
+to freeze and unfreeze domain's mounted file systems. However,
+if domain has no guest agent, snapshot creation will fail.
+Currently, this requires I<--disk-only> to be passed as well.
+
 Existence of snapshot metadata will prevent attempts to B<undefine>
 a persistent domain.  However, for transient domains, snapshot
 metadata is silently lost when the domain quits running (whether
@@ -2095,7 +2101,8 @@ by command such as B<destroy> or by internal guest action).
 
 =item B<snapshot-create-as> I<domain> {[I<--print-xml>]
 | [I<--no-metadata>] [I<--halt>] [I<--reuse-existing>]} [I<name>]
-[I<description>] [I<--disk-only> [[I<--diskspec>] B<diskspec>]...]
+[I<description>] [I<--disk-only> [I<--quiesce>]
+[[I<--diskspec>] B<diskspec>]...]
 
 Create a snapshot for domain I<domain> with the given <name> and
 <description>; if either value is omitted, libvirt will choose a
@@ -2122,6 +2129,11 @@ If I<--reuse-external> is specified, and the domain XML or I<diskspec>
 option requests an external snapshot with a destination of an existing
 file, then the existing file is truncated and reused; otherwise, a
 snapshot is refused to avoid losing contents of the existing files.
+
+If I<--quiesce> is specified, libvirt will try to use guest agent
+to freeze and unfreeze domain's mounted file systems. However,
+if domain has no guest agent, snapshot creation will fail.
+Currently, this requires I<--disk-only> to be passed as well.
 
 If I<--no-metadata> is specified, then the snapshot data is created,
 but any metadata is immediately discarded (that is, libvirt does not

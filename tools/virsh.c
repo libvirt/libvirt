@@ -14662,6 +14662,7 @@ static const vshCmdOptDef opts_snapshot_create[] = {
     {"halt", VSH_OT_BOOL, 0, N_("halt domain after snapshot is created")},
     {"disk-only", VSH_OT_BOOL, 0, N_("capture disk state but not vm state")},
     {"reuse-external", VSH_OT_BOOL, 0, N_("reuse any existing external files")},
+    {"quiesce", VSH_OT_BOOL, 0, N_("quiesce guest's file systems")},
     {NULL, 0, 0, NULL}
 };
 
@@ -14686,6 +14687,8 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY;
     if (vshCommandOptBool(cmd, "reuse-external"))
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT;
+    if (vshCommandOptBool(cmd, "quiesce"))
+        flags |= VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -14795,6 +14798,7 @@ static const vshCmdOptDef opts_snapshot_create_as[] = {
     {"halt", VSH_OT_BOOL, 0, N_("halt domain after snapshot is created")},
     {"disk-only", VSH_OT_BOOL, 0, N_("capture disk state but not vm state")},
     {"reuse-external", VSH_OT_BOOL, 0, N_("reuse any existing external files")},
+    {"quiesce", VSH_OT_BOOL, 0, N_("quiesce guest's file systems")},
     {"diskspec", VSH_OT_ARGV, 0,
      N_("disk attributes: disk[,snapshot=type][,driver=type][,file=name]")},
     {NULL, 0, 0, NULL}
@@ -14820,6 +14824,8 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY;
     if (vshCommandOptBool(cmd, "reuse-external"))
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT;
+    if (vshCommandOptBool(cmd, "quiesce"))
+        flags |= VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
