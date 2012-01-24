@@ -21,8 +21,8 @@
     <disk type='file' device='cdrom'>
       <source file='/root/boot.iso'/>
       <target dev='hdc' bus='ide'/>
-      <boot order='1'/>
       <readonly/>
+      <boot order='1'/>
       <address type='drive' controller='0' bus='1' unit='0'/>
     </disk>
     <disk type='network' device='disk'>

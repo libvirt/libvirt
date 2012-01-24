@@ -67,6 +67,8 @@ typedef enum {
    VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET = (1<<17),
    /* dump/parse original states of host PCI device */
    VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES = (1<<18),
+   VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM = (1<<19),
+   VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT = (1<<20),
 } virDomainXMLInternalFlags;
 
 VIR_ENUM_IMPL(virDomainTaint, VIR_DOMAIN_TAINT_LAST,
@@ -1909,6 +1911,9 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
                           virDomainDeviceInfoPtr info,
                           unsigned int flags)
 {
+    if ((flags & VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) && info->bootIndex)
+        virBufferAsprintf(buf, "      <boot order='%d'/>\n", info->bootIndex);
+
     if (info->alias &&
         !(flags & VIR_DOMAIN_XML_INACTIVE)) {
         virBufferAsprintf(buf, "      <alias name='%s'/>\n", info->alias);
@@ -1917,6 +1922,18 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
     if (info->mastertype == VIR_DOMAIN_CONTROLLER_MASTER_USB) {
         virBufferAsprintf(buf, "      <master startport='%d'/>\n",
                           info->master.usb.startport);
+    }
+
+    if ((flags & VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) && info->rombar) {
+        const char *rombar
+            = virDomainPciRombarModeTypeToString(info->rombar);
+        if (!rombar) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("unexpected rom bar value %d"),
+                                 info->rombar);
+            return -1;
+        }
+        virBufferAsprintf(buf, "      <rom bar='%s'/>\n", rombar);
     }
 
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
@@ -2267,11 +2284,56 @@ cleanup:
     return ret;
 }
 
+static int
+virDomainDeviceBootParseXML(xmlNodePtr node,
+                            int *bootIndex,
+                            virBitmapPtr bootMap)
+{
+    char *order;
+    int boot;
+    int ret = -1;
+
+    order = virXMLPropString(node, "order");
+    if (!order) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                            "%s", _("missing boot order attribute"));
+        goto cleanup;
+    } else if (virStrToLong_i(order, NULL, 10, &boot) < 0 ||
+               boot <= 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                _("incorrect boot order '%s', expecting positive integer"),
+                order);
+        goto cleanup;
+    }
+
+    if (bootMap) {
+        bool set;
+        if (virBitmapGetBit(bootMap, boot - 1, &set) < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("boot orders have to be contiguous and starting from 1"));
+            goto cleanup;
+        } else if (set) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                    _("boot order %d used for more than one device"), boot);
+            goto cleanup;
+        }
+        ignore_value(virBitmapSetBit(bootMap, boot - 1));
+    }
+
+    *bootIndex = boot;
+    ret = 0;
+
+cleanup:
+    VIR_FREE(order);
+    return ret;
+}
+
 /* Parse the XML definition for a device address
  * @param node XML nodeset to parse for device address definition
  */
 static int
 virDomainDeviceInfoParseXML(xmlNodePtr node,
+                            virBitmapPtr bootMap,
                             virDomainDeviceInfoPtr info,
                             unsigned int flags)
 {
@@ -2279,6 +2341,8 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
     xmlNodePtr address = NULL;
     xmlNodePtr master = NULL;
     xmlNodePtr alias = NULL;
+    xmlNodePtr boot = NULL;
+    xmlNodePtr rom = NULL;
     char *type = NULL;
     int ret = -1;
 
@@ -2297,6 +2361,14 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
             } else if (master == NULL &&
                        xmlStrEqual(cur->name, BAD_CAST "master")) {
                 master = cur;
+            } else if (boot == NULL && bootMap &&
+                       (flags & VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) &&
+                       xmlStrEqual(cur->name, BAD_CAST "boot")) {
+                boot = cur;
+            } else if (rom == NULL &&
+                       (flags & VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) &&
+                       xmlStrEqual(cur->name, BAD_CAST "rom")) {
+                rom = cur;
             }
         }
         cur = cur->next;
@@ -2309,6 +2381,27 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
         info->mastertype = VIR_DOMAIN_CONTROLLER_MASTER_USB;
         if (virDomainDeviceUSBMasterParseXML(master, &info->master.usb) < 0)
             goto cleanup;
+    }
+
+    if (boot) {
+        if (virDomainDeviceBootParseXML(boot, &info->bootIndex, bootMap))
+            goto cleanup;
+    }
+
+    if (rom) {
+        char *rombar = virXMLPropString(rom, "bar");
+        if (!rombar) {
+            virDomainReportError(VIR_ERR_XML_ERROR,
+                                 "%s", _("missing rom bar attribute"));
+            goto cleanup;
+        }
+        if ((info->rombar = virDomainPciRombarModeTypeFromString(rombar)) <= 0) {
+            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                 _("unknown rom bar value '%s'"), rombar);
+            VIR_FREE(rombar);
+            goto cleanup;
+        }
+        VIR_FREE(rombar);
     }
 
     if (!address)
@@ -2373,50 +2466,6 @@ cleanup:
     if (ret == -1)
         VIR_FREE(info->alias);
     VIR_FREE(type);
-    return ret;
-}
-
-static int
-virDomainDeviceBootParseXML(xmlNodePtr node,
-                            int *bootIndex,
-                            virBitmapPtr bootMap)
-{
-    char *order;
-    int boot;
-    int ret = -1;
-
-    order = virXMLPropString(node, "order");
-    if (!order) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                            "%s", _("missing boot order attribute"));
-        goto cleanup;
-    } else if (virStrToLong_i(order, NULL, 10, &boot) < 0 ||
-               boot <= 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                _("incorrect boot order '%s', expecting positive integer"),
-                order);
-        goto cleanup;
-    }
-
-    if (bootMap) {
-        bool set;
-        if (virBitmapGetBit(bootMap, boot - 1, &set) < 0) {
-            virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("boot orders have to be contiguous and starting from 1"));
-            goto cleanup;
-        } else if (set) {
-            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                    _("boot order %d used for more than one device"), boot);
-            goto cleanup;
-        }
-        ignore_value(virBitmapSetBit(bootMap, boot - 1));
-    }
-
-    *bootIndex = boot;
-    ret = 0;
-
-cleanup:
-    VIR_FREE(order);
     return ret;
 }
 
@@ -3022,9 +3071,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                        (xmlStrEqual(cur->name, BAD_CAST "serial"))) {
                 serial = (char *)xmlNodeGetContent(cur);
             } else if (xmlStrEqual(cur->name, BAD_CAST "boot")) {
-                if (virDomainDeviceBootParseXML(cur, &def->info.bootIndex,
-                                                bootMap))
-                    goto error;
+                /* boot is parsed as part of virDomainDeviceInfoParseXML */
             }
         }
         cur = cur->next;
@@ -3230,7 +3277,8 @@ virDomainDiskDefParseXML(virCapsPtr caps,
         }
         def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
     } else {
-        if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+        if (virDomainDeviceInfoParseXML(node, bootMap, &def->info,
+                                        flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
             goto error;
     }
 
@@ -3390,7 +3438,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
         def->model = -1;
     }
 
-    if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
     switch (def->type) {
@@ -3556,7 +3604,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
     def->dst = target;
     target = NULL;
 
-    if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
 cleanup:
@@ -3791,9 +3839,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
                 /* Legacy back-compat. Don't add any more attributes here */
                 devaddr = virXMLPropString(cur, "devaddr");
             } else if (xmlStrEqual(cur->name, BAD_CAST "boot")) {
-                if (virDomainDeviceBootParseXML(cur, &def->info.bootIndex,
-                                                bootMap))
-                    goto error;
+                /* boot is parsed as part of virDomainDeviceInfoParseXML */
             } else if ((actual == NULL) &&
                        (flags & VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET) &&
                        (def->type == VIR_DOMAIN_NET_TYPE_NETWORK) &&
@@ -3829,7 +3875,8 @@ virDomainNetDefParseXML(virCapsPtr caps,
         }
         def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
     } else {
-        if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+        if (virDomainDeviceInfoParseXML(node, bootMap, &def->info,
+                                        flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
             goto error;
     }
 
@@ -4580,7 +4627,7 @@ virDomainChrDefParseXML(virCapsPtr caps,
         }
     }
 
-    if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
 cleanup:
@@ -4701,7 +4748,7 @@ virDomainSmartcardDefParseXML(xmlNodePtr node,
         goto error;
     }
 
-    if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
     if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID) {
@@ -4797,7 +4844,7 @@ virDomainInputDefParseXML(const char *ostype,
         }
     }
 
-    if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
     if (def->bus == VIR_DOMAIN_INPUT_BUS_USB &&
@@ -4847,7 +4894,7 @@ virDomainHubDefParseXML(xmlNodePtr node, unsigned int flags)
         goto error;
     }
 
-    if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
 cleanup:
@@ -5597,7 +5644,7 @@ virDomainSoundDefParseXML(const xmlNodePtr node,
         goto error;
     }
 
-    if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
 cleanup:
@@ -5651,7 +5698,7 @@ virDomainWatchdogDefParseXML(const xmlNodePtr node,
         }
     }
 
-    if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
 cleanup:
@@ -5691,7 +5738,7 @@ virDomainMemballoonDefParseXML(const xmlNodePtr node,
         goto error;
     }
 
-    if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
 cleanup:
@@ -5940,7 +5987,7 @@ virDomainVideoDefParseXML(const xmlNodePtr node,
         def->heads = 1;
     }
 
-    if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
     VIR_FREE(type);
@@ -6230,23 +6277,9 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
             } else if (xmlStrEqual(cur->name, BAD_CAST "alias")) {
                 /* alias is parsed as part of virDomainDeviceInfoParseXML */
             } else if (xmlStrEqual(cur->name, BAD_CAST "boot")) {
-                if (virDomainDeviceBootParseXML(cur, &def->info.bootIndex,
-                                                bootMap))
-                    goto error;
+                /* boot is parsed as part of virDomainDeviceInfoParseXML */
             } else if (xmlStrEqual(cur->name, BAD_CAST "rom")) {
-                char *rombar = virXMLPropString(cur, "bar");
-                if (!rombar) {
-                    virDomainReportError(VIR_ERR_XML_ERROR,
-                                         "%s", _("missing rom bar attribute"));
-                    goto error;
-                }
-                if ((def->info.rombar = virDomainPciRombarModeTypeFromString(rombar)) <= 0) {
-                    virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                         _("unknown rom bar value '%s'"), rombar);
-                    VIR_FREE(rombar);
-                    goto error;
-                }
-                VIR_FREE(rombar);
+                /* rombar is parsed as part of virDomainDeviceInfoParseXML */
             } else {
                 virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                      _("unknown node %s"), cur->name);
@@ -6256,7 +6289,9 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
     }
 
     if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-        if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+        if (virDomainDeviceInfoParseXML(node, bootMap, &def->info,
+                                        flags  | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT
+                                        | VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) < 0)
             goto error;
     }
 
@@ -6340,7 +6375,7 @@ virDomainRedirdevDefParseXML(const xmlNodePtr node,
         def->source.chr.data.spicevmc = VIR_DOMAIN_CHR_SPICEVMC_USBREDIR;
     }
 
-    if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
     if (def->bus == VIR_DOMAIN_REDIRDEV_BUS_USB &&
@@ -10089,8 +10124,6 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "      </iotune>\n");
     }
 
-    if (def->info.bootIndex)
-        virBufferAsprintf(buf, "      <boot order='%d'/>\n", def->info.bootIndex);
     if (def->readonly)
         virBufferAddLit(buf, "      <readonly/>\n");
     if (def->shared)
@@ -10105,7 +10138,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferAdjustIndent(buf, -6);
     }
 
-    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+    if (virDomainDeviceInfoFormat(buf, &def->info,
+                                  flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
         return -1;
 
     virBufferAddLit(buf, "    </disk>\n");
@@ -10454,8 +10488,6 @@ virDomainNetDefFormat(virBufferPtr buf,
             return -1;
         virBufferAdjustIndent(buf, -6);
     }
-    if (def->info.bootIndex)
-        virBufferAsprintf(buf, "      <boot order='%d'/>\n", def->info.bootIndex);
 
     if (def->tune.sndbuf_specified) {
         virBufferAddLit(buf,   "      <tune>\n");
@@ -10473,7 +10505,8 @@ virDomainNetDefFormat(virBufferPtr buf,
         return -1;
     virBufferAdjustIndent(buf, -6);
 
-    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+    if (virDomainDeviceInfoFormat(buf, &def->info,
+                                  flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
         return -1;
 
     virBufferAddLit(buf, "    </interface>\n");
@@ -11305,23 +11338,10 @@ virDomainHostdevDefFormat(virBufferPtr buf,
 
     virBufferAddLit(buf, "      </source>\n");
 
-    if (def->info.bootIndex)
-        virBufferAsprintf(buf, "      <boot order='%d'/>\n", def->info.bootIndex);
-
-    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+    if (virDomainDeviceInfoFormat(buf, &def->info,
+                                  flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT
+                                  | VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) < 0)
         return -1;
-
-    if (def->info.rombar) {
-        const char *rombar
-            = virDomainPciRombarModeTypeToString(def->info.rombar);
-        if (!rombar) {
-            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                 _("unexpected rom bar value %d"),
-                                 def->info.rombar);
-            return -1;
-        }
-        virBufferAsprintf(buf, "      <rom bar='%s'/>\n", rombar);
-    }
 
     virBufferAddLit(buf, "    </hostdev>\n");
 
