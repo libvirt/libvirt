@@ -4518,7 +4518,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
      */
     for (i = 0 ; i < def->nnets ; i++) {
         virDomainNetDefPtr net = def->nets[i];
-        int bootIndex = net->bootIndex;
+        int bootIndex = net->info.bootIndex;
         if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
             int actualType = virDomainNetGetActualType(net);
             const char *brname;
@@ -4576,7 +4576,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
             net->data.ethernet.dev = brname;
             net->data.ethernet.ipaddr = ipaddr;
         }
-        net->bootIndex = bootIndex;
+        net->info.bootIndex = bootIndex;
     }
     for (i = 0 ; i < def->ngraphics ; i++) {
         if (def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&

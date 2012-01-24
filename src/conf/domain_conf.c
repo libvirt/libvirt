@@ -3022,7 +3022,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                        (xmlStrEqual(cur->name, BAD_CAST "serial"))) {
                 serial = (char *)xmlNodeGetContent(cur);
             } else if (xmlStrEqual(cur->name, BAD_CAST "boot")) {
-                if (virDomainDeviceBootParseXML(cur, &def->bootIndex,
+                if (virDomainDeviceBootParseXML(cur, &def->info.bootIndex,
                                                 bootMap))
                     goto error;
             }
@@ -3791,7 +3791,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
                 /* Legacy back-compat. Don't add any more attributes here */
                 devaddr = virXMLPropString(cur, "devaddr");
             } else if (xmlStrEqual(cur->name, BAD_CAST "boot")) {
-                if (virDomainDeviceBootParseXML(cur, &def->bootIndex,
+                if (virDomainDeviceBootParseXML(cur, &def->info.bootIndex,
                                                 bootMap))
                     goto error;
             } else if ((actual == NULL) &&
@@ -6230,7 +6230,7 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
             } else if (xmlStrEqual(cur->name, BAD_CAST "alias")) {
                 /* alias is parsed as part of virDomainDeviceInfoParseXML */
             } else if (xmlStrEqual(cur->name, BAD_CAST "boot")) {
-                if (virDomainDeviceBootParseXML(cur, &def->bootIndex,
+                if (virDomainDeviceBootParseXML(cur, &def->info.bootIndex,
                                                 bootMap))
                     goto error;
             } else if (xmlStrEqual(cur->name, BAD_CAST "rom")) {
@@ -6240,7 +6240,7 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
                                          "%s", _("missing rom bar attribute"));
                     goto error;
                 }
-                if ((def->rombar = virDomainPciRombarModeTypeFromString(rombar)) <= 0) {
+                if ((def->info.rombar = virDomainPciRombarModeTypeFromString(rombar)) <= 0) {
                     virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                          _("unknown rom bar value '%s'"), rombar);
                     VIR_FREE(rombar);
@@ -10089,8 +10089,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "      </iotune>\n");
     }
 
-    if (def->bootIndex)
-        virBufferAsprintf(buf, "      <boot order='%d'/>\n", def->bootIndex);
+    if (def->info.bootIndex)
+        virBufferAsprintf(buf, "      <boot order='%d'/>\n", def->info.bootIndex);
     if (def->readonly)
         virBufferAddLit(buf, "      <readonly/>\n");
     if (def->shared)
@@ -10454,8 +10454,8 @@ virDomainNetDefFormat(virBufferPtr buf,
             return -1;
         virBufferAdjustIndent(buf, -6);
     }
-    if (def->bootIndex)
-        virBufferAsprintf(buf, "      <boot order='%d'/>\n", def->bootIndex);
+    if (def->info.bootIndex)
+        virBufferAsprintf(buf, "      <boot order='%d'/>\n", def->info.bootIndex);
 
     if (def->tune.sndbuf_specified) {
         virBufferAddLit(buf,   "      <tune>\n");
@@ -11305,19 +11305,19 @@ virDomainHostdevDefFormat(virBufferPtr buf,
 
     virBufferAddLit(buf, "      </source>\n");
 
-    if (def->bootIndex)
-        virBufferAsprintf(buf, "      <boot order='%d'/>\n", def->bootIndex);
+    if (def->info.bootIndex)
+        virBufferAsprintf(buf, "      <boot order='%d'/>\n", def->info.bootIndex);
 
     if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;
 
-    if (def->rombar) {
+    if (def->info.rombar) {
         const char *rombar
-            = virDomainPciRombarModeTypeToString(def->rombar);
+            = virDomainPciRombarModeTypeToString(def->info.rombar);
         if (!rombar) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                  _("unexpected rom bar value %d"),
-                                 def->rombar);
+                                 def->info.rombar);
             return -1;
         }
         virBufferAsprintf(buf, "      <rom bar='%s'/>\n", rombar);

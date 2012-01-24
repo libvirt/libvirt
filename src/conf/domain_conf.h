@@ -82,6 +82,14 @@ enum virDomainDeviceAddressPciMulti {
     VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_LAST
 };
 
+enum virDomainPciRombarMode {
+    VIR_DOMAIN_PCI_ROMBAR_DEFAULT = 0,
+    VIR_DOMAIN_PCI_ROMBAR_ON,
+    VIR_DOMAIN_PCI_ROMBAR_OFF,
+
+    VIR_DOMAIN_PCI_ROMBAR_LAST
+};
+
 typedef struct _virDomainDevicePCIAddress virDomainDevicePCIAddress;
 typedef virDomainDevicePCIAddress *virDomainDevicePCIAddressPtr;
 struct _virDomainDevicePCIAddress {
@@ -159,6 +167,10 @@ struct _virDomainDeviceInfo {
     union {
         virDomainDeviceUSBMaster usb;
     } master;
+    /* rombar is only used for pci hostdev devices, and bootIndex only
+     * for disk, network interface, and hostdev devices */
+    int rombar;         /* enum virDomainPciRombarMode */
+    int bootIndex;
 };
 
 enum virDomainSeclabelType {
@@ -389,7 +401,6 @@ struct _virDomainDiskDef {
     int cachemode;
     int error_policy;  /* enum virDomainDiskErrorPolicy */
     int rerror_policy; /* enum virDomainDiskErrorPolicy */
-    int bootIndex;
     int iomode;
     int ioeventfd;
     int event_idx;
@@ -635,7 +646,6 @@ struct _virDomainNetDef {
     } tune;
     char *script;
     char *ifname;
-    int bootIndex;
     virDomainDeviceInfo info;
     char *filter;
     virNWFilterHashTablePtr filterparams;
@@ -1074,14 +1084,6 @@ enum virDomainHostdevSubsysType {
     VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST
 };
 
-enum virDomainPciRombarMode {
-    VIR_DOMAIN_PCI_ROMBAR_DEFAULT = 0,
-    VIR_DOMAIN_PCI_ROMBAR_ON,
-    VIR_DOMAIN_PCI_ROMBAR_OFF,
-
-    VIR_DOMAIN_PCI_ROMBAR_LAST
-};
-
 typedef struct _virDomainHostdevDef virDomainHostdevDef;
 typedef virDomainHostdevDef *virDomainHostdevDefPtr;
 struct _virDomainHostdevDef {
@@ -1108,9 +1110,7 @@ struct _virDomainHostdevDef {
             int dummy;
         } caps;
     } source;
-    int bootIndex;
     virDomainDeviceInfo info; /* Guest address */
-    int rombar;               /* enum virDomainPciRombarMode */
     virDomainHostdevOrigStates origstates;
 };
 

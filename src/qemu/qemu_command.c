@@ -2849,19 +2849,19 @@ qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev, const char *configfd,
     virBufferAsprintf(&buf, ",id=%s", dev->info.alias);
     if (configfd && *configfd)
         virBufferAsprintf(&buf, ",configfd=%s", configfd);
-    if (dev->bootIndex)
-        virBufferAsprintf(&buf, ",bootindex=%d", dev->bootIndex);
+    if (dev->info.bootIndex)
+        virBufferAsprintf(&buf, ",bootindex=%d", dev->info.bootIndex);
     if (qemuBuildDeviceAddressStr(&buf, &dev->info, qemuCaps) < 0)
         goto error;
 
-    if (dev->rombar) {
+    if (dev->info.rombar) {
         if (!qemuCapsGet(qemuCaps, QEMU_CAPS_PCI_ROMBAR)) {
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             "%s", _("rombar not supported in this QEMU binary"));
             goto error;
         }
 
-        switch (dev->rombar) {
+        switch (dev->info.rombar) {
         case VIR_DOMAIN_PCI_ROMBAR_OFF:
             virBufferAddLit(&buf, ",rombar=0");
             break;
@@ -4448,8 +4448,8 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             if (!emitBootindex)
                 bootindex = 0;
-            else if (disk->bootIndex)
-                bootindex = disk->bootIndex;
+            else if (disk->info.bootIndex)
+                bootindex = disk->info.bootIndex;
 
             if (withDeviceArg) {
                 if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
@@ -4643,7 +4643,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             bootNet = 0;
             if (!bootindex)
-                bootindex = net->bootIndex;
+                bootindex = net->info.bootIndex;
 
             /* VLANs are not used with -netdev, so don't record them */
             if (qemuCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
@@ -5576,7 +5576,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         virDomainHostdevDefPtr hostdev = def->hostdevs[i];
         char *devstr;
 
-        if (hostdev->bootIndex) {
+        if (hostdev->info.bootIndex) {
             if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
                 hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
                 qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
