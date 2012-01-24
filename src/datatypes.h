@@ -31,7 +31,7 @@
  * VIR_CONNECT_MAGIC:
  *
  * magic value used to protect the API when pointers to connection structures
- * are passed down by the uers.
+ * are passed down by the users.
  */
 # define VIR_CONNECT_MAGIC	0x4F23DEAD
 # define VIR_IS_CONNECT(obj)	((obj) && (obj)->magic==VIR_CONNECT_MAGIC)
