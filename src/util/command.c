@@ -1710,7 +1710,7 @@ virCommandProcessIO(virCommandPtr cmd)
         }
 
         for (i = 0; i < nfds ; i++) {
-            if (fds[i].revents & POLLIN &&
+            if (fds[i].revents & (POLLIN | POLLHUP | POLLERR) &&
                 (fds[i].fd == errfd || fds[i].fd == outfd)) {
                 char data[1024];
                 char **buf;
@@ -1751,7 +1751,7 @@ virCommandProcessIO(virCommandPtr cmd)
                 }
             }
 
-            if (fds[i].revents & POLLOUT &&
+            if (fds[i].revents & (POLLOUT | POLLERR) &&
                 fds[i].fd == infd) {
                 int done;
 
@@ -1775,19 +1775,6 @@ virCommandProcessIO(virCommandPtr cmd)
                         if (VIR_CLOSE(infd) < 0)
                             VIR_DEBUG("ignoring failed close on fd %d", tmpfd);
                     }
-                }
-            }
-
-            if (fds[i].revents & (POLLHUP | POLLERR)) {
-                if (fds[i].fd == errfd) {
-                    VIR_DEBUG("hangup on stderr");
-                    errfd = -1;
-                } else if (fds[i].fd == outfd) {
-                    VIR_DEBUG("hangup on stdout");
-                    outfd = -1;
-                } else {
-                    VIR_DEBUG("hangup on stdin");
-                    infd = -1;
                 }
             }
         }
