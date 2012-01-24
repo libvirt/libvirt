@@ -1055,12 +1055,13 @@ cleanup:
 
 
 static int
-qemudGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, int pid,
-                    int tid)
+qemudGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
+                    int pid, int tid)
 {
     char *proc;
     FILE *pidinfo;
     unsigned long long usertime, systime;
+    long rss;
     int cpu;
     int ret;
 
@@ -1077,6 +1078,8 @@ qemudGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, int pid,
             *cpuTime = 0;
         if (lastCpu)
             *lastCpu = 0;
+        if (vm_rss)
+            *vm_rss = 0;
         VIR_FREE(proc);
         return 0;
     }
@@ -1088,10 +1091,10 @@ qemudGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, int pid,
                /* pid -> stime */
                "%*d %*s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %llu %llu"
                /* cutime -> endcode */
-               "%*d %*d %*d %*d %*d %*u %*u %*d %*u %*u %*u %*u"
+               "%*d %*d %*d %*d %*d %*d %*u %*u %ld %*u %*u %*u"
                /* startstack -> processor */
                "%*u %*u %*u %*u %*u %*u %*u %*u %*u %*u %*d %d",
-               &usertime, &systime, &cpu) != 3) {
+               &usertime, &systime, &rss, &cpu) != 4) {
         VIR_FORCE_FCLOSE(pidinfo);
         VIR_WARN("cannot parse process status data");
         errno = -EINVAL;
@@ -1108,9 +1111,16 @@ qemudGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, int pid,
     if (lastCpu)
         *lastCpu = cpu;
 
+    /* We got pages
+     * We want kiloBytes
+     * _SC_PAGESIZE is page size in Bytes
+     * So calculate, but first lower the pagesize so we don't get overflow */
+    if (vm_rss)
+        *vm_rss = rss * (sysconf(_SC_PAGESIZE) >> 10);
 
-    VIR_DEBUG("Got status for %d/%d user=%llu sys=%llu cpu=%d",
-              pid, tid, usertime, systime, cpu);
+
+    VIR_DEBUG("Got status for %d/%d user=%llu sys=%llu cpu=%d rss=%ld",
+              pid, tid, usertime, systime, cpu, rss);
 
     VIR_FORCE_FCLOSE(pidinfo);
 
@@ -2135,7 +2145,7 @@ static int qemudDomainGetInfo(virDomainPtr dom,
     if (!virDomainObjIsActive(vm)) {
         info->cpuTime = 0;
     } else {
-        if (qemudGetProcessInfo(&(info->cpuTime), NULL, vm->pid, 0) < 0) {
+        if (qemudGetProcessInfo(&(info->cpuTime), NULL, NULL, vm->pid, 0) < 0) {
             qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
                             _("cannot read cputime for domain"));
             goto cleanup;
@@ -3717,6 +3727,7 @@ qemudDomainGetVcpus(virDomainPtr dom,
                 if (priv->vcpupids != NULL &&
                     qemudGetProcessInfo(&(info[i].cpuTime),
                                         &(info[i].cpu),
+                                        NULL,
                                         vm->pid,
                                         priv->vcpupids[i]) < 0) {
                     virReportSystemError(errno, "%s",
