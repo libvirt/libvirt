@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2011 Red Hat, Inc.
+ * Copyright (C) 2008-2012 Red Hat, Inc.
  * Copyright (C) 2008 IBM Corp.
  *
  * lxc_container.c: file description
@@ -119,6 +119,7 @@ static virCommandPtr lxcContainerBuildInitCmd(virDomainDefPtr vmDef)
 
     virCommandAddEnvString(cmd, "PATH=/bin:/sbin");
     virCommandAddEnvString(cmd, "TERM=linux");
+    virCommandAddEnvString(cmd, "container=lxc-libvirt");
     virCommandAddEnvPair(cmd, "LIBVIRT_LXC_UUID", uuidstr);
     virCommandAddEnvPair(cmd, "LIBVIRT_LXC_NAME", vmDef->name);
     if (vmDef->os.cmdline)
