@@ -884,11 +884,16 @@ typedef enum {
 
     /* Current balloon value (in KB). */
     VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON  = 6,
+
+    /* Resident Set Size of the process running the domain. This value
+     * is in kB */
+    VIR_DOMAIN_MEMORY_STAT_RSS             = 7,
+
     /*
      * The number of statistics supported by this version of the interface.
      * To add new statistics, add them to the enum and increase this value.
      */
-    VIR_DOMAIN_MEMORY_STAT_NR              = 7,
+    VIR_DOMAIN_MEMORY_STAT_NR              = 8,
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_MEMORY_STAT_LAST = VIR_DOMAIN_MEMORY_STAT_NR

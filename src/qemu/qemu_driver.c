@@ -8035,7 +8035,7 @@ qemudDomainMemoryStats (virDomainPtr dom,
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    unsigned int ret = -1;
+    int ret = -1;
 
     virCheckFlags(0, -1);
 
@@ -8054,14 +8054,27 @@ qemudDomainMemoryStats (virDomainPtr dom,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
         goto cleanup;
 
-    if (virDomainObjIsActive(vm)) {
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+    } else {
         qemuDomainObjPrivatePtr priv = vm->privateData;
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorGetMemoryStats(priv->mon, stats, nr_stats);
         qemuDomainObjExitMonitor(driver, vm);
-    } else {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is not running"));
+
+        if (ret >= 0 && ret < nr_stats) {
+            long rss;
+            if (qemudGetProcessInfo(NULL, NULL, &rss, vm->pid, 0) < 0) {
+                qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                            _("cannot get RSS for domain"));
+            } else {
+                stats[ret].tag = VIR_DOMAIN_MEMORY_STAT_RSS;
+                stats[ret].val = rss;
+                ret++;
+            }
+
+        }
     }
 
     if (qemuDomainObjEndJob(driver, vm) == 0)
