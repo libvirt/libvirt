@@ -210,6 +210,8 @@ mymain(void)
     DO_TEST_DIFFERENT("graphics-listen-network2");
     DO_TEST_DIFFERENT("graphics-spice-timeout");
 
+    DO_TEST_DIFFERENT("metadata");
+
     virCapabilitiesFree(driver.caps);
 
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);

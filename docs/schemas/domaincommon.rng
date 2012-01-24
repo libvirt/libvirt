@@ -26,6 +26,9 @@
           <ref name="description"/>
         </optional>
         <optional>
+          <ref name="metadata"/>
+        </optional>
+        <optional>
           <ref name="cpu"/>
         </optional>
         <optional>
@@ -2938,6 +2941,29 @@
           </optional>
           <empty/>
         </element>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="metadata">
+    <element name="metadata">
+      <zeroOrMore>
+        <ref name="customElement"/>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="customElement">
+    <element>
+      <anyName/>
+      <zeroOrMore>
+        <choice>
+          <attribute>
+            <anyName/>
+          </attribute>
+          <text/>
+          <ref name="customElement"/>
+        </choice>
       </zeroOrMore>
     </element>
   </define>

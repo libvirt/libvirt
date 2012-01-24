@@ -3556,6 +3556,26 @@ qemu-kvm -net nic,model=? /dev/null
       sub-element <code>label</code> are supported.
     </p>
 
+    <h3><a name="customMetadata">Custom metadata</a></h3>
+
+<pre>
+  ...
+  &lt;metadata&gt;
+    &lt;app1:foo xmlns:app1="http://app1.org/app1/"&gt;..&lt;/app1:foo&gt;
+    &lt;app2:bar xmlns:app2="http://app1.org/app2/"&gt;..&lt;/app2:bar&gt;
+  &lt;/metadata&gt;
+  ...</pre>
+
+    <dl>
+      <dt><code>metadata</code></dt>
+      <dd>The <code>metadata</code> node can be used by applications to
+      store custom metadata in the form of XML nodes/trees. Applications
+      must use custom namespaces on their XML nodes/trees, with only
+      one top-level element per namespace (if the application needs
+      structure, they should have sub-elements to their namespace
+      element). <span class="since">Since 0.9.10</span></dd>
+    </dl>
+
     <h2><a name="examples">Example configs</a></h2>
 
     <p>

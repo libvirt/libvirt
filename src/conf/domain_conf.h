@@ -1525,6 +1525,9 @@ struct _virDomainDef {
 
     void *namespaceData;
     virDomainXMLNamespace ns;
+
+    /* Application-specific custom metadata */
+    xmlNodePtr metadata;
 };
 
 enum virDomainTaintFlags {

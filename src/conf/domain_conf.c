@@ -1500,6 +1500,8 @@ void virDomainDefFree(virDomainDefPtr def)
     if (def->namespaceData && def->ns.free)
         (def->ns.free)(def->namespaceData);
 
+    xmlFreeNode(def->metadata);
+
     VIR_FREE(def);
 }
 
@@ -8072,6 +8074,11 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         def->os.smbios_mode = VIR_DOMAIN_SMBIOS_NONE; /* not present */
     }
 
+    /* Extract custom metadata */
+    if ((node = virXPathNode("./metadata[1]", ctxt)) != NULL) {
+        def->metadata = xmlCopyNode(node, 1);
+    }
+
     /* we have to make a copy of all of the callback pointers here since
      * we won't have the virCaps structure available during free
      */
@@ -8211,6 +8218,7 @@ virDomainDefParse(const char *xmlStr,
 {
     xmlDocPtr xml;
     virDomainDefPtr def = NULL;
+    int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
     if ((xml = virXMLParse(filename, xmlStr, _("(domain_definition)")))) {
         def = virDomainDefParseNode(caps, xml, xmlDocGetRootElement(xml),
@@ -8218,6 +8226,7 @@ virDomainDefParse(const char *xmlStr,
         xmlFreeDoc(xml);
     }
 
+    xmlKeepBlanksDefault(keepBlanksDefault);
     return def;
 }
 
@@ -8311,6 +8320,7 @@ virDomainObjParseFile(virCapsPtr caps,
 {
     xmlDocPtr xml;
     virDomainObjPtr obj = NULL;
+    int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
     if ((xml = virXMLParseFile(filename))) {
         obj = virDomainObjParseNode(caps, xml,
@@ -8319,6 +8329,7 @@ virDomainObjParseFile(virCapsPtr caps,
         xmlFreeDoc(xml);
     }
 
+    xmlKeepBlanksDefault(keepBlanksDefault);
     return obj;
 }
 
@@ -11833,6 +11844,30 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             goto cleanup;
     }
 
+    /* Custom metadata comes at the end */
+    if (def->metadata) {
+        xmlBufferPtr xmlbuf;
+        int oldIndentTreeOutput = xmlIndentTreeOutput;
+
+        /* Indentation on output requires that we previously set
+         * xmlKeepBlanksDefault to 0 when parsing; also, libxml does 2
+         * spaces per level of indentation of intermediate elements,
+         * but no leading indentation before the starting element.
+         * Thankfully, libxml maps what looks like globals into
+         * thread-local uses, so we are thread-safe.  */
+        xmlIndentTreeOutput = 1;
+        xmlbuf = xmlBufferCreate();
+        if (xmlNodeDump(xmlbuf, def->metadata->doc, def->metadata,
+                        virBufferGetIndent(buf, false) / 2 + 1, 1) < 0) {
+            xmlBufferFree(xmlbuf);
+            xmlIndentTreeOutput = oldIndentTreeOutput;
+            goto cleanup;
+        }
+        virBufferAsprintf(buf, "  %s\n", (char *) xmlBufferContent(xmlbuf));
+        xmlBufferFree(xmlbuf);
+        xmlIndentTreeOutput = oldIndentTreeOutput;
+    }
+
     virBufferAddLit(buf, "</domain>\n");
 
     if (virBufferError(buf))
@@ -12517,11 +12552,14 @@ virDomainSnapshotDefParseString(const char *xmlStr,
     struct timeval tv;
     int active;
     char *tmp;
+    int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
     xml = virXMLParseCtxt(NULL, xmlStr, _("(domain_snapshot)"), &ctxt);
     if (!xml) {
+        xmlKeepBlanksDefault(keepBlanksDefault);
         return NULL;
     }
+    xmlKeepBlanksDefault(keepBlanksDefault);
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
