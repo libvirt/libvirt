@@ -3125,6 +3125,10 @@ typedef enum {
                                                           system checkpoint */
     VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT   = (1 << 5), /* reuse any existing
                                                           external files */
+    VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE     = (1 << 6), /* use guest agent to
+                                                          quiesce all mounted
+                                                          file systems within
+                                                          the domain */
 } virDomainSnapshotCreateFlags;
 
 /* Take a snapshot of the current VM state */

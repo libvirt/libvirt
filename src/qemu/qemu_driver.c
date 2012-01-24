@@ -9461,6 +9461,56 @@ static int qemuDomainSnapshotIsAllowed(virDomainObjPtr vm)
     return 1;
 }
 
+static int
+qemuDomainSnapshotFSFreeze(struct qemud_driver *driver,
+                           virDomainObjPtr vm) {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int freezed;
+
+    if (priv->agentError) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("QEMU guest agent is not "
+                          "available due to an error"));
+        return -1;
+    }
+    if (!priv->agent) {
+        qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                        _("QEMU guest agent is not configured"));
+        return -1;
+    }
+
+    qemuDomainObjEnterAgent(driver, vm);
+    freezed = qemuAgentFSFreeze(priv->agent);
+    qemuDomainObjExitAgent(driver, vm);
+
+    return freezed;
+}
+
+static int
+qemuDomainSnapshotFSThaw(struct qemud_driver *driver,
+                         virDomainObjPtr vm) {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int thawed;
+
+    if (priv->agentError) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("QEMU guest agent is not "
+                          "available due to an error"));
+        return -1;
+    }
+    if (!priv->agent) {
+        qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                        _("QEMU guest agent is not configured"));
+        return -1;
+    }
+
+    qemuDomainObjEnterAgent(driver, vm);
+    thawed = qemuAgentFSThaw(priv->agent);
+    qemuDomainObjExitAgent(driver, vm);
+
+    return thawed;
+}
+
 /* The domain is expected to be locked and inactive. */
 static int
 qemuDomainSnapshotCreateInactive(struct qemud_driver *driver,
@@ -9773,6 +9823,12 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
 
 
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+        if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) &&
+            (qemuDomainSnapshotFSFreeze(driver, vm) < 0)) {
+            /* helper reported the error */
+            goto endjob;
+        }
+
         /* In qemu, snapshot_blkdev on a single disk will pause cpus,
          * but this confuses libvirt since notifications are not given
          * when qemu resumes.  And for multiple disks, libvirt must
@@ -9840,13 +9896,20 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
     }
 
 cleanup:
-    if (resume && virDomainObjIsActive(vm) &&
-        qemuProcessStartCPUs(driver, vm, conn,
-                             VIR_DOMAIN_RUNNING_UNPAUSED,
-                             QEMU_ASYNC_JOB_NONE) < 0 &&
-        virGetLastError() == NULL) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                        _("resuming after snapshot failed"));
+    if (resume && virDomainObjIsActive(vm)) {
+        if (qemuProcessStartCPUs(driver, vm, conn,
+                                 VIR_DOMAIN_RUNNING_UNPAUSED,
+                                 QEMU_ASYNC_JOB_NONE) < 0 &&
+            virGetLastError() == NULL) {
+            qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                            _("resuming after snapshot failed"));
+            goto endjob;
+        }
+
+        if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) &&
+            qemuDomainSnapshotFSThaw(driver, vm) < 0) {
+            /* helper reported the error */
+        }
     }
 
     if (vm) {
@@ -9888,7 +9951,15 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                   VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA |
                   VIR_DOMAIN_SNAPSHOT_CREATE_HALT |
                   VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY |
-                  VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT, NULL);
+                  VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE, NULL);
+
+    if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) &&
+        !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("quiesce requires disk-only"));
+        return NULL;
+    }
 
     if (((flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) &&
          !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) ||

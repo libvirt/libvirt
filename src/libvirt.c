@@ -16602,6 +16602,12 @@ virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
  * inconsistent (as if power had been pulled), and specifying this
  * with the VIR_DOMAIN_SNAPSHOT_CREATE_HALT flag risks data loss.
  *
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE, then the
+ * libvirt will attempt to use guest agent to freeze and thaw all
+ * file systems in use within domain OS. However, if the guest agent
+ * is not present, an error is thrown. Moreover, this flag requires
+ * VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY to be passed as well.
+ *
  * By default, if the snapshot involves external files, and any of the
  * destination files already exist as a regular file, the snapshot is
  * rejected to avoid losing contents of those files.  However, if
