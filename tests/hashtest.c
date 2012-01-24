@@ -583,7 +583,7 @@ testHashEqualCompValue(const void *value1, const void *value2)
 static int
 testHashEqual(const void *data ATTRIBUTE_UNUSED)
 {
-    virHashTablePtr hash1, hash2;
+    virHashTablePtr hash1, hash2 = NULL;
     int ret = -1;
     char keya[] = "a";
     char keyb[] = "b";
