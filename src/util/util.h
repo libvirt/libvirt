@@ -242,9 +242,6 @@ int virGetUserID(const char *name,
 int virGetGroupID(const char *name,
                   gid_t *gid) ATTRIBUTE_RETURN_CHECK;
 
-int virRandomInitialize(unsigned int seed) ATTRIBUTE_RETURN_CHECK;
-int virRandom(int max);
-
 char *virFileFindMountPoint(const char *type);
 
 void virFileWaitForDevices(void);

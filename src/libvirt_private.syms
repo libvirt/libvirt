@@ -1126,8 +1126,6 @@ virParseMacAddr;
 virParseNumber;
 virParseVersionString;
 virPipeReadUntilEOF;
-virRandom;
-virRandomInitialize;
 virSetBlocking;
 virSetCloseExec;
 virSetInherit;
@@ -1367,6 +1365,11 @@ virPidFileWrite;
 virPidFileWritePath;
 virPidFileDelete;
 virPidFileDeletePath;
+
+
+# virrandom.h
+virRandomBits;
+virRandomInitialize;
 
 
 # virsocketaddr.h

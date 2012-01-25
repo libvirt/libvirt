@@ -39,6 +39,7 @@
 #include "memory.h"
 #include "virterror_internal.h"
 #include "configmake.h"
+#include "virrandom.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 

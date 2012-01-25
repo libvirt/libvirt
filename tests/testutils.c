@@ -1,7 +1,7 @@
 /*
  * testutils.c: basic test utils
  *
- * Copyright (C) 2005-2011 Red Hat, Inc.
+ * Copyright (C) 2005-2012 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -34,6 +34,7 @@
 #include "buf.h"
 #include "logging.h"
 #include "command.h"
+#include "virrandom.h"
 
 #if TEST_OOM_TRACE
 # include <execinfo.h>

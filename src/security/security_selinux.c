@@ -32,6 +32,7 @@
 #include "hostusb.h"
 #include "storage_file.h"
 #include "virfile.h"
+#include "virrandom.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
@@ -216,8 +217,8 @@ SELinuxGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
         }
     } else {
         do {
-            c1 = virRandom(1024);
-            c2 = virRandom(1024);
+            c1 = virRandomBits(10);
+            c2 = virRandomBits(10);
 
             if ( c1 == c2 ) {
                 if (virAsprintf(&mcs, "s0:c%d", c1) < 0) {

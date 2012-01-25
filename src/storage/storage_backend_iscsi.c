@@ -42,6 +42,7 @@
 #include "logging.h"
 #include "virfile.h"
 #include "command.h"
+#include "virrandom.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -283,15 +284,8 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
         initiatoriqn, NULL
     };
 
-    if (virRandomInitialize(time(NULL) ^ getpid()) == -1) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                              _("Failed to initialize random generator "
-                                "when creating iscsi interface"));
-        goto out;
-    }
-
-    snprintf(temp_ifacename, sizeof(temp_ifacename), "libvirt-iface-%08x",
-             virRandom(1024 * 1024 * 1024));
+    snprintf(temp_ifacename, sizeof(temp_ifacename), "libvirt-iface-%08llx",
+             (unsigned long long)virRandomBits(30));
 
     VIR_DEBUG("Attempting to create interface '%s' with IQN '%s'",
               &temp_ifacename[0], initiatoriqn);

@@ -77,6 +77,7 @@
 #include "command.h"
 #include "nonblocking.h"
 #include "passfd.h"
+#include "virrandom.h"
 
 #ifndef NSIG
 # define NSIG 32
@@ -1853,9 +1854,9 @@ void virGenerateMacAddr(const unsigned char *prefix,
     addr[0] = prefix[0];
     addr[1] = prefix[1];
     addr[2] = prefix[2];
-    addr[3] = virRandom(256);
-    addr[4] = virRandom(256);
-    addr[5] = virRandom(256);
+    addr[3] = virRandomBits(8);
+    addr[4] = virRandomBits(8);
+    addr[5] = virRandomBits(8);
 }
 
 
@@ -2094,36 +2095,6 @@ int virKillProcess(pid_t pid, int sig)
 #else
     return kill(pid, sig);
 #endif
-}
-
-
-static char randomState[128];
-static struct random_data randomData;
-static virMutex randomLock;
-
-int virRandomInitialize(unsigned int seed)
-{
-    if (virMutexInit(&randomLock) < 0)
-        return -1;
-
-    if (initstate_r(seed,
-                    randomState,
-                    sizeof(randomState),
-                    &randomData) < 0)
-        return -1;
-
-    return 0;
-}
-
-int virRandom(int max)
-{
-    int32_t ret;
-
-    virMutexLock(&randomLock);
-    random_r(&randomData, &ret);
-    virMutexUnlock(&randomLock);
-
-    return (int) ((double)max * ((double)ret / (double)RAND_MAX));
 }
 
 

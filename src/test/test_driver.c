@@ -51,6 +51,7 @@
 #include "logging.h"
 #include "virfile.h"
 #include "virtypedparam.h"
+#include "virrandom.h"
 
 #define VIR_FROM_THIS VIR_FROM_TEST
 
@@ -5316,7 +5317,7 @@ testNodeDeviceCreateXML(virConnectPtr conn,
         if (caps->type != VIR_NODE_DEV_CAP_SCSI_HOST)
             continue;
 
-        caps->data.scsi_host.host = virRandom(1024);
+        caps->data.scsi_host.host = virRandomBits(10);
         caps = caps->next;
     }
 

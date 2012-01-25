@@ -40,6 +40,7 @@
 #include "logging.h"
 #include "memory.h"
 #include "virfile.h"
+#include "virrandom.h"
 
 #ifndef ENODATA
 # define ENODATA EIO
@@ -80,7 +81,7 @@ virUUIDGeneratePseudoRandomBytes(unsigned char *buf,
                                  int buflen)
 {
     while (buflen > 0) {
-        *buf++ = virRandom(256);
+        *buf++ = virRandomBits(8);
         buflen--;
     }
 

@@ -36,7 +36,6 @@
 #include "driver.h"
 
 #include "uuid.h"
-#include "util.h"
 #include "memory.h"
 #include "configmake.h"
 #include "intprops.h"
@@ -44,6 +43,7 @@
 #include "rpc/virnettlscontext.h"
 #include "command.h"
 #include "virnodesuspend.h"
+#include "virrandom.h"
 
 #ifndef WITH_DRIVER_MODULES
 # ifdef WITH_TEST
