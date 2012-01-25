@@ -1636,9 +1636,9 @@ cleanup:
 }
 
 
-static unsigned long virCgroupPidCode(const void *name)
+static uint32_t virCgroupPidCode(const void *name)
 {
-    return (unsigned long)name;
+    return (uint32_t)(intptr_t)name;
 }
 static bool virCgroupPidEqual(const void *namea, const void *nameb)
 {

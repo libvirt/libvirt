@@ -60,7 +60,7 @@ typedef int (*virHashSearcher) (const void *payload, const void *name,
  *
  * Returns the hash code
  */
-typedef unsigned long (*virHashKeyCode)(const void *name);
+typedef uint32_t (*virHashKeyCode)(const void *name);
 /**
  * virHashKeyEqual:
  * @namea: the first hash key
@@ -93,17 +93,17 @@ typedef void (*virHashKeyFree)(void *name);
 /*
  * Constructor and destructor.
  */
-virHashTablePtr virHashCreate(int size,
+virHashTablePtr virHashCreate(ssize_t size,
                               virHashDataFree dataFree);
-virHashTablePtr virHashCreateFull(int size,
+virHashTablePtr virHashCreateFull(ssize_t size,
                                   virHashDataFree dataFree,
                                   virHashKeyCode keyCode,
                                   virHashKeyEqual keyEqual,
                                   virHashKeyCopy keyCopy,
                                   virHashKeyFree keyFree);
 void virHashFree(virHashTablePtr table);
-int virHashSize(virHashTablePtr table);
-int virHashTableSize(virHashTablePtr table);
+ssize_t virHashSize(virHashTablePtr table);
+ssize_t virHashTableSize(virHashTablePtr table);
 
 /*
  * Add a new entry to the hash table.
@@ -168,8 +168,8 @@ bool virHashEqual(const virHashTablePtr table1,
 /*
  * Iterators
  */
-int virHashForEach(virHashTablePtr table, virHashIterator iter, void *data);
-int virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, const void *data);
+ssize_t virHashForEach(virHashTablePtr table, virHashIterator iter, void *data);
+ssize_t virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, const void *data);
 void *virHashSearch(virHashTablePtr table, virHashSearcher iter, const void *data);
 
 #endif                          /* ! __VIR_HASH_H__ */
