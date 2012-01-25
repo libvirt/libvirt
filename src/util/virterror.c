@@ -1228,7 +1228,7 @@ virErrorMsg(virErrorNumber error, const char *info)
  * virReportErrorHelper:
  *
  * @domcode: the virErrorDomain indicating where it's coming from
- * @errcode: the virErrorNumber code for the error
+ * @errorcode: the virErrorNumber code for the error
  * @filename: Source file error is dispatched from
  * @funcname: Function error is dispatched from
  * @linenr: Line number error is dispatched from
@@ -1239,7 +1239,7 @@ virErrorMsg(virErrorNumber error, const char *info)
  * ReportError
  */
 void virReportErrorHelper(int domcode,
-                          int errcode,
+                          int errorcode,
                           const char *filename,
                           const char *funcname,
                           size_t linenr,
@@ -1258,9 +1258,9 @@ void virReportErrorHelper(int domcode,
         errorMessage[0] = '\0';
     }
 
-    virerr = virErrorMsg(errcode, (errorMessage[0] ? errorMessage : NULL));
+    virerr = virErrorMsg(errorcode, (errorMessage[0] ? errorMessage : NULL));
     virRaiseErrorFull(filename, funcname, linenr,
-                      domcode, errcode, VIR_ERR_ERROR,
+                      domcode, errorcode, VIR_ERR_ERROR,
                       virerr, errorMessage, NULL,
                       -1, -1, virerr, errorMessage);
     errno = save_errno;
