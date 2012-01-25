@@ -32,7 +32,9 @@ typedef struct _virSecurityManager virSecurityManager;
 typedef virSecurityManager *virSecurityManagerPtr;
 
 virSecurityManagerPtr virSecurityManagerNew(const char *name,
-                                            bool allowDiskFormatProbing);
+                                            bool allowDiskFormatProbing,
+                                            bool defaultConfined,
+                                            bool requireConfined);
 
 virSecurityManagerPtr virSecurityManagerNewStack(virSecurityManagerPtr primary,
                                                  virSecurityManagerPtr secondary);
@@ -40,6 +42,8 @@ virSecurityManagerPtr virSecurityManagerNewStack(virSecurityManagerPtr primary,
 virSecurityManagerPtr virSecurityManagerNewDAC(uid_t user,
                                                gid_t group,
                                                bool allowDiskFormatProbing,
+                                               bool defaultConfined,
+                                               bool requireConfined,
                                                bool dynamicOwnership);
 
 void *virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr);
@@ -49,6 +53,8 @@ void virSecurityManagerFree(virSecurityManagerPtr mgr);
 const char *virSecurityManagerGetDOI(virSecurityManagerPtr mgr);
 const char *virSecurityManagerGetModel(virSecurityManagerPtr mgr);
 bool virSecurityManagerGetAllowDiskFormatProbing(virSecurityManagerPtr mgr);
+bool virSecurityManagerGetDefaultConfined(virSecurityManagerPtr mgr);
+bool virSecurityManagerGetRequireConfined(virSecurityManagerPtr mgr);
 
 int virSecurityManagerRestoreImageLabel(virSecurityManagerPtr mgr,
                                         virDomainDefPtr def,

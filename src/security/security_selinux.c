@@ -171,6 +171,7 @@ SELinuxGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     int c1 = 0;
     int c2 = 0;
     context_t ctx = NULL;
+    const char *range;
 
     if ((def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC) &&
         !def->seclabel.baselabel &&
@@ -201,7 +202,8 @@ SELinuxGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
         return rc;
     }
 
-    if (def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC) {
+    switch (def->seclabel.type) {
+    case VIR_DOMAIN_SECLABEL_STATIC:
         if (!(ctx = context_new(def->seclabel.label)) ) {
             virReportSystemError(errno,
                                  _("unable to allocate socket security context '%s'"),
@@ -209,13 +211,15 @@ SELinuxGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
             return rc;
         }
 
-        const char *range = context_range_get(ctx);
+        range = context_range_get(ctx);
         if (!range ||
             !(mcs = strdup(range))) {
             virReportOOMError();
             goto cleanup;
         }
-    } else {
+        break;
+
+    case VIR_DOMAIN_SECLABEL_DYNAMIC:
         do {
             c1 = virRandomBits(10);
             c2 = virRandomBits(10);
@@ -247,12 +251,26 @@ SELinuxGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                    _("cannot generate selinux context for %s"), mcs);
             goto cleanup;
         }
-    }
-    def->seclabel.imagelabel = SELinuxGenNewContext(default_image_context, mcs);
-    if (!def->seclabel.imagelabel)  {
+        break;
+
+    case VIR_DOMAIN_SECLABEL_NONE:
+        /* no op */
+        break;
+
+    default:
         virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("cannot generate selinux context for %s"), mcs);
+                               _("unexpected security label type '%s'"),
+                               virDomainSeclabelTypeToString(def->seclabel.type));
         goto cleanup;
+    }
+
+    if (!def->seclabel.norelabel) {
+        def->seclabel.imagelabel = SELinuxGenNewContext(default_image_context, mcs);
+        if (!def->seclabel.imagelabel)  {
+            virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("cannot generate selinux context for %s"), mcs);
+            goto cleanup;
+        }
     }
 
     if (!def->seclabel.model &&

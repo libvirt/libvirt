@@ -36,10 +36,14 @@
 struct _virSecurityManager {
     virSecurityDriverPtr drv;
     bool allowDiskFormatProbing;
+    bool defaultConfined;
+    bool requireConfined;
 };
 
 static virSecurityManagerPtr virSecurityManagerNewDriver(virSecurityDriverPtr drv,
-                                                         bool allowDiskFormatProbing)
+                                                         bool allowDiskFormatProbing,
+                                                         bool defaultConfined,
+                                                         bool requireConfined)
 {
     virSecurityManagerPtr mgr;
 
@@ -50,6 +54,8 @@ static virSecurityManagerPtr virSecurityManagerNewDriver(virSecurityDriverPtr dr
 
     mgr->drv = drv;
     mgr->allowDiskFormatProbing = allowDiskFormatProbing;
+    mgr->defaultConfined = defaultConfined;
+    mgr->requireConfined = requireConfined;
 
     if (drv->open(mgr) < 0) {
         virSecurityManagerFree(mgr);
@@ -64,7 +70,9 @@ virSecurityManagerPtr virSecurityManagerNewStack(virSecurityManagerPtr primary,
 {
     virSecurityManagerPtr mgr =
         virSecurityManagerNewDriver(&virSecurityDriverStack,
-                                    virSecurityManagerGetAllowDiskFormatProbing(primary));
+                                    virSecurityManagerGetAllowDiskFormatProbing(primary),
+                                    virSecurityManagerGetDefaultConfined(primary),
+                                    virSecurityManagerGetRequireConfined(primary));
 
     if (!mgr)
         return NULL;
@@ -78,11 +86,15 @@ virSecurityManagerPtr virSecurityManagerNewStack(virSecurityManagerPtr primary,
 virSecurityManagerPtr virSecurityManagerNewDAC(uid_t user,
                                                gid_t group,
                                                bool allowDiskFormatProbing,
+                                               bool defaultConfined,
+                                               bool requireConfined,
                                                bool dynamicOwnership)
 {
     virSecurityManagerPtr mgr =
         virSecurityManagerNewDriver(&virSecurityDriverDAC,
-                                    allowDiskFormatProbing);
+                                    allowDiskFormatProbing,
+                                    defaultConfined,
+                                    requireConfined);
 
     if (!mgr)
         return NULL;
@@ -95,13 +107,18 @@ virSecurityManagerPtr virSecurityManagerNewDAC(uid_t user,
 }
 
 virSecurityManagerPtr virSecurityManagerNew(const char *name,
-                                            bool allowDiskFormatProbing)
+                                            bool allowDiskFormatProbing,
+                                            bool defaultConfined,
+                                            bool requireConfined)
 {
     virSecurityDriverPtr drv = virSecurityDriverLookup(name);
     if (!drv)
         return NULL;
 
-    return virSecurityManagerNewDriver(drv, allowDiskFormatProbing);
+    return virSecurityManagerNewDriver(drv,
+                                       allowDiskFormatProbing,
+                                       defaultConfined,
+                                       requireConfined);
 }
 
 
@@ -147,6 +164,16 @@ virSecurityManagerGetModel(virSecurityManagerPtr mgr)
 bool virSecurityManagerGetAllowDiskFormatProbing(virSecurityManagerPtr mgr)
 {
     return mgr->allowDiskFormatProbing;
+}
+
+bool virSecurityManagerGetDefaultConfined(virSecurityManagerPtr mgr)
+{
+    return mgr->defaultConfined;
+}
+
+bool virSecurityManagerGetRequireConfined(virSecurityManagerPtr mgr)
+{
+    return mgr->requireConfined;
 }
 
 int virSecurityManagerRestoreImageLabel(virSecurityManagerPtr mgr,
@@ -248,6 +275,20 @@ int virSecurityManagerRestoreSavedStateLabel(virSecurityManagerPtr mgr,
 int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
                                virDomainDefPtr vm)
 {
+    if (vm->seclabel.type == VIR_DOMAIN_SECLABEL_DEFAULT) {
+        if (mgr->defaultConfined)
+            vm->seclabel.type = VIR_DOMAIN_SECLABEL_DYNAMIC;
+        else
+            vm->seclabel.type = VIR_DOMAIN_SECLABEL_NONE;
+    }
+
+    if ((vm->seclabel.type == VIR_DOMAIN_SECLABEL_NONE) &&
+        mgr->requireConfined) {
+        virSecurityReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Unconfined guests are not allowed on this host"));
+        return -1;
+    }
+
     if (mgr->drv->domainGenSecurityLabel)
         return mgr->drv->domainGenSecurityLabel(mgr, vm);
 

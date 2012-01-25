@@ -3539,16 +3539,18 @@ qemu-kvm -net nic,model=? /dev/null
 
     <p>
       The <code>seclabel</code> element allows control over the
-      operation of the security drivers. There are two basic
-      modes of operation, dynamic where libvirt automatically
-      generates a unique security label, or static where the
-      application/administrator chooses the labels. With dynamic
+      operation of the security drivers. There are three basic
+      modes of operation, 'dynamic' where libvirt automatically
+      generates a unique security label, 'static' where the
+      application/administrator chooses the labels, or 'none'
+      where confinement is disabled. With dynamic
       label generation, libvirt will always automatically
       relabel any resources associated with the virtual machine.
       With static label assignment, by default, the administrator
       or application must ensure labels are set correctly on any
       resources, however, automatic relabeling can be enabled
-      if desired.
+      if desired.  <span class="since">'dynamic' since 0.6.1, 'static'
+      since 0.6.2, and 'none' since 0.9.10.</span>
     </p>
 
     <p>
@@ -3570,7 +3572,16 @@ qemu-kvm -net nic,model=? /dev/null
   &lt;seclabel type='static' model='selinux' relabel='yes'&gt;
     &lt;label&gt;system_u:system_r:svirt_t:s0:c392,c662&lt;/label&gt;
   &lt;/seclabel&gt;
+
+  &lt;seclabel type='none'/&gt;
     </pre>
+
+    <p>
+      If no 'type' attribute is provided in the input XML, then
+      the security driver default setting will be used, which
+      may be either 'none' or 'dynamic'. If a 'baselabel' is set
+      but no 'type' is set, then the type is presumed to be 'dynamic'
+    </p>
 
     <p>
       When viewing the XML for a running guest with automatic
@@ -3581,9 +3592,9 @@ qemu-kvm -net nic,model=? /dev/null
     </p>
     <dl>
       <dt><code>type</code></dt>
-      <dd>Either <code>static</code> or <code>dynamic</code> to determine
-        whether libvirt automatically generates a unique security label
-        or not.
+      <dd>Either <code>static</code>, <code>dynamic</code> or <code>none</code>
+        to determine whether libvirt automatically generates a unique security
+        label or not.
       </dd>
       <dt><code>model</code></dt>
       <dd>A valid security model name, matching the currently

@@ -75,6 +75,8 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     int i;
 
     /* Setup critical defaults */
+    driver->securityDefaultConfined = true;
+    driver->securityRequireConfined = false;
     driver->dynamicOwnership = 1;
     driver->clearEmulatorCapabilities = 1;
 
@@ -194,6 +196,15 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
             return -1;
         }
     }
+
+    p = virConfGetValue (conf, "security_default_confined");
+    CHECK_TYPE ("security_default_confined", VIR_CONF_LONG);
+    if (p) driver->securityDefaultConfined = p->l;
+
+    p = virConfGetValue (conf, "security_require_confined");
+    CHECK_TYPE ("security_require_confined", VIR_CONF_LONG);
+    if (p) driver->securityRequireConfined = p->l;
+
 
     p = virConfGetValue (conf, "vnc_sasl");
     CHECK_TYPE ("vnc_sasl", VIR_CONF_LONG);

@@ -33,6 +33,8 @@ module Libvirtd_qemu =
                  | bool_entry "vnc_sasl"
                  | str_entry "vnc_sasl_dir"
                  | str_entry "security_driver"
+                 | bool_entry "security_default_confined"
+                 | bool_entry "security_require_confined"
                  | str_entry "user"
                  | str_entry "group"
                  | bool_entry "dynamic_ownership"

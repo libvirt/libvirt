@@ -90,6 +90,7 @@ src/secret/secret_driver.c
 src/security/security_apparmor.c
 src/security/security_dac.c
 src/security/security_driver.c
+src/security/security_manager.c
 src/security/security_selinux.c
 src/security/virt-aa-helper.c
 src/storage/parthelper.c

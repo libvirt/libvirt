@@ -564,6 +564,8 @@ VIR_ENUM_IMPL(virDomainCrashedReason, VIR_DOMAIN_CRASHED_LAST,
               "unknown")
 
 VIR_ENUM_IMPL(virDomainSeclabel, VIR_DOMAIN_SECLABEL_LAST,
+              "default",
+              "none",
               "dynamic",
               "static")
 
@@ -2585,13 +2587,15 @@ virSecurityLabelDefParseXML(virSecurityLabelDefPtr def,
                              "%s", _("missing security type"));
         goto error;
     }
+
     def->type = virDomainSeclabelTypeFromString(p);
     VIR_FREE(p);
-    if (def->type < 0) {
+    if (def->type <= 0) {
         virDomainReportError(VIR_ERR_XML_ERROR,
                              "%s", _("invalid security type"));
         goto error;
     }
+
     p = virXPathStringLimit("string(./seclabel/@relabel)",
                             VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
     if (p != NULL) {
@@ -2612,8 +2616,15 @@ virSecurityLabelDefParseXML(virSecurityLabelDefPtr def,
                                  "%s", _("dynamic label type must use resource relabeling"));
             goto error;
         }
+        if (def->type == VIR_DOMAIN_SECLABEL_NONE &&
+            !def->norelabel) {
+            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                 "%s", _("resource relabeling is not compatible with 'none' label type"));
+            goto error;
+        }
     } else {
-        if (def->type == VIR_DOMAIN_SECLABEL_STATIC)
+        if (def->type == VIR_DOMAIN_SECLABEL_STATIC ||
+            def->type == VIR_DOMAIN_SECLABEL_NONE)
             def->norelabel = true;
         else
             def->norelabel = false;
@@ -2648,12 +2659,16 @@ virSecurityLabelDefParseXML(virSecurityLabelDefPtr def,
         def->imagelabel = p;
     }
 
-    /* Only parse baselabel, for dynamic label */
-    if (def->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
+    /* Only parse baselabel, for dynamic or none label types */
+    if (def->type == VIR_DOMAIN_SECLABEL_DYNAMIC ||
+        def->type == VIR_DOMAIN_SECLABEL_NONE) {
         p = virXPathStringLimit("string(./seclabel/baselabel[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-        if (p != NULL)
+        if (p != NULL) {
             def->baselabel = p;
+            /* Forces none type to dynamic for back compat */
+            def->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
+        }
     }
 
     /* Only parse model, if static labelling, or a base
@@ -9923,24 +9938,32 @@ virDomainLifecycleDefFormat(virBufferPtr buf,
 }
 
 
-static int
-virSecurityLabelDefFormat(virBufferPtr buf, virSecurityLabelDefPtr def,
-                          unsigned int flags)
+static void
+virSecurityLabelDefFormat(virBufferPtr buf, virSecurityLabelDefPtr def)
 {
     const char *sectype = virDomainSeclabelTypeToString(def->type);
-    int ret = -1;
 
     if (!sectype)
-        goto cleanup;
+        return;
 
-    if (def->type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
-        !def->baselabel &&
-        (flags & VIR_DOMAIN_XML_INACTIVE)) {
-        /* This is the default for inactive xml, so nothing to output.  */
-    } else {
-        virBufferAsprintf(buf, "<seclabel type='%s' model='%s' relabel='%s'>\n",
-                          sectype, def->model,
-                          def->norelabel ? "no" : "yes");
+    if (def->type == VIR_DOMAIN_SECLABEL_DEFAULT)
+        return;
+
+    virBufferAsprintf(buf, "<seclabel type='%s'",
+                      sectype);
+    virBufferEscapeString(buf, " model='%s'", def->model);
+
+    virBufferAsprintf(buf, " relabel='%s'",
+                      def->norelabel ? "no" : "yes");
+
+    if (def->type == VIR_DOMAIN_SECLABEL_NONE) {
+        virBufferAddLit(buf, "/>\n");
+        return;
+    }
+
+    if (def->label || def->imagelabel || def->baselabel) {
+        virBufferAddLit(buf, ">\n");
+
         virBufferEscapeString(buf, "  <label>%s</label>\n",
                               def->label);
         if (!def->norelabel)
@@ -9950,10 +9973,9 @@ virSecurityLabelDefFormat(virBufferPtr buf, virSecurityLabelDefPtr def,
             virBufferEscapeString(buf, "  <baselabel>%s</baselabel>\n",
                                   def->baselabel);
         virBufferAddLit(buf, "</seclabel>\n");
+    } else {
+        virBufferAddLit(buf, "/>\n");
     }
-    ret = 0;
-cleanup:
-    return ret;
 }
 
 
@@ -11957,12 +11979,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     virBufferAddLit(buf, "  </devices>\n");
 
-    if (def->seclabel.model) {
-        virBufferAdjustIndent(buf, 2);
-        if (virSecurityLabelDefFormat(buf, &def->seclabel, flags) < 0)
-            goto cleanup;
-        virBufferAdjustIndent(buf, -2);
-    }
+    virBufferAdjustIndent(buf, 2);
+    virSecurityLabelDefFormat(buf, &def->seclabel);
+    virBufferAdjustIndent(buf, -2);
 
     if (def->namespaceData && def->ns.format) {
         if ((def->ns.format)(buf, def->namespaceData) < 0)

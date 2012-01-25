@@ -210,7 +210,10 @@ static int
 qemuSecurityInit(struct qemud_driver *driver)
 {
     virSecurityManagerPtr mgr = virSecurityManagerNew(driver->securityDriverName,
-                                                      driver->allowDiskFormatProbing);
+                                                      driver->allowDiskFormatProbing,
+                                                      driver->securityDefaultConfined,
+                                                      driver->securityRequireConfined);
+
     if (!mgr)
         goto error;
 
@@ -218,6 +221,8 @@ qemuSecurityInit(struct qemud_driver *driver)
         virSecurityManagerPtr dac = virSecurityManagerNewDAC(driver->user,
                                                              driver->group,
                                                              driver->allowDiskFormatProbing,
+                                                             driver->securityDefaultConfined,
+                                                             driver->securityRequireConfined,
                                                              driver->dynamicOwnership);
         if (!dac)
             goto error;

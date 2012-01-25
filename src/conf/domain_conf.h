@@ -175,6 +175,8 @@ struct _virDomainDeviceInfo {
 };
 
 enum virDomainSeclabelType {
+    VIR_DOMAIN_SECLABEL_DEFAULT,
+    VIR_DOMAIN_SECLABEL_NONE,
     VIR_DOMAIN_SECLABEL_DYNAMIC,
     VIR_DOMAIN_SECLABEL_STATIC,
 

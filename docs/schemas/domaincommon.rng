@@ -129,6 +129,11 @@
             </optional>
           </interleave>
         </group>
+        <group>
+          <attribute name='type'>
+            <value>none</value>
+          </attribute>
+        </group>
       </choice>
     </element>
   </define>
