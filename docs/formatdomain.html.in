@@ -2275,8 +2275,8 @@
 <pre>
   ...
   &lt;devices&gt;
-    &lt;mac address='52:54:00:6d:90:01'&gt;
     &lt;interface type='mcast'&gt;
+      &lt;mac address='52:54:00:6d:90:01'&gt;
       &lt;source address='230.0.0.1' port='5558'/&gt;
     &lt;/interface&gt;
   &lt;/devices&gt;
@@ -2297,13 +2297,13 @@
   ...
   &lt;devices&gt;
     &lt;interface type='server'&gt;
-    &lt;mac address='52:54:00:22:c9:42'&gt;
+      &lt;mac address='52:54:00:22:c9:42'&gt;
       &lt;source address='192.168.0.1' port='5558'/&gt;
     &lt;/interface&gt;
     ...
     &lt;interface type='client'&gt;
-    &lt;mac address='52:54:00:8b:c9:51'&gt;
-    &lt;source address='192.168.0.1' port='5558'/&gt;
+      &lt;mac address='52:54:00:8b:c9:51'&gt;
+      &lt;source address='192.168.0.1' port='5558'/&gt;
     &lt;/interface&gt;
   &lt;/devices&gt;
   ...</pre>
@@ -2470,7 +2470,7 @@ qemu-kvm -net nic,model=? /dev/null
   ...</pre>
 
     <p>
-      For hypervisors which support this, you can set exact NIC which should
+      For hypervisors which support this, you can set a specific NIC to
       be used for network boot. The <code>order</code> attribute determines
       the order in which devices will be tried during boot sequence. The
       per-device <code>boot</code> elements cannot be used together with
