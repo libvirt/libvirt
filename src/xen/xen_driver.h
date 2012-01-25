@@ -20,7 +20,7 @@
 #  include "xen_inotify.h"
 # endif
 # include "domain_event.h"
-# include "hash.h"
+# include "virhash.h"
 
 # ifndef HAVE_WINSOCK2_H
 #  include <sys/un.h>

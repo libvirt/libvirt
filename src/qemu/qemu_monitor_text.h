@@ -28,7 +28,6 @@
 # include "internal.h"
 
 # include "qemu_monitor.h"
-# include "hash.h"
 
 int qemuMonitorTextIOProcess(qemuMonitorPtr mon,
                              const char *data,

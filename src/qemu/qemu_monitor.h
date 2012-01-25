@@ -29,7 +29,7 @@
 
 # include "domain_conf.h"
 # include "qemu_conf.h"
-# include "hash.h"
+# include "virhash.h"
 
 typedef struct _qemuMonitor qemuMonitor;
 typedef qemuMonitor *qemuMonitorPtr;

@@ -3,7 +3,8 @@
  * Description: This module implements the hash table and allocation and
  *              deallocation of domains and connections
  *
- * Copy: Copyright (C) 2005, 2011 Red Hat, Inc.
+ * Copyright (C) 2005-2012 Red Hat, Inc.
+ * Copyright (C) 2000 Bjorn Reese and Daniel Veillard.
  *
  * Author: Bjorn Reese <bjorn.reese@systematic.dk>
  *         Daniel Veillard <veillard@redhat.com>

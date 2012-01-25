@@ -6,8 +6,8 @@
 #include <time.h>
 
 #include "internal.h"
-#include "hash.h"
-#include "hashdata.h"
+#include "virhash.h"
+#include "virhashdata.h"
 #include "testutils.h"
 #include "memory.h"
 

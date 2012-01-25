@@ -1,9 +1,9 @@
 /*
- * hash.c: chained hash tables for domain and domain/connection deallocations
+ * virhash.c: chained hash tables for domain and domain/connection deallocatiosn
  *
  * Reference: Your favorite introductory book on algorithms
  *
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2005-2012 Red Hat, Inc.
  * Copyright (C) 2000 Bjorn Reese and Daniel Veillard.
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -15,7 +15,7 @@
  * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE AUTHORS AND
  * CONTRIBUTORS ACCEPT NO RESPONSIBILITY IN ANY CONCEIVABLE MANNER.
  *
- * Author: breese@users.sourceforge.net
+ * Author: Bjorn Reese <bjorn.reese@systematic.dk>
  *         Daniel Veillard <veillard@redhat.com>
  */
 
@@ -25,7 +25,7 @@
 #include <stdlib.h>
 
 #include "virterror_internal.h"
-#include "hash.h"
+#include "virhash.h"
 #include "memory.h"
 #include "logging.h"
 

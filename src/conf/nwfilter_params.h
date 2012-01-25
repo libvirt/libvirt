@@ -23,7 +23,7 @@
 #ifndef NWFILTER_PARAMS_H
 # define NWFILTER_PARAMS_H
 
-# include "hash.h"
+# include "virhash.h"
 # include "buf.h"
 
 enum virNWFilterVarValueType {

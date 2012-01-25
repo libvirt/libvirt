@@ -42,7 +42,7 @@
 #include "xend_internal.h"
 #include "xen_sxpr.h"
 #include "xen_xm.h"
-#include "hash.h"
+#include "virhash.h"
 #include "buf.h"
 #include "uuid.h"
 #include "util.h"

@@ -32,7 +32,7 @@
 # include "internal.h"
 
 # include "util.h"
-# include "hash.h"
+# include "virhash.h"
 # include "xml.h"
 # include "buf.h"
 # include "virsocketaddr.h"

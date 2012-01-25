@@ -95,7 +95,7 @@ EXTRA_DIST =		\
 check_PROGRAMS = virshtest conftest sockettest \
 	nodeinfotest qparamtest virbuftest \
 	commandtest commandhelper seclabeltest \
-	hashtest virnetmessagetest virnetsockettest ssh \
+	virhashtest virnetmessagetest virnetsockettest ssh \
 	utiltest virnettlscontexttest shunloadtest \
 	virtimetest
 
@@ -214,7 +214,7 @@ TESTS = virshtest \
 	sockettest \
 	commandtest \
 	seclabeltest \
-	hashtest \
+	virhashtest \
 	virnetmessagetest \
 	virnetsockettest \
 	virnettlscontexttest \
@@ -515,9 +515,9 @@ virbuftest_SOURCES = \
 	virbuftest.c testutils.h testutils.c
 virbuftest_LDADD = $(LDADDS)
 
-hashtest_SOURCES = \
-	hashtest.c hashdata.h testutils.h testutils.c
-hashtest_LDADD = $(LDADDS)
+virhashtest_SOURCES = \
+	virhashtest.c virhashdata.h testutils.h testutils.c
+virhashtest_LDADD = $(LDADDS)
 
 jsontest_SOURCES = \
 	jsontest.c testutils.h testutils.c

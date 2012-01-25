@@ -34,7 +34,7 @@
 # include "cpu_conf.h"
 # include "util.h"
 # include "threads.h"
-# include "hash.h"
+# include "virhash.h"
 # include "virsocketaddr.h"
 # include "nwfilter_params.h"
 # include "nwfilter_conf.h"

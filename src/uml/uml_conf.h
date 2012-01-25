@@ -32,7 +32,7 @@
 # include "virterror_internal.h"
 # include "threads.h"
 # include "command.h"
-# include "hash.h"
+# include "virhash.h"
 
 # define umlDebug(fmt, ...) do {} while(0)
 

@@ -32,7 +32,7 @@
 #include "cgroup.h"
 #include "logging.h"
 #include "virfile.h"
-#include "hash.h"
+#include "virhash.h"
 
 #define CGROUP_MAX_VAL 512
 
