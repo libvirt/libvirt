@@ -33,6 +33,7 @@
 # include "capabilities.h"
 # include "threads.h"
 # include "cgroup.h"
+# include "security/security_manager.h"
 # include "configmake.h"
 
 # define LXC_CONFIG_DIR SYSCONFDIR "/libvirt/lxc"
@@ -57,6 +58,11 @@ struct __lxc_driver {
 
     virDomainEventStatePtr domainEventState;
 
+    char *securityDriverName;
+    bool securityDefaultConfined;
+    bool securityRequireConfined;
+    virSecurityManagerPtr securityManager;
+
     /* Mapping of 'char *uuidstr' -> virConnectPtr
      * of guests which will be automatically killed
      * when the virConnectPtr is closed*/
@@ -64,7 +70,7 @@ struct __lxc_driver {
 };
 
 int lxcLoadDriverConfig(lxc_driver_t *driver);
-virCapsPtr lxcCapsInit(void);
+virCapsPtr lxcCapsInit(lxc_driver_t *driver);
 
 # define lxcError(code, ...)                                             \
     virReportErrorHelper(VIR_FROM_LXC, code, __FILE__,                   \

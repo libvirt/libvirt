@@ -1361,6 +1361,7 @@ cleanup:
 
 static int
 lxcControllerRun(virDomainDefPtr def,
+                 virSecurityManagerPtr securityDriver,
                  unsigned int nveths,
                  char **veths,
                  int monitor,
@@ -1515,6 +1516,7 @@ lxcControllerRun(virDomainDefPtr def,
         goto cleanup;
 
     if ((container = lxcContainerStart(def,
+                                       securityDriver,
                                        nveths,
                                        veths,
                                        control[1],
@@ -1623,11 +1625,13 @@ int main(int argc, char *argv[])
         { "veth",   1, NULL, 'v' },
         { "console", 1, NULL, 'c' },
         { "handshakefd", 1, NULL, 's' },
+        { "security", 1, NULL, 'S' },
         { "help", 0, NULL, 'h' },
         { 0, 0, 0, 0 },
     };
     int *ttyFDs = NULL;
     size_t nttyFDs = 0;
+    virSecurityManagerPtr securityDriver = NULL;
 
     if (setlocale(LC_ALL, "") == NULL ||
         bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
@@ -1639,7 +1643,7 @@ int main(int argc, char *argv[])
     while (1) {
         int c;
 
-        c = getopt_long(argc, argv, "dn:v:m:c:s:h",
+        c = getopt_long(argc, argv, "dn:v:m:c:s:h:S:",
                        options, NULL);
 
         if (c == -1)
@@ -1687,6 +1691,14 @@ int main(int argc, char *argv[])
             }
             break;
 
+        case 'S':
+            if (!(securityDriver = virSecurityManagerNew(optarg, false, false, false))) {
+                fprintf(stderr, "Cannot create security manager '%s'",
+                        optarg);
+                goto cleanup;
+            }
+            break;
+
         case 'h':
         case '?':
             fprintf(stderr, "\n");
@@ -1699,8 +1711,16 @@ int main(int argc, char *argv[])
             fprintf(stderr, "  -c FD, --console FD\n");
             fprintf(stderr, "  -v VETH, --veth VETH\n");
             fprintf(stderr, "  -s FD, --handshakefd FD\n");
+            fprintf(stderr, "  -S NAME, --security NAME\n");
             fprintf(stderr, "  -h, --help\n");
             fprintf(stderr, "\n");
+            goto cleanup;
+        }
+    }
+
+    if (securityDriver == NULL) {
+        if (!(securityDriver = virSecurityManagerNew("none", false, false, false))) {
+            fprintf(stderr, "%s: cannot initialize nop security manager", argv[0]);
             goto cleanup;
         }
     }
@@ -1724,7 +1744,7 @@ int main(int argc, char *argv[])
 
     virEventRegisterDefaultImpl();
 
-    if ((caps = lxcCapsInit()) == NULL)
+    if ((caps = lxcCapsInit(NULL)) == NULL)
         goto cleanup;
 
     if ((configFile = virDomainConfigFile(LXC_STATE_DIR,
@@ -1790,9 +1810,9 @@ int main(int argc, char *argv[])
         goto cleanup;
     }
 
-    rc = lxcControllerRun(def, nveths, veths, monitor, client,
+    rc = lxcControllerRun(def, securityDriver,
+                          nveths, veths, monitor, client,
                           ttyFDs, nttyFDs, handshakefd);
-
 
 cleanup:
     if (def)

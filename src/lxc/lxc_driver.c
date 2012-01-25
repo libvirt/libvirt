@@ -441,6 +441,9 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
+    if (virSecurityManagerVerify(driver->securityManager, def) < 0)
+        goto cleanup;
+
     if ((dupVM = virDomainObjIsDuplicate(&driver->domains, def, 0)) < 0)
         goto cleanup;
 
@@ -1394,7 +1397,21 @@ static int lxcMonitorClient(lxc_driver_t * driver,
         return -1;
     }
 
-    if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
+    if (virSecurityManagerSetSocketLabel(driver->securityManager, vm->def) < 0) {
+        VIR_ERROR(_("Failed to set security context for monitor for %s"),
+                  vm->def->name);
+        goto error;
+    }
+
+    fd = socket(PF_UNIX, SOCK_STREAM, 0);
+
+    if (virSecurityManagerClearSocketLabel(driver->securityManager, vm->def) < 0) {
+        VIR_ERROR(_("Failed to clear security context for monitor for %s"),
+                  vm->def->name);
+        goto error;
+    }
+
+    if (fd < 0) {
         virReportSystemError(errno, "%s",
                              _("Failed to create client socket"));
         goto error;
@@ -1435,6 +1452,16 @@ static int lxcVmTerminate(lxc_driver_t *driver,
         lxcError(VIR_ERR_INTERNAL_ERROR,
                  _("Invalid PID %d for container"), vm->pid);
         return -1;
+    }
+
+    virSecurityManagerRestoreAllLabel(driver->securityManager,
+                                      vm->def, false);
+    virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
+    /* Clear out dynamically assigned labels */
+    if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
+        VIR_FREE(vm->def->seclabel.model);
+        VIR_FREE(vm->def->seclabel.label);
+        VIR_FREE(vm->def->seclabel.imagelabel);
     }
 
     if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) == 0) {
@@ -1567,6 +1594,10 @@ lxcBuildControllerCmd(lxc_driver_t *driver,
         virCommandAddArgFormat(cmd, "%d", ttyFDs[i]);
         virCommandPreserveFD(cmd, ttyFDs[i]);
     }
+
+    if (driver->securityDriverName)
+        virCommandAddArgPair(cmd, "--security", driver->securityDriverName);
+
     virCommandAddArg(cmd, "--handshake");
     virCommandAddArgFormat(cmd, "%d", handshakefd);
     virCommandAddArg(cmd, "--background");
@@ -1761,6 +1792,24 @@ static int lxcVmStart(virConnectPtr conn,
         virReportOOMError();
         goto cleanup;
     }
+
+    /* If you are using a SecurityDriver with dynamic labelling,
+       then generate a security label for isolation */
+    VIR_DEBUG("Generating domain security label (if required)");
+    if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_DEFAULT)
+        vm->def->seclabel.type = VIR_DOMAIN_SECLABEL_NONE;
+
+    if (virSecurityManagerGenLabel(driver->securityManager, vm->def) < 0) {
+        virDomainAuditSecurityLabel(vm, false);
+        goto cleanup;
+    }
+    virDomainAuditSecurityLabel(vm, true);
+
+    VIR_DEBUG("Setting domain security labels");
+    if (virSecurityManagerSetAllLabel(driver->securityManager,
+                                      vm->def, NULL) < 0)
+        goto cleanup;
+
     for (i = 0 ; i < vm->def->nconsoles ; i++)
         ttyFDs[i] = -1;
 
@@ -1916,6 +1965,16 @@ cleanup:
     if (rc != 0) {
         VIR_FORCE_CLOSE(priv->monitor);
         virDomainConfVMNWFilterTeardown(vm);
+
+        virSecurityManagerRestoreAllLabel(driver->securityManager,
+                                          vm->def, false);
+        virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
+        /* Clear out dynamically assigned labels */
+        if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
+            VIR_FREE(vm->def->seclabel.model);
+            VIR_FREE(vm->def->seclabel.label);
+            VIR_FREE(vm->def->seclabel.imagelabel);
+        }
     }
     for (i = 0 ; i < nttyFDs ; i++)
         VIR_FORCE_CLOSE(ttyFDs[i]);
@@ -2040,6 +2099,9 @@ lxcDomainCreateAndStart(virConnectPtr conn,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
+    if (virSecurityManagerVerify(driver->securityManager, def) < 0)
+        goto cleanup;
+
     if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
         goto cleanup;
 
@@ -2081,6 +2143,102 @@ cleanup:
         lxcDomainEventQueue(driver, event);
     lxcDriverUnlock(driver);
     return dom;
+}
+
+
+static int lxcDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr seclabel)
+{
+    lxc_driver_t *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    lxcDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    memset(seclabel, 0, sizeof(*seclabel));
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainVirtTypeToString(vm->def->virtType)) {
+        lxcError(VIR_ERR_INTERNAL_ERROR,
+                 _("unknown virt type in domain definition '%d'"),
+                 vm->def->virtType);
+        goto cleanup;
+    }
+
+    /*
+     * Theoretically, the pid can be replaced during this operation and
+     * return the label of a different process.  If atomicity is needed,
+     * further validation will be required.
+     *
+     * Comment from Dan Berrange:
+     *
+     *   Well the PID as stored in the virDomainObjPtr can't be changed
+     *   because you've got a locked object.  The OS level PID could have
+     *   exited, though and in extreme circumstances have cycled through all
+     *   PIDs back to ours. We could sanity check that our PID still exists
+     *   after reading the label, by checking that our FD connecting to the
+     *   LXC monitor hasn't seen SIGHUP/ERR on poll().
+     */
+    if (virDomainObjIsActive(vm)) {
+        if (virSecurityManagerGetProcessLabel(driver->securityManager,
+                                              vm->def, vm->pid, seclabel) < 0) {
+            lxcError(VIR_ERR_INTERNAL_ERROR,
+                     "%s", _("Failed to get security label"));
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    lxcDriverUnlock(driver);
+    return ret;
+}
+
+static int lxcNodeGetSecurityModel(virConnectPtr conn,
+                                   virSecurityModelPtr secmodel)
+{
+    lxc_driver_t *driver = conn->privateData;
+    int ret = 0;
+
+    lxcDriverLock(driver);
+    memset(secmodel, 0, sizeof(*secmodel));
+
+    /* NULL indicates no driver, which we treat as
+     * success, but simply return no data in *secmodel */
+    if (driver->caps->host.secModel.model == NULL)
+        goto cleanup;
+
+    if (!virStrcpy(secmodel->model, driver->caps->host.secModel.model,
+                   VIR_SECURITY_MODEL_BUFLEN)) {
+        lxcError(VIR_ERR_INTERNAL_ERROR,
+                 _("security model string exceeds max %d bytes"),
+                 VIR_SECURITY_MODEL_BUFLEN - 1);
+        ret = -1;
+        goto cleanup;
+    }
+
+    if (!virStrcpy(secmodel->doi, driver->caps->host.secModel.doi,
+                   VIR_SECURITY_DOI_BUFLEN)) {
+        lxcError(VIR_ERR_INTERNAL_ERROR,
+                 _("security DOI string exceeds max %d bytes"),
+                 VIR_SECURITY_DOI_BUFLEN-1);
+        ret = -1;
+        goto cleanup;
+    }
+
+cleanup:
+    lxcDriverUnlock(driver);
+    return ret;
 }
 
 
@@ -2332,6 +2490,10 @@ lxcReconnectVM(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
                  lxcMonitorEvent,
                  vm, NULL)) < 0)
             goto error;
+
+        if (virSecurityManagerReserveLabel(driver->securityManager,
+                                           vm->def, vm->pid) < 0)
+            goto error;
     } else {
         vm->def->id = -1;
         VIR_FORCE_CLOSE(priv->monitor);
@@ -2345,6 +2507,27 @@ error:
     lxcVmTerminate(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
     virDomainAuditStop(vm, "failed");
     goto cleanup;
+}
+
+
+static int
+lxcSecurityInit(lxc_driver_t *driver)
+{
+    virSecurityManagerPtr mgr = virSecurityManagerNew(driver->securityDriverName,
+                                                      false,
+                                                      driver->securityDefaultConfined,
+                                                      driver->securityRequireConfined);
+    if (!mgr)
+        goto error;
+
+    driver->securityManager = mgr;
+
+    return 0;
+
+error:
+    VIR_ERROR(_("Failed to initialize security drivers"));
+    virSecurityManagerFree(mgr);
+    return -1;
 }
 
 
@@ -2408,7 +2591,10 @@ static int lxcStartup(int privileged)
     if (lxcLoadDriverConfig(lxc_driver) < 0)
         goto cleanup;
 
-    if ((lxc_driver->caps = lxcCapsInit()) == NULL)
+    if (lxcSecurityInit(lxc_driver) < 0)
+        goto cleanup;
+
+    if ((lxc_driver->caps = lxcCapsInit(lxc_driver)) == NULL)
         goto cleanup;
 
     lxc_driver->caps->privateDataAllocFunc = lxcDomainObjPrivateAlloc;
@@ -2500,6 +2686,7 @@ static int lxcShutdown(void)
     lxcProcessAutoDestroyShutdown(lxc_driver);
 
     virCapabilitiesFree(lxc_driver->caps);
+    virSecurityManagerFree(lxc_driver->securityManager);
     VIR_FREE(lxc_driver->configDir);
     VIR_FREE(lxc_driver->autostartDir);
     VIR_FREE(lxc_driver->stateDir);
@@ -3671,6 +3858,8 @@ static virDriver lxcDriver = {
     .domainGetBlkioParameters = lxcDomainGetBlkioParameters, /* 0.9.8 */
     .domainGetInfo = lxcDomainGetInfo, /* 0.4.2 */
     .domainGetState = lxcDomainGetState, /* 0.9.2 */
+    .domainGetSecurityLabel = lxcDomainGetSecurityLabel, /* 0.9.10 */
+    .nodeGetSecurityModel = lxcNodeGetSecurityModel, /* 0.9.10 */
     .domainGetXMLDesc = lxcDomainGetXMLDesc, /* 0.4.2 */
     .listDefinedDomains = lxcListDefinedDomains, /* 0.4.2 */
     .numOfDefinedDomains = lxcNumDefinedDomains, /* 0.4.2 */

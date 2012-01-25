@@ -91,6 +91,7 @@ typedef char lxc_message_t;
 typedef struct __lxc_child_argv lxc_child_argv_t;
 struct __lxc_child_argv {
     virDomainDefPtr config;
+    virSecurityManagerPtr securityDriver;
     unsigned int nveths;
     char **veths;
     int monitor;
@@ -1297,6 +1298,10 @@ static int lxcContainerChild( void *data )
         goto cleanup;
     }
 
+    VIR_DEBUG("Setting up security labeling");
+    if (virSecurityManagerSetProcessLabel(argv->securityDriver, vmDef) < 0)
+        goto cleanup;
+
     ret = 0;
 cleanup:
     VIR_FREE(ttyPath);
@@ -1359,6 +1364,7 @@ const char *lxcContainerGetAlt32bitArch(const char *arch)
  * Returns PID of container on success or -1 in case of error
  */
 int lxcContainerStart(virDomainDefPtr def,
+                      virSecurityManagerPtr securityDriver,
                       unsigned int nveths,
                       char **veths,
                       int control,
@@ -1370,7 +1376,8 @@ int lxcContainerStart(virDomainDefPtr def,
     int cflags;
     int stacksize = getpagesize() * 4;
     char *stack, *stacktop;
-    lxc_child_argv_t args = { def, nveths, veths, control,
+    lxc_child_argv_t args = { def, securityDriver,
+                              nveths, veths, control,
                               ttyPaths, nttyPaths, handshakefd};
 
     /* allocate a stack for the container */

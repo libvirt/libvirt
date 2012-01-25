@@ -1506,7 +1506,14 @@ libvirt_lxc_SOURCES =						\
 		$(DOMAIN_CONF_SOURCES)				\
 		$(SECRET_CONF_SOURCES)				\
 		$(CPU_CONF_SOURCES)				\
+		$(SECURITY_DRIVER_SOURCES)			\
 		$(NWFILTER_PARAM_CONF_SOURCES)
+if WITH_SECDRIVER_SELINUX
+libvirt_lxc_SOURCES += $(SECURITY_DRIVER_SELINUX_SOURCES)
+endif
+if WITH_SECDRIVER_APPARMOR
+libvirt_lxc_SOURCES += $(SECURITY_DRIVER_APPARMOR_SOURCES)
+endif
 libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(AM_LDFLAGS)
 libvirt_lxc_LDADD = $(CAPNG_LIBS) $(YAJL_LIBS) \
 		$(LIBXML_LIBS) $(NUMACTL_LIBS) $(THREAD_LIBS) \
@@ -1515,6 +1522,9 @@ libvirt_lxc_LDADD = $(CAPNG_LIBS) $(YAJL_LIBS) \
 		../gnulib/lib/libgnu.la
 if WITH_DTRACE
 libvirt_lxc_LDADD += probes.o
+endif
+if WITH_SECDRIVER_SELINUX
+libvirt_lxc_LDADD += $(SELINUX_LIBS)
 endif
 libvirt_lxc_CFLAGS =				\
 		$(LIBPARTED_CFLAGS)		\
@@ -1527,6 +1537,9 @@ libvirt_lxc_CFLAGS =				\
 if HAVE_LIBBLKID
 libvirt_lxc_CFLAGS += $(BLKID_CFLAGS)
 libvirt_lxc_LDADD += $(BLKID_LIBS)
+endif
+if WITH_SECDRIVER_SELINUX
+libvirt_lxc_CFLAGS += $(SELINUX_CFLAGS)
 endif
 endif
 endif

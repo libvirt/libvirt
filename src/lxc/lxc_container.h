@@ -25,6 +25,7 @@
 # define LXC_CONTAINER_H
 
 # include "lxc_conf.h"
+# include "security/security_manager.h"
 
 enum {
     LXC_CONTAINER_FEATURE_NET = (1 << 0),
@@ -49,6 +50,7 @@ int lxcContainerSendContinue(int control);
 int lxcContainerWaitForContinue(int control);
 
 int lxcContainerStart(virDomainDefPtr def,
+                      virSecurityManagerPtr securityDriver,
                       unsigned int nveths,
                       char **veths,
                       int control,

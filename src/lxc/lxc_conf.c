@@ -49,7 +49,7 @@ static int lxcDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED)
 
 
 /* Functions */
-virCapsPtr lxcCapsInit(void)
+virCapsPtr lxcCapsInit(lxc_driver_t *driver)
 {
     struct utsname utsname;
     virCapsPtr caps;
@@ -127,7 +127,29 @@ virCapsPtr lxcCapsInit(void)
     /* LXC Requires an emulator in the XML */
     virCapabilitiesSetEmulatorRequired(caps);
 
+    if (driver) {
+        /* Security driver data */
+        const char *doi, *model;
+
+        doi = virSecurityManagerGetDOI(driver->securityManager);
+        model = virSecurityManagerGetModel(driver->securityManager);
+        if (STRNEQ(model, "none")) {
+            if (!(caps->host.secModel.model = strdup(model)))
+                goto no_memory;
+            if (!(caps->host.secModel.doi = strdup(doi)))
+                goto no_memory;
+        }
+
+        VIR_DEBUG("Initialized caps for security driver \"%s\" with "
+                  "DOI \"%s\"", model, doi);
+    } else {
+        VIR_INFO("No driver, not initializing security driver");
+    }
+
     return caps;
+
+no_memory:
+    virReportOOMError();
 
 error:
     virCapabilitiesFree(caps);
@@ -139,6 +161,9 @@ int lxcLoadDriverConfig(lxc_driver_t *driver)
     char *filename;
     virConfPtr conf;
     virConfValuePtr p;
+
+    driver->securityDefaultConfined = false;
+    driver->securityRequireConfined = false;
 
     /* Set the container configuration directory */
     if ((driver->configDir = strdup(LXC_CONFIG_DIR)) == NULL)
@@ -161,13 +186,38 @@ int lxcLoadDriverConfig(lxc_driver_t *driver)
     if (!conf)
         goto done;
 
-    p = virConfGetValue(conf, "log_with_libvirtd");
-    if (p) {
-        if (p->type != VIR_CONF_LONG)
-            VIR_WARN("lxcLoadDriverConfig: invalid setting: log_with_libvirtd");
-        else
-            driver->log_libvirtd = p->l;
+#define CHECK_TYPE(name,typ) if (p && p->type != (typ)) {               \
+        lxcError(VIR_ERR_INTERNAL_ERROR,                                \
+                 "%s: %s: expected type " #typ,                         \
+                 filename, (name));                                     \
+        virConfFree(conf);                                              \
+        return -1;                                                      \
     }
+
+    p = virConfGetValue(conf, "log_with_libvirtd");
+    CHECK_TYPE ("log_with_libvirtd", VIR_CONF_LONG);
+    if (p) driver->log_libvirtd = p->l;
+
+    p = virConfGetValue (conf, "security_driver");
+    CHECK_TYPE ("security_driver", VIR_CONF_STRING);
+    if (p && p->str) {
+        if (!(driver->securityDriverName = strdup(p->str))) {
+            virReportOOMError();
+            virConfFree(conf);
+            return -1;
+        }
+    }
+
+    p = virConfGetValue (conf, "security_default_confined");
+    CHECK_TYPE ("security_default_confined", VIR_CONF_LONG);
+    if (p) driver->securityDefaultConfined = p->l;
+
+    p = virConfGetValue (conf, "security_require_confined");
+    CHECK_TYPE ("security_require_confined", VIR_CONF_LONG);
+    if (p) driver->securityRequireConfined = p->l;
+
+
+#undef CHECK_TYPE
 
     virConfFree(conf);
 

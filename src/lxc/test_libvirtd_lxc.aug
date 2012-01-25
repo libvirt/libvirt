@@ -13,6 +13,7 @@ module Test_libvirtd_lxc =
 # This is disabled by default, uncomment below to enable it.
 #
 log_with_libvirtd = 1
+security_driver = \"selinux\"
 "
 
    test Libvirtd_lxc.lns get conf =
@@ -29,3 +30,4 @@ log_with_libvirtd = 1
 { "#comment" = "This is disabled by default, uncomment below to enable it." }
 { "#comment" = "" }
 { "log_with_libvirtd" = "1" }
+{ "security_driver" = "selinux" }
