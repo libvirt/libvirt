@@ -171,6 +171,7 @@ useless_free_options =				\
   --name=xmlBufferFree				\
   --name=xmlFree				\
   --name=xmlFreeDoc				\
+  --name=xmlFreeNode				\
   --name=xmlXPathFreeContext			\
   --name=xmlXPathFreeObject
 
