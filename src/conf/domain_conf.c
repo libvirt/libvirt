@@ -11431,6 +11431,29 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     virBufferEscapeString(buf, "  <description>%s</description>\n",
                           def->description);
 
+    if (def->metadata) {
+        xmlBufferPtr xmlbuf;
+        int oldIndentTreeOutput = xmlIndentTreeOutput;
+
+        /* Indentation on output requires that we previously set
+         * xmlKeepBlanksDefault to 0 when parsing; also, libxml does 2
+         * spaces per level of indentation of intermediate elements,
+         * but no leading indentation before the starting element.
+         * Thankfully, libxml maps what looks like globals into
+         * thread-local uses, so we are thread-safe.  */
+        xmlIndentTreeOutput = 1;
+        xmlbuf = xmlBufferCreate();
+        if (xmlNodeDump(xmlbuf, def->metadata->doc, def->metadata,
+                        virBufferGetIndent(buf, false) / 2 + 1, 1) < 0) {
+            xmlBufferFree(xmlbuf);
+            xmlIndentTreeOutput = oldIndentTreeOutput;
+            goto cleanup;
+        }
+        virBufferAsprintf(buf, "  %s\n", (char *) xmlBufferContent(xmlbuf));
+        xmlBufferFree(xmlbuf);
+        xmlIndentTreeOutput = oldIndentTreeOutput;
+    }
+
     virBufferAsprintf(buf, "  <memory>%lu</memory>\n", def->mem.max_balloon);
     virBufferAsprintf(buf, "  <currentMemory>%lu</currentMemory>\n",
                       def->mem.cur_balloon);
@@ -11842,30 +11865,6 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     if (def->namespaceData && def->ns.format) {
         if ((def->ns.format)(buf, def->namespaceData) < 0)
             goto cleanup;
-    }
-
-    /* Custom metadata comes at the end */
-    if (def->metadata) {
-        xmlBufferPtr xmlbuf;
-        int oldIndentTreeOutput = xmlIndentTreeOutput;
-
-        /* Indentation on output requires that we previously set
-         * xmlKeepBlanksDefault to 0 when parsing; also, libxml does 2
-         * spaces per level of indentation of intermediate elements,
-         * but no leading indentation before the starting element.
-         * Thankfully, libxml maps what looks like globals into
-         * thread-local uses, so we are thread-safe.  */
-        xmlIndentTreeOutput = 1;
-        xmlbuf = xmlBufferCreate();
-        if (xmlNodeDump(xmlbuf, def->metadata->doc, def->metadata,
-                        virBufferGetIndent(buf, false) / 2 + 1, 1) < 0) {
-            xmlBufferFree(xmlbuf);
-            xmlIndentTreeOutput = oldIndentTreeOutput;
-            goto cleanup;
-        }
-        virBufferAsprintf(buf, "  %s\n", (char *) xmlBufferContent(xmlbuf));
-        xmlBufferFree(xmlbuf);
-        xmlIndentTreeOutput = oldIndentTreeOutput;
     }
 
     virBufferAddLit(buf, "</domain>\n");
