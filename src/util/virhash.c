@@ -1,5 +1,5 @@
 /*
- * virhash.c: chained hash tables for domain and domain/connection deallocatiosn
+ * virhash.c: chained hash tables
  *
  * Reference: Your favorite introductory book on algorithms
  *

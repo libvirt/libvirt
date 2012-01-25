@@ -46,7 +46,11 @@ int virRandomInitialize(uint32_t seed)
     return 0;
 }
 
-/*
+/* The algorithm of virRandomBits requires that RAND_MAX == 2^n-1 for
+ * some n; gnulib's random_r meets this property. */
+verify(((RAND_MAX + 1U) & RAND_MAX) == 0);
+
+/**
  * virRandomBits:
  * @nbits: Number of bits of randommess required
  *
@@ -60,10 +64,6 @@ uint64_t virRandomBits(int nbits)
     int bits_per_iter = count_one_bits(RAND_MAX);
     uint64_t ret = 0;
     int32_t bits;
-
-    /* This algorithm requires that RAND_MAX == 2^n-1 for some n;
-       gnulib's random_r meets this property. */
-    verify(((RAND_MAX + 1U) & RAND_MAX) == 0);
 
     virMutexLock(&randomLock);
 

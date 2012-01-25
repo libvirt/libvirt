@@ -78,6 +78,7 @@
 /tests/openvzutilstest
 /tests/qemuxmlnstest
 /tests/shunloadtest
+/tests/virhashtest
 /update.log
 Makefile
 Makefile.in
