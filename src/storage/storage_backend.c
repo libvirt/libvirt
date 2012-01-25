@@ -1327,6 +1327,10 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
     if (!STRPREFIX(pool->def->target.path, "/dev"))
         goto ret_strdup;
 
+    /* Logical pools are under /dev but already have stable paths */
+    if (pool->def->type == VIR_STORAGE_POOL_LOGICAL)
+        goto ret_strdup;
+
     /* We loop here because /dev/disk/by-{id,path} may not have existed
      * before we started this operation, so we have to give it some time to
      * get created.
