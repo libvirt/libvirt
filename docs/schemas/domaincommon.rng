@@ -2525,6 +2525,11 @@
               <empty/>
             </element>
           </optional>
+          <optional>
+            <element name="viridian">
+              <empty/>
+            </element>
+          </optional>
         </interleave>
       </element>
     </optional>
