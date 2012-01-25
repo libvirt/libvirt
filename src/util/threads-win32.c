@@ -336,7 +336,7 @@ int virThreadSelfID(void)
 /* For debugging use only; see comments in threads-pthread.c.  */
 int virThreadID(virThreadPtr thread)
 {
-    return (int)thread->thread;
+    return (intptr_t)thread->thread;
 }
 
 

@@ -1,7 +1,7 @@
 /*
  * logging.c: internal logging and debugging
  *
- * Copyright (C) 2008, 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2008, 2010-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -329,7 +329,7 @@ static void virLogDumpAllFD(const char *msg, int len) {
 
     for (i = 0; i < virLogNbOutputs;i++) {
         if (virLogOutputs[i].f == virLogOutputToFd) {
-            int fd = (long) virLogOutputs[i].data;
+            int fd = (intptr_t) virLogOutputs[i].data;
 
             if (fd >= 0) {
                 ignore_value (safewrite(fd, msg, len));
@@ -791,7 +791,7 @@ static int virLogOutputToFd(const char *category ATTRIBUTE_UNUSED,
                             const char *str,
                             void *data)
 {
-    int fd = (long) data;
+    int fd = (intptr_t) data;
     int ret;
     char *msg;
 
@@ -808,7 +808,7 @@ static int virLogOutputToFd(const char *category ATTRIBUTE_UNUSED,
 }
 
 static void virLogCloseFd(void *data) {
-    int fd = (long) data;
+    int fd = (intptr_t) data;
 
     VIR_FORCE_CLOSE(fd);
 }
@@ -826,7 +826,8 @@ static int virLogAddOutputToFile(int priority, const char *file) {
     fd = open(file, O_CREAT | O_APPEND | O_WRONLY, S_IRUSR | S_IWUSR);
     if (fd < 0)
         return -1;
-    if (virLogDefineOutput(virLogOutputToFd, virLogCloseFd, (void *)(long)fd,
+    if (virLogDefineOutput(virLogOutputToFd, virLogCloseFd,
+                           (void *)(intptr_t)fd,
                            priority, VIR_LOG_TO_FILE, file, 0) < 0) {
         VIR_FORCE_CLOSE(fd);
         return -1;
