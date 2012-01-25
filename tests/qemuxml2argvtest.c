@@ -663,6 +663,9 @@ mymain(void)
     DO_TEST("hostdev-pci-address", false, QEMU_CAPS_PCIDEVICE);
     DO_TEST("hostdev-pci-address-device", false,
             QEMU_CAPS_PCIDEVICE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("pci-rom", false,
+            QEMU_CAPS_PCIDEVICE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_PCI_ROMBAR);
 
     DO_TEST_FULL("restore-v1", "stdio", 7, false, false,
             QEMU_CAPS_MIGRATE_KVM_STDIO);

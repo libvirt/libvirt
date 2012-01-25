@@ -1515,6 +1515,37 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
 }
 
 static int
+qemuBuildRomStr(virBufferPtr buf,
+                virDomainDeviceInfoPtr info,
+                virBitmapPtr qemuCaps)
+{
+    if (info->rombar) {
+        if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            "%s", _("rombar is supported only for PCI devices"));
+            return -1;
+        }
+        if (!qemuCapsGet(qemuCaps, QEMU_CAPS_PCI_ROMBAR)) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            "%s", _("rombar not supported in this QEMU binary"));
+            return -1;
+        }
+
+        switch (info->rombar) {
+        case VIR_DOMAIN_PCI_ROMBAR_OFF:
+            virBufferAddLit(buf, ",rombar=0");
+            break;
+        case VIR_DOMAIN_PCI_ROMBAR_ON:
+            virBufferAddLit(buf, ",rombar=1");
+            break;
+        default:
+            break;
+        }
+    }
+    return 0;
+}
+
+static int
 qemuBuildIoEventFdStr(virBufferPtr buf,
                       enum virDomainIoEventFd use,
                       virBitmapPtr qemuCaps)
@@ -2502,6 +2533,8 @@ qemuBuildNicDevStr(virDomainNetDefPtr net,
                       net->mac[4], net->mac[5]);
     if (qemuBuildDeviceAddressStr(&buf, &net->info, qemuCaps) < 0)
         goto error;
+    if (qemuBuildRomStr(&buf, &net->info, qemuCaps) < 0)
+       goto error;
     if (bootindex && qemuCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX))
         virBufferAsprintf(&buf, ",bootindex=%d", bootindex);
 
@@ -2853,25 +2886,8 @@ qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev, const char *configfd,
         virBufferAsprintf(&buf, ",bootindex=%d", dev->info.bootIndex);
     if (qemuBuildDeviceAddressStr(&buf, &dev->info, qemuCaps) < 0)
         goto error;
-
-    if (dev->info.rombar) {
-        if (!qemuCapsGet(qemuCaps, QEMU_CAPS_PCI_ROMBAR)) {
-            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            "%s", _("rombar not supported in this QEMU binary"));
-            goto error;
-        }
-
-        switch (dev->info.rombar) {
-        case VIR_DOMAIN_PCI_ROMBAR_OFF:
-            virBufferAddLit(&buf, ",rombar=0");
-            break;
-        case VIR_DOMAIN_PCI_ROMBAR_ON:
-            virBufferAddLit(&buf, ",rombar=1");
-            break;
-        default:
-            break;
-        }
-    }
+    if (qemuBuildRomStr(&buf, &dev->info, qemuCaps) < 0)
+       goto error;
 
     if (virBufferError(&buf)) {
         virReportOOMError();

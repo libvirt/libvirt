@@ -1955,6 +1955,7 @@
       &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
       &lt;script path='vif-bridge'/&gt;
       &lt;boot order='1'/&gt;
+      &lt;rom bar='off'/&gt;
     &lt;/interface&gt;
   &lt;/devices&gt;
   ...</pre>
@@ -2481,6 +2482,32 @@ qemu-kvm -net nic,model=? /dev/null
       general boot elements in
       <a href="#elementsOSBIOS">BIOS bootloader</a> section.
       <span class="since">Since 0.8.8</span>
+    </p>
+
+    <h5><a name="elementsNICSROM">Interface ROM BIOS configuration</a></h5>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='network'&gt;
+      &lt;source network='default'/&gt;
+      &lt;target dev='vnet1'/&gt;
+      <b>&lt;rom bar='off'/&gt;</b>
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
+    <p>
+      For hypervisors which support this, you can change how a PCI Network
+      device's ROM is presented to the guest. The <code>bar</code>
+      attribute can be set to "on" or "off", and determines whether
+      or not the device's ROM will be visible in the guest's memory
+      map. (In PCI documentation, the "rombar" setting controls the
+      presence of the Base Address Register for the ROM). If no rom
+      bar is specified, the qemu default will be used (older
+      versions of qemu used a default of "off", while newer qemus
+      have a default of "on"). <span class="since">Since
+      0.9.10 (QEMU and KVM only)</span>
     </p>
 
     <h5><a name="elementQoS">Quality of service</a></h5>

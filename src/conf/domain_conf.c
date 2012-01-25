@@ -3876,7 +3876,8 @@ virDomainNetDefParseXML(virCapsPtr caps,
         def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
     } else {
         if (virDomainDeviceInfoParseXML(node, bootMap, &def->info,
-                                        flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
+                                        flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT
+                                        | VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) < 0)
             goto error;
     }
 
@@ -10506,7 +10507,8 @@ virDomainNetDefFormat(virBufferPtr buf,
     virBufferAdjustIndent(buf, -6);
 
     if (virDomainDeviceInfoFormat(buf, &def->info,
-                                  flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
+                                  flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT
+                                  | VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) < 0)
         return -1;
 
     virBufferAddLit(buf, "    </interface>\n");

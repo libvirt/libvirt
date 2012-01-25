@@ -1491,6 +1491,9 @@
         <ref name="deviceBoot"/>
       </optional>
       <optional>
+        <ref name="rom"/>
+      </optional>
+      <optional>
         <ref name="bandwidth"/>
       </optional>
     </interleave>
@@ -2348,15 +2351,7 @@
         <ref name="address"/>
       </optional>
       <optional>
-        <element name="rom">
-          <attribute name="bar">
-            <choice>
-              <value>on</value>
-              <value>off</value>
-            </choice>
-          </attribute>
-          <empty/>
-        </element>
+        <ref name="rom"/>
       </optional>
     </element>
   </define>
@@ -2818,6 +2813,18 @@
           <ref name="spaprvioaddress"/>
         </group>
       </choice>
+    </element>
+  </define>
+
+  <define name="rom">
+    <element name="rom">
+      <attribute name="bar">
+        <choice>
+          <value>on</value>
+          <value>off</value>
+        </choice>
+      </attribute>
+      <empty/>
     </element>
   </define>
 
