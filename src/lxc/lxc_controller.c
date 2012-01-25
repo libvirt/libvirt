@@ -52,6 +52,9 @@
 # define NUMA_VERSION1_COMPATIBILITY 1
 # include <numa.h>
 #endif
+#if HAVE_SELINUX
+# include <selinux/selinux.h>
+#endif
 
 #include "virterror_internal.h"
 #include "logging.h"
@@ -1433,6 +1436,10 @@ lxcControllerRun(virDomainDefPtr def,
      * marked as shared
      */
     if (root) {
+#if HAVE_SELINUX
+        security_context_t con;
+#endif
+        char *opts;
         VIR_DEBUG("Setting up private /dev/pts");
 
         if (!virFileExists(root->src)) {
@@ -1467,16 +1474,35 @@ lxcControllerRun(virDomainDefPtr def,
             goto cleanup;
         }
 
+#if HAVE_SELINUX
+        if (getfilecon(root->src, &con) < 0 &&
+            errno != ENOTSUP) {
+            virReportSystemError(errno,
+                                 _("Failed to query file context on %s"),
+                                 root->src);
+            goto cleanup;
+        }
+#endif
         /* XXX should we support gid=X for X!=5 for distros which use
          * a different gid for tty?  */
-        VIR_DEBUG("Mounting 'devpts' on %s", devpts);
-        if (mount("devpts", devpts, "devpts", 0,
-                  "newinstance,ptmxmode=0666,mode=0620,gid=5") < 0) {
+        if (virAsprintf(&opts, "newinstance,ptmxmode=0666,mode=0620,gid=5%s%s%s",
+                        con ? ",context=\"" : "",
+                        con ? (const char *)con : "",
+                        con ? "\"" : "") < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        VIR_DEBUG("Mount devpts on %s type=tmpfs flags=%x, opts=%s",
+                  devpts, MS_NOSUID, opts);
+        if (mount("devpts", devpts, "devpts", MS_NOSUID, opts) < 0) {
+            VIR_FREE(opts);
             virReportSystemError(errno,
                                  _("Failed to mount devpts on %s"),
                                  devpts);
             goto cleanup;
         }
+        VIR_FREE(opts);
 
         if (access(devptmx, R_OK) < 0) {
             VIR_WARN("Kernel does not support private devpts, using shared devpts");

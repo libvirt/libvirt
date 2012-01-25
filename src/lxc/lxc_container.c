@@ -36,6 +36,10 @@
 #include <unistd.h>
 #include <mntent.h>
 
+#if HAVE_SELINUX
+# include <selinux/selinux.h>
+#endif
+
 /* Yes, we want linux private one, for _syscall2() macro */
 #include <linux/unistd.h>
 
@@ -420,7 +424,6 @@ err:
 static int lxcContainerMountBasicFS(const char *srcprefix, bool pivotRoot)
 {
     const struct {
-        bool onlyPivotRoot;
         bool needPrefix;
         const char *src;
         const char *dst;
@@ -434,16 +437,19 @@ static int lxcContainerMountBasicFS(const char *srcprefix, bool pivotRoot)
          * mount point in the main OS becomes readonly too which is not what
          * we want. Hence some things have two entries here.
          */
-        { true, false, "devfs", "/dev", "tmpfs", "mode=755", MS_NOSUID },
-        { false, false, "proc", "/proc", "proc", NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV },
-        { false, false, "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND },
-        { false, false, "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
-        { false, true, "/sys", "/sys", NULL, NULL, MS_BIND },
-        { false, true, "/sys", "/sys", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
-        { false, true, "/selinux", "/selinux", NULL, NULL, MS_BIND },
-        { false, true, "/selinux", "/selinux", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
+        { false, "proc", "/proc", "proc", NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV },
+        { false, "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND },
+        { false, "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
+        { true, "/sys", "/sys", NULL, NULL, MS_BIND },
+        { true, "/sys", "/sys", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
+        { true, "/selinux", "/selinux", NULL, NULL, MS_BIND },
+        { true, "/selinux", "/selinux", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
     };
     int i, rc = -1;
+    char *opts = NULL;
+#if HAVE_SELINUX
+    security_context_t con;
+#endif
 
     VIR_DEBUG("Mounting basic filesystems %s pivotRoot=%d", NULLSTR(srcprefix), pivotRoot);
 
@@ -451,10 +457,8 @@ static int lxcContainerMountBasicFS(const char *srcprefix, bool pivotRoot)
         char *src = NULL;
         const char *srcpath = NULL;
 
-        VIR_DEBUG("Consider %s onlyPivotRoot=%d",
-                  mnts[i].src, mnts[i].onlyPivotRoot);
-        if (mnts[i].onlyPivotRoot && !pivotRoot)
-            continue;
+        VIR_DEBUG("Processing %s -> %s",
+                  mnts[i].src, mnts[i].dst);
 
         if (virFileMakePath(mnts[i].dst) < 0) {
             virReportSystemError(errno,
@@ -475,8 +479,10 @@ static int lxcContainerMountBasicFS(const char *srcprefix, bool pivotRoot)
 
         /* Skip if mount doesn't exist in source */
         if ((srcpath[0] == '/') &&
-            (access(srcpath, R_OK) < 0))
+            (access(srcpath, R_OK) < 0)) {
+            VIR_FREE(src);
             continue;
+        }
 
         VIR_DEBUG("Mount %s on %s type=%s flags=%x, opts=%s",
                   srcpath, mnts[i].dst, mnts[i].type, mnts[i].mflags, mnts[i].opts);
@@ -490,15 +496,47 @@ static int lxcContainerMountBasicFS(const char *srcprefix, bool pivotRoot)
         VIR_FREE(src);
     }
 
+    if (pivotRoot) {
+#if HAVE_SELINUX
+        if (getfilecon("/", &con) < 0 &&
+            errno != ENOTSUP) {
+            virReportSystemError(errno, "%s",
+                                 _("Failed to query file context on /"));
+            goto cleanup;
+        }
+#endif
+        /*
+         * tmpfs is limited to 64kb, since we only have device nodes in there
+         * and don't want to DOS the entire OS RAM usage
+         */
+        if (virAsprintf(&opts, "mode=755,size=65536%s%s%s",
+                        con ? ",context=\"" : "",
+                        con ? (const char *)con : "",
+                        con ? "\"" : "") < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        VIR_DEBUG("Mount devfs on /dev type=tmpfs flags=%x, opts=%s",
+                  MS_NOSUID, opts);
+        if (mount("devfs", "/dev", "tmpfs", MS_NOSUID, opts) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to mount %s on %s type %s"),
+                                 "devfs", "/dev", "tmpfs");
+            goto cleanup;
+        }
+    }
+
     rc = 0;
 
 cleanup:
     VIR_DEBUG("rc=%d", rc);
+    VIR_FREE(opts);
     return rc;
 }
 
 
-static int lxcContainerMountDevFS(virDomainFSDefPtr root)
+static int lxcContainerMountFSDevPTS(virDomainFSDefPtr root)
 {
     char *devpts = NULL;
     int rc = -1;
@@ -1070,8 +1108,8 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     if (lxcContainerMountBasicFS("/.oldroot", true) < 0)
         return -1;
 
-    /* Mounts /dev and /dev/pts */
-    if (lxcContainerMountDevFS(root) < 0)
+    /* Mounts /dev/pts */
+    if (lxcContainerMountFSDevPTS(root) < 0)
         return -1;
 
     /* Populates device nodes in /dev/ */
