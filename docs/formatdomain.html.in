@@ -1741,7 +1741,7 @@
         &lt;address bus='0x06' slot='0x02' function='0x0'/&gt;
       &lt;/source&gt;
       &lt;boot order='1'/&gt;
-      &lt;rom bar='off'/&gt;
+      &lt;rom bar='on' file='/etc/fake/boot.bin'/&gt;
     &lt;/hostdev&gt;
   &lt;/devices&gt;
   ...</pre>
@@ -1783,7 +1783,7 @@
       <span class="since">Since 0.8.8</span></dd>
       <dt><code>rom</code></dt>
       <dd>The <code>rom</code> element is used to change how a PCI
-        device's ROM is presented to the guest. The <code>bar</code>
+        device's ROM is presented to the guest. The optional <code>bar</code>
         attribute can be set to "on" or "off", and determines whether
         or not the device's ROM will be visible in the guest's memory
         map. (In PCI documentation, the "rombar" setting controls the
@@ -1791,7 +1791,13 @@
         bar is specified, the qemu default will be used (older
         versions of qemu used a default of "off", while newer qemus
         have a default of "on"). <span class="since">Since
-        0.9.7</span>
+        0.9.7 (QEMU and KVM only)</span>. The optional
+        <code>file</code> attribute is used to point to a binary file
+        to be presented to the guest as the device's ROM BIOS. This
+        can be useful, for example, to provide a PXE boot ROM for a
+        virtual function of an sr-iov capable ethernet device (which
+        has no boot ROMs for the VFs).
+        <span class="since">Since 0.9.10 (QEMU and KVM only)</span>.
       </dd>
       <dt><code>address</code></dt>
       <dd>The <code>address</code> element for USB devices has a
@@ -2492,7 +2498,7 @@ qemu-kvm -net nic,model=? /dev/null
     &lt;interface type='network'&gt;
       &lt;source network='default'/&gt;
       &lt;target dev='vnet1'/&gt;
-      <b>&lt;rom bar='off'/&gt;</b>
+      <b>&lt;rom bar='on' file='/etc/fake/boot.bin'/&gt;</b>
     &lt;/interface&gt;
   &lt;/devices&gt;
   ...</pre>
@@ -2506,8 +2512,12 @@ qemu-kvm -net nic,model=? /dev/null
       presence of the Base Address Register for the ROM). If no rom
       bar is specified, the qemu default will be used (older
       versions of qemu used a default of "off", while newer qemus
-      have a default of "on"). <span class="since">Since
-      0.9.10 (QEMU and KVM only)</span>
+      have a default of "on").
+      The optional <code>file</code> attribute is used to point to a
+      binary file to be presented to the guest as the device's ROM
+      BIOS. This can be useful to provide an alternative boot ROM for a
+      network device.
+      <span class="since">Since 0.9.10 (QEMU and KVM only)</span>.
     </p>
 
     <h5><a name="elementQoS">Quality of service</a></h5>

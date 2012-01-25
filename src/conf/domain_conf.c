@@ -1812,6 +1812,7 @@ void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
     }
     memset(&info->addr, 0, sizeof(info->addr));
     info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
+    VIR_FREE(info->romfile);
 }
 
 
@@ -1924,16 +1925,25 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
                           info->master.usb.startport);
     }
 
-    if ((flags & VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) && info->rombar) {
-        const char *rombar
-            = virDomainPciRombarModeTypeToString(info->rombar);
-        if (!rombar) {
-            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                 _("unexpected rom bar value %d"),
-                                 info->rombar);
-            return -1;
+    if ((flags & VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) &&
+        (info->rombar || info->romfile)) {
+
+        virBufferAddLit(buf, "      <rom");
+        if (info->rombar) {
+
+            const char *rombar = virDomainPciRombarModeTypeToString(info->rombar);
+
+            if (!rombar) {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     _("unexpected rom bar value %d"),
+                                     info->rombar);
+                return -1;
+            }
+            virBufferAsprintf(buf, " bar='%s'", rombar);
         }
-        virBufferAsprintf(buf, "      <rom bar='%s'/>\n", rombar);
+        if (info->romfile)
+            virBufferAsprintf(buf, " file='%s'", info->romfile);
+        virBufferAddLit(buf, "/>\n");
     }
 
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
@@ -2390,18 +2400,15 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
 
     if (rom) {
         char *rombar = virXMLPropString(rom, "bar");
-        if (!rombar) {
-            virDomainReportError(VIR_ERR_XML_ERROR,
-                                 "%s", _("missing rom bar attribute"));
-            goto cleanup;
-        }
-        if ((info->rombar = virDomainPciRombarModeTypeFromString(rombar)) <= 0) {
+        if (rombar &&
+            ((info->rombar = virDomainPciRombarModeTypeFromString(rombar)) <= 0)) {
             virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                  _("unknown rom bar value '%s'"), rombar);
             VIR_FREE(rombar);
             goto cleanup;
         }
         VIR_FREE(rombar);
+        info->romfile = virXMLPropString(rom, "file");
     }
 
     if (!address)

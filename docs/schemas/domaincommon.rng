@@ -2818,12 +2818,19 @@
 
   <define name="rom">
     <element name="rom">
-      <attribute name="bar">
-        <choice>
-          <value>on</value>
-          <value>off</value>
-        </choice>
-      </attribute>
+      <optional>
+        <attribute name="bar">
+          <choice>
+            <value>on</value>
+            <value>off</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="file">
+          <ref name="absFilePath"/>
+        </attribute>
+      </optional>
       <empty/>
     </element>
   </define>

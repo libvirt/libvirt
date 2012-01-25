@@ -1519,15 +1519,15 @@ qemuBuildRomStr(virBufferPtr buf,
                 virDomainDeviceInfoPtr info,
                 virBitmapPtr qemuCaps)
 {
-    if (info->rombar) {
+    if (info->rombar || info->romfile) {
         if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            "%s", _("rombar is supported only for PCI devices"));
+                            "%s", _("rombar and romfile are supported only for PCI devices"));
             return -1;
         }
         if (!qemuCapsGet(qemuCaps, QEMU_CAPS_PCI_ROMBAR)) {
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            "%s", _("rombar not supported in this QEMU binary"));
+                            "%s", _("rombar and romfile not supported in this QEMU binary"));
             return -1;
         }
 
@@ -1541,6 +1541,8 @@ qemuBuildRomStr(virBufferPtr buf,
         default:
             break;
         }
+        if (info->romfile)
+           virBufferAsprintf(buf, ",romfile=%s", info->romfile);
     }
     return 0;
 }
