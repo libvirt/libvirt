@@ -1,7 +1,7 @@
 /*
  * threads-win32.h basic thread synchronization primitives
  *
- * Copyright (C) 2009, 2011 Red Hat, Inc.
+ * Copyright (C) 2009, 2011-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,9 @@
 
 #include "internal.h"
 
+#ifdef HAVE_WINSOCK2_H
+# include <winsock2.h>
+#endif
 #include <windows.h>
 
 struct virMutex {
