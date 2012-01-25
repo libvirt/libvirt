@@ -1808,7 +1808,6 @@ void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
         VIR_FREE(info->addr.usb.port);
     }
-    VIR_FREE(info->alias);
     memset(&info->addr, 0, sizeof(info->addr));
     info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
 }
