@@ -2471,6 +2471,15 @@ virSetUIDGID(uid_t uid ATTRIBUTE_UNUSED,
                  "%s", _("virSetUIDGID is not available"));
     return -1;
 }
+
+char *
+virGetGroupName(gid_t gid ATTRIBUTE_UNUSED)
+{
+    virUtilError(VIR_ERR_INTERNAL_ERROR,
+                 "%s", _("virGetGroupName is not available"));
+
+    return NULL;
+}
 #endif /* HAVE_GETPWUID_R */
 
 
