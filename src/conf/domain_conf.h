@@ -193,6 +193,16 @@ struct _virSecurityLabelDef {
     bool norelabel;
 };
 
+
+/* Security configuration for domain */
+typedef struct _virSecurityDeviceLabelDef virSecurityDeviceLabelDef;
+typedef virSecurityDeviceLabelDef *virSecurityDeviceLabelDefPtr;
+struct _virSecurityDeviceLabelDef {
+    char *label;        /* image label string */
+    bool norelabel;
+};
+
+
 typedef struct _virDomainHostdevOrigStates virDomainHostdevOrigStates;
 typedef virDomainHostdevOrigStates *virDomainHostdevOrigStatesPtr;
 struct _virDomainHostdevOrigStates {
@@ -380,7 +390,7 @@ struct _virDomainDiskDef {
     int device;
     int bus;
     char *src;
-    virSecurityLabelDefPtr seclabel;
+    virSecurityDeviceLabelDefPtr seclabel;
     char *dst;
     int protocol;
     int nhosts;
