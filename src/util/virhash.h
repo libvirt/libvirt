@@ -13,6 +13,8 @@
 #ifndef __VIR_HASH_H__
 # define __VIR_HASH_H__
 
+# include <stdint.h>
+
 /*
  * The hash table.
  */

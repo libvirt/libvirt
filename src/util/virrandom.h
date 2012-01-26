@@ -23,6 +23,7 @@
 # define __VIR_RANDOM_H__
 
 # include "internal.h"
+# include <stdint.h>
 
 int virRandomInitialize(uint32_t seed) ATTRIBUTE_RETURN_CHECK;
 uint64_t virRandomBits(int nbits);
