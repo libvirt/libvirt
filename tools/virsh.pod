@@ -2046,7 +2046,7 @@ used to represent properties of snapshots.
 =over 4
 
 =item B<snapshot-create> I<domain> [I<xmlfile>] {[I<--redefine> [I<--current>]]
-| [I<--no-metadata>] [I<--halt>] [I<--disk-only>] [I<--reuse-external]
+| [I<--no-metadata>] [I<--halt>] [I<--disk-only>] [I<--reuse-external>]
 [I<--quiesce>]}
 
 Create a snapshot for domain I<domain> with the properties specified in
