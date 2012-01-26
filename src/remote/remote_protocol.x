@@ -732,6 +732,13 @@ struct remote_domain_suspend_args {
     remote_nonnull_domain dom;
 };
 
+struct remote_domain_pm_suspend_for_duration_args {
+    remote_nonnull_domain dom;
+    unsigned int target;
+    unsigned hyper duration;
+    unsigned int flags;
+};
+
 struct remote_domain_resume_args {
     remote_nonnull_domain dom;
 };
@@ -2674,7 +2681,9 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_GET_INTERFACE_PARAMETERS = 257, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_SHUTDOWN_FLAGS = 258, /* autogen autogen */
     REMOTE_PROC_STORAGE_VOL_WIPE_PATTERN = 259, /* autogen autogen */
-    REMOTE_PROC_STORAGE_VOL_RESIZE = 260 /* autogen autogen */
+    REMOTE_PROC_STORAGE_VOL_RESIZE = 260, /* autogen autogen */
+
+    REMOTE_PROC_DOMAIN_PM_SUSPEND_FOR_DURATION = 261 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

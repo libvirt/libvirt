@@ -37,7 +37,7 @@ sub name_to_ProcName {
     @elems = map { $_ =~ s/Nwfilter/NWFilter/; $_ =~ s/Xml$/XML/;
                    $_ =~ s/Uri$/URI/; $_ =~ s/Uuid$/UUID/; $_ =~ s/Id$/ID/;
                    $_ =~ s/Mac$/MAC/; $_ =~ s/Cpu$/CPU/; $_ =~ s/Os$/OS/;
-                   $_ =~ s/Nmi$/NMI/; $_ } @elems;
+                   $_ =~ s/Nmi$/NMI/; $_ =~ s/Pm/PM/; $_ } @elems;
     join "", @elems
 }
 

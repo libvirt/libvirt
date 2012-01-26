@@ -120,6 +120,11 @@ typedef int
 typedef int
         (*virDrvDomainResume)		(virDomainPtr domain);
 typedef int
+        (*virDrvDomainPMSuspendForDuration) (virDomainPtr,
+                                             unsigned int target,
+                                             unsigned long long duration,
+                                             unsigned int flags);
+typedef int
         (*virDrvDomainShutdown)		(virDomainPtr domain);
 typedef int
         (*virDrvDomainReboot)		(virDomainPtr domain,
@@ -831,6 +836,7 @@ struct _virDriver {
     virDrvDomainLookupByUUID	domainLookupByUUID;
     virDrvDomainLookupByName	domainLookupByName;
     virDrvDomainSuspend		domainSuspend;
+    virDrvDomainPMSuspendForDuration domainPMSuspendForDuration;
     virDrvDomainResume		domainResume;
     virDrvDomainShutdown		domainShutdown;
     virDrvDomainShutdownFlags   domainShutdownFlags;

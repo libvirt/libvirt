@@ -521,6 +521,7 @@ LIBVIRT_0.9.10 {
         virDomainShutdownFlags;
         virStorageVolResize;
         virStorageVolWipePattern;
+        virDomainPMSuspendForDuration;
 } LIBVIRT_0.9.9;
 
 # .... define new API here using predicted next version number ....

@@ -1232,7 +1232,10 @@ int                     virDomainFree           (virDomainPtr domain);
  */
 int                     virDomainSuspend        (virDomainPtr domain);
 int                     virDomainResume         (virDomainPtr domain);
-
+int                     virDomainPMSuspendForDuration (virDomainPtr domain,
+                                                       unsigned int target,
+                                                       unsigned long long duration,
+                                                       unsigned int flags);
 /*
  * Domain save/restore
  */

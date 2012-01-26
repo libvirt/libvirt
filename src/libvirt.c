@@ -2433,6 +2433,64 @@ error:
 }
 
 /**
+ * virDomainPMSuspendForDuration:
+ * @dom: a domain object
+ * @target: an OR'ed set of virNodeSuspendTarget
+ * @duration: currently unused, pass 0
+ * @flags: ditto
+ *
+ * Attempt to suspend given domain. However, more
+ * states are supported than in virDomainSuspend.
+ *
+ * Dependent on hypervisor used, this may require
+ * guest agent to be available, e.g. QEMU.
+ *
+ * Returns: 0 on success,
+ *          -1 on failure.
+ */
+int
+virDomainPMSuspendForDuration(virDomainPtr dom,
+                              unsigned int target,
+                              unsigned long long duration,
+                              unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "target=%u duration=%llu flags=%x",
+                     target, duration, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = dom->conn;
+
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainPMSuspendForDuration) {
+        int ret;
+        ret = conn->driver->domainPMSuspendForDuration(dom, target,
+                                                       duration, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
  * virDomainSave:
  * @domain: a domain object
  * @to: path for the output file
