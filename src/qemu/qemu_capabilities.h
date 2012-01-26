@@ -162,7 +162,8 @@ int qemuCapsParseHelpStr(const char *qemu,
                          virBitmapPtr qemuCaps,
                          unsigned int *version,
                          unsigned int *is_kvm,
-                         unsigned int *kvm_version);
+                         unsigned int *kvm_version,
+                         bool check_yajl);
 int qemuCapsParseDeviceStr(const char *str,
                            virBitmapPtr qemuCaps);
 

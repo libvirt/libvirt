@@ -982,12 +982,13 @@ virCapsPtr qemuCapsInit(virCapsPtr old_caps)
 }
 
 
-static void
+static int
 qemuCapsComputeCmdFlags(const char *help,
                         unsigned int version,
                         unsigned int is_kvm,
                         unsigned int kvm_version,
-                        virBitmapPtr flags)
+                        virBitmapPtr flags,
+                        bool check_yajl ATTRIBUTE_UNUSED)
 {
     const char *p;
     const char *fsdev;
@@ -1184,6 +1185,24 @@ qemuCapsComputeCmdFlags(const char *help,
         qemuCapsSet(flags, QEMU_CAPS_MONITOR_JSON);
         qemuCapsSet(flags, QEMU_CAPS_NETDEV);
     }
+#else
+    /* Starting with qemu 0.15 and newer, upstream qemu no longer
+     * promises to keep the human interface stable, but requests that
+     * we use QMP (the JSON interface) for everything.  If the user
+     * forgot to include YAJL libraries when building their own
+     * libvirt but is targetting a newer qemu, we are better off
+     * telling them to recompile (the spec file includes the
+     * dependency, so distros won't hit this).  */
+    if (version >= 15000 ||
+        (version >= 12000 && strstr(help, "libvirt"))) {
+        if (check_yajl) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("this qemu binary requires libvirt to be "
+                              "compiled with yajl"));
+            return -1;
+        }
+        qemuCapsSet(flags, QEMU_CAPS_NETDEV);
+    }
 #endif
 
     if (version >= 13000)
@@ -1204,6 +1223,7 @@ qemuCapsComputeCmdFlags(const char *help,
 
     if (version >= 11000)
         qemuCapsSet(flags, QEMU_CAPS_CPU_HOST);
+    return 0;
 }
 
 /* We parse the output of 'qemu -help' to get the QEMU
@@ -1235,7 +1255,8 @@ int qemuCapsParseHelpStr(const char *qemu,
                          virBitmapPtr flags,
                          unsigned int *version,
                          unsigned int *is_kvm,
-                         unsigned int *kvm_version)
+                         unsigned int *kvm_version,
+                         bool check_yajl)
 {
     unsigned major, minor, micro;
     const char *p = help;
@@ -1291,7 +1312,9 @@ int qemuCapsParseHelpStr(const char *qemu,
 
     *version = (major * 1000 * 1000) + (minor * 1000) + micro;
 
-    qemuCapsComputeCmdFlags(help, *version, *is_kvm, *kvm_version, flags);
+    if (qemuCapsComputeCmdFlags(help, *version, *is_kvm, *kvm_version,
+                                flags, check_yajl) < 0)
+        goto cleanup;
 
     strflags = virBitmapString(flags);
     VIR_DEBUG("Version %u.%u.%u, cooked version %u, flags %s",
@@ -1314,6 +1337,7 @@ fail:
                     _("cannot parse %s version number in '%s'"),
                     qemu, p ? p : help);
 
+cleanup:
     VIR_FREE(p);
 
     return -1;
@@ -1455,7 +1479,7 @@ int qemuCapsExtractVersionInfo(const char *qemu, const char *arch,
 
     if (!(flags = qemuCapsNew()) ||
         qemuCapsParseHelpStr(qemu, help, flags,
-                             &version, &is_kvm, &kvm_version) == -1)
+                             &version, &is_kvm, &kvm_version, true) == -1)
         goto cleanup;
 
     /* Currently only x86_64 and i686 support PCI-multibus. */

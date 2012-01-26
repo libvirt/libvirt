@@ -53,7 +53,7 @@ static int testHelpStrParsing(const void *data)
         goto cleanup;
 
     if (qemuCapsParseHelpStr("QEMU", help, flags,
-                             &version, &is_kvm, &kvm_version) == -1)
+                             &version, &is_kvm, &kvm_version, false) == -1)
         goto cleanup;
 
 # ifndef HAVE_YAJL
