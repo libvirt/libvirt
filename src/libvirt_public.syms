@@ -12,283 +12,283 @@
 #
 LIBVIRT_0.0.3 {
     global:
-	virConnectClose;
-	virConnectGetType;
-	virConnectGetVersion;
-	virConnectListDomains;
-	virConnectNumOfDomains;
-	virConnectOpen;
-	virConnectOpenReadOnly;
+        virConnectClose;
+        virConnectGetType;
+        virConnectGetVersion;
+        virConnectListDomains;
+        virConnectNumOfDomains;
+        virConnectOpen;
+        virConnectOpenReadOnly;
 
-	virDomainCreateLinux;
-	virDomainDestroy;
-	virDomainFree;
-	virDomainGetID;
-	virDomainGetInfo;
-	virDomainGetMaxMemory;
-	virDomainGetName;
-	virDomainGetOSType;
-	virDomainGetXMLDesc;
-	virDomainLookupByID;
-	virDomainLookupByName;
-	virDomainRestore;
-	virDomainResume;
-	virDomainSave;
-	virDomainSetMaxMemory;
-	virDomainShutdown;
-	virDomainSuspend;
+        virDomainCreateLinux;
+        virDomainDestroy;
+        virDomainFree;
+        virDomainGetID;
+        virDomainGetInfo;
+        virDomainGetMaxMemory;
+        virDomainGetName;
+        virDomainGetOSType;
+        virDomainGetXMLDesc;
+        virDomainLookupByID;
+        virDomainLookupByName;
+        virDomainRestore;
+        virDomainResume;
+        virDomainSave;
+        virDomainSetMaxMemory;
+        virDomainShutdown;
+        virDomainSuspend;
 
-	virGetVersion;
+        virGetVersion;
 };
 
 LIBVIRT_0.0.5 {
     global:
-	virDomainLookupByUUID;
-	virDomainGetUUID;
+        virDomainLookupByUUID;
+        virDomainGetUUID;
 } LIBVIRT_0.0.3;
 
 LIBVIRT_0.1.0 {
     global:
-	virInitialize;
-	virNodeGetInfo;
-	virDomainReboot;
+        virInitialize;
+        virNodeGetInfo;
+        virDomainReboot;
 
-	virCopyLastError;
-	virConnSetErrorFunc;
-	virResetLastError;
-	virResetError;
-	virConnGetLastError;
-	virGetLastError;
-	virSetErrorFunc;
-	virConnCopyLastError;
-	virConnResetLastError;
-	virDefaultErrorFunc;
+        virCopyLastError;
+        virConnSetErrorFunc;
+        virResetLastError;
+        virResetError;
+        virConnGetLastError;
+        virGetLastError;
+        virSetErrorFunc;
+        virConnCopyLastError;
+        virConnResetLastError;
+        virDefaultErrorFunc;
 } LIBVIRT_0.0.5;
 
 LIBVIRT_0.1.1 {
     global:
-	virDomainLookupByUUIDString;
-	virDomainGetUUIDString;
-	virDomainSetMemory;
-	virDomainDefineXML;
-	virDomainCreate;
-	virDomainUndefine;
-	virConnectListDefinedDomains;
+        virDomainLookupByUUIDString;
+        virDomainGetUUIDString;
+        virDomainSetMemory;
+        virDomainDefineXML;
+        virDomainCreate;
+        virDomainUndefine;
+        virConnectListDefinedDomains;
 } LIBVIRT_0.1.0;
 
 LIBVIRT_0.1.4 {
     global:
-	virDomainSetVcpus;
-	virDomainPinVcpu;
-	virDomainGetVcpus;
+        virDomainSetVcpus;
+        virDomainPinVcpu;
+        virDomainGetVcpus;
 } LIBVIRT_0.1.1;
 
 LIBVIRT_0.1.5 {
     global:
-	virConnectNumOfDefinedDomains;
+        virConnectNumOfDefinedDomains;
 } LIBVIRT_0.1.4;
 
 LIBVIRT_0.1.9 {
     global:
-	virDomainCoreDump;
-	virDomainAttachDevice;
-	virDomainDetachDevice;
+        virDomainCoreDump;
+        virDomainAttachDevice;
+        virDomainDetachDevice;
 } LIBVIRT_0.1.5;
 
 LIBVIRT_0.2.0 {
     global:
-	virConnectNumOfNetworks;
-	virConnectListNetworks;
-	virConnectNumOfDefinedNetworks;
-	virConnectListDefinedNetworks;
-	virNetworkLookupByName;
-	virNetworkLookupByUUID;
-	virNetworkLookupByUUIDString;
-	virNetworkCreateXML;
-	virNetworkDefineXML;
-	virNetworkUndefine;
-	virNetworkCreate;
-	virNetworkDestroy;
-	virNetworkFree;
-	virNetworkGetName;
-	virNetworkGetUUID;
-	virNetworkGetUUIDString;
-	virNetworkGetXMLDesc;
-	virNetworkGetBridgeName;
+        virConnectNumOfNetworks;
+        virConnectListNetworks;
+        virConnectNumOfDefinedNetworks;
+        virConnectListDefinedNetworks;
+        virNetworkLookupByName;
+        virNetworkLookupByUUID;
+        virNetworkLookupByUUIDString;
+        virNetworkCreateXML;
+        virNetworkDefineXML;
+        virNetworkUndefine;
+        virNetworkCreate;
+        virNetworkDestroy;
+        virNetworkFree;
+        virNetworkGetName;
+        virNetworkGetUUID;
+        virNetworkGetUUIDString;
+        virNetworkGetXMLDesc;
+        virNetworkGetBridgeName;
 } LIBVIRT_0.1.9;
 
 LIBVIRT_0.2.1 {
     global:
-	virConnectGetCapabilities;
-	virConnectGetMaxVcpus;
-	virDomainGetMaxVcpus;
-	virDomainGetAutostart;
-	virDomainSetAutostart;
-	virNetworkGetAutostart;
-	virNetworkSetAutostart;
+        virConnectGetCapabilities;
+        virConnectGetMaxVcpus;
+        virDomainGetMaxVcpus;
+        virDomainGetAutostart;
+        virDomainSetAutostart;
+        virNetworkGetAutostart;
+        virNetworkSetAutostart;
 } LIBVIRT_0.2.0;
 
 LIBVIRT_0.2.3 {
     global:
-	virDomainGetSchedulerType;
-	virDomainGetSchedulerParameters;
-	virDomainSetSchedulerParameters;
+        virDomainGetSchedulerType;
+        virDomainGetSchedulerParameters;
+        virDomainSetSchedulerParameters;
 } LIBVIRT_0.2.1;
 
 LIBVIRT_0.3.0 {
     global:
-	virConnectGetHostname;
-	virConnectGetURI;
-	virDomainGetConnect;
-	virNetworkGetConnect;
+        virConnectGetHostname;
+        virConnectGetURI;
+        virDomainGetConnect;
+        virNetworkGetConnect;
 } LIBVIRT_0.2.3;
 
 LIBVIRT_0.3.2 {
     global:
-	virDomainMigrate;
-	virDomainBlockStats;
-	virDomainInterfaceStats;
+        virDomainMigrate;
+        virDomainBlockStats;
+        virDomainInterfaceStats;
 } LIBVIRT_0.3.0;
 
 LIBVIRT_0.3.3 {
     global:
-	virNodeGetCellsFreeMemory;
-	virNodeGetFreeMemory;
+        virNodeGetCellsFreeMemory;
+        virNodeGetFreeMemory;
 } LIBVIRT_0.3.2;
 
 LIBVIRT_0.4.0 {
     global:
-	virConnectOpenAuth;
-	virConnectAuthPtrDefault;
+        virConnectOpenAuth;
+        virConnectAuthPtrDefault;
 } LIBVIRT_0.3.3;
 
 LIBVIRT_0.4.1 {
     global:
-	virStoragePoolGetConnect;
-	virConnectNumOfStoragePools;
-	virConnectNumOfDefinedStoragePools;
-	virConnectListStoragePools;
-	virConnectListDefinedStoragePools;
-	virStoragePoolLookupByName;
-	virStoragePoolLookupByUUID;
-	virStoragePoolLookupByUUIDString;
-	virStoragePoolLookupByVolume;
-	virStoragePoolCreateXML;
-	virStoragePoolDefineXML;
-	virStoragePoolUndefine;
-	virStoragePoolCreate;
-	virStoragePoolBuild;
-	virStoragePoolDestroy;
-	virStoragePoolDelete;
-	virStoragePoolRefresh;
-	virStoragePoolFree;
-	virStoragePoolGetName;
-	virStoragePoolGetUUID;
-	virStoragePoolGetUUIDString;
-	virStoragePoolGetInfo;
-	virStoragePoolGetXMLDesc;
-	virStoragePoolSetAutostart;
-	virStoragePoolGetAutostart;
-	virStoragePoolNumOfVolumes;
-	virStoragePoolListVolumes;
+        virStoragePoolGetConnect;
+        virConnectNumOfStoragePools;
+        virConnectNumOfDefinedStoragePools;
+        virConnectListStoragePools;
+        virConnectListDefinedStoragePools;
+        virStoragePoolLookupByName;
+        virStoragePoolLookupByUUID;
+        virStoragePoolLookupByUUIDString;
+        virStoragePoolLookupByVolume;
+        virStoragePoolCreateXML;
+        virStoragePoolDefineXML;
+        virStoragePoolUndefine;
+        virStoragePoolCreate;
+        virStoragePoolBuild;
+        virStoragePoolDestroy;
+        virStoragePoolDelete;
+        virStoragePoolRefresh;
+        virStoragePoolFree;
+        virStoragePoolGetName;
+        virStoragePoolGetUUID;
+        virStoragePoolGetUUIDString;
+        virStoragePoolGetInfo;
+        virStoragePoolGetXMLDesc;
+        virStoragePoolSetAutostart;
+        virStoragePoolGetAutostart;
+        virStoragePoolNumOfVolumes;
+        virStoragePoolListVolumes;
 
-	virStorageVolGetConnect;
-	virStorageVolLookupByName;
-	virStorageVolLookupByKey;
-	virStorageVolLookupByPath;
-	virStorageVolCreateXML;
-	virStorageVolDelete;
-	virStorageVolFree;
-	virStorageVolGetName;
-	virStorageVolGetKey;
-	virStorageVolGetInfo;
-	virStorageVolGetXMLDesc;
-	virStorageVolGetPath;
+        virStorageVolGetConnect;
+        virStorageVolLookupByName;
+        virStorageVolLookupByKey;
+        virStorageVolLookupByPath;
+        virStorageVolCreateXML;
+        virStorageVolDelete;
+        virStorageVolFree;
+        virStorageVolGetName;
+        virStorageVolGetKey;
+        virStorageVolGetInfo;
+        virStorageVolGetXMLDesc;
+        virStorageVolGetPath;
 } LIBVIRT_0.4.0;
 
 LIBVIRT_0.4.2 {
     global:
-	virDomainBlockPeek;
-	virDomainMemoryPeek;
+        virDomainBlockPeek;
+        virDomainMemoryPeek;
 } LIBVIRT_0.4.1;
 
 LIBVIRT_0.4.5 {
     global:
-	virConnectFindStoragePoolSources;
+        virConnectFindStoragePoolSources;
 } LIBVIRT_0.4.2;
 
 LIBVIRT_0.5.0 {
     global:
-	virDomainCreateXML;
-	virEventRegisterImpl;
-	virConnectDomainEventRegister;
-	virConnectDomainEventDeregister;
+        virDomainCreateXML;
+        virEventRegisterImpl;
+        virConnectDomainEventRegister;
+        virConnectDomainEventDeregister;
 
-	virNodeNumOfDevices;
-	virNodeListDevices;
-	virNodeDeviceLookupByName;
-	virNodeDeviceFree;
-	virNodeDeviceGetXMLDesc;
-	virNodeDeviceGetName;
-	virNodeDeviceGetParent;
-	virNodeDeviceNumOfCaps;
-	virNodeDeviceListCaps;
+        virNodeNumOfDevices;
+        virNodeListDevices;
+        virNodeDeviceLookupByName;
+        virNodeDeviceFree;
+        virNodeDeviceGetXMLDesc;
+        virNodeDeviceGetName;
+        virNodeDeviceGetParent;
+        virNodeDeviceNumOfCaps;
+        virNodeDeviceListCaps;
 
 } LIBVIRT_0.4.5;
 
 LIBVIRT_0.6.0 {
     global:
-	virConnectRef;
-	virDomainRef;
-	virNetworkRef;
-	virStoragePoolRef;
-	virStorageVolRef;
-	virNodeDeviceRef;
+        virConnectRef;
+        virDomainRef;
+        virNetworkRef;
+        virStoragePoolRef;
+        virStorageVolRef;
+        virNodeDeviceRef;
 
 } LIBVIRT_0.5.0;
 
 LIBVIRT_0.6.1 {
     global:
-	virFreeError;
-	virSaveLastError;
-	virNodeDeviceDettach;
-	virNodeDeviceReAttach;
-	virNodeDeviceReset;
-	virDomainGetSecurityLabel;
-	virNodeGetSecurityModel;
+        virFreeError;
+        virSaveLastError;
+        virNodeDeviceDettach;
+        virNodeDeviceReAttach;
+        virNodeDeviceReset;
+        virDomainGetSecurityLabel;
+        virNodeGetSecurityModel;
 } LIBVIRT_0.6.0;
 
 LIBVIRT_0.6.3 {
     global:
-	virNodeDeviceCreateXML;
-	virNodeDeviceDestroy;
+        virNodeDeviceCreateXML;
+        virNodeDeviceDestroy;
 } LIBVIRT_0.6.1;
 
 LIBVIRT_0.6.4 {
     global:
-	virInterfaceGetConnect;
-	virConnectNumOfInterfaces;
-	virConnectListInterfaces;
-	virInterfaceLookupByName;
-	virInterfaceLookupByMACString;
-	virInterfaceGetName;
-	virInterfaceGetMACString;
-	virInterfaceGetXMLDesc;
-	virInterfaceRef;
-	virInterfaceFree;
-	virInterfaceDefineXML;
-	virInterfaceUndefine;
-	virInterfaceCreate;
-	virInterfaceDestroy;
-	virStorageVolCreateXMLFrom;
-	virConnectDomainXMLFromNative;
-	virConnectDomainXMLToNative;
+        virInterfaceGetConnect;
+        virConnectNumOfInterfaces;
+        virConnectListInterfaces;
+        virInterfaceLookupByName;
+        virInterfaceLookupByMACString;
+        virInterfaceGetName;
+        virInterfaceGetMACString;
+        virInterfaceGetXMLDesc;
+        virInterfaceRef;
+        virInterfaceFree;
+        virInterfaceDefineXML;
+        virInterfaceUndefine;
+        virInterfaceCreate;
+        virInterfaceDestroy;
+        virStorageVolCreateXMLFrom;
+        virConnectDomainXMLFromNative;
+        virConnectDomainXMLToNative;
 } LIBVIRT_0.6.3;
 
 LIBVIRT_0.7.0 {
     global:
-	virConnectNumOfDefinedInterfaces;
-	virConnectListDefinedInterfaces;
+        virConnectNumOfDefinedInterfaces;
+        virConnectListDefinedInterfaces;
 } LIBVIRT_0.6.4;
 
 LIBVIRT_0.7.1 {
@@ -314,33 +314,33 @@ LIBVIRT_0.7.1 {
 
 LIBVIRT_0.7.2 {
     global:
-	virStreamNew;
-	virStreamRef;
-	virStreamSend;
-	virStreamRecv;
-	virStreamSendAll;
-	virStreamRecvAll;
-	virStreamEventAddCallback;
-	virStreamEventUpdateCallback;
-	virStreamEventRemoveCallback;
-	virStreamFinish;
-	virStreamAbort;
-	virStreamFree;
-	virDomainMigrateToURI;
+        virStreamNew;
+        virStreamRef;
+        virStreamSend;
+        virStreamRecv;
+        virStreamSendAll;
+        virStreamRecvAll;
+        virStreamEventAddCallback;
+        virStreamEventUpdateCallback;
+        virStreamEventRemoveCallback;
+        virStreamFinish;
+        virStreamAbort;
+        virStreamFree;
+        virDomainMigrateToURI;
 } LIBVIRT_0.7.1;
 
 LIBVIRT_0.7.3 {
     global:
-	virConnectGetLibVersion;
-	virConnectIsEncrypted;
-	virConnectIsSecure;
-	virDomainIsActive;
-	virDomainIsPersistent;
-	virNetworkIsActive;
-	virNetworkIsPersistent;
-	virStoragePoolIsActive;
-	virStoragePoolIsPersistent;
-	virInterfaceIsActive;
+        virConnectGetLibVersion;
+        virConnectIsEncrypted;
+        virConnectIsSecure;
+        virDomainIsActive;
+        virDomainIsPersistent;
+        virNetworkIsActive;
+        virNetworkIsPersistent;
+        virStoragePoolIsActive;
+        virStoragePoolIsPersistent;
+        virInterfaceIsActive;
 } LIBVIRT_0.7.2;
 
 LIBVIRT_0.7.5 {
@@ -355,32 +355,32 @@ LIBVIRT_0.7.7 {
         virDomainDetachDeviceFlags;
         virConnectBaselineCPU;
         virDomainGetJobInfo;
-	virDomainAbortJob;
+        virDomainAbortJob;
 } LIBVIRT_0.7.5;
 
 LIBVIRT_0.8.0 {
     global:
-	virStorageVolWipe;
+        virStorageVolWipe;
         virDomainMigrateSetMaxDowntime;
         virConnectDomainEventRegisterAny;
         virConnectDomainEventDeregisterAny;
         virDomainUpdateDeviceFlags;
-	virConnectListNWFilters;
-	virConnectNumOfNWFilters;
-	virNWFilterLookupByName;
-	virNWFilterLookupByUUID;
-	virNWFilterLookupByUUIDString;
-	virNWFilterFree;
-	virNWFilterGetName;
-	virNWFilterGetUUID;
-	virNWFilterGetUUIDString;
-	virNWFilterGetXMLDesc;
-	virNWFilterRef;
-	virNWFilterDefineXML;
-	virNWFilterUndefine;
-	virDomainManagedSave;
-	virDomainHasManagedSaveImage;
-	virDomainManagedSaveRemove;
+        virConnectListNWFilters;
+        virConnectNumOfNWFilters;
+        virNWFilterLookupByName;
+        virNWFilterLookupByUUID;
+        virNWFilterLookupByUUIDString;
+        virNWFilterFree;
+        virNWFilterGetName;
+        virNWFilterGetUUID;
+        virNWFilterGetUUIDString;
+        virNWFilterGetXMLDesc;
+        virNWFilterRef;
+        virNWFilterDefineXML;
+        virNWFilterUndefine;
+        virDomainManagedSave;
+        virDomainHasManagedSaveImage;
+        virDomainManagedSaveRemove;
         virDomainSnapshotCreateXML;
         virDomainSnapshotGetXMLDesc;
         virDomainSnapshotNum;
