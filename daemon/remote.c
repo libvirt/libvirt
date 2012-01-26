@@ -2468,26 +2468,17 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
     uid_t callerUid = -1;
     const char *action;
     int status = -1;
-    char pidbuf[50];
-    char ident[100];
-    int rv = -1;
+    char *ident = NULL;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
-
-    memset(ident, 0, sizeof ident);
+    virCommandPtr cmd = NULL;
 
     virMutexLock(&priv->lock);
     action = virNetServerClientGetReadonly(client) ?
         "org.libvirt.unix.monitor" :
         "org.libvirt.unix.manage";
 
-    const char * const pkcheck [] = {
-      PKCHECK_PATH,
-      "--action-id", action,
-      "--process", pidbuf,
-      "--allow-user-interaction",
-      NULL
-    };
+    cmd = virCommandNewArgList(PKCHECK_PATH, "--action-id", action, NULL);
 
     VIR_DEBUG("Start PolicyKit auth %d", virNetServerClientGetFD(client));
     if (virNetServerClientGetAuth(client) != VIR_NET_SERVER_SERVICE_AUTH_POLKIT) {
@@ -2495,28 +2486,25 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto authfail;
     }
 
-    if (virNetServerClientGetUNIXIdentity(client, &callerUid, &callerGid, &callerPid) < 0) {
+    if (virNetServerClientGetUNIXIdentity(client, &callerUid, &callerGid,
+                                          &callerPid) < 0) {
         goto authfail;
     }
 
     VIR_INFO("Checking PID %d running as %d", callerPid, callerUid);
 
-    rv = snprintf(pidbuf, sizeof pidbuf, "%d", callerPid);
-    if (rv < 0 || rv >= sizeof pidbuf) {
-        VIR_ERROR(_("Caller PID was too large %d"), callerPid);
+    virCommandAddArg(cmd, "--process");
+    virCommandAddArgFormat(cmd, "%d", callerPid);
+    virCommandAddArg(cmd, "--allow-user-interaction");
+
+    if (virAsprintf(&ident, "pid:%d,uid:%d", callerPid, callerUid) < 0) {
+        virReportOOMError();
         goto authfail;
     }
 
-    rv = snprintf(ident, sizeof ident, "pid:%d,uid:%d", callerPid, callerUid);
-    if (rv < 0 || rv >= sizeof ident) {
-        VIR_ERROR(_("Caller identity was too large %d:%d"), callerPid, callerUid);
+    if (virCommandRun(cmd, &status) < 0)
         goto authfail;
-    }
 
-    if (virRun(pkcheck, &status) < 0) {
-        VIR_ERROR(_("Cannot invoke %s"), PKCHECK_PATH);
-        goto authfail;
-    }
     if (status != 0) {
         char *tmp = virCommandTranslateStatus(status);
         VIR_ERROR(_("Policy kit denied action %s from pid %d, uid %d: %s"),
@@ -2533,10 +2521,14 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     virNetServerClientSetIdentity(client, ident);
     virMutexUnlock(&priv->lock);
+    virCommandFree(cmd);
+    VIR_FREE(ident);
 
     return 0;
 
 error:
+    virCommandFree(cmd);
+    VIR_FREE(ident);
     virResetLastError();
     virNetError(VIR_ERR_AUTH_FAILED, "%s",
                 _("authentication failed"));
@@ -2553,7 +2545,7 @@ authfail:
 authdeny:
     PROBE(RPC_SERVER_CLIENT_AUTH_DENY,
           "client=%p auth=%d identity=%s",
-          client, REMOTE_AUTH_POLKIT, (char *)ident);
+          client, REMOTE_AUTH_POLKIT, ident);
     goto error;
 }
 #elif HAVE_POLKIT0
