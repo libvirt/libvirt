@@ -2039,20 +2039,22 @@ remoteDispatchAuthList(virNetServerPtr server ATTRIBUTE_UNUSED,
      * some piece of polkit isn't present/running
      */
     if (auth == VIR_NET_SERVER_SERVICE_AUTH_POLKIT) {
-        if (virNetServerClientGetUNIXIdentity(client, &callerUid, &callerGid, &callerPid) < 0) {
+        if (virNetServerClientGetUNIXIdentity(client, &callerUid, &callerGid,
+                                              &callerPid) < 0) {
             /* Don't do anything on error - it'll be validated at next
              * phase of auth anyway */
             virResetLastError();
         } else if (callerUid == 0) {
-            char ident[100];
-            rv = snprintf(ident, sizeof ident, "pid:%d,uid:%d", callerPid, callerUid);
-            if (rv > 0 || rv < sizeof ident) {
+            char *ident;
+            if (virAsprintf(&ident, "pid:%lld,uid:%d",
+                            (long long) callerPid, callerUid) == 0) {
                 VIR_INFO("Bypass polkit auth for privileged client %s",
                          ident);
                 if (virNetServerClientSetIdentity(client, ident) < 0)
                     virResetLastError();
                 else
                     auth = VIR_NET_SERVER_SERVICE_AUTH_NONE;
+                VIR_FREE(ident);
             }
             rv = -1;
         }
@@ -2491,13 +2493,15 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto authfail;
     }
 
-    VIR_INFO("Checking PID %d running as %d", callerPid, callerUid);
+    VIR_INFO("Checking PID %lld running as %d",
+             (long long) callerPid, callerUid);
 
     virCommandAddArg(cmd, "--process");
-    virCommandAddArgFormat(cmd, "%d", callerPid);
+    virCommandAddArgFormat(cmd, "%lld", (long long) callerPid);
     virCommandAddArg(cmd, "--allow-user-interaction");
 
-    if (virAsprintf(&ident, "pid:%d,uid:%d", callerPid, callerUid) < 0) {
+    if (virAsprintf(&ident, "pid:%lld,uid:%d",
+                    (long long) callerPid, callerUid) < 0) {
         virReportOOMError();
         goto authfail;
     }
@@ -2507,16 +2511,16 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     if (status != 0) {
         char *tmp = virCommandTranslateStatus(status);
-        VIR_ERROR(_("Policy kit denied action %s from pid %d, uid %d: %s"),
-                  action, callerPid, callerUid, NULLSTR(tmp));
+        VIR_ERROR(_("Policy kit denied action %s from pid %lld, uid %d: %s"),
+                  action, (long long) callerPid, callerUid, NULLSTR(tmp));
         VIR_FREE(tmp);
         goto authdeny;
     }
     PROBE(RPC_SERVER_CLIENT_AUTH_ALLOW,
           "client=%p auth=%d identity=%s",
           client, REMOTE_AUTH_POLKIT, ident);
-    VIR_INFO("Policy allowed action %s from pid %d, uid %d",
-             action, callerPid, callerUid);
+    VIR_INFO("Policy allowed action %s from pid %lld, uid %d",
+             action, (long long) callerPid, callerUid);
     ret->complete = 1;
 
     virNetServerClientSetIdentity(client, ident);
@@ -2566,7 +2570,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server,
     PolKitResult pkresult;
     DBusError err;
     const char *action;
-    char ident[100];
+    char *ident = NULL;
     int rv = -1;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
@@ -2585,18 +2589,20 @@ remoteDispatchAuthPolkit(virNetServerPtr server,
         goto authfail;
     }
 
-    if (virNetServerClientGetUNIXIdentity(client, &callerUid, &callerGid, &callerPid) < 0) {
+    if (virNetServerClientGetUNIXIdentity(client, &callerUid, &callerGid,
+                                          &callerPid) < 0) {
         VIR_ERROR(_("cannot get peer socket identity"));
         goto authfail;
     }
 
-    rv = snprintf(ident, sizeof ident, "pid:%d,uid:%d", callerPid, callerUid);
-    if (rv < 0 || rv >= sizeof ident) {
-        VIR_ERROR(_("Caller identity was too large %d:%d"), callerPid, callerUid);
+    if (virAsprintf(&ident, "pid:%lld,uid:%d",
+                    (long long) callerPid, callerUid) < 0) {
+        virReportOOMError();
         goto authfail;
     }
 
-    VIR_INFO("Checking PID %d running as %d", callerPid, callerUid);
+    VIR_INFO("Checking PID %lld running as %d",
+             (long long) callerPid, callerUid);
     dbus_error_init(&err);
     if (!(pkcaller = polkit_caller_new_from_pid(virNetServerGetDBusConn(server),
                                                 callerPid, &err))) {
@@ -2649,24 +2655,26 @@ remoteDispatchAuthPolkit(virNetServerPtr server,
     polkit_caller_unref(pkcaller);
     polkit_action_unref(pkaction);
     if (pkresult != POLKIT_RESULT_YES) {
-        VIR_ERROR(_("Policy kit denied action %s from pid %d, uid %d, result: %s"),
-                  action, callerPid, callerUid,
+        VIR_ERROR(_("Policy kit denied action %s from pid %lld, uid %d, result: %s"),
+                  action, (long long) callerPid, callerUid,
                   polkit_result_to_string_representation(pkresult));
         goto authdeny;
     }
     PROBE(RPC_SERVER_CLIENT_AUTH_ALLOW,
           "client=%p auth=%d identity=%s",
           client, REMOTE_AUTH_POLKIT, ident);
-    VIR_INFO("Policy allowed action %s from pid %d, uid %d, result %s",
-             action, callerPid, callerUid,
+    VIR_INFO("Policy allowed action %s from pid %lld, uid %d, result %s",
+             action, (long long) callerPid, callerUid,
              polkit_result_to_string_representation(pkresult));
     ret->complete = 1;
     virNetServerClientSetIdentity(client, ident);
 
     virMutexUnlock(&priv->lock);
+    VIR_FREE(ident);
     return 0;
 
 error:
+    VIR_FREE(ident);
     virResetLastError();
     virNetError(VIR_ERR_AUTH_FAILED, "%s",
                 _("authentication failed"));
