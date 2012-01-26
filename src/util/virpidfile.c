@@ -193,6 +193,9 @@ int virPidFileRead(const char *dir,
  * resolves to @binpath. This adds protection against
  * recycling of previously reaped pids.
  *
+ * If @binpath is NULL the check for the executable path
+ * is skipped.
+ *
  * Returns -errno upon error, or zero on successful
  * reading of the pidfile. If the PID was not still
  * alive, zero will be returned, but @pid will be
@@ -218,16 +221,18 @@ int virPidFileReadPathIfAlive(const char *path,
     }
 #endif
 
-    if (virAsprintf(&procpath, "/proc/%d/exe", *pid) < 0) {
-        *pid = -1;
-        return -1;
+    if (binpath) {
+        if (virAsprintf(&procpath, "/proc/%d/exe", *pid) < 0) {
+            *pid = -1;
+            return -1;
+        }
+
+        if (virFileIsLink(procpath) &&
+            virFileLinkPointsTo(procpath, binpath) == 0)
+            *pid = -1;
+
+        VIR_FREE(procpath);
     }
-
-    if (virFileIsLink(procpath) &&
-        virFileLinkPointsTo(procpath, binpath) == 0)
-        *pid = -1;
-
-    VIR_FREE(procpath);
 
     return 0;
 }
