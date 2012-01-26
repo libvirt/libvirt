@@ -1239,6 +1239,14 @@ Moves a domain out of the suspended state.  This will allow a previously
 suspended domain to now be eligible for scheduling by the underlying
 hypervisor.
 
+=item B<suspend-duration> I<domain-id> I<target>
+
+Suspend a running domain into one of these states (possible I<target>
+values):
+    mem equivallent of S3 ACPI state
+    disk equivallent of S4 ACPI state
+    hybrid RAM is saved to disk but not powered off
+
 =item B<ttyconsole> I<domain-id>
 
 Output the device used for the TTY console of the domain. If the information

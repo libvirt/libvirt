@@ -2170,6 +2170,77 @@ cmdSuspend(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "dompmsuspend" command
+ */
+static const vshCmdInfo info_dom_pm_suspend[] = {
+    {"help", N_("suspend a domain for a given time duration")},
+    {"desc", N_("Suspend a running domain for a given time duration.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_dom_pm_suspend[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"duration", VSH_OT_INT, VSH_OFLAG_REQ_OPT, N_("duration in seconds")},
+    {"target", VSH_OT_STRING, VSH_OFLAG_REQ, N_("mem(Suspend-to-RAM), "
+                                                "disk(Suspend-to-Disk), "
+                                                "hybrid(Hybrid-Suspend)")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdDomPMSuspend(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    const char *name;
+    bool ret = false;
+    const char *target = NULL;
+    unsigned int suspendTarget;
+    unsigned long long duration = 0;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
+        return false;
+
+    if (vshCommandOptULongLong(cmd, "duration", &duration) < 0) {
+        vshError(ctl, _("Invalid duration argument"));
+        goto cleanup;
+    }
+
+    if (vshCommandOptString(cmd, "target", &target) < 0) {
+        vshError(ctl, _("Invalid target argument"));
+        goto cleanup;
+    }
+
+    if (STREQ(target, "mem"))
+        suspendTarget = VIR_NODE_SUSPEND_TARGET_MEM;
+    else if (STREQ(target, "disk"))
+        suspendTarget = VIR_NODE_SUSPEND_TARGET_DISK;
+    else if (STREQ(target, "hybrid"))
+        suspendTarget = VIR_NODE_SUSPEND_TARGET_HYBRID;
+    else {
+        vshError(ctl, "%s", _("Invalid target"));
+        goto cleanup;
+    }
+
+    if (virDomainPMSuspendForDuration(dom, suspendTarget, duration, 0) < 0) {
+        vshError(ctl, _("Domain %s could not be suspended"),
+                 virDomainGetName(dom));
+        goto cleanup;
+    }
+
+    vshPrint(ctl, _("Domain %s successfully suspended"),
+             virDomainGetName(dom));
+
+    ret = true;
+
+cleanup:
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "create" command
  */
 static const vshCmdInfo info_create[] = {
@@ -16109,6 +16180,8 @@ static const vshCmdDef domManagementCmds[] = {
     {"domjobabort", cmdDomjobabort, opts_domjobabort, info_domjobabort, 0},
     {"domjobinfo", cmdDomjobinfo, opts_domjobinfo, info_domjobinfo, 0},
     {"domname", cmdDomname, opts_domname, info_domname, 0},
+    {"dompmsuspend", cmdDomPMSuspend,
+     opts_dom_pm_suspend, info_dom_pm_suspend, 0},
     {"domuuid", cmdDomuuid, opts_domuuid, info_domuuid, 0},
     {"domxml-from-native", cmdDomXMLFromNative, opts_domxmlfromnative,
      info_domxmlfromnative, 0},
