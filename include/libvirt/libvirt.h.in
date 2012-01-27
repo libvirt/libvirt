@@ -2386,6 +2386,17 @@ char *                  virStorageVolGetXMLDesc         (virStorageVolPtr pool,
 
 char *                  virStorageVolGetPath            (virStorageVolPtr vol);
 
+typedef enum {
+  VIR_STORAGE_VOL_RESIZE_ALLOCATE = 1 << 0, /* force allocation of new size */
+  VIR_STORAGE_VOL_RESIZE_DELTA    = 1 << 1, /* size is relative to current */
+  VIR_STORAGE_VOL_RESIZE_SHRINK   = 1 << 2, /* allow decrease in capacity */
+} virStorageVolResizeFlags;
+
+int                     virStorageVolResize             (virStorageVolPtr vol,
+                                                         long long capacity,
+                                                         unsigned int flags);
+
+
 /**
  * virKeycodeSet:
  *

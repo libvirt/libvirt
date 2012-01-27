@@ -11279,6 +11279,87 @@ cmdVolInfo(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+/*
+ * "vol-resize" command
+ */
+static const vshCmdInfo info_vol_resize[] = {
+    {"help", N_("resize a vol")},
+    {"desc", N_("Resizes a storage volume.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_vol_resize[] = {
+    {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("vol name, key or path")},
+    {"capacity", VSH_OT_DATA, VSH_OFLAG_REQ,
+     N_("new capacity for the vol with optional k,M,G,T suffix")},
+    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
+    {"allocate", VSH_OT_BOOL, 0,
+     N_("allocate the new capacity, rather than leaving it sparse")},
+    {"delta", VSH_OT_BOOL, 0,
+     N_("use capacity as a delta to current size, rather than the new size")},
+    {"shrink", VSH_OT_BOOL, 0, N_("allow the resize to shrink the volume")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdVolResize(vshControl *ctl, const vshCmd *cmd)
+{
+    virStorageVolPtr vol;
+    const char *capacityStr = NULL;
+    unsigned long long capacity = 0;
+    unsigned int flags = 0;
+    bool ret = false;
+    bool delta = false;
+
+    if (vshCommandOptBool(cmd, "allocate"))
+        flags |= VIR_STORAGE_VOL_RESIZE_ALLOCATE;
+    if (vshCommandOptBool(cmd, "delta")) {
+        delta = true;
+        flags |= VIR_STORAGE_VOL_RESIZE_DELTA;
+    }
+    if (vshCommandOptBool(cmd, "shrink"))
+        flags |= VIR_STORAGE_VOL_RESIZE_SHRINK;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", NULL)))
+        return false;
+
+    if (vshCommandOptString(cmd, "capacity", &capacityStr) <= 0)
+        goto cleanup;
+    if (delta && *capacityStr == '-') {
+        if (cmdVolSize(capacityStr + 1, &capacity) < 0) {
+            vshError(ctl, _("Malformed size %s"), capacityStr);
+            goto cleanup;
+        }
+        capacity = -capacity;
+    } else {
+        if (cmdVolSize(capacityStr, &capacity) < 0) {
+            vshError(ctl, _("Malformed size %s"), capacityStr);
+            goto cleanup;
+        }
+    }
+
+    if (virStorageVolResize(vol, capacity, flags) == 0) {
+        vshPrint(ctl,
+                 delta ? _("Size of volume '%s' successfully changed by %s\n")
+                 : _("Size of volume '%s' successfully changed to %s\n"),
+                 virStorageVolGetName(vol), capacityStr);
+        ret = true;
+    } else {
+        vshError(ctl,
+                 delta ? _("Failed to change size of volume '%s' by %s\n")
+                 : _("Failed to change size of volume '%s' to %s\n"),
+                 virStorageVolGetName(vol), capacityStr);
+        ret = false;
+    }
+
+cleanup:
+    virStorageVolFree(vol);
+    return ret;
+}
+
 
 /*
  * "vol-dumpxml" command
@@ -16139,6 +16220,7 @@ static const vshCmdDef storageVolCmds[] = {
     {"vol-name", cmdVolName, opts_vol_name, info_vol_name, 0},
     {"vol-path", cmdVolPath, opts_vol_path, info_vol_path, 0},
     {"vol-pool", cmdVolPool, opts_vol_pool, info_vol_pool, 0},
+    {"vol-resize", cmdVolResize, opts_vol_resize, info_vol_resize, 0},
     {"vol-upload", cmdVolUpload, opts_vol_upload, info_vol_upload, 0},
     {"vol-wipe", cmdVolWipe, opts_vol_wipe, info_vol_wipe, 0},
     {NULL, NULL, NULL, NULL, 0}

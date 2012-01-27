@@ -519,6 +519,7 @@ LIBVIRT_0.9.9 {
 LIBVIRT_0.9.10 {
     global:
         virDomainShutdownFlags;
+        virStorageVolResize;
         virStorageVolWipePattern;
 } LIBVIRT_0.9.9;
 

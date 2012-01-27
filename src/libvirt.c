@@ -12927,6 +12927,82 @@ error:
     return NULL;
 }
 
+/**
+ * virStorageVolResize:
+ * @vol: pointer to storage volume
+ * @capacity: new capacity, in bytes
+ * @flags: bitwise-OR of virStorageVolResizeFlags
+ *
+ * Changes the capacity of the storage volume @vol to @capacity. The
+ * operation will fail if the new capacity requires allocation that would
+ * exceed the remaining free space in the parent pool.  The contents of
+ * the new capacity will appear as all zero bytes.
+ *
+ * Normally, the operation will attempt to affect capacity with a minimum
+ * impact on allocation (that is, the default operation favors a sparse
+ * resize).  If @flags contains VIR_STORAGE_VOL_RESIZE_ALLOCATE, then the
+ * operation will ensure that allocation is sufficient for the new
+ * capacity; this may make the operation take noticeably longer.
+ *
+ * Normally, the operation treats @capacity as the new size in bytes;
+ * but if @flags contains VIR_STORAGE_RESIZE_DELTA, then @capacity
+ * represents the size difference to add to the current size.  It is
+ * up to the storage pool implementation whether unaligned requests are
+ * rounded up to the next valid boundary, or rejected.
+ *
+ * Normally, this operation should only be used to enlarge capacity;
+ * but if @flags contains VIR_STORAGE_RESIZE_SHRINK, it is possible to
+ * attempt a reduction in capacity even though it might cause data loss.
+ *
+ * Returns 0 on success, or -1 on error.
+ */
+int
+virStorageVolResize(virStorageVolPtr vol,
+                    long long capacity,
+                    unsigned int flags)
+{
+    virConnectPtr conn;
+    VIR_DEBUG("vol=%p capacity=%lld flags=%x", vol, capacity, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_STORAGE_VOL(vol)) {
+        virLibStorageVolError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = vol->conn;
+
+    if (conn->flags & VIR_CONNECT_RO) {
+       virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+       goto error;
+    }
+
+    /* Negative capacity is valid only with both delta and shrink;
+     * zero capacity is valid with either delta or shrink.  */
+    if ((capacity < 0 && !(flags & VIR_STORAGE_VOL_RESIZE_DELTA) &&
+         !(flags & VIR_STORAGE_VOL_RESIZE_SHRINK)) ||
+        (capacity == 0 && !((flags & VIR_STORAGE_VOL_RESIZE_DELTA) ||
+                            (flags & VIR_STORAGE_VOL_RESIZE_SHRINK)))) {
+        virLibStorageVolError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->storageDriver && conn->storageDriver->volResize) {
+        int ret;
+        ret = conn->storageDriver->volResize(vol, capacity, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(vol->conn);
+    return -1;
+}
 
 /**
  * virNodeNumOfDevices:

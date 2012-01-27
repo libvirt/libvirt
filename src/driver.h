@@ -1261,6 +1261,10 @@ typedef int
                                unsigned long long offset,
                                unsigned long long length,
                                unsigned int flags);
+typedef int
+        (*virDrvStorageVolResize) (virStorageVolPtr vol,
+                                   long long capacity,
+                                   unsigned int flags);
 
 typedef int
         (*virDrvStoragePoolIsActive)(virStoragePoolPtr pool);
@@ -1323,6 +1327,7 @@ struct _virStorageDriver {
     virDrvStorageVolGetInfo volGetInfo;
     virDrvStorageVolGetXMLDesc volGetXMLDesc;
     virDrvStorageVolGetPath volGetPath;
+    virDrvStorageVolResize volResize;
     virDrvStoragePoolIsActive   poolIsActive;
     virDrvStoragePoolIsPersistent   poolIsPersistent;
 };
