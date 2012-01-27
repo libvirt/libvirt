@@ -6778,12 +6778,10 @@ static int
 qemuParseCommandLineCPU(virDomainDefPtr dom,
                         const char *val)
 {
-    virCPUDefPtr cpu;
+    virCPUDefPtr cpu = NULL;
     const char *p = val;
     const char *next;
-
-    if (!(cpu = qemuInitGuestCPU(dom)))
-        goto error;
+    char *model = NULL;
 
     do {
         if (*p == '\0' || *p == ',')
@@ -6792,14 +6790,22 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
         if ((next = strchr(p, ',')))
             next++;
 
-        if (!cpu->model) {
+        if (p == val) {
             if (next)
-                cpu->model = strndup(p, next - p - 1);
+                model = strndup(p, next - p - 1);
             else
-                cpu->model = strdup(p);
+                model = strdup(p);
 
-            if (!cpu->model)
+            if (!model)
                 goto no_memory;
+
+            if (!STREQ(model, "qemu32") && !STREQ(model, "qemu64")) {
+                if (!(cpu = qemuInitGuestCPU(dom)))
+                    goto error;
+
+                cpu->model = model;
+                model = NULL;
+            }
         }
         else if (*p == '+' || *p == '-') {
             char *feature;
@@ -6823,6 +6829,13 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             if (!feature)
                 goto no_memory;
 
+            if (!cpu) {
+                if (!(cpu = qemuInitGuestCPU(dom)))
+                    goto error;
+
+                cpu->model = model;
+                model = NULL;
+            }
             ret = virCPUDefAddFeature(cpu, feature, policy);
             VIR_FREE(feature);
             if (ret < 0)
@@ -6832,22 +6845,27 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
 
     if (STREQ(dom->os.arch, "x86_64")) {
         bool is_32bit = false;
-        union cpuData *cpuData = NULL;
-        int ret;
+        if (cpu) {
+            union cpuData *cpuData = NULL;
+            int ret;
 
-        ret = cpuEncode("x86_64", cpu, NULL, &cpuData,
-                        NULL, NULL, NULL, NULL);
-        if (ret < 0)
-            goto error;
+            ret = cpuEncode("x86_64", cpu, NULL, &cpuData,
+                            NULL, NULL, NULL, NULL);
+            if (ret < 0)
+                goto error;
 
-        is_32bit = (cpuHasFeature("x86_64", cpuData, "lm") != 1);
-        cpuDataFree("x86_64", cpuData);
+            is_32bit = (cpuHasFeature("x86_64", cpuData, "lm") != 1);
+            cpuDataFree("x86_64", cpuData);
+        } else if (model) {
+            is_32bit = STREQ(model, "qemu32");
+        }
 
         if (is_32bit) {
             VIR_FREE(dom->os.arch);
             dom->os.arch = strdup("i686");
         }
     }
+    VIR_FREE(model);
     return 0;
 
 syntax:
