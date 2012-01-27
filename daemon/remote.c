@@ -2472,7 +2472,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
     int status = -1;
     char *ident = NULL;
     bool authdismissed = 0;
-    char *pkout = NULL;
+    char *pkout = NULL, *pkerr = NULL;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
     virCommandPtr cmd = NULL;
@@ -2484,6 +2484,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     cmd = virCommandNewArgList(PKCHECK_PATH, "--action-id", action, NULL);
     virCommandSetOutputBuffer(cmd, &pkout);
+    virCommandSetErrorBuffer(cmd, &pkerr);
 
     VIR_DEBUG("Start PolicyKit auth %d", virNetServerClientGetFD(client));
     if (virNetServerClientGetAuth(client) != VIR_NET_SERVER_SERVICE_AUTH_POLKIT) {
@@ -2537,15 +2538,22 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
 error:
     virCommandFree(cmd);
     VIR_FREE(ident);
-    VIR_FREE(pkout);
     virResetLastError();
+
     if (authdismissed) {
         virNetError(VIR_ERR_AUTH_CANCELLED, "%s",
                     _("authentication cancelled by user"));
+    } else if (pkout || pkerr) {
+        virNetError(VIR_ERR_AUTH_FAILED, "%s %s",
+                    pkerr ? pkerr : "",
+                    pkout ? pkout : "");
     } else {
         virNetError(VIR_ERR_AUTH_FAILED, "%s",
                     _("authentication failed"));
     }
+
+    VIR_FREE(pkout);
+    VIR_FREE(pkerr);
     virNetMessageSaveError(rerr);
     virMutexUnlock(&priv->lock);
     return -1;
