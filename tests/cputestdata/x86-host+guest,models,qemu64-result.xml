@@ -6,7 +6,6 @@
   <feature policy='require' name='sse4.1'/>
   <feature policy='require' name='dca'/>
   <feature policy='require' name='xtpr'/>
-  <feature policy='require' name='cx16'/>
   <feature policy='require' name='ssse3'/>
   <feature policy='require' name='monitor'/>
   <feature policy='require' name='pbe'/>
