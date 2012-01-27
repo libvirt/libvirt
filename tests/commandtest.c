@@ -1,7 +1,7 @@
 /*
  * commandtest.c: Test the libCommand API
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -481,7 +481,7 @@ static int test13(const void *unused ATTRIBUTE_UNUSED)
     cmd = NULL;
 
     if (!STREQ(outactual, outexpect)) {
-        virtTestDifference(stderr, outactual, outexpect);
+        virtTestDifference(stderr, outexpect, outactual);
         goto cleanup;
     }
 
@@ -526,11 +526,11 @@ static int test14(const void *unused ATTRIBUTE_UNUSED)
     cmd = NULL;
 
     if (!STREQ(outactual, outexpect)) {
-        virtTestDifference(stderr, outactual, outexpect);
+        virtTestDifference(stderr, outexpect, outactual);
         goto cleanup;
     }
     if (!STREQ(erractual, errexpect)) {
-        virtTestDifference(stderr, erractual, errexpect);
+        virtTestDifference(stderr, errexpect, erractual);
         goto cleanup;
     }
 
@@ -604,7 +604,7 @@ static int test16(const void *unused ATTRIBUTE_UNUSED)
     }
 
     if (!STREQ(outactual, outexpect)) {
-        virtTestDifference(stderr, outactual, outexpect);
+        virtTestDifference(stderr, outexpect, outactual);
         goto cleanup;
     }
 
