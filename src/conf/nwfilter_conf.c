@@ -2809,6 +2809,35 @@ virNWFilterTestUnassignDef(virConnectPtr conn,
     return rc;
 }
 
+static bool
+virNWFilterDefEqual(const virNWFilterDefPtr def1, virNWFilterDefPtr def2,
+                    bool cmpUUIDs)
+{
+    bool ret = false;
+    unsigned char rem_uuid[VIR_UUID_BUFLEN];
+    char *xml1, *xml2 = NULL;
+
+    if (!cmpUUIDs) {
+        /* make sure the UUIDs are equal */
+        memcpy(rem_uuid, def2->uuid, sizeof(rem_uuid));
+        memcpy(def2->uuid, def1->uuid, sizeof(def2->uuid));
+    }
+
+    if (!(xml1 = virNWFilterDefFormat(def1)) ||
+        !(xml2 = virNWFilterDefFormat(def2)))
+        goto cleanup;
+
+    ret = STREQ(xml1, xml2);
+
+cleanup:
+    if (!cmpUUIDs)
+        memcpy(def2->uuid, rem_uuid, sizeof(rem_uuid));
+
+    VIR_FREE(xml1);
+    VIR_FREE(xml2);
+
+    return ret;
+}
 
 virNWFilterObjPtr
 virNWFilterObjAssignDef(virConnectPtr conn,
@@ -2840,6 +2869,14 @@ virNWFilterObjAssignDef(virConnectPtr conn,
     virNWFilterLockFilterUpdates();
 
     if ((nwfilter = virNWFilterObjFindByName(nwfilters, def->name))) {
+
+        if (virNWFilterDefEqual(def, nwfilter->def, false)) {
+            virNWFilterDefFree(nwfilter->def);
+            nwfilter->def = def;
+            virNWFilterUnlockFilterUpdates();
+            return nwfilter;
+        }
+
         nwfilter->newDef = def;
         /* trigger the update on VMs referencing the filter */
         if (virNWFilterTriggerVMFilterRebuild(conn)) {
