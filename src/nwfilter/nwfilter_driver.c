@@ -162,6 +162,8 @@ nwfilterDriverReload(void) {
         virNWFilterCallbackDriversUnlock();
         nwfilterDriverUnlock(driverState);
 
+        virNWFilterInstFiltersOnAllVMs(conn);
+
         virConnectClose(conn);
     }
 

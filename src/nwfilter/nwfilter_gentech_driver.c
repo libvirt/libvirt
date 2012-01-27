@@ -1122,7 +1122,7 @@ virNWFilterDomainFWUpdateCB(void *payload,
     virDomainObjPtr obj = payload;
     virDomainDefPtr vm = obj->def;
     struct domUpdateCBStruct *cb = data;
-    int i;
+    int i, err;
     bool skipIface;
 
     virDomainObjLock(obj);
@@ -1155,6 +1155,16 @@ virNWFilterDomainFWUpdateCB(void *payload,
                     if ( !virHashLookup(cb->skipInterfaces, net->ifname)) {
                         cb->err = virNWFilterTearOldFilter(net);
                     }
+                    break;
+
+                case STEP_APPLY_CURRENT:
+                    err = virNWFilterInstantiateFilter(cb->conn,
+                                                       vm->uuid,
+                                                       net);
+                    if (err)
+                        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Failure while applying current filter on "
+                            "VM %s"), vm->name);
                     break;
                 }
                 if (cb->err)

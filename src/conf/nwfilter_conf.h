@@ -577,6 +577,7 @@ enum UpdateStep {
     STEP_APPLY_NEW,
     STEP_TEAR_NEW,
     STEP_TEAR_OLD,
+    STEP_APPLY_CURRENT,
 };
 
 struct domUpdateCBStruct {
@@ -721,6 +722,8 @@ void virNWFilterUnlockFilterUpdates(void);
 
 int virNWFilterConfLayerInit(virHashIterator domUpdateCB);
 void virNWFilterConfLayerShutdown(void);
+
+int virNWFilterInstFiltersOnAllVMs(virConnectPtr conn);
 
 # define virNWFilterReportError(code, fmt...)                      \
         virReportErrorHelper(VIR_FROM_NWFILTER, code, __FILE__,    \

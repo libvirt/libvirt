@@ -2723,6 +2723,29 @@ virNWFilterCallbackDriversUnlock(void)
 
 static virHashIterator virNWFilterDomainFWUpdateCB;
 
+/**
+ * virNWFilterInstFiltersOnAllVMs:
+ * Apply all filters on all running VMs. Don't terminate in case of an
+ * error. This should be called upon reloading of the driver.
+ */
+int
+virNWFilterInstFiltersOnAllVMs(virConnectPtr conn)
+{
+    int i;
+    struct domUpdateCBStruct cb = {
+        .conn = conn,
+        .err = 0, /* ignored here */
+        .step = STEP_APPLY_CURRENT,
+        .skipInterfaces = NULL, /* not needed */
+    };
+
+    for (i = 0; i < nCallbackDriver; i++)
+        callbackDrvArray[i]->vmFilterRebuild(conn,
+                                             virNWFilterDomainFWUpdateCB,
+                                             &cb);
+
+    return 0;
+}
 
 static int
 virNWFilterTriggerVMFilterRebuild(virConnectPtr conn)

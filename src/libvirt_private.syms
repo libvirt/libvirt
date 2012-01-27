@@ -811,6 +811,7 @@ virNWFilterConfLayerShutdown;
 virNWFilterDefFormat;
 virNWFilterDefFree;
 virNWFilterDefParseString;
+virNWFilterInstFiltersOnAllVMs;
 virNWFilterJumpTargetTypeToString;
 virNWFilterLoadAllConfigs;
 virNWFilterLockFilterUpdates;
