@@ -42,6 +42,7 @@
 #include "pci.h"
 #include "virfile.h"
 #include "configmake.h"
+#include "virrandom.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
@@ -1181,6 +1182,9 @@ main(int argc, char **argv)
         progname++;
 
     memset(ctl, 0, sizeof(vahControl));
+
+    if (virRandomInitialize(time(NULL) ^ getpid()) < 0)
+        vah_error(ctl, 1, _("could not initialize random generator"));
 
     if (vahParseArgv(ctl, argc, argv) != 0)
         vah_error(ctl, 1, _("could not parse arguments"));
