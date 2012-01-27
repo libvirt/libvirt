@@ -7250,6 +7250,8 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
             def->onReboot = VIR_DOMAIN_LIFECYCLE_DESTROY;
         } else if (STREQ(arg, "-no-kvm")) {
             def->virtType = VIR_DOMAIN_VIRT_QEMU;
+        } else if (STREQ(arg, "-enable-kvm")) {
+            def->virtType = VIR_DOMAIN_VIRT_KVM;
         } else if (STREQ(arg, "-nographic")) {
             nographics = 1;
         } else if (STREQ(arg, "-full-screen")) {
