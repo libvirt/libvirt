@@ -2365,7 +2365,7 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     if (addressType == NULL || STRCASEEQ(addressType, "generated") ||
         STRCASEEQ(addressType, "vpx")) {
         if (generatedAddress != NULL) {
-            if (virParseMacAddr(generatedAddress, (*def)->mac) < 0) {
+            if (virMacAddrParse(generatedAddress, (*def)->mac) < 0) {
                 VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
                           _("Expecting VMX entry '%s' to be MAC address but "
                             "found '%s'"), generatedAddress_name,
@@ -2375,7 +2375,7 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
         }
     } else if (STRCASEEQ(addressType, "static")) {
         if (address != NULL) {
-            if (virParseMacAddr(address, (*def)->mac) < 0) {
+            if (virMacAddrParse(address, (*def)->mac) < 0) {
                 VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
                           _("Expecting VMX entry '%s' to be MAC address but "
                             "found '%s'"), address_name, address);
@@ -3557,7 +3557,7 @@ virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
     }
 
     /* def:mac -> vmx:addressType, vmx:(generated)Address, vmx:checkMACAddress */
-    virFormatMacAddr(def->mac, mac_string);
+    virMacAddrFormat(def->mac, mac_string);
 
     prefix = (def->mac[0] << 16) | (def->mac[1] << 8) | def->mac[2];
     suffix = (def->mac[3] << 16) | (def->mac[4] << 8) | def->mac[5];

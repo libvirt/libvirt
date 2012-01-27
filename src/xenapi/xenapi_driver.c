@@ -1513,7 +1513,7 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
             }
             xen_vif_get_record(session, &vif_rec, vif);
             if (vif_rec != NULL) {
-                if (virParseMacAddr((const char *)vif_rec->mac,defPtr->nets[i]->mac) < 0)
+                if (virMacAddrParse((const char *)vif_rec->mac,defPtr->nets[i]->mac) < 0)
                     xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
                                               _("Unable to parse given mac address"));
                 xen_vif_record_free(vif_rec);

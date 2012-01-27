@@ -295,7 +295,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
                                     _("MAC address %s too long for destination"), p);
                         goto error;
                     }
-                    if (virParseMacAddr(cpy_temp, net->mac) < 0) {
+                    if (virMacAddrParse(cpy_temp, net->mac) < 0) {
                         openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
                                     _("Wrong MAC address"));
                         goto error;

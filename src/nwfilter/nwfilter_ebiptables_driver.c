@@ -303,7 +303,7 @@ _printDataType(virNWFilterVarCombIterPtr vars,
             return -1;
         }
 
-        virFormatMacAddr(item->u.macaddr.addr, buf);
+        virMacAddrFormat(item->u.macaddr.addr, buf);
     break;
 
     case DATATYPE_IPV6MASK:
@@ -3129,7 +3129,7 @@ ebtablesApplyBasicRules(const char *ifname,
         return -1;
     }
 
-    virFormatMacAddr(macaddr, macaddr_str);
+    virMacAddrFormat(macaddr, macaddr_str);
 
     ebiptablesAllTeardown(ifname);
 
@@ -3234,7 +3234,7 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
         srcIPParam = virBufferContentAndReset(&buf);
     }
 
-    virFormatMacAddr(macaddr, macaddr_str);
+    virMacAddrFormat(macaddr, macaddr_str);
 
     ebiptablesAllTeardown(ifname);
 

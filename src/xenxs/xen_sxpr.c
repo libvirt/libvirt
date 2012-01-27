@@ -580,7 +580,7 @@ xenParseSxprNets(virDomainDefPtr def,
 
             tmp = sexpr_node(node, "device/vif/mac");
             if (tmp) {
-                if (virParseMacAddr(tmp, net->mac) < 0) {
+                if (virMacAddrParse(tmp, net->mac) < 0) {
                     XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
                                  _("malformed mac address '%s'"), tmp);
                     goto cleanup;

@@ -831,7 +831,7 @@ __virNWFilterInstantiateFilter(const unsigned char *vmuuid,
         goto err_exit;
     }
 
-    virFormatMacAddr(macaddr, vmmacaddr);
+    virMacAddrFormat(macaddr, vmmacaddr);
     str_macaddr = strdup(vmmacaddr);
     if (!str_macaddr) {
         virReportOOMError();

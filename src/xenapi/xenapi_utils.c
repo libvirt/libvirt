@@ -562,7 +562,7 @@ createVMRecordFromXml (virConnectPtr conn, virDomainDefPtr def,
                     goto error_cleanup;
             if (def->nets[i]->mac) {
                 char macStr[VIR_MAC_STRING_BUFLEN];
-                virFormatMacAddr(def->nets[i]->mac, macStr);
+                virMacAddrFormat(def->nets[i]->mac, macStr);
                 if (!(mac = strdup(macStr))) {
                     VIR_FREE(bridge);
                     goto error_cleanup;

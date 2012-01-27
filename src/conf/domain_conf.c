@@ -3810,7 +3810,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
     }
 
     if (macaddr) {
-        if (virParseMacAddr((const char *)macaddr, def->mac) < 0) {
+        if (virMacAddrParse((const char *)macaddr, def->mac) < 0) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                  _("unable to parse mac address '%s'"),
                                  (const char *)macaddr);
@@ -13904,7 +13904,7 @@ virDomainNetFind(virDomainDefPtr def, const char *device)
     unsigned char mac[VIR_MAC_BUFLEN];
     int i;
 
-    if (virParseMacAddr(device, mac) == 0)
+    if (virMacAddrParse(device, mac) == 0)
         isMac = true;
 
     if (isMac) {

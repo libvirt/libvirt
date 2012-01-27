@@ -425,7 +425,7 @@ virNetworkDHCPRangeDefParseXML(const char *networkName,
 
             mac = virXMLPropString(cur, "mac");
             if ((mac != NULL) &&
-                (virParseMacAddr(mac, &addr[0]) != 0)) {
+                (virMacAddrParse(mac, &addr[0]) != 0)) {
                 virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                                       _("Cannot parse MAC address '%s' in network '%s'"),
                                       mac, networkName);
@@ -989,7 +989,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
 
     tmp = virXPathString("string(./mac[1]/@address)", ctxt);
     if (tmp) {
-        if (virParseMacAddr(tmp, def->mac) < 0) {
+        if (virMacAddrParse(tmp, def->mac) < 0) {
             virNetworkReportError(VIR_ERR_XML_ERROR,
                                   _("Invalid bridge mac address '%s' in network '%s'"),
                                   tmp, def->name);
@@ -1513,7 +1513,7 @@ char *virNetworkDefFormat(const virNetworkDefPtr def, unsigned int flags)
 
     if (def->mac_specified) {
         char macaddr[VIR_MAC_STRING_BUFLEN];
-        virFormatMacAddr(def->mac, macaddr);
+        virMacAddrFormat(def->mac, macaddr);
         virBufferAsprintf(&buf, "  <mac address='%s'/>\n", macaddr);
     }
 
@@ -1840,7 +1840,7 @@ void virNetworkSetBridgeMacAddr(virNetworkDefPtr def)
         /* if the bridge doesn't have a mac address explicitly defined,
          * autogenerate a random one.
          */
-        virGenerateMacAddr((unsigned char[]){ 0x52, 0x54, 0 },
+        virMacAddrGenerate((unsigned char[]){ 0x52, 0x54, 0 },
                            def->mac);
         def->mac_specified = true;
     }

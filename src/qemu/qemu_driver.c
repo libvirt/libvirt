@@ -5361,7 +5361,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         net = dev->data.net;
         if (virDomainNetIndexByMac(vmdef, net->mac) >= 0) {
             char macbuf[VIR_MAC_STRING_BUFLEN];
-            virFormatMacAddr(net->mac, macbuf);
+            virMacAddrFormat(net->mac, macbuf);
             qemuReportError(VIR_ERR_INVALID_ARG,
                             _("mac %s already exists"), macbuf);
             return -1;
@@ -5422,7 +5422,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         if (virDomainNetRemoveByMac(vmdef, net->mac)) {
             char macbuf[VIR_MAC_STRING_BUFLEN];
 
-            virFormatMacAddr(net->mac, macbuf);
+            virMacAddrFormat(net->mac, macbuf);
             qemuReportError(VIR_ERR_INVALID_ARG,
                             _("no nic of mac %s"), macbuf);
             return -1;
@@ -5496,7 +5496,7 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
         net = dev->data.net;
         if ((pos = virDomainNetIndexByMac(vmdef, net->mac)) < 0) {
             char macbuf[VIR_MAC_STRING_BUFLEN];
-            virFormatMacAddr(net->mac, macbuf);
+            virMacAddrFormat(net->mac, macbuf);
             qemuReportError(VIR_ERR_INVALID_ARG,
                             _("mac %s doesn't exist"), macbuf);
             return -1;

@@ -1794,7 +1794,7 @@ virMacAddrCompare (const char *p, const char *q)
 }
 
 /**
- * virParseMacAddr:
+ * virMacAddrParse:
  * @str: string representation of MAC address, e.g., "0:1E:FC:E:3a:CB"
  * @addr: 6-byte MAC address
  *
@@ -1803,7 +1803,7 @@ virMacAddrCompare (const char *p, const char *q)
  * Return 0 upon success, or -1 in case of error.
  */
 int
-virParseMacAddr(const char* str, unsigned char *addr)
+virMacAddrParse(const char* str, unsigned char *addr)
 {
     int i;
 
@@ -1838,7 +1838,7 @@ virParseMacAddr(const char* str, unsigned char *addr)
     return -1;
 }
 
-void virFormatMacAddr(const unsigned char *addr,
+void virMacAddrFormat(const unsigned char *addr,
                       char *str)
 {
     snprintf(str, VIR_MAC_STRING_BUFLEN,
@@ -1848,7 +1848,7 @@ void virFormatMacAddr(const unsigned char *addr,
     str[VIR_MAC_STRING_BUFLEN-1] = '\0';
 }
 
-void virGenerateMacAddr(const unsigned char *prefix,
+void virMacAddrGenerate(const unsigned char *prefix,
                         unsigned char *addr)
 {
     addr[0] = prefix[0];

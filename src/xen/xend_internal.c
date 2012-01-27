@@ -2713,7 +2713,7 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
             goto cleanup;
 
         char macStr[VIR_MAC_STRING_BUFLEN];
-        virFormatMacAddr(dev->data.net->mac, macStr);
+        virMacAddrFormat(dev->data.net->mac, macStr);
 
         if (!(target = strdup(macStr))) {
             virReportOOMError();

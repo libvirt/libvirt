@@ -848,7 +848,7 @@ extern void
 virCapabilitiesGenerateMac(virCapsPtr caps,
                            unsigned char *mac)
 {
-    virGenerateMacAddr(caps->macPrefix, mac);
+    virMacAddrGenerate(caps->macPrefix, mac);
 }
 
 extern void

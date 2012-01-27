@@ -264,7 +264,7 @@ virNetDevReplaceMacAddress(const char *linkdev,
         virReportOOMError();
         return -1;
     }
-    virFormatMacAddr(oldmac, macstr);
+    virMacAddrFormat(oldmac, macstr);
     if (virFileWriteStr(path, macstr, O_CREAT|O_TRUNC|O_WRONLY) < 0) {
         virReportSystemError(errno, _("Unable to preserve mac for %s"),
                              linkdev);
@@ -305,7 +305,7 @@ virNetDevRestoreMacAddress(const char *linkdev,
     if (virFileReadAll(path, VIR_MAC_STRING_BUFLEN, &macstr) < 0)
         return -1;
 
-    if (virParseMacAddr(macstr, &oldmac[0]) != 0) {
+    if (virMacAddrParse(macstr, &oldmac[0]) != 0) {
         virNetDevError(VIR_ERR_INTERNAL_ERROR,
                        _("Cannot parse MAC address from '%s'"),
                        oldmacname);

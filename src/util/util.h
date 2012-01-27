@@ -182,11 +182,11 @@ char *virStrcpy(char *dest, const char *src, size_t destbytes)
 # define VIR_MAC_PREFIX_BUFLEN 3
 # define VIR_MAC_STRING_BUFLEN VIR_MAC_BUFLEN * 3
 
-int virParseMacAddr(const char* str,
+int virMacAddrParse(const char* str,
                     unsigned char *addr) ATTRIBUTE_RETURN_CHECK;
-void virFormatMacAddr(const unsigned char *addr,
+void virMacAddrFormat(const unsigned char *addr,
                       char *str);
-void virGenerateMacAddr(const unsigned char *prefix,
+void virMacAddrGenerate(const unsigned char *prefix,
                         unsigned char *addr);
 
 int virDiskNameToIndex(const char* str);

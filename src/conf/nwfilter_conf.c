@@ -1670,7 +1670,7 @@ static int
 virNWMACAddressParser(const char *input,
                       nwMACAddressPtr output)
 {
-    return virParseMacAddr(input, &output->addr[0]);
+    return virMacAddrParse(input, &output->addr[0]);
 }
 
 

@@ -511,7 +511,7 @@ learnIPAddressThread(void *arg)
         goto done;
     }
 
-    virFormatMacAddr(req->macaddr, macaddr);
+    virMacAddrFormat(req->macaddr, macaddr);
 
     switch (req->howDetect) {
     case DETECT_DHCP:

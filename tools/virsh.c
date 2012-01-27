@@ -1408,7 +1408,7 @@ cmdDomIfSetLink (vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (virParseMacAddr(iface, macaddr) == 0) {
+    if (virMacAddrParse(iface, macaddr) == 0) {
         element = "mac";
         attr = "address";
     } else {
@@ -1566,7 +1566,7 @@ cmdDomIfGetLink (vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (virParseMacAddr(iface, macaddr) == 0) {
+    if (virMacAddrParse(iface, macaddr) == 0) {
         element = "mac";
         attr = "address";
     } else {
@@ -13473,7 +13473,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
             if (cur->type == XML_ELEMENT_NODE &&
                 xmlStrEqual(cur->name, BAD_CAST "mac")) {
                 char *tmp_mac = virXMLPropString(cur, "address");
-                diff_mac = virMacAddrCompare (tmp_mac, mac);
+                diff_mac = virMacAddrCompare(tmp_mac, mac);
                 VIR_FREE(tmp_mac);
                 if (!diff_mac) {
                     goto hit;

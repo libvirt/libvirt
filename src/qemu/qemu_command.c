@@ -6479,7 +6479,7 @@ qemuParseCommandLineNet(virCapsPtr caps,
     for (i = 0 ; i < nkeywords ; i++) {
         if (STREQ(keywords[i], "macaddr")) {
             genmac = 0;
-            if (virParseMacAddr(values[i], def->mac) < 0) {
+            if (virMacAddrParse(values[i], def->mac) < 0) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 _("unable to parse mac address '%s'"),
                                 values[i]);
