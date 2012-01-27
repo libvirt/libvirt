@@ -576,7 +576,8 @@ VIR_ENUM_IMPL(virDomainTimerName, VIR_DOMAIN_TIMER_NAME_LAST,
               "pit",
               "rtc",
               "hpet",
-              "tsc");
+              "tsc",
+              "kvmclock");
 
 VIR_ENUM_IMPL(virDomainTimerTrack, VIR_DOMAIN_TIMER_TRACK_LAST,
               "boot",

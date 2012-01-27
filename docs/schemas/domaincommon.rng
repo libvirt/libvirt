@@ -571,9 +571,10 @@
       <attribute name="name">
         <choice>
           <value>platform</value>
+          <value>hpet</value>
+          <value>kvmclock</value>
           <value>pit</value>
           <value>rtc</value>
-          <value>hpet</value>
           <value>tsc</value>
         </choice>
       </attribute>

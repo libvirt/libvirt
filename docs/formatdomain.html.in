@@ -943,8 +943,8 @@
           <dt><code>name</code></dt>
           <dd>
             The <code>name</code> attribute selects which timer is
-            being modified, and can be one of "platform", "pit",
-            "rtc", "hpet", or "tsc".
+            being modified, and can be one of "platform", "hpet",
+            "kvmclock", "pit", "rtc", or "tsc".
           </dd>
           <dt><code>track</code></dt>
           <dd>
