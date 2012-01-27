@@ -1330,16 +1330,14 @@ int qemuCapsParseHelpStr(const char *qemu,
 
 fail:
     p = strchr(help, '\n');
-    if (p)
-        p = strndup(help, p - help);
+    if (!p)
+        p = strchr(help, '\0');
 
     qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                    _("cannot parse %s version number in '%s'"),
-                    qemu, p ? p : help);
+                    _("cannot parse %s version number in '%.*s'"),
+                    qemu, (int) (p - help), help);
 
 cleanup:
-    VIR_FREE(p);
-
     return -1;
 }
 
