@@ -1,7 +1,7 @@
 /*
  * xml.c: XML based interfaces for the libvir library
  *
- * Copyright (C) 2005, 2007-2011 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2012 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -842,7 +842,7 @@ or other application using the libvirt API.\n\
 }
 
 
-struct virXMLRewritFileData {
+struct virXMLRewriteFileData {
     const char *warnName;
     const char *warnCommand;
     const char *xml;
@@ -851,7 +851,7 @@ struct virXMLRewritFileData {
 static int
 virXMLRewriteFile(int fd, void *opaque)
 {
-    struct virXMLRewritFileData *data = opaque;
+    struct virXMLRewriteFileData *data = opaque;
 
     if (data->warnName && data->warnCommand) {
         if (virXMLEmitWarning(fd, data->warnName, data->warnCommand) < 0)
@@ -870,7 +870,7 @@ virXMLSaveFile(const char *path,
                const char *warnCommand,
                const char *xml)
 {
-    struct virXMLRewritFileData data = { warnName, warnCommand, xml };
+    struct virXMLRewriteFileData data = { warnName, warnCommand, xml };
 
     return virFileRewrite(path, S_IRUSR | S_IWUSR, virXMLRewriteFile, &data);
 }
