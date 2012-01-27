@@ -1022,6 +1022,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("authentication failed: %s");
             break;
+        case VIR_ERR_AUTH_CANCELLED:
+            if (info == NULL)
+                errmsg = _("authentication cancelled");
+            else
+                errmsg = _("authentication cancelled: %s");
+            break;
         case VIR_ERR_NO_STORAGE_POOL:
             if (info == NULL)
                 errmsg = _("Storage pool not found");

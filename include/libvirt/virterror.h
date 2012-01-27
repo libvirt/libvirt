@@ -243,6 +243,7 @@ typedef enum {
                                            risky domain snapshot revert */
     VIR_ERR_OPERATION_ABORTED = 78,     /* operation on a domain was
                                            canceled/aborted by user */
+    VIR_ERR_AUTH_CANCELLED = 79,        /* authentication cancelled */
 } virErrorNumber;
 
 /**

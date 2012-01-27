@@ -2471,6 +2471,8 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
     const char *action;
     int status = -1;
     char *ident = NULL;
+    bool authdismissed = 0;
+    char *pkout = NULL;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
     virCommandPtr cmd = NULL;
@@ -2481,6 +2483,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
         "org.libvirt.unix.manage";
 
     cmd = virCommandNewArgList(PKCHECK_PATH, "--action-id", action, NULL);
+    virCommandSetOutputBuffer(cmd, &pkout);
 
     VIR_DEBUG("Start PolicyKit auth %d", virNetServerClientGetFD(client));
     if (virNetServerClientGetAuth(client) != VIR_NET_SERVER_SERVICE_AUTH_POLKIT) {
@@ -2509,6 +2512,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (virCommandRun(cmd, &status) < 0)
         goto authfail;
 
+    authdismissed = (pkout && strstr(pkout, "dismissed=true"));
     if (status != 0) {
         char *tmp = virCommandTranslateStatus(status);
         VIR_ERROR(_("Policy kit denied action %s from pid %lld, uid %d: %s"),
@@ -2533,9 +2537,15 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
 error:
     virCommandFree(cmd);
     VIR_FREE(ident);
+    VIR_FREE(pkout);
     virResetLastError();
-    virNetError(VIR_ERR_AUTH_FAILED, "%s",
-                _("authentication failed"));
+    if (authdismissed) {
+        virNetError(VIR_ERR_AUTH_CANCELLED, "%s",
+                    _("authentication cancelled by user"));
+    } else {
+        virNetError(VIR_ERR_AUTH_FAILED, "%s",
+                    _("authentication failed"));
+    }
     virNetMessageSaveError(rerr);
     virMutexUnlock(&priv->lock);
     return -1;
