@@ -464,7 +464,9 @@ virExecWithHook(const char *const*argv,
     }
 
     if (errfd != NULL) {
-        if (*errfd == -1) {
+        if (errfd == outfd) {
+            childerr = childout;
+        } else if (*errfd == -1) {
             if (pipe2(pipeerr, O_CLOEXEC) < 0) {
                 virReportSystemError(errno,
                                      "%s", _("Failed to create pipe"));
@@ -1428,7 +1430,10 @@ virCommandSetOutputBuffer(virCommandPtr cmd, char **outbuf)
  * guaranteed to be allocated after successful virCommandRun or
  * virCommandWait, and is best-effort allocated after failed
  * virCommandRun; caller is responsible for freeing *errbuf.
- * This requires the use of virCommandRun.
+ * This requires the use of virCommandRun.  It is possible to
+ * pass the same pointer as for virCommandSetOutputBuffer(), in
+ * which case the child process will interleave all output into
+ * a single string.
  */
 void
 virCommandSetErrorBuffer(virCommandPtr cmd, char **errbuf)
@@ -1938,6 +1943,13 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
         }
         cmd->infd = infd[0];
         cmd->inpipe = infd[1];
+    }
+
+    /* If caller requested the same string for stdout and stderr, then
+     * merge those into one string.  */
+    if (cmd->outbuf && cmd->outbuf == cmd->errbuf) {
+        cmd->errfdptr = &cmd->outfd;
+        cmd->errbuf = NULL;
     }
 
     /* If caller hasn't requested capture of stdout/err, then capture

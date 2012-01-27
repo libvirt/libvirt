@@ -508,6 +508,14 @@ static int test14(const void *unused ATTRIBUTE_UNUSED)
     const char *errexpect = "BEGIN STDERR\n"
         "Hello World\n"
         "END STDERR\n";
+
+    char *jointactual = NULL;
+    const char *jointexpect = "BEGIN STDOUT\n"
+        "BEGIN STDERR\n"
+        "Hello World\n"
+        "Hello World\n"
+        "END STDOUT\n"
+        "END STDERR\n";
     int ret = -1;
 
     virCommandSetInputBuffer(cmd, "Hello World\n");
@@ -523,7 +531,18 @@ static int test14(const void *unused ATTRIBUTE_UNUSED)
         goto cleanup;
 
     virCommandFree(cmd);
-    cmd = NULL;
+
+    cmd = virCommandNew(abs_builddir "/commandhelper");
+    virCommandSetInputBuffer(cmd, "Hello World\n");
+    virCommandSetOutputBuffer(cmd, &jointactual);
+    virCommandSetErrorBuffer(cmd, &jointactual);
+    if (virCommandRun(cmd, NULL) < 0) {
+        virErrorPtr err = virGetLastError();
+        printf("Cannot run child %s\n", err->message);
+        goto cleanup;
+    }
+    if (!jointactual)
+        goto cleanup;
 
     if (!STREQ(outactual, outexpect)) {
         virtTestDifference(stderr, outexpect, outactual);
@@ -533,6 +552,10 @@ static int test14(const void *unused ATTRIBUTE_UNUSED)
         virtTestDifference(stderr, errexpect, erractual);
         goto cleanup;
     }
+    if (!STREQ(jointactual, jointexpect)) {
+        virtTestDifference(stderr, jointexpect, jointactual);
+        goto cleanup;
+    }
 
     ret = checkoutput("test14");
 
@@ -540,6 +563,7 @@ cleanup:
     virCommandFree(cmd);
     VIR_FREE(outactual);
     VIR_FREE(erractual);
+    VIR_FREE(jointactual);
     return ret;
 }
 

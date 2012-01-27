@@ -373,7 +373,10 @@
       allocation of collected information (however, on an
       out-of-memory condition, the buffer may still be NULL).  The
       caller is responsible for freeing registered buffers, since the
-      buffers are designed to persist beyond virCommandFree.
+      buffers are designed to persist beyond virCommandFree.  It
+      is possible to pass the same pointer to both
+      virCommandSetOutputBuffer and virCommandSetErrorBuffer, in which
+      case the child process interleaves output into a single string.
     </p>
 
     <h3><a name="directory">Setting working directory</a></h3>
