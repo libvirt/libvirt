@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <gettext.h>
 #include <getopt.h>
+#include <locale.h>
 
 #include "internal.h"
 #include "configmake.h"

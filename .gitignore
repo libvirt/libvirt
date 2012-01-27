@@ -79,6 +79,7 @@
 /tests/qemuxmlnstest
 /tests/shunloadtest
 /tests/virhashtest
+/tools/virt-host-validate
 /update.log
 Makefile
 Makefile.in
