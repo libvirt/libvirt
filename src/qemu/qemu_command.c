@@ -6830,6 +6830,24 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
         }
     } while ((p = next));
 
+    if (STREQ(dom->os.arch, "x86_64")) {
+        bool is_32bit = false;
+        union cpuData *cpuData = NULL;
+        int ret;
+
+        ret = cpuEncode("x86_64", cpu, NULL, &cpuData,
+                        NULL, NULL, NULL, NULL);
+        if (ret < 0)
+            goto error;
+
+        is_32bit = (cpuHasFeature("x86_64", cpuData, "lm") != 1);
+        cpuDataFree("x86_64", cpuData);
+
+        if (is_32bit) {
+            VIR_FREE(dom->os.arch);
+            dom->os.arch = strdup("i686");
+        }
+    }
     return 0;
 
 syntax:
