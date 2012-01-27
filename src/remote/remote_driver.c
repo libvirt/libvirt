@@ -4837,6 +4837,7 @@ static virStorageDriver storage_driver = {
     .volGetInfo = remoteStorageVolGetInfo, /* 0.4.1 */
     .volGetXMLDesc = remoteStorageVolGetXMLDesc, /* 0.4.1 */
     .volGetPath = remoteStorageVolGetPath, /* 0.4.1 */
+    .volResize = remoteStorageVolResize, /* 0.9.10 */
     .poolIsActive = remoteStoragePoolIsActive, /* 0.7.3 */
     .poolIsPersistent = remoteStoragePoolIsPersistent, /* 0.7.3 */
 };

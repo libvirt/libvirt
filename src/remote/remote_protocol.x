@@ -1676,6 +1676,12 @@ struct remote_storage_vol_get_path_ret {
     remote_nonnull_string name;
 };
 
+struct remote_storage_vol_resize_args {
+    remote_nonnull_storage_vol vol;
+    hyper capacity;
+    unsigned int flags;
+};
+
 /* Node driver calls: */
 
 struct remote_node_num_of_devices_args {
@@ -2667,7 +2673,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_SET_INTERFACE_PARAMETERS = 256, /* autogen autogen */
     REMOTE_PROC_DOMAIN_GET_INTERFACE_PARAMETERS = 257, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_SHUTDOWN_FLAGS = 258, /* autogen autogen */
-    REMOTE_PROC_STORAGE_VOL_WIPE_PATTERN = 259 /* autogen autogen */
+    REMOTE_PROC_STORAGE_VOL_WIPE_PATTERN = 259, /* autogen autogen */
+    REMOTE_PROC_STORAGE_VOL_RESIZE = 260 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
