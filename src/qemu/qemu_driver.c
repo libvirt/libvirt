@@ -1769,7 +1769,7 @@ qemuDomainDestroyFlags(virDomainPtr dom,
     virDomainEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_DESTROY_GRACEFUL, -1);
 
     qemuDriverLock(driver);
     vm  = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1790,7 +1790,15 @@ qemuDomainDestroyFlags(virDomainPtr dom,
      * can kill the process even if a job is active. Killing
      * it now means the job will be released
      */
-    qemuProcessKill(vm, false);
+    if (flags & VIR_DOMAIN_DESTROY_GRACEFUL) {
+        if (qemuProcessKill(vm, 0) < 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("failed to kill qemu process with SIGTERM"));
+            goto cleanup;
+        }
+    } else {
+        ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE));
+    }
 
     /* We need to prevent monitor EOF callback from doing our work (and sending
      * misleading events) while the vm is unlocked inside BeginJob API

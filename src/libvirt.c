@@ -2181,6 +2181,15 @@ error:
  * does not free the associated virDomainPtr object.
  * This function may require privileged access
  *
+ * virDomainDestroy first requests that a guest terminate
+ * (e.g. SIGTERM), then waits for it to comply. After a reasonable
+ * timeout, if the guest still exists, virDomainDestory will
+ * forcefully terminate the guest (e.g. SIGKILL) if necessary (which
+ * may produce undesirable results, for example unflushed disk cache
+ * in the guest). To avoid this possibility, it's recommended to
+ * instead call virDomainDestroyFlags, sending the
+ * VIR_DOMAIN_DESTROY_GRACEFUL flag.
+ *
  * If the domain is transient and has any snapshot metadata (see
  * virDomainSnapshotNum()), then that metadata will automatically
  * be deleted when the domain quits.
@@ -2233,10 +2242,22 @@ error:
  * This does not free the associated virDomainPtr object.
  * This function may require privileged access.
  *
- * Calling this function with no @flags set (equal to zero)
- * is equivalent to calling virDomainDestroy.  Using virDomainShutdown()
- * may produce cleaner results for the guest's disks, but depends on guest
- * support.
+ * Calling this function with no @flags set (equal to zero) is
+ * equivalent to calling virDomainDestroy, and after a reasonable
+ * timeout will forcefully terminate the guest (e.g. SIGKILL) if
+ * necessary (which may produce undesirable results, for example
+ * unflushed disk cache in the guest). Including
+ * VIR_DOMAIN_DESTROY_GRACEFUL in the flags will prevent the forceful
+ * termination of the guest, and virDomainDestroyFlags will instead
+ * return an error if the guest doesn't terminate by the end of the
+ * timeout; at that time, the management application can decide if
+ * calling again without VIR_DOMAIN_DESTROY_GRACEFUL is appropriate.
+ *
+ * Another alternative which may produce cleaner results for the
+ * guest's disks is to use virDomainShutdown() instead, but that
+ * depends on guest support (some hypervisor/guest combinations may
+ * ignore the shutdown request).
+ *
  *
  * Returns 0 in case of success and -1 in case of failure.
  */

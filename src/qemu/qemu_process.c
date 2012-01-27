@@ -1,7 +1,7 @@
 /*
  * qemu_process.h: QEMU process management
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -587,7 +587,7 @@ endjob:
 cleanup:
     if (vm) {
         if (ret == -1)
-            qemuProcessKill(vm, false);
+            ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE));
         if (virDomainObjUnref(vm) > 0)
             virDomainObjUnlock(vm);
     }
@@ -612,12 +612,12 @@ qemuProcessShutdownOrReboot(struct qemud_driver *driver,
                             qemuProcessFakeReboot,
                             vm) < 0) {
             VIR_ERROR(_("Failed to create reboot thread, killing domain"));
-            qemuProcessKill(vm, true);
+            ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_NOWAIT));
             /* Safe to ignore value since ref count was incremented above */
             ignore_value(virDomainObjUnref(vm));
         }
     } else {
-        qemuProcessKill(vm, true);
+        ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_NOWAIT));
     }
 }
 
@@ -3532,45 +3532,65 @@ cleanup:
 }
 
 
-void qemuProcessKill(virDomainObjPtr vm, bool gracefully)
+int qemuProcessKill(virDomainObjPtr vm, unsigned int flags)
 {
     int i;
-    VIR_DEBUG("vm=%s pid=%d gracefully=%d",
-              vm->def->name, vm->pid, gracefully);
+    const char *signame = "TERM";
+
+    VIR_DEBUG("vm=%s pid=%d flags=%x",
+              vm->def->name, vm->pid, flags);
 
     if (!virDomainObjIsActive(vm)) {
         VIR_DEBUG("VM '%s' not active", vm->def->name);
-        return;
+        return 0;
     }
 
-    /* This loop sends SIGTERM, then waits a few iterations
-     * (1.6 seconds) to see if it dies. If still alive then
-     * it does SIGKILL, and waits a few more iterations (1.6
-     * seconds more) to confirm that it has really gone.
+    /* This loop sends SIGTERM (or SIGKILL if flags has
+     * VIR_QEMU_PROCESS_KILL_FORCE and VIR_QEMU_PROCESS_KILL_NOWAIT),
+     * then waits a few iterations (3 seconds) to see if it
+     * dies. Halfway through this wait, if the qemu process still
+     * hasn't exited, and VIR_QEMU_PROCESS_KILL_FORCE is requested, a
+     * SIGKILL will be sent.  Note that the FORCE mode could result
+     * in lost data in the guest, so it should only be used if the
+     * guest is hung and can't be destroyed in any other manner.
      */
-    for (i = 0 ; i < 15 ; i++) {
+    for (i = 0 ; i < 15; i++) {
         int signum;
-        if (i == 0)
-            signum = SIGTERM;
-        else if (i == 8)
-            signum = SIGKILL;
-        else
+        if (i == 0) {
+            if ((flags & VIR_QEMU_PROCESS_KILL_FORCE) &&
+                (flags & VIR_QEMU_PROCESS_KILL_NOWAIT)) {
+                signum = SIGKILL; /* kill it immediately */
+                signame="KILL";
+            } else {
+                signum = SIGTERM; /* kindly suggest it should exit */
+            }
+        } else if ((i == 8) & (flags & VIR_QEMU_PROCESS_KILL_FORCE)) {
+            VIR_WARN("Timed out waiting after SIG%s to process %d, "
+                     "sending SIGKILL", signame, vm->pid);
+            signum = SIGKILL; /* kill it after a grace period */
+            signame="KILL";
+        } else {
             signum = 0; /* Just check for existence */
+        }
 
         if (virKillProcess(vm->pid, signum) < 0) {
             if (errno != ESRCH) {
                 char ebuf[1024];
-                VIR_WARN("Failed to kill process %d %s",
-                         vm->pid, virStrerror(errno, ebuf, sizeof ebuf));
+                VIR_WARN("Failed to terminate process %d with SIG%s: %s",
+                         vm->pid, signame,
+                         virStrerror(errno, ebuf, sizeof ebuf));
+                return -1;
             }
-            break;
+            return 0; /* process is dead */
         }
 
-        if (i == 0 && gracefully)
-            break;
+        if (i == 0 && (flags & VIR_QEMU_PROCESS_KILL_NOWAIT))
+            return 0;
 
         usleep(200 * 1000);
     }
+    VIR_WARN("Timed out waiting after SIG%s to process %d", signame, vm->pid);
+    return -1;
 }
 
 
@@ -3659,7 +3679,7 @@ void qemuProcessStop(struct qemud_driver *driver,
     }
 
     /* shut it off for sure */
-    qemuProcessKill(vm, false);
+    ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE));
 
     /* Stop autodestroy in case guest is restarted */
     qemuProcessAutoDestroyRemove(driver, vm);

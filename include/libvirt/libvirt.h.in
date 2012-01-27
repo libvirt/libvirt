@@ -1191,12 +1191,6 @@ virConnectPtr           virDomainGetConnect     (virDomainPtr domain);
  * Domain creation and destruction
  */
 
-
-/*
- * typedef enum {
- * } virDomainDestroyFlagsValues;
- */
-
 virDomainPtr            virDomainCreateXML      (virConnectPtr conn,
                                                  const char *xmlDesc,
                                                  unsigned int flags);
@@ -1231,6 +1225,18 @@ int                     virDomainReset          (virDomainPtr domain,
                                                  unsigned int flags);
 
 int                     virDomainDestroy        (virDomainPtr domain);
+
+/**
+ * virDomainDestroyFlagsValues:
+ *
+ * Flags used to provide specific behaviour to the
+ * virDomainDestroyFlags() function
+ */
+typedef enum {
+    VIR_DOMAIN_DESTROY_DEFAULT   = 0,      /* Default behavior - could lead to data loss!! */
+    VIR_DOMAIN_DESTROY_GRACEFUL  = 1 << 0, /* only SIGTERM, no SIGKILL */
+} virDomainDestroyFlagsValues;
+
 int                     virDomainDestroyFlags   (virDomainPtr domain,
                                                  unsigned int flags);
 int                     virDomainRef            (virDomainPtr domain);
