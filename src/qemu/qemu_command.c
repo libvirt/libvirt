@@ -3500,7 +3500,9 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
     virCPUDefPtr cpu = NULL;
     unsigned int ncpus = 0;
     const char **cpus = NULL;
+    const char *default_model;
     union cpuData *data = NULL;
+    bool have_cpu = false;
     int ret = -1;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int i;
@@ -3516,6 +3518,11 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
             cpuUpdate(cpu, host) < 0)
             goto cleanup;
     }
+
+    if (STREQ(def->os.arch, "i686"))
+        default_model = "qemu32";
+    else
+        default_model = "qemu64";
 
     if (cpu) {
         virCPUCompareResult cmp;
@@ -3594,6 +3601,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
                 virBufferAsprintf(&buf, ",%c%s", sign, guest->features[i].name);
             }
         }
+        have_cpu = true;
     } else {
         /*
          * Need to force a 32-bit guest CPU type if
@@ -3610,8 +3618,26 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
         if (STREQ(def->os.arch, "i686") &&
             ((STREQ(ut->machine, "x86_64") &&
               strstr(emulator, "kvm")) ||
-             strstr(emulator, "x86_64")))
-            virBufferAddLit(&buf, "qemu32");
+             strstr(emulator, "x86_64"))) {
+            virBufferAdd(&buf, default_model, -1);
+            have_cpu = true;
+        }
+    }
+
+    /* Now force kvmclock on/off based on the corresponding <timer> element.  */
+    for (i = 0; i < def->clock.ntimers; i++) {
+        if (def->clock.timers[i]->name == VIR_DOMAIN_TIMER_NAME_KVMCLOCK &&
+            def->clock.timers[i]->present != -1) {
+            char sign;
+            if (def->clock.timers[i]->present)
+                sign = '+';
+            else
+                sign = '-';
+            virBufferAsprintf(&buf, "%s,%ckvmclock",
+                              have_cpu ? "" : default_model,
+                              sign);
+            break;
+        }
     }
 
     if (virBufferError(&buf))
@@ -4090,6 +4116,10 @@ qemuBuildCommandLine(virConnectPtr conn,
                             _("unsupported timer type (name) '%s'"),
                             virDomainTimerNameTypeToString(def->clock.timers[i]->name));
             goto error;
+
+        case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:
+            /* This is handled when building -cpu.  */
+            break;
 
         case VIR_DOMAIN_TIMER_NAME_RTC:
             /* This has already been taken care of (in qemuBuildClockArgStr)
@@ -6829,14 +6859,47 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             if (!feature)
                 goto no_memory;
 
-            if (!cpu) {
-                if (!(cpu = qemuInitGuestCPU(dom)))
-                    goto error;
+            if (STREQ(feature, "kvmclock")) {
+                bool present = (policy == VIR_CPU_FEATURE_REQUIRE);
+                int i;
 
-                cpu->model = model;
-                model = NULL;
+                for (i = 0; i < dom->clock.ntimers; i++) {
+                    if (dom->clock.timers[i]->name == VIR_DOMAIN_TIMER_NAME_KVMCLOCK) {
+                        break;
+                    }
+                }
+
+                if (i == dom->clock.ntimers) {
+                    if (VIR_REALLOC_N(dom->clock.timers, i+1) < 0 ||
+                        VIR_ALLOC(dom->clock.timers[i]) < 0)
+                        goto no_memory;
+                    dom->clock.timers[i]->name = VIR_DOMAIN_TIMER_NAME_KVMCLOCK;
+                    dom->clock.timers[i]->present = -1;
+                    dom->clock.timers[i]->tickpolicy = -1;
+                    dom->clock.timers[i]->track = -1;
+                    dom->clock.ntimers++;
+                }
+
+                if (dom->clock.timers[i]->present != -1 &&
+                    dom->clock.timers[i]->present != present) {
+                    qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                    _("conflicting occurrences of kvmclock feature"));
+                    goto error;
+                }
+                dom->clock.timers[i]->present = present;
+                ret = 0;
+            } else {
+                if (!cpu) {
+                    if (!(cpu = qemuInitGuestCPU(dom)))
+                        goto error;
+
+                    cpu->model = model;
+                    model = NULL;
+                }
+
+                ret = virCPUDefAddFeature(cpu, feature, policy);
             }
-            ret = virCPUDefAddFeature(cpu, feature, policy);
+
             VIR_FREE(feature);
             if (ret < 0)
                 goto error;

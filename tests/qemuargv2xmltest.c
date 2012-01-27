@@ -144,6 +144,10 @@ mymain(void)
     DO_TEST("boot-cdrom");
     DO_TEST("boot-network");
     DO_TEST("boot-floppy");
+    DO_TEST("kvmclock");
+    /* This needs <emulator>./qemu.sh</emulator> which doesn't work here.  */
+    /*DO_TEST("cpu-kvmclock");*/
+
     /* Can't roundtrip xenner arch */
     /*DO_TEST("bootloader");*/
     DO_TEST("clock-utc");

@@ -385,6 +385,9 @@ mymain(void)
     DO_TEST("clock-variable", false, QEMU_CAPS_RTC);
     */
     DO_TEST("clock-france", false, QEMU_CAPS_RTC);
+    DO_TEST("cpu-kvmclock", false, QEMU_CAPS_ENABLE_KVM);
+    DO_TEST("cpu-host-kvmclock", false, QEMU_CAPS_ENABLE_KVM, QEMU_CAPS_CPU_HOST);
+    DO_TEST("kvmclock", false, QEMU_CAPS_KVM);
 
     DO_TEST("hugepages", false, QEMU_CAPS_MEM_PATH);
     DO_TEST("disk-cdrom", false, NONE);

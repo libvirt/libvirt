@@ -124,6 +124,9 @@ mymain(void)
     DO_TEST("bootloader");
     DO_TEST("clock-utc");
     DO_TEST("clock-localtime");
+    DO_TEST("cpu-kvmclock");
+    DO_TEST("cpu-host-kvmclock");
+    DO_TEST("kvmclock");
     DO_TEST("hugepages");
     DO_TEST("disk-aio");
     DO_TEST("disk-cdrom");
