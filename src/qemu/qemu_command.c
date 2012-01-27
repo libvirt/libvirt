@@ -7003,8 +7003,10 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
         path = def->emulator;
     else
         path = strstr(def->emulator, "qemu");
-    if (path &&
-        STRPREFIX(path, "qemu-system-"))
+    if (def->virtType == VIR_DOMAIN_VIRT_KVM)
+        def->os.arch = strdup(caps->host.cpu->arch);
+    else if (path &&
+             STRPREFIX(path, "qemu-system-"))
         def->os.arch = strdup(path + strlen("qemu-system-"));
     else
         def->os.arch = strdup("i686");
