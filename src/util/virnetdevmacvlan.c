@@ -27,8 +27,8 @@
 
 #include <config.h>
 
-
 #include "virnetdevmacvlan.h"
+#include "virmacaddr.h"
 #include "util.h"
 #include "virterror_internal.h"
 

@@ -157,8 +157,6 @@ int virStrToDouble(char const *s,
 
 int virHexToBin(unsigned char c);
 
-int virMacAddrCompare (const char *mac1, const char *mac2);
-
 void virSkipSpaces(const char **str) ATTRIBUTE_NONNULL(1);
 void virSkipSpacesAndBackslash(const char **str) ATTRIBUTE_NONNULL(1);
 void virTrimSpaces(char *str, char **endp) ATTRIBUTE_NONNULL(1);
@@ -177,17 +175,6 @@ char *virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
 char *virStrcpy(char *dest, const char *src, size_t destbytes)
     ATTRIBUTE_RETURN_CHECK;
 # define virStrcpyStatic(dest, src) virStrcpy((dest), (src), sizeof(dest))
-
-# define VIR_MAC_BUFLEN 6
-# define VIR_MAC_PREFIX_BUFLEN 3
-# define VIR_MAC_STRING_BUFLEN VIR_MAC_BUFLEN * 3
-
-int virMacAddrParse(const char* str,
-                    unsigned char *addr) ATTRIBUTE_RETURN_CHECK;
-void virMacAddrFormat(const unsigned char *addr,
-                      char *str);
-void virMacAddrGenerate(const unsigned char *prefix,
-                        unsigned char *addr);
 
 int virDiskNameToIndex(const char* str);
 char *virIndexToDiskName(int idx, const char *prefix);

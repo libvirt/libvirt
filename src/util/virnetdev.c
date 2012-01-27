@@ -23,6 +23,7 @@
 #include <config.h>
 
 #include "virnetdev.h"
+#include "virmacaddr.h"
 #include "virfile.h"
 #include "virterror_internal.h"
 #include "command.h"

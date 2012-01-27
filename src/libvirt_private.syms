@@ -1120,10 +1120,6 @@ virHexToBin;
 virIndexToDiskName;
 virIsDevMapperDevice;
 virKillProcess;
-virMacAddrCompare;
-virMacAddrFormat;
-virMacAddrGenerate;
-virMacAddrParse;
 virParseNumber;
 virParseVersionString;
 virPipeReadUntilEOF;
@@ -1181,6 +1177,13 @@ virKeycodeSetTypeFromString;
 virKeycodeSetTypeToString;
 virKeycodeValueFromString;
 virKeycodeValueTranslate;
+
+
+# virmacaddr.h
+virMacAddrCompare;
+virMacAddrFormat;
+virMacAddrGenerate;
+virMacAddrParse;
 
 
 # virnetclient.h

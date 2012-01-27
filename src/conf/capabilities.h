@@ -25,9 +25,9 @@
 # define __VIR_CAPABILITIES_H
 
 # include "internal.h"
-# include "util.h"
 # include "buf.h"
 # include "cpu_conf.h"
+# include "virmacaddr.h"
 
 # include <libxml/xpath.h>
 
