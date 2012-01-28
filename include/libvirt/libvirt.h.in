@@ -1127,6 +1127,10 @@ char *                  virConnectGetURI        (virConnectPtr conn);
 char *                  virConnectGetSysinfo    (virConnectPtr conn,
                                                  unsigned int flags);
 
+int virConnectSetKeepAlive(virConnectPtr conn,
+                           int interval,
+                           unsigned int count);
+
 
 /*
  * Capabilities of the connection / driver.
@@ -1299,14 +1303,29 @@ char *                  virDomainScreenshot     (virDomainPtr domain,
                                                  unsigned int flags);
 
 /*
- * Domain runtime information
+ * Domain runtime information, and collecting CPU statistics
  */
+
 int                     virDomainGetInfo        (virDomainPtr domain,
                                                  virDomainInfoPtr info);
 int                     virDomainGetState       (virDomainPtr domain,
                                                  int *state,
                                                  int *reason,
                                                  unsigned int flags);
+
+/**
+ * VIR_DOMAIN_CPU_STATS_CPUTIME:
+ * cpu usage in nanoseconds, as a ullong
+ */
+#define VIR_DOMAIN_CPU_STATS_CPUTIME "cpu_time"
+
+int virDomainGetCPUStats(virDomainPtr domain,
+                         virTypedParameterPtr params,
+                         unsigned int nparams,
+                         int start_cpu,
+                         unsigned int ncpus,
+                         unsigned int flags);
+
 int                     virDomainGetControlInfo (virDomainPtr domain,
                                                  virDomainControlInfoPtr info,
                                                  unsigned int flags);
@@ -3807,24 +3826,6 @@ typedef struct _virTypedParameter virMemoryParameter;
  */
 typedef virMemoryParameter *virMemoryParameterPtr;
 
-int virConnectSetKeepAlive(virConnectPtr conn,
-                           int interval,
-                           unsigned int count);
-
-/* Collecting CPU statistics */
-
-/**
- * VIR_DOMAIN_CPU_STATS_CPUTIME:
- * cpu usage in nanoseconds, as a ullong
- */
-#define VIR_DOMAIN_CPU_STATS_CPUTIME "cpu_time"
-
-int virDomainGetCPUStats(virDomainPtr domain,
-                         virTypedParameterPtr params,
-                         unsigned int nparams,
-                         int start_cpu,
-                         unsigned int ncpus,
-                         unsigned int flags);
 #ifdef __cplusplus
 }
 #endif
