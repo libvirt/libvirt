@@ -2435,14 +2435,17 @@ error:
 /**
  * virDomainPMSuspendForDuration:
  * @dom: a domain object
- * @target: an OR'ed set of virNodeSuspendTarget
- * @duration: currently unused, pass 0
- * @flags: ditto
+ * @target: a value from virNodeSuspendTarget
+ * @duration: duration in seconds to suspend, or 0 for indefinite
+ * @flags: extra flags; not used yet, so callers should always pass 0
  *
- * Attempt to suspend given domain. However, more
- * states are supported than in virDomainSuspend.
+ * Attempt to have the guest enter the given @target power management
+ * suspension level.  If @duration is non-zero, also schedule the guest to
+ * resume normal operation after that many seconds, if nothing else has
+ * resumed it earlier.  Some hypervisors require that @duration be 0, for
+ * an indefinite suspension.
  *
- * Dependent on hypervisor used, this may require
+ * Dependent on hypervisor used, this may require a
  * guest agent to be available, e.g. QEMU.
  *
  * Returns: 0 on success,
