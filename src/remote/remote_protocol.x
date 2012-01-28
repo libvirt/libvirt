@@ -208,6 +208,17 @@ const REMOTE_DOMAIN_SEND_KEY_MAX = 16;
  */
 const REMOTE_DOMAIN_INTERFACE_PARAMETERS_MAX = 16;
 
+/*
+ * Upper limit on cpus involved in per-cpu stats
+ */
+const REMOTE_DOMAIN_GET_CPU_STATS_NCPUS_MAX = 128;
+
+/*
+ * Upper limit on list of per-cpu stats:
+ *  REMOTE_NODE_CPU_STATS_MAX * REMOTE_DOMAIN_GET_CPU_STATS_MAX
+ */
+const REMOTE_DOMAIN_GET_CPU_STATS_MAX = 2048;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -1153,6 +1164,19 @@ struct remote_domain_get_block_io_tune_args {
 
 struct remote_domain_get_block_io_tune_ret {
     remote_typed_param params<REMOTE_DOMAIN_BLOCK_IO_TUNE_PARAMETERS_MAX>;
+    int nparams;
+};
+
+struct remote_domain_get_cpu_stats_args {
+    remote_nonnull_domain dom;
+    unsigned int nparams;
+    int          start_cpu;
+    unsigned int ncpus;
+    unsigned int flags;
+};
+
+struct remote_domain_get_cpu_stats_ret {
+    remote_typed_param params<REMOTE_DOMAIN_GET_CPU_STATS_MAX>;
     int nparams;
 };
 
@@ -2683,7 +2707,8 @@ enum remote_procedure {
     REMOTE_PROC_STORAGE_VOL_WIPE_PATTERN = 259, /* autogen autogen */
     REMOTE_PROC_STORAGE_VOL_RESIZE = 260, /* autogen autogen */
 
-    REMOTE_PROC_DOMAIN_PM_SUSPEND_FOR_DURATION = 261 /* autogen autogen */
+    REMOTE_PROC_DOMAIN_PM_SUSPEND_FOR_DURATION = 261, /* autogen autogen */
+    REMOTE_PROC_DOMAIN_GET_CPU_STATS = 262 /* skipgen skipgen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

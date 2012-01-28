@@ -18162,7 +18162,7 @@ error:
  * @nparams: number of parameters per cpu
  * @start_cpu: which cpu to start with, or -1 for summary
  * @ncpus: how many cpus to query
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virTypedParameterFlags
  *
  * Get statistics relating to CPU usage attributable to a single
  * domain (in contrast to the statistics returned by
@@ -18251,20 +18251,19 @@ int virDomainGetCPUStats(virDomainPtr domain,
      * if start_cpu is -1, ncpus must be 1
      * params == NULL must match nparams == 0
      * ncpus must be non-zero unless params == NULL
+     * nparams * ncpus must not overflow (RPC may restrict it even more)
      */
     if (start_cpu < -1 ||
         (start_cpu == -1 && ncpus != 1) ||
         ((params == NULL) != (nparams == 0)) ||
-        (ncpus == 0 && params != NULL)) {
+        (ncpus == 0 && params != NULL) ||
+        ncpus < UINT_MAX / nparams) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
-
-    /* remote protocol doesn't welcome big args in one shot */
-    if ((nparams > 16) || (ncpus > 128)) {
-        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        goto error;
-    }
+    if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                 VIR_DRV_FEATURE_TYPED_PARAM_STRING))
+        flags |= VIR_TYPED_PARAM_STRING_OKAY;
 
     if (conn->driver->domainGetCPUStats) {
         int ret;

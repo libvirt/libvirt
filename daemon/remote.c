@@ -704,8 +704,11 @@ remoteSerializeTypedParameters(virTypedParameterPtr params,
     }
 
     for (i = 0, j = 0; i < nparams; ++i) {
-        if (!(flags & VIR_TYPED_PARAM_STRING_OKAY) &&
-            params[i].type == VIR_TYPED_PARAM_STRING) {
+        /* virDomainGetCPUStats can return a sparse array; also, we
+         * can't pass back strings to older clients.  */
+        if (!params[i].type ||
+            (!(flags & VIR_TYPED_PARAM_STRING_OKAY) &&
+             params[i].type == VIR_TYPED_PARAM_STRING)) {
             --*ret_params_len;
             continue;
         }
@@ -3517,6 +3520,75 @@ cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
     virTypedParameterArrayClear(params, nparams);
+    VIR_FREE(params);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
+static int
+remoteDispatchDomainGetCPUStats(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                virNetMessagePtr hdr ATTRIBUTE_UNUSED,
+                                virNetMessageErrorPtr rerr,
+                                remote_domain_get_cpu_stats_args *args,
+                                remote_domain_get_cpu_stats_ret *ret)
+{
+    virDomainPtr dom = NULL;
+    struct daemonClientPrivate *priv;
+    virTypedParameterPtr params = NULL;
+    int rv = -1;
+    int percpu_len = 0;
+
+    priv = virNetServerClientGetPrivateData(client);
+    if (!priv->conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->nparams > REMOTE_NODE_CPU_STATS_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
+        goto cleanup;
+    }
+    if (args->ncpus > REMOTE_DOMAIN_GET_CPU_STATS_NCPUS_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("ncpus too large"));
+        goto cleanup;
+    }
+
+    if (args->nparams > 0 &&
+        VIR_ALLOC_N(params, args->ncpus * args->nparams) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+
+    percpu_len = virDomainGetCPUStats(dom, params, args->nparams,
+                                      args->start_cpu, args->ncpus,
+                                      args->flags);
+    if (percpu_len < 0)
+        goto cleanup;
+    /* If nparams == 0, the function returns a single value */
+    if (args->nparams == 0)
+        goto success;
+
+    if (remoteSerializeTypedParameters(params, args->nparams * args->ncpus,
+                                       &ret->params.params_val,
+                                       &ret->params.params_len,
+                                       args->flags) < 0)
+        goto cleanup;
+
+    percpu_len = ret->params.params_len / args->ncpus;
+
+success:
+    rv = 0;
+    ret->nparams = percpu_len;
+
+cleanup:
+    if (rv < 0)
+         virNetMessageSaveError(rerr);
+    virTypedParameterArrayClear(params, args->ncpus * args->nparams);
     VIR_FREE(params);
     if (dom)
         virDomainFree(dom);

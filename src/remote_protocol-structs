@@ -835,6 +835,20 @@ struct remote_domain_get_block_io_tune_ret {
         } params;
         int                        nparams;
 };
+struct remote_domain_get_cpu_stats_args {
+        remote_nonnull_domain      dom;
+        u_int                      nparams;
+        int                        start_cpu;
+        u_int                      ncpus;
+        u_int                      flags;
+};
+struct remote_domain_get_cpu_stats_ret {
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        int                        nparams;
+};
 struct remote_num_of_networks_ret {
         int                        num;
 };
@@ -2114,4 +2128,5 @@ enum remote_procedure {
         REMOTE_PROC_STORAGE_VOL_WIPE_PATTERN = 259,
         REMOTE_PROC_STORAGE_VOL_RESIZE = 260,
         REMOTE_PROC_DOMAIN_PM_SUSPEND_FOR_DURATION = 261,
+        REMOTE_PROC_DOMAIN_GET_CPU_STATS = 262,
 };

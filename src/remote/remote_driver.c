@@ -2,7 +2,7 @@
  * remote_driver.c: driver to provide access to libvirtd running
  *   on a remote machine
  *
- * Copyright (C) 2007-2011 Red Hat, Inc.
+ * Copyright (C) 2007-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2304,6 +2304,102 @@ done:
     remoteDriverUnlock(priv);
     return rv;
 }
+
+static int remoteDomainGetCPUStats(virDomainPtr domain,
+                                   virTypedParameterPtr params,
+                                   unsigned int nparams,
+                                   int start_cpu,
+                                   unsigned int ncpus,
+                                   unsigned int flags)
+{
+    struct private_data *priv = domain->conn->privateData;
+    remote_domain_get_cpu_stats_args args;
+    remote_domain_get_cpu_stats_ret ret;
+    int rv = -1;
+    int cpu;
+
+    remoteDriverLock(priv);
+
+    if (nparams > REMOTE_NODE_CPU_STATS_MAX) {
+        remoteError(VIR_ERR_RPC,
+                    _("nparams count exceeds maximum: %u > %u"),
+                    nparams, REMOTE_NODE_CPU_STATS_MAX);
+        goto done;
+    }
+    if (ncpus > REMOTE_DOMAIN_GET_CPU_STATS_NCPUS_MAX) {
+        remoteError(VIR_ERR_RPC,
+                    _("ncpus count exceeds maximum: %u > %u"),
+                    ncpus, REMOTE_DOMAIN_GET_CPU_STATS_NCPUS_MAX);
+        goto done;
+    }
+
+    make_nonnull_domain(&args.dom, domain);
+    args.nparams = nparams;
+    args.start_cpu = start_cpu;
+    args.ncpus = ncpus;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+
+    if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_CPU_STATS,
+             (xdrproc_t) xdr_remote_domain_get_cpu_stats_args,
+             (char *) &args,
+             (xdrproc_t) xdr_remote_domain_get_cpu_stats_ret,
+             (char *) &ret) == -1)
+        goto done;
+
+    /* Check the length of the returned list carefully. */
+    if (ret.params.params_len > nparams * ncpus ||
+        (ret.params.params_len &&
+         ret.nparams * ncpus != ret.params.params_len)) {
+        remoteError(VIR_ERR_RPC, "%s",
+                    _("remoteDomainGetCPUStats: "
+                      "returned number of stats exceeds limit"));
+        memset(params, 0, sizeof(*params) * nparams * ncpus);
+        goto cleanup;
+    }
+
+    /* Handle the case when the caller does not know the number of stats
+     * and is asking for the number of stats supported
+     */
+    if (nparams == 0) {
+        rv = ret.nparams;
+        goto cleanup;
+    }
+
+    /* The remote side did not send back any zero entries, so we have
+     * to expand things back into a possibly sparse array.
+     */
+    memset(params, 0, sizeof(*params) * nparams * ncpus);
+    for (cpu = 0; cpu < ncpus; cpu++) {
+        int tmp = nparams;
+        remote_typed_param *stride = &ret.params.params_val[cpu * ret.nparams];
+
+        if (remoteDeserializeTypedParameters(stride, ret.nparams,
+                                             REMOTE_NODE_CPU_STATS_MAX,
+                                             &params[cpu * nparams],
+                                             &tmp) < 0)
+            goto cleanup;
+    }
+
+    rv = ret.nparams;
+cleanup:
+    if (rv < 0) {
+        int max = nparams * ncpus;
+        int i;
+
+        for (i = 0; i < max; i++) {
+            if (params[i].type == VIR_TYPED_PARAM_STRING)
+                VIR_FREE(params[i].value.s);
+        }
+    }
+    xdr_free ((xdrproc_t) xdr_remote_domain_get_cpu_stats_ret,
+              (char *) &ret);
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 
 /*----------------------------------------------------------------------*/
 
@@ -4752,6 +4848,7 @@ static virDriver remote_driver = {
     .domainGetBlockIoTune = remoteDomainGetBlockIoTune, /* 0.9.8 */
     .domainSetNumaParameters = remoteDomainSetNumaParameters, /* 0.9.9 */
     .domainGetNumaParameters = remoteDomainGetNumaParameters, /* 0.9.9 */
+    .domainGetCPUStats = remoteDomainGetCPUStats, /* 0.9.10 */
 };
 
 static virNetworkDriver network_driver = {
