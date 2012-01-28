@@ -18151,3 +18151,131 @@ error:
     virDispatchError(dom->conn);
     return -1;
 }
+
+/**
+ * virDomainGetCPUStats:
+ * @domain: domain to query
+ * @params: array to populate on output
+ * @nparams: number of parameters per cpu
+ * @start_cpu: which cpu to start with, or -1 for summary
+ * @ncpus: how many cpus to query
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Get statistics relating to CPU usage attributable to a single
+ * domain (in contrast to the statistics returned by
+ * virNodeGetCPUStats() for all processes on the host).  @dom
+ * must be running (an inactive domain has no attributable cpu
+ * usage).  On input, @params must contain at least @nparams * @ncpus
+ * entries, allocated by the caller.
+ *
+ * If @start_cpu is -1, then @ncpus must be 1, and the returned
+ * results reflect the statistics attributable to the entire
+ * domain (such as user and system time for the process as a
+ * whole).  Otherwise, @start_cpu represents which cpu to start
+ * with, and @ncpus represents how many consecutive processors to
+ * query, with statistics attributable per processor (such as
+ * per-cpu usage).
+ *
+ * The remote driver imposes a limit of 128 @ncpus and 16 @nparams;
+ * the number of parameters per cpu should not exceed 16, but if you
+ * have a host with more than 128 CPUs, your program should split
+ * the request into multiple calls.
+ *
+ * As special cases, if @params is NULL and @nparams is 0 and
+ * @ncpus is 1, and the return value will be how many
+ * statistics are available for the given @start_cpu.  This number
+ * may be different for @start_cpu of -1 than for any non-negative
+ * value, but will be the same for all non-negative @start_cpu.
+ * Likewise, if @params is NULL and @nparams is 0 and @ncpus is 0,
+ * the number of cpus available to query is returned.  From the
+ * host perspective, this would typically match the cpus member
+ * of virNodeGetInfo(), but might be less due to host cpu hotplug.
+ *
+ * For now, @flags is unused, and the statistics all relate to the
+ * usage from the host perspective.  It is possible that a future
+ * version will support a flag that queries the cpu usage from the
+ * guest's perspective, where the maximum cpu to query would be
+ * related to virDomainGetVcpusFlags() rather than virNodeGetInfo().
+ * An individual guest vcpu cannot be reliably mapped back to a
+ * specific host cpu unless a single-processor vcpu pinning was used,
+ * but when @start_cpu is -1, any difference in usage between a host
+ * and guest perspective would serve as a measure of hypervisor overhead.
+ *
+ * Typical use sequence is below.
+ *
+ * getting total stats: set start_cpu as -1, ncpus 1
+ * virDomainGetCPUStats(dom, NULL, 0, -1, 1, 0) => nparams
+ * params = calloc(nparams, sizeof (virTypedParameter))
+ * virDomainGetCPUStats(dom, params, nparams, -1, 1, 0) => total stats.
+ *
+ * getting per-cpu stats:
+ * virDomainGetCPUStats(dom, NULL, 0, 0, 0, 0) => ncpus
+ * virDomainGetCPUStats(dom, NULL, 0, 0, 1, 0) => nparams
+ * params = calloc(ncpus * nparams, sizeof (virTypedParameter))
+ * virDomainGetCPUStats(dom, params, nparams, 0, ncpus, 0) => per-cpu stats
+ *
+ * Returns -1 on failure, or the number of statistics that were
+ * populated per cpu on success (this will be less than the total
+ * number of populated @params, unless @ncpus was 1; and may be
+ * less than @nparams).  The populated parameters start at each
+ * stride of @nparams, which means the results may be discontiguous;
+ * any unpopulated parameters will be zeroed on success.  The caller
+ * is responsible for freeing any returned string parameters.
+ */
+int virDomainGetCPUStats(virDomainPtr domain,
+                         virTypedParameterPtr params,
+                         unsigned int nparams,
+                         int start_cpu,
+                         unsigned int ncpus,
+                         unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain,
+                     "params=%p, nparams=%d, start_cpu=%d, ncpus=%u, flags=%x",
+                     params, nparams, start_cpu, ncpus, flags);
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = domain->conn;
+    /* Special cases:
+     * start_cpu must be non-negative, or else -1
+     * if start_cpu is -1, ncpus must be 1
+     * params == NULL must match nparams == 0
+     * ncpus must be non-zero unless params == NULL
+     */
+    if (start_cpu < -1 ||
+        (start_cpu == -1 && ncpus != 1) ||
+        ((params == NULL) != (nparams == 0)) ||
+        (ncpus == 0 && params != NULL)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    /* remote protocol doesn't welcome big args in one shot */
+    if ((nparams > 16) || (ncpus > 128)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainGetCPUStats) {
+        int ret;
+
+        ret = conn->driver->domainGetCPUStats(domain, params, nparams,
+                                              start_cpu, ncpus, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}

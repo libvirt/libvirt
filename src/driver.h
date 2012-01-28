@@ -802,6 +802,13 @@ typedef int
     (*virDrvDomainShutdownFlags)(virDomainPtr domain,
                                  unsigned int flags);
 
+typedef int
+    (*virDrvDomainGetCPUStats)(virDomainPtr domain,
+                               virTypedParameterPtr params,
+                               unsigned int nparams,
+                               int start_cpu,
+                               unsigned int ncpus,
+                               unsigned int flags);
 
 /**
  * _virDriver:
@@ -973,6 +980,7 @@ struct _virDriver {
     virDrvNodeSuspendForDuration nodeSuspendForDuration;
     virDrvDomainSetBlockIoTune domainSetBlockIoTune;
     virDrvDomainGetBlockIoTune domainGetBlockIoTune;
+    virDrvDomainGetCPUStats domainGetCPUStats;
 };
 
 typedef int
