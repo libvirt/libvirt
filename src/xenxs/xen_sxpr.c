@@ -1377,7 +1377,7 @@ xenParseSxpr(const struct sexpr *root,
             chr->target.port = 0;
             def->parallels[def->nparallels++] = chr;
         }
-    } else {
+    } else if (def->id != 0) {
         /* Fake a paravirt console, since that's not in the sexpr */
         if (!(def->console = xenParseSxprChar("pty", tty)))
             goto error;
