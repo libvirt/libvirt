@@ -1392,7 +1392,7 @@ xenParseSxpr(const struct sexpr *root,
             chr->target.port = 0;
             def->parallels[def->nparallels++] = chr;
         }
-    } else {
+    } else if (def->id != 0) {
         def->nconsoles = 1;
         if (VIR_ALLOC_N(def->consoles, 1) < 0)
             goto no_memory;
