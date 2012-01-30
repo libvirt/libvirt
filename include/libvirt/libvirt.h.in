@@ -2415,7 +2415,7 @@ typedef enum {
 } virStorageVolResizeFlags;
 
 int                     virStorageVolResize             (virStorageVolPtr vol,
-                                                         long long capacity,
+                                                         unsigned long long capacity,
                                                          unsigned int flags);
 
 

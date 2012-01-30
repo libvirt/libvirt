@@ -1709,7 +1709,7 @@ struct remote_storage_vol_get_path_ret {
 
 struct remote_storage_vol_resize_args {
     remote_nonnull_storage_vol vol;
-    hyper capacity;
+    unsigned hyper capacity;
     unsigned int flags;
 };
 

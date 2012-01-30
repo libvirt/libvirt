@@ -1277,7 +1277,7 @@ typedef int
                                unsigned int flags);
 typedef int
         (*virDrvStorageVolResize) (virStorageVolPtr vol,
-                                   long long capacity,
+                                   unsigned long long capacity,
                                    unsigned int flags);
 
 typedef int

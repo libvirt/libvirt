@@ -13014,16 +13014,20 @@ error:
  * Normally, this operation should only be used to enlarge capacity;
  * but if @flags contains VIR_STORAGE_RESIZE_SHRINK, it is possible to
  * attempt a reduction in capacity even though it might cause data loss.
+ * If VIR_STORAGE_RESIZE_DELTA is also present, then @capacity is
+ * subtracted from the current size; without it, @capacity represents
+ * the absolute new size regardless of whether it is larger or smaller
+ * than the current size.
  *
  * Returns 0 on success, or -1 on error.
  */
 int
 virStorageVolResize(virStorageVolPtr vol,
-                    long long capacity,
+                    unsigned long long capacity,
                     unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("vol=%p capacity=%lld flags=%x", vol, capacity, flags);
+    VIR_DEBUG("vol=%p capacity=%llu flags=%x", vol, capacity, flags);
 
     virResetLastError();
 
@@ -13040,12 +13044,9 @@ virStorageVolResize(virStorageVolPtr vol,
        goto error;
     }
 
-    /* Negative capacity is valid only with both delta and shrink;
-     * zero capacity is valid with either delta or shrink.  */
-    if ((capacity < 0 && !(flags & VIR_STORAGE_VOL_RESIZE_DELTA) &&
-         !(flags & VIR_STORAGE_VOL_RESIZE_SHRINK)) ||
-        (capacity == 0 && !((flags & VIR_STORAGE_VOL_RESIZE_DELTA) ||
-                            (flags & VIR_STORAGE_VOL_RESIZE_SHRINK)))) {
+    /* Zero capacity is only valid with either delta or shrink.  */
+    if (capacity == 0 && !((flags & VIR_STORAGE_VOL_RESIZE_DELTA) ||
+                           (flags & VIR_STORAGE_VOL_RESIZE_SHRINK))) {
         virLibStorageVolError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }

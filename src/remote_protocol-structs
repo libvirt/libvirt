@@ -1282,7 +1282,7 @@ struct remote_storage_vol_get_path_ret {
 };
 struct remote_storage_vol_resize_args {
         remote_nonnull_storage_vol vol;
-        int64_t                    capacity;
+        uint64_t                   capacity;
         u_int                      flags;
 };
 struct remote_node_num_of_devices_args {
