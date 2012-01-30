@@ -1,4 +1,4 @@
-/usr/sbin/dnsmasq --strict-order --bind-interfaces --domain example.com \
+@DNSMASQ@ --strict-order --bind-interfaces --domain example.com \
 --conf-file= --except-interface lo --listen-address 192.168.122.1 \
 --dhcp-range 192.168.122.2,192.168.122.254 \
 --dhcp-leasefile=/var/lib/libvirt/dnsmasq/netboot.leases \
