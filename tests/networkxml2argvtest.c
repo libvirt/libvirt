@@ -15,6 +15,36 @@
 #include "memory.h"
 #include "network/bridge_driver.h"
 
+/* Replace all occurrences of @token in @buf by @replacement and adjust size of
+ * @buf accordingly. Returns 0 on success and -1 on out-of-memory errors. */
+static int replaceTokens(char **buf, const char *token, const char *replacement) {
+    char *token_start, *token_end;
+    size_t buf_len, rest_len;
+    const size_t token_len = strlen(token);
+    const size_t replacement_len = strlen(replacement);
+    const int diff = replacement_len - token_len;
+
+    buf_len = rest_len = strlen(*buf) + 1;
+    token_end = *buf;
+    for (;;) {
+        token_start = strstr(token_end, token);
+        if (token_start == NULL)
+            break;
+        rest_len -= token_start + token_len - token_end;
+        token_end = token_start + token_len;
+        buf_len += diff;
+        if (diff > 0)
+            if (VIR_REALLOC_N(*buf, buf_len) < 0)
+                return -1;
+        if (diff != 0)
+            memmove(token_end + diff, token_end, rest_len);
+        memcpy(token_start, replacement, replacement_len);
+        token_end += diff;
+    }
+    /* if diff < 0, we could shrink the buffer here... */
+    return 0;
+}
+
 static int testCompareXMLToArgvFiles(const char *inxml, const char *outargv) {
     char *inXmlData = NULL;
     char *outArgvData = NULL;
@@ -30,6 +60,9 @@ static int testCompareXMLToArgvFiles(const char *inxml, const char *outargv) {
         goto fail;
 
     if (virtTestLoadFile(outargv, &outArgvData) < 0)
+        goto fail;
+
+    if (replaceTokens(&outArgvData, "@DNSMASQ@", DNSMASQ))
         goto fail;
 
     if (!(dev = virNetworkDefParseString(inXmlData)))

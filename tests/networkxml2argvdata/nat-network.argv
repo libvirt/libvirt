@@ -1,4 +1,4 @@
-/usr/sbin/dnsmasq --strict-order --bind-interfaces --conf-file= \
+@DNSMASQ@ --strict-order --bind-interfaces --conf-file= \
 --except-interface lo --listen-address 192.168.122.1 \
 --listen-address 192.168.123.1 --listen-address 2001:db8:ac10:fe01::1 \
 --listen-address 2001:db8:ac10:fd01::1 --listen-address 10.24.10.1 \

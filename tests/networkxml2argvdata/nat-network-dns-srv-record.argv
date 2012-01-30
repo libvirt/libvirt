@@ -1,4 +1,4 @@
-/usr/sbin/dnsmasq \
+@DNSMASQ@ \
 --strict-order \
 --bind-interfaces \
 --conf-file= \
