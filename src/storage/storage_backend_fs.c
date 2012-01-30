@@ -1187,6 +1187,56 @@ virStorageBackendFileSystemVolRefresh(virConnectPtr conn,
     return 0;
 }
 
+static int
+virStorageBackendFilesystemResizeQemuImg(const char *path,
+                                         unsigned long long capacity)
+{
+    int ret = -1;
+    char *img_tool;
+    virCommandPtr cmd = NULL;
+
+    /* KVM is usually ahead of qemu on features, so try that first */
+    img_tool = virFindFileInPath("kvm-img");
+    if (!img_tool)
+        img_tool = virFindFileInPath("qemu-img");
+
+    if (!img_tool) {
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+                              "%s", _("unable to find kvm-img or qemu-img"));
+        return -1;
+    }
+
+    cmd = virCommandNew(img_tool);
+    virCommandAddArgList(cmd, "resize", path, NULL);
+    virCommandAddArgFormat(cmd, "%llu", capacity);
+
+    ret = virCommandRun(cmd, NULL);
+
+    VIR_FREE(img_tool);
+    virCommandFree(cmd);
+
+    return ret;
+}
+
+/**
+ * Resize a volume
+ */
+static int
+virStorageBackendFileSystemVolResize(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                     virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+                                     virStorageVolDefPtr vol,
+                                     unsigned long long capacity,
+                                     unsigned int flags)
+{
+    virCheckFlags(0, -1);
+
+    if (vol->target.format == VIR_STORAGE_FILE_RAW)
+        return virStorageFileResize(vol->target.path, capacity);
+    else
+        return virStorageBackendFilesystemResizeQemuImg(vol->target.path,
+                                                        capacity);
+}
+
 virStorageBackend virStorageBackendDirectory = {
     .type = VIR_STORAGE_POOL_DIR,
 
@@ -1199,6 +1249,7 @@ virStorageBackend virStorageBackendDirectory = {
     .createVol = virStorageBackendFileSystemVolCreate,
     .refreshVol = virStorageBackendFileSystemVolRefresh,
     .deleteVol = virStorageBackendFileSystemVolDelete,
+    .resizeVol = virStorageBackendFileSystemVolResize,
 };
 
 #if WITH_STORAGE_FS
@@ -1216,6 +1267,7 @@ virStorageBackend virStorageBackendFileSystem = {
     .createVol = virStorageBackendFileSystemVolCreate,
     .refreshVol = virStorageBackendFileSystemVolRefresh,
     .deleteVol = virStorageBackendFileSystemVolDelete,
+    .resizeVol = virStorageBackendFileSystemVolResize,
 };
 virStorageBackend virStorageBackendNetFileSystem = {
     .type = VIR_STORAGE_POOL_NETFS,
@@ -1232,5 +1284,6 @@ virStorageBackend virStorageBackendNetFileSystem = {
     .createVol = virStorageBackendFileSystemVolCreate,
     .refreshVol = virStorageBackendFileSystemVolRefresh,
     .deleteVol = virStorageBackendFileSystemVolDelete,
+    .resizeVol = virStorageBackendFileSystemVolResize,
 };
 #endif /* WITH_STORAGE_FS */

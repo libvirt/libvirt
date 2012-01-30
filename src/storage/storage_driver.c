@@ -1,7 +1,7 @@
 /*
  * storage_driver.c: core driver for storage APIs
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1695,7 +1695,94 @@ out:
     return ret;
 }
 
+static int
+storageVolumeResize(virStorageVolPtr obj,
+                    unsigned long long capacity,
+                    unsigned int flags)
+{
+    virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
+    virStorageBackendPtr backend;
+    virStoragePoolObjPtr pool = NULL;
+    virStorageVolDefPtr vol = NULL;
+    unsigned long long abs_capacity;
+    int ret = -1;
 
+    virCheckFlags(VIR_STORAGE_VOL_RESIZE_DELTA, -1);
+
+    storageDriverLock(driver);
+    pool = virStoragePoolObjFindByName(&driver->pools, obj->pool);
+    storageDriverUnlock(driver);
+
+    if (!pool) {
+        virStorageReportError(VIR_ERR_NO_STORAGE_POOL,
+                              _("no storage pool with matching uuid"));
+        goto out;
+    }
+
+    if (!virStoragePoolObjIsActive(pool)) {
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
+                              _("storage pool is not active"));
+        goto out;
+    }
+
+    if ((backend = virStorageBackendForType(pool->def->type)) == NULL)
+        goto out;
+
+    vol = virStorageVolDefFindByName(pool, obj->name);
+
+    if (vol == NULL) {
+        virStorageReportError(VIR_ERR_NO_STORAGE_VOL,
+                              _("no storage vol with matching name '%s'"),
+                              obj->name);
+        goto out;
+    }
+
+    if (vol->building) {
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
+                              _("volume '%s' is still being allocated."),
+                              vol->name);
+        goto out;
+    }
+
+    if (flags & VIR_STORAGE_VOL_RESIZE_DELTA) {
+        abs_capacity = vol->capacity + capacity;
+        flags &= ~VIR_STORAGE_VOL_RESIZE_DELTA;
+    } else {
+        abs_capacity = capacity;
+    }
+
+    if (abs_capacity < vol->allocation) {
+        virStorageReportError(VIR_ERR_INVALID_ARG,
+                              _("can't shrink capacity below "
+                                "existing allocation"));
+        goto out;
+    }
+
+    if (abs_capacity > vol->allocation + pool->def->available) {
+        virStorageReportError(VIR_ERR_INVALID_ARG,
+                              _("Not enough space left on storage pool"));
+        goto out;
+    }
+
+    if (!backend->resizeVol) {
+        virStorageReportError(VIR_ERR_NO_SUPPORT,
+                              _("storage pool does not support changing of "
+                                "volume capacity"));
+        goto out;
+    }
+
+    if (backend->resizeVol(obj->conn, pool, vol, abs_capacity, flags) < 0)
+        goto out;
+
+   vol->capacity = abs_capacity;
+   ret = 0;
+
+out:
+    if (pool)
+        virStoragePoolObjUnlock(pool);
+
+    return ret;
+}
 
 /* If the volume we're wiping is already a sparse file, we simply
  * truncate and extend it to its original size, filling it with
@@ -2243,6 +2330,7 @@ static virStorageDriver storageDriver = {
     .volGetInfo = storageVolumeGetInfo, /* 0.4.0 */
     .volGetXMLDesc = storageVolumeGetXMLDesc, /* 0.4.0 */
     .volGetPath = storageVolumeGetPath, /* 0.4.0 */
+    .volResize = storageVolumeResize, /* 0.9.10 */
 
     .poolIsActive = storagePoolIsActive, /* 0.7.3 */
     .poolIsPersistent = storagePoolIsPersistent, /* 0.7.3 */

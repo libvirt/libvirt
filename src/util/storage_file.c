@@ -931,6 +931,22 @@ virStorageFileFreeMetadata(virStorageFileMetadata *meta)
     VIR_FREE(meta);
 }
 
+/**
+ * virStorageFileResize:
+ *
+ * Change the capacity of the raw storage file at 'path'.
+ */
+int
+virStorageFileResize(const char *path, unsigned long long capacity)
+{
+    if (truncate(path, capacity) < 0) {
+        virReportSystemError(errno, _("Failed to truncate file '%s'"), path);
+        return -1;
+    }
+
+    return 0;
+}
+
 #ifdef __linux__
 
 # ifndef NFS_SUPER_MAGIC
