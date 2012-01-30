@@ -185,6 +185,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mingw32_mandir}/man1/virsh.1*
 %{_mingw32_mandir}/man1/virt-xml-validate.1*
 %{_mingw32_mandir}/man1/virt-pki-validate.1*
+%{_mingw32_mandir}/man1/virt-host-validate.1*
 
 
 %changelog
