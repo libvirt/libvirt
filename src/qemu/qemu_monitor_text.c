@@ -774,7 +774,7 @@ int qemuMonitorTextGetMemoryStats(qemuMonitorPtr mon,
 int qemuMonitorTextGetBlockInfo(qemuMonitorPtr mon,
                                 virHashTablePtr table)
 {
-    struct qemuDomainDiskInfo *info;
+    struct qemuDomainDiskInfo *info = NULL;
     char *reply = NULL;
     int ret = -1;
     char *dummy;
