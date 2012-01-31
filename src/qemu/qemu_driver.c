@@ -1546,12 +1546,12 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags) {
         if (priv->agentError) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("QEMU guest agent is not available due to an error"));
-            goto endjob;
+            goto cleanup;
         }
         if (!priv->agent) {
             qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                             _("QEMU guest agent is not configured"));
-            goto endjob;
+            goto cleanup;
         }
     }
 
