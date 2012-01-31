@@ -568,7 +568,7 @@ qemuAssignDeviceHostdevAlias(virDomainDefPtr def, virDomainHostdevDefPtr hostdev
         idx = 0;
         for (i = 0 ; i < def->nhostdevs ; i++) {
             int thisidx;
-            if ((thisidx = qemuDomainDeviceAliasIndex(&def->hostdevs[i]->info, "hostdev")) < 0) {
+            if ((thisidx = qemuDomainDeviceAliasIndex(def->hostdevs[i]->info, "hostdev")) < 0) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                 _("Unable to determine device index for hostdev device"));
                 return -1;
@@ -578,7 +578,7 @@ qemuAssignDeviceHostdevAlias(virDomainDefPtr def, virDomainHostdevDefPtr hostdev
         }
     }
 
-    if (virAsprintf(&hostdev->info.alias, "hostdev%d", idx) < 0) {
+    if (virAsprintf(&hostdev->info->alias, "hostdev%d", idx) < 0) {
         virReportOOMError();
         return -1;
     }
@@ -1419,13 +1419,13 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
 
     /* Host PCI devices */
     for (i = 0; i < def->nhostdevs ; i++) {
-        if (def->hostdevs[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+        if (def->hostdevs[i]->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             continue;
         if (def->hostdevs[i]->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
             def->hostdevs[i]->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             continue;
 
-        if (qemuDomainPCIAddressSetNextAddr(addrs, &def->hostdevs[i]->info) < 0)
+        if (qemuDomainPCIAddressSetNextAddr(addrs, def->hostdevs[i]->info) < 0)
             goto error;
     }
 
@@ -2977,14 +2977,14 @@ qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev, const char *configfd,
                       dev->source.subsys.u.pci.bus,
                       dev->source.subsys.u.pci.slot,
                       dev->source.subsys.u.pci.function);
-    virBufferAsprintf(&buf, ",id=%s", dev->info.alias);
+    virBufferAsprintf(&buf, ",id=%s", dev->info->alias);
     if (configfd && *configfd)
         virBufferAsprintf(&buf, ",configfd=%s", configfd);
-    if (dev->info.bootIndex)
-        virBufferAsprintf(&buf, ",bootindex=%d", dev->info.bootIndex);
-    if (qemuBuildDeviceAddressStr(&buf, &dev->info, qemuCaps) < 0)
+    if (dev->info->bootIndex)
+        virBufferAsprintf(&buf, ",bootindex=%d", dev->info->bootIndex);
+    if (qemuBuildDeviceAddressStr(&buf, dev->info, qemuCaps) < 0)
         goto error;
-    if (qemuBuildRomStr(&buf, &dev->info, qemuCaps) < 0)
+    if (qemuBuildRomStr(&buf, dev->info, qemuCaps) < 0)
        goto error;
 
     if (virBufferError(&buf)) {
@@ -3070,9 +3070,9 @@ qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev,
     virBufferAsprintf(&buf, "usb-host,hostbus=%d,hostaddr=%d,id=%s",
                       dev->source.subsys.u.usb.bus,
                       dev->source.subsys.u.usb.device,
-                      dev->info.alias);
+                      dev->info->alias);
 
-    if (qemuBuildDeviceAddressStr(&buf, &dev->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, dev->info, qemuCaps) < 0)
         goto error;
 
     if (virBufferError(&buf)) {
@@ -5702,7 +5702,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         virDomainHostdevDefPtr hostdev = def->hostdevs[i];
         char *devstr;
 
-        if (hostdev->info.bootIndex) {
+        if (hostdev->info->bootIndex) {
             if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
                 hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
                 qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -6654,43 +6654,37 @@ cleanup:
 static virDomainHostdevDefPtr
 qemuParseCommandLinePCI(const char *val)
 {
-    virDomainHostdevDefPtr def = NULL;
     int bus = 0, slot = 0, func = 0;
     const char *start;
     char *end;
+    virDomainHostdevDefPtr def = virDomainHostdevDefAlloc();
+
+    if (!def)
+       goto error;
 
     if (!STRPREFIX(val, "host=")) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("unknown PCI device syntax '%s'"), val);
-        VIR_FREE(def);
-        goto cleanup;
+        goto error;
     }
 
     start = val + strlen("host=");
     if (virStrToLong_i(start, &end, 16, &bus) < 0 || *end != ':') {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("cannot extract PCI device bus '%s'"), val);
-        VIR_FREE(def);
-        goto cleanup;
+        goto error;
     }
     start = end + 1;
     if (virStrToLong_i(start, &end, 16, &slot) < 0 || *end != '.') {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("cannot extract PCI device slot '%s'"), val);
-        VIR_FREE(def);
-        goto cleanup;
+        goto error;
     }
     start = end + 1;
     if (virStrToLong_i(start, NULL, 16, &func) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("cannot extract PCI device function '%s'"), val);
-        VIR_FREE(def);
-        goto cleanup;
-    }
-
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
-        goto cleanup;
+        goto error;
     }
 
     def->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
@@ -6699,9 +6693,11 @@ qemuParseCommandLinePCI(const char *val)
     def->source.subsys.u.pci.bus = bus;
     def->source.subsys.u.pci.slot = slot;
     def->source.subsys.u.pci.function = func;
-
-cleanup:
     return def;
+
+ error:
+    virDomainHostdevDefFree(def);
+    return NULL;
 }
 
 
@@ -6711,16 +6707,18 @@ cleanup:
 static virDomainHostdevDefPtr
 qemuParseCommandLineUSB(const char *val)
 {
-    virDomainHostdevDefPtr def = NULL;
+    virDomainHostdevDefPtr def = virDomainHostdevDefAlloc();
     int first = 0, second = 0;
     const char *start;
     char *end;
 
+    if (!def)
+       goto error;
+
     if (!STRPREFIX(val, "host:")) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("unknown USB device syntax '%s'"), val);
-        VIR_FREE(def);
-        goto cleanup;
+        goto error;
     }
 
     start = val + strlen("host:");
@@ -6728,35 +6726,26 @@ qemuParseCommandLineUSB(const char *val)
         if (virStrToLong_i(start, &end, 16, &first) < 0 || *end != ':') {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("cannot extract USB device vendor '%s'"), val);
-            VIR_FREE(def);
-            goto cleanup;
+            goto error;
         }
         start = end + 1;
         if (virStrToLong_i(start, NULL, 16, &second) < 0) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("cannot extract USB device product '%s'"), val);
-            VIR_FREE(def);
-            goto cleanup;
+            goto error;
         }
     } else {
         if (virStrToLong_i(start, &end, 10, &first) < 0 || *end != '.') {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                              _("cannot extract USB device bus '%s'"), val);
-            VIR_FREE(def);
-            goto cleanup;
+            goto error;
         }
         start = end + 1;
         if (virStrToLong_i(start, NULL, 10, &second) < 0) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("cannot extract USB device address '%s'"), val);
-            VIR_FREE(def);
-            goto cleanup;
+            goto error;
         }
-    }
-
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
-        goto cleanup;
     }
 
     def->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
@@ -6769,9 +6758,11 @@ qemuParseCommandLineUSB(const char *val)
         def->source.subsys.u.usb.vendor = first;
         def->source.subsys.u.usb.product = second;
     }
-
-cleanup:
     return def;
+
+ error:
+    virDomainHostdevDefFree(def);
+    return NULL;
 }
 
 

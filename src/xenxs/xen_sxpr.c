@@ -1076,8 +1076,8 @@ xenParseSxprPCI(virDomainDefPtr def,
             goto error;
         }
 
-        if (VIR_ALLOC(dev) < 0)
-            goto no_memory;
+        if (!(dev = virDomainHostdevDefAlloc()))
+           goto error;
 
         dev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
         dev->managed = 0;
@@ -1088,6 +1088,7 @@ xenParseSxprPCI(virDomainDefPtr def,
         dev->source.subsys.u.pci.function = funcID;
 
         if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs+1) < 0) {
+            virDomainHostdevDefFree(dev);
             goto no_memory;
         }
 

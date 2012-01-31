@@ -380,7 +380,7 @@ struct _virDomainHostdevDef {
         } caps;
     } source;
     virDomainHostdevOrigStates origstates;
-    virDomainDeviceInfo info; /* Guest address */
+    virDomainDeviceInfoPtr info; /* Guest address */
 };
 
 /* Two types of disk backends */
@@ -1773,6 +1773,8 @@ void virDomainSoundDefFree(virDomainSoundDefPtr def);
 void virDomainMemballoonDefFree(virDomainMemballoonDefPtr def);
 void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def);
 void virDomainVideoDefFree(virDomainVideoDefPtr def);
+virDomainHostdevDefPtr virDomainHostdevDefAlloc(void);
+void virDomainHostdevDefClear(virDomainHostdevDefPtr def);
 void virDomainHostdevDefFree(virDomainHostdevDefPtr def);
 void virDomainHubDefFree(virDomainHubDefPtr def);
 void virDomainRedirdevDefFree(virDomainRedirdevDefPtr def);

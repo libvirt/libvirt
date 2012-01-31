@@ -815,8 +815,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             if (virStrToLong_i(func, NULL, 16, &funcID) < 0)
                 goto skippci;
 
-            if (VIR_ALLOC(hostdev) < 0)
-                goto no_memory;
+            if (!(hostdev = virDomainHostdevDefAlloc()))
+               goto cleanup;
 
             hostdev->managed = 0;
             hostdev->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
@@ -825,8 +825,10 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             hostdev->source.subsys.u.pci.slot = slotID;
             hostdev->source.subsys.u.pci.function = funcID;
 
-            if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs+1) < 0)
+            if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs+1) < 0) {
+                virDomainHostdevDefFree(hostdev);
                 goto no_memory;
+            }
             def->hostdevs[def->nhostdevs++] = hostdev;
             hostdev = NULL;
 

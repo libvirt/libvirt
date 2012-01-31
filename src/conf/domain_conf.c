@@ -786,6 +786,15 @@ bool virDomainObjTaint(virDomainObjPtr obj,
     return true;
 }
 
+static void
+virDomainDeviceInfoFree(virDomainDeviceInfoPtr info)
+{
+    if (info) {
+        virDomainDeviceInfoClear(info);
+        VIR_FREE(info);
+    }
+}
+
 
 static void
 virDomainGraphicsAuthDefClear(virDomainGraphicsAuthDefPtr def)
@@ -1294,12 +1303,42 @@ void virDomainVideoDefFree(virDomainVideoDefPtr def)
     VIR_FREE(def);
 }
 
+virDomainHostdevDefPtr virDomainHostdevDefAlloc(void)
+{
+    virDomainHostdevDefPtr def = NULL;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+    if (VIR_ALLOC(def->info) < 0) {
+        virReportOOMError();
+        VIR_FREE(def);
+        return NULL;
+    }
+    return def;
+}
+
+void virDomainHostdevDefClear(virDomainHostdevDefPtr def)
+{
+    if (!def)
+        return;
+
+    /* Free all resources in the hostdevdef. Currently the only
+     * such resource is the virDomainDeviceInfo.
+     */
+
+    virDomainDeviceInfoFree(def->info);
+}
+
 void virDomainHostdevDefFree(virDomainHostdevDefPtr def)
 {
     if (!def)
         return;
 
-    virDomainDeviceInfoClear(&def->info);
+    /* free all subordinate objects */
+    virDomainHostdevDefClear(def);
+
     VIR_FREE(def);
 }
 
@@ -1877,7 +1916,7 @@ int virDomainDeviceInfoIterate(virDomainDefPtr def,
     device.type = VIR_DOMAIN_DEVICE_HOSTDEV;
     for (i = 0; i < def->nhostdevs ; i++) {
         device.data.hostdev = def->hostdevs[i];
-        if (cb(def, &device, &def->hostdevs[i]->info, opaque) < 0)
+        if (cb(def, &device, def->hostdevs[i]->info, opaque) < 0)
             return -1;
     }
     device.type = VIR_DOMAIN_DEVICE_VIDEO;
@@ -2743,14 +2782,14 @@ virDomainHostdevSubsysPciDefParseXML(const xmlNodePtr node,
                 char *devaddr = virXMLPropString(cur, "devaddr");
                 if (devaddr &&
                     virDomainParseLegacyDeviceAddress(devaddr,
-                                                      &def->info.addr.pci) < 0) {
+                                                      &def->info->addr.pci) < 0) {
                     virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                          _("Unable to parse devaddr parameter '%s'"),
                                          devaddr);
                     VIR_FREE(devaddr);
                     goto out;
                 }
-                def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+                def->info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
             } else if ((flags & VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES) &&
                        xmlStrEqual(cur->name, BAD_CAST "origstates")) {
                 virDomainHostdevOrigStatesPtr states = &def->origstates;
@@ -6379,10 +6418,8 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
     virDomainHostdevDefPtr def;
     char *mode, *type = NULL, *managed = NULL;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (!(def = virDomainHostdevDefAlloc()))
         return NULL;
-    }
 
     mode = virXMLPropString(node, "mode");
     if (mode) {
@@ -6445,8 +6482,8 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
         cur = cur->next;
     }
 
-    if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-        if (virDomainDeviceInfoParseXML(node, bootMap, &def->info,
+    if (def->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+        if (virDomainDeviceInfoParseXML(node, bootMap, def->info,
                                         flags  | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT
                                         | VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) < 0)
             goto error;
@@ -6455,8 +6492,8 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
     if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
         switch (def->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-            if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-                def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+            if (def->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                def->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
                 virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                      _("PCI host devices must use 'pci' address type"));
                 goto error;
@@ -9015,7 +9052,7 @@ static bool virDomainHostdevDefCheckABIStability(virDomainHostdevDefPtr src,
         }
     }
 
-    if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
+    if (!virDomainDeviceInfoCheckABIStability(src->info, dst->info))
         goto cleanup;
 
     identical = true;
@@ -11551,7 +11588,7 @@ virDomainHostdevDefFormat(virBufferPtr buf,
 
     virBufferAddLit(buf, "      </source>\n");
 
-    if (virDomainDeviceInfoFormat(buf, &def->info,
+    if (virDomainDeviceInfoFormat(buf, def->info,
                                   flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT
                                   | VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) < 0)
         return -1;

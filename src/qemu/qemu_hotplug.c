@@ -918,14 +918,14 @@ int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
             goto error;
-        if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &hostdev->info) < 0)
+        if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, hostdev->info) < 0)
             goto error;
         releaseaddr = true;
         if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_PCI_CONFIGFD)) {
             configfd = qemuOpenPCIConfig(hostdev);
             if (configfd >= 0) {
                 if (virAsprintf(&configfd_name, "fd-%s",
-                                hostdev->info.alias) < 0) {
+                                hostdev->info->alias) < 0) {
                     virReportOOMError();
                     goto error;
                 }
@@ -947,7 +947,7 @@ int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
                                          configfd, configfd_name);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     } else {
-        virDomainDevicePCIAddress guestAddr = hostdev->info.addr.pci;
+        virDomainDevicePCIAddress guestAddr = hostdev->info->addr.pci;
 
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         ret = qemuMonitorAddPCIHostDevice(priv->mon,
@@ -955,8 +955,8 @@ int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
                                           &guestAddr);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-        hostdev->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-        memcpy(&hostdev->info.addr.pci, &guestAddr, sizeof(guestAddr));
+        hostdev->info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+        memcpy(&hostdev->info->addr.pci, &guestAddr, sizeof(guestAddr));
     }
     virDomainAuditHostdev(vm, hostdev, "attach", ret == 0);
     if (ret < 0)
@@ -972,10 +972,10 @@ int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
 
 error:
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        (hostdev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
+        (hostdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
         releaseaddr &&
         qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
-                                        hostdev->info.addr.pci.slot) < 0)
+                                        hostdev->info->addr.pci.slot) < 0)
         VIR_WARN("Unable to release PCI address on host device");
 
     qemuDomainReAttachHostdevDevices(driver, vm->def->name, &hostdev, 1);
@@ -2018,14 +2018,14 @@ qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
         return -1;
     }
 
-    if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
+    if (qemuIsMultiFunctionDevice(vm->def, detach->info)) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         _("cannot hot unplug multifunction PCI device: %s"),
                         dev->data.disk->dst);
         return -1;
     }
 
-    if (!virDomainDeviceAddressIsValid(&detach->info,
+    if (!virDomainDeviceAddressIsValid(detach->info,
                                        VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("device cannot be detached without a PCI address"));
@@ -2034,9 +2034,9 @@ qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        ret = qemuMonitorDelDevice(priv->mon, detach->info.alias);
+        ret = qemuMonitorDelDevice(priv->mon, detach->info->alias);
     } else {
-        ret = qemuMonitorRemovePCIDevice(priv->mon, &detach->info.addr.pci);
+        ret = qemuMonitorRemovePCIDevice(priv->mon, &detach->info->addr.pci);
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
     virDomainAuditHostdev(vm, detach, "detach", ret == 0);
@@ -2062,7 +2062,7 @@ qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
         qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
-                                        detach->info.addr.pci.slot) < 0)
+                                        detach->info->addr.pci.slot) < 0)
         VIR_WARN("Unable to release PCI address on host device");
 
     if (vm->def->nhostdevs > 1) {
@@ -2131,7 +2131,7 @@ qemuDomainDetachHostUsbDevice(struct qemud_driver *driver,
         return -1;
     }
 
-    if (!detach->info.alias) {
+    if (!detach->info->alias) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("device cannot be detached without a device alias"));
         return -1;
@@ -2144,7 +2144,7 @@ qemuDomainDetachHostUsbDevice(struct qemud_driver *driver,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    ret = qemuMonitorDelDevice(priv->mon, detach->info.alias);
+    ret = qemuMonitorDelDevice(priv->mon, detach->info->alias);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
     virDomainAuditHostdev(vm, detach, "detach", ret == 0);
     if (ret < 0)
