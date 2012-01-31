@@ -27,6 +27,7 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <linux/capability.h>
 
 #include "qemu_process.h"
 #include "qemu_domain.h"
@@ -3083,6 +3084,7 @@ int qemuProcessStart(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     struct qemuProcessHookData hookData;
     unsigned long cur_balloon;
+    int i;
 
     hookData.conn = conn;
     hookData.vm = vm;
@@ -3334,6 +3336,12 @@ int qemuProcessStart(virConnectPtr conn,
               driver->clearEmulatorCapabilities);
     if (driver->clearEmulatorCapabilities)
         virCommandClearCaps(cmd);
+
+    /* in case a certain disk is desirous of CAP_SYS_RAWIO, add this */
+    for (i = 0; i < vm->def->ndisks; i++) {
+        if (vm->def->disks[i]->rawio == 1)
+            virCommandAllowCap(cmd, CAP_SYS_RAWIO);
+    }
 
     virCommandSetPreExecHook(cmd, qemuProcessHook, &hookData);
 
