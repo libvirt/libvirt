@@ -3058,7 +3058,9 @@
   </define>
   <define name="domainName">
     <data type="string">
-      <param name="pattern">[^\n]+</param>
+      <!-- Use literal newline instead of \n for bug in libxml2 2.7.6 -->
+      <param name="pattern">[^
+]+</param>
     </data>
   </define>
   <define name="diskSerial">
