@@ -394,6 +394,7 @@ prepareStdFd(int fd, int std)
  * @hook optional virExecHook function to call prior to exec
  * @data data to pass to the hook function
  * @pidfile path to use as pidfile for daemonized process (needs DAEMON flag)
+ * @capabilities capabilities to keep
  */
 static int
 virExecWithHook(const char *const*argv,
@@ -405,7 +406,8 @@ virExecWithHook(const char *const*argv,
                 unsigned int flags,
                 virExecHook hook,
                 void *data,
-                char *pidfile)
+                char *pidfile,
+                unsigned long long capabilities)
 {
     pid_t pid;
     int null = -1, i, openmax;
@@ -634,9 +636,9 @@ virExecWithHook(const char *const*argv,
 
     /* The steps above may need todo something privileged, so
      * we delay clearing capabilities until the last minute */
-    if ((flags & VIR_EXEC_CLEAR_CAPS) &&
-        virClearCapabilities() < 0)
-        goto fork_error;
+    if (capabilities || (flags & VIR_EXEC_CLEAR_CAPS))
+        if (virSetCapabilities(capabilities) < 0)
+            goto fork_error;
 
     /* Close logging again to ensure no FDs leak to child */
     virLogReset();
@@ -724,7 +726,8 @@ virExecWithHook(const char *const*argv ATTRIBUTE_UNUSED,
                 int flags_unused ATTRIBUTE_UNUSED,
                 virExecHook hook ATTRIBUTE_UNUSED,
                 void *data ATTRIBUTE_UNUSED,
-                char *pidfile ATTRIBUTE_UNUSED)
+                char *pidfile ATTRIBUTE_UNUSED,
+                unsigned long long capabilities ATTRIBUTE_UNUSED)
 {
     /* XXX: Some day we can implement pieces of virCommand/virExec on
      * top of _spawn() or CreateProcess(), but we can't implement
@@ -2172,7 +2175,8 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
                           cmd->flags,
                           virCommandHook,
                           cmd,
-                          cmd->pidfile);
+                          cmd->pidfile,
+                          cmd->capabilities);
 
     VIR_DEBUG("Command result %d, with PID %d",
               ret, (int)cmd->pid);
