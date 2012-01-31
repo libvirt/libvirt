@@ -806,6 +806,14 @@
         </attribute>
       </optional>
       <optional>
+        <attribute name="rawio">
+          <choice>
+            <value>yes</value>
+            <value>no</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
         <ref name="snapshot"/>
       </optional>
       <choice>

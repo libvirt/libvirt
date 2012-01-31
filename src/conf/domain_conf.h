@@ -413,6 +413,8 @@ struct _virDomainDiskDef {
     unsigned int transient : 1;
     virDomainDeviceInfo info;
     virStorageEncryptionPtr encryption;
+    bool rawio_specified;
+    int rawio; /* no = 0, yes = 1 */
 };
 
 

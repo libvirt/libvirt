@@ -2806,6 +2806,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     char *type = NULL;
     char *device = NULL;
     char *snapshot = NULL;
+    char *rawio = NULL;
     char *driverName = NULL;
     char *driverType = NULL;
     char *source = NULL;
@@ -2849,6 +2850,8 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     }
 
     snapshot = virXMLPropString(node, "snapshot");
+
+    rawio = virXMLPropString(node, "rawio");
 
     cur = node->children;
     while (cur != NULL) {
@@ -3154,6 +3157,26 @@ virDomainDiskDefParseXML(virCapsPtr caps,
         }
     } else if (def->readonly) {
         def->snapshot = VIR_DOMAIN_DISK_SNAPSHOT_NO;
+    }
+
+    if (rawio) {
+        def->rawio_specified = true;
+        if (def->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+            if (STREQ(rawio, "yes")) {
+                def->rawio = 1;
+            } else if (STREQ(rawio, "no")) {
+                def->rawio = 0;
+            } else {
+                virDomainReportError(VIR_ERR_XML_ERROR,
+                                     _("unknown disk rawio setting '%s'"),
+                                     rawio);
+                goto error;
+            }
+        } else {
+            virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                _("rawio can be used only with device='lun'"));
+            goto error;
+        }
     }
 
     if (bus) {
@@ -9972,6 +9995,13 @@ virDomainDiskDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf,
                       "    <disk type='%s' device='%s'",
                       type, device);
+    if (def->rawio_specified) {
+        if (def->rawio == 1) {
+            virBufferAddLit(buf, " rawio='yes'");
+        } else if (def->rawio == 0) {
+            virBufferAddLit(buf, " rawio='no'");
+        }
+    }
     if (def->snapshot &&
         !(def->snapshot == VIR_DOMAIN_DISK_SNAPSHOT_NO && def->readonly))
         virBufferAsprintf(buf, " snapshot='%s'",

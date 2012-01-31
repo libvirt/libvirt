@@ -1096,8 +1096,11 @@
         - also note that device='lun' will only be recognized for
         actual raw devices, never for individual partitions or LVM
         partitions (in those cases, the kernel will reject the generic
-        SCSI commands, making it identical to device='disk').  The
-        optional <code>snapshot</code> attribute indicates the default
+        SCSI commands, making it identical to device='disk').
+        The optional <code>rawio</code> attribute indicates that the disk
+        is desirous of rawio capability. This attribute is only valid when
+        device is "lun".
+        The optional <code>snapshot</code> attribute indicates the default
         behavior of the disk during disk snapshots: "internal"
         requires a file format such as qcow2 that can store both the
         snapshot and the data changes since the snapshot;
