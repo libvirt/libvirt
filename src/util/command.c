@@ -103,6 +103,8 @@ struct _virCommand {
     pid_t pid;
     char *pidfile;
     bool reap;
+
+    unsigned long long capabilities;
 };
 
 /*
@@ -168,6 +170,7 @@ virCommandFDSet(int fd,
 #ifndef WIN32
 
 # if HAVE_CAPNG
+static int virClearCapabilities(void) ATTRIBUTE_UNUSED;
 static int virClearCapabilities(void)
 {
     int ret;
@@ -182,11 +185,43 @@ static int virClearCapabilities(void)
 
     return 0;
 }
+
+/**
+ * virSetCapabilities:
+ *  @capabilities - capability flag to set.
+ *                  In case of 0, this function is identical to
+ *                  virClearCapabilities()
+ *
+ */
+static int virSetCapabilities(unsigned long long capabilities)
+{
+    int ret, i;
+
+    capng_clear(CAPNG_SELECT_BOTH);
+
+    for (i = 0; i <= CAP_LAST_CAP; i++) {
+        if (capabilities & (1ULL << i))
+            capng_update(CAPNG_ADD, CAPNG_BOUNDING_SET, i);
+    }
+
+    if ((ret = capng_apply(CAPNG_SELECT_BOTH)) < 0) {
+        virCommandError(VIR_ERR_INTERNAL_ERROR,
+                        _("cannot apply process capabilities %d"), ret);
+        return -1;
+    }
+
+    return 0;
+}
 # else
 static int virClearCapabilities(void)
 {
 //    VIR_WARN("libcap-ng support not compiled in, unable to clear "
 //             "capabilities");
+    return 0;
+}
+
+static int virSetCapabilities(unsigned long long capabilities)
+{
     return 0;
 }
 # endif
@@ -883,26 +918,23 @@ virCommandClearCaps(virCommandPtr cmd)
     cmd->flags |= VIR_EXEC_CLEAR_CAPS;
 }
 
-#if 0 /* XXX Enable if we have a need for capability management.  */
-
 /**
  * virCommandAllowCap:
  * @cmd: the command to modify
  * @capability: what to allow
  *
- * Re-allow a specific capability
+ * Allow specific capabilities
  */
 void
 virCommandAllowCap(virCommandPtr cmd,
-                   int capability ATTRIBUTE_UNUSED)
+                   int capability)
 {
     if (!cmd || cmd->has_error)
         return;
 
-    /* XXX ? */
+    cmd->capabilities |= (1ULL << capability);
 }
 
-#endif /* 0 */
 
 
 /**

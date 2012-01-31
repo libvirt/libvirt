@@ -60,10 +60,8 @@ void virCommandSetPidFile(virCommandPtr cmd,
 
 void virCommandClearCaps(virCommandPtr cmd);
 
-# if 0
 void virCommandAllowCap(virCommandPtr cmd,
                         int capability);
-# endif
 
 void virCommandDaemonize(virCommandPtr cmd);
 
