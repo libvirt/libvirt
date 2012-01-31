@@ -94,6 +94,10 @@ struct remote_node_get_memory_stats {
         remote_nonnull_string      field;
         uint64_t                   value;
 };
+struct remote_domain_disk_error {
+        remote_nonnull_string      disk;
+        int                        error;
+};
 struct remote_open_args {
         remote_string              name;
         u_int                      flags;
@@ -1866,6 +1870,18 @@ struct remote_domain_shutdown_flags_args {
         remote_nonnull_domain      dom;
         u_int                      flags;
 };
+struct remote_domain_get_disk_errors_args {
+        remote_nonnull_domain      dom;
+        u_int                      maxerrors;
+        u_int                      flags;
+};
+struct remote_domain_get_disk_errors_ret {
+        struct {
+                u_int              errors_len;
+                remote_domain_disk_error * errors_val;
+        } errors;
+        int                        nerrors;
+};
 enum remote_procedure {
         REMOTE_PROC_OPEN = 1,
         REMOTE_PROC_CLOSE = 2,
@@ -2129,4 +2145,5 @@ enum remote_procedure {
         REMOTE_PROC_STORAGE_VOL_RESIZE = 260,
         REMOTE_PROC_DOMAIN_PM_SUSPEND_FOR_DURATION = 261,
         REMOTE_PROC_DOMAIN_GET_CPU_STATS = 262,
+        REMOTE_PROC_DOMAIN_GET_DISK_ERRORS = 263,
 };

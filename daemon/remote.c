@@ -98,6 +98,12 @@ remoteDeserializeTypedParameters(remote_typed_param *args_params_val,
                                  int limit,
                                  int *nparams);
 
+static int
+remoteSerializeDomainDiskErrors(virDomainDiskErrorPtr errors,
+                                int nerrors,
+                                remote_domain_disk_error **ret_errors_val,
+                                u_int *ret_errors_len);
+
 #include "remote_dispatch.h"
 #include "qemu_dispatch.h"
 
@@ -3591,6 +3597,69 @@ cleanup:
     return rv;
 }
 
+static int remoteDispatchDomainGetDiskErrors(
+    virNetServerPtr server ATTRIBUTE_UNUSED,
+    virNetServerClientPtr client,
+    virNetMessagePtr msg ATTRIBUTE_UNUSED,
+    virNetMessageErrorPtr rerr,
+    remote_domain_get_disk_errors_args *args,
+    remote_domain_get_disk_errors_ret *ret)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    virDomainDiskErrorPtr errors = NULL;
+    int len;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+
+    if (args->maxerrors > REMOTE_DOMAIN_DISK_ERRORS_MAX) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("maxerrors too large"));
+        goto cleanup;
+    }
+
+    if (args->maxerrors &&
+        VIR_ALLOC_N(errors, args->maxerrors) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((len = virDomainGetDiskErrors(dom, errors,
+                                      args->maxerrors,
+                                      args->flags)) < 0)
+        goto cleanup;
+
+    ret->nerrors = len;
+    if (errors &&
+        remoteSerializeDomainDiskErrors(errors, len,
+                                        &ret->errors.errors_val,
+                                        &ret->errors.errors_len) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    if (errors) {
+        int i;
+        for (i = 0; i < len; i++)
+            VIR_FREE(errors[i].disk);
+    }
+    VIR_FREE(errors);
+    return rv;
+}
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
@@ -3720,4 +3789,38 @@ make_nonnull_domain_snapshot(remote_nonnull_domain_snapshot *snapshot_dst, virDo
 {
     snapshot_dst->name = strdup(snapshot_src->name);
     make_nonnull_domain(&snapshot_dst->dom, snapshot_src->domain);
+}
+
+static int
+remoteSerializeDomainDiskErrors(virDomainDiskErrorPtr errors,
+                                int nerrors,
+                                remote_domain_disk_error **ret_errors_val,
+                                u_int *ret_errors_len)
+{
+    remote_domain_disk_error *val = NULL;
+    int i = 0;
+
+    if (VIR_ALLOC_N(val, nerrors) < 0)
+        goto no_memory;
+
+    for (i = 0; i < nerrors; i++) {
+        if (!(val[i].disk = strdup(errors[i].disk)))
+            goto no_memory;
+        val[i].error = errors[i].error;
+    }
+
+    *ret_errors_len = nerrors;
+    *ret_errors_val = val;
+
+    return 0;
+
+no_memory:
+    if (val) {
+        int j;
+        for (j = 0; j < i; j++)
+            VIR_FREE(val[j].disk);
+        VIR_FREE(val);
+    }
+    virReportOOMError();
+    return -1;
 }

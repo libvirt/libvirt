@@ -219,6 +219,11 @@ const REMOTE_DOMAIN_GET_CPU_STATS_NCPUS_MAX = 128;
  */
 const REMOTE_DOMAIN_GET_CPU_STATS_MAX = 2048;
 
+/*
+ * Upper limit on number of disks with errors
+ */
+const REMOTE_DOMAIN_DISK_ERRORS_MAX = 256;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -359,6 +364,10 @@ struct remote_node_get_memory_stats {
     unsigned hyper value;
 };
 
+struct remote_domain_disk_error {
+    remote_nonnull_string disk;
+    int error;
+};
 
 /*----- Calls. -----*/
 
@@ -2397,6 +2406,17 @@ struct remote_domain_shutdown_flags_args {
     unsigned int flags;
 };
 
+struct remote_domain_get_disk_errors_args {
+    remote_nonnull_domain dom;
+    unsigned int maxerrors;
+    unsigned int flags;
+};
+
+struct remote_domain_get_disk_errors_ret {
+    remote_domain_disk_error errors<REMOTE_DOMAIN_DISK_ERRORS_MAX>;
+    int nerrors;
+};
+
 
 /*----- Protocol. -----*/
 
@@ -2708,7 +2728,8 @@ enum remote_procedure {
     REMOTE_PROC_STORAGE_VOL_RESIZE = 260, /* autogen autogen */
 
     REMOTE_PROC_DOMAIN_PM_SUSPEND_FOR_DURATION = 261, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_GET_CPU_STATS = 262 /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_GET_CPU_STATS = 262, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_GET_DISK_ERRORS = 263 /* skipgen skipgen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

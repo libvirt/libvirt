@@ -1424,6 +1424,39 @@ cleanup:
 }
 
 static int
+remoteDeserializeDomainDiskErrors(remote_domain_disk_error *ret_errors_val,
+                                  u_int ret_errors_len,
+                                  int limit,
+                                  virDomainDiskErrorPtr errors,
+                                  int maxerrors)
+{
+    int i = 0;
+    int j;
+
+    if (ret_errors_len > limit || ret_errors_len > maxerrors) {
+        remoteError(VIR_ERR_RPC, "%s",
+                    _("returned number of disk errors exceeds limit"));
+        goto error;
+    }
+
+    for (i = 0; i < ret_errors_len; i++) {
+        if (!(errors[i].disk = strdup(ret_errors_val[i].disk))) {
+            virReportOOMError();
+            goto error;
+        }
+        errors[i].error = ret_errors_val[i].error;
+    }
+
+    return 0;
+
+error:
+    for (j = 0; j < i; j++)
+        VIR_FREE(errors[i].disk);
+
+    return -1;
+}
+
+static int
 remoteDomainBlockStatsFlags(virDomainPtr domain,
                             const char *path,
                             virTypedParameterPtr params,
@@ -4438,6 +4471,49 @@ remoteIsAlive(virConnectPtr conn)
 }
 
 
+static int
+remoteDomainGetDiskErrors(virDomainPtr dom,
+                          virDomainDiskErrorPtr errors,
+                          unsigned int maxerrors,
+                          unsigned int flags)
+{
+    int rv = -1;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_get_disk_errors_args args;
+    remote_domain_get_disk_errors_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, dom);
+    args.maxerrors = maxerrors;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_DISK_ERRORS,
+             (xdrproc_t) xdr_remote_domain_get_disk_errors_args,
+             (char *) &args,
+             (xdrproc_t) xdr_remote_domain_get_disk_errors_ret,
+             (char *) &ret) == -1)
+        goto done;
+
+    if (remoteDeserializeDomainDiskErrors(ret.errors.errors_val,
+                                          ret.errors.errors_len,
+                                          REMOTE_DOMAIN_DISK_ERRORS_MAX,
+                                          errors,
+                                          maxerrors) < 0)
+        goto cleanup;
+
+    rv = ret.nerrors;
+
+cleanup:
+    xdr_free((xdrproc_t) xdr_remote_domain_get_disk_errors_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 #include "remote_client_bodies.h"
 #include "qemu_client_bodies.h"
 
@@ -4840,6 +4916,7 @@ static virDriver remote_driver = {
     .domainSetNumaParameters = remoteDomainSetNumaParameters, /* 0.9.9 */
     .domainGetNumaParameters = remoteDomainGetNumaParameters, /* 0.9.9 */
     .domainGetCPUStats = remoteDomainGetCPUStats, /* 0.9.10 */
+    .domainGetDiskErrors = remoteDomainGetDiskErrors, /* 0.9.10 */
 };
 
 static virNetworkDriver network_driver = {
