@@ -1967,6 +1967,38 @@ virDomainGetBlockIoTune(virDomainPtr dom,
                         int *nparams,
                         unsigned int flags);
 
+/**
+ * virDomainDiskErrorCode:
+ *
+ * Disk I/O error.
+ */
+typedef enum {
+    VIR_DOMAIN_DISK_ERROR_NONE      = 0, /* no error */
+    VIR_DOMAIN_DISK_ERROR_UNSPEC    = 1, /* unspecified I/O error */
+    VIR_DOMAIN_DISK_ERROR_NO_SPACE  = 2, /* no space left on the device */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_DISK_ERROR_LAST
+#endif
+} virDomainDiskErrorCode;
+
+/**
+ * virDomainDiskError:
+ *
+ */
+typedef struct _virDomainDiskError virDomainDiskError;
+typedef virDomainDiskError *virDomainDiskErrorPtr;
+
+struct _virDomainDiskError {
+    char *disk; /* disk target */
+    int error;  /* virDomainDiskErrorCode */
+};
+
+int virDomainGetDiskErrors(virDomainPtr dom,
+                           virDomainDiskErrorPtr errors,
+                           unsigned int maxerrors,
+                           unsigned int flags);
+
 
 /*
  * NUMA support

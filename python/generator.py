@@ -423,7 +423,8 @@ skip_impl = (
     'virDomainGetBlockIoTune',
     'virDomainSetInterfaceParameters',
     'virDomainGetInterfaceParameters',
-    'virDomainGetCPUStats'  # not implemented now.
+    'virDomainGetCPUStats',  # not implemented now.
+    'virDomainGetDiskErrors',
 )
 
 qemu_skip_impl = (

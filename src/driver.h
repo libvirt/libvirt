@@ -810,6 +810,12 @@ typedef int
                                unsigned int ncpus,
                                unsigned int flags);
 
+typedef int
+    (*virDrvDomainGetDiskErrors)(virDomainPtr dom,
+                                 virDomainDiskErrorPtr errors,
+                                 unsigned int maxerrors,
+                                 unsigned int flags);
+
 /**
  * _virDriver:
  *
@@ -981,6 +987,7 @@ struct _virDriver {
     virDrvDomainSetBlockIoTune domainSetBlockIoTune;
     virDrvDomainGetBlockIoTune domainGetBlockIoTune;
     virDrvDomainGetCPUStats domainGetCPUStats;
+    virDrvDomainGetDiskErrors domainGetDiskErrors;
 };
 
 typedef int

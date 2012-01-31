@@ -18282,3 +18282,68 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
+/**
+ * virDomainGetDiskErrors:
+ * @dom: a domain object
+ * @errors: array to populate on output
+ * @maxerrors: size of @errors array
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * The function populates @errors array with all disks that encountered an
+ * I/O error.  Disks with no error will not be returned in the @errors array.
+ * Each disk is identified by its target (the dev attribute of target
+ * subelement in domain XML), such as "vda", and accompanied with the error
+ * that was seen on it.  The caller is also responsible for calling free()
+ * on each disk name returned.
+ *
+ * In a special case when @errors is NULL and @maxerrors is 0, the function
+ * returns preferred size of @errors that the caller should use to get all
+ * disk errors.
+ *
+ * Since calling virDomainGetDiskErrors(dom, NULL, 0, 0) to get preferred size
+ * of @errors array and getting the errors are two separate operations, new
+ * disks may be hotplugged to the domain and new errors may be encountered
+ * between the two calls.  Thus, this function may not return all disk errors
+ * because the supplied array is not large enough.  Such errors may, however,
+ * be detected by listening to domain events.
+ *
+ * Returns number of disks with errors filled in the @errors array or -1 on
+ * error.
+ */
+int
+virDomainGetDiskErrors(virDomainPtr dom,
+                       virDomainDiskErrorPtr errors,
+                       unsigned int maxerrors,
+                       unsigned int flags)
+{
+    VIR_DOMAIN_DEBUG(dom, "errors=%p, maxerrors=%u, flags=%x",
+                     errors, maxerrors, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_DOMAIN(dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if ((!errors && maxerrors) || (errors && !maxerrors)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        goto error;
+    }
+
+    if (dom->conn->driver->domainGetDiskErrors) {
+        int ret = dom->conn->driver->domainGetDiskErrors(dom, errors,
+                                                         maxerrors, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dom->conn);
+    return -1;
+}
