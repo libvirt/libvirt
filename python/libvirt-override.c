@@ -3484,6 +3484,59 @@ libvirt_virDomainGetBlockIoTune(PyObject *self ATTRIBUTE_UNUSED,
     return(pyreply);
 }
 
+static PyObject *
+libvirt_virDomainGetDiskErrors(PyObject *self ATTRIBUTE_UNUSED,
+                               PyObject *args)
+{
+    PyObject *py_retval = VIR_PY_NONE;
+    virDomainPtr domain;
+    PyObject *pyobj_domain;
+    unsigned int flags;
+    virDomainDiskErrorPtr disks = NULL;
+    unsigned int ndisks;
+    int count;
+    int i;
+
+    if (!PyArg_ParseTuple(args, (char *) "Oi:virDomainGetDiskErrors",
+                          &pyobj_domain, &flags))
+        return NULL;
+
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    if ((count = virDomainGetDiskErrors(domain, NULL, 0, 0)) < 0)
+        return VIR_PY_NONE;
+    ndisks = count;
+
+    if (ndisks) {
+        if (!(disks = malloc(sizeof(*disks) * ndisks)))
+            return VIR_PY_NONE;
+
+        LIBVIRT_BEGIN_ALLOW_THREADS;
+        count = virDomainGetDiskErrors(domain, disks, ndisks, 0);
+        LIBVIRT_END_ALLOW_THREADS;
+
+        if (count < 0)
+            goto cleanup;
+    }
+
+    if (!(py_retval = PyDict_New()))
+        goto cleanup;
+
+    for (i = 0; i < count; i++) {
+        PyDict_SetItem(py_retval,
+                       libvirt_constcharPtrWrap(disks[i].disk),
+                       libvirt_intWrap(disks[i].error));
+    }
+
+cleanup:
+    if (disks) {
+        for (i = 0; i < count; i++)
+            free(disks[i].disk);
+        free(disks);
+    }
+    return py_retval;
+}
+
 /*******************************************
  * Helper functions to avoid importing modules
  * for every callback
@@ -5206,6 +5259,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainMigrateGetMaxSpeed", libvirt_virDomainMigrateGetMaxSpeed, METH_VARARGS, NULL},
     {(char *) "virDomainBlockPeek", libvirt_virDomainBlockPeek, METH_VARARGS, NULL},
     {(char *) "virDomainMemoryPeek", libvirt_virDomainMemoryPeek, METH_VARARGS, NULL},
+    {(char *) "virDomainGetDiskErrors", libvirt_virDomainGetDiskErrors, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 

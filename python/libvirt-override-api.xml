@@ -421,5 +421,11 @@
       <arg name='flags' type='unsigned int' info='an OR&apos;ed set of virDomainMemoryFlags'/>
       <return type='char *' info='the returned buffer or None in case of error'/>
     </function>
+    <function name='virDomainGetDiskErrors' file='python'>
+      <info>Extract errors on disk devices.</info>
+      <return type='virDomainDiskErrorPtr' info='dictionary of disks and their errors or None in case of error'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+      <arg name='flags' type='unsigned int' info='unused, always pass 0'/>
+    </function>
   </symbols>
 </api>
