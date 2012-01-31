@@ -7226,8 +7226,8 @@ error:
  *
  * Change a subset or all parameters of interface; currently this
  * includes bandwidth parameters.  The value of @flags should be
- * either VIR_DOMAIN_AFFECT_CURRENT, or a bitwise-or of values from
- * VIR_DOMAIN_AFFECT_LIVE and VIR_DOMAIN_AFFECT_CURRENT, although
+ * either VIR_DOMAIN_AFFECT_CURRENT, or a bitwise-or of values
+ * VIR_DOMAIN_AFFECT_LIVE and VIR_DOMAIN_AFFECT_CONFIG, although
  * hypervisors vary in which flags are supported.
  *
  * This function may require privileged access to the hypervisor.

@@ -7779,20 +7779,12 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         }
     }
 
-    if (VIR_ALLOC(bandwidth) < 0) {
+    if ((VIR_ALLOC(bandwidth) < 0) ||
+        (VIR_ALLOC(bandwidth->in) < 0) ||
+        (VIR_ALLOC(bandwidth->out) < 0)) {
         virReportOOMError();
         goto cleanup;
     }
-    if (VIR_ALLOC(bandwidth->in) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-    memset(bandwidth->in, 0, sizeof(*bandwidth->in));
-    if (VIR_ALLOC(bandwidth->out) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-    memset(bandwidth->out, 0, sizeof(*bandwidth->out));
 
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
@@ -7817,11 +7809,9 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
      * inbound/outbound to not be set. */
     if (!bandwidth->in->average) {
         VIR_FREE(bandwidth->in);
-        bandwidth->in = NULL;
     }
     if (!bandwidth->out->average) {
         VIR_FREE(bandwidth->out);
-        bandwidth->out = NULL;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
@@ -7833,29 +7823,27 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         /* virNetDevBandwidthSet() will clear any previous value of
          * bandwidth parameters, so merge with old bandwidth parameters
          * here to prevent them from being lost. */
-        if (bandwidth->in || net->bandwidth->in) {
+        if (bandwidth->in ||
+            (net->bandwidth && net->bandwidth->in)) {
             if (VIR_ALLOC(newBandwidth->in) < 0) {
                 virReportOOMError();
                 goto cleanup;
             }
-            if (bandwidth->in)
-                memcpy(newBandwidth->in, bandwidth->in,
-                       sizeof(*newBandwidth->in));
-            else if (net->bandwidth->in)
-                memcpy(newBandwidth->in, net->bandwidth->in,
-                       sizeof(*newBandwidth->in));
+
+            memcpy(newBandwidth->in,
+                   bandwidth->in ? bandwidth->in : net->bandwidth->in,
+                   sizeof(*newBandwidth->in));
         }
-        if (bandwidth->out || net->bandwidth->out) {
+        if (bandwidth->out ||
+            (net->bandwidth && net->bandwidth->out)) {
             if (VIR_ALLOC(newBandwidth->out) < 0) {
                 virReportOOMError();
                 goto cleanup;
             }
-            if (bandwidth->out)
-                memcpy(newBandwidth->out, bandwidth->out,
-                       sizeof(*newBandwidth->out));
-            else if (net->bandwidth->out)
-                memcpy(newBandwidth->out, net->bandwidth->out,
-                       sizeof(*newBandwidth->out));
+
+            memcpy(newBandwidth->out,
+                   bandwidth->out ? bandwidth->out : net->bandwidth->out,
+                   sizeof(*newBandwidth->out));
         }
 
         if (virNetDevBandwidthSet(net->ifname, newBandwidth) < 0) {
