@@ -46,6 +46,7 @@
 #include "virfile.h"
 #include "command.h"
 #include "intprops.h"
+#include "virtypedparam.h"
 
 #define VIR_FROM_THIS VIR_FROM_REMOTE
 
@@ -1417,12 +1418,8 @@ remoteDeserializeTypedParameters(remote_typed_param *ret_params_val,
     rv = 0;
 
 cleanup:
-    if (rv < 0) {
-        int j;
-        for (j = 0; j < i; j++)
-            if (params[j].type == VIR_TYPED_PARAM_STRING)
-                VIR_FREE(params[j].value.s);
-    }
+    if (rv < 0)
+        virTypedParameterArrayClear(params, i);
     return rv;
 }
 
@@ -2384,15 +2381,9 @@ static int remoteDomainGetCPUStats(virDomainPtr domain,
 
     rv = ret.nparams;
 cleanup:
-    if (rv < 0) {
-        int max = nparams * ncpus;
-        int i;
+    if (rv < 0)
+        virTypedParameterArrayClear(params, nparams * ncpus);
 
-        for (i = 0; i < max; i++) {
-            if (params[i].type == VIR_TYPED_PARAM_STRING)
-                VIR_FREE(params[i].value.s);
-        }
-    }
     xdr_free ((xdrproc_t) xdr_remote_domain_get_cpu_stats_ret,
               (char *) &ret);
 done:

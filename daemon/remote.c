@@ -848,11 +848,7 @@ remoteDeserializeTypedParameters(remote_typed_param *args_params_val,
 
 cleanup:
     if (rv < 0) {
-        int j;
-        for (j = 0; j < i; ++j) {
-            if (params[j].type == VIR_TYPED_PARAM_STRING)
-                VIR_FREE(params[j].value.s);
-        }
+        virTypedParameterArrayClear(params, i);
         VIR_FREE(params);
     }
     return params;
