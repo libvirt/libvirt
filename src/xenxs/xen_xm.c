@@ -570,7 +570,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
         }
     }
 
-    if (hvm && xendConfigVersion == 1) {
+    if (hvm && xendConfigVersion == XEND_CONFIG_VERSION_3_0_2) {
         if (xenXMConfigGetString(conf, "cdrom", &str, NULL) < 0)
             goto cleanup;
         if (str) {
@@ -858,7 +858,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     }
 
     /* HVM guests, or old PV guests use this config format */
-    if (hvm || xendConfigVersion < 3) {
+    if (hvm || xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
         if (xenXMConfigGetBool(conf, "vnc", &val, 0) < 0)
             goto cleanup;
 
@@ -1169,7 +1169,7 @@ static int xenFormatXMDisk(virConfValuePtr list,
         virBufferAdd(&buf, disk->src, -1);
     }
     virBufferAddLit(&buf, ",");
-    if (hvm && xendConfigVersion == 1)
+    if (hvm && xendConfigVersion == XEND_CONFIG_VERSION_3_0_2)
         virBufferAddLit(&buf, "ioemu:");
 
     virBufferAdd(&buf, disk->dst, -1);
@@ -1545,7 +1545,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                                (1 << VIR_DOMAIN_FEATURE_APIC)) ? 1 : 0) < 0)
             goto no_memory;
 
-        if (xendConfigVersion >= 3) {
+        if (xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4) {
             if (xenXMConfigSetInt(conf, "hap",
                                   (def->features &
                                    (1 << VIR_DOMAIN_FEATURE_HAP)) ? 1 : 0) < 0)
@@ -1584,7 +1584,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                     break;
         }
 
-        if (xendConfigVersion == 1) {
+        if (xendConfigVersion == XEND_CONFIG_VERSION_3_0_2) {
             for (i = 0 ; i < def->ndisks ; i++) {
                 if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
                     def->disks[i]->dst &&
@@ -1665,7 +1665,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
     }
 
     if (def->ngraphics == 1) {
-        if (xendConfigVersion < (hvm ? 4 : XEND_CONFIG_MIN_VERS_PVFB_NEWCONF)) {
+        if (xendConfigVersion < (hvm ? XEND_CONFIG_VERSION_3_1_0 : XEND_CONFIG_MIN_VERS_PVFB_NEWCONF)) {
             if (def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
                 if (xenXMConfigSetInt(conf, "sdl", 1) < 0)
                     goto no_memory;
@@ -1772,7 +1772,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
     diskVal->list = NULL;
 
     for (i = 0 ; i < def->ndisks ; i++) {
-        if (xendConfigVersion == 1 &&
+        if (xendConfigVersion == XEND_CONFIG_VERSION_3_0_2 &&
             def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
             def->disks[i]->dst &&
             STREQ(def->disks[i]->dst, "hdc")) {

@@ -55,7 +55,7 @@ int xenGetDomIdFromSxpr(const struct sexpr *root, int xendConfigVersion)
 {
     int id = -1;
     const char * tmp = sexpr_node(root, "domain/domid");
-    if (tmp == NULL && xendConfigVersion < 3) { /* Old XenD, domid was mandatory */
+    if (tmp == NULL && xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) { /* domid was mandatory */
         XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
                      "%s", _("domain information incomplete, missing id"));
     } else {
@@ -468,7 +468,7 @@ xenParseSxprDisks(virDomainDefPtr def,
 
             disk->device = VIR_DOMAIN_DISK_DEVICE_DISK;
             /* New style disk config from Xen >= 3.0.3 */
-            if (xendConfigVersion > 1) {
+            if (xendConfigVersion >= XEND_CONFIG_VERSION_3_0_3) {
                 offset = strrchr(dst, ':');
                 if (offset) {
                     if (STREQ (offset, ":cdrom")) {
@@ -814,7 +814,7 @@ xenParseSxprGraphicsOld(virDomainDefPtr def,
          * present yet. Subsquent dumps of the XML will eventually
          * find the port in XenStore once VNC server has started
          */
-        if (port == -1 && xendConfigVersion < 2)
+        if (port == -1 && xendConfigVersion < XEND_CONFIG_VERSION_3_0_3)
             port = 5900 + def->id;
 
         if ((unused && STREQ(unused, "1")) || port == -1)
@@ -1132,7 +1132,7 @@ xenParseSxpr(const struct sexpr *root,
         goto no_memory;
 
     tmp = sexpr_node(root, "domain/domid");
-    if (tmp == NULL && xendConfigVersion < 3) { /* Old XenD, domid was mandatory */
+    if (tmp == NULL && xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) { /* domid was mandatory */
         XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
                      "%s", _("domain information incomplete, missing id"));
         goto error;
@@ -1318,7 +1318,7 @@ xenParseSxpr(const struct sexpr *root,
 
     /* Old style cdrom config from Xen <= 3.0.2 */
     if (hvm &&
-        xendConfigVersion == 1) {
+        xendConfigVersion == XEND_CONFIG_VERSION_3_0_2) {
         tmp = sexpr_node(root, "domain/image/hvm/cdrom");
         if ((tmp != NULL) && (tmp[0] != 0)) {
             virDomainDiskDefPtr disk;
@@ -1617,7 +1617,7 @@ xenFormatSxprGraphicsOld(virDomainGraphicsDefPtr def,
             virBufferAsprintf(buf, "(xauthority '%s')", def->data.sdl.xauth);
     } else if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virBufferAddLit(buf, "(vnc 1)");
-        if (xendConfigVersion >= 2) {
+        if (xendConfigVersion >= XEND_CONFIG_VERSION_3_0_3) {
             if (def->data.vnc.autoport) {
                 virBufferAddLit(buf, "(vncunused 1)");
             } else {
@@ -1762,7 +1762,7 @@ xenFormatSxprDisk(virDomainDiskDefPtr def,
     /* Xend <= 3.0.2 doesn't include cdrom config here */
     if (hvm &&
         def->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
-        xendConfigVersion == 1) {
+        xendConfigVersion == XEND_CONFIG_VERSION_3_0_2) {
         if (isAttach) {
             XENXS_ERROR(VIR_ERR_INVALID_ARG,
                      _("Cannot directly attach CDROM %s"), def->src);
@@ -1787,7 +1787,7 @@ xenFormatSxprDisk(virDomainDiskDefPtr def,
 
     if (hvm) {
         /* Xend <= 3.0.2 wants a ioemu: prefix on devices for HVM */
-        if (xendConfigVersion == 1) {
+        if (xendConfigVersion == XEND_CONFIG_VERSION_3_0_2) {
             virBufferEscapeSexpr(buf, "(dev 'ioemu:%s')", def->dst);
         } else {
             /* But newer does not */
@@ -2338,7 +2338,7 @@ xenFormatSxpr(virConnectPtr conn,
                 switch (def->disks[i]->device) {
                 case VIR_DOMAIN_DISK_DEVICE_CDROM:
                     /* Only xend <= 3.0.2 wants cdrom config here */
-                    if (xendConfigVersion != 1)
+                    if (xendConfigVersion != XEND_CONFIG_VERSION_3_0_2)
                         break;
                     if (!STREQ(def->disks[i]->dst, "hdc") ||
                         def->disks[i]->src == NULL)
@@ -2437,7 +2437,7 @@ xenFormatSxpr(virConnectPtr conn,
         }
 
         /* get the device emulation model */
-        if (def->emulator && (hvm || xendConfigVersion >= 3))
+        if (def->emulator && (hvm || xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4))
             virBufferEscapeSexpr(&buf, "(device_model '%s')", def->emulator);
 
         /* look for HPET in order to override the hypervisor/xend default */
@@ -2452,7 +2452,7 @@ xenFormatSxpr(virConnectPtr conn,
 
         /* PV graphics for xen <= 3.0.4, or HVM graphics for xen <= 3.1.0 */
         if ((!hvm && xendConfigVersion < XEND_CONFIG_MIN_VERS_PVFB_NEWCONF) ||
-            (hvm && xendConfigVersion < 4)) {
+            (hvm && xendConfigVersion < XEND_CONFIG_VERSION_3_1_0)) {
             if ((def->ngraphics == 1) &&
                 xenFormatSxprGraphicsOld(def->graphics[0],
                                          &buf, xendConfigVersion) < 0)
@@ -2484,7 +2484,7 @@ xenFormatSxpr(virConnectPtr conn,
     /* New style PV graphics config xen >= 3.0.4,
      * or HVM graphics config xen >= 3.0.5 */
     if ((xendConfigVersion >= XEND_CONFIG_MIN_VERS_PVFB_NEWCONF && !hvm) ||
-        (xendConfigVersion >= 4 && hvm)) {
+        (xendConfigVersion >= XEND_CONFIG_VERSION_3_1_0 && hvm)) {
         if ((def->ngraphics == 1) &&
             xenFormatSxprGraphicsNew(def->graphics[0], &buf) < 0)
             goto error;

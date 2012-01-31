@@ -954,7 +954,7 @@ xend_detect_config_version(virConnectPtr conn) {
     }  else {
         /* Xen prior to 3.0.3 did not have the xend_config_format
            field, and is implicitly version 1. */
-        priv->xendConfigVersion = 1;
+        priv->xendConfigVersion = XEND_CONFIG_VERSION_3_0_2;
     }
     sexpr_free(root);
     return (0);
@@ -1224,7 +1224,7 @@ sexpr_to_domain(virConnectPtr conn, const struct sexpr *root)
     /* New 3.0.4 XenD will not report a domid for inactive domains,
      * so only error out for old XenD
      */
-    if (!tmp && priv->xendConfigVersion < 3)
+    if (!tmp && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         goto error;
 
     if (tmp)
@@ -1512,7 +1512,7 @@ xenDaemonDomainGetOSType(virDomainPtr domain)
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
-    if (domain->id < 0 && priv->xendConfigVersion < 3)
+    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         return(NULL);
 
     /* can we ask for a subset ? worth it ? */
@@ -1652,7 +1652,7 @@ xenDaemonDomainGetMaxMemory(virDomainPtr domain)
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
-    if (domain->id < 0 && priv->xendConfigVersion < 3)
+    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         return(-1);
 
     /* can we ask for a subset ? worth it ? */
@@ -1691,7 +1691,7 @@ xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
-    if (domain->id < 0 && priv->xendConfigVersion < 3)
+    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         return(-1);
 
     snprintf(buf, sizeof(buf), "%lu", VIR_DIV_UP(memory, 1024));
@@ -1728,7 +1728,7 @@ xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory)
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
-    if (domain->id < 0 && priv->xendConfigVersion < 3)
+    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         return(-1);
 
     snprintf(buf, sizeof(buf), "%lu", VIR_DIV_UP(memory, 1024));
@@ -1808,7 +1808,7 @@ xenDaemonDomainGetXMLDesc(virDomainPtr domain, unsigned int flags,
     }
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
-    if (domain->id < 0 && priv->xendConfigVersion < 3) {
+    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
         /* fall-through to the next driver to handle */
         return(NULL);
     }
@@ -1852,7 +1852,7 @@ xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
-    if (domain->id < 0 && priv->xendConfigVersion < 3)
+    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         return(-1);
 
     root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
@@ -1887,7 +1887,7 @@ xenDaemonDomainGetState(virDomainPtr domain,
 
     virCheckFlags(0, -1);
 
-    if (domain->id < 0 && priv->xendConfigVersion < 3)
+    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         return -1;
 
     root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
@@ -2186,14 +2186,14 @@ xenDaemonDomainSetVcpusFlags(virDomainPtr domain, unsigned int vcpus,
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
-    if ((domain->id < 0 && priv->xendConfigVersion < 3) ||
+    if ((domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) ||
         (flags & VIR_DOMAIN_VCPU_MAXIMUM))
         return -2;
 
     /* With xendConfigVersion 2, only _LIVE is supported.  With
      * xendConfigVersion 3, only _LIVE|_CONFIG is supported for
      * running domains, or _CONFIG for inactive domains.  */
-    if (priv->xendConfigVersion < 3) {
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
         if (flags & VIR_DOMAIN_VCPU_CONFIG) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend version does not support modifying "
@@ -2267,7 +2267,7 @@ xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
     }
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
-    if (priv->xendConfigVersion < 3) {
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
         mapstr[0] = '[';
         mapstr[1] = 0;
     } else {
@@ -2280,7 +2280,7 @@ xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
         snprintf(buf, sizeof(buf), "%d,", (8 * i) + j);
         strcat(mapstr, buf);
     }
-    if (priv->xendConfigVersion < 3)
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         mapstr[strlen(mapstr) - 1] = ']';
     else
         mapstr[strlen(mapstr) - 1] = 0;
@@ -2343,7 +2343,7 @@ xenDaemonDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
     /* If xendConfigVersion is 2, then we can only report _LIVE (and
      * xm_internal reports _CONFIG).  If it is 3, then _LIVE and
      * _CONFIG are always in sync for a running system.  */
-    if (domain->id < 0 && priv->xendConfigVersion < 3)
+    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         return -2;
     if (domain->id < 0 && (flags & VIR_DOMAIN_VCPU_LIVE)) {
         virXendError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -2477,7 +2477,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
 
     /* Old approach for xen <= 3.0.3 */
-    if (priv->xendConfigVersion < 3) {
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
         char **names, **tmp;
         unsigned char ident[VIR_UUID_BUFLEN];
         names = xenDaemonListDomainsOld(conn);
@@ -2648,7 +2648,7 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
             return -1;
         }
         /* If xendConfigVersion < 3 only live config can be changed */
-        if (priv->xendConfigVersion < 3) {
+        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend version does not support modifying "
                            "persistent config"));
@@ -2656,7 +2656,7 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
         }
     } else {
         /* Only live config can be changed if xendConfigVersion < 3 */
-        if (priv->xendConfigVersion < 3 &&
+        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4 &&
             (flags != VIR_DOMAIN_DEVICE_MODIFY_CURRENT &&
              flags != VIR_DOMAIN_DEVICE_MODIFY_LIVE)) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -2667,7 +2667,7 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
         /* Xen only supports modifying both live and persistent config if
          * xendConfigVersion >= 3
          */
-        if (priv->xendConfigVersion >= 3 &&
+        if (priv->xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4 &&
             (flags != (VIR_DOMAIN_DEVICE_MODIFY_LIVE |
                        VIR_DOMAIN_DEVICE_MODIFY_CONFIG))) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -2816,7 +2816,7 @@ xenDaemonUpdateDeviceFlags(virDomainPtr domain, const char *xml,
             return -1;
         }
         /* If xendConfigVersion < 3 only live config can be changed */
-        if (priv->xendConfigVersion < 3) {
+        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend version does not support modifying "
                            "persistent config"));
@@ -2824,7 +2824,7 @@ xenDaemonUpdateDeviceFlags(virDomainPtr domain, const char *xml,
         }
     } else {
         /* Only live config can be changed if xendConfigVersion < 3 */
-        if (priv->xendConfigVersion < 3 &&
+        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4 &&
             (flags != VIR_DOMAIN_DEVICE_MODIFY_CURRENT &&
              flags != VIR_DOMAIN_DEVICE_MODIFY_LIVE)) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -2835,7 +2835,7 @@ xenDaemonUpdateDeviceFlags(virDomainPtr domain, const char *xml,
         /* Xen only supports modifying both live and persistent config if
          * xendConfigVersion >= 3
          */
-        if (priv->xendConfigVersion >= 3 &&
+        if (priv->xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4 &&
             (flags != (VIR_DOMAIN_DEVICE_MODIFY_LIVE |
                        VIR_DOMAIN_DEVICE_MODIFY_CONFIG))) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -2929,7 +2929,7 @@ xenDaemonDetachDeviceFlags(virDomainPtr domain, const char *xml,
             return -1;
         }
         /* If xendConfigVersion < 3 only live config can be changed */
-        if (priv->xendConfigVersion < 3) {
+        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend version does not support modifying "
                            "persistent config"));
@@ -2937,7 +2937,7 @@ xenDaemonDetachDeviceFlags(virDomainPtr domain, const char *xml,
         }
     } else {
         /* Only live config can be changed if xendConfigVersion < 3 */
-        if (priv->xendConfigVersion < 3 &&
+        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4 &&
             (flags != VIR_DOMAIN_DEVICE_MODIFY_CURRENT &&
              flags != VIR_DOMAIN_DEVICE_MODIFY_LIVE)) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -2948,7 +2948,7 @@ xenDaemonDetachDeviceFlags(virDomainPtr domain, const char *xml,
         /* Xen only supports modifying both live and persistent config if
          * xendConfigVersion >= 3
          */
-        if (priv->xendConfigVersion >= 3 &&
+        if (priv->xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4 &&
             (flags != (VIR_DOMAIN_DEVICE_MODIFY_LIVE |
                        VIR_DOMAIN_DEVICE_MODIFY_CONFIG))) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -3016,7 +3016,7 @@ xenDaemonDomainGetAutostart(virDomainPtr domain,
      * config files used by old Xen) will handle this.
      */
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
-    if (priv->xendConfigVersion < 3)
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         return(-1);
 
     root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
@@ -3056,7 +3056,7 @@ xenDaemonDomainSetAutostart(virDomainPtr domain,
      * config files used by old Xen) will handle this.
      */
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
-    if (priv->xendConfigVersion < 3)
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         return(-1);
 
     root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
@@ -3318,7 +3318,7 @@ virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
 
-    if (priv->xendConfigVersion < 3)
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         return(NULL);
 
     if (!(def = virDomainDefParseString(priv->caps, xmlDesc,
@@ -3367,7 +3367,7 @@ int xenDaemonDomainCreate(virDomainPtr domain)
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
-    if (priv->xendConfigVersion < 3)
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         return(-1);
 
     ret = xend_op(domain->conn, domain->name, "op", "start", NULL);
@@ -3394,7 +3394,7 @@ int xenDaemonDomainUndefine(virDomainPtr domain)
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
-    if (priv->xendConfigVersion < 3)
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         return(-1);
 
     return xend_op(domain->conn, domain->name, "op", "delete", NULL);
@@ -3419,7 +3419,7 @@ xenDaemonNumOfDefinedDomains(virConnectPtr conn)
     /* xm_internal.c (the support for defined domains from /etc/xen
      * config files used by old Xen) will handle this.
      */
-    if (priv->xendConfigVersion < 3)
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         return(-1);
 
     root = sexpr_get(conn, "/xend/domain?state=halted");
@@ -3447,7 +3447,7 @@ xenDaemonListDefinedDomains(virConnectPtr conn, char **const names, int maxnames
     struct sexpr *_for_i, *node;
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
 
-    if (priv->xendConfigVersion < 3)
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         return(-1);
 
     if ((names == NULL) || (maxnames < 0))
@@ -3513,7 +3513,7 @@ xenDaemonGetSchedulerType(virDomainPtr domain, int *nparams)
 
     /* Support only xendConfigVersion >=4 */
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
-    if (priv->xendConfigVersion < 4) {
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_1_0) {
         virXendError(VIR_ERR_OPERATION_INVALID,
                       "%s", _("unsupported in xendConfigVersion < 4"));
         return NULL;
@@ -3586,7 +3586,7 @@ xenDaemonGetSchedulerParameters(virDomainPtr domain,
 
     /* Support only xendConfigVersion >=4 */
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
-    if (priv->xendConfigVersion < 4) {
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_1_0) {
         virXendError(VIR_ERR_OPERATION_INVALID,
                       "%s", _("unsupported in xendConfigVersion < 4"));
         return (-1);
@@ -3694,7 +3694,7 @@ xenDaemonSetSchedulerParameters(virDomainPtr domain,
 
     /* Support only xendConfigVersion >=4 and active domains */
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
-    if (priv->xendConfigVersion < 4) {
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_1_0) {
         virXendError(VIR_ERR_OPERATION_INVALID,
                       "%s", _("unsupported in xendConfigVersion < 4"));
         return (-1);
@@ -3802,7 +3802,7 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
-    if (domain->id < 0 && priv->xendConfigVersion < 3)
+    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         return -2;              /* Decline, allow XM to handle it. */
 
     /* Security check: The path must correspond to a block device. */

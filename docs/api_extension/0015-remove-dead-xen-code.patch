@@ -122,7 +122,7 @@ index 55c2cc4..b90c331 100644
 -
 -    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 -
--    if (domain->id < 0 && priv->xendConfigVersion < 3)
+-    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
 -        return(-1);
 -
 -    snprintf(buf, sizeof(buf), "%d", vcpus);

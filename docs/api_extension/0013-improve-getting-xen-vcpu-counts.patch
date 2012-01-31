@@ -100,7 +100,7 @@ index dfc6415..3642296 100644
 +    /* If xendConfigVersion is 2, then we can only report _LIVE (and
 +     * xm_internal reports _CONFIG).  If it is 3, then _LIVE and
 +     * _CONFIG are always in sync for a running system.  */
-+    if (domain->id < 0 && priv->xendConfigVersion < 3)
++    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
 +        return -2;
 +    if (domain->id < 0 && (flags & VIR_DOMAIN_VCPU_LIVE)) {
 +        virXendError(VIR_ERR_OPERATION_INVALID, "%s",

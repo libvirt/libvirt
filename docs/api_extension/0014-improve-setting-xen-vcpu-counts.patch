@@ -110,7 +110,7 @@ index fe2ff86..66e8518 100644
 +     * depends on xendConfigVersion.  */
 +    if (dom) {
 +        priv = dom->conn->privateData;
-+        if (priv->xendConfigVersion >= 3)
++        if (priv->xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4)
 +            flags |= VIR_DOMAIN_VCPU_CONFIG;
 +    }
 +    return xenUnifiedDomainSetVcpusFlags(dom, nvcpus, flags);
@@ -163,14 +163,14 @@ index 3642296..55c2cc4 100644
 +
 +    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 +
-+    if ((domain->id < 0 && priv->xendConfigVersion < 3) ||
++    if ((domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) ||
 +        (flags & VIR_DOMAIN_VCPU_MAXIMUM))
 +        return -2;
 +
 +    /* With xendConfigVersion 2, only _LIVE is supported.  With
 +     * xendConfigVersion 3, only _LIVE|_CONFIG is supported for
 +     * running domains, or _CONFIG for inactive domains.  */
-+    if (priv->xendConfigVersion < 3) {
++    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
 +        if (flags & VIR_DOMAIN_VCPU_CONFIG) {
 +            virXendError(VIR_ERR_OPERATION_INVALID, "%s",
 +                         _("Xend version does not support modifying "

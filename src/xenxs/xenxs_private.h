@@ -29,6 +29,7 @@
 
 # include <stdint.h>
 # include <xen/xen.h>
+# include "xen_sxpr.h"
 
 /* xen-unstable changeset 19788 removed MAX_VIRT_CPUS from public
  * headers.  Its semantic was retained with XEN_LEGACY_MAX_VCPUS.
@@ -40,10 +41,10 @@
 
 # ifdef WITH_RHEL5_API
 #  define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 0
-#  define XEND_CONFIG_MIN_VERS_PVFB_NEWCONF 2
+#  define XEND_CONFIG_MIN_VERS_PVFB_NEWCONF XEND_CONFIG_VERSION_3_0_3
 # else
-#  define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 3
-#  define XEND_CONFIG_MIN_VERS_PVFB_NEWCONF 3
+#  define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU XEND_CONFIG_VERSION_3_0_4
+#  define XEND_CONFIG_MIN_VERS_PVFB_NEWCONF XEND_CONFIG_VERSION_3_0_4
 # endif
 
 # define MIN_XEN_GUEST_SIZE 64  /* 64 megabytes */

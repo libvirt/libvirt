@@ -354,7 +354,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
 
         /* XenD is active, so try the xm & xs drivers too, both requird to
          * succeed if root, optional otherwise */
-        if (priv->xendConfigVersion <= 2) {
+        if (priv->xendConfigVersion <= XEND_CONFIG_VERSION_3_0_3) {
             VIR_DEBUG("Trying XM sub-driver");
             if (xenXMOpen(conn, auth, flags) == VIR_DRV_OPEN_SUCCESS) {
                 VIR_DEBUG("Activated XM sub-driver");
@@ -1161,7 +1161,7 @@ xenUnifiedDomainSetVcpus (virDomainPtr dom, unsigned int nvcpus)
      * depends on xendConfigVersion.  */
     if (dom) {
         priv = dom->conn->privateData;
-        if (priv->xendConfigVersion >= 3)
+        if (priv->xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4)
             flags |= VIR_DOMAIN_VCPU_CONFIG;
     }
     return xenUnifiedDomainSetVcpusFlags(dom, nvcpus, flags);
@@ -1239,7 +1239,7 @@ xenUnifiedDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 {
     GET_PRIVATE(dom->conn);
 
-    if (dom->id == -1 && priv->xendConfigVersion < 3 ) {
+    if (dom->id == -1 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
         if (priv->opened[XEN_UNIFIED_XM_OFFSET])
             return xenXMDomainGetXMLDesc(dom, flags);
     } else {
@@ -1561,7 +1561,7 @@ xenUnifiedDomainAttachDevice (virDomainPtr dom, const char *xml)
      * to make this API work
      */
     if (priv->opened[XEN_UNIFIED_XEND_OFFSET] &&
-        priv->xendConfigVersion >= 3)
+        priv->xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4)
         flags |= VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
@@ -1600,7 +1600,7 @@ xenUnifiedDomainDetachDevice (virDomainPtr dom, const char *xml)
      * to make this API work
      */
     if (priv->opened[XEN_UNIFIED_XEND_OFFSET] &&
-        priv->xendConfigVersion >= 3)
+        priv->xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4)
         flags |= VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
@@ -1642,7 +1642,7 @@ xenUnifiedDomainGetAutostart (virDomainPtr dom, int *autostart)
 {
     GET_PRIVATE(dom->conn);
 
-    if (priv->xendConfigVersion < 3) {
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
         if (priv->opened[XEN_UNIFIED_XM_OFFSET])
             return xenXMDomainGetAutostart(dom, autostart);
     } else {
@@ -1659,7 +1659,7 @@ xenUnifiedDomainSetAutostart (virDomainPtr dom, int autostart)
 {
     GET_PRIVATE(dom->conn);
 
-    if (priv->xendConfigVersion < 3) {
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
         if (priv->opened[XEN_UNIFIED_XM_OFFSET])
             return xenXMDomainSetAutostart(dom, autostart);
     } else {
