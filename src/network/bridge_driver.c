@@ -459,6 +459,10 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
     int r, ret = -1;
     int nbleases = 0;
     int ii;
+    char *record = NULL;
+    char *recordPort = NULL;
+    char *recordWeight = NULL;
+    char *recordPriority = NULL;
     virNetworkIpDefPtr tmpipdef;
 
     /*
@@ -516,24 +520,13 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         int i;
 
         for (i = 0; i < dns->ntxtrecords; i++) {
-            char *record = NULL;
-            if (virAsprintf(&record, "%s,%s",
-                            dns->txtrecords[i].name,
-                            dns->txtrecords[i].value) < 0) {
-                virReportOOMError();
-                goto cleanup;
-            }
-
-            virCommandAddArgPair(cmd, "--txt-record", record);
-            VIR_FREE(record);
+            virCommandAddArg(cmd, "--txt-record");
+            virCommandAddArgFormat(cmd, "%s,%s",
+                                   dns->txtrecords[i].name,
+                                   dns->txtrecords[i].value);
         }
 
         for (i = 0; i < dns->nsrvrecords; i++) {
-            char *record = NULL;
-            char *recordPort = NULL;
-            char *recordPriority = NULL;
-            char *recordWeight = NULL;
-
             if (dns->srvrecords[i].service && dns->srvrecords[i].protocol) {
                 if (dns->srvrecords[i].port) {
                     if (virAsprintf(&recordPort, "%d", dns->srvrecords[i].port) < 0) {
@@ -568,6 +561,9 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
 
                 virCommandAddArgPair(cmd, "--srv-host", record);
                 VIR_FREE(record);
+                VIR_FREE(recordPort);
+                VIR_FREE(recordWeight);
+                VIR_FREE(recordPriority);
             }
         }
     }
@@ -671,6 +667,10 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
 
     ret = 0;
 cleanup:
+    VIR_FREE(record);
+    VIR_FREE(recordPort);
+    VIR_FREE(recordWeight);
+    VIR_FREE(recordPriority);
     return ret;
 }
 
