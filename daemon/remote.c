@@ -3608,7 +3608,7 @@ static int remoteDispatchDomainGetDiskErrors(
     int rv = -1;
     virDomainPtr dom = NULL;
     virDomainDiskErrorPtr errors = NULL;
-    int len;
+    int len = 0;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
