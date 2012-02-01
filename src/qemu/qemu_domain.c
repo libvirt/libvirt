@@ -1260,7 +1260,7 @@ void qemuDomainObjCheckDiskTaint(struct qemud_driver *driver,
         driver->allowDiskFormatProbing)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_DISK_PROBING, logFD);
 
-    if (disk->rawio)
+    if (disk->rawio == 1)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES, logFD);
 }
 
