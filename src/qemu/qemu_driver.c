@@ -11296,7 +11296,7 @@ cleanup:
 }
 
 static int
-qemuDomainBlockJobImpl(virDomainPtr dom, const char *path,
+qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
                        unsigned long bandwidth, virDomainBlockJobInfoPtr info,
                        int mode)
 {
@@ -11316,14 +11316,16 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path,
         goto cleanup;
     }
 
-    if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is not running"));
-        goto cleanup;
-    }
-
     device = qemuDiskPathToAlias(vm, path);
     if (!device) {
+        goto cleanup;
+    }
+    /* XXX - add a qemu capability check; if qemu 1.1 or newer, then
+     *  validate and convert non-NULL base into something that can
+     * be passed as optional base argument.  */
+    if (base)  {
+        qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                        _("partial block pull is not supported with this QEMU binary"));
         goto cleanup;
     }
 
@@ -11359,7 +11361,7 @@ static int
 qemuDomainBlockJobAbort(virDomainPtr dom, const char *path, unsigned int flags)
 {
     virCheckFlags(0, -1);
-    return qemuDomainBlockJobImpl(dom, path, 0, NULL, BLOCK_JOB_ABORT);
+    return qemuDomainBlockJobImpl(dom, path, NULL, 0, NULL, BLOCK_JOB_ABORT);
 }
 
 static int
@@ -11367,7 +11369,7 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
                            virDomainBlockJobInfoPtr info, unsigned int flags)
 {
     virCheckFlags(0, -1);
-    return qemuDomainBlockJobImpl(dom, path, 0, info, BLOCK_JOB_INFO);
+    return qemuDomainBlockJobImpl(dom, path, NULL, 0, info, BLOCK_JOB_INFO);
 }
 
 static int
@@ -11375,21 +11377,30 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom, const char *path,
                            unsigned long bandwidth, unsigned int flags)
 {
     virCheckFlags(0, -1);
-    return qemuDomainBlockJobImpl(dom, path, bandwidth, NULL, BLOCK_JOB_SPEED);
+    return qemuDomainBlockJobImpl(dom, path, NULL, bandwidth, NULL,
+                                  BLOCK_JOB_SPEED);
+}
+
+static int
+qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
+                      unsigned long bandwidth, unsigned int flags)
+{
+    int ret;
+
+    virCheckFlags(0, -1);
+    ret = qemuDomainBlockJobImpl(dom, path, base, bandwidth, NULL,
+                                 BLOCK_JOB_PULL);
+    if (ret == 0 && bandwidth != 0)
+        ret = qemuDomainBlockJobImpl(dom, path, NULL, bandwidth, NULL,
+                                     BLOCK_JOB_SPEED);
+    return ret;
 }
 
 static int
 qemuDomainBlockPull(virDomainPtr dom, const char *path, unsigned long bandwidth,
                     unsigned int flags)
 {
-    int ret;
-
-    virCheckFlags(0, -1);
-    ret = qemuDomainBlockJobImpl(dom, path, bandwidth, NULL, BLOCK_JOB_PULL);
-    if (ret == 0 && bandwidth != 0)
-        ret = qemuDomainBlockJobImpl(dom, path, bandwidth, NULL,
-                                     BLOCK_JOB_SPEED);
-    return ret;
+    return qemuDomainBlockRebase(dom, path, NULL, bandwidth, flags);
 }
 
 static int
@@ -12130,6 +12141,7 @@ static virDriver qemuDriver = {
     .domainGetBlockJobInfo = qemuDomainGetBlockJobInfo, /* 0.9.4 */
     .domainBlockJobSetSpeed = qemuDomainBlockJobSetSpeed, /* 0.9.4 */
     .domainBlockPull = qemuDomainBlockPull, /* 0.9.4 */
+    .domainBlockRebase = qemuDomainBlockRebase, /* 0.9.10 */
     .isAlive = qemuIsAlive, /* 0.9.8 */
     .nodeSuspendForDuration = nodeSuspendForDuration, /* 0.9.8 */
     .domainSetBlockIoTune = qemuDomainSetBlockIoTune, /* 0.9.8 */
