@@ -169,8 +169,9 @@ virCommandFDSet(int fd,
 
 #ifndef WIN32
 
-# if HAVE_CAPNG
 static int virClearCapabilities(void) ATTRIBUTE_UNUSED;
+
+# if HAVE_CAPNG
 static int virClearCapabilities(void)
 {
     int ret;
@@ -220,7 +221,8 @@ static int virClearCapabilities(void)
     return 0;
 }
 
-static int virSetCapabilities(unsigned long long capabilities)
+static int
+virSetCapabilities(unsigned long long capabilities ATTRIBUTE_UNUSED)
 {
     return 0;
 }
