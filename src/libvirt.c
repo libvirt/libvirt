@@ -17768,7 +17768,7 @@ int virDomainBlockJobAbort(virDomainPtr dom, const char *disk,
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(dom, "disk=%p, flags=%x", disk, flags);
+    VIR_DOMAIN_DEBUG(dom, "disk=%s, flags=%x", disk, flags);
 
     virResetLastError();
 
@@ -17829,7 +17829,7 @@ int virDomainGetBlockJobInfo(virDomainPtr dom, const char *disk,
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(dom, "disk=%p, info=%p, flags=%x", disk, info, flags);
+    VIR_DOMAIN_DEBUG(dom, "disk=%s, info=%p, flags=%x", disk, info, flags);
 
     virResetLastError();
 
@@ -17891,7 +17891,7 @@ int virDomainBlockJobSetSpeed(virDomainPtr dom, const char *disk,
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(dom, "disk=%p, bandwidth=%lu, flags=%x",
+    VIR_DOMAIN_DEBUG(dom, "disk=%s, bandwidth=%lu, flags=%x",
                      disk, bandwidth, flags);
 
     virResetLastError();
@@ -17955,6 +17955,8 @@ error:
  * suitable default.  Some hypervisors do not support this feature and will
  * return an error if bandwidth is not 0.
  *
+ * This is shorthand for virDomainBlockRebase() with a NULL base.
+ *
  * Returns 0 if the operation has started, -1 on failure.
  */
 int virDomainBlockPull(virDomainPtr dom, const char *disk,
@@ -17962,7 +17964,7 @@ int virDomainBlockPull(virDomainPtr dom, const char *disk,
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(dom, "disk=%p, bandwidth=%lu, flags=%x",
+    VIR_DOMAIN_DEBUG(dom, "disk=%s, bandwidth=%lu, flags=%x",
                      disk, bandwidth, flags);
 
     virResetLastError();
@@ -17988,6 +17990,88 @@ int virDomainBlockPull(virDomainPtr dom, const char *disk,
     if (conn->driver->domainBlockPull) {
         int ret;
         ret = conn->driver->domainBlockPull(dom, disk, bandwidth, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
+
+/**
+ * virDomainBlockRebase:
+ * @dom: pointer to domain object
+ * @disk: path to the block device, or device shorthand
+ * @base: path to backing file to keep, or NULL for no backing file
+ * @bandwidth: (optional) specify copy bandwidth limit in Mbps
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Populate a disk image with data from its backing image chain, and
+ * setting the backing image to @base.  @base must be the absolute
+ * path of one of the backing images further up the chain, or NULL to
+ * convert the disk image so that it has no backing image.  Once all
+ * data from its backing image chain has been pulled, the disk no
+ * longer depends on those intermediate backing images.  This function
+ * pulls data for the entire device in the background.  Progress of
+ * the operation can be checked with virDomainGetBlockJobInfo() and
+ * the operation can be aborted with virDomainBlockJobAbort().  When
+ * finished, an asynchronous event is raised to indicate the final
+ * status.
+ *
+ * The @disk parameter is either an unambiguous source name of the
+ * block device (the <source file='...'/> sub-element, such as
+ * "/path/to/image"), or the device target shorthand (the
+ * <target dev='...'/> sub-element, such as "xvda").  Valid names
+ * can be found by calling virDomainGetXMLDesc() and inspecting
+ * elements within //domain/devices/disk.
+ *
+ * The maximum bandwidth (in Mbps) that will be used to do the copy can be
+ * specified with the bandwidth parameter.  If set to 0, libvirt will choose a
+ * suitable default.  Some hypervisors do not support this feature and will
+ * return an error if bandwidth is not 0.
+ *
+ * When @base is NULL, this is identical to virDomainBlockPull().
+ *
+ * Returns 0 if the operation has started, -1 on failure.
+ */
+int virDomainBlockRebase(virDomainPtr dom, const char *disk,
+                         const char *base, unsigned long bandwidth,
+                         unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "disk=%s, base=%s bandwidth=%lu, flags=%x",
+                     disk, NULLSTR(base), bandwidth, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    conn = dom->conn;
+
+    if (dom->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (!disk) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                          _("disk is NULL"));
+        goto error;
+    }
+
+    if (conn->driver->domainBlockRebase) {
+        int ret;
+        ret = conn->driver->domainBlockRebase(dom, disk, base, bandwidth,
+                                              flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -18208,7 +18292,7 @@ int virDomainSetBlockIoTune(virDomainPtr dom,
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(dom, "disk=%p, params=%p, nparams=%d, flags=%x",
+    VIR_DOMAIN_DEBUG(dom, "disk=%s, params=%p, nparams=%d, flags=%x",
                      disk, params, nparams, flags);
 
     virResetLastError();
@@ -18290,7 +18374,7 @@ int virDomainGetBlockIoTune(virDomainPtr dom,
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(dom, "disk=%p, params=%p, nparams=%d, flags=%x",
+    VIR_DOMAIN_DEBUG(dom, "disk=%s, params=%p, nparams=%d, flags=%x",
                      NULLSTR(disk), params, (nparams) ? *nparams : -1, flags);
 
     virResetLastError();

@@ -232,6 +232,7 @@ my $long_legacy = {
     GetVersion                  => { ret => { hv_ver => 1 } },
     NodeGetInfo                 => { ret => { memory => 1 } },
     DomainBlockPull             => { arg => { bandwidth => 1 } },
+    DomainBlockRebase           => { arg => { bandwidth => 1 } },
     DomainBlockJobSetSpeed      => { arg => { bandwidth => 1 } },
     DomainMigrateGetMaxSpeed    => { ret => { bandwidth => 1 } },
 };

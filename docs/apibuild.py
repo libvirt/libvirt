@@ -1649,6 +1649,7 @@ class CParser:
         "virDomainSetMemoryFlags"        : (False, ("memory")),
         "virDomainBlockJobSetSpeed"      : (False, ("bandwidth")),
         "virDomainBlockPull"             : (False, ("bandwidth")),
+        "virDomainBlockRebase"           : (False, ("bandwidth")),
         "virDomainMigrateGetMaxSpeed"    : (False, ("bandwidth")) }
 
     def checkLongLegacyFunction(self, name, return_type, signature):

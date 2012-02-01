@@ -518,6 +518,7 @@ LIBVIRT_0.9.9 {
 
 LIBVIRT_0.9.10 {
     global:
+        virDomainBlockRebase;
         virDomainGetCPUStats;
         virDomainGetDiskErrors;
         virDomainGetMetadata;
