@@ -117,6 +117,7 @@ virCommandAddEnvPair;
 virCommandAddEnvPass;
 virCommandAddEnvPassCommon;
 virCommandAddEnvString;
+virCommandAllowCap;
 virCommandClearCaps;
 virCommandDaemonize;
 virCommandExec;
