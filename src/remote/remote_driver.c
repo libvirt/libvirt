@@ -4908,6 +4908,7 @@ static virDriver remote_driver = {
     .domainGetBlockJobInfo = remoteDomainGetBlockJobInfo, /* 0.9.4 */
     .domainBlockJobSetSpeed = remoteDomainBlockJobSetSpeed, /* 0.9.4 */
     .domainBlockPull = remoteDomainBlockPull, /* 0.9.4 */
+    .domainBlockRebase = remoteDomainBlockRebase, /* 0.9.10 */
     .setKeepAlive = remoteSetKeepAlive, /* 0.9.8 */
     .isAlive = remoteIsAlive, /* 0.9.8 */
     .nodeSuspendForDuration = remoteNodeSuspendForDuration, /* 0.9.8 */

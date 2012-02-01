@@ -834,6 +834,13 @@ struct remote_domain_block_pull_args {
         uint64_t                   bandwidth;
         u_int                      flags;
 };
+struct remote_domain_block_rebase_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      path;
+        remote_string              base;
+        uint64_t                   bandwidth;
+        u_int                      flags;
+};
 struct remote_domain_set_block_io_tune_args {
         remote_nonnull_domain      dom;
         remote_nonnull_string      disk;
@@ -2165,4 +2172,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_GET_DISK_ERRORS = 263,
         REMOTE_PROC_DOMAIN_SET_METADATA = 264,
         REMOTE_PROC_DOMAIN_GET_METADATA = 265,
+        REMOTE_PROC_DOMAIN_BLOCK_REBASE = 266,
 };
