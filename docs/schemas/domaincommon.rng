@@ -6,11 +6,21 @@
   <include href='networkcommon.rng'/>
 
   <!--
-    description element, may be placed anywhere under the root
+    description and title element, may be placed anywhere under the root
     -->
   <define name="description">
     <element name="description">
       <text/>
+    </element>
+  </define>
+
+  <define name="title">
+    <element name="title">
+      <data type="string">
+        <!-- Use literal newline instead of \n for bug in libxml2 2.7.6 -->
+        <param name="pattern">[^
+]+</param>
+      </data>
     </element>
   </define>
 
@@ -22,6 +32,9 @@
       <ref name="hvs"/>
       <ref name="ids"/>
       <interleave>
+        <optional>
+          <ref name="title"/>
+        </optional>
         <optional>
           <ref name="description"/>
         </optional>

@@ -32,6 +32,7 @@
 &lt;domain type='xen' id='3'&gt;
   &lt;name&gt;fv0&lt;/name&gt;
   &lt;uuid&gt;4dea22b31d52d8f32516782e98ab3fa0&lt;/uuid&gt;
+  &lt;title&gt;A short description - title - of the domain&lt;/title&gt;
   &lt;description&gt;Some human readable description&lt;/description&gt;
   &lt;metadata&gt;
     &lt;app1:foo xmlns:app1="http://app1.org/app1/"&gt;..&lt;/app1:foo&gt;
@@ -58,6 +59,11 @@
         specification. <span class="since">Since 0.0.1, sysinfo
         since 0.8.7</span></dd>
 
+      <dt><code>title</code></dt>
+      <dd>The optional element <code>title</code> provides space for a
+        short description of the domain. The title should not contain
+        any newlines. <span class="since">Since 0.9.10</span>.</dd>
+
       <dt><code>description</code></dt>
       <dd>The content of the <code>description</code> element provides a
         human readable description of the virtual machine. This data is not
@@ -72,7 +78,7 @@
         (if the application needs structure, they should have
         sub-elements to their namespace
         element). <span class="since">Since 0.9.10</span></dd>
-    </dl>
+   </dl>
 
     <h3><a name="elementsOS">Operating system booting</a></h3>
 

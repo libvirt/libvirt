@@ -1425,6 +1425,7 @@ struct _virDomainDef {
     int id;
     unsigned char uuid[VIR_UUID_BUFLEN];
     char *name;
+    char *title;
     char *description;
 
     struct {

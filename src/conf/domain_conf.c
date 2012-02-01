@@ -1481,6 +1481,7 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->cpumask);
     VIR_FREE(def->emulator);
     VIR_FREE(def->description);
+    VIR_FREE(def->title);
 
     virBlkioDeviceWeightArrayClear(def->blkio.devices,
                                    def->blkio.ndevices);
@@ -7158,6 +7159,14 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         VIR_FREE(tmp);
     }
 
+    /* Extract short description of domain (title) */
+    def->title = virXPathString("string(./title[1])", ctxt);
+    if (def->title && strchr(def->title, '\n')) {
+        virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                             _("Domain title can't contain newlines"));
+        goto error;
+    }
+
     /* Extract documentation if present */
     def->description = virXPathString("string(./description[1])", ctxt);
 
@@ -11486,6 +11495,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     uuid = def->uuid;
     virUUIDFormat(uuid, uuidstr);
     virBufferAsprintf(buf, "  <uuid>%s</uuid>\n", uuidstr);
+
+    virBufferEscapeString(buf, "  <title>%s</title>\n", def->title);
 
     virBufferEscapeString(buf, "  <description>%s</description>\n",
                           def->description);
