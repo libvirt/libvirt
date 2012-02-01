@@ -520,8 +520,7 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         int i;
 
         for (i = 0; i < dns->ntxtrecords; i++) {
-            virCommandAddArg(cmd, "--txt-record");
-            virCommandAddArgFormat(cmd, "%s,%s",
+            virCommandAddArgFormat(cmd, "--txt-record=%s,%s",
                                    dns->txtrecords[i].name,
                                    dns->txtrecords[i].value);
         }
