@@ -39,6 +39,7 @@
 #include "virterror_internal.h"
 #include "json.h"
 #include "virfile.h"
+#include "virtime.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -316,6 +317,7 @@ qemuAgentIOProcessLine(qemuAgentPtr mon,
 {
     virJSONValuePtr obj = NULL;
     int ret = -1;
+    unsigned long long id;
 
     VIR_DEBUG("Line [%s]", line);
 
@@ -340,6 +342,20 @@ qemuAgentIOProcessLine(qemuAgentPtr mon,
             obj = NULL;
             ret = 0;
         } else {
+            /* If we've received something like:
+             *  {"return": 1234}
+             * it is likely that somebody started GA
+             * which is now processing our previous
+             * guest-sync commands. Check if this is
+             * the case and don't report an error but
+             * return silently.
+             */
+            if (virJSONValueObjectGetNumberUlong(obj, "return", &id) == 0) {
+                VIR_DEBUG("Ignoring delayed reply to guest-sync: %llu", id);
+                ret = 0;
+                goto cleanup;
+            }
+
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("Unexpected JSON reply '%s'"), line);
         }
@@ -813,11 +829,28 @@ void qemuAgentClose(qemuAgentPtr mon)
         qemuAgentUnlock(mon);
 }
 
+#define QEMU_AGENT_WAIT_TIME (1000ull * 5)
 
+/**
+ * qemuAgentSend:
+ * @mon: Monitor
+ * @msg: Message
+ * @timeout: use timeout?
+ *
+ * Send @msg to agent @mon.
+ * Wait max QEMU_AGENT_WAIT_TIME for agent
+ * to reply.
+ *
+ * Returns: 0 on success,
+ *          -2 on timeout,
+ *          -1 otherwise
+ */
 static int qemuAgentSend(qemuAgentPtr mon,
-                         qemuAgentMessagePtr msg)
+                         qemuAgentMessagePtr msg,
+                         bool timeout)
 {
     int ret = -1;
+    unsigned long long now, then = 0;
 
     /* Check whether qemu quit unexpectedly */
     if (mon->lastError.code != VIR_ERR_OK) {
@@ -827,13 +860,26 @@ static int qemuAgentSend(qemuAgentPtr mon,
         return -1;
     }
 
+    if (timeout) {
+        if (virTimeMillisNow(&now) < 0)
+            return -1;
+        then = now + QEMU_AGENT_WAIT_TIME;
+    }
+
     mon->msg = msg;
     qemuAgentUpdateWatch(mon);
 
     while (!mon->msg->finished) {
-        if (virCondWait(&mon->notify, &mon->lock) < 0) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("Unable to wait on monitor condition"));
+        if ((timeout && virCondWaitUntil(&mon->notify, &mon->lock, then) < 0) ||
+            (!timeout && virCondWait(&mon->notify, &mon->lock) < 0)) {
+            if (errno == ETIMEDOUT) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Guest agent not available for now"));
+                ret = -2;
+            } else {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Unable to wait on monitor condition"));
+            }
             goto cleanup;
         }
     }
@@ -855,6 +901,78 @@ cleanup:
 }
 
 
+/**
+ * qemuAgentGuestSync:
+ * @mon: Monitor
+ *
+ * Send guest-sync with unique ID
+ * and wait for reply. If we get one, check if
+ * received ID is equal to given.
+ *
+ * Returns: 0 on success,
+ *          -1 otherwise
+ */
+static int
+qemuAgentGuestSync(qemuAgentPtr mon)
+{
+    int ret = -1;
+    int send_ret;
+    unsigned long long id, id_ret;
+    qemuAgentMessage sync_msg;
+
+    memset(&sync_msg, 0, sizeof(sync_msg));
+
+    if (virTimeMillisNow(&id) < 0)
+        return -1;
+
+    if (virAsprintf(&sync_msg.txBuffer,
+                    "{\"execute\":\"guest-sync\", "
+                    "\"arguments\":{\"id\":%llu}}", id) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    sync_msg.txLength = strlen(sync_msg.txBuffer);
+
+    VIR_DEBUG("Sending guest-sync command with ID: %llu", id);
+
+    send_ret = qemuAgentSend(mon, &sync_msg, true);
+
+    VIR_DEBUG("qemuAgentSend returned: %d", send_ret);
+
+    if (send_ret < 0) {
+        /* error reported */
+        goto cleanup;
+    }
+
+    if (!sync_msg.rxObject) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Missing monitor reply object"));
+        goto cleanup;
+    }
+
+    if (virJSONValueObjectGetNumberUlong(sync_msg.rxObject,
+                                         "return", &id_ret) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Malformed return value"));
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Guest returned ID: %llu", id_ret);
+    if (id_ret != id) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Guest agent returned ID: %llu instead of %llu"),
+                        id_ret, id);
+        goto cleanup;
+    }
+    ret = 0;
+
+cleanup:
+    virJSONValueFree(sync_msg.rxObject);
+    VIR_FREE(sync_msg.txBuffer);
+    return ret;
+}
+
 static int
 qemuAgentCommand(qemuAgentPtr mon,
                  virJSONValuePtr cmd,
@@ -865,6 +983,11 @@ qemuAgentCommand(qemuAgentPtr mon,
     char *cmdstr = NULL;
 
     *reply = NULL;
+
+    if (qemuAgentGuestSync(mon) < 0) {
+        /* helper reported the error */
+        return -1;
+    }
 
     memset(&msg, 0, sizeof(msg));
 
@@ -880,11 +1003,10 @@ qemuAgentCommand(qemuAgentPtr mon,
 
     VIR_DEBUG("Send command '%s' for write", cmdstr);
 
-    ret = qemuAgentSend(mon, &msg);
+    ret = qemuAgentSend(mon, &msg, false);
 
     VIR_DEBUG("Receive command reply ret=%d rxObject=%p",
               ret, msg.rxObject);
-
 
     if (ret == 0) {
         if (!msg.rxObject) {
