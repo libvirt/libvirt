@@ -313,6 +313,9 @@ static int vshCommandOptULongLong(const vshCmd *cmd, const char *name,
 static bool vshCommandOptBool(const vshCmd *cmd, const char *name);
 static const vshCmdOpt *vshCommandOptArgv(const vshCmd *cmd,
                                           const vshCmdOpt *opt);
+static char *vshGetDomainDescription(vshControl *ctl, virDomainPtr dom,
+                                     bool title, unsigned int flags)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 #define VSH_BYID     (1 << 1)
 #define VSH_BYUUID   (1 << 2)
@@ -886,6 +889,7 @@ static const vshCmdOptDef opts_list[] = {
     {"all", VSH_OT_BOOL, 0, N_("list inactive & active domains")},
     {"managed-save", VSH_OT_BOOL, 0,
      N_("mark domains with managed save state")},
+    {"title", VSH_OT_BOOL, 0, N_("show short domain description")},
     {NULL, 0, 0, NULL}
 };
 
@@ -900,7 +904,10 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     char **names = NULL;
     int maxname = 0;
     bool managed = vshCommandOptBool(cmd, "managed-save");
+    bool desc = vshCommandOptBool(cmd, "title");
+    char *title;
     int state;
+    bool ret = false;
 
     inactive |= all;
 
@@ -918,8 +925,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
             if ((maxid = virConnectListDomains(ctl->conn, &ids[0], maxid)) < 0) {
                 vshError(ctl, "%s", _("Failed to list active domains"));
-                VIR_FREE(ids);
-                return false;
+                goto cleanup;
             }
 
             qsort(&ids[0], maxid, sizeof(int), idsorter);
@@ -929,37 +935,52 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         maxname = virConnectNumOfDefinedDomains(ctl->conn);
         if (maxname < 0) {
             vshError(ctl, "%s", _("Failed to list inactive domains"));
-            VIR_FREE(ids);
-            return false;
+            goto cleanup;
         }
         if (maxname) {
             names = vshMalloc(ctl, sizeof(char *) * maxname);
 
             if ((maxname = virConnectListDefinedDomains(ctl->conn, names, maxname)) < 0) {
                 vshError(ctl, "%s", _("Failed to list inactive domains"));
-                VIR_FREE(ids);
-                VIR_FREE(names);
-                return false;
+                goto cleanup;
             }
 
             qsort(&names[0], maxname, sizeof(char*), namesorter);
         }
     }
-    vshPrintExtra(ctl, " %-5s %-30s %s\n", _("Id"), _("Name"), _("State"));
-    vshPrintExtra(ctl, "----------------------------------------------------\n");
+
+    if (desc) {
+        vshPrintExtra(ctl, "%-5s %-30s %-10s %s\n", _("Id"), _("Name"), _("State"), _("Title"));
+        vshPrintExtra(ctl, "-----------------------------------------------------------\n");
+    } else {
+        vshPrintExtra(ctl, " %-5s %-30s %s\n", _("Id"), _("Name"), _("State"));
+        vshPrintExtra(ctl, "----------------------------------------------------\n");
+    }
 
     for (i = 0; i < maxid; i++) {
-        virDomainPtr dom = virDomainLookupByID(ctl->conn, ids[i]);
+         virDomainPtr dom = virDomainLookupByID(ctl->conn, ids[i]);
 
         /* this kind of work with domains is not atomic operation */
         if (!dom)
             continue;
 
-        vshPrint(ctl, " %-5d %-30s %s\n",
-                 virDomainGetID(dom),
-                 virDomainGetName(dom),
-                 _(vshDomainStateToString(vshDomainState(ctl, dom, NULL))));
-        virDomainFree(dom);
+        if (desc) {
+            if (!(title = vshGetDomainDescription(ctl, dom, true, 0)))
+                goto cleanup;
+
+            vshPrint(ctl, "%-5d %-30s %-10s %s\n",
+                     virDomainGetID(dom),
+                     virDomainGetName(dom),
+                    _(vshDomainStateToString(vshDomainState(ctl, dom, NULL))),
+                    title);
+            VIR_FREE(title);
+       } else {
+            vshPrint(ctl, " %-5d %-30s %s\n",
+                     virDomainGetID(dom),
+                     virDomainGetName(dom),
+                     _(vshDomainStateToString(vshDomainState(ctl, dom, NULL))));
+       }
+       virDomainFree(dom);
     }
     for (i = 0; i < maxname; i++) {
         virDomainPtr dom = virDomainLookupByName(ctl->conn, names[i]);
@@ -975,17 +996,177 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             virDomainHasManagedSaveImage(dom, 0) > 0)
             state = -2;
 
-        vshPrint(ctl, " %-5s %-30s %s\n",
-                 "-",
-                 names[i],
-                 state == -2 ? _("saved") : _(vshDomainStateToString(state)));
+        if (desc) {
+            if (!(title = vshGetDomainDescription(ctl, dom, true, 0)))
+                goto cleanup;
+
+            vshPrint(ctl, "%-5s %-30s %-10s %s\n",
+                     "-",
+                     names[i],
+                     state == -2 ? _("saved") : _(vshDomainStateToString(state)),
+                     title);
+            VIR_FREE(title);
+        } else {
+            vshPrint(ctl, " %-5s %-30s %s\n",
+                     "-",
+                     names[i],
+                     state == -2 ? _("saved") : _(vshDomainStateToString(state)));
 
         virDomainFree(dom);
         VIR_FREE(names[i]);
+        }
     }
+
+    ret = true;
+cleanup:
     VIR_FREE(ids);
     VIR_FREE(names);
-    return true;
+    return ret;
+}
+
+/*
+ * "desc" command for managing domain description and title
+ */
+static const vshCmdInfo info_desc[] = {
+    {"help", N_("show or set domain's description or title")},
+    {"desc", N_("Allows to show or modify description or title of a domain.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_desc[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"live", VSH_OT_BOOL, 0, N_("modify/get running state")},
+    {"config", VSH_OT_BOOL, 0, N_("modify/get persistent configuration")},
+    {"current", VSH_OT_BOOL, 0, N_("modify/get current state configuration")},
+    {"title", VSH_OT_BOOL, 0, N_("modify the title instead of description")},
+    {"edit", VSH_OT_BOOL, 0, N_("open an editor to modify the description")},
+    {"new-desc", VSH_OT_ARGV, 0, N_("message")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdDesc(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    /* current is ignored */
+
+    bool title = vshCommandOptBool(cmd, "title");
+    bool edit = vshCommandOptBool(cmd, "edit");
+
+    int state;
+    int type;
+    char *desc = NULL;
+    char *desc_edited = NULL;
+    char *tmp = NULL;
+    char *tmpstr;
+    const vshCmdOpt *opt = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    bool pad = false;
+    bool ret = false;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if ((state = vshDomainState(ctl, dom, NULL)) < 0)
+        goto cleanup;
+
+    while ((opt = vshCommandOptArgv(cmd, opt))) {
+        if (pad)
+            virBufferAddChar(&buf, ' ');
+        pad = true;
+        virBufferAdd(&buf, opt->data, -1);
+    }
+
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (title)
+        type = VIR_DOMAIN_METADATA_TITLE;
+    else
+        type = VIR_DOMAIN_METADATA_DESCRIPTION;
+
+    if (virBufferError(&buf)) {
+        vshPrint(ctl, "%s", _("Failed to collect new description/title"));
+        goto cleanup;
+    }
+    desc = virBufferContentAndReset(&buf);
+
+    if (edit || desc) {
+        if (!desc) {
+                desc = vshGetDomainDescription(ctl, dom, title,
+                                           config?VIR_DOMAIN_XML_INACTIVE:0);
+                if (!desc)
+                    goto cleanup;
+        }
+
+        if (edit) {
+            /* Create and open the temporary file. */
+            if (!(tmp = editWriteToTempFile(ctl, desc)))
+                goto cleanup;
+
+            /* Start the editor. */
+            if (editFile(ctl, tmp) == -1)
+                goto cleanup;
+
+            /* Read back the edited file. */
+            if (!(desc_edited = editReadBackFile(ctl, tmp)))
+                goto cleanup;
+
+            /* strip a possible newline at the end of file; some
+             * editors enforce a newline, this makes editing the title
+             * more convinient */
+            if (title &&
+                (tmpstr = strrchr(desc_edited, '\n')) &&
+                *(tmpstr+1) == '\0')
+                *tmpstr = '\0';
+
+            /* Compare original XML with edited.  Has it changed at all? */
+            if (STREQ(desc, desc_edited)) {
+                vshPrint(ctl, _("Domain description not changed.\n"));
+                ret = true;
+                goto cleanup;
+            }
+
+            VIR_FREE(desc);
+            desc = desc_edited;
+            desc_edited = NULL;
+        }
+
+        if (virDomainSetMetadata(dom, type, desc, NULL, NULL, flags) < 0) {
+            vshError(ctl, "%s",
+                     _("Failed to set new domain description"));
+            goto cleanup;
+        }
+        vshPrint(ctl, "%s", _("Domain description updated successfully"));
+    } else {
+        desc = vshGetDomainDescription(ctl, dom, title,
+                                       config?VIR_DOMAIN_XML_INACTIVE:0);
+        if (!desc)
+            goto cleanup;
+
+        if (strlen(desc) > 0)
+            vshPrint(ctl, "%s", desc);
+        else
+            vshPrint(ctl, _("No description for domain: %s"),
+                     virDomainGetName(dom));
+    }
+
+    ret = true;
+cleanup:
+    VIR_FREE(desc_edited);
+    VIR_FREE(desc);
+    if (tmp) {
+        unlink(tmp);
+        VIR_FREE(tmp);
+    }
+    return ret;
 }
 
 /*
@@ -16245,6 +16426,7 @@ static const vshCmdDef domManagementCmds[] = {
     {"cpu-compare", cmdCPUCompare, opts_cpu_compare, info_cpu_compare, 0},
     {"create", cmdCreate, opts_create, info_create, 0},
     {"define", cmdDefine, opts_define, info_define, 0},
+    {"desc", cmdDesc, opts_desc, info_desc, 0},
     {"destroy", cmdDestroy, opts_destroy, info_destroy, 0},
     {"detach-device", cmdDetachDevice, opts_detach_device,
      info_detach_device, 0},
@@ -18009,6 +18191,65 @@ vshDomainStateReasonToString(int state, int reason)
     }
 
     return N_("unknown");
+}
+
+/* extract description or title from domain xml */
+static char *
+vshGetDomainDescription(vshControl *ctl, virDomainPtr dom, bool title,
+                        unsigned int flags)
+{
+    char *desc = NULL;
+    char *domxml = NULL;
+    virErrorPtr err = NULL;
+    xmlDocPtr doc = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    int type;
+
+    if (title)
+        type = VIR_DOMAIN_METADATA_TITLE;
+    else
+        type = VIR_DOMAIN_METADATA_DESCRIPTION;
+
+    if ((desc = virDomainGetMetadata(dom, type, NULL, flags))) {
+        return desc;
+    } else {
+        err = virGetLastError();
+
+        if (err && err->code == VIR_ERR_NO_DOMAIN_METADATA) {
+            desc = vshStrdup(ctl, "");
+            virResetLastError();
+            return desc;
+        }
+
+        if (err && err->code != VIR_ERR_NO_SUPPORT)
+            return desc;
+    }
+
+    /* fall back to xml */
+    /* get domain's xml description and extract the title/description */
+    if (!(domxml = virDomainGetXMLDesc(dom, flags))) {
+        vshError(ctl, "%s", _("Failed to retrieve domain XML"));
+        goto cleanup;
+    }
+    doc = virXMLParseStringCtxt(domxml, _("(domain_definition)"), &ctxt);
+    if (!doc) {
+        vshError(ctl, "%s", _("Couldn't parse domain XML"));
+        goto cleanup;
+    }
+    if (title)
+        desc = virXPathString("string(./title[1])", ctxt);
+    else
+        desc = virXPathString("string(./description[1])", ctxt);
+
+    if (!desc)
+        desc = vshStrdup(ctl, "");
+
+cleanup:
+    VIR_FREE(domxml);
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(doc);
+
+    return desc;
 }
 
 /* Return a non-NULL string representation of a typed parameter; exit

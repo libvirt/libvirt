@@ -279,7 +279,7 @@ The XML also show the NUMA topology information if available.
 
 Inject NMI to the guest.
 
-=item B<list> [I<--inactive> | I<--all>] [I<--managed-save>]
+=item B<list> [I<--inactive> | I<--all>] [I<--managed-save>] [I<--title>]
 
 Prints information about existing domains.  If no options are
 specified it prints out information about running domains.
@@ -349,6 +349,15 @@ crashed.
 If I<--managed-save> is specified, then domains that have managed save
 state (only possible if they are in the B<shut off> state) will
 instead show as B<saved> in the listing.
+
+If I<--title> is specified, then the domain note is printed. The output then
+the output looks as follows.
+
+B<virsh> list --note
+ Id Name                 State      Title
+-----------------------------------------------
+  0 Domain-0             running    Mailserver 1
+  2 fedora               paused
 
 =item B<freecell> [B<cellno> | I<--all>]
 
@@ -425,6 +434,29 @@ B<Example>
 Define a domain from an XML <file>. The domain definition is registered
 but not started.  If domain is already running, the changes will take
 effect on the next boot.
+
+=item B<desc> [I<--live> | I<--config>] [I<--title>] [I<--edit>]
+              [I<--new-desc> New description or title message]
+
+Show or modify description and title of a domain. These values are user
+fields that allow to store arbitrary textual data to allow easy
+identification of domains. Title should be short, although it's not enforced.
+
+Flags I<--live> or I<--config> select whether this command works on live
+or persistent definitions of the domain. By default both are influenced, while
+modifying and running definition is used while reading the note.
+
+If both I<--live> and I<--config> are specified, the I<--config> option takes
+precedence on getting the current description and both live configuration
+and config are updated while setting the description.
+
+Flag I<--edit> specifies that an editor with the contents of current
+description or title should be opened and the contents saved back afterwards.
+
+Flag I<--title> selects operation on the title field instead of description.
+
+If neither of I<--edit> and I<--new_desc> are specified the note or description
+is displayed instead of being modified.
 
 =item B<destroy> I<domain-id>
 
