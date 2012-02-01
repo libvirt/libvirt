@@ -11813,6 +11813,178 @@ cleanup:
     return ret;
 }
 
+static int
+qemuDomainSetMetadata(virDomainPtr dom,
+                      int type,
+                      const char *metadata,
+                      const char *key ATTRIBUTE_UNUSED,
+                      const char *uri ATTRIBUTE_UNUSED,
+                      unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    virDomainDefPtr persistentDef;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (virDomainLiveConfigHelperMethod(driver->caps, vm, &flags,
+                                        &persistentDef) < 0)
+        goto cleanup;
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        switch ((virDomainMetadataType) type) {
+        case VIR_DOMAIN_METADATA_DESCRIPTION:
+            VIR_FREE(vm->def->description);
+            if (metadata &&
+                !(vm->def->description = strdup(metadata)))
+                goto no_memory;
+            break;
+        case VIR_DOMAIN_METADATA_TITLE:
+            VIR_FREE(vm->def->title);
+            if (metadata &&
+                !(vm->def->title = strdup(metadata)))
+                goto no_memory;
+            break;
+        case VIR_DOMAIN_METADATA_ELEMENT:
+            qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                            _("QEmu driver does not support modifying"
+                              "<metadata> element"));
+            goto cleanup;
+            break;
+        default:
+            qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                            _("unknown metadata type"));
+            goto cleanup;
+            break;
+        }
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        switch ((virDomainMetadataType) type) {
+        case VIR_DOMAIN_METADATA_DESCRIPTION:
+            VIR_FREE(persistentDef->description);
+            if (metadata &&
+                !(persistentDef->description = strdup(metadata)))
+                goto no_memory;
+            break;
+        case VIR_DOMAIN_METADATA_TITLE:
+            VIR_FREE(persistentDef->title);
+            if (metadata &&
+                !(persistentDef->title = strdup(metadata)))
+                goto no_memory;
+            break;
+        case VIR_DOMAIN_METADATA_ELEMENT:
+            qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                            _("QEMU driver does not support"
+                              "<metadata> element"));
+            goto cleanup;
+         default:
+            qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                            _("unknown metadata type"));
+            goto cleanup;
+            break;
+        }
+
+        if (virDomainSaveConfig(driver->configDir, persistentDef) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+no_memory:
+    virReportOOMError();
+    goto cleanup;
+}
+
+static char *
+qemuDomainGetMetadata(virDomainPtr dom,
+                      int type,
+                      const char *uri ATTRIBUTE_UNUSED,
+                      unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    virDomainDefPtr def;
+    char *ret = NULL;
+    char *field = NULL;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, NULL);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (virDomainLiveConfigHelperMethod(driver->caps, vm, &flags, &def) < 0)
+        goto cleanup;
+
+    /* use correct domain definition according to flags */
+    if (flags & VIR_DOMAIN_AFFECT_LIVE)
+        def = vm->def;
+
+    switch ((virDomainMetadataType) type) {
+    case VIR_DOMAIN_METADATA_DESCRIPTION:
+        field = def->description;
+        break;
+    case VIR_DOMAIN_METADATA_TITLE:
+        field = def->title;
+        break;
+    case VIR_DOMAIN_METADATA_ELEMENT:
+        qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                        _("QEMU driver does not support"
+                          "<metadata> element"));
+        goto cleanup;
+        break;
+    default:
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("unknown metadata type"));
+        goto cleanup;
+        break;
+    }
+
+    if (!field) {
+        qemuReportError(VIR_ERR_NO_DOMAIN_METADATA, "%s",
+                        _("Requested metadata element is not present"));
+        goto cleanup;
+    }
+
+    if (!(ret = strdup(field))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
 static virDriver qemuDriver = {
     .no = VIR_DRV_QEMU,
     .name = "QEMU",
@@ -11967,6 +12139,8 @@ static virDriver qemuDriver = {
     .domainGetInterfaceParameters = qemuDomainGetInterfaceParameters, /* 0.9.9 */
     .domainSetInterfaceParameters = qemuDomainSetInterfaceParameters, /* 0.9.9 */
     .domainGetDiskErrors = qemuDomainGetDiskErrors, /* 0.9.10 */
+    .domainSetMetadata = qemuDomainSetMetadata, /* 0.9.10 */
+    .domainGetMetadata = qemuDomainGetMetadata, /* 0.9.10 */
 };
 
 
