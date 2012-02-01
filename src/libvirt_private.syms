@@ -1019,7 +1019,7 @@ virStorageFileIsSharedFS;
 virStorageFileIsSharedFSType;
 virStorageFileProbeFormat;
 virStorageFileProbeFormatFromFD;
-
+virStorageFileResize;
 
 # sysinfo.h
 virSysinfoDefFree;
