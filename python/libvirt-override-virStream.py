@@ -86,7 +86,7 @@
 
             ret = self.send(got)
             if ret == -2:
-                raise libvirtError("cannot use recvAll with "
+                raise libvirtError("cannot use sendAll with "
                                    "nonblocking stream")
 
     def recv(self, nbytes):
