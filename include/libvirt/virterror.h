@@ -244,6 +244,7 @@ typedef enum {
     VIR_ERR_OPERATION_ABORTED = 78,     /* operation on a domain was
                                            canceled/aborted by user */
     VIR_ERR_AUTH_CANCELLED = 79,        /* authentication cancelled */
+    VIR_ERR_NO_DOMAIN_METADATA = 80,    /* The metadata is not present */
 } virErrorNumber;
 
 /**

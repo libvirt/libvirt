@@ -816,6 +816,20 @@ typedef int
                                  unsigned int maxerrors,
                                  unsigned int flags);
 
+typedef int
+    (*virDrvDomainSetMetadata)(virDomainPtr dom,
+                               int type,
+                               const char *metadata,
+                               const char *key,
+                               const char *uri,
+                               unsigned int flags);
+
+typedef char *
+    (*virDrvDomainGetMetadata)(virDomainPtr dom,
+                               int type,
+                               const char *uri,
+                               unsigned int flags);
+
 /**
  * _virDriver:
  *
@@ -988,6 +1002,8 @@ struct _virDriver {
     virDrvDomainGetBlockIoTune domainGetBlockIoTune;
     virDrvDomainGetCPUStats domainGetCPUStats;
     virDrvDomainGetDiskErrors domainGetDiskErrors;
+    virDrvDomainSetMetadata domainSetMetadata;
+    virDrvDomainGetMetadata domainGetMetadata;
 };
 
 typedef int

@@ -8887,6 +8887,184 @@ error:
 }
 
 /**
+ * virDomainSetMetadata:
+ * @domain: a domain object
+ * @type: type of description, from virDomainMetadataType
+ * @metadata: new metadata text
+ * @key: XML namespace key, or NULL
+ * @uri: XML namespace URI, or NULL
+ * @flags: bitwise-OR of virDomainModificationImpact
+ *
+ * Sets the appropriate domain element given by @type to the
+ * value of @description.  A @type of VIR_DOMAIN_METADATA_DESCRIPTION
+ * is free-form text; VIR_DOMAIN_METADATA_TITLE is free-form, but no
+ * newlines are permitted, and should be short (although the length is
+ * not enforced). For these two options @key and @uri are irrelevant and
+ * must be set to NULL.
+ *
+ * For type VIR_DOMAIN_METADATA_ELEMENT @metadata  must be well-formed
+ * XML belonging to namespace defined by @uri with local name @key.
+ *
+ * Passing NULL for @metadata says to remove that element from the
+ * domain XML (passing the empty string leaves the element present).
+ *
+ * The resulting metadata will be present in virDomainGetXMLDesc(),
+ * as well as quick access through virDomainGetMetadata().
+ *
+ * @flags controls whether the live domain, persistent configuration,
+ * or both will be modified.
+ *
+ * Returns 0 on success, -1 in case of failure.
+ */
+int
+virDomainSetMetadata(virDomainPtr domain,
+                     int type,
+                     const char *metadata,
+                     const char *key,
+                     const char *uri,
+                     unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain,
+                     "type=%d, metadata='%s', key='%s', uri='%s', flags=%x",
+                     type, NULLSTR(metadata), NULLSTR(key), NULLSTR(uri),
+                     flags);
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        goto error;
+    }
+
+    conn = domain->conn;
+
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    switch (type) {
+    case VIR_DOMAIN_METADATA_TITLE:
+        if (metadata && strchr(metadata, '\n')) {
+                virLibDomainError(VIR_ERR_INVALID_ARG, "%s",
+                                  _("Domain title can't contain newlines"));
+                goto error;
+        }
+        /* fallthrough */
+    case VIR_DOMAIN_METADATA_DESCRIPTION:
+        if (uri || key) {
+            virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+            goto error;
+        }
+        break;
+    case VIR_DOMAIN_METADATA_ELEMENT:
+        if (!uri || !key) {
+            virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+            goto error;
+        }
+        break;
+    default:
+        /* For future expansion */
+        break;
+    }
+
+    if (conn->driver->domainSetMetadata) {
+        int ret;
+        ret = conn->driver->domainSetMetadata(domain, type, metadata, key, uri,
+                                              flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
+ * virDomainGetMetadata:
+ * @domain: a domain object
+ * @type: type of description, from virDomainMetadataType
+ * @uri: XML namespace identifier
+ * @flags: bitwise-OR of virDomainModificationImpact
+ *
+ * Retrieves the appropriate domain element given by @type.
+ * If VIR_DOMAIN_METADATA_ELEMENT is requested parameter @uri
+ * must be set to the name of the namespace the requested elements
+ * belong to, otherwise must be NULL.
+ *
+ * If an element of the domain XML is not present, the resulting
+ * error will be VIR_ERR_NO_DOMAIN_METADATA.  This method forms
+ * a shortcut for seeing information from virDomainSetMetadata()
+ * without having to go through virDomainGetXMLDesc().
+ *
+ * @flags controls whether the live domain or persistent
+ * configuration will be queried.
+ *
+ * Returns the metadata string on success (caller must free),
+ * or NULL in case of failure.
+ */
+char *
+virDomainGetMetadata(virDomainPtr domain,
+                     int type,
+                     const char *uri,
+                     unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "type=%d, uri='%s', flags=%x",
+                     type, NULLSTR(uri), flags);
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        goto error;
+    }
+
+    if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
+        (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    switch (type) {
+    case VIR_DOMAIN_METADATA_TITLE:
+    case VIR_DOMAIN_METADATA_DESCRIPTION:
+        if (uri) {
+            virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+            goto error;
+        }
+        break;
+    case VIR_DOMAIN_METADATA_ELEMENT:
+        if (!uri) {
+            virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+            goto error;
+        }
+        break;
+    default:
+        /* For future expansion */
+        break;
+    }
+
+    conn = domain->conn;
+
+    if (conn->driver->domainGetMetadata) {
+        char *ret;
+        if (!(ret = conn->driver->domainGetMetadata(domain, type, uri, flags)))
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return NULL;
+}
+
+/**
  * virNodeGetSecurityModel:
  * @conn: a connection object
  * @secmodel: pointer to a virSecurityModel structure

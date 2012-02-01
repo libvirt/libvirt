@@ -4917,6 +4917,8 @@ static virDriver remote_driver = {
     .domainGetNumaParameters = remoteDomainGetNumaParameters, /* 0.9.9 */
     .domainGetCPUStats = remoteDomainGetCPUStats, /* 0.9.10 */
     .domainGetDiskErrors = remoteDomainGetDiskErrors, /* 0.9.10 */
+    .domainSetMetadata = remoteDomainSetMetadata, /* 0.9.10 */
+    .domainGetMetadata = remoteDomainGetMetadata, /* 0.9.10 */
 };
 
 static virNetworkDriver network_driver = {

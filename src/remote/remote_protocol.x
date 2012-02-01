@@ -1123,6 +1123,26 @@ struct remote_domain_set_autostart_args {
     int autostart;
 };
 
+struct remote_domain_set_metadata_args {
+    remote_nonnull_domain dom;
+    int type;
+    remote_string metadata;
+    remote_string key;
+    remote_string uri;
+    unsigned int flags;
+};
+
+struct remote_domain_get_metadata_args {
+    remote_nonnull_domain dom;
+    int type;
+    remote_string uri;
+    unsigned int flags;
+};
+
+struct remote_domain_get_metadata_ret {
+    remote_nonnull_string metadata;
+};
+
 struct remote_domain_block_job_abort_args {
     remote_nonnull_domain dom;
     remote_nonnull_string path;
@@ -2729,7 +2749,9 @@ enum remote_procedure {
 
     REMOTE_PROC_DOMAIN_PM_SUSPEND_FOR_DURATION = 261, /* autogen autogen */
     REMOTE_PROC_DOMAIN_GET_CPU_STATS = 262, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_GET_DISK_ERRORS = 263 /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_GET_DISK_ERRORS = 263, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_SET_METADATA = 264, /* autogen autogen */
+    REMOTE_PROC_DOMAIN_GET_METADATA = 265 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

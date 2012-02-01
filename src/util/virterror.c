@@ -1,7 +1,7 @@
 /*
  * virterror.c: implements error handling and reporting code for libvirt
  *
- * Copy:  Copyright (C) 2006, 2008-2011 Red Hat, Inc.
+ * Copy:  Copyright (C) 2006, 2008-2012 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -1225,6 +1225,12 @@ virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = _("operation aborted");
             else
                 errmsg = _("operation aborted: %s");
+            break;
+        case VIR_ERR_NO_DOMAIN_METADATA:
+            if (info == NULL)
+                errmsg = _("metadata not found");
+            else
+                errmsg = _("metadata not found: %s");
             break;
     }
     return (errmsg);

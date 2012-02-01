@@ -1496,6 +1496,30 @@ int                     virDomainGetMaxVcpus    (virDomainPtr domain);
 int                     virDomainGetSecurityLabel (virDomainPtr domain,
                                                    virSecurityLabelPtr seclabel);
 
+typedef enum {
+    VIR_DOMAIN_METADATA_DESCRIPTION = 0, /* Operate on <description> */
+    VIR_DOMAIN_METADATA_TITLE       = 1, /* Operate on <title> */
+    VIR_DOMAIN_METADATA_ELEMENT     = 2, /* Operate on <metadata> */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_METADATA_LAST
+#endif
+} virDomainMetadataType;
+
+int
+virDomainSetMetadata(virDomainPtr domain,
+                     int type,
+                     const char *metadata,
+                     const char *key,
+                     const char *uri,
+                     unsigned int flags);
+
+char *
+virDomainGetMetadata(virDomainPtr domain,
+                     int type,
+                     const char *uri,
+                     unsigned int flags);
+
 /*
  * XML domain description
  */

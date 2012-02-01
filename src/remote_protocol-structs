@@ -788,6 +788,23 @@ struct remote_domain_set_autostart_args {
         remote_nonnull_domain      dom;
         int                        autostart;
 };
+struct remote_domain_set_metadata_args {
+        remote_nonnull_domain      dom;
+        int                        type;
+        remote_string              metadata;
+        remote_string              key;
+        remote_string              uri;
+        u_int                      flags;
+};
+struct remote_domain_get_metadata_args {
+        remote_nonnull_domain      dom;
+        int                        type;
+        remote_string              uri;
+        u_int                      flags;
+};
+struct remote_domain_get_metadata_ret {
+        remote_nonnull_string      metadata;
+};
 struct remote_domain_block_job_abort_args {
         remote_nonnull_domain      dom;
         remote_nonnull_string      path;
@@ -2146,4 +2163,6 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_PM_SUSPEND_FOR_DURATION = 261,
         REMOTE_PROC_DOMAIN_GET_CPU_STATS = 262,
         REMOTE_PROC_DOMAIN_GET_DISK_ERRORS = 263,
+        REMOTE_PROC_DOMAIN_SET_METADATA = 264,
+        REMOTE_PROC_DOMAIN_GET_METADATA = 265,
 };
