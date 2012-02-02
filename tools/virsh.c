@@ -2875,6 +2875,8 @@ cleanup:
     VIR_FREE(volume_tokens);
     VIR_FREE(def);
     VIR_FREE(vol_nodes);
+    if (vol)
+        virStorageVolFree(vol);
     xmlFreeDoc(doc);
     xmlXPathFreeContext(ctxt);
     virDomainFree(dom);
