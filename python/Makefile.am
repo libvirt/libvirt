@@ -1,14 +1,14 @@
 # Makefile for libvirt python library
 
-## Copyright (C) 2005-2011 Red Hat, Inc.
+## Copyright (C) 2005-2012 Red Hat, Inc.
 ## See COPYING.LIB for the License of this software
 
 SUBDIRS= . tests
 
 INCLUDES = \
 	$(PYTHON_INCLUDES) \
-	-I$(top_srcdir)/include \
 	-I$(top_builddir)/include \
+	-I$(top_srcdir)/include \
 	-I$(top_builddir)/$(subdir) \
 	$(GETTEXT_CPPFLAGS)
 
