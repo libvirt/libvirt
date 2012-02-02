@@ -1,7 +1,7 @@
 /*
  * virpidfile.c: manipulation of pidfiles
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
  *
@@ -54,7 +54,7 @@ int virPidFileWritePath(const char *pidfile,
 {
     int rc;
     int fd;
-    FILE *file = NULL;
+    char pidstr[INT_BUFSIZE_BOUND(pid)];
 
     if ((fd = open(pidfile,
                    O_WRONLY | O_CREAT | O_TRUNC,
@@ -63,21 +63,18 @@ int virPidFileWritePath(const char *pidfile,
         goto cleanup;
     }
 
-    if (!(file = VIR_FDOPEN(fd, "w"))) {
+    snprintf(pidstr, sizeof(pidstr), "%lld", (long long) pid);
+
+    if (safewrite(fd, pidstr, strlen(pidstr)) < 0) {
         rc = -errno;
         VIR_FORCE_CLOSE(fd);
-        goto cleanup;
-    }
-
-    if (fprintf(file, "%d", pid) < 0) {
-        rc = -errno;
         goto cleanup;
     }
 
     rc = 0;
 
 cleanup:
-    if (VIR_FCLOSE(file) < 0)
+    if (VIR_CLOSE(fd) < 0)
         rc = -errno;
 
     return rc;
@@ -117,30 +114,40 @@ cleanup:
 int virPidFileReadPath(const char *path,
                        pid_t *pid)
 {
-    FILE *file;
+    int fd;
     int rc;
+    ssize_t bytes;
+    long long pid_value = 0;
+    char pidstr[INT_BUFSIZE_BOUND(pid_value)];
 
     *pid = 0;
 
-    if (!(file = fopen(path, "r"))) {
+    if ((fd = open(path, O_RDONLY)) < 0) {
         rc = -errno;
         goto cleanup;
     }
 
-    if (fscanf(file, "%d", pid) != 1) {
-        rc = -EINVAL;
-        VIR_FORCE_FCLOSE(file);
-        goto cleanup;
-    }
-
-    if (VIR_FCLOSE(file) < 0) {
+    bytes = saferead(fd, pidstr, sizeof(pidstr));
+    if (bytes < 0) {
         rc = -errno;
+        VIR_FORCE_CLOSE(fd);
+        goto cleanup;
+    }
+    pidstr[bytes] = '\0';
+
+    if (virStrToLong_ll(pidstr, NULL, 10, &pid_value) < 0 ||
+        (pid_t) pid_value != pid_value) {
+        rc = -1;
         goto cleanup;
     }
 
+    *pid = pid_value;
     rc = 0;
 
- cleanup:
+cleanup:
+    if (VIR_CLOSE(fd) < 0)
+        rc = -errno;
+
     return rc;
 }
 
@@ -367,7 +374,7 @@ int virPidFileAcquirePath(const char *path,
         /* Someone else must be racing with us, so try agin */
     }
 
-    snprintf(pidstr, sizeof(pidstr), "%u", (unsigned int)pid);
+    snprintf(pidstr, sizeof(pidstr), "%lld", (long long) pid);
 
     if (safewrite(fd, pidstr, strlen(pidstr)) < 0) {
         virReportSystemError(errno,
