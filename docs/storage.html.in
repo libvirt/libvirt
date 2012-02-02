@@ -3,9 +3,85 @@
   <body>
     <h1 >Storage Management</h1>
     <p>
-This page describes the backends for the storage management capabilities in
-libvirt.
-</p>
+      Libvirt provides storage management on the physical host through
+      storage pools and volumes.
+    </p>
+    <p>
+      A storage pool is a quantity of storage set aside by an
+      administrator, often a dedicated storage administrator, for use
+      by virtual machines.  Storage pools are divided into storage
+      volumes either by the storage administrator or the system
+      administrator, and the volumes are assigned to VMs as block
+      devices.
+    </p>
+    <p>
+      For example, the storage administrator responsible for an NFS
+      server creates a share to store virtual machines' data.  The
+      system administrator defines a pool on the virtualization host
+      with the details of the share
+      (e.g. nfs.example.com:/path/to/share should be mounted on
+      /vm_data).  When the pool is started, libvirt mounts the share
+      on the specified directory, just as if the system administrator
+      logged in and executed 'mount nfs.example.com:/path/to/share
+      /vmdata'.  If the pool is configured to autostart, libvirt
+      ensures that the NFS share is mounted on the directory specified
+      when libvirt is started.
+    </p>
+    <p>
+      Once the pool is started, the files in the NFS share are
+      reported as volumes, and the storage volumes' paths may be
+      queried using the libvirt APIs.  The volumes' paths can then be
+      copied into the section of a VM's XML definition describing the
+      source storage for the VM's block devices.  In the case of NFS,
+      an application using the libvirt APIs can create and delete
+      volumes in the pool (files in the NFS share) up to the limit of
+      the size of the pool (the storage capacity of the share).  Not
+      all pool types support creating and deleting volumes.  Stopping
+      the pool (somewhat unfortunately referred to by virsh and the
+      API as "pool-destroy") undoes the start operation, in this case,
+      unmounting the NFS share.  The data on the share is not modified
+      by the destroy operation, despite the name.  See man virsh for
+      more details.
+    </p>
+    <p>
+      A second example is an iSCSI pool.  A storage administrator
+      provisions an iSCSI target to present a set of LUNs to the host
+      running the VMs.  When libvirt is configured to manage that
+      iSCSI target as a pool, libvirt will ensure that the host logs
+      into the iSCSI target and libvirt can then report the available
+      LUNs as storage volumes.  The volumes' paths can be queried and
+      used in VM's XML definitions as in the NFS example.  In this
+      case, the LUNs are defined on the iSCSI server, and libvirt
+      cannot create and delete volumes.
+    </p>
+    <p>
+      Storage pools and volumes are not required for the proper
+      operation of VMs.  Pools and volumes provide a way for libvirt
+      to ensure that a particular piece of storage will be available
+      for a VM, but some administrators will prefer to manage their
+      own storage and VMs will operate properly without any pools or
+      volumes defined.  On systems that do not use pools, system
+      administrators must ensure the availability of the VMs' storage
+      using whatever tools they prefer, for example, adding the NFS
+      share to the host's fstab so that the share is mounted at boot
+      time.
+    </p>
+    <p>
+      If at this point the value of pools and volumes over traditional
+      system administration tools is unclear, note that one of the
+      features of libvirt is its remote protocol, so it's possible to
+      manage all aspects of a virtual machine's lifecycle as well as
+      the configuration of the resources required by the VM.  These
+      operations can be performed on a remote host entirely within the
+      libvirt API.  In other words, a management application using
+      libvirt can enable a user to perform all the required tasks for
+      configuring the host for a VM: allocating resources, running the
+      VM, shutting it down and deallocating the resources, without
+      requiring shell access or any other control channel.
+    </p>
+    <p>
+      Libvirt supports the following storage pool types:
+    </p>
     <ul>
       <li>
         <a href="#StorageBackendDir">Directory backend</a>
