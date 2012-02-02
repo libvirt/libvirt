@@ -1,7 +1,7 @@
 /*
  * libvirt_wrap.h: type wrappers for libvir python bindings
  *
- * Copyright (C) 2005, 2011 Red Hat, Inc.
+ * Copyright (C) 2005, 2011-2012 Red Hat, Inc.
  *
  * Daniel Veillard <veillard@redhat.com>
  */
@@ -163,7 +163,6 @@ PyObject * libvirt_ulonglongWrap(unsigned long long val);
 PyObject * libvirt_charPtrWrap(char *str);
 PyObject * libvirt_charPtrSizeWrap(char *str, Py_ssize_t size);
 PyObject * libvirt_constcharPtrWrap(const char *str);
-PyObject * libvirt_charPtrConstWrap(const char *str);
 PyObject * libvirt_virConnectPtrWrap(virConnectPtr node);
 PyObject * libvirt_virDomainPtrWrap(virDomainPtr node);
 PyObject * libvirt_virNetworkPtrWrap(virNetworkPtr node);

@@ -118,19 +118,6 @@ libvirt_constcharPtrWrap(const char *str)
 }
 
 PyObject *
-libvirt_charPtrConstWrap(const char *str)
-{
-    PyObject *ret;
-
-    if (str == NULL) {
-        Py_INCREF(Py_None);
-        return (Py_None);
-    }
-    ret = PyString_FromString(str);
-    return (ret);
-}
-
-PyObject *
 libvirt_virDomainPtrWrap(virDomainPtr node)
 {
     PyObject *ret;
