@@ -744,7 +744,7 @@ exclude_file_name_regexp--sc_prohibit_nonreentrant = \
   ^((po|tests)/|docs/.*py$$|tools/(virsh|console)\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_raw_allocation = \
-  ^(src/util/memory\.[ch]|(examples|python)/.*)$$
+  ^(src/util/memory\.[ch]|examples/.*)$$
 
 exclude_file_name_regexp--sc_prohibit_readlink = ^src/util/util\.c$$
 

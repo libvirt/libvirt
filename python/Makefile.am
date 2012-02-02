@@ -7,9 +7,13 @@ SUBDIRS= . tests
 
 INCLUDES = \
 	$(PYTHON_INCLUDES) \
+	-I$(top_builddir)/gnulib/lib \
+	-I$(top_srcdir)/gnulib/lib \
+	-I$(top_builddir)/src \
+	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/src/util \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/include \
-	-I$(top_builddir)/$(subdir) \
 	$(GETTEXT_CPPFLAGS)
 
 AM_CFLAGS = $(WARN_CFLAGS)
@@ -35,8 +39,14 @@ EXTRA_DIST =			\
 	$(DOCS)
 
 if WITH_PYTHON
-mylibs = $(top_builddir)/src/libvirt.la
-myqemulibs = $(top_builddir)/src/libvirt-qemu.la
+mylibs = \
+	$(top_builddir)/src/libvirt.la \
+	$(top_builddir)/src/libvirt_util.la \
+	$(top_builddir)/gnulib/lib/libgnu.la
+myqemulibs = \
+	$(top_builddir)/src/libvirt-qemu.la \
+	$(top_builddir)/src/libvirt_util.la \
+	$(top_builddir)/gnulib/lib/libgnu.la
 
 all-local: libvirt.py libvirt_qemu.py
 
@@ -46,7 +56,7 @@ libvirtmod_la_SOURCES = libvirt-override.c typewrappers.c
 nodist_libvirtmod_la_SOURCES = libvirt.c libvirt.h
 # Python <= 2.4 header files contain a redundant decl, hence we
 # need extra flags here
-libvirtmod_la_CFLAGS = $(WARN_PYTHON_CFLAGS)
+libvirtmod_la_CFLAGS = $(WARN_CFLAGS) $(WARN_PYTHON_CFLAGS)
 
 libvirtmod_la_LDFLAGS = -module -avoid-version -shared -L$(top_builddir)/src/.libs \
 	$(CYGWIN_EXTRA_LDFLAGS)
