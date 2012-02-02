@@ -1381,6 +1381,7 @@ cleanup:
 
 enum qemuMigrationDestinationType {
     MIGRATION_DEST_HOST,
+    MIGRATION_DEST_CONNECT_HOST,
     MIGRATION_DEST_UNIX,
     MIGRATION_DEST_FD,
 };
@@ -1519,6 +1520,44 @@ cleanup:
 }
 
 static int
+qemuMigrationConnect(struct qemud_driver *driver,
+                     virDomainObjPtr vm,
+                     qemuMigrationSpecPtr spec)
+{
+    virNetSocketPtr sock;
+    const char *host;
+    char *port = NULL;
+    int ret = -1;
+
+    host = spec->dest.host.name;
+    if (virAsprintf(&port, "%d", spec->dest.host.port) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    spec->destType = MIGRATION_DEST_FD;
+    spec->dest.fd.qemu = -1;
+
+    if (virSecurityManagerSetSocketLabel(driver->securityManager, vm->def) < 0)
+        goto cleanup;
+    if (virNetSocketNewConnectTCP(host, port, &sock) == 0) {
+        spec->dest.fd.qemu = virNetSocketDupFD(sock, true);
+        virNetSocketFree(sock);
+    }
+    if (virSecurityManagerClearSocketLabel(driver->securityManager, vm->def) < 0 ||
+        spec->dest.fd.qemu == -1)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(port);
+    if (ret < 0)
+        VIR_FORCE_CLOSE(spec->dest.fd.qemu);
+    return ret;
+}
+
+static int
 qemuMigrationRun(struct qemud_driver *driver,
                  virDomainObjPtr vm,
                  const char *cookiein,
@@ -1583,11 +1622,20 @@ qemuMigrationRun(struct qemud_driver *driver,
     if (flags & VIR_MIGRATE_NON_SHARED_INC)
         migrate_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_INC;
 
+    /* connect to the destination qemu if needed */
+    if (spec->destType == MIGRATION_DEST_CONNECT_HOST &&
+        qemuMigrationConnect(driver, vm, spec) < 0)
+        goto cleanup;
+
     switch (spec->destType) {
     case MIGRATION_DEST_HOST:
         ret = qemuMonitorMigrateToHost(priv->mon, migrate_flags,
                                        spec->dest.host.name,
                                        spec->dest.host.port);
+        break;
+
+    case MIGRATION_DEST_CONNECT_HOST:
+        /* handled above and transformed into MIGRATION_DEST_FD */
         break;
 
     case MIGRATION_DEST_UNIX:
@@ -1712,7 +1760,6 @@ static int doNativeMigrate(struct qemud_driver *driver,
     xmlURIPtr uribits = NULL;
     int ret = -1;
     qemuMigrationSpec spec;
-    char *tmp = NULL;
 
     VIR_DEBUG("driver=%p, vm=%p, uri=%s, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, resource=%lu",
@@ -1720,6 +1767,7 @@ static int doNativeMigrate(struct qemud_driver *driver,
               cookieout, cookieoutlen, flags, resource);
 
     if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri, "tcp://")) {
+        char *tmp;
         /* HACK: source host generates bogus URIs, so fix them up */
         if (virAsprintf(&tmp, "tcp://%s", uri + strlen("tcp:")) < 0) {
             virReportOOMError();
@@ -1736,41 +1784,20 @@ static int doNativeMigrate(struct qemud_driver *driver,
         return -1;
     }
 
-    spec.fwdType = MIGRATION_FWD_DIRECT;
-
-    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD)) {
-        virNetSocketPtr sock;
-
-        spec.destType = MIGRATION_DEST_FD;
-        spec.dest.fd.qemu = -1;
-
-        if (virAsprintf(&tmp, "%d", uribits->port) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-        if (virSecurityManagerSetSocketLabel(driver->securityManager, vm->def) < 0)
-            goto cleanup;
-        if (virNetSocketNewConnectTCP(uribits->server, tmp, &sock) == 0) {
-            spec.dest.fd.qemu = virNetSocketDupFD(sock, true);
-            virNetSocketFree(sock);
-        }
-        if (virSecurityManagerClearSocketLabel(driver->securityManager, vm->def) < 0 ||
-            spec.dest.fd.qemu == -1)
-            goto cleanup;
-    } else {
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD))
+        spec.destType = MIGRATION_DEST_CONNECT_HOST;
+    else
         spec.destType = MIGRATION_DEST_HOST;
-        spec.dest.host.name = uribits->server;
-        spec.dest.host.port = uribits->port;
-    }
+    spec.dest.host.name = uribits->server;
+    spec.dest.host.port = uribits->port;
+    spec.fwdType = MIGRATION_FWD_DIRECT;
 
     ret = qemuMigrationRun(driver, vm, cookiein, cookieinlen, cookieout,
                            cookieoutlen, flags, resource, &spec, dconn);
 
-cleanup:
     if (spec.destType == MIGRATION_DEST_FD)
         VIR_FORCE_CLOSE(spec.dest.fd.qemu);
 
-    VIR_FREE(tmp);
     xmlFreeURI(uribits);
 
     return ret;
