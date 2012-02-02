@@ -316,6 +316,12 @@ sc_prohibit_internal_functions:
 	halt='use VIR_ macros instead of internal functions'		\
 	  $(_sc_search_regexp)
 
+# Avoid raw malloc and free, except in documentation comments.
+sc_prohibit_raw_allocation:
+	@prohibit='^.[^*].*\<((m|c|re)alloc|free) *\([^)]'		\
+	halt='use VIR_ macros from memory.h instead of malloc/free'	\
+	  $(_sc_search_regexp)
+
 # Avoid functions that can lead to double-close bugs.
 sc_prohibit_close:
 	@prohibit='([^>.]|^)\<[fp]?close *\('				\
@@ -736,6 +742,9 @@ exclude_file_name_regexp--sc_prohibit_newline_at_end_of_diagnostic = \
 
 exclude_file_name_regexp--sc_prohibit_nonreentrant = \
   ^((po|tests)/|docs/.*py$$|tools/(virsh|console)\.c$$)
+
+exclude_file_name_regexp--sc_prohibit_raw_allocation = \
+  ^(src/util/memory\.[ch]|(examples|python|tests)/.*)$$
 
 exclude_file_name_regexp--sc_prohibit_readlink = ^src/util/util\.c$$
 

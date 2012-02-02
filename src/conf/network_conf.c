@@ -592,7 +592,7 @@ virNetworkDNSSrvDefParseXML(virNetworkDNSDefPtr def,
         virAsprintf(&name, _("Service name is too long, limit is %d bytes"), DNS_RECORD_LENGTH_SRV);
         virNetworkReportError(VIR_ERR_XML_DETAIL,
                               "%s", name);
-        free(name);
+        VIR_FREE(name);
         goto error;
     }
 

@@ -1,6 +1,7 @@
 /*---------------------------------------------------------------------------*/
-/*  Copyright (c) 2011 SUSE LINUX Products GmbH, Nuernberg, Germany.
- *  Copyright (C) 2011 Univention GmbH.
+/* Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (c) 2011 SUSE LINUX Products GmbH, Nuernberg, Germany.
+ * Copyright (C) 2011 Univention GmbH.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -466,7 +467,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
         }
         if (def->os.kernel) {
             /* libxl_init_build_info() sets kernel.path = strdup("hvmloader") */
-            free(b_info->kernel.path);
+            VIR_FREE(b_info->kernel.path);
             if ((b_info->kernel.path = strdup(def->os.kernel)) == NULL) {
                 virReportOOMError();
                 goto error;
@@ -707,7 +708,7 @@ libxlMakeVfb(libxlDriverPrivatePtr driver, virDomainDefPtr def,
             listenAddr = virDomainGraphicsListenGetAddress(l_vfb, 0);
             if (listenAddr) {
                 /* libxl_device_vfb_init() does strdup("127.0.0.1") */
-                free(x_vfb->vnclisten);
+                VIR_FREE(x_vfb->vnclisten);
                 if ((x_vfb->vnclisten = strdup(listenAddr)) == NULL) {
                     virReportOOMError();
                     return -1;
@@ -827,7 +828,7 @@ libxlMakeDeviceModelInfo(virDomainDefPtr def, libxl_domain_config *d_config)
         /* HVM-specific device model info */
         dm_info->type = XENFV;
         if (def->os.nBootDevs > 0) {
-            free(dm_info->boot);
+            VIR_FREE(dm_info->boot);
             for (i = 0; i < def->os.nBootDevs; i++) {
                 switch (def->os.bootDevs[i]) {
                     case VIR_DOMAIN_BOOT_FLOPPY:
@@ -866,7 +867,7 @@ libxlMakeDeviceModelInfo(virDomainDefPtr def, libxl_domain_config *d_config)
             /* driver handles selection of free port */
             dm_info->vncunused = 0;
             if (d_config->vfbs[0].vnclisten) {
-                free(dm_info->vnclisten);
+                VIR_FREE(dm_info->vnclisten);
                 if ((dm_info->vnclisten =
                      strdup(d_config->vfbs[0].vnclisten)) == NULL) {
                     virReportOOMError();

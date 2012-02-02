@@ -1,7 +1,7 @@
 /*
  * virnetmessage.c: basic RPC message encoding/decoding
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -466,26 +466,27 @@ void virNetMessageSaveError(virNetMessageErrorPtr rerr)
     if (rerr->code != VIR_ERR_OK)
         return;
 
+    memset(rerr, 0, sizeof(*rerr));
     virErrorPtr verr = virGetLastError();
     if (verr) {
         rerr->code = verr->code;
         rerr->domain = verr->domain;
-        rerr->message = verr->message ? malloc(sizeof(char*)) : NULL;
-        if (rerr->message) *rerr->message = strdup(verr->message);
+        if (verr->message && VIR_ALLOC(rerr->message) == 0)
+            *rerr->message = strdup(verr->message);
         rerr->level = verr->level;
-        rerr->str1 = verr->str1 ? malloc(sizeof(char*)) : NULL;
-        if (rerr->str1) *rerr->str1 = strdup(verr->str1);
-        rerr->str2 = verr->str2 ? malloc(sizeof(char*)) : NULL;
-        if (rerr->str2) *rerr->str2 = strdup(verr->str2);
-        rerr->str3 = verr->str3 ? malloc(sizeof(char*)) : NULL;
-        if (rerr->str3) *rerr->str3 = strdup(verr->str3);
+        if (verr->str1 && VIR_ALLOC(rerr->str1) == 0)
+            *rerr->str1 = strdup(verr->str1);
+        if (verr->str2 && VIR_ALLOC(rerr->str2) == 0)
+            *rerr->str2 = strdup(verr->str2);
+        if (verr->str3 && VIR_ALLOC(rerr->str3) == 0)
+            *rerr->str3 = strdup(verr->str3);
         rerr->int1 = verr->int1;
         rerr->int2 = verr->int2;
     } else {
         rerr->code = VIR_ERR_INTERNAL_ERROR;
         rerr->domain = VIR_FROM_RPC;
-        rerr->message = malloc(sizeof(char*));
-        if (rerr->message) *rerr->message = strdup(_("Library function returned error but did not set virError"));
+        if (VIR_ALLOC(rerr->message) == 0)
+            *rerr->message = strdup(_("Library function returned error but did not set virError"));
         rerr->level = VIR_ERR_ERROR;
     }
 }

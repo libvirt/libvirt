@@ -436,9 +436,9 @@ static int parseRateStr(const char *rateStr, virNetDevBandwidthRatePtr rate);
 static void *
 _vshMalloc(vshControl *ctl, size_t size, const char *filename, int line)
 {
-    void *x;
+    char *x;
 
-    if ((x = malloc(size)))
+    if (VIR_ALLOC_N(x, size) == 0)
         return x;
     vshError(ctl, _("%s: %d: failed to allocate %d bytes"),
              filename, line, (int) size);
@@ -448,9 +448,10 @@ _vshMalloc(vshControl *ctl, size_t size, const char *filename, int line)
 static void *
 _vshCalloc(vshControl *ctl, size_t nmemb, size_t size, const char *filename, int line)
 {
-    void *x;
+    char *x;
 
-    if ((x = calloc(nmemb, size)))
+    if (!xalloc_oversized(nmemb, size) &&
+        VIR_ALLOC_N(x, nmemb * size) == 0)
         return x;
     vshError(ctl, _("%s: %d: failed to allocate %d bytes"),
              filename, line, (int) (size*nmemb));
