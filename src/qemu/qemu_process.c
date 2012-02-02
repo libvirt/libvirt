@@ -3553,14 +3553,16 @@ qemuProcessKill(struct qemud_driver *driver,
 
     /* This loop sends SIGTERM (or SIGKILL if flags has
      * VIR_QEMU_PROCESS_KILL_FORCE and VIR_QEMU_PROCESS_KILL_NOWAIT),
-     * then waits a few iterations (3 seconds) to see if it
-     * dies. Halfway through this wait, if the qemu process still
-     * hasn't exited, and VIR_QEMU_PROCESS_KILL_FORCE is requested, a
-     * SIGKILL will be sent.  Note that the FORCE mode could result
-     * in lost data in the guest, so it should only be used if the
-     * guest is hung and can't be destroyed in any other manner.
+     * then waits a few iterations (10 seconds) to see if it dies. If
+     * the qemu process still hasn't exited, and
+     * VIR_QEMU_PROCESS_KILL_FORCE is requested, a SIGKILL will then
+     * be sent, and qemuProcessKill will wait up to 5 seconds more for
+     * the process to exit before returning.  Note that the FORCE mode
+     * could result in lost data in the guest, so it should only be
+     * used if the guest is hung and can't be destroyed in any other
+     * manner.
      */
-    for (i = 0 ; i < 15; i++) {
+    for (i = 0 ; i < 75; i++) {
         int signum;
         if (i == 0) {
             if ((flags & VIR_QEMU_PROCESS_KILL_FORCE) &&
@@ -3570,7 +3572,7 @@ qemuProcessKill(struct qemud_driver *driver,
             } else {
                 signum = SIGTERM; /* kindly suggest it should exit */
             }
-        } else if ((i == 8) & (flags & VIR_QEMU_PROCESS_KILL_FORCE)) {
+        } else if ((i == 50) & (flags & VIR_QEMU_PROCESS_KILL_FORCE)) {
             VIR_WARN("Timed out waiting after SIG%s to process %d, "
                      "sending SIGKILL", signame, vm->pid);
             signum = SIGKILL; /* kill it after a grace period */
