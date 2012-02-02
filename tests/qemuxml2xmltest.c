@@ -48,9 +48,9 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
 
     ret = 0;
  fail:
-    free(inXmlData);
-    free(outXmlData);
-    free(actual);
+    VIR_FREE(inXmlData);
+    VIR_FREE(outXmlData);
+    VIR_FREE(actual);
     virDomainDefFree(def);
     return ret;
 }
@@ -81,8 +81,8 @@ testCompareXMLToXMLHelper(const void *data)
     }
 
 cleanup:
-    free(xml_in);
-    free(xml_out);
+    VIR_FREE(xml_in);
+    VIR_FREE(xml_out);
     return ret;
 }
 

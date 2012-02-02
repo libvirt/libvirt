@@ -120,7 +120,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (vmdef->emulator && STRPREFIX(vmdef->emulator, "/.")) {
         if (!(emulator = strdup(vmdef->emulator + 1)))
             goto out;
-        free(vmdef->emulator);
+        VIR_FREE(vmdef->emulator);
         vmdef->emulator = NULL;
         if (virAsprintf(&vmdef->emulator, "%s/qemuxml2argvdata/%s",
                         abs_srcdir, emulator) < 0)
@@ -164,8 +164,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
         qemuDomainPCIAddressSetFree(pciaddrs);
     }
 
-
-    free(virtTestLogContentAndReset());
+    log = virtTestLogContentAndReset();
+    VIR_FREE(log);
     virResetLastError();
 
     /* We do not call qemuCapsExtractVersionInfo() before calling
@@ -233,10 +233,10 @@ static int testCompareXMLToArgvFiles(const char *xml,
     ret = 0;
 
 out:
-    free(log);
-    free(emulator);
-    free(expectargv);
-    free(actualargv);
+    VIR_FREE(log);
+    VIR_FREE(emulator);
+    VIR_FREE(expectargv);
+    VIR_FREE(actualargv);
     virCommandFree(cmd);
     virDomainDefFree(vmdef);
     virUnrefConnect(conn);
@@ -275,8 +275,8 @@ testCompareXMLToArgvHelper(const void *data)
                                        info->expectFailure);
 
 cleanup:
-    free(xml);
-    free(args);
+    VIR_FREE(xml);
+    VIR_FREE(args);
     return result;
 }
 
@@ -307,7 +307,7 @@ mymain(void)
         return EXIT_FAILURE;
     if (virAsprintf(&map, "%s/src/cpu/cpu_map.xml", abs_top_srcdir) < 0 ||
         cpuMapOverride(map) < 0) {
-        free(map);
+        VIR_FREE(map);
         return EXIT_FAILURE;
     }
 
@@ -499,8 +499,8 @@ mymain(void)
     driver.vncTLSx509certdir = strdup("/etc/pki/tls/qemu");
     DO_TEST("graphics-vnc-tls", false, NONE);
     driver.vncSASL = driver.vncTLSx509verify = driver.vncTLS = 0;
-    free(driver.vncSASLdir);
-    free(driver.vncTLSx509certdir);
+    VIR_FREE(driver.vncSASLdir);
+    VIR_FREE(driver.vncTLSx509certdir);
     driver.vncSASLdir = driver.vncTLSx509certdir = NULL;
 
     DO_TEST("graphics-sdl", false, NONE);
@@ -738,9 +738,9 @@ mymain(void)
     DO_TEST("pseries-vio-address-clash", true, QEMU_CAPS_DRIVE,
             QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
 
-    free(driver.stateDir);
+    VIR_FREE(driver.stateDir);
     virCapabilitiesFree(driver.caps);
-    free(map);
+    VIR_FREE(map);
 
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

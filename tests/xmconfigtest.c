@@ -87,9 +87,9 @@ testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion)
     ret = 0;
 
  fail:
-    free(xmlData);
-    free(xmcfgData);
-    free(gotxmcfgData);
+    VIR_FREE(xmlData);
+    VIR_FREE(xmcfgData);
+    VIR_FREE(gotxmcfgData);
     if (conf)
         virConfFree(conf);
     virDomainDefFree(def);
@@ -179,8 +179,8 @@ testCompareHelper(const void *data)
         result = testCompareFormatXML(cfg, xml, info->version);
 
 cleanup:
-    free(xml);
-    free(cfg);
+    VIR_FREE(xml);
+    VIR_FREE(cfg);
 
     return result;
 }

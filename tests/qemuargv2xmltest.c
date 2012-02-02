@@ -52,10 +52,10 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if ((log = virtTestLogContentAndReset()) == NULL)
         goto fail;
     if ((*log != '\0') != expect_warning) {
-        free(log);
+        VIR_FREE(log);
         goto fail;
     }
-    free(log);
+    VIR_FREE(log);
 
     if (!(actualxml = virDomainDefFormat(vmdef, 0)))
         goto fail;
@@ -72,9 +72,9 @@ static int testCompareXMLToArgvFiles(const char *xml,
     ret = 0;
 
  fail:
-    free(expectxml);
-    free(actualxml);
-    free(cmd);
+    VIR_FREE(expectxml);
+    VIR_FREE(actualxml);
+    VIR_FREE(cmd);
     virDomainDefFree(vmdef);
     return ret;
 }
@@ -103,8 +103,8 @@ testCompareXMLToArgvHelper(const void *data)
     result = testCompareXMLToArgvFiles(xml, args, !!info->extraFlags);
 
 cleanup:
-    free(xml);
-    free(args);
+    VIR_FREE(xml);
+    VIR_FREE(args);
     return result;
 }
 
@@ -192,8 +192,8 @@ mymain(void)
     driver.vncTLSx509certdir = strdup("/etc/pki/tls/qemu");
     DO_TEST("graphics-vnc-tls");
     driver.vncSASL = driver.vncTLSx509verify = driver.vncTLS = 0;
-    free(driver.vncSASLdir);
-    free(driver.vncTLSx509certdir);
+    VIR_FREE(driver.vncSASLdir);
+    VIR_FREE(driver.vncTLSx509certdir);
     driver.vncSASLdir = driver.vncTLSx509certdir = NULL;
 
     DO_TEST("graphics-sdl");
@@ -238,7 +238,7 @@ mymain(void)
 
     DO_TEST_FULL("qemu-ns-no-env", 1, NULL);
 
-    free(driver.stateDir);
+    VIR_FREE(driver.stateDir);
     virCapabilitiesFree(driver.caps);
 
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);

@@ -91,9 +91,9 @@ static int testCompareXMLToArgvFiles(const char *inxml, const char *outargv) {
     ret = 0;
 
  fail:
-    free(inXmlData);
-    free(outArgvData);
-    free(actual);
+    VIR_FREE(inXmlData);
+    VIR_FREE(outArgvData);
+    VIR_FREE(actual);
     VIR_FREE(pidfile);
     virCommandFree(cmd);
     virNetworkObjFree(obj);
@@ -118,8 +118,8 @@ testCompareXMLToArgvHelper(const void *data)
     result = testCompareXMLToArgvFiles(inxml, outxml);
 
 cleanup:
-    free(inxml);
-    free(outxml);
+    VIR_FREE(inxml);
+    VIR_FREE(outxml);
 
     return result;
 }

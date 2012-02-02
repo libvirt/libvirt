@@ -76,7 +76,7 @@ testCompareOutputLit(const char *expectData,
     result = 0;
 
 cleanup:
-    free(actualData);
+    VIR_FREE(actualData);
 
     return result;
 }
@@ -388,7 +388,7 @@ mymain(void)
 
 # undef DO_TEST
 
-    free(custom_uri);
+    VIR_FREE(custom_uri);
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 

@@ -104,7 +104,7 @@ cpuTestLoadXML(const char *arch, const char *name)
 cleanup:
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
-    free(xml);
+    VIR_FREE(xml);
     return cpu;
 }
 
@@ -129,7 +129,7 @@ cpuTestLoadMultiXML(const char *arch,
         goto error;
 
     n = virXPathNodeSet("/cpuTest/cpu", ctxt, &nodes);
-    if (n <= 0 || !(cpus = calloc(n, sizeof(virCPUDefPtr))))
+    if (n <= 0 || (VIR_ALLOC_N(cpus, n) < 0))
         goto error;
 
     for (i = 0; i < n; i++) {
@@ -142,8 +142,8 @@ cpuTestLoadMultiXML(const char *arch,
     *count = n;
 
 cleanup:
-    free(xml);
-    free(nodes);
+    VIR_FREE(xml);
+    VIR_FREE(nodes);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
     return cpus;
@@ -152,7 +152,7 @@ error:
     if (cpus) {
         for (i = 0; i < n; i++)
             virCPUDefFree(cpus[i]);
-        free(cpus);
+        VIR_FREE(cpus);
         cpus = NULL;
     }
     goto cleanup;
@@ -190,9 +190,9 @@ cpuTestCompareXML(const char *arch,
     ret = 0;
 
 cleanup:
-    free(xml);
-    free(expected);
-    free(actual);
+    VIR_FREE(xml);
+    VIR_FREE(expected);
+    VIR_FREE(actual);
     return ret;
 }
 
@@ -381,10 +381,10 @@ cleanup:
     if (cpus) {
         for (i = 0; i < ncpus; i++)
             virCPUDefFree(cpus[i]);
-        free(cpus);
+        VIR_FREE(cpus);
     }
     virCPUDefFree(baseline);
-    free(result);
+    VIR_FREE(result);
     return ret;
 }
 
@@ -414,7 +414,7 @@ cpuTestUpdate(const void *arg)
 cleanup:
     virCPUDefFree(host);
     virCPUDefFree(cpu);
-    free(result);
+    VIR_FREE(result);
     return ret;
 }
 
@@ -473,11 +473,13 @@ static int
 cpuTestRun(const char *name, const struct data *data)
 {
     char *label = NULL;
+    char *tmp;
 
     if (virAsprintf(&label, "CPU %s(%s): %s", apis[data->api], data->arch, name) < 0)
         return -1;
 
-    free(virtTestLogContentAndReset());
+    tmp = virtTestLogContentAndReset();
+    VIR_FREE(tmp);
 
     if (virtTestRun(label, 1, cpuTest[data->api], data) < 0) {
         if (virTestGetDebug()) {
@@ -485,14 +487,14 @@ cpuTestRun(const char *name, const struct data *data)
             if ((log = virtTestLogContentAndReset()) &&
                  strlen(log) > 0)
                 fprintf(stderr, "\n%s\n", log);
-            free(log);
+            VIR_FREE(log);
         }
 
-        free(label);
+        VIR_FREE(label);
         return -1;
     }
 
-    free(label);
+    VIR_FREE(label);
     return 0;
 }
 
@@ -513,7 +515,7 @@ mymain(void)
 
     if (virAsprintf(&map, "%s/src/cpu/cpu_map.xml", abs_top_srcdir) < 0 ||
         cpuMapOverride(map) < 0) {
-        free(map);
+        VIR_FREE(map);
         return EXIT_FAILURE;
     }
 
@@ -632,7 +634,7 @@ mymain(void)
     DO_TEST_GUESTDATA("x86", "host", "host+host-model-nofallback",
                       models, "Penryn", -1);
 
-    free(map);
+    VIR_FREE(map);
     return (ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 

@@ -39,8 +39,8 @@ testCompareXMLToXMLFiles(const char *xml)
     ret = 0;
 
  fail:
-    free(xmlData);
-    free(actual);
+    VIR_FREE(xmlData);
+    VIR_FREE(actual);
     virInterfaceDefFree(dev);
     return ret;
 }
@@ -57,7 +57,7 @@ testCompareXMLToXMLHelper(const void *data)
 
     result = testCompareXMLToXMLFiles(xml);
 
-    free (xml);
+    VIR_FREE(xml);
     return result;
 }
 

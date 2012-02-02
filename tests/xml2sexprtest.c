@@ -46,9 +46,9 @@ testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion)
   ret = 0;
 
  fail:
-  free(xmlData);
-  free(sexprData);
-  free(gotsexpr);
+  VIR_FREE(xmlData);
+  VIR_FREE(sexprData);
+  VIR_FREE(gotsexpr);
   virDomainDefFree(def);
 
   return ret;
@@ -79,8 +79,8 @@ testCompareHelper(const void *data)
     result = testCompareFiles(xml, args, info->version);
 
 cleanup:
-    free(xml);
-    free(args);
+    VIR_FREE(xml);
+    VIR_FREE(args);
 
     return result;
 }

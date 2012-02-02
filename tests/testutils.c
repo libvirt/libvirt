@@ -128,8 +128,7 @@ virtTestRun(const char *title, int nloops, int (*body)(const void *data), const 
             fprintf(stderr, "%2d) %-65s ... ", testCounter, title);
     }
 
-    if (nloops > 1 && (ts = calloc(nloops,
-                                   sizeof(double)))==NULL)
+    if (nloops > 1 && (VIR_ALLOC_N(ts, nloops) < 0))
         return -1;
 
     for (i=0; i < nloops; i++) {
@@ -181,7 +180,7 @@ virtTestRun(const char *title, int nloops, int (*body)(const void *data), const 
         }
     }
 
-    free(ts);
+    VIR_FREE(ts);
     return ret;
 }
 
@@ -236,7 +235,7 @@ virtTestLoadFile(const char *file, char **buf)
         if (ferror(fp)) {
             fprintf (stderr, "%s: read failed: %s\n", file, strerror(errno));
             VIR_FORCE_FCLOSE(fp);
-            free(*buf);
+            VIR_FREE(*buf);
             return -1;
         }
     }
@@ -512,7 +511,7 @@ virtTestErrorHook(int n, void *data ATTRIBUTE_UNUSED)
             if (symbols[i])
                 fprintf(stderr, "  TRACE:  %s\n", symbols[i]);
         }
-        free(symbols);
+        VIR_FREE(symbols);
     }
 }
 #endif

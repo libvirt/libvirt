@@ -49,10 +49,10 @@ testCompareXMLToXMLFiles(const char *poolxml, const char *inxml,
     ret = 0;
 
  fail:
-    free(poolXmlData);
-    free(inXmlData);
-    free(outXmlData);
-    free(actual);
+    VIR_FREE(poolXmlData);
+    VIR_FREE(inXmlData);
+    VIR_FREE(outXmlData);
+    VIR_FREE(actual);
     virStoragePoolDefFree(pool);
     virStorageVolDefFree(dev);
     return ret;
@@ -84,9 +84,9 @@ testCompareXMLToXMLHelper(const void *data)
     result = testCompareXMLToXMLFiles(poolxml, inxml, outxml);
 
 cleanup:
-    free(poolxml);
-    free(inxml);
-    free(outxml);
+    VIR_FREE(poolxml);
+    VIR_FREE(inxml);
+    VIR_FREE(outxml);
 
     return result;
 }

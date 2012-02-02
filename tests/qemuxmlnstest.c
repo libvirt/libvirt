@@ -69,7 +69,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (vmdef->emulator && STRPREFIX(vmdef->emulator, "/.")) {
         if (!(emulator = strdup(vmdef->emulator + 1)))
             goto fail;
-        free(vmdef->emulator);
+        VIR_FREE(vmdef->emulator);
         vmdef->emulator = NULL;
         if (virAsprintf(&vmdef->emulator, "%s/qemuxml2argvdata/%s",
                         abs_srcdir, emulator) < 0)
@@ -107,7 +107,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
     }
 
 
-    free(virtTestLogContentAndReset());
+    log = virtTestLogContentAndReset();
+    VIR_FREE(log);
     virResetLastError();
 
     /* We do not call qemuCapsExtractVersionInfo() before calling
@@ -159,10 +160,10 @@ static int testCompareXMLToArgvFiles(const char *xml,
     ret = 0;
 
  fail:
-    free(log);
-    free(emulator);
-    free(expectargv);
-    free(actualargv);
+    VIR_FREE(log);
+    VIR_FREE(emulator);
+    VIR_FREE(expectargv);
+    VIR_FREE(actualargv);
     virCommandFree(cmd);
     virDomainDefFree(vmdef);
     virUnrefConnect(conn);
@@ -198,8 +199,8 @@ testCompareXMLToArgvHelper(const void *data)
                                        info->json, info->expectError);
 
 cleanup:
-    free(xml);
-    free(args);
+    VIR_FREE(xml);
+    VIR_FREE(args);
     return result;
 }
 
@@ -231,7 +232,7 @@ mymain(void)
         return EXIT_FAILURE;
     if (virAsprintf(&map, "%s/src/cpu/cpu_map.xml", abs_top_srcdir) < 0 ||
         cpuMapOverride(map) < 0) {
-        free(map);
+        VIR_FREE(map);
         return EXIT_FAILURE;
     }
 
@@ -275,9 +276,9 @@ mymain(void)
     DO_TEST("qemu-ns-commandline-ns0", false, NONE);
     DO_TEST("qemu-ns-commandline-ns1", false, NONE);
 
-    free(driver.stateDir);
+    VIR_FREE(driver.stateDir);
     virCapabilitiesFree(driver.caps);
-    free(map);
+    VIR_FREE(map);
 
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

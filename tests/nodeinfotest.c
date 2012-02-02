@@ -81,8 +81,8 @@ linuxTestCompareFiles(const char *cpuinfofile,
     ret = 0;
 
 fail:
-    free(expectData);
-    free(actualData);
+    VIR_FREE(expectData);
+    VIR_FREE(actualData);
     return ret;
 }
 
@@ -117,9 +117,9 @@ linuxTestNodeInfo(const void *data)
     result = linuxTestCompareFiles(cpuinfo, sysfs_cpuinfo, output);
 
 cleanup:
-    free(cpuinfo);
-    free(output);
-    free(sysfs_cpuinfo);
+    VIR_FREE(cpuinfo);
+    VIR_FREE(output);
+    VIR_FREE(sysfs_cpuinfo);
 
     return result;
 }

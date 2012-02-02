@@ -51,8 +51,8 @@ testCompareXMLToXMLFiles(const char *inxml, const char *uuid, int internal)
 
     ret = 0;
  fail:
-    free(inXmlData);
-    free(actual);
+    VIR_FREE(inXmlData);
+    VIR_FREE(actual);
     virDomainSnapshotDefFree(def);
     return ret;
 }
@@ -77,7 +77,7 @@ testCompareXMLToXMLHelper(const void *data)
     ret = testCompareXMLToXMLFiles(xml_in, info->uuid, info->internal);
 
 cleanup:
-    free(xml_in);
+    VIR_FREE(xml_in);
     return ret;
 }
 

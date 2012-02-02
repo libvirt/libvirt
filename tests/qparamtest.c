@@ -71,7 +71,7 @@ qparamFormatTest(const void *data)
     ret = 0;
 
 fail:
-    free(output);
+    VIR_FREE(output);
     free_qparam_set(actual);
     return ret;
 }

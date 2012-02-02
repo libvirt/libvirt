@@ -54,11 +54,11 @@ testCompareFiles(const char *hostmachine, const char *xml_rel,
   ret = 0;
 
  fail:
-  free(expectxml);
-  free(actualxml);
-  free(xml);
-  free(cpuinfo);
-  free(capabilities);
+  VIR_FREE(expectxml);
+  VIR_FREE(actualxml);
+  VIR_FREE(xml);
+  VIR_FREE(cpuinfo);
+  VIR_FREE(capabilities);
   VIR_FORCE_FCLOSE(fp1);
   VIR_FORCE_FCLOSE(fp2);
 
