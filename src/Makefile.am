@@ -1526,6 +1526,9 @@ endif
 if WITH_SECDRIVER_SELINUX
 libvirt_lxc_LDADD += $(SELINUX_LIBS)
 endif
+if WITH_SECDRIVER_APPARMOR
+libvirt_lxc_LDADD += $(APPARMOR_LIBS)
+endif
 libvirt_lxc_CFLAGS =				\
 		$(LIBPARTED_CFLAGS)		\
 		$(NUMACTL_CFLAGS)		\
@@ -1540,6 +1543,9 @@ libvirt_lxc_LDADD += $(BLKID_LIBS)
 endif
 if WITH_SECDRIVER_SELINUX
 libvirt_lxc_CFLAGS += $(SELINUX_CFLAGS)
+endif
+if WITH_SECDRIVER_APPARMOR
+libvirt_lxc_CFLAGS += $(APPARMOR_CFLAGS)
 endif
 endif
 endif
