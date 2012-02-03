@@ -356,6 +356,7 @@ enum virDomainHostdevSubsysType {
 
 /* basic device for direct passthrough */
 struct _virDomainHostdevDef {
+    virDomainDeviceDef parent; /* higher level Def containing this */
     int mode; /* enum virDomainHostdevMode */
     unsigned int managed : 1;
     union {

@@ -1328,7 +1328,11 @@ void virDomainHostdevDefClear(virDomainHostdevDefPtr def)
      * such resource is the virDomainDeviceInfo.
      */
 
-    virDomainDeviceInfoFree(def->info);
+    /* If there is a parent device object, it will handle freeing
+     * def->info.
+     */
+    if (def->parent.type == VIR_DOMAIN_DEVICE_NONE)
+        virDomainDeviceInfoFree(def->info);
 }
 
 void virDomainHostdevDefFree(virDomainHostdevDefPtr def)
@@ -1339,7 +1343,11 @@ void virDomainHostdevDefFree(virDomainHostdevDefPtr def)
     /* free all subordinate objects */
     virDomainHostdevDefClear(def);
 
-    VIR_FREE(def);
+    /* If there is a parent device object, it will handle freeing
+     * the memory.
+     */
+    if (def->parent.type == VIR_DOMAIN_DEVICE_NONE)
+        VIR_FREE(def);
 }
 
 void virDomainHubDefFree(virDomainHubDefPtr def)
