@@ -13885,6 +13885,7 @@ static const vshCmdOptDef opts_attach_disk[] = {
     {"sourcetype", VSH_OT_STRING, 0, N_("type of source (block|file)")},
     {"serial", VSH_OT_STRING, 0, N_("serial of disk device")},
     {"shareable", VSH_OT_BOOL, 0, N_("shareable between domains")},
+    {"rawio", VSH_OT_BOOL, 0, N_("needs rawio capability")},
     {"address", VSH_OT_STRING, 0, N_("address of disk device")},
     {"multifunction", VSH_OT_BOOL, 0,
      N_("use multifunction pci under specified address")},
@@ -14104,6 +14105,8 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
                       (isFile) ? "file" : "block");
     if (type)
         virBufferAsprintf(&buf, " device='%s'", type);
+    if (vshCommandOptBool (cmd, "rawio"))
+        virBufferAddLit(&buf, " rawio='yes'");
     virBufferAddLit(&buf, ">\n");
 
     if (driver || subdriver)

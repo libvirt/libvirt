@@ -1404,7 +1404,7 @@ the device does not use managed mode.
 =item B<attach-disk> I<domain-id> I<source> I<target>
 [I<--driver driver>] [I<--subdriver subdriver>] [I<--cache cache>]
 [I<--type type>] [I<--mode mode>] [I<--persistent>] [I<--sourcetype soucetype>]
-[I<--serial serial>] [I<--shareable>] [I<--address address>]
+[I<--serial serial>] [I<--shareable>] [I<--rawio>] [I<--address address>]
 [I<--multifunction>]
 
 Attach a new disk device to the domain.
@@ -1421,6 +1421,7 @@ I<cache> can be one of "default", "none", "writethrough", "writeback",
 "directsync" or "unsafe".
 I<serial> is the serial of disk device. I<shareable> indicates the disk device
 is shareable between domains.
+I<rawio> indicates the disk needs rawio capability.
 I<address> is the address of disk device in the form of pci:domain.bus.slot.function,
 scsi:controller.bus.unit or ide:controller.bus.unit.
 I<multifunction> indicates specified pci address is a multifunction pci device
