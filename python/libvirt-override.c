@@ -259,6 +259,12 @@ libvirt_virDomainMemoryStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
         else if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_AVAILABLE)
             PyDict_SetItem(info, libvirt_constcharPtrWrap("available"),
                            PyLong_FromUnsignedLongLong(stats[i].val));
+        else if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON)
+            PyDict_SetItem(info, libvirt_constcharPtrWrap("actual"),
+                           PyLong_FromUnsignedLongLong(stats[i].val));
+        else if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_RSS)
+            PyDict_SetItem(info, libvirt_constcharPtrWrap("rss"),
+                           PyLong_FromUnsignedLongLong(stats[i].val));
     }
     return info;
 }
