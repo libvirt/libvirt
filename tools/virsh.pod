@@ -458,7 +458,7 @@ Flag I<--title> selects operation on the title field instead of description.
 If neither of I<--edit> and I<--new_desc> are specified the note or description
 is displayed instead of being modified.
 
-=item B<destroy> I<domain-id>
+=item B<destroy> I<domain-id> [I<--graceful>]
 
 Immediately terminate the domain domain-id.  This doesn't give the domain
 OS any chance to react, and it's the equivalent of ripping the power
@@ -471,6 +471,10 @@ If I<domain-id> is transient, then the metadata of any snapshots will
 be lost once the guest stops running, but the snapshot contents still
 exist, and a new domain with the same name and UUID can restore the
 snapshot metadata with B<snapshot-create>.
+
+If I<--graceful> is specified, don't resort to extreme measures
+(e.g. SIGKILL) when the guest doesn't stop after a reasonable timeout;
+return an error instead.
 
 =item B<domblkstat> I<domain> I<block-device> [I<--human>]
 

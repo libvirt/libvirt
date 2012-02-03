@@ -4265,6 +4265,7 @@ static const vshCmdInfo info_destroy[] = {
 
 static const vshCmdOptDef opts_destroy[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"graceful", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("terminate gracefully")},
     {NULL, 0, 0, NULL}
 };
 
@@ -4274,6 +4275,8 @@ cmdDestroy(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     bool ret = true;
     const char *name;
+    unsigned int flags = 0;
+    int result;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -4281,7 +4284,15 @@ cmdDestroy(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
-    if (virDomainDestroy(dom) == 0) {
+    if (vshCommandOptBool(cmd, "graceful"))
+       flags |= VIR_DOMAIN_DESTROY_GRACEFUL;
+
+    if (flags)
+       result = virDomainDestroyFlags(dom, VIR_DOMAIN_DESTROY_GRACEFUL);
+    else
+       result = virDomainDestroy(dom);
+
+    if (result == 0) {
         vshPrint(ctl, _("Domain %s destroyed\n"), name);
     } else {
         vshError(ctl, _("Failed to destroy domain %s"), name);
