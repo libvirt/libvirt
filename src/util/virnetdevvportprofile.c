@@ -55,7 +55,7 @@ VIR_ENUM_IMPL(virNetDevVPortProfileOp, VIR_NETDEV_VPORT_PROFILE_OP_LAST,
 # include <linux/if.h>
 # include <linux/if_tun.h>
 
-# include "netlink.h"
+# include "virnetlink.h"
 # include "virfile.h"
 # include "memory.h"
 # include "logging.h"
@@ -224,7 +224,7 @@ virNetDevVPortProfileLinkDump(const char *ifname, int ifindex, bool nltarget_ker
         }
     }
 
-    if (nlComm(nl_msg, recvbuf, &recvbuflen, pid) < 0) {
+    if (virNetlinkCommand(nl_msg, recvbuf, &recvbuflen, pid) < 0) {
         rc = -1;
         goto cleanup;
     }
@@ -517,7 +517,7 @@ virNetDevVPortProfileOpSetLink(const char *ifname, int ifindex,
             goto err_exit;
     }
 
-    if (nlComm(nl_msg, &recvbuf, &recvbuflen, pid) < 0)
+    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, pid) < 0)
         goto err_exit;
 
     if (recvbuflen < NLMSG_LENGTH(0) || recvbuf == NULL)

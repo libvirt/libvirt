@@ -734,10 +734,6 @@ virResizeN;
 virShrinkN;
 
 
-#netlink.h
-nlComm;
-
-
 # netdev_bandwidth_conf.h
 virNetDevBandwidthFormat;
 virNetDevBandwidthParse;
@@ -1258,6 +1254,10 @@ virNetDevVPortProfileDisassociate;
 virNetDevVPortProfileEqual;
 virNetDevVPortProfileOpTypeFromString;
 virNetDevVPortProfileOpTypeToString;
+
+
+#virnetlink.h
+virNetlinkCommand;
 
 
 # virnetmessage.h

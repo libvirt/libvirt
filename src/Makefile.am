@@ -67,7 +67,6 @@ UTIL_SOURCES =							\
 		util/json.c util/json.h				\
 		util/logging.c util/logging.h			\
 		util/memory.c util/memory.h			\
-		util/netlink.c util/netlink.h			\
 		util/pci.c util/pci.h				\
 		util/processinfo.c util/processinfo.h		\
 		util/hostusb.c util/hostusb.h			\
@@ -101,6 +100,7 @@ UTIL_SOURCES =							\
 		util/virnetdevtap.h util/virnetdevtap.c		\
 		util/virnetdevveth.h util/virnetdevveth.c \
 		util/virnetdevvportprofile.h util/virnetdevvportprofile.c \
+		util/virnetlink.c util/virnetlink.h		\
 		util/virrandom.h util/virrandom.c		\
 		util/virsocketaddr.h util/virsocketaddr.c \
 		util/virtime.h util/virtime.c

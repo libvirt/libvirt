@@ -66,7 +66,7 @@ VIR_ENUM_IMPL(virNetDevMacVLanMode, VIR_NETDEV_MACVLAN_MODE_LAST,
 # include "logging.h"
 # include "uuid.h"
 # include "virfile.h"
-# include "netlink.h"
+# include "virnetlink.h"
 # include "virnetdev.h"
 
 # define MACVTAP_NAME_PREFIX	"macvtap"
@@ -153,7 +153,7 @@ virNetDevMacVLanCreate(const char *ifname,
 
     nla_nest_end(nl_msg, linkinfo);
 
-    if (nlComm(nl_msg, &recvbuf, &recvbuflen, 0) < 0) {
+    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0) < 0) {
         rc = -1;
         goto cleanup;
     }
@@ -249,7 +249,7 @@ int virNetDevMacVLanDelete(const char *ifname)
     if (nla_put(nl_msg, IFLA_IFNAME, strlen(ifname)+1, ifname) < 0)
         goto buffer_too_small;
 
-    if (nlComm(nl_msg, &recvbuf, &recvbuflen, 0) < 0) {
+    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0) < 0) {
         rc = -1;
         goto cleanup;
     }

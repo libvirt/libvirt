@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010-2011 Red Hat, Inc.
- * Copyright (C) 2010 IBM Corporation
+ * Copyright (C) 2010-2012 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,8 +32,8 @@ struct nl_msg;
 
 # endif /* __linux__ */
 
-int nlComm(struct nl_msg *nl_msg,
-           unsigned char **respbuf, unsigned int *respbuflen,
-           int nl_pid);
+int virNetlinkCommand(struct nl_msg *nl_msg,
+                      unsigned char **respbuf, unsigned int *respbuflen,
+                      int nl_pid);
 
 #endif /* __VIR_NETLINK_H__ */

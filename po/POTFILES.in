@@ -116,7 +116,6 @@ src/util/hostusb.c
 src/util/iohelper.c
 src/util/iptables.c
 src/util/json.c
-src/util/netlink.c
 src/util/pci.c
 src/util/processinfo.c
 src/util/sexpr.c
@@ -132,6 +131,7 @@ src/util/virnetdevbridge.c
 src/util/virnetdevmacvlan.c
 src/util/virnetdevtap.c
 src/util/virnetdevvportprofile.c
+src/util/virnetlink.c
 src/util/virnodesuspend.c
 src/util/virpidfile.c
 src/util/virsocketaddr.c

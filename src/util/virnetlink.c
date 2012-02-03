@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010-2011 Red Hat, Inc.
- * Copyright (C) 2010 IBM Corporation
+ * Copyright (C) 2010-2012 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,10 +18,13 @@
  *
  * Authors:
  *     Stefan Berger <stefanb@us.ibm.com>
+ *     Dirk Herrendoerfer <herrend[at]de[dot]ibm[dot]com>
  *
  * Notes:
  * netlink: http://lovezutto.googlepages.com/netlink.pdf
  *          iproute2 package
+ *
+ * 2012/02: Renamed from netlink.[ch] to virnetlink.[ch]
  *
  */
 
@@ -31,7 +34,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-#include "netlink.h"
+#include "virnetlink.h"
 #include "memory.h"
 #include "virterror_internal.h"
 
@@ -44,7 +47,7 @@
 #define NETLINK_ACK_TIMEOUT_S  2
 
 /**
- * nlComm:
+ * virNetlinkCommand:
  * @nlmsg: pointer to netlink message
  * @respbuf: pointer to pointer where response buffer will be allocated
  * @respbuflen: pointer to integer holding the size of the response buffer
@@ -56,9 +59,9 @@
  * buffer will be returned.
  */
 #if defined(__linux__) && defined(HAVE_LIBNL)
-int nlComm(struct nl_msg *nl_msg,
-           unsigned char **respbuf, unsigned int *respbuflen,
-           int nl_pid)
+int virNetlinkCommand(struct nl_msg *nl_msg,
+                      unsigned char **respbuf, unsigned int *respbuflen,
+                      int nl_pid)
 {
     int rc = 0;
     struct sockaddr_nl nladdr = {
@@ -137,16 +140,16 @@ err_exit:
 
 #else
 
-int nlComm(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
+int virNetlinkCommand(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
            unsigned char **respbuf ATTRIBUTE_UNUSED,
            unsigned int *respbuflen ATTRIBUTE_UNUSED,
            int nl_pid ATTRIBUTE_UNUSED)
 {
     netlinkError(VIR_ERR_INTERNAL_ERROR, "%s",
 # if defined(__linux__) && !defined(HAVE_LIBNL)
-                 _("nlComm is not supported since libnl was not available"));
+                 _("virNetlinkCommand is not supported since libnl was not available"));
 # else
-                 _("nlComm is not supported on non-linux platforms"));
+                 _("virNetlinkCommand is not supported on non-linux platforms"));
 # endif
     return -1;
 }
