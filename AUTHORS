@@ -73,13 +73,11 @@ Patches have also been contributed by:
   Itamar Heim          <iheim@redhat.com>
   Markus Armbruster    <armbru@redhat.com>
   Ryota Ozaki          <ozaki.ryota@gmail.com>
-  James Morris         <jmorris@namei.org>
   Daniel J Walsh       <dwalsh@redhat.com>
   Maximilian Wilhelm   <max@rfc2324.org>
   Pritesh Kothari      <Pritesh.Kothari@Sun.COM>
   Amit Shah            <amit.shah@redhat.com>
   Florian Vichot       <florian.vichot@diateam.net>
-  Takahashi Tomohiro   <takatom@jp.fujitsu.com>
   Serge E. Hallyn      <serue@us.ibm.com>
   Soren Hansen         <soren@linux2go.dk>
   Abel Míguez Rodríguez<amiguezr@pdi.ucm.es>
@@ -144,7 +142,7 @@ Patches have also been contributed by:
   Hu Tao               <hutao@cn.fujitsu.com>
   Laurent Léonard      <laurent@open-minds.org>
   MORITA Kazutaka      <morita.kazutaka@lab.ntt.co.jp>
-  Josh Durgin          <joshd@hq.newdream.net>
+  Josh Durgin          <josh.durgin@dreamhost.com>
   Roopa Prabhu         <roprabhu@cisco.com>
   Paweł Krześniak      <pawel.krzesniak@gmail.com>
   Kay Schubert         <kayegypt@web.de>
@@ -200,7 +198,6 @@ Patches have also been contributed by:
   Sage Weil            <sage@newdream.net>
   David L Stevens      <dlstevens@us.ibm.com>
   Tyler Coumbes        <coumbes@gmail.com>
-  Josh Durgin          <josh.durgin@dreamhost.com>
   Wen Ruo Lv           <lvroyce@linux.vnet.ibm.com>
   Patrice LACHANCE     <patlachance@gmail.com>
   Eli Qiao             <taget@linux.vnet.ibm.com>
