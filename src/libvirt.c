@@ -8519,9 +8519,9 @@ error:
  *      Bytes are stored in little-endian order: CPU0-7, 8-15...
  *      In each byte, lowest CPU number is least significant bit.
  * @maplen: number of bytes in cpumap, from 1 up to size of CPU map in
- *	underlying virtualization system (Xen...).
- *	If maplen < size, missing bytes are set to zero.
- *	If maplen > size, failure code is returned.
+ *      underlying virtualization system (Xen...).
+ *      If maplen < size, missing bytes are set to zero.
+ *      If maplen > size, failure code is returned.
  *
  * Dynamically change the real CPUs which can be allocated to a virtual CPU.
  * This function may require privileged access to the hypervisor.
@@ -8730,15 +8730,15 @@ error:
  * @maxinfo: number of structures in info array
  * @cpumaps: pointer to a bit map of real CPUs for all vcpus of this
  *      domain (in 8-bit bytes) (OUT)
- *	If cpumaps is NULL, then no cpumap information is returned by the API.
- *	It's assumed there is <maxinfo> cpumap in cpumaps array.
- *	The memory allocated to cpumaps must be (maxinfo * maplen) bytes
- *	(ie: calloc(maxinfo, maplen)).
- *	One cpumap inside cpumaps has the format described in
+ *      If cpumaps is NULL, then no cpumap information is returned by the API.
+ *      It's assumed there is <maxinfo> cpumap in cpumaps array.
+ *      The memory allocated to cpumaps must be (maxinfo * maplen) bytes
+ *      (ie: calloc(maxinfo, maplen)).
+ *      One cpumap inside cpumaps has the format described in
  *      virDomainPinVcpu() API.
  * @maplen: number of bytes in one cpumap, from 1 up to size of CPU map in
- *	underlying virtualization system (Xen...).
- *	Must be zero when cpumaps is NULL and positive when it is non-NULL.
+ *      underlying virtualization system (Xen...).
+ *      Must be zero when cpumaps is NULL and positive when it is non-NULL.
  *
  * Extract information about virtual CPUs of domain, store it in info array
  * and also in cpumaps if this pointer isn't NULL.  This call may fail
@@ -11160,7 +11160,7 @@ virStoragePoolGetConnect (virStoragePoolPtr pool)
  * Returns the number of pools found, or -1 on error
  */
 int
-virConnectNumOfStoragePools	(virConnectPtr conn)
+virConnectNumOfStoragePools(virConnectPtr conn)
 {
     VIR_DEBUG("conn=%p", conn);
 
@@ -11200,9 +11200,9 @@ error:
  * Returns 0 on success, -1 on error
  */
 int
-virConnectListStoragePools	(virConnectPtr conn,
-                             char **const names,
-                             int maxnames)
+virConnectListStoragePools(virConnectPtr conn,
+                           char **const names,
+                           int maxnames)
 {
     VIR_DEBUG("conn=%p, names=%p, maxnames=%d", conn, names, maxnames);
 
