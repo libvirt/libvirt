@@ -384,7 +384,7 @@ virNetServerProgramDispatchCall(virNetServerProgramPtr prog,
     if (virNetServerClientNeedAuth(client) &&
         dispatcher->needAuth) {
         /* Explicitly *NOT* calling  remoteDispatchAuthError() because
-           we want back-compatability with libvirt clients which don't
+           we want back-compatibility with libvirt clients which don't
            support the VIR_ERR_AUTH_FAILED error code */
         virNetError(VIR_ERR_RPC,
                     "%s", _("authentication required"));

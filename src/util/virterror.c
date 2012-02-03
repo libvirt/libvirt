@@ -228,7 +228,7 @@ virErrorGenericFailure(virErrorPtr err)
 
 
 /*
- * Internal helper to perform a deep copy of the an error
+ * Internal helper to perform a deep copy of an error
  */
 static int
 virCopyError(virErrorPtr from,
@@ -439,7 +439,7 @@ virResetLastError(void)
  * Since 0.6.0, all errors reported in the per-connection object
  * are also duplicated in the global error object. As such an
  * application can always use virGetLastError(). This method
- * remains for backwards compatability.
+ * remains for backwards compatibility.
  *
  * Returns a pointer to the last error or NULL if none occurred.
  */
@@ -470,7 +470,7 @@ virConnGetLastError(virConnectPtr conn)
  * Since 0.6.0, all errors reported in the per-connection object
  * are also duplicated in the global error object. As such an
  * application can always use virGetLastError(). This method
- * remains for backwards compatability.
+ * remains for backwards compatibility.
  *
  * One will need to free the result with virResetError()
  *
@@ -683,7 +683,7 @@ virRaiseErrorFull(const char *filename ATTRIBUTE_UNUSED,
 
     /*
      * All errors are recorded in thread local storage
-     * For compatability, public API calls will copy them
+     * For compatibility, public API calls will copy them
      * to the per-connection error object when necessary
      */
     to = virLastErrorObject();

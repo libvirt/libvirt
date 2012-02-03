@@ -35,7 +35,7 @@ mount them use:
 <p>
 NB, the blkio controller in some kernels will not allow creation of nested
 sub-directories which will prevent correct operation of the libvirt LXC
-driver. On such kernels, it may be neccessary to unmount the blkio controller.
+driver. On such kernels, it may be necessary to unmount the blkio controller.
 </p>
 
 

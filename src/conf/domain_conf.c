@@ -2970,7 +2970,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                 /* People sometimes pass a bogus '' source path
                    when they mean to omit the source element
                    completely. eg CDROM without media. This is
-                   just a little compatability check to help
+                   just a little compatibility check to help
                    those broken apps */
                 if (source && STREQ(source, ""))
                     VIR_FREE(source);
@@ -8002,7 +8002,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     }
     VIR_FREE(nodes);
 
-    /* For backwards compatability, if no <video> tag is set but there
+    /* For backwards compatibility, if no <video> tag is set but there
      * is a <graphics> tag, then we add a single video tag */
     if (def->ngraphics && !def->nvideos) {
         virDomainVideoDefPtr video;
@@ -9531,7 +9531,7 @@ virDomainDefMaybeAddSmartcardController(virDomainDefPtr def)
 
 /*
  * Based on the declared <address/> info for any devices,
- * add neccessary drive controllers which are not already present
+ * add necessary drive controllers which are not already present
  * in the XML. This is for compat with existing apps which will
  * not know/care about <controller> info in the XML
  */

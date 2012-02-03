@@ -1317,7 +1317,7 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
 
         /* XXX this really should have been a properly well-formed
          * URI, but we can't add in tcp:// now without breaking
-         * compatability with old targets. We at least make the
+         * compatibility with old targets. We at least make the
          * new targets accept both syntaxes though.
          */
         /* Caller frees */

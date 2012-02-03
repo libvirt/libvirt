@@ -651,7 +651,7 @@ xenParseSxprSound(virDomainDefPtr def,
         int i;
 
         /*
-         * Special compatability code for Xen with a bogus
+         * Special compatibility code for Xen with a bogus
          * sound=all in config.
          *
          * NB deliberately, don't include all possible

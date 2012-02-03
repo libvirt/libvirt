@@ -5471,7 +5471,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: Search binaries in PATH instead of hardcoding /usr/bin (Matthias Bolte),<br/>
       Implement QMP support for extracting CPU thread ID (Daniel P. Berrange),<br/>
       Misc fixes to QMP monitor support for QEMU (Daniel P. Berrange),<br/>
-      Fix setup of compatability serial devices from console device (Daniel P. Berrange),<br/>
+      Fix setup of compatibility serial devices from console device (Daniel P. Berrange),<br/>
       Start modernizing configure (Eric Blake),<br/>
       Add a rule to check for uses of readlink. (Chris Lalancette),<br/>
       Add virConnectGetVersion Python API (Taizo ITO),<br/>
@@ -6125,7 +6125,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
         Pull connection handling code out of doTunnelMigrate (Daniel P. Berrange),<br/>
         Refactor native QEMU migration code (Daniel P. Berrange),<br/>
         Don't force dconn to be NULL in virDomainMigrate (Daniel P. Berrange),<br/>
-        Remove unneccessary uri_in parameter from virMigratePrepareTunnel (Daniel P. Berrange),<br/>
+        Remove unnecessary uri_in parameter from virMigratePrepareTunnel (Daniel P. Berrange),<br/>
         Move the VIR_DRV_FEATURE* constants (Daniel P. Berrange),<br/>
         Fix configure.ac message vertical alignment (Daniel P. Berrange),<br/>
         cgroup: Fix -Werror breakage (Cole Robinson),<br/>

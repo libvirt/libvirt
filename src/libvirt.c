@@ -16577,7 +16577,7 @@ error:
  * is non-NULL, then only the specific domain will be monitored
  *
  * Most types of event have a callback providing a custom set of parameters
- * for the event. When registering an event, it is thus neccessary to use
+ * for the event. When registering an event, it is thus necessary to use
  * the VIR_DOMAIN_EVENT_CALLBACK() macro to cast the supplied function pointer
  * to match the signature of this method.
  *

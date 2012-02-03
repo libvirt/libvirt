@@ -882,7 +882,7 @@ Wed May 13 18:06:17 CEST 2009 Daniel Veillard <veillard@redhat.com>
 Wed May 13 12:34:06 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/lxc_container.c: Replace sys/capability.h with
-	linux/capability.h, to avoid unneccessary dependancy
+	linux/capability.h, to avoid unnecessary dependency
 	on the libcap package.
 
 Tue May 12 16:39:06 EDT 2009 Cole Robinson <crobinso@redhat.com>
@@ -3351,7 +3351,7 @@ Tue Jan 20 20:22:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 Tue Jan 20 19:49:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* .x-sc_prohibit_nonreentrant: Blacklist some places where
-	use of non-threadsafe APIs are not neccessary to check
+	use of non-threadsafe APIs are not necessary to check
 	* Makefile.am, Makefile.maint, Makefile.nonreentrant: Add
 	check for non-reentrant safe API calls
 	* Makefile.cfg: Temporarily disable non-reentrant check
@@ -3591,7 +3591,7 @@ Thu Jan 15 19:54:19 GMT 2009  Daniel P. Berrange <berrange@redhat.com>
 	* src/Makefile.am, src/threads.c, src/threads.h: Generic internal API for threads
 	* src/threads-pthread.c, src/threads-pthread.h: UNIX pthreads impl
 	* src/threads-win32.c, src/threads-win32.h: Win32 threads impl
-	* src/internal.h: Remove unnneccessary pthreads macros
+	* src/internal.h: Remove unnecessary pthreads macros
 	* src/libvirt_private.syms: Add symbols for internal threads API
 	* po/POTFILES.in: Add node_device_conf.c
 	* proxy/Makefile.am: Add threads.c to build
@@ -4262,7 +4262,7 @@ Thu Dec 18 11:50:58 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Misc daemon bug fixes (John Levon)
 	* qemud/qemud.c: Fix conditional for node devices
-	* qemud/remote.c: Remove unneccessary path.h include
+	* qemud/remote.c: Remove unnecessary path.h include
 
 Thu Dec 18 07:47:58 +0100 2008 Jim Meyering <meyering@redhat.com>
 
@@ -5032,7 +5032,7 @@ Tue Nov 25 11:17:40 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 Tue Nov 25 10:49:40 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
-	* src/Makefile.am: Remove unneccessary $(builddir) usage which
+	* src/Makefile.am: Remove unnecessary $(builddir) usage which
 	breaks on older automake. Remove duplicate CFLAGS from merge
 	error
 	* src/xen_unified.c: Wire up XM driver for autostart
@@ -5093,7 +5093,7 @@ Mon Nov 24 19:22:40 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 	* tests/Makefile.am, tests/sexpr2xmltest.c,
 	tests/testutilsxen.c, tests/xencapstest.c,
 	tests/xmconfigtest.c, tests/xml2sexprtest.c: Disable all
-	Xen tests when Xen driver build is disabled. Remove unneccessary
+	Xen tests when Xen driver build is disabled. Remove unnecessary
 	WITH_XEN conditionals from source, since the entire build
 	is disabled in Makefile.am
 
@@ -6822,7 +6822,7 @@ Wed Aug 20 21:05:09 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 	src/xen_unified.h, src/xend_internal.c, src/xend_internal.h,
 	src/xm_internal.c, src/xs_internal.c, src/xs_internal.h
 	tests/testutils.h: Remove preprocessor conditions for driver
-	compilation. Remove unneccessary "extern C" declarations.
+	compilation. Remove unnecessary "extern C" declarations.
 
 Wed Aug 20 20:42:09 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
@@ -7008,7 +7008,7 @@ Fri Aug  8 16:41:24 BST 2008 Daniel Berrange <berrange@redhat.com>
 	src/storage_backend_fs.c, src/storage_backend_iscsi.c,
 	src/storage_backend_logical.c, src/util.c, src/util.h,
 	src/veth.c, tests/qemuxml2argvtest.c: Fix const-correctness
-	of virRun and virExec, and remove unneccessary casts in callers
+	of virRun and virExec, and remove unnecessary casts in callers
 
 Fri Aug  8 16:53:24 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
@@ -7530,7 +7530,7 @@ Wed Jul 16 16:44:27 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 Sat Jul 12 14:52:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
-	* src/qemu_conf.c: Remove unneccessary c-ctype.h include
+	* src/qemu_conf.c: Remove unnecessary c-ctype.h include
 
 Fri Jul 11 20:32:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
@@ -8612,7 +8612,7 @@ Thu May  1 14:10:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 Tue Apr 29 12:32:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
-	* configure.in: Remove compatability macros AC_CHECK_*_ONCE for
+	* configure.in: Remove compatibility macros AC_CHECK_*_ONCE for
 	now part of onceonly.m4 in gnulib/m4/
 
 Wed Apr 29 18:10:00 CEST 2008 Jim Meyering <meyering@redhat.com>
@@ -8628,7 +8628,7 @@ Wed Apr 29 18:10:00 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 Tue Apr 29 11:54:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
-	* configure.in: Add compatability macros AC_CHECK_*_ONCE for
+	* configure.in: Add compatibility macros AC_CHECK_*_ONCE for
 	older autoconf (RHEL-5 vintage)
 
 Tue Apr 29 08:13:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
@@ -10247,7 +10247,7 @@ Fri Jan 25 12:00:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 Fri Jan 25 10:46:32 CET 2008 Daniel Veillard <veillard@redhat.com>
 
-	* src/xen_internal.c: fix an erronous use of VIR_DOMAIN_NONE instead
+	* src/xen_internal.c: fix an erroneous use of VIR_DOMAIN_NONE instead
 	  of VIR_DOMAIN_NOSTATE (both defined as 0, no regression)
 
 Thu Jan 24 18:08:28 CET 2008 Daniel Veillard <veillard@redhat.com>
@@ -10283,8 +10283,8 @@ Tue Jan 22 16:27:47 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.ac: Remove use of PKG_CHECK_EXISTS macro. Avoid
 	lines going over 80 chars wide. Make sasl check automatic
-	enable/disable as neccessary.
-	* acinclude.m4: Added compatability macro for old pkg-config
+	enable/disable as necessary.
+	* acinclude.m4: Added compatibility macro for old pkg-config
 	* src/gnutls_1_0_compat.h: Add compat for gnutls_cipher_algorithm_t
 
 Mon Jan 21 18:03:47 CET 2008  Jim Meyering  <meyering@redhat.com>
@@ -11617,7 +11617,7 @@ Tue Oct 23 17:30:52 CEST 2007 Daniel Veillard <veillard@redhat.com>
 Mon Oct 22 22:33:59 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c src/xen_unified.c src/xen_unified.h
-	  src/xend_internal.c src/xml.c src/xml.h: commited erronously
+	  src/xend_internal.c src/xml.c src/xml.h: committed erroneously
 	  the NUMA patches sent for review on the list in last commit.
 	  But that should not affect non NUMA users so early push should
 	  not be a problem.
@@ -12117,7 +12117,7 @@ Mon Aug 13 21:18:48 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 	* src/util.h, src/util.c: Allow a file descriptor to be supplied
 	for STDIN when calling virExec(), or if -1, redirect from /dev/null
 	* src/qemu_driver.c, src/openvz_driver.c: Pass in -1 for new stdin
-	parameter above where neccessary. Patch from Jim Paris
+	parameter above where necessary. Patch from Jim Paris
 
 Mon Aug 13 20:13:48 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
@@ -15485,7 +15485,7 @@ Fri Aug  4 20:19:23 EDT 2006 Daniel Berrange <berrange@redhat.com>
 	* src/libvirt.c: Fix off-by-one in validated VCPU number (it is
 	zero based, not one based).
 	* include/libvirt/libvirt.h: Add some convenience macros for
-	calculating neccessary CPU map lengths & total host CPUs
+	calculating necessary CPU map lengths & total host CPUs
 	* src/virsh.c: Add 'vcpuinfo' and 'vcpumap' commands
 
 Fri Aug  4 14:45:25 CEST 2006 Daniel Veillard <veillard@redhat.com>
@@ -15708,7 +15708,7 @@ Wed Jun 14 13:10:03 EDT 2006 Daniel Veillard <veillard@redhat.com>
 Tue Jun 13 14:06:01 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/virsh.c: use 'double' instead of 'float' when calculating
-	'CPU time' field for dominfo command, to ensure no unneccessary
+	'CPU time' field for dominfo command, to ensure no unnecessary
 	loss of precision converting from nanoseconds to seconds.
 
 Tue Jun 13 18:35:22 EDT 2006 Daniel Veillard <veillard@redhat.com>

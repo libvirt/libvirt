@@ -432,7 +432,7 @@ static int lxcContainerMountBasicFS(const char *srcprefix, bool pivotRoot)
         int mflags;
     } mnts[] = {
         /* When we want to make a bind mount readonly, for unknown reasons,
-         * it is currently neccessary to bind it once, and then remount the
+         * it is currently necessary to bind it once, and then remount the
          * bind with the readonly flag. If this is not done, then the original
          * mount point in the main OS becomes readonly too which is not what
          * we want. Hence some things have two entries here.

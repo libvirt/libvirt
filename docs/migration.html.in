@@ -25,7 +25,7 @@
       on the hypervisor in question, but will typically have the lowest computational costs
       by minimising the number of data copies involved. The native data transports will also
       require extra hypervisor-specific network configuration steps by the administrator when
-      deploying a host. For some hypervisors, it might be neccessary to open up a large range
+      deploying a host. For some hypervisors, it might be necessary to open up a large range
       of ports on the firewall to allow multiple concurrent migration operations.
     </p>
 
