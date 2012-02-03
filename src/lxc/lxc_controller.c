@@ -1438,6 +1438,8 @@ lxcControllerRun(virDomainDefPtr def,
     if (root) {
 #if HAVE_SELINUX
         security_context_t con;
+#else
+        bool con = false;
 #endif
         char *opts;
         VIR_DEBUG("Setting up private /dev/pts");

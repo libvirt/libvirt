@@ -449,6 +449,8 @@ static int lxcContainerMountBasicFS(const char *srcprefix, bool pivotRoot)
     char *opts = NULL;
 #if HAVE_SELINUX
     security_context_t con;
+#else
+    bool con = false;
 #endif
 
     VIR_DEBUG("Mounting basic filesystems %s pivotRoot=%d", NULLSTR(srcprefix), pivotRoot);
