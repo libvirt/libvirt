@@ -3413,6 +3413,7 @@ cleanup:
     VIR_FREE(bus);
     VIR_FREE(type);
     VIR_FREE(snapshot);
+    VIR_FREE(rawio);
     VIR_FREE(target);
     VIR_FREE(source);
     while (nhosts > 0) {
