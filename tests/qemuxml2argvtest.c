@@ -728,6 +728,7 @@ mymain(void)
     DO_TEST("seclabel-dynamic-override", false, QEMU_CAPS_NAME);
     DO_TEST("seclabel-static", false, QEMU_CAPS_NAME);
     DO_TEST("seclabel-static-relabel", false, QEMU_CAPS_NAME);
+    DO_TEST("seclabel-none", false, QEMU_CAPS_NAME);
 
     DO_TEST("pseries-basic", false,
             QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);

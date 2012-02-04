@@ -19,7 +19,7 @@
 static struct qemud_driver driver;
 
 static int
-testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
+testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
 {
     char *inXmlData = NULL;
     char *outXmlData = NULL;
@@ -34,7 +34,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
 
     if (!(def = virDomainDefParseString(driver.caps, inXmlData,
                                         QEMU_EXPECTED_VIRT_TYPES,
-                                        VIR_DOMAIN_XML_INACTIVE)))
+                                        live ? 0 : VIR_DOMAIN_XML_INACTIVE)))
         goto fail;
 
     if (!(actual = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE)))
@@ -58,6 +58,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
 struct testInfo {
     const char *name;
     int different;
+    bool inactive_only;
 };
 
 static int
@@ -75,9 +76,16 @@ testCompareXMLToXMLHelper(const void *data)
         goto cleanup;
 
     if (info->different) {
-        ret = testCompareXMLToXMLFiles(xml_in, xml_out);
+        ret = testCompareXMLToXMLFiles(xml_in, xml_out, false);
     } else {
-        ret = testCompareXMLToXMLFiles(xml_in, xml_in);
+        ret = testCompareXMLToXMLFiles(xml_in, xml_in, false);
+    }
+    if (!info->inactive_only) {
+        if (info->different) {
+            ret = testCompareXMLToXMLFiles(xml_in, xml_out, true);
+        } else {
+            ret = testCompareXMLToXMLFiles(xml_in, xml_in, true);
+        }
     }
 
 cleanup:
@@ -95,19 +103,19 @@ mymain(void)
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return (EXIT_FAILURE);
 
-# define DO_TEST_FULL(name, is_different)                               \
+# define DO_TEST_FULL(name, is_different, inactive)                     \
     do {                                                                \
-        const struct testInfo info = {name, is_different};              \
+        const struct testInfo info = {name, is_different, inactive};    \
         if (virtTestRun("QEMU XML-2-XML " name,                         \
                         1, testCompareXMLToXMLHelper, &info) < 0)       \
             ret = -1;                                                   \
     } while (0)
 
 # define DO_TEST(name) \
-    DO_TEST_FULL(name, 0)
+    DO_TEST_FULL(name, 0, false)
 
 # define DO_TEST_DIFFERENT(name) \
-    DO_TEST_FULL(name, 1)
+    DO_TEST_FULL(name, 1, false)
 
     /* Unset or set all envvars here that are copied in qemudBuildCommandLine
      * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
@@ -200,9 +208,10 @@ mymain(void)
     DO_TEST("usb-redir");
     DO_TEST("blkdeviotune");
 
-    DO_TEST("seclabel-dynamic-baselabel");
-    DO_TEST("seclabel-dynamic-override");
+    DO_TEST_FULL("seclabel-dynamic-baselabel", false, true);
+    DO_TEST_FULL("seclabel-dynamic-override", false, true);
     DO_TEST("seclabel-static");
+    DO_TEST("seclabel-none");
 
     /* These tests generate different XML */
     DO_TEST_DIFFERENT("balloon-device-auto");

@@ -130,9 +130,15 @@
           </interleave>
         </group>
         <group>
+          <!-- with none, relabel must be no if present -->
           <attribute name='type'>
             <value>none</value>
           </attribute>
+          <optional>
+            <attribute name='relabel'>
+              <value>no</value>
+            </attribute>
+          </optional>
         </group>
       </choice>
     </element>

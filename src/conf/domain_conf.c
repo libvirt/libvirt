@@ -2583,17 +2583,15 @@ virSecurityLabelDefParseXML(virSecurityLabelDefPtr def,
     p = virXPathStringLimit("string(./seclabel/@type)",
                             VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
     if (p == NULL) {
-        virDomainReportError(VIR_ERR_XML_ERROR,
-                             "%s", _("missing security type"));
-        goto error;
-    }
-
-    def->type = virDomainSeclabelTypeFromString(p);
-    VIR_FREE(p);
-    if (def->type <= 0) {
-        virDomainReportError(VIR_ERR_XML_ERROR,
-                             "%s", _("invalid security type"));
-        goto error;
+        def->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
+    } else {
+        def->type = virDomainSeclabelTypeFromString(p);
+        VIR_FREE(p);
+        if (def->type <= 0) {
+            virDomainReportError(VIR_ERR_XML_ERROR,
+                                 "%s", _("invalid security type"));
+            goto error;
+        }
     }
 
     p = virXPathStringLimit("string(./seclabel/@relabel)",
@@ -2634,7 +2632,8 @@ virSecurityLabelDefParseXML(virSecurityLabelDefPtr def,
      * if the 'live' VM XML is requested
      */
     if (def->type == VIR_DOMAIN_SECLABEL_STATIC ||
-        !(flags & VIR_DOMAIN_XML_INACTIVE)) {
+        (!(flags & VIR_DOMAIN_XML_INACTIVE) &&
+         def->type != VIR_DOMAIN_SECLABEL_NONE)) {
         p = virXPathStringLimit("string(./seclabel/label[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
         if (p == NULL) {
@@ -2648,7 +2647,8 @@ virSecurityLabelDefParseXML(virSecurityLabelDefPtr def,
 
     /* Only parse imagelabel, if requested live XML with relabeling */
     if (!def->norelabel &&
-        !(flags & VIR_DOMAIN_XML_INACTIVE)) {
+        (!(flags & VIR_DOMAIN_XML_INACTIVE) &&
+         def->type != VIR_DOMAIN_SECLABEL_NONE)) {
         p = virXPathStringLimit("string(./seclabel/imagelabel[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
         if (p == NULL) {
@@ -2659,16 +2659,11 @@ virSecurityLabelDefParseXML(virSecurityLabelDefPtr def,
         def->imagelabel = p;
     }
 
-    /* Only parse baselabel, for dynamic or none label types */
-    if (def->type == VIR_DOMAIN_SECLABEL_DYNAMIC ||
-        def->type == VIR_DOMAIN_SECLABEL_NONE) {
+    /* Only parse baselabel for dynamic label type */
+    if (def->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
         p = virXPathStringLimit("string(./seclabel/baselabel[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-        if (p != NULL) {
-            def->baselabel = p;
-            /* Forces none type to dynamic for back compat */
-            def->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
-        }
+        def->baselabel = p;
     }
 
     /* Only parse model, if static labelling, or a base
@@ -2676,7 +2671,8 @@ virSecurityLabelDefParseXML(virSecurityLabelDefPtr def,
      */
     if (def->type == VIR_DOMAIN_SECLABEL_STATIC ||
         def->baselabel ||
-        !(flags & VIR_DOMAIN_XML_INACTIVE)) {
+        (!(flags & VIR_DOMAIN_XML_INACTIVE) &&
+         def->type != VIR_DOMAIN_SECLABEL_NONE)) {
         p = virXPathStringLimit("string(./seclabel/@model)",
                                 VIR_SECURITY_MODEL_BUFLEN-1, ctxt);
         if (p == NULL) {
