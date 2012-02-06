@@ -111,6 +111,7 @@
 /tests/*.pid
 /tests/*xml2*test
 /tests/commandhelper
+/tests/commandtest
 /tests/conftest
 /tests/cputest
 /tests/domainsnapshotxml2xmltest
@@ -142,6 +143,7 @@
 /tests/virhashtest
 /tests/virnet*test
 /tests/virshtest
+/tests/virtimetest
 /tests/vmx2xmltest
 /tests/xencapstest
 /tests/xmconfigtest
