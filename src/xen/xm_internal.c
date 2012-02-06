@@ -1073,6 +1073,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
     char *filename;
     const char *oldfilename;
     virDomainDefPtr def = NULL;
+    virConfPtr conf = NULL;
     xenXMConfCachePtr entry = NULL;
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
 
@@ -1100,6 +1101,9 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
         xenUnifiedUnlock(priv);
         return (NULL);
     }
+
+    if (!(conf = xenFormatXM(conn, def, priv->xendConfigVersion)))
+        goto error;
 
     /*
      * check that if there is another domain defined with the same uuid
@@ -1156,7 +1160,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
     if (!(filename = virFileBuildPath(priv->configDir, def->name, NULL)))
         goto error;
 
-    if (xenXMConfigSaveFile(conn, filename, def) < 0)
+    if (virConfWriteFile(filename, conf) < 0)
         goto error;
 
     if (VIR_ALLOC(entry) < 0) {
@@ -1199,6 +1203,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
     if (entry)
         VIR_FREE(entry->filename);
     VIR_FREE(entry);
+    virConfFree(conf);
     virDomainDefFree(def);
     xenUnifiedUnlock(priv);
     return (NULL);
