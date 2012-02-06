@@ -917,7 +917,7 @@ get_files(vahControl * ctl)
         int ret = virDomainDiskDefForeachPath(ctl->def->disks[i],
                                               ctl->allowDiskFormatProbing,
                                               true,
-                                              -1, -1 /* current uid:gid */
+                                              -1, -1, /* current uid:gid */
                                               add_file_path,
                                               &buf);
         if (ret != 0)
