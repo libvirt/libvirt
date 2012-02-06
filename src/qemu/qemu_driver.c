@@ -2943,9 +2943,11 @@ doCoreDump(struct qemud_driver *driver,
     int ret = -1;
     virFileWrapperFdPtr wrapperFd = NULL;
     int directFlag = 0;
+    unsigned int flags = VIR_FILE_WRAPPER_NON_BLOCKING;
 
     /* Create an empty file with appropriate ownership.  */
     if (bypass_cache) {
+        flags |= VIR_FILE_WRAPPER_BYPASS_CACHE;
         directFlag = virFileDirectFdFlag();
         if (directFlag < 0) {
             qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
@@ -2961,9 +2963,7 @@ doCoreDump(struct qemud_driver *driver,
                            NULL, NULL)) < 0)
         goto cleanup;
 
-    if (bypass_cache &&
-        !(wrapperFd = virFileWrapperFdNew(&fd, path,
-                                          VIR_FILE_WRAPPER_BYPASS_CACHE)))
+    if (!(wrapperFd = virFileWrapperFdNew(&fd, path, flags)))
         goto cleanup;
 
     if (qemuMigrationToFile(driver, vm, fd, 0, path,
