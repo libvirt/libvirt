@@ -5187,7 +5187,7 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
 
     /* Pin mode: pinning specified vcpu to specified physical cpus*/
 
-    cpumap = vshCalloc(ctl, 0, cpumaplen);
+    cpumap = vshCalloc(ctl, cpumaplen, sizeof(cpumap));
     /* Parse cpulist */
     cur = cpulist;
     if (*cur == 0) {
