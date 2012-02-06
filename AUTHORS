@@ -30,6 +30,7 @@ The primary maintainers and people with commit access rights:
   Michal Prívozník     <mprivozn@redhat.com>
   Peter Krempa         <pkrempa@redhat.com>
   Christophe Fergeau   <cfergeau@redhat.com>
+  Alex Jia             <ajia@redhat.com>
 
 Previous maintainers:
   Karel Zak            <kzak@redhat.com>
@@ -182,7 +183,6 @@ Patches have also been contributed by:
   Guannan Ren          <gren@redhat.com>
   John Williams        <john.williams@petalogix.com>
   Michael Santos       <michael.santos@gmail.com>
-  Alex Jia             <ajia@redhat.com>
   Oskari Saarenmaa     <os@ohmu.fi>
   Nan Zhang            <nzhang@redhat.com>
   Wieland Hoffmann     <themineo@googlemail.com>
