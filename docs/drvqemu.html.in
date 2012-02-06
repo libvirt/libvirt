@@ -432,9 +432,16 @@ mount -t cgroup none /dev/cgroup -o devices
     <h3><a name="xmlimport">Converting from QEMU args to domain XML</a></h3>
 
     <p>
-      The <code>virsh domxml-from-native</code> provides a way to convert an
-      existing set of QEMU args into a guest description using libvirt Domain XML
-      that can then be used by libvirt.
+      The <code>virsh domxml-from-native</code> provides a way to
+      convert an existing set of QEMU args into a guest description
+      using libvirt Domain XML that can then be used by libvirt.
+      Please note that this command is intended to be used to convert
+      existing qemu guests previously started from the command line to
+      be managed through libvirt.  It should not be used a method of
+      creating new guests from scratch.  New guests should be created
+      using an application calling the libvirt APIs (see
+      the <a href="apps.html">libvirt applications page</a> for some
+      examples) or by manually crafting XML to pass to virsh.
     </p>
 
     <pre>$ cat &gt; demo.args &lt;&lt;EOF
