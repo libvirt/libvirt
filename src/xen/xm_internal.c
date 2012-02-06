@@ -1196,7 +1196,8 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
 
  error:
     VIR_FREE(filename);
-    VIR_FREE(entry->filename);
+    if (entry)
+        VIR_FREE(entry->filename);
     VIR_FREE(entry);
     virDomainDefFree(def);
     xenUnifiedUnlock(priv);
