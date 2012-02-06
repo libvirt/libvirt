@@ -590,6 +590,10 @@ VIR_ENUM_IMPL(virDomainClockOffset, VIR_DOMAIN_CLOCK_OFFSET_LAST,
               "variable",
               "timezone");
 
+VIR_ENUM_IMPL(virDomainClockBasis, VIR_DOMAIN_CLOCK_BASIS_LAST,
+              "utc",
+              "localtime");
+
 VIR_ENUM_IMPL(virDomainTimerName, VIR_DOMAIN_TIMER_NAME_LAST,
               "platform",
               "pit",
@@ -8069,10 +8073,53 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
     }
     switch (def->clock.offset) {
+    case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+    case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+        tmp = virXPathString("string(./clock/@adjustment)", ctxt);
+        if (tmp) {
+            if (STREQ(tmp, "reset")) {
+                def->clock.data.utc_reset = true;
+            } else {
+                char *conv = NULL;
+                unsigned long long val;
+                val = strtoll(tmp, &conv, 10);
+                if (conv == tmp || *conv != '\0') {
+                    virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                         _("unknown clock adjustment '%s'"), tmp);
+                    goto error;
+                }
+                switch (def->clock.offset) {
+                case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+                    def->clock.data.variable.basis = VIR_DOMAIN_CLOCK_BASIS_LOCALTIME;
+                    break;
+                case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+                    def->clock.data.variable.basis = VIR_DOMAIN_CLOCK_BASIS_UTC;
+                    break;
+                }
+                def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_VARIABLE;
+                def->clock.data.variable.adjustment = val;
+            }
+            VIR_FREE(tmp);
+        } else {
+            def->clock.data.utc_reset = false;
+        }
+        break;
+
     case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
         if (virXPathLongLong("number(./clock/@adjustment)", ctxt,
-                             &def->clock.data.adjustment) < 0)
-            def->clock.data.adjustment = 0;
+                             &def->clock.data.variable.adjustment) < 0)
+            def->clock.data.variable.adjustment = 0;
+        tmp = virXPathString("string(./clock/@basis)", ctxt);
+        if (tmp) {
+            if ((def->clock.data.variable.basis = virDomainClockBasisTypeFromString(tmp)) < 0) {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     _("unknown clock basis '%s'"), tmp);
+                goto error;
+            }
+            VIR_FREE(tmp);
+        } else {
+            def->clock.data.variable.basis = VIR_DOMAIN_CLOCK_BASIS_UTC;
+        }
         break;
 
     case VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE:
@@ -12521,9 +12568,15 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     virBufferAsprintf(buf, "  <clock offset='%s'",
                       virDomainClockOffsetTypeToString(def->clock.offset));
     switch (def->clock.offset) {
+    case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+    case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+        if (def->clock.data.utc_reset)
+            virBufferAddLit(buf, " adjustment='reset'");
+        break;
     case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
-        virBufferAsprintf(buf, " adjustment='%lld'",
-                          def->clock.data.adjustment);
+        virBufferAsprintf(buf, " adjustment='%lld' basis='%s'",
+                          def->clock.data.variable.adjustment,
+                          virDomainClockBasisTypeToString(def->clock.data.variable.basis));
         break;
     case VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE:
         virBufferEscapeString(buf, " timezone='%s'", def->clock.data.timezone);

@@ -582,12 +582,22 @@
     <optional>
       <element name="clock">
         <choice>
-          <attribute name="offset">
-            <value>localtime</value>
-          </attribute>
-          <attribute name="offset">
-            <value>utc</value>
-          </attribute>
+          <group>
+            <attribute name="offset">
+              <choice>
+                <value>localtime</value>
+                <value>utc</value>
+              </choice>
+            </attribute>
+            <optional>
+              <attribute name='adjustment'>
+                <choice>
+                  <ref name='timeDelta'/>
+                  <value>reset</value>
+                </choice>
+              </attribute>
+            </optional>
+          </group>
           <group>
             <attribute name="offset">
               <value>timezone</value>
@@ -605,6 +615,14 @@
             <optional>
               <attribute name="adjustment">
                 <ref name="timeDelta"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="basis">
+                <choice>
+                  <value>utc</value>
+                  <value>localtime</value>
+                </choice>
               </attribute>
             </optional>
           </group>

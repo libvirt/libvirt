@@ -255,6 +255,7 @@ virDomainChrTcpProtocolTypeFromString;
 virDomainChrTcpProtocolTypeToString;
 virDomainChrTypeFromString;
 virDomainChrTypeToString;
+virDomainClockBasisTypeToString;
 virDomainClockOffsetTypeFromString;
 virDomainClockOffsetTypeToString;
 virDomainConfigFile;

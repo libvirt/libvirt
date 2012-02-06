@@ -8,7 +8,7 @@
     <type arch='i686' machine='pc'>hvm</type>
     <boot dev='hd'/>
   </os>
-  <clock offset='variable' adjustment='123456'/>
+  <clock offset='variable' adjustment='123456' basis='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>

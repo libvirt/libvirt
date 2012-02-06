@@ -3563,7 +3563,13 @@ qemuBuildClockArgStr(virDomainClockDefPtr def)
         time_t now = time(NULL);
         struct tm nowbits;
 
-        now += def->data.adjustment;
+        if (def->data.variable.basis != VIR_DOMAIN_CLOCK_BASIS_UTC) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("unsupported clock basis '%s'"),
+                            virDomainClockBasisTypeToString(def->data.variable.basis));
+            goto error;
+        }
+        now += def->data.variable.adjustment;
         gmtime_r(&now, &nowbits);
 
         virBufferAsprintf(&buf, "base=%d-%02d-%02dT%02d:%02d:%02d",

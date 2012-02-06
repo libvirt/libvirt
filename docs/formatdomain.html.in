@@ -985,11 +985,23 @@
           <dt><code>utc</code></dt>
           <dd>
             The guest clock will always be synchronized to UTC when
-            booted</dd>
+            booted.
+            <span class="since">Since 0.9.11</span> 'utc' mode can be converted
+            to 'variable' mode, which can be controlled by using the
+            <code>adjustment</code> attribute. If the value is 'reset', the
+            conversion is never done (not all hypervisors can
+            synchronize to UTC on each boot; use of 'reset' will cause
+            an error on those hypervisors). A numeric value
+            forces the conversion to 'variable' mode using the value as the
+            initial adjustment. The default <code>adjustment</code> is
+            hypervisor specific.
+          </dd>
           <dt><code>localtime</code></dt>
           <dd>
             The guest clock will be synchronized to the host's configured
             timezone when booted, if any.
+            <span class="since">Since 0.9.11,</span> the <code>adjustment</code>
+            attribute behaves the same as in 'utc' mode.
           </dd>
           <dt><code>timezone</code></dt>
           <dd>
@@ -1000,12 +1012,16 @@
           <dt><code>variable</code></dt>
           <dd>
             The guest clock will have an arbitrary offset applied
-            relative to UTC. The delta relative to UTC is specified
+            relative to UTC or localtime, depending on the <code>basis</code>
+            attribute. The delta relative to UTC (or localtime) is specified
             in seconds, using the <code>adjustment</code> attribute.
             The guest is free to adjust the RTC over time and expect
-            that it will be honoured at next reboot. This is in
-            contrast to 'utc' mode, where the RTC adjustments are
+            that it will be honored at next reboot. This is in
+            contrast to 'utc' and 'localtime' mode (with the optional
+            attribute adjustment='reset'), where the RTC adjustments are
             lost at each reboot. <span class="since">Since 0.7.7</span>
+            <span class="since">Since 0.9.11</span> the <code>basis</code>
+            attribute can be either 'utc' (default) or 'localtime'.
           </dd>
         </dl>
         <p>

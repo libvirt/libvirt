@@ -1446,15 +1446,27 @@ enum virDomainClockOffsetType {
     VIR_DOMAIN_CLOCK_OFFSET_LAST,
 };
 
+enum virDomainClockBasis {
+    VIR_DOMAIN_CLOCK_BASIS_UTC = 0,
+    VIR_DOMAIN_CLOCK_BASIS_LOCALTIME = 1,
+
+    VIR_DOMAIN_CLOCK_BASIS_LAST,
+};
+
 typedef struct _virDomainClockDef virDomainClockDef;
 typedef virDomainClockDef *virDomainClockDefPtr;
 struct _virDomainClockDef {
     int offset;
 
     union {
-        /* Adjustment in seconds, relative to UTC, when
+        /* Bug-compatibility-mode for Xen utc|localtime */
+        int utc_reset;
+        /* Adjustment in seconds, relative to UTC or LOCALTIME, when
          * offset == VIR_DOMAIN_CLOCK_OFFSET_VARIABLE */
-        long long adjustment;
+        struct {
+            long long adjustment;
+            int basis;
+        } variable;
 
         /* Timezone name, when
          * offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME */
@@ -2176,6 +2188,7 @@ int virDomainStateReasonFromString(virDomainState state, const char *reason);
 
 VIR_ENUM_DECL(virDomainSeclabel)
 VIR_ENUM_DECL(virDomainClockOffset)
+VIR_ENUM_DECL(virDomainClockBasis)
 
 VIR_ENUM_DECL(virDomainTimerName)
 VIR_ENUM_DECL(virDomainTimerTrack)

@@ -738,7 +738,7 @@ qemuProcessHandleRTCChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     event = virDomainEventRTCChangeNewFromObj(vm, offset);
 
     if (vm->def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_VARIABLE)
-        vm->def->clock.data.adjustment = offset;
+        vm->def->clock.data.variable.adjustment = offset;
 
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         VIR_WARN("unable to save domain status with RTC change");
