@@ -1012,10 +1012,10 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                      "-",
                      names[i],
                      state == -2 ? _("saved") : _(vshDomainStateToString(state)));
+        }
 
         virDomainFree(dom);
         VIR_FREE(names[i]);
-        }
     }
 
     ret = true;
