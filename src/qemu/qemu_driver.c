@@ -2521,7 +2521,7 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
     unsigned long long pad;
     int fd = -1;
     int directFlag = 0;
-    virFileDirectFdPtr directFd = NULL;
+    virFileWrapperFdPtr wrapperFd = NULL;
     bool bypass_cache = flags & VIR_DOMAIN_SAVE_BYPASS_CACHE;
 
     if (qemuProcessAutoDestroyActive(driver, vm)) {
@@ -2625,7 +2625,9 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
                       &needUnlink, &bypassSecurityDriver);
     if (fd < 0)
         goto endjob;
-    if (bypass_cache && (directFd = virFileDirectFdNew(&fd, path)) == NULL)
+    if (bypass_cache &&
+        !(wrapperFd = virFileWrapperFdNew(&fd, path,
+                                          VIR_FILE_WRAPPER_BYPASS_CACHE)))
         goto endjob;
 
     /* Write header to file, followed by XML */
@@ -2644,14 +2646,14 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
     /* Touch up file header to mark image complete.  */
     if (bypass_cache) {
         /* Reopen the file to touch up the header, since we aren't set
-         * up to seek backwards on directFd.  The reopened fd will
+         * up to seek backwards on wrapperFd.  The reopened fd will
          * trigger a single page of file system cache pollution, but
          * that's acceptable.  */
         if (VIR_CLOSE(fd) < 0) {
             virReportSystemError(errno, _("unable to close %s"), path);
             goto endjob;
         }
-        if (virFileDirectFdClose(directFd) < 0)
+        if (virFileWrapperFdClose(wrapperFd) < 0)
             goto endjob;
         fd = qemuOpenFile(driver, path, O_WRONLY, NULL, NULL);
         if (fd < 0)
@@ -2703,7 +2705,7 @@ endjob:
 
 cleanup:
     VIR_FORCE_CLOSE(fd);
-    virFileDirectFdFree(directFd);
+    virFileWrapperFdFree(wrapperFd);
     VIR_FREE(xml);
     if (ret != 0 && needUnlink)
         unlink(path);
@@ -2939,7 +2941,7 @@ doCoreDump(struct qemud_driver *driver,
 {
     int fd = -1;
     int ret = -1;
-    virFileDirectFdPtr directFd = NULL;
+    virFileWrapperFdPtr wrapperFd = NULL;
     int directFlag = 0;
 
     /* Create an empty file with appropriate ownership.  */
@@ -2959,7 +2961,9 @@ doCoreDump(struct qemud_driver *driver,
                            NULL, NULL)) < 0)
         goto cleanup;
 
-    if (bypass_cache && (directFd = virFileDirectFdNew(&fd, path)) == NULL)
+    if (bypass_cache &&
+        !(wrapperFd = virFileWrapperFdNew(&fd, path,
+                                          VIR_FILE_WRAPPER_BYPASS_CACHE)))
         goto cleanup;
 
     if (qemuMigrationToFile(driver, vm, fd, 0, path,
@@ -2973,14 +2977,14 @@ doCoreDump(struct qemud_driver *driver,
                              path);
         goto cleanup;
     }
-    if (virFileDirectFdClose(directFd) < 0)
+    if (virFileWrapperFdClose(wrapperFd) < 0)
         goto cleanup;
 
     ret = 0;
 
 cleanup:
     VIR_FORCE_CLOSE(fd);
-    virFileDirectFdFree(directFd);
+    virFileWrapperFdFree(wrapperFd);
     if (ret != 0)
         unlink(path);
     return ret;
@@ -3926,7 +3930,8 @@ qemuDomainSaveImageOpen(struct qemud_driver *driver,
                         const char *path,
                         virDomainDefPtr *ret_def,
                         struct qemud_save_header *ret_header,
-                        bool bypass_cache, virFileDirectFdPtr *directFd,
+                        bool bypass_cache,
+                        virFileWrapperFdPtr *wrapperFd,
                         const char *xmlin, int state, bool edit,
                         bool unlink_corrupt)
 {
@@ -3948,7 +3953,9 @@ qemuDomainSaveImageOpen(struct qemud_driver *driver,
 
     if ((fd = qemuOpenFile(driver, path, oflags, NULL, NULL)) < 0)
         goto error;
-    if (bypass_cache && (*directFd = virFileDirectFdNew(&fd, path)) == NULL)
+    if (bypass_cache &&
+        !(*wrapperFd = virFileWrapperFdNew(&fd, path,
+                                           VIR_FILE_WRAPPER_BYPASS_CACHE)))
         goto error;
 
     if (saferead(fd, &header, sizeof(header)) != sizeof(header)) {
@@ -4187,7 +4194,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     int fd = -1;
     int ret = -1;
     struct qemud_save_header header;
-    virFileDirectFdPtr directFd = NULL;
+    virFileWrapperFdPtr wrapperFd = NULL;
     int state = -1;
 
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
@@ -4203,7 +4210,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
 
     fd = qemuDomainSaveImageOpen(driver, path, &def, &header,
                                  (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
-                                 &directFd, dxml, state, false, false);
+                                 &wrapperFd, dxml, state, false, false);
     if (fd < 0)
         goto cleanup;
 
@@ -4223,7 +4230,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
 
     ret = qemuDomainSaveImageStartVM(conn, driver, vm, &fd, &header, path,
                                      false);
-    if (virFileDirectFdClose(directFd) < 0)
+    if (virFileWrapperFdClose(wrapperFd) < 0)
         VIR_WARN("Failed to close %s", path);
 
     if (qemuDomainObjEndJob(driver, vm) == 0)
@@ -4236,7 +4243,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
 cleanup:
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
-    virFileDirectFdFree(directFd);
+    virFileWrapperFdFree(wrapperFd);
     if (vm)
         virDomainObjUnlock(vm);
     qemuDriverUnlock(driver);
@@ -4364,10 +4371,10 @@ qemuDomainObjRestore(virConnectPtr conn,
     int fd = -1;
     int ret = -1;
     struct qemud_save_header header;
-    virFileDirectFdPtr directFd = NULL;
+    virFileWrapperFdPtr wrapperFd = NULL;
 
     fd = qemuDomainSaveImageOpen(driver, path, &def, &header,
-                                 bypass_cache, &directFd, NULL, -1, false,
+                                 bypass_cache, &wrapperFd, NULL, -1, false,
                                  true);
     if (fd < 0) {
         if (fd == -3)
@@ -4394,13 +4401,13 @@ qemuDomainObjRestore(virConnectPtr conn,
 
     ret = qemuDomainSaveImageStartVM(conn, driver, vm, &fd, &header, path,
                                      start_paused);
-    if (virFileDirectFdClose(directFd) < 0)
+    if (virFileWrapperFdClose(wrapperFd) < 0)
         VIR_WARN("Failed to close %s", path);
 
 cleanup:
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
-    virFileDirectFdFree(directFd);
+    virFileWrapperFdFree(wrapperFd);
     return ret;
 }
 

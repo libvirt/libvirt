@@ -94,12 +94,6 @@ FILE *virFileFdopen(int *fdptr, const char *mode)
 }
 
 
-/* Opaque type for managing a wrapper around an O_DIRECT fd.  For now,
- * read-write is not supported, just a single direction.  */
-struct _virFileDirectFd {
-    virCommandPtr cmd; /* Child iohelper process to do the I/O.  */
-};
-
 /**
  * virFileDirectFdFlag:
  *
@@ -116,36 +110,62 @@ virFileDirectFdFlag(void)
     return O_DIRECT ? O_DIRECT : -1;
 }
 
+/* Opaque type for managing a wrapper around a fd.  For now,
+ * read-write is not supported, just a single direction.  */
+struct _virFileWrapperFd {
+    virCommandPtr cmd; /* Child iohelper process to do the I/O.  */
+};
+
+#ifndef WIN32
 /**
- * virFileDirectFdNew:
+ * virFileWrapperFdNew:
  * @fd: pointer to fd to wrap
  * @name: name of fd, for diagnostics
+ * @flags: bitwise-OR of virFileWrapperFdFlags
  *
- * Update *FD (created with virFileDirectFdFlag() among the flags to
- * open()) to ensure that all I/O to that file will bypass the system
- * cache.  This must be called after open() and optional fchown() or
- * fchmod(), but before any seek or I/O, and only on seekable fd.  The
- * file must be O_RDONLY (to read the entire existing file) or
- * O_WRONLY (to write to an empty file).  In some cases, *FD is
- * changed to a non-seekable pipe; in this case, the caller must not
- * do anything further with the original fd.
+ * Update @fd so that it meets parameters requested by @flags.
+ *
+ * If VIR_FILE_WRAPPER_BYPASS_CACHE bit is set in @flags, @fd will be updated
+ * in a way that all I/O to that file will bypass the system cache.  The
+ * original fd must have been created with virFileDirectFdFlag() among the
+ * flags to open().
+ *
+ * If VIR_FILE_WRAPPER_NON_BLOCKING bit is set in @flags, @fd will be updated
+ * to ensure it properly supports non-blocking I/O, i.e., it will report
+ * EAGAIN.
+ *
+ * This must be called after open() and optional fchown() or fchmod(), but
+ * before any seek or I/O, and only on seekable fd.  The file must be O_RDONLY
+ * (to read the entire existing file) or O_WRONLY (to write to an empty file).
+ * In some cases, @fd is changed to a non-seekable pipe; in this case, the
+ * caller must not do anything further with the original fd.
  *
  * On success, the new wrapper object is returned, which must be later
- * freed with virFileDirectFdFree().  On failure, *FD is unchanged, an
+ * freed with virFileWrapperFdFree().  On failure, @fd is unchanged, an
  * error message is output, and NULL is returned.
  */
-virFileDirectFdPtr
-virFileDirectFdNew(int *fd, const char *name)
+virFileWrapperFdPtr
+virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
 {
-    virFileDirectFdPtr ret = NULL;
+    virFileWrapperFdPtr ret = NULL;
     bool output = false;
     int pipefd[2] = { -1, -1 };
     int mode = -1;
 
-    /* XXX support posix_fadvise rather than spawning a child, if the
-     * kernel support for that is decent enough.  */
+    if (!flags) {
+        virFileError(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("invalid use with no flags"));
+        return NULL;
+    }
 
-    if (!O_DIRECT) {
+    /* XXX support posix_fadvise rather than O_DIRECT, if the kernel support
+     * for that is decent enough. In that case, we will also need to
+     * explicitly support VIR_FILE_WRAPPER_NON_BLOCKING since
+     * VIR_FILE_WRAPPER_BYPASS_CACHE alone will no longer require spawning
+     * iohelper.
+     */
+
+    if ((flags & VIR_FILE_WRAPPER_BYPASS_CACHE) && !O_DIRECT) {
         virFileError(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("O_DIRECT unsupported on this platform"));
         return NULL;
@@ -156,12 +176,7 @@ virFileDirectFdNew(int *fd, const char *name)
         return NULL;
     }
 
-#ifdef F_GETFL
-    /* Mingw lacks F_GETFL, but it also lacks O_DIRECT so didn't get
-     * here in the first place.  All other platforms reach this
-     * line.  */
     mode = fcntl(*fd, F_GETFL);
-#endif
 
     if (mode < 0) {
         virFileError(VIR_ERR_INTERNAL_ERROR, _("invalid fd %d for %s"),
@@ -208,48 +223,59 @@ virFileDirectFdNew(int *fd, const char *name)
 error:
     VIR_FORCE_CLOSE(pipefd[0]);
     VIR_FORCE_CLOSE(pipefd[1]);
-    virFileDirectFdFree(ret);
+    virFileWrapperFdFree(ret);
     return NULL;
 }
+#else
+virFileWrapperFdPtr
+virFileWrapperFdNew(int *fd ATTRIBUTE_UNUSED,
+                    const char *name ATTRIBUTE_UNUSED,
+                    unsigned int fdflags ATTRIBUTE_UNUSED)
+{
+    virFileError(VIR_ERR_INTERNAL_ERROR, "%s",
+                 _("virFileWrapperFd unsupported on this platform"));
+    return NULL;
+}
+#endif
 
 /**
- * virFileDirectFdClose:
- * @dfd: direct fd wrapper, or NULL
+ * virFileWrapperFdClose:
+ * @wfd: fd wrapper, or NULL
  *
- * If DFD is valid, then ensure that I/O has completed, which may
+ * If @wfd is valid, then ensure that I/O has completed, which may
  * include reaping a child process.  Return 0 if all data for the
  * wrapped fd is complete, or -1 on failure with an error emitted.
- * This function intentionally returns 0 when DFD is NULL, so that
- * callers can conditionally create a virFileDirectFd wrapper but
+ * This function intentionally returns 0 when @wfd is NULL, so that
+ * callers can conditionally create a virFileWrapperFd wrapper but
  * unconditionally call the cleanup code.  To avoid deadlock, only
- * call this after closing the fd resulting from virFileDirectFdNew().
+ * call this after closing the fd resulting from virFileWrapperFdNew().
  */
 int
-virFileDirectFdClose(virFileDirectFdPtr dfd)
+virFileWrapperFdClose(virFileWrapperFdPtr wfd)
 {
-    if (!dfd)
+    if (!wfd)
         return 0;
 
-    return virCommandWait(dfd->cmd, NULL);
+    return virCommandWait(wfd->cmd, NULL);
 }
 
 /**
- * virFileDirectFdFree:
- * @dfd: direct fd wrapper, or NULL
+ * virFileWrapperFdFree:
+ * @wfd: fd wrapper, or NULL
  *
- * Free all remaining resources associated with DFD.  If
- * virFileDirectFdClose() was not previously called, then this may
+ * Free all remaining resources associated with @wfd.  If
+ * virFileWrapperFdClose() was not previously called, then this may
  * discard some previous I/O.  To avoid deadlock, only call this after
- * closing the fd resulting from virFileDirectFdNew().
+ * closing the fd resulting from virFileWrapperFdNew().
  */
 void
-virFileDirectFdFree(virFileDirectFdPtr dfd)
+virFileWrapperFdFree(virFileWrapperFdPtr wfd)
 {
-    if (!dfd)
+    if (!wfd)
         return;
 
-    virCommandFree(dfd->cmd);
-    VIR_FREE(dfd);
+    virCommandFree(wfd->cmd);
+    VIR_FREE(wfd);
 }
 
 
