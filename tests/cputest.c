@@ -126,17 +126,17 @@ cpuTestLoadMultiXML(const char *arch,
         goto cleanup;
 
     if (!(doc = virXMLParseFileCtxt(xml, &ctxt)))
-        goto error;
+        goto cleanup;
 
     n = virXPathNodeSet("/cpuTest/cpu", ctxt, &nodes);
     if (n <= 0 || (VIR_ALLOC_N(cpus, n) < 0))
-        goto error;
+        goto cleanup;
 
     for (i = 0; i < n; i++) {
         ctxt->node = nodes[i];
         cpus[i] = virCPUDefParseXML(nodes[i], ctxt, VIR_CPU_TYPE_HOST);
         if (!cpus[i])
-            goto error;
+            goto cleanup_cpus;
     }
 
     *count = n;
@@ -148,13 +148,10 @@ cleanup:
     xmlFreeDoc(doc);
     return cpus;
 
-error:
-    if (cpus) {
-        for (i = 0; i < n; i++)
-            virCPUDefFree(cpus[i]);
-        VIR_FREE(cpus);
-        cpus = NULL;
-    }
+cleanup_cpus:
+    for (i = 0; i < n; i++)
+        virCPUDefFree(cpus[i]);
+    VIR_FREE(cpus);
     goto cleanup;
 }
 
