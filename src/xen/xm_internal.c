@@ -1071,7 +1071,7 @@ int xenXMDomainCreate(virDomainPtr domain) {
 virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
 {
     virDomainPtr ret;
-    char *filename;
+    char *filename = NULL;
     const char *oldfilename;
     virDomainDefPtr def = NULL;
     xenXMConfCachePtr entry = NULL;
