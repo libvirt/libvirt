@@ -9948,15 +9948,16 @@ virSecurityLabelDefFormat(virBufferPtr buf, virSecurityLabelDefPtr def)
 
     virBufferAsprintf(buf, "<seclabel type='%s'",
                       sectype);
-    virBufferEscapeString(buf, " model='%s'", def->model);
-
-    virBufferAsprintf(buf, " relabel='%s'",
-                      def->norelabel ? "no" : "yes");
 
     if (def->type == VIR_DOMAIN_SECLABEL_NONE) {
         virBufferAddLit(buf, "/>\n");
         return;
     }
+
+    virBufferEscapeString(buf, " model='%s'", def->model);
+
+    virBufferAsprintf(buf, " relabel='%s'",
+                      def->norelabel ? "no" : "yes");
 
     if (def->label || def->imagelabel || def->baselabel) {
         virBufferAddLit(buf, ">\n");
