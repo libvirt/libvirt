@@ -586,8 +586,10 @@ endjob:
 
 cleanup:
     if (vm) {
-        if (ret == -1)
-            ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE));
+        if (ret == -1) {
+            ignore_value(qemuProcessKill(driver, vm,
+                                         VIR_QEMU_PROCESS_KILL_FORCE));
+        }
         if (virDomainObjUnref(vm) > 0)
             virDomainObjUnlock(vm);
     }
@@ -612,12 +614,13 @@ qemuProcessShutdownOrReboot(struct qemud_driver *driver,
                             qemuProcessFakeReboot,
                             vm) < 0) {
             VIR_ERROR(_("Failed to create reboot thread, killing domain"));
-            ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_NOWAIT));
+            ignore_value(qemuProcessKill(driver, vm,
+                                         VIR_QEMU_PROCESS_KILL_NOWAIT));
             /* Safe to ignore value since ref count was incremented above */
             ignore_value(virDomainObjUnref(vm));
         }
     } else {
-        ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_NOWAIT));
+        ignore_value(qemuProcessKill(driver, vm, VIR_QEMU_PROCESS_KILL_NOWAIT));
     }
 }
 
@@ -3532,10 +3535,13 @@ cleanup:
 }
 
 
-int qemuProcessKill(virDomainObjPtr vm, unsigned int flags)
+int
+qemuProcessKill(struct qemud_driver *driver,
+                virDomainObjPtr vm, unsigned int flags)
 {
-    int i;
+    int i, ret = -1;
     const char *signame = "TERM";
+    bool driver_unlocked = false;
 
     VIR_DEBUG("vm=%s pid=%d flags=%x",
               vm->def->name, vm->pid, flags);
@@ -3579,18 +3585,44 @@ int qemuProcessKill(virDomainObjPtr vm, unsigned int flags)
                 VIR_WARN("Failed to terminate process %d with SIG%s: %s",
                          vm->pid, signame,
                          virStrerror(errno, ebuf, sizeof ebuf));
-                return -1;
+                goto cleanup;
             }
-            return 0; /* process is dead */
+            ret = 0;
+            goto cleanup; /* process is dead */
         }
 
-        if (i == 0 && (flags & VIR_QEMU_PROCESS_KILL_NOWAIT))
-            return 0;
+        if (i == 0 && (flags & VIR_QEMU_PROCESS_KILL_NOWAIT)) {
+            ret = 0;
+            goto cleanup;
+        }
+
+        if (driver && !driver_unlocked) {
+            /* THREADS.txt says we can't hold the driver lock while sleeping */
+            qemuDriverUnlock(driver);
+            driver_unlocked = true;
+        }
 
         usleep(200 * 1000);
     }
     VIR_WARN("Timed out waiting after SIG%s to process %d", signame, vm->pid);
-    return -1;
+cleanup:
+    if (driver_unlocked) {
+        /* We had unlocked the driver, so re-lock it. THREADS.txt says
+         * we can't have the domain locked when locking the driver, so
+         * we must first unlock the domain. BUT, before we can unlock
+         * the domain, we need to add a ref to it in case there aren't
+         * any active jobs (analysis of all callers didn't reveal such
+         * a case, but there are too many to maintain certainty, so we
+         * will do this as a precaution).
+         */
+        virDomainObjRef(vm);
+        virDomainObjUnlock(vm);
+        qemuDriverLock(driver);
+        virDomainObjLock(vm);
+        /* Safe to ignore value since ref count was incremented above */
+        ignore_value(virDomainObjUnref(vm));
+    }
+    return ret;
 }
 
 
@@ -3679,7 +3711,7 @@ void qemuProcessStop(struct qemud_driver *driver,
     }
 
     /* shut it off for sure */
-    ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE));
+    ignore_value(qemuProcessKill(driver, vm, VIR_QEMU_PROCESS_KILL_FORCE));
 
     /* Stop autodestroy in case guest is restarted */
     qemuProcessAutoDestroyRemove(driver, vm);
