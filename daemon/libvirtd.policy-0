@@ -34,8 +34,8 @@ file are instantly applied.
       <defaults>
         <!-- Only a program in the active host session can use libvirt in
              read-write mode for management, and we require user password -->
-        <allow_any>no</allow_any>
-        <allow_inactive>no</allow_inactive>
+        <allow_any>auth_admin</allow_any>
+        <allow_inactive>auth_admin</allow_inactive>
         <allow_active>auth_admin_keep_session</allow_active>
       </defaults>
     </action>
