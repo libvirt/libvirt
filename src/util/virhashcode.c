@@ -31,8 +31,7 @@
 #include "bitrotate.h"
 
 /* slower than original but handles platforms that do only aligned reads */
-__attribute__((always_inline))
-static uint32_t getblock(const uint8_t *p, int i)
+static inline uint32_t getblock(const uint8_t *p, int i)
 {
     uint32_t r;
     size_t size = sizeof(r);
@@ -45,8 +44,7 @@ static uint32_t getblock(const uint8_t *p, int i)
 /*
  * Finalization mix - force all bits of a hash block to avalanche
  */
-__attribute__((always_inline))
-static uint32_t fmix(uint32_t h)
+static inline uint32_t fmix(uint32_t h)
 {
     h ^= h >> 16;
     h *= 0x85ebca6b;
