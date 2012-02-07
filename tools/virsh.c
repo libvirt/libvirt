@@ -13153,6 +13153,7 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
  * @n2 second node
  * returns true in case n1 covers n2, false otherwise.
  */
+ATTRIBUTE_UNUSED
 static bool
 vshNodeIsSuperset(xmlNodePtr n1, xmlNodePtr n2)
 {
@@ -13278,6 +13279,7 @@ cleanup:
  *          (is too ambiguous), 0 in case of success. Otherwise returns -1. @newXML
  *          is touched only in case of success.
  */
+ATTRIBUTE_UNUSED
 static int
 vshCompleteXMLFromDomain(vshControl *ctl, virDomainPtr dom, char *oldXML,
                          char **newXML)
@@ -13412,7 +13414,7 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     const char *from = NULL;
-    char *buffer = NULL, *new_buffer = NULL;
+    char *buffer = NULL;
     int ret;
     bool funcRet = false;
     unsigned int flags;
@@ -13431,27 +13433,13 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    ret = vshCompleteXMLFromDomain(ctl, dom, buffer, &new_buffer);
-    if (ret < 0) {
-        if (ret == -2) {
-            vshError(ctl, _("no such device in %s"), virDomainGetName(dom));
-        } else if (ret == -3) {
-            vshError(ctl, "%s", _("given XML selects too many devices. "
-                                  "Please, be more specific"));
-        } else {
-            /* vshCompleteXMLFromDomain() already printed error message,
-             * so nothing to do here. */
-        }
-        goto cleanup;
-    }
-
     if (vshCommandOptBool(cmd, "persistent")) {
         flags = VIR_DOMAIN_AFFECT_CONFIG;
         if (virDomainIsActive(dom) == 1)
            flags |= VIR_DOMAIN_AFFECT_LIVE;
-        ret = virDomainDetachDeviceFlags(dom, new_buffer, flags);
+        ret = virDomainDetachDeviceFlags(dom, buffer, flags);
     } else {
-        ret = virDomainDetachDevice(dom, new_buffer);
+        ret = virDomainDetachDevice(dom, buffer);
     }
 
     if (ret < 0) {
@@ -13463,7 +13451,6 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
     funcRet = true;
 
 cleanup:
-    VIR_FREE(new_buffer);
     VIR_FREE(buffer);
     virDomainFree(dom);
     return funcRet;
