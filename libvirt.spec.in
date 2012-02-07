@@ -273,7 +273,7 @@ Requires: module-init-tools
 # for /sbin/ip & /sbin/tc
 Requires: iproute
 %if %{with_avahi}
-Requires: avahi
+Requires: avahi-libs
 %endif
 %endif
 %if %{with_network}
