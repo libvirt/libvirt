@@ -453,7 +453,7 @@ no_memory:
 
 virSysinfoDefPtr
 virSysinfoRead(void) {
-    char *path, *base;
+    char *path;
     virSysinfoDefPtr ret = NULL;
     char *outbuf = NULL;
     virCommandPtr cmd;
@@ -481,22 +481,20 @@ virSysinfoRead(void) {
 
     ret->type = VIR_SYSINFO_SMBIOS;
 
-    base = outbuf;
-
-    if ((base = virSysinfoParseBIOS(base, ret)) == NULL)
+    if ((virSysinfoParseBIOS(outbuf, ret)) == NULL)
         goto no_memory;
 
-    if ((base = virSysinfoParseSystem(base, ret)) == NULL)
+    if ((virSysinfoParseSystem(outbuf, ret)) == NULL)
         goto no_memory;
 
     ret->nprocessor = 0;
     ret->processor = NULL;
-    if ((base = virSysinfoParseProcessor(base, ret)) == NULL)
+    if ((virSysinfoParseProcessor(outbuf, ret)) == NULL)
         goto no_memory;
 
     ret->nmemory = 0;
     ret->memory = NULL;
-    if (virSysinfoParseMemory(base, ret) == NULL)
+    if (virSysinfoParseMemory(outbuf, ret) == NULL)
         goto no_memory;
 
 cleanup:
