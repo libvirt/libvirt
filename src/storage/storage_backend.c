@@ -127,7 +127,6 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
     int inputfd = -1;
     int amtread = -1;
     int ret = 0;
-    unsigned long long remain;
     size_t rbytes = READ_BLOCK_SIZE_DEFAULT;
     size_t wbytes = 0;
     int interval;
@@ -165,13 +164,11 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
         goto cleanup;
     }
 
-    remain = *total;
-
     while (amtread != 0) {
         int amtleft;
 
-        if (remain < rbytes)
-            rbytes = remain;
+        if (*total < rbytes)
+            rbytes = *total;
 
         if ((amtread = saferead(inputfd, buf, rbytes)) < 0) {
             ret = -errno;
@@ -180,7 +177,7 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
                                  inputvol->target.path);
             goto cleanup;
         }
-        remain -= amtread;
+        *total -= amtread;
 
         /* Loop over amt read in 512 byte increments, looking for sparse
          * blocks */
@@ -224,8 +221,6 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
         goto cleanup;
     }
     inputfd = -1;
-
-    *total -= remain;
 
 cleanup:
     VIR_FORCE_CLOSE(inputfd);
