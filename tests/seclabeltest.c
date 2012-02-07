@@ -13,7 +13,7 @@ main (int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
     virSecurityManagerPtr mgr;
     const char *doi, *model;
 
-    mgr = virSecurityManagerNew(NULL, false, true, true);
+    mgr = virSecurityManagerNew(NULL, false, true, false);
     if (mgr == NULL) {
         fprintf (stderr, "Failed to start security driver");
         exit (-1);

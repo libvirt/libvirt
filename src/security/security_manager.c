@@ -115,6 +115,26 @@ virSecurityManagerPtr virSecurityManagerNew(const char *name,
     if (!drv)
         return NULL;
 
+    /* driver "none" needs some special handling of *Confined bools */
+    if (STREQ(drv->name, "none")) {
+        if (requireConfined) {
+            virSecurityReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                    _("Security driver \"none\" cannot create confined guests"));
+            return NULL;
+        }
+
+        if (defaultConfined) {
+            if (name != NULL) {
+                VIR_WARN("Configured security driver \"none\" disables default"
+                         " policy to create confined guests");
+            } else {
+                VIR_DEBUG("Auto-probed security driver is \"none\";"
+                          " confined guests will not be created");
+            }
+            defaultConfined = false;
+        }
+    }
+
     return virSecurityManagerNewDriver(drv,
                                        allowDiskFormatProbing,
                                        defaultConfined,
