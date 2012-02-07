@@ -41,11 +41,9 @@ EXTRA_DIST =			\
 if WITH_PYTHON
 mylibs = \
 	$(top_builddir)/src/libvirt.la \
-	$(top_builddir)/src/libvirt_util.la \
 	$(top_builddir)/gnulib/lib/libgnu.la
 myqemulibs = \
 	$(top_builddir)/src/libvirt-qemu.la \
-	$(top_builddir)/src/libvirt_util.la \
 	$(top_builddir)/gnulib/lib/libgnu.la
 
 all-local: libvirt.py libvirt_qemu.py
