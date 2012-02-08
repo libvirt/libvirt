@@ -3666,8 +3666,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
     ret = 0;
 
 cleanup:
-    if (guest)
-        cpuDataFree(guest->arch, data);
+    cpuDataFree(host->arch, data);
     virCPUDefFree(guest);
     virCPUDefFree(cpu);
 
