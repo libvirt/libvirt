@@ -160,6 +160,9 @@
     <feature name='popcnt'> <!-- CPUID_EXT_POPCNT -->
       <cpuid function='0x00000001' ecx='0x00800000'/>
     </feature>
+    <feature name='tsc-deadline'>
+      <cpuid function='0x00000001' ecx='0x01000000'/>
+    </feature>
     <feature name='aes'>
       <cpuid function='0x00000001' ecx='0x02000000'/>
     </feature>
@@ -591,6 +594,48 @@
       <vendor name='Intel'/>
       <model name='Nehalem'/>
       <feature name='aes'/>
+    </model>
+
+    <model name='SandyBridge'>
+      <vendor name='Intel'/>
+      <feature name='aes'/>
+      <feature name='apic'/>
+      <feature name='avx'/>
+      <feature name='clflush'/>
+      <feature name='cmov'/>
+      <feature name='cx16'/>
+      <feature name='cx8'/>
+      <feature name='de'/>
+      <feature name='fpu'/>
+      <feature name='fxsr'/>
+      <feature name='lahf_lm'/>
+      <feature name='lm'/>
+      <feature name='mca'/>
+      <feature name='mce'/>
+      <feature name='mmx'/>
+      <feature name='msr'/>
+      <feature name='mtrr'/>
+      <feature name='nx'/>
+      <feature name='pae'/>
+      <feature name='pat'/>
+      <feature name='pclmuldq'/>
+      <feature name='pge'/>
+      <feature name='pni'/>
+      <feature name='popcnt'/>
+      <feature name='pse'/>
+      <feature name='pse36'/>
+      <feature name='rdtscp'/>
+      <feature name='sep'/>
+      <feature name='sse'/>
+      <feature name='sse2'/>
+      <feature name='sse4.1'/>
+      <feature name='sse4.2'/>
+      <feature name='ssse3'/>
+      <feature name='syscall'/>
+      <feature name='tsc'/>
+      <feature name='tsc-deadline'/>
+      <feature name='x2apic'/>
+      <feature name='xsave'/>
     </model>
 
     <model name='Opteron_G1'>
