@@ -1167,6 +1167,8 @@ cleanup:
         unlink(tmp);
         VIR_FREE(tmp);
     }
+    if (dom)
+        virDomainFree(dom);
     return ret;
 }
 
