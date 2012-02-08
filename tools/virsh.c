@@ -1051,7 +1051,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     virDomainPtr dom;
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
-    /* current is ignored */
+    bool current = vshCommandOptBool(cmd, "current");
 
     bool title = vshCommandOptBool(cmd, "title");
     bool edit = vshCommandOptBool(cmd, "edit");
@@ -1067,6 +1067,19 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     bool pad = false;
     bool ret = false;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+
+    if (current) {
+        if (live || config) {
+            vshError(ctl, "%s", _("--current must be specified exclusively"));
+            return false;
+        }
+        flags = VIR_DOMAIN_AFFECT_CURRENT;
+    } else {
+        if (config)
+            flags |= VIR_DOMAIN_AFFECT_CONFIG;
+        if (live)
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
+    }
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -1084,10 +1097,6 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         virBufferAdd(&buf, opt->data, -1);
     }
 
-    if (live)
-        flags |= VIR_DOMAIN_AFFECT_LIVE;
-    if (config)
-        flags |= VIR_DOMAIN_AFFECT_CONFIG;
     if (title)
         type = VIR_DOMAIN_METADATA_TITLE;
     else
@@ -1122,7 +1131,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
             /* strip a possible newline at the end of file; some
              * editors enforce a newline, this makes editing the title
-             * more convinient */
+             * more convenient */
             if (title &&
                 (tmpstr = strrchr(desc_edited, '\n')) &&
                 *(tmpstr+1) == '\0')
