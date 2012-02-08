@@ -6148,8 +6148,8 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
                     ret = -1;
                     continue;
                 }
-                if (qemuDomainMergeDeviceWeights(&vm->def->blkio.devices,
-                                                 &vm->def->blkio.ndevices,
+                if (qemuDomainMergeDeviceWeights(&persistentDef->blkio.devices,
+                                                 &persistentDef->blkio.ndevices,
                                                  devices, ndevices) < 0)
                     ret = -1;
                 virBlkioDeviceWeightArrayClear(devices, ndevices);
