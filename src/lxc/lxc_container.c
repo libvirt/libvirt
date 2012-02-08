@@ -584,6 +584,15 @@ static int lxcContainerPopulateDevices(char **ttyPaths, size_t nttyPaths)
         { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_RANDOM, 0666, "/dev/random" },
         { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_URANDOM, 0666, "/dev/urandom" },
     };
+    const struct {
+        const char *src;
+        const char *dst;
+    } links[] = {
+        { "/proc/self/fd/0", "/dev/stdin" },
+        { "/proc/self/fd/1", "/dev/stdout" },
+        { "/proc/self/fd/2", "/dev/stderr" },
+        { "/proc/self/fd", "/dev/fd" },
+    };
 
     /* Populate /dev/ with a few important bits */
     for (i = 0 ; i < ARRAY_CARDINALITY(devs) ; i++) {
@@ -593,6 +602,15 @@ static int lxcContainerPopulateDevices(char **ttyPaths, size_t nttyPaths)
             virReportSystemError(errno,
                                  _("Failed to make device %s"),
                                  devs[i].path);
+            return -1;
+        }
+    }
+
+    for (i = 0 ; i < ARRAY_CARDINALITY(links) ; i++) {
+        if (symlink(links[i].src, links[i].dst) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to symlink device %s to %s"),
+                                 links[i].dst, links[i].src);
             return -1;
         }
     }
