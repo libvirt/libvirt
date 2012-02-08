@@ -16,12 +16,18 @@
    which has over 180 autoconf-style HAVE_* definitions.  Shame on them.  */
 #undef HAVE_PTHREAD_H
 
+/* We want to see *_LAST enums.  */
+#define VIR_ENUM_SENTINELS
+
 #include <Python.h>
 #include "libvirt/libvirt.h"
 #include "libvirt/virterror.h"
 #include "typewrappers.h"
 #include "libvirt.h"
 #include "memory.h"
+#include "virtypedparam.h"
+#include "ignore-value.h"
+#include "util.h"
 
 #ifndef __CYGWIN__
 extern void initlibvirtmod(void);
@@ -60,6 +66,228 @@ static char *py_str(PyObject *obj)
         return NULL;
     };
     return PyString_AsString(str);
+}
+
+/* Helper function to convert a virTypedParameter output array into a
+ * Python dictionary for return to the user.  Return NULL on failure,
+ * after raising a python exception.  */
+static PyObject * ATTRIBUTE_NONNULL(1)
+getPyVirTypedParameter(const virTypedParameterPtr params, int nparams)
+{
+    PyObject *key, *val, *info;
+    int i;
+
+    if ((info = PyDict_New()) == NULL)
+        return NULL;
+
+    for (i = 0 ; i < nparams ; i++) {
+        switch (params[i].type) {
+        case VIR_TYPED_PARAM_INT:
+            val = PyInt_FromLong(params[i].value.i);
+            break;
+
+        case VIR_TYPED_PARAM_UINT:
+            val = PyInt_FromLong(params[i].value.ui);
+            break;
+
+        case VIR_TYPED_PARAM_LLONG:
+            val = PyLong_FromLongLong(params[i].value.l);
+            break;
+
+        case VIR_TYPED_PARAM_ULLONG:
+            val = PyLong_FromUnsignedLongLong(params[i].value.ul);
+            break;
+
+        case VIR_TYPED_PARAM_DOUBLE:
+            val = PyFloat_FromDouble(params[i].value.d);
+            break;
+
+        case VIR_TYPED_PARAM_BOOLEAN:
+            val = PyBool_FromLong(params[i].value.b);
+            break;
+
+        case VIR_TYPED_PARAM_STRING:
+            val = libvirt_constcharPtrWrap(params[i].value.s);
+            break;
+
+        default:
+            /* Possible if a newer server has a bug and sent stuff we
+             * don't recognize.  */
+            PyErr_Format(PyExc_LookupError,
+                         "Type value \"%d\" not recognized",
+                         params[i].type);
+            val = NULL;
+            break;
+        }
+
+        key = libvirt_constcharPtrWrap(params[i].field);
+        if (!key || !val)
+            goto cleanup;
+
+        if (PyDict_SetItem(info, key, val) < 0) {
+            Py_DECREF(info);
+            goto cleanup;
+        }
+
+        Py_DECREF(key);
+        Py_DECREF(val);
+    }
+    return info;
+
+cleanup:
+    Py_XDECREF(key);
+    Py_XDECREF(val);
+    return NULL;
+}
+
+/* Allocate a new typed parameter array with the same contents and
+ * length as info, and using the array params of length nparams as
+ * hints on what types to use when creating the new array. The caller
+ * must NOT clear the array before freeing it, as it points into info
+ * rather than allocated strings.  Return NULL on failure, after
+ * raising a python exception.  */
+static virTypedParameterPtr ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+setPyVirTypedParameter(PyObject *info,
+                       const virTypedParameterPtr params, int nparams)
+{
+    PyObject *key, *value;
+    Py_ssize_t pos = 0;
+    virTypedParameterPtr temp = NULL, ret = NULL;
+    int size, i;
+
+    if ((size = PyDict_Size(info)) < 0)
+        return NULL;
+
+    /* Libvirt APIs use NULL array and 0 size as a special case;
+     * setting should have at least one parameter.  */
+    if (size == 0) {
+        PyErr_Format(PyExc_LookupError, "Dictionary must not be empty");
+        return NULL;
+    }
+
+    if (VIR_ALLOC_N(ret, size) < 0) {
+        PyErr_NoMemory();
+        return NULL;
+    }
+
+    temp = &ret[0];
+    while (PyDict_Next(info, &pos, &key, &value)) {
+        char *keystr = NULL;
+
+        if ((keystr = PyString_AsString(key)) == NULL)
+            goto cleanup;
+
+        for (i = 0; i < nparams; i++) {
+            if (STREQ(params[i].field, keystr))
+                break;
+        }
+        if (i == nparams) {
+            PyErr_Format(PyExc_LookupError,
+                         "Attribute name \"%s\" could not be recognized",
+                         keystr);
+            goto cleanup;
+        }
+
+        ignore_value(virStrcpyStatic(temp->field, keystr));
+        temp->type = params[i].type;
+
+        switch(params[i].type) {
+        case VIR_TYPED_PARAM_INT:
+        {
+            long long_val = PyInt_AsLong(value);
+            if ((long_val == -1) && PyErr_Occurred())
+                goto cleanup;
+            if ((int)long_val == long_val) {
+                temp->value.i = long_val;
+            } else {
+                PyErr_Format(PyExc_ValueError,
+                             "The value of "
+                             "attribute \"%s\" is out of int range", keystr);
+                goto cleanup;
+            }
+        }
+        break;
+        case VIR_TYPED_PARAM_UINT:
+        {
+            long long_val = PyInt_AsLong(value);
+            if ((long_val == -1) && PyErr_Occurred())
+                goto cleanup;
+            if ((unsigned int)long_val == long_val) {
+                temp->value.ui = long_val;
+            } else {
+                PyErr_Format(PyExc_ValueError,
+                             "The value of "
+                             "attribute \"%s\" is out of int range", keystr);
+                goto cleanup;
+            }
+        }
+        break;
+        case VIR_TYPED_PARAM_LLONG:
+        {
+            long long llong_val = PyLong_AsLongLong(value);
+            if ((llong_val == -1) && PyErr_Occurred())
+                goto cleanup;
+            temp->value.l = llong_val;
+        }
+        break;
+        case VIR_TYPED_PARAM_ULLONG:
+        {
+            unsigned long long ullong_val = PyLong_AsUnsignedLongLong(value);
+            if ((ullong_val == -1) && PyErr_Occurred())
+                goto cleanup;
+            temp->value.ul = ullong_val;
+        }
+        break;
+        case VIR_TYPED_PARAM_DOUBLE:
+        {
+            double double_val = PyFloat_AsDouble(value);
+            if ((double_val == -1) && PyErr_Occurred())
+                goto cleanup;
+            temp->value.d = double_val;
+        }
+        break;
+        case VIR_TYPED_PARAM_BOOLEAN:
+        {
+            /* Hack - Python's definition of Py_True breaks strict
+             * aliasing rules, so can't directly compare
+             */
+            if (PyBool_Check(value)) {
+                PyObject *hacktrue = PyBool_FromLong(1);
+                temp->value.b = hacktrue == value ? 1 : 0;
+                Py_DECREF(hacktrue);
+            } else {
+                PyErr_Format(PyExc_TypeError,
+                             "The value type of "
+                             "attribute \"%s\" must be bool", keystr);
+                goto cleanup;
+            }
+        }
+        break;
+        case VIR_TYPED_PARAM_STRING:
+        {
+            char *string_val = PyString_AsString(value);
+            if (!string_val)
+                goto cleanup;
+            temp->value.s = string_val;
+            break;
+        }
+
+        default:
+            /* Possible if a newer server has a bug and sent stuff we
+             * don't recognize.  */
+            PyErr_Format(PyExc_LookupError,
+                         "Type value \"%d\" not recognized",
+                         params[i].type);
+            goto cleanup;
+        }
+
+        temp++;
+    }
+    return ret;
+
+cleanup:
+    VIR_FREE(ret);
+    return NULL;
 }
 
 /************************************************************************
@@ -1004,6 +1232,127 @@ libvirt_virDomainGetMemoryParameters(PyObject *self ATTRIBUTE_UNUSED,
     }
     VIR_FREE(params);
     return(info);
+}
+
+static PyObject *
+libvirt_virDomainSetNumaParameters(PyObject *self ATTRIBUTE_UNUSED,
+                                   PyObject *args)
+{
+    virDomainPtr domain;
+    PyObject *pyobj_domain, *info;
+    PyObject *ret = NULL;
+    int i_retval;
+    int nparams = 0, size = 0;
+    unsigned int flags;
+    virTypedParameterPtr params, new_params;
+
+    if (!PyArg_ParseTuple(args,
+                          (char *)"OOi:virDomainSetNumaParameters",
+                          &pyobj_domain, &info, &flags))
+        return NULL;
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    if ((size = PyDict_Size(info)) < 0)
+        return NULL;
+
+    if (size == 0) {
+        PyErr_Format(PyExc_LookupError,
+                     "Need non-empty dictionary to set attributes");
+        return NULL;
+    }
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    i_retval = virDomainGetNumaParameters(domain, NULL, &nparams, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (i_retval < 0)
+        return VIR_PY_INT_FAIL;
+
+    if (nparams == 0) {
+        PyErr_Format(PyExc_LookupError,
+                     "Domain has no settable attributes");
+        return NULL;
+    }
+
+    if (VIR_ALLOC_N(params, nparams) < 0)
+        return PyErr_NoMemory();
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    i_retval = virDomainGetNumaParameters(domain, params, &nparams, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (i_retval < 0) {
+        ret = VIR_PY_INT_FAIL;
+        goto cleanup;
+    }
+
+    new_params = setPyVirTypedParameter(info, params, nparams);
+    if (!new_params)
+        goto cleanup;
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    i_retval = virDomainSetNumaParameters(domain, new_params, size, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (i_retval < 0) {
+        ret = VIR_PY_INT_FAIL;
+        goto cleanup;
+    }
+
+    ret = VIR_PY_INT_SUCCESS;
+
+cleanup:
+    virTypedParameterArrayClear(params, nparams);
+    VIR_FREE(params);
+    VIR_FREE(new_params);
+    return ret;
+}
+
+static PyObject *
+libvirt_virDomainGetNumaParameters(PyObject *self ATTRIBUTE_UNUSED,
+                                   PyObject *args)
+{
+    virDomainPtr domain;
+    PyObject *pyobj_domain;
+    PyObject *ret = NULL;
+    int i_retval;
+    int nparams = 0;
+    unsigned int flags;
+    virTypedParameterPtr params;
+
+    if (!PyArg_ParseTuple(args, (char *)"Oi:virDomainGetNumaParameters",
+                          &pyobj_domain, &flags))
+        return NULL;
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    i_retval = virDomainGetNumaParameters(domain, NULL, &nparams, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (i_retval < 0)
+        return VIR_PY_NONE;
+
+    if (!nparams)
+        return PyDict_New();
+
+    if (VIR_ALLOC_N(params, nparams) < 0)
+        return PyErr_NoMemory();
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    i_retval = virDomainGetNumaParameters(domain, params, &nparams, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (i_retval < 0) {
+        ret = VIR_PY_NONE;
+        goto cleanup;
+    }
+
+    ret = getPyVirTypedParameter(params, nparams);
+
+cleanup:
+    virTypedParameterArrayClear(params, nparams);
+    VIR_FREE(params);
+    return ret;
 }
 
 static PyObject *
@@ -5205,6 +5554,8 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainGetBlkioParameters", libvirt_virDomainGetBlkioParameters, METH_VARARGS, NULL},
     {(char *) "virDomainSetMemoryParameters", libvirt_virDomainSetMemoryParameters, METH_VARARGS, NULL},
     {(char *) "virDomainGetMemoryParameters", libvirt_virDomainGetMemoryParameters, METH_VARARGS, NULL},
+    {(char *) "virDomainSetNumaParameters", libvirt_virDomainSetNumaParameters, METH_VARARGS, NULL},
+    {(char *) "virDomainGetNumaParameters", libvirt_virDomainGetNumaParameters, METH_VARARGS, NULL},
     {(char *) "virDomainGetVcpus", libvirt_virDomainGetVcpus, METH_VARARGS, NULL},
     {(char *) "virDomainPinVcpu", libvirt_virDomainPinVcpu, METH_VARARGS, NULL},
     {(char *) "virDomainPinVcpuFlags", libvirt_virDomainPinVcpuFlags, METH_VARARGS, NULL},
