@@ -5976,35 +5976,40 @@ cleanup:
     return -1;
 }
 
-/* Modify def to reflect all device weight changes described in tmp.  */
+/* Modify dest_array to reflect all device weight changes described in
+ * src_array.  */
 static int
-qemuDomainMergeDeviceWeights(virBlkioDeviceWeightPtr *def, size_t *def_size,
-                             virBlkioDeviceWeightPtr tmp, size_t tmp_size)
+qemuDomainMergeDeviceWeights(virBlkioDeviceWeightPtr *dest_array,
+                             size_t *dest_size,
+                             virBlkioDeviceWeightPtr src_array,
+                             size_t src_size)
 {
     int i, j;
-    virBlkioDeviceWeightPtr dw;
+    virBlkioDeviceWeightPtr dest, src;
 
-    for (i = 0; i < tmp_size; i++) {
+    for (i = 0; i < src_size; i++) {
         bool found = false;
 
-        dw = &tmp[i];
-        for (j = 0; j < *def_size; j++) {
-            if (STREQ(dw->path, (*def)[j].path)) {
+        src = &src_array[i];
+        for (j = 0; j < *dest_size; j++) {
+            dest = &(*dest_array)[j];
+            if (STREQ(src->path, dest->path)) {
                 found = true;
-                (*def)[j].weight = dw->weight;
+                dest->weight = src->weight;
                 break;
             }
         }
         if (!found) {
-            if (!dw->weight)
+            if (!src->weight)
                 continue;
-            if (VIR_EXPAND_N(*def, *def_size, 1) < 0) {
+            if (VIR_EXPAND_N(*dest_array, *dest_size, 1) < 0) {
                 virReportOOMError();
                 return -1;
             }
-            (*def)[*def_size - 1].path = dw->path;
-            (*def)[*def_size - 1].weight = dw->weight;
-            dw->path = NULL;
+            dest = &(*dest_array)[*dest_size - 1];
+            dest->path = src->path;
+            dest->weight = src->weight;
+            src->path = NULL;
         }
     }
 
