@@ -4,7 +4,7 @@
  *           entry points where an automatically generated stub is
  *           unpractical
  *
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * Daniel Veillard <veillard@redhat.com>
  */
@@ -46,20 +46,6 @@ extern void initcygvirtmod_qemu(void);
 #define VIR_PY_NONE (Py_INCREF (Py_None), Py_None)
 #define VIR_PY_INT_FAIL (libvirt_intWrap(-1))
 #define VIR_PY_INT_SUCCESS (libvirt_intWrap(0))
-
-/* We don't want to free() returned value. As written in doc:
- * PyString_AsString returns pointer to 'internal buffer of string,
- * not a copy' and 'It must not be deallocated'. */
-static char *py_str(PyObject *obj)
-{
-    PyObject *str = PyObject_Str(obj);
-    if (!str) {
-        PyErr_Print();
-        PyErr_Clear();
-        return NULL;
-    };
-    return PyString_AsString(str);
-}
 
 /************************************************************************
  *									*
