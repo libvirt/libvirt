@@ -1158,10 +1158,10 @@ virAuditSend;
 
 # virfile.h
 virFileClose;
-virFileDirectFdClose;
 virFileDirectFdFlag;
-virFileDirectFdFree;
-virFileDirectFdNew;
+virFileWrapperFdClose;
+virFileWrapperFdFree;
+virFileWrapperFdNew;
 virFileFclose;
 virFileFdopen;
 virFileRewrite;
