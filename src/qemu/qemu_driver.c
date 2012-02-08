@@ -2522,7 +2522,7 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
     int fd = -1;
     int directFlag = 0;
     virFileWrapperFdPtr wrapperFd = NULL;
-    bool bypass_cache = flags & VIR_DOMAIN_SAVE_BYPASS_CACHE;
+    unsigned int wrapperFlags = VIR_FILE_WRAPPER_NON_BLOCKING;
 
     if (qemuProcessAutoDestroyActive(driver, vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
@@ -2613,7 +2613,8 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
     header.xml_len = len;
 
     /* Obtain the file handle.  */
-    if (bypass_cache) {
+    if ((flags & VIR_DOMAIN_SAVE_BYPASS_CACHE)) {
+        wrapperFlags |= VIR_FILE_WRAPPER_BYPASS_CACHE;
         directFlag = virFileDirectFdFlag();
         if (directFlag < 0) {
             qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
@@ -2625,9 +2626,7 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
                       &needUnlink, &bypassSecurityDriver);
     if (fd < 0)
         goto endjob;
-    if (bypass_cache &&
-        !(wrapperFd = virFileWrapperFdNew(&fd, path,
-                                          VIR_FILE_WRAPPER_BYPASS_CACHE)))
+    if (!(wrapperFd = virFileWrapperFdNew(&fd, path, wrapperFlags)))
         goto endjob;
 
     /* Write header to file, followed by XML */
@@ -2643,27 +2642,22 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
                             QEMU_ASYNC_JOB_SAVE) < 0)
         goto endjob;
 
-    /* Touch up file header to mark image complete.  */
-    if (bypass_cache) {
-        /* Reopen the file to touch up the header, since we aren't set
-         * up to seek backwards on wrapperFd.  The reopened fd will
-         * trigger a single page of file system cache pollution, but
-         * that's acceptable.  */
-        if (VIR_CLOSE(fd) < 0) {
-            virReportSystemError(errno, _("unable to close %s"), path);
-            goto endjob;
-        }
-        if (virFileWrapperFdClose(wrapperFd) < 0)
-            goto endjob;
-        fd = qemuOpenFile(driver, path, O_WRONLY, NULL, NULL);
-        if (fd < 0)
-            goto endjob;
-    } else {
-        if (lseek(fd, 0, SEEK_SET) != 0) {
-            virReportSystemError(errno, _("unable to seek %s"), path);
-            goto endjob;
-        }
+    /* Touch up file header to mark image complete. */
+
+    /* Reopen the file to touch up the header, since we aren't set
+     * up to seek backwards on wrapperFd.  The reopened fd will
+     * trigger a single page of file system cache pollution, but
+     * that's acceptable.  */
+    if (VIR_CLOSE(fd) < 0) {
+        virReportSystemError(errno, _("unable to close %s"), path);
+        goto endjob;
     }
+    if (virFileWrapperFdClose(wrapperFd) < 0)
+        goto endjob;
+    fd = qemuOpenFile(driver, path, O_WRONLY, NULL, NULL);
+    if (fd < 0)
+        goto endjob;
+
     memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
     if (safewrite(fd, &header, sizeof(header)) != sizeof(header)) {
         virReportSystemError(errno, _("unable to write %s"), path);
