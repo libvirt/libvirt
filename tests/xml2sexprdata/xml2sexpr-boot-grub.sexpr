@@ -2,4 +2,5 @@
 (uuid '596a5d21-71f4-8fb2-e068-e2386a5c413e')(on_poweroff 'destroy')\
 (on_reboot 'destroy')(on_crash 'destroy')(image (linux \
 (kernel '/usr/lib/xen/boot/pv-grub-x86_64.gz')(args '(hd0,0)/grub/menu.lst')))\
+(localtime 0)\
 (device (vbd (dev 'xvda')(uname 'phy:/dev/MainVG/GuestLV')(mode 'w'))))\

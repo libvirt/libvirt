@@ -12,7 +12,7 @@
   <features>
     <acpi/>
   </features>
-  <clock offset='utc'>
+  <clock offset='utc' adjustment='reset'>
     <timer name='hpet' present='no'/>
   </clock>
   <on_poweroff>destroy</on_poweroff>

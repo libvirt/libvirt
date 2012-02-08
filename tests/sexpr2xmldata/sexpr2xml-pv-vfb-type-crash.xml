@@ -8,7 +8,7 @@
   <os>
     <type>linux</type>
   </os>
-  <clock offset='utc'/>
+  <clock offset='utc' adjustment='reset'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>

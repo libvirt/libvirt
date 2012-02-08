@@ -446,9 +446,31 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     if (xenXMConfigGetBool(conf, "localtime", &vmlocaltime, 0) < 0)
         goto cleanup;
 
-    def->clock.offset = vmlocaltime ?
-        VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME :
-        VIR_DOMAIN_CLOCK_OFFSET_UTC;
+    if (hvm) {
+        /* only managed HVM domains since 3.1.0 have persistent rtc_timeoffset */
+        if (xendConfigVersion < XEND_CONFIG_VERSION_3_1_0) {
+            if (vmlocaltime)
+                def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
+            else
+                def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
+            def->clock.data.utc_reset = true;
+        } else {
+            unsigned long rtc_timeoffset;
+            def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_VARIABLE;
+            if (xenXMConfigGetULong(conf, "rtc_timeoffset", &rtc_timeoffset, 0) < 0)
+                goto cleanup;
+            def->clock.data.variable.adjustment = (int)rtc_timeoffset;
+            def->clock.data.variable.basis = vmlocaltime ?
+                VIR_DOMAIN_CLOCK_BASIS_LOCALTIME :
+                VIR_DOMAIN_CLOCK_BASIS_UTC;
+        }
+    } else {
+        /* PV domains do not have an emulated RTC and the offset is fixed. */
+        def->clock.offset = vmlocaltime ?
+            VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME :
+            VIR_DOMAIN_CLOCK_OFFSET_UTC;
+        def->clock.data.utc_reset = true;
+    } /* !hvm */
 
     if (xenXMConfigCopyStringOpt(conf, "device_model", &def->emulator) < 0)
         goto cleanup;
@@ -1489,7 +1511,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                                    virDomainDefPtr def,
                                    int xendConfigVersion) {
     virConfPtr conf = NULL;
-    int hvm = 0, i;
+    int hvm = 0, i, vmlocaltime = 0;
     char *cpus = NULL;
     const char *lifecycle;
     char uuid[VIR_UUID_STRING_BUFLEN];
@@ -1598,26 +1620,6 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                 goto no_memory;
         }
 
-        if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME) {
-            if (def->clock.data.timezone) {
-                XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("configurable timezones are not supported"));
-                goto cleanup;
-            }
-
-            if (xenXMConfigSetInt(conf, "localtime", 1) < 0)
-                goto no_memory;
-        } else if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_UTC) {
-            if (xenXMConfigSetInt(conf, "localtime", 0) < 0)
-                goto no_memory;
-        } else {
-            /* XXX We could support Xen's rtc clock offset */
-            XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unsupported clock offset '%s'"),
-                       virDomainClockOffsetTypeToString(def->clock.offset));
-            goto cleanup;
-        }
-
         for (i = 0; i < def->clock.ntimers; i++) {
             if (def->clock.timers[i]->name == VIR_DOMAIN_TIMER_NAME_HPET &&
                 def->clock.timers[i]->present != -1 &&
@@ -1656,8 +1658,79 @@ virConfPtr xenFormatXM(virConnectPtr conn,
         if (def->os.cmdline &&
             xenXMConfigSetString(conf, "extra", def->os.cmdline) < 0)
             goto no_memory;
+    } /* !hvm */
 
+
+    if (xendConfigVersion < XEND_CONFIG_VERSION_3_1_0) {
+        /* <3.1: UTC and LOCALTIME */
+        switch (def->clock.offset) {
+        case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+            vmlocaltime = 0;
+            break;
+        case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+            vmlocaltime = 1;
+            break;
+        default:
+            XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("unsupported clock offset='%s'"),
+                        virDomainClockOffsetTypeToString(def->clock.offset));
+            goto cleanup;
+        }
+    } else {
+        if (hvm) {
+            /* >=3.1 HV: VARIABLE */
+            int rtc_timeoffset;
+            switch (def->clock.offset) {
+            case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
+                vmlocaltime = (int)def->clock.data.variable.basis;
+                rtc_timeoffset = def->clock.data.variable.adjustment;
+                break;
+            case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+                if (def->clock.data.utc_reset) {
+                    XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
+                                _("unsupported clock adjustment='reset'"));
+                    goto cleanup;
+                }
+                vmlocaltime = 0;
+                rtc_timeoffset = 0;
+                break;
+            case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+                if (def->clock.data.utc_reset) {
+                    XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
+                                _("unsupported clock adjustment='reset'"));
+                    goto cleanup;
+                }
+                vmlocaltime = 1;
+                rtc_timeoffset = 0;
+                break;
+            default:
+                XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("unsupported clock offset='%s'"),
+                            virDomainClockOffsetTypeToString(def->clock.offset));
+                goto cleanup;
+            }
+            if (xenXMConfigSetInt(conf, "rtc_timeoffset", rtc_timeoffset) < 0)
+                goto no_memory;
+        } else {
+            /* >=3.1 PV: UTC and LOCALTIME */
+            switch (def->clock.offset) {
+            case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+                vmlocaltime = 0;
+                break;
+            case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+                vmlocaltime = 1;
+                break;
+            default:
+                XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("unsupported clock offset='%s'"),
+                            virDomainClockOffsetTypeToString(def->clock.offset));
+                goto cleanup;
+            }
+        } /* !hvm */
     }
+    if (xenXMConfigSetInt(conf, "localtime", vmlocaltime) < 0)
+        goto no_memory;
+
 
     if (!(lifecycle = virDomainLifecycleTypeToString(def->onPoweroff))) {
         XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,

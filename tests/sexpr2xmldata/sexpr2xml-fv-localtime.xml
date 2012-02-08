@@ -12,7 +12,7 @@
   <features>
     <acpi/>
   </features>
-  <clock offset='localtime'/>
+  <clock offset='localtime' adjustment='reset'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>

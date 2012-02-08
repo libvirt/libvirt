@@ -9,7 +9,7 @@
     <kernel>/usr/lib/xen/boot/pv-grub-x86_64.gz</kernel>
     <cmdline>(hd0,0)/grub/menu.lst</cmdline>
   </os>
-  <clock offset='utc'/>
+  <clock offset='utc' adjustment='reset'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>destroy</on_reboot>
   <on_crash>destroy</on_crash>

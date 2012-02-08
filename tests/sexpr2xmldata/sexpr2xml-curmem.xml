@@ -11,7 +11,7 @@
     <initrd>/var/lib/xen/initrd.gULTf1</initrd>
     <cmdline>ro root=/dev/VolGroup00/LogVol00 rhgb quiet</cmdline>
   </os>
-  <clock offset='utc'/>
+  <clock offset='utc' adjustment='reset'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>

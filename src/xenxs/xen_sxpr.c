@@ -1127,7 +1127,7 @@ xenParseSxpr(const struct sexpr *root,
 {
     const char *tmp;
     virDomainDefPtr def;
-    int hvm = 0;
+    int hvm = 0, vmlocaltime;
 
     if (VIR_ALLOC(def) < 0)
         goto no_memory;
@@ -1246,7 +1246,6 @@ xenParseSxpr(const struct sexpr *root,
     } else
         def->onCrash = VIR_DOMAIN_LIFECYCLE_DESTROY;
 
-    def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
     if (hvm) {
         if (sexpr_int(root, "domain/image/hvm/acpi"))
             def->features |= (1 << VIR_DOMAIN_FEATURE_ACPI);
@@ -1258,10 +1257,35 @@ xenParseSxpr(const struct sexpr *root,
             def->features |= (1 << VIR_DOMAIN_FEATURE_HAP);
         if (sexpr_int(root, "domain/image/hvm/viridian"))
             def->features |= (1 << VIR_DOMAIN_FEATURE_VIRIDIAN);
+    }
 
-        /* Old XenD only allows localtime here for HVM */
-        if (sexpr_int(root, "domain/image/hvm/localtime"))
-            def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
+    /* 12aaf4a2486b (3.0.3) added a second low-priority 'localtime' setting */
+    vmlocaltime = sexpr_int(root, "domain/localtime");
+    if (hvm) {
+        const char *value = sexpr_node(root, "domain/image/hvm/localtime");
+        if (value) {
+            if (virStrToLong_i(value, NULL, 0, &vmlocaltime) < 0) {
+                XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
+                            _("unknown localtime offset %s"), value);
+                goto error;
+            }
+        }
+        /* only managed HVM domains since 3.1.0 have persistent rtc_timeoffset */
+        if (xendConfigVersion < XEND_CONFIG_VERSION_3_1_0) {
+            if (vmlocaltime)
+                def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
+            else
+                def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
+            def->clock.data.utc_reset = true;
+        } else {
+            int rtc_offset;
+            def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_VARIABLE;
+            rtc_offset =  sexpr_int(root, "domain/image/hvm/rtc_timeoffset");
+            def->clock.data.variable.adjustment = rtc_offset;
+            def->clock.data.variable.basis = vmlocaltime ?
+                VIR_DOMAIN_CLOCK_BASIS_LOCALTIME :
+                VIR_DOMAIN_CLOCK_BASIS_UTC;
+        }
 
         if (sexpr_lookup(root, "domain/image/hvm/hpet")) {
             virDomainTimerDefPtr timer;
@@ -1279,14 +1303,22 @@ xenParseSxpr(const struct sexpr *root,
             def->clock.ntimers = 1;
             def->clock.timers[0] = timer;
         }
-    } else { /* !hvm */
-        if (sexpr_int(root, "domain/image/linux/localtime"))
+    } else {
+        const char *value = sexpr_node(root, "domain/image/linux/localtime");
+        if (value) {
+            if (virStrToLong_i(value, NULL, 0, &vmlocaltime) < 0) {
+                XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
+                            _("unknown localtime offset %s"), value);
+                goto error;
+            }
+        }
+        /* PV domains do not have an emulated RTC and the offset is fixed. */
+        if (vmlocaltime)
             def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
-    }
-
-    /* Current XenD allows localtime here, for PV and HVM */
-    if (sexpr_int(root, "domain/localtime"))
-        def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
+        else
+            def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
+        def->clock.data.utc_reset = true;
+    } /* !hvm */
 
     if (sexpr_node_copy(root, hvm ?
                         "domain/image/hvm/device_model" :
@@ -2195,7 +2227,8 @@ xenFormatSxpr(virConnectPtr conn,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     const char *tmp;
     char *bufout;
-    int hvm = 0, i;
+    int hvm = 0, i, vmlocaltime = -1;
+    bool in_image = false;
 
     VIR_DEBUG("Formatting domain sexpr");
 
@@ -2255,30 +2288,15 @@ xenFormatSxpr(virConnectPtr conn,
     }
     virBufferAsprintf(&buf, "(on_crash '%s')", tmp);
 
-    /* Set localtime here for current XenD (both PV & HVM) */
-    if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME) {
-        if (def->clock.data.timezone) {
-            XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
-                         "%s", _("configurable timezones are not supported"));
-            goto error;
-        }
-
-        virBufferAddLit(&buf, "(localtime 1)");
-    } else if (def->clock.offset != VIR_DOMAIN_CLOCK_OFFSET_UTC) {
-        XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
-                     _("unsupported clock offset '%s'"),
-                     virDomainClockOffsetTypeToString(def->clock.offset));
-        goto error;
-    }
+    if (STREQ(def->os.type, "hvm"))
+        hvm = 1;
 
     if (!def->os.bootloader) {
-        if (STREQ(def->os.type, "hvm"))
-            hvm = 1;
-
         if (hvm)
             virBufferAddLit(&buf, "(image (hvm ");
         else
             virBufferAddLit(&buf, "(image (linux ");
+        in_image = true;
 
         if (hvm &&
             def->os.loader == NULL) {
@@ -2424,17 +2442,13 @@ xenFormatSxpr(virConnectPtr conn,
                 virBufferAddLit(&buf, "(serial none)");
             }
 
-            /* Set localtime here to keep old XenD happy for HVM */
-            if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME)
-                virBufferAddLit(&buf, "(localtime 1)");
-
             if (def->sounds) {
                 virBufferAddLit(&buf, "(soundhw '");
                 if (xenFormatSxprSound(def, &buf) < 0)
                     goto error;
                 virBufferAddLit(&buf, "')");
             }
-        }
+        } /* hvm */
 
         /* get the device emulation model */
         if (def->emulator && (hvm || xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4))
@@ -2458,15 +2472,98 @@ xenFormatSxpr(virConnectPtr conn,
                                          &buf, xendConfigVersion) < 0)
                 goto error;
         }
-
-        virBufferAddLit(&buf, "))");
     } else {
         /* PV domains accept kernel cmdline args */
         if (def->os.cmdline) {
-            virBufferEscapeSexpr(&buf, "(image (linux (args '%s')))",
-                                 def->os.cmdline);
+            virBufferEscapeSexpr(&buf, "(image (linux (args '%s')", def->os.cmdline);
+            in_image = true;
         }
+    } /* os.bootloader */
+
+
+    if (xendConfigVersion < XEND_CONFIG_VERSION_3_1_0) {
+        /* <3.1: UTC and LOCALTIME */
+        switch (def->clock.offset) {
+        case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+            vmlocaltime = 0;
+            break;
+        case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+            vmlocaltime = 1;
+            break;
+        default:
+            XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("unsupported clock offset='%s'"),
+                        virDomainClockOffsetTypeToString(def->clock.offset));
+            goto error;
+        }
+    } else {
+        if (!in_image) {
+            if (hvm)
+                virBufferAddLit(&buf, "(image (hvm ");
+            else
+                virBufferAddLit(&buf, "(image (linux ");
+            in_image = true;
+        }
+        if (hvm) {
+            /* >=3.1 HV: VARIABLE */
+            int rtc_timeoffset;
+            switch (def->clock.offset) {
+            case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
+                vmlocaltime = (int)def->clock.data.variable.basis;
+                rtc_timeoffset = def->clock.data.variable.adjustment;
+                break;
+            case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+                if (def->clock.data.utc_reset) {
+                    XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
+                                _("unsupported clock adjustment='reset'"));
+                    goto error;
+                }
+                vmlocaltime = 0;
+                rtc_timeoffset = 0;
+                break;
+            case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+                if (def->clock.data.utc_reset) {
+                    XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
+                                _("unsupported clock adjustment='reset'"));
+                    goto error;
+                }
+                vmlocaltime = 1;
+                rtc_timeoffset = 0;
+                break;
+            default:
+                XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("unsupported clock offset='%s'"),
+                            virDomainClockOffsetTypeToString(def->clock.offset));
+                goto error;
+            }
+            virBufferAsprintf(&buf, "(rtc_timeoffset %d)", rtc_timeoffset);
+        } else {
+            /* >=3.1 PV: UTC and LOCALTIME */
+            switch (def->clock.offset) {
+            case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+                vmlocaltime = 0;
+                break;
+            case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+                vmlocaltime = 1;
+                break;
+            default:
+                XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("unsupported clock offset='%s'"),
+                            virDomainClockOffsetTypeToString(def->clock.offset));
+                goto error;
+            }
+        } /* !hvm */
+        /* default post-XenD-3.1 location: */
+        virBufferAsprintf(&buf, "(localtime %d)", vmlocaltime);
     }
+    if (in_image) {
+        /* closes (image(hvm|linux */
+        virBufferAddLit(&buf, "))");
+        in_image = false;
+    }
+    /* pre-XenD-3.1 and compatibility location */
+    virBufferAsprintf(&buf, "(localtime %d)", vmlocaltime);
+
 
     for (i = 0 ; i < def->ndisks ; i++)
         if (xenFormatSxprDisk(def->disks[i],
