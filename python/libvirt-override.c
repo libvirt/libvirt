@@ -5062,14 +5062,16 @@ libvirt_virDomainMigrateGetMaxSpeed(PyObject *self ATTRIBUTE_UNUSED, PyObject *a
     unsigned long bandwidth;
     virDomainPtr domain;
     PyObject *pyobj_domain;
+    unsigned int flags = 0;
 
-    if (!PyArg_ParseTuple(args, (char *)"O:virDomainMigrateGetMaxSpeed", &pyobj_domain))
+    if (!PyArg_ParseTuple(args, (char *)"Oi:virDomainMigrateGetMaxSpeed",
+                          &pyobj_domain, &flags))
         return(NULL);
 
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
-    c_retval = virDomainMigrateGetMaxSpeed(domain, &bandwidth, 0);
+    c_retval = virDomainMigrateGetMaxSpeed(domain, &bandwidth, flags);
     LIBVIRT_END_ALLOW_THREADS;
 
     if (c_retval < 0)
