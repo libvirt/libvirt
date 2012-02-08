@@ -33,6 +33,7 @@
       <target dev='hdb' bus='ide'/>
       <address type='drive' controller='0' bus='2' unit='0'/>
     </disk>
+    <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <memballoon model='virtio'/>
   </devices>

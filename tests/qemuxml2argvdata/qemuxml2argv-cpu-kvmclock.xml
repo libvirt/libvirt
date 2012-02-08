@@ -19,6 +19,7 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/./qemu.sh</emulator>
+    <controller type='usb' index='0'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

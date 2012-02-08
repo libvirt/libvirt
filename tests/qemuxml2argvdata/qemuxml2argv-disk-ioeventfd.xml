@@ -32,6 +32,7 @@
       <model type='virtio'/>
       <driver name='vhost' txmode='iothread' ioeventfd='off'/>
     </interface>
+    <controller type='usb' index='0'/>
     <controller type='virtio-serial' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </controller>

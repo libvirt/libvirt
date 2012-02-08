@@ -33,6 +33,7 @@
       <source file='/tmp/logs.img'/>
       <target dev='vdb' bus='virtio'/>
     </disk>
+    <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <memballoon model='virtio'/>
   </devices>

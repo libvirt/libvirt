@@ -23,6 +23,7 @@
       </encryption>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </disk>
+    <controller type='usb' index='0'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

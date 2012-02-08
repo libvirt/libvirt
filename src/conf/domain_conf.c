@@ -619,7 +619,6 @@ VIR_ENUM_IMPL(virDomainStartupPolicy, VIR_DOMAIN_STARTUP_POLICY_LAST,
 #define VIR_DOMAIN_XML_WRITE_FLAGS  VIR_DOMAIN_XML_SECURE
 #define VIR_DOMAIN_XML_READ_FLAGS   VIR_DOMAIN_XML_INACTIVE
 
-
 void
 virBlkioDeviceWeightArrayClear(virBlkioDeviceWeightPtr deviceWeights,
                                int ndevices)
@@ -7091,6 +7090,49 @@ error:
 }
 
 
+static int virDomainDefMaybeAddController(virDomainDefPtr def,
+                                          int type,
+                                          int idx)
+{
+    int found = 0;
+    int i;
+    virDomainControllerDefPtr cont;
+
+    for (i = 0 ; (i < def->ncontrollers) && !found; i++) {
+        if (def->controllers[i]->type == type &&
+            def->controllers[i]->idx == idx)
+            found = 1;
+    }
+
+    if (found)
+        return 0;
+
+    if (VIR_ALLOC(cont) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    cont->type = type;
+    cont->idx = idx;
+    cont->model = -1;
+
+    if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) {
+        cont->opts.vioserial.ports = -1;
+        cont->opts.vioserial.vectors = -1;
+    }
+
+
+    if (VIR_REALLOC_N(def->controllers, def->ncontrollers+1) < 0) {
+        VIR_FREE(cont);
+        virReportOOMError();
+        return -1;
+    }
+    def->controllers[def->ncontrollers] = cont;
+    def->ncontrollers++;
+
+    return 0;
+}
+
 static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                                             xmlDocPtr xml,
                                             xmlNodePtr root,
@@ -7648,6 +7690,12 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         virDomainControllerInsertPreAlloced(def, controller);
     }
     VIR_FREE(nodes);
+
+    if (def->virtType == VIR_DOMAIN_VIRT_QEMU ||
+        def->virtType == VIR_DOMAIN_VIRT_KQEMU ||
+        def->virtType == VIR_DOMAIN_VIRT_KVM)
+        if (virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_USB, 0) < 0)
+            goto error;
 
     /* analysis of the resource leases */
     if ((n = virXPathNodeSet("./devices/lease", ctxt, &nodes)) < 0) {
@@ -9377,49 +9425,6 @@ cleanup:
     return identical;
 }
 
-
-static int virDomainDefMaybeAddController(virDomainDefPtr def,
-                                          int type,
-                                          int idx)
-{
-    int found = 0;
-    int i;
-    virDomainControllerDefPtr cont;
-
-    for (i = 0 ; (i < def->ncontrollers) && !found; i++) {
-        if (def->controllers[i]->type == type &&
-            def->controllers[i]->idx == idx)
-            found = 1;
-    }
-
-    if (found)
-        return 0;
-
-    if (VIR_ALLOC(cont) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    cont->type = type;
-    cont->idx = idx;
-    cont->model = -1;
-
-    if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) {
-        cont->opts.vioserial.ports = -1;
-        cont->opts.vioserial.vectors = -1;
-    }
-
-
-    if (VIR_REALLOC_N(def->controllers, def->ncontrollers+1) < 0) {
-        VIR_FREE(cont);
-        virReportOOMError();
-        return -1;
-    }
-    def->controllers[def->ncontrollers] = cont;
-    def->ncontrollers++;
-
-    return 0;
-}
 
 static int virDomainDefAddDiskControllersForType(virDomainDefPtr def,
                                                  int controllerType,

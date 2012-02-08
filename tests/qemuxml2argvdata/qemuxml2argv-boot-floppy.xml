@@ -24,6 +24,7 @@
       <target dev='fda' bus='fdc'/>
       <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
+    <controller type='usb' index='0'/>
     <controller type='fdc' index='0'/>
     <controller type='ide' index='0'/>
     <memballoon model='virtio'/>

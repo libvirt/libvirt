@@ -19,6 +19,7 @@
       <target dev='sda' bus='sata'/>
       <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
+    <controller type='usb' index='0'/>
     <controller type='sata' index='0'/>
     <memballoon model='virtio'/>
   </devices>

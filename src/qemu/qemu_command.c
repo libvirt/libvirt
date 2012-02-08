@@ -7620,7 +7620,13 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
             WANT_VALUE();
             /* ignore, generted on the fly */
         } else if (STREQ(arg, "-usb")) {
-            /* ignore, always added by libvirt */
+            virDomainControllerDefPtr ctldef;
+            if (VIR_ALLOC(ctldef) < 0)
+                goto no_memory;
+            ctldef->type = VIR_DOMAIN_CONTROLLER_TYPE_USB;
+            ctldef->idx = 0;
+            ctldef->model = -1;
+            virDomainControllerInsert(def, ctldef);
         } else if (STREQ(arg, "-pidfile")) {
             WANT_VALUE();
             if (pidfile)

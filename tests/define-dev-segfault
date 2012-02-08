@@ -36,6 +36,7 @@ cat <<\EOF > D.xml || fail=1
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-kvm</emulator>
+    <controller type='usb' index='0'/>
     <serial type='pty'>
       <target port='0'/>
     </serial>

@@ -34,6 +34,7 @@
       <target dev='hdd' bus='ide'/>
       <address type='drive' controller='0' bus='1' unit='1'/>
     </disk>
+    <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <memballoon model='virtio'/>
   </devices>

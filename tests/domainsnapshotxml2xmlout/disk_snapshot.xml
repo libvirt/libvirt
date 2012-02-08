@@ -69,6 +69,7 @@
         <target dev='hdf' bus='ide'/>
         <address type='drive' controller='0' bus='5' unit='0'/>
       </disk>
+      <controller type='usb' index='0'/>
       <controller type='ide' index='0'/>
       <memballoon model='virtio'/>
     </devices>

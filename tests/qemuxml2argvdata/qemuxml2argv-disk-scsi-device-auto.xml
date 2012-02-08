@@ -18,6 +18,7 @@
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='hda' bus='ide'/>
     </disk>
+    <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <disk type='file' device='disk'>
       <source file='/tmp/scsidisk.img'/>

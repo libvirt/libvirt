@@ -40,6 +40,7 @@
       <boot order='4'/>
       <address type='drive' controller='0' bus='0' unit='1'/>
     </disk>
+    <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <controller type='fdc' index='0'/>
     <interface type='user'>

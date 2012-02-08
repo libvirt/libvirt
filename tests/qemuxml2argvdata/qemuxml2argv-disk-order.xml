@@ -31,6 +31,7 @@
       <source file='/tmp/data.img'/>
       <target dev='vda' bus='virtio'/>
     </disk>
+    <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <memballoon model='virtio'/>
   </devices>

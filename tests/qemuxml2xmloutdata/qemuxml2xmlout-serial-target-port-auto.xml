@@ -20,6 +20,7 @@
       <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
     <controller type='ide' index='0'/>
+    <controller type='usb' index='0'/>
     <serial type='pty'>
       <target port='0'/>
     </serial>

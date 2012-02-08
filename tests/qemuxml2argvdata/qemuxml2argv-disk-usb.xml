@@ -23,6 +23,7 @@
       <source file='/tmp/usbdisk.img'/>
       <target dev='sda' bus='usb'/>
     </disk>
+    <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <memballoon model='virtio'/>
   </devices>
