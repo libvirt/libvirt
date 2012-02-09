@@ -175,7 +175,7 @@ virDomainAuditNet(virDomainObjPtr vm,
     }
 
     VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
-              "virt=%s resrc=net reason=%s %s uuid=%s old-net='%s' new-net='%s'",
+              "virt=%s resrc=net reason=%s %s uuid=%s old-net=%s new-net=%s",
               virt, reason, vmname, uuidstr,
               oldDef ? oldMacstr : "?",
               newDef ? newMacstr : "?");
@@ -222,7 +222,7 @@ virDomainAuditNetDevice(virDomainDefPtr vmDef, virDomainNetDefPtr netDef,
     }
 
     VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
-              "virt=%s resrc=net reason=open %s uuid=%s net='%s' %s rdev=%s",
+              "virt=%s resrc=net reason=open %s uuid=%s net=%s %s rdev=%s",
               virt, vmname, uuidstr, macstr, dev_name, VIR_AUDIT_STR(rdev));
 
 cleanup:
