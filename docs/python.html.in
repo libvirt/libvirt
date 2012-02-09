@@ -20,7 +20,7 @@ lower case, for example the C functions:</p>
     </p>
     <p>become</p>
     <p>
-      <code>virConn::numOfDomains(self)</code>
+      <code>virConnect::numOfDomains(self)</code>
     </p>
     <p>
       <code>virDomain::setMaxMemory(self, memory)</code>
