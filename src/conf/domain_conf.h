@@ -167,10 +167,12 @@ struct _virDomainDeviceInfo {
     union {
         virDomainDeviceUSBMaster usb;
     } master;
-    /* rombar is only used for pci hostdev devices, and bootIndex only
-     * for disk, network interface, and hostdev devices */
+    /* rombar and romfile are only used for pci hostdev and network
+     * devices. */
     int rombar;         /* enum virDomainPciRombarMode */
     char *romfile;
+    /* bootIndex is only user for disk, network interface, and
+     * hostdev devices. */
     int bootIndex;
 };
 
