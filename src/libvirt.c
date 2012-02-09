@@ -18541,7 +18541,7 @@ int virDomainGetCPUStats(virDomainPtr domain,
         (start_cpu == -1 && ncpus != 1) ||
         ((params == NULL) != (nparams == 0)) ||
         (ncpus == 0 && params != NULL) ||
-        ncpus < UINT_MAX / nparams) {
+        (nparams && ncpus > UINT_MAX / nparams)) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
