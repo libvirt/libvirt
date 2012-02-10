@@ -3492,3 +3492,24 @@ int qemuMonitorJSONGetBlockIoThrottle(qemuMonitorPtr mon,
     virJSONValueFree(result);
     return ret;
 }
+
+int qemuMonitorJSONSystemWakeup(qemuMonitorPtr mon)
+{
+    int ret = -1;
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+
+    cmd = qemuMonitorJSONMakeCommand("system_wakeup", NULL);
+    if (!cmd) {
+        return -1;
+    }
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}

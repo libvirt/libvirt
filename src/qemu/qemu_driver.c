@@ -12165,6 +12165,61 @@ cleanup:
     return ret;
 }
 
+static int
+qemuDomainPMWakeup(virDomainPtr dom,
+                   unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv;
+
+    virCheckFlags(0, -1);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+    priv = vm->privateData;
+
+    if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_WAKEUP)) {
+       qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Unable to wake up domain due to "
+                         "missing system_wakeup monitor command"));
+       goto endjob;
+    }
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    ret = qemuMonitorSystemWakeup(priv->mon);
+    qemuDomainObjExitMonitor(driver, vm);
+
+endjob:
+    if (qemuDomainObjEndJob(driver, vm) == 0)
+        vm = NULL;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
 static virDriver qemuDriver = {
     .no = VIR_DRV_QEMU,
     .name = "QEMU",
@@ -12323,6 +12378,7 @@ static virDriver qemuDriver = {
     .domainSetMetadata = qemuDomainSetMetadata, /* 0.9.10 */
     .domainGetMetadata = qemuDomainGetMetadata, /* 0.9.10 */
     .domainPMSuspendForDuration = qemuDomainPMSuspendForDuration, /* 0.9.11 */
+    .domainPMWakeup = qemuDomainPMWakeup, /* 0.9.11 */
 };
 
 

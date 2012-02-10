@@ -536,6 +536,8 @@ int qemuMonitorGetBlockIoThrottle(qemuMonitorPtr mon,
                                   const char *device,
                                   virDomainBlockIoTuneInfoPtr reply);
 
+int qemuMonitorSystemWakeup(qemuMonitorPtr mon);
+
 /**
  * When running two dd process and using <> redirection, we need a
  * shell that will not truncate files.  These two strings serve that

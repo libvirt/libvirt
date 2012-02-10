@@ -267,4 +267,6 @@ int qemuMonitorJSONGetBlockIoThrottle(qemuMonitorPtr mon,
                                       const char *device,
                                       virDomainBlockIoTuneInfoPtr reply);
 
+int qemuMonitorJSONSystemWakeup(qemuMonitorPtr mon);
+
 #endif /* QEMU_MONITOR_JSON_H */

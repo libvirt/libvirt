@@ -2784,3 +2784,22 @@ int qemuMonitorOpenGraphics(qemuMonitorPtr mon,
 
     return ret;
 }
+
+int qemuMonitorSystemWakeup(qemuMonitorPtr mon)
+{
+    VIR_DEBUG("mon=%p", mon);
+
+    if (!mon) {
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+                        _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONSystemWakeup(mon);
+}
