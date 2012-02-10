@@ -38,9 +38,9 @@
 typedef struct _virStoragePerms virStoragePerms;
 typedef virStoragePerms *virStoragePermsPtr;
 struct _virStoragePerms {
-    int mode;
-    int uid;
-    int gid;
+    mode_t mode;
+    uid_t uid;
+    gid_t gid;
     char *label;
 };
 

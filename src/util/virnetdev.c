@@ -443,7 +443,7 @@ int virNetDevSetMTUFromDevice(const char *ifname,
  *
  * Returns 0 on success or -1 in case of error
  */
-int virNetDevSetNamespace(const char *ifname, int pidInNs)
+int virNetDevSetNamespace(const char *ifname, pid_t pidInNs)
 {
     int rc;
     char *pid = NULL;
@@ -451,7 +451,7 @@ int virNetDevSetNamespace(const char *ifname, int pidInNs)
         "ip", "link", "set", ifname, "netns", NULL, NULL
     };
 
-    if (virAsprintf(&pid, "%d", pidInNs) == -1) {
+    if (virAsprintf(&pid, "%lld", (long long) pidInNs) == -1) {
         virReportOOMError();
         return -1;
     }

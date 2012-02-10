@@ -1056,7 +1056,7 @@ cleanup:
 
 static int
 qemudGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
-                    int pid, int tid)
+                    pid_t pid, int tid)
 {
     char *proc;
     FILE *pidinfo;
@@ -1065,10 +1065,12 @@ qemudGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
     int cpu;
     int ret;
 
+    /* In general, we cannot assume pid_t fits in int; but /proc parsing
+     * is specific to Linux where int works fine.  */
     if (tid)
-        ret = virAsprintf(&proc, "/proc/%d/task/%d/stat", pid, tid);
+        ret = virAsprintf(&proc, "/proc/%d/task/%d/stat", (int) pid, tid);
     else
-        ret = virAsprintf(&proc, "/proc/%d/stat", pid);
+        ret = virAsprintf(&proc, "/proc/%d/stat", (int) pid);
     if (ret < 0)
         return -1;
 
@@ -1120,7 +1122,7 @@ qemudGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
 
 
     VIR_DEBUG("Got status for %d/%d user=%llu sys=%llu cpu=%d rss=%ld",
-              pid, tid, usertime, systime, cpu, rss);
+              (int) pid, tid, usertime, systime, cpu, rss);
 
     VIR_FORCE_FCLOSE(pidinfo);
 
@@ -11147,7 +11149,7 @@ cleanup:
 
 
 static virDomainPtr qemuDomainAttach(virConnectPtr conn,
-                                     unsigned int pid,
+                                     unsigned int pid_value,
                                      unsigned int flags)
 {
     struct qemud_driver *driver = conn->privateData;
@@ -11156,6 +11158,7 @@ static virDomainPtr qemuDomainAttach(virConnectPtr conn,
     virDomainPtr dom = NULL;
     virDomainChrSourceDefPtr monConfig = NULL;
     bool monJSON = false;
+    pid_t pid = pid_value;
     char *pidfile = NULL;
 
     virCheckFlags(0, NULL);
@@ -11168,19 +11171,20 @@ static virDomainPtr qemuDomainAttach(virConnectPtr conn,
 
     if (!monConfig) {
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                        _("No monitor connection for pid %u"),
-                        pid);
+                        _("No monitor connection for pid %u"), pid_value);
         goto cleanup;
     }
     if (monConfig->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                        _("Cannot connect to monitor connection of type '%s' for pid %u"),
-                        virDomainChrTypeToString(monConfig->type), pid);
+                        _("Cannot connect to monitor connection of type '%s' "
+                          "for pid %u"),
+                        virDomainChrTypeToString(monConfig->type),
+                        pid_value);
         goto cleanup;
     }
 
     if (!(def->name) &&
-        virAsprintf(&def->name, "attach-pid-%u", pid) < 0) {
+        virAsprintf(&def->name, "attach-pid-%u", pid_value) < 0) {
         virReportOOMError();
         goto cleanup;
     }

@@ -3844,7 +3844,7 @@ retry:
 int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
                       struct qemud_driver *driver,
                       virDomainObjPtr vm,
-                      int pid,
+                      pid_t pid,
                       const char *pidfile,
                       virDomainChrSourceDefPtr monConfig,
                       bool monJSON)

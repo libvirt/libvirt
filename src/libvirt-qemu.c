@@ -2,7 +2,7 @@
  * libvirt-qemu.c: Interfaces for the libvirt library to handle qemu-specific
  *                 APIs.
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -116,7 +116,7 @@ error:
 /**
  * virDomainQemuAttach:
  * @conn: pointer to a hypervisor connection
- * @pid: the UNIX process ID of the external QEMU process
+ * @pid_value: the UNIX process ID of the external QEMU process
  * @flags: optional flags, currently unused
  *
  * This API is QEMU specific, so it will only work with hypervisor
@@ -133,6 +133,10 @@ error:
  *   - The '-name' and '-uuid' arguments should have been set (not
  *     mandatory, but strongly recommended)
  *
+ * To date, the only platforms we know of where pid_t is larger than
+ * unsigned int (64-bit Windows) also lack UNIX sockets, so the choice
+ * of @pid_value as an unsigned int should not present any difficulties.
+ *
  * If successful, then the guest will appear in the list of running
  * domains for this connection, and other APIs should operate
  * normally (provided the above requirements were honored).
@@ -141,10 +145,11 @@ error:
  */
 virDomainPtr
 virDomainQemuAttach(virConnectPtr conn,
-                    unsigned int pid,
+                    unsigned int pid_value,
                     unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, pid=%u, flags=%x", conn, pid, flags);
+    pid_t pid = pid_value;
+    VIR_DEBUG("conn=%p, pid=%u, flags=%x", conn, pid_value, flags);
 
     virResetLastError();
 
@@ -154,7 +159,7 @@ virDomainQemuAttach(virConnectPtr conn,
         return NULL;
     }
 
-    if (pid <= 1) {
+    if (pid != pid_value || pid <= 1) {
         virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
@@ -166,7 +171,7 @@ virDomainQemuAttach(virConnectPtr conn,
 
     if (conn->driver->qemuDomainAttach) {
         virDomainPtr ret;
-        ret = conn->driver->qemuDomainAttach(conn, pid, flags);
+        ret = conn->driver->qemuDomainAttach(conn, pid_value, flags);
         if (!ret)
             goto error;
         return ret;

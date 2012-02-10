@@ -1679,7 +1679,7 @@ struct _virDomainObj {
     virMutex lock;
     int refs;
 
-    int pid;
+    pid_t pid;
     virDomainStateReason state;
 
     unsigned int autostart : 1;

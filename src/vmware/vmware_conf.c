@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------*/
 /*
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  * Copyright 2010, diateam (www.diateam.net)
  *
  * This library is free software; you can redistribute it and/or
@@ -457,7 +457,7 @@ vmwareExtractPid(const char * vmxPath)
     FILE *logFile = NULL;
     char line[1024];
     char *tmp = NULL;
-    int pid = -1;
+    int pid_value = -1;
 
     if ((vmxDir = mdir_name(vmxPath)) == NULL)
         goto cleanup;
@@ -485,7 +485,9 @@ vmwareExtractPid(const char * vmxPath)
 
     tmp += strlen(" pid=");
 
-    if (virStrToLong_i(tmp, &tmp, 10, &pid) < 0 || *tmp != ' ') {
+    /* Although 64-bit windows allows 64-bit pid_t, a domain id has to be
+     * 32 bits.  For now, we just reject pid values that overflow int.  */
+    if (virStrToLong_i(tmp, &tmp, 10, &pid_value) < 0 || *tmp != ' ') {
         vmwareError(VIR_ERR_INTERNAL_ERROR, "%s",
                     _("cannot parse pid in vmware log file"));
         goto cleanup;
@@ -495,7 +497,7 @@ cleanup:
     VIR_FREE(vmxDir);
     VIR_FREE(logFilePath);
     VIR_FORCE_FCLOSE(logFile);
-    return pid;
+    return pid_value;
 }
 
 char *

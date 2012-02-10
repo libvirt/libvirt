@@ -1,7 +1,7 @@
 /*
  * libvirtd.c: daemon start of day, guest process & i/o management
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -187,7 +187,7 @@ static int daemonForkIntoBackground(const char *argv0)
     if (pipe(statuspipe) < 0)
         return -1;
 
-    int pid = fork();
+    pid_t pid = fork();
     switch (pid) {
     case 0:
         {

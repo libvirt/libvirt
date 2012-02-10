@@ -294,7 +294,7 @@ virtTestCaptureProgramOutput(const char *const argv[], char **buf, int maxlen)
     if (pipe(pipefd) < 0)
         return -1;
 
-    int pid = fork();
+    pid_t pid = fork();
     switch (pid) {
     case 0:
         VIR_FORCE_CLOSE(pipefd[0]);

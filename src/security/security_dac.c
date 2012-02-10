@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -94,9 +94,10 @@ static const char * virSecurityDACGetDOI(virSecurityManagerPtr mgr ATTRIBUTE_UNU
 }
 
 static int
-virSecurityDACSetOwnership(const char *path, int uid, int gid)
+virSecurityDACSetOwnership(const char *path, uid_t uid, gid_t gid)
 {
-    VIR_INFO("Setting DAC user and group on '%s' to '%d:%d'", path, uid, gid);
+    VIR_INFO("Setting DAC user and group on '%s' to '%ld:%ld'",
+             path, (long) uid, (long) gid);
 
     if (chown(path, uid, gid) < 0) {
         struct stat sb;
@@ -111,18 +112,22 @@ virSecurityDACSetOwnership(const char *path, int uid, int gid)
         }
 
         if (chown_errno == EOPNOTSUPP || chown_errno == EINVAL) {
-            VIR_INFO("Setting user and group to '%d:%d' on '%s' not supported by filesystem",
-                     uid, gid, path);
+            VIR_INFO("Setting user and group to '%ld:%ld' on '%s' not "
+                     "supported by filesystem",
+                     (long) uid, (long) gid, path);
         } else if (chown_errno == EPERM) {
-            VIR_INFO("Setting user and group to '%d:%d' on '%s' not permitted",
-                     uid, gid, path);
+            VIR_INFO("Setting user and group to '%ld:%ld' on '%s' not "
+                     "permitted",
+                     (long) uid, (long) gid, path);
         } else if (chown_errno == EROFS) {
-            VIR_INFO("Setting user and group to '%d:%d' on '%s' not possible on readonly filesystem",
-                     uid, gid, path);
+            VIR_INFO("Setting user and group to '%ld:%ld' on '%s' not "
+                     "possible on readonly filesystem",
+                     (long) uid, (long) gid, path);
         } else {
             virReportSystemError(chown_errno,
-                                 _("unable to set user and group to '%d:%d' on '%s'"),
-                                 uid, gid, path);
+                                 _("unable to set user and group to '%ld:%ld' "
+                                   "on '%s'"),
+                                 (long) uid, (long) gid, path);
             return -1;
         }
     }

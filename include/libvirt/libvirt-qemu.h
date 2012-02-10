@@ -4,7 +4,7 @@
  * Description: Provides the interfaces of the libvirt library to handle
  *              qemu specific methods
  *
- * Copy:  Copyright (C) 2010 Red Hat, Inc.
+ * Copy:  Copyright (C) 2010, 2012 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -29,7 +29,7 @@ int virDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
                                 char **result, unsigned int flags);
 
 virDomainPtr virDomainQemuAttach(virConnectPtr domain,
-                                 unsigned int pid,
+                                 unsigned int pid_value,
                                  unsigned int flags);
 
 # ifdef __cplusplus

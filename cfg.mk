@@ -416,6 +416,12 @@ sc_prohibit_ctype_h:
 	halt="don't use ctype.h; instead, use c-ctype.h"		\
 	  $(_sc_search_regexp)
 
+# Insist on correct types for [pug]id.
+sc_correct_id_types:
+	@prohibit='\<(int|long) *[pug]id\>'				\
+	halt="use pid_t for pid, uid_t for uid, gid_t for gid"		\
+	  $(_sc_search_regexp)
+
 # Ensure that no C source file, docs, or rng schema uses TABs for
 # indentation.  Also match *.h.in files, to get libvirt.h.in.  Exclude
 # files in gnulib, since they're imported.

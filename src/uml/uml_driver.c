@@ -1,7 +1,7 @@
 /*
  * uml_driver.c: core driver methods for managing UML guests
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1240,13 +1240,13 @@ static char *umlGetCapabilities(virConnectPtr conn) {
 
 
 
-static int umlGetProcessInfo(unsigned long long *cpuTime, int pid)
+static int umlGetProcessInfo(unsigned long long *cpuTime, pid_t pid)
 {
     char *proc;
     FILE *pidinfo;
     unsigned long long usertime, systime;
 
-    if (virAsprintf(&proc, "/proc/%d/stat", pid) < 0) {
+    if (virAsprintf(&proc, "/proc/%lld/stat", (long long) pid) < 0) {
         return -1;
     }
 

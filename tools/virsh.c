@@ -16865,26 +16865,26 @@ cmdQemuAttach(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     bool ret = false;
     unsigned int flags = 0;
-    unsigned int pid;
+    unsigned int pid_value; /* API uses unsigned int, not pid_t */
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
 
-    if (vshCommandOptUInt(cmd, "pid", &pid) <= 0) {
+    if (vshCommandOptUInt(cmd, "pid", &pid_value) <= 0) {
         vshError(ctl, "%s", _("missing pid value"));
         goto cleanup;
     }
 
-    if (!(dom = virDomainQemuAttach(ctl->conn, pid, flags)))
+    if (!(dom = virDomainQemuAttach(ctl->conn, pid_value, flags)))
         goto cleanup;
 
     if (dom != NULL) {
         vshPrint(ctl, _("Domain %s attached to pid %u\n"),
-                 virDomainGetName(dom), pid);
+                 virDomainGetName(dom), pid_value);
         virDomainFree(dom);
         ret = true;
     } else {
-        vshError(ctl, _("Failed to attach to pid %u"), pid);
+        vshError(ctl, _("Failed to attach to pid %u"), pid_value);
     }
 
 cleanup:

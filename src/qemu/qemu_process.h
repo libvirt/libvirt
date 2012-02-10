@@ -63,7 +63,7 @@ void qemuProcessStop(struct qemud_driver *driver,
 int qemuProcessAttach(virConnectPtr conn,
                       struct qemud_driver *driver,
                       virDomainObjPtr vm,
-                      int pid,
+                      pid_t pid,
                       const char *pidfile,
                       virDomainChrSourceDefPtr monConfig,
                       bool monJSON);

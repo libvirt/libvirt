@@ -13,7 +13,7 @@ struct qemu_monitor_command_ret {
         remote_nonnull_string      result;
 };
 struct qemu_domain_attach_args {
-        u_int                      pid;
+        u_int                      pid_value;
         u_int                      flags;
 };
 struct qemu_domain_attach_ret {

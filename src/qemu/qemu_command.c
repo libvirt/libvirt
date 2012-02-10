@@ -7954,7 +7954,7 @@ cleanup:
 }
 
 
-static int qemuParseProcFileStrings(unsigned int pid,
+static int qemuParseProcFileStrings(int pid_value,
                                     const char *name,
                                     const char ***list)
 {
@@ -7967,7 +7967,7 @@ static int qemuParseProcFileStrings(unsigned int pid,
     const char **str = NULL;
     int i;
 
-    if (virAsprintf(&path, "/proc/%u/%s", pid, name) < 0) {
+    if (virAsprintf(&path, "/proc/%d/%s", pid_value, name) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -8014,7 +8014,7 @@ cleanup:
 }
 
 virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
-                                        unsigned int pid,
+                                        pid_t pid,
                                         char **pidfile,
                                         virDomainChrSourceDefPtr *monConfig,
                                         bool *monJSON)
@@ -8026,7 +8026,10 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
     char *emulator;
     int i;
 
-    if (qemuParseProcFileStrings(pid, "cmdline", &progargv) < 0 ||
+    /* The parser requires /proc/pid, which only exists on platforms
+     * like Linux where pid_t fits in int.  */
+    if ((int) pid != pid ||
+        qemuParseProcFileStrings(pid, "cmdline", &progargv) < 0 ||
         qemuParseProcFileStrings(pid, "environ", &progenv) < 0)
         goto cleanup;
 
@@ -8034,7 +8037,7 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
                                      pidfile, monConfig, monJSON)))
         goto cleanup;
 
-    if (virAsprintf(&exepath, "/proc/%u/exe", pid) < 0) {
+    if (virAsprintf(&exepath, "/proc/%d/exe", (int) pid) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -8042,7 +8045,7 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
     if (virFileResolveLink(exepath, &emulator) < 0) {
         virReportSystemError(errno,
                              _("Unable to resolve %s for pid %u"),
-                             exepath, pid);
+                             exepath, (int) pid);
         goto cleanup;
     }
     VIR_FREE(def->emulator);

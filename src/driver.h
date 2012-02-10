@@ -661,9 +661,10 @@ typedef int
     (*virDrvDomainQemuMonitorCommand)(virDomainPtr domain, const char *cmd,
                                       char **result, unsigned int flags);
 
+/* Choice of unsigned int rather than pid_t is intentional.  */
 typedef virDomainPtr
     (*virDrvDomainQemuAttach)(virConnectPtr conn,
-                              unsigned int pid,
+                              unsigned int pid_value,
                               unsigned int flags);
 
 typedef int
