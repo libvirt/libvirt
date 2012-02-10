@@ -1313,6 +1313,12 @@ values):
     disk equivallent of S4 ACPI state
     hybrid RAM is saved to disk but not powered off
 
+=item B<dompmwakeup> I<domain-id>
+
+Wakeup a domain suspended by dompmsuspend command. Injects a wakeup
+into the guest that previously used dompmsuspend, rather than waiting
+for the previously requested duration (if any) to elapse.
+
 =item B<ttyconsole> I<domain-id>
 
 Output the device used for the TTY console of the domain. If the information

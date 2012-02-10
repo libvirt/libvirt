@@ -2528,6 +2528,52 @@ cleanup:
 }
 
 /*
+ * "dompmwakeup" command
+ */
+
+static const vshCmdInfo info_dom_pm_wakeup[] = {
+    {"help", N_("wakeup a domain suspended by dompmsuspend command")},
+    {"desc", N_("Wakeup a domain previously suspended "
+                "by dompmsuspend command.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_dom_pm_wakeup[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdDomPMWakeup(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    const char *name;
+    bool ret = false;
+    unsigned int flags = 0;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
+        return false;
+
+    if (virDomainPMWakeup(dom, flags) < 0) {
+        vshError(ctl, _("Domain %s could not be woken up"),
+                 virDomainGetName(dom));
+        goto cleanup;
+    }
+
+    vshPrint(ctl, _("Domain %s successfully woken up"),
+             virDomainGetName(dom));
+
+    ret = true;
+
+cleanup:
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "create" command
  */
 static const vshCmdInfo info_create[] = {
@@ -16554,6 +16600,8 @@ static const vshCmdDef domManagementCmds[] = {
     {"domname", cmdDomname, opts_domname, info_domname, 0},
     {"dompmsuspend", cmdDomPMSuspend,
      opts_dom_pm_suspend, info_dom_pm_suspend, 0},
+    {"dompmwakeup", cmdDomPMWakeup,
+     opts_dom_pm_wakeup, info_dom_pm_wakeup, 0},
     {"domuuid", cmdDomuuid, opts_domuuid, info_domuuid, 0},
     {"domxml-from-native", cmdDomXMLFromNative, opts_domxmlfromnative,
      info_domxmlfromnative, 0},
