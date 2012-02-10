@@ -449,8 +449,6 @@ static int lxcContainerMountBasicFS(const char *srcprefix, bool pivotRoot)
     char *opts = NULL;
 #if HAVE_SELINUX
     security_context_t con;
-#else
-    bool con = false;
 #endif
 
     VIR_DEBUG("Mounting basic filesystems %s pivotRoot=%d", NULLSTR(srcprefix), pivotRoot);
@@ -511,10 +509,17 @@ static int lxcContainerMountBasicFS(const char *srcprefix, bool pivotRoot)
          * tmpfs is limited to 64kb, since we only have device nodes in there
          * and don't want to DOS the entire OS RAM usage
          */
-        if (virAsprintf(&opts, "mode=755,size=65536%s%s%s",
-                        con ? ",context=\"" : "",
-                        con ? (const char *)con : "",
-                        con ? "\"" : "") < 0) {
+
+#if HAVE_SELINUX
+        if (con)
+            ignore_value(virAsprintf(&opts,
+                                     "mode=755,size=65536,context=\"%s\"",
+                                     (const char *)con));
+        else
+#endif
+            opts = strdup("mode=755,size=65536");
+
+        if (!opts) {
             virReportOOMError();
             goto cleanup;
         }
