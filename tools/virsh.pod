@@ -604,8 +604,9 @@ I<--total_iops_sec> specifies total I/O operations limit per second.
 I<--read_iops_sec> specifies read I/O operations limit per second.
 I<--write_iops_sec> specifies write I/O operations limit per second.
 
-When setting any value, all remaining values are reset to unlimited,
-an explicit 0 also clears any limit.  A non-zero value for a given total
+Bytes and iops values are independent, but setting only one value (such
+as --read_bytes_sec) resets the other two in that category to unlimited.
+An explicit 0 also clears any limit.  A non-zero value for a given total
 cannot be mixed with non-zero values for read or write.
 
 If I<--live> is specified, affect a running guest.

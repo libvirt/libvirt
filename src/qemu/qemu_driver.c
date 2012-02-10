@@ -11309,7 +11309,7 @@ cleanup:
 }
 
 static char *
-qemuDiskPathToAlias(virDomainObjPtr vm, const char *path)
+qemuDiskPathToAlias(virDomainObjPtr vm, const char *path, int *idx)
 {
     int i;
     char *ret = NULL;
@@ -11320,6 +11320,8 @@ qemuDiskPathToAlias(virDomainObjPtr vm, const char *path)
         goto cleanup;
 
     disk = vm->def->disks[i];
+    if (idx)
+        *idx = i;
 
     if (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
         disk->type != VIR_DOMAIN_DISK_TYPE_FILE)
@@ -11361,7 +11363,7 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
         goto cleanup;
     }
 
-    device = qemuDiskPathToAlias(vm, path);
+    device = qemuDiskPathToAlias(vm, path, NULL);
     if (!device) {
         goto cleanup;
     }
@@ -11529,11 +11531,14 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     qemuDomainObjPrivatePtr priv;
     virDomainDefPtr persistentDef = NULL;
     virDomainBlockIoTuneInfo info;
+    virDomainBlockIoTuneInfo *oldinfo;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     const char *device = NULL;
     int ret = -1;
     int i;
     int idx = -1;
+    bool set_bytes = false;
+    bool set_iops = false;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -11564,7 +11569,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         goto cleanup;
     }
 
-    device = qemuDiskPathToAlias(vm, disk);
+    device = qemuDiskPathToAlias(vm, disk, &idx);
     if (!device) {
         goto cleanup;
     }
@@ -11581,21 +11586,27 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
         if (STREQ(param->field, VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC)) {
             info.total_bytes_sec = param->value.ul;
+            set_bytes = true;
         } else if (STREQ(param->field,
                          VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC)) {
             info.read_bytes_sec = param->value.ul;
+            set_bytes = true;
         } else if (STREQ(param->field,
                          VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC)) {
             info.write_bytes_sec = param->value.ul;
+            set_bytes = true;
         } else if (STREQ(param->field,
                          VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC)) {
             info.total_iops_sec = param->value.ul;
+            set_iops = true;
         } else if (STREQ(param->field,
                          VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC)) {
             info.read_iops_sec = param->value.ul;
+            set_iops = true;
         } else if (STREQ(param->field,
                          VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC)) {
             info.write_iops_sec = param->value.ul;
+            set_iops = true;
         }
     }
 
@@ -11614,10 +11625,25 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        /* If the user didn't specify bytes limits, inherit previous
+         * values; likewise if the user didn't specify iops
+         * limits.  */
+        oldinfo = &vm->def->disks[idx]->blkdeviotune;
+        if (!set_bytes) {
+            info.total_bytes_sec = oldinfo->total_bytes_sec;
+            info.read_bytes_sec = oldinfo->read_bytes_sec;
+            info.write_bytes_sec = oldinfo->write_bytes_sec;
+        }
+        if (!set_iops) {
+            info.total_iops_sec = oldinfo->total_iops_sec;
+            info.read_iops_sec = oldinfo->read_iops_sec;
+            info.write_iops_sec = oldinfo->write_iops_sec;
+        }
         priv = vm->privateData;
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         ret = qemuMonitorSetBlockIoThrottle(priv->mon, device, &info);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
+        vm->def->disks[idx]->blkdeviotune = info;
         if (ret < 0)
             goto endjob;
     }
@@ -11627,6 +11653,17 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         idx = virDomainDiskIndexByName(persistentDef, disk, true);
         if (idx < 0)
             goto endjob;
+        oldinfo = &persistentDef->disks[idx]->blkdeviotune;
+        if (!set_bytes) {
+            info.total_bytes_sec = oldinfo->total_bytes_sec;
+            info.read_bytes_sec = oldinfo->read_bytes_sec;
+            info.write_bytes_sec = oldinfo->write_bytes_sec;
+        }
+        if (!set_iops) {
+            info.total_iops_sec = oldinfo->total_iops_sec;
+            info.read_iops_sec = oldinfo->read_iops_sec;
+            info.write_iops_sec = oldinfo->write_iops_sec;
+        }
         persistentDef->disks[idx]->blkdeviotune = info;
         ret = virDomainSaveConfig(driver->configDir, persistentDef);
         if (ret < 0) {
@@ -11688,7 +11725,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
         goto cleanup;
     }
 
-    device = qemuDiskPathToAlias(vm, disk);
+    device = qemuDiskPathToAlias(vm, disk, NULL);
 
     if (!device) {
         goto cleanup;
