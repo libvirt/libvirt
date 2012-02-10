@@ -42,16 +42,12 @@
 #include "virpidfile.h"
 #include "buf.h"
 #include "ignore-value.h"
-#include "verify.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 #define virCommandError(code, ...)                                      \
     virReportErrorHelper(VIR_FROM_NONE, code, __FILE__,                 \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
-
-/* We have quite a bit of changes to make if this doesn't hold.  */
-verify(sizeof(pid_t) <= sizeof(int));
 
 /* Flags for virExecWithHook */
 enum {
@@ -2152,8 +2148,8 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
 
     if (cmd->pid != -1) {
         virCommandError(VIR_ERR_INTERNAL_ERROR,
-                        _("command is already running as pid %d"),
-                        cmd->pid);
+                        _("command is already running as pid %lld"),
+                        (long long) cmd->pid);
         return -1;
     }
 
@@ -2228,7 +2224,8 @@ virPidWait(pid_t pid, int *exitstatus)
     int status;
 
     if (pid <= 0) {
-        virReportSystemError(EINVAL, _("unable to wait for process %d"), pid);
+        virReportSystemError(EINVAL, _("unable to wait for process %lld"),
+                             (long long) pid);
         return -1;
     }
 
@@ -2237,7 +2234,8 @@ virPidWait(pid_t pid, int *exitstatus)
            errno == EINTR);
 
     if (ret == -1) {
-        virReportSystemError(errno, _("unable to wait for process %d"), pid);
+        virReportSystemError(errno, _("unable to wait for process %lld"),
+                             (long long) pid);
         return -1;
     }
 
@@ -2245,8 +2243,8 @@ virPidWait(pid_t pid, int *exitstatus)
         if (status != 0) {
             char *st = virCommandTranslateStatus(status);
             virCommandError(VIR_ERR_INTERNAL_ERROR,
-                            _("Child process (%d) status unexpected: %s"),
-                            pid, NULLSTR(st));
+                            _("Child process (%lld) status unexpected: %s"),
+                            (long long) pid, NULLSTR(st));
             VIR_FREE(st);
             return -1;
         }
@@ -2371,7 +2369,7 @@ virPidAbort(pid_t pid)
             }
         }
     }
-    VIR_DEBUG("failed to reap child %d, abandoning it", pid);
+    VIR_DEBUG("failed to reap child %lld, abandoning it", (long long) pid);
 
 cleanup:
     VIR_FREE(tmp);
