@@ -144,7 +144,7 @@
     </function>
     <function name='virDomainBlockStatsFlags' file='python'>
       <info>Extracts block device statistics parameters of a running domain</info>
-      <return type='virTypedParameterPtr' info='None in case of error, returns a dictionary of params'/>
+      <return type='str *' info='None in case of error, returns a dictionary of params'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
       <arg name='path' type='char *' info='the path for the block device'/>
       <arg name='flags' type='int' info='flags (unused; pass 0)'/>
@@ -169,12 +169,12 @@
     </function>
     <function name='virDomainGetSchedulerParameters' file='python'>
       <info>Get the scheduler parameters, the @params array will be filled with the values.</info>
-      <return type='int' info='-1 in case of error, 0 in case of success.'/>
+      <return type='str *' info='None in case of error, returns a dictionary of params.'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
     </function>
     <function name='virDomainGetSchedulerParametersFlags' file='python'>
       <info>Get the scheduler parameters</info>
-     <return type='virSchedParameterPtr' info='None in case of error, returns a dictionary of params'/>
+     <return type='str *' info='None in case of error, returns a dictionary of params'/>
      <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
      <arg name='flags' type='int' info='an OR&apos;ed set of virDomainModificationImpact'/>
     </function>
@@ -231,7 +231,7 @@
     </function>
     <function name='virDomainGetBlkioParameters' file='python'>
       <info>Get the blkio parameters</info>
-      <return type='virSchedParameterPtr' info='None in case of error, returns a dictionary of params'/>
+      <return type='str *' info='None in case of error, returns a dictionary of params'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
       <arg name='flags' type='int' info='an OR&apos;ed set of virDomainModificationImpact'/>
     </function>
@@ -244,7 +244,7 @@
     </function>
     <function name='virDomainGetMemoryParameters' file='python'>
       <info>Get the memory parameters</info>
-      <return type='virSchedParameterPtr' info='None in case of error, returns a dictionary of params'/>
+      <return type='str *' info='None in case of error, returns a dictionary of params'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
       <arg name='flags' type='int' info='an OR&apos;ed set of virDomainModificationImpact'/>
     </function>
@@ -415,7 +415,7 @@
       <arg name='dom' type='virDomainPtr' info='pointer to the domain'/>
       <arg name='disk' type='const char *' info='disk name'/>
       <arg name='flags' type='unsigned int' info='an OR&apos;ed set of virDomainModificationImpact'/>
-      <return type='virTypedParameterPtr' info='the I/O tunables value or None in case of error'/>
+      <return type='str *' info='the I/O tunables value or None in case of error'/>
     </function>
     <function name='virDomainBlockPeek' file='python'>
       <info>Read the contents of domain's disk device</info>

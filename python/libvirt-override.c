@@ -153,7 +153,8 @@ setPyVirTypedParameter(PyObject *info,
     PyObject *key, *value;
     Py_ssize_t pos = 0;
     virTypedParameterPtr temp = NULL, ret = NULL;
-    int size, i;
+    Py_ssize_t size;
+    int i;
 
     if ((size = PyDict_Size(info)) < 0)
         return NULL;
@@ -330,18 +331,20 @@ libvirt_virDomainBlockStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
 
 static PyObject *
 libvirt_virDomainBlockStatsFlags(PyObject *self ATTRIBUTE_UNUSED,
-                                 PyObject *args) {
+                                 PyObject *args)
+{
     virDomainPtr domain;
-    PyObject *pyobj_domain, *info;
+    PyObject *pyobj_domain;
+    PyObject *ret = NULL;
     int i_retval;
-    int nparams = 0, i;
+    int nparams = 0;
     unsigned int flags;
     virTypedParameterPtr params;
     const char *path;
 
     if (!PyArg_ParseTuple(args, (char *)"Ozi:virDomainBlockStatsFlags",
                           &pyobj_domain, &path, &flags))
-        return(NULL);
+        return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
@@ -351,66 +354,28 @@ libvirt_virDomainBlockStatsFlags(PyObject *self ATTRIBUTE_UNUSED,
     if (i_retval < 0)
         return VIR_PY_NONE;
 
+    if (!nparams)
+        return PyDict_New();
+
     if (VIR_ALLOC_N(params, nparams) < 0)
-        return VIR_PY_NONE;
+        return PyErr_NoMemory();
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
     i_retval = virDomainBlockStatsFlags(domain, path, params, &nparams, flags);
     LIBVIRT_END_ALLOW_THREADS;
 
     if (i_retval < 0) {
-        VIR_FREE(params);
-        return VIR_PY_NONE;
+        ret = VIR_PY_NONE;
+        goto cleanup;
     }
 
-    /* convert to a Python tuple of long objects */
-    if ((info = PyDict_New()) == NULL) {
-        VIR_FREE(params);
-        return VIR_PY_NONE;
-    }
+    ret = getPyVirTypedParameter(params, nparams);
 
-    for (i = 0 ; i < nparams ; i++) {
-        PyObject *key, *val;
-
-        switch (params[i].type) {
-        case VIR_TYPED_PARAM_INT:
-            val = PyInt_FromLong((long)params[i].value.i);
-            break;
-
-        case VIR_TYPED_PARAM_UINT:
-            val = PyInt_FromLong((long)params[i].value.ui);
-            break;
-
-        case VIR_TYPED_PARAM_LLONG:
-            val = PyLong_FromLongLong((long long)params[i].value.l);
-            break;
-
-        case VIR_TYPED_PARAM_ULLONG:
-            val = PyLong_FromLongLong((long long)params[i].value.ul);
-            break;
-
-        case VIR_TYPED_PARAM_DOUBLE:
-            val = PyFloat_FromDouble((double)params[i].value.d);
-            break;
-
-        case VIR_TYPED_PARAM_BOOLEAN:
-            val = PyBool_FromLong((long)params[i].value.b);
-            break;
-
-        default:
-            VIR_FREE(params);
-            Py_DECREF(info);
-            return VIR_PY_NONE;
-        }
-
-        key = libvirt_constcharPtrWrap(params[i].field);
-        PyDict_SetItem(info, key, val);
-    }
-
+cleanup:
+    virTypedParameterArrayClear(params, nparams);
     VIR_FREE(params);
-    return(info);
+    return ret;
 }
-
 
 static PyObject *
 libvirt_virDomainInterfaceStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
@@ -530,17 +495,19 @@ libvirt_virDomainGetSchedulerType(PyObject *self ATTRIBUTE_UNUSED,
 
 static PyObject *
 libvirt_virDomainGetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
-                                        PyObject *args) {
+                                        PyObject *args)
+{
     virDomainPtr domain;
-    PyObject *pyobj_domain, *info;
+    PyObject *pyobj_domain;
+    PyObject *ret = NULL;
     char *c_retval;
     int i_retval;
-    int nparams, i;
+    int nparams = 0;
     virTypedParameterPtr params;
 
     if (!PyArg_ParseTuple(args, (char *)"O:virDomainGetScedulerParameters",
                           &pyobj_domain))
-        return(NULL);
+        return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
@@ -551,78 +518,45 @@ libvirt_virDomainGetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
         return VIR_PY_NONE;
     VIR_FREE(c_retval);
 
+    if (!nparams)
+        return PyDict_New();
+
     if (VIR_ALLOC_N(params, nparams) < 0)
-        return VIR_PY_NONE;
+        return PyErr_NoMemory();
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
     i_retval = virDomainGetSchedulerParameters(domain, params, &nparams);
     LIBVIRT_END_ALLOW_THREADS;
 
     if (i_retval < 0) {
-        VIR_FREE(params);
-        return VIR_PY_NONE;
+        ret = VIR_PY_NONE;
+        goto cleanup;
     }
 
-    /* convert to a Python tuple of long objects */
-    if ((info = PyDict_New()) == NULL) {
-        VIR_FREE(params);
-        return VIR_PY_NONE;
-    }
-    for (i = 0 ; i < nparams ; i++) {
-        PyObject *key, *val;
+    ret = getPyVirTypedParameter(params, nparams);
 
-        switch (params[i].type) {
-        case VIR_TYPED_PARAM_INT:
-            val = PyInt_FromLong((long)params[i].value.i);
-            break;
-
-        case VIR_TYPED_PARAM_UINT:
-            val = PyInt_FromLong((long)params[i].value.ui);
-            break;
-
-        case VIR_TYPED_PARAM_LLONG:
-            val = PyLong_FromLongLong((long long)params[i].value.l);
-            break;
-
-        case VIR_TYPED_PARAM_ULLONG:
-            val = PyLong_FromLongLong((long long)params[i].value.ul);
-            break;
-
-        case VIR_TYPED_PARAM_DOUBLE:
-            val = PyFloat_FromDouble((double)params[i].value.d);
-            break;
-
-        case VIR_TYPED_PARAM_BOOLEAN:
-            val = PyBool_FromLong((long)params[i].value.b);
-            break;
-
-        default:
-            VIR_FREE(params);
-            Py_DECREF(info);
-            return VIR_PY_NONE;
-        }
-
-        key = libvirt_constcharPtrWrap(params[i].field);
-        PyDict_SetItem(info, key, val);
-    }
+cleanup:
+    virTypedParameterArrayClear(params, nparams);
     VIR_FREE(params);
-    return(info);
+    return ret;
 }
 
 static PyObject *
 libvirt_virDomainGetSchedulerParametersFlags(PyObject *self ATTRIBUTE_UNUSED,
-                                        PyObject *args) {
+                                        PyObject *args)
+{
     virDomainPtr domain;
-    PyObject *pyobj_domain, *info;
+    PyObject *pyobj_domain;
+    PyObject *ret = NULL;
     char *c_retval;
     int i_retval;
-    int nparams, i;
+    int nparams = 0;
     unsigned int flags;
     virTypedParameterPtr params;
 
     if (!PyArg_ParseTuple(args, (char *)"Oi:virDomainGetScedulerParametersFlags",
                           &pyobj_domain, &flags))
-        return(NULL);
+        return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
@@ -633,78 +567,55 @@ libvirt_virDomainGetSchedulerParametersFlags(PyObject *self ATTRIBUTE_UNUSED,
         return VIR_PY_NONE;
     VIR_FREE(c_retval);
 
+    if (!nparams)
+        return PyDict_New();
+
     if (VIR_ALLOC_N(params, nparams) < 0)
-        return VIR_PY_NONE;
+        return PyErr_NoMemory();
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
     i_retval = virDomainGetSchedulerParametersFlags(domain, params, &nparams, flags);
     LIBVIRT_END_ALLOW_THREADS;
 
     if (i_retval < 0) {
-        VIR_FREE(params);
-        return VIR_PY_NONE;
+        ret = VIR_PY_NONE;
+        goto cleanup;
     }
 
-    /* convert to a Python tuple of long objects */
-    if ((info = PyDict_New()) == NULL) {
-        VIR_FREE(params);
-        return VIR_PY_NONE;
-    }
-    for (i = 0 ; i < nparams ; i++) {
-        PyObject *key, *val;
+    ret = getPyVirTypedParameter(params, nparams);
 
-        switch (params[i].type) {
-        case VIR_TYPED_PARAM_INT:
-            val = PyInt_FromLong((long)params[i].value.i);
-            break;
-
-        case VIR_TYPED_PARAM_UINT:
-            val = PyInt_FromLong((long)params[i].value.ui);
-            break;
-
-        case VIR_TYPED_PARAM_LLONG:
-            val = PyLong_FromLongLong((long long)params[i].value.l);
-            break;
-
-        case VIR_TYPED_PARAM_ULLONG:
-            val = PyLong_FromLongLong((long long)params[i].value.ul);
-            break;
-
-        case VIR_TYPED_PARAM_DOUBLE:
-            val = PyFloat_FromDouble((double)params[i].value.d);
-            break;
-
-        case VIR_TYPED_PARAM_BOOLEAN:
-            val = PyBool_FromLong((long)params[i].value.b);
-            break;
-
-        default:
-            VIR_FREE(params);
-            Py_DECREF(info);
-            return VIR_PY_NONE;
-        }
-
-        key = libvirt_constcharPtrWrap(params[i].field);
-        PyDict_SetItem(info, key, val);
-    }
+cleanup:
+    virTypedParameterArrayClear(params, nparams);
     VIR_FREE(params);
-    return(info);
+    return ret;
 }
 
 static PyObject *
 libvirt_virDomainSetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
-                                        PyObject *args) {
+                                        PyObject *args)
+{
     virDomainPtr domain;
     PyObject *pyobj_domain, *info;
+    PyObject *ret = NULL;
     char *c_retval;
     int i_retval;
-    int nparams, i;
-    virTypedParameterPtr params;
+    int nparams = 0;
+    Py_ssize_t size = 0;
+    virTypedParameterPtr params, new_params;
 
     if (!PyArg_ParseTuple(args, (char *)"OO:virDomainSetScedulerParameters",
                           &pyobj_domain, &info))
-        return(NULL);
+        return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    if ((size = PyDict_Size(info)) < 0)
+        return NULL;
+
+    if (size == 0) {
+        PyErr_Format(PyExc_LookupError,
+                     "Need non-empty dictionary to set attributes");
+        return NULL;
+    }
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
     c_retval = virDomainGetSchedulerType(domain, &nparams);
@@ -714,94 +625,74 @@ libvirt_virDomainSetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
         return VIR_PY_INT_FAIL;
     VIR_FREE(c_retval);
 
+    if (nparams == 0) {
+        PyErr_Format(PyExc_LookupError,
+                     "Domain has no settable attributes");
+        return NULL;
+    }
+
     if (VIR_ALLOC_N(params, nparams) < 0)
-        return VIR_PY_INT_FAIL;
+        return PyErr_NoMemory();
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
     i_retval = virDomainGetSchedulerParameters(domain, params, &nparams);
     LIBVIRT_END_ALLOW_THREADS;
 
     if (i_retval < 0) {
-        VIR_FREE(params);
-        return VIR_PY_INT_FAIL;
+        ret = VIR_PY_INT_FAIL;
+        goto cleanup;
     }
 
-    /* convert to a Python tuple of long objects */
-    for (i = 0 ; i < nparams ; i++) {
-        PyObject *key, *val;
-        key = libvirt_constcharPtrWrap(params[i].field);
-        val = PyDict_GetItem(info, key);
-        Py_DECREF(key);
-
-        if (val == NULL)
-            continue;
-
-        switch (params[i].type) {
-        case VIR_TYPED_PARAM_INT:
-            params[i].value.i = (int)PyInt_AS_LONG(val);
-            break;
-
-        case VIR_TYPED_PARAM_UINT:
-            params[i].value.ui = (unsigned int)PyInt_AS_LONG(val);
-            break;
-
-        case VIR_TYPED_PARAM_LLONG:
-            params[i].value.l = (long long)PyLong_AsLongLong(val);
-            break;
-
-        case VIR_TYPED_PARAM_ULLONG:
-            params[i].value.ul = (unsigned long long)PyLong_AsLongLong(val);
-            break;
-
-        case VIR_TYPED_PARAM_DOUBLE:
-            params[i].value.d = (double)PyFloat_AsDouble(val);
-            break;
-
-        case VIR_TYPED_PARAM_BOOLEAN:
-            {
-                /* Hack - Python's definition of Py_True breaks strict
-                 * aliasing rules, so can't directly compare :-(
-                 */
-                PyObject *hacktrue = PyBool_FromLong(1);
-                params[i].value.b = hacktrue == val ? 1 : 0;
-                Py_DECREF(hacktrue);
-            }
-            break;
-
-        default:
-            VIR_FREE(params);
-            return VIR_PY_INT_FAIL;
-        }
-    }
+    new_params = setPyVirTypedParameter(info, params, nparams);
+    if (!new_params)
+        goto cleanup;
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
-    i_retval = virDomainSetSchedulerParameters(domain, params, nparams);
+    i_retval = virDomainSetSchedulerParameters(domain, new_params, size);
     LIBVIRT_END_ALLOW_THREADS;
+
     if (i_retval < 0) {
-        VIR_FREE(params);
-        return VIR_PY_INT_FAIL;
+        ret = VIR_PY_INT_FAIL;
+        goto cleanup;
     }
 
+    ret = VIR_PY_INT_SUCCESS;
+
+cleanup:
+    virTypedParameterArrayClear(params, nparams);
     VIR_FREE(params);
-    return VIR_PY_INT_SUCCESS;
+    VIR_FREE(new_params);
+    return ret;
 }
 
 static PyObject *
 libvirt_virDomainSetSchedulerParametersFlags(PyObject *self ATTRIBUTE_UNUSED,
-                                             PyObject *args) {
+                                             PyObject *args)
+{
     virDomainPtr domain;
     PyObject *pyobj_domain, *info;
+    PyObject *ret = NULL;
     char *c_retval;
     int i_retval;
-    int nparams, i;
+    int nparams = 0;
+    Py_ssize_t size = 0;
     unsigned int flags;
-    virTypedParameterPtr params;
+    virTypedParameterPtr params, new_params;
 
     if (!PyArg_ParseTuple(args,
                           (char *)"OOi:virDomainSetScedulerParametersFlags",
                           &pyobj_domain, &info, &flags))
-        return(NULL);
+        return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    if ((size = PyDict_Size(info)) < 0)
+        return NULL;
+
+    if (size == 0) {
+        PyErr_Format(PyExc_LookupError,
+                     "Need non-empty dictionary to set attributes");
+        return NULL;
+    }
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
     c_retval = virDomainGetSchedulerType(domain, &nparams);
@@ -811,94 +702,73 @@ libvirt_virDomainSetSchedulerParametersFlags(PyObject *self ATTRIBUTE_UNUSED,
         return VIR_PY_INT_FAIL;
     VIR_FREE(c_retval);
 
+    if (nparams == 0) {
+        PyErr_Format(PyExc_LookupError,
+                     "Domain has no settable attributes");
+        return NULL;
+    }
+
     if (VIR_ALLOC_N(params, nparams) < 0)
-        return VIR_PY_INT_FAIL;
+        return PyErr_NoMemory();
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
     i_retval = virDomainGetSchedulerParametersFlags(domain, params, &nparams, flags);
     LIBVIRT_END_ALLOW_THREADS;
 
     if (i_retval < 0) {
-        VIR_FREE(params);
-        return VIR_PY_INT_FAIL;
+        ret = VIR_PY_INT_FAIL;
+        goto cleanup;
     }
 
-    /* convert to a Python tuple of long objects */
-    for (i = 0; i < nparams; i++) {
-        PyObject *key, *val;
-        key = libvirt_constcharPtrWrap(params[i].field);
-        val = PyDict_GetItem(info, key);
-        Py_DECREF(key);
-
-        if (val == NULL)
-            continue;
-
-        switch (params[i].type) {
-        case VIR_TYPED_PARAM_INT:
-            params[i].value.i = (int)PyInt_AS_LONG(val);
-            break;
-
-        case VIR_TYPED_PARAM_UINT:
-            params[i].value.ui = (unsigned int)PyInt_AS_LONG(val);
-            break;
-
-        case VIR_TYPED_PARAM_LLONG:
-            params[i].value.l = (long long)PyLong_AsLongLong(val);
-            break;
-
-        case VIR_TYPED_PARAM_ULLONG:
-            params[i].value.ul = (unsigned long long)PyLong_AsLongLong(val);
-            break;
-
-        case VIR_TYPED_PARAM_DOUBLE:
-            params[i].value.d = (double)PyFloat_AsDouble(val);
-            break;
-
-        case VIR_TYPED_PARAM_BOOLEAN:
-            {
-                /* Hack - Python's definition of Py_True breaks strict
-                 * aliasing rules, so can't directly compare :-(
-                 */
-                PyObject *hacktrue = PyBool_FromLong(1);
-                params[i].value.b = hacktrue == val ? 1: 0;
-                Py_DECREF(hacktrue);
-            }
-            break;
-
-        default:
-            VIR_FREE(params);
-            return VIR_PY_INT_FAIL;
-        }
-    }
+    new_params = setPyVirTypedParameter(info, params, nparams);
+    if (!new_params)
+        goto cleanup;
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
-    i_retval = virDomainSetSchedulerParametersFlags(domain, params, nparams, flags);
+    i_retval = virDomainSetSchedulerParametersFlags(domain, new_params, size, flags);
     LIBVIRT_END_ALLOW_THREADS;
+
     if (i_retval < 0) {
-        VIR_FREE(params);
-        return VIR_PY_INT_FAIL;
+        ret = VIR_PY_INT_FAIL;
+        goto cleanup;
     }
 
-    VIR_FREE(params);
-    return VIR_PY_INT_SUCCESS;
-}
+    ret = VIR_PY_INT_SUCCESS;
 
+cleanup:
+    virTypedParameterArrayClear(params, nparams);
+    VIR_FREE(params);
+    VIR_FREE(new_params);
+    return ret;
+}
 
 static PyObject *
 libvirt_virDomainSetBlkioParameters(PyObject *self ATTRIBUTE_UNUSED,
-                                     PyObject *args) {
+                                    PyObject *args)
+{
     virDomainPtr domain;
     PyObject *pyobj_domain, *info;
+    PyObject *ret = NULL;
     int i_retval;
-    int nparams = 0, i;
+    int nparams = 0;
+    Py_ssize_t size = 0;
     unsigned int flags;
-    virTypedParameterPtr params;
+    virTypedParameterPtr params, new_params;
 
     if (!PyArg_ParseTuple(args,
                           (char *)"OOi:virDomainSetBlkioParameters",
                           &pyobj_domain, &info, &flags))
-        return(NULL);
+        return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    if ((size = PyDict_Size(info)) < 0)
+        return NULL;
+
+    if (size == 0) {
+        PyErr_Format(PyExc_LookupError,
+                     "Need non-empty dictionary to set attributes");
+        return NULL;
+    }
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
     i_retval = virDomainGetBlkioParameters(domain, NULL, &nparams, flags);
@@ -907,91 +777,61 @@ libvirt_virDomainSetBlkioParameters(PyObject *self ATTRIBUTE_UNUSED,
     if (i_retval < 0)
         return VIR_PY_INT_FAIL;
 
+    if (nparams == 0) {
+        PyErr_Format(PyExc_LookupError,
+                     "Domain has no settable attributes");
+        return NULL;
+    }
+
     if (VIR_ALLOC_N(params, nparams) < 0)
-        return VIR_PY_INT_FAIL;
+        return PyErr_NoMemory();
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
     i_retval = virDomainGetBlkioParameters(domain, params, &nparams, flags);
     LIBVIRT_END_ALLOW_THREADS;
 
     if (i_retval < 0) {
-        VIR_FREE(params);
-        return VIR_PY_INT_FAIL;
+        ret = VIR_PY_INT_FAIL;
+        goto cleanup;
     }
 
-    /* convert to a Python tuple of long objects */
-    for (i = 0; i < nparams; i++) {
-        PyObject *key, *val;
-        key = libvirt_constcharPtrWrap(params[i].field);
-        val = PyDict_GetItem(info, key);
-        Py_DECREF(key);
-
-        if (val == NULL)
-            continue;
-
-        switch (params[i].type) {
-        case VIR_TYPED_PARAM_INT:
-            params[i].value.i = (int)PyInt_AS_LONG(val);
-            break;
-
-        case VIR_TYPED_PARAM_UINT:
-            params[i].value.ui = (unsigned int)PyInt_AS_LONG(val);
-            break;
-
-        case VIR_TYPED_PARAM_LLONG:
-            params[i].value.l = (long long)PyLong_AsLongLong(val);
-            break;
-
-        case VIR_TYPED_PARAM_ULLONG:
-            params[i].value.ul = (unsigned long long)PyLong_AsLongLong(val);
-            break;
-
-        case VIR_TYPED_PARAM_DOUBLE:
-            params[i].value.d = (double)PyFloat_AsDouble(val);
-            break;
-
-        case VIR_TYPED_PARAM_BOOLEAN:
-            {
-                /* Hack - Python's definition of Py_True breaks strict
-                 * aliasing rules, so can't directly compare :-(
-                 */
-                PyObject *hacktrue = PyBool_FromLong(1);
-                params[i].value.b = hacktrue == val ? 1: 0;
-                Py_DECREF(hacktrue);
-            }
-            break;
-
-        default:
-            VIR_FREE(params);
-            return VIR_PY_INT_FAIL;
-        }
-    }
+    new_params = setPyVirTypedParameter(info, params, nparams);
+    if (!new_params)
+        goto cleanup;
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
-    i_retval = virDomainSetBlkioParameters(domain, params, nparams, flags);
+    i_retval = virDomainSetBlkioParameters(domain, new_params, size, flags);
     LIBVIRT_END_ALLOW_THREADS;
+
     if (i_retval < 0) {
-        VIR_FREE(params);
-        return VIR_PY_INT_FAIL;
+        ret = VIR_PY_INT_FAIL;
+        goto cleanup;
     }
 
+    ret = VIR_PY_INT_SUCCESS;
+
+cleanup:
+    virTypedParameterArrayClear(params, nparams);
     VIR_FREE(params);
-    return VIR_PY_INT_SUCCESS;
+    VIR_FREE(new_params);
+    return ret;
 }
 
 static PyObject *
 libvirt_virDomainGetBlkioParameters(PyObject *self ATTRIBUTE_UNUSED,
-                                     PyObject *args) {
+                                    PyObject *args)
+{
     virDomainPtr domain;
-    PyObject *pyobj_domain, *info;
+    PyObject *pyobj_domain;
+    PyObject *ret = NULL;
     int i_retval;
-    int nparams = 0, i;
+    int nparams = 0;
     unsigned int flags;
     virTypedParameterPtr params;
 
     if (!PyArg_ParseTuple(args, (char *)"Oi:virDomainGetBlkioParameters",
                           &pyobj_domain, &flags))
-        return(NULL);
+        return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
@@ -1001,79 +841,56 @@ libvirt_virDomainGetBlkioParameters(PyObject *self ATTRIBUTE_UNUSED,
     if (i_retval < 0)
         return VIR_PY_NONE;
 
+    if (!nparams)
+        return PyDict_New();
+
     if (VIR_ALLOC_N(params, nparams) < 0)
-        return VIR_PY_NONE;
+        return PyErr_NoMemory();
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
     i_retval = virDomainGetBlkioParameters(domain, params, &nparams, flags);
     LIBVIRT_END_ALLOW_THREADS;
 
     if (i_retval < 0) {
-        VIR_FREE(params);
-        return VIR_PY_NONE;
+        ret = VIR_PY_NONE;
+        goto cleanup;
     }
 
-    /* convert to a Python tuple of long objects */
-    if ((info = PyDict_New()) == NULL) {
-        VIR_FREE(params);
-        return VIR_PY_NONE;
-    }
-    for (i = 0 ; i < nparams ; i++) {
-        PyObject *key, *val;
+    ret = getPyVirTypedParameter(params, nparams);
 
-        switch (params[i].type) {
-        case VIR_TYPED_PARAM_INT:
-            val = PyInt_FromLong((long)params[i].value.i);
-            break;
-
-        case VIR_TYPED_PARAM_UINT:
-            val = PyInt_FromLong((long)params[i].value.ui);
-            break;
-
-        case VIR_TYPED_PARAM_LLONG:
-            val = PyLong_FromLongLong((long long)params[i].value.l);
-            break;
-
-        case VIR_TYPED_PARAM_ULLONG:
-            val = PyLong_FromLongLong((long long)params[i].value.ul);
-            break;
-
-        case VIR_TYPED_PARAM_DOUBLE:
-            val = PyFloat_FromDouble((double)params[i].value.d);
-            break;
-
-        case VIR_TYPED_PARAM_BOOLEAN:
-            val = PyBool_FromLong((long)params[i].value.b);
-            break;
-
-        default:
-            VIR_FREE(params);
-            Py_DECREF(info);
-            return VIR_PY_NONE;
-        }
-
-        key = libvirt_constcharPtrWrap(params[i].field);
-        PyDict_SetItem(info, key, val);
-    }
+cleanup:
+    virTypedParameterArrayClear(params, nparams);
     VIR_FREE(params);
-    return(info);
+    return ret;
 }
 
 static PyObject *
 libvirt_virDomainSetMemoryParameters(PyObject *self ATTRIBUTE_UNUSED,
-                                     PyObject *args) {
+                                     PyObject *args)
+{
     virDomainPtr domain;
     PyObject *pyobj_domain, *info;
+    PyObject *ret = NULL;
     int i_retval;
-    int nparams = 0, i;
+    int nparams = 0;
+    Py_ssize_t size = 0;
     unsigned int flags;
-    virTypedParameterPtr params;
+    virTypedParameterPtr params, new_params;
 
     if (!PyArg_ParseTuple(args,
                           (char *)"OOi:virDomainSetMemoryParameters",
                           &pyobj_domain, &info, &flags))
-        return(NULL);
+        return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    if ((size = PyDict_Size(info)) < 0)
+        return NULL;
+
+    if (size == 0) {
+        PyErr_Format(PyExc_LookupError,
+                     "Need non-empty dictionary to set attributes");
+        return NULL;
+    }
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
     i_retval = virDomainGetMemoryParameters(domain, NULL, &nparams, flags);
@@ -1082,91 +899,61 @@ libvirt_virDomainSetMemoryParameters(PyObject *self ATTRIBUTE_UNUSED,
     if (i_retval < 0)
         return VIR_PY_INT_FAIL;
 
+    if (nparams == 0) {
+        PyErr_Format(PyExc_LookupError,
+                     "Domain has no settable attributes");
+        return NULL;
+    }
+
     if (VIR_ALLOC_N(params, nparams) < 0)
-        return VIR_PY_INT_FAIL;
+        return PyErr_NoMemory();
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
     i_retval = virDomainGetMemoryParameters(domain, params, &nparams, flags);
     LIBVIRT_END_ALLOW_THREADS;
 
     if (i_retval < 0) {
-        VIR_FREE(params);
-        return VIR_PY_INT_FAIL;
+        ret = VIR_PY_INT_FAIL;
+        goto cleanup;
     }
 
-    /* convert to a Python tuple of long objects */
-    for (i = 0; i < nparams; i++) {
-        PyObject *key, *val;
-        key = libvirt_constcharPtrWrap(params[i].field);
-        val = PyDict_GetItem(info, key);
-        Py_DECREF(key);
-
-        if (val == NULL)
-            continue;
-
-        switch (params[i].type) {
-        case VIR_TYPED_PARAM_INT:
-            params[i].value.i = (int)PyInt_AS_LONG(val);
-            break;
-
-        case VIR_TYPED_PARAM_UINT:
-            params[i].value.ui = (unsigned int)PyInt_AS_LONG(val);
-            break;
-
-        case VIR_TYPED_PARAM_LLONG:
-            params[i].value.l = (long long)PyLong_AsLongLong(val);
-            break;
-
-        case VIR_TYPED_PARAM_ULLONG:
-            params[i].value.ul = (unsigned long long)PyLong_AsLongLong(val);
-            break;
-
-        case VIR_TYPED_PARAM_DOUBLE:
-            params[i].value.d = (double)PyFloat_AsDouble(val);
-            break;
-
-        case VIR_TYPED_PARAM_BOOLEAN:
-            {
-                /* Hack - Python's definition of Py_True breaks strict
-                 * aliasing rules, so can't directly compare :-(
-                 */
-                PyObject *hacktrue = PyBool_FromLong(1);
-                params[i].value.b = hacktrue == val ? 1: 0;
-                Py_DECREF(hacktrue);
-            }
-            break;
-
-        default:
-            VIR_FREE(params);
-            return VIR_PY_INT_FAIL;
-        }
-    }
+    new_params = setPyVirTypedParameter(info, params, nparams);
+    if (!new_params)
+        goto cleanup;
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
-    i_retval = virDomainSetMemoryParameters(domain, params, nparams, flags);
+    i_retval = virDomainSetMemoryParameters(domain, new_params, size, flags);
     LIBVIRT_END_ALLOW_THREADS;
+
     if (i_retval < 0) {
-        VIR_FREE(params);
-        return VIR_PY_INT_FAIL;
+        ret = VIR_PY_INT_FAIL;
+        goto cleanup;
     }
 
+    ret = VIR_PY_INT_SUCCESS;
+
+cleanup:
+    virTypedParameterArrayClear(params, nparams);
     VIR_FREE(params);
-    return VIR_PY_INT_SUCCESS;
+    VIR_FREE(new_params);
+    return ret;
 }
 
 static PyObject *
 libvirt_virDomainGetMemoryParameters(PyObject *self ATTRIBUTE_UNUSED,
-                                     PyObject *args) {
+                                     PyObject *args)
+{
     virDomainPtr domain;
-    PyObject *pyobj_domain, *info;
+    PyObject *pyobj_domain;
+    PyObject *ret = NULL;
     int i_retval;
-    int nparams = 0, i;
+    int nparams = 0;
     unsigned int flags;
     virTypedParameterPtr params;
 
     if (!PyArg_ParseTuple(args, (char *)"Oi:virDomainGetMemoryParameters",
                           &pyobj_domain, &flags))
-        return(NULL);
+        return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
@@ -1176,62 +963,27 @@ libvirt_virDomainGetMemoryParameters(PyObject *self ATTRIBUTE_UNUSED,
     if (i_retval < 0)
         return VIR_PY_NONE;
 
+    if (!nparams)
+        return PyDict_New();
+
     if (VIR_ALLOC_N(params, nparams) < 0)
-        return VIR_PY_NONE;
+        return PyErr_NoMemory();
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
     i_retval = virDomainGetMemoryParameters(domain, params, &nparams, flags);
     LIBVIRT_END_ALLOW_THREADS;
 
     if (i_retval < 0) {
-        VIR_FREE(params);
-        return VIR_PY_NONE;
+        ret = VIR_PY_NONE;
+        goto cleanup;
     }
 
-    /* convert to a Python tuple of long objects */
-    if ((info = PyDict_New()) == NULL) {
-        VIR_FREE(params);
-        return VIR_PY_NONE;
-    }
-    for (i = 0 ; i < nparams ; i++) {
-        PyObject *key, *val;
+    ret = getPyVirTypedParameter(params, nparams);
 
-        switch (params[i].type) {
-        case VIR_TYPED_PARAM_INT:
-            val = PyInt_FromLong((long)params[i].value.i);
-            break;
-
-        case VIR_TYPED_PARAM_UINT:
-            val = PyInt_FromLong((long)params[i].value.ui);
-            break;
-
-        case VIR_TYPED_PARAM_LLONG:
-            val = PyLong_FromLongLong((long long)params[i].value.l);
-            break;
-
-        case VIR_TYPED_PARAM_ULLONG:
-            val = PyLong_FromLongLong((long long)params[i].value.ul);
-            break;
-
-        case VIR_TYPED_PARAM_DOUBLE:
-            val = PyFloat_FromDouble((double)params[i].value.d);
-            break;
-
-        case VIR_TYPED_PARAM_BOOLEAN:
-            val = PyBool_FromLong((long)params[i].value.b);
-            break;
-
-        default:
-            VIR_FREE(params);
-            Py_DECREF(info);
-            return VIR_PY_NONE;
-        }
-
-        key = libvirt_constcharPtrWrap(params[i].field);
-        PyDict_SetItem(info, key, val);
-    }
+cleanup:
+    virTypedParameterArrayClear(params, nparams);
     VIR_FREE(params);
-    return(info);
+    return ret;
 }
 
 static PyObject *
@@ -1242,7 +994,8 @@ libvirt_virDomainSetNumaParameters(PyObject *self ATTRIBUTE_UNUSED,
     PyObject *pyobj_domain, *info;
     PyObject *ret = NULL;
     int i_retval;
-    int nparams = 0, size = 0;
+    int nparams = 0;
+    Py_ssize_t size = 0;
     unsigned int flags;
     virTypedParameterPtr params, new_params;
 
@@ -3650,93 +3403,74 @@ libvirt_virDomainSetBlockIoTune(PyObject *self ATTRIBUTE_UNUSED,
                                 PyObject *args)
 {
     virDomainPtr domain;
-    PyObject *pyobj_domain, *pyinfo;
+    PyObject *pyobj_domain, *info;
+    PyObject *ret = NULL;
+    int i_retval;
+    int nparams = 0;
+    Py_ssize_t size = 0;
     const char *disk;
     unsigned int flags;
-    virTypedParameterPtr params;
-    int nparams = 0, i;
-    int c_ret;
+    virTypedParameterPtr params, new_params;
 
     if (!PyArg_ParseTuple(args, (char *)"OzOi:virDomainSetBlockIoTune",
-                          &pyobj_domain, &disk, &pyinfo, &flags))
-        return(NULL);
+                          &pyobj_domain, &disk, &info, &flags))
+        return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
+    if ((size = PyDict_Size(info)) < 0)
+        return NULL;
+
+    if (size == 0) {
+        PyErr_Format(PyExc_LookupError,
+                     "Need non-empty dictionary to set attributes");
+        return NULL;
+    }
+
     LIBVIRT_BEGIN_ALLOW_THREADS;
-    c_ret = virDomainGetBlockIoTune(domain, disk, NULL, &nparams, flags);
+    i_retval = virDomainGetBlockIoTune(domain, disk, NULL, &nparams, flags);
     LIBVIRT_END_ALLOW_THREADS;
 
-    if (c_ret < 0)
+    if (i_retval < 0)
         return VIR_PY_INT_FAIL;
+
+    if (nparams == 0) {
+        PyErr_Format(PyExc_LookupError,
+                     "Domain has no settable attributes");
+        return NULL;
+    }
 
     if (VIR_ALLOC_N(params, nparams) < 0)
-        return VIR_PY_INT_FAIL;
+        return PyErr_NoMemory();
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
-    c_ret = virDomainGetBlockIoTune(domain, disk, params, &nparams, flags);
+    i_retval = virDomainGetBlockIoTune(domain, disk, params, &nparams, flags);
     LIBVIRT_END_ALLOW_THREADS;
 
-    if (c_ret < 0) {
-        VIR_FREE(params);
-        return VIR_PY_INT_FAIL;
+    if (i_retval < 0) {
+        ret = VIR_PY_INT_FAIL;
+        goto cleanup;
     }
 
-    /* convert to a Python tuple of long objects */
-    for (i = 0; i < nparams; i++) {
-        PyObject *key, *val;
-        key = libvirt_constcharPtrWrap(params[i].field);
-        val = PyDict_GetItem(pyinfo, key);
-        Py_DECREF(key);
-
-        if (val == NULL)
-            continue;
-
-        switch (params[i].type) {
-        case VIR_TYPED_PARAM_INT:
-            params[i].value.i = (int)PyInt_AS_LONG(val);
-            break;
-
-        case VIR_TYPED_PARAM_UINT:
-            params[i].value.ui = (unsigned int)PyInt_AS_LONG(val);
-            break;
-
-        case VIR_TYPED_PARAM_LLONG:
-            params[i].value.l = (long long)PyLong_AsLongLong(val);
-            break;
-
-        case VIR_TYPED_PARAM_ULLONG:
-            params[i].value.ul = (unsigned long long)PyLong_AsLongLong(val);
-            break;
-
-        case VIR_TYPED_PARAM_DOUBLE:
-            params[i].value.d = (double)PyFloat_AsDouble(val);
-            break;
-
-        case VIR_TYPED_PARAM_BOOLEAN:
-            {
-                PyObject *hacktrue = PyBool_FromLong(1);
-                params[i].value.b = hacktrue == val ? 1: 0;
-                Py_DECREF(hacktrue);
-            }
-            break;
-
-        default:
-            VIR_FREE(params);
-            return VIR_PY_INT_FAIL;
-        }
-    }
+    new_params = setPyVirTypedParameter(info, params, nparams);
+    if (!new_params)
+        goto cleanup;
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
-    c_ret = virDomainSetBlockIoTune(domain, disk, params, nparams, flags);
+    i_retval = virDomainSetBlockIoTune(domain, disk, new_params, size, flags);
     LIBVIRT_END_ALLOW_THREADS;
 
-    if (c_ret < 0) {
-        VIR_FREE(params);
-        return VIR_PY_INT_FAIL;
+    if (i_retval < 0) {
+        ret = VIR_PY_INT_FAIL;
+        goto cleanup;
     }
 
+    ret = VIR_PY_INT_SUCCESS;
+
+cleanup:
+    virTypedParameterArrayClear(params, nparams);
     VIR_FREE(params);
-    return VIR_PY_INT_SUCCESS;
+    VIR_FREE(new_params);
+    return ret;
 }
 
 static PyObject *
@@ -3744,81 +3478,47 @@ libvirt_virDomainGetBlockIoTune(PyObject *self ATTRIBUTE_UNUSED,
                                 PyObject *args)
 {
     virDomainPtr domain;
-    PyObject *pyobj_domain, *pyreply;
+    PyObject *pyobj_domain;
+    PyObject *ret = NULL;
+    int i_retval;
+    int nparams = 0;
     const char *disk;
-    int nparams = 0, i;
     unsigned int flags;
     virTypedParameterPtr params;
-    int c_ret;
 
     if (!PyArg_ParseTuple(args, (char *)"Ozi:virDomainGetBlockIoTune",
                           &pyobj_domain, &disk, &flags))
-        return(NULL);
+        return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
-    c_ret = virDomainGetBlockIoTune(domain, disk, NULL, &nparams, flags);
+    i_retval = virDomainGetBlockIoTune(domain, disk, NULL, &nparams, flags);
     LIBVIRT_END_ALLOW_THREADS;
 
-    if (c_ret < 0)
+    if (i_retval < 0)
         return VIR_PY_NONE;
+
+    if (!nparams)
+        return PyDict_New();
 
     if (VIR_ALLOC_N(params, nparams) < 0)
-        return VIR_PY_NONE;
+        return PyErr_NoMemory();
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
-    c_ret = virDomainGetBlockIoTune(domain, disk, params, &nparams, flags);
+    i_retval = virDomainGetBlockIoTune(domain, disk, params, &nparams, flags);
     LIBVIRT_END_ALLOW_THREADS;
 
-    if (c_ret < 0) {
-        VIR_FREE(params);
-        return VIR_PY_NONE;
+    if (i_retval < 0) {
+        ret = VIR_PY_NONE;
+        goto cleanup;
     }
 
-    /* convert to a Python tuple of long objects */
-    if ((pyreply = PyDict_New()) == NULL) {
-        VIR_FREE(params);
-        return VIR_PY_NONE;
-    }
-    for (i = 0 ; i < nparams ; i++) {
-        PyObject *key, *val;
+    ret = getPyVirTypedParameter(params, nparams);
 
-        switch (params[i].type) {
-        case VIR_TYPED_PARAM_INT:
-            val = PyInt_FromLong((long)params[i].value.i);
-            break;
-
-        case VIR_TYPED_PARAM_UINT:
-            val = PyInt_FromLong((long)params[i].value.ui);
-            break;
-
-        case VIR_TYPED_PARAM_LLONG:
-            val = PyLong_FromLongLong((long long)params[i].value.l);
-            break;
-
-        case VIR_TYPED_PARAM_ULLONG:
-            val = PyLong_FromLongLong((unsigned long long)params[i].value.ul);
-            break;
-
-        case VIR_TYPED_PARAM_DOUBLE:
-            val = PyFloat_FromDouble((double)params[i].value.d);
-            break;
-
-        case VIR_TYPED_PARAM_BOOLEAN:
-            val = PyBool_FromLong((long)params[i].value.b);
-            break;
-
-        default:
-            VIR_FREE(params);
-            Py_DECREF(pyreply);
-            return VIR_PY_NONE;
-        }
-
-        key = libvirt_constcharPtrWrap(params[i].field);
-        PyDict_SetItem(pyreply, key, val);
-    }
+cleanup:
+    virTypedParameterArrayClear(params, nparams);
     VIR_FREE(params);
-    return(pyreply);
+    return ret;
 }
 
 static PyObject *
