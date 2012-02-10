@@ -2515,6 +2515,56 @@ error:
 }
 
 /**
+ * virDomainPMWakeup:
+ * @dom: a domain object
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Inject a wakeup into the guest that previously used
+ * virDomainPMSuspendForDuration, rather than waiting for the
+ * previously requested duration (if any) to elapse.
+ *
+ * Returns: 0 on success,
+ *          -1 on failure.
+ */
+int
+virDomainPMWakeup(virDomainPtr dom,
+                  unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "flags=%x", flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = dom->conn;
+
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainPMWakeup) {
+        int ret;
+        ret = conn->driver->domainPMWakeup(dom, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
  * virDomainSave:
  * @domain: a domain object
  * @to: path for the output file

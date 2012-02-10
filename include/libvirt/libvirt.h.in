@@ -1251,6 +1251,8 @@ int                     virDomainPMSuspendForDuration (virDomainPtr domain,
                                                        unsigned int target,
                                                        unsigned long long duration,
                                                        unsigned int flags);
+int                     virDomainPMWakeup       (virDomainPtr domain,
+                                                 unsigned int flags);
 /*
  * Domain save/restore
  */

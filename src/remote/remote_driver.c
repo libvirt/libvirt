@@ -4781,6 +4781,7 @@ static virDriver remote_driver = {
     .domainSuspend = remoteDomainSuspend, /* 0.3.0 */
     .domainResume = remoteDomainResume, /* 0.3.0 */
     .domainPMSuspendForDuration = remoteDomainPMSuspendForDuration, /* 0.9.10 */
+    .domainPMWakeup = remoteDomainPMWakeup, /* 0.9.11 */
     .domainShutdown = remoteDomainShutdown, /* 0.3.0 */
     .domainShutdownFlags = remoteDomainShutdownFlags, /* 0.9.10 */
     .domainReboot = remoteDomainReboot, /* 0.3.0 */

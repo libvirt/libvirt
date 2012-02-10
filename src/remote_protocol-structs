@@ -444,14 +444,18 @@ struct remote_domain_lookup_by_name_ret {
 struct remote_domain_suspend_args {
         remote_nonnull_domain      dom;
 };
+struct remote_domain_resume_args {
+        remote_nonnull_domain      dom;
+};
 struct remote_domain_pm_suspend_for_duration_args {
         remote_nonnull_domain      dom;
         u_int                      target;
         uint64_t                   duration;
         u_int                      flags;
 };
-struct remote_domain_resume_args {
+struct remote_domain_pm_wakeup_args {
         remote_nonnull_domain      dom;
+        u_int                      flags;
 };
 struct remote_domain_shutdown_args {
         remote_nonnull_domain      dom;
@@ -2173,4 +2177,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_SET_METADATA = 264,
         REMOTE_PROC_DOMAIN_GET_METADATA = 265,
         REMOTE_PROC_DOMAIN_BLOCK_REBASE = 266,
+        REMOTE_PROC_DOMAIN_PM_WAKEUP = 267,
 };

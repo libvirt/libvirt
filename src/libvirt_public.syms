@@ -529,4 +529,9 @@ LIBVIRT_0.9.10 {
         virStorageVolWipePattern;
 } LIBVIRT_0.9.9;
 
+LIBVIRT_0.9.11 {
+    global:
+        virDomainPMWakeup;
+} LIBVIRT_0.9.10;
+
 # .... define new API here using predicted next version number ....

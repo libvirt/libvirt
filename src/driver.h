@@ -125,6 +125,9 @@ typedef int
                                              unsigned long long duration,
                                              unsigned int flags);
 typedef int
+        (*virDrvDomainPMWakeup)     (virDomainPtr domain,
+                                     unsigned int flags);
+typedef int
         (*virDrvDomainShutdown)		(virDomainPtr domain);
 typedef int
         (*virDrvDomainReboot)		(virDomainPtr domain,
@@ -867,8 +870,9 @@ struct _virDriver {
     virDrvDomainLookupByUUID	domainLookupByUUID;
     virDrvDomainLookupByName	domainLookupByName;
     virDrvDomainSuspend		domainSuspend;
-    virDrvDomainPMSuspendForDuration domainPMSuspendForDuration;
     virDrvDomainResume		domainResume;
+    virDrvDomainPMSuspendForDuration domainPMSuspendForDuration;
+    virDrvDomainPMWakeup    domainPMWakeup;
     virDrvDomainShutdown		domainShutdown;
     virDrvDomainShutdownFlags   domainShutdownFlags;
     virDrvDomainReboot		domainReboot;
