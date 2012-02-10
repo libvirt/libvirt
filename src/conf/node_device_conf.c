@@ -37,6 +37,7 @@
 #include "buf.h"
 #include "uuid.h"
 #include "pci.h"
+#include "virrandom.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
@@ -63,19 +64,12 @@ VIR_ENUM_IMPL(virNodeDevHBACap, VIR_NODE_DEV_CAP_HBA_LAST,
 static int
 virNodeDevCapsDefParseString(const char *xpath,
                              xmlXPathContextPtr ctxt,
-                             char **string,
-                             virNodeDeviceDefPtr def,
-                             const char *missing_error_fmt)
+                             char **string)
 {
     char *s;
 
-    s = virXPathString(xpath, ctxt);
-    if (s == NULL) {
-        virNodeDeviceReportError(VIR_ERR_INTERNAL_ERROR,
-                                 missing_error_fmt,
-                                 def->name);
+    if (!(s = virXPathString(xpath, ctxt)))
         return -1;
-    }
 
     *string = s;
     return 0;
@@ -717,7 +711,8 @@ virNodeDevCapScsiHostParseXML(xmlXPathContextPtr ctxt,
                               virNodeDeviceDefPtr def,
                               xmlNodePtr node,
                               union _virNodeDevCapData *data,
-                              int create)
+                              int create,
+                              const char *virt_type)
 {
     xmlNodePtr orignode, *nodes = NULL;
     int ret = -1, n = 0, i;
@@ -763,18 +758,26 @@ virNodeDevCapScsiHostParseXML(xmlXPathContextPtr ctxt,
 
             if (virNodeDevCapsDefParseString("string(./wwnn[1])",
                                              ctxt,
-                                             &data->scsi_host.wwnn,
-                                             def,
-                                             _("no WWNN supplied for '%s'")) < 0) {
-                goto out;
+                                             &data->scsi_host.wwnn) < 0) {
+                if (virRandomGenerateWWN(&data->scsi_host.wwnn, virt_type) < 0) {
+                    virNodeDeviceReportError(VIR_ERR_INTERNAL_ERROR,
+                                             _("no WWNN supplied for '%s', and "
+                                               "auto-generation failed"),
+                                             def->name);
+                    goto out;
+                }
             }
 
             if (virNodeDevCapsDefParseString("string(./wwpn[1])",
                                              ctxt,
-                                             &data->scsi_host.wwpn,
-                                             def,
-                                             _("no WWPN supplied for '%s'")) < 0) {
-                goto out;
+                                             &data->scsi_host.wwpn) < 0) {
+                if (virRandomGenerateWWN(&data->scsi_host.wwpn, virt_type) < 0) {
+                    virNodeDeviceReportError(VIR_ERR_INTERNAL_ERROR,
+                                             _("no WWPN supplied for '%s', and "
+                                               "auto-generation failed"),
+                                             def->name);
+                    goto out;
+                }
             }
 
             ctxt->node = orignode2;
@@ -1060,7 +1063,8 @@ static virNodeDevCapsDefPtr
 virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
                           virNodeDeviceDefPtr def,
                           xmlNodePtr node,
-                          int create)
+                          int create,
+                          const char *virt_type)
 {
     virNodeDevCapsDefPtr caps;
     char *tmp;
@@ -1104,7 +1108,10 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
         ret = virNodeDevCapNetParseXML(ctxt, def, node, &caps->data);
         break;
     case VIR_NODE_DEV_CAP_SCSI_HOST:
-        ret = virNodeDevCapScsiHostParseXML(ctxt, def, node, &caps->data, create);
+        ret = virNodeDevCapScsiHostParseXML(ctxt, def, node,
+                                            &caps->data,
+                                            create,
+                                            virt_type);
         break;
     case VIR_NODE_DEV_CAP_SCSI_TARGET:
         ret = virNodeDevCapScsiTargetParseXML(ctxt, def, node, &caps->data);
@@ -1133,7 +1140,9 @@ error:
 }
 
 static virNodeDeviceDefPtr
-virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt, int create)
+virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
+                         int create,
+                         const char *virt_type)
 {
     virNodeDeviceDefPtr def;
     virNodeDevCapsDefPtr *next_cap;
@@ -1180,7 +1189,10 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt, int create)
 
     next_cap = &def->caps;
     for (i = 0 ; i < n ; i++) {
-        *next_cap = virNodeDevCapsDefParseXML(ctxt, def, nodes[i], create);
+        *next_cap = virNodeDevCapsDefParseXML(ctxt, def,
+                                              nodes[i],
+                                              create,
+                                              virt_type);
         if (!*next_cap) {
             VIR_FREE(nodes);
             goto error;
@@ -1200,7 +1212,8 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt, int create)
 virNodeDeviceDefPtr
 virNodeDeviceDefParseNode(xmlDocPtr xml,
                           xmlNodePtr root,
-                          int create)
+                          int create,
+                          const char *virt_type)
 {
     xmlXPathContextPtr ctxt = NULL;
     virNodeDeviceDefPtr def = NULL;
@@ -1220,7 +1233,7 @@ virNodeDeviceDefParseNode(xmlDocPtr xml,
     }
 
     ctxt->node = root;
-    def = virNodeDeviceDefParseXML(ctxt, create);
+    def = virNodeDeviceDefParseXML(ctxt, create, virt_type);
 
 cleanup:
     xmlXPathFreeContext(ctxt);
@@ -1230,13 +1243,15 @@ cleanup:
 static virNodeDeviceDefPtr
 virNodeDeviceDefParse(const char *str,
                       const char *filename,
-                      int create)
+                      int create,
+                      const char *virt_type)
 {
     xmlDocPtr xml;
     virNodeDeviceDefPtr def = NULL;
 
     if ((xml = virXMLParse(filename, str, _("(node_device_definition)")))) {
-        def = virNodeDeviceDefParseNode(xml, xmlDocGetRootElement(xml), create);
+        def = virNodeDeviceDefParseNode(xml, xmlDocGetRootElement(xml),
+                                        create, virt_type);
         xmlFreeDoc(xml);
     }
 
@@ -1245,16 +1260,18 @@ virNodeDeviceDefParse(const char *str,
 
 virNodeDeviceDefPtr
 virNodeDeviceDefParseString(const char *str,
-                            int create)
+                            int create,
+                            const char *virt_type)
 {
-    return virNodeDeviceDefParse(str, NULL, create);
+    return virNodeDeviceDefParse(str, NULL, create, virt_type);
 }
 
 virNodeDeviceDefPtr
 virNodeDeviceDefParseFile(const char *filename,
-                          int create)
+                          int create,
+                          const char *virt_type)
 {
-    return virNodeDeviceDefParse(NULL, filename, create);
+    return virNodeDeviceDefParse(NULL, filename, create, virt_type);
 }
 
 /*

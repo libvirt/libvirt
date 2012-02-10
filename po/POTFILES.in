@@ -134,6 +134,7 @@ src/util/virnetdevvportprofile.c
 src/util/virnetlink.c
 src/util/virnodesuspend.c
 src/util/virpidfile.c
+src/util/virrandom.c
 src/util/virsocketaddr.c
 src/util/virterror.c
 src/util/virtime.c

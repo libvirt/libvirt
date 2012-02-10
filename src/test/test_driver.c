@@ -608,7 +608,7 @@ static int testOpenDefault(virConnectPtr conn) {
     virStoragePoolObjUnlock(poolobj);
 
     /* Init default node device */
-    if (!(nodedef = virNodeDeviceDefParseString(defaultNodeXML, 0)))
+    if (!(nodedef = virNodeDeviceDefParseString(defaultNodeXML, 0, NULL)))
         goto error;
     if (!(nodeobj = virNodeDeviceAssignDef(&privconn->devs,
                                            nodedef))) {
@@ -1057,12 +1057,12 @@ static int testOpenFromFile(virConnectPtr conn,
                 goto error;
             }
 
-            def = virNodeDeviceDefParseFile(absFile, 0);
+            def = virNodeDeviceDefParseFile(absFile, 0, NULL);
             VIR_FREE(absFile);
             if (!def)
                 goto error;
         } else {
-            if ((def = virNodeDeviceDefParseNode(xml, devs[i], 0)) == NULL)
+            if ((def = virNodeDeviceDefParseNode(xml, devs[i], 0, NULL)) == NULL)
                 goto error;
         }
         if (!(dev = virNodeDeviceAssignDef(&privconn->devs, def))) {
@@ -5285,7 +5285,7 @@ testNodeDeviceCreateXML(virConnectPtr conn,
 
     testDriverLock(driver);
 
-    def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE);
+    def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, NULL);
     if (def == NULL) {
         goto cleanup;
     }

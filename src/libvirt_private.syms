@@ -1373,6 +1373,7 @@ virPidFileDeletePath;
 
 # virrandom.h
 virRandomBits;
+virRandomGenerateWWN;
 virRandomInitialize;
 
 

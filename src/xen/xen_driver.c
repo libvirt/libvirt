@@ -1950,7 +1950,7 @@ xenUnifiedNodeDeviceGetPciInfo (virNodeDevicePtr dev,
     if (!xml)
         goto out;
 
-    def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE);
+    def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE, NULL);
     if (!def)
         goto out;
 

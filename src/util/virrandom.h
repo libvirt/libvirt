@@ -27,5 +27,6 @@
 
 int virRandomInitialize(uint32_t seed) ATTRIBUTE_RETURN_CHECK;
 uint64_t virRandomBits(int nbits);
+int virRandomGenerateWWN(char **wwn, const char *virt_type);
 
 #endif /* __VIR_RANDOM_H__ */

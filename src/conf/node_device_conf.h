@@ -234,12 +234,15 @@ void virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
 char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def);
 
 virNodeDeviceDefPtr virNodeDeviceDefParseString(const char *str,
-                                                int create);
+                                                int create,
+                                                const char *virt_type);
 virNodeDeviceDefPtr virNodeDeviceDefParseFile(const char *filename,
-                                              int create);
+                                              int create,
+                                              const char *virt_type);
 virNodeDeviceDefPtr virNodeDeviceDefParseNode(xmlDocPtr xml,
                                               xmlNodePtr root,
-                                              int create);
+                                              int create,
+                                              const char *virt_type);
 
 int virNodeDeviceGetWWNs(virNodeDeviceDefPtr def,
                          char **wwnn,

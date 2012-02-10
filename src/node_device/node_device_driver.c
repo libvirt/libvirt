@@ -558,12 +558,14 @@ nodeDeviceCreateXML(virConnectPtr conn,
     char *wwnn = NULL, *wwpn = NULL;
     int parent_host = -1;
     virNodeDevicePtr dev = NULL;
+    const char *virt_type = NULL;
 
     virCheckFlags(0, NULL);
+    virt_type  = virConnectGetType(conn);
 
     nodeDeviceLock(driver);
 
-    def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE);
+    def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, virt_type);
     if (def == NULL) {
         goto cleanup;
     }
