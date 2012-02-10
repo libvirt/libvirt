@@ -753,6 +753,8 @@ doRemoteOpen (virConnectPtr conn,
         free_qparam_set (vars);
 
  failed:
+    virNetClientProgramFree(priv->remoteProgram);
+    virNetClientProgramFree(priv->qemuProgram);
     virNetClientClose(priv->client);
     virNetClientFree(priv->client);
     priv->client = NULL;
