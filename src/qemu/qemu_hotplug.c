@@ -40,6 +40,7 @@
 #include "qemu_cgroup.h"
 #include "locking/domain_lock.h"
 #include "network/bridge_driver.h"
+#include "virnetdevtap.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -652,6 +653,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     int vhostfd = -1;
     char *nicstr = NULL;
     char *netstr = NULL;
+    virNetDevVPortProfilePtr vport = NULL;
     int ret = -1;
     virDomainDevicePCIAddress guestAddr;
     int vlan;
@@ -837,6 +839,11 @@ cleanup:
 
         if (iface_connected)
             virDomainConfNWFilterTeardown(net);
+
+        vport = virDomainNetGetActualVirtPortProfile(net);
+        if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
+            ignore_value(virNetDevOpenvswitchRemovePort(
+                            virDomainNetGetActualBridgeName(net), net->ifname));
 
         networkReleaseActualDevice(net);
     }
@@ -1833,6 +1840,7 @@ int qemuDomainDetachNetDevice(struct qemud_driver *driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int vlan;
     char *hostnet_name = NULL;
+    virNetDevVPortProfilePtr vport = NULL;
 
     for (i = 0 ; i < vm->def->nnets ; i++) {
         virDomainNetDefPtr net = vm->def->nets[i];
@@ -1937,6 +1945,12 @@ int qemuDomainDetachNetDevice(struct qemud_driver *driver,
                                  detach->ifname);
         }
     }
+
+    vport = virDomainNetGetActualVirtPortProfile(detach);
+    if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
+        ignore_value(virNetDevOpenvswitchRemovePort(
+                        virDomainNetGetActualBridgeName(detach),
+                        detach->ifname));
 
     networkReleaseActualDevice(detach);
     if (vm->def->nnets > 1) {

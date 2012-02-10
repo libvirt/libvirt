@@ -247,7 +247,8 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
     memcpy(tapmac, net->mac, VIR_MAC_BUFLEN);
     tapmac[0] = 0xFE; /* Discourage bridge from using TAP dev MAC */
     err = virNetDevTapCreateInBridgePort(brname, &net->ifname, tapmac,
-                                         vnet_hdr, true, &tapfd);
+                                         vnet_hdr, true, &tapfd,
+                                         virDomainNetGetActualVirtPortProfile(net));
     virDomainAuditNetDevice(def, net, "/dev/net/tun", tapfd >= 0);
     if (err < 0) {
         if (template_ifname)

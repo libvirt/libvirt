@@ -56,6 +56,7 @@
 #include "domain_nwfilter.h"
 #include "network/bridge_driver.h"
 #include "virnetdev.h"
+#include "virnetdevtap.h"
 #include "virnodesuspend.h"
 #include "virtime.h"
 #include "virtypedparam.h"
@@ -1105,6 +1106,7 @@ static void lxcVmCleanup(lxc_driver_t *driver,
     virCgroupPtr cgroup;
     int i;
     lxcDomainObjPrivatePtr priv = vm->privateData;
+    virNetDevVPortProfilePtr vport = NULL;
 
     /* now that we know it's stopped call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
@@ -1132,10 +1134,15 @@ static void lxcVmCleanup(lxc_driver_t *driver,
     priv->monitorWatch = -1;
 
     for (i = 0 ; i < vm->def->nnets ; i++) {
-        ignore_value(virNetDevSetOnline(vm->def->nets[i]->ifname, false));
-        ignore_value(virNetDevVethDelete(vm->def->nets[i]->ifname));
-
-        networkReleaseActualDevice(vm->def->nets[i]);
+        virDomainNetDefPtr iface = vm->def->nets[i];
+        vport = virDomainNetGetActualVirtPortProfile(iface);
+        ignore_value(virNetDevSetOnline(iface->ifname, false));
+        if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
+            ignore_value(virNetDevOpenvswitchRemovePort(
+                            virDomainNetGetActualBridgeName(iface),
+                            iface->ifname));
+        ignore_value(virNetDevVethDelete(iface->ifname));
+        networkReleaseActualDevice(iface);
     }
 
     virDomainConfVMNWFilterTeardown(vm);
@@ -1165,6 +1172,7 @@ static int lxcSetupInterfaceBridged(virConnectPtr conn,
     int ret = -1;
     char *parentVeth;
     char *containerVeth = NULL;
+    const virNetDevVPortProfilePtr vport = virDomainNetGetActualVirtPortProfile(net);
 
     VIR_DEBUG("calling vethCreate()");
     parentVeth = net->ifname;
@@ -1186,7 +1194,11 @@ static int lxcSetupInterfaceBridged(virConnectPtr conn,
     if (virNetDevSetMAC(containerVeth, net->mac) < 0)
         goto cleanup;
 
-    if (virNetDevBridgeAddPort(brname, parentVeth) < 0)
+    if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
+        ret = virNetDevOpenvswitchAddPort(brname, parentVeth, net->mac, vport);
+    else
+        ret = virNetDevBridgeAddPort(brname, parentVeth);
+    if (ret < 0)
         goto cleanup;
 
     if (virNetDevSetOnline(parentVeth, true) < 0)
@@ -1377,8 +1389,15 @@ static int lxcSetupInterfaces(virConnectPtr conn,
 
 cleanup:
     if (ret != 0) {
-        for (i = 0 ; i < def->nnets ; i++)
-            networkReleaseActualDevice(def->nets[i]);
+        for (i = 0 ; i < def->nnets ; i++) {
+            virDomainNetDefPtr iface = def->nets[i];
+            virNetDevVPortProfilePtr vport = virDomainNetGetActualVirtPortProfile(iface);
+            if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
+                ignore_value(virNetDevOpenvswitchRemovePort(
+                                virDomainNetGetActualBridgeName(iface),
+                                iface->ifname));
+            networkReleaseActualDevice(iface);
+        }
     }
     return ret;
 }

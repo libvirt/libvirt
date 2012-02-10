@@ -968,6 +968,7 @@ virNetDevVPortProfileAssociate(const char *macvtap_ifname,
 
     switch (virtPort->virtPortType) {
     case VIR_NETDEV_VPORT_PROFILE_NONE:
+    case VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH:
     case VIR_NETDEV_VPORT_PROFILE_LAST:
         break;
 
@@ -1027,6 +1028,7 @@ virNetDevVPortProfileDisassociate(const char *macvtap_ifname,
 
     switch (virtPort->virtPortType) {
     case VIR_NETDEV_VPORT_PROFILE_NONE:
+    case VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH:
     case VIR_NETDEV_VPORT_PROFILE_LAST:
         break;
 

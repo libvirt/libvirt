@@ -35,6 +35,7 @@ enum virNetDevVPortProfile {
     VIR_NETDEV_VPORT_PROFILE_NONE,
     VIR_NETDEV_VPORT_PROFILE_8021QBG,
     VIR_NETDEV_VPORT_PROFILE_8021QBH,
+    VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH,
 
     VIR_NETDEV_VPORT_PROFILE_LAST,
 };
@@ -54,7 +55,7 @@ enum virNetDevVPortProfileOp {
 };
 VIR_ENUM_DECL(virNetDevVPortProfileOp)
 
-/* profile data for macvtap (VEPA) */
+/* profile data for macvtap (VEPA) and openvswitch */
 typedef struct _virNetDevVPortProfile virNetDevVPortProfile;
 typedef virNetDevVPortProfile *virNetDevVPortProfilePtr;
 struct _virNetDevVPortProfile {
@@ -69,6 +70,10 @@ struct _virNetDevVPortProfile {
         struct {
             char          profileID[LIBVIRT_IFLA_VF_PORT_PROFILE_MAX];
         } virtPort8021Qbh;
+        struct {
+            unsigned char interfaceID[VIR_UUID_BUFLEN];
+            char          profileID[LIBVIRT_IFLA_VF_PORT_PROFILE_MAX];
+        } openvswitch;
     } u;
 };
 

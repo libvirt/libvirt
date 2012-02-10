@@ -213,6 +213,8 @@ AC_PATH_PROG([UDEVSETTLE], [udevsettle], [],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([MODPROBE], [modprobe], [],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+AC_PATH_PROG([OVSVSCTL], [ovs-vsctl], [ovs-vsctl],
+	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 
 AC_DEFINE_UNQUOTED([DNSMASQ],["$DNSMASQ"],
         [Location or name of the dnsmasq program])
@@ -220,6 +222,9 @@ AC_DEFINE_UNQUOTED([RADVD],["$RADVD"],
         [Location or name of the radvd program])
 AC_DEFINE_UNQUOTED([TC],["$TC"],
         [Location or name of the tc profram (see iproute2)])
+AC_DEFINE_UNQUOTED([OVSVSCTL],["$OVSVSCTL"],
+        [Location or name of the ovs-vsctl program])
+
 if test -n "$UDEVADM"; then
   AC_DEFINE_UNQUOTED([UDEVADM],["$UDEVADM"],
         [Location or name of the udevadm program])

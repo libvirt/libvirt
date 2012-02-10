@@ -35,7 +35,8 @@
 VIR_ENUM_IMPL(virNetDevVPort, VIR_NETDEV_VPORT_PROFILE_LAST,
               "none",
               "802.1Qbg",
-              "802.1Qbh")
+              "802.1Qbh",
+              "openvswitch")
 
 
 virNetDevVPortProfilePtr
@@ -47,6 +48,7 @@ virNetDevVPortProfileParse(xmlNodePtr node)
     char *virtPortTypeIDVersion = NULL;
     char *virtPortInstanceID = NULL;
     char *virtPortProfileID = NULL;
+    char *virtPortInterfaceID = NULL;
     virNetDevVPortProfilePtr virtPort = NULL;
     xmlNodePtr cur = node->children;
 
@@ -76,7 +78,7 @@ virNetDevVPortProfileParse(xmlNodePtr node)
             virtPortTypeIDVersion = virXMLPropString(cur, "typeidversion");
             virtPortInstanceID = virXMLPropString(cur, "instanceid");
             virtPortProfileID = virXMLPropString(cur, "profileid");
-
+            virtPortInterfaceID = virXMLPropString(cur, "interfaceid");
             break;
         }
 
@@ -171,6 +173,33 @@ virNetDevVPortProfileParse(xmlNodePtr node)
             goto error;
         }
         break;
+    case VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH:
+        if (virtPortInterfaceID != NULL) {
+            if (virUUIDParse(virtPortInterfaceID,
+                             virtPort->u.openvswitch.interfaceID)) {
+                virNetDevError(VIR_ERR_XML_ERROR, "%s",
+                               _("cannot parse interfaceid parameter as a uuid"));
+                goto error;
+            }
+        } else {
+            if (virUUIDGenerate(virtPort->u.openvswitch.interfaceID)) {
+                virNetDevError(VIR_ERR_XML_ERROR, "%s",
+                               _("cannot generate a random uuid for interfaceid"));
+                goto error;
+            }
+        }
+        /* profileid is not mandatory for Open vSwitch */
+        if (virtPortProfileID != NULL) {
+            if (virStrcpyStatic(virtPort->u.openvswitch.profileID,
+                                virtPortProfileID) == NULL) {
+                virNetDevError(VIR_ERR_XML_ERROR, "%s",
+                               _("profileid parameter too long"));
+                goto error;
+            }
+        } else {
+            virtPort->u.openvswitch.profileID[0] = '\0';
+        }
+        break;
 
     default:
         virNetDevError(VIR_ERR_XML_ERROR,
@@ -223,6 +252,20 @@ virNetDevVPortProfileFormat(virNetDevVPortProfilePtr virtPort,
         virBufferAsprintf(buf,
                           "  <parameters profileid='%s'/>\n",
                           virtPort->u.virtPort8021Qbh.profileID);
+        break;
+
+    case VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH:
+        virUUIDFormat(virtPort->u.openvswitch.interfaceID,
+                      uuidstr);
+        if (virtPort->u.openvswitch.profileID[0] == '\0') {
+            virBufferAsprintf(buf, "  <parameters interfaceid='%s'/>\n",
+                              uuidstr);
+        } else {
+            virBufferAsprintf(buf, "  <parameters interfaceid='%s' "
+                              "profileid='%s'/>\n", uuidstr,
+                              virtPort->u.openvswitch.profileID);
+        }
+
         break;
 
     default:

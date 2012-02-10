@@ -1237,6 +1237,11 @@ virNetDevMacVLanCreateWithVPortProfile;
 virNetDevMacVLanDeleteWithVPortProfile;
 
 
+# virnetdevopenvswitch.h
+virNetDevOpenvswitchAddPort;
+virNetDevOpenvswitchRemovePort;
+
+
 # virnetdevtap.h
 virNetDevTapCreate;
 virNetDevTapCreateInBridgePort;

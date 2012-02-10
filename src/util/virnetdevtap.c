@@ -25,6 +25,7 @@
 #include "virnetdevtap.h"
 #include "virnetdev.h"
 #include "virnetdevbridge.h"
+#include "virnetdevopenvswitch.h"
 #include "virterror_internal.h"
 #include "virfile.h"
 #include "virterror_internal.h"
@@ -249,6 +250,7 @@ int virNetDevTapDelete(const char *ifname ATTRIBUTE_UNUSED)
  * @macaddr: desired MAC address (VIR_MAC_BUFLEN long)
  * @vnet_hdr: whether to try enabling IFF_VNET_HDR
  * @tapfd: file descriptor return value for the new tap device
+ * @virtPortProfile: bridge/port specific configuration
  *
  * This function creates a new tap device on a bridge. @ifname can be either
  * a fixed name or a name template with '%d' for dynamic name allocation.
@@ -265,7 +267,8 @@ int virNetDevTapCreateInBridgePort(const char *brname,
                                    const unsigned char *macaddr,
                                    int vnet_hdr,
                                    bool up,
-                                   int *tapfd)
+                                   int *tapfd,
+                                   virNetDevVPortProfilePtr virtPortProfile)
 {
     if (virNetDevTapCreate(ifname, vnet_hdr, tapfd) < 0)
         return -1;
@@ -286,8 +289,15 @@ int virNetDevTapCreateInBridgePort(const char *brname,
     if (virNetDevSetMTUFromDevice(*ifname, brname) < 0)
         goto error;
 
-    if (virNetDevBridgeAddPort(brname, *ifname) < 0)
-        goto error;
+    if (virtPortProfile) {
+        if (virNetDevOpenvswitchAddPort(brname, *ifname, macaddr,
+                                        virtPortProfile) < 0) {
+            goto error;
+        }
+    } else {
+        if (virNetDevBridgeAddPort(brname, *ifname) < 0)
+            goto error;
+    }
 
     if (virNetDevSetOnline(*ifname, up) < 0)
         goto error;
