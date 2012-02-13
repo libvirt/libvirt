@@ -996,9 +996,11 @@ int qemuMonitorEmitBlockJob(qemuMonitorPtr mon,
 
 
 
-int qemuMonitorSetCapabilities(qemuMonitorPtr mon)
+int qemuMonitorSetCapabilities(qemuMonitorPtr mon,
+                               virBitmapPtr qemuCaps)
 {
     int ret;
+    int json_hmp;
     VIR_DEBUG("mon=%p", mon);
 
     if (!mon) {
@@ -1009,19 +1011,16 @@ int qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 
     if (mon->json) {
         ret = qemuMonitorJSONSetCapabilities(mon);
-        if (ret == 0) {
-            int hmp = qemuMonitorJSONCheckHMP(mon);
-            if (hmp < 0) {
-                /* qemu may quited unexpectedly when we call
-                 * qemuMonitorJSONCheckHMP() */
-                ret = -1;
-            } else {
-                mon->json_hmp = hmp > 0;
-            }
-        }
+        if (ret)
+            goto cleanup;
+
+        ret = qemuMonitorJSONCheckCommands(mon, qemuCaps, &json_hmp);
+        mon->json_hmp = json_hmp > 0;
     } else {
         ret = 0;
     }
+
+cleanup:
     return ret;
 }
 

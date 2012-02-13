@@ -29,6 +29,7 @@
 
 # include "domain_conf.h"
 # include "qemu_conf.h"
+# include "bitmap.h"
 # include "virhash.h"
 
 typedef struct _qemuMonitor qemuMonitor;
@@ -135,7 +136,8 @@ qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
 
 void qemuMonitorClose(qemuMonitorPtr mon);
 
-int qemuMonitorSetCapabilities(qemuMonitorPtr mon);
+int qemuMonitorSetCapabilities(qemuMonitorPtr mon,
+                               virBitmapPtr qemuCaps);
 
 int qemuMonitorCheckHMP(qemuMonitorPtr mon, const char *cmd);
 

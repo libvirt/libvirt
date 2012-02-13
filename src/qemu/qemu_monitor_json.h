@@ -28,6 +28,7 @@
 # include "internal.h"
 
 # include "qemu_monitor.h"
+# include "bitmap.h"
 
 int qemuMonitorJSONIOProcess(qemuMonitorPtr mon,
                              const char *data,
@@ -41,7 +42,9 @@ int qemuMonitorJSONHumanCommandWithFd(qemuMonitorPtr mon,
 
 int qemuMonitorJSONSetCapabilities(qemuMonitorPtr mon);
 
-int qemuMonitorJSONCheckHMP(qemuMonitorPtr mon);
+int qemuMonitorJSONCheckCommands(qemuMonitorPtr mon,
+                                 virBitmapPtr qemuCaps,
+                                 int *json_hmp);
 
 int qemuMonitorJSONStartCPUs(qemuMonitorPtr mon,
                              virConnectPtr conn);

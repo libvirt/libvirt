@@ -34,6 +34,7 @@
 #include "qemu_monitor_text.h"
 #include "qemu_monitor_json.h"
 #include "qemu_command.h"
+#include "qemu_capabilities.h"
 #include "memory.h"
 #include "logging.h"
 #include "driver.h"
@@ -800,7 +801,9 @@ qemuMonitorJSONSetCapabilities(qemuMonitorPtr mon)
  * human-monitor-command worked or -1 on failure
  */
 int
-qemuMonitorJSONCheckHMP(qemuMonitorPtr mon)
+qemuMonitorJSONCheckCommands(qemuMonitorPtr mon,
+                             virBitmapPtr qemuCaps,
+                             int *json_hmp)
 {
     int ret = -1;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-commands", NULL);
@@ -828,13 +831,13 @@ qemuMonitorJSONCheckHMP(qemuMonitorPtr mon)
             !(name = virJSONValueObjectGetString(entry, "name")))
             goto cleanup;
 
-        if (STREQ(name, "human-monitor-command")) {
-            ret = 1;
-            goto cleanup;
-        }
+        if (STREQ(name, "human-monitor-command"))
+            *json_hmp = 1;
+
+        if (STREQ(name, "system_wakeup"))
+            qemuCapsSet(qemuCaps, QEMU_CAPS_WAKEUP);
     }
 
-    /* human-monitor-command is not supported */
     ret = 0;
 
 cleanup:

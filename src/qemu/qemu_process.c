@@ -1086,7 +1086,7 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
 
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    ret = qemuMonitorSetCapabilities(priv->mon);
+    ret = qemuMonitorSetCapabilities(priv->mon, priv->qemuCaps);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
 error:

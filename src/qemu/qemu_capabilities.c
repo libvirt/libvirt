@@ -152,6 +152,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "fsdev-writeout",
 
               "drive-iotune", /* 85 */
+              "system_wakeup",
     );
 
 struct qemu_feature_flags {
