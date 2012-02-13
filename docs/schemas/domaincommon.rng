@@ -1121,7 +1121,6 @@
             <value>lsisas1068</value>
             <value>vmpvscsi</value>
             <value>ibmvscsi</value>
-            <value>virtio-scsi</value>
             <value>piix3-uhci</value>
             <value>piix4-uhci</value>
             <value>ehci</value>
