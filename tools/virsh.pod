@@ -1280,7 +1280,7 @@ Moves a domain out of the suspended state.  This will allow a previously
 suspended domain to now be eligible for scheduling by the underlying
 hypervisor.
 
-=item B<suspend-duration> I<domain-id> I<target>
+=item B<dompmsuspend> I<domain-id> I<target>
 
 Suspend a running domain into one of these states (possible I<target>
 values):
