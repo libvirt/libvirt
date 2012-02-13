@@ -2355,30 +2355,14 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
                           int *nusbcontroller)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    int model;
 
     switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
-        model = def->model;
-        if (model == -1 || model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO) {
-            if (STREQ(domainDef->os.arch, "ppc64") &&
-                STREQ(domainDef->os.machine, "pseries")) {
-                model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
-            } else {
-                model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
-            }
-        }
-        switch (model) {
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC:
-            virBufferAddLit(&buf, "lsi");
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
+        if (STREQ(domainDef->os.arch, "ppc64") &&
+            STREQ(domainDef->os.machine, "pseries")) {
             virBufferAddLit(&buf, "spapr-vscsi");
-            break;
-        default:
-            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            _("Unsupported controller model: %s"),
-                            virDomainControllerModelSCSITypeToString(model));
+        } else {
+            virBufferAddLit(&buf, "lsi");
         }
         virBufferAsprintf(&buf, ",id=scsi%d", def->idx);
         break;
