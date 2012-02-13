@@ -69,4 +69,6 @@ int qemuAgentShutdown(qemuAgentPtr mon,
 int qemuAgentFSFreeze(qemuAgentPtr mon);
 int qemuAgentFSThaw(qemuAgentPtr mon);
 
+int qemuAgentSuspend(qemuAgentPtr mon,
+                     unsigned int target);
 #endif /* __QEMU_AGENT_H__ */

@@ -1184,3 +1184,34 @@ cleanup:
     virJSONValueFree(reply);
     return ret;
 }
+
+VIR_ENUM_DECL(qemuAgentSuspendMode);
+
+VIR_ENUM_IMPL(qemuAgentSuspendMode,
+              VIR_NODE_SUSPEND_TARGET_LAST,
+              "guest-suspend-ram",
+              "guest-suspend-disk",
+              "guest-suspend-hybrid");
+
+int
+qemuAgentSuspend(qemuAgentPtr mon,
+                 unsigned int target)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    cmd = qemuAgentMakeCommand(qemuAgentSuspendModeTypeToString(target),
+                               NULL);
+    if (!cmd)
+        return -1;
+
+    ret = qemuAgentCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuAgentCheckError(cmd, reply);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}

@@ -12078,6 +12078,92 @@ cleanup:
     return ret;
 }
 
+static int
+qemuDomainPMSuspendForDuration(virDomainPtr dom,
+                               unsigned int target,
+                               unsigned long long duration,
+                               unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    qemuDomainObjPrivatePtr priv;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (duration) {
+        qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                        _("Duration not supported. Use 0 for now"));
+        return -1;
+    }
+
+    if (!(target == VIR_NODE_SUSPEND_TARGET_MEM ||
+          target == VIR_NODE_SUSPEND_TARGET_DISK ||
+          target == VIR_NODE_SUSPEND_TARGET_HYBRID)) {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        _("Unknown suspend target: %u"),
+                        target);
+        return -1;
+    }
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_WAKEUP) &&
+        (target == VIR_NODE_SUSPEND_TARGET_MEM ||
+         target == VIR_NODE_SUSPEND_TARGET_HYBRID)) {
+       qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Unable to suspend domain due to "
+                         "missing system_wakeup monitor command"));
+       goto cleanup;
+    }
+
+    if (priv->agentError) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("QEMU guest agent is not available due to an error"));
+        goto cleanup;
+    }
+
+    if (!priv->agent) {
+        qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                        _("QEMU guest agent is not configured"));
+        goto cleanup;
+    }
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+    qemuDomainObjEnterAgent(driver, vm);
+    ret = qemuAgentSuspend(priv->agent, target);
+    qemuDomainObjExitAgent(driver, vm);
+
+endjob:
+    if (qemuDomainObjEndJob(driver, vm) == 0)
+        vm = NULL;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
 static virDriver qemuDriver = {
     .no = VIR_DRV_QEMU,
     .name = "QEMU",
@@ -12235,6 +12321,7 @@ static virDriver qemuDriver = {
     .domainGetDiskErrors = qemuDomainGetDiskErrors, /* 0.9.10 */
     .domainSetMetadata = qemuDomainSetMetadata, /* 0.9.10 */
     .domainGetMetadata = qemuDomainGetMetadata, /* 0.9.10 */
+    .domainPMSuspendForDuration = qemuDomainPMSuspendForDuration, /* 0.9.11 */
 };
 
 
