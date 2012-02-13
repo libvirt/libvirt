@@ -34,7 +34,7 @@
 #include "intprops.h"
 #include "logging.h"
 #include "virterror_internal.h"
-
+#include "c-ctype.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -119,6 +119,7 @@ int virPidFileReadPath(const char *path,
     ssize_t bytes;
     long long pid_value = 0;
     char pidstr[INT_BUFSIZE_BOUND(pid_value)];
+    char *endptr = NULL;
 
     *pid = 0;
 
@@ -135,7 +136,8 @@ int virPidFileReadPath(const char *path,
     }
     pidstr[bytes] = '\0';
 
-    if (virStrToLong_ll(pidstr, NULL, 10, &pid_value) < 0 ||
+    if (virStrToLong_ll(pidstr, &endptr, 10, &pid_value) < 0 ||
+        !(*endptr == '\0' || c_isspace(*endptr)) ||
         (pid_t) pid_value != pid_value) {
         rc = -1;
         goto cleanup;
