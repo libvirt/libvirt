@@ -85,6 +85,9 @@ qemu_xml = \
   libvirt-qemu-api.xml \
   libvirt-qemu-refs.xml
 
+apidir = $(pkgdatadir)/api
+api_DATA = libvirt-api.xml libvirt-qemu-api.xml
+
 fig = \
   libvirt-net-logical.fig \
   libvirt-net-physical.fig \

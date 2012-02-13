@@ -3,6 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
+libvirt_api=@datadir@/libvirt/libvirt-api.xml
+libvirt_qemu_api=@datadir@/libvirt/libvirt-qemu-api.xml
+
 Name: libvirt
 Version: @VERSION@
 Description: libvirt library
