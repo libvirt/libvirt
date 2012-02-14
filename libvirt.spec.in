@@ -513,6 +513,9 @@ BuildRequires: nfs-utils
 # Fedora build root suckage
 BuildRequires: gawk
 
+# For storage wiping with different algorithms
+BuildRequires: scrub
+
 %description
 Libvirt is a C toolkit to interact with the virtualization capabilities
 of recent versions of Linux (and other OSes). The main package includes

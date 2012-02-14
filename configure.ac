@@ -215,6 +215,8 @@ AC_PATH_PROG([MODPROBE], [modprobe], [],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([OVSVSCTL], [ovs-vsctl], [ovs-vsctl],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+AC_PATH_PROG([SCRUB], [scrub], [],
+	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 
 AC_DEFINE_UNQUOTED([DNSMASQ],["$DNSMASQ"],
         [Location or name of the dnsmasq program])
@@ -237,6 +239,8 @@ if test -n "$MODPROBE"; then
   AC_DEFINE_UNQUOTED([MODPROBE],["$MODPROBE"],
         [Location or name of the modprobe program])
 fi
+AC_DEFINE_UNQUOTED([SCRUB],["$SCRUB"],
+        [Location or name of the scrub program (for wiping algorithms)])
 
 dnl Specific dir for HTML output ?
 AC_ARG_WITH([html-dir], [AC_HELP_STRING([--with-html-dir=path],
@@ -2504,32 +2508,6 @@ AM_CONDITIONAL([HAVE_LIBNL], [test "$have_libnl" = "yes"])
 
 AC_SUBST([LIBNL_CFLAGS])
 AC_SUBST([LIBNL_LIBS])
-
-dnl scrub program for different volume wiping algorithms
-
-AC_ARG_WITH([scrub],
-            AC_HELP_STRING([--with-scrub], [enable different volume wiping algorithms
-                            @<:@default=check@:>@]),
-            [with_macvtap=${withval}],
-            [with_scrub=check])
-
-if test "$with_scrub" != "no"; then
-  AC_PATH_PROG([SCRUB], [scrub])
-  if test -z "$SCRUB" ; then
-    if test "$with_scrub" = "check"; then
-      with_scrub=no
-    else
-      AC_MSG_ERROR([You must install the 'scrub' binary to enable
-                    different volume wiping algorithms])
-    fi
-  else
-    with_scrub=yes
-  fi
-  if test "$with_scrub" = "yes"; then
-    AC_DEFINE_UNQUOTED([SCRUB], ["$SCRUB"],
-                       [Location of the scrub program])
-  fi
-fi
 
 # Only COPYING.LIB is under version control, yet COPYING
 # is included as part of the distribution tarball.

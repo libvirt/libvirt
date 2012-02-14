@@ -1918,7 +1918,6 @@ storageVolumeWipeInternal(virStorageVolDefPtr def,
     if (algorithm != VIR_STORAGE_VOL_WIPE_ALG_ZERO) {
         const char *alg_char ATTRIBUTE_UNUSED = NULL;
         switch (algorithm) {
-#ifdef SCRUB
         case VIR_STORAGE_VOL_WIPE_ALG_NNSA:
             alg_char = "nnsa";
             break;
@@ -1943,13 +1942,11 @@ storageVolumeWipeInternal(virStorageVolDefPtr def,
         case VIR_STORAGE_VOL_WIPE_ALG_RANDOM:
             alg_char = "random";
             break;
-#endif
         default:
             virStorageReportError(VIR_ERR_INVALID_ARG,
                                   _("unsupported algorithm %d"),
                                   algorithm);
         }
-#ifdef SCRUB
         cmd = virCommandNew(SCRUB);
         virCommandAddArgList(cmd, "-f", "-p", alg_char,
                              def->target.path, NULL);
@@ -1958,7 +1955,6 @@ storageVolumeWipeInternal(virStorageVolDefPtr def,
             goto out;
 
         ret = 0;
-#endif
         goto out;
     } else {
         if (S_ISREG(st.st_mode) && st.st_blocks < (st.st_size / DEV_BSIZE)) {
