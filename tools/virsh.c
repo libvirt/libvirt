@@ -14391,7 +14391,6 @@ typedef enum {
  * @path: Fully-qualified path or target of disk device.
  * @type: Either VSH_FIND_DISK_NORMAL or VSH_FIND_DISK_CHANGEABLE.
  */
-ATTRIBUTE_UNUSED
 static xmlNodePtr
 vshFindDisk(const char *doc,
             const char *path,
@@ -14489,7 +14488,6 @@ typedef enum {
  * for changeable disk. Returns the processed XML as string on
  * success, or NULL on failure. Caller must free the result.
  */
-ATTRIBUTE_UNUSED
 static char *
 vshPrepareDiskXML(xmlNodePtr disk_node,
                   const char *source,
@@ -14615,18 +14613,14 @@ static const vshCmdOptDef opts_detach_disk[] = {
 static bool
 cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
 {
-    xmlDocPtr xml = NULL;
-    xmlXPathObjectPtr obj=NULL;
-    xmlXPathContextPtr ctxt = NULL;
-    xmlNodePtr cur = NULL;
-    xmlBufferPtr xml_buf = NULL;
+    char *disk_xml = NULL;
     virDomainPtr dom = NULL;
     const char *target = NULL;
     char *doc;
-    int i = 0, diff_tgt;
     int ret;
     bool functionReturn = false;
     unsigned int flags;
+    xmlNodePtr disk_node = NULL;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -14641,60 +14635,22 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     if (!doc)
         goto cleanup;
 
-    xml = virXMLParseStringCtxt(doc, _("(domain_definition)"), &ctxt);
-    VIR_FREE(doc);
-    if (!xml) {
-        vshError(ctl, "%s", _("Failed to get disk information"));
+    if (!(disk_node = vshFindDisk(doc, target, VSH_FIND_DISK_NORMAL)))
         goto cleanup;
-    }
 
-    obj = xmlXPathEval(BAD_CAST "/domain/devices/disk", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
-        (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr == 0)) {
-        vshError(ctl, "%s", _("Failed to get disk information"));
+    if (!(disk_xml = vshPrepareDiskXML(disk_node, NULL, NULL,
+                                       VSH_PREPARE_DISK_XML_NONE)))
         goto cleanup;
-    }
-
-    /* search target */
-    for (; i < obj->nodesetval->nodeNr; i++) {
-        cur = obj->nodesetval->nodeTab[i]->children;
-        while (cur != NULL) {
-            if (cur->type == XML_ELEMENT_NODE &&
-                xmlStrEqual(cur->name, BAD_CAST "target")) {
-                char *tmp_tgt = virXMLPropString(cur, "dev");
-                diff_tgt = STREQ(tmp_tgt, target);
-                VIR_FREE(tmp_tgt);
-                if (diff_tgt) {
-                    goto hit;
-                }
-            }
-            cur = cur->next;
-        }
-    }
-    vshError(ctl, _("No found disk whose target is %s"), target);
-    goto cleanup;
-
- hit:
-    xml_buf = xmlBufferCreate();
-    if (!xml_buf) {
-        vshError(ctl, "%s", _("Failed to allocate memory"));
-        goto cleanup;
-    }
-
-    if (xmlNodeDump(xml_buf, xml, obj->nodesetval->nodeTab[i], 0, 0) < 0) {
-        vshError(ctl, "%s", _("Failed to create XML"));
-        goto cleanup;
-    }
 
     if (vshCommandOptBool(cmd, "persistent")) {
         flags = VIR_DOMAIN_AFFECT_CONFIG;
         if (virDomainIsActive(dom) == 1)
             flags |= VIR_DOMAIN_AFFECT_LIVE;
         ret = virDomainDetachDeviceFlags(dom,
-                                         (char *)xmlBufferContent(xml_buf),
+                                         disk_xml,
                                          flags);
     } else {
-        ret = virDomainDetachDevice(dom, (char *)xmlBufferContent(xml_buf));
+        ret = virDomainDetachDevice(dom, disk_xml);
     }
 
     if (ret != 0) {
@@ -14705,10 +14661,9 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    xmlXPathFreeObject(obj);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xml);
-    xmlBufferFree(xml_buf);
+    xmlFreeNode(disk_node);
+    VIR_FREE(disk_xml);
+    VIR_FREE(doc);
     if (dom)
         virDomainFree(dom);
     return functionReturn;
