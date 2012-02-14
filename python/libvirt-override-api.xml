@@ -261,6 +261,22 @@
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
       <arg name='flags' type='int' info='an OR&apos;ed set of virDomainModificationImpact'/>
     </function>
+    <function name='virDomainSetInterfaceParameters' file='python'>
+      <info>Change the bandwidth tunables for a interface device</info>
+      <arg name='dom' type='virDomainPtr' info='pointer to the domain'/>
+      <arg name='device' type='const char *' info='interface name'/>
+      <arg name='params' type='virTypedParameterPtr' info='Pointer to bandwidth tuning params object'/>
+      <arg name='flags' type='unsigned int' info='an OR&apos;ed set of virDomainModificationImpact'/>
+      <return type='int' info='0 in case of success, -1 in case of failure'/>
+    </function>
+    <function name='virDomainGetInterfaceParameters' file='python'>
+      <info>Get the bandwidth tunables for a interface device</info>
+      <arg name='dom' type='virDomainPtr' info='pointer to the domain'/>
+      <arg name='device' type='const char *' info='interface name'/>
+      <arg name='flags' type='unsigned int' info='an OR&apos;ed set of virDomainModificationImpact'/>
+      <return type='str *' info='the bandwidth tunables value or None in case of error'/>
+    </function>
+
     <function name='virConnectListStoragePools' file='python'>
       <info>list the storage pools, stores the pointers to the names in @names</info>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
