@@ -13347,8 +13347,9 @@ virDomainSnapshotForEachChild(virDomainSnapshotObjPtr snapshot,
     virDomainSnapshotObjPtr child = snapshot->first_child;
 
     while (child) {
+        virDomainSnapshotObjPtr next = child->sibling;
         (iter)(child, child->def->name, data);
-        child = child->sibling;
+        child = next;
     }
 
     return snapshot->nchildren;
@@ -13368,10 +13369,10 @@ virDomainSnapshotActOnDescendant(void *payload,
     virDomainSnapshotObjPtr obj = payload;
     struct snapshot_act_on_descendant *curr = data;
 
-    (curr->iter)(payload, name, curr->data);
     curr->number += 1 + virDomainSnapshotForEachDescendant(obj,
                                                            curr->iter,
                                                            curr->data);
+    (curr->iter)(payload, name, curr->data);
 }
 
 /* Run iter(data) on all descendants of snapshot, while ignoring all
