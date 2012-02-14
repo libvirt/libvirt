@@ -2536,6 +2536,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
     virNetServerClientSetIdentity(client, ident);
     virMutexUnlock(&priv->lock);
     virCommandFree(cmd);
+    VIR_FREE(pkout);
     VIR_FREE(ident);
 
     return 0;
