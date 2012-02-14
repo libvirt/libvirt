@@ -2052,7 +2052,7 @@ remoteDispatchAuthList(virNetServerPtr server ATTRIBUTE_UNUSED,
         } else if (callerUid == 0) {
             char *ident;
             if (virAsprintf(&ident, "pid:%lld,uid:%d",
-                            (long long) callerPid, callerUid) == 0) {
+                            (long long) callerPid, callerUid) >= 0) {
                 VIR_INFO("Bypass polkit auth for privileged client %s",
                          ident);
                 if (virNetServerClientSetIdentity(client, ident) < 0)
