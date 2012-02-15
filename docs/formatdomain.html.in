@@ -2303,6 +2303,55 @@
   ...
   </pre>
 
+
+    <h5><a name="elementsNICSHostdev">PCI Passthrough</a></h5>
+
+    <p>
+      A PCI network device (specified by the &lt;source&gt; element)
+      is directly assigned to the guest using generic device
+      passthrough, after first optionally setting the device's MAC
+      address to the configured value, and associating the device with
+      an 802.1Qgh capable switch using an optionally specified
+      %lt;virtualport%gt; element (see the examples of virtualport
+      given above for type='direct' network devices). Note that - due
+      to limitations in standard single-port PCI ethernet card driver
+      design - only SR-IOV (Single Root I/O Virtualization) virtual
+      function (VF) devices can be assigned in this manner; to assign
+      a standard single-port PCI or PCIe ethernet card to a guest, use
+      the traditional &lt;hostdev&gt; device definition and
+      <span class="since">Since 0.9.11</span>
+    </p>
+
+    <p>
+      Note that this "intelligent passthrough" of network devices is
+      very similar to the functionality of a standard &lt;hostdev&gt;
+      device, the difference being that this method allows specifying
+      a MAC address and &lt;virtualport&gt; for the passed-through
+      device. If these capabilities are not required, if you have a
+      standard single-port PCI, PCIe, or USB network card that doesn't
+      support SR-IOV (and hence would anyway lose the configured MAC
+      address during reset after being assigned to the guest domain),
+      or if you are using a version of libvirt older than 0.9.11, you
+      should use standard &lt;hostdev&gt; to assign the device to the
+      guest instead of &lt;interface type='hostdev'/&gt;.
+    </p>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='hostdev'&gt;
+      &lt;source&gt;
+        &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/&gt;
+      &lt;/source&gt;
+      &lt;mac address='52:54:00:6d:90:02'&gt;
+      &lt;virtualport type='802.1Qbh'&gt;
+        &lt;parameters profileid='finance'/&gt;
+      &lt;/virtualport&gt;
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
+
     <h5><a name="elementsNICSMulticast">Multicast tunnel</a></h5>
 
     <p>

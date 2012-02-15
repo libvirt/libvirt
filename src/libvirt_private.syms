@@ -384,6 +384,7 @@ virDomainNetGetActualBandwidth;
 virDomainNetGetActualBridgeName;
 virDomainNetGetActualDirectDev;
 virDomainNetGetActualDirectMode;
+virDomainNetGetActualHostdev;
 virDomainNetGetActualType;
 virDomainNetGetActualVirtPortProfile;
 virDomainNetIndexByMac;

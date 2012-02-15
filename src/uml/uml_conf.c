@@ -254,6 +254,11 @@ umlBuildCommandLineNet(virConnectPtr conn,
                        _("direct networking type not supported"));
         goto error;
 
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+        umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("hostdev networking type not supported"));
+        goto error;
+
     case VIR_DOMAIN_NET_TYPE_LAST:
         break;
     }

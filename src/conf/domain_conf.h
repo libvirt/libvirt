@@ -694,6 +694,7 @@ enum virDomainNetType {
     VIR_DOMAIN_NET_TYPE_BRIDGE,
     VIR_DOMAIN_NET_TYPE_INTERNAL,
     VIR_DOMAIN_NET_TYPE_DIRECT,
+    VIR_DOMAIN_NET_TYPE_HOSTDEV,
 
     VIR_DOMAIN_NET_TYPE_LAST,
 };
@@ -744,6 +745,10 @@ struct _virDomainActualNetDef {
             int mode; /* enum virMacvtapMode from util/macvtap.h */
             virNetDevVPortProfilePtr virtPortProfile;
         } direct;
+        struct {
+            virDomainHostdevDef def;
+            virNetDevVPortProfilePtr virtPortProfile;
+        } hostdev;
     } data;
     virNetDevBandwidthPtr bandwidth;
 };
@@ -797,6 +802,10 @@ struct _virDomainNetDef {
             int mode; /* enum virMacvtapMode from util/macvtap.h */
             virNetDevVPortProfilePtr virtPortProfile;
         } direct;
+        struct {
+            virDomainHostdevDef def;
+            virNetDevVPortProfilePtr virtPortProfile;
+        } hostdev;
     } data;
     struct {
         bool sndbuf_specified;
@@ -1922,6 +1931,7 @@ int virDomainNetGetActualType(virDomainNetDefPtr iface);
 const char *virDomainNetGetActualBridgeName(virDomainNetDefPtr iface);
 const char *virDomainNetGetActualDirectDev(virDomainNetDefPtr iface);
 int virDomainNetGetActualDirectMode(virDomainNetDefPtr iface);
+virDomainHostdevDefPtr virDomainNetGetActualHostdev(virDomainNetDefPtr iface);
 virNetDevVPortProfilePtr
 virDomainNetGetActualVirtPortProfile(virDomainNetDefPtr iface);
 virNetDevBandwidthPtr

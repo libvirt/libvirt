@@ -1416,6 +1416,56 @@
             </optional>
           </interleave>
         </group>
+        <group>
+          <attribute name="type">
+            <value>hostdev</value>
+          </attribute>
+          <optional>
+            <attribute name="managed">
+              <choice>
+                <value>yes</value>
+                <value>no</value>
+              </choice>
+            </attribute>
+          </optional>
+          <interleave>
+            <element name="source">
+              <choice>
+                <group>
+                  <ref name="usbproduct"/>
+                  <optional>
+                    <ref name="usbaddress"/>
+                  </optional>
+                </group>
+                <element name="address">
+                  <choice>
+                    <group>
+                      <attribute name="type">
+                        <value>pci</value>
+                      </attribute>
+                      <ref name="pciaddress"/>
+                    </group>
+                    <group>
+                      <attribute name="type">
+                        <value>usb</value>
+                      </attribute>
+                      <attribute name="bus">
+                        <ref name="usbAddr"/>
+                      </attribute>
+                      <attribute name="device">
+                        <ref name="usbPort"/>
+                      </attribute>
+                    </group>
+                  </choice>
+                </element>
+              </choice>
+            </element>
+            <optional>
+              <ref name="virtualPortProfile"/>
+            </optional>
+            <ref name="interface-options"/>
+          </interleave>
+        </group>
       </choice>
     </element>
   </define>
