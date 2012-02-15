@@ -1624,8 +1624,10 @@ qemuMigrationRun(struct qemud_driver *driver,
 
     /* connect to the destination qemu if needed */
     if (spec->destType == MIGRATION_DEST_CONNECT_HOST &&
-        qemuMigrationConnect(driver, vm, spec) < 0)
+        qemuMigrationConnect(driver, vm, spec) < 0) {
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
         goto cleanup;
+    }
 
     switch (spec->destType) {
     case MIGRATION_DEST_HOST:
