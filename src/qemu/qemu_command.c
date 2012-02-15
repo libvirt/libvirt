@@ -3509,22 +3509,13 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
 
     *hasHwVirt = false;
 
-    if (def->cpu &&
-        (def->cpu->mode != VIR_CPU_MODE_CUSTOM || def->cpu->model)) {
-        if (!(cpu = virCPUDefCopy(def->cpu)))
-            goto cleanup;
-        if (cpu->mode != VIR_CPU_MODE_CUSTOM &&
-            !migrating &&
-            cpuUpdate(cpu, host) < 0)
-            goto cleanup;
-    }
-
     if (STREQ(def->os.arch, "i686"))
         default_model = "qemu32";
     else
         default_model = "qemu64";
 
-    if (cpu) {
+    if (def->cpu &&
+        (def->cpu->mode != VIR_CPU_MODE_CUSTOM || def->cpu->model)) {
         virCPUCompareResult cmp;
         const char *preferred;
         int hasSVM;
@@ -3539,6 +3530,14 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
                             _("CPU specification not supported by hypervisor"));
             goto cleanup;
         }
+
+        if (!(cpu = virCPUDefCopy(def->cpu)))
+            goto cleanup;
+
+        if (cpu->mode != VIR_CPU_MODE_CUSTOM &&
+            !migrating &&
+            cpuUpdate(cpu, host) < 0)
+            goto cleanup;
 
         cmp = cpuGuestData(host, cpu, &data);
         switch (cmp) {
@@ -3648,7 +3647,8 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
     ret = 0;
 
 cleanup:
-    cpuDataFree(host->arch, data);
+    if (host)
+        cpuDataFree(host->arch, data);
     virCPUDefFree(guest);
     virCPUDefFree(cpu);
 
