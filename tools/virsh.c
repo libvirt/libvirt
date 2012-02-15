@@ -838,8 +838,14 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom, const char *name)
         goto cleanup;
     }
 
+    if (!isatty(STDIN_FILENO)) {
+        vshError(ctl, "%s", _("Cannot run interactive console without a controlling TTY"));
+        goto cleanup;
+    }
+
     vshPrintExtra(ctl, _("Connected to domain %s\n"), virDomainGetName(dom));
     vshPrintExtra(ctl, _("Escape character is %s\n"), ctl->escapeChar);
+    fflush(stdout);
     if (vshRunConsole(dom, name, ctl->escapeChar) == 0)
         ret = true;
 
