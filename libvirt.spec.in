@@ -1249,9 +1249,9 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %doc %{_datadir}/gtk-doc/html/libvirt/*.png
 %doc %{_datadir}/gtk-doc/html/libvirt/*.css
 
-%dir %{_datadir}/libvirt/apis/
-%{_datadir}/libvirt/apis/libvirt-api.xml
-%{_datadir}/libvirt/apis/libvirt-qemu-api.xml
+%dir %{_datadir}/libvirt/api/
+%{_datadir}/libvirt/api/libvirt-api.xml
+%{_datadir}/libvirt/api/libvirt-qemu-api.xml
 
 %doc docs/*.html docs/html docs/*.gif
 %doc docs/libvirt-api.xml

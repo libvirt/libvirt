@@ -156,9 +156,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mingw32_libdir}/libvirt-qemu.dll.a
 %{_mingw32_libdir}/libvirt-qemu.la
 
-%dir %{_mingw32_datadir}/libvirt/apis/
-%{_mingw32_datadir}/libvirt/apis/libvirt-api.xml
-%{_mingw32_datadir}/libvirt/apis/libvirt-qemu-api.xml
+%dir %{_mingw32_datadir}/libvirt/api/
+%{_mingw32_datadir}/libvirt/api/libvirt-api.xml
+%{_mingw32_datadir}/libvirt/api/libvirt-qemu-api.xml
 
 %dir %{_mingw32_datadir}/libvirt/
 %dir %{_mingw32_datadir}/libvirt/schemas/
