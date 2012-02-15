@@ -1242,7 +1242,7 @@ static int lxcSetupInterfaceDirect(virConnectPtr conn,
      * and automagically dies when the container dies. So
      * we have no dev to perform disassociation with.
      */
-    prof = virDomainNetGetActualDirectVirtPortProfile(net);
+    prof = virDomainNetGetActualVirtPortProfile(net);
     if (prof) {
         lxcError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                  _("Unable to set port profile on direct interfaces"));
@@ -1260,7 +1260,7 @@ static int lxcSetupInterfaceDirect(virConnectPtr conn,
             virDomainNetGetActualDirectDev(net),
             virDomainNetGetActualDirectMode(net),
             false, false, def->uuid,
-            virDomainNetGetActualDirectVirtPortProfile(net),
+            virDomainNetGetActualVirtPortProfile(net),
             &res_ifname,
             VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
             driver->stateDir,

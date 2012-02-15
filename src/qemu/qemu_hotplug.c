@@ -1923,7 +1923,7 @@ int qemuDomainDetachNetDevice(struct qemud_driver *driver,
                          detach->ifname, detach->mac,
                          virDomainNetGetActualDirectDev(detach),
                          virDomainNetGetActualDirectMode(detach),
-                         virDomainNetGetActualDirectVirtPortProfile(detach),
+                         virDomainNetGetActualVirtPortProfile(detach),
                          driver->stateDir));
         VIR_FREE(detach->ifname);
     }

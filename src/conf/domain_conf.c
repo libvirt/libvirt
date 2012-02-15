@@ -13830,7 +13830,7 @@ virDomainNetGetActualDirectMode(virDomainNetDefPtr iface)
 }
 
 virNetDevVPortProfilePtr
-virDomainNetGetActualDirectVirtPortProfile(virDomainNetDefPtr iface)
+virDomainNetGetActualVirtPortProfile(virDomainNetDefPtr iface)
 {
     if (iface->type == VIR_DOMAIN_NET_TYPE_DIRECT)
         return iface->data.direct.virtPortProfile;

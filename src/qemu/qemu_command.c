@@ -154,7 +154,7 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
         virDomainNetGetActualDirectDev(net),
         virDomainNetGetActualDirectMode(net),
         true, vnet_hdr, def->uuid,
-        virDomainNetGetActualDirectVirtPortProfile(net),
+        virDomainNetGetActualVirtPortProfile(net),
         &res_ifname,
         vmop, driver->stateDir,
         virDomainNetGetActualBandwidth(net));
