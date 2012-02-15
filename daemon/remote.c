@@ -2052,16 +2052,16 @@ remoteDispatchAuthList(virNetServerPtr server ATTRIBUTE_UNUSED,
         } else if (callerUid == 0) {
             char *ident;
             if (virAsprintf(&ident, "pid:%lld,uid:%d",
-                            (long long) callerPid, callerUid) >= 0) {
-                VIR_INFO("Bypass polkit auth for privileged client %s",
-                         ident);
-                if (virNetServerClientSetIdentity(client, ident) < 0)
-                    virResetLastError();
-                else
-                    auth = VIR_NET_SERVER_SERVICE_AUTH_NONE;
-                VIR_FREE(ident);
+                            (long long) callerPid, callerUid) < 0) {
+                virReportOOMError();
+                goto cleanup;
             }
-            rv = -1;
+            VIR_INFO("Bypass polkit auth for privileged client %s", ident);
+            if (virNetServerClientSetIdentity(client, ident) < 0)
+                virResetLastError();
+            else
+                auth = VIR_NET_SERVER_SERVICE_AUTH_NONE;
+            VIR_FREE(ident);
         }
     }
 
@@ -2592,8 +2592,6 @@ remoteDispatchAuthPolkit(virNetServerPtr server,
     char *ident = NULL;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
-
-    memset(ident, 0, sizeof ident);
 
     virMutexLock(&priv->lock);
 
