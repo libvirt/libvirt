@@ -44,6 +44,104 @@
 # include "virnetdevopenvswitch.h"
 # include "virnetdevbandwidth.h"
 
+/* forward declarations of all device types, required by
+ * virDomainDeviceDef
+ */
+typedef struct _virDomainDiskDef virDomainDiskDef;
+typedef virDomainDiskDef *virDomainDiskDefPtr;
+
+typedef struct _virDomainControllerDef virDomainControllerDef;
+typedef virDomainControllerDef *virDomainControllerDefPtr;
+
+typedef struct _virDomainLeaseDef virDomainLeaseDef;
+typedef virDomainLeaseDef *virDomainLeaseDefPtr;
+
+typedef struct _virDomainFSDef virDomainFSDef;
+typedef virDomainFSDef *virDomainFSDefPtr;
+
+typedef struct _virDomainNetDef virDomainNetDef;
+typedef virDomainNetDef *virDomainNetDefPtr;
+
+typedef struct _virDomainInputDef virDomainInputDef;
+typedef virDomainInputDef *virDomainInputDefPtr;
+
+typedef struct _virDomainSoundDef virDomainSoundDef;
+typedef virDomainSoundDef *virDomainSoundDefPtr;
+
+typedef struct _virDomainVideoDef virDomainVideoDef;
+typedef virDomainVideoDef *virDomainVideoDefPtr;
+
+typedef struct _virDomainHostdevDef virDomainHostdevDef;
+typedef virDomainHostdevDef *virDomainHostdevDefPtr;
+
+typedef struct _virDomainWatchdogDef virDomainWatchdogDef;
+typedef virDomainWatchdogDef *virDomainWatchdogDefPtr;
+
+typedef struct _virDomainGraphicsDef virDomainGraphicsDef;
+typedef virDomainGraphicsDef *virDomainGraphicsDefPtr;
+
+typedef struct _virDomainHubDef virDomainHubDef;
+typedef virDomainHubDef *virDomainHubDefPtr;
+
+typedef struct _virDomainRedirdevDef virDomainRedirdevDef;
+typedef virDomainRedirdevDef *virDomainRedirdevDefPtr;
+
+typedef struct _virDomainSmartcardDef virDomainSmartcardDef;
+typedef virDomainSmartcardDef *virDomainSmartcardDefPtr;
+
+typedef struct _virDomainChrDef virDomainChrDef;
+typedef virDomainChrDef *virDomainChrDefPtr;
+
+typedef struct _virDomainMemballoonDef virDomainMemballoonDef;
+typedef virDomainMemballoonDef *virDomainMemballoonDefPtr;
+
+/* Flags for the 'type' field in virDomainDeviceDef */
+typedef enum {
+    VIR_DOMAIN_DEVICE_NONE = 0,
+    VIR_DOMAIN_DEVICE_DISK,
+    VIR_DOMAIN_DEVICE_LEASE,
+    VIR_DOMAIN_DEVICE_FS,
+    VIR_DOMAIN_DEVICE_NET,
+    VIR_DOMAIN_DEVICE_INPUT,
+    VIR_DOMAIN_DEVICE_SOUND,
+    VIR_DOMAIN_DEVICE_VIDEO,
+    VIR_DOMAIN_DEVICE_HOSTDEV,
+    VIR_DOMAIN_DEVICE_WATCHDOG,
+    VIR_DOMAIN_DEVICE_CONTROLLER,
+    VIR_DOMAIN_DEVICE_GRAPHICS,
+    VIR_DOMAIN_DEVICE_HUB,
+    VIR_DOMAIN_DEVICE_REDIRDEV,
+    VIR_DOMAIN_DEVICE_SMARTCARD,
+    VIR_DOMAIN_DEVICE_CHR,
+    VIR_DOMAIN_DEVICE_MEMBALLOON,
+
+    VIR_DOMAIN_DEVICE_LAST,
+} virDomainDeviceType;
+
+typedef struct _virDomainDeviceDef virDomainDeviceDef;
+typedef virDomainDeviceDef *virDomainDeviceDefPtr;
+struct _virDomainDeviceDef {
+    int type; /* enum virDomainDeviceType */
+    union {
+        virDomainDiskDefPtr disk;
+        virDomainControllerDefPtr controller;
+        virDomainLeaseDefPtr lease;
+        virDomainFSDefPtr fs;
+        virDomainNetDefPtr net;
+        virDomainInputDefPtr input;
+        virDomainSoundDefPtr sound;
+        virDomainVideoDefPtr video;
+        virDomainHostdevDefPtr hostdev;
+        virDomainWatchdogDefPtr watchdog;
+        virDomainGraphicsDefPtr graphics;
+        virDomainHubDefPtr hub;
+        virDomainRedirdevDefPtr redirdev;
+        virDomainSmartcardDefPtr smartcard;
+        virDomainChrDefPtr chr;
+        virDomainMemballoonDefPtr memballoon;
+    } data;
+};
+
 /* Different types of hypervisor */
 /* NB: Keep in sync with virDomainVirtTypeToString impl */
 enum virDomainVirtType {
@@ -234,8 +332,6 @@ struct _virDomainHostdevOrigStates {
     } states;
 };
 
-typedef struct _virDomainLeaseDef virDomainLeaseDef;
-typedef virDomainLeaseDef *virDomainLeaseDefPtr;
 struct _virDomainLeaseDef {
     char *lockspace;
     char *key;
@@ -243,6 +339,49 @@ struct _virDomainLeaseDef {
     unsigned long long offset;
 };
 
+
+enum virDomainHostdevMode {
+    VIR_DOMAIN_HOSTDEV_MODE_SUBSYS,
+    VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES,
+
+    VIR_DOMAIN_HOSTDEV_MODE_LAST,
+};
+
+enum virDomainHostdevSubsysType {
+    VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB,
+    VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI,
+
+    VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST
+};
+
+/* basic device for direct passthrough */
+struct _virDomainHostdevDef {
+    int mode; /* enum virDomainHostdevMode */
+    unsigned int managed : 1;
+    union {
+        struct {
+            int type; /* enum virDomainHostdevBusType */
+            union {
+                struct {
+                    unsigned bus;
+                    unsigned device;
+
+                    unsigned vendor;
+                    unsigned product;
+                } usb;
+                virDomainDevicePCIAddress pci; /* host address */
+            } u;
+        } subsys;
+        struct {
+            /* TBD: struct capabilities see:
+             * https://www.redhat.com/archives/libvir-list/2008-July/msg00429.html
+             */
+            int dummy;
+        } caps;
+    } source;
+    virDomainHostdevOrigStates origstates;
+    virDomainDeviceInfo info; /* Guest address */
+};
 
 /* Two types of disk backends */
 enum virDomainDiskType {
@@ -389,8 +528,6 @@ struct _virDomainBlockIoTuneInfo {
 typedef virDomainBlockIoTuneInfo *virDomainBlockIoTuneInfoPtr;
 
 /* Stores the virtual disk configuration */
-typedef struct _virDomainDiskDef virDomainDiskDef;
-typedef virDomainDiskDef *virDomainDiskDefPtr;
 struct _virDomainDiskDef {
     int type;
     int device;
@@ -481,8 +618,6 @@ struct _virDomainVirtioSerialOpts {
 };
 
 /* Stores the virtual disk controller configuration */
-typedef struct _virDomainControllerDef virDomainControllerDef;
-typedef virDomainControllerDef *virDomainControllerDefPtr;
 struct _virDomainControllerDef {
     int type;
     int idx;
@@ -530,8 +665,6 @@ enum virDomainFSWrpolicy {
     VIR_DOMAIN_FS_WRPOLICY_LAST
 };
 
-typedef struct _virDomainFSDef virDomainFSDef;
-typedef virDomainFSDef *virDomainFSDefPtr;
 struct _virDomainFSDef {
     int type;
     int fsdriver;
@@ -610,8 +743,6 @@ struct _virDomainActualNetDef {
 };
 
 /* Stores the virtual network interface configuration */
-typedef struct _virDomainNetDef virDomainNetDef;
-typedef virDomainNetDef *virDomainNetDefPtr;
 struct _virDomainNetDef {
     enum virDomainNetType type;
     unsigned char mac[VIR_MAC_BUFLEN];
@@ -769,8 +900,6 @@ struct _virDomainChrSourceDef {
 };
 
 /* A complete character device, both host and domain views.  */
-typedef struct _virDomainChrDef virDomainChrDef;
-typedef virDomainChrDef *virDomainChrDefPtr;
 struct _virDomainChrDef {
     int deviceType;
     int targetType;
@@ -796,8 +925,6 @@ enum virDomainSmartcardType {
 # define VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES 3
 # define VIR_DOMAIN_SMARTCARD_DEFAULT_DATABASE "/etc/pki/nssdb"
 
-typedef struct _virDomainSmartcardDef virDomainSmartcardDef;
-typedef virDomainSmartcardDef *virDomainSmartcardDefPtr;
 struct _virDomainSmartcardDef {
     int type; /* virDomainSmartcardType */
     union {
@@ -812,8 +939,6 @@ struct _virDomainSmartcardDef {
     virDomainDeviceInfo info;
 };
 
-typedef struct _virDomainHubDef virDomainHubDef;
-typedef virDomainHubDef *virDomainHubDefPtr;
 struct _virDomainHubDef {
     int type;
     virDomainDeviceInfo info;
@@ -834,8 +959,6 @@ enum virDomainInputBus {
     VIR_DOMAIN_INPUT_BUS_LAST
 };
 
-typedef struct _virDomainInputDef virDomainInputDef;
-typedef virDomainInputDef *virDomainInputDefPtr;
 struct _virDomainInputDef {
     int type;
     int bus;
@@ -852,8 +975,6 @@ enum virDomainSoundModel {
     VIR_DOMAIN_SOUND_MODEL_LAST
 };
 
-typedef struct _virDomainSoundDef virDomainSoundDef;
-typedef virDomainSoundDef *virDomainSoundDefPtr;
 struct _virDomainSoundDef {
     int model;
     virDomainDeviceInfo info;
@@ -877,8 +998,6 @@ enum virDomainWatchdogAction {
     VIR_DOMAIN_WATCHDOG_ACTION_LAST
 };
 
-typedef struct _virDomainWatchdogDef virDomainWatchdogDef;
-typedef virDomainWatchdogDef *virDomainWatchdogDefPtr;
 struct _virDomainWatchdogDef {
     int model;
     int action;
@@ -906,8 +1025,6 @@ struct _virDomainVideoAccelDef {
 };
 
 
-typedef struct _virDomainVideoDef virDomainVideoDef;
-typedef virDomainVideoDef *virDomainVideoDefPtr;
 struct _virDomainVideoDef {
     int type;
     unsigned int vram;
@@ -1042,8 +1159,6 @@ struct _virDomainGraphicsListenDef {
     char *network;
 };
 
-typedef struct _virDomainGraphicsDef virDomainGraphicsDef;
-typedef virDomainGraphicsDef *virDomainGraphicsDefPtr;
 struct _virDomainGraphicsDef {
     int type;
     union {
@@ -1091,58 +1206,12 @@ struct _virDomainGraphicsDef {
     virDomainGraphicsListenDefPtr listens;
 };
 
-enum virDomainHostdevMode {
-    VIR_DOMAIN_HOSTDEV_MODE_SUBSYS,
-    VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES,
-
-    VIR_DOMAIN_HOSTDEV_MODE_LAST,
-};
-
-enum virDomainHostdevSubsysType {
-    VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB,
-    VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI,
-
-    VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST
-};
-
-typedef struct _virDomainHostdevDef virDomainHostdevDef;
-typedef virDomainHostdevDef *virDomainHostdevDefPtr;
-struct _virDomainHostdevDef {
-    int mode; /* enum virDomainHostdevMode */
-    unsigned int managed : 1;
-    union {
-        struct {
-            int type; /* enum virDomainHostdevBusType */
-            union {
-                struct {
-                    unsigned bus;
-                    unsigned device;
-
-                    unsigned vendor;
-                    unsigned product;
-                } usb;
-                virDomainDevicePCIAddress pci; /* host address */
-            } u;
-        } subsys;
-        struct {
-            /* TBD: struct capabilities see:
-             * https://www.redhat.com/archives/libvir-list/2008-July/msg00429.html
-             */
-            int dummy;
-        } caps;
-    } source;
-    virDomainDeviceInfo info; /* Guest address */
-    virDomainHostdevOrigStates origstates;
-};
-
 enum virDomainRedirdevBus {
     VIR_DOMAIN_REDIRDEV_BUS_USB,
 
     VIR_DOMAIN_REDIRDEV_BUS_LAST
 };
 
-typedef struct _virDomainRedirdevDef virDomainRedirdevDef;
-typedef virDomainRedirdevDef *virDomainRedirdevDefPtr;
 struct _virDomainRedirdevDef {
     int bus; /* enum virDomainRedirdevBus */
 
@@ -1161,8 +1230,6 @@ enum {
     VIR_DOMAIN_MEMBALLOON_MODEL_LAST
 };
 
-typedef struct _virDomainMemballoonDef virDomainMemballoonDef;
-typedef virDomainMemballoonDef *virDomainMemballoonDefPtr;
 struct _virDomainMemballoonDef {
     int model;
     virDomainDeviceInfo info;
@@ -1176,53 +1243,6 @@ enum virDomainSmbiosMode {
     VIR_DOMAIN_SMBIOS_SYSINFO,
 
     VIR_DOMAIN_SMBIOS_LAST
-};
-
-/* Flags for the 'type' field in next struct */
-typedef enum {
-    VIR_DOMAIN_DEVICE_NONE = 0,
-    VIR_DOMAIN_DEVICE_DISK,
-    VIR_DOMAIN_DEVICE_LEASE,
-    VIR_DOMAIN_DEVICE_FS,
-    VIR_DOMAIN_DEVICE_NET,
-    VIR_DOMAIN_DEVICE_INPUT,
-    VIR_DOMAIN_DEVICE_SOUND,
-    VIR_DOMAIN_DEVICE_VIDEO,
-    VIR_DOMAIN_DEVICE_HOSTDEV,
-    VIR_DOMAIN_DEVICE_WATCHDOG,
-    VIR_DOMAIN_DEVICE_CONTROLLER,
-    VIR_DOMAIN_DEVICE_GRAPHICS,
-    VIR_DOMAIN_DEVICE_HUB,
-    VIR_DOMAIN_DEVICE_REDIRDEV,
-    VIR_DOMAIN_DEVICE_SMARTCARD,
-    VIR_DOMAIN_DEVICE_CHR,
-    VIR_DOMAIN_DEVICE_MEMBALLOON,
-
-    VIR_DOMAIN_DEVICE_LAST,
-} virDomainDeviceType;
-
-typedef struct _virDomainDeviceDef virDomainDeviceDef;
-typedef virDomainDeviceDef *virDomainDeviceDefPtr;
-struct _virDomainDeviceDef {
-    int type;
-    union {
-        virDomainDiskDefPtr disk;
-        virDomainControllerDefPtr controller;
-        virDomainLeaseDefPtr lease;
-        virDomainFSDefPtr fs;
-        virDomainNetDefPtr net;
-        virDomainInputDefPtr input;
-        virDomainSoundDefPtr sound;
-        virDomainVideoDefPtr video;
-        virDomainHostdevDefPtr hostdev;
-        virDomainWatchdogDefPtr watchdog;
-        virDomainGraphicsDefPtr graphics;
-        virDomainHubDefPtr hub;
-        virDomainRedirdevDefPtr redirdev;
-        virDomainSmartcardDefPtr smartcard;
-        virDomainChrDefPtr chr;
-        virDomainMemballoonDefPtr memballoon;
-    } data;
 };
 
 
