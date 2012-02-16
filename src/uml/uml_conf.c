@@ -127,7 +127,6 @@ umlConnectTapDevice(virConnectPtr conn,
                     const char *bridge)
 {
     bool template_ifname = false;
-    unsigned char tapmac[VIR_MAC_BUFLEN];
 
     if (!net->ifname ||
         STRPREFIX(net->ifname, VIR_NET_GENERATED_PREFIX) ||
@@ -139,9 +138,7 @@ umlConnectTapDevice(virConnectPtr conn,
         template_ifname = true;
     }
 
-    memcpy(tapmac, net->mac, VIR_MAC_BUFLEN);
-    tapmac[0] = 0xFE; /* Discourage bridge from using TAP dev MAC */
-    if (virNetDevTapCreateInBridgePort(bridge, &net->ifname, tapmac,
+    if (virNetDevTapCreateInBridgePort(bridge, &net->ifname, net->mac, true,
                                        0, true, NULL,
                                        virDomainNetGetActualVirtPortProfile(net)) < 0) {
         if (template_ifname)

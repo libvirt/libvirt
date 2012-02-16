@@ -37,6 +37,7 @@ int virNetDevTapDelete(const char *ifname)
 int virNetDevTapCreateInBridgePort(const char *brname,
                                    char **ifname,
                                    const unsigned char *macaddr,
+                                   bool discourage,
                                    int vnet_hdr,
                                    bool up,
                                    int *tapfd,

@@ -180,7 +180,6 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
     int tapfd = -1;
     int vnet_hdr = 0;
     bool template_ifname = false;
-    unsigned char tapmac[VIR_MAC_BUFLEN];
     int actualType = virDomainNetGetActualType(net);
 
     if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
@@ -244,9 +243,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         net->model && STREQ(net->model, "virtio"))
         vnet_hdr = 1;
 
-    memcpy(tapmac, net->mac, VIR_MAC_BUFLEN);
-    tapmac[0] = 0xFE; /* Discourage bridge from using TAP dev MAC */
-    err = virNetDevTapCreateInBridgePort(brname, &net->ifname, tapmac,
+    err = virNetDevTapCreateInBridgePort(brname, &net->ifname, net->mac, true,
                                          vnet_hdr, true, &tapfd,
                                          virDomainNetGetActualVirtPortProfile(net));
     virDomainAuditNetDevice(def, net, "/dev/net/tun", tapfd >= 0);

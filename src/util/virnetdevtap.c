@@ -22,6 +22,7 @@
 
 #include <config.h>
 
+#include "virmacaddr.h"
 #include "virnetdevtap.h"
 #include "virnetdev.h"
 #include "virnetdevbridge.h"
@@ -248,6 +249,7 @@ int virNetDevTapDelete(const char *ifname ATTRIBUTE_UNUSED)
  * @brname: the bridge name
  * @ifname: the interface name (or name template)
  * @macaddr: desired MAC address (VIR_MAC_BUFLEN long)
+ * @discourage: whether bridge should be discouraged from using macaddr
  * @vnet_hdr: whether to try enabling IFF_VNET_HDR
  * @tapfd: file descriptor return value for the new tap device
  * @virtPortProfile: bridge/port specific configuration
@@ -265,11 +267,14 @@ int virNetDevTapDelete(const char *ifname ATTRIBUTE_UNUSED)
 int virNetDevTapCreateInBridgePort(const char *brname,
                                    char **ifname,
                                    const unsigned char *macaddr,
+                                   bool discourage,
                                    int vnet_hdr,
                                    bool up,
                                    int *tapfd,
                                    virNetDevVPortProfilePtr virtPortProfile)
 {
+    unsigned char tapmac[VIR_MAC_BUFLEN];
+
     if (virNetDevTapCreate(ifname, vnet_hdr, tapfd) < 0)
         return -1;
 
@@ -279,7 +284,11 @@ int virNetDevTapCreateInBridgePort(const char *brname,
      * seeing the kernel allocate random MAC for the TAP
      * device before we set our static MAC.
      */
-    if (virNetDevSetMAC(*ifname, macaddr) < 0)
+    memcpy(tapmac, macaddr, VIR_MAC_BUFLEN);
+    if (discourage)
+        tapmac[0] = 0xFE; /* Discourage bridge from using TAP dev MAC */
+
+    if (virNetDevSetMAC(*ifname, tapmac) < 0)
         goto error;
 
     /* We need to set the interface MTU before adding it
