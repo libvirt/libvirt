@@ -194,7 +194,7 @@ qemuFindAgentConfig(virDomainDefPtr def)
         if (channel->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO)
             continue;
 
-        if (STREQ(channel->target.name, "org.qemu.guest_agent.0")) {
+        if (STREQ_NULLABLE(channel->target.name, "org.qemu.guest_agent.0")) {
             config = &channel->source;
             break;
         }
