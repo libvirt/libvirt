@@ -2590,7 +2590,6 @@ remoteDispatchAuthPolkit(virNetServerPtr server,
     DBusError err;
     const char *action;
     char *ident = NULL;
-    int rv = -1;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
