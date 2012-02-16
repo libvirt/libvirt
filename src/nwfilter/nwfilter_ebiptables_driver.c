@@ -4036,6 +4036,7 @@ static int
 ebiptablesDriverInit(bool privileged)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *errmsg = NULL;
 
     if (!privileged)
         return 0;
@@ -4056,8 +4057,13 @@ ebiptablesDriverInit(bool privileged)
                           "%s",
                           CMD_STOPONERR(1));
 
-        if (ebiptablesExecCLI(&buf, NULL, NULL) < 0)
-             VIR_FREE(ebtables_cmd_path);
+        if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0) {
+            VIR_FREE(ebtables_cmd_path);
+            VIR_ERROR(_("Testing of ebtables command failed: %s"),
+                      errmsg);
+        }
+    } else {
+        VIR_WARN("Could not find 'ebtables' executable");
     }
 
     iptables_cmd_path = virFindFileInPath("iptables");
@@ -4070,8 +4076,13 @@ ebiptablesDriverInit(bool privileged)
                           "%s",
                           CMD_STOPONERR(1));
 
-        if (ebiptablesExecCLI(&buf, NULL, NULL) < 0)
-             VIR_FREE(iptables_cmd_path);
+        if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0) {
+            VIR_FREE(iptables_cmd_path);
+            VIR_ERROR(_("Testing of iptables command failed: %s"),
+                      errmsg);
+        }
+    } else {
+        VIR_WARN("Could not find 'iptables' executable");
     }
 
     ip6tables_cmd_path = virFindFileInPath("ip6tables");
@@ -4084,25 +4095,28 @@ ebiptablesDriverInit(bool privileged)
                           "%s",
                           CMD_STOPONERR(1));
 
-        if (ebiptablesExecCLI(&buf, NULL, NULL) < 0)
-             VIR_FREE(ip6tables_cmd_path);
+        if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0) {
+            VIR_FREE(ip6tables_cmd_path);
+            VIR_ERROR(_("Testing of ip6tables command failed: %s"),
+                      errmsg);
+        }
+    } else {
+        VIR_WARN("Could not find 'ip6tables' executable");
     }
 
     /* ip(6)tables support needs gawk & grep, ebtables doesn't */
     if ((iptables_cmd_path != NULL || ip6tables_cmd_path != NULL) &&
         (!grep_cmd_path || !gawk_cmd_path)) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("essential tools to support ip(6)tables "
-                                 "firewalls could not be located"));
+        VIR_ERROR(_("essential tools to support ip(6)tables "
+                  "firewalls could not be located"));
         VIR_FREE(iptables_cmd_path);
         VIR_FREE(ip6tables_cmd_path);
     }
 
+    VIR_FREE(errmsg);
 
     if (!ebtables_cmd_path && !iptables_cmd_path && !ip6tables_cmd_path) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("firewall tools were not found or "
-                                 "cannot be used"));
+        VIR_ERROR(_("firewall tools were not found or cannot be used"));
         ebiptablesDriverShutdown();
         return -ENOTSUP;
     }
