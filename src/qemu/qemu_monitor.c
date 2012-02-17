@@ -1,7 +1,7 @@
 /*
  * qemu_monitor.c: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -2716,15 +2716,16 @@ int qemuMonitorBlockJob(qemuMonitorPtr mon,
                         virDomainBlockJobInfoPtr info,
                         int mode)
 {
-    int ret;
+    int ret = -1;
 
-    VIR_DEBUG("mon=%p, device=%p, bandwidth=%lu, info=%p, mode=%o",
+    VIR_DEBUG("mon=%p, device=%s, bandwidth=%lu, info=%p, mode=%o",
               mon, device, bandwidth, info, mode);
 
     if (mon->json)
         ret = qemuMonitorJSONBlockJob(mon, device, bandwidth, info, mode);
     else
-        ret = qemuMonitorTextBlockJob(mon, device, bandwidth, info, mode);
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("block jobs require JSON monitor"));
     return ret;
 }
 
