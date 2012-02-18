@@ -1,7 +1,7 @@
 /*
  * qemu_monitor_json.h: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2009, 2011 Red Hat, Inc.
+ * Copyright (C) 2006-2009, 2011-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -246,6 +246,7 @@ int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
 
 int qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
                             const char *device,
+                            const char *base,
                             unsigned long bandwidth,
                             virDomainBlockJobInfoPtr info,
                             int mode);

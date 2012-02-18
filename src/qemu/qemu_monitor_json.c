@@ -3229,16 +3229,24 @@ static int qemuMonitorJSONGetBlockJobInfo(virJSONValuePtr reply,
 }
 
 
-int qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
-                             const char *device,
-                             unsigned long bandwidth,
-                             virDomainBlockJobInfoPtr info,
-                             int mode)
+int
+qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
+                        const char *device,
+                        const char *base,
+                        unsigned long bandwidth,
+                        virDomainBlockJobInfoPtr info,
+                        int mode)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
     const char *cmd_name = NULL;
+
+    if (base && mode != BLOCK_JOB_PULL) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("only block pull supports base: %s"), base);
+        return -1;
+    }
 
     if (mode == BLOCK_JOB_ABORT) {
         cmd_name = "block_job_cancel";
@@ -3254,8 +3262,12 @@ int qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
                                          NULL);
     } else if (mode == BLOCK_JOB_PULL) {
         cmd_name = "block_stream";
-        cmd = qemuMonitorJSONMakeCommand(cmd_name, "s:device",
-                                         device, NULL);
+        if (base)
+            cmd = qemuMonitorJSONMakeCommand(cmd_name, "s:device",
+                                             device, "s:base", base, NULL);
+        else
+            cmd = qemuMonitorJSONMakeCommand(cmd_name, "s:device",
+                                             device, NULL);
     }
 
     if (!cmd)

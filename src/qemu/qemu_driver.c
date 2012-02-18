@@ -11379,14 +11379,6 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
     if (!device) {
         goto cleanup;
     }
-    /* XXX - add a qemu capability check; if qemu 1.1 or newer, then
-     *  validate and convert non-NULL base into something that can
-     * be passed as optional base argument.  */
-    if (base)  {
-        qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                        _("partial block pull is not supported with this QEMU binary"));
-        goto cleanup;
-    }
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
@@ -11399,7 +11391,12 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     priv = vm->privateData;
-    ret = qemuMonitorBlockJob(priv->mon, device, bandwidth, info, mode);
+    /* XXX - add a qemu capability check, since only qemu 1.1 or newer
+     * supports the base argument.
+     * XXX - libvirt should really be tracking the backing file chain
+     * itself, and validating that base is on the chain, rather than
+     * relying on qemu to do this.  */
+    ret = qemuMonitorBlockJob(priv->mon, device, base, bandwidth, info, mode);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
 endjob:

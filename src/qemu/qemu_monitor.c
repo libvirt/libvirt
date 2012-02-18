@@ -2712,17 +2712,18 @@ int qemuMonitorScreendump(qemuMonitorPtr mon,
 
 int qemuMonitorBlockJob(qemuMonitorPtr mon,
                         const char *device,
+                        const char *base,
                         unsigned long bandwidth,
                         virDomainBlockJobInfoPtr info,
                         int mode)
 {
     int ret = -1;
 
-    VIR_DEBUG("mon=%p, device=%s, bandwidth=%lu, info=%p, mode=%o",
-              mon, device, bandwidth, info, mode);
+    VIR_DEBUG("mon=%p, device=%s, base=%s, bandwidth=%lu, info=%p, mode=%o",
+              mon, device, NULLSTR(base), bandwidth, info, mode);
 
     if (mon->json)
-        ret = qemuMonitorJSONBlockJob(mon, device, bandwidth, info, mode);
+        ret = qemuMonitorJSONBlockJob(mon, device, base, bandwidth, info, mode);
     else
         qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                         _("block jobs require JSON monitor"));

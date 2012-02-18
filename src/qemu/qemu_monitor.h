@@ -1,7 +1,7 @@
 /*
  * qemu_monitor.h: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -519,9 +519,11 @@ typedef enum {
 
 int qemuMonitorBlockJob(qemuMonitorPtr mon,
                         const char *device,
+                        const char *back,
                         unsigned long bandwidth,
                         virDomainBlockJobInfoPtr info,
-                        int mode);
+                        int mode)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
 
 int qemuMonitorOpenGraphics(qemuMonitorPtr mon,
                             const char *protocol,
