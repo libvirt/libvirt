@@ -2515,6 +2515,214 @@ virDomainParseLegacyDeviceAddress(char *devaddr,
     return 0;
 }
 
+static int
+virDomainHostdevSubsysUsbDefParseXML(const xmlNodePtr node,
+                                     virDomainHostdevDefPtr def)
+{
+
+    int ret = -1;
+    int got_product, got_vendor;
+    xmlNodePtr cur;
+
+    /* Product can validly be 0, so we need some extra help to determine
+     * if it is uninitialized*/
+    got_product = 0;
+    got_vendor = 0;
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (xmlStrEqual(cur->name, BAD_CAST "vendor")) {
+                char *vendor = virXMLPropString(cur, "id");
+
+                if (vendor) {
+                    got_vendor = 1;
+                    if (virStrToLong_ui(vendor, NULL, 0,
+                                    &def->source.subsys.u.usb.vendor) < 0) {
+                        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("cannot parse vendor id %s"), vendor);
+                        VIR_FREE(vendor);
+                        goto out;
+                    }
+                    VIR_FREE(vendor);
+                } else {
+                    virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                         "%s", _("usb vendor needs id"));
+                    goto out;
+                }
+            } else if (xmlStrEqual(cur->name, BAD_CAST "product")) {
+                char* product = virXMLPropString(cur, "id");
+
+                if (product) {
+                    got_product = 1;
+                    if (virStrToLong_ui(product, NULL, 0,
+                                        &def->source.subsys.u.usb.product) < 0) {
+                        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                             _("cannot parse product %s"),
+                                             product);
+                        VIR_FREE(product);
+                        goto out;
+                    }
+                    VIR_FREE(product);
+                } else {
+                    virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                         "%s", _("usb product needs id"));
+                    goto out;
+                }
+            } else if (xmlStrEqual(cur->name, BAD_CAST "address")) {
+                char *bus, *device;
+
+                bus = virXMLPropString(cur, "bus");
+                if (bus) {
+                    if (virStrToLong_ui(bus, NULL, 0,
+                                        &def->source.subsys.u.usb.bus) < 0) {
+                        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                             _("cannot parse bus %s"), bus);
+                        VIR_FREE(bus);
+                        goto out;
+                    }
+                    VIR_FREE(bus);
+                } else {
+                    virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                         "%s", _("usb address needs bus id"));
+                    goto out;
+                }
+
+                device = virXMLPropString(cur, "device");
+                if (device) {
+                    if (virStrToLong_ui(device, NULL, 0,
+                                        &def->source.subsys.u.usb.device) < 0)  {
+                        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                             _("cannot parse device %s"),
+                                             device);
+                        VIR_FREE(device);
+                        goto out;
+                    }
+                    VIR_FREE(device);
+                } else {
+                    virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                         _("usb address needs device id"));
+                    goto out;
+                }
+            } else {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     _("unknown usb source type '%s'"),
+                                     cur->name);
+                goto out;
+            }
+        }
+        cur = cur->next;
+    }
+
+    if (got_vendor && def->source.subsys.u.usb.vendor == 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+            "%s", _("vendor cannot be 0."));
+        goto out;
+    }
+
+    if (!got_vendor && got_product) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+            "%s", _("missing vendor"));
+        goto out;
+    }
+    if (got_vendor && !got_product) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+            "%s", _("missing product"));
+        goto out;
+    }
+
+    ret = 0;
+out:
+    return ret;
+}
+
+/* The internal XML for host PCI device's original states:
+ *
+ * <origstates>
+ *   <unbind/>
+ *   <removeslot/>
+ *   <reprobe/>
+ * </origstates>
+ */
+static int
+virDomainHostdevSubsysPciOrigStatesDefParseXML(const xmlNodePtr node,
+                                               virDomainHostdevOrigStatesPtr def)
+{
+    xmlNodePtr cur;
+    cur = node->children;
+
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (xmlStrEqual(cur->name, BAD_CAST "unbind")) {
+                def->states.pci.unbind_from_stub = 1;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "removeslot")) {
+                def->states.pci.remove_slot = 1;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "reprobe")) {
+                def->states.pci.reprobe = 1;
+            } else {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     _("unsupported element '%s' of 'origstates'"),
+                                     cur->name);
+                return -1;
+            }
+        }
+        cur = cur->next;
+    }
+
+    return 0;
+}
+
+static int
+virDomainHostdevSubsysPciDefParseXML(const xmlNodePtr node,
+                                     virDomainHostdevDefPtr def,
+                                     unsigned int flags)
+{
+    int ret = -1;
+    xmlNodePtr cur;
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (xmlStrEqual(cur->name, BAD_CAST "address")) {
+                virDomainDevicePCIAddressPtr addr =
+                    &def->source.subsys.u.pci;
+
+                if (virDomainDevicePCIAddressParseXML(cur, addr) < 0)
+                    goto out;
+            } else if ((flags & VIR_DOMAIN_XML_INTERNAL_STATUS) &&
+                       xmlStrEqual(cur->name, BAD_CAST "state")) {
+                /* Legacy back-compat. Don't add any more attributes here */
+                char *devaddr = virXMLPropString(cur, "devaddr");
+                if (devaddr &&
+                    virDomainParseLegacyDeviceAddress(devaddr,
+                                                      &def->info.addr.pci) < 0) {
+                    virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                         _("Unable to parse devaddr parameter '%s'"),
+                                         devaddr);
+                    VIR_FREE(devaddr);
+                    goto out;
+                }
+                def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+            } else if ((flags & VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES) &&
+                       xmlStrEqual(cur->name, BAD_CAST "origstates")) {
+                virDomainHostdevOrigStatesPtr states = &def->origstates;
+                if (virDomainHostdevSubsysPciOrigStatesDefParseXML(cur, states) < 0)
+                    goto out;
+            } else {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     _("unknown pci source type '%s'"),
+                                     cur->name);
+                goto out;
+            }
+        }
+        cur = cur->next;
+    }
+
+    ret = 0;
+out:
+    return ret;
+}
+
 int
 virDomainDiskFindControllerModel(virDomainDefPtr def,
                                  virDomainDiskDefPtr disk,
@@ -6113,215 +6321,6 @@ error:
     VIR_FREE(heads);
     return NULL;
 }
-
-static int
-virDomainHostdevSubsysUsbDefParseXML(const xmlNodePtr node,
-                                     virDomainHostdevDefPtr def)
-{
-
-    int ret = -1;
-    int got_product, got_vendor;
-    xmlNodePtr cur;
-
-    /* Product can validly be 0, so we need some extra help to determine
-     * if it is uninitialized*/
-    got_product = 0;
-    got_vendor = 0;
-
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (xmlStrEqual(cur->name, BAD_CAST "vendor")) {
-                char *vendor = virXMLPropString(cur, "id");
-
-                if (vendor) {
-                    got_vendor = 1;
-                    if (virStrToLong_ui(vendor, NULL, 0,
-                                    &def->source.subsys.u.usb.vendor) < 0) {
-                        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                 _("cannot parse vendor id %s"), vendor);
-                        VIR_FREE(vendor);
-                        goto out;
-                    }
-                    VIR_FREE(vendor);
-                } else {
-                    virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                         "%s", _("usb vendor needs id"));
-                    goto out;
-                }
-            } else if (xmlStrEqual(cur->name, BAD_CAST "product")) {
-                char* product = virXMLPropString(cur, "id");
-
-                if (product) {
-                    got_product = 1;
-                    if (virStrToLong_ui(product, NULL, 0,
-                                        &def->source.subsys.u.usb.product) < 0) {
-                        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                             _("cannot parse product %s"),
-                                             product);
-                        VIR_FREE(product);
-                        goto out;
-                    }
-                    VIR_FREE(product);
-                } else {
-                    virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                         "%s", _("usb product needs id"));
-                    goto out;
-                }
-            } else if (xmlStrEqual(cur->name, BAD_CAST "address")) {
-                char *bus, *device;
-
-                bus = virXMLPropString(cur, "bus");
-                if (bus) {
-                    if (virStrToLong_ui(bus, NULL, 0,
-                                        &def->source.subsys.u.usb.bus) < 0) {
-                        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                             _("cannot parse bus %s"), bus);
-                        VIR_FREE(bus);
-                        goto out;
-                    }
-                    VIR_FREE(bus);
-                } else {
-                    virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                         "%s", _("usb address needs bus id"));
-                    goto out;
-                }
-
-                device = virXMLPropString(cur, "device");
-                if (device) {
-                    if (virStrToLong_ui(device, NULL, 0,
-                                        &def->source.subsys.u.usb.device) < 0)  {
-                        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                             _("cannot parse device %s"),
-                                             device);
-                        VIR_FREE(device);
-                        goto out;
-                    }
-                    VIR_FREE(device);
-                } else {
-                    virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                         _("usb address needs device id"));
-                    goto out;
-                }
-            } else {
-                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                     _("unknown usb source type '%s'"),
-                                     cur->name);
-                goto out;
-            }
-        }
-        cur = cur->next;
-    }
-
-    if (got_vendor && def->source.subsys.u.usb.vendor == 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-            "%s", _("vendor cannot be 0."));
-        goto out;
-    }
-
-    if (!got_vendor && got_product) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-            "%s", _("missing vendor"));
-        goto out;
-    }
-    if (got_vendor && !got_product) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-            "%s", _("missing product"));
-        goto out;
-    }
-
-    ret = 0;
-out:
-    return ret;
-}
-
-/* The internal XML for host PCI device's original states:
- *
- * <origstates>
- *   <unbind/>
- *   <removeslot/>
- *   <reprobe/>
- * </origstates>
- */
-static int
-virDomainHostdevSubsysPciOrigStatesDefParseXML(const xmlNodePtr node,
-                                               virDomainHostdevOrigStatesPtr def)
-{
-    xmlNodePtr cur;
-    cur = node->children;
-
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (xmlStrEqual(cur->name, BAD_CAST "unbind")) {
-                def->states.pci.unbind_from_stub = 1;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "removeslot")) {
-                def->states.pci.remove_slot = 1;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "reprobe")) {
-                def->states.pci.reprobe = 1;
-            } else {
-                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                     _("unsupported element '%s' of 'origstates'"),
-                                     cur->name);
-                return -1;
-            }
-        }
-        cur = cur->next;
-    }
-
-    return 0;
-}
-
-static int
-virDomainHostdevSubsysPciDefParseXML(const xmlNodePtr node,
-                                     virDomainHostdevDefPtr def,
-                                     unsigned int flags)
-{
-    int ret = -1;
-    xmlNodePtr cur;
-
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (xmlStrEqual(cur->name, BAD_CAST "address")) {
-                virDomainDevicePCIAddressPtr addr =
-                    &def->source.subsys.u.pci;
-
-                if (virDomainDevicePCIAddressParseXML(cur, addr) < 0)
-                    goto out;
-            } else if ((flags & VIR_DOMAIN_XML_INTERNAL_STATUS) &&
-                       xmlStrEqual(cur->name, BAD_CAST "state")) {
-                /* Legacy back-compat. Don't add any more attributes here */
-                char *devaddr = virXMLPropString(cur, "devaddr");
-                if (devaddr &&
-                    virDomainParseLegacyDeviceAddress(devaddr,
-                                                      &def->info.addr.pci) < 0) {
-                    virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                         _("Unable to parse devaddr parameter '%s'"),
-                                         devaddr);
-                    VIR_FREE(devaddr);
-                    goto out;
-                }
-                def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-            } else if ((flags & VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES) &&
-                       xmlStrEqual(cur->name, BAD_CAST "origstates")) {
-                virDomainHostdevOrigStatesPtr states = &def->origstates;
-                if (virDomainHostdevSubsysPciOrigStatesDefParseXML(cur, states) < 0)
-                    goto out;
-            } else {
-                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                     _("unknown pci source type '%s'"),
-                                     cur->name);
-                goto out;
-            }
-        }
-        cur = cur->next;
-    }
-
-    ret = 0;
-out:
-    return ret;
-}
-
 
 static virDomainHostdevDefPtr
 virDomainHostdevDefParseXML(const xmlNodePtr node,
