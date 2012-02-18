@@ -598,10 +598,14 @@ currently in use by a running domain. Other contexts that require a MAC
 address of virtual interface (such as I<detach-interface> or
 I<domif-setlink>) will accept the MAC address printed by this command.
 
-=item B<blockpull> I<domain> I<path> [I<bandwidth>]
+=item B<blockpull> I<domain> I<path> [I<bandwidth>] [I<base>]
 
-Populate a disk from its backing image. Once all data from its backing
-image has been pulled, the disk no longer depends on the backing image.
+Populate a disk from its backing image chain. By default, this command
+flattens the entire chain; but if I<base> is specified, containing the
+name of one of the backing files in the chain, then that file becomes
+the new backing file and only the intermediate portion of the chain is
+pulled.  Once all requested data from the backing image chain has been
+pulled, the disk no longer depends on that portion of the backing chain.
 It pulls data for the entire disk in the background, the process of the
 operation can be checked with B<blockjob>.
 

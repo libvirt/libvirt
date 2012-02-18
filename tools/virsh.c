@@ -7349,14 +7349,21 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
         goto cleanup;
     }
 
-    if (mode == VSH_CMD_BLOCK_JOB_ABORT)
+    if (mode == VSH_CMD_BLOCK_JOB_ABORT) {
         ret = virDomainBlockJobAbort(dom, path, 0);
-    else if (mode == VSH_CMD_BLOCK_JOB_INFO)
+    } else if (mode == VSH_CMD_BLOCK_JOB_INFO) {
         ret = virDomainGetBlockJobInfo(dom, path, info, 0);
-    else if (mode == VSH_CMD_BLOCK_JOB_SPEED)
+    } else if (mode == VSH_CMD_BLOCK_JOB_SPEED) {
         ret = virDomainBlockJobSetSpeed(dom, path, bandwidth, 0);
-    else if (mode == VSH_CMD_BLOCK_JOB_PULL)
-        ret = virDomainBlockPull(dom, path, bandwidth, 0);
+    } else if (mode == VSH_CMD_BLOCK_JOB_PULL) {
+        const char *base = NULL;
+        if (vshCommandOptString(cmd, "base", &base) < 0)
+            goto cleanup;
+        if (base)
+            ret = virDomainBlockRebase(dom, path, base, bandwidth, 0);
+        else
+            ret = virDomainBlockPull(dom, path, bandwidth, 0);
+    }
 
 cleanup:
     if (dom)
@@ -7377,6 +7384,8 @@ static const vshCmdOptDef opts_block_pull[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"path", VSH_OT_DATA, VSH_OFLAG_REQ, N_("Fully-qualified path of disk")},
     {"bandwidth", VSH_OT_DATA, VSH_OFLAG_NONE, N_("Bandwidth limit in MB/s")},
+    {"base", VSH_OT_DATA, VSH_OFLAG_NONE,
+     N_("path of backing file in chain for a partial pull")},
     {NULL, 0, 0, NULL}
 };
 
