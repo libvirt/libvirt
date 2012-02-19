@@ -2810,6 +2810,90 @@ out:
     return ret;
 }
 
+static int
+virDomainHostdevPartsParse(xmlNodePtr node,
+                           xmlXPathContextPtr ctxt,
+                           const char *mode,
+                           const char *type,
+                           virDomainHostdevDefPtr def,
+                           unsigned int flags)
+{
+    xmlNodePtr sourcenode;
+    char *managed = NULL;
+    int ret = -1;
+
+    /* @mode is passed in separately from the caller, since an
+     * 'intelligent hostdev' has no place for 'mode' in the XML (it is
+     * always 'subsys').
+     */
+    if (mode) {
+        if ((def->mode=virDomainHostdevModeTypeFromString(mode)) < 0) {
+             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                  _("unknown hostdev mode '%s'"), mode);
+            goto error;
+        }
+    } else {
+        def->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
+    }
+
+    /* @managed can be read from the xml document - it is always an
+     * attribute of the toplevel element, no matter what type of
+     * element that might be (pure hostdev, or higher level device
+     * (e.g. <interface>) with type='hostdev')
+     */
+    if ((managed = virXMLPropString(node, "managed"))!= NULL) {
+        if (STREQ(managed, "yes"))
+            def->managed = 1;
+    }
+
+    /* @type is passed in from the caller rather than read from the
+     * xml document, because it is specified in different places for
+     * different kinds of defs - it is an attribute of
+     * <source>/<address> for an intelligent hostdev (<interface>),
+     * but an attribute of the toplevel element for a standard
+     * <hostdev>.  (the functions we're going to call expect address
+     * type to already be known).
+     */
+    if (type) {
+        if ((def->source.subsys.type
+             = virDomainHostdevSubsysTypeFromString(type)) < 0) {
+            virDomainReportError(VIR_ERR_XML_ERROR,
+                                 _("unknown host device source address type '%s'"),
+                                 type);
+            goto error;
+        }
+    } else {
+        virDomainReportError(VIR_ERR_XML_ERROR,
+                             "%s", _("missing source address type"));
+        goto error;
+    }
+
+    if (!(sourcenode = virXPathNode("./source", ctxt))) {
+        virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                             _("Missing <source> element in hostdev device"));
+        goto error;
+    }
+    switch (def->source.subsys.type) {
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+        if (virDomainHostdevSubsysPciDefParseXML(sourcenode, def, flags) < 0)
+            goto error;
+        break;
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+        if (virDomainHostdevSubsysUsbDefParseXML(sourcenode, def) < 0)
+            goto error;
+        break;
+    default:
+        virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                             _("address type='%s' not supported in hostdev interfaces"),
+                             virDomainHostdevSubsysTypeToString(def->source.subsys.type));
+        goto error;
+    }
+    ret = 0;
+error:
+    VIR_FREE(managed);
+    return ret;
+}
+
 int
 virDomainDiskFindControllerModel(virDomainDefPtr def,
                                  virDomainDiskDefPtr disk,
@@ -6411,76 +6495,23 @@ error:
 
 static virDomainHostdevDefPtr
 virDomainHostdevDefParseXML(const xmlNodePtr node,
+                            xmlXPathContextPtr ctxt,
                             virBitmapPtr bootMap,
                             unsigned int flags)
 {
-    xmlNodePtr cur;
     virDomainHostdevDefPtr def;
-    char *mode, *type = NULL, *managed = NULL;
+    xmlNodePtr save = ctxt->node;
+    char *mode = virXMLPropString(node, "mode");
+    char *type = virXMLPropString(node, "type");
+
+    ctxt->node = node;
 
     if (!(def = virDomainHostdevDefAlloc()))
-        return NULL;
-
-    mode = virXMLPropString(node, "mode");
-    if (mode) {
-        if ((def->mode=virDomainHostdevModeTypeFromString(mode)) < 0) {
-             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                  _("unknown hostdev mode '%s'"), mode);
-            goto error;
-        }
-    } else {
-        def->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
-    }
-
-    type = virXMLPropString(node, "type");
-    if (type) {
-        if ((def->source.subsys.type = virDomainHostdevSubsysTypeFromString(type)) < 0) {
-            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                 _("unknown host device type '%s'"), type);
-            goto error;
-        }
-    } else {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("missing type in hostdev"));
         goto error;
-    }
 
-    managed = virXMLPropString(node, "managed");
-    if (managed != NULL) {
-        if (STREQ(managed, "yes"))
-            def->managed = 1;
-        VIR_FREE(managed);
-    }
-
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (xmlStrEqual(cur->name, BAD_CAST "source")) {
-                if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-                    def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-                    if (virDomainHostdevSubsysUsbDefParseXML(cur, def) < 0)
-                        goto error;
-                }
-                if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-                    def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
-                        if (virDomainHostdevSubsysPciDefParseXML(cur, def, flags) < 0)
-                            goto error;
-                }
-            } else if (xmlStrEqual(cur->name, BAD_CAST "address")) {
-                /* address is parsed as part of virDomainDeviceInfoParseXML */
-            } else if (xmlStrEqual(cur->name, BAD_CAST "alias")) {
-                /* alias is parsed as part of virDomainDeviceInfoParseXML */
-            } else if (xmlStrEqual(cur->name, BAD_CAST "boot")) {
-                /* boot is parsed as part of virDomainDeviceInfoParseXML */
-            } else if (xmlStrEqual(cur->name, BAD_CAST "rom")) {
-                /* rombar is parsed as part of virDomainDeviceInfoParseXML */
-            } else {
-                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                     _("unknown node %s"), cur->name);
-            }
-        }
-        cur = cur->next;
-    }
+    /* parse managed/mode/type, and the <source> element */
+    if (virDomainHostdevPartsParse(node, ctxt, mode, type, def, flags) < 0)
+        goto error;
 
     if (def->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
         if (virDomainDeviceInfoParseXML(node, bootMap, def->info,
@@ -6505,6 +6536,7 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
 cleanup:
     VIR_FREE(type);
     VIR_FREE(mode);
+    ctxt->node = save;
     return def;
 
 error:
@@ -6671,7 +6703,7 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "hostdev")) {
         dev->type = VIR_DOMAIN_DEVICE_HOSTDEV;
-        if (!(dev->data.hostdev = virDomainHostdevDefParseXML(node, NULL,
+        if (!(dev->data.hostdev = virDomainHostdevDefParseXML(node, ctxt, NULL,
                                                               flags)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "controller")) {
@@ -8208,9 +8240,9 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     if (n && VIR_ALLOC_N(def->hostdevs, n) < 0)
         goto no_memory;
     for (i = 0 ; i < n ; i++) {
-        virDomainHostdevDefPtr hostdev = virDomainHostdevDefParseXML(nodes[i],
-                                                                     bootMap,
-                                                                     flags);
+        virDomainHostdevDefPtr hostdev;
+
+        hostdev = virDomainHostdevDefParseXML(nodes[i], ctxt, bootMap, flags);
         if (!hostdev)
             goto error;
 
@@ -10532,6 +10564,64 @@ virDomainFSDefFormat(virBufferPtr buf,
 }
 
 static int
+virDomainHostdevSourceFormat(virBufferPtr buf,
+                             virDomainHostdevDefPtr def,
+                             unsigned int flags,
+                             bool includeTypeInAddr)
+{
+    virBufferAddLit(buf, "<source>\n");
+    switch (def->source.subsys.type)
+    {
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+        if (def->source.subsys.u.usb.vendor) {
+            virBufferAsprintf(buf, "  <vendor id='0x%.4x'/>\n",
+                              def->source.subsys.u.usb.vendor);
+            virBufferAsprintf(buf, "  <product id='0x%.4x'/>\n",
+                              def->source.subsys.u.usb.product);
+        }
+        if (def->source.subsys.u.usb.bus ||
+            def->source.subsys.u.usb.device) {
+            virBufferAsprintf(buf, "  <address %sbus='%d' device='%d'/>\n",
+                              includeTypeInAddr ? "type='usb' " : "",
+                              def->source.subsys.u.usb.bus,
+                              def->source.subsys.u.usb.device);
+        }
+        break;
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+        virBufferAsprintf(buf, "  <address %sdomain='0x%.4x' bus='0x%.2x' "
+                          "slot='0x%.2x' function='0x%.1x'/>\n",
+                          includeTypeInAddr ? "type='pci' " : "",
+                          def->source.subsys.u.pci.domain,
+                          def->source.subsys.u.pci.bus,
+                          def->source.subsys.u.pci.slot,
+                          def->source.subsys.u.pci.function);
+
+        if ((flags & VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES) &&
+            (def->origstates.states.pci.unbind_from_stub ||
+             def->origstates.states.pci.remove_slot ||
+             def->origstates.states.pci.reprobe)) {
+            virBufferAddLit(buf, "  <origstates>\n");
+            if (def->origstates.states.pci.unbind_from_stub)
+                virBufferAddLit(buf, "    <unbind/>\n");
+            if (def->origstates.states.pci.remove_slot)
+                virBufferAddLit(buf, "    <removeslot/>\n");
+            if (def->origstates.states.pci.reprobe)
+                virBufferAddLit(buf, "    <reprobe/>\n");
+            virBufferAddLit(buf, "  </origstates>\n");
+        }
+        break;
+    default:
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected hostdev type %d"),
+                             def->source.subsys.type);
+        return -1;
+    }
+
+    virBufferAddLit(buf, "</source>\n");
+    return 0;
+}
+
+static int
 virDomainActualNetDefFormat(virBufferPtr buf,
                             virDomainActualNetDefPtr def)
 {
@@ -11549,44 +11639,11 @@ virDomainHostdevDefFormat(virBufferPtr buf,
 
     virBufferAsprintf(buf, "    <hostdev mode='%s' type='%s' managed='%s'>\n",
                       mode, type, def->managed ? "yes" : "no");
-    virBufferAddLit(buf, "      <source>\n");
 
-    if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-        if (def->source.subsys.u.usb.vendor) {
-            virBufferAsprintf(buf, "        <vendor id='0x%.4x'/>\n",
-                              def->source.subsys.u.usb.vendor);
-            virBufferAsprintf(buf, "        <product id='0x%.4x'/>\n",
-                              def->source.subsys.u.usb.product);
-        }
-        if (def->source.subsys.u.usb.bus ||
-            def->source.subsys.u.usb.device)
-            virBufferAsprintf(buf, "        <address bus='%d' device='%d'/>\n",
-                              def->source.subsys.u.usb.bus,
-                              def->source.subsys.u.usb.device);
-    } else if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
-        virBufferAsprintf(buf, "        <address domain='0x%.4x' bus='0x%.2x' "
-                          "slot='0x%.2x' function='0x%.1x'/>\n",
-                          def->source.subsys.u.pci.domain,
-                          def->source.subsys.u.pci.bus,
-                          def->source.subsys.u.pci.slot,
-                          def->source.subsys.u.pci.function);
-
-        if ((flags & VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES) &&
-            (def->origstates.states.pci.unbind_from_stub ||
-             def->origstates.states.pci.remove_slot ||
-             def->origstates.states.pci.reprobe)) {
-            virBufferAddLit(buf, "        <origstates>\n");
-            if (def->origstates.states.pci.unbind_from_stub)
-                virBufferAddLit(buf, "          <unbind/>\n");
-            if (def->origstates.states.pci.remove_slot)
-                virBufferAddLit(buf, "          <removeslot/>\n");
-            if (def->origstates.states.pci.reprobe)
-                virBufferAddLit(buf, "          <reprobe/>\n");
-            virBufferAddLit(buf, "        </origstates>\n");
-        }
-    }
-
-    virBufferAddLit(buf, "      </source>\n");
+    virBufferAdjustIndent(buf, 6);
+    if (virDomainHostdevSourceFormat(buf, def, flags, false) < 0)
+        return -1;
+    virBufferAdjustIndent(buf, -6);
 
     if (virDomainDeviceInfoFormat(buf, def->info,
                                   flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT
