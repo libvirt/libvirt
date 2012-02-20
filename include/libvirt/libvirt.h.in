@@ -934,7 +934,7 @@ typedef enum {
     VIR_MIGRATE_CHANGE_PROTECTION = (1 << 8), /* protect for changing domain configuration through the
                                                * whole migration process; this will be used automatically
                                                * when supported */
-
+    VIR_MIGRATE_UNSAFE            = (1 << 9), /* force migration even if it is considered unsafe */
 } virDomainMigrateFlags;
 
 /* Domain migration. */

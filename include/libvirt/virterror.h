@@ -245,6 +245,7 @@ typedef enum {
                                            canceled/aborted by user */
     VIR_ERR_AUTH_CANCELLED = 79,        /* authentication cancelled */
     VIR_ERR_NO_DOMAIN_METADATA = 80,    /* The metadata is not present */
+    VIR_ERR_MIGRATE_UNSAFE = 81,        /* Migration is not safe */
 } virErrorNumber;
 
 /**

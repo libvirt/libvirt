@@ -1232,6 +1232,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("metadata not found: %s");
             break;
+        case VIR_ERR_MIGRATE_UNSAFE:
+            if (!info)
+                errmsg = _("Unsafe migration");
+            else
+                errmsg = _("Unsafe migration: %s");
+            break;
     }
     return (errmsg);
 }
