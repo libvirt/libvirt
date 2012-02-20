@@ -7581,9 +7581,18 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     def->os.arch = virXPathString("string(./os/type[1]/@arch)", ctxt);
     if (def->os.arch) {
-        if (!virCapabilitiesSupportsGuestArch(caps, def->os.type, def->os.arch)) {
+        if (!virCapabilitiesSupportsGuestArch(caps, def->os.arch)) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                 _("os type '%s' & arch '%s' combination is not supported"),
+                                 _("No guest options available for arch '%s'"),
+                                 def->os.arch);
+            goto error;
+        }
+
+        if (!virCapabilitiesSupportsGuestOSTypeArch(caps,
+                                                    def->os.type,
+                                                    def->os.arch)) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("No os type '%s' available for arch '%s'"),
                                  def->os.type, def->os.arch);
             goto error;
         }

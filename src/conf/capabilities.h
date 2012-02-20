@@ -237,12 +237,15 @@ virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
                                int toggle);
 
 extern int
+virCapabilitiesSupportsGuestArch(virCapsPtr caps,
+                                 const char *arch);
+extern int
 virCapabilitiesSupportsGuestOSType(virCapsPtr caps,
                                    const char *ostype);
 extern int
-virCapabilitiesSupportsGuestArch(virCapsPtr caps,
-                                 const char *ostype,
-                                 const char *arch);
+virCapabilitiesSupportsGuestOSTypeArch(virCapsPtr caps,
+                                       const char *ostype,
+                                       const char *arch);
 
 
 extern const char *
