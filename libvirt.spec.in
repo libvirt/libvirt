@@ -22,7 +22,7 @@
 
 # RHEL-5 builds are client-only for s390, ppc
 %if 0%{?rhel} == 5
-%ifnarch i386 i586 i686 x86_64 ia64
+%ifnarch %{ix86} x86_64 ia64
 %define client_only        1
 %endif
 %endif
@@ -93,7 +93,7 @@
 # Finally set the OS / architecture specific special cases
 
 # Xen is available only on i386 x86_64 ia64
-%ifnarch i386 i586 i686 x86_64 ia64
+%ifnarch %{ix86} x86_64 ia64
 %define with_xen 0
 %define with_libxl 0
 %endif
@@ -184,7 +184,7 @@
 %define with_sanlock 0%{!?_without_sanlock:%{server_drivers}}
 %endif
 %if 0%{?rhel} >= 6
-%ifarch i386 i586 i686 x86_64
+%ifarch %{ix86} x86_64
 %define with_sanlock 0%{!?_without_sanlock:%{server_drivers}}
 %endif
 %endif
@@ -346,7 +346,7 @@ Requires: device-mapper
 %if %{with_cgconfig}
 Requires: libcgroup
 %endif
-%ifarch i386 i586 i686 x86_64 ia64
+%ifarch %{ix86} x86_64 ia64
 # For virConnectGetSysinfo
 Requires: dmidecode
 %endif
