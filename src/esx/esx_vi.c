@@ -293,14 +293,14 @@ esxVI_CURL_Connect(esxVI_CURL *curl, esxUtil_ParsedUri *parsedUri)
                                       "Content-Type: text/xml; charset=UTF-8");
 
     /*
-     * Add a dummy expect header to stop CURL from waiting for a response code
+     * Add an empty expect header to stop CURL from waiting for a response code
      * 100 (Continue) from the server before continuing the POST operation.
      * Waiting for this response would slowdown each communication with the
      * server by approx. 2 sec, because the server doesn't send the expected
      * 100 (Continue) response and the wait times out resulting in wasting
      * approx. 2 sec per POST operation.
      */
-    curl->headers = curl_slist_append(curl->headers, "Expect: nothing");
+    curl->headers = curl_slist_append(curl->headers, "Expect:");
 
     if (curl->headers == NULL) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
