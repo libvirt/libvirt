@@ -58,10 +58,10 @@ typedef virFileWrapperFd *virFileWrapperFdPtr;
 
 int virFileDirectFdFlag(void);
 
-enum {
+enum virFileWrapperFdFlags {
     VIR_FILE_WRAPPER_BYPASS_CACHE   = (1 << 0),
     VIR_FILE_WRAPPER_NON_BLOCKING   = (1 << 1),
-} virFileWrapperFdFlags;
+};
 
 virFileWrapperFdPtr virFileWrapperFdNew(int *fd,
                                         const char *name,
