@@ -35,7 +35,8 @@
      VIR_MIGRATE_PAUSED |                       \
      VIR_MIGRATE_NON_SHARED_DISK |              \
      VIR_MIGRATE_NON_SHARED_INC |               \
-     VIR_MIGRATE_CHANGE_PROTECTION)
+     VIR_MIGRATE_CHANGE_PROTECTION |            \
+     VIR_MIGRATE_UNSAFE)
 
 enum qemuMigrationJobPhase {
     QEMU_MIGRATION_PHASE_NONE = 0,
@@ -81,7 +82,8 @@ char *qemuMigrationBegin(struct qemud_driver *driver,
                          const char *xmlin,
                          const char *dname,
                          char **cookieout,
-                         int *cookieoutlen);
+                         int *cookieoutlen,
+                         unsigned long flags);
 
 int qemuMigrationPrepareTunnel(struct qemud_driver *driver,
                                virConnectPtr dconn,

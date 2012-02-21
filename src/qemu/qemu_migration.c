@@ -45,6 +45,7 @@
 #include "virtime.h"
 #include "locking/domain_lock.h"
 #include "rpc/virnetsocket.h"
+#include "storage_file.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -817,6 +818,34 @@ qemuMigrationIsAllowed(struct qemud_driver *driver, virDomainObjPtr vm,
     return true;
 }
 
+static bool
+qemuMigrationIsSafe(virDomainDefPtr def)
+{
+    int i;
+
+    for (i = 0 ; i < def->ndisks ; i++) {
+        virDomainDiskDefPtr disk = def->disks[i];
+
+        /* shared && !readonly implies cache=none */
+        if (disk->src &&
+            disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE &&
+            (disk->cachemode || !disk->shared || disk->readonly)) {
+            int cfs;
+            if ((cfs = virStorageFileIsClusterFS(disk->src)) == 1)
+                continue;
+            else if (cfs < 0)
+                return false;
+
+            qemuReportError(VIR_ERR_MIGRATE_UNSAFE, "%s",
+                            _("Migration may lead to data corruption if disks"
+                              " use cache != none"));
+            return false;
+        }
+    }
+
+    return true;
+}
+
 /** qemuMigrationSetOffline
  * Pause domain for non-live migration.
  */
@@ -1010,7 +1039,8 @@ char *qemuMigrationBegin(struct qemud_driver *driver,
                          const char *xmlin,
                          const char *dname,
                          char **cookieout,
-                         int *cookieoutlen)
+                         int *cookieoutlen,
+                         unsigned long flags)
 {
     char *rv = NULL;
     qemuMigrationCookiePtr mig = NULL;
@@ -1018,9 +1048,9 @@ char *qemuMigrationBegin(struct qemud_driver *driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     VIR_DEBUG("driver=%p, vm=%p, xmlin=%s, dname=%s,"
-              " cookieout=%p, cookieoutlen=%p",
+              " cookieout=%p, cookieoutlen=%p, flags=%lx",
               driver, vm, NULLSTR(xmlin), NULLSTR(dname),
-              cookieout, cookieoutlen);
+              cookieout, cookieoutlen, flags);
 
     /* Only set the phase if we are inside QEMU_ASYNC_JOB_MIGRATION_OUT.
      * Otherwise we will start the async job later in the perform phase losing
@@ -1030,6 +1060,9 @@ char *qemuMigrationBegin(struct qemud_driver *driver,
         qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_BEGIN3);
 
     if (!qemuMigrationIsAllowed(driver, vm, NULL))
+        goto cleanup;
+
+    if (!(flags & VIR_MIGRATE_UNSAFE) && !qemuMigrationIsSafe(vm->def))
         goto cleanup;
 
     if (!(mig = qemuMigrationEatCookie(driver, vm, NULL, 0, 0)))
@@ -2070,7 +2103,7 @@ static int doPeer2PeerMigrate3(struct qemud_driver *driver,
      * a single job.  */
 
     dom_xml = qemuMigrationBegin(driver, vm, xmlin, dname,
-                                 &cookieout, &cookieoutlen);
+                                 &cookieout, &cookieoutlen, flags);
     if (!dom_xml)
         goto cleanup;
 
@@ -2352,6 +2385,9 @@ qemuMigrationPerformJob(struct qemud_driver *driver,
     }
 
     if (!qemuMigrationIsAllowed(driver, vm, NULL))
+        goto cleanup;
+
+    if (!(flags & VIR_MIGRATE_UNSAFE) && !qemuMigrationIsSafe(vm->def))
         goto cleanup;
 
     resume = virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING;

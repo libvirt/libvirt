@@ -8767,7 +8767,8 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
         goto endjob;
 
     if (!(xml = qemuMigrationBegin(driver, vm, xmlin, dname,
-                                   cookieout, cookieoutlen)))
+                                   cookieout, cookieoutlen,
+                                   flags)))
         goto endjob;
 
     if ((flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
