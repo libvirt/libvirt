@@ -280,6 +280,8 @@ The XML also show the NUMA topology information if available.
 Inject NMI to the guest.
 
 =item B<list> [I<--inactive> | I<--all>] [I<--managed-save>] [I<--title>]
+              { [I<--table>] | I<--name> | I<--uuid> } [I<--persistent>]
+              [I<--transient>]
 
 Prints information about existing domains.  If no options are
 specified it prints out information about running domains.
@@ -348,10 +350,24 @@ crashed.
 
 If I<--managed-save> is specified, then domains that have managed save
 state (only possible if they are in the B<shut off> state) will
-instead show as B<saved> in the listing.
+instead show as B<saved> in the listing. This flag is usable only with the
+default I<--table> output.
+
+If I<--name> is specified, domain names are printed instead of the table
+formatted one per line. If I<--uuid> is specified domain's UUID's are printed
+instead of names. Flag I<--table> specifies that the legacy table-formatted
+output should be used. This is the default. All of these are mutually
+exclusive.
+
+Flag I<--persistent> specifies that persistent domains should be printed.
+Similarly I<--transient> enables output of transient domains. These flags
+may be combined. Default behavior is as though both were specified. (Note that
+if any of these flags is specified, the check for the persistence state is done
+and may fail. If none of these flags is specified, the check is skipped.)
 
 If I<--title> is specified, then the domain note is printed. The output then
-the output looks as follows.
+the output looks as follows. This flag is usable only with the default
+I<--table> output.
 
 B<virsh> list --title
  Id Name                 State      Title
