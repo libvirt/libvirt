@@ -6819,6 +6819,7 @@ static const vshCmdOptDef opts_migrate[] = {
     {"copy-storage-inc", VSH_OT_BOOL, 0, N_("migration with non-shared storage with incremental copy (same base image shared between source and destination)")},
     {"change-protection", VSH_OT_BOOL, 0,
      N_("prevent any configuration changes to domain until migration ends)")},
+    {"unsafe", VSH_OT_BOOL, 0, N_("force migration even if it may be unsafe")},
     {"verbose", VSH_OT_BOOL, 0, N_("display the progress of migration")},
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"desturi", VSH_OT_DATA, VSH_OFLAG_REQ, N_("connection URI of the destination host as seen from the client(normal migration) or source(p2p migration)")},
@@ -6891,6 +6892,9 @@ doMigrate (void *opaque)
 
     if (vshCommandOptBool (cmd, "change-protection"))
         flags |= VIR_MIGRATE_CHANGE_PROTECTION;
+
+    if (vshCommandOptBool(cmd, "unsafe"))
+        flags |= VIR_MIGRATE_UNSAFE;
 
     if (xmlfile &&
         virFileReadAll(xmlfile, 8192, &xml) < 0) {

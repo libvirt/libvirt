@@ -781,7 +781,7 @@ type attribute for the <domain> element of XML.
 
 =item B<migrate> [I<--live>] [I<--direct>] [I<--p2p> [I<--tunnelled>]]
 [I<--persistent>] [I<--undefinesource>] [I<--suspend>] [I<--copy-storage-all>]
-[I<--copy-storage-inc>] [I<--change-protection>] [I<--verbose>]
+[I<--copy-storage-inc>] [I<--change-protection>] [I<--unsafe>] [I<--verbose>]
 I<domain-id> I<desturi> [I<migrateuri>] [I<dname>]
 [I<--timeout> B<seconds>] [I<--xml> B<file>]
 
@@ -801,6 +801,14 @@ changes will be made to the domain while the migration is underway; this flag
 is implicitly enabled when supported by the hypervisor, but can be explicitly
 used to reject the migration if the hypervisor lacks change protection
 support.  I<--verbose> displays the progress of migration.
+
+In some cases libvirt may refuse to migrate the domain because doing so may
+lead to potential problems such as data corruption, and thus the migration is
+considered unsafe. For QEMU domain, this may happen if the domain uses disks
+without explicitly setting cache mode to "none". Migrating such domains is
+unsafe unless the disk images are stored on coherent clustered filesystem,
+such as GFS2 or GPFS. If you are sure the migration is safe or you just do not
+care, use I<--unsafe> to force the migration.
 
 The I<desturi> is the connection URI of the destination host, and
 I<migrateuri> is the migration URI, which usually can be omitted.
