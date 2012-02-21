@@ -82,6 +82,7 @@ enum {
 };
 
 int virStorageFileIsSharedFS(const char *path);
+int virStorageFileIsClusterFS(const char *path);
 int virStorageFileIsSharedFSType(const char *path,
                                  int fstypes);
 
