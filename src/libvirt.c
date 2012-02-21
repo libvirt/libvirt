@@ -1825,9 +1825,9 @@ error:
  * @ids: array to collect the list of IDs of active domains
  * @maxids: size of @ids
  *
- * Collect the list of active domains, and store their ID in @maxids
+ * Collect the list of active domains, and store their IDs in array @ids
  *
- * Returns the number of domain found or -1 in case of error
+ * Returns the number of domains found or -1 in case of error
  */
 int
 virConnectListDomains(virConnectPtr conn, int *ids, int maxids)
