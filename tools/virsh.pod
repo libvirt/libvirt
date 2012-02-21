@@ -353,7 +353,7 @@ instead show as B<saved> in the listing.
 If I<--title> is specified, then the domain note is printed. The output then
 the output looks as follows.
 
-B<virsh> list --note
+B<virsh> list --title
  Id Name                 State      Title
 -----------------------------------------------
   0 Domain-0             running    Mailserver 1
