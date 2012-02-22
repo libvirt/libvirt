@@ -2649,7 +2649,7 @@ qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def) {
                                                net->mac,
                                                virDomainNetGetActualDirectDev(net),
                                                def->uuid,
-                                               VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_FINISH) < 0)
+                                               VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_FINISH, false) < 0)
                 goto err_exit;
         }
         last_good_net = i;

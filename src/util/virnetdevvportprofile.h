@@ -86,7 +86,8 @@ int virNetDevVPortProfileAssociate(const char *ifname,
                                    const unsigned char *macaddr,
                                    const char *linkdev,
                                    const unsigned char *vmuuid,
-                                   enum virNetDevVPortProfileOp vmOp)
+                                   enum virNetDevVPortProfileOp vmOp,
+                                   bool setlink_only)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
     ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
 

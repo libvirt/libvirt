@@ -650,7 +650,8 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
                               const unsigned char *instanceId,
                               const unsigned char *hostUUID,
                               int32_t vf,
-                              uint8_t op)
+                              uint8_t op,
+                              bool setlink_only)
 {
     int rc;
     unsigned char *recvbuf = NULL;
@@ -674,6 +675,9 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
                        _("sending of PortProfileRequest failed."));
         return rc;
     }
+
+    if (setlink_only) /*for re-associations on existing links*/
+        return 0;
 
     while (--repeats >= 0) {
         rc = virNetDevVPortProfileLinkDump(NULL, ifindex, nltarget_kernel, tb,
@@ -751,7 +755,8 @@ static int
 virNetDevVPortProfileOp8021Qbg(const char *ifname,
                                const unsigned char *macaddr,
                                const virNetDevVPortProfilePtr virtPort,
-                               enum virNetDevVPortProfileLinkOp virtPortOp)
+                               enum virNetDevVPortProfileLinkOp virtPortOp,
+                               bool setlink_only)
 {
     int rc = 0;
     int op = PORT_REQUEST_ASSOCIATE;
@@ -804,7 +809,8 @@ virNetDevVPortProfileOp8021Qbg(const char *ifname,
                                        virtPort->u.virtPort8021Qbg.instanceID,
                                        NULL,
                                        vf,
-                                       op);
+                                       op,
+                                       setlink_only);
 
 err_exit:
 
@@ -892,7 +898,8 @@ virNetDevVPortProfileOp8021Qbh(const char *ifname,
                                            (virtPortOp ==
                                             VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE_RR) ?
                                            PORT_REQUEST_PREASSOCIATE_RR
-                                           : PORT_REQUEST_ASSOCIATE);
+                                           : PORT_REQUEST_ASSOCIATE,
+                                           false);
         if (rc == -2)
             /* Association timed out, disassociate */
             virNetDevVPortProfileOpCommon(NULL, ifindex,
@@ -904,7 +911,8 @@ virNetDevVPortProfileOp8021Qbh(const char *ifname,
                                           NULL,
                                           NULL,
                                           vf,
-                                          PORT_REQUEST_DISASSOCIATE);
+                                          PORT_REQUEST_DISASSOCIATE,
+                                          false);
         break;
 
     case VIR_NETDEV_VPORT_PROFILE_LINK_OP_DISASSOCIATE:
@@ -917,7 +925,8 @@ virNetDevVPortProfileOp8021Qbh(const char *ifname,
                                            NULL,
                                            NULL,
                                            vf,
-                                           PORT_REQUEST_DISASSOCIATE);
+                                           PORT_REQUEST_DISASSOCIATE,
+                                           false);
         break;
 
     default:
@@ -938,6 +947,7 @@ err_exit:
  * @virtPort: pointer to the object holding port profile parameters
  * @vmuuid : the UUID of the virtual machine
  * @vmOp : The VM operation (i.e., create, no-op)
+ * @setlink_only : Only set the link - dont wait for the link to come up
  *
  * Associate a port on a swtich with a profile. This function
  * may notify a kernel driver or an external daemon to run
@@ -954,7 +964,8 @@ virNetDevVPortProfileAssociate(const char *macvtap_ifname,
                                const unsigned char *macvtap_macaddr,
                                const char *linkdev,
                                const unsigned char *vmuuid,
-                               enum virNetDevVPortProfileOp vmOp)
+                               enum virNetDevVPortProfileOp vmOp,
+                               bool setlink_only)
 {
     int rc = 0;
 
@@ -977,7 +988,8 @@ virNetDevVPortProfileAssociate(const char *macvtap_ifname,
                                             virtPort,
                                             (vmOp == VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_START)
                                             ? VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE
-                                            : VIR_NETDEV_VPORT_PROFILE_LINK_OP_ASSOCIATE);
+                                            : VIR_NETDEV_VPORT_PROFILE_LINK_OP_ASSOCIATE,
+                                            setlink_only);
         break;
 
     case VIR_NETDEV_VPORT_PROFILE_8021QBH:
@@ -1035,7 +1047,7 @@ virNetDevVPortProfileDisassociate(const char *macvtap_ifname,
     case VIR_NETDEV_VPORT_PROFILE_8021QBG:
         rc = virNetDevVPortProfileOp8021Qbg(macvtap_ifname, macvtap_macaddr,
                                             virtPort,
-                                            VIR_NETDEV_VPORT_PROFILE_LINK_OP_DISASSOCIATE);
+                                            VIR_NETDEV_VPORT_PROFILE_LINK_OP_DISASSOCIATE, false);
         break;
 
     case VIR_NETDEV_VPORT_PROFILE_8021QBH:
@@ -1058,7 +1070,8 @@ int virNetDevVPortProfileAssociate(const char *macvtap_ifname ATTRIBUTE_UNUSED,
                                const unsigned char *macvtap_macaddr ATTRIBUTE_UNUSED,
                                const char *linkdev ATTRIBUTE_UNUSED,
                                const unsigned char *vmuuid ATTRIBUTE_UNUSED,
-                               enum virNetDevVPortProfileOp vmOp ATTRIBUTE_UNUSED)
+                               enum virNetDevVPortProfileOp vmOp ATTRIBUTE_UNUSED,
+                               bool setlink_only)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Virtual port profile association not supported on this platform"));

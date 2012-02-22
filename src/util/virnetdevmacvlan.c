@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010-2011 Red Hat, Inc.
- * Copyright (C) 2010 IBM Corporation
+ * Copyright (C) 2010-2012 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -46,7 +46,6 @@ VIR_ENUM_IMPL(virNetDevMacVLanMode, VIR_NETDEV_MACVLAN_MODE_LAST,
               "passthrough")
 
 #if WITH_MACVTAP
-
 # include <stdint.h>
 # include <stdio.h>
 # include <errno.h>
@@ -68,6 +67,8 @@ VIR_ENUM_IMPL(virNetDevMacVLanMode, VIR_NETDEV_MACVLAN_MODE_LAST,
 # include "virfile.h"
 # include "virnetlink.h"
 # include "virnetdev.h"
+# include "virpidfile.h"
+
 
 # define MACVTAP_NAME_PREFIX	"macvtap"
 # define MACVTAP_NAME_PATTERN	"macvtap%d"
@@ -445,6 +446,328 @@ static const uint32_t modeMap[VIR_NETDEV_MACVLAN_MODE_LAST] = {
     [VIR_NETDEV_MACVLAN_MODE_PASSTHRU] = MACVLAN_MODE_PASSTHRU,
 };
 
+/* Struct to hold the state and configuration of a 802.1qbg port */
+struct virNetlinkCallbackData {
+    char *cr_ifname;
+    virNetDevVPortProfilePtr virtPortProfile;
+    unsigned char *macaddress;
+    char *linkdev;
+    unsigned char *vmuuid;
+    enum virNetDevVPortProfileOp vmOp;
+    unsigned int linkState;
+};
+
+typedef struct virNetlinkCallbackData *virNetlinkCallbackDataPtr;
+
+# define INSTANCE_STRLEN 36
+
+static int instance2str(const unsigned char *p, char *dst, size_t size)
+{
+    if (dst && size > INSTANCE_STRLEN) {
+        snprintf(dst, size, "%02x%02x%02x%02x-%02x%02x-%02x%02x-"
+                 "%02x%02x-%02x%02x%02x%02x%02x%02x",
+                 p[0], p[1], p[2], p[3],
+                 p[4], p[5], p[6], p[7],
+                 p[8], p[9], p[10], p[11], p[12], p[13], p[14], p[15]);
+        return 0;
+    }
+    return -1;
+}
+
+# define LLDPAD_PID_FILE  "/var/run/lldpad.pid"
+# define VIRIP_PID_FILE   "/var/run/virip.pid"
+
+/**
+ * virNetDevMacVLanVPortProfileCallback:
+ *
+ * @msg: The buffer containing the received netlink message
+ * @length: The length of the received netlink message.
+ * @peer: The netling sockaddr containing the peer information
+ * @handled: Contains information if the message has been replied to yet
+ * @opaque: Contains vital information regarding the associated vm an interface
+ *
+ * This function is called when a netlink message is received. The function
+ * reads the message and responds if it is pertinent to the running VMs
+ * network interface.
+ */
+
+static void
+virNetDevMacVLanVPortProfileCallback(unsigned char *msg,
+                                     int length,
+                                     struct sockaddr_nl *peer,
+                                     bool *handled,
+                                     void *opaque)
+{
+   struct nla_policy ifla_vf_policy[IFLA_VF_MAX + 1] = {
+       [IFLA_VF_MAC] = {.minlen = sizeof(struct ifla_vf_mac),
+                        .maxlen = sizeof(struct ifla_vf_mac)},
+       [IFLA_VF_VLAN] = {.minlen = sizeof(struct ifla_vf_vlan),
+                         .maxlen = sizeof(struct ifla_vf_vlan)},
+    };
+
+    struct nla_policy ifla_port_policy[IFLA_PORT_MAX + 1] = {
+        [IFLA_PORT_RESPONSE] = {.type = NLA_U16},
+    };
+
+    struct nlattr *tb[IFLA_MAX + 1], *tb3[IFLA_PORT_MAX + 1],
+        *tb_vfinfo[IFLA_VF_MAX + 1], *tb_vfinfo_list;
+
+    struct ifinfomsg ifinfo;
+    struct nlmsghdr *hdr;
+    void *data;
+    int rem;
+    char *ifname;
+    bool indicate = false;
+    virNetlinkCallbackDataPtr calld = opaque;
+    pid_t lldpad_pid = 0;
+    pid_t virip_pid = 0;
+
+    hdr = (struct nlmsghdr *) msg;
+    data = nlmsg_data(hdr);
+
+    /* Quickly decide if we want this or not */
+
+    if (virPidFileReadPath(LLDPAD_PID_FILE, &lldpad_pid) < 0)
+        return;
+
+    ignore_value(virPidFileReadPath(VIRIP_PID_FILE, &virip_pid));
+
+    if (hdr->nlmsg_pid != lldpad_pid && hdr->nlmsg_pid != virip_pid)
+        return; /* we only care for lldpad and virip messages */
+    if (hdr->nlmsg_type != RTM_SETLINK)
+        return; /* we only care for RTM_SETLINK */
+    if (*handled)
+        return; /* if it has been handled - dont handle again */
+
+    /* DEBUG start */
+    VIR_INFO("netlink message nl_sockaddr: %p len: %d", peer, length);
+    VIR_DEBUG("nlmsg_type  = 0x%02x", hdr->nlmsg_type);
+    VIR_DEBUG("nlmsg_len   = 0x%04x", hdr->nlmsg_len);
+    VIR_DEBUG("nlmsg_pid   = %d", hdr->nlmsg_pid);
+    VIR_DEBUG("nlmsg_seq   = 0x%08x", hdr->nlmsg_seq);
+    VIR_DEBUG("nlmsg_flags = 0x%04x", hdr->nlmsg_flags);
+
+    VIR_DEBUG("lldpad pid  = %d", lldpad_pid);
+
+    switch (hdr->nlmsg_type) {
+    case RTM_NEWLINK:
+    case RTM_DELLINK:
+    case RTM_SETLINK:
+    case RTM_GETLINK:
+        VIR_DEBUG(" IFINFOMSG\n");
+        VIR_DEBUG("        ifi_family = 0x%02x\n",
+            ((struct ifinfomsg *)data)->ifi_family);
+        VIR_DEBUG("        ifi_type   = 0x%x\n",
+            ((struct ifinfomsg *)data)->ifi_type);
+        VIR_DEBUG("        ifi_index  = %i\n",
+            ((struct ifinfomsg *)data)->ifi_index);
+        VIR_DEBUG("        ifi_flags  = 0x%04x\n",
+            ((struct ifinfomsg *)data)->ifi_flags);
+        VIR_DEBUG("        ifi_change = 0x%04x\n",
+            ((struct ifinfomsg *)data)->ifi_change);
+    }
+    /* DEBUG end */
+
+    /* Parse netlink message assume a setlink with vfports */
+    memcpy(&ifinfo, NLMSG_DATA(hdr), sizeof ifinfo);
+    VIR_DEBUG("family:%#x type:%#x index:%d flags:%#x change:%#x",
+        ifinfo.ifi_family, ifinfo.ifi_type, ifinfo.ifi_index,
+        ifinfo.ifi_flags, ifinfo.ifi_change);
+    if (nlmsg_parse(hdr, sizeof ifinfo,
+        (struct nlattr **)&tb, IFLA_MAX, NULL)) {
+        VIR_DEBUG("error parsing request...");
+        return;
+    }
+
+    if (tb[IFLA_VFINFO_LIST]) {
+        VIR_DEBUG("FOUND IFLA_VFINFO_LIST!");
+
+        nla_for_each_nested(tb_vfinfo_list, tb[IFLA_VFINFO_LIST], rem) {
+            if (nla_type(tb_vfinfo_list) != IFLA_VF_INFO) {
+                VIR_DEBUG("nested parsing of"
+                    "IFLA_VFINFO_LIST failed.");
+                return;
+            }
+            if (nla_parse_nested(tb_vfinfo, IFLA_VF_MAX,
+                tb_vfinfo_list, ifla_vf_policy)) {
+                VIR_DEBUG("nested parsing of "
+                    "IFLA_VF_INFO failed.");
+                return;
+            }
+        }
+
+        if (tb_vfinfo[IFLA_VF_MAC]) {
+            struct ifla_vf_mac *mac = RTA_DATA(tb_vfinfo[IFLA_VF_MAC]);
+            unsigned char *m = mac->mac;
+
+            VIR_DEBUG("IFLA_VF_MAC = %2x:%2x:%2x:%2x:%2x:%2x",
+                      m[0], m[1], m[2], m[3], m[4], m[5]);
+
+            if (memcmp(calld->macaddress, m, VIR_MAC_BUFLEN))
+            {
+                /* Repeat the same check for a broadcast mac */
+                int i;
+
+                for (i = 0;i < VIR_MAC_BUFLEN; i++) {
+                    if (calld->macaddress[i] != 0xff) {
+                        VIR_DEBUG("MAC address match failed (wasn't broadcast)");
+                        return;
+                    }
+                }
+            }
+        }
+
+        if (tb_vfinfo[IFLA_VF_VLAN]) {
+            struct ifla_vf_vlan *vlan = RTA_DATA(tb_vfinfo[IFLA_VF_VLAN]);
+
+            VIR_DEBUG("IFLA_VF_VLAN = %d", vlan->vlan);
+        }
+    }
+
+    if (tb[IFLA_IFNAME]) {
+        ifname = (char *)RTA_DATA(tb[IFLA_IFNAME]);
+        VIR_DEBUG("IFLA_IFNAME = %s\n", ifname);
+    }
+
+    if (tb[IFLA_OPERSTATE]) {
+        rem = *(unsigned short *)RTA_DATA(tb[IFLA_OPERSTATE]);
+        VIR_DEBUG("IFLA_OPERSTATE = %d\n", rem);
+    }
+
+    if (tb[IFLA_VF_PORTS]) {
+        struct nlattr *tb_vf_ports;
+
+        VIR_DEBUG("found IFLA_VF_PORTS\n");
+        nla_for_each_nested(tb_vf_ports, tb[IFLA_VF_PORTS], rem) {
+
+            VIR_DEBUG("iterating\n");
+            if (nla_type(tb_vf_ports) != IFLA_VF_PORT) {
+                VIR_DEBUG("not a IFLA_VF_PORT. skipping\n");
+                continue;
+            }
+            if (nla_parse_nested(tb3, IFLA_PORT_MAX, tb_vf_ports,
+                ifla_port_policy)) {
+                VIR_DEBUG("nested parsing on level 2"
+                          " failed.");
+            }
+            if (tb3[IFLA_PORT_VF]) {
+                VIR_DEBUG("IFLA_PORT_VF = %d",
+                          *(uint32_t *) (RTA_DATA(tb3[IFLA_PORT_VF])));
+            }
+            if (tb3[IFLA_PORT_PROFILE]) {
+                VIR_DEBUG("IFLA_PORT_PROFILE = %s",
+                          (char *) RTA_DATA(tb3[IFLA_PORT_PROFILE]));
+            }
+
+            if (tb3[IFLA_PORT_VSI_TYPE]) {
+                struct ifla_port_vsi *pvsi;
+                int tid = 0;
+
+                pvsi = (struct ifla_port_vsi *)
+                    RTA_DATA(tb3[IFLA_PORT_VSI_TYPE]);
+                tid = ((pvsi->vsi_type_id[2] << 16) |
+                       (pvsi->vsi_type_id[1] << 8) |
+                       pvsi->vsi_type_id[0]);
+
+                VIR_DEBUG("mgr_id: %d", pvsi->vsi_mgr_id);
+                VIR_DEBUG("type_id: %d", tid);
+                VIR_DEBUG("type_version: %d",
+                          pvsi->vsi_type_version);
+            }
+
+            if (tb3[IFLA_PORT_INSTANCE_UUID]) {
+                char instance[INSTANCE_STRLEN + 2];
+                unsigned char *uuid;
+
+                uuid = (unsigned char *)
+                    RTA_DATA(tb3[IFLA_PORT_INSTANCE_UUID]);
+                instance2str(uuid, instance, sizeof(instance));
+                VIR_DEBUG("IFLA_PORT_INSTANCE_UUID = %s\n",
+                          instance);
+            }
+
+            if (tb3[IFLA_PORT_REQUEST]) {
+                uint8_t req = *(uint8_t *) RTA_DATA(tb3[IFLA_PORT_REQUEST]);
+                VIR_DEBUG("IFLA_PORT_REQUEST = %d", req);
+
+                if (req == PORT_REQUEST_DISASSOCIATE) {
+                    VIR_DEBUG("Set dissaccociated.");
+                    indicate = true;
+                }
+            }
+
+            if (tb3[IFLA_PORT_RESPONSE]) {
+                VIR_DEBUG("IFLA_PORT_RESPONSE = %d\n", *(uint16_t *)
+                    RTA_DATA(tb3[IFLA_PORT_RESPONSE]));
+            }
+        }
+    }
+
+    if (!indicate) {
+        return;
+    }
+
+    VIR_INFO("Re-send 802.1qbg associate request:");
+    VIR_INFO("  if: %s", calld->cr_ifname);
+    VIR_INFO("  lf: %s", calld->linkdev);
+    VIR_INFO(" mac: %02x:%02x:%02x:%02x:%02x:%02x",
+             calld->macaddress[0], calld->macaddress[1],
+             calld->macaddress[2], calld->macaddress[3],
+             calld->macaddress[4], calld->macaddress[5]);
+
+    ignore_value(virNetDevVPortProfileAssociate(calld->cr_ifname,
+                                                calld->virtPortProfile,
+                                                calld->macaddress,
+                                                calld->linkdev,
+                                                calld->vmuuid,
+                                                calld->vmOp, true));
+    *handled = true;
+    return;
+}
+
+/**
+ * virNetlinkCallbackDataFree
+ *
+ * @calld: pointer to a virNetlinkCallbackData object to free
+ *
+ * This function frees all the data associated with a virNetlinkCallbackData object
+ * as well as the object itself. If called with NULL, it does nothing.
+ *
+ * Returns nothing.
+ */
+static void
+virNetlinkCallbackDataFree(virNetlinkCallbackDataPtr calld)
+{
+    if (calld) {
+        VIR_FREE(calld->cr_ifname);
+        VIR_FREE(calld->virtPortProfile);
+        VIR_FREE(calld->macaddress);
+        VIR_FREE(calld->linkdev);
+        VIR_FREE(calld->vmuuid);
+    }
+    VIR_FREE(calld);
+}
+
+/**
+ * virNetDevMacVLanVPortProfileDestroyCallback:
+ *
+ * @watch: watch whose handle to remove
+ * @macaddr: macaddr whose handle to remove
+ * @opaque: Contains vital information regarding the associated vm
+ *
+ * This function is called when a netlink message handler is terminated.
+ * The function frees locally allocated data referenced in the opaque
+ * data, and the opaque object itself.
+ */
+static void
+virNetDevMacVLanVPortProfileDestroyCallback(int watch ATTRIBUTE_UNUSED,
+                                            const unsigned char *macaddr ATTRIBUTE_UNUSED,
+                                            void *opaque)
+{
+    virNetlinkCallbackDataFree((virNetlinkCallbackDataPtr)opaque);
+}
+
+
 /**
  * virNetDevMacVLanCreateWithVPortProfile:
  * Create an instance of a macvtap device and open its tap character
@@ -485,6 +808,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
     int retries, do_retry = 0;
     uint32_t macvtapMode;
     const char *cr_ifname;
+    virNetlinkCallbackDataPtr calld = NULL;
     int ret;
 
     macvtapMode = modeMap[mode];
@@ -547,7 +871,7 @@ create_name:
                                        virtPortProfile,
                                        macaddress,
                                        linkdev,
-                                       vmuuid, vmOp) < 0) {
+                                       vmuuid, vmOp, false) < 0) {
         rc = -1;
         goto link_del_exit;
     }
@@ -589,8 +913,35 @@ create_name:
         goto disassociate_exit;
     }
 
+    if (virNetlinkEventServiceIsRunning()) {
+        if (VIR_ALLOC(calld) < 0)
+            goto memory_error;
+        if ((calld->cr_ifname = strdup(cr_ifname)) == NULL)
+            goto memory_error;
+        if (VIR_ALLOC(calld->virtPortProfile) < 0)
+            goto memory_error;
+        memcpy(calld->virtPortProfile, virtPortProfile, sizeof(*virtPortProfile));
+        if (VIR_ALLOC_N(calld->macaddress, VIR_MAC_BUFLEN) < 0)
+            goto memory_error;
+        memcpy(calld->macaddress, macaddress, VIR_MAC_BUFLEN);
+        if ((calld->linkdev = strdup(linkdev)) == NULL)
+            goto  memory_error;
+        if (VIR_ALLOC_N(calld->vmuuid, VIR_UUID_BUFLEN) < 0)
+            goto memory_error;
+        memcpy(calld->vmuuid, vmuuid, VIR_UUID_BUFLEN);
+
+        calld->vmOp = vmOp;
+
+        virNetlinkEventAddClient(virNetDevMacVLanVPortProfileCallback,
+                                 virNetDevMacVLanVPortProfileDestroyCallback,
+                                 calld, macaddress);
+    }
 
     return rc;
+
+ memory_error:
+    virReportOOMError();
+    virNetlinkCallbackDataFree(calld);
 
 disassociate_exit:
     ignore_value(virNetDevVPortProfileDisassociate(cr_ifname,
@@ -638,6 +989,9 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
         if (virNetDevMacVLanDelete(ifname) < 0)
             ret = -1;
     }
+
+    virNetlinkEventRemoveClient(0, macaddr);
+
     return ret;
 }
 
