@@ -21,6 +21,7 @@
 # define __VIR_NETLINK_H__
 
 # include "config.h"
+# include "internal.h"
 
 # if defined(__linux__) && defined(HAVE_LIBNL)
 
@@ -29,11 +30,43 @@
 # else
 
 struct nl_msg;
+struct sockaddr_nl;
 
 # endif /* __linux__ */
 
 int virNetlinkCommand(struct nl_msg *nl_msg,
                       unsigned char **respbuf, unsigned int *respbuflen,
                       int nl_pid);
+
+typedef void (*virNetlinkEventHandleCallback)(unsigned char *msg, int length, struct sockaddr_nl *peer, bool *handled, void *opaque);
+
+typedef void (*virNetlinkEventRemoveCallback)(int watch, const unsigned char *macaddr, void *opaque);
+
+/**
+ * stopNetlinkEventServer: stop the monitor to receive netlink messages for libvirtd
+ */
+int virNetlinkEventServiceStop(void);
+
+/**
+ * startNetlinkEventServer: start a monitor to receive netlink messages for libvirtd
+ */
+int virNetlinkEventServiceStart(void);
+
+/**
+ * virNetlinkEventServiceIsRunning: returns if the netlink event service is running.
+ */
+bool virNetlinkEventServiceIsRunning(void);
+
+/**
+ * virNetlinkEventAddClient: register a callback for handling of netlink messages
+ */
+int virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
+                             virNetlinkEventRemoveCallback removeCB,
+                             void *opaque, const unsigned char *macaddr);
+
+/**
+ * virNetlinkEventRemoveClient: unregister a callback from a netlink monitor
+ */
+int virNetlinkEventRemoveClient(int watch, const unsigned char *macaddr);
 
 #endif /* __VIR_NETLINK_H__ */

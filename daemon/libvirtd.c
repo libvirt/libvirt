@@ -47,6 +47,7 @@
 #include "conf.h"
 #include "memory.h"
 #include "conf.h"
+#include "virnetlink.h"
 #include "virnetserver.h"
 #include "threads.h"
 #include "remote.h"
@@ -1598,6 +1599,12 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
+    /* Register the netlink event service */
+    if (virNetlinkEventServiceStart() < 0) {
+        ret = VIR_DAEMON_ERR_NETWORK;
+        goto cleanup;
+    }
+
     /* Run event loop. */
     virNetServerRun(srv);
 
@@ -1607,6 +1614,7 @@ int main(int argc, char **argv) {
                 0, "shutdown", NULL, NULL);
 
 cleanup:
+    virNetlinkEventServiceStop();
     virNetServerProgramFree(remoteProgram);
     virNetServerProgramFree(qemuProgram);
     virNetServerClose(srv);

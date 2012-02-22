@@ -35,7 +35,10 @@
 #include <sys/types.h>
 
 #include "virnetlink.h"
+#include "logging.h"
 #include "memory.h"
+#include "threads.h"
+#include "virmacaddr.h"
 #include "virterror_internal.h"
 
 #define VIR_FROM_THIS VIR_FROM_NET
@@ -45,6 +48,48 @@
                              __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #define NETLINK_ACK_TIMEOUT_S  2
+
+#if defined(__linux__) && defined(HAVE_LIBNL)
+/* State for a single netlink event handle */
+struct virNetlinkEventHandle {
+    int watch;
+    virNetlinkEventHandleCallback handleCB;
+    virNetlinkEventRemoveCallback removeCB;
+    void *opaque;
+    unsigned char macaddr[VIR_MAC_BUFLEN];
+    int deleted;
+};
+
+typedef struct _virNetlinkEventSrvPrivate virNetlinkEventSrvPrivate;
+typedef virNetlinkEventSrvPrivate *virNetlinkEventSrvPrivatePtr;
+struct _virNetlinkEventSrvPrivate {
+    /*Server*/
+    virMutex lock;
+    int eventwatch;
+    int netlinkfd;
+    struct nl_handle *netlinknh;
+    /*Events*/
+    int handled;
+    size_t handlesCount;
+    size_t handlesAlloc;
+    struct virNetlinkEventHandle *handles;
+};
+
+enum virNetlinkDeleteMode {
+    VIR_NETLINK_HANDLE_VALID,
+    VIR_NETLINK_HANDLE_DELETED,
+};
+
+/* Unique ID for the next netlink watch to be registered */
+static int nextWatch = 1;
+
+/* Allocate extra slots for virEventPollHandle/virEventPollTimeout
+ records in this multiple */
+# define NETLINK_EVENT_ALLOC_EXTENT 10
+
+static virNetlinkEventSrvPrivatePtr server = NULL;
+
+/* Function definitions */
 
 /**
  * virNetlinkCommand:
@@ -58,7 +103,6 @@
  * Returns 0 on success, -1 on error. In case of error, no response
  * buffer will be returned.
  */
-#if defined(__linux__) && defined(HAVE_LIBNL)
 int virNetlinkCommand(struct nl_msg *nl_msg,
                       unsigned char **respbuf, unsigned int *respbuflen,
                       int nl_pid)
@@ -89,7 +133,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
         virReportSystemError(errno,
                              "%s", _("cannot connect to netlink socket"));
         rc = -1;
-        goto err_exit;
+        goto error;
     }
 
     nlmsg_set_dst(nl_msg, &nladdr);
@@ -101,7 +145,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
         virReportSystemError(errno,
                              "%s", _("cannot send to netlink socket"));
         rc = -1;
-        goto err_exit;
+        goto error;
     }
 
     fd = nl_socket_get_fd(nlhandle);
@@ -118,7 +162,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
             virReportSystemError(ETIMEDOUT, "%s",
                                  _("no valid netlink response was received"));
         rc = -1;
-        goto err_exit;
+        goto error;
     }
 
     *respbuflen = nl_recv(nlhandle, &nladdr, respbuf, NULL);
@@ -127,7 +171,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
                              "%s", _("nl_recv failed"));
         rc = -1;
     }
-err_exit:
+error:
     if (rc == -1) {
         VIR_FREE(*respbuf);
         *respbuf = NULL;
@@ -136,6 +180,345 @@ err_exit:
 
     nl_handle_destroy(nlhandle);
     return rc;
+}
+
+static void
+virNetlinkEventServerLock(virNetlinkEventSrvPrivatePtr driver)
+{
+    virMutexLock(&driver->lock);
+}
+
+static void
+virNetlinkEventServerUnlock(virNetlinkEventSrvPrivatePtr driver)
+{
+    virMutexUnlock(&driver->lock);
+}
+
+/**
+ * virNetlinkEventRemoveClientPrimitive:
+ *
+ * @i: index of the client to remove from the table
+ *
+ * This static function does the low level removal of a client from
+ * the table once its index is known, including calling the remove
+ * callback (which usually will free resources required by the
+ * handler). The event server lock *must* be locked before calling
+ * this function.
+ *
+ * assumes success, returns nothing.
+ */
+static void
+virNetlinkEventRemoveClientPrimitive(size_t i)
+{
+    virNetlinkEventRemoveCallback removeCB = server->handles[i].removeCB;
+
+    if (removeCB) {
+        (removeCB)(server->handles[i].watch,
+                   server->handles[i].macaddr,
+                   server->handles[i].opaque);
+    }
+    server->handles[i].deleted = VIR_NETLINK_HANDLE_DELETED;
+}
+
+static void
+virNetlinkEventCallback(int watch,
+                        int fd ATTRIBUTE_UNUSED,
+                        int events ATTRIBUTE_UNUSED,
+                        void *opaque)
+{
+    virNetlinkEventSrvPrivatePtr srv = opaque;
+    unsigned char *msg;
+    struct sockaddr_nl peer;
+    struct ucred *creds = NULL;
+    int i, length;
+    bool handled = false;
+
+    length = nl_recv(srv->netlinknh, &peer, &msg, &creds);
+
+    if (length == 0)
+        return;
+    if (length < 0) {
+        netlinkError(errno,
+                     "%s", _("nl_recv returned with error"));
+        return;
+    }
+
+    virNetlinkEventServerLock(srv);
+
+    VIR_DEBUG("dispatching to max %d clients, called from event watch %d",
+            (int)srv->handlesCount, watch);
+
+    for (i = 0; i < srv->handlesCount; i++) {
+        if (srv->handles[i].deleted != VIR_NETLINK_HANDLE_VALID)
+            continue;
+
+        VIR_DEBUG("dispatching client %d.", i);
+
+        (srv->handles[i].handleCB)(msg, length, &peer, &handled,
+                                   srv->handles[i].opaque);
+    }
+
+    if (!handled)
+        VIR_DEBUG("event not handled.");
+    VIR_FREE(msg);
+    virNetlinkEventServerUnlock(srv);
+}
+
+/**
+ * virNetlinkEventServiceStop:
+ *
+ * stop the monitor to receive netlink messages for libvirtd.
+ * This removes the netlink socket fd from the event handler.
+ *
+ * returns -1 if the monitor cannot be unregistered, 0 upon success
+ */
+int
+virNetlinkEventServiceStop(void)
+{
+    virNetlinkEventSrvPrivatePtr srv = server;
+    int i;
+
+    VIR_INFO("stopping netlink event service");
+
+    if (!server)
+        return 0;
+
+    virNetlinkEventServerLock(srv);
+    nl_close(srv->netlinknh);
+    nl_handle_destroy(srv->netlinknh);
+    virEventRemoveHandle(srv->eventwatch);
+
+    /* free any remaining clients on the list */
+    for (i = 0; i < srv->handlesCount; i++) {
+        if (srv->handles[i].deleted == VIR_NETLINK_HANDLE_VALID)
+            virNetlinkEventRemoveClientPrimitive(i);
+    }
+
+    server = 0;
+    virNetlinkEventServerUnlock(srv);
+
+    virMutexDestroy(&srv->lock);
+    VIR_FREE(srv);
+    return 0;
+}
+
+/**
+ * virNetlinkEventServiceIsRunning:
+ *
+ * returns if the netlink event service is running.
+ *
+ * returns 'true' if the service is running, 'false' if stopped.
+ */
+bool
+virNetlinkEventServiceIsRunning(void)
+{
+    return (server != NULL);
+}
+
+/**
+ * virNetlinkEventServiceStart:
+ *
+ * start a monitor to receive netlink messages for libvirtd.
+ * This registers a netlink socket with the event interface.
+ *
+ * returns -1 if the monitor cannot be registered, 0 upon success
+ */
+int
+virNetlinkEventServiceStart(void)
+{
+    virNetlinkEventSrvPrivatePtr srv;
+    int fd;
+    int ret = -1;
+
+    if (server)
+        return 0;
+
+    VIR_INFO("starting netlink event service");
+
+    if (VIR_ALLOC(srv) < 0) {
+        virReportOOMError();
+        goto error;
+    }
+
+    if (virMutexInit(&srv->lock) < 0)
+        goto error;
+
+    virNetlinkEventServerLock(srv);
+
+    /* Allocate a new socket and get fd */
+    srv->netlinknh = nl_handle_alloc();
+
+    if (!srv->netlinknh) {
+        netlinkError(errno,
+                "%s", _("cannot allocate nlhandle for virNetlinkEvent server"));
+        goto error_locked;
+    }
+
+    if (nl_connect(srv->netlinknh, NETLINK_ROUTE) < 0) {
+        netlinkError(errno,
+                "%s", _("cannot connect to netlink socket"));
+        goto error_server;
+    }
+
+    fd = nl_socket_get_fd(srv->netlinknh);
+
+    if (fd < 0) {
+        netlinkError(errno,
+                     "%s", _("cannot get netlink socket fd"));
+        goto error_server;
+    }
+
+    if (nl_socket_set_nonblocking(srv->netlinknh)) {
+        netlinkError(errno, "%s",
+                     _("cannot set netlink socket nonblocking"));
+        goto error_server;
+    }
+
+    if ((srv->eventwatch = virEventAddHandle(fd,
+                                             VIR_EVENT_HANDLE_READABLE,
+                                             virNetlinkEventCallback,
+                                             srv, NULL)) < 0) {
+        netlinkError(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Failed to add netlink event handle watch"));
+        goto error_server;
+    }
+
+    srv->netlinkfd = fd;
+    VIR_DEBUG("netlink event listener on fd: %i running", fd);
+
+    ret = 0;
+    server = srv;
+
+error_server:
+    if (ret < 0) {
+        nl_close(srv->netlinknh);
+        nl_handle_destroy(srv->netlinknh);
+    }
+error_locked:
+    virNetlinkEventServerUnlock(srv);
+    if (ret < 0) {
+        virMutexDestroy(&srv->lock);
+        VIR_FREE(srv);
+    }
+error:
+    return ret;
+}
+
+/**
+ * virNetlinkEventAddClient:
+ *
+ * @handleCB: callback to invoke when an event occurs
+ * @removeCB: callback to invoke when removing a client
+ * @opaque: user data to pass to callback
+ * @macaddr: macaddr to store with the data. Used to identify callers. May be null.
+ *
+ * register a callback for handling of netlink messages. The
+ * registered function receives the entire netlink message and
+ * may choose to act upon it.
+ *
+ * returns -1 if the file handle cannot be registered, number of monitor upon success
+ */
+int
+virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
+                         virNetlinkEventRemoveCallback removeCB,
+                         void *opaque, const unsigned char *macaddr)
+{
+    int i, r, ret = -1;
+    virNetlinkEventSrvPrivatePtr srv = server;
+
+    if (handleCB == NULL)
+        return -1;
+
+    virNetlinkEventServerLock(srv);
+
+    VIR_DEBUG("adding client: %d.", nextWatch);
+
+    r = 0;
+    /* first try to re-use deleted free slots */
+    for (i = 0; i < srv->handlesCount; i++) {
+        if (srv->handles[i].deleted == VIR_NETLINK_HANDLE_DELETED) {
+            r = i;
+            goto addentry;
+        }
+    }
+    /* Resize the eventLoop array if needed */
+    if (srv->handlesCount == srv->handlesAlloc) {
+        VIR_DEBUG("Used %zu handle slots, adding at least %d more",
+                  srv->handlesAlloc, NETLINK_EVENT_ALLOC_EXTENT);
+        if (VIR_RESIZE_N(srv->handles, srv->handlesAlloc,
+                        srv->handlesCount, NETLINK_EVENT_ALLOC_EXTENT) < 0) {
+            goto error;
+        }
+    }
+    r = srv->handlesCount++;
+
+addentry:
+    srv->handles[r].watch    = nextWatch;
+    srv->handles[r].handleCB = handleCB;
+    srv->handles[r].removeCB = removeCB;
+    srv->handles[r].opaque   = opaque;
+    srv->handles[r].deleted  = VIR_NETLINK_HANDLE_VALID;
+    if (macaddr)
+        memcpy(srv->handles[r].macaddr, macaddr, VIR_MAC_BUFLEN);
+    else
+        memset(srv->handles[r].macaddr, 0, VIR_MAC_BUFLEN);
+
+    VIR_DEBUG("added client to loop slot: %d. with macaddr ptr=%p", r, macaddr);
+
+    ret = nextWatch++;
+error:
+    virNetlinkEventServerUnlock(srv);
+    return ret;
+}
+
+/**
+ * virNetlinkEventRemoveClient:
+ *
+ * @watch: watch whose handle to remove
+ * @macaddr: macaddr whose handle to remove
+ *
+ * Unregister a callback from a netlink monitor.
+ * The handler function referenced will no longer receive netlink messages.
+ * Either watch or macaddr may be used, the other should be null.
+ *
+ * returns -1 if the file handle was not registered, 0 upon success
+ */
+int
+virNetlinkEventRemoveClient(int watch, const unsigned char *macaddr)
+{
+    int i;
+    int ret = -1;
+    virNetlinkEventSrvPrivatePtr srv = server;
+
+    VIR_DEBUG("removing client watch=%d, mac=%p.", watch, macaddr);
+
+    if (watch <= 0 && !macaddr) {
+        VIR_WARN("Ignoring invalid netlink client id: %d", watch);
+        return -1;
+    }
+
+    virNetlinkEventServerLock(srv);
+
+    for (i = 0; i < srv->handlesCount; i++) {
+        if (srv->handles[i].deleted != VIR_NETLINK_HANDLE_VALID)
+            continue;
+
+        if ((watch && srv->handles[i].watch == watch) ||
+            (!watch &&
+             memcmp(macaddr, srv->handles[i].macaddr, VIR_MAC_BUFLEN) == 0)) {
+
+            VIR_DEBUG("removed client: %d by %s.",
+                      srv->handles[i].watch, watch ? "index" : "mac");
+            virNetlinkEventRemoveClientPrimitive(i);
+            ret = 0;
+            goto cleanup;
+        }
+    }
+    VIR_DEBUG("no client found to remove.");
+
+cleanup:
+    virNetlinkEventServerUnlock(srv);
+    return ret;
 }
 
 #else
@@ -150,6 +533,77 @@ int virNetlinkCommand(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
                  _("virNetlinkCommand is not supported since libnl was not available"));
 # else
                  _("virNetlinkCommand is not supported on non-linux platforms"));
+# endif
+    return -1;
+}
+
+/**
+ * stopNetlinkEventServer: stop the monitor to receive netlink messages for libvirtd
+ */
+int virNetlinkEventServiceStop(void)
+{
+    netlinkError(VIR_ERR_INTERNAL_ERROR,
+                "%s",
+# if defined(__linux__) && !defined(HAVE_LIBNL)
+                _("virNetlinkEventServiceStop is not supported since libnl was not available"));
+# endif
+    return 0;
+}
+
+/**
+ * startNetlinkEventServer: start a monitor to receive netlink messages for libvirtd
+ */
+int virNetlinkEventServiceStart(void)
+{
+# if defined(__linux__) && !defined(HAVE_LIBNL)
+    netlinkError(VIR_ERR_INTERNAL_ERROR,
+                "%s",
+                _("virNetlinkEventServiceStart is not supported since libnl was not available"));
+# endif
+    return 0;
+}
+
+/**
+ * virNetlinkEventServiceIsRunning: returns if the netlink event service is running.
+ */
+int virNetlinkEventServiceIsRunning(void)
+{
+# if defined(__linux__) && !defined(HAVE_LIBNL)
+    netlinkError(VIR_ERR_INTERNAL_ERROR,
+                "%s",
+                _("virNetlinkEventServiceIsRunning is not supported since libnl was not available"));
+# endif
+    return 0;
+}
+
+/**
+ * virNetlinkEventAddClient: register a callback for handling of netlink messages
+ */
+int virNetlinkEventAddClient(virNetlinkEventHandleCallback cb,
+                             virNetlinkEventRemoveCallback cb,
+                             void *opaque, const unsigned char *macaddr)
+{
+    netlinkError(VIR_ERR_INTERNAL_ERROR,
+                "%s",
+# if defined(__linux__) && !defined(HAVE_LIBNL)
+                _("virNetlinkEventServiceAddClient is not supported since libnl was not available"));
+# else
+                _("virNetlinkEventServiceAddClient is not supported on non-linux platforms"));
+# endif
+    return -1;
+}
+
+/**
+ * virNetlinkEventRemoveClient: unregister a callback from a netlink monitor
+ */
+int virNetlinkEventRemoveClient(int watch, const unsigned char *macaddr)
+{
+    netlinkError(VIR_ERR_INTERNAL_ERROR,
+                "%s",
+# if defined(__linux__) && !defined(HAVE_LIBNL)
+                _("virNetlinkEventRemoveClient is not supported since libnl was not available"));
+# else
+                _("virNetlinkEventRemoveClient is not supported on non-linux platforms"));
 # endif
     return -1;
 }
