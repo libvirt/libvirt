@@ -724,8 +724,12 @@ virFileAccessibleAs(const char *path, int mode,
                 return -1;
         }
 
-        errno = status;
-        return -1;
+        if (status) {
+            errno = status;
+            return -1;
+        }
+
+        return 0;
     }
 
     /* child.
