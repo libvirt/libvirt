@@ -211,11 +211,11 @@ AC_PATH_PROG([UDEVADM], [udevadm], [],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([UDEVSETTLE], [udevsettle], [],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
-AC_PATH_PROG([MODPROBE], [modprobe], [],
+AC_PATH_PROG([MODPROBE], [modprobe], [modprobe],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([OVSVSCTL], [ovs-vsctl], [ovs-vsctl],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
-AC_PATH_PROG([SCRUB], [scrub], [],
+AC_PATH_PROG([SCRUB], [scrub], [scrub],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 
 AC_DEFINE_UNQUOTED([DNSMASQ],["$DNSMASQ"],
