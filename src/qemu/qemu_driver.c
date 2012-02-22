@@ -1792,7 +1792,7 @@ qemuDomainDestroyFlags(virDomainPtr dom,
      */
     if (flags & VIR_DOMAIN_DESTROY_GRACEFUL) {
         if (qemuProcessKill(driver, vm, 0) < 0) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+            qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
                             _("failed to kill qemu process with SIGTERM"));
             goto cleanup;
         }
