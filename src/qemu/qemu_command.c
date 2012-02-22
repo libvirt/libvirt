@@ -719,6 +719,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virBitmapPtr qemuCaps)
 
 static int
 qemuSpaprVIOFindByReg(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                      virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
                       virDomainDeviceInfoPtr info, void *opaque)
 {
     virDomainDeviceInfoPtr target = opaque;
@@ -833,6 +834,7 @@ static char *qemuPCIAddressAsString(virDomainDeviceInfoPtr dev)
 
 
 static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                 virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
                                  virDomainDeviceInfoPtr info,
                                  void *opaque)
 {

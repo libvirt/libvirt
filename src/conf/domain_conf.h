@@ -1785,7 +1785,8 @@ void virDomainDefClearPCIAddresses(virDomainDefPtr def);
 void virDomainDefClearDeviceAliases(virDomainDefPtr def);
 
 typedef int (*virDomainDeviceInfoCallback)(virDomainDefPtr def,
-                                           virDomainDeviceInfoPtr dev,
+                                           virDomainDeviceDefPtr dev,
+                                           virDomainDeviceInfoPtr info,
                                            void *opaque);
 
 int virDomainDeviceInfoIterate(virDomainDefPtr def,

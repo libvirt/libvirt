@@ -1829,6 +1829,7 @@ void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
 
 
 static int virDomainDeviceInfoClearAlias(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                         virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
                                          virDomainDeviceInfoPtr info,
                                          void *opaque ATTRIBUTE_UNUSED)
 {
@@ -1837,6 +1838,7 @@ static int virDomainDeviceInfoClearAlias(virDomainDefPtr def ATTRIBUTE_UNUSED,
 }
 
 static int virDomainDeviceInfoClearPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                              virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
                                               virDomainDeviceInfoPtr info,
                                               void *opaque ATTRIBUTE_UNUSED)
 {
@@ -1852,55 +1854,101 @@ int virDomainDeviceInfoIterate(virDomainDefPtr def,
                                void *opaque)
 {
     int i;
+    virDomainDeviceDef device;
 
-    for (i = 0; i < def->ndisks ; i++)
-        if (cb(def, &def->disks[i]->info, opaque) < 0)
+    device.type = VIR_DOMAIN_DEVICE_DISK;
+    for (i = 0; i < def->ndisks ; i++) {
+        device.data.disk = def->disks[i];
+        if (cb(def, &device, &def->disks[i]->info, opaque) < 0)
             return -1;
-    for (i = 0; i < def->nnets ; i++)
-        if (cb(def, &def->nets[i]->info, opaque) < 0)
+    }
+    device.type = VIR_DOMAIN_DEVICE_NET;
+    for (i = 0; i < def->nnets ; i++) {
+        device.data.net = def->nets[i];
+        if (cb(def, &device, &def->nets[i]->info, opaque) < 0)
             return -1;
-    for (i = 0; i < def->nsounds ; i++)
-        if (cb(def, &def->sounds[i]->info, opaque) < 0)
+    }
+    device.type = VIR_DOMAIN_DEVICE_SOUND;
+    for (i = 0; i < def->nsounds ; i++) {
+        device.data.sound = def->sounds[i];
+        if (cb(def, &device, &def->sounds[i]->info, opaque) < 0)
             return -1;
-    for (i = 0; i < def->nhostdevs ; i++)
-        if (cb(def, &def->hostdevs[i]->info, opaque) < 0)
+    }
+    device.type = VIR_DOMAIN_DEVICE_HOSTDEV;
+    for (i = 0; i < def->nhostdevs ; i++) {
+        device.data.hostdev = def->hostdevs[i];
+        if (cb(def, &device, &def->hostdevs[i]->info, opaque) < 0)
             return -1;
-    for (i = 0; i < def->nvideos ; i++)
-        if (cb(def, &def->videos[i]->info, opaque) < 0)
+    }
+    device.type = VIR_DOMAIN_DEVICE_VIDEO;
+    for (i = 0; i < def->nvideos ; i++) {
+        device.data.video = def->videos[i];
+        if (cb(def, &device, &def->videos[i]->info, opaque) < 0)
             return -1;
-    for (i = 0; i < def->ncontrollers ; i++)
-        if (cb(def, &def->controllers[i]->info, opaque) < 0)
+    }
+    device.type = VIR_DOMAIN_DEVICE_CONTROLLER;
+    for (i = 0; i < def->ncontrollers ; i++) {
+        device.data.controller = def->controllers[i];
+        if (cb(def, &device, &def->controllers[i]->info, opaque) < 0)
             return -1;
-    for (i = 0; i < def->nsmartcards ; i++)
-        if (cb(def, &def->smartcards[i]->info, opaque) < 0)
+    }
+    device.type = VIR_DOMAIN_DEVICE_SMARTCARD;
+    for (i = 0; i < def->nsmartcards ; i++) {
+        device.data.smartcard = def->smartcards[i];
+        if (cb(def, &device, &def->smartcards[i]->info, opaque) < 0)
             return -1;
-    for (i = 0; i < def->nserials ; i++)
-        if (cb(def, &def->serials[i]->info, opaque) < 0)
+    }
+    device.type = VIR_DOMAIN_DEVICE_CHR;
+    for (i = 0; i < def->nserials ; i++) {
+        device.data.chr = def->serials[i];
+        if (cb(def, &device, &def->serials[i]->info, opaque) < 0)
             return -1;
-    for (i = 0; i < def->nparallels ; i++)
-        if (cb(def, &def->parallels[i]->info, opaque) < 0)
+    }
+    for (i = 0; i < def->nparallels ; i++) {
+        device.data.chr = def->parallels[i];
+        if (cb(def, &device, &def->parallels[i]->info, opaque) < 0)
             return -1;
-    for (i = 0; i < def->nchannels ; i++)
-        if (cb(def, &def->channels[i]->info, opaque) < 0)
+    }
+    for (i = 0; i < def->nchannels ; i++) {
+        device.data.chr = def->channels[i];
+        if (cb(def, &device, &def->channels[i]->info, opaque) < 0)
             return -1;
-    for (i = 0; i < def->nconsoles ; i++)
-        if (cb(def, &def->consoles[i]->info, opaque) < 0)
+    }
+    for (i = 0; i < def->nconsoles ; i++) {
+        device.data.chr = def->consoles[i];
+        if (cb(def, &device, &def->consoles[i]->info, opaque) < 0)
             return -1;
-    for (i = 0; i < def->ninputs ; i++)
-        if (cb(def, &def->inputs[i]->info, opaque) < 0)
+    }
+    device.type = VIR_DOMAIN_DEVICE_INPUT;
+    for (i = 0; i < def->ninputs ; i++) {
+        device.data.input = def->inputs[i];
+        if (cb(def, &device, &def->inputs[i]->info, opaque) < 0)
             return -1;
-    for (i = 0; i < def->nfss ; i++)
-        if (cb(def, &def->fss[i]->info, opaque) < 0)
+    }
+    device.type = VIR_DOMAIN_DEVICE_FS;
+    for (i = 0; i < def->nfss ; i++) {
+        device.data.fs = def->fss[i];
+        if (cb(def, &device, &def->fss[i]->info, opaque) < 0)
             return -1;
-    if (def->watchdog)
-        if (cb(def, &def->watchdog->info, opaque) < 0)
+    }
+    if (def->watchdog) {
+        device.type = VIR_DOMAIN_DEVICE_WATCHDOG;
+        device.data.watchdog = def->watchdog;
+        if (cb(def, &device, &def->watchdog->info, opaque) < 0)
             return -1;
-    if (def->memballoon)
-        if (cb(def, &def->memballoon->info, opaque) < 0)
+    }
+    if (def->memballoon) {
+        device.type = VIR_DOMAIN_DEVICE_MEMBALLOON;
+        device.data.memballoon = def->memballoon;
+        if (cb(def, &device, &def->memballoon->info, opaque) < 0)
             return -1;
-    for (i = 0; i < def->nhubs ; i++)
-        if (cb(def, &def->hubs[i]->info, opaque) < 0)
+    }
+    device.type = VIR_DOMAIN_DEVICE_HUB;
+    for (i = 0; i < def->nhubs ; i++) {
+        device.data.hub = def->hubs[i];
+        if (cb(def, &device, &def->hubs[i]->info, opaque) < 0)
             return -1;
+    }
     return 0;
 }
 

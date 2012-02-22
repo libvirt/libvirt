@@ -1481,6 +1481,7 @@ static inline int qemuFindDisk(virDomainDefPtr def, const char *dst)
 }
 
 static int qemuComparePCIDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
                                 virDomainDeviceInfoPtr info1,
                                 void *opaque)
 {
