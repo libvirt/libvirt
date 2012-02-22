@@ -844,6 +844,36 @@ vmwareDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     return ret;
 }
 
+static char *
+vmwareDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
+                          const char *nativeConfig,
+                          unsigned int flags)
+{
+    struct vmware_driver *driver = conn->privateData;
+    virVMXContext ctx;
+    virDomainDefPtr def = NULL;
+    char *xml = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (STRNEQ(nativeFormat, "vmware-vmx")) {
+        vmwareError(VIR_ERR_INVALID_ARG,
+                    _("Unsupported config format '%s'"), nativeFormat);
+        return NULL;
+    }
+
+    ctx.parseFileName = vmwareCopyVMXFileName;
+
+    def = virVMXParseConfig(&ctx, driver->caps, nativeConfig);
+
+    if (def != NULL)
+        xml = virDomainDefFormat(def, VIR_DOMAIN_XML_INACTIVE);
+
+    virDomainDefFree(def);
+
+    return xml;
+}
+
 static int
 vmwareNumDefinedDomains(virConnectPtr conn)
 {
@@ -988,6 +1018,7 @@ static virDriver vmwareDriver = {
     .domainGetInfo = vmwareDomainGetInfo, /* 0.8.7 */
     .domainGetState = vmwareDomainGetState, /* 0.9.2 */
     .domainGetXMLDesc = vmwareDomainGetXMLDesc, /* 0.8.7 */
+    .domainXMLFromNative = vmwareDomainXMLFromNative, /* 0.9.11 */
     .listDefinedDomains = vmwareListDefinedDomains, /* 0.8.7 */
     .numOfDefinedDomains = vmwareNumDefinedDomains, /* 0.8.7 */
     .domainCreate = vmwareDomainCreate, /* 0.8.7 */
