@@ -1179,7 +1179,8 @@ enum virDomainSmbiosMode {
 };
 
 /* Flags for the 'type' field in next struct */
-enum virDomainDeviceType {
+typedef enum {
+    VIR_DOMAIN_DEVICE_NONE = 0,
     VIR_DOMAIN_DEVICE_DISK,
     VIR_DOMAIN_DEVICE_LEASE,
     VIR_DOMAIN_DEVICE_FS,
@@ -1193,9 +1194,12 @@ enum virDomainDeviceType {
     VIR_DOMAIN_DEVICE_GRAPHICS,
     VIR_DOMAIN_DEVICE_HUB,
     VIR_DOMAIN_DEVICE_REDIRDEV,
+    VIR_DOMAIN_DEVICE_SMARTCARD,
+    VIR_DOMAIN_DEVICE_CHR,
+    VIR_DOMAIN_DEVICE_MEMBALLOON,
 
     VIR_DOMAIN_DEVICE_LAST,
-};
+} virDomainDeviceType;
 
 typedef struct _virDomainDeviceDef virDomainDeviceDef;
 typedef virDomainDeviceDef *virDomainDeviceDefPtr;
@@ -1215,6 +1219,9 @@ struct _virDomainDeviceDef {
         virDomainGraphicsDefPtr graphics;
         virDomainHubDefPtr hub;
         virDomainRedirdevDefPtr redirdev;
+        virDomainSmartcardDefPtr smartcard;
+        virDomainChrDefPtr chr;
+        virDomainMemballoonDefPtr memballoon;
     } data;
 };
 

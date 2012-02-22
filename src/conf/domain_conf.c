@@ -123,6 +123,7 @@ VIR_ENUM_IMPL(virDomainLifecycleCrash, VIR_DOMAIN_LIFECYCLE_CRASH_LAST,
               "coredump-restart")
 
 VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
+              "none",
               "disk",
               "lease",
               "filesystem",
@@ -135,7 +136,10 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "controller",
               "graphics",
               "hub",
-              "redirdev")
+              "redirdev",
+              "smartcard",
+              "chr",
+              "memballoon")
 
 VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "none",
