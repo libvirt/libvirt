@@ -3077,10 +3077,6 @@
 
   <!--
        Type library
-
-       A domain name should be made of ascii, numbers, _-+ and is non-empty
-       memoryKB request at least 4Mbytes though Xen will grow bigger if too low
-       weight currently is in range [100, 1000]
     -->
   <define name="cpuset">
     <data type="string">
@@ -3122,6 +3118,7 @@
       <param name="minInclusive">-1</param>
     </data>
   </define>
+  <!-- weight currently is in range [100, 1000] -->
   <define name="weight">
     <data type="unsignedInt">
       <param name="pattern">[0-9]+</param>
@@ -3133,7 +3130,6 @@
   <define name="memoryKB">
     <data type="unsignedInt">
       <param name="pattern">[0-9]+</param>
-      <param name="minInclusive">4000</param>
     </data>
   </define>
   <!-- Memory as an element, with optional unit attribute -->
@@ -3145,7 +3141,6 @@
     </optional>
     <data type='unsignedInt'>
       <param name='pattern'>[0-9]+</param>
-      <param name='minInclusive'>4000</param>
     </data>
   </define>
   <define name="domainName">

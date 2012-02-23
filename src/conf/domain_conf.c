@@ -7625,6 +7625,13 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                       &def->mem.cur_balloon) < 0)
         def->mem.cur_balloon = def->mem.max_balloon;
 
+    if (def->mem.cur_balloon > def->mem.max_balloon) {
+        virDomainReportError(VIR_ERR_XML_ERROR,
+                             _("current memory '%luk' exceeds maximum '%luk'"),
+                             def->mem.cur_balloon, def->mem.max_balloon);
+        goto error;
+    }
+
     node = virXPathNode("./memoryBacking/hugepages", ctxt);
     if (node)
         def->mem.hugepage_backed = 1;
