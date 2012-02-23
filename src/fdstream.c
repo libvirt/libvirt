@@ -67,6 +67,12 @@ struct virFDStreamData {
     bool abortCallbackCalled;
     bool abortCallbackDispatching;
 
+    /* internal callback, as the regular one (from generic streams) gets
+     * eaten up by the server stream driver */
+    virFDStreamInternalCloseCb icbCb;
+    virFDStreamInternalCloseCbFreeOpaque icbFreeOpaque;
+    void *icbOpaque;
+
     virMutex lock;
 };
 
@@ -312,6 +318,14 @@ virFDStreamCloseInt(virStreamPtr st, bool streamAbort)
         VIR_DEBUG("ignoring failed close on fd %d", fdst->errfd);
 
     st->privateData = NULL;
+
+    /* call the internal stream closing callback */
+    if (fdst->icbCb) {
+        /* the mutex is not accessible anymore, as private data is null */
+        (fdst->icbCb)(st, fdst->icbOpaque);
+        if (fdst->icbFreeOpaque)
+            (fdst->icbFreeOpaque)(fdst->icbOpaque);
+    }
 
     if (fdst->dispatching) {
         fdst->closed = true;
@@ -686,4 +700,24 @@ int virFDStreamCreateFile(virStreamPtr st,
     return virFDStreamOpenFileInternal(st, path,
                                        offset, length,
                                        oflags | O_CREAT, mode);
+}
+
+int virFDStreamSetInternalCloseCb(virStreamPtr st,
+                                  virFDStreamInternalCloseCb cb,
+                                  void *opaque,
+                                  virFDStreamInternalCloseCbFreeOpaque fcb)
+{
+    struct virFDStreamData *fdst = st->privateData;
+
+    virMutexLock(&fdst->lock);
+
+    if (fdst->icbFreeOpaque)
+        (fdst->icbFreeOpaque)(fdst->icbOpaque);
+
+    fdst->icbCb = cb;
+    fdst->icbOpaque = opaque;
+    fdst->icbFreeOpaque = fcb;
+
+    virMutexUnlock(&fdst->lock);
+    return 0;
 }
