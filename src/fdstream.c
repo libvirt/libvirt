@@ -1,7 +1,7 @@
 /*
- * fdstream.h: generic streams impl for file descriptors
+ * fdstream.c: generic streams impl for file descriptors
  *
- * Copyright (C) 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -55,12 +55,17 @@ struct virFDStreamData {
     unsigned long long length;
 
     int watch;
+    int events;         /* events the stream callback is subscribed for */
     bool cbRemoved;
     bool dispatching;
     bool closed;
     virStreamEventCallback cb;
     void *opaque;
     virFreeCallback ff;
+
+    /* don't call the abort callback more than once */
+    bool abortCallbackCalled;
+    bool abortCallbackDispatching;
 
     virMutex lock;
 };
@@ -92,6 +97,7 @@ static int virFDStreamRemoveCallback(virStreamPtr stream)
     fdst->watch = 0;
     fdst->ff = NULL;
     fdst->cb = NULL;
+    fdst->events = 0;
     fdst->opaque = NULL;
 
     ret = 0;
@@ -120,6 +126,7 @@ static int virFDStreamUpdateCallback(virStreamPtr stream, int events)
     }
 
     virEventUpdateHandle(fdst->watch, events);
+    fdst->events = events;
 
     ret = 0;
 
@@ -214,6 +221,8 @@ virFDStreamAddCallback(virStreamPtr st,
     fdst->cb = cb;
     fdst->opaque = opaque;
     fdst->ff = ff;
+    fdst->events = events;
+    fdst->abortCallbackCalled = false;
     virStreamRef(st);
 
     ret = 0;
@@ -225,18 +234,48 @@ cleanup:
 
 
 static int
-virFDStreamClose(virStreamPtr st)
+virFDStreamCloseInt(virStreamPtr st, bool streamAbort)
 {
-    struct virFDStreamData *fdst = st->privateData;
+    struct virFDStreamData *fdst;
+    virStreamEventCallback cb;
+    void *opaque;
     int ret;
 
     VIR_DEBUG("st=%p", st);
 
-    if (!fdst)
+    if (!st || !(fdst = st->privateData) || fdst->abortCallbackDispatching)
         return 0;
 
     virMutexLock(&fdst->lock);
 
+    /* aborting the stream, ensure the callback is called if it's
+     * registered for stream error event */
+    if (streamAbort &&
+        fdst->cb &&
+        (fdst->events & (VIR_STREAM_EVENT_READABLE |
+                         VIR_STREAM_EVENT_WRITABLE))) {
+        /* don't enter this function accidentally from the callback again */
+        if (fdst->abortCallbackCalled) {
+            virMutexUnlock(&fdst->lock);
+            return 0;
+        }
+
+        fdst->abortCallbackCalled = true;
+        fdst->abortCallbackDispatching = true;
+
+        /* cache the pointers */
+        cb = fdst->cb;
+        opaque = fdst->opaque;
+        virMutexUnlock(&fdst->lock);
+
+        /* call failure callback, poll reports nothing on closed fd */
+        (cb)(st, VIR_STREAM_EVENT_ERROR, opaque);
+
+        virMutexLock(&fdst->lock);
+        fdst->abortCallbackDispatching = false;
+    }
+
+    /* mutex locked */
     ret = VIR_CLOSE(fdst->fd);
     if (fdst->cmd) {
         char buf[1024];
@@ -284,6 +323,18 @@ virFDStreamClose(virStreamPtr st)
     }
 
     return ret;
+}
+
+static int
+virFDStreamClose(virStreamPtr st)
+{
+    return virFDStreamCloseInt(st, false);
+}
+
+static int
+virFDStreamAbort(virStreamPtr st)
+{
+    return virFDStreamCloseInt(st, true);
 }
 
 static int virFDStreamWrite(virStreamPtr st, const char *bytes, size_t nbytes)
@@ -392,7 +443,7 @@ static virStreamDriver virFDStreamDrv = {
     .streamSend = virFDStreamWrite,
     .streamRecv = virFDStreamRead,
     .streamFinish = virFDStreamClose,
-    .streamAbort = virFDStreamClose,
+    .streamAbort = virFDStreamAbort,
     .streamAddCallback = virFDStreamAddCallback,
     .streamUpdateCallback = virFDStreamUpdateCallback,
     .streamRemoveCallback = virFDStreamRemoveCallback
