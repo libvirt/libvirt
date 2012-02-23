@@ -833,22 +833,22 @@ static char *qemuPCIAddressAsString(virDomainDeviceInfoPtr dev)
 
 
 static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                 virDomainDeviceInfoPtr dev,
+                                 virDomainDeviceInfoPtr info,
                                  void *opaque)
 {
     int ret = -1;
     char *addr = NULL;
     qemuDomainPCIAddressSetPtr addrs = opaque;
 
-    if (dev->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
+    if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
         return 0;
 
-    addr = qemuPCIAddressAsString(dev);
+    addr = qemuPCIAddressAsString(info);
     if (!addr)
         goto cleanup;
 
     if (virHashLookup(addrs->used, addr)) {
-        if (dev->addr.pci.function != 0) {
+        if (info->addr.pci.function != 0) {
             qemuReportError(VIR_ERR_XML_ERROR,
                             _("Attempted double use of PCI Address '%s' "
                               "(may need \"multifunction='on'\" for device on function 0"),
@@ -865,15 +865,15 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
         goto cleanup;
     addr = NULL;
 
-    if ((dev->addr.pci.function == 0) &&
-        (dev->addr.pci.multi != VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_ON)) {
+    if ((info->addr.pci.function == 0) &&
+        (info->addr.pci.multi != VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_ON)) {
         /* a function 0 w/o multifunction=on must reserve the entire slot */
         int function;
-        virDomainDeviceInfo temp_dev = *dev;
+        virDomainDeviceInfo temp_info = *info;
 
         for (function = 1; function < QEMU_PCI_ADDRESS_LAST_FUNCTION; function++) {
-            temp_dev.addr.pci.function = function;
-            addr = qemuPCIAddressAsString(&temp_dev);
+            temp_info.addr.pci.function = function;
+            addr = qemuPCIAddressAsString(&temp_info);
             if (!addr)
                 goto cleanup;
 

@@ -1481,17 +1481,17 @@ static inline int qemuFindDisk(virDomainDefPtr def, const char *dst)
 }
 
 static int qemuComparePCIDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                virDomainDeviceInfoPtr dev1,
+                                virDomainDeviceInfoPtr info1,
                                 void *opaque)
 {
-    virDomainDeviceInfoPtr dev2 = opaque;
+    virDomainDeviceInfoPtr info2 = opaque;
 
-    if (dev1->type !=  VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI ||
-        dev2->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
+    if (info1->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI ||
+        info2->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
         return 0;
 
-    if (dev1->addr.pci.slot == dev2->addr.pci.slot &&
-        dev1->addr.pci.function != dev2->addr.pci.function)
+    if (info1->addr.pci.slot == info2->addr.pci.slot &&
+        info1->addr.pci.function != info2->addr.pci.function)
         return -1;
     return 0;
 }
