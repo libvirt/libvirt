@@ -1463,6 +1463,16 @@ void virDomainDefFree(virDomainDefPtr def)
     if (!def)
         return;
 
+    /* hostdevs must be freed before nets (or any future "intelligent
+     * hostdevs") because the pointer to the hostdev is really
+     * pointing into the middle of the higher level device's object,
+     * so the original object must still be available during the call
+     * to virDomainHostdevDefFree().
+     */
+    for (i = 0 ; i < def->nhostdevs ; i++)
+        virDomainHostdevDefFree(def->hostdevs[i]);
+    VIR_FREE(def->hostdevs);
+
     for (i = 0 ; i < def->nleases ; i++)
         virDomainLeaseDefFree(def->leases[i]);
     VIR_FREE(def->leases);
@@ -1518,10 +1528,6 @@ void virDomainDefFree(virDomainDefPtr def)
     for (i = 0 ; i < def->nvideos ; i++)
         virDomainVideoDefFree(def->videos[i]);
     VIR_FREE(def->videos);
-
-    for (i = 0 ; i < def->nhostdevs ; i++)
-        virDomainHostdevDefFree(def->hostdevs[i]);
-    VIR_FREE(def->hostdevs);
 
     for (i = 0 ; i < def->nhubs ; i++)
         virDomainHubDefFree(def->hubs[i]);
@@ -7061,6 +7067,10 @@ int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net)
         return -1;
     def->nets[def->nnets]  = net;
     def->nnets++;
+    if (net->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        /* hostdev net devices must also exist in the hostdevs array */
+        return virDomainHostdevInsert(def, &net->data.hostdev.def);
+    }
     return 0;
 }
 
@@ -7076,6 +7086,23 @@ int virDomainNetIndexByMac(virDomainDefPtr def, const unsigned char *mac)
 
 static void virDomainNetRemove(virDomainDefPtr def, size_t i)
 {
+    virDomainNetDefPtr net = def->nets[i];
+
+    if (net->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        /* hostdev net devices are normally also be in the hostdevs
+         * array, but might have already been removed by the time we
+         * get here.
+         */
+        virDomainHostdevDefPtr hostdev = &net->data.hostdev.def;
+        size_t h;
+
+        for (h = 0; h < def->nhostdevs; h++) {
+            if (def->hostdevs[h] == hostdev) {
+                virDomainHostdevRemove(def, h);
+                break;
+            }
+        }
+    }
     if (def->nnets > 1) {
         memmove(def->nets + i,
                 def->nets + i + 1,
@@ -8086,6 +8113,12 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             goto error;
 
         def->nets[def->nnets++] = net;
+
+        /* <interface type='hostdev'> must also be in the hostdevs array */
+        if ((net->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) &&
+            (virDomainHostdevInsert(def, &net->data.hostdev.def) < 0)) {
+                goto no_memory;
+        }
     }
     VIR_FREE(nodes);
 
@@ -8412,7 +8445,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     if ((n = virXPathNodeSet("./devices/hostdev", ctxt, &nodes)) < 0) {
         goto error;
     }
-    if (n && VIR_ALLOC_N(def->hostdevs, n) < 0)
+    if (n && VIR_REALLOC_N(def->hostdevs, def->nhostdevs + n) < 0)
         goto no_memory;
     for (i = 0 ; i < n ; i++) {
         virDomainHostdevDefPtr hostdev;
@@ -12374,9 +12407,16 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if (virDomainVideoDefFormat(buf, def->videos[n], flags) < 0)
             goto cleanup;
 
-    for (n = 0 ; n < def->nhostdevs ; n++)
-        if (virDomainHostdevDefFormat(buf, def->hostdevs[n], flags) < 0)
+    for (n = 0 ; n < def->nhostdevs ; n++) {
+        /* If parent.type != NONE, this is just a pointer to the
+         * hostdev in a higher-level device (e.g. virDomainNetDef),
+         * and will have already been formatted there.
+         */
+        if ((def->hostdevs[n]->parent.type == VIR_DOMAIN_DEVICE_NONE) &&
+            (virDomainHostdevDefFormat(buf, def->hostdevs[n], flags) < 0)) {
             goto cleanup;
+        }
+    }
 
     for (n = 0 ; n < def->nredirdevs ; n++)
         if (virDomainRedirdevDefFormat(buf, def->redirdevs[n], flags) < 0)

@@ -641,8 +641,13 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virBitmapPtr qemuCaps)
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_NET_NAME) ||
         qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
         for (i = 0; i < def->nnets ; i++) {
-            if (qemuAssignDeviceNetAlias(def, def->nets[i], i) < 0)
+            /* type='hostdev' interfaces are also on the hostdevs list,
+             * and will have their alias assigned with other hostdevs.
+             */
+            if ((def->nets[i]->type != VIR_DOMAIN_NET_TYPE_HOSTDEV) &&
+                (qemuAssignDeviceNetAlias(def, def->nets[i], i) < 0)) {
                 return -1;
+            }
         }
     }
 
@@ -834,7 +839,7 @@ static char *qemuPCIAddressAsString(virDomainDeviceInfoPtr dev)
 
 
 static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                 virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
+                                 virDomainDeviceDefPtr device,
                                  virDomainDeviceInfoPtr info,
                                  void *opaque)
 {
@@ -842,8 +847,15 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
     char *addr = NULL;
     qemuDomainPCIAddressSetPtr addrs = opaque;
 
-    if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
+    if ((info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
+        || ((device->type == VIR_DOMAIN_DEVICE_HOSTDEV) &&
+            (device->data.hostdev->parent.type != VIR_DOMAIN_DEVICE_NONE))) {
+        /* If a hostdev has a parent, its info will be a part of the
+         * parent, and will have its address collected during the scan
+         * of the parent's device type.
+        */
         return 0;
+    }
 
     addr = qemuPCIAddressAsString(info);
     if (!addr)
@@ -1358,8 +1370,14 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
 
     /* Network interfaces */
     for (i = 0; i < def->nnets ; i++) {
-        if (def->nets[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+        /* type='hostdev' network devices might be USB, and are also
+         * in hostdevs list anyway, so handle them with other hostdevs
+         * instead of here.
+         */
+        if ((def->nets[i]->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) ||
+            (def->nets[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)) {
             continue;
+        }
         if (qemuDomainPCIAddressSetNextAddr(addrs, &def->nets[i]->info) < 0)
             goto error;
     }
@@ -4774,6 +4792,16 @@ qemuBuildCommandLine(virConnectPtr conn,
                goto error;
 
             actualType = virDomainNetGetActualType(net);
+            if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+                /* type='hostdev' interfaces are handled in codepath
+                 * for standard hostdev (NB: when there is a network
+                 * with <forward mode='hostdev', there will need to be
+                 * code here that adds the newly minted hostdev to the
+                 * hostdevs array).
+                 */
+                continue;
+            }
+
             if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
                 actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
                 int tapfd = qemuNetworkIfaceConnect(def, conn, driver, net,

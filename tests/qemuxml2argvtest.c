@@ -542,6 +542,8 @@ mymain(void)
     DO_TEST("net-client", false, NONE);
     DO_TEST("net-server", false, NONE);
     DO_TEST("net-mcast", false, NONE);
+    DO_TEST("net-hostdev", false,
+            QEMU_CAPS_PCIDEVICE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
 
     DO_TEST("serial-vc", false, NONE);
     DO_TEST("serial-pty", false, NONE);
