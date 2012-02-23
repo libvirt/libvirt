@@ -880,9 +880,9 @@ virErrorMsg(virErrorNumber error, const char *info)
             break;
         case VIR_ERR_NO_NAME:
             if (info == NULL)
-                errmsg = _("missing domain name information");
+                errmsg = _("missing name information");
             else
-                errmsg = _("missing domain name information in %s");
+                errmsg = _("missing name information in %s");
             break;
         case VIR_ERR_NO_OS:
             if (info == NULL)
