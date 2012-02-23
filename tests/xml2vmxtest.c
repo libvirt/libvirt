@@ -260,6 +260,7 @@ mymain(void)
 
     DO_TEST("ethernet-custom", "ethernet-custom", 4);
     DO_TEST("ethernet-bridged", "ethernet-bridged", 4);
+    DO_TEST("ethernet-nat", "ethernet-nat", 4);
 
     DO_TEST("ethernet-generated", "ethernet-generated", 4);
     DO_TEST("ethernet-static", "ethernet-static", 4);
@@ -286,6 +287,9 @@ mymain(void)
     DO_TEST("gsx-in-the-wild-2", "gsx-in-the-wild-2", 4);
     DO_TEST("gsx-in-the-wild-3", "gsx-in-the-wild-3", 4);
     DO_TEST("gsx-in-the-wild-4", "gsx-in-the-wild-4", 4);
+
+    DO_TEST("ws-in-the-wild-1", "ws-in-the-wild-1", 8);
+    DO_TEST("ws-in-the-wild-2", "ws-in-the-wild-2", 8);
 
     DO_TEST("annotation", "annotation", 4);
 

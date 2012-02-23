@@ -2418,12 +2418,20 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     }
 
     /* vmx:networkName -> def:data.bridge.brname */
-    if ((connectionType == NULL ||
-         STRCASEEQ(connectionType, "bridged") ||
-         STRCASEEQ(connectionType, "custom")) &&
-        virVMXGetConfigString(conf, networkName_name, &networkName,
-                              false) < 0) {
-        goto cleanup;
+    if (connectionType == NULL ||
+        STRCASEEQ(connectionType, "bridged") ||
+        STRCASEEQ(connectionType, "custom")) {
+        if (virVMXGetConfigString(conf, networkName_name, &networkName,
+                                  true) < 0)
+            goto cleanup;
+
+        if (networkName == NULL) {
+            networkName = strdup("");
+            if (networkName == NULL) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        }
     }
 
     /* vmx:vnet -> def:data.ifname */
@@ -2447,11 +2455,10 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
                   connectionType, connectionType_name);
         goto cleanup;
     } else if (STRCASEEQ(connectionType, "nat")) {
-        /* FIXME */
-        VMX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("No yet handled value '%s' for VMX entry '%s'"),
-                  connectionType, connectionType_name);
-        goto cleanup;
+        (*def)->type = VIR_DOMAIN_NET_TYPE_USER;
+        (*def)->model = virtualDev;
+
+        virtualDev = NULL;
     } else if (STRCASEEQ(connectionType, "custom")) {
         (*def)->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
         (*def)->model = virtualDev;
@@ -3533,8 +3540,9 @@ virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
     /* def:type, def:ifname -> vmx:connectionType */
     switch (def->type) {
       case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        virBufferAsprintf(buffer, "ethernet%d.networkName = \"%s\"\n",
-                          controller, def->data.bridge.brname);
+        if (STRNEQ(def->data.bridge.brname, ""))
+            virBufferAsprintf(buffer, "ethernet%d.networkName = \"%s\"\n",
+                              controller, def->data.bridge.brname);
 
         if (def->ifname != NULL) {
             virBufferAsprintf(buffer, "ethernet%d.connectionType = \"custom\"\n",
@@ -3546,6 +3554,11 @@ virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
                               controller);
         }
 
+        break;
+
+      case VIR_DOMAIN_NET_TYPE_USER:
+        virBufferAsprintf(buffer, "ethernet%d.connectionType = \"nat\"\n",
+                          controller);
         break;
 
       default:

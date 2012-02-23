@@ -1,0 +1,30 @@
+<domain type='vmware'>
+  <name>dcd9c436-4825-4fc0-8fa1-14444b0f0569</name>
+  <uuid>dcd9c436-4825-4fc0-8fa1-14444b0f0569</uuid>
+  <memory>524288</memory>
+  <currentMemory>524288</currentMemory>
+  <vcpu>1</vcpu>
+  <os>
+    <type arch='x86_64'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <source file='/data/vmware/disk.vmdk'/>
+      <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
+    </disk>
+    <controller type='scsi' index='0' model='lsilogic'/>
+    <interface type='bridge'>
+      <mac address='00:90:b9:dc:ea:81'/>
+      <source bridge=''/>
+      <model type='e1000'/>
+    </interface>
+    <video>
+      <model type='vmvga' vram='4096'/>
+    </video>
+  </devices>
+</domain>

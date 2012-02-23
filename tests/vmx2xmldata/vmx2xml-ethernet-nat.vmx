@@ -1,0 +1,6 @@
+config.version = "8"
+virtualHW.version = "4"
+ethernet0.present = "true"
+ethernet0.connectionType = "nat"
+ethernet0.addressType = "static"
+ethernet0.address = "00:50:56:11:22:33"
