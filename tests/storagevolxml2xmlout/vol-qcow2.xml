@@ -3,8 +3,8 @@
   <key>(null)</key>
   <source>
   </source>
-  <capacity>5368709120</capacity>
-  <allocation>294912</allocation>
+  <capacity unit='bytes'>5368709120</capacity>
+  <allocation unit='bytes'>294912</allocation>
   <target>
     <path>/var/lib/libvirt/images/OtherDemo.img</path>
     <format type='qcow2'/>

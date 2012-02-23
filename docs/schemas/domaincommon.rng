@@ -412,11 +412,11 @@
   <define name="resources">
     <interleave>
       <element name="memory">
-        <ref name="memoryKB"/>
+        <ref name='memoryKBElement'/>
       </element>
       <optional>
         <element name="currentMemory">
-          <ref name="memoryKB"/>
+          <ref name='memoryKBElement'/>
         </element>
       </optional>
       <optional>
@@ -461,25 +461,25 @@
           <!-- Maximum memory the VM can use -->
           <optional>
             <element name="hard_limit">
-              <ref name="memoryKB"/>
+              <ref name='memoryKBElement'/>
             </element>
           </optional>
           <!-- Minimum memory ascertained for the VM during contention -->
           <optional>
             <element name="soft_limit">
-              <ref name="memoryKB"/>
+              <ref name='memoryKBElement'/>
             </element>
           </optional>
           <!-- Minimum amount of memory required to start the VM -->
           <optional>
             <element name="min_guarantee">
-              <ref name="memoryKB"/>
+              <ref name='memoryKBElement'/>
             </element>
           </optional>
           <!-- Maximum swap area the VM can use -->
           <optional>
             <element name="swap_hard_limit">
-              <ref name="memoryKB"/>
+              <ref name='memoryKBElement'/>
             </element>
           </optional>
         </element>
@@ -3129,10 +3129,23 @@
       <param name="maxInclusive">1000</param>
     </data>
   </define>
+  <!-- Memory as an attribute is in KiB, no way to express a unit -->
   <define name="memoryKB">
     <data type="unsignedInt">
       <param name="pattern">[0-9]+</param>
       <param name="minInclusive">4000</param>
+    </data>
+  </define>
+  <!-- Memory as an element, with optional unit attribute -->
+  <define name='memoryKBElement'>
+    <optional>
+      <attribute name='unit'>
+        <value>KiB</value>
+      </attribute>
+    </optional>
+    <data type='unsignedInt'>
+      <param name='pattern'>[0-9]+</param>
+      <param name='minInclusive'>4000</param>
     </data>
   </define>
   <define name="domainName">

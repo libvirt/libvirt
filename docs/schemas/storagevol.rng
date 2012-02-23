@@ -32,22 +32,12 @@
   <define name='sizing'>
     <optional>
       <element name='capacity'>
-        <optional>
-          <attribute name='unit'>
-            <ref name='unit'/>
-          </attribute>
-        </optional>
-        <ref name='unsignedLong'/>
+        <ref name='scaledInteger'/>
       </element>
     </optional>
     <optional>
       <element name='allocation'>
-        <optional>
-          <attribute name='unit'>
-            <ref name='unit'/>
-          </attribute>
-        </optional>
-        <ref name='unsignedLong'/>
+        <ref name='scaledInteger'/>
       </element>
     </optional>
   </define>

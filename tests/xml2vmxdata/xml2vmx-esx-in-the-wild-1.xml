@@ -1,8 +1,8 @@
 <domain type='vmware'>
   <name>Fedora11</name>
   <uuid>50115e16-9bdc-49d7-f171-53c4d7f91710</uuid>
-  <memory>1048576</memory>
-  <currentMemory>1048576</currentMemory>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu>1</vcpu>
   <cputune>
     <shares>500</shares>

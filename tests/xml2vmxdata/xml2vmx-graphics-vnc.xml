@@ -1,7 +1,7 @@
 <domain type='vmware'>
   <name>minimal</name>
   <uuid>564d9bef-acd9-b4e0-c8f0-aea8b9103515</uuid>
-  <memory>4096</memory>
+  <memory unit='KiB'>4096</memory>
   <os>
     <type>hvm</type>
   </os>

@@ -2,8 +2,8 @@
   <name>rhel5</name>
   <uuid>4f77abd2301958e83bab6fbf2118f880</uuid>
   <bootloader>/usr/bin/pygrub</bootloader>
-  <memory>394240</memory>
-  <currentMemory>179200</currentMemory>
+  <memory unit='KiB'>394240</memory>
+  <currentMemory unit='KiB'>179200</currentMemory>
   <vcpu>1</vcpu>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>

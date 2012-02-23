@@ -1,8 +1,8 @@
 <domain type='xen' id='6'>
   <name>pvtest</name>
   <uuid>49a0c6ff-c066-5392-6498-3632d093c2e7</uuid>
-  <memory>524288</memory>
-  <currentMemory>393216</currentMemory>
+  <memory unit='KiB'>524288</memory>
+  <currentMemory unit='KiB'>393216</currentMemory>
   <vcpu>1</vcpu>
   <bootloader>/usr/bin/pygrub</bootloader>
   <os>

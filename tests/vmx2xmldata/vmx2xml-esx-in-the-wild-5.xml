@@ -2,10 +2,10 @@
   <name>vmtest.local</name>
   <uuid>423e94a9-a1c7-b31d-7161-76c7586c830e</uuid>
   <description>Centos 5.5 64bit Server</description>
-  <memory>2097152</memory>
-  <currentMemory>2097152</currentMemory>
+  <memory unit='KiB'>2097152</memory>
+  <currentMemory unit='KiB'>2097152</currentMemory>
   <memtune>
-    <min_guarantee>262144</min_guarantee>
+    <min_guarantee unit='KiB'>262144</min_guarantee>
   </memtune>
   <vcpu>2</vcpu>
   <cputune>

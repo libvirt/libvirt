@@ -7,7 +7,7 @@
     <initrd>/var/lib/xen/initrd.img.0u-Vhq</initrd>
     <cmdline> method=http://download.fedora.devel.redhat.com/pub/fedora/linux/core/test/5.91/x86_64/os  </cmdline>
   </os>
-  <memory>430080</memory>
+  <memory unit='KiB'>430080</memory>
   <vcpu current='2'>4</vcpu>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>destroy</on_reboot>

@@ -1,8 +1,8 @@
 <domain type='xen' id='21'>
   <name>domu-224</name>
   <uuid>e0c172e6-4ad8-7353-0ece-515d2f181365</uuid>
-  <memory>524288</memory>
-  <currentMemory>524288</currentMemory>
+  <memory unit='KiB'>524288</memory>
+  <currentMemory unit='KiB'>524288</currentMemory>
   <vcpu>1</vcpu>
   <os>
     <type>hvm</type>

@@ -1,8 +1,8 @@
 <domain type='vmware'>
   <name>virtMonServ1</name>
   <uuid>564d9bef-acd9-b4e0-c8f0-aea8b9103515</uuid>
-  <memory>524288</memory>
-  <currentMemory>524288</currentMemory>
+  <memory unit='KiB'>524288</memory>
+  <currentMemory unit='KiB'>524288</currentMemory>
   <vcpu>1</vcpu>
   <cputune>
     <shares>1000</shares>

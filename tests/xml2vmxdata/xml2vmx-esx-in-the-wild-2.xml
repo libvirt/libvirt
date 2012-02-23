@@ -1,8 +1,8 @@
 <domain type='vmware'>
   <name>virtDebian1</name>
   <uuid>564dcd37-3685-8889-35ea-719fc93c983e</uuid>
-  <memory>1024000</memory>
-  <currentMemory>120832</currentMemory>
+  <memory unit='KiB'>1024000</memory>
+  <currentMemory unit='KiB'>120832</currentMemory>
   <vcpu cpuset='0-2,5-7'>4</vcpu>
   <os>
     <type arch='x86_64'>hvm</type>

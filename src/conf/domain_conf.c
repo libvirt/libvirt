@@ -12026,8 +12026,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         xmlIndentTreeOutput = oldIndentTreeOutput;
     }
 
-    virBufferAsprintf(buf, "  <memory>%lu</memory>\n", def->mem.max_balloon);
-    virBufferAsprintf(buf, "  <currentMemory>%lu</currentMemory>\n",
+    virBufferAsprintf(buf, "  <memory unit='KiB'>%lu</memory>\n",
+                      def->mem.max_balloon);
+    virBufferAsprintf(buf, "  <currentMemory unit='KiB'>%lu</currentMemory>\n",
                       def->mem.cur_balloon);
 
     /* add blkiotune only if there are any */
@@ -12068,20 +12069,20 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         def->mem.swap_hard_limit)
         virBufferAddLit(buf, "  <memtune>\n");
     if (def->mem.hard_limit) {
-        virBufferAsprintf(buf, "    <hard_limit>%lu</hard_limit>\n",
-                          def->mem.hard_limit);
+        virBufferAsprintf(buf, "    <hard_limit unit='KiB'>"
+                          "%lu</hard_limit>\n", def->mem.hard_limit);
     }
     if (def->mem.soft_limit) {
-        virBufferAsprintf(buf, "    <soft_limit>%lu</soft_limit>\n",
-                          def->mem.soft_limit);
+        virBufferAsprintf(buf, "    <soft_limit unit='KiB'>"
+                          "%lu</soft_limit>\n", def->mem.soft_limit);
     }
     if (def->mem.min_guarantee) {
-        virBufferAsprintf(buf, "    <min_guarantee>%lu</min_guarantee>\n",
-                          def->mem.min_guarantee);
+        virBufferAsprintf(buf, "    <min_guarantee unit='KiB'>"
+                          "%lu</min_guarantee>\n", def->mem.min_guarantee);
     }
     if (def->mem.swap_hard_limit) {
-        virBufferAsprintf(buf, "    <swap_hard_limit>%lu</swap_hard_limit>\n",
-                          def->mem.swap_hard_limit);
+        virBufferAsprintf(buf, "    <swap_hard_limit unit='KiB'>"
+                          "%lu</swap_hard_limit>\n", def->mem.swap_hard_limit);
     }
     if (def->mem.hard_limit || def->mem.soft_limit || def->mem.min_guarantee ||
         def->mem.swap_hard_limit)

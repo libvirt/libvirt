@@ -5,8 +5,8 @@
     <app1:foo xmlns:app1="http://foo.org/">fooish</app1:foo>
     <app2:bar xmlns:app2="http://bar.com/" maman="baz">barish</app2:bar>
   </metadata>
-  <memory>219100</memory>
-  <currentMemory>219100</currentMemory>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
   <vcpu cpuset='1-4,8-20,525'>1</vcpu>
   <os>
     <type arch='i686' machine='pc'>hvm</type>

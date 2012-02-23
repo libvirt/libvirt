@@ -140,8 +140,16 @@
 
   <define name='unit'>
     <data type='string'>
-      <param name='pattern'>[kKmMgGtTpPeE]</param>
+      <param name='pattern'>(bytes)|[kKmMgGtTpPeE]</param>
     </data>
+  </define>
+  <define name='scaledInteger'>
+    <optional>
+      <attribute name='unit'>
+        <ref name='unit'/>
+      </attribute>
+    </optional>
+    <ref name='unsignedLong'/>
   </define>
 
 </grammar>

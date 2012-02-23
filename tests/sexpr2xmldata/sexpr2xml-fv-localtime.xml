@@ -1,8 +1,8 @@
 <domain type='xen' id='3'>
   <name>fvtest</name>
   <uuid>b5d70dd2-75cd-aca5-1776-9660b059d8bc</uuid>
-  <memory>409600</memory>
-  <currentMemory>409600</currentMemory>
+  <memory unit='KiB'>409600</memory>
+  <currentMemory unit='KiB'>409600</currentMemory>
   <vcpu>1</vcpu>
   <os>
     <type>hvm</type>

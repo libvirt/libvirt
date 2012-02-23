@@ -1,8 +1,8 @@
 <domain type='qemu'>
   <name>qemu-demo</name>
   <uuid>603cc28c-9841-864e-0949-8cc7d3bae9f8</uuid>
-  <memory>65536</memory>
-  <currentMemory>65536</currentMemory>
+  <memory unit='KiB'>65536</memory>
+  <currentMemory unit='KiB'>65536</currentMemory>
   <title>A short description of this domain</title>
   <description>
       A longer explanation that this domain is a test domain

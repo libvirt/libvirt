@@ -1,8 +1,8 @@
 <domain type='qemu'>
   <name>test-bios</name>
   <uuid>362d1fc1-df7d-193e-5c18-49a71bd1da66</uuid>
-  <memory>1048576</memory>
-  <currentMemory>1048576</currentMemory>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu>1</vcpu>
   <os>
     <type arch='i686' machine='pc'>hvm</type>

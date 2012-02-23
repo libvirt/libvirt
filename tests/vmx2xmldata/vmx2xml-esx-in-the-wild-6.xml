@@ -1,8 +1,8 @@
 <domain type='vmware'>
   <name>el6-test</name>
   <uuid>564d15d4-d062-fe9a-80f5-eb8e1a2c3afc</uuid>
-  <memory>1048576</memory>
-  <currentMemory>1048576</currentMemory>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu>1</vcpu>
   <os>
     <type arch='x86_64'>hvm</type>

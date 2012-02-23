@@ -1,8 +1,8 @@
 <domain type='vmware'>
   <name>Router</name>
   <uuid>564ddebe-e86f-d586-0854-a0879cc4be5a</uuid>
-  <memory>32768</memory>
-  <currentMemory>32768</currentMemory>
+  <memory unit='KiB'>32768</memory>
+  <currentMemory unit='KiB'>32768</currentMemory>
   <vcpu>1</vcpu>
   <os>
     <type>hvm</type>

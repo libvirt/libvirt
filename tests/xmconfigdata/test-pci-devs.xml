@@ -1,8 +1,8 @@
 <domain type='xen'>
   <name>test</name>
   <uuid>cc2315e7-d26a-307a-438c-6d188ec4c09c</uuid>
-  <memory>391168</memory>
-  <currentMemory>358400</currentMemory>
+  <memory unit='KiB'>391168</memory>
+  <currentMemory unit='KiB'>358400</currentMemory>
   <vcpu>1</vcpu>
   <os>
     <type arch='i686' machine='xenfv'>hvm</type>

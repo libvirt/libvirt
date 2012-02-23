@@ -1,7 +1,7 @@
 /*
  * storage_conf.h: config handling for storage driver
  *
- * Copyright (C) 2006-2008, 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2010-2012 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -92,8 +92,8 @@ struct _virStorageVolDef {
 
     unsigned int building;
 
-    unsigned long long allocation;
-    unsigned long long capacity;
+    unsigned long long allocation; /* bytes */
+    unsigned long long capacity; /* bytes */
 
     virStorageVolSource source;
     virStorageVolTarget target;
@@ -262,9 +262,9 @@ struct _virStoragePoolDef {
     unsigned char uuid[VIR_UUID_BUFLEN];
     int type; /* virStoragePoolType */
 
-    unsigned long long allocation;
-    unsigned long long capacity;
-    unsigned long long available;
+    unsigned long long allocation; /* bytes */
+    unsigned long long capacity; /* bytes */
+    unsigned long long available; /* bytes */
 
     virStoragePoolSource source;
     virStoragePoolTarget target;

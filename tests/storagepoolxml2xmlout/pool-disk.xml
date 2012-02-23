@@ -1,9 +1,9 @@
 <pool type='disk'>
   <name>sda</name>
   <uuid>e3509a62-1b4c-e20b-94bd-9168963f9b97</uuid>
-  <capacity>0</capacity>
-  <allocation>0</allocation>
-  <available>0</available>
+  <capacity unit='bytes'>0</capacity>
+  <allocation unit='bytes'>0</allocation>
+  <available unit='bytes'>0</available>
   <source>
     <device path='/dev/sda'/>
     <format type='dos'/>

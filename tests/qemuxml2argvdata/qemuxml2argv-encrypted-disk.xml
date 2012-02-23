@@ -1,8 +1,8 @@
 <domain type='kvm'>
   <name>encryptdisk</name>
   <uuid>496898a6-e6ff-f7c8-5dc2-3cf410945ee9</uuid>
-  <memory>1048576</memory>
-  <currentMemory>524288</currentMemory>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>524288</currentMemory>
   <vcpu>1</vcpu>
   <os>
     <type arch='i686' machine='pc-0.13'>hvm</type>

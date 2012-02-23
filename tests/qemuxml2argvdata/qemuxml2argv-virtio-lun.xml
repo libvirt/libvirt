@@ -1,8 +1,8 @@
 <domain type='qemu'>
   <name>test</name>
   <uuid>bba65c0e-c049-934f-b6aa-4e2c0582acdf</uuid>
-  <memory>1048576</memory>
-  <currentMemory>1048576</currentMemory>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu>1</vcpu>
   <os>
     <type arch='x86_64' machine='pc-0.13'>hvm</type>

@@ -1,8 +1,8 @@
 <domain type='xen' id='5'>
   <name>rhel5</name>
   <uuid>4f77abd2-3019-58e8-3bab-6fbf2118f880</uuid>
-  <memory>394240</memory>
-  <currentMemory>179200</currentMemory>
+  <memory unit='KiB'>394240</memory>
+  <currentMemory unit='KiB'>179200</currentMemory>
   <vcpu>1</vcpu>
   <bootloader>/usr/bin/pygrub</bootloader>
   <os>

@@ -8,8 +8,8 @@
     <initrd>/var/lib/xen/boot_ramdisk.sjOK9_</initrd>
     <cmdline>ro root=/dev/VolGroup00/LogVol00</cmdline>
   </os>
-  <currentMemory>393216</currentMemory>
-  <memory>524288</memory>
+  <currentMemory unit='KiB'>393216</currentMemory>
+  <memory unit='KiB'>524288</memory>
   <vcpu>1</vcpu>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>

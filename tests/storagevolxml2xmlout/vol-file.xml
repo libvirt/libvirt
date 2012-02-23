@@ -3,8 +3,8 @@
   <key>(null)</key>
   <source>
   </source>
-  <capacity>1099511627776</capacity>
-  <allocation>0</allocation>
+  <capacity unit='bytes'>1099511627776</capacity>
+  <allocation unit='bytes'>0</allocation>
   <target>
     <path>/var/lib/libvirt/images/sparse.img</path>
     <format type='raw'/>

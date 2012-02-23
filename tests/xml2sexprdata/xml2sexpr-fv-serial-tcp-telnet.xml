@@ -6,7 +6,7 @@
     <loader>/usr/lib/xen/boot/hvmloader</loader>
     <boot dev='hd'/>
   </os>
-  <memory>409600</memory>
+  <memory unit='KiB'>409600</memory>
   <vcpu>1</vcpu>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>

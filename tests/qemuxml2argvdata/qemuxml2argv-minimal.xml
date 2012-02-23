@@ -6,8 +6,8 @@
       A test of qemu&apos;s minimal configuration.
       This test also tests the description and title elements.
   </description>
-  <memory>219100</memory>
-  <currentMemory>219100</currentMemory>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
   <vcpu cpuset='1-4,8-20,525'>1</vcpu>
   <os>
     <type arch='i686' machine='pc'>hvm</type>

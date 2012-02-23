@@ -1,8 +1,8 @@
 <domain type='kvm'>
   <name>f14-60</name>
   <uuid>38644c45-5227-a936-3b38-bc4f72c355bb</uuid>
-  <memory>1048576</memory>
-  <currentMemory>1048576</currentMemory>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu>2</vcpu>
   <os>
     <type arch='x86_64' machine='pc-0.13'>hvm</type>

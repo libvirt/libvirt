@@ -78,8 +78,8 @@ testReadNetworkConf(const void *data ATTRIBUTE_UNUSED)
     const char *expected =
         "<domain type='openvz'>\n"
         "  <uuid>00000000-0000-0000-0000-000000000000</uuid>\n"
-        "  <memory>0</memory>\n"
-        "  <currentMemory>0</currentMemory>\n"
+        "  <memory unit='KiB'>0</memory>\n"
+        "  <currentMemory unit='KiB'>0</currentMemory>\n"
         "  <vcpu>0</vcpu>\n"
         "  <os>\n"
         "    <type>exe</type>\n"

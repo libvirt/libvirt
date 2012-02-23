@@ -1,8 +1,8 @@
 <domain type='vmware'>
   <name>Server1</name>
   <uuid>564d1223-f835-c4b1-bbf6-e32390d62bd3</uuid>
-  <memory>32768</memory>
-  <currentMemory>32768</currentMemory>
+  <memory unit='KiB'>32768</memory>
+  <currentMemory unit='KiB'>32768</currentMemory>
   <vcpu>1</vcpu>
   <os>
     <type>hvm</type>

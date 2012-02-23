@@ -1,7 +1,7 @@
 /*
  * storage_conf.c: config handling for storage driver
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -897,11 +897,11 @@ virStoragePoolDefFormat(virStoragePoolDefPtr def) {
     virUUIDFormat(def->uuid, uuid);
     virBufferAsprintf(&buf,"  <uuid>%s</uuid>\n", uuid);
 
-    virBufferAsprintf(&buf,"  <capacity>%llu</capacity>\n",
+    virBufferAsprintf(&buf,"  <capacity unit='bytes'>%llu</capacity>\n",
                       def->capacity);
-    virBufferAsprintf(&buf,"  <allocation>%llu</allocation>\n",
+    virBufferAsprintf(&buf,"  <allocation unit='bytes'>%llu</allocation>\n",
                       def->allocation);
-    virBufferAsprintf(&buf,"  <available>%llu</available>\n",
+    virBufferAsprintf(&buf,"  <available unit='bytes'>%llu</available>\n",
                       def->available);
 
     if (virStoragePoolSourceFormat(&buf, options, &def->source) < 0)
@@ -1262,9 +1262,9 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
     }
     virBufferAddLit(&buf, "  </source>\n");
 
-    virBufferAsprintf(&buf,"  <capacity>%llu</capacity>\n",
+    virBufferAsprintf(&buf,"  <capacity unit='bytes'>%llu</capacity>\n",
                       def->capacity);
-    virBufferAsprintf(&buf,"  <allocation>%llu</allocation>\n",
+    virBufferAsprintf(&buf,"  <allocation unit='bytes'>%llu</allocation>\n",
                       def->allocation);
 
     if (virStorageVolTargetDefFormat(options, &buf,

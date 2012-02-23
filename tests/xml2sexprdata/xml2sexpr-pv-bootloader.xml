@@ -3,7 +3,7 @@
   <uuid>596a5d2171f48fb2e068e2386a5c413e</uuid>
   <bootloader>/usr/bin/pypxeboot</bootloader>
   <bootloader_args>mac=AA:00:86:e2:35:72</bootloader_args>
-  <memory>430080</memory>
+  <memory unit='KiB'>430080</memory>
   <vcpu>2</vcpu>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>destroy</on_reboot>

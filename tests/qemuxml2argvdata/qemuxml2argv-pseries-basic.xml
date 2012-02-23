@@ -1,7 +1,7 @@
 <domain type='qemu'>
   <name>QEMUGuest1</name>
   <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
-  <memory>524288</memory>
+  <memory unit='KiB'>524288</memory>
   <vcpu>1</vcpu>
   <os>
     <type arch='ppc64' machine='pseries'>hvm</type>

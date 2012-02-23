@@ -1,7 +1,7 @@
 <domain type='lxc'>
   <name>portprofile</name>
   <uuid>00000000-0000-0000-0000-000000000000</uuid>
-  <memory>1048576</memory>
+  <memory unit='KiB'>1048576</memory>
     <os>
         <type>exe</type>
         <init>/sh</init>

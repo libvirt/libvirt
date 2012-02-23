@@ -1,8 +1,8 @@
 <domain type='qemu'>
   <name>encryptdisk</name>
   <uuid>496898a6-e6ff-f7c8-5dc2-3cf410945ee9</uuid>
-  <memory>219100</memory>
-  <currentMemory>219100</currentMemory>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
   <vcpu>1</vcpu>
   <os>
     <type arch='i686' machine='pc'>hvm</type>

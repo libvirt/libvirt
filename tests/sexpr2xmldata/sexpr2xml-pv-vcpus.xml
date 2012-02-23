@@ -1,8 +1,8 @@
 <domain type='xen' id='6'>
   <name>pvtest</name>
   <uuid>596a5d21-71f4-8fb2-e068-e2386a5c413e</uuid>
-  <memory>430080</memory>
-  <currentMemory>430080</currentMemory>
+  <memory unit='KiB'>430080</memory>
+  <currentMemory unit='KiB'>430080</currentMemory>
   <vcpu current='2'>4</vcpu>
   <os>
     <type>linux</type>

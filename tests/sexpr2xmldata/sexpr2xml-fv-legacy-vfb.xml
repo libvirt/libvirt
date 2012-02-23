@@ -1,8 +1,8 @@
 <domain type='xen' id='1'>
   <name>s10u4</name>
   <uuid>fde0533d-d043-88c6-dfba-4822fa32f309</uuid>
-  <memory>1048576</memory>
-  <currentMemory>1048576</currentMemory>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu>1</vcpu>
   <os>
     <type>hvm</type>

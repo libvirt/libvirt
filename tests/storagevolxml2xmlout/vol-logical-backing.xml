@@ -3,8 +3,8 @@
   <key>(null)</key>
   <source>
   </source>
-  <capacity>2080374784</capacity>
-  <allocation>2080374784</allocation>
+  <capacity unit='bytes'>2080374784</capacity>
+  <allocation unit='bytes'>2080374784</allocation>
   <target>
     <path>/dev/HostVG/Swap</path>
     <permissions>

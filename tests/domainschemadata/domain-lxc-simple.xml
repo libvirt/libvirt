@@ -5,7 +5,7 @@
         <type>exe</type>
         <init>/sh</init>
     </os>
-    <memory>500000</memory>
+    <memory unit='KiB'>500000</memory>
     <devices>
         <filesystem type='mount'>
             <source dir='/root/container'/>

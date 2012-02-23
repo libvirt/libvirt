@@ -1,7 +1,7 @@
 <domain type='vmware'>
   <uuid>00000000-0000-0000-0000-000000000000</uuid>
-  <memory>32768</memory>
-  <currentMemory>32768</currentMemory>
+  <memory unit='KiB'>32768</memory>
+  <currentMemory unit='KiB'>32768</currentMemory>
   <vcpu>1</vcpu>
   <os>
     <type arch='i686'>hvm</type>

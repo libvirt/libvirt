@@ -1,9 +1,9 @@
 <pool type='logical'>
   <name>HostVG</name>
   <uuid>1c13165a-d0f4-3aee-b447-30fb38789091</uuid>
-  <capacity>0</capacity>
-  <allocation>0</allocation>
-  <available>0</available>
+  <capacity unit='bytes'>0</capacity>
+  <allocation unit='bytes'>0</allocation>
+  <available unit='bytes'>0</available>
   <source>
     <device path='/dev/sdb1'/>
     <device path='/dev/sdb2'/>
