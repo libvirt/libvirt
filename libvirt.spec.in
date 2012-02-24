@@ -1027,14 +1027,6 @@ fi
 %if %{with_systemd}
 %else
 /sbin/chkconfig --add libvirt-guests
-if [ $1 -ge 1 ]; then
-    level=$(/sbin/runlevel | /bin/cut -d ' ' -f 2)
-    if /sbin/chkconfig --levels $level libvirt-guests; then
-        # this doesn't do anything but allowing for libvirt-guests to be
-        # stopped on the first shutdown
-        /sbin/service libvirt-guests start > /dev/null 2>&1 || true
-    fi
-fi
 %endif
 
 %postun client -p /sbin/ldconfig
