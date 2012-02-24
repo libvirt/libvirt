@@ -25,7 +25,6 @@
 #include <limits.h>
 #include <stdint.h>
 #include <string.h>
-#include <libxml/uri.h>
 #include <curl/curl.h>
 #include <xen/api/xen_all.h>
 #include "internal.h"
@@ -37,6 +36,7 @@
 #include "uuid.h"
 #include "memory.h"
 #include "buf.h"
+#include "viruri.h"
 #include "xenapi_driver.h"
 #include "xenapi_driver_private.h"
 #include "xenapi_utils.h"

@@ -23,9 +23,9 @@
 # define __VIR_XENAPI_UTILS__
 
 # include <stdint.h>
-# include <libxml/uri.h>
 # include <xen/api/xen_all.h>
 # include "internal.h"
+# include "viruri.h"
 # include "domain_conf.h"
 
 # define NETWORK_DEVID_SIZE  (12)
@@ -40,7 +40,7 @@ xenapiUtil_RequestPassword(virConnectAuthPtr auth, const char *username,
                            const char *hostname);
 
 int
-xenapiUtil_ParseQuery(virConnectPtr conn, xmlURIPtr uri, int *noVerify);
+xenapiUtil_ParseQuery(virConnectPtr conn, virURIPtr uri, int *noVerify);
 
 enum xen_on_normal_exit
 actionShutdownLibvirt2XenapiEnum(enum virDomainLifecycleAction action);

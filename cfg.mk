@@ -457,6 +457,12 @@ sc_prohibit_xmlGetProp:
 	halt='use virXMLPropString, not xmlGetProp'			\
 	  $(_sc_search_regexp)
 
+# xml(ParseURI|SaveUri) doesn't handle IPv6 URIs well
+sc_prohibit_xmlURI:
+	@prohibit='\<xml(ParseURI|SaveUri) *\('				\
+	halt='use virURI(Parse|Format), not xml(ParseURI|SaveUri)'	\
+	  $(_sc_search_regexp)
+
 # ATTRIBUTE_UNUSED should only be applied in implementations, not
 # header declarations
 sc_avoid_attribute_unused_in_header:
@@ -757,6 +763,8 @@ exclude_file_name_regexp--sc_prohibit_strncpy = \
   ^(src/util/util|tools/virsh)\.c$$
 
 exclude_file_name_regexp--sc_prohibit_xmlGetProp = ^src/util/xml\.c$$
+
+exclude_file_name_regexp--sc_prohibit_xmlURI = ^src/util/viruri\.c$$
 
 exclude_file_name_regexp--sc_require_config_h = ^examples/
 

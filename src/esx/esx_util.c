@@ -42,7 +42,7 @@
 
 
 int
-esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, xmlURIPtr uri)
+esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
 {
     int result = -1;
     struct qparam_set *queryParamSet = NULL;

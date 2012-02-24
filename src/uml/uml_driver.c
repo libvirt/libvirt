@@ -63,6 +63,7 @@
 #include "configmake.h"
 #include "virnetdevtap.h"
 #include "virnodesuspend.h"
+#include "viruri.h"
 
 #define VIR_FROM_THIS VIR_FROM_UML
 
@@ -1138,7 +1139,7 @@ static virDrvOpenStatus umlOpen(virConnectPtr conn,
         if (uml_driver == NULL)
             return VIR_DRV_OPEN_DECLINED;
 
-        conn->uri = xmlParseURI(uml_driver->privileged ?
+        conn->uri = virURIParse(uml_driver->privileged ?
                                 "uml:///system" :
                                 "uml:///session");
         if (!conn->uri) {

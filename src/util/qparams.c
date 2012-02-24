@@ -26,12 +26,11 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include <libxml/uri.h>
-
 #include "virterror_internal.h"
 #include "buf.h"
 #include "memory.h"
 #include "qparams.h"
+#include "viruri.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

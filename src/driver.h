@@ -9,9 +9,9 @@
 # include "config.h"
 
 # include <unistd.h>
-# include <libxml/uri.h>
 
 # include "internal.h"
+# include "viruri.h"
 /*
  * List of registered drivers numbers
  */

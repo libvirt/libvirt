@@ -104,7 +104,8 @@ UTIL_SOURCES =							\
 		util/virnetlink.c util/virnetlink.h		\
 		util/virrandom.h util/virrandom.c		\
 		util/virsocketaddr.h util/virsocketaddr.c \
-		util/virtime.h util/virtime.c
+		util/virtime.h util/virtime.c \
+		util/viruri.h util/viruri.c
 
 EXTRA_DIST += $(srcdir)/util/virkeymaps.h $(srcdir)/util/keymaps.csv \
 		$(srcdir)/util/virkeycode-mapgen.py

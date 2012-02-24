@@ -25,7 +25,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
-#include <libxml/uri.h>
 #include <xen/api/xen_all.h>
 #include "internal.h"
 #include "domain_conf.h"
@@ -37,6 +36,7 @@
 #include "buf.h"
 #include "logging.h"
 #include "qparams.h"
+#include "viruri.h"
 #include "xenapi_driver_private.h"
 #include "xenapi_utils.h"
 
@@ -94,7 +94,7 @@ xenapiUtil_RequestPassword(virConnectAuthPtr auth, const char *username,
 }
 
 int
-xenapiUtil_ParseQuery(virConnectPtr conn, xmlURIPtr uri, int *noVerify)
+xenapiUtil_ParseQuery(virConnectPtr conn, virURIPtr uri, int *noVerify)
 {
     int result = 0;
     int i;

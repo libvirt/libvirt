@@ -857,7 +857,7 @@ static virDrvOpenStatus qemudOpen(virConnectPtr conn,
         if (qemu_driver == NULL)
             return VIR_DRV_OPEN_DECLINED;
 
-        conn->uri = xmlParseURI(qemu_driver->privileged ?
+        conn->uri = virURIParse(qemu_driver->privileged ?
                                 "qemu:///system" :
                                 "qemu:///session");
         if (!conn->uri) {

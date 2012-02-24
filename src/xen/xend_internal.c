@@ -27,7 +27,6 @@
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#include <libxml/uri.h>
 #include <errno.h>
 
 #include "virterror_internal.h"
@@ -46,6 +45,7 @@
 #include "memory.h"
 #include "count-one-bits.h"
 #include "virfile.h"
+#include "viruri.h"
 
 /* required for cpumap_t */
 #include <xen/dom0_ops.h>
@@ -3224,7 +3224,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
      * "hostname", "hostname:port" or "xenmigr://hostname[:port]/".
      */
     if (strstr (uri, "//")) {   /* Full URI. */
-        xmlURIPtr uriptr = xmlParseURI (uri);
+        virURIPtr uriptr = virURIParse (uri);
         if (!uriptr) {
             virXendError(VIR_ERR_INVALID_ARG,
                           "%s", _("xenDaemonDomainMigrate: invalid URI"));

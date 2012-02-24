@@ -37,7 +37,7 @@
 
 
 int
-hypervParseUri(hypervParsedUri **parsedUri, xmlURIPtr uri)
+hypervParseUri(hypervParsedUri **parsedUri, virURIPtr uri)
 {
     int result = -1;
     struct qparam_set *queryParamSet = NULL;

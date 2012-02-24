@@ -22,9 +22,9 @@
 #ifndef __ESX_UTIL_H__
 # define __ESX_UTIL_H__
 
-# include <libxml/uri.h>
 # include <netdb.h>
 # include "internal.h"
+# include "viruri.h"
 
 typedef struct _esxUtil_ParsedUri esxUtil_ParsedUri;
 
@@ -40,7 +40,7 @@ struct _esxUtil_ParsedUri {
     char *path;
 };
 
-int esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, xmlURIPtr uri);
+int esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri);
 
 void esxUtil_FreeParsedUri(esxUtil_ParsedUri **parsedUri);
 

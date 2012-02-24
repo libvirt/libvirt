@@ -23,7 +23,6 @@
 
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
-#include <libxml/uri.h>
 #include "getpass.h"
 
 #ifdef HAVE_WINSOCK2_H
@@ -44,6 +43,7 @@
 #include "command.h"
 #include "virnodesuspend.h"
 #include "virrandom.h"
+#include "viruri.h"
 
 #ifndef WITH_DRIVER_MODULES
 # ifdef WITH_TEST
@@ -1127,7 +1127,7 @@ do_open (const char *name,
             virConnectOpenResolveURIAlias(name, &alias) < 0)
             goto failed;
 
-        ret->uri = xmlParseURI (alias ? alias : name);
+        ret->uri = virURIParse (alias ? alias : name);
         if (!ret->uri) {
             virLibConnError(VIR_ERR_INVALID_ARG,
                             _("could not parse connection URI %s"),
@@ -1729,7 +1729,7 @@ virConnectGetURI (virConnectPtr conn)
         return NULL;
     }
 
-    name = (char *)xmlSaveUri(conn->uri);
+    name = virURIFormat(conn->uri);
     if (!name) {
         virReportOOMError();
         goto error;
@@ -4952,7 +4952,7 @@ virDomainMigratePeer2Peer (virDomainPtr domain,
                            const char *uri,
                            unsigned long bandwidth)
 {
-    xmlURIPtr tempuri = NULL;
+    virURIPtr tempuri = NULL;
     VIR_DOMAIN_DEBUG(domain, "xmlin=%s, flags=%lx, dname=%s, "
                      "dconnuri=%s, uri=%s, bandwidth=%lu",
                      NULLSTR(xmlin), flags, NULLSTR(dname),
@@ -4964,7 +4964,7 @@ virDomainMigratePeer2Peer (virDomainPtr domain,
         return -1;
     }
 
-    tempuri = xmlParseURI(dconnuri);
+    tempuri = virURIParse(dconnuri);
     if (!tempuri) {
         virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         virDispatchError(domain->conn);

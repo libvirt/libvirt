@@ -60,6 +60,7 @@
 #include "virnodesuspend.h"
 #include "virtime.h"
 #include "virtypedparam.h"
+#include "viruri.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -139,7 +140,7 @@ static virDrvOpenStatus lxcOpen(virConnectPtr conn,
         if (lxc_driver == NULL)
             return VIR_DRV_OPEN_DECLINED;
 
-        conn->uri = xmlParseURI("lxc:///");
+        conn->uri = virURIParse("lxc:///");
         if (!conn->uri) {
             virReportOOMError();
             return VIR_DRV_OPEN_ERROR;

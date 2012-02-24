@@ -26,8 +26,6 @@
 #include <unistd.h>
 #include <assert.h>
 
-#include <libxml/uri.h>
-
 #include "virnetclient.h"
 #include "virnetclientprogram.h"
 #include "virnetclientstream.h"
@@ -47,6 +45,7 @@
 #include "command.h"
 #include "intprops.h"
 #include "virtypedparam.h"
+#include "viruri.h"
 
 #define VIR_FROM_THIS VIR_FROM_REMOTE
 
@@ -488,7 +487,7 @@ doRemoteOpen (virConnectPtr conn,
                 /* Allow remote serve to probe */
                 name = strdup("");
             } else {
-                xmlURI tmpuri = {
+                virURI tmpuri = {
                     .scheme = conn->uri->scheme,
 #ifdef HAVE_XMLURI_QUERY_RAW
                     .query_raw = qparam_get_query (vars),
@@ -505,7 +504,7 @@ doRemoteOpen (virConnectPtr conn,
                     transport_str[-1] = '\0';
                 }
 
-                name = (char *) xmlSaveUri (&tmpuri);
+                name = virURIFormat(&tmpuri);
 
 #ifdef HAVE_XMLURI_QUERY_RAW
                 VIR_FREE(tmpuri.query_raw);
@@ -719,7 +718,7 @@ doRemoteOpen (virConnectPtr conn,
             goto failed;
 
         VIR_DEBUG("Auto-probed URI is %s", uriret.uri);
-        conn->uri = xmlParseURI(uriret.uri);
+        conn->uri = virURIParse(uriret.uri);
         VIR_FREE(uriret.uri);
         if (!conn->uri) {
             virReportOOMError();

@@ -11,11 +11,10 @@
 #ifndef __VIR_XEN_INTERNAL_H__
 # define __VIR_XEN_INTERNAL_H__
 
-# include <libxml/uri.h>
-
 # include "internal.h"
 # include "capabilities.h"
 # include "driver.h"
+# include "viruri.h"
 
 /* See xenHypervisorInit() for details. */
 struct xenHypervisorVersions {

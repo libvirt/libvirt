@@ -1,7 +1,7 @@
 /*
  * qemu_migration.c: QEMU migration handling
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -46,6 +46,7 @@
 #include "locking/domain_lock.h"
 #include "rpc/virnetsocket.h"
 #include "storage_file.h"
+#include "viruri.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -1792,7 +1793,7 @@ static int doNativeMigrate(struct qemud_driver *driver,
                            virConnectPtr dconn)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    xmlURIPtr uribits = NULL;
+    virURIPtr uribits = NULL;
     int ret = -1;
     qemuMigrationSpec spec;
 
@@ -1808,10 +1809,10 @@ static int doNativeMigrate(struct qemud_driver *driver,
             virReportOOMError();
             return -1;
         }
-        uribits = xmlParseURI(tmp);
+        uribits = virURIParse(tmp);
         VIR_FREE(tmp);
     } else {
-        uribits = xmlParseURI(uri);
+        uribits = virURIParse(uri);
     }
     if (!uribits) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,

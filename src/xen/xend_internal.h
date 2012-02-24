@@ -18,13 +18,13 @@
 
 # include <sys/types.h>
 # include <stdint.h>
-# include <libxml/uri.h>
 
 # include "internal.h"
 # include "capabilities.h"
 # include "domain_conf.h"
 # include "driver.h"
 # include "buf.h"
+# include "viruri.h"
 
 int
 xenDaemonOpen_unix(virConnectPtr conn, const char *path);

@@ -44,6 +44,7 @@
 #include "esx_vi.h"
 #include "esx_vi_methods.h"
 #include "esx_util.h"
+#include "viruri.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
@@ -3945,7 +3946,7 @@ esxDomainMigratePerform(virDomainPtr domain,
 {
     int result = -1;
     esxPrivate *priv = domain->conn->privateData;
-    xmlURIPtr parsedUri = NULL;
+    virURIPtr parsedUri = NULL;
     char *saveptr;
     char *path_resourcePool;
     char *path_hostSystem;
@@ -3976,7 +3977,7 @@ esxDomainMigratePerform(virDomainPtr domain,
     }
 
     /* Parse migration URI */
-    parsedUri = xmlParseURI(uri);
+    parsedUri = virURIParse(uri);
 
     if (parsedUri == NULL) {
         virReportOOMError();

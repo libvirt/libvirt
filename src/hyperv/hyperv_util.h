@@ -23,9 +23,8 @@
 #ifndef __HYPERV_UTIL_H__
 # define __HYPERV_UTIL_H__
 
-# include <libxml/uri.h>
-
 # include "internal.h"
+# include "viruri.h"
 
 typedef struct _hypervParsedUri hypervParsedUri;
 
@@ -33,7 +32,7 @@ struct _hypervParsedUri {
     char *transport;
 };
 
-int hypervParseUri(hypervParsedUri **parsedUri, xmlURIPtr uri);
+int hypervParseUri(hypervParsedUri **parsedUri, virURIPtr uri);
 
 void hypervFreeParsedUri(hypervParsedUri **parsedUri);
 

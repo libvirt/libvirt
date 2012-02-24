@@ -1431,6 +1431,11 @@ virTypedParameterArrayValidate;
 virTypedParameterAssign;
 
 
+# viruri.h
+virURIFormat;
+virURIParse;
+
+
 # xml.h
 virXMLChildElementCount;
 virXMLParseHelper;

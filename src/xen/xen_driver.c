@@ -26,7 +26,6 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <xen/dom0_ops.h>
-#include <libxml/uri.h>
 
 #include "virterror_internal.h"
 #include "logging.h"
@@ -50,6 +49,7 @@
 #include "uuid.h"
 #include "fdstream.h"
 #include "virfile.h"
+#include "viruri.h"
 #include "command.h"
 #include "virnodesuspend.h"
 
@@ -270,7 +270,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
         if (!xenUnifiedProbe())
             return VIR_DRV_OPEN_DECLINED;
 
-        conn->uri = xmlParseURI("xen:///");
+        conn->uri = virURIParse("xen:///");
         if (!conn->uri) {
             virReportOOMError();
             return VIR_DRV_OPEN_ERROR;

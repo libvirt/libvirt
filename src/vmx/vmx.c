@@ -24,7 +24,6 @@
 #include <config.h>
 
 #include <c-ctype.h>
-#include <libxml/uri.h>
 
 #include "internal.h"
 #include "virterror_internal.h"
@@ -33,6 +32,7 @@
 #include "logging.h"
 #include "uuid.h"
 #include "vmx.h"
+#include "viruri.h"
 
 /*
 
@@ -2525,7 +2525,7 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
     char network_endPoint_name[48] = "";
     char *network_endPoint = NULL;
 
-    xmlURIPtr parsedUri = NULL;
+    virURIPtr parsedUri = NULL;
 
     if (def == NULL || *def != NULL) {
         VMX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -2615,7 +2615,7 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
         (*def)->target.port = port;
         (*def)->source.type = VIR_DOMAIN_CHR_TYPE_TCP;
 
-        parsedUri = xmlParseURI(fileName);
+        parsedUri = virURIParse(fileName);
 
         if (parsedUri == NULL) {
             virReportOOMError();

@@ -56,6 +56,7 @@
 #include "configmake.h"
 #include "virfile.h"
 #include "fdstream.h"
+#include "viruri.h"
 
 /* This one changes from version to version. */
 #if VBOX_API_VERSION == 2002
@@ -980,7 +981,7 @@ static virDrvOpenStatus vboxOpen(virConnectPtr conn,
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (conn->uri == NULL) {
-        conn->uri = xmlParseURI(uid ? "vbox:///session" : "vbox:///system");
+        conn->uri = virURIParse(uid ? "vbox:///session" : "vbox:///system");
         if (conn->uri == NULL) {
             virReportOOMError();
             return VIR_DRV_OPEN_ERROR;

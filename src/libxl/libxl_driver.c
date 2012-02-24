@@ -44,6 +44,7 @@
 #include "libxl_conf.h"
 #include "xen_xm.h"
 #include "virtypedparam.h"
+#include "viruri.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
@@ -1043,7 +1044,7 @@ libxlOpen(virConnectPtr conn,
         if (libxl_driver == NULL)
             return VIR_DRV_OPEN_DECLINED;
 
-        conn->uri = xmlParseURI("xen:///");
+        conn->uri = virURIParse("xen:///");
         if (!conn->uri) {
             virReportOOMError();
             return VIR_DRV_OPEN_ERROR;

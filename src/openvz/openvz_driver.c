@@ -56,6 +56,7 @@
 #include "virfile.h"
 #include "logging.h"
 #include "command.h"
+#include "viruri.h"
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 
@@ -1335,7 +1336,7 @@ static virDrvOpenStatus openvzOpen(virConnectPtr conn,
         if (access("/proc/vz", W_OK) < 0)
             return VIR_DRV_OPEN_DECLINED;
 
-        conn->uri = xmlParseURI("openvz:///system");
+        conn->uri = virURIParse("openvz:///system");
         if (conn->uri == NULL) {
             virReportOOMError();
             return VIR_DRV_OPEN_ERROR;
