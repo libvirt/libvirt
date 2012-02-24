@@ -1378,10 +1378,10 @@ if test "$with_dtrace" != "no" ; then
     with_dtrace=yes
   fi
   if test "$with_dtrace" = "yes"; then
-    AC_DEFINE_UNQUOTED([WITH_DTRACE], 1, [whether DTrace static probes are available])
+    AC_DEFINE_UNQUOTED([WITH_DTRACE_PROBES], 1, [whether DTrace static probes are available])
   fi
 fi
-AM_CONDITIONAL([WITH_DTRACE], [test "$with_dtrace" != "no"])
+AM_CONDITIONAL([WITH_DTRACE_PROBES], [test "$with_dtrace" != "no"])
 
 
 dnl NUMA lib

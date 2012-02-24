@@ -29,7 +29,7 @@ INCLUDES += \
 endif
 
 PROBES_O =
-if WITH_DTRACE
+if WITH_DTRACE_PROBES
 PROBES_O += ../src/probes.o
 endif
 

@@ -109,7 +109,7 @@ libvirtd_LDADD =					\
 	$(SASL_LIBS)					\
 	$(POLKIT_LIBS)
 
-if WITH_DTRACE
+if WITH_DTRACE_PROBES
 libvirtd_LDADD += ../src/probes.o
 endif
 

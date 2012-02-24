@@ -1284,7 +1284,7 @@ libvirt_la_CFLAGS = -DIN_LIBVIRT $(AM_CFLAGS)
 # picked out for us.
 libvirt_la_DEPENDENCIES = $(libvirt_la_BUILT_LIBADD) $(LIBVIRT_SYMBOL_FILE)
 
-if WITH_DTRACE
+if WITH_DTRACE_PROBES
 libvirt_la_BUILT_LIBADD += probes.o
 libvirt_la_DEPENDENCIES += probes.o
 nodist_libvirt_la_SOURCES = probes.h
@@ -1521,7 +1521,7 @@ libvirt_lxc_LDADD = $(CAPNG_LIBS) $(YAJL_LIBS) \
 		$(LIBNL_LIBS) $(AUDIT_LIBS) $(DEVMAPPER_LIBS) \
 		$(RT_LIBS) \
 		../gnulib/lib/libgnu.la
-if WITH_DTRACE
+if WITH_DTRACE_PROBES
 libvirt_lxc_LDADD += probes.o
 endif
 if WITH_SECDRIVER_SELINUX

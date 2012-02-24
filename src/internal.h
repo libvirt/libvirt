@@ -247,7 +247,7 @@
 # define VIR_DIV_UP(value, size) (((value) + (size) - 1) / (size))
 
 
-# if WITH_DTRACE
+# if WITH_DTRACE_PROBES
 #  ifndef LIBVIRT_PROBES_H
 #   define LIBVIRT_PROBES_H
 #   include "probes.h"
