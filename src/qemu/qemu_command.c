@@ -5231,7 +5231,12 @@ qemuBuildCommandLine(virConnectPtr conn,
 
         virBufferAsprintf(&opt, "port=%u", def->graphics[0]->data.spice.port);
 
-        if (driver->spiceTLS && def->graphics[0]->data.spice.tlsPort != -1)
+        if (def->graphics[0]->data.spice.tlsPort != -1)
+            if (!driver->spiceTLS) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                _("spice TLS port set in XML configuration, but TLS is disabled in qemu.conf"));
+                goto error;
+            }
             virBufferAsprintf(&opt, ",tls-port=%u", def->graphics[0]->data.spice.tlsPort);
 
         switch (virDomainGraphicsListenGetType(def->graphics[0], 0)) {
@@ -5287,6 +5292,11 @@ qemuBuildCommandLine(virConnectPtr conn,
             int mode = def->graphics[0]->data.spice.channels[i];
             switch (mode) {
             case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
+                if (!driver->spiceTLS) {
+                    qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                    _("spice secure channels set in XML configuration, but TLS is disabled in qemu.conf"));
+                    goto error;
+                }
                 virBufferAsprintf(&opt, ",tls-channel=%s",
                                   virDomainGraphicsSpiceChannelNameTypeToString(i));
                 break;
