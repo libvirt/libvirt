@@ -346,8 +346,9 @@ sc_prohibit_access_xok:
 
 # Similar to the gnulib maint.mk rule for sc_prohibit_strcmp
 # Use STREQLEN or STRPREFIX rather than comparing strncmp == 0, or != 0.
+snp_ = strncmp *\(.+\)
 sc_prohibit_strncmp:
-	@grep -nE '! *str''ncmp *\(|\<str''ncmp *\(.+\) *[!=]='		\
+	@grep -nE '! *strncmp *\(|\<$(snp_) *[!=]=|[!=]= *$(snp_)'	\
 	    $$($(VC_LIST_EXCEPT))					\
 	  | grep -vE ':# *define STR(N?EQLEN|PREFIX)\(' &&		\
 	  { echo '$(ME): use STREQLEN or STRPREFIX instead of str''ncmp' \
