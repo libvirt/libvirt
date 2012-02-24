@@ -660,6 +660,14 @@ mymain(void)
             QEMU_CAPS_VGA, QEMU_CAPS_VGA_QXL,
             QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_QXL);
+    driver.config->spiceSASL = 1;
+    ignore_value(VIR_STRDUP(driver.config->spiceSASLdir, "/root/.sasl2"));
+    DO_TEST("graphics-spice-sasl",
+            QEMU_CAPS_VGA, QEMU_CAPS_VGA_QXL,
+            QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE,
+            QEMU_CAPS_DEVICE_QXL);
+    VIR_FREE(driver.config->spiceSASLdir);
+    driver.config->spiceSASL = 0;
     DO_TEST("graphics-spice-agentmouse",
             QEMU_CAPS_VGA, QEMU_CAPS_VGA_QXL,
             QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE,

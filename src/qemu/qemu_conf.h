@@ -111,6 +111,8 @@ struct _virQEMUDriverConfig {
 
     bool spiceTLS;
     char *spiceTLSx509certdir;
+    bool spiceSASL;
+    char *spiceSASLdir;
     char *spiceListen;
     char *spicePassword;
 

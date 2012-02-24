@@ -7191,6 +7191,16 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
         virBufferAsprintf(&opt, "tls-port=%u", tlsPort);
     }
 
+    if (cfg->spiceSASL) {
+        virBufferAddLit(&opt, ",sasl");
+
+        if (cfg->spiceSASLdir)
+            virCommandAddEnvPair(cmd, "SASL_CONF_PATH",
+                                 cfg->spiceSASLdir);
+
+        /* TODO: Support ACLs later */
+    }
+
     switch (virDomainGraphicsListenGetType(graphics, 0)) {
     case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
         listenAddr = virDomainGraphicsListenGetAddress(graphics, 0);

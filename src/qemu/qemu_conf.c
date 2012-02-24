@@ -284,6 +284,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->spiceTLSx509certdir);
     VIR_FREE(cfg->spiceListen);
     VIR_FREE(cfg->spicePassword);
+    VIR_FREE(cfg->spiceSASLdir);
 
     VIR_FREE(cfg->hugetlbfsMount);
     VIR_FREE(cfg->hugepagePath);
@@ -397,6 +398,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
 
     GET_VALUE_BOOL("spice_tls", cfg->spiceTLS);
     GET_VALUE_STR("spice_tls_x509_cert_dir", cfg->spiceTLSx509certdir);
+    GET_VALUE_BOOL("spice_sasl", cfg->spiceSASL);
+    GET_VALUE_STR("spice_sasl_dir", cfg->spiceSASLdir);
     GET_VALUE_STR("spice_listen", cfg->spiceListen);
     GET_VALUE_STR("spice_password", cfg->spicePassword);
 

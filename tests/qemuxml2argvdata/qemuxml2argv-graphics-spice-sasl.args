@@ -1,0 +1,9 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
+SASL_CONF_PATH=/root/.sasl2 QEMU_AUDIO_DRV=spice \
+/usr/bin/qemu -S -M pc -m 214 -smp 1 -nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -usb -hda \
+/dev/HostVG/QEMUGuest1 \
+-spice port=5903,tls-port=5904,sasl,addr=127.0.0.1,\
+x509-dir=/etc/pki/libvirt-spice,tls-channel=default \
+-vga qxl -global qxl.ram_size=67108864 -global \
+qxl.vram_size=18874368 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
