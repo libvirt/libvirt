@@ -8974,7 +8974,7 @@ cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
     }
 
     vshPrint(ctl, _("Created bridge %s with attached device %s\n"),
-             if_name, br_name);
+             br_name, if_name);
 
     /* start it up unless requested not to */
     if (!nostart) {
