@@ -153,6 +153,49 @@ char *qemuMonitorEscapeArg(const char *in)
     return out;
 }
 
+char *qemuMonitorUnescapeArg(const char *in)
+{
+    int i, j;
+    char *out;
+    int len = strlen(in) + 1;
+    char next;
+
+    if (VIR_ALLOC_N(out, len) < 0)
+        return NULL;
+
+    for (i = j = 0; i < len; ++i) {
+        next = in[i];
+        if (in[i] == '\\') {
+            if (len < i + 1) {
+                /* trailing backslash shouldn't be possible */
+                VIR_FREE(out);
+                return NULL;
+            }
+            ++i;
+            switch(in[i]) {
+            case 'r':
+                next = '\r';
+                break;
+            case 'n':
+                next = '\n';
+                break;
+            case '"':
+            case '\\':
+                next = in[i];
+                break;
+            default:
+                /* invalid input */
+                VIR_FREE(out);
+                return NULL;
+            }
+        }
+        out[j++] = next;
+    }
+    out[j] = '\0';
+
+    return out;
+}
+
 #if DEBUG_RAW_IO
 # include <c-ctype.h>
 static char * qemuMonitorEscapeNonPrintable(const char *text)
@@ -852,10 +895,26 @@ int qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
                                 int scm_fd,
                                 char **reply)
 {
-    if (mon->json)
-        return qemuMonitorJSONHumanCommandWithFd(mon, cmd, scm_fd, reply);
-    else
-        return qemuMonitorTextCommandWithFd(mon, cmd, scm_fd, reply);
+    char *json_cmd = NULL;
+    int ret = -1;
+
+    if (mon->json) {
+        /* hack to avoid complicating each call to text monitor functions */
+        json_cmd = qemuMonitorUnescapeArg(cmd);
+        if (!json_cmd) {
+            VIR_DEBUG("Could not unescape command: %s", cmd);
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Unable to unescape command"));
+            goto cleanup;
+        }
+        ret = qemuMonitorJSONHumanCommandWithFd(mon, json_cmd, scm_fd, reply);
+    } else {
+        ret = qemuMonitorTextCommandWithFd(mon, cmd, scm_fd, reply);
+    }
+
+cleanup:
+    VIR_FREE(json_cmd);
+    return ret;
 }
 
 /* Ensure proper locking around callbacks.  */

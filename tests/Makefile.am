@@ -72,6 +72,7 @@ EXTRA_DIST =		\
 	nwfilterxml2xmlout \
 	oomtrace.pl \
 	qemuhelpdata \
+	qemumonitortest \
 	qemuxml2argvdata \
 	qemuxml2xmloutdata \
 	qemuxmlnsdata \
@@ -110,7 +111,8 @@ check_PROGRAMS += xml2sexprtest sexpr2xmltest \
 endif
 if WITH_QEMU
 check_PROGRAMS += qemuxml2argvtest qemuxml2xmltest qemuxmlnstest \
-	qemuargv2xmltest qemuhelptest domainsnapshotxml2xmltest
+	qemuargv2xmltest qemuhelptest domainsnapshotxml2xmltest \
+	qemumonitortest
 endif
 
 if WITH_OPENVZ
@@ -237,7 +239,8 @@ endif
 
 if WITH_QEMU
 TESTS += qemuxml2argvtest qemuxml2xmltest qemuxmlnstest qemuargv2xmltest \
-	 qemuhelptest domainsnapshotxml2xmltest nwfilterxml2xmltest
+	 qemuhelptest domainsnapshotxml2xmltest nwfilterxml2xmltest \
+	 qemumonitortest
 endif
 
 if WITH_OPENVZ
@@ -365,6 +368,9 @@ qemuargv2xmltest_LDADD = $(qemu_LDADDS) $(LDADDS)
 qemuhelptest_SOURCES = qemuhelptest.c testutils.c testutils.h
 qemuhelptest_LDADD = $(qemu_LDADDS) $(LDADDS)
 
+qemumonitortest_SOURCES = qemumonitortest.c testutils.c testutils.h
+qemumonitortest_LDADD = $(qemu_LDADDS) $(LDADDS)
+
 domainsnapshotxml2xmltest_SOURCES = \
 	domainsnapshotxml2xmltest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
@@ -372,7 +378,7 @@ domainsnapshotxml2xmltest_LDADD = $(qemu_LDADDS) $(LDADDS)
 else
 EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c qemuargv2xmltest.c \
 	qemuxmlnstest.c qemuhelptest.c domainsnapshotxml2xmltest.c \
-	testutilsqemu.c testutilsqemu.h
+	qemumonitortest.c testutilsqemu.c testutilsqemu.h
 endif
 
 if WITH_OPENVZ
