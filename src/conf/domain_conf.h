@@ -354,25 +354,30 @@ enum virDomainHostdevSubsysType {
     VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST
 };
 
+
+typedef struct _virDomainHostdevSubsys virDomainHostdevSubsys;
+typedef virDomainHostdevSubsys *virDomainHostdevSubsysPtr;
+struct _virDomainHostdevSubsys {
+    int type; /* enum virDomainHostdevBusType */
+    union {
+        struct {
+            unsigned bus;
+            unsigned device;
+
+            unsigned vendor;
+            unsigned product;
+        } usb;
+        virDomainDevicePCIAddress pci; /* host address */
+    } u;
+};
+
 /* basic device for direct passthrough */
 struct _virDomainHostdevDef {
     virDomainDeviceDef parent; /* higher level Def containing this */
     int mode; /* enum virDomainHostdevMode */
     unsigned int managed : 1;
     union {
-        struct {
-            int type; /* enum virDomainHostdevBusType */
-            union {
-                struct {
-                    unsigned bus;
-                    unsigned device;
-
-                    unsigned vendor;
-                    unsigned product;
-                } usb;
-                virDomainDevicePCIAddress pci; /* host address */
-            } u;
-        } subsys;
+        virDomainHostdevSubsys subsys;
         struct {
             /* TBD: struct capabilities see:
              * https://www.redhat.com/archives/libvir-list/2008-July/msg00429.html
