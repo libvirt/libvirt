@@ -2503,6 +2503,23 @@ virDomainParseLegacyDeviceAddress(char *devaddr,
 }
 
 int
+virDomainDiskFindControllerModel(virDomainDefPtr def,
+                                 virDomainDiskDefPtr disk,
+                                 int controllerType)
+{
+    int model = -1;
+    int i;
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        if (def->controllers[i]->type == controllerType &&
+            def->controllers[i]->idx == disk->info.addr.drive.controller)
+            model = def->controllers[i]->model;
+    }
+
+    return model;
+}
+
+int
 virDomainDiskDefAssignAddress(virCapsPtr caps, virDomainDiskDefPtr def)
 {
     int idx = virDiskNameToIndex(def->dst);

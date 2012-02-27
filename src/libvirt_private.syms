@@ -302,6 +302,7 @@ virDomainDiskDefFree;
 virDomainDiskDeviceTypeToString;
 virDomainDiskErrorPolicyTypeFromString;
 virDomainDiskErrorPolicyTypeToString;
+virDomainDiskFindControllerModel;
 virDomainDiskIndexByName;
 virDomainDiskInsert;
 virDomainDiskInsertPreAlloced;

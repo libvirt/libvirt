@@ -1729,6 +1729,9 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def);
 void virDomainInputDefFree(virDomainInputDefPtr def);
 void virDomainDiskDefFree(virDomainDiskDefPtr def);
 void virDomainDiskHostDefFree(virDomainDiskHostDefPtr def);
+int virDomainDiskFindControllerModel(virDomainDefPtr def,
+                                     virDomainDiskDefPtr disk,
+                                     int controllerType);
 void virDomainControllerDefFree(virDomainControllerDefPtr def);
 void virDomainFSDefFree(virDomainFSDefPtr def);
 void virDomainActualNetDefFree(virDomainActualNetDefPtr def);
