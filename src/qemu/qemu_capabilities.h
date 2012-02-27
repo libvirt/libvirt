@@ -121,6 +121,7 @@ enum qemuCapsFlags {
     QEMU_CAPS_FSDEV_WRITEOUT     = 84, /* -fsdev writeout supported */
     QEMU_CAPS_DRIVE_IOTUNE       = 85, /* -drive bps= and friends */
     QEMU_CAPS_WAKEUP             = 86, /* system_wakeup monitor command */
+    QEMU_CAPS_SCSI_DISK_CHANNEL  = 87, /* Is scsi-disk.channel available? */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

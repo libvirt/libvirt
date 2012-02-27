@@ -153,6 +153,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
 
               "drive-iotune", /* 85 */
               "system_wakeup",
+              "scsi-disk.channel",
     );
 
 struct qemu_feature_flags {
@@ -1363,6 +1364,7 @@ qemuCapsExtractDeviceStr(const char *qemu,
                                "-device", "pci-assign,?",
                                "-device", "virtio-blk-pci,?",
                                "-device", "virtio-net-pci,?",
+                               "-device", "scsi-disk,?",
                                NULL);
     virCommandAddEnvPassCommon(cmd);
     /* qemu -help goes to stdout, but qemu -device ? goes to stderr.  */
@@ -1440,6 +1442,8 @@ qemuCapsParseDeviceStr(const char *str, virBitmapPtr flags)
         qemuCapsSet(flags, QEMU_CAPS_VIRTIO_NET_EVENT_IDX);
     if (strstr(str, "virtio-blk-pci.scsi"))
         qemuCapsSet(flags, QEMU_CAPS_VIRTIO_BLK_SCSI);
+    if (strstr(str, "scsi-disk.channel"))
+        qemuCapsSet(flags, QEMU_CAPS_SCSI_DISK_CHANNEL);
 
     return 0;
 }
