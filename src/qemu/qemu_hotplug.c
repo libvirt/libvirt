@@ -1833,150 +1833,6 @@ cleanup:
     return ret;
 }
 
-int qemuDomainDetachNetDevice(struct qemud_driver *driver,
-                              virDomainObjPtr vm,
-                              virDomainDeviceDefPtr dev)
-{
-    int i, ret = -1;
-    virDomainNetDefPtr detach = NULL;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    int vlan;
-    char *hostnet_name = NULL;
-    virNetDevVPortProfilePtr vport = NULL;
-
-    for (i = 0 ; i < vm->def->nnets ; i++) {
-        virDomainNetDefPtr net = vm->def->nets[i];
-
-        if (!memcmp(net->mac, dev->data.net->mac,  sizeof(net->mac))) {
-            detach = net;
-            break;
-        }
-    }
-
-    if (!detach) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("network device %02x:%02x:%02x:%02x:%02x:%02x not found"),
-                        dev->data.net->mac[0], dev->data.net->mac[1],
-                        dev->data.net->mac[2], dev->data.net->mac[3],
-                        dev->data.net->mac[4], dev->data.net->mac[5]);
-        goto cleanup;
-    }
-
-    if (!virDomainDeviceAddressIsValid(&detach->info,
-                                       VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        "%s", _("device cannot be detached without a PCI address"));
-        goto cleanup;
-    }
-
-    if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("cannot hot unplug multifunction PCI device :%s"),
-                        dev->data.disk->dst);
-        goto cleanup;
-    }
-
-    if ((vlan = qemuDomainNetVLAN(detach)) < 0) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        "%s", _("unable to determine original VLAN"));
-        goto cleanup;
-    }
-
-    if (virAsprintf(&hostnet_name, "host%s", detach->info.alias) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-            virDomainAuditNet(vm, detach, NULL, "detach", false);
-            goto cleanup;
-        }
-    } else {
-        if (qemuMonitorRemovePCIDevice(priv->mon,
-                                       &detach->info.addr.pci) < 0) {
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-            virDomainAuditNet(vm, detach, NULL, "detach", false);
-            goto cleanup;
-        }
-    }
-
-    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV) &&
-        qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuMonitorRemoveNetdev(priv->mon, hostnet_name) < 0) {
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-            virDomainAuditNet(vm, detach, NULL, "detach", false);
-            goto cleanup;
-        }
-    } else {
-        if (qemuMonitorRemoveHostNetwork(priv->mon, vlan, hostnet_name) < 0) {
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-            virDomainAuditNet(vm, detach, NULL, "detach", false);
-            goto cleanup;
-        }
-    }
-    qemuDomainObjExitMonitorWithDriver(driver, vm);
-
-    virDomainAuditNet(vm, detach, NULL, "detach", true);
-
-    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
-                                        detach->info.addr.pci.slot) < 0)
-        VIR_WARN("Unable to release PCI address on NIC");
-
-    virDomainConfNWFilterTeardown(detach);
-
-    if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_DIRECT) {
-        ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
-                         detach->ifname, detach->mac,
-                         virDomainNetGetActualDirectDev(detach),
-                         virDomainNetGetActualDirectMode(detach),
-                         virDomainNetGetActualVirtPortProfile(detach),
-                         driver->stateDir));
-        VIR_FREE(detach->ifname);
-    }
-
-    if ((driver->macFilter) && (detach->ifname != NULL)) {
-        if ((errno = networkDisallowMacOnPort(driver,
-                                              detach->ifname,
-                                              detach->mac))) {
-            virReportSystemError(errno,
-             _("failed to remove ebtables rule on  '%s'"),
-                                 detach->ifname);
-        }
-    }
-
-    vport = virDomainNetGetActualVirtPortProfile(detach);
-    if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
-        ignore_value(virNetDevOpenvswitchRemovePort(
-                        virDomainNetGetActualBridgeName(detach),
-                        detach->ifname));
-
-    networkReleaseActualDevice(detach);
-    if (vm->def->nnets > 1) {
-        memmove(vm->def->nets + i,
-                vm->def->nets + i + 1,
-                sizeof(*vm->def->nets) *
-                (vm->def->nnets - (i + 1)));
-        vm->def->nnets--;
-        if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets) < 0) {
-            /* ignore, harmless */
-        }
-    } else {
-        VIR_FREE(vm->def->nets);
-        vm->def->nnets = 0;
-    }
-    virDomainNetDefFree(detach);
-
-    ret = 0;
-
-cleanup:
-    VIR_FREE(hostnet_name);
-    return ret;
-}
-
 static int
 qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
                               virDomainObjPtr vm,
@@ -2218,6 +2074,151 @@ int qemuDomainDetachHostDevice(struct qemud_driver *driver,
 
     virDomainHostdevDefFree(detach);
 
+    return ret;
+}
+
+int
+qemuDomainDetachNetDevice(struct qemud_driver *driver,
+                          virDomainObjPtr vm,
+                          virDomainDeviceDefPtr dev)
+{
+    int i, ret = -1;
+    virDomainNetDefPtr detach = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int vlan;
+    char *hostnet_name = NULL;
+    virNetDevVPortProfilePtr vport = NULL;
+
+    for (i = 0 ; i < vm->def->nnets ; i++) {
+        virDomainNetDefPtr net = vm->def->nets[i];
+
+        if (!memcmp(net->mac, dev->data.net->mac,  sizeof(net->mac))) {
+            detach = net;
+            break;
+        }
+    }
+
+    if (!detach) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("network device %02x:%02x:%02x:%02x:%02x:%02x not found"),
+                        dev->data.net->mac[0], dev->data.net->mac[1],
+                        dev->data.net->mac[2], dev->data.net->mac[3],
+                        dev->data.net->mac[4], dev->data.net->mac[5]);
+        goto cleanup;
+    }
+
+    if (!virDomainDeviceAddressIsValid(&detach->info,
+                                       VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        "%s", _("device cannot be detached without a PCI address"));
+        goto cleanup;
+    }
+
+    if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("cannot hot unplug multifunction PCI device :%s"),
+                        dev->data.disk->dst);
+        goto cleanup;
+    }
+
+    if ((vlan = qemuDomainNetVLAN(detach)) < 0) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        "%s", _("unable to determine original VLAN"));
+        goto cleanup;
+    }
+
+    if (virAsprintf(&hostnet_name, "host%s", detach->info.alias) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
+        if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            virDomainAuditNet(vm, detach, NULL, "detach", false);
+            goto cleanup;
+        }
+    } else {
+        if (qemuMonitorRemovePCIDevice(priv->mon,
+                                       &detach->info.addr.pci) < 0) {
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            virDomainAuditNet(vm, detach, NULL, "detach", false);
+            goto cleanup;
+        }
+    }
+
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV) &&
+        qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
+        if (qemuMonitorRemoveNetdev(priv->mon, hostnet_name) < 0) {
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            virDomainAuditNet(vm, detach, NULL, "detach", false);
+            goto cleanup;
+        }
+    } else {
+        if (qemuMonitorRemoveHostNetwork(priv->mon, vlan, hostnet_name) < 0) {
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            virDomainAuditNet(vm, detach, NULL, "detach", false);
+            goto cleanup;
+        }
+    }
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    virDomainAuditNet(vm, detach, NULL, "detach", true);
+
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
+        qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
+                                        detach->info.addr.pci.slot) < 0)
+        VIR_WARN("Unable to release PCI address on NIC");
+
+    virDomainConfNWFilterTeardown(detach);
+
+    if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
+                         detach->ifname, detach->mac,
+                         virDomainNetGetActualDirectDev(detach),
+                         virDomainNetGetActualDirectMode(detach),
+                         virDomainNetGetActualVirtPortProfile(detach),
+                         driver->stateDir));
+        VIR_FREE(detach->ifname);
+    }
+
+    if ((driver->macFilter) && (detach->ifname != NULL)) {
+        if ((errno = networkDisallowMacOnPort(driver,
+                                              detach->ifname,
+                                              detach->mac))) {
+            virReportSystemError(errno,
+             _("failed to remove ebtables rule on  '%s'"),
+                                 detach->ifname);
+        }
+    }
+
+    vport = virDomainNetGetActualVirtPortProfile(detach);
+    if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
+        ignore_value(virNetDevOpenvswitchRemovePort(
+                        virDomainNetGetActualBridgeName(detach),
+                        detach->ifname));
+
+    networkReleaseActualDevice(detach);
+    if (vm->def->nnets > 1) {
+        memmove(vm->def->nets + i,
+                vm->def->nets + i + 1,
+                sizeof(*vm->def->nets) *
+                (vm->def->nnets - (i + 1)));
+        vm->def->nnets--;
+        if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets) < 0) {
+            /* ignore, harmless */
+        }
+    } else {
+        VIR_FREE(vm->def->nets);
+        vm->def->nnets = 0;
+    }
+    virDomainNetDefFree(detach);
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(hostnet_name);
     return ret;
 }
 
