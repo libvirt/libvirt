@@ -72,6 +72,6 @@ int virHookInitialize(void);
 int virHookPresent(int driver);
 
 int virHookCall(int driver, const char *id, int op, int sub_op,
-                const char *extra, const char *input);
+                const char *extra, const char *input, char **output);
 
 #endif /* __VIR_HOOKS_H__ */

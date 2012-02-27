@@ -3120,7 +3120,8 @@ int qemuProcessStart(virConnectPtr conn,
         int hookret;
 
         hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name,
-                    VIR_HOOK_QEMU_OP_PREPARE, VIR_HOOK_SUBOP_BEGIN, NULL, xml);
+                              VIR_HOOK_QEMU_OP_PREPARE, VIR_HOOK_SUBOP_BEGIN,
+                              NULL, xml, NULL);
         VIR_FREE(xml);
 
         /*
@@ -3305,7 +3306,8 @@ int qemuProcessStart(virConnectPtr conn,
         int hookret;
 
         hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name,
-                    VIR_HOOK_QEMU_OP_START, VIR_HOOK_SUBOP_BEGIN, NULL, xml);
+                              VIR_HOOK_QEMU_OP_START, VIR_HOOK_SUBOP_BEGIN,
+                              NULL, xml, NULL);
         VIR_FREE(xml);
 
         /*
@@ -3726,7 +3728,8 @@ void qemuProcessStop(struct qemud_driver *driver,
 
         /* we can't stop the operation even if the script raised an error */
         virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name,
-                    VIR_HOOK_QEMU_OP_STOPPED, VIR_HOOK_SUBOP_END, NULL, xml);
+                    VIR_HOOK_QEMU_OP_STOPPED, VIR_HOOK_SUBOP_END,
+                    NULL, xml, NULL);
         VIR_FREE(xml);
     }
 
@@ -3819,7 +3822,8 @@ retry:
 
         /* we can't stop the operation even if the script raised an error */
         virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name,
-                    VIR_HOOK_QEMU_OP_RELEASE, VIR_HOOK_SUBOP_END, NULL, xml);
+                    VIR_HOOK_QEMU_OP_RELEASE, VIR_HOOK_SUBOP_END,
+                    NULL, xml, NULL);
         VIR_FREE(xml);
     }
 

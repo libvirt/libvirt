@@ -1115,7 +1115,8 @@ static void lxcVmCleanup(lxc_driver_t *driver,
 
         /* we can't stop the operation even if the script raised an error */
         virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
-                    VIR_HOOK_LXC_OP_STOPPED, VIR_HOOK_SUBOP_END, NULL, xml);
+                    VIR_HOOK_LXC_OP_STOPPED, VIR_HOOK_SUBOP_END,
+                    NULL, xml, NULL);
         VIR_FREE(xml);
     }
 
@@ -1632,7 +1633,8 @@ lxcBuildControllerCmd(lxc_driver_t *driver,
         int hookret;
 
         hookret = virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
-                    VIR_HOOK_LXC_OP_START, VIR_HOOK_SUBOP_BEGIN, NULL, xml);
+                              VIR_HOOK_LXC_OP_START, VIR_HOOK_SUBOP_BEGIN,
+                              NULL, xml, NULL);
         VIR_FREE(xml);
 
         /*

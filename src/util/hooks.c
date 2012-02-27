@@ -173,7 +173,7 @@ virHookPresent(int driver) {
     return(1);
 }
 
-/*
+/**
  * virHookCall:
  * @driver: the driver number (from virHookDriver enum)
  * @id: an id for the object '-' if non available for example on daemon hooks
@@ -181,17 +181,26 @@ virHookPresent(int driver) {
  * @sub_op: a sub_operation, currently unused
  * @extra: optional string information
  * @input: extra input given to the script on stdin
+ * @output: optional address of variable to store malloced result buffer
  *
  * Implement a hook call, where the external script for the driver is
  * called with the given information. This is a synchronous call, we wait for
- * execution completion
+ * execution completion. If @output is non-NULL, *output is guaranteed to be
+ * allocated after successful virHookCall, and is best-effort allocated after
+ * failed virHookCall; the caller is responsible for freeing *output.
  *
  * Returns: 0 if the execution succeeded, 1 if the script was not found or
  *          invalid parameters, and -1 if script returned an error
  */
 int
-virHookCall(int driver, const char *id, int op, int sub_op, const char *extra,
-            const char *input) {
+virHookCall(int driver,
+            const char *id,
+            int op,
+            int sub_op,
+            const char *extra,
+            const char *input,
+            char **output)
+{
     int ret;
     int exitstatus;
     char *path;
@@ -199,6 +208,9 @@ virHookCall(int driver, const char *id, int op, int sub_op, const char *extra,
     const char *drvstr;
     const char *opstr;
     const char *subopstr;
+
+    if (output)
+        *output = NULL;
 
     if ((driver < VIR_HOOK_DRIVER_DAEMON) ||
         (driver >= VIR_HOOK_DRIVER_LAST))
@@ -257,6 +269,8 @@ virHookCall(int driver, const char *id, int op, int sub_op, const char *extra,
 
     if (input)
         virCommandSetInputBuffer(cmd, input);
+    if (output)
+        virCommandSetOutputBuffer(cmd, output);
 
     ret = virCommandRun(cmd, &exitstatus);
     if (ret == 0 && exitstatus != 0) {

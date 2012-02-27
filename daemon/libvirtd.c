@@ -1148,7 +1148,7 @@ static void daemonReloadHandler(virNetServerPtr srv ATTRIBUTE_UNUSED,
 {
         VIR_INFO("Reloading configuration on SIGHUP");
         virHookCall(VIR_HOOK_DRIVER_DAEMON, "-",
-                    VIR_HOOK_DAEMON_OP_RELOAD, SIGHUP, "SIGHUP", NULL);
+                    VIR_HOOK_DAEMON_OP_RELOAD, SIGHUP, "SIGHUP", NULL, NULL);
         if (virStateReload() < 0)
             VIR_WARN("Error while reloading drivers");
 }
@@ -1571,7 +1571,7 @@ int main(int argc, char **argv) {
      *       an error ?
      */
     virHookCall(VIR_HOOK_DRIVER_DAEMON, "-", VIR_HOOK_DAEMON_OP_START,
-                0, "start", NULL);
+                0, "start", NULL, NULL);
 
     if (daemonSetupNetworking(srv, config,
                               sock_file, sock_file_ro,
@@ -1604,7 +1604,7 @@ int main(int argc, char **argv) {
     ret = 0;
 
     virHookCall(VIR_HOOK_DRIVER_DAEMON, "-", VIR_HOOK_DAEMON_OP_SHUTDOWN,
-                0, "shutdown", NULL);
+                0, "shutdown", NULL, NULL);
 
 cleanup:
     virNetServerProgramFree(remoteProgram);
