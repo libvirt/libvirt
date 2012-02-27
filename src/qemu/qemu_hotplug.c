@@ -661,9 +661,9 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     bool iface_connected = false;
     int actualType;
 
-    if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_HOST_NET_ADD)) {
-        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                        _("installed qemu version does not support host_net_add"));
+    /* preallocate new slot for device */
+    if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets+1) < 0) {
+        virReportOOMError();
         return -1;
     }
 
@@ -672,9 +672,27 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
      * to the one defined in the network definition.
      */
     if (networkAllocateActualDevice(net) < 0)
-        goto cleanup;
+        return -1;
 
     actualType = virDomainNetGetActualType(net);
+
+    if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        /* This is really a "smart hostdev", so it should be attached
+         * as a hostdev (the hostdev code will reach over into the
+         * netdev-specific code as appropriate), then also added to
+         * the nets list (see cleanup:) if successful.
+         */
+        ret = qemuDomainAttachHostDevice(driver, vm,
+                                         virDomainNetGetActualHostdev(net));
+        goto cleanup;
+    }
+
+    if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_HOST_NET_ADD)) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("installed qemu version does not support host_net_add"));
+        goto cleanup;
+    }
+
     if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
         actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
         if ((tapfd = qemuNetworkIfaceConnect(vm->def, conn, driver, net,
@@ -692,9 +710,6 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, &vhostfd) < 0)
             goto cleanup;
     }
-
-    if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets+1) < 0)
-        goto no_memory;
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_NET_NAME) ||
         qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
@@ -826,10 +841,10 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
 
     ret = 0;
 
-    vm->def->nets[vm->def->nnets++] = net;
-
 cleanup:
-    if (ret < 0) {
+    if (!ret) {
+        vm->def->nets[vm->def->nnets++] = net;
+    } else {
         if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
             (net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
             releaseaddr &&
@@ -2032,7 +2047,13 @@ int qemuDomainDetachHostDevice(struct qemud_driver *driver,
         return -1;
     }
 
-    return qemuDomainDetachThisHostDevice(driver, vm, detach, idx);
+    /* If this is a network hostdev, we need to use the higher-level detach
+     * function so that mac address / virtualport are reset
+     */
+    if (detach->parent.type == VIR_DOMAIN_DEVICE_NET)
+        return qemuDomainDetachNetDevice(driver, vm, &detach->parent);
+    else
+        return qemuDomainDetachThisHostDevice(driver, vm, detach, idx);
 }
 
 int
@@ -2054,6 +2075,13 @@ qemuDomainDetachNetDevice(struct qemud_driver *driver,
             detach = net;
             break;
         }
+    }
+
+    if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        ret = qemuDomainDetachThisHostDevice(driver, vm,
+                                             virDomainNetGetActualHostdev(detach),
+                                             -1);
+        goto cleanup;
     }
 
     if (!detach) {
@@ -2156,14 +2184,13 @@ qemuDomainDetachNetDevice(struct qemud_driver *driver,
         ignore_value(virNetDevOpenvswitchRemovePort(
                         virDomainNetGetActualBridgeName(detach),
                         detach->ifname));
-
-    networkReleaseActualDevice(detach);
-    virDomainNetRemove(vm->def, i);
-    virDomainNetDefFree(detach);
-
     ret = 0;
-
 cleanup:
+    if (!ret) {
+        networkReleaseActualDevice(detach);
+        virDomainNetRemove(vm->def, i);
+        virDomainNetDefFree(detach);
+    }
     VIR_FREE(hostnet_name);
     return ret;
 }
