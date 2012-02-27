@@ -6769,6 +6769,100 @@ virDomainChrTargetTypeToString(int deviceType,
 }
 
 int
+virDomainHostdevInsert(virDomainDefPtr def, virDomainHostdevDefPtr hostdev)
+{
+    if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs + 1) < 0)
+        return -1;
+    def->hostdevs[def->nhostdevs++]  = hostdev;
+    return 0;
+}
+
+void
+virDomainHostdevRemove(virDomainDefPtr def, size_t i)
+{
+    if (def->nhostdevs > 1) {
+        memmove(def->hostdevs + i,
+                def->hostdevs + i + 1,
+                sizeof(*def->hostdevs) *
+                (def->nhostdevs - (i + 1)));
+        def->nhostdevs--;
+        if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs) < 0) {
+            /* ignore, harmless */
+        }
+    } else {
+        VIR_FREE(def->hostdevs);
+        def->nhostdevs = 0;
+    }
+}
+
+/* Find an entry in hostdevs that matches the source spec in
+ * @match. return pointer to the entry in @found (if found is
+ * non-NULL). Returns index (within hostdevs) of matched entry, or -1
+ * if no match was found.
+ */
+int
+virDomainHostdevFind(virDomainDefPtr def,
+                     virDomainHostdevDefPtr match,
+                     virDomainHostdevDefPtr *found)
+{
+    virDomainHostdevDefPtr local_found;
+    virDomainHostdevSubsysPtr m_subsys = &match->source.subsys;
+    int i;
+
+    if (!found)
+        found = &local_found;
+    *found = NULL;
+
+    /* There is no code that uses _MODE_CAPABILITIES, and nothing to
+     * compare if it did, so don't allow it.
+     */
+    if (match->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+        return -1;
+
+    for (i = 0 ; i < def->nhostdevs ; i++) {
+        virDomainHostdevDefPtr compare = def->hostdevs[i];
+        virDomainHostdevSubsysPtr c_subsys = &compare->source.subsys;
+
+        if ((compare->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) ||
+            (c_subsys->type != m_subsys->type)) {
+            continue;
+        }
+
+        switch (m_subsys->type)
+        {
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+            if ((c_subsys->u.pci.domain   == m_subsys->u.pci.domain) &&
+                (c_subsys->u.pci.bus      == m_subsys->u.pci.bus) &&
+                (c_subsys->u.pci.slot     == m_subsys->u.pci.slot) &&
+                (c_subsys->u.pci.function == m_subsys->u.pci.function)) {
+                *found = compare;
+            }
+                break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+            if (m_subsys->u.usb.bus && m_subsys->u.usb.device) {
+                /* specified by bus location on host */
+                if ((c_subsys->u.usb.bus    == m_subsys->u.usb.bus) &&
+                    (c_subsys->u.usb.device == m_subsys->u.usb.device)) {
+                    *found = compare;
+                }
+            } else {
+                /* specified by product & vendor id */
+                if ((c_subsys->u.usb.product == m_subsys->u.usb.product) &&
+                    (c_subsys->u.usb.vendor  == m_subsys->u.usb.vendor)) {
+                    *found = compare;
+                }
+            }
+            break;
+        default:
+            break;
+        }
+        if (*found)
+            break;
+    }
+    return *found ? i : -1;
+}
+
+int
 virDomainDiskIndexByName(virDomainDefPtr def, const char *name,
                          bool allow_ambiguous)
 {

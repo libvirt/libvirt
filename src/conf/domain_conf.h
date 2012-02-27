@@ -1895,6 +1895,11 @@ int virDomainNetIndexByMac(virDomainDefPtr def, const unsigned char *mac);
 int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net);
 int virDomainNetRemoveByMac(virDomainDefPtr def, const unsigned char *mac);
 
+int virDomainHostdevInsert(virDomainDefPtr def, virDomainHostdevDefPtr hostdev);
+void virDomainHostdevRemove(virDomainDefPtr def, size_t i);
+int virDomainHostdevFind(virDomainDefPtr def, virDomainHostdevDefPtr match,
+                         virDomainHostdevDefPtr *found);
+
 int virDomainGraphicsListenGetType(virDomainGraphicsDefPtr def, size_t ii)
             ATTRIBUTE_NONNULL(1);
 int virDomainGraphicsListenSetType(virDomainGraphicsDefPtr def, size_t ii, int val)
