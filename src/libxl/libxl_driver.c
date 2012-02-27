@@ -3243,10 +3243,6 @@ libxlDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
          goto cleanup;
     }
 
-    if (!(dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
-                                  VIR_DOMAIN_XML_INACTIVE)))
-        goto cleanup;
-
     priv = vm->privateData;
 
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
