@@ -2158,19 +2158,7 @@ qemuDomainDetachNetDevice(struct qemud_driver *driver,
                         detach->ifname));
 
     networkReleaseActualDevice(detach);
-    if (vm->def->nnets > 1) {
-        memmove(vm->def->nets + i,
-                vm->def->nets + i + 1,
-                sizeof(*vm->def->nets) *
-                (vm->def->nnets - (i + 1)));
-        vm->def->nnets--;
-        if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets) < 0) {
-            /* ignore, harmless */
-        }
-    } else {
-        VIR_FREE(vm->def->nets);
-        vm->def->nnets = 0;
-    }
+    virDomainNetRemove(vm->def, i);
     virDomainNetDefFree(detach);
 
     ret = 0;
