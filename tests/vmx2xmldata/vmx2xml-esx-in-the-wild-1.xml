@@ -18,7 +18,7 @@
     <disk type='file' device='disk'>
       <source file='[datastore] directory/Fedora11.vmdk'/>
       <target dev='sda' bus='scsi'/>
-      <address type='drive' controller='0' bus='0' unit='0'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='scsi' index='0' model='lsilogic'/>
     <interface type='bridge'>

@@ -24,12 +24,12 @@
     <disk type='block' device='disk'>
       <source dev='/dev/HostVG/hdb'/>
       <target dev='hdb' bus='ide'/>
-      <address type='drive' controller='0' bus='0' unit='1'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
     </disk>
     <disk type='block' device='disk'>
       <source dev='/dev/HostVG/hda'/>
       <target dev='hda' bus='ide'/>
-      <address type='drive' controller='0' bus='0' unit='0'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <disk type='file' device='disk'>
       <source file='/tmp/vda.img'/>
@@ -38,17 +38,17 @@
     <disk type='block' device='cdrom'>
       <source dev='/dev/HostVG/hdc'/>
       <target dev='hdc' bus='ide'/>
-      <address type='drive' controller='0' bus='1' unit='0'/>
+      <address type='drive' controller='0' bus='1' target='0' unit='0'/>
     </disk>
     <disk type='block' device='floppy'>
       <source dev='/dev/fd1'/>
       <target dev='fdb' bus='fdc'/>
-      <address type='drive' controller='0' bus='0' unit='1'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
     </disk>
     <disk type='block' device='floppy'>
       <source dev='/dev/fd0'/>
       <target dev='fda' bus='fdc'/>
-      <address type='drive' controller='0' bus='0' unit='0'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='usb' index='0'/>
     <controller type='fdc' index='0'/>

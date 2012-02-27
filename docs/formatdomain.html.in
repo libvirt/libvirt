@@ -1094,6 +1094,12 @@
       &lt;target dev='hdc' bus='ide'/&gt;
       &lt;readonly/&gt;
     &lt;/disk&gt;
+    &lt;disk type='block' device='lun'&gt;
+      &lt;driver name='qemu' type='raw'/&gt;
+      &lt;source dev='/dev/sda'/&lt;
+      &lt;target dev='sda' bus='scsi'/&lt;
+      &lt;address type='drive' controller='0' bus='0' target='3' unit='0'/&lt;
+    &lt;/disk&gt;
   &lt;/devices&gt;
   ...</pre>
 
@@ -1401,8 +1407,9 @@
         Multifunction defaults to 'off'; any other value requires
         QEMU 0.1.3 and <span class="since">libvirt 0.9.7</span>.  For a
         "drive" controller, additional attributes
-        <code>controller</code>, <code>bus</code>,
-        and <code>unit</code> are available, each defaulting to 0.
+        <code>controller</code>, <code>bus</code>, <code>target</code>
+        (<span class="since">libvirt 0.9.11</span>), and <code>unit</code>
+        are available, each defaulting to 0.
       </dd>
       <dt><code>auth</code></dt>
       <dd>If present, the <code>auth</code> element provides the
@@ -1592,6 +1599,7 @@
       <dd>Drive addresses have the following additional
         attributes: <code>controller</code> (a 2-digit controller
         number), <code>bus</code> (a 2-digit bus number),
+        <code>target</code> (a 2-digit bus number),
         and <code>unit</code> (a 2-digit unit number on the bus).
       </dd>
       <dt><code>type='virtio-serial'</code></dt>

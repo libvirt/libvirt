@@ -1913,7 +1913,7 @@ void virDomainDefClearDeviceAliases(virDomainDefPtr def)
 
 
 /* Generate a string representation of a device address
- * @param address Device address to stringify
+ * @info address Device address to stringify
  */
 static int ATTRIBUTE_NONNULL(2)
 virDomainDeviceInfoFormat(virBufferPtr buf,
@@ -1975,9 +1975,10 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
-        virBufferAsprintf(buf, " controller='%d' bus='%d' unit='%d'",
+        virBufferAsprintf(buf, " controller='%d' bus='%d' target='%d' unit='%d'",
                           info->addr.drive.controller,
                           info->addr.drive.bus,
+                          info->addr.drive.target,
                           info->addr.drive.unit);
         break;
 
@@ -2015,7 +2016,6 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
 
     return 0;
 }
-
 
 static int
 virDomainDevicePCIAddressParseXML(xmlNodePtr node,
@@ -2090,13 +2090,14 @@ static int
 virDomainDeviceDriveAddressParseXML(xmlNodePtr node,
                                     virDomainDeviceDriveAddressPtr addr)
 {
-    char *bus, *unit, *controller;
+    char *bus, *unit, *controller, *target;
     int ret = -1;
 
     memset(addr, 0, sizeof(*addr));
 
     controller = virXMLPropString(node, "controller");
     bus = virXMLPropString(node, "bus");
+    target = virXMLPropString(node, "target");
     unit = virXMLPropString(node, "unit");
 
     if (controller &&
@@ -2113,6 +2114,13 @@ virDomainDeviceDriveAddressParseXML(xmlNodePtr node,
         goto cleanup;
     }
 
+    if (target &&
+        virStrToLong_ui(target, NULL, 10, &addr->target) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Cannot parse <address> 'target' attribute"));
+        goto cleanup;
+    }
+
     if (unit &&
         virStrToLong_ui(unit, NULL, 10, &addr->unit) < 0) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2125,6 +2133,7 @@ virDomainDeviceDriveAddressParseXML(xmlNodePtr node,
 cleanup:
     VIR_FREE(controller);
     VIR_FREE(bus);
+    VIR_FREE(target);
     VIR_FREE(unit);
     return ret;
 }

@@ -106,6 +106,7 @@ typedef virDomainDeviceDriveAddress *virDomainDeviceDriveAddressPtr;
 struct _virDomainDeviceDriveAddress {
     unsigned int controller;
     unsigned int bus;
+    unsigned int target;
     unsigned int unit;
 };
 

@@ -17,7 +17,7 @@
     <disk type='file' device='disk'>
       <source file='/tmp/scsidisk.img'/>
       <target dev='sda' bus='scsi'/>
-      <address type='drive' controller='0' bus='0' unit='0'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='scsi' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0' multifunction='off'/>

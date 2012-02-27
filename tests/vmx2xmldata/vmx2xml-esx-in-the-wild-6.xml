@@ -15,12 +15,12 @@
     <disk type='file' device='disk'>
       <source file='[datastore] directory/el6-test-000001.vmdk'/>
       <target dev='sda' bus='scsi'/>
-      <address type='drive' controller='0' bus='0' unit='0'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <disk type='file' device='cdrom'>
       <source file='/usr/lib/vmware/isoimages/linux.iso'/>
       <target dev='hdc' bus='ide'/>
-      <address type='drive' controller='0' bus='1' unit='0'/>
+      <address type='drive' controller='0' bus='1' target='0' unit='0'/>
     </disk>
     <controller type='scsi' index='0' model='vmpvscsi'/>
     <controller type='ide' index='0'/>
