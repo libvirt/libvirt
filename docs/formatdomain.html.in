@@ -1658,7 +1658,7 @@
       control how many devices can be connected through the
       controller.  A "scsi" controller has an optional
       attribute <code>model</code>, which is one of "auto", "buslogic",
-      "ibmvscsi", "lsilogic", "lsias1068", or "vmpvscsi".
+      "ibmvscsi", "lsilogic", "lsias1068", "virtio-scsi" or "vmpvscsi".
       A "usb" controller has an optional attribute <code>model</code>,
       which is one of "piix3-uhci", "piix4-uhci", "ehci",
       "ich9-ehci1", "ich9-uhci1", "ich9-uhci2", "ich9-uhci3",

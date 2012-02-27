@@ -2375,6 +2375,9 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
             model = qemuDefaultScsiControllerModel(domainDef);
         }
         switch (model) {
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
+            virBufferAddLit(&buf, "virtio-scsi-pci");
+            break;
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC:
             virBufferAddLit(&buf, "lsi");
             break;
