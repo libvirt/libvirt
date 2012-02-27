@@ -389,6 +389,7 @@ virDomainNetGetActualType;
 virDomainNetGetActualVirtPortProfile;
 virDomainNetIndexByMac;
 virDomainNetInsert;
+virDomainNetRemove;
 virDomainNetRemoveByMac;
 virDomainNetTypeToString;
 virDomainNostateReasonTypeFromString;

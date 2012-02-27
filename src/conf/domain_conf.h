@@ -1902,6 +1902,7 @@ int virDomainDiskRemoveByName(virDomainDefPtr def, const char *name);
 
 int virDomainNetIndexByMac(virDomainDefPtr def, const unsigned char *mac);
 int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net);
+void virDomainNetRemove(virDomainDefPtr def, size_t i);
 int virDomainNetRemoveByMac(virDomainDefPtr def, const unsigned char *mac);
 
 int virDomainHostdevInsert(virDomainDefPtr def, virDomainHostdevDefPtr hostdev);

@@ -7084,7 +7084,7 @@ int virDomainNetIndexByMac(virDomainDefPtr def, const unsigned char *mac)
     return -1;
 }
 
-static void virDomainNetRemove(virDomainDefPtr def, size_t i)
+void virDomainNetRemove(virDomainDefPtr def, size_t i)
 {
     virDomainNetDefPtr net = def->nets[i];
 
