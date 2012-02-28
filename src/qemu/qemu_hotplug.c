@@ -226,13 +226,13 @@ int qemuDomainAttachPciDiskDevice(virConnectPtr conn,
         if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &disk->info) < 0)
             goto error;
         releaseaddr = true;
-        if (qemuAssignDeviceDiskAlias(disk, priv->qemuCaps) < 0)
+        if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
             goto error;
 
         if (!(drivestr = qemuBuildDriveStr(conn, disk, false, priv->qemuCaps)))
             goto error;
 
-        if (!(devstr = qemuBuildDriveDevStr(disk, 0, priv->qemuCaps)))
+        if (!(devstr = qemuBuildDriveDevStr(NULL, disk, 0, priv->qemuCaps)))
             goto error;
     }
 
@@ -461,9 +461,9 @@ int qemuDomainAttachSCSIDisk(virConnectPtr conn,
     }
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuAssignDeviceDiskAlias(disk, priv->qemuCaps) < 0)
+        if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
             goto error;
-        if (!(devstr = qemuBuildDriveDevStr(disk, 0, priv->qemuCaps)))
+        if (!(devstr = qemuBuildDriveDevStr(vm->def, disk, 0, priv->qemuCaps)))
             goto error;
     }
 
@@ -583,11 +583,11 @@ int qemuDomainAttachUsbMassstorageDevice(virConnectPtr conn,
     }
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuAssignDeviceDiskAlias(disk, priv->qemuCaps) < 0)
+        if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
             goto error;
         if (!(drivestr = qemuBuildDriveStr(conn, disk, false, priv->qemuCaps)))
             goto error;
-        if (!(devstr = qemuBuildDriveDevStr(disk, 0, priv->qemuCaps)))
+        if (!(devstr = qemuBuildDriveDevStr(NULL, disk, 0, priv->qemuCaps)))
             goto error;
     }
 

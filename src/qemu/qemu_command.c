@@ -472,15 +472,39 @@ qemuDefaultScsiControllerModel(virDomainDefPtr def) {
 }
 
 /* Our custom -drive naming scheme used with id= */
-static int qemuAssignDeviceDiskAliasCustom(virDomainDiskDefPtr disk)
+static int
+qemuAssignDeviceDiskAliasCustom(virDomainDefPtr def,
+                                virDomainDiskDefPtr disk)
 {
     const char *prefix = virDomainDiskBusTypeToString(disk->bus);
+    int controllerModel = -1;
+
     if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
-        if (virAsprintf(&disk->info.alias, "%s%d-%d-%d", prefix,
-                        disk->info.addr.drive.controller,
-                        disk->info.addr.drive.bus,
-                        disk->info.addr.drive.unit) < 0)
-            goto no_memory;
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
+            controllerModel =
+                virDomainDiskFindControllerModel(def, disk,
+                                                 VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
+        }
+
+        if (controllerModel == -1 ||
+            controllerModel == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO)
+            controllerModel = qemuDefaultScsiControllerModel(def);
+
+        if (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI ||
+            controllerModel == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
+            if (virAsprintf(&disk->info.alias, "%s%d-%d-%d", prefix,
+                            disk->info.addr.drive.controller,
+                            disk->info.addr.drive.bus,
+                            disk->info.addr.drive.unit) < 0)
+                goto no_memory;
+        } else {
+            if (virAsprintf(&disk->info.alias, "%s%d-%d-%d-%d", prefix,
+                            disk->info.addr.drive.controller,
+                            disk->info.addr.drive.bus,
+                            disk->info.addr.drive.target,
+                            disk->info.addr.drive.unit) < 0)
+                goto no_memory;
+        }
     } else {
         int idx = virDiskNameToIndex(disk->dst);
         if (virAsprintf(&disk->info.alias, "%s-disk%d", prefix, idx) < 0)
@@ -496,11 +520,13 @@ no_memory:
 
 
 int
-qemuAssignDeviceDiskAlias(virDomainDiskDefPtr def, virBitmapPtr qemuCaps)
+qemuAssignDeviceDiskAlias(virDomainDefPtr vmdef,
+                          virDomainDiskDefPtr def,
+                          virBitmapPtr qemuCaps)
 {
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_DRIVE)) {
         if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
-            return qemuAssignDeviceDiskAliasCustom(def);
+            return qemuAssignDeviceDiskAliasCustom(vmdef, def);
         else
             return qemuAssignDeviceDiskAliasFixed(def);
     } else {
@@ -611,7 +637,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virBitmapPtr qemuCaps)
     int i;
 
     for (i = 0; i < def->ndisks ; i++) {
-        if (qemuAssignDeviceDiskAlias(def->disks[i], qemuCaps) < 0)
+        if (qemuAssignDeviceDiskAlias(def, def->disks[i], qemuCaps) < 0)
             return -1;
     }
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_NET_NAME) ||
@@ -1841,6 +1867,11 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                             _("Only 1 %s bus is supported"), bus);
             goto error;
         }
+        if (disk->info.addr.drive.target != 0) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("target must be 0 for controller fdc"));
+            goto error;
+        }
         unitid = disk->info.addr.drive.unit;
 
         break;
@@ -2087,13 +2118,15 @@ error:
 
 
 char *
-qemuBuildDriveDevStr(virDomainDiskDefPtr disk,
+qemuBuildDriveDevStr(virDomainDefPtr def,
+                     virDomainDiskDefPtr disk,
                      int bootindex,
                      virBitmapPtr qemuCaps)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
     int idx = virDiskNameToIndex(disk->dst);
+    int controllerModel;
 
     if (idx < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2105,7 +2138,8 @@ qemuBuildDriveDevStr(virDomainDiskDefPtr disk,
         /* make sure that both the bus and the qemu binary support
          *  type='lun' (SG_IO).
          */
-        if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
+        if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO &&
+            disk->bus != VIR_DOMAIN_DISK_BUS_SCSI) {
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             _("disk device='lun' is not supported for bus='%s'"),
                             bus);
@@ -2126,19 +2160,74 @@ qemuBuildDriveDevStr(virDomainDiskDefPtr disk,
 
     switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_IDE:
+        if (disk->info.addr.drive.target != 0) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("target must be 0 for ide controller"));
+            goto error;
+        }
         virBufferAddLit(&opt, "ide-drive");
         virBufferAsprintf(&opt, ",bus=ide.%d,unit=%d",
                           disk->info.addr.drive.bus,
                           disk->info.addr.drive.unit);
         break;
     case VIR_DOMAIN_DISK_BUS_SCSI:
-        virBufferAddLit(&opt, "scsi-disk");
-        virBufferAsprintf(&opt, ",bus=scsi%d.%d,scsi-id=%d",
-                          disk->info.addr.drive.controller,
-                          disk->info.addr.drive.bus,
-                          disk->info.addr.drive.unit);
+        controllerModel =
+            virDomainDiskFindControllerModel(def, disk,
+                                             VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
+        if (controllerModel == -1 ||
+            controllerModel == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO)
+            controllerModel = qemuDefaultScsiControllerModel(def);
+
+        if (controllerModel == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
+            if (disk->info.addr.drive.target != 0) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                _("target must be 0 for controller "
+                                   "model 'lsilogic'"));
+                goto error;
+            }
+
+            virBufferAddLit(&opt, "scsi-disk");
+            virBufferAsprintf(&opt, ",bus=scsi%d.%d,scsi-id=%d",
+                              disk->info.addr.drive.controller,
+                              disk->info.addr.drive.bus,
+                              disk->info.addr.drive.unit);
+        } else {
+            if (!qemuCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_CHANNEL)) {
+                if (disk->info.addr.drive.target > 7) {
+                    qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                    _("This QEMU doesn't support target "
+                                      "greater than 7"));
+                    goto error;
+                }
+
+                if ((disk->info.addr.drive.bus != disk->info.addr.drive.unit) &&
+                    (disk->info.addr.drive.bus != 0)) {
+                    qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                    _("This QEMU only supports both bus and "
+                                      "unit equal to 0"));
+                    goto error;
+                }
+            }
+
+            virBufferAddLit(&opt, "scsi-disk");
+            virBufferAsprintf(&opt, ",bus=scsi%d.0,channel=%d,scsi-id=%d,lun=%d",
+                              disk->info.addr.drive.controller,
+                              disk->info.addr.drive.bus,
+                              disk->info.addr.drive.target,
+                              disk->info.addr.drive.unit);
+        }
         break;
     case VIR_DOMAIN_DISK_BUS_SATA:
+        if (disk->info.addr.drive.bus != 0) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("bus must be 0 for ide controller"));
+            goto error;
+        }
+        if (disk->info.addr.drive.target != 0) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("target must be 0 for ide controller"));
+            goto error;
+        }
         virBufferAddLit(&opt, "ide-drive");
         virBufferAsprintf(&opt, ",bus=ahci%d.%d",
                           disk->info.addr.drive.controller,
@@ -2332,6 +2421,7 @@ qemuBuildUSBControllerDevStr(virDomainControllerDefPtr def,
     int model, caps;
 
     model = def->model;
+
     if (model == -1)
         model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
 
@@ -4492,7 +4582,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                 } else {
                     virCommandAddArg(cmd, "-device");
 
-                    if (!(optstr = qemuBuildDriveDevStr(disk, bootindex,
+                    if (!(optstr = qemuBuildDriveDevStr(def, disk, bootindex,
                                                         qemuCaps)))
                         goto error;
                     virCommandAddArg(cmd, optstr);
