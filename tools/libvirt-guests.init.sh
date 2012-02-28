@@ -293,12 +293,47 @@ stop() {
                 printf %s "$(guest_name "$uri" "$uuid")"
                 empty=false
             done
+
             if "$empty"; then
-                gettext "no running guests."; echo
-            else
-                echo
-                echo "$uri" "$list" >>"$LISTFILE"
+                gettext "no running guests."
             fi
+            echo
+        fi
+
+        if "$suspending"; then
+            transient=$(list_guests "$uri" "--transient")
+            if [ $? -eq 0 ]; then
+                empty=true
+                for uuid in $transient; do
+                    if "$empty"; then
+                        eval_gettext "Not suspending transient guests on URI: \$uri: "
+                        empty=false
+                    else
+                        printf ", "
+                    fi
+                    printf %s "$(guest_name "$uri" "$uuid")"
+                done
+                echo
+                # reload domain list to contain only persistent guests
+                list=$(list_guests "$uri" "--persistent")
+                if [ $? -ne 0 ]; then
+                    eval_gettext "Failed to list persistent guests on \$uri"
+                    echo
+                    RETVAL=1
+                    set +f
+                    return
+                fi
+            else
+                gettext "Failed to list transient guests"
+                echo
+                RETVAL=1
+                set +f
+                return
+            fi
+        fi
+
+        if [ -n "$list" ]; then
+            echo "$uri" "$list" >>"$LISTFILE"
         fi
     done
     set +f
