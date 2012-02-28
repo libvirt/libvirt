@@ -47,6 +47,7 @@
 #include "rpc/virnetsocket.h"
 #include "storage_file.h"
 #include "viruri.h"
+#include "hooks.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -1130,6 +1131,7 @@ qemuMigrationPrepareAny(struct qemud_driver *driver,
     qemuMigrationCookiePtr mig = NULL;
     bool tunnel = !!st;
     char *origname = NULL;
+    char *xmlout = NULL;
 
     if (virTimeMillisNow(&now) < 0)
         return -1;
@@ -1148,6 +1150,46 @@ qemuMigrationPrepareAny(struct qemud_driver *driver,
         def->name = strdup(dname);
         if (def->name == NULL)
             goto cleanup;
+    }
+
+    /* Let migration hook filter domain XML */
+    if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
+        char *xml;
+        int hookret;
+
+        if (!(xml = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE)))
+            goto cleanup;
+
+        hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, def->name,
+                              VIR_HOOK_QEMU_OP_MIGRATE, VIR_HOOK_SUBOP_BEGIN,
+                              NULL, xml, &xmlout);
+        VIR_FREE(xml);
+
+        if (hookret < 0) {
+            goto cleanup;
+        } else if (hookret == 0) {
+            if (!*xmlout) {
+                VIR_DEBUG("Migrate hook filter returned nothing; using the"
+                          " original XML");
+            } else {
+                virDomainDefPtr newdef;
+
+                VIR_DEBUG("Using hook-filtered domain XML: %s", xmlout);
+                newdef = virDomainDefParseString(driver->caps, xmlout,
+                                                 QEMU_EXPECTED_VIRT_TYPES,
+                                                 VIR_DOMAIN_XML_INACTIVE);
+                if (!newdef)
+                    goto cleanup;
+
+                if (!virDomainDefCheckABIStability(def, newdef)) {
+                    virDomainDefFree(newdef);
+                    goto cleanup;
+                }
+
+                virDomainDefFree(def);
+                def = newdef;
+            }
+        }
     }
 
     if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
@@ -1244,6 +1286,7 @@ qemuMigrationPrepareAny(struct qemud_driver *driver,
 
 cleanup:
     VIR_FREE(origname);
+    VIR_FREE(xmlout);
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(dataFD[0]);
     VIR_FORCE_CLOSE(dataFD[1]);

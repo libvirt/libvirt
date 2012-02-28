@@ -56,6 +56,7 @@ enum virHookQemuOpType {
     VIR_HOOK_QEMU_OP_STOPPED,          /* domain has stopped */
     VIR_HOOK_QEMU_OP_PREPARE,          /* domain startup initiated */
     VIR_HOOK_QEMU_OP_RELEASE,          /* domain destruction is over */
+    VIR_HOOK_QEMU_OP_MIGRATE,          /* domain is being migrated */
 
     VIR_HOOK_QEMU_OP_LAST,
 };

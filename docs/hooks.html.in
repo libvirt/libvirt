@@ -120,6 +120,16 @@
         called again, <span class="since">since 0.9.0</span>, to allow
         any additional resource cleanup:<br/>
         <pre>/etc/libvirt/hooks/qemu guest_name release end -</pre></li>
+      <li><span class="since">Since 0.9.11</span>, the qemu hook script
+        is also called at the beginning of incoming migration. It is called
+        as: <pre>/etc/libvirt/hooks/qemu guest_name migrate begin -</pre>
+        with domain XML sent to standard input of the script. In this case,
+        the script acts as a filter and is supposed to modify the domain
+        XML and print it out on its standard output. Empty output is
+        identical to copying the input XML without changing it. In case the
+        script returns failure or the output XML is not valid, incoming
+        migration will be canceled. This hook may be used, e.g., to change
+        location of disk images for incoming domains.</li>
     </ul>
 
     <h5><a name="lxc">/etc/libvirt/hooks/lxc</a></h5>
@@ -161,19 +171,20 @@
        source and destination hosts:</p>
     <ol>
       <li>At the beginning of the migration, the <i>qemu</i> hook script on
-          the <b>destination</b> host is executed with the "start"
-          operation.<br/><br/></li>
-      <li>If this hook script returns indicating success (error code 0), the
-          migration continues.  Any other return code indicates failure, and
-          the migration is aborted.<br/><br/></li>
-      <li>The QEMU guest is then migrated to the destination host.<br/>
-          <br/></li>
+          the <b>destination</b> host is executed with the "migrate"
+          operation.</li>
+      <li>Before QEMU process is spawned, the two operations ("prepare" and
+          "start") called for domain start are executed on
+          <b>destination</b> host.</li>
+      <li>If both of these hook script executions exit successfully (exit
+          status 0), the migration continues.  Any other exit code indicates
+          failure, and the migration is aborted.</li>
+      <li>The QEMU guest is then migrated to the destination host.</li>
       <li>Unless an error occurs during the migration process, the <i>qemu</i>
-          hook script on the <b>source</b> host is then executed with the "stopped"
-          operation, to indicate it is no longer running on this
-          host.<br/><br/>
-          Regardless of the return code from this hook script, the migration
-          is not aborted as it has already been performed.</li>
+          hook script on the <b>source</b> host is then executed with the
+          "stopped" and "release" operations to indicate it is no longer
+          running on this host. Regardless of the return codes, the
+          migration is not aborted as it has already been performed.</li>
     </ol>
     <br/>
 
