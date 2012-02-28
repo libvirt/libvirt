@@ -468,7 +468,8 @@ Flags I<--live> or I<--config> select whether this command works on live
 or persistent definitions of the domain. If both I<--live> and I<--config>
 are specified, the I<--config> option takes precedence on getting the current
 description and both live configuration and config are updated while setting
-the description. I<--current> is exclusive and implied if none of these was specified.
+the description. I<--current> is exclusive and implied if none of these was
+specified.
 
 Flag I<--edit> specifies that an editor with the contents of current
 description or title should be opened and the contents saved back afterwards.
@@ -1471,7 +1472,8 @@ address.
 [I<--persistent>] [I<--inbound average,peak,burst>] [I<--outbound average,peak,burst>]
 
 Attach a new network interface to the domain.
-I<type> can be either I<network> to indicate a physical network device or I<bridge> to indicate a bridge to a device.
+I<type> can be either I<network> to indicate a physical network device or
+I<bridge> to indicate a bridge to a device.
 I<source> indicates the source device.
 I<target> allows to indicate the target device in the guest.
 I<mac> allows to specify the MAC address of the network interface.
@@ -1502,9 +1504,10 @@ from the domain.
 =item B<detach-interface> I<domain-id> I<type> [I<--mac mac>]
 
 Detach a network interface from a domain.
-I<type> can be either I<network> to indicate a physical network device or I<bridge> to indicate a bridge to a device.
-It is recommended to use the I<mac> option to distinguish between the interfaces
-if more than one are present on the domain.
+I<type> can be either I<network> to indicate a physical network device or
+I<bridge> to indicate a bridge to a device. It is recommended to use the
+I<mac> option to distinguish between the interfaces if more than one are
+present on the domain.
 
 =item B<update-device> I<domain-id> I<file> [I<--persistent>] [I<--force>]
 
