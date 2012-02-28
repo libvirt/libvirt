@@ -88,6 +88,20 @@ run_virsh_c() {
     ( export LC_ALL=C; run_virsh "$@" )
 }
 
+# test_connect URI
+# check if URI is reachable
+test_connect()
+{
+    uri=$1
+
+    run_virsh "$uri" connect 2>/dev/null
+    if [ $? -ne 0 ]; then
+        eval_gettext "Can't connect to \$uri. Skipping."
+        echo
+        return 1
+    fi
+}
+
 # list_guests URI PERSISTENT
 # List running guests on URI.
 # PERSISTENT argument options:
@@ -171,6 +185,8 @@ start() {
             eval_gettext "Ignoring guests on \$uri URI"; echo
             continue
         fi
+
+        test_connect "$uri" || continue
 
         eval_gettext "Resuming guests on \$uri URI..."; echo
         for guest in $list; do
@@ -278,12 +294,10 @@ stop() {
     set -f
     for uri in $URIS; do
         set +f
-        eval_gettext "Running guests on \$uri URI: "
 
-        if [ "x$uri" = xdefault ] && [ ! -x "$libvirtd" ]; then
-            gettext "libvirtd not installed; skipping this URI."; echo
-            continue
-        fi
+        test_connect "$uri" || continue
+
+        eval_gettext "Running guests on \$uri URI: "
 
         list=$(list_guests "$uri")
         if [ $? -eq 0 ]; then
