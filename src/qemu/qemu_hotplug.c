@@ -837,13 +837,14 @@ cleanup:
                                             net->info.addr.pci.slot) < 0)
             VIR_WARN("Unable to release PCI address on NIC");
 
-        if (iface_connected)
+        if (iface_connected) {
             virDomainConfNWFilterTeardown(net);
 
-        vport = virDomainNetGetActualVirtPortProfile(net);
-        if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
-            ignore_value(virNetDevOpenvswitchRemovePort(
-                            virDomainNetGetActualBridgeName(net), net->ifname));
+            vport = virDomainNetGetActualVirtPortProfile(net);
+            if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
+               ignore_value(virNetDevOpenvswitchRemovePort(
+                               virDomainNetGetActualBridgeName(net), net->ifname));
+        }
 
         networkReleaseActualDevice(net);
     }
