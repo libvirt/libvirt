@@ -53,6 +53,9 @@ VAR_SUBSYS_LIBVIRT_GUESTS="$localstatedir"/lock/subsys/libvirt-guests
 
 RETVAL=0
 
+# retval COMMAND ARGUMENTS...
+# run command with arguments and convert non-zero return value to 1 and set
+# the global return variable
 retval() {
     "$@"
     if [ $? -ne 0 ]; then
@@ -63,6 +66,10 @@ retval() {
     fi
 }
 
+# run_virsh URI ARGUMENTS...
+# start virsh and let it execute ARGUMENTS on URI
+# If URI is "default" virsh is called without the "-c" argument
+# (using libvirt's default connection)
 run_virsh() {
     uri=$1
     shift
@@ -74,64 +81,67 @@ run_virsh() {
     fi
 }
 
+# run_virsh_c URI ARGUMENTS
+# Same as "run_virsh" but the "C" locale is used instead of
+# the system's locale.
 run_virsh_c() {
     ( export LC_ALL=C; run_virsh "$@" )
 }
 
+# list_guests URI PERSISTENT
+# List running guests on URI.
+# PERSISTENT argument options:
+# --persistent: list only persistent guests
+# --transient: list only transient guests
+# [none]: list both persistent and transient guests
 list_guests() {
     uri=$1
+    persistent=$2
 
-    list=$(run_virsh_c "$uri" list)
+    list=$(run_virsh_c "$uri" list --uuid $persistent)
     if [ $? -ne 0 ]; then
         RETVAL=1
         return 1
     fi
 
-    uuids=
-    for id in $(echo "$list" | awk 'NR > 2 {print $1}'); do
-        uuid=$(run_virsh_c "$uri" dominfo "$id" | awk '/^UUID:/{print $2}')
-        if [ -z "$uuid" ]; then
-            RETVAL=1
-            return 1
-        fi
-        uuids="$uuids $uuid"
-    done
-
-    echo $uuids
+    echo $list
 }
 
+# guest_name URI UUID
+# return name of guest UUID on URI
 guest_name() {
     uri=$1
     uuid=$2
 
-    name=$(run_virsh_c "$uri" dominfo "$uuid" 2>/dev/null | \
-           sed -ne 's/^Name: *//p')
-    [ -n "$name" ] || name=$uuid
-
-    echo "$name"
+    run_virsh "$uri" domname "$uuid" 2>/dev/null
 }
 
+# guest_is_on URI UUID
+# check if guest UUID on URI is running
+# Result is returned by variable "guest_running"
 guest_is_on() {
     uri=$1
     uuid=$2
 
     guest_running=false
-    info=$(run_virsh_c "$uri" dominfo "$uuid")
+    id=$(run_virsh "$uri" domid "$uuid")
     if [ $? -ne 0 ]; then
         RETVAL=1
         return 1
     fi
 
-    id=$(echo "$info" | awk '/^Id:/{print $2}')
-
     [ -n "$id" ] && [ "x$id" != x- ] && guest_running=true
     return 0
 }
 
+# started
+# Create the startup lock file
 started() {
     touch "$VAR_SUBSYS_LIBVIRT_GUESTS"
 }
 
+# start
+# Start or resume the guests
 start() {
     [ -f "$LISTFILE" ] || { started; return 0; }
 
@@ -187,6 +197,9 @@ start() {
     started
 }
 
+# suspend_guest URI GUEST
+# Do a managed save on a GUEST on URI. This function returns after the guest
+# was saved.
 suspend_guest()
 {
     uri=$1
@@ -213,6 +226,9 @@ suspend_guest()
     retval wait "$virsh_pid" && printf '\r%s%-12s\n' "$label" "$(gettext "done")"
 }
 
+# shutdown_guest URI GUEST
+# Start a ACPI shutdown of GUEST on URI. This function return after the quest
+# was successfully shutdown or the timeout defined by $SHUTDOWN_TIMEOUT expires.
 shutdown_guest()
 {
     uri=$1
@@ -241,6 +257,8 @@ shutdown_guest()
     fi
 }
 
+# stop
+# Shutdown or save guests on the configured uris
 stop() {
     # last stop was not followed by start
     [ -f "$LISTFILE" ] && return 0
@@ -304,6 +322,8 @@ stop() {
     rm -f "$VAR_SUBSYS_LIBVIRT_GUESTS"
 }
 
+# gueststatus
+# List status of guests
 gueststatus() {
     set -f
     for uri in $URIS; do
