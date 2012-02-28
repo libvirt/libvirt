@@ -5345,13 +5345,16 @@ qemuBuildCommandLine(virConnectPtr conn,
 
         virBufferAsprintf(&opt, "port=%u", def->graphics[0]->data.spice.port);
 
-        if (def->graphics[0]->data.spice.tlsPort != -1)
+        if (def->graphics[0]->data.spice.tlsPort != -1) {
             if (!driver->spiceTLS) {
                 qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                _("spice TLS port set in XML configuration, but TLS is disabled in qemu.conf"));
+                                _("spice TLS port set in XML configuration,"
+                                  " but TLS is disabled in qemu.conf"));
                 goto error;
             }
-            virBufferAsprintf(&opt, ",tls-port=%u", def->graphics[0]->data.spice.tlsPort);
+            virBufferAsprintf(&opt, ",tls-port=%u",
+                              def->graphics[0]->data.spice.tlsPort);
+        }
 
         switch (virDomainGraphicsListenGetType(def->graphics[0], 0)) {
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
