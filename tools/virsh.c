@@ -14381,6 +14381,221 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     return functionReturn;
 }
 
+typedef enum {
+    VSH_FIND_DISK_NORMAL,
+    VSH_FIND_DISK_CHANGEABLE,
+} vshFindDiskType;
+
+/* Helper function to find disk device in XML doc.  Returns the disk
+ * node on success, or NULL on failure. Caller must free the result
+ * @path: Fully-qualified path or target of disk device.
+ * @type: Either VSH_FIND_DISK_NORMAL or VSH_FIND_DISK_CHANGEABLE.
+ */
+ATTRIBUTE_UNUSED
+static xmlNodePtr
+vshFindDisk(const char *doc,
+            const char *path,
+            int type)
+{
+    xmlDocPtr xml = NULL;
+    xmlXPathObjectPtr obj= NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    xmlNodePtr cur = NULL;
+    xmlNodePtr ret = NULL;
+    int i = 0;
+
+    xml = virXMLParseStringCtxt(doc, _("(domain_definition)"), &ctxt);
+    if (!xml) {
+        vshError(NULL, "%s", _("Failed to get disk information"));
+        goto cleanup;
+    }
+
+    obj = xmlXPathEval(BAD_CAST "/domain/devices/disk", ctxt);
+    if ((obj == NULL) ||
+        (obj->type != XPATH_NODESET) ||
+        (obj->nodesetval == NULL) ||
+        (obj->nodesetval->nodeNr == 0)) {
+        vshError(NULL, "%s", _("Failed to get disk information"));
+        goto cleanup;
+    }
+
+    /* search disk using @path */
+    for (; i < obj->nodesetval->nodeNr; i++) {
+        bool is_supported = true;
+
+        if (type == VSH_FIND_DISK_CHANGEABLE) {
+            xmlNodePtr n = obj->nodesetval->nodeTab[i];
+            is_supported = false;
+
+            /* Check if the disk is CDROM or floppy disk */
+            if (xmlStrEqual(n->name, BAD_CAST "disk")) {
+                char *device_value = virXMLPropString(n, "device");
+
+                if (STREQ(device_value, "cdrom") ||
+                    STREQ(device_value, "floppy"))
+                    is_supported = true;
+
+                VIR_FREE(device_value);
+            }
+
+            if (!is_supported)
+                continue;
+        }
+
+        cur = obj->nodesetval->nodeTab[i]->children;
+        while (cur != NULL) {
+            if (cur->type == XML_ELEMENT_NODE) {
+                char *tmp = NULL;
+
+                if (xmlStrEqual(cur->name, BAD_CAST "source")) {
+                    if ((tmp = virXMLPropString(cur, "file")) ||
+                        (tmp = virXMLPropString(cur, "dev")) ||
+                        (tmp = virXMLPropString(cur, "dir")) ||
+                        (tmp = virXMLPropString(cur, "name"))) {
+                    }
+                } else if (xmlStrEqual(cur->name, BAD_CAST "target")) {
+                    tmp = virXMLPropString(cur, "dev");
+                }
+
+                if (STREQ_NULLABLE(tmp, path)) {
+                    ret = xmlCopyNode(obj->nodesetval->nodeTab[i], 1);
+                    VIR_FREE(tmp);
+                    goto cleanup;
+                }
+                VIR_FREE(tmp);
+            }
+            cur = cur->next;
+        }
+    }
+
+    vshError(NULL, _("No found disk whose source path or target is %s"), path);
+
+cleanup:
+    xmlXPathFreeObject(obj);
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(xml);
+    return ret;
+}
+
+typedef enum {
+    VSH_PREPARE_DISK_XML_NONE = 0,
+    VSH_PREPARE_DISK_XML_EJECT,
+    VSH_PREPARE_DISK_XML_INSERT,
+    VSH_PREPARE_DISK_XML_UPDATE,
+} vshPrepareDiskXMLType;
+
+/* Helper function to prepare disk XML. Could be used for disk
+ * detaching, media changing(ejecting, inserting, updating)
+ * for changeable disk. Returns the processed XML as string on
+ * success, or NULL on failure. Caller must free the result.
+ */
+ATTRIBUTE_UNUSED
+static char *
+vshPrepareDiskXML(xmlNodePtr disk_node,
+                  const char *source,
+                  const char *path,
+                  int type)
+{
+    xmlNodePtr cur = NULL;
+    xmlBufferPtr xml_buf = NULL;
+    const char *disk_type = NULL;
+    const char *device_type = NULL;
+    xmlNodePtr new_node = NULL;
+    char *ret = NULL;
+
+    if (!disk_node)
+        return NULL;
+
+    xml_buf = xmlBufferCreate();
+    if (!xml_buf) {
+        vshError(NULL, "%s", _("Failed to allocate memory"));
+        return NULL;
+    }
+
+    device_type = virXMLPropString(disk_node, "device");
+
+    if (STREQ_NULLABLE(device_type, "cdrom") ||
+        STREQ_NULLABLE(device_type, "floppy")) {
+        bool has_source = false;
+        disk_type = virXMLPropString(disk_node, "type");
+
+        cur = disk_node->children;
+        while (cur != NULL) {
+            if (cur->type == XML_ELEMENT_NODE &&
+                xmlStrEqual(cur->name, BAD_CAST "source")) {
+                has_source = true;
+                break;
+            }
+            cur = cur->next;
+        }
+
+        if (!has_source) {
+            if (type == VSH_PREPARE_DISK_XML_EJECT) {
+                vshError(NULL, _("The disk device '%s' doesn't have media"),
+                         path);
+                goto error;
+            }
+
+            if (source) {
+                new_node = xmlNewNode(NULL, BAD_CAST "source");
+                xmlNewProp(new_node, (const xmlChar *)disk_type,
+                           (const xmlChar *)source);
+                xmlAddChild(disk_node, new_node);
+            } else if (type == VSH_PREPARE_DISK_XML_INSERT) {
+                vshError(NULL, _("No source is specified for inserting media"));
+                goto error;
+            } else if (type == VSH_PREPARE_DISK_XML_UPDATE) {
+                vshError(NULL, _("No source is specified for updating media"));
+                goto error;
+            }
+        }
+
+        if (has_source) {
+            if (type == VSH_PREPARE_DISK_XML_INSERT) {
+                vshError(NULL, _("The disk device '%s' already has media"),
+                         path);
+                goto error;
+            }
+
+            /* Remove the source if it tends to eject/update media. */
+            xmlUnlinkNode(cur);
+            xmlFreeNode(cur);
+
+            if (source && (type == VSH_PREPARE_DISK_XML_UPDATE)) {
+                new_node = xmlNewNode(NULL, BAD_CAST "source");
+                xmlNewProp(new_node, (const xmlChar *)disk_type,
+                           (const xmlChar *)source);
+                xmlAddChild(disk_node, new_node);
+            }
+        }
+    }
+
+    if (xmlNodeDump(xml_buf, NULL, disk_node, 0, 0) < 0) {
+        vshError(NULL, "%s", _("Failed to create XML"));
+        goto error;
+    }
+
+    goto cleanup;
+
+cleanup:
+    VIR_FREE(device_type);
+    VIR_FREE(disk_type);
+    if (xml_buf) {
+        if (VIR_ALLOC_N(ret, xmlBufferLength(xml_buf)) < 0) {
+            virReportOOMError();
+            return NULL;
+        }
+        memcpy(ret, (char *)xmlBufferContent(xml_buf), xmlBufferLength(xml_buf));
+        xmlBufferFree(xml_buf);
+    }
+    return ret;
+
+error:
+    xmlBufferFree(xml_buf);
+    xml_buf = NULL;
+    goto cleanup;
+}
+
 /*
  * "detach-disk" command
  */
