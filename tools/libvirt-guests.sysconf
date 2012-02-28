@@ -10,7 +10,8 @@
 #           libvirtd
 #ON_BOOT=start
 
-# number of seconds to wait between each guest start
+# Number of seconds to wait between each guest start. Set to 0 to allow
+# parallel startup.
 #START_DELAY=0
 
 # action taken on host shutdown
@@ -23,8 +24,16 @@
 #             value suitable for your guests.
 #ON_SHUTDOWN=suspend
 
-# number of seconds we're willing to wait for a guest to shut down
-#SHUTDOWN_TIMEOUT=0
+# If set to non-zero, shutdown will suspend guests concurrently. Number of
+# guests on shutdown at any time will not exceed number set in this variable.
+#PARALLEL_SHUTDOWN=0
+
+# Number of seconds we're willing to wait for a guest to shut down. If parallel
+# shutdown is enabled, this timeout applies as a timeout for shutting down all
+# guests on a single URI defined in the variable URIS. If this is 0, then there
+# is no time out (use with caution, as guests might not respond to a shutdown
+# request). The default value is 300 seconds (5 minutes).
+#SHUTDOWN_TIMEOUT=300
 
 # If non-zero, try to bypass the file system cache when saving and
 # restoring guests, even though this may give slower operation for

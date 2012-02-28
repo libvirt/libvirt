@@ -41,7 +41,8 @@ export TEXTDOMAIN="@PACKAGE@" TEXTDOMAINDIR="@localedir@"
 URIS=default
 ON_BOOT=start
 ON_SHUTDOWN=suspend
-SHUTDOWN_TIMEOUT=0
+SHUTDOWN_TIMEOUT=300
+PARALLEL_SHUTDOWN=0
 START_DELAY=0
 BYPASS_CACHE=0
 
@@ -255,12 +256,18 @@ shutdown_guest()
     printf %s "$label"
     retval run_virsh "$uri" shutdown "$guest" >/dev/null || return
     timeout=$SHUTDOWN_TIMEOUT
-    while [ "$timeout" -gt 0 ]; do
+    check_timeout=false
+    if [ $timeout -gt 0 ]; then
+        check_timeout=true
+    fi
+    while ! $check_timeout || [ "$timeout" -gt 0 ]; do
         sleep 1
-        timeout=$((timeout - 1))
         guest_is_on "$uri" "$guest" || return
         "$guest_running" || break
-        printf '\r%s%-12d ' "$label" "$timeout"
+        if $check_timeout; then
+            timeout=$((timeout - 1))
+            printf '\r%s%-12d ' "$label" "$timeout"
+        fi
     done
 
     if guest_is_on "$uri" "$guest"; then
@@ -273,6 +280,108 @@ shutdown_guest()
     fi
 }
 
+# shutdown_guest_async URI GUEST
+# Start a ACPI shutdown of GUEST on URI. This function returns after the command
+# was issued to libvirt to allow parallel shutdown.
+shutdown_guest_async()
+{
+    uri=$1
+    guest=$2
+
+    name=$(guest_name "$uri" "$guest")
+    eval_gettext "Starting shutdown on guest: \$name"
+    echo
+    retval run_virsh "$uri" shutdown "$guest" > /dev/null
+}
+
+# guest_count GUEST_LIST
+# Returns number of guests in GUEST_LIST
+guest_count()
+{
+    set -- $1
+    echo $#
+}
+
+# check_guests_shutdown URI GUESTS
+# check if shutdown is complete on guests in "GUESTS" and returns only
+# guests that are still shutting down
+check_guests_shutdown()
+{
+    uri=$1
+    guests=$2
+
+    guests_up=
+    for guest in $guests; do
+        if ! guest_is_on "$uri" "$guest" >/dev/null 2>&1; then
+            eval_gettext "Failed to determine state of guest: \$guest. Not tracking it anymore."
+            echo
+            continue
+        fi
+        if "$guest_running"; then
+            guests_up="$guests_up $guest"
+        fi
+    done
+    echo "$guests_up"
+}
+
+# print_guests_shutdown URI BEFORE AFTER
+# Checks for differences in the lists BEFORE and AFTER and prints
+# a shutdown complete notice for guests that have finished
+print_guests_shutdown()
+{
+    uri=$1
+    before=$2
+    after=$3
+
+    for guest in $before; do
+        case " $after " in
+            *" $guest "*) continue;;
+        esac
+
+        name=$(guest_name "$uri" "$guest")
+        eval_gettext "Shutdown of guest \$name complete."
+        echo
+    done
+}
+
+# shutdown_guests_parallel URI GUESTS
+# Shutdown guests GUESTS on machine URI in parallel
+shutdown_guests_parallel()
+{
+    uri=$1
+    guests=$2
+
+    on_shutdown=
+    check_timeout=false
+    timeout=$SHUTDOWN_TIMEOUT
+    if [ $timeout -gt 0 ]; then
+        check_timeout=true
+    fi
+    while [ -n "$on_shutdown" ] || [ -n "$guests" ]; do
+        while [ -n "$guests" ] &&
+              [ $(guest_count "$on_shutdown") -lt "$PARALLEL_SHUTDOWN" ]; do
+            set -- $guests
+            guest=$1
+            shift
+            guests=$*
+            shutdown_guest_async "$uri" "$guest"
+            on_shutdown="$on_shutdown $guest"
+        done
+        sleep 1
+        if $check_timeout; then
+            timeout=$(($timeout - 1))
+            if [ $timeout -le 0 ]; then
+                eval_gettext "Timeout expired while shutting down domains"; echo
+                RETVAL=1
+                return
+            fi
+        fi
+        on_shutdown_prev=$on_shutdown
+        on_shutdown=$(check_guests_shutdown "$uri" "$on_shutdown")
+        print_guests_shutdown "$uri" "$on_shutdown_prev" "$on_shutdown"
+    done
+}
+
 # stop
 # Shutdown or save guests on the configured uris
 stop() {
@@ -282,8 +391,8 @@ stop() {
     suspending=true
     if [ "x$ON_SHUTDOWN" = xshutdown ]; then
         suspending=false
-        if [ $SHUTDOWN_TIMEOUT -le 0 ]; then
-            gettext "Shutdown action requested but SHUTDOWN_TIMEOUT was not set"
+        if [ $SHUTDOWN_TIMEOUT -lt 0 ]; then
+            gettext "SHUTDOWN_TIMEOUT must be equal or greater than 0"
             echo
             RETVAL=6
             return
@@ -359,13 +468,18 @@ stop() {
             eval_gettext "Shutting down guests on \$uri URI..."; echo
         fi
 
-        for guest in $list; do
-            if "$suspending"; then
-                suspend_guest "$uri" "$guest"
-            else
-                shutdown_guest "$uri" "$guest"
-            fi
-        done
+        if [ "$PARALLEL_SHUTDOWN" -gt 1 ] &&
+           ! "$suspending"; then
+            shutdown_guests_parallel "$uri" "$list"
+        else
+            for guest in $list; do
+                if "$suspending"; then
+                    suspend_guest "$uri" "$guest"
+                else
+                    shutdown_guest "$uri" "$guest"
+                fi
+            done
+        fi
     done <"$LISTFILE"
 
     rm -f "$VAR_SUBSYS_LIBVIRT_GUESTS"
