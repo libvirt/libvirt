@@ -40,7 +40,6 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
     if (!(actual = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE)))
         goto fail;
 
-
     if (STRNEQ(outXmlData, actual)) {
         virtTestDifference(stderr, outXmlData, actual);
         goto fail;
@@ -150,6 +149,8 @@ mymain(void)
     DO_TEST("disk-drive-cache-v1-wb");
     DO_TEST("disk-drive-cache-v1-none");
     DO_TEST("disk-scsi-device");
+    DO_TEST("disk-scsi-vscsi");
+    DO_TEST("disk-scsi-virtio-scsi");
     DO_TEST("graphics-listen-network");
     DO_TEST("graphics-vnc");
     DO_TEST("graphics-vnc-sasl");

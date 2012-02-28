@@ -1,0 +1,9 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M \
+pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults -monitor \
+unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -device \
+virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x3 -drive file=/dev/HostVG/QEMUGuest1,\
+if=none,id=drive-ide0-0-0 -device ide-drive,bus=ide.0,unit=0,\
+drive=drive-ide0-0-0,id=ide0-0-0 -drive file=/tmp/scsidisk.img,if=none,\
+id=drive-scsi0-0-4-0 -device scsi-disk,bus=scsi0.0,channel=0,scsi-id=4,lun=0,\
+drive=drive-scsi0-0-4-0,id=scsi0-0-4-0 -usb -device virtio-balloon-pci,\
+id=balloon0,bus=pci.0,addr=0x4
