@@ -1515,6 +1515,32 @@ option can be used to force device update, e.g., to eject a CD-ROM even if it
 is locked/mounted in the domain. See the documentation to learn about libvirt
 XML format for a device.
 
+=item B<change-media> I<domain-id> I<path> [I<--eject>] [I<--insert>]
+[I<--update>] [I<source>] [I<--force>] [[I<--live>] [I<--config>] | [I<--current>]]
+
+Change media of CDROM or floppy drive. I<path> can be the fully-qualified path
+or the unique target name (<target dev='hdc'>) of the disk device. I<source>
+specifies the path of the media to be inserted or updated.
+
+I<--eject> indicates the media will be ejected.
+I<--insert> indicates the media will be inserted. I<source> must be specified.
+If the device has source (e.g. <source file='media'>), and I<source> is not
+specified, I<--update> is equal to I<--eject>. If the device has no source,
+and I<source> is specified, I<--update> is equal to I<--insert>. If the device
+has source, and I<source> is specified, I<--update> behaves like combination
+of I<--eject> and I<--insert>.
+If none of I<--eject>, I<--insert>, and I<--update> is specified, I<--update>
+is used by default.
+The I<--force> option can be used to force media changing.
+If I<--live> is specified, alter live configuration of running guest.
+If I<--config> is specified, alter persistent configuration, effect observed
+on next boot.
+I<--current> can be either or both of I<live> and I<config>, depends on
+the hypervisor's implementation.
+Both I<--live> and I<--config> flags may be given, but I<--current> is
+exclusive. If no flag is specified, behavior is different depending
+on hypervisor.
+
 =back
 
 =head1 NODEDEV COMMANDS

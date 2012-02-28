@@ -14670,6 +14670,139 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "change-media" command
+ */
+static const vshCmdInfo info_change_media[] = {
+    {"help", N_("Change media of CD or floppy drive")},
+    {"desc", N_("Change media of CD or floppy drive.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_change_media[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"path", VSH_OT_DATA, VSH_OFLAG_REQ, N_("Fully-qualified path or "
+                                            "target of disk device")},
+    {"source", VSH_OT_DATA, 0, N_("source of the media")},
+    {"eject", VSH_OT_BOOL, 0, N_("Eject the media")},
+    {"insert", VSH_OT_BOOL, 0, N_("Insert the media")},
+    {"update", VSH_OT_BOOL, 0, N_("Update the media")},
+    {"current", VSH_OT_BOOL, 0, N_("can be either or both of --live and --config, "
+                                   "depends on implementation of hypervisor driver")},
+    {"live", VSH_OT_BOOL, 0, N_("alter live configuration of running domain")},
+    {"config", VSH_OT_BOOL, 0, N_("alter persistent configuration, effect observed on next boot")},
+    {"force",  VSH_OT_BOOL, 0, N_("force media insertion")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    const char *source = NULL;
+    const char *path = NULL;
+    const char *doc = NULL;
+    xmlNodePtr disk_node = NULL;
+    const char *disk_xml = NULL;
+    int flags = 0;
+    bool config, live, current, force = false;
+    bool eject, insert, update = false;
+    bool ret = false;
+    int prepare_type = 0;
+    const char *action = NULL;
+
+    config = vshCommandOptBool(cmd, "config");
+    live = vshCommandOptBool(cmd, "live");
+    current = vshCommandOptBool(cmd, "current");
+    force = vshCommandOptBool(cmd, "force");
+    eject = vshCommandOptBool(cmd, "eject");
+    insert = vshCommandOptBool(cmd, "insert");
+    update = vshCommandOptBool(cmd, "update");
+
+    if (eject + insert + update > 1) {
+        vshError(ctl, "%s", _("--eject, --insert, and --update must be specified "
+                            "exclusively."));
+        return false;
+    }
+
+    if (eject) {
+        prepare_type = VSH_PREPARE_DISK_XML_EJECT;
+        action = "eject";
+    }
+
+    if (insert) {
+        prepare_type = VSH_PREPARE_DISK_XML_INSERT;
+        action = "insert";
+    }
+
+    if (update || (!eject && !insert)) {
+        prepare_type = VSH_PREPARE_DISK_XML_UPDATE;
+        action = "update";
+    }
+
+    if (current) {
+        if (live || config) {
+            vshError(ctl, "%s", _("--current must be specified exclusively"));
+            return false;
+        }
+        flags = VIR_DOMAIN_AFFECT_CURRENT;
+    } else {
+        if (config)
+            flags |= VIR_DOMAIN_AFFECT_CONFIG;
+        if (live)
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
+    }
+
+    if (force)
+        flags |= VIR_DOMAIN_DEVICE_MODIFY_FORCE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        goto cleanup;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        goto cleanup;
+
+    if (vshCommandOptString(cmd, "path", &path) <= 0)
+        goto cleanup;
+
+    if (vshCommandOptString(cmd, "source", &source) < 0)
+        goto cleanup;
+
+    if (insert && !source) {
+        vshError(ctl, "%s", _("No disk source specified for inserting"));
+        goto cleanup;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+        doc = virDomainGetXMLDesc(dom, VIR_DOMAIN_XML_INACTIVE);
+    else
+        doc = virDomainGetXMLDesc(dom, 0);
+    if (!doc)
+        goto cleanup;
+
+    if (!(disk_node = vshFindDisk(doc, path, VSH_FIND_DISK_CHANGEABLE)))
+        goto cleanup;
+
+    if (!(disk_xml = vshPrepareDiskXML(disk_node, source, path, prepare_type)))
+        goto cleanup;
+
+    if (virDomainUpdateDeviceFlags(dom, disk_xml, flags) != 0) {
+        vshError(ctl, _("Failed to complete action %s on media"), action);
+        goto cleanup;
+    }
+
+    vshPrint(ctl, _("succeeded to complete action %s on media\n"), action);
+    ret = true;
+
+cleanup:
+    VIR_FREE(doc);
+    xmlFreeNode(disk_node);
+    VIR_FREE(disk_xml);
+    if (dom)
+        virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "cpu-compare" command
  */
 static const vshCmdInfo info_cpu_compare[] = {
@@ -16762,6 +16895,7 @@ static const vshCmdDef domManagementCmds[] = {
     {"blockpull", cmdBlockPull, opts_block_pull, info_block_pull, 0},
     {"blockjob", cmdBlockJob, opts_block_job, info_block_job, 0},
     {"blockresize", cmdBlockResize, opts_block_resize, info_block_resize, 0},
+    {"change-media", cmdChangeMedia, opts_change_media, info_change_media, 0},
 #ifndef WIN32
     {"console", cmdConsole, opts_console, info_console, 0},
 #endif
