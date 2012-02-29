@@ -2081,6 +2081,9 @@ B<Supported algorithms>
   pfitzner33 - Roy Pfitzner's 33-random-pass method: random x33.
   random     - 1-pass pattern: random.
 
+B<Note>: The availability of algorithms may be limited by the version
+of the C<scrub> binary installed on the host.
+
 =item B<vol-dumpxml> [I<--pool> I<pool-or-uuid>] I<vol-name-or-key-or-path>
 
 Output the volume information as an XML dump to stdout.
