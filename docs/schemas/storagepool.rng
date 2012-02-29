@@ -2,6 +2,7 @@
 <!-- A Relax NG schema for the libvirt storage pool XML format -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
     datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <include href='basictypes.rng'/>
   <start>
     <ref name='pool'/>
   </start>
@@ -127,7 +128,7 @@
     </element>
     <optional>
       <element name='uuid'>
-        <ref name='uuid'/>
+        <ref name='UUID'/>
       </element>
     </optional>
   </define>
@@ -135,17 +136,17 @@
   <define name='sizing'>
     <optional>
       <element name='capacity'>
-        <ref name='uint'/>
+        <ref name='unsignedLong'/>
       </element>
     </optional>
     <optional>
       <element name='allocation'>
-        <ref name='uint'/>
+        <ref name='unsignedLong'/>
       </element>
     </optional>
     <optional>
       <element name='available'>
-        <ref name='uint'/>
+        <ref name='unsignedLong'/>
       </element>
     </optional>
   </define>
@@ -154,13 +155,13 @@
     <optional>
       <element name='permissions'>
         <element name='mode'>
-          <ref name='uint'/>
+          <ref name='unsignedInt'/>
         </element>
         <element name='owner'>
-          <ref name='uint'/>
+          <ref name='unsignedInt'/>
         </element>
         <element name='group'>
-          <ref name='uint'/>
+          <ref name='unsignedInt'/>
         </element>
         <optional>
           <element name='label'>
@@ -175,7 +176,7 @@
     <element name='target'>
       <optional>
         <element name='path'>
-          <ref name='path'/>
+          <ref name='absFilePath'/>
         </element>
       </optional>
       <ref name='permissions'/>
@@ -200,7 +201,7 @@
     <element name='device'>
       <attribute name='path'>
         <choice>
-          <ref name='path'/>
+          <ref name='absFilePath'/>
           <ref name='name'/>
         </choice>
       </attribute>
@@ -226,10 +227,10 @@
     <oneOrMore>
       <element name='freeExtent'>
         <attribute name='start'>
-          <ref name='uint'/>
+          <ref name='unsignedLong'/>
         </attribute>
         <attribute name='end'>
-          <ref name='uint'/>
+          <ref name='unsignedLong'/>
         </attribute>
       </element>
     </oneOrMore>
@@ -238,7 +239,7 @@
   <define name='sourceinfodir'>
     <element name='dir'>
       <attribute name='path'>
-        <ref name='path'/>
+        <ref name='absFilePath'/>
       </attribute>
       <empty/>
     </element>
@@ -452,28 +453,6 @@
   <define name='name'>
     <data type='string'>
       <param name="pattern">[a-zA-Z0-9_\+\-]+</param>
-    </data>
-  </define>
-  <define name='uuid'>
-    <choice>
-      <data type='string'>
-        <param name="pattern">[a-fA-F0-9]{32}</param>
-      </data>
-      <data type='string'>
-        <param name="pattern">[a-fA-F0-9]{8}\-([a-fA-F0-9]{4}\-){3}[a-fA-F0-9]{12}</param>
-      </data>
-    </choice>
-  </define>
-
-  <define name='uint'>
-    <data type='string'>
-      <param name="pattern">[0-9]+</param>
-    </data>
-  </define>
-
-  <define name='path'>
-    <data type='string'>
-      <param name="pattern">/[a-zA-Z0-9_\+\-/%]+</param>
     </data>
   </define>
 

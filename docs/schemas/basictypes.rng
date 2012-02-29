@@ -8,6 +8,11 @@
       <param name="pattern">[0-9]+</param>
     </data>
   </define>
+  <define name='unsignedLong'>
+    <data type='unsignedLong'>
+      <param name='pattern'>[0-9]+</param>
+    </data>
+  </define>
 
   <define name="positiveInteger">
     <data type="positiveInteger">
@@ -130,6 +135,12 @@
   <define name="absDirPath">
     <data type="string">
       <param name="pattern">/[a-zA-Z0-9_\.\+\-\\&amp;&quot;&apos;&lt;&gt;/%]*</param>
+    </data>
+  </define>
+
+  <define name='unit'>
+    <data type='string'>
+      <param name='pattern'>[kKmMgGtTpPeE]</param>
     </data>
   </define>
 

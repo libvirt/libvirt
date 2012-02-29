@@ -1,6 +1,8 @@
+<?xml version="1.0"?>
 <!-- A Relax NG schema for the libvirt storage volume XML format -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
     datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <include href='basictypes.rng'/>
   <start>
     <ref name='vol'/>
   </start>
@@ -35,12 +37,17 @@
             <ref name='unit'/>
           </attribute>
         </optional>
-        <ref name='uint'/>
+        <ref name='unsignedLong'/>
       </element>
     </optional>
     <optional>
       <element name='allocation'>
-        <ref name='uint'/>
+        <optional>
+          <attribute name='unit'>
+            <ref name='unit'/>
+          </attribute>
+        </optional>
+        <ref name='unsignedLong'/>
       </element>
     </optional>
   </define>
@@ -49,13 +56,13 @@
     <optional>
       <element name='permissions'>
         <element name='mode'>
-          <ref name='uint'/>
+          <ref name='unsignedInt'/>
         </element>
         <element name='owner'>
-          <ref name='uint'/>
+          <ref name='unsignedInt'/>
         </element>
         <element name='group'>
-          <ref name='uint'/>
+          <ref name='unsignedInt'/>
         </element>
         <optional>
           <element name='label'>
@@ -70,7 +77,7 @@
     <element name='target'>
       <optional>
         <element name='path'>
-          <ref name='path'/>
+          <ref name='absFilePath'/>
         </element>
       </optional>
       <ref name='format'/>
@@ -84,7 +91,7 @@
   <define name='backingStore'>
     <element name='backingStore'>
       <element name='path'>
-        <ref name='path'/>
+        <ref name='absFilePath'/>
       </element>
       <ref name='format'/>
       <ref name='permissions'/>
@@ -103,7 +110,7 @@
   <define name='sourcedev'>
     <element name='device'>
       <attribute name='path'>
-        <ref name='path'/>
+        <ref name='absFilePath'/>
       </attribute>
       <choice>
         <empty/>
@@ -116,10 +123,10 @@
     <oneOrMore>
       <element name='extent'>
         <attribute name='start'>
-          <ref name='uint'/>
+          <ref name='unsignedLong'/>
         </attribute>
         <attribute name='end'>
-          <ref name='uint'/>
+          <ref name='unsignedLong'/>
         </attribute>
       </element>
     </oneOrMore>
@@ -178,35 +185,6 @@
     <data type='string'>
       <param name="pattern">[a-zA-Z0-9_\+\-\.]+</param>
     </data>
-  </define>
-
-  <define name='uint'>
-    <data type='string'>
-      <param name="pattern">[0-9]+</param>
-    </data>
-  </define>
-
-  <define name='path'>
-    <data type='string'>
-      <param name="pattern">/[a-zA-Z0-9_\+\-\./%]+</param>
-    </data>
-  </define>
-
-  <define name='unit'>
-    <data type='string'>
-      <param name="pattern">[kKmMgGtTpPyYzZ]</param>
-    </data>
-  </define>
-
-  <define name="UUID">
-    <choice>
-      <data type="string">
-        <param name="pattern">[a-fA-F0-9]{32}</param>
-      </data>
-      <data type="string">
-        <param name="pattern">[a-fA-F0-9]{8}\-([a-fA-F0-9]{4}\-){3}[a-fA-F0-9]{12}</param>
-      </data>
-    </choice>
   </define>
 
 </grammar>
