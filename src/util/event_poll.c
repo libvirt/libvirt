@@ -615,7 +615,7 @@ int virEventPollRunOnce(void) {
 
  retry:
     PROBE(EVENT_POLL_RUN,
-          "nhandles=%d imeout=%d",
+          "nhandles=%d timeout=%d",
           nfds, timeout);
     ret = poll(fds, nfds, timeout);
     if (ret < 0) {
