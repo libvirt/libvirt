@@ -1931,7 +1931,7 @@ storageVolumeWipeInternal(virStorageVolDefPtr def,
             alg_char = "gutmann";
             break;
         case VIR_STORAGE_VOL_WIPE_ALG_SCHNEIER:
-            alg_char = "shneier";
+            alg_char = "schneier";
             break;
         case VIR_STORAGE_VOL_WIPE_ALG_PFITZNER7:
             alg_char = "pfitzner7";
