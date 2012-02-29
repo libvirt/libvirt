@@ -236,11 +236,26 @@
     <feature name='osvw'> <!-- CPUID_EXT3_OSVW -->
       <cpuid function='0x80000001' ecx='0x00000200'/>
     </feature>
+    <feature name='ibs'>
+      <cpuid function='0x80000001' ecx='0x00000400'/>
+    </feature>
+    <feature name='xop'>
+      <cpuid function='0x80000001' ecx='0x00000800'/>
+    </feature>
     <feature name='skinit'> <!-- CPUID_EXT3_SKINIT -->
       <cpuid function='0x80000001' ecx='0x00001000'/>
     </feature>
     <feature name='wdt'>
       <cpuid function='0x80000001' ecx='0x00002000'/>
+    </feature>
+    <feature name='fma4'>
+      <cpuid function='0x80000001' ecx='0x00010000'/>
+    </feature>
+    <feature name='cvt16'>
+      <cpuid function='0x80000001' ecx='0x00040000'/>
+    </feature>
+    <feature name='nodeid_msr'>
+      <cpuid function='0x80000001' ecx='0x00080000'/>
     </feature>
 
     <!-- models -->
