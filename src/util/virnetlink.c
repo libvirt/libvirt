@@ -270,7 +270,7 @@ virNetlinkEventCallback(int watch,
  * stop the monitor to receive netlink messages for libvirtd.
  * This removes the netlink socket fd from the event handler.
  *
- * returns -1 if the monitor cannot be unregistered, 0 upon success
+ * Returns -1 if the monitor cannot be unregistered, 0 upon success
  */
 int
 virNetlinkEventServiceStop(void)
@@ -305,9 +305,9 @@ virNetlinkEventServiceStop(void)
 /**
  * virNetlinkEventServiceIsRunning:
  *
- * returns if the netlink event service is running.
+ * Returns if the netlink event service is running.
  *
- * returns 'true' if the service is running, 'false' if stopped.
+ * Returns 'true' if the service is running, 'false' if stopped.
  */
 bool
 virNetlinkEventServiceIsRunning(void)
@@ -321,7 +321,7 @@ virNetlinkEventServiceIsRunning(void)
  * start a monitor to receive netlink messages for libvirtd.
  * This registers a netlink socket with the event interface.
  *
- * returns -1 if the monitor cannot be registered, 0 upon success
+ * Returns -1 if the monitor cannot be registered, 0 upon success
  */
 int
 virNetlinkEventServiceStart(void)
@@ -410,13 +410,15 @@ error:
  * @handleCB: callback to invoke when an event occurs
  * @removeCB: callback to invoke when removing a client
  * @opaque: user data to pass to callback
- * @macaddr: macaddr to store with the data. Used to identify callers. May be null.
+ * @macaddr: macaddr to store with the data. Used to identify callers.
+ *           May be null.
  *
  * register a callback for handling of netlink messages. The
  * registered function receives the entire netlink message and
  * may choose to act upon it.
  *
- * returns -1 if the file handle cannot be registered, number of monitor upon success
+ * Returns -1 if the file handle cannot be registered, number of
+ * monitor upon success.
  */
 int
 virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
@@ -481,7 +483,7 @@ error:
  * The handler function referenced will no longer receive netlink messages.
  * Either watch or macaddr may be used, the other should be null.
  *
- * returns -1 if the file handle was not registered, 0 upon success
+ * Returns -1 if the file handle was not registered, 0 upon success
  */
 int
 virNetlinkEventRemoveClient(int watch, const unsigned char *macaddr)
@@ -538,7 +540,8 @@ int virNetlinkCommand(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
 }
 
 /**
- * stopNetlinkEventServer: stop the monitor to receive netlink messages for libvirtd
+ * stopNetlinkEventServer: stop the monitor to receive netlink
+ * messages for libvirtd
  */
 int virNetlinkEventServiceStop(void)
 {
@@ -551,7 +554,8 @@ int virNetlinkEventServiceStop(void)
 }
 
 /**
- * startNetlinkEventServer: start a monitor to receive netlink messages for libvirtd
+ * startNetlinkEventServer: start a monitor to receive netlink
+ * messages for libvirtd
  */
 int virNetlinkEventServiceStart(void)
 {
@@ -564,7 +568,8 @@ int virNetlinkEventServiceStart(void)
 }
 
 /**
- * virNetlinkEventServiceIsRunning: returns if the netlink event service is running.
+ * virNetlinkEventServiceIsRunning: returns if the netlink event
+ * service is running.
  */
 int virNetlinkEventServiceIsRunning(void)
 {
@@ -577,7 +582,8 @@ int virNetlinkEventServiceIsRunning(void)
 }
 
 /**
- * virNetlinkEventAddClient: register a callback for handling of netlink messages
+ * virNetlinkEventAddClient: register a callback for handling of
+ * netlink messages
  */
 int virNetlinkEventAddClient(virNetlinkEventHandleCallback cb,
                              virNetlinkEventRemoveCallback cb,
