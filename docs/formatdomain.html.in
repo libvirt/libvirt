@@ -2588,7 +2588,7 @@ qemu-kvm -net nic,model=? /dev/null
       <span class="since">Since 0.9.4</span>
     </p>
 
-    <h5><a name="elementLink">Modyfing virtual link state</a></h5>
+    <h5><a name="elementLink">Modifying virtual link state</a></h5>
 <pre>
   ...
   &lt;devices&gt;
