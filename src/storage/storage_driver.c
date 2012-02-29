@@ -1937,7 +1937,7 @@ storageVolumeWipeInternal(virStorageVolDefPtr def,
             alg_char = "pfitzner7";
             break;
         case VIR_STORAGE_VOL_WIPE_ALG_PFITZNER33:
-            alg_char = " pfitzner33";
+            alg_char = "pfitzner33";
             break;
         case VIR_STORAGE_VOL_WIPE_ALG_RANDOM:
             alg_char = "random";
