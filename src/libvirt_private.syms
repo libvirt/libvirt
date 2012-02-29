@@ -1271,12 +1271,11 @@ virNetDevVPortProfileOpTypeToString;
 
 #virnetlink.h
 virNetlinkCommand;
+virNetlinkEventAddClient;
+virNetlinkEventRemoveClient;
 virNetlinkEventServiceIsRunning;
 virNetlinkEventServiceStop;
 virNetlinkEventServiceStart;
-virNetlinkEventAddClient;
-virNetlinkEventRemoveClient;
-
 
 
 # virnetmessage.h
