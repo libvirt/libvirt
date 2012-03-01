@@ -178,7 +178,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
     char *brname = NULL;
     int err;
     int tapfd = -1;
-    int vnet_hdr = 0;
+    unsigned int tap_create_flags = VIR_NETDEV_TAP_CREATE_IFUP;
     bool template_ifname = false;
     int actualType = virDomainNetGetActualType(net);
 
@@ -240,12 +240,13 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
     }
 
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_VNET_HDR) &&
-        net->model && STREQ(net->model, "virtio"))
-        vnet_hdr = 1;
+        net->model && STREQ(net->model, "virtio")) {
+        tap_create_flags |= VIR_NETDEV_TAP_CREATE_VNET_HDR;
+    }
 
-    err = virNetDevTapCreateInBridgePort(brname, &net->ifname, net->mac, true,
-                                         vnet_hdr, true, &tapfd,
-                                         virDomainNetGetActualVirtPortProfile(net));
+    err = virNetDevTapCreateInBridgePort(brname, &net->ifname, net->mac, &tapfd,
+                                         virDomainNetGetActualVirtPortProfile(net),
+                                         tap_create_flags);
     virDomainAuditNetDevice(def, net, "/dev/net/tun", tapfd >= 0);
     if (err < 0) {
         if (template_ifname)

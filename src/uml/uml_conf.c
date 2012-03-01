@@ -1,7 +1,7 @@
 /*
  * uml_conf.c: UML driver configuration
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -138,9 +138,9 @@ umlConnectTapDevice(virConnectPtr conn,
         template_ifname = true;
     }
 
-    if (virNetDevTapCreateInBridgePort(bridge, &net->ifname, net->mac, true,
-                                       0, true, NULL,
-                                       virDomainNetGetActualVirtPortProfile(net)) < 0) {
+    if (virNetDevTapCreateInBridgePort(bridge, &net->ifname, net->mac, NULL,
+                                       virDomainNetGetActualVirtPortProfile(net),
+                                       VIR_NETDEV_TAP_CREATE_IFUP) < 0) {
         if (template_ifname)
             VIR_FREE(net->ifname);
         goto error;

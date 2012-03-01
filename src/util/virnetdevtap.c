@@ -107,22 +107,25 @@ virNetDevProbeVnetHdr(int tapfd)
 
 #ifdef TUNSETIFF
 /**
- * brCreateTap:
+ * virNetDevTapCreate:
  * @ifname: the interface name
- * @vnet_hr: whether to try enabling IFF_VNET_HDR
  * @tapfd: file descriptor return value for the new tap device
+ * @flags: OR of virNetDevTapCreateFlags. Only one flag is recognized:
+ *
+ *   VIR_NETDEV_TAP_CREATE_VNET_HDR
+ *     - Enable IFF_VNET_HDR on the tap device
  *
  * Creates a tap interface.
  * If the @tapfd parameter is supplied, the open tap device file
  * descriptor will be returned, otherwise the TAP device will be made
- * persistent and closed. The caller must use brDeleteTap to remove
- * a persistent TAP devices when it is no longer needed.
+ * persistent and closed. The caller must use virNetDevTapDelete to
+ * remove a persistent TAP devices when it is no longer needed.
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
 int virNetDevTapCreate(char **ifname,
-                       int vnet_hdr ATTRIBUTE_UNUSED,
-                       int *tapfd)
+                       int *tapfd,
+                       unsigned int flags ATTRIBUTE_UNUSED)
 {
     int fd;
     struct ifreq ifr;
@@ -139,7 +142,8 @@ int virNetDevTapCreate(char **ifname,
     ifr.ifr_flags = IFF_TAP|IFF_NO_PI;
 
 # ifdef IFF_VNET_HDR
-    if (vnet_hdr && virNetDevProbeVnetHdr(fd))
+    if ((flags &  VIR_NETDEV_TAP_CREATE_VNET_HDR) &&
+        virNetDevProbeVnetHdr(fd))
         ifr.ifr_flags |= IFF_VNET_HDR;
 # endif
 
@@ -228,8 +232,8 @@ cleanup:
 }
 #else /* ! TUNSETIFF */
 int virNetDevTapCreate(char **ifname ATTRIBUTE_UNUSED,
-                       int vnet_hdr ATTRIBUTE_UNUSED,
-                       int *tapfd ATTRIBUTE_UNUSED)
+                       int *tapfd ATTRIBUTE_UNUSED,
+                       unsigned int flags ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to create TAP devices on this platform"));
@@ -249,17 +253,23 @@ int virNetDevTapDelete(const char *ifname ATTRIBUTE_UNUSED)
  * @brname: the bridge name
  * @ifname: the interface name (or name template)
  * @macaddr: desired MAC address (VIR_MAC_BUFLEN long)
- * @discourage: whether bridge should be discouraged from using macaddr
- * @vnet_hdr: whether to try enabling IFF_VNET_HDR
  * @tapfd: file descriptor return value for the new tap device
  * @virtPortProfile: bridge/port specific configuration
+ * @flags: OR of virNetDevTapCreateFlags:
+
+ *   VIR_NETDEV_TAP_CREATE_IFUP
+ *     - Bring the interface up
+ *   VIR_NETDEV_TAP_CREATE_VNET_HDR
+ *     - Enable IFF_VNET_HDR on the tap device
+ *   VIR_NETDEV_TAP_CREATE_USE_MAC_FOR_BRIDGE
+ *     - Set this interface's MAC as the bridge's MAC address
  *
  * This function creates a new tap device on a bridge. @ifname can be either
  * a fixed name or a name template with '%d' for dynamic name allocation.
  * in either case the final name for the bridge will be stored in @ifname.
  * If the @tapfd parameter is supplied, the open tap device file
  * descriptor will be returned, otherwise the TAP device will be made
- * persistent and closed. The caller must use brDeleteTap to remove
+ * persistent and closed. The caller must use virNetDevTapDelete to remove
  * a persistent TAP devices when it is no longer needed.
  *
  * Returns 0 in case of success or -1 on failure
@@ -267,15 +277,13 @@ int virNetDevTapDelete(const char *ifname ATTRIBUTE_UNUSED)
 int virNetDevTapCreateInBridgePort(const char *brname,
                                    char **ifname,
                                    const unsigned char *macaddr,
-                                   bool discourage,
-                                   int vnet_hdr,
-                                   bool up,
                                    int *tapfd,
-                                   virNetDevVPortProfilePtr virtPortProfile)
+                                   virNetDevVPortProfilePtr virtPortProfile,
+                                   unsigned int flags)
 {
     unsigned char tapmac[VIR_MAC_BUFLEN];
 
-    if (virNetDevTapCreate(ifname, vnet_hdr, tapfd) < 0)
+    if (virNetDevTapCreate(ifname, tapfd, flags) < 0)
         return -1;
 
     /* We need to set the interface MAC before adding it
@@ -285,7 +293,7 @@ int virNetDevTapCreateInBridgePort(const char *brname,
      * device before we set our static MAC.
      */
     memcpy(tapmac, macaddr, VIR_MAC_BUFLEN);
-    if (discourage)
+    if (!(flags & VIR_NETDEV_TAP_CREATE_USE_MAC_FOR_BRIDGE))
         tapmac[0] = 0xFE; /* Discourage bridge from using TAP dev MAC */
 
     if (virNetDevSetMAC(*ifname, tapmac) < 0)
@@ -308,7 +316,7 @@ int virNetDevTapCreateInBridgePort(const char *brname,
             goto error;
     }
 
-    if (virNetDevSetOnline(*ifname, up) < 0)
+    if (virNetDevSetOnline(*ifname, !!(flags & VIR_NETDEV_TAP_CREATE_IFUP)) < 0)
         goto error;
 
     return 0;

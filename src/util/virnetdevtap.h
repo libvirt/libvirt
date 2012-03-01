@@ -27,21 +27,29 @@
 # include "virnetdevvportprofile.h"
 
 int virNetDevTapCreate(char **ifname,
-                       int vnet_hdr,
-                       int *tapfd)
+                       int *tapfd,
+                       unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevTapDelete(const char *ifname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
+typedef enum {
+   VIR_NETDEV_TAP_CREATE_NONE = 0,
+   /* Bring the interface up */
+   VIR_NETDEV_TAP_CREATE_IFUP               = 1 << 0,
+   /* Enable IFF_VNET_HDR on the tap device */
+   VIR_NETDEV_TAP_CREATE_VNET_HDR           = 1 << 1,
+   /* Set this interface's MAC as the bridge's MAC address */
+   VIR_NETDEV_TAP_CREATE_USE_MAC_FOR_BRIDGE = 1 << 2,
+} virNetDevTapCreateFlags;
+
 int virNetDevTapCreateInBridgePort(const char *brname,
                                    char **ifname,
                                    const unsigned char *macaddr,
-                                   bool discourage,
-                                   int vnet_hdr,
-                                   bool up,
                                    int *tapfd,
-                                   virNetDevVPortProfilePtr virtPortProfile)
+                                   virNetDevVPortProfilePtr virtPortProfile,
+                                   unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_RETURN_CHECK;
 
