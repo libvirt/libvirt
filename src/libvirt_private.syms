@@ -287,6 +287,7 @@ virDomainDeviceAddressIsValid;
 virDomainDeviceAddressPciMultiTypeFromString;
 virDomainDeviceAddressPciMultiTypeToString;
 virDomainDeviceAddressTypeToString;
+virDomainDeviceDefCopy;
 virDomainDeviceDefFree;
 virDomainDeviceDefParse;
 virDomainDeviceInfoIterate;

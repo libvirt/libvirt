@@ -5567,7 +5567,7 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr vmdef = NULL;
-    virDomainDeviceDefPtr dev = NULL;
+    virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
     bool force = (flags & VIR_DOMAIN_DEVICE_MODIFY_FORCE) != 0;
     int ret = -1;
     unsigned int affect;
@@ -5614,12 +5614,23 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
          goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
-                                      VIR_DOMAIN_XML_INACTIVE);
-        if (dev == NULL)
-            goto endjob;
+    dev = dev_copy = virDomainDeviceDefParse(driver->caps, vm->def, xml,
+                                             VIR_DOMAIN_XML_INACTIVE);
+    if (dev == NULL)
+        goto endjob;
 
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG &&
+        flags & VIR_DOMAIN_AFFECT_LIVE) {
+        /* If we are affecting both CONFIG and LIVE
+         * create a deep copy of device as adding
+         * to CONFIG takes one instance.
+         */
+        dev_copy = virDomainDeviceDefCopy(driver->caps, vm->def, dev);
+        if (!dev_copy)
+            goto endjob;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         /* Make a copy for updated domain. */
         vmdef = virDomainObjCopyPersistentDef(driver->caps, vm);
         if (!vmdef)
@@ -5645,24 +5656,15 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        /* If dev exists it was created to modify the domain config. Free it. */
-        virDomainDeviceDefFree(dev);
-        dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
-                                      VIR_DOMAIN_XML_INACTIVE);
-        if (dev == NULL) {
-            ret = -1;
-            goto endjob;
-        }
-
         switch (action) {
         case QEMU_DEVICE_ATTACH:
-            ret = qemuDomainAttachDeviceLive(vm, dev, dom);
+            ret = qemuDomainAttachDeviceLive(vm, dev_copy, dom);
             break;
         case QEMU_DEVICE_DETACH:
-            ret = qemuDomainDetachDeviceLive(vm, dev, dom);
+            ret = qemuDomainDetachDeviceLive(vm, dev_copy, dom);
             break;
         case QEMU_DEVICE_UPDATE:
-            ret = qemuDomainUpdateDeviceLive(vm, dev, dom, force);
+            ret = qemuDomainUpdateDeviceLive(vm, dev_copy, dom, force);
             break;
         default:
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -5699,6 +5701,8 @@ endjob:
 
 cleanup:
     virDomainDefFree(vmdef);
+    if (dev != dev_copy)
+        virDomainDeviceDefFree(dev_copy);
     virDomainDeviceDefFree(dev);
     if (vm)
         virDomainObjUnlock(vm);

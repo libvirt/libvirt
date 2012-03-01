@@ -1794,6 +1794,9 @@ void virDomainHostdevDefFree(virDomainHostdevDefPtr def);
 void virDomainHubDefFree(virDomainHubDefPtr def);
 void virDomainRedirdevDefFree(virDomainRedirdevDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
+virDomainDeviceDefPtr virDomainDeviceDefCopy(virCapsPtr caps,
+                                             const virDomainDefPtr def,
+                                             virDomainDeviceDefPtr src);
 int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
                                   int type);
 int virDomainDevicePCIAddressIsValid(virDomainDevicePCIAddressPtr addr);

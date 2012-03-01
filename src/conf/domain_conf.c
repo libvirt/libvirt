@@ -14590,3 +14590,87 @@ virDomainNetFind(virDomainDefPtr def, const char *device)
 
     return net;
 }
+
+/**
+ * virDomainDeviceDefCopy:
+ * @caps: Capabilities
+ * @def: Domain definition to which @src belongs
+ * @src: source to be copied
+ *
+ * virDomainDeviceDefCopy does a deep copy of only the parts of a
+ * DeviceDef that are valid when just the flag VIR_DOMAIN_XML_INACTIVE is
+ * set. This means that any part of the device xml that is conditionally
+ * parsed/formatted based on some other flag being set (or on the INACTIVE
+ * flag being reset) *will not* be copied to the destination. Caveat emptor.
+ *
+ * Returns a pointer to copied @src or NULL in case of error.
+ */
+virDomainDeviceDefPtr
+virDomainDeviceDefCopy(virCapsPtr caps,
+                       const virDomainDefPtr def,
+                       virDomainDeviceDefPtr src)
+{
+    virDomainDeviceDefPtr ret = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int flags = VIR_DOMAIN_XML_INACTIVE;
+    char *xmlStr = NULL;
+    int rc = -1;
+
+    switch(src->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        rc = virDomainDiskDefFormat(&buf, src->data.disk, flags);
+        break;
+    case VIR_DOMAIN_DEVICE_LEASE:
+        rc = virDomainLeaseDefFormat(&buf, src->data.lease);
+        break;
+    case VIR_DOMAIN_DEVICE_FS:
+        rc = virDomainFSDefFormat(&buf, src->data.fs, flags);
+        break;
+    case VIR_DOMAIN_DEVICE_NET:
+        rc = virDomainNetDefFormat(&buf, src->data.net, flags);
+        break;
+    case VIR_DOMAIN_DEVICE_INPUT:
+        rc = virDomainInputDefFormat(&buf, src->data.input, flags);
+        break;
+    case VIR_DOMAIN_DEVICE_SOUND:
+        rc = virDomainSoundDefFormat(&buf, src->data.sound, flags);
+        break;
+    case VIR_DOMAIN_DEVICE_VIDEO:
+        rc = virDomainVideoDefFormat(&buf, src->data.video, flags);
+        break;
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        rc = virDomainHostdevDefFormat(&buf, src->data.hostdev, flags);
+        break;
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+        rc = virDomainWatchdogDefFormat(&buf, src->data.watchdog, flags);
+        break;
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+        rc = virDomainControllerDefFormat(&buf, src->data.controller, flags);
+        break;
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+        rc = virDomainGraphicsDefFormat(&buf, src->data.graphics, flags);
+        break;
+    case VIR_DOMAIN_DEVICE_HUB:
+        rc = virDomainHubDefFormat(&buf, src->data.hub, flags);
+        break;
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+        rc = virDomainRedirdevDefFormat(&buf, src->data.redirdev, flags);
+        break;
+    default:
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("Copying definition of '%d' type "
+                               "is not implemented yet."),
+                             src->type);
+        goto cleanup;
+    }
+
+    if (rc < 0)
+        goto cleanup;
+
+    xmlStr = virBufferContentAndReset(&buf);
+    ret = virDomainDeviceDefParse(caps, def, xmlStr, flags);
+
+cleanup:
+    VIR_FREE(xmlStr);
+    return ret;
+}
