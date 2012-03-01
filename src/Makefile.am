@@ -1569,6 +1569,9 @@ virt_aa_helper_LDADD =						\
 		libvirt_conf.la					\
 		libvirt_util.la					\
 		../gnulib/lib/libgnu.la
+if WITH_DTRACE_PROBES
+virt_aa_helper_LDADD += probes.o
+endif
 virt_aa_helper_CFLAGS =						\
 		-I$(top_srcdir)/src/conf			\
 		-I$(top_srcdir)/src/security			\
