@@ -802,6 +802,7 @@ virNodeDeviceObjUnlock;
 
 # nodeinfo.h
 nodeCapsInitNUMA;
+nodeGetCPUmap;
 nodeGetCPUStats;
 nodeGetCellsFreeMemory;
 nodeGetFreeMemory;

@@ -1,7 +1,7 @@
 /*
  * nodeinfo.c: Helper routines for OS specific node information
  *
- * Copyright (C) 2006-2008, 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2010-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -31,6 +31,7 @@
 #include <dirent.h>
 #include <sys/utsname.h>
 #include <sched.h>
+#include "conf/domain_conf.h"
 
 #if HAVE_NUMACTL
 # define NUMA_VERSION1_COMPATIBILITY 1
@@ -569,6 +570,47 @@ int linuxNodeGetMemoryStats(FILE *meminfo,
 cleanup:
     return ret;
 }
+
+/*
+ * Linux maintains cpu bit map. For example, if cpuid=5's flag is not set
+ * and max cpu is 7. The map file shows 0-4,6-7. This function parses
+ * it and returns cpumap.
+ */
+static char *
+linuxParseCPUmap(int *max_cpuid, const char *path)
+{
+    char *map = NULL;
+    char *str = NULL;
+    int max_id, i;
+
+    if (virFileReadAll(path, 5 * VIR_DOMAIN_CPUMASK_LEN, &str) < 0) {
+        virReportOOMError();
+        goto error;
+    }
+
+    if (VIR_ALLOC_N(map, VIR_DOMAIN_CPUMASK_LEN) < 0) {
+        virReportOOMError();
+        goto error;
+    }
+    if (virDomainCpuSetParse(str, 0, map,
+                             VIR_DOMAIN_CPUMASK_LEN) < 0) {
+        goto error;
+    }
+
+    for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++) {
+        if (map[i]) {
+            max_id = i;
+        }
+    }
+    *max_cpuid = max_id;
+
+    return map;
+
+error:
+    VIR_FREE(str);
+    VIR_FREE(map);
+    return NULL;
+}
 #endif
 
 int nodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED, virNodeInfoPtr nodeinfo) {
@@ -709,6 +751,30 @@ int nodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
     nodeReportError(VIR_ERR_NO_SUPPORT, "%s",
                     _("node memory stats not implemented on this platform"));
     return -1;
+#endif
+}
+
+char *
+nodeGetCPUmap(virConnectPtr conn ATTRIBUTE_UNUSED,
+              int *max_id ATTRIBUTE_UNUSED,
+              const char *mapname ATTRIBUTE_UNUSED)
+{
+#ifdef __linux__
+    char *path;
+    char *cpumap;
+
+    if (virAsprintf(&path, CPU_SYS_PATH "/%s", mapname) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    cpumap = linuxParseCPUmap(max_id, path);
+    VIR_FREE(path);
+    return cpumap;
+#else
+    nodeReportError(VIR_ERR_NO_SUPPORT, "%s",
+                    _("node cpumap not implemented on this platform"));
+    return NULL;
 #endif
 }
 

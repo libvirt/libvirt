@@ -1,7 +1,7 @@
 /*
  * nodeinfo.c: Helper routines for OS specific node information
  *
- * Copyright (C) 2006-2008, 2011 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2011-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -46,4 +46,7 @@ int nodeGetCellsFreeMemory(virConnectPtr conn,
                            int maxCells);
 unsigned long long nodeGetFreeMemory(virConnectPtr conn);
 
+char *nodeGetCPUmap(virConnectPtr conn,
+                    int *max_id,
+                    const char *mapname);
 #endif /* __VIR_NODEINFO_H__*/
