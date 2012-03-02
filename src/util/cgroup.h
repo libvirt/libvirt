@@ -115,6 +115,7 @@ int virCgroupSetCpuCfsQuota(virCgroupPtr group, long long cfs_quota);
 int virCgroupGetCpuCfsQuota(virCgroupPtr group, long long *cfs_quota);
 
 int virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage);
+int virCgroupGetCpuacctPercpuUsage(virCgroupPtr group, char **usage);
 
 int virCgroupSetFreezerState(virCgroupPtr group, const char *state);
 int virCgroupGetFreezerState(virCgroupPtr group, char **state);

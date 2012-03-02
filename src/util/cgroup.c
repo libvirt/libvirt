@@ -1555,6 +1555,12 @@ int virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage)
                                 "cpuacct.usage", usage);
 }
 
+int virCgroupGetCpuacctPercpuUsage(virCgroupPtr group, char **usage)
+{
+    return virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_CPUACCT,
+                                "cpuacct.usage_percpu", usage);
+}
+
 int virCgroupSetFreezerState(virCgroupPtr group, const char *state)
 {
     return virCgroupSetValueStr(group,

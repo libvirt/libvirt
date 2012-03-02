@@ -74,16 +74,17 @@ virCgroupForDriver;
 virCgroupForVcpu;
 virCgroupFree;
 virCgroupGetBlkioWeight;
-virCgroupGetCpuShares;
 virCgroupGetCpuCfsPeriod;
 virCgroupGetCpuCfsQuota;
+virCgroupGetCpuShares;
+virCgroupGetCpuacctPercpuUsage;
 virCgroupGetCpuacctUsage;
 virCgroupGetCpusetMems;
 virCgroupGetFreezerState;
+virCgroupGetMemSwapHardLimit;
 virCgroupGetMemoryHardLimit;
 virCgroupGetMemorySoftLimit;
 virCgroupGetMemoryUsage;
-virCgroupGetMemSwapHardLimit;
 virCgroupKill;
 virCgroupKillPainfully;
 virCgroupKillRecursive;
@@ -92,15 +93,15 @@ virCgroupPathOfController;
 virCgroupRemove;
 virCgroupSetBlkioDeviceWeight;
 virCgroupSetBlkioWeight;
-virCgroupSetCpuShares;
 virCgroupSetCpuCfsPeriod;
 virCgroupSetCpuCfsQuota;
+virCgroupSetCpuShares;
 virCgroupSetCpusetMems;
 virCgroupSetFreezerState;
+virCgroupSetMemSwapHardLimit;
 virCgroupSetMemory;
 virCgroupSetMemoryHardLimit;
 virCgroupSetMemorySoftLimit;
-virCgroupSetMemSwapHardLimit;
 
 
 # command.h

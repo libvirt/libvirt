@@ -12095,6 +12095,158 @@ cleanup:
     return ret;
 }
 
+/* qemuDomainGetCPUStats() with start_cpu == -1 */
+static int
+qemuDomainGetTotalcpuStats(virCgroupPtr group,
+                           virTypedParameterPtr params,
+                           int nparams)
+{
+    unsigned long long cpu_time;
+    int param_idx = 0;
+    int ret;
+
+    if (nparams == 0) /* return supported number of params */
+        return 1;
+    /* entry 0 is cputime */
+    ret = virCgroupGetCpuacctUsage(group, &cpu_time);
+    if (ret < 0) {
+        virReportSystemError(-ret, "%s", _("unable to get cpu account"));
+        return -1;
+    }
+
+    virTypedParameterAssign(&params[param_idx], VIR_DOMAIN_CPU_STATS_CPUTIME,
+                            VIR_TYPED_PARAM_ULLONG, cpu_time);
+    return 1;
+}
+
+static int
+qemuDomainGetPercpuStats(virDomainPtr domain,
+                         virCgroupPtr group,
+                         virTypedParameterPtr params,
+                         unsigned int nparams,
+                         int start_cpu,
+                         unsigned int ncpus)
+{
+    char *map = NULL;
+    int rv = -1;
+    int i, max_id;
+    char *pos;
+    char *buf = NULL;
+    virTypedParameterPtr ent;
+    int param_idx;
+
+    /* return the number of supported params */
+    if (nparams == 0 && ncpus != 0)
+        return 1; /* only cpu_time is supported */
+
+    /* return percpu cputime in index 0 */
+    param_idx = 0;
+    /* to parse account file, we need "present" cpu map */
+    map = nodeGetCPUmap(domain->conn, &max_id, "present");
+    if (!map)
+        return rv;
+
+    if (ncpus == 0) { /* returns max cpu ID */
+        rv = max_id + 1;
+        goto cleanup;
+    }
+
+    if (start_cpu > max_id) {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        _("start_cpu %d larger than maximum of %d"),
+                        start_cpu, max_id);
+        goto cleanup;
+    }
+
+    /* we get percpu cputime accounting info. */
+    if (virCgroupGetCpuacctPercpuUsage(group, &buf))
+        goto cleanup;
+    pos = buf;
+
+    if (max_id - start_cpu > ncpus - 1)
+        max_id = start_cpu + ncpus - 1;
+
+    for (i = 0; i <= max_id; i++) {
+        unsigned long long cpu_time;
+
+        if (!map[i]) {
+            cpu_time = 0;
+        } else if (virStrToLong_ull(pos, &pos, 10, &cpu_time) < 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("cpuacct parse error"));
+            goto cleanup;
+        }
+        if (i < start_cpu)
+            continue;
+        ent = &params[ (i - start_cpu) * nparams + param_idx];
+        virTypedParameterAssign(ent, VIR_DOMAIN_CPU_STATS_CPUTIME,
+                                VIR_TYPED_PARAM_ULLONG, cpu_time);
+    }
+    rv = param_idx + 1;
+cleanup:
+    VIR_FREE(buf);
+    VIR_FREE(map);
+    return rv;
+}
+
+
+static int
+qemuDomainGetCPUStats(virDomainPtr domain,
+                virTypedParameterPtr params,
+                unsigned int nparams,
+                int start_cpu,
+                unsigned int ncpus,
+                unsigned int flags)
+{
+    struct qemud_driver *driver = domain->conn->privateData;
+    virCgroupPtr group = NULL;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+    bool isActive;
+
+    virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
+
+    qemuDriverLock(driver);
+
+    vm = virDomainFindByUUID(&driver->domains, domain->uuid);
+    if (vm == NULL) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("No such domain %s"), domain->uuid);
+        goto cleanup;
+    }
+
+    isActive = virDomainObjIsActive(vm);
+    if (!isActive) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPUACCT)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("cgroup CPUACCT controller is not mounted"));
+        goto cleanup;
+    }
+
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("cannot find cgroup for domain %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    if (start_cpu == -1)
+        ret = qemuDomainGetTotalcpuStats(group, params, nparams);
+    else
+        ret = qemuDomainGetPercpuStats(domain, group, params, nparams,
+                                       start_cpu, ncpus);
+cleanup:
+    virCgroupFree(&group);
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
 static int
 qemuDomainPMSuspendForDuration(virDomainPtr dom,
                                unsigned int target,
@@ -12395,6 +12547,7 @@ static virDriver qemuDriver = {
     .domainGetMetadata = qemuDomainGetMetadata, /* 0.9.10 */
     .domainPMSuspendForDuration = qemuDomainPMSuspendForDuration, /* 0.9.11 */
     .domainPMWakeup = qemuDomainPMWakeup, /* 0.9.11 */
+    .domainGetCPUStats = qemuDomainGetCPUStats, /* 0.9.11 */
 };
 
 
