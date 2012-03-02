@@ -5537,6 +5537,160 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "cpu-stats" command
+ */
+static const vshCmdInfo info_cpu_stats[] = {
+    {"help", N_("show domain cpu statistics")},
+    {"desc",
+     N_("Display per-CPU and total statistics about the domain's CPUs")},
+    {NULL, NULL},
+};
+
+static const vshCmdOptDef opts_cpu_stats[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"total", VSH_OT_BOOL, 0, N_("Show total statistics only")},
+    {"start", VSH_OT_INT, 0, N_("Show statistics from this CPU")},
+    {"count", VSH_OT_INT, 0, N_("Number of shown CPUs at most")},
+    {NULL, 0, 0, NULL},
+};
+
+static bool
+cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    virTypedParameterPtr params = NULL;
+    int i, j, pos, max_id, cpu = -1, show_count = -1, nparams;
+    bool show_total = false, show_per_cpu = false;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    show_total = vshCommandOptBool(cmd, "total");
+    if (vshCommandOptInt(cmd, "start", &cpu) > 0)
+        show_per_cpu = true;
+    if (vshCommandOptInt(cmd, "count", &show_count) > 0)
+        show_per_cpu = true;
+
+    /* default show per_cpu and total */
+    if (!show_total && !show_per_cpu) {
+        show_total = true;
+        show_per_cpu = true;
+    }
+
+    if (!show_per_cpu) /* show total stats only */
+        goto do_show_total;
+
+    /* check cpu, show_count, and ignore wrong argument */
+    if (cpu < 0)
+        cpu = 0;
+
+    /* get number of cpus on the node */
+    if ((max_id = virDomainGetCPUStats(dom, NULL, 0, 0, 0, 0)) < 0)
+        goto failed_stats;
+    if (show_count < 0 || show_count > max_id)
+        show_count = max_id;
+
+    /* get percpu information */
+    if ((nparams = virDomainGetCPUStats(dom, NULL, 0, 0, 1, 0)) < 0)
+        goto failed_stats;
+
+    if (!nparams) {
+        vshPrint(ctl, "%s", _("No per-CPU stats available"));
+        goto do_show_total;
+    }
+
+    if (VIR_ALLOC_N(params, nparams * MIN(show_count, 128)) < 0)
+        goto failed_params;
+
+    while (show_count) {
+        int ncpus = MIN(show_count, 128);
+
+        if (virDomainGetCPUStats(dom, params, nparams, cpu, ncpus, 0) < 0)
+            goto failed_stats;
+
+        for (i = 0; i < ncpus; i++) {
+            if (params[i * nparams].type == 0) /* this cpu is not in the map */
+                continue;
+            vshPrint(ctl, "CPU%d:\n", cpu + i);
+
+            for (j = 0; j < nparams; j++) {
+                pos = i * nparams + j;
+                vshPrint(ctl, "\t%-10s ", params[pos].field);
+                if (STREQ(params[pos].field, VIR_DOMAIN_CPU_STATS_CPUTIME) &&
+                    params[j].type == VIR_TYPED_PARAM_ULLONG) {
+                    vshPrint(ctl, "%lld.%09lld seconds\n",
+                             params[pos].value.ul / 1000000000,
+                             params[pos].value.ul % 1000000000);
+                } else {
+                    const char *s = vshGetTypedParamValue(ctl, &params[pos]);
+                    vshPrint(ctl, _("%s\n"), s);
+                    VIR_FREE(s);
+                }
+            }
+        }
+        cpu += ncpus;
+        show_count -= ncpus;
+        virTypedParameterArrayClear(params, nparams * ncpus);
+    }
+    VIR_FREE(params);
+
+do_show_total:
+    if (!show_total)
+        goto cleanup;
+
+    /* get supported num of parameter for total statistics */
+    if ((nparams = virDomainGetCPUStats(dom, NULL, 0, -1, 1, 0)) < 0)
+        goto failed_stats;
+
+    if (!nparams) {
+        vshPrint(ctl, "%s", _("No total stats available"));
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(params, nparams))
+        goto failed_params;
+
+    /* passing start_cpu == -1 gives us domain's total status */
+    if ((nparams = virDomainGetCPUStats(dom, params, nparams, -1, 1, 0)) < 0)
+        goto failed_stats;
+
+    vshPrint(ctl, _("Total:\n"));
+    for (i = 0; i < nparams; i++) {
+        vshPrint(ctl, "\t%-10s ", params[i].field);
+        if (STREQ(params[i].field, VIR_DOMAIN_CPU_STATS_CPUTIME) &&
+            params[i].type == VIR_TYPED_PARAM_ULLONG) {
+            vshPrint(ctl, "%llu.%09llu seconds\n",
+                     params[i].value.ul / 1000000000,
+                     params[i].value.ul % 1000000000);
+        } else {
+            char *s = vshGetTypedParamValue(ctl, &params[i]);
+            vshPrint(ctl, "%s\n", s);
+            VIR_FREE(s);
+        }
+    }
+    virTypedParameterArrayClear(params, nparams);
+    VIR_FREE(params);
+
+cleanup:
+    virDomainFree(dom);
+    return true;
+
+failed_params:
+    virReportOOMError();
+    virDomainFree(dom);
+    return false;
+
+failed_stats:
+    vshError(ctl, _("Failed to virDomainGetCPUStats()\n"));
+    VIR_FREE(params);
+    virDomainFree(dom);
+    return false;
+}
+
+/*
  * "inject-nmi" command
  */
 static const vshCmdInfo info_inject_nmi[] = {
@@ -16910,6 +17064,7 @@ static const vshCmdDef domManagementCmds[] = {
 #endif
     {"cpu-baseline", cmdCPUBaseline, opts_cpu_baseline, info_cpu_baseline, 0},
     {"cpu-compare", cmdCPUCompare, opts_cpu_compare, info_cpu_compare, 0},
+    {"cpu-stats", cmdCPUStats, opts_cpu_stats, info_cpu_stats, 0},
     {"create", cmdCreate, opts_create, info_create, 0},
     {"define", cmdDefine, opts_define, info_define, 0},
     {"desc", cmdDesc, opts_desc, info_desc, 0},

@@ -790,6 +790,14 @@ Provide the maximum number of virtual CPUs supported for a guest VM on
 this connection.  If provided, the I<type> parameter must be a valid
 type attribute for the <domain> element of XML.
 
+=item B<cpu-stats> I<domain> [I<--total>] [I<start>] [I<count>]
+
+Provide cpu statistics information of a domain. The domain should
+be running. Default it shows stats for all CPUs, and a total. Use
+I<--total> for only the total stats, I<start> for only the per-cpu
+stats of the CPUs from I<start>, I<count> for only I<count> CPUs'
+stats.
+
 =item B<migrate> [I<--live>] [I<--direct>] [I<--p2p> [I<--tunnelled>]]
 [I<--persistent>] [I<--undefinesource>] [I<--suspend>] [I<--copy-storage-all>]
 [I<--copy-storage-inc>] [I<--change-protection>] [I<--unsafe>] [I<--verbose>]
