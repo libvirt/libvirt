@@ -386,6 +386,12 @@ mymain(void)
     DO_TEST(30, "--shell a\n",
             "echo \t '-'\"-\" \t --shell \t a");
 
+    /* Tests of alias handling.  */
+    DO_TEST(31, "hello\n", "echo", "--string", "hello");
+    DO_TEST(32, "hello\n", "echo --string hello");
+    DO_TEST(33, "hello\n", "echo", "--str", "hello");
+    DO_TEST(34, "hello\n", "echo --str hello");
+
 # undef DO_TEST
 
     VIR_FREE(custom_uri);

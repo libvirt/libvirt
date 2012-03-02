@@ -115,6 +115,12 @@ program returned, may not mean the action is complete and you
 must poll periodically to detect that the guest completed the
 operation.
 
+B<virsh> strives for backward compatibility.  Although the B<help>
+command only lists the preferred usage of a command, if an older
+version of B<virsh> supported an alternate spelling of a command or
+option (such as I<--tunnelled> instead of I<--tunneled>), then
+scripts using that older spelling will continue to work.
+
 =head1 GENERIC COMMANDS
 
 The following commands are generic i.e. not specific to a domain.

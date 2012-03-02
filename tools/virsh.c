@@ -138,7 +138,8 @@ typedef enum {
     VSH_OT_STRING,   /* optional string option */
     VSH_OT_INT,      /* optional or mandatory int option */
     VSH_OT_DATA,     /* string data (as non-option) */
-    VSH_OT_ARGV      /* remaining arguments */
+    VSH_OT_ARGV,     /* remaining arguments */
+    VSH_OT_ALIAS,    /* alternate spelling for a later argument */
 } vshCmdOptType;
 
 /*
@@ -190,7 +191,8 @@ typedef struct {
     const char *name;           /* the name of option, or NULL for list end */
     vshCmdOptType type;         /* option type */
     unsigned int flags;         /* flags */
-    const char *help;           /* non-NULL help string */
+    const char *help;           /* non-NULL help string; or for VSH_OT_ALIAS
+                                 * the name of a later public option */
 } vshCmdOptDef;
 
 /*
@@ -15363,6 +15365,7 @@ static const vshCmdInfo info_echo[] = {
 static const vshCmdOptDef opts_echo[] = {
     {"shell", VSH_OT_BOOL, 0, N_("escape for shell use")},
     {"xml", VSH_OT_BOOL, 0, N_("escape for XML use")},
+    {"str", VSH_OT_ALIAS, 0, "string"},
     {"string", VSH_OT_ARGV, 0, N_("arguments to echo")},
     {NULL, 0, 0, NULL}
 };
@@ -17411,6 +17414,18 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint32_t *opts_need_arg,
                 return -1; /* bool options can't be mandatory */
             continue;
         }
+        if (opt->type == VSH_OT_ALIAS) {
+            int j;
+            if (opt->flags || !opt->help)
+                return -1; /* alias options are tracked by the original name */
+            for (j = i + 1; cmd->opts[j].name; j++) {
+                if (STREQ(opt->help, cmd->opts[j].name))
+                    break;
+            }
+            if (!cmd->opts[j].name)
+                return -1; /* alias option must map to a later option name */
+            continue;
+        }
         if (opt->flags & VSH_OFLAG_REQ_OPT) {
             if (opt->flags & VSH_OFLAG_REQ)
                 *opts_required |= 1 << i;
@@ -17442,6 +17457,10 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
         const vshCmdOptDef *opt = &cmd->opts[i];
 
         if (STREQ(opt->name, name)) {
+            if (opt->type == VSH_OT_ALIAS) {
+                name = opt->help;
+                continue;
+            }
             if ((*opts_seen & (1 << i)) && opt->type != VSH_OT_ARGV) {
                 vshError(ctl, _("option --%s already seen"), name);
                 return NULL;
@@ -17620,6 +17639,9 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
                             : _("[<%s>]...");
                     }
                     break;
+                case VSH_OT_ALIAS:
+                    /* aliases are intentionally undocumented */
+                    continue;
                 default:
                     assert(0);
                 }
@@ -17661,6 +17683,8 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
                              shortopt ? _("[--%s] <string>") : _("<%s>"),
                              opt->name);
                     break;
+                case VSH_OT_ALIAS:
+                    continue;
                 default:
                     assert(0);
                 }
