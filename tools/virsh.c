@@ -212,6 +212,7 @@ typedef struct vshCmdOpt {
  */
 enum {
     VSH_CMD_FLAG_NOCONNECT = (1 << 0),  /* no prior connection needed */
+    VSH_CMD_FLAG_ALIAS     = (1 << 1),  /* command is an alias */
 };
 
 /*
@@ -685,9 +686,12 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, _(" %s (help keyword '%s'):\n"), grp->name,
                      grp->keyword);
 
-            for (def = grp->commands; def->name; def++)
+            for (def = grp->commands; def->name; def++) {
+                if (def->flags & VSH_CMD_FLAG_ALIAS)
+                    continue;
                 vshPrint(ctl, "    %-30s %s\n", def->name,
                          _(vshCmddefGetInfo(def, "help")));
+            }
 
             vshPrint(ctl, "\n");
         }
@@ -13093,22 +13097,22 @@ cmdNodeDeviceDumpXML (vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
- * "nodedev-dettach" command
+ * "nodedev-detach" command
  */
-static const vshCmdInfo info_node_device_dettach[] = {
-    {"help", N_("dettach node device from its device driver")},
-    {"desc", N_("Dettach node device from its device driver before assigning to a domain.")},
+static const vshCmdInfo info_node_device_detach[] = {
+    {"help", N_("detach node device from its device driver")},
+    {"desc", N_("Detach node device from its device driver before assigning to a domain.")},
     {NULL, NULL}
 };
 
 
-static const vshCmdOptDef opts_node_device_dettach[] = {
+static const vshCmdOptDef opts_node_device_detach[] = {
     {"device", VSH_OT_DATA, VSH_OFLAG_REQ, N_("device key")},
     {NULL, 0, 0, NULL}
 };
 
 static bool
-cmdNodeDeviceDettach (vshControl *ctl, const vshCmd *cmd)
+cmdNodeDeviceDetach (vshControl *ctl, const vshCmd *cmd)
 {
     const char *name = NULL;
     virNodeDevicePtr device;
@@ -13123,10 +13127,12 @@ cmdNodeDeviceDettach (vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
+    /* Yes, our public API is misspelled.  At least virsh can accept
+     * either spelling.  */
     if (virNodeDeviceDettach(device) == 0) {
-        vshPrint(ctl, _("Device %s dettached\n"), name);
+        vshPrint(ctl, _("Device %s detached\n"), name);
     } else {
-        vshError(ctl, _("Failed to dettach device %s"), name);
+        vshError(ctl, _("Failed to detach device %s"), name);
         ret = false;
     }
     virNodeDeviceFree(device);
@@ -17245,8 +17251,10 @@ static const vshCmdDef nodedevCmds[] = {
      info_node_device_create, 0},
     {"nodedev-destroy", cmdNodeDeviceDestroy, opts_node_device_destroy,
      info_node_device_destroy, 0},
-    {"nodedev-dettach", cmdNodeDeviceDettach, opts_node_device_dettach,
-     info_node_device_dettach, 0},
+    {"nodedev-detach", cmdNodeDeviceDetach, opts_node_device_detach,
+     info_node_device_detach, 0},
+    {"nodedev-dettach", cmdNodeDeviceDetach, opts_node_device_detach,
+     info_node_device_detach, VSH_CMD_FLAG_ALIAS},
     {"nodedev-dumpxml", cmdNodeDeviceDumpXML, opts_node_device_dumpxml,
      info_node_device_dumpxml, 0},
     {"nodedev-list", cmdNodeListDevices, opts_node_list_devices,

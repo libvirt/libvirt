@@ -1459,7 +1459,7 @@ Attach a device to the domain, using a device definition in an XML file.
 See the documentation to learn about libvirt XML format for a device.
 For cdrom and floppy devices, this command only replaces the media within
 the single existing device; consider using B<update-device> for this usage.
-For passthrough host devices, see also B<nodedev-dettach>, needed if
+For passthrough host devices, see also B<nodedev-detach>, needed if
 the device does not use managed mode.
 
 =item B<attach-disk> I<domain-id> I<source> I<target>
@@ -1588,7 +1588,7 @@ guest domains, nor by multiple active guests at once.  If the
 <hostdev> description includes the attribute B<managed='yes'>, and the
 hypervisor driver supports it, then the device is in managed mode, and
 attempts to use that passthrough device in an active guest will
-automatically behave as if B<nodedev-dettach> (guest start, device
+automatically behave as if B<nodedev-detach> (guest start, device
 hot-plug) and B<nodedev-reattach> (guest stop, device hot-unplug) were
 called at the right points (currently, qemu does this for PCI devices,
 but not USB).  If a device is not marked as managed, then it must
@@ -1613,11 +1613,13 @@ Destroy (stop) a device on the host.  Note that this makes libvirt
 quit managing a host device, and may even make that device unusable
 by the rest of the physical host until a reboot.
 
-=item B<nodedev-dettach> I<nodedev>
+=item B<nodedev-detach> I<nodedev>
 
 Detach I<nodedev> from the host, so that it can safely be used by
 guests via <hostdev> passthrough.  This is reversed with
 B<nodedev-reattach>, and is done automatically for managed devices.
+For compatibility purposes, this command can also be spelled
+B<nodedev-dettach>.
 
 =item B<nodedev-dumpxml> I<nodedev>
 
@@ -1638,7 +1640,7 @@ formatted in a tree representing parents of each node.
 Declare that I<nodedev> is no longer in use by any guests, and that
 the host can resume normal use of the device.  This is done
 automatically for devices in managed mode, but must be done explicitly
-to match any explicit B<nodedev-dettach>.
+to match any explicit B<nodedev-detach>.
 
 =item B<nodedev-reset> I<nodedev>
 
