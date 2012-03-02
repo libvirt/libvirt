@@ -206,7 +206,7 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
     DIR *cpudir = NULL;
     struct dirent *cpudirent = NULL;
     unsigned int cpu;
-    unsigned long core, socket, cur_threads;
+    unsigned long core, sock, cur_threads;
     cpu_set_t core_mask;
     cpu_set_t socket_mask;
     int online;
@@ -311,9 +311,9 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
         }
 
         /* Parse socket */
-        socket = parse_socket(cpu);
-        if (!CPU_ISSET(socket, &socket_mask)) {
-            CPU_SET(socket, &socket_mask);
+        sock = parse_socket(cpu);
+        if (!CPU_ISSET(sock, &socket_mask)) {
+            CPU_SET(sock, &socket_mask);
             nodeinfo->sockets++;
         }
 
