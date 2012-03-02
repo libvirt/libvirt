@@ -8,7 +8,6 @@
 # Required-Start: $network messagebus
 # Should-Start: $named
 # Should-Start: xend
-# Should-Start: hal
 # Should-Start: avahi-daemon
 # Required-Stop: $network messagebus
 # Should-Stop: $named
