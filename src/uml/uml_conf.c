@@ -421,7 +421,7 @@ virCommandPtr umlBuildCommandLine(virConnectPtr conn,
     virCommandAddEnvPassCommon(cmd);
 
     //virCommandAddArgPair(cmd, "con0", "fd:0,fd:1");
-    virCommandAddArgFormat(cmd, "mem=%luK", vm->def->mem.cur_balloon);
+    virCommandAddArgFormat(cmd, "mem=%lluK", vm->def->mem.cur_balloon);
     virCommandAddArgPair(cmd, "umid", vm->def->name);
     virCommandAddArgPair(cmd, "uml_dir", driver->monitorDir);
 

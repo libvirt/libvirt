@@ -705,7 +705,7 @@ static int qemuMonitorParseBalloonInfo(char *text,
  * or -1 on failure
  */
 int qemuMonitorTextGetBalloonInfo(qemuMonitorPtr mon,
-                                  unsigned long *currmem)
+                                  unsigned long long *currmem)
 {
     char *reply = NULL;
     int ret = -1;

@@ -61,7 +61,7 @@ int qemuMonitorJSONGetCPUInfo(qemuMonitorPtr mon,
 int qemuMonitorJSONGetVirtType(qemuMonitorPtr mon,
                                int *virtType);
 int qemuMonitorJSONGetBalloonInfo(qemuMonitorPtr mon,
-                                  unsigned long *currmem);
+                                  unsigned long long *currmem);
 int qemuMonitorJSONGetMemoryStats(qemuMonitorPtr mon,
                                   virDomainMemoryStatPtr stats,
                                   unsigned int nr_stats);

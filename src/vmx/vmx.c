@@ -2,7 +2,7 @@
 /*
  * vmx.c: VMware VMX parsing/formatting functions
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2009-2010 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -2883,7 +2883,7 @@ virVMXFormatConfig(virVMXContext *ctx, virCapsPtr caps, virDomainDefPtr def,
     char *preliminaryDisplayName = NULL;
     char *displayName = NULL;
     char *annotation = NULL;
-    unsigned long max_balloon;
+    unsigned long long max_balloon;
     bool scsi_present[4] = { false, false, false, false };
     int scsi_virtualDev[4] = { -1, -1, -1, -1 };
     bool floppy_present[2] = { false, false };
@@ -2978,19 +2978,19 @@ virVMXFormatConfig(virVMXContext *ctx, virCapsPtr caps, virDomainDefPtr def,
     /* max-memory must be a multiple of 4096 kilobyte */
     max_balloon = VIR_DIV_UP(def->mem.max_balloon, 4096) * 4096;
 
-    virBufferAsprintf(&buffer, "memsize = \"%lu\"\n",
+    virBufferAsprintf(&buffer, "memsize = \"%llu\"\n",
                       max_balloon / 1024); /* Scale from kilobytes to megabytes */
 
     /* def:mem.cur_balloon -> vmx:sched.mem.max */
     if (def->mem.cur_balloon < max_balloon) {
-        virBufferAsprintf(&buffer, "sched.mem.max = \"%lu\"\n",
+        virBufferAsprintf(&buffer, "sched.mem.max = \"%llu\"\n",
                           VIR_DIV_UP(def->mem.cur_balloon,
                                      1024)); /* Scale from kilobytes to megabytes */
     }
 
     /* def:mem.min_guarantee -> vmx:sched.mem.minsize */
     if (def->mem.min_guarantee > 0) {
-        virBufferAsprintf(&buffer, "sched.mem.minsize = \"%lu\"\n",
+        virBufferAsprintf(&buffer, "sched.mem.minsize = \"%llu\"\n",
                           VIR_DIV_UP(def->mem.min_guarantee,
                                      1024)); /* Scale from kilobytes to megabytes */
     }

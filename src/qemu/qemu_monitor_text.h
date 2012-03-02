@@ -54,7 +54,7 @@ int qemuMonitorTextGetCPUInfo(qemuMonitorPtr mon,
 int qemuMonitorTextGetVirtType(qemuMonitorPtr mon,
                                int *virtType);
 int qemuMonitorTextGetBalloonInfo(qemuMonitorPtr mon,
-                                  unsigned long *currmem);
+                                  unsigned long long *currmem);
 int qemuMonitorTextGetMemoryStats(qemuMonitorPtr mon,
                                   virDomainMemoryStatPtr stats,
                                   unsigned int nr_stats);

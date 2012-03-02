@@ -7614,27 +7614,27 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto error;
 
     /* Extract domain memory */
-    if (virXPathULong("string(./memory[1])", ctxt,
-                      &def->mem.max_balloon) < 0) {
+    if (virXPathULongLong("string(./memory[1])", ctxt,
+                          &def->mem.max_balloon) < 0) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                              "%s", _("missing memory element"));
         goto error;
     }
 
-    if (virXPathULong("string(./currentMemory[1])", ctxt,
-                      &def->mem.cur_balloon) < 0)
+    if (virXPathULongLong("string(./currentMemory[1])", ctxt,
+                          &def->mem.cur_balloon) < 0)
         def->mem.cur_balloon = def->mem.max_balloon;
 
     if (def->mem.cur_balloon > def->mem.max_balloon) {
         virDomainReportError(VIR_ERR_XML_ERROR,
-                             _("current memory '%luk' exceeds maximum '%luk'"),
+                             _("current memory '%lluk' exceeds maximum '%lluk'"),
                              def->mem.cur_balloon, def->mem.max_balloon);
         goto error;
     }
 
     node = virXPathNode("./memoryBacking/hugepages", ctxt);
     if (node)
-        def->mem.hugepage_backed = 1;
+        def->mem.hugepage_backed = true;
 
     /* Extract blkio cgroup tunables */
     if (virXPathUInt("string(./blkiotune/weight)", ctxt,
@@ -7668,20 +7668,20 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     VIR_FREE(nodes);
 
     /* Extract other memory tunables */
-    if (virXPathULong("string(./memtune/hard_limit)", ctxt,
-                      &def->mem.hard_limit) < 0)
+    if (virXPathULongLong("string(./memtune/hard_limit)", ctxt,
+                          &def->mem.hard_limit) < 0)
         def->mem.hard_limit = 0;
 
-    if (virXPathULong("string(./memtune/soft_limit[1])", ctxt,
-                      &def->mem.soft_limit) < 0)
+    if (virXPathULongLong("string(./memtune/soft_limit[1])", ctxt,
+                          &def->mem.soft_limit) < 0)
         def->mem.soft_limit = 0;
 
-    if (virXPathULong("string(./memtune/min_guarantee[1])", ctxt,
-                      &def->mem.min_guarantee) < 0)
+    if (virXPathULongLong("string(./memtune/min_guarantee[1])", ctxt,
+                          &def->mem.min_guarantee) < 0)
         def->mem.min_guarantee = 0;
 
-    if (virXPathULong("string(./memtune/swap_hard_limit[1])", ctxt,
-                      &def->mem.swap_hard_limit) < 0)
+    if (virXPathULongLong("string(./memtune/swap_hard_limit[1])", ctxt,
+                          &def->mem.swap_hard_limit) < 0)
         def->mem.swap_hard_limit = 0;
 
     n = virXPathULong("string(./vcpu[1])", ctxt, &count);
@@ -9538,19 +9538,19 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (src->mem.max_balloon != dst->mem.max_balloon) {
         virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                             _("Target domain max memory %ld does not match source %ld"),
+                             _("Target domain max memory %lld does not match source %lld"),
                              dst->mem.max_balloon, src->mem.max_balloon);
         goto cleanup;
     }
     if (src->mem.cur_balloon != dst->mem.cur_balloon) {
         virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                             _("Target domain current memory %ld does not match source %ld"),
+                             _("Target domain current memory %lld does not match source %lld"),
                              dst->mem.cur_balloon, src->mem.cur_balloon);
         goto cleanup;
     }
     if (src->mem.hugepage_backed != dst->mem.hugepage_backed) {
         virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                             _("Target domain huge page backing %ld does not match source %ld"),
+                             _("Target domain huge page backing %d does not match source %d"),
                              dst->mem.hugepage_backed,
                              src->mem.hugepage_backed);
         goto cleanup;
@@ -12033,9 +12033,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         xmlIndentTreeOutput = oldIndentTreeOutput;
     }
 
-    virBufferAsprintf(buf, "  <memory unit='KiB'>%lu</memory>\n",
+    virBufferAsprintf(buf, "  <memory unit='KiB'>%llu</memory>\n",
                       def->mem.max_balloon);
-    virBufferAsprintf(buf, "  <currentMemory unit='KiB'>%lu</currentMemory>\n",
+    virBufferAsprintf(buf, "  <currentMemory unit='KiB'>%llu</currentMemory>\n",
                       def->mem.cur_balloon);
 
     /* add blkiotune only if there are any */
@@ -12077,19 +12077,19 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAddLit(buf, "  <memtune>\n");
     if (def->mem.hard_limit) {
         virBufferAsprintf(buf, "    <hard_limit unit='KiB'>"
-                          "%lu</hard_limit>\n", def->mem.hard_limit);
+                          "%llu</hard_limit>\n", def->mem.hard_limit);
     }
     if (def->mem.soft_limit) {
         virBufferAsprintf(buf, "    <soft_limit unit='KiB'>"
-                          "%lu</soft_limit>\n", def->mem.soft_limit);
+                          "%llu</soft_limit>\n", def->mem.soft_limit);
     }
     if (def->mem.min_guarantee) {
         virBufferAsprintf(buf, "    <min_guarantee unit='KiB'>"
-                          "%lu</min_guarantee>\n", def->mem.min_guarantee);
+                          "%llu</min_guarantee>\n", def->mem.min_guarantee);
     }
     if (def->mem.swap_hard_limit) {
         virBufferAsprintf(buf, "    <swap_hard_limit unit='KiB'>"
-                          "%lu</swap_hard_limit>\n", def->mem.swap_hard_limit);
+                          "%llu</swap_hard_limit>\n", def->mem.swap_hard_limit);
     }
     if (def->mem.hard_limit || def->mem.soft_limit || def->mem.min_guarantee ||
         def->mem.swap_hard_limit)

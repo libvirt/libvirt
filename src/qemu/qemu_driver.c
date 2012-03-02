@@ -2139,7 +2139,7 @@ static int qemudDomainGetInfo(virDomainPtr dom,
     virDomainObjPtr vm;
     int ret = -1;
     int err;
-    unsigned long balloon;
+    unsigned long long balloon;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -4416,7 +4416,7 @@ static char *qemuDomainGetXMLDesc(virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *ret = NULL;
-    unsigned long balloon;
+    unsigned long long balloon;
     int err = 0;
 
     /* Flags checked by virDomainDefFormat */

@@ -1496,13 +1496,13 @@ struct _virDomainDef {
     } blkio;
 
     struct {
-        unsigned long max_balloon; /* in kibibytes */
-        unsigned long cur_balloon; /* in kibibytes */
-        unsigned long hugepage_backed;
-        unsigned long hard_limit; /* in kibibytes */
-        unsigned long soft_limit; /* in kibibytes */
-        unsigned long min_guarantee; /* in kibibytes */
-        unsigned long swap_hard_limit; /* in kibibytes */
+        unsigned long long max_balloon; /* in kibibytes */
+        unsigned long long cur_balloon; /* in kibibytes */
+        bool hugepage_backed;
+        unsigned long long hard_limit; /* in kibibytes */
+        unsigned long long soft_limit; /* in kibibytes */
+        unsigned long long min_guarantee; /* in kibibytes */
+        unsigned long long swap_hard_limit; /* in kibibytes */
     } mem;
     unsigned short vcpus;
     unsigned short maxvcpus;

@@ -1260,7 +1260,7 @@ int qemuMonitorGetVirtType(qemuMonitorPtr mon,
 
 
 int qemuMonitorGetBalloonInfo(qemuMonitorPtr mon,
-                              unsigned long *currmem)
+                              unsigned long long *currmem)
 {
     int ret;
     VIR_DEBUG("mon=%p", mon);

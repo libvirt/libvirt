@@ -4032,7 +4032,7 @@ qemuBuildCommandLine(virConnectPtr conn,
      * is not supported, then they're out of luck anyway
      */
     virCommandAddArg(cmd, "-m");
-    virCommandAddArgFormat(cmd, "%lu", VIR_DIV_UP(def->mem.max_balloon, 1024));
+    virCommandAddArgFormat(cmd, "%llu", VIR_DIV_UP(def->mem.max_balloon, 1024));
     if (def->mem.hugepage_backed) {
         if (!driver->hugetlbfs_mount) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,

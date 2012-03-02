@@ -1191,10 +1191,8 @@ xenParseSxpr(const struct sexpr *root,
         }
     }
 
-    def->mem.max_balloon = (unsigned long)
-                           (sexpr_u64(root, "domain/maxmem") << 10);
-    def->mem.cur_balloon = (unsigned long)
-                           (sexpr_u64(root, "domain/memory") << 10);
+    def->mem.max_balloon = (sexpr_u64(root, "domain/maxmem") << 10);
+    def->mem.cur_balloon = (sexpr_u64(root, "domain/memory") << 10);
     if (def->mem.cur_balloon > def->mem.max_balloon)
         def->mem.cur_balloon = def->mem.max_balloon;
 
@@ -2203,7 +2201,7 @@ xenFormatSxpr(virConnectPtr conn,
 
     virBufferAddLit(&buf, "(vm ");
     virBufferEscapeSexpr(&buf, "(name '%s')", def->name);
-    virBufferAsprintf(&buf, "(memory %lu)(maxmem %lu)",
+    virBufferAsprintf(&buf, "(memory %llu)(maxmem %llu)",
                       VIR_DIV_UP(def->mem.cur_balloon, 1024),
                       VIR_DIV_UP(def->mem.max_balloon, 1024));
     virBufferAsprintf(&buf, "(vcpus %u)", def->maxvcpus);

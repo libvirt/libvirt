@@ -3488,6 +3488,12 @@ int qemuProcessStart(virConnectPtr conn,
      * migration completes.  */
     VIR_DEBUG("Setting initial memory amount");
     cur_balloon = vm->def->mem.cur_balloon;
+    if (cur_balloon != vm->def->mem.cur_balloon) {
+        qemuReportError(VIR_ERR_OVERFLOW,
+                        _("unable to set balloon to %lld"),
+                        vm->def->mem.cur_balloon);
+        goto cleanup;
+    }
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuMonitorSetBalloon(priv->mon, cur_balloon) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);

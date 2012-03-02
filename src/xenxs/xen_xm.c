@@ -1,8 +1,8 @@
 /*
  * xen_xm.c: Xen XM parsing functions
  *
+ * Copyright (C) 2006-2007, 2009-2010, 2012 Red Hat, Inc.
  * Copyright (C) 2011 Univention GmbH
- * Copyright (C) 2006-2007, 2009-2010 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@
 #include "xen_sxpr.h"
 #include "domain_conf.h"
 
-/* Convenience method to grab a int from the config file object */
+/* Convenience method to grab a long int from the config file object */
 static int xenXMConfigGetBool(virConfPtr conf,
                               const char *name,
                               int *value,
@@ -68,7 +68,7 @@ static int xenXMConfigGetBool(virConfPtr conf,
 static int xenXMConfigGetULong(virConfPtr conf,
                                const char *name,
                                unsigned long *value,
-                               int def) {
+                               unsigned long def) {
     virConfValuePtr val;
 
     *value = 0;
@@ -82,6 +82,38 @@ static int xenXMConfigGetULong(virConfPtr conf,
     } else if (val->type == VIR_CONF_STRING) {
         char *ret;
         *value = strtol(val->str, &ret, 10);
+        if (ret == val->str) {
+            XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
+                       _("config value %s was malformed"), name);
+            return -1;
+        }
+    } else {
+        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
+                   _("config value %s was malformed"), name);
+        return -1;
+    }
+    return 0;
+}
+
+
+/* Convenience method to grab a int from the config file object */
+static int xenXMConfigGetULongLong(virConfPtr conf,
+                                   const char *name,
+                                   unsigned long long *value,
+                                   unsigned long long def) {
+    virConfValuePtr val;
+
+    *value = 0;
+    if (!(val = virConfGetValue(conf, name))) {
+        *value = def;
+        return 0;
+    }
+
+    if (val->type == VIR_CONF_LONG) {
+        *value = val->l;
+    } else if (val->type == VIR_CONF_STRING) {
+        char *ret;
+        *value = strtoll(val->str, &ret, 10);
         if (ret == val->str) {
             XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
                        _("config value %s was malformed"), name);
@@ -312,12 +344,12 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             goto cleanup;
     }
 
-    if (xenXMConfigGetULong(conf, "memory", &def->mem.cur_balloon,
-                            MIN_XEN_GUEST_SIZE * 2) < 0)
+    if (xenXMConfigGetULongLong(conf, "memory", &def->mem.cur_balloon,
+                                MIN_XEN_GUEST_SIZE * 2) < 0)
         goto cleanup;
 
-    if (xenXMConfigGetULong(conf, "maxmem", &def->mem.max_balloon,
-                            def->mem.cur_balloon) < 0)
+    if (xenXMConfigGetULongLong(conf, "maxmem", &def->mem.max_balloon,
+                                def->mem.cur_balloon) < 0)
         goto cleanup;
 
     def->mem.cur_balloon *= 1024;
@@ -1103,9 +1135,14 @@ cleanup:
 
 
 static
-int xenXMConfigSetInt(virConfPtr conf, const char *setting, long l) {
+int xenXMConfigSetInt(virConfPtr conf, const char *setting, long long l) {
     virConfValuePtr value = NULL;
 
+    if ((long) l != l) {
+        XENXS_ERROR(VIR_ERR_OVERFLOW, _("failed to store %lld to %s"),
+                    l, setting);
+        return -1;
+    }
     if (VIR_ALLOC(value) < 0) {
         virReportOOMError();
         return -1;
@@ -1470,10 +1507,12 @@ virConfPtr xenFormatXM(virConnectPtr conn,
     if (xenXMConfigSetString(conf, "uuid", uuid) < 0)
         goto no_memory;
 
-    if (xenXMConfigSetInt(conf, "maxmem", VIR_DIV_UP(def->mem.max_balloon, 1024)) < 0)
+    if (xenXMConfigSetInt(conf, "maxmem",
+                          VIR_DIV_UP(def->mem.max_balloon, 1024)) < 0)
         goto no_memory;
 
-    if (xenXMConfigSetInt(conf, "memory", VIR_DIV_UP(def->mem.cur_balloon, 1024)) < 0)
+    if (xenXMConfigSetInt(conf, "memory",
+                          VIR_DIV_UP(def->mem.cur_balloon, 1024)) < 0)
         goto no_memory;
 
     if (xenXMConfigSetInt(conf, "vcpus", def->maxvcpus) < 0)

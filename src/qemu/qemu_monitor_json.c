@@ -1178,7 +1178,7 @@ cleanup:
  * or -1 on failure
  */
 int qemuMonitorJSONGetBalloonInfo(qemuMonitorPtr mon,
-                                  unsigned long *currmem)
+                                  unsigned long long *currmem)
 {
     int ret;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-balloon",
