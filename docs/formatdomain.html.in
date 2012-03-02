@@ -424,7 +424,7 @@
     <dl>
       <dt><code>memory</code></dt>
       <dd>The maximum allocation of memory for the guest at boot time.
-        The units for this value are kilobytes (i.e. blocks of 1024 bytes)</dd>
+        The units for this value are kibibytes (i.e. blocks of 1024 bytes)</dd>
       <dt><code>currentMemory</code></dt>
       <dd>The actual allocation of memory for the guest. This value can
         be less than the maximum allocation, to allow for ballooning
@@ -480,21 +480,21 @@
         determine so one needs guess and try.</dd>
       <dt><code>hard_limit</code></dt>
       <dd> The optional <code>hard_limit</code> element is the maximum memory
-        the guest can use. The units for this value are kilobytes (i.e. blocks
+        the guest can use. The units for this value are kibibytes (i.e. blocks
         of 1024 bytes)</dd>
       <dt><code>soft_limit</code></dt>
       <dd> The optional <code>soft_limit</code> element is the memory limit to
         enforce during memory contention. The units for this value are
-        kilobytes (i.e. blocks of 1024 bytes)</dd>
+        kibibytes (i.e. blocks of 1024 bytes)</dd>
       <dt><code>swap_hard_limit</code></dt>
       <dd> The optional <code>swap_hard_limit</code> element is the maximum
         memory plus swap the guest can use. The units for this value are
-        kilobytes (i.e. blocks of 1024 bytes). This has to be more than
+        kibibytes (i.e. blocks of 1024 bytes). This has to be more than
         hard_limit value provided</dd>
       <dt><code>min_guarantee</code></dt>
       <dd> The optional <code>min_guarantee</code> element is the guaranteed
         minimum memory allocation for the guest. The units for this value are
-        kilobytes (i.e. blocks of 1024 bytes)</dd>
+        kibibytes (i.e. blocks of 1024 bytes)</dd>
     </dl>
 
 
@@ -774,7 +774,7 @@
     <p>
       Each <code>cell</code> element specifies a NUMA cell or a NUMA node.
       <code>cpus</code> specifies the CPU or range of CPUs that are part of
-      the node. <code>memory</code> specifies the node memory in kilobytes
+      the node. <code>memory</code> specifies the node memory in kibibytes
       (i.e. blocks of 1024 bytes). Each cell or node is assigned cellid
       or nodeid in the increasing order starting from 0.
     </p>
@@ -2969,7 +2969,8 @@ qemu-kvm -net nic,model=? /dev/null
         attribute which takes the value "vga", "cirrus", "vmvga", "xen",
         "vbox", or "qxl" (<span class="since">since 0.8.6</span>)
         depending on the hypervisor features available.
-        You can also provide the amount of video memory in kilobytes using
+        You can also provide the amount of video memory in kibibytes
+        (blocks of 1024 bytes) using
         <code>vram</code> and the number of screen with <code>heads</code>.
       </dd>
 

@@ -3582,7 +3582,8 @@ error:
  * domain. If domain is NULL, then this get the amount of memory reserved
  * to Domain0 i.e. the domain where the application runs.
  *
- * Returns the memory size in kilobytes or 0 in case of error.
+ * Returns the memory size in kibibytes (blocks of 1024 bytes), or 0 in
+ * case of error.
  */
 unsigned long
 virDomainGetMaxMemory(virDomainPtr domain)
@@ -3619,7 +3620,7 @@ error:
 /**
  * virDomainSetMaxMemory:
  * @domain: a domain object or NULL
- * @memory: the memory size in kilobytes
+ * @memory: the memory size in kibibytes (blocks of 1024 bytes)
  *
  * Dynamically change the maximum amount of physical memory allocated to a
  * domain. If domain is NULL, then this change the amount of memory reserved
@@ -3674,7 +3675,7 @@ error:
 /**
  * virDomainSetMemory:
  * @domain: a domain object or NULL
- * @memory: the memory size in kilobytes
+ * @memory: the memory size in kibibytes (blocks of 1024 bytes)
  *
  * Dynamically change the target amount of physical memory allocated to a
  * domain. If domain is NULL, then this change the amount of memory reserved
@@ -3729,7 +3730,7 @@ error:
 /**
  * virDomainSetMemoryFlags:
  * @domain: a domain object or NULL
- * @memory: the memory size in kilobytes
+ * @memory: the memory size in kibibytes (blocks of 1024 bytes)
  * @flags: bitwise-OR of virDomainMemoryModFlags
  *
  * Dynamically change the target amount of physical memory allocated to a
@@ -6684,7 +6685,7 @@ error:
  * @conn: pointer to the hypervisor connection
  *
  * provides the free memory available on the Node
- * Note: most libvirt APIs provide memory sizes in kilobytes, but in this
+ * Note: most libvirt APIs provide memory sizes in kibibytes, but in this
  * function the returned value is in bytes. Divide by 1024 as necessary.
  *
  * Returns the available free memory in bytes or 0 in case of error
@@ -7605,11 +7606,11 @@ error:
  * @flags: bitwise-OR of virDomainBlockResizeFlags
  *
  * Resize a block device of domain while the domain is running.  If
- * @flags is 0, then @size is in kibibytes (blocks of 1024); since
- * 0.9.11, if @flags includes VIR_DOMAIN_BLOCK_RESIZE_BYTES, @size is
- * in bytes instead.  @size is taken directly as the new size.
- * Depending on the file format, the hypervisor may round up to the
- * next alignment boundary.
+ * @flags is 0, then @size is in kibibytes (blocks of 1024 bytes);
+ * since 0.9.11, if @flags includes VIR_DOMAIN_BLOCK_RESIZE_BYTES,
+ * @size is in bytes instead.  @size is taken directly as the new
+ * size.  Depending on the file format, the hypervisor may round up
+ * to the next alignment boundary.
  *
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
