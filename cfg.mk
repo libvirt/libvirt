@@ -348,11 +348,10 @@ sc_prohibit_access_xok:
 # Use STREQLEN or STRPREFIX rather than comparing strncmp == 0, or != 0.
 snp_ = strncmp *\(.+\)
 sc_prohibit_strncmp:
-	@grep -nE '! *strncmp *\(|\<$(snp_) *[!=]=|[!=]= *$(snp_)'	\
-	    $$($(VC_LIST_EXCEPT))					\
-	  | grep -vE ':# *define STR(N?EQLEN|PREFIX)\(' &&		\
-	  { echo '$(ME): use STREQLEN or STRPREFIX instead of str''ncmp' \
-		1>&2; exit 1; } || :
+	@prohibit='! *strncmp *\(|\<$(snp_) *[!=]=|[!=]= *$(snp_)'	\
+	exclude=':# *define STR(N?EQLEN|PREFIX)\('			\
+	halt='$(ME): use STREQLEN or STRPREFIX instead of str''ncmp'	\
+	  $(_sc_search_regexp)
 
 # Use virAsprintf rather than as'printf since *strp is undefined on error.
 sc_prohibit_asprintf:
@@ -569,11 +568,10 @@ func_re := ($(func_or))
 #    _("...: "
 #    "%s", _("no storage vol w..."
 sc_libvirt_unmarked_diagnostics:
-	@grep -nE							\
-	    '\<$(func_re) *\([^"]*"[^"]*[a-z]{3}' $$($(VC_LIST_EXCEPT))	\
-	  | grep -v '_''(' &&						\
-	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2;		\
-	    exit 1; } || :
+	@prohibit='\<$(func_re) *\([^"]*"[^"]*[a-z]{3}'			\
+	exclude='_\('							\
+	halt='$(ME): found unmarked diagnostic(s)'			\
+	  $(_sc_search_regexp)
 	@{ grep     -nE '\<$(func_re) *\(.*;$$' $$($(VC_LIST_EXCEPT));   \
 	   grep -A1 -nE '\<$(func_re) *\(.*,$$' $$($(VC_LIST_EXCEPT)); } \
 	   | sed 's/_("[^"][^"]*"//;s/[	 ]"%s"//'			\
@@ -623,6 +621,26 @@ sc_prohibit_gettext_markup:
 	@prohibit='\<VIR_(WARN|INFO|DEBUG) *\(_\('			\
 	halt='do not mark these strings for translation'		\
 	  $(_sc_search_regexp)
+
+# Our code is divided into modular subdirectories for a reason, and
+# lower-level code must not include higher-level headers.
+cross_dirs=$(patsubst $(srcdir)/src/%.,%,$(wildcard $(srcdir)/src/*/.))
+cross_dirs_re=($(subst / ,/|,$(cross_dirs)))
+sc_prohibit_cross_inclusion:
+	@for dir in $(cross_dirs); do					\
+	  case $$dir in							\
+	    util/) safe="util";;					\
+	    cpu/ | locking/ | network/ | rpc/ | security/)		\
+	      safe="($$dir|util|conf)";;				\
+	    xenapi/ | xenxs/ ) safe="($$dir|util|conf|xen)";;		\
+	    *) safe="($$dir|util|conf|cpu|network|locking|rpc|security)";; \
+	  esac;								\
+	  in_vc_files="^src/$$dir"					\
+	  prohibit='^# *include .$(cross_dirs_re)'			\
+	  exclude="# *include .$$safe"					\
+	  halt='unsafe cross-directory include'				\
+	    $(_sc_search_regexp)					\
+	done
 
 # When converting an enum to a string, make sure that we track any new
 # elements added to the enum by using a _LAST marker.
