@@ -7033,6 +7033,7 @@ static const vshCmdOptDef opts_migrate[] = {
     {"live", VSH_OT_BOOL, 0, N_("live migration")},
     {"p2p", VSH_OT_BOOL, 0, N_("peer-2-peer migration")},
     {"direct", VSH_OT_BOOL, 0, N_("direct migration")},
+    {"tunneled", VSH_OT_ALIAS, 0, "tunnelled"},
     {"tunnelled", VSH_OT_BOOL, 0, N_("tunnelled migration")},
     {"persistent", VSH_OT_BOOL, 0, N_("persist VM on destination")},
     {"undefinesource", VSH_OT_BOOL, 0, N_("undefine VM on source")},
@@ -7728,17 +7729,23 @@ static const vshCmdInfo info_blkdeviotune[] = {
 static const vshCmdOptDef opts_blkdeviotune[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"device", VSH_OT_DATA, VSH_OFLAG_REQ, N_("block device")},
-    {"total_bytes_sec", VSH_OT_INT, VSH_OFLAG_NONE,
+    {"total_bytes_sec", VSH_OT_ALIAS, 0, "total-bytes-sec"},
+    {"total-bytes-sec", VSH_OT_INT, VSH_OFLAG_NONE,
      N_("total throughput limit in bytes per second")},
-    {"read_bytes_sec", VSH_OT_INT, VSH_OFLAG_NONE,
+    {"read_bytes_sec", VSH_OT_ALIAS, 0, "read-bytes-sec"},
+    {"read-bytes-sec", VSH_OT_INT, VSH_OFLAG_NONE,
      N_("read throughput limit in bytes per second")},
-    {"write_bytes_sec", VSH_OT_INT, VSH_OFLAG_NONE,
+    {"write_bytes_sec", VSH_OT_ALIAS, 0, "write-bytes-sec"},
+    {"write-bytes-sec", VSH_OT_INT, VSH_OFLAG_NONE,
      N_("write throughput limit in bytes per second")},
-    {"total_iops_sec", VSH_OT_INT, VSH_OFLAG_NONE,
+    {"total_iops_sec", VSH_OT_ALIAS, 0, "total-iops-sec"},
+    {"total-iops-sec", VSH_OT_INT, VSH_OFLAG_NONE,
      N_("total I/O operations limit per second")},
-    {"read_iops_sec", VSH_OT_INT, VSH_OFLAG_NONE,
+    {"read_iops_sec", VSH_OT_ALIAS, 0, "read-iops-sec"},
+    {"read-iops-sec", VSH_OT_INT, VSH_OFLAG_NONE,
      N_("read I/O operations limit per second")},
-    {"write_iops_sec", VSH_OT_INT, VSH_OFLAG_NONE,
+    {"write_iops_sec", VSH_OT_ALIAS, 0, "write-iops-sec"},
+    {"write-iops-sec", VSH_OT_INT, VSH_OFLAG_NONE,
      N_("write I/O operations limit per second")},
     {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
     {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
@@ -7784,7 +7791,8 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "device", &disk) < 0)
         goto cleanup;
 
-    if ((rv = vshCommandOptULongLong(cmd, "total_bytes_sec", &total_bytes_sec)) < 0) {
+    if ((rv = vshCommandOptULongLong(cmd, "total-bytes-sec",
+                                     &total_bytes_sec)) < 0) {
         vshError(ctl, "%s",
                  _("Unable to parse integer parameter"));
         goto cleanup;
@@ -7792,7 +7800,8 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
         nparams++;
     }
 
-    if ((rv = vshCommandOptULongLong(cmd, "read_bytes_sec", &read_bytes_sec)) < 0) {
+    if ((rv = vshCommandOptULongLong(cmd, "read-bytes-sec",
+                                     &read_bytes_sec)) < 0) {
         vshError(ctl, "%s",
                  _("Unable to parse integer parameter"));
         goto cleanup;
@@ -7800,7 +7809,8 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
         nparams++;
     }
 
-    if ((rv = vshCommandOptULongLong(cmd, "write_bytes_sec", &write_bytes_sec)) < 0) {
+    if ((rv = vshCommandOptULongLong(cmd, "write-bytes-sec",
+                                     &write_bytes_sec)) < 0) {
         vshError(ctl, "%s",
                  _("Unable to parse integer parameter"));
         goto cleanup;
@@ -7808,7 +7818,8 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
         nparams++;
     }
 
-    if ((rv = vshCommandOptULongLong(cmd, "total_iops_sec", &total_iops_sec)) < 0) {
+    if ((rv = vshCommandOptULongLong(cmd, "total-iops-sec",
+                                     &total_iops_sec)) < 0) {
         vshError(ctl, "%s",
                  _("Unable to parse integer parameter"));
         goto cleanup;
@@ -7816,7 +7827,8 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
         nparams++;
     }
 
-    if ((rv = vshCommandOptULongLong(cmd, "read_iops_sec", &read_iops_sec)) < 0) {
+    if ((rv = vshCommandOptULongLong(cmd, "read-iops-sec",
+                                     &read_iops_sec)) < 0) {
         vshError(ctl, "%s",
                  _("Unable to parse integer parameter"));
         goto cleanup;
@@ -7824,7 +7836,8 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
         nparams++;
     }
 
-    if ((rv = vshCommandOptULongLong(cmd, "write_iops_sec", &write_iops_sec)) < 0) {
+    if ((rv = vshCommandOptULongLong(cmd, "write-iops-sec",
+                                     &write_iops_sec)) < 0) {
         vshError(ctl, "%s",
                  _("Unable to parse integer parameter"));
         goto cleanup;
@@ -7866,7 +7879,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
         params = vshCalloc(ctl, nparams, sizeof(*params));
         i = 0;
 
-        if ((i < nparams) && (vshCommandOptBool(cmd, "total_bytes_sec"))) {
+        if ((i < nparams) && (vshCommandOptBool(cmd, "total-bytes-sec"))) {
             temp = &params[i];
             temp->type = VIR_TYPED_PARAM_ULLONG;
             strncpy(temp->field, VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC,
@@ -7875,7 +7888,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
             i++;
         }
 
-        if ((i < nparams) && (vshCommandOptBool(cmd, "read_bytes_sec"))) {
+        if ((i < nparams) && (vshCommandOptBool(cmd, "read-bytes-sec"))) {
             temp = &params[i];
             temp->type = VIR_TYPED_PARAM_ULLONG;
             strncpy(temp->field, VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC,
@@ -7884,7 +7897,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
             i++;
         }
 
-        if ((i < nparams) && (vshCommandOptBool(cmd, "write_bytes_sec"))) {
+        if ((i < nparams) && (vshCommandOptBool(cmd, "write-bytes-sec"))) {
             temp = &params[i];
             temp->type = VIR_TYPED_PARAM_ULLONG;
             strncpy(temp->field, VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC,
@@ -7893,7 +7906,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
             i++;
         }
 
-        if ((i < nparams) && (vshCommandOptBool(cmd, "total_iops_sec"))) {
+        if ((i < nparams) && (vshCommandOptBool(cmd, "total-iops-sec"))) {
             temp = &params[i];
             temp->type = VIR_TYPED_PARAM_ULLONG;
             strncpy(temp->field, VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC,
@@ -7902,7 +7915,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
             i++;
         }
 
-        if ((i < nparams) && (vshCommandOptBool(cmd, "read_iops_sec"))) {
+        if ((i < nparams) && (vshCommandOptBool(cmd, "read-iops-sec"))) {
             temp = &params[i];
             temp->type = VIR_TYPED_PARAM_ULLONG;
             strncpy(temp->field, VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC,
@@ -7911,7 +7924,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
             i++;
         }
 
-        if ((i < nparams) && (vshCommandOptBool(cmd, "write_iops_sec"))) {
+        if ((i < nparams) && (vshCommandOptBool(cmd, "write-iops-sec"))) {
             temp = &params[i];
             temp->type = VIR_TYPED_PARAM_ULLONG;
             strncpy(temp->field, VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC,
