@@ -57,14 +57,15 @@
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #if SIZEOF_LONG < 8
-# define HYPER_TO_TYPE(_type, _to, _from)                                     \
-    do {                                                                      \
-        if ((_from) != (_type)(_from)) {                                      \
-            virNetError(VIR_ERR_INTERNAL_ERROR,                               \
-                        _("conversion from hyper to %s overflowed"), #_type); \
-            goto cleanup;                                                     \
-        }                                                                     \
-        (_to) = (_from);                                                      \
+# define HYPER_TO_TYPE(_type, _to, _from)                               \
+    do {                                                                \
+        if ((_from) != (_type)(_from)) {                                \
+            virNetError(VIR_ERR_OVERFLOW,                               \
+                        _("conversion from hyper to %s overflowed"),    \
+                        #_type);                                        \
+            goto cleanup;                                               \
+        }                                                               \
+        (_to) = (_from);                                                \
     } while (0)
 
 # define HYPER_TO_LONG(_to, _from) HYPER_TO_TYPE(long, _to, _from)

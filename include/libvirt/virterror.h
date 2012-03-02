@@ -4,7 +4,7 @@
  * Description: Provides the interfaces of the libvirt library to handle
  *              errors raised while using the library.
  *
- * Copy:  Copyright (C) 2006, 2010-2011 Red Hat, Inc.
+ * Copy:  Copyright (C) 2006, 2010-2012 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -246,6 +246,7 @@ typedef enum {
     VIR_ERR_AUTH_CANCELLED = 79,        /* authentication cancelled */
     VIR_ERR_NO_DOMAIN_METADATA = 80,    /* The metadata is not present */
     VIR_ERR_MIGRATE_UNSAFE = 81,        /* Migration is not safe */
+    VIR_ERR_OVERFLOW = 82,              /* integer overflow */
 } virErrorNumber;
 
 /**

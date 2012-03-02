@@ -8507,8 +8507,12 @@ virDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
     }
 
     /* Perform some argument validation common to all implementations.  */
-    if (nvcpus < 1 || (unsigned short) nvcpus != nvcpus) {
+    if (nvcpus < 1) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    if ((unsigned short) nvcpus != nvcpus) {
+        virLibDomainError(VIR_ERR_OVERFLOW, _("input too large: %u"), nvcpus);
         goto error;
     }
     conn = domain->conn;
@@ -8774,9 +8778,13 @@ virDomainGetVcpuPinInfo(virDomainPtr domain, int ncpumaps,
         return -1;
     }
 
-    if (ncpumaps < 1 || !cpumaps || maplen <= 0 ||
-        INT_MULTIPLY_OVERFLOW(ncpumaps, maplen)) {
+    if (ncpumaps < 1 || !cpumaps || maplen <= 0) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    if (INT_MULTIPLY_OVERFLOW(ncpumaps, maplen)) {
+        virLibDomainError(VIR_ERR_OVERFLOW, _("input too large: %d * %d"),
+                          ncpumaps, maplen);
         goto error;
     }
 
@@ -8853,9 +8861,13 @@ virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
 
     /* Ensure that domainGetVcpus (aka remoteDomainGetVcpus) does not
        try to memcpy anything into a NULL pointer.  */
-    if (!cpumaps ? maplen != 0
-        : (maplen <= 0 || INT_MULTIPLY_OVERFLOW(maxinfo, maplen))) {
+    if (!cpumaps ? maplen != 0 : maplen <= 0) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    if (cpumaps && INT_MULTIPLY_OVERFLOW(maxinfo, maplen)) {
+        virLibDomainError(VIR_ERR_OVERFLOW, _("input too large: %d * %d"),
+                          maxinfo, maplen);
         goto error;
     }
 
@@ -18618,9 +18630,13 @@ int virDomainGetCPUStats(virDomainPtr domain,
     if (start_cpu < -1 ||
         (start_cpu == -1 && ncpus != 1) ||
         ((params == NULL) != (nparams == 0)) ||
-        (ncpus == 0 && params != NULL) ||
-        (nparams && ncpus > UINT_MAX / nparams)) {
+        (ncpus == 0 && params != NULL)) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    if (nparams && ncpus > UINT_MAX / nparams) {
+        virLibDomainError(VIR_ERR_OVERFLOW, _("input too large: %u * %u"),
+                          nparams, ncpus);
         goto error;
     }
     if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,

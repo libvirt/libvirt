@@ -7371,7 +7371,7 @@ qemuDomainBlockResize(virDomainPtr dom,
     /* We prefer operating on bytes.  */
     if ((flags & VIR_DOMAIN_BLOCK_RESIZE_BYTES) == 0) {
         if (size > ULLONG_MAX / 1024) {
-            qemuReportError(VIR_ERR_INVALID_ARG,
+            qemuReportError(VIR_ERR_OVERFLOW,
                             _("size must be less than %llu"),
                             ULLONG_MAX / 1024);
             return -1;

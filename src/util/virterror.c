@@ -1238,6 +1238,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("Unsafe migration: %s");
             break;
+        case VIR_ERR_OVERFLOW:
+            if (!info)
+                errmsg = _("numerical overflow");
+            else
+                errmsg = _("numerical overflow: %s");
+            break;
     }
     return (errmsg);
 }
