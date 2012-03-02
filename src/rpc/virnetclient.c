@@ -108,8 +108,6 @@ struct _virNetClient {
 };
 
 
-static void virNetClientRequestClose(virNetClientPtr client);
-
 static void virNetClientLock(virNetClientPtr client)
 {
     virMutexLock(&client->lock);
@@ -253,7 +251,7 @@ virNetClientKeepAliveStart(virNetClientPtr client,
 static void
 virNetClientKeepAliveDeadCB(void *opaque)
 {
-    virNetClientRequestClose(opaque);
+    virNetClientClose(opaque);
 }
 
 static int
@@ -512,18 +510,10 @@ virNetClientCloseLocked(virNetClientPtr client)
 
 void virNetClientClose(virNetClientPtr client)
 {
+    VIR_DEBUG("client=%p", client);
+
     if (!client)
         return;
-
-    virNetClientLock(client);
-    virNetClientCloseLocked(client);
-    virNetClientUnlock(client);
-}
-
-static void
-virNetClientRequestClose(virNetClientPtr client)
-{
-    VIR_DEBUG("client=%p", client);
 
     virNetClientLock(client);
 
