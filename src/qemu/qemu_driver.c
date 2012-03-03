@@ -7348,10 +7348,10 @@ qemuGetSchedulerParameters(virDomainPtr dom,
  * like LVM volumes.
  */
 static int
-qemuDomainBlockResize (virDomainPtr dom,
-                       const char *path,
-                       unsigned long long size,
-                       unsigned int flags)
+qemuDomainBlockResize(virDomainPtr dom,
+                      const char *path,
+                      unsigned long long size,
+                      unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -7360,7 +7360,7 @@ qemuDomainBlockResize (virDomainPtr dom,
     char *device = NULL;
     virDomainDiskDefPtr disk = NULL;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_BLOCK_RESIZE_BYTES, -1);
 
     if (path[0] == '\0') {
         qemuReportError(VIR_ERR_INVALID_ARG,
@@ -7368,11 +7368,15 @@ qemuDomainBlockResize (virDomainPtr dom,
         return -1;
     }
 
-    if (size > ULLONG_MAX / 1024) {
-        qemuReportError(VIR_ERR_INVALID_ARG,
-                        _("size must be less than %llu"),
-                        ULLONG_MAX / 1024);
-        return -1;
+    /* We prefer operating on bytes.  */
+    if ((flags & VIR_DOMAIN_BLOCK_RESIZE_BYTES) == 0) {
+        if (size > ULLONG_MAX / 1024) {
+            qemuReportError(VIR_ERR_INVALID_ARG,
+                            _("size must be less than %llu"),
+                            ULLONG_MAX / 1024);
+            return -1;
+        }
+        size *= 1024;
     }
 
     qemuDriverLock(driver);

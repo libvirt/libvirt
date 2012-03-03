@@ -1636,6 +1636,16 @@ int                     virDomainBlockPeek (virDomainPtr dom,
                                             size_t size,
                                             void *buffer,
                                             unsigned int flags);
+
+/**
+ * virDomainBlockResizeFlags:
+ *
+ * Flags available for virDomainBlockResize().
+ */
+typedef enum {
+    VIR_DOMAIN_BLOCK_RESIZE_BYTES = 1 << 0, /* size in bytes instead of KiB */
+} virDomainBlockResizeFlags;
+
 int                     virDomainBlockResize (virDomainPtr dom,
                                               const char *disk,
                                               unsigned long long size,

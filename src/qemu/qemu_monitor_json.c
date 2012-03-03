@@ -1783,7 +1783,8 @@ cleanup:
     return ret;
 }
 
-/* Return 0 on success, -1 on failure, or -2 if not supported. */
+/* Return 0 on success, -1 on failure, or -2 if not supported.  Size
+ * is in bytes.  */
 int qemuMonitorJSONBlockResize(qemuMonitorPtr mon,
                                const char *device,
                                unsigned long long size)
@@ -1794,7 +1795,7 @@ int qemuMonitorJSONBlockResize(qemuMonitorPtr mon,
 
     cmd = qemuMonitorJSONMakeCommand("block_resize",
                                      "s:device", device,
-                                     "U:size", size * 1024,
+                                     "U:size", size,
                                      NULL);
     if (!cmd)
         return -1;

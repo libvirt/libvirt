@@ -1097,7 +1097,8 @@ int qemuMonitorTextGetBlockExtent(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     return -1;
 }
 
-/* Return 0 on success, -1 on failure, or -2 if not supported. */
+/* Return 0 on success, -1 on failure, or -2 if not supported.  Size
+ * is in bytes. */
 int qemuMonitorTextBlockResize(qemuMonitorPtr mon,
                                const char *device,
                                unsigned long long size)
@@ -1106,8 +1107,7 @@ int qemuMonitorTextBlockResize(qemuMonitorPtr mon,
     char *reply = NULL;
     int ret = -1;
 
-    if (virAsprintf(&cmd, "block_resize %s %llu",
-                    device, VIR_DIV_UP(size, 1024)) < 0) {
+    if (virAsprintf(&cmd, "block_resize %s %lluB", device, size) < 0) {
         virReportOOMError();
         goto cleanup;
     }

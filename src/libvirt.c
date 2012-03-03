@@ -7601,12 +7601,15 @@ error:
  * virDomainBlockResize:
  * @dom: pointer to the domain object
  * @disk: path to the block image, or shorthand
- * @size: new size of the block image in kilobytes
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @size: new size of the block image, see below for unit
+ * @flags: bitwise-OR of virDomainBlockResizeFlags
  *
- * Note that this call may fail if the underlying virtualization hypervisor
- * does not support it. And this call requires privileged access to the
- * hypervisor.
+ * Resize a block device of domain while the domain is running.  If
+ * @flags is 0, then @size is in kibibytes (blocks of 1024); since
+ * 0.9.11, if @flags includes VIR_DOMAIN_BLOCK_RESIZE_BYTES, @size is
+ * in bytes instead.  @size is taken directly as the new size.
+ * Depending on the file format, the hypervisor may round up to the
+ * next alignment boundary.
  *
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
@@ -7615,7 +7618,9 @@ error:
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
  *
- * Resize a block device of domain while the domain is running.
+ * Note that this call may fail if the underlying virtualization hypervisor
+ * does not support it; this call requires privileged access to the
+ * hypervisor.
  *
  * Returns: 0 in case of success or -1 in case of failure.
  */
