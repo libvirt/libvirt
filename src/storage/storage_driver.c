@@ -1758,8 +1758,8 @@ storageVolumeResize(virStorageVolPtr obj,
         goto out;
     }
 
-    if (abs_capacity > vol->allocation + pool->def->available) {
-        virStorageReportError(VIR_ERR_INVALID_ARG,
+    if (abs_capacity > vol->capacity + pool->def->available) {
+        virStorageReportError(VIR_ERR_OPERATION_FAILED,
                               _("Not enough space left on storage pool"));
         goto out;
     }
