@@ -1,7 +1,7 @@
 /*
  * xs_internal.c: access to Xen Store
  *
- * Copyright (C) 2006, 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2006, 2009-2012 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -495,23 +495,23 @@ xenStoreDomainSetMemory(virDomainPtr domain, unsigned long memory)
  *
  * Returns the memory size in kilobytes or 0 in case of error.
  */
-unsigned long
+unsigned long long
 xenStoreDomainGetMaxMemory(virDomainPtr domain)
 {
     char *tmp;
-    unsigned long ret = 0;
+    unsigned long long ret = 0;
     xenUnifiedPrivatePtr priv;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain))
         return (ret);
     if (domain->id == -1)
-        return(-1);
+        return 0;
 
     priv = domain->conn->privateData;
     xenUnifiedLock(priv);
     tmp = virDomainDoStoreQuery(domain->conn, domain->id, "memory/target");
     if (tmp != NULL) {
-        ret = (unsigned long) atol(tmp);
+        ret = atol(tmp);
         VIR_FREE(tmp);
     }
     xenUnifiedUnlock(priv);

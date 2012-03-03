@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*/
-/*  Copyright (c) 2011 SUSE LINUX Products GmbH, Nuernberg, Germany.
+/*  Copyright (C) 2006-2012 Red Hat, Inc.
+ *  Copyright (c) 2011 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *  Copyright (C) 2011 Univention GmbH.
- *  Copyright (C) 2006-2011 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1592,12 +1592,12 @@ cleanup:
     return type;
 }
 
-static unsigned long
+static unsigned long long
 libxlDomainGetMaxMemory(virDomainPtr dom)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    unsigned long ret = 0;
+    unsigned long long ret = 0;
 
     libxlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);

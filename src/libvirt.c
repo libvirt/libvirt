@@ -3603,10 +3603,15 @@ virDomainGetMaxMemory(virDomainPtr domain)
     conn = domain->conn;
 
     if (conn->driver->domainGetMaxMemory) {
-        unsigned long ret;
+        unsigned long long ret;
         ret = conn->driver->domainGetMaxMemory (domain);
         if (ret == 0)
             goto error;
+        if ((unsigned long) ret != ret) {
+            virLibDomainError(VIR_ERR_OVERFLOW, _("result too large: %llu"),
+                              ret);
+            goto error;
+        }
         return ret;
     }
 

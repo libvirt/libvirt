@@ -142,7 +142,7 @@ typedef int
                                          unsigned int flags);
 typedef char *
         (*virDrvDomainGetOSType)	(virDomainPtr domain);
-typedef unsigned long
+typedef unsigned long long
         (*virDrvDomainGetMaxMemory)	(virDomainPtr domain);
 typedef int
         (*virDrvDomainSetMaxMemory)	(virDomainPtr domain,

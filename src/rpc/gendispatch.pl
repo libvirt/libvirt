@@ -201,7 +201,6 @@ close(PROTOCOL);
 # this list is fixed. new procedures and public APIs have to map [unsigned]
 # hyper to [unsigned] long long
 my $long_legacy = {
-    DomainGetMaxMemory          => { ret => { memory => 1 } },
     DomainGetInfo               => { ret => { maxMem => 1, memory => 1 } },
     DomainMigrate               => { arg => { flags => 1, resource => 1 } },
     DomainMigrate2              => { arg => { flags => 1, resource => 1 } },

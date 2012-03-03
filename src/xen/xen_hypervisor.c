@@ -855,7 +855,7 @@ typedef struct xen_op_v2_dom xen_op_v2_dom;
 # error "unsupported platform"
 #endif
 
-static unsigned long xenHypervisorGetMaxMemory(virDomainPtr domain);
+static unsigned long long xenHypervisorGetMaxMemory(virDomainPtr domain);
 
 struct xenUnifiedDriver xenHypervisorDriver = {
     .xenClose = xenHypervisorClose,
@@ -3157,7 +3157,7 @@ xenHypervisorGetDomMaxMemory(virConnectPtr conn, int id)
  *
  * Returns the memory size in kilobytes or 0 in case of error.
  */
-static unsigned long ATTRIBUTE_NONNULL (1)
+static unsigned long long ATTRIBUTE_NONNULL (1)
 xenHypervisorGetMaxMemory(virDomainPtr domain)
 {
     xenUnifiedPrivatePtr priv;

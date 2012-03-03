@@ -2021,10 +2021,10 @@ static char *testGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED) {
     return ret;
 }
 
-static unsigned long testGetMaxMemory(virDomainPtr domain) {
+static unsigned long long testGetMaxMemory(virDomainPtr domain) {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
-    unsigned long ret = 0;
+    unsigned long long ret = 0;
 
     testDriverLock(privconn);
     privdom = virDomainFindByName(&privconn->domains,

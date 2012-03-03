@@ -1,7 +1,7 @@
 /*
  * xm_internal.h: helper routines for dealing with inactive domains
  *
- * Copyright (C) 2006-2007, 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -646,11 +646,11 @@ cleanup:
 /*
  * Get max memory limit from config
  */
-unsigned long xenXMDomainGetMaxMemory(virDomainPtr domain) {
+unsigned long long xenXMDomainGetMaxMemory(virDomainPtr domain) {
     xenUnifiedPrivatePtr priv;
     const char *filename;
     xenXMConfCachePtr entry;
-    unsigned long ret = 0;
+    unsigned long long ret = 0;
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         xenXMError(VIR_ERR_INVALID_ARG, __FUNCTION__);

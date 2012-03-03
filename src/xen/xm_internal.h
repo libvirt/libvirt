@@ -1,7 +1,7 @@
 /*
  * xm_internal.h: helper routines for dealing with inactive domains
  *
- * Copyright (C) 2006-2007, 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2010-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -48,7 +48,7 @@ int xenXMDomainGetState(virDomainPtr domain,
 char *xenXMDomainGetXMLDesc(virDomainPtr domain, unsigned int flags);
 int xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory);
 int xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory);
-unsigned long xenXMDomainGetMaxMemory(virDomainPtr domain);
+unsigned long long xenXMDomainGetMaxMemory(virDomainPtr domain);
 int xenXMDomainSetVcpus(virDomainPtr domain, unsigned int vcpus);
 int xenXMDomainSetVcpusFlags(virDomainPtr domain, unsigned int vcpus,
                              unsigned int flags);

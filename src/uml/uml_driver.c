@@ -1625,10 +1625,12 @@ cleanup:
 }
 
 /* Returns max memory in kb, 0 if error */
-static unsigned long umlDomainGetMaxMemory(virDomainPtr dom) {
+static unsigned long long
+umlDomainGetMaxMemory(virDomainPtr dom)
+{
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    unsigned long ret = 0;
+    unsigned long long ret = 0;
 
     umlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);

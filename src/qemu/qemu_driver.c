@@ -1877,10 +1877,12 @@ cleanup:
 }
 
 /* Returns max memory in kb, 0 if error */
-static unsigned long qemudDomainGetMaxMemory(virDomainPtr dom) {
+static unsigned long long
+qemuDomainGetMaxMemory(virDomainPtr dom)
+{
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    unsigned long ret = 0;
+    unsigned long long ret = 0;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -12417,7 +12419,7 @@ static virDriver qemuDriver = {
     .domainDestroy = qemuDomainDestroy, /* 0.2.0 */
     .domainDestroyFlags = qemuDomainDestroyFlags, /* 0.9.4 */
     .domainGetOSType = qemudDomainGetOSType, /* 0.2.2 */
-    .domainGetMaxMemory = qemudDomainGetMaxMemory, /* 0.4.2 */
+    .domainGetMaxMemory = qemuDomainGetMaxMemory, /* 0.4.2 */
     .domainSetMaxMemory = qemudDomainSetMaxMemory, /* 0.4.2 */
     .domainSetMemory = qemudDomainSetMemory, /* 0.4.2 */
     .domainSetMemoryFlags = qemudDomainSetMemoryFlags, /* 0.9.0 */

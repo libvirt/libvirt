@@ -670,10 +670,12 @@ cleanup:
 }
 
 /* Returns max memory in kb, 0 if error */
-static unsigned long lxcDomainGetMaxMemory(virDomainPtr dom) {
+static unsigned long long
+lxcDomainGetMaxMemory(virDomainPtr dom)
+{
     lxc_driver_t *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    unsigned long ret = 0;
+    unsigned long long ret = 0;
 
     lxcDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);

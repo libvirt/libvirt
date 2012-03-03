@@ -1,6 +1,6 @@
 /*
  * xenapi_driver.c: Xen API driver.
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  * Copyright (C) 2009, 2010 Citrix Ltd.
  *
  * This library is free software; you can redistribute it and/or
@@ -955,7 +955,7 @@ xenapiDomainGetOSType (virDomainPtr dom)
  * Returns maximum static memory for VM on success
  * or 0 in case of error
  */
-static unsigned long
+static unsigned long long
 xenapiDomainGetMaxMemory (virDomainPtr dom)
 {
     int64_t mem_static_max = 0;
@@ -972,7 +972,7 @@ xenapiDomainGetMaxMemory (virDomainPtr dom)
         vm = vms->contents[0];
         xen_vm_get_memory_static_max(session, &mem_static_max, vm);
         xen_vm_set_free(vms);
-        return (unsigned long)(mem_static_max / 1024);
+        return (mem_static_max / 1024);
     } else {
         if (vms) xen_vm_set_free(vms);
         xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);

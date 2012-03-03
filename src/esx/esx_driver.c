@@ -2,7 +2,7 @@
 /*
  * esx_driver.c: core driver functions for managing VMware ESX hosts
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2009-2011 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2009 Maximilian Wilhelm <max@rfc2324.org>
  *
@@ -2073,7 +2073,7 @@ esxDomainGetOSType(virDomainPtr domain ATTRIBUTE_UNUSED)
 
 
 
-static unsigned long
+static unsigned long long
 esxDomainGetMaxMemory(virDomainPtr domain)
 {
     esxPrivate *priv = domain->conn->privateData;

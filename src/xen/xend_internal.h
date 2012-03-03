@@ -1,7 +1,7 @@
 /*
  * xend_internal.h
  *
- * Copyright (C) 2006-2008, 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2010-2012 Red Hat, Inc.
  * Copyright (C) 2005,2006
  *
  *      Anthony Liguori <aliguori@us.ibm.com>
@@ -119,7 +119,7 @@ int xenDaemonDomainGetState(virDomainPtr domain,
                             unsigned int flags);
 char *xenDaemonDomainGetXMLDesc(virDomainPtr domain, unsigned int flags,
                                 const char *cpus);
-unsigned long xenDaemonDomainGetMaxMemory(virDomainPtr domain);
+unsigned long long xenDaemonDomainGetMaxMemory(virDomainPtr domain);
 char **xenDaemonListDomainsOld(virConnectPtr xend);
 
 virDomainPtr xenDaemonDomainDefineXML(virConnectPtr xend, const char *sexpr);

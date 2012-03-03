@@ -1,7 +1,7 @@
 /*
  * xen_driver.c: Unified Xen driver.
  *
- * Copyright (C) 2007-2011 Red Hat, Inc.
+ * Copyright (C) 2007-2012 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -937,12 +937,12 @@ xenUnifiedDomainGetOSType (virDomainPtr dom)
     return NULL;
 }
 
-static unsigned long
+static unsigned long long
 xenUnifiedDomainGetMaxMemory (virDomainPtr dom)
 {
     GET_PRIVATE(dom->conn);
     int i;
-    unsigned long ret;
+    unsigned long long ret;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] && drivers[i]->xenDomainGetMaxMemory) {

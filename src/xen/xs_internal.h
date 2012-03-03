@@ -1,7 +1,7 @@
 /*
  * xs_internal.h: internal API for access to XenStore
  *
- * Copyright (C) 2006, 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2006, 2010-2012 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -36,7 +36,7 @@ virDomainPtr	xenStoreLookupByName(virConnectPtr conn,
 unsigned long	xenStoreGetMaxMemory	(virDomainPtr domain);
 int		xenStoreDomainSetMemory	(virDomainPtr domain,
                                          unsigned long memory);
-unsigned long	xenStoreDomainGetMaxMemory(virDomainPtr domain);
+unsigned long long xenStoreDomainGetMaxMemory(virDomainPtr domain);
 int		xenStoreDomainShutdown	(virDomainPtr domain);
 int		xenStoreDomainReboot	(virDomainPtr domain,
                                          unsigned int flags);
