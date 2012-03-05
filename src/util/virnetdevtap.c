@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2011 Red Hat, Inc.
+ * Copyright (C) 2007-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -44,6 +44,10 @@
 #endif
 
 #define VIR_FROM_THIS VIR_FROM_NONE
+
+#define virNetDevTapError(code, ...)                    \
+    virReportErrorHelper(VIR_FROM_NONE, code, __FILE__, \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /**
  * virNetDevProbeVnetHdr:
@@ -294,8 +298,22 @@ int virNetDevTapCreateInBridgePort(const char *brname,
      * device before we set our static MAC.
      */
     memcpy(tapmac, macaddr, VIR_MAC_BUFLEN);
-    if (!(flags & VIR_NETDEV_TAP_CREATE_USE_MAC_FOR_BRIDGE))
+    if (!(flags & VIR_NETDEV_TAP_CREATE_USE_MAC_FOR_BRIDGE)) {
+        if (macaddr[0] == 0xFE) {
+            /* For normal use, the tap device's MAC address cannot
+             * match the MAC address used by the guest. This results
+             * in "received packet on vnetX with own address as source
+             * address" error logs from the kernel.
+             */
+            virNetDevTapError(VIR_ERR_CONFIG_UNSUPPORTED,
+                              "Unable to use MAC address starting with "
+                              "reserved value 0xFE - '%02X:%02X:%02X:%02X:%02X:%02X' - ",
+                              macaddr[0], macaddr[1], macaddr[2],
+                              macaddr[3], macaddr[4], macaddr[5]);
+            goto error;
+        }
         tapmac[0] = 0xFE; /* Discourage bridge from using TAP dev MAC */
+    }
 
     if (virNetDevSetMAC(*ifname, tapmac) < 0)
         goto error;
