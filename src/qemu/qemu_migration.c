@@ -828,10 +828,12 @@ qemuMigrationIsSafe(virDomainDefPtr def)
     for (i = 0 ; i < def->ndisks ; i++) {
         virDomainDiskDefPtr disk = def->disks[i];
 
-        /* shared && !readonly implies cache=none */
+        /* Our code elsewhere guarantees shared disks are either readonly (in
+         * which case cache mode doesn't matter) or used with cache=none */
         if (disk->src &&
-            disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE &&
-            (disk->cachemode || !disk->shared || disk->readonly)) {
+            !disk->shared &&
+            !disk->readonly &&
+            disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE) {
             int cfs;
             if ((cfs = virStorageFileIsClusterFS(disk->src)) == 1)
                 continue;
