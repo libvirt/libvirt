@@ -3624,6 +3624,7 @@ typedef enum {
  * @dom: domain on which the event occurred
  * @oldSrcPath: old source path
  * @newSrcPath: new source path
+ * @devAlias: device alias name
  * @reason: reason why this callback was called; any of
  *          virConnectDomainEventDiskChangeReason
  * @opaque: application specified data
@@ -3634,7 +3635,7 @@ typedef enum {
  * for more details.
  *
  * The callback signature to use when registering for an event of type
- * VIR_DOMAIN_EVENT_ID_IO_ERROR with virConnectDomainEventRegisterAny()
+ * VIR_DOMAIN_EVENT_ID_DISK_CHANGE with virConnectDomainEventRegisterAny()
  */
 typedef void (*virConnectDomainEventDiskChangeCallback)(virConnectPtr conn,
                                                        virDomainPtr dom,
