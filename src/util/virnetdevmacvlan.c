@@ -913,7 +913,7 @@ create_name:
         goto disassociate_exit;
     }
 
-    if (virNetlinkEventServiceIsRunning()) {
+    if (virtPortProfile && virNetlinkEventServiceIsRunning()) {
         if (VIR_ALLOC(calld) < 0)
             goto memory_error;
         if ((calld->cr_ifname = strdup(cr_ifname)) == NULL)
