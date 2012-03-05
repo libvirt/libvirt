@@ -415,8 +415,8 @@
 <pre>
 &lt;domain&gt;
   ...
-  &lt;memory&gt;524288&lt;/memory&gt;
-  &lt;currentMemory&gt;524288&lt;/currentMemory&gt;
+  &lt;memory unit='KiB'&gt;524288&lt;/memory&gt;
+  &lt;currentMemory unit='KiB'&gt;524288&lt;/currentMemory&gt;
   ...
 &lt;/domain&gt;
 </pre>
@@ -424,12 +424,31 @@
     <dl>
       <dt><code>memory</code></dt>
       <dd>The maximum allocation of memory for the guest at boot time.
-        The units for this value are kibibytes (i.e. blocks of 1024 bytes)</dd>
+        The units for this value are determined by the optional
+        atttribute <code>unit</code>, which defaults to "KiB"
+        (kibibytes, 2<sup>10</sup> or blocks of 1024 bytes).  Valid
+        units are "b" or "bytes" for bytes, "KB" for kilobytes
+        (10<sup>3</sup> or 1,000 bytes), "k" or "KiB" for kibibytes
+        (1024 bytes), "MB" for megabytes (10<sup>6</sup> or 1,000,000
+        bytes), "M" or "MiB" for mebibytes (2<sup>20</sup> or
+        1,048,576 bytes), "GB" for gigabytes (10<sup>9</sup> or
+        1,000,000,000 bytes), "G" or "GiB" for gibibytes
+        (2<sup>30</sup> or 1,073,741,824 bytes), "TB" for terabytes
+        (10<sup>12</sup> or 1,000,000,000,000 bytes), or "T" or "TiB"
+        for tebibytes (2<sup>40</sup> or 1,099,511,627,776 bytes).
+        However, the value will be rounded up to the nearest kibibyte
+        by libvirt, and may be further rounded to the granularity
+        supported by the hypervisor.  Some hypervisors also enforce a
+        minimum, such as
+        4000KiB. <span class='since'><code>unit</code> since
+        0.9.11</span></dd>
       <dt><code>currentMemory</code></dt>
       <dd>The actual allocation of memory for the guest. This value can
         be less than the maximum allocation, to allow for ballooning
         up the guests memory on the fly. If this is omitted, it defaults
-        to the same value as the <code>memory</code> element</dd>
+        to the same value as the <code>memory</code> element.
+        The <code>unit</code> attribute behaves the same as
+        for <code>memory</code>.</dd>
     </dl>
 
 
@@ -460,10 +479,10 @@
 &lt;domain&gt;
   ...
   &lt;memtune&gt;
-    &lt;hard_limit&gt;1048576&lt;/hard_limit&gt;
-    &lt;soft_limit&gt;131072&lt;/soft_limit&gt;
-    &lt;swap_hard_limit&gt;2097152&lt;/swap_hard_limit&gt;
-    &lt;min_guarantee&gt;65536&lt;/min_guarantee&gt;
+    &lt;hard_limit unit='G'&gt;1&lt;/hard_limit&gt;
+    &lt;soft_limit unit='M'&gt;128&lt;/soft_limit&gt;
+    &lt;swap_hard_limit unit='G'&gt;2&lt;/swap_hard_limit&gt;
+    &lt;min_guarantee unit='bytes'&gt;67108864&lt;/min_guarantee&gt;
   &lt;/memtune&gt;
   ...
 &lt;/domain&gt;
@@ -477,7 +496,13 @@
         parameters are applied to the QEMU process as a whole. Thus, when
         counting them, one needs to add up guest RAM, guest video RAM, and
         some memory overhead of QEMU itself. The last piece is hard to
-        determine so one needs guess and try.</dd>
+        determine so one needs guess and try.  For each tunable, it
+        is possible to designate which unit the number is in on
+        input, using the same values as
+        for <code>&lt;memory&gt;</code>.  For backwards
+        compatibility, output is always in
+        KiB.  <span class='since'><code>unit</code>
+        since 0.9.11</span></dd>
       <dt><code>hard_limit</code></dt>
       <dd> The optional <code>hard_limit</code> element is the maximum memory
         the guest can use. The units for this value are kibibytes (i.e. blocks

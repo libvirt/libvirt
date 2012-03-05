@@ -7491,6 +7491,60 @@ static int virDomainDefMaybeAddController(virDomainDefPtr def,
     return 0;
 }
 
+
+/* Parse a memory element located at XPATH within CTXT, and store the
+ * result into MEM.  If REQUIRED, then the value must exist;
+ * otherwise, the value is optional.  The value is in blocks of 1024.
+ * Return 0 on success, -1 on failure after issuing error.  */
+static int
+virDomainParseMemory(const char *xpath, xmlXPathContextPtr ctxt,
+                     unsigned long long *mem, bool required)
+{
+    char *xpath_full = NULL;
+    char *unit = NULL;
+    int ret = -1;
+    unsigned long long bytes;
+    unsigned long long max;
+
+    *mem = 0;
+    if (virAsprintf(&xpath_full, "string(%s)", xpath) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    if (virXPathULongLong(xpath_full, ctxt, &bytes) < 0) {
+        if (required)
+            virDomainReportError(VIR_ERR_XML_ERROR,
+                                 "%s", _("missing memory element"));
+        else
+            ret = 0;
+        goto cleanup;
+    }
+    VIR_FREE(xpath_full);
+
+    if (virAsprintf(&xpath_full, "string(%s/@unit)", xpath) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    unit = virXPathString(xpath_full, ctxt);
+    /* On 32-bit machines, our bound is 0xffffffff * KiB. On 64-bit
+     * machines, our bound is off_t (2^63).  */
+    if (sizeof(unsigned long) < sizeof(long long))
+        max = 1024ull * ULONG_MAX;
+    else
+        max = LLONG_MAX;
+    if (virScaleInteger(&bytes, unit, 1024, max) < 0)
+        goto cleanup;
+
+    /* Yes, we really do use kibibytes for our internal sizing.  */
+    *mem = VIR_DIV_UP(bytes, 1024);
+    ret = 0;
+cleanup:
+    VIR_FREE(xpath_full);
+    VIR_FREE(unit);
+    return ret;
+}
+
+
 static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                                             xmlDocPtr xml,
                                             xmlNodePtr root,
@@ -7614,22 +7668,21 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto error;
 
     /* Extract domain memory */
-    if (virXPathULongLong("string(./memory[1])", ctxt,
-                          &def->mem.max_balloon) < 0) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("missing memory element"));
+    if (virDomainParseMemory("./memory[1]", ctxt,
+                             &def->mem.max_balloon, true) < 0)
         goto error;
-    }
 
-    if (virXPathULongLong("string(./currentMemory[1])", ctxt,
-                          &def->mem.cur_balloon) < 0)
-        def->mem.cur_balloon = def->mem.max_balloon;
+    if (virDomainParseMemory("./currentMemory[1]", ctxt,
+                             &def->mem.cur_balloon, false) < 0)
+        goto error;
 
     if (def->mem.cur_balloon > def->mem.max_balloon) {
         virDomainReportError(VIR_ERR_XML_ERROR,
                              _("current memory '%lluk' exceeds maximum '%lluk'"),
                              def->mem.cur_balloon, def->mem.max_balloon);
         goto error;
+    } else if (def->mem.cur_balloon == 0) {
+        def->mem.cur_balloon = def->mem.max_balloon;
     }
 
     node = virXPathNode("./memoryBacking/hugepages", ctxt);
@@ -7668,21 +7721,21 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     VIR_FREE(nodes);
 
     /* Extract other memory tunables */
-    if (virXPathULongLong("string(./memtune/hard_limit)", ctxt,
-                          &def->mem.hard_limit) < 0)
-        def->mem.hard_limit = 0;
+    if (virDomainParseMemory("./memtune/hard_limit[1]", ctxt,
+                             &def->mem.hard_limit, false) < 0)
+        goto error;
 
-    if (virXPathULongLong("string(./memtune/soft_limit[1])", ctxt,
-                          &def->mem.soft_limit) < 0)
-        def->mem.soft_limit = 0;
+    if (virDomainParseMemory("./memtune/soft_limit[1]", ctxt,
+                             &def->mem.soft_limit, false) < 0)
+        goto error;
 
-    if (virXPathULongLong("string(./memtune/min_guarantee[1])", ctxt,
-                          &def->mem.min_guarantee) < 0)
-        def->mem.min_guarantee = 0;
+    if (virDomainParseMemory("./memtune/min_guarantee[1]", ctxt,
+                             &def->mem.min_guarantee, false) < 0)
+        goto error;
 
-    if (virXPathULongLong("string(./memtune/swap_hard_limit[1])", ctxt,
-                          &def->mem.swap_hard_limit) < 0)
-        def->mem.swap_hard_limit = 0;
+    if (virDomainParseMemory("./memtune/swap_hard_limit[1]", ctxt,
+                             &def->mem.swap_hard_limit, false) < 0)
+        goto error;
 
     n = virXPathULong("string(./vcpu[1])", ctxt, &count);
     if (n == -2) {
