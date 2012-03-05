@@ -571,7 +571,7 @@ int virNetlinkEventServiceStart(void)
  * virNetlinkEventServiceIsRunning: returns if the netlink event
  * service is running.
  */
-int virNetlinkEventServiceIsRunning(void)
+bool virNetlinkEventServiceIsRunning(void)
 {
 # if defined(__linux__) && !defined(HAVE_LIBNL)
     netlinkError(VIR_ERR_INTERNAL_ERROR,
@@ -585,9 +585,10 @@ int virNetlinkEventServiceIsRunning(void)
  * virNetlinkEventAddClient: register a callback for handling of
  * netlink messages
  */
-int virNetlinkEventAddClient(virNetlinkEventHandleCallback cb,
-                             virNetlinkEventRemoveCallback cb,
-                             void *opaque, const unsigned char *macaddr)
+int virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB ATTRIBUTE_UNUSED,
+                             virNetlinkEventRemoveCallback removeCB ATTRIBUTE_UNUSED,
+                             void *opaque ATTRIBUTE_UNUSED,
+                             const unsigned char *macaddr ATTRIBUTE_UNUSED)
 {
     netlinkError(VIR_ERR_INTERNAL_ERROR,
                 "%s",
@@ -602,7 +603,8 @@ int virNetlinkEventAddClient(virNetlinkEventHandleCallback cb,
 /**
  * virNetlinkEventRemoveClient: unregister a callback from a netlink monitor
  */
-int virNetlinkEventRemoveClient(int watch, const unsigned char *macaddr)
+int virNetlinkEventRemoveClient(int watch ATTRIBUTE_UNUSED,
+                                const unsigned char *macaddr ATTRIBUTE_UNUSED)
 {
     netlinkError(VIR_ERR_INTERNAL_ERROR,
                 "%s",
