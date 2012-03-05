@@ -1632,6 +1632,76 @@ virHexToBin(unsigned char c)
     }
 }
 
+/* Scale an integer VALUE in-place by an optional case-insensitive
+ * SUFFIX, defaulting to SCALE if suffix is NULL or empty (scale is
+ * typically 1 or 1024).  Recognized suffixes include 'b' or 'bytes',
+ * as well as power-of-two scaling via binary abbreviations ('KiB',
+ * 'MiB', ...) or their one-letter counterpart ('k', 'M', ...), and
+ * power-of-ten scaling via SI abbreviations ('KB', 'MB', ...).
+ * Ensure that the result does not exceed LIMIT.  Return 0 on success,
+ * -1 with error message raised on failure.  */
+int
+virScaleInteger(unsigned long long *value, const char *suffix,
+                unsigned long long scale, unsigned long long limit)
+{
+    if (!suffix || !*suffix) {
+        if (!scale) {
+            virUtilError(VIR_ERR_INTERNAL_ERROR,
+                         _("invalid scale %llu"), scale);
+            return -1;
+        }
+        suffix = "";
+    } else if (STRCASEEQ(suffix, "b") || STRCASEEQ(suffix, "byte") ||
+               STRCASEEQ(suffix, "bytes")) {
+        scale = 1;
+    } else {
+        int base;
+
+        if (!suffix[1] || STRCASEEQ(suffix + 1, "iB")) {
+            base = 1024;
+        } else if (c_tolower(suffix[1]) == 'b' && !suffix[2]) {
+            base = 1000;
+        } else {
+            virUtilError(VIR_ERR_INVALID_ARG,
+                         _("unknown suffix '%s'"), suffix);
+            return -1;
+        }
+        scale = 1;
+        switch (c_tolower(*suffix)) {
+        case 'e':
+            scale *= base;
+            /* fallthrough */
+        case 'p':
+            scale *= base;
+            /* fallthrough */
+        case 't':
+            scale *= base;
+            /* fallthrough */
+        case 'g':
+            scale *= base;
+            /* fallthrough */
+        case 'm':
+            scale *= base;
+            /* fallthrough */
+        case 'k':
+            scale *= base;
+            break;
+        default:
+            virUtilError(VIR_ERR_INVALID_ARG,
+                         _("unknown suffix '%s'"), suffix);
+            return -1;
+        }
+    }
+
+    if (*value && *value >= (limit / scale)) {
+        virUtilError(VIR_ERR_OVERFLOW, _("value too large: %llu%s"),
+                     *value, suffix);
+        return -1;
+    }
+    *value *= scale;
+    return 0;
+}
+
 /**
  * virSkipSpaces:
  * @str: pointer to the char pointer used

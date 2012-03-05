@@ -157,6 +157,10 @@ int virStrToDouble(char const *s,
                    char **end_ptr,
                    double *result);
 
+int virScaleInteger(unsigned long long *value, const char *suffix,
+                    unsigned long long scale, unsigned long long limit)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+
 int virHexToBin(unsigned char c);
 
 void virSkipSpaces(const char **str) ATTRIBUTE_NONNULL(1);

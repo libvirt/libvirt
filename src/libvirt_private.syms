@@ -1134,6 +1134,7 @@ virKillProcess;
 virParseNumber;
 virParseVersionString;
 virPipeReadUntilEOF;
+virScaleInteger;
 virSetBlocking;
 virSetCloseExec;
 virSetInherit;
