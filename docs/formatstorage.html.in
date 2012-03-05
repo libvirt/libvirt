@@ -236,13 +236,22 @@
         <br/>
         By default this is specified in bytes, but an optional attribute
         <code>unit</code> can be specified to adjust the passed value.
-        Values can be: 'K' (kibibytes, 2<sup>10</sup> or 1024 bytes),
-        'M' (mebibytes, 2<sup>20</sup> or 1,048,576 bytes), 'G'
-        (gibibytes, 2<sup>30</sup> or 1,073,741,824 bytes), 'T'
-        (tebibytes, 2<sup>40</sup> or 1,099,511,627,776 bytes), 'P'
-        (pebibytes, 2<sup>50</sup> or 1,125,899,906,842,624 bytes), or
-        'E' (exbibytes, 2<sup>60</sup> or 1,152,921,504,606,846,976
-        bytes).  <span class="since">Since 0.4.1</span></dd>
+        Values can be: 'B' or 'bytes' for bytes, 'KB' (kilobytes,
+        10<sup>3</sup> or 1000 bytes), 'K' or 'KiB' (kibibytes,
+        2<sup>10</sup> or 1024 bytes), 'MB' (megabytes, 10<sup>6</sup>
+        or 1,000,000 bytes), 'M' or 'MiB' (mebibytes, 2<sup>20</sup>
+        or 1,048,576 bytes), 'GB' (gigabytes, 10<sup>9</sup> or
+        1,000,000,000 bytes), 'G' or 'GiB' (gibibytes, 2<sup>30</sup>
+        or 1,073,741,824 bytes), 'TB' (terabytes, 10<sup>12</sup> or
+        1,000,000,000,000 bytes), 'T' or 'TiB' (tebibytes,
+        2<sup>40</sup> or 1,099,511,627,776 bytes), 'PB' (petabytes,
+        10<sup>15</sup> or 1,000,000,000,000,000 bytes), 'P' or 'PiB'
+        (pebibytes, 2<sup>50</sup> or 1,125,899,906,842,624 bytes),
+        'EB' (exabytes, 10<sup>18</sup> or 1,000,000,000,000,000,000
+        bytes), or 'E' or 'EiB' (exbibytes, 2<sup>60</sup> or
+        1,152,921,504,606,846,976 bytes).  <span class="since">Since
+        0.4.1, multi-character <code>unit</code> since
+        0.9.11</span></dd>
       <dt><code>capacity</code></dt>
       <dd>Providing the logical capacity for the volume. This value is
         in bytes by default, but a <code>unit</code> attribute can be

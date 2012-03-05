@@ -1,8 +1,8 @@
 <volume>
   <name>sparse.img</name>
   <source/>
-  <capacity unit="T">1</capacity>
-  <allocation>0</allocation>
+  <capacity unit="TiB">1</capacity>
+  <allocation unit="bytes">0</allocation>
   <target>
     <path>/var/lib/libvirt/images/sparse.img</path>
     <permissions>

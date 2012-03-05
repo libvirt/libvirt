@@ -944,64 +944,17 @@ virStoragePoolDefFormat(virStoragePoolDefPtr def) {
 static int
 virStorageSize(const char *unit,
                const char *val,
-               unsigned long long *ret) {
-    unsigned long long mult;
-    char *end;
-
-    if (!unit) {
-        mult = 1;
-    } else {
-        switch (unit[0]) {
-        case 'k':
-        case 'K':
-            mult = 1024ull;
-            break;
-
-        case 'm':
-        case 'M':
-            mult = 1024ull * 1024ull;
-            break;
-
-        case 'g':
-        case 'G':
-            mult = 1024ull * 1024ull * 1024ull;
-            break;
-
-        case 't':
-        case 'T':
-            mult = 1024ull * 1024ull * 1024ull * 1024ull;
-            break;
-
-        case 'p':
-        case 'P':
-            mult = 1024ull * 1024ull * 1024ull * 1024ull * 1024ull;
-            break;
-
-        case 'e':
-        case 'E':
-            mult = 1024ull * 1024ull * 1024ull * 1024ull * 1024ull *
-                1024ull;
-            break;
-
-        default:
-            virStorageReportError(VIR_ERR_XML_ERROR,
-                                  _("unknown size units '%s'"), unit);
-            return -1;
-        }
-    }
-
-    if (virStrToLong_ull (val, &end, 10, ret) < 0) {
+               unsigned long long *ret)
+{
+    if (virStrToLong_ull(val, NULL, 10, ret) < 0) {
         virStorageReportError(VIR_ERR_XML_ERROR,
                               "%s", _("malformed capacity element"));
         return -1;
     }
-    if (*ret > (ULLONG_MAX / mult)) {
-        virStorageReportError(VIR_ERR_XML_ERROR,
-                              "%s", _("capacity element value too large"));
-            return -1;
-    }
-
-    *ret *= mult;
+    /* off_t is signed, so you cannot create a file larger than 2**63
+     * bytes in the first place.  */
+    if (virScaleInteger(ret, unit, 1, LLONG_MAX) < 0)
+        return -1;
 
     return 0;
 }

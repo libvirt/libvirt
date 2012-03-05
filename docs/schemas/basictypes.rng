@@ -140,7 +140,7 @@
 
   <define name='unit'>
     <data type='string'>
-      <param name='pattern'>(bytes)|[kKmMgGtTpPeE]</param>
+      <param name='pattern'>([bB]([yY][tT][eE][sS]?)?)|([kKmMgGtTpPeE]([iI]?[bB])?)</param>
     </data>
   </define>
   <define name='scaledInteger'>
