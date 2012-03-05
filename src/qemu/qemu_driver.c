@@ -12136,10 +12136,10 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
     if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_WAKEUP) &&
         (target == VIR_NODE_SUSPEND_TARGET_MEM ||
          target == VIR_NODE_SUSPEND_TARGET_HYBRID)) {
-       qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("Unable to suspend domain due to "
-                         "missing system_wakeup monitor command"));
-       goto cleanup;
+        qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                        _("Unable to suspend domain due to "
+                          "missing system_wakeup monitor command"));
+        goto cleanup;
     }
 
     if (priv->agentError) {
