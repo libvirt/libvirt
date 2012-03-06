@@ -5822,7 +5822,7 @@ cleanup:
 }
 
 /*
- * "setmemory" command
+ * "setmem" command
  */
 static const vshCmdInfo info_setmem[] = {
     {"help", N_("change memory allocation")},
@@ -5832,7 +5832,9 @@ static const vshCmdInfo info_setmem[] = {
 
 static const vshCmdOptDef opts_setmem[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"kilobytes", VSH_OT_INT, VSH_OFLAG_REQ, N_("number of kilobytes of memory")},
+    {"kilobytes", VSH_OT_ALIAS, 0, "size"},
+    {"size", VSH_OT_INT, VSH_OFLAG_REQ,
+     N_("new memory size, as scaled integer (default KiB)")},
     {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
     {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
     {"current", VSH_OT_BOOL, 0, N_("affect current domain")},
@@ -5843,8 +5845,9 @@ static bool
 cmdSetmem(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
-    virDomainInfo info;
-    unsigned long kilobytes = 0;
+    unsigned long long bytes = 0;
+    unsigned long long max;
+    unsigned long kibibytes = 0;
     bool ret = true;
     int config = vshCommandOptBool(cmd, "config");
     int live = vshCommandOptBool(cmd, "live");
@@ -5873,36 +5876,25 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptUL(cmd, "kilobytes", &kilobytes) < 0) {
+    /* The API expects 'unsigned long' KiB, so depending on whether we
+     * are 32-bit or 64-bit determines the maximum we can use.  */
+    if (sizeof(kibibytes) < sizeof(max))
+        max = 1024ull * ULONG_MAX;
+    else
+        max = ULONG_MAX;
+    if (vshCommandOptScaledInt(cmd, "size", &bytes, 1024, max) < 0) {
         vshError(ctl, "%s", _("memory size has to be a number"));
-        return false;
-    }
-
-    if (kilobytes <= 0) {
         virDomainFree(dom);
-        vshError(ctl, _("Invalid value of %lu for memory size"), kilobytes);
         return false;
     }
-
-    if (virDomainGetInfo(dom, &info) != 0) {
-        virDomainFree(dom);
-        vshError(ctl, "%s", _("Unable to verify MaxMemorySize"));
-        return false;
-    }
-
-    if (kilobytes > info.maxMem) {
-        virDomainFree(dom);
-        vshError(ctl, _("Requested memory size %lu kb is larger than maximum of %lu kb"),
-                 kilobytes, info.maxMem);
-        return false;
-    }
+    kibibytes = VIR_DIV_UP(bytes, 1024);
 
     if (flags == -1) {
-        if (virDomainSetMemory(dom, kilobytes) != 0) {
+        if (virDomainSetMemory(dom, kibibytes) != 0) {
             ret = false;
         }
     } else {
-        if (virDomainSetMemoryFlags(dom, kilobytes, flags) < 0) {
+        if (virDomainSetMemoryFlags(dom, kibibytes, flags) < 0) {
             ret = false;
         }
     }
@@ -5922,7 +5914,9 @@ static const vshCmdInfo info_setmaxmem[] = {
 
 static const vshCmdOptDef opts_setmaxmem[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"kilobytes", VSH_OT_INT, VSH_OFLAG_REQ, N_("maximum memory limit in kilobytes")},
+    {"kilobytes", VSH_OT_ALIAS, 0, "size"},
+    {"size", VSH_OT_INT, VSH_OFLAG_REQ,
+     N_("new maximum memory size, as scaled integer (default KiB)")},
     {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
     {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
     {"current", VSH_OT_BOOL, 0, N_("affect current domain")},
@@ -5933,7 +5927,9 @@ static bool
 cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
-    int kilobytes = 0;
+    unsigned long long bytes = 0;
+    unsigned long long max;
+    unsigned long kibibytes = 0;
     bool ret = true;
     int config = vshCommandOptBool(cmd, "config");
     int live = vshCommandOptBool(cmd, "live");
@@ -5961,24 +5957,26 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptInt(cmd, "kilobytes", &kilobytes) < 0) {
+    /* The API expects 'unsigned long' KiB, so depending on whether we
+     * are 32-bit or 64-bit determines the maximum we can use.  */
+    if (sizeof(kibibytes) < sizeof(max))
+        max = 1024ull * ULONG_MAX;
+    else
+        max = ULONG_MAX;
+    if (vshCommandOptScaledInt(cmd, "size", &bytes, 1024, max) < 0) {
         vshError(ctl, "%s", _("memory size has to be a number"));
-        return false;
-    }
-
-    if (kilobytes <= 0) {
         virDomainFree(dom);
-        vshError(ctl, _("Invalid value of %d for memory size"), kilobytes);
         return false;
     }
+    kibibytes = VIR_DIV_UP(bytes, 1024);
 
     if (flags == -1) {
-        if (virDomainSetMaxMemory(dom, kilobytes) != 0) {
+        if (virDomainSetMaxMemory(dom, kibibytes) != 0) {
             vshError(ctl, "%s", _("Unable to change MaxMemorySize"));
             ret = false;
         }
     } else {
-        if (virDomainSetMemoryFlags(dom, kilobytes, flags) < 0) {
+        if (virDomainSetMemoryFlags(dom, kibibytes, flags) < 0) {
             vshError(ctl, "%s", _("Unable to change MaxMemorySize"));
             ret = false;
         }
@@ -6151,21 +6149,45 @@ static const vshCmdInfo info_memtune[] = {
 static const vshCmdOptDef opts_memtune[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"hard-limit", VSH_OT_INT, VSH_OFLAG_NONE,
-     N_("Max memory in kilobytes")},
+     N_("Max memory, as scaled integer (default KiB)")},
     {"soft-limit", VSH_OT_INT, VSH_OFLAG_NONE,
-     N_("Memory during contention in kilobytes")},
+     N_("Memory during contention, as scaled integer (default KiB)")},
     {"swap-hard-limit", VSH_OT_INT, VSH_OFLAG_NONE,
-     N_("Max memory plus swap in kilobytes")},
+     N_("Max memory plus swap, as scaled integer (default KiB)")},
     {"min-guarantee", VSH_OT_INT, VSH_OFLAG_NONE,
-     N_("Min guaranteed memory in kilobytes")},
+     N_("Min guaranteed memory, as scaled integer (default KiB)")},
     {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
     {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
     {"current", VSH_OT_BOOL, 0, N_("affect current domain")},
     {NULL, 0, 0, NULL}
 };
 
+static int
+vshMemtuneGetSize(const vshCmd *cmd, const char *name, long long *value)
+{
+    int ret;
+    unsigned long long tmp;
+    const char *str;
+    char *end;
+
+    ret = vshCommandOptString(cmd, name, &str);
+    if (ret <= 0)
+        return ret;
+    if (virStrToLong_ll(str, &end, 10, value) < 0)
+        return -1;
+    if (*value < 0) {
+        *value = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+        return 1;
+    }
+    tmp = *value;
+    if (virScaleInteger(&tmp, end, 1024, LLONG_MAX) < 0)
+        return -1;
+    *value = VIR_DIV_UP(tmp, 1024);
+    return 0;
+}
+
 static bool
-cmdMemtune(vshControl * ctl, const vshCmd * cmd)
+cmdMemtune(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     long long hard_limit = 0, soft_limit = 0, swap_hard_limit = 0;
@@ -6198,10 +6220,10 @@ cmdMemtune(vshControl * ctl, const vshCmd * cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptLongLong(cmd, "hard-limit", &hard_limit) < 0 ||
-        vshCommandOptLongLong(cmd, "soft-limit", &soft_limit) < 0 ||
-        vshCommandOptLongLong(cmd, "swap-hard-limit", &swap_hard_limit) < 0 ||
-        vshCommandOptLongLong(cmd, "min-guarantee", &min_guarantee) < 0) {
+    if (vshMemtuneGetSize(cmd, "hard-limit", &hard_limit) < 0 ||
+        vshMemtuneGetSize(cmd, "soft-limit", &soft_limit) < 0 ||
+        vshMemtuneGetSize(cmd, "swap-hard-limit", &swap_hard_limit) < 0 ||
+        vshMemtuneGetSize(cmd, "min-guarantee", &min_guarantee) < 0) {
         vshError(ctl, "%s",
                  _("Unable to parse integer parameter"));
         goto cleanup;

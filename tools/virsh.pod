@@ -1170,7 +1170,7 @@ B<Examples>
   # send a tab, held for 1 second
   virsh send-key --holdtime 1000 0xf
 
-=item B<setmem> I<domain-id> B<kilobytes> [[I<--config>] [I<--live>] |
+=item B<setmem> I<domain-id> B<size> [[I<--config>] [I<--live>] |
 [I<--current>]]
 
 Change the memory allocation for a guest domain.
@@ -1181,15 +1181,17 @@ Both I<--live> and I<--config> flags may be given, but I<--current> is
 exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
 
-Some hypervisors require a larger granularity than kilobytes, and requests
-that are not an even multiple will be rounded up.  For example, vSphere/ESX
-rounds the parameter up unless the kB argument is evenly divisible by 1024
-(that is, the kB argument happens to represent megabytes).
+I<size> is a scaled integer (see B<NOTES> above); it defaults to kibibytes
+(blocks of 1024 bytes) unless you provide a suffix (and the older option
+name I<--kilobytes> is available as a deprecated synonym) .  Libvirt rounds
+up to the nearest kibibyte.  Some hypervisors require a larger granularity
+than KiB, and requests that are not an even multiple will be rounded up.
+For example, vSphere/ESX rounds the parameter up to mebibytes (1024 kibibytes).
 
 For Xen, you can only adjust the memory of a running domain if the domain is
 paravirtualized or running the PV balloon driver.
 
-=item B<setmaxmem> I<domain-id> B<kilobytes> [[I<--config>] [I<--live>] |
+=item B<setmaxmem> I<domain-id> B<size> [[I<--config>] [I<--live>] |
 [I<--current>]]
 
 Change the maximum memory allocation limit for a guest domain.
@@ -1202,22 +1204,24 @@ on hypervisor.
 
 This command works for at least the Xen, QEMU/KVM and vSphere/ESX hypervisors.
 
-Some hypervisors require a larger granularity than kilobytes, rounding up
-requests that are not an even multiple of the desired amount.  vSphere/ESX
-is one of these, requiring the parameter to be evenly divisible by 4MB.  For
-vSphere/ESX, 263168 (257MB) would be rounded up because it's not a multiple
-of 4MB, while 266240 (260MB) is valid without rounding.
+I<size> is a scaled integer (see B<NOTES> above); it defaults to kibibytes
+(blocks of 1024 bytes) unless you provide a suffix (and the older option
+name I<--kilobytes> is available as a deprecated synonym) .  Libvirt rounds
+up to the nearest kibibyte.  Some hypervisors require a larger granularity
+than KiB, and requests that are not an even multiple will be rounded up.
+For example, vSphere/ESX rounds the parameter up to mebibytes (1024 kibibytes).
 
-
-=item B<memtune> I<domain-id> [I<--hard-limit> B<kilobytes>]
-[I<--soft-limit> B<kilobytes>] [I<--swap-hard-limit> B<kilobytes>]
-[I<--min-guarantee> B<kilobytes>] [[I<--config>] [I<--live>] | [I<--current>]]
+=item B<memtune> I<domain-id> [I<--hard-limit> B<size>]
+[I<--soft-limit> B<size>] [I<--swap-hard-limit> B<size>]
+[I<--min-guarantee> B<size>] [[I<--config>] [I<--live>] | [I<--current>]]
 
 Allows you to display or set the domain memory parameters. Without
 flags, the current settings are displayed; with a flag, the
 appropriate limit is adjusted if supported by the hypervisor.  LXC and
 QEMU/KVM support I<--hard-limit>, I<--soft-limit>, and I<--swap-hard-limit>.
-I<--min-guarantee> is supported only by ESX hypervisor.
+I<--min-guarantee> is supported only by ESX hypervisor.  Each of these
+limits are scaled integers (see B<NOTES> above), with a default of
+kibibytes (blocks of 1024 bytes) if no suffix is present.
 
 If I<--live> is specified, affect a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.
@@ -1235,24 +1239,20 @@ one needs guess and try.
 
 =item I<--hard-limit>
 
-The maximum memory the guest can use.  The units for this value are kilobytes
-(i.e. blocks of 1024 bytes).
+The maximum memory the guest can use.
 
 =item I<--soft-limit>
 
-The memory limit to enforce during memory contention.  The units for this
-value are kilobytes (i.e. blocks of 1024 bytes).
+The memory limit to enforce during memory contention.
 
 =item I<--swap-hard-limit>
 
-The maximum memory plus swap the guest can use.  The units for this value are
-kilobytes (i.e. blocks of 1024 bytes).  This has to be more than hard-limit
-value provided.
+The maximum memory plus swap the guest can use.  This has to be more
+than hard-limit value provided.
 
 =item I<--min-guarantee>
 
-The guaranteed minimum memory allocation for the guest.  The units for this
-value are kilobytes (i.e. blocks of 1024 bytes).
+The guaranteed minimum memory allocation for the guest.
 
 =back
 
