@@ -452,6 +452,7 @@ struct virNetlinkCallbackData {
     virNetDevVPortProfilePtr virtPortProfile;
     unsigned char *macaddress;
     char *linkdev;
+    int vf;
     unsigned char *vmuuid;
     enum virNetDevVPortProfileOp vmOp;
     unsigned int linkState;
@@ -719,6 +720,7 @@ virNetDevMacVLanVPortProfileCallback(unsigned char *msg,
                                                 calld->virtPortProfile,
                                                 calld->macaddress,
                                                 calld->linkdev,
+                                                calld->vf,
                                                 calld->vmuuid,
                                                 calld->vmOp, true));
     *handled = true;
@@ -810,6 +812,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
     const char *cr_ifname;
     virNetlinkCallbackDataPtr calld = NULL;
     int ret;
+    int vf = -1;
 
     macvtapMode = modeMap[mode];
 
@@ -871,6 +874,7 @@ create_name:
                                        virtPortProfile,
                                        macaddress,
                                        linkdev,
+                                       vf,
                                        vmuuid, vmOp, false) < 0) {
         rc = -1;
         goto link_del_exit;
@@ -948,6 +952,7 @@ disassociate_exit:
                                                    virtPortProfile,
                                                    macaddress,
                                                    linkdev,
+                                                   vf,
                                                    vmOp));
 
 link_del_exit:
@@ -975,6 +980,8 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
                                            char *stateDir)
 {
     int ret = 0;
+    int vf = -1;
+
     if (mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) {
         ignore_value(virNetDevRestoreMacAddress(linkdev, stateDir));
     }
@@ -984,6 +991,7 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
                                               virtPortProfile,
                                               macaddr,
                                               linkdev,
+                                              vf,
                                               VIR_NETDEV_VPORT_PROFILE_OP_DESTROY) < 0)
             ret = -1;
         if (virNetDevMacVLanDelete(ifname) < 0)

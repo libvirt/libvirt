@@ -85,18 +85,20 @@ int virNetDevVPortProfileAssociate(const char *ifname,
                                    const virNetDevVPortProfilePtr virtPort,
                                    const unsigned char *macaddr,
                                    const char *linkdev,
+                                   int vf,
                                    const unsigned char *vmuuid,
                                    enum virNetDevVPortProfileOp vmOp,
                                    bool setlink_only)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
-    ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(6)
+    ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevVPortProfileDisassociate(const char *ifname,
                                       const virNetDevVPortProfilePtr virtPort,
                                       const unsigned char *macaddr,
                                       const char *linkdev,
+                                      int vf,
                                       enum virNetDevVPortProfileOp vmOp)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
     ATTRIBUTE_RETURN_CHECK;
 
 

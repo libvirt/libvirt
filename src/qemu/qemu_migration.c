@@ -2650,6 +2650,7 @@ qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def) {
                                                virDomainNetGetActualVirtPortProfile(net),
                                                net->mac,
                                                virDomainNetGetActualDirectDev(net),
+                                               -1,
                                                def->uuid,
                                                VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_FINISH, false) < 0)
                 goto err_exit;
@@ -2667,6 +2668,7 @@ err_exit:
                                                            virDomainNetGetActualVirtPortProfile(net),
                                                            net->mac,
                                                            virDomainNetGetActualDirectDev(net),
+                                                           -1,
                                                            VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_FINISH));
         }
     }

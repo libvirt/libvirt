@@ -126,11 +126,6 @@ static struct nla_policy ifla_port_policy[IFLA_PORT_MAX + 1] =
 {
   [IFLA_PORT_RESPONSE]      = { .type = NLA_U16 },
 };
-static struct nla_policy ifla_policy[IFLA_MAX + 1] =
-{
-  [IFLA_VF_PORTS] = { .type = NLA_NESTED },
-};
-
 
 static uint32_t
 virNetDevVPortProfileGetLldpadPid(void) {
@@ -162,126 +157,6 @@ virNetDevVPortProfileGetLldpadPid(void) {
     VIR_FORCE_CLOSE(fd);
 
     return pid;
-}
-
-
-/**
- * virNetDevVPortProfileLinkDump:
- *
- * @ifname: The name of the interface; only use if ifindex < 0
- * @ifindex: The interface index; may be < 0 if ifname is given
- * @nltarget_kernel: whether to send the message to the kernel or another
- *                   process
- * @nlattr: pointer to a pointer of netlink attributes that will contain
- *          the results
- * @recvbuf: Pointer to the buffer holding the returned netlink response
- *           message; free it, once not needed anymore
- * @getPidFunc: Pointer to a function that will be invoked if the kernel
- *              is not the target of the netlink message but it is to be
- *              sent to another process.
- *
- * Get information about an interface given its name or index.
- *
- * Returns 0 on success, -1 on fatal error.
- */
-static int
-virNetDevVPortProfileLinkDump(const char *ifname, int ifindex, bool nltarget_kernel,
-                              struct nlattr **tb, unsigned char **recvbuf,
-                              uint32_t (*getPidFunc)(void))
-{
-    int rc = 0;
-    struct nlmsghdr *resp;
-    struct nlmsgerr *err;
-    struct ifinfomsg ifinfo = {
-        .ifi_family = AF_UNSPEC,
-        .ifi_index  = ifindex
-    };
-    unsigned int recvbuflen;
-    uint32_t pid = 0;
-    struct nl_msg *nl_msg;
-
-    *recvbuf = NULL;
-
-    nl_msg = nlmsg_alloc_simple(RTM_GETLINK, NLM_F_REQUEST);
-    if (!nl_msg) {
-        virReportOOMError();
-        return -1;
-    }
-
-    if (nlmsg_append(nl_msg,  &ifinfo, sizeof(ifinfo), NLMSG_ALIGNTO) < 0)
-        goto buffer_too_small;
-
-    if (ifindex < 0 && ifname) {
-        if (nla_put(nl_msg, IFLA_IFNAME, strlen(ifname)+1, ifname) < 0)
-            goto buffer_too_small;
-    }
-
-    if (!nltarget_kernel) {
-        pid = getPidFunc();
-        if (pid == 0) {
-            rc = -1;
-            goto cleanup;
-        }
-    }
-
-    if (virNetlinkCommand(nl_msg, recvbuf, &recvbuflen, pid) < 0) {
-        rc = -1;
-        goto cleanup;
-    }
-
-    if (recvbuflen < NLMSG_LENGTH(0) || *recvbuf == NULL)
-        goto malformed_resp;
-
-    resp = (struct nlmsghdr *)*recvbuf;
-
-    switch (resp->nlmsg_type) {
-    case NLMSG_ERROR:
-        err = (struct nlmsgerr *)NLMSG_DATA(resp);
-        if (resp->nlmsg_len < NLMSG_LENGTH(sizeof(*err)))
-            goto malformed_resp;
-
-        if (err->error) {
-            virReportSystemError(-err->error,
-                                 _("error dumping %s (%d) interface"),
-                                 ifname, ifindex);
-            rc = -1;
-        }
-        break;
-
-    case GENL_ID_CTRL:
-    case NLMSG_DONE:
-        if (nlmsg_parse(resp, sizeof(struct ifinfomsg),
-                        tb, IFLA_MAX, ifla_policy)) {
-            goto malformed_resp;
-        }
-        break;
-
-    default:
-        goto malformed_resp;
-    }
-
-    if (rc != 0)
-        VIR_FREE(*recvbuf);
-
-cleanup:
-    nlmsg_free(nl_msg);
-
-    return rc;
-
-malformed_resp:
-    nlmsg_free(nl_msg);
-
-    virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("malformed netlink response message"));
-    VIR_FREE(*recvbuf);
-    return -1;
-
-buffer_too_small:
-    nlmsg_free(nl_msg);
-
-    virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("allocated netlink buffer is too small"));
-    return -1;
 }
 
 /**
@@ -607,7 +482,7 @@ virNetDevVPortProfileGetNthParent(const char *ifname, int ifindex, unsigned int 
         return -1;
 
     while (!end && i <= nthParent) {
-        rc = virNetDevVPortProfileLinkDump(ifname, ifindex, true, tb, &recvbuf, NULL);
+        rc = virNetDevLinkDump(ifname, ifindex, true, tb, &recvbuf, NULL);
         if (rc < 0)
             break;
 
@@ -680,8 +555,8 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
         return 0;
 
     while (--repeats >= 0) {
-        rc = virNetDevVPortProfileLinkDump(NULL, ifindex, nltarget_kernel, tb,
-                                           &recvbuf, virNetDevVPortProfileGetLldpadPid);
+        rc = virNetDevLinkDump(NULL, ifindex, nltarget_kernel, tb,
+                               &recvbuf, virNetDevVPortProfileGetLldpadPid);
         if (rc < 0)
             goto err_exit;
 
@@ -754,6 +629,7 @@ virNetDevVPortProfileGetPhysdevAndVlan(const char *ifname, int *root_ifindex, ch
 static int
 virNetDevVPortProfileOp8021Qbg(const char *ifname,
                                const unsigned char *macaddr,
+                               int vf,
                                const virNetDevVPortProfilePtr virtPort,
                                enum virNetDevVPortProfileLinkOp virtPortOp,
                                bool setlink_only)
@@ -768,7 +644,11 @@ virNetDevVPortProfileOp8021Qbg(const char *ifname,
     int vlanid;
     int physdev_ifindex = 0;
     char physdev_ifname[IFNAMSIZ] = { 0, };
-    int vf = PORT_SELF_VF;
+
+    if (!ifname)
+        return -1;
+
+    vf = PORT_SELF_VF;
 
     if (virNetDevVPortProfileGetPhysdevAndVlan(ifname, &physdev_ifindex, physdev_ifname,
                                                &vlanid) < 0) {
@@ -817,46 +697,11 @@ err_exit:
     return rc;
 }
 
-
-static int
-virNetDevVPortProfileGetPhysfnDev(const char *linkdev,
-                                  int32_t *vf,
-                                  char **physfndev)
-{
-    int rc = -1;
-
-    if (virNetDevIsVirtualFunction(linkdev) == 1) {
-        /* if linkdev is SR-IOV VF, then set vf = VF index */
-        /* and set linkdev = PF device */
-
-        rc = virNetDevGetPhysicalFunction(linkdev, physfndev);
-        if (!rc)
-            rc = virNetDevGetVirtualFunctionIndex(*physfndev, linkdev, vf);
-    } else {
-
-        /* Not SR-IOV VF: physfndev is linkdev and VF index
-         * refers to linkdev self
-         */
-
-        *vf = PORT_SELF_VF;
-        *physfndev = strdup(linkdev);
-        if (!*physfndev) {
-            virReportOOMError();
-            goto err_exit;
-        }
-        rc = 0;
-    }
-
-err_exit:
-
-    return rc;
-}
-
-
 /* Returns 0 on success, -1 on general failure, and -2 on timeout */
 static int
 virNetDevVPortProfileOp8021Qbh(const char *ifname,
                                const unsigned char *macaddr,
+                               int32_t vf,
                                const virNetDevVPortProfilePtr virtPort,
                                const unsigned char *vm_uuid,
                                enum virNetDevVPortProfileLinkOp virtPortOp)
@@ -864,18 +709,36 @@ virNetDevVPortProfileOp8021Qbh(const char *ifname,
     int rc = 0;
     char *physfndev = NULL;
     unsigned char hostuuid[VIR_UUID_BUFLEN];
-    int32_t vf;
     bool nltarget_kernel = true;
     int ifindex;
     int vlanid = -1;
+    bool is_vf = false;
 
-    rc = virNetDevVPortProfileGetPhysfnDev(ifname, &vf, &physfndev);
-    if (rc < 0)
-        goto err_exit;
+    if (vf == -1) {
+        int isvf_ret = virNetDevIsVirtualFunction(ifname);
+
+        if (isvf_ret == -1)
+            goto cleanup;
+        is_vf = !!isvf_ret;
+    }
+
+    if (is_vf) {
+        if (virNetDevGetVirtualFunctionInfo(ifname, &physfndev, &vf) < 0) {
+            rc = -1;
+            goto cleanup;
+        }
+    } else {
+        physfndev = strdup(ifname);
+        if (!physfndev) {
+            virReportOOMError();
+            rc = -1;
+            goto cleanup;
+        }
+    }
 
     rc = virNetDevGetIndex(physfndev, &ifindex);
     if (rc < 0)
-        goto err_exit;
+        goto cleanup;
 
     switch (virtPortOp) {
     case VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE_RR:
@@ -883,7 +746,7 @@ virNetDevVPortProfileOp8021Qbh(const char *ifname,
         errno = virGetHostUUID(hostuuid);
         if (errno) {
             rc = -1;
-            goto err_exit;
+            goto cleanup;
         }
 
         rc = virNetDevVPortProfileOpCommon(NULL, ifindex,
@@ -935,7 +798,7 @@ virNetDevVPortProfileOp8021Qbh(const char *ifname,
         rc = -1;
     }
 
-err_exit:
+cleanup:
     VIR_FREE(physfndev);
     return rc;
 }
@@ -963,6 +826,7 @@ virNetDevVPortProfileAssociate(const char *macvtap_ifname,
                                const virNetDevVPortProfilePtr virtPort,
                                const unsigned char *macvtap_macaddr,
                                const char *linkdev,
+                               int vf,
                                const unsigned char *vmuuid,
                                enum virNetDevVPortProfileOp vmOp,
                                bool setlink_only)
@@ -970,7 +834,7 @@ virNetDevVPortProfileAssociate(const char *macvtap_ifname,
     int rc = 0;
 
     VIR_DEBUG("Associating port profile '%p' on link device '%s'",
-              virtPort, macvtap_ifname);
+              virtPort, (macvtap_ifname ? macvtap_ifname : linkdev));
 
     VIR_DEBUG("%s: VM OPERATION: %s", __FUNCTION__, virNetDevVPortProfileOpTypeToString(vmOp));
 
@@ -985,7 +849,7 @@ virNetDevVPortProfileAssociate(const char *macvtap_ifname,
 
     case VIR_NETDEV_VPORT_PROFILE_8021QBG:
         rc = virNetDevVPortProfileOp8021Qbg(macvtap_ifname, macvtap_macaddr,
-                                            virtPort,
+                                            vf, virtPort,
                                             (vmOp == VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_START)
                                             ? VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE
                                             : VIR_NETDEV_VPORT_PROFILE_LINK_OP_ASSOCIATE,
@@ -993,7 +857,7 @@ virNetDevVPortProfileAssociate(const char *macvtap_ifname,
         break;
 
     case VIR_NETDEV_VPORT_PROFILE_8021QBH:
-        rc = virNetDevVPortProfileOp8021Qbh(linkdev, macvtap_macaddr,
+        rc = virNetDevVPortProfileOp8021Qbh(linkdev, macvtap_macaddr, vf,
                                             virtPort, vmuuid,
                                             (vmOp == VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_START)
                                             ? VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE_RR
@@ -1026,6 +890,7 @@ virNetDevVPortProfileDisassociate(const char *macvtap_ifname,
                                   const virNetDevVPortProfilePtr virtPort,
                                   const unsigned char *macvtap_macaddr,
                                   const char *linkdev,
+                                  int vf,
                                   enum virNetDevVPortProfileOp vmOp)
 {
     int rc = 0;
@@ -1045,7 +910,7 @@ virNetDevVPortProfileDisassociate(const char *macvtap_ifname,
         break;
 
     case VIR_NETDEV_VPORT_PROFILE_8021QBG:
-        rc = virNetDevVPortProfileOp8021Qbg(macvtap_ifname, macvtap_macaddr,
+        rc = virNetDevVPortProfileOp8021Qbg(macvtap_ifname, macvtap_macaddr, vf,
                                             virtPort,
                                             VIR_NETDEV_VPORT_PROFILE_LINK_OP_DISASSOCIATE, false);
         break;
@@ -1055,7 +920,7 @@ virNetDevVPortProfileDisassociate(const char *macvtap_ifname,
         if (vmOp == VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_FINISH)
             break;
         ignore_value(virNetDevSetOnline(linkdev, false));
-        rc = virNetDevVPortProfileOp8021Qbh(linkdev, macvtap_macaddr,
+        rc = virNetDevVPortProfileOp8021Qbh(linkdev, macvtap_macaddr, vf,
                                             virtPort, NULL,
                                             VIR_NETDEV_VPORT_PROFILE_LINK_OP_DISASSOCIATE);
         break;
@@ -1069,6 +934,7 @@ int virNetDevVPortProfileAssociate(const char *macvtap_ifname ATTRIBUTE_UNUSED,
                                const virNetDevVPortProfilePtr virtPort ATTRIBUTE_UNUSED,
                                const unsigned char *macvtap_macaddr ATTRIBUTE_UNUSED,
                                const char *linkdev ATTRIBUTE_UNUSED,
+                               int vf ATTRIBUTE_UNUSED,
                                const unsigned char *vmuuid ATTRIBUTE_UNUSED,
                                enum virNetDevVPortProfileOp vmOp ATTRIBUTE_UNUSED,
                                bool setlink_only ATTRIBUTE_UNUSED)
@@ -1082,6 +948,7 @@ int virNetDevVPortProfileDisassociate(const char *macvtap_ifname ATTRIBUTE_UNUSE
                                       const virNetDevVPortProfilePtr virtPort ATTRIBUTE_UNUSED,
                                       const unsigned char *macvtap_macaddr ATTRIBUTE_UNUSED,
                                       const char *linkdev ATTRIBUTE_UNUSED,
+                                      int vf ATTRIBUTE_UNUSED,
                                       enum virNetDevVPortProfileOp vmOp ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
