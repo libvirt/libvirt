@@ -525,17 +525,18 @@ cleanup:
 
 #else
 
+# if defined(__linux)
+static const char *unsupported = N_("libnl was not available at build time");
+# else
+static const char *unsupported = N_("not supported on non-linux platforms");
+# endif
+
 int virNetlinkCommand(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
            unsigned char **respbuf ATTRIBUTE_UNUSED,
            unsigned int *respbuflen ATTRIBUTE_UNUSED,
            int nl_pid ATTRIBUTE_UNUSED)
 {
-    netlinkError(VIR_ERR_INTERNAL_ERROR, "%s",
-# if defined(__linux__) && !defined(HAVE_LIBNL)
-                 _("virNetlinkCommand is not supported since libnl was not available"));
-# else
-                 _("virNetlinkCommand is not supported on non-linux platforms"));
-# endif
+    netlinkError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 
@@ -545,11 +546,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
  */
 int virNetlinkEventServiceStop(void)
 {
-# if defined(__linux__) && !defined(HAVE_LIBNL)
-    netlinkError(VIR_ERR_INTERNAL_ERROR,
-                "%s",
-                _("virNetlinkEventServiceStop is not supported since libnl was not available"));
-# endif
+    netlinkError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return 0;
 }
 
@@ -559,11 +556,7 @@ int virNetlinkEventServiceStop(void)
  */
 int virNetlinkEventServiceStart(void)
 {
-# if defined(__linux__) && !defined(HAVE_LIBNL)
-    netlinkError(VIR_ERR_INTERNAL_ERROR,
-                "%s",
-                _("virNetlinkEventServiceStart is not supported since libnl was not available"));
-# endif
+    netlinkError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return 0;
 }
 
@@ -573,11 +566,7 @@ int virNetlinkEventServiceStart(void)
  */
 bool virNetlinkEventServiceIsRunning(void)
 {
-# if defined(__linux__) && !defined(HAVE_LIBNL)
-    netlinkError(VIR_ERR_INTERNAL_ERROR,
-                "%s",
-                _("virNetlinkEventServiceIsRunning is not supported since libnl was not available"));
-# endif
+    netlinkError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return 0;
 }
 
@@ -590,13 +579,7 @@ int virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB ATTRIBUTE_UN
                              void *opaque ATTRIBUTE_UNUSED,
                              const unsigned char *macaddr ATTRIBUTE_UNUSED)
 {
-    netlinkError(VIR_ERR_INTERNAL_ERROR,
-                "%s",
-# if defined(__linux__) && !defined(HAVE_LIBNL)
-                _("virNetlinkEventServiceAddClient is not supported since libnl was not available"));
-# else
-                _("virNetlinkEventServiceAddClient is not supported on non-linux platforms"));
-# endif
+    netlinkError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 
@@ -606,13 +589,7 @@ int virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB ATTRIBUTE_UN
 int virNetlinkEventRemoveClient(int watch ATTRIBUTE_UNUSED,
                                 const unsigned char *macaddr ATTRIBUTE_UNUSED)
 {
-    netlinkError(VIR_ERR_INTERNAL_ERROR,
-                "%s",
-# if defined(__linux__) && !defined(HAVE_LIBNL)
-                _("virNetlinkEventRemoveClient is not supported since libnl was not available"));
-# else
-                _("virNetlinkEventRemoveClient is not supported on non-linux platforms"));
-# endif
+    netlinkError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 
