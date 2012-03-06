@@ -545,9 +545,9 @@ int virNetlinkCommand(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
  */
 int virNetlinkEventServiceStop(void)
 {
+# if defined(__linux__) && !defined(HAVE_LIBNL)
     netlinkError(VIR_ERR_INTERNAL_ERROR,
                 "%s",
-# if defined(__linux__) && !defined(HAVE_LIBNL)
                 _("virNetlinkEventServiceStop is not supported since libnl was not available"));
 # endif
     return 0;
