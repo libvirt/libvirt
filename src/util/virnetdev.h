@@ -24,6 +24,7 @@
 # define __VIR_NETDEV_H__
 
 # include "virsocketaddr.h"
+# include "virnetlink.h"
 
 int virNetDevExists(const char *brname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
@@ -104,5 +105,23 @@ int virNetDevGetVirtualFunctions(const char *pfname,
                                  unsigned int *n_vfname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_RETURN_CHECK;
+
+int virNetDevLinkDump(const char *ifname, int ifindex,
+                      bool nltarget_kernel, struct nlattr **tb,
+                      unsigned char **recvbuf,
+                      uint32_t (*getPidFunc)(void))
+    ATTRIBUTE_RETURN_CHECK;
+
+int virNetDevReplaceNetConfig(char *linkdev, int vf,
+                              const unsigned char *macaddress, int vlanid,
+                              char *stateDir)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(5);
+
+int virNetDevRestoreNetConfig(char *linkdev, int vf, char *stateDir)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+
+int virNetDevGetVirtualFunctionInfo(const char *vfname, char **pfname,
+                                    int *vf)
+    ATTRIBUTE_NONNULL(1);
 
 #endif /* __VIR_NETDEV_H__ */

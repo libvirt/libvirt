@@ -31,6 +31,7 @@
 
 struct nl_msg;
 struct sockaddr_nl;
+struct nlattr;
 
 # endif /* __linux__ */
 
