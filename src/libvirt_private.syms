@@ -864,6 +864,7 @@ virNWFilterVarValueGetSimple;
 
 
 # pci.h
+pciConfigAddressToSysfsFile;
 pciDettachDevice;
 pciDeviceFileIterate;
 pciDeviceGetManaged;
@@ -872,6 +873,7 @@ pciDeviceGetRemoveSlot;
 pciDeviceGetReprobe;
 pciDeviceGetUnbindFromStub;
 pciDeviceGetUsedBy;
+pciDeviceGetVirtualFunctionInfo;
 pciDeviceIsAssignable;
 pciDeviceIsVirtualFunction;
 pciDeviceListAdd;

@@ -2081,6 +2081,20 @@ pciSysfsFile(char *pciDeviceName, char **pci_sysfs_device_link)
     return 0;
 }
 
+int
+pciConfigAddressToSysfsFile(struct pci_config_address *dev,
+                            char **pci_sysfs_device_link)
+{
+    if (virAsprintf(pci_sysfs_device_link,
+                    PCI_SYSFS "devices/%04x:%02x:%02x.%x", dev->domain,
+                    dev->bus, dev->slot, dev->function) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    return 0;
+}
+
 /*
  * Returns the network device name of a pci device
  */
@@ -2123,6 +2137,38 @@ out:
 
      return ret;
 }
+
+int
+pciDeviceGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
+                                char **pfname, int *vf_index)
+{
+    struct pci_config_address *pf_config_address = NULL;
+    char *pf_sysfs_device_path = NULL;
+    int ret = -1;
+
+    if (pciGetPhysicalFunction(vf_sysfs_device_path, &pf_config_address) < 0)
+        return ret;
+
+    if (pciConfigAddressToSysfsFile(pf_config_address,
+                                    &pf_sysfs_device_path) < 0) {
+
+        VIR_FREE(pf_config_address);
+        return ret;
+    }
+
+    if (pciGetVirtualFunctionIndex(pf_sysfs_device_path, vf_sysfs_device_path,
+        vf_index) < 0)
+        goto cleanup;
+
+    ret = pciDeviceNetName(pf_sysfs_device_path, pfname);
+
+cleanup:
+    VIR_FREE(pf_config_address);
+    VIR_FREE(pf_sysfs_device_path);
+
+    return ret;
+}
+
 #else
 int
 pciGetPhysicalFunction(const char *vf_sysfs_path ATTRIBUTE_UNUSED,
@@ -2168,6 +2214,15 @@ pciDeviceNetName(char *device_link_sysfs_path ATTRIBUTE_UNUSED,
 {
     pciReportError(VIR_ERR_INTERNAL_ERROR, _("pciDeviceNetName is not "
                    "supported on non-linux platforms"));
+    return -1;
+}
+
+int
+pciDeviceGetVirtualFunctionInfo(const char *vf_sysfs_device_path ATTRIBUTE_UNUSED,
+                                char **pfname, int *vf_index ATTRIBUTE_UNUSED)
+{
+    pciReportError(VIR_ERR_INTERNAL_ERROR, _("pciDeviceGetVirtualFunctionInfo "
+                   "is not supported on non-linux platforms"));
     return -1;
 }
 #endif /* __linux__ */
