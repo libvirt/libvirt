@@ -750,6 +750,8 @@ virNetDevBandwidthParse;
 # netdev_vportprofile_conf.h
 virNetDevVPortProfileFormat;
 virNetDevVPortProfileParse;
+virNetDevVPortTypeFromString;
+virNetDevVPortTypeToString;
 
 
 # network_conf.h

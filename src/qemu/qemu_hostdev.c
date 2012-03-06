@@ -29,6 +29,7 @@
 #include "memory.h"
 #include "pci.h"
 #include "hostusb.h"
+#include "virnetdev.h"
 
 static pciDeviceList *
 qemuGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
@@ -156,19 +157,192 @@ int qemuUpdateActivePciHostdevs(struct qemud_driver *driver,
     return 0;
 }
 
+static int
+qemuDomainHostdevPciSysfsPath(virDomainHostdevDefPtr hostdev, char **sysfs_path)
+{
+    struct pci_config_address config_address;
+
+    config_address.domain = hostdev->source.subsys.u.pci.domain;
+    config_address.bus = hostdev->source.subsys.u.pci.bus;
+    config_address.slot = hostdev->source.subsys.u.pci.slot;
+    config_address.function = hostdev->source.subsys.u.pci.function;
+
+    return pciConfigAddressToSysfsFile(&config_address, sysfs_path);
+}
+
+int
+qemuDomainHostdevIsVirtualFunction(virDomainHostdevDefPtr hostdev)
+{
+    char *sysfs_path = NULL;
+    int ret = -1;
+
+    if (qemuDomainHostdevPciSysfsPath(hostdev, &sysfs_path) < 0)
+        return ret;
+
+    ret = pciDeviceIsVirtualFunction(sysfs_path);
+
+    VIR_FREE(sysfs_path);
+
+    return ret;
+}
+
+static int
+qemuDomainHostdevNetDevice(virDomainHostdevDefPtr hostdev, char **linkdev,
+                           int *vf)
+{
+    int ret = -1;
+    char *sysfs_path = NULL;
+
+    if (qemuDomainHostdevPciSysfsPath(hostdev, &sysfs_path) < 0)
+        return ret;
+
+    if (pciDeviceIsVirtualFunction(sysfs_path) == 1) {
+        if (pciDeviceGetVirtualFunctionInfo(sysfs_path, linkdev,
+                                            vf) < 0)
+            goto cleanup;
+    } else {
+        if (pciDeviceNetName(sysfs_path, linkdev) < 0)
+            goto cleanup;
+        *vf = -1;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(sysfs_path);
+
+    return ret;
+}
+
+static int
+qemuDomainHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
+                                          virNetDevVPortProfilePtr virtPort,
+                                          const unsigned char *macaddr,
+                                          const unsigned char *uuid,
+                                          int associate)
+{
+    int ret = -1;
+
+    if (!virtPort)
+        return ret;
+
+    switch(virtPort->virtPortType) {
+    case VIR_NETDEV_VPORT_PROFILE_NONE:
+    case VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH:
+    case VIR_NETDEV_VPORT_PROFILE_8021QBG:
+    case VIR_NETDEV_VPORT_PROFILE_LAST:
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("virtualport type %s is "
+                        "currently not supported on interfaces of type "
+                        "hostdev"),
+                        virNetDevVPortTypeToString(virtPort->virtPortType));
+        break;
+
+    case VIR_NETDEV_VPORT_PROFILE_8021QBH:
+        if (associate)
+            ret = virNetDevVPortProfileAssociate(NULL, virtPort, macaddr,
+                                                 linkdev, vf, uuid,
+                                                 VIR_NETDEV_VPORT_PROFILE_OP_CREATE, false);
+        else
+            ret = virNetDevVPortProfileDisassociate(NULL, virtPort,
+                                                    macaddr, linkdev, vf,
+                                                    VIR_NETDEV_VPORT_PROFILE_OP_DESTROY);
+        break;
+    }
+
+    return ret;
+}
+
+int
+qemuDomainHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
+                                  const unsigned char *uuid,
+                                  char *stateDir)
+{
+    char *linkdev = NULL;
+    virNetDevVPortProfilePtr virtPort;
+    int ret = -1;
+    int vf = -1;
+    int vlanid = -1;
+    int port_profile_associate = 1;
+    int isvf;
+
+    isvf = qemuDomainHostdevIsVirtualFunction(hostdev);
+    if (isvf <= 0) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("Interface type hostdev is currently supported on"
+                        " SR-IOV Virtual Functions only"));
+        return ret;
+    }
+
+    if (qemuDomainHostdevNetDevice(hostdev, &linkdev, &vf) < 0)
+        return ret;
+
+    virtPort = virDomainNetGetActualVirtPortProfile(
+                                 hostdev->parent.data.net);
+    if (virtPort)
+        ret = qemuDomainHostdevNetConfigVirtPortProfile(linkdev, vf,
+                            virtPort, hostdev->parent.data.net->mac, uuid,
+                            port_profile_associate);
+    else
+        /* Set only mac */
+        ret = virNetDevReplaceNetConfig(linkdev, vf,
+                                        hostdev->parent.data.net->mac, vlanid,
+                                        stateDir);
+    VIR_FREE(linkdev);
+
+    return ret;
+}
+
+int
+qemuDomainHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
+                                  char *stateDir)
+{
+    char *linkdev = NULL;
+    virNetDevVPortProfilePtr virtPort;
+    int ret = -1;
+    int vf = -1;
+    int port_profile_associate = 0;
+    int isvf;
+
+    isvf = qemuDomainHostdevIsVirtualFunction(hostdev);
+    if (isvf <= 0) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("Interface type hostdev is currently supported on"
+                        " SR-IOV Virtual Functions only"));
+        return ret;
+    }
+
+    if (qemuDomainHostdevNetDevice(hostdev, &linkdev, &vf) < 0)
+        return ret;
+
+    virtPort = virDomainNetGetActualVirtPortProfile(
+                                 hostdev->parent.data.net);
+    if (virtPort)
+        ret = qemuDomainHostdevNetConfigVirtPortProfile(linkdev, vf, virtPort,
+                                          hostdev->parent.data.net->mac, NULL,
+                                          port_profile_associate);
+    else
+        ret = virNetDevRestoreNetConfig(linkdev, vf, stateDir);
+
+    VIR_FREE(linkdev);
+
+    return ret;
+}
+
 int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
                                  const char *name,
+                                 const unsigned char *uuid,
                                  virDomainHostdevDefPtr *hostdevs,
                                  int nhostdevs)
 {
     pciDeviceList *pcidevs;
+    int last_processed_hostdev_vf = -1;
     int i;
     int ret = -1;
 
     if (!(pcidevs = qemuGetPciHostDeviceList(hostdevs, nhostdevs)))
         return -1;
 
-    /* We have to use 7 loops here. *All* devices must
+    /* We have to use 9 loops here. *All* devices must
      * be detached before we reset any of them, because
      * in some cases you have to reset the whole PCI,
      * which impacts all devices on it. Also, all devices
@@ -225,7 +399,25 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
             goto reattachdevs;
     }
 
-    /* Loop 4: Now mark all the devices as active */
+    /* Loop 4: For SRIOV network devices, Now that we have detached the
+     * the network device, set the netdev config */
+    for (i = 0; i < nhostdevs; i++) {
+         virDomainHostdevDefPtr hostdev = hostdevs[i];
+         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+             continue;
+         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+             continue;
+         if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET &&
+             hostdev->parent.data.net) {
+             if (qemuDomainHostdevNetConfigReplace(hostdev, uuid,
+                                                   driver->stateDir) < 0) {
+                 goto resetvfnetconfig;
+             }
+         }
+         last_processed_hostdev_vf = i;
+    }
+
+    /* Loop 5: Now mark all the devices as active */
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
         if (pciDeviceListAdd(driver->activePciHostdevs, dev) < 0) {
@@ -234,13 +426,13 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
         }
     }
 
-    /* Loop 5: Now remove the devices from inactive list. */
+    /* Loop 6: Now remove the devices from inactive list. */
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
          pciDevice *dev = pciDeviceListGet(pcidevs, i);
          pciDeviceListDel(driver->inactivePciHostdevs, dev);
     }
 
-    /* Loop 6: Now set the used_by_domain of the device in
+    /* Loop 7: Now set the used_by_domain of the device in
      * driver->activePciHostdevs as domain name.
      */
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
@@ -252,7 +444,7 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
         pciDeviceSetUsedBy(activeDev, name);
     }
 
-    /* Loop 7: Now set the original states for hostdev def */
+    /* Loop 8: Now set the original states for hostdev def */
     for (i = 0; i < nhostdevs; i++) {
         pciDevice *dev;
         pciDevice *pcidev;
@@ -284,7 +476,7 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
         pciFreeDevice(dev);
     }
 
-    /* Loop 8: Now steal all the devices from pcidevs */
+    /* Loop 9: Now steal all the devices from pcidevs */
     while (pciDeviceListCount(pcidevs) > 0) {
         pciDevice *dev = pciDeviceListGet(pcidevs, 0);
         pciDeviceListSteal(pcidevs, dev);
@@ -302,6 +494,15 @@ inactivedevs:
         pciDeviceListSteal(driver->activePciHostdevs, dev);
     }
 
+resetvfnetconfig:
+    for (i = 0; i < last_processed_hostdev_vf; i++) {
+         virDomainHostdevDefPtr hostdev = hostdevs[i];
+         if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET &&
+             hostdev->parent.data.net) {
+             qemuDomainHostdevNetConfigRestore(hostdev, driver->stateDir);
+         }
+    }
+
 reattachdevs:
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
@@ -317,9 +518,9 @@ static int
 qemuPrepareHostPCIDevices(struct qemud_driver *driver,
                           virDomainDefPtr def)
 {
-    return qemuPrepareHostdevPCIDevices(driver, def->name, def->hostdevs, def->nhostdevs);
+    return qemuPrepareHostdevPCIDevices(driver, def->name, def->uuid,
+                                        def->hostdevs, def->nhostdevs);
 }
-
 
 int
 qemuPrepareHostdevUSBDevices(struct qemud_driver *driver,
@@ -494,8 +695,10 @@ void qemuDomainReAttachHostdevDevices(struct qemud_driver *driver,
         return;
     }
 
-    /* Again 3 loops; mark all devices as inactive before reset
-     * them and reset all the devices before re-attach */
+    /* Again 4 loops; mark all devices as inactive before reset
+     * them and reset all the devices before re-attach.
+     * Attach mac and port profile parameters to devices
+     */
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
         pciDevice *activeDev = NULL;
@@ -512,6 +715,22 @@ void qemuDomainReAttachHostdevDevices(struct qemud_driver *driver,
 
         /* pciDeviceListFree() will take care of freeing the dev. */
         pciDeviceListSteal(driver->activePciHostdevs, dev);
+    }
+
+    /*
+     * For SRIOV net host devices, unset mac and port profile before
+     * reset and reattach device
+     */
+    for (i = 0; i < nhostdevs; i++) {
+         virDomainHostdevDefPtr hostdev = hostdevs[i];
+         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+             continue;
+         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+             continue;
+         if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET &&
+             hostdev->parent.data.net) {
+             qemuDomainHostdevNetConfigRestore(hostdev, driver->stateDir);
+         }
     }
 
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
@@ -540,5 +759,6 @@ void qemuDomainReAttachHostDevices(struct qemud_driver *driver,
     if (!def->nhostdevs)
         return;
 
-    qemuDomainReAttachHostdevDevices(driver, def->name, def->hostdevs, def->nhostdevs);
+    qemuDomainReAttachHostdevDevices(driver, def->name, def->hostdevs,
+                                     def->nhostdevs);
 }

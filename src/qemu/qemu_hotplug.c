@@ -927,7 +927,8 @@ int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
         return -1;
     }
 
-    if (qemuPrepareHostdevPCIDevices(driver, vm->def->name, &hostdev, 1) < 0)
+    if (qemuPrepareHostdevPCIDevices(driver, vm->def->name, vm->def->uuid,
+                                     &hostdev, 1) < 0)
         return -1;
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
@@ -1885,6 +1886,13 @@ qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
     virDomainAuditHostdev(vm, detach, "detach", ret == 0);
     if (ret < 0)
         return -1;
+
+    /*
+     * For SRIOV net host devices, unset mac and port profile before
+     * reset and reattach device
+     */
+     if (detach->parent.data.net)
+         qemuDomainHostdevNetConfigRestore(detach, driver->stateDir);
 
     pci = pciGetDevice(subsys->u.pci.domain, subsys->u.pci.bus,
                        subsys->u.pci.slot,   subsys->u.pci.function);
