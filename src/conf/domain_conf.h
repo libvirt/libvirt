@@ -1901,16 +1901,21 @@ void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
                                    virDomainDiskDefPtr disk);
 int virDomainDiskDefAssignAddress(virCapsPtr caps, virDomainDiskDefPtr def);
 
-void virDomainDiskRemove(virDomainDefPtr def, size_t i);
-int virDomainDiskRemoveByName(virDomainDefPtr def, const char *name);
+virDomainDiskDefPtr
+virDomainDiskRemove(virDomainDefPtr def, size_t i);
+virDomainDiskDefPtr
+virDomainDiskRemoveByName(virDomainDefPtr def, const char *name);
 
 int virDomainNetIndexByMac(virDomainDefPtr def, const unsigned char *mac);
 int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net);
-void virDomainNetRemove(virDomainDefPtr def, size_t i);
-int virDomainNetRemoveByMac(virDomainDefPtr def, const unsigned char *mac);
+virDomainNetDefPtr
+virDomainNetRemove(virDomainDefPtr def, size_t i);
+virDomainNetDefPtr
+virDomainNetRemoveByMac(virDomainDefPtr def, const unsigned char *mac);
 
 int virDomainHostdevInsert(virDomainDefPtr def, virDomainHostdevDefPtr hostdev);
-void virDomainHostdevRemove(virDomainDefPtr def, size_t i);
+virDomainHostdevDefPtr
+virDomainHostdevRemove(virDomainDefPtr def, size_t i);
 int virDomainHostdevFind(virDomainDefPtr def, virDomainHostdevDefPtr match,
                          virDomainHostdevDefPtr *found);
 
@@ -1955,9 +1960,11 @@ int virDomainLeaseInsert(virDomainDefPtr def,
 int virDomainLeaseInsertPreAlloc(virDomainDefPtr def);
 void virDomainLeaseInsertPreAlloced(virDomainDefPtr def,
                                     virDomainLeaseDefPtr lease);
-void virDomainLeaseRemoveAt(virDomainDefPtr def, size_t i);
-int virDomainLeaseRemove(virDomainDefPtr def,
-                         virDomainLeaseDefPtr lease);
+virDomainLeaseDefPtr
+virDomainLeaseRemoveAt(virDomainDefPtr def, size_t i);
+virDomainLeaseDefPtr
+virDomainLeaseRemove(virDomainDefPtr def,
+                     virDomainLeaseDefPtr lease);
 
 int virDomainSaveXML(const char *configDir,
                      virDomainDefPtr def,

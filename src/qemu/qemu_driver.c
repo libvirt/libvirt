@@ -5436,23 +5436,24 @@ static int
 qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
                              virDomainDeviceDefPtr dev)
 {
-    virDomainDiskDefPtr disk;
-    virDomainNetDefPtr net;
-    virDomainLeaseDefPtr lease;
+    virDomainDiskDefPtr disk, det_disk;
+    virDomainNetDefPtr net, det_net;
+    virDomainLeaseDefPtr lease, det_lease;
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         disk = dev->data.disk;
-        if (virDomainDiskRemoveByName(vmdef, disk->dst)) {
+        if (!(det_disk = virDomainDiskRemoveByName(vmdef, disk->dst))) {
             qemuReportError(VIR_ERR_INVALID_ARG,
                             _("no target device %s"), disk->dst);
             return -1;
         }
+        virDomainDiskDefFree(det_disk);
         break;
 
     case VIR_DOMAIN_DEVICE_NET:
         net = dev->data.net;
-        if (virDomainNetRemoveByMac(vmdef, net->mac)) {
+        if (!(det_net = virDomainNetRemoveByMac(vmdef, net->mac))) {
             char macbuf[VIR_MAC_STRING_BUFLEN];
 
             virMacAddrFormat(net->mac, macbuf);
@@ -5460,16 +5461,18 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
                             _("no nic of mac %s"), macbuf);
             return -1;
         }
+        virDomainNetDefFree(det_net);
         break;
 
     case VIR_DOMAIN_DEVICE_LEASE:
         lease = dev->data.lease;
-        if (virDomainLeaseRemove(vmdef, lease) < 0) {
+        if (!(det_lease = virDomainLeaseRemove(vmdef, lease))) {
             qemuReportError(VIR_ERR_INVALID_ARG,
                             _("Lease %s in lockspace %s does not exist"),
                             lease->key, NULLSTR(lease->lockspace));
             return -1;
         }
+        virDomainLeaseDefFree(det_lease);
         break;
 
     default:

@@ -2286,6 +2286,7 @@ int qemuDomainDetachLease(struct qemud_driver *driver,
                           virDomainObjPtr vm,
                           virDomainLeaseDefPtr lease)
 {
+    virDomainLeaseDefPtr det_lease;
     int i;
 
     if ((i = virDomainLeaseIndex(vm->def, lease)) < 0) {
@@ -2298,6 +2299,7 @@ int qemuDomainDetachLease(struct qemud_driver *driver,
     if (virDomainLockLeaseDetach(driver->lockManager, vm, lease) < 0)
         return -1;
 
-    virDomainLeaseRemoveAt(vm->def, i);
+    det_lease = virDomainLeaseRemoveAt(vm->def, i);
+    virDomainLeaseDefFree(det_lease);
     return 0;
 }

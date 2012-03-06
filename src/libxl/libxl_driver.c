@@ -3089,17 +3089,18 @@ libxlDomainDetachDeviceLive(libxlDomainObjPrivatePtr priv, virDomainObjPtr vm,
 static int
 libxlDomainDetachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
 {
-    virDomainDiskDefPtr disk;
+    virDomainDiskDefPtr disk, detach;
     int ret = -1;
 
     switch (dev->type) {
         case VIR_DOMAIN_DEVICE_DISK:
             disk = dev->data.disk;
-            if (virDomainDiskRemoveByName(vmdef, disk->dst)) {
+            if (!(detach = virDomainDiskRemoveByName(vmdef, disk->dst))) {
                 libxlError(VIR_ERR_INVALID_ARG,
                             _("no target device %s"), disk->dst);
                 break;
             }
+            virDomainDiskDefFree(detach);
             ret = 0;
             break;
         default:

@@ -6856,9 +6856,11 @@ virDomainHostdevInsert(virDomainDefPtr def, virDomainHostdevDefPtr hostdev)
     return 0;
 }
 
-void
+virDomainHostdevDefPtr
 virDomainHostdevRemove(virDomainDefPtr def, size_t i)
 {
+    virDomainHostdevDefPtr hostdev = def->hostdevs[i];
+
     if (def->nhostdevs > 1) {
         memmove(def->hostdevs + i,
                 def->hostdevs + i + 1,
@@ -6872,6 +6874,7 @@ virDomainHostdevRemove(virDomainDefPtr def, size_t i)
         VIR_FREE(def->hostdevs);
         def->nhostdevs = 0;
     }
+    return hostdev;
 }
 
 /* Find an entry in hostdevs that matches the source spec in
@@ -7035,8 +7038,11 @@ void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
 }
 
 
-void virDomainDiskRemove(virDomainDefPtr def, size_t i)
+virDomainDiskDefPtr
+virDomainDiskRemove(virDomainDefPtr def, size_t i)
 {
+    virDomainDiskDefPtr disk = disk = def->disks[i];
+
     if (def->ndisks > 1) {
         memmove(def->disks + i,
                 def->disks + i + 1,
@@ -7050,15 +7056,16 @@ void virDomainDiskRemove(virDomainDefPtr def, size_t i)
         VIR_FREE(def->disks);
         def->ndisks = 0;
     }
+    return disk;
 }
 
-int virDomainDiskRemoveByName(virDomainDefPtr def, const char *name)
+virDomainDiskDefPtr
+virDomainDiskRemoveByName(virDomainDefPtr def, const char *name)
 {
     int i = virDomainDiskIndexByName(def, name, false);
     if (i < 0)
-        return -1;
-    virDomainDiskRemove(def, i);
-    return 0;
+        return NULL;
+    return virDomainDiskRemove(def, i);
 }
 
 int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net)
@@ -7084,7 +7091,8 @@ int virDomainNetIndexByMac(virDomainDefPtr def, const unsigned char *mac)
     return -1;
 }
 
-void virDomainNetRemove(virDomainDefPtr def, size_t i)
+virDomainNetDefPtr
+virDomainNetRemove(virDomainDefPtr def, size_t i)
 {
     virDomainNetDefPtr net = def->nets[i];
 
@@ -7115,16 +7123,17 @@ void virDomainNetRemove(virDomainDefPtr def, size_t i)
         VIR_FREE(def->nets);
         def->nnets = 0;
     }
+    return net;
 }
 
-int virDomainNetRemoveByMac(virDomainDefPtr def, const unsigned char *mac)
+virDomainNetDefPtr
+virDomainNetRemoveByMac(virDomainDefPtr def, const unsigned char *mac)
 {
     int i = virDomainNetIndexByMac(def, mac);
 
     if (i < 0)
-        return -1;
-    virDomainNetRemove(def, i);
-    return 0;
+        return NULL;
+    return virDomainNetRemove(def, i);
 }
 
 
@@ -7233,8 +7242,12 @@ void virDomainLeaseInsertPreAlloced(virDomainDefPtr def,
 }
 
 
-void virDomainLeaseRemoveAt(virDomainDefPtr def, size_t i)
+virDomainLeaseDefPtr
+virDomainLeaseRemoveAt(virDomainDefPtr def, size_t i)
 {
+
+    virDomainLeaseDefPtr lease = def->leases[i];
+
     if (def->nleases > 1) {
         memmove(def->leases + i,
                 def->leases + i + 1,
@@ -7245,17 +7258,18 @@ void virDomainLeaseRemoveAt(virDomainDefPtr def, size_t i)
         VIR_FREE(def->leases);
         def->nleases = 0;
     }
+    return lease;
 }
 
 
-int virDomainLeaseRemove(virDomainDefPtr def,
-                         virDomainLeaseDefPtr lease)
+virDomainLeaseDefPtr
+virDomainLeaseRemove(virDomainDefPtr def,
+                     virDomainLeaseDefPtr lease)
 {
     int i = virDomainLeaseIndex(def, lease);
     if (i < 0)
-        return -1;
-    virDomainLeaseRemoveAt(def, i);
-    return 0;
+        return NULL;
+    return virDomainLeaseRemoveAt(def, i);
 }
 
 
