@@ -1,6 +1,7 @@
 <!-- A Relax NG schema for the libvirt node device XML format -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
     datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <include href='basictypes.rng'/>
   <start>
     <ref name='device'/>
   </start>
@@ -56,7 +57,7 @@
       </optional>
 
       <element name='uuid'>
-        <ref name='uuid'/>
+        <ref name='UUID'/>
       </element>
     </element>
 
@@ -80,16 +81,16 @@
     </attribute>
 
     <element name='domain'>
-      <ref name='uint'/>
+      <ref name='unsignedLong'/>
     </element>
     <element name='bus'>
-      <ref name='uint'/>
+      <ref name='unsignedLong'/>
     </element>
     <element name='slot'>
-      <ref name='uint'/>
+      <ref name='unsignedLong'/>
     </element>
     <element name='function'>
-      <ref name='uint'/>
+      <ref name='unsignedLong'/>
     </element>
 
     <element name='product'>
@@ -122,10 +123,10 @@
     </attribute>
 
     <element name='bus'>
-      <ref name='uint'/>
+      <ref name='unsignedLong'/>
     </element>
     <element name='device'>
-      <ref name='uint'/>
+      <ref name='unsignedLong'/>
     </element>
 
     <element name='product'>
@@ -157,16 +158,16 @@
     </attribute>
 
     <element name='number'>
-      <ref name='uint'/>
+      <ref name='unsignedLong'/>
     </element>
     <element name='class'>
-      <ref name='uint'/>
+      <ref name='unsignedLong'/>
     </element>
     <element name='subclass'>
-      <ref name='uint'/>
+      <ref name='unsignedLong'/>
     </element>
     <element name='protocol'>
-      <ref name='uint'/>
+      <ref name='unsignedLong'/>
     </element>
 
     <optional>
@@ -252,7 +253,7 @@
     </attribute>
 
     <element name='host'>
-      <ref name='uint'/>
+      <ref name='unsignedLong'/>
     </element>
 
     <optional>
@@ -273,16 +274,16 @@
     </attribute>
 
     <element name='host'>
-      <ref name='uint'/>
+      <ref name='unsignedLong'/>
     </element>
     <element name='bus'>
-      <ref name='uint'/>
+      <ref name='unsignedLong'/>
     </element>
     <element name='target'>
-      <ref name='uint'/>
+      <ref name='unsignedLong'/>
     </element>
     <element name='lun'>
-      <ref name='uint'/>
+      <ref name='unsignedLong'/>
     </element>
 
     <element name='type'>
@@ -352,7 +353,7 @@
       </element>
 
       <element name='media_size'>
-        <ref name='uint'/>
+        <ref name='unsignedLong'/>
       </element>
       <optional>
         <element name='media_label'>
@@ -364,25 +365,8 @@
 
   <define name='capstoragefixed'>
     <element name='size'>
-      <ref name='uint'/>
+      <ref name='unsignedLong'/>
     </element>
-  </define>
-
-  <define name='uuid'>
-    <choice>
-      <data type='string'>
-        <param name="pattern">[a-fA-F0-9]{32}</param>
-      </data>
-      <data type='string'>
-        <param name="pattern">[a-fA-F0-9]{8}\-([a-fA-F0-9]{4}\-){3}[a-fA-F0-9]{12}</param>
-      </data>
-    </choice>
-  </define>
-
-  <define name='uint'>
-    <data type='string'>
-      <param name="pattern">[0-9]+</param>
-    </data>
   </define>
 
   <define name='hexuint'>

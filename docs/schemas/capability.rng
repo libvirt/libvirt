@@ -1,6 +1,7 @@
 <!-- A Relax NG schema for the libvirt capabilities XML format -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
     datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <include href='basictypes.rng'/>
   <start>
     <ref name='capabilities'/>
   </start>
@@ -157,7 +158,7 @@
     <element name='topology'>
       <element name='cells'>
         <attribute name='num'>
-          <ref name='uint'/>
+          <ref name='unsignedInt'/>
         </attribute>
         <oneOrMore>
           <ref name='cell'/>
@@ -169,13 +170,13 @@
   <define name='cell'>
     <element name='cell'>
       <attribute name='id'>
-        <ref name='uint'/>
+        <ref name='unsignedInt'/>
       </attribute>
 
       <optional>
         <element name='cpus'>
           <attribute name='num'>
-            <ref name='uint'/>
+            <ref name='unsignedInt'/>
           </attribute>
           <oneOrMore>
             <ref name='cpu'/>
@@ -188,7 +189,7 @@
   <define name='cpu'>
     <element name='cpu'>
       <attribute name='id'>
-        <ref name='uint'/>
+        <ref name='unsignedInt'/>
       </attribute>
     </element>
   </define>
@@ -238,13 +239,13 @@
 
   <define name='emulator'>
     <element name='emulator'>
-      <ref name='path'/>
+      <ref name='absFilePath'/>
     </element>
   </define>
 
   <define name='loader'>
     <element name='loader'>
-      <ref name='path'/>
+      <ref name='absFilePath'/>
     </element>
   </define>
 
@@ -367,39 +368,9 @@
     </choice>
   </define>
 
-
-  <define name='positiveInteger'>
-    <data type='positiveInteger'>
-      <param name="pattern">[0-9]+</param>
-    </data>
-  </define>
-
-  <define name='uint'>
-    <data type='unsignedInt'>
-      <param name="pattern">[0-9]+</param>
-    </data>
-  </define>
-
-  <define name='path'>
-    <data type='string'>
-      <param name="pattern">/[a-zA-Z0-9_\+\-/%]+</param>
-    </data>
-  </define>
-
   <define name='featureName'>
     <data type='string'>
       <param name='pattern'>[a-zA-Z0-9\-_]+</param>
     </data>
-  </define>
-
-  <define name="UUID">
-    <choice>
-      <data type="string">
-        <param name="pattern">[a-fA-F0-9]{32}</param>
-      </data>
-      <data type="string">
-        <param name="pattern">[a-fA-F0-9]{8}\-([a-fA-F0-9]{4}\-){3}[a-fA-F0-9]{12}</param>
-      </data>
-    </choice>
   </define>
 </grammar>

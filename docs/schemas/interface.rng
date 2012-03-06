@@ -183,12 +183,12 @@
         <choice>
           <element name="miimon">
             <!-- miimon frequency in ms -->
-            <attribute name="freq"><ref name="uint"/></attribute>
+            <attribute name="freq"><ref name="unsignedInt"/></attribute>
             <optional>
-              <attribute name="downdelay"><ref name="uint"/></attribute>
+              <attribute name="downdelay"><ref name="unsignedInt"/></attribute>
             </optional>
             <optional>
-              <attribute name="updelay"><ref name="uint"/></attribute>
+              <attribute name="updelay"><ref name="unsignedInt"/></attribute>
             </optional>
             <optional>
               <!-- use_carrier -->
@@ -203,7 +203,7 @@
             </optional>
           </element>
           <element name="arpmon">
-            <attribute name="interval"><ref name="uint"/></attribute>
+            <attribute name="interval"><ref name="unsignedInt"/></attribute>
             <attribute name="target"><ref name="ipv4Addr"/></attribute>
             <optional>
               <attribute name="validate">
@@ -252,7 +252,7 @@
   <define name="mtu">
     <optional>
       <element name="mtu">
-        <attribute name="size"><ref name="uint"/></attribute>
+        <attribute name="size"><ref name="unsignedInt"/></attribute>
       </element>
     </optional>
   </define>
@@ -406,12 +406,6 @@
   </define>
 
   <!-- Type library -->
-
-  <define name='uint'>
-    <data type='unsignedInt'>
-      <param name="pattern">[0-9]+</param>
-    </data>
-  </define>
 
   <define name="timeval">
     <data type="double">
