@@ -702,7 +702,7 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
         goto error;
     }
 
-    if (state && STRNEQ(state, "") && 0) {
+    if (state && STRNEQ(state, "")) {
         if ((rv = sanlock_state_to_args((char *)state,
                                         &res_count,
                                         &res_args)) < 0) {
