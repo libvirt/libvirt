@@ -778,7 +778,7 @@ virNetworkIPParseXML(const char *networkName,
         if (!(VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET) ||
               VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_UNSPEC))) {
             virNetworkReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                  _("no family specified for non-IPv4 address address '%s' in network '%s'"),
+                                  _("no family specified for non-IPv4 address '%s' in network '%s'"),
                                   address, networkName);
             goto error;
         }
