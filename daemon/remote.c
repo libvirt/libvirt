@@ -3574,11 +3574,17 @@ remoteDispatchDomainGetCPUStats(virNetServerPtr server ATTRIBUTE_UNUSED,
                                        args->flags) < 0)
         goto cleanup;
 
-    percpu_len = ret->params.params_len / args->ncpus;
-
 success:
     rv = 0;
     ret->nparams = percpu_len;
+    if (args->nparams && !(args->flags & VIR_TYPED_PARAM_STRING_OKAY)) {
+        int i;
+
+        for (i = 0; i < percpu_len; i++) {
+            if (params[i].type == VIR_TYPED_PARAM_STRING)
+                ret->nparams--;
+        }
+    }
 
 cleanup:
     if (rv < 0)

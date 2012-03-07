@@ -2382,7 +2382,7 @@ static int remoteDomainGetCPUStats(virDomainPtr domain,
     /* Check the length of the returned list carefully. */
     if (ret.params.params_len > nparams * ncpus ||
         (ret.params.params_len &&
-         ret.nparams * ncpus != ret.params.params_len)) {
+         ((ret.params.params_len % ret.nparams) || ret.nparams > nparams))) {
         remoteError(VIR_ERR_RPC, "%s",
                     _("remoteDomainGetCPUStats: "
                       "returned number of stats exceeds limit"));
@@ -2399,9 +2399,11 @@ static int remoteDomainGetCPUStats(virDomainPtr domain,
     }
 
     /* The remote side did not send back any zero entries, so we have
-     * to expand things back into a possibly sparse array.
+     * to expand things back into a possibly sparse array, where the
+     * tail of the array may be omitted.
      */
     memset(params, 0, sizeof(*params) * nparams * ncpus);
+    ncpus = ret.params.params_len / ret.nparams;
     for (cpu = 0; cpu < ncpus; cpu++) {
         int tmp = nparams;
         remote_typed_param *stride = &ret.params.params_val[cpu * ret.nparams];

@@ -18534,7 +18534,9 @@ error:
  * whole).  Otherwise, @start_cpu represents which cpu to start
  * with, and @ncpus represents how many consecutive processors to
  * query, with statistics attributable per processor (such as
- * per-cpu usage).
+ * per-cpu usage).  If @ncpus is larger than the number of cpus
+ * available to query, then the trailing part of the array will
+ * be unpopulated.
  *
  * The remote driver imposes a limit of 128 @ncpus and 16 @nparams;
  * the number of parameters per cpu should not exceed 16, but if you
@@ -18579,8 +18581,10 @@ error:
  * number of populated @params, unless @ncpus was 1; and may be
  * less than @nparams).  The populated parameters start at each
  * stride of @nparams, which means the results may be discontiguous;
- * any unpopulated parameters will be zeroed on success.  The caller
- * is responsible for freeing any returned string parameters.
+ * any unpopulated parameters will be zeroed on success (this includes
+ * skipped elements if @nparams is too large, and tail elements if
+ * @ncpus is too large).  The caller is responsible for freeing any
+ * returned string parameters.
  */
 int virDomainGetCPUStats(virDomainPtr domain,
                          virTypedParameterPtr params,

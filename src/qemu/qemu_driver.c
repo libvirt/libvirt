@@ -12162,6 +12162,7 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
     if (virCgroupGetCpuacctPercpuUsage(group, &buf))
         goto cleanup;
     pos = buf;
+    memset(params, 0, nparams * ncpus);
 
     if (max_id - start_cpu > ncpus - 1)
         max_id = start_cpu + ncpus - 1;
