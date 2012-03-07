@@ -828,7 +828,7 @@ static int virLockManagerSanlockRelease(virLockManagerPtr lock,
             return -1;
         }
 
-        if (STREQ(*state, ""))
+        if (STREQ_NULLABLE(*state, ""))
             VIR_FREE(*state);
     }
 
@@ -871,7 +871,7 @@ static int virLockManagerSanlockInquire(virLockManagerPtr lock,
         return -1;
     }
 
-    if (STREQ(*state, ""))
+    if (STREQ_NULLABLE(*state, ""))
         VIR_FREE(*state);
 
     return 0;
