@@ -1199,7 +1199,8 @@ static int lxcSetupInterfaceBridged(virConnectPtr conn,
         goto cleanup;
 
     if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
-        ret = virNetDevOpenvswitchAddPort(brname, parentVeth, net->mac, vport);
+        ret = virNetDevOpenvswitchAddPort(brname, parentVeth, net->mac,
+                                          vm->uuid, vport);
     else
         ret = virNetDevBridgeAddPort(brname, parentVeth);
     if (ret < 0)

@@ -138,7 +138,8 @@ umlConnectTapDevice(virConnectPtr conn,
         template_ifname = true;
     }
 
-    if (virNetDevTapCreateInBridgePort(bridge, &net->ifname, net->mac, NULL,
+    if (virNetDevTapCreateInBridgePort(bridge, &net->ifname, net->mac,
+                                       vm->uuid, NULL,
                                        virDomainNetGetActualVirtPortProfile(net),
                                        VIR_NETDEV_TAP_CREATE_IFUP) < 0) {
         if (template_ifname)

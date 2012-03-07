@@ -36,6 +36,7 @@
  * @brname: the bridge name
  * @ifname: the network interface name
  * @macaddr: the mac address of the virtual interface
+ * @vmuuid: the Domain UUID that has this interface
  * @ovsport: the ovs specific fields
  *
  * Add an interface to the OVS bridge
@@ -44,24 +45,31 @@
  */
 int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
                                    const unsigned char *macaddr,
+                                   const unsigned char *vmuuid,
                                    virNetDevVPortProfilePtr ovsport)
 {
     int ret = -1;
     virCommandPtr cmd = NULL;
     char macaddrstr[VIR_MAC_STRING_BUFLEN];
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char ifuuidstr[VIR_UUID_STRING_BUFLEN];
+    char vmuuidstr[VIR_UUID_STRING_BUFLEN];
     char *attachedmac_ex_id = NULL;
     char *ifaceid_ex_id = NULL;
     char *profile_ex_id = NULL;
+    char *vmid_ex_id = NULL;
 
     virMacAddrFormat(macaddr, macaddrstr);
-    virUUIDFormat(ovsport->u.openvswitch.interfaceID, uuidstr);
+    virUUIDFormat(ovsport->u.openvswitch.interfaceID, ifuuidstr);
+    virUUIDFormat(vmuuid, vmuuidstr);
 
     if (virAsprintf(&attachedmac_ex_id, "external-ids:attached-mac=\"%s\"",
                     macaddrstr) < 0)
         goto cleanup;
     if (virAsprintf(&ifaceid_ex_id, "external-ids:iface-id=\"%s\"",
-                    uuidstr) < 0)
+                    ifuuidstr) < 0)
+        goto cleanup;
+    if (virAsprintf(&vmid_ex_id, "external-ids:vm-id=\"%s\"",
+                    vmuuidstr) < 0)
         goto cleanup;
     if (ovsport->u.openvswitch.profileID[0] != '\0') {
         if (virAsprintf(&profile_ex_id, "external-ids:port-profile=\"%s\"",
@@ -75,6 +83,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
                         brname, ifname,
                         "--", "set", "Interface", ifname, attachedmac_ex_id,
                         "--", "set", "Interface", ifname, ifaceid_ex_id,
+                        "--", "set", "Interface", ifname, vmid_ex_id,
                         "--", "set", "Interface", ifname,
                         "external-ids:iface-status=active",
                         NULL);
@@ -83,6 +92,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
                         brname, ifname,
                         "--", "set", "Interface", ifname, attachedmac_ex_id,
                         "--", "set", "Interface", ifname, ifaceid_ex_id,
+                        "--", "set", "Interface", ifname, vmid_ex_id,
                         "--", "set", "Interface", ifname, profile_ex_id,
                         "--", "set", "Interface", ifname,
                         "external-ids:iface-status=active",
@@ -100,6 +110,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
 cleanup:
     VIR_FREE(attachedmac_ex_id);
     VIR_FREE(ifaceid_ex_id);
+    VIR_FREE(vmid_ex_id);
     VIR_FREE(profile_ex_id);
     virCommandFree(cmd);
     return ret;

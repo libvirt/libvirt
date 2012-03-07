@@ -47,6 +47,7 @@ typedef enum {
 int virNetDevTapCreateInBridgePort(const char *brname,
                                    char **ifname,
                                    const unsigned char *macaddr,
+                                   const unsigned char *vmuuid,
                                    int *tapfd,
                                    virNetDevVPortProfilePtr virtPortProfile,
                                    unsigned int flags)

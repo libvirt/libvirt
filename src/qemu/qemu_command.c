@@ -244,7 +244,8 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         tap_create_flags |= VIR_NETDEV_TAP_CREATE_VNET_HDR;
     }
 
-    err = virNetDevTapCreateInBridgePort(brname, &net->ifname, net->mac, &tapfd,
+    err = virNetDevTapCreateInBridgePort(brname, &net->ifname, net->mac,
+                                         def->uuid, &tapfd,
                                          virDomainNetGetActualVirtPortProfile(net),
                                          tap_create_flags);
     virDomainAuditNetDevice(def, net, "/dev/net/tun", tapfd >= 0);

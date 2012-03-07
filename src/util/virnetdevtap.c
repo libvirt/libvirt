@@ -277,6 +277,7 @@ int virNetDevTapDelete(const char *ifname ATTRIBUTE_UNUSED)
 int virNetDevTapCreateInBridgePort(const char *brname,
                                    char **ifname,
                                    const unsigned char *macaddr,
+                                   const unsigned char *vmuuid,
                                    int *tapfd,
                                    virNetDevVPortProfilePtr virtPortProfile,
                                    unsigned int flags)
@@ -307,7 +308,7 @@ int virNetDevTapCreateInBridgePort(const char *brname,
         goto error;
 
     if (virtPortProfile) {
-        if (virNetDevOpenvswitchAddPort(brname, *ifname, macaddr,
+        if (virNetDevOpenvswitchAddPort(brname, *ifname, macaddr, vmuuid,
                                         virtPortProfile) < 0) {
             goto error;
         }
