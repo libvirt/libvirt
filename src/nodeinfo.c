@@ -581,7 +581,7 @@ linuxParseCPUmap(int *max_cpuid, const char *path)
 {
     char *map = NULL;
     char *str = NULL;
-    int max_id, i;
+    int max_id = 0, i;
 
     if (virFileReadAll(path, 5 * VIR_DOMAIN_CPUMASK_LEN, &str) < 0) {
         virReportOOMError();
