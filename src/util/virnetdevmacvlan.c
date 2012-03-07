@@ -100,7 +100,7 @@ virNetDevMacVLanCreate(const char *ifname,
                        uint32_t macvlan_mode,
                        int *retry)
 {
-    int rc = 0;
+    int rc = -1;
     struct nlmsghdr *resp;
     struct nlmsgerr *err;
     struct ifinfomsg ifinfo = { .ifi_family = AF_UNSPEC };
@@ -155,7 +155,6 @@ virNetDevMacVLanCreate(const char *ifname,
     nla_nest_end(nl_msg, linkinfo);
 
     if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0) < 0) {
-        rc = -1;
         goto cleanup;
     }
 
@@ -177,14 +176,13 @@ virNetDevMacVLanCreate(const char *ifname,
 
         case -EEXIST:
             *retry = 1;
-            rc = -1;
-            break;
+            goto cleanup;
 
         default:
             virReportSystemError(-err->error,
                                  _("error creating %s type of interface"),
                                  type);
-            rc = -1;
+            goto cleanup;
         }
         break;
 
@@ -195,27 +193,21 @@ virNetDevMacVLanCreate(const char *ifname,
         goto malformed_resp;
     }
 
+    rc = 0;
 cleanup:
     nlmsg_free(nl_msg);
-
     VIR_FREE(recvbuf);
-
     return rc;
 
 malformed_resp:
-    nlmsg_free(nl_msg);
-
     virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("malformed netlink response message"));
-    VIR_FREE(recvbuf);
-    return -1;
+    goto cleanup;
 
 buffer_too_small:
-    nlmsg_free(nl_msg);
-
     virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("allocated netlink buffer is too small"));
-    return -1;
+    goto cleanup;
 }
 
 /**
@@ -229,7 +221,7 @@ buffer_too_small:
  */
 int virNetDevMacVLanDelete(const char *ifname)
 {
-    int rc = 0;
+    int rc = -1;
     struct nlmsghdr *resp;
     struct nlmsgerr *err;
     struct ifinfomsg ifinfo = { .ifi_family = AF_UNSPEC };
@@ -251,7 +243,6 @@ int virNetDevMacVLanDelete(const char *ifname)
         goto buffer_too_small;
 
     if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0) < 0) {
-        rc = -1;
         goto cleanup;
     }
 
@@ -270,7 +261,7 @@ int virNetDevMacVLanDelete(const char *ifname)
             virReportSystemError(-err->error,
                                  _("error destroying %s interface"),
                                  ifname);
-            rc = -1;
+            goto cleanup;
         }
         break;
 
@@ -281,27 +272,21 @@ int virNetDevMacVLanDelete(const char *ifname)
         goto malformed_resp;
     }
 
+    rc = 0;
 cleanup:
     nlmsg_free(nl_msg);
-
     VIR_FREE(recvbuf);
-
     return rc;
 
 malformed_resp:
-    nlmsg_free(nl_msg);
-
     virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("malformed netlink response message"));
-    VIR_FREE(recvbuf);
-    return -1;
+    goto cleanup;
 
 buffer_too_small:
-    nlmsg_free(nl_msg);
-
     virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("allocated netlink buffer is too small"));
-    return -1;
+    goto cleanup;
 }
 
 

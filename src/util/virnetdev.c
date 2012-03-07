@@ -1249,7 +1249,7 @@ virNetDevLinkDump(const char *ifname, int ifindex,
                   unsigned char **recvbuf,
                   uint32_t (*getPidFunc)(void))
 {
-    int rc = 0;
+    int rc = -1;
     struct nlmsghdr *resp;
     struct nlmsgerr *err;
     struct ifinfomsg ifinfo = {
@@ -1284,15 +1284,12 @@ virNetDevLinkDump(const char *ifname, int ifindex,
     if (!nltarget_kernel) {
         pid = getPidFunc();
         if (pid == 0) {
-            rc = -1;
             goto cleanup;
         }
     }
 
-    if (virNetlinkCommand(nl_msg, recvbuf, &recvbuflen, pid) < 0) {
-        rc = -1;
+    if (virNetlinkCommand(nl_msg, recvbuf, &recvbuflen, pid) < 0)
         goto cleanup;
-    }
 
     if (recvbuflen < NLMSG_LENGTH(0) || *recvbuf == NULL)
         goto malformed_resp;
@@ -1309,7 +1306,7 @@ virNetDevLinkDump(const char *ifname, int ifindex,
             virReportSystemError(-err->error,
                                  _("error dumping %s (%d) interface"),
                                  ifname, ifindex);
-            rc = -1;
+            goto cleanup;
         }
         break;
 
@@ -1324,29 +1321,22 @@ virNetDevLinkDump(const char *ifname, int ifindex,
     default:
         goto malformed_resp;
     }
-
-    if (rc != 0)
-        VIR_FREE(*recvbuf);
-
+    rc = 0;
 cleanup:
+    if (rc < 0)
+        VIR_FREE(*recvbuf);
     nlmsg_free(nl_msg);
-
     return rc;
 
 malformed_resp:
-    nlmsg_free(nl_msg);
-
     virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("malformed netlink response message"));
-    VIR_FREE(*recvbuf);
-    return -1;
+    goto cleanup;
 
 buffer_too_small:
-    nlmsg_free(nl_msg);
-
     virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("allocated netlink buffer is too small"));
-    return -1;
+    goto cleanup;
 }
 
 static int
@@ -1457,28 +1447,20 @@ virNetDevSetVfConfig(const char *ifname, int ifindex, int vf,
     }
 
     rc = 0;
-
 cleanup:
     nlmsg_free(nl_msg);
-
     VIR_FREE(recvbuf);
-
     return rc;
 
 malformed_resp:
-    nlmsg_free(nl_msg);
-
     virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("malformed netlink response message"));
-    VIR_FREE(recvbuf);
-    return rc;
+    goto cleanup;
 
 buffer_too_small:
-    nlmsg_free(nl_msg);
-
     virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("allocated netlink buffer is too small"));
-    return rc;
+    goto cleanup;
 }
 
 static int

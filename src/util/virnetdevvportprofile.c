@@ -179,19 +179,20 @@ virNetDevVPortProfileGetStatus(struct nlattr **tb, int32_t vf,
                                uint16_t *status)
 {
     int rc = -1;
-    const char *msg = NULL;
     struct nlattr *tb_port[IFLA_PORT_MAX + 1] = { NULL, };
 
     if (vf == PORT_SELF_VF && nltarget_kernel) {
         if (tb[IFLA_PORT_SELF]) {
             if (nla_parse_nested(tb_port, IFLA_PORT_MAX, tb[IFLA_PORT_SELF],
                                  ifla_port_policy)) {
-                msg = _("error parsing IFLA_PORT_SELF part");
-                goto err_exit;
+                virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("error parsing IFLA_PORT_SELF part"));
+                goto cleanup;
             }
         } else {
-            msg = _("IFLA_PORT_SELF is missing");
-            goto err_exit;
+            virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("IFLA_PORT_SELF is missing"));
+            goto cleanup;
         }
     } else {
         if (tb[IFLA_VF_PORTS]) {
@@ -202,14 +203,17 @@ virNetDevVPortProfileGetStatus(struct nlattr **tb, int32_t vf,
             nla_for_each_nested(tb_vf_ports, tb[IFLA_VF_PORTS], rem) {
 
                 if (nla_type(tb_vf_ports) != IFLA_VF_PORT) {
-                    msg = _("error while iterating over IFLA_VF_PORTS part");
-                    goto err_exit;
+                    virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("error while iterating over "
+                                     "IFLA_VF_PORTS part"));
+                    goto cleanup;
                 }
 
                 if (nla_parse_nested(tb_port, IFLA_PORT_MAX, tb_vf_ports,
                                      ifla_port_policy)) {
-                    msg = _("error parsing IFLA_VF_PORT part");
-                    goto err_exit;
+                    virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("error parsing IFLA_VF_PORT part"));
+                    goto cleanup;
                 }
 
                 if (instanceId &&
@@ -226,13 +230,15 @@ virNetDevVPortProfileGetStatus(struct nlattr **tb, int32_t vf,
             }
 
             if (!found) {
-                msg = _("Could not find netlink response with "
-                        "expected parameters");
-                goto err_exit;
+                virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Could not find netlink response with "
+                                 "expected parameters"));
+                goto cleanup;
             }
         } else {
-            msg = _("IFLA_VF_PORTS is missing");
-            goto err_exit;
+            virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("IFLA_VF_PORTS is missing"));
+            goto cleanup;
         }
     }
 
@@ -245,15 +251,12 @@ virNetDevVPortProfileGetStatus(struct nlattr **tb, int32_t vf,
             *status = PORT_PROFILE_RESPONSE_INPROGRESS;
             rc = 0;
         } else {
-            msg = _("no IFLA_PORT_RESPONSE found in netlink message");
-            goto err_exit;
+            virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("no IFLA_PORT_RESPONSE found in netlink message"));
+            goto cleanup;
         }
     }
-
-err_exit:
-    if (msg)
-        virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s", msg);
-
+cleanup:
     return rc;
 }
 
@@ -389,11 +392,11 @@ virNetDevVPortProfileOpSetLink(const char *ifname, int ifindex,
     if (!nltarget_kernel) {
         pid = virNetDevVPortProfileGetLldpadPid();
         if (pid == 0)
-            goto err_exit;
+            goto cleanup;
     }
 
     if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, pid) < 0)
-        goto err_exit;
+        goto cleanup;
 
     if (recvbuflen < NLMSG_LENGTH(0) || recvbuf == NULL)
         goto malformed_resp;
@@ -410,7 +413,7 @@ virNetDevVPortProfileOpSetLink(const char *ifname, int ifindex,
             virReportSystemError(-err->error,
                 _("error during virtual port configuration of ifindex %d"),
                 ifindex);
-            goto err_exit;
+            goto cleanup;
         }
         break;
 
@@ -422,28 +425,20 @@ virNetDevVPortProfileOpSetLink(const char *ifname, int ifindex,
     }
 
     rc = 0;
-
-err_exit:
+cleanup:
     nlmsg_free(nl_msg);
-
     VIR_FREE(recvbuf);
-
     return rc;
 
 malformed_resp:
-    nlmsg_free(nl_msg);
-
     virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("malformed netlink response message"));
-    VIR_FREE(recvbuf);
-    return rc;
+    goto cleanup;
 
 buffer_too_small:
-    nlmsg_free(nl_msg);
-
     virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("allocated netlink buffer is too small"));
-    return rc;
+    goto cleanup;
 }
 
 
@@ -558,12 +553,12 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
         rc = virNetDevLinkDump(NULL, ifindex, nltarget_kernel, tb,
                                &recvbuf, virNetDevVPortProfileGetLldpadPid);
         if (rc < 0)
-            goto err_exit;
+            goto cleanup;
 
         rc = virNetDevVPortProfileGetStatus(tb, vf, instanceId, nltarget_kernel,
                                             is8021Qbg, &status);
         if (rc < 0)
-            goto err_exit;
+            goto cleanup;
         if (status == PORT_PROFILE_RESPONSE_SUCCESS ||
             status == PORT_VDP_RESPONSE_SUCCESS) {
             break;
@@ -589,7 +584,7 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
         rc = -2;
     }
 
-err_exit:
+cleanup:
     VIR_FREE(recvbuf);
 
     return rc;
@@ -634,7 +629,7 @@ virNetDevVPortProfileOp8021Qbg(const char *ifname,
                                enum virNetDevVPortProfileLinkOp virtPortOp,
                                bool setlink_only)
 {
-    int rc = 0;
+    int rc = -1;
     int op = PORT_REQUEST_ASSOCIATE;
     struct ifla_port_vsi portVsi = {
         .vsi_mgr_id       = virtPort->u.virtPort8021Qbg.managerID,
@@ -650,10 +645,9 @@ virNetDevVPortProfileOp8021Qbg(const char *ifname,
 
     vf = PORT_SELF_VF;
 
-    if (virNetDevVPortProfileGetPhysdevAndVlan(ifname, &physdev_ifindex, physdev_ifname,
-                                               &vlanid) < 0) {
-        rc = -1;
-        goto err_exit;
+    if (virNetDevVPortProfileGetPhysdevAndVlan(ifname, &physdev_ifindex,
+                                               physdev_ifname, &vlanid) < 0) {
+        goto cleanup;
     }
 
     if (vlanid < 0)
@@ -676,8 +670,7 @@ virNetDevVPortProfileOp8021Qbg(const char *ifname,
     default:
         virNetDevError(VIR_ERR_INTERNAL_ERROR,
                        _("operation type %d not supported"), virtPortOp);
-        rc = -1;
-        goto err_exit;
+        goto cleanup;
     }
 
     rc = virNetDevVPortProfileOpCommon(physdev_ifname, physdev_ifindex,
@@ -691,9 +684,7 @@ virNetDevVPortProfileOp8021Qbg(const char *ifname,
                                        vf,
                                        op,
                                        setlink_only);
-
-err_exit:
-
+cleanup:
     return rc;
 }
 
