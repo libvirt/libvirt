@@ -1096,9 +1096,9 @@
     &lt;/disk&gt;
     &lt;disk type='block' device='lun'&gt;
       &lt;driver name='qemu' type='raw'/&gt;
-      &lt;source dev='/dev/sda'/&lt;
-      &lt;target dev='sda' bus='scsi'/&lt;
-      &lt;address type='drive' controller='0' bus='0' target='3' unit='0'/&lt;
+      &lt;source dev='/dev/sda'/&gt;
+      &lt;target dev='sda' bus='scsi'/&gt;
+      &lt;address type='drive' controller='0' bus='0' target='3' unit='0'/&gt;
     &lt;/disk&gt;
   &lt;/devices&gt;
   ...</pre>
