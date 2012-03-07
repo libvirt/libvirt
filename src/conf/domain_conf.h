@@ -1771,6 +1771,7 @@ bool virDomainObjTaint(virDomainObjPtr obj,
 void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def);
 void virDomainInputDefFree(virDomainInputDefPtr def);
 void virDomainDiskDefFree(virDomainDiskDefPtr def);
+void virDomainLeaseDefFree(virDomainLeaseDefPtr def);
 void virDomainDiskHostDefFree(virDomainDiskHostDefPtr def);
 int virDomainDiskFindControllerModel(virDomainDefPtr def,
                                      virDomainDiskDefPtr disk,

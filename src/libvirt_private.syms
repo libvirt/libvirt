@@ -366,6 +366,7 @@ virDomainHubTypeToString;
 virDomainInputDefFree;
 virDomainIoEventFdTypeFromString;
 virDomainIoEventFdTypeToString;
+virDomainLeaseDefFree;
 virDomainLeaseIndex;
 virDomainLeaseInsert;
 virDomainLeaseInsertPreAlloc;

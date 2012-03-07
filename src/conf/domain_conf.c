@@ -887,7 +887,7 @@ void virDomainInputDefFree(virDomainInputDefPtr def)
     VIR_FREE(def);
 }
 
-static void virDomainLeaseDefFree(virDomainLeaseDefPtr def)
+void virDomainLeaseDefFree(virDomainLeaseDefPtr def)
 {
     if (!def)
         return;
