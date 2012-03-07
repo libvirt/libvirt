@@ -1852,8 +1852,7 @@ cleanup:
 static int
 qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
                               virDomainObjPtr vm,
-                              virDomainHostdevDefPtr detach,
-                              int idx)
+                              virDomainHostdevDefPtr detach)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainHostdevSubsysPtr subsys = &detach->source.subsys;
@@ -1914,15 +1913,13 @@ qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
                                         detach->info->addr.pci.slot) < 0)
         VIR_WARN("Unable to release PCI address on host device");
 
-    virDomainHostdevRemove(vm->def, idx);
     return ret;
 }
 
 static int
 qemuDomainDetachHostUsbDevice(struct qemud_driver *driver,
                               virDomainObjPtr vm,
-                              virDomainHostdevDefPtr detach,
-                              int idx)
+                              virDomainHostdevDefPtr detach)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainHostdevSubsysPtr subsys = &detach->source.subsys;
@@ -1956,8 +1953,6 @@ qemuDomainDetachHostUsbDevice(struct qemud_driver *driver,
         VIR_WARN("Unable to find device %03d.%03d in list of used USB devices",
                  subsys->u.usb.bus, subsys->u.usb.device);
     }
-
-    virDomainHostdevRemove(vm->def, idx);
     return ret;
 }
 
@@ -1987,10 +1982,10 @@ int qemuDomainDetachThisHostDevice(struct qemud_driver *driver,
 
     switch (detach->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        ret = qemuDomainDetachHostPciDevice(driver, vm, detach, idx);
-       break;
+        ret = qemuDomainDetachHostPciDevice(driver, vm, detach);
+        break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-        ret = qemuDomainDetachHostUsbDevice(driver, vm, detach, idx);
+        ret = qemuDomainDetachHostUsbDevice(driver, vm, detach);
         break;
     default:
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1999,13 +1994,14 @@ int qemuDomainDetachThisHostDevice(struct qemud_driver *driver,
         return -1;
     }
 
-    if (ret == 0 &&
-        virSecurityManagerRestoreHostdevLabel(driver->securityManager,
-                                              vm->def, detach) < 0) {
-        VIR_WARN("Failed to restore host device labelling");
+    if (!ret) {
+        if (virSecurityManagerRestoreHostdevLabel(driver->securityManager,
+                                                  vm->def, detach) < 0) {
+            VIR_WARN("Failed to restore host device labelling");
+        }
+        virDomainHostdevRemove(vm->def, idx);
+        virDomainHostdevDefFree(detach);
     }
-
-    virDomainHostdevDefFree(detach);
     return ret;
 }
 
