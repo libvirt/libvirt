@@ -5367,6 +5367,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
 {
     virDomainDiskDefPtr disk;
     virDomainNetDefPtr net;
+    virDomainHostdevDefPtr hostdev;
     virDomainLeaseDefPtr lease;
 
     switch (dev->type) {
@@ -5408,6 +5409,22 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
             return -1;
         break;
 
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        hostdev = dev->data.hostdev;
+        if (virDomainHostdevFind(vmdef, hostdev, NULL) >= 0) {
+            qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                            _("device is already in the domain configuration"));
+            return -1;
+        }
+        if (virDomainHostdevInsert(vmdef, hostdev)) {
+            virReportOOMError();
+            return -1;
+        }
+        dev->data.hostdev = NULL;
+        if (qemuDomainAssignAddresses(vmdef) < 0)
+            return -1;
+        break;
+
     case VIR_DOMAIN_DEVICE_LEASE:
         lease = dev->data.lease;
         if (virDomainLeaseIndex(vmdef, lease) >= 0) {
@@ -5438,6 +5455,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
 {
     virDomainDiskDefPtr disk, det_disk;
     virDomainNetDefPtr net, det_net;
+    virDomainHostdevDefPtr hostdev, det_hostdev;
     virDomainLeaseDefPtr lease, det_lease;
 
     switch (dev->type) {
@@ -5463,6 +5481,20 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         }
         virDomainNetDefFree(det_net);
         break;
+
+    case VIR_DOMAIN_DEVICE_HOSTDEV: {
+        int idx;
+
+        hostdev = dev->data.hostdev;
+        if ((idx = virDomainHostdevFind(vmdef, hostdev, &det_hostdev)) < 0) {
+            qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                            _("device not present in domain configuration"));
+            return -1;
+        }
+        virDomainHostdevRemove(vmdef, idx);
+        virDomainHostdevDefFree(det_hostdev);
+        break;
+    }
 
     case VIR_DOMAIN_DEVICE_LEASE:
         lease = dev->data.lease;
