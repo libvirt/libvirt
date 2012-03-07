@@ -3072,6 +3072,7 @@ int qemuProcessStart(virConnectPtr conn,
                      struct qemud_driver *driver,
                      virDomainObjPtr vm,
                      const char *migrateFrom,
+                     bool cold_boot,
                      bool start_paused,
                      bool autodestroy,
                      int stdin_fd,
@@ -3227,7 +3228,7 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Checking for CDROM and floppy presence");
-    if (qemuDomainCheckDiskPresence(driver, vm, migrateFrom != NULL) < 0)
+    if (qemuDomainCheckDiskPresence(driver, vm, cold_boot) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting up domain cgroup (if required)");
