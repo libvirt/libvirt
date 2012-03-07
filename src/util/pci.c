@@ -2219,7 +2219,8 @@ pciDeviceNetName(char *device_link_sysfs_path ATTRIBUTE_UNUSED,
 
 int
 pciDeviceGetVirtualFunctionInfo(const char *vf_sysfs_device_path ATTRIBUTE_UNUSED,
-                                char **pfname, int *vf_index ATTRIBUTE_UNUSED)
+                                char **pfname ATTRIBUTE_UNUSED,
+                                int *vf_index ATTRIBUTE_UNUSED)
 {
     pciReportError(VIR_ERR_INTERNAL_ERROR, _("pciDeviceGetVirtualFunctionInfo "
                    "is not supported on non-linux platforms"));
