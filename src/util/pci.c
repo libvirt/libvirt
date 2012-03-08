@@ -2209,6 +2209,15 @@ pciGetVirtualFunctionIndex(const char *pf_sysfs_device_link ATTRIBUTE_UNUSED,
 }
 
 int
+pciConfigAddressToSysfsFile(struct pci_config_address *dev ATTRIBUTE_UNUSED,
+                            char **pci_sysfs_device_link ATTRIBUTE_UNUSED)
+{
+    pciReportError(VIR_ERR_INTERNAL_ERROR, _("pciConfigAddressToSysfsFile is not "
+                   "supported on non-linux platforms"));
+    return -1;
+}
+
+int
 pciDeviceNetName(char *device_link_sysfs_path ATTRIBUTE_UNUSED,
                  char **netname ATTRIBUTE_UNUSED)
 {
