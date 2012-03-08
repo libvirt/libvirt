@@ -44,17 +44,21 @@ void qemuProcessReconnectAll(virConnectPtr conn, struct qemud_driver *driver);
 
 int qemuProcessAssignPCIAddresses(virDomainDefPtr def);
 
+typedef enum {
+    VIR_QEMU_PROCESS_START_COLD         = 1 << 0,
+    VIR_QEMU_PROCESS_START_PAUSED       = 1 << 1,
+    VIR_QEMU_PROCESS_START_AUTODESROY   = 1 << 2,
+} qemuProcessStartFlags;
+
 int qemuProcessStart(virConnectPtr conn,
                      struct qemud_driver *driver,
                      virDomainObjPtr vm,
                      const char *migrateFrom,
-                     bool cold_boot,
-                     bool start_paused,
-                     bool autodestroy,
                      int stdin_fd,
                      const char *stdin_path,
                      virDomainSnapshotObjPtr snapshot,
-                     enum virNetDevVPortProfileOp vmop);
+                     enum virNetDevVPortProfileOp vmop,
+                     unsigned int flags);
 
 void qemuProcessStop(struct qemud_driver *driver,
                      virDomainObjPtr vm,

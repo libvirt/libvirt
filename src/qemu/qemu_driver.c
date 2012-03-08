@@ -1351,9 +1351,15 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     virDomainPtr dom = NULL;
     virDomainEventPtr event = NULL;
     virDomainEventPtr event2 = NULL;
+    unsigned int start_flags = VIR_QEMU_PROCESS_START_COLD;
 
     virCheckFlags(VIR_DOMAIN_START_PAUSED |
                   VIR_DOMAIN_START_AUTODESTROY, NULL);
+
+    if (flags & VIR_DOMAIN_START_PAUSED)
+        start_flags |= VIR_QEMU_PROCESS_START_PAUSED;
+    if (flags & VIR_DOMAIN_START_AUTODESTROY)
+        start_flags |= VIR_QEMU_PROCESS_START_AUTODESROY;
 
     qemuDriverLock(driver);
     if (!(def = virDomainDefParseString(driver->caps, xml,
@@ -1383,10 +1389,9 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup; /* XXXX free the 'vm' we created ? */
 
-    if (qemuProcessStart(conn, driver, vm, NULL, true,
-                         (flags & VIR_DOMAIN_START_PAUSED) != 0,
-                         (flags & VIR_DOMAIN_START_AUTODESTROY) != 0,
-                         -1, NULL, NULL, VIR_NETDEV_VPORT_PROFILE_OP_CREATE) < 0) {
+    if (qemuProcessStart(conn, driver, vm, NULL, -1, NULL, NULL,
+                         VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
+                         start_flags) < 0) {
         virDomainAuditStart(vm, "booted", false);
         if (qemuDomainObjEndJob(driver, vm) > 0)
             qemuDomainRemoveInactive(driver, vm);
@@ -4138,9 +4143,9 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     }
 
     /* Set the migration source and start it up. */
-    ret = qemuProcessStart(conn, driver, vm, "stdio", false, true,
-                           false, *fd, path, NULL,
-                           VIR_NETDEV_VPORT_PROFILE_OP_RESTORE);
+    ret = qemuProcessStart(conn, driver, vm, "stdio", *fd, path, NULL,
+                           VIR_NETDEV_VPORT_PROFILE_OP_RESTORE,
+                           VIR_QEMU_PROCESS_START_PAUSED);
 
     if (intermediatefd != -1) {
         if (ret < 0) {
@@ -4710,6 +4715,10 @@ qemuDomainObjStart(virConnectPtr conn,
     bool autodestroy = (flags & VIR_DOMAIN_START_AUTODESTROY) != 0;
     bool bypass_cache = (flags & VIR_DOMAIN_START_BYPASS_CACHE) != 0;
     bool force_boot = (flags & VIR_DOMAIN_START_FORCE_BOOT) != 0;
+    unsigned int start_flags = VIR_QEMU_PROCESS_START_COLD;
+
+    start_flags |= start_paused ? VIR_QEMU_PROCESS_START_PAUSED : 0;
+    start_flags |= autodestroy ? VIR_QEMU_PROCESS_START_AUTODESROY : 0;
 
     /*
      * If there is a managed saved state restore it instead of starting
@@ -4741,9 +4750,8 @@ qemuDomainObjStart(virConnectPtr conn,
         }
     }
 
-    ret = qemuProcessStart(conn, driver, vm, NULL, true, start_paused,
-                           autodestroy, -1, NULL, NULL,
-                           VIR_NETDEV_VPORT_PROFILE_OP_CREATE);
+    ret = qemuProcessStart(conn, driver, vm, NULL, -1, NULL, NULL,
+                           VIR_NETDEV_VPORT_PROFILE_OP_CREATE, start_flags);
     virDomainAuditStart(vm, "booted", ret >= 0);
     if (ret >= 0) {
         virDomainEventPtr event =
@@ -11027,9 +11035,10 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             if (config)
                 virDomainObjAssignDef(vm, config, false);
 
-            rc = qemuProcessStart(snapshot->domain->conn, driver, vm, NULL,
-                                  false, true, false, -1, NULL, snap,
-                                  VIR_NETDEV_VPORT_PROFILE_OP_CREATE);
+            rc = qemuProcessStart(snapshot->domain->conn,
+                                  driver, vm, NULL, -1, NULL, snap,
+                                  VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
+                                  VIR_QEMU_PROCESS_START_PAUSED);
             virDomainAuditStart(vm, "from-snapshot", rc >= 0);
             detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
             event = virDomainEventNewFromObj(vm,
@@ -11114,12 +11123,16 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                      VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) {
             /* Flush first event, now do transition 2 or 3 */
             bool paused = (flags & VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED) != 0;
+            unsigned int start_flags = 0;
+
+            start_flags |= paused ? VIR_QEMU_PROCESS_START_PAUSED : 0;
 
             if (event)
                 qemuDomainEventQueue(driver, event);
-            rc = qemuProcessStart(snapshot->domain->conn, driver, vm, NULL,
-                                  false, paused, false, -1, NULL, NULL,
-                                  VIR_NETDEV_VPORT_PROFILE_OP_CREATE);
+            rc = qemuProcessStart(snapshot->domain->conn,
+                                  driver, vm, NULL, -1, NULL, NULL,
+                                  VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
+                                  start_flags);
             virDomainAuditStart(vm, "from-snapshot", rc >= 0);
             if (rc < 0) {
                 if (!vm->persistent) {

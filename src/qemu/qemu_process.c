@@ -3274,13 +3274,11 @@ int qemuProcessStart(virConnectPtr conn,
                      struct qemud_driver *driver,
                      virDomainObjPtr vm,
                      const char *migrateFrom,
-                     bool cold_boot,
-                     bool start_paused,
-                     bool autodestroy,
                      int stdin_fd,
                      const char *stdin_path,
                      virDomainSnapshotObjPtr snapshot,
-                     enum virNetDevVPortProfileOp vmop)
+                     enum virNetDevVPortProfileOp vmop,
+                     unsigned int flags)
 {
     int ret;
     off_t pos = -1;
@@ -3292,6 +3290,12 @@ int qemuProcessStart(virConnectPtr conn,
     struct qemuProcessHookData hookData;
     unsigned long cur_balloon;
     int i;
+
+    /* Okay, these are just internal flags,
+     * but doesn't hurt to check */
+    virCheckFlags(VIR_QEMU_PROCESS_START_COLD |
+                  VIR_QEMU_PROCESS_START_PAUSED |
+                  VIR_QEMU_PROCESS_START_AUTODESROY, -1);
 
     hookData.conn = conn;
     hookData.vm = vm;
@@ -3437,7 +3441,8 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Checking for CDROM and floppy presence");
-    if (qemuDomainCheckDiskPresence(driver, vm, cold_boot) < 0)
+    if (qemuDomainCheckDiskPresence(driver, vm,
+                                    flags & VIR_QEMU_PROCESS_START_COLD) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting up domain cgroup (if required)");
@@ -3636,7 +3641,7 @@ int qemuProcessStart(virConnectPtr conn,
     VIR_DEBUG("Handshake complete, child running");
 
     if (migrateFrom)
-        start_paused = true;
+        flags |= VIR_QEMU_PROCESS_START_PAUSED;
 
     if (ret == -1) /* The VM failed to start; tear filters before taps */
         virDomainConfVMNWFilterTeardown(vm);
@@ -3711,7 +3716,7 @@ int qemuProcessStart(virConnectPtr conn,
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    if (!start_paused) {
+    if (!(flags & VIR_QEMU_PROCESS_START_PAUSED)) {
         VIR_DEBUG("Starting domain CPUs");
         /* Allow the CPUS to start executing */
         if (qemuProcessStartCPUs(driver, vm, conn,
@@ -3729,7 +3734,7 @@ int qemuProcessStart(virConnectPtr conn,
                              VIR_DOMAIN_PAUSED_USER);
     }
 
-    if (autodestroy &&
+    if (flags & VIR_QEMU_PROCESS_START_AUTODESROY &&
         qemuProcessAutoDestroyAdd(driver, vm, conn) < 0)
         goto cleanup;
 
