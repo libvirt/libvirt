@@ -2170,12 +2170,13 @@ cleanup:
 }
 
 #else
+static const char *unsupported = N_("not supported on non-linux platforms");
+
 int
 pciGetPhysicalFunction(const char *vf_sysfs_path ATTRIBUTE_UNUSED,
               struct pci_config_address **physical_function ATTRIBUTE_UNUSED)
 {
-    pciReportError(VIR_ERR_INTERNAL_ERROR, _("pciGetPhysicalFunction is not "
-                   "supported on non-linux platforms"));
+    pciReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 
@@ -2184,16 +2185,14 @@ pciGetVirtualFunctions(const char *sysfs_path ATTRIBUTE_UNUSED,
              struct pci_config_address ***virtual_functions ATTRIBUTE_UNUSED,
              unsigned int *num_virtual_functions ATTRIBUTE_UNUSED)
 {
-    pciReportError(VIR_ERR_INTERNAL_ERROR, _("pciGetVirtualFunctions is not "
-                   "supported on non-linux platforms"));
+    pciReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 
 int
 pciDeviceIsVirtualFunction(const char *vf_sysfs_device_link ATTRIBUTE_UNUSED)
 {
-    pciReportError(VIR_ERR_INTERNAL_ERROR, _("pciDeviceIsVirtualFunction is "
-                   "not supported on non-linux platforms"));
+    pciReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 
@@ -2202,8 +2201,7 @@ pciGetVirtualFunctionIndex(const char *pf_sysfs_device_link ATTRIBUTE_UNUSED,
                            const char *vf_sysfs_device_link ATTRIBUTE_UNUSED,
                            int *vf_index ATTRIBUTE_UNUSED)
 {
-    pciReportError(VIR_ERR_INTERNAL_ERROR, _("pciGetVirtualFunctionIndex is "
-                   "not supported on non-linux platforms"));
+    pciReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 
 }
@@ -2212,8 +2210,7 @@ int
 pciConfigAddressToSysfsFile(struct pci_config_address *dev ATTRIBUTE_UNUSED,
                             char **pci_sysfs_device_link ATTRIBUTE_UNUSED)
 {
-    pciReportError(VIR_ERR_INTERNAL_ERROR, _("pciConfigAddressToSysfsFile is not "
-                   "supported on non-linux platforms"));
+    pciReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 
@@ -2221,8 +2218,7 @@ int
 pciDeviceNetName(char *device_link_sysfs_path ATTRIBUTE_UNUSED,
                  char **netname ATTRIBUTE_UNUSED)
 {
-    pciReportError(VIR_ERR_INTERNAL_ERROR, _("pciDeviceNetName is not "
-                   "supported on non-linux platforms"));
+    pciReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 
@@ -2231,8 +2227,7 @@ pciDeviceGetVirtualFunctionInfo(const char *vf_sysfs_device_path ATTRIBUTE_UNUSE
                                 char **pfname ATTRIBUTE_UNUSED,
                                 int *vf_index ATTRIBUTE_UNUSED)
 {
-    pciReportError(VIR_ERR_INTERNAL_ERROR, _("pciDeviceGetVirtualFunctionInfo "
-                   "is not supported on non-linux platforms"));
+    pciReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 #endif /* __linux__ */
