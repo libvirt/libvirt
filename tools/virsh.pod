@@ -551,17 +551,20 @@ B<Explanation of fields> (fields appear in the folowing order):
 
 Get network interface stats for a running domain.
 
-=item B<domif-setlink> I<domain> I<interface-device> I<state> I<--persistent>
+=item B<domif-setlink> I<domain> I<interface-device> I<state> [I<--config>]
 
 Modify link state of the domain's virtual interface. Possible values for
-state are "up" and "down. If --persistent is specified, only the persistent
-configuration of the domain is modified.
+state are "up" and "down. If I<--config> is specified, only the persistent
+configuration of the domain is modified, for compatibility purposes,
+I<--persistent> is alias of I<--config>.
 I<interface-device> can be the interface's target name or the MAC address.
 
-=item B<domif-getlink> I<domain> I<interface-device> I<--persistent>
+=item B<domif-getlink> I<domain> I<interface-device> [I<--config>]
 
-Query link state of the domain's virtual interface. If --persistent
-is specified, query the persistent configuration.
+Query link state of the domain's virtual interface. If I<--config>
+is specified, query the persistent configuration, for compatibility
+purposes, I<--persistent> is alias of I<--config>.
+
 I<interface-device> can be the interface's target name or the MAC address.
 
 =item B<domiftune> I<domain> I<interface-device>
@@ -1475,10 +1478,13 @@ format of the device sections to get the most accurate set of accepted values.
 
 =over 4
 
-=item B<attach-device> I<domain-id> I<FILE>
+=item B<attach-device> I<domain-id> I<FILE> [I<--config>]
 
 Attach a device to the domain, using a device definition in an XML file.
 See the documentation to learn about libvirt XML format for a device.
+If I<--config> is specified, alter persistent configuration, effect observed
+on next boot, for compatibility purposes, I<--persistent> is alias of
+I<--config>.
 For cdrom and floppy devices, this command only replaces the media within
 the single existing device; consider using B<update-device> for this usage.
 For passthrough host devices, see also B<nodedev-detach>, needed if
@@ -1486,7 +1492,7 @@ the device does not use managed mode.
 
 =item B<attach-disk> I<domain-id> I<source> I<target>
 [I<--driver driver>] [I<--subdriver subdriver>] [I<--cache cache>]
-[I<--type type>] [I<--mode mode>] [I<--persistent>] [I<--sourcetype soucetype>]
+[I<--type type>] [I<--mode mode>] [I<--config>] [I<--sourcetype soucetype>]
 [I<--serial serial>] [I<--shareable>] [I<--rawio>] [I<--address address>]
 [I<--multifunction>]
 
@@ -1498,7 +1504,8 @@ I<type> can indicate I<cdrom> or I<floppy> as alternative to the disk default,
 although this use only replaces the media within the existing virtual cdrom or
 floppy device; consider using B<update-device> for this usage instead.
 I<mode> can specify the two specific mode I<readonly> or I<shareable>.
-I<persistent> indicates the changes will affect the next boot of the domain.
+I<--config> indicates the changes will affect the next boot of the domain,
+for compatibility purposes, I<--persistent> is alias of I<--config>.
 I<sourcetype> can indicate the type of source (block|file)
 I<cache> can be one of "default", "none", "writethrough", "writeback",
 "directsync" or "unsafe".
@@ -1512,7 +1519,7 @@ address.
 
 =item B<attach-interface> I<domain-id> I<type> I<source>
 [I<--target target>] [I<--mac mac>] [I<--script script>] [I<--model model>]
-[I<--persistent>] [I<--inbound average,peak,burst>] [I<--outbound average,peak,burst>]
+[I<--config>] [I<--inbound average,peak,burst>] [I<--outbound average,peak,burst>]
 
 Attach a new network interface to the domain.
 I<type> can be either I<network> to indicate a physical network device or
@@ -1523,7 +1530,8 @@ I<mac> allows to specify the MAC address of the network interface.
 I<script> allows to specify a path to a script handling a bridge instead of
 the default one.
 I<model> allows to specify the model type.
-I<persistent> indicates the changes will affect the next boot of the domain.
+I<--config> indicates the changes will affect the next boot of the domain,
+for compatibility purposes, I<--persistent> is alias of I<--config>.
 I<inbound> and I<outbound> control the bandwidth of the interface. I<peak>
 and I<burst> are optional, so "average,peak", "average,,burst" and
 "average" are also legal.
@@ -1532,34 +1540,45 @@ B<Note>: the optional target value is the name of a device to be created
 as the back-end on the node. If not provided a device named "vnetN" or "vifN"
 will be created automatically.
 
-=item B<detach-device> I<domain-id> I<FILE>
+=item B<detach-device> I<domain-id> I<FILE> [I<--config>]
 
 Detach a device from the domain, takes the same kind of XML descriptions
 as command B<attach-device>.
+If I<--config> is specified, alter persistent configuration, effect observed
+on next boot, for compatibility purposes, I<--persistent> is alias of
+I<--config>.
 For passthrough host devices, see also B<nodedev-reattach>, needed if
 the device does not use managed mode.
 
-=item B<detach-disk> I<domain-id> I<target>
+=item B<detach-disk> I<domain-id> I<target> [I<--config>]
 
 Detach a disk device from a domain. The I<target> is the device as seen
 from the domain.
+If I<--config> is specified, alter persistent configuration, effect observed
+on next boot, for compatibility purposes, I<--persistent> is alias of
+I<--config>.
 
-=item B<detach-interface> I<domain-id> I<type> [I<--mac mac>]
+=item B<detach-interface> I<domain-id> I<type> [I<--mac mac>] [I<--config>]
 
 Detach a network interface from a domain.
 I<type> can be either I<network> to indicate a physical network device or
 I<bridge> to indicate a bridge to a device. It is recommended to use the
 I<mac> option to distinguish between the interfaces if more than one are
 present on the domain.
+If I<--config> is specified, alter persistent configuration, effect observed
+on next boot, for compatibility purposes, I<--persistent> is alias of
+I<--config>.
 
-=item B<update-device> I<domain-id> I<file> [I<--persistent>] [I<--force>]
+=item B<update-device> I<domain-id> I<file> [I<--config>] [I<--force>]
 
 Update the characteristics of a device associated with I<domain-id>, based on
-the device definition in an XML I<file>.  If the I<--persistent> option is
-used, the changes will affect the next boot of the domain. The I<--force>
-option can be used to force device update, e.g., to eject a CD-ROM even if it
-is locked/mounted in the domain. See the documentation to learn about libvirt
-XML format for a device.
+the device definition in an XML I<file>.
+If the I<--config> option is used, the changes will affect the next boot of
+the domain, for compatibility purposes, I<--persistent> is alias of
+I<--config>.
+The I<--force> option can be used to force device update, e.g., to eject a
+CD-ROM even if it is locked/mounted in the domain. See the documentation to
+learn about libvirt XML format for a device.
 
 =item B<change-media> I<domain-id> I<path> [I<--eject>] [I<--insert>]
 [I<--update>] [I<source>] [I<--force>] [[I<--live>] [I<--config>] | [I<--current>]]

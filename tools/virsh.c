@@ -1643,7 +1643,8 @@ static const vshCmdOptDef opts_domif_setlink[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, N_("interface device (MAC Address)")},
     {"state", VSH_OT_DATA, VSH_OFLAG_REQ, N_("new state of the device")},
-    {"persistent", VSH_OT_BOOL, 0, N_("persist interface state")},
+    {"persistent", VSH_OT_ALIAS, 0, "config"},
+    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1658,7 +1659,7 @@ cmdDomIfSetLink (vshControl *ctl, const vshCmd *cmd)
     unsigned char macaddr[VIR_MAC_BUFLEN];
     const char *element;
     const char *attr;
-    bool persistent;
+    bool config;
     bool ret = false;
     unsigned int flags = 0;
     int i;
@@ -1680,7 +1681,7 @@ cmdDomIfSetLink (vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "state", &state) <= 0)
         goto cleanup;
 
-    persistent = vshCommandOptBool(cmd, "persistent");
+    config = vshCommandOptBool(cmd, "config");
 
     if (STRNEQ(state, "up") && STRNEQ(state, "down")) {
         vshError(ctl, _("invalid link state '%s'"), state);
@@ -1688,13 +1689,13 @@ cmdDomIfSetLink (vshControl *ctl, const vshCmd *cmd)
     }
 
     /* get persistent or live description of network device */
-    desc = virDomainGetXMLDesc(dom, persistent?VIR_DOMAIN_XML_INACTIVE:0);
+    desc = virDomainGetXMLDesc(dom, config ? VIR_DOMAIN_XML_INACTIVE : 0);
     if (desc == NULL) {
         vshError(ctl, _("Failed to get domain description xml"));
         goto cleanup;
     }
 
-    if (persistent)
+    if (config)
         flags = VIR_DOMAIN_AFFECT_CONFIG;
     else
         flags = VIR_DOMAIN_AFFECT_LIVE;
@@ -1818,7 +1819,8 @@ static const vshCmdInfo info_domif_getlink[] = {
 static const vshCmdOptDef opts_domif_getlink[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, N_("interface device (MAC Address)")},
-    {"persistent", VSH_OT_BOOL, 0, N_("Get persistent interface state")},
+    {"persistent", VSH_OT_ALIAS, 0, "config"},
+    {"config", VSH_OT_BOOL, 0, N_("Get persistent interface state")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1852,7 +1854,7 @@ cmdDomIfGetLink (vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (vshCommandOptBool(cmd, "persistent"))
+    if (vshCommandOptBool(cmd, "config"))
         flags = VIR_DOMAIN_XML_INACTIVE;
 
     desc = virDomainGetXMLDesc(dom, flags);
@@ -13460,7 +13462,8 @@ static const vshCmdInfo info_attach_device[] = {
 static const vshCmdOptDef opts_attach_device[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"file",   VSH_OT_DATA, VSH_OFLAG_REQ, N_("XML file")},
-    {"persistent", VSH_OT_BOOL, 0, N_("persist device attachment")},
+    {"persistent", VSH_OT_ALIAS, 0, "config"},
+    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
     {NULL, 0, 0, NULL}
 };
 
@@ -13490,7 +13493,7 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (vshCommandOptBool(cmd, "persistent")) {
+    if (vshCommandOptBool(cmd, "config")) {
         flags = VIR_DOMAIN_AFFECT_CONFIG;
         if (virDomainIsActive(dom) == 1)
            flags |= VIR_DOMAIN_AFFECT_LIVE;
@@ -13771,7 +13774,8 @@ static const vshCmdInfo info_detach_device[] = {
 static const vshCmdOptDef opts_detach_device[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"file",   VSH_OT_DATA, VSH_OFLAG_REQ, N_("XML file")},
-    {"persistent", VSH_OT_BOOL, 0, N_("persist device detachment")},
+    {"persistent", VSH_OT_ALIAS, 0, "config"},
+    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
     {NULL, 0, 0, NULL}
 };
 
@@ -13799,7 +13803,7 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (vshCommandOptBool(cmd, "persistent")) {
+    if (vshCommandOptBool(cmd, "config")) {
         flags = VIR_DOMAIN_AFFECT_CONFIG;
         if (virDomainIsActive(dom) == 1)
            flags |= VIR_DOMAIN_AFFECT_LIVE;
@@ -13835,7 +13839,8 @@ static const vshCmdInfo info_update_device[] = {
 static const vshCmdOptDef opts_update_device[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"file",   VSH_OT_DATA, VSH_OFLAG_REQ, N_("XML file")},
-    {"persistent", VSH_OT_BOOL, 0, N_("persist device update")},
+    {"persistent", VSH_OT_ALIAS, 0, "config"},
+    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
     {"force",  VSH_OT_BOOL, 0, N_("force device update")},
     {NULL, 0, 0, NULL}
 };
@@ -13866,7 +13871,7 @@ cmdUpdateDevice(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (vshCommandOptBool(cmd, "persistent")) {
+    if (vshCommandOptBool(cmd, "config")) {
         flags = VIR_DOMAIN_AFFECT_CONFIG;
         if (virDomainIsActive(dom) == 1)
            flags |= VIR_DOMAIN_AFFECT_LIVE;
@@ -13910,7 +13915,8 @@ static const vshCmdOptDef opts_attach_interface[] = {
     {"mac",    VSH_OT_DATA, 0, N_("MAC address")},
     {"script", VSH_OT_DATA, 0, N_("script used to bridge network interface")},
     {"model", VSH_OT_DATA, 0, N_("model type")},
-    {"persistent", VSH_OT_BOOL, 0, N_("persist interface attachment")},
+    {"persistent", VSH_OT_ALIAS, 0, "config"},
+    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
     {"inbound", VSH_OT_DATA, VSH_OFLAG_NONE, N_("control domain's incoming traffics")},
     {"outbound", VSH_OT_DATA, VSH_OFLAG_NONE, N_("control domain's outgoing traffics")},
     {NULL, 0, 0, NULL}
@@ -14067,7 +14073,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 
     xml = virBufferContentAndReset(&buf);
 
-    if (vshCommandOptBool(cmd, "persistent")) {
+    if (vshCommandOptBool(cmd, "config")) {
         flags = VIR_DOMAIN_AFFECT_CONFIG;
         if (virDomainIsActive(dom) == 1)
             flags |= VIR_DOMAIN_AFFECT_LIVE;
@@ -14105,7 +14111,8 @@ static const vshCmdOptDef opts_detach_interface[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"type",   VSH_OT_DATA, VSH_OFLAG_REQ, N_("network interface type")},
     {"mac",    VSH_OT_STRING, 0, N_("MAC address")},
-    {"persistent", VSH_OT_BOOL, 0, N_("persist interface detachment")},
+    {"persistent", VSH_OT_ALIAS, 0, "config"},
+    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
     {NULL, 0, 0, NULL}
 };
 
@@ -14199,7 +14206,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (vshCommandOptBool(cmd, "persistent")) {
+    if (vshCommandOptBool(cmd, "config")) {
         flags = VIR_DOMAIN_AFFECT_CONFIG;
         if (virDomainIsActive(dom) == 1)
             flags |= VIR_DOMAIN_AFFECT_LIVE;
@@ -14246,7 +14253,8 @@ static const vshCmdOptDef opts_attach_disk[] = {
     {"cache",     VSH_OT_STRING, 0, N_("cache mode of disk device")},
     {"type",    VSH_OT_STRING, 0, N_("target device type")},
     {"mode",    VSH_OT_STRING, 0, N_("mode of device reading and writing")},
-    {"persistent", VSH_OT_BOOL, 0, N_("persist disk attachment")},
+    {"persistent", VSH_OT_ALIAS, 0, "config"},
+    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
     {"sourcetype", VSH_OT_STRING, 0, N_("type of source (block|file)")},
     {"serial", VSH_OT_STRING, 0, N_("serial of disk device")},
     {"shareable", VSH_OT_BOOL, 0, N_("shareable between domains")},
@@ -14555,7 +14563,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 
     xml = virBufferContentAndReset(&buf);
 
-    if (vshCommandOptBool(cmd, "persistent")) {
+    if (vshCommandOptBool(cmd, "config")) {
         flags = VIR_DOMAIN_AFFECT_CONFIG;
         if (virDomainIsActive(dom) == 1)
             flags |= VIR_DOMAIN_AFFECT_LIVE;
@@ -14805,7 +14813,8 @@ static const vshCmdInfo info_detach_disk[] = {
 static const vshCmdOptDef opts_detach_disk[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"target", VSH_OT_DATA, VSH_OFLAG_REQ, N_("target of disk device")},
-    {"persistent", VSH_OT_BOOL, 0, N_("persist disk detachment")},
+    {"persistent", VSH_OT_ALIAS, 0, "config"},
+    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
     {NULL, 0, 0, NULL}
 };
 
@@ -14841,7 +14850,7 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
                                        VSH_PREPARE_DISK_XML_NONE)))
         goto cleanup;
 
-    if (vshCommandOptBool(cmd, "persistent")) {
+    if (vshCommandOptBool(cmd, "config")) {
         flags = VIR_DOMAIN_AFFECT_CONFIG;
         if (virDomainIsActive(dom) == 1)
             flags |= VIR_DOMAIN_AFFECT_LIVE;
