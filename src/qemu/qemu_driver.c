@@ -5570,7 +5570,7 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
             return -1;
         }
 
-        VIR_FREE(vmdef->nets[pos]);
+        virDomainNetDefFree(vmdef->nets[pos]);
 
         vmdef->nets[pos] = net;
         dev->data.net = NULL;
