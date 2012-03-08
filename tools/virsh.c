@@ -313,6 +313,10 @@ static int vshCommandOptLongLong(const vshCmd *cmd, const char *name,
 static int vshCommandOptULongLong(const vshCmd *cmd, const char *name,
                                   unsigned long long *value)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
+static int vshCommandOptScaledInt(const vshCmd *cmd, const char *name,
+                                  unsigned long long *value, int scale,
+                                  unsigned long long max)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
 static bool vshCommandOptBool(const vshCmd *cmd, const char *name);
 static const vshCmdOpt *vshCommandOptArgv(const vshCmd *cmd,
                                           const vshCmdOpt *opt);
@@ -7625,9 +7629,10 @@ static const vshCmdInfo info_block_resize[] = {
 
 static const vshCmdOptDef opts_block_resize[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"path", VSH_OT_DATA, VSH_OFLAG_REQ, N_("Fully-qualified path of block device")},
-    {"size", VSH_OT_INT, VSH_OFLAG_REQ, N_("New size of the block device in kilobytes, "
-                                           "the size must be integer")},
+    {"path", VSH_OT_DATA, VSH_OFLAG_REQ,
+     N_("Fully-qualified path of block device")},
+    {"size", VSH_OT_INT, VSH_OFLAG_REQ,
+     N_("New size of the block device, as scaled integer (default KiB)")},
     {NULL, 0, 0, NULL}
 };
 
@@ -7648,15 +7653,16 @@ cmdBlockResize(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (vshCommandOptULongLong(cmd, "size", &size) < 0) {
+    if (vshCommandOptScaledInt(cmd, "size", &size, 1024, ULLONG_MAX) < 0) {
         vshError(ctl, "%s", _("Unable to parse integer"));
         return false;
     }
 
-    if (size > ULLONG_MAX / 1024) {
-        vshError(ctl, _("Size must be less than %llu"), ULLONG_MAX / 1024);
-        return false;
-    }
+    /* Prefer the older interface of KiB.  */
+    if (size % 1024 == 0)
+        size /= 1024;
+    else
+        flags |= VIR_DOMAIN_BLOCK_RESIZE_BYTES;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -11046,43 +11052,26 @@ static const vshCmdInfo info_vol_create_as[] = {
 static const vshCmdOptDef opts_vol_create_as[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool name")},
     {"name", VSH_OT_DATA, VSH_OFLAG_REQ, N_("name of the volume")},
-    {"capacity", VSH_OT_DATA, VSH_OFLAG_REQ, N_("size of the vol with optional k,M,G,T suffix")},
-    {"allocation", VSH_OT_STRING, 0, N_("initial allocation size with optional k,M,G,T suffix")},
-    {"format", VSH_OT_STRING, 0, N_("file format type raw,bochs,qcow,qcow2,vmdk")},
-    {"backing-vol", VSH_OT_STRING, 0, N_("the backing volume if taking a snapshot")},
-    {"backing-vol-format", VSH_OT_STRING, 0, N_("format of backing volume if taking a snapshot")},
+    {"capacity", VSH_OT_DATA, VSH_OFLAG_REQ,
+     N_("size of the vol, as scaled integer (default bytes)")},
+    {"allocation", VSH_OT_STRING, 0,
+     N_("initial allocation size, as scaled integer (default bytes)")},
+    {"format", VSH_OT_STRING, 0,
+     N_("file format type raw,bochs,qcow,qcow2,vmdk")},
+    {"backing-vol", VSH_OT_STRING, 0,
+     N_("the backing volume if taking a snapshot")},
+    {"backing-vol-format", VSH_OT_STRING, 0,
+     N_("format of backing volume if taking a snapshot")},
     {NULL, 0, 0, NULL}
 };
 
-static int cmdVolSize(const char *data, unsigned long long *val)
+static int
+vshVolSize(const char *data, unsigned long long *val)
 {
     char *end;
     if (virStrToLong_ull(data, &end, 10, val) < 0)
         return -1;
-
-    if (end && *end) {
-        /* Deliberate fallthrough cases here :-) */
-        switch (*end) {
-        case 'T':
-            *val *= 1024;
-            /* fallthrough */
-        case 'G':
-            *val *= 1024;
-            /* fallthrough */
-        case 'M':
-            *val *= 1024;
-            /* fallthrough */
-        case 'k':
-            *val *= 1024;
-            break;
-        default:
-            return -1;
-        }
-        end++;
-        if (*end)
-            return -1;
-    }
-    return 0;
+    return virScaleInteger(val, end, 1, ULLONG_MAX);
 }
 
 static bool
@@ -11108,11 +11097,11 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptString(cmd, "capacity", &capacityStr) <= 0)
         goto cleanup;
-    if (cmdVolSize(capacityStr, &capacity) < 0)
+    if (vshVolSize(capacityStr, &capacity) < 0)
         vshError(ctl, _("Malformed size %s"), capacityStr);
 
     if ((vshCommandOptString(cmd, "allocation", &allocationStr) > 0) &&
-        (cmdVolSize(allocationStr, &allocation) < 0))
+        (vshVolSize(allocationStr, &allocation) < 0))
         vshError(ctl, _("Malformed size %s"), allocationStr);
 
     if (vshCommandOptString(cmd, "format", &format) < 0 ||
@@ -11908,7 +11897,7 @@ static const vshCmdInfo info_vol_resize[] = {
 static const vshCmdOptDef opts_vol_resize[] = {
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("vol name, key or path")},
     {"capacity", VSH_OT_DATA, VSH_OFLAG_REQ,
-     N_("new capacity for the vol with optional k,M,G,T suffix")},
+     N_("new capacity for the vol, as scaled integer (default bytes)")},
     {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {"allocate", VSH_OT_BOOL, 0,
      N_("allocate the new capacity, rather than leaving it sparse")},
@@ -11945,17 +11934,21 @@ cmdVolResize(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptString(cmd, "capacity", &capacityStr) <= 0)
         goto cleanup;
-    if (delta && *capacityStr == '-') {
-        if (cmdVolSize(capacityStr + 1, &capacity) < 0) {
-            vshError(ctl, _("Malformed size %s"), capacityStr);
+    virSkipSpaces(&capacityStr);
+    if (*capacityStr == '-') {
+        /* The API always requires a positive value; but we allow a
+         * negative value for convenience.  */
+        if (delta && vshCommandOptBool(cmd, "shrink")){
+            capacityStr++;
+        } else {
+            vshError(ctl, "%s",
+                     _("negative size requires --delta and --shrink"));
             goto cleanup;
         }
-        capacity = -capacity;
-    } else {
-        if (cmdVolSize(capacityStr, &capacity) < 0) {
-            vshError(ctl, _("Malformed size %s"), capacityStr);
-            goto cleanup;
-        }
+    }
+    if (vshVolSize(capacityStr, &capacity) < 0) {
+        vshError(ctl, _("Malformed size %s"), capacityStr);
+        goto cleanup;
     }
 
     if (virStorageVolResize(vol, capacity, flags) == 0) {
@@ -18002,6 +17995,36 @@ vshCommandOptULongLong(const vshCmd *cmd, const char *name,
         return 1;
     }
     return -1;
+}
+
+
+/**
+ * vshCommandOptScaledInt:
+ * @cmd command reference
+ * @name option name
+ * @value result
+ * @scale default of 1 or 1024, if no suffix is present
+ * @max maximum value permitted
+ *
+ * Returns option as long long, scaled according to suffix
+ * See vshCommandOptInt()
+ */
+static int
+vshCommandOptScaledInt(const vshCmd *cmd, const char *name,
+                       unsigned long long *value, int scale,
+                       unsigned long long max)
+{
+    const char *str;
+    int ret;
+    char *end;
+
+    ret = vshCommandOptString(cmd, name, &str);
+    if (ret <= 0)
+        return ret;
+    if (virStrToLong_ull(str, &end, 10, value) < 0 ||
+        virScaleInteger(value, end, scale, max) < 0)
+        return -1;
+    return 1;
 }
 
 

@@ -121,6 +121,25 @@ version of B<virsh> supported an alternate spelling of a command or
 option (such as I<--tunnelled> instead of I<--tunneled>), then
 scripts using that older spelling will continue to work.
 
+Several B<virsh> commands take an optionally scaled integer; if no
+scale is provided, then the default is listed in the command (for
+historical reasons, some commands default to bytes, while other
+commands default to kibibytes).  The following case-insensitive
+suffixes can be used to select a specfic scale:
+  b, byte  byte      1
+  KB       kilobyte  1,000
+  k, KiB   kibibyte  1,024
+  MB       megabyte  1,000,000
+  M, MiB   mebibyte  1,048,576
+  GB       gigabyte  1,000,000,000
+  G, GiB   gibibyte  1,073,741,824
+  TB       terabyte  1,000,000,000,000
+  T, TiB   tebibyte  1,099,511,627,776
+  PB       petabyte  1,000,000,000,000,000
+  P, PiB   pebibyte  1,125,899,906,842,624
+  EB       exabyte   1,000,000,000,000,000,000
+  E, EiB   exbibyte  1,152,921,504,606,846,976
+
 =head1 GENERIC COMMANDS
 
 The following commands are generic i.e. not specific to a domain.
@@ -663,11 +682,14 @@ If I<--info> is specified, the active job information on the specified
 disk will be printed.
 I<bandwidth> can be used to set bandwidth limit for the active job.
 
-=item B<blockresize> I<domain> I<--path> I<--size>
+=item B<blockresize> I<domain> I<path> I<size>
 
-Resize a block device of domain while the domain is running, I<--path>
-specifies the absolute path of the block device, I<--size> specifies the
-new size in kilobytes
+Resize a block device of domain while the domain is running, I<path>
+specifies the absolute path of the block device, I<size> is a scaled
+integer (see B<NOTES> above) which defaults to KiB (blocks of 1024 bytes)
+if there is no suffix.  You must use a suffix of "B" to get bytes (note
+that for historical reasons, this differs from B<vol-resize> which
+defaults to bytes without a suffix).
 
 =item B<dominfo> I<domain-id>
 
@@ -2024,10 +2046,10 @@ Create a volume from a set of arguments.
 I<pool-or-uuid> is the name or UUID of the storage pool to create the volume
 in.
 I<name> is the name of the new volume.
-I<capacity> is the size of the volume to be created, with optional k, M, G, or
-T suffix.
-I<--allocation> I<size> is the initial size to be allocated in the volume, with
-optional k, M, G, or T suffix.
+I<capacity> is the size of the volume to be created, as a scaled integer
+(see B<NOTES> above), defaulting to bytes if there is no suffix.
+I<--allocation> I<size> is the initial size to be allocated in the volume,
+also as a scaled integer defaulting to bytes.
 I<--format> I<string> is used in file based storage pools to specify the volume
 file format to use; raw, bochs, qcow, qcow2, vmdk.
 I<--backing-vol> I<vol-name-or-key-or-path> is the source backing
@@ -2163,7 +2185,12 @@ is in. I<vol-name-or-key-or-path> is the name or key or path of the volume
 to resize.  The new capacity might be sparse unless I<--allocate> is
 specified.  Normally, I<capacity> is the new size, but if I<--delta>
 is present, then it is added to the existing size.  Attempts to shrink
-the volume will fail unless I<--shrink> is present.
+the volume will fail unless I<--shrink> is present; I<capacity> cannot
+be negative unless I<--shrink> is provided, but a negative sign is not
+necessary. I<capacity> is a scaled integer (see B<NOTES> above), which
+defaults to bytes if there is no suffix.  This command is only safe
+for storage volumes not in use by an active guest; see also
+B<blockresize> for live resizing.
 
 =back
 
