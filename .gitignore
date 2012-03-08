@@ -54,7 +54,6 @@
 /daemon/libvirtd.8
 /daemon/libvirtd.8.in
 /daemon/libvirtd.pod
-/daemon/probes.h
 /docs/devhelp/libvirt.devhelp
 /docs/hvsupport.html.in
 /docs/libvirt-api.xml
