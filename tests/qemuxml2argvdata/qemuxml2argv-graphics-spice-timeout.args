@@ -10,6 +10,6 @@ LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=spice \
 -device rtl8139,vlan=0,id=net0,mac=52:54:00:71:70:89,bus=pci.0,addr=0x7 \
 -net tap,script=/etc/qemu-ifup,vlan=0,name=hostnet0 -serial pty \
 -usb -device usb-tablet,id=input0 \
--spice port=5900,tls-port=0,x509-dir=/etc/pki/libvirt-spice -vga std \
+-spice port=5900,x509-dir=/etc/pki/libvirt-spice -vga std \
 -device AC97,id=sound0,bus=pci.0,addr=0x3 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x5
