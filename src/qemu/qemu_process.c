@@ -1633,11 +1633,47 @@ qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm)
 }
 #endif
 
+#if defined(NUMAD)
+static char *
+qemuGetNumadAdvice(virDomainDefPtr def)
+{
+    virCommandPtr cmd = NULL;
+    char *args = NULL;
+    char *output = NULL;
+
+    if (virAsprintf(&args, "%d:%lu", def->vcpus, def->mem.cur_balloon) < 0) {
+        virReportOOMError();
+        goto out;
+    }
+    cmd = virCommandNewArgList(NUMAD, "-w", args, NULL);
+
+    virCommandSetOutputBuffer(cmd, &output);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Failed to query numad for the advisory nodeset"));
+
+out:
+    VIR_FREE(args);
+    virCommandFree(cmd);
+    return output;
+}
+#else
+static char *
+qemuGetNumadAdvice(virDomainDefPtr def ATTRIBUTE_UNUSED)
+{
+    qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                    _("numad is not available on this host"));
+    return NULL;
+}
+#endif
+
 /*
  * To be run between fork/exec of QEMU only
  */
 static int
-qemuProcessInitCpuAffinity(virDomainObjPtr vm)
+qemuProcessInitCpuAffinity(struct qemud_driver *driver,
+                           virDomainObjPtr vm)
 {
     int i, hostcpus, maxcpu = QEMUD_CPUMASK_LEN;
     virNodeInfo nodeinfo;
@@ -1661,19 +1697,53 @@ qemuProcessInitCpuAffinity(virDomainObjPtr vm)
         return -1;
     }
 
-    if (vm->def->cpumask) {
-        /* XXX why don't we keep 'cpumask' in the libvirt cpumap
-         * format to start with ?!?! */
-        for (i = 0 ; i < maxcpu && i < vm->def->cpumasklen ; i++)
-            if (vm->def->cpumask[i])
+    if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
+        char *tmp_cpumask = NULL;
+        char *nodeset = NULL;
+
+        nodeset = qemuGetNumadAdvice(vm->def);
+        if (!nodeset)
+            return -1;
+
+        if (VIR_ALLOC_N(tmp_cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0) {
+            virReportOOMError();
+            return -1;
+        }
+
+        if (virDomainCpuSetParse(nodeset, 0, tmp_cpumask,
+                                 VIR_DOMAIN_CPUMASK_LEN) < 0) {
+            VIR_FREE(tmp_cpumask);
+            VIR_FREE(nodeset);
+            return -1;
+        }
+
+        for (i = 0; i < maxcpu && i < VIR_DOMAIN_CPUMASK_LEN; i++) {
+            if (tmp_cpumask[i])
                 VIR_USE_CPU(cpumap, i);
+        }
+
+        VIR_FREE(vm->def->cpumask);
+        vm->def->cpumask = tmp_cpumask;
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
+            VIR_WARN("Unable to save status on vm %s after state change",
+                     vm->def->name);
+        }
+        VIR_FREE(nodeset);
     } else {
-        /* You may think this is redundant, but we can't assume libvirtd
-         * itself is running on all pCPUs, so we need to explicitly set
-         * the spawned QEMU instance to all pCPUs if no map is given in
-         * its config file */
-        for (i = 0 ; i < maxcpu ; i++)
-            VIR_USE_CPU(cpumap, i);
+        if (vm->def->cpumask) {
+            /* XXX why don't we keep 'cpumask' in the libvirt cpumap
+             * format to start with ?!?! */
+            for (i = 0 ; i < maxcpu && i < vm->def->cpumasklen ; i++)
+                if (vm->def->cpumask[i])
+                    VIR_USE_CPU(cpumap, i);
+        } else {
+            /* You may think this is redundant, but we can't assume libvirtd
+             * itself is running on all pCPUs, so we need to explicitly set
+             * the spawned QEMU instance to all pCPUs if no map is given in
+             * its config file */
+            for (i = 0 ; i < maxcpu ; i++)
+                VIR_USE_CPU(cpumap, i);
+        }
     }
 
     /* We are pressuming we are running between fork/exec of QEMU
@@ -2404,7 +2474,7 @@ static int qemuProcessHook(void *data)
     /* This must be done after cgroup placement to avoid resetting CPU
      * affinity */
     VIR_DEBUG("Setup CPU affinity");
-    if (qemuProcessInitCpuAffinity(h->vm) < 0)
+    if (qemuProcessInitCpuAffinity(h->driver, h->vm) < 0)
         goto cleanup;
 
     if (qemuProcessInitNumaMemoryPolicy(h->vm) < 0)

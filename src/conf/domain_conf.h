@@ -1394,6 +1394,14 @@ enum virDomainTimerModeType {
     VIR_DOMAIN_TIMER_MODE_LAST,
 };
 
+enum virDomainCpuPlacementMode {
+    VIR_DOMAIN_CPU_PLACEMENT_MODE_DEFAULT = 0,
+    VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
+    VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO,
+
+    VIR_DOMAIN_CPU_PLACEMENT_MODE_LAST,
+};
+
 typedef struct _virDomainTimerCatchupDef virDomainTimerCatchupDef;
 typedef virDomainTimerCatchupDef *virDomainTimerCatchupDefPtr;
 struct _virDomainTimerCatchupDef {
@@ -1520,6 +1528,7 @@ struct _virDomainDef {
     } mem;
     unsigned short vcpus;
     unsigned short maxvcpus;
+    int placement_mode;
     int cpumasklen;
     char *cpumask;
 
@@ -2161,6 +2170,7 @@ VIR_ENUM_DECL(virDomainTimerName)
 VIR_ENUM_DECL(virDomainTimerTrack)
 VIR_ENUM_DECL(virDomainTimerTickpolicy)
 VIR_ENUM_DECL(virDomainTimerMode)
+VIR_ENUM_DECL(virDomainCpuPlacementMode)
 
 VIR_ENUM_DECL(virDomainStartupPolicy)
 

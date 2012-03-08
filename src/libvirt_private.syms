@@ -271,6 +271,8 @@ virDomainControllerModelSCSITypeToString;
 virDomainControllerModelUSBTypeFromString;
 virDomainControllerModelUSBTypeToString;
 virDomainControllerTypeToString;
+virDomainCpuPlacementTypeFromString;
+virDomainCpuPlacementTypeToString;
 virDomainCpuSetFormat;
 virDomainCpuSetParse;
 virDomainDefAddImplicitControllers;

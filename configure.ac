@@ -1445,6 +1445,14 @@ AM_CONDITIONAL([HAVE_NUMACTL], [test "$with_numactl" != "no"])
 AC_SUBST([NUMACTL_CFLAGS])
 AC_SUBST([NUMACTL_LIBS])
 
+dnl Do we have numad?
+if test "$with_qemu" = "yes"; then
+    AC_PATH_PROG([NUMAD], [numad], [], [/bin:/usr/bin:/usr/local/bin:$PATH])
+
+    if test -n "$NUMAD"; then
+        AC_DEFINE_UNQUOTED([NUMAD],["$NUMAD"], [Location or name of the numad program])
+    fi
+fi
 
 dnl pcap lib
 LIBPCAP_CONFIG="pcap-config"

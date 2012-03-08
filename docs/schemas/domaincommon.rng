@@ -488,6 +488,14 @@
       <optional>
         <element name="vcpu">
           <optional>
+            <attribute name="placement">
+              <choice>
+                <value>static</value>
+                <value>auto</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
             <attribute name="cpuset">
               <ref name="cpuset"/>
             </attribute>
