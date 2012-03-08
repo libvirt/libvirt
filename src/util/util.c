@@ -724,8 +724,13 @@ virFileAccessibleAs(const char *path, int mode,
                 return -1;
         }
 
+        if (!WIFEXITED(status)) {
+            errno = EINTR;
+            return -1;
+        }
+
         if (status) {
-            errno = status;
+            errno = WEXITSTATUS(status);
             return -1;
         }
 
