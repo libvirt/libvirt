@@ -1629,6 +1629,7 @@ qemuSafeSerialParamValue(const char *value)
     return 0;
 }
 
+
 static int
 qemuBuildRBDString(virConnectPtr conn,
                    virDomainDiskDefPtr disk,
@@ -1639,9 +1640,9 @@ qemuBuildRBDString(virConnectPtr conn,
     char *secret = NULL;
     size_t secret_size;
 
-    virBufferAsprintf(opt, "rbd:%s", disk->src);
+    virBufferEscape(opt, ',', ",", "rbd:%s", disk->src);
     if (disk->auth.username) {
-        virBufferEscape(opt, ":", ":id=%s", disk->auth.username);
+        virBufferEscape(opt, '\\', ":", ":id=%s", disk->auth.username);
         /* look up secret */
         switch (disk->auth.secretType) {
         case VIR_DOMAIN_DISK_SECRET_TYPE_UUID:
@@ -1672,7 +1673,8 @@ qemuBuildRBDString(virConnectPtr conn,
                 virReportOOMError();
                 goto error;
             }
-            virBufferEscape(opt, ":", ":key=%s:auth_supported=cephx none",
+            virBufferEscape(opt, '\\', ":",
+                            ":key=%s:auth_supported=cephx none",
                             base64);
             VIR_FREE(base64);
         } else {
@@ -1923,9 +1925,10 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                 goto error;
             }
             if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
-                virBufferAsprintf(&opt, "file=fat:floppy:%s,", disk->src);
+                virBufferEscape(&opt, ',', ",", "file=fat:floppy:%s,",
+                                disk->src);
             else
-                virBufferAsprintf(&opt, "file=fat:%s,", disk->src);
+                virBufferEscape(&opt, ',', ",", "file=fat:%s,", disk->src);
         } else if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
             switch (disk->protocol) {
             case VIR_DOMAIN_DISK_PROTOCOL_NBD:
@@ -1944,17 +1947,19 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                 virBufferAddChar(&opt, ',');
                 break;
             case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
-                if (disk->nhosts == 0)
-                    virBufferAsprintf(&opt, "file=sheepdog:%s,", disk->src);
-                else
+                if (disk->nhosts == 0) {
+                    virBufferEscape(&opt, ',', ",", "file=sheepdog:%s,",
+                                    disk->src);
+                } else {
                     /* only one host is supported now */
-                    virBufferAsprintf(&opt, "file=sheepdog:%s:%s:%s,",
-                                      disk->hosts->name, disk->hosts->port,
-                                      disk->src);
+                    virBufferAsprintf(&opt, "file=sheepdog:%s:%s:",
+                                      disk->hosts->name, disk->hosts->port);
+                    virBufferEscape(&opt, ',', ",", "%s,", disk->src);
+                }
                 break;
             }
         } else {
-            virBufferAsprintf(&opt, "file=%s,", disk->src);
+            virBufferEscape(&opt, ',', ",", "file=%s,", disk->src);
         }
     }
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
@@ -2134,7 +2139,6 @@ error:
     virBufferFreeAndReset(&opt);
     return NULL;
 }
-
 
 char *
 qemuBuildDriveDevStr(virDomainDefPtr def,
@@ -6130,7 +6134,14 @@ qemuParseKeywords(const char *str,
         char *keyword;
         char *value = NULL;
 
-        if (!(endmark = strchr(start, ',')))
+        endmark = start;
+        do {
+            /* Qemu accepts ',,' as an escape for a literal comma;
+             * skip past those here while searching for the end of the
+             * value, then strip them down below */
+            endmark = strchr(endmark, ',');
+        } while (endmark && endmark[1] == ',' && (endmark += 2));
+        if (!endmark)
             endmark = end;
         if (!(separator = strchr(start, '=')))
             separator = end;
@@ -6152,6 +6163,16 @@ qemuParseKeywords(const char *str,
             if (!(value = strndup(separator, endmark - separator))) {
                 VIR_FREE(keyword);
                 goto no_memory;
+            }
+            if (strchr(value, ',')) {
+                char *p = strchr(value, ',') + 1;
+                char *q = p + 1;
+                while (*q) {
+                    if (*q == ',')
+                        q++;
+                    *p++ = *q++;
+                }
+                *p = '\0';
             }
         }
 

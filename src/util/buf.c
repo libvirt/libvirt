@@ -1,7 +1,7 @@
 /*
  * buf.c: buffers for libvirt
  *
- * Copyright (C) 2005-2008, 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2005-2008, 2010-2012 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -423,22 +423,23 @@ virBufferEscapeSexpr(virBufferPtr buf,
                      const char *format,
                      const char *str)
 {
-    virBufferEscape(buf, "\\'", format, str);
+    virBufferEscape(buf, '\\', "\\'", format, str);
 }
 
 /**
  * virBufferEscape:
  * @buf: the buffer to append to
+ * @escape: the escape character to inject
  * @toescape: NUL-terminated list of characters to escape
  * @format: a printf like format string but with only one %s parameter
  * @str: the string argument which needs to be escaped
  *
  * Do a formatted print with a single string to a buffer.  Any characters
- * in the provided list are escaped with a preceeding \.  Auto indentation
+ * in the provided list are escaped with the given escape.  Auto indentation
  * may be applied.
  */
 void
-virBufferEscape(virBufferPtr buf, const char *toescape,
+virBufferEscape(virBufferPtr buf, char escape, const char *toescape,
                 const char *format, const char *str)
 {
     int len;
@@ -471,7 +472,7 @@ virBufferEscape(virBufferPtr buf, const char *toescape,
          */
         char needle[2] = { *cur, 0 };
         if (strstr(toescape, needle))
-            *out++ = '\\';
+            *out++ = escape;
         *out++ = *cur;
         cur++;
     }

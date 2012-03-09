@@ -1,5 +1,5 @@
 LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M \
 pc -m 214 -smp 1 -nographic -monitor unix:/tmp/test-monitor,server,nowait \
--no-acpi -boot c -drive file=/dev/HostVG/QEMUGuest1,if=ide,bus=0,unit=0 -drive \
-file=sheepdog:example.org:6000:image,if=virtio,format=raw -net none -serial \
-none -parallel none -usb
+-no-acpi -boot c -drive file=/dev/HostVG/QEMU,,Guest,,,,1,if=ide,bus=0,unit=0 \
+-drive file=sheepdog:example.org:6000:image,,with,,commas,if=virtio,format=raw \
+-net none -serial none -parallel none -usb
