@@ -101,6 +101,9 @@
 
 #define QEMU_NB_NUMA_PARAM 2
 
+#define QEMU_NB_TOTAL_CPU_STAT_PARAM 3
+#define QEMU_NB_PER_CPU_STAT_PARAM 1
+
 #if HAVE_LINUX_KVM_H
 # include <linux/kvm.h>
 #endif
@@ -12145,11 +12148,10 @@ qemuDomainGetTotalcpuStats(virCgroupPtr group,
                            int nparams)
 {
     unsigned long long cpu_time;
-    int param_idx = 0;
     int ret;
 
     if (nparams == 0) /* return supported number of params */
-        return 1;
+        return QEMU_NB_TOTAL_CPU_STAT_PARAM;
     /* entry 0 is cputime */
     ret = virCgroupGetCpuacctUsage(group, &cpu_time);
     if (ret < 0) {
@@ -12157,9 +12159,35 @@ qemuDomainGetTotalcpuStats(virCgroupPtr group,
         return -1;
     }
 
-    virTypedParameterAssign(&params[param_idx], VIR_DOMAIN_CPU_STATS_CPUTIME,
-                            VIR_TYPED_PARAM_ULLONG, cpu_time);
-    return 1;
+    if (virTypedParameterAssign(&params[0], VIR_DOMAIN_CPU_STATS_CPUTIME,
+                                VIR_TYPED_PARAM_ULLONG, cpu_time) < 0)
+        return -1;
+
+    if (nparams > 1) {
+        unsigned long long user;
+        unsigned long long sys;
+
+        ret = virCgroupGetCpuacctStat(group, &user, &sys);
+        if (ret < 0) {
+            virReportSystemError(-ret, "%s", _("unable to get cpu account"));
+            return -1;
+        }
+
+        if (virTypedParameterAssign(&params[1],
+                                    VIR_DOMAIN_CPU_STATS_USERTIME,
+                                    VIR_TYPED_PARAM_ULLONG, user) < 0)
+            return -1;
+        if (nparams > 2 &&
+            virTypedParameterAssign(&params[2],
+                                    VIR_DOMAIN_CPU_STATS_SYSTEMTIME,
+                                    VIR_TYPED_PARAM_ULLONG, sys) < 0)
+            return -1;
+
+        if (nparams > QEMU_NB_TOTAL_CPU_STAT_PARAM)
+            nparams = QEMU_NB_TOTAL_CPU_STAT_PARAM;
+    }
+
+    return nparams;
 }
 
 static int
@@ -12180,7 +12208,7 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
 
     /* return the number of supported params */
     if (nparams == 0 && ncpus != 0)
-        return 1; /* only cpu_time is supported */
+        return QEMU_NB_PER_CPU_STAT_PARAM; /* only cpu_time is supported */
 
     /* return percpu cputime in index 0 */
     param_idx = 0;
@@ -12223,8 +12251,9 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
         if (i < start_cpu)
             continue;
         ent = &params[ (i - start_cpu) * nparams + param_idx];
-        virTypedParameterAssign(ent, VIR_DOMAIN_CPU_STATS_CPUTIME,
-                                VIR_TYPED_PARAM_ULLONG, cpu_time);
+        if (virTypedParameterAssign(ent, VIR_DOMAIN_CPU_STATS_CPUTIME,
+                                    VIR_TYPED_PARAM_ULLONG, cpu_time) < 0)
+            goto cleanup;
     }
     rv = param_idx + 1;
 cleanup:

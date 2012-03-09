@@ -1332,6 +1332,18 @@ int                     virDomainGetState       (virDomainPtr domain,
  */
 #define VIR_DOMAIN_CPU_STATS_CPUTIME "cpu_time"
 
+/**
+ * VIR_DOMAIN_CPU_STATS_USERTIME:
+ * cpu time charged to user instructions in nanoseconds, as a ullong
+ */
+#define VIR_DOMAIN_CPU_STATS_USERTIME "user_time"
+
+/**
+ * VIR_DOMAIN_CPU_STATS_SYSTEMTIME:
+ * cpu time charged to system instructions in nanoseconds, as a ullong
+ */
+#define VIR_DOMAIN_CPU_STATS_SYSTEMTIME "system_time"
+
 int virDomainGetCPUStats(virDomainPtr domain,
                          virTypedParameterPtr params,
                          unsigned int nparams,

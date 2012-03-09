@@ -5630,10 +5630,10 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
 
             for (j = 0; j < nparams; j++) {
                 pos = i * nparams + j;
-                vshPrint(ctl, "\t%-10s ", params[pos].field);
+                vshPrint(ctl, "\t%-12s ", params[pos].field);
                 if (STREQ(params[pos].field, VIR_DOMAIN_CPU_STATS_CPUTIME) &&
                     params[j].type == VIR_TYPED_PARAM_ULLONG) {
-                    vshPrint(ctl, "%lld.%09lld seconds\n",
+                    vshPrint(ctl, "%9lld.%09lld seconds\n",
                              params[pos].value.ul / 1000000000,
                              params[pos].value.ul % 1000000000);
                 } else {
@@ -5671,10 +5671,12 @@ do_show_total:
 
     vshPrint(ctl, _("Total:\n"));
     for (i = 0; i < nparams; i++) {
-        vshPrint(ctl, "\t%-10s ", params[i].field);
-        if (STREQ(params[i].field, VIR_DOMAIN_CPU_STATS_CPUTIME) &&
+        vshPrint(ctl, "\t%-12s ", params[i].field);
+        if ((STREQ(params[i].field, VIR_DOMAIN_CPU_STATS_CPUTIME) ||
+             STREQ(params[i].field, VIR_DOMAIN_CPU_STATS_USERTIME) ||
+             STREQ(params[i].field, VIR_DOMAIN_CPU_STATS_SYSTEMTIME)) &&
             params[i].type == VIR_TYPED_PARAM_ULLONG) {
-            vshPrint(ctl, "%llu.%09llu seconds\n",
+            vshPrint(ctl, "%9lld.%09lld seconds\n",
                      params[i].value.ul / 1000000000,
                      params[i].value.ul % 1000000000);
         } else {

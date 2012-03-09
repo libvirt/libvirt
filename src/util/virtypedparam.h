@@ -29,9 +29,10 @@ void virTypedParameterArrayClear(virTypedParameterPtr params, int nparams);
 
 int virTypedParameterArrayValidate(virTypedParameterPtr params, int nparams,
                                    /* const char *name, int type ... */ ...)
-    ATTRIBUTE_SENTINEL;
+    ATTRIBUTE_SENTINEL ATTRIBUTE_RETURN_CHECK;
 
 int virTypedParameterAssign(virTypedParameterPtr param, const char *name,
-                            int type, /* TYPE arg */ ...);
+                            int type, /* TYPE arg */ ...)
+    ATTRIBUTE_RETURN_CHECK;
 
 #endif /* __VIR_TYPED_PARAM_H */
