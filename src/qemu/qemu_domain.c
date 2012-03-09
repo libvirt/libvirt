@@ -47,6 +47,10 @@
 
 #define QEMU_NAMESPACE_HREF "http://libvirt.org/schemas/domain/qemu/1.0"
 
+#define QEMU_DOMAIN_FORMAT_LIVE_FLAGS       \
+    (VIR_DOMAIN_XML_SECURE |                \
+     VIR_DOMAIN_XML_UPDATE_CPU)
+
 VIR_ENUM_DECL(qemuDomainJob)
 VIR_ENUM_IMPL(qemuDomainJob, QEMU_JOB_LAST,
               "none",
@@ -1192,6 +1196,19 @@ char *qemuDomainFormatXML(struct qemud_driver *driver,
     return qemuDomainDefFormatXML(driver, def, flags);
 }
 
+char *
+qemuDomainDefFormatLive(struct qemud_driver *driver,
+                        virDomainDefPtr def,
+                        bool inactive)
+{
+    unsigned int flags = QEMU_DOMAIN_FORMAT_LIVE_FLAGS;
+
+    if (inactive)
+        flags |= VIR_DOMAIN_XML_INACTIVE;
+
+    return qemuDomainDefFormatXML(driver, def, flags);
+}
+
 
 void qemuDomainObjTaint(struct qemud_driver *driver,
                         virDomainObjPtr obj,
@@ -1436,11 +1453,9 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     newxml = virDomainSnapshotDefFormat(uuidstr, snapshot->def,
-                                        VIR_DOMAIN_XML_SECURE, 1);
-    if (newxml == NULL) {
-        virReportOOMError();
+                                        QEMU_DOMAIN_FORMAT_LIVE_FLAGS, 1);
+    if (newxml == NULL)
         return -1;
-    }
 
     if (virAsprintf(&snapDir, "%s/%s", snapshotDir, vm->def->name) < 0) {
         virReportOOMError();

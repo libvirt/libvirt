@@ -1092,13 +1092,9 @@ char *qemuMigrationBegin(struct qemud_driver *driver,
         if (!virDomainDefCheckABIStability(vm->def, def))
             goto cleanup;
 
-        rv = qemuDomainDefFormatXML(driver, def,
-                                    VIR_DOMAIN_XML_SECURE |
-                                    VIR_DOMAIN_XML_UPDATE_CPU);
+        rv = qemuDomainDefFormatLive(driver, def, false);
     } else {
-        rv = qemuDomainFormatXML(driver, vm,
-                                 VIR_DOMAIN_XML_SECURE |
-                                 VIR_DOMAIN_XML_UPDATE_CPU);
+        rv = qemuDomainDefFormatLive(driver, vm->def, false);
     }
 
 cleanup:

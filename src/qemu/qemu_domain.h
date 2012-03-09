@@ -232,6 +232,10 @@ char *qemuDomainFormatXML(struct qemud_driver *driver,
                           virDomainObjPtr vm,
                           unsigned int flags);
 
+char *qemuDomainDefFormatLive(struct qemud_driver *driver,
+                              virDomainDefPtr def,
+                              bool inactive);
+
 void qemuDomainObjTaint(struct qemud_driver *driver,
                         virDomainObjPtr obj,
                         enum virDomainTaintFlags taint,

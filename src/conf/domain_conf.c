@@ -13561,7 +13561,8 @@ char *virDomainSnapshotDefFormat(const char *domain_uuid,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int i;
 
-    virCheckFlags(VIR_DOMAIN_XML_SECURE, NULL);
+    virCheckFlags(VIR_DOMAIN_XML_SECURE |
+                  VIR_DOMAIN_XML_UPDATE_CPU, NULL);
 
     flags |= VIR_DOMAIN_XML_INACTIVE;
 

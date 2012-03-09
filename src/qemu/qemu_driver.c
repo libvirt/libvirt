@@ -2587,11 +2587,9 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
             virDomainDefFree(def);
             goto endjob;
         }
-        xml = virDomainDefFormat(def, (VIR_DOMAIN_XML_INACTIVE |
-                                       VIR_DOMAIN_XML_SECURE));
+        xml = qemuDomainDefFormatLive(driver, def, true);
     } else {
-        xml = virDomainDefFormat(vm->def, (VIR_DOMAIN_XML_INACTIVE |
-                                           VIR_DOMAIN_XML_SECURE));
+        xml = qemuDomainDefFormatLive(driver, vm->def, true);
     }
     if (!xml) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
@@ -10173,8 +10171,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     } else {
         /* Easiest way to clone inactive portion of vm->def is via
          * conversion in and back out of xml.  */
-        if (!(xml = virDomainDefFormat(vm->def, (VIR_DOMAIN_XML_INACTIVE |
-                                                 VIR_DOMAIN_XML_SECURE))) ||
+        if (!(xml = qemuDomainDefFormatLive(driver, vm->def, true)) ||
             !(def->dom = virDomainDefParseString(driver->caps, xml,
                                                  QEMU_EXPECTED_VIRT_TYPES,
                                                  VIR_DOMAIN_XML_INACTIVE)))
