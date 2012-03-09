@@ -347,7 +347,6 @@
     </model>
 
     <model name='cpu64-rhel6'>
-      <feature name='abm'/>
       <feature name='apic'/>
       <feature name='clflush'/>
       <feature name='cmov'/>
@@ -373,7 +372,6 @@
       <feature name='sse'/>
       <feature name='sse2'/>
       <feature name='pni'/>
-      <feature name='sse4a'/>
       <feature name='syscall'/>
       <feature name='tsc'/>
     </model>
