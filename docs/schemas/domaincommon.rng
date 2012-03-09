@@ -1826,6 +1826,17 @@
                 <empty/>
               </element>
             </optional>
+            <optional>
+              <element name="mouse">
+                <attribute name="mode">
+                  <choice>
+                    <value>server</value>
+                    <value>client</value>
+                  </choice>
+                </attribute>
+                <empty/>
+              </element>
+            </optional>
           </interleave>
         </group>
         <group>

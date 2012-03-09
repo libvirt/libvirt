@@ -5424,6 +5424,20 @@ qemuBuildCommandLine(virConnectPtr conn,
 
         VIR_FREE(netAddr);
 
+        int mm = def->graphics[0]->data.spice.mousemode;
+        if (mm) {
+            switch (mm) {
+            case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_SERVER:
+                virBufferAsprintf(&opt, ",agent-mouse=off");
+                break;
+            case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_CLIENT:
+                virBufferAsprintf(&opt, ",agent-mouse=on");
+                break;
+            default:
+                break;
+            }
+        }
+
         /* In the password case we set it via monitor command, to avoid
          * making it visible on CLI, so there's no use of password=XXX
          * in this bit of the code */

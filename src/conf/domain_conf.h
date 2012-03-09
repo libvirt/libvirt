@@ -1135,6 +1135,14 @@ enum virDomainGraphicsSpicePlaybackCompression {
     VIR_DOMAIN_GRAPHICS_SPICE_PLAYBACK_COMPRESSION_LAST
 };
 
+enum virDomainGraphicsSpiceMouseMode {
+    VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_DEFAULT = 0,
+    VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_SERVER,
+    VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_CLIENT,
+
+    VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_LAST
+};
+
 enum virDomainGraphicsSpiceStreamingMode {
     VIR_DOMAIN_GRAPHICS_SPICE_STREAMING_MODE_DEFAULT = 0,
     VIR_DOMAIN_GRAPHICS_SPICE_STREAMING_MODE_FILTER,
@@ -1202,6 +1210,7 @@ struct _virDomainGraphicsDef {
         struct {
             int port;
             int tlsPort;
+            int mousemode;
             char *keymap;
             virDomainGraphicsAuthDef auth;
             unsigned int autoport :1;
@@ -2124,6 +2133,7 @@ VIR_ENUM_DECL(virDomainGraphicsSpiceZlibCompression)
 VIR_ENUM_DECL(virDomainGraphicsSpicePlaybackCompression)
 VIR_ENUM_DECL(virDomainGraphicsSpiceStreamingMode)
 VIR_ENUM_DECL(virDomainGraphicsSpiceClipboardCopypaste)
+VIR_ENUM_DECL(virDomainGraphicsSpiceMouseMode)
 VIR_ENUM_DECL(virDomainNumatuneMemMode)
 VIR_ENUM_DECL(virDomainSnapshotState)
 /* from libvirt.h */

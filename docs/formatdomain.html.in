@@ -2851,6 +2851,7 @@ qemu-kvm -net nic,model=? /dev/null
     &lt;image compression='auto_glz'/&gt;
     &lt;streaming mode='filter'/&gt;
     &lt;clipboard copypaste='no'/&gt;
+    &lt;mouse mode='client'/&gt;
   &lt;/graphics&gt;</pre>
             <p>
               Spice supports variable compression settings for audio,
@@ -2882,6 +2883,13 @@ qemu-kvm -net nic,model=? /dev/null
               the <code>copypaste</code> property
               to <code>no</code>, <span class="since">since
               0.9.3</span>.
+            </p>
+            <p>
+              Mouse mode is set by the <code>mouse<code/> element,
+              setting it's <code>mode<code/> attribute to one of
+              <code>server</code> or <code>client</code> ,
+              <span class="since">since 0.9.11</span>. If no mode is
+              specified, the qemu default will be used (client mode).
             </p>
           </dd>
           <dt><code>"rdp"</code></dt>

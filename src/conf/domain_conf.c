@@ -465,6 +465,12 @@ VIR_ENUM_IMPL(virDomainGraphicsSpicePlaybackCompression,
               "on",
               "off");
 
+VIR_ENUM_IMPL(virDomainGraphicsSpiceMouseMode,
+              VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_LAST,
+              "default",
+              "server",
+              "client");
+
 VIR_ENUM_IMPL(virDomainGraphicsSpiceStreamingMode,
               VIR_DOMAIN_GRAPHICS_SPICE_STREAMING_MODE_LAST,
               "default",
@@ -6180,6 +6186,26 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
                     VIR_FREE(copypaste);
 
                     def->data.spice.copypaste = copypasteVal;
+                } else if (xmlStrEqual(cur->name, BAD_CAST "mouse")) {
+                    const char *mode = virXMLPropString(cur, "mode");
+                    int modeVal;
+
+                    if (!mode) {
+                        virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                                             _("spice mouse missing mode"));
+                        goto error;
+                    }
+
+                    if ((modeVal = virDomainGraphicsSpiceMouseModeTypeFromString(mode)) <= 0) {
+                        virDomainReportError(VIR_ERR_XML_ERROR,
+                                             _("unknown mouse mode value '%s'"),
+                                             mode);
+                        VIR_FREE(mode);
+                        goto error;
+                    }
+                    VIR_FREE(mode);
+
+                    def->data.spice.mousemode = modeVal;
                 }
             }
             cur = cur->next;
@@ -11896,7 +11922,8 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         }
         if (!children && (def->data.spice.image || def->data.spice.jpeg ||
                           def->data.spice.zlib || def->data.spice.playback ||
-                          def->data.spice.streaming || def->data.spice.copypaste)) {
+                          def->data.spice.streaming || def->data.spice.copypaste ||
+                          def->data.spice.mousemode)) {
             virBufferAddLit(buf, ">\n");
             children = 1;
         }
@@ -11915,6 +11942,9 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         if (def->data.spice.streaming)
             virBufferAsprintf(buf, "      <streaming mode='%s'/>\n",
                               virDomainGraphicsSpiceStreamingModeTypeToString(def->data.spice.streaming));
+        if (def->data.spice.mousemode)
+            virBufferAsprintf(buf, "      <mouse mode='%s'/>\n",
+                              virDomainGraphicsSpiceMouseModeTypeToString(def->data.spice.mousemode));
         if (def->data.spice.copypaste)
             virBufferAsprintf(buf, "      <clipboard copypaste='%s'/>\n",
                               virDomainGraphicsSpiceClipboardCopypasteTypeToString(def->data.spice.copypaste));
