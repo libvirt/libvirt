@@ -513,7 +513,9 @@ mymain(void)
             QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE);
     DO_TEST("graphics-spice-agentmouse", false,
             QEMU_CAPS_VGA, QEMU_CAPS_VGA_QXL,
-            QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE);
+            QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE,
+            QEMU_CAPS_CHARDEV_SPICEVMC,
+            QEMU_CAPS_NODEFCONFIG);
     DO_TEST("graphics-spice-compression", false,
             QEMU_CAPS_VGA, QEMU_CAPS_VGA_QXL,
             QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE);
