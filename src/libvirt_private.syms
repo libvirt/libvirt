@@ -78,6 +78,7 @@ virCgroupGetCpuCfsPeriod;
 virCgroupGetCpuCfsQuota;
 virCgroupGetCpuShares;
 virCgroupGetCpuacctPercpuUsage;
+virCgroupGetCpuacctStat;
 virCgroupGetCpuacctUsage;
 virCgroupGetCpusetMems;
 virCgroupGetFreezerState;

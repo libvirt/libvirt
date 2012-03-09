@@ -355,8 +355,8 @@ static int virCgroupGetValueStr(virCgroupPtr group,
         VIR_DEBUG("Failed to read %s: %m\n", keypath);
     } else {
         /* Terminated with '\n' has sometimes harmful effects to the caller */
-        char *p = strchr(*value, '\n');
-        if (p) *p = '\0';
+        if ((*value)[rc - 1] == '\n')
+            (*value)[rc - 1] = '\0';
 
         rc = 0;
     }
@@ -1560,6 +1560,53 @@ int virCgroupGetCpuacctPercpuUsage(virCgroupPtr group, char **usage)
     return virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_CPUACCT,
                                 "cpuacct.usage_percpu", usage);
 }
+
+#ifdef _SC_CLK_TCK
+int virCgroupGetCpuacctStat(virCgroupPtr group, unsigned long long *user,
+                            unsigned long long *sys)
+{
+    char *str;
+    char *p;
+    int ret;
+    static double scale = -1.0;
+
+    if ((ret = virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_CPUACCT,
+                                    "cpuacct.stat", &str)) < 0)
+        return ret;
+    if (!(p = STRSKIP(str, "user ")) ||
+        virStrToLong_ull(p, &p, 10, user) < 0 ||
+        !(p = STRSKIP(p, "\nsystem ")) ||
+        virStrToLong_ull(p, NULL, 10, sys) < 0) {
+        ret = -EINVAL;
+        goto cleanup;
+    }
+    /* times reported are in system ticks (generally 100 Hz), but that
+     * rate can theoretically vary between machines.  Scale things
+     * into approximate nanoseconds.  */
+    if (scale < 0) {
+        long ticks_per_sec = sysconf(_SC_CLK_TCK);
+        if (ticks_per_sec == -1) {
+            ret = -errno;
+            goto cleanup;
+        }
+        scale = 1000000000.0 / ticks_per_sec;
+    }
+    *user *= scale;
+    *sys *= scale;
+
+    ret = 0;
+cleanup:
+    VIR_FREE(str);
+    return ret;
+}
+#else
+int virCgroupGetCpuacctStat(virCgroupPtr group ATTRIBUTE_UNUSED,
+                            unsigned long long *user ATTRIBUTE_UNUSED,
+                            unsigned long long *sys ATTRIBUTE_UNUSED)
+{
+    return -ENOSYS;
+}
+#endif
 
 int virCgroupSetFreezerState(virCgroupPtr group, const char *state)
 {
