@@ -3356,13 +3356,13 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
 
         if (!temp_dev || temp_dev->type != VIR_JSON_TYPE_OBJECT) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("block io throttle device entry was not in expected format"));
+                            _("block_io_throttle device entry was not in expected format"));
             goto cleanup;
         }
 
         if ((current_dev = virJSONValueObjectGetString(temp_dev, "device")) == NULL) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("block io throttle device entry was not in expected format"));
+                            _("block_io_throttle device entry was not in expected format"));
             goto cleanup;
         }
 
@@ -3376,7 +3376,7 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
         if ((inserted = virJSONValueObjectGet(temp_dev, "inserted")) == NULL ||
             inserted->type != VIR_JSON_TYPE_OBJECT) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("block io throttle inserted entry was not in expected format"));
+                            _("block_io_throttle inserted entry was not in expected format"));
             goto cleanup;
         }
 

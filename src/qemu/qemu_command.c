@@ -866,7 +866,7 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
         if (info->addr.pci.function != 0) {
             qemuReportError(VIR_ERR_XML_ERROR,
                             _("Attempted double use of PCI Address '%s' "
-                              "(may need \"multifunction='on'\" for device on function 0"),
+                              "(may need \"multifunction='on'\" for device on function 0)"),
                             addr);
         } else {
             qemuReportError(VIR_ERR_XML_ERROR,

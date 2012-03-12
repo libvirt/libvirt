@@ -1591,14 +1591,14 @@ lxcControllerRun(virDomainDefPtr def,
     if (virSetBlocking(monitor, false) < 0 ||
         virSetBlocking(client, false) < 0) {
         virReportSystemError(errno, "%s",
-                             _("Unable to set file descriptor non blocking"));
+                             _("Unable to set file descriptor non-blocking"));
         goto cleanup;
     }
     for (i = 0 ; i < nttyFDs ; i++) {
         if (virSetBlocking(ttyFDs[i], false) < 0 ||
             virSetBlocking(containerTtyFDs[i], false) < 0) {
             virReportSystemError(errno, "%s",
-                                 _("Unable to set file descriptor non blocking"));
+                                 _("Unable to set file descriptor non-blocking"));
             goto cleanup;
         }
     }
