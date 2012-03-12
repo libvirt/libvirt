@@ -5379,7 +5379,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
         virBufferAsprintf(&opt, "port=%u", def->graphics[0]->data.spice.port);
 
-        if (def->graphics[0]->data.spice.tlsPort) {
+        if (def->graphics[0]->data.spice.tlsPort > 0) {
             if (!driver->spiceTLS) {
                 qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                 _("spice TLS port set in XML configuration,"

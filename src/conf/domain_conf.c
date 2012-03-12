@@ -5929,6 +5929,10 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
                 VIR_FREE(port);
                 goto error;
             }
+            /* Legacy compat syntax, used -1 for auto-port */
+            if (def->data.rdp.port == -1)
+                def->data.rdp.autoport = 1;
+
             VIR_FREE(port);
         } else {
             def->data.rdp.port = 0;
@@ -5936,13 +5940,14 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
         }
 
         if ((autoport = virXMLPropString(node, "autoport")) != NULL) {
-            if (STREQ(autoport, "yes")) {
-                if (flags & VIR_DOMAIN_XML_INACTIVE)
-                    def->data.rdp.port = 0;
+            if (STREQ(autoport, "yes"))
                 def->data.rdp.autoport = 1;
-            }
+
             VIR_FREE(autoport);
         }
+
+        if (def->data.rdp.autoport && (flags & VIR_DOMAIN_XML_INACTIVE))
+            def->data.rdp.port = 0;
 
         if ((replaceUser = virXMLPropString(node, "replaceUser")) != NULL) {
             if (STREQ(replaceUser, "yes")) {
@@ -6009,14 +6014,19 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
         }
 
         if ((autoport = virXMLPropString(node, "autoport")) != NULL) {
-            if (STREQ(autoport, "yes")) {
-                if (flags & VIR_DOMAIN_XML_INACTIVE) {
-                    def->data.spice.port = 0;
-                    def->data.spice.tlsPort = 0;
-                }
+            if (STREQ(autoport, "yes"))
                 def->data.spice.autoport = 1;
-            }
             VIR_FREE(autoport);
+        }
+
+        if (def->data.spice.port == -1 && def->data.spice.tlsPort == -1) {
+            /* Legacy compat syntax, used -1 for auto-port */
+            def->data.spice.autoport = 1;
+        }
+
+        if (def->data.spice.autoport && (flags & VIR_DOMAIN_XML_INACTIVE)) {
+            def->data.spice.port = 0;
+            def->data.spice.tlsPort = 0;
         }
 
         def->data.spice.keymap = virXMLPropString(node, "keymap");

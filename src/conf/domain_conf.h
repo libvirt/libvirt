@@ -1183,6 +1183,11 @@ struct _virDomainGraphicsListenDef {
 };
 
 struct _virDomainGraphicsDef {
+    /* Port value discipline:
+     * Value -1 is legacy syntax indicating that it should be auto-allocated.
+     * Value 0 means port wasn't specified in XML at all.
+     * Positive value is actual port number given in XML.
+     */
     int type;
     union {
         struct {

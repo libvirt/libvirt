@@ -3169,28 +3169,35 @@ int qemuProcessStart(virConnectPtr conn,
                 goto cleanup;
             }
             vm->def->graphics[0]->data.vnc.port = port;
-        } else if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
-                   vm->def->graphics[0]->data.spice.autoport) {
-            int port = qemuProcessNextFreePort(driver, QEMU_VNC_PORT_MIN);
-            int tlsPort = -1;
-            if (port < 0) {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s", _("Unable to find an unused SPICE port"));
-                goto cleanup;
+        } else if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+            int port = -1;
+            if (vm->def->graphics[0]->data.spice.autoport ||
+                vm->def->graphics[0]->data.spice.port == -1) {
+                port = qemuProcessNextFreePort(driver, QEMU_VNC_PORT_MIN);
+
+                if (port < 0) {
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                    "%s", _("Unable to find an unused SPICE port"));
+                    goto cleanup;
+                }
+
+                vm->def->graphics[0]->data.spice.port = port;
             }
 
-            if (driver->spiceTLS) {
-                tlsPort = qemuProcessNextFreePort(driver, port + 1);
+            if (driver->spiceTLS &&
+                (vm->def->graphics[0]->data.spice.autoport ||
+                 vm->def->graphics[0]->data.spice.tlsPort == -1)) {
+                int tlsPort = qemuProcessNextFreePort(driver,
+                                                      vm->def->graphics[0]->data.spice.port + 1);
                 if (tlsPort < 0) {
                     qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                     "%s", _("Unable to find an unused SPICE TLS port"));
                     qemuProcessReturnPort(driver, port);
                     goto cleanup;
                 }
-            }
 
-            vm->def->graphics[0]->data.spice.port = port;
-            vm->def->graphics[0]->data.spice.tlsPort = tlsPort;
+                vm->def->graphics[0]->data.spice.tlsPort = tlsPort;
+            }
         }
     }
 
