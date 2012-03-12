@@ -673,7 +673,8 @@ mymain(void)
             QEMU_CAPS_VIRTIO_BLK_SCSI,
             QEMU_CAPS_VIRTIO_BLK_SG_IO,
             QEMU_CAPS_CPU_HOST,
-            QEMU_CAPS_FSDEV_WRITEOUT);
+            QEMU_CAPS_FSDEV_WRITEOUT,
+            QEMU_CAPS_SCSI_BLOCK);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

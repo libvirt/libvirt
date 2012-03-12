@@ -2194,6 +2194,15 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                           disk->info.addr.drive.unit);
         break;
     case VIR_DOMAIN_DISK_BUS_SCSI:
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+            if (!qemuCapsGet(qemuCaps, QEMU_CAPS_SCSI_BLOCK)) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                _("This QEMU doesn't support scsi-block for "
+                                  "lun passthrough"));
+                goto error;
+            }
+        }
+
         controllerModel =
             virDomainDiskFindControllerModel(def, disk,
                                              VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
@@ -2209,7 +2218,10 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                 goto error;
             }
 
-            virBufferAddLit(&opt, "scsi-disk");
+            if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN)
+                virBufferAddLit(&opt, "scsi-block");
+            else
+                virBufferAddLit(&opt, "scsi-disk");
             virBufferAsprintf(&opt, ",bus=scsi%d.%d,scsi-id=%d",
                               disk->info.addr.drive.controller,
                               disk->info.addr.drive.bus,
@@ -2232,7 +2244,11 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                 }
             }
 
-            virBufferAddLit(&opt, "scsi-disk");
+            if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN)
+                virBufferAddLit(&opt, "scsi-disk");
+            else
+                virBufferAddLit(&opt, "scsi-block");
+
             virBufferAsprintf(&opt, ",bus=scsi%d.0,channel=%d,scsi-id=%d,lun=%d",
                               disk->info.addr.drive.controller,
                               disk->info.addr.drive.bus,

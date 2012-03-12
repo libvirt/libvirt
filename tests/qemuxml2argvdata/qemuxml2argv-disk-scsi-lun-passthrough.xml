@@ -1,0 +1,32 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu>1</vcpu>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu</emulator>
+    <disk type='block' device='lun'>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <target dev='hda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <disk type='block' device='lun'>
+      <source dev='/dev/HostVG/QEMUGuest2'/>
+      <target dev='hda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='1' unit='1'/>
+    </disk>
+    <controller type='scsi' index='0' model='virtio-scsi'/>
+    <controller type='scsi' index='1' model='lsilogic'/>
+    <controller type='usb' index='0'/>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>

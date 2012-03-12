@@ -487,6 +487,10 @@ mymain(void)
             QEMU_CAPS_DRIVE,
             QEMU_CAPS_DEVICE,
             QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
+    DO_TEST("disk-scsi-lun-passthrough", false,
+            QEMU_CAPS_DRIVE,
+            QEMU_CAPS_DEVICE,
+            QEMU_CAPS_SCSI_BLOCK, QEMU_CAPS_VIRTIO_BLK_SG_IO);
 
     DO_TEST("graphics-vnc", false, NONE);
     DO_TEST("graphics-vnc-socket", false, NONE);
