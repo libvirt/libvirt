@@ -170,8 +170,8 @@ export LIBVIRT_LOG_OUTPUTS="1:file:virsh.log"</pre>
     put the correct breakpoints when running under a debugger.</p>
     <p>To activate full debug of the libvirt entry points, utility
     functions and the QEmu/KVM driver, set:</p>
-    <pre>log_filters=1:libvirt 1:util 1:qemu
-log_output=1:file:/var/log/libvirt/libvirtd.log</pre>
+    <pre>log_filters="1:libvirt 1:util 1:qemu"
+log_outputs="1:file:/var/log/libvirt/libvirtd.log"</pre>
     <p>in libvirtd.conf and restart the daemon will allow to
     gather a copious amount of debugging traces for the operations done
     in those areas.</p>
