@@ -2081,19 +2081,19 @@ qemuDomainDetachNetDevice(struct qemud_driver *driver,
         }
     }
 
-    if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
-        ret = qemuDomainDetachThisHostDevice(driver, vm,
-                                             virDomainNetGetActualHostdev(detach),
-                                             -1);
-        goto cleanup;
-    }
-
     if (!detach) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         _("network device %02x:%02x:%02x:%02x:%02x:%02x not found"),
                         dev->data.net->mac[0], dev->data.net->mac[1],
                         dev->data.net->mac[2], dev->data.net->mac[3],
                         dev->data.net->mac[4], dev->data.net->mac[5]);
+        goto cleanup;
+    }
+
+    if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        ret = qemuDomainDetachThisHostDevice(driver, vm,
+                                             virDomainNetGetActualHostdev(detach),
+                                             -1);
         goto cleanup;
     }
 
