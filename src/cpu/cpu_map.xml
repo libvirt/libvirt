@@ -692,5 +692,53 @@
       <feature name='misalignsse'/>
       <feature name='lahf_lm'/>
     </model>
+
+    <model name='Opteron_G4'>
+      <vendor name='AMD'/>
+      <feature name='fpu'/>
+      <feature name='de'/>
+      <feature name='pse'/>
+      <feature name='tsc'/>
+      <feature name='msr'/>
+      <feature name='pae'/>
+      <feature name='mce'/>
+      <feature name='cx8'/>
+      <feature name='apic'/>
+      <feature name='sep'/>
+      <feature name='mtrr'/>
+      <feature name='pge'/>
+      <feature name='mca'/>
+      <feature name='cmov'/>
+      <feature name='pat'/>
+      <feature name='pse36'/>
+      <feature name='clflush'/>
+      <feature name='mmx'/>
+      <feature name='fxsr'/>
+      <feature name='sse'/>
+      <feature name='sse2'/>
+      <feature name='pni'/>
+      <feature name='pclmuldq'/>
+      <feature name='ssse3'/>
+      <feature name='cx16'/>
+      <feature name='sse4.1'/>
+      <feature name='sse4.2'/>
+      <feature name='popcnt'/>
+      <feature name='aes'/>
+      <feature name='xsave'/>
+      <feature name='avx'/>
+      <feature name='syscall'/>
+      <feature name='nx'/>
+      <feature name='pdpe1gb'/>
+      <feature name='rdtscp'/>
+      <feature name='lm'/>
+      <feature name='lahf_lm'/>
+      <feature name='svm'/>
+      <feature name='abm'/>
+      <feature name='sse4a'/>
+      <feature name='misalignsse'/>
+      <feature name='3dnowprefetch'/>
+      <feature name='xop'/>
+      <feature name='fma4'/>
+    </model>
   </arch>
 </cpus>
