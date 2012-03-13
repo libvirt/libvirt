@@ -1497,7 +1497,6 @@ qemuProcessFindCharDevicePTYs(virDomainObjPtr vm,
             if ((ret = virDomainChrSourceDefCopy(&chr->source,
                                                  &((vm->def->serials[0])->source))) != 0)
                 return ret;
-            chr->source.type = VIR_DOMAIN_CHR_TYPE_PTY;
         } else {
             if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
                 chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO) {
