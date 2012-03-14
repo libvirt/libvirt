@@ -961,7 +961,7 @@ error:
 }
 
 static char *
-virConnectConfigFile(void)
+virConnectGetConfigFilePath(void)
 {
     char *path;
     if (geteuid() == 0) {
@@ -987,6 +987,33 @@ no_memory:
     virReportOOMError();
 error:
     return NULL;
+}
+
+static int
+virConnectGetConfigFile(virConfPtr *conf)
+{
+    char *filename = NULL;
+    int ret = -1;
+
+    *conf = NULL;
+
+    if (!(filename = virConnectGetConfigFilePath()))
+        goto cleanup;
+
+    if (!virFileExists(filename)) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Loading config file '%s'", filename);
+    if (!(*conf = virConfReadFile(filename, 0)))
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(filename);
+    return ret;
 }
 
 #define URI_ALIAS_CHARS "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
@@ -1050,35 +1077,45 @@ virConnectOpenFindURIAliasMatch(virConfValuePtr value, const char *alias, char *
 }
 
 static int
-virConnectOpenResolveURIAlias(const char *alias, char **uri)
+virConnectOpenResolveURIAlias(virConfPtr conf,
+                              const char *alias, char **uri)
 {
-    char *config = NULL;
     int ret = -1;
-    virConfPtr conf = NULL;
     virConfValuePtr value = NULL;
 
     *uri = NULL;
-
-    if (!(config = virConnectConfigFile()))
-        goto cleanup;
-
-    if (!virFileExists(config)) {
-        ret = 0;
-        goto cleanup;
-    }
-
-    VIR_DEBUG("Loading config file '%s'", config);
-    if (!(conf = virConfReadFile(config, 0)))
-        goto cleanup;
 
     if ((value = virConfGetValue(conf, "uri_aliases")))
         ret = virConnectOpenFindURIAliasMatch(value, alias, uri);
     else
         ret = 0;
 
+    return ret;
+}
+
+
+static int
+virConnectGetDefaultURI(virConfPtr conf,
+                        const char **name)
+{
+    int ret = -1;
+    virConfValuePtr value = NULL;
+    char *defname = getenv("LIBVIRT_DEFAULT_URI");
+    if (defname && *defname) {
+        VIR_DEBUG("Using LIBVIRT_DEFAULT_URI '%s'", defname);
+        *name = defname;
+    } else if ((value = virConfGetValue(conf, "uri_default"))) {
+        if (value->type != VIR_CONF_STRING) {
+            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Expected a string for 'uri_default' config parameter"));
+            goto cleanup;
+        }
+        VIR_DEBUG("Using config file uri '%s'", value->str);
+        *name = value->str;
+    }
+
+    ret = 0;
 cleanup:
-    virConfFree(conf);
-    VIR_FREE(config);
     return ret;
 }
 
@@ -1089,6 +1126,7 @@ do_open (const char *name,
 {
     int i, res;
     virConnectPtr ret;
+    virConfPtr conf = NULL;
 
     virResetLastError();
 
@@ -1096,20 +1134,20 @@ do_open (const char *name,
     if (ret == NULL)
         return NULL;
 
+    if (virConnectGetConfigFile(&conf) < 0)
+        goto failed;
+
+    if (name && name[0] == '\0')
+        name = NULL;
+
     /*
      *  If no URI is passed, then check for an environment string if not
      *  available probe the compiled in drivers to find a default hypervisor
      *  if detectable.
      */
-    if (!name || name[0] == '\0') {
-        char *defname = getenv("LIBVIRT_DEFAULT_URI");
-        if (defname && *defname) {
-            VIR_DEBUG("Using LIBVIRT_DEFAULT_URI %s", defname);
-            name = defname;
-        } else {
-            name = NULL;
-        }
-    }
+    if (!name &&
+        virConnectGetDefaultURI(conf, &name) < 0)
+        goto failed;
 
     if (name) {
         char *alias = NULL;
@@ -1124,7 +1162,7 @@ do_open (const char *name,
             name = "xen:///";
 
         if (!(flags & VIR_CONNECT_NO_ALIASES) &&
-            virConnectOpenResolveURIAlias(name, &alias) < 0)
+            virConnectOpenResolveURIAlias(conf, name, &alias) < 0)
             goto failed;
 
         ret->uri = virURIParse (alias ? alias : name);
@@ -1308,9 +1346,12 @@ do_open (const char *name,
         }
     }
 
+    virConfFree(conf);
+
     return ret;
 
 failed:
+    virConfFree(conf);
     virUnrefConnect(ret);
 
     return NULL;
@@ -1325,11 +1366,11 @@ failed:
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
  *
- * If @name is NULL then probing will be done to determine a suitable
- * default driver to activate. This involves trying each hypervisor
- * in turn until one successfully opens. If the LIBVIRT_DEFAULT_URI
- * environment variable is set, then it will be used in preference
- * to probing for a driver.
+ * If @name is NULL, if the LIBVIRT_DEFAULT_URI environment variable is set,
+ * then it will be used. Otherwise if the client configuration file
+ * has the "uri_default" parameter set, then it will be used. Finally
+ * probing will be done to determine a suitable default driver to activate.
+ * This involves trying each hypervisor in turn until one successfully opens.
  *
  * If connecting to an unprivileged hypervisor driver which requires
  * the libvirtd daemon to be active, it will automatically be launched

@@ -52,6 +52,19 @@ uri_aliases = [
   set, no alias lookup will be attempted.
 </p>
 
+    <h2><a name="URI_default">Default URI choice</a></h2>
+
+    <p>
+If the URI passed to <code>virConnectOpen*</code> is NULL, then libvirt will use the following
+logic to determine what URI to use.
+</p>
+
+    <ol>
+      <li>The environment variable <code>LIBVIRT_DEFAULT_URI</code></li>
+      <li>The client configuration file <code>uri_default</code> parameter</li>
+      <li>Probe each hypervisor in turn until one that works is found</li>
+    </ol>
+
     <h2>
       <a name="URI_virsh">Specifying URIs to virsh, virt-manager and virt-install</a>
     </h2>
@@ -64,7 +77,8 @@ virsh <b>-c test:///default</b> list
     <p>
 If virsh finds the environment variable
 <code>VIRSH_DEFAULT_CONNECT_URI</code> set, it will try this URI by
-default.
+default. Use of this environment variable is, however, deprecated
+now that libvirt supports <code>LIBVIRT_DEFAULT_URI</code> itself.
 </p>
     <p>
 When using the interactive virsh shell, you can also use the

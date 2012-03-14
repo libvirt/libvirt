@@ -2632,7 +2632,16 @@ The file to log virsh debug messages.
 =item VIRSH_DEFAULT_CONNECT_URI
 
 The hypervisor to connect to by default. Set this to a URI, in the same
-format as accepted by the B<connect> option.
+format as accepted by the B<connect> option. This environment variable
+is deprecated in favour of the global B<LIBVIRT_DEFAULT_URI> variable
+which serves the same purpose.
+
+=item LIBVIRT_DEFAULT_URI
+
+The hypervisor to connect to by default. Set this to a URI, in the
+same format as accepted by the B<connect> option. This overrides
+the default URI set in any client config file and prevents libvirt
+from probing for drivers.
 
 =item VISUAL
 
