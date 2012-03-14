@@ -1703,7 +1703,7 @@ qemuDomainSetFakeReboot(struct qemud_driver *driver,
 int
 qemuDomainCheckDiskPresence(struct qemud_driver *driver,
                             virDomainObjPtr vm,
-                            bool start_with_state)
+                            bool cold_boot)
 {
     int ret = -1;
     int i;
@@ -1738,7 +1738,7 @@ qemuDomainCheckDiskPresence(struct qemud_driver *driver,
                 break;
 
             case VIR_DOMAIN_STARTUP_POLICY_REQUISITE:
-                if (!start_with_state) {
+                if (cold_boot) {
                     virReportSystemError(errno,
                                          _("cannot access file '%s'"),
                                          disk->src);
