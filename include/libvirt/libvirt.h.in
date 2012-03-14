@@ -123,6 +123,8 @@ typedef enum {
     VIR_DOMAIN_RUNNING_UNPAUSED = 5,        /* returned from paused state */
     VIR_DOMAIN_RUNNING_MIGRATION_CANCELED = 6,  /* returned from migration */
     VIR_DOMAIN_RUNNING_SAVE_CANCELED = 7,   /* returned from failed save process */
+    VIR_DOMAIN_RUNNING_WAKEUP = 8,          /* returned from pmsuspended due to
+                                               wakeup event */
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_RUNNING_LAST
@@ -2695,6 +2697,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_STARTED_MIGRATED = 1, /* Incoming migration from another host */
     VIR_DOMAIN_EVENT_STARTED_RESTORED = 2, /* Restored from a state file */
     VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT = 3, /* Restored from snapshot */
+    VIR_DOMAIN_EVENT_STARTED_WAKEUP = 4,   /* Started due to wakeup event */
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_STARTED_LAST

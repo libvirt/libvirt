@@ -18859,6 +18859,8 @@ vshDomainStateReasonToString(int state, int reason)
             return N_("migration canceled");
         case VIR_DOMAIN_RUNNING_SAVE_CANCELED:
             return N_("save canceled");
+        case VIR_DOMAIN_RUNNING_WAKEUP:
+            return N_("event wakeup");
         case VIR_DOMAIN_RUNNING_UNKNOWN:
         case VIR_DOMAIN_RUNNING_LAST:
             ;

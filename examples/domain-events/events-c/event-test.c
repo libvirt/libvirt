@@ -93,6 +93,9 @@ static const char *eventDetailToString(int event, int detail) {
             case VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT:
                 ret = "Snapshot";
                 break;
+            case VIR_DOMAIN_EVENT_STARTED_WAKEUP:
+                ret = "Event wakeup";
+                break;
             }
             break;
         case VIR_DOMAIN_EVENT_SUSPENDED:

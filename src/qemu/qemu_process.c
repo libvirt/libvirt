@@ -1067,15 +1067,38 @@ qemuProcessHandlePMWakeup(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 {
     struct qemud_driver *driver = qemu_driver;
     virDomainEventPtr event = NULL;
+    virDomainEventPtr lifecycleEvent = NULL;
 
     virDomainObjLock(vm);
     event = virDomainEventPMWakeupNewFromObj(vm);
 
+    /* Don't set domain status back to running if it wasn't paused
+     * from guest side, otherwise it can just cause confusion.
+     */
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PMSUSPENDED) {
+        VIR_DEBUG("Transitioned guest %s from pmsuspended to running "
+                  "state due to QMP wakeup event", vm->def->name);
+
+        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
+                             VIR_DOMAIN_RUNNING_WAKEUP);
+        lifecycleEvent = virDomainEventNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_STARTED,
+                                                  VIR_DOMAIN_EVENT_STARTED_WAKEUP);
+
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
+            VIR_WARN("Unable to save status on vm %s after wakeup event",
+                     vm->def->name);
+        }
+    }
+
     virDomainObjUnlock(vm);
 
-    if (event) {
+    if (event || lifecycleEvent) {
         qemuDriverLock(driver);
-        qemuDomainEventQueue(driver, event);
+        if (event)
+            qemuDomainEventQueue(driver, event);
+        if (lifecycleEvent)
+            qemuDomainEventQueue(driver, lifecycleEvent);
         qemuDriverUnlock(driver);
     }
 
