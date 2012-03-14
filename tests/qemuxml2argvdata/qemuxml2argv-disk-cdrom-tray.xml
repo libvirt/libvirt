@@ -1,0 +1,43 @@
+<domain type='qemu'>
+  <name>test</name>
+  <uuid>3fa02811-7832-34bd-004d-1ff56a9286ff</uuid>
+  <memory>1048576</memory>
+  <currentMemory>1048576</currentMemory>
+  <vcpu>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc-0.13'>hvm</type>
+    <boot dev='cdrom'/>
+    <boot dev='hd'/>
+    <bootmenu enable='yes'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/var/lib/libvirt/images/f14.img'/>
+      <target dev='vda' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </disk>
+      <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/Fedora-14-x86_64-Live-KDE.iso'/>
+      <target dev='hdc' bus='ide' tray='closed'/>
+      <readonly/>
+      <address type='drive' controller='0' bus='1' target='0' unit='0'/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='/tmp/cdrom.img'/>
+      <target dev='hdd' bus='ide' tray='open'/>
+      <readonly/>
+      <address type='drive' controller='0' bus='1' target='0' unit='1'/>
+    </disk>
+    <controller type='usb' index='0'/>
+    <controller type='ide' index='0'/>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>

@@ -392,7 +392,13 @@ mymain(void)
     DO_TEST("hugepages", false, QEMU_CAPS_MEM_PATH);
     DO_TEST("disk-cdrom", false, NONE);
     DO_TEST("disk-cdrom-empty", false, QEMU_CAPS_DRIVE);
+    DO_TEST("disk-cdrom-tray", false,
+            QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_VIRTIO_TX_ALG);
+    DO_TEST("disk-cdrom-tray-no-device-cap", false, NONE);
     DO_TEST("disk-floppy", false, NONE);
+    DO_TEST("disk-floppy-tray-no-device-cap", false, NONE);
+    DO_TEST("disk-floppy-tray", false,
+            QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE);
     DO_TEST("disk-many", false, NONE);
     DO_TEST("disk-virtio", false, QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("disk-order", false,

@@ -1908,8 +1908,12 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     /* disk->src is NULL when we use nbd disks */
-    if (disk->src || (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
-                      disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_NBD)) {
+    if ((disk->src ||
+        (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
+         disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_NBD)) &&
+        !((disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY ||
+           disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
+          disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN)) {
         if (disk->type == VIR_DOMAIN_DISK_TYPE_DIR) {
             /* QEMU only supports magic FAT format for now */
             if (disk->driverType &&
@@ -4736,7 +4740,13 @@ qemuBuildCommandLine(virConnectPtr conn,
                 }
             }
 
-            virCommandAddArgList(cmd, dev, file, NULL);
+            /* Don't start with source if the tray is open for
+             * CDROM and Floppy device.
+             */
+            if (!((disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY ||
+                   disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
+                  disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN))
+                virCommandAddArgList(cmd, dev, file, NULL);
             VIR_FREE(file);
         }
     }
