@@ -1038,6 +1038,16 @@ qemuProcessHandleTrayChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         event = virDomainEventTrayChangeNewFromObj(vm,
                                                    devAlias,
                                                    reason);
+        /* Update disk tray status */
+        if (reason == VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN)
+            disk->tray_status = VIR_DOMAIN_DISK_TRAY_OPEN;
+        else if (reason == VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE)
+            disk->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
+
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
+            VIR_WARN("Unable to save status on vm %s after tray moved event",
+                     vm->def->name);
+        }
     }
 
     virDomainObjUnlock(vm);
