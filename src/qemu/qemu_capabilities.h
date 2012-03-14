@@ -123,6 +123,7 @@ enum qemuCapsFlags {
     QEMU_CAPS_WAKEUP             = 86, /* system_wakeup monitor command */
     QEMU_CAPS_SCSI_DISK_CHANNEL  = 87, /* Is scsi-disk.channel available? */
     QEMU_CAPS_SCSI_BLOCK         = 88, /* -device scsi-block */
+    QEMU_CAPS_TRANSACTION        = 89, /* transaction monitor command */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

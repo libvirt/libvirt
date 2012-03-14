@@ -155,6 +155,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "system_wakeup",
               "scsi-disk.channel",
               "scsi-block",
+              "transaction",
     );
 
 struct qemu_feature_flags {

@@ -929,6 +929,9 @@ qemuMonitorJSONCheckCommands(qemuMonitorPtr mon,
 
         if (STREQ(name, "system_wakeup"))
             qemuCapsSet(qemuCaps, QEMU_CAPS_WAKEUP);
+
+        if (STREQ(name, "transaction"))
+            qemuCapsSet(qemuCaps, QEMU_CAPS_TRANSACTION);
     }
 
     ret = 0;
