@@ -967,6 +967,14 @@
           </choice>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="tray">
+          <choice>
+            <value>open</value>
+            <value>closed</value>
+          </choice>
+        </attribute>
+      </optional>
     </element>
   </define>
   <!--

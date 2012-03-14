@@ -1134,7 +1134,7 @@
     &lt;/disk&gt;
     &lt;disk type='block' device='cdrom'&gt;
       &lt;driver name='qemu' type='raw'/&gt;
-      &lt;target dev='hdc' bus='ide'/&gt;
+      &lt;target dev='hdc' bus='ide' tray='open'/&gt;
       &lt;readonly/&gt;
     &lt;/disk&gt;
     &lt;disk type='block' device='lun'&gt;
@@ -1245,10 +1245,15 @@
         possible values are driver specific, with typical values being
         "ide", "scsi", "virtio", "xen", "usb" or "sata". If omitted, the bus
         type is inferred from the style of the device name. eg, a device named
-        'sda' will typically be exported using a SCSI bus.
+        'sda' will typically be exported using a SCSI bus. The optional
+        attribute <code>tray</code> indicates the tray status of the
+        removable disks (i.e. CDROM or Floppy disk), the value can be either
+        "open" or "closed", defaults to "closed". NB, the value of
+        <code>tray</code> could be updated while the domain is running.
         <span class="since">Since 0.0.3; <code>bus</code> attribute since 0.4.3;
-        "usb" attribute value since after 0.4.4; "sata" attribute value since
-        0.9.7</span></dd>
+        <code>tray</code> attribute since 0.9.11; "usb" attribute value since
+        after 0.4.4; "sata" attribute value since 0.9.7</span>
+      </dd>
       <dt><code>iotune</code></dt>
       <dd>The optional <code>iotune</code> element provides the
         ability to provide additional per-device I/O tuning, with
