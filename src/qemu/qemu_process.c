@@ -1092,6 +1092,19 @@ qemuProcessHandlePMSuspend(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virDomainObjLock(vm);
     event = virDomainEventPMSuspendNewFromObj(vm);
 
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+        VIR_DEBUG("Transitioned guest %s to pmsuspended state due to "
+                  "QMP suspend event", vm->def->name);
+
+        virDomainObjSetState(vm, VIR_DOMAIN_PMSUSPENDED,
+                             VIR_DOMAIN_PMSUSPENDED_UNKNOWN);
+
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
+            VIR_WARN("Unable to save status on vm %s after suspend event",
+                     vm->def->name);
+        }
+    }
+
     virDomainObjUnlock(vm);
 
     if (event) {
