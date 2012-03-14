@@ -18822,6 +18822,8 @@ vshDomainStateToString(int state)
         return N_("shut off");
     case VIR_DOMAIN_CRASHED:
         return N_("crashed");
+    case VIR_DOMAIN_PMSUSPENDED:
+        return N_("pmsuspended");
     case VIR_DOMAIN_NOSTATE:
     default:
         ;/*FALLTHROUGH*/
@@ -18931,6 +18933,14 @@ vshDomainStateReasonToString(int state, int reason)
         switch ((virDomainCrashedReason) reason) {
         case VIR_DOMAIN_CRASHED_UNKNOWN:
         case VIR_DOMAIN_CRASHED_LAST:
+            ;
+        }
+        break;
+
+    case VIR_DOMAIN_PMSUSPENDED:
+        switch ((virDomainPMSuspendedReason) reason) {
+        case VIR_DOMAIN_PMSUSPENDED_UNKNOWN:
+        case VIR_DOMAIN_PMSUSPENDED_LAST:
             ;
         }
         break;

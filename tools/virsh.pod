@@ -328,7 +328,7 @@ State is the run state (see below).
 
 B<STATES>
 
-The State field lists 7 states for a domain, and which ones the
+The State field lists 8 states for a domain, and which ones the
 current domain is in.
 
 =over 4
@@ -371,6 +371,11 @@ restart on crash.
 
 The domain is in process of dying, but hasn't completely shutdown or
 crashed.
+
+=item B<pmsuspended>
+
+The domain has been suspended by guest power management, e.g. entered
+into s3 state.
 
 =back
 

@@ -512,7 +512,8 @@ VIR_ENUM_IMPL(virDomainState, VIR_DOMAIN_LAST,
               "paused",
               "shutdown",
               "shutoff",
-              "crashed")
+              "crashed",
+              "pmsuspended")
 
 /* virDomainSnapshotState is really virDomainState plus one extra state */
 VIR_ENUM_IMPL(virDomainSnapshotState, VIR_DOMAIN_SNAPSHOT_STATE_LAST,
@@ -523,6 +524,7 @@ VIR_ENUM_IMPL(virDomainSnapshotState, VIR_DOMAIN_SNAPSHOT_STATE_LAST,
               "shutdown",
               "shutoff",
               "crashed",
+              "pmsuspended",
               "disk-snapshot")
 
 #define VIR_DOMAIN_NOSTATE_LAST (VIR_DOMAIN_NOSTATE_UNKNOWN + 1)
@@ -14369,14 +14371,32 @@ virDomainObjSetState(virDomainObjPtr dom, virDomainState state, int reason)
     int last = -1;
 
     switch (state) {
-    case VIR_DOMAIN_NOSTATE:    last = VIR_DOMAIN_NOSTATE_LAST;     break;
-    case VIR_DOMAIN_RUNNING:    last = VIR_DOMAIN_RUNNING_LAST;     break;
-    case VIR_DOMAIN_BLOCKED:    last = VIR_DOMAIN_BLOCKED_LAST;     break;
-    case VIR_DOMAIN_PAUSED:     last = VIR_DOMAIN_PAUSED_LAST;      break;
-    case VIR_DOMAIN_SHUTDOWN:   last = VIR_DOMAIN_SHUTDOWN_LAST;    break;
-    case VIR_DOMAIN_SHUTOFF:    last = VIR_DOMAIN_SHUTOFF_LAST;     break;
-    case VIR_DOMAIN_CRASHED:    last = VIR_DOMAIN_CRASHED_LAST;     break;
-    default: last = -1;
+    case VIR_DOMAIN_NOSTATE:
+        last = VIR_DOMAIN_NOSTATE_LAST;
+        break;
+    case VIR_DOMAIN_RUNNING:
+        last = VIR_DOMAIN_RUNNING_LAST;
+        break;
+    case VIR_DOMAIN_BLOCKED:
+        last = VIR_DOMAIN_BLOCKED_LAST;
+        break;
+    case VIR_DOMAIN_PAUSED:
+        last = VIR_DOMAIN_PAUSED_LAST;
+        break;
+    case VIR_DOMAIN_SHUTDOWN:
+        last = VIR_DOMAIN_SHUTDOWN_LAST;
+        break;
+    case VIR_DOMAIN_SHUTOFF:
+        last = VIR_DOMAIN_SHUTOFF_LAST;
+        break;
+    case VIR_DOMAIN_CRASHED:
+        last = VIR_DOMAIN_CRASHED_LAST;
+        break;
+    case VIR_DOMAIN_PMSUSPENDED:
+        last = VIR_DOMAIN_PMSUSPENDED_LAST;
+        break;
+    default:
+        last = -1;
     }
 
     if (last < 0) {
