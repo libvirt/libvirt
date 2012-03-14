@@ -1963,6 +1963,13 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                 break;
             }
         } else {
+            if ((disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK) &&
+                (disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN)) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                _("tray status 'open' is invalid for "
+                                  "block type disk"));
+                goto error;
+            }
             virBufferEscape(&opt, ',', ",", "file=%s,", disk->src);
         }
     }
@@ -4640,6 +4647,14 @@ qemuBuildCommandLine(virConnectPtr conn,
             char *file;
             const char *fmt;
             virDomainDiskDefPtr disk = def->disks[i];
+
+            if ((disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK) &&
+                (disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN)) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                _("tray status 'open' is invalid for "
+                                  "block type disk"));
+                goto error;
+            }
 
             if (disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
                 if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
