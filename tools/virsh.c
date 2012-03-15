@@ -14428,6 +14428,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     const char *stype = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *xml;
+    struct stat st;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -14458,8 +14459,12 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (!stype) {
-        if (driver && (STREQ(driver, "file") || STREQ(driver, "tap")))
+        if (driver && (STREQ(driver, "file") || STREQ(driver, "tap"))) {
             isFile = true;
+        } else {
+            if (source && !stat(source, &st))
+                isFile = S_ISREG(st.st_mode) ? true : false;
+        }
     } else if (STREQ(stype, "file")) {
         isFile = true;
     } else if (STRNEQ(stype, "block")) {
