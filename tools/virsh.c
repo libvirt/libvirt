@@ -14826,7 +14826,7 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     char *disk_xml = NULL;
     virDomainPtr dom = NULL;
     const char *target = NULL;
-    char *doc;
+    char *doc = NULL;
     int ret;
     bool functionReturn = false;
     unsigned int flags;
