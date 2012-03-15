@@ -1641,7 +1641,7 @@ qemuGetNumadAdvice(virDomainDefPtr def)
     char *args = NULL;
     char *output = NULL;
 
-    if (virAsprintf(&args, "%d:%lu", def->vcpus, def->mem.cur_balloon) < 0) {
+    if (virAsprintf(&args, "%d:%llu", def->vcpus, def->mem.cur_balloon) < 0) {
         virReportOOMError();
         goto out;
     }
