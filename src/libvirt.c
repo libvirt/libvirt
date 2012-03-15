@@ -1085,7 +1085,8 @@ virConnectOpenResolveURIAlias(virConfPtr conf,
 
     *uri = NULL;
 
-    if ((value = virConfGetValue(conf, "uri_aliases")))
+    if (conf &&
+        (value = virConfGetValue(conf, "uri_aliases")))
         ret = virConnectOpenFindURIAliasMatch(value, alias, uri);
     else
         ret = 0;
