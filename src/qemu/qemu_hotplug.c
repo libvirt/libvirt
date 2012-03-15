@@ -1621,6 +1621,7 @@ int qemuDomainDetachPciDiskDevice(struct qemud_driver *driver,
     ret = 0;
 
 cleanup:
+    virCgroupFree(&cgroup);
     VIR_FREE(drivestr);
     return ret;
 }
