@@ -44,6 +44,7 @@
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #define SYSINFO_SMBIOS_DECODER "dmidecode"
+#define CPUINFO "/proc/cpuinfo"
 
 VIR_ENUM_IMPL(virSysinfo, VIR_SYSINFO_LAST,
               "smbios");
@@ -113,10 +114,138 @@ void virSysinfoDefFree(virSysinfoDefPtr def)
  *
  * Returns: a filled up sysinfo structure or NULL in case of error
  */
-#if defined(WIN32) || \
+
+#if defined(__powerpc__)
+static int
+virSysinfoParseSystem(const char *base, virSysinfoDefPtr ret)
+{
+    char *eol = NULL;
+    const char *cur;
+
+    if ((cur = strstr(base, "platform")) == NULL)
+        return 0;
+
+    base = cur;
+    /* Account for format 'platform    : XXXX'*/
+    cur = strchr(cur, ':') + 1;
+    eol = strchr(cur, '\n');
+    virSkipSpaces(&cur);
+    if (eol &&
+       ((ret->system_family = strndup(cur, eol - cur)) == NULL))
+         goto no_memory;
+
+    if ((cur = strstr(base, "model")) != NULL) {
+        cur = strchr(cur, ':') + 1;
+        eol = strchr(cur, '\n');
+        virSkipSpaces(&cur);
+        if (eol && ((ret->system_serial = strndup(cur, eol - cur))
+                                                           == NULL))
+            goto no_memory;
+    }
+
+    if ((cur = strstr(base, "machine")) != NULL) {
+        cur = strchr(cur, ':') + 1;
+        eol = strchr(cur, '\n');
+        virSkipSpaces(&cur);
+        if (eol && ((ret->system_version = strndup(cur, eol - cur))
+                                                            == NULL))
+            goto no_memory;
+    }
+
+    return 0;
+
+no_memory:
+    return -1;
+}
+
+static int
+virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
+{
+    const char *cur;
+    char *eol, *tmp_base;
+    virSysinfoProcessorDefPtr processor;
+
+    while((tmp_base = strstr(base, "processor")) != NULL) {
+        base = tmp_base;
+        eol = strchr(base, '\n');
+        cur = strchr(base, ':') + 1;
+
+        if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0) {
+            goto no_memory;
+        }
+        processor = &ret->processor[ret->nprocessor - 1];
+
+        virSkipSpaces(&cur);
+        if (eol &&
+            ((processor->processor_socket_destination = strndup
+                                     (cur, eol - cur)) == NULL))
+            goto no_memory;
+
+        if ((cur = strstr(base, "cpu")) != NULL) {
+            cur = strchr(cur, ':') + 1;
+            eol = strchr(cur, '\n');
+            virSkipSpaces(&cur);
+            if (eol &&
+               ((processor->processor_type = strndup(cur, eol - cur))
+                                                             == NULL))
+                goto no_memory;
+        }
+
+        if ((cur = strstr(base, "revision")) != NULL) {
+            cur = strchr(cur, ':') + 1;
+            eol = strchr(cur, '\n');
+            virSkipSpaces(&cur);
+            if (eol &&
+               ((processor->processor_version = strndup(cur, eol - cur))
+                                                                == NULL))
+                goto no_memory;
+        }
+
+        base = cur;
+    }
+
+    return 0;
+
+no_memory:
+    return -1;
+}
+
+/* virSysinfoRead for PowerPC
+ * Gathers sysinfo data from /proc/cpuinfo */
+virSysinfoDefPtr
+virSysinfoRead(void) {
+    virSysinfoDefPtr ret = NULL;
+    char *outbuf = NULL;
+
+    if (VIR_ALLOC(ret) < 0)
+        goto no_memory;
+
+    if(virFileReadAll(CPUINFO, 2048, &outbuf) < 0) {
+        virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("Failed to open %s"), CPUINFO);
+        return NULL;
+    }
+
+    ret->nprocessor = 0;
+    ret->processor = NULL;
+    if (virSysinfoParseProcessor(outbuf, ret) < 0)
+        goto no_memory;
+
+    if (virSysinfoParseSystem(outbuf, ret) < 0)
+        goto no_memory;
+
+    return ret;
+
+no_memory:
+    VIR_FREE(outbuf);
+    return NULL;
+}
+
+#elif defined(WIN32) || \
     !(defined(__x86_64__) || \
       defined(__i386__) ||   \
-      defined(__amd64__))
+      defined(__amd64__) || \
+      defined(__powerpc__))
 virSysinfoDefPtr
 virSysinfoRead(void) {
     /*
