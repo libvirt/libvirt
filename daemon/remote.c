@@ -640,7 +640,8 @@ static void remoteClientCloseFunc(virNetServerClientPtr client)
 
 
 int remoteClientInitHook(virNetServerPtr srv ATTRIBUTE_UNUSED,
-                         virNetServerClientPtr client)
+                         virNetServerClientPtr client,
+                         void *opaque ATTRIBUTE_UNUSED)
 {
     struct daemonClientPrivate *priv;
     int i;

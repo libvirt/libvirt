@@ -112,6 +112,7 @@ struct _virNetServer {
     void *autoShutdownOpaque;
 
     virNetServerClientInitHook clientInitHook;
+    void *clientInitOpaque;
 };
 
 
@@ -248,7 +249,7 @@ static int virNetServerDispatchNewClient(virNetServerServicePtr svc ATTRIBUTE_UN
         goto error;
 
     if (srv->clientInitHook &&
-        srv->clientInitHook(srv, client) < 0)
+        srv->clientInitHook(srv, client, srv->clientInitOpaque) < 0)
         goto error;
 
     if (VIR_EXPAND_N(srv->clients, srv->nclients, 1) < 0) {
@@ -310,7 +311,8 @@ virNetServerPtr virNetServerNew(size_t min_workers,
                                 unsigned int keepaliveCount,
                                 bool keepaliveRequired,
                                 const char *mdnsGroupName,
-                                virNetServerClientInitHook clientInitHook)
+                                virNetServerClientInitHook clientInitHook,
+                                void *opaque)
 {
     virNetServerPtr srv;
     struct sigaction sig_action;
@@ -334,6 +336,7 @@ virNetServerPtr virNetServerNew(size_t min_workers,
     srv->keepaliveRequired = keepaliveRequired;
     srv->sigwrite = srv->sigread = -1;
     srv->clientInitHook = clientInitHook;
+    srv->clientInitOpaque = opaque;
     srv->privileged = geteuid() == 0 ? true : false;
 
     if (mdnsGroupName &&
