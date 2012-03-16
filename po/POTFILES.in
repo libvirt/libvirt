@@ -127,6 +127,7 @@ src/util/util.c
 src/util/viraudit.c
 src/util/virfile.c
 src/util/virhash.c
+src/util/virkeyfile.c
 src/util/virnetdev.c
 src/util/virnetdevbridge.c
 src/util/virnetdevmacvlan.c

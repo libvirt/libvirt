@@ -90,6 +90,7 @@ UTIL_SOURCES =							\
 		util/virhash.c util/virhash.h			\
 		util/virhashcode.c util/virhashcode.h           \
 		util/virkeycode.c util/virkeycode.h		\
+		util/virkeyfile.c util/virkeyfile.h		\
 		util/virkeymaps.h				\
 		util/virmacaddr.h util/virmacaddr.c		\
 		util/virnetdev.h util/virnetdev.c		\

@@ -1198,6 +1198,16 @@ virKeycodeValueFromString;
 virKeycodeValueTranslate;
 
 
+# virkeyfile.h
+virKeyFileNew;
+virKeyFileLoadFile;
+virKeyFileLoadData;
+virKeyFileFree;
+virKeyFileHasValue;
+virKeyFileHasGroup;
+virKeyFileGetValueString;
+
+
 # virmacaddr.h
 virMacAddrCompare;
 virMacAddrFormat;
