@@ -19718,12 +19718,15 @@ vshUsage(void)
                       "  commands (non interactive mode):\n\n"), progname, progname);
 
     for (grp = cmdGroups; grp->name; grp++) {
-        fprintf(stdout, _(" %s (help keyword '%s')\n"), grp->name, grp->keyword);
-
-        for (cmd = grp->commands; cmd->name; cmd++)
+        fprintf(stdout, _(" %s (help keyword '%s')\n"),
+                grp->name, grp->keyword);
+        for (cmd = grp->commands; cmd->name; cmd++) {
+            if (cmd->flags & VSH_CMD_FLAG_ALIAS)
+                continue;
             fprintf(stdout,
-                    "    %-30s %s\n", cmd->name, _(vshCmddefGetInfo(cmd, "help")));
-
+                    "    %-30s %s\n", cmd->name,
+                    _(vshCmddefGetInfo(cmd, "help")));
+        }
         fprintf(stdout, "\n");
     }
 
