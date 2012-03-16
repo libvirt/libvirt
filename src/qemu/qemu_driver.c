@@ -9584,24 +9584,36 @@ qemuDomainSnapshotFSFreeze(struct qemud_driver *driver,
 
 static int
 qemuDomainSnapshotFSThaw(struct qemud_driver *driver,
-                         virDomainObjPtr vm) {
+                         virDomainObjPtr vm, bool report)
+{
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int thawed;
+    virErrorPtr err = NULL;
 
     if (priv->agentError) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("QEMU guest agent is not "
-                          "available due to an error"));
+        if (report)
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("QEMU guest agent is not "
+                              "available due to an error"));
         return -1;
     }
     if (!priv->agent) {
-        qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                        _("QEMU guest agent is not configured"));
+        if (report)
+            qemuReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                            _("QEMU guest agent is not configured"));
         return -1;
     }
 
     qemuDomainObjEnterAgent(driver, vm);
+    if (!report)
+        err = virGetLastError();
     thawed = qemuAgentFSThaw(priv->agent);
+    if (!report) {
+        if (err)
+            virResetError(err);
+        else
+            virResetLastError();
+    }
     qemuDomainObjExitAgent(driver, vm);
 
     return thawed;
@@ -9907,6 +9919,7 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
     int ret = -1;
     int i;
     bool persist = false;
+    int thaw = 0; /* 1 if freeze succeeded, -1 if freeze failed */
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         return -1;
@@ -9917,14 +9930,21 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
         goto endjob;
     }
 
+    /* If quiesce was requested, then issue a freeze command, and a
+     * counterpart thaw command, no matter what.  The command will
+     * fail if the guest is paused or the guest agent is not
+     * running.  */
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) {
+        if (qemuDomainSnapshotFSFreeze(driver, vm) < 0) {
+            /* helper reported the error */
+            thaw = -1;
+            goto endjob;
+        } else {
+            thaw = 1;
+        }
+    }
 
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
-        if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) &&
-            (qemuDomainSnapshotFSFreeze(driver, vm) < 0)) {
-            /* helper reported the error */
-            goto endjob;
-        }
-
         /* In qemu, snapshot_blkdev on a single disk will pause cpus,
          * but this confuses libvirt since notifications are not given
          * when qemu resumes.  And for multiple disks, libvirt must
@@ -9986,6 +10006,7 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
          * only, so this end job never drops the last reference.  */
         ignore_value(qemuDomainObjEndJob(driver, vm));
         resume = false;
+        thaw = 0;
         vm = NULL;
         if (event)
             qemuDomainEventQueue(driver, event);
@@ -10001,11 +10022,6 @@ cleanup:
                             _("resuming after snapshot failed"));
             goto endjob;
         }
-
-        if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) &&
-            qemuDomainSnapshotFSThaw(driver, vm) < 0) {
-            /* helper reported the error */
-        }
     }
 
     if (vm) {
@@ -10016,6 +10032,12 @@ cleanup:
     }
 
 endjob:
+    if (vm && thaw != 0 &&
+        qemuDomainSnapshotFSThaw(driver, vm, thaw > 0) < 0) {
+        /* helper reported the error, if it was needed */
+        if (thaw > 0)
+            ret = -1;
+    }
     if (vm && (qemuDomainObjEndJob(driver, vm) == 0)) {
             /* Only possible if a transient vm quit while our locks were down,
              * in which case we don't want to save snapshot metadata.  */
