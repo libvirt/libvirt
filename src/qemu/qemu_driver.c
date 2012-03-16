@@ -9536,7 +9536,8 @@ cleanup:
     return ret;
 }
 
-static int qemuDomainSnapshotIsAllowed(virDomainObjPtr vm)
+static bool
+qemuDomainSnapshotIsAllowed(virDomainObjPtr vm)
 {
     int i;
 
@@ -9551,11 +9552,11 @@ static int qemuDomainSnapshotIsAllowed(virDomainObjPtr vm)
             qemuReportError(VIR_ERR_OPERATION_INVALID,
                             _("Disk '%s' does not support snapshotting"),
                             vm->def->disks[i]->src);
-            return 0;
+            return false;
         }
     }
 
-    return 1;
+    return true;
 }
 
 static int
@@ -9713,13 +9714,17 @@ endjob:
 
 static int
 qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
-                              bool allow_reuse)
+                              unsigned int *flags)
 {
     int ret = -1;
     int i;
     bool found = false;
     bool active = virDomainObjIsActive(vm);
     struct stat st;
+    bool allow_reuse = (*flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
+    bool atomic = (*flags & VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC) != 0;
+    int external = 0;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
 
     for (i = 0; i < def->ndisks; i++) {
         virDomainSnapshotDiskDefPtr disk = &def->disks[i];
@@ -9774,6 +9779,7 @@ qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
                 goto cleanup;
             }
             found = true;
+            external++;
             break;
 
         case VIR_DOMAIN_DISK_SNAPSHOT_NO:
@@ -9792,6 +9798,17 @@ qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
                         _("disk snapshots require at least one disk to be "
                           "selected for snapshot"));
         goto cleanup;
+    }
+    if (active) {
+        if (external == 1 ||
+            qemuCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION)) {
+            *flags |= VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC;
+        } else if (atomic && external > 1) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("atomic live snapshot of multiple disks "
+                              "is unsupported"));
+            goto cleanup;
+        }
     }
 
     ret = 0;
@@ -9921,6 +9938,7 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
     int i;
     bool persist = false;
     int thaw = 0; /* 1 if freeze succeeded, -1 if freeze failed */
+    bool atomic = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC) != 0;
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         return -1;
@@ -9945,14 +9963,14 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
         }
     }
 
-    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
-        /* In qemu, snapshot_blkdev on a single disk will pause cpus,
-         * but this confuses libvirt since notifications are not given
-         * when qemu resumes.  And for multiple disks, libvirt must
-         * pause externally to get all snapshots to be at the same
-         * point in time.  For simplicitly, we always pause ourselves
-         * rather than relying on qemu doing pause.
-         */
+    /* For multiple disks, libvirt must pause externally to get all
+     * snapshots to be at the same point in time, unless qemu supports
+     * transactions.  For a single disk, snapshot is atomic without
+     * requiring a pause.  Thanks to qemuDomainSnapshotDiskPrepare, if
+     * we got to this point, the atomic flag now says whether we need
+     * to pause, and a capability bit says whether to use transaction.
+     */
+    if (!atomic && virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         if (qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_SAVE,
                                 QEMU_ASYNC_JOB_NONE) < 0)
             goto cleanup;
@@ -10040,10 +10058,10 @@ endjob:
             ret = -1;
     }
     if (vm && (qemuDomainObjEndJob(driver, vm) == 0)) {
-            /* Only possible if a transient vm quit while our locks were down,
-             * in which case we don't want to save snapshot metadata.  */
-            *vmptr = NULL;
-            ret = -1;
+        /* Only possible if a transient vm quit while our locks were down,
+         * in which case we don't want to save snapshot metadata.  */
+        *vmptr = NULL;
+        ret = -1;
     }
 
     return ret;
@@ -10071,7 +10089,8 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                   VIR_DOMAIN_SNAPSHOT_CREATE_HALT |
                   VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY |
                   VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT |
-                  VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE, NULL);
+                  VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC, NULL);
 
     if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) &&
         !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY)) {
@@ -10213,14 +10232,11 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
             goto cleanup;
 
         if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
-            bool allow_reuse;
-
-            allow_reuse = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
             if (virDomainSnapshotAlignDisks(def,
                                             VIR_DOMAIN_DISK_SNAPSHOT_EXTERNAL,
                                             false) < 0)
                 goto cleanup;
-            if (qemuDomainSnapshotDiskPrepare(vm, def, allow_reuse) < 0)
+            if (qemuDomainSnapshotDiskPrepare(vm, def, &flags) < 0)
                 goto cleanup;
             def->state = VIR_DOMAIN_DISK_SNAPSHOT;
         } else {
