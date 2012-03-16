@@ -1963,6 +1963,7 @@ remoteDomainMigratePrepare (virConnectPtr dconn,
     if (ret.uri_out)
         *uri_out = *ret.uri_out; /* Caller frees. */
 
+    VIR_FREE(ret.uri_out);
     rv = 0;
 
 done:
@@ -2018,6 +2019,7 @@ remoteDomainMigratePrepare2 (virConnectPtr dconn,
     rv = 0;
 
 done:
+    VIR_FREE(ret.uri_out);
     remoteDriverUnlock(priv);
     return rv;
 error:
@@ -4161,6 +4163,7 @@ remoteDomainMigratePrepare3(virConnectPtr dconn,
     rv = 0;
 
 done:
+    VIR_FREE(ret.uri_out);
     remoteDriverUnlock(priv);
     return rv;
 error:
