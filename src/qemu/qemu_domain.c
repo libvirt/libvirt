@@ -232,6 +232,7 @@ static void qemuDomainObjPrivateFree(void *data)
         VIR_ERROR(_("Unexpected QEMU agent still active during domain deletion"));
         qemuAgentClose(priv->agent);
     }
+    VIR_FREE(priv->cleanupCallbacks);
     VIR_FREE(priv);
 }
 
@@ -1768,4 +1769,76 @@ qemuDomainCheckDiskPresence(struct qemud_driver *driver,
 
 cleanup:
     return ret;
+}
+
+/*
+ * The vm must be locked when any of the following cleanup functions is
+ * called.
+ */
+int
+qemuDomainCleanupAdd(virDomainObjPtr vm,
+                     qemuDomainCleanupCallback cb)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int i;
+
+    VIR_DEBUG("vm=%s, cb=%p", vm->def->name, cb);
+
+    for (i = 0; i < priv->ncleanupCallbacks; i++) {
+        if (priv->cleanupCallbacks[i] == cb)
+            return 0;
+    }
+
+    if (VIR_RESIZE_N(priv->cleanupCallbacks,
+                     priv->ncleanupCallbacks_max,
+                     priv->ncleanupCallbacks, 1) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    priv->cleanupCallbacks[priv->ncleanupCallbacks++] = cb;
+    return 0;
+}
+
+void
+qemuDomainCleanupRemove(virDomainObjPtr vm,
+                        qemuDomainCleanupCallback cb)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int i;
+
+    VIR_DEBUG("vm=%s, cb=%p", vm->def->name, cb);
+
+    for (i = 0; i < priv->ncleanupCallbacks; i++) {
+        if (priv->cleanupCallbacks[i] == cb) {
+            memmove(priv->cleanupCallbacks + i,
+                    priv->cleanupCallbacks + i + 1,
+                    priv->ncleanupCallbacks - i - 1);
+            priv->ncleanupCallbacks--;
+        }
+    }
+
+    VIR_SHRINK_N(priv->cleanupCallbacks,
+                 priv->ncleanupCallbacks_max,
+                 priv->ncleanupCallbacks_max - priv->ncleanupCallbacks);
+}
+
+void
+qemuDomainCleanupRun(struct qemud_driver *driver,
+                     virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int i;
+
+    VIR_DEBUG("driver=%p, vm=%s", driver, vm->def->name);
+
+    /* run cleanup callbacks in reverse order */
+    for (i = priv->ncleanupCallbacks - 1; i >= 0; i--) {
+        if (priv->cleanupCallbacks[i])
+            priv->cleanupCallbacks[i](driver, vm);
+    }
+
+    VIR_FREE(priv->cleanupCallbacks);
+    priv->ncleanupCallbacks = 0;
+    priv->ncleanupCallbacks_max = 0;
 }

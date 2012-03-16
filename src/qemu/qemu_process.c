@@ -3803,6 +3803,8 @@ void qemuProcessStop(struct qemud_driver *driver,
     /* shut it off for sure */
     ignore_value(qemuProcessKill(driver, vm, VIR_QEMU_PROCESS_KILL_FORCE));
 
+    qemuDomainCleanupRun(driver, vm);
+
     /* Stop autodestroy in case guest is restarted */
     qemuProcessAutoDestroyRemove(driver, vm);
 

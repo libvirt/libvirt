@@ -101,6 +101,9 @@ struct qemuDomainJobObj {
 typedef struct _qemuDomainPCIAddressSet qemuDomainPCIAddressSet;
 typedef qemuDomainPCIAddressSet *qemuDomainPCIAddressSetPtr;
 
+typedef void (*qemuDomainCleanupCallback)(struct qemud_driver *driver,
+                                          virDomainObjPtr vm);
+
 typedef struct _qemuDomainObjPrivate qemuDomainObjPrivate;
 typedef qemuDomainObjPrivate *qemuDomainObjPrivatePtr;
 struct _qemuDomainObjPrivate {
@@ -137,6 +140,10 @@ struct _qemuDomainObjPrivate {
     char *origname;
 
     virConsolesPtr cons;
+
+    qemuDomainCleanupCallback *cleanupCallbacks;
+    size_t ncleanupCallbacks;
+    size_t ncleanupCallbacks_max;
 };
 
 struct qemuDomainWatchdogEvent
@@ -314,4 +321,12 @@ bool qemuDomainJobAllowed(qemuDomainObjPrivatePtr priv,
 int qemuDomainCheckDiskPresence(struct qemud_driver *driver,
                                 virDomainObjPtr vm,
                                 bool start_with_state);
+
+int qemuDomainCleanupAdd(virDomainObjPtr vm,
+                         qemuDomainCleanupCallback cb);
+void qemuDomainCleanupRemove(virDomainObjPtr vm,
+                             qemuDomainCleanupCallback cb);
+void qemuDomainCleanupRun(struct qemud_driver *driver,
+                          virDomainObjPtr vm);
+
 #endif /* __QEMU_DOMAIN_H__ */
