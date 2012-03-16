@@ -13324,15 +13324,15 @@ error:
  * capacity; this may make the operation take noticeably longer.
  *
  * Normally, the operation treats @capacity as the new size in bytes;
- * but if @flags contains VIR_STORAGE_RESIZE_DELTA, then @capacity
+ * but if @flags contains VIR_STORAGE_VOL_RESIZE_DELTA, then @capacity
  * represents the size difference to add to the current size.  It is
  * up to the storage pool implementation whether unaligned requests are
  * rounded up to the next valid boundary, or rejected.
  *
  * Normally, this operation should only be used to enlarge capacity;
- * but if @flags contains VIR_STORAGE_RESIZE_SHRINK, it is possible to
+ * but if @flags contains VIR_STORAGE_VOL_RESIZE_SHRINK, it is possible to
  * attempt a reduction in capacity even though it might cause data loss.
- * If VIR_STORAGE_RESIZE_DELTA is also present, then @capacity is
+ * If VIR_STORAGE_VOL_RESIZE_DELTA is also present, then @capacity is
  * subtracted from the current size; without it, @capacity represents
  * the absolute new size regardless of whether it is larger or smaller
  * than the current size.
