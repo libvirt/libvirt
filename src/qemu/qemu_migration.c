@@ -1107,6 +1107,23 @@ cleanup:
 /* Prepare is the first step, and it runs on the destination host.
  */
 
+static void
+qemuMigrationPrepareCleanup(struct qemud_driver *driver,
+                            virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    VIR_DEBUG("driver=%p, vm=%s, job=%s, asyncJob=%s",
+              driver,
+              vm->def->name,
+              qemuDomainJobTypeToString(priv->job.active),
+              qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
+
+    if (!qemuMigrationJobIsActive(vm, QEMU_ASYNC_JOB_MIGRATION_IN))
+        return;
+    qemuDomainObjDiscardAsyncJob(driver, vm);
+}
+
 static int
 qemuMigrationPrepareAny(struct qemud_driver *driver,
                         virConnectPtr dconn,
@@ -1263,6 +1280,9 @@ qemuMigrationPrepareAny(struct qemud_driver *driver,
          */
         VIR_WARN("Unable to encode migration cookie");
     }
+
+    if (qemuDomainCleanupAdd(vm, qemuMigrationPrepareCleanup) < 0)
+        goto endjob;
 
     virDomainAuditStart(vm, "migrated", true);
     event = virDomainEventNewFromObj(vm,
@@ -2702,6 +2722,8 @@ qemuMigrationFinish(struct qemud_driver *driver,
     qemuMigrationJobStartPhase(driver, vm,
                                v3proto ? QEMU_MIGRATION_PHASE_FINISH3
                                        : QEMU_MIGRATION_PHASE_FINISH2);
+
+    qemuDomainCleanupRemove(vm, qemuMigrationPrepareCleanup);
 
     if (flags & VIR_MIGRATE_PERSIST_DEST)
         cookie_flags |= QEMU_MIGRATION_COOKIE_PERSISTENT;

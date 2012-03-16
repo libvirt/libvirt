@@ -51,7 +51,6 @@
     (VIR_DOMAIN_XML_SECURE |                \
      VIR_DOMAIN_XML_UPDATE_CPU)
 
-VIR_ENUM_DECL(qemuDomainJob)
 VIR_ENUM_IMPL(qemuDomainJob, QEMU_JOB_LAST,
               "none",
               "query",
@@ -64,7 +63,6 @@ VIR_ENUM_IMPL(qemuDomainJob, QEMU_JOB_LAST,
               "async nested",
 );
 
-VIR_ENUM_DECL(qemuDomainAsyncJob)
 VIR_ENUM_IMPL(qemuDomainAsyncJob, QEMU_ASYNC_JOB_LAST,
               "none",
               "migration out",

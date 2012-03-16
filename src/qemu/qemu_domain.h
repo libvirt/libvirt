@@ -71,6 +71,7 @@ enum qemuDomainJob {
 
     QEMU_JOB_LAST
 };
+VIR_ENUM_DECL(qemuDomainJob)
 
 /* Async job consists of a series of jobs that may change state. Independent
  * jobs that do not change state (and possibly others if explicitly allowed by
@@ -85,6 +86,7 @@ enum qemuDomainAsyncJob {
 
     QEMU_ASYNC_JOB_LAST
 };
+VIR_ENUM_DECL(qemuDomainAsyncJob)
 
 struct qemuDomainJobObj {
     virCond cond;                       /* Use to coordinate jobs */
