@@ -5959,6 +5959,12 @@ qemuDomainParseDeviceWeightStr(char *deviceWeightStr,
     int i;
     virBlkioDeviceWeightPtr result = NULL;
 
+    *dw = NULL;
+    *size = 0;
+
+    if (STREQ(deviceWeightStr, ""))
+        return 0;
+
     temp = deviceWeightStr;
     while (temp) {
         temp = strchr(temp, ',');
@@ -6021,7 +6027,7 @@ qemuDomainParseDeviceWeightStr(char *deviceWeightStr,
 
 error:
     qemuReportError(VIR_ERR_INVALID_ARG,
-                    _("unable to parse %s"), deviceWeightStr);
+                    _("unable to parse device weight '%s'"), deviceWeightStr);
 cleanup:
     virBlkioDeviceWeightArrayClear(result, ndevices);
     VIR_FREE(result);
