@@ -3301,6 +3301,8 @@ typedef enum {
                                                           quiesce all mounted
                                                           file systems within
                                                           the domain */
+    VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC      = (1 << 7), /* atomically avoid
+                                                          partial changes */
 } virDomainSnapshotCreateFlags;
 
 /* Take a snapshot of the current VM state */

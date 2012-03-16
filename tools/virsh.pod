@@ -2286,7 +2286,7 @@ used to represent properties of snapshots.
 
 =item B<snapshot-create> I<domain> [I<xmlfile>] {[I<--redefine> [I<--current>]]
 | [I<--no-metadata>] [I<--halt>] [I<--disk-only>] [I<--reuse-external>]
-[I<--quiesce>]}
+[I<--quiesce>] [I<--atomic>]}
 
 Create a snapshot for domain I<domain> with the properties specified in
 I<xmlfile>.  Normally, the only properties settable for a domain snapshot
@@ -2333,6 +2333,12 @@ to freeze and unfreeze domain's mounted file systems. However,
 if domain has no guest agent, snapshot creation will fail.
 Currently, this requires I<--disk-only> to be passed as well.
 
+If I<--atomic> is specified, libvirt will guarantee that the snapshot
+either succeeds, or fails with no changes; not all hypervisors support
+this.  If this flag is not specified, then some hypervisors may fail
+after partially performing the action, and B<dumpxml> must be used to
+see whether any partial changes occurred.
+
 Existence of snapshot metadata will prevent attempts to B<undefine>
 a persistent domain.  However, for transient domains, snapshot
 metadata is silently lost when the domain quits running (whether
@@ -2340,7 +2346,7 @@ by command such as B<destroy> or by internal guest action).
 
 =item B<snapshot-create-as> I<domain> {[I<--print-xml>]
 | [I<--no-metadata>] [I<--halt>] [I<--reuse-existing>]} [I<name>]
-[I<description>] [I<--disk-only> [I<--quiesce>]
+[I<description>] [I<--disk-only> [I<--quiesce>] [I<--atomic>]
 [[I<--diskspec>] B<diskspec>]...]
 
 Create a snapshot for domain I<domain> with the given <name> and
@@ -2379,6 +2385,12 @@ but any metadata is immediately discarded (that is, libvirt does not
 treat the snapshot as current, and cannot revert to the snapshot
 unless B<snapshot-create> is later used to teach libvirt about the
 metadata again).  This flag is incompatible with I<--print-xml>.
+
+If I<--atomic> is specified, libvirt will guarantee that the snapshot
+either succeeds, or fails with no changes; not all hypervisors support
+this.  If this flag is not specified, then some hypervisors may fail
+after partially performing the action, and B<dumpxml> must be used to
+see whether any partial changes occurred.
 
 =item B<snapshot-current> I<domain> {[I<--name>] | [I<--security-info>]
 | [I<snapshotname>]}

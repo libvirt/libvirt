@@ -17107,14 +17107,21 @@ virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
  * @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT, then existing
  * destination files are instead truncated and reused.
  *
- * Returns an (opaque) virDomainSnapshotPtr on success, NULL on failure.
  * Be aware that although libvirt prefers to report errors up front with
- * no other effect, there are certain types of failures where a failure
- * can occur even though the guest configuration was changed (for
- * example, if a disk snapshot request over two disks only fails on the
- * second disk, leaving the first disk altered); so after getting a NULL
- * return, it can be wise to use virDomainGetXMLDesc() to determine if
- * any partial changes occurred.
+ * no other effect, some hypervisors have certain types of failures where
+ * the overall command can easily fail even though the guest configuration
+ * was partially altered (for example, if a disk snapshot request for two
+ * disks fails on the second disk, but the first disk alteration cannot be
+ * rolled back).  If this API call fails, it is therefore normally
+ * necessary to follow up with virDomainGetXMLDesc() and check each disk
+ * to determine if any partial changes occurred.  However, if @flags
+ * contains VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC, then libvirt guarantees
+ * that this command will not alter any disks unless the entire set of
+ * changes can be done atomically, making failure recovery simpler (note
+ * that it is still possible to fail after disks have changed, but only
+ * in the much rarer cases of running out of memory or disk space).
+ *
+ * Returns an (opaque) virDomainSnapshotPtr on success, NULL on failure.
  */
 virDomainSnapshotPtr
 virDomainSnapshotCreateXML(virDomainPtr domain,
