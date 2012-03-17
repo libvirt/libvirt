@@ -1,7 +1,7 @@
 /*
  * qemu_domain.h: QEMU domain private state
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1488,24 +1488,17 @@ cleanup:
 
 /* The domain is expected to be locked and inactive. Return -1 on normal
  * failure, 1 if we skipped a disk due to try_all.  */
-int
-qemuDomainSnapshotForEachQcow2(struct qemud_driver *driver,
-                               virDomainObjPtr vm,
-                               virDomainSnapshotObjPtr snap,
-                               const char *op,
-                               bool try_all)
+static int
+qemuDomainSnapshotForEachQcow2Raw(struct qemud_driver *driver,
+                                  virDomainDefPtr def,
+                                  const char *name,
+                                  const char *op,
+                                  bool try_all,
+                                  int ndisks)
 {
     const char *qemuimgarg[] = { NULL, "snapshot", NULL, NULL, NULL, NULL };
     int i;
     bool skipped = false;
-    virDomainDefPtr def;
-
-    /* Prefer action on the disks in use at the time the snapshot was
-     * created; but fall back to current definition if dealing with a
-     * snapshot created prior to libvirt 0.9.5.  */
-    def = snap->def->dom;
-    if (!def)
-        def = vm->def;
 
     qemuimgarg[0] = qemuFindQemuImgBinary(driver);
     if (qemuimgarg[0] == NULL) {
@@ -1514,13 +1507,10 @@ qemuDomainSnapshotForEachQcow2(struct qemud_driver *driver,
     }
 
     qemuimgarg[2] = op;
-    qemuimgarg[3] = snap->def->name;
+    qemuimgarg[3] = name;
 
-    for (i = 0; i < def->ndisks; i++) {
+    for (i = 0; i < ndisks; i++) {
         /* FIXME: we also need to handle LVM here */
-        /* FIXME: if we fail halfway through this loop, we are in an
-         * inconsistent state.  I'm not quite sure what to do about that
-         */
         if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
             if (!def->disks[i]->driverType ||
                 STRNEQ(def->disks[i]->driverType, "qcow2")) {
@@ -1532,6 +1522,11 @@ qemuDomainSnapshotForEachQcow2(struct qemud_driver *driver,
                              def->disks[i]->dst);
                     skipped = true;
                     continue;
+                } else if (STREQ(op, "-c") && i) {
+                    /* We must roll back partial creation by deleting
+                     * all earlier snapshots.  */
+                    qemuDomainSnapshotForEachQcow2Raw(driver, def, name,
+                                                      "-d", false, i);
                 }
                 qemuReportError(VIR_ERR_OPERATION_INVALID,
                                 _("Disk device '%s' does not support"
@@ -1548,6 +1543,11 @@ qemuDomainSnapshotForEachQcow2(struct qemud_driver *driver,
                              def->disks[i]->dst);
                     skipped = true;
                     continue;
+                } else if (STREQ(op, "-c") && i) {
+                    /* We must roll back partial creation by deleting
+                     * all earlier snapshots.  */
+                    qemuDomainSnapshotForEachQcow2Raw(driver, def, name,
+                                                      "-d", false, i);
                 }
                 return -1;
             }
@@ -1555,6 +1555,26 @@ qemuDomainSnapshotForEachQcow2(struct qemud_driver *driver,
     }
 
     return skipped ? 1 : 0;
+}
+
+/* The domain is expected to be locked and inactive. Return -1 on normal
+ * failure, 1 if we skipped a disk due to try_all.  */
+int
+qemuDomainSnapshotForEachQcow2(struct qemud_driver *driver,
+                               virDomainObjPtr vm,
+                               virDomainSnapshotObjPtr snap,
+                               const char *op,
+                               bool try_all)
+{
+    /* Prefer action on the disks in use at the time the snapshot was
+     * created; but fall back to current definition if dealing with a
+     * snapshot created prior to libvirt 0.9.5.  */
+    virDomainDefPtr def = snap->def->dom;
+
+    if (!def)
+        def = vm->def;
+    return qemuDomainSnapshotForEachQcow2Raw(driver, def, snap->def->name,
+                                             op, try_all, def->ndisks);
 }
 
 /* Discard one snapshot (or its metadata), without reparenting any children.  */
