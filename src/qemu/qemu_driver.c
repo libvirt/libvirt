@@ -9883,7 +9883,7 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
     origdriver = NULL;
 
     /* create the actual snapshot */
-    ret = qemuMonitorDiskSnapshot(priv->mon, device, source);
+    ret = qemuMonitorDiskSnapshot(priv->mon, NULL, device, source);
     virDomainAuditDisk(vm, disk->src, source, "snapshot", ret >= 0);
     if (ret < 0)
         goto cleanup;

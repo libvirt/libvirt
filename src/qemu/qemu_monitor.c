@@ -2656,12 +2656,13 @@ int qemuMonitorDeleteSnapshot(qemuMonitorPtr mon, const char *name)
  * device into a read-only backing file of a new qcow2 image located
  * at file.  */
 int
-qemuMonitorDiskSnapshot(qemuMonitorPtr mon, const char *device,
-                        const char *file)
+qemuMonitorDiskSnapshot(qemuMonitorPtr mon, virJSONValuePtr actions,
+                        const char *device, const char *file)
 {
     int ret;
 
-    VIR_DEBUG("mon=%p, device=%s, file=%s", mon, device, file);
+    VIR_DEBUG("mon=%p, actions=%p, device=%s, file=%s",
+              mon, actions, device, file);
 
     if (!mon) {
         qemuReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2669,10 +2670,32 @@ qemuMonitorDiskSnapshot(qemuMonitorPtr mon, const char *device,
         return -1;
     }
 
-    if (mon->json)
-        ret = qemuMonitorJSONDiskSnapshot(mon, device, file);
-    else
+    if (mon->json) {
+        ret = qemuMonitorJSONDiskSnapshot(mon, actions, device, file);
+    } else {
+        if (actions) {
+            qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                            _("actions not supported with text monitor"));
+            return -1;
+        }
         ret = qemuMonitorTextDiskSnapshot(mon, device, file);
+    }
+    return ret;
+}
+
+/* Use the transaction QMP command to run atomic snapshot commands.  */
+int
+qemuMonitorTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
+{
+    int ret = -1;
+
+    VIR_DEBUG("mon=%p, actions=%p", mon, actions);
+
+    if (mon->json)
+        ret = qemuMonitorJSONTransaction(mon, actions);
+    else
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("transaction requires JSON monitor"));
     return ret;
 }
 

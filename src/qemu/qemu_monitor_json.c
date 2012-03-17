@@ -375,9 +375,10 @@ qemuMonitorJSONHasError(virJSONValuePtr reply,
     return STREQ(klass, thisklass);
 }
 
+/* Top-level commands and nested transaction list elements share a
+ * common structure for everything except the dictionary names.  */
 static virJSONValuePtr ATTRIBUTE_SENTINEL
-qemuMonitorJSONMakeCommand(const char *cmdname,
-                           ...)
+qemuMonitorJSONMakeCommandRaw(bool wrap, const char *cmdname, ...)
 {
     virJSONValuePtr obj;
     virJSONValuePtr jargs = NULL;
@@ -389,7 +390,8 @@ qemuMonitorJSONMakeCommand(const char *cmdname,
     if (!(obj = virJSONValueNewObject()))
         goto no_memory;
 
-    if (virJSONValueObjectAppendString(obj, "execute", cmdname) < 0)
+    if (virJSONValueObjectAppendString(obj, wrap ? "type" : "execute",
+                                       cmdname) < 0)
         goto no_memory;
 
     while ((key = va_arg(args, char *)) != NULL) {
@@ -411,8 +413,7 @@ qemuMonitorJSONMakeCommand(const char *cmdname,
             !(jargs = virJSONValueNewObject()))
             goto no_memory;
 
-        /* This doesn't supports maps/arrays.  This hasn't
-         * proved to be a problem..... yet :-)  */
+        /* This doesn't support maps, but no command uses those.  */
         switch (type) {
         case 's': {
             char *val = va_arg(args, char *);
@@ -450,6 +451,10 @@ qemuMonitorJSONMakeCommand(const char *cmdname,
         case 'n': {
             ret = virJSONValueObjectAppendNull(jargs, key);
         }   break;
+        case 'a': {
+            virJSONValuePtr val = va_arg(args, virJSONValuePtr);
+            ret = virJSONValueObjectAppend(jargs, key, val);
+        }   break;
         default:
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("unsupported data type '%c' for arg '%s'"), type, key - 2);
@@ -460,7 +465,7 @@ qemuMonitorJSONMakeCommand(const char *cmdname,
     }
 
     if (jargs &&
-        virJSONValueObjectAppend(obj, "arguments", jargs) < 0)
+        virJSONValueObjectAppend(obj, wrap ? "data" : "arguments", jargs) < 0)
         goto no_memory;
 
     va_end(args);
@@ -476,6 +481,8 @@ error:
     return NULL;
 }
 
+#define qemuMonitorJSONMakeCommand(cmdname, ...) \
+    qemuMonitorJSONMakeCommandRaw(false, cmdname, __VA_ARGS__)
 
 static void
 qemuFreeKeywords(int nkeywords, char **keywords, char **values)
@@ -3097,29 +3104,68 @@ cleanup:
 }
 
 int
-qemuMonitorJSONDiskSnapshot(qemuMonitorPtr mon, const char *device,
-                            const char *file)
+qemuMonitorJSONDiskSnapshot(qemuMonitorPtr mon, virJSONValuePtr actions,
+                            const char *device, const char *file)
 {
     int ret;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
 
-    cmd = qemuMonitorJSONMakeCommand("blockdev-snapshot-sync",
-                                     "s:device", device,
-                                     "s:snapshot-file", file,
-                                     NULL);
+    cmd = qemuMonitorJSONMakeCommandRaw(actions != NULL,
+                                        "blockdev-snapshot-sync",
+                                        "s:device", device,
+                                        "s:snapshot-file", file,
+                                        NULL);
     if (!cmd)
         return -1;
 
-    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
+    if (actions) {
+        if (virJSONValueArrayAppend(actions, cmd) < 0) {
+            virReportOOMError();
+            ret = -1;
+        } else {
+            ret = 0;
+            cmd = NULL;
+        }
+    } else {
+        if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound") &&
-        qemuMonitorCheckHMP(mon, "snapshot_blkdev")) {
-        VIR_DEBUG("blockdev-snapshot-sync command not found, trying HMP");
-        ret = qemuMonitorTextDiskSnapshot(mon, device, file);
-        goto cleanup;
+        if (qemuMonitorJSONHasError(reply, "CommandNotFound") &&
+            qemuMonitorCheckHMP(mon, "snapshot_blkdev")) {
+            VIR_DEBUG("blockdev-snapshot-sync command not found, trying HMP");
+            ret = qemuMonitorTextDiskSnapshot(mon, device, file);
+            goto cleanup;
+        }
+
+        ret = qemuMonitorJSONCheckError(cmd, reply);
     }
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+/* Note that this call frees actions regardless of whether the call
+ * succeeds.  */
+int
+qemuMonitorJSONTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    cmd = qemuMonitorJSONMakeCommand("transaction",
+                                     "a:actions", actions,
+                                     NULL);
+    if (!cmd) {
+        virJSONValueFree(actions);
+        return -1;
+    }
+
+    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
+        goto cleanup;
 
     ret = qemuMonitorJSONCheckError(cmd, reply);
 

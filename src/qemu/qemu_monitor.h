@@ -31,6 +31,7 @@
 # include "qemu_conf.h"
 # include "bitmap.h"
 # include "virhash.h"
+# include "json.h"
 
 typedef struct _qemuMonitor qemuMonitor;
 typedef qemuMonitor *qemuMonitorPtr;
@@ -502,8 +503,11 @@ int qemuMonitorLoadSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorDeleteSnapshot(qemuMonitorPtr mon, const char *name);
 
 int qemuMonitorDiskSnapshot(qemuMonitorPtr mon,
+                            virJSONValuePtr actions,
                             const char *device,
                             const char *file);
+int qemuMonitorTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorArbitraryCommand(qemuMonitorPtr mon,
                                 const char *cmd,
