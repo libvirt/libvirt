@@ -9823,7 +9823,8 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
                                          virDomainObjPtr vm,
                                          virDomainSnapshotDiskDefPtr snap,
                                          virDomainDiskDefPtr disk,
-                                         virDomainDiskDefPtr persistDisk)
+                                         virDomainDiskDefPtr persistDisk,
+                                         virJSONValuePtr actions)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *device = NULL;
@@ -9883,7 +9884,7 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
     origdriver = NULL;
 
     /* create the actual snapshot */
-    ret = qemuMonitorDiskSnapshot(priv->mon, NULL, device, source);
+    ret = qemuMonitorDiskSnapshot(priv->mon, actions, device, source);
     virDomainAuditDisk(vm, disk->src, source, "snapshot", ret >= 0);
     if (ret < 0)
         goto cleanup;
@@ -9924,6 +9925,69 @@ cleanup:
     return ret;
 }
 
+/* The domain is expected to hold monitor lock.  This is the
+ * counterpart to qemuDomainSnapshotCreateSingleDiskActive, called
+ * only on a failed transaction. */
+static void
+qemuDomainSnapshotUndoSingleDiskActive(struct qemud_driver *driver,
+                                       virDomainObjPtr vm,
+                                       virDomainDiskDefPtr origdisk,
+                                       virDomainDiskDefPtr disk,
+                                       virDomainDiskDefPtr persistDisk,
+                                       bool need_unlink)
+{
+    char *source = NULL;
+    char *driverType = NULL;
+    char *persistSource = NULL;
+    char *persistDriverType = NULL;
+    struct stat st;
+
+    if (!(source = strdup(origdisk->src)) ||
+        (origdisk->driverType &&
+         !(driverType = strdup(origdisk->driverType))) ||
+        (persistDisk &&
+         (!(persistSource = strdup(source)) ||
+          (driverType && !(persistDriverType = strdup(driverType)))))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
+                                            vm->def, disk) < 0)
+        VIR_WARN("Unable to restore security label on %s", disk->src);
+    if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
+        VIR_WARN("Unable to release lock on %s", disk->src);
+    if (need_unlink && stat(disk->src, &st) == 0 &&
+        st.st_size == 0 && S_ISREG(st.st_mode) && unlink(disk->src) < 0)
+        VIR_WARN("Unable to remove just-created %s", disk->src);
+
+    /* Update vm in place to match changes.  */
+    VIR_FREE(disk->src);
+    disk->src = source;
+    source = NULL;
+    VIR_FREE(disk->driverType);
+    if (driverType) {
+        disk->driverType = driverType;
+        driverType = NULL;
+    }
+    if (persistDisk) {
+        VIR_FREE(persistDisk->src);
+        persistDisk->src = persistSource;
+        persistSource = NULL;
+        VIR_FREE(persistDisk->driverType);
+        if (persistDriverType) {
+            persistDisk->driverType = persistDriverType;
+            persistDriverType = NULL;
+        }
+    }
+
+cleanup:
+    VIR_FREE(source);
+    VIR_FREE(driverType);
+    VIR_FREE(persistSource);
+    VIR_FREE(persistDriverType);
+}
+
 /* The domain is expected to be locked and active. */
 static int
 qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
@@ -9933,6 +9997,8 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
                                    unsigned int flags)
 {
     virDomainObjPtr vm = *vmptr;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virJSONValuePtr actions = NULL;
     bool resume = false;
     int ret = -1;
     int i;
@@ -9982,9 +10048,17 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
             goto cleanup;
         }
     }
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION)) {
+        actions = virJSONValueNewArray();
+        if (!actions) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
 
     /* No way to roll back if first disk succeeds but later disks
-     * fail.  Based on earlier qemuDomainSnapshotDiskPrepare, all
+     * fail, unless we have transaction support.
+     * Based on earlier qemuDomainSnapshotDiskPrepare, all
      * disks in this list are now either SNAPSHOT_NO, or
      * SNAPSHOT_EXTERNAL with a valid file name and qcow2 format.  */
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
@@ -10006,9 +10080,36 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
         ret = qemuDomainSnapshotCreateSingleDiskActive(driver, vm,
                                                        &snap->def->disks[i],
                                                        vm->def->disks[i],
-                                                       persistDisk);
+                                                       persistDisk, actions);
         if (ret < 0)
             break;
+    }
+    if (actions) {
+        if (ret == 0)
+            ret = qemuMonitorTransaction(priv->mon, actions);
+        if (ret < 0) {
+            /* Transaction failed; undo the changes to vm.  */
+            bool need_unlink = !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT);
+            while (--i >= 0) {
+                virDomainDiskDefPtr persistDisk = NULL;
+
+                if (snap->def->disks[i].snapshot == VIR_DOMAIN_DISK_SNAPSHOT_NO)
+                    continue;
+                if (vm->newDef) {
+                    int indx = virDomainDiskIndexByName(vm->newDef,
+                                                        vm->def->disks[i]->dst,
+                                                        false);
+                    if (indx >= 0)
+                        persistDisk = vm->newDef->disks[indx];
+                }
+
+                qemuDomainSnapshotUndoSingleDiskActive(driver, vm,
+                                                       snap->def->dom->disks[i],
+                                                       vm->def->disks[i],
+                                                       persistDisk,
+                                                       need_unlink);
+            }
+        }
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
     if (ret < 0)
@@ -10043,7 +10144,8 @@ cleanup:
         }
     }
 
-    if (vm) {
+    if (vm && (ret == 0 ||
+               !qemuCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION))) {
         if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0 ||
             (persist &&
              virDomainSaveConfig(driver->configDir, vm->newDef) < 0))
