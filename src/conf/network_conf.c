@@ -430,13 +430,16 @@ virNetworkDHCPRangeDefParseXML(const char *networkName,
                                       _("Cannot parse MAC address '%s' in network '%s'"),
                                       mac, networkName);
                 VIR_FREE(mac);
+                return -1;
             }
             name = virXMLPropString(cur, "name");
             if ((name != NULL) && (!c_isalpha(name[0]))) {
                 virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                                       _("Cannot use name address '%s' in network '%s'"),
                                       name, networkName);
+                VIR_FREE(mac);
                 VIR_FREE(name);
+                return -1;
             }
             /*
              * You need at least one MAC address or one host name
