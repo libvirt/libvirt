@@ -1,6 +1,5 @@
-
 /*
- * authhelper.h: authentication related utility functions
+ * virauth.h: authentication related utility functions
  *
  * Copyright (C) 2010 Matthias Bolte <matthias.bolte@googlemail.com>
  *
@@ -20,8 +19,8 @@
  *
  */
 
-#ifndef __VIR_AUTHHELPER_H__
-# define __VIR_AUTHHELPER_H__
+#ifndef __VIR_AUTH_H__
+# define __VIR_AUTH_H__
 
 # include "internal.h"
 
@@ -30,4 +29,4 @@ char *virRequestUsername(virConnectAuthPtr auth, const char *defaultUsername,
 char *virRequestPassword(virConnectAuthPtr auth, const char *username,
                          const char *hostname);
 
-#endif /* __VIR_AUTHHELPER_H__ */
+#endif /* __VIR_AUTH_H__ */

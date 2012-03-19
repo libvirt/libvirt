@@ -106,7 +106,6 @@ src/storage/storage_driver.c
 src/test/test_driver.c
 src/uml/uml_conf.c
 src/uml/uml_driver.c
-src/util/authhelper.c
 src/util/cgroup.c
 src/util/command.c
 src/util/conf.c
@@ -125,6 +124,7 @@ src/util/storage_file.c
 src/util/sysinfo.c
 src/util/util.c
 src/util/viraudit.c
+src/util/virauth.c
 src/util/virfile.c
 src/util/virhash.c
 src/util/virkeyfile.c

@@ -26,7 +26,7 @@
 #include "internal.h"
 #include "datatypes.h"
 #include "domain_conf.h"
-#include "authhelper.h"
+#include "virauth.h"
 #include "util.h"
 #include "memory.h"
 #include "logging.h"

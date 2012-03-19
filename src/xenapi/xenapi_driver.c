@@ -31,7 +31,7 @@
 #include "domain_conf.h"
 #include "virterror_internal.h"
 #include "datatypes.h"
-#include "authhelper.h"
+#include "virauth.h"
 #include "util.h"
 #include "uuid.h"
 #include "memory.h"

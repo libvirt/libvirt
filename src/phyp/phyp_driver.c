@@ -44,7 +44,7 @@
 #include <domain_event.h>
 
 #include "internal.h"
-#include "authhelper.h"
+#include "virauth.h"
 #include "util.h"
 #include "datatypes.h"
 #include "buf.h"

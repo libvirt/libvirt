@@ -1,6 +1,5 @@
-
 /*
- * authhelper.c: authentication related utility functions
+ * virauth.c: authentication related utility functions
  *
  * Copyright (C) 2010 Matthias Bolte <matthias.bolte@googlemail.com>
  *
@@ -22,7 +21,7 @@
 
 #include <config.h>
 
-#include "authhelper.h"
+#include "virauth.h"
 #include "util.h"
 #include "memory.h"
 
