@@ -1037,6 +1037,67 @@ qemuDomainMigrateGraphicsRelocate(struct qemud_driver *driver,
 }
 
 
+/* This is called for outgoing non-p2p migrations when a connection to the
+ * client which initiated the migration was closed but we were waiting for it
+ * to follow up with the next phase, that is, in between
+ * qemuDomainMigrateBegin3 and qemuDomainMigratePerform3 or
+ * qemuDomainMigratePerform3 and qemuDomainMigrateConfirm3.
+ */
+virDomainObjPtr
+qemuMigrationCleanup(struct qemud_driver *driver,
+                     virDomainObjPtr vm,
+                     virConnectPtr conn)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    VIR_DEBUG("vm=%s, conn=%p, asyncJob=%s, phase=%s",
+              vm->def->name, conn,
+              qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
+              qemuDomainAsyncJobPhaseToString(priv->job.asyncJob,
+                                              priv->job.phase));
+
+    if (!qemuMigrationJobIsActive(vm, QEMU_ASYNC_JOB_MIGRATION_OUT))
+        goto cleanup;
+
+    VIR_DEBUG("The connection which started outgoing migration of domain %s"
+              " was closed; canceling the migration",
+              vm->def->name);
+
+    switch ((enum qemuMigrationJobPhase) priv->job.phase) {
+    case QEMU_MIGRATION_PHASE_BEGIN3:
+        /* just forget we were about to migrate */
+        qemuDomainObjDiscardAsyncJob(driver, vm);
+        break;
+
+    case QEMU_MIGRATION_PHASE_PERFORM3_DONE:
+        VIR_WARN("Migration of domain %s finished but we don't know if the"
+                 " domain was successfully started on destination or not",
+                 vm->def->name);
+        /* clear the job and let higher levels decide what to do */
+        qemuDomainObjDiscardAsyncJob(driver, vm);
+        break;
+
+    case QEMU_MIGRATION_PHASE_PERFORM3:
+        /* cannot be seen without an active migration API; unreachable */
+    case QEMU_MIGRATION_PHASE_CONFIRM3:
+    case QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED:
+        /* all done; unreachable */
+    case QEMU_MIGRATION_PHASE_PREPARE:
+    case QEMU_MIGRATION_PHASE_FINISH2:
+    case QEMU_MIGRATION_PHASE_FINISH3:
+        /* incoming migration; unreachable */
+    case QEMU_MIGRATION_PHASE_PERFORM2:
+        /* single phase outgoing migration; unreachable */
+    case QEMU_MIGRATION_PHASE_NONE:
+    case QEMU_MIGRATION_PHASE_LAST:
+        /* unreachable */
+        ;
+    }
+
+cleanup:
+    return vm;
+}
+
 /* The caller is supposed to lock the vm and start a migration job. */
 char *qemuMigrationBegin(struct qemud_driver *driver,
                          virDomainObjPtr vm,
@@ -2547,6 +2608,7 @@ qemuMigrationPerformPhase(struct qemud_driver *driver,
     }
 
     qemuMigrationJobStartPhase(driver, vm, QEMU_MIGRATION_PHASE_PERFORM3);
+    qemuDriverCloseCallbackUnset(driver, vm, qemuMigrationCleanup);
 
     resume = virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING;
     ret = doNativeMigrate(driver, vm, uri, cookiein, cookieinlen,
@@ -2576,6 +2638,10 @@ qemuMigrationPerformPhase(struct qemud_driver *driver,
         goto endjob;
 
     qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_PERFORM3_DONE);
+
+    if (qemuDriverCloseCallbackSet(driver, vm, conn,
+                                   qemuMigrationCleanup) < 0)
+        goto endjob;
 
 endjob:
     if (ret < 0)

@@ -8838,6 +8838,9 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
          * This prevents any other APIs being invoked while migration is taking
          * place.
          */
+        if (qemuDriverCloseCallbackSet(driver, vm, domain->conn,
+                                       qemuMigrationCleanup) < 0)
+            goto endjob;
         if (qemuMigrationJobContinue(vm) == 0) {
             vm = NULL;
             qemuReportError(VIR_ERR_OPERATION_FAILED,
@@ -9069,6 +9072,7 @@ qemuDomainMigrateConfirm3(virDomainPtr domain,
         phase = QEMU_MIGRATION_PHASE_CONFIRM3;
 
     qemuMigrationJobStartPhase(driver, vm, phase);
+    qemuDriverCloseCallbackUnset(driver, vm, qemuMigrationCleanup);
 
     ret = qemuMigrationConfirm(driver, domain->conn, vm,
                                cookiein, cookieinlen,

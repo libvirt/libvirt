@@ -77,6 +77,10 @@ int qemuMigrationJobFinish(struct qemud_driver *driver, virDomainObjPtr obj)
 int qemuMigrationSetOffline(struct qemud_driver *driver,
                             virDomainObjPtr vm);
 
+virDomainObjPtr qemuMigrationCleanup(struct qemud_driver *driver,
+                                     virDomainObjPtr vm,
+                                     virConnectPtr conn);
+
 char *qemuMigrationBegin(struct qemud_driver *driver,
                          virDomainObjPtr vm,
                          const char *xmlin,
