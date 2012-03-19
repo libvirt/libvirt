@@ -662,6 +662,9 @@ qemudStartup(int privileged) {
     if (qemuProcessAutoDestroyInit(qemu_driver) < 0)
         goto error;
 
+    if (qemuDriverCloseCallbackInit(qemu_driver) < 0)
+        goto error;
+
     /* Get all the running persistent or transient configs first */
     if (virDomainLoadAllConfigs(qemu_driver->caps,
                                 &qemu_driver->domains,
@@ -801,6 +804,7 @@ qemudShutdown(void) {
     virSysinfoDefFree(qemu_driver->hostsysinfo);
 
     qemuProcessAutoDestroyShutdown(qemu_driver);
+    qemuDriverCloseCallbackShutdown(qemu_driver);
 
     VIR_FREE(qemu_driver->configDir);
     VIR_FREE(qemu_driver->autostartDir);
@@ -922,6 +926,7 @@ static int qemudClose(virConnectPtr conn) {
     virDomainEventStateDeregisterConn(conn,
                                       driver->domainEventState);
     qemuProcessAutoDestroyRun(driver, conn);
+    qemuDriverCloseCallbackRunAll(driver, conn);
     qemuDriverUnlock(driver);
 
     conn->privateData = NULL;

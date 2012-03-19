@@ -56,6 +56,11 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+struct _qemuDriverCloseDef {
+    virConnectPtr conn;
+    qemuDriverCloseCallback cb;
+};
+
 void qemuDriverLock(struct qemud_driver *driver)
 {
     virMutexLock(&driver->lock);
@@ -489,4 +494,171 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
 
     virConfFree (conf);
     return 0;
+}
+
+static void
+qemuDriverCloseCallbackFree(void *payload,
+                            const void *name ATTRIBUTE_UNUSED)
+{
+    VIR_FREE(payload);
+}
+
+int
+qemuDriverCloseCallbackInit(struct qemud_driver *driver)
+{
+    driver->closeCallbacks = virHashCreate(5, qemuDriverCloseCallbackFree);
+    if (!driver->closeCallbacks)
+        return -1;
+
+    return 0;
+}
+
+void
+qemuDriverCloseCallbackShutdown(struct qemud_driver *driver)
+{
+    virHashFree(driver->closeCallbacks);
+}
+
+int
+qemuDriverCloseCallbackSet(struct qemud_driver *driver,
+                           virDomainObjPtr vm,
+                           virConnectPtr conn,
+                           qemuDriverCloseCallback cb)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    qemuDriverCloseDefPtr closeDef;
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    VIR_DEBUG("vm=%s, uuid=%s, conn=%p, cb=%p",
+              vm->def->name, uuidstr, conn, cb);
+
+    closeDef = virHashLookup(driver->closeCallbacks, uuidstr);
+    if (closeDef) {
+        if (closeDef->conn != conn) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Close callback for domain %s already registered"
+                              " with another connection %p"),
+                            vm->def->name, closeDef->conn);
+            return -1;
+        }
+        if (closeDef->cb && closeDef->cb != cb) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Another close callback is already defined for"
+                              " domain %s"), vm->def->name);
+            return -1;
+        }
+
+        closeDef->cb = cb;
+    } else {
+        if (VIR_ALLOC(closeDef) < 0) {
+            virReportOOMError();
+            return -1;
+        }
+
+        closeDef->conn = conn;
+        closeDef->cb = cb;
+        if (virHashAddEntry(driver->closeCallbacks, uuidstr, closeDef) < 0) {
+            VIR_FREE(closeDef);
+            return -1;
+        }
+    }
+    return 0;
+}
+
+int
+qemuDriverCloseCallbackUnset(struct qemud_driver *driver,
+                             virDomainObjPtr vm,
+                             qemuDriverCloseCallback cb)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    qemuDriverCloseDefPtr closeDef;
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    VIR_DEBUG("vm=%s, uuid=%s, cb=%p",
+              vm->def->name, uuidstr, cb);
+
+    closeDef = virHashLookup(driver->closeCallbacks, uuidstr);
+    if (!closeDef)
+        return -1;
+
+    if (closeDef->cb && closeDef->cb != cb) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Trying to remove mismatching close callback for"
+                          " domain %s"), vm->def->name);
+        return -1;
+    }
+
+    return virHashRemoveEntry(driver->closeCallbacks, uuidstr);
+}
+
+qemuDriverCloseCallback
+qemuDriverCloseCallbackGet(struct qemud_driver *driver,
+                           virDomainObjPtr vm,
+                           virConnectPtr conn)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    qemuDriverCloseDefPtr closeDef;
+    qemuDriverCloseCallback cb = NULL;
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    VIR_DEBUG("vm=%s, uuid=%s, conn=%p",
+              vm->def->name, uuidstr, conn);
+
+    closeDef = virHashLookup(driver->closeCallbacks, uuidstr);
+    if (closeDef && (!conn || closeDef->conn == conn))
+        cb = closeDef->cb;
+
+    VIR_DEBUG("cb=%p", cb);
+    return cb;
+}
+
+struct qemuDriverCloseCallbackData {
+    struct qemud_driver *driver;
+    virConnectPtr conn;
+};
+
+static void
+qemuDriverCloseCallbackRun(void *payload,
+                           const void *name,
+                           void *opaque)
+{
+    struct qemuDriverCloseCallbackData *data = opaque;
+    qemuDriverCloseDefPtr closeDef = payload;
+    const char *uuidstr = name;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    virDomainObjPtr dom;
+
+    VIR_DEBUG("conn=%p, thisconn=%p, uuid=%s, cb=%p",
+              closeDef->conn, data->conn, uuidstr, closeDef->cb);
+
+    if (data->conn != closeDef->conn || !closeDef->cb)
+        return;
+
+    if (virUUIDParse(uuidstr, uuid) < 0) {
+        VIR_WARN("Failed to parse %s", uuidstr);
+        return;
+    }
+
+    if (!(dom = virDomainFindByUUID(&data->driver->domains, uuid))) {
+        VIR_DEBUG("No domain object with UUID %s", uuidstr);
+        return;
+    }
+
+    dom = closeDef->cb(data->driver, dom, data->conn);
+    if (dom)
+        virDomainObjUnlock(dom);
+
+    virHashRemoveEntry(data->driver->closeCallbacks, uuidstr);
+}
+
+void
+qemuDriverCloseCallbackRunAll(struct qemud_driver *driver,
+                              virConnectPtr conn)
+{
+    struct qemuDriverCloseCallbackData data = {
+        driver, conn
+    };
+    VIR_DEBUG("conn=%p", conn);
+
+    virHashForEach(driver->closeCallbacks, qemuDriverCloseCallbackRun, &data);
 }
