@@ -2863,7 +2863,8 @@ static sasl_callback_t *remoteAuthMakeCallbacks(int *credtype, int ncredtype)
  * are basically a 1-to-1 copy of each other.
  */
 static int remoteAuthMakeCredentials(sasl_interact_t *interact,
-                                     virConnectCredentialPtr *cred)
+                                     virConnectCredentialPtr *cred,
+                                     size_t *ncred)
 {
     int ninteract;
     if (!cred)
@@ -2889,16 +2890,8 @@ static int remoteAuthMakeCredentials(sasl_interact_t *interact,
         (*cred)[ninteract].result = NULL;
     }
 
-    return ninteract;
-}
-
-static void remoteAuthFreeCredentials(virConnectCredentialPtr cred,
-                                      int ncred)
-{
-    int i;
-    for (i = 0 ; i < ncred ; i++)
-        VIR_FREE(cred[i].result);
-    VIR_FREE(cred);
+    *ncred = ninteract;
+    return 0;
 }
 
 
@@ -2919,6 +2912,69 @@ static void remoteAuthFillInteract(virConnectCredentialPtr cred,
     }
 }
 
+
+struct remoteAuthInteractState {
+    sasl_interact_t *interact;
+    virConnectCredentialPtr cred;
+    size_t ncred;
+};
+
+
+static void remoteAuthInteractStateClear(struct remoteAuthInteractState *state)
+{
+    size_t i;
+    if (!state)
+        return;
+
+    for (i = 0 ; i < state->ncred ; i++)
+        VIR_FREE(state->cred[i].result);
+    VIR_FREE(state->cred);
+    state->ncred = 0;
+}
+
+
+static int remoteAuthInteract(struct remoteAuthInteractState *state,
+                              virConnectAuthPtr auth)
+{
+    int ret = -1;
+
+    remoteAuthInteractStateClear(state);
+
+    if (remoteAuthMakeCredentials(state->interact, &state->cred, &state->ncred) < 0) {
+        remoteError(VIR_ERR_AUTH_FAILED, "%s",
+                    _("Failed to make auth credentials"));
+        goto cleanup;
+    }
+
+    /* Run the authentication callback */
+    if (!auth || !auth->cb) {
+        remoteError(VIR_ERR_AUTH_FAILED, "%s",
+                    _("No authentication callback available"));
+        goto cleanup;
+    }
+
+    if ((*(auth->cb))(state->cred, state->ncred, auth->cbdata) < 0) {
+        remoteError(VIR_ERR_AUTH_FAILED, "%s",
+                    _("Failed to collect auth credentials"));
+        goto cleanup;
+    }
+
+    remoteAuthFillInteract(state->cred, state->interact);
+    /*
+     * 'interact' now has pointers to strings in 'state->cred'
+     * so we must not free state->cred until the *next*
+     * sasl_start/step function is complete. Hence we
+     * call remoteAuthInteractStateClear() at the *start*
+     * of this method, rather than the end.
+     */
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
+
 /* Perform the SASL authentication process
  */
 static int
@@ -2937,13 +2993,13 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv,
     int err, complete;
     int ssf;
     sasl_callback_t *saslcb = NULL;
-    sasl_interact_t *interact = NULL;
-    virConnectCredentialPtr cred = NULL;
-    int ncred = 0;
     int ret = -1;
     const char *mechlist;
     virNetSASLContextPtr saslCtxt;
     virNetSASLSessionPtr sasl = NULL;
+    struct remoteAuthInteractState state;
+
+    memset(&state, 0, sizeof(state));
 
     VIR_DEBUG("Client initialize SASL authentication");
 
@@ -3010,7 +3066,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv,
     VIR_DEBUG("Client start negotiation mechlist '%s'", mechlist);
     if ((err = virNetSASLSessionClientStart(sasl,
                                             mechlist,
-                                            &interact,
+                                            &state.interact,
                                             &clientout,
                                             &clientoutlen,
                                             &mech)) < 0)
@@ -3018,29 +3074,11 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv,
 
     /* Need to gather some credentials from the client */
     if (err == VIR_NET_SASL_INTERACT) {
-        const char *msg;
-        if (cred) {
-            remoteAuthFreeCredentials(cred, ncred);
-            cred = NULL;
-        }
-        if ((ncred = remoteAuthMakeCredentials(interact, &cred)) < 0) {
-            remoteError(VIR_ERR_AUTH_FAILED, "%s",
-                        _("Failed to make auth credentials"));
+        if (remoteAuthInteract(&state, auth) < 0) {
             VIR_FREE(iret.mechlist);
             goto cleanup;
         }
-        /* Run the authentication callback */
-        if (auth && auth->cb) {
-            if ((*(auth->cb))(cred, ncred, auth->cbdata) >= 0) {
-                remoteAuthFillInteract(cred, interact);
-                goto restart;
-            }
-            msg = "Failed to collect auth credentials";
-        } else {
-            msg = "No authentication callback available";
-        }
-        remoteError(VIR_ERR_AUTH_FAILED, "%s", msg);
-        goto cleanup;
+        goto restart;
     }
     VIR_FREE(iret.mechlist);
 
@@ -3081,35 +3119,18 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv,
         if ((err = virNetSASLSessionClientStep(sasl,
                                                serverin,
                                                serverinlen,
-                                               &interact,
+                                               &state.interact,
                                                &clientout,
                                                &clientoutlen)) < 0)
             goto cleanup;
 
         /* Need to gather some credentials from the client */
         if (err == VIR_NET_SASL_INTERACT) {
-            const char *msg;
-            if (cred) {
-                remoteAuthFreeCredentials(cred, ncred);
-                cred = NULL;
-            }
-            if ((ncred = remoteAuthMakeCredentials(interact, &cred)) < 0) {
-                remoteError(VIR_ERR_AUTH_FAILED, "%s",
-                            _("Failed to make auth credentials"));
+            if (remoteAuthInteract(&state, auth) < 0) {
+                VIR_FREE(iret.mechlist);
                 goto cleanup;
             }
-            /* Run the authentication callback */
-            if (auth && auth->cb) {
-                if ((*(auth->cb))(cred, ncred, auth->cbdata) >= 0) {
-                    remoteAuthFillInteract(cred, interact);
-                    goto restep;
-                }
-                msg = _("Failed to collect auth credentials");
-            } else {
-                msg = _("No authentication callback available");
-            }
-            remoteError(VIR_ERR_AUTH_FAILED, "%s", msg);
-            goto cleanup;
+            goto restep;
         }
 
         VIR_FREE(serverin);
@@ -3171,8 +3192,8 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv,
  cleanup:
     VIR_FREE(serverin);
 
+    remoteAuthInteractStateClear(&state);
     VIR_FREE(saslcb);
-    remoteAuthFreeCredentials(cred, ncred);
     virNetSASLSessionFree(sasl);
     virNetSASLContextFree(saslCtxt);
 
