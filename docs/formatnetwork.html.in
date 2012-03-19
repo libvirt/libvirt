@@ -363,6 +363,7 @@
           &lt;host ip='192.168.122.2'&gt;
             &lt;hostname&gt;myhost&lt;/hostname&gt;
             &lt;hostname&gt;myhostalias&lt;/hostname&gt;
+          &lt;/host&gt;
         &lt;/dns&gt;
         &lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
           &lt;dhcp&gt;
