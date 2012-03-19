@@ -1,7 +1,7 @@
 /**
  * conf.c: parser for a subset of the Python encoded Xen configuration files
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -835,6 +835,9 @@ virConfValuePtr
 virConfGetValue(virConfPtr conf, const char *setting)
 {
     virConfEntryPtr cur;
+
+    if (conf == NULL)
+        return NULL;
 
     cur = conf->entries;
     while (cur != NULL) {
