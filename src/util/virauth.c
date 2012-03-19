@@ -27,7 +27,7 @@
 
 
 char *
-virRequestUsername(virConnectAuthPtr auth, const char *defaultUsername,
+virAuthGetUsername(virConnectAuthPtr auth, const char *defaultUsername,
                    const char *hostname)
 {
     unsigned int ncred;
@@ -74,7 +74,7 @@ virRequestUsername(virConnectAuthPtr auth, const char *defaultUsername,
 
 
 char *
-virRequestPassword(virConnectAuthPtr auth, const char *username,
+virAuthGetPassword(virConnectAuthPtr auth, const char *username,
                    const char *hostname)
 {
     unsigned int ncred;

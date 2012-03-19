@@ -5,11 +5,6 @@
 # Keep this file sorted by header name, then by symbols with each header.
 #
 
-# authhelper.h
-virRequestPassword;
-virRequestUsername;
-
-
 # bitmap.h
 virBitmapAlloc;
 virBitmapClearBit;
@@ -1163,6 +1158,11 @@ virSetHostUUIDStr;
 virUUIDFormat;
 virUUIDGenerate;
 virUUIDParse;
+
+
+# virauth.h
+virAuthGetUsername;
+virAuthGetPassword;
 
 
 # viraudit.h

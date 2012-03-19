@@ -700,7 +700,7 @@ esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
             goto cleanup;
         }
     } else {
-        username = virRequestUsername(auth, "root", hostname);
+        username = virAuthGetUsername(auth, "root", hostname);
 
         if (username == NULL) {
             ESX_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Username request failed"));
@@ -708,7 +708,7 @@ esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
         }
     }
 
-    unescapedPassword = virRequestPassword(auth, username, hostname);
+    unescapedPassword = virAuthGetPassword(auth, username, hostname);
 
     if (unescapedPassword == NULL) {
         ESX_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Password request failed"));
@@ -830,7 +830,7 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
             goto cleanup;
         }
     } else {
-        username = virRequestUsername(auth, "administrator", hostname);
+        username = virAuthGetUsername(auth, "administrator", hostname);
 
         if (username == NULL) {
             ESX_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Username request failed"));
@@ -838,7 +838,7 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
         }
     }
 
-    unescapedPassword = virRequestPassword(auth, username, hostname);
+    unescapedPassword = virAuthGetPassword(auth, username, hostname);
 
     if (unescapedPassword == NULL) {
         ESX_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Password request failed"));

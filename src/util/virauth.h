@@ -24,9 +24,9 @@
 
 # include "internal.h"
 
-char *virRequestUsername(virConnectAuthPtr auth, const char *defaultUsername,
+char *virAuthGetUsername(virConnectAuthPtr auth, const char *defaultUsername,
                          const char *hostname);
-char *virRequestPassword(virConnectAuthPtr auth, const char *username,
+char *virAuthGetPassword(virConnectAuthPtr auth, const char *username,
                          const char *hostname);
 
 #endif /* __VIR_AUTH_H__ */

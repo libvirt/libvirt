@@ -147,7 +147,7 @@ hypervOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
             goto cleanup;
         }
     } else {
-        username = virRequestUsername(auth, "administrator", conn->uri->server);
+        username = virAuthGetUsername(auth, "administrator", conn->uri->server);
 
         if (username == NULL) {
             HYPERV_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Username request failed"));
@@ -155,7 +155,7 @@ hypervOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
         }
     }
 
-    password = virRequestPassword(auth, username, conn->uri->server);
+    password = virAuthGetPassword(auth, username, conn->uri->server);
 
     if (password == NULL) {
         HYPERV_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Password request failed"));

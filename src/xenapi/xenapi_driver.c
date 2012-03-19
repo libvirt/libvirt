@@ -138,7 +138,7 @@ xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth,
             goto error;
         }
     } else {
-        username = virRequestUsername(auth, NULL, conn->uri->server);
+        username = virAuthGetUsername(auth, NULL, conn->uri->server);
 
         if (username == NULL) {
             xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
@@ -147,7 +147,7 @@ xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth,
         }
     }
 
-    password = virRequestPassword(auth, username, conn->uri->server);
+    password = virAuthGetPassword(auth, username, conn->uri->server);
 
     if (password == NULL) {
         xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
