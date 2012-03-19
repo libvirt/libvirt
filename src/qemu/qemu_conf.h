@@ -141,11 +141,6 @@ struct qemud_driver {
 
     virLockManagerPluginPtr lockManager;
 
-    /* Mapping of 'char *uuidstr' -> virConnectPtr
-     * of guests which will be automatically killed
-     * when the virConnectPtr is closed*/
-    virHashTablePtr autodestroy;
-
     /* Mapping of 'char *uuidstr' -> qemuDriverCloseDefPtr of domains
      * which want a specific cleanup to be done when a connection is
      * closed. Such cleanup may be to automatically destroy the

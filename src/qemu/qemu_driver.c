@@ -659,9 +659,6 @@ qemudStartup(int privileged) {
         qemu_driver->hugepage_path = mempath;
     }
 
-    if (qemuProcessAutoDestroyInit(qemu_driver) < 0)
-        goto error;
-
     if (qemuDriverCloseCallbackInit(qemu_driver) < 0)
         goto error;
 
@@ -803,7 +800,6 @@ qemudShutdown(void) {
 
     virSysinfoDefFree(qemu_driver->hostsysinfo);
 
-    qemuProcessAutoDestroyShutdown(qemu_driver);
     qemuDriverCloseCallbackShutdown(qemu_driver);
 
     VIR_FREE(qemu_driver->configDir);
@@ -925,7 +921,6 @@ static int qemudClose(virConnectPtr conn) {
     qemuDriverLock(driver);
     virDomainEventStateDeregisterConn(conn,
                                       driver->domainEventState);
-    qemuProcessAutoDestroyRun(driver, conn);
     qemuDriverCloseCallbackRunAll(driver, conn);
     qemuDriverUnlock(driver);
 
