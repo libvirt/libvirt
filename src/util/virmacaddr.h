@@ -37,5 +37,6 @@ void virMacAddrGenerate(const unsigned char *prefix,
                         unsigned char *addr);
 int virMacAddrParse(const char* str,
                     unsigned char *addr) ATTRIBUTE_RETURN_CHECK;
-
+bool virMacAddrIsUnicast(const unsigned char *addr);
+bool virMacAddrIsMulticast(const unsigned char *addr);
 #endif /* __VIR_MACADDR_H__ */

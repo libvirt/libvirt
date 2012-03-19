@@ -57,7 +57,7 @@
         <!-- <mac> element -->
         <optional>
           <element name="mac">
-            <attribute name="address"><ref name="macAddr"/></attribute>
+            <attribute name="address"><ref name="uniMacAddr"/></attribute>
             <empty/>
           </element>
         </optional>
@@ -218,7 +218,7 @@
                 </zeroOrMore>
                 <zeroOrMore>
                   <element name="host">
-                    <attribute name="mac"><ref name="macAddr"/></attribute>
+                    <attribute name="mac"><ref name="uniMacAddr"/></attribute>
                     <attribute name="name"><text/></attribute>
                     <attribute name="ip"><ref name="ipv4Addr"/></attribute>
                   </element>

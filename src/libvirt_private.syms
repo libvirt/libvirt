@@ -1208,6 +1208,8 @@ virKeycodeValueTranslate;
 virMacAddrCompare;
 virMacAddrFormat;
 virMacAddrGenerate;
+virMacAddrIsMulticast;
+virMacAddrIsUnicast;
 virMacAddrParse;
 
 

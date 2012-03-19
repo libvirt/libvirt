@@ -126,3 +126,16 @@ void virMacAddrGenerate(const unsigned char *prefix,
     addr[4] = virRandomBits(8);
     addr[5] = virRandomBits(8);
 }
+
+/* The low order bit of the first byte is the "multicast" bit. */
+bool
+virMacAddrIsMulticast(const unsigned char *addr)
+{
+    return !!(addr[0] & 1);
+}
+
+bool
+virMacAddrIsUnicast(const unsigned char *addr)
+{
+    return !(addr[0] & 1);
+}

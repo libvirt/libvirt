@@ -1391,7 +1391,7 @@
             <optional>
               <element name="mac">
                 <attribute name="address">
-                  <ref name="macAddr"/>
+                  <ref name="uniMacAddr"/>
                 </attribute>
                 <empty/>
               </element>
@@ -1417,7 +1417,7 @@
             <optional>
               <element name="mac">
                 <attribute name="address">
-                  <ref name="macAddr"/>
+                  <ref name="uniMacAddr"/>
                 </attribute>
                 <empty/>
               </element>
@@ -1498,7 +1498,7 @@
       <optional>
         <element name="mac">
           <attribute name="address">
-            <ref name="macAddr"/>
+            <ref name="uniMacAddr"/>
           </attribute>
           <empty/>
         </element>

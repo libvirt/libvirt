@@ -419,22 +419,30 @@ virNetworkDHCPRangeDefParseXML(const char *networkName,
             def->nranges++;
         } else if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "host")) {
-            char *mac, *name, *ip;
+            char *mac = NULL, *name = NULL, *ip;
             unsigned char addr[6];
             virSocketAddr inaddr;
 
             mac = virXMLPropString(cur, "mac");
-            if ((mac != NULL) &&
-                (virMacAddrParse(mac, &addr[0]) != 0)) {
-                virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
-                                      _("Cannot parse MAC address '%s' in network '%s'"),
-                                      mac, networkName);
-                VIR_FREE(mac);
-                return -1;
+            if (mac != NULL) {
+                if (virMacAddrParse(mac, &addr[0]) < 0) {
+                    virNetworkReportError(VIR_ERR_XML_ERROR,
+                                          _("Cannot parse MAC address '%s' in network '%s'"),
+                                          mac, networkName);
+                    VIR_FREE(mac);
+                    return -1;
+                }
+                if (virMacAddrIsMulticast(addr)) {
+                    virNetworkReportError(VIR_ERR_XML_ERROR,
+                                         _("expected unicast mac address, found multicast '%s' in network '%s'"),
+                                         (const char *)mac, networkName);
+                    VIR_FREE(mac);
+                    return -1;
+                }
             }
             name = virXMLPropString(cur, "name");
             if ((name != NULL) && (!c_isalpha(name[0]))) {
-                virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
+                virNetworkReportError(VIR_ERR_XML_ERROR,
                                       _("Cannot use name address '%s' in network '%s'"),
                                       name, networkName);
                 VIR_FREE(mac);
@@ -988,6 +996,13 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             virNetworkReportError(VIR_ERR_XML_ERROR,
                                   _("Invalid bridge mac address '%s' in network '%s'"),
                                   tmp, def->name);
+            VIR_FREE(tmp);
+            goto error;
+        }
+        if (virMacAddrIsMulticast(def->mac)) {
+            virNetworkReportError(VIR_ERR_XML_ERROR,
+                                 _("Invalid multicast bridge mac address '%s' in network '%s'"),
+                                 tmp, def->name);
             VIR_FREE(tmp);
             goto error;
         }

@@ -4416,8 +4416,14 @@ virDomainNetDefParseXML(virCapsPtr caps,
 
     if (macaddr) {
         if (virMacAddrParse((const char *)macaddr, def->mac) < 0) {
-            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+            virDomainReportError(VIR_ERR_XML_ERROR,
                                  _("unable to parse mac address '%s'"),
+                                 (const char *)macaddr);
+            goto error;
+        }
+        if (virMacAddrIsMulticast(def->mac)) {
+            virDomainReportError(VIR_ERR_XML_ERROR,
+                                 _("expected unicast mac address, found multicast '%s'"),
                                  (const char *)macaddr);
             goto error;
         }
