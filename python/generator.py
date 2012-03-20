@@ -423,7 +423,7 @@ skip_impl = (
     'virDomainGetBlockIoTune',
     'virDomainSetInterfaceParameters',
     'virDomainGetInterfaceParameters',
-    'virDomainGetCPUStats',  # not implemented now.
+    'virDomainGetCPUStats',
     'virDomainGetDiskErrors',
 )
 
@@ -966,6 +966,9 @@ def nameFixup(name, classe, type, file):
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:19] == "virStorageVolLookup":
         func = name[3:]
+        func = string.lower(func[0:1]) + func[1:]
+    elif name[0:20] == "virDomainGetCPUStats":
+        func = name[9:]
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:12] == "virDomainGet":
         func = name[12:]

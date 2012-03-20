@@ -378,6 +378,152 @@ cleanup:
 }
 
 static PyObject *
+libvirt_virDomainGetCPUStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
+{
+    virDomainPtr domain;
+    PyObject *pyobj_domain, *totalbool;
+    PyObject *cpu, *total;
+    PyObject *ret = NULL;
+    PyObject *error = NULL;
+    int ncpus = -1, start_cpu = 0;
+    int sumparams = 0, nparams = -1;
+    int i, i_retval;
+    unsigned int flags, totalflag;
+    virTypedParameterPtr params = NULL, cpuparams;
+
+    if (!PyArg_ParseTuple(args, (char *)"OOi:virDomainGetCPUStats",
+                          &pyobj_domain, &totalbool, &flags))
+        return NULL;
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    if (!PyBool_Check(totalbool)) {
+        PyErr_Format(PyExc_TypeError,
+                    "The \"total\" attribute must be bool");
+        return NULL;
+    } else {
+        /* Hack - Python's definition of Py_True breaks strict
+         * aliasing rules, so can't directly compare
+         */
+        PyObject *hacktrue = PyBool_FromLong(1);
+        totalflag = hacktrue == totalbool ? 1 : 0;
+        Py_DECREF(hacktrue);
+    }
+
+    if ((ret = PyList_New(0)) == NULL)
+        return NULL;
+
+    if (!totalflag) {
+        LIBVIRT_BEGIN_ALLOW_THREADS;
+        ncpus = virDomainGetCPUStats(domain, NULL, 0, 0, 0, flags);
+        LIBVIRT_END_ALLOW_THREADS;
+
+        if (ncpus < 0) {
+            error = VIR_PY_NONE;
+            goto error;
+        }
+
+        LIBVIRT_BEGIN_ALLOW_THREADS;
+        nparams = virDomainGetCPUStats(domain, NULL, 0, 0, 1, flags);
+        LIBVIRT_END_ALLOW_THREADS;
+
+        if (nparams < 0) {
+            error = VIR_PY_NONE;
+            goto error;
+        }
+
+        sumparams = nparams * MIN(ncpus, 128);
+
+        if (VIR_ALLOC_N(params, sumparams) < 0) {
+            error = PyErr_NoMemory();
+            goto error;
+        }
+
+        while (ncpus) {
+            int queried_ncpus = MIN(ncpus, 128);
+            if (nparams) {
+
+                LIBVIRT_BEGIN_ALLOW_THREADS;
+                i_retval = virDomainGetCPUStats(domain, params,
+                                                nparams, start_cpu, queried_ncpus, flags);
+                LIBVIRT_END_ALLOW_THREADS;
+
+                if (i_retval < 0) {
+                    error = VIR_PY_NONE;
+                    goto error;
+                }
+            } else {
+                i_retval = 0;
+            }
+
+            for (i = 0; i < queried_ncpus; i++) {
+                cpuparams = &params[i * nparams];
+                if ((cpu = getPyVirTypedParameter(cpuparams, i_retval)) == NULL) {
+                    goto error;
+                }
+
+                if (PyList_Append(ret, cpu) < 0) {
+                    Py_DECREF(cpu);
+                    goto error;
+                }
+                Py_DECREF(cpu);
+            }
+
+            start_cpu += queried_ncpus;
+            ncpus -= queried_ncpus;
+            virTypedParameterArrayClear(params, sumparams);
+        }
+    } else {
+        LIBVIRT_BEGIN_ALLOW_THREADS;
+        nparams = virDomainGetCPUStats(domain, NULL, 0, -1, 1, flags);
+        LIBVIRT_END_ALLOW_THREADS;
+
+        if (nparams < 0) {
+            error = VIR_PY_NONE;
+            goto error;
+        }
+
+        if (nparams) {
+            sumparams = nparams;
+
+            if (VIR_ALLOC_N(params, nparams) < 0) {
+                error = PyErr_NoMemory();
+                goto error;
+            }
+
+            LIBVIRT_BEGIN_ALLOW_THREADS;
+            i_retval = virDomainGetCPUStats(domain, params, nparams, -1, 1, flags);
+            LIBVIRT_END_ALLOW_THREADS;
+
+            if (i_retval < 0) {
+                error = VIR_PY_NONE;
+                goto error;
+            }
+        } else {
+            i_retval = 0;
+        }
+
+        if ((total = getPyVirTypedParameter(params, i_retval)) == NULL) {
+            goto error;
+        }
+        if (PyList_Append(ret, total) < 0) {
+            Py_DECREF(total);
+            goto error;
+        }
+        Py_DECREF(total);
+    }
+
+    virTypedParameterArrayClear(params, sumparams);
+    VIR_FREE(params);
+    return ret;
+
+error:
+    virTypedParameterArrayClear(params, sumparams);
+    VIR_FREE(params);
+    Py_DECREF(ret);
+    return error;
+}
+
+static PyObject *
 libvirt_virDomainInterfaceStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     virDomainPtr domain;
     PyObject *pyobj_domain;
@@ -5398,6 +5544,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virNetworkGetAutostart", libvirt_virNetworkGetAutostart, METH_VARARGS, NULL},
     {(char *) "virDomainBlockStats", libvirt_virDomainBlockStats, METH_VARARGS, NULL},
     {(char *) "virDomainBlockStatsFlags", libvirt_virDomainBlockStatsFlags, METH_VARARGS, NULL},
+    {(char *) "virDomainGetCPUStats", libvirt_virDomainGetCPUStats, METH_VARARGS, NULL},
     {(char *) "virDomainInterfaceStats", libvirt_virDomainInterfaceStats, METH_VARARGS, NULL},
     {(char *) "virDomainMemoryStats", libvirt_virDomainMemoryStats, METH_VARARGS, NULL},
     {(char *) "virNodeGetCellsFreeMemory", libvirt_virNodeGetCellsFreeMemory, METH_VARARGS, NULL},
