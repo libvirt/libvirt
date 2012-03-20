@@ -1172,15 +1172,12 @@ do_open (const char *name,
 
         VIR_DEBUG("name \"%s\" to URI components:\n"
                   "  scheme %s\n"
-                  "  opaque %s\n"
-                  "  authority %s\n"
                   "  server %s\n"
                   "  user %s\n"
                   "  port %d\n"
                   "  path %s\n",
                   alias ? alias : name,
-                  NULLSTR(ret->uri->scheme), NULLSTR(ret->uri->opaque),
-                  NULLSTR(ret->uri->authority), NULLSTR(ret->uri->server),
+                  NULLSTR(ret->uri->scheme), NULLSTR(ret->uri->server),
                   NULLSTR(ret->uri->user), ret->uri->port,
                   NULLSTR(ret->uri->path));
 

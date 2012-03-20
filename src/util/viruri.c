@@ -36,14 +36,44 @@
 virURIPtr
 virURIParse(const char *uri)
 {
-    virURIPtr ret = xmlParseURI(uri);
+    xmlURIPtr xmluri;
+    virURIPtr ret = NULL;
 
-    if (!ret) {
+    xmluri = xmlParseURI(uri);
+
+    if (!xmluri) {
         /* libxml2 does not tell us what failed. Grr :-( */
         virURIReportError(VIR_ERR_INTERNAL_ERROR,
                           "Unable to parse URI %s", uri);
         return NULL;
     }
+
+    if (VIR_ALLOC(ret) < 0)
+        goto no_memory;
+
+    if (xmluri->scheme &&
+        !(ret->scheme = strdup(xmluri->scheme)))
+        goto no_memory;
+    if (xmluri->server &&
+        !(ret->server = strdup(xmluri->server)))
+        goto no_memory;
+    ret->port = xmluri->port;
+    if (xmluri->path &&
+        !(ret->path = strdup(xmluri->path)))
+        goto no_memory;
+#ifdef HAVE_XMLURI_QUERY_RAW
+    if (xmluri->query_raw &&
+        !(ret->query = strdup(xmluri->query_raw)))
+        goto no_memory;
+#else
+    if (xmluri->query &&
+        !(ret->query = strdup(xmluri->query)))
+        goto no_memory;
+#endif
+    if (xmluri->fragment &&
+        !(ret->fragment = strdup(xmluri->fragment)))
+        goto no_memory;
+
 
     /* First check: does it even make sense to jump inside */
     if (ret->server != NULL &&
@@ -62,7 +92,15 @@ virURIParse(const char *uri)
          * the uri with xmlFreeURI() */
     }
 
+    xmlFreeURI(xmluri);
+
     return ret;
+
+no_memory:
+    virReportOOMError();
+    xmlFreeURI(xmluri);
+    virURIFree(ret);
+    return NULL;
 }
 
 /**
@@ -79,33 +117,37 @@ virURIParse(const char *uri)
 char *
 virURIFormat(virURIPtr uri)
 {
-    char *backupserver = NULL;
+    xmlURI xmluri;
     char *tmpserver = NULL;
     char *ret;
 
-    /* First check: does it make sense to do anything */
-    if (uri->server != NULL &&
-        strchr(uri->server, ':') != NULL) {
+    memset(&xmluri, 0, sizeof(xmluri));
 
-        backupserver = uri->server;
-        if (virAsprintf(&tmpserver, "[%s]", uri->server) < 0)
+    xmluri.scheme = uri->scheme;
+    xmluri.server = uri->server;
+    xmluri.port = uri->port;
+    xmluri.path = uri->path;
+    xmluri.query = uri->query;
+    xmluri.fragment = uri->fragment;
+
+    /* First check: does it make sense to do anything */
+    if (xmluri.server != NULL &&
+        strchr(xmluri.server, ':') != NULL) {
+
+        if (virAsprintf(&tmpserver, "[%s]", xmluri.server) < 0)
             return NULL;
 
-        uri->server = tmpserver;
+        xmluri.server = tmpserver;
     }
 
-    ret = (char *) xmlSaveUri(uri);
+    ret = (char *)xmlSaveUri(&xmluri);
     if (!ret) {
         virReportOOMError();
         goto cleanup;
     }
 
 cleanup:
-    /* Put the fixed version back */
-    if (tmpserver) {
-        uri->server = backupserver;
-        VIR_FREE(tmpserver);
-    }
+    VIR_FREE(tmpserver);
 
     return ret;
 }
@@ -119,5 +161,12 @@ cleanup:
  */
 void virURIFree(virURIPtr uri)
 {
-    xmlFreeURI(uri);
+    if (!uri)
+        return;
+
+    VIR_FREE(uri->scheme);
+    VIR_FREE(uri->server);
+    VIR_FREE(uri->path);
+    VIR_FREE(uri->query);
+    VIR_FREE(uri);
 }

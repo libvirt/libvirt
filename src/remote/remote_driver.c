@@ -417,15 +417,9 @@ doRemoteOpen (virConnectPtr conn,
      */
     struct qparam *var;
     int i;
-    char *query;
 
     if (conn->uri) {
-#ifdef HAVE_XMLURI_QUERY_RAW
-        query = conn->uri->query_raw;
-#else
-        query = conn->uri->query;
-#endif
-        vars = qparam_query_parse (query);
+        vars = qparam_query_parse (conn->uri->query);
         if (vars == NULL) goto failed;
 
         for (i = 0; i < vars->n; i++) {
@@ -490,11 +484,7 @@ doRemoteOpen (virConnectPtr conn,
             } else {
                 virURI tmpuri = {
                     .scheme = conn->uri->scheme,
-#ifdef HAVE_XMLURI_QUERY_RAW
-                    .query_raw = qparam_get_query (vars),
-#else
                     .query = qparam_get_query (vars),
-#endif
                     .path = conn->uri->path,
                     .fragment = conn->uri->fragment,
                 };
@@ -507,11 +497,7 @@ doRemoteOpen (virConnectPtr conn,
 
                 name = virURIFormat(&tmpuri);
 
-#ifdef HAVE_XMLURI_QUERY_RAW
-                VIR_FREE(tmpuri.query_raw);
-#else
                 VIR_FREE(tmpuri.query);
-#endif
 
                 /* Restore transport scheme */
                 if (transport_str)

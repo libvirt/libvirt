@@ -13,8 +13,18 @@
 
 # include "internal.h"
 
-typedef xmlURI    virURI;
-typedef xmlURIPtr virURIPtr;
+typedef struct _virURI virURI;
+typedef virURI *virURIPtr;
+
+struct _virURI {
+    char *scheme;       /* the URI scheme */
+    char *server;       /* the server part */
+    char *user;         /* the user part */
+    int port;           /* the port number */
+    char *path;         /* the path string */
+    char *query;        /* the query string */
+    char *fragment;     /* the fragment string */
+};
 
 virURIPtr virURIParse(const char *uri)
     ATTRIBUTE_NONNULL(1);

@@ -62,11 +62,7 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
         return -1;
     }
 
-#ifdef HAVE_XMLURI_QUERY_RAW
-    queryParamSet = qparam_query_parse(uri->query_raw);
-#else
     queryParamSet = qparam_query_parse(uri->query);
-#endif
 
     if (queryParamSet == NULL) {
         goto cleanup;
