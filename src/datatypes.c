@@ -117,7 +117,7 @@ virReleaseConnect(virConnectPtr conn) {
 
     virResetError(&conn->err);
 
-    xmlFreeURI(conn->uri);
+    virURIFree(conn->uri);
 
     virMutexUnlock(&conn->lock);
     virMutexDestroy(&conn->lock);

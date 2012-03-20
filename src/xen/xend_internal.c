@@ -3234,25 +3234,25 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
             virXendError(VIR_ERR_INVALID_ARG,
                           "%s", _("xenDaemonDomainMigrate: only xenmigr://"
                             " migrations are supported by Xen"));
-            xmlFreeURI (uriptr);
+            virURIFree (uriptr);
             return -1;
         }
         if (!uriptr->server) {
             virXendError(VIR_ERR_INVALID_ARG,
                           "%s", _("xenDaemonDomainMigrate: a hostname must be"
                             " specified in the URI"));
-            xmlFreeURI (uriptr);
+            virURIFree (uriptr);
             return -1;
         }
         hostname = strdup (uriptr->server);
         if (!hostname) {
             virReportOOMError();
-            xmlFreeURI (uriptr);
+            virURIFree (uriptr);
             return -1;
         }
         if (uriptr->port)
             snprintf (port, sizeof port, "%d", uriptr->port);
-        xmlFreeURI (uriptr);
+        virURIFree (uriptr);
     }
     else if ((p = strrchr (uri, ':')) != NULL) { /* "hostname:port" */
         int port_nr, n;

@@ -91,3 +91,15 @@ virURIFormat(xmlURIPtr uri)
 
     return ret;
 }
+
+
+/**
+ * virURIFree:
+ * @uri: uri to free
+ *
+ * Frees the URI
+ */
+void virURIFree(virURIPtr uri)
+{
+    xmlFreeURI(uri);
+}

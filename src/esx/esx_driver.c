@@ -4072,7 +4072,7 @@ esxDomainMigratePerform(virDomainPtr domain,
     result = 0;
 
   cleanup:
-    xmlFreeURI(parsedUri);
+    virURIFree(parsedUri);
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_Event_Free(&eventList);
     esxVI_ManagedObjectReference_Free(&task);

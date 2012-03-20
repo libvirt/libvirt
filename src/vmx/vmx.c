@@ -2696,7 +2696,7 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
     VIR_FREE(fileType);
     VIR_FREE(fileName);
     VIR_FREE(network_endPoint);
-    xmlFreeURI(parsedUri);
+    virURIFree(parsedUri);
 
     return result;
 

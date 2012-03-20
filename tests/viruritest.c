@@ -105,7 +105,7 @@ static int testURIParse(const void *args)
     ret = 0;
 cleanup:
     VIR_FREE(uristr);
-    xmlFreeURI(uri);
+    virURIFree(uri);
     return ret;
 }
 

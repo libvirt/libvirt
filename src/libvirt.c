@@ -5071,10 +5071,10 @@ virDomainMigratePeer2Peer (virDomainPtr domain,
     if (!tempuri->server || STRPREFIX(tempuri->server, "localhost")) {
         virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         virDispatchError(domain->conn);
-        xmlFreeURI(tempuri);
+        virURIFree(tempuri);
         return -1;
     }
-    xmlFreeURI(tempuri);
+    virURIFree(tempuri);
 
     /* Perform the migration.  The driver isn't supposed to return
      * until the migration is complete.

@@ -1956,7 +1956,7 @@ static int doNativeMigrate(struct qemud_driver *driver,
     if (spec.destType == MIGRATION_DEST_FD)
         VIR_FORCE_CLOSE(spec.dest.fd.qemu);
 
-    xmlFreeURI(uribits);
+    virURIFree(uribits);
 
     return ret;
 }
