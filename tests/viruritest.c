@@ -41,6 +41,7 @@ struct URIParseData {
     const char *path;
     const char *query;
     const char *fragment;
+    virURIParamPtr params;
 };
 
 static int testURIParse(const void *args)
@@ -49,6 +50,7 @@ static int testURIParse(const void *args)
     virURIPtr uri = NULL;
     const struct URIParseData *data = args;
     char *uristr;
+    size_t i;
 
     if (!(uri = virURIParse(data->uri)))
         goto cleanup;
@@ -98,6 +100,29 @@ static int testURIParse(const void *args)
         goto cleanup;
     }
 
+    for (i = 0 ; data->params && data->params[i].name && i < uri->paramsCount ; i++) {
+        if (!STREQ_NULLABLE(data->params[i].name, uri->params[i].name)) {
+            VIR_DEBUG("Expected param name %zu '%s', actual '%s'",
+                      i, data->params[i].name, uri->params[i].name);
+            goto cleanup;
+        }
+        if (!STREQ_NULLABLE(data->params[i].value, uri->params[i].value)) {
+            VIR_DEBUG("Expected param value %zu '%s', actual '%s'",
+                      i, data->params[i].value, uri->params[i].value);
+            goto cleanup;
+        }
+    }
+    if (data->params && data->params[i].name) {
+        VIR_DEBUG("Missing parameter %zu %s=%s",
+                  i, data->params[i].name, data->params[i].value);
+        goto cleanup;
+    }
+    if (i != uri->paramsCount) {
+        VIR_DEBUG("Unexpected parameter %zu %s=%s",
+                  i, uri->params[i].name, uri->params[i].value);
+        goto cleanup;
+    }
+
     ret = 0;
 cleanup:
     VIR_FREE(uristr);
@@ -113,21 +138,26 @@ mymain(void)
 
     signal(SIGPIPE, SIG_IGN);
 
-#define TEST_PARSE(uri, scheme, server, port, path, query, fragment)    \
+#define TEST_PARSE(uri, scheme, server, port, path, query, fragment, params) \
     do  {                                                               \
         const struct URIParseData data = {                              \
-            uri, scheme, server, port, path, query, fragment            \
+            uri, scheme, server, port, path, query, fragment, params    \
         };                                                              \
         if (virtTestRun("Test IPv6 " # uri,  1, testURIParse, &data) < 0) \
             ret = -1;                                                   \
     } while (0)
 
-    TEST_PARSE("test://example.com", "test", "example.com", 0, NULL, NULL, NULL);
-    TEST_PARSE("test://example.com:123", "test", "example.com", 123, NULL, NULL, NULL);
-    TEST_PARSE("test://example.com:123/system?name=value#foo", "test", "example.com", 123, "/system", "name=value", "foo");
-    TEST_PARSE("test://127.0.0.1:123/system", "test", "127.0.0.1", 123, "/system", NULL, NULL);
-    TEST_PARSE("test://[::1]:123/system", "test", "::1", 123, "/system", NULL, NULL);
-    TEST_PARSE("test://[2001:41c8:1:4fd4::2]:123/system", "test", "2001:41c8:1:4fd4::2", 123, "/system", NULL, NULL);
+    virURIParam params[] = {
+        { (char*)"name", (char*)"value" },
+        { NULL, NULL },
+    };
+
+    TEST_PARSE("test://example.com", "test", "example.com", 0, NULL, NULL, NULL, NULL);
+    TEST_PARSE("test://example.com:123", "test", "example.com", 123, NULL, NULL, NULL, NULL);
+    TEST_PARSE("test://example.com:123/system?name=value#foo", "test", "example.com", 123, "/system", "name=value", "foo", params);
+    TEST_PARSE("test://127.0.0.1:123/system", "test", "127.0.0.1", 123, "/system", NULL, NULL, NULL);
+    TEST_PARSE("test://[::1]:123/system", "test", "::1", 123, "/system", NULL, NULL, NULL);
+    TEST_PARSE("test://[2001:41c8:1:4fd4::2]:123/system", "test", "2001:41c8:1:4fd4::2", 123, "/system", NULL, NULL, NULL);
 
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

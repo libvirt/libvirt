@@ -13,6 +13,7 @@
 #include "memory.h"
 #include "util.h"
 #include "virterror_internal.h"
+#include "buf.h"
 
 #define VIR_FROM_THIS VIR_FROM_URI
 
@@ -20,6 +21,117 @@
     virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,                 \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
+
+static int
+virURIParamAppend(virURIPtr uri,
+                  const char *name,
+                  const char *value)
+{
+    char *pname = NULL;
+    char *pvalue = NULL;
+
+    if (!(pname = strdup(name)))
+        goto no_memory;
+    if (!(pvalue = strdup (value)))
+        goto no_memory;
+
+    if (VIR_RESIZE_N(uri->params, uri->paramsAlloc, uri->paramsCount, 1) < 0)
+        goto no_memory;
+
+    uri->params[uri->paramsCount].name = pname;
+    uri->params[uri->paramsCount].value = pvalue;
+    uri->params[uri->paramsCount].ignore = 0;
+    uri->paramsCount++;
+
+    return 0;
+
+no_memory:
+    VIR_FREE(pname);
+    VIR_FREE(pvalue);
+    virReportOOMError();
+    return -1;
+}
+
+
+static int
+virURIParseParams(virURIPtr uri)
+{
+    const char *end, *eq;
+    const char *query = uri->query;
+
+    if (!query || query[0] == '\0')
+        return 0;
+
+    while (*query) {
+        char *name = NULL, *value = NULL;
+
+        /* Find the next separator, or end of the string. */
+        end = strchr (query, '&');
+        if (!end)
+            end = strchr (query, ';');
+        if (!end)
+            end = query + strlen (query);
+
+        /* Find the first '=' character between here and end. */
+        eq = strchr (query, '=');
+        if (eq && eq >= end) eq = NULL;
+
+        /* Empty section (eg. "&&"). */
+        if (end == query)
+            goto next;
+
+        /* If there is no '=' character, then we have just "name"
+         * and consistent with CGI.pm we assume value is "".
+         */
+        else if (!eq) {
+            name = xmlURIUnescapeString (query, end - query, NULL);
+            if (!name) goto no_memory;
+        }
+        /* Or if we have "name=" here (works around annoying
+         * problem when calling xmlURIUnescapeString with len = 0).
+         */
+        else if (eq+1 == end) {
+            name = xmlURIUnescapeString (query, eq - query, NULL);
+            if (!name) goto no_memory;
+        }
+        /* If the '=' character is at the beginning then we have
+         * "=value" and consistent with CGI.pm we _ignore_ this.
+         */
+        else if (query == eq)
+            goto next;
+
+        /* Otherwise it's "name=value". */
+        else {
+            name = xmlURIUnescapeString (query, eq - query, NULL);
+            if (!name)
+                goto no_memory;
+            value = xmlURIUnescapeString (eq+1, end - (eq+1), NULL);
+            if (!value) {
+                VIR_FREE(name);
+                goto no_memory;
+            }
+        }
+
+        /* Append to the parameter set. */
+        if (virURIParamAppend(uri, name, value ? value : "") < 0) {
+            VIR_FREE(name);
+            VIR_FREE(value);
+            goto no_memory;
+        }
+        VIR_FREE(name);
+        VIR_FREE(value);
+
+    next:
+        query = end;
+        if (*query) query ++; /* skip '&' separator */
+    }
+
+    return 0;
+
+ no_memory:
+    virReportOOMError();
+    return -1;
+}
 
 /**
  * virURIParse:
@@ -92,12 +204,16 @@ virURIParse(const char *uri)
          * the uri with xmlFreeURI() */
     }
 
+    if (virURIParseParams(ret) < 0)
+        goto error;
+
     xmlFreeURI(xmluri);
 
     return ret;
 
 no_memory:
     virReportOOMError();
+error:
     xmlFreeURI(xmluri);
     virURIFree(ret);
     return NULL;
@@ -153,6 +269,29 @@ cleanup:
 }
 
 
+char *virURIFormatParams(virURIPtr uri)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int i, amp = 0;
+
+    for (i = 0; i < uri->paramsCount; ++i) {
+        if (!uri->params[i].ignore) {
+            if (amp) virBufferAddChar (&buf, '&');
+            virBufferStrcat (&buf, uri->params[i].name, "=", NULL);
+            virBufferURIEncodeString (&buf, uri->params[i].value);
+            amp = 1;
+        }
+    }
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buf);
+}
+
 /**
  * virURIFree:
  * @uri: uri to free
@@ -161,12 +300,23 @@ cleanup:
  */
 void virURIFree(virURIPtr uri)
 {
+    size_t i;
+
     if (!uri)
         return;
 
     VIR_FREE(uri->scheme);
     VIR_FREE(uri->server);
+    VIR_FREE(uri->user);
     VIR_FREE(uri->path);
     VIR_FREE(uri->query);
+    VIR_FREE(uri->fragment);
+
+    for (i = 0 ; i < uri->paramsCount ; i++) {
+        VIR_FREE(uri->params[i].name);
+        VIR_FREE(uri->params[i].value);
+    }
+    VIR_FREE(uri->params);
+
     VIR_FREE(uri);
 }

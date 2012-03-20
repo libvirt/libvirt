@@ -16,6 +16,15 @@
 typedef struct _virURI virURI;
 typedef virURI *virURIPtr;
 
+typedef struct _virURIParam virURIParam;
+typedef virURIParam *virURIParamPtr;
+
+struct _virURIParam {
+    char *name;  /* Name (unescaped). */
+    char *value; /* Value (unescaped). */
+    bool ignore; /* Ignore this field in virURIFormatParams */
+};
+
 struct _virURI {
     char *scheme;       /* the URI scheme */
     char *server;       /* the server part */
@@ -24,12 +33,18 @@ struct _virURI {
     char *path;         /* the path string */
     char *query;        /* the query string */
     char *fragment;     /* the fragment string */
+
+    size_t paramsCount;
+    size_t paramsAlloc;
+    virURIParamPtr params;
 };
 
 virURIPtr virURIParse(const char *uri)
     ATTRIBUTE_NONNULL(1);
 char *virURIFormat(virURIPtr uri)
     ATTRIBUTE_NONNULL(1);
+
+char *virURIFormatParams(virURIPtr uri);
 
 void virURIFree(virURIPtr uri);
 

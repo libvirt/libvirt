@@ -1472,6 +1472,7 @@ virTypedParameterAssign;
 
 # viruri.h
 virURIFormat;
+virURIFormatParams;
 virURIFree;
 virURIParse;
 
