@@ -917,12 +917,6 @@ virProcessInfoGetAffinity;
 virProcessInfoSetAffinity;
 
 
-# qparams.h
-free_qparam_set;
-qparam_get_query;
-qparam_query_parse;
-
-
 # secret_conf.h
 virSecretDefFormat;
 virSecretDefFree;

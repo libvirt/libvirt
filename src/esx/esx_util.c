@@ -28,7 +28,6 @@
 
 #include "internal.h"
 #include "datatypes.h"
-#include "qparams.h"
 #include "util.h"
 #include "memory.h"
 #include "logging.h"
@@ -45,8 +44,6 @@ int
 esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
 {
     int result = -1;
-    struct qparam_set *queryParamSet = NULL;
-    struct qparam *queryParam = NULL;
     int i;
     int noVerify;
     int autoAnswer;
@@ -62,14 +59,8 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
         return -1;
     }
 
-    queryParamSet = qparam_query_parse(uri->query);
-
-    if (queryParamSet == NULL) {
-        goto cleanup;
-    }
-
-    for (i = 0; i < queryParamSet->n; i++) {
-        queryParam = &queryParamSet->p[i];
+    for (i = 0; i < uri->paramsCount; i++) {
+        virURIParamPtr queryParam = &uri->params[i];
 
         if (STRCASEEQ(queryParam->name, "transport")) {
             VIR_FREE((*parsedUri)->transport);
@@ -202,10 +193,6 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
   cleanup:
     if (result < 0) {
         esxUtil_FreeParsedUri(parsedUri);
-    }
-
-    if (queryParamSet != NULL) {
-        free_qparam_set(queryParamSet);
     }
 
     return result;

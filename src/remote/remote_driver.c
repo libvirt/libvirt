@@ -35,7 +35,6 @@
 #include "domain_event.h"
 #include "driver.h"
 #include "buf.h"
-#include "qparams.h"
 #include "remote_driver.h"
 #include "remote_protocol.h"
 #include "qemu_protocol.h"
@@ -311,7 +310,6 @@ doRemoteOpen (virConnectPtr conn,
               virConnectAuthPtr auth ATTRIBUTE_UNUSED,
               unsigned int flags)
 {
-    struct qparam_set *vars = NULL;
     char *transport_str = NULL;
     enum {
         trans_tls,
@@ -415,15 +413,11 @@ doRemoteOpen (virConnectPtr conn,
      * feasibly it might contain variables needed by the real driver,
      * although that won't be the case for now).
      */
-    struct qparam *var;
     int i;
 
     if (conn->uri) {
-        vars = qparam_query_parse (conn->uri->query);
-        if (vars == NULL) goto failed;
-
-        for (i = 0; i < vars->n; i++) {
-            var = &vars->p[i];
+        for (i = 0; i < conn->uri->paramsCount ; i++) {
+            virURIParamPtr var = &conn->uri->params[i];
             if (STRCASEEQ (var->name, "name")) {
                 VIR_FREE(name);
                 name = strdup (var->value);
@@ -484,7 +478,7 @@ doRemoteOpen (virConnectPtr conn,
             } else {
                 virURI tmpuri = {
                     .scheme = conn->uri->scheme,
-                    .query = qparam_get_query (vars),
+                    .query = virURIFormatQuery(conn->uri),
                     .path = conn->uri->path,
                     .fragment = conn->uri->fragment,
                 };
@@ -507,9 +501,6 @@ doRemoteOpen (virConnectPtr conn,
                     goto failed;
             }
         }
-
-        free_qparam_set (vars);
-        vars = NULL;
     } else {
         /* Probe URI server side */
         if (!(name = strdup("")))
@@ -732,8 +723,6 @@ doRemoteOpen (virConnectPtr conn,
 
  out_of_memory:
     virReportOOMError();
-    if (vars)
-        free_qparam_set (vars);
 
  failed:
     virNetClientProgramFree(priv->remoteProgram);

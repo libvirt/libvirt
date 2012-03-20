@@ -35,7 +35,6 @@
 #include "memory.h"
 #include "buf.h"
 #include "logging.h"
-#include "qparams.h"
 #include "viruri.h"
 #include "xenapi_driver_private.h"
 #include "xenapi_utils.h"
@@ -98,21 +97,9 @@ xenapiUtil_ParseQuery(virConnectPtr conn, virURIPtr uri, int *noVerify)
 {
     int result = 0;
     int i;
-    struct qparam_set *queryParamSet = NULL;
-    struct qparam *queryParam = NULL;
 
-#ifdef HAVE_XMLURI_QUERY_RAW
-    queryParamSet = qparam_query_parse(uri->query_raw);
-#else
-    queryParamSet = qparam_query_parse(uri->query);
-#endif
-
-    if (queryParamSet == NULL) {
-        goto failure;
-    }
-
-    for (i = 0; i < queryParamSet->n; i++) {
-        queryParam = &queryParamSet->p[i];
+    for (i = 0; i < uri->paramsCount; i++) {
+        virURIParamPtr queryParam = &uri->params[i];
         if (STRCASEEQ(queryParam->name, "no_verify")) {
             if (noVerify == NULL) {
                 continue;
@@ -127,9 +114,6 @@ xenapiUtil_ParseQuery(virConnectPtr conn, virURIPtr uri, int *noVerify)
     }
 
   cleanup:
-    if (queryParamSet != NULL) {
-        free_qparam_set(queryParamSet);
-    }
 
     return result;
 
