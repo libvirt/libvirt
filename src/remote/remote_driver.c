@@ -485,7 +485,8 @@ doRemoteOpen (virConnectPtr conn,
                 (STREQ(conn->uri->scheme, "remote") ||
                  STRPREFIX(conn->uri->scheme, "remote+"))) {
                 /* Allow remote serve to probe */
-                name = strdup("");
+                if (!(name = strdup("")))
+                    goto out_of_memory;
             } else {
                 virURI tmpuri = {
                     .scheme = conn->uri->scheme,
@@ -515,6 +516,9 @@ doRemoteOpen (virConnectPtr conn,
                 /* Restore transport scheme */
                 if (transport_str)
                     transport_str[-1] = '+';
+
+                if (!name)
+                    goto failed;
             }
         }
 
@@ -522,12 +526,8 @@ doRemoteOpen (virConnectPtr conn,
         vars = NULL;
     } else {
         /* Probe URI server side */
-        name = strdup("");
-    }
-
-    if (!name) {
-        virReportOOMError();
-        goto failed;
+        if (!(name = strdup("")))
+            goto out_of_memory;
     }
 
     VIR_DEBUG("proceeding with name = %s", name);
@@ -720,10 +720,8 @@ doRemoteOpen (virConnectPtr conn,
         VIR_DEBUG("Auto-probed URI is %s", uriret.uri);
         conn->uri = virURIParse(uriret.uri);
         VIR_FREE(uriret.uri);
-        if (!conn->uri) {
-            virReportOOMError();
+        if (!conn->uri)
             goto failed;
-        }
     }
 
     if (!(priv->domainEventState = virDomainEventStateNew()))

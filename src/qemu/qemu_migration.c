@@ -1936,11 +1936,8 @@ static int doNativeMigrate(struct qemud_driver *driver,
     } else {
         uribits = virURIParse(uri);
     }
-    if (!uribits) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("cannot parse URI %s"), uri);
+    if (!uribits)
         return -1;
-    }
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD))
         spec.destType = MIGRATION_DEST_CONNECT_HOST;

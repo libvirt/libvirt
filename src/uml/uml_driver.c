@@ -1139,13 +1139,10 @@ static virDrvOpenStatus umlOpen(virConnectPtr conn,
         if (uml_driver == NULL)
             return VIR_DRV_OPEN_DECLINED;
 
-        conn->uri = virURIParse(uml_driver->privileged ?
-                                "uml:///system" :
-                                "uml:///session");
-        if (!conn->uri) {
-            virReportOOMError();
+        if (!(conn->uri = virURIParse(uml_driver->privileged ?
+                                      "uml:///system" :
+                                      "uml:///session")))
             return VIR_DRV_OPEN_ERROR;
-        }
     } else {
         if (conn->uri->scheme == NULL ||
             STRNEQ (conn->uri->scheme, "uml"))

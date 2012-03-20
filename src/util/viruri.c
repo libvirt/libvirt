@@ -12,6 +12,14 @@
 
 #include "memory.h"
 #include "util.h"
+#include "virterror_internal.h"
+
+#define VIR_FROM_THIS VIR_FROM_URI
+
+#define virURIReportError(code, ...)                                    \
+    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,                 \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
+
 
 /**
  * virURIParse:
@@ -30,9 +38,15 @@ virURIParse(const char *uri)
 {
     virURIPtr ret = xmlParseURI(uri);
 
+    if (!ret) {
+        /* libxml2 does not tell us what failed. Grr :-( */
+        virURIReportError(VIR_ERR_INTERNAL_ERROR,
+                          "Unable to parse URI %s", uri);
+        return NULL;
+    }
+
     /* First check: does it even make sense to jump inside */
-    if (ret != NULL &&
-        ret->server != NULL &&
+    if (ret->server != NULL &&
         ret->server[0] == '[') {
         size_t length = strlen(ret->server);
 
@@ -70,8 +84,7 @@ virURIFormat(virURIPtr uri)
     char *ret;
 
     /* First check: does it make sense to do anything */
-    if (uri != NULL &&
-        uri->server != NULL &&
+    if (uri->server != NULL &&
         strchr(uri->server, ':') != NULL) {
 
         backupserver = uri->server;
@@ -82,7 +95,12 @@ virURIFormat(virURIPtr uri)
     }
 
     ret = (char *) xmlSaveUri(uri);
+    if (!ret) {
+        virReportOOMError();
+        goto cleanup;
+    }
 
+cleanup:
     /* Put the fixed version back */
     if (tmpserver) {
         uri->server = backupserver;

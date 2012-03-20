@@ -3224,12 +3224,10 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
      * "hostname", "hostname:port" or "xenmigr://hostname[:port]/".
      */
     if (strstr (uri, "//")) {   /* Full URI. */
-        virURIPtr uriptr = virURIParse (uri);
-        if (!uriptr) {
-            virXendError(VIR_ERR_INVALID_ARG,
-                          "%s", _("xenDaemonDomainMigrate: invalid URI"));
+        virURIPtr uriptr;
+        if (!(uriptr = virURIParse (uri)))
             return -1;
-        }
+
         if (uriptr->scheme && STRCASENEQ (uriptr->scheme, "xenmigr")) {
             virXendError(VIR_ERR_INVALID_ARG,
                           "%s", _("xenDaemonDomainMigrate: only xenmigr://"

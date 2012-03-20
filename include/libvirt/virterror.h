@@ -85,6 +85,7 @@ typedef enum {
     VIR_FROM_LOCKING = 42,	/* Error from lock manager */
     VIR_FROM_HYPERV = 43,	/* Error from Hyper-V driver */
     VIR_FROM_CAPABILITIES = 44, /* Error from capabilities */
+    VIR_FROM_URI = 45,          /* Error from URI handling */
 } virErrorDomain;
 
 

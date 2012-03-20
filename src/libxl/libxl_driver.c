@@ -1044,11 +1044,8 @@ libxlOpen(virConnectPtr conn,
         if (libxl_driver == NULL)
             return VIR_DRV_OPEN_DECLINED;
 
-        conn->uri = virURIParse("xen:///");
-        if (!conn->uri) {
-            virReportOOMError();
+        if (!(conn->uri = virURIParse("xen:///")))
             return VIR_DRV_OPEN_ERROR;
-        }
     } else {
         /* Only xen scheme */
         if (conn->uri->scheme == NULL || STRNEQ(conn->uri->scheme, "xen"))

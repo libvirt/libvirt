@@ -50,15 +50,11 @@ static int testURIParse(const void *args)
     const struct URIParseData *data = args;
     char *uristr;
 
-    if (!(uri = virURIParse(data->uri))) {
-        virReportOOMError();
+    if (!(uri = virURIParse(data->uri)))
         goto cleanup;
-    }
 
-    if (!(uristr = virURIFormat(uri))) {
-        virReportOOMError();
+    if (!(uristr = virURIFormat(uri)))
         goto cleanup;
-    }
 
     if (!STREQ(uristr, data->uri)) {
         VIR_DEBUG("URI did not roundtrip, expect '%s', actual '%s'",

@@ -2617,12 +2617,8 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
         (*def)->target.port = port;
         (*def)->source.type = VIR_DOMAIN_CHR_TYPE_TCP;
 
-        parsedUri = virURIParse(fileName);
-
-        if (parsedUri == NULL) {
-            virReportOOMError();
+        if (!(parsedUri = virURIParse(fileName)))
             goto cleanup;
-        }
 
         if (parsedUri->port == 0) {
             VMX_ERROR(VIR_ERR_INTERNAL_ERROR,

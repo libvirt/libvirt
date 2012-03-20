@@ -178,6 +178,9 @@ static const char *virErrorDomainName(virErrorDomain domain) {
         case VIR_FROM_CAPABILITIES:
             dom = "Capabilities ";
             break;
+        case VIR_FROM_URI:
+            dom = "URI ";
+            break;
     }
     return(dom);
 }

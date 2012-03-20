@@ -3977,12 +3977,8 @@ esxDomainMigratePerform(virDomainPtr domain,
     }
 
     /* Parse migration URI */
-    parsedUri = virURIParse(uri);
-
-    if (parsedUri == NULL) {
-        virReportOOMError();
+    if (!(parsedUri = virURIParse(uri)))
         return -1;
-    }
 
     if (parsedUri->scheme == NULL || STRCASENEQ(parsedUri->scheme, "vpxmigr")) {
         ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",

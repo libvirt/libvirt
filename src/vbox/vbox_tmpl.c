@@ -980,13 +980,9 @@ static virDrvOpenStatus vboxOpen(virConnectPtr conn,
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (conn->uri == NULL) {
-        conn->uri = virURIParse(uid ? "vbox:///session" : "vbox:///system");
-        if (conn->uri == NULL) {
-            virReportOOMError();
-            return VIR_DRV_OPEN_ERROR;
-        }
-    }
+    if (conn->uri == NULL &&
+        !(conn->uri = virURIParse(uid ? "vbox:///session" : "vbox:///system")))
+        return VIR_DRV_OPEN_ERROR;
 
     if (conn->uri->scheme == NULL ||
         STRNEQ (conn->uri->scheme, "vbox"))

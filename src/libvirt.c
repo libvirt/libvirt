@@ -1165,11 +1165,7 @@ do_open (const char *name,
             virConnectOpenResolveURIAlias(conf, name, &alias) < 0)
             goto failed;
 
-        ret->uri = virURIParse (alias ? alias : name);
-        if (!ret->uri) {
-            virLibConnError(VIR_ERR_INVALID_ARG,
-                            _("could not parse connection URI %s"),
-                            alias ? alias : name);
+        if (!(ret->uri = virURIParse (alias ? alias : name))) {
             VIR_FREE(alias);
             goto failed;
         }
@@ -1770,11 +1766,9 @@ virConnectGetURI (virConnectPtr conn)
         return NULL;
     }
 
-    name = virURIFormat(conn->uri);
-    if (!name) {
-        virReportOOMError();
+    if (!(name = virURIFormat(conn->uri)))
         goto error;
-    }
+
     return name;
 
 error:
@@ -5061,9 +5055,7 @@ virDomainMigratePeer2Peer (virDomainPtr domain,
         return -1;
     }
 
-    tempuri = virURIParse(dconnuri);
-    if (!tempuri) {
-        virLibConnError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+    if (!(tempuri = virURIParse(dconnuri))) {
         virDispatchError(domain->conn);
         return -1;
     }

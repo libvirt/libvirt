@@ -860,13 +860,10 @@ static virDrvOpenStatus qemudOpen(virConnectPtr conn,
         if (qemu_driver == NULL)
             return VIR_DRV_OPEN_DECLINED;
 
-        conn->uri = virURIParse(qemu_driver->privileged ?
-                                "qemu:///system" :
-                                "qemu:///session");
-        if (!conn->uri) {
-            virReportOOMError();
+        if (!(conn->uri = virURIParse(qemu_driver->privileged ?
+                                      "qemu:///system" :
+                                      "qemu:///session")))
             return VIR_DRV_OPEN_ERROR;
-        }
     } else {
         /* If URI isn't 'qemu' its definitely not for us */
         if (conn->uri->scheme == NULL ||

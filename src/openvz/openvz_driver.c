@@ -1336,11 +1336,8 @@ static virDrvOpenStatus openvzOpen(virConnectPtr conn,
         if (access("/proc/vz", W_OK) < 0)
             return VIR_DRV_OPEN_DECLINED;
 
-        conn->uri = virURIParse("openvz:///system");
-        if (conn->uri == NULL) {
-            virReportOOMError();
+        if (!(conn->uri = virURIParse("openvz:///system")))
             return VIR_DRV_OPEN_ERROR;
-        }
     } else {
         /* If scheme isn't 'openvz', then its for another driver */
         if (conn->uri->scheme == NULL ||

@@ -140,11 +140,8 @@ static virDrvOpenStatus lxcOpen(virConnectPtr conn,
         if (lxc_driver == NULL)
             return VIR_DRV_OPEN_DECLINED;
 
-        conn->uri = virURIParse("lxc:///");
-        if (!conn->uri) {
-            virReportOOMError();
+        if (!(conn->uri = virURIParse("lxc:///")))
             return VIR_DRV_OPEN_ERROR;
-        }
     } else {
         if (conn->uri->scheme == NULL ||
             STRNEQ(conn->uri->scheme, "lxc"))

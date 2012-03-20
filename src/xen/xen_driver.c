@@ -270,11 +270,8 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
         if (!xenUnifiedProbe())
             return VIR_DRV_OPEN_DECLINED;
 
-        conn->uri = virURIParse("xen:///");
-        if (!conn->uri) {
-            virReportOOMError();
+        if (!(conn->uri = virURIParse("xen:///")))
             return VIR_DRV_OPEN_ERROR;
-        }
     } else {
         if (conn->uri->scheme) {
             /* Decline any scheme which isn't "xen://" or "http://". */

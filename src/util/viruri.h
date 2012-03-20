@@ -16,8 +16,10 @@
 typedef xmlURI    virURI;
 typedef xmlURIPtr virURIPtr;
 
-virURIPtr virURIParse(const char *uri);
-char *virURIFormat(virURIPtr uri);
+virURIPtr virURIParse(const char *uri)
+    ATTRIBUTE_NONNULL(1);
+char *virURIFormat(virURIPtr uri)
+    ATTRIBUTE_NONNULL(1);
 
 void virURIFree(virURIPtr uri);
 
