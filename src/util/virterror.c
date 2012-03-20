@@ -181,6 +181,9 @@ static const char *virErrorDomainName(virErrorDomain domain) {
         case VIR_FROM_URI:
             dom = "URI ";
             break;
+        case VIR_FROM_AUTH:
+            dom = "Auth ";
+            break;
     }
     return(dom);
 }

@@ -24,6 +24,9 @@
 
 # include "internal.h"
 
+int virAuthGetConfigFilePath(virConnectPtr conn,
+                             char **path);
+
 char *virAuthGetUsername(virConnectAuthPtr auth, const char *defaultUsername,
                          const char *hostname);
 char *virAuthGetPassword(virConnectAuthPtr auth, const char *username,

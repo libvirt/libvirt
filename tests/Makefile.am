@@ -96,7 +96,8 @@ check_PROGRAMS = virshtest conftest sockettest \
 	commandtest commandhelper seclabeltest \
 	virhashtest virnetmessagetest virnetsockettest ssh \
 	utiltest virnettlscontexttest shunloadtest \
-	virtimetest viruritest virkeyfiletest
+	virtimetest viruritest virkeyfiletest \
+	virauthconfigtest
 
 check_LTLIBRARIES = libshunload.la
 
@@ -221,6 +222,7 @@ TESTS = virshtest \
 	virtimetest \
 	viruritest \
 	virkeyfiletest \
+	virauthconfigtest \
 	shunloadtest \
 	utiltest \
 	$(test_scripts)
@@ -517,6 +519,11 @@ virkeyfiletest_SOURCES = \
 	virkeyfiletest.c testutils.h testutils.c
 virkeyfiletest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
 virkeyfiletest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
+
+virauthconfigtest_SOURCES = \
+	virauthconfigtest.c testutils.h testutils.c
+virauthconfigtest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
+virauthconfigtest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
 
 seclabeltest_SOURCES = \
 	seclabeltest.c

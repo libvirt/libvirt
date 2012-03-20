@@ -1161,8 +1161,16 @@ virUUIDParse;
 
 
 # virauth.h
-virAuthGetUsername;
+virAuthGetConfigFilePath;
 virAuthGetPassword;
+virAuthGetUsername;
+
+
+# virauthconfig.h
+virAuthConfigFree;
+virAuthConfigLookup;
+virAuthConfigNew;
+virAuthConfigNewData;
 
 
 # viraudit.h

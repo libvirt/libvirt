@@ -21,9 +21,83 @@
 
 #include <config.h>
 
+#include <stdlib.h>
+
 #include "virauth.h"
 #include "util.h"
 #include "memory.h"
+#include "logging.h"
+#include "datatypes.h"
+#include "virterror_internal.h"
+#include "configmake.h"
+
+#define VIR_FROM_THIS VIR_FROM_AUTH
+
+
+int virAuthGetConfigFilePath(virConnectPtr conn,
+                             char **path)
+{
+    int ret = -1;
+    size_t i;
+    const char *authenv = getenv("LIBVIRT_AUTH_FILE");
+    char *userdir = NULL;
+
+    *path = NULL;
+
+    VIR_DEBUG("Determining auth config file path");
+
+    if (authenv) {
+        VIR_DEBUG("Using path from env '%s'", authenv);
+        if (!(*path = strdup(authenv)))
+            goto no_memory;
+        return 0;
+    }
+
+    for (i = 0 ; i < conn->uri->paramsCount ; i++) {
+        if (STREQ_NULLABLE(conn->uri->params[i].name, "authfile") &&
+            conn->uri->params[i].value) {
+            VIR_DEBUG("Using path from URI '%s'",
+                      conn->uri->params[i].value);
+            if (!(*path = strdup(conn->uri->params[i].value)))
+                goto no_memory;
+            return 0;
+        }
+    }
+
+    if (!(userdir = virGetUserDirectory(geteuid())))
+        goto cleanup;
+
+    if (virAsprintf(path, "%s/.libvirt/auth.conf", userdir) < 0)
+        goto no_memory;
+
+    VIR_DEBUG("Checking for readability of '%s'", *path);
+    if (access(*path, R_OK) == 0)
+        goto done;
+
+    VIR_FREE(*path);
+
+    if (!(*path = strdup(SYSCONFDIR "/libvirt/auth.conf")))
+        goto no_memory;
+
+    VIR_DEBUG("Checking for readability of '%s'", *path);
+    if (access(*path, R_OK) == 0)
+        goto done;
+
+    VIR_FREE(*path);
+
+done:
+    ret = 0;
+
+    VIR_DEBUG("Using auth file '%s'", NULLSTR(*path));
+cleanup:
+    VIR_FREE(userdir);
+
+    return ret;
+
+no_memory:
+    virReportOOMError();
+    goto cleanup;
+}
 
 
 char *
