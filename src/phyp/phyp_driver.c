@@ -1006,7 +1006,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
             goto err;
         }
 
-        username = virAuthGetUsername(auth, NULL, conn->uri->server);
+        username = virAuthGetUsername(conn, auth, "ssh", NULL, conn->uri->server);
 
         if (username == NULL) {
             PHYP_ERROR(VIR_ERR_AUTH_FAILED, "%s",
@@ -1087,7 +1087,7 @@ keyboard_interactive:
             goto disconnect;
         }
 
-        password = virAuthGetPassword(auth, username, conn->uri->server);
+        password = virAuthGetPassword(conn, auth, "ssh", username, conn->uri->server);
 
         if (password == NULL) {
             PHYP_ERROR(VIR_ERR_AUTH_FAILED, "%s",

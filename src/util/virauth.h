@@ -27,9 +27,15 @@
 int virAuthGetConfigFilePath(virConnectPtr conn,
                              char **path);
 
-char *virAuthGetUsername(virConnectAuthPtr auth, const char *defaultUsername,
+char *virAuthGetUsername(virConnectPtr conn,
+                         virConnectAuthPtr auth,
+                         const char *servicename,
+                         const char *defaultUsername,
                          const char *hostname);
-char *virAuthGetPassword(virConnectAuthPtr auth, const char *username,
+char *virAuthGetPassword(virConnectPtr conn,
+                         virConnectAuthPtr auth,
+                         const char *servicename,
+                         const char *username,
                          const char *hostname);
 
 #endif /* __VIR_AUTH_H__ */

@@ -45,6 +45,8 @@
 #include "intprops.h"
 #include "virtypedparam.h"
 #include "viruri.h"
+#include "virauth.h"
+#include "virauthconfig.h"
 
 #define VIR_FROM_THIS VIR_FROM_REMOTE
 
@@ -460,6 +462,9 @@ doRemoteOpen (virConnectPtr conn,
                 VIR_FREE(pkipath);
                 pkipath = strdup(var->value);
                 if (!pkipath) goto out_of_memory;
+                var->ignore = 1;
+            } else if (STRCASEEQ(var->name, "authfile")) {
+                /* Strip this param, used by virauth.c */
                 var->ignore = 1;
             } else {
                 VIR_DEBUG("passing through variable '%s' ('%s') to remote end",
@@ -2870,27 +2875,35 @@ static int remoteAuthMakeCredentials(sasl_interact_t *interact,
     if (!cred)
         return -1;
 
-    for (ninteract = 0 ; interact[ninteract].id != 0 ; ninteract++)
-        ; /* empty */
+    for (ninteract = 0, *ncred = 0 ; interact[ninteract].id != 0 ; ninteract++) {
+        if (interact[ninteract].result)
+            continue;
+        (*ncred)++;
+    }
 
-    if (VIR_ALLOC_N(*cred, ninteract) < 0)
+    if (VIR_ALLOC_N(*cred, *ncred) < 0)
         return -1;
 
-    for (ninteract = 0 ; interact[ninteract].id != 0 ; ninteract++) {
-        (*cred)[ninteract].type = remoteAuthCredSASL2Vir(interact[ninteract].id);
-        if (!(*cred)[ninteract].type) {
+    for (ninteract = 0, *ncred = 0 ; interact[ninteract].id != 0 ; ninteract++) {
+        if (interact[ninteract].result)
+            continue;
+
+        (*cred)[*ncred].type = remoteAuthCredSASL2Vir(interact[ninteract].id);
+        if (!(*cred)[*ncred].type) {
+            *ncred = 0;
             VIR_FREE(*cred);
             return -1;
         }
-        if (interact[ninteract].challenge)
-            (*cred)[ninteract].challenge = interact[ninteract].challenge;
-        (*cred)[ninteract].prompt = interact[ninteract].prompt;
-        if (interact[ninteract].defresult)
-            (*cred)[ninteract].defresult = interact[ninteract].defresult;
-        (*cred)[ninteract].result = NULL;
+        if (interact[*ncred].challenge)
+            (*cred)[*ncred].challenge = interact[ninteract].challenge;
+        (*cred)[*ncred].prompt = interact[ninteract].prompt;
+        if (interact[*ncred].defresult)
+            (*cred)[*ncred].defresult = interact[ninteract].defresult;
+        (*cred)[*ncred].result = NULL;
+
+        (*ncred)++;
     }
 
-    *ncred = ninteract;
     return 0;
 }
 
@@ -2905,22 +2918,91 @@ static int remoteAuthMakeCredentials(sasl_interact_t *interact,
 static void remoteAuthFillInteract(virConnectCredentialPtr cred,
                                    sasl_interact_t *interact)
 {
-    int ninteract;
-    for (ninteract = 0 ; interact[ninteract].id != 0 ; ninteract++) {
-        interact[ninteract].result = cred[ninteract].result;
-        interact[ninteract].len = cred[ninteract].resultlen;
+    int ninteract, ncred;
+    for (ninteract = 0, ncred = 0 ; interact[ninteract].id != 0 ; ninteract++) {
+        if (interact[ninteract].result)
+            continue;
+        interact[ninteract].result = cred[ncred].result;
+        interact[ninteract].len = cred[ncred].resultlen;
+        ncred++;
     }
 }
-
 
 struct remoteAuthInteractState {
     sasl_interact_t *interact;
     virConnectCredentialPtr cred;
     size_t ncred;
+    virAuthConfigPtr config;
 };
 
 
-static void remoteAuthInteractStateClear(struct remoteAuthInteractState *state)
+
+static int remoteAuthFillFromConfig(virConnectPtr conn,
+                                    struct remoteAuthInteractState *state)
+{
+    int ret = -1;
+    int ninteract;
+    const char *credname;
+    char *path = NULL;
+
+    VIR_DEBUG("Trying to fill auth parameters from config file");
+
+    if (!state->config) {
+        if (virAuthGetConfigFilePath(conn, &path) < 0)
+            goto cleanup;
+        if (path == NULL) {
+            ret = 0;
+            goto cleanup;
+        }
+
+        if (!(state->config = virAuthConfigNew(path)))
+            goto cleanup;
+    }
+
+    for (ninteract = 0 ; state->interact[ninteract].id != 0 ; ninteract++) {
+        const char *value = NULL;
+
+        switch (state->interact[ninteract].id) {
+        case SASL_CB_USER:
+            credname = "username";
+            break;
+        case SASL_CB_AUTHNAME:
+            credname = "authname";
+            break;
+        case SASL_CB_PASS:
+            credname = "password";
+            break;
+        case SASL_CB_GETREALM:
+            credname = "realm";
+            break;
+        default:
+            credname = NULL;
+            break;
+        }
+
+        if (virAuthConfigLookup(state->config,
+                                "libvirt",
+                                conn->uri->server,
+                                credname,
+                                &value) < 0)
+            goto cleanup;
+
+        if (value) {
+            state->interact[ninteract].result = value;
+            state->interact[ninteract].len = strlen(value);
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(path);
+    return ret;
+}
+
+
+static void remoteAuthInteractStateClear(struct remoteAuthInteractState *state,
+                                         bool final)
 {
     size_t i;
     if (!state)
@@ -2930,15 +3012,23 @@ static void remoteAuthInteractStateClear(struct remoteAuthInteractState *state)
         VIR_FREE(state->cred[i].result);
     VIR_FREE(state->cred);
     state->ncred = 0;
+
+    if (final)
+        virAuthConfigFree(state->config);
 }
 
 
-static int remoteAuthInteract(struct remoteAuthInteractState *state,
+static int remoteAuthInteract(virConnectPtr conn,
+                              struct remoteAuthInteractState *state,
                               virConnectAuthPtr auth)
 {
     int ret = -1;
 
-    remoteAuthInteractStateClear(state);
+    VIR_DEBUG("Starting SASL interaction");
+    remoteAuthInteractStateClear(state, false);
+
+    if (remoteAuthFillFromConfig(conn, state) < 0)
+        goto cleanup;
 
     if (remoteAuthMakeCredentials(state->interact, &state->cred, &state->ncred) < 0) {
         remoteError(VIR_ERR_AUTH_FAILED, "%s",
@@ -3074,7 +3164,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv,
 
     /* Need to gather some credentials from the client */
     if (err == VIR_NET_SASL_INTERACT) {
-        if (remoteAuthInteract(&state, auth) < 0) {
+        if (remoteAuthInteract(conn, &state, auth) < 0) {
             VIR_FREE(iret.mechlist);
             goto cleanup;
         }
@@ -3126,7 +3216,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv,
 
         /* Need to gather some credentials from the client */
         if (err == VIR_NET_SASL_INTERACT) {
-            if (remoteAuthInteract(&state, auth) < 0) {
+            if (remoteAuthInteract(conn, &state, auth) < 0) {
                 VIR_FREE(iret.mechlist);
                 goto cleanup;
             }
@@ -3192,7 +3282,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv,
  cleanup:
     VIR_FREE(serverin);
 
-    remoteAuthInteractStateClear(&state);
+    remoteAuthInteractStateClear(&state, true);
     VIR_FREE(saslcb);
     virNetSASLSessionFree(sasl);
     virNetSASLContextFree(saslCtxt);

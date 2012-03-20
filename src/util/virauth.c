@@ -30,6 +30,7 @@
 #include "datatypes.h"
 #include "virterror_internal.h"
 #include "configmake.h"
+#include "virauthconfig.h"
 
 #define VIR_FROM_THIS VIR_FROM_AUTH
 
@@ -100,13 +101,68 @@ no_memory:
 }
 
 
+static int
+virAuthGetCredential(virConnectPtr conn,
+                     const char *servicename,
+                     const char *credname,
+                     char **value)
+{
+    int ret = -1;
+    char *path = NULL;
+    virAuthConfigPtr config = NULL;
+    const char *tmp;
+
+    *value = NULL;
+
+    if (virAuthGetConfigFilePath(conn, &path) < 0)
+        goto cleanup;
+
+    if (path == NULL) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (!(config = virAuthConfigNew(path)))
+        goto cleanup;
+
+    if (virAuthConfigLookup(config,
+                            servicename,
+                            conn->uri->server,
+                            credname,
+                            &tmp) < 0)
+        goto cleanup;
+
+    if (tmp &&
+        !(*value = strdup(tmp))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    virAuthConfigFree(config);
+    VIR_FREE(path);
+    return ret;
+}
+
+
 char *
-virAuthGetUsername(virConnectAuthPtr auth, const char *defaultUsername,
+virAuthGetUsername(virConnectPtr conn,
+                   virConnectAuthPtr auth,
+                   const char *servicename,
+                   const char *defaultUsername,
                    const char *hostname)
 {
     unsigned int ncred;
     virConnectCredential cred;
     char *prompt;
+    char *ret = NULL;
+
+    if (virAuthGetCredential(conn, servicename, "username", &ret) < 0)
+        return NULL;
+    if (ret != NULL)
+        return ret;
 
     memset(&cred, 0, sizeof (virConnectCredential));
 
@@ -148,12 +204,21 @@ virAuthGetUsername(virConnectAuthPtr auth, const char *defaultUsername,
 
 
 char *
-virAuthGetPassword(virConnectAuthPtr auth, const char *username,
+virAuthGetPassword(virConnectPtr conn,
+                   virConnectAuthPtr auth,
+                   const char *servicename,
+                   const char *username,
                    const char *hostname)
 {
     unsigned int ncred;
     virConnectCredential cred;
     char *prompt;
+    char *ret = NULL;
+
+    if (virAuthGetCredential(conn, servicename, "password", &ret) < 0)
+        return NULL;
+    if (ret != NULL)
+        return ret;
 
     memset(&cred, 0, sizeof (virConnectCredential));
 

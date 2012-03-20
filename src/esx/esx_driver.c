@@ -667,10 +667,8 @@ esxCapsInit(esxPrivate *priv)
 
 
 static int
-esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
-                 const char *hostname, int port,
-                 const char *predefinedUsername,
-                 esxVI_ProductVersion expectedProductVersion,
+esxConnectToHost(virConnectPtr conn,
+                 virConnectAuthPtr auth,
                  char **vCenterIpAddress)
 {
     int result = -1;
@@ -682,25 +680,29 @@ esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *hostSystem = NULL;
     esxVI_Boolean inMaintenanceMode = esxVI_Boolean_Undefined;
+    esxPrivate *priv = conn->privateData;
+    esxVI_ProductVersion expectedProductVersion = STRCASEEQ(conn->uri->scheme, "esx")
+        ? esxVI_ProductVersion_ESX
+        : esxVI_ProductVersion_GSX;
 
     if (vCenterIpAddress == NULL || *vCenterIpAddress != NULL) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
-    if (esxUtil_ResolveHostname(hostname, ipAddress, NI_MAXHOST) < 0) {
+    if (esxUtil_ResolveHostname(conn->uri->server, ipAddress, NI_MAXHOST) < 0) {
         return -1;
     }
 
-    if (predefinedUsername != NULL) {
-        username = strdup(predefinedUsername);
+    if (conn->uri->user != NULL) {
+        username = strdup(conn->uri->user);
 
         if (username == NULL) {
             virReportOOMError();
             goto cleanup;
         }
     } else {
-        username = virAuthGetUsername(auth, "root", hostname);
+        username = virAuthGetUsername(conn, auth, "esx", "root", conn->uri->server);
 
         if (username == NULL) {
             ESX_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Username request failed"));
@@ -708,7 +710,7 @@ esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
         }
     }
 
-    unescapedPassword = virAuthGetPassword(auth, username, hostname);
+    unescapedPassword = virAuthGetPassword(conn, auth, "esx", username, conn->uri->server);
 
     if (unescapedPassword == NULL) {
         ESX_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Password request failed"));
@@ -722,7 +724,7 @@ esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
     }
 
     if (virAsprintf(&url, "%s://%s:%d/sdk", priv->parsedUri->transport,
-                    hostname, port) < 0) {
+                    conn->uri->server, conn->uri->port) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -743,13 +745,13 @@ esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
             priv->host->productVersion != esxVI_ProductVersion_ESX5x) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("%s is neither an ESX 3.5, 4.x nor 5.x host"),
-                      hostname);
+                      conn->uri->server);
             goto cleanup;
         }
     } else { /* GSX */
         if (priv->host->productVersion != esxVI_ProductVersion_GSX20) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("%s isn't a GSX 2.0 host"), hostname);
+                      _("%s isn't a GSX 2.0 host"), conn->uri->server);
             goto cleanup;
         }
     }
@@ -799,9 +801,9 @@ esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
 
 
 static int
-esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
-                    const char *hostname, int port,
-                    const char *predefinedUsername,
+esxConnectToVCenter(virConnectPtr conn,
+                    virConnectAuthPtr auth,
+                    const char *hostname,
                     const char *hostSystemIpAddress)
 {
     int result = -1;
@@ -810,6 +812,7 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
     char *unescapedPassword = NULL;
     char *password = NULL;
     char *url = NULL;
+    esxPrivate *priv = conn->privateData;
 
     if (hostSystemIpAddress == NULL &&
         (priv->parsedUri->path == NULL || STREQ(priv->parsedUri->path, "/"))) {
@@ -822,15 +825,15 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
         return -1;
     }
 
-    if (predefinedUsername != NULL) {
-        username = strdup(predefinedUsername);
+    if (conn->uri->user != NULL) {
+        username = strdup(conn->uri->user);
 
         if (username == NULL) {
             virReportOOMError();
             goto cleanup;
         }
     } else {
-        username = virAuthGetUsername(auth, "administrator", hostname);
+        username = virAuthGetUsername(conn, auth, "esx", "administrator", hostname);
 
         if (username == NULL) {
             ESX_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Username request failed"));
@@ -838,7 +841,7 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
         }
     }
 
-    unescapedPassword = virAuthGetPassword(auth, username, hostname);
+    unescapedPassword = virAuthGetPassword(conn, auth, "esx", username, hostname);
 
     if (unescapedPassword == NULL) {
         ESX_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Password request failed"));
@@ -852,7 +855,7 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
     }
 
     if (virAsprintf(&url, "%s://%s:%d/sdk", priv->parsedUri->transport,
-                    hostname, port) < 0) {
+                    hostname, conn->uri->port) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -1046,11 +1049,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth,
     if (STRCASEEQ(conn->uri->scheme, "esx") ||
         STRCASEEQ(conn->uri->scheme, "gsx")) {
         /* Connect to host */
-        if (esxConnectToHost(priv, auth, conn->uri->server, conn->uri->port,
-                             conn->uri->user,
-                             STRCASEEQ(conn->uri->scheme, "esx")
-                               ? esxVI_ProductVersion_ESX
-                               : esxVI_ProductVersion_GSX,
+        if (esxConnectToHost(conn, auth,
                              &potentialVCenterIpAddress) < 0) {
             goto cleanup;
         }
@@ -1089,8 +1088,8 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth,
                 }
             }
 
-            if (esxConnectToVCenter(priv, auth, vCenterIpAddress,
-                                    conn->uri->port, NULL,
+            if (esxConnectToVCenter(conn, auth,
+                                    vCenterIpAddress,
                                     priv->host->ipAddress) < 0) {
                 goto cleanup;
             }
@@ -1099,8 +1098,9 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth,
         priv->primary = priv->host;
     } else { /* VPX */
         /* Connect to vCenter */
-        if (esxConnectToVCenter(priv, auth, conn->uri->server, conn->uri->port,
-                                conn->uri->user, NULL) < 0) {
+        if (esxConnectToVCenter(conn, auth,
+                                conn->uri->server,
+                                NULL) < 0) {
             goto cleanup;
         }
 
