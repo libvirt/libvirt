@@ -96,7 +96,7 @@ check_PROGRAMS = virshtest conftest sockettest \
 	commandtest commandhelper seclabeltest \
 	virhashtest virnetmessagetest virnetsockettest ssh \
 	utiltest virnettlscontexttest shunloadtest \
-	virtimetest
+	virtimetest viruritest
 
 check_LTLIBRARIES = libshunload.la
 
@@ -219,6 +219,7 @@ TESTS = virshtest \
 	virnetsockettest \
 	virnettlscontexttest \
 	virtimetest \
+	viruritest \
 	shunloadtest \
 	utiltest \
 	$(test_scripts)
@@ -506,6 +507,10 @@ virtimetest_SOURCES = \
 virtimetest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
 virtimetest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
 
+viruritest_SOURCES = \
+	viruritest.c testutils.h testutils.c
+viruritest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
+viruritest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
 
 seclabeltest_SOURCES = \
 	seclabeltest.c
