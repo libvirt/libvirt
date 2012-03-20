@@ -3105,7 +3105,8 @@ cleanup:
 
 int
 qemuMonitorJSONDiskSnapshot(qemuMonitorPtr mon, virJSONValuePtr actions,
-                            const char *device, const char *file)
+                            const char *device, const char *file,
+                            const char *format, bool reuse)
 {
     int ret;
     virJSONValuePtr cmd;
@@ -3115,6 +3116,9 @@ qemuMonitorJSONDiskSnapshot(qemuMonitorPtr mon, virJSONValuePtr actions,
                                         "blockdev-snapshot-sync",
                                         "s:device", device,
                                         "s:snapshot-file", file,
+                                        "s:format", format,
+                                        reuse ? "s:mode" : NULL,
+                                        reuse ? "existing" : NULL,
                                         NULL);
     if (!cmd)
         return -1;

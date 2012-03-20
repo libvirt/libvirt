@@ -2657,12 +2657,13 @@ int qemuMonitorDeleteSnapshot(qemuMonitorPtr mon, const char *name)
  * at file.  */
 int
 qemuMonitorDiskSnapshot(qemuMonitorPtr mon, virJSONValuePtr actions,
-                        const char *device, const char *file)
+                        const char *device, const char *file,
+                        const char *format, bool reuse)
 {
     int ret;
 
-    VIR_DEBUG("mon=%p, actions=%p, device=%s, file=%s",
-              mon, actions, device, file);
+    VIR_DEBUG("mon=%p, actions=%p, device=%s, file=%s, format=%s, reuse=%d",
+              mon, actions, device, file, format, reuse);
 
     if (!mon) {
         qemuReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2671,11 +2672,12 @@ qemuMonitorDiskSnapshot(qemuMonitorPtr mon, virJSONValuePtr actions,
     }
 
     if (mon->json) {
-        ret = qemuMonitorJSONDiskSnapshot(mon, actions, device, file);
+        ret = qemuMonitorJSONDiskSnapshot(mon, actions, device, file, format,
+                                          reuse);
     } else {
-        if (actions) {
+        if (actions || STRNEQ(format, "qcow2") || reuse) {
             qemuReportError(VIR_ERR_INVALID_ARG, "%s",
-                            _("actions not supported with text monitor"));
+                            _("text monitor lacks several snapshot features"));
             return -1;
         }
         ret = qemuMonitorTextDiskSnapshot(mon, device, file);

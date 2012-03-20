@@ -9726,6 +9726,12 @@ qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
     int external = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
+    if (allow_reuse && !qemuCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION)) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("reuse is not supported with this QEMU binary"));
+        goto cleanup;
+    }
+
     for (i = 0; i < def->ndisks; i++) {
         virDomainSnapshotDiskDefPtr disk = &def->disks[i];
 
@@ -9756,8 +9762,8 @@ qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
                     virReportOOMError();
                     goto cleanup;
                 }
-            } else if (STRNEQ(disk->driverType, "qcow2")) {
-                /* XXX We should also support QED */
+            } else if (STRNEQ(disk->driverType, "qcow2") &&
+                       STRNEQ(disk->driverType, "qed")) {
                 qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                 _("external snapshot format for disk %s "
                                   "is unsupported: %s"),
@@ -9771,7 +9777,7 @@ qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
                                          disk->name, disk->file);
                     goto cleanup;
                 }
-            } else if (!(S_ISBLK(st.st_mode) || allow_reuse)) {
+            } else if (!(S_ISBLK(st.st_mode) || !st.st_size || allow_reuse)) {
                 qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                 _("external snapshot file for disk %s already "
                                   "exists and is not a block device: %s"),
@@ -9824,7 +9830,8 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
                                          virDomainSnapshotDiskDefPtr snap,
                                          virDomainDiskDefPtr disk,
                                          virDomainDiskDefPtr persistDisk,
-                                         virJSONValuePtr actions)
+                                         virJSONValuePtr actions,
+                                         bool reuse)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *device = NULL;
@@ -9846,23 +9853,25 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
 
     if (virAsprintf(&device, "drive-%s", disk->info.alias) < 0 ||
         !(source = strdup(snap->file)) ||
-        (STRNEQ_NULLABLE(disk->driverType, "qcow2") &&
-         !(driverType = strdup("qcow2"))) ||
+        (STRNEQ_NULLABLE(disk->driverType, snap->driverType) &&
+         !(driverType = strdup(snap->driverType))) ||
         (persistDisk &&
          (!(persistSource = strdup(source)) ||
-          (STRNEQ_NULLABLE(persistDisk->driverType, "qcow2") &&
-           !(persistDriverType = strdup("qcow2")))))) {
+          (STRNEQ_NULLABLE(persistDisk->driverType, snap->driverType) &&
+           !(persistDriverType = strdup(snap->driverType)))))) {
         virReportOOMError();
         goto cleanup;
     }
 
     /* create the stub file and set selinux labels; manipulate disk in
      * place, in a way that can be reverted on failure. */
-    fd = qemuOpenFile(driver, source, O_WRONLY | O_TRUNC | O_CREAT,
-                      &need_unlink, NULL);
-    if (fd < 0)
-        goto cleanup;
-    VIR_FORCE_CLOSE(fd);
+    if (!reuse) {
+        fd = qemuOpenFile(driver, source, O_WRONLY | O_TRUNC | O_CREAT,
+                          &need_unlink, NULL);
+        if (fd < 0)
+            goto cleanup;
+        VIR_FORCE_CLOSE(fd);
+    }
 
     origsrc = disk->src;
     disk->src = source;
@@ -9884,7 +9893,8 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
     origdriver = NULL;
 
     /* create the actual snapshot */
-    ret = qemuMonitorDiskSnapshot(priv->mon, actions, device, source);
+    ret = qemuMonitorDiskSnapshot(priv->mon, actions, device, source,
+                                  driverType, reuse);
     virDomainAuditDisk(vm, disk->src, source, "snapshot", ret >= 0);
     if (ret < 0)
         goto cleanup;
@@ -10005,6 +10015,7 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
     bool persist = false;
     int thaw = 0; /* 1 if freeze succeeded, -1 if freeze failed */
     bool atomic = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC) != 0;
+    bool reuse = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         return -1;
@@ -10080,7 +10091,8 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
         ret = qemuDomainSnapshotCreateSingleDiskActive(driver, vm,
                                                        &snap->def->disks[i],
                                                        vm->def->disks[i],
-                                                       persistDisk, actions);
+                                                       persistDisk, actions,
+                                                       reuse);
         if (ret < 0)
             break;
     }

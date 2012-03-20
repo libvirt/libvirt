@@ -17102,10 +17102,13 @@ virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
  * VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY to be passed as well.
  *
  * By default, if the snapshot involves external files, and any of the
- * destination files already exist as a regular file, the snapshot is
- * rejected to avoid losing contents of those files.  However, if
- * @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT, then existing
- * destination files are instead truncated and reused.
+ * destination files already exist as a non-empty regular file, the
+ * snapshot is rejected to avoid losing contents of those files.
+ * However, if @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT,
+ * then the destination files must already exist and contain content
+ * identical to the source files (this allows a management app to
+ * pre-create files with relative backing file names, rather than the
+ * default of creating with absolute backing file names).
  *
  * Be aware that although libvirt prefers to report errors up front with
  * no other effect, some hypervisors have certain types of failures where

@@ -505,7 +505,9 @@ int qemuMonitorDeleteSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorDiskSnapshot(qemuMonitorPtr mon,
                             virJSONValuePtr actions,
                             const char *device,
-                            const char *file);
+                            const char *file,
+                            const char *format,
+                            bool reuse);
 int qemuMonitorTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 

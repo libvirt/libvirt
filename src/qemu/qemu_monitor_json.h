@@ -228,7 +228,9 @@ int qemuMonitorJSONDeleteSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorJSONDiskSnapshot(qemuMonitorPtr mon,
                                 virJSONValuePtr actions,
                                 const char *device,
-                                const char *file);
+                                const char *file,
+                                const char *format,
+                                bool reuse);
 int qemuMonitorJSONTransaction(qemuMonitorPtr mon, virJSONValuePtr actions);
 
 int qemuMonitorJSONArbitraryCommand(qemuMonitorPtr mon,
