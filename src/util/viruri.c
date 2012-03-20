@@ -63,7 +63,7 @@ virURIParse(const char *uri)
  * @returns the constructed uri as a string
  */
 char *
-virURIFormat(xmlURIPtr uri)
+virURIFormat(virURIPtr uri)
 {
     char *backupserver = NULL;
     char *tmpserver = NULL;
