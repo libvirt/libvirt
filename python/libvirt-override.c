@@ -2550,7 +2550,9 @@ libvirt_virNodeGetCPUStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
 static PyObject *
 libvirt_virNodeGetMemoryStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
 {
-    PyObject *ret;
+    PyObject *ret = NULL;
+    PyObject *key = NULL;
+    PyObject *val = NULL;
     PyObject *pyobj_conn;
     virConnectPtr conn;
     unsigned int flags;
@@ -2559,7 +2561,7 @@ libvirt_virNodeGetMemoryStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
     virNodeMemoryStatsPtr stats = NULL;
 
     if (!PyArg_ParseTuple(args, (char *)"Oii:virNodeGetMemoryStats", &pyobj_conn, &cellNum, &flags))
-        return(NULL);
+        return ret;
     conn = (virConnectPtr)(PyvirConnect_Get(pyobj_conn));
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
@@ -2570,7 +2572,7 @@ libvirt_virNodeGetMemoryStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
 
     if (nparams) {
         if (VIR_ALLOC_N(stats, nparams) < 0)
-            return VIR_PY_NONE;
+            return PyErr_NoMemory();
 
         LIBVIRT_BEGIN_ALLOW_THREADS;
         c_retval = virNodeGetMemoryStats(conn, cellNum, stats, &nparams, flags);
@@ -2580,17 +2582,31 @@ libvirt_virNodeGetMemoryStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
             return VIR_PY_NONE;
         }
     }
-    if (!(ret = PyDict_New())) {
-        VIR_FREE(stats);
-        return VIR_PY_NONE;
-    }
+
+    if (!(ret = PyDict_New()))
+        goto error;
+
     for (i = 0; i < nparams; i++) {
-        PyDict_SetItem(ret,
-                       libvirt_constcharPtrWrap(stats[i].field),
-                       libvirt_ulonglongWrap(stats[i].value));
+        key = libvirt_constcharPtrWrap(stats[i].field);
+        val = libvirt_ulonglongWrap(stats[i].value);
+
+        if (!key || !val || PyDict_SetItem(ret, key, val) < 0) {
+            Py_DECREF(ret);
+            ret = NULL;
+            goto error;
+        }
+
+        Py_DECREF(key);
+        Py_DECREF(val);
     }
 
     VIR_FREE(stats);
+    return ret;
+
+error:
+    VIR_FREE(stats);
+    Py_XDECREF(key);
+    Py_XDECREF(val);
     return ret;
 }
 
