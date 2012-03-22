@@ -401,11 +401,16 @@ B<virsh> list --title
   0 Domain-0             running    Mailserver 1
   2 fedora               paused
 
-=item B<freecell> [B<cellno> | I<--all>]
+=item B<freecell> [{ [I<--cellno>] B<cellno> | I<--all> }]
 
-Prints the available amount of memory on the machine or within a
-NUMA cell if I<cellno> is provided.  If I<--all> is provided instead
-of I<--cellno>, then show the information on all NUMA cells.
+Prints the available amount of memory on the machine or within a NUMA
+cell.  The freecell command can provide one of three different
+displays of available memory on the machine depending on the options
+specified.  With no options, it displays the total free memory on the
+machine.  With the --all option, it displays the free memory in each
+cell and the total free memory on the machine.  Finally, with a
+numeric argument or with --cellno plus a cell number it will display
+the free memory for the specified cell only.
 
 =item B<cpu-baseline> I<FILE>
 
