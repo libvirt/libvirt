@@ -100,7 +100,7 @@ mymain(void)
     } while (0)
 
     if (!(caps = testXenCapsInit()))
-        return(EXIT_FAILURE);
+        return EXIT_FAILURE;
 
     DO_TEST("pv", "pv", "pvtest", 1);
     DO_TEST("fv", "fv", "fvtest", 1);
@@ -170,7 +170,7 @@ mymain(void)
 
     virCapabilitiesFree(caps);
 
-    return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIRT_TEST_MAIN(mymain)

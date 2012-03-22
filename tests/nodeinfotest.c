@@ -141,7 +141,7 @@ mymain(void)
       if (virtTestRun(nodeData[i], 1, linuxTestNodeInfo, nodeData[i]) != 0)
         ret = -1;
 
-    return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIRT_TEST_MAIN(mymain)

@@ -48,7 +48,7 @@ static int virSocketAddrGetIPv4Addr(virSocketAddrPtr addr, virSocketAddrIPv4Ptr 
     int i;
 
     if ((addr == NULL) || (tab == NULL) || (addr->data.stor.ss_family != AF_INET))
-        return(-1);
+        return -1;
 
     val = ntohl(addr->data.inet4.sin_addr.s_addr);
 
@@ -57,21 +57,21 @@ static int virSocketAddrGetIPv4Addr(virSocketAddrPtr addr, virSocketAddrIPv4Ptr 
         val >>= 8;
     }
 
-    return(0);
+    return 0;
 }
 
 static int virSocketAddrGetIPv6Addr(virSocketAddrPtr addr, virSocketAddrIPv6Ptr tab) {
     int i;
 
     if ((addr == NULL) || (tab == NULL) || (addr->data.stor.ss_family != AF_INET6))
-        return(-1);
+        return -1;
 
     for (i = 0;i < 8;i++) {
         (*tab)[i] = ((addr->data.inet6.sin6_addr.s6_addr[2 * i] << 8) |
                      addr->data.inet6.sin6_addr.s6_addr[2 * i + 1]);
     }
 
-    return(0);
+    return 0;
 }
 
 /**
@@ -120,7 +120,7 @@ int virSocketAddrParse(virSocketAddrPtr addr, const char *val, int family) {
     }
 
     freeaddrinfo(res);
-    return(len);
+    return len;
 }
 
 /*
@@ -444,13 +444,13 @@ int virSocketAddrCheckNetmask(virSocketAddrPtr addr1, virSocketAddrPtr addr2,
     int i;
 
     if ((addr1 == NULL) || (addr2 == NULL) || (netmask == NULL))
-        return(-1);
+        return -1;
     if ((addr1->data.stor.ss_family != addr2->data.stor.ss_family) ||
         (addr1->data.stor.ss_family != netmask->data.stor.ss_family))
-        return(-1);
+        return -1;
 
     if (virSocketAddrIsNetmask(netmask) != 0)
-        return(-1);
+        return -1;
 
     if (addr1->data.stor.ss_family == AF_INET) {
         virSocketAddrIPv4 t1, t2, tm;
@@ -458,11 +458,11 @@ int virSocketAddrCheckNetmask(virSocketAddrPtr addr1, virSocketAddrPtr addr2,
         if ((virSocketAddrGetIPv4Addr(addr1, &t1) < 0) ||
             (virSocketAddrGetIPv4Addr(addr2, &t2) < 0) ||
             (virSocketAddrGetIPv4Addr(netmask, &tm) < 0))
-            return(-1);
+            return -1;
 
         for (i = 0;i < 4;i++) {
             if ((t1[i] & tm[i]) != (t2[i] & tm[i]))
-                return(0);
+                return 0;
         }
 
     } else if (addr1->data.stor.ss_family == AF_INET6) {
@@ -471,17 +471,17 @@ int virSocketAddrCheckNetmask(virSocketAddrPtr addr1, virSocketAddrPtr addr2,
         if ((virSocketAddrGetIPv6Addr(addr1, &t1) < 0) ||
             (virSocketAddrGetIPv6Addr(addr2, &t2) < 0) ||
             (virSocketAddrGetIPv6Addr(netmask, &tm) < 0))
-            return(-1);
+            return -1;
 
         for (i = 0;i < 8;i++) {
             if ((t1[i] & tm[i]) != (t2[i] & tm[i]))
-                return(0);
+                return 0;
         }
 
     } else {
-        return(-1);
+        return -1;
     }
-    return(1);
+    return 1;
 }
 
 /**
@@ -500,44 +500,44 @@ int virSocketAddrGetRange(virSocketAddrPtr start, virSocketAddrPtr end) {
     int ret = 0, i;
 
     if ((start == NULL) || (end == NULL))
-        return(-1);
+        return -1;
     if (start->data.stor.ss_family != end->data.stor.ss_family)
-        return(-1);
+        return -1;
 
     if (start->data.stor.ss_family == AF_INET) {
         virSocketAddrIPv4 t1, t2;
 
         if ((virSocketAddrGetIPv4Addr(start, &t1) < 0) ||
             (virSocketAddrGetIPv4Addr(end, &t2) < 0))
-            return(-1);
+            return -1;
 
         for (i = 0;i < 2;i++) {
             if (t1[i] != t2[i])
-                return(-1);
+                return -1;
         }
         ret = (t2[2] - t1[2]) * 256 + (t2[3] - t1[3]);
         if (ret < 0)
-            return(-1);
+            return -1;
         ret++;
     } else if (start->data.stor.ss_family == AF_INET6) {
         virSocketAddrIPv6 t1, t2;
 
         if ((virSocketAddrGetIPv6Addr(start, &t1) < 0) ||
             (virSocketAddrGetIPv6Addr(end, &t2) < 0))
-            return(-1);
+            return -1;
 
         for (i = 0;i < 7;i++) {
             if (t1[i] != t2[i])
-                return(-1);
+                return -1;
         }
         ret = t2[7] - t1[7];
         if (ret < 0)
-            return(-1);
+            return -1;
         ret++;
     } else {
-        return(-1);
+        return -1;
     }
-    return(ret);
+    return ret;
 }
 
 

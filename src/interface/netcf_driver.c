@@ -73,7 +73,7 @@ static int netcf_to_vir_err(int netcf_errcode)
              * allocation failed return VIR ERR NO MEMORY
              * though it should not be used now.
              */
-            return(2);
+            return 2;
         case NETCF_EXMLPARSER:
             /* XML parser choked */
             return VIR_ERR_XML_ERROR;

@@ -641,7 +641,7 @@ static char *testBuildFilename(const char *relativeTo,
     char *offset;
     int baseLen;
     if (!filename || filename[0] == '\0')
-        return (NULL);
+        return NULL;
     if (filename[0] == '/')
         return strdup(filename);
 
@@ -1078,7 +1078,7 @@ static int testOpenFromFile(virConnectPtr conn,
     xmlFreeDoc(xml);
     testDriverUnlock(privconn);
 
-    return (0);
+    return 0;
 
  error:
     xmlXPathFreeContext(ctxt);
@@ -1176,7 +1176,7 @@ static int testGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED,
                           unsigned long *hvVer)
 {
     *hvVer = 2;
-    return (0);
+    return 0;
 }
 
 static int testIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
@@ -1207,7 +1207,7 @@ static int testNodeGetInfo(virConnectPtr conn,
     testDriverLock(privconn);
     memcpy(info, &privconn->nodeInfo, sizeof(virNodeInfo));
     testDriverUnlock(privconn);
-    return (0);
+    return 0;
 }
 
 static char *testGetCapabilities (virConnectPtr conn)

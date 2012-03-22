@@ -140,9 +140,9 @@ static int xenXMConfigReaper(const void *payload, const void *key ATTRIBUTE_UNUS
         if (nameowner && STREQ(nameowner, key)) {
             virHashRemoveEntry(args->priv->nameConfigMap, olddomname);
         }
-        return (1);
+        return 1;
     }
-    return (0);
+    return 0;
 }
 
 
@@ -324,12 +324,12 @@ int xenXMConfigCacheRefresh (virConnectPtr conn) {
     if (now == ((time_t)-1)) {
         virReportSystemError(errno,
                              "%s", _("cannot get time of day"));
-        return (-1);
+        return -1;
     }
 
     /* Rate limit re-scans */
     if ((now - priv->lastRefresh) < XM_REFRESH_INTERVAL)
-        return (0);
+        return 0;
 
     priv->lastRefresh = now;
 
@@ -338,7 +338,7 @@ int xenXMConfigCacheRefresh (virConnectPtr conn) {
         virReportSystemError(errno,
                              _("cannot read directory %s"),
                              priv->configDir);
-        return (-1);
+        return -1;
     }
 
     while ((ent = readdir(dh))) {
@@ -404,7 +404,7 @@ int xenXMConfigCacheRefresh (virConnectPtr conn) {
 
     closedir(dh);
 
-    return (ret);
+    return ret;
 }
 
 
@@ -427,19 +427,19 @@ xenXMOpen (virConnectPtr conn,
 
     priv->configCache = virHashCreate(50, xenXMConfigFree);
     if (!priv->configCache)
-        return (-1);
+        return -1;
     priv->nameConfigMap = virHashCreate(50, NULL);
     if (!priv->nameConfigMap) {
         virHashFree(priv->configCache);
         priv->configCache = NULL;
-        return (-1);
+        return -1;
     }
     /* Force the cache to be reloaded next time that
      * xenXMConfigCacheRefresh is called.
      */
     priv->lastRefresh = 0;
 
-    return (0);
+    return 0;
 }
 
 /*
@@ -452,7 +452,7 @@ int xenXMClose(virConnectPtr conn) {
     virHashFree(priv->nameConfigMap);
     virHashFree(priv->configCache);
 
-    return (0);
+    return 0;
 }
 
 /*
@@ -487,11 +487,11 @@ int xenXMDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
     xenXMConfCachePtr entry;
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         xenXMError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return(-1);
+        return -1;
     }
 
     if (domain->id != -1)
-        return (-1);
+        return -1;
 
     priv = domain->conn->privateData;
     xenUnifiedLock(priv);
@@ -510,7 +510,7 @@ int xenXMDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
     info->cpuTime = 0;
 
     xenUnifiedUnlock(priv);
-    return (0);
+    return 0;
 
 error:
     xenUnifiedUnlock(priv);
@@ -533,10 +533,10 @@ char *xenXMDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         xenXMError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return(NULL);
+        return NULL;
     }
     if (domain->id != -1)
-        return (NULL);
+        return NULL;
 
     priv = domain->conn->privateData;
     xenUnifiedLock(priv);
@@ -566,14 +566,14 @@ int xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory) {
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         xenXMError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (-1);
+        return -1;
     }
     if (domain->conn->flags & VIR_CONNECT_RO)
-        return (-1);
+        return -1;
     if (domain->id != -1)
-        return (-1);
+        return -1;
     if (memory < 1024 * MIN_XEN_GUEST_SIZE)
-        return (-1);
+        return -1;
 
     priv = domain->conn->privateData;
     xenUnifiedLock(priv);
@@ -611,12 +611,12 @@ int xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory) {
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         xenXMError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (-1);
+        return -1;
     }
     if (domain->conn->flags & VIR_CONNECT_RO)
-        return (-1);
+        return -1;
     if (domain->id != -1)
-        return (-1);
+        return -1;
 
     priv = domain->conn->privateData;
     xenUnifiedLock(priv);
@@ -654,10 +654,10 @@ unsigned long long xenXMDomainGetMaxMemory(virDomainPtr domain) {
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         xenXMError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (0);
+        return 0;
     }
     if (domain->id != -1)
-        return (0);
+        return 0;
 
     priv = domain->conn->privateData;
     xenUnifiedLock(priv);
@@ -910,7 +910,7 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
     VIR_FREE(mapsave);
     VIR_FREE(cpuset);
     xenUnifiedUnlock(priv);
-    return (ret);
+    return ret;
 }
 
 /*
@@ -924,11 +924,11 @@ virDomainPtr xenXMDomainLookupByName(virConnectPtr conn, const char *domname) {
 
     if (!VIR_IS_CONNECT(conn)) {
         xenXMError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        return (NULL);
+        return NULL;
     }
     if (domname == NULL) {
         xenXMError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (NULL);
+        return NULL;
     }
 
     priv = conn->privateData;
@@ -952,7 +952,7 @@ virDomainPtr xenXMDomainLookupByName(virConnectPtr conn, const char *domname) {
 
 cleanup:
     xenUnifiedUnlock(priv);
-    return (ret);
+    return ret;
 }
 
 
@@ -964,9 +964,9 @@ static int xenXMDomainSearchForUUID(const void *payload, const void *name ATTRIB
     const xenXMConfCachePtr entry = (const xenXMConfCachePtr)payload;
 
     if (!memcmp(entry->def->uuid, wantuuid, VIR_UUID_BUFLEN))
-        return (1);
+        return 1;
 
-    return (0);
+    return 0;
 }
 
 /*
@@ -980,11 +980,11 @@ virDomainPtr xenXMDomainLookupByUUID(virConnectPtr conn,
 
     if (!VIR_IS_CONNECT(conn)) {
         xenXMError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        return (NULL);
+        return NULL;
     }
     if (uuid == NULL) {
         xenXMError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (NULL);
+        return NULL;
     }
 
     priv = conn->privateData;
@@ -1005,7 +1005,7 @@ virDomainPtr xenXMDomainLookupByUUID(virConnectPtr conn,
 
 cleanup:
     xenUnifiedUnlock(priv);
-    return (ret);
+    return ret;
 }
 
 
@@ -1022,7 +1022,7 @@ int xenXMDomainCreate(virDomainPtr domain) {
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
     if (domain->id != -1)
-        return (-1);
+        return -1;
 
     xenUnifiedLock(priv);
 
@@ -1052,7 +1052,7 @@ int xenXMDomainCreate(virDomainPtr domain) {
         goto error;
 
     xenUnifiedUnlock(priv);
-    return (0);
+    return 0;
 
  error:
     if (domain->id != -1) {
@@ -1060,7 +1060,7 @@ int xenXMDomainCreate(virDomainPtr domain) {
         domain->id = -1;
     }
     xenUnifiedUnlock(priv);
-    return (-1);
+    return -1;
 }
 
 /*
@@ -1079,27 +1079,27 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
 
     if (!VIR_IS_CONNECT(conn)) {
         xenXMError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        return (NULL);
+        return NULL;
     }
     if (xml == NULL) {
         xenXMError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (NULL);
+        return NULL;
     }
     if (conn->flags & VIR_CONNECT_RO)
-        return (NULL);
+        return NULL;
 
     xenUnifiedLock(priv);
 
     if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh (conn) < 0) {
         xenUnifiedUnlock(priv);
-        return (NULL);
+        return NULL;
     }
 
     if (!(def = virDomainDefParseString(priv->caps, xml,
                                         1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         xenUnifiedUnlock(priv);
-        return (NULL);
+        return NULL;
     }
 
     if (!(conf = xenFormatXM(conn, def, priv->xendConfigVersion)))
@@ -1196,7 +1196,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
     ret = virGetDomain(conn, def->name, def->uuid);
     xenUnifiedUnlock(priv);
     VIR_FREE(filename);
-    return (ret);
+    return ret;
 
  error:
     VIR_FREE(filename);
@@ -1206,7 +1206,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
     virConfFree(conf);
     virDomainDefFree(def);
     xenUnifiedUnlock(priv);
-    return (NULL);
+    return NULL;
 }
 
 /*
@@ -1220,13 +1220,13 @@ int xenXMDomainUndefine(virDomainPtr domain) {
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         xenXMError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (-1);
+        return -1;
     }
 
     if (domain->id != -1)
-        return (-1);
+        return -1;
     if (domain->conn->flags & VIR_CONNECT_RO)
-        return (-1);
+        return -1;
 
     priv = domain->conn->privateData;
     xenUnifiedLock(priv);
@@ -1296,7 +1296,7 @@ int xenXMListDefinedDomains(virConnectPtr conn, char **const names, int maxnames
 
     if (!VIR_IS_CONNECT(conn)) {
         xenXMError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        return (-1);
+        return -1;
     }
 
     priv = conn->privateData;
@@ -1341,7 +1341,7 @@ int xenXMNumOfDefinedDomains(virConnectPtr conn) {
 
     if (!VIR_IS_CONNECT(conn)) {
         xenXMError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        return (-1);
+        return -1;
     }
 
     priv = conn->privateData;
@@ -1566,7 +1566,7 @@ xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
  cleanup:
     virDomainDeviceDefFree(dev);
     xenUnifiedUnlock(priv);
-    return (ret);
+    return ret;
 }
 
 int

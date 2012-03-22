@@ -1245,7 +1245,7 @@ mymain(void)
 
     asn1_delete_structure(&pkix_asn1);
 
-    return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIRT_TEST_MAIN(mymain)

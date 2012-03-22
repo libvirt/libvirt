@@ -972,7 +972,7 @@ xenapiDomainGetMaxMemory (virDomainPtr dom)
         vm = vms->contents[0];
         xen_vm_get_memory_static_max(session, &mem_static_max, vm);
         xen_vm_set_free(vms);
-        return (mem_static_max / 1024);
+        return mem_static_max / 1024;
     } else {
         if (vms) xen_vm_set_free(vms);
         xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);

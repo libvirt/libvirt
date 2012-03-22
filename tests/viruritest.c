@@ -211,7 +211,7 @@ mymain(void)
     TEST_PARAMS("foo=one%20two", "", params5);
     TEST_PARAMS("=bogus&foo=one", "foo=one", params6);
 
-    return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIRT_TEST_MAIN(mymain)

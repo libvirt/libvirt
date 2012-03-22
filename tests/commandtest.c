@@ -803,7 +803,7 @@ mymain(void)
     int fd;
 
     if (chdir("/tmp") < 0)
-        return(EXIT_FAILURE);
+        return EXIT_FAILURE;
 
     setpgid(0, 0);
     setsid();
@@ -868,7 +868,7 @@ mymain(void)
     DO_TEST(test18);
     DO_TEST(test19);
 
-    return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIRT_TEST_MAIN(mymain)

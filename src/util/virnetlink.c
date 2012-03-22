@@ -312,7 +312,7 @@ virNetlinkEventServiceStop(void)
 bool
 virNetlinkEventServiceIsRunning(void)
 {
-    return (server != NULL);
+    return server != NULL;
 }
 
 /**

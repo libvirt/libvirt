@@ -105,7 +105,7 @@ SELinuxGenNewContext(const char *oldcontext, const char *mcs)
     context_free(con);
 err:
     freecon(scontext);
-    return (newcontext);
+    return newcontext;
 }
 
 static int

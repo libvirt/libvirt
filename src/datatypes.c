@@ -70,14 +70,14 @@ virGetConnect(void) {
     ret->interfacePrivateData = NULL;
 
     ret->refs = 1;
-    return(ret);
+    return ret;
 
 failed:
     if (ret != NULL) {
         virMutexDestroy(&ret->lock);
         VIR_FREE(ret);
     }
-    return(NULL);
+    return NULL;
 }
 
 /**
@@ -148,10 +148,10 @@ virUnrefConnect(virConnectPtr conn) {
     if (refs == 0) {
         virReleaseConnect(conn);
         /* Already unlocked mutex */
-        return (0);
+        return 0;
     }
     virMutexUnlock(&conn->lock);
-    return (refs);
+    return refs;
 }
 
 /**
@@ -207,14 +207,14 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     conn->refs++;
     ret->refs++;
     virMutexUnlock(&conn->lock);
-    return(ret);
+    return ret;
 
  error:
     if (ret != NULL) {
         VIR_FREE(ret->name);
         VIR_FREE(ret);
     }
-    return(NULL);
+    return NULL;
 }
 
 /**
@@ -279,11 +279,11 @@ virUnrefDomain(virDomainPtr domain) {
     if (refs == 0) {
         virReleaseDomain(domain);
         /* Already unlocked mutex */
-        return (0);
+        return 0;
     }
 
     virMutexUnlock(&domain->conn->lock);
-    return (refs);
+    return refs;
 }
 
 /**
@@ -338,14 +338,14 @@ virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     conn->refs++;
     ret->refs++;
     virMutexUnlock(&conn->lock);
-    return(ret);
+    return ret;
 
  error:
     if (ret != NULL) {
         VIR_FREE(ret->name);
         VIR_FREE(ret);
     }
-    return(NULL);
+    return NULL;
 }
 
 /**
@@ -410,11 +410,11 @@ virUnrefNetwork(virNetworkPtr network) {
     if (refs == 0) {
         virReleaseNetwork(network);
         /* Already unlocked mutex */
-        return (0);
+        return 0;
     }
 
     virMutexUnlock(&network->conn->lock);
-    return (refs);
+    return refs;
 }
 
 
@@ -475,7 +475,7 @@ virGetInterface(virConnectPtr conn, const char *name, const char *mac) {
     conn->refs++;
     ret->refs++;
     virMutexUnlock(&conn->lock);
-    return(ret);
+    return ret;
 
  error:
     if (ret != NULL) {
@@ -483,7 +483,7 @@ virGetInterface(virConnectPtr conn, const char *name, const char *mac) {
         VIR_FREE(ret->mac);
         VIR_FREE(ret);
     }
-    return(NULL);
+    return NULL;
 }
 
 /**
@@ -546,11 +546,11 @@ virUnrefInterface(virInterfacePtr iface) {
     if (refs == 0) {
         virReleaseInterface(iface);
         /* Already unlocked mutex */
-        return (0);
+        return 0;
     }
 
     virMutexUnlock(&iface->conn->lock);
-    return (refs);
+    return refs;
 }
 
 
@@ -607,14 +607,14 @@ virGetStoragePool(virConnectPtr conn, const char *name,
     conn->refs++;
     ret->refs++;
     virMutexUnlock(&conn->lock);
-    return(ret);
+    return ret;
 
 error:
     if (ret != NULL) {
         VIR_FREE(ret->name);
         VIR_FREE(ret);
     }
-    return(NULL);
+    return NULL;
 }
 
 
@@ -680,11 +680,11 @@ virUnrefStoragePool(virStoragePoolPtr pool) {
     if (refs == 0) {
         virReleaseStoragePool(pool);
         /* Already unlocked mutex */
-        return (0);
+        return 0;
     }
 
     virMutexUnlock(&pool->conn->lock);
-    return (refs);
+    return refs;
 }
 
 
@@ -750,7 +750,7 @@ virGetStorageVol(virConnectPtr conn, const char *pool, const char *name,
     conn->refs++;
     ret->refs++;
     virMutexUnlock(&conn->lock);
-    return(ret);
+    return ret;
 
 error:
     if (ret != NULL) {
@@ -759,7 +759,7 @@ error:
         VIR_FREE(ret->pool);
         VIR_FREE(ret);
     }
-    return(NULL);
+    return NULL;
 }
 
 
@@ -824,11 +824,11 @@ virUnrefStorageVol(virStorageVolPtr vol) {
     if (refs == 0) {
         virReleaseStorageVol(vol);
         /* Already unlocked mutex */
-        return (0);
+        return 0;
     }
 
     virMutexUnlock(&vol->conn->lock);
-    return (refs);
+    return refs;
 }
 
 
@@ -876,14 +876,14 @@ virGetNodeDevice(virConnectPtr conn, const char *name)
     conn->refs++;
     ret->refs++;
     virMutexUnlock(&conn->lock);
-    return(ret);
+    return ret;
 
 error:
     if (ret != NULL) {
         VIR_FREE(ret->name);
         VIR_FREE(ret);
     }
-    return(NULL);
+    return NULL;
 }
 
 
@@ -942,11 +942,11 @@ virUnrefNodeDevice(virNodeDevicePtr dev) {
     if (refs == 0) {
         virReleaseNodeDevice(dev);
         /* Already unlocked mutex */
-        return (0);
+        return 0;
     }
 
     virMutexUnlock(&dev->conn->lock);
-    return (refs);
+    return refs;
 }
 
 
@@ -1092,12 +1092,12 @@ virStreamPtr virGetStream(virConnectPtr conn) {
     conn->refs++;
     ret->refs++;
     virMutexUnlock(&conn->lock);
-    return(ret);
+    return ret;
 
 error:
     virMutexUnlock(&conn->lock);
     VIR_FREE(ret);
-    return(NULL);
+    return NULL;
 }
 
 static void
@@ -1129,11 +1129,11 @@ int virUnrefStream(virStreamPtr st) {
     if (refs == 0) {
         virReleaseStream(st);
         /* Already unlocked mutex */
-        return (0);
+        return 0;
     }
 
     virMutexUnlock(&st->conn->lock);
-    return (refs);
+    return refs;
 }
 
 
@@ -1189,14 +1189,14 @@ virGetNWFilter(virConnectPtr conn, const char *name, const unsigned char *uuid) 
     conn->refs++;
     ret->refs++;
     virMutexUnlock(&conn->lock);
-    return(ret);
+    return ret;
 
 error:
     if (ret != NULL) {
         VIR_FREE(ret->name);
         VIR_FREE(ret);
     }
-    return(NULL);
+    return NULL;
 }
 
 
@@ -1265,11 +1265,11 @@ virUnrefNWFilter(virNWFilterPtr nwfilter)
     if (refs == 0) {
         virReleaseNWFilter(nwfilter);
         /* Already unlocked mutex */
-        return (0);
+        return 0;
     }
 
     virMutexUnlock(&nwfilter->conn->lock);
-    return (refs);
+    return refs;
 }
 
 
@@ -1305,14 +1305,14 @@ virGetDomainSnapshot(virDomainPtr domain, const char *name)
     domain->refs++;
     ret->refs++;
     virMutexUnlock(&domain->conn->lock);
-    return(ret);
+    return ret;
 
  error:
     if (ret != NULL) {
         VIR_FREE(ret->name);
         VIR_FREE(ret);
     }
-    return(NULL);
+    return NULL;
 }
 
 
@@ -1355,9 +1355,9 @@ virUnrefDomainSnapshot(virDomainSnapshotPtr snapshot)
     if (refs == 0) {
         virReleaseDomainSnapshot(snapshot);
         /* Already unlocked mutex */
-        return (0);
+        return 0;
     }
 
     virMutexUnlock(&snapshot->domain->conn->lock);
-    return (refs);
+    return refs;
 }

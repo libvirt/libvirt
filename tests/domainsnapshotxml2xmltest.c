@@ -88,7 +88,7 @@ mymain(void)
     int ret = 0;
 
     if ((driver.caps = testQemuCapsInit()) == NULL)
-        return (EXIT_FAILURE);
+        return EXIT_FAILURE;
 
 # define DO_TEST(name, uuid, internal)                                  \
     do {                                                                \
@@ -113,7 +113,7 @@ mymain(void)
 
     virCapabilitiesFree(driver.caps);
 
-    return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIRT_TEST_MAIN(mymain)

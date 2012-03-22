@@ -66,7 +66,7 @@ libvirt_qemu_virDomainQemuMonitorCommand(PyObject *self ATTRIBUTE_UNUSED,
 
     if (!PyArg_ParseTuple(args, (char *)"Ozi:virDomainQemuMonitorCommand",
                           &pyobj_domain, &cmd, &flags))
-        return(NULL);
+        return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
     if (domain == NULL)
@@ -79,7 +79,7 @@ libvirt_qemu_virDomainQemuMonitorCommand(PyObject *self ATTRIBUTE_UNUSED,
         return VIR_PY_NONE;
 
     py_retval = PyString_FromString(result);
-    return(py_retval);
+    return py_retval;
 }
 
 /************************************************************************

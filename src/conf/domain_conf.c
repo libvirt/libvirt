@@ -6413,12 +6413,12 @@ virSysinfoParseXML(const xmlNodePtr node,
     if (!xmlStrEqual(node->name, BAD_CAST "sysinfo")) {
         virDomainReportError(VIR_ERR_XML_ERROR, "%s",
                         _("XML does not contain expected 'sysinfo' element"));
-        return(NULL);
+        return NULL;
     }
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
-        return(NULL);
+        return NULL;
     }
 
     type = virXMLPropString(node, "type");
@@ -6462,7 +6462,7 @@ virSysinfoParseXML(const xmlNodePtr node,
 
 cleanup:
     VIR_FREE(type);
-    return(def);
+    return def;
 
 error:
     virSysinfoDefFree(def);
@@ -6548,7 +6548,7 @@ virDomainVideoAccelDefParseXML(const xmlNodePtr node) {
     }
 
     if ((support3d == NULL) && (support2d == NULL))
-        return(NULL);
+        return NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -10155,16 +10155,16 @@ virDomainCpuNumberParse(const char **str, int maxcpu)
     const char *cur = *str;
 
     if (!c_isdigit(*cur))
-        return (-1);
+        return -1;
 
     while (c_isdigit(*cur)) {
         ret = ret * 10 + (*cur - '0');
         if (ret >= maxcpu)
-            return (-1);
+            return -1;
         cur++;
     }
     *str = cur;
-    return (ret);
+    return ret;
 }
 
 /**
@@ -10186,7 +10186,7 @@ virDomainCpuSetFormat(char *cpuset, int maxcpu)
     int first = 1;
 
     if ((cpuset == NULL) || (maxcpu <= 0) || (maxcpu > 100000))
-        return (NULL);
+        return NULL;
 
     cur = 0;
     start = -1;
@@ -10251,7 +10251,7 @@ virDomainCpuSetParse(const char *str, char sep,
 
     if ((str == NULL) || (cpuset == NULL) || (maxcpu <= 0) ||
         (maxcpu > 100000))
-        return (-1);
+        return -1;
 
     cur = str;
     virSkipSpaces(&cur);
@@ -10318,12 +10318,12 @@ virDomainCpuSetParse(const char *str, char sep,
         } else
             goto parse_error;
     }
-    return (ret);
+    return ret;
 
   parse_error:
     virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                          "%s", _("topology cpuset syntax error"));
-    return (-1);
+    return -1;
 }
 
 

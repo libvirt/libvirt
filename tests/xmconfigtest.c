@@ -192,7 +192,7 @@ mymain(void)
     int ret = 0;
 
     if (!(caps = testXenCapsInit()))
-        return(EXIT_FAILURE);
+        return EXIT_FAILURE;
 
 #define DO_TEST(name, version)                                          \
     do {                                                                \
@@ -247,7 +247,7 @@ mymain(void)
 
     virCapabilitiesFree(caps);
 
-    return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIRT_TEST_MAIN(mymain)

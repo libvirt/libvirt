@@ -135,17 +135,17 @@ xenDomainUsedCpus(virDomainPtr dom)
     xenUnifiedPrivatePtr priv;
 
     if (!VIR_IS_CONNECTED_DOMAIN(dom))
-        return (NULL);
+        return NULL;
 
     priv = dom->conn->privateData;
 
     if (priv->nbNodeCpus <= 0)
-        return(NULL);
+        return NULL;
     nb_vcpu = xenUnifiedDomainGetMaxVcpus(dom);
     if (nb_vcpu <= 0)
-        return(NULL);
+        return NULL;
     if (xenUnifiedNodeGetInfo(dom->conn, &nodeinfo) < 0)
-        return(NULL);
+        return NULL;
 
     if (VIR_ALLOC_N(cpulist, priv->nbNodeCpus) < 0) {
         virReportOOMError();
@@ -184,7 +184,7 @@ done:
     VIR_FREE(cpulist);
     VIR_FREE(cpumap);
     VIR_FREE(cpuinfo);
-    return(res);
+    return res;
 }
 
 #ifdef WITH_LIBVIRTD
@@ -1247,7 +1247,7 @@ xenUnifiedDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
             xenUnifiedUnlock(priv);
             res = xenDaemonDomainGetXMLDesc(dom, flags, cpus);
             VIR_FREE(cpus);
-            return(res);
+            return res;
         }
     }
 
@@ -1679,10 +1679,10 @@ xenUnifiedDomainGetSchedulerType (virDomainPtr dom, int *nparams)
         if (priv->opened[i] && drivers[i]->xenDomainGetSchedulerType) {
             schedulertype = drivers[i]->xenDomainGetSchedulerType (dom, nparams);
             if (schedulertype != NULL)
-                return(schedulertype);
+                return schedulertype;
         }
     }
-    return(NULL);
+    return NULL;
 }
 
 static int
@@ -1700,10 +1700,10 @@ xenUnifiedDomainGetSchedulerParametersFlags(virDomainPtr dom,
         if (priv->opened[i] && drivers[i]->xenDomainGetSchedulerParameters) {
            ret = drivers[i]->xenDomainGetSchedulerParameters(dom, params, nparams);
            if (ret == 0)
-               return(0);
+               return 0;
         }
     }
-    return(-1);
+    return -1;
 }
 
 static int
@@ -1735,7 +1735,7 @@ xenUnifiedDomainSetSchedulerParametersFlags(virDomainPtr dom,
         }
     }
 
-    return(-1);
+    return -1;
 }
 
 static int
@@ -1823,12 +1823,12 @@ xenUnifiedNodeGetFreeMemory (virConnectPtr conn)
         ret = xenHypervisorNodeGetCellsFreeMemory (conn, &freeMem,
                                                     -1, 1);
         if (ret != 1)
-            return (0);
-        return(freeMem);
+            return 0;
+        return freeMem;
     }
 
     xenUnifiedError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return(0);
+    return 0;
 }
 
 
@@ -1853,7 +1853,7 @@ xenUnifiedDomainEventRegister(virConnectPtr conn,
                                       callback, opaque, freefunc);
 
     xenUnifiedUnlock(priv);
-    return (ret);
+    return ret;
 }
 
 
@@ -1905,7 +1905,7 @@ xenUnifiedDomainEventRegisterAny(virConnectPtr conn,
         ret = -1;
 
     xenUnifiedUnlock(priv);
-    return (ret);
+    return ret;
 }
 
 static int

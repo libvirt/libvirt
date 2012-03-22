@@ -87,7 +87,7 @@ qemuProcessRemoveDomainStatus(struct qemud_driver *driver,
 
     if (virAsprintf(&file, "%s/%s.xml", driver->stateDir, vm->def->name) < 0) {
         virReportOOMError();
-        return(-1);
+        return -1;
     }
 
     if (unlink(file) < 0 && errno != ENOENT && errno != ENOTDIR)

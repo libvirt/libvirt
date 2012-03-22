@@ -1951,5 +1951,5 @@ cleanup:
     VIR_FREE(cpus);
     if (conf)
         virConfFree(conf);
-    return (NULL);
+    return NULL;
 }

@@ -58,7 +58,7 @@ virMacAddrCompare(const char *p, const char *q)
     /* On machines where 'char' and 'int' are types of the same size, the
        difference of two 'unsigned char' values - including the sign bit -
        doesn't fit in an 'int'.  */
-    return (c > d ? 1 : c < d ? -1 : 0);
+    return c > d ? 1 : c < d ? -1 : 0;
 }
 
 /**

@@ -30,9 +30,9 @@ checkDomainState(virDomainPtr dom) {
 
     ret = virDomainGetInfo(dom, &info);
     if (ret < 0) {
-        return(-1);
+        return -1;
     }
-    return(info.state);
+    return info.state;
 }
 
 /**
@@ -130,5 +130,5 @@ int main(int argc, char **argv) {
 error:
     if (conn != NULL)
         virConnectClose(conn);
-    return(0);
+    return 0;
 }

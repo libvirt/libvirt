@@ -150,7 +150,7 @@ mymain(void)
     DO_TEST("VSprintf infinite loop", testBufInfiniteLoop, 0);
     DO_TEST("Auto-indentation", testBufAutoIndent, 0);
 
-    return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIRT_TEST_MAIN(mymain)

@@ -2800,10 +2800,10 @@ qemuDomainManagedSavePath(struct qemud_driver *driver, virDomainObjPtr vm) {
 
     if (virAsprintf(&ret, "%s/%s.save", driver->saveDir, vm->def->name) < 0) {
         virReportOOMError();
-        return(NULL);
+        return NULL;
     }
 
-    return(ret);
+    return ret;
 }
 
 static int

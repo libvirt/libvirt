@@ -589,7 +589,7 @@ def print_function_wrapper(module, name, output, export, include):
                                                    args[1][0])
         else:
             c_call = "\n    %s(%s);\n" % (name, c_call);
-        ret_convert = "    Py_INCREF(Py_None);\n    return(Py_None);\n"
+        ret_convert = "    Py_INCREF(Py_None);\n    return Py_None;\n"
     elif py_types.has_key(ret[0]):
         (f, t, n, c) = py_types[ret[0]]
         c_return = "    %s c_retval;\n" % (ret[0])
@@ -598,13 +598,13 @@ def print_function_wrapper(module, name, output, export, include):
         else:
             c_call = "\n    c_retval = %s(%s);\n" % (name, c_call);
         ret_convert = "    py_retval = libvirt_%sWrap((%s) c_retval);\n" % (n,c)
-        ret_convert = ret_convert + "    return(py_retval);\n"
+        ret_convert = ret_convert + "    return py_retval;\n"
     elif py_return_types.has_key(ret[0]):
         (f, t, n, c) = py_return_types[ret[0]]
         c_return = "    %s c_retval;\n" % (ret[0])
         c_call = "\n    c_retval = %s(%s);\n" % (name, c_call);
         ret_convert = "    py_retval = libvirt_%sWrap((%s) c_retval);\n" % (n,c)
-        ret_convert = ret_convert + "    return(py_retval);\n"
+        ret_convert = ret_convert + "    return py_retval;\n"
     else:
         if skipped_types.has_key(ret[0]):
             return 0
@@ -663,7 +663,7 @@ def print_function_wrapper(module, name, output, export, include):
     if format != "":
         output.write("\n    if (!PyArg_ParseTuple(args, (char *)\"%s\"%s))\n" %
                      (format, format_args))
-        output.write("        return(NULL);\n")
+        output.write("        return NULL;\n")
     if c_convert != "":
         output.write(c_convert + "\n")
 

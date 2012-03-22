@@ -2699,7 +2699,7 @@ lxcReload(void) {
 static int lxcShutdown(void)
 {
     if (lxc_driver == NULL)
-        return(-1);
+        return -1;
 
     lxcDriverLock(lxc_driver);
     virDomainObjListDeinit(&lxc_driver->domains);
@@ -2732,7 +2732,7 @@ lxcActive(void) {
     int active;
 
     if (lxc_driver == NULL)
-        return(0);
+        return 0;
 
     lxcDriverLock(lxc_driver);
     active = virDomainObjListNumOfDomains(&lxc_driver->domains, 1);

@@ -3097,7 +3097,7 @@ ebiptablesInstCommand(virBufferPtr buf,
  */
 static int
 ebiptablesCanApplyBasicRules(void) {
-    return (ebtables_cmd_path != NULL);
+    return ebtables_cmd_path != NULL;
 }
 
 /**
@@ -3445,7 +3445,7 @@ ebiptablesRuleOrderSort(const void *a, const void *b)
     }
 normal:
     /* priorities are limited to range [-1000, 1000] */
-    return (insta->priority - instb->priority);
+    return insta->priority - instb->priority;
 }
 
 static int

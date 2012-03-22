@@ -471,7 +471,7 @@ _vshStrdup(vshControl *ctl, const char *s, const char *filename, int line)
     char *x;
 
     if (s == NULL)
-        return(NULL);
+        return NULL;
     if ((x = strdup(s)))
         return x;
     vshError(ctl, _("%s: %d: failed to allocate %lu bytes"),
@@ -518,13 +518,13 @@ prettyCapacity(unsigned long long val,
         return (((double)val / 1024.0l));
     } else if (val < (1024.0l * 1024.0l * 1024.0l)) {
         *unit = "MB";
-        return ((double)val / (1024.0l * 1024.0l));
+        return (double)val / (1024.0l * 1024.0l);
     } else if (val < (1024.0l * 1024.0l * 1024.0l * 1024.0l)) {
         *unit = "GB";
-        return ((double)val / (1024.0l * 1024.0l * 1024.0l));
+        return (double)val / (1024.0l * 1024.0l * 1024.0l);
     } else {
         *unit = "TB";
-        return ((double)val / (1024.0l * 1024.0l * 1024.0l * 1024.0l));
+        return (double)val / (1024.0l * 1024.0l * 1024.0l * 1024.0l);
     }
 }
 

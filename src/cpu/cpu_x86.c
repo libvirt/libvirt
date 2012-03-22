@@ -392,7 +392,7 @@ x86DataIsEmpty(union cpuData *data)
 {
     struct data_iterator iter = DATA_ITERATOR_INIT(data);
 
-    return (x86DataCpuidNext(&iter) == NULL);
+    return x86DataCpuidNext(&iter) == NULL;
 }
 
 

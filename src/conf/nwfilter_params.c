@@ -908,7 +908,7 @@ virNWFilterVarAccessEqual(const virNWFilterVarAccessPtr a,
                 a->u.index.intIterId == b->u.index.intIterId);
         break;
     case VIR_NWFILTER_VAR_ACCESS_ITERATOR:
-        return (a->u.iterId == b->u.iterId);
+        return a->u.iterId == b->u.iterId;
         break;
     case VIR_NWFILTER_VAR_ACCESS_LAST:
         break;

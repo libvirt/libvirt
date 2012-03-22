@@ -184,7 +184,7 @@ remoteFindDaemonPath(void)
     const char *customDaemon = getenv("LIBVIRTD_PATH");
 
     if (customDaemon)
-        return(customDaemon);
+        return customDaemon;
 
     for (i = 0; serverPaths[i]; i++) {
         if (virFileIsExecutable(serverPaths[i])) {

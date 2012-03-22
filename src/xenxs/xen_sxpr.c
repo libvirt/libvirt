@@ -95,7 +95,7 @@ xenParseSxprOS(const struct sexpr *node,
             if (def->os.loader == NULL) {
                 XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
                              "%s", _("domain information incomplete, missing HVM loader"));
-                return(-1);
+                return -1;
             }
         } else {
             if (sexpr_node_copy(node, "domain/image/hvm/kernel", &def->os.kernel) < 0)

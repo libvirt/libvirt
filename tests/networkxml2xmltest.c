@@ -106,7 +106,7 @@ mymain(void)
     DO_TEST("bandwidth-network");
     DO_TEST_FULL("passthrough-pf", VIR_NETWORK_XML_INACTIVE);
 
-    return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIRT_TEST_MAIN(mymain)

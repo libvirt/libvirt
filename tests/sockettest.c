@@ -252,7 +252,7 @@ mymain(void)
     DO_TEST_NETMASK("2000::1:1", "9000::1:1",
                     "ffff:ffff:ffff:ffff:ffff:ffff:ffff:0", false);
 
-    return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIRT_TEST_MAIN(mymain)

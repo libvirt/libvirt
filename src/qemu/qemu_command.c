@@ -3482,7 +3482,7 @@ static char *qemuBuildSmbiosBiosStr(virSysinfoDefPtr def)
 
     if ((def->bios_vendor == NULL) && (def->bios_version == NULL) &&
         (def->bios_date == NULL) && (def->bios_release == NULL))
-        return(NULL);
+        return NULL;
 
     virBufferAddLit(&buf, "type=0");
 
@@ -3508,7 +3508,7 @@ static char *qemuBuildSmbiosBiosStr(virSysinfoDefPtr def)
 
 error:
     virBufferFreeAndReset(&buf);
-    return(NULL);
+    return NULL;
 }
 
 static char *qemuBuildSmbiosSystemStr(virSysinfoDefPtr def, bool skip_uuid)
@@ -3555,7 +3555,7 @@ static char *qemuBuildSmbiosSystemStr(virSysinfoDefPtr def, bool skip_uuid)
 
 error:
     virBufferFreeAndReset(&buf);
-    return(NULL);
+    return NULL;
 }
 
 static char *

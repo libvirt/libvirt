@@ -142,14 +142,14 @@ virHookInitialize(void) {
     for (i = 0;i < VIR_HOOK_DRIVER_LAST;i++) {
         res = virHookCheck(i, virHookDriverTypeToString(i));
         if (res < 0)
-            return(-1);
+            return -1;
 
         if (res == 1) {
             virHooksFound |= (1 << i);
             ret++;
         }
     }
-    return(ret);
+    return ret;
 }
 
 /**
@@ -165,13 +165,13 @@ int
 virHookPresent(int driver) {
     if ((driver < VIR_HOOK_DRIVER_DAEMON) ||
         (driver >= VIR_HOOK_DRIVER_LAST))
-        return(0);
+        return 0;
     if (virHooksFound == -1)
-        return(0);
+        return 0;
 
     if ((virHooksFound & (1 << driver)) == 0)
-        return(0);
-    return(1);
+        return 0;
+    return 1;
 }
 
 /**
@@ -215,7 +215,7 @@ virHookCall(int driver,
 
     if ((driver < VIR_HOOK_DRIVER_DAEMON) ||
         (driver >= VIR_HOOK_DRIVER_LAST))
-        return(1);
+        return 1;
 
     /*
      * We cache the availability of the script to minimize impact at
@@ -228,7 +228,7 @@ virHookCall(int driver,
         virHookInitialize();
 
     if ((virHooksFound & (1 << driver)) == 0)
-        return(1);
+        return 1;
 
     drvstr = virHookDriverTypeToString(driver);
 
@@ -248,7 +248,7 @@ virHookCall(int driver,
         virHookReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Hook for %s, failed to find operation #%d"),
                            drvstr, op);
-        return(1);
+        return 1;
     }
     subopstr = virHookSubopTypeToString(sub_op);
     if (subopstr == NULL)
@@ -261,7 +261,7 @@ virHookCall(int driver,
         virHookReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to build path for %s hook"),
                            drvstr);
-        return(-1);
+        return -1;
     }
 
     cmd = virCommandNewArgList(path, id, opstr, subopstr, extra, NULL);

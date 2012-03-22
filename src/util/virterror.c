@@ -31,13 +31,13 @@ virErrorLogPriorityFunc virErrorLogPriorityFilter = NULL;
 static virLogPriority virErrorLevelPriority(virErrorLevel level) {
     switch (level) {
         case VIR_ERR_NONE:
-            return(VIR_LOG_INFO);
+            return VIR_LOG_INFO;
         case VIR_ERR_WARNING:
-            return(VIR_LOG_WARN);
+            return VIR_LOG_WARN;
         case VIR_ERR_ERROR:
-            return(VIR_LOG_ERROR);
+            return VIR_LOG_ERROR;
     }
-    return(VIR_LOG_ERROR);
+    return VIR_LOG_ERROR;
 }
 
 static const char *virErrorDomainName(virErrorDomain domain) {
@@ -185,7 +185,7 @@ static const char *virErrorDomainName(virErrorDomain domain) {
             dom = "Auth ";
             break;
     }
-    return(dom);
+    return dom;
 }
 
 
@@ -769,7 +769,7 @@ virErrorMsg(virErrorNumber error, const char *info)
 
     switch (error) {
         case VIR_ERR_OK:
-            return (NULL);
+            return NULL;
         case VIR_ERR_INTERNAL_ERROR:
             if (info != NULL)
               errmsg = _("internal error %s");
@@ -1251,7 +1251,7 @@ virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = _("numerical overflow: %s");
             break;
     }
-    return (errmsg);
+    return errmsg;
 }
 
 /**
