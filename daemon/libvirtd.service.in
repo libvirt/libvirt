@@ -15,6 +15,7 @@ Before=libvirt-guests.service
 EnvironmentFile=-/etc/sysconfig/libvirtd
 ExecStart=@sbindir@/libvirtd $LIBVIRTD_ARGS
 ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
 # Override the maximum number of opened files
 #LimitNOFILE=2048
 
