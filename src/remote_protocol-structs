@@ -1658,6 +1658,9 @@ struct remote_domain_event_tray_change_msg {
 struct remote_domain_event_pmwakeup_msg {
         remote_nonnull_domain      dom;
 }
+struct remote_domain_event_pmsuspend_msg {
+        remote_nonnull_domain      dom;
+}
 struct remote_domain_managed_save_args {
         remote_nonnull_domain      dom;
         u_int                      flags;
@@ -2188,4 +2191,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_PM_WAKEUP = 267,
         REMOTE_PROC_DOMAIN_TRAY_CHANGE = 268,
         REMOTE_PROC_DOMAIN_PMWAKEUP = 269,
+        REMOTE_PROC_DOMAIN_PMSUSPEND = 270,
 };

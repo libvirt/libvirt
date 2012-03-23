@@ -1063,6 +1063,16 @@ int qemuMonitorEmitPMWakeup(qemuMonitorPtr mon)
     return ret;
 }
 
+int qemuMonitorEmitPMSuspend(qemuMonitorPtr mon)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p", mon);
+
+    QEMU_MONITOR_CALLBACK(mon, ret, domainPMSuspend, mon->vm);
+
+    return ret;
+}
+
 int qemuMonitorEmitBlockJob(qemuMonitorPtr mon,
                             const char *diskAlias,
                             int type,

@@ -3719,6 +3719,24 @@ typedef void (*virConnectDomainEventPMWakeupCallback)(virConnectPtr conn,
                                                       void *opaque);
 
 /**
+ * virConnectDomainEventPMSuspendCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @reason: reason why the callback was called, unused currently,
+ *          always passes 0
+ * @opaque: application specified data
+ *
+ * This callback occurs when the guest is waken up.
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_PMSuspend with virConnectDomainEventRegisterAny()
+ */
+typedef void (*virConnectDomainEventPMSuspendCallback)(virConnectPtr conn,
+                                                       virDomainPtr dom,
+                                                       int reason,
+                                                       void *opaque);
+
+/**
  * VIR_DOMAIN_EVENT_CALLBACK:
  *
  * Used to cast the event specific callback into the generic one
@@ -3740,6 +3758,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_DISK_CHANGE = 9,     /* virConnectDomainEventDiskChangeCallback */
     VIR_DOMAIN_EVENT_ID_TRAY_CHANGE = 10,    /* virConnectDomainEventTrayChangeCallback */
     VIR_DOMAIN_EVENT_ID_PMWAKEUP = 11,       /* virConnectDomainEventPMWakeupCallback */
+    VIR_DOMAIN_EVENT_ID_PMSUSPEND = 12,      /* virConnectDomainEventPMSuspendCallback */
 
 #ifdef VIR_ENUM_SENTINELS
     /*

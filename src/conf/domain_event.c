@@ -1119,6 +1119,31 @@ virDomainEventPMWakeupNewFromDom(virDomainPtr dom)
     return virDomainEventPMWakeupNew(dom->id, dom->name, dom->uuid);
 }
 
+static virDomainEventPtr
+virDomainEventPMSuspendNew(int id, const char *name,
+                           unsigned char *uuid)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_PMSUSPEND,
+                                  id, name, uuid);
+
+    return ev;
+}
+
+virDomainEventPtr
+virDomainEventPMSuspendNewFromObj(virDomainObjPtr obj)
+{
+    return virDomainEventPMSuspendNew(obj->def->id,
+                                      obj->def->name,
+                                      obj->def->uuid);
+}
+
+virDomainEventPtr
+virDomainEventPMSuspendNewFromDom(virDomainPtr dom)
+{
+    return virDomainEventPMSuspendNew(dom->id, dom->name, dom->uuid);
+}
+
 /**
  * virDomainEventQueuePush:
  * @evtQueue: the dom event queue
@@ -1251,6 +1276,10 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
 
     case VIR_DOMAIN_EVENT_ID_PMWAKEUP:
         ((virConnectDomainEventPMWakeupCallback)cb)(conn, dom, 0, cbopaque);
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_PMSUSPEND:
+        ((virConnectDomainEventPMSuspendCallback)cb)(conn, dom, 0, cbopaque);
         break;
 
     default:

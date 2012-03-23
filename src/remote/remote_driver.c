@@ -249,6 +249,11 @@ remoteDomainBuildEventPMWakeup(virNetClientProgramPtr prog,
                                virNetClientPtr client,
                                void *evdata, void *opaque);
 
+static void
+remoteDomainBuildEventPMSuspend(virNetClientProgramPtr prog,
+                                virNetClientPtr client,
+                                void *evdata, void *opaque);
+
 static virNetClientProgramEvent remoteDomainEvents[] = {
     { REMOTE_PROC_DOMAIN_EVENT_RTC_CHANGE,
       remoteDomainBuildEventRTCChange,
@@ -298,6 +303,10 @@ static virNetClientProgramEvent remoteDomainEvents[] = {
       remoteDomainBuildEventPMWakeup,
       sizeof(remote_domain_event_pmwakeup_msg),
       (xdrproc_t)xdr_remote_domain_event_pmwakeup_msg },
+    { REMOTE_PROC_DOMAIN_EVENT_PMSUSPEND,
+      remoteDomainBuildEventPMSuspend,
+      sizeof(remote_domain_event_pmsuspend_msg),
+      (xdrproc_t)xdr_remote_domain_event_pmsuspend_msg },
 };
 
 enum virDrvOpenRemoteFlags {
@@ -3789,6 +3798,28 @@ remoteDomainBuildEventPMWakeup(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
         return;
 
     event = virDomainEventPMWakeupNewFromDom(dom);
+
+    virDomainFree(dom);
+
+    remoteDomainEventQueue(priv, event);
+}
+
+static void
+remoteDomainBuildEventPMSuspend(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                virNetClientPtr client ATTRIBUTE_UNUSED,
+                                void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    struct private_data *priv = conn->privateData;
+    remote_domain_event_pmsuspend_msg *msg = evdata;
+    virDomainPtr dom;
+    virDomainEventPtr event = NULL;
+
+    dom = get_nonnull_domain(conn, msg->dom);
+    if (!dom)
+        return;
+
+    event = virDomainEventPMSuspendNewFromDom(dom);
 
     virDomainFree(dom);
 

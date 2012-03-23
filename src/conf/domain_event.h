@@ -122,6 +122,8 @@ virDomainEventPtr virDomainEventTrayChangeNewFromDom(virDomainPtr dom,
                                                      int reason);
 virDomainEventPtr virDomainEventPMWakeupNewFromObj(virDomainObjPtr obj);
 virDomainEventPtr virDomainEventPMWakeupNewFromDom(virDomainPtr dom);
+virDomainEventPtr virDomainEventPMSuspendNewFromObj(virDomainObjPtr obj);
+virDomainEventPtr virDomainEventPMSuspendNewFromDom(virDomainPtr dom);
 
 void virDomainEventFree(virDomainEventPtr event);
 
