@@ -469,6 +469,12 @@ sc_prohibit_xmlURI:
 	halt='use virURI(Parse|Format), not xml(ParseURI|SaveUri)'	\
 	  $(_sc_search_regexp)
 
+# we don't want old old-style return with parentheses around argument
+sc_prohibit_return_as_function:
+	@prohibit='\<return *\(([^()]*(\([^()]*\)[^()]*)*)\) *;'    \
+	halt='avoid extra () with return statements'                \
+	  $(_sc_search_regexp)
+
 # ATTRIBUTE_UNUSED should only be applied in implementations, not
 # header declarations
 sc_avoid_attribute_unused_in_header:
@@ -790,6 +796,8 @@ exclude_file_name_regexp--sc_prohibit_strncpy = \
 exclude_file_name_regexp--sc_prohibit_xmlGetProp = ^src/util/xml\.c$$
 
 exclude_file_name_regexp--sc_prohibit_xmlURI = ^src/util/viruri\.c$$
+
+exclude_file_name_regexp--sc_prohibit_return_as_function = \.py$$
 
 exclude_file_name_regexp--sc_require_config_h = ^examples/
 
