@@ -3684,7 +3684,7 @@ typedef void (*virConnectDomainEventDiskChangeCallback)(virConnectPtr conn,
  *
  * The reason describing why the callback was called
  */
-enum {
+typedef enum {
     VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN = 0,
     VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE,
 
