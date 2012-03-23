@@ -538,6 +538,29 @@ static int remoteRelayDomainEventTrayChange(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+
+static int remoteRelayDomainEventPMWakeup(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                          virDomainPtr dom,
+                                          void *opaque) {
+    virNetServerClientPtr client = opaque;
+    remote_domain_event_pmwakeup_msg data;
+
+    if (!client)
+        return -1;
+
+    VIR_DEBUG("Relaying domain %s %d system pmwakeup", dom->name, dom->id);
+
+    /* build return data */
+    memset(&data, 0, sizeof data);
+    make_nonnull_domain(&data.dom, dom);
+
+    remoteDispatchDomainEventSend(client, remoteProgram,
+                                  REMOTE_PROC_DOMAIN_EVENT_PMWAKEUP,
+                                  (xdrproc_t)xdr_remote_domain_event_pmwakeup_msg, &data);
+
+    return 0;
+}
+
 static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventReboot),
@@ -550,6 +573,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventBlockJob),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventDiskChange),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventTrayChange),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventPMWakeup),
 };
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

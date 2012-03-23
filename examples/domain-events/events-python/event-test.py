@@ -477,6 +477,9 @@ def myDomainEventDiskChangeCallback(conn, dom, oldSrcPath, newSrcPath, devAlias,
 def myDomainEventTrayChangeCallback(conn, dom, devAlias, reason, opaque):
     print "myDomainEventTrayChangeCallback: Domain %s(%s) tray change devAlias: %s reason: %s" % (
             dom.name(), dom.ID(), devAlias, reason)
+def myDomainEventPMWakeupCallback(conn, dom, reason, opaque):
+    print "myDomainEventPMWakeupCallback: Domain %s(%s) system pmwakeup" % (
+            dom.name(), dom.ID())
 def usage(out=sys.stderr):
     print >>out, "usage: "+os.path.basename(sys.argv[0])+" [-hdl] [uri]"
     print >>out, "   uri will default to qemu:///system"
@@ -536,6 +539,7 @@ def main():
     vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_GRAPHICS, myDomainEventGraphicsCallback, None)
     vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_DISK_CHANGE, myDomainEventDiskChangeCallback, None)
     vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_TRAY_CHANGE, myDomainEventTrayChangeCallback, None)
+    vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_PMWAKEUP, myDomainEventPMWakeupCallback, None)
 
     vc.setKeepAlive(5, 3)
 

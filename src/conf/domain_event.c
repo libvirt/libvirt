@@ -1094,6 +1094,30 @@ virDomainEventPtr virDomainEventTrayChangeNewFromDom(virDomainPtr dom,
                                        devAlias, reason);
 }
 
+static virDomainEventPtr
+virDomainEventPMWakeupNew(int id, const char *name,
+                          unsigned char *uuid)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_PMWAKEUP,
+                                  id, name, uuid);
+
+    return ev;
+}
+
+virDomainEventPtr
+virDomainEventPMWakeupNewFromObj(virDomainObjPtr obj)
+{
+    return virDomainEventPMWakeupNew(obj->def->id,
+                                     obj->def->name,
+                                     obj->def->uuid);
+}
+
+virDomainEventPtr
+virDomainEventPMWakeupNewFromDom(virDomainPtr dom)
+{
+    return virDomainEventPMWakeupNew(dom->id, dom->name, dom->uuid);
+}
 
 /**
  * virDomainEventQueuePush:
@@ -1223,6 +1247,10 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                                       event->data.trayChange.devAlias,
                                                       event->data.trayChange.reason,
                                                       cbopaque);
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_PMWAKEUP:
+        ((virConnectDomainEventPMWakeupCallback)cb)(conn, dom, 0, cbopaque);
         break;
 
     default:

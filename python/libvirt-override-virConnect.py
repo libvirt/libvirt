@@ -143,6 +143,14 @@
         cb(self, virDomain(self, _obj=dom), devAlias, reason, opaque)
         return 0;
 
+    def _dispatchDomainEventPMWakeupCallback(self, dom, reason, cbData):
+        """Dispatches event to python user domain pmwakeup event callbacks
+        """
+        cb = cbData["cb"]
+        opaque = cbData["opaque"]
+
+        cb(self, virDomain(self, _obj=dom), reason, opaque)
+        return 0;
 
     def domainEventDeregisterAny(self, callbackID):
         """Removes a Domain Event Callback. De-registering for a

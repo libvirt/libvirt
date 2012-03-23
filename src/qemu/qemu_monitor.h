@@ -128,6 +128,8 @@ struct _qemuMonitorCallbacks {
                             virDomainObjPtr vm,
                             const char *devAlias,
                             int reason);
+    int (*domainPMWakeup)(qemuMonitorPtr mon,
+                          virDomainObjPtr vm);
 };
 
 char *qemuMonitorEscapeArg(const char *in);
@@ -197,6 +199,7 @@ int qemuMonitorEmitGraphics(qemuMonitorPtr mon,
 int qemuMonitorEmitTrayChange(qemuMonitorPtr mon,
                               const char *devAlias,
                               int reason);
+int qemuMonitorEmitPMWakeup(qemuMonitorPtr mon);
 int qemuMonitorEmitBlockJob(qemuMonitorPtr mon,
                             const char *diskAlias,
                             int type,

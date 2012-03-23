@@ -330,6 +330,16 @@ static int myDomainEventTrayChangeCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int myDomainEventPMWakeupCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                         virDomainPtr dom,
+                                         int reason ATTRIBUTE_UNUSED,
+                                         void *opaque ATTRIBUTE_UNUSED)
+{
+    printf("%s EVENT: Domain %s(%d) system pmwakeup",
+           __func__, virDomainGetName(dom), virDomainGetID(dom));
+    return 0;
+}
+
 static void myFreeFunc(void *opaque)
 {
     char *str = opaque;
@@ -366,6 +376,7 @@ int main(int argc, char **argv)
     int callback8ret = -1;
     int callback9ret = -1;
     int callback10ret = -1;
+    int callback11ret = -1;
     struct sigaction action_stop;
 
     memset(&action_stop, 0, sizeof action_stop);
@@ -441,7 +452,11 @@ int main(int argc, char **argv)
                                                      VIR_DOMAIN_EVENT_ID_TRAY_CHANGE,
                                                      VIR_DOMAIN_EVENT_CALLBACK(myDomainEventTrayChangeCallback),
                                                      strdup("tray change"), myFreeFunc);
-
+    callback11ret = virConnectDomainEventRegisterAny(dconn,
+                                                     NULL,
+                                                     VIR_DOMAIN_EVENT_ID_PMWAKEUP,
+                                                     VIR_DOMAIN_EVENT_CALLBACK(myDomainEventPMWakeupCallback),
+                                                     strdup("pmwakeup"), myFreeFunc);
     if ((callback1ret != -1) &&
         (callback2ret != -1) &&
         (callback3ret != -1) &&
@@ -450,7 +465,8 @@ int main(int argc, char **argv)
         (callback6ret != -1) &&
         (callback7ret != -1) &&
         (callback9ret != -1) &&
-        (callback10ret != -1)) {
+        (callback10ret != -1) &&
+        (callback11ret != -1)) {
         if (virConnectSetKeepAlive(dconn, 5, 3) < 0) {
             virErrorPtr err = virGetLastError();
             fprintf(stderr, "Failed to start keepalive protocol: %s\n",
@@ -476,6 +492,7 @@ int main(int argc, char **argv)
         virConnectDomainEventDeregisterAny(dconn, callback7ret);
         virConnectDomainEventDeregisterAny(dconn, callback9ret);
         virConnectDomainEventDeregisterAny(dconn, callback10ret);
+        virConnectDomainEventDeregisterAny(dconn, callback11ret);
         if (callback8ret != -1)
             virConnectDomainEventDeregisterAny(dconn, callback8ret);
     }

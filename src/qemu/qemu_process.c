@@ -1061,6 +1061,26 @@ qemuProcessHandleTrayChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+qemuProcessHandlePMWakeup(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                          virDomainObjPtr vm)
+{
+    struct qemud_driver *driver = qemu_driver;
+    virDomainEventPtr event = NULL;
+
+    virDomainObjLock(vm);
+    event = virDomainEventPMWakeupNewFromObj(vm);
+
+    virDomainObjUnlock(vm);
+
+    if (event) {
+        qemuDriverLock(driver);
+        qemuDomainEventQueue(driver, event);
+        qemuDriverUnlock(driver);
+    }
+
+    return 0;
+}
 
 static qemuMonitorCallbacks monitorCallbacks = {
     .destroy = qemuProcessHandleMonitorDestroy,
@@ -1076,6 +1096,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .domainGraphics = qemuProcessHandleGraphics,
     .domainBlockJob = qemuProcessHandleBlockJob,
     .domainTrayChange = qemuProcessHandleTrayChange,
+    .domainPMWakeup = qemuProcessHandlePMWakeup,
 };
 
 static int

@@ -508,6 +508,8 @@ virDomainEventNew;
 virDomainEventNewFromDef;
 virDomainEventNewFromDom;
 virDomainEventNewFromObj;
+virDomainEventPMWakeupNewFromDom;
+virDomainEventPMWakeupNewFromObj;
 virDomainEventRTCChangeNewFromDom;
 virDomainEventRTCChangeNewFromObj;
 virDomainEventRebootNew;

@@ -63,6 +63,7 @@ static void qemuMonitorJSONHandleSPICEConnect(qemuMonitorPtr mon, virJSONValuePt
 static void qemuMonitorJSONHandleSPICEInitialize(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleSPICEDisconnect(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleTrayChange(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandlePMWakeup(qemuMonitorPtr mon, virJSONValuePtr data);
 
 static struct {
     const char *type;
@@ -83,6 +84,7 @@ static struct {
     { "SPICE_INITIALIZED", qemuMonitorJSONHandleSPICEInitialize, },
     { "SPICE_DISCONNECTED", qemuMonitorJSONHandleSPICEDisconnect, },
     { "DEVICE_TRAY_MOVED", qemuMonitorJSONHandleTrayChange, },
+    { "WAKEUP", qemuMonitorJSONHandlePMWakeup, },
 };
 
 
@@ -799,6 +801,13 @@ qemuMonitorJSONHandleTrayChange(qemuMonitorPtr mon,
         reason = VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE;
 
     qemuMonitorEmitTrayChange(mon, devAlias, reason);
+}
+
+static void
+qemuMonitorJSONHandlePMWakeup(qemuMonitorPtr mon,
+                              virJSONValuePtr data ATTRIBUTE_UNUSED)
+{
+    qemuMonitorEmitPMWakeup(mon);
 }
 
 int

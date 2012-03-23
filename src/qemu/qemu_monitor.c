@@ -1053,6 +1053,16 @@ int qemuMonitorEmitTrayChange(qemuMonitorPtr mon,
     return ret;
 }
 
+int qemuMonitorEmitPMWakeup(qemuMonitorPtr mon)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p", mon);
+
+    QEMU_MONITOR_CALLBACK(mon, ret, domainPMWakeup, mon->vm);
+
+    return ret;
+}
+
 int qemuMonitorEmitBlockJob(qemuMonitorPtr mon,
                             const char *diskAlias,
                             int type,

@@ -120,6 +120,8 @@ virDomainEventPtr virDomainEventTrayChangeNewFromObj(virDomainObjPtr obj,
 virDomainEventPtr virDomainEventTrayChangeNewFromDom(virDomainPtr dom,
                                                      const char *devAlias,
                                                      int reason);
+virDomainEventPtr virDomainEventPMWakeupNewFromObj(virDomainObjPtr obj);
+virDomainEventPtr virDomainEventPMWakeupNewFromDom(virDomainPtr dom);
 
 void virDomainEventFree(virDomainEventPtr event);
 
