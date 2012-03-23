@@ -510,7 +510,7 @@ doRemoteOpen (virConnectPtr conn,
             } else {
                 virURI tmpuri = {
                     .scheme = conn->uri->scheme,
-                    .query = virURIFormatQuery(conn->uri),
+                    .query = virURIFormatParams(conn->uri),
                     .path = conn->uri->path,
                     .fragment = conn->uri->fragment,
                 };
