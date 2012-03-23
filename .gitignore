@@ -139,11 +139,14 @@
 /tests/ssh
 /tests/statstest
 /tests/utiltest
+/tests/virauthconfigtest
 /tests/virbuftest
 /tests/virhashtest
+/tests/virkeyfiletest
 /tests/virnet*test
 /tests/virshtest
 /tests/virtimetest
+/tests/viruritest
 /tests/vmx2xmltest
 /tests/xencapstest
 /tests/xmconfigtest

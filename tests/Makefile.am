@@ -92,7 +92,7 @@ EXTRA_DIST =		\
 	.valgrind.supp
 
 check_PROGRAMS = virshtest conftest sockettest \
-	nodeinfotest qparamtest virbuftest \
+	nodeinfotest virbuftest \
 	commandtest commandhelper seclabeltest \
 	virhashtest virnetmessagetest virnetsockettest ssh \
 	utiltest virnettlscontexttest shunloadtest \
@@ -210,7 +210,6 @@ EXTRA_DIST += $(test_scripts)
 
 TESTS = virshtest \
         nodeinfotest \
-	qparamtest \
 	virbuftest \
 	sockettest \
 	commandtest \
@@ -528,10 +527,6 @@ virauthconfigtest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
 seclabeltest_SOURCES = \
 	seclabeltest.c
 seclabeltest_LDADD = ../src/libvirt_driver_security.la $(LDADDS)
-
-qparamtest_SOURCES = \
-	qparamtest.c testutils.h testutils.c
-qparamtest_LDADD = $(LDADDS)
 
 virbuftest_SOURCES = \
 	virbuftest.c testutils.h testutils.c
