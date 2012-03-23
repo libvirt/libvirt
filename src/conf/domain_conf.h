@@ -451,6 +451,13 @@ enum virDomainDiskProtocol {
     VIR_DOMAIN_DISK_PROTOCOL_LAST
 };
 
+enum virDomainDiskTray {
+    VIR_DOMAIN_DISK_TRAY_CLOSED,
+    VIR_DOMAIN_DISK_TRAY_OPEN,
+
+    VIR_DOMAIN_DISK_TRAY_LAST
+};
+
 typedef struct _virDomainDiskHostDef virDomainDiskHostDef;
 typedef virDomainDiskHostDef *virDomainDiskHostDefPtr;
 struct _virDomainDiskHostDef {
@@ -541,6 +548,7 @@ struct _virDomainDiskDef {
     char *src;
     virSecurityDeviceLabelDefPtr seclabel;
     char *dst;
+    int tray_status;
     int protocol;
     int nhosts;
     virDomainDiskHostDefPtr hosts;
@@ -2103,6 +2111,7 @@ VIR_ENUM_DECL(virDomainDiskProtocol)
 VIR_ENUM_DECL(virDomainDiskIo)
 VIR_ENUM_DECL(virDomainDiskSecretType)
 VIR_ENUM_DECL(virDomainDiskSnapshot)
+VIR_ENUM_DECL(virDomainDiskTray)
 VIR_ENUM_DECL(virDomainIoEventFd)
 VIR_ENUM_DECL(virDomainVirtioEventIdx)
 VIR_ENUM_DECL(virDomainDiskCopyOnRead)

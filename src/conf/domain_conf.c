@@ -630,6 +630,10 @@ VIR_ENUM_IMPL(virDomainCpuPlacementMode, VIR_DOMAIN_CPU_PLACEMENT_MODE_LAST,
               "static",
               "auto");
 
+VIR_ENUM_IMPL(virDomainDiskTray, VIR_DOMAIN_DISK_TRAY_LAST,
+              "closed",
+              "open");
+
 #define virDomainReportError(code, ...)                              \
     virReportErrorHelper(VIR_FROM_DOMAIN, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
@@ -3313,6 +3317,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     char *authUsage = NULL;
     char *authUUID = NULL;
     char *usageType = NULL;
+    char *tray = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -3421,6 +3426,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                        (xmlStrEqual(cur->name, BAD_CAST "target"))) {
                 target = virXMLPropString(cur, "dev");
                 bus = virXMLPropString(cur, "bus");
+                tray = virXMLPropString(cur, "tray");
 
                 /* HACK: Work around for compat with Xen
                  * driver in previous libvirt releases */
@@ -3688,6 +3694,25 @@ virDomainDiskDefParseXML(virCapsPtr caps,
             else
                 def->bus = VIR_DOMAIN_DISK_BUS_IDE;
         }
+    }
+
+    if (tray) {
+        if ((def->tray_status = virDomainDiskTrayTypeFromString(tray)) < 0) {
+            virDomainReportError(VIR_ERR_XML_ERROR,
+                                 _("unknown disk tray status '%s'"), tray);
+            goto error;
+        }
+
+        if (def->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
+            def->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
+            virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                                 _("tray is only valid for cdrom and floppy"));
+            goto error;
+        }
+    } else {
+        if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY ||
+            def->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+            def->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
     }
 
     if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
@@ -10721,8 +10746,15 @@ virDomainDiskDefFormat(virBufferPtr buf,
         }
     }
 
-    virBufferAsprintf(buf, "      <target dev='%s' bus='%s'/>\n",
+    virBufferAsprintf(buf, "      <target dev='%s' bus='%s'",
                       def->dst, bus);
+    if ((def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY ||
+         def->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
+        (def->tray_status != VIR_DOMAIN_DISK_TRAY_CLOSED))
+        virBufferAsprintf(buf, " tray='%s'/>\n",
+                          virDomainDiskTrayTypeToString(def->tray_status));
+    else
+        virBufferAddLit(buf, "/>\n");
 
     /*disk I/O throttling*/
     if (def->blkdeviotune.total_bytes_sec ||
