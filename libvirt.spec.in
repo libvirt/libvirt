@@ -139,8 +139,8 @@
 %define with_xen 0
 %endif
 
-# Fedora doesn't have any QEMU on ppc64 - only ppc
-%if 0%{?fedora}
+# Fedora doesn't have any QEMU on ppc64 until FC16 - only ppc
+%if 0%{?fedora} && 0%{?fedora} < 16
 %ifarch ppc64
 %define with_qemu 0
 %endif
