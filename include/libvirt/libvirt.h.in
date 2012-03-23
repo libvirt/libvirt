@@ -3668,6 +3668,40 @@ typedef void (*virConnectDomainEventDiskChangeCallback)(virConnectPtr conn,
                                                        void *opaque);
 
 /**
+ * virConnectDomainEventTrayChangeReason:
+ *
+ * The reason describing why the callback was called
+ */
+enum {
+    VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN = 0,
+    VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE,
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_TRAY_CHANGE_LAST
+#endif
+} virDomainEventTrayChangeReason;
+
+/**
+ * virConnectDomainEventTrayChangeCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @devAlias: device alias
+ * @reason: why the tray status was changed?
+ * @opaque: application specified data
+ *
+ * This callback occurs when the tray of a removable device is moved.
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_TRAY_CHANGE with virConnectDomainEventRegisterAny()
+ */
+typedef void (*virConnectDomainEventTrayChangeCallback)(virConnectPtr conn,
+                                                        virDomainPtr dom,
+                                                        const char *devAlias,
+                                                        int reason,
+                                                        void *opaque);
+
+
+/**
  * VIR_DOMAIN_EVENT_CALLBACK:
  *
  * Used to cast the event specific callback into the generic one
@@ -3687,6 +3721,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_CONTROL_ERROR = 7,   /* virConnectDomainEventGenericCallback */
     VIR_DOMAIN_EVENT_ID_BLOCK_JOB = 8,       /* virConnectDomainEventBlockJobCallback */
     VIR_DOMAIN_EVENT_ID_DISK_CHANGE = 9,     /* virConnectDomainEventDiskChangeCallback */
+    VIR_DOMAIN_EVENT_ID_TRAY_CHANGE = 10,    /* virConnectDomainEventTrayChangeCallback */
 
 #ifdef VIR_ENUM_SENTINELS
     /*

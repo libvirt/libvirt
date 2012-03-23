@@ -522,6 +522,8 @@ virDomainEventStateRegisterID;
 virDomainEventStateFree;
 virDomainEventStateNew;
 virDomainEventStateQueue;
+virDomainEventTrayChangeNewFromDom;
+virDomainEventTrayChangeNewFromObj;
 virDomainEventWatchdogNewFromDom;
 virDomainEventWatchdogNewFromObj;
 

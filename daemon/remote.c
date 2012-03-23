@@ -506,6 +506,38 @@ mem_error:
 }
 
 
+static int remoteRelayDomainEventTrayChange(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                            virDomainPtr dom,
+                                            const char *devAlias,
+                                            int reason,
+                                            void *opaque) {
+    virNetServerClientPtr client = opaque;
+    remote_domain_event_tray_change_msg data;
+
+    if (!client)
+        return -1;
+
+    VIR_DEBUG("Relaying domain %s %d tray change devAlias: %s reason: %d",
+              dom->name, dom->id, devAlias, reason);
+
+    /* build return data */
+    memset(&data, 0, sizeof data);
+
+    if (!(data.devAlias = strdup(devAlias))) {
+        virReportOOMError();
+        return -1;
+    }
+    data.reason = reason;
+
+    make_nonnull_domain(&data.dom, dom);
+
+    remoteDispatchDomainEventSend(client, remoteProgram,
+                                  REMOTE_PROC_DOMAIN_EVENT_TRAY_CHANGE,
+                                  (xdrproc_t)xdr_remote_domain_event_tray_change_msg, &data);
+
+    return 0;
+}
+
 static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventReboot),
@@ -517,6 +549,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventControlError),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventBlockJob),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventDiskChange),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventTrayChange),
 };
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

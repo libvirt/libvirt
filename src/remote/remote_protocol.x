@@ -2178,6 +2178,12 @@ struct remote_domain_event_disk_change_msg {
     int reason;
 };
 
+struct remote_domain_event_tray_change_msg {
+    remote_nonnull_domain dom;
+    remote_nonnull_string devAlias;
+    int reason;
+};
+
 struct remote_domain_managed_save_args {
     remote_nonnull_domain dom;
     unsigned int flags;
@@ -2765,7 +2771,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_SET_METADATA = 264, /* autogen autogen */
     REMOTE_PROC_DOMAIN_GET_METADATA = 265, /* autogen autogen */
     REMOTE_PROC_DOMAIN_BLOCK_REBASE = 266, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_PM_WAKEUP = 267 /* autogen autogen */
+    REMOTE_PROC_DOMAIN_PM_WAKEUP = 267, /* autogen autogen */
+    REMOTE_PROC_DOMAIN_EVENT_TRAY_CHANGE = 268 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

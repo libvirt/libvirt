@@ -239,6 +239,11 @@ remoteDomainBuildEventDiskChange(virNetClientProgramPtr prog,
                                  virNetClientPtr client,
                                  void *evdata, void *opaque);
 
+static void
+remoteDomainBuildEventTrayChange(virNetClientProgramPtr prog,
+                                 virNetClientPtr client,
+                                 void *evdata, void *opaque);
+
 static virNetClientProgramEvent remoteDomainEvents[] = {
     { REMOTE_PROC_DOMAIN_EVENT_RTC_CHANGE,
       remoteDomainBuildEventRTCChange,
@@ -280,6 +285,10 @@ static virNetClientProgramEvent remoteDomainEvents[] = {
       remoteDomainBuildEventDiskChange,
       sizeof(remote_domain_event_disk_change_msg),
       (xdrproc_t)xdr_remote_domain_event_disk_change_msg },
+    { REMOTE_PROC_DOMAIN_EVENT_TRAY_CHANGE,
+      remoteDomainBuildEventTrayChange,
+      sizeof(remote_domain_event_tray_change_msg),
+      (xdrproc_t)xdr_remote_domain_event_tray_change_msg },
 };
 
 enum virDrvOpenRemoteFlags {
@@ -3722,6 +3731,31 @@ remoteDomainBuildEventDiskChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     event = virDomainEventDiskChangeNewFromDom(dom,
                                                msg->oldSrcPath ? *msg->oldSrcPath : NULL,
                                                msg->newSrcPath ? *msg->newSrcPath : NULL,
+                                               msg->devAlias,
+                                               msg->reason);
+
+    virDomainFree(dom);
+
+    remoteDomainEventQueue(priv, event);
+}
+
+
+static void
+remoteDomainBuildEventTrayChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                 virNetClientPtr client ATTRIBUTE_UNUSED,
+                                 void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    struct private_data *priv = conn->privateData;
+    remote_domain_event_tray_change_msg *msg = evdata;
+    virDomainPtr dom;
+    virDomainEventPtr event = NULL;
+
+    dom = get_nonnull_domain(conn, msg->dom);
+    if (!dom)
+        return;
+
+    event = virDomainEventTrayChangeNewFromDom(dom,
                                                msg->devAlias,
                                                msg->reason);
 

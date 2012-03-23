@@ -1021,6 +1021,37 @@ static void qemuProcessHandleMonitorDestroy(qemuMonitorPtr mon,
         virDomainObjUnlock(vm);
 }
 
+static int
+qemuProcessHandleTrayChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                            virDomainObjPtr vm,
+                            const char *devAlias,
+                            int reason)
+{
+    struct qemud_driver *driver = qemu_driver;
+    virDomainEventPtr event = NULL;
+    virDomainDiskDefPtr disk;
+
+    virDomainObjLock(vm);
+    disk = qemuProcessFindDomainDiskByAlias(vm, devAlias);
+
+    if (disk) {
+        event = virDomainEventTrayChangeNewFromObj(vm,
+                                                   devAlias,
+                                                   reason);
+    }
+
+    virDomainObjUnlock(vm);
+
+    if (event) {
+        qemuDriverLock(driver);
+        qemuDomainEventQueue(driver, event);
+        qemuDriverUnlock(driver);
+    }
+
+    return 0;
+}
+
+
 static qemuMonitorCallbacks monitorCallbacks = {
     .destroy = qemuProcessHandleMonitorDestroy,
     .eofNotify = qemuProcessHandleMonitorEOF,
@@ -1034,6 +1065,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .domainIOError = qemuProcessHandleIOError,
     .domainGraphics = qemuProcessHandleGraphics,
     .domainBlockJob = qemuProcessHandleBlockJob,
+    .domainTrayChange = qemuProcessHandleTrayChange,
 };
 
 static int

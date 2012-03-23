@@ -62,6 +62,7 @@ static void qemuMonitorJSONHandleBlockJob(qemuMonitorPtr mon, virJSONValuePtr da
 static void qemuMonitorJSONHandleSPICEConnect(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleSPICEInitialize(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleSPICEDisconnect(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleTrayChange(qemuMonitorPtr mon, virJSONValuePtr data);
 
 static struct {
     const char *type;
@@ -81,6 +82,7 @@ static struct {
     { "SPICE_CONNECTED", qemuMonitorJSONHandleSPICEConnect, },
     { "SPICE_INITIALIZED", qemuMonitorJSONHandleSPICEInitialize, },
     { "SPICE_DISCONNECTED", qemuMonitorJSONHandleSPICEDisconnect, },
+    { "DEVICE_TRAY_MOVED", qemuMonitorJSONHandleTrayChange, },
 };
 
 
@@ -773,6 +775,31 @@ out:
     qemuMonitorEmitBlockJob(mon, device, type, status);
 }
 
+static void
+qemuMonitorJSONHandleTrayChange(qemuMonitorPtr mon,
+                                virJSONValuePtr data)
+{
+    const char *devAlias = NULL;
+    bool trayOpened;
+    int reason;
+
+    if ((devAlias = virJSONValueObjectGetString(data, "device")) == NULL) {
+        VIR_WARN("missing device in tray change event");
+        return;
+    }
+
+    if (virJSONValueObjectGetBoolean(data, "tray-open", &trayOpened) < 0) {
+        VIR_WARN("missing tray-open in tray change event");
+        return;
+    }
+
+    if (trayOpened)
+        reason = VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN;
+    else
+        reason = VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE;
+
+    qemuMonitorEmitTrayChange(mon, devAlias, reason);
+}
 
 int
 qemuMonitorJSONHumanCommandWithFd(qemuMonitorPtr mon,

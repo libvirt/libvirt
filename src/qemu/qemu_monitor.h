@@ -124,8 +124,11 @@ struct _qemuMonitorCallbacks {
                           const char *diskAlias,
                           int type,
                           int status);
+    int (*domainTrayChange)(qemuMonitorPtr mon,
+                            virDomainObjPtr vm,
+                            const char *devAlias,
+                            int reason);
 };
-
 
 char *qemuMonitorEscapeArg(const char *in);
 char *qemuMonitorUnescapeArg(const char *in);
@@ -191,12 +194,13 @@ int qemuMonitorEmitGraphics(qemuMonitorPtr mon,
                             const char *authScheme,
                             const char *x509dname,
                             const char *saslUsername);
+int qemuMonitorEmitTrayChange(qemuMonitorPtr mon,
+                              const char *devAlias,
+                              int reason);
 int qemuMonitorEmitBlockJob(qemuMonitorPtr mon,
                             const char *diskAlias,
                             int type,
                             int status);
-
-
 
 int qemuMonitorStartCPUs(qemuMonitorPtr mon,
                          virConnectPtr conn);
