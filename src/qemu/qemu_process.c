@@ -1754,7 +1754,7 @@ qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm)
 }
 #endif
 
-#if defined(NUMAD)
+#if HAVE_NUMAD
 static char *
 qemuGetNumadAdvice(virDomainDefPtr def)
 {

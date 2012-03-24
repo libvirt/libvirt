@@ -84,6 +84,7 @@
 %define with_cgconfig      0%{!?_without_cgconfig:0}
 %define with_sanlock       0%{!?_without_sanlock:0}
 %define with_systemd       0%{!?_without_systemd:0}
+%define with_numad         0%{!?_without_numad:0}
 
 # Non-server/HV driver defaults which are always enabled
 %define with_python        0%{!?_without_python:1}
@@ -205,11 +206,19 @@
 %define with_storage_disk 0
 %endif
 
-# Enable libpcap library
 %if %{with_qemu}
 %define with_nwfilter 0%{!?_without_nwfilter:%{server_drivers}}
+# Enable libpcap library
 %define with_libpcap  0%{!?_without_libpcap:%{server_drivers}}
 %define with_macvtap  0%{!?_without_macvtap:%{server_drivers}}
+
+# numad is used to manage the CPU placement dynamically,
+# it's not available on s390[x] and ARM.
+%if 0%{?fedora} >= 17 || 0%{?rhel} >= 6
+%ifnarch s390 s390x %{arm}
+%define with_numad    0%{!?_without_numad:%{server_drivers}}
+%endif
+%endif
 %endif
 
 %if %{with_macvtap}
@@ -356,6 +365,9 @@ Requires(post): systemd-units
 Requires(post): systemd-sysv
 Requires(preun): systemd-units
 Requires(postun): systemd-units
+%endif
+%if %{with_numad}
+Requires: numad
 %endif
 
 # All build-time requirements
@@ -515,6 +527,10 @@ BuildRequires: gawk
 
 # For storage wiping with different algorithms
 BuildRequires: scrub
+
+%if %{with_numad}
+BuildRequires: numad
+%endif
 
 %description
 Libvirt is a C toolkit to interact with the virtualization capabilities
@@ -690,6 +706,10 @@ of recent versions of Linux (and other OSes).
 %define _without_numactl --without-numactl
 %endif
 
+%if ! %{with_numad}
+%define _without_numad --without-numad
+%endif
+
 %if ! %{with_capng}
 %define _without_capng --without-capng
 %endif
@@ -775,6 +795,7 @@ autoreconf -if
            %{?_without_storage_disk} \
            %{?_without_storage_mpath} \
            %{?_without_numactl} \
+           %{?_without_numad} \
            %{?_without_capng} \
            %{?_without_netcf} \
            %{?_without_selinux} \

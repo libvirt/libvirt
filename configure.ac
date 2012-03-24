@@ -1445,14 +1445,29 @@ AM_CONDITIONAL([HAVE_NUMACTL], [test "$with_numactl" != "no"])
 AC_SUBST([NUMACTL_CFLAGS])
 AC_SUBST([NUMACTL_LIBS])
 
-dnl Do we have numad?
-if test "$with_qemu" = "yes"; then
-    AC_PATH_PROG([NUMAD], [numad], [], [/bin:/usr/bin:/usr/local/bin:$PATH])
+dnl numad
+AC_ARG_WITH([numad],
+  AC_HELP_STRING([--with-numad], [use numad to manage CPU placement dynamically @<:@default=check@:>@]),
+  [],
+  [with_numad=check])
 
-    if test -n "$NUMAD"; then
-        AC_DEFINE_UNQUOTED([NUMAD],["$NUMAD"], [Location or name of the numad program])
+if test "$with_numad" != "no" ; then
+  AC_PATH_PROG([NUMAD], [numad], [], [/bin:/usr/bin])
+  if test -z "$NUMAD" ; then
+    if test "$with_numad" = "check"; then
+      with_numad="no"
+    else
+      AC_MSG_ERROR([You must install the 'numad' to manage CPU placement dynamically])
     fi
+  else
+    with_numad="yes"
+  fi
+  if test "$with_numad" = "yes"; then
+    AC_DEFINE_UNQUOTED([HAVE_NUMAD], 1, [whether numad is available])
+    AC_DEFINE_UNQUOTED([NUMAD],["$NUMAD"], [Location or name of the numad program])
+  fi
 fi
+AM_CONDITIONAL([HAVE_NUMAD], [test "$with_numad" != "no"])
 
 dnl pcap lib
 LIBPCAP_CONFIG="pcap-config"
@@ -2774,6 +2789,7 @@ AC_MSG_NOTICE([Warning Flags: $WARN_CFLAGS])
 AC_MSG_NOTICE([     Readline: $lv_use_readline])
 AC_MSG_NOTICE([       Python: $with_python])
 AC_MSG_NOTICE([       DTrace: $with_dtrace])
+AC_MSG_NOTICE([        numad: $with_numad])
 AC_MSG_NOTICE([  XML Catalog: $XML_CATALOG_FILE])
 AC_MSG_NOTICE([  Init script: $with_init_script])
 AC_MSG_NOTICE([Console locks: $with_console_lock_files])
