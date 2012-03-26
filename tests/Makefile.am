@@ -60,6 +60,7 @@ EXTRA_DIST =		\
 	domainsnapshotxml2xmlin \
 	domainsnapshotxml2xmlout \
 	interfaceschemadata \
+	lxcxml2xmldata \
 	networkschematest \
 	networkxml2xmlin \
 	networkxml2xmlout \
@@ -113,6 +114,10 @@ if WITH_QEMU
 check_PROGRAMS += qemuxml2argvtest qemuxml2xmltest qemuxmlnstest \
 	qemuargv2xmltest qemuhelptest domainsnapshotxml2xmltest \
 	qemumonitortest
+endif
+
+if WITH_LXC
+check_PROGRAMS += lxcxml2xmltest
 endif
 
 if WITH_OPENVZ
@@ -243,6 +248,10 @@ if WITH_QEMU
 TESTS += qemuxml2argvtest qemuxml2xmltest qemuxmlnstest qemuargv2xmltest \
 	 qemuhelptest domainsnapshotxml2xmltest nwfilterxml2xmltest \
 	 qemumonitortest
+endif
+
+if WITH_LXC
+TESTS += lxcxml2xmltest
 endif
 
 if WITH_OPENVZ
@@ -381,6 +390,18 @@ else
 EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c qemuargv2xmltest.c \
 	qemuxmlnstest.c qemuhelptest.c domainsnapshotxml2xmltest.c \
 	qemumonitortest.c testutilsqemu.c testutilsqemu.h
+endif
+
+if WITH_LXC
+
+lxc_LDADDS = ../src/libvirt_driver_lxc.la
+
+lxcxml2xmltest_SOURCES = \
+	lxcxml2xmltest.c testutilslxc.c testutilslxc.h \
+	testutils.c testutils.h
+lxcxml2xmltest_LDADD = $(lxc_LDADDS) $(LDADDS)
+else
+EXTRA_DIST += lxcxml2xmltest.c testutilslxc.c testutilslxc.h
 endif
 
 if WITH_OPENVZ

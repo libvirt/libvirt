@@ -378,6 +378,11 @@
             <ref name="absFilePath"/>
           </element>
         </optional>
+        <zeroOrMore>
+          <element name="initarg">
+            <text/>
+          </element>
+        </zeroOrMore>
       </interleave>
     </element>
   </define>

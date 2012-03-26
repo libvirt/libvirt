@@ -122,6 +122,9 @@ static virCommandPtr lxcContainerBuildInitCmd(virDomainDefPtr vmDef)
 
     cmd = virCommandNew(vmDef->os.init);
 
+    if (vmDef->os.initargv && vmDef->os.initargv[0])
+        virCommandAddArgSet(cmd, (const char **)vmDef->os.initargv);
+
     virCommandAddEnvString(cmd, "PATH=/bin:/sbin");
     virCommandAddEnvString(cmd, "TERM=linux");
     virCommandAddEnvString(cmd, "container=lxc-libvirt");

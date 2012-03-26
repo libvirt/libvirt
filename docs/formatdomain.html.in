@@ -250,6 +250,28 @@
         installation media source / kickstart file</dd>
     </dl>
 
+    <h4><a name="eleemntsOSContainer">Container boot</a></h4>
+
+    <p>
+      When booting a domain using container based virtualization, instead
+      of a kernel / boot image, a path to the init binary is required, using
+      the <code>init</code> element. By default this will be launched with
+      no arguments. To specify the initial argv, use the <code>initarg</code>
+      element, repeated as many time as is required. The <code>cmdline</code>
+      element, if set will be used to provide an equivalent to <code>/proc/cmdline</code>
+      but will not effect init argv.
+    </p>
+
+    <pre>
+  &lt;os&gt;
+    &lt;type arch='x86_64'&gt;exe&lt;/type&gt;
+    &lt;init&gt;/bin/systemd&lt;/init&gt;
+    &lt;initarg&gt;--unit&lt;/initarg&gt;
+    &lt;initarg&gt;emergency.service&lt;/initarg&gt;
+  &lt;/os&gt;
+    </pre>
+
+
     <h3><a name="elementsSysinfo">SMBIOS System Information</a></h3>
 
     <p>

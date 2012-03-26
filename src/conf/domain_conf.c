@@ -1559,6 +1559,9 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->os.arch);
     VIR_FREE(def->os.machine);
     VIR_FREE(def->os.init);
+    for (i = 0 ; def->os.initargv && def->os.initargv[i] ; i++)
+        VIR_FREE(def->os.initargv[i]);
+    VIR_FREE(def->os.initargv);
     VIR_FREE(def->os.kernel);
     VIR_FREE(def->os.initrd);
     VIR_FREE(def->os.cmdline);
@@ -8188,6 +8191,25 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             }
         }
         def->os.cmdline = virXPathString("string(./os/cmdline[1])", ctxt);
+
+        if ((n = virXPathNodeSet("./os/initarg", ctxt, &nodes)) < 0) {
+            goto error;
+        }
+
+        if (VIR_ALLOC_N(def->os.initargv, n+1) < 0)
+            goto no_memory;
+        for (i = 0 ; i < n ; i++) {
+            if (!nodes[i]->children ||
+                !nodes[i]->children->content) {
+                virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                                     _("No data supplied for <initarg> element"));
+                goto error;
+            }
+            if (!(def->os.initargv[i] = strdup((const char*)nodes[i]->children->content)))
+                goto no_memory;
+        }
+        def->os.initargv[n] = NULL;
+        VIR_FREE(nodes);
     }
 
     if (STREQ(def->os.type, "xen") ||
@@ -12171,6 +12193,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     const char *type = NULL;
     int n, allones = 1;
+    int i;
     bool blkio = false;
 
     virCheckFlags(DUMPXML_FLAGS |
@@ -12332,7 +12355,6 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAsprintf(buf, "    <quota>%lld</quota>\n",
                           def->cputune.quota);
     if (def->cputune.vcpupin) {
-        int i;
         for (i = 0; i < def->cputune.nvcpupin; i++) {
             virBufferAsprintf(buf, "    <vcpupin vcpu='%u' ",
                               def->cputune.vcpupin[i]->vcpuid);
@@ -12408,6 +12430,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     virBufferEscapeString(buf, "    <init>%s</init>\n",
                           def->os.init);
+    for (i = 0 ; def->os.initargv && def->os.initargv[i] ; i++)
+        virBufferEscapeString(buf, "    <initarg>%s</initarg>\n",
+                              def->os.initargv[i]);
     virBufferEscapeString(buf, "    <loader>%s</loader>\n",
                           def->os.loader);
     virBufferEscapeString(buf, "    <kernel>%s</kernel>\n",
@@ -12462,7 +12487,6 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     virBufferAddLit(buf, "  </os>\n");
 
     if (def->features) {
-        int i;
         virBufferAddLit(buf, "  <features>\n");
         for (i = 0 ; i < VIR_DOMAIN_FEATURE_LAST ; i++) {
             if (def->features & (1 << i)) {

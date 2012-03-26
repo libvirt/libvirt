@@ -1354,6 +1354,7 @@ struct _virDomainOSDef {
     int bootDevs[VIR_DOMAIN_BOOT_LAST];
     int bootmenu;
     char *init;
+    char **initargv;
     char *kernel;
     char *initrd;
     char *cmdline;
