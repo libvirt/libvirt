@@ -157,6 +157,46 @@ int qemuUpdateActivePciHostdevs(struct qemud_driver *driver,
     return 0;
 }
 
+int
+qemuUpdateActiveUsbHostdevs(struct qemud_driver *driver,
+                            virDomainDefPtr def)
+{
+    virDomainHostdevDefPtr hostdev = NULL;
+    int i;
+
+    if (!def->nhostdevs)
+        return 0;
+
+    for (i = 0; i < def->nhostdevs; i++) {
+        usbDevice *usb = NULL;
+        hostdev = def->hostdevs[i];
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
+            continue;
+
+        usb = usbGetDevice(hostdev->source.subsys.u.usb.bus,
+                           hostdev->source.subsys.u.usb.device);
+        if (!usb) {
+            VIR_WARN("Unable to reattach USB device %03d.%03d on domain %s",
+                     hostdev->source.subsys.u.usb.bus,
+                     hostdev->source.subsys.u.usb.device,
+                     def->name);
+            continue;
+        }
+
+        usbDeviceSetUsedBy(usb, def->name);
+
+        if (usbDeviceListAdd(driver->activeUsbHostdevs, usb) < 0) {
+            usbFreeDevice(usb);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
 static int
 qemuDomainHostdevPciSysfsPath(virDomainHostdevDefPtr hostdev, char **sysfs_path)
 {
