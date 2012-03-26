@@ -426,6 +426,7 @@ qemudStartup(int privileged) {
     char *driverConf = NULL;
     int rc;
     virConnectPtr conn = NULL;
+    char ebuf[1024];
 
     if (VIR_ALLOC(qemu_driver) < 0)
         return -1;
@@ -519,37 +520,31 @@ qemudStartup(int privileged) {
     }
 
     if (virFileMakePath(qemu_driver->stateDir) < 0) {
-        char ebuf[1024];
         VIR_ERROR(_("Failed to create state dir '%s': %s"),
                   qemu_driver->stateDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
     if (virFileMakePath(qemu_driver->libDir) < 0) {
-        char ebuf[1024];
         VIR_ERROR(_("Failed to create lib dir '%s': %s"),
                   qemu_driver->libDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
     if (virFileMakePath(qemu_driver->cacheDir) < 0) {
-        char ebuf[1024];
         VIR_ERROR(_("Failed to create cache dir '%s': %s"),
                   qemu_driver->cacheDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
     if (virFileMakePath(qemu_driver->saveDir) < 0) {
-        char ebuf[1024];
         VIR_ERROR(_("Failed to create save dir '%s': %s"),
                   qemu_driver->saveDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
     if (virFileMakePath(qemu_driver->snapshotDir) < 0) {
-        char ebuf[1024];
         VIR_ERROR(_("Failed to create save dir '%s': %s"),
                   qemu_driver->snapshotDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
     if (virFileMakePath(qemu_driver->autoDumpPath) < 0) {
-        char ebuf[1024];
         VIR_ERROR(_("Failed to create dump dir '%s': %s"),
                   qemu_driver->autoDumpPath, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
@@ -567,9 +562,8 @@ qemudStartup(int privileged) {
 
     rc = virCgroupForDriver("qemu", &qemu_driver->cgroup, privileged, 1);
     if (rc < 0) {
-        char buf[1024];
         VIR_INFO("Unable to create cgroup for driver: %s",
-                 virStrerror(-rc, buf, sizeof(buf)));
+                 virStrerror(-rc, ebuf, sizeof(ebuf)));
     }
 
     if (qemudLoadDriverConfig(qemu_driver, driverConf) < 0) {

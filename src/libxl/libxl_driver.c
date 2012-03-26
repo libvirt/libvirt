@@ -833,6 +833,7 @@ libxlStartup(int privileged) {
     char *log_file = NULL;
     virCommandPtr cmd;
     int status, ret = 0;
+    char ebuf[1024];
 
     /* Disable libxl driver if non-root */
     if (!privileged) {
@@ -893,25 +894,21 @@ libxlStartup(int privileged) {
         goto out_of_memory;
 
     if (virFileMakePath(libxl_driver->logDir) < 0) {
-        char ebuf[1024];
         VIR_ERROR(_("Failed to create log dir '%s': %s"),
                   libxl_driver->logDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
     if (virFileMakePath(libxl_driver->stateDir) < 0) {
-        char ebuf[1024];
         VIR_ERROR(_("Failed to create state dir '%s': %s"),
                   libxl_driver->stateDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
     if (virFileMakePath(libxl_driver->libDir) < 0) {
-        char ebuf[1024];
         VIR_ERROR(_("Failed to create lib dir '%s': %s"),
                   libxl_driver->libDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
     if (virFileMakePath(libxl_driver->saveDir) < 0) {
-        char ebuf[1024];
         VIR_ERROR(_("Failed to create save dir '%s': %s"),
                   libxl_driver->saveDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
