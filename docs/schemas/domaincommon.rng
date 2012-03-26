@@ -370,6 +370,18 @@
   <define name="osexe">
     <element name="os">
       <element name="type">
+        <optional>
+          <attribute name="arch">
+            <choice>
+              <value>i686</value>
+              <value>x86_64</value>
+              <value>ppc</value>
+              <value>ppc64</value>
+              <value>mips</value>
+              <value>sparc</value>
+            </choice>
+          </attribute>
+        </optional>
         <value>exe</value>
       </element>
       <interleave>
@@ -2103,6 +2115,8 @@
         <value>serial</value>
         <value>uml</value>
         <value>virtio</value>
+        <value>lxc</value>
+        <value>openvz</value>
       </choice>
     </attribute>
   </define>
