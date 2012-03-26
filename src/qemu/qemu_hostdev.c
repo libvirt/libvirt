@@ -559,10 +559,7 @@ qemuPrepareHostdevUSBDevices(struct qemud_driver *driver,
                                 hostdev->source.subsys.u.usb.product);
 
             if (!usb)
-                return -1;
-
-            hostdev->source.subsys.u.usb.bus = usbDeviceGetBus(usb);
-            hostdev->source.subsys.u.usb.device = usbDeviceGetDevno(usb);
+                goto cleanup;
 
             if ((tmp = usbDeviceListFind(driver->activeUsbHostdevs, usb))) {
                 const char *other_name = usbDeviceGetUsedBy(tmp);
@@ -579,6 +576,9 @@ qemuPrepareHostdevUSBDevices(struct qemud_driver *driver,
                 goto cleanup;
             }
 
+            hostdev->source.subsys.u.usb.bus = usbDeviceGetBus(usb);
+            hostdev->source.subsys.u.usb.device = usbDeviceGetDevno(usb);
+
             if (usbDeviceListAdd(list, usb) < 0) {
                 usbFreeDevice(usb);
                 goto cleanup;
@@ -594,6 +594,9 @@ qemuPrepareHostdevUSBDevices(struct qemud_driver *driver,
     for (i = 0; i < usbDeviceListCount(list); i++) {
         tmp = usbDeviceListGet(list, i);
         usbDeviceSetUsedBy(tmp, name);
+
+        VIR_DEBUG("Adding %03d.%03d dom=%s to activeUsbHostdevs",
+                  usbDeviceGetBus(tmp), usbDeviceGetDevno(tmp), name);
         if (usbDeviceListAdd(driver->activeUsbHostdevs, tmp) < 0) {
             usbFreeDevice(tmp);
             goto inactivedevs;
