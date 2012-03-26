@@ -29,6 +29,8 @@
 
 int qemuUpdateActivePciHostdevs(struct qemud_driver *driver,
                                 virDomainDefPtr def);
+int qemuUpdateActiveUsbHostdevs(struct qemud_driver *driver,
+                                virDomainDefPtr def);
 int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
                                  const char *name,
                                  const unsigned char *uuid,

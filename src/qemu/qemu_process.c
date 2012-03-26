@@ -3057,6 +3057,9 @@ qemuProcessReconnect(void *opaque)
         goto error;
     }
 
+    if (qemuUpdateActiveUsbHostdevs(driver, obj->def) < 0)
+        goto error;
+
     if (qemuProcessUpdateState(driver, obj) < 0)
         goto error;
 
