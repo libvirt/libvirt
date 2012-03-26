@@ -3255,7 +3255,7 @@ error:
 void
 qemuProcessReconnectAll(virConnectPtr conn, struct qemud_driver *driver)
 {
-    struct qemuProcessReconnectData data = {conn, driver};
+    struct qemuProcessReconnectData data = {.conn = conn, .driver = driver};
     virHashForEach(driver->domains.objs, qemuProcessReconnectHelper, &data);
 }
 
