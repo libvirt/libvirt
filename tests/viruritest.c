@@ -35,6 +35,7 @@
 
 struct URIParseData {
     const char *uri;
+    const char *uri_out;
     const char *scheme;
     const char *server;
     int port;
@@ -49,20 +50,11 @@ static int testURIParse(const void *args)
     int ret = -1;
     virURIPtr uri = NULL;
     const struct URIParseData *data = args;
-    char *uristr;
+    char *uristr = NULL;
     size_t i;
 
     if (!(uri = virURIParse(data->uri)))
         goto cleanup;
-
-    if (!(uristr = virURIFormat(uri)))
-        goto cleanup;
-
-    if (!STREQ(uristr, data->uri)) {
-        VIR_DEBUG("URI did not roundtrip, expect '%s', actual '%s'",
-                  data->uri, uristr);
-        goto cleanup;
-    }
 
     if (!STREQ(uri->scheme, data->scheme)) {
         VIR_DEBUG("Expected scheme '%s', actual '%s'",
@@ -123,6 +115,18 @@ static int testURIParse(const void *args)
         goto cleanup;
     }
 
+    VIR_FREE(uri->query);
+    uri->query = virURIFormatParams(uri);
+
+    if (!(uristr = virURIFormat(uri)))
+        goto cleanup;
+
+    if (!STREQ(uristr, data->uri_out)) {
+        VIR_DEBUG("URI did not roundtrip, expect '%s', actual '%s'",
+                  data->uri_out, uristr);
+        goto cleanup;
+    }
+
     ret = 0;
 cleanup:
     VIR_FREE(uristr);
@@ -138,14 +142,22 @@ mymain(void)
 
     signal(SIGPIPE, SIG_IGN);
 
-#define TEST_PARSE(uri, scheme, server, port, path, query, fragment, params) \
+#define TEST_FULL(uri, uri_out, scheme, server, port, path, query,      \
+                  fragment, params)                                     \
     do  {                                                               \
         const struct URIParseData data = {                              \
-            uri, scheme, server, port, path, query, fragment, params    \
+            uri, (uri_out) ? (uri_out) : (uri), scheme, server, port,   \
+            path, query, fragment, params                               \
         };                                                              \
-        if (virtTestRun("Test IPv6 " # uri,  1, testURIParse, &data) < 0) \
+        if (virtTestRun("Test URI " # uri,  1, testURIParse, &data) < 0) \
             ret = -1;                                                   \
     } while (0)
+#define TEST_PARSE(uri, scheme, server, port, path, query, fragment, params) \
+    TEST_FULL(uri, NULL, scheme, server, port, path, query, fragment, params)
+#define TEST_PARAMS(query_in, query_out, params)                        \
+    TEST_FULL("test://example.com/?" query_in,                          \
+              *query_out ? "test://example.com/?" query_out : NULL,     \
+              "test", "example.com", 0, "/", query_in, NULL, params)
 
     virURIParam params[] = {
         { (char*)"name", (char*)"value" },
@@ -158,6 +170,46 @@ mymain(void)
     TEST_PARSE("test://127.0.0.1:123/system", "test", "127.0.0.1", 123, "/system", NULL, NULL, NULL);
     TEST_PARSE("test://[::1]:123/system", "test", "::1", 123, "/system", NULL, NULL, NULL);
     TEST_PARSE("test://[2001:41c8:1:4fd4::2]:123/system", "test", "2001:41c8:1:4fd4::2", 123, "/system", NULL, NULL, NULL);
+
+    virURIParam params1[] = {
+        { (char*)"foo", (char*)"one" },
+        { (char*)"bar", (char*)"two" },
+        { NULL, NULL },
+    };
+    virURIParam params2[] = {
+        { (char*)"foo", (char*)"one" },
+        { (char*)"foo", (char*)"two" },
+        { NULL, NULL },
+    };
+    virURIParam params3[] = {
+        { (char*)"foo", (char*)"&one" },
+        { (char*)"bar", (char*)"&two" },
+        { NULL, NULL },
+    };
+    virURIParam params4[] = {
+        { (char*)"foo", (char*)"" },
+        { NULL, NULL },
+    };
+    virURIParam params5[] = {
+        { (char*)"foo", (char*)"one two" },
+        { NULL, NULL },
+    };
+    virURIParam params6[] = {
+        { (char*)"foo", (char*)"one" },
+        { NULL, NULL },
+    };
+
+    TEST_PARAMS("foo=one&bar=two", "", params1);
+    TEST_PARAMS("foo=one&foo=two", "", params2);
+    TEST_PARAMS("foo=one&&foo=two", "foo=one&foo=two", params2);
+    TEST_PARAMS("foo=one;foo=two", "foo=one&foo=two", params2);
+    TEST_PARAMS("foo=%26one&bar=%26two", "", params3);
+    TEST_PARAMS("foo", "foo=", params4);
+    TEST_PARAMS("foo=", "", params4);
+    TEST_PARAMS("foo=&", "foo=", params4);
+    TEST_PARAMS("foo=&&", "foo=", params4);
+    TEST_PARAMS("foo=one%20two", "", params5);
+    TEST_PARAMS("=bogus&foo=one", "foo=one", params6);
 
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

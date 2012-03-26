@@ -243,15 +243,21 @@ virURIFormat(virURIPtr uri)
     xmluri.server = uri->server;
     xmluri.port = uri->port;
     xmluri.path = uri->path;
+#ifdef HAVE_XMLURI_QUERY_RAW
+    xmluri.query_raw = uri->query;
+#else
     xmluri.query = uri->query;
+#endif
     xmluri.fragment = uri->fragment;
 
     /* First check: does it make sense to do anything */
     if (xmluri.server != NULL &&
         strchr(xmluri.server, ':') != NULL) {
 
-        if (virAsprintf(&tmpserver, "[%s]", xmluri.server) < 0)
+        if (virAsprintf(&tmpserver, "[%s]", xmluri.server) < 0) {
+            virReportOOMError();
             return NULL;
+        }
 
         xmluri.server = tmpserver;
     }
