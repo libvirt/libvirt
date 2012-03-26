@@ -444,8 +444,10 @@ static int lxcContainerMountBasicFS(const char *srcprefix, bool pivotRoot)
         { false, "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
         { true, "/sys", "/sys", NULL, NULL, MS_BIND },
         { true, "/sys", "/sys", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
-        { true, "/selinux", "/selinux", NULL, NULL, MS_BIND },
-        { true, "/selinux", "/selinux", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
+#if HAVE_SELINUX
+        { true, SELINUX_MOUNT, SELINUX_MOUNT, NULL, NULL, MS_BIND },
+        { true, SELINUX_MOUNT, SELINUX_MOUNT, NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
+#endif
     };
     int i, rc = -1;
     char *opts = NULL;

@@ -1238,6 +1238,10 @@ AC_ARG_WITH([selinux],
   AC_HELP_STRING([--with-selinux], [use SELinux to manage security @<:@default=check@:>@]),
   [],
   [with_selinux=check])
+AC_ARG_WITH([selinux_mount],
+  AC_HELP_STRING([--with-selinux-mount], [set SELinux mount point @<:@default=check@:>@]),
+  [],
+  [with_selinux_mount=check])
 
 SELINUX_CFLAGS=
 SELINUX_LIBS=
@@ -1261,7 +1265,20 @@ if test "$with_selinux" != "no"; then
   LIBS="$old_libs"
 fi
 if test "$with_selinux" = "yes"; then
+  AC_MSG_CHECKING([SELinux mount point])
+  if test "$with_selinux_mount" = "check" || test -z "$with_selinux_mount"; then
+    if test -d /sys/fs/selinux ; then
+      SELINUX_MOUNT=/sys/fs/selinux
+    else
+      SELINUX_MOUNT=/selinux
+    fi
+  else
+    SELINUX_MOUNT=$with_selinux_mount
+  fi
+  AC_MSG_RESULT([$SELINUX_MOUNT])
+
   SELINUX_LIBS="-lselinux"
+  AC_DEFINE_UNQUOTED([SELINUX_MOUNT], ["$SELINUX_MOUNT"], [SELinux mount point])
   AC_DEFINE_UNQUOTED([HAVE_SELINUX], 1, [whether basic SELinux functionality is available])
   dnl We prefer to use <selinux/label.h> and selabel_open, but can fall
   dnl back to matchpathcon for the sake of RHEL 5's version of libselinux.
@@ -2640,7 +2657,7 @@ AC_MSG_NOTICE([    Disk: $with_storage_disk])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Security Drivers])
 AC_MSG_NOTICE([])
-AC_MSG_NOTICE([ SELinux: $with_secdriver_selinux])
+AC_MSG_NOTICE([ SELinux: $with_secdriver_selinux ($SELINUX_MOUNT)])
 AC_MSG_NOTICE([AppArmor: $with_secdriver_apparmor])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Driver Loadable Modules])
