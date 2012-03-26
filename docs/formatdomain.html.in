@@ -1016,11 +1016,32 @@
           </dd>
           <dt><code>tickpolicy</code></dt>
           <dd>
-            The <code>tickpolicy</code> attribute determines how
-            missed ticks in the guest are handled, and can be "delay",
-            "catchup", "merge", or "discard".  If the policy is
-            "catchup", there can be further details in
-            the <code>catchup</code> sub-element.
+            <p>
+            The <code>tickpolicy</code> attribute determines what
+            happens whens QEMU misses a deadline for injecting a
+            tick to the guest:
+            </p>
+            <dl>
+              <dt><code>delay</code></dt>
+              <dd>Continue to deliver ticks at the normal rate.
+                The guest time will be delayed due to the late
+                tick</dd>
+              <dt><code>catchup</code></dt>
+              <dd>Deliver ticks at a higher rate to catch up
+                with the missed tick. The guest time should
+                not be delayed once catchup is complete.</dd>
+              <dt><code>merge</code></dt>
+              <dd>Merge the missed tick(s) into one tick and
+                inject. The guest time may be delayed, depending
+                on how the OS reacts to the merging of ticks</dd>
+              <dt><code>discard</code></dt>
+              <dd>Throw away the missed tick(s) and continue
+                with future injection normally. The guest time
+                may be delayed, unless the OS has explicit
+                handling of lost ticks</dd>
+            </dl>
+            <p>If the policy is "catchup", there can be further details in
+            the <code>catchup</code> sub-element.</p>
             <dl>
               <dt><code>catchup</code></dt>
               <dd>
@@ -1030,6 +1051,9 @@
                 and <code>limit</code>.
               </dd>
             </dl>
+            <p>
+              Note that hypervisors are not required to support all policies across all time sources
+            </p>
           </dd>
           <dt><code>frequency</code></dt>
           <dd>
