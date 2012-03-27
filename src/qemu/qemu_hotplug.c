@@ -160,9 +160,9 @@ qemuDomainCheckEjectableMedia(struct qemud_driver *driver,
     int ret = -1;
     int i;
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
     table = qemuMonitorGetBlockInfo(priv->mon);
-    qemuDomainObjExitMonitor(driver, vm);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     if (!table)
         goto cleanup;
