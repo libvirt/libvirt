@@ -2716,7 +2716,7 @@ qemuMigrationPerform(struct qemud_driver *driver,
     }
 }
 
-static void
+static int
 qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def) {
     int i;
     int last_good_net = -1;
@@ -2731,13 +2731,19 @@ qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def) {
                                                virDomainNetGetActualDirectDev(net),
                                                -1,
                                                def->uuid,
-                                               VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_FINISH, false) < 0)
+                                               VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_FINISH,
+                                               false) < 0) {
+                qemuReportError(VIR_ERR_OPERATION_FAILED,
+                                _("Port profile Associate failed for %s"),
+                                net->ifname);
                 goto err_exit;
+            }
+            VIR_DEBUG("Port profile Associate succeeded for %s", net->ifname);
         }
         last_good_net = i;
     }
 
-    return;
+    return 0;
 
 err_exit:
     for (i = 0; i < last_good_net; i++) {
@@ -2751,6 +2757,7 @@ err_exit:
                                                            VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_FINISH));
         }
     }
+    return -1;
 }
 
 
@@ -2805,7 +2812,14 @@ qemuMigrationFinish(struct qemud_driver *driver,
             goto endjob;
         }
 
-        qemuMigrationVPAssociatePortProfiles(vm->def);
+        if (qemuMigrationVPAssociatePortProfiles(vm->def) < 0) {
+            qemuProcessStop(driver, vm, 1, VIR_DOMAIN_SHUTOFF_FAILED);
+            virDomainAuditStop(vm, "failed");
+            event = virDomainEventNewFromObj(vm,
+                                             VIR_DOMAIN_EVENT_STOPPED,
+                                             VIR_DOMAIN_EVENT_STOPPED_FAILED);
+            goto endjob;
+        }
 
         if (flags & VIR_MIGRATE_PERSIST_DEST) {
             virDomainDefPtr vmdef;
