@@ -119,6 +119,138 @@ libvirt_constcharPtrWrap(const char *str)
     return ret;
 }
 
+int
+libvirt_intUnwrap(PyObject *obj, int *val)
+{
+    long long_val;
+
+    /* If obj is type of PyInt_Type, PyInt_AsLong converts it
+     * to C long type directly. If it is of PyLong_Type, PyInt_AsLong
+     * will call PyLong_AsLong() to deal with it automatically.
+     */
+    long_val = PyInt_AsLong(obj);
+    if ((long_val == -1) && PyErr_Occurred())
+        return -1;
+
+    if ((int)long_val == long_val) {
+        *val = long_val;
+    } else {
+        PyErr_SetString(PyExc_OverflowError,
+                        "Python int too large to convert to C int");
+        return -1;
+    }
+    return 0;
+}
+
+int
+libvirt_uintUnwrap(PyObject *obj, unsigned int *val)
+{
+    long long_val;
+
+    long_val = PyInt_AsLong(obj);
+    if ((long_val == -1) && PyErr_Occurred())
+        return -1;
+
+    if ((unsigned int)long_val == long_val) {
+        *val = long_val;
+    } else {
+        PyErr_SetString(PyExc_OverflowError,
+                        "Python int too large to convert to C unsigned int");
+        return -1;
+    }
+    return 0;
+}
+
+int
+libvirt_longUnwrap(PyObject *obj, long *val)
+{
+    long long_val;
+
+    long_val = PyInt_AsLong(obj);
+    if ((long_val == -1) && PyErr_Occurred())
+        return -1;
+
+    *val = long_val;
+    return 0;
+}
+
+int
+libvirt_ulongUnwrap(PyObject *obj, unsigned long *val)
+{
+    long long_val;
+
+    long_val = PyInt_AsLong(obj);
+    if ((long_val == -1) && PyErr_Occurred())
+        return -1;
+
+    *val = long_val;
+    return 0;
+}
+
+int
+libvirt_longlongUnwrap(PyObject *obj, long long *val)
+{
+    long long llong_val;
+
+    /* If obj is of PyInt_Type, PyLong_AsLongLong
+     * will call PyInt_AsLong() to handle it automatically.
+     */
+    llong_val = PyLong_AsLongLong(obj);
+    if ((llong_val == -1) && PyErr_Occurred())
+        return -1;
+
+    *val = llong_val;
+    return 0;
+}
+
+int
+libvirt_ulonglongUnwrap(PyObject *obj, unsigned long long *val)
+{
+    unsigned long long ullong_val = -1;
+
+    /* The PyLong_AsUnsignedLongLong doesn't check the type of
+     * obj, only accept argument of PyLong_Type, so we check it instead.
+     */
+    if (PyInt_Check(obj))
+        ullong_val = PyInt_AsLong(obj);
+    else if (PyLong_Check(obj))
+        ullong_val = PyLong_AsUnsignedLongLong(obj);
+    else
+        PyErr_SetString(PyExc_TypeError, "an integer is required");
+
+    if ((ullong_val == -1) && PyErr_Occurred())
+        return -1;
+
+    *val = ullong_val;
+    return 0;
+}
+
+int
+libvirt_doubleUnwrap(PyObject *obj, double *val)
+{
+    double double_val;
+
+    double_val = PyFloat_AsDouble(obj);
+    if ((double_val == -1) && PyErr_Occurred())
+        return -1;
+
+    *val = double_val;
+    return 0;
+}
+
+int
+libvirt_boolUnwrap(PyObject *obj, bool *val)
+{
+    int ret;
+
+    ret = PyObject_IsTrue(obj);
+    if (ret < 0)
+        return ret;
+
+    *val = ret > 0;
+    return 0;
+}
+
 PyObject *
 libvirt_virDomainPtrWrap(virDomainPtr node)
 {
