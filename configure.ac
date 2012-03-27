@@ -106,7 +106,7 @@ VERSION_SCRIPT_FLAGS=-Wl,--version-script=
     VERSION_SCRIPT_FLAGS="-Wl,-M -Wl,"
 AC_MSG_RESULT([$VERSION_SCRIPT_FLAGS])
 
-LIBVIRT_COMPILE_WARNINGS([maximum])
+LIBVIRT_COMPILE_WARNINGS
 
 AC_MSG_CHECKING([for CPUID instruction])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
@@ -2820,7 +2820,7 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Miscellaneous])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([        Debug: $enable_debug])
-AC_MSG_NOTICE([     Warnings: $enable_compile_warnings])
+AC_MSG_NOTICE([  Use -Werror: $set_werror])
 AC_MSG_NOTICE([Warning Flags: $WARN_CFLAGS])
 AC_MSG_NOTICE([     Readline: $lv_use_readline])
 AC_MSG_NOTICE([       Python: $with_python])

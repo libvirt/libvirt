@@ -20,7 +20,7 @@ cd build
 ../autogen.sh --prefix="$AUTOBUILD_INSTALL_ROOT" \
   --enable-test-coverage \
   --disable-nls \
-  --enable-compile-warnings=error
+  --enable-werror
 
 # If the MAKEFLAGS envvar does not yet include a -j option,
 # add -jN where N depends on the number of processors.
@@ -74,7 +74,7 @@ if [ -x /usr/bin/i686-pc-mingw32-gcc ]; then
     --build=$(uname -m)-pc-linux \
     --host=i686-pc-mingw32 \
     --prefix="$AUTOBUILD_INSTALL_ROOT/i686-pc-mingw32/sys-root/mingw" \
-    --enable-compile-warnings=error \
+    --enable-werror \
     --without-libvirtd \
     --without-python
 
