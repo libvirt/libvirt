@@ -2162,6 +2162,25 @@ AM_CONDITIONAL([WITH_PYTHON], [test "$with_python" = "yes"])
 AC_SUBST([PYTHON_VERSION])
 AC_SUBST([PYTHON_INCLUDES])
 
+AC_ARG_ENABLE([with-test-suite],
+              AC_HELP_STRING([--with-test-suite], [build test suite by default @<:@default=check@:>@]),
+              [case "${withval}" in
+                 yes|no|check) ;;
+                 *)      AC_MSG_ERROR([bad value ${withval} for tests option]) ;;
+              esac],
+              [withval=check])
+
+AC_MSG_CHECKING([Whether to build test suite by default])
+if test "$withval" = "check" ; then
+  if test -d $srcdir/.git ; then
+    withval=yes
+  else
+    withval=no
+  fi
+fi
+AC_MSG_RESULT([$withval])
+AM_CONDITIONAL([WITH_TESTS], [test "$withval" = "yes"])
+
 AC_ARG_ENABLE([test-coverage],
   AC_HELP_STRING([--enable-test-coverage], [turn on code coverage instrumentation @<:@default=no@:>@]),
 [case "${enableval}" in
