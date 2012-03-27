@@ -909,7 +909,7 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
 #endif
     data->auth_tls = REMOTE_AUTH_NONE;
 
-    data->mdns_adv = 1;
+    data->mdns_adv = 0;
 
     data->min_workers = 5;
     data->max_workers = 20;

@@ -738,7 +738,7 @@ Blank lines and comments beginning with <code>#</code> are ignored.
       </tr>
       <tr>
         <td> mdns_adv <i>[0|1]</i> </td>
-        <td> 1 (advertise with mDNS) </td>
+        <td> 0 (advertise with mDNS) </td>
         <td>
   If set to 1 then the virtualization service will be advertised over
   mDNS to hosts on the local LAN segment.

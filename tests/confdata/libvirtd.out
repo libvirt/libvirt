@@ -37,8 +37,8 @@ tcp_port = "16509"
 # Alternatively can disable for all services on a host by
 # stopping the Avahi daemon
 #
-# This is enabled by default, uncomment this to disable it
-mdns_adv = 0
+# This is disabled by default, uncomment this to enable it
+mdns_adv = 1
 # Override the default mDNS advertizement name. This must be
 # unique on the immediate broadcast network.
 #

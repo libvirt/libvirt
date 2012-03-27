@@ -54,8 +54,8 @@ listen_addr = \"192.168.0.1\"
 # Alternatively can disable for all services on a host by
 # stopping the Avahi daemon
 #
-# This is enabled by default, uncomment this to disable it
-mdns_adv = 0
+# This is disabled by default, uncomment this to enable it
+mdns_adv = 1
 
 # Override the default mDNS advertizement name. This must be
 # unique on the immediate broadcast network.
@@ -330,8 +330,8 @@ audit_level = 2
         { "#comment" = "Alternatively can disable for all services on a host by" }
         { "#comment" = "stopping the Avahi daemon" }
         { "#comment" = "" }
-        { "#comment" = "This is enabled by default, uncomment this to disable it" }
-        { "mdns_adv" = "0" }
+        { "#comment" = "This is disabled by default, uncomment this to enable it" }
+        { "mdns_adv" = "1" }
         { "#empty" }
         { "#comment" = "Override the default mDNS advertizement name. This must be" }
         { "#comment" = "unique on the immediate broadcast network." }
