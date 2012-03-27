@@ -151,11 +151,11 @@
     </function>
     <function name='virDomainGetCPUStats' file='python'>
       <info>Extracts CPU statistics for a running domain. On success it will
-   return a list of data of dictionary type. If boolean total is False, the
+   return a list of data of dictionary type. If boolean total is False or 0, the
    first element of the list refers to CPU0 on the host, second element is
    CPU1, and so on. The format of data struct is as follows:
    [{cpu_time:xxx}, {cpu_time:xxx}, ...]
-   If it is True, it returns total domain CPU statistics in the format of
+   If it is True or 1, it returns total domain CPU statistics in the format of
    [{cpu_time:xxx, user_time:xxx, system_time:xxx}]</info>
      <return type='str *' info='returns a list of dictionary in case of success, None in case of error'/>
      <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>

@@ -194,76 +194,38 @@ setPyVirTypedParameter(PyObject *info,
 
         switch(params[i].type) {
         case VIR_TYPED_PARAM_INT:
-        {
-            long long_val = PyInt_AsLong(value);
-            if ((long_val == -1) && PyErr_Occurred())
+            if (libvirt_intUnwrap(value, &temp->value.i) < 0)
                 goto cleanup;
-            if ((int)long_val == long_val) {
-                temp->value.i = long_val;
-            } else {
-                PyErr_Format(PyExc_ValueError,
-                             "The value of "
-                             "attribute \"%s\" is out of int range", keystr);
-                goto cleanup;
-            }
-        }
-        break;
+            break;
+
         case VIR_TYPED_PARAM_UINT:
-        {
-            long long_val = PyInt_AsLong(value);
-            if ((long_val == -1) && PyErr_Occurred())
+            if (libvirt_uintUnwrap(value, &temp->value.ui) < 0)
                 goto cleanup;
-            if ((unsigned int)long_val == long_val) {
-                temp->value.ui = long_val;
-            } else {
-                PyErr_Format(PyExc_ValueError,
-                             "The value of "
-                             "attribute \"%s\" is out of int range", keystr);
-                goto cleanup;
-            }
-        }
-        break;
+            break;
+
         case VIR_TYPED_PARAM_LLONG:
-        {
-            long long llong_val = PyLong_AsLongLong(value);
-            if ((llong_val == -1) && PyErr_Occurred())
+            if (libvirt_longlongUnwrap(value, &temp->value.l) < 0)
                 goto cleanup;
-            temp->value.l = llong_val;
-        }
-        break;
+            break;
+
         case VIR_TYPED_PARAM_ULLONG:
-        {
-            unsigned long long ullong_val = PyLong_AsUnsignedLongLong(value);
-            if ((ullong_val == -1) && PyErr_Occurred())
+            if (libvirt_ulonglongUnwrap(value, &temp->value.ul) < 0)
                 goto cleanup;
-            temp->value.ul = ullong_val;
-        }
-        break;
+            break;
+
         case VIR_TYPED_PARAM_DOUBLE:
-        {
-            double double_val = PyFloat_AsDouble(value);
-            if ((double_val == -1) && PyErr_Occurred())
+            if (libvirt_doubleUnwrap(value, &temp->value.d) < 0)
                 goto cleanup;
-            temp->value.d = double_val;
-        }
-        break;
+            break;
+
         case VIR_TYPED_PARAM_BOOLEAN:
         {
-            /* Hack - Python's definition of Py_True breaks strict
-             * aliasing rules, so can't directly compare
-             */
-            if (PyBool_Check(value)) {
-                PyObject *hacktrue = PyBool_FromLong(1);
-                temp->value.b = hacktrue == value ? 1 : 0;
-                Py_DECREF(hacktrue);
-            } else {
-                PyErr_Format(PyExc_TypeError,
-                             "The value type of "
-                             "attribute \"%s\" must be bool", keystr);
+            bool b;
+            if (libvirt_boolUnwrap(value, &b) < 0)
                 goto cleanup;
-            }
+            temp->value.b = b;
+            break;
         }
-        break;
         case VIR_TYPED_PARAM_STRING:
         {
             char *string_val = PyString_AsString(value);
@@ -388,7 +350,8 @@ libvirt_virDomainGetCPUStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
     int ncpus = -1, start_cpu = 0;
     int sumparams = 0, nparams = -1;
     int i, i_retval;
-    unsigned int flags, totalflag;
+    unsigned int flags;
+    bool totalflag;
     virTypedParameterPtr params = NULL, cpuparams;
 
     if (!PyArg_ParseTuple(args, (char *)"OOi:virDomainGetCPUStats",
@@ -396,18 +359,8 @@ libvirt_virDomainGetCPUStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
         return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
-    if (!PyBool_Check(totalbool)) {
-        PyErr_Format(PyExc_TypeError,
-                    "The \"total\" attribute must be bool");
+    if (libvirt_boolUnwrap(totalbool, &totalflag) < 0)
         return NULL;
-    } else {
-        /* Hack - Python's definition of Py_True breaks strict
-         * aliasing rules, so can't directly compare
-         */
-        PyObject *hacktrue = PyBool_FromLong(1);
-        totalflag = hacktrue == totalbool ? 1 : 0;
-        Py_DECREF(hacktrue);
-    }
 
     if ((ret = PyList_New(0)) == NULL)
         return NULL;
