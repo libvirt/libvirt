@@ -754,6 +754,50 @@ virNetDevMacVLanVPortProfileDestroyCallback(int watch ATTRIBUTE_UNUSED,
     virNetlinkCallbackDataFree((virNetlinkCallbackDataPtr)opaque);
 }
 
+static int
+virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
+                                             const unsigned char *macaddress,
+                                             const char *linkdev,
+                                             const unsigned char *vmuuid,
+                                             virNetDevVPortProfilePtr virtPortProfile,
+                                             enum virNetDevVPortProfileOp vmOp)
+{
+    virNetlinkCallbackDataPtr calld = NULL;
+
+    if (virtPortProfile && virNetlinkEventServiceIsRunning()) {
+        if (VIR_ALLOC(calld) < 0)
+            goto memory_error;
+        if ((calld->cr_ifname = strdup(ifname)) == NULL)
+            goto memory_error;
+        if (VIR_ALLOC(calld->virtPortProfile) < 0)
+            goto memory_error;
+        memcpy(calld->virtPortProfile, virtPortProfile, sizeof(*virtPortProfile));
+        if (VIR_ALLOC_N(calld->macaddress, VIR_MAC_BUFLEN) < 0)
+            goto memory_error;
+        memcpy(calld->macaddress, macaddress, VIR_MAC_BUFLEN);
+        if ((calld->linkdev = strdup(linkdev)) == NULL)
+            goto  memory_error;
+        if (VIR_ALLOC_N(calld->vmuuid, VIR_UUID_BUFLEN) < 0)
+            goto memory_error;
+        memcpy(calld->vmuuid, vmuuid, VIR_UUID_BUFLEN);
+
+        calld->vmOp = vmOp;
+
+        if (virNetlinkEventAddClient(virNetDevMacVLanVPortProfileCallback,
+                                     virNetDevMacVLanVPortProfileDestroyCallback,
+                                     calld, macaddress) < 0)
+            goto error;
+    }
+
+    return 0;
+
+memory_error:
+    virReportOOMError();
+error:
+    virNetlinkCallbackDataFree(calld);
+    return -1;
+}
+
 
 /**
  * virNetDevMacVLanCreateWithVPortProfile:
@@ -795,7 +839,6 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
     int retries, do_retry = 0;
     uint32_t macvtapMode;
     const char *cr_ifname;
-    virNetlinkCallbackDataPtr calld = NULL;
     int ret;
     int vf = -1;
 
@@ -902,35 +945,11 @@ create_name:
         goto disassociate_exit;
     }
 
-    if (virtPortProfile && virNetlinkEventServiceIsRunning()) {
-        if (VIR_ALLOC(calld) < 0)
-            goto memory_error;
-        if ((calld->cr_ifname = strdup(cr_ifname)) == NULL)
-            goto memory_error;
-        if (VIR_ALLOC(calld->virtPortProfile) < 0)
-            goto memory_error;
-        memcpy(calld->virtPortProfile, virtPortProfile, sizeof(*virtPortProfile));
-        if (VIR_ALLOC_N(calld->macaddress, VIR_MAC_BUFLEN) < 0)
-            goto memory_error;
-        memcpy(calld->macaddress, macaddress, VIR_MAC_BUFLEN);
-        if ((calld->linkdev = strdup(linkdev)) == NULL)
-            goto  memory_error;
-        if (VIR_ALLOC_N(calld->vmuuid, VIR_UUID_BUFLEN) < 0)
-            goto memory_error;
-        memcpy(calld->vmuuid, vmuuid, VIR_UUID_BUFLEN);
-
-        calld->vmOp = vmOp;
-
-        virNetlinkEventAddClient(virNetDevMacVLanVPortProfileCallback,
-                                 virNetDevMacVLanVPortProfileDestroyCallback,
-                                 calld, macaddress);
-    }
+    if (virNetDevMacVLanVPortProfileRegisterCallback(cr_ifname, macaddress,
+                                         linkdev, vmuuid, virtPortProfile, vmOp) < 0 )
+        goto disassociate_exit;
 
     return rc;
-
- memory_error:
-    virReportOOMError();
-    virNetlinkCallbackDataFree(calld);
 
 disassociate_exit:
     ignore_value(virNetDevVPortProfileDisassociate(cr_ifname,
@@ -988,6 +1007,48 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
     return ret;
 }
 
+/**
+ * virNetDevMacVLanRestartWithVPortProfile:
+ * Register a port profile callback handler for a VM that
+ * is already running
+ * .
+ * @cr_ifname: Interface name that the macvtap has.
+ * @macaddress: The MAC address for the macvtap device
+ * @linkdev: The interface name of the NIC to connect to the external bridge
+ * @vmuuid: The UUID of the VM the macvtap belongs to
+ * @virtPortProfile: pointer to object holding the virtual port profile data
+ * @vmOp: Operation to use during setup of the association
+ *
+ * Returns 0; returns -1 on error.
+ */
+int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname,
+                                           const unsigned char *macaddress,
+                                           const char *linkdev,
+                                           const unsigned char *vmuuid,
+                                           virNetDevVPortProfilePtr virtPortProfile,
+                                           enum virNetDevVPortProfileOp vmOp)
+{
+    int rc = 0;
+
+    rc = virNetDevMacVLanVPortProfileRegisterCallback(cr_ifname, macaddress,
+                                                      linkdev, vmuuid,
+                                                      virtPortProfile, vmOp);
+    if (rc < 0)
+        goto error;
+
+    ignore_value(virNetDevVPortProfileAssociate(cr_ifname,
+                                                virtPortProfile,
+                                                macaddress,
+                                                linkdev,
+                                                -1,
+                                                vmuuid,
+                                                vmOp, true));
+
+error:
+    return rc;
+
+}
+
 #else /* ! WITH_MACVTAP */
 int virNetDevMacVLanCreate(const char *ifname ATTRIBUTE_UNUSED,
                            const char *type ATTRIBUTE_UNUSED,
@@ -1032,6 +1093,18 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname ATTRIBUTE_UNUSED,
                                            int mode ATTRIBUTE_UNUSED,
                                            virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
                                            char *stateDir ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Cannot create macvlan devices on this platform"));
+    return -1;
+}
+
+int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname ATTRIBUTE_UNUSED,
+                                           const unsigned char *macaddress ATTRIBUTE_UNUSED,
+                                           const char *linkdev ATTRIBUTE_UNUSED,
+                                           const unsigned char *vmuuid ATTRIBUTE_UNUSED,
+                                           virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
+                                           enum virNetDevVPortProfileOp vmOp ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));

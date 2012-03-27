@@ -428,8 +428,11 @@ virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
     int i, r, ret = -1;
     virNetlinkEventSrvPrivatePtr srv = server;
 
-    if (handleCB == NULL)
+    if (handleCB == NULL) {
+        netlinkError(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Invalid NULL callback provided"));
         return -1;
+    }
 
     virNetlinkEventServerLock(srv);
 
@@ -449,6 +452,7 @@ virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
                   srv->handlesAlloc, NETLINK_EVENT_ALLOC_EXTENT);
         if (VIR_RESIZE_N(srv->handles, srv->handlesAlloc,
                         srv->handlesCount, NETLINK_EVENT_ALLOC_EXTENT) < 0) {
+            virReportOOMError();
             goto error;
         }
     }
