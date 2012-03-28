@@ -40,6 +40,8 @@
 #include "qemu_cgroup.h"
 #include "locking/domain_lock.h"
 #include "network/bridge_driver.h"
+#include "virnetdev.h"
+#include "virnetdevbridge.h"
 #include "virnetdevtap.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -1191,6 +1193,53 @@ static virDomainNetDefPtr qemuDomainFindNet(virDomainObjPtr vm,
     return NULL;
 }
 
+static
+int qemuDomainChangeNetBridge(virDomainObjPtr vm,
+                              virDomainNetDefPtr olddev,
+                              virDomainNetDefPtr newdev)
+{
+    int ret = -1;
+    char *oldbridge = olddev->data.bridge.brname;
+    char *newbridge = newdev->data.bridge.brname;
+
+    VIR_DEBUG("Change bridge for interface %s: %s -> %s",
+              olddev->ifname, oldbridge, newbridge);
+
+    if (virNetDevExists(newbridge) != 1) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("bridge %s doesn't exist"), newbridge);
+        return -1;
+    }
+
+    if (oldbridge) {
+        ret = virNetDevBridgeRemovePort(oldbridge, olddev->ifname);
+        virDomainAuditNet(vm, olddev, NULL, "detach", ret == 0);
+        if (ret < 0)
+            return -1;
+    }
+
+    /* move newbridge into olddev now so Audit log is correct */
+    olddev->data.bridge.brname = newbridge;
+    ret = virNetDevBridgeAddPort(newbridge, olddev->ifname);
+    virDomainAuditNet(vm, NULL, olddev, "attach", ret == 0);
+    if (ret < 0) {
+        /* restore oldbridge to olddev */
+        olddev->data.bridge.brname = oldbridge;
+        ret = virNetDevBridgeAddPort(oldbridge, olddev->ifname);
+        virDomainAuditNet(vm, NULL, olddev, "attach", ret == 0);
+        if (ret < 0) {
+            qemuReportError(VIR_ERR_OPERATION_FAILED,
+                            _("unable to recover former state by adding port"
+                              "to bridge %s"), oldbridge);
+        }
+        return -1;
+    }
+    /* oldbridge no longer needed, and newbridge moved to olddev */
+    VIR_FREE(oldbridge);
+    newdev->data.bridge.brname = NULL;
+    return 0;
+}
+
 int qemuDomainChangeNetLinkState(struct qemud_driver *driver,
                                  virDomainObjPtr vm,
                                  virDomainNetDefPtr dev,
@@ -1279,6 +1328,16 @@ int qemuDomainChangeNet(struct qemud_driver *driver,
 
         break;
 
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
+       /* allow changing brname, but not portprofile */
+       if (!virNetDevVPortProfileEqual(olddev->data.bridge.virtPortProfile,
+                                       dev->data.bridge.virtPortProfile)) {
+           qemuReportError(VIR_ERR_NO_SUPPORT,
+                           _("cannot modify bridge network device configuration"));
+           return -1;
+       }
+       break;
+
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
         if (STRNEQ_NULLABLE(olddev->data.internal.name, dev->data.internal.name)) {
             qemuReportError(VIR_ERR_NO_SUPPORT,
@@ -1319,6 +1378,13 @@ int qemuDomainChangeNet(struct qemud_driver *driver,
         qemuReportError(VIR_ERR_NO_SUPPORT,
                         _("cannot modify network device configuration"));
         return -1;
+    }
+
+    if (olddev->type == VIR_DOMAIN_NET_TYPE_BRIDGE
+        && STRNEQ_NULLABLE(olddev->data.bridge.brname,
+                           dev->data.bridge.brname)) {
+        if ((ret = qemuDomainChangeNetBridge(vm, olddev, dev)) < 0)
+            return ret;
     }
 
     if (olddev->linkstate != dev->linkstate) {
