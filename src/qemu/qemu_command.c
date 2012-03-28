@@ -2721,8 +2721,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_DIRECT:
-        virBufferAddLit(&buf, "tap");
-        virBufferAsprintf(&buf, "%cfd=%s", type_sep, tapfd);
+        virBufferAsprintf(&buf, "tap%cfd=%s", type_sep, tapfd);
         type_sep = ',';
         is_tap = true;
         break;
@@ -2742,40 +2741,28 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
         break;
 
     case VIR_DOMAIN_NET_TYPE_CLIENT:
+       virBufferAsprintf(&buf, "socket%cconnect=%s:%d",
+                         type_sep,
+                         net->data.socket.address,
+                         net->data.socket.port);
+       type_sep = ',';
+       break;
+
     case VIR_DOMAIN_NET_TYPE_SERVER:
+       virBufferAsprintf(&buf, "socket%clisten=%s:%d",
+                         type_sep,
+                         net->data.socket.address,
+                         net->data.socket.port);
+       type_sep = ',';
+       break;
+
     case VIR_DOMAIN_NET_TYPE_MCAST:
-        virBufferAddLit(&buf, "socket");
-        switch (netType) {
-        case VIR_DOMAIN_NET_TYPE_CLIENT:
-            virBufferAsprintf(&buf, "%cconnect=%s:%d",
-                              type_sep,
-                              net->data.socket.address,
-                              net->data.socket.port);
-            break;
-        case VIR_DOMAIN_NET_TYPE_SERVER:
-            virBufferAsprintf(&buf, "%clisten=%s:%d",
-                              type_sep,
-                              net->data.socket.address,
-                              net->data.socket.port);
-            break;
-        case VIR_DOMAIN_NET_TYPE_MCAST:
-            virBufferAsprintf(&buf, "%cmcast=%s:%d",
-                              type_sep,
-                              net->data.socket.address,
-                              net->data.socket.port);
-            break;
-        case VIR_DOMAIN_NET_TYPE_USER:
-        case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        case VIR_DOMAIN_NET_TYPE_NETWORK:
-        case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        case VIR_DOMAIN_NET_TYPE_INTERNAL:
-        case VIR_DOMAIN_NET_TYPE_DIRECT:
-        case VIR_DOMAIN_NET_TYPE_HOSTDEV:
-        case VIR_DOMAIN_NET_TYPE_LAST:
-            break;
-        }
-        type_sep = ',';
-        break;
+       virBufferAsprintf(&buf, "socket%cmcast=%s:%d",
+                         type_sep,
+                         net->data.socket.address,
+                         net->data.socket.port);
+       type_sep = ',';
+       break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
     default:
