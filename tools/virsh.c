@@ -16357,23 +16357,24 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         if (vshCommandOptBool(cmd, "roots")) {
             vshError(ctl, "%s",
                      _("--parent and --roots are mutually exclusive"));
-            return false;
+            goto cleanup;
         }
         if (tree) {
             vshError(ctl, "%s",
                      _("--parent and --tree are mutually exclusive"));
-            return false;
+            goto cleanup;
         }
         parent_filter = 1;
     } else if (vshCommandOptBool(cmd, "roots")) {
         if (tree) {
             vshError(ctl, "%s",
                      _("--roots and --tree are mutually exclusive"));
-            return false;
+            goto cleanup;
         }
         if (from) {
             vshError(ctl, "%s",
                      _("--roots and --from are mutually exclusive"));
+            goto cleanup;
         }
         flags |= VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
     }
@@ -16381,7 +16382,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         if (tree) {
             vshError(ctl, "%s",
                      _("--leaves and --tree are mutually exclusive"));
-            return false;
+            goto cleanup;
         }
         flags |= VIR_DOMAIN_SNAPSHOT_LIST_LEAVES;
     }
