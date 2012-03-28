@@ -2325,7 +2325,7 @@ metadata again).
 
 If I<--reuse-external> is specified, and the snapshot XML requests an
 external snapshot with a destination of an existing file, then the
-existing file is truncated and reused; otherwise, a snapshot is refused
+destination must exist, and is reused; otherwise, a snapshot is refused
 to avoid losing contents of the existing files.
 
 If I<--quiesce> is specified, libvirt will try to use guest agent
@@ -2345,7 +2345,7 @@ metadata is silently lost when the domain quits running (whether
 by command such as B<destroy> or by internal guest action).
 
 =item B<snapshot-create-as> I<domain> {[I<--print-xml>]
-| [I<--no-metadata>] [I<--halt>] [I<--reuse-existing>]} [I<name>]
+| [I<--no-metadata>] [I<--halt>] [I<--reuse-external>]} [I<name>]
 [I<description>] [I<--disk-only> [I<--quiesce>] [I<--atomic>]
 [[I<--diskspec>] B<diskspec>]...]
 
@@ -2372,7 +2372,7 @@ results in the following XML:
 
 If I<--reuse-external> is specified, and the domain XML or I<diskspec>
 option requests an external snapshot with a destination of an existing
-file, then the existing file is truncated and reused; otherwise, a
+file, then the destination must exist, and is reused; otherwise, a
 snapshot is refused to avoid losing contents of the existing files.
 
 If I<--quiesce> is specified, libvirt will try to use guest agent
