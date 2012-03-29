@@ -54,10 +54,16 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
     return ret;
 }
 
+enum {
+    WHEN_INACTIVE = 1,
+    WHEN_ACTIVE = 2,
+    WHEN_EITHER = 3,
+};
+
 struct testInfo {
     const char *name;
-    int different;
-    bool inactive_only;
+    bool different;
+    int when;
 };
 
 static int
@@ -74,17 +80,15 @@ testCompareXMLToXMLHelper(const void *data)
                     abs_srcdir, info->name) < 0)
         goto cleanup;
 
-    if (info->different) {
-        ret = testCompareXMLToXMLFiles(xml_in, xml_out, false);
-    } else {
-        ret = testCompareXMLToXMLFiles(xml_in, xml_in, false);
+    if (info->when & WHEN_INACTIVE) {
+        ret = testCompareXMLToXMLFiles(xml_in,
+                                       info->different ? xml_out : xml_in,
+                                       false);
     }
-    if (!info->inactive_only) {
-        if (info->different) {
-            ret = testCompareXMLToXMLFiles(xml_in, xml_out, true);
-        } else {
-            ret = testCompareXMLToXMLFiles(xml_in, xml_in, true);
-        }
+    if (info->when & WHEN_ACTIVE) {
+        ret = testCompareXMLToXMLFiles(xml_in,
+                                       info->different ? xml_out : xml_in,
+                                       true);
     }
 
 cleanup:
@@ -102,19 +106,19 @@ mymain(void)
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
 
-# define DO_TEST_FULL(name, is_different, inactive)                     \
+# define DO_TEST_FULL(name, is_different, when)                         \
     do {                                                                \
-        const struct testInfo info = {name, is_different, inactive};    \
+        const struct testInfo info = {name, is_different, when};        \
         if (virtTestRun("QEMU XML-2-XML " name,                         \
                         1, testCompareXMLToXMLHelper, &info) < 0)       \
             ret = -1;                                                   \
     } while (0)
 
 # define DO_TEST(name) \
-    DO_TEST_FULL(name, 0, false)
+    DO_TEST_FULL(name, false, WHEN_EITHER)
 
 # define DO_TEST_DIFFERENT(name) \
-    DO_TEST_FULL(name, 1, false)
+    DO_TEST_FULL(name, true, WHEN_EITHER)
 
     /* Unset or set all envvars here that are copied in qemudBuildCommandLine
      * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
@@ -151,6 +155,8 @@ mymain(void)
     DO_TEST("disk-scsi-device");
     DO_TEST("disk-scsi-vscsi");
     DO_TEST("disk-scsi-virtio-scsi");
+    DO_TEST_FULL("disk-mirror", false, WHEN_ACTIVE);
+    DO_TEST_FULL("disk-mirror", true, WHEN_INACTIVE);
     DO_TEST("graphics-listen-network");
     DO_TEST("graphics-vnc");
     DO_TEST("graphics-vnc-sasl");
@@ -208,8 +214,8 @@ mymain(void)
     DO_TEST("usb-redir");
     DO_TEST("blkdeviotune");
 
-    DO_TEST_FULL("seclabel-dynamic-baselabel", false, true);
-    DO_TEST_FULL("seclabel-dynamic-override", false, true);
+    DO_TEST_FULL("seclabel-dynamic-baselabel", false, WHEN_INACTIVE);
+    DO_TEST_FULL("seclabel-dynamic-override", false, WHEN_INACTIVE);
     DO_TEST("seclabel-static");
     DO_TEST("seclabel-none");
 

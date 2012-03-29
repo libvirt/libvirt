@@ -772,6 +772,9 @@
         <ref name="driver"/>
       </optional>
       <optional>
+        <ref name='diskMirror'/>
+      </optional>
+      <optional>
         <ref name="diskAuth"/>
       </optional>
       <ref name="target"/>
@@ -1013,9 +1016,7 @@
     </element>
   </define>
   <!--
-      Disk may use a special driver for access. Currently this is
-      only defined for Xen for tap/aio and file, but will certainly be
-      extended in the future, and libvirt doesn't look for specific values.
+      Disk may use a special driver for access.
     -->
   <define name="driver">
     <element name="driver">
@@ -3016,6 +3017,23 @@
         <ref name="positiveInteger"/>
       </attribute>
       <empty/>
+    </element>
+  </define>
+  <define name='diskMirror'>
+    <element name='mirror'>
+      <attribute name='file'>
+        <ref name='absFilePath'/>
+      </attribute>
+      <optional>
+        <attribute name='format'>
+          <ref name="genericName"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name='ready'>
+          <value>yes</value>
+        </attribute>
+      </optional>
     </element>
   </define>
   <define name="diskAuth">

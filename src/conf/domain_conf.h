@@ -563,6 +563,10 @@ struct _virDomainDiskDef {
     char *driverName;
     char *driverType;
 
+    char *mirror;
+    char *mirrorFormat;
+    bool mirroring;
+
     virDomainBlockIoTuneInfo blkdeviotune;
 
     char *serial;

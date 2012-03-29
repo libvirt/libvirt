@@ -933,6 +933,8 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
     VIR_FREE(def->dst);
     VIR_FREE(def->driverName);
     VIR_FREE(def->driverType);
+    VIR_FREE(def->mirror);
+    VIR_FREE(def->mirrorFormat);
     VIR_FREE(def->auth.username);
     if (def->auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_USAGE)
         VIR_FREE(def->auth.secret.usage);
@@ -3319,6 +3321,9 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     char *ioeventfd = NULL;
     char *event_idx = NULL;
     char *copy_on_read = NULL;
+    char *mirror = NULL;
+    char *mirrorFormat = NULL;
+    bool mirroring = false;
     char *devaddr = NULL;
     virStorageEncryptionPtr encryption = NULL;
     char *serial = NULL;
@@ -3454,6 +3459,21 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                 ioeventfd = virXMLPropString(cur, "ioeventfd");
                 event_idx = virXMLPropString(cur, "event_idx");
                 copy_on_read = virXMLPropString(cur, "copy_on_read");
+            } else if (!mirror && xmlStrEqual(cur->name, BAD_CAST "mirror") &&
+                       !(flags & VIR_DOMAIN_XML_INACTIVE)) {
+                char *ready;
+                mirror = virXMLPropString(cur, "file");
+                if (!mirror) {
+                    virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                                         _("mirror requires file name"));
+                    goto error;
+                }
+                mirrorFormat = virXMLPropString(cur, "format");
+                ready = virXMLPropString(cur, "ready");
+                if (ready) {
+                    mirroring = true;
+                    VIR_FREE(ready);
+                }
             } else if (xmlStrEqual(cur->name, BAD_CAST "auth")) {
                 authUsername = virXMLPropString(cur, "username");
                 if (authUsername == NULL) {
@@ -3868,6 +3888,11 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     driverName = NULL;
     def->driverType = driverType;
     driverType = NULL;
+    def->mirror = mirror;
+    mirror = NULL;
+    def->mirrorFormat = mirrorFormat;
+    mirrorFormat = NULL;
+    def->mirroring = mirroring;
     def->encryption = encryption;
     encryption = NULL;
     def->serial = serial;
@@ -3881,6 +3906,12 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     if (!def->driverName &&
         caps->defaultDiskDriverName &&
         !(def->driverName = strdup(caps->defaultDiskDriverName)))
+        goto no_memory;
+
+
+    if (def->mirror && !def->mirrorFormat &&
+        caps->defaultDiskDriverType &&
+        !(def->mirrorFormat = strdup(caps->defaultDiskDriverType)))
         goto no_memory;
 
     if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE
@@ -3908,6 +3939,8 @@ cleanup:
     VIR_FREE(authUsage);
     VIR_FREE(driverType);
     VIR_FREE(driverName);
+    VIR_FREE(mirror);
+    VIR_FREE(mirrorFormat);
     VIR_FREE(cachetag);
     VIR_FREE(error_policy);
     VIR_FREE(rerror_policy);
@@ -10837,6 +10870,18 @@ virDomainDiskDefFormat(virBufferPtr buf,
                                  virDomainDiskTypeToString(def->type));
             return -1;
         }
+    }
+
+    /* For now, mirroring is currently output-only: we only output it
+     * for live domains, therefore we ignore it on input except for
+     * the internal parse on libvirtd restart.  */
+    if (def->mirror && !(flags & VIR_DOMAIN_XML_INACTIVE)) {
+        virBufferEscapeString(buf, "      <mirror file='%s'", def->mirror);
+        if (def->mirrorFormat)
+            virBufferAsprintf(buf, " format='%s'", def->mirrorFormat);
+        if (def->mirroring)
+            virBufferAddLit(buf, " ready='yes'");
+        virBufferAddLit(buf, "/>\n");
     }
 
     virBufferAsprintf(buf, "      <target dev='%s' bus='%s'",

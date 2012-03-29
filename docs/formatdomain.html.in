@@ -1296,6 +1296,19 @@
         </table>
         <span class="since">Since 0.9.7</span>
         </dd>
+      <dt><code>mirror</code></dt>
+      <dd>
+        This element is present if the hypervisor has started a block
+        copy operation (via the <code>virDomainBlockCopy</code> API),
+        where the mirror location in attribute <code>file</code> will
+        eventually have the same contents as the source, and with the
+        file format in attribute <code>format</code> (which might
+        differ from the format of the source).  If
+        attribute <code>ready</code> is present, then it is known the
+        disk is ready to pivot; otherwise, the disk is probably still
+        copying.  For now, this element only valid in output; it is
+        ignored on input.  <span class="since">Since 0.9.12</span>
+      </dd>
       <dt><code>target</code></dt>
       <dd>The <code>target</code> element controls the bus / device
         under which the disk is exposed to the guest
