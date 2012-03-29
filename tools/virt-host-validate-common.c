@@ -113,13 +113,13 @@ void virHostMsgFail(virHostValidateLevel level,
 
 
 int virHostValidateDevice(const char *hvname,
-                          const char *devname,
+                          const char *dev_name,
                           virHostValidateLevel level,
                           const char *hint)
 {
-    virHostMsgCheck(hvname, "for device %s", devname);
+    virHostMsgCheck(hvname, "for device %s", dev_name);
 
-    if (access(devname, R_OK|W_OK) < 0) {
+    if (access(dev_name, R_OK|W_OK) < 0) {
         virHostMsgFail(level, hint);
         return -1;
     }
