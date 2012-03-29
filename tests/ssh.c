@@ -22,6 +22,9 @@
 
 #include <stdio.h>
 #include "internal.h"
+#include "testutils.h"
+
+#ifndef WIN32
 
 int main(int argc, char **argv)
 {
@@ -52,3 +55,13 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
+#else
+
+int
+main(void)
+{
+    return EXIT_AM_SKIP;
+}
+
+#endif

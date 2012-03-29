@@ -30,6 +30,9 @@
 #include "util.h"
 #include "memory.h"
 #include "virfile.h"
+#include "testutils.h"
+
+#ifndef WIN32
 
 
 static int envsort(const void *a, const void *b) {
@@ -140,3 +143,13 @@ int main(int argc, char **argv) {
 error:
     return EXIT_FAILURE;
 }
+
+#else
+
+int
+main(void)
+{
+    return EXIT_AM_SKIP;
+}
+
+#endif
