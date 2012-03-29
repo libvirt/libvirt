@@ -1839,7 +1839,7 @@ remoteDomainGetSecurityLabel (virDomainPtr domain, virSecurityLabelPtr seclabel)
 
     if (ret.label.label_val != NULL) {
         if (strlen (ret.label.label_val) >= sizeof seclabel->label) {
-            remoteError(VIR_ERR_RPC, _("security label exceeds maximum: %zd"),
+            remoteError(VIR_ERR_RPC, _("security label exceeds maximum: %zu"),
                         sizeof seclabel->label - 1);
             goto cleanup;
         }
@@ -1910,7 +1910,7 @@ remoteNodeGetSecurityModel (virConnectPtr conn, virSecurityModelPtr secmodel)
 
     if (ret.model.model_val != NULL) {
         if (strlen (ret.model.model_val) >= sizeof secmodel->model) {
-            remoteError(VIR_ERR_RPC, _("security model exceeds maximum: %zd"),
+            remoteError(VIR_ERR_RPC, _("security model exceeds maximum: %zu"),
                         sizeof secmodel->model - 1);
             goto cleanup;
         }
@@ -1919,7 +1919,7 @@ remoteNodeGetSecurityModel (virConnectPtr conn, virSecurityModelPtr secmodel)
 
     if (ret.doi.doi_val != NULL) {
         if (strlen (ret.doi.doi_val) >= sizeof secmodel->doi) {
-            remoteError(VIR_ERR_RPC, _("security doi exceeds maximum: %zd"),
+            remoteError(VIR_ERR_RPC, _("security doi exceeds maximum: %zu"),
                         sizeof secmodel->doi - 1);
             goto cleanup;
         }
