@@ -1360,7 +1360,7 @@ esxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo)
     int32_t numaInfo_numNodes = 0;
     char *ptr = NULL;
 
-    memset(nodeinfo, 0, sizeof (*nodeinfo));
+    memset(nodeinfo, 0, sizeof(*nodeinfo));
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
@@ -2286,7 +2286,7 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     esxVI_Long *value = NULL;
 #endif
 
-    memset(info, 0, sizeof (*info));
+    memset(info, 0, sizeof(*info));
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
@@ -2763,7 +2763,7 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     /* Flags checked by virDomainDefFormat */
 
-    memset(&data, 0, sizeof (data));
+    memset(&data, 0, sizeof(data));
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;
@@ -2870,7 +2870,7 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
 
     virCheckFlags(0, NULL);
 
-    memset(&data, 0, sizeof (data));
+    memset(&data, 0, sizeof(data));
 
     if (STRNEQ(nativeFormat, "vmware-vmx")) {
         ESX_ERROR(VIR_ERR_INVALID_ARG,
@@ -2913,7 +2913,7 @@ esxDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
 
     virCheckFlags(0, NULL);
 
-    memset(&data, 0, sizeof (data));
+    memset(&data, 0, sizeof(data));
 
     if (STRNEQ(nativeFormat, "vmware-vmx")) {
         ESX_ERROR(VIR_ERR_INVALID_ARG,
@@ -3137,7 +3137,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
     char *taskInfoErrorMessage = NULL;
     virDomainPtr domain = NULL;
 
-    memset(&data, 0, sizeof (data));
+    memset(&data, 0, sizeof(data));
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;
@@ -4344,7 +4344,7 @@ esxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     virCheckFlags(0, NULL);
 
-    memset(&def, 0, sizeof (def));
+    memset(&def, 0, sizeof(def));
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;

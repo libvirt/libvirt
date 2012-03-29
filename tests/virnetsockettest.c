@@ -54,7 +54,7 @@ checkProtocols(bool *hasIPv4, bool *hasIPv6,
     int i;
     int ret = -1;
 
-    memset(&hints, 0, sizeof hints);
+    memset(&hints, 0, sizeof(hints));
 
     *hasIPv4 = *hasIPv6 = false;
     *freePort = 0;

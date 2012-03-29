@@ -518,7 +518,7 @@ elsif ($opt_b) {
                             die "legacy [u]long hyper arrays aren't supported";
                         }
 
-                        push(@ret_list, "memcpy(ret->$3, tmp.$3, sizeof ret->$3);");
+                        push(@ret_list, "memcpy(ret->$3, tmp.$3, sizeof(ret->$3));");
                     } elsif ($ret_member =~ m/^(unsigned )?(char|short|int|hyper) (\S+);/) {
                         push(@ret_list, "ret->$3 = tmp.$3;");
                     } else {
@@ -731,7 +731,7 @@ elsif ($opt_b) {
                 #          have a 'Struct' suffix on the actual struct name
                 #          and take the struct size as additional argument
                 $struct_name .= "Struct";
-                splice(@args_list, $call->{ret_offset} + 1, 0, ("sizeof tmp"));
+                splice(@args_list, $call->{ret_offset} + 1, 0, ("sizeof(tmp)"));
             }
 
             push(@vars_list, "vir$struct_name tmp");
@@ -1213,7 +1213,7 @@ elsif ($opt_k) {
                             die "legacy [u]long hyper arrays aren't supported";
                         }
 
-                        push(@ret_list, "memcpy(result->$3, ret.$3, sizeof result->$3);");
+                        push(@ret_list, "memcpy(result->$3, ret.$3, sizeof(result->$3));");
                     } elsif ($ret_member =~ m/<\S+>;/ or $ret_member =~ m/\[\S+\];/) {
                         # just make all other array types fail
                         die "unhandled type for multi-return-value for " .
@@ -1465,7 +1465,7 @@ elsif ($opt_k) {
 
         if ($rettype ne "void") {
             print "\n";
-            print "    memset(&ret, 0, sizeof ret);\n";
+            print "    memset(&ret, 0, sizeof(ret));\n";
         }
 
         my $callflags = "0";

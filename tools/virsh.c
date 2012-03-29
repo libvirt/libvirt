@@ -1485,7 +1485,7 @@ cmdDomblkstat (vshControl *ctl, const vshCmd *cmd)
         last_error = NULL;
 
         if (virDomainBlockStats(dom, device, &stats,
-                                sizeof stats) == -1) {
+                                sizeof(stats)) == -1) {
             vshError(ctl, _("Failed to get block stats %s %s"),
                      name, device);
             goto cleanup;
@@ -1597,7 +1597,7 @@ cmdDomIfstat (vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (virDomainInterfaceStats (dom, device, &stats, sizeof stats) == -1) {
+    if (virDomainInterfaceStats (dom, device, &stats, sizeof(stats)) == -1) {
         vshError(ctl, _("Failed to get interface stats %s %s"), name, device);
         virDomainFree(dom);
         return false;
@@ -4578,7 +4578,7 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
                  has_managed_save ? _("yes") : _("no"));
 
     /* Security model and label information */
-    memset(&secmodel, 0, sizeof secmodel);
+    memset(&secmodel, 0, sizeof(secmodel));
     if (virNodeGetSecurityModel(ctl->conn, &secmodel) == -1) {
         if (last_error->code != VIR_ERR_NO_SUPPORT) {
             virDomainFree(dom);
@@ -13045,7 +13045,7 @@ cmdNodeListDevices (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             virNodeDeviceFree(dev);
         }
         for (i = 0 ; i < num_devices ; i++) {
-            memset(indentBuf, '\0', sizeof indentBuf);
+            memset(indentBuf, '\0', sizeof(indentBuf));
             if (parents[i] == NULL)
                 cmdNodeListDevicesPrint(ctl,
                                         devices,
@@ -16501,7 +16501,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     if (tree) {
         char indentBuf[INDENT_BUFLEN];
         for (i = 0 ; i < actual ; i++) {
-            memset(indentBuf, '\0', sizeof indentBuf);
+            memset(indentBuf, '\0', sizeof(indentBuf));
             if (ctl->useSnapshotOld ? STREQ(names[i], from) : !parents[i])
                 cmdNodeListDevicesPrint(ctl,
                                         names,
@@ -19615,7 +19615,7 @@ vshReadlineDeinit (vshControl *ctl)
         if (mkdir(ctl->historydir, 0755) < 0 && errno != EEXIST) {
             char ebuf[1024];
             vshError(ctl, _("Failed to create '%s': %s"),
-                     ctl->historydir, virStrerror(errno, ebuf, sizeof ebuf));
+                     ctl->historydir, virStrerror(errno, ebuf, sizeof(ebuf)));
         } else
             write_history(ctl->historyfile);
     }
@@ -19653,7 +19653,7 @@ vshReadline (vshControl *ctl, const char *prompt)
     int len;
 
     fputs (prompt, stdout);
-    r = fgets (line, sizeof line, stdin);
+    r = fgets (line, sizeof(line), stdin);
     if (r == NULL) return NULL; /* EOF */
 
     /* Chomp trailing \n */

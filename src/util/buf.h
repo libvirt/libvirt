@@ -59,7 +59,7 @@ void virBufferEscapeShell(virBufferPtr buf, const char *str);
 void virBufferURIEncodeString(virBufferPtr buf, const char *str);
 
 # define virBufferAddLit(buf_, literal_string_) \
-    virBufferAdd(buf_, "" literal_string_ "", sizeof literal_string_ - 1)
+    virBufferAdd(buf_, "" literal_string_ "", sizeof(literal_string_) - 1)
 
 void virBufferAdjustIndent(virBufferPtr buf, int indent);
 int virBufferGetIndent(const virBufferPtr buf, bool dynamic);

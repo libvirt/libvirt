@@ -39,7 +39,7 @@ testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion)
   if (virtTestLoadFile(sexpr, &sexprData) < 0)
       goto fail;
 
-  memset(&priv, 0, sizeof priv);
+  memset(&priv, 0, sizeof(priv));
   /* Many puppies died to bring you this code. */
   priv.xendConfigVersion = xendConfigVersion;
   priv.caps = caps;

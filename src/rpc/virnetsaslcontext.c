@@ -364,7 +364,7 @@ int virNetSASLSessionSecProps(virNetSASLSessionPtr sasl,
               minSSF, maxSSF, allowAnonymous, sasl->maxbufsize);
 
     virMutexLock(&sasl->lock);
-    memset(&secprops, 0, sizeof secprops);
+    memset(&secprops, 0, sizeof(secprops));
 
     secprops.min_ssf = minSSF;
     secprops.max_ssf = maxSSF;

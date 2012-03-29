@@ -114,7 +114,7 @@ ebtRulesRemove(ebtRules *rules,
 
     memmove(&rules->rules[i],
             &rules->rules[i+1],
-            (rules->nrules - i - 1) * sizeof (ebtRule));
+            (rules->nrules - i - 1) * sizeof(ebtRule));
 
     rules->nrules--;
 

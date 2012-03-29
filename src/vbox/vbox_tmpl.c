@@ -381,7 +381,7 @@ vboxIIDFromUUID_v2_x_WIN32(vboxGlobalData *data, vboxIID_v2_x_WIN32 *iid,
 static bool
 vboxIIDIsEqual_v2_x_WIN32(vboxIID_v2_x_WIN32 *iid1, vboxIID_v2_x_WIN32 *iid2)
 {
-    return memcmp(&iid1->value, &iid2->value, sizeof (GUID)) == 0;
+    return memcmp(&iid1->value, &iid2->value, sizeof(GUID)) == 0;
 }
 
 static void
@@ -392,7 +392,7 @@ vboxIIDFromArrayItem_v2_x_WIN32(vboxGlobalData *data, vboxIID_v2_x_WIN32 *iid,
 
     vboxIIDUnalloc_v2_x_WIN32(data, iid);
 
-    memcpy(&iid->value, &items[idx], sizeof (GUID));
+    memcpy(&iid->value, &items[idx], sizeof(GUID));
 }
 
 #  define vboxIIDUnalloc(iid) vboxIIDUnalloc_v2_x_WIN32(data, iid)
@@ -454,7 +454,7 @@ vboxIIDFromUUID_v2_x(vboxGlobalData *data, vboxIID_v2_x *iid,
 static bool
 vboxIIDIsEqual_v2_x(vboxIID_v2_x *iid1, vboxIID_v2_x *iid2)
 {
-    return memcmp(iid1->value, iid2->value, sizeof (nsID)) == 0;
+    return memcmp(iid1->value, iid2->value, sizeof(nsID)) == 0;
 }
 
 static void
@@ -465,7 +465,7 @@ vboxIIDFromArrayItem_v2_x(vboxGlobalData *data, vboxIID_v2_x *iid,
 
     iid->value = &iid->backing;
 
-    memcpy(iid->value, array->items[idx], sizeof (nsID));
+    memcpy(iid->value, array->items[idx], sizeof(nsID));
 }
 
 #  define vboxIIDUnalloc(iid) vboxIIDUnalloc_v2_x(data, iid)

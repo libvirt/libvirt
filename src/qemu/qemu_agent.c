@@ -866,7 +866,7 @@ qemuAgentCommand(qemuAgentPtr mon,
 
     *reply = NULL;
 
-    memset(&msg, 0, sizeof msg);
+    memset(&msg, 0, sizeof(msg));
 
     if (!(cmdstr = virJSONValueToString(cmd))) {
         virReportOOMError();

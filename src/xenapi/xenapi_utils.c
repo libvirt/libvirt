@@ -60,7 +60,7 @@ xenapiUtil_RequestPassword(virConnectAuthPtr auth, const char *username,
     virConnectCredential cred;
     char *prompt;
 
-    memset(&cred, 0, sizeof (virConnectCredential));
+    memset(&cred, 0, sizeof(virConnectCredential));
 
     if (virAsprintf(&prompt, "Enter %s password for %s", username,
                     hostname) < 0) {

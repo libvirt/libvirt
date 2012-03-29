@@ -2241,11 +2241,11 @@ qemuDomainChangeGraphicsPasswords(struct qemud_driver *driver,
     if (auth->expires) {
         time_t lifetime = auth->validTo - now;
         if (lifetime <= 0)
-            snprintf(expire_time, sizeof (expire_time), "now");
+            snprintf(expire_time, sizeof(expire_time), "now");
         else
-            snprintf(expire_time, sizeof (expire_time), "%lu", (long unsigned)auth->validTo);
+            snprintf(expire_time, sizeof(expire_time), "%lu", (long unsigned)auth->validTo);
     } else {
-        snprintf(expire_time, sizeof (expire_time), "never");
+        snprintf(expire_time, sizeof(expire_time), "never");
     }
 
     ret = qemuMonitorExpirePassword(priv->mon, type, expire_time);

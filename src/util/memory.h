@@ -35,12 +35,12 @@
    calculations, so the conservative dividend to use here is
    SIZE_MAX - 1, since SIZE_MAX might represent an overflowed value.
    However, malloc (SIZE_MAX) fails on all known hosts where
-   sizeof (ptrdiff_t) <= sizeof (size_t), so do not bother to test for
+   sizeof(ptrdiff_t) <= sizeof(size_t), so do not bother to test for
    exactly-SIZE_MAX allocations on such hosts; this avoids a test and
    branch when S is known to be 1.  */
 # ifndef xalloc_oversized
 #  define xalloc_oversized(n, s) \
-    ((size_t) (sizeof (ptrdiff_t) <= sizeof (size_t) ? -1 : -2) / (s) < (n))
+    ((size_t) (sizeof(ptrdiff_t) <= sizeof(size_t) ? -1 : -2) / (s) < (n))
 # endif
 
 

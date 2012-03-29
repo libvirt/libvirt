@@ -83,7 +83,7 @@
 
 
 # define NUL_TERMINATE(buf) do { (buf)[sizeof(buf)-1] = '\0'; } while (0)
-# define ARRAY_CARDINALITY(Array) (sizeof (Array) / sizeof *(Array))
+# define ARRAY_CARDINALITY(Array) (sizeof(Array) / sizeof(*(Array)))
 
 /* C99 uses __func__.  __FUNCTION__ is legacy. */
 # ifndef __GNUC__
@@ -205,7 +205,7 @@
  * Use this when passing possibly-NULL strings to printf-a-likes.
  */
 # define NULLSTR(s) \
-    ((void)verify_true(sizeof *(s) == sizeof (char)), \
+    ((void)verify_true(sizeof(*(s)) == sizeof(char)),   \
      (s) ? (s) : "(null)")
 
 /**

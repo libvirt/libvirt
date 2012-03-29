@@ -833,7 +833,7 @@ virStorageFileGetMetadataFromFD(const char *path,
     int ret = -1;
     struct stat sb;
 
-    memset(meta, 0, sizeof (*meta));
+    memset(meta, 0, sizeof(*meta));
 
     if (fstat(fd, &sb) < 0) {
         virReportSystemError(errno,

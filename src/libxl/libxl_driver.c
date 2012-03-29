@@ -895,22 +895,22 @@ libxlStartup(int privileged) {
 
     if (virFileMakePath(libxl_driver->logDir) < 0) {
         VIR_ERROR(_("Failed to create log dir '%s': %s"),
-                  libxl_driver->logDir, virStrerror(errno, ebuf, sizeof ebuf));
+                  libxl_driver->logDir, virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
     if (virFileMakePath(libxl_driver->stateDir) < 0) {
         VIR_ERROR(_("Failed to create state dir '%s': %s"),
-                  libxl_driver->stateDir, virStrerror(errno, ebuf, sizeof ebuf));
+                  libxl_driver->stateDir, virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
     if (virFileMakePath(libxl_driver->libDir) < 0) {
         VIR_ERROR(_("Failed to create lib dir '%s': %s"),
-                  libxl_driver->libDir, virStrerror(errno, ebuf, sizeof ebuf));
+                  libxl_driver->libDir, virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
     if (virFileMakePath(libxl_driver->saveDir) < 0) {
         VIR_ERROR(_("Failed to create save dir '%s': %s"),
-                  libxl_driver->saveDir, virStrerror(errno, ebuf, sizeof ebuf));
+                  libxl_driver->saveDir, virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
 

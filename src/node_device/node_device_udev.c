@@ -1623,7 +1623,7 @@ static int udevDeviceMonitorStartup(int privileged)
         if (errno != ENOENT && (privileged  || errno != EACCES)) {
             char ebuf[256];
             VIR_ERROR(_("Failed to initialize libpciaccess: %s"),
-                      virStrerror(pciret, ebuf, sizeof ebuf));
+                      virStrerror(pciret, ebuf, sizeof(ebuf)));
             ret = -1;
             goto out;
         }

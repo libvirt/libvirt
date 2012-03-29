@@ -1598,7 +1598,7 @@ closelog:
     if (VIR_CLOSE(logfd) < 0) {
         char ebuf[1024];
         VIR_WARN("Unable to close logfile: %s",
-                 virStrerror(errno, ebuf, sizeof ebuf));
+                 virStrerror(errno, ebuf, sizeof(ebuf)));
     }
 
     VIR_FREE(buf);
@@ -3523,7 +3523,7 @@ int qemuProcessStart(virConnectPtr conn,
         if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
             safewrite(logfile, START_POSTFIX, strlen(START_POSTFIX)) < 0) {
             VIR_WARN("Unable to write timestamp to logfile: %s",
-                     virStrerror(errno, ebuf, sizeof ebuf));
+                     virStrerror(errno, ebuf, sizeof(ebuf)));
         }
 
         VIR_FREE(timestamp);
@@ -3535,7 +3535,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     if ((pos = lseek(logfile, 0, SEEK_END)) < 0)
         VIR_WARN("Unable to seek to end of logfile: %s",
-                 virStrerror(errno, ebuf, sizeof ebuf));
+                 virStrerror(errno, ebuf, sizeof(ebuf)));
 
     VIR_DEBUG("Clear emulator capabilities: %d",
               driver->clearEmulatorCapabilities);
@@ -3796,7 +3796,7 @@ qemuProcessKill(struct qemud_driver *driver,
                 char ebuf[1024];
                 VIR_WARN("Failed to terminate process %d with SIG%s: %s",
                          vm->pid, signame,
-                         virStrerror(errno, ebuf, sizeof ebuf));
+                         virStrerror(errno, ebuf, sizeof(ebuf)));
                 goto cleanup;
             }
             ret = 0;
@@ -3873,7 +3873,7 @@ void qemuProcessStop(struct qemud_driver *driver,
         /* To not break the normal domain shutdown process, skip the
          * timestamp log writing if failed on opening log file. */
         VIR_WARN("Unable to open logfile: %s",
-                  virStrerror(errno, ebuf, sizeof ebuf));
+                  virStrerror(errno, ebuf, sizeof(ebuf)));
     } else {
         if ((timestamp = virTimeStringNow()) == NULL) {
             virReportOOMError();
@@ -3882,7 +3882,7 @@ void qemuProcessStop(struct qemud_driver *driver,
                 safewrite(logfile, SHUTDOWN_POSTFIX,
                           strlen(SHUTDOWN_POSTFIX)) < 0) {
                 VIR_WARN("Unable to write timestamp to logfile: %s",
-                         virStrerror(errno, ebuf, sizeof ebuf));
+                         virStrerror(errno, ebuf, sizeof(ebuf)));
             }
 
             VIR_FREE(timestamp);
@@ -3890,7 +3890,7 @@ void qemuProcessStop(struct qemud_driver *driver,
 
         if (VIR_CLOSE(logfile) < 0)
              VIR_WARN("Unable to close logfile: %s",
-                      virStrerror(errno, ebuf, sizeof ebuf));
+                      virStrerror(errno, ebuf, sizeof(ebuf)));
     }
 
     /* This method is routinely used in clean up paths. Disable error
@@ -4169,7 +4169,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
             safewrite(logfile, ATTACH_POSTFIX, strlen(ATTACH_POSTFIX)) < 0) {
             VIR_WARN("Unable to write timestamp to logfile: %s",
-                     virStrerror(errno, ebuf, sizeof ebuf));
+                     virStrerror(errno, ebuf, sizeof(ebuf)));
         }
 
         VIR_FREE(timestamp);

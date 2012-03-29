@@ -83,8 +83,8 @@
 # define NSIG 32
 #endif
 
-verify(sizeof(gid_t) <= sizeof (unsigned int) &&
-       sizeof(uid_t) <= sizeof (unsigned int));
+verify(sizeof(gid_t) <= sizeof(unsigned int) &&
+       sizeof(uid_t) <= sizeof(unsigned int));
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

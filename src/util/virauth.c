@@ -164,7 +164,7 @@ virAuthGetUsername(virConnectPtr conn,
     if (ret != NULL)
         return ret;
 
-    memset(&cred, 0, sizeof (virConnectCredential));
+    memset(&cred, 0, sizeof(virConnectCredential));
 
     if (defaultUsername != NULL) {
         if (virAsprintf(&prompt, _("Enter username for %s [%s]"), hostname,
@@ -220,7 +220,7 @@ virAuthGetPassword(virConnectPtr conn,
     if (ret != NULL)
         return ret;
 
-    memset(&cred, 0, sizeof (virConnectCredential));
+    memset(&cred, 0, sizeof(virConnectCredential));
 
     if (virAsprintf(&prompt, _("Enter %s's password for %s"), username,
                     hostname) < 0) {

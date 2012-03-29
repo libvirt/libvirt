@@ -43,7 +43,7 @@
     int                                                                       \
     esxVI_##__type##_Alloc(esxVI_##__type **ptrptr)                           \
     {                                                                         \
-        if (esxVI_Alloc((void **)ptrptr, sizeof (esxVI_##__type)) < 0) {      \
+        if (esxVI_Alloc((void **)ptrptr, sizeof(esxVI_##__type)) < 0) {       \
             return -1;                                                        \
         }                                                                     \
                                                                               \

@@ -1441,7 +1441,7 @@ int main(int argc, char **argv) {
 
         if ((statuswrite = daemonForkIntoBackground(argv[0])) < 0) {
             VIR_ERROR(_("Failed to fork as daemon: %s"),
-                      virStrerror(errno, ebuf, sizeof ebuf));
+                      virStrerror(errno, ebuf, sizeof(ebuf)));
             goto cleanup;
         }
     }

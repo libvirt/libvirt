@@ -367,7 +367,7 @@ int virPidFileAcquirePath(const char *path,
         if (stat(path, &a) < 0) {
             char ebuf[1024] ATTRIBUTE_UNUSED;
             VIR_DEBUG("Pid file '%s' disappeared: %s",
-                      path, virStrerror(errno, ebuf, sizeof ebuf));
+                      path, virStrerror(errno, ebuf, sizeof(ebuf)));
             VIR_FORCE_CLOSE(fd);
             /* Someone else must be racing with us, so try agin */
             continue;

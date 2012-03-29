@@ -4089,7 +4089,7 @@ esxVI_ParseHostCpuIdInfo(esxVI_ParsedHostCpuIdInfo *parsedHostCpuIdInfo,
     const char *name[4] = { "eax", "ebx", "ecx", "edx" };
     int r, i, o;
 
-    memset(parsedHostCpuIdInfo, 0, sizeof (*parsedHostCpuIdInfo));
+    memset(parsedHostCpuIdInfo, 0, sizeof(*parsedHostCpuIdInfo));
 
     parsedHostCpuIdInfo->level = hostCpuIdInfo->level->value;
 

@@ -1897,7 +1897,7 @@ static int lxcVmStart(virConnectPtr conn,
     if (safewrite(logfd, timestamp, strlen(timestamp)) < 0 ||
         safewrite(logfd, START_POSTFIX, strlen(START_POSTFIX)) < 0) {
         VIR_WARN("Unable to write timestamp to logfile: %s",
-                 virStrerror(errno, ebuf, sizeof ebuf));
+                 virStrerror(errno, ebuf, sizeof(ebuf)));
     }
     VIR_FREE(timestamp);
 
@@ -1905,7 +1905,7 @@ static int lxcVmStart(virConnectPtr conn,
     virCommandWriteArgLog(cmd, logfd);
     if ((pos = lseek(logfd, 0, SEEK_END)) < 0)
         VIR_WARN("Unable to seek to end of logfile: %s",
-                 virStrerror(errno, ebuf, sizeof ebuf));
+                 virStrerror(errno, ebuf, sizeof(ebuf)));
 
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;

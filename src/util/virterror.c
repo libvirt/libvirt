@@ -1355,7 +1355,7 @@ void virReportSystemErrorFull(int domcode,
         va_end(args);
 
         size_t len = strlen(errnoDetail);
-        if (0 <= n && n + 2 + len < sizeof (msgDetailBuf)) {
+        if (0 <= n && n + 2 + len < sizeof(msgDetailBuf)) {
           char *p = msgDetailBuf + n;
           stpcpy (stpcpy (p, ": "), errnoDetail);
           msgDetail = msgDetailBuf;

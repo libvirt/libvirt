@@ -472,7 +472,7 @@ umlStartup(int privileged)
     if (virFileMakePath(uml_driver->monitorDir) < 0) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create monitor directory %s: %s"),
-               uml_driver->monitorDir, virStrerror(errno, ebuf, sizeof ebuf));
+                  uml_driver->monitorDir, virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
 
@@ -788,7 +788,7 @@ static int umlMonitorAddress(const struct uml_driver *driver,
         return -1;
     }
 
-    memset(addr, 0, sizeof *addr);
+    memset(addr, 0, sizeof(*addr));
     addr->sun_family = AF_UNIX;
     if (virStrcpyStatic(addr->sun_path, sockname) == NULL) {
         umlReportError(VIR_ERR_INTERNAL_ERROR,
@@ -826,11 +826,11 @@ restat:
         return -1;
     }
 
-    memset(addr.sun_path, 0, sizeof addr.sun_path);
+    memset(addr.sun_path, 0, sizeof(addr.sun_path));
     snprintf(addr.sun_path + 1, sizeof(addr.sun_path) - 1,
              "libvirt-uml-%u", vm->pid);
     VIR_DEBUG("Reply address for monitor is '%s'", addr.sun_path+1);
-    if (bind(priv->monitor, (struct sockaddr *)&addr, sizeof addr) < 0) {
+    if (bind(priv->monitor, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
         virReportSystemError(errno,
                              "%s", _("cannot bind socket"));
         VIR_FORCE_CLOSE(priv->monitor);
@@ -896,8 +896,8 @@ static int umlMonitorCommand(const struct uml_driver *driver,
         return -1;
     }
 
-    if (sendto(priv->monitor, &req, sizeof req, 0,
-               (struct sockaddr *)&addr, sizeof addr) != (sizeof req)) {
+    if (sendto(priv->monitor, &req, sizeof(req), 0,
+               (struct sockaddr *)&addr, sizeof(addr)) != sizeof(req)) {
         virReportSystemError(errno,
                              _("cannot send command %s"),
                              cmd);
@@ -907,7 +907,7 @@ static int umlMonitorCommand(const struct uml_driver *driver,
     do {
         ssize_t nbytes;
         addrlen = sizeof(addr);
-        nbytes = recvfrom(priv->monitor, &res, sizeof res, 0,
+        nbytes = recvfrom(priv->monitor, &res, sizeof(res), 0,
                           (struct sockaddr *)&addr, &addrlen);
         if (nbytes < 0) {
             if (errno == EAGAIN || errno == EINTR)

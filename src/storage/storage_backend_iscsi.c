@@ -55,7 +55,7 @@ virStorageBackendISCSITargetIP(const char *hostname,
     struct addrinfo *result = NULL;
     int ret;
 
-    memset(&hints, 0, sizeof hints);
+    memset(&hints, 0, sizeof(hints));
     hints.ai_flags = AI_ADDRCONFIG;
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
@@ -207,7 +207,7 @@ virStorageBackendIQNFound(const char *initiatoriqn,
         virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Failed to open stream for file descriptor "
                                 "when reading output from '%s': '%s'"),
-                              ISCSIADM, virStrerror(errno, ebuf, sizeof ebuf));
+                              ISCSIADM, virStrerror(errno, ebuf, sizeof(ebuf)));
         ret = IQN_ERROR;
         goto out;
     }

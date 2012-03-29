@@ -132,7 +132,7 @@ static int remoteRelayDomainEventLifecycle(virConnectPtr conn ATTRIBUTE_UNUSED,
     VIR_DEBUG("Relaying domain lifecycle event %d %d", event, detail);
 
     /* build return data */
-    memset(&data, 0, sizeof data);
+    memset(&data, 0, sizeof(data));
     make_nonnull_domain(&data.dom, dom);
     data.event = event;
     data.detail = detail;
@@ -157,7 +157,7 @@ static int remoteRelayDomainEventReboot(virConnectPtr conn ATTRIBUTE_UNUSED,
     VIR_DEBUG("Relaying domain reboot event %s %d", dom->name, dom->id);
 
     /* build return data */
-    memset(&data, 0, sizeof data);
+    memset(&data, 0, sizeof(data));
     make_nonnull_domain(&data.dom, dom);
 
     remoteDispatchDomainEventSend(client, remoteProgram,
@@ -182,7 +182,7 @@ static int remoteRelayDomainEventRTCChange(virConnectPtr conn ATTRIBUTE_UNUSED,
     VIR_DEBUG("Relaying domain rtc change event %s %d %lld", dom->name, dom->id, offset);
 
     /* build return data */
-    memset(&data, 0, sizeof data);
+    memset(&data, 0, sizeof(data));
     make_nonnull_domain(&data.dom, dom);
     data.offset = offset;
 
@@ -208,7 +208,7 @@ static int remoteRelayDomainEventWatchdog(virConnectPtr conn ATTRIBUTE_UNUSED,
     VIR_DEBUG("Relaying domain watchdog event %s %d %d", dom->name, dom->id, action);
 
     /* build return data */
-    memset(&data, 0, sizeof data);
+    memset(&data, 0, sizeof(data));
     make_nonnull_domain(&data.dom, dom);
     data.action = action;
 
@@ -236,7 +236,7 @@ static int remoteRelayDomainEventIOError(virConnectPtr conn ATTRIBUTE_UNUSED,
     VIR_DEBUG("Relaying domain io error %s %d %s %s %d", dom->name, dom->id, srcPath, devAlias, action);
 
     /* build return data */
-    memset(&data, 0, sizeof data);
+    memset(&data, 0, sizeof(data));
     data.srcPath = strdup(srcPath);
     if (data.srcPath == NULL)
         goto mem_error;
@@ -277,7 +277,7 @@ static int remoteRelayDomainEventIOErrorReason(virConnectPtr conn ATTRIBUTE_UNUS
               dom->name, dom->id, srcPath, devAlias, action, reason);
 
     /* build return data */
-    memset(&data, 0, sizeof data);
+    memset(&data, 0, sizeof(data));
     data.srcPath = strdup(srcPath);
     if (data.srcPath == NULL)
         goto mem_error;
@@ -333,7 +333,7 @@ static int remoteRelayDomainEventGraphics(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     /* build return data */
-    memset(&data, 0, sizeof data);
+    memset(&data, 0, sizeof(data));
     data.phase = phase;
     data.local.family = local->family;
     data.remote.family = remote->family;
@@ -409,7 +409,7 @@ static int remoteRelayDomainEventBlockJob(virConnectPtr conn ATTRIBUTE_UNUSED,
               dom->name, dom->id, path, type, status);
 
     /* build return data */
-    memset(&data, 0, sizeof data);
+    memset(&data, 0, sizeof(data));
     data.path = strdup(path);
     if (data.path == NULL)
         goto mem_error;
@@ -443,7 +443,7 @@ static int remoteRelayDomainEventControlError(virConnectPtr conn ATTRIBUTE_UNUSE
     VIR_DEBUG("Relaying domain control error %s %d", dom->name, dom->id);
 
     /* build return data */
-    memset(&data, 0, sizeof data);
+    memset(&data, 0, sizeof(data));
     make_nonnull_domain(&data.dom, dom);
 
     remoteDispatchDomainEventSend(client, remoteProgram,
@@ -473,7 +473,7 @@ static int remoteRelayDomainEventDiskChange(virConnectPtr conn ATTRIBUTE_UNUSED,
               dom->name, dom->id, oldSrcPath, newSrcPath, devAlias, reason);
 
     /* build return data */
-    memset(&data, 0, sizeof data);
+    memset(&data, 0, sizeof(data));
     if (oldSrcPath &&
         ((VIR_ALLOC(oldSrcPath_p) < 0) ||
          !(*oldSrcPath_p = strdup(oldSrcPath))))
@@ -521,7 +521,7 @@ static int remoteRelayDomainEventTrayChange(virConnectPtr conn ATTRIBUTE_UNUSED,
               dom->name, dom->id, devAlias, reason);
 
     /* build return data */
-    memset(&data, 0, sizeof data);
+    memset(&data, 0, sizeof(data));
 
     if (!(data.devAlias = strdup(devAlias))) {
         virReportOOMError();
@@ -550,7 +550,7 @@ static int remoteRelayDomainEventPMWakeup(virConnectPtr conn ATTRIBUTE_UNUSED,
     VIR_DEBUG("Relaying domain %s %d system pmwakeup", dom->name, dom->id);
 
     /* build return data */
-    memset(&data, 0, sizeof data);
+    memset(&data, 0, sizeof(data));
     make_nonnull_domain(&data.dom, dom);
 
     remoteDispatchDomainEventSend(client, remoteProgram,
@@ -572,7 +572,7 @@ static int remoteRelayDomainEventPMSuspend(virConnectPtr conn ATTRIBUTE_UNUSED,
     VIR_DEBUG("Relaying domain %s %d system pmsuspend", dom->name, dom->id);
 
     /* build return data */
-    memset(&data, 0, sizeof data);
+    memset(&data, 0, sizeof(data));
     make_nonnull_domain(&data.dom, dom);
 
     remoteDispatchDomainEventSend(client, remoteProgram,
@@ -1357,7 +1357,7 @@ remoteDispatchNodeGetSecurityModel(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    memset(&secmodel, 0, sizeof secmodel);
+    memset(&secmodel, 0, sizeof(secmodel));
     if (virNodeGetSecurityModel(priv->conn, &secmodel) < 0)
         goto cleanup;
 
@@ -2710,7 +2710,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server,
     if (!(pkaction = polkit_action_new())) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create polkit action %s"),
-                  virStrerror(errno, ebuf, sizeof ebuf));
+                  virStrerror(errno, ebuf, sizeof(ebuf)));
         polkit_caller_unref(pkcaller);
         goto authfail;
     }
@@ -2721,7 +2721,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server,
         char ebuf[1024];
         VIR_ERROR(_("Failed to create polkit context %s"),
                   (pkerr ? polkit_error_get_error_message(pkerr)
-                   : virStrerror(errno, ebuf, sizeof ebuf)));
+                   : virStrerror(errno, ebuf, sizeof(ebuf))));
         if (pkerr)
             polkit_error_free(pkerr);
         polkit_caller_unref(pkcaller);

@@ -422,6 +422,12 @@ sc_correct_id_types:
 	halt="use pid_t for pid, uid_t for uid, gid_t for gid"		\
 	  $(_sc_search_regexp)
 
+# Forbid sizeof foo or sizeof (foo), require sizeof(foo)
+sc_size_of_brackets:
+	@prohibit='sizeof\s'						\
+	halt='use sizeof(foo), not sizeof (foo) or sizeof foo'		\
+	  $(_sc_search_regexp)
+
 # Ensure that no C source file, docs, or rng schema uses TABs for
 # indentation.  Also match *.h.in files, to get libvirt.h.in.  Exclude
 # files in gnulib, since they're imported.
@@ -807,3 +813,5 @@ exclude_file_name_regexp--sc_trailing_blank = \.(fig|gif|ico|png)$$
 
 exclude_file_name_regexp--sc_unmarked_diagnostics = \
   ^(docs/apibuild.py|tests/virt-aa-helper-test)$$
+
+exclude_file_name_regexp--sc_size_of_brackets = cfg.mk

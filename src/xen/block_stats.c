@@ -76,7 +76,7 @@ read_stat (const char *path)
       return -1;
 
     /* read, but don't bail out before closing */
-    i = fread (str, 1, sizeof str - 1, fp);
+    i = fread (str, 1, sizeof(str) - 1, fp);
 
     if (VIR_FCLOSE(fp) != 0        /* disk error */
         || i < 1)               /* ensure we read at least one byte */
@@ -136,9 +136,9 @@ check_bd_connected (xenUnifiedPrivatePtr priv, int device, int domid)
      * xenstore, etc.
      */
     if (!priv->xshandle) return 1;
-    snprintf (s, sizeof s, "/local/domain/0/backend/vbd/%d/%d/state",
+    snprintf (s, sizeof(s), "/local/domain/0/backend/vbd/%d/%d/state",
               domid, device);
-    s[sizeof s - 1] = '\0';
+    s[sizeof(s) - 1] = '\0';
 
     rs = xs_read (priv->xshandle, 0, s, &len);
     if (!rs) return 1;

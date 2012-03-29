@@ -286,7 +286,7 @@ hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
     Win32_Processor *processor = NULL;
     char *tmp;
 
-    memset(info, 0, sizeof (*info));
+    memset(info, 0, sizeof(*info));
 
     virBufferAddLit(&query, WIN32_COMPUTERSYSTEM_WQL_SELECT);
 
@@ -341,7 +341,7 @@ hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
 
     /* Fill struct */
     if (virStrncpy(info->model, processorList->data->Name,
-                   sizeof (info->model) - 1, sizeof (info->model)) == NULL) {
+                   sizeof(info->model) - 1, sizeof(info->model)) == NULL) {
         HYPERV_ERROR(VIR_ERR_INTERNAL_ERROR,
                      _("CPU model %s too long for destination"),
                      processorList->data->Name);
@@ -679,7 +679,7 @@ hypervDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     Msvm_ProcessorSettingData *processorSettingData = NULL;
     Msvm_MemorySettingData *memorySettingData = NULL;
 
-    memset(info, 0, sizeof (*info));
+    memset(info, 0, sizeof(*info));
 
     virUUIDFormat(domain->uuid, uuid_string);
 

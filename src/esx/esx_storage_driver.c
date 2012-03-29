@@ -407,7 +407,7 @@ esxStoragePoolGetInfo(virStoragePoolPtr pool, virStoragePoolInfoPtr info)
     esxVI_DynamicProperty *dynamicProperty = NULL;
     esxVI_Boolean accessible = esxVI_Boolean_Undefined;
 
-    memset(info, 0, sizeof (*info));
+    memset(info, 0, sizeof(*info));
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
@@ -479,7 +479,7 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
 
     virCheckFlags(0, NULL);
 
-    memset(&def, 0, sizeof (def));
+    memset(&def, 0, sizeof(def));
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;
@@ -977,7 +977,7 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
 
     virCheckFlags(0, NULL);
 
-    memset(&poolDef, 0, sizeof (poolDef));
+    memset(&poolDef, 0, sizeof(poolDef));
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;
@@ -1205,7 +1205,7 @@ esxStorageVolumeCreateXMLFrom(virStoragePoolPtr pool, const char *xmldesc,
 
     virCheckFlags(0, NULL);
 
-    memset(&poolDef, 0, sizeof (poolDef));
+    memset(&poolDef, 0, sizeof(poolDef));
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;
@@ -1483,7 +1483,7 @@ esxStorageVolumeGetInfo(virStorageVolPtr volume, virStorageVolInfoPtr info)
     esxVI_FileInfo *fileInfo = NULL;
     esxVI_VmDiskFileInfo *vmDiskFileInfo = NULL;
 
-    memset(info, 0, sizeof (*info));
+    memset(info, 0, sizeof(*info));
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
@@ -1538,8 +1538,8 @@ esxStorageVolumeGetXMLDesc(virStorageVolPtr volume, unsigned int flags)
 
     virCheckFlags(0, NULL);
 
-    memset(&pool, 0, sizeof (pool));
-    memset(&def, 0, sizeof (def));
+    memset(&pool, 0, sizeof(pool));
+    memset(&def, 0, sizeof(def));
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;

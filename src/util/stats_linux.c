@@ -57,7 +57,7 @@ linuxDomainInterfaceStats(const char *path,
 
     path_len = strlen (path);
 
-    while (fgets (line, sizeof line, fp)) {
+    while (fgets (line, sizeof(line), fp)) {
         long long dummy;
         long long rx_bytes;
         long long rx_packets;

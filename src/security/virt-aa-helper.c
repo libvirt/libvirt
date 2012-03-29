@@ -577,14 +577,14 @@ valid_path(const char *path, const bool readonly)
         }
     }
 
-    opaths = sizeof(override)/sizeof *(override);
+    opaths = sizeof(override)/sizeof(*(override));
 
-    npaths = sizeof(restricted)/sizeof *(restricted);
+    npaths = sizeof(restricted)/sizeof(*(restricted));
     if (array_starts_with(path, restricted, npaths) == 0 &&
         array_starts_with(path, override, opaths) != 0)
             return 1;
 
-    npaths = sizeof(restricted_rw)/sizeof *(restricted_rw);
+    npaths = sizeof(restricted_rw)/sizeof(*(restricted_rw));
     if (!readonly) {
         if (array_starts_with(path, restricted_rw, npaths) == 0)
             return 1;

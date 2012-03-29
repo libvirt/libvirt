@@ -226,7 +226,7 @@ qemuMonitorTextCommandWithHandler(qemuMonitorPtr mon,
 
     *reply = NULL;
 
-    memset(&msg, 0, sizeof msg);
+    memset(&msg, 0, sizeof(msg));
 
     if (virAsprintf(&msg.txBuffer, "%s\r", cmd) < 0) {
         virReportOOMError();

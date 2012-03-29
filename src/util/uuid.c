@@ -108,7 +108,7 @@ virUUIDGenerate(unsigned char *uuid)
         char ebuf[1024];
         VIR_WARN("Falling back to pseudorandom UUID,"
                  " failed to generate random bytes: %s",
-                 virStrerror(err, ebuf, sizeof ebuf));
+                 virStrerror(err, ebuf, sizeof(ebuf)));
         err = virUUIDGeneratePseudoRandomBytes(uuid, VIR_UUID_BUFLEN);
     }
 

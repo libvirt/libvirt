@@ -550,32 +550,32 @@ qemudStartup(int privileged) {
 
     if (virFileMakePath(qemu_driver->stateDir) < 0) {
         VIR_ERROR(_("Failed to create state dir '%s': %s"),
-                  qemu_driver->stateDir, virStrerror(errno, ebuf, sizeof ebuf));
+                  qemu_driver->stateDir, virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
     if (virFileMakePath(qemu_driver->libDir) < 0) {
         VIR_ERROR(_("Failed to create lib dir '%s': %s"),
-                  qemu_driver->libDir, virStrerror(errno, ebuf, sizeof ebuf));
+                  qemu_driver->libDir, virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
     if (virFileMakePath(qemu_driver->cacheDir) < 0) {
         VIR_ERROR(_("Failed to create cache dir '%s': %s"),
-                  qemu_driver->cacheDir, virStrerror(errno, ebuf, sizeof ebuf));
+                  qemu_driver->cacheDir, virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
     if (virFileMakePath(qemu_driver->saveDir) < 0) {
         VIR_ERROR(_("Failed to create save dir '%s': %s"),
-                  qemu_driver->saveDir, virStrerror(errno, ebuf, sizeof ebuf));
+                  qemu_driver->saveDir, virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
     if (virFileMakePath(qemu_driver->snapshotDir) < 0) {
         VIR_ERROR(_("Failed to create save dir '%s': %s"),
-                  qemu_driver->snapshotDir, virStrerror(errno, ebuf, sizeof ebuf));
+                  qemu_driver->snapshotDir, virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
     if (virFileMakePath(qemu_driver->autoDumpPath) < 0) {
         VIR_ERROR(_("Failed to create dump dir '%s': %s"),
-                  qemu_driver->autoDumpPath, virStrerror(errno, ebuf, sizeof ebuf));
+                  qemu_driver->autoDumpPath, virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
 
@@ -4591,7 +4591,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
 
                 virDomainActualNetDefFree(net->data.network.actual);
 
-                memset(net, 0, sizeof *net);
+                memset(net, 0, sizeof(*net));
 
                 net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
                 net->script = NULL;
@@ -4602,7 +4602,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
                  * case, the best we can do is NULL everything out.
                  */
                 virDomainActualNetDefFree(net->data.network.actual);
-                memset(net, 0, sizeof *net);
+                memset(net, 0, sizeof(*net));
 
                 net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
                 net->script = NULL;
@@ -4613,7 +4613,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
             VIR_FREE(net->data.direct.linkdev);
             VIR_FREE(net->data.direct.virtPortProfile);
 
-            memset(net, 0, sizeof *net);
+            memset(net, 0, sizeof(*net));
 
             net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
             net->script = NULL;
@@ -4624,7 +4624,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
             char *brname = net->data.bridge.brname;
             char *ipaddr = net->data.bridge.ipaddr;
 
-            memset(net, 0, sizeof *net);
+            memset(net, 0, sizeof(*net));
 
             net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
             net->script = script;

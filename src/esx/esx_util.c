@@ -339,7 +339,7 @@ esxUtil_ResolveHostname(const char *hostname,
     struct addrinfo *result = NULL;
     int errcode;
 
-    memset(&hints, 0, sizeof (hints));
+    memset(&hints, 0, sizeof(hints));
 
     hints.ai_flags = AI_ADDRCONFIG;
     hints.ai_family = AF_INET;

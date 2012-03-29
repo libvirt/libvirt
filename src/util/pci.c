@@ -863,7 +863,7 @@ recheck:
             virRun(stubprobe, NULL) < 0) {
             char ebuf[1024];
             VIR_WARN("failed to load pci-stub or pciback drivers: %s",
-                     virStrerror(errno, ebuf, sizeof ebuf));
+                     virStrerror(errno, ebuf, sizeof(ebuf)));
             return NULL;
         }
 

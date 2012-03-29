@@ -621,7 +621,7 @@ vboxComUninitialize(void)
 
 
 static VBOXXPCOMC_v1 vboxXPCOMC_v1 = {
-    sizeof (VBOXXPCOMC_v1),     /* cb */
+    sizeof(VBOXXPCOMC_v1),      /* cb */
     0x00010000U,                /* uVersion */
     vboxGetVersion,             /* pfnGetVersion */
     vboxComInitialize_v1,       /* pfnComInitialize */
@@ -635,7 +635,7 @@ static VBOXXPCOMC_v1 vboxXPCOMC_v1 = {
 };
 
 static VBOXXPCOMC_v2 vboxXPCOMC_v2 = {
-    sizeof (VBOXXPCOMC_v2),     /* cb */
+    sizeof(VBOXXPCOMC_v2),      /* cb */
     0x00020000U,                /* uVersion */
     vboxGetVersion,             /* pfnGetVersion */
     vboxComInitialize_v2,       /* pfnComInitialize */

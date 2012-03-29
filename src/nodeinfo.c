@@ -803,9 +803,9 @@ nodeCapsInitNUMA(virCapsPtr caps)
         return 0;
 
     int mask_n_bytes = max_n_cpus / 8;
-    if (VIR_ALLOC_N(mask, mask_n_bytes / sizeof *mask) < 0)
+    if (VIR_ALLOC_N(mask, mask_n_bytes / sizeof(*mask)) < 0)
         goto cleanup;
-    if (VIR_ALLOC_N(allonesmask, mask_n_bytes / sizeof *mask) < 0)
+    if (VIR_ALLOC_N(allonesmask, mask_n_bytes / sizeof(*mask)) < 0)
         goto cleanup;
     memset(allonesmask, 0xff, mask_n_bytes);
 

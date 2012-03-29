@@ -203,7 +203,7 @@ int virNetSocketNewListenTCP(const char *nodename,
     *retsocks = NULL;
     *nretsocks = 0;
 
-    memset(&hints, 0, sizeof hints);
+    memset(&hints, 0, sizeof(hints));
     hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG;
     hints.ai_socktype = SOCK_STREAM;
 
@@ -228,7 +228,7 @@ int virNetSocketNewListenTCP(const char *nodename,
         }
 
         int opt = 1;
-        if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof opt) < 0) {
+        if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
             virReportSystemError(errno, "%s", _("Unable to enable port reuse"));
             goto error;
         }
@@ -244,7 +244,7 @@ int virNetSocketNewListenTCP(const char *nodename,
              * we force it to only listen on IPv6
              */
             if (setsockopt(fd, IPPROTO_IPV6, IPV6_V6ONLY,
-                           (void*)&on, sizeof on) < 0) {
+                           (void*)&on, sizeof(on)) < 0) {
                 virReportSystemError(errno, "%s",
                                      _("Unable to force bind to IPv6 only"));
                 goto error;
@@ -400,7 +400,7 @@ int virNetSocketNewConnectTCP(const char *nodename,
     memset(&localAddr, 0, sizeof(localAddr));
     memset(&remoteAddr, 0, sizeof(remoteAddr));
 
-    memset(&hints, 0, sizeof hints);
+    memset(&hints, 0, sizeof(hints));
     hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG;
     hints.ai_socktype = SOCK_STREAM;
 
@@ -422,7 +422,7 @@ int virNetSocketNewConnectTCP(const char *nodename,
             goto error;
         }
 
-        setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof opt);
+        setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
         if (connect(fd, runp->ai_addr, runp->ai_addrlen) >= 0)
             break;
@@ -830,7 +830,7 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
                                 pid_t *pid)
 {
     struct ucred cr;
-    socklen_t cr_len = sizeof (cr);
+    socklen_t cr_len = sizeof(cr);
     virMutexLock(&sock->lock);
 
     if (getsockopt(sock->fd, SOL_SOCKET, SO_PEERCRED, &cr, &cr_len) < 0) {

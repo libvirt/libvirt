@@ -566,7 +566,7 @@ struct xen_v2s3_getdomaininfolistop {
     uint32_t  max_domains;
 #ifdef __BIG_ENDIAN__
     struct {
-        int __pad[(sizeof (long long) - sizeof (struct xen_v2d5_getdomaininfo *)) / sizeof (int)];
+        int __pad[(sizeof(long long) - sizeof(struct xen_v2d5_getdomaininfo *)) / sizeof(int)];
         struct xen_v2d5_getdomaininfo *v;
     } buffer;
 #else
@@ -681,7 +681,7 @@ typedef struct xen_v2_setvcpumap xen_v2_setvcpumap;
 struct xen_v2d5_cpumap {
 #ifdef __BIG_ENDIAN__
     struct {
-        int __pad[(sizeof (long long) - sizeof (uint8_t *)) / sizeof (int)];
+        int __pad[(sizeof(long long) - sizeof(uint8_t *)) / sizeof(int)];
         uint8_t *v;
     } bitmap;
 #else
@@ -1996,7 +1996,7 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
     errcode = regcomp (&flags_hvm_rec, flags_hvm_re, REG_EXTENDED);
     if (errcode != 0) {
         char error[100];
-        regerror (errcode, &flags_hvm_rec, error, sizeof error);
+        regerror (errcode, &flags_hvm_rec, error, sizeof(error));
         regfree (&flags_hvm_rec);
         virXenError(VIR_ERR_INTERNAL_ERROR, "%s", error);
         in_init = 0;
@@ -2005,7 +2005,7 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
     errcode = regcomp (&flags_pae_rec, flags_pae_re, REG_EXTENDED);
     if (errcode != 0) {
         char error[100];
-        regerror (errcode, &flags_pae_rec, error, sizeof error);
+        regerror (errcode, &flags_pae_rec, error, sizeof(error));
         regfree (&flags_pae_rec);
         regfree (&flags_hvm_rec);
         virXenError(VIR_ERR_INTERNAL_ERROR, "%s", error);
@@ -2015,7 +2015,7 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
     errcode = regcomp (&xen_cap_rec, xen_cap_re, REG_EXTENDED);
     if (errcode != 0) {
         char error[100];
-        regerror (errcode, &xen_cap_rec, error, sizeof error);
+        regerror (errcode, &xen_cap_rec, error, sizeof(error));
         regfree (&xen_cap_rec);
         regfree (&flags_pae_rec);
         regfree (&flags_hvm_rec);
@@ -2470,7 +2470,7 @@ get_cpu_flags(virConnectPtr conn, const char **hvm, int *pae, int *longmode)
     *hvm = "";
 
     if (STREQLEN((const char *)&regs.r_ebx, "AuthcAMDenti", 12)) {
-        if (pread(fd, &regs, sizeof (regs), 0x80000001) == sizeof (regs)) {
+        if (pread(fd, &regs, sizeof(regs), 0x80000001) == sizeof(regs)) {
             /* Read secure virtual machine bit (bit 2 of ECX feature ID) */
             if ((regs.r_ecx >> 2) & 1) {
                 *hvm = "svm";
@@ -2479,7 +2479,7 @@ get_cpu_flags(virConnectPtr conn, const char **hvm, int *pae, int *longmode)
                 *pae = 1;
         }
     } else if (STREQLEN((const char *)&regs.r_ebx, "GenuntelineI", 12)) {
-        if (pread(fd, &regs, sizeof (regs), 0x00000001) == sizeof (regs)) {
+        if (pread(fd, &regs, sizeof(regs), 0x00000001) == sizeof(regs)) {
             /* Read VMXE feature bit (bit 5 of ECX feature ID) */
             if ((regs.r_ecx >> 5) & 1)
                 *hvm = "vmx";
@@ -2591,7 +2591,7 @@ xenHypervisorMakeCapabilitiesInternal(virConnectPtr conn,
      * architectures and non-Linux. (XXX)
      */
     if (cpuinfo) {
-        while (fgets (line, sizeof line, cpuinfo)) {
+        while (fgets (line, sizeof(line), cpuinfo)) {
             if (regexec (&flags_hvm_rec, line, sizeof(subs)/sizeof(regmatch_t), subs, 0) == 0
                 && subs[0].rm_so != -1) {
                 if (virStrncpy(hvm_type,
@@ -2629,16 +2629,16 @@ xenHypervisorMakeCapabilitiesInternal(virConnectPtr conn,
      */
 
     /* Expecting one line in this file - ignore any more. */
-    if ((capabilities) && (fgets (line, sizeof line, capabilities))) {
+    if ((capabilities) && (fgets (line, sizeof(line), capabilities))) {
         /* Split the line into tokens.  strtok_r is OK here because we "own"
          * this buffer.  Parse out the features from each token.
          */
         for (str = line, nr_guest_archs = 0;
-             nr_guest_archs < sizeof guest_archs / sizeof guest_archs[0]
+             nr_guest_archs < sizeof(guest_archs) / sizeof(guest_archs[0])
                  && (token = strtok_r (str, " ", &saveptr)) != NULL;
              str = NULL) {
 
-            if (regexec (&xen_cap_rec, token, sizeof subs / sizeof subs[0],
+            if (regexec (&xen_cap_rec, token, sizeof(subs) / sizeof(subs[0]),
                          subs, 0) == 0) {
                 int hvm = STRPREFIX(&token[subs[1].rm_so], "hvm");
                 const char *model;

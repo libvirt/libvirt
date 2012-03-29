@@ -671,7 +671,7 @@ xenDaemonOpen_tcp(virConnectPtr conn, const char *host, const char *port)
     memset(&priv->addr, 0, sizeof(priv->addr));
 
     /* http://people.redhat.com/drepper/userapi-ipv6.html */
-    memset (&hints, 0, sizeof hints);
+    memset (&hints, 0, sizeof(hints));
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_ADDRCONFIG;
 
@@ -3249,7 +3249,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
             return -1;
         }
         if (uriptr->port)
-            snprintf (port, sizeof port, "%d", uriptr->port);
+            snprintf (port, sizeof(port), "%d", uriptr->port);
         virURIFree (uriptr);
     }
     else if ((p = strrchr (uri, ':')) != NULL) { /* "hostname:port" */
@@ -3260,7 +3260,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
                           "%s", _("xenDaemonDomainMigrate: invalid port number"));
             return -1;
         }
-        snprintf (port, sizeof port, "%d", port_nr);
+        snprintf (port, sizeof(port), "%d", port_nr);
 
         /* Get the hostname. */
         n = p - uri; /* n = Length of hostname in bytes. */

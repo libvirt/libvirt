@@ -45,6 +45,8 @@
 #include "virrandom.h"
 #include "viruri.h"
 
+#include <ctype.h>
+
 #ifndef WITH_DRIVER_MODULES
 # ifdef WITH_TEST
 #  include "test/test_driver.h"
@@ -7165,7 +7167,7 @@ virDomainBlockStats(virDomainPtr dom, const char *disk,
         virDispatchError(NULL);
         return -1;
     }
-    if (!disk || !stats || size > sizeof stats2) {
+    if (!disk || !stats || size > sizeof(stats2)) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
@@ -7305,7 +7307,7 @@ virDomainInterfaceStats (virDomainPtr dom, const char *path,
         virDispatchError(NULL);
         return -1;
     }
-    if (!path || !stats || size > sizeof stats2) {
+    if (!path || !stats || size > sizeof(stats2)) {
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
@@ -18625,13 +18627,13 @@ error:
  *
  * getting total stats: set start_cpu as -1, ncpus 1
  * virDomainGetCPUStats(dom, NULL, 0, -1, 1, 0) => nparams
- * params = calloc(nparams, sizeof (virTypedParameter))
+ * params = calloc(nparams, sizeof(virTypedParameter))
  * virDomainGetCPUStats(dom, params, nparams, -1, 1, 0) => total stats.
  *
  * getting per-cpu stats:
  * virDomainGetCPUStats(dom, NULL, 0, 0, 0, 0) => ncpus
  * virDomainGetCPUStats(dom, NULL, 0, 0, 1, 0) => nparams
- * params = calloc(ncpus * nparams, sizeof (virTypedParameter))
+ * params = calloc(ncpus * nparams, sizeof(virTypedParameter))
  * virDomainGetCPUStats(dom, params, nparams, 0, ncpus, 0) => per-cpu stats
  *
  * Returns -1 on failure, or the number of statistics that were

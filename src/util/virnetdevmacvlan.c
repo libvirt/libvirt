@@ -555,11 +555,11 @@ virNetDevMacVLanVPortProfileCallback(unsigned char *msg,
     /* DEBUG end */
 
     /* Parse netlink message assume a setlink with vfports */
-    memcpy(&ifinfo, NLMSG_DATA(hdr), sizeof ifinfo);
+    memcpy(&ifinfo, NLMSG_DATA(hdr), sizeof(ifinfo));
     VIR_DEBUG("family:%#x type:%#x index:%d flags:%#x change:%#x",
         ifinfo.ifi_family, ifinfo.ifi_type, ifinfo.ifi_index,
         ifinfo.ifi_flags, ifinfo.ifi_change);
-    if (nlmsg_parse(hdr, sizeof ifinfo,
+    if (nlmsg_parse(hdr, sizeof(ifinfo),
         (struct nlattr **)&tb, IFLA_MAX, NULL)) {
         VIR_DEBUG("error parsing request...");
         return;

@@ -129,7 +129,7 @@ void virAuditSend(const char *file ATTRIBUTE_UNUSED, const char *func,
                                         clientaddr, clienttty, success) < 0) {
             char ebuf[1024];
             VIR_WARN("Failed to send audit message %s: %s",
-                     NULLSTR(str), virStrerror(errno, ebuf, sizeof ebuf));
+                     NULLSTR(str), virStrerror(errno, ebuf, sizeof(ebuf)));
         }
         VIR_FREE(str);
     }

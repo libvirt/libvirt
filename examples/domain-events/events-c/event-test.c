@@ -393,7 +393,7 @@ int main(int argc, char **argv)
     int callback12ret = -1;
     struct sigaction action_stop;
 
-    memset(&action_stop, 0, sizeof action_stop);
+    memset(&action_stop, 0, sizeof(action_stop));
 
     action_stop.sa_handler = stop;
 

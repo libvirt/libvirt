@@ -1522,7 +1522,7 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
         VIR_DEBUG("Generated uri_out=%s", *uri_out);
 
     /* QEMU will be started with -incoming tcp:0.0.0.0:port */
-    snprintf(migrateFrom, sizeof (migrateFrom), "tcp:0.0.0.0:%d", this_port);
+    snprintf(migrateFrom, sizeof(migrateFrom), "tcp:0.0.0.0:%d", this_port);
 
     ret = qemuMigrationPrepareAny(driver, dconn, cookiein, cookieinlen,
                                   cookieout, cookieoutlen, dname, dom_xml,
