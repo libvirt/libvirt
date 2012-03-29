@@ -43,13 +43,6 @@ static const char *abs_top_srcdir;
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
-enum compResultShadow {
-    ERROR           = VIR_CPU_COMPARE_ERROR,
-    INCOMPATIBLE    = VIR_CPU_COMPARE_INCOMPATIBLE,
-    IDENTICAL       = VIR_CPU_COMPARE_IDENTICAL,
-    SUPERSET        = VIR_CPU_COMPARE_SUPERSET
-};
-
 enum cpuTestBoolWithError {
     FAIL    = -1,
     NO      = 0,
@@ -558,45 +551,45 @@ mymain(void)
             preferred, result)
 
     /* host to host comparison */
-    DO_TEST_COMPARE("x86", "host", "host", IDENTICAL);
-    DO_TEST_COMPARE("x86", "host", "host-better", INCOMPATIBLE);
-    DO_TEST_COMPARE("x86", "host", "host-worse", SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "host-amd-fake", INCOMPATIBLE);
-    DO_TEST_COMPARE("x86", "host", "host-incomp-arch", INCOMPATIBLE);
-    DO_TEST_COMPARE("x86", "host", "host-no-vendor", IDENTICAL);
-    DO_TEST_COMPARE("x86", "host-no-vendor", "host", INCOMPATIBLE);
+    DO_TEST_COMPARE("x86", "host", "host", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("x86", "host", "host-better", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("x86", "host", "host-worse", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86", "host", "host-amd-fake", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("x86", "host", "host-incomp-arch", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("x86", "host", "host-no-vendor", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("x86", "host-no-vendor", "host", VIR_CPU_COMPARE_INCOMPATIBLE);
 
     /* guest to host comparison */
-    DO_TEST_COMPARE("x86", "host", "bogus-model", ERROR);
-    DO_TEST_COMPARE("x86", "host", "bogus-feature", ERROR);
-    DO_TEST_COMPARE("x86", "host", "min", SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "pentium3", SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "exact", SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "exact-forbid", INCOMPATIBLE);
-    DO_TEST_COMPARE("x86", "host", "exact-forbid-extra", SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "exact-disable", SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "exact-disable2", SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "exact-disable-extra", SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "exact-require", SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "exact-require-extra", INCOMPATIBLE);
-    DO_TEST_COMPARE("x86", "host", "exact-force", SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "strict", INCOMPATIBLE);
-    DO_TEST_COMPARE("x86", "host", "strict-full", IDENTICAL);
-    DO_TEST_COMPARE("x86", "host", "strict-disable", IDENTICAL);
-    DO_TEST_COMPARE("x86", "host", "strict-force-extra", IDENTICAL);
-    DO_TEST_COMPARE("x86", "host", "guest", SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "pentium3-amd", INCOMPATIBLE);
-    DO_TEST_COMPARE("x86", "host-amd", "pentium3-amd", SUPERSET);
-    DO_TEST_COMPARE("x86", "host-worse", "nehalem-force", IDENTICAL);
+    DO_TEST_COMPARE("x86", "host", "bogus-model", VIR_CPU_COMPARE_ERROR);
+    DO_TEST_COMPARE("x86", "host", "bogus-feature", VIR_CPU_COMPARE_ERROR);
+    DO_TEST_COMPARE("x86", "host", "min", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86", "host", "pentium3", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86", "host", "exact", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86", "host", "exact-forbid", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("x86", "host", "exact-forbid-extra", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86", "host", "exact-disable", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86", "host", "exact-disable2", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86", "host", "exact-disable-extra", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86", "host", "exact-require", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86", "host", "exact-require-extra", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("x86", "host", "exact-force", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86", "host", "strict", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("x86", "host", "strict-full", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("x86", "host", "strict-disable", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("x86", "host", "strict-force-extra", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("x86", "host", "guest", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86", "host", "pentium3-amd", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("x86", "host-amd", "pentium3-amd", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86", "host-worse", "nehalem-force", VIR_CPU_COMPARE_IDENTICAL);
 
     /* guest updates for migration
      * automatically compares host CPU with the result */
-    DO_TEST_UPDATE("x86", "host", "min", IDENTICAL);
-    DO_TEST_UPDATE("x86", "host", "pentium3", IDENTICAL);
-    DO_TEST_UPDATE("x86", "host", "guest", SUPERSET);
-    DO_TEST_UPDATE("x86", "host", "host-model", IDENTICAL);
-    DO_TEST_UPDATE("x86", "host", "host-model-nofallback", IDENTICAL);
-    DO_TEST_UPDATE("x86", "host", "host-passthrough", IDENTICAL);
+    DO_TEST_UPDATE("x86", "host", "min", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_UPDATE("x86", "host", "pentium3", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_UPDATE("x86", "host", "guest", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_UPDATE("x86", "host", "host-model", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_UPDATE("x86", "host", "host-model-nofallback", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_UPDATE("x86", "host", "host-passthrough", VIR_CPU_COMPARE_IDENTICAL);
 
     /* computing baseline CPUs */
     DO_TEST_BASELINE("x86", "incompatible-vendors", -1);
