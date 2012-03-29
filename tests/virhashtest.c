@@ -10,11 +10,17 @@
 #include "virhashdata.h"
 #include "testutils.h"
 #include "memory.h"
+#include "util.h"
+#include "logging.h"
 
 
 #define testError(...)                                          \
     do {                                                        \
-        fprintf(stderr, __VA_ARGS__);                           \
+        char *str;                                              \
+        if (virAsprintf(&str, __VA_ARGS__) == 0) {              \
+            fprintf(stderr, "%s", str);                         \
+            VIR_FREE(str);                                      \
+        }                                                       \
         /* Pad to line up with test name ... in virTestRun */   \
         fprintf(stderr, "%74s", "... ");                        \
     } while (0)
@@ -40,16 +46,16 @@ testHashInit(int size)
         }
 
         if (virHashTableSize(hash) != oldsize && virTestGetDebug()) {
-            fprintf(stderr, "\nhash grown from %zd to %zd",
-                    oldsize, virHashTableSize(hash));
+            VIR_WARN("hash grown from %zd to %zd",
+                     (size_t)oldsize, (size_t)virHashTableSize(hash));
         }
     }
 
     for (i = 0; i < ARRAY_CARDINALITY(uuids); i++) {
         if (!virHashLookup(hash, uuids[i])) {
             if (virTestGetVerbose()) {
-                fprintf(stderr, "\nentry \"%s\" could not be found\n",
-                        uuids[i]);
+                VIR_WARN("\nentry \"%s\" could not be found\n",
+                         uuids[i]);
             }
             virHashFree(hash);
             return NULL;
@@ -75,15 +81,15 @@ testHashCheckCount(virHashTablePtr hash, size_t count)
     ssize_t iter_count = 0;
 
     if (virHashSize(hash) != count) {
-        testError("\nhash contains %zd instead of %zu elements\n",
-                  virHashSize(hash), count);
+        testError("\nhash contains %zu instead of %zu elements\n",
+                  (size_t)virHashSize(hash), count);
         return -1;
     }
 
     iter_count = virHashForEach(hash, testHashCheckForEachCount, NULL);
     if (count != iter_count) {
-        testError("\nhash claims to have %zu elements but iteration finds %zd\n",
-                  count, iter_count);
+        testError("\nhash claims to have %zu elements but iteration finds %zu\n",
+                  count, (size_t)iter_count);
         return -1;
     }
 
