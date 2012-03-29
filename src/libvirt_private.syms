@@ -1290,6 +1290,7 @@ virNetDevMacVLanDelete;
 virNetDevMacVLanCreateWithVPortProfile;
 virNetDevMacVLanDeleteWithVPortProfile;
 virNetDevMacVLanRestartWithVPortProfile;
+virNetDevMacVLanVPortProfileRegisterCallback;
 
 
 # virnetdevopenvswitch.h

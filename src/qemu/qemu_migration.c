@@ -2739,6 +2739,12 @@ qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def) {
                 goto err_exit;
             }
             VIR_DEBUG("Port profile Associate succeeded for %s", net->ifname);
+
+            if (virNetDevMacVLanVPortProfileRegisterCallback(net->ifname, net->mac,
+                                                             virDomainNetGetActualDirectDev(net), def->uuid,
+                                                             virDomainNetGetActualVirtPortProfile(net),
+                                                             VIR_NETDEV_VPORT_PROFILE_OP_CREATE))
+                goto err_exit;
         }
         last_good_net = i;
     }
