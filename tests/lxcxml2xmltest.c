@@ -99,7 +99,7 @@ mymain(void)
     int ret = 0;
 
     if ((caps = testLXCCapsInit()) == NULL)
-        return (EXIT_FAILURE);
+        return EXIT_FAILURE;
 
 # define DO_TEST_FULL(name, is_different, inactive)                     \
     do {                                                                \
@@ -124,7 +124,7 @@ mymain(void)
 
     virCapabilitiesFree(caps);
 
-    return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIRT_TEST_MAIN(mymain)

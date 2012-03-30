@@ -129,11 +129,13 @@ virNetDevProbeVnetHdr(int tapfd)
  */
 int virNetDevTapCreate(char **ifname,
                        int *tapfd,
-                       unsigned int flags ATTRIBUTE_UNUSED)
+                       unsigned int flags)
 {
     int fd;
     struct ifreq ifr;
     int ret = -1;
+
+    virCheckFlags(VIR_NETDEV_TAP_CREATE_VNET_HDR, -1);
 
     if ((fd = open("/dev/net/tun", O_RDWR)) < 0) {
         virReportSystemError(errno, "%s",
@@ -237,8 +239,9 @@ cleanup:
 #else /* ! TUNSETIFF */
 int virNetDevTapCreate(char **ifname ATTRIBUTE_UNUSED,
                        int *tapfd ATTRIBUTE_UNUSED,
-                       unsigned int flags ATTRIBUTE_UNUSED)
+                       unsigned int flags)
 {
+    virCheckFlags(0, -1);
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to create TAP devices on this platform"));
     return -1;
