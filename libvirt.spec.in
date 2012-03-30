@@ -52,6 +52,14 @@
 %define with_libxl         0%{!?_without_libxl:%{server_drivers}}
 %define with_vmware        0%{!?_without_vmware:%{server_drivers}}
 
+%define with_qemu_tcg      %{with_qemu}
+# Change if we ever provide qemu-kvm binaries on non-x86 hosts
+%ifarch %{ix86} x86_64
+%define with_qemu_kvm      %{with_qemu}
+%else
+%define with_qemu_kvm      0
+%endif
+
 # Then the hypervisor drivers that talk via a native remote protocol
 %define with_phyp          0%{!?_without_phyp:1}
 %define with_esx           0%{!?_without_esx:1}
@@ -125,8 +133,10 @@
 
 # RHEL-5 has restricted QEMU to x86_64 only and is too old for LXC
 %if 0%{?rhel} == 5
+%define with_qemu_tcg 0
 %ifnarch x86_64
 %define with_qemu 0
+%define with_qemu_kvm 0
 %endif
 %define with_lxc 0
 %endif
@@ -134,8 +144,10 @@
 # RHEL-6 has restricted QEMU to x86_64 only, stopped including Xen
 # on all archs. Other archs all have LXC available though
 %if 0%{?rhel} >= 6
+%define with_qemu_tcg 0
 %ifnarch x86_64
 %define with_qemu 0
+%define with_qemu_kvm 0
 %endif
 %define with_xen 0
 %endif
@@ -206,10 +218,13 @@
 %define with_storage_disk 0
 %endif
 
-%if %{with_qemu}
+%if %{with_qemu} || %{with_lxc} || %{with_uml}
 %define with_nwfilter 0%{!?_without_nwfilter:%{server_drivers}}
 # Enable libpcap library
 %define with_libpcap  0%{!?_without_libpcap:%{server_drivers}}
+%endif
+
+%if %{with_qemu}
 %define with_macvtap  0%{!?_without_macvtap:%{server_drivers}}
 
 # numad is used to manage the CPU placement dynamically,
@@ -268,109 +283,22 @@ Source: http://libvirt.org/sources/libvirt-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 URL: http://libvirt.org/
 
-# All runtime requirements for the libvirt package (runtime requrements
-# for subpackages are listed later in those subpackages)
-
-# The client side, i.e. shared libs and virsh are in a subpackage
-Requires: %{name}-client = %{version}-%{release}
-
-# Used by many of the drivers, so turn it on whenever the
-# daemon is present
 %if %{with_libvirtd}
-# for modprobe of pci devices
-Requires: module-init-tools
-# for /sbin/ip & /sbin/tc
-Requires: iproute
-%if %{with_avahi}
-Requires: avahi-libs
-%endif
-%endif
+Requires: libvirt-daemon = %{version}-%{release}
 %if %{with_network}
-Requires: dnsmasq >= 2.41
-Requires: radvd
-%endif
-%if %{with_network} || %{with_nwfilter}
-Requires: iptables
-Requires: iptables-ipv6
+Requires: libvirt-daemon-config-network = %{version}-%{release}
 %endif
 %if %{with_nwfilter}
-Requires: ebtables
+Requires: libvirt-daemon-config-nwfilter = %{version}-%{release}
 %endif
-# needed for device enumeration
-%if %{with_hal}
-Requires: hal
+# XXX when we turn on driver modules, we need to add
+# deps on each driver (Requires: libvirt-daemon-drv-qemu)
 %endif
-%if %{with_udev}
-Requires: udev >= 145
-%endif
-%if %{with_polkit}
-%if 0%{?fedora} >= 12 || 0%{?rhel} >=6
-Requires: polkit >= 0.93
-%else
-Requires: PolicyKit >= 0.6
-%endif
-%endif
-%if %{with_storage_fs}
-Requires: nfs-utils
-# For mkfs
-Requires: util-linux-ng
-# For pool-build probing for existing pools
-BuildRequires: libblkid-devel >= 2.17
-# For glusterfs
-%if 0%{?fedora} >= 11
-Requires: glusterfs-client >= 2.0.1
-%endif
-%endif
-%if %{with_qemu}
-# From QEMU RPMs
-Requires: /usr/bin/qemu-img
-# For image compression
-Requires: gzip
-Requires: bzip2
-Requires: lzop
-Requires: xz
-%else
-%if %{with_xen}
-# From Xen RPMs
-Requires: /usr/sbin/qcow-create
-%endif
-%endif
-%if %{with_storage_lvm}
-# For LVM drivers
-Requires: lvm2
-%endif
-%if %{with_storage_iscsi}
-# For ISCSI driver
-Requires: iscsi-initiator-utils
-%endif
-%if %{with_storage_disk}
-# For disk driver
-Requires: parted
-Requires: device-mapper
-%endif
-%if %{with_storage_mpath}
-# For multipath support
-Requires: device-mapper
-%endif
-%if %{with_cgconfig}
-Requires: libcgroup
-%endif
-%ifarch %{ix86} x86_64 ia64
-# For virConnectGetSysinfo
-Requires: dmidecode
-%endif
-# For service management
-%if %{with_systemd}
-Requires(post): systemd-units
-Requires(post): systemd-sysv
-Requires(preun): systemd-units
-Requires(postun): systemd-units
-%endif
-%if %{with_numad}
-Requires: numad
-%endif
+Requires: libvirt-docs = %{version}-%{release}
+Requires: libvirt-client = %{version}-%{release}
 
-# All build-time requirements
+# All build-time requirements. Run-time requirements are
+# listed against each sub-RPM
 %if 0%{?enable_autotools}
 BuildRequires: autoconf
 BuildRequires: automake
@@ -537,6 +465,275 @@ Libvirt is a C toolkit to interact with the virtualization capabilities
 of recent versions of Linux (and other OSes). The main package includes
 the libvirtd server exporting the virtualization support.
 
+%package docs
+Summary: Documentation for libvirt library and daemon
+Group: Development/Libraries
+
+%description docs
+Copy of the libvirt website documentation
+
+%if %{with_libvirtd}
+%package daemon
+Summary: Server side daemon and supporting files for libvirt library
+Group: Development/Libraries
+
+# All runtime requirements for the libvirt package (runtime requrements
+# for subpackages are listed later in those subpackages)
+
+# The client side, i.e. shared libs and virsh are in a subpackage
+Requires: %{name}-client = %{version}-%{release}
+
+# for modprobe of pci devices
+Requires: module-init-tools
+# for /sbin/ip & /sbin/tc
+Requires: iproute
+%if %{with_avahi}
+Requires: avahi-libs
+%endif
+%if %{with_network}
+Requires: dnsmasq >= 2.41
+Requires: radvd
+%endif
+%if %{with_network} || %{with_nwfilter}
+Requires: iptables
+Requires: iptables-ipv6
+%endif
+%if %{with_nwfilter}
+Requires: ebtables
+%endif
+# needed for device enumeration
+%if %{with_hal}
+Requires: hal
+%endif
+%if %{with_udev}
+Requires: udev >= 145
+%endif
+%if %{with_polkit}
+%if 0%{?fedora} >= 12 || 0%{?rhel} >=6
+Requires: polkit >= 0.93
+%else
+Requires: PolicyKit >= 0.6
+%endif
+%endif
+%if %{with_storage_fs}
+Requires: nfs-utils
+# For mkfs
+Requires: util-linux-ng
+# For pool-build probing for existing pools
+BuildRequires: libblkid-devel >= 2.17
+# For glusterfs
+%if 0%{?fedora} >= 11
+Requires: glusterfs-client >= 2.0.1
+%endif
+%endif
+%if %{with_qemu}
+# From QEMU RPMs
+Requires: /usr/bin/qemu-img
+# For image compression
+Requires: gzip
+Requires: bzip2
+Requires: lzop
+Requires: xz
+%else
+%if %{with_xen}
+# From Xen RPMs
+Requires: /usr/sbin/qcow-create
+%endif
+%endif
+%if %{with_storage_lvm}
+# For LVM drivers
+Requires: lvm2
+%endif
+%if %{with_storage_iscsi}
+# For ISCSI driver
+Requires: iscsi-initiator-utils
+%endif
+%if %{with_storage_disk}
+# For disk driver
+Requires: parted
+Requires: device-mapper
+%endif
+%if %{with_storage_mpath}
+# For multipath support
+Requires: device-mapper
+%endif
+%if %{with_cgconfig}
+Requires: libcgroup
+%endif
+%ifarch %{ix86} x86_64 ia64
+# For virConnectGetSysinfo
+Requires: dmidecode
+%endif
+# For service management
+%if %{with_systemd}
+Requires(post): systemd-units
+Requires(post): systemd-sysv
+Requires(preun): systemd-units
+Requires(postun): systemd-units
+%endif
+%if %{with_numad}
+Requires: numad
+%endif
+
+%description daemon
+Server side daemon required to manage the virtualization capabilities
+of recent versions of Linux. Requires a hypervisor specific sub-RPM
+for specific drivers.
+
+%if %{with_network}
+%package daemon-config-network
+Summary: Default configuration files for the libvirtd daemon
+Group: Development/Libraries
+
+Requires: libvirt-daemon = %{version}-%{release}
+
+%description daemon-config-network
+Default configuration files for setting up NAT based networking
+%endif
+
+%if %{with_nwfilter}
+%package daemon-config-nwfilter
+Summary: Network filter configuration files for the libvirtd daemon
+Group: Development/Libraries
+
+Requires: libvirt-daemon = %{version}-%{release}
+
+%description daemon-config-nwfilter
+Network filter configuration files for cleaning guest traffic
+%endif
+
+# XXX when we turn on driver modules, we will need to
+# create daemon-drv-XXX sub-RPMs and add them as deps
+# to all of the following  daemon-XXX RPMs
+
+%if %{with_qemu_tcg}
+%package daemon-qemu
+Summary: Server side daemon & driver required to run QEMU guests
+Group: Development/Libraries
+
+Requires: libvirt-daemon = %{version}-%{release}
+Requires: qemu
+
+%description daemon-qemu
+Server side daemon and driver required to manage the virtualization
+capabilities of the QEMU TCG emulators
+
+%package qemu
+Summary: Server side daemon, driver & default configs required to run QEMU guests
+Group: Development/Libraries
+
+Requires: libvirt-daemon-qemu = %{version}-%{release}
+Requires: libvirt-daemon-config-network = %{version}-%{release}
+Requires: libvirt-daemon-config-nwfilter = %{version}-%{release}
+
+%description qemu
+Server side daemon, driver and default network & firewall configs
+required to manage the virtualization capabilities of QEMU.
+%endif
+
+
+%if %{with_qemu_kvm}
+%package daemon-kvm
+Summary: Server side daemon & driver required to run QEMU guests
+Group: Development/Libraries
+
+Requires: libvirt-daemon = %{version}-%{release}
+Requires: qemu-kvm
+
+%description daemon-kvm
+Server side daemon and driver required to manage the virtualization
+capabilities of the QEMU KVM hypervisor
+
+%package kvm
+Summary: Server side daemon, driver & default configs required to run KVM guests
+Group: Development/Libraries
+
+Requires: libvirt-daemon-kvm = %{version}-%{release}
+Requires: libvirt-daemon-config-network = %{version}-%{release}
+Requires: libvirt-daemon-config-nwfilter = %{version}-%{release}
+
+%description kvm
+Server side daemon, driver and default network & firewall configs
+required to manage the virtualization capabilities of KVM.
+%endif
+
+
+%if %{with_lxc}
+%package daemon-lxc
+Summary: Server side daemon & driver required to run LXC guests
+Group: Development/Libraries
+
+Requires: libvirt-daemon = %{version}-%{release}
+
+%description daemon-lxc
+Server side daemon and driver required to manage the virtualization
+capabilities of LXC
+
+%package lxc
+Summary: Server side daemon, driver & default configs required to run LXC guests
+Group: Development/Libraries
+
+Requires: libvirt-daemon-lxc = %{version}-%{release}
+Requires: libvirt-daemon-config-network = %{version}-%{release}
+Requires: libvirt-daemon-config-nwfilter = %{version}-%{release}
+
+%description lxc
+Server side daemon, driver and default network & firewall configs
+required to manage the virtualization capabilities of LXC.
+%endif
+
+
+%if %{with_uml}
+%package daemon-uml
+Summary: Server side daemon & driver required to run UML guests
+Group: Development/Libraries
+
+Requires: libvirt-daemon = %{version}-%{release}
+# There are no UML kernel RPMs in Fedora/RHEL to depend on.
+
+%description daemon-uml
+Server side daemon and driver required to manage the virtualization
+capabilities of UML
+
+%package uml
+Summary: Server side daemon, driver & default configs required to run UML guests
+Group: Development/Libraries
+
+Requires: libvirt-daemon-uml = %{version}-%{release}
+Requires: libvirt-daemon-config-network = %{version}-%{release}
+Requires: libvirt-daemon-config-nwfilter = %{version}-%{release}
+
+%description uml
+Server side daemon, driver and default network & firewall configs
+required to manage the virtualization capabilities of UML.
+%endif
+
+
+%if %{with_xen}
+%package daemon-xen
+Summary: Server side daemon & driver required to run XEN guests
+Group: Development/Libraries
+
+Requires: libvirt-daemon = %{version}-%{release}
+Requires: xen
+
+%description daemon-xen
+Server side daemon and driver required to manage the virtualization
+capabilities of XEN
+
+%package xen
+Summary: Server side daemon, driver & default configs required to run XEN guests
+Group: Development/Libraries
+
+Requires: libvirt-daemon-xen = %{version}-%{release}
+Requires: libvirt-daemon-config-network = %{version}-%{release}
+
+%description xen
+Server side daemon, driver and default network & firewall configs
+required to manage the virtualization capabilities of Xen.
+%endif
+%endif
+
 %package client
 Summary: Client side library and utilities of the libvirt library
 Group: Development/Libraries
@@ -582,7 +779,7 @@ Group: Development/Libraries
 Requires: sanlock >= 1.8
 #for virt-sanlock-cleanup require augeas
 Requires: augeas
-Requires: %{name} = %{version}-%{release}
+Requires: %{name}-daemon = %{version}-%{release}
 
 %description lock-sanlock
 Includes the Sanlock lock manager plugin for the QEMU
@@ -884,6 +1081,12 @@ rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.lxc
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.uml
 %endif
 
+mv $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-%{version} $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-docs-%{version}
+
+%if ! %{with_nwfilter}
+rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/nwfilter
+%endif
+
 %clean
 rm -fr %{buildroot}
 
@@ -898,7 +1101,8 @@ do
 done
 make check
 
-%pre
+%if %{with_libvirtd}
+%pre daemon
 %if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
 # Normally 'setup' adds this in /etc/passwd, but this is
 # here for case of upgrades from earlier Fedora/RHEL. This
@@ -910,22 +1114,9 @@ getent passwd qemu >/dev/null || \
     -c "qemu user" qemu
 %endif
 
-%post
+%post daemon
 
-%if %{with_libvirtd}
 %if %{with_network}
-# We want to install the default network for initial RPM installs
-# or on the first upgrade from a non-network aware libvirt only.
-# We check this by looking to see if the daemon is already installed
-if ! /sbin/chkconfig libvirtd && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml
-then
-    UUID=`/usr/bin/uuidgen`
-    sed -e "s,</name>,</name>\n  <uuid>$UUID</uuid>," \
-         < %{_datadir}/libvirt/networks/default.xml \
-         > %{_sysconfdir}/libvirt/qemu/networks/default.xml
-    ln -s ../default.xml %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
-fi
-
 # All newly defined networks will have a mac address for the bridge
 # auto-generated, but networks already existing at the time of upgrade
 # will not. We need to go through all the network configs, look for
@@ -991,8 +1182,8 @@ fi
 %endif
 %endif
 
-%preun
 %if %{with_libvirtd}
+%preun daemon
 %if %{with_systemd}
 if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
@@ -1007,8 +1198,8 @@ fi
 %endif
 %endif
 
-%postun
 %if %{with_libvirtd}
+%postun daemon
 %if %{with_systemd}
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 if [ $1 -ge 1 ] ; then
@@ -1017,6 +1208,20 @@ if [ $1 -ge 1 ] ; then
 fi
 %endif
 %endif
+
+%if %{with_libvirtd}
+%if %{with_network}
+%post daemon-config-network
+if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ; then
+    UUID=`/usr/bin/uuidgen`
+    sed -e "s,</name>,</name>\n  <uuid>$UUID</uuid>," \
+         < %{_datadir}/libvirt/networks/default.xml \
+         > %{_sysconfdir}/libvirt/qemu/networks/default.xml
+    ln -s ../default.xml %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
+fi
+%endif
+%endif
+
 
 %if %{with_libvirtd}
 %if %{with_systemd}
@@ -1064,8 +1269,17 @@ fi
 /bin/systemctl try-restart libvirt-guests.service >/dev/null 2>&1 || :
 %endif
 
-%if %{with_libvirtd}
 %files
+%defattr(-, root, root)
+
+%files docs
+%defattr(-, root, root)
+%dir %{_datadir}/doc/libvirt-docs-%{version}
+%dir %{_datadir}/doc/libvirt-docs-%{version}/html
+%{_datadir}/doc/libvirt-docs-%{version}/html/*
+
+%if %{with_libvirtd}
+%files daemon
 %defattr(-, root, root)
 
 %doc AUTHORS ChangeLog.gz NEWS README COPYING.LIB TODO
@@ -1078,7 +1292,6 @@ fi
 %endif
 
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/nwfilter/
-%{_sysconfdir}/libvirt/nwfilter/*.xml
 
 %{_sysconfdir}/rc.d/init.d/libvirtd
 %if %{with_systemd}
@@ -1190,6 +1403,67 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %{_mandir}/man8/libvirtd.8*
 
 %doc docs/*.xml
+
+%if %{with_network}
+%files daemon-config-network
+%defattr(-, root, root)
+%endif
+
+%if %{with_nwfilter}
+%files daemon-config-nwfilter
+%defattr(-, root, root)
+%{_sysconfdir}/libvirt/nwfilter/*.xml
+%endif
+
+%if %{with_qemu_tcg}
+%files daemon-qemu
+%defattr(-, root, root)
+%endif
+
+%if %{with_qemu_kvm}
+%files daemon-kvm
+%defattr(-, root, root)
+%endif
+
+%if %{with_lxc}
+%files daemon-lxc
+%defattr(-, root, root)
+%endif
+
+%if %{with_uml}
+%files daemon-uml
+%defattr(-, root, root)
+%endif
+
+%if %{with_xen}
+%files daemon-xen
+%defattr(-, root, root)
+%endif
+
+%if %{with_qemu_tcg}
+%files qemu
+%defattr(-, root, root)
+%endif
+
+%if %{with_qemu_kvm}
+%files kvm
+%defattr(-, root, root)
+%endif
+
+%if %{with_lxc}
+%files lxc
+%defattr(-, root, root)
+%endif
+
+%if %{with_uml}
+%files uml
+%defattr(-, root, root)
+%endif
+
+%if %{with_xen}
+%files xen
+%defattr(-, root, root)
+%endif
 %endif
 
 %if %{with_sanlock}
