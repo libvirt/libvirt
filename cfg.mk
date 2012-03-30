@@ -769,7 +769,7 @@ exclude_file_name_regexp--sc_prohibit_close = \
   (\.p[yl]$$|^docs/|^(src/util/virfile\.c|src/libvirt\.c)$$)
 
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
-  (^tests/qemuhelpdata/|\.(gif|ico|png)$$)
+  (^tests/qemuhelpdata/|\.(gif|ico|png|diff)$$)
 
 _src2=src/(util/command|libvirt|lxc/lxc_controller)
 exclude_file_name_regexp--sc_prohibit_fork_wrappers = \

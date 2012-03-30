@@ -45,8 +45,6 @@
 #include "virrandom.h"
 #include "viruri.h"
 
-#include <ctype.h>
-
 #ifndef WITH_DRIVER_MODULES
 # ifdef WITH_TEST
 #  include "test/test_driver.h"
