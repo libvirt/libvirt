@@ -3444,8 +3444,7 @@ qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev,
 
     if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
         dev->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC &&
-        dev->target.name &&
-        STRNEQ(dev->target.name, "com.redhat.spice.0")) {
+        STRNEQ_NULLABLE(dev->target.name, "com.redhat.spice.0")) {
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                         _("Unsupported spicevmc target name '%s'"),
                         dev->target.name);
@@ -3457,9 +3456,9 @@ qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev,
           qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC))) {
         virBufferAsprintf(&buf, ",chardev=char%s,id=%s",
                           dev->info.alias, dev->info.alias);
-        if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
-            dev->target.name) {
-            virBufferAsprintf(&buf, ",name=%s", dev->target.name);
+        if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL) {
+            virBufferAsprintf(&buf, ",name=%s", dev->target.name
+                              ? dev->target.name : "com.redhat.spice.0");
         }
     } else {
         virBufferAsprintf(&buf, ",id=%s", dev->info.alias);
