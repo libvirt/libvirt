@@ -72,6 +72,7 @@ int qemuProcessAttach(virConnectPtr conn,
 typedef enum {
    VIR_QEMU_PROCESS_KILL_FORCE  = 1 << 0,
    VIR_QEMU_PROCESS_KILL_NOWAIT = 1 << 1,
+   VIR_QEMU_PROCESS_KILL_NOCHECK = 1 << 2, /* bypass the running vm check */
 } virQemuProcessKillMode;
 
 int qemuProcessKill(struct qemud_driver *driver,

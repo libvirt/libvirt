@@ -3754,9 +3754,11 @@ qemuProcessKill(struct qemud_driver *driver,
     VIR_DEBUG("vm=%s pid=%d flags=%x",
               vm->def->name, vm->pid, flags);
 
-    if (!virDomainObjIsActive(vm)) {
-        VIR_DEBUG("VM '%s' not active", vm->def->name);
-        return 0;
+    if (!(flags & VIR_QEMU_PROCESS_KILL_NOCHECK)) {
+        if (!virDomainObjIsActive(vm)) {
+            VIR_DEBUG("VM '%s' not active", vm->def->name);
+            return 0;
+        }
     }
 
     /* This loop sends SIGTERM (or SIGKILL if flags has
@@ -3860,6 +3862,13 @@ void qemuProcessStop(struct qemud_driver *driver,
         return;
     }
 
+    /*
+     * We may unlock the driver and vm in qemuProcessKill(), and another thread
+     * can lock driver and vm, and then call qemuProcessStop(). So we should
+     * set vm->def->id to -1 here to avoid qemuProcessStop() to be called twice.
+     */
+    vm->def->id = -1;
+
     if ((logfile = qemuDomainCreateLog(driver, vm, true)) < 0) {
         /* To not break the normal domain shutdown process, skip the
          * timestamp log writing if failed on opening log file. */
@@ -3922,7 +3931,8 @@ void qemuProcessStop(struct qemud_driver *driver,
     }
 
     /* shut it off for sure */
-    ignore_value(qemuProcessKill(driver, vm, VIR_QEMU_PROCESS_KILL_FORCE));
+    ignore_value(qemuProcessKill(driver, vm, VIR_QEMU_PROCESS_KILL_FORCE|
+                                             VIR_QEMU_PROCESS_KILL_NOCHECK));
 
     qemuDomainCleanupRun(driver, vm);
 
@@ -4015,7 +4025,6 @@ retry:
 
     vm->taint = 0;
     vm->pid = -1;
-    vm->def->id = -1;
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
     VIR_FREE(priv->vcpupids);
     priv->nvcpupids = 0;
