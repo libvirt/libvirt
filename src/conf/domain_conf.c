@@ -9597,10 +9597,10 @@ static bool virDomainChannelDefCheckABIStability(virDomainChrDefPtr src,
 
     switch (src->targetType) {
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
-        if (STRNEQ(src->target.name, dst->target.name)) {
+        if (STRNEQ_NULLABLE(src->target.name, dst->target.name)) {
             virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                  _("Target channel name %s does not match source %s"),
-                                 dst->target.name, src->target.name);
+                                 NULLSTR(dst->target.name), NULLSTR(src->target.name));
             goto cleanup;
         }
         break;
