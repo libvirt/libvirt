@@ -5248,13 +5248,6 @@ virDomainChrDefParseXML(virCapsPtr caps,
             goto error;
         } else {
             def->source.data.spicevmc = VIR_DOMAIN_CHR_SPICEVMC_VDAGENT;
-            if (!def->target.name) {
-                def->target.name = strdup("com.redhat.spice.0");
-                if (!def->target.name) {
-                    virReportOOMError();
-                    goto error;
-                }
-            }
         }
     }
 
