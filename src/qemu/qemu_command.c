@@ -3902,8 +3902,9 @@ qemuBuildNumaArgStr(const virDomainDefPtr def, virCommandPtr cmd)
         virBufferAsprintf(&buf, "node,nodeid=%d", def->cpu->cells[i].cellid);
         virBufferAddLit(&buf, ",cpus=");
         qemuBuildNumaCPUArgStr(def->cpu->cells[i].cpumask, &buf);
-        virBufferAsprintf(&buf, "mem=%d",
-            VIR_DIV_UP(def->cpu->cells[i].mem, 1024));
+        def->cpu->cells[i].mem = VIR_DIV_UP(def->cpu->cells[i].mem,
+                                            1024) * 1024;
+        virBufferAsprintf(&buf, "mem=%d", def->cpu->cells[i].mem / 1024);
 
         if (virBufferError(&buf))
             goto error;
@@ -4047,10 +4048,12 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     /* Set '-m MB' based on maxmem, because the lower 'memory' limit
      * is set post-startup using the balloon driver. If balloon driver
-     * is not supported, then they're out of luck anyway
+     * is not supported, then they're out of luck anyway.  Update the
+     * XML to reflect our rounding.
      */
     virCommandAddArg(cmd, "-m");
-    virCommandAddArgFormat(cmd, "%llu", VIR_DIV_UP(def->mem.max_balloon, 1024));
+    def->mem.max_balloon = VIR_DIV_UP(def->mem.max_balloon, 1024) * 1024;
+    virCommandAddArgFormat(cmd, "%llu", def->mem.max_balloon / 1024);
     if (def->mem.hugepage_backed) {
         if (!driver->hugetlbfs_mount) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
