@@ -915,10 +915,10 @@ virStoragePoolDefFormat(virStoragePoolDefPtr def) {
     virBufferAddLit(&buf,"    <permissions>\n");
     virBufferAsprintf(&buf,"      <mode>0%o</mode>\n",
                       def->target.perms.mode);
-    virBufferAsprintf(&buf,"      <owner>%d</owner>\n",
-                      def->target.perms.uid);
-    virBufferAsprintf(&buf,"      <group>%d</group>\n",
-                      def->target.perms.gid);
+    virBufferAsprintf(&buf,"      <owner>%u</owner>\n",
+                      (unsigned int) def->target.perms.uid);
+    virBufferAsprintf(&buf,"      <group>%u</group>\n",
+                      (unsigned int) def->target.perms.gid);
 
     if (def->target.perms.label)
         virBufferAsprintf(&buf,"      <label>%s</label>\n",
@@ -1152,10 +1152,10 @@ virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
     virBufferAddLit(buf,"    <permissions>\n");
     virBufferAsprintf(buf,"      <mode>0%o</mode>\n",
                       def->perms.mode);
-    virBufferAsprintf(buf,"      <owner>%d</owner>\n",
-                      def->perms.uid);
-    virBufferAsprintf(buf,"      <group>%d</group>\n",
-                      def->perms.gid);
+    virBufferAsprintf(buf,"      <owner>%u</owner>\n",
+                      (unsigned int) def->perms.uid);
+    virBufferAsprintf(buf,"      <group>%u</group>\n",
+                      (unsigned int) def->perms.gid);
 
 
     if (def->perms.label)
