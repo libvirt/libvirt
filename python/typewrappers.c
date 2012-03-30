@@ -132,7 +132,7 @@ libvirt_intUnwrap(PyObject *obj, int *val)
     if ((long_val == -1) && PyErr_Occurred())
         return -1;
 
-    if ((int)long_val == long_val) {
+    if (long_val >= INT_MIN && long_val <= INT_MAX) {
         *val = long_val;
     } else {
         PyErr_SetString(PyExc_OverflowError,
@@ -151,7 +151,7 @@ libvirt_uintUnwrap(PyObject *obj, unsigned int *val)
     if ((long_val == -1) && PyErr_Occurred())
         return -1;
 
-    if ((unsigned int)long_val == long_val) {
+    if (long_val >= 0 && long_val <= UINT_MAX) {
         *val = long_val;
     } else {
         PyErr_SetString(PyExc_OverflowError,
@@ -183,7 +183,13 @@ libvirt_ulongUnwrap(PyObject *obj, unsigned long *val)
     if ((long_val == -1) && PyErr_Occurred())
         return -1;
 
-    *val = long_val;
+    if (long_val >= 0) {
+        *val = long_val;
+    } else {
+        PyErr_SetString(PyExc_OverflowError,
+                        "negative Python int cannot be converted to C unsigned long");
+        return -1;
+    }
     return 0;
 }
 
@@ -207,16 +213,23 @@ int
 libvirt_ulonglongUnwrap(PyObject *obj, unsigned long long *val)
 {
     unsigned long long ullong_val = -1;
+    long long llong_val;
 
     /* The PyLong_AsUnsignedLongLong doesn't check the type of
      * obj, only accept argument of PyLong_Type, so we check it instead.
      */
-    if (PyInt_Check(obj))
-        ullong_val = PyInt_AsLong(obj);
-    else if (PyLong_Check(obj))
+    if (PyInt_Check(obj)) {
+        llong_val = PyInt_AsLong(obj);
+        if (llong_val < 0)
+            PyErr_SetString(PyExc_OverflowError,
+                            "negative Python int cannot be converted to C unsigned long long");
+        else
+            ullong_val = llong_val;
+    } else if (PyLong_Check(obj)) {
         ullong_val = PyLong_AsUnsignedLongLong(obj);
-    else
+    } else {
         PyErr_SetString(PyExc_TypeError, "an integer is required");
+    }
 
     if ((ullong_val == -1) && PyErr_Occurred())
         return -1;
