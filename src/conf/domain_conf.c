@@ -7769,10 +7769,21 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto error;
 
     if (def->mem.cur_balloon > def->mem.max_balloon) {
-        virDomainReportError(VIR_ERR_XML_ERROR,
-                             _("current memory '%lluk' exceeds maximum '%lluk'"),
-                             def->mem.cur_balloon, def->mem.max_balloon);
-        goto error;
+        /* Older libvirt could get into this situation due to
+         * rounding; if the discrepancy is less than 1MiB, we silently
+         * round down, otherwise we flag the issue.  */
+        if (VIR_DIV_UP(def->mem.cur_balloon, 1024) >
+            VIR_DIV_UP(def->mem.max_balloon, 1024)) {
+            virDomainReportError(VIR_ERR_XML_ERROR,
+                                 _("current memory '%lluk' exceeds "
+                                   "maximum '%lluk'"),
+                                 def->mem.cur_balloon, def->mem.max_balloon);
+            goto error;
+        } else {
+            VIR_DEBUG("Truncating current %lluk to maximum %lluk",
+                      def->mem.cur_balloon, def->mem.max_balloon);
+            def->mem.cur_balloon = def->mem.max_balloon;
+        }
     } else if (def->mem.cur_balloon == 0) {
         def->mem.cur_balloon = def->mem.max_balloon;
     }
