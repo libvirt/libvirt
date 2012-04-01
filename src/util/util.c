@@ -1030,7 +1030,7 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
                 break;
             case -1:
                 /* failure detecting fstype */
-                virReportSystemError(errno, _("couldn't determine fs type of"
+                virReportSystemError(errno, _("couldn't determine fs type "
                                               "of mount containing '%s'"), path);
                 goto error;
             case 0:

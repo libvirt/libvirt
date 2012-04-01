@@ -1174,7 +1174,7 @@ virNetDevGetVirtualFunctions(const char *pfname ATTRIBUTE_UNUSED,
                              unsigned int *n_vfname ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
-                         _("Unable to get virtual functions on this platfornm"));
+                         _("Unable to get virtual functions on this platform"));
     return -1;
 }
 

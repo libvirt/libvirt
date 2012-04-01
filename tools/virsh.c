@@ -965,7 +965,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     if (optTable + optName + optUUID > 1) {
         vshError(ctl, "%s",
-                 _("Only one argument from --table, --name and --uuid"
+                 _("Only one argument from --table, --name and --uuid "
                    "may be specified."));
         return false;
     }
