@@ -93,6 +93,10 @@ test_programs = virshtest sockettest \
 	virtimetest viruritest virkeyfiletest \
 	virauthconfigtest
 
+if WITH_DRIVER_MODULES
+test_programs += virdrivermoduletest
+endif
+
 # This is a fake SSH we use from virnetsockettest
 ssh_SOURCES = ssh.c
 ssh_LDADD = $(COVERAGE_LDFLAGS)
@@ -519,6 +523,13 @@ jsontest_LDADD = $(LDADDS)
 utiltest_SOURCES = \
 	utiltest.c testutils.h testutils.c
 utiltest_LDADD = $(LDADDS)
+
+if WITH_DRIVER_MODULES
+virdrivermoduletest_SOURCES = \
+	virdrivermoduletest.c testutils.h testutils.c
+virdrivermoduletest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
+virdrivermoduletest_LDADD = $(LDADDS)
+endif
 
 if WITH_LIBVIRTD
 eventtest_SOURCES = \
