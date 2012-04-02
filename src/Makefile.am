@@ -795,6 +795,10 @@ libvirt_driver_lxc_la_CFLAGS = \
 		$(LIBNL_CFLAGS) \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
 libvirt_driver_lxc_la_LIBADD = $(CAPNG_LIBS) $(LIBNL_LIBS)
+if HAVE_LIBBLKID
+libvirt_driver_lxc_la_CFLAGS += $(BLKID_CFLAGS)
+libvirt_driver_lxc_la_LIBADD += $(BLKID_LIBS)
+endif
 if WITH_SECDRIVER_SELINUX
 libvirt_driver_lxc_la_LIBADD += $(SELINUX_LIBS)
 endif
