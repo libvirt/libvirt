@@ -38,16 +38,30 @@
 
 # include <dlfcn.h>
 
+static const char *moddir = NULL;
+
+void
+virDriverModuleInitialize(const char *defmoddir)
+{
+    const char *custommoddir = getenv("LIBVIRT_DRIVER_DIR");
+    if (custommoddir)
+        moddir = custommoddir;
+    else if (defmoddir)
+        moddir = defmoddir;
+    else
+        moddir = DEFAULT_DRIVER_DIR;
+    VIR_DEBUG("Module dir %s", moddir);
+}
+
 void *
 virDriverLoadModule(const char *name)
 {
-    const char *moddir = getenv("LIBVIRT_DRIVER_DIR");
     char *modfile = NULL, *regfunc = NULL;
     void *handle = NULL;
     int (*regsym)(void);
 
     if (moddir == NULL)
-        moddir = DEFAULT_DRIVER_DIR;
+        virDriverModuleInitialize(NULL);
 
     VIR_DEBUG("Module load %s", name);
 

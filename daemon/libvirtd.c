@@ -958,6 +958,12 @@ int main(int argc, char **argv) {
     /* initialize early logging */
     virLogSetFromEnv();
 
+#ifdef WITH_DRIVER_MODULES
+    if (strstr(argv[0], "lt-libvirtd") &&
+        (access("./.git", R_OK) >= 0 || access("../.git", R_OK) >= 0))
+        virDriverModuleInitialize("./src/.libs");
+#endif
+
     while (1) {
         int optidx = 0;
         int c;
