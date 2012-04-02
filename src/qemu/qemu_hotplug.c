@@ -155,16 +155,18 @@ error:
 
 int
 qemuDomainCheckEjectableMedia(struct qemud_driver *driver,
-                             virDomainObjPtr vm)
+                             virDomainObjPtr vm,
+                             enum qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virHashTablePtr table;
+    virHashTablePtr table = NULL;
     int ret = -1;
     int i;
 
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    table = qemuMonitorGetBlockInfo(priv->mon);
-    qemuDomainObjExitMonitorWithDriver(driver, vm);
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
+        table = qemuMonitorGetBlockInfo(priv->mon);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+    }
 
     if (!table)
         goto cleanup;

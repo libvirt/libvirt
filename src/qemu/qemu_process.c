@@ -3106,7 +3106,7 @@ qemuProcessReconnect(void *opaque)
     if (qemuProcessFiltersInstantiate(conn, obj->def))
         goto error;
 
-    if (qemuDomainCheckEjectableMedia(driver, obj) < 0)
+    if (qemuDomainCheckEjectableMedia(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
         goto error;
 
     if (qemuProcessRecoverJob(driver, obj, conn, &oldjob) < 0)

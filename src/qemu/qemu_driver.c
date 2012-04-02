@@ -8816,6 +8816,7 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
     struct qemud_driver *driver = domain->conn->privateData;
     virDomainObjPtr vm;
     char *xml = NULL;
+    enum qemuDomainAsyncJob asyncJob;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, NULL);
 
@@ -8832,9 +8833,11 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
     if ((flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
         if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
             goto cleanup;
+        asyncJob = QEMU_ASYNC_JOB_MIGRATION_OUT;
     } else {
         if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
             goto cleanup;
+        asyncJob = QEMU_ASYNC_JOB_NONE;
     }
 
     if (!virDomainObjIsActive(vm)) {
@@ -8847,7 +8850,7 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
      * We don't want to require them on the destination.
      */
 
-    if (qemuDomainCheckEjectableMedia(driver, vm) < 0)
+    if (qemuDomainCheckEjectableMedia(driver, vm, asyncJob) < 0)
         goto endjob;
 
     if (!(xml = qemuMigrationBegin(driver, vm, xmlin, dname,
