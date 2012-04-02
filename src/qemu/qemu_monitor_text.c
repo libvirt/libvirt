@@ -41,6 +41,10 @@
 #include "virterror_internal.h"
 #include "buf.h"
 
+#ifdef WITH_DTRACE_PROBES
+# include "libvirt_qemu_probes.h"
+#endif
+
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 #define QEMU_CMD_PROMPT "\n(qemu) "

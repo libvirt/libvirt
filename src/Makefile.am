@@ -1246,22 +1246,30 @@ libvirt_la_CFLAGS = -DIN_LIBVIRT $(AM_CFLAGS)
 libvirt_la_DEPENDENCIES = $(libvirt_la_BUILT_LIBADD) $(LIBVIRT_SYMBOL_FILE)
 
 if WITH_DTRACE_PROBES
-libvirt_la_BUILT_LIBADD += probes.o
-libvirt_la_DEPENDENCIES += probes.o
-nodist_libvirt_la_SOURCES = probes.h
+libvirt_la_BUILT_LIBADD += libvirt_probes.o
+libvirt_la_DEPENDENCIES += libvirt_probes.o
+nodist_libvirt_la_SOURCES = libvirt_probes.h
 if WITH_REMOTE
-$(REMOTE_DRIVER_GENERATED): probes.h
+$(REMOTE_DRIVER_GENERATED): libvirt_probes.h
 endif WITH_REMOTE
 
-BUILT_SOURCES += probes.h libvirt_probes.stp libvirt_functions.stp
+BUILT_SOURCES += libvirt_probes.h libvirt_probes.stp libvirt_functions.stp
+
+if WITH_QEMU
+libvirt_driver_qemu_la_LIBADD += libvirt_qemu_probes.o
+nodist_libvirt_driver_qemu_la_SOURCES = libvirt_qemu_probes.h
+libvirt_driver_qemu_la_DEPENDENCIES = libvirt_qemu_probes.o
+
+$(libvirt_driver_qemu_la_SOURCES): libvirt_qemu_probes.h
+endif
 
 tapsetdir = $(datadir)/systemtap/tapset
-tapset_DATA = libvirt_probes.stp libvirt_functions.stp
+tapset_DATA = libvirt_probes.stp libvirt_qemu_probes.stp libvirt_functions.stp
 
-probes.h: probes.d
+%_probes.h: %_probes.d
 	$(AM_V_GEN)$(DTRACE) -o $@ -h -s $<
 
-probes.o: probes.d
+%_probes.o: %_probes.d
 	$(AM_V_GEN)$(DTRACE) -o $@ -G -s $<
 
 RPC_PROBE_FILES = $(srcdir)/rpc/virnetprotocol.x \
@@ -1272,13 +1280,19 @@ RPC_PROBE_FILES = $(srcdir)/rpc/virnetprotocol.x \
 libvirt_functions.stp: $(RPC_PROBE_FILES) $(srcdir)/rpc/gensystemtap.pl
 	$(AM_V_GEN)perl -w $(srcdir)/rpc/gensystemtap.pl $(RPC_PROBE_FILES) > $@
 
-libvirt_probes.stp: probes.d $(srcdir)/dtrace2systemtap.pl
+libvirt_probes.stp: libvirt_probes.d $(srcdir)/dtrace2systemtap.pl
 	$(AM_V_GEN)perl -w $(srcdir)/dtrace2systemtap.pl $(bindir) $(sbindir) $(libdir) $< > $@
 
-CLEANFILES += probes.h probes.o libvirt_functions.stp libvirt_probes.stp
+libvirt_qemu_probes.stp: libvirt_qemu_probes.d $(srcdir)/dtrace2systemtap.pl
+	$(AM_V_GEN)perl -w $(srcdir)/dtrace2systemtap.pl $(bindir) $(sbindir) $(libdir) $< > $@
+
+CLEANFILES += libvirt_probes.h libvirt_probes.o \
+              libvirt_qemu_probes.h libvirt_qemu_probes.o \
+              libvirt_functions.stp libvirt_probes.stp \
+              libvirt_qemu_probes.stp
 endif
 
-EXTRA_DIST += probes.d
+EXTRA_DIST += libvirt_probes.d libvirt_qemu_probes.d
 
 libvirt_qemu_la_SOURCES = libvirt-qemu.c
 libvirt_qemu_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)$(LIBVIRT_QEMU_SYMBOL_FILE) \
@@ -1465,7 +1479,7 @@ libvirt_lxc_LDADD = $(CAPNG_LIBS) $(YAJL_LIBS) \
 		$(RT_LIBS) $(DBUS_LIBS) \
 		../gnulib/lib/libgnu.la
 if WITH_DTRACE_PROBES
-libvirt_lxc_LDADD += probes.o
+libvirt_lxc_LDADD += libvirt_probes.o
 endif
 if WITH_SECDRIVER_SELINUX
 libvirt_lxc_LDADD += $(SELINUX_LIBS)
@@ -1510,7 +1524,7 @@ virt_aa_helper_LDADD =						\
 		libvirt_util.la					\
 		../gnulib/lib/libgnu.la
 if WITH_DTRACE_PROBES
-virt_aa_helper_LDADD += probes.o
+virt_aa_helper_LDADD += libvirt_probes.o
 endif
 virt_aa_helper_CFLAGS =						\
 		-I$(top_srcdir)/src/conf			\

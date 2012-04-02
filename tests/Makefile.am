@@ -31,7 +31,7 @@ endif
 
 PROBES_O =
 if WITH_DTRACE_PROBES
-PROBES_O += ../src/probes.o
+PROBES_O += ../src/libvirt_probes.o
 endif
 
 LDADDS = \
@@ -289,6 +289,9 @@ if WITH_QEMU
 qemu_LDADDS = ../src/libvirt_driver_qemu.la
 if WITH_NETWORK
 qemu_LDADDS += ../src/libvirt_driver_network.la
+endif
+if WITH_DTRACE_PROBES
+qemu_LDADDS += ../src/libvirt_qemu_probes.o
 endif
 qemu_LDADDS += $(LDADDS)
 

@@ -250,7 +250,7 @@
 # if WITH_DTRACE_PROBES
 #  ifndef LIBVIRT_PROBES_H
 #   define LIBVIRT_PROBES_H
-#   include "probes.h"
+#   include "libvirt_probes.h"
 #  endif /* LIBVIRT_PROBES_H */
 
 /* Systemtap 1.2 headers have a bug where they cannot handle a

@@ -43,6 +43,10 @@
 #include "json.h"
 #include "ignore-value.h"
 
+#ifdef WITH_DTRACE_PROBES
+# include "libvirt_qemu_probes.h"
+#endif
+
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 

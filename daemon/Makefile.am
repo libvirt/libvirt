@@ -112,7 +112,7 @@ libvirtd_LDADD =					\
 	$(POLKIT_LIBS)
 
 if WITH_DTRACE_PROBES
-libvirtd_LDADD += ../src/probes.o
+libvirtd_LDADD += ../src/libvirt_probes.o
 endif
 
 libvirtd_LDADD += \
@@ -121,6 +121,9 @@ libvirtd_LDADD += \
 if ! WITH_DRIVER_MODULES
 if WITH_QEMU
     libvirtd_LDADD += ../src/libvirt_driver_qemu.la
+if WITH_DTRACE_PROBES
+    libvirtd_LDADD += ../src/libvirt_qemu_probes.o
+endif
 endif
 
 if WITH_LXC
