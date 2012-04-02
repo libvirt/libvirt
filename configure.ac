@@ -2422,14 +2422,27 @@ dnl Driver-Modules library
 AC_ARG_WITH([driver-modules],
   AC_HELP_STRING([--with-driver-modules], [build drivers as loadable modules @<:@default=no@:>@]),
   [],
-  [with_driver_modules=no])
+  [with_driver_modules=check])
+
+if test "$with_libvirtd" = "no" ; then
+  with_driver_modules=no
+fi
 
 DRIVER_MODULE_CFLAGS=
 DRIVER_MODULE_LIBS=
-if test "$with_driver_modules" = "yes"; then
+if test "$with_driver_modules" = "yes" || test "$with_driver_modules" = "check"; then
   if test "$dlfcn_found" != "yes" || test "$dlopen_found" != "yes"; then
-    AC_MSG_ERROR([You must have dlfcn.h / dlopen() support to build driver modules])
+    if test "$with_driver_modules" = "yes" ; then
+      AC_MSG_ERROR([You must have dlfcn.h / dlopen() support to build driver modules])
+    else
+      with_driver_modules=no
+    fi
+  else
+    with_driver_modules=yes
   fi
+fi
+
+if test "$with_driver_modules" = "yes" ; then
   DRIVER_MODULE_CFLAGS="-export-dynamic"
   case $ac_cv_search_dlopen in
     no*) DRIVER_MODULE_LIBS= ;;
