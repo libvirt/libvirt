@@ -1253,6 +1253,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("numerical overflow: %s");
             break;
+        case VIR_ERR_BLOCK_COPY_ACTIVE:
+            if (!info)
+                errmsg = _("block copy still active");
+            else
+                errmsg = _("block copy still active: %s");
+            break;
     }
     return errmsg;
 }

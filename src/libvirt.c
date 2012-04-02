@@ -2696,6 +2696,10 @@ error:
  * A save file can be inspected or modified slightly with
  * virDomainSaveImageGetXMLDesc() and virDomainSaveImageDefineXML().
  *
+ * Some hypervisors may prevent this operation if there is a current
+ * block copy operation; in that case, use virDomainBlockJobAbort()
+ * to stop the block copy first.
+ *
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
@@ -7891,6 +7895,11 @@ error:
  * virDomainUndefine(). A previous definition for this domain would be
  * overriden if it already exists.
  *
+ * Some hypervisors may prevent this operation if there is a current
+ * block copy operation on a transient domain with the same id as the
+ * domain being defined; in that case, use virDomainBlockJobAbort() to
+ * stop the block copy first.
+ *
  * Returns NULL in case of error, a pointer to the domain otherwise
  */
 virDomainPtr
@@ -9423,6 +9432,10 @@ error:
  * error if unable to satisfy flags.  E.g. the hypervisor driver will
  * return failure if LIVE is specified but it only supports removing the
  * persisted device allocation.
+ *
+ * Some hypervisors may prevent this operation if there is a current
+ * block copy operation on the device being detached; in that case,
+ * use virDomainBlockJobAbort() to stop the block copy first.
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
@@ -17124,6 +17137,10 @@ virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
  * that it is still possible to fail after disks have changed, but only
  * in the much rarer cases of running out of memory or disk space).
  *
+ * Some hypervisors may prevent this operation if there is a current
+ * block copy operation; in that case, use virDomainBlockJobAbort()
+ * to stop the block copy first.
+ *
  * Returns an (opaque) virDomainSnapshotPtr on success, NULL on failure.
  */
 virDomainSnapshotPtr
@@ -17913,7 +17930,8 @@ error:
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
  *
- * By default, this function performs a synchronous operation and the caller
+ * If the current block job for @disk is VIR_DOMAIN_BLOCK_JOB_TYPE_PULL, then
+ * by default, this function performs a synchronous operation and the caller
  * may assume that the operation has completed when 0 is returned.  However,
  * BlockJob operations may take a long time to cancel, and during this time
  * further domain interactions may be unresponsive.  To avoid this problem,
@@ -17922,7 +17940,18 @@ error:
  * been canceled, a BlockJob event will be emitted, with status
  * VIR_DOMAIN_BLOCK_JOB_CANCELED (even if the ABORT_ASYNC flag was not
  * used); it is also possible to poll virDomainBlockJobInfo() to see if
- * the job cancellation is still pending.
+ * the job cancellation is still pending.  This type of job can be restarted
+ * to pick up from where it left off.
+ *
+ * If the current block job for @disk is VIR_DOMAIN_BLOCK_JOB_TYPE_COPY, then
+ * the default is to abort the mirroring and revert to the source disk;
+ * adding @flags of VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT causes this call to
+ * fail with VIR_ERR_BLOCK_COPY_ACTIVE if the copy is not fully populated,
+ * otherwise it will swap the disk over to the copy to end the mirroring.  An
+ * event will be issued when the job is ended, and it is possible to use
+ * VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC to control whether this command waits
+ * for the completion of the job.  Restarting this job requires starting
+ * over from the beginning of the first phase.
  *
  * Returns -1 in case of failure, 0 when successful.
  */
@@ -18172,19 +18201,57 @@ error:
  * @disk: path to the block device, or device shorthand
  * @base: path to backing file to keep, or NULL for no backing file
  * @bandwidth: (optional) specify copy bandwidth limit in Mbps
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virDomainBlockRebaseFlags
  *
  * Populate a disk image with data from its backing image chain, and
- * setting the backing image to @base.  @base must be the absolute
+ * setting the backing image to @base, or alternatively copy an entire
+ * backing chain to a new file @base.
+ *
+ * When @flags is 0, this starts a pull, where @base must be the absolute
  * path of one of the backing images further up the chain, or NULL to
  * convert the disk image so that it has no backing image.  Once all
  * data from its backing image chain has been pulled, the disk no
  * longer depends on those intermediate backing images.  This function
  * pulls data for the entire device in the background.  Progress of
- * the operation can be checked with virDomainGetBlockJobInfo() and
- * the operation can be aborted with virDomainBlockJobAbort().  When
- * finished, an asynchronous event is raised to indicate the final
- * status.
+ * the operation can be checked with virDomainGetBlockJobInfo() with a
+ * job type of VIR_DOMAIN_BLOCK_JOB_TYPE_PULL, and the operation can be
+ * aborted with virDomainBlockJobAbort().  When finished, an asynchronous
+ * event is raised to indicate the final status, and the job no longer
+ * exists.  If the job is aborted, a new one can be started later to
+ * resume from the same point.
+ *
+ * When @flags includes VIR_DOMAIN_BLOCK_REBASE_COPY, this starts a copy,
+ * where @base must be the name of a new file to copy the chain to.  By
+ * default, the copy will pull the entire source chain into the destination
+ * file, but if @flags also contains VIR_DOMAIN_BLOCK_REBASE_SHALLOW, then
+ * only the top of the source chain will be copied (the source and
+ * destination have a common backing file).  By default, @base will be
+ * created with the same file format as the source, but this can be altered
+ * by adding VIR_DOMAIN_BLOCK_REBASE_COPY_RAW to force the copy to be raw
+ * (does not make sense with the shallow flag unless the source is also raw),
+ * or by using VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT to reuse an existing file
+ * with initial contents identical to the backing file of the source (this
+ * allows a management app to pre-create files with relative backing file
+ * names, rather than the default of absolute backing file names; as a
+ * security precaution, you should generally only use reuse_ext with the
+ * shallow flag and a non-raw destination file).
+ *
+ * A copy job has two parts; in the first phase, the @bandwidth parameter
+ * affects how fast the source is pulled into the destination, and the job
+ * can only be canceled by reverting to the source file; progress in this
+ * phase can be tracked via the virDomainBlockJobInfo() command, with a
+ * job type of VIR_DOMAIN_BLOCK_JOB_TYPE_COPY.  The job transitions to the
+ * second phase when the job info states cur == end, and remains alive to
+ * mirror all further changes to both source and destination.  The user
+ * must call virDomainBlockJobAbort() to end the mirroring while choosing
+ * whether to revert to source or pivot to the destination.  An event is
+ * issued when the job ends, and in the future, an event may be added when
+ * the job transitions from pulling to mirroring.  If the job is aborted,
+ * a new job will have to start over from the beginning of the first phase.
+ *
+ * Some hypervisors will restrict certain actions, such as virDomainSave()
+ * or virDomainDetachDevice(), while a copy job is active; they may
+ * also restrict a copy job to transient domains.
  *
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
@@ -18198,7 +18265,8 @@ error:
  * suitable default.  Some hypervisors do not support this feature and will
  * return an error if bandwidth is not 0.
  *
- * When @base is NULL, this is identical to virDomainBlockPull().
+ * When @base is NULL and @flags is 0, this is identical to
+ * virDomainBlockPull().
  *
  * Returns 0 if the operation has started, -1 on failure.
  */
@@ -18228,6 +18296,20 @@ int virDomainBlockRebase(virDomainPtr dom, const char *disk,
     if (!disk) {
         virLibDomainError(VIR_ERR_INVALID_ARG,
                           _("disk is NULL"));
+        goto error;
+    }
+
+    if (flags & VIR_DOMAIN_BLOCK_REBASE_COPY) {
+        if (!base) {
+            virLibDomainError(VIR_ERR_INVALID_ARG,
+                              _("base is required when starting a copy"));
+            goto error;
+        }
+    } else if (flags & (VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
+                        VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT |
+                        VIR_DOMAIN_BLOCK_REBASE_COPY_RAW)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG,
+                          _("use of flags requires a copy job"));
         goto error;
     }
 
