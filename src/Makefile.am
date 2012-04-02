@@ -1143,12 +1143,20 @@ if WITH_LINUX
 USED_SYM_FILES += libvirt_linux.syms
 endif
 
+if WITH_ESX
+USED_SYM_FILES += libvirt_esx.syms
+endif
+
 if WITH_LIBVIRTD
 USED_SYM_FILES += libvirt_daemon.syms
 endif
 
 if WITH_NWFILTER
 USED_SYM_FILES += libvirt_nwfilter.syms
+endif
+
+if WITH_OPENVZ
+USED_SYM_FILES += libvirt_openvz.syms
 endif
 
 if WITH_VMX
@@ -1173,8 +1181,11 @@ EXTRA_DIST += \
   libvirt_driver_modules.syms	\
   libvirt_daemon.syms		\
   libvirt_linux.syms		\
+  libvirt_esx.syms		\
   libvirt_network.syms		\
   libvirt_nwfilter.syms		\
+  libvirt_openvz.syms		\
+  libvirt_qemu.syms		\
   libvirt_sasl.syms		\
   libvirt_vmx.syms		\
   libvirt_xenxs.syms
@@ -1264,24 +1275,6 @@ CLEANFILES += probes.h probes.o libvirt_functions.stp libvirt_probes.stp
 endif
 
 EXTRA_DIST += probes.d
-
-
-# Create an automake "convenience library" version of libvirt_la,
-# just for testing, since the test harness requires access to internal
-# bits and pieces that we don't want to make publicly accessible.
-noinst_LTLIBRARIES += libvirt_test.la
-
-# Remove version script from convenience library
-test_LDFLAGS =						\
-  $$(echo '$(libvirt_la_LDFLAGS)'			\
-     |sed 's!$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_SYMBOL_FILE)!!'	\
-     |sed 's!-version-info $(LIBVIRT_VERSION_INFO)!!')
-
-# Just like the above, but with a slightly different set of public symbols.
-libvirt_test_la_SOURCES = $(libvirt_la_SOURCES)
-libvirt_test_la_LIBADD = $(libvirt_la_LIBADD)
-libvirt_test_la_LDFLAGS = $(test_LDFLAGS) $(AM_LDFLAGS)
-libvirt_test_la_CFLAGS = $(AM_CFLAGS)
 
 libvirt_qemu_la_SOURCES = libvirt-qemu.c
 libvirt_qemu_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)$(LIBVIRT_QEMU_SYMBOL_FILE) \

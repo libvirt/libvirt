@@ -1,0 +1,7 @@
+#
+# These symbols are dependent upon --with-esx via WITH_ESX
+#
+
+esxUtil_EscapeDatastoreItem;
+esxVI_DateTime_ConvertToCalendarTime;
+esxUtil_ParseDatastorePath;

@@ -35,19 +35,10 @@ PROBES_O += ../src/probes.o
 endif
 
 LDADDS = \
-	$(STATIC_BINARIES) \
-	$(LIBXML_LIBS) \
-        $(GNUTLS_LIBS) \
-        $(SASL_LIBS) \
-        $(SELINUX_LIBS) \
-        $(APPARMOR_LIBS) \
-        $(YAJL_LIBS) \
         $(WARN_CFLAGS) \
-	../src/libvirt_test.la \
 	$(PROBES_O) \
-	../gnulib/lib/libgnu.la \
-	$(LIBSOCKET) \
-        $(COVERAGE_LDFLAGS)
+	../src/libvirt.la \
+	../gnulib/lib/libgnu.la
 
 EXTRA_DIST =		\
 	capabilityschemadata \
@@ -254,27 +245,30 @@ valgrind:
 sockettest_SOURCES = \
 	sockettest.c \
 	testutils.c testutils.h
-sockettest_LDADD = ../src/libvirt_util.la $(LDADDS)
+sockettest_LDADD = $(LDADDS)
 
 if WITH_XEN
+xen_LDADDS = ../src/libvirt_driver_xen.la
+xen_LDADDS += $(LDADDS)
+
 xml2sexprtest_SOURCES = \
 	xml2sexprtest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
-xml2sexprtest_LDADD = ../src/libvirt_driver_xen.la $(LDADDS)
+xml2sexprtest_LDADD = $(xen_LDADDS)
 
 sexpr2xmltest_SOURCES = \
 	sexpr2xmltest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
-sexpr2xmltest_LDADD = ../src/libvirt_driver_xen.la $(LDADDS)
+sexpr2xmltest_LDADD = $(xen_LDADDS)
 
 xmconfigtest_SOURCES = \
 	xmconfigtest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
-xmconfigtest_LDADD = ../src/libvirt_driver_xen.la $(LDADDS)
+xmconfigtest_LDADD = $(xen_LDADDS)
 
 xencapstest_SOURCES = \
 	xencapstest.c testutils.h testutils.c
-xencapstest_LDADD = ../src/libvirt_driver_xen.la $(LDADDS)
+xencapstest_LDADD = $(xen_LDADDS)
 
 reconnect_SOURCES = \
 	reconnect.c testutils.h testutils.c
@@ -282,7 +276,7 @@ reconnect_LDADD = $(LDADDS)
 
 statstest_SOURCES = \
 	statstest.c testutils.h testutils.c
-statstest_LDADD = ../src/libvirt_driver_xen.la $(LDADDS)
+statstest_LDADD = $(xen_LDADDS)
 
 else
 EXTRA_DIST += xml2sexprtest.c sexpr2xmltest.c xmconfigtest.c \
@@ -293,41 +287,41 @@ endif
 if WITH_QEMU
 
 qemu_LDADDS = ../src/libvirt_driver_qemu.la
-
 if WITH_NETWORK
 qemu_LDADDS += ../src/libvirt_driver_network.la
 endif
+qemu_LDADDS += $(LDADDS)
 
 qemuxml2argvtest_SOURCES = \
 	qemuxml2argvtest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
-qemuxml2argvtest_LDADD = $(qemu_LDADDS)  $(LDADDS)
+qemuxml2argvtest_LDADD = $(qemu_LDADDS)
 
 qemuxml2xmltest_SOURCES = \
 	qemuxml2xmltest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
-qemuxml2xmltest_LDADD = $(qemu_LDADDS) $(LDADDS)
+qemuxml2xmltest_LDADD = $(qemu_LDADDS)
 
 qemuxmlnstest_SOURCES = \
 	qemuxmlnstest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
-qemuxmlnstest_LDADD = $(qemu_LDADDS)  $(LDADDS)
+qemuxmlnstest_LDADD = $(qemu_LDADDS)
 
 qemuargv2xmltest_SOURCES = \
 	qemuargv2xmltest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
-qemuargv2xmltest_LDADD = $(qemu_LDADDS) $(LDADDS)
+qemuargv2xmltest_LDADD = $(qemu_LDADDS)
 
 qemuhelptest_SOURCES = qemuhelptest.c testutils.c testutils.h
-qemuhelptest_LDADD = $(qemu_LDADDS) $(LDADDS)
+qemuhelptest_LDADD = $(qemu_LDADDS)
 
 qemumonitortest_SOURCES = qemumonitortest.c testutils.c testutils.h
-qemumonitortest_LDADD = $(qemu_LDADDS) $(LDADDS)
+qemumonitortest_LDADD = $(qemu_LDADDS)
 
 domainsnapshotxml2xmltest_SOURCES = \
 	domainsnapshotxml2xmltest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
-domainsnapshotxml2xmltest_LDADD = $(qemu_LDADDS) $(LDADDS)
+domainsnapshotxml2xmltest_LDADD = $(qemu_LDADDS)
 else
 EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c qemuargv2xmltest.c \
 	qemuxmlnstest.c qemuhelptest.c domainsnapshotxml2xmltest.c \
@@ -337,11 +331,15 @@ endif
 if WITH_LXC
 
 lxc_LDADDS = ../src/libvirt_driver_lxc.la
+if WITH_NETWORK
+lxc_LDADDS += ../src/libvirt_driver_network.la
+endif
+lxc_LDADDS += $(LDADDS)
 
 lxcxml2xmltest_SOURCES = \
 	lxcxml2xmltest.c testutilslxc.c testutilslxc.h \
 	testutils.c testutils.h
-lxcxml2xmltest_LDADD = $(lxc_LDADDS) $(LDADDS)
+lxcxml2xmltest_LDADD = $(lxc_LDADDS)
 else
 EXTRA_DIST += lxcxml2xmltest.c testutilslxc.c testutilslxc.h
 endif
@@ -350,7 +348,7 @@ if WITH_OPENVZ
 openvzutilstest_SOURCES = \
 	openvzutilstest.c \
 	testutils.c testutils.h
-openvzutilstest_LDADD = ../src/libvirt_driver_openvz.la $(LDADDS)
+openvzutilstest_LDADD = $(LDADDS)
 else
 EXTRA_DIST += openvzutilstest.c
 endif
@@ -360,7 +358,7 @@ if WITH_ESX
 esxutilstest_SOURCES = \
 	esxutilstest.c \
 	testutils.c testutils.h
-esxutilstest_LDADD = ../src/libvirt_driver_esx.la $(LDADDS)
+esxutilstest_LDADD = $(LDADDS)
 else
 EXTRA_DIST += esxutilstest.c
 endif
@@ -369,12 +367,12 @@ if WITH_VMX
 vmx2xmltest_SOURCES = \
 	vmx2xmltest.c \
 	testutils.c testutils.h
-vmx2xmltest_LDADD = ../src/libvirt_vmx.la $(LDADDS)
+vmx2xmltest_LDADD = $(LDADDS)
 
 xml2vmxtest_SOURCES = \
 	xml2vmxtest.c \
 	testutils.c testutils.h
-xml2vmxtest_LDADD = ../src/libvirt_vmx.la $(LDADDS)
+xml2vmxtest_LDADD = $(LDADDS)
 else
 EXTRA_DIST += vmx2xmltest.c xml2vmxtest.c
 endif
@@ -445,6 +443,7 @@ commandhelper_SOURCES = \
 	commandhelper.c
 commandhelper_CFLAGS = -Dabs_builddir="\"`pwd`\"" $(AM_CFLAGS)
 commandhelper_LDADD = $(LDADDS)
+commandhelper_LDFLAGS = -static
 
 if WITH_LIBVIRTD
 libvirtdconftest_SOURCES = \
@@ -460,17 +459,17 @@ virnetmessagetest_SOURCES = \
 	virnetmessagetest.c testutils.h testutils.c
 virnetmessagetest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" \
 		$(XDR_CFLAGS) $(AM_CFLAGS)
-virnetmessagetest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
+virnetmessagetest_LDADD = $(LDADDS)
 
 virnetsockettest_SOURCES = \
 	virnetsockettest.c testutils.h testutils.c
 virnetsockettest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
-virnetsockettest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
+virnetsockettest_LDADD = $(LDADDS)
 
 virnettlscontexttest_SOURCES = \
 	virnettlscontexttest.c testutils.h testutils.c
 virnettlscontexttest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
-virnettlscontexttest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
+virnettlscontexttest_LDADD = $(LDADDS)
 if HAVE_LIBTASN1
 virnettlscontexttest_SOURCES += pkix_asn1_tab.c
 virnettlscontexttest_LDADD += -ltasn1
@@ -481,26 +480,26 @@ endif
 virtimetest_SOURCES = \
 	virtimetest.c testutils.h testutils.c
 virtimetest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
-virtimetest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
+virtimetest_LDADD = $(LDADDS)
 
 viruritest_SOURCES = \
 	viruritest.c testutils.h testutils.c
 viruritest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
-viruritest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
+viruritest_LDADD = $(LDADDS)
 
 virkeyfiletest_SOURCES = \
 	virkeyfiletest.c testutils.h testutils.c
 virkeyfiletest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
-virkeyfiletest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
+virkeyfiletest_LDADD = $(LDADDS)
 
 virauthconfigtest_SOURCES = \
 	virauthconfigtest.c testutils.h testutils.c
 virauthconfigtest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
-virauthconfigtest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
+virauthconfigtest_LDADD = $(LDADDS)
 
 seclabeltest_SOURCES = \
 	seclabeltest.c
-seclabeltest_LDADD = ../src/libvirt_driver_security.la $(LDADDS)
+seclabeltest_LDADD = $(LDADDS)
 
 virbuftest_SOURCES = \
 	virbuftest.c testutils.h testutils.c
