@@ -703,9 +703,6 @@ Group: Development/Libraries
 Requires: %{name}-client = %{version}-%{release}
 Requires: %{name}-docs = %{version}-%{release}
 Requires: pkgconfig
-%if %{with_xen}
-Requires: xen-devel
-%endif
 
 %description devel
 Include header files & development libraries for the libvirt C library.
