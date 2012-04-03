@@ -42,15 +42,12 @@
 %define with_libvirtd      0%{!?_without_libvirtd:%{server_drivers}}
 %define with_avahi         0%{!?_without_avahi:%{server_drivers}}
 
-# Then the hypervisor drivers that run on local host
+# Then the hypervisor drivers that run in libvirtd
 %define with_xen           0%{!?_without_xen:%{server_drivers}}
 %define with_qemu          0%{!?_without_qemu:%{server_drivers}}
-%define with_openvz        0%{!?_without_openvz:%{server_drivers}}
 %define with_lxc           0%{!?_without_lxc:%{server_drivers}}
-%define with_vbox          0%{!?_without_vbox:%{server_drivers}}
 %define with_uml           0%{!?_without_uml:%{server_drivers}}
 %define with_libxl         0%{!?_without_libxl:%{server_drivers}}
-%define with_vmware        0%{!?_without_vmware:%{server_drivers}}
 
 %define with_qemu_tcg      %{with_qemu}
 # Change if we ever provide qemu-kvm binaries on non-x86 hosts
@@ -60,13 +57,16 @@
 %define with_qemu_kvm      0
 %endif
 
-# Then the hypervisor drivers that talk via a native remote protocol
+# Then the hypervisor drivers that run outside libvirtd, in libvirt.so
+%define with_openvz        0%{!?_without_openvz:1}
+%define with_vbox          0%{!?_without_vbox:1}
+%define with_vmware        0%{!?_without_vmware:1}
 %define with_phyp          0%{!?_without_phyp:1}
 %define with_esx           0%{!?_without_esx:1}
 %define with_hyperv        0%{!?_without_hyperv:1}
 %define with_xenapi        0%{!?_without_xenapi:1}
 
-# Then the secondary host drivers
+# Then the secondary host drivers, which run inside libvirtd
 %define with_network       0%{!?_without_network:%{server_drivers}}
 %define with_storage_fs    0%{!?_without_storage_fs:%{server_drivers}}
 %define with_storage_lvm   0%{!?_without_storage_lvm:%{server_drivers}}
