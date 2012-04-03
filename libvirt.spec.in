@@ -578,9 +578,6 @@ Summary: Libraries, includes, etc. to compile with the libvirt library
 Group: Development/Libraries
 Requires: %{name}-client = %{version}-%{release}
 Requires: pkgconfig
-%if %{with_xen}
-Requires: xen-devel
-%endif
 
 %description devel
 Includes and documentations for the C library providing an API to use
