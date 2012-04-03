@@ -52,6 +52,14 @@
 %define with_libxl         0%{!?_without_libxl:%{server_drivers}}
 %define with_vmware        0%{!?_without_vmware:%{server_drivers}}
 
+%define with_qemu_tcg      %{with_qemu}
+# Change if we ever provide qemu-kvm binaries on non-x86 hosts
+%ifarch %{ix86} x86_64
+%define with_qemu_kvm      %{with_qemu}
+%else
+%define with_qemu_kvm      0
+%endif
+
 # Then the hypervisor drivers that talk via a native remote protocol
 %define with_phyp          0%{!?_without_phyp:1}
 %define with_esx           0%{!?_without_esx:1}
@@ -125,8 +133,10 @@
 
 # RHEL-5 has restricted QEMU to x86_64 only and is too old for LXC
 %if 0%{?rhel} == 5
+%define with_qemu_tcg 0
 %ifnarch x86_64
 %define with_qemu 0
+%define with_qemu_kvm 0
 %endif
 %define with_lxc 0
 %endif
@@ -134,8 +144,10 @@
 # RHEL-6 has restricted QEMU to x86_64 only, stopped including Xen
 # on all archs. Other archs all have LXC available though
 %if 0%{?rhel} >= 6
+%define with_qemu_tcg 0
 %ifnarch x86_64
 %define with_qemu 0
+%define with_qemu_kvm 0
 %endif
 %define with_xen 0
 %endif
@@ -206,7 +218,7 @@
 %define with_storage_disk 0
 %endif
 
-%if %{with_qemu}
+%if %{with_qemu} || %{with_lxc} || %{with_uml}
 %define with_nwfilter 0%{!?_without_nwfilter:%{server_drivers}}
 # Enable libpcap library
 %define with_libpcap  0%{!?_without_libpcap:%{server_drivers}}
@@ -585,6 +597,78 @@ Requires: libvirt-daemon = %{version}-%{release}
 
 %description daemon-config-nwfilter
 Network filter configuration files for cleaning guest traffic
+%endif
+
+# XXX when we turn on driver modules, we will need to
+# create daemon-drv-XXX sub-RPMs and add them as deps
+# to all of the following  daemon-XXX RPMs
+
+%if %{with_qemu_tcg}
+%package daemon-qemu
+Summary: Server side daemon & driver required to run QEMU guests
+Group: Development/Libraries
+
+Requires: libvirt-daemon = %{version}-%{release}
+Requires: qemu
+
+%description daemon-qemu
+Server side daemon and driver required to manage the virtualization
+capabilities of the QEMU TCG emulators
+%endif
+
+
+%if %{with_qemu_kvm}
+%package daemon-kvm
+Summary: Server side daemon & driver required to run KVM guests
+Group: Development/Libraries
+
+Requires: libvirt-daemon = %{version}-%{release}
+Requires: qemu-kvm
+
+%description daemon-kvm
+Server side daemon and driver required to manage the virtualization
+capabilities of the KVM hypervisor
+%endif
+
+
+%if %{with_lxc}
+%package daemon-lxc
+Summary: Server side daemon & driver required to run LXC guests
+Group: Development/Libraries
+
+Requires: libvirt-daemon = %{version}-%{release}
+
+%description daemon-lxc
+Server side daemon and driver required to manage the virtualization
+capabilities of LXC
+%endif
+
+
+%if %{with_uml}
+%package daemon-uml
+Summary: Server side daemon & driver required to run UML guests
+Group: Development/Libraries
+
+Requires: libvirt-daemon = %{version}-%{release}
+# There are no UML kernel RPMs in Fedora/RHEL to depend on.
+
+%description daemon-uml
+Server side daemon and driver required to manage the virtualization
+capabilities of UML
+%endif
+
+
+%if %{with_xen} || %{with_libxl}
+%package daemon-xen
+Summary: Server side daemon & driver required to run XEN guests
+Group: Development/Libraries
+
+Requires: libvirt-daemon = %{version}-%{release}
+Requires: xen
+
+%description daemon-xen
+Server side daemon and driver required to manage the virtualization
+capabilities of XEN
 %endif
 %endif
 
@@ -1249,6 +1333,31 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %files daemon-config-nwfilter
 %defattr(-, root, root)
 %{_sysconfdir}/libvirt/nwfilter/*.xml
+%endif
+
+%if %{with_qemu_tcg}
+%files daemon-qemu
+%defattr(-, root, root)
+%endif
+
+%if %{with_qemu_kvm}
+%files daemon-kvm
+%defattr(-, root, root)
+%endif
+
+%if %{with_lxc}
+%files daemon-lxc
+%defattr(-, root, root)
+%endif
+
+%if %{with_uml}
+%files daemon-uml
+%defattr(-, root, root)
+%endif
+
+%if %{with_xen} || %{with_libxl}
+%files daemon-xen
+%defattr(-, root, root)
 %endif
 %endif
 
