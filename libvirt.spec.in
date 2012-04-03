@@ -268,109 +268,21 @@ Source: http://libvirt.org/sources/libvirt-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 URL: http://libvirt.org/
 
-# All runtime requirements for the libvirt package (runtime requrements
-# for subpackages are listed later in those subpackages)
-
-# The client side, i.e. shared libs and virsh are in a subpackage
-Requires: %{name}-client = %{version}-%{release}
-
-# Used by many of the drivers, so turn it on whenever the
-# daemon is present
 %if %{with_libvirtd}
-# for modprobe of pci devices
-Requires: module-init-tools
-# for /sbin/ip & /sbin/tc
-Requires: iproute
-%if %{with_avahi}
-Requires: avahi-libs
-%endif
-%endif
+Requires: libvirt-daemon = %{version}-%{release}
 %if %{with_network}
-Requires: dnsmasq >= 2.41
-Requires: radvd
-%endif
-%if %{with_network} || %{with_nwfilter}
-Requires: iptables
-Requires: iptables-ipv6
+Requires: libvirt-daemon-config-network = %{version}-%{release}
 %endif
 %if %{with_nwfilter}
-Requires: ebtables
+Requires: libvirt-daemon-config-nwfilter = %{version}-%{release}
 %endif
-# needed for device enumeration
-%if %{with_hal}
-Requires: hal
+# XXX when we turn on driver modules, we need to add
+# deps on each driver (Requires: libvirt-daemon-drv-qemu)
 %endif
-%if %{with_udev}
-Requires: udev >= 145
-%endif
-%if %{with_polkit}
-%if 0%{?fedora} >= 12 || 0%{?rhel} >=6
-Requires: polkit >= 0.93
-%else
-Requires: PolicyKit >= 0.6
-%endif
-%endif
-%if %{with_storage_fs}
-Requires: nfs-utils
-# For mkfs
-Requires: util-linux-ng
-# For pool-build probing for existing pools
-BuildRequires: libblkid-devel >= 2.17
-# For glusterfs
-%if 0%{?fedora} >= 11
-Requires: glusterfs-client >= 2.0.1
-%endif
-%endif
-%if %{with_qemu}
-# From QEMU RPMs
-Requires: /usr/bin/qemu-img
-# For image compression
-Requires: gzip
-Requires: bzip2
-Requires: lzop
-Requires: xz
-%else
-%if %{with_xen}
-# From Xen RPMs
-Requires: /usr/sbin/qcow-create
-%endif
-%endif
-%if %{with_storage_lvm}
-# For LVM drivers
-Requires: lvm2
-%endif
-%if %{with_storage_iscsi}
-# For ISCSI driver
-Requires: iscsi-initiator-utils
-%endif
-%if %{with_storage_disk}
-# For disk driver
-Requires: parted
-Requires: device-mapper
-%endif
-%if %{with_storage_mpath}
-# For multipath support
-Requires: device-mapper
-%endif
-%if %{with_cgconfig}
-Requires: libcgroup
-%endif
-%ifarch %{ix86} x86_64 ia64
-# For virConnectGetSysinfo
-Requires: dmidecode
-%endif
-# For service management
-%if %{with_systemd}
-Requires(post): systemd-units
-Requires(post): systemd-sysv
-Requires(preun): systemd-units
-Requires(postun): systemd-units
-%endif
-%if %{with_numad}
-Requires: numad
-%endif
+Requires: libvirt-client = %{version}-%{release}
 
-# All build-time requirements
+# All build-time requirements. Run-time requirements are
+# listed against each sub-RPM
 %if 0%{?enable_autotools}
 BuildRequires: autoconf
 BuildRequires: automake
@@ -544,6 +456,137 @@ Group: Development/Libraries
 %description docs
 Includes the API reference for the libvirt C library, and a complete
 copy of the libvirt.org website documentation.
+
+%if %{with_libvirtd}
+%package daemon
+Summary: Server side daemon and supporting files for libvirt library
+Group: Development/Libraries
+
+# All runtime requirements for the libvirt package (runtime requrements
+# for subpackages are listed later in those subpackages)
+
+# The client side, i.e. shared libs and virsh are in a subpackage
+Requires: %{name}-client = %{version}-%{release}
+
+# for modprobe of pci devices
+Requires: module-init-tools
+# for /sbin/ip & /sbin/tc
+Requires: iproute
+%if %{with_avahi}
+Requires: avahi-libs
+%endif
+%if %{with_network}
+Requires: dnsmasq >= 2.41
+Requires: radvd
+%endif
+%if %{with_network} || %{with_nwfilter}
+Requires: iptables
+Requires: iptables-ipv6
+%endif
+%if %{with_nwfilter}
+Requires: ebtables
+%endif
+# needed for device enumeration
+%if %{with_hal}
+Requires: hal
+%endif
+%if %{with_udev}
+Requires: udev >= 145
+%endif
+%if %{with_polkit}
+%if 0%{?fedora} >= 12 || 0%{?rhel} >=6
+Requires: polkit >= 0.93
+%else
+Requires: PolicyKit >= 0.6
+%endif
+%endif
+%if %{with_storage_fs}
+Requires: nfs-utils
+# For mkfs
+Requires: util-linux-ng
+# For pool-build probing for existing pools
+BuildRequires: libblkid-devel >= 2.17
+# For glusterfs
+%if 0%{?fedora} >= 11
+Requires: glusterfs-client >= 2.0.1
+%endif
+%endif
+%if %{with_qemu}
+# From QEMU RPMs
+Requires: /usr/bin/qemu-img
+# For image compression
+Requires: gzip
+Requires: bzip2
+Requires: lzop
+Requires: xz
+%else
+%if %{with_xen}
+# From Xen RPMs
+Requires: /usr/sbin/qcow-create
+%endif
+%endif
+%if %{with_storage_lvm}
+# For LVM drivers
+Requires: lvm2
+%endif
+%if %{with_storage_iscsi}
+# For ISCSI driver
+Requires: iscsi-initiator-utils
+%endif
+%if %{with_storage_disk}
+# For disk driver
+Requires: parted
+Requires: device-mapper
+%endif
+%if %{with_storage_mpath}
+# For multipath support
+Requires: device-mapper
+%endif
+%if %{with_cgconfig}
+Requires: libcgroup
+%endif
+%ifarch %{ix86} x86_64 ia64
+# For virConnectGetSysinfo
+Requires: dmidecode
+%endif
+# For service management
+%if %{with_systemd}
+Requires(post): systemd-units
+Requires(post): systemd-sysv
+Requires(preun): systemd-units
+Requires(postun): systemd-units
+%endif
+%if %{with_numad}
+Requires: numad
+%endif
+
+%description daemon
+Server side daemon required to manage the virtualization capabilities
+of recent versions of Linux. Requires a hypervisor specific sub-RPM
+for specific drivers.
+
+%if %{with_network}
+%package daemon-config-network
+Summary: Default configuration files for the libvirtd daemon
+Group: Development/Libraries
+
+Requires: libvirt-daemon = %{version}-%{release}
+
+%description daemon-config-network
+Default configuration files for setting up NAT based networking
+%endif
+
+%if %{with_nwfilter}
+%package daemon-config-nwfilter
+Summary: Network filter configuration files for the libvirtd daemon
+Group: Development/Libraries
+
+Requires: libvirt-daemon = %{version}-%{release}
+
+%description daemon-config-nwfilter
+Network filter configuration files for cleaning guest traffic
+%endif
+%endif
 
 %package client
 Summary: Client side library and utilities of the libvirt library
@@ -899,7 +942,8 @@ do
 done
 make check
 
-%pre
+%if %{with_libvirtd}
+%pre daemon
 %if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
 # Normally 'setup' adds this in /etc/passwd, but this is
 # here for case of upgrades from earlier Fedora/RHEL. This
@@ -911,22 +955,9 @@ getent passwd qemu >/dev/null || \
     -c "qemu user" qemu
 %endif
 
-%post
+%post daemon
 
-%if %{with_libvirtd}
 %if %{with_network}
-# We want to install the default network for initial RPM installs
-# or on the first upgrade from a non-network aware libvirt only.
-# We check this by looking to see if the daemon is already installed
-if ! /sbin/chkconfig libvirtd && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml
-then
-    UUID=`/usr/bin/uuidgen`
-    sed -e "s,</name>,</name>\n  <uuid>$UUID</uuid>," \
-         < %{_datadir}/libvirt/networks/default.xml \
-         > %{_sysconfdir}/libvirt/qemu/networks/default.xml
-    ln -s ../default.xml %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
-fi
-
 # All newly defined networks will have a mac address for the bridge
 # auto-generated, but networks already existing at the time of upgrade
 # will not. We need to go through all the network configs, look for
@@ -990,10 +1021,8 @@ if [ "$1" -ge "1" ]; then
 	/sbin/service libvirtd condrestart > /dev/null 2>&1
 fi
 %endif
-%endif
 
-%preun
-%if %{with_libvirtd}
+%preun daemon
 %if %{with_systemd}
 if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
@@ -1006,15 +1035,24 @@ if [ $1 = 0 ]; then
     /sbin/chkconfig --del libvirtd
 fi
 %endif
-%endif
 
-%postun
-%if %{with_libvirtd}
+%postun daemon
 %if %{with_systemd}
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 if [ $1 -ge 1 ] ; then
     # Package upgrade, not uninstall
     /bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 || :
+fi
+%endif
+
+%if %{with_network}
+%post daemon-config-network
+if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ; then
+    UUID=`/usr/bin/uuidgen`
+    sed -e "s,</name>,</name>\n  <uuid>$UUID</uuid>," \
+         < %{_datadir}/libvirt/networks/default.xml \
+         > %{_sysconfdir}/libvirt/qemu/networks/default.xml
+    ln -s ../default.xml %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
 fi
 %endif
 %endif
@@ -1065,8 +1103,25 @@ fi
 /bin/systemctl try-restart libvirt-guests.service >/dev/null 2>&1 || :
 %endif
 
-%if %{with_libvirtd}
 %files
+%defattr(-, root, root)
+
+%files docs
+%defattr(-, root, root)
+# Website
+%dir %{_datadir}/doc/libvirt-docs-%{version}
+%dir %{_datadir}/doc/libvirt-docs-%{version}/html
+%{_datadir}/doc/libvirt-docs-%{version}/html/*
+
+# API docs
+%dir %{_datadir}/gtk-doc/html/libvirt/
+%doc %{_datadir}/gtk-doc/html/libvirt/*.devhelp
+%doc %{_datadir}/gtk-doc/html/libvirt/*.html
+%doc %{_datadir}/gtk-doc/html/libvirt/*.png
+%doc %{_datadir}/gtk-doc/html/libvirt/*.css
+
+%if %{with_libvirtd}
+%files daemon
 %defattr(-, root, root)
 
 %doc AUTHORS ChangeLog.gz NEWS README COPYING.LIB TODO
@@ -1079,7 +1134,6 @@ fi
 %endif
 
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/nwfilter/
-%{_sysconfdir}/libvirt/nwfilter/*.xml
 
 %{_sysconfdir}/rc.d/init.d/libvirtd
 %if %{with_systemd}
@@ -1185,21 +1239,18 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %attr(0755, root, root) %{_sbindir}/libvirtd
 
 %{_mandir}/man8/libvirtd.8*
+
+%if %{with_network}
+%files daemon-config-network
+%defattr(-, root, root)
 %endif
 
-%files docs
+%if %{with_nwfilter}
+%files daemon-config-nwfilter
 %defattr(-, root, root)
-# Website
-%dir %{_datadir}/doc/libvirt-docs-%{version}
-%dir %{_datadir}/doc/libvirt-docs-%{version}/html
-%{_datadir}/doc/libvirt-docs-%{version}/html/*
-
-# API docs
-%dir %{_datadir}/gtk-doc/html/libvirt/
-%doc %{_datadir}/gtk-doc/html/libvirt/*.devhelp
-%doc %{_datadir}/gtk-doc/html/libvirt/*.html
-%doc %{_datadir}/gtk-doc/html/libvirt/*.png
-%doc %{_datadir}/gtk-doc/html/libvirt/*.css
+%{_sysconfdir}/libvirt/nwfilter/*.xml
+%endif
+%endif
 
 %if %{with_sanlock}
 %files lock-sanlock
