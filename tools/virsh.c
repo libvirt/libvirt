@@ -19879,6 +19879,16 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
     vshPrint(ctl, "\n");
 }
 
+static bool
+vshAllowedEscapeChar(char c)
+{
+    /* Allowed escape characters:
+     * a-z A-Z @ [ \ ] ^ _
+     */
+    return ('a' <= c && c <= 'z') ||
+        ('@' <= c && c <= '_');
+}
+
 /*
  * argv[]:  virsh [options] [command]
  *
@@ -19942,7 +19952,8 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
         case 'e':
             len = strlen(optarg);
 
-            if ((len == 2 && *optarg == '^') ||
+            if ((len == 2 && *optarg == '^' &&
+                 vshAllowedEscapeChar(optarg[1])) ||
                 (len == 1 && *optarg != '^')) {
                 ctl->escapeChar = optarg;
             } else {

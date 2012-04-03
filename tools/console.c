@@ -34,6 +34,7 @@
 # include <errno.h>
 # include <unistd.h>
 # include <signal.h>
+# include <c-ctype.h>
 
 # include "internal.h"
 # include "console.h"
@@ -292,7 +293,7 @@ static char
 vshGetEscapeChar(const char *s)
 {
     if (*s == '^')
-        return CONTROL(s[1]);
+        return CONTROL(c_toupper(s[1]));
 
     return *s;
 }
