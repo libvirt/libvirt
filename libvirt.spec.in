@@ -1285,6 +1285,17 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %endif
 
 %changelog
+* Tue Apr  3 2012 Daniel Veillard <veillard@redhat.com> - 0.9.11-1
+- Add support for the suspend event
+- Add support for event tray moved of removable disks
+- qemu: Support numad
+- cpustats: API, improvements and qemu support
+- qemu: support type='hostdev' network devices at domain start
+- Introduce virDomainPMWakeup API
+- network: support Open vSwitch
+- a number of snapshot improvements
+- many improvements and bug fixes
+
 * Mon Feb 13 2012 Daniel Veillard <veillard@redhat.com> - 0.9.10-1
 - Add support for sVirt in the LXC driver
 - block rebase: add new API virDomainBlockRebase
