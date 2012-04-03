@@ -537,6 +537,14 @@ Libvirt is a C toolkit to interact with the virtualization capabilities
 of recent versions of Linux (and other OSes). The main package includes
 the libvirtd server exporting the virtualization support.
 
+%package docs
+Summary: API reference and website documentation
+Group: Development/Libraries
+
+%description docs
+Includes the API reference for the libvirt C library, and a complete
+copy of the libvirt.org website documentation.
+
 %package client
 Summary: Client side library and utilities of the libvirt library
 Group: Development/Libraries
@@ -566,14 +574,14 @@ virtualization capabilities of recent versions of Linux (and other OSes).
 Summary: Libraries, includes, etc. to compile with the libvirt library
 Group: Development/Libraries
 Requires: %{name}-client = %{version}-%{release}
+Requires: %{name}-docs = %{version}-%{release}
 Requires: pkgconfig
 %if %{with_xen}
 Requires: xen-devel
 %endif
 
 %description devel
-Includes and documentations for the C library providing an API to use
-the virtualization capabilities of recent versions of Linux (and other OSes).
+Include header files & development libraries for the libvirt C library.
 
 %if %{with_sanlock}
 %package lock-sanlock
@@ -873,6 +881,9 @@ rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.lxc
 %if ! %{with_uml}
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.uml
 %endif
+
+mv $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-%{version} \
+   $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-docs-%{version}
 
 %clean
 rm -fr %{buildroot}
@@ -1178,6 +1189,20 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %doc docs/*.xml
 %endif
 
+%files docs
+%defattr(-, root, root)
+# Website
+%dir %{_datadir}/doc/libvirt-docs-%{version}
+%dir %{_datadir}/doc/libvirt-docs-%{version}/html
+%{_datadir}/doc/libvirt-docs-%{version}/html/*
+
+# API docs
+%dir %{_datadir}/gtk-doc/html/libvirt/
+%doc %{_datadir}/gtk-doc/html/libvirt/*.devhelp
+%doc %{_datadir}/gtk-doc/html/libvirt/*.html
+%doc %{_datadir}/gtk-doc/html/libvirt/*.png
+%doc %{_datadir}/gtk-doc/html/libvirt/*.css
+
 %if %{with_sanlock}
 %files lock-sanlock
 %defattr(-, root, root)
@@ -1250,11 +1275,6 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %dir %{_includedir}/libvirt
 %{_includedir}/libvirt/*.h
 %{_libdir}/pkgconfig/libvirt.pc
-%dir %{_datadir}/gtk-doc/html/libvirt/
-%doc %{_datadir}/gtk-doc/html/libvirt/*.devhelp
-%doc %{_datadir}/gtk-doc/html/libvirt/*.html
-%doc %{_datadir}/gtk-doc/html/libvirt/*.png
-%doc %{_datadir}/gtk-doc/html/libvirt/*.css
 
 %dir %{_datadir}/libvirt/api/
 %{_datadir}/libvirt/api/libvirt-api.xml
