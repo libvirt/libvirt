@@ -22,7 +22,6 @@ FILTERS = \
 
 EXTRA_DIST=$(FILTERS)
 
-if WITH_NWFILTER
 confdir = $(sysconfdir)/libvirt
 
 NWFILTER_DIR = "$(DESTDIR)$(sysconfdir)/libvirt/nwfilter"
@@ -38,4 +37,3 @@ uninstall-local::
 		rm -f "$(NWFILTER_DIR)/$$f"; \
 	done
 	-test -z $(shell ls $(NWFILTER_DIR)) || rmdir $(NWFILTER_DIR)
-endif

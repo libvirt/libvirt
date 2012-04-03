@@ -84,10 +84,6 @@
                 <a href="hooks.html">Hooks</a>
                 <span>Hooks for system specific management</span>
               </li>
-              <li>
-                <a href="packaging.html">Distribution packaging</a>
-                <span>Rationale for distribution RPM packaging</span>
-              </li>
             </ul>
           </li>
           <li>
