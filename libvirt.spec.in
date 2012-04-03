@@ -1185,8 +1185,6 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %attr(0755, root, root) %{_sbindir}/libvirtd
 
 %{_mandir}/man8/libvirtd.8*
-
-%doc docs/*.xml
 %endif
 
 %files docs
