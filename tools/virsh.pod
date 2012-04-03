@@ -95,7 +95,8 @@ Output elapsed time information for each command.
 =item B<-e>, B<--escape> I<string>
 
 Set alternative escape sequence for I<console> command. By default,
-telnet's B<^]> is used.
+telnet's B<^]> is used. Allowed characters when using hat notation are:
+alphabetic character, @, [, ], \, ^, _.
 
 =back
 
