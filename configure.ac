@@ -403,6 +403,31 @@ AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_UPSTART], test "$init_upstart" = "yes")
 AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_SYSTEMD], test "$init_systemd" = "yes")
 AC_MSG_RESULT($with_init_script)
 
+
+AC_MSG_CHECKING([for whether to install sysctl config])
+AC_ARG_WITH([sysctl],
+            [AC_HELP_STRING([--with-sysctl@<:@=yes/no@:>@],
+                            [Whether to install sysctl configs @<:@default=auto@:>@])],
+                            [],[with_sysctl=check])
+
+if test "$with_sysctl" = "yes" || test "$with_sysctl" = "check"
+then
+  case $host in
+    *-*-linux*)
+      with_sysctl=yes
+      ;;
+    **)
+      if test "$with_sysctl" = "yes"; then
+         AC_MSG_ERROR([No sysctl configuration supported for $host])
+      else
+         with_sysctl=no
+      fi
+      ;;
+  esac
+fi
+AM_CONDITIONAL([WITH_SYSCTL], test "$with_sysctl" = "yes")
+AC_MSG_RESULT($with_sysctl)
+
 dnl RHEL-5 has a peculiar version of Xen, which requires some special casing
 AC_ARG_WITH([rhel5-api],
 	[AC_HELP_STRING([--with-rhel5-api=@<:@ARG@:>@],

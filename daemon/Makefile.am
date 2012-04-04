@@ -256,6 +256,7 @@ uninstall-sysconfig:
 	rm -f $(DESTDIR)$(sysconfdir)/sysconfig/libvirtd
 	rmdir $(DESTDIR)$(sysconfdir)/sysconfig || :
 
+if WITH_SYSCTL
 install-sysctl:
 	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sysctl.d
 	$(INSTALL_DATA) $(srcdir)/libvirtd.sysctl \
@@ -264,6 +265,10 @@ install-sysctl:
 uninstall-sysctl:
 	rm -f $(DESTDIR)$(sysconfdir)/sysctl.d/libvirtd
 	rmdir $(DESTDIR)$(sysconfdir)/sysctl.d || :
+else
+install-sysctl:
+uninstall-sysctl:
+endif
 
 if LIBVIRT_INIT_SCRIPT_RED_HAT
 
