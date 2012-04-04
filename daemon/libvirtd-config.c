@@ -28,12 +28,16 @@
 #include "memory.h"
 #include "virterror_internal.h"
 #include "logging.h"
-#include "virnetserver.h"
+#include "rpc/virnetserver.h"
 #include "configmake.h"
-#include "remote_protocol.h"
-#include "remote_driver.h"
+#include "remote/remote_protocol.h"
+#include "remote/remote_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_CONF
+
+#define virConfError(code, ...)                                      \
+    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,              \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /* Allocate an array of malloc'd strings from the config file, filename
  * (used only in diagnostics), using handle "conf".  Upon error, return -1
@@ -52,14 +56,17 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
     switch (p->type) {
     case VIR_CONF_STRING:
         if (VIR_ALLOC_N(list, 2) < 0) {
-            VIR_ERROR(_("failed to allocate memory for %s config list"), key);
+            virConfError(VIR_ERR_CONFIG_UNSUPPORTED,
+                         _("failed to allocate memory for %s config list"),
+                         key);
             return -1;
         }
         list[0] = strdup (p->str);
         list[1] = NULL;
         if (list[0] == NULL) {
-            VIR_ERROR(_("failed to allocate memory for %s config list value"),
-                      key);
+            virConfError(VIR_ERR_CONFIG_UNSUPPORTED,
+                         _("failed to allocate memory for %s config list value"),
+                         key);
             VIR_FREE(list);
             return -1;
         }
@@ -71,14 +78,17 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
         for (pp = p->list; pp; pp = pp->next)
             len++;
         if (VIR_ALLOC_N(list, 1+len) < 0) {
-            VIR_ERROR(_("failed to allocate memory for %s config list"), key);
+            virConfError(VIR_ERR_CONFIG_UNSUPPORTED,
+                         _("failed to allocate memory for %s config list"),
+                         key);
             return -1;
         }
         for (i = 0, pp = p->list; pp; ++i, pp = pp->next) {
             if (pp->type != VIR_CONF_STRING) {
-                VIR_ERROR(_("remoteReadConfigFile: %s: %s:"
-                            " must be a string or list of strings"),
-                          filename, key);
+                virConfError(VIR_ERR_CONFIG_UNSUPPORTED,
+                             _("remoteReadConfigFile: %s: %s:"
+                               " must be a string or list of strings"),
+                             filename, key);
                 VIR_FREE(list);
                 return -1;
             }
@@ -88,8 +98,9 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
                 for (j = 0 ; j < i ; j++)
                     VIR_FREE(list[j]);
                 VIR_FREE(list);
-                VIR_ERROR(_("failed to allocate memory for %s config list value"),
-                          key);
+                virConfError(VIR_ERR_CONFIG_UNSUPPORTED,
+                             _("failed to allocate memory for %s config list value"),
+                             key);
                 return -1;
             }
 
@@ -99,9 +110,10 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
     }
 
     default:
-        VIR_ERROR(_("remoteReadConfigFile: %s: %s:"
-                    " must be a string or list of strings"),
-                  filename, key);
+        virConfError(VIR_ERR_CONFIG_UNSUPPORTED,
+                     _("remoteReadConfigFile: %s: %s:"
+                       " must be a string or list of strings"),
+                     filename, key);
         return -1;
     }
 
@@ -115,10 +127,11 @@ checkType (virConfValuePtr p, const char *filename,
            const char *key, virConfType required_type)
 {
     if (p->type != required_type) {
-        VIR_ERROR(_("remoteReadConfigFile: %s: %s: invalid type:"
-                    " got %s; expected %s"), filename, key,
-                  virConfTypeName (p->type),
-                  virConfTypeName (required_type));
+        virConfError(VIR_ERR_CONFIG_UNSUPPORTED,
+                     _("remoteReadConfigFile: %s: %s: invalid type:"
+                       " got %s; expected %s"), filename, key,
+                     virConfTypeName (p->type),
+                     virConfTypeName (required_type));
         return -1;
     }
     return 0;
@@ -176,8 +189,9 @@ static int remoteConfigGetAuth(virConfPtr conf, const char *key, int *auth, cons
     } else if (STREQ(p->str, "polkit")) {
         *auth = VIR_NET_SERVER_SERVICE_AUTH_POLKIT;
     } else {
-        VIR_ERROR(_("remoteReadConfigFile: %s: %s: unsupported auth %s"),
-                  filename, key, p->str);
+        virConfError(VIR_ERR_CONFIG_UNSUPPORTED,
+                     _("remoteReadConfigFile: %s: %s: unsupported auth %s"),
+                     filename, key, p->str);
         return -1;
     }
 
