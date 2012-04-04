@@ -103,7 +103,7 @@ MAINTAINERCLEANFILES = \
   $(addprefix $(srcdir)/,$(apihtml)) \
   $(addprefix $(srcdir)/,$(devhelphtml))
 
-all: web
+all-am: web
 
 api: $(srcdir)/libvirt-api.xml $(srcdir)/libvirt-refs.xml
 qemu_api: $(srcdir)/libvirt-qemu-api.xml $(srcdir)/libvirt-qemu-refs.xml
