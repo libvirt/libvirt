@@ -6,3 +6,6 @@
 # stats_linux.h
 linuxDomainInterfaceStats;
 xenLinuxDomainBlockStats;
+
+# nodeinfo.h
+linuxNodeInfoCPUPopulate;
