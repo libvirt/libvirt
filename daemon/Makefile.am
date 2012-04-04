@@ -21,6 +21,7 @@ DAEMON_GENERATED =					\
 
 DAEMON_SOURCES =					\
 		libvirtd.c libvirtd.h			\
+		libvirtd-config.c libvirtd-config.h	\
 		remote.c remote.h			\
 		stream.c stream.h			\
 		../src/remote/remote_protocol.c		\
