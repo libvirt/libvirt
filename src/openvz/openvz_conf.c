@@ -1,7 +1,7 @@
 /*
  * openvz_conf.c: config functions for managing OpenVZ VEs
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
  * Copyright (C) 2007 Anoop Joe Cyriac
@@ -99,7 +99,7 @@ openvzExtractVersionInfo(const char *cmdstr, int *retversion)
     if ((tmp = STRSKIP(tmp, "vzctl version ")) == NULL)
         goto cleanup;
 
-    if (virParseVersionString(tmp, &version, false) < 0)
+    if (virParseVersionString(tmp, &version, true) < 0)
         goto cleanup;
 
     if (retversion)
