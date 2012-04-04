@@ -350,26 +350,11 @@ daemonConfigFree(struct daemonConfig *data)
     VIR_FREE(data);
 }
 
-
-/* Read the config file if it exists.
- * Only used in the remote case, hence the name.
- */
-int
-daemonConfigLoad(struct daemonConfig *data,
-                 const char *filename,
-                 bool allow_missing)
+static int
+daemonConfigLoadOptions(struct daemonConfig *data,
+                        const char *filename,
+                        virConfPtr conf)
 {
-    virConfPtr conf;
-
-    if (allow_missing &&
-        access(filename, R_OK) == -1 &&
-        errno == ENOENT)
-        return 0;
-
-    conf = virConfReadFile (filename, 0);
-    if (!conf)
-        return -1;
-
     GET_CONF_INT (conf, filename, listen_tcp);
     GET_CONF_INT (conf, filename, listen_tls);
     GET_CONF_STR (conf, filename, tls_port);
@@ -447,10 +432,50 @@ daemonConfigLoad(struct daemonConfig *data,
     GET_CONF_INT (conf, filename, keepalive_count);
     GET_CONF_INT (conf, filename, keepalive_required);
 
-    virConfFree (conf);
     return 0;
 
 error:
-    virConfFree (conf);
     return -1;
+}
+
+
+/* Read the config file if it exists.
+ * Only used in the remote case, hence the name.
+ */
+int
+daemonConfigLoadFile(struct daemonConfig *data,
+                     const char *filename,
+                     bool allow_missing)
+{
+    virConfPtr conf;
+    int ret;
+
+    if (allow_missing &&
+        access(filename, R_OK) == -1 &&
+        errno == ENOENT)
+        return 0;
+
+    conf = virConfReadFile(filename, 0);
+    if (!conf)
+        return -1;
+
+    ret = daemonConfigLoadOptions(data, filename, conf);
+    virConfFree(conf);
+    return ret;
+}
+
+int daemonConfigLoadData(struct daemonConfig *data,
+                         const char *filename,
+                         const char *filedata)
+{
+    virConfPtr conf;
+    int ret;
+
+    conf = virConfReadMem(filedata, strlen(filedata), 0);
+    if (!conf)
+        return -1;
+
+    ret = daemonConfigLoadOptions(data, filename, conf);
+    virConfFree(conf);
+    return ret;
 }

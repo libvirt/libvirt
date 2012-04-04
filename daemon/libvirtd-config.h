@@ -84,8 +84,11 @@ struct daemonConfig {
 int daemonConfigFilePath(bool privileged, char **configfile);
 struct daemonConfig* daemonConfigNew(bool privileged);
 void daemonConfigFree(struct daemonConfig *data);
-int daemonConfigLoad(struct daemonConfig *data,
-                     const char *filename,
-                     bool allow_missing);
+int daemonConfigLoadFile(struct daemonConfig *data,
+                         const char *filename,
+                         bool allow_missing);
+int daemonConfigLoadData(struct daemonConfig *data,
+                         const char *filename,
+                         const char *filedata);
 
 #endif /* __LIBVIRTD_CONFIG_H__ */
