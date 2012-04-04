@@ -150,6 +150,7 @@
 /tests/vmx2xmltest
 /tests/xencapstest
 /tests/xmconfigtest
+/tests/libvirtdconftest
 /tools/*.[18]
 /tools/libvirt-guests.init
 /tools/virsh
