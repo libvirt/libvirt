@@ -4,6 +4,7 @@ daemon/remote.c
 daemon/remote_dispatch.h
 daemon/stream.c
 gnulib/lib/gai_strerror.c
+gnulib/lib/regcomp.c
 src/conf/cpu_conf.c
 src/conf/domain_conf.c
 src/conf/domain_event.c
