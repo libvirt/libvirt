@@ -2464,9 +2464,8 @@ xenFormatSxpr(virConnectPtr conn,
             }
         }
 
-        /* PV graphics for xen <= 3.0.4, or HVM graphics for xen <= 3.1.0 */
-        if ((!hvm && xendConfigVersion < XEND_CONFIG_MIN_VERS_PVFB_NEWCONF) ||
-            (hvm && xendConfigVersion < XEND_CONFIG_VERSION_3_1_0)) {
+        /* PV graphics for xen <= 3.0.4, or HVM graphics */
+        if (hvm || (xendConfigVersion < XEND_CONFIG_MIN_VERS_PVFB_NEWCONF)) {
             if ((def->ngraphics == 1) &&
                 xenFormatSxprGraphicsOld(def->graphics[0],
                                          &buf, xendConfigVersion) < 0)
@@ -2578,10 +2577,8 @@ xenFormatSxpr(virConnectPtr conn,
     if (xenFormatSxprAllPCI(def, &buf) < 0)
         goto error;
 
-    /* New style PV graphics config xen >= 3.0.4,
-     * or HVM graphics config xen >= 3.0.5 */
-    if ((xendConfigVersion >= XEND_CONFIG_MIN_VERS_PVFB_NEWCONF && !hvm) ||
-        (xendConfigVersion >= XEND_CONFIG_VERSION_3_1_0 && hvm)) {
+    /* New style PV graphics config xen >= 3.0.4 */
+    if (!hvm && (xendConfigVersion >= XEND_CONFIG_MIN_VERS_PVFB_NEWCONF)) {
         if ((def->ngraphics == 1) &&
             xenFormatSxprGraphicsNew(def->graphics[0], &buf) < 0)
             goto error;
