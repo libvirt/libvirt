@@ -512,7 +512,7 @@ mymain(void)
 #define DO_TEST(arch, api, name, host, cpu,                             \
                 models, nmodels, preferred, result)                     \
     do {                                                                \
-        struct data data = {                                            \
+        static struct data data = {                                     \
             arch, api, host, cpu, models,                               \
             models == NULL ? NULL : #models,                            \
             nmodels, preferred, result    \
