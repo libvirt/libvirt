@@ -1,8 +1,8 @@
 /*
  * json.h: JSON object parsing/formatting
  *
+ * Copyright (C) 2009, 2012 Red Hat, Inc.
  * Copyright (C) 2009 Daniel P. Berrange
- * Copyright (C) 2009 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,14 +27,14 @@
 # include "internal.h"
 
 
-enum {
+typedef enum {
     VIR_JSON_TYPE_OBJECT,
     VIR_JSON_TYPE_ARRAY,
     VIR_JSON_TYPE_STRING,
     VIR_JSON_TYPE_NUMBER,
     VIR_JSON_TYPE_BOOLEAN,
     VIR_JSON_TYPE_NULL,
-};
+} virJSONType;
 
 typedef struct _virJSONValue virJSONValue;
 typedef virJSONValue *virJSONValuePtr;
@@ -65,7 +65,8 @@ struct _virJSONArray {
 };
 
 struct _virJSONValue {
-    int type;
+    int type; /* enum virJSONType */
+    bool protect; /* prevents deletion when embedded in another object */
 
     union {
         virJSONObject object;

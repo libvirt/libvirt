@@ -3157,22 +3157,21 @@ cleanup:
     return ret;
 }
 
-/* Note that this call frees actions regardless of whether the call
- * succeeds.  */
 int
 qemuMonitorJSONTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
 {
-    int ret;
+    int ret = -1;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
+    bool protect = actions->protect;
 
+    /* We do NOT want to free actions when recursively freeing cmd.  */
+    actions->protect = true;
     cmd = qemuMonitorJSONMakeCommand("transaction",
                                      "a:actions", actions,
                                      NULL);
-    if (!cmd) {
-        virJSONValueFree(actions);
-        return -1;
-    }
+    if (!cmd)
+        goto cleanup;
 
     if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
         goto cleanup;
@@ -3182,6 +3181,7 @@ qemuMonitorJSONTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
 cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
+    actions->protect = protect;
     return ret;
 }
 
