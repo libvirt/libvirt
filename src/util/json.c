@@ -1,7 +1,7 @@
 /*
  * json.c: JSON object parsing/formatting
  *
- * Copyright (C) 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2009-2010, 2012 Red Hat, Inc.
  * Copyright (C) 2009 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -67,10 +67,10 @@ struct _virJSONParser {
 void virJSONValueFree(virJSONValuePtr value)
 {
     int i;
-    if (!value)
+    if (!value || value->protect)
         return;
 
-    switch (value->type) {
+    switch ((virJSONType) value->type) {
     case VIR_JSON_TYPE_OBJECT:
         for (i = 0 ; i < value->data.object.npairs; i++) {
             VIR_FREE(value->data.object.pairs[i].key);
@@ -88,6 +88,9 @@ void virJSONValueFree(virJSONValuePtr value)
         break;
     case VIR_JSON_TYPE_NUMBER:
         VIR_FREE(value->data.number);
+        break;
+    case VIR_JSON_TYPE_BOOLEAN:
+    case VIR_JSON_TYPE_NULL:
         break;
     }
 

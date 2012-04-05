@@ -10124,6 +10124,7 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
     if (actions) {
         if (ret == 0)
             ret = qemuMonitorTransaction(priv->mon, actions);
+        virJSONValueFree(actions);
         if (ret < 0) {
             /* Transaction failed; undo the changes to vm.  */
             bool need_unlink = !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT);
