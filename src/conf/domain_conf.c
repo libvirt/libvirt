@@ -3893,6 +3893,7 @@ cleanup:
     VIR_FREE(rawio);
     VIR_FREE(target);
     VIR_FREE(source);
+    VIR_FREE(tray);
     while (nhosts > 0) {
         virDomainDiskHostDefFree(&hosts[nhosts - 1]);
         nhosts--;
