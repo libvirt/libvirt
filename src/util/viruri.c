@@ -185,7 +185,9 @@ virURIParse(const char *uri)
     if (xmluri->fragment &&
         !(ret->fragment = strdup(xmluri->fragment)))
         goto no_memory;
-
+    if (xmluri->user &&
+        !(ret->user = strdup(xmluri->user)))
+        goto no_memory;
 
     /* First check: does it even make sense to jump inside */
     if (ret->server != NULL &&
@@ -249,6 +251,7 @@ virURIFormat(virURIPtr uri)
     xmluri.query = uri->query;
 #endif
     xmluri.fragment = uri->fragment;
+    xmluri.user = uri->user;
 
     /* First check: does it make sense to do anything */
     if (xmluri.server != NULL &&

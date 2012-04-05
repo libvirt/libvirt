@@ -42,6 +42,7 @@ struct URIParseData {
     const char *path;
     const char *query;
     const char *fragment;
+    const char *user;
     virURIParamPtr params;
 };
 
@@ -143,33 +144,34 @@ mymain(void)
     signal(SIGPIPE, SIG_IGN);
 
 #define TEST_FULL(uri, uri_out, scheme, server, port, path, query,      \
-                  fragment, params)                                     \
+                  fragment, user, params)                               \
     do  {                                                               \
         const struct URIParseData data = {                              \
             uri, (uri_out) ? (uri_out) : (uri), scheme, server, port,   \
-            path, query, fragment, params                               \
+            path, query, fragment, user, params                         \
         };                                                              \
         if (virtTestRun("Test URI " # uri,  1, testURIParse, &data) < 0) \
             ret = -1;                                                   \
     } while (0)
-#define TEST_PARSE(uri, scheme, server, port, path, query, fragment, params) \
-    TEST_FULL(uri, NULL, scheme, server, port, path, query, fragment, params)
+#define TEST_PARSE(uri, scheme, server, port, path, query, fragment, user, params) \
+    TEST_FULL(uri, NULL, scheme, server, port, path, query, fragment, user, params)
 #define TEST_PARAMS(query_in, query_out, params)                        \
     TEST_FULL("test://example.com/?" query_in,                          \
               *query_out ? "test://example.com/?" query_out : NULL,     \
-              "test", "example.com", 0, "/", query_in, NULL, params)
+              "test", "example.com", 0, "/", query_in, NULL, NULL, params)
 
     virURIParam params[] = {
         { (char*)"name", (char*)"value" },
         { NULL, NULL },
     };
 
-    TEST_PARSE("test://example.com", "test", "example.com", 0, NULL, NULL, NULL, NULL);
-    TEST_PARSE("test://example.com:123", "test", "example.com", 123, NULL, NULL, NULL, NULL);
-    TEST_PARSE("test://example.com:123/system?name=value#foo", "test", "example.com", 123, "/system", "name=value", "foo", params);
-    TEST_PARSE("test://127.0.0.1:123/system", "test", "127.0.0.1", 123, "/system", NULL, NULL, NULL);
-    TEST_PARSE("test://[::1]:123/system", "test", "::1", 123, "/system", NULL, NULL, NULL);
-    TEST_PARSE("test://[2001:41c8:1:4fd4::2]:123/system", "test", "2001:41c8:1:4fd4::2", 123, "/system", NULL, NULL, NULL);
+    TEST_PARSE("test://example.com", "test", "example.com", 0, NULL, NULL, NULL, NULL, NULL);
+    TEST_PARSE("test://foo@example.com", "test", "example.com", 0, NULL, NULL, NULL, "foo", NULL);
+    TEST_PARSE("test://example.com:123", "test", "example.com", 123, NULL, NULL, NULL, NULL, NULL);
+    TEST_PARSE("test://example.com:123/system?name=value#foo", "test", "example.com", 123, "/system", "name=value", "foo", NULL, params);
+    TEST_PARSE("test://127.0.0.1:123/system", "test", "127.0.0.1", 123, "/system", NULL, NULL, NULL, NULL);
+    TEST_PARSE("test://[::1]:123/system", "test", "::1", 123, "/system", NULL, NULL, NULL, NULL);
+    TEST_PARSE("test://[2001:41c8:1:4fd4::2]:123/system", "test", "2001:41c8:1:4fd4::2", 123, "/system", NULL, NULL, NULL, NULL);
 
     virURIParam params1[] = {
         { (char*)"foo", (char*)"one" },
