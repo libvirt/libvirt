@@ -314,7 +314,7 @@ mymain(void)
 # define DO_TEST_FULL(name, migrateFrom, migrateFd,                     \
                       expectError, expectFailure, ...)                  \
     do {                                                                \
-        struct testInfo info = {                                        \
+        static struct testInfo info = {                                 \
             name, NULL, migrateFrom, migrateFd,                         \
             expectError, expectFailure                                  \
         };                                                              \
