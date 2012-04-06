@@ -9636,16 +9636,13 @@ qemuDomainSnapshotFSThaw(struct qemud_driver *driver,
 
     qemuDomainObjEnterAgent(driver, vm);
     if (!report)
-        err = virGetLastError();
+        err = virSaveLastError();
     thawed = qemuAgentFSThaw(priv->agent);
-    if (!report) {
-        if (err)
-            virResetError(err);
-        else
-            virResetLastError();
-    }
+    if (!report)
+        virSetError(err);
     qemuDomainObjExitAgent(driver, vm);
 
+    virFreeError(err);
     return thawed;
 }
 
