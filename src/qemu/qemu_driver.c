@@ -10705,12 +10705,12 @@ qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
     bool found = false;
     bool active = virDomainObjIsActive(vm);
     struct stat st;
-    bool allow_reuse = (*flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
+    bool reuse = (*flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
     bool atomic = (*flags & VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC) != 0;
     int external = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (allow_reuse && !qemuCapsGet(priv->caps, QEMU_CAPS_TRANSACTION)) {
+    if (reuse && !qemuCapsGet(priv->caps, QEMU_CAPS_TRANSACTION)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("reuse is not supported with this QEMU binary"));
         goto cleanup;
@@ -10759,8 +10759,13 @@ qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
                                          _("unable to stat for disk %s: %s"),
                                          disk->name, disk->file);
                     goto cleanup;
+                } else if (reuse) {
+                    virReportSystemError(errno,
+                                         _("missing existing file for disk %s: %s"),
+                                         disk->name, disk->file);
+                    goto cleanup;
                 }
-            } else if (!(S_ISBLK(st.st_mode) || !st.st_size || allow_reuse)) {
+            } else if (!S_ISBLK(st.st_mode) && st.st_size && !reuse) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("external snapshot file for disk %s already "
                                  "exists and is not a block device: %s"),
