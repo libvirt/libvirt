@@ -183,6 +183,12 @@ qemuDomainObjFreeJob(qemuDomainObjPrivatePtr priv)
     ignore_value(virCondDestroy(&priv->job.asyncCond));
 }
 
+static bool
+qemuDomainTrackJob(enum qemuDomainJob job)
+{
+    return (QEMU_DOMAIN_TRACK_JOBS & JOB_MASK(job)) != 0;
+}
+
 
 static void *qemuDomainObjPrivateAlloc(void)
 {
@@ -239,6 +245,7 @@ static int qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
 {
     qemuDomainObjPrivatePtr priv = data;
     const char *monitorpath;
+    enum qemuDomainJob job;
 
     /* priv->monitor_chr is set only for qemu */
     if (priv->monConfig) {
@@ -284,6 +291,10 @@ static int qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
     if (priv->lockState)
         virBufferAsprintf(buf, "  <lockstate>%s</lockstate>\n", priv->lockState);
 
+    job = priv->job.active;
+    if (!qemuDomainTrackJob(job))
+        priv->job.active = QEMU_JOB_NONE;
+
     if (priv->job.active || priv->job.asyncJob) {
         virBufferAsprintf(buf, "  <job type='%s' async='%s'",
                           qemuDomainJobTypeToString(priv->job.active),
@@ -295,6 +306,7 @@ static int qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
         }
         virBufferAddLit(buf, "/>\n");
     }
+    priv->job.active = job;
 
     if (priv->fakeReboot)
         virBufferAsprintf(buf, "  <fakereboot/>\n");
@@ -766,7 +778,8 @@ retry:
         virDomainObjLock(obj);
     }
 
-    qemuDomainObjSaveJob(driver, obj);
+    if (qemuDomainTrackJob(job))
+        qemuDomainObjSaveJob(driver, obj);
 
     return 0;
 
@@ -862,15 +875,17 @@ int qemuDomainObjBeginAsyncJobWithDriver(struct qemud_driver *driver,
 int qemuDomainObjEndJob(struct qemud_driver *driver, virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
+    enum qemuDomainJob job = priv->job.active;
 
     priv->jobs_queued--;
 
     VIR_DEBUG("Stopping job: %s (async=%s)",
-              qemuDomainJobTypeToString(priv->job.active),
+              qemuDomainJobTypeToString(job),
               qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
 
     qemuDomainObjResetJob(priv);
-    qemuDomainObjSaveJob(driver, obj);
+    if (qemuDomainTrackJob(job))
+        qemuDomainObjSaveJob(driver, obj);
     virCondSignal(&priv->job.cond);
 
     return virDomainObjUnref(obj);

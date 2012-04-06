@@ -53,6 +53,11 @@
      JOB_MASK(QEMU_JOB_DESTROY) |       \
      JOB_MASK(QEMU_JOB_ABORT))
 
+/* Jobs which have to be tracked in domain state XML. */
+# define QEMU_DOMAIN_TRACK_JOBS         \
+    (JOB_MASK(QEMU_JOB_DESTROY) |       \
+     JOB_MASK(QEMU_JOB_ASYNC))
+
 /* Only 1 job is allowed at any time
  * A job includes *all* monitor commands, even those just querying
  * information, not merely actions */

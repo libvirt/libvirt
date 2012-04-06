@@ -2963,6 +2963,10 @@ qemuProcessRecoverJob(struct qemud_driver *driver,
     if (!virDomainObjIsActive(vm))
         return -1;
 
+    /* In case any special handling is added for job type that has been ignored
+     * before, QEMU_DOMAIN_TRACK_JOBS (from qemu_domain.h) needs to be updated
+     * for the job to be properly tracked in domain state XML.
+     */
     switch (job->active) {
     case QEMU_JOB_QUERY:
         /* harmless */
