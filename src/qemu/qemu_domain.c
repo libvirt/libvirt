@@ -147,6 +147,7 @@ qemuDomainObjResetJob(qemuDomainObjPrivatePtr priv)
     struct qemuDomainJobObj *job = &priv->job;
 
     job->active = QEMU_JOB_NONE;
+    job->owner = 0;
 }
 
 static void
@@ -155,6 +156,7 @@ qemuDomainObjResetAsyncJob(qemuDomainObjPrivatePtr priv)
     struct qemuDomainJobObj *job = &priv->job;
 
     job->asyncJob = QEMU_ASYNC_JOB_NONE;
+    job->asyncOwner = 0;
     job->phase = 0;
     job->mask = DEFAULT_JOB_MASK;
     job->start = 0;
@@ -169,11 +171,23 @@ qemuDomainObjRestoreJob(virDomainObjPtr obj,
 
     memset(job, 0, sizeof(*job));
     job->active = priv->job.active;
+    job->owner = priv->job.owner;
     job->asyncJob = priv->job.asyncJob;
+    job->asyncOwner = priv->job.asyncOwner;
     job->phase = priv->job.phase;
 
     qemuDomainObjResetJob(priv);
     qemuDomainObjResetAsyncJob(priv);
+}
+
+void
+qemuDomainObjTransferJob(virDomainObjPtr obj)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+
+    VIR_DEBUG("Changing job owner from %d to %d",
+              priv->job.owner, virThreadSelfID());
+    priv->job.owner = virThreadSelfID();
 }
 
 static void
@@ -664,11 +678,23 @@ qemuDomainObjSetJobPhase(struct qemud_driver *driver,
                          int phase)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
+    int me = virThreadSelfID();
 
     if (!priv->job.asyncJob)
         return;
 
+    VIR_DEBUG("Setting '%s' phase to '%s'",
+              qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
+              qemuDomainAsyncJobPhaseToString(priv->job.asyncJob, phase));
+
+    if (priv->job.asyncOwner && me != priv->job.asyncOwner) {
+        VIR_WARN("'%s' async job is owned by thread %d",
+                 qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
+                 priv->job.asyncOwner);
+    }
+
     priv->job.phase = phase;
+    priv->job.asyncOwner = me;
     qemuDomainObjSaveJob(driver, obj);
 }
 
@@ -693,6 +719,22 @@ qemuDomainObjDiscardAsyncJob(struct qemud_driver *driver, virDomainObjPtr obj)
         qemuDomainObjResetJob(priv);
     qemuDomainObjResetAsyncJob(priv);
     qemuDomainObjSaveJob(driver, obj);
+}
+
+void
+qemuDomainObjReleaseAsyncJob(virDomainObjPtr obj)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+
+    VIR_DEBUG("Releasing ownership of '%s' async job",
+              qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
+
+    if (priv->job.asyncOwner != virThreadSelfID()) {
+        VIR_WARN("'%s' async job is owned by thread %d",
+                 qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
+                 priv->job.asyncOwner);
+    }
+    priv->job.asyncOwner = 0;
 }
 
 static bool
@@ -764,11 +806,13 @@ retry:
                    qemuDomainJobTypeToString(job),
                    qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
         priv->job.active = job;
+        priv->job.owner = virThreadSelfID();
     } else {
         VIR_DEBUG("Starting async job: %s",
                   qemuDomainAsyncJobTypeToString(asyncJob));
         qemuDomainObjResetAsyncJob(priv);
         priv->job.asyncJob = asyncJob;
+        priv->job.asyncOwner = virThreadSelfID();
         priv->job.start = now;
     }
 
@@ -784,6 +828,15 @@ retry:
     return 0;
 
 error:
+    VIR_WARN("Cannot start job (%s, %s) for domain %s;"
+             " current job is (%s, %s) owned by (%d, %d)",
+             qemuDomainJobTypeToString(job),
+             qemuDomainAsyncJobTypeToString(asyncJob),
+             obj->def->name,
+             qemuDomainJobTypeToString(priv->job.active),
+             qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
+             priv->job.owner, priv->job.asyncOwner);
+
     if (errno == ETIMEDOUT)
         qemuReportError(VIR_ERR_OPERATION_TIMEOUT,
                         "%s", _("cannot acquire state change lock"));

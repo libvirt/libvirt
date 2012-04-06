@@ -3038,8 +3038,8 @@ qemuProcessReconnect(void *opaque)
 
     priv = obj->privateData;
 
-    /* Set fake job so that EnterMonitor* doesn't want to start a new one */
-    priv->job.active = QEMU_JOB_MODIFY;
+    /* Job was started by the caller for us */
+    qemuDomainObjTransferJob(obj);
 
     /* Hold an extra reference because we can't allow 'vm' to be
      * deleted if qemuConnectMonitor() failed */
@@ -3118,8 +3118,6 @@ qemuProcessReconnect(void *opaque)
 
     if (qemuProcessRecoverJob(driver, obj, conn, &oldjob) < 0)
         goto error;
-
-    priv->job.active = QEMU_JOB_NONE;
 
     /* update domain state XML with possibly updated state in virDomainObj */
     if (virDomainSaveStatus(driver->caps, driver->stateDir, obj) < 0)

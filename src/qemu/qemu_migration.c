@@ -3242,6 +3242,7 @@ qemuMigrationJobStartPhase(struct qemud_driver *driver,
 int
 qemuMigrationJobContinue(virDomainObjPtr vm)
 {
+    qemuDomainObjReleaseAsyncJob(vm);
     return virDomainObjUnref(vm);
 }
 
