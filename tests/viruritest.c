@@ -161,8 +161,8 @@ mymain(void)
               "test", "example.com", 0, "/", query_in, NULL, NULL, params)
 
     virURIParam params[] = {
-        { (char*)"name", (char*)"value" },
-        { NULL, NULL },
+        { (char*)"name", (char*)"value", false },
+        { NULL, NULL, false },
     };
 
     TEST_PARSE("test://example.com", "test", "example.com", 0, NULL, NULL, NULL, NULL, NULL);
@@ -174,31 +174,31 @@ mymain(void)
     TEST_PARSE("test://[2001:41c8:1:4fd4::2]:123/system", "test", "2001:41c8:1:4fd4::2", 123, "/system", NULL, NULL, NULL, NULL);
 
     virURIParam params1[] = {
-        { (char*)"foo", (char*)"one" },
-        { (char*)"bar", (char*)"two" },
-        { NULL, NULL },
+        { (char*)"foo", (char*)"one", false },
+        { (char*)"bar", (char*)"two", false },
+        { NULL, NULL, false },
     };
     virURIParam params2[] = {
-        { (char*)"foo", (char*)"one" },
-        { (char*)"foo", (char*)"two" },
-        { NULL, NULL },
+        { (char*)"foo", (char*)"one", false },
+        { (char*)"foo", (char*)"two", false },
+        { NULL, NULL, false },
     };
     virURIParam params3[] = {
-        { (char*)"foo", (char*)"&one" },
-        { (char*)"bar", (char*)"&two" },
-        { NULL, NULL },
+        { (char*)"foo", (char*)"&one", false },
+        { (char*)"bar", (char*)"&two", false },
+        { NULL, NULL, false },
     };
     virURIParam params4[] = {
-        { (char*)"foo", (char*)"" },
-        { NULL, NULL },
+        { (char*)"foo", (char*)"", false },
+        { NULL, NULL, false },
     };
     virURIParam params5[] = {
-        { (char*)"foo", (char*)"one two" },
-        { NULL, NULL },
+        { (char*)"foo", (char*)"one two", false },
+        { NULL, NULL, false },
     };
     virURIParam params6[] = {
-        { (char*)"foo", (char*)"one" },
-        { NULL, NULL },
+        { (char*)"foo", (char*)"one", false },
+        { NULL, NULL, false },
     };
 
     TEST_PARAMS("foo=one&bar=two", "", params1);
