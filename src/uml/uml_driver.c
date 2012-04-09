@@ -249,7 +249,7 @@ umlIdentifyChrPTY(struct uml_driver *driver,
 {
     int i;
 
-    for (i = 0 ; i < dom->def->nserials; i++)
+    for (i = 0 ; i < dom->def->nconsoles; i++)
         if (dom->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY)
         if (umlIdentifyOneChrPTY(driver, dom,
                                  dom->def->consoles[i], "con") < 0)
