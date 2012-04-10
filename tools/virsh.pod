@@ -381,8 +381,9 @@ into s3 state.
 =back
 
 If I<--managed-save> is specified, then domains that have managed save
-state (only possible if they are in the B<shut off> state) will
-instead show as B<saved> in the listing. This flag is usable only with the
+state (only possible if they are in the B<shut off> state, so you need to
+specify I<--inactive> or I<--all> to actually list them) will instead
+show as B<saved> in the listing. This flag is usable only with the
 default I<--table> output.
 
 If I<--name> is specified, domain names are printed instead of the table

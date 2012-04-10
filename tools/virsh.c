@@ -924,7 +924,7 @@ static const vshCmdOptDef opts_list[] = {
     {"name", VSH_OT_BOOL, 0, N_("list domain names only")},
     {"table", VSH_OT_BOOL, 0, N_("list table (default)")},
     {"managed-save", VSH_OT_BOOL, 0,
-     N_("mark domains with managed save state")},
+     N_("mark inactive domains with managed save state")},
     {"title", VSH_OT_BOOL, 0, N_("show short domain description")},
     {NULL, 0, 0, NULL}
 };
