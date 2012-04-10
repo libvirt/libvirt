@@ -4052,6 +4052,11 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (enableKVM)
         virCommandAddArg(cmd, "-enable-kvm");
 
+    if (def->os.loader) {
+        virCommandAddArg(cmd, "-bios");
+        virCommandAddArg(cmd, def->os.loader);
+    }
+
     /* Set '-m MB' based on maxmem, because the lower 'memory' limit
      * is set post-startup using the balloon driver. If balloon driver
      * is not supported, then they're out of luck anyway.  Update the
@@ -7580,6 +7585,10 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
         } else if (STREQ(arg, "-kernel")) {
             WANT_VALUE();
             if (!(def->os.kernel = strdup(val)))
+                goto no_memory;
+        } else if (STREQ(arg, "-bios")) {
+            WANT_VALUE();
+            if (!(def->os.loader = strdup(val)))
                 goto no_memory;
         } else if (STREQ(arg, "-initrd")) {
             WANT_VALUE();

@@ -6,6 +6,7 @@
   <vcpu>1</vcpu>
   <os>
     <type arch='i686' machine='pc'>hvm</type>
+    <loader>/usr/share/seabios/bios.bin</loader>
     <boot dev='hd'/>
     <bootmenu enable='yes'/>
     <bios useserial='yes'/>
