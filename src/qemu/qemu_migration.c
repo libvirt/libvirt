@@ -1034,6 +1034,11 @@ qemuMigrationIsAllowed(struct qemud_driver *driver, virDomainObjPtr vm,
                            nsnapshots);
             return false;
         }
+        if (virDomainHasDiskMirror(vm)) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cannot migrate domain with active block job"));
+            return false;
+        }
 
         def = vm->def;
     }

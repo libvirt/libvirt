@@ -2049,6 +2049,13 @@ int qemuDomainDetachDiskDevice(struct qemud_driver *driver,
 
     detach = vm->def->disks[i];
 
+    if (detach->mirror) {
+        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
+                       _("disk '%s' is in an active block copy job"),
+                       detach->dst);
+        goto cleanup;
+    }
+
     if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

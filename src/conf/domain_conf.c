@@ -7980,6 +7980,18 @@ virDomainDiskRemoveByName(virDomainDefPtr def, const char *name)
     return virDomainDiskRemove(def, i);
 }
 
+/* Return true if VM has at least one disk involved in a current block
+ * copy job (that is, with a <mirror> element in the disk xml).  */
+bool
+virDomainHasDiskMirror(virDomainObjPtr vm)
+{
+    int i;
+    for (i = 0; i < vm->def->ndisks; i++)
+        if (vm->def->disks[i]->mirror)
+            return true;
+    return false;
+}
+
 int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net)
 {
     if (VIR_REALLOC_N(def->nets, def->nnets + 1) < 0)

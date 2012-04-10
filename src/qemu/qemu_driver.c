@@ -2784,6 +2784,11 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
                        "%s", _("domain is marked for auto destroy"));
         goto cleanup;
     }
+    if (virDomainHasDiskMirror(vm)) {
+        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE, "%s",
+                       _("domain has active block copy job"));
+        goto cleanup;
+    }
 
     memset(&header, 0, sizeof(header));
     memcpy(header.magic, QEMUD_SAVE_PARTIAL, sizeof(header.magic));
@@ -5661,6 +5666,12 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
         }
     }
     def = NULL;
+    if (virDomainHasDiskMirror(vm)) {
+        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE, "%s",
+                       _("domain has active block copy job"));
+        virDomainObjAssignDef(vm, NULL, false);
+        goto cleanup;
+    }
     vm->persistent = 1;
 
     if (virDomainSaveConfig(driver->configDir,
@@ -11213,6 +11224,12 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                        "%s", _("domain is marked for auto destroy"));
         goto cleanup;
     }
+    if (virDomainHasDiskMirror(vm)) {
+        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE, "%s",
+                       _("domain has active block copy job"));
+        goto cleanup;
+    }
+
     if (!vm->persistent && (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("cannot halt after transient domain snapshot"));
@@ -11800,6 +11817,11 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+    if (virDomainHasDiskMirror(vm)) {
+        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE, "%s",
+                       _("domain has active block copy job"));
         goto cleanup;
     }
 
@@ -12579,6 +12601,13 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
     if (!device)
         goto cleanup;
     disk = vm->def->disks[idx];
+
+    if (mode == BLOCK_JOB_PULL && disk->mirror) {
+        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
+                       _("disk '%s' already in active block copy job"),
+                       disk->dst);
+        goto cleanup;
+    }
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
