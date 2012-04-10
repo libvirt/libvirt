@@ -933,9 +933,9 @@ static const vshCmdOptDef opts_list[] = {
 static bool
 cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
-    int inactive = vshCommandOptBool(cmd, "inactive");
-    int all = vshCommandOptBool(cmd, "all");
-    int active = !inactive || all ? 1 : 0;
+    bool inactive = vshCommandOptBool(cmd, "inactive");
+    bool all = vshCommandOptBool(cmd, "all");
+    bool active = !inactive || all;
     int *ids = NULL, maxid = 0, i;
     char **names = NULL;
     int maxname = 0;
@@ -1317,7 +1317,7 @@ cmdDomstate(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     bool ret = true;
-    int showReason = vshCommandOptBool(cmd, "reason");
+    bool showReason = vshCommandOptBool(cmd, "reason");
     int state, reason;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
@@ -1966,9 +1966,9 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
     int nparams = 0;
     virTypedParameterPtr params = NULL;
     bool ret = false;
-    int current = vshCommandOptBool(cmd, "current");
-    int config = vshCommandOptBool(cmd, "config");
-    int live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
     virNetDevBandwidthRate inbound, outbound;
     int i;
 
@@ -2626,7 +2626,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char *buffer;
 #ifndef WIN32
-    int console = vshCommandOptBool(cmd, "console");
+    bool console = vshCommandOptBool(cmd, "console");
 #endif
     unsigned int flags = VIR_DOMAIN_NONE;
 
@@ -3094,7 +3094,7 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     bool ret = false;
 #ifndef WIN32
-    int console = vshCommandOptBool(cmd, "console");
+    bool console = vshCommandOptBool(cmd, "console");
 #endif
     unsigned int flags = VIR_DOMAIN_NONE;
     int rc;
@@ -3786,9 +3786,9 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
     int i, ret;
     bool ret_val = false;
     unsigned int flags = 0;
-    int current = vshCommandOptBool(cmd, "current");
-    int config = vshCommandOptBool(cmd, "config");
-    int live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
 
     if (current) {
         if (live || config) {
@@ -4921,11 +4921,11 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     bool ret = true;
-    int maximum = vshCommandOptBool(cmd, "maximum");
-    int active = vshCommandOptBool(cmd, "active");
-    int config = vshCommandOptBool(cmd, "config");
-    int live = vshCommandOptBool(cmd, "live");
-    int current = vshCommandOptBool(cmd, "current");
+    bool maximum = vshCommandOptBool(cmd, "maximum");
+    bool active = vshCommandOptBool(cmd, "active");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
     bool all = maximum + active + current + config + live == 0;
     int count;
 
@@ -5246,9 +5246,9 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
     int i, cpu, lastcpu, maxcpu, ncpus;
     bool unuse = false;
     const char *cur;
-    int config = vshCommandOptBool(cmd, "config");
-    int live = vshCommandOptBool(cmd, "live");
-    int current = vshCommandOptBool(cmd, "current");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
     bool query = false; /* Query mode if no cpulist */
     unsigned int flags = 0;
 
@@ -5479,10 +5479,10 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     int count = 0;
     bool ret = true;
-    int maximum = vshCommandOptBool(cmd, "maximum");
-    int config = vshCommandOptBool(cmd, "config");
-    int live = vshCommandOptBool(cmd, "live");
-    int current = vshCommandOptBool(cmd, "current");
+    bool maximum = vshCommandOptBool(cmd, "maximum");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
     unsigned int flags = 0;
 
     if (current) {
@@ -5853,9 +5853,9 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
     unsigned long long max;
     unsigned long kibibytes = 0;
     bool ret = true;
-    int config = vshCommandOptBool(cmd, "config");
-    int live = vshCommandOptBool(cmd, "live");
-    int current = vshCommandOptBool(cmd, "current");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
     unsigned int flags = 0;
 
     if (current) {
@@ -5935,9 +5935,9 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
     unsigned long long max;
     unsigned long kibibytes = 0;
     bool ret = true;
-    int config = vshCommandOptBool(cmd, "config");
-    int live = vshCommandOptBool(cmd, "live");
-    int current = vshCommandOptBool(cmd, "current");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
     unsigned int flags = VIR_DOMAIN_MEM_MAXIMUM;
 
     if (current) {
@@ -6026,9 +6026,9 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
     virTypedParameterPtr params = NULL, temp = NULL;
     bool ret = false;
     unsigned int flags = 0;
-    int current = vshCommandOptBool(cmd, "current");
-    int config = vshCommandOptBool(cmd, "config");
-    int live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
 
     if (current) {
         if (live || config) {
@@ -6201,9 +6201,9 @@ cmdMemtune(vshControl *ctl, const vshCmd *cmd)
     virTypedParameterPtr params = NULL, temp = NULL;
     bool ret = false;
     unsigned int flags = 0;
-    int current = vshCommandOptBool(cmd, "current");
-    int config = vshCommandOptBool(cmd, "config");
-    int live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
 
     if (current) {
         if (live || config) {
@@ -6365,9 +6365,9 @@ cmdNumatune(vshControl * ctl, const vshCmd * cmd)
     const char *nodeset = NULL;
     bool ret = false;
     unsigned int flags = 0;
-    int current = vshCommandOptBool(cmd, "current");
-    int config = vshCommandOptBool(cmd, "config");
-    int live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
     const char *mode = NULL;
 
     if (current) {
@@ -6831,9 +6831,9 @@ cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char *dump;
     unsigned int flags = 0;
-    int inactive = vshCommandOptBool(cmd, "inactive");
-    int secure = vshCommandOptBool(cmd, "security-info");
-    int update = vshCommandOptBool(cmd, "update-cpu");
+    bool inactive = vshCommandOptBool(cmd, "inactive");
+    bool secure = vshCommandOptBool(cmd, "security-info");
+    bool update = vshCommandOptBool(cmd, "update-cpu");
 
     if (inactive)
         flags |= VIR_DOMAIN_XML_INACTIVE;
@@ -7800,9 +7800,9 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
     virTypedParameterPtr params = NULL, temp = NULL;
     unsigned int flags = 0, i = 0;
     int rv = 0;
-    int current = vshCommandOptBool(cmd, "current");
-    int config = vshCommandOptBool(cmd, "config");
-    int live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
     bool ret = false;
 
     if (current) {
@@ -8336,9 +8336,9 @@ static const vshCmdOptDef opts_network_list[] = {
 static bool
 cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
-    int inactive = vshCommandOptBool(cmd, "inactive");
-    int all = vshCommandOptBool(cmd, "all");
-    int active = !inactive || all ? 1 : 0;
+    bool inactive = vshCommandOptBool(cmd, "inactive");
+    bool all = vshCommandOptBool(cmd, "all");
+    bool active = !inactive || all;
     int maxactive = 0, maxinactive = 0, i;
     char **activeNames = NULL, **inactiveNames = NULL;
     inactive |= all;
@@ -8609,9 +8609,9 @@ static const vshCmdOptDef opts_interface_list[] = {
 static bool
 cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
-    int inactive = vshCommandOptBool(cmd, "inactive");
-    int all = vshCommandOptBool(cmd, "all");
-    int active = !inactive || all ? 1 : 0;
+    bool inactive = vshCommandOptBool(cmd, "inactive");
+    bool all = vshCommandOptBool(cmd, "all");
+    bool active = !inactive || all;
     int maxactive = 0, maxinactive = 0, i;
     char **activeNames = NULL, **inactiveNames = NULL;
     inactive |= all;
@@ -8786,7 +8786,7 @@ cmdInterfaceDumpXML(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char *dump;
     unsigned int flags = 0;
-    int inactive = vshCommandOptBool(cmd, "inactive");
+    bool inactive = vshCommandOptBool(cmd, "inactive");
 
     if (inactive)
         flags |= VIR_INTERFACE_XML_INACTIVE;
@@ -10038,7 +10038,7 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
     virStoragePoolPtr pool;
     const char *name;
     char *xml;
-    int printXML = vshCommandOptBool(cmd, "print-xml");
+    bool printXML = vshCommandOptBool(cmd, "print-xml");
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -10126,7 +10126,7 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
     virStoragePoolPtr pool;
     const char *name;
     char *xml;
-    int printXML = vshCommandOptBool(cmd, "print-xml");
+    bool printXML = vshCommandOptBool(cmd, "print-xml");
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -10400,10 +10400,10 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     struct poolInfoText *poolInfoTexts = NULL;
 
     /* Determine the options passed by the user */
-    int all = vshCommandOptBool(cmd, "all");
-    int details = vshCommandOptBool(cmd, "details");
-    int inactive = vshCommandOptBool(cmd, "inactive");
-    int active = !inactive || all ? 1 : 0;
+    bool all = vshCommandOptBool(cmd, "all");
+    bool details = vshCommandOptBool(cmd, "details");
+    bool inactive = vshCommandOptBool(cmd, "inactive");
+    bool active = !inactive || all;
     inactive |= all;
 
     /* Check the connection to libvirtd daemon is still working */
@@ -12062,7 +12062,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     char *outputStr = NULL;
     const char *unit;
     double val;
-    int details = vshCommandOptBool(cmd, "details");
+    bool details = vshCommandOptBool(cmd, "details");
     int numVolumes = 0, i;
     int ret;
     bool functionReturn;
@@ -13006,7 +13006,7 @@ cmdNodeListDevices (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     const char *cap = NULL;
     char **devices;
     int num_devices, i;
-    int tree = vshCommandOptBool(cmd, "tree");
+    bool tree = vshCommandOptBool(cmd, "tree");
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
