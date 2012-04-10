@@ -132,6 +132,7 @@ libvirt_intUnwrap(PyObject *obj, int *val)
     if ((long_val == -1) && PyErr_Occurred())
         return -1;
 
+#if LONG_MAX != INT_MAX
     if (long_val >= INT_MIN && long_val <= INT_MAX) {
         *val = long_val;
     } else {
@@ -139,6 +140,9 @@ libvirt_intUnwrap(PyObject *obj, int *val)
                         "Python int too large to convert to C int");
         return -1;
     }
+#else
+    *val = long_val;
+#endif
     return 0;
 }
 
