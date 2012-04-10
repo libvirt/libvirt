@@ -975,6 +975,9 @@ qemuDomainObjEnterMonitorInternal(struct qemud_driver *driver,
                             _("unexpected async job %d"), asyncJob);
             return -1;
         }
+        if (priv->job.asyncOwner != virThreadSelfID())
+            VIR_WARN("This thread doesn't seem to be the async job owner: %d",
+                     priv->job.asyncOwner);
         if (qemuDomainObjBeginJobInternal(driver, driver_locked, obj,
                                           QEMU_JOB_ASYNC_NESTED,
                                           QEMU_ASYNC_JOB_NONE) < 0)
@@ -986,6 +989,9 @@ qemuDomainObjEnterMonitorInternal(struct qemud_driver *driver,
             ignore_value(qemuDomainObjEndJob(driver, obj));
             return -1;
         }
+    } else if (priv->job.asyncOwner == virThreadSelfID()) {
+        VIR_WARN("This thread seems to be the async job owner; entering"
+                 " monitor without asking for a nested job is dangerous");
     }
 
     qemuMonitorLock(priv->mon);
