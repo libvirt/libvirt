@@ -11494,6 +11494,7 @@ qemuDomainOpenConsole(virDomainPtr dom,
     qemuDriverLock(driver);
     virUUIDFormat(dom->uuid, uuidstr);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
     if (!vm) {
         qemuReportError(VIR_ERR_NO_DOMAIN,
                         _("no domain with matching uuid '%s'"), uuidstr);
@@ -11558,7 +11559,6 @@ qemuDomainOpenConsole(virDomainPtr dom,
 cleanup:
     if (vm)
         virDomainObjUnlock(vm);
-    qemuDriverUnlock(driver);
     return ret;
 }
 
