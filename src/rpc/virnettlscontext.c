@@ -1423,9 +1423,13 @@ void virNetTLSSessionFree(virNetTLSSessionPtr sess)
  * virNetTLS* because it initializes
  * underlying GnuTLS library. According to
  * it's documentation, it's safe to be called
- * many times, but is not thread safe. Each
- * call SHOULD be later followed by
- * virNetTLSContextDeinit.
+ * many times, but is not thread safe.
+ *
+ * There is no corresponding "Deinit" / "Cleanup"
+ * function because there is no safe way to call
+ * 'gnutls_global_deinit' from a multi-threaded
+ * library, where other libraries linked into the
+ * application may also be using gnutls.
  */
 void virNetTLSInit(void)
 {
