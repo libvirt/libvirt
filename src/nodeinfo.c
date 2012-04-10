@@ -231,10 +231,10 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
 
     /* NOTE: hyperthreads are ignored here; they are parsed out of /sys */
     while (fgets(line, sizeof(line), cpuinfo) != NULL) {
-        char *buf = line;
 # if defined(__x86_64__) || \
     defined(__amd64__)  || \
     defined(__i386__)
+        char *buf = line;
         if (STRPREFIX(buf, "cpu MHz")) {
             char *p;
             unsigned int ui;
@@ -253,6 +253,7 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
         }
 # elif defined(__powerpc__) || \
       defined(__powerpc64__)
+        char *buf = line;
         if (STRPREFIX(buf, "clock")) {
             char *p;
             unsigned int ui;
