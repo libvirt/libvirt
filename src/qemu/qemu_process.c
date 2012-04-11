@@ -1759,23 +1759,19 @@ static char *
 qemuGetNumadAdvice(virDomainDefPtr def)
 {
     virCommandPtr cmd = NULL;
-    char *args = NULL;
     char *output = NULL;
 
-    if (virAsprintf(&args, "%d:%llu", def->vcpus, def->mem.cur_balloon) < 0) {
-        virReportOOMError();
-        goto out;
-    }
-    cmd = virCommandNewArgList(NUMAD, "-w", args, NULL);
+    cmd = virCommandNewArgList(NUMAD, "-w", NULL);
+    virCommandAddArgFormat(cmd, "%d:%llu", def->vcpus,
+                           def->mem.cur_balloon);
 
     virCommandSetOutputBuffer(cmd, &output);
 
     if (virCommandRun(cmd, NULL) < 0)
         qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("Failed to query numad for the advisory nodeset"));
+                        _("Failed to query numad for the "
+                          "advisory nodeset"));
 
-out:
-    VIR_FREE(args);
     virCommandFree(cmd);
     return output;
 }
