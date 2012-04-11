@@ -365,11 +365,11 @@
         "auto", defaults to "static" if <code>cpuset</code> is specified,
         "auto" indicates the domain process will be pinned to the advisory
         nodeset from querying numad, and the value of attribute
-        <code>cpuset</code> will be overridden by the advisory nodeset
-        from numad if it's specified. If both <code>cpuset</code> and
-        <code>placement</code> are not specified, or if <code>placement</code>
-        is "static", but no <code>cpuset</code> is specified, the domain
-        process will be pinned to all the available physical CPUs.
+        <code>cpuset</code> will be ignored if it's specified. If both
+        <code>cpuset</code> and <code>placement</code> are not specified,
+        or if <code>placement</code> is "static", but no <code>cpuset</code>
+        is specified, the domain process will be pinned to all the
+        available physical CPUs.
       </dd>
     </dl>
 

@@ -7884,19 +7884,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         }
     }
 
-    tmp = virXPathString("string(./vcpu[1]/@cpuset)", ctxt);
-    if (tmp) {
-        char *set = tmp;
-        def->cpumasklen = VIR_DOMAIN_CPUMASK_LEN;
-        if (VIR_ALLOC_N(def->cpumask, def->cpumasklen) < 0) {
-            goto no_memory;
-        }
-        if (virDomainCpuSetParse(set, 0, def->cpumask,
-                                 def->cpumasklen) < 0)
-            goto error;
-        VIR_FREE(tmp);
-    }
-
     tmp = virXPathString("string(./vcpu[1]/@placement)", ctxt);
     if (tmp) {
         if ((def->placement_mode =
@@ -7911,6 +7898,21 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     } else {
         if (def->cpumasklen)
             def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
+    }
+
+    if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC) {
+        tmp = virXPathString("string(./vcpu[1]/@cpuset)", ctxt);
+        if (tmp) {
+            char *set = tmp;
+            def->cpumasklen = VIR_DOMAIN_CPUMASK_LEN;
+            if (VIR_ALLOC_N(def->cpumask, def->cpumasklen) < 0) {
+                goto no_memory;
+            }
+            if (virDomainCpuSetParse(set, 0, def->cpumask,
+                                     def->cpumasklen) < 0)
+                goto error;
+            VIR_FREE(tmp);
+        }
     }
 
     /* Extract cpu tunables. */
