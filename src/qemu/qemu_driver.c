@@ -11599,7 +11599,7 @@ cleanup:
 static int
 qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
                        unsigned long bandwidth, virDomainBlockJobInfoPtr info,
-                       int mode)
+                       int mode, unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
@@ -11608,6 +11608,9 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
     char *device = NULL;
     int ret = -1;
     bool async = false;
+    virDomainEventPtr event = NULL;
+    int idx;
+    virDomainDiskDefPtr disk;
 
     qemuDriverLock(driver);
     virUUIDFormat(dom->uuid, uuidstr);
@@ -11631,10 +11634,10 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
         goto cleanup;
     }
 
-    device = qemuDiskPathToAlias(vm, path, NULL);
-    if (!device) {
+    device = qemuDiskPathToAlias(vm, path, &idx);
+    if (!device)
         goto cleanup;
-    }
+    disk = vm->def->disks[idx];
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
@@ -11652,6 +11655,53 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
     ret = qemuMonitorBlockJob(priv->mon, device, base, bandwidth, info, mode,
                               async);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
+    if (ret < 0)
+        goto endjob;
+
+    /* With synchronous block cancel, we must synthesize an event, and
+     * we silently ignore the ABORT_ASYNC flag.  With asynchronous
+     * block cancel, the event will come from qemu, but without the
+     * ABORT_ASYNC flag, we must block to guarantee synchronous
+     * operation.  We do the waiting while still holding the VM job,
+     * to prevent newly scheduled block jobs from confusing us.  */
+    if (mode == BLOCK_JOB_ABORT) {
+        if (!async) {
+            int type = VIR_DOMAIN_BLOCK_JOB_TYPE_PULL;
+            int status = VIR_DOMAIN_BLOCK_JOB_CANCELED;
+            event = virDomainEventBlockJobNewFromObj(vm, disk->src, type,
+                                                     status);
+        } else if (!(flags & VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC)) {
+            while (1) {
+                /* Poll every 50ms */
+                static struct timespec ts = { .tv_sec = 0,
+                                              .tv_nsec = 50 * 1000 * 1000ull };
+                virDomainBlockJobInfo dummy;
+
+                qemuDomainObjEnterMonitorWithDriver(driver, vm);
+                ret = qemuMonitorBlockJob(priv->mon, device, NULL, 0, &dummy,
+                                          BLOCK_JOB_INFO, async);
+                qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+                if (ret <= 0)
+                    break;
+
+                virDomainObjUnlock(vm);
+                qemuDriverUnlock(driver);
+
+                nanosleep(&ts, NULL);
+
+                qemuDriverLock(driver);
+                virDomainObjLock(vm);
+
+                if (!virDomainObjIsActive(vm)) {
+                    qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                                    _("domain is not running"));
+                    ret = -1;
+                    break;
+                }
+            }
+        }
+    }
 
 endjob:
     if (qemuDomainObjEndJob(driver, vm) == 0) {
@@ -11663,6 +11713,8 @@ cleanup:
     VIR_FREE(device);
     if (vm)
         virDomainObjUnlock(vm);
+    if (event)
+        qemuDomainEventQueue(driver, event);
     qemuDriverUnlock(driver);
     return ret;
 }
@@ -11670,8 +11722,9 @@ cleanup:
 static int
 qemuDomainBlockJobAbort(virDomainPtr dom, const char *path, unsigned int flags)
 {
-    virCheckFlags(0, -1);
-    return qemuDomainBlockJobImpl(dom, path, NULL, 0, NULL, BLOCK_JOB_ABORT);
+    virCheckFlags(VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC, -1);
+    return qemuDomainBlockJobImpl(dom, path, NULL, 0, NULL, BLOCK_JOB_ABORT,
+                                  flags);
 }
 
 static int
@@ -11679,7 +11732,8 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
                            virDomainBlockJobInfoPtr info, unsigned int flags)
 {
     virCheckFlags(0, -1);
-    return qemuDomainBlockJobImpl(dom, path, NULL, 0, info, BLOCK_JOB_INFO);
+    return qemuDomainBlockJobImpl(dom, path, NULL, 0, info, BLOCK_JOB_INFO,
+                                  flags);
 }
 
 static int
@@ -11688,7 +11742,7 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom, const char *path,
 {
     virCheckFlags(0, -1);
     return qemuDomainBlockJobImpl(dom, path, NULL, bandwidth, NULL,
-                                  BLOCK_JOB_SPEED);
+                                  BLOCK_JOB_SPEED, flags);
 }
 
 static int
@@ -11699,10 +11753,10 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
 
     virCheckFlags(0, -1);
     ret = qemuDomainBlockJobImpl(dom, path, base, bandwidth, NULL,
-                                 BLOCK_JOB_PULL);
+                                 BLOCK_JOB_PULL, flags);
     if (ret == 0 && bandwidth != 0)
         ret = qemuDomainBlockJobImpl(dom, path, NULL, bandwidth, NULL,
-                                     BLOCK_JOB_SPEED);
+                                     BLOCK_JOB_SPEED, flags);
     return ret;
 }
 

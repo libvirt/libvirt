@@ -58,13 +58,14 @@ static void qemuMonitorJSONHandleIOError(qemuMonitorPtr mon, virJSONValuePtr dat
 static void qemuMonitorJSONHandleVNCConnect(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleVNCInitialize(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleVNCDisconnect(qemuMonitorPtr mon, virJSONValuePtr data);
-static void qemuMonitorJSONHandleBlockJob(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleSPICEConnect(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleSPICEInitialize(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleSPICEDisconnect(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleTrayChange(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandlePMWakeup(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandlePMSuspend(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleBlockJobCompleted(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleBlockJobCanceled(qemuMonitorPtr mon, virJSONValuePtr data);
 
 typedef struct {
     const char *type;
@@ -73,7 +74,8 @@ typedef struct {
 
 static qemuEventHandler eventHandlers[] = {
     { "BLOCK_IO_ERROR", qemuMonitorJSONHandleIOError, },
-    { "BLOCK_JOB_COMPLETED", qemuMonitorJSONHandleBlockJob, },
+    { "BLOCK_JOB_CANCELLED", qemuMonitorJSONHandleBlockJobCanceled, },
+    { "BLOCK_JOB_COMPLETED", qemuMonitorJSONHandleBlockJobCompleted, },
     { "DEVICE_TRAY_MOVED", qemuMonitorJSONHandleTrayChange, },
     { "POWERDOWN", qemuMonitorJSONHandlePowerdown, },
     { "RESET", qemuMonitorJSONHandleReset, },
@@ -763,13 +765,15 @@ static void qemuMonitorJSONHandleSPICEDisconnect(qemuMonitorPtr mon, virJSONValu
     qemuMonitorJSONHandleGraphics(mon, data, VIR_DOMAIN_EVENT_GRAPHICS_DISCONNECT);
 }
 
-static void qemuMonitorJSONHandleBlockJob(qemuMonitorPtr mon, virJSONValuePtr data)
+static void
+qemuMonitorJSONHandleBlockJobImpl(qemuMonitorPtr mon,
+                                  virJSONValuePtr data,
+                                  int event)
 {
     const char *device;
     const char *type_str;
     int type = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
     unsigned long long offset, len;
-    int status = VIR_DOMAIN_BLOCK_JOB_FAILED;
 
     if ((device = virJSONValueObjectGetString(data, "device")) == NULL) {
         VIR_WARN("missing device in block job event");
@@ -794,11 +798,22 @@ static void qemuMonitorJSONHandleBlockJob(qemuMonitorPtr mon, virJSONValuePtr da
     if (STREQ(type_str, "stream"))
         type = VIR_DOMAIN_BLOCK_JOB_TYPE_PULL;
 
-    if (offset != 0 && offset == len)
-        status = VIR_DOMAIN_BLOCK_JOB_COMPLETED;
+    switch ((virConnectDomainEventBlockJobStatus) event) {
+    case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
+        /* Make sure the whole device has been processed */
+        if (offset != len)
+            event = VIR_DOMAIN_BLOCK_JOB_FAILED;
+        break;
+    case VIR_DOMAIN_BLOCK_JOB_CANCELED:
+        break;
+    case VIR_DOMAIN_BLOCK_JOB_FAILED:
+    case VIR_DOMAIN_BLOCK_JOB_LAST:
+            VIR_DEBUG("should not get here");
+            break;
+    }
 
 out:
-    qemuMonitorEmitBlockJob(mon, device, type, status);
+    qemuMonitorEmitBlockJob(mon, device, type, event);
 }
 
 static void
@@ -839,6 +854,22 @@ qemuMonitorJSONHandlePMSuspend(qemuMonitorPtr mon,
                                virJSONValuePtr data ATTRIBUTE_UNUSED)
 {
     qemuMonitorEmitPMSuspend(mon);
+}
+
+static void
+qemuMonitorJSONHandleBlockJobCompleted(qemuMonitorPtr mon,
+                                       virJSONValuePtr data)
+{
+    qemuMonitorJSONHandleBlockJobImpl(mon, data,
+                                      VIR_DOMAIN_BLOCK_JOB_COMPLETED);
+}
+
+static void
+qemuMonitorJSONHandleBlockJobCanceled(qemuMonitorPtr mon,
+                                       virJSONValuePtr data)
+{
+    qemuMonitorJSONHandleBlockJobImpl(mon, data,
+                                      VIR_DOMAIN_BLOCK_JOB_CANCELED);
 }
 
 int
