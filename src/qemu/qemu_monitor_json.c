@@ -939,12 +939,14 @@ qemuMonitorJSONCheckCommands(qemuMonitorPtr mon,
 
         if (STREQ(name, "human-monitor-command"))
             *json_hmp = 1;
-
-        if (STREQ(name, "system_wakeup"))
+        else if (STREQ(name, "system_wakeup"))
             qemuCapsSet(qemuCaps, QEMU_CAPS_WAKEUP);
-
-        if (STREQ(name, "transaction"))
+        else if (STREQ(name, "transaction"))
             qemuCapsSet(qemuCaps, QEMU_CAPS_TRANSACTION);
+        else if (STREQ(name, "block_job_cancel"))
+            qemuCapsSet(qemuCaps, QEMU_CAPS_BLOCKJOB_SYNC);
+        else if (STREQ(name, "block-job-cancel"))
+            qemuCapsSet(qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC);
     }
 
     ret = 0;
@@ -3114,7 +3116,7 @@ qemuMonitorJSONDiskSnapshot(qemuMonitorPtr mon, virJSONValuePtr actions,
                             const char *device, const char *file,
                             const char *format, bool reuse)
 {
-    int ret;
+    int ret = -1;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
 
@@ -3132,14 +3134,13 @@ qemuMonitorJSONDiskSnapshot(qemuMonitorPtr mon, virJSONValuePtr actions,
     if (actions) {
         if (virJSONValueArrayAppend(actions, cmd) < 0) {
             virReportOOMError();
-            ret = -1;
         } else {
             ret = 0;
             cmd = NULL;
         }
     } else {
         if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
-        goto cleanup;
+            goto cleanup;
 
         if (qemuMonitorJSONHasError(reply, "CommandNotFound") &&
             qemuMonitorCheckHMP(mon, "snapshot_blkdev")) {
@@ -3388,39 +3389,43 @@ qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
                         const char *base,
                         unsigned long bandwidth,
                         virDomainBlockJobInfoPtr info,
-                        int mode)
+                        int mode,
+                        bool async)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
     const char *cmd_name = NULL;
 
-    if (base && mode != BLOCK_JOB_PULL) {
+    if (base && (mode != BLOCK_JOB_PULL || !async)) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("only block pull supports base: %s"), base);
+                        _("only modern block pull supports base: %s"), base);
         return -1;
     }
 
-    if (mode == BLOCK_JOB_ABORT) {
-        cmd_name = "block_job_cancel";
+    switch ((BLOCK_JOB_CMD) mode) {
+    case BLOCK_JOB_ABORT:
+        cmd_name = async ? "block-job-cancel" : "block_job_cancel";
         cmd = qemuMonitorJSONMakeCommand(cmd_name, "s:device", device, NULL);
-    } else if (mode == BLOCK_JOB_INFO) {
+        break;
+    case BLOCK_JOB_INFO:
         cmd_name = "query-block-jobs";
         cmd = qemuMonitorJSONMakeCommand(cmd_name, NULL);
-    } else if (mode == BLOCK_JOB_SPEED) {
-        cmd_name = "block_job_set_speed";
+        break;
+    case BLOCK_JOB_SPEED:
+        cmd_name = async ? "block-job-set-speed" : "block_job_set_speed";
         cmd = qemuMonitorJSONMakeCommand(cmd_name, "s:device",
                                          device, "U:value",
                                          bandwidth * 1024ULL * 1024ULL,
                                          NULL);
-    } else if (mode == BLOCK_JOB_PULL) {
-        cmd_name = "block_stream";
-        if (base)
-            cmd = qemuMonitorJSONMakeCommand(cmd_name, "s:device",
-                                             device, "s:base", base, NULL);
-        else
-            cmd = qemuMonitorJSONMakeCommand(cmd_name, "s:device",
-                                             device, NULL);
+        break;
+    case BLOCK_JOB_PULL:
+        cmd_name = async ? "block-stream" : "block_stream";
+        cmd = qemuMonitorJSONMakeCommand(cmd_name,
+                                         "s:device", device,
+                                         base ? "s:base" : NULL, base,
+                                         NULL);
+        break;
     }
 
     if (!cmd)

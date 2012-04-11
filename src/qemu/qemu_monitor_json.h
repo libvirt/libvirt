@@ -253,7 +253,9 @@ int qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
                             const char *base,
                             unsigned long bandwidth,
                             virDomainBlockJobInfoPtr info,
-                            int mode);
+                            int mode,
+                            bool async)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorJSONSetLink(qemuMonitorPtr mon,
                            const char *name,

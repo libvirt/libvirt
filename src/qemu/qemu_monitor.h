@@ -538,8 +538,9 @@ int qemuMonitorBlockJob(qemuMonitorPtr mon,
                         const char *back,
                         unsigned long bandwidth,
                         virDomainBlockJobInfoPtr info,
-                        int mode)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
+                        int mode,
+                        bool async)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorOpenGraphics(qemuMonitorPtr mon,
                             const char *protocol,

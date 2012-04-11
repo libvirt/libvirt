@@ -11607,6 +11607,7 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *device = NULL;
     int ret = -1;
+    bool async = false;
 
     qemuDriverLock(driver);
     virUUIDFormat(dom->uuid, uuidstr);
@@ -11614,6 +11615,19 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
     if (!vm) {
         qemuReportError(VIR_ERR_NO_DOMAIN,
                         _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+    priv = vm->privateData;
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC)) {
+        async = true;
+    } else if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_SYNC)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("block jobs not supported with this QEMU binary"));
+        goto cleanup;
+    } else if (base) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("partial block pull not supported with this "
+                          "QEMU binary"));
         goto cleanup;
     }
 
@@ -11632,13 +11646,11 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    priv = vm->privateData;
-    /* XXX - add a qemu capability check, since only qemu 1.1 or newer
-     * supports the base argument.
-     * XXX - libvirt should really be tracking the backing file chain
+    /* XXX - libvirt should really be tracking the backing file chain
      * itself, and validating that base is on the chain, rather than
      * relying on qemu to do this.  */
-    ret = qemuMonitorBlockJob(priv->mon, device, base, bandwidth, info, mode);
+    ret = qemuMonitorBlockJob(priv->mon, device, base, bandwidth, info, mode,
+                              async);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
 endjob:

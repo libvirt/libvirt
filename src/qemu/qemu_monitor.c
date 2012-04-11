@@ -2773,15 +2773,18 @@ int qemuMonitorBlockJob(qemuMonitorPtr mon,
                         const char *base,
                         unsigned long bandwidth,
                         virDomainBlockJobInfoPtr info,
-                        int mode)
+                        int mode,
+                        bool async)
 {
     int ret = -1;
 
-    VIR_DEBUG("mon=%p, device=%s, base=%s, bandwidth=%lu, info=%p, mode=%o",
-              mon, device, NULLSTR(base), bandwidth, info, mode);
+    VIR_DEBUG("mon=%p, device=%s, base=%s, bandwidth=%lu, info=%p, mode=%o, "
+              "async=%d", mon, device, NULLSTR(base), bandwidth, info, mode,
+              async);
 
     if (mon->json)
-        ret = qemuMonitorJSONBlockJob(mon, device, base, bandwidth, info, mode);
+        ret = qemuMonitorJSONBlockJob(mon, device, base, bandwidth, info, mode,
+                                      async);
     else
         qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                         _("block jobs require JSON monitor"));

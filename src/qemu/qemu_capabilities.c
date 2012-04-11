@@ -156,6 +156,9 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "scsi-disk.channel",
               "scsi-block",
               "transaction",
+
+              "block-job-sync", /* 90 */
+              "block-job-async",
     );
 
 struct qemu_feature_flags {
