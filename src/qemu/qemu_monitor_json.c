@@ -66,36 +66,46 @@ static void qemuMonitorJSONHandleTrayChange(qemuMonitorPtr mon, virJSONValuePtr 
 static void qemuMonitorJSONHandlePMWakeup(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandlePMSuspend(qemuMonitorPtr mon, virJSONValuePtr data);
 
-static struct {
+typedef struct {
     const char *type;
     void (*handler)(qemuMonitorPtr mon, virJSONValuePtr data);
-} eventHandlers[] = {
-    { "SHUTDOWN", qemuMonitorJSONHandleShutdown, },
-    { "RESET", qemuMonitorJSONHandleReset, },
-    { "POWERDOWN", qemuMonitorJSONHandlePowerdown, },
-    { "STOP", qemuMonitorJSONHandleStop, },
-    { "RTC_CHANGE", qemuMonitorJSONHandleRTCChange, },
-    { "WATCHDOG", qemuMonitorJSONHandleWatchdog, },
+} qemuEventHandler;
+
+static qemuEventHandler eventHandlers[] = {
     { "BLOCK_IO_ERROR", qemuMonitorJSONHandleIOError, },
-    { "VNC_CONNECTED", qemuMonitorJSONHandleVNCConnect, },
-    { "VNC_INITIALIZED", qemuMonitorJSONHandleVNCInitialize, },
-    { "VNC_DISCONNECTED", qemuMonitorJSONHandleVNCDisconnect, },
     { "BLOCK_JOB_COMPLETED", qemuMonitorJSONHandleBlockJob, },
-    { "SPICE_CONNECTED", qemuMonitorJSONHandleSPICEConnect, },
-    { "SPICE_INITIALIZED", qemuMonitorJSONHandleSPICEInitialize, },
-    { "SPICE_DISCONNECTED", qemuMonitorJSONHandleSPICEDisconnect, },
     { "DEVICE_TRAY_MOVED", qemuMonitorJSONHandleTrayChange, },
-    { "WAKEUP", qemuMonitorJSONHandlePMWakeup, },
+    { "POWERDOWN", qemuMonitorJSONHandlePowerdown, },
+    { "RESET", qemuMonitorJSONHandleReset, },
+    { "RTC_CHANGE", qemuMonitorJSONHandleRTCChange, },
+    { "SHUTDOWN", qemuMonitorJSONHandleShutdown, },
+    { "SPICE_CONNECTED", qemuMonitorJSONHandleSPICEConnect, },
+    { "SPICE_DISCONNECTED", qemuMonitorJSONHandleSPICEDisconnect, },
+    { "SPICE_INITIALIZED", qemuMonitorJSONHandleSPICEInitialize, },
+    { "STOP", qemuMonitorJSONHandleStop, },
     { "SUSPEND", qemuMonitorJSONHandlePMSuspend, },
+    { "VNC_CONNECTED", qemuMonitorJSONHandleVNCConnect, },
+    { "VNC_DISCONNECTED", qemuMonitorJSONHandleVNCDisconnect, },
+    { "VNC_INITIALIZED", qemuMonitorJSONHandleVNCInitialize, },
+    { "WAKEUP", qemuMonitorJSONHandlePMWakeup, },
+    { "WATCHDOG", qemuMonitorJSONHandleWatchdog, },
+    /* We use bsearch, so keep this list sorted.  */
 };
 
+static int
+qemuMonitorEventCompare(const void *key, const void *elt)
+{
+    const char *type = key;
+    const qemuEventHandler *handler = elt;
+    return strcmp(type, handler->type);
+}
 
 static int
 qemuMonitorJSONIOProcessEvent(qemuMonitorPtr mon,
                               virJSONValuePtr obj)
 {
     const char *type;
-    int i;
+    qemuEventHandler *handler;
     VIR_DEBUG("mon=%p obj=%p", mon, obj);
 
     type = virJSONValueObjectGetString(obj, "event");
@@ -105,14 +115,13 @@ qemuMonitorJSONIOProcessEvent(qemuMonitorPtr mon,
         return -1;
     }
 
-    for (i = 0 ; i < ARRAY_CARDINALITY(eventHandlers) ; i++) {
-        if (STREQ(eventHandlers[i].type, type)) {
-            virJSONValuePtr data = virJSONValueObjectGet(obj, "data");
-            VIR_DEBUG("handle %s handler=%p data=%p", type,
-                      eventHandlers[i].handler, data);
-            (eventHandlers[i].handler)(mon, data);
-            break;
-        }
+    handler = bsearch(type, eventHandlers, ARRAY_CARDINALITY(eventHandlers),
+                      sizeof(eventHandlers[0]), qemuMonitorEventCompare);
+    if (handler) {
+        virJSONValuePtr data = virJSONValueObjectGet(obj, "data");
+        VIR_DEBUG("handle %s handler=%p data=%p", type,
+                  handler->handler, data);
+        (handler->handler)(mon, data);
     }
     return 0;
 }
