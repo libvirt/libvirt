@@ -11654,6 +11654,9 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
      * relying on qemu to do this.  */
     ret = qemuMonitorBlockJob(priv->mon, device, base, bandwidth, info, mode,
                               async);
+    if (ret == 0 && mode == BLOCK_JOB_PULL && bandwidth)
+        ret = qemuMonitorBlockJob(priv->mon, device, NULL, bandwidth, NULL,
+                                  BLOCK_JOB_SPEED_INTERNAL, async);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
     if (ret < 0)
         goto endjob;
@@ -11749,15 +11752,9 @@ static int
 qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
                       unsigned long bandwidth, unsigned int flags)
 {
-    int ret;
-
     virCheckFlags(0, -1);
-    ret = qemuDomainBlockJobImpl(dom, path, base, bandwidth, NULL,
-                                 BLOCK_JOB_PULL, flags);
-    if (ret == 0 && bandwidth != 0)
-        ret = qemuDomainBlockJobImpl(dom, path, NULL, bandwidth, NULL,
-                                     BLOCK_JOB_SPEED, flags);
-    return ret;
+    return qemuDomainBlockJobImpl(dom, path, base, bandwidth, NULL,
+                                  BLOCK_JOB_PULL, flags);
 }
 
 static int

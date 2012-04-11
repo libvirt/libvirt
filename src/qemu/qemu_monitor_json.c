@@ -3453,6 +3453,7 @@ qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
         cmd = qemuMonitorJSONMakeCommand(cmd_name, NULL);
         break;
     case BLOCK_JOB_SPEED:
+    case BLOCK_JOB_SPEED_INTERNAL:
         cmd_name = async ? "block-job-set-speed" : "block_job_set_speed";
         cmd = qemuMonitorJSONMakeCommand(cmd_name, "s:device",
                                          device, "U:value",
@@ -3474,22 +3475,30 @@ qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
     ret = qemuMonitorJSONCommand(mon, cmd, &reply);
 
     if (ret == 0 && virJSONValueObjectHasKey(reply, "error")) {
-        if (qemuMonitorJSONHasError(reply, "DeviceNotActive"))
-            qemuReportError(VIR_ERR_OPERATION_INVALID,
-                _("No active operation on device: %s"), device);
-        else if (qemuMonitorJSONHasError(reply, "DeviceInUse"))
+        ret = -1;
+        if (qemuMonitorJSONHasError(reply, "DeviceNotActive")) {
+            /* If a job completes before we get a chance to set the
+             * speed, we don't want to fail the original command.  */
+            if (mode == BLOCK_JOB_SPEED_INTERNAL)
+                ret = 0;
+            else
+                qemuReportError(VIR_ERR_OPERATION_INVALID,
+                                _("No active operation on device: %s"),
+                                device);
+        } else if (qemuMonitorJSONHasError(reply, "DeviceInUse")){
             qemuReportError(VIR_ERR_OPERATION_FAILED,
-                _("Device %s in use"), device);
-        else if (qemuMonitorJSONHasError(reply, "NotSupported"))
+                            _("Device %s in use"), device);
+        } else if (qemuMonitorJSONHasError(reply, "NotSupported")) {
             qemuReportError(VIR_ERR_OPERATION_INVALID,
-                _("Operation is not supported for device: %s"), device);
-        else if (qemuMonitorJSONHasError(reply, "CommandNotFound"))
+                            _("Operation is not supported for device: %s"),
+                            device);
+        } else if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
             qemuReportError(VIR_ERR_OPERATION_INVALID,
-                _("Command '%s' is not found"), cmd_name);
-        else
+                            _("Command '%s' is not found"), cmd_name);
+        } else {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                 _("Unexpected error"));
-        ret = -1;
+        }
     }
 
     if (ret == 0 && mode == BLOCK_JOB_INFO)

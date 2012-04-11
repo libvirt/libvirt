@@ -530,7 +530,8 @@ typedef enum {
     BLOCK_JOB_ABORT = 0,
     BLOCK_JOB_INFO = 1,
     BLOCK_JOB_SPEED = 2,
-    BLOCK_JOB_PULL = 3,
+    BLOCK_JOB_SPEED_INTERNAL = 3,
+    BLOCK_JOB_PULL = 4,
 } BLOCK_JOB_CMD;
 
 int qemuMonitorBlockJob(qemuMonitorPtr mon,
