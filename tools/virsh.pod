@@ -641,6 +641,47 @@ currently in use by a running domain. Other contexts that require a MAC
 address of virtual interface (such as I<detach-interface> or
 I<domif-setlink>) will accept the MAC address printed by this command.
 
+=item B<blockcopy> I<domain> I<path> I<dest> [I<bandwidth>] [I<--shallow>]
+[I<--reuse-external>] [I<--raw>] [I<--wait> [I<--verbose]
+[{I<--pivot> | I<--finish>}] [I<--timeout> B<seconds>] [I<--async>]]
+
+Copy a disk backing image chain to I<dest>. By default, this command
+flattens the entire chain; but if I<--shallow> is specified, the copy
+shares the backing chain.
+
+If I<--reuse-external> is specified, then I<dest> must exist and have
+contents identical to the resulting backing file (that is, it must
+start with contents matching the backing file I<disk> if I<--shallow>
+is used, otherwise it must start empty); this option is typically used
+to set up a relative backing file name in the destination.
+
+The format of the destination is determined by the first match in the
+following list: if I<--raw> is specified, it will be raw; if
+I<--reuse-external> is specified, the existing destination is probed
+for a format; and in all other cases, the destination format will
+match the source format.
+
+By default, the copy job runs in the background, and consists of two
+phases.  Initially, the job must copy all data from the source, and
+during this phase, the job can only be canceled to revert back to the
+source disk, with no guarantees about the destination.  After this phase
+completes, both the source and the destination remain mirrored until a
+call to B<blockjob> with the I<--abort> and I<--pivot> flags pivots over
+to the copy, or a call without I<--pivot> leaves the destination as a
+faithful copy of that point in time.  However, if I<--wait> is specified,
+then this command will block until the mirroring phase begins, or cancel
+the operation if the optional I<timeout> in seconds elapses or SIGINT is
+sent (usually with C<Ctrl-C>).  Using I<--verbose> along with I<--wait>
+will produce periodic status updates.  Using I<--pivot> or I<--finish>
+along with I<--wait> will additionally end the job cleanly rather than
+leaving things in the mirroring phase.  If job cancellation is triggered,
+I<--async> will return control to the user as fast as possible, otherwise
+the command may continue to block a little while longer until the job
+is done cleaning up.
+
+I<path> specifies fully-qualified path of the disk.
+I<bandwidth> specifies copying bandwidth limit in Mbps.
+
 =item B<blockpull> I<domain> I<path> [I<bandwidth>] [I<base>]
 [I<--wait> [I<--verbose>] [I<--timeout> B<seconds>] [I<--async]]
 
@@ -702,12 +743,12 @@ Both I<--live> and I<--current> flags may be given, but I<--current> is
 exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
 
-=item B<blockjob> I<domain> I<path> { [I<--abort>] [I<--async>] |
+=item B<blockjob> I<domain> I<path> { [I<--abort>] [I<--async>] [I<--pivot>] |
 [I<--info>] | [I<bandwidth>] }
 
 Manage active block operations.  There are three modes: I<--info>,
 I<bandwidth>, and I<--abort>; I<--info> is default except that I<--async>
-implies I<--abort>.
+or I<--pivot> implies I<--abort>.
 
 I<path> specifies fully-qualified path of the disk; it corresponds
 to a unique target name (<target dev='name'/>) or source file (<source
@@ -716,7 +757,9 @@ also B<domblklist> for listing these names).
 
 If I<--abort> is specified, the active job on the specified disk will
 be aborted.  If I<--async> is also specified, this command will return
-immediately, rather than waiting for the cancelation to complete.
+immediately, rather than waiting for the cancelation to complete.  If
+I<--pivot> is specified, this requests that an active copy job
+be pivoted over to the new copy.
 If I<--info> is specified, the active job information on the specified
 disk will be printed.
 I<bandwidth> can be used to set bandwidth limit for the active job.

@@ -7515,7 +7515,8 @@ typedef enum {
     VSH_CMD_BLOCK_JOB_INFO = 1,
     VSH_CMD_BLOCK_JOB_SPEED = 2,
     VSH_CMD_BLOCK_JOB_PULL = 3,
-} VSH_CMD_BLOCK_JOB_MODE;
+    VSH_CMD_BLOCK_JOB_COPY = 4,
+} vshCmdBlockJobMode;
 
 static int
 blockJobImpl(vshControl *ctl, const vshCmd *cmd,
@@ -7526,6 +7527,7 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
     const char *name, *path;
     unsigned long bandwidth = 0;
     int ret = -1;
+    const char *base = NULL;
     unsigned int flags = 0;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
@@ -7542,22 +7544,39 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
         goto cleanup;
     }
 
-    if (mode == VSH_CMD_BLOCK_JOB_ABORT) {
+    switch ((vshCmdBlockJobMode) mode) {
+    case  VSH_CMD_BLOCK_JOB_ABORT:
         if (vshCommandOptBool(cmd, "async"))
             flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
+        if (vshCommandOptBool(cmd, "pivot"))
+            flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT;
         ret = virDomainBlockJobAbort(dom, path, flags);
-    } else if (mode == VSH_CMD_BLOCK_JOB_INFO) {
+        break;
+    case VSH_CMD_BLOCK_JOB_INFO:
         ret = virDomainGetBlockJobInfo(dom, path, info, 0);
-    } else if (mode == VSH_CMD_BLOCK_JOB_SPEED) {
+        break;
+    case VSH_CMD_BLOCK_JOB_SPEED:
         ret = virDomainBlockJobSetSpeed(dom, path, bandwidth, 0);
-    } else if (mode == VSH_CMD_BLOCK_JOB_PULL) {
-        const char *base = NULL;
+        break;
+    case VSH_CMD_BLOCK_JOB_PULL:
         if (vshCommandOptString(cmd, "base", &base) < 0)
             goto cleanup;
         if (base)
             ret = virDomainBlockRebase(dom, path, base, bandwidth, 0);
         else
             ret = virDomainBlockPull(dom, path, bandwidth, 0);
+        break;
+    case VSH_CMD_BLOCK_JOB_COPY:
+        flags |= VIR_DOMAIN_BLOCK_REBASE_COPY;
+        if (vshCommandOptBool(cmd, "shallow"))
+            flags |= VIR_DOMAIN_BLOCK_REBASE_SHALLOW;
+        if (vshCommandOptBool(cmd, "reuse-external"))
+            flags |= VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT;
+        if (vshCommandOptBool(cmd, "raw"))
+            flags |= VIR_DOMAIN_BLOCK_REBASE_COPY_RAW;
+        if (vshCommandOptString(cmd, "dest", &base) < 0)
+            goto cleanup;
+        ret = virDomainBlockRebase(dom, path, base, bandwidth, flags);
     }
 
 cleanup:
@@ -7565,6 +7584,159 @@ cleanup:
         *pdom = dom;
     else if (dom)
         virDomainFree(dom);
+    return ret;
+}
+
+/*
+ * "blockcopy" command
+ */
+static const vshCmdInfo info_block_copy[] = {
+    {"help", N_("Start a block copy operation.")},
+    {"desc", N_("Populate a disk from its backing image.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_block_copy[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"path", VSH_OT_DATA, VSH_OFLAG_REQ, N_("fully-qualified path of disk")},
+    {"dest", VSH_OT_DATA, VSH_OFLAG_REQ, N_("path of the copy to create")},
+    {"bandwidth", VSH_OT_DATA, VSH_OFLAG_NONE, N_("bandwidth limit in MB/s")},
+    {"shallow", VSH_OT_BOOL, 0, N_("make the copy share a backing chain")},
+    {"reuse-external", VSH_OT_BOOL, 0, N_("reuse existing destination")},
+    {"raw", VSH_OT_BOOL, 0, N_("use raw destination file")},
+    {"wait", VSH_OT_BOOL, 0, N_("wait for job to reach mirroring phase")},
+    {"verbose", VSH_OT_BOOL, 0, N_("with --wait, display the progress")},
+    {"timeout", VSH_OT_INT, VSH_OFLAG_NONE,
+     N_("with --wait, abort if copy exceeds timeout (in seconds)")},
+    {"pivot", VSH_OT_BOOL, 0, N_("with --wait, pivot when mirroring starts")},
+    {"finish", VSH_OT_BOOL, 0, N_("with --wait, quit when mirroring starts")},
+    {"async", VSH_OT_BOOL, 0,
+     N_("with --wait, don't wait for cancel to finish")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    bool ret = false;
+    bool blocking = vshCommandOptBool(cmd, "wait");
+    bool verbose = vshCommandOptBool(cmd, "verbose");
+    bool pivot = vshCommandOptBool(cmd, "pivot");
+    bool finish = vshCommandOptBool(cmd, "finish");
+    int timeout = 0;
+    struct sigaction sig_action;
+    struct sigaction old_sig_action;
+    sigset_t sigmask;
+    struct timeval start;
+    struct timeval curr;
+    const char *path = NULL;
+    bool quit = false;
+    int abort_flags = 0;
+
+    if (blocking) {
+        if (pivot && finish) {
+            vshError(ctl, "%s", _("cannot mix --pivot and --finish"));
+            return false;
+        }
+        if (vshCommandOptInt(cmd, "timeout", &timeout) > 0) {
+            if (timeout < 1) {
+                vshError(ctl, "%s", _("migrate: Invalid timeout"));
+                return false;
+            }
+
+            /* Ensure that we can multiply by 1000 without overflowing. */
+            if (timeout > INT_MAX / 1000) {
+                vshError(ctl, "%s", _("migrate: Timeout is too big"));
+                return false;
+            }
+        }
+        if (vshCommandOptString(cmd, "path", &path) < 0)
+            return false;
+        if (vshCommandOptBool(cmd, "async"))
+            abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
+
+        sigemptyset(&sigmask);
+        sigaddset(&sigmask, SIGINT);
+
+        intCaught = 0;
+        sig_action.sa_sigaction = vshCatchInt;
+        sig_action.sa_flags = SA_SIGINFO;
+        sigemptyset(&sig_action.sa_mask);
+        sigaction(SIGINT, &sig_action, &old_sig_action);
+
+        GETTIMEOFDAY(&start);
+    } else if (verbose || vshCommandOptBool(cmd, "timeout") ||
+               vshCommandOptBool(cmd, "async") || pivot || finish) {
+        vshError(ctl, "%s", _("blocking control options require --wait"));
+        return false;
+    }
+
+    if (blockJobImpl(ctl, cmd, NULL, VSH_CMD_BLOCK_JOB_COPY, &dom) < 0)
+        goto cleanup;
+
+    if (!blocking) {
+        vshPrint(ctl, "%s", _("Block Copy started"));
+        ret = true;
+        goto cleanup;
+    }
+
+    while (blocking) {
+        virDomainBlockJobInfo info;
+        int result = virDomainGetBlockJobInfo(dom, path, &info, 0);
+
+        if (result <= 0) {
+            vshError(ctl, _("failed to query job for disk %s"), path);
+            goto cleanup;
+        }
+        if (verbose)
+            print_job_progress(_("Block Copy"), info.end - info.cur, info.end);
+        if (info.cur == info.end)
+            break;
+
+        GETTIMEOFDAY(&curr);
+        if (intCaught || (timeout &&
+                          (((int)(curr.tv_sec - start.tv_sec)  * 1000 +
+                            (int)(curr.tv_usec - start.tv_usec) / 1000) >
+                           timeout * 1000))) {
+            vshDebug(ctl, VSH_ERR_DEBUG,
+                     intCaught ? "interrupted" : "timeout");
+            intCaught = 0;
+            timeout = 0;
+            quit = true;
+            if (virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
+                vshError(ctl, _("failed to abort job for disk %s"), path);
+                goto cleanup;
+            }
+            if (abort_flags & VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC)
+                break;
+        } else {
+            usleep(500 * 1000);
+        }
+    }
+
+    if (pivot) {
+        abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT;
+        if (virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
+            vshError(ctl, _("failed to pivot job for disk %s"), path);
+            goto cleanup;
+        }
+    } else if (finish && virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
+        vshError(ctl, _("failed to finish job for disk %s"), path);
+        goto cleanup;
+    }
+    vshPrint(ctl, "\n%s",
+             quit ? _("Copy aborted") :
+             pivot ? _("Successfully pivoted") :
+             finish ? _("Successfully copied") :
+             _("Now in mirroring phase"));
+
+    ret = true;
+cleanup:
+    if (dom)
+        virDomainFree(dom);
+    if (blocking)
+        sigaction(SIGINT, &old_sig_action, NULL);
     return ret;
 }
 
@@ -7579,8 +7751,8 @@ static const vshCmdInfo info_block_pull[] = {
 
 static const vshCmdOptDef opts_block_pull[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"path", VSH_OT_DATA, VSH_OFLAG_REQ, N_("Fully-qualified path of disk")},
-    {"bandwidth", VSH_OT_DATA, VSH_OFLAG_NONE, N_("Bandwidth limit in MB/s")},
+    {"path", VSH_OT_DATA, VSH_OFLAG_REQ, N_("fully-qualified path of disk")},
+    {"bandwidth", VSH_OT_DATA, VSH_OFLAG_NONE, N_("bandwidth limit in MB/s")},
     {"base", VSH_OT_DATA, VSH_OFLAG_NONE,
      N_("path of backing file in chain for a partial pull")},
     {"wait", VSH_OT_BOOL, 0, N_("wait for job to finish")},
@@ -7713,15 +7885,17 @@ static const vshCmdInfo info_block_job[] = {
 
 static const vshCmdOptDef opts_block_job[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"path", VSH_OT_DATA, VSH_OFLAG_REQ, N_("Fully-qualified path of disk")},
+    {"path", VSH_OT_DATA, VSH_OFLAG_REQ, N_("fully-qualified path of disk")},
     {"abort", VSH_OT_BOOL, VSH_OFLAG_NONE,
-     N_("Abort the active job on the specified disk")},
+     N_("abort the active job on the specified disk")},
     {"async", VSH_OT_BOOL, VSH_OFLAG_NONE,
      N_("don't wait for --abort to complete")},
+    {"pivot", VSH_OT_BOOL, VSH_OFLAG_NONE,
+     N_("conclude and pivot a copy job")},
     {"info", VSH_OT_BOOL, VSH_OFLAG_NONE,
-     N_("Get active job information for the specified disk")},
+     N_("get active job information for the specified disk")},
     {"bandwidth", VSH_OT_DATA, VSH_OFLAG_NONE,
-     N_("Set the Bandwidth limit in MB/s")},
+     N_("set the Bandwidth limit in MB/s")},
     {NULL, 0, 0, NULL}
 };
 
@@ -7733,7 +7907,8 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
     const char *type;
     int ret;
     bool abortMode = (vshCommandOptBool(cmd, "abort") ||
-                      vshCommandOptBool(cmd, "async"));
+                      vshCommandOptBool(cmd, "async") ||
+                      vshCommandOptBool(cmd, "pivot"));
     bool infoMode = vshCommandOptBool(cmd, "info");
     bool bandwidth = vshCommandOptBool(cmd, "bandwidth");
 
@@ -7757,10 +7932,17 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
     if (ret == 0 || mode != VSH_CMD_BLOCK_JOB_INFO)
         return true;
 
-    if (info.type == VIR_DOMAIN_BLOCK_JOB_TYPE_PULL)
+    switch (info.type) {
+    case VIR_DOMAIN_BLOCK_JOB_TYPE_PULL:
         type = _("Block Pull");
-    else
+        break;
+    case VIR_DOMAIN_BLOCK_JOB_TYPE_COPY:
+        type = _("Block Copy");
+        break;
+    default:
         type = _("Unknown job");
+        break;
+    }
 
     print_job_progress(type, info.end - info.cur, info.end);
     if (info.bandwidth != 0)
@@ -17239,6 +17421,7 @@ static const vshCmdDef domManagementCmds[] = {
     {"autostart", cmdAutostart, opts_autostart, info_autostart, 0},
     {"blkdeviotune", cmdBlkdeviotune, opts_blkdeviotune, info_blkdeviotune, 0},
     {"blkiotune", cmdBlkiotune, opts_blkiotune, info_blkiotune, 0},
+    {"blockcopy", cmdBlockCopy, opts_block_copy, info_block_copy, 0},
     {"blockjob", cmdBlockJob, opts_block_job, info_block_job, 0},
     {"blockpull", cmdBlockPull, opts_block_pull, info_block_pull, 0},
     {"blockresize", cmdBlockResize, opts_block_resize, info_block_resize, 0},
