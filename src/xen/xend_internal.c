@@ -989,9 +989,14 @@ sexpr_to_xend_domain_state(virDomainPtr domain, const struct sexpr *root)
             state = VIR_DOMAIN_BLOCKED;
         else if (strchr(flags, 'r'))
             state = VIR_DOMAIN_RUNNING;
-    } else if (domain->id < 0) {
-        /* Inactive domains don't have a state reported, so
-           mark them SHUTOFF, rather than NOSTATE */
+    } else if (domain->id < 0 || sexpr_int(root, "domain/status") == 0) {
+        /* As far as I can see the domain->id is a bad sign for checking
+         * inactive domains as this is inaccurate after the domain has
+         * been running once. However domain/status from xend seems to
+         * be always present and 0 for inactive domains.
+         * (keeping the check for id < 0 to be extra safe about backward
+         * compatibility)
+         */
         state = VIR_DOMAIN_SHUTOFF;
     }
 
