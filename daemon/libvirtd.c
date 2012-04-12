@@ -993,6 +993,7 @@ daemonConfigFree(struct daemonConfig *data)
     VIR_FREE(data->cert_file);
     VIR_FREE(data->crl_file);
 
+    VIR_FREE(data->host_uuid);
     VIR_FREE(data->log_filters);
     VIR_FREE(data->log_outputs);
 
