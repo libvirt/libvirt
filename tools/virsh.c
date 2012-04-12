@@ -7521,7 +7521,8 @@ typedef enum {
 
 static int
 blockJobImpl(vshControl *ctl, const vshCmd *cmd,
-              virDomainBlockJobInfoPtr info, int mode)
+             virDomainBlockJobInfoPtr info, int mode,
+             virDomainPtr *pdom)
 {
     virDomainPtr dom = NULL;
     const char *name, *path;
@@ -7562,7 +7563,9 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
     }
 
 cleanup:
-    if (dom)
+    if (pdom && ret == 0)
+        *pdom = dom;
+    else if (dom)
         virDomainFree(dom);
     return ret;
 }
@@ -7582,15 +7585,122 @@ static const vshCmdOptDef opts_block_pull[] = {
     {"bandwidth", VSH_OT_DATA, VSH_OFLAG_NONE, N_("Bandwidth limit in MB/s")},
     {"base", VSH_OT_DATA, VSH_OFLAG_NONE,
      N_("path of backing file in chain for a partial pull")},
+    {"wait", VSH_OT_BOOL, 0, N_("wait for job to finish")},
+    {"verbose", VSH_OT_BOOL, 0, N_("with --wait, display the progress")},
+    {"timeout", VSH_OT_INT, VSH_OFLAG_NONE,
+     N_("with --wait, abort if pull exceeds timeout (in seconds)")},
+    {"async", VSH_OT_BOOL, 0,
+     N_("with --wait, don't wait for cancel to finish")},
     {NULL, 0, 0, NULL}
 };
 
 static bool
 cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
 {
-    if (blockJobImpl(ctl, cmd, NULL, VSH_CMD_BLOCK_JOB_PULL) != 0)
+    virDomainPtr dom = NULL;
+    bool ret = false;
+    bool blocking = vshCommandOptBool(cmd, "wait");
+    bool verbose = vshCommandOptBool(cmd, "verbose");
+    int timeout = 0;
+    struct sigaction sig_action;
+    struct sigaction old_sig_action;
+    sigset_t sigmask;
+    struct timeval start;
+    struct timeval curr;
+    const char *path = NULL;
+    bool quit = false;
+    int abort_flags = 0;
+
+    if (blocking) {
+        if (vshCommandOptInt(cmd, "timeout", &timeout) > 0) {
+            if (timeout < 1) {
+                vshError(ctl, "%s", _("invalid timeout"));
+                return false;
+            }
+
+            /* Ensure that we can multiply by 1000 without overflowing. */
+            if (timeout > INT_MAX / 1000) {
+                vshError(ctl, "%s", _("timeout is too big"));
+                return false;
+            }
+        }
+        if (vshCommandOptString(cmd, "path", &path) < 0)
+            return false;
+        if (vshCommandOptBool(cmd, "async"))
+            abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
+
+        sigemptyset(&sigmask);
+        sigaddset(&sigmask, SIGINT);
+
+        intCaught = 0;
+        sig_action.sa_sigaction = vshCatchInt;
+        sigemptyset(&sig_action.sa_mask);
+        sigaction(SIGINT, &sig_action, &old_sig_action);
+
+        GETTIMEOFDAY(&start);
+    } else if (verbose || vshCommandOptBool(cmd, "timeout") ||
+               vshCommandOptBool(cmd, "async")) {
+        vshError(ctl, "%s", _("blocking control options require --wait"));
         return false;
-    return true;
+    }
+
+    if (blockJobImpl(ctl, cmd, NULL, VSH_CMD_BLOCK_JOB_PULL, &dom) < 0)
+        goto cleanup;
+
+    if (!blocking) {
+        vshPrint(ctl, "%s", _("Block Pull started"));
+        ret = true;
+        goto cleanup;
+    }
+
+    while (blocking) {
+        virDomainBlockJobInfo info;
+        int result = virDomainGetBlockJobInfo(dom, path, &info, 0);
+
+        if (result < 0) {
+            vshError(ctl, _("failed to query job for disk %s"), path);
+            goto cleanup;
+        }
+        if (result == 0)
+            break;
+
+        if (verbose)
+            print_job_progress(_("Block Pull"), info.end - info.cur, info.end);
+
+        GETTIMEOFDAY(&curr);
+        if (intCaught || (timeout &&
+                          (((int)(curr.tv_sec - start.tv_sec)  * 1000 +
+                            (int)(curr.tv_usec - start.tv_usec) / 1000) >
+                           timeout * 1000))) {
+            vshDebug(ctl, VSH_ERR_DEBUG,
+                     intCaught ? "interrupted" : "timeout");
+            intCaught = 0;
+            timeout = 0;
+            quit = true;
+            if (virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
+                vshError(ctl, _("failed to abort job for disk %s"), path);
+                goto cleanup;
+            }
+            if (abort_flags & VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC)
+                break;
+        } else {
+            usleep(500 * 1000);
+        }
+    }
+
+    if (verbose && !quit) {
+        /* printf [100 %] */
+        print_job_progress(_("Block Pull"), 0, 1);
+    }
+    vshPrint(ctl, "\n%s", quit ? _("Pull aborted") : _("Pull complete"));
+
+    ret = true;
+cleanup:
+    if (dom)
+        virDomainFree(dom);
+    if (blocking)
+        sigaction(SIGINT, &old_sig_action, NULL);
+    return ret;
 }
 
 /*
@@ -7641,7 +7751,7 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
     else
         mode = VSH_CMD_BLOCK_JOB_INFO;
 
-    ret = blockJobImpl(ctl, cmd, &info, mode);
+    ret = blockJobImpl(ctl, cmd, &info, mode, NULL);
     if (ret < 0)
         return false;
 

@@ -640,6 +640,7 @@ address of virtual interface (such as I<detach-interface> or
 I<domif-setlink>) will accept the MAC address printed by this command.
 
 =item B<blockpull> I<domain> I<path> [I<bandwidth>] [I<base>]
+[I<--wait> [I<--verbose>] [I<--timeout> B<seconds>] [I<--async]]
 
 Populate a disk from its backing image chain. By default, this command
 flattens the entire chain; but if I<base> is specified, containing the
@@ -647,8 +648,17 @@ name of one of the backing files in the chain, then that file becomes
 the new backing file and only the intermediate portion of the chain is
 pulled.  Once all requested data from the backing image chain has been
 pulled, the disk no longer depends on that portion of the backing chain.
-It pulls data for the entire disk in the background, the process of the
-operation can be checked with B<blockjob>.
+
+By default, this command returns as soon as possible, and data for
+the entire disk is pulled in the background; the progress of the
+operation can be checked with B<blockjob>.  However, if I<--wait> is
+specified, then this command will block until the operation completes,
+or cancel the operation if the optional I<timeout> in seconds elapses
+or SIGINT is sent (usually with C<Ctrl-C>).  Using I<--verbose> along
+with I<--wait> will produce periodic status updates.  If job cancellation
+is triggered, I<--async> will return control to the user as fast as
+possible, otherwise the command may continue to block a little while
+longer until the job is done cleaning up.
 
 I<path> specifies fully-qualified path of the disk; it corresponds
 to a unique target name (<target dev='name'/>) or source file (<source
