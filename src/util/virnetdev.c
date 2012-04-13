@@ -1215,7 +1215,7 @@ virNetDevGetVirtualFunctionInfo(const char *vfname ATTRIBUTE_UNUSED,
     return -1;
 }
 #endif /* !__linux__ */
-#if defined(__linux__) && defined(HAVE_LIBNL)
+#if defined(__linux__) && defined(HAVE_LIBNL) && defined(IFLA_VF_MAX)
 
 static struct nla_policy ifla_vf_policy[IFLA_VF_MAX+1] = {
     [IFLA_VF_MAC]       = { .type = NLA_UNSPEC,
