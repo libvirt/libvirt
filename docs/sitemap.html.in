@@ -332,6 +332,10 @@
             <a href="todo.html">Todo list</a>
             <span>Main feature request list</span>
           </li>
+          <li>
+            <a href="pending.html">Pending patches</a>
+            <span>Pending patches awaiting reviews and integration</span>
+          </li>
         </ul>
       </li>
       <li>

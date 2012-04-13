@@ -1,0 +1,12 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Pending patches needing review</title>
+  </head>
+  <body>
+    <h1>Pending patches needing review</h1>
+    <p> A list of pending patches needing review upstream is available
+        on <a href="http://libvirt.org/pending.html">the project pending
+        patches page</a>.</p>
+  </body>
+</html>
