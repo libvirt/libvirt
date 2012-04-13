@@ -672,7 +672,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     char size[100];
     const char *cmdargvnew[] = {
         LVCREATE, "--name", vol->name, "-L", size,
-        pool->def->target.path, NULL
+        pool->def->source.name, NULL
     };
     const char *cmdargvsnap[] = {
         LVCREATE, "--name", vol->name, "-L", size,
@@ -778,23 +778,23 @@ virStorageBackendLogicalDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   unsigned int flags)
 {
     int ret = -1;
+    char *volpath = NULL;
 
     virCommandPtr lvchange_cmd = NULL;
     virCommandPtr lvremove_cmd = NULL;
 
     virCheckFlags(0, -1);
 
+    if (virAsprintf(&volpath, "%s/%s",
+                    pool->def->source.name, vol->name) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
     virFileWaitForDevices();
 
-    lvchange_cmd = virCommandNewArgList(LVCHANGE,
-                                        "-aln",
-                                        vol->target.path,
-                                        NULL);
-
-    lvremove_cmd = virCommandNewArgList(LVREMOVE,
-                                        "-f",
-                                        vol->target.path,
-                                        NULL);
+    lvchange_cmd = virCommandNewArgList(LVCHANGE, "-aln", volpath, NULL);
+    lvremove_cmd = virCommandNewArgList(LVREMOVE, "-f", volpath, NULL);
 
     if (virCommandRun(lvremove_cmd, NULL) < 0) {
         if (virCommandRun(lvchange_cmd, NULL) < 0) {
@@ -807,6 +807,7 @@ virStorageBackendLogicalDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     ret = 0;
 cleanup:
+    VIR_FREE(volpath);
     virCommandFree(lvchange_cmd);
     virCommandFree(lvremove_cmd);
     return ret;
