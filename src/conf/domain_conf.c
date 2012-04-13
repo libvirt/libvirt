@@ -7124,7 +7124,7 @@ void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
 virDomainDiskDefPtr
 virDomainDiskRemove(virDomainDefPtr def, size_t i)
 {
-    virDomainDiskDefPtr disk = disk = def->disks[i];
+    virDomainDiskDefPtr disk = def->disks[i];
 
     if (def->ndisks > 1) {
         memmove(def->disks + i,
