@@ -1796,6 +1796,7 @@ static int
 qemuProcessInitCpuAffinity(struct qemud_driver *driver,
                            virDomainObjPtr vm)
 {
+    int ret = -1;
     int i, hostcpus, maxcpu = QEMUD_CPUMASK_LEN;
     virNodeInfo nodeinfo;
     unsigned char *cpumap;
@@ -1824,19 +1825,21 @@ qemuProcessInitCpuAffinity(struct qemud_driver *driver,
 
         nodeset = qemuGetNumadAdvice(vm->def);
         if (!nodeset)
-            return -1;
+            goto cleanup;
 
         if (VIR_ALLOC_N(tmp_cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0) {
             virReportOOMError();
-            return -1;
+            VIR_FREE(nodeset);
+            goto cleanup;
         }
 
         if (virDomainCpuSetParse(nodeset, 0, tmp_cpumask,
                                  VIR_DOMAIN_CPUMASK_LEN) < 0) {
             VIR_FREE(tmp_cpumask);
             VIR_FREE(nodeset);
-            return -1;
+            goto cleanup;
         }
+        VIR_FREE(nodeset);
 
         for (i = 0; i < maxcpu && i < VIR_DOMAIN_CPUMASK_LEN; i++) {
             if (tmp_cpumask[i])
@@ -1849,7 +1852,6 @@ qemuProcessInitCpuAffinity(struct qemud_driver *driver,
             VIR_WARN("Unable to save status on vm %s after state change",
                      vm->def->name);
         }
-        VIR_FREE(nodeset);
     } else {
         if (vm->def->cpumask) {
             /* XXX why don't we keep 'cpumask' in the libvirt cpumap
@@ -1872,13 +1874,14 @@ qemuProcessInitCpuAffinity(struct qemud_driver *driver,
      * running at this point
      */
     if (virProcessInfoSetAffinity(0, /* Self */
-                                  cpumap, cpumaplen, maxcpu) < 0) {
-        VIR_FREE(cpumap);
-        return -1;
-    }
-    VIR_FREE(cpumap);
+                                  cpumap, cpumaplen, maxcpu) < 0)
+        goto cleanup;
 
-    return 0;
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cpumap);
+    return ret;
 }
 
 /* set link states to down on interfaces at qemu start */
