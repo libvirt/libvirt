@@ -945,9 +945,18 @@ create_name:
         goto disassociate_exit;
     }
 
-    if (virNetDevMacVLanVPortProfileRegisterCallback(cr_ifname, macaddress,
-                                         linkdev, vmuuid, virtPortProfile, vmOp) < 0 )
+    if (vmOp == VIR_NETDEV_VPORT_PROFILE_OP_CREATE ||
+        vmOp == VIR_NETDEV_VPORT_PROFILE_OP_RESTORE) {
+        /* Only directly register upon a create or restore (restarting
+         * a saved image) - migration and libvirtd restart are handled
+         * elsewhere.
+         */
+        if (virNetDevMacVLanVPortProfileRegisterCallback(cr_ifname, macaddress,
+                                                         linkdev, vmuuid,
+                                                         virtPortProfile,
+                                                         vmOp) < 0 )
         goto disassociate_exit;
+    }
 
     return rc;
 
