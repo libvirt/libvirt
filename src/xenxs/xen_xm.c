@@ -1381,20 +1381,21 @@ static int xenFormatXMNet(virConnectPtr conn,
         if (net->model != NULL)
             virBufferAsprintf(&buf, ",model=%s", net->model);
     }
-    else if (net->model == NULL) {
-        /*
-         * apparently type ioemu breaks paravirt drivers on HVM so skip this
-         * from XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU
-         */
-        if (xendConfigVersion <= XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU)
-            virBufferAddLit(&buf, ",type=ioemu");
-    }
-    else if (STREQ(net->model, "netfront")) {
-        virBufferAddLit(&buf, ",type=netfront");
-    }
     else {
-        virBufferAsprintf(&buf, ",model=%s", net->model);
-        virBufferAddLit(&buf, ",type=ioemu");
+        if (net->model != NULL && STREQ(net->model, "netfront")) {
+            virBufferAddLit(&buf, ",type=netfront");
+        }
+        else {
+            if (net->model != NULL)
+                virBufferAsprintf(&buf, ",model=%s", net->model);
+
+            /*
+             * apparently type ioemu breaks paravirt drivers on HVM so skip this
+             * from XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU
+             */
+            if (xendConfigVersion <= XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU)
+                virBufferAddLit(&buf, ",type=ioemu");
+        }
     }
 
     if (net->ifname)
