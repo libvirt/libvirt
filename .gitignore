@@ -48,12 +48,12 @@
 /daemon/*_dispatch.h
 /daemon/libvirt_qemud
 /daemon/libvirtd
-/daemon/libvirtd.init
-/daemon/libvirtd.service
 /daemon/libvirtd*.logrotate
 /daemon/libvirtd.8
 /daemon/libvirtd.8.in
+/daemon/libvirtd.init
 /daemon/libvirtd.pod
+/daemon/libvirtd.service
 /docs/devhelp/libvirt.devhelp
 /docs/hvsupport.html.in
 /docs/libvirt-api.xml
@@ -118,6 +118,7 @@
 /tests/eventtest
 /tests/hashtest
 /tests/jsontest
+/tests/libvirtdconftest
 /tests/networkxml2argvtest
 /tests/nodeinfotest
 /tests/nwfilterxml2xmltest
@@ -150,7 +151,6 @@
 /tests/vmx2xmltest
 /tests/xencapstest
 /tests/xmconfigtest
-/tests/libvirtdconftest
 /tools/*.[18]
 /tools/libvirt-guests.init
 /tools/virsh
