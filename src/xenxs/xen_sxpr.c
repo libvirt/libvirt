@@ -1999,20 +1999,22 @@ xenFormatSxprNet(virConnectPtr conn,
         if (def->model != NULL)
             virBufferEscapeSexpr(buf, "(model '%s')", def->model);
     }
-    else if (def->model == NULL) {
-        /*
-         * apparently (type ioemu) breaks paravirt drivers on HVM so skip
-         * this from XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU
-         */
-        if (xendConfigVersion <= XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU)
-            virBufferAddLit(buf, "(type ioemu)");
-    }
-    else if (STREQ(def->model, "netfront")) {
-        virBufferAddLit(buf, "(type netfront)");
-    }
     else {
-        virBufferEscapeSexpr(buf, "(model '%s')", def->model);
-        virBufferAddLit(buf, "(type ioemu)");
+        if (def->model != NULL && STREQ(def->model, "netfront")) {
+            virBufferAddLit(buf, "(type netfront)");
+        }
+        else {
+            if (def->model != NULL) {
+                virBufferEscapeSexpr(buf, "(model '%s')", def->model);
+            }
+            /*
+             * apparently (type ioemu) breaks paravirt drivers on HVM so skip
+             * this from XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU
+             */
+            if (xendConfigVersion <= XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU) {
+                virBufferAddLit(buf, "(type ioemu)");
+            }
+        }
     }
 
     if (!isAttach)
