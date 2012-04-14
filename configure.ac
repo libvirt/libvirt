@@ -2534,7 +2534,8 @@ AC_MSG_CHECKING([whether to compile with macvtap support])
 if test "$with_macvtap" != "no" ; then
     AC_TRY_COMPILE([ #include <sys/socket.h>
                      #include <linux/rtnetlink.h> ],
-                   [ int x = MACVLAN_MODE_BRIDGE; ],
+                   [ int x = MACVLAN_MODE_BRIDGE;
+                     int y = IFLA_VF_MAX; ],
                    [ with_macvtap=yes ],
                    [ if test "$with_macvtap" = "yes" ; then
                          AC_MSG_ERROR([Installed linux headers don't show support for macvtap device.])
