@@ -402,8 +402,8 @@
       <dt><code>vcpupin</code></dt>
       <dd>
         The optional <code>vcpupin</code> element specifies which of host
-        physical CPUS the domain VCPU will be pinned to. If this is ommited,
-        each VCPU pinned to all the physical CPUS by default. It contains two
+        physical CPUS the domain VCPU will be pinned to. If this is omitted,
+        each VCPU is pinned to all the physical CPUS by default. It contains two
         required attributes, the attribute <code>vcpu</code> specifies vcpu id,
         and the attribute <code>cpuset</code> is same as
         attribute <code>cpuset</code>
@@ -413,7 +413,7 @@
       <dt><code>shares</code></dt>
       <dd>
         The optional <code>shares</code> element specifies the proportional
-        weighted share for the domain. If this is ommited, it defaults to
+        weighted share for the domain. If this is omitted, it defaults to
         the OS provided defaults. NB, There is no unit for the value,
         it's a relative measure based on the setting of other VM,
         e.g. A VM configured with value
