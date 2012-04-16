@@ -31,6 +31,7 @@ The primary maintainers and people with commit access rights:
   Peter Krempa         <pkrempa@redhat.com>
   Christophe Fergeau   <cfergeau@redhat.com>
   Alex Jia             <ajia@redhat.com>
+  Martin Kletzander    <mkletzan@redhat.com>
 
 Previous maintainers:
   Karel Zak            <kzak@redhat.com>
@@ -212,7 +213,6 @@ Patches have also been contributed by:
   Rommer               <rommer@active.by>
   Yuri Chornoivan      <yurchor@ukr.net>
   Deepak C Shetty      <deepakcs@linux.vnet.ibm.com>
-  Martin Kletzander    <mkletzan@redhat.com>
   Laszlo Ersek         <lersek@redhat.com>
   Zeeshan Ali (Khattak) <zeeshanak@gnome.org>
   Marcelo Cerri        <mhcerri@linux.vnet.ibm.com>
