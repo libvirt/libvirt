@@ -67,7 +67,7 @@ openvz+ssh://root@example.com/system (remote access, SSH tunnelled)
     script must be created manually by the host OS administrator. The
     simplest way is to just download the latest version of this script
     from a newer OpenVZ release, or upstream source repository. Then
-    a generic configuration file <code>/etc/vz/vznetctl.conf</code>
+    a generic configuration file <code>/etc/vz/vznet.conf</code>
     must be created containing
     </p>
 
