@@ -1820,38 +1820,45 @@ qemuProcessInitCpuAffinity(struct qemud_driver *driver,
     }
 
     if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
-        char *tmp_cpumask = NULL;
         char *nodeset = NULL;
+        char *nodemask = NULL;
 
         nodeset = qemuGetNumadAdvice(vm->def);
         if (!nodeset)
             goto cleanup;
 
-        if (VIR_ALLOC_N(tmp_cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0) {
+        if (VIR_ALLOC_N(nodemask, VIR_DOMAIN_CPUMASK_LEN) < 0) {
             virReportOOMError();
             VIR_FREE(nodeset);
             goto cleanup;
         }
 
-        if (virDomainCpuSetParse(nodeset, 0, tmp_cpumask,
+        if (virDomainCpuSetParse(nodeset, 0, nodemask,
                                  VIR_DOMAIN_CPUMASK_LEN) < 0) {
-            VIR_FREE(tmp_cpumask);
+            VIR_FREE(nodemask);
             VIR_FREE(nodeset);
             goto cleanup;
         }
         VIR_FREE(nodeset);
 
-        for (i = 0; i < maxcpu && i < VIR_DOMAIN_CPUMASK_LEN; i++) {
-            if (tmp_cpumask[i])
-                VIR_USE_CPU(cpumap, i);
+        /* numad returns the NUMA node list, convert it to cpumap */
+        int prev_total_ncpus = 0;
+        for (i = 0; i < driver->caps->host.nnumaCell; i++) {
+            int j;
+            int cur_ncpus = driver->caps->host.numaCell[i]->ncpus;
+            if (nodemask[i]) {
+                for (j = prev_total_ncpus;
+                     j < cur_ncpus + prev_total_ncpus &&
+                     j < maxcpu &&
+                     j < VIR_DOMAIN_CPUMASK_LEN;
+                     j++) {
+                    VIR_USE_CPU(cpumap, j);
+                }
+            }
+            prev_total_ncpus += cur_ncpus;
         }
 
-        VIR_FREE(vm->def->cpumask);
-        vm->def->cpumask = tmp_cpumask;
-        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
-            VIR_WARN("Unable to save status on vm %s after state change",
-                     vm->def->name);
-        }
+        VIR_FREE(nodemask);
     } else {
         if (vm->def->cpumask) {
             /* XXX why don't we keep 'cpumask' in the libvirt cpumap
