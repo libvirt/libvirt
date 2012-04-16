@@ -359,7 +359,7 @@
         0.8.5</span>, the optional attribute <code>current</code> can
         be used to specify whether fewer than the maximum number of
         virtual CPUs should be enabled.  <span class="since">Since
-        0.9.11 (QEMU and KVM only), the optional attribute
+        0.9.11 (QEMU and KVM only)</span>, the optional attribute
         <code>placement</code> can be used to indicate the CPU placement
         mode for domain process, its value can be either "static" or
         "auto", defaults to "static" if <code>cpuset</code> is specified,
