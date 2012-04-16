@@ -1679,6 +1679,7 @@ static virDriver openvzDriver = {
     .close = openvzClose, /* 0.3.1 */
     .type = openvzGetType, /* 0.3.1 */
     .version = openvzGetVersion, /* 0.5.0 */
+    .getHostname = virGetHostname, /* 0.9.12 */
     .getMaxVcpus = openvzGetMaxVCPUs, /* 0.4.6 */
     .nodeGetInfo = nodeGetInfo, /* 0.3.2 */
     .getCapabilities = openvzGetCapabilities, /* 0.4.6 */
