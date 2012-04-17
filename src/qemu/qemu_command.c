@@ -1978,8 +1978,14 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
     else
         virBufferAsprintf(&opt, "if=%s", bus);
 
-    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-        virBufferAddLit(&opt, ",media=cdrom");
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
+        if ((disk->bus == VIR_DOMAIN_DISK_BUS_SCSI)) {
+            if (!qemuCapsGet(qemuCaps, QEMU_CAPS_SCSI_CD))
+                virBufferAddLit(&opt, ",media=cdrom");
+        } else {
+            virBufferAddLit(&opt, ",media=cdrom");
+        }
+    }
 
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
         virBufferAsprintf(&opt, ",id=%s%s", QEMU_DRIVE_HOST_PREFIX, disk->info.alias);
@@ -2229,10 +2235,19 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                 goto error;
             }
 
-            if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN)
+            if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
                 virBufferAddLit(&opt, "scsi-block");
-            else
-                virBufferAddLit(&opt, "scsi-disk");
+            } else {
+                if (qemuCapsGet(qemuCaps, QEMU_CAPS_SCSI_CD)) {
+                    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+                        virBufferAddLit(&opt, "scsi-cd");
+                    else
+                        virBufferAddLit(&opt, "scsi-hd");
+                } else {
+                    virBufferAddLit(&opt, "scsi-disk");
+                }
+            }
+
             virBufferAsprintf(&opt, ",bus=scsi%d.%d,scsi-id=%d",
                               disk->info.addr.drive.controller,
                               disk->info.addr.drive.bus,
@@ -2255,10 +2270,18 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                 }
             }
 
-            if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN)
-                virBufferAddLit(&opt, "scsi-disk");
-            else
+            if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN) {
+                if (qemuCapsGet(qemuCaps, QEMU_CAPS_SCSI_CD)) {
+                    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+                        virBufferAddLit(&opt, "scsi-cd");
+                    else
+                        virBufferAddLit(&opt, "scsi-hd");
+                } else {
+                    virBufferAddLit(&opt, "scsi-disk");
+                }
+            } else {
                 virBufferAddLit(&opt, "scsi-block");
+            }
 
             virBufferAsprintf(&opt, ",bus=scsi%d.0,channel=%d,scsi-id=%d,lun=%d",
                               disk->info.addr.drive.controller,
