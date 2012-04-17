@@ -269,7 +269,7 @@ cpuTestGuestData(const void *arg)
         !(cpu = cpuTestLoadXML(data->arch, data->name)))
         goto cleanup;
 
-    cmpResult = cpuGuestData(host, cpu, &guestData);
+    cmpResult = cpuGuestData(host, cpu, &guestData, NULL);
     if (cmpResult == VIR_CPU_COMPARE_ERROR ||
         cmpResult == VIR_CPU_COMPARE_INCOMPATIBLE)
         goto cleanup;

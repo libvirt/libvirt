@@ -3704,6 +3704,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
     const char *default_model;
     union cpuData *data = NULL;
     bool have_cpu = false;
+    char *compare_msg = NULL;
     int ret = -1;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int i;
@@ -3740,11 +3741,17 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
             cpuUpdate(cpu, host) < 0)
             goto cleanup;
 
-        cmp = cpuGuestData(host, cpu, &data);
+        cmp = cpuGuestData(host, cpu, &data, &compare_msg);
         switch (cmp) {
         case VIR_CPU_COMPARE_INCOMPATIBLE:
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+            if (compare_msg) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                _("guest and host CPU are not compatible: %s"),
+                                compare_msg);
+            } else {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             _("guest CPU is not compatible with host CPU"));
+            }
             /* fall through */
         case VIR_CPU_COMPARE_ERROR:
             goto cleanup;
@@ -3848,6 +3855,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
     ret = 0;
 
 cleanup:
+    VIR_FREE(compare_msg);
     if (host)
         cpuDataFree(host->arch, data);
     virCPUDefFree(guest);

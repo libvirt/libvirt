@@ -70,7 +70,8 @@ typedef union cpuData *
 typedef virCPUCompareResult
 (*cpuArchGuestData) (virCPUDefPtr host,
                      virCPUDefPtr guest,
-                     union cpuData **data);
+                     union cpuData **data,
+                     char **message);
 
 typedef virCPUDefPtr
 (*cpuArchBaseline)  (virCPUDefPtr *cpus,
@@ -138,7 +139,8 @@ cpuNodeData (const char *arch);
 extern virCPUCompareResult
 cpuGuestData(virCPUDefPtr host,
              virCPUDefPtr guest,
-             union cpuData **data);
+             union cpuData **data,
+             char **msg);
 
 extern char *
 cpuBaselineXML(const char **xmlCPUs,

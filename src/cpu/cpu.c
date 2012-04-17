@@ -248,11 +248,12 @@ cpuNodeData(const char *arch)
 virCPUCompareResult
 cpuGuestData(virCPUDefPtr host,
              virCPUDefPtr guest,
-             union cpuData **data)
+             union cpuData **data,
+             char **msg)
 {
     struct cpuArchDriver *driver;
 
-    VIR_DEBUG("host=%p, guest=%p, data=%p", host, guest, data);
+    VIR_DEBUG("host=%p, guest=%p, data=%p, msg=%p", host, guest, data, msg);
 
     if ((driver = cpuGetSubDriver(host->arch)) == NULL)
         return VIR_CPU_COMPARE_ERROR;
@@ -264,7 +265,7 @@ cpuGuestData(virCPUDefPtr host,
         return VIR_CPU_COMPARE_ERROR;
     }
 
-    return driver->guestData(host, guest, data);
+    return driver->guestData(host, guest, data, msg);
 }
 
 
