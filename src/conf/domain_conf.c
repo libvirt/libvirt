@@ -7896,11 +7896,10 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         }
         VIR_FREE(tmp);
     } else {
-        if (def->cpumasklen)
-            def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
+        def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_DEFAULT;
     }
 
-    if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC) {
+    if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
         tmp = virXPathString("string(./vcpu[1]/@cpuset)", ctxt);
         if (tmp) {
             char *set = tmp;
@@ -7912,6 +7911,8 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                                      def->cpumasklen) < 0)
                 goto error;
             VIR_FREE(tmp);
+            if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_DEFAULT)
+                def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
         }
     }
 
