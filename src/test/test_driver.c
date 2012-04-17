@@ -230,6 +230,7 @@ no_memory:
 static const char *defaultDomainXML =
 "<domain type='test'>"
 "  <name>test</name>"
+"  <uuid>6695eb01-f6a4-8304-79aa-97f2502e193f</uuid>"
 "  <memory>8388608</memory>"
 "  <currentMemory>2097152</currentMemory>"
 "  <vcpu>2</vcpu>"
@@ -242,6 +243,7 @@ static const char *defaultDomainXML =
 static const char *defaultNetworkXML =
 "<network>"
 "  <name>default</name>"
+"  <uuid>dd8fe884-6c02-601e-7551-cca97df1c5df</uuid>"
 "  <bridge name='virbr0' />"
 "  <forward/>"
 "  <ip address='192.168.122.1' netmask='255.255.255.0'>"
@@ -265,6 +267,7 @@ static const char *defaultInterfaceXML =
 static const char *defaultPoolXML =
 "<pool type='dir'>"
 "  <name>default-pool</name>"
+"  <uuid>dfe224cb-28fb-8dd0-c4b2-64eb3f0f4566</uuid>"
 "  <target>"
 "    <path>/default-pool</path>"
 "  </target>"
