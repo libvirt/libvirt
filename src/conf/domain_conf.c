@@ -1173,6 +1173,8 @@ virDomainChrSourceDefCopy(virDomainChrSourceDefPtr dest,
         break;
     }
 
+    dest->type = src->type;
+
     return 0;
 }
 
