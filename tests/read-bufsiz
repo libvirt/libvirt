@@ -32,8 +32,10 @@ fail=0
 # Output a valid definition, to be used as input.
 $abs_top_builddir/tools/virsh -c test:///default dumpxml 1 > xml.t || fail=1
 
-# Change the VM name
-sed -e "s|<name>test</name>|<name>newtest</name>|g" xml.t > xml
+# Change the VM name and UUID
+sed -e "s|<name>test</name>|<name>newtest</name>|g" \
+  -e "\|<uuid>.*</uuid>|d" \
+  xml.t > xml
 
 for i in before after; do
   # The largest BUFSIZ I've seen is 128K.  This is slightly larger.
