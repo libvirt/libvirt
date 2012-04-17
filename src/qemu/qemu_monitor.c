@@ -2696,7 +2696,7 @@ qemuMonitorTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
     if (mon->json)
         ret = qemuMonitorJSONTransaction(mon, actions);
     else
-        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("transaction requires JSON monitor"));
     return ret;
 }
@@ -2786,7 +2786,7 @@ int qemuMonitorBlockJob(qemuMonitorPtr mon,
         ret = qemuMonitorJSONBlockJob(mon, device, base, bandwidth, info, mode,
                                       async);
     else
-        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("block jobs require JSON monitor"));
     return ret;
 }
@@ -2918,7 +2918,7 @@ int qemuMonitorSystemWakeup(qemuMonitorPtr mon)
     }
 
     if (!mon->json) {
-        qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("JSON monitor is required"));
         return -1;
     }

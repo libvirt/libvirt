@@ -1633,12 +1633,15 @@ cleanup:
     return ret;
 }
 
-static int qemuDomainShutdown(virDomainPtr dom) {
+static int qemuDomainShutdown(virDomainPtr dom)
+{
     return qemuDomainShutdownFlags(dom, 0);
 }
 
 
-static int qemuDomainReboot(virDomainPtr dom, unsigned int flags) {
+static int
+qemuDomainReboot(virDomainPtr dom, unsigned int flags)
+{
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
@@ -1682,7 +1685,7 @@ static int qemuDomainReboot(virDomainPtr dom, unsigned int flags) {
 #if HAVE_YAJL
         if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON)) {
             if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
-                qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                 _("Reboot is not supported with this QEMU binary"));
                 goto cleanup;
             }
@@ -11643,11 +11646,11 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC)) {
         async = true;
     } else if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_SYNC)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("block jobs not supported with this QEMU binary"));
         goto cleanup;
     } else if (base) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("partial block pull not supported with this "
                           "QEMU binary"));
         goto cleanup;

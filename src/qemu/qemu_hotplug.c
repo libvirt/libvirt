@@ -335,7 +335,7 @@ int qemuDomainAttachPciControllerDevice(struct qemud_driver *driver,
         if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
             controller->model == -1 &&
             !qemuCapsGet(priv->qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI)) {
-            qemuReportError(VIR_ERR_OPERATION_FAILED,
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             _("USB controller hotplug unsupported in this QEMU binary"));
             goto cleanup;
         }

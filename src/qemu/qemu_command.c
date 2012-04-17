@@ -1527,7 +1527,7 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
             }
         } else {
             if (info->addr.pci.function != 0) {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                 _("Only PCI device addresses with function=0 "
                                   "are supported with this QEMU binary"));
                 return -1;
