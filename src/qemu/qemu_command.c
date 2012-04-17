@@ -1982,6 +1982,9 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
         if ((disk->bus == VIR_DOMAIN_DISK_BUS_SCSI)) {
             if (!qemuCapsGet(qemuCaps, QEMU_CAPS_SCSI_CD))
                 virBufferAddLit(&opt, ",media=cdrom");
+        } else if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE) {
+            if (!qemuCapsGet(qemuCaps, QEMU_CAPS_IDE_CD))
+                virBufferAddLit(&opt, ",media=cdrom");
         } else {
             virBufferAddLit(&opt, ",media=cdrom");
         }
@@ -2205,7 +2208,16 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                             _("target must be 0 for ide controller"));
             goto error;
         }
-        virBufferAddLit(&opt, "ide-drive");
+
+        if (qemuCapsGet(qemuCaps, QEMU_CAPS_IDE_CD)) {
+            if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+                virBufferAddLit(&opt, "ide-cd");
+            else
+                virBufferAddLit(&opt, "ide-hd");
+        } else {
+            virBufferAddLit(&opt, "ide-drive");
+        }
+
         virBufferAsprintf(&opt, ",bus=ide.%d,unit=%d",
                           disk->info.addr.drive.bus,
                           disk->info.addr.drive.unit);
@@ -2301,7 +2313,16 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                             _("target must be 0 for ide controller"));
             goto error;
         }
-        virBufferAddLit(&opt, "ide-drive");
+
+        if (qemuCapsGet(qemuCaps, QEMU_CAPS_IDE_CD)) {
+            if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+                virBufferAddLit(&opt, "ide-cd");
+            else
+                virBufferAddLit(&opt, "ide-hd");
+        } else {
+            virBufferAddLit(&opt, "ide-drive");
+        }
+
         virBufferAsprintf(&opt, ",bus=ahci%d.%d",
                           disk->info.addr.drive.controller,
                           disk->info.addr.drive.unit);

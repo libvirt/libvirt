@@ -160,6 +160,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "block-job-sync", /* 90 */
               "block-job-async",
               "scsi-cd",
+              "ide-cd",
     );
 
 struct qemu_feature_flags {
@@ -1454,6 +1455,8 @@ qemuCapsParseDeviceStr(const char *str, virBitmapPtr flags)
         qemuCapsSet(flags, QEMU_CAPS_SCSI_BLOCK);
     if (strstr(str, "scsi-cd"))
         qemuCapsSet(flags, QEMU_CAPS_SCSI_CD);
+    if (strstr(str, "ide-cd"))
+        qemuCapsSet(flags, QEMU_CAPS_IDE_CD);
 
     return 0;
 }

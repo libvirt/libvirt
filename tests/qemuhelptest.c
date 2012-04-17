@@ -676,7 +676,8 @@ mymain(void)
             QEMU_CAPS_CPU_HOST,
             QEMU_CAPS_FSDEV_WRITEOUT,
             QEMU_CAPS_SCSI_BLOCK,
-            QEMU_CAPS_SCSI_CD);
+            QEMU_CAPS_SCSI_CD,
+            QEMU_CAPS_IDE_CD);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
