@@ -5756,15 +5756,13 @@ static const vshCmdOptDef opts_send_key[] = {
     {NULL, 0, 0, NULL}
 };
 
-static int get_integer_keycode(const char *key_name)
+static int
+get_integer_keycode(const char *key_name)
 {
-    long val;
-    char *endptr;
+    unsigned int val;
 
-    val = strtol(key_name, &endptr, 0);
-    if (*endptr != '\0' || val > 0xffff || val <= 0)
-         return -1;
-
+    if (virStrToLong_ui(key_name, NULL, 0, &val) < 0 || val > 0xffff || !val)
+        return -1;
     return val;
 }
 
@@ -17974,8 +17972,6 @@ vshCommandOptInt(const vshCmd *cmd, const char *name, int *value)
 {
     vshCmdOpt *arg;
     int ret;
-    int num;
-    char *end_p = NULL;
 
     ret = vshCommandOpt(cmd, name, &arg);
     if (ret <= 0)
@@ -17986,12 +17982,9 @@ vshCommandOptInt(const vshCmd *cmd, const char *name, int *value)
         return -2;
     }
 
-    num = strtol(arg->data, &end_p, 10);
-    if (arg->data != end_p && *end_p == 0) {
-        *value = num;
-        return 1;
-    }
-    return -1;
+    if (virStrToLong_i(arg->data, NULL, 10, value) < 0)
+        return -1;
+    return 1;
 }
 
 
@@ -18009,8 +18002,6 @@ vshCommandOptUInt(const vshCmd *cmd, const char *name, unsigned int *value)
 {
     vshCmdOpt *arg;
     int ret;
-    unsigned int num;
-    char *end_p = NULL;
 
     ret = vshCommandOpt(cmd, name, &arg);
     if (ret <= 0)
@@ -18021,12 +18012,9 @@ vshCommandOptUInt(const vshCmd *cmd, const char *name, unsigned int *value)
         return -2;
     }
 
-    num = strtoul(arg->data, &end_p, 10);
-    if (arg->data != end_p && *end_p == 0) {
-        *value = num;
-        return 1;
-    }
-    return -1;
+    if (virStrToLong_ui(arg->data, NULL, 10, value) < 0)
+        return -1;
+    return 1;
 }
 
 
@@ -18044,8 +18032,6 @@ vshCommandOptUL(const vshCmd *cmd, const char *name, unsigned long *value)
 {
     vshCmdOpt *arg;
     int ret;
-    unsigned long num;
-    char *end_p = NULL;
 
     ret = vshCommandOpt(cmd, name, &arg);
     if (ret <= 0)
@@ -18056,12 +18042,9 @@ vshCommandOptUL(const vshCmd *cmd, const char *name, unsigned long *value)
         return -2;
     }
 
-    num = strtoul(arg->data, &end_p, 10);
-    if (arg->data != end_p && *end_p == 0) {
-        *value = num;
-        return 1;
-    }
-    return -1;
+    if (virStrToLong_ul(arg->data, NULL, 10, value) < 0)
+        return -1;
+    return 1;
 }
 
 /**
@@ -18113,8 +18096,6 @@ vshCommandOptLongLong(const vshCmd *cmd, const char *name,
 {
     vshCmdOpt *arg;
     int ret;
-    long long num;
-    char *end_p = NULL;
 
     ret = vshCommandOpt(cmd, name, &arg);
     if (ret <= 0)
@@ -18125,12 +18106,9 @@ vshCommandOptLongLong(const vshCmd *cmd, const char *name,
         return -2;
     }
 
-    num = strtoll(arg->data, &end_p, 10);
-    if (arg->data != end_p && *end_p == 0) {
-        *value = num;
-        return 1;
-    }
-    return -1;
+    if (virStrToLong_ll(arg->data, NULL, 10, value) < 0)
+        return -1;
+    return 1;
 }
 
 /**
@@ -18148,8 +18126,6 @@ vshCommandOptULongLong(const vshCmd *cmd, const char *name,
 {
     vshCmdOpt *arg;
     int ret;
-    unsigned long long num;
-    char *end_p = NULL;
 
     ret = vshCommandOpt(cmd, name, &arg);
     if (ret <= 0)
@@ -18160,12 +18136,9 @@ vshCommandOptULongLong(const vshCmd *cmd, const char *name,
         return -2;
     }
 
-    num = strtoull(arg->data, &end_p, 10);
-    if (arg->data != end_p && *end_p == 0) {
-        *value = num;
-        return 1;
-    }
-    return -1;
+    if (virStrToLong_ull(arg->data, NULL, 10, value) < 0)
+        return -1;
+    return 1;
 }
 
 
