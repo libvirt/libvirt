@@ -7609,10 +7609,16 @@ virDomainParseMemory(const char *xpath, xmlXPathContextPtr ctxt,
         virReportOOMError();
         goto cleanup;
     }
-    if (virXPathULongLong(xpath_full, ctxt, &bytes) < 0) {
-        if (required)
+    ret = virXPathULongLong(xpath_full, ctxt, &bytes);
+    if (ret < 0) {
+        if (ret == -2)
             virDomainReportError(VIR_ERR_XML_ERROR,
-                                 "%s", _("missing memory element"));
+                                 _("could not parse memory element %s"),
+                                 xpath);
+        else if (required)
+            virDomainReportError(VIR_ERR_XML_ERROR,
+                                 _("missing memory element %s"),
+                                 xpath);
         else
             ret = 0;
         goto cleanup;
@@ -8086,12 +8092,11 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             if (STREQ(tmp, "reset")) {
                 def->clock.data.utc_reset = true;
             } else {
-                char *conv = NULL;
-                unsigned long long val;
-                val = strtoll(tmp, &conv, 10);
-                if (conv == tmp || *conv != '\0') {
-                    virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                         _("unknown clock adjustment '%s'"), tmp);
+                if (virStrToLong_ll(tmp, NULL, 10,
+                                    &def->clock.data.variable.adjustment) < 0) {
+                    virDomainReportError(VIR_ERR_XML_ERROR,
+                                         _("unknown clock adjustment '%s'"),
+                                         tmp);
                     goto error;
                 }
                 switch (def->clock.offset) {
@@ -8103,7 +8108,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                     break;
                 }
                 def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_VARIABLE;
-                def->clock.data.variable.adjustment = val;
             }
             VIR_FREE(tmp);
         } else {

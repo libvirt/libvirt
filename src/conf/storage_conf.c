@@ -570,14 +570,15 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
     if (!mode) {
         perms->mode = defaultmode;
     } else {
-        char *end = NULL;
-        perms->mode = strtol(mode, &end, 8);
-        if (*end || (perms->mode & ~0777)) {
+        int tmp;
+
+        if (virStrToLong_i(mode, NULL, 8, &tmp) < 0 || (tmp & ~0777)) {
             VIR_FREE(mode);
             virStorageReportError(VIR_ERR_XML_ERROR,
                                   "%s", _("malformed octal mode"));
             goto error;
         }
+        perms->mode = tmp;
         VIR_FREE(mode);
     }
 

@@ -174,15 +174,8 @@ virXPathLongBase(const char *xpath,
     ctxt->node = relnode;
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        char *conv = NULL;
-        long val;
-
-        val = strtol((const char *) obj->stringval, &conv, base);
-        if (conv == (const char *) obj->stringval) {
+        if (virStrToLong_l((char *) obj->stringval, NULL, base, value) < 0)
             ret = -2;
-        } else {
-            *value = val;
-        }
     } else if ((obj != NULL) && (obj->type == XPATH_NUMBER) &&
                (!(isnan(obj->floatval)))) {
         *value = (long) obj->floatval;
@@ -287,15 +280,8 @@ virXPathULongBase(const char *xpath,
     ctxt->node = relnode;
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        char *conv = NULL;
-        long val;
-
-        val = strtoul((const char *) obj->stringval, &conv, base);
-        if (conv == (const char *) obj->stringval) {
+        if (virStrToLong_ul((char *) obj->stringval, NULL, base, value) < 0)
             ret = -2;
-        } else {
-            *value = val;
-        }
     } else if ((obj != NULL) && (obj->type == XPATH_NUMBER) &&
                (!(isnan(obj->floatval)))) {
         *value = (unsigned long) obj->floatval;
@@ -411,15 +397,8 @@ virXPathULongLong(const char *xpath,
     ctxt->node = relnode;
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        char *conv = NULL;
-        unsigned long long val;
-
-        val = strtoull((const char *) obj->stringval, &conv, 10);
-        if (conv == (const char *) obj->stringval) {
+        if (virStrToLong_ull((char *) obj->stringval, NULL, 10, value) < 0)
             ret = -2;
-        } else {
-            *value = val;
-        }
     } else if ((obj != NULL) && (obj->type == XPATH_NUMBER) &&
                (!(isnan(obj->floatval)))) {
         *value = (unsigned long long) obj->floatval;
@@ -465,15 +444,8 @@ virXPathLongLong(const char *xpath,
     ctxt->node = relnode;
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        char *conv = NULL;
-        unsigned long long val;
-
-        val = strtoll((const char *) obj->stringval, &conv, 10);
-        if (conv == (const char *) obj->stringval) {
+        if (virStrToLong_ll((char *) obj->stringval, NULL, 10, value) < 0)
             ret = -2;
-        } else {
-            *value = val;
-        }
     } else if ((obj != NULL) && (obj->type == XPATH_NUMBER) &&
                (!(isnan(obj->floatval)))) {
         *value = (long long) obj->floatval;
