@@ -1574,7 +1574,7 @@ virStrToLong_ll(char const *s, char **end_ptr, int base, long long *result)
 
     errno = 0;
     val = strtoll(s, &p, base);
-    err = (errno || (!end_ptr && *p) || p == s || (long long) val != val);
+    err = (errno || (!end_ptr && *p) || p == s);
     if (end_ptr)
         *end_ptr = p;
     if (err)
@@ -1593,7 +1593,7 @@ virStrToLong_ull(char const *s, char **end_ptr, int base, unsigned long long *re
 
     errno = 0;
     val = strtoull(s, &p, base);
-    err = (errno || (!end_ptr && *p) || p == s || (unsigned long long) val != val);
+    err = (errno || (!end_ptr && *p) || p == s);
     if (end_ptr)
         *end_ptr = p;
     if (err)
