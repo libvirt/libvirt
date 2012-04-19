@@ -57,6 +57,7 @@
 #include "logging.h"
 #include "command.h"
 #include "viruri.h"
+#include "stats_linux.h"
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 
@@ -1672,6 +1673,56 @@ cleanup:
     return ret;
 }
 
+static int
+openvzDomainInterfaceStats (virDomainPtr dom,
+                            const char *path,
+                            struct _virDomainInterfaceStats *stats)
+{
+    struct openvz_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int i;
+    int ret = -1;
+
+    openvzDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    openvzDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        openvzError(VIR_ERR_NO_DOMAIN,
+                    _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        openvzError(VIR_ERR_OPERATION_INVALID,
+                    "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    /* Check the path is one of the domain's network interfaces. */
+    for (i = 0 ; i < vm->def->nnets ; i++) {
+        if (vm->def->nets[i]->ifname &&
+            STREQ (vm->def->nets[i]->ifname, path)) {
+            ret = 0;
+            break;
+        }
+    }
+
+    if (ret == 0)
+        ret = linuxDomainInterfaceStats(path, stats);
+    else
+        openvzError(VIR_ERR_INVALID_ARG,
+                    _("invalid path, '%s' is not a known interface"), path);
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+
 static virDriver openvzDriver = {
     .no = VIR_DRV_OPENVZ,
     .name = "OPENVZ",
@@ -1717,6 +1768,7 @@ static virDriver openvzDriver = {
     .domainUndefineFlags = openvzDomainUndefineFlags, /* 0.9.4 */
     .domainGetAutostart = openvzDomainGetAutostart, /* 0.4.6 */
     .domainSetAutostart = openvzDomainSetAutostart, /* 0.4.6 */
+    .domainInterfaceStats = openvzDomainInterfaceStats, /* 0.9.12 */
     .isEncrypted = openvzIsEncrypted, /* 0.7.3 */
     .isSecure = openvzIsSecure, /* 0.7.3 */
     .domainIsActive = openvzDomainIsActive, /* 0.7.3 */
