@@ -1497,7 +1497,7 @@ virStrToLong_i(char const *s, char **end_ptr, int base, int *result)
     int err;
 
     errno = 0;
-    val = strtol(s, &p, base);
+    val = strtol(s, &p, base); /* exempt from syntax-check */
     err = (errno || (!end_ptr && *p) || p == s || (int) val != val);
     if (end_ptr)
         *end_ptr = p;
@@ -1516,7 +1516,7 @@ virStrToLong_ui(char const *s, char **end_ptr, int base, unsigned int *result)
     int err;
 
     errno = 0;
-    val = strtoul(s, &p, base);
+    val = strtoul(s, &p, base); /* exempt from syntax-check */
     err = (errno || (!end_ptr && *p) || p == s || (unsigned int) val != val);
     if (end_ptr)
         *end_ptr = p;
@@ -1535,7 +1535,7 @@ virStrToLong_l(char const *s, char **end_ptr, int base, long *result)
     int err;
 
     errno = 0;
-    val = strtol(s, &p, base);
+    val = strtol(s, &p, base); /* exempt from syntax-check */
     err = (errno || (!end_ptr && *p) || p == s);
     if (end_ptr)
         *end_ptr = p;
@@ -1554,7 +1554,7 @@ virStrToLong_ul(char const *s, char **end_ptr, int base, unsigned long *result)
     int err;
 
     errno = 0;
-    val = strtoul(s, &p, base);
+    val = strtoul(s, &p, base); /* exempt from syntax-check */
     err = (errno || (!end_ptr && *p) || p == s);
     if (end_ptr)
         *end_ptr = p;
@@ -1573,7 +1573,7 @@ virStrToLong_ll(char const *s, char **end_ptr, int base, long long *result)
     int err;
 
     errno = 0;
-    val = strtoll(s, &p, base);
+    val = strtoll(s, &p, base); /* exempt from syntax-check */
     err = (errno || (!end_ptr && *p) || p == s);
     if (end_ptr)
         *end_ptr = p;
@@ -1592,7 +1592,7 @@ virStrToLong_ull(char const *s, char **end_ptr, int base, unsigned long long *re
     int err;
 
     errno = 0;
-    val = strtoull(s, &p, base);
+    val = strtoull(s, &p, base); /* exempt from syntax-check */
     err = (errno || (!end_ptr && *p) || p == s);
     if (end_ptr)
         *end_ptr = p;
@@ -1612,7 +1612,7 @@ virStrToDouble(char const *s,
     int err;
 
     errno = 0;
-    val = strtod(s, &p);
+    val = strtod(s, &p); /* exempt from syntax-check */
     err = (errno || (!end_ptr && *p) || p == s);
     if (end_ptr)
         *end_ptr = p;

@@ -86,7 +86,7 @@ virMacAddrParse(const char* str, unsigned char *addr)
         if (!c_isxdigit(*str))
             break;
 
-        result = strtoul(str, &end_ptr, 16);
+        result = strtoul(str, &end_ptr, 16); /* exempt from syntax-check */
 
         if ((end_ptr - str) < 1 || 2 < (end_ptr - str) ||
             (errno != 0) ||
