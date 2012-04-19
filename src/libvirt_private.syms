@@ -578,6 +578,7 @@ virHashForEach;
 virHashFree;
 virHashGetItems;
 virHashLookup;
+virHashRemoveAll;
 virHashRemoveEntry;
 virHashRemoveSet;
 virHashSearch;

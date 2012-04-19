@@ -127,6 +127,11 @@ int virHashRemoveEntry(virHashTablePtr table,
                        const void *name);
 
 /*
+ * Remove all entries from the hash table.
+ */
+ssize_t virHashRemoveAll(virHashTablePtr table);
+
+/*
  * Retrieve the userdata.
  */
 void *virHashLookup(virHashTablePtr table, const void *name);
