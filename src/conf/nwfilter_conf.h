@@ -625,7 +625,7 @@ typedef int (*virNWFilterApplyBasicRules)(const char *ifname,
 
 typedef int (*virNWFilterApplyDHCPOnlyRules)(const char *ifname,
                                              const unsigned char *macaddr,
-                                             const char *dhcpserver,
+                                             virNWFilterVarValuePtr dhcpsrvs,
                                              bool leaveTemporary);
 
 typedef int (*virNWFilterRemoveBasicRules)(const char *ifname);

@@ -3195,7 +3195,7 @@ tear_down_tmpebchains:
  * @ifname: name of the backend-interface to which to apply the rules
  * @macaddr: MAC address the VM is using in packets sent through the
  *    interface
- * @dhcpserver: The DHCP server from which the VM may receive traffic
+ * @dhcpsrvrs: The DHCP server(s) from which the VM may receive traffic
  *    from; may be NULL
  * @leaveTemporary: Whether to leave the table names with their temporary
  *    names (true) or also perform the renaming to their final names as
@@ -3209,29 +3209,21 @@ tear_down_tmpebchains:
 static int
 ebtablesApplyDHCPOnlyRules(const char *ifname,
                            const unsigned char *macaddr,
-                           const char *dhcpserver,
+                           virNWFilterVarValuePtr dhcpsrvrs,
                            bool leaveTemporary)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char chain_in [MAX_CHAINNAME_LENGTH],
          chain_out[MAX_CHAINNAME_LENGTH];
     char macaddr_str[VIR_MAC_STRING_BUFLEN];
-    char *srcIPParam = NULL;
+    unsigned int idx = 0;
+    unsigned int num_dhcpsrvrs;
 
     if (!ebtables_cmd_path) {
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("cannot create rules since ebtables tool is "
                                  "missing."));
         return -1;
-    }
-
-    if (dhcpserver) {
-        virBufferAsprintf(&buf, " --ip-src %s", dhcpserver);
-        if (virBufferError(&buf)) {
-            virBufferFreeAndReset(&buf);
-            return -1;
-        }
-        srcIPParam = virBufferContentAndReset(&buf);
     }
 
     virMacAddrFormat(macaddr, macaddr_str);
@@ -3267,20 +3259,46 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
                       chain_in,
                       CMD_STOPONERR(1));
 
-    virBufferAsprintf(&buf,
-                      CMD_DEF("$EBT -t nat -A %s"
-                              " -d %s"
-                              " -p ipv4 --ip-protocol udp"
-                              " %s"
-                              " --ip-sport 67 --ip-dport 68"
-                              " -j ACCEPT") CMD_SEPARATOR
-                      CMD_EXEC
-                      "%s",
+    num_dhcpsrvrs = (dhcpsrvrs != NULL)
+                    ? virNWFilterVarValueGetCardinality(dhcpsrvrs)
+                    : 0;
 
-                      chain_out,
-                      macaddr_str,
-                      srcIPParam != NULL ? srcIPParam : "",
-                      CMD_STOPONERR(1));
+    while (true) {
+        char *srcIPParam = NULL;
+
+        if (idx < num_dhcpsrvrs) {
+            const char *dhcpserver;
+
+            dhcpserver = virNWFilterVarValueGetNthValue(dhcpsrvrs, idx);
+
+            if (virAsprintf(&srcIPParam, "--ip-src %s", dhcpserver) < 0) {
+                virReportOOMError();
+                goto tear_down_tmpebchains;
+            }
+        }
+
+        virBufferAsprintf(&buf,
+                          CMD_DEF("$EBT -t nat -A %s"
+                                  " -d %s"
+                                  " -p ipv4 --ip-protocol udp"
+                                  " %s"
+                                  " --ip-sport 67 --ip-dport 68"
+                                  " -j ACCEPT") CMD_SEPARATOR
+                          CMD_EXEC
+                          "%s",
+
+                          chain_out,
+                          macaddr_str,
+                          srcIPParam != NULL ? srcIPParam : "",
+                          CMD_STOPONERR(1));
+
+        VIR_FREE(srcIPParam);
+
+        if (idx == num_dhcpsrvrs)
+            break;
+
+        idx++;
+    }
 
     virBufferAsprintf(&buf,
                       CMD_DEF("$EBT -t nat -A %s -j DROP") CMD_SEPARATOR
@@ -3301,8 +3319,6 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
     if (ebiptablesExecCLI(&buf, NULL, NULL) < 0)
         goto tear_down_tmpebchains;
 
-    VIR_FREE(srcIPParam);
-
     return 0;
 
 tear_down_tmpebchains:
@@ -3311,8 +3327,6 @@ tear_down_tmpebchains:
     virNWFilterReportError(VIR_ERR_BUILD_FIREWALL,
                            "%s",
                            _("Some rules could not be created."));
-
-    VIR_FREE(srcIPParam);
 
     return -1;
 }
