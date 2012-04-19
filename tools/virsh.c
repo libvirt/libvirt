@@ -7634,6 +7634,7 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
 
         intCaught = 0;
         sig_action.sa_sigaction = vshCatchInt;
+        sig_action.sa_flags = SA_SIGINFO;
         sigemptyset(&sig_action.sa_mask);
         sigaction(SIGINT, &sig_action, &old_sig_action);
 
