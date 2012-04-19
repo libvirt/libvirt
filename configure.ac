@@ -74,6 +74,7 @@ LIBPCAP_REQUIRED="1.0.0"
 LIBNL_REQUIRED="1.1"
 LIBSSH2_REQUIRED="1.0"
 LIBBLKID_REQUIRED="2.17"
+DBUS_REQUIRED="1.0.0"
 
 dnl Checks for C compiler.
 AC_PROG_CC
@@ -1099,6 +1100,36 @@ AC_SUBST([SANLOCK_CFLAGS])
 AC_SUBST([SANLOCK_LIBS])
 
 
+dnl DBus library
+DBUS_CFLAGS=
+DBUS_LIBS=
+AC_ARG_WITH([dbus],
+  AC_HELP_STRING([--with-dbus], [enable communication with DBus @<:@default=check@:>@]),
+  [],
+  [with_dbus=check])
+if test "$with_dbus" = "yes" || test "$with_dbus" = "check" ; then
+  PKG_CHECK_MODULES(DBUS, dbus-1 >= $DBUS_REQUIRED,
+    [with_dbus=yes], [
+     if test "$with_dbus" = "check" ; then
+       with_dbus=no
+     else
+       AC_MSG_ERROR([You must install DBus >= $DBUS_REQUIRED to compile libvirt])
+     fi])
+fi
+
+if test "$with_dbus" = "yes" ; then
+  AC_DEFINE_UNQUOTED([HAVE_DBUS], 1, [enable communication with DBus])
+
+  save_LIBS="$LIBS"
+  save_CFLAGS="$CFLAGS"
+  LIBS="$LIBS $DBUS_LIBS"
+  CFLAGS="$CFLAGS $DBUS_CFLAGS"
+  AC_CHECK_FUNCS([dbus_watch_get_unix_fd])
+  LIBS="$save_LIBS"
+  CFLAGS="$save_CFLAGS"
+fi
+
+
 dnl PolicyKit library
 POLKIT_CFLAGS=
 POLKIT_LIBS=
@@ -1109,7 +1140,6 @@ AC_ARG_WITH([polkit],
   [with_polkit=check])
 
 with_polkit0=no
-with_dbus=no
 with_polkit1=no
 if test "x$with_polkit" = "xyes" || test "x$with_polkit" = "xcheck"; then
   dnl Check for new polkit first - just a binary
@@ -1138,8 +1168,6 @@ if test "x$with_polkit" = "xyes" || test "x$with_polkit" = "xcheck"; then
         [use PolicyKit for UNIX socket access checks])
       AC_DEFINE_UNQUOTED([HAVE_POLKIT0], 1,
         [use PolicyKit for UNIX socket access checks])
-      AC_DEFINE_UNQUOTED([HAVE_DBUS], 1,
-        [use DBus for PolicyKit])
 
       old_CFLAGS=$CFLAGS
       old_LIBS=$LIBS
@@ -1154,13 +1182,11 @@ if test "x$with_polkit" = "xyes" || test "x$with_polkit" = "xcheck"; then
         AC_DEFINE_UNQUOTED([POLKIT_AUTH],["$POLKIT_AUTH"],[Location of polkit-auth program])
       fi
       with_polkit0="yes"
-      with_dbus="yes"
     fi
   fi
 fi
 AM_CONDITIONAL([HAVE_POLKIT], [test "x$with_polkit" = "xyes"])
 AM_CONDITIONAL([HAVE_POLKIT0], [test "x$with_polkit0" = "xyes"])
-AM_CONDITIONAL([HAVE_DBUS], [test "x$with_dbus" = "xyes"])
 AM_CONDITIONAL([HAVE_POLKIT1], [test "x$with_polkit1" = "xyes"])
 AC_SUBST([POLKIT_CFLAGS])
 AC_SUBST([POLKIT_LIBS])
@@ -2413,7 +2439,6 @@ if test "x$with_hal" = "xyes" || test "x$with_hal" = "xcheck"; then
     CFLAGS="$CFLAGS $HAL_CFLAGS"
     LIBS="$LIBS $HAL_LIBS"
     AC_CHECK_FUNCS([libhal_get_all_devices],,[with_hal=no])
-    AC_CHECK_FUNCS([dbus_watch_get_unix_fd])
     CFLAGS="$old_CFLAGS"
     LIBS="$old_LIBS"
   fi

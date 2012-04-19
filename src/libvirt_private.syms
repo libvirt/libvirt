@@ -1195,6 +1195,10 @@ virConsoleFree;
 virConsoleOpen;
 
 
+# virdbus.h
+virDBusGetSystemBus;
+
+
 # virfile.h
 virFileClose;
 virFileDirectFdFlag;

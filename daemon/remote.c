@@ -45,7 +45,7 @@
 #include "virnetserver.h"
 #include "virfile.h"
 #include "virtypedparam.h"
-
+#include "virdbus.h"
 #include "remote_protocol.h"
 #include "qemu_protocol.h"
 
@@ -2672,6 +2672,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server,
     char *ident = NULL;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
+    DBusConnection *sysbus;
 
     virMutexLock(&priv->lock);
 
@@ -2697,10 +2698,13 @@ remoteDispatchAuthPolkit(virNetServerPtr server,
         goto authfail;
     }
 
+    if (!(sysbus = virDBusGetSystemBus()))
+        goto authfail;
+
     VIR_INFO("Checking PID %lld running as %d",
              (long long) callerPid, callerUid);
     dbus_error_init(&err);
-    if (!(pkcaller = polkit_caller_new_from_pid(virNetServerGetDBusConn(server),
+    if (!(pkcaller = polkit_caller_new_from_pid(sysbus,
                                                 callerPid, &err))) {
         VIR_ERROR(_("Failed to lookup policy kit caller: %s"), err.message);
         dbus_error_free(&err);

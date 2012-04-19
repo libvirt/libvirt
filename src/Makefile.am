@@ -88,6 +88,7 @@ UTIL_SOURCES =							\
 		util/virtypedparam.c util/virtypedparam.h	\
 		util/xml.c util/xml.h				\
 		util/virterror.c util/virterror_internal.h	\
+		util/virdbus.c util/virdbus.h			\
 		util/virhash.c util/virhash.h			\
 		util/virhashcode.c util/virhashcode.h           \
 		util/virkeycode.c util/virkeycode.h		\
@@ -574,10 +575,11 @@ libvirt_la_BUILT_LIBADD = libvirt_util.la
 libvirt_util_la_SOURCES =					\
 		$(UTIL_SOURCES)
 libvirt_util_la_CFLAGS = $(CAPNG_CFLAGS) $(YAJL_CFLAGS) $(LIBNL_CFLAGS) \
-		$(AM_CFLAGS) $(AUDIT_CFLAGS) $(DEVMAPPER_CFLAGS)
+		$(AM_CFLAGS) $(AUDIT_CFLAGS) $(DEVMAPPER_CFLAGS) \
+		$(DBUS_CFLAGS)
 libvirt_util_la_LIBADD = $(CAPNG_LIBS) $(YAJL_LIBS) $(LIBNL_LIBS) \
 		$(THREAD_LIBS) $(AUDIT_LIBS) $(DEVMAPPER_LIBS) \
-		$(RT_LIBS)
+		$(RT_LIBS) $(DBUS_LIBS)
 
 
 noinst_LTLIBRARIES += libvirt_conf.la
@@ -1198,10 +1200,6 @@ if WITH_LINUX
 USED_SYM_FILES += libvirt_linux.syms
 endif
 
-if HAVE_DBUS
-USED_SYM_FILES += libvirt_dbus.syms
-endif
-
 if WITH_LIBVIRTD
 USED_SYM_FILES += libvirt_daemon.syms
 endif
@@ -1525,7 +1523,7 @@ libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(AM_LDFLAGS)
 libvirt_lxc_LDADD = $(CAPNG_LIBS) $(YAJL_LIBS) \
 		$(LIBXML_LIBS) $(NUMACTL_LIBS) $(THREAD_LIBS) \
 		$(LIBNL_LIBS) $(AUDIT_LIBS) $(DEVMAPPER_LIBS) \
-		$(RT_LIBS) \
+		$(RT_LIBS) $(DBUS_LIBS) \
 		../gnulib/lib/libgnu.la
 if WITH_DTRACE_PROBES
 libvirt_lxc_LDADD += probes.o
@@ -1542,6 +1540,7 @@ libvirt_lxc_CFLAGS =				\
 		$(CAPNG_CFLAGS)			\
 		$(YAJL_CFLAGS)			\
 		$(AUDIT_CFLAGS)			\
+		$(DBUS_CFLAGS)			\
 		-I$(top_srcdir)/src/conf	\
 		$(AM_CFLAGS)
 if HAVE_LIBBLKID

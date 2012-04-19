@@ -87,6 +87,7 @@ typedef enum {
     VIR_FROM_CAPABILITIES = 44, /* Error from capabilities */
     VIR_FROM_URI = 45,          /* Error from URI handling */
     VIR_FROM_AUTH = 46,         /* Error from auth handling */
+    VIR_FROM_DBUS = 47,         /* Error from DBus */
 } virErrorDomain;
 
 

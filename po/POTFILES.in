@@ -128,6 +128,7 @@ src/util/util.c
 src/util/viraudit.c
 src/util/virauth.c
 src/util/virauthconfig.c
+src/util/virdbus.c
 src/util/virfile.c
 src/util/virhash.c
 src/util/virkeyfile.c

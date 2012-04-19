@@ -812,7 +812,6 @@ int main(int argc, char **argv) {
     struct daemonConfig *config;
     bool privileged = geteuid() == 0 ? true : false;
     bool implicit_conf = false;
-    bool use_polkit_dbus;
     char *run_dir = NULL;
     mode_t old_umask;
 
@@ -1008,8 +1007,6 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
-    use_polkit_dbus = config->auth_unix_rw == REMOTE_AUTH_POLKIT ||
-            config->auth_unix_ro == REMOTE_AUTH_POLKIT;
     if (!(srv = virNetServerNew(config->min_workers,
                                 config->max_workers,
                                 config->prio_workers,
@@ -1018,7 +1015,6 @@ int main(int argc, char **argv) {
                                 config->keepalive_count,
                                 !!config->keepalive_required,
                                 config->mdns_adv ? config->mdns_name : NULL,
-                                use_polkit_dbus,
                                 remoteClientInitHook))) {
         ret = VIR_DAEMON_ERR_INIT;
         goto cleanup;
