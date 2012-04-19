@@ -1,6 +1,6 @@
 #! /bin/sh
 # Print a version string.
-scriptversion=2012-02-11.09; # UTC
+scriptversion=2012-04-19.22; # UTC
 
 # Bootstrap this package from checked-out sources.
 
@@ -35,6 +35,10 @@ nl='
 # Ensure file names are sorted consistently across platforms.
 LC_ALL=C
 export LC_ALL
+
+# Ensure that CDPATH is not set.  Otherwise, the output from cd
+# would cause trouble in at least one use below.
+(unset CDPATH) >/dev/null 2>&1 && unset CDPATH
 
 local_gl_dir=gl
 
@@ -758,9 +762,15 @@ fi
 # Autoreconf runs aclocal before libtoolize, which causes spurious
 # warnings if the initial aclocal is confused by the libtoolized
 # (or worse out-of-date) macro directory.
+# libtoolize 1.9b added the --install option; but we support back
+# to libtoolize 1.5.22, where the install action was default.
 if test $use_libtool = 1; then
-  echo "running: $LIBTOOLIZE --copy --install"
-  $LIBTOOLIZE --copy --install
+  install=
+  case $($LIBTOOLIZE --help) in
+    *--install*) install=--install ;;
+  esac
+  echo "running: $LIBTOOLIZE $install --copy"
+  $LIBTOOLIZE $install --copy
 fi
 
 version_controlled_file() {
@@ -862,6 +872,8 @@ if test $with_gettext = yes; then
           '"$XGETTEXT_OPTIONS"' $${end_of_xgettext_options+}
     }
   ' po/Makevars.template >po/Makevars || exit 1
+
+  cat $GNULIB_SRCDIR/build-aux/po/Makefile.in.in > po/Makefile.in.in || exit 1
 
   if test -d runtime-po; then
     # Similarly for runtime-po/Makevars, but not quite the same.
