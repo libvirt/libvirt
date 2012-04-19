@@ -5294,8 +5294,11 @@ vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
 
         ((IMachine_Delete)machine->vtbl->Delete)(machine, &safeArray, &progress);
 # else
-        vboxArray array = VBOX_ARRAY_INITIALIZER;
-        machine->vtbl->Delete(machine, 0, (IMedium**)&array, &progress);
+        union {
+            vboxArray array;
+            IMedium *medium;
+        } u = { .array = VBOX_ARRAY_INITIALIZER };
+        machine->vtbl->Delete(machine, 0, &u.medium, &progress);
 # endif
         if (progress != NULL) {
             progress->vtbl->WaitForCompletion(progress, -1);
