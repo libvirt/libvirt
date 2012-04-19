@@ -398,13 +398,15 @@ may be combined. Default behavior is as though both were specified. (Note that
 if any of these flags is specified, the check for the persistence state is done
 and may fail. If none of these flags is specified, the check is skipped.)
 
-If I<--title> is specified, then the domain note is printed. The output then
-the output looks as follows. This flag is usable only with the default
+If I<--title> is specified, then the short domain description (title) is
+printed in an extra column. This flag is usable only with the default
 I<--table> output.
+
+Example:
 
 B<virsh> list --title
  Id Name                 State      Title
------------------------------------------------
+ -----------------------------------------------
   0 Domain-0             running    Mailserver 1
   2 fedora               paused
 
