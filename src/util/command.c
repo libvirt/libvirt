@@ -2399,7 +2399,7 @@ void
 virPidAbort(pid_t pid)
 {
     /* Not yet ported to mingw.  Any volunteers?  */
-    VIR_DEBUG("failed to reap child %d, abandoning it", pid);
+    VIR_DEBUG("failed to reap child %lld, abandoning it", (long long)pid);
 }
 
 void
