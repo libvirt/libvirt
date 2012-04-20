@@ -1232,7 +1232,6 @@ EXTRA_DIST += \
   libvirt_driver_modules.syms	\
   libvirt_daemon.syms		\
   libvirt_linux.syms		\
-  libvirt_dbus.syms		\
   libvirt_network.syms		\
   libvirt_nwfilter.syms		\
   libvirt_sasl.syms		\
