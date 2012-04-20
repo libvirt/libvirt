@@ -882,7 +882,7 @@ qemuMigrationUpdateJobStatus(struct qemud_driver *driver,
                              enum qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret = -1;
+    int ret;
     int status;
     unsigned long long memProcessed;
     unsigned long long memRemaining;
@@ -906,6 +906,7 @@ qemuMigrationUpdateJobStatus(struct qemud_driver *driver,
     }
     priv->job.info.timeElapsed -= priv->job.start;
 
+    ret = -1;
     switch (status) {
     case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
         priv->job.info.type = VIR_DOMAIN_JOB_NONE;
