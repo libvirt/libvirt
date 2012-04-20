@@ -1732,6 +1732,7 @@ qemuMigrationRun(struct qemud_driver *driver,
     qemuMigrationIOThreadPtr iothread = NULL;
     int fd = -1;
     unsigned long migrate_speed = resource ? resource : priv->migMaxBandwidth;
+    virErrorPtr orig_err = NULL;
 
     VIR_DEBUG("driver=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, resource=%lu, "
@@ -1873,6 +1874,9 @@ qemuMigrationRun(struct qemud_driver *driver,
     ret = 0;
 
 cleanup:
+    if (ret < 0 && !orig_err)
+        orig_err = virSaveLastError();
+
     if (spec->fwdType != MIGRATION_FWD_DIRECT) {
         /* Close now to ensure the IO thread quits & is joinable */
         VIR_FORCE_CLOSE(fd);
@@ -1887,9 +1891,16 @@ cleanup:
 
     qemuMigrationCookieFree(mig);
 
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
+    }
+
     return ret;
 
 cancel:
+    orig_err = virSaveLastError();
+
     if (virDomainObjIsActive(vm)) {
         if (qemuDomainObjEnterMonitorAsync(driver, vm,
                                            QEMU_ASYNC_JOB_MIGRATION_OUT) == 0) {
@@ -2494,6 +2505,7 @@ qemuMigrationPerformJob(struct qemud_driver *driver,
     virDomainEventPtr event = NULL;
     int ret = -1;
     int resume = 0;
+    virErrorPtr orig_err = NULL;
 
     if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
@@ -2539,6 +2551,9 @@ qemuMigrationPerformJob(struct qemud_driver *driver,
     resume = 0;
 
 endjob:
+    if (ret < 0)
+        orig_err = virSaveLastError();
+
     if (resume && virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
         /* we got here through some sort of failure; start the domain again */
         if (qemuProcessStartCPUs(driver, vm, conn,
@@ -2566,6 +2581,11 @@ endjob:
             virDomainDeleteConfig(driver->configDir, driver->autostartDir, vm);
         qemuDomainRemoveInactive(driver, vm);
         vm = NULL;
+    }
+
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
     }
 
 cleanup:
