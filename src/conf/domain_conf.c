@@ -12832,10 +12832,10 @@ static char *virDomainObjFormat(virCapsPtr caps,
     int i;
 
     state = virDomainObjGetState(obj, &reason);
-    virBufferAsprintf(&buf, "<domstatus state='%s' reason='%s' pid='%d'>\n",
+    virBufferAsprintf(&buf, "<domstatus state='%s' reason='%s' pid='%lld'>\n",
                       virDomainStateTypeToString(state),
                       virDomainStateReasonToString(state, reason),
-                      obj->pid);
+                      (long long)obj->pid);
 
     for (i = 0 ; i < VIR_DOMAIN_TAINT_LAST ; i++) {
         if (obj->taint & (1 << i))

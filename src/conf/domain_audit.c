@@ -562,8 +562,8 @@ virDomainAuditLifecycle(virDomainObjPtr vm, const char *op,
     }
 
     VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, success,
-              "virt=%s op=%s reason=%s %s uuid=%s vm-pid=%d",
-              virt, op, reason, vmname, uuidstr, vm->pid);
+              "virt=%s op=%s reason=%s %s uuid=%s vm-pid=%lld",
+              virt, op, reason, vmname, uuidstr, (long long)vm->pid);
 
     VIR_FREE(vmname);
 }

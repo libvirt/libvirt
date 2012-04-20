@@ -222,7 +222,7 @@ int virPidFileReadPathIfAlive(const char *path,
 #endif
 
     if (binpath) {
-        if (virAsprintf(&procpath, "/proc/%d/exe", *pid) < 0) {
+        if (virAsprintf(&procpath, "/proc/%lld/exe", (long long)*pid) < 0) {
             *pid = -1;
             return -1;
         }
