@@ -316,9 +316,6 @@ cleanup:
     return rc;
 }
 
-
-verify(sizeof(pid_t) <= sizeof(unsigned int));
-
 int virPidFileAcquirePath(const char *path,
                           pid_t pid)
 {
