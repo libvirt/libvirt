@@ -1,7 +1,7 @@
 /*
  * virnetserver.c: generic network RPC server
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -41,6 +41,10 @@
 #endif
 #if HAVE_DBUS
 # include <dbus/dbus.h>
+#endif
+
+#ifndef SA_SIGINFO
+# define SA_SIGINFO 0
 #endif
 
 #define VIR_FROM_THIS VIR_FROM_RPC
@@ -277,8 +281,9 @@ error:
 }
 
 
-static void virNetServerFatalSignal(int sig, siginfo_t *siginfo ATTRIBUTE_UNUSED,
-                                    void *context ATTRIBUTE_UNUSED)
+static void
+virNetServerFatalSignal(int sig, siginfo_t *siginfo ATTRIBUTE_UNUSED,
+                        void *context ATTRIBUTE_UNUSED)
 {
     struct sigaction sig_action;
     int origerrno;
@@ -293,6 +298,7 @@ static void virNetServerFatalSignal(int sig, siginfo_t *siginfo ATTRIBUTE_UNUSED
 #ifdef SIGUSR2
     if (sig != SIGUSR2) {
 #endif
+        memset(&sig_action, 0, sizeof(sig_action));
         sig_action.sa_handler = SIG_DFL;
         sigaction(sig, &sig_action, NULL);
         raise(sig);
@@ -390,6 +396,7 @@ virNetServerPtr virNetServerNew(size_t min_workers,
      * debugging purposes or testing
      */
     sig_action.sa_sigaction = virNetServerFatalSignal;
+    sig_action.sa_flags = SA_SIGINFO;
     sigaction(SIGFPE, &sig_action, NULL);
     sigaction(SIGSEGV, &sig_action, NULL);
     sigaction(SIGILL, &sig_action, NULL);
@@ -455,17 +462,24 @@ static sig_atomic_t sigErrors = 0;
 static int sigLastErrno = 0;
 static int sigWrite = -1;
 
-static void virNetServerSignalHandler(int sig, siginfo_t * siginfo,
-                                      void* context ATTRIBUTE_UNUSED)
+static void
+virNetServerSignalHandler(int sig, siginfo_t * siginfo,
+                          void* context ATTRIBUTE_UNUSED)
 {
     int origerrno;
     int r;
+    siginfo_t tmp;
+
+    if (SA_SIGINFO)
+        tmp = *siginfo;
+    else
+        memset(&tmp, 0, sizeof(tmp));
 
     /* set the sig num in the struct */
-    siginfo->si_signo = sig;
+    tmp.si_signo = sig;
 
     origerrno = errno;
-    r = safewrite(sigWrite, siginfo, sizeof(*siginfo));
+    r = safewrite(sigWrite, &tmp, sizeof(tmp));
     if (r == -1) {
         sigErrors++;
         sigLastErrno = errno;
@@ -568,9 +582,7 @@ int virNetServerAddSignalHandler(virNetServerPtr srv,
 
     memset(&sig_action, 0, sizeof(sig_action));
     sig_action.sa_sigaction = virNetServerSignalHandler;
-#ifdef SA_SIGINFO
     sig_action.sa_flags = SA_SIGINFO;
-#endif
     sigemptyset(&sig_action.sa_mask);
 
     sigaction(signum, &sig_action, &sigdata->oldaction);
