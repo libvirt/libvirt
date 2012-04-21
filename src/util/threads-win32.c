@@ -316,8 +316,15 @@ int virThreadCreate(virThreadPtr thread,
 void virThreadSelf(virThreadPtr thread)
 {
     virThreadPtr self = TlsGetValue(selfkey);
-    thread->thread = self->thread;
-    thread->joinable = self->joinable;
+
+    if (self == NULL) {
+        /* called on a thread not created by virThreadCreate, e.g. the main thread */
+        thread->thread = 0;
+        thread->joinable = false;
+    } else {
+        thread->thread = self->thread;
+        thread->joinable = self->joinable;
+    }
 }
 
 bool virThreadIsSelf(virThreadPtr thread)
