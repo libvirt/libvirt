@@ -1023,6 +1023,8 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth,
     priv->supportsLongMode = esxVI_Boolean_Undefined;
     priv->usedCpuTimeCounterId = -1;
 
+    conn->privateData = priv;
+
     /*
      * Set the port dependent on the transport protocol if no port is
      * specified. This allows us to rely on the port parameter being
@@ -1113,8 +1115,6 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth,
     if (priv->caps == NULL) {
         goto cleanup;
     }
-
-    conn->privateData = priv;
 
     result = VIR_DRV_OPEN_SUCCESS;
 
