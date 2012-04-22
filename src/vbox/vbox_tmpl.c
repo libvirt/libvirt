@@ -5294,11 +5294,10 @@ vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
 
         ((IMachine_Delete)machine->vtbl->Delete)(machine, &safeArray, &progress);
 # else
-        union {
-            vboxArray array;
-            IMedium *medium;
-        } u = { .array = VBOX_ARRAY_INITIALIZER };
-        machine->vtbl->Delete(machine, 0, &u.medium, &progress);
+        /* XPCOM doesn't like NULL as an array, even when the array size is 0.
+         * Instead pass it a dummy array to avoid passing NULL. */
+        IMedium *array[] = { NULL };
+        machine->vtbl->Delete(machine, 0, array, &progress);
 # endif
         if (progress != NULL) {
             progress->vtbl->WaitForCompletion(progress, -1);
