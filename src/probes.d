@@ -78,7 +78,7 @@ provider libvirt {
 	probe rpc_keepalive_ref(void *ka, void *client, int refs);
 	probe rpc_keepalive_free(void *ka, void *client, int refs);
 	probe rpc_keepalive_start(void *ka, void *client, int interval, int count);
-	probe rpc_keepalive_stop(void *ka, void *client);
+	probe rpc_keepalive_stop(void *ka, void *client, bool all);
 	probe rpc_keepalive_send(void *ka, void *client, int prog, int vers, int proc);
 	probe rpc_keepalive_received(void *ka, void *client, int prog, int vers, int proc);
 	probe rpc_keepalive_timeout(void *ka, void *client, int coundToDeath, int idle);

@@ -49,6 +49,7 @@ int virKeepAliveStart(virKeepAlivePtr ka,
                       int interval,
                       unsigned int count);
 void virKeepAliveStop(virKeepAlivePtr ka);
+void virKeepAliveStopSending(virKeepAlivePtr ka);
 
 bool virKeepAliveCheckMessage(virKeepAlivePtr ka,
                               virNetMessagePtr msg);

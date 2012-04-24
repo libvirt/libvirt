@@ -104,4 +104,6 @@ int virNetClientKeepAliveStart(virNetClientPtr client,
                                int interval,
                                unsigned int count);
 
+void virNetClientKeepAliveStop(virNetClientPtr client);
+
 #endif /* __VIR_NET_CLIENT_H__ */

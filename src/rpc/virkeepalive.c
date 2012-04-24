@@ -372,29 +372,45 @@ cleanup:
 }
 
 
-void
-virKeepAliveStop(virKeepAlivePtr ka)
+static void
+virKeepAliveStopInternal(virKeepAlivePtr ka, bool all)
 {
     virKeepAliveLock(ka);
 
     PROBE(RPC_KEEPALIVE_STOP,
-          "ka=%p client=%p",
-          ka, ka->client);
+          "ka=%p client=%p all=%d",
+          ka, ka->client, all);
 
     if (ka->timer > 0) {
         virEventRemoveTimeout(ka->timer);
         ka->timer = -1;
     }
 
-    if (ka->responseTimer > 0) {
-        virEventRemoveTimeout(ka->responseTimer);
-        ka->responseTimer = -1;
+    if (all) {
+        if (ka->responseTimer > 0) {
+            virEventRemoveTimeout(ka->responseTimer);
+            ka->responseTimer = -1;
+        }
+
+        virNetMessageFree(ka->response);
+        ka->response = NULL;
     }
 
-    virNetMessageFree(ka->response);
-    ka->response = NULL;
-
     virKeepAliveUnlock(ka);
+}
+
+
+void
+virKeepAliveStop(virKeepAlivePtr ka)
+{
+    virKeepAliveStopInternal(ka, true);
+}
+
+
+void
+virKeepAliveStopSending(virKeepAlivePtr ka)
+{
+    virKeepAliveStopInternal(ka, false);
 }
 
 

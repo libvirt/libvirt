@@ -4631,7 +4631,12 @@ remoteSetKeepAlive(virConnectPtr conn, int interval, unsigned int count)
         goto cleanup;
     }
 
-    ret = virNetClientKeepAliveStart(priv->client, interval, count);
+    if (interval > 0) {
+        ret = virNetClientKeepAliveStart(priv->client, interval, count);
+    } else {
+        virNetClientKeepAliveStop(priv->client);
+        ret = 0;
+    }
 
 cleanup:
     remoteDriverUnlock(priv);

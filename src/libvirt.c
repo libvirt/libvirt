@@ -18433,6 +18433,10 @@ error:
  * messages.  Failure to do so may result in connections being closed
  * unexpectedly.
  *
+ * Note: This API function controls only keepalive messages sent by the client.
+ * If the server is configured to use keepalive you still need to run the event
+ * loop to respond to them, even if you disable keepalives by this function.
+ *
  * Returns -1 on error, 0 on success, 1 when remote party doesn't support
  * keepalive messages.
  */
@@ -18450,12 +18454,6 @@ int virConnectSetKeepAlive(virConnectPtr conn,
         virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
-    }
-
-    if (interval <= 0) {
-        virLibConnError(VIR_ERR_INVALID_ARG,
-                        _("negative or zero interval make no sense"));
-        goto error;
     }
 
     if (conn->driver->setKeepAlive) {
