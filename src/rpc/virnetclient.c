@@ -248,6 +248,14 @@ virNetClientKeepAliveStart(virNetClientPtr client,
     return ret;
 }
 
+void
+virNetClientKeepAliveStop(virNetClientPtr client)
+{
+    virNetClientLock(client);
+    virKeepAliveStopSending(client->keepalive);
+    virNetClientUnlock(client);
+}
+
 static void
 virNetClientKeepAliveDeadCB(void *opaque)
 {
