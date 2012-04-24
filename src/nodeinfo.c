@@ -605,6 +605,7 @@ linuxParseCPUmap(int *max_cpuid, const char *path)
     }
     *max_cpuid = max_id;
 
+    VIR_FREE(str);
     return map;
 
 error:
