@@ -30,6 +30,29 @@
 typedef struct _virAtomicInt virAtomicInt;
 typedef virAtomicInt *virAtomicIntPtr;
 
+# define __VIR_ATOMIC_USES_LOCK
+
+# if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 1)) || (__GNUC__ > 4)
+#  undef __VIR_ATOMIC_USES_LOCK
+# endif
+
+static inline int virAtomicIntInit(virAtomicIntPtr vaip)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+static inline int virAtomicIntRead(virAtomicIntPtr vaip)
+    ATTRIBUTE_NONNULL(1);
+static inline void virAtomicIntSet(virAtomicIntPtr vaip, int val)
+    ATTRIBUTE_NONNULL(1);
+static inline int virAtomicIntAdd(virAtomicIntPtr vaip, int add)
+    ATTRIBUTE_NONNULL(1);
+static inline int virAtomicIntSub(virAtomicIntPtr vaip, int add)
+    ATTRIBUTE_NONNULL(1);
+static inline int virAtomicIntInc(virAtomicIntPtr vaip)
+    ATTRIBUTE_NONNULL(1);
+static inline int virAtomicIntDec(virAtomicIntPtr vaip)
+    ATTRIBUTE_NONNULL(1);
+
+# ifdef __VIR_ATOMIC_USES_LOCK
+
 struct _virAtomicInt {
     virMutex lock;
     int value;
@@ -40,22 +63,6 @@ virAtomicIntInit(virAtomicIntPtr vaip)
 {
     vaip->value = 0;
     return virMutexInit(&vaip->lock);
-}
-
-static inline void
-virAtomicIntSet(virAtomicIntPtr vaip, int value)
-{
-     virMutexLock(&vaip->lock);
-
-     vaip->value = value;
-
-     virMutexUnlock(&vaip->lock);
-}
-
-static inline int
-virAtomicIntRead(virAtomicIntPtr vaip)
-{
-     return vaip->value;
 }
 
 static inline int
@@ -86,6 +93,62 @@ virAtomicIntSub(virAtomicIntPtr vaip, int sub)
     virMutexUnlock(&vaip->lock);
 
     return ret;
+}
+
+# else /* __VIR_ATOMIC_USES_LOCK */
+
+struct _virAtomicInt {
+    int value;
+};
+
+static inline int
+virAtomicIntInit(virAtomicIntPtr vaip)
+{
+    vaip->value = 0;
+    return 0;
+}
+
+static inline int
+virAtomicIntAdd(virAtomicIntPtr vaip, int add)
+{
+    return __sync_add_and_fetch(&vaip->value, add);
+}
+
+static inline int
+virAtomicIntSub(virAtomicIntPtr vaip, int sub)
+{
+    return __sync_sub_and_fetch(&vaip->value, sub);
+}
+
+# endif /* __VIR_ATOMIC_USES_LOCK */
+
+
+
+/* common operations that need no locking or build on others */
+
+
+static inline void
+virAtomicIntSet(virAtomicIntPtr vaip, int value)
+{
+     vaip->value = value;
+}
+
+static inline int
+virAtomicIntRead(virAtomicIntPtr vaip)
+{
+     return *(volatile int *)&vaip->value;
+}
+
+static inline int
+virAtomicIntInc(virAtomicIntPtr vaip)
+{
+    return virAtomicIntAdd(vaip, 1);
+}
+
+static inline int
+virAtomicIntDec(virAtomicIntPtr vaip)
+{
+    return virAtomicIntSub(vaip, 1);
 }
 
 #endif /* __VIR_ATOMIC_H */
