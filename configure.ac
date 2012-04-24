@@ -2274,7 +2274,7 @@ dnl compute the difference between save_CPPFLAGS and CPPFLAGS and append it
 dnl to INCLUDES in order to preserve changes made by gettext but in a place
 dnl that does not break the build
 save_CPPFLAGS="$CPPFLAGS"
-AM_GNU_GETTEXT_VERSION([0.17])
+AM_GNU_GETTEXT_VERSION([0.18])
 AM_GNU_GETTEXT([external])
 GETTEXT_CPPFLAGS=
 if test "x$save_CPPFLAGS" != "x$CPPFLAGS"; then
