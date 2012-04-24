@@ -21,6 +21,8 @@
     <filesystem type='template' accessmode='passthrough'>
       <source name='debian'/>
       <target dir='/'/>
+      <space_hard_limit>1153024</space_hard_limit>
+      <space_soft_limit>1048576</space_soft_limit>
     </filesystem>
   </devices>
 </domain>

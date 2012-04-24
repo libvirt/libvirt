@@ -407,6 +407,8 @@ openvzReadFSConf(virDomainDefPtr def,
     virDomainFSDefPtr fs = NULL;
     char *veid_str = NULL;
     char *temp = NULL;
+    const char *param;
+    unsigned long long barrier, limit;
 
     ret = openvzReadVPSConfigParam(veid, "OSTEMPLATE", &temp);
     if (ret < 0) {
@@ -443,6 +445,28 @@ openvzReadFSConf(virDomainDefPtr def,
     }
 
     fs->dst = strdup("/");
+
+    param = "DISKSPACE";
+    ret = openvzReadVPSConfigParam(veid, param, &temp);
+    if (ret > 0) {
+        if (openvzParseBarrierLimit(temp, &barrier, &limit)) {
+            openvzError(VIR_ERR_INTERNAL_ERROR,
+                        _("Could not read '%s' from config for container %d"),
+                        param, veid);
+            goto error;
+        } else {
+            /* Ensure that we can multiply by 1024 without overflowing. */
+            if (barrier > ULONG_LONG_MAX / 1024 ||
+                limit > ULONG_LONG_MAX / 1024 ) {
+                virReportSystemError(VIR_ERR_OVERFLOW,
+                                     _("%s"),
+                                     "Unable to parse quota");
+                goto error;
+            }
+            fs->space_soft_limit = barrier * 1024; /* unit is bytes */
+            fs->space_hard_limit = limit * 1024;   /* unit is bytes */
+        }
+    }
 
     if (fs->src == NULL || fs->dst == NULL)
         goto no_memory;
