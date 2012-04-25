@@ -435,10 +435,10 @@ static const uint32_t modeMap[VIR_NETDEV_MACVLAN_MODE_LAST] = {
 struct virNetlinkCallbackData {
     char *cr_ifname;
     virNetDevVPortProfilePtr virtPortProfile;
-    unsigned char *macaddress;
+    unsigned char macaddress[VIR_UUID_BUFLEN];
     char *linkdev;
     int vf;
-    unsigned char *vmuuid;
+    unsigned char vmuuid[VIR_UUID_BUFLEN];
     enum virNetDevVPortProfileOp vmOp;
     unsigned int linkState;
 };
@@ -728,9 +728,7 @@ virNetlinkCallbackDataFree(virNetlinkCallbackDataPtr calld)
     if (calld) {
         VIR_FREE(calld->cr_ifname);
         VIR_FREE(calld->virtPortProfile);
-        VIR_FREE(calld->macaddress);
         VIR_FREE(calld->linkdev);
-        VIR_FREE(calld->vmuuid);
     }
     VIR_FREE(calld);
 }
@@ -772,14 +770,10 @@ virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
         if (VIR_ALLOC(calld->virtPortProfile) < 0)
             goto memory_error;
         memcpy(calld->virtPortProfile, virtPortProfile, sizeof(*virtPortProfile));
-        if (VIR_ALLOC_N(calld->macaddress, VIR_MAC_BUFLEN) < 0)
-            goto memory_error;
-        memcpy(calld->macaddress, macaddress, VIR_MAC_BUFLEN);
+        memcpy(calld->macaddress, macaddress, sizeof(calld->macaddress));
         if ((calld->linkdev = strdup(linkdev)) == NULL)
             goto  memory_error;
-        if (VIR_ALLOC_N(calld->vmuuid, VIR_UUID_BUFLEN) < 0)
-            goto memory_error;
-        memcpy(calld->vmuuid, vmuuid, VIR_UUID_BUFLEN);
+        memcpy(calld->vmuuid, vmuuid, sizeof(calld->vmuuid));
 
         calld->vmOp = vmOp;
 
