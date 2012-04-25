@@ -182,7 +182,7 @@
 #  endif
 
 #  ifndef ATTRIBUTE_NONNULL
-#   if __GNUC_PREREQ (3, 3)
+#   if __GNUC_PREREQ (3, 3) && STATIC_ANALYSIS
 #    define ATTRIBUTE_NONNULL(m) __attribute__((__nonnull__(m)))
 #   else
 #    define ATTRIBUTE_NONNULL(m)
