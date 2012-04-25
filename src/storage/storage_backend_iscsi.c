@@ -96,13 +96,19 @@ virStorageBackendISCSIPortal(virStoragePoolSourcePtr source)
     char ipaddr[NI_MAXHOST];
     char *portal;
 
-    if (virStorageBackendISCSITargetIP(source->host.name,
+    if (source->nhost != 1) {
+        virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                              _("Expected exactly 1 host for the storage pool"));
+        return NULL;
+    }
+
+    if (virStorageBackendISCSITargetIP(source->hosts[0].name,
                                        ipaddr, sizeof(ipaddr)) < 0)
         return NULL;
 
     if (virAsprintf(&portal, "%s:%d,1", ipaddr,
-                    source->host.port ?
-                    source->host.port : 3260) < 0) {
+                    source->hosts[0].port ?
+                    source->hosts[0].port : 3260) < 0) {
         virReportOOMError();
         return NULL;
     }
@@ -563,6 +569,12 @@ virStorageBackendISCSIFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
                                                       list.type)))
         return NULL;
 
+    if (source->nhost != 1) {
+        virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                              _("Expected exactly 1 host for the storage pool"));
+        goto cleanup;
+    }
+
     if (!(portal = virStorageBackendISCSIPortal(source)))
         goto cleanup;
 
@@ -581,7 +593,7 @@ virStorageBackendISCSIFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
             virReportOOMError();
             goto cleanup;
         }
-        list.sources[i].host = source->host;
+        list.sources[i].host = source->hosts[0];
         list.sources[i].initiator = source->initiator;
         list.sources[i].ndevice = 1;
         list.sources[i].devices[0].path = targets[i];
@@ -617,7 +629,13 @@ virStorageBackendISCSICheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     *isActive = false;
 
-    if (pool->def->source.host.name == NULL) {
+    if (pool->def->source.nhost != 1) {
+         virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Expected exactly 1 host for the storage pool"));
+        return -1;
+    }
+
+    if (pool->def->source.hosts[0].name == NULL) {
         virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               "%s", _("missing source host"));
         return -1;
@@ -649,7 +667,13 @@ virStorageBackendISCSIStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     int ret = -1;
     const char *loginargv[] = { "--login", NULL };
 
-    if (pool->def->source.host.name == NULL) {
+    if (pool->def->source.nhost != 1) {
+         virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Expected exactly 1 host for the storage pool"));
+        return -1;
+    }
+
+    if (pool->def->source.hosts[0].name == NULL) {
         virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               "%s", _("missing source host"));
         return -1;

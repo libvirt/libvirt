@@ -206,7 +206,13 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(virStoragePoolObjPtr pool ATTR
     if (!(src = virStoragePoolSourceListNewSource(&state->list)))
         goto cleanup;
 
-    if (!(src->host.name = strdup(state->host)) ||
+    if (src->nhost != 1) {
+        virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                              _("Expected exactly 1 host for the storage pool"));
+        goto cleanup;
+    }
+
+    if (!(src->hosts[0].name = strdup(state->host)) ||
         !(src->dir = strdup(path))) {
         virReportOOMError();
         goto cleanup;
@@ -260,8 +266,14 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
     if (!source)
         goto cleanup;
 
-    state.host = source->host.name;
-    prog[3] = source->host.name;
+    if (source->nhost != 1) {
+        virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                              _("Expected exactly 1 host for the storage pool"));
+        goto cleanup;
+    }
+
+    state.host = source->hosts[0].name;
+    prog[3] = source->hosts[0].name;
 
     if (virStorageBackendRunProgRegex(NULL, prog, 1, regexes, vars,
                             virStorageBackendFileSystemNetFindPoolSourcesFunc,
@@ -387,7 +399,12 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
     int ret;
 
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
-        if (pool->def->source.host.name == NULL) {
+        if (pool->def->source.nhost != 1) {
+            virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                  _("Expected exactly 1 host for the storage pool"));
+            return -1;
+        }
+        if (pool->def->source.hosts[0].name == NULL) {
             virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                                   "%s", _("missing source host"));
             return -1;
@@ -415,7 +432,7 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
 
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
         if (virAsprintf(&src, "%s:%s",
-                        pool->def->source.host.name,
+                        pool->def->source.hosts[0].name,
                         pool->def->source.dir) == -1) {
             virReportOOMError();
             return -1;
@@ -452,7 +469,12 @@ virStorageBackendFileSystemUnmount(virStoragePoolObjPtr pool) {
     int ret;
 
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
-        if (pool->def->source.host.name == NULL) {
+        if (pool->def->source.nhost != 1) {
+            virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                  _("Expected exactly 1 host for the storage pool"));
+            return -1;
+        }
+        if (pool->def->source.hosts[0].name == NULL) {
             virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                                   "%s", _("missing source host"));
             return -1;

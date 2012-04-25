@@ -212,8 +212,9 @@ struct _virStoragePoolSourceDevice {
 typedef struct _virStoragePoolSource virStoragePoolSource;
 typedef virStoragePoolSource *virStoragePoolSourcePtr;
 struct _virStoragePoolSource {
-    /* An optional host */
-    virStoragePoolSourceHost host;
+    /* An optional (maybe multiple) host(s) */
+    size_t nhost;
+    virStoragePoolSourceHostPtr hosts;
 
     /* And either one or more devices ... */
     int ndevice;

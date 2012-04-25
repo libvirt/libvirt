@@ -4053,14 +4053,14 @@ testStorageFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
         break;
 
     case VIR_STORAGE_POOL_NETFS:
-        if (!source || !source->host.name) {
+        if (!source || !source->hosts[0].name) {
             testError(VIR_ERR_INVALID_ARG,
                       "%s", "hostname must be specified for netfs sources");
             goto cleanup;
         }
 
         if (virAsprintf(&ret, defaultPoolSourcesNetFSXML,
-                        source->host.name) < 0)
+                        source->hosts[0].name) < 0)
             virReportOOMError();
         break;
 

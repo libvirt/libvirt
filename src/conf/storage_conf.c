@@ -276,7 +276,11 @@ virStoragePoolSourceClear(virStoragePoolSourcePtr source)
     if (!source)
         return;
 
-    VIR_FREE(source->host.name);
+    for (i = 0 ; i < source->nhost ; i++) {
+        VIR_FREE(source->hosts[i].name);
+    }
+    VIR_FREE(source->hosts);
+
     for (i = 0 ; i < source->ndevice ; i++) {
         VIR_FREE(source->devices[i].freeExtents);
         VIR_FREE(source->devices[i].path);
@@ -404,6 +408,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     char *authType = NULL;
     int nsource, i;
     virStoragePoolOptionsPtr options;
+    char *name = NULL;
     char *port = NULL;
 
     relnode = ctxt->node;
@@ -431,17 +436,34 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
         VIR_FREE(format);
     }
 
-    source->host.name = virXPathString("string(./host/@name)", ctxt);
-    port = virXPathString("string(./host/@port)", ctxt);
-    if (port) {
-        if (virStrToLong_i(port, NULL, 10, &source->host.port) < 0) {
-            virStorageReportError(VIR_ERR_XML_ERROR,
-                                  _("Invalid port number: %s"),
-                                  port);
+    source->nhost = virXPathNodeSet("./host", ctxt, &nodeset);
+
+    if (source->nhost) {
+        if (VIR_ALLOC_N(source->hosts, source->nhost) < 0) {
+            virReportOOMError();
             goto cleanup;
         }
-    }
 
+        for (i = 0 ; i < source->nhost ; i++) {
+            name = virXMLPropString(nodeset[i], "name");
+            if (name == NULL) {
+                virStorageReportError(VIR_ERR_XML_ERROR,
+                        "%s", _("missing storage pool host name"));
+                goto cleanup;
+            }
+            source->hosts[i].name = name;
+
+            port = virXMLPropString(nodeset[i], "port");
+            if (port) {
+                if (virStrToLong_i(port, NULL, 10, &source->hosts[i].port) < 0) {
+                    virStorageReportError(VIR_ERR_XML_ERROR,
+                                          _("Invalid port number: %s"),
+                                          port);
+                    goto cleanup;
+                }
+            }
+        }
+    }
 
     source->initiator.iqn = virXPathString("string(./initiator/iqn/@name)", ctxt);
 
@@ -675,7 +697,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt) {
     }
 
     if (options->flags & VIR_STORAGE_POOL_SOURCE_HOST) {
-        if (!ret->source.host.name) {
+        if (!ret->source.nhost) {
             virStorageReportError(VIR_ERR_XML_ERROR,
                                   "%s",
                                   _("missing storage pool source host name"));
@@ -801,12 +823,13 @@ virStoragePoolSourceFormat(virBufferPtr buf,
     int i, j;
 
     virBufferAddLit(buf,"  <source>\n");
-    if ((options->flags & VIR_STORAGE_POOL_SOURCE_HOST) &&
-        src->host.name) {
-        virBufferAsprintf(buf, "    <host name='%s'", src->host.name);
-        if (src->host.port)
-            virBufferAsprintf(buf, " port='%d'", src->host.port);
-        virBufferAddLit(buf, "/>\n");
+    if ((options->flags & VIR_STORAGE_POOL_SOURCE_HOST) && src->nhost) {
+        for (i = 0; i < src->nhost; i++) {
+            virBufferAsprintf(buf, " <host name='%s'", src->hosts[i].name);
+            if (src->hosts[i].port)
+                virBufferAsprintf(buf, " port='%d'", src->hosts[i].port);
+            virBufferAddLit(buf, "/>\n");
+        }
     }
 
     if ((options->flags & VIR_STORAGE_POOL_SOURCE_DEVICE) &&
@@ -1678,7 +1701,8 @@ int virStoragePoolSourceFindDuplicate(virStoragePoolObjListPtr pools,
             break;
         case VIR_STORAGE_POOL_NETFS:
             if ((STREQ(pool->def->source.dir, def->source.dir)) \
-                && (STREQ(pool->def->source.host.name, def->source.host.name)))
+                && (pool->def->source.nhost == 1 && def->source.nhost == 1) \
+                && (STREQ(pool->def->source.hosts[0].name, def->source.hosts[0].name)))
                 matchpool = pool;
             break;
         case VIR_STORAGE_POOL_SCSI:
@@ -1689,13 +1713,15 @@ int virStoragePoolSourceFindDuplicate(virStoragePoolObjListPtr pools,
         {
             matchpool = virStoragePoolSourceFindDuplicateDevices(pool, def);
             if (matchpool) {
-                if (STREQ(matchpool->def->source.host.name, def->source.host.name)) {
-                    if ((matchpool->def->source.initiator.iqn) && (def->source.initiator.iqn)) {
-                        if (STREQ(matchpool->def->source.initiator.iqn, def->source.initiator.iqn))
-                            break;
-                        matchpool = NULL;
+                if (matchpool->def->source.nhost == 1 && def->source.nhost == 1) {
+                    if (STREQ(matchpool->def->source.hosts[0].name, def->source.hosts[0].name)) {
+                        if ((matchpool->def->source.initiator.iqn) && (def->source.initiator.iqn)) {
+                            if (STREQ(matchpool->def->source.initiator.iqn, def->source.initiator.iqn))
+                                break;
+                            matchpool = NULL;
+                        }
+                        break;
                     }
-                    break;
                 }
                 matchpool = NULL;
             }

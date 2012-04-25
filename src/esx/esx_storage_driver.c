@@ -544,8 +544,12 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
     if (esxVI_LocalDatastoreInfo_DynamicCast(info) != NULL) {
         def.type = VIR_STORAGE_POOL_DIR;
     } else if ((nasInfo = esxVI_NasDatastoreInfo_DynamicCast(info)) != NULL) {
+        if (VIR_ALLOC_N(def.source.hosts, 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
         def.type = VIR_STORAGE_POOL_NETFS;
-        def.source.host.name = nasInfo->nas->remoteHost;
+        def.source.hosts[0].name = nasInfo->nas->remoteHost;
         def.source.dir = nasInfo->nas->remotePath;
 
         if (STRCASEEQ(nasInfo->nas->type, "NFS")) {
