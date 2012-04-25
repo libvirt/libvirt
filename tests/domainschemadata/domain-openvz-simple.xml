@@ -1,0 +1,26 @@
+<domain type='openvz'>
+  <name>100</name>
+  <uuid>7109d234-f5a8-30a6-5dd2-39ca85ce3958</uuid>
+  <memory unit='KiB'>0</memory>
+  <currentMemory unit='KiB'>0</currentMemory>
+  <memtune>
+    <hard_limit unit='KiB'>278528</hard_limit>
+    <soft_limit unit='KiB'>262144</soft_limit>
+    <min_guarantee unit='KiB'>135168</min_guarantee>
+  </memtune>
+  <vcpu>1</vcpu>
+  <os>
+    <type>exe</type>
+    <init>/sbin/init</init>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>destroy</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <filesystem type='template' accessmode='passthrough'>
+      <source name='debian'/>
+      <target dir='/'/>
+    </filesystem>
+  </devices>
+</domain>
