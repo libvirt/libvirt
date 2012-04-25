@@ -251,10 +251,10 @@ int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
 int qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
                             const char *device,
                             const char *base,
-                            unsigned long bandwidth,
+                            unsigned long long speed,
                             virDomainBlockJobInfoPtr info,
-                            int mode,
-                            bool async)
+                            qemuMonitorBlockJobCmd mode,
+                            bool modern)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorJSONSetLink(qemuMonitorPtr mon,

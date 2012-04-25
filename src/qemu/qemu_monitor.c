@@ -2768,23 +2768,34 @@ int qemuMonitorScreendump(qemuMonitorPtr mon,
     return ret;
 }
 
+/* bandwidth is in MB/sec */
 int qemuMonitorBlockJob(qemuMonitorPtr mon,
                         const char *device,
                         const char *base,
                         unsigned long bandwidth,
                         virDomainBlockJobInfoPtr info,
-                        int mode,
-                        bool async)
+                        qemuMonitorBlockJobCmd mode,
+                        bool modern)
 {
     int ret = -1;
+    unsigned long long speed;
 
-    VIR_DEBUG("mon=%p, device=%s, base=%s, bandwidth=%lu, info=%p, mode=%o, "
-              "async=%d", mon, device, NULLSTR(base), bandwidth, info, mode,
-              async);
+    VIR_DEBUG("mon=%p, device=%s, base=%s, bandwidth=%luM, info=%p, mode=%o, "
+              "modern=%d", mon, device, NULLSTR(base), bandwidth, info, mode,
+              modern);
+
+    /* Convert bandwidth MiB to bytes */
+    if (bandwidth > ULLONG_MAX / 1024 / 1024) {
+        qemuReportError(VIR_ERR_OVERFLOW,
+                        _("bandwidth must be less than %llu"),
+                        ULLONG_MAX / 1024 / 1024);
+        return -1;
+    }
+    speed = bandwidth * 1024ULL * 1024ULL;
 
     if (mon->json)
-        ret = qemuMonitorJSONBlockJob(mon, device, base, bandwidth, info, mode,
-                                      async);
+        ret = qemuMonitorJSONBlockJob(mon, device, base, speed, info, mode,
+                                      modern);
     else
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("block jobs require JSON monitor"));

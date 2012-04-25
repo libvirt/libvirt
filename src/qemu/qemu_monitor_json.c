@@ -3423,29 +3423,36 @@ static int qemuMonitorJSONGetBlockJobInfo(virJSONValuePtr reply,
 }
 
 
+/* speed is in bytes/sec */
 int
 qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
                         const char *device,
                         const char *base,
-                        unsigned long bandwidth,
+                        unsigned long long speed,
                         virDomainBlockJobInfoPtr info,
-                        int mode,
-                        bool async)
+                        qemuMonitorBlockJobCmd mode,
+                        bool modern)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
     const char *cmd_name = NULL;
 
-    if (base && (mode != BLOCK_JOB_PULL || !async)) {
+    if (base && (mode != BLOCK_JOB_PULL || !modern)) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("only modern block pull supports base: %s"), base);
         return -1;
     }
+    if (speed && mode == BLOCK_JOB_PULL && !modern) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("only modern block pull supports speed: %llu"),
+                        speed);
+        return -1;
+    }
 
-    switch ((BLOCK_JOB_CMD) mode) {
+    switch (mode) {
     case BLOCK_JOB_ABORT:
-        cmd_name = async ? "block-job-cancel" : "block_job_cancel";
+        cmd_name = modern ? "block-job-cancel" : "block_job_cancel";
         cmd = qemuMonitorJSONMakeCommand(cmd_name, "s:device", device, NULL);
         break;
     case BLOCK_JOB_INFO:
@@ -3453,19 +3460,24 @@ qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
         cmd = qemuMonitorJSONMakeCommand(cmd_name, NULL);
         break;
     case BLOCK_JOB_SPEED:
-    case BLOCK_JOB_SPEED_INTERNAL:
-        cmd_name = async ? "block-job-set-speed" : "block_job_set_speed";
-        cmd = qemuMonitorJSONMakeCommand(cmd_name, "s:device",
-                                         device, "U:value",
-                                         bandwidth * 1024ULL * 1024ULL,
-                                         NULL);
+        cmd_name = modern ? "block-job-set-speed" : "block_job_set_speed";
+        cmd = qemuMonitorJSONMakeCommand(cmd_name, "s:device", device,
+                                         modern ? "U:speed" : "U:value",
+                                         speed, NULL);
         break;
     case BLOCK_JOB_PULL:
-        cmd_name = async ? "block-stream" : "block_stream";
-        cmd = qemuMonitorJSONMakeCommand(cmd_name,
-                                         "s:device", device,
-                                         base ? "s:base" : NULL, base,
-                                         NULL);
+        cmd_name = modern ? "block-stream" : "block_stream";
+        if (speed)
+            cmd = qemuMonitorJSONMakeCommand(cmd_name,
+                                             "s:device", device,
+                                             "U:speed", speed,
+                                             base ? "s:base" : NULL, base,
+                                             NULL);
+        else
+            cmd = qemuMonitorJSONMakeCommand(cmd_name,
+                                             "s:device", device,
+                                             base ? "s:base" : NULL, base,
+                                             NULL);
         break;
     }
 
@@ -3477,14 +3489,9 @@ qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
     if (ret == 0 && virJSONValueObjectHasKey(reply, "error")) {
         ret = -1;
         if (qemuMonitorJSONHasError(reply, "DeviceNotActive")) {
-            /* If a job completes before we get a chance to set the
-             * speed, we don't want to fail the original command.  */
-            if (mode == BLOCK_JOB_SPEED_INTERNAL)
-                ret = 0;
-            else
-                qemuReportError(VIR_ERR_OPERATION_INVALID,
-                                _("No active operation on device: %s"),
-                                device);
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            _("No active operation on device: %s"),
+                            device);
         } else if (qemuMonitorJSONHasError(reply, "DeviceInUse")){
             qemuReportError(VIR_ERR_OPERATION_FAILED,
                             _("Device %s in use"), device);
@@ -3497,7 +3504,7 @@ qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
                             _("Command '%s' is not found"), cmd_name);
         } else {
             qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                _("Unexpected error"));
+                            _("Unexpected error"));
         }
     }
 

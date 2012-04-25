@@ -18145,7 +18145,9 @@ error:
  * The maximum bandwidth (in Mbps) that will be used to do the copy can be
  * specified with the bandwidth parameter.  If set to 0, libvirt will choose a
  * suitable default.  Some hypervisors do not support this feature and will
- * return an error if bandwidth is not 0.
+ * return an error if bandwidth is not 0; in this case, it might still be
+ * possible for a later call to virDomainBlockJobSetSpeed() to succeed.
+ * The actual speed can be determined with virDomainGetBlockJobInfo().
  *
  * This is shorthand for virDomainBlockRebase() with a NULL base.
  *
@@ -18263,7 +18265,9 @@ error:
  * The maximum bandwidth (in Mbps) that will be used to do the copy can be
  * specified with the bandwidth parameter.  If set to 0, libvirt will choose a
  * suitable default.  Some hypervisors do not support this feature and will
- * return an error if bandwidth is not 0.
+ * return an error if bandwidth is not 0; in this case, it might still be
+ * possible for a later call to virDomainBlockJobSetSpeed() to succeed.
+ * The actual speed can be determined with virDomainGetBlockJobInfo().
  *
  * When @base is NULL and @flags is 0, this is identical to
  * virDomainBlockPull().

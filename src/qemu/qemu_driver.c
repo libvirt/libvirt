@@ -11667,6 +11667,11 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
                         _("partial block pull not supported with this "
                           "QEMU binary"));
         goto cleanup;
+    } else if (mode == BLOCK_JOB_PULL && bandwidth) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("setting bandwidth at start of block pull not "
+                          "supported with this QEMU binary"));
+        goto cleanup;
     }
 
     device = qemuDiskPathToAlias(vm, path, &idx);
@@ -11689,9 +11694,6 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
      * relying on qemu to do this.  */
     ret = qemuMonitorBlockJob(priv->mon, device, base, bandwidth, info, mode,
                               async);
-    if (ret == 0 && mode == BLOCK_JOB_PULL && bandwidth)
-        ret = qemuMonitorBlockJob(priv->mon, device, NULL, bandwidth, NULL,
-                                  BLOCK_JOB_SPEED_INTERNAL, async);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
     if (ret < 0)
         goto endjob;
