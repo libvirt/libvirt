@@ -152,6 +152,51 @@ virSocketAddrParseIPv6(virSocketAddrPtr addr, const char *val) {
 }
 
 /*
+ * virSocketAddrSetIPv4Addr:
+ * @addr: the location to store the result
+ * @val: the 32bit integer in host byte order representing the IPv4 address
+ *
+ * Set the IPv4 address given an integer in host order. This function does not
+ * touch any previously set port.
+ */
+void
+virSocketAddrSetIPv4Addr(virSocketAddrPtr addr, uint32_t val)
+{
+    addr->data.stor.ss_family = AF_INET;
+    addr->data.inet4.sin_addr.s_addr = htonl(val);
+    addr->len = sizeof(struct sockaddr_in);
+}
+
+/*
+ * virSocketAddrEqual:
+ * @s1: the location of the one IP address
+ * @s2: the location of the other IP address
+ *
+ * Compare two IP addresses for equality. Two addresses are equal
+ * if their IP addresses and ports are equal.
+ */
+bool
+virSocketAddrEqual(const virSocketAddrPtr s1, const virSocketAddrPtr s2)
+{
+    if (s1->data.stor.ss_family != s2->data.stor.ss_family)
+        return false;
+
+    switch (s1->data.stor.ss_family) {
+    case AF_INET:
+        return (memcmp(&s1->data.inet4.sin_addr.s_addr,
+                       &s2->data.inet4.sin_addr.s_addr,
+                       sizeof(s1->data.inet4.sin_addr.s_addr)) == 0 &&
+                s1->data.inet4.sin_port == s2->data.inet4.sin_port);
+    case AF_INET6:
+        return (memcmp(&s1->data.inet6.sin6_addr.s6_addr,
+                       &s2->data.inet6.sin6_addr.s6_addr,
+                       sizeof(s1->data.inet6.sin6_addr.s6_addr)) == 0 &&
+                s1->data.inet6.sin6_port == s2->data.inet6.sin6_port);
+    }
+    return false;
+}
+
+/*
  * virSocketAddrFormat:
  * @addr: an initialized virSocketAddrPtr
  *

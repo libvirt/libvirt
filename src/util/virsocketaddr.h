@@ -66,6 +66,8 @@ int virSocketAddrParseIPv4(virSocketAddrPtr addr,
 int virSocketAddrParseIPv6(virSocketAddrPtr addr,
                            const char *val);
 
+void virSocketAddrSetIPv4Addr(const virSocketAddrPtr s, uint32_t addr);
+
 char * virSocketAddrFormat(virSocketAddrPtr addr);
 char * virSocketAddrFormatFull(virSocketAddrPtr addr,
                                bool withService,
@@ -100,5 +102,7 @@ int virSocketAddrGetNumNetmaskBits(const virSocketAddrPtr netmask);
 int virSocketAddrPrefixToNetmask(unsigned int prefix,
                                  virSocketAddrPtr netmask,
                                  int family);
+bool virSocketAddrEqual(const virSocketAddrPtr s1,
+                        const virSocketAddrPtr s2);
 
 #endif /* __VIR_SOCKETADDR_H__ */

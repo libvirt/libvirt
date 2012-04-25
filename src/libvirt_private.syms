@@ -1452,6 +1452,7 @@ virRandomInitialize;
 virSocketAddrBroadcast;
 virSocketAddrBroadcastByPrefix;
 virSocketAddrCheckNetmask;
+virSocketAddrEqual;
 virSocketAddrFormat;
 virSocketAddrFormatFull;
 virSocketAddrGetPort;
@@ -1463,6 +1464,7 @@ virSocketAddrParse;
 virSocketAddrParseIPv4;
 virSocketAddrParseIPv6;
 virSocketAddrPrefixToNetmask;
+virSocketAddrSetIPv4Addr;
 virSocketAddrSetPort;
 
 
