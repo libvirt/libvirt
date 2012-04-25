@@ -82,7 +82,7 @@ int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname,
                                            virNetDevVPortProfilePtr virtPortProfile,
                                            enum virNetDevVPortProfileOp vmOp)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
                                              const unsigned char *macaddress ,
@@ -91,5 +91,5 @@ int virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
                                              virNetDevVPortProfilePtr virtPortProfile,
                                              enum virNetDevVPortProfileOp vmOp)
 ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
+ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
 #endif /* __UTIL_MACVTAP_H__ */
