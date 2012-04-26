@@ -154,6 +154,9 @@ virNWFilterVarValueGetNthValue(virNWFilterVarValuePtr val, unsigned int idx)
 {
     const char *res = NULL;
 
+    if (!val)
+        return NULL;
+
     switch (val->valType) {
     case NWFILTER_VALUE_TYPE_SIMPLE:
         if (idx == 0)
@@ -467,7 +470,7 @@ virNWFilterVarCombIterCreate(virNWFilterHashTablePtr hash,
             res->nIter++;
             break;
         case VIR_NWFILTER_VAR_ACCESS_LAST:
-            break;
+            goto err_exit;
         }
 
         if (virNWFilterVarCombIterAddVariable(&res->iter[iterIndex],

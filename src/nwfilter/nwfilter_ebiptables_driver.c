@@ -2888,10 +2888,11 @@ ebtablesCreateTmpSubChain(ebiptablesRuleInstPtr *inst,
         protostr = strdup("");
         break;
     case L2_PROTO_STP_IDX:
-        virAsprintf(&protostr, "-d " NWFILTER_MAC_BGA " ");
+        ignore_value(virAsprintf(&protostr, "-d " NWFILTER_MAC_BGA " "));
         break;
     default:
-        virAsprintf(&protostr, "-p 0x%04x ", l3_protocols[protoidx].attr);
+        ignore_value(virAsprintf(&protostr, "-p 0x%04x ",
+                     l3_protocols[protoidx].attr));
         break;
     }
 
@@ -3574,6 +3575,9 @@ ebiptablesApplyNewRules(const char *ifname,
     ebiptablesRuleInstPtr ebtChains = NULL;
     int nEbtChains = 0;
     char *errmsg = NULL;
+
+    if (inst == NULL)
+        nruleInstances = 0;
 
     if (!chains_in_set || !chains_out_set) {
         virReportOOMError();
