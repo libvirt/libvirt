@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-04-03 14:57+0800\n"
+"POT-Creation-Date: 2012-04-26 14:44-0400\n"
 "PO-Revision-Date: 2012-04-02 01:10+0000\n"
 "Last-Translator: Tomoyuki KATO <tomo@dream.daynight.jp>\n"
 "Language-Team: Japanese (http://www.transifex.net/projects/p/libvirt/"
@@ -71,19 +71,19 @@ msgstr ""
 msgid "remoteReadConfigFile: %s: %s: unsupported auth %s"
 msgstr "remoteReadConfigFile: %s: %s: サポートされない認証 %s"
 
-#: daemon/libvirtd.c:1122
+#: daemon/libvirtd.c:1123
 msgid "additional privileges are required"
 msgstr "追加の権限が必要です"
 
-#: daemon/libvirtd.c:1128
+#: daemon/libvirtd.c:1129
 msgid "failed to set reduced privileges"
 msgstr "低い権限の設定に失敗しました"
 
-#: daemon/libvirtd.c:1179
+#: daemon/libvirtd.c:1180
 msgid "Driver state initialization failed"
 msgstr "ドライバーの状態の初期化に失敗しました"
 
-#: daemon/libvirtd.c:1207
+#: daemon/libvirtd.c:1208
 #, c-format
 msgid ""
 "\n"
@@ -116,7 +116,7 @@ msgstr ""
 "\n"
 "libvirt 管理デーモン:\n"
 
-#: daemon/libvirtd.c:1224
+#: daemon/libvirtd.c:1225
 #, c-format
 msgid ""
 "\n"
@@ -157,7 +157,7 @@ msgstr ""
 "      %s/run/libvirtd.pid\n"
 "\n"
 
-#: daemon/libvirtd.c:1251
+#: daemon/libvirtd.c:1252
 msgid ""
 "\n"
 "  Default paths:\n"
@@ -195,71 +195,71 @@ msgstr ""
 "      $HOME/.libvirt/libvirtd.pid\n"
 "\n"
 
-#: daemon/libvirtd.c:1312 src/lxc/lxc_controller.c:1667
+#: daemon/libvirtd.c:1313 src/lxc/lxc_controller.c:1667
 #: src/security/virt-aa-helper.c:1169 src/storage/parthelper.c:75
 #: src/util/iohelper.c:228 src/util/iohelper.c:235
 #, c-format
 msgid "%s: initialization failed\n"
 msgstr "%s: 初期化に失敗しました\n"
 
-#: daemon/libvirtd.c:1349
+#: daemon/libvirtd.c:1350
 msgid "Invalid value for timeout"
 msgstr "不正なタイムアウト値です"
 
-#: daemon/libvirtd.c:1357 daemon/libvirtd.c:1365
+#: daemon/libvirtd.c:1358 daemon/libvirtd.c:1366
 msgid "Can't allocate memory"
 msgstr "メモリーを割り当てられません"
 
-#: daemon/libvirtd.c:1379
+#: daemon/libvirtd.c:1380
 #, c-format
 msgid "%s: internal error: unknown flag: %c"
 msgstr "%s: 内部エラー: 未知のフラグ: %c"
 
-#: daemon/libvirtd.c:1386
+#: daemon/libvirtd.c:1387
 msgid "Can't create initial configuration"
 msgstr "初期設定を作成できません"
 
-#: daemon/libvirtd.c:1395
+#: daemon/libvirtd.c:1396
 msgid "Can't determine config path"
 msgstr "設定のパスを決定できません"
 
-#: daemon/libvirtd.c:1403
+#: daemon/libvirtd.c:1404
 #, c-format
 msgid "Can't load config file '%s'"
 msgstr "設定ファイル '%s' を読み込めません"
 
-#: daemon/libvirtd.c:1409
+#: daemon/libvirtd.c:1410
 #, c-format
 msgid "invalid host UUID: %s"
 msgstr "無効なホスト UUID: %s"
 
-#: daemon/libvirtd.c:1414
+#: daemon/libvirtd.c:1415
 msgid "Can't initialize logging"
 msgstr "ロギングを初期化できません"
 
-#: daemon/libvirtd.c:1421
+#: daemon/libvirtd.c:1422
 msgid "Can't determine pid file path."
 msgstr "PID ファイルのパスを決定できません"
 
-#: daemon/libvirtd.c:1429
+#: daemon/libvirtd.c:1430
 msgid "Can't determine socket paths"
 msgstr "ソケットのパスを決定できません"
 
-#: daemon/libvirtd.c:1437
+#: daemon/libvirtd.c:1438
 #, c-format
 msgid "cannot change to root directory: %s"
 msgstr "ルートディレクトリーに変更できません: %s"
 
-#: daemon/libvirtd.c:1443
+#: daemon/libvirtd.c:1444
 #, c-format
 msgid "Failed to fork as daemon: %s"
 msgstr "デーモンとして fork できませんでした: %s"
 
-#: daemon/libvirtd.c:1456
+#: daemon/libvirtd.c:1457
 msgid "Can't determine user directory"
 msgstr "ユーザーのディレクトリーを決定できません"
 
-#: daemon/libvirtd.c:1470
+#: daemon/libvirtd.c:1471
 #, c-format
 msgid "unable to create rundir %s: %s"
 msgstr "実行ディレクトリー %s を作成できません: %s"
@@ -684,6 +684,87 @@ msgstr "正しくエンコードされていないパラメーター文字列"
 msgid "Unknown error"
 msgstr "未知のエラー"
 
+#: gnulib/lib/regcomp.c:130
+msgid "Success"
+msgstr ""
+
+#: gnulib/lib/regcomp.c:133
+msgid "No match"
+msgstr ""
+
+#: gnulib/lib/regcomp.c:136
+#, fuzzy
+msgid "Invalid regular expression"
+msgstr "無効な呼び出し、セッションがありません"
+
+#: gnulib/lib/regcomp.c:139
+#, fuzzy
+msgid "Invalid collation character"
+msgstr "無効な duration 引数"
+
+#: gnulib/lib/regcomp.c:142
+#, fuzzy
+msgid "Invalid character class name"
+msgstr "無効なパラメーターカウントです"
+
+#: gnulib/lib/regcomp.c:145
+msgid "Trailing backslash"
+msgstr ""
+
+#: gnulib/lib/regcomp.c:148
+#, fuzzy
+msgid "Invalid back reference"
+msgstr "無効なパラメーター"
+
+#: gnulib/lib/regcomp.c:151
+msgid "Unmatched [ or [^"
+msgstr ""
+
+#: gnulib/lib/regcomp.c:154
+msgid "Unmatched ( or \\("
+msgstr ""
+
+#: gnulib/lib/regcomp.c:157
+msgid "Unmatched \\{"
+msgstr ""
+
+#: gnulib/lib/regcomp.c:160
+#, fuzzy
+msgid "Invalid content of \\{\\}"
+msgstr "無効なコンテキスト"
+
+#: gnulib/lib/regcomp.c:163
+#, fuzzy
+msgid "Invalid range end"
+msgstr "不正な引数"
+
+#: gnulib/lib/regcomp.c:166
+#, fuzzy
+msgid "Memory exhausted"
+msgstr "処理済みメモリー:"
+
+#: gnulib/lib/regcomp.c:169
+#, fuzzy
+msgid "Invalid preceding regular expression"
+msgstr "不正な形式の TLS ホワイトリスト正規表現 '%s'"
+
+#: gnulib/lib/regcomp.c:172
+msgid "Premature end of regular expression"
+msgstr ""
+
+#: gnulib/lib/regcomp.c:175
+msgid "Regular expression too big"
+msgstr ""
+
+#: gnulib/lib/regcomp.c:178
+msgid "Unmatched ) or \\)"
+msgstr ""
+
+#: gnulib/lib/regcomp.c:703
+#, fuzzy
+msgid "No previous regular expression"
+msgstr "不正な形式の TLS ホワイトリスト正規表現 '%s'"
+
 #: src/conf/cpu_conf.c:204
 msgid "XML does not contain expected 'cpu' element"
 msgstr "XML が期待される 'cpu' 要素を含んでいません"
@@ -864,850 +945,850 @@ msgstr "ウェイト %s を構文解析できません"
 msgid "missing per-device path"
 msgstr "デバイスごとのパスがありません"
 
-#: src/conf/domain_conf.c:1669 src/conf/interface_conf.c:1288
+#: src/conf/domain_conf.c:1671 src/conf/interface_conf.c:1288
 #: src/conf/network_conf.c:241 src/conf/node_device_conf.c:189
-#: src/conf/nwfilter_conf.c:2905 src/conf/storage_conf.c:1362
+#: src/conf/nwfilter_conf.c:2905 src/conf/storage_conf.c:1363
 #: src/libxl/libxl_driver.c:858 src/openvz/openvz_conf.c:474
 #: src/qemu/qemu_driver.c:464 src/remote/remote_driver.c:781
-#: src/rpc/virnetclientstream.c:151 src/rpc/virnetserver.c:377
+#: src/rpc/virnetclientstream.c:151 src/rpc/virnetserver.c:383
 #: src/test/test_driver.c:527 src/test/test_driver.c:767
 #: src/xen/xen_driver.c:320
 msgid "cannot initialize mutex"
 msgstr "mutex を初期化できません"
 
-#: src/conf/domain_conf.c:1826 src/lxc/lxc_driver.c:3781
+#: src/conf/domain_conf.c:1828 src/lxc/lxc_driver.c:3781
 #: src/qemu/qemu_driver.c:1454 src/qemu/qemu_driver.c:1473
 #: src/qemu/qemu_driver.c:1525 src/qemu/qemu_driver.c:1605
 #: src/qemu/qemu_driver.c:1699 src/qemu/qemu_driver.c:1754
 #: src/qemu/qemu_driver.c:1842 src/qemu/qemu_driver.c:2059
 #: src/qemu/qemu_driver.c:2070 src/qemu/qemu_driver.c:2141
-#: src/qemu/qemu_driver.c:2302 src/qemu/qemu_driver.c:2800
-#: src/qemu/qemu_driver.c:2859 src/qemu/qemu_driver.c:3074
-#: src/qemu/qemu_driver.c:3185 src/qemu/qemu_driver.c:3276
-#: src/qemu/qemu_driver.c:4472 src/qemu/qemu_driver.c:7479
-#: src/qemu/qemu_driver.c:7544 src/qemu/qemu_driver.c:7567
-#: src/qemu/qemu_driver.c:7629 src/qemu/qemu_driver.c:7657
-#: src/qemu/qemu_driver.c:7798 src/qemu/qemu_driver.c:8159
-#: src/qemu/qemu_driver.c:8294 src/qemu/qemu_driver.c:8845
-#: src/qemu/qemu_driver.c:9352 src/qemu/qemu_driver.c:9387
-#: src/qemu/qemu_driver.c:9449 src/qemu/qemu_driver.c:9507
-#: src/qemu/qemu_driver.c:9679 src/qemu/qemu_driver.c:10053
-#: src/qemu/qemu_driver.c:11355 src/qemu/qemu_driver.c:11364
-#: src/qemu/qemu_driver.c:11507 src/qemu/qemu_driver.c:11632
-#: src/qemu/qemu_driver.c:11732 src/qemu/qemu_driver.c:12112
-#: src/qemu/qemu_driver.c:12484 src/qemu/qemu_driver.c:12581
-#: src/qemu/qemu_driver.c:12627 src/qemu/qemu_migration.c:2503
+#: src/qemu/qemu_driver.c:2302 src/qemu/qemu_driver.c:2806
+#: src/qemu/qemu_driver.c:2865 src/qemu/qemu_driver.c:3080
+#: src/qemu/qemu_driver.c:3191 src/qemu/qemu_driver.c:3282
+#: src/qemu/qemu_driver.c:4478 src/qemu/qemu_driver.c:7485
+#: src/qemu/qemu_driver.c:7550 src/qemu/qemu_driver.c:7573
+#: src/qemu/qemu_driver.c:7635 src/qemu/qemu_driver.c:7663
+#: src/qemu/qemu_driver.c:7804 src/qemu/qemu_driver.c:8165
+#: src/qemu/qemu_driver.c:8300 src/qemu/qemu_driver.c:8851
+#: src/qemu/qemu_driver.c:9358 src/qemu/qemu_driver.c:9393
+#: src/qemu/qemu_driver.c:9455 src/qemu/qemu_driver.c:9513
+#: src/qemu/qemu_driver.c:9682 src/qemu/qemu_driver.c:10056
+#: src/qemu/qemu_driver.c:11359 src/qemu/qemu_driver.c:11368
+#: src/qemu/qemu_driver.c:11512 src/qemu/qemu_driver.c:11636
+#: src/qemu/qemu_driver.c:11736 src/qemu/qemu_driver.c:12116
+#: src/qemu/qemu_driver.c:12488 src/qemu/qemu_driver.c:12585
+#: src/qemu/qemu_driver.c:12631 src/qemu/qemu_migration.c:2608
 #: src/uml/uml_driver.c:2399 src/xen/xen_driver.c:2131
 #: src/xen/xen_hypervisor.c:1177 src/xen/xen_hypervisor.c:1258
 #: src/xen/xen_hypervisor.c:1377 src/xen/xm_internal.c:715
 msgid "domain is not running"
 msgstr "ドメインは稼働していません"
 
-#: src/conf/domain_conf.c:1833 src/libxl/libxl_driver.c:1660
+#: src/conf/domain_conf.c:1835 src/libxl/libxl_driver.c:1660
 #: src/libxl/libxl_driver.c:2252
 msgid "cannot change persistent config of a transient domain"
 msgstr "一時ドメインの永続的な設定を変更できません"
 
-#: src/conf/domain_conf.c:1839
+#: src/conf/domain_conf.c:1841
 msgid "Get persistent config failed"
 msgstr "永続的な設定の取得に失敗しました"
 
-#: src/conf/domain_conf.c:2086
+#: src/conf/domain_conf.c:2088
 #, c-format
 msgid "unexpected rom bar value %d"
 msgstr "予期しない rom bar 値 %d"
 
-#: src/conf/domain_conf.c:2151
+#: src/conf/domain_conf.c:2153
 #, c-format
 msgid "unknown address type '%d'"
 msgstr "未知のアドレスタイプ '%d'"
 
-#: src/conf/domain_conf.c:2178
+#: src/conf/domain_conf.c:2180
 msgid "Cannot parse <address> 'domain' attribute"
 msgstr "<address> の 'domain' 属性を構文解析できません"
 
-#: src/conf/domain_conf.c:2185 src/conf/domain_conf.c:2253
-#: src/conf/domain_conf.c:2307 src/conf/domain_conf.c:2390
+#: src/conf/domain_conf.c:2187 src/conf/domain_conf.c:2255
+#: src/conf/domain_conf.c:2309 src/conf/domain_conf.c:2392
 msgid "Cannot parse <address> 'bus' attribute"
 msgstr "<address> の 'bus' 属性を構文解析できません"
 
-#: src/conf/domain_conf.c:2192 src/conf/domain_conf.c:2349
+#: src/conf/domain_conf.c:2194 src/conf/domain_conf.c:2351
 msgid "Cannot parse <address> 'slot' attribute"
 msgstr "<address> の 'slot' 属性を構文解析できません"
 
-#: src/conf/domain_conf.c:2199
+#: src/conf/domain_conf.c:2201
 msgid "Cannot parse <address> 'function' attribute"
 msgstr "Cannot parse <address> の 'function' 属性を構文解析できません"
 
-#: src/conf/domain_conf.c:2206
+#: src/conf/domain_conf.c:2208
 #, c-format
 msgid "Unknown value '%s' for <address> 'multifunction' attribute"
 msgstr "<address> の 'multifunction' 属性に未知の値 '%s' があります"
 
-#: src/conf/domain_conf.c:2213
+#: src/conf/domain_conf.c:2215
 msgid "Insufficient specification for PCI address"
 msgstr "PCI アドレスに対する指定が不十分です"
 
-#: src/conf/domain_conf.c:2246 src/conf/domain_conf.c:2300
-#: src/conf/domain_conf.c:2342
+#: src/conf/domain_conf.c:2248 src/conf/domain_conf.c:2302
+#: src/conf/domain_conf.c:2344
 msgid "Cannot parse <address> 'controller' attribute"
 msgstr "<address> の 'controller' 属性を構文解析できません"
 
-#: src/conf/domain_conf.c:2260
+#: src/conf/domain_conf.c:2262
 msgid "Cannot parse <address> 'target' attribute"
 msgstr "<address> の 'target' 属性を構文解析できません"
 
-#: src/conf/domain_conf.c:2267
+#: src/conf/domain_conf.c:2269
 msgid "Cannot parse <address> 'unit' attribute"
 msgstr "<address> の 'unit' 属性を構文解析できません"
 
-#: src/conf/domain_conf.c:2314 src/conf/domain_conf.c:2380
+#: src/conf/domain_conf.c:2316 src/conf/domain_conf.c:2382
 msgid "Cannot parse <address> 'port' attribute"
 msgstr "<address> の 'port' 属性を構文解析できません"
 
-#: src/conf/domain_conf.c:2415
+#: src/conf/domain_conf.c:2417
 msgid "Cannot parse <address> 'reg' attribute"
 msgstr "<address> の 'reg' 属性を構文解析できません"
 
-#: src/conf/domain_conf.c:2443
+#: src/conf/domain_conf.c:2445
 msgid "Cannot parse <master> 'startport' attribute"
 msgstr "<master> の 'startport' 属性を構文解析できません"
 
-#: src/conf/domain_conf.c:2466
+#: src/conf/domain_conf.c:2468
 msgid "missing boot order attribute"
 msgstr "boot の order 属性がありません"
 
-#: src/conf/domain_conf.c:2471
+#: src/conf/domain_conf.c:2473
 #, c-format
 msgid "incorrect boot order '%s', expecting positive integer"
 msgstr "無効なブート順序 '%s' です、正の整数値が期待されます"
 
-#: src/conf/domain_conf.c:2480
+#: src/conf/domain_conf.c:2482
 msgid "boot orders have to be contiguous and starting from 1"
 msgstr "ブート順序は 1 から始まり連続していなければいけません"
 
-#: src/conf/domain_conf.c:2484
+#: src/conf/domain_conf.c:2486
 #, c-format
 msgid "boot order %d used for more than one device"
 msgstr "ブート順序 %d は複数のデバイスに使用されています"
 
-#: src/conf/domain_conf.c:2563
+#: src/conf/domain_conf.c:2565
 #, c-format
 msgid "unknown rom bar value '%s'"
 msgstr "未知の rom bar 値 '%s' です"
 
-#: src/conf/domain_conf.c:2579
+#: src/conf/domain_conf.c:2581
 #, c-format
 msgid "unknown address type '%s'"
 msgstr "未知のアドレスタイプ '%s'"
 
-#: src/conf/domain_conf.c:2584
+#: src/conf/domain_conf.c:2586
 msgid "No type specified for device address"
 msgstr "デバイスアドレスの種類が指定されていません"
 
-#: src/conf/domain_conf.c:2623
+#: src/conf/domain_conf.c:2625
 msgid "Unknown device address type"
 msgstr "未知のデバイスアドレスの種類です"
 
-#: src/conf/domain_conf.c:2679
+#: src/conf/domain_conf.c:2681
 #, c-format
 msgid "cannot parse vendor id %s"
 msgstr "vendor id %s を構文解析できません"
 
-#: src/conf/domain_conf.c:2686
+#: src/conf/domain_conf.c:2688
 msgid "usb vendor needs id"
 msgstr "usb ベンダーに id が必要です"
 
-#: src/conf/domain_conf.c:2697
+#: src/conf/domain_conf.c:2699
 #, c-format
 msgid "cannot parse product %s"
 msgstr "product %s を構文解析できません"
 
-#: src/conf/domain_conf.c:2705
+#: src/conf/domain_conf.c:2707
 msgid "usb product needs id"
 msgstr "usb 製品は id が必要です"
 
-#: src/conf/domain_conf.c:2716
+#: src/conf/domain_conf.c:2718
 #, c-format
 msgid "cannot parse bus %s"
 msgstr "bus %s を構文解析できません"
 
-#: src/conf/domain_conf.c:2723
+#: src/conf/domain_conf.c:2725
 msgid "usb address needs bus id"
 msgstr "usb アドレスは バス id が必要です"
 
-#: src/conf/domain_conf.c:2732
+#: src/conf/domain_conf.c:2734
 #, c-format
 msgid "cannot parse device %s"
 msgstr "device %s を構文解析できません"
 
-#: src/conf/domain_conf.c:2740
+#: src/conf/domain_conf.c:2742
 msgid "usb address needs device id"
 msgstr "usb アドレスは デバイス id が必要です"
 
-#: src/conf/domain_conf.c:2745
+#: src/conf/domain_conf.c:2747
 #, c-format
 msgid "unknown usb source type '%s'"
 msgstr "不明な usb ソースタイプ %s"
 
-#: src/conf/domain_conf.c:2755
+#: src/conf/domain_conf.c:2757
 msgid "vendor cannot be 0."
 msgstr "ベンダーは 0 ではいけません。"
 
-#: src/conf/domain_conf.c:2761
+#: src/conf/domain_conf.c:2763
 msgid "missing vendor"
 msgstr "ベンダーがありません"
 
-#: src/conf/domain_conf.c:2766
+#: src/conf/domain_conf.c:2768
 msgid "missing product"
 msgstr "製品名がありません"
 
-#: src/conf/domain_conf.c:2800
+#: src/conf/domain_conf.c:2802
 #, c-format
 msgid "unsupported element '%s' of 'origstates'"
 msgstr "'origstates' の要素 '%s' は未サポートです"
 
-#: src/conf/domain_conf.c:2836 src/conf/domain_conf.c:3824
-#: src/conf/domain_conf.c:4472
+#: src/conf/domain_conf.c:2838 src/conf/domain_conf.c:3826
+#: src/conf/domain_conf.c:4475
 #, c-format
 msgid "Unable to parse devaddr parameter '%s'"
 msgstr "devaddr パラメーター '%s' の構文解析ができません"
 
-#: src/conf/domain_conf.c:2849
+#: src/conf/domain_conf.c:2851
 #, c-format
 msgid "unknown pci source type '%s'"
 msgstr "不明な PCI ソースタイプ '%s'"
 
-#: src/conf/domain_conf.c:2881
+#: src/conf/domain_conf.c:2883
 #, c-format
 msgid "unknown hostdev mode '%s'"
 msgstr "不明な hostdev モード '%s'"
 
-#: src/conf/domain_conf.c:2910
+#: src/conf/domain_conf.c:2912
 #, c-format
 msgid "unknown host device source address type '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:2916
+#: src/conf/domain_conf.c:2918
 msgid "missing source address type"
 msgstr "ソースアドレス形式がありません"
 
-#: src/conf/domain_conf.c:2922
+#: src/conf/domain_conf.c:2924
 msgid "Missing <source> element in hostdev device"
 msgstr "hostdev デバイス に <source> 要素がありません"
 
-#: src/conf/domain_conf.c:2936
+#: src/conf/domain_conf.c:2938
 #, c-format
 msgid "address type='%s' not supported in hostdev interfaces"
 msgstr ""
 "hostdev インターフェースにおいてアドレス形式 ='%s' はサポートされません"
 
-#: src/conf/domain_conf.c:3052
+#: src/conf/domain_conf.c:3054
 msgid "invalid security type"
 msgstr "無効なセキュリティタイプ"
 
-#: src/conf/domain_conf.c:3066 src/conf/domain_conf.c:3188
+#: src/conf/domain_conf.c:3068 src/conf/domain_conf.c:3190
 #, c-format
 msgid "invalid security relabel value %s"
 msgstr "無効なセキュリティ relabel 値 %s です"
 
-#: src/conf/domain_conf.c:3074
+#: src/conf/domain_conf.c:3076
 msgid "dynamic label type must use resource relabeling"
 msgstr "動的ラベル形式はリソース再ラベルを使用しなければいけません"
 
-#: src/conf/domain_conf.c:3080
+#: src/conf/domain_conf.c:3082
 msgid "resource relabeling is not compatible with 'none' label type"
 msgstr "リソースの再ラベルは 'none' ラベル形式と互換性がありません"
 
-#: src/conf/domain_conf.c:3101
+#: src/conf/domain_conf.c:3103
 msgid "security label is missing"
 msgstr "セキュリティラベルがありません"
 
-#: src/conf/domain_conf.c:3116
+#: src/conf/domain_conf.c:3118
 msgid "security imagelabel is missing"
 msgstr "セキュリティイメージラベルがありません"
 
-#: src/conf/domain_conf.c:3140
+#: src/conf/domain_conf.c:3142
 msgid "missing security model"
 msgstr "セキュリティモデルがありません"
 
-#: src/conf/domain_conf.c:3169
+#: src/conf/domain_conf.c:3171
 msgid "label overrides require relabeling to be enabled at the domain level"
 msgstr "ラベルの上書きはドメインレベルにおいて有効にされた再ラベルが必要です"
 
-#: src/conf/domain_conf.c:3204
+#: src/conf/domain_conf.c:3206
 msgid "Cannot specify a label if relabelling is turned off"
 msgstr "再ラベルが無効にされていると、ラベルを指定できません"
 
-#: src/conf/domain_conf.c:3251
+#: src/conf/domain_conf.c:3253
 msgid "Missing 'key' element for lease"
 msgstr "リースの 'key' 要素がありません"
 
-#: src/conf/domain_conf.c:3256
+#: src/conf/domain_conf.c:3258
 msgid "Missing 'target' element for lease"
 msgstr "リースの 'target'要素がありません"
 
-#: src/conf/domain_conf.c:3263
+#: src/conf/domain_conf.c:3265
 #, c-format
 msgid "Malformed lease target offset %s"
 msgstr "不正な形式のターゲットオフセット %s"
 
-#: src/conf/domain_conf.c:3342
+#: src/conf/domain_conf.c:3344
 #, c-format
 msgid "unknown disk type '%s'"
 msgstr "不明なディスク形式 '%s' です"
 
-#: src/conf/domain_conf.c:3376
+#: src/conf/domain_conf.c:3378
 msgid "missing protocol type"
 msgstr "プロトコル形式がありません"
 
-#: src/conf/domain_conf.c:3382
+#: src/conf/domain_conf.c:3384
 #, c-format
 msgid "unknown protocol type '%s'"
 msgstr "未知のプロトコル形式 '%s'"
 
-#: src/conf/domain_conf.c:3389
+#: src/conf/domain_conf.c:3391
 msgid "missing name for disk source"
 msgstr "ディスクソースの名前がありません"
 
-#: src/conf/domain_conf.c:3407
+#: src/conf/domain_conf.c:3409
 msgid "missing name for host"
 msgstr "ホストの名前がありません"
 
-#: src/conf/domain_conf.c:3413
+#: src/conf/domain_conf.c:3415
 msgid "missing port for host"
 msgstr "ホストのポートがありません"
 
-#: src/conf/domain_conf.c:3422 src/conf/domain_conf.c:10825
+#: src/conf/domain_conf.c:3424 src/conf/domain_conf.c:10835
 #, c-format
 msgid "unexpected disk type %s"
 msgstr "予期しないディスク形式 %s です"
 
-#: src/conf/domain_conf.c:3460
+#: src/conf/domain_conf.c:3462
 msgid "missing username for auth"
 msgstr "認証用のユーザー名がありません"
 
-#: src/conf/domain_conf.c:3472
+#: src/conf/domain_conf.c:3474
 msgid "missing type for secret"
 msgstr "シークレットの形式がありません"
 
-#: src/conf/domain_conf.c:3478
+#: src/conf/domain_conf.c:3480
 #, c-format
 msgid "invalid secret type %s"
 msgstr "無効なシークレットの形式 %s"
 
-#: src/conf/domain_conf.c:3488
+#: src/conf/domain_conf.c:3490
 msgid "only one of uuid and usage can be specified"
 msgstr "UUID および使用法を 1 つだけ指定できます"
 
-#: src/conf/domain_conf.c:3496
+#: src/conf/domain_conf.c:3498
 #, c-format
 msgid "malformed uuid %s"
 msgstr "不正な形式の UUID %s"
 
-#: src/conf/domain_conf.c:3550
+#: src/conf/domain_conf.c:3552
 msgid "total and read/write bytes_sec cannot be set at the same time"
 msgstr "bytes_sec の合計と読み書きは同時に設定できません"
 
-#: src/conf/domain_conf.c:3560
+#: src/conf/domain_conf.c:3562
 msgid "total and read/write iops_sec cannot be set at the same time"
 msgstr "iops_sec の合計と読み書きは同時に設定できません"
 
-#: src/conf/domain_conf.c:3594
+#: src/conf/domain_conf.c:3596
 #, c-format
 msgid "unknown disk device '%s'"
 msgstr "不明なディスクデバイス: '%s'"
 
-#: src/conf/domain_conf.c:3631
+#: src/conf/domain_conf.c:3633
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr "無効なフロッピーデバイス名: %s"
 
-#: src/conf/domain_conf.c:3647
+#: src/conf/domain_conf.c:3649
 #, c-format
 msgid "Invalid harddisk device name: %s"
 msgstr "無効なハードディスクデバイス名: %s"
 
-#: src/conf/domain_conf.c:3655 src/conf/domain_conf.c:13376
+#: src/conf/domain_conf.c:3657 src/conf/domain_conf.c:13386
 #, c-format
 msgid "unknown disk snapshot setting '%s'"
 msgstr "未知のディスクスナップショット設定 '%s' です"
 
-#: src/conf/domain_conf.c:3672
+#: src/conf/domain_conf.c:3674
 #, c-format
 msgid "unknown disk rawio setting '%s'"
 msgstr "未知のディスク rawio 設定 '%s'"
 
-#: src/conf/domain_conf.c:3678
+#: src/conf/domain_conf.c:3680
 msgid "rawio can be used only with device='lun'"
 msgstr "rawio は device='lun' を用いてのみ使用できます"
 
-#: src/conf/domain_conf.c:3686
+#: src/conf/domain_conf.c:3688
 #, c-format
 msgid "unknown disk bus type '%s'"
 msgstr "不明なディスクバスタイプ %s"
 
-#: src/conf/domain_conf.c:3711
+#: src/conf/domain_conf.c:3713
 #, c-format
 msgid "unknown disk tray status '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:3718
+#: src/conf/domain_conf.c:3720
 msgid "tray is only valid for cdrom and floppy"
 msgstr "tray は cdrom と floppy に対してのみ有効です"
 
-#: src/conf/domain_conf.c:3730
+#: src/conf/domain_conf.c:3732
 #, c-format
 msgid "Invalid bus type '%s' for floppy disk"
 msgstr "無効なフロッピーディスクのバス形式 '%s'"
 
-#: src/conf/domain_conf.c:3736
+#: src/conf/domain_conf.c:3738
 #, c-format
 msgid "Invalid bus type '%s' for disk"
 msgstr "無効なディスクのバス形式 '%s'"
 
-#: src/conf/domain_conf.c:3743
+#: src/conf/domain_conf.c:3745
 #, c-format
 msgid "unknown disk cache mode '%s'"
 msgstr "不明なディスクキャッシュモード %s"
 
-#: src/conf/domain_conf.c:3750
+#: src/conf/domain_conf.c:3752
 #, c-format
 msgid "unknown disk error policy '%s'"
 msgstr "未知のディスクエラーポリシー '%s' です"
 
-#: src/conf/domain_conf.c:3759
+#: src/conf/domain_conf.c:3761
 #, c-format
 msgid "unknown disk read error policy '%s'"
 msgstr "未知のディスク読み取りエラーポリシー '%s' です"
 
-#: src/conf/domain_conf.c:3768
+#: src/conf/domain_conf.c:3770
 #, c-format
 msgid "unknown disk io mode '%s'"
 msgstr "未知のディスク I/O モード '%s' です"
 
-#: src/conf/domain_conf.c:3776
+#: src/conf/domain_conf.c:3778
 msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "ディスク ioeventfd モードは virtio バスに対してのみサポートされます"
 
-#: src/conf/domain_conf.c:3784
+#: src/conf/domain_conf.c:3786
 #, c-format
 msgid "unknown disk ioeventfd mode '%s'"
 msgstr "未知のディスク ioeventfd モード '%s' です"
 
-#: src/conf/domain_conf.c:3794
+#: src/conf/domain_conf.c:3796
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr "ディスク event_idx モードは virtio バスに対してのみサポートされます"
 
-#: src/conf/domain_conf.c:3802
+#: src/conf/domain_conf.c:3804
 #, c-format
 msgid "unknown disk event_idx mode '%s'"
 msgstr "未知のディスク event_idx モード '%s'"
 
-#: src/conf/domain_conf.c:3813
+#: src/conf/domain_conf.c:3815
 #, c-format
 msgid "unknown disk copy_on_read mode '%s'"
 msgstr "未知のディスク copy_on_read モード '%s'"
 
-#: src/conf/domain_conf.c:3840
+#: src/conf/domain_conf.c:3842
 #, c-format
 msgid "unknown startupPolicy value '%s'"
 msgstr "未知の startupPolicy 値 '%s'"
 
-#: src/conf/domain_conf.c:3848
+#: src/conf/domain_conf.c:3850
 #, c-format
 msgid "Setting disk %s is allowed only for cdrom or floppy"
 msgstr "ディスク %s の設定は CD-ROM またはフロッピーに対してのみ許可されます"
 
-#: src/conf/domain_conf.c:3967
+#: src/conf/domain_conf.c:3970
 #, c-format
 msgid "Unknown controller type '%s'"
 msgstr "未知のコントローラー形式 '%s' です"
 
-#: src/conf/domain_conf.c:3976
+#: src/conf/domain_conf.c:3979
 #, c-format
 msgid "Cannot parse controller index %s"
 msgstr "コントローラーのインデックス %s を構文解析できません"
 
-#: src/conf/domain_conf.c:3985
+#: src/conf/domain_conf.c:3988
 #, c-format
 msgid "Unknown model type '%s'"
 msgstr "未知のモデルの種類 '%s'"
 
-#: src/conf/domain_conf.c:4003
+#: src/conf/domain_conf.c:4006
 #, c-format
 msgid "Invalid ports: %s"
 msgstr "無効なポート: %s"
 
-#: src/conf/domain_conf.c:4018
+#: src/conf/domain_conf.c:4021
 #, c-format
 msgid "Invalid vectors: %s"
 msgstr "無効なベクター: %s"
 
-#: src/conf/domain_conf.c:4037
+#: src/conf/domain_conf.c:4040
 msgid "Controllers must use the 'pci' address type"
 msgstr "コントローラーは 'pci'アドレス形式を使用しなければいけません"
 
-#: src/conf/domain_conf.c:4078
+#: src/conf/domain_conf.c:4081
 #, c-format
 msgid "unknown filesystem type '%s'"
 msgstr "不明なファイルシステムタイプ %s"
 
-#: src/conf/domain_conf.c:4089
+#: src/conf/domain_conf.c:4092
 #, c-format
 msgid "unknown accessmode '%s'"
 msgstr "未知のアクセスモード '%s'"
 
-#: src/conf/domain_conf.c:4126
+#: src/conf/domain_conf.c:4129
 #, c-format
 msgid "unknown fs driver type '%s'"
 msgstr "未知のファイルシステムドライバー形式 '%s' です"
 
-#: src/conf/domain_conf.c:4134
+#: src/conf/domain_conf.c:4137
 #, c-format
 msgid "unknown filesystem write policy '%s'"
 msgstr "未知のファイルシステム書き込みポリシー '%s'"
 
-#: src/conf/domain_conf.c:4202
+#: src/conf/domain_conf.c:4205
 msgid "missing type attribute in interface's <actual> element"
 msgstr "インターフェースの <actual> 要素に type 属性がありません"
 
-#: src/conf/domain_conf.c:4207
+#: src/conf/domain_conf.c:4210
 #, c-format
 msgid "unknown type '%s' in interface's <actual> element"
 msgstr "インターフェースの <actual> 要素に未知の type '%s' があります"
 
-#: src/conf/domain_conf.c:4215
+#: src/conf/domain_conf.c:4218
 #, c-format
 msgid "unsupported type '%s' in interface's <actual> element"
 msgstr ""
 "インターフェースの <actual> 要素にサポートされない type '%s' があります"
 
-#: src/conf/domain_conf.c:4236
+#: src/conf/domain_conf.c:4239
 #, c-format
 msgid "Unkown mode '%s' in interface <actual> element"
 msgstr "インターフェースの <actual> 要素に未知の mode '%s' があります"
 
-#: src/conf/domain_conf.c:4351
+#: src/conf/domain_conf.c:4354
 #, c-format
 msgid "unknown interface type '%s'"
 msgstr "不明なインターフェイスタイプ %s"
 
-#: src/conf/domain_conf.c:4454 src/qemu/qemu_command.c:6711
+#: src/conf/domain_conf.c:4457 src/qemu/qemu_command.c:6711
 #, c-format
 msgid "unable to parse mac address '%s'"
 msgstr "MAC アドレス '%s' を構文解析できません"
 
-#: src/conf/domain_conf.c:4460
+#: src/conf/domain_conf.c:4463
 #, c-format
 msgid "expected unicast mac address, found multicast '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:4490
+#: src/conf/domain_conf.c:4493
 msgid "Network interfaces must use 'pci' address type"
 msgstr ""
 "ネットワークインターフェースは 'pci' アドレス形式を使用しなければいけません"
 
-#: src/conf/domain_conf.c:4498
+#: src/conf/domain_conf.c:4501
 msgid ""
 "No <source> 'network' attribute specified with <interface type='network'/>"
 msgstr ""
 "<interface type='network'/> とともに <source> の 'network' 属性が指定されてい"
 "ません"
 
-#: src/conf/domain_conf.c:4525
+#: src/conf/domain_conf.c:4528
 msgid ""
 "No <source> 'bridge' attribute specified with <interface type='bridge'/>"
 msgstr ""
 "<interface type='network'/> とともに <source> の 'birdge' 属性が指定されてい"
 "ません"
 
-#: src/conf/domain_conf.c:4543
+#: src/conf/domain_conf.c:4546
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr ""
 "ソケットインターフェースとともに <source> の 'port' 属性が指定されていません"
 
-#: src/conf/domain_conf.c:4548
+#: src/conf/domain_conf.c:4551
 msgid "Cannot parse <source> 'port' attribute with socket interface"
 msgstr ""
 "ソケットインターフェイスとともに <source> の 'port' 属性を構文解析できません"
 
-#: src/conf/domain_conf.c:4556
+#: src/conf/domain_conf.c:4559
 msgid "No <source> 'address' attribute specified with socket interface"
 msgstr ""
 "ソケットインターフェースとともに <source> の 'address' 属性が指定されていませ"
 "ん"
 
-#: src/conf/domain_conf.c:4568
+#: src/conf/domain_conf.c:4571
 msgid ""
 "No <source> 'name' attribute specified with <interface type='internal'/>"
 msgstr ""
 "<interface type='internal'/> とともに <source> の 'name' 属性が指定されていま"
 "せん"
 
-#: src/conf/domain_conf.c:4578
+#: src/conf/domain_conf.c:4581
 msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
 msgstr ""
 "<interface type='direct'/> とともに <source> の 'dev' 属性が指定されていませ"
 "ん"
 
-#: src/conf/domain_conf.c:4586
+#: src/conf/domain_conf.c:4589
 msgid "Unkown mode has been specified"
 msgstr "未知のモードが指定されました"
 
-#: src/conf/domain_conf.c:4650
+#: src/conf/domain_conf.c:4653
 msgid "Model name contains invalid characters"
 msgstr "モデル名は無効な文字を含んでいます"
 
-#: src/conf/domain_conf.c:4663
+#: src/conf/domain_conf.c:4666
 #, c-format
 msgid "Unknown interface <driver name='%s'> has been specified"
 msgstr "未知のインターフェース <driver name='%s'> が指定されました"
 
-#: src/conf/domain_conf.c:4675
+#: src/conf/domain_conf.c:4678
 #, c-format
 msgid "Unknown interface <driver txmode='%s'> has been specified"
 msgstr "未知のインターフェース <driver txmode='%s'> が指定されました"
 
-#: src/conf/domain_conf.c:4686
+#: src/conf/domain_conf.c:4689
 #, c-format
 msgid "unknown interface ioeventfd mode '%s'"
 msgstr "未知のインターフェース ioeventfd モード '%s' です"
 
-#: src/conf/domain_conf.c:4696
+#: src/conf/domain_conf.c:4699
 #, c-format
 msgid "unknown interface event_idx mode '%s'"
 msgstr "未知のインターフェース event_idx モード '%s' です"
 
-#: src/conf/domain_conf.c:4708
+#: src/conf/domain_conf.c:4711
 #, c-format
 msgid "unknown interface link state '%s'"
 msgstr "未知のインターフェースリンクステート '%s' です"
 
-#: src/conf/domain_conf.c:4734
+#: src/conf/domain_conf.c:4737
 msgid "sndbuf must be a positive integer"
 msgstr "sndbuf は正の整数でなければいけません"
 
-#: src/conf/domain_conf.c:4783
+#: src/conf/domain_conf.c:4786
 #, c-format
 msgid "target type must be specified for %s device"
 msgstr "ターゲット形式は %s デバイスに対して指定されなければいけません"
 
-#: src/conf/domain_conf.c:4790
+#: src/conf/domain_conf.c:4793
 msgid "Driver does not have a default console type set"
 msgstr "ドライバーはデフォルトのコンソール形式を設定していません"
 
-#: src/conf/domain_conf.c:4869
+#: src/conf/domain_conf.c:4872
 msgid "guestfwd channel does not define a target address"
 msgstr "guestfwd チャネルがターゲットアドレスを定義していません"
 
-#: src/conf/domain_conf.c:4884
+#: src/conf/domain_conf.c:4887
 msgid "guestfwd channel only supports IPv4 addresses"
 msgstr "guestfwd チャネルは IPv4 アドレスのみをサポートします"
 
-#: src/conf/domain_conf.c:4891
+#: src/conf/domain_conf.c:4894
 msgid "guestfwd channel does not define a target port"
 msgstr "guestfwd チャネルがターゲットポートを定義していません"
 
-#: src/conf/domain_conf.c:4898 src/conf/domain_conf.c:4922
+#: src/conf/domain_conf.c:4901 src/conf/domain_conf.c:4925
 #: src/conf/storage_conf.c:439
 #, c-format
 msgid "Invalid port number: %s"
 msgstr "無効なポート番号: %s"
 
-#: src/conf/domain_conf.c:4994
+#: src/conf/domain_conf.c:4997
 #, c-format
 msgid "Unknown source mode '%s'"
 msgstr "不明なソースモード '%s'"
 
-#: src/conf/domain_conf.c:5027 src/conf/domain_conf.c:5110
+#: src/conf/domain_conf.c:5030 src/conf/domain_conf.c:5113
 msgid "Missing source path attribute for char device"
 msgstr "char デバイス用のソースパス属性がありません"
 
-#: src/conf/domain_conf.c:5045 src/conf/domain_conf.c:5062
+#: src/conf/domain_conf.c:5048 src/conf/domain_conf.c:5065
 msgid "Missing source host attribute for char device"
 msgstr "char デバイスのソースホスト属性がありません"
 
-#: src/conf/domain_conf.c:5050 src/conf/domain_conf.c:5067
-#: src/conf/domain_conf.c:5092
+#: src/conf/domain_conf.c:5053 src/conf/domain_conf.c:5070
+#: src/conf/domain_conf.c:5095
 msgid "Missing source service attribute for char device"
 msgstr "char デバイスのソースサービス属性がありません"
 
-#: src/conf/domain_conf.c:5083
+#: src/conf/domain_conf.c:5086
 #, c-format
 msgid "Unknown protocol '%s'"
 msgstr "不明なプロトコル '%s'"
 
-#: src/conf/domain_conf.c:5213 src/conf/domain_conf.c:5357
+#: src/conf/domain_conf.c:5216 src/conf/domain_conf.c:5360
 #, c-format
 msgid "unknown type presented to host for character device: %s"
 msgstr "ホストのキャラクターデバイスに未知の形式が与えられました: %s"
 
-#: src/conf/domain_conf.c:5221
+#: src/conf/domain_conf.c:5224
 #, c-format
 msgid "unknown character device type: %s"
 msgstr "未知のキャラクターデバイスの形式: %s"
 
-#: src/conf/domain_conf.c:5250
+#: src/conf/domain_conf.c:5253
 msgid "spicevmc device type only supports virtio"
 msgstr "spicevmc デバイス形式は virtio のみをサポートします"
 
-#: src/conf/domain_conf.c:5290
+#: src/conf/domain_conf.c:5293
 msgid "missing smartcard device mode"
 msgstr "スマートカードデバイスのモードがありません"
 
-#: src/conf/domain_conf.c:5295
+#: src/conf/domain_conf.c:5298
 #, c-format
 msgid "unknown smartcard device mode: %s"
 msgstr "スマートカードデバイスの未知のモードです: %s"
 
-#: src/conf/domain_conf.c:5312 src/conf/domain_conf.c:5341
+#: src/conf/domain_conf.c:5315 src/conf/domain_conf.c:5344
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "ホスト証明書モードは正確に 3 つの証明書が必要です"
 
-#: src/conf/domain_conf.c:5332
+#: src/conf/domain_conf.c:5335
 #, c-format
 msgid "expecting absolute path: %s"
 msgstr "絶対パスが期待されます: %s"
 
-#: src/conf/domain_conf.c:5351
+#: src/conf/domain_conf.c:5354
 msgid "passthrough mode requires a character device type attribute"
 msgstr "パススルーモードはキャラクターデバイスの type 属性が必要です"
 
-#: src/conf/domain_conf.c:5375
+#: src/conf/domain_conf.c:5378
 msgid "unknown smartcard mode"
 msgstr "未知のスマートカードのモードです"
 
-#: src/conf/domain_conf.c:5384
+#: src/conf/domain_conf.c:5387
 msgid "Controllers must use the 'ccid' address type"
 msgstr "コントローターは 'ccid' アドレス形式を使用しなければいけません"
 
-#: src/conf/domain_conf.c:5420
+#: src/conf/domain_conf.c:5423
 msgid "missing input device type"
 msgstr "入力デバイスタイプがありません"
 
-#: src/conf/domain_conf.c:5426
+#: src/conf/domain_conf.c:5429
 #, c-format
 msgid "unknown input device type '%s'"
 msgstr "不明な入力デバイスタイプ '%s'"
 
-#: src/conf/domain_conf.c:5433
+#: src/conf/domain_conf.c:5436
 #, c-format
 msgid "unknown input bus type '%s'"
 msgstr "不明な入力バスタイプ %s"
 
-#: src/conf/domain_conf.c:5441
+#: src/conf/domain_conf.c:5444
 #, c-format
 msgid "ps2 bus does not support %s input device"
 msgstr "ps2 バスは %s 入力デバイスをサポートしません"
 
-#: src/conf/domain_conf.c:5447 src/conf/domain_conf.c:5454
+#: src/conf/domain_conf.c:5450 src/conf/domain_conf.c:5457
 #, c-format
 msgid "unsupported input bus %s"
 msgstr "サポートのない入力バス %s"
 
-#: src/conf/domain_conf.c:5459
+#: src/conf/domain_conf.c:5462
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "xen バスは %s 入力デバイスをサポートしません"
 
-#: src/conf/domain_conf.c:5482 src/conf/domain_conf.c:6780
+#: src/conf/domain_conf.c:5485 src/conf/domain_conf.c:6783
 msgid "Invalid address for a USB device"
 msgstr "USB デバイスのアドレスが無効です"
 
-#: src/conf/domain_conf.c:5515
+#: src/conf/domain_conf.c:5518
 msgid "missing hub device type"
 msgstr "ハブデバイスの形式がありません"
 
-#: src/conf/domain_conf.c:5521
+#: src/conf/domain_conf.c:5524
 #, c-format
 msgid "unknown hub device type '%s'"
 msgstr "ハブデバイスの未知の形式 '%s' です"
 
-#: src/conf/domain_conf.c:5566
+#: src/conf/domain_conf.c:5569
 msgid "missing timer name"
 msgstr "タイマー名がありません"
 
-#: src/conf/domain_conf.c:5571
+#: src/conf/domain_conf.c:5574
 #, c-format
 msgid "unknown timer name '%s'"
 msgstr "未知のタイマー名 '%s' です"
 
-#: src/conf/domain_conf.c:5583
+#: src/conf/domain_conf.c:5586
 #, c-format
 msgid "unknown timer present value '%s'"
 msgstr "未知のタイマー present 値 '%s' です"
 
-#: src/conf/domain_conf.c:5593
+#: src/conf/domain_conf.c:5596
 #, c-format
 msgid "unknown timer tickpolicy '%s'"
 msgstr "未知のタイマー tickpolicy '%s' です"
 
-#: src/conf/domain_conf.c:5603
+#: src/conf/domain_conf.c:5606
 #, c-format
 msgid "unknown timer track '%s'"
 msgstr "未知の track '%s' です"
 
-#: src/conf/domain_conf.c:5613
+#: src/conf/domain_conf.c:5616
 msgid "invalid timer frequency"
 msgstr "無効なタイマー frequency です"
 
-#: src/conf/domain_conf.c:5622
+#: src/conf/domain_conf.c:5625
 #, c-format
 msgid "unknown timer mode '%s'"
 msgstr "未知のタイマーモード '%s'"
 
-#: src/conf/domain_conf.c:5635
+#: src/conf/domain_conf.c:5638
 msgid "invalid catchup threshold"
 msgstr "無効な catchup threshold です"
 
-#: src/conf/domain_conf.c:5644
+#: src/conf/domain_conf.c:5647
 msgid "invalid catchup slew"
 msgstr "無効な catchup slew です"
 
-#: src/conf/domain_conf.c:5653
+#: src/conf/domain_conf.c:5656
 msgid "invalid catchup limit"
 msgstr "無効な catchup limit です"
 
-#: src/conf/domain_conf.c:5706
+#: src/conf/domain_conf.c:5709
 #, c-format
 msgid "cannot parse password validity time '%s', expect YYYY-MM-DDTHH:MM:SS"
 msgstr ""
 "パスワード有効期限 '%s' を構文解析できません、YYYY-MM-DDTHH:MM:SS が期待され"
 "ます"
 
-#: src/conf/domain_conf.c:5725
+#: src/conf/domain_conf.c:5728
 #, c-format
 msgid "unknown connected value %s"
 msgstr "未知の connected 値 %s です"
 
-#: src/conf/domain_conf.c:5736
+#: src/conf/domain_conf.c:5739
 msgid "VNC supports connected='keep' only"
 msgstr "VNC は connected='keep' のみがサポートされます"
 
-#: src/conf/domain_conf.c:5758
+#: src/conf/domain_conf.c:5761
 msgid "graphics listen type must be specified"
 msgstr "グラフィックスのリッスン形式が指定されなければいけません"
 
-#: src/conf/domain_conf.c:5764
+#: src/conf/domain_conf.c:5767
 #, c-format
 msgid "unknown graphics listen type '%s'"
 msgstr "未知のグラフィックスのリッスン形式 '%s' です"
 
-#: src/conf/domain_conf.c:5784
+#: src/conf/domain_conf.c:5787
 msgid "network attribute not allowed when listen type is not network"
 msgstr "network 属性はリッスン形式が network でないとき許可されません"
 
-#: src/conf/domain_conf.c:5826
+#: src/conf/domain_conf.c:5829
 msgid "missing graphics device type"
 msgstr "グラフィックデバイスタイプがありません"
 
-#: src/conf/domain_conf.c:5832
+#: src/conf/domain_conf.c:5835
 #, c-format
 msgid "unknown graphics device type '%s'"
 msgstr "不明なグラフィックデバイスタイプ'%s'"
 
-#: src/conf/domain_conf.c:5899
+#: src/conf/domain_conf.c:5902
 #, c-format
 msgid ""
 "graphics listen attribute %s must match address attribute of first listen "
@@ -1716,474 +1797,480 @@ msgstr ""
 "グラフィックス listen 属性 %s が最初の listen 要素の address 属性 (%s があり"
 "ました) と一致しなければいけません"
 
-#: src/conf/domain_conf.c:5915
+#: src/conf/domain_conf.c:5918
 #, c-format
 msgid "cannot parse vnc port %s"
 msgstr "vnc port %s を構文解析できません"
 
-#: src/conf/domain_conf.c:5956 src/conf/domain_conf.c:6022
+#: src/conf/domain_conf.c:5959 src/conf/domain_conf.c:6025
 #, c-format
 msgid "unknown fullscreen value '%s'"
 msgstr "不明な全画面の値 %s"
 
-#: src/conf/domain_conf.c:5974
+#: src/conf/domain_conf.c:5977
 #, c-format
 msgid "cannot parse rdp port %s"
 msgstr "rdp port %s を構文解析できません"
 
-#: src/conf/domain_conf.c:6040
+#: src/conf/domain_conf.c:6043
 #, c-format
 msgid "cannot parse spice port %s"
 msgstr "spice port %s を構文解析できません"
 
-#: src/conf/domain_conf.c:6053
+#: src/conf/domain_conf.c:6056
 #, c-format
 msgid "cannot parse spice tlsPort %s"
 msgstr "spice tlsPort %s を構文解析できません"
 
-#: src/conf/domain_conf.c:6095
+#: src/conf/domain_conf.c:6098
 msgid "spice channel missing name/mode"
 msgstr "spice channel に name/mode がありません"
 
-#: src/conf/domain_conf.c:6103
+#: src/conf/domain_conf.c:6106
 #, c-format
 msgid "unknown spice channel name %s"
 msgstr "不明な SPICE チャネル名 %s"
 
-#: src/conf/domain_conf.c:6111
+#: src/conf/domain_conf.c:6114
 #, c-format
 msgid "unknown spice channel mode %s"
 msgstr "不明な SPICE チャネルモード %s"
 
-#: src/conf/domain_conf.c:6127
+#: src/conf/domain_conf.c:6130
 msgid "spice image missing compression"
 msgstr "spice image に compression がありません"
 
-#: src/conf/domain_conf.c:6134
+#: src/conf/domain_conf.c:6137
 #, c-format
 msgid "unknown spice image compression %s"
 msgstr "不明な spice image compression %s です"
 
-#: src/conf/domain_conf.c:6148
+#: src/conf/domain_conf.c:6151
 msgid "spice jpeg missing compression"
 msgstr "spice jpeg に compression がありません"
 
-#: src/conf/domain_conf.c:6155
+#: src/conf/domain_conf.c:6158
 #, c-format
 msgid "unknown spice jpeg compression %s"
 msgstr "不明な spice jpeg compression %s です"
 
-#: src/conf/domain_conf.c:6169
+#: src/conf/domain_conf.c:6172
 msgid "spice zlib missing compression"
 msgstr "spice zlib に compression がありません"
 
-#: src/conf/domain_conf.c:6176
+#: src/conf/domain_conf.c:6179
 #, c-format
 msgid "unknown spice zlib compression %s"
 msgstr "不明な spice zlib compression %s です"
 
-#: src/conf/domain_conf.c:6190
+#: src/conf/domain_conf.c:6193
 msgid "spice playback missing compression"
 msgstr "spice playback に compression がありません"
 
-#: src/conf/domain_conf.c:6197
+#: src/conf/domain_conf.c:6200
 msgid "unknown spice playback compression"
 msgstr "不明な spice playback compression です"
 
-#: src/conf/domain_conf.c:6211
+#: src/conf/domain_conf.c:6214
 msgid "spice streaming missing mode"
 msgstr "spice streaming に mode がありません"
 
-#: src/conf/domain_conf.c:6217
+#: src/conf/domain_conf.c:6220
 msgid "unknown spice streaming mode"
 msgstr "不明な spice streaming mode です"
 
-#: src/conf/domain_conf.c:6231
+#: src/conf/domain_conf.c:6234
 msgid "spice clipboard missing copypaste"
 msgstr "spice clipboard に copypaste があります"
 
-#: src/conf/domain_conf.c:6238
+#: src/conf/domain_conf.c:6241
 #, c-format
 msgid "unknown copypaste value '%s'"
 msgstr "不明な copypaste value '%s' です"
 
-#: src/conf/domain_conf.c:6251
+#: src/conf/domain_conf.c:6254
 msgid "spice mouse missing mode"
 msgstr "spice mouse に mode がありません"
 
-#: src/conf/domain_conf.c:6257
+#: src/conf/domain_conf.c:6260
 #, c-format
 msgid "unknown mouse mode value '%s'"
 msgstr "未知の mouse mode 値 '%s'"
 
-#: src/conf/domain_conf.c:6301
+#: src/conf/domain_conf.c:6304
 #, c-format
 msgid "unknown sound model '%s'"
 msgstr "不明なサウンドモデル '%s' です"
 
-#: src/conf/domain_conf.c:6337
+#: src/conf/domain_conf.c:6340
 msgid "watchdog must contain model name"
 msgstr "watchdog はモデル名を含まなければいけません"
 
-#: src/conf/domain_conf.c:6343
+#: src/conf/domain_conf.c:6346
 #, c-format
 msgid "unknown watchdog model '%s'"
 msgstr "未知の watchdog model '%s' です"
 
-#: src/conf/domain_conf.c:6354
+#: src/conf/domain_conf.c:6357
 #, c-format
 msgid "unknown watchdog action '%s'"
 msgstr "未知の watchdog action '%s' です"
 
-#: src/conf/domain_conf.c:6390
+#: src/conf/domain_conf.c:6393
 msgid "balloon memory must contain model name"
 msgstr "バルーンメモリーはモデル名を含まなければいけません"
 
-#: src/conf/domain_conf.c:6395
+#: src/conf/domain_conf.c:6398
 #, c-format
 msgid "unknown memory balloon model '%s'"
 msgstr "未知のメモリーバルーンモデル '%s' です"
 
-#: src/conf/domain_conf.c:6422
+#: src/conf/domain_conf.c:6425
 msgid "XML does not contain expected 'sysinfo' element"
 msgstr "XML が 期待される 'sysinfo' 要素を含んでいません"
 
-#: src/conf/domain_conf.c:6434
+#: src/conf/domain_conf.c:6437
 msgid "sysinfo must contain a type attribute"
 msgstr "sysinfo は type 属性を含まなければいけません"
 
-#: src/conf/domain_conf.c:6439
+#: src/conf/domain_conf.c:6442
 #, c-format
 msgid "unknown sysinfo type '%s'"
 msgstr "未知の sysinfo type '%s' です"
 
-#: src/conf/domain_conf.c:6617
+#: src/conf/domain_conf.c:6620
 #, c-format
 msgid "unknown video model '%s'"
 msgstr "未知のビデオモデル '%s' です"
 
-#: src/conf/domain_conf.c:6623
+#: src/conf/domain_conf.c:6626
 msgid "missing video model and cannot determine default"
 msgstr "ビデオモデルが無いためデフォルトを決定できません"
 
-#: src/conf/domain_conf.c:6631
+#: src/conf/domain_conf.c:6634
 #, c-format
 msgid "cannot parse video ram '%s'"
 msgstr "video ram '%s' を構文解析できません"
 
-#: src/conf/domain_conf.c:6641
+#: src/conf/domain_conf.c:6644
 #, c-format
 msgid "cannot parse video heads '%s'"
 msgstr "video heads '%s' を構文解析できません"
 
-#: src/conf/domain_conf.c:6698
+#: src/conf/domain_conf.c:6701
 msgid "PCI host devices must use 'pci' address type"
 msgstr "PCI ホストデバイスは 'pci' アドレス形式を使用しなければいけません"
 
-#: src/conf/domain_conf.c:6735
+#: src/conf/domain_conf.c:6738
 #, c-format
 msgid "unknown redirdev bus '%s'"
 msgstr "未知の redirdev バス '%s' です"
 
-#: src/conf/domain_conf.c:6746
+#: src/conf/domain_conf.c:6749
 #, c-format
 msgid "unknown redirdev character device type '%s'"
 msgstr "未知の redirdev キャラクターデバイス形式 '%s' です"
 
-#: src/conf/domain_conf.c:6751
+#: src/conf/domain_conf.c:6754
 msgid "missing type in redirdev"
 msgstr "redirdev に type がありません"
 
-#: src/conf/domain_conf.c:6809
+#: src/conf/domain_conf.c:6812
 #, c-format
 msgid "unknown lifecycle action %s"
 msgstr "不明なライフサイクルアクション %s"
 
-#: src/conf/domain_conf.c:6828 tools/virsh.c:13683
+#: src/conf/domain_conf.c:6831 tools/virsh.c:13683
 msgid "(device_definition)"
 msgstr "(デバイス定義)"
 
-#: src/conf/domain_conf.c:6896
+#: src/conf/domain_conf.c:6899
 msgid "unknown device type"
 msgstr "不明なデバイスタイプ"
 
-#: src/conf/domain_conf.c:7367
+#: src/conf/domain_conf.c:7370
 msgid "unknown virt type"
 msgstr "不明な virt タイプ"
 
-#: src/conf/domain_conf.c:7378
+#: src/conf/domain_conf.c:7381
 #, c-format
 msgid "no emulator for domain %s os type %s on architecture %s"
 msgstr ""
 "アーキテクチャ %s 上の ドメイン %s os タイプ %s にはエミュレータが ありません"
 
-#: src/conf/domain_conf.c:7406
+#: src/conf/domain_conf.c:7409
 msgid "cannot count boot devices"
 msgstr "ブートデバイスを数えられません"
 
-#: src/conf/domain_conf.c:7417
+#: src/conf/domain_conf.c:7420
 msgid "per-device boot elements cannot be used together with os/boot elements"
 msgstr "per-device boot 要素は os/boot 要素と同時に指定できません"
 
-#: src/conf/domain_conf.c:7427
+#: src/conf/domain_conf.c:7430
 msgid "missing boot device"
 msgstr "ブートデバイスがありません"
 
-#: src/conf/domain_conf.c:7432
+#: src/conf/domain_conf.c:7435
 #, c-format
 msgid "unknown boot device '%s'"
 msgstr "不明なブートデバイス: '%s'"
 
-#: src/conf/domain_conf.c:7460
+#: src/conf/domain_conf.c:7463
 msgid "need at least one serial port for useserial"
 msgstr "useserial するには少なくとも一つのシリアルポートが必要です"
 
-#: src/conf/domain_conf.c:7501
+#: src/conf/domain_conf.c:7504
 msgid "vcpu id must be an unsigned integer"
 msgstr "仮想 CPU ID は符号なし整数でなければいけません"
 
-#: src/conf/domain_conf.c:7505
+#: src/conf/domain_conf.c:7508
 msgid "can't parse vcpupin node"
 msgstr "vcpupin node を構文解析できません"
 
-#: src/conf/domain_conf.c:7511
+#: src/conf/domain_conf.c:7514
 msgid "vcpu id must be less than maxvcpus"
 msgstr "vcpu id は maxvcpus よりも小さくなければいけません"
 
-#: src/conf/domain_conf.c:7533
+#: src/conf/domain_conf.c:7536
 msgid "missing cpuset for vcpupin"
 msgstr "vcpupin に cpuset がありません"
 
-#: src/conf/domain_conf.c:7612
-msgid "missing memory element"
+#: src/conf/domain_conf.c:7616
+#, fuzzy, c-format
+msgid "could not parse memory element %s"
+msgstr "memory level '%s' を構文解析できません"
+
+#: src/conf/domain_conf.c:7620
+#, fuzzy, c-format
+msgid "missing memory element %s"
 msgstr "メモリー要素がありません"
 
-#: src/conf/domain_conf.c:7674
+#: src/conf/domain_conf.c:7683
 msgid "missing domain type attribute"
 msgstr "ドメインタイプの属性がありません"
 
-#: src/conf/domain_conf.c:7680
+#: src/conf/domain_conf.c:7689
 #, c-format
 msgid "invalid domain type %s"
 msgstr "無効なドメインタイプ %s"
 
-#: src/conf/domain_conf.c:7688
+#: src/conf/domain_conf.c:7697
 #, c-format
 msgid "unexpected domain type %s, expecting %s"
 msgstr "予期しないドメイン形式 %s です、%s が期待されます"
 
-#: src/conf/domain_conf.c:7713
+#: src/conf/domain_conf.c:7722
 #, c-format
 msgid "unexpected domain type %s, expecting one of these: %s"
 msgstr "予期しないドメイン形式 %s です、次のどれかが期待されます: %s"
 
-#: src/conf/domain_conf.c:7737 src/conf/network_conf.c:966
+#: src/conf/domain_conf.c:7746 src/conf/network_conf.c:966
 #: src/conf/secret_conf.c:180 src/openvz/openvz_conf.c:971
 msgid "Failed to generate UUID"
 msgstr "UUID の生成に失敗しました"
 
-#: src/conf/domain_conf.c:7744 src/conf/domain_conf.c:8855
+#: src/conf/domain_conf.c:7753 src/conf/domain_conf.c:8865
 #: src/conf/network_conf.c:973 src/conf/nwfilter_conf.c:2449
-#: src/conf/secret_conf.c:186 src/conf/storage_conf.c:670
+#: src/conf/secret_conf.c:186 src/conf/storage_conf.c:671
 msgid "malformed uuid element"
 msgstr "不正な形式の UUID 要素"
 
-#: src/conf/domain_conf.c:7754 src/libvirt.c:9078
+#: src/conf/domain_conf.c:7763 src/libvirt.c:9078
 msgid "Domain title can't contain newlines"
 msgstr "ドメインのタイトルに改行を含めることはできません"
 
-#: src/conf/domain_conf.c:7782
+#: src/conf/domain_conf.c:7791
 #, c-format
 msgid "current memory '%lluk' exceeds maximum '%lluk'"
 msgstr "現在のメモリー '%lluk' が最大値 '%lluk' を超えています"
 
-#: src/conf/domain_conf.c:7806
+#: src/conf/domain_conf.c:7815
 msgid "cannot extract blkiotune nodes"
 msgstr "blkiotune ノードを抽出できません"
 
-#: src/conf/domain_conf.c:7822
+#: src/conf/domain_conf.c:7831
 #, c-format
 msgid "duplicate device weight path '%s'"
 msgstr "重複したデバイスウェイトパス '%s'"
 
-#: src/conf/domain_conf.c:7850
+#: src/conf/domain_conf.c:7859
 msgid "maximum vcpus must be an integer"
 msgstr "最大 vcpus は整数でなければいけません"
 
-#: src/conf/domain_conf.c:7858
+#: src/conf/domain_conf.c:7867
 #, c-format
 msgid "invalid maxvcpus %lu"
 msgstr "無効な maxvcpus %lu"
 
-#: src/conf/domain_conf.c:7866
+#: src/conf/domain_conf.c:7875
 msgid "current vcpus must be an integer"
 msgstr "current vcpus は整数でなければいけません"
 
-#: src/conf/domain_conf.c:7874
+#: src/conf/domain_conf.c:7883
 #, c-format
 msgid "invalid current vcpus %lu"
 msgstr "無効な current vcpus %lu"
 
-#: src/conf/domain_conf.c:7880
+#: src/conf/domain_conf.c:7889
 #, c-format
 msgid "maxvcpus must not be less than current vcpus (%d < %lu)"
 msgstr "maxvcpus が current vcpus より小さくてはいけません (%d < %lu)"
 
-#: src/conf/domain_conf.c:7904
+#: src/conf/domain_conf.c:7900
 #, c-format
 msgid "Unsupported CPU placement mode '%s'"
 msgstr "サポートされない CPU 配置モード '%s'"
 
-#: src/conf/domain_conf.c:7937
+#: src/conf/domain_conf.c:7949
 msgid "vcpupin nodes must be less than maxvcpus"
 msgstr "vcpupin nodes は maxvcpus より小さくなければいけません"
 
-#: src/conf/domain_conf.c:7952
+#: src/conf/domain_conf.c:7964
 msgid "duplicate vcpupin for same vcpu"
 msgstr "同じ仮想 CPU に対して重複した vcpupin があります"
 
-#: src/conf/domain_conf.c:7964
+#: src/conf/domain_conf.c:7976
 msgid "cannot extract numatune nodes"
 msgstr "numatune ノードを抽出できません"
 
-#: src/conf/domain_conf.c:7970
+#: src/conf/domain_conf.c:7982
 msgid "only one numatune is supported"
 msgstr "numatune は一つのみサポートされます"
 
-#: src/conf/domain_conf.c:8000
+#: src/conf/domain_conf.c:8012
 msgid "nodeset for NUMA memory tuning must be set"
 msgstr "NUMA メモリーチューニングの nodeset が設定されなければいけません"
 
-#: src/conf/domain_conf.c:8010
+#: src/conf/domain_conf.c:8022
 #, c-format
 msgid "Unsupported NUMA memory tuning mode '%s'"
 msgstr "サポートされない NUMA メモリーチューニングの mode '%s' です"
 
-#: src/conf/domain_conf.c:8021
+#: src/conf/domain_conf.c:8033
 #, c-format
 msgid "unsupported XML element %s"
 msgstr "サポートされない XML 要素 %s"
 
-#: src/conf/domain_conf.c:8039
+#: src/conf/domain_conf.c:8051
 #, c-format
 msgid "unexpected feature %s"
 msgstr "予期しない機能 '%s'"
 
-#: src/conf/domain_conf.c:8068
+#: src/conf/domain_conf.c:8080
 #, c-format
 msgid "unknown clock offset '%s'"
 msgstr "未知のクロックオフセット '%s'"
 
-#: src/conf/domain_conf.c:8088
+#: src/conf/domain_conf.c:8098
 #, fuzzy, c-format
 msgid "unknown clock adjustment '%s'"
 msgstr "未知のクロックオフセット '%s'"
 
-#: src/conf/domain_conf.c:8116
+#: src/conf/domain_conf.c:8126
 #, fuzzy, c-format
 msgid "unknown clock basis '%s'"
 msgstr "未知のクロックオフセット '%s'"
 
-#: src/conf/domain_conf.c:8129
+#: src/conf/domain_conf.c:8139
 msgid "missing 'timezone' attribute for clock with offset='timezone'"
 msgstr "offset='timezone' を持つクロックに対して 'timezone' 属性がありません"
 
-#: src/conf/domain_conf.c:8162
+#: src/conf/domain_conf.c:8172
 msgid "no OS type"
 msgstr "OS タイプがありません"
 
-#: src/conf/domain_conf.c:8189
+#: src/conf/domain_conf.c:8199
 #, c-format
 msgid "No guest options available for arch '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:8198
+#: src/conf/domain_conf.c:8208
 #, c-format
 msgid "No os type '%s' available for arch '%s'"
 msgstr "OS の種類 '%s' はアーキテクチャー '%s' に対して利用可能ではありません"
 
-#: src/conf/domain_conf.c:8206 src/xenxs/xen_xm.c:291
+#: src/conf/domain_conf.c:8216 src/xenxs/xen_xm.c:291
 #, c-format
 msgid "no supported architecture for os type '%s'"
 msgstr "OS タイプ '%s' に対してサポートされたアーキテクチャーがありません"
 
-#: src/conf/domain_conf.c:8247
+#: src/conf/domain_conf.c:8257
 msgid "init binary must be specified"
 msgstr "init バイナリが指定されなければいけません"
 
-#: src/conf/domain_conf.c:8263
+#: src/conf/domain_conf.c:8273
 msgid "No data supplied for <initarg> element"
 msgstr ""
 
-#: src/conf/domain_conf.c:8342
+#: src/conf/domain_conf.c:8352
 msgid "cannot extract device leases"
 msgstr "デバイスのリースを抽出できません"
 
-#: src/conf/domain_conf.c:8473
+#: src/conf/domain_conf.c:8483
 msgid "cannot extract console devices"
 msgstr "コンソールデバイスを抽出できません"
 
-#: src/conf/domain_conf.c:8510
+#: src/conf/domain_conf.c:8520
 msgid "Only the first console can be a serial port"
 msgstr "最初のコンソールのみがシリアルポートになれます"
 
-#: src/conf/domain_conf.c:8703
+#: src/conf/domain_conf.c:8713
 msgid "cannot determine default video type"
 msgstr "デフォルトのビデオ形式を決められません"
 
-#: src/conf/domain_conf.c:8740
+#: src/conf/domain_conf.c:8750
 msgid "only a single watchdog device is supported"
 msgstr "watchdog デバイスは1つのみサポートされます"
 
-#: src/conf/domain_conf.c:8760
+#: src/conf/domain_conf.c:8770
 msgid "only a single memory balloon device is supported"
 msgstr "メモリーバルーンデバイスは1つのみサポートされます"
 
-#: src/conf/domain_conf.c:8831
+#: src/conf/domain_conf.c:8841
 msgid "Maximum CPUs greater than topology limit"
 msgstr "最大 CPU がトポロジーの制限より大きいです"
 
-#: src/conf/domain_conf.c:8837
+#: src/conf/domain_conf.c:8847
 msgid "Number of CPUs in <numa> exceeds the <vcpu> count"
 msgstr "<numa> にある CPU 数が <vcpu> カウントを超えています"
 
-#: src/conf/domain_conf.c:8862
+#: src/conf/domain_conf.c:8872
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr "UUID が <uuid> と <sysinfo> で一致しません"
 
-#: src/conf/domain_conf.c:8874
+#: src/conf/domain_conf.c:8884
 #, c-format
 msgid "unknown smbios mode '%s'"
 msgstr "未知の smbios モード '%s'"
 
-#: src/conf/domain_conf.c:8941
+#: src/conf/domain_conf.c:8951
 msgid "no domain config"
 msgstr "ドメイン設定がありません"
 
-#: src/conf/domain_conf.c:8955
+#: src/conf/domain_conf.c:8965
 msgid "missing domain state"
 msgstr "ドメインの state がありません"
 
-#: src/conf/domain_conf.c:8960
+#: src/conf/domain_conf.c:8970
 #, c-format
 msgid "invalid domain state '%s'"
 msgstr "無効なドメインの state '%s'"
 
-#: src/conf/domain_conf.c:8969
+#: src/conf/domain_conf.c:8979
 #, c-format
 msgid "invalid domain state reason '%s'"
 msgstr "無効なドメインの state reason '%s'"
 
-#: src/conf/domain_conf.c:8980
+#: src/conf/domain_conf.c:8990
 msgid "invalid pid"
 msgstr "無効な pid"
 
-#: src/conf/domain_conf.c:8994
+#: src/conf/domain_conf.c:9004
 #, c-format
 msgid "Unknown taint flag %s"
 msgstr "未知の汚染フラグ %s"
 
-#: src/conf/domain_conf.c:9029 src/security/virt-aa-helper.c:642
+#: src/conf/domain_conf.c:9039 src/security/virt-aa-helper.c:642
 #: tools/virsh.c:1707 tools/virsh.c:1866 tools/virsh.c:2287 tools/virsh.c:2391
 #: tools/virsh.c:2955 tools/virsh.c:13366 tools/virsh.c:13434
 #: tools/virsh.c:13677 tools/virsh.c:14156 tools/virsh.c:14620
@@ -2191,42 +2278,42 @@ msgstr "未知の汚染フラグ %s"
 msgid "(domain_definition)"
 msgstr "(ドメイン定義)"
 
-#: src/conf/domain_conf.c:9067
+#: src/conf/domain_conf.c:9077
 #, c-format
 msgid "unexpected root element <%s>, expecting <domain>"
 msgstr "予期しないルート要素 <%s> です、<domain> が期待されます"
 
-#: src/conf/domain_conf.c:9100
+#: src/conf/domain_conf.c:9110
 #, c-format
 msgid "unexpected root element <%s>, expecting <domstatus>"
 msgstr "予期しないルート要素 <%s> です、<domstatus> が期待されます"
 
-#: src/conf/domain_conf.c:9150
+#: src/conf/domain_conf.c:9160
 #, c-format
 msgid "Target timer %s does not match source %s"
 msgstr "ターゲットのタイマー %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9158
+#: src/conf/domain_conf.c:9168
 #, c-format
 msgid "Target timer presence %d does not match source %d"
 msgstr "ターゲットのタイマープレゼンス %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:9166
+#: src/conf/domain_conf.c:9176
 #, c-format
 msgid "Target TSC frequency %lu does not match source %lu"
 msgstr "ターゲットの TSC 周波数 %lu がソースの %lu と一致しません"
 
-#: src/conf/domain_conf.c:9173
+#: src/conf/domain_conf.c:9183
 #, c-format
 msgid "Target TSC mode %s does not match source %s"
 msgstr "ターゲットの TSC モード %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9194
+#: src/conf/domain_conf.c:9204
 #, c-format
 msgid "Target device address type %s does not match source %s"
 msgstr "ターゲットのデバイスアドレス形式 %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9207
+#: src/conf/domain_conf.c:9217
 #, c-format
 msgid ""
 "Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
@@ -2235,14 +2322,14 @@ msgstr ""
 "ターゲットデバイスの PCI アドレス %04x:%02x:%02x.%02x がソースの %04x:%02x:"
 "%02x.%02x と一致しません"
 
-#: src/conf/domain_conf.c:9221
+#: src/conf/domain_conf.c:9231
 #, c-format
 msgid "Target device drive address %d:%d:%d does not match source %d:%d:%d"
 msgstr ""
 "ターゲットデバイスのドライブアドレス %d:%d:%d がソースの %d:%d:%d と一致しま"
 "せん"
 
-#: src/conf/domain_conf.c:9235
+#: src/conf/domain_conf.c:9245
 #, c-format
 msgid ""
 "Target device virtio serial address %d:%d:%d does not match source %d:%d:%d"
@@ -2250,73 +2337,73 @@ msgstr ""
 "ターゲットデバイスの virtio シリアルアドレス %d:%d:%d がソースの %d:%d:%d と"
 "一致しません"
 
-#: src/conf/domain_conf.c:9248
+#: src/conf/domain_conf.c:9258
 #, c-format
 msgid "Target device ccid address %d:%d does not match source %d:%d"
 msgstr ""
 "ターゲットデバイスの CCID アドレス %d:%d がソースの %d:%d と一致しません"
 
-#: src/conf/domain_conf.c:9272
+#: src/conf/domain_conf.c:9282
 #, c-format
 msgid "Target disk device %s does not match source %s"
 msgstr "ターゲットのディスクデバイス %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9280
+#: src/conf/domain_conf.c:9290
 #, c-format
 msgid "Target disk bus %s does not match source %s"
 msgstr "ターゲットディスクのバス %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9288
+#: src/conf/domain_conf.c:9298
 #, c-format
 msgid "Target disk %s does not match source %s"
 msgstr "ターゲットのディスク %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9295
+#: src/conf/domain_conf.c:9305
 #, c-format
 msgid "Target disk serial %s does not match source %s"
 msgstr "ターゲットディスクのシリアル %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9302
+#: src/conf/domain_conf.c:9312
 msgid "Target disk access mode does not match source"
 msgstr "ターゲットディスクのアクセスモードがソースと一致しません"
 
-#: src/conf/domain_conf.c:9323
+#: src/conf/domain_conf.c:9333
 #, c-format
 msgid "Target controller type %s does not match source %s"
 msgstr "ターゲットコントローラーの種別 %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9331
+#: src/conf/domain_conf.c:9341
 #, c-format
 msgid "Target controller index %d does not match source %d"
 msgstr "ターゲットコントローラーのインデックス %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:9338
+#: src/conf/domain_conf.c:9348
 #, c-format
 msgid "Target controller model %d does not match source %d"
 msgstr "ターゲットコントローラーのモデル %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:9346
+#: src/conf/domain_conf.c:9356
 #, c-format
 msgid "Target controller ports %d does not match source %d"
 msgstr "ターゲットコントローラーのポート %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:9353
+#: src/conf/domain_conf.c:9363
 #, c-format
 msgid "Target controller vectors %d does not match source %d"
 msgstr "ターゲットコントローラーのベクター %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:9376
+#: src/conf/domain_conf.c:9386
 #, c-format
 msgid "Target filesystem guest target %s does not match source %s"
 msgstr ""
 "ターゲットのファイルシステムのゲストターゲット %s がソースの %s と一致しませ"
 "ん"
 
-#: src/conf/domain_conf.c:9383
+#: src/conf/domain_conf.c:9393
 msgid "Target filesystem access mode does not match source"
 msgstr "ターゲットのファイルシステムのアクセスモードがソースと一致しません"
 
-#: src/conf/domain_conf.c:9404
+#: src/conf/domain_conf.c:9414
 #, c-format
 msgid ""
 "Target network card mac %02x:%02x:%02x:%02x:%02x:%02xdoes not match source "
@@ -2325,555 +2412,555 @@ msgstr ""
 "ターゲットのネットワークカード MAC %02x:%02x:%02x:%02x:%02x:%02x がソースの "
 "%02x:%02x:%02x:%02x:%02x:%02x と一致しません"
 
-#: src/conf/domain_conf.c:9415
+#: src/conf/domain_conf.c:9425
 #, c-format
 msgid "Target network card model %s does not match source %s"
 msgstr "ターゲットのネットワークカードのモデル %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9437
+#: src/conf/domain_conf.c:9447
 #, c-format
 msgid "Target input device type %s does not match source %s"
 msgstr "ターゲットの入力デバイスの種類 %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9445
+#: src/conf/domain_conf.c:9455
 #, c-format
 msgid "Target input device bus %s does not match source %s"
 msgstr "ターゲットの入力デバイスのバス %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9468
+#: src/conf/domain_conf.c:9478
 #, c-format
 msgid "Target sound card model %s does not match source %s"
 msgstr "ターゲットのサウンドカードのモデル %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9491
+#: src/conf/domain_conf.c:9501
 #, c-format
 msgid "Target video card model %s does not match source %s"
 msgstr "ターゲットのビデオカードのモデル %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9499
+#: src/conf/domain_conf.c:9509
 #, c-format
 msgid "Target video card vram %u does not match source %u"
 msgstr "ターゲットのビデオカードの VRAM  %u がソースの %u と一致しません"
 
-#: src/conf/domain_conf.c:9506
+#: src/conf/domain_conf.c:9516
 #, c-format
 msgid "Target video card heads %u does not match source %u"
 msgstr "ターゲットのビデオカードのヘッド %u がソースの %u と一致しません"
 
-#: src/conf/domain_conf.c:9514
+#: src/conf/domain_conf.c:9524
 msgid "Target video card acceleration does not match source"
 msgstr "ターゲットのビデオカードのアクセラレーションが一致しません"
 
-#: src/conf/domain_conf.c:9521
+#: src/conf/domain_conf.c:9531
 #, c-format
 msgid "Target video card 2d accel %u does not match source %u"
 msgstr ""
 "ターゲットのビデオカードの 2D アクセラレーション %u がソースの %u と一致しま"
 "せん"
 
-#: src/conf/domain_conf.c:9528
+#: src/conf/domain_conf.c:9538
 #, c-format
 msgid "Target video card 3d accel %u does not match source %u"
 msgstr ""
 "ターゲットのビデオカードの 3D アクセラレーション %u がソースの %u と一致しま"
 "せん"
 
-#: src/conf/domain_conf.c:9551
+#: src/conf/domain_conf.c:9561
 #, c-format
 msgid "Target host device mode %s does not match source %s"
 msgstr "ターゲットホストのデバイスモード %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9560
+#: src/conf/domain_conf.c:9570
 #, c-format
 msgid "Target host device subsystem %s does not match source %s"
 msgstr "ターゲットホストのデバイスサブシステム %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9599 src/conf/domain_conf.c:9621
+#: src/conf/domain_conf.c:9609 src/conf/domain_conf.c:9631
 #, c-format
 msgid "Target serial port %d does not match source %d"
 msgstr "ターゲットのシリアルポート %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:9643
+#: src/conf/domain_conf.c:9653
 #, c-format
 msgid "Target channel type %s does not match source %s"
 msgstr "ターゲットのチャネル形式 %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9653
+#: src/conf/domain_conf.c:9663
 #, c-format
 msgid "Target channel name %s does not match source %s"
 msgstr "ターゲットのチャネル名 %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9664
+#: src/conf/domain_conf.c:9674
 #, c-format
 msgid "Target channel addr %s does not match source %s"
 msgstr "ターゲットのチャネルアドレス %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9690
+#: src/conf/domain_conf.c:9700
 #, c-format
 msgid "Target console type %s does not match source %s"
 msgstr "ターゲットのコンソール種別 %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9713
+#: src/conf/domain_conf.c:9723
 #, c-format
 msgid "Target watchdog model %s does not match source %s"
 msgstr "ターゲットの watchdog モデル %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9736
+#: src/conf/domain_conf.c:9746
 #, c-format
 msgid "Target balloon model %s does not match source %s"
 msgstr "ターゲットのバルーンモデル %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9759
+#: src/conf/domain_conf.c:9769
 #, c-format
 msgid "Target hub device type %s does not match source %s"
 msgstr "ターゲットのハブデバイス種別 %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9787
+#: src/conf/domain_conf.c:9797
 #, c-format
 msgid "Target domain virt type %s does not match source %s"
 msgstr "ターゲットドメインの仮想化形式 %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9799
+#: src/conf/domain_conf.c:9809
 #, c-format
 msgid "Target domain uuid %s does not match source %s"
 msgstr "ターゲットドメインの UUID %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9806
+#: src/conf/domain_conf.c:9816
 #, c-format
 msgid "Target domain max memory %lld does not match source %lld"
 msgstr ""
 
-#: src/conf/domain_conf.c:9812
+#: src/conf/domain_conf.c:9822
 #, c-format
 msgid "Target domain current memory %lld does not match source %lld"
 msgstr ""
 
-#: src/conf/domain_conf.c:9818
+#: src/conf/domain_conf.c:9828
 #, c-format
 msgid "Target domain huge page backing %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:9826
+#: src/conf/domain_conf.c:9836
 #, c-format
 msgid "Target domain vpu count %d does not match source %d"
 msgstr "ターゲットドメインの仮想 CPU 数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:9832
+#: src/conf/domain_conf.c:9842
 #, c-format
 msgid "Target domain vpu max %d does not match source %d"
 msgstr "ターゲットドメインの最大仮想 CPU 数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:9839 src/conf/domain_conf.c:9851
+#: src/conf/domain_conf.c:9849 src/conf/domain_conf.c:9861
 #, c-format
 msgid "Target domain OS type %s does not match source %s"
 msgstr "ターゲットドメインの OS 種別 %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9845
+#: src/conf/domain_conf.c:9855
 #, c-format
 msgid "Target domain architecture %s does not match source %s"
 msgstr "ターゲットドメインのアーキテクチャー %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9858
+#: src/conf/domain_conf.c:9868
 #, c-format
 msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr "ターゲットドメインの SMBIOS モード %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:9866
+#: src/conf/domain_conf.c:9876
 #, c-format
 msgid "Target domain features %d does not match source %d"
 msgstr "ターゲットドメインの機能 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:9873
+#: src/conf/domain_conf.c:9883
 msgid "Target domain timers do not match source"
 msgstr "ターゲットドメインのタイマーがソースと一致しません"
 
-#: src/conf/domain_conf.c:9890
+#: src/conf/domain_conf.c:9900
 #, c-format
 msgid "Target domain disk count %d does not match source %d"
 msgstr "ターゲットドメインのディスク数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:9901
+#: src/conf/domain_conf.c:9911
 #, c-format
 msgid "Target domain disk controller count %d does not match source %d"
 msgstr ""
 "ターゲットドメインのディスクコントローラー数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:9912
+#: src/conf/domain_conf.c:9922
 #, c-format
 msgid "Target domain filesystem count %d does not match source %d"
 msgstr "ターゲットドメインのファイルシステム数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:9923
+#: src/conf/domain_conf.c:9933
 #, c-format
 msgid "Target domain net card count %d does not match source %d"
 msgstr ""
 "ターゲットドメインのネットワークカード数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:9934
+#: src/conf/domain_conf.c:9944
 #, c-format
 msgid "Target domain input device count %d does not match source %d"
 msgstr "ターゲットドメインの入力デバイス数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:9945
+#: src/conf/domain_conf.c:9955
 #, c-format
 msgid "Target domain sound card count %d does not match source %d"
 msgstr "ターゲットドメインのサウンドカード数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:9956
+#: src/conf/domain_conf.c:9966
 #, c-format
 msgid "Target domain video card count %d does not match source %d"
 msgstr "ターゲットドメインのビデオカード数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:9967
+#: src/conf/domain_conf.c:9977
 #, c-format
 msgid "Target domain host device count %d does not match source %d"
 msgstr "ターゲットドメインのホストデバイス数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:9978
+#: src/conf/domain_conf.c:9988
 #, c-format
 msgid "Target domain smartcard count %d does not match source %d"
 msgstr "ターゲットドメインのスマートカード数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:9989
+#: src/conf/domain_conf.c:9999
 #, c-format
 msgid "Target domain serial port count %d does not match source %d"
 msgstr "ターゲットドメインのシリアルポート数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10000
+#: src/conf/domain_conf.c:10010
 #, c-format
 msgid "Target domain parallel port count %d does not match source %d"
 msgstr "ターゲットドメインのパラレルポート数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10011
+#: src/conf/domain_conf.c:10021
 #, c-format
 msgid "Target domain channel count %d does not match source %d"
 msgstr "ターゲットドメインのチャネル数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10022
+#: src/conf/domain_conf.c:10032
 #, c-format
 msgid "Target domain console count %d does not match source %d"
 msgstr "ターゲットドメインのコンソール数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10033
+#: src/conf/domain_conf.c:10043
 #, c-format
 msgid "Target domain hub device count %d does not match source %d"
 msgstr "ターゲットドメインのハブデバイス数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10046
+#: src/conf/domain_conf.c:10056
 #, c-format
 msgid "Target domain watchdog count %d does not match source %d"
 msgstr "ターゲットドメインの watchdog 数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10058
+#: src/conf/domain_conf.c:10068
 #, c-format
 msgid "Target domain memory balloon count %d does not match source %d"
 msgstr "ターゲットドメインのメモリーバルーン数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10405
+#: src/conf/domain_conf.c:10415
 msgid "topology cpuset syntax error"
 msgstr "トポロジー cpuset 構文エラー"
 
-#: src/conf/domain_conf.c:10578
+#: src/conf/domain_conf.c:10588
 #, c-format
 msgid "unexpected lifecycle type %d"
 msgstr "予期しないライフサイクルタイプ %d"
 
-#: src/conf/domain_conf.c:10684
+#: src/conf/domain_conf.c:10694
 #, c-format
 msgid "unexpected disk type %d"
 msgstr "予期しないディスクタイプ %d"
 
-#: src/conf/domain_conf.c:10689
+#: src/conf/domain_conf.c:10699
 #, c-format
 msgid "unexpected disk device %d"
 msgstr "予期しないディスクデバイス %d"
 
-#: src/conf/domain_conf.c:10694
+#: src/conf/domain_conf.c:10704
 #, c-format
 msgid "unexpected disk bus %d"
 msgstr "予期しないディスクバス %d"
 
-#: src/conf/domain_conf.c:10699
+#: src/conf/domain_conf.c:10709
 #, c-format
 msgid "unexpected disk cache mode %d"
 msgstr "予期しないディスクキャッシュモード %d"
 
-#: src/conf/domain_conf.c:10704
+#: src/conf/domain_conf.c:10714
 #, c-format
 msgid "unexpected disk io mode %d"
 msgstr "予期しないディスク I/O モード %d"
 
-#: src/conf/domain_conf.c:10928
+#: src/conf/domain_conf.c:10938
 #, c-format
 msgid "unexpected controller type %d"
 msgstr "予期しないコントローラー種別 %d"
 
-#: src/conf/domain_conf.c:10937
+#: src/conf/domain_conf.c:10947
 #, c-format
 msgid "unexpected model type %d"
 msgstr "予期しないモデルの種類 %d"
 
-#: src/conf/domain_conf.c:10990
+#: src/conf/domain_conf.c:11000
 #, c-format
 msgid "unexpected filesystem type %d"
 msgstr "予期しないファイルシステムタイプ %d"
 
-#: src/conf/domain_conf.c:10996
+#: src/conf/domain_conf.c:11006
 #, c-format
 msgid "unexpected accessmode %d"
 msgstr "予期しないアクセスモード %d"
 
-#: src/conf/domain_conf.c:11102 src/conf/domain_conf.c:12161
+#: src/conf/domain_conf.c:11112 src/conf/domain_conf.c:12171
 #: src/qemu/qemu_hotplug.c:2117
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr "予期しない hostdev タイプ %d"
 
-#: src/conf/domain_conf.c:11126 src/conf/domain_conf.c:11211
-#: src/conf/domain_conf.c:11963
+#: src/conf/domain_conf.c:11136 src/conf/domain_conf.c:11221
+#: src/conf/domain_conf.c:11973
 #, c-format
 msgid "unexpected net type %d"
 msgstr "予期しないネットタイプ %d"
 
-#: src/conf/domain_conf.c:11158
+#: src/conf/domain_conf.c:11168
 #, c-format
 msgid "unexpected source mode %d"
 msgstr "予期しないソースモード %d"
 
-#: src/conf/domain_conf.c:11186
+#: src/conf/domain_conf.c:11196
 #, c-format
 msgid "unexpected net type %s"
 msgstr "予期しないネットタイプ %s"
 
-#: src/conf/domain_conf.c:11392
+#: src/conf/domain_conf.c:11402
 #, c-format
 msgid "unexpected char type %d"
 msgstr "予期しない文字タイプ %d"
 
-#: src/conf/domain_conf.c:11493
+#: src/conf/domain_conf.c:11503
 #, c-format
 msgid "unexpected char device type %d"
 msgstr "予期しないキャラクターデバイス形式 %d"
 
-#: src/conf/domain_conf.c:11512
+#: src/conf/domain_conf.c:11522
 msgid "Could not format channel target type"
 msgstr "チャネルターゲット形式をフォーマットできませんでした"
 
-#: src/conf/domain_conf.c:11522
+#: src/conf/domain_conf.c:11532
 msgid "Unable to format guestfwd port"
 msgstr "guestfwd ポートをフォーマットできません"
 
-#: src/conf/domain_conf.c:11582 src/conf/domain_conf.c:11613
+#: src/conf/domain_conf.c:11592 src/conf/domain_conf.c:11623
 #: src/qemu/qemu_command.c:5027
 #, c-format
 msgid "unexpected smartcard type %d"
 msgstr "予期しないスマートカード種別 %d"
 
-#: src/conf/domain_conf.c:11631 src/xenxs/xen_sxpr.c:2157
+#: src/conf/domain_conf.c:11641 src/xenxs/xen_sxpr.c:2159
 #, c-format
 msgid "unexpected sound model %d"
 msgstr "予期しないサウンドモデル %d"
 
-#: src/conf/domain_conf.c:11659
+#: src/conf/domain_conf.c:11669
 #, c-format
 msgid "unexpected memballoon model %d"
 msgstr "予期しないメモリーバルーンモデル %d"
 
-#: src/conf/domain_conf.c:11699
+#: src/conf/domain_conf.c:11709
 #, c-format
 msgid "unexpected watchdog model %d"
 msgstr "予期しないウォッチドッグモデル %d"
 
-#: src/conf/domain_conf.c:11705
+#: src/conf/domain_conf.c:11715
 #, c-format
 msgid "unexpected watchdog action %d"
 msgstr "予期しないウォッチドッグアクション %d"
 
-#: src/conf/domain_conf.c:11746
+#: src/conf/domain_conf.c:11756
 #, c-format
 msgid "unexpected video model %d"
 msgstr "予期しないビデオモデル %d"
 
-#: src/conf/domain_conf.c:11783 src/xenxs/xen_sxpr.c:2194
+#: src/conf/domain_conf.c:11793 src/xenxs/xen_sxpr.c:2196
 #, c-format
 msgid "unexpected input type %d"
 msgstr "予期しない入力タイプ %d"
 
-#: src/conf/domain_conf.c:11788
+#: src/conf/domain_conf.c:11798
 #, c-format
 msgid "unexpected input bus type %d"
 msgstr "予期しない入力バスタイプ %d"
 
-#: src/conf/domain_conf.c:11816
+#: src/conf/domain_conf.c:11826
 #, c-format
 msgid "unexpected timer name %d"
 msgstr "予期しないタイマー名 %d"
 
-#: src/conf/domain_conf.c:11832
+#: src/conf/domain_conf.c:11842
 #, c-format
 msgid "unexpected timer tickpolicy %d"
 msgstr "予期しない timer tickpolicy %d"
 
-#: src/conf/domain_conf.c:11846
+#: src/conf/domain_conf.c:11856
 #, c-format
 msgid "unexpected timer track %d"
 msgstr "予期しない timer track %d"
 
-#: src/conf/domain_conf.c:11864
+#: src/conf/domain_conf.c:11874
 #, c-format
 msgid "unexpected timer mode %d"
 msgstr "予期しないタイマーモード %d"
 
-#: src/conf/domain_conf.c:12152
+#: src/conf/domain_conf.c:12162
 #, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "予期しない hostdev モード %d"
 
-#: src/conf/domain_conf.c:12212
+#: src/conf/domain_conf.c:12222
 #, c-format
 msgid "unexpected hub type %d"
 msgstr "予期しない hub 形式 %d"
 
-#: src/conf/domain_conf.c:12265
+#: src/conf/domain_conf.c:12275
 #, c-format
 msgid "unexpected domain type %d"
 msgstr "予期しないドメインタイプ %d"
 
-#: src/conf/domain_conf.c:12426
+#: src/conf/domain_conf.c:12436
 msgid "failed to format cpuset for vcpupin"
 msgstr "vcpupin の cpuset のフォーマットに失敗しました"
 
-#: src/conf/domain_conf.c:12448
+#: src/conf/domain_conf.c:12458
 msgid "failed to format nodeset for NUMA memory tuning"
 msgstr "NUMA メモリーチューニングのノードセットをフォーマットできませんでした"
 
-#: src/conf/domain_conf.c:12511
+#: src/conf/domain_conf.c:12521
 #, c-format
 msgid "unexpected boot device type %d"
 msgstr "予期しないブートデバイスタイプ %d"
 
-#: src/conf/domain_conf.c:12539
+#: src/conf/domain_conf.c:12549
 #, c-format
 msgid "unexpected smbios mode %d"
 msgstr "サポートされない smbios モード %d です"
 
-#: src/conf/domain_conf.c:12554
+#: src/conf/domain_conf.c:12564
 #, c-format
 msgid "unexpected feature %d"
 msgstr "予期しない機能 %d"
 
-#: src/conf/domain_conf.c:12826 src/conf/network_conf.c:1597
+#: src/conf/domain_conf.c:12836 src/conf/network_conf.c:1597
 #: src/conf/nwfilter_conf.c:2602 src/util/dnsmasq.c:529
 #, c-format
 msgid "cannot create config directory '%s'"
 msgstr "設定ディレクトリー %s を作成できません"
 
-#: src/conf/domain_conf.c:12971
+#: src/conf/domain_conf.c:12981
 #, c-format
 msgid "unexpected domain %s already exists"
 msgstr "予期しないドメイン %s がすでに存在します"
 
-#: src/conf/domain_conf.c:13011 src/conf/network_conf.c:1697
-#: src/conf/nwfilter_conf.c:2976 src/conf/storage_conf.c:1439
+#: src/conf/domain_conf.c:13021 src/conf/network_conf.c:1697
+#: src/conf/nwfilter_conf.c:2976 src/conf/storage_conf.c:1440
 #, c-format
 msgid "Failed to open dir '%s'"
 msgstr "ディレクトリー '%s' を開けませんでした"
 
-#: src/conf/domain_conf.c:13075
+#: src/conf/domain_conf.c:13085
 #, c-format
 msgid "cannot remove config %s"
 msgstr "設定 %s を削除できません"
 
-#: src/conf/domain_conf.c:13181 src/xen/xm_internal.c:1120
+#: src/conf/domain_conf.c:13191 src/xen/xm_internal.c:1120
 #, c-format
 msgid "domain '%s' is already defined with uuid %s"
 msgstr "ドメイン '%s' がすでに UUID %s を用いて定義されています"
 
-#: src/conf/domain_conf.c:13190
+#: src/conf/domain_conf.c:13200
 #, c-format
 msgid "domain is already active as '%s'"
 msgstr "ドメインはすでに '%s' としてアクティブです"
 
-#: src/conf/domain_conf.c:13204
+#: src/conf/domain_conf.c:13214
 #, c-format
 msgid "domain '%s' already exists with uuid %s"
 msgstr "ドメイン '%s' がすでに UUID %s を用いて存在します"
 
-#: src/conf/domain_conf.c:13367
+#: src/conf/domain_conf.c:13377
 msgid "missing name from disk snapshot element"
 msgstr "disk snapshot 要素の name がありません"
 
-#: src/conf/domain_conf.c:13429 tools/virsh.c:16267 tools/virsh.c:16595
+#: src/conf/domain_conf.c:13439 tools/virsh.c:16267 tools/virsh.c:16595
 msgid "(domain_snapshot)"
 msgstr "(ドメインスナップショット)"
 
-#: src/conf/domain_conf.c:13442
+#: src/conf/domain_conf.c:13452
 msgid "domainsnapshot"
 msgstr "ドメインスナップショット"
 
-#: src/conf/domain_conf.c:13452
+#: src/conf/domain_conf.c:13462
 msgid "a redefined snapshot must have a name"
 msgstr "再定義されたスナップショットは名前を持たなければいけません"
 
-#: src/conf/domain_conf.c:13471
+#: src/conf/domain_conf.c:13481
 msgid "missing creationTime from existing snapshot"
 msgstr "既存のスナップショットの creationTime がありません"
 
-#: src/conf/domain_conf.c:13483
+#: src/conf/domain_conf.c:13493
 msgid "missing state from existing snapshot"
 msgstr "既存のスナップショットの状態がありません"
 
-#: src/conf/domain_conf.c:13489
+#: src/conf/domain_conf.c:13499
 #, c-format
 msgid "Invalid state '%s' in domain snapshot XML"
 msgstr "ドメインのスナップショット XML において無効な状態 '%s' です"
 
-#: src/conf/domain_conf.c:13504 src/conf/domain_conf.c:13595
+#: src/conf/domain_conf.c:13514 src/conf/domain_conf.c:13605
 msgid "missing domain in snapshot"
 msgstr "スナップショットにドメインがありません"
 
-#: src/conf/domain_conf.c:13537
+#: src/conf/domain_conf.c:13547
 msgid "unable to handle disk requests in snapshot"
 msgstr "スナップショットにあるディスク要求を処理できません"
 
-#: src/conf/domain_conf.c:13544
+#: src/conf/domain_conf.c:13554
 msgid "Could not find 'active' element"
 msgstr "'active' 要素を見つけられませんでした"
 
-#: src/conf/domain_conf.c:13601
+#: src/conf/domain_conf.c:13611
 msgid "too many disk snapshot requests for domain"
 msgstr "ドメインに対してディスクスナップショットの要求が多すぎます"
 
-#: src/conf/domain_conf.c:13624
+#: src/conf/domain_conf.c:13634
 #, c-format
 msgid "no disk named '%s'"
 msgstr "'%s' という名前のディスクがありません"
 
-#: src/conf/domain_conf.c:13631
+#: src/conf/domain_conf.c:13641
 #, c-format
 msgid "disk '%s' specified twice"
 msgstr "ディスク '%s' が二重定義されました"
 
-#: src/conf/domain_conf.c:13645
+#: src/conf/domain_conf.c:13655
 #, c-format
 msgid "disk '%s' must use snapshot mode '%s'"
 msgstr ""
 "ディスク '%s' はスナップショットのモード '%s' を使用しなければいけません"
 
-#: src/conf/domain_conf.c:13652
+#: src/conf/domain_conf.c:13662
 #, c-format
 msgid "file '%s' for disk '%s' requires use of external snapshot mode"
 msgstr ""
 "ファイル '%s' (ディスク '%s') は、外部スナップショットモードを利用する必要が"
 "あります"
 
-#: src/conf/domain_conf.c:13706
+#: src/conf/domain_conf.c:13716
 #, c-format
 msgid "cannot generate external snapshot name for disk '%s' without source"
 msgstr ""
 "ソースのないディスク '%s' に対する外部スナップショット名を生成できません"
 
-#: src/conf/domain_conf.c:13713
+#: src/conf/domain_conf.c:13723
 #, c-format
 msgid ""
 "source for disk '%s' is not a regular file; refusing to generate external "
@@ -2882,46 +2969,46 @@ msgstr ""
 "ディスク '%s' のソースは通常のファイルではありません。外部スナップショットの"
 "生成を拒否します。"
 
-#: src/conf/domain_conf.c:13727
+#: src/conf/domain_conf.c:13737
 msgid "integer overflow"
 msgstr "整数値オーバーフロー"
 
-#: src/conf/domain_conf.c:13861
+#: src/conf/domain_conf.c:13871
 #, c-format
 msgid "unexpected domain snapshot %s already exists"
 msgstr "予期しないドメインスナップショット %s がすでに存在します"
 
-#: src/conf/domain_conf.c:14336
+#: src/conf/domain_conf.c:14346
 #, c-format
 msgid "unknown disk format '%s' for %s"
 msgstr "未知のディスクフォーマット '%s' が %s にあります"
 
-#: src/conf/domain_conf.c:14345 src/qemu/qemu_driver.c:8423
+#: src/conf/domain_conf.c:14355 src/qemu/qemu_driver.c:8429
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "%s のディスクフォーマットがなく、かつプローブが無効です"
 
-#: src/conf/domain_conf.c:14362
+#: src/conf/domain_conf.c:14372
 #, c-format
 msgid "backing store for %s is self-referential"
 msgstr "%s のバッキングストアが自己参照しています"
 
-#: src/conf/domain_conf.c:14374
+#: src/conf/domain_conf.c:14384
 #, c-format
 msgid "unable to open disk path %s"
 msgstr "ディスクパス %s を開けません"
 
-#: src/conf/domain_conf.c:14387
+#: src/conf/domain_conf.c:14397
 #, c-format
 msgid "could not close file %s"
 msgstr "ファイル %s を閉じることができませんでした"
 
-#: src/conf/domain_conf.c:14491
+#: src/conf/domain_conf.c:14501
 #, c-format
 msgid "invalid domain state: %d"
 msgstr "無効なドメイン状態: %d"
 
-#: src/conf/domain_conf.c:14916
+#: src/conf/domain_conf.c:14926
 #, c-format
 msgid "Copying definition of '%d' type is not implemented yet."
 msgstr "'%d' 形式の定義のコピーはまだ実装されていません。"
@@ -3789,7 +3876,7 @@ msgstr "チェインの優先度 '%s' を構文解析できません"
 msgid "Priority '%d' is outside valid range of [%d,%d]"
 msgstr "優先度 '%d' が有効な範囲 [%d,%d] の外にあります"
 
-#: src/conf/nwfilter_conf.c:2443 src/conf/storage_conf.c:664
+#: src/conf/nwfilter_conf.c:2443 src/conf/storage_conf.c:665
 #: src/storage/storage_backend.c:424
 msgid "unable to generate uuid"
 msgstr "uuid を生成できません"
@@ -3816,21 +3903,21 @@ msgstr "フィルターがループしています"
 msgid "network filter config filename '%s' does not match name '%s'"
 msgstr "ネットワークフィルターの設定ファイル名 '%s' が名前 '%s' と一致しません"
 
-#: src/conf/nwfilter_conf.c:3018 src/conf/storage_conf.c:1489
+#: src/conf/nwfilter_conf.c:3018 src/conf/storage_conf.c:1490
 #, c-format
 msgid "cannot create config directory %s"
 msgstr "設定ディレクトリー %s を作成できません"
 
-#: src/conf/nwfilter_conf.c:3031 src/conf/storage_conf.c:1508
+#: src/conf/nwfilter_conf.c:3031 src/conf/storage_conf.c:1509
 msgid "failed to generate XML"
 msgstr "XML の生成に失敗しました"
 
-#: src/conf/nwfilter_conf.c:3047 src/conf/storage_conf.c:1522
+#: src/conf/nwfilter_conf.c:3047 src/conf/storage_conf.c:1523
 #, c-format
 msgid "no config file for %s"
 msgstr "%s 用の設定ファイルはありません"
 
-#: src/conf/nwfilter_conf.c:3053 src/conf/storage_conf.c:1528
+#: src/conf/nwfilter_conf.c:3053 src/conf/storage_conf.c:1529
 #, c-format
 msgid "cannot remove config for %s"
 msgstr "%s 用の設定を削除できません"
@@ -3979,112 +4066,112 @@ msgstr "ルート要素が source ではありませんでした"
 msgid "malformed octal mode"
 msgstr "不正な形式の 8 進数のモード"
 
-#: src/conf/storage_conf.c:589
+#: src/conf/storage_conf.c:590
 msgid "malformed owner element"
 msgstr "不正な形式の owner 要素"
 
-#: src/conf/storage_conf.c:600
+#: src/conf/storage_conf.c:601
 msgid "malformed group element"
 msgstr "不正な形式の group 要素"
 
-#: src/conf/storage_conf.c:632 src/storage/storage_driver.c:454
+#: src/conf/storage_conf.c:633 src/storage/storage_driver.c:454
 #: src/test/test_driver.c:4034
 #, c-format
 msgid "unknown storage pool type %s"
 msgstr "未知のストレージプール形式 %s です"
 
-#: src/conf/storage_conf.c:656
+#: src/conf/storage_conf.c:657
 msgid "missing pool source name element"
 msgstr "プールソースの name 要素がありません"
 
-#: src/conf/storage_conf.c:680
+#: src/conf/storage_conf.c:681
 msgid "missing storage pool source host name"
 msgstr "ストレージプールのソースホスト名がありません"
 
-#: src/conf/storage_conf.c:688
+#: src/conf/storage_conf.c:689
 msgid "missing storage pool source path"
 msgstr "ストレージプールのソースパスがありません"
 
-#: src/conf/storage_conf.c:706
+#: src/conf/storage_conf.c:707
 msgid "missing storage pool source adapter name"
 msgstr "ストレージプールのソースアダプター名がありません"
 
-#: src/conf/storage_conf.c:715
+#: src/conf/storage_conf.c:716
 msgid "missing storage pool source device name"
 msgstr "ストレージプールのソースデバイス名がありません"
 
-#: src/conf/storage_conf.c:722
+#: src/conf/storage_conf.c:723
 msgid "missing storage pool target path"
 msgstr "ストレージプールのターゲットパスがありません"
 
-#: src/conf/storage_conf.c:752
+#: src/conf/storage_conf.c:753
 msgid "unknown root element for storage pool"
 msgstr "ストレージプールに対する未知のルート要素です"
 
-#: src/conf/storage_conf.c:775
+#: src/conf/storage_conf.c:776
 msgid "(storage_pool_definition)"
 msgstr "(ストレージプール定義)"
 
-#: src/conf/storage_conf.c:850
+#: src/conf/storage_conf.c:851
 #, c-format
 msgid "unknown pool format number %d"
 msgstr "未知のプールフォーマット番号 %d です"
 
-#: src/conf/storage_conf.c:891 src/conf/storage_conf.c:1566
+#: src/conf/storage_conf.c:892 src/conf/storage_conf.c:1567
 msgid "unexpected pool type"
 msgstr "予期しないプールタイプ"
 
-#: src/conf/storage_conf.c:951
+#: src/conf/storage_conf.c:952
 msgid "malformed capacity element"
 msgstr "不正な形式の capacity 要素"
 
-#: src/conf/storage_conf.c:984
+#: src/conf/storage_conf.c:985
 msgid "missing volume name element"
 msgstr "ボリュームの name 要素がありません"
 
-#: src/conf/storage_conf.c:995
+#: src/conf/storage_conf.c:996
 msgid "missing capacity element"
 msgstr "capacity 要素がありません"
 
-#: src/conf/storage_conf.c:1024 src/conf/storage_conf.c:1055
+#: src/conf/storage_conf.c:1025 src/conf/storage_conf.c:1056
 #, c-format
 msgid "unknown volume format type %s"
 msgstr "未知のボリュームフォーマット形式 %s です"
 
-#: src/conf/storage_conf.c:1085
+#: src/conf/storage_conf.c:1086
 msgid "unknown root element for storage vol"
 msgstr "ストレージボリュームの未知のルート要素です"
 
-#: src/conf/storage_conf.c:1109
+#: src/conf/storage_conf.c:1110
 msgid "(storage_volume_definition)"
 msgstr "(ストレージボリューム定義)"
 
-#: src/conf/storage_conf.c:1145
+#: src/conf/storage_conf.c:1146
 #, c-format
 msgid "unknown volume format number %d"
 msgstr "未知のボリュームフォーマット番号 %d です"
 
-#: src/conf/storage_conf.c:1396
+#: src/conf/storage_conf.c:1397
 #, c-format
 msgid "Storage pool config filename '%s' does not match pool name '%s'"
 msgstr "ストレージプール設定ファイル名 '%s' がプール名 '%s' と一致しません"
 
-#: src/conf/storage_conf.c:1617
+#: src/conf/storage_conf.c:1618
 #, c-format
 msgid "pool '%s' is already defined with uuid %s"
 msgstr "プール '%s' はすでに UUID %s で定義されています"
 
-#: src/conf/storage_conf.c:1626
+#: src/conf/storage_conf.c:1627
 #, c-format
 msgid "pool is already active as '%s'"
 msgstr "プールはすでに '%s' としてアクティブです"
 
-#: src/conf/storage_conf.c:1640
+#: src/conf/storage_conf.c:1641
 #, c-format
 msgid "pool '%s' already exists with uuid %s"
 msgstr "プール '%s' はすでに UUID %s を持って定義されています"
 
-#: src/conf/storage_conf.c:1716
+#: src/conf/storage_conf.c:1717
 #, c-format
 msgid "Storage source conflict with pool: '%s'"
 msgstr "ストレージソースがプールと競合します: '%s'"
@@ -4576,16 +4663,16 @@ msgstr "URI にサーバーのポートがありません"
 msgid "Missing or invalid auth pointer"
 msgstr "認証ポインターが無いか無効です"
 
-#: src/esx/esx_driver.c:1062
+#: src/esx/esx_driver.c:1064
 msgid "This host is not managed by a vCenter"
 msgstr "このホストは vCenter により管理されていません"
 
-#: src/esx/esx_driver.c:1069
+#: src/esx/esx_driver.c:1071
 #, c-format
 msgid "vCenter IP address %s too big for destination"
 msgstr "vCenter の IP アドレス %s は宛先にとって長過ぎます"
 
-#: src/esx/esx_driver.c:1082
+#: src/esx/esx_driver.c:1084
 #, c-format
 msgid ""
 "This host is managed by a vCenter with IP address %s, but a mismachting "
@@ -4840,7 +4927,7 @@ msgstr ""
 "ドメインをマイグレーションできませんでした、マイグレーションタスクがエラーと"
 "ともに終了しました"
 
-#: src/esx/esx_driver.c:4281 src/vbox/vbox_tmpl.c:5892
+#: src/esx/esx_driver.c:4281 src/vbox/vbox_tmpl.c:5895
 msgid "disk snapshots not supported yet"
 msgstr "ディスクのスナップショットはまだサポートされていません"
 
@@ -4854,8 +4941,8 @@ msgstr "スナップショット '%s' がすでに存在します"
 msgid "Could not create snapshot: %s"
 msgstr "スナップショットを作成できませんでした: %s"
 
-#: src/esx/esx_driver.c:4658 src/qemu/qemu_driver.c:10737
-#: src/vbox/vbox_tmpl.c:6337
+#: src/esx/esx_driver.c:4658 src/qemu/qemu_driver.c:10741
+#: src/vbox/vbox_tmpl.c:6340
 #, c-format
 msgid "snapshot '%s' does not have a parent"
 msgstr "スナップショット '%s' が親を持っていません"
@@ -6084,11 +6171,11 @@ msgstr "セキュアフラグのある virDomainGetXMLDesc"
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare は uri をセットしませんでした"
 
-#: src/libvirt.c:4769 src/qemu/qemu_migration.c:2124
+#: src/libvirt.c:4769 src/qemu/qemu_migration.c:2228
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare2 は uri をセットしませんでした"
 
-#: src/libvirt.c:4915 src/qemu/qemu_migration.c:2262
+#: src/libvirt.c:4915 src/qemu/qemu_migration.c:2366
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare3 が URI を設定していません"
 
@@ -6675,16 +6762,16 @@ msgstr "%s をループデバイスに接続できません"
 msgid "Unable to mark loop device as autoclear"
 msgstr "loop デバイスを自動削除として印をつけられません"
 
-#: src/lxc/lxc_controller.c:255 src/qemu/qemu_process.c:1678
+#: src/lxc/lxc_controller.c:255 src/qemu/qemu_process.c:1677
 msgid "Host kernel is not aware of NUMA."
 msgstr "ホストカーネルが NUMA を意識していません。"
 
-#: src/lxc/lxc_controller.c:267 src/qemu/qemu_process.c:1690
+#: src/lxc/lxc_controller.c:267 src/qemu/qemu_process.c:1689
 #, c-format
 msgid "Host cannot support NUMA node %d"
 msgstr "ホストが NUMA ノード %d をサポートできません"
 
-#: src/lxc/lxc_controller.c:296 src/qemu/qemu_process.c:1719
+#: src/lxc/lxc_controller.c:296 src/qemu/qemu_process.c:1718
 msgid "NUMA memory tuning in 'preferred' mode only supports single node"
 msgstr ""
 "'preferred' モードにおける NUMA メモリーチューニングは単一ノードのみがサポー"
@@ -7037,41 +7124,41 @@ msgstr "ドメインのメモリーの設定に失敗しました"
 
 #: src/lxc/lxc_driver.c:823 src/lxc/lxc_driver.c:2973
 #: src/lxc/lxc_driver.c:3117 src/lxc/lxc_driver.c:3221
-#: src/lxc/lxc_driver.c:3325 src/qemu/qemu_driver.c:6144
-#: src/qemu/qemu_driver.c:6304 src/qemu/qemu_driver.c:6486
-#: src/qemu/qemu_driver.c:6593 src/qemu/qemu_driver.c:6755
-#: src/qemu/qemu_driver.c:6924 src/qemu/qemu_driver.c:7145
-#: src/qemu/qemu_driver.c:7361 src/qemu/qemu_driver.c:12496
+#: src/lxc/lxc_driver.c:3325 src/qemu/qemu_driver.c:6150
+#: src/qemu/qemu_driver.c:6310 src/qemu/qemu_driver.c:6492
+#: src/qemu/qemu_driver.c:6599 src/qemu/qemu_driver.c:6761
+#: src/qemu/qemu_driver.c:6930 src/qemu/qemu_driver.c:7151
+#: src/qemu/qemu_driver.c:7367 src/qemu/qemu_driver.c:12500
 #, c-format
 msgid "cannot find cgroup for domain %s"
 msgstr "ドメイン %s に対する cgroup を見つけられません"
 
-#: src/lxc/lxc_driver.c:835 src/qemu/qemu_driver.c:6500
+#: src/lxc/lxc_driver.c:835 src/qemu/qemu_driver.c:6506
 msgid "unable to set memory hard_limit tunable"
 msgstr "メモリーのハード制限をチューニング可能に設定できません"
 
-#: src/lxc/lxc_driver.c:842 src/qemu/qemu_driver.c:6513
+#: src/lxc/lxc_driver.c:842 src/qemu/qemu_driver.c:6519
 msgid "unable to set memory soft_limit tunable"
 msgstr "メモリーのソフト制限をチューニング可能に設定できません"
 
-#: src/lxc/lxc_driver.c:849 src/qemu/qemu_driver.c:6526
+#: src/lxc/lxc_driver.c:849 src/qemu/qemu_driver.c:6532
 msgid "unable to set swap_hard_limit tunable"
 msgstr "スワップのハード制限をチューニング可能に設定できません"
 
-#: src/lxc/lxc_driver.c:913 src/qemu/qemu_driver.c:6654
+#: src/lxc/lxc_driver.c:913 src/qemu/qemu_driver.c:6660
 msgid "unable to get memory hard limit"
 msgstr "メモリーのハード制限を取得できません"
 
-#: src/lxc/lxc_driver.c:924 src/qemu/qemu_driver.c:6667
+#: src/lxc/lxc_driver.c:924 src/qemu/qemu_driver.c:6673
 msgid "unable to get memory soft limit"
 msgstr "メモリーのソフト制限を取得できません"
 
-#: src/lxc/lxc_driver.c:935 src/qemu/qemu_driver.c:6680
+#: src/lxc/lxc_driver.c:935 src/qemu/qemu_driver.c:6686
 msgid "unable to get swap hard limit"
 msgstr "スワップのハード制限を取得できません"
 
 #: src/lxc/lxc_driver.c:1212 src/network/bridge_driver.c:1832
-#: src/qemu/qemu_command.c:270 src/qemu/qemu_driver.c:7967
+#: src/qemu/qemu_command.c:270 src/qemu/qemu_driver.c:7973
 #: src/util/virnetdevmacvlan.c:939
 #, c-format
 msgid "cannot set bandwidth limits on %s"
@@ -7214,35 +7301,35 @@ msgstr "ドメインはすでに実行中です"
 #: src/qemu/qemu_driver.c:1920 src/qemu/qemu_driver.c:1951
 #: src/qemu/qemu_driver.c:2053 src/qemu/qemu_driver.c:2130
 #: src/qemu/qemu_driver.c:2176 src/qemu/qemu_driver.c:2263
-#: src/qemu/qemu_driver.c:2296 src/qemu/qemu_driver.c:2794
-#: src/qemu/qemu_driver.c:2853 src/qemu/qemu_driver.c:2904
-#: src/qemu/qemu_driver.c:2938 src/qemu/qemu_driver.c:3064
-#: src/qemu/qemu_driver.c:3400 src/qemu/qemu_driver.c:3518
-#: src/qemu/qemu_driver.c:3651 src/qemu/qemu_driver.c:3730
-#: src/qemu/qemu_driver.c:3821 src/qemu/qemu_driver.c:3862
-#: src/qemu/qemu_driver.c:4455 src/qemu/qemu_driver.c:4783
-#: src/qemu/qemu_driver.c:5001 src/qemu/qemu_driver.c:5652
-#: src/qemu/qemu_driver.c:5823 src/qemu/qemu_driver.c:5850
-#: src/qemu/qemu_driver.c:7538 src/qemu/qemu_driver.c:7623
-#: src/qemu/qemu_driver.c:7792 src/qemu/qemu_driver.c:8150
-#: src/qemu/qemu_driver.c:8211 src/qemu/qemu_driver.c:8279
-#: src/qemu/qemu_driver.c:8376 src/qemu/qemu_driver.c:8739
-#: src/qemu/qemu_driver.c:8829 src/qemu/qemu_driver.c:9016
-#: src/qemu/qemu_driver.c:9087 src/qemu/qemu_driver.c:9328
-#: src/qemu/qemu_driver.c:9378 src/qemu/qemu_driver.c:9440
-#: src/qemu/qemu_driver.c:9496 src/qemu/qemu_driver.c:9553
-#: src/qemu/qemu_driver.c:10258 src/qemu/qemu_driver.c:10507
-#: src/qemu/qemu_driver.c:10538 src/qemu/qemu_driver.c:10576
-#: src/qemu/qemu_driver.c:10616 src/qemu/qemu_driver.c:10658
-#: src/qemu/qemu_driver.c:10693 src/qemu/qemu_driver.c:10723
-#: src/qemu/qemu_driver.c:10766 src/qemu/qemu_driver.c:10801
-#: src/qemu/qemu_driver.c:10871 src/qemu/qemu_driver.c:11232
-#: src/qemu/qemu_driver.c:11349 src/qemu/qemu_driver.c:11501
-#: src/qemu/qemu_driver.c:11618 src/qemu/qemu_driver.c:11726
-#: src/qemu/qemu_driver.c:11821 src/qemu/qemu_driver.c:11970
-#: src/qemu/qemu_driver.c:12101 src/qemu/qemu_driver.c:12186
-#: src/qemu/qemu_driver.c:12286 src/qemu/qemu_driver.c:12549
-#: src/qemu/qemu_driver.c:12618 src/test/test_driver.c:2125
+#: src/qemu/qemu_driver.c:2296 src/qemu/qemu_driver.c:2800
+#: src/qemu/qemu_driver.c:2859 src/qemu/qemu_driver.c:2910
+#: src/qemu/qemu_driver.c:2944 src/qemu/qemu_driver.c:3070
+#: src/qemu/qemu_driver.c:3406 src/qemu/qemu_driver.c:3524
+#: src/qemu/qemu_driver.c:3657 src/qemu/qemu_driver.c:3736
+#: src/qemu/qemu_driver.c:3827 src/qemu/qemu_driver.c:3868
+#: src/qemu/qemu_driver.c:4461 src/qemu/qemu_driver.c:4789
+#: src/qemu/qemu_driver.c:5007 src/qemu/qemu_driver.c:5658
+#: src/qemu/qemu_driver.c:5829 src/qemu/qemu_driver.c:5856
+#: src/qemu/qemu_driver.c:7544 src/qemu/qemu_driver.c:7629
+#: src/qemu/qemu_driver.c:7798 src/qemu/qemu_driver.c:8156
+#: src/qemu/qemu_driver.c:8217 src/qemu/qemu_driver.c:8285
+#: src/qemu/qemu_driver.c:8382 src/qemu/qemu_driver.c:8745
+#: src/qemu/qemu_driver.c:8835 src/qemu/qemu_driver.c:9022
+#: src/qemu/qemu_driver.c:9093 src/qemu/qemu_driver.c:9334
+#: src/qemu/qemu_driver.c:9384 src/qemu/qemu_driver.c:9446
+#: src/qemu/qemu_driver.c:9502 src/qemu/qemu_driver.c:9559
+#: src/qemu/qemu_driver.c:10262 src/qemu/qemu_driver.c:10511
+#: src/qemu/qemu_driver.c:10542 src/qemu/qemu_driver.c:10580
+#: src/qemu/qemu_driver.c:10620 src/qemu/qemu_driver.c:10662
+#: src/qemu/qemu_driver.c:10697 src/qemu/qemu_driver.c:10727
+#: src/qemu/qemu_driver.c:10770 src/qemu/qemu_driver.c:10805
+#: src/qemu/qemu_driver.c:10875 src/qemu/qemu_driver.c:11236
+#: src/qemu/qemu_driver.c:11353 src/qemu/qemu_driver.c:11506
+#: src/qemu/qemu_driver.c:11622 src/qemu/qemu_driver.c:11730
+#: src/qemu/qemu_driver.c:11825 src/qemu/qemu_driver.c:11974
+#: src/qemu/qemu_driver.c:12105 src/qemu/qemu_driver.c:12190
+#: src/qemu/qemu_driver.c:12290 src/qemu/qemu_driver.c:12553
+#: src/qemu/qemu_driver.c:12622 src/test/test_driver.c:2125
 #: src/uml/uml_driver.c:1641 src/uml/uml_driver.c:1666
 #: src/uml/uml_driver.c:1699 src/uml/uml_driver.c:2042
 #: src/uml/uml_driver.c:2160 src/uml/uml_driver.c:2393
@@ -7251,22 +7338,22 @@ msgstr "ドメインはすでに実行中です"
 msgid "no domain with matching uuid '%s'"
 msgstr "UUID '%s' に一致するドメインがありません"
 
-#: src/lxc/lxc_driver.c:2192 src/qemu/qemu_driver.c:3423
-#: src/qemu/qemu_driver.c:3868
+#: src/lxc/lxc_driver.c:2192 src/qemu/qemu_driver.c:3429
+#: src/qemu/qemu_driver.c:3874
 #, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr "ドメイン定義 '%d' に不明な virt タイプがあります"
 
-#: src/lxc/lxc_driver.c:2215 src/qemu/qemu_driver.c:3891
+#: src/lxc/lxc_driver.c:2215 src/qemu/qemu_driver.c:3897
 msgid "Failed to get security label"
 msgstr "セキュリティレベルの取得に失敗しました"
 
-#: src/lxc/lxc_driver.c:2246 src/qemu/qemu_driver.c:3923
+#: src/lxc/lxc_driver.c:2246 src/qemu/qemu_driver.c:3929
 #, c-format
 msgid "security model string exceeds max %d bytes"
 msgstr "セキュリティモデルの文字列が最大値 %d バイトを超過"
 
-#: src/lxc/lxc_driver.c:2255 src/qemu/qemu_driver.c:3933
+#: src/lxc/lxc_driver.c:2255 src/qemu/qemu_driver.c:3939
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "セキュリティ DOI の文字列が最大値 %d バイトを超過"
@@ -7287,18 +7374,18 @@ msgid "Unknown release: %s"
 msgstr "不明なリリース: %s"
 
 #: src/lxc/lxc_driver.c:2820 src/lxc/lxc_driver.c:2968
-#: src/lxc/lxc_driver.c:3111 src/qemu/qemu_driver.c:5948
-#: src/qemu/qemu_driver.c:7140 src/qemu/qemu_driver.c:7355
+#: src/lxc/lxc_driver.c:3111 src/qemu/qemu_driver.c:5954
+#: src/qemu/qemu_driver.c:7146 src/qemu/qemu_driver.c:7361
 msgid "cgroup CPU controller is not mounted"
 msgstr "cgroup CPU コントローラーがマウントされていません"
 
-#: src/lxc/lxc_driver.c:2853 src/qemu/qemu_driver.c:7021
-#: src/qemu/qemu_driver.c:7242
+#: src/lxc/lxc_driver.c:2853 src/qemu/qemu_driver.c:7027
+#: src/qemu/qemu_driver.c:7248
 msgid "unable to get cpu bandwidth period tunable"
 msgstr "cpu bandwidth period tunable を取得できません"
 
-#: src/lxc/lxc_driver.c:2860 src/qemu/qemu_driver.c:7014
-#: src/qemu/qemu_driver.c:7249
+#: src/lxc/lxc_driver.c:2860 src/qemu/qemu_driver.c:7020
+#: src/qemu/qemu_driver.c:7255
 msgid "unable to get cpu bandwidth tunable"
 msgstr "チューニング可能な CPU の帯域を取得できません"
 
@@ -7315,7 +7402,7 @@ msgid "Unable to set cpu bandwidth quota"
 msgstr "cpu bandwidth quota を設定できません"
 
 #: src/lxc/lxc_driver.c:2910 src/qemu/qemu_cgroup.c:467
-#: src/qemu/qemu_cgroup.c:502 src/qemu/qemu_driver.c:7001
+#: src/qemu/qemu_cgroup.c:502 src/qemu/qemu_driver.c:7007
 #: src/xenapi/xenapi_utils.c:375 src/xenapi/xenapi_utils.c:379
 #, c-format
 msgid "%s"
@@ -7323,39 +7410,39 @@ msgstr "%s"
 
 #: src/lxc/lxc_driver.c:2950 src/lxc/lxc_driver.c:3092
 #: src/lxc/lxc_driver.c:3205 src/lxc/lxc_driver.c:3302
-#: src/qemu/qemu_driver.c:6127 src/qemu/qemu_driver.c:6281
-#: src/qemu/qemu_driver.c:6469 src/qemu/qemu_driver.c:6576
-#: src/qemu/qemu_driver.c:6738 src/qemu/qemu_driver.c:6901
-#: src/qemu/qemu_driver.c:7122 src/qemu/qemu_driver.c:7336
-#: src/qemu/qemu_driver.c:7873 src/qemu/qemu_driver.c:8036
-#: src/qemu/qemu_driver.c:12477
+#: src/qemu/qemu_driver.c:6133 src/qemu/qemu_driver.c:6287
+#: src/qemu/qemu_driver.c:6475 src/qemu/qemu_driver.c:6582
+#: src/qemu/qemu_driver.c:6744 src/qemu/qemu_driver.c:6907
+#: src/qemu/qemu_driver.c:7128 src/qemu/qemu_driver.c:7342
+#: src/qemu/qemu_driver.c:7879 src/qemu/qemu_driver.c:8042
+#: src/qemu/qemu_driver.c:12481
 #, c-format
 msgid "No such domain %s"
 msgstr "ドメイン %s はありません"
 
-#: src/lxc/lxc_driver.c:2987 src/qemu/qemu_driver.c:7159
+#: src/lxc/lxc_driver.c:2987 src/qemu/qemu_driver.c:7165
 msgid "unable to set cpu shares tunable"
 msgstr "cpu shares tunable を設定できません"
 
-#: src/lxc/lxc_driver.c:3124 src/qemu/qemu_driver.c:7368
+#: src/lxc/lxc_driver.c:3124 src/qemu/qemu_driver.c:7374
 msgid "unable to get cpu shares tunable"
 msgstr "cpu shares tunable を設定できません"
 
 #: src/lxc/lxc_driver.c:3215 src/lxc/lxc_driver.c:3319
-#: src/qemu/qemu_driver.c:6138 src/qemu/qemu_driver.c:6298
+#: src/qemu/qemu_driver.c:6144 src/qemu/qemu_driver.c:6304
 msgid "blkio cgroup isn't mounted"
 msgstr "blkio cgroup がマウントされていません"
 
 #: src/lxc/lxc_driver.c:3233 src/lxc/lxc_driver.c:3256
-#: src/qemu/qemu_driver.c:6159 src/qemu/qemu_driver.c:6215
+#: src/qemu/qemu_driver.c:6165 src/qemu/qemu_driver.c:6221
 msgid "out of blkio weight range."
 msgstr "blkio weight が範囲外です。"
 
-#: src/lxc/lxc_driver.c:3240 src/qemu/qemu_driver.c:6167
+#: src/lxc/lxc_driver.c:3240 src/qemu/qemu_driver.c:6173
 msgid "unable to set blkio weight tunable"
 msgstr "blkio weight tunable を設定できません"
 
-#: src/lxc/lxc_driver.c:3338 src/qemu/qemu_driver.c:6319
+#: src/lxc/lxc_driver.c:3338 src/qemu/qemu_driver.c:6325
 msgid "unable to get blkio weight"
 msgstr "ブロック I/O ウェイトを取得できませんでした"
 
@@ -7374,13 +7461,13 @@ msgid "Cannot create autostart directory %s"
 msgstr "自動起動ディレクトリー %s を作成できません"
 
 #: src/lxc/lxc_driver.c:3521 src/libxl/libxl_driver.c:3476
-#: src/qemu/qemu_driver.c:5878 src/uml/uml_driver.c:2279
+#: src/qemu/qemu_driver.c:5884 src/uml/uml_driver.c:2279
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "'%s' へのシンボルリンク %s の作成に失敗しました"
 
 #: src/lxc/lxc_driver.c:3528 src/libxl/libxl_driver.c:3483
-#: src/network/bridge_driver.c:2660 src/qemu/qemu_driver.c:5885
+#: src/network/bridge_driver.c:2660 src/qemu/qemu_driver.c:5891
 #: src/storage/storage_driver.c:1063 src/uml/uml_driver.c:2286
 #, c-format
 msgid "Failed to delete symlink '%s'"
@@ -7403,15 +7490,15 @@ msgstr "コンソールデバイス '%s' が見つかりません"
 msgid "default"
 msgstr "デフォルト"
 
-#: src/lxc/lxc_driver.c:3809 src/qemu/qemu_driver.c:11543
+#: src/lxc/lxc_driver.c:3809 src/qemu/qemu_driver.c:11548
 #: src/uml/uml_driver.c:2427 src/xen/xen_driver.c:2159
 #, c-format
 msgid "character device %s is not using a PTY"
 msgstr "キャラクターデバイス %s は PTY を使用していません"
 
 #: src/libxl/libxl_driver.c:150 src/qemu/qemu_driver.c:169
-#: src/qemu/qemu_driver.c:177 src/qemu/qemu_hostdev.c:674
-#: src/qemu/qemu_hostdev.c:693 src/qemu/qemu_hostdev.c:742
+#: src/qemu/qemu_driver.c:177 src/qemu/qemu_hostdev.c:717
+#: src/qemu/qemu_hostdev.c:736 src/qemu/qemu_hostdev.c:785
 #: src/secret/secret_driver.c:505 src/uml/uml_driver.c:169
 #: src/xenapi/xenapi_utils.c:266 tools/virsh.c:569 tools/virsh.c:16936
 msgid "unknown error"
@@ -7438,21 +7525,21 @@ msgstr "ドメインイメージを読み込めません"
 msgid "failed to read libxl header"
 msgstr "libxl ヘッダーの読み込みに失敗しました"
 
-#: src/libxl/libxl_driver.c:233 src/qemu/qemu_driver.c:3998
+#: src/libxl/libxl_driver.c:233 src/qemu/qemu_driver.c:4004
 msgid "image magic is incorrect"
 msgstr "イメージマジックは正しくありません"
 
-#: src/libxl/libxl_driver.c:239 src/qemu/qemu_driver.c:4024
+#: src/libxl/libxl_driver.c:239 src/qemu/qemu_driver.c:4030
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr "イメージバージョンはサポートがありません (%d > %d)"
 
-#: src/libxl/libxl_driver.c:246 src/qemu/qemu_driver.c:4031
+#: src/libxl/libxl_driver.c:246 src/qemu/qemu_driver.c:4037
 #, c-format
 msgid "invalid XML length: %d"
 msgstr "無効な XML 長: %d"
 
-#: src/libxl/libxl_driver.c:256 src/qemu/qemu_driver.c:4042
+#: src/libxl/libxl_driver.c:256 src/qemu/qemu_driver.c:4048
 msgid "failed to read XML"
 msgstr "XML の読み込みに失敗しました"
 
@@ -7466,7 +7553,7 @@ msgstr "ドメイン %d をクリーンアップできません"
 msgid "Failed to pin vcpu '%d' with libxenlight"
 msgstr "libxenlight を用いた仮想 CPU '%d' の固定に失敗しました"
 
-#: src/libxl/libxl_driver.c:637 src/qemu/qemu_driver.c:4414
+#: src/libxl/libxl_driver.c:637 src/qemu/qemu_driver.c:4420
 #, c-format
 msgid ""
 "cannot restore domain '%s' uuid %s from a file which belongs to domain '%s' "
@@ -7578,8 +7665,8 @@ msgstr "ドメイン '%d' の強制停止に失敗しました"
 #: src/uml/uml_driver.c:2225 src/uml/uml_driver.c:2251
 #: src/uml/uml_driver.c:2326 src/vbox/vbox_tmpl.c:2035
 #: src/vbox/vbox_tmpl.c:2095 src/vbox/vbox_tmpl.c:5265
-#: src/vbox/vbox_tmpl.c:5359 src/vbox/vbox_tmpl.c:5596
-#: src/vbox/vbox_tmpl.c:8628 src/vbox/vbox_tmpl.c:8993
+#: src/vbox/vbox_tmpl.c:5362 src/vbox/vbox_tmpl.c:5599
+#: src/vbox/vbox_tmpl.c:8631 src/vbox/vbox_tmpl.c:8996
 #: src/vmware/vmware_driver.c:330 src/vmware/vmware_driver.c:387
 #: src/vmware/vmware_driver.c:436 src/vmware/vmware_driver.c:480
 #: src/vmware/vmware_driver.c:835 src/vmware/vmware_driver.c:943
@@ -7661,7 +7748,7 @@ msgstr "libxenlight を用いたドメイン '%d' のダンプコアに失敗し
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr "コアのダンプ後、libxenlight を用いたドメイン '%d' の再開に失敗しました"
 
-#: src/libxl/libxl_driver.c:2113 src/qemu/qemu_driver.c:2864
+#: src/libxl/libxl_driver.c:2113 src/qemu/qemu_driver.c:2870
 msgid "cannot do managed save for transient domain"
 msgstr "一時ドメインに対して管理保存を実行できません"
 
@@ -7679,13 +7766,13 @@ msgstr "nvcpus が 0 です"
 msgid "cannot set vcpus on an inactive domain"
 msgstr "休止状態のドメインの仮想 CPU 数を設定できません"
 
-#: src/libxl/libxl_driver.c:2258 src/qemu/qemu_driver.c:3430
-#: src/xen/xend_internal.c:2223 src/xen/xm_internal.c:731
+#: src/libxl/libxl_driver.c:2258 src/qemu/qemu_driver.c:3436
+#: src/xen/xend_internal.c:2228 src/xen/xm_internal.c:731
 msgid "could not determine max vcpus for the domain"
 msgstr "ドメインの最大仮想 CPU 数を決定できません"
 
-#: src/libxl/libxl_driver.c:2268 src/qemu/qemu_driver.c:3440
-#: src/xen/xend_internal.c:2228 src/xen/xm_internal.c:740
+#: src/libxl/libxl_driver.c:2268 src/qemu/qemu_driver.c:3446
+#: src/xen/xend_internal.c:2233 src/xen/xm_internal.c:740
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
@@ -7716,7 +7803,7 @@ msgstr ""
 "libxenlight を用いたドメイン '%d' の仮想 CPU 数の一覧表示に失敗しました"
 
 #: src/libxl/libxl_driver.c:2563 src/libxl/libxl_driver.c:2606
-#: src/qemu/qemu_driver.c:4516 src/qemu/qemu_driver.c:4560
+#: src/qemu/qemu_driver.c:4522 src/qemu/qemu_driver.c:4566
 #: src/xen/xen_driver.c:1278 src/xen/xen_driver.c:1327
 #, c-format
 msgid "unsupported config type %s"
@@ -7730,16 +7817,16 @@ msgstr "libxenlight からバージョン情報を取得できません"
 msgid "parsing xm config failed"
 msgstr "xm 設定ファイルの構文解析に失敗しました"
 
-#: src/libxl/libxl_driver.c:2783 src/qemu/qemu_driver.c:5007
+#: src/libxl/libxl_driver.c:2783 src/qemu/qemu_driver.c:5013
 #: src/uml/uml_driver.c:1948 src/vmware/vmware_driver.c:644
 msgid "cannot undefine transient domain"
 msgstr "一時ドメインを定義解除できません"
 
-#: src/libxl/libxl_driver.c:2795 src/qemu/qemu_driver.c:5032
+#: src/libxl/libxl_driver.c:2795 src/qemu/qemu_driver.c:5038
 msgid "Failed to remove domain managed save image"
 msgstr "ドメインの管理保存イメージの削除に失敗しました"
 
-#: src/libxl/libxl_driver.c:2800 src/qemu/qemu_driver.c:5038
+#: src/libxl/libxl_driver.c:2800 src/qemu/qemu_driver.c:5044
 #: tools/virsh.c:2897
 msgid "Refusing to undefine while domain managed save image exists"
 msgstr "ドメインの管理保存イメージが存在する間は定義解除が拒否されます"
@@ -7776,13 +7863,13 @@ msgstr "ディスクソースパスがありません"
 msgid "libxenlight failed to attach disk '%s'"
 msgstr "libxenlight がディスク '%s' の接続に失敗しました"
 
-#: src/libxl/libxl_driver.c:2940 src/qemu/qemu_driver.c:5130
+#: src/libxl/libxl_driver.c:2940 src/qemu/qemu_driver.c:5136
 #: src/uml/uml_driver.c:2065
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "ディスクバス '%s' はホットプラグができません"
 
-#: src/libxl/libxl_driver.c:2946 src/qemu/qemu_driver.c:5136
+#: src/libxl/libxl_driver.c:2946 src/qemu/qemu_driver.c:5142
 #, c-format
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr "ディスクデバイスタイプ '%s' はホットプラグができません"
@@ -7808,18 +7895,18 @@ msgstr "ディスクバス '%s' は活性抜線できません。"
 msgid "device type '%s' cannot hot unplugged"
 msgstr "ディスク形式 '%s' は活性抜線できません。"
 
-#: src/libxl/libxl_driver.c:3025 src/qemu/qemu_driver.c:5226
+#: src/libxl/libxl_driver.c:3025 src/qemu/qemu_driver.c:5232
 #: src/uml/uml_driver.c:2070
 #, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "デバイスタイプ '%s' は添付できません"
 
-#: src/libxl/libxl_driver.c:3043 src/qemu/qemu_driver.c:5407
+#: src/libxl/libxl_driver.c:3043 src/qemu/qemu_driver.c:5413
 #, c-format
 msgid "target %s already exists."
 msgstr "ターゲット %s がすでに存在します。"
 
-#: src/libxl/libxl_driver.c:3056 src/qemu/qemu_driver.c:5474
+#: src/libxl/libxl_driver.c:3056 src/qemu/qemu_driver.c:5480
 msgid "persistent attach of device is not supported"
 msgstr "デバイスの永続的な接続はサポートされません"
 
@@ -7828,54 +7915,54 @@ msgstr "デバイスの永続的な接続はサポートされません"
 msgid "device type '%s' cannot be detached"
 msgstr "デバイス形式 '%s' は切断できません"
 
-#: src/libxl/libxl_driver.c:3094 src/qemu/qemu_driver.c:5495
+#: src/libxl/libxl_driver.c:3094 src/qemu/qemu_driver.c:5501
 #, c-format
 msgid "no target device %s"
 msgstr "ターゲットデバイス %s がありません"
 
-#: src/libxl/libxl_driver.c:3102 src/qemu/qemu_driver.c:5541
+#: src/libxl/libxl_driver.c:3102 src/qemu/qemu_driver.c:5547
 msgid "persistent detach of device is not supported"
 msgstr "デバイスの永続的な切断はサポートされません"
 
-#: src/libxl/libxl_driver.c:3127 src/qemu/qemu_driver.c:5348
+#: src/libxl/libxl_driver.c:3127 src/qemu/qemu_driver.c:5354
 #, c-format
 msgid "disk bus '%s' cannot be updated."
 msgstr "ディスクのバス '%s' は更新できません"
 
-#: src/libxl/libxl_driver.c:3134 src/qemu/qemu_driver.c:5385
+#: src/libxl/libxl_driver.c:3134 src/qemu/qemu_driver.c:5391
 #, c-format
 msgid "device type '%s' cannot be updated"
 msgstr "デバイス形式 '%s' は更新できません"
 
-#: src/libxl/libxl_driver.c:3155 src/qemu/qemu_driver.c:5561
+#: src/libxl/libxl_driver.c:3155 src/qemu/qemu_driver.c:5567
 #, c-format
 msgid "target %s doesn't exist."
 msgstr "ターゲット %s が存在しません。"
 
-#: src/libxl/libxl_driver.c:3161 src/qemu/qemu_driver.c:5568
+#: src/libxl/libxl_driver.c:3161 src/qemu/qemu_driver.c:5574
 msgid "this disk doesn't support update"
 msgstr "このディスクは更新をサポートしません"
 
-#: src/libxl/libxl_driver.c:3182 src/qemu/qemu_driver.c:5613
+#: src/libxl/libxl_driver.c:3182 src/qemu/qemu_driver.c:5619
 msgid "persistent update of device is not supported"
 msgstr "デバイスの永続的な更新はサポートされません"
 
-#: src/libxl/libxl_driver.c:3237 src/qemu/qemu_driver.c:5677
+#: src/libxl/libxl_driver.c:3237 src/qemu/qemu_driver.c:5683
 msgid "cannot modify device on transient domain"
 msgstr "一時ドメインにあるデバイスを変更できません"
 
 #: src/libxl/libxl_driver.c:3263 src/libxl/libxl_driver.c:3287
-#: src/qemu/qemu_driver.c:5714 src/qemu/qemu_driver.c:5735
+#: src/qemu/qemu_driver.c:5720 src/qemu/qemu_driver.c:5741
 #, c-format
 msgid "unknown domain modify action %d"
 msgstr "未知のドメイン変更アクション %d"
 
-#: src/libxl/libxl_driver.c:3454 src/qemu/qemu_driver.c:5856
+#: src/libxl/libxl_driver.c:3454 src/qemu/qemu_driver.c:5862
 #: src/uml/uml_driver.c:2257
 msgid "cannot set autostart for transient domain"
 msgstr "一時ドメインに対して自動起動を設定できません"
 
-#: src/libxl/libxl_driver.c:3469 src/qemu/qemu_driver.c:5871
+#: src/libxl/libxl_driver.c:3469 src/qemu/qemu_driver.c:5877
 #: src/storage/storage_driver.c:1048 src/uml/uml_driver.c:2272
 #, c-format
 msgid "cannot create autostart directory %s"
@@ -7932,7 +8019,7 @@ msgstr "libxenlight は一時的なディスクをサポートしません"
 msgid "scripts are not supported on interfaces of type %s"
 msgstr "スクリプトは形式 %s のインターフェースにおいてサポートされません"
 
-#: src/libxl/libxl_conf.c:701 src/qemu/qemu_process.c:3359
+#: src/libxl/libxl_conf.c:701 src/qemu/qemu_process.c:3371
 msgid "Unable to find an unused VNC port"
 msgstr "未使用の VNC ポートを見つけることができません"
 
@@ -8290,8 +8377,8 @@ msgstr "HAL 呼び出しのセットアップに失敗しました"
 msgid "libhal_get_all_devices failed"
 msgstr "libhal_get_all_devices に失敗しました"
 
-#: src/node_device/node_device_hal.c:801 src/qemu/qemu_migration.c:913
-#: src/qemu/qemu_migration.c:936 src/qemu/qemu_migration.c:942
+#: src/node_device/node_device_hal.c:801 src/qemu/qemu_migration.c:915
+#: src/qemu/qemu_migration.c:938 src/qemu/qemu_migration.c:944
 #, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
@@ -8420,8 +8507,8 @@ msgstr "driverState のミューテックスの初期化に失敗しました"
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr "udev_monitor_new_from_netlink が NULL を返しました"
 
-#: src/nodeinfo.c:109 src/nodeinfo.c:155 src/nodeinfo.c:632 src/nodeinfo.c:676
-#: src/nodeinfo.c:740 src/uml/uml_driver.c:2348 src/util/command.c:358
+#: src/nodeinfo.c:109 src/nodeinfo.c:155 src/nodeinfo.c:634 src/nodeinfo.c:678
+#: src/nodeinfo.c:742 src/uml/uml_driver.c:2348 src/util/command.c:358
 #: src/util/pci.c:1633
 #, c-format
 msgid "cannot open %s"
@@ -8442,100 +8529,100 @@ msgstr "'%s' を整数値に変換できませんでした"
 msgid "cannot copy %s"
 msgstr "%s をコピーできません"
 
-#: src/nodeinfo.c:246 src/nodeinfo.c:264
+#: src/nodeinfo.c:246 src/nodeinfo.c:265
 msgid "parsing cpuinfo cpu MHz"
 msgstr "cpuinfo cpu MHz を構文解析しています"
 
-#: src/nodeinfo.c:287
+#: src/nodeinfo.c:288
 #, c-format
 msgid "cannot opendir %s"
 msgstr "ディレクトリー %s を開けません"
 
-#: src/nodeinfo.c:331
+#: src/nodeinfo.c:332
 #, c-format
 msgid "problem reading %s"
 msgstr "%s の読み込み中に問題が発生しました"
 
-#: src/nodeinfo.c:341
+#: src/nodeinfo.c:342
 msgid "no CPUs found"
 msgstr "CPU が見つかりません"
 
-#: src/nodeinfo.c:346
+#: src/nodeinfo.c:347
 msgid "no sockets found"
 msgstr "ソケットが見つかりません"
 
-#: src/nodeinfo.c:351
+#: src/nodeinfo.c:352
 msgid "no threads found"
 msgstr "スレッドが見つかりません"
 
-#: src/nodeinfo.c:390 src/xen/xen_hypervisor.c:1288
-#: src/xen/xend_internal.c:3610
+#: src/nodeinfo.c:391 src/xen/xen_hypervisor.c:1288
+#: src/xen/xend_internal.c:3615
 msgid "Invalid parameter count"
 msgstr "無効なパラメーターカウントです"
 
-#: src/nodeinfo.c:421 src/nodeinfo.c:430 src/nodeinfo.c:439 src/nodeinfo.c:448
+#: src/nodeinfo.c:422 src/nodeinfo.c:431 src/nodeinfo.c:440 src/nodeinfo.c:449
 msgid "Field kernel cpu time too long for destination"
 msgstr "kernel cpu time の項目が宛先に対して長すぎます"
 
-#: src/nodeinfo.c:464
+#: src/nodeinfo.c:465
 msgid "Invalid cpu number"
 msgstr "無効な CPU 番号"
 
-#: src/nodeinfo.c:508
+#: src/nodeinfo.c:509
 msgid "Invalid stats count"
 msgstr "無効な統計カウント"
 
-#: src/nodeinfo.c:531
+#: src/nodeinfo.c:532
 msgid "no prefix found"
 msgstr "プレフィックスが見つかりません"
 
-#: src/nodeinfo.c:550
+#: src/nodeinfo.c:551
 msgid "Field kernel memory too long for destination"
 msgstr "kernel memory の項目が宛先に対して長すぎます"
 
-#: src/nodeinfo.c:564
+#: src/nodeinfo.c:565
 msgid "no available memory line found"
 msgstr "利用可能なメモリーラインが見つかりませんでした"
 
-#: src/nodeinfo.c:657
+#: src/nodeinfo.c:659
 msgid "node info not implemented on this platform"
 msgstr "このプラットフォームではノード情報は実装されていません。"
 
-#: src/nodeinfo.c:686
+#: src/nodeinfo.c:688
 msgid "node CPU stats not implemented on this platform"
 msgstr "ノード CPU の統計はこのプラットフォームにおいて実装されていません"
 
-#: src/nodeinfo.c:716 src/nodeinfo.c:870 src/nodeinfo.c:908
+#: src/nodeinfo.c:718 src/nodeinfo.c:872 src/nodeinfo.c:910
 msgid "NUMA not supported on this host"
 msgstr "このホストにおいて NUMA はサポートされません"
 
-#: src/nodeinfo.c:725
+#: src/nodeinfo.c:727
 msgid "Invalid cell number"
 msgstr "無効なセル番号です"
 
-#: src/nodeinfo.c:752
+#: src/nodeinfo.c:754
 msgid "node memory stats not implemented on this platform"
 msgstr "ノードメモリーの統計はこのプラットフォームにおいて実装されていません"
 
-#: src/nodeinfo.c:776
+#: src/nodeinfo.c:778
 msgid "node cpumap not implemented on this platform"
 msgstr "node cpumap はこのプラットフォームにおいて実装されていません"
 
-#: src/nodeinfo.c:876
+#: src/nodeinfo.c:878
 #, c-format
 msgid "start cell %d out of range (0-%d)"
 msgstr "セル %d を開始、範囲外です (0-%d)"
 
-#: src/nodeinfo.c:888
+#: src/nodeinfo.c:890
 #, c-format
 msgid "Failed to query NUMA free memory for node: %d"
 msgstr "ノードの NUMA 空きメモリーの問い合わせに失敗しました: %d"
 
-#: src/nodeinfo.c:916
+#: src/nodeinfo.c:918
 msgid "Failed to query NUMA free memory"
 msgstr "NUMA 空きメモリーの問い合わせに失敗しました"
 
-#: src/nodeinfo.c:937 src/nodeinfo.c:944
+#: src/nodeinfo.c:939 src/nodeinfo.c:946
 msgid "NUMA memory information not available on this platform"
 msgstr "NUMA メモリー情報はこのプラットフォーム上では使用できません"
 
@@ -9391,7 +9478,7 @@ msgstr "ディスクパス %s に対するアクセスを許可できません"
 msgid "Unable to deny access for disk path %s"
 msgstr "ディスクパス %s に対するアクセスを拒否できません"
 
-#: src/qemu/qemu_cgroup.c:166 src/qemu/qemu_migration.c:3089
+#: src/qemu/qemu_cgroup.c:166 src/qemu/qemu_migration.c:3208
 #, c-format
 msgid "Unable to allow device %s for %s"
 msgstr "デバイス %s を %s に対して許可できません"
@@ -9456,9 +9543,9 @@ msgid "Unable to set cpuset.mems for domain %s"
 msgstr "ドメイン %s に対して cpuset.mems を設定できません"
 
 #: src/qemu/qemu_cgroup.c:491 src/qemu/qemu_cgroup.c:582
-#: src/qemu/qemu_driver.c:5102 src/qemu/qemu_driver.c:5331
+#: src/qemu/qemu_driver.c:5108 src/qemu/qemu_driver.c:5337
 #: src/qemu/qemu_hotplug.c:1081 src/qemu/qemu_hotplug.c:1623
-#: src/qemu/qemu_hotplug.c:1727 src/qemu/qemu_migration.c:3077
+#: src/qemu/qemu_hotplug.c:1727 src/qemu/qemu_migration.c:3196
 #, c-format
 msgid "Unable to find cgroup for %s"
 msgstr "%s の cgroup を見つけられません"
@@ -10010,7 +10097,7 @@ msgstr "pit タイマーはサポートされません"
 msgid "hypervisor lacks deviceboot feature"
 msgstr "ハイパーバイザーがデバイスブートの機能はありません"
 
-#: src/qemu/qemu_command.c:4466 src/qemu/qemu_driver.c:5094
+#: src/qemu/qemu_command.c:4466 src/qemu/qemu_driver.c:5100
 #, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "ディスク '%s' 用のドライバー名 '%s' にはサポートがありません"
@@ -10525,7 +10612,7 @@ msgstr "予期しない非同期ジョブ %d"
 msgid "domain is no longer running"
 msgstr "ドメインはもはや実行中ではありません"
 
-#: src/qemu/qemu_domain.c:1166 src/qemu/qemu_driver.c:9287
+#: src/qemu/qemu_domain.c:1166 src/qemu/qemu_driver.c:9293
 msgid "cannot get host CPU capabilities"
 msgstr "ホスト CPU ケイパビリティを取得できません"
 
@@ -10666,27 +10753,27 @@ msgstr "予期しない QEMU URI パス '%s'、qemu:///session を試して下�
 msgid "no domain with matching id %d"
 msgstr "一致する id %d のドメインはありません"
 
-#: src/qemu/qemu_driver.c:1222 src/qemu/qemu_driver.c:8785
-#: src/qemu/qemu_driver.c:9053
+#: src/qemu/qemu_driver.c:1222 src/qemu/qemu_driver.c:8791
+#: src/qemu/qemu_driver.c:9059
 #, c-format
 msgid "no domain with matching name '%s'"
 msgstr "'%s' と一致する名前を持つドメインがありません"
 
-#: src/qemu/qemu_driver.c:1534 src/qemu/qemu_migration.c:2880
-#: src/qemu/qemu_migration.c:3007 src/qemu/qemu_process.c:574
-#: src/qemu/qemu_process.c:3711
+#: src/qemu/qemu_driver.c:1534 src/qemu/qemu_migration.c:2999
+#: src/qemu/qemu_migration.c:3126 src/qemu/qemu_process.c:574
+#: src/qemu/qemu_process.c:3723
 msgid "resume operation failed"
 msgstr "レジューム操作は失敗しました"
 
 #: src/qemu/qemu_driver.c:1590 src/qemu/qemu_driver.c:1668
-#: src/qemu/qemu_driver.c:9598 src/qemu/qemu_driver.c:9626
-#: src/qemu/qemu_driver.c:12566
+#: src/qemu/qemu_driver.c:9604 src/qemu/qemu_driver.c:9632
+#: src/qemu/qemu_driver.c:12570
 msgid "QEMU guest agent is not available due to an error"
 msgstr "QEMU ゲストエージェントがエラーのため利用可能ではありません"
 
 #: src/qemu/qemu_driver.c:1595 src/qemu/qemu_driver.c:1673
-#: src/qemu/qemu_driver.c:9604 src/qemu/qemu_driver.c:9633
-#: src/qemu/qemu_driver.c:12572
+#: src/qemu/qemu_driver.c:9610 src/qemu/qemu_driver.c:9639
+#: src/qemu/qemu_driver.c:12576
 msgid "QEMU guest agent is not configured"
 msgstr "QEMU ゲストエージェントが設定されていません"
 
@@ -10724,89 +10811,89 @@ msgstr "ドメインの cputime を読み込めません"
 msgid "failed to write header to domain save file '%s'"
 msgstr "ヘッダーをドメイン保存ファイル '%s' に書き込みできませんでした"
 
-#: src/qemu/qemu_driver.c:2404 src/qemu/qemu_driver.c:4368
+#: src/qemu/qemu_driver.c:2404 src/qemu/qemu_driver.c:4374
 #, c-format
 msgid "failed to write xml to '%s'"
 msgstr "XML を '%s' に書き込みできません"
 
-#: src/qemu/qemu_driver.c:2457
+#: src/qemu/qemu_driver.c:2463
 #, c-format
 msgid "unable to open %s"
 msgstr "%s を開けません"
 
-#: src/qemu/qemu_driver.c:2472 src/qemu/qemu_driver.c:2496
+#: src/qemu/qemu_driver.c:2478 src/qemu/qemu_driver.c:2502
 #, c-format
 msgid "Failed to create file '%s'"
 msgstr "ファイル '%s' の作成に失敗しました"
 
-#: src/qemu/qemu_driver.c:2487
+#: src/qemu/qemu_driver.c:2493
 #, c-format
 msgid "Failed to create file '%s': couldn't determine fs type"
 msgstr ""
 "ファイル '%s' の作成に失敗しました: ファイルシステムの形式がわかりませんでし"
 "た"
 
-#: src/qemu/qemu_driver.c:2508
+#: src/qemu/qemu_driver.c:2514
 #, c-format
 msgid "Error from child process creating '%s'"
 msgstr "'%s' を作成している子プロセスからエラーが起きました"
 
-#: src/qemu/qemu_driver.c:2558 src/qemu/qemu_driver.c:10264
-#: src/qemu/qemu_migration.c:802
+#: src/qemu/qemu_driver.c:2564 src/qemu/qemu_driver.c:10268
+#: src/qemu/qemu_migration.c:803
 msgid "domain is marked for auto destroy"
 msgstr "ドメインは自動デプロイとして印がつけられています"
 
-#: src/qemu/qemu_driver.c:2586 src/qemu/qemu_driver.c:3092
-#: src/qemu/qemu_driver.c:9695 src/qemu/qemu_driver.c:10086
-#: src/qemu/qemu_driver.c:11005 src/qemu/qemu_driver.c:11056
+#: src/qemu/qemu_driver.c:2592 src/qemu/qemu_driver.c:3098
+#: src/qemu/qemu_driver.c:9698 src/qemu/qemu_driver.c:10089
+#: src/qemu/qemu_driver.c:11009 src/qemu/qemu_driver.c:11060
 #: src/qemu/qemu_hotplug.c:419 src/qemu/qemu_hotplug.c:788
-#: src/qemu/qemu_migration.c:1826 src/qemu/qemu_migration.c:2117
-#: src/qemu/qemu_migration.c:2441 src/qemu/qemu_migration.c:2811
+#: src/qemu/qemu_migration.c:1921 src/qemu/qemu_migration.c:2221
+#: src/qemu/qemu_migration.c:2545 src/qemu/qemu_migration.c:2930
 #: src/qemu/qemu_process.c:552 src/qemu/qemu_process.c:565
 msgid "guest unexpectedly quit"
 msgstr "ゲストが予期せず終了しました"
 
-#: src/qemu/qemu_driver.c:2618
+#: src/qemu/qemu_driver.c:2624
 msgid "failed to get domain xml"
 msgstr "ドメイン XML の取得に失敗しました"
 
-#: src/qemu/qemu_driver.c:2648 src/qemu/qemu_driver.c:2975
-#: src/qemu/qemu_driver.c:3969
+#: src/qemu/qemu_driver.c:2654 src/qemu/qemu_driver.c:2981
+#: src/qemu/qemu_driver.c:3975
 msgid "bypass cache unsupported by this system"
 msgstr "キャッシュのバイパスはこのシステムにサポートされません"
 
-#: src/qemu/qemu_driver.c:2679 src/qemu/qemu_driver.c:2694
-#: src/qemu/qemu_driver.c:3219 src/vbox/vbox_tmpl.c:9067
+#: src/qemu/qemu_driver.c:2685 src/qemu/qemu_driver.c:2700
+#: src/qemu/qemu_driver.c:3225 src/vbox/vbox_tmpl.c:9070
 #, c-format
 msgid "unable to close %s"
 msgstr "%s を閉じられません"
 
-#: src/qemu/qemu_driver.c:2690
+#: src/qemu/qemu_driver.c:2696
 #, c-format
 msgid "unable to write %s"
 msgstr "%s を書き込みできません"
 
-#: src/qemu/qemu_driver.c:2777
+#: src/qemu/qemu_driver.c:2783
 msgid "Invalid save image format specified in configuration file"
 msgstr "無効なイメージ保存形式が設定ファイルにおいて指定されました"
 
-#: src/qemu/qemu_driver.c:2783
+#: src/qemu/qemu_driver.c:2789
 msgid ""
 "Compression program for image format in configuration file isn't available"
 msgstr "設定ファイルにあるイメージ形式に対する圧縮プログラムが利用できません"
 
-#: src/qemu/qemu_driver.c:2997
+#: src/qemu/qemu_driver.c:3003
 #, c-format
 msgid "unable to save file %s"
 msgstr "ファイル %s を保存できません"
 
-#: src/qemu/qemu_driver.c:3029
+#: src/qemu/qemu_driver.c:3035
 msgid "Invalid dump image format specified in configuration file, using raw"
 msgstr ""
 "無効なダンプイメージ形式が設定ファイルにおいて指定されてました、ロー形式を使"
 "用します"
 
-#: src/qemu/qemu_driver.c:3034
+#: src/qemu/qemu_driver.c:3040
 msgid ""
 "Compression program for dump image format in configuration file isn't "
 "available, using raw"
@@ -10814,515 +10901,515 @@ msgstr ""
 "設定ファイルにあるダンプイメージ形式に対する圧縮プログラムが利用できません、"
 "ロー形式を使用します"
 
-#: src/qemu/qemu_driver.c:3130
+#: src/qemu/qemu_driver.c:3136
 msgid "resuming after dump failed"
 msgstr "ダンプ後の再開に失敗しました"
 
-#: src/qemu/qemu_driver.c:3174 src/qemu/qemu_driver.c:7468
+#: src/qemu/qemu_driver.c:3180 src/qemu/qemu_driver.c:7474
 #, c-format
 msgid "no domain matching uuid '%s'"
 msgstr "UUID '%s' に一致するドメインがありません"
 
-#: src/qemu/qemu_driver.c:3193
+#: src/qemu/qemu_driver.c:3199
 msgid "currently is supported only taking screenshots of screen ID 0"
 msgstr "現在は画面 ID 0 のスクリーンショットの取得のみがサポートされます"
 
-#: src/qemu/qemu_driver.c:3204 src/qemu/qemu_driver.c:8306
-#: src/vbox/vbox_tmpl.c:9019
+#: src/qemu/qemu_driver.c:3210 src/qemu/qemu_driver.c:8312
+#: src/vbox/vbox_tmpl.c:9022
 #, c-format
 msgid "mkstemp(\"%s\") failed"
 msgstr "mkstemp(\"%s\") は失敗しました"
 
-#: src/qemu/qemu_driver.c:3225 src/vbox/vbox_tmpl.c:9073
+#: src/qemu/qemu_driver.c:3231 src/vbox/vbox_tmpl.c:9076
 msgid "unable to open stream"
 msgstr "ストリームを開けません"
 
-#: src/qemu/qemu_driver.c:3286
+#: src/qemu/qemu_driver.c:3292
 msgid "Dump failed"
 msgstr "ダンプが失敗しました"
 
-#: src/qemu/qemu_driver.c:3294
+#: src/qemu/qemu_driver.c:3300
 msgid "Resuming after dump failed"
 msgstr "ダンプ後の再開に失敗しました"
 
-#: src/qemu/qemu_driver.c:3365
+#: src/qemu/qemu_driver.c:3371
 msgid "cannot change vcpu count of this domain"
 msgstr "このドメインの仮想 CPU 数を変更できません"
 
-#: src/qemu/qemu_driver.c:3388 src/test/test_driver.c:2174
+#: src/qemu/qemu_driver.c:3394 src/test/test_driver.c:2174
 #: src/xen/xen_driver.c:1126
 #, c-format
 msgid "argument out of range: %d"
 msgstr "引数が範囲外です: %d"
 
-#: src/qemu/qemu_driver.c:3417
+#: src/qemu/qemu_driver.c:3423
 msgid "cannot adjust maximum on running domain"
 msgstr "実行中のドメインにおいて最大値を調整できません"
 
-#: src/qemu/qemu_driver.c:3530
+#: src/qemu/qemu_driver.c:3536
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr "vcpu 数は範囲外です %d > %d"
 
-#: src/qemu/qemu_driver.c:3559 src/qemu/qemu_process.c:1940
+#: src/qemu/qemu_driver.c:3565 src/qemu/qemu_process.c:1949
 msgid "cpu affinity is not supported"
 msgstr "cpu アフィニティはサポートされていません"
 
-#: src/qemu/qemu_driver.c:3566
+#: src/qemu/qemu_driver.c:3572
 msgid "failed to delete vcpupin xml of a running domain"
 msgstr "実行中のドメインの vcpupin XML の削除に失敗しました"
 
-#: src/qemu/qemu_driver.c:3573
+#: src/qemu/qemu_driver.c:3579
 msgid "failed to update or add vcpupin xml of a running domain"
 msgstr "実行中のドメインの vcpupin XML を更新または追加できませんでした"
 
-#: src/qemu/qemu_driver.c:3588
+#: src/qemu/qemu_driver.c:3594
 msgid "failed to delete vcpupin xml of a persistent domain"
 msgstr "永続ドメインの vcpupin XML を削除できませんでした"
 
-#: src/qemu/qemu_driver.c:3595
+#: src/qemu/qemu_driver.c:3601
 msgid "failed to update or add vcpupin xml of a persistent domain"
 msgstr "永続ドメインの vcpupin XML を更新または追加できませんでした"
 
-#: src/qemu/qemu_driver.c:3737
+#: src/qemu/qemu_driver.c:3743
 msgid "cannot list vcpu pinning for an inactive domain"
 msgstr "休止状態のドメインの仮想 CPU ピニングを一覧表示できません"
 
-#: src/qemu/qemu_driver.c:3769
+#: src/qemu/qemu_driver.c:3775
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "仮想 CPU 配置と物理 CPU 時間を取得できません"
 
-#: src/qemu/qemu_driver.c:3787
+#: src/qemu/qemu_driver.c:3793
 msgid "cpu affinity is not available"
 msgstr "cpu アフィニティは使用できません"
 
-#: src/qemu/qemu_driver.c:3986 src/qemu/qemu_driver.c:4006
+#: src/qemu/qemu_driver.c:3992 src/qemu/qemu_driver.c:4012
 #, c-format
 msgid "cannot remove corrupt file: %s"
 msgstr "破損した削除を削除できません: %s"
 
-#: src/qemu/qemu_driver.c:3993
+#: src/qemu/qemu_driver.c:3999
 msgid "failed to read qemu header"
 msgstr "qemu ヘッダーの読み込みに失敗しました"
 
-#: src/qemu/qemu_driver.c:4002
+#: src/qemu/qemu_driver.c:4008
 msgid "save image is incomplete"
 msgstr "保存イメージが不完全です"
 
-#: src/qemu/qemu_driver.c:4050 src/qemu/qemu_driver.c:4155
+#: src/qemu/qemu_driver.c:4056 src/qemu/qemu_driver.c:4161
 #, c-format
 msgid "cannot close file: %s"
 msgstr "ファイルを閉じられません: %s"
 
-#: src/qemu/qemu_driver.c:4111
+#: src/qemu/qemu_driver.c:4117
 #, c-format
 msgid "Invalid compressed save format %d"
 msgstr "無効な圧縮保存形式 %d"
 
-#: src/qemu/qemu_driver.c:4126
+#: src/qemu/qemu_driver.c:4132
 #, c-format
 msgid "Failed to start decompression binary %s"
 msgstr "展開バイナリー %s の開始に失敗しました"
 
-#: src/qemu/qemu_driver.c:4179
+#: src/qemu/qemu_driver.c:4185
 msgid "failed to resume domain"
 msgstr "ドメインの再開に失敗しました"
 
-#: src/qemu/qemu_driver.c:4353
+#: src/qemu/qemu_driver.c:4359
 msgid "new xml too large to fit in file"
 msgstr "新しい XML はファイルに収まるには大きすぎます"
 
-#: src/qemu/qemu_driver.c:4362
+#: src/qemu/qemu_driver.c:4368
 #, c-format
 msgid "cannot seek in '%s'"
 msgstr "'%s' にシークできません"
 
-#: src/qemu/qemu_driver.c:4721
+#: src/qemu/qemu_driver.c:4727
 #, c-format
 msgid "cannot remove managed save file %s"
 msgstr "管理保存ファイル %s を削除できません"
 
-#: src/qemu/qemu_driver.c:4792
+#: src/qemu/qemu_driver.c:4798
 msgid "domain is already running"
 msgstr "ドメインがすでに実行中です"
 
-#: src/qemu/qemu_driver.c:5015
+#: src/qemu/qemu_driver.c:5021
 #, c-format
 msgid "cannot delete inactive domain with %d snapshots"
 msgstr "%d 個のスナップショットを持つ停止状態のドメインを削除できません"
 
-#: src/qemu/qemu_driver.c:5119
+#: src/qemu/qemu_driver.c:5125
 msgid "disk device='lun' is not supported for usb bus"
 msgstr "disk device='lun' は USB バスに対してサポートされません"
 
-#: src/qemu/qemu_driver.c:5166
+#: src/qemu/qemu_driver.c:5172
 #, c-format
 msgid "disk controller bus '%s' cannot be hotplugged."
 msgstr "ディスクコントローラーのバス '%s' はホットプラグできません"
 
-#: src/qemu/qemu_driver.c:5253 src/uml/uml_driver.c:2181
+#: src/qemu/qemu_driver.c:5259 src/uml/uml_driver.c:2181
 msgid "This type of disk cannot be hot unplugged"
 msgstr "この形式のディスクはホットプラグで抜けません"
 
-#: src/qemu/qemu_driver.c:5257
+#: src/qemu/qemu_driver.c:5263
 #, c-format
 msgid "disk device type '%s' cannot be detached"
 msgstr "ディスクデバイス形式 '%s' は切断できません"
 
-#: src/qemu/qemu_driver.c:5278
+#: src/qemu/qemu_driver.c:5284
 #, c-format
 msgid "disk controller bus '%s' cannot be hotunplugged."
 msgstr "ディスクコントローラーのバス '%s' はホットプラグで抜けません"
 
-#: src/qemu/qemu_driver.c:5310 src/uml/uml_driver.c:2185
+#: src/qemu/qemu_driver.c:5316 src/uml/uml_driver.c:2185
 msgid "This type of device cannot be hot unplugged"
 msgstr "この形式のデバイスはホットプラグで抜けません"
 
-#: src/qemu/qemu_driver.c:5429
+#: src/qemu/qemu_driver.c:5435
 #, c-format
 msgid "mac %s already exists"
 msgstr "MAC アドレス %s がすでに存在します"
 
-#: src/qemu/qemu_driver.c:5445
+#: src/qemu/qemu_driver.c:5451
 msgid "device is already in the domain configuration"
 msgstr "デバイスはすでにドメインの設定にあります"
 
-#: src/qemu/qemu_driver.c:5461
+#: src/qemu/qemu_driver.c:5467
 #, c-format
 msgid "Lease %s in lockspace %s already exists"
 msgstr "リース %s がロック空間 %s にすでに存在します"
 
-#: src/qemu/qemu_driver.c:5508
+#: src/qemu/qemu_driver.c:5514
 #, c-format
 msgid "no nic of mac %s"
 msgstr "MAC アドレス %s の NIC がありません"
 
-#: src/qemu/qemu_driver.c:5520
+#: src/qemu/qemu_driver.c:5526
 msgid "device not present in domain configuration"
 msgstr "デバイスはドメインの設定にありません"
 
-#: src/qemu/qemu_driver.c:5532 src/qemu/qemu_hotplug.c:2363
+#: src/qemu/qemu_driver.c:5538 src/qemu/qemu_hotplug.c:2363
 #, c-format
 msgid "Lease %s in lockspace %s does not exist"
 msgstr "リース %s がロック空間 %s が存在しません"
 
-#: src/qemu/qemu_driver.c:5598
+#: src/qemu/qemu_driver.c:5604
 #, c-format
 msgid "mac %s doesn't exist"
 msgstr "MAC アドレス %s が存在しません"
 
-#: src/qemu/qemu_driver.c:5669
+#: src/qemu/qemu_driver.c:5675
 msgid "cannot do live update a device on inactive domain"
 msgstr "停止状態のドメインにおいてデバイスを動的更新できません"
 
-#: src/qemu/qemu_driver.c:6052
+#: src/qemu/qemu_driver.c:6058
 #, c-format
 msgid "unable to parse device weight '%s'"
 msgstr "device weight '%s' を構文解析できません"
 
-#: src/qemu/qemu_driver.c:6187
+#: src/qemu/qemu_driver.c:6193
 #, c-format
 msgid "Unable to set io device weight for path %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6371 src/qemu/qemu_driver.c:6411
+#: src/qemu/qemu_driver.c:6377 src/qemu/qemu_driver.c:6417
 #: src/util/virtypedparam.c:143
 #, c-format
 msgid "Field name '%s' too long"
 msgstr "フィールド名 '%s' が長すぎます"
 
-#: src/qemu/qemu_driver.c:6480 src/qemu/qemu_driver.c:6587
-#: src/qemu/qemu_driver.c:6918
+#: src/qemu/qemu_driver.c:6486 src/qemu/qemu_driver.c:6593
+#: src/qemu/qemu_driver.c:6924
 msgid "cgroup memory controller is not mounted"
 msgstr "cgroup メモリーコントローラーがマウントされていません"
 
-#: src/qemu/qemu_driver.c:6749
+#: src/qemu/qemu_driver.c:6755
 msgid "cgroup cpuset controller is not mounted"
 msgstr "cgroup cpuset コントローラーがマウントされていません"
 
-#: src/qemu/qemu_driver.c:6769
+#: src/qemu/qemu_driver.c:6775
 msgid "can't change numa mode for running domain"
 msgstr "実行中のドメインに対して NUMA モードを変更できません"
 
-#: src/qemu/qemu_driver.c:6786
+#: src/qemu/qemu_driver.c:6792
 msgid "change of nodeset for running domain requires strict numa mode"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6794
+#: src/qemu/qemu_driver.c:6800
 msgid "unable to set numa tunable"
 msgstr "NUMA を調整可能に設定できません"
 
-#: src/qemu/qemu_driver.c:6956
+#: src/qemu/qemu_driver.c:6962
 msgid "unable to get numa nodeset"
 msgstr "NUMA のノードセットを取得できません"
 
-#: src/qemu/qemu_driver.c:7064
+#: src/qemu/qemu_driver.c:7070
 #, c-format
 msgid "Unable to find vcpu cgroup for %s(vcpu: %d)"
 msgstr "%s の 仮想 CPU の cgroup を見つけられません (仮想 CPU: %d)"
 
-#: src/qemu/qemu_driver.c:7281
+#: src/qemu/qemu_driver.c:7287
 #, c-format
 msgid "Unable to find vcpu cgroup for %s(vcpu: 0)"
 msgstr "%s の 仮想 CPU の cgroup を見つけられません (仮想 CPU: 0)"
 
-#: src/qemu/qemu_driver.c:7445
+#: src/qemu/qemu_driver.c:7451
 msgid "empty path"
 msgstr "パスが空白です"
 
-#: src/qemu/qemu_driver.c:7453
+#: src/qemu/qemu_driver.c:7459
 #, c-format
 msgid "size must be less than %llu"
 msgstr "容量は %llu より小さくなければいけません"
 
-#: src/qemu/qemu_driver.c:7485 src/qemu/qemu_driver.c:7550
-#: src/qemu/qemu_driver.c:7636 src/test/test_driver.c:2799
+#: src/qemu/qemu_driver.c:7491 src/qemu/qemu_driver.c:7556
+#: src/qemu/qemu_driver.c:7642 src/test/test_driver.c:2799
 #, c-format
 msgid "invalid path: %s"
 msgstr "無効なパスです: %s"
 
-#: src/qemu/qemu_driver.c:7557 src/qemu/qemu_driver.c:7643
+#: src/qemu/qemu_driver.c:7563 src/qemu/qemu_driver.c:7649
 #: src/qemu/qemu_hotplug.c:78
 #, c-format
 msgid "missing disk device alias name for %s"
 msgstr "%s に対するディスクデバイスのエイリアス名がありません"
 
-#: src/qemu/qemu_driver.c:7815 src/test/test_driver.c:2854
+#: src/qemu/qemu_driver.c:7821 src/test/test_driver.c:2854
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "無効なパス、'%s' は不明なインターフェイスです"
 
-#: src/qemu/qemu_driver.c:7829
+#: src/qemu/qemu_driver.c:7835
 msgid "interface stats not implemented on this platform"
 msgstr "インターフェースの統計はこのプラットフォームにおいてサポートされません"
 
-#: src/qemu/qemu_driver.c:7885 src/qemu/qemu_driver.c:7893
-#: src/qemu/qemu_driver.c:8057
+#: src/qemu/qemu_driver.c:7891 src/qemu/qemu_driver.c:7899
+#: src/qemu/qemu_driver.c:8063
 #, c-format
 msgid "Can't find device %s"
 msgstr "デバイス %s を見つけられません"
 
-#: src/qemu/qemu_driver.c:8170
+#: src/qemu/qemu_driver.c:8176
 msgid "cannot get RSS for domain"
 msgstr "ドメインの RSS を取得できません"
 
-#: src/qemu/qemu_driver.c:8217 src/qemu/qemu_driver.c:8382
+#: src/qemu/qemu_driver.c:8223 src/qemu/qemu_driver.c:8388
 #: src/uml/uml_driver.c:2332
 msgid "NULL or empty path"
 msgstr "NULL または空のパス"
 
-#: src/qemu/qemu_driver.c:8224 src/uml/uml_driver.c:2339
+#: src/qemu/qemu_driver.c:8230 src/uml/uml_driver.c:2339
 #, c-format
 msgid "invalid path '%s'"
 msgstr "無効なパス '%s'"
 
-#: src/qemu/qemu_driver.c:8233
+#: src/qemu/qemu_driver.c:8239
 #, c-format
 msgid "%s: failed to open"
 msgstr "%s: 開くのに失敗"
 
-#: src/qemu/qemu_driver.c:8244
+#: src/qemu/qemu_driver.c:8250
 #, c-format
 msgid "%s: failed to seek or read"
 msgstr "%s: 探索、又は読み込みに失敗"
 
-#: src/qemu/qemu_driver.c:8285
+#: src/qemu/qemu_driver.c:8291
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr ""
 "flags パラメーターは VIR_MEMORY_VIRTUAL または VIR_MEMORY_PHYSICAL でなければ"
 "いけません"
 
-#: src/qemu/qemu_driver.c:8330
+#: src/qemu/qemu_driver.c:8336
 #, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "テンプレート %s で作成された一時ファイルの読み込みに失敗しました"
 
-#: src/qemu/qemu_driver.c:8389
+#: src/qemu/qemu_driver.c:8395
 #, c-format
 msgid "invalid path %s not assigned to domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8395
+#: src/qemu/qemu_driver.c:8401
 #, c-format
 msgid "disk %s does not currently have a source assigned"
 msgstr "ディスク %s は現在ソースが割り当てられていません"
 
-#: src/qemu/qemu_driver.c:8405
+#: src/qemu/qemu_driver.c:8411
 #, c-format
 msgid "failed to open path '%s'"
 msgstr "パス '%s' のオープンに失敗しました"
 
-#: src/qemu/qemu_driver.c:8413
+#: src/qemu/qemu_driver.c:8419
 #, c-format
 msgid "unknown disk format %s for %s"
 msgstr "未知のディスク形式 %s が %s に対してあります"
 
-#: src/qemu/qemu_driver.c:8442 src/storage/storage_backend.c:1011
+#: src/qemu/qemu_driver.c:8448 src/storage/storage_backend.c:1011
 #: src/storage/storage_backend.c:1039 src/storage/storage_backend.c:1159
 #: src/util/storage_file.c:744 src/util/storage_file.c:840
 #, c-format
 msgid "cannot stat file '%s'"
 msgstr "ファイル '%s' の統計が出来ません"
 
-#: src/qemu/qemu_driver.c:8464
+#: src/qemu/qemu_driver.c:8470
 #, c-format
 msgid "failed to seek to end of %s"
 msgstr "%s の最後までシークできませんでした"
 
-#: src/qemu/qemu_driver.c:8618 src/qemu/qemu_driver.c:8690
-#: src/qemu/qemu_driver.c:8930 src/qemu/qemu_driver.c:8965
+#: src/qemu/qemu_driver.c:8624 src/qemu/qemu_driver.c:8696
+#: src/qemu/qemu_driver.c:8936 src/qemu/qemu_driver.c:8971
 msgid "no domain XML passed"
 msgstr "ドメイン XML が渡されていません"
 
-#: src/qemu/qemu_driver.c:8623 src/qemu/qemu_driver.c:8970
+#: src/qemu/qemu_driver.c:8629 src/qemu/qemu_driver.c:8976
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr ""
 "PrepareTunnel が呼び出されましたが、TUNNELLED フラグが設定されていません"
 
-#: src/qemu/qemu_driver.c:8628 src/qemu/qemu_driver.c:8975
+#: src/qemu/qemu_driver.c:8634 src/qemu/qemu_driver.c:8981
 msgid "tunnelled migration requested but NULL stream passed"
 msgstr ""
 "トンネルマイグレーションが要求されましたが、NULL ストリームが渡されました"
 
-#: src/qemu/qemu_driver.c:8634 src/qemu/qemu_driver.c:8674
-#: src/qemu/qemu_driver.c:8729
+#: src/qemu/qemu_driver.c:8640 src/qemu/qemu_driver.c:8680
+#: src/qemu/qemu_driver.c:8735
 #, c-format
 msgid "Cannot use migrate v2 protocol with lock manager %s"
 msgstr ""
 "ロックマネージャー %s を用いてマイグレーション v2 プロトコルを使用できません"
 
-#: src/qemu/qemu_driver.c:8684 src/qemu/qemu_driver.c:8924
+#: src/qemu/qemu_driver.c:8690 src/qemu/qemu_driver.c:8930
 msgid "Tunnelled migration requested but invalid RPC method called"
 msgstr ""
 "トンネルマイグレーションが要求されましたが、無効な RPC 方式が呼び出されました"
 
-#: src/qemu/qemu_driver.c:8872 src/qemu/qemu_migration.c:1360
+#: src/qemu/qemu_driver.c:8878 src/qemu/qemu_migration.c:1362
 msgid "domain disappeared"
 msgstr "ドメインが消えました"
 
-#: src/qemu/qemu_driver.c:9159 src/xen/xen_driver.c:1969
+#: src/qemu/qemu_driver.c:9165 src/xen/xen_driver.c:1969
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr "デバイス %s  PCI デバイスではありません"
 
-#: src/qemu/qemu_driver.c:9223
+#: src/qemu/qemu_driver.c:9229
 #, c-format
 msgid "PCI device %s is still in use by domain %s"
 msgstr "PCI デバイス %s はまだドメイン %s により使用中です"
 
-#: src/qemu/qemu_driver.c:9227
+#: src/qemu/qemu_driver.c:9233
 #, c-format
 msgid "PCI device %s is still in use"
 msgstr "PCI デバイス %s はまだ使用中です"
 
-#: src/qemu/qemu_driver.c:9395
+#: src/qemu/qemu_driver.c:9401
 msgid "no job is active on the domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9399
+#: src/qemu/qemu_driver.c:9405
 msgid "cannot abort incoming migration; use virDomainDestroy instead"
 msgstr ""
 "入力中のマイグレーションを中断できません、代わりに virDomainDestroy を使用し"
 "ます"
 
-#: src/qemu/qemu_driver.c:9457
+#: src/qemu/qemu_driver.c:9463
 msgid "domain is not being migrated"
 msgstr "ドメインはマイグレーションされていません"
 
-#: src/qemu/qemu_driver.c:9581
+#: src/qemu/qemu_driver.c:9587
 #, c-format
 msgid "Disk '%s' does not support snapshotting"
 msgstr "ディスク '%s' はスナップショットをサポートしません"
 
-#: src/qemu/qemu_driver.c:9729 src/qemu/qemu_driver.c:10182
+#: src/qemu/qemu_driver.c:9732 src/qemu/qemu_driver.c:10186
 msgid "resuming after snapshot failed"
 msgstr "スナップショット失敗後に再開中"
 
-#: src/qemu/qemu_driver.c:9759
+#: src/qemu/qemu_driver.c:9762
 msgid "reuse is not supported with this QEMU binary"
 msgstr "reuse はこの QEMU バイナリーでサポートされません"
 
-#: src/qemu/qemu_driver.c:9770
+#: src/qemu/qemu_driver.c:9773
 #, c-format
 msgid ""
 "active qemu domains require external disk snapshots; disk %s requested "
 "internal"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9778
+#: src/qemu/qemu_driver.c:9781
 #, c-format
 msgid "internal snapshot for disk %s unsupported for storage type %s"
 msgstr ""
 "ディスク %s の内部スナップショットはストレージ形式 %s に対してサポートされま"
 "せん"
 
-#: src/qemu/qemu_driver.c:9796
+#: src/qemu/qemu_driver.c:9799
 #, c-format
 msgid "external snapshot format for disk %s is unsupported: %s"
 msgstr "ディスク %s に対する外部スナップショット形式はサポートされません: %s"
 
-#: src/qemu/qemu_driver.c:9804
+#: src/qemu/qemu_driver.c:9807
 #, c-format
 msgid "unable to stat for disk %s: %s"
 msgstr "ディスク %s の統計情報を取得できません: %s"
 
-#: src/qemu/qemu_driver.c:9810
+#: src/qemu/qemu_driver.c:9813
 #, c-format
 msgid ""
 "external snapshot file for disk %s already exists and is not a block device: "
 "%s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9825 src/qemu/qemu_driver.c:9878
+#: src/qemu/qemu_driver.c:9828 src/qemu/qemu_driver.c:9881
 msgid "unexpected code path"
 msgstr "予期しないコードパスです"
 
-#: src/qemu/qemu_driver.c:9832
+#: src/qemu/qemu_driver.c:9835
 msgid "disk snapshots require at least one disk to be selected for snapshot"
 msgstr ""
 "ディスクスナップショットは少なくとも一つのスナップショットを選択する必要があ"
 "ります"
 
-#: src/qemu/qemu_driver.c:9842
+#: src/qemu/qemu_driver.c:9845
 msgid "atomic live snapshot of multiple disks is unsupported"
 msgstr "複数ディスクの原子性のあるライブスナップショットはサポートされません"
 
-#: src/qemu/qemu_driver.c:10240
+#: src/qemu/qemu_driver.c:10244
 msgid "quiesce requires disk-only"
 msgstr "quiesce は disk-only が必要です"
 
-#: src/qemu/qemu_driver.c:10269
+#: src/qemu/qemu_driver.c:10273
 msgid "cannot halt after transient domain snapshot"
 msgstr "一時ドメインのスナップショット後に停止できません"
 
-#: src/qemu/qemu_driver.c:10283
+#: src/qemu/qemu_driver.c:10287
 #, c-format
 msgid "cannot set snapshot %s as its own parent"
 msgstr "スナップショット %s を自身の親として設定できません"
 
-#: src/qemu/qemu_driver.c:10290
+#: src/qemu/qemu_driver.c:10294
 #, c-format
 msgid "parent %s for snapshot %s not found"
 msgstr "親 %s （スナップショット %s）が見つかりません"
 
-#: src/qemu/qemu_driver.c:10297
+#: src/qemu/qemu_driver.c:10301
 #, c-format
 msgid "parent %s would create cycle to %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10315
+#: src/qemu/qemu_driver.c:10319
 #, c-format
 msgid "definition for snapshot %s must use uuid %s"
 msgstr "スナップショット %s は UUID %s を使用する必要があります"
 
-#: src/qemu/qemu_driver.c:10326
+#: src/qemu/qemu_driver.c:10330
 #, c-format
 msgid "cannot change between online and offline snapshot state in snapshot %s"
 msgstr ""
 "スナップショット %s においてスナップショットのオンライン状態とオフライン状態"
 "の間で変更できません"
 
-#: src/qemu/qemu_driver.c:10334
+#: src/qemu/qemu_driver.c:10338
 #, c-format
 msgid ""
 "cannot change between disk snapshot and system checkpoint in snapshot %s"
@@ -11330,200 +11417,200 @@ msgstr ""
 "スナップショット %s においてディスクスナップショットとシステムチェックポイン"
 "トの間で変更できません"
 
-#: src/qemu/qemu_driver.c:10433
+#: src/qemu/qemu_driver.c:10437
 msgid "disk snapshots of inactive domains not implemented yet"
 msgstr "停止状態のドメインのディスクスナップショットはまだ実装されていません"
 
-#: src/qemu/qemu_driver.c:10583 src/qemu/qemu_driver.c:10623
-#: src/qemu/qemu_driver.c:10730 src/qemu/qemu_driver.c:10808
-#: src/qemu/qemu_driver.c:10878 src/qemu/qemu_driver.c:11239
+#: src/qemu/qemu_driver.c:10587 src/qemu/qemu_driver.c:10627
+#: src/qemu/qemu_driver.c:10734 src/qemu/qemu_driver.c:10812
+#: src/qemu/qemu_driver.c:10882 src/qemu/qemu_driver.c:11243
 #, c-format
 msgid "no domain snapshot with matching name '%s'"
 msgstr "名前 '%s' と一致するドメインスナップショットがありません"
 
-#: src/qemu/qemu_driver.c:10665
+#: src/qemu/qemu_driver.c:10669
 #, c-format
 msgid "no snapshot with matching name '%s'"
 msgstr "名前 '%s' と一致するスナップショットがありません"
 
-#: src/qemu/qemu_driver.c:10772
+#: src/qemu/qemu_driver.c:10776
 msgid "the domain does not have a current snapshot"
 msgstr "ドメインは現行のスナップショットを持ちません"
 
-#: src/qemu/qemu_driver.c:10889
+#: src/qemu/qemu_driver.c:10893
 msgid ""
 "transient domain needs to request run or pause to revert to inactive snapshot"
 msgstr ""
 "一時ドメインは非稼動のスナップショットを復元するために実行または一時停止する"
 "必要があります"
 
-#: src/qemu/qemu_driver.c:10895
+#: src/qemu/qemu_driver.c:10899
 msgid "revert to external disk snapshot not supported yet"
 msgstr "外部ディスクスナップショットへの復元はまだサポートされていません"
 
-#: src/qemu/qemu_driver.c:10902
+#: src/qemu/qemu_driver.c:10906
 #, c-format
 msgid "snapshot '%s' lacks domain '%s' rollback info"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10912
+#: src/qemu/qemu_driver.c:10916
 msgid "must respawn qemu to start inactive snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11254
+#: src/qemu/qemu_driver.c:11258
 #, c-format
 msgid "deletion of %d external disk snapshots not supported yet"
 msgstr "%d 個の外部ディスクスナップショットの削除はまだサポートされていません"
 
-#: src/qemu/qemu_driver.c:11281
+#: src/qemu/qemu_driver.c:11285
 #, c-format
 msgid "failed to set snapshot '%s' as current"
 msgstr "スナップショット '%s' を現行として設定できませんでした"
 
-#: src/qemu/qemu_driver.c:11414
+#: src/qemu/qemu_driver.c:11418
 #, c-format
 msgid "No monitor connection for pid %u"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11419
+#: src/qemu/qemu_driver.c:11423
 #, c-format
 msgid "Cannot connect to monitor connection of type '%s' for pid %u"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11536
+#: src/qemu/qemu_driver.c:11541
 #, c-format
 msgid "cannot find character device %s"
 msgstr "キャラクターデバイス %s を見つけられませんでした"
 
-#: src/qemu/qemu_driver.c:11556
+#: src/qemu/qemu_driver.c:11561
 msgid "Active console session exists for this domain"
 msgstr "使用中のコンソールセッションがこのドメインに対して存在します"
 
-#: src/qemu/qemu_driver.c:11596
+#: src/qemu/qemu_driver.c:11600
 msgid "No device found for specified path"
 msgstr "指定されたパスにデバイスが見つかりませんでした"
 
-#: src/qemu/qemu_driver.c:11740
+#: src/qemu/qemu_driver.c:11744
 #, c-format
 msgid "No graphics backend with index %d"
 msgstr "インデックス %d を持つグラフィックバックエンドがありません"
 
-#: src/qemu/qemu_driver.c:11752
+#: src/qemu/qemu_driver.c:11756
 #, c-format
 msgid "Can only open VNC or SPICE graphics backends, not %s"
 msgstr "VNC または SPICEグラフィックバックエンドのみ開けます、%s はできません"
 
-#: src/qemu/qemu_driver.c:11869
+#: src/qemu/qemu_driver.c:11873
 msgid "total and read/write of bytes_sec cannot be set at the same time"
 msgstr "bytes_sec の合計と読み書きは同時に設定できません"
 
-#: src/qemu/qemu_driver.c:11876
+#: src/qemu/qemu_driver.c:11880
 msgid "total and read/write of iops_sec cannot be set at the same time"
 msgstr "iops_sec の合計と読み書きは同時に設定できません"
 
-#: src/qemu/qemu_driver.c:11924
+#: src/qemu/qemu_driver.c:11928
 msgid "Write to config file failed"
 msgstr "設定ファイルへの書き込みに失敗しました"
 
-#: src/qemu/qemu_driver.c:12210
+#: src/qemu/qemu_driver.c:12214
 msgid "QEmu driver does not support modifying<metadata> element"
 msgstr "QEMU ドライバーが <metadata> 要素の変更をサポートしません"
 
-#: src/qemu/qemu_driver.c:12216 src/qemu/qemu_driver.c:12243
-#: src/qemu/qemu_driver.c:12312
+#: src/qemu/qemu_driver.c:12220 src/qemu/qemu_driver.c:12247
+#: src/qemu/qemu_driver.c:12316
 msgid "unknown metadata type"
 msgstr "予期しないメタ情報の形式"
 
-#: src/qemu/qemu_driver.c:12238 src/qemu/qemu_driver.c:12306
+#: src/qemu/qemu_driver.c:12242 src/qemu/qemu_driver.c:12310
 msgid "QEMU driver does not support<metadata> element"
 msgstr "QEMU ドライバーが <metadata> 要素をサポートしません"
 
-#: src/qemu/qemu_driver.c:12319
+#: src/qemu/qemu_driver.c:12323
 msgid "Requested metadata element is not present"
 msgstr "要求された metadata 要素がありません"
 
-#: src/qemu/qemu_driver.c:12348 src/qemu/qemu_driver.c:12362
+#: src/qemu/qemu_driver.c:12352 src/qemu/qemu_driver.c:12366
 msgid "unable to get cpu account"
 msgstr "cpu account を取得できません"
 
-#: src/qemu/qemu_driver.c:12417
+#: src/qemu/qemu_driver.c:12421
 #, c-format
 msgid "start_cpu %d larger than maximum of %d"
 msgstr "start_cpu %d が %d の最大値よりも大きいです"
 
-#: src/qemu/qemu_driver.c:12438
+#: src/qemu/qemu_driver.c:12442
 msgid "cpuacct parse error"
 msgstr "cpuacct 解析エラー"
 
-#: src/qemu/qemu_driver.c:12490
+#: src/qemu/qemu_driver.c:12494
 msgid "cgroup CPUACCT controller is not mounted"
 msgstr "cgroup CPUACCT コントローラーがマウントされていません"
 
-#: src/qemu/qemu_driver.c:12528
+#: src/qemu/qemu_driver.c:12532
 msgid "Duration not supported. Use 0 for now"
 msgstr "間隔の指定はサポートされません。今のところ 0 を使用します"
 
-#: src/qemu/qemu_driver.c:12536
+#: src/qemu/qemu_driver.c:12540
 #, c-format
 msgid "Unknown suspend target: %u"
 msgstr "未知の一時停止ターゲット: %u"
 
-#: src/qemu/qemu_driver.c:12559
+#: src/qemu/qemu_driver.c:12563
 msgid "Unable to suspend domain due to missing system_wakeup monitor command"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12635
+#: src/qemu/qemu_driver.c:12639
 msgid "Unable to wake up domain due to missing system_wakeup monitor command"
 msgstr ""
 
-#: src/qemu/qemu_hostdev.c:234
+#: src/qemu/qemu_hostdev.c:274
 #, c-format
 msgid ""
 "virtualport type %s is currently not supported on interfaces of type hostdev"
 msgstr ""
 
-#: src/qemu/qemu_hostdev.c:271 src/qemu/qemu_hostdev.c:309
+#: src/qemu/qemu_hostdev.c:311 src/qemu/qemu_hostdev.c:349
 msgid ""
 "Interface type hostdev is currently supported on SR-IOV Virtual Functions "
 "only"
 msgstr ""
 
-#: src/qemu/qemu_hostdev.c:363
+#: src/qemu/qemu_hostdev.c:403
 #, c-format
 msgid "PCI device %s is not assignable"
 msgstr "PCI デバイス %s は割り当てできません"
 
-#: src/qemu/qemu_hostdev.c:375
+#: src/qemu/qemu_hostdev.c:415
 #, c-format
 msgid "PCI device %s is in use by domain %s"
 msgstr "PCI デバイス %s はドメイン %s により使用中です"
 
-#: src/qemu/qemu_hostdev.c:379
+#: src/qemu/qemu_hostdev.c:419
 #, c-format
 msgid "PCI device %s is already in use"
 msgstr "PCI デバイス %s はすでに使用中です"
 
-#: src/qemu/qemu_hostdev.c:572
+#: src/qemu/qemu_hostdev.c:609
 #, c-format
 msgid "USB device %s is in use by domain %s"
 msgstr "USB デバイス %s はドメイン %s により使用中です"
 
-#: src/qemu/qemu_hostdev.c:576
+#: src/qemu/qemu_hostdev.c:613
 #, c-format
 msgid "USB device %s is already in use"
 msgstr "USB デバイス %s はすでに使用中です"
 
-#: src/qemu/qemu_hostdev.c:673
+#: src/qemu/qemu_hostdev.c:716
 #, c-format
 msgid "Failed to re-attach PCI device: %s"
 msgstr "PCI デバイスの再接続に失敗しました: %s"
 
-#: src/qemu/qemu_hostdev.c:692
+#: src/qemu/qemu_hostdev.c:735
 #, c-format
 msgid "Failed to allocate pciDeviceList: %s"
 msgstr "pciDeviceList の割り当てに失敗しました: %s"
 
-#: src/qemu/qemu_hostdev.c:741
+#: src/qemu/qemu_hostdev.c:784
 #, c-format
 msgid "Failed to reset PCI device: %s"
 msgstr "PCI デバイスのリセットに失敗しました: %s"
@@ -11761,272 +11848,291 @@ msgstr "グラフィックスパスワードは VNC に対してのみサポー�
 msgid "Expiry of passwords is not supported"
 msgstr "パスワードの期限切れはサポートされません"
 
-#: src/qemu/qemu_migration.c:167
+#: src/qemu/qemu_migration.c:168
 #, c-format
 msgid "unable to read server cert %s"
 msgstr "サーバー証明書 %s を読み込めません"
 
-#: src/qemu/qemu_migration.c:174
+#: src/qemu/qemu_migration.c:175
 #, c-format
 msgid "cannot initialize cert object: %s"
 msgstr "証明書オブジェクトを初期化できません: %s"
 
-#: src/qemu/qemu_migration.c:185
+#: src/qemu/qemu_migration.c:186
 #, c-format
 msgid "cannot load cert data from %s: %s"
 msgstr "%s から証明書データを読み込めません: %s"
 
-#: src/qemu/qemu_migration.c:280
+#: src/qemu/qemu_migration.c:281
 msgid "Unable to obtain host UUID"
 msgstr "ホストの UUID を取得できません"
 
-#: src/qemu/qemu_migration.c:301
+#: src/qemu/qemu_migration.c:302
 msgid "Migration graphics data already present"
 msgstr "マイグレーションのグラフィックデータがすでに存在します"
 
-#: src/qemu/qemu_migration.c:327
+#: src/qemu/qemu_migration.c:328
 msgid "Migration lockstate data already present"
 msgstr "マイグレーションのロック状態データがすでに存在します"
 
-#: src/qemu/qemu_migration.c:358
+#: src/qemu/qemu_migration.c:359
 msgid "Migration persistent data already present"
 msgstr "マイグレーションの永続データはすでに存在します"
 
-#: src/qemu/qemu_migration.c:473
+#: src/qemu/qemu_migration.c:474
 msgid "missing type attribute in migration data"
 msgstr "マイグレーションのデータに type 属性がありません"
 
-#: src/qemu/qemu_migration.c:478
+#: src/qemu/qemu_migration.c:479
 #, c-format
 msgid "unknown graphics type %s"
 msgstr "未知のグラフィックス形式 %s"
 
-#: src/qemu/qemu_migration.c:485
+#: src/qemu/qemu_migration.c:486
 msgid "missing port attribute in migration data"
 msgstr "マイグレーションのデータに port 属性がありません"
 
-#: src/qemu/qemu_migration.c:491
+#: src/qemu/qemu_migration.c:492
 msgid "missing tlsPort attribute in migration data"
 msgstr "マイグレーションのデータに tlsPort 属性がありません"
 
-#: src/qemu/qemu_migration.c:497
+#: src/qemu/qemu_migration.c:498
 msgid "missing listen attribute in migration data"
 msgstr "マイグレーションのデータに listen 属性がありません"
 
-#: src/qemu/qemu_migration.c:534
+#: src/qemu/qemu_migration.c:535
 msgid "missing name element in migration data"
 msgstr "マイグレーションのデータに name 要素がありません"
 
-#: src/qemu/qemu_migration.c:539
+#: src/qemu/qemu_migration.c:540
 #, c-format
 msgid "Incoming cookie data had unexpected name %s vs %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:549
+#: src/qemu/qemu_migration.c:550
 msgid "missing uuid element in migration data"
 msgstr "マイグレーションのデータに uuid 要素がありません"
 
-#: src/qemu/qemu_migration.c:555
+#: src/qemu/qemu_migration.c:556
 #, c-format
 msgid "Incoming cookie data had unexpected UUID %s vs %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:563
+#: src/qemu/qemu_migration.c:564
 msgid "missing hostname element in migration data"
 msgstr "マイグレーションのデータに hostname 要素がありません"
 
-#: src/qemu/qemu_migration.c:568 src/qemu/qemu_migration.c:585
+#: src/qemu/qemu_migration.c:569 src/qemu/qemu_migration.c:586
 #, c-format
 msgid "Attempt to migrate guest to the same host %s"
 msgstr "ゲストを同じホスト %s にマイグレーションしようとします"
 
-#: src/qemu/qemu_migration.c:575
+#: src/qemu/qemu_migration.c:576
 msgid "missing hostuuid element in migration data"
 msgstr "マイグレーションデータに hostuuid 要素がありません"
 
-#: src/qemu/qemu_migration.c:580
+#: src/qemu/qemu_migration.c:581
 msgid "malformed hostuuid element in migration data"
 msgstr "マイグレーションのデータに不正な形式の hostuuid 要素があります"
 
-#: src/qemu/qemu_migration.c:601
+#: src/qemu/qemu_migration.c:602
 msgid "missing feature name"
 msgstr "機能名がありません"
 
-#: src/qemu/qemu_migration.c:607
+#: src/qemu/qemu_migration.c:608
 #, c-format
 msgid "Unknown migration cookie feature %s"
 msgstr "未知のマイグレーションクッキー機能 %s"
 
-#: src/qemu/qemu_migration.c:615
+#: src/qemu/qemu_migration.c:616
 #, c-format
 msgid "Unsupported migration cookie feature %s"
 msgstr "サポートされないマイグレーションクッキー機能 %s"
 
-#: src/qemu/qemu_migration.c:633
+#: src/qemu/qemu_migration.c:634
 msgid "Missing lock driver name in migration cookie"
 msgstr "マイグレーションクッキーにロックドライバー名がありません"
 
-#: src/qemu/qemu_migration.c:645
+#: src/qemu/qemu_migration.c:646
 #, c-format
 msgid "Too many domain elements in migration cookie: %d"
 msgstr "マイグレーションクッキーにあるドメイン要素が多すぎます: %d"
 
-#: src/qemu/qemu_migration.c:681
+#: src/qemu/qemu_migration.c:682
 msgid "(qemu_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
 
-#: src/qemu/qemu_migration.c:743
+#: src/qemu/qemu_migration.c:744
 msgid "Migration cookie was not NULL terminated"
 msgstr "マイグレーションクッキーが NULL で終了していませんでした"
 
-#: src/qemu/qemu_migration.c:763
+#: src/qemu/qemu_migration.c:764
 #, c-format
 msgid "Missing %s lock state for migration cookie"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:770
+#: src/qemu/qemu_migration.c:771
 #, c-format
 msgid "Source host lock driver %s different from target %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:807
+#: src/qemu/qemu_migration.c:808
 #, c-format
 msgid "cannot migrate domain with %d snapshots"
 msgstr "%d 個のスナップショットを持つドメインをマイグレーションできません"
 
-#: src/qemu/qemu_migration.c:816
+#: src/qemu/qemu_migration.c:817
 msgid "Domain with assigned host devices cannot be migrated"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:844
+#: src/qemu/qemu_migration.c:845
 msgid "Migration may lead to data corruption if disks use cache != none"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:913
+#: src/qemu/qemu_migration.c:915
 msgid "is not active"
 msgstr "活動中ではありません"
 
-#: src/qemu/qemu_migration.c:936
+#: src/qemu/qemu_migration.c:938
 msgid "unexpectedly failed"
 msgstr "予期せず失敗しました"
 
-#: src/qemu/qemu_migration.c:942
+#: src/qemu/qemu_migration.c:944
 msgid "canceled by client"
 msgstr "クライアントにより取り消されました"
 
-#: src/qemu/qemu_migration.c:960 src/qemu/qemu_migration.c:1838
+#: src/qemu/qemu_migration.c:962 src/qemu/qemu_migration.c:1933
 msgid "migration job"
 msgstr "マイグレーションジョブ"
 
-#: src/qemu/qemu_migration.c:963
+#: src/qemu/qemu_migration.c:965
 msgid "domain save job"
 msgstr "ドメイン保存ジョブ"
 
-#: src/qemu/qemu_migration.c:966
+#: src/qemu/qemu_migration.c:968
 msgid "domain core dump job"
 msgstr "ドメインコアダンプジョブ"
 
-#: src/qemu/qemu_migration.c:969
+#: src/qemu/qemu_migration.c:971
 msgid "job"
 msgstr "ジョブ"
 
-#: src/qemu/qemu_migration.c:983
+#: src/qemu/qemu_migration.c:985
 msgid "Lost connection to destination host"
 msgstr "宛先ホストへの接続が失われました"
 
-#: src/qemu/qemu_migration.c:1149
+#: src/qemu/qemu_migration.c:1151
 msgid "target domain name doesn't match source name"
 msgstr "ターゲットドメイン名がソース名と一致しません"
 
-#: src/qemu/qemu_migration.c:1299 src/qemu/qemu_migration.c:2009
+#: src/qemu/qemu_migration.c:1301 src/qemu/qemu_migration.c:2113
 msgid "cannot create pipe for tunnelled migration"
 msgstr "トンネルマイグレーションのパイプを"
 
-#: src/qemu/qemu_migration.c:1319
+#: src/qemu/qemu_migration.c:1321
 msgid "cannot pass pipe for tunnelled migration"
 msgstr "トンネルマイグレーションのパイプを"
 
-#: src/qemu/qemu_migration.c:1469
+#: src/qemu/qemu_migration.c:1471
 msgid ""
 "hostname on destination resolved to localhost, but migration requires an FQDN"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1491
+#: src/qemu/qemu_migration.c:1493
 msgid "only tcp URIs are supported for KVM/QEMU migrations"
 msgstr "KVM/QEMU のマイグレーションは TCP の URI のみがサポートされます"
 
-#: src/qemu/qemu_migration.c:1515
+#: src/qemu/qemu_migration.c:1517
 msgid "URI ended with incorrect ':port'"
 msgstr "URI が不正な ':port' で終わりました"
 
-#: src/qemu/qemu_migration.c:1604
+#: src/qemu/qemu_migration.c:1623
+msgid "poll failed in migration tunnel"
+msgstr ""
+
+#: src/qemu/qemu_migration.c:1641
+#, fuzzy
+msgid "failed to read from wakeup fd"
+msgstr "Xen デーモンからの読み込みに失敗しました"
+
+#: src/qemu/qemu_migration.c:1663
 msgid "tunnelled migration failed to read from qemu"
 msgstr "トンネルマイグレーションが QEMU からの読み込みに失敗しました"
 
-#: src/qemu/qemu_migration.c:1650
+#: src/qemu/qemu_migration.c:1707
+#, fuzzy
+msgid "Unable to make pipe"
+msgstr "パイプを作成できません"
+
+#: src/qemu/qemu_migration.c:1723
 msgid "Unable to create migration thread"
 msgstr "マイグレーションのスレッドを作成できません"
 
-#: src/qemu/qemu_migration.c:1746
+#: src/qemu/qemu_migration.c:1747
+#, fuzzy
+msgid "failed to wakeup migration tunnel"
+msgstr "設定ファイルの書き込みに失敗しました"
+
+#: src/qemu/qemu_migration.c:1841
 #, c-format
 msgid "Migration with lock driver %s requires cookie support"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1846
+#: src/qemu/qemu_migration.c:1941
 msgid "failed to accept connection from qemu"
 msgstr "QEMU からの接続の試行に失敗しました"
 
-#: src/qemu/qemu_migration.c:1987
+#: src/qemu/qemu_migration.c:2091
 msgid "Source qemu is too old to support tunnelled migration"
 msgstr "ソースの QEMU はトンネルマイグレーションをサポートするには古すぎます"
 
-#: src/qemu/qemu_migration.c:2413
+#: src/qemu/qemu_migration.c:2517
 #, c-format
 msgid "Failed to connect to remote libvirt URI %s"
 msgstr "リモート libvirt URI %s への接続に失敗しました"
 
-#: src/qemu/qemu_migration.c:2434
+#: src/qemu/qemu_migration.c:2538
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr ""
 "宛先 libvirt がピアツーピアマイグレーションプロトコルをサポートしません"
 
-#: src/qemu/qemu_migration.c:2551 src/qemu/qemu_migration.c:2625
+#: src/qemu/qemu_migration.c:2659 src/qemu/qemu_migration.c:2738
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "失敗後にゲスト %s の再開に失敗しました"
 
-#: src/qemu/qemu_migration.c:2690
+#: src/qemu/qemu_migration.c:2803
 msgid "received unexpected cookie with P2P migration"
 msgstr "P2P マイグレーションで予期しないクッキーを受信しました"
 
-#: src/qemu/qemu_migration.c:2701
+#: src/qemu/qemu_migration.c:2814
 msgid "Unexpected dconnuri parameter with non-peer2peer migration"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2737
+#: src/qemu/qemu_migration.c:2850
 #, c-format
 msgid "Port profile Associate failed for %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2856
+#: src/qemu/qemu_migration.c:2975
 msgid "can't get vmdef"
 msgstr "仮想マシンの定義を取得できません"
 
-#: src/qemu/qemu_migration.c:3130
+#: src/qemu/qemu_migration.c:3249
 msgid "Unable to set cloexec flag"
 msgstr "cloexec フラグを設定できません"
 
-#: src/qemu/qemu_migration.c:3224
+#: src/qemu/qemu_migration.c:3343
 #, c-format
 msgid "migration protocol going backwards %s => %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:3258
+#: src/qemu/qemu_migration.c:3377
 #, c-format
 msgid "domain '%s' is not processing incoming migration"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:3260
+#: src/qemu/qemu_migration.c:3379
 #, c-format
 msgid "domain '%s' is not being migrated"
 msgstr "ドメイン '%s' がマイグレーションされていません"
@@ -13048,115 +13154,115 @@ msgstr "%s ログ出力の読み込み中にタイムアウトしました: %s"
 msgid "no assigned pty for device %s"
 msgstr "デバイス %s に pty が割り当てられていません"
 
-#: src/qemu/qemu_process.c:1592
+#: src/qemu/qemu_process.c:1591
 #, c-format
 msgid "process exited while connecting to monitor: %s"
 msgstr "モニターに接続中にプロセスが終了しました: %s"
 
-#: src/qemu/qemu_process.c:1642
+#: src/qemu/qemu_process.c:1641
 #, c-format
 msgid "got wrong number of vCPU pids from QEMU monitor. got %d, wanted %d"
 msgstr ""
 
-#: src/qemu/qemu_process.c:1733
+#: src/qemu/qemu_process.c:1732
 msgid "Invalid mode for memory NUMA tuning."
 msgstr "メモリー NUMA チューニングに対する無効なモードです。"
 
-#: src/qemu/qemu_process.c:1748
+#: src/qemu/qemu_process.c:1747
 msgid "libvirt is compiled without NUMA tuning support"
 msgstr "libvirt が NUMA チューニングのサポートなしでコンパイルされています"
 
-#: src/qemu/qemu_process.c:1775
+#: src/qemu/qemu_process.c:1774
 msgid "Failed to query numad for the advisory nodeset"
 msgstr ""
 
-#: src/qemu/qemu_process.c:1787
+#: src/qemu/qemu_process.c:1786
 msgid "numad is not available on this host"
 msgstr "numad はこのホストにおいて利用可能ではありません"
 
-#: src/qemu/qemu_process.c:1899
+#: src/qemu/qemu_process.c:1908
 msgid "Setting of link state is not supported by this qemu"
 msgstr "リンクステートの設定はこの QEMU によりサポートされていません"
 
-#: src/qemu/qemu_process.c:1908
+#: src/qemu/qemu_process.c:1917
 #, c-format
 msgid "Couldn't set link state on interface: %s"
 msgstr "インターフェースにおいてリンクステートを設定できませんでした: %s"
 
-#: src/qemu/qemu_process.c:2309
+#: src/qemu/qemu_process.c:2318
 #, c-format
 msgid "cannot find PCI address for VirtIO disk %s"
 msgstr "VirtIO ディスク %s の PCI アドレスを見つけることができません"
 
-#: src/qemu/qemu_process.c:2323
+#: src/qemu/qemu_process.c:2332
 #, c-format
 msgid "cannot find PCI address for %s NIC"
 msgstr "%s NIC の PCI アドレスを見つけることができません"
 
-#: src/qemu/qemu_process.c:2337
+#: src/qemu/qemu_process.c:2346
 #, c-format
 msgid "cannot find PCI address for controller %s"
 msgstr "コントローラー %s の PCI アドレスを見つけることができません"
 
-#: src/qemu/qemu_process.c:2351
+#: src/qemu/qemu_process.c:2360
 #, c-format
 msgid "cannot find PCI address for video adapter %s"
 msgstr "ビデオアダプター %s の PCI アドレスを見つけることができません"
 
-#: src/qemu/qemu_process.c:2365
+#: src/qemu/qemu_process.c:2374
 #, c-format
 msgid "cannot find PCI address for sound adapter %s"
 msgstr "サウンドアダプター %s の PCI アドレスを見つけることができません"
 
-#: src/qemu/qemu_process.c:2378
+#: src/qemu/qemu_process.c:2387
 #, c-format
 msgid "cannot find PCI address for watchdog %s"
 msgstr "watchdog %s の PCI アドレスを見つけることができません"
 
-#: src/qemu/qemu_process.c:2390
+#: src/qemu/qemu_process.c:2399
 #, c-format
 msgid "cannot find PCI address for balloon %s"
 msgstr "バルーン %s の PCI アドレスを見つけることができません"
 
-#: src/qemu/qemu_process.c:2509
+#: src/qemu/qemu_process.c:2518
 #, c-format
 msgid "Unable to pre-create chardev file '%s'"
 msgstr "キャラクターデバイスファイル '%s' を事前作成できません"
 
-#: src/qemu/qemu_process.c:2529
+#: src/qemu/qemu_process.c:2538
 #, c-format
 msgid "cannot limit number of processes to %d"
 msgstr "プロセス数を %d に制限できません"
 
-#: src/qemu/qemu_process.c:2541
+#: src/qemu/qemu_process.c:2550
 #, c-format
 msgid "cannot set max opened files to %d"
 msgstr ""
 
-#: src/qemu/qemu_process.c:3225
+#: src/qemu/qemu_process.c:3237
 msgid "Could not create thread. QEMU initialization might be incomplete"
 msgstr "スレッドを作成できませんでした。QEMU の初期化が不完全かもしれません。"
 
-#: src/qemu/qemu_process.c:3293 src/qemu/qemu_process.c:4080
+#: src/qemu/qemu_process.c:3305 src/qemu/qemu_process.c:4092
 #: src/uml/uml_driver.c:980
 msgid "VM is already active"
 msgstr "VM はすでにアクティブです"
 
-#: src/qemu/qemu_process.c:3371
+#: src/qemu/qemu_process.c:3383
 msgid "Unable to find an unused SPICE port"
 msgstr "未使用の SPICE ポートを見つけられません"
 
-#: src/qemu/qemu_process.c:3385
+#: src/qemu/qemu_process.c:3397
 msgid "Unable to find an unused SPICE TLS port"
 msgstr "未使用の SPICE TLS ポートを見つけられません"
 
-#: src/qemu/qemu_process.c:3397 src/qemu/qemu_process.c:4096
+#: src/qemu/qemu_process.c:3409 src/qemu/qemu_process.c:4108
 #: src/uml/uml_driver.c:1002
 #, c-format
 msgid "cannot create log directory %s"
 msgstr "ログディレクトリー %s を作成できません"
 
-#: src/qemu/qemu_process.c:3410
+#: src/qemu/qemu_process.c:3422
 msgid ""
 "Domain requires KVM, but it is not available. Check that virtualization is "
 "enabled in the host BIOS, and host configuration is setup to load the kvm "
@@ -13166,31 +13272,31 @@ msgstr ""
 "トの BIOS において有効になっていること、およびホストの設定が kvm モジュールを"
 "読み込むために設定されていることを確認してください。"
 
-#: src/qemu/qemu_process.c:3457
+#: src/qemu/qemu_process.c:3469
 msgid "Failed to build pidfile path."
 msgstr "PID ファイルのパスの構築に失敗しました"
 
-#: src/qemu/qemu_process.c:3464
+#: src/qemu/qemu_process.c:3476
 #, c-format
 msgid "Cannot remove stale PID file %s"
 msgstr "期限切れの PID ファイル %s を削除できません"
 
-#: src/qemu/qemu_process.c:3566
+#: src/qemu/qemu_process.c:3578
 #, c-format
 msgid "Domain %s didn't show up"
 msgstr "ドメイン %s が現れませんでした"
 
-#: src/qemu/qemu_process.c:3613
+#: src/qemu/qemu_process.c:3625
 #, c-format
 msgid "cannot stat fd %d"
 msgstr ""
 
-#: src/qemu/qemu_process.c:3692
+#: src/qemu/qemu_process.c:3704
 #, c-format
 msgid "unable to set balloon to %lld"
 msgstr ""
 
-#: src/qemu/qemu_process.c:3911
+#: src/qemu/qemu_process.c:3923
 #, c-format
 msgid "failed to remove ebtables rule to allow MAC address on  '%s'"
 msgstr ""
@@ -13450,7 +13556,7 @@ msgstr "キープアライブ間隔がすでに設定されています"
 msgid "unable to make pipe"
 msgstr "パイプを作成できません"
 
-#: src/rpc/virnetclient.c:530 src/rpc/virnetclient.c:1546
+#: src/rpc/virnetclient.c:530 src/rpc/virnetclient.c:1543
 msgid "failed to wake up polling thread"
 msgstr ""
 
@@ -13472,35 +13578,35 @@ msgstr ""
 msgid "got unexpected RPC call prog %d vers %d proc %d type %d"
 msgstr ""
 
-#: src/rpc/virnetclient.c:1372
+#: src/rpc/virnetclient.c:1376
 msgid "read on wakeup fd failed"
 msgstr ""
 
-#: src/rpc/virnetclient.c:1392
+#: src/rpc/virnetclient.c:1396
 msgid "poll on socket failed"
 msgstr "ソケット上の投票のは失敗しました"
 
-#: src/rpc/virnetclient.c:1440
+#: src/rpc/virnetclient.c:1437
 msgid "received hangup / error event on socket"
 msgstr "ソケット上で切断/エラーのイベントがありました"
 
-#: src/rpc/virnetclient.c:1555
+#: src/rpc/virnetclient.c:1552
 msgid "failed to wait on condition"
 msgstr "条件の待機に失敗しました"
 
-#: src/rpc/virnetclient.c:1681
+#: src/rpc/virnetclient.c:1678
 msgid "Attempt to send an asynchronous message with a synchronous reply"
 msgstr "同期応答で非同期メッセージの送信を試行します"
 
-#: src/rpc/virnetclient.c:1687
+#: src/rpc/virnetclient.c:1684
 msgid "Attempt to send a non-blocking message with a synchronous reply"
 msgstr ""
 
-#: src/rpc/virnetclient.c:1698
+#: src/rpc/virnetclient.c:1695
 msgid "client socket is closed"
 msgstr "クライアントソケットが閉じられました"
 
-#: src/rpc/virnetclient.c:1704
+#: src/rpc/virnetclient.c:1701
 msgid "cannot initialize condition variable"
 msgstr "条件変数を初期化出来ません"
 
@@ -13885,34 +13991,34 @@ msgstr "ソケットにおいてリッスンできません"
 msgid "Unable to accept client"
 msgstr "クライアントを受け取れません"
 
-#: src/rpc/virnetserver.c:245
+#: src/rpc/virnetserver.c:249
 #, c-format
 msgid "Too many active clients (%zu), dropping connection from %s"
 msgstr "有効なクライアントが多すぎます (%zu)、%s からの接続を破棄します"
 
-#: src/rpc/virnetserver.c:366
+#: src/rpc/virnetserver.c:372
 #, c-format
 msgid "Failed to connect to system bus for PolicyKit auth: %s"
 msgstr "PolicyKit auth 用のシステムバスへの接続に失敗: %s"
 
-#: src/rpc/virnetserver.c:489
+#: src/rpc/virnetserver.c:503
 msgid "Failed to read from signal pipe"
 msgstr "シグナルのパイプからの読み込みに失敗しました"
 
-#: src/rpc/virnetserver.c:506
+#: src/rpc/virnetserver.c:520
 #, c-format
 msgid "Unexpected signal received: %d"
 msgstr "予期しないシグナルを受け取りました: %d"
 
-#: src/rpc/virnetserver.c:521
+#: src/rpc/virnetserver.c:535
 msgid "Unable to create signal pipe"
 msgstr "シグナルのパイプを作成できません"
 
-#: src/rpc/virnetserver.c:530
+#: src/rpc/virnetserver.c:544
 msgid "Failed to add signal handle watch"
 msgstr ""
 
-#: src/rpc/virnetserver.c:708
+#: src/rpc/virnetserver.c:720
 msgid "Failed to register shutdown timeout"
 msgstr "シャットダウンのタイムアウトの登録に失敗しました"
 
@@ -15996,8 +16102,8 @@ msgid "cannot attach device on inactive domain"
 msgstr "停止状態のドメインでデバイスを添付できません"
 
 #: src/uml/uml_driver.c:2094 src/uml/uml_driver.c:2206
-#: src/vbox/vbox_tmpl.c:5542 src/vbox/vbox_tmpl.c:5557
-#: src/vbox/vbox_tmpl.c:5713
+#: src/vbox/vbox_tmpl.c:5545 src/vbox/vbox_tmpl.c:5560
+#: src/vbox/vbox_tmpl.c:5716
 msgid "cannot modify the persistent configuration of a domain"
 msgstr "ドメインの永続的な設定を変更できません"
 
@@ -16533,20 +16639,20 @@ msgstr "アドレスのマスクに失敗しました"
 msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
 msgstr "NAT '%s' を試行しました。NAT は IPv4 に対してのみサポートされます"
 
-#: src/util/json.c:927
+#: src/util/json.c:930
 msgid "Unable to create JSON parser"
 msgstr "JSON パーサーを作成できません"
 
-#: src/util/json.c:939
+#: src/util/json.c:942
 #, c-format
 msgid "cannot parse json %s: %s"
 msgstr "JSON %s を構文解析できません: %s"
 
-#: src/util/json.c:1051
+#: src/util/json.c:1054
 msgid "Unable to create JSON formatter"
 msgstr "JSON フォーマッターを作成できません"
 
-#: src/util/json.c:1081 src/util/json.c:1087
+#: src/util/json.c:1084 src/util/json.c:1090
 msgid "No JSON parser implementation is available"
 msgstr "JSON パーサーが利用できません"
 
@@ -17379,9 +17485,9 @@ msgstr "macvtap タップにおいて IFF_VNET_HDR フラグを設定できま�
 msgid "Unable to create macvlan device %s"
 msgstr "macvlan デバイス %s を作成できません"
 
-#: src/util/virnetdevmacvlan.c:1061 src/util/virnetdevmacvlan.c:1068
-#: src/util/virnetdevmacvlan.c:1086 src/util/virnetdevmacvlan.c:1098
-#: src/util/virnetdevmacvlan.c:1110
+#: src/util/virnetdevmacvlan.c:1070 src/util/virnetdevmacvlan.c:1077
+#: src/util/virnetdevmacvlan.c:1095 src/util/virnetdevmacvlan.c:1107
+#: src/util/virnetdevmacvlan.c:1119 src/util/virnetdevmacvlan.c:1131
 msgid "Cannot create macvlan devices on this platform"
 msgstr "このプラットフォームにおいて macvlan デバイスを作成できません"
 
@@ -18391,32 +18497,32 @@ msgstr "virXPathNumber() への無効なパラメーター"
 msgid "Invalid parameter to virXPathLong()"
 msgstr "virXPathLong() への無効なパラメーター"
 
-#: src/util/xml.c:282 src/util/xml.c:406
+#: src/util/xml.c:275 src/util/xml.c:392
 msgid "Invalid parameter to virXPathULong()"
 msgstr "virXPathULong() への無効なパラメーター"
 
-#: src/util/xml.c:460
+#: src/util/xml.c:439
 msgid "Invalid parameter to virXPathLongLong()"
 msgstr "virXPathLongLong() への無効なパラメーター"
 
-#: src/util/xml.c:517
+#: src/util/xml.c:489
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr "virXPathBoolean() への無効なパラメーター"
 
-#: src/util/xml.c:554
+#: src/util/xml.c:526
 msgid "Invalid parameter to virXPathNode()"
 msgstr "virXPathNode() への無効なパラメーター"
 
-#: src/util/xml.c:594
+#: src/util/xml.c:566
 msgid "Invalid parameter to virXPathNodeSet()"
 msgstr "virXPathNodeSet() への無効なパラメーター"
 
-#: src/util/xml.c:609
+#: src/util/xml.c:581
 #, c-format
 msgid "Incorrect xpath '%s'"
 msgstr "正しくない xpath '%s'"
 
-#: src/util/xml.c:706
+#: src/util/xml.c:678
 #, c-format
 msgid ""
 "%s:%d: %s%s\n"
@@ -18425,7 +18531,7 @@ msgstr ""
 "%s:%d: %s%s\n"
 "%s"
 
-#: src/util/xml.c:714
+#: src/util/xml.c:686
 #, c-format
 msgid ""
 "at line %d: %s%s\n"
@@ -18434,11 +18540,11 @@ msgstr ""
 "%d 行目: %s%s\n"
 "%s"
 
-#: src/util/xml.c:774
+#: src/util/xml.c:746
 msgid "missing root element"
 msgstr "root 要素がありません"
 
-#: src/util/xml.c:798
+#: src/util/xml.c:770
 msgid "failed to parse xml document"
 msgstr "xml ドキュメントの構文解析に失敗しました"
 
@@ -18581,12 +18687,12 @@ msgstr "ドメインの電源を切るまで、メモリー容量を変更でき
 msgid "could not set the memory size of the domain to: %lu Kb, rc=%08x"
 msgstr "ドメインのメモリー容量を設定できませんでした: %lu Kb, rc=%08x"
 
-#: src/vbox/vbox_tmpl.c:1973 src/vbox/vbox_tmpl.c:5900
-#: src/vbox/vbox_tmpl.c:6002 src/vbox/vbox_tmpl.c:6107
-#: src/vbox/vbox_tmpl.c:6158 src/vbox/vbox_tmpl.c:6247
-#: src/vbox/vbox_tmpl.c:6279 src/vbox/vbox_tmpl.c:6321
-#: src/vbox/vbox_tmpl.c:6385 src/vbox/vbox_tmpl.c:6553
-#: src/vbox/vbox_tmpl.c:6711
+#: src/vbox/vbox_tmpl.c:1973 src/vbox/vbox_tmpl.c:5903
+#: src/vbox/vbox_tmpl.c:6005 src/vbox/vbox_tmpl.c:6110
+#: src/vbox/vbox_tmpl.c:6161 src/vbox/vbox_tmpl.c:6250
+#: src/vbox/vbox_tmpl.c:6282 src/vbox/vbox_tmpl.c:6324
+#: src/vbox/vbox_tmpl.c:6388 src/vbox/vbox_tmpl.c:6556
+#: src/vbox/vbox_tmpl.c:6714
 msgid "no domain with matching UUID"
 msgstr "UUID が一致するドメインがありません"
 
@@ -18632,12 +18738,12 @@ msgstr "ドメイン名の読み込み中にエラーが発生しました"
 msgid "machine is not in poweroff|saved|aborted state, so couldn't start it"
 msgstr "マシンが poweroff|saved|aborted 状態にないので、起動できませんでした"
 
-#: src/vbox/vbox_tmpl.c:3851 src/vbox/vbox_tmpl.c:5402
+#: src/vbox/vbox_tmpl.c:3851 src/vbox/vbox_tmpl.c:5405
 #, c-format
 msgid "can't get the uuid of the file to be attached to cdrom: %s, rc=%08x"
 msgstr "CD-ROM に接続するファイルの UUID を取得できませんでした: %s, rc=%08x"
 
-#: src/vbox/vbox_tmpl.c:3858 src/vbox/vbox_tmpl.c:5411
+#: src/vbox/vbox_tmpl.c:3858 src/vbox/vbox_tmpl.c:5414
 #, c-format
 msgid "could not attach the file to cdrom: %s, rc=%08x"
 msgstr "CD-ROM にファイルを接続できませんでした: %s, rc=%08x"
@@ -18654,7 +18760,7 @@ msgstr ""
 msgid "could not attach the file as harddisk: %s, rc=%08x"
 msgstr "ハードディスクとしてファイルを接続できませんでした: %s, rc=%08x"
 
-#: src/vbox/vbox_tmpl.c:4007 src/vbox/vbox_tmpl.c:5455
+#: src/vbox/vbox_tmpl.c:4007 src/vbox/vbox_tmpl.c:5458
 #, c-format
 msgid ""
 "can't get the uuid of the file to be attached to floppy drive: %s, rc=%08x"
@@ -18662,7 +18768,7 @@ msgstr ""
 "フロッピードライブに接続するファイルの UUID を取得できませんでした: %s, rc="
 "%08x"
 
-#: src/vbox/vbox_tmpl.c:4015 src/vbox/vbox_tmpl.c:5462
+#: src/vbox/vbox_tmpl.c:4015 src/vbox/vbox_tmpl.c:5465
 #, c-format
 msgid "could not attach the file to floppy drive: %s, rc=%08x"
 msgstr "フロッピードライブにファイルを接続できませんでした: %s, rc=%08x"
@@ -18740,196 +18846,196 @@ msgstr "ACPI 状態を変更できませんでした: %s, rc=%08x"
 msgid "could not change APIC status to: %s, rc=%08x"
 msgstr "APIC 状態を変更できませんでした: %s, rc=%08x"
 
-#: src/vbox/vbox_tmpl.c:5307
+#: src/vbox/vbox_tmpl.c:5310
 #, c-format
 msgid "could not delete the domain, rc=%08x"
 msgstr "ドメインを削除できませんでした, rc=%08x"
 
-#: src/vbox/vbox_tmpl.c:5507
+#: src/vbox/vbox_tmpl.c:5510
 #, c-format
 msgid "could not attach shared folder '%s', rc=%08x"
 msgstr "共有フォルダー '%s' を接続できませんでした, rc=%08x"
 
-#: src/vbox/vbox_tmpl.c:5627
+#: src/vbox/vbox_tmpl.c:5630
 #, c-format
 msgid "could not de-attach the mounted ISO, rc=%08x"
 msgstr "マウントされている ISO を切断できませんでした, rc=%08x"
 
-#: src/vbox/vbox_tmpl.c:5648
+#: src/vbox/vbox_tmpl.c:5651
 #, c-format
 msgid "could not attach the file to floppy drive, rc=%08x"
 msgstr "フロッピードライブにファイルを接続できませんでした, rc=%08x"
 
-#: src/vbox/vbox_tmpl.c:5683
+#: src/vbox/vbox_tmpl.c:5686
 #, c-format
 msgid "could not detach shared folder '%s', rc=%08x"
 msgstr "共有フォルダー '%s' を切断できませんでした, rc=%08x"
 
-#: src/vbox/vbox_tmpl.c:5735 src/vbox/vbox_tmpl.c:6120
+#: src/vbox/vbox_tmpl.c:5738 src/vbox/vbox_tmpl.c:6123
 #, c-format
 msgid "could not get snapshot count for domain %s"
 msgstr "ドメイン %s のスナップショット回数を取得できませんでした"
 
-#: src/vbox/vbox_tmpl.c:5755 src/vbox/vbox_tmpl.c:6181
+#: src/vbox/vbox_tmpl.c:5758 src/vbox/vbox_tmpl.c:6184
 #, c-format
 msgid "could not get root snapshot for domain %s"
 msgstr "ドメイン %s の親スナップショットを取得できませんでした"
 
-#: src/vbox/vbox_tmpl.c:5768
+#: src/vbox/vbox_tmpl.c:5771
 #, c-format
 msgid "unexpected number of snapshots < %u"
 msgstr "予期しないスナップショット数 < %u"
 
-#: src/vbox/vbox_tmpl.c:5776 src/vbox/vbox_tmpl.c:6675
+#: src/vbox/vbox_tmpl.c:5779 src/vbox/vbox_tmpl.c:6678
 msgid "could not get children snapshots"
 msgstr "子スナップショットを取得できませんでした"
 
-#: src/vbox/vbox_tmpl.c:5785
+#: src/vbox/vbox_tmpl.c:5788
 #, c-format
 msgid "unexpected number of snapshots > %u"
 msgstr "予期しないスナップショット数 > %u"
 
-#: src/vbox/vbox_tmpl.c:5831 src/vbox/vbox_tmpl.c:6201
+#: src/vbox/vbox_tmpl.c:5834 src/vbox/vbox_tmpl.c:6204
 msgid "could not get snapshot name"
 msgstr "スナップショット名を取得できませんでした"
 
-#: src/vbox/vbox_tmpl.c:5846
+#: src/vbox/vbox_tmpl.c:5849
 #, c-format
 msgid "domain %s has no snapshots with name %s"
 msgstr "ドメイン %s は %s という名前のスナップショットがありません"
 
-#: src/vbox/vbox_tmpl.c:5907 src/vbox/vbox_tmpl.c:6480
-#: src/vbox/vbox_tmpl.c:6580 src/vbox/vbox_tmpl.c:6722
+#: src/vbox/vbox_tmpl.c:5910 src/vbox/vbox_tmpl.c:6483
+#: src/vbox/vbox_tmpl.c:6583 src/vbox/vbox_tmpl.c:6725
 msgid "could not get domain state"
 msgstr "ドメインの状態を取得できませんでした"
 
-#: src/vbox/vbox_tmpl.c:5922 src/vbox/vbox_tmpl.c:6496
-#: src/vbox/vbox_tmpl.c:6745
+#: src/vbox/vbox_tmpl.c:5925 src/vbox/vbox_tmpl.c:6499
+#: src/vbox/vbox_tmpl.c:6748
 #, c-format
 msgid "could not open VirtualBox session with domain %s"
 msgstr "ドメイン %s の VirtualBox セッションを開けませんでした"
 
-#: src/vbox/vbox_tmpl.c:5944 src/vbox/vbox_tmpl.c:5952
+#: src/vbox/vbox_tmpl.c:5947 src/vbox/vbox_tmpl.c:5955
 #, c-format
 msgid "could not take snapshot of domain %s"
 msgstr "ドメイン %s のスナップショットを作成できませんでした"
 
-#: src/vbox/vbox_tmpl.c:5959 src/vbox/vbox_tmpl.c:6572
+#: src/vbox/vbox_tmpl.c:5962 src/vbox/vbox_tmpl.c:6575
 #, c-format
 msgid "could not get current snapshot of domain %s"
 msgstr "ドメイン %s の現在のスナップショットを取得できませんでした"
 
-#: src/vbox/vbox_tmpl.c:6016
+#: src/vbox/vbox_tmpl.c:6019
 #, c-format
 msgid "could not get description of snapshot %s"
 msgstr "スナップショット %s の記述を取得できませんでした"
 
-#: src/vbox/vbox_tmpl.c:6032
+#: src/vbox/vbox_tmpl.c:6035
 #, c-format
 msgid "could not get creation time of snapshot %s"
 msgstr "スナップショット %s の作成日時を取得できませんでした"
 
-#: src/vbox/vbox_tmpl.c:6042 src/vbox/vbox_tmpl.c:6331
+#: src/vbox/vbox_tmpl.c:6045 src/vbox/vbox_tmpl.c:6334
 #, c-format
 msgid "could not get parent of snapshot %s"
 msgstr "スナップショット %s の親を取得できませんでした"
 
-#: src/vbox/vbox_tmpl.c:6050 src/vbox/vbox_tmpl.c:6345
+#: src/vbox/vbox_tmpl.c:6053 src/vbox/vbox_tmpl.c:6348
 #, c-format
 msgid "could not get name of parent of snapshot %s"
 msgstr "スナップショット %s の親の名前を取得できませんでした"
 
-#: src/vbox/vbox_tmpl.c:6065 src/vbox/vbox_tmpl.c:6564
+#: src/vbox/vbox_tmpl.c:6068 src/vbox/vbox_tmpl.c:6567
 #, c-format
 msgid "could not get online state of snapshot %s"
 msgstr "スナップショット %s のオンライン状態を取得できませんでした"
 
-#: src/vbox/vbox_tmpl.c:6286 src/vbox/vbox_tmpl.c:6392
+#: src/vbox/vbox_tmpl.c:6289 src/vbox/vbox_tmpl.c:6395
 msgid "could not get current snapshot"
 msgstr "現在のスナップショットを取得できませんでした"
 
-#: src/vbox/vbox_tmpl.c:6398
+#: src/vbox/vbox_tmpl.c:6401
 msgid "domain has no snapshots"
 msgstr "ドメインはスナップショットがありません"
 
-#: src/vbox/vbox_tmpl.c:6405
+#: src/vbox/vbox_tmpl.c:6408
 msgid "could not get current snapshot name"
 msgstr "現在のスナップショット名を取得できませんでした"
 
-#: src/vbox/vbox_tmpl.c:6439 src/vbox/vbox_tmpl.c:6626
+#: src/vbox/vbox_tmpl.c:6442 src/vbox/vbox_tmpl.c:6629
 msgid "could not get snapshot UUID"
 msgstr "スナップショットの UUID を取得できませんでした"
 
-#: src/vbox/vbox_tmpl.c:6446 src/vbox/vbox_tmpl.c:6508
-#: src/vbox/vbox_tmpl.c:6518
+#: src/vbox/vbox_tmpl.c:6449 src/vbox/vbox_tmpl.c:6511
+#: src/vbox/vbox_tmpl.c:6521
 #, c-format
 msgid "could not restore snapshot for domain %s"
 msgstr "ドメイン %s のスナップショットを復元できませんでした"
 
-#: src/vbox/vbox_tmpl.c:6473
+#: src/vbox/vbox_tmpl.c:6476
 msgid "could not get domain UUID"
 msgstr "ドメイン UUID を取得できませんでした"
 
-#: src/vbox/vbox_tmpl.c:6487
+#: src/vbox/vbox_tmpl.c:6490
 #, c-format
 msgid "domain %s is already running"
 msgstr "ドメイン %s はすでに実行中です"
 
-#: src/vbox/vbox_tmpl.c:6505
+#: src/vbox/vbox_tmpl.c:6508
 msgid "cannot restore domain snapshot for running domain"
 msgstr "実行中のドメインに対してドメインのスナップショットを復元できません"
 
-#: src/vbox/vbox_tmpl.c:6587
+#: src/vbox/vbox_tmpl.c:6590
 msgid "cannot revert snapshot of running domain"
 msgstr "実行中のドメインのスナップショットを復元できません"
 
-#: src/vbox/vbox_tmpl.c:6638
+#: src/vbox/vbox_tmpl.c:6641
 msgid "cannot delete domain snapshot for running domain"
 msgstr "実行中のドメインに対してドメインのスナップショットを削除できません"
 
-#: src/vbox/vbox_tmpl.c:6641 src/vbox/vbox_tmpl.c:6650
+#: src/vbox/vbox_tmpl.c:6644 src/vbox/vbox_tmpl.c:6653
 msgid "could not delete snapshot"
 msgstr "スナップショットを削除できませんでした"
 
-#: src/vbox/vbox_tmpl.c:6736
+#: src/vbox/vbox_tmpl.c:6739
 msgid "cannot delete snapshots of running domain"
 msgstr "実行中のドメインのスナップショットを削除できません"
 
-#: src/vbox/vbox_tmpl.c:8214
+#: src/vbox/vbox_tmpl.c:8217
 #, c-format
 msgid "could not get number of volumes in the pool: %s, rc=%08x"
 msgstr "プールにあるボリュームの数を取得できませんでした: %s, rc=%08x"
 
-#: src/vbox/vbox_tmpl.c:8266
+#: src/vbox/vbox_tmpl.c:8269
 #, c-format
 msgid "could not get the volume list in the pool: %s, rc=%08x"
 msgstr "プールにあるボリュームの一覧を取得できませんでした: %s, rc=%08x"
 
-#: src/vbox/vbox_tmpl.c:8348 src/vbox/vbox_tmpl.c:8579
-#: src/vbox/vbox_tmpl.c:8748 src/vbox/vbox_tmpl.c:8818
-#: src/vbox/vbox_tmpl.c:8925
+#: src/vbox/vbox_tmpl.c:8351 src/vbox/vbox_tmpl.c:8582
+#: src/vbox/vbox_tmpl.c:8751 src/vbox/vbox_tmpl.c:8821
+#: src/vbox/vbox_tmpl.c:8928
 #, c-format
 msgid "Could not parse UUID from '%s'"
 msgstr "'%s' から UUID を構文解析できませんでした"
 
-#: src/vbox/vbox_tmpl.c:9000
+#: src/vbox/vbox_tmpl.c:9003
 msgid "unable to get monitor count"
 msgstr "モニターの数を取得できません"
 
-#: src/vbox/vbox_tmpl.c:9006
+#: src/vbox/vbox_tmpl.c:9009
 #, c-format
 msgid "screen ID higher than monitor count (%d)"
 msgstr "画面 ID がモニターの数 (%d) よりも大きいです"
 
-#: src/vbox/vbox_tmpl.c:9045
+#: src/vbox/vbox_tmpl.c:9048
 msgid "unable to get screen resolution"
 msgstr "画面の解像度を取得できません"
 
-#: src/vbox/vbox_tmpl.c:9055
+#: src/vbox/vbox_tmpl.c:9058
 msgid "failed to take screenshot"
 msgstr "スクリーンショットの取得に失敗しました"
 
-#: src/vbox/vbox_tmpl.c:9061
+#: src/vbox/vbox_tmpl.c:9064
 #, c-format
 msgid "unable to write data to '%s'"
 msgstr "'%s' にデータを書き込めません"
@@ -19810,195 +19916,195 @@ msgstr "ドメイン情報が不完全です、uuid が不足しています"
 msgid "domain information incomplete, missing name"
 msgstr "ドメイン情報が不完全です、name が不足しています"
 
-#: src/xen/xend_internal.c:1176
+#: src/xen/xend_internal.c:1181
 msgid "topology syntax error"
 msgstr "トポロジーの構文エラー"
 
-#: src/xen/xend_internal.c:1239
+#: src/xen/xend_internal.c:1244
 msgid "failed to parse Xend domain information"
 msgstr "Xend ドメイン情報の解析に失敗しました"
 
-#: src/xen/xend_internal.c:1365 src/xen/xend_internal.c:1391
-#: src/xen/xend_internal.c:1418 src/xen/xend_internal.c:1448
-#: src/xen/xend_internal.c:1485 src/xen/xend_internal.c:1561
-#: src/xen/xend_internal.c:1599
+#: src/xen/xend_internal.c:1370 src/xen/xend_internal.c:1396
+#: src/xen/xend_internal.c:1423 src/xen/xend_internal.c:1453
+#: src/xen/xend_internal.c:1490 src/xen/xend_internal.c:1566
+#: src/xen/xend_internal.c:1604
 #, c-format
 msgid "Domain %s isn't running."
 msgstr "ドメイン %s が実行中ではありません"
 
-#: src/xen/xend_internal.c:2199 src/xen/xend_internal.c:2653
-#: src/xen/xend_internal.c:2663 src/xen/xend_internal.c:2821
-#: src/xen/xend_internal.c:2831 src/xen/xend_internal.c:2934
-#: src/xen/xend_internal.c:2944
+#: src/xen/xend_internal.c:2204 src/xen/xend_internal.c:2658
+#: src/xen/xend_internal.c:2668 src/xen/xend_internal.c:2826
+#: src/xen/xend_internal.c:2836 src/xen/xend_internal.c:2939
+#: src/xen/xend_internal.c:2949
 msgid "Xend version does not support modifying persistent config"
 msgstr "Xend バージョンが永続的な設定の変更をサポートしません"
 
-#: src/xen/xend_internal.c:2206
+#: src/xen/xend_internal.c:2211
 msgid "domain not running"
 msgstr "ドメインが実行中ではありません"
 
-#: src/xen/xend_internal.c:2213 src/xen/xend_internal.c:2674
-#: src/xen/xend_internal.c:2842 src/xen/xend_internal.c:2955
+#: src/xen/xend_internal.c:2218 src/xen/xend_internal.c:2679
+#: src/xen/xend_internal.c:2847 src/xen/xend_internal.c:2960
 msgid "Xend only supports modifying both live and persistent config"
 msgstr "Xend バージョンが動的なまたは永続的な設定の変更をサポートしません"
 
-#: src/xen/xend_internal.c:2302
+#: src/xen/xend_internal.c:2307
 msgid "failed to add vcpupin xml entry"
 msgstr "vcpupin XML エントリーの追加に失敗しました"
 
-#: src/xen/xend_internal.c:2350 src/xen/xm_internal.c:795
+#: src/xen/xend_internal.c:2355 src/xen/xm_internal.c:795
 msgid "domain not active"
 msgstr "ドメインがアクティブではありません"
 
-#: src/xen/xend_internal.c:2647 src/xen/xend_internal.c:2815
-#: src/xen/xend_internal.c:2928
+#: src/xen/xend_internal.c:2652 src/xen/xend_internal.c:2820
+#: src/xen/xend_internal.c:2933
 msgid "Cannot modify live config if domain is inactive"
 msgstr "ドメインが休止中に動的設定を変更できません"
 
-#: src/xen/xend_internal.c:2742 src/xen/xend_internal.c:2749
-#: src/xen/xend_internal.c:2870 src/xen/xend_internal.c:2981
+#: src/xen/xend_internal.c:2747 src/xen/xend_internal.c:2754
+#: src/xen/xend_internal.c:2875 src/xen/xend_internal.c:2986
 msgid "unsupported device type"
 msgstr "サポートされないデバイス形式です"
 
-#: src/xen/xend_internal.c:2762
+#: src/xen/xend_internal.c:2767
 #, c-format
 msgid "target '%s' already exists"
 msgstr "ターゲット '%s' がすでに存在します"
 
-#: src/xen/xend_internal.c:2878
+#: src/xen/xend_internal.c:2883
 msgid "requested device does not exist"
 msgstr "要求されたデバイスが存在しません"
 
-#: src/xen/xend_internal.c:3025
+#: src/xen/xend_internal.c:3030
 msgid "xenDaemonGetAutostart failed to find this domain"
 msgstr "xenDaemonGetAutostart このドメインの検出に失敗しました"
 
-#: src/xen/xend_internal.c:3065
+#: src/xen/xend_internal.c:3070
 msgid "xenDaemonSetAutostart failed to find this domain"
 msgstr "xenDaemonSetAutostart このドメインの検出に失敗しました"
 
-#: src/xen/xend_internal.c:3075
+#: src/xen/xend_internal.c:3080
 msgid "unexpected value from on_xend_start"
 msgstr "on_xend_start から予期しないボリューム"
 
-#: src/xen/xend_internal.c:3090
+#: src/xen/xend_internal.c:3095
 msgid "sexpr2string failed"
 msgstr "sexpr2string は失敗しました"
 
-#: src/xen/xend_internal.c:3103
+#: src/xen/xend_internal.c:3108
 msgid "Failed to redefine sexpr"
 msgstr "sexpr の再定義に失敗しました"
 
-#: src/xen/xend_internal.c:3108
+#: src/xen/xend_internal.c:3113
 msgid "on_xend_start not present in sexpr"
 msgstr "on_xend_start は sexpr にありません"
 
-#: src/xen/xend_internal.c:3171
+#: src/xen/xend_internal.c:3176
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
 msgstr ""
 "xenDaemonDomainMigrate:  Xen は移行中にドメインの再命名をサポートしません。"
 
-#: src/xen/xend_internal.c:3181
+#: src/xen/xend_internal.c:3186
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr ""
 "xenDaemonDomainMigrate: Xen は移行中にバンド幅の制限をサポートしません。"
 
-#: src/xen/xend_internal.c:3209
+#: src/xen/xend_internal.c:3214
 msgid "xenDaemonDomainMigrate: xend cannot migrate paused domains"
 msgstr ""
 "xenDaemonDomainMigrate: xend は一時停止中のドメインをマイグレーションできませ"
 "ん"
 
-#: src/xen/xend_internal.c:3217
+#: src/xen/xend_internal.c:3222
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr "xenDaemonDomainMigrate: サポートされていないフラグ"
 
-#: src/xen/xend_internal.c:3233
+#: src/xen/xend_internal.c:3238
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr ""
 "xenDaemonDomainMigrate: xenmigr:// 移行のみが Xen でサポートされています"
 
-#: src/xen/xend_internal.c:3240
+#: src/xen/xend_internal.c:3245
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr "xenDaemonDomainMigrate: ホスト名は URI で指定する必要があります"
 
-#: src/xen/xend_internal.c:3260
+#: src/xen/xend_internal.c:3265
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr "xenDaemonDomainMigrate: 無効なポート番号"
 
-#: src/xen/xend_internal.c:3326
+#: src/xen/xend_internal.c:3331
 msgid "failed to parse domain description"
 msgstr "ドメイン記述の構文解析に失敗しました"
 
-#: src/xen/xend_internal.c:3332
+#: src/xen/xend_internal.c:3337
 msgid "failed to build sexpr"
 msgstr "S 式のビルドに失敗しました"
 
-#: src/xen/xend_internal.c:3340
+#: src/xen/xend_internal.c:3345
 #, c-format
 msgid "Failed to create inactive domain %s"
 msgstr "停止状態のドメイン %s の作成に失敗しました"
 
-#: src/xen/xend_internal.c:3516 src/xen/xend_internal.c:3589
-#: src/xen/xend_internal.c:3697
+#: src/xen/xend_internal.c:3521 src/xen/xend_internal.c:3594
+#: src/xen/xend_internal.c:3702
 msgid "unsupported in xendConfigVersion < 4"
 msgstr "xendConfigVersion < 4 ではサポートがありません"
 
-#: src/xen/xend_internal.c:3528
+#: src/xen/xend_internal.c:3533
 msgid "node information incomplete, missing scheduler name"
 msgstr "ノード情報が不完全です、スネジューラ名がありません"
 
-#: src/xen/xend_internal.c:3548 src/xen/xend_internal.c:3657
-#: src/xen/xend_internal.c:3767
+#: src/xen/xend_internal.c:3553 src/xen/xend_internal.c:3662
+#: src/xen/xend_internal.c:3772
 msgid "Unknown scheduler"
 msgstr "不明なスケジューラ"
 
-#: src/xen/xend_internal.c:3602 src/xen/xend_internal.c:3710
+#: src/xen/xend_internal.c:3607 src/xen/xend_internal.c:3715
 msgid "Failed to get a scheduler name"
 msgstr "スメジューラ名の取得に失敗しました"
 
-#: src/xen/xend_internal.c:3621 src/xen/xend_internal.c:3746
+#: src/xen/xend_internal.c:3626 src/xen/xend_internal.c:3751
 msgid "domain information incomplete, missing cpu_weight"
 msgstr "ドメイン情報が不完全です、cpu_weight がありません"
 
-#: src/xen/xend_internal.c:3626 src/xen/xend_internal.c:3755
+#: src/xen/xend_internal.c:3631 src/xen/xend_internal.c:3760
 msgid "domain information incomplete, missing cpu_cap"
 msgstr "ドメイン情報が不完全です、cpu_cap がありません"
 
-#: src/xen/xend_internal.c:3633
+#: src/xen/xend_internal.c:3638
 #, c-format
 msgid "Weight %s too big for destination"
 msgstr "ウェイト %s が宛先にとって大きすぎます"
 
-#: src/xen/xend_internal.c:3644
+#: src/xen/xend_internal.c:3649
 #, c-format
 msgid "Cap %s too big for destination"
 msgstr "キャップ %s が宛先にとって大きすぎます"
 
-#: src/xen/xend_internal.c:3816
+#: src/xen/xend_internal.c:3821
 msgid "domainBlockPeek is not supported for dom0"
 msgstr "domainBlockPeek は dom0 にはサポートされていません"
 
-#: src/xen/xend_internal.c:3837
+#: src/xen/xend_internal.c:3842
 #, c-format
 msgid "%s: invalid path"
 msgstr "%s: 無効なパス"
 
-#: src/xen/xend_internal.c:3846
+#: src/xen/xend_internal.c:3851
 #, c-format
 msgid "failed to open for reading: %s"
 msgstr "読み込み専用のオープンに失敗しました: %s"
 
-#: src/xen/xend_internal.c:3858
+#: src/xen/xend_internal.c:3863
 #, c-format
 msgid "failed to lseek or read from file: %s"
 msgstr "ファイルから lseek または読み込みに失敗しました: %s"
 
-#: src/xen/xend_internal.c:3999
+#: src/xen/xend_internal.c:4004
 msgid "hotplug of device type not supported"
 msgstr "デバイス形式の動的追加はサポートされません"
 
@@ -20348,29 +20454,29 @@ msgstr "サポートされないネットワーク形式 %d です"
 msgid "network %s is not active"
 msgstr "ネットワーク %s がアクティブではありません"
 
-#: src/xenxs/xen_sxpr.c:2065 src/xenxs/xen_sxpr.c:2125
+#: src/xenxs/xen_sxpr.c:2067 src/xenxs/xen_sxpr.c:2127
 msgid "managed PCI devices not supported with XenD"
 msgstr "管理された PCI デバイスは XenD でサポートされません"
 
-#: src/xenxs/xen_sxpr.c:2272 src/xenxs/xen_sxpr.c:2279
-#: src/xenxs/xen_sxpr.c:2286
+#: src/xenxs/xen_sxpr.c:2274 src/xenxs/xen_sxpr.c:2281
+#: src/xenxs/xen_sxpr.c:2288
 #, c-format
 msgid "unexpected lifecycle value %d"
 msgstr "予期しないライフサイクル値 %d です"
 
-#: src/xenxs/xen_sxpr.c:2304
+#: src/xenxs/xen_sxpr.c:2306
 msgid "no HVM domain loader"
 msgstr "HVM ドメインローダーがありません"
 
-#: src/xenxs/xen_sxpr.c:2495 src/xenxs/xen_sxpr.c:2535
-#: src/xenxs/xen_sxpr.c:2551 src/xenxs/xen_xm.c:1675 src/xenxs/xen_xm.c:1708
-#: src/xenxs/xen_xm.c:1725
+#: src/xenxs/xen_sxpr.c:2496 src/xenxs/xen_sxpr.c:2536
+#: src/xenxs/xen_sxpr.c:2552 src/xenxs/xen_xm.c:1676 src/xenxs/xen_xm.c:1709
+#: src/xenxs/xen_xm.c:1726
 #, fuzzy, c-format
 msgid "unsupported clock offset='%s'"
 msgstr "サポートされないクロックオフセット '%s'"
 
-#: src/xenxs/xen_sxpr.c:2518 src/xenxs/xen_sxpr.c:2527 src/xenxs/xen_xm.c:1691
-#: src/xenxs/xen_xm.c:1700
+#: src/xenxs/xen_sxpr.c:2519 src/xenxs/xen_sxpr.c:2528 src/xenxs/xen_xm.c:1692
+#: src/xenxs/xen_xm.c:1701
 #, fuzzy
 msgid "unsupported clock adjustment='reset'"
 msgstr "サポートされないクロックオフセット '%s'"
@@ -20490,22 +20596,22 @@ msgstr "VFB %s が宛先に対して大きすぎます"
 msgid "failed to store %lld to %s"
 msgstr "%lld を %s に保存することに失敗しました"
 
-#: src/xenxs/xen_xm.c:1737 src/xenxs/xen_xm.c:1746 src/xenxs/xen_xm.c:1755
+#: src/xenxs/xen_xm.c:1738 src/xenxs/xen_xm.c:1747 src/xenxs/xen_xm.c:1756
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "予期しないライフサイクルアクション %d です"
 
-#: tools/console.c:320
+#: tools/console.c:321
 #, c-format
 msgid "unable to get tty attributes: %s"
 msgstr "TTY 属性を取得できませんでした: %s"
 
-#: tools/console.c:329
+#: tools/console.c:330
 #, c-format
 msgid "unable to set tty attributes: %s"
 msgstr "TTY 属性を設定できませんでした: %s"
 
-#: tools/console.c:382
+#: tools/console.c:383
 msgid "unable to wait on console condition"
 msgstr "コンソースの条件において待てません"
 
@@ -20865,7 +20971,8 @@ msgid "list table (default)"
 msgstr "表形式の一覧表示 (初期値)"
 
 #: tools/virsh.c:927
-msgid "mark domains with managed save state"
+#, fuzzy
+msgid "mark inactive domains with managed save state"
 msgstr "ドメインを管理中の保存状態にする"
 
 #: tools/virsh.c:928
@@ -26688,34 +26795,34 @@ msgstr "ストレージ:"
 msgid " Miscellaneous:"
 msgstr "その他:"
 
-#: tools/virsh.c:19911
+#: tools/virsh.c:19921
 msgid "option -d takes a numeric argument"
 msgstr "オプション -d は数値の引数をとります"
 
-#: tools/virsh.c:19949
+#: tools/virsh.c:19960
 #, c-format
 msgid "Invalid string '%s' for escape sequence"
 msgstr "文字列 '%s' はエスケープシーケンスに対して無効です"
 
-#: tools/virsh.c:19955
+#: tools/virsh.c:19966
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "サポートされていないオプション '-%c' です。--help を参照してください。"
 
-#: tools/virsh.c:19962
+#: tools/virsh.c:19973
 #, c-format
 msgid "extra argument '%s'. See --help."
 msgstr "余分な引数 '%s' があります。--help を参照してください。"
 
-#: tools/virsh.c:20012
+#: tools/virsh.c:20023
 msgid "Failed to initialize mutex"
 msgstr "ミューテックスの初期化に失敗しました"
 
-#: tools/virsh.c:20017
+#: tools/virsh.c:20028
 msgid "Failed to initialize libvirt"
 msgstr "libvirt の初期化に失敗しました"
 
-#: tools/virsh.c:20046
+#: tools/virsh.c:20057
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -26724,7 +26831,7 @@ msgstr ""
 "%s にようこそ、仮想化対話式ターミナルです。\n"
 "\n"
 
-#: tools/virsh.c:20049
+#: tools/virsh.c:20060
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
