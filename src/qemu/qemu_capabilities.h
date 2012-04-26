@@ -26,6 +26,7 @@
 
 # include "bitmap.h"
 # include "capabilities.h"
+# include "command.h"
 
 /* Internal flags to keep track of qemu command line capabilities */
 enum qemuCapsFlags {
@@ -150,6 +151,7 @@ bool qemuCapsGet(virBitmapPtr caps,
 virCapsPtr qemuCapsInit(virCapsPtr old_caps);
 
 int qemuCapsProbeMachineTypes(const char *binary,
+                              virBitmapPtr qemuCaps,
                               virCapsGuestMachinePtr **machines,
                               int *nmachines);
 
@@ -174,6 +176,9 @@ int qemuCapsParseHelpStr(const char *qemu,
                          bool check_yajl);
 int qemuCapsParseDeviceStr(const char *str,
                            virBitmapPtr qemuCaps);
+
+virCommandPtr qemuCapsProbeCommand(const char *qemu,
+                                   virBitmapPtr qemuCaps);
 
 VIR_ENUM_DECL(qemuCaps);
 

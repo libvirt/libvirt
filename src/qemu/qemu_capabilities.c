@@ -289,6 +289,7 @@ qemuCapsParseMachineTypesStr(const char *output,
 
 int
 qemuCapsProbeMachineTypes(const char *binary,
+                          virBitmapPtr qemuCaps,
                           virCapsGuestMachinePtr **machines,
                           int *nmachines)
 {
@@ -306,10 +307,9 @@ qemuCapsProbeMachineTypes(const char *binary,
         return -1;
     }
 
-    cmd = virCommandNewArgList(binary, "-M", "?", NULL);
-    virCommandAddEnvPassCommon(cmd);
+    cmd = qemuCapsProbeCommand(binary, qemuCaps);
+    virCommandAddArgList(cmd, "-M", "?", NULL);
     virCommandSetOutputBuffer(cmd, &output);
-    virCommandClearCaps(cmd);
 
     /* Ignore failure from older qemu that did not understand '-M ?'.  */
     if (virCommandRun(cmd, &status) < 0)
@@ -599,12 +599,9 @@ qemuCapsProbeCPUModels(const char *qemu,
         return 0;
     }
 
-    cmd = virCommandNewArgList(qemu, "-cpu", "?", NULL);
-    if (qemuCapsGet(qemuCaps, QEMU_CAPS_NODEFCONFIG))
-        virCommandAddArg(cmd, "-nodefconfig");
-    virCommandAddEnvPassCommon(cmd);
+    cmd = qemuCapsProbeCommand(qemu, qemuCaps);
+    virCommandAddArgList(cmd, "-cpu", "?", NULL);
     virCommandSetOutputBuffer(cmd, &output);
-    virCommandClearCaps(cmd);
 
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
@@ -730,7 +727,8 @@ qemuCapsInitGuest(virCapsPtr caps,
                                             info->wordsize, binary, binary_mtime,
                                             old_caps, &machines, &nmachines);
         if (probe &&
-            qemuCapsProbeMachineTypes(binary, &machines, &nmachines) < 0)
+            qemuCapsProbeMachineTypes(binary, qemuCaps,
+                                      &machines, &nmachines) < 0)
             goto error;
     }
 
@@ -798,7 +796,8 @@ qemuCapsInitGuest(virCapsPtr caps,
                                                     kvmbin, binary_mtime,
                                                     old_caps, &machines, &nmachines);
                 if (probe &&
-                    qemuCapsProbeMachineTypes(kvmbin, &machines, &nmachines) < 0)
+                    qemuCapsProbeMachineTypes(kvmbin, qemuCaps,
+                                              &machines, &nmachines) < 0)
                     goto error;
             }
 
@@ -1366,17 +1365,16 @@ qemuCapsExtractDeviceStr(const char *qemu,
      * understand '-device name,?', and always exits with status 1 for
      * the simpler '-device ?', so this function is really only useful
      * if -help includes "device driver,?".  */
-    cmd = virCommandNewArgList(qemu,
-                               "-device", "?",
-                               "-device", "pci-assign,?",
-                               "-device", "virtio-blk-pci,?",
-                               "-device", "virtio-net-pci,?",
-                               "-device", "scsi-disk,?",
-                               NULL);
-    virCommandAddEnvPassCommon(cmd);
+    cmd = qemuCapsProbeCommand(qemu, flags);
+    virCommandAddArgList(cmd,
+                         "-device", "?",
+                         "-device", "pci-assign,?",
+                         "-device", "virtio-blk-pci,?",
+                         "-device", "virtio-net-pci,?",
+                         "-device", "scsi-disk,?",
+                         NULL);
     /* qemu -help goes to stdout, but qemu -device ? goes to stderr.  */
     virCommandSetErrorBuffer(cmd, &output);
-    virCommandClearCaps(cmd);
 
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
@@ -1485,10 +1483,9 @@ int qemuCapsExtractVersionInfo(const char *qemu, const char *arch,
         return -1;
     }
 
-    cmd = virCommandNewArgList(qemu, "-help", NULL);
-    virCommandAddEnvPassCommon(cmd);
+    cmd = qemuCapsProbeCommand(qemu, NULL);
+    virCommandAddArgList(cmd, "-help", NULL);
     virCommandSetOutputBuffer(cmd, &help);
-    virCommandClearCaps(cmd);
 
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
@@ -1627,4 +1624,22 @@ qemuCapsGet(virBitmapPtr caps,
         return false;
     else
         return b;
+}
+
+
+virCommandPtr
+qemuCapsProbeCommand(const char *qemu,
+                     virBitmapPtr qemuCaps)
+{
+    virCommandPtr cmd = virCommandNew(qemu);
+
+    if (qemuCaps) {
+        if (qemuCapsGet(qemuCaps, QEMU_CAPS_NODEFCONFIG))
+            virCommandAddArg(cmd, "-nodefconfig");
+    }
+
+    virCommandAddEnvPassCommon(cmd);
+    virCommandClearCaps(cmd);
+
+    return cmd;
 }

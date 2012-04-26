@@ -4867,7 +4867,14 @@ qemudCanonicalizeMachineDirect(virDomainDefPtr def, char **canonical)
     virCapsGuestMachinePtr *machines = NULL;
     int i, nmachines = 0;
 
-    if (qemuCapsProbeMachineTypes(def->emulator, &machines, &nmachines) < 0)
+    /* XXX we should be checking emulator capabilities and pass them instead
+     * of NULL so that -nodefconfig is properly added when
+     * probing machine types. Luckily, qemu does not support specifying new
+     * machine types in its configuration files yet, which means passing this
+     * additional parameter makes no difference now.
+     */
+    if (qemuCapsProbeMachineTypes(def->emulator, NULL,
+                                  &machines, &nmachines) < 0)
         return -1;
 
     for (i = 0; i < nmachines; i++) {
