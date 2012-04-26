@@ -30,7 +30,7 @@
 #include "datatypes.h"
 #include "nwfilter_params.h"
 #include "domain_conf.h"
-
+#include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
@@ -391,14 +391,28 @@ virNWFilterVarCombIterEntryAreUniqueEntries(virNWFilterVarCombIterEntryPtr cie,
     const char *value;
 
     varValue = virHashLookup(hash->hashTable, cie->varNames[0]);
+    if (!varValue) {
+        /* caller's error */
+        VIR_ERROR(_("hash lookup resulted in NULL pointer"));
+        return true;
+    }
 
     value = virNWFilterVarValueGetNthValue(varValue, cie->curValue);
+    if (!value) {
+        VIR_ERROR(_("Lookup of value at index %u resulted in a NULL "
+                  "pointer"), cie->curValue);
+        return true;
+    }
 
     for (i = 0; i < cie->curValue; i++) {
         if (STREQ(value, virNWFilterVarValueGetNthValue(varValue, i))) {
             bool isSame = true;
             for (j = 1; j < cie->nVarNames; j++) {
                 tmp = virHashLookup(hash->hashTable, cie->varNames[j]);
+                if (!tmp) {
+                    /* should never occur to step on a NULL here */
+                    return true;
+                }
                 if (!STREQ(virNWFilterVarValueGetNthValue(tmp, cie->curValue),
                            virNWFilterVarValueGetNthValue(tmp, i))) {
                     isSame = false;
