@@ -10389,6 +10389,12 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
             goto cleanup;
 
         if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
+            if (!virDomainObjIsActive(vm)) {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                _("disk snapshots of inactive domains not "
+                                  "implemented yet"));
+                goto cleanup;
+            }
             if (virDomainSnapshotAlignDisks(def,
                                             VIR_DOMAIN_DISK_SNAPSHOT_EXTERNAL,
                                             false) < 0)
@@ -10443,12 +10449,6 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
          * makes sense, such as checking that qemu-img recognizes the
          * snapshot name in at least one of the domain's disks?  */
     } else if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
-        if (!virDomainObjIsActive(vm)) {
-            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                            _("disk snapshots of inactive domains not "
-                              "implemented yet"));
-            goto cleanup;
-        }
         if (qemuDomainSnapshotCreateDiskActive(domain->conn, driver,
                                                &vm, snap, flags) < 0)
             goto cleanup;
@@ -11642,6 +11642,12 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("domain is not running"));
+        goto cleanup;
+    }
+
     priv = vm->privateData;
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC)) {
         async = true;
@@ -12634,6 +12640,12 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
     }
 
     priv = vm->privateData;
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
+    }
 
     if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_WAKEUP) &&
         (target == VIR_NODE_SUSPEND_TARGET_MEM ||
