@@ -129,6 +129,7 @@ enum qemuCapsFlags {
     QEMU_CAPS_BLOCKJOB_ASYNC     = 91, /* qemu 1.1 block-job-cancel */
     QEMU_CAPS_SCSI_CD            = 92, /* -device scsi-cd */
     QEMU_CAPS_IDE_CD             = 93, /* -device ide-cd */
+    QEMU_CAPS_NO_USER_CONFIG     = 94, /* -no-user-config */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
