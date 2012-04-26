@@ -31,13 +31,10 @@ typedef virNetMessage *virNetMessagePtr;
 
 typedef void (*virNetMessageFreeCallback)(virNetMessagePtr msg, void *opaque);
 
-/* Never allocate this (huge) buffer on the stack. Always
- * use virNetMessageNew() to allocate on the heap
- */
 struct _virNetMessage {
     bool tracked;
 
-    char buffer[VIR_NET_MESSAGE_MAX + VIR_NET_MESSAGE_LEN_MAX];
+    char *buffer; /* Typically VIR_NET_MESSAGE_MAX + VIR_NET_MESSAGE_LEN_MAX */
     size_t bufferLength;
     size_t bufferOffset;
 

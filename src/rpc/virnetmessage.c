@@ -61,6 +61,7 @@ void virNetMessageClear(virNetMessagePtr msg)
     for (i = 0 ; i < msg->nfds ; i++)
         VIR_FORCE_CLOSE(msg->fds[i]);
     VIR_FREE(msg->fds);
+    VIR_FREE(msg->buffer);
     memset(msg, 0, sizeof(*msg));
     msg->tracked = tracked;
 }
@@ -79,6 +80,7 @@ void virNetMessageFree(virNetMessagePtr msg)
 
     for (i = 0 ; i < msg->nfds ; i++)
         VIR_FORCE_CLOSE(msg->fds[i]);
+    VIR_FREE(msg->buffer);
     VIR_FREE(msg->fds);
     VIR_FREE(msg);
 }
@@ -144,6 +146,10 @@ int virNetMessageDecodeLength(virNetMessagePtr msg)
     /* Extend our declared buffer length and carry
        on reading the header + payload */
     msg->bufferLength += len;
+    if (VIR_REALLOC_N(msg->buffer, msg->bufferLength) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
 
     VIR_DEBUG("Got length, now need %zu total (%u more)",
               msg->bufferLength, len);
@@ -212,7 +218,11 @@ int virNetMessageEncodeHeader(virNetMessagePtr msg)
     int ret = -1;
     unsigned int len = 0;
 
-    msg->bufferLength = sizeof(msg->buffer);
+    msg->bufferLength = VIR_NET_MESSAGE_MAX + VIR_NET_MESSAGE_LEN_MAX;
+    if (VIR_ALLOC_N(msg->buffer, msg->bufferLength) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
     msg->bufferOffset = 0;
 
     /* Format the header. */

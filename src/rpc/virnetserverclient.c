@@ -313,6 +313,11 @@ virNetServerClientCheckAccess(virNetServerClientPtr client)
      * (NB. The '\1' byte is sent in an encrypted record).
      */
     confirm->bufferLength = 1;
+    if (VIR_ALLOC_N(confirm->buffer, confirm->bufferLength) < 0) {
+        virReportOOMError();
+        virNetMessageFree(confirm);
+        return -1;
+    }
     confirm->bufferOffset = 0;
     confirm->buffer[0] = '\1';
 
@@ -373,6 +378,10 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
     if (!(client->rx = virNetMessageNew(true)))
         goto error;
     client->rx->bufferLength = VIR_NET_MESSAGE_LEN_MAX;
+    if (VIR_ALLOC_N(client->rx->buffer, client->rx->bufferLength) < 0) {
+        virReportOOMError();
+        goto error;
+    }
     client->nrequests = 1;
 
     PROBE(RPC_SERVER_CLIENT_NEW,
@@ -922,7 +931,13 @@ readmore:
                 client->wantClose = true;
             } else {
                 client->rx->bufferLength = VIR_NET_MESSAGE_LEN_MAX;
-                client->nrequests++;
+                if (VIR_ALLOC_N(client->rx->buffer,
+                                client->rx->bufferLength) < 0) {
+                    virReportOOMError();
+                    client->wantClose = true;
+                } else {
+                    client->nrequests++;
+                }
             }
         }
         virNetServerClientUpdateEvent(client);
@@ -1019,8 +1034,13 @@ virNetServerClientDispatchWrite(virNetServerClientPtr client)
                     client->nrequests < client->nrequests_max) {
                     /* Ready to recv more messages */
                     virNetMessageClear(msg);
+                    msg->bufferLength = VIR_NET_MESSAGE_LEN_MAX;
+                    if (VIR_ALLOC_N(msg->buffer, msg->bufferLength) < 0) {
+                        virReportOOMError();
+                        virNetMessageFree(msg);
+                        return;
+                    }
                     client->rx = msg;
-                    client->rx->bufferLength = VIR_NET_MESSAGE_LEN_MAX;
                     msg = NULL;
                     client->nrequests++;
                 }

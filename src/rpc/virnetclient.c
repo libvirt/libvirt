@@ -801,7 +801,12 @@ virNetClientCallDispatchReply(virNetClientPtr client)
         return -1;
     }
 
-    memcpy(thecall->msg->buffer, client->msg.buffer, sizeof(client->msg.buffer));
+    if (VIR_REALLOC_N(thecall->msg->buffer, client->msg.bufferLength) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    memcpy(thecall->msg->buffer, client->msg.buffer, client->msg.bufferLength);
     memcpy(&thecall->msg->header, &client->msg.header, sizeof(client->msg.header));
     thecall->msg->bufferLength = client->msg.bufferLength;
     thecall->msg->bufferOffset = client->msg.bufferOffset;
@@ -987,6 +992,7 @@ virNetClientIOWriteMessage(virNetClientPtr client,
         }
         thecall->msg->donefds = 0;
         thecall->msg->bufferOffset = thecall->msg->bufferLength = 0;
+        VIR_FREE(thecall->msg->buffer);
         if (thecall->expectReply)
             thecall->mode = VIR_NET_CLIENT_MODE_WAIT_RX;
         else
@@ -1030,8 +1036,13 @@ virNetClientIOReadMessage(virNetClientPtr client)
     ssize_t ret;
 
     /* Start by reading length word */
-    if (client->msg.bufferLength == 0)
+    if (client->msg.bufferLength == 0) {
         client->msg.bufferLength = 4;
+        if (VIR_ALLOC_N(client->msg.buffer, client->msg.bufferLength) < 0) {
+            virReportOOMError();
+            return -ENOMEM;
+        }
+    }
 
     wantData = client->msg.bufferLength - client->msg.bufferOffset;
 
@@ -1108,6 +1119,7 @@ virNetClientIOHandleInput(virNetClientPtr client)
 
                 ret = virNetClientCallDispatch(client);
                 client->msg.bufferOffset = client->msg.bufferLength = 0;
+                VIR_FREE(client->msg.buffer);
                 /*
                  * We've completed one call, but we don't want to
                  * spin around the loop forever if there are many
