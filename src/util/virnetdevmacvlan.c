@@ -435,7 +435,7 @@ static const uint32_t modeMap[VIR_NETDEV_MACVLAN_MODE_LAST] = {
 struct virNetlinkCallbackData {
     char *cr_ifname;
     virNetDevVPortProfilePtr virtPortProfile;
-    unsigned char macaddress[VIR_UUID_BUFLEN];
+    unsigned char macaddress[VIR_MAC_BUFLEN];
     char *linkdev;
     int vf;
     unsigned char vmuuid[VIR_UUID_BUFLEN];
