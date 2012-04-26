@@ -238,8 +238,8 @@ virNetlinkEventCallback(int watch,
     if (length == 0)
         return;
     if (length < 0) {
-        netlinkError(errno,
-                     "%s", _("nl_recv returned with error"));
+        virReportSystemError(errno,
+                             "%s", _("nl_recv returned with error"));
         return;
     }
 
@@ -349,28 +349,28 @@ virNetlinkEventServiceStart(void)
     srv->netlinknh = nl_handle_alloc();
 
     if (!srv->netlinknh) {
-        netlinkError(errno,
-                "%s", _("cannot allocate nlhandle for virNetlinkEvent server"));
+        virReportSystemError(errno,
+                             "%s", _("cannot allocate nlhandle for virNetlinkEvent server"));
         goto error_locked;
     }
 
     if (nl_connect(srv->netlinknh, NETLINK_ROUTE) < 0) {
-        netlinkError(errno,
-                "%s", _("cannot connect to netlink socket"));
+        virReportSystemError(errno,
+                             "%s", _("cannot connect to netlink socket"));
         goto error_server;
     }
 
     fd = nl_socket_get_fd(srv->netlinknh);
 
     if (fd < 0) {
-        netlinkError(errno,
-                     "%s", _("cannot get netlink socket fd"));
+        virReportSystemError(errno,
+                             "%s", _("cannot get netlink socket fd"));
         goto error_server;
     }
 
     if (nl_socket_set_nonblocking(srv->netlinknh)) {
-        netlinkError(errno, "%s",
-                     _("cannot set netlink socket nonblocking"));
+        virReportSystemError(errno, "%s",
+                             _("cannot set netlink socket nonblocking"));
         goto error_server;
     }
 
