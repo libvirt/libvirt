@@ -4237,11 +4237,12 @@ qemuBuildCommandLine(virConnectPtr conn,
         virCommandAddArg(cmd, "-nographic");
 
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuCapsGet(qemuCaps, QEMU_CAPS_NODEFCONFIG))
-            virCommandAddArg(cmd,
-                             "-nodefconfig"); /* Disable global config files */
-        virCommandAddArg(cmd,
-                         "-nodefaults");  /* Disable default guest devices */
+        /* Disable global config files and default devices */
+        if (qemuCapsGet(qemuCaps, QEMU_CAPS_NO_USER_CONFIG))
+            virCommandAddArg(cmd, "-no-user-config");
+        else if (qemuCapsGet(qemuCaps, QEMU_CAPS_NODEFCONFIG))
+            virCommandAddArg(cmd, "-nodefconfig");
+        virCommandAddArg(cmd, "-nodefaults");
     }
 
     /* Serial graphics adapter */

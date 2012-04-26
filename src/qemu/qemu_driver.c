@@ -4898,7 +4898,7 @@ qemudCanonicalizeMachineDirect(virDomainDefPtr def, char **canonical)
     int i, nmachines = 0;
 
     /* XXX we should be checking emulator capabilities and pass them instead
-     * of NULL so that -nodefconfig is properly added when
+     * of NULL so that -nodefconfig or -no-user-config is properly added when
      * probing machine types. Luckily, qemu does not support specifying new
      * machine types in its configuration files yet, which means passing this
      * additional parameter makes no difference now.

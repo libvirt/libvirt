@@ -161,6 +161,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "block-job-async",
               "scsi-cd",
               "ide-cd",
+              "no-user-config",
     );
 
 struct qemu_feature_flags {
@@ -1082,6 +1083,8 @@ qemuCapsComputeCmdFlags(const char *help,
     }
     if (strstr(help, "-nodefconfig"))
         qemuCapsSet(flags, QEMU_CAPS_NODEFCONFIG);
+    if (strstr(help, "-no-user-config"))
+        qemuCapsSet(flags, QEMU_CAPS_NO_USER_CONFIG);
     /* The trailing ' ' is important to avoid a bogus match */
     if (strstr(help, "-rtc "))
         qemuCapsSet(flags, QEMU_CAPS_RTC);
@@ -1634,7 +1637,9 @@ qemuCapsProbeCommand(const char *qemu,
     virCommandPtr cmd = virCommandNew(qemu);
 
     if (qemuCaps) {
-        if (qemuCapsGet(qemuCaps, QEMU_CAPS_NODEFCONFIG))
+        if (qemuCapsGet(qemuCaps, QEMU_CAPS_NO_USER_CONFIG))
+            virCommandAddArg(cmd, "-no-user-config");
+        else if (qemuCapsGet(qemuCaps, QEMU_CAPS_NODEFCONFIG))
             virCommandAddArg(cmd, "-nodefconfig");
     }
 

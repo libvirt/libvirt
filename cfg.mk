@@ -823,7 +823,8 @@ exclude_file_name_regexp--sc_require_config_h = ^examples/
 
 exclude_file_name_regexp--sc_require_config_h_first = ^examples/
 
-exclude_file_name_regexp--sc_trailing_blank = \.(fig|gif|ico|png)$$
+exclude_file_name_regexp--sc_trailing_blank = \
+  (/qemuhelpdata/|\.(fig|gif|ico|png)$$)
 
 exclude_file_name_regexp--sc_unmarked_diagnostics = \
   ^(docs/apibuild.py|tests/virt-aa-helper-test)$$
