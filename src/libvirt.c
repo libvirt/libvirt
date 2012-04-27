@@ -7455,6 +7455,7 @@ error:
  * NB. The remote driver imposes a 64K byte limit on 'size'.
  * For your program to be able to work reliably over a remote
  * connection you should split large requests to <= 65536 bytes.
+ * However, with 0.9.13 this RPC limit has been raised to 1M byte.
  *
  * Returns: 0 in case of success or -1 in case of failure.
  */
@@ -7604,6 +7605,7 @@ error:
  * NB. The remote driver imposes a 64K byte limit on 'size'.
  * For your program to be able to work reliably over a remote
  * connection you should split large requests to <= 65536 bytes.
+ * However, with 0.9.13 this RPC limit has been raised to 1M byte.
  *
  * Returns: 0 in case of success or -1 in case of failure.
  */

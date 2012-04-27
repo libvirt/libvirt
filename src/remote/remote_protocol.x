@@ -65,7 +65,7 @@
  * This is an arbitrary limit designed to stop the decoder from trying
  * to allocate unbounded amounts of memory when fed with a bad message.
  */
-const REMOTE_STRING_MAX = 65536;
+const REMOTE_STRING_MAX = 1048576;
 
 /* A long string, which may NOT be NULL. */
 typedef string remote_nonnull_string<REMOTE_STRING_MAX>;
@@ -79,7 +79,7 @@ typedef remote_nonnull_string *remote_string;
 const REMOTE_DOMAIN_ID_LIST_MAX = 16384;
 
 /* Upper limit on lists of domain names. */
-const REMOTE_DOMAIN_NAME_LIST_MAX = 1024;
+const REMOTE_DOMAIN_NAME_LIST_MAX = 16384;
 
 /* Upper limit on cpumap (bytes) passed to virDomainPinVcpu. */
 const REMOTE_CPUMAP_MAX = 256;
@@ -94,25 +94,25 @@ const REMOTE_CPUMAPS_MAX = 16384;
 const REMOTE_MIGRATE_COOKIE_MAX = 16384;
 
 /* Upper limit on lists of network names. */
-const REMOTE_NETWORK_NAME_LIST_MAX = 256;
+const REMOTE_NETWORK_NAME_LIST_MAX = 16384;
 
 /* Upper limit on lists of interface names. */
-const REMOTE_INTERFACE_NAME_LIST_MAX = 256;
+const REMOTE_INTERFACE_NAME_LIST_MAX = 16384;
 
 /* Upper limit on lists of defined interface names. */
-const REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX = 256;
+const REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX = 16384;
 
 /* Upper limit on lists of storage pool names. */
-const REMOTE_STORAGE_POOL_NAME_LIST_MAX = 256;
+const REMOTE_STORAGE_POOL_NAME_LIST_MAX = 4096;
 
 /* Upper limit on lists of storage vol names. */
-const REMOTE_STORAGE_VOL_NAME_LIST_MAX = 1024;
+const REMOTE_STORAGE_VOL_NAME_LIST_MAX = 16384;
 
 /* Upper limit on lists of node device names. */
 const REMOTE_NODE_DEVICE_NAME_LIST_MAX = 16384;
 
 /* Upper limit on lists of node device capabilities. */
-const REMOTE_NODE_DEVICE_CAPS_LIST_MAX = 16384;
+const REMOTE_NODE_DEVICE_CAPS_LIST_MAX = 65536;
 
 /* Upper limit on lists of network filter names. */
 const REMOTE_NWFILTER_NAME_LIST_MAX = 1024;
@@ -160,13 +160,13 @@ const REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX = 1024;
  * Note applications need to be aware of this limit and issue multiple
  * requests for large amounts of data.
  */
-const REMOTE_DOMAIN_BLOCK_PEEK_BUFFER_MAX = 65536;
+const REMOTE_DOMAIN_BLOCK_PEEK_BUFFER_MAX = 1048576;
 
 /* Maximum length of a memory peek buffer message.
  * Note applications need to be aware of this limit and issue multiple
  * requests for large amounts of data.
  */
-const REMOTE_DOMAIN_MEMORY_PEEK_BUFFER_MAX = 65536;
+const REMOTE_DOMAIN_MEMORY_PEEK_BUFFER_MAX = 1048576;
 
 /*
  * Maximum length of a security model field.
