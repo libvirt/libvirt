@@ -437,3 +437,40 @@ int virFileTouch(const char *path, mode_t mode)
 
     return 0;
 }
+
+
+#define MODE_BITS (S_ISUID | S_ISGID | S_ISVTX | S_IRWXU | S_IRWXG | S_IRWXO)
+
+int virFileUpdatePerm(const char *path,
+                      mode_t mode_remove,
+                      mode_t mode_add)
+{
+    struct stat sb;
+    mode_t mode;
+
+    if (mode_remove & ~MODE_BITS || mode_add & ~MODE_BITS) {
+        virFileError(VIR_ERR_INVALID_ARG, "%s", _("invalid mode"));
+        return -1;
+    }
+
+    if (stat(path, &sb) < 0) {
+        virReportSystemError(errno, _("cannot stat '%s'"), path);
+        return -1;
+    }
+
+    mode = sb.st_mode & MODE_BITS;
+
+    if ((mode & mode_remove) == 0 && (mode & mode_add) == mode_add)
+        return 0;
+
+    mode &= MODE_BITS ^ mode_remove;
+    mode |= mode_add;
+
+    if (chmod(path, mode) < 0) {
+        virReportSystemError(errno, _("cannot change permission of '%s'"),
+                             path);
+        return -1;
+    }
+
+    return 0;
+}

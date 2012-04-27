@@ -456,6 +456,8 @@ qemudStartup(int privileged) {
     int rc;
     virConnectPtr conn = NULL;
     char ebuf[1024];
+    char *membase = NULL;
+    char *mempath = NULL;
 
     if (VIR_ALLOC(qemu_driver) < 0)
         return -1;
@@ -660,23 +662,26 @@ qemudStartup(int privileged) {
      */
     if (qemu_driver->hugetlbfs_mount &&
         qemu_driver->hugetlbfs_mount[0] == '/') {
-        char *mempath = NULL;
-        if (virAsprintf(&mempath, "%s/libvirt/qemu", qemu_driver->hugetlbfs_mount) < 0)
+        if (virAsprintf(&membase, "%s/libvirt",
+                        qemu_driver->hugetlbfs_mount) < 0 ||
+            virAsprintf(&mempath, "%s/qemu", membase) < 0)
             goto out_of_memory;
 
         if (virFileMakePath(mempath) < 0) {
             virReportSystemError(errno,
                                  _("unable to create hugepage path %s"), mempath);
-            VIR_FREE(mempath);
             goto error;
         }
-        if (qemu_driver->privileged &&
-            chown(mempath, qemu_driver->user, qemu_driver->group) < 0) {
-            virReportSystemError(errno,
-                                 _("unable to set ownership on %s to %d:%d"),
-                                 mempath, qemu_driver->user, qemu_driver->group);
-            VIR_FREE(mempath);
-            goto error;
+        if (qemu_driver->privileged) {
+            if (virFileUpdatePerm(membase, 0, S_IXGRP | S_IXOTH) < 0)
+                goto error;
+            if (chown(mempath, qemu_driver->user, qemu_driver->group) < 0) {
+                virReportSystemError(errno,
+                                     _("unable to set ownership on %s to %d:%d"),
+                                     mempath, qemu_driver->user,
+                                     qemu_driver->group);
+                goto error;
+            }
         }
 
         qemu_driver->hugepage_path = mempath;
@@ -737,6 +742,8 @@ error:
         virConnectClose(conn);
     VIR_FREE(base);
     VIR_FREE(driverConf);
+    VIR_FREE(membase);
+    VIR_FREE(mempath);
     qemudShutdown();
     return -1;
 }

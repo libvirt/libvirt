@@ -1204,6 +1204,7 @@ virFileFclose;
 virFileFdopen;
 virFileRewrite;
 virFileTouch;
+virFileUpdatePerm;
 
 
 # virkeycode.h
