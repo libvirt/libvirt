@@ -14,7 +14,7 @@ INCLUDES = \
 
 AM_CFLAGS = $(WARN_CFLAGS)
 
-DOCS_DIR = $(datadir)/doc/libvirt-python-$(LIBVIRT_VERSION)
+DOCS_DIR = $(datadir)/doc/libvirt-python-$(VERSION)
 
 DOCS = ${srcdir}/TODO
 
