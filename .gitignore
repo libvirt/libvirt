@@ -37,6 +37,7 @@
 /configure
 /configure.lineno
 /daemon/*_dispatch.h
+/docs/apibuild.py.stamp
 /docs/hvsupport.html.in
 /docs/libvirt-qemu-*.xml
 /gnulib/lib/*

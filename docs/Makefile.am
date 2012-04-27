@@ -187,12 +187,19 @@ python_generated_files = \
 		$(srcdir)/libvirt-qemu-api.xml \
 		$(srcdir)/libvirt-qemu-refs.xml
 
-$(python_generated_files): $(srcdir)/apibuild.py \
+APIBUILD="$(srcdir)/apibuild.py"
+APIBUILD_STAMP="$(APIBUILD).stamp"
+
+$(python_generated_files): $(APIBUILD_STAMP)
+
+$(APIBUILD_STAMP): $(srcdir)/apibuild.py \
 		$(srcdir)/../include/libvirt/*.h \
 		$(srcdir)/../src/libvirt.c \
 		$(srcdir)/../src/libvirt-qemu.c \
 		$(srcdir)/../src/util/virterror.c
-	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) $(srcdir)/apibuild.py
+	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) $(APIBUILD)
+	touch $@
+
 
 check-local: all
 
@@ -202,6 +209,7 @@ clean-local:
 maintainer-clean-local: clean-local
 	rm -rf $(srcdir)/libvirt-api.xml $(srcdir)/libvirt-refs.xml todo.html.in hvsupport.html.in
 	rm -rf $(srcdir)/libvirt-qemu-api.xml $(srcdir)/libvirt-qemu-refs.xml
+	rm -rf $(APIBUILD_STAMP)
 
 rebuild: api qemu_api all
 
