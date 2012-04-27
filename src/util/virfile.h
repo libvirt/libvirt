@@ -83,4 +83,8 @@ int virFileRewrite(const char *path,
 
 int virFileTouch(const char *path, mode_t mode);
 
+int virFileUpdatePerm(const char *path,
+                      mode_t mode_remove,
+                      mode_t mode_add);
+
 #endif /* __VIR_FILES_H */
