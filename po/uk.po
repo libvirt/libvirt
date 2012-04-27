@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-04-26 17:40-0400\n"
+"POT-Creation-Date: 2012-04-27 14:32-0400\n"
 "PO-Revision-Date: 2012-03-26 18:37+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
@@ -980,10 +980,11 @@ msgstr "не вдається ініціалізувати mutex"
 #: src/qemu/qemu_driver.c:9455 src/qemu/qemu_driver.c:9513
 #: src/qemu/qemu_driver.c:9682 src/qemu/qemu_driver.c:10056
 #: src/qemu/qemu_driver.c:11359 src/qemu/qemu_driver.c:11368
-#: src/qemu/qemu_driver.c:11512 src/qemu/qemu_driver.c:11636
-#: src/qemu/qemu_driver.c:11736 src/qemu/qemu_driver.c:12116
-#: src/qemu/qemu_driver.c:12488 src/qemu/qemu_driver.c:12585
-#: src/qemu/qemu_driver.c:12631 src/qemu/qemu_migration.c:2608
+#: src/qemu/qemu_driver.c:11512 src/qemu/qemu_driver.c:11628
+#: src/qemu/qemu_driver.c:11642 src/qemu/qemu_driver.c:11742
+#: src/qemu/qemu_driver.c:12122 src/qemu/qemu_driver.c:12494
+#: src/qemu/qemu_driver.c:12567 src/qemu/qemu_driver.c:12597
+#: src/qemu/qemu_driver.c:12643 src/qemu/qemu_migration.c:2608
 #: src/uml/uml_driver.c:2399 src/xen/xen_driver.c:2131
 #: src/xen/xen_hypervisor.c:1177 src/xen/xen_hypervisor.c:1258
 #: src/xen/xen_hypervisor.c:1377 src/xen/xm_internal.c:715
@@ -4016,64 +4017,73 @@ msgstr "інструментом форматування %s %s повідомл
 msgid "Variable value contains invalid character"
 msgstr "У значенні змінної міститься некоректний символ"
 
-#: src/conf/nwfilter_params.c:325 src/conf/nwfilter_params.c:564
+#: src/conf/nwfilter_params.c:328 src/conf/nwfilter_params.c:581
 #, c-format
 msgid "Could not find value for variable '%s'"
 msgstr "Не вдалося знайти значення змінної «%s»"
 
-#: src/conf/nwfilter_params.c:350
+#: src/conf/nwfilter_params.c:353
 msgid ""
 "Cardinality of list items must be the same for processing them in parallel"
 msgstr ""
 "Кількість пунктів у списках має бути однаковою для паралельної обробки "
 "списків"
 
-#: src/conf/nwfilter_params.c:528
+#: src/conf/nwfilter_params.c:396
+msgid "hash lookup resulted in NULL pointer"
+msgstr ""
+
+#: src/conf/nwfilter_params.c:402
+#, c-format
+msgid "Lookup of value at index %u resulted in a NULL pointer"
+msgstr ""
+
+#: src/conf/nwfilter_params.c:545
 #, c-format
 msgid "Could not get iterator index for iterator ID %u"
 msgstr "Не вдалося отримати індекс ітератора для ідентифікатора ітератора %u"
 
-#: src/conf/nwfilter_params.c:538
+#: src/conf/nwfilter_params.c:555
 #, c-format
 msgid "Could not get iterator index for (internal) iterator ID %u"
 msgstr ""
 "Не вдалося отримати індекс ітератора для (внутрішнього) ідентифікатора "
 "ітератора %u"
 
-#: src/conf/nwfilter_params.c:556
+#: src/conf/nwfilter_params.c:573
 #, c-format
 msgid "Could not find variable '%s' in iterator"
 msgstr "Не вдалося знайти змінну «%s» у ітераторі"
 
-#: src/conf/nwfilter_params.c:572
+#: src/conf/nwfilter_params.c:589
 #, c-format
 msgid "Could not get nth (%u) value of variable '%s'"
 msgstr "Не вдалося отримати n-те (%u) значення змінної «%s»"
 
-#: src/conf/nwfilter_params.c:723
+#: src/conf/nwfilter_params.c:740
 #, c-format
 msgid "Could not put variable '%s' into hashmap"
 msgstr "Не вдалося розмістити змінну «%s» у карті хешів"
 
-#: src/conf/nwfilter_params.c:850
+#: src/conf/nwfilter_params.c:867
 msgid "missing filter parameter table"
 msgstr "не вказано таблиці фільтрування параметрів"
 
-#: src/conf/nwfilter_params.c:985
+#: src/conf/nwfilter_params.c:1002
 msgid "Malformatted array index"
 msgstr "Помилкове форматування індексу масиву"
 
-#: src/conf/nwfilter_params.c:988
+#: src/conf/nwfilter_params.c:1005
 msgid "Malformatted iterator id"
 msgstr "Помилковий ідентифікатор ітератора"
 
-#: src/conf/nwfilter_params.c:1000
+#: src/conf/nwfilter_params.c:1017
 #, c-format
 msgid "Iterator ID exceeds maximum ID of %u"
 msgstr ""
 "Ідентифікатор ітератора перевищує максимальне значення ідентифікатора %u"
 
-#: src/conf/nwfilter_params.c:1013
+#: src/conf/nwfilter_params.c:1030
 msgid "Malformatted variable"
 msgstr "Помилкове форматування змінної"
 
@@ -7244,7 +7254,7 @@ msgstr "Не вдалося встановити об’єм пам’яті д�
 #: src/qemu/qemu_driver.c:6310 src/qemu/qemu_driver.c:6492
 #: src/qemu/qemu_driver.c:6599 src/qemu/qemu_driver.c:6761
 #: src/qemu/qemu_driver.c:6930 src/qemu/qemu_driver.c:7151
-#: src/qemu/qemu_driver.c:7367 src/qemu/qemu_driver.c:12500
+#: src/qemu/qemu_driver.c:7367 src/qemu/qemu_driver.c:12506
 #, c-format
 msgid "cannot find cgroup for domain %s"
 msgstr "не вдалося знайти cgroup для домену %s"
@@ -7440,11 +7450,11 @@ msgstr "Домен вже запущено"
 #: src/qemu/qemu_driver.c:10770 src/qemu/qemu_driver.c:10805
 #: src/qemu/qemu_driver.c:10875 src/qemu/qemu_driver.c:11236
 #: src/qemu/qemu_driver.c:11353 src/qemu/qemu_driver.c:11506
-#: src/qemu/qemu_driver.c:11622 src/qemu/qemu_driver.c:11730
-#: src/qemu/qemu_driver.c:11825 src/qemu/qemu_driver.c:11974
-#: src/qemu/qemu_driver.c:12105 src/qemu/qemu_driver.c:12190
-#: src/qemu/qemu_driver.c:12290 src/qemu/qemu_driver.c:12553
-#: src/qemu/qemu_driver.c:12622 src/test/test_driver.c:2125
+#: src/qemu/qemu_driver.c:11622 src/qemu/qemu_driver.c:11736
+#: src/qemu/qemu_driver.c:11831 src/qemu/qemu_driver.c:11980
+#: src/qemu/qemu_driver.c:12111 src/qemu/qemu_driver.c:12196
+#: src/qemu/qemu_driver.c:12296 src/qemu/qemu_driver.c:12559
+#: src/qemu/qemu_driver.c:12634 src/test/test_driver.c:2125
 #: src/uml/uml_driver.c:1641 src/uml/uml_driver.c:1666
 #: src/uml/uml_driver.c:1699 src/uml/uml_driver.c:2042
 #: src/uml/uml_driver.c:2160 src/uml/uml_driver.c:2393
@@ -7532,7 +7542,7 @@ msgstr "%s"
 #: src/qemu/qemu_driver.c:6744 src/qemu/qemu_driver.c:6907
 #: src/qemu/qemu_driver.c:7128 src/qemu/qemu_driver.c:7342
 #: src/qemu/qemu_driver.c:7879 src/qemu/qemu_driver.c:8042
-#: src/qemu/qemu_driver.c:12481
+#: src/qemu/qemu_driver.c:12487
 #, c-format
 msgid "No such domain %s"
 msgstr "Домен %s не існує"
@@ -8826,55 +8836,55 @@ msgstr ""
 msgid "illegal protocol type"
 msgstr "некоректний тип протоколу"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3127
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3223
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3339
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3128
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3224
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3340
 msgid "cannot create rules since ebtables tool is missing."
 msgstr "не вдалося створити правила, оскільки не знайдено програми ebtables."
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3186
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3313
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3385
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3187
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3314
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3386
 msgid "Some rules could not be created."
 msgstr "Деякі з правил не може бути створено."
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3490
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3491
 #, c-format
 msgid "To enable ip%stables filtering for the VM do 'echo 1 > %s'"
 msgstr ""
 "Щоб увімкнути фільтрування ip%stables для віртуальної машини, виконайте "
 "команду «echo 1 > %s»"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3814
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3818
 #, c-format
 msgid "Some rules could not be created for interface %s%s%s"
 msgstr "Деякі з правил для інтерфейсу %s%s%s не вдалося створити."
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3954
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3958
 msgid "error while executing CLI commands"
 msgstr "помилка під час спроби виконання консольних команд"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4062
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4066
 #, c-format
 msgid "Testing of ebtables command failed: %s"
 msgstr "Спроба перевірки команди ebtables зазнала невдачі: %s"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4081
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4085
 #, c-format
 msgid "Testing of iptables command failed: %s"
 msgstr "Спроба перевірки команди iptables зазнала невдачі: %s"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4100
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4104
 #, c-format
 msgid "Testing of ip6tables command failed: %s"
 msgstr "Спроба перевірки команди ip6tables зазнала невдачі: %s"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4110
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4114
 msgid "essential tools to support ip(6)tables firewalls could not be located"
 msgstr ""
 "не вдалося знайти ключові програми для підтримки брандмауерів ip(6)tables"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4119
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4123
 msgid "firewall tools were not found or cannot be used"
 msgstr ""
 "програми керування брандмауером не знайдено або ними не вдалося скористатися"
@@ -10920,13 +10930,13 @@ msgstr "помилка дії з відновлення"
 
 #: src/qemu/qemu_driver.c:1590 src/qemu/qemu_driver.c:1668
 #: src/qemu/qemu_driver.c:9604 src/qemu/qemu_driver.c:9632
-#: src/qemu/qemu_driver.c:12570
+#: src/qemu/qemu_driver.c:12582
 msgid "QEMU guest agent is not available due to an error"
 msgstr "агент гостьової системи QEMU недоступний через помилку"
 
 #: src/qemu/qemu_driver.c:1595 src/qemu/qemu_driver.c:1673
 #: src/qemu/qemu_driver.c:9610 src/qemu/qemu_driver.c:9639
-#: src/qemu/qemu_driver.c:12576
+#: src/qemu/qemu_driver.c:12588
 msgid "QEMU guest agent is not configured"
 msgstr "агент гостьової системи QEMU не налаштовано"
 
@@ -11587,7 +11597,7 @@ msgstr ""
 "не можна перемикатися між знімком диска і контрольною точкою системи у "
 "знімку %s"
 
-#: src/qemu/qemu_driver.c:10437
+#: src/qemu/qemu_driver.c:10383
 msgid "disk snapshots of inactive domains not implemented yet"
 msgstr "створення знімків дисків неактивних доменів ще не реалізовано"
 
@@ -11661,79 +11671,79 @@ msgstr "Для цього домену існує активний сеанс к
 msgid "No device found for specified path"
 msgstr "Для вказаного шляху не знайдено жодного пристрою"
 
-#: src/qemu/qemu_driver.c:11744
+#: src/qemu/qemu_driver.c:11750
 #, c-format
 msgid "No graphics backend with index %d"
 msgstr "Немає графічного сервера з індексом %d"
 
-#: src/qemu/qemu_driver.c:11756
+#: src/qemu/qemu_driver.c:11762
 #, c-format
 msgid "Can only open VNC or SPICE graphics backends, not %s"
 msgstr "Можливе відкриття лише графічних серверів VNC або SPICE, але не %s"
 
-#: src/qemu/qemu_driver.c:11873
+#: src/qemu/qemu_driver.c:11879
 msgid "total and read/write of bytes_sec cannot be set at the same time"
 msgstr "Не можна одночасно встановлювати total і read/write bytes_sec"
 
-#: src/qemu/qemu_driver.c:11880
+#: src/qemu/qemu_driver.c:11886
 msgid "total and read/write of iops_sec cannot be set at the same time"
 msgstr "Не можна одночасно встановлювати total і read/write iops_sec"
 
-#: src/qemu/qemu_driver.c:11928
+#: src/qemu/qemu_driver.c:11934
 msgid "Write to config file failed"
 msgstr "Спроба запису до файла налаштувань завершилася невдало"
 
-#: src/qemu/qemu_driver.c:12214
+#: src/qemu/qemu_driver.c:12220
 msgid "QEmu driver does not support modifying<metadata> element"
 msgstr ""
 "у драйвері QEMU не передбачено підтримки внесення змін до елемента <metadata>"
 
-#: src/qemu/qemu_driver.c:12220 src/qemu/qemu_driver.c:12247
-#: src/qemu/qemu_driver.c:12316
+#: src/qemu/qemu_driver.c:12226 src/qemu/qemu_driver.c:12253
+#: src/qemu/qemu_driver.c:12322
 msgid "unknown metadata type"
 msgstr "невідомий тип метаданих"
 
-#: src/qemu/qemu_driver.c:12242 src/qemu/qemu_driver.c:12310
+#: src/qemu/qemu_driver.c:12248 src/qemu/qemu_driver.c:12316
 msgid "QEMU driver does not support<metadata> element"
 msgstr "у драйвері QEMU не передбачено підтримки елементів <metadata>"
 
-#: src/qemu/qemu_driver.c:12323
+#: src/qemu/qemu_driver.c:12329
 msgid "Requested metadata element is not present"
 msgstr "Потрібного елемента метаданих (metadata) не виявлено"
 
-#: src/qemu/qemu_driver.c:12352 src/qemu/qemu_driver.c:12366
+#: src/qemu/qemu_driver.c:12358 src/qemu/qemu_driver.c:12372
 msgid "unable to get cpu account"
 msgstr "не вдалося отримати обліковий запис процесора"
 
-#: src/qemu/qemu_driver.c:12421
+#: src/qemu/qemu_driver.c:12427
 #, c-format
 msgid "start_cpu %d larger than maximum of %d"
 msgstr "значення start_cpu, %d, перевищує максимум — %d"
 
-#: src/qemu/qemu_driver.c:12442
+#: src/qemu/qemu_driver.c:12448
 msgid "cpuacct parse error"
 msgstr "помилка обробки cpuacct"
 
-#: src/qemu/qemu_driver.c:12494
+#: src/qemu/qemu_driver.c:12500
 msgid "cgroup CPUACCT controller is not mounted"
 msgstr "контролер CPUACCT cgroup не змонтовано"
 
-#: src/qemu/qemu_driver.c:12532
+#: src/qemu/qemu_driver.c:12538
 msgid "Duration not supported. Use 0 for now"
 msgstr "Підтримки тривалості не передбачено. Скористайтеся значенням 0."
 
-#: src/qemu/qemu_driver.c:12540
+#: src/qemu/qemu_driver.c:12546
 #, c-format
 msgid "Unknown suspend target: %u"
 msgstr "Невідома ціль призупинення: %u"
 
-#: src/qemu/qemu_driver.c:12563
+#: src/qemu/qemu_driver.c:12575
 msgid "Unable to suspend domain due to missing system_wakeup monitor command"
 msgstr ""
 "Не вдалося призупинити домен через те, що не вказано команду монітора "
 "system_wakeup"
 
-#: src/qemu/qemu_driver.c:12639
+#: src/qemu/qemu_driver.c:12651
 msgid "Unable to wake up domain due to missing system_wakeup monitor command"
 msgstr ""
 "Не вдалося пробудити домен через те, що не вказано команду монітора "

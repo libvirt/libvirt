@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-04-26 17:40-0400\n"
+"POT-Creation-Date: 2012-04-27 14:32-0400\n"
 "PO-Revision-Date: 2012-03-26 02:10+0000\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Hindi (http://www.transifex.net/projects/p/libvirt/language/"
@@ -972,10 +972,11 @@ msgstr "म्यूटेक्स आरंभ नहीं कर सकत�
 #: src/qemu/qemu_driver.c:9455 src/qemu/qemu_driver.c:9513
 #: src/qemu/qemu_driver.c:9682 src/qemu/qemu_driver.c:10056
 #: src/qemu/qemu_driver.c:11359 src/qemu/qemu_driver.c:11368
-#: src/qemu/qemu_driver.c:11512 src/qemu/qemu_driver.c:11636
-#: src/qemu/qemu_driver.c:11736 src/qemu/qemu_driver.c:12116
-#: src/qemu/qemu_driver.c:12488 src/qemu/qemu_driver.c:12585
-#: src/qemu/qemu_driver.c:12631 src/qemu/qemu_migration.c:2608
+#: src/qemu/qemu_driver.c:11512 src/qemu/qemu_driver.c:11628
+#: src/qemu/qemu_driver.c:11642 src/qemu/qemu_driver.c:11742
+#: src/qemu/qemu_driver.c:12122 src/qemu/qemu_driver.c:12494
+#: src/qemu/qemu_driver.c:12567 src/qemu/qemu_driver.c:12597
+#: src/qemu/qemu_driver.c:12643 src/qemu/qemu_migration.c:2608
 #: src/uml/uml_driver.c:2399 src/xen/xen_driver.c:2131
 #: src/xen/xen_hypervisor.c:1177 src/xen/xen_hypervisor.c:1258
 #: src/xen/xen_hypervisor.c:1377 src/xen/xm_internal.c:715
@@ -3875,59 +3876,68 @@ msgstr "%s %s रिपोर्ट की गयी त्रुटि के �
 msgid "Variable value contains invalid character"
 msgstr "परिवर्तनीय मान में अवैध अक्षर है"
 
-#: src/conf/nwfilter_params.c:325 src/conf/nwfilter_params.c:564
+#: src/conf/nwfilter_params.c:328 src/conf/nwfilter_params.c:581
 #, c-format
 msgid "Could not find value for variable '%s'"
 msgstr "परिवर्तनीय '%s' के लिए मान ढूँढ़ नहीं सका"
 
-#: src/conf/nwfilter_params.c:350
+#: src/conf/nwfilter_params.c:353
 msgid ""
 "Cardinality of list items must be the same for processing them in parallel"
 msgstr "सूचि मद की प्रमुखता समानांतर में उनके प्रसंस्करण के लिए एक समान होना चाहिए"
 
-#: src/conf/nwfilter_params.c:528
+#: src/conf/nwfilter_params.c:396
+msgid "hash lookup resulted in NULL pointer"
+msgstr ""
+
+#: src/conf/nwfilter_params.c:402
+#, c-format
+msgid "Lookup of value at index %u resulted in a NULL pointer"
+msgstr ""
+
+#: src/conf/nwfilter_params.c:545
 #, c-format
 msgid "Could not get iterator index for iterator ID %u"
 msgstr "इटरेटर सूचकांक प्राप्त नहीं कर सका इटरेटर ID %u के लिए"
 
-#: src/conf/nwfilter_params.c:538
+#: src/conf/nwfilter_params.c:555
 #, c-format
 msgid "Could not get iterator index for (internal) iterator ID %u"
 msgstr "इटरेटर सूचकांक प्राप्त नहीं कर सका (आंतरिक) इटरेटर ID %u के लिए "
 
-#: src/conf/nwfilter_params.c:556
+#: src/conf/nwfilter_params.c:573
 #, c-format
 msgid "Could not find variable '%s' in iterator"
 msgstr "इटरेटर में परिवर्तनीय '%s' को ढूंढ नहीं सका"
 
-#: src/conf/nwfilter_params.c:572
+#: src/conf/nwfilter_params.c:589
 #, c-format
 msgid "Could not get nth (%u) value of variable '%s'"
 msgstr "nth (%u) मान ढूँढ़ नहीं सका परिवर्तनीय '%s' के लिए "
 
-#: src/conf/nwfilter_params.c:723
+#: src/conf/nwfilter_params.c:740
 #, c-format
 msgid "Could not put variable '%s' into hashmap"
 msgstr "hashmap में परिवर्तनीय '%s' को रख नहीं सका"
 
-#: src/conf/nwfilter_params.c:850
+#: src/conf/nwfilter_params.c:867
 msgid "missing filter parameter table"
 msgstr "गुम फिल्टर पैरामीटर सारणी "
 
-#: src/conf/nwfilter_params.c:985
+#: src/conf/nwfilter_params.c:1002
 msgid "Malformatted array index"
 msgstr "मालफॉर्मेटेड सरणी सूचकांक "
 
-#: src/conf/nwfilter_params.c:988
+#: src/conf/nwfilter_params.c:1005
 msgid "Malformatted iterator id"
 msgstr "मालफॉर्मेटेड इटरेटर id"
 
-#: src/conf/nwfilter_params.c:1000
+#: src/conf/nwfilter_params.c:1017
 #, c-format
 msgid "Iterator ID exceeds maximum ID of %u"
 msgstr "इटरेटर ID %u की अधिकतम ID से अधिक है "
 
-#: src/conf/nwfilter_params.c:1013
+#: src/conf/nwfilter_params.c:1030
 msgid "Malformatted variable"
 msgstr "मालफॉर्मेटेड परिवर्तनीय"
 
@@ -6999,7 +7009,7 @@ msgstr "डोमेन के लिए स्मृति सीमा से�
 #: src/qemu/qemu_driver.c:6310 src/qemu/qemu_driver.c:6492
 #: src/qemu/qemu_driver.c:6599 src/qemu/qemu_driver.c:6761
 #: src/qemu/qemu_driver.c:6930 src/qemu/qemu_driver.c:7151
-#: src/qemu/qemu_driver.c:7367 src/qemu/qemu_driver.c:12500
+#: src/qemu/qemu_driver.c:7367 src/qemu/qemu_driver.c:12506
 #, c-format
 msgid "cannot find cgroup for domain %s"
 msgstr "cgroup को डोमेन %s के लिए ढूँढ़ नहीं सकता है"
@@ -7194,11 +7204,11 @@ msgstr "डोमेन पहले से चल रहा है"
 #: src/qemu/qemu_driver.c:10770 src/qemu/qemu_driver.c:10805
 #: src/qemu/qemu_driver.c:10875 src/qemu/qemu_driver.c:11236
 #: src/qemu/qemu_driver.c:11353 src/qemu/qemu_driver.c:11506
-#: src/qemu/qemu_driver.c:11622 src/qemu/qemu_driver.c:11730
-#: src/qemu/qemu_driver.c:11825 src/qemu/qemu_driver.c:11974
-#: src/qemu/qemu_driver.c:12105 src/qemu/qemu_driver.c:12190
-#: src/qemu/qemu_driver.c:12290 src/qemu/qemu_driver.c:12553
-#: src/qemu/qemu_driver.c:12622 src/test/test_driver.c:2125
+#: src/qemu/qemu_driver.c:11622 src/qemu/qemu_driver.c:11736
+#: src/qemu/qemu_driver.c:11831 src/qemu/qemu_driver.c:11980
+#: src/qemu/qemu_driver.c:12111 src/qemu/qemu_driver.c:12196
+#: src/qemu/qemu_driver.c:12296 src/qemu/qemu_driver.c:12559
+#: src/qemu/qemu_driver.c:12634 src/test/test_driver.c:2125
 #: src/uml/uml_driver.c:1641 src/uml/uml_driver.c:1666
 #: src/uml/uml_driver.c:1699 src/uml/uml_driver.c:2042
 #: src/uml/uml_driver.c:2160 src/uml/uml_driver.c:2393
@@ -7284,7 +7294,7 @@ msgstr "%s"
 #: src/qemu/qemu_driver.c:6744 src/qemu/qemu_driver.c:6907
 #: src/qemu/qemu_driver.c:7128 src/qemu/qemu_driver.c:7342
 #: src/qemu/qemu_driver.c:7879 src/qemu/qemu_driver.c:8042
-#: src/qemu/qemu_driver.c:12481
+#: src/qemu/qemu_driver.c:12487
 #, c-format
 msgid "No such domain %s"
 msgstr "कोई ऐसा %s डोमेन नहीं"
@@ -8525,52 +8535,52 @@ msgstr "स्रोत मैक पता सेट के साथ %s दि
 msgid "illegal protocol type"
 msgstr "अवैध प्रोटोकॉल प्रकार"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3127
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3223
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3339
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3128
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3224
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3340
 msgid "cannot create rules since ebtables tool is missing."
 msgstr "नियम नहीं बना सकते के बाद से ebtables टूल गुम है"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3186
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3313
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3385
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3187
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3314
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3386
 msgid "Some rules could not be created."
 msgstr "कुछ नियम नहीं बनाया जा सका."
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3490
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3491
 #, c-format
 msgid "To enable ip%stables filtering for the VM do 'echo 1 > %s'"
 msgstr "VM के लिए ip%stables फ़िल्टरिंग सक्षम करने के लिए 'echo 1 > %s' करे "
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3814
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3818
 #, c-format
 msgid "Some rules could not be created for interface %s%s%s"
 msgstr "अंतरफलक  %s%s%s के लिए कुछ नियम नहीं बनाया जा सका"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3954
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3958
 msgid "error while executing CLI commands"
 msgstr "CLI कमांड को चलाने के दौरान त्रुटि"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4062
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4066
 #, c-format
 msgid "Testing of ebtables command failed: %s"
 msgstr ""
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4081
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4085
 #, c-format
 msgid "Testing of iptables command failed: %s"
 msgstr ""
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4100
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4104
 #, c-format
 msgid "Testing of ip6tables command failed: %s"
 msgstr ""
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4110
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4114
 msgid "essential tools to support ip(6)tables firewalls could not be located"
 msgstr "ip(6)tables फ़ायरवॉलों का समर्थन करने के लिए आवश्यक उपकरण को ढूँढ़ा नहीं जा सका"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4119
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4123
 msgid "firewall tools were not found or cannot be used"
 msgstr "फ़ायरवॉल उपकरण नहीं मिला या उपयोग नहीं किया जा सकता"
 
@@ -10558,13 +10568,13 @@ msgstr "विफल ऑपरेशन फिर बहाल करें"
 
 #: src/qemu/qemu_driver.c:1590 src/qemu/qemu_driver.c:1668
 #: src/qemu/qemu_driver.c:9604 src/qemu/qemu_driver.c:9632
-#: src/qemu/qemu_driver.c:12570
+#: src/qemu/qemu_driver.c:12582
 msgid "QEMU guest agent is not available due to an error"
 msgstr "QEMU अतिथि प्रतिनिधि त्रुटि के कारण उपलब्ध नहीं है "
 
 #: src/qemu/qemu_driver.c:1595 src/qemu/qemu_driver.c:1673
 #: src/qemu/qemu_driver.c:9610 src/qemu/qemu_driver.c:9639
-#: src/qemu/qemu_driver.c:12576
+#: src/qemu/qemu_driver.c:12588
 msgid "QEMU guest agent is not configured"
 msgstr "QEMU अतिथि प्रतिनिधि विन्यस्त नहीं है"
 
@@ -11191,7 +11201,7 @@ msgid ""
 "cannot change between disk snapshot and system checkpoint in snapshot %s"
 msgstr "स्नैपशॉट %s में डिस्क स्नैपशॉट और सिस्टम चेकपॉइंट के बीच परिवर्तित नहीं कर सकता"
 
-#: src/qemu/qemu_driver.c:10437
+#: src/qemu/qemu_driver.c:10383
 msgid "disk snapshots of inactive domains not implemented yet"
 msgstr "डिस्क स्नैपशॉट के निष्क्रिय डोमेन अभी तक कार्यान्वित नहीं"
 
@@ -11264,76 +11274,76 @@ msgstr ""
 msgid "No device found for specified path"
 msgstr "निर्दिष्ट पथ के लिए कोई युक्ति नहीं मिला "
 
-#: src/qemu/qemu_driver.c:11744
+#: src/qemu/qemu_driver.c:11750
 #, c-format
 msgid "No graphics backend with index %d"
 msgstr "कोई ग्राफ़िक्स बैकेंड अनुक्रमणिका %d के साथ नहीं "
 
-#: src/qemu/qemu_driver.c:11756
+#: src/qemu/qemu_driver.c:11762
 #, c-format
 msgid "Can only open VNC or SPICE graphics backends, not %s"
 msgstr "केवल VNC या SPICE ग्राफिक्स बैकेंड खोल सकते हैं, %s नहीं "
 
-#: src/qemu/qemu_driver.c:11873
+#: src/qemu/qemu_driver.c:11879
 msgid "total and read/write of bytes_sec cannot be set at the same time"
 msgstr "कुल और पढ़ें/लिखें bytes_sec के एक ही समय में सेट किया जा सकता है "
 
-#: src/qemu/qemu_driver.c:11880
+#: src/qemu/qemu_driver.c:11886
 msgid "total and read/write of iops_sec cannot be set at the same time"
 msgstr "कुल और read/write iops_sec एक ही समय में सेट नहीं किया जा सकता है"
 
-#: src/qemu/qemu_driver.c:11928
+#: src/qemu/qemu_driver.c:11934
 msgid "Write to config file failed"
 msgstr " विन्यास फाइल लिखने में विफल"
 
-#: src/qemu/qemu_driver.c:12214
+#: src/qemu/qemu_driver.c:12220
 msgid "QEmu driver does not support modifying<metadata> element"
 msgstr "QEMU ड्राइवर संशोधित <metadata> तत्व का समर्थन नहीं करता है"
 
-#: src/qemu/qemu_driver.c:12220 src/qemu/qemu_driver.c:12247
-#: src/qemu/qemu_driver.c:12316
+#: src/qemu/qemu_driver.c:12226 src/qemu/qemu_driver.c:12253
+#: src/qemu/qemu_driver.c:12322
 msgid "unknown metadata type"
 msgstr "अज्ञात metadata प्रकार"
 
-#: src/qemu/qemu_driver.c:12242 src/qemu/qemu_driver.c:12310
+#: src/qemu/qemu_driver.c:12248 src/qemu/qemu_driver.c:12316
 msgid "QEMU driver does not support<metadata> element"
 msgstr "QEMU ड्राइवर <metadata> तत्व का समर्थन नहीं करता है"
 
-#: src/qemu/qemu_driver.c:12323
+#: src/qemu/qemu_driver.c:12329
 msgid "Requested metadata element is not present"
 msgstr "अनुरोधित metadata तत्व मौजूद नहीं है"
 
-#: src/qemu/qemu_driver.c:12352 src/qemu/qemu_driver.c:12366
+#: src/qemu/qemu_driver.c:12358 src/qemu/qemu_driver.c:12372
 msgid "unable to get cpu account"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12421
+#: src/qemu/qemu_driver.c:12427
 #, c-format
 msgid "start_cpu %d larger than maximum of %d"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12442
+#: src/qemu/qemu_driver.c:12448
 msgid "cpuacct parse error"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12494
+#: src/qemu/qemu_driver.c:12500
 msgid "cgroup CPUACCT controller is not mounted"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12532
+#: src/qemu/qemu_driver.c:12538
 msgid "Duration not supported. Use 0 for now"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12540
+#: src/qemu/qemu_driver.c:12546
 #, c-format
 msgid "Unknown suspend target: %u"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12563
+#: src/qemu/qemu_driver.c:12575
 msgid "Unable to suspend domain due to missing system_wakeup monitor command"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12639
+#: src/qemu/qemu_driver.c:12651
 msgid "Unable to wake up domain due to missing system_wakeup monitor command"
 msgstr ""
 

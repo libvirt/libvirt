@@ -48,12 +48,12 @@
 /daemon/*_dispatch.h
 /daemon/libvirt_qemud
 /daemon/libvirtd
-/daemon/libvirtd.init
-/daemon/libvirtd.service
 /daemon/libvirtd*.logrotate
 /daemon/libvirtd.8
 /daemon/libvirtd.8.in
+/daemon/libvirtd.init
 /daemon/libvirtd.pod
+/daemon/libvirtd.service
 /docs/apibuild.py.stamp
 /docs/devhelp/libvirt.devhelp
 /docs/hvsupport.html.in

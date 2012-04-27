@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-04-26 17:40-0400\n"
+"POT-Creation-Date: 2012-04-27 14:32-0400\n"
 "PO-Revision-Date: 2012-04-02 01:10+0000\n"
 "Last-Translator: Tomoyuki KATO <tomo@dream.daynight.jp>\n"
 "Language-Team: Japanese (http://www.transifex.net/projects/p/libvirt/"
@@ -974,10 +974,11 @@ msgstr "mutex を初期化できません"
 #: src/qemu/qemu_driver.c:9455 src/qemu/qemu_driver.c:9513
 #: src/qemu/qemu_driver.c:9682 src/qemu/qemu_driver.c:10056
 #: src/qemu/qemu_driver.c:11359 src/qemu/qemu_driver.c:11368
-#: src/qemu/qemu_driver.c:11512 src/qemu/qemu_driver.c:11636
-#: src/qemu/qemu_driver.c:11736 src/qemu/qemu_driver.c:12116
-#: src/qemu/qemu_driver.c:12488 src/qemu/qemu_driver.c:12585
-#: src/qemu/qemu_driver.c:12631 src/qemu/qemu_migration.c:2608
+#: src/qemu/qemu_driver.c:11512 src/qemu/qemu_driver.c:11628
+#: src/qemu/qemu_driver.c:11642 src/qemu/qemu_driver.c:11742
+#: src/qemu/qemu_driver.c:12122 src/qemu/qemu_driver.c:12494
+#: src/qemu/qemu_driver.c:12567 src/qemu/qemu_driver.c:12597
+#: src/qemu/qemu_driver.c:12643 src/qemu/qemu_migration.c:2608
 #: src/uml/uml_driver.c:2399 src/xen/xen_driver.c:2131
 #: src/xen/xen_hypervisor.c:1177 src/xen/xen_hypervisor.c:1258
 #: src/xen/xen_hypervisor.c:1377 src/xen/xm_internal.c:715
@@ -3931,59 +3932,68 @@ msgstr "%s %s のフォーマッターがエラーを報告しました"
 msgid "Variable value contains invalid character"
 msgstr "変数の値が無効な文字を含みます"
 
-#: src/conf/nwfilter_params.c:325 src/conf/nwfilter_params.c:564
+#: src/conf/nwfilter_params.c:328 src/conf/nwfilter_params.c:581
 #, c-format
 msgid "Could not find value for variable '%s'"
 msgstr "変数 '%s' の値を見つけられませんでした"
 
-#: src/conf/nwfilter_params.c:350
+#: src/conf/nwfilter_params.c:353
 msgid ""
 "Cardinality of list items must be the same for processing them in parallel"
 msgstr "リスト項目の濃度は並列に処理するために同じにする必要があります"
 
-#: src/conf/nwfilter_params.c:528
+#: src/conf/nwfilter_params.c:396
+msgid "hash lookup resulted in NULL pointer"
+msgstr ""
+
+#: src/conf/nwfilter_params.c:402
+#, c-format
+msgid "Lookup of value at index %u resulted in a NULL pointer"
+msgstr ""
+
+#: src/conf/nwfilter_params.c:545
 #, c-format
 msgid "Could not get iterator index for iterator ID %u"
 msgstr "反復子  ID %u のインデックスを取得できませんでした"
 
-#: src/conf/nwfilter_params.c:538
+#: src/conf/nwfilter_params.c:555
 #, c-format
 msgid "Could not get iterator index for (internal) iterator ID %u"
 msgstr "（内部）反復子 ID %u のインデックスを取得できませんでした"
 
-#: src/conf/nwfilter_params.c:556
+#: src/conf/nwfilter_params.c:573
 #, c-format
 msgid "Could not find variable '%s' in iterator"
 msgstr "反復子に変数 '%s' を見つけられませんでした"
 
-#: src/conf/nwfilter_params.c:572
+#: src/conf/nwfilter_params.c:589
 #, c-format
 msgid "Could not get nth (%u) value of variable '%s'"
 msgstr "N 番目 (%u) の値を変数 '%s' から取得できませんでした"
 
-#: src/conf/nwfilter_params.c:723
+#: src/conf/nwfilter_params.c:740
 #, c-format
 msgid "Could not put variable '%s' into hashmap"
 msgstr "変数 '%s' をハッシュマップの中に置けませんでした"
 
-#: src/conf/nwfilter_params.c:850
+#: src/conf/nwfilter_params.c:867
 msgid "missing filter parameter table"
 msgstr "フィルターパラメーター表がありません"
 
-#: src/conf/nwfilter_params.c:985
+#: src/conf/nwfilter_params.c:1002
 msgid "Malformatted array index"
 msgstr "不正な形式の配列インデックス"
 
-#: src/conf/nwfilter_params.c:988
+#: src/conf/nwfilter_params.c:1005
 msgid "Malformatted iterator id"
 msgstr "不正な形式の反復子 ID"
 
-#: src/conf/nwfilter_params.c:1000
+#: src/conf/nwfilter_params.c:1017
 #, c-format
 msgid "Iterator ID exceeds maximum ID of %u"
 msgstr "反復子 ID が最大 ID %u を超えています"
 
-#: src/conf/nwfilter_params.c:1013
+#: src/conf/nwfilter_params.c:1030
 msgid "Malformatted variable"
 msgstr "不正な形式の変数"
 
@@ -7128,7 +7138,7 @@ msgstr "ドメインのメモリーの設定に失敗しました"
 #: src/qemu/qemu_driver.c:6310 src/qemu/qemu_driver.c:6492
 #: src/qemu/qemu_driver.c:6599 src/qemu/qemu_driver.c:6761
 #: src/qemu/qemu_driver.c:6930 src/qemu/qemu_driver.c:7151
-#: src/qemu/qemu_driver.c:7367 src/qemu/qemu_driver.c:12500
+#: src/qemu/qemu_driver.c:7367 src/qemu/qemu_driver.c:12506
 #, c-format
 msgid "cannot find cgroup for domain %s"
 msgstr "ドメイン %s に対する cgroup を見つけられません"
@@ -7325,11 +7335,11 @@ msgstr "ドメインはすでに実行中です"
 #: src/qemu/qemu_driver.c:10770 src/qemu/qemu_driver.c:10805
 #: src/qemu/qemu_driver.c:10875 src/qemu/qemu_driver.c:11236
 #: src/qemu/qemu_driver.c:11353 src/qemu/qemu_driver.c:11506
-#: src/qemu/qemu_driver.c:11622 src/qemu/qemu_driver.c:11730
-#: src/qemu/qemu_driver.c:11825 src/qemu/qemu_driver.c:11974
-#: src/qemu/qemu_driver.c:12105 src/qemu/qemu_driver.c:12190
-#: src/qemu/qemu_driver.c:12290 src/qemu/qemu_driver.c:12553
-#: src/qemu/qemu_driver.c:12622 src/test/test_driver.c:2125
+#: src/qemu/qemu_driver.c:11622 src/qemu/qemu_driver.c:11736
+#: src/qemu/qemu_driver.c:11831 src/qemu/qemu_driver.c:11980
+#: src/qemu/qemu_driver.c:12111 src/qemu/qemu_driver.c:12196
+#: src/qemu/qemu_driver.c:12296 src/qemu/qemu_driver.c:12559
+#: src/qemu/qemu_driver.c:12634 src/test/test_driver.c:2125
 #: src/uml/uml_driver.c:1641 src/uml/uml_driver.c:1666
 #: src/uml/uml_driver.c:1699 src/uml/uml_driver.c:2042
 #: src/uml/uml_driver.c:2160 src/uml/uml_driver.c:2393
@@ -7415,7 +7425,7 @@ msgstr "%s"
 #: src/qemu/qemu_driver.c:6744 src/qemu/qemu_driver.c:6907
 #: src/qemu/qemu_driver.c:7128 src/qemu/qemu_driver.c:7342
 #: src/qemu/qemu_driver.c:7879 src/qemu/qemu_driver.c:8042
-#: src/qemu/qemu_driver.c:12481
+#: src/qemu/qemu_driver.c:12487
 #, c-format
 msgid "No such domain %s"
 msgstr "ドメイン %s はありません"
@@ -8696,56 +8706,56 @@ msgstr ""
 msgid "illegal protocol type"
 msgstr "不正なプロトコル形式"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3127
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3223
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3339
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3128
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3224
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3340
 msgid "cannot create rules since ebtables tool is missing."
 msgstr "ebtables ツールがないのでルールを作成できません"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3186
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3313
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3385
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3187
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3314
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3386
 msgid "Some rules could not be created."
 msgstr "いくつかのルールが作成できませんでした。"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3490
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3491
 #, c-format
 msgid "To enable ip%stables filtering for the VM do 'echo 1 > %s'"
 msgstr ""
 "仮想マシンに対して ip%stables フィルタリングを有効にするには 'echo 1 > %s' を"
 "実行してください"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3814
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3818
 #, c-format
 msgid "Some rules could not be created for interface %s%s%s"
 msgstr "いくつかのルールがインターフェース %s%s%s に対して作成できませんでした"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3954
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3958
 msgid "error while executing CLI commands"
 msgstr "CLI コマンドの実行中にエラーが発生しました"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4062
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4066
 #, c-format
 msgid "Testing of ebtables command failed: %s"
 msgstr "ebtables コマンドのテストに失敗しました: %s"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4081
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4085
 #, c-format
 msgid "Testing of iptables command failed: %s"
 msgstr "iptables コマンドのテストに失敗しました: %s"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4100
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4104
 #, c-format
 msgid "Testing of ip6tables command failed: %s"
 msgstr "ip6tables コマンドのテストに失敗しました: %s"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4110
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4114
 msgid "essential tools to support ip(6)tables firewalls could not be located"
 msgstr ""
 "ip(6)tables ファイアウォールをサポートする基本的なツールが場所を決められませ"
 "んでした"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4119
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4123
 msgid "firewall tools were not found or cannot be used"
 msgstr "ファイアウォールツールが見つからないか使用できません"
 
@@ -10767,13 +10777,13 @@ msgstr "レジューム操作は失敗しました"
 
 #: src/qemu/qemu_driver.c:1590 src/qemu/qemu_driver.c:1668
 #: src/qemu/qemu_driver.c:9604 src/qemu/qemu_driver.c:9632
-#: src/qemu/qemu_driver.c:12570
+#: src/qemu/qemu_driver.c:12582
 msgid "QEMU guest agent is not available due to an error"
 msgstr "QEMU ゲストエージェントがエラーのため利用可能ではありません"
 
 #: src/qemu/qemu_driver.c:1595 src/qemu/qemu_driver.c:1673
 #: src/qemu/qemu_driver.c:9610 src/qemu/qemu_driver.c:9639
-#: src/qemu/qemu_driver.c:12576
+#: src/qemu/qemu_driver.c:12588
 msgid "QEMU guest agent is not configured"
 msgstr "QEMU ゲストエージェントが設定されていません"
 
@@ -11417,7 +11427,7 @@ msgstr ""
 "スナップショット %s においてディスクスナップショットとシステムチェックポイン"
 "トの間で変更できません"
 
-#: src/qemu/qemu_driver.c:10437
+#: src/qemu/qemu_driver.c:10383
 msgid "disk snapshots of inactive domains not implemented yet"
 msgstr "停止状態のドメインのディスクスナップショットはまだ実装されていません"
 
@@ -11490,76 +11500,76 @@ msgstr "使用中のコンソールセッションがこのドメインに対し
 msgid "No device found for specified path"
 msgstr "指定されたパスにデバイスが見つかりませんでした"
 
-#: src/qemu/qemu_driver.c:11744
+#: src/qemu/qemu_driver.c:11750
 #, c-format
 msgid "No graphics backend with index %d"
 msgstr "インデックス %d を持つグラフィックバックエンドがありません"
 
-#: src/qemu/qemu_driver.c:11756
+#: src/qemu/qemu_driver.c:11762
 #, c-format
 msgid "Can only open VNC or SPICE graphics backends, not %s"
 msgstr "VNC または SPICEグラフィックバックエンドのみ開けます、%s はできません"
 
-#: src/qemu/qemu_driver.c:11873
+#: src/qemu/qemu_driver.c:11879
 msgid "total and read/write of bytes_sec cannot be set at the same time"
 msgstr "bytes_sec の合計と読み書きは同時に設定できません"
 
-#: src/qemu/qemu_driver.c:11880
+#: src/qemu/qemu_driver.c:11886
 msgid "total and read/write of iops_sec cannot be set at the same time"
 msgstr "iops_sec の合計と読み書きは同時に設定できません"
 
-#: src/qemu/qemu_driver.c:11928
+#: src/qemu/qemu_driver.c:11934
 msgid "Write to config file failed"
 msgstr "設定ファイルへの書き込みに失敗しました"
 
-#: src/qemu/qemu_driver.c:12214
+#: src/qemu/qemu_driver.c:12220
 msgid "QEmu driver does not support modifying<metadata> element"
 msgstr "QEMU ドライバーが <metadata> 要素の変更をサポートしません"
 
-#: src/qemu/qemu_driver.c:12220 src/qemu/qemu_driver.c:12247
-#: src/qemu/qemu_driver.c:12316
+#: src/qemu/qemu_driver.c:12226 src/qemu/qemu_driver.c:12253
+#: src/qemu/qemu_driver.c:12322
 msgid "unknown metadata type"
 msgstr "予期しないメタ情報の形式"
 
-#: src/qemu/qemu_driver.c:12242 src/qemu/qemu_driver.c:12310
+#: src/qemu/qemu_driver.c:12248 src/qemu/qemu_driver.c:12316
 msgid "QEMU driver does not support<metadata> element"
 msgstr "QEMU ドライバーが <metadata> 要素をサポートしません"
 
-#: src/qemu/qemu_driver.c:12323
+#: src/qemu/qemu_driver.c:12329
 msgid "Requested metadata element is not present"
 msgstr "要求された metadata 要素がありません"
 
-#: src/qemu/qemu_driver.c:12352 src/qemu/qemu_driver.c:12366
+#: src/qemu/qemu_driver.c:12358 src/qemu/qemu_driver.c:12372
 msgid "unable to get cpu account"
 msgstr "cpu account を取得できません"
 
-#: src/qemu/qemu_driver.c:12421
+#: src/qemu/qemu_driver.c:12427
 #, c-format
 msgid "start_cpu %d larger than maximum of %d"
 msgstr "start_cpu %d が %d の最大値よりも大きいです"
 
-#: src/qemu/qemu_driver.c:12442
+#: src/qemu/qemu_driver.c:12448
 msgid "cpuacct parse error"
 msgstr "cpuacct 解析エラー"
 
-#: src/qemu/qemu_driver.c:12494
+#: src/qemu/qemu_driver.c:12500
 msgid "cgroup CPUACCT controller is not mounted"
 msgstr "cgroup CPUACCT コントローラーがマウントされていません"
 
-#: src/qemu/qemu_driver.c:12532
+#: src/qemu/qemu_driver.c:12538
 msgid "Duration not supported. Use 0 for now"
 msgstr "間隔の指定はサポートされません。今のところ 0 を使用します"
 
-#: src/qemu/qemu_driver.c:12540
+#: src/qemu/qemu_driver.c:12546
 #, c-format
 msgid "Unknown suspend target: %u"
 msgstr "未知の一時停止ターゲット: %u"
 
-#: src/qemu/qemu_driver.c:12563
+#: src/qemu/qemu_driver.c:12575
 msgid "Unable to suspend domain due to missing system_wakeup monitor command"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12639
+#: src/qemu/qemu_driver.c:12651
 msgid "Unable to wake up domain due to missing system_wakeup monitor command"
 msgstr ""
 

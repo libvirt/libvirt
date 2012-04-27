@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: te\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-04-26 17:40-0400\n"
+"POT-Creation-Date: 2012-04-27 14:32-0400\n"
 "PO-Revision-Date: 2010-04-06 19:23+0530\n"
 "Last-Translator: Krishna Babu K <kkrothap@redhat.com>\n"
 "Language-Team: Telugu <te@li.org>\n"
@@ -943,10 +943,11 @@ msgstr "మ్యూటెక్సును సిద్దము చేయల�
 #: src/qemu/qemu_driver.c:9455 src/qemu/qemu_driver.c:9513
 #: src/qemu/qemu_driver.c:9682 src/qemu/qemu_driver.c:10056
 #: src/qemu/qemu_driver.c:11359 src/qemu/qemu_driver.c:11368
-#: src/qemu/qemu_driver.c:11512 src/qemu/qemu_driver.c:11636
-#: src/qemu/qemu_driver.c:11736 src/qemu/qemu_driver.c:12116
-#: src/qemu/qemu_driver.c:12488 src/qemu/qemu_driver.c:12585
-#: src/qemu/qemu_driver.c:12631 src/qemu/qemu_migration.c:2608
+#: src/qemu/qemu_driver.c:11512 src/qemu/qemu_driver.c:11628
+#: src/qemu/qemu_driver.c:11642 src/qemu/qemu_driver.c:11742
+#: src/qemu/qemu_driver.c:12122 src/qemu/qemu_driver.c:12494
+#: src/qemu/qemu_driver.c:12567 src/qemu/qemu_driver.c:12597
+#: src/qemu/qemu_driver.c:12643 src/qemu/qemu_migration.c:2608
 #: src/uml/uml_driver.c:2399 src/xen/xen_driver.c:2131
 #: src/xen/xen_hypervisor.c:1177 src/xen/xen_hypervisor.c:1258
 #: src/xen/xen_hypervisor.c:1377 src/xen/xm_internal.c:715
@@ -3918,61 +3919,70 @@ msgstr ""
 msgid "Variable value contains invalid character"
 msgstr "మోడల్ నామము చెల్లని అక్షరములను కలిగివుంది"
 
-#: src/conf/nwfilter_params.c:325 src/conf/nwfilter_params.c:564
+#: src/conf/nwfilter_params.c:328 src/conf/nwfilter_params.c:581
 #, fuzzy, c-format
 msgid "Could not find value for variable '%s'"
 msgstr "'%s' రకముదస్త్రమును కనుగొనలేక పోయింది"
 
-#: src/conf/nwfilter_params.c:350
+#: src/conf/nwfilter_params.c:353
 msgid ""
 "Cardinality of list items must be the same for processing them in parallel"
 msgstr ""
 
-#: src/conf/nwfilter_params.c:528
+#: src/conf/nwfilter_params.c:396
+msgid "hash lookup resulted in NULL pointer"
+msgstr ""
+
+#: src/conf/nwfilter_params.c:402
+#, c-format
+msgid "Lookup of value at index %u resulted in a NULL pointer"
+msgstr ""
+
+#: src/conf/nwfilter_params.c:545
 #, fuzzy, c-format
 msgid "Could not get iterator index for iterator ID %u"
 msgstr "'%s' రకముదస్త్రమును కనుగొనలేక పోయింది"
 
-#: src/conf/nwfilter_params.c:538
+#: src/conf/nwfilter_params.c:555
 #, fuzzy, c-format
 msgid "Could not get iterator index for (internal) iterator ID %u"
 msgstr "కంటైనర్ కొరకు eth నామమును నిష్పాదించలేక పోయింది"
 
-#: src/conf/nwfilter_params.c:556
+#: src/conf/nwfilter_params.c:573
 #, fuzzy, c-format
 msgid "Could not find variable '%s' in iterator"
 msgstr "%sకి ఆర్గుమెంటును వుంచలేక పోయింది"
 
-#: src/conf/nwfilter_params.c:572
+#: src/conf/nwfilter_params.c:589
 #, fuzzy, c-format
 msgid "Could not get nth (%u) value of variable '%s'"
 msgstr "%s పై మాధ్యమాన్ని బయటకు పంపలేదు"
 
-#: src/conf/nwfilter_params.c:723
+#: src/conf/nwfilter_params.c:740
 #, fuzzy, c-format
 msgid "Could not put variable '%s' into hashmap"
 msgstr "%sకి ఆర్గుమెంటును వుంచలేక పోయింది"
 
-#: src/conf/nwfilter_params.c:850
+#: src/conf/nwfilter_params.c:867
 #, fuzzy
 msgid "missing filter parameter table"
 msgstr "డ్రైవ్ '%s' నందు ఫైలు పారామితి తప్పిపోయినది"
 
-#: src/conf/nwfilter_params.c:985
+#: src/conf/nwfilter_params.c:1002
 msgid "Malformatted array index"
 msgstr ""
 
-#: src/conf/nwfilter_params.c:988
+#: src/conf/nwfilter_params.c:1005
 #, fuzzy
 msgid "Malformatted iterator id"
 msgstr "తప్పుగాఫార్మైన పరిమాణము %s"
 
-#: src/conf/nwfilter_params.c:1000
+#: src/conf/nwfilter_params.c:1017
 #, fuzzy, c-format
 msgid "Iterator ID exceeds maximum ID of %u"
 msgstr "రక్షణ doi గరిష్టమును మించినది: %zd"
 
-#: src/conf/nwfilter_params.c:1013
+#: src/conf/nwfilter_params.c:1030
 #, fuzzy
 msgid "Malformatted variable"
 msgstr "తప్పుగాఫార్మైన పరిమాణము %s"
@@ -7156,7 +7166,7 @@ msgstr "డొమైన్ కొరకు మెమొరీను అమర్
 #: src/qemu/qemu_driver.c:6310 src/qemu/qemu_driver.c:6492
 #: src/qemu/qemu_driver.c:6599 src/qemu/qemu_driver.c:6761
 #: src/qemu/qemu_driver.c:6930 src/qemu/qemu_driver.c:7151
-#: src/qemu/qemu_driver.c:7367 src/qemu/qemu_driver.c:12500
+#: src/qemu/qemu_driver.c:7367 src/qemu/qemu_driver.c:12506
 #, c-format
 msgid "cannot find cgroup for domain %s"
 msgstr "డొమైన్ %s కొరకు cgroup కనుగొనలేక పోయింది"
@@ -7369,11 +7379,11 @@ msgstr "డొమైన్ యిప్పటికే నడుచుచున�
 #: src/qemu/qemu_driver.c:10770 src/qemu/qemu_driver.c:10805
 #: src/qemu/qemu_driver.c:10875 src/qemu/qemu_driver.c:11236
 #: src/qemu/qemu_driver.c:11353 src/qemu/qemu_driver.c:11506
-#: src/qemu/qemu_driver.c:11622 src/qemu/qemu_driver.c:11730
-#: src/qemu/qemu_driver.c:11825 src/qemu/qemu_driver.c:11974
-#: src/qemu/qemu_driver.c:12105 src/qemu/qemu_driver.c:12190
-#: src/qemu/qemu_driver.c:12290 src/qemu/qemu_driver.c:12553
-#: src/qemu/qemu_driver.c:12622 src/test/test_driver.c:2125
+#: src/qemu/qemu_driver.c:11622 src/qemu/qemu_driver.c:11736
+#: src/qemu/qemu_driver.c:11831 src/qemu/qemu_driver.c:11980
+#: src/qemu/qemu_driver.c:12111 src/qemu/qemu_driver.c:12196
+#: src/qemu/qemu_driver.c:12296 src/qemu/qemu_driver.c:12559
+#: src/qemu/qemu_driver.c:12634 src/test/test_driver.c:2125
 #: src/uml/uml_driver.c:1641 src/uml/uml_driver.c:1666
 #: src/uml/uml_driver.c:1699 src/uml/uml_driver.c:2042
 #: src/uml/uml_driver.c:2160 src/uml/uml_driver.c:2393
@@ -7466,7 +7476,7 @@ msgstr "%s"
 #: src/qemu/qemu_driver.c:6744 src/qemu/qemu_driver.c:6907
 #: src/qemu/qemu_driver.c:7128 src/qemu/qemu_driver.c:7342
 #: src/qemu/qemu_driver.c:7879 src/qemu/qemu_driver.c:8042
-#: src/qemu/qemu_driver.c:12481
+#: src/qemu/qemu_driver.c:12487
 #, c-format
 msgid "No such domain %s"
 msgstr "డొమైన్ %s వంటి డొమైన్ లేదు"
@@ -8746,53 +8756,53 @@ msgstr ""
 msgid "illegal protocol type"
 msgstr ""
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3127
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3223
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3339
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3128
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3224
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3340
 msgid "cannot create rules since ebtables tool is missing."
 msgstr ""
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3186
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3313
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3385
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3187
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3314
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3386
 msgid "Some rules could not be created."
 msgstr ""
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3490
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3491
 #, c-format
 msgid "To enable ip%stables filtering for the VM do 'echo 1 > %s'"
 msgstr ""
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3814
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3818
 #, fuzzy, c-format
 msgid "Some rules could not be created for interface %s%s%s"
 msgstr "ఇంటర్‌ఫేస్ స్టాట్సు పోందుటలో విఫలం %s %s"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3954
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3958
 #, fuzzy
 msgid "error while executing CLI commands"
 msgstr "%s చిరునామా సమాచారము పొందుటలో దోషము"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4062
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4066
 #, fuzzy, c-format
 msgid "Testing of ebtables command failed: %s"
 msgstr "%s: సరికూర్చు ఆదేశము విఫలమైంది: %s"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4081
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4085
 #, fuzzy, c-format
 msgid "Testing of iptables command failed: %s"
 msgstr "%s: సరికూర్చు ఆదేశము విఫలమైంది: %s"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4100
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4104
 #, fuzzy, c-format
 msgid "Testing of ip6tables command failed: %s"
 msgstr "%s: సరికూర్చు ఆదేశము విఫలమైంది: %s"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4110
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4114
 msgid "essential tools to support ip(6)tables firewalls could not be located"
 msgstr ""
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4119
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4123
 msgid "firewall tools were not found or cannot be used"
 msgstr ""
 
@@ -10863,13 +10873,13 @@ msgstr "ఆపరేషన్ తిరిగికొనసాగింపు �
 
 #: src/qemu/qemu_driver.c:1590 src/qemu/qemu_driver.c:1668
 #: src/qemu/qemu_driver.c:9604 src/qemu/qemu_driver.c:9632
-#: src/qemu/qemu_driver.c:12570
+#: src/qemu/qemu_driver.c:12582
 msgid "QEMU guest agent is not available due to an error"
 msgstr ""
 
 #: src/qemu/qemu_driver.c:1595 src/qemu/qemu_driver.c:1673
 #: src/qemu/qemu_driver.c:9610 src/qemu/qemu_driver.c:9639
-#: src/qemu/qemu_driver.c:12576
+#: src/qemu/qemu_driver.c:12588
 msgid "QEMU guest agent is not configured"
 msgstr ""
 
@@ -11526,7 +11536,7 @@ msgid ""
 "cannot change between disk snapshot and system checkpoint in snapshot %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10437
+#: src/qemu/qemu_driver.c:10383
 msgid "disk snapshots of inactive domains not implemented yet"
 msgstr ""
 
@@ -11599,85 +11609,85 @@ msgstr ""
 msgid "No device found for specified path"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11744
+#: src/qemu/qemu_driver.c:11750
 #, fuzzy, c-format
 msgid "No graphics backend with index %d"
 msgstr "id %dతో యెటువంటి డొమైన్ లేదు"
 
-#: src/qemu/qemu_driver.c:11756
+#: src/qemu/qemu_driver.c:11762
 #, c-format
 msgid "Can only open VNC or SPICE graphics backends, not %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11873
+#: src/qemu/qemu_driver.c:11879
 msgid "total and read/write of bytes_sec cannot be set at the same time"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11880
+#: src/qemu/qemu_driver.c:11886
 msgid "total and read/write of iops_sec cannot be set at the same time"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11928
+#: src/qemu/qemu_driver.c:11934
 #, fuzzy
 msgid "Write to config file failed"
 msgstr "fd %dకు వ్రాయుట విఫలమైంది"
 
-#: src/qemu/qemu_driver.c:12214
+#: src/qemu/qemu_driver.c:12220
 #, fuzzy
 msgid "QEmu driver does not support modifying<metadata> element"
 msgstr "స్థిరమైన ఆకృతీకరణను సవరించుటకు Xend వర్షన్ మద్దతించుటలేదు"
 
-#: src/qemu/qemu_driver.c:12220 src/qemu/qemu_driver.c:12247
-#: src/qemu/qemu_driver.c:12316
+#: src/qemu/qemu_driver.c:12226 src/qemu/qemu_driver.c:12253
+#: src/qemu/qemu_driver.c:12322
 #, fuzzy
 msgid "unknown metadata type"
 msgstr "తెలియని నిల్వ vol రకము %d"
 
-#: src/qemu/qemu_driver.c:12242 src/qemu/qemu_driver.c:12310
+#: src/qemu/qemu_driver.c:12248 src/qemu/qemu_driver.c:12316
 #, fuzzy
 msgid "QEMU driver does not support<metadata> element"
 msgstr "qemu ఎమ్యులేటర్ '%s' xenను మద్దతించుటలేదు"
 
-#: src/qemu/qemu_driver.c:12323
+#: src/qemu/qemu_driver.c:12329
 #, fuzzy
 msgid "Requested metadata element is not present"
 msgstr "ఇంటర్ఫేస్ %s లేదు"
 
-#: src/qemu/qemu_driver.c:12352 src/qemu/qemu_driver.c:12366
+#: src/qemu/qemu_driver.c:12358 src/qemu/qemu_driver.c:12372
 #, fuzzy
 msgid "unable to get cpu account"
 msgstr "మానిటర్ ఘటనలను నమోదుచేయలేక పోయింది"
 
-#: src/qemu/qemu_driver.c:12421
+#: src/qemu/qemu_driver.c:12427
 #, c-format
 msgid "start_cpu %d larger than maximum of %d"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12442
+#: src/qemu/qemu_driver.c:12448
 #, fuzzy
 msgid "cpuacct parse error"
 msgstr "పార్శర్ దోషం"
 
-#: src/qemu/qemu_driver.c:12494
+#: src/qemu/qemu_driver.c:12500
 #, fuzzy
 msgid "cgroup CPUACCT controller is not mounted"
 msgstr "డిస్కు నియంత్రణి %s:%d కనుగొనబడలేదు"
 
-#: src/qemu/qemu_driver.c:12532
+#: src/qemu/qemu_driver.c:12538
 #, fuzzy
 msgid "Duration not supported. Use 0 for now"
 msgstr "%s పరికరము కొరకు తీసివేయదగు మాధ్యమం మద్దతించబడదు"
 
-#: src/qemu/qemu_driver.c:12540
+#: src/qemu/qemu_driver.c:12546
 #, fuzzy, c-format
 msgid "Unknown suspend target: %u"
 msgstr "చెల్లని రహస్యము"
 
-#: src/qemu/qemu_driver.c:12563
+#: src/qemu/qemu_driver.c:12575
 msgid "Unable to suspend domain due to missing system_wakeup monitor command"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12639
+#: src/qemu/qemu_driver.c:12651
 msgid "Unable to wake up domain due to missing system_wakeup monitor command"
 msgstr ""
 
