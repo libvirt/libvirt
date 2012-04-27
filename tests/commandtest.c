@@ -806,7 +806,7 @@ mymain(void)
         return EXIT_FAILURE;
 
     setpgid(0, 0);
-    setsid();
+    ignore_value(setsid());
 
     /* Our test expects particular fd values; to get that, we must not
      * leak fds that we inherited from a lazy parent.  At the same
@@ -827,10 +827,11 @@ mymain(void)
 
     /* Prime the debug/verbose settings from the env vars,
      * since we're about to reset 'environ' */
-    virTestGetDebug();
-    virTestGetVerbose();
+    ignore_value(virTestGetDebug());
+    ignore_value(virTestGetVerbose());
 
-    virInitialize();
+    if (virInitialize() < 0)
+        return EXIT_FAILURE;
 
     /* Phase two of killing interfering fds; see above.  */
     fd = 3;

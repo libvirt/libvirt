@@ -2777,8 +2777,8 @@ qemuProcessUpdateState(struct qemud_driver *driver, virDomainObjPtr vm)
         } else {
             newState = VIR_DOMAIN_PAUSED;
             newReason = reason;
-            virAsprintf(&msg, "was paused (%s)",
-                        virDomainPausedReasonTypeToString(reason));
+            ignore_value(virAsprintf(&msg, "was paused (%s)",
+                                 virDomainPausedReasonTypeToString(reason)));
         }
     } else if (state == VIR_DOMAIN_SHUTOFF && running) {
         newState = VIR_DOMAIN_RUNNING;
