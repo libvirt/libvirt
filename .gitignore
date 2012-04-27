@@ -54,6 +54,7 @@
 /daemon/libvirtd.8
 /daemon/libvirtd.8.in
 /daemon/libvirtd.pod
+/docs/apibuild.py.stamp
 /docs/devhelp/libvirt.devhelp
 /docs/hvsupport.html.in
 /docs/libvirt-api.xml
