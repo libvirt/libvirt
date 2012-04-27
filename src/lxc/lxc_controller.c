@@ -957,7 +957,7 @@ static void lxcEpollIO(int watch, int fd, int events, void *opaque)
         int ret;
         ret = epoll_wait(console->epollFd, &event, 1, 0);
         if (ret < 0) {
-            if (ret == EINTR)
+            if (errno == EINTR)
                 continue;
             virReportSystemError(errno, "%s",
                                  _("Unable to wait on epoll"));
@@ -1101,7 +1101,7 @@ static int lxcControllerMain(int serverFd,
                              size_t nFds,
                              pid_t container)
 {
-    struct lxcConsole *consoles;
+    struct lxcConsole *consoles = NULL;
     struct lxcMonitor monitor = {
         .serverFd = serverFd,
         .clientFd = clientFd,

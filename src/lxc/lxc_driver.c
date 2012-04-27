@@ -1409,7 +1409,7 @@ static int lxcMonitorClient(lxc_driver_t * driver,
                             virDomainObjPtr vm)
 {
     char *sockpath = NULL;
-    int fd;
+    int fd = -1;
     struct sockaddr_un addr;
 
     if (virAsprintf(&sockpath, "%s/%s.sock",
