@@ -1710,6 +1710,9 @@ int virStoragePoolSourceFindDuplicate(virStoragePoolObjListPtr pools,
             break;
         }
         virStoragePoolObjUnlock(pool);
+
+        if (matchpool)
+            break;
     }
 
     if (matchpool) {
