@@ -341,7 +341,8 @@ int virNetDevTapCreateInBridgePort(const char *brname,
     return 0;
 
  error:
-    VIR_FORCE_CLOSE(*tapfd);
+    if (tapfd)
+        VIR_FORCE_CLOSE(*tapfd);
 
     return errno;
 }
