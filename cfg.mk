@@ -603,7 +603,7 @@ sc_libvirt_unmarked_diagnostics:
 	  $(_sc_search_regexp)
 	@{ grep     -nE '\<$(func_re) *\(.*;$$' $$($(VC_LIST_EXCEPT));   \
 	   grep -A1 -nE '\<$(func_re) *\(.*,$$' $$($(VC_LIST_EXCEPT)); } \
-	   | sed 's/_("[^"][^"]*"//;s/[	 ]"%s"//'			\
+	   | sed 's/_("\([^\"]\|\\.\)\+"//;s/[	 ]"%s"//'		\
 	   | grep '[	 ]"' &&						\
 	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2;		\
 	    exit 1; } || :
