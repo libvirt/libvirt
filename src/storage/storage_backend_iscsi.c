@@ -1,7 +1,7 @@
 /*
  * storage_backend_iscsi.c: storage backend for iSCSI handling
  *
- * Copyright (C) 2007-2008, 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2007-2008, 2010-2012 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -589,11 +589,13 @@ virStorageBackendISCSIFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     for (i = 0 ; i < ntargets ; i++) {
-        if (VIR_ALLOC_N(list.sources[i].devices, 1) < 0) {
+        if (VIR_ALLOC_N(list.sources[i].devices, 1) < 0 ||
+            VIR_ALLOC_N(list.sources[i].hosts, 1) < 0) {
             virReportOOMError();
             goto cleanup;
         }
-        list.sources[i].host = source->hosts[0];
+        list.sources[i].nhost = 1;
+        list.sources[i].hosts[0] = source->hosts[0];
         list.sources[i].initiator = source->initiator;
         list.sources[i].ndevice = 1;
         list.sources[i].devices[0].path = targets[i];
@@ -607,8 +609,10 @@ virStorageBackendISCSIFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 cleanup:
     if (list.sources) {
-        for (i = 0 ; i < ntargets ; i++)
+        for (i = 0 ; i < ntargets ; i++) {
+            VIR_FREE(list.sources[i].hosts);
             VIR_FREE(list.sources[i].devices);
+        }
         VIR_FREE(list.sources);
     }
     for (i = 0 ; i < ntargets ; i++)

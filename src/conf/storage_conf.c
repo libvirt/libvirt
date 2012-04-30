@@ -825,7 +825,7 @@ virStoragePoolSourceFormat(virBufferPtr buf,
     virBufferAddLit(buf,"  <source>\n");
     if ((options->flags & VIR_STORAGE_POOL_SOURCE_HOST) && src->nhost) {
         for (i = 0; i < src->nhost; i++) {
-            virBufferAsprintf(buf, " <host name='%s'", src->hosts[i].name);
+            virBufferAsprintf(buf, "    <host name='%s'", src->hosts[i].name);
             if (src->hosts[i].port)
                 virBufferAsprintf(buf, " port='%d'", src->hosts[i].port);
             virBufferAddLit(buf, "/>\n");
