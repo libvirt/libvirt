@@ -20179,7 +20179,6 @@ vshAllowedEscapeChar(char c)
 static bool
 vshParseArgv(vshControl *ctl, int argc, char **argv)
 {
-    bool help = false;
     int arg, len;
     struct option opt[] = {
         {"debug", required_argument, NULL, 'd'},
@@ -20206,7 +20205,8 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
             }
             break;
         case 'h':
-            help = true;
+            vshUsage();
+            exit(EXIT_SUCCESS);
             break;
         case 'q':
             ctl->quiet = true;
@@ -20249,17 +20249,6 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
             vshError(ctl, _("unsupported option '-%c'. See --help."), arg);
             exit(EXIT_FAILURE);
         }
-    }
-
-    if (help) {
-        if (optind < argc) {
-            vshError(ctl, _("extra argument '%s'. See --help."), argv[optind]);
-            exit(EXIT_FAILURE);
-        }
-
-        /* list all command */
-        vshUsage();
-        exit(EXIT_SUCCESS);
     }
 
     if (argc > optind) {
