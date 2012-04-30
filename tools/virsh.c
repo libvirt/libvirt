@@ -514,16 +514,16 @@ prettyCapacity(unsigned long long val,
         *unit = "";
         return (double)val;
     } else if (val < (1024.0l * 1024.0l)) {
-        *unit = "KB";
+        *unit = "KiB";
         return (((double)val / 1024.0l));
     } else if (val < (1024.0l * 1024.0l * 1024.0l)) {
-        *unit = "MB";
+        *unit = "MiB";
         return (double)val / (1024.0l * 1024.0l);
     } else if (val < (1024.0l * 1024.0l * 1024.0l * 1024.0l)) {
-        *unit = "GB";
+        *unit = "GiB";
         return (double)val / (1024.0l * 1024.0l * 1024.0l);
     } else {
-        *unit = "TB";
+        *unit = "TiB";
         return (double)val / (1024.0l * 1024.0l * 1024.0l * 1024.0l);
     }
 }
@@ -4541,13 +4541,13 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
         }
 
         if (info.maxMem != UINT_MAX)
-            vshPrint(ctl, "%-15s %lu kB\n", _("Max memory:"),
+            vshPrint(ctl, "%-15s %lu KiB\n", _("Max memory:"),
                  info.maxMem);
         else
             vshPrint(ctl, "%-15s %s\n", _("Max memory:"),
                  _("no limit"));
 
-        vshPrint(ctl, "%-15s %lu kB\n", _("Used memory:"),
+        vshPrint(ctl, "%-15s %lu KiB\n", _("Used memory:"),
                  info.memory);
 
     } else {
@@ -4823,13 +4823,13 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
 
         memory = 0;
         for (cell = 0; cell < nodes_cnt; cell++) {
-            vshPrint(ctl, "%5lu: %10llu kB\n", nodes_id[cell],
+            vshPrint(ctl, "%5lu: %10llu KiB\n", nodes_id[cell],
                     (nodes_free[cell]/1024));
             memory += nodes_free[cell];
         }
 
         vshPrintExtra(ctl, "--------------------\n");
-        vshPrintExtra(ctl, "%5s: %10llu kB\n", _("Total"), memory/1024);
+        vshPrintExtra(ctl, "%5s: %10llu KiB\n", _("Total"), memory/1024);
     } else {
         if (!cell_given) {
             memory = virNodeGetFreeMemory(ctl->conn);
@@ -4842,9 +4842,9 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
         }
 
         if (cell == -1)
-            vshPrint(ctl, "%s: %llu kB\n", _("Total"), (memory/1024));
+            vshPrint(ctl, "%s: %llu KiB\n", _("Total"), (memory/1024));
         else
-            vshPrint(ctl, "%d: %llu kB\n", cell, (memory/1024));
+            vshPrint(ctl, "%d: %llu KiB\n", cell, (memory/1024));
     }
 
     func_ret = true;
@@ -6513,7 +6513,7 @@ cmdNodeinfo(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     vshPrint(ctl, "%-20s %d\n", _("Core(s) per socket:"), info.cores);
     vshPrint(ctl, "%-20s %d\n", _("Thread(s) per core:"), info.threads);
     vshPrint(ctl, "%-20s %d\n", _("NUMA cell(s):"), info.nodes);
-    vshPrint(ctl, "%-20s %lu kB\n", _("Memory size:"), info.memory);
+    vshPrint(ctl, "%-20s %lu KiB\n", _("Memory size:"), info.memory);
 
     return true;
 }
@@ -6699,7 +6699,7 @@ cmdNodeMemStats(vshControl *ctl, const vshCmd *cmd)
     }
 
     for (i = 0; i < nparams; i++)
-        vshPrint(ctl, "%-7s: %20llu kB\n", params[i].field, params[i].value);
+        vshPrint(ctl, "%-7s: %20llu KiB\n", params[i].field, params[i].value);
 
     ret = true;
 
@@ -7432,14 +7432,15 @@ done:
  */
 static const vshCmdInfo info_migrate_setspeed[] = {
     {"help", N_("Set the maximum migration bandwidth")},
-    {"desc", N_("Set the maximum migration bandwidth (in Mbps) for a domain "
+    {"desc", N_("Set the maximum migration bandwidth (in MiB/s) for a domain "
                 "which is being migrated to another host.")},
     {NULL, NULL}
 };
 
 static const vshCmdOptDef opts_migrate_setspeed[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"bandwidth", VSH_OT_INT, VSH_OFLAG_REQ, N_("migration bandwidth limit in Mbps")},
+    {"bandwidth", VSH_OT_INT, VSH_OFLAG_REQ,
+     N_("migration bandwidth limit in MiB/s")},
     {NULL, 0, 0, NULL}
 };
 
@@ -7476,7 +7477,7 @@ done:
  */
 static const vshCmdInfo info_migrate_getspeed[] = {
     {"help", N_("Get the maximum migration bandwidth")},
-    {"desc", N_("Get the maximum migration bandwidth (in Mbps) for a domain.")},
+    {"desc", N_("Get the maximum migration bandwidth (in MiB/s) for a domain.")},
     {NULL, NULL}
 };
 
@@ -7600,7 +7601,7 @@ static const vshCmdOptDef opts_block_copy[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"path", VSH_OT_DATA, VSH_OFLAG_REQ, N_("fully-qualified path of disk")},
     {"dest", VSH_OT_DATA, VSH_OFLAG_REQ, N_("path of the copy to create")},
-    {"bandwidth", VSH_OT_DATA, VSH_OFLAG_NONE, N_("bandwidth limit in MB/s")},
+    {"bandwidth", VSH_OT_DATA, VSH_OFLAG_NONE, N_("bandwidth limit in MiB/s")},
     {"shallow", VSH_OT_BOOL, 0, N_("make the copy share a backing chain")},
     {"reuse-external", VSH_OT_BOOL, 0, N_("reuse existing destination")},
     {"raw", VSH_OT_BOOL, 0, N_("use raw destination file")},
@@ -7752,7 +7753,7 @@ static const vshCmdInfo info_block_pull[] = {
 static const vshCmdOptDef opts_block_pull[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"path", VSH_OT_DATA, VSH_OFLAG_REQ, N_("fully-qualified path of disk")},
-    {"bandwidth", VSH_OT_DATA, VSH_OFLAG_NONE, N_("bandwidth limit in MB/s")},
+    {"bandwidth", VSH_OT_DATA, VSH_OFLAG_NONE, N_("bandwidth limit in MiB/s")},
     {"base", VSH_OT_DATA, VSH_OFLAG_NONE,
      N_("path of backing file in chain for a partial pull")},
     {"wait", VSH_OT_BOOL, 0, N_("wait for job to finish")},
@@ -7895,7 +7896,7 @@ static const vshCmdOptDef opts_block_job[] = {
     {"info", VSH_OT_BOOL, VSH_OFLAG_NONE,
      N_("get active job information for the specified disk")},
     {"bandwidth", VSH_OT_DATA, VSH_OFLAG_NONE,
-     N_("set the Bandwidth limit in MB/s")},
+     N_("set the Bandwidth limit in MiB/s")},
     {NULL, 0, 0, NULL}
 };
 
@@ -7946,7 +7947,7 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
 
     print_job_progress(type, info.end - info.cur, info.end);
     if (info.bandwidth != 0)
-        vshPrint(ctl, _("    Bandwidth limit: %lu MB/s\n"), info.bandwidth);
+        vshPrint(ctl, _("    Bandwidth limit: %lu MiB/s\n"), info.bandwidth);
     return true;
 }
 
