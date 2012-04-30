@@ -87,7 +87,13 @@
       daemon controls the entire migration process itself, by directly
       connecting the destination host libvirtd. If the client application crashes,
       or otherwise loses its connection to libvirtd, the migration process
-      will continue uninterrupted until completion.
+      will continue uninterrupted until completion.  Note that the
+      source libvirtd uses its own credentials (typically root) to
+      connect to the destination, rather than the credentials used
+      by the client to connect to the source; if these differ, it is
+      common to run into a situation where a client can connect to the
+      destination directly but the source cannot make the connection to
+      set up the peer-to-peer migration.
     </p>
 
     <p>
@@ -139,7 +145,9 @@
       connection to the source host, where the virtual guest is
       currently running. The second URI is that of the libvirt
       connection to the destination host, where the virtual guest
-      will be moved to. The third URI is a hypervisor specific
+      will be moved to (and in peer-to-peer migrations, this is from
+      the perspective of the source, not the client). The third URI is
+      a hypervisor specific
       URI used to control how the guest will be migrated. With
       any managed migration flow, the first and second URIs are
       compulsory, while the third URI is optional. With the
@@ -533,7 +541,10 @@
       destination libvirtd server will automatically determine
       the native hypervisor URI for migration, based off the
       primary hostname. There is no scope for forcing an alternative
-      network interface for the native migration data with this method.
+      network interface for the native migration data with this
+      method.  The destination URI must be reachable using the source
+      libvirtd credentials (which are not necessarily the same as the
+      credentials of the client in connecting to the source).
     </p>
 
     <pre>
@@ -571,7 +582,10 @@
       in case it is not accessible using the same address that
       the client uses to connect to the destination, or a different
       encryption/auth scheme is required. The native hypervisor URI
-      format is not used at all.
+      format is not used at all.  The destination URI must be
+      reachable using the source libvirtd credentials (which are not
+      necessarily the same as the credentials of the client in
+      connecting to the source).
     </p>
 
     <pre>
