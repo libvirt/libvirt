@@ -1955,17 +1955,15 @@ static int lxcVmStart(virConnectPtr conn,
         lxcProcessAutoDestroyAdd(driver, vm, conn) < 0)
         goto error;
 
-    /*
-     * Again, need to save the live configuration, because the function
-     * requires vm->def->id != -1 to save tty info surely.
-     */
-    if (virDomainSaveConfig(driver->stateDir, vm->def) < 0)
-        goto error;
-
     if (virDomainObjSetDefTransient(driver->caps, vm, false) < 0)
         goto error;
 
-    /* Write domain status to disk. */
+    /* Write domain status to disk.
+     *
+     * XXX: Earlier we wrote the plain "live" domain XML to this
+     * location for the benefit of libvirt_lxc. We're now overwriting
+     * it with the live status XML instead. This is a (currently
+     * harmless) inconsistency we should fix one day */
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         goto error;
 
