@@ -1366,13 +1366,13 @@ static int lxcContainerChild( void *data )
         goto cleanup;
     }
 
-    if (lxcContainerSetStdio(argv->monitor, ttyfd, argv->handshakefd) < 0) {
-        goto cleanup;
-    }
-
     VIR_DEBUG("Setting up security labeling");
     if (virSecurityManagerSetProcessLabel(argv->securityDriver, vmDef) < 0)
         goto cleanup;
+
+    if (lxcContainerSetStdio(argv->monitor, ttyfd, argv->handshakefd) < 0) {
+        goto cleanup;
+    }
 
     ret = 0;
 cleanup:
