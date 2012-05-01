@@ -1674,7 +1674,7 @@ qemuBuildRBDString(virConnectPtr conn,
                 goto error;
             }
             virBufferEscape(opt, '\\', ":",
-                            ":key=%s:auth_supported=cephx none",
+                            ":key=%s:auth_supported=cephx\\;none",
                             base64);
             VIR_FREE(base64);
         } else {
