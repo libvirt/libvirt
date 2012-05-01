@@ -1616,8 +1616,8 @@ lxcBuildControllerCmd(lxc_driver_t *driver,
         virCommandPreserveFD(cmd, ttyFDs[i]);
     }
 
-    if (driver->securityDriverName)
-        virCommandAddArgPair(cmd, "--security", driver->securityDriverName);
+    virCommandAddArgPair(cmd, "--security",
+                         virSecurityManagerGetModel(driver->securityManager));
 
     virCommandAddArg(cmd, "--handshake");
     virCommandAddArgFormat(cmd, "%d", handshakefd);
