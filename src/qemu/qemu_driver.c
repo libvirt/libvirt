@@ -9605,12 +9605,18 @@ qemuDomainSnapshotIsAllowed(virDomainObjPtr vm)
      * that succeed as well
      */
     for (i = 0; i < vm->def->ndisks; i++) {
-        if ((vm->def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_LUN) ||
-            (vm->def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
-             STRNEQ_NULLABLE(vm->def->disks[i]->driverType, "qcow2"))) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+        if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
+            (disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG ||
+             disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD))
+            continue;
+
+        if ((disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) ||
+            (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
+             STRNEQ_NULLABLE(disk->driverType, "qcow2"))) {
             qemuReportError(VIR_ERR_OPERATION_INVALID,
                             _("Disk '%s' does not support snapshotting"),
-                            vm->def->disks[i]->src);
+                            disk->src);
             return false;
         }
     }
