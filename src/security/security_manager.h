@@ -107,5 +107,6 @@ int virSecurityManagerVerify(virSecurityManagerPtr mgr,
 int virSecurityManagerSetImageFDLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr def,
                                       int fd);
-
+char *virSecurityManagerGetMountOptions(virSecurityManagerPtr mgr,
+                                              virDomainDefPtr vm);
 #endif /* VIR_SECURITY_MANAGER_H__ */

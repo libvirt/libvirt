@@ -963,6 +963,7 @@ virSecurityManagerSetProcessLabel;
 virSecurityManagerSetSavedStateLabel;
 virSecurityManagerSetSocketLabel;
 virSecurityManagerVerify;
+virSecurityManagerGetMountOptions;
 
 # sexpr.h
 sexpr_append;

@@ -149,7 +149,6 @@ virSecurityManagerPtr virSecurityManagerNew(const char *name,
                                        requireConfined);
 }
 
-
 void *virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr)
 {
     /* This accesses the memory just beyond mgr, which was allocated
@@ -422,4 +421,17 @@ int virSecurityManagerSetImageFDLabel(virSecurityManagerPtr mgr,
 
     virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
+}
+
+char *virSecurityManagerGetMountOptions(virSecurityManagerPtr mgr,
+                                        virDomainDefPtr vm)
+{
+    if (mgr->drv->domainGetSecurityMountOptions)
+        return mgr->drv->domainGetSecurityMountOptions(mgr, vm);
+
+    /*
+      I don't think this is an error, these should be optional
+      virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    */
+    return NULL;
 }

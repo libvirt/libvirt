@@ -1523,6 +1523,60 @@ SELinuxSetImageFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     return SELinuxFSetFilecon(fd, secdef->imagelabel);
 }
 
+static char *genImageLabel(virSecurityManagerPtr mgr,
+                           virDomainDefPtr def) {
+    const virSecurityLabelDefPtr secdef = &def->seclabel;
+    virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
+    const char *range;
+    context_t ctx = NULL;
+    char *label = NULL;
+    const char *mcs = NULL;
+
+    if (secdef->label) {
+        ctx = context_new(secdef->label);
+        if (!ctx) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        range = context_range_get(ctx);
+        if (range) {
+            mcs = strdup(range);
+            if (!mcs) {
+                virReportOOMError();
+                goto cleanup;
+            }
+            label = SELinuxGenNewContext(data->file_context, mcs);
+            if (!label) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        }
+    }
+
+cleanup:
+        context_free(ctx);
+        VIR_FREE(mcs);
+        return label;
+}
+
+static char *SELinuxGetSecurityMountOptions(virSecurityManagerPtr mgr,
+                                            virDomainDefPtr def) {
+    char *opts = NULL;
+    const virSecurityLabelDefPtr secdef = &def->seclabel;
+
+    if (! secdef->imagelabel)
+        secdef->imagelabel = genImageLabel(mgr,def);
+
+    if (secdef->imagelabel) {
+        virAsprintf(&opts,
+                    ",context=\"%s\"",
+                    (const char*) secdef->imagelabel);
+    }
+
+    VIR_DEBUG("SELinuxGetSecurityMountOptions imageLabel %s", secdef->imagelabel);
+    return opts;
+}
+
 virSecurityDriver virSecurityDriverSELinux = {
     sizeof(virSecuritySELinuxData),
     SECURITY_SELINUX_NAME,
@@ -1559,4 +1613,6 @@ virSecurityDriver virSecurityDriverSELinux = {
     SELinuxRestoreSavedStateLabel,
 
     SELinuxSetImageFDLabel,
+
+    SELinuxGetSecurityMountOptions,
 };

@@ -403,6 +403,10 @@ virSecurityStackSetImageFDLabel(virSecurityManagerPtr mgr,
     return rc;
 }
 
+static char *virSecurityStackGetMountOptions(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                             virDomainDefPtr vm ATTRIBUTE_UNUSED) {
+    return NULL;
+}
 
 virSecurityDriver virSecurityDriverStack = {
     sizeof(virSecurityStackData),
@@ -440,4 +444,6 @@ virSecurityDriver virSecurityDriverStack = {
     virSecurityStackRestoreSavedStateLabel,
 
     virSecurityStackSetImageFDLabel,
+
+    virSecurityStackGetMountOptions,
 };

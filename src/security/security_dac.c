@@ -717,6 +717,11 @@ virSecurityDACSetImageFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static char *virSecurityDACGetMountOptions(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                           virDomainDefPtr vm ATTRIBUTE_UNUSED) {
+    return NULL;
+}
+
 virSecurityDriver virSecurityDriverDAC = {
     sizeof(virSecurityDACData),
     "virDAC",
@@ -754,4 +759,6 @@ virSecurityDriver virSecurityDriverDAC = {
     virSecurityDACRestoreSavedStateLabel,
 
     virSecurityDACSetImageFDLabel,
+
+    virSecurityDACGetMountOptions,
 };

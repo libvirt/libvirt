@@ -164,6 +164,11 @@ static int virSecurityDomainSetFDLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UN
     return 0;
 }
 
+static char *virSecurityDomainGetMountOptionsNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                                 virDomainDefPtr vm ATTRIBUTE_UNUSED) {
+    return NULL;
+}
+
 virSecurityDriver virSecurityDriverNop = {
     0,
     "none",
@@ -200,4 +205,6 @@ virSecurityDriver virSecurityDriverNop = {
     virSecurityDomainRestoreSavedStateLabelNop,
 
     virSecurityDomainSetFDLabelNop,
+
+    virSecurityDomainGetMountOptionsNop,
 };
