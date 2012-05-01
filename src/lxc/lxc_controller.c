@@ -1668,6 +1668,9 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
+    /* Initialize logging */
+    virLogSetFromEnv();
+
     while (1) {
         int c;
 
@@ -1784,6 +1787,12 @@ int main(int argc, char *argv[])
                                      0)) == NULL)
         goto cleanup;
 
+    VIR_DEBUG("Security model %s type %s label %s imagelabel %s",
+              NULLSTR(def->seclabel.model),
+              virDomainSeclabelTypeToString(def->seclabel.type),
+              NULLSTR(def->seclabel.label),
+              NULLSTR(def->seclabel.imagelabel));
+
     if (def->nnets != nveths) {
         fprintf(stderr, "%s: expecting %d veths, but got %d\n",
                 argv[0], def->nnets, nveths);
@@ -1827,9 +1836,6 @@ int main(int argc, char *argv[])
             goto cleanup;
         }
     }
-
-    /* Initialize logging */
-    virLogSetFromEnv();
 
     /* Accept initial client which is the libvirtd daemon */
     if ((client = accept(monitor, NULL, 0)) < 0) {
