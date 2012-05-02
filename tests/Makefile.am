@@ -530,7 +530,7 @@ libshunload_la_LDFLAGS = -module -avoid-version -rpath /evil/libtool/hack/to/for
 
 shunloadtest_SOURCES = \
 	shunloadtest.c
-shunloadtest_LDADD = -lpthread
+shunloadtest_LDADD = $(LIB_PTHREAD)
 shunloadtest_DEPENDENCIES = libshunload.la
 
 if WITH_CIL
