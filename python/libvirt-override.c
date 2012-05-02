@@ -71,7 +71,7 @@ static char *py_str(PyObject *obj)
 /* Helper function to convert a virTypedParameter output array into a
  * Python dictionary for return to the user.  Return NULL on failure,
  * after raising a python exception.  */
-static PyObject * ATTRIBUTE_NONNULL(1)
+static PyObject *
 getPyVirTypedParameter(const virTypedParameterPtr params, int nparams)
 {
     PyObject *key, *val, *info;
