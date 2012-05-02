@@ -123,6 +123,7 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn, const char *filename,
 
     if (!(*name = strdup(dom->name))) {
         virReportOOMError();
+        virDomainFree(dom);
         return -1;
     }
     memcpy(uuid, dom->uuid, VIR_UUID_BUFLEN);

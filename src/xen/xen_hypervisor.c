@@ -2732,7 +2732,7 @@ xenHypervisorMakeCapabilities(virConnectPtr conn)
 #ifdef __sun
     return xenHypervisorMakeCapabilitiesSunOS(conn);
 #else
-    virCapsPtr caps;
+    virCapsPtr caps = NULL;
     FILE *cpuinfo, *capabilities;
     struct utsname utsname;
 
@@ -2765,11 +2765,12 @@ xenHypervisorMakeCapabilities(virConnectPtr conn)
                                                  cpuinfo,
                                                  capabilities);
     if (caps == NULL)
-        return NULL;
+        goto cleanup;
 
     if (virNodeSuspendGetTargetMask(&caps->host.powerMgmt) < 0)
         VIR_WARN("Failed to get host power management capabilities");
 
+cleanup:
     VIR_FORCE_FCLOSE(cpuinfo);
     VIR_FORCE_FCLOSE(capabilities);
 
