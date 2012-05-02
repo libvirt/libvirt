@@ -347,11 +347,13 @@ virNetlinkEventServiceStart(void)
 
     if (VIR_ALLOC(srv) < 0) {
         virReportOOMError();
-        goto error;
+        return -1;
     }
 
-    if (virMutexInit(&srv->lock) < 0)
-        goto error;
+    if (virMutexInit(&srv->lock) < 0) {
+        VIR_FREE(srv);
+        return -1;
+    }
 
     virNetlinkEventServerLock(srv);
 
@@ -410,7 +412,6 @@ error_locked:
         virMutexDestroy(&srv->lock);
         VIR_FREE(srv);
     }
-error:
     return ret;
 }
 
