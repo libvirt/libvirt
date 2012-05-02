@@ -431,6 +431,36 @@ virJSONValuePtr virJSONValueObjectGet(virJSONValuePtr object, const char *key)
     return NULL;
 }
 
+int virJSONValueObjectKeysNumber(virJSONValuePtr object)
+{
+    if (object->type != VIR_JSON_TYPE_OBJECT)
+        return -1;
+
+    return object->data.object.npairs;
+}
+
+const char *virJSONValueObjectGetKey(virJSONValuePtr object, unsigned int n)
+{
+    if (object->type != VIR_JSON_TYPE_OBJECT)
+        return NULL;
+
+    if (n >= object->data.object.npairs)
+        return NULL;
+
+    return object->data.object.pairs[n].key;
+}
+
+virJSONValuePtr virJSONValueObjectGetValue(virJSONValuePtr object, unsigned int n)
+{
+    if (object->type != VIR_JSON_TYPE_OBJECT)
+        return NULL;
+
+    if (n >= object->data.object.npairs)
+        return NULL;
+
+    return object->data.object.pairs[n].value;
+}
+
 int virJSONValueArraySize(virJSONValuePtr array)
 {
     if (array->type != VIR_JSON_TYPE_ARRAY)

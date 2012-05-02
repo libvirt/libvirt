@@ -100,6 +100,10 @@ virJSONValuePtr virJSONValueObjectGet(virJSONValuePtr object, const char *key);
 int virJSONValueArraySize(virJSONValuePtr object);
 virJSONValuePtr virJSONValueArrayGet(virJSONValuePtr object, unsigned int element);
 
+int virJSONValueObjectKeysNumber(virJSONValuePtr object);
+const char *virJSONValueObjectGetKey(virJSONValuePtr object, unsigned int n);
+virJSONValuePtr virJSONValueObjectGetValue(virJSONValuePtr object, unsigned int n);
+
 const char *virJSONValueGetString(virJSONValuePtr object);
 int virJSONValueGetNumberInt(virJSONValuePtr object, int *value);
 int virJSONValueGetNumberUint(virJSONValuePtr object, unsigned int *value);

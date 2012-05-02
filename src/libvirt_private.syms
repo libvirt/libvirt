@@ -671,14 +671,17 @@ virJSONValueObjectAppendNumberUlong;
 virJSONValueObjectAppendString;
 virJSONValueObjectGet;
 virJSONValueObjectGetBoolean;
+virJSONValueObjectGetKey;
 virJSONValueObjectGetNumberDouble;
 virJSONValueObjectGetNumberInt;
 virJSONValueObjectGetNumberLong;
 virJSONValueObjectGetNumberUint;
 virJSONValueObjectGetNumberUlong;
 virJSONValueObjectGetString;
+virJSONValueObjectGetValue;
 virJSONValueObjectHasKey;
 virJSONValueObjectIsNull;
+virJSONValueObjectKeysNumber;
 virJSONValueToString;
 
 
