@@ -2785,7 +2785,7 @@ int qemuMonitorBlockJob(qemuMonitorPtr mon,
               modern);
 
     /* Convert bandwidth MiB to bytes */
-    if (bandwidth > ULLONG_MAX / 1024 / 1024) {
+    if (bandwidth * 1ULL > ULLONG_MAX / 1024 / 1024) {
         qemuReportError(VIR_ERR_OVERFLOW,
                         _("bandwidth must be less than %llu"),
                         ULLONG_MAX / 1024 / 1024);
