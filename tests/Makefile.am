@@ -458,7 +458,8 @@ endif
 
 virnetmessagetest_SOURCES = \
 	virnetmessagetest.c testutils.h testutils.c
-virnetmessagetest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
+virnetmessagetest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" \
+		$(XDR_CFLAGS) $(AM_CFLAGS)
 virnetmessagetest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
 
 virnetsockettest_SOURCES = \
