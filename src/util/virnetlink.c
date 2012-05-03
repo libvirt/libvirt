@@ -561,7 +561,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
  */
 int virNetlinkEventServiceStop(void)
 {
-    netlinkError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    VIR_DEBUG("%s", _(unsupported));
     return 0;
 }
 
@@ -571,7 +571,7 @@ int virNetlinkEventServiceStop(void)
  */
 int virNetlinkEventServiceStart(void)
 {
-    netlinkError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    VIR_DEBUG("%s", _(unsupported));
     return 0;
 }
 
