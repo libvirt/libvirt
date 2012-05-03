@@ -1483,6 +1483,12 @@ int main(int argc, char **argv) {
 
     use_polkit_dbus = config->auth_unix_rw == REMOTE_AUTH_POLKIT ||
             config->auth_unix_ro == REMOTE_AUTH_POLKIT;
+
+    if (virNetlinkStartup() < 0) {
+        ret = VIR_DAEMON_ERR_INIT;
+        goto cleanup;
+    }
+
     if (!(srv = virNetServerNew(config->min_workers,
                                 config->max_workers,
                                 config->prio_workers,
@@ -1620,6 +1626,7 @@ cleanup:
     virNetServerProgramFree(qemuProgram);
     virNetServerClose(srv);
     virNetServerFree(srv);
+    virNetlinkShutdown();
     if (statuswrite != -1) {
         if (ret != 0) {
             /* Tell parent of daemon what failed */

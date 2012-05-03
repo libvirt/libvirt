@@ -1327,6 +1327,8 @@ virNetlinkEventRemoveClient;
 virNetlinkEventServiceIsRunning;
 virNetlinkEventServiceStop;
 virNetlinkEventServiceStart;
+virNetlinkShutdown;
+virNetlinkStartup;
 
 
 # virnetmessage.h

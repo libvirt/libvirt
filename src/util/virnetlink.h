@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2010-2012 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -34,6 +34,9 @@ struct sockaddr_nl;
 struct nlattr;
 
 # endif /* __linux__ */
+
+int virNetlinkStartup(void);
+void virNetlinkShutdown(void);
 
 int virNetlinkCommand(struct nl_msg *nl_msg,
                       unsigned char **respbuf, unsigned int *respbuflen,
