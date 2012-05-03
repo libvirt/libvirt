@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2010-2012 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -60,6 +60,16 @@ struct virNetlinkEventHandle {
     int deleted;
 };
 
+# ifdef HAVE_LIBNL1
+#  define virNetlinkAlloc nl_handle_alloc
+#  define virNetlinkFree nl_handle_destroy
+typedef struct nl_handle virNetlinkHandle;
+# else
+#  define virNetlinkAlloc nl_socket_alloc
+#  define virNetlinkFree nl_socket_free
+typedef struct nl_sock virNetlinkHandle;
+# endif
+
 typedef struct _virNetlinkEventSrvPrivate virNetlinkEventSrvPrivate;
 typedef virNetlinkEventSrvPrivate *virNetlinkEventSrvPrivatePtr;
 struct _virNetlinkEventSrvPrivate {
@@ -67,7 +77,7 @@ struct _virNetlinkEventSrvPrivate {
     virMutex lock;
     int eventwatch;
     int netlinkfd;
-    struct nl_handle *netlinknh;
+    virNetlinkHandle *netlinknh;
     /*Events*/
     int handled;
     size_t handlesCount;
@@ -121,7 +131,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
     int fd;
     int n;
     struct nlmsghdr *nlmsg = nlmsg_hdr(nl_msg);
-    struct nl_handle *nlhandle = nl_handle_alloc();
+    virNetlinkHandle *nlhandle = virNetlinkAlloc();
 
     if (!nlhandle) {
         virReportSystemError(errno,
@@ -178,7 +188,7 @@ error:
         *respbuflen = 0;
     }
 
-    nl_handle_destroy(nlhandle);
+    virNetlinkFree(nlhandle);
     return rc;
 }
 
@@ -285,7 +295,7 @@ virNetlinkEventServiceStop(void)
 
     virNetlinkEventServerLock(srv);
     nl_close(srv->netlinknh);
-    nl_handle_destroy(srv->netlinknh);
+    virNetlinkFree(srv->netlinknh);
     virEventRemoveHandle(srv->eventwatch);
 
     /* free any remaining clients on the list */
@@ -346,7 +356,7 @@ virNetlinkEventServiceStart(void)
     virNetlinkEventServerLock(srv);
 
     /* Allocate a new socket and get fd */
-    srv->netlinknh = nl_handle_alloc();
+    srv->netlinknh = virNetlinkAlloc();
 
     if (!srv->netlinknh) {
         virReportSystemError(errno,
@@ -392,7 +402,7 @@ virNetlinkEventServiceStart(void)
 error_server:
     if (ret < 0) {
         nl_close(srv->netlinknh);
-        nl_handle_destroy(srv->netlinknh);
+        virNetlinkFree(srv->netlinknh);
     }
 error_locked:
     virNetlinkEventServerUnlock(srv);

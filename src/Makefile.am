@@ -809,12 +809,14 @@ endif
 libvirt_driver_qemu_la_CFLAGS = $(NUMACTL_CFLAGS) \
                                 $(GNUTLS_CFLAGS) \
                                 $(LIBXML_CFLAGS) \
+                                $(LIBNL_CFLAGS) \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
 libvirt_driver_qemu_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_qemu_la_LIBADD = $(NUMACTL_LIBS) \
 				$(CAPNG_LIBS) \
                                 $(GNUTLS_LIBS) \
-                                $(LIBXML_LIBS)
+                                $(LIBXML_LIBS) \
+				$(LIBNL_LIBS)
 if WITH_DRIVER_MODULES
 libvirt_driver_qemu_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_qemu_la_LDFLAGS += -module -avoid-version
@@ -840,8 +842,9 @@ noinst_LTLIBRARIES += libvirt_driver_lxc.la
 #libvirt_la_BUILT_LIBADD += libvirt_driver_lxc.la
 endif
 libvirt_driver_lxc_la_CFLAGS = \
+		$(LIBNL_CFLAGS) \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
-libvirt_driver_lxc_la_LIBADD = $(CAPNG_LIBS)
+libvirt_driver_lxc_la_LIBADD = $(CAPNG_LIBS) $(LIBNL_LIBS)
 if WITH_SECDRIVER_SELINUX
 libvirt_driver_lxc_la_LIBADD += $(SELINUX_LIBS)
 endif
@@ -941,9 +944,10 @@ noinst_LTLIBRARIES += libvirt_driver_network.la
 #libvirt_la_BUILT_LIBADD += libvirt_driver_network.la
 endif
 libvirt_driver_network_la_CFLAGS = \
+		$(LIBNL_CFLAGS) \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
 if WITH_DRIVER_MODULES
-libvirt_driver_network_la_LIBADD = ../gnulib/lib/libgnu.la
+libvirt_driver_network_la_LIBADD = ../gnulib/lib/libgnu.la $(LIBNL_LIBS)
 libvirt_driver_network_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 endif
 libvirt_driver_network_la_SOURCES = $(NETWORK_DRIVER_SOURCES)
@@ -1086,9 +1090,9 @@ libvirt_la_BUILT_LIBADD += libvirt_driver_nwfilter.la
 noinst_LTLIBRARIES += libvirt_driver_nwfilter.la
 endif
 libvirt_driver_nwfilter_la_CFLAGS = $(LIBPCAP_CFLAGS) \
-		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
+		-I$(top_srcdir)/src/conf $(LIBNL_CFLAGS) $(AM_CFLAGS)
 libvirt_driver_nwfilter_la_LDFLAGS = $(LD_AMFLAGS)
-libvirt_driver_nwfilter_la_LIBADD = $(LIBPCAP_LIBS)
+libvirt_driver_nwfilter_la_LIBADD = $(LIBPCAP_LIBS) $(LIBNL_LIBS)
 if WITH_DRIVER_MODULES
 libvirt_driver_nwfilter_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_nwfilter_la_LDFLAGS += -module -avoid-version
@@ -1540,6 +1544,7 @@ libvirt_lxc_CFLAGS =				\
 		$(YAJL_CFLAGS)			\
 		$(AUDIT_CFLAGS)			\
 		$(DBUS_CFLAGS)			\
+		$(LIBNL_CFLAGS)			\
 		-I$(top_srcdir)/src/conf	\
 		$(AM_CFLAGS)
 if HAVE_LIBBLKID

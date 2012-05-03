@@ -2626,18 +2626,31 @@ AM_CONDITIONAL([WITH_VIRTUALPORT], [test "$with_virtualport" = "yes"])
 
 dnl netlink library
 
+LIBNL_ROUTE3_CFLAGS=""
+LIBNL_ROUTE3_LIBS=""
 LIBNL_CFLAGS=""
 LIBNL_LIBS=""
 have_libnl=no
 
 if test "$with_linux" = "yes"; then
-    PKG_CHECK_MODULES([LIBNL], [libnl-1 >= $LIBNL_REQUIRED], [
+    PKG_CHECK_MODULES([LIBNL], [libnl-3.0], [
         have_libnl=yes
-        AC_DEFINE_UNQUOTED([HAVE_LIBNL], 1, [whether the netlink library is available])
-    ], [
-        if test "$with_macvtap" = "yes"; then
-            AC_MSG_ERROR([libnl-devel >= $LIBNL_REQUIRED is required for macvtap support])
-        fi
+        AC_DEFINE([HAVE_LIBNL3], [1], [Use libnl-3.0])
+        AC_DEFINE([HAVE_LIBNL], [1], [whether the netlink library is available])
+        PKG_CHECK_MODULES([LIBNL_ROUTE3], [libnl-route-3.0])
+        LIBNL_CFLAGS="$LIBNL_CFLAGS $LIBNL_ROUTE3_CFLAGS"
+        LIBNL_LIBS="$LIBNL_LIBS $LIBNL_ROUTE3_LIBS"
+    ], [PKG_CHECK_MODULES([LIBNL], [libnl-1 >= $LIBNL_REQUIRED], [
+            have_libnl=yes
+            AC_DEFINE_UNQUOTED([HAVE_LIBNL], [1],
+             [whether the netlink library is available])
+            AC_DEFINE_UNQUOTED([HAVE_LIBNL1], [1],
+             [whether the netlink v1 library is available])
+        ], [
+            if test "$with_macvtap" = "yes"; then
+                AC_MSG_ERROR([libnl-devel >= $LIBNL_REQUIRED is required for macvtap support])
+            fi
+        ])
     ])
 fi
 AM_CONDITIONAL([HAVE_LIBNL], [test "$have_libnl" = "yes"])
