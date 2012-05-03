@@ -420,28 +420,28 @@ static void qemuDomainNetsRestart(void *payload,
                                 const void *name ATTRIBUTE_UNUSED,
                                 void *data ATTRIBUTE_UNUSED)
 {
-   int i;
-   virDomainObjPtr vm = (virDomainObjPtr)payload;
-   virDomainDefPtr def = vm->def;
+    int i;
+    virDomainObjPtr vm = (virDomainObjPtr)payload;
+    virDomainDefPtr def = vm->def;
 
-   virDomainObjLock(vm);
+    virDomainObjLock(vm);
 
-   for (i = 0; i < def->nnets; i++) {
-       virDomainNetDefPtr net = def->nets[i];
-       if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT &&
-           virDomainNetGetActualDirectMode(net) == VIR_NETDEV_MACVLAN_MODE_VEPA) {
-           VIR_DEBUG("VEPA mode device %s active in domain %s. Reassociating.",
-                     net->ifname, def->name);
-           ignore_value(virNetDevMacVLanRestartWithVPortProfile(net->ifname,
-                                                                net->mac,
-                                                                virDomainNetGetActualDirectDev(net),
-                                                                def->uuid,
-                                                                virDomainNetGetActualVirtPortProfile(net),
-                                                                VIR_NETDEV_VPORT_PROFILE_OP_CREATE));
-       }
-   }
+    for (i = 0; i < def->nnets; i++) {
+        virDomainNetDefPtr net = def->nets[i];
+        if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT &&
+            virDomainNetGetActualDirectMode(net) == VIR_NETDEV_MACVLAN_MODE_VEPA) {
+            VIR_DEBUG("VEPA mode device %s active in domain %s. Reassociating.",
+                      net->ifname, def->name);
+            ignore_value(virNetDevMacVLanRestartWithVPortProfile(net->ifname,
+                                                                 net->mac,
+                                                                 virDomainNetGetActualDirectDev(net),
+                                                                 def->uuid,
+                                                                 virDomainNetGetActualVirtPortProfile(net),
+                                                                 VIR_NETDEV_VPORT_PROFILE_OP_CREATE));
+        }
+    }
 
-   virDomainObjUnlock(vm);
+    virDomainObjUnlock(vm);
 }
 
 /**
