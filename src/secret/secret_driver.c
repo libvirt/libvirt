@@ -1013,16 +1013,9 @@ secretDriverStartup(int privileged)
             goto out_of_memory;
     } else {
         uid_t uid = geteuid();
-        char *userdir = virGetUserDirectory(uid);
-
-        if (!userdir)
+        base = virGetUserConfigDirectory(uid);
+        if (!base)
             goto error;
-
-        if (virAsprintf(&base, "%s/.libvirt", userdir) == -1) {
-            VIR_FREE(userdir);
-            goto out_of_memory;
-        }
-        VIR_FREE(userdir);
     }
     if (virAsprintf(&driverState->directory, "%s/secrets", base) == -1)
         goto out_of_memory;

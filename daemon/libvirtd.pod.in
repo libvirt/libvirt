@@ -85,7 +85,7 @@ command line using the B<-f>|B<--config> option.
 
 The sockets libvirtd will use when B<run as root>.
 
-=item F<$HOME/.libvirt/libvirt-sock>
+=item F<$XDG_RUNTIME_DIR/libvirt/libvirt-sock>
 
 The socket libvirtd will use when run as a B<non-root> user.
 

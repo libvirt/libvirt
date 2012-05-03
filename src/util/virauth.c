@@ -65,10 +65,10 @@ int virAuthGetConfigFilePath(virConnectPtr conn,
         }
     }
 
-    if (!(userdir = virGetUserDirectory(geteuid())))
+    if (!(userdir = virGetUserConfigDirectory(geteuid())))
         goto cleanup;
 
-    if (virAsprintf(path, "%s/.libvirt/auth.conf", userdir) < 0)
+    if (virAsprintf(path, "%s/auth.conf", userdir) < 0)
         goto no_memory;
 
     VIR_DEBUG("Checking for readability of '%s'", *path);

@@ -665,6 +665,12 @@ char *virFindFileInPath(const char *file)
     return fullpath;
 }
 
+bool virFileIsDir(const char *path)
+{
+    struct stat s;
+    return (stat (path, &s) == 0) && S_ISDIR (s.st_mode);
+}
+
 bool virFileExists(const char *path)
 {
     return access(path, F_OK) == 0;
@@ -2302,6 +2308,62 @@ static char *virGetGroupEnt(gid_t gid)
 char *virGetUserDirectory(uid_t uid)
 {
     return virGetUserEnt(uid, VIR_USER_ENT_DIRECTORY);
+}
+
+static char *virGetXDGDirectory(uid_t uid, const char *xdgenvname, const char *xdgdefdir)
+{
+    const char *path = NULL;
+    char *ret = NULL;
+    char *home = virGetUserEnt(uid, VIR_USER_ENT_DIRECTORY);
+
+    if (uid == getuid())
+        path = getenv(xdgenvname);
+
+    if (path && path[0]) {
+        if (virAsprintf(&ret, "%s/libvirt/", path) < 0)
+            goto no_memory;
+    } else {
+        if (virAsprintf(&ret, "%s/%s/libvirt/", home, xdgdefdir) < 0)
+            goto no_memory;
+    }
+
+ cleanup:
+    VIR_FREE(home);
+    return ret;
+ no_memory:
+    virReportOOMError();
+    goto cleanup;
+}
+
+char *virGetUserConfigDirectory(uid_t uid)
+{
+    return virGetXDGDirectory(uid, "XDG_CONFIG_HOME", ".config");
+}
+
+char *virGetUserCacheDirectory(uid_t uid)
+{
+     return virGetXDGDirectory(uid, "XDG_CACHE_HOME", ".cache");
+}
+
+char *virGetUserRuntimeDirectory(uid_t uid)
+{
+    const char *path = NULL;
+
+    if (uid == getuid ())
+        path = getenv("XDG_RUNTIME_DIR");
+
+    if (!path || !path[0]) {
+        return virGetUserCacheDirectory(uid);
+    } else {
+        char *ret;
+
+        if (virAsprintf(&ret, "%s/libvirt/", path) < 0) {
+            virReportOOMError();
+            return NULL;
+        }
+
+        return ret;
+    }
 }
 
 char *virGetUserName(uid_t uid)

@@ -969,11 +969,11 @@ virConnectGetConfigFilePath(void)
                         SYSCONFDIR) < 0)
             goto no_memory;
     } else {
-        char *userdir = virGetUserDirectory(geteuid());
+        char *userdir = virGetUserConfigDirectory(geteuid());
         if (!userdir)
             goto error;
 
-        if (virAsprintf(&path, "%s/.libvirt/libvirt.conf",
+        if (virAsprintf(&path, "%s/libvirt.conf",
                         userdir) < 0) {
             VIR_FREE(userdir);
             goto no_memory;

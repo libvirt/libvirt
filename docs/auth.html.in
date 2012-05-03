@@ -25,7 +25,7 @@ for the authentication file using the following sequence:
         variable.</li>
       <li>The file path specified by the "authfile=/some/file" URI
         query parameter</li>
-      <li>The file $HOME/.libvirt/auth.conf</li>
+      <li>The file $XDG_CONFIG_DIR/libvirt/auth.conf</li>
       <li>The file /etc/libvirt/auth.conf</li>
     </ol>
 

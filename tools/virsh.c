@@ -19864,15 +19864,15 @@ vshReadlineInit(vshControl *ctl)
     /* Limit the total size of the history buffer */
     stifle_history(500);
 
-    /* Prepare to read/write history from/to the ~/.virsh/history file */
-    userdir = virGetUserDirectory(getuid());
+    /* Prepare to read/write history from/to the $XDG_CACHE_HOME/virsh/history file */
+    userdir = virGetUserCacheDirectory(getuid());
 
     if (userdir == NULL) {
         vshError(ctl, "%s", _("Could not determine home directory"));
         return -1;
     }
 
-    if (virAsprintf(&ctl->historydir, "%s/.virsh", userdir) < 0) {
+    if (virAsprintf(&ctl->historydir, "%s/virsh", userdir) < 0) {
         vshError(ctl, "%s", _("Out of memory"));
         VIR_FREE(userdir);
         return -1;

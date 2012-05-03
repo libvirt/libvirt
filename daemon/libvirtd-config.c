@@ -205,16 +205,16 @@ daemonConfigFilePath(bool privileged, char **configfile)
         if (!(*configfile = strdup(SYSCONFDIR "/libvirt/libvirtd.conf")))
             goto no_memory;
     } else {
-        char *userdir = NULL;
+        char *configdir = NULL;
 
-        if (!(userdir = virGetUserDirectory(geteuid())))
+        if (!(configdir = virGetUserConfigDirectory(geteuid())))
             goto error;
 
-        if (virAsprintf(configfile, "%s/.libvirt/libvirtd.conf", userdir) < 0) {
-            VIR_FREE(userdir);
+        if (virAsprintf(configfile, "%s/libvirtd.conf", configdir) < 0) {
+            VIR_FREE(configdir);
             goto no_memory;
         }
-        VIR_FREE(userdir);
+        VIR_FREE(configdir);
     }
 
     return 0;

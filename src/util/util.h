@@ -85,6 +85,7 @@ int virFileIsLink(const char *linkpath)
 
 char *virFindFileInPath(const char *file);
 
+bool virFileIsDir (const char *file) ATTRIBUTE_NONNULL(1);
 bool virFileExists(const char *file) ATTRIBUTE_NONNULL(1);
 bool virFileIsExecutable(const char *file) ATTRIBUTE_NONNULL(1);
 
@@ -228,6 +229,9 @@ char *virGetHostname(virConnectPtr conn);
 int virKillProcess(pid_t pid, int sig);
 
 char *virGetUserDirectory(uid_t uid);
+char *virGetUserConfigDirectory(uid_t uid);
+char *virGetUserCacheDirectory(uid_t uid);
+char *virGetUserRuntimeDirectory(uid_t uid);
 char *virGetUserName(uid_t uid);
 char *virGetGroupName(gid_t gid);
 int virGetUserID(const char *name,
