@@ -1007,6 +1007,11 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
+    if (virNetlinkStartup() < 0) {
+        ret = VIR_DAEMON_ERR_INIT;
+        goto cleanup;
+    }
+
     if (!(srv = virNetServerNew(config->min_workers,
                                 config->max_workers,
                                 config->prio_workers,
@@ -1143,6 +1148,7 @@ cleanup:
     virNetServerProgramFree(qemuProgram);
     virNetServerClose(srv);
     virNetServerFree(srv);
+    virNetlinkShutdown();
     if (statuswrite != -1) {
         if (ret != 0) {
             /* Tell parent of daemon what failed */

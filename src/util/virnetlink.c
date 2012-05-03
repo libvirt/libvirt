@@ -98,8 +98,61 @@ static int nextWatch = 1;
 # define NETLINK_EVENT_ALLOC_EXTENT 10
 
 static virNetlinkEventSrvPrivatePtr server = NULL;
+static struct nl_handle *placeholder_nlhandle = NULL;
 
 /* Function definitions */
+
+/**
+ * virNetlinkStartup:
+ *
+ * Perform any initialization that needs to take place before the
+ * program starts up worker threads. This is currently used to assure
+ * that an nl_handle is allocated prior to any attempts to bind a
+ * netlink socket. For a discussion of why this is necessary, please
+ * see the following email message:
+ *
+ *   https://www.redhat.com/archives/libvir-list/2012-May/msg00202.html
+ *
+ * The short version is that, without this placeholder allocation of
+ * an nl_handle that is never used, it is possible for nl_connect() in
+ * one thread to collide with a direct bind() of a netlink socket in
+ * another thread, leading to failure of the operation (which could
+ * lead to failure of libvirtd to start). Since getaddrinfo() (used by
+ * libvirtd in virSocketAddrParse, which is called quite frequently
+ * during startup) directly calls bind() on a netlink socket, this is
+ * actually a very common occurrence (15-20% failure rate on some
+ * hardware).
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+int
+virNetlinkStartup(void)
+{
+    if (placeholder_nlhandle)
+        return 0;
+    placeholder_nlhandle = nl_handle_alloc();
+    if (!placeholder_nlhandle) {
+        virReportSystemError(errno, "%s",
+                             _("cannot allocate placeholder nlhandle for netlink"));
+        return -1;
+    }
+    return 0;
+}
+
+/**
+ * virNetlinkShutdown:
+ *
+ * Undo any initialization done by virNetlinkStartup. This currently
+ * destroys the placeholder nl_handle.
+ */
+void
+virNetlinkShutdown(void)
+{
+    if (placeholder_nlhandle) {
+        nl_handle_destroy(placeholder_nlhandle);
+        placeholder_nlhandle = NULL;
+    }
+}
 
 /**
  * virNetlinkCommand:
@@ -545,6 +598,18 @@ static const char *unsupported = N_("libnl was not available at build time");
 # else
 static const char *unsupported = N_("not supported on non-linux platforms");
 # endif
+
+int
+virNetlinkStartup(void)
+{
+    return 0;
+}
+
+void
+virNetlinkShutdown(void)
+{
+    return;
+}
 
 int virNetlinkCommand(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
            unsigned char **respbuf ATTRIBUTE_UNUSED,
