@@ -583,7 +583,7 @@ doRemoteOpen (virConnectPtr conn,
                 if (!userdir)
                     goto failed;
 
-                if (virAsprintf(&sockname, "@%s/" LIBVIRTD_USER_UNIX_SOCKET, userdir) < 0) {
+                if (virAsprintf(&sockname, "%s/" LIBVIRTD_USER_UNIX_SOCKET, userdir) < 0) {
                     VIR_FREE(userdir);
                     goto out_of_memory;
                 }

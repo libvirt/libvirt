@@ -300,7 +300,7 @@ daemonUnixSocketPaths(struct daemonConfig *config,
             }
             umask(old_umask);
 
-            if (virAsprintf(sockfile, "@%s/libvirt-sock", rundir) < 0) {
+            if (virAsprintf(sockfile, "%s/libvirt-sock", rundir) < 0) {
                 VIR_FREE(rundir);
                 goto no_memory;
             }
