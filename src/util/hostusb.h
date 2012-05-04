@@ -28,17 +28,27 @@
 typedef struct _usbDevice usbDevice;
 typedef struct _usbDeviceList usbDeviceList;
 
-usbDevice *usbGetDevice(unsigned bus,
-                        unsigned devno);
-usbDevice *usbFindDevice(unsigned vendor,
-                         unsigned product);
+usbDevice *usbGetDevice(unsigned int bus,
+                        unsigned int devno);
+
+usbDevice *usbFindDeviceByBus(unsigned int bus,
+                              unsigned int devno);
+
+usbDeviceList *usbFindDeviceByVendor(unsigned int vendor,
+                                     unsigned int product);
+
+usbDevice *usbFindDevice(unsigned int vendor,
+                         unsigned int product,
+                         unsigned int bus,
+                         unsigned int devno);
+
 void       usbFreeDevice (usbDevice *dev);
 void       usbDeviceSetUsedBy(usbDevice *dev, const char *name);
 const char *usbDeviceGetUsedBy(usbDevice *dev);
 const char *usbDeviceGetName(usbDevice *dev);
 
-unsigned usbDeviceGetBus(usbDevice *dev);
-unsigned usbDeviceGetDevno(usbDevice *dev);
+unsigned int usbDeviceGetBus(usbDevice *dev);
+unsigned int usbDeviceGetDevno(usbDevice *dev);
 
 /*
  * Callback that will be invoked once for each file
