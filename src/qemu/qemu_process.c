@@ -3322,7 +3322,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     /* Run an early hook to set-up missing devices */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
-        char *xml = virDomainDefFormat(vm->def, 0);
+        char *xml = qemuDomainDefFormatXML(driver, vm->def, 0);
         int hookret;
 
         hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name,
@@ -3516,7 +3516,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     /* now that we know it is about to start call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
-        char *xml = virDomainDefFormat(vm->def, 0);
+        char *xml = qemuDomainDefFormatXML(driver, vm->def, 0);
         int hookret;
 
         hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name,
@@ -3956,7 +3956,7 @@ void qemuProcessStop(struct qemud_driver *driver,
 
     /* now that we know it's stopped call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
-        char *xml = virDomainDefFormat(vm->def, 0);
+        char *xml = qemuDomainDefFormatXML(driver, vm->def, 0);
 
         /* we can't stop the operation even if the script raised an error */
         virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name,
@@ -4049,7 +4049,7 @@ retry:
 
     /* The "release" hook cleans up additional resources */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
-        char *xml = virDomainDefFormat(vm->def, 0);
+        char *xml = qemuDomainDefFormatXML(driver, vm->def, 0);
 
         /* we can't stop the operation even if the script raised an error */
         virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name,

@@ -4551,7 +4551,7 @@ static char *qemuDomainXMLFromNative(virConnectPtr conn,
         goto cleanup;
     }
 
-    xml = virDomainDefFormat(def, VIR_DOMAIN_XML_INACTIVE);
+    xml = qemuDomainDefFormatXML(driver, def, VIR_DOMAIN_XML_INACTIVE);
 
 cleanup:
     virDomainDefFree(def);
@@ -10972,9 +10972,10 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     snap->def->current = true;
     if (snap->def->dom) {
         char *xml;
-        if (!(xml = virDomainDefFormat(snap->def->dom,
-                                       (VIR_DOMAIN_XML_INACTIVE |
-                                        VIR_DOMAIN_XML_SECURE))))
+        if (!(xml = qemuDomainDefFormatXML(driver,
+                                           snap->def->dom,
+                                           VIR_DOMAIN_XML_INACTIVE |
+                                           VIR_DOMAIN_XML_SECURE)))
             goto cleanup;
         config = virDomainDefParseString(driver->caps, xml,
                                          QEMU_EXPECTED_VIRT_TYPES,

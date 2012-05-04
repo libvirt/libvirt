@@ -390,7 +390,8 @@ static void qemuMigrationCookieGraphicsXMLFormat(virBufferPtr buf,
 
 
 static int
-qemuMigrationCookieXMLFormat(virBufferPtr buf,
+qemuMigrationCookieXMLFormat(struct qemud_driver *driver,
+                             virBufferPtr buf,
                              qemuMigrationCookiePtr mig)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -428,10 +429,11 @@ qemuMigrationCookieXMLFormat(virBufferPtr buf,
     if ((mig->flags & QEMU_MIGRATION_COOKIE_PERSISTENT) &&
         mig->persistent) {
         virBufferAdjustIndent(buf, 2);
-        if (virDomainDefFormatInternal(mig->persistent,
-                                       VIR_DOMAIN_XML_INACTIVE |
-                                       VIR_DOMAIN_XML_SECURE,
-                                       buf) < 0)
+        if (qemuDomainDefFormatBuf(driver,
+                                   mig->persistent,
+                                   VIR_DOMAIN_XML_INACTIVE |
+                                   VIR_DOMAIN_XML_SECURE,
+                                   buf) < 0)
             return -1;
         virBufferAdjustIndent(buf, -2);
     }
@@ -441,11 +443,12 @@ qemuMigrationCookieXMLFormat(virBufferPtr buf,
 }
 
 
-static char *qemuMigrationCookieXMLFormatStr(qemuMigrationCookiePtr mig)
+static char *qemuMigrationCookieXMLFormatStr(struct qemud_driver *driver,
+                                             qemuMigrationCookiePtr mig)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (qemuMigrationCookieXMLFormat(&buf, mig) < 0) {
+    if (qemuMigrationCookieXMLFormat(driver, &buf, mig) < 0) {
         virBufferFreeAndReset(&buf);
         return NULL;
     }
@@ -717,7 +720,7 @@ qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
         qemuMigrationCookieAddPersistent(mig, dom) < 0)
         return -1;
 
-    if (!(*cookieout = qemuMigrationCookieXMLFormatStr(mig)))
+    if (!(*cookieout = qemuMigrationCookieXMLFormatStr(driver, mig)))
         return -1;
 
     *cookieoutlen = strlen(*cookieout) + 1;
@@ -1235,7 +1238,8 @@ qemuMigrationPrepareAny(struct qemud_driver *driver,
         char *xml;
         int hookret;
 
-        if (!(xml = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE)))
+        if (!(xml = qemuDomainDefFormatXML(driver, def,
+                                           VIR_DOMAIN_XML_SECURE)))
             goto cleanup;
 
         hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, def->name,
