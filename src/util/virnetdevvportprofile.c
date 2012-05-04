@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -395,7 +395,7 @@ virNetDevVPortProfileOpSetLink(const char *ifname, int ifindex,
             goto cleanup;
     }
 
-    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, pid) < 0)
+    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0, pid) < 0)
         goto cleanup;
 
     if (recvbuflen < NLMSG_LENGTH(0) || recvbuf == NULL)

@@ -168,12 +168,12 @@ virNetlinkShutdown(void)
  */
 int virNetlinkCommand(struct nl_msg *nl_msg,
                       unsigned char **respbuf, unsigned int *respbuflen,
-                      int nl_pid)
+                      uint32_t src_pid, uint32_t dst_pid)
 {
     int rc = 0;
     struct sockaddr_nl nladdr = {
             .nl_family = AF_NETLINK,
-            .nl_pid    = nl_pid,
+            .nl_pid    = dst_pid,
             .nl_groups = 0,
     };
     ssize_t nbytes;
@@ -201,7 +201,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
 
     nlmsg_set_dst(nl_msg, &nladdr);
 
-    nlmsg->nlmsg_pid = getpid();
+    nlmsg->nlmsg_pid = src_pid ? src_pid : getpid();
 
     nbytes = nl_send_auto_complete(nlhandle, nl_msg);
     if (nbytes < 0) {
@@ -612,9 +612,10 @@ virNetlinkShutdown(void)
 }
 
 int virNetlinkCommand(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
-           unsigned char **respbuf ATTRIBUTE_UNUSED,
-           unsigned int *respbuflen ATTRIBUTE_UNUSED,
-           int nl_pid ATTRIBUTE_UNUSED)
+                      unsigned char **respbuf ATTRIBUTE_UNUSED,
+                      unsigned int *respbuflen ATTRIBUTE_UNUSED,
+                      uint32_t src_pid ATTRIBUTE_UNUSED,
+                      uint32_t dst_pid ATTRIBUTE_UNUSED)
 {
     netlinkError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
