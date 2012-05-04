@@ -62,6 +62,11 @@ int virNetlinkEventServiceStart(void);
 bool virNetlinkEventServiceIsRunning(void);
 
 /**
+ * virNetlinkEventServiceLocalPid: returns nl_pid used to bind() netlink socket
+ */
+int virNetlinkEventServiceLocalPid(void);
+
+/**
  * virNetlinkEventAddClient: register a callback for handling of netlink messages
  */
 int virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,

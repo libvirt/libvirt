@@ -379,6 +379,24 @@ virNetlinkEventServiceIsRunning(void)
 }
 
 /**
+ * virNetlinkEventServiceLocalPid:
+ *
+ * Returns the nl_pid value that was used to bind() the netlink socket
+ * used by the netlink event service, or -1 on error (netlink
+ * guarantees that this value will always be > 0).
+ */
+int virNetlinkEventServiceLocalPid(void)
+{
+    if (!(server && server->netlinknh)) {
+        netlinkError(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("netlink event service not running"));
+        return -1;
+    }
+    return (int)nl_socket_get_local_port(server->netlinknh);
+}
+
+
+/**
  * virNetlinkEventServiceStart:
  *
  * start a monitor to receive netlink messages for libvirtd.
