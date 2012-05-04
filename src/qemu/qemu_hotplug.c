@@ -1131,15 +1131,21 @@ int qemuDomainAttachHostDevice(struct qemud_driver *driver,
     /* Resolve USB product/vendor to bus/device */
     if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
         hostdev->source.subsys.u.usb.vendor) {
+        usbDevice *usb;
+        usbDeviceList *list;
+
         if (qemuPrepareHostdevUSBDevices(driver, vm->def->name, &hostdev, 1) < 0)
             goto error;
 
-        usbDevice *usb
-            = usbFindDevice(hostdev->source.subsys.u.usb.vendor,
-                            hostdev->source.subsys.u.usb.product);
+        list = usbFindDeviceByVendor(hostdev->source.subsys.u.usb.vendor,
+                                     hostdev->source.subsys.u.usb.product);
 
-        if (!usb)
+        if (!list)
             return -1;
+
+        usb = usbDeviceListGet(list, 0);
+        usbDeviceListSteal(list, usb);
+        usbDeviceListFree(list);
 
         hostdev->source.subsys.u.usb.bus = usbDeviceGetBus(usb);
         hostdev->source.subsys.u.usb.device = usbDeviceGetDevno(usb);
