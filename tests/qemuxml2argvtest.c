@@ -50,8 +50,10 @@ fakeSecretLookupByUsage(virConnectPtr conn,
     ret->magic = VIR_SECRET_MAGIC;
     ret->refs = 1;
     ret->usageID = strdup(usageID);
-    if (!ret->usageID)
+    if (!ret->usageID) {
+        VIR_FREE(ret);
         return NULL;
+    }
     ret->conn = conn;
     conn->refs++;
     return ret;
