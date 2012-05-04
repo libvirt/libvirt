@@ -2485,6 +2485,7 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
         *def = NULL;
     }
 
+    VIR_FREE(networkName);
     VIR_FREE(connectionType);
     VIR_FREE(addressType);
     VIR_FREE(generatedAddress);
