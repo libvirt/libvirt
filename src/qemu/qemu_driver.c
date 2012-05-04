@@ -6991,6 +6991,9 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
             if (virTypedParameterAssign(param, VIR_DOMAIN_NUMA_NODESET,
                                         VIR_TYPED_PARAM_STRING, nodeset) < 0)
                 goto cleanup;
+
+            nodeset = NULL;
+
             break;
 
         default:
@@ -7004,6 +7007,7 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
     ret = 0;
 
 cleanup:
+    VIR_FREE(nodeset);
     virCgroupFree(&group);
     if (vm)
         virDomainObjUnlock(vm);
