@@ -12011,9 +12011,9 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         ret = qemuMonitorSetBlockIoThrottle(priv->mon, device, &info);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
-        vm->def->disks[idx]->blkdeviotune = info;
         if (ret < 0)
             goto endjob;
+        vm->def->disks[idx]->blkdeviotune = info;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
