@@ -70,14 +70,13 @@ int read_wwn_linux(int host, const char *file, char **wwn)
 {
     char *p = NULL;
     int fd = -1, retval = 0;
-    char buf[64];
+    char buf[65] = "";
 
     if (open_wwn_file(LINUX_SYSFS_FC_HOST_PREFIX, host, file, &fd) < 0) {
         goto out;
     }
 
-    memset(buf, 0, sizeof(buf));
-    if (saferead(fd, buf, sizeof(buf)) < 0) {
+    if (saferead(fd, buf, sizeof(buf) - 1) < 0) {
         retval = -1;
         VIR_DEBUG("Failed to read WWN for host%d '%s'",
                   host, file);
