@@ -1227,11 +1227,14 @@ int
 qemuDomainDefFormatBuf(struct qemud_driver *driver,
                        virDomainDefPtr def,
                        unsigned int flags,
+                       bool compatible,
                        virBuffer *buf)
 {
     int ret = -1;
     virCPUDefPtr cpu = NULL;
     virCPUDefPtr def_cpu = def->cpu;
+    virDomainControllerDefPtr *controllers = NULL;
+    int ncontrollers = 0;
 
     /* Update guest CPU requirements according to host CPU */
     if ((flags & VIR_DOMAIN_XML_UPDATE_CPU) &&
@@ -1249,21 +1252,64 @@ qemuDomainDefFormatBuf(struct qemud_driver *driver,
         def->cpu = cpu;
     }
 
+    if (compatible) {
+        int i;
+        virDomainControllerDefPtr usb = NULL;
+
+        /* If only the default USB controller is present, we can remove it
+         * and make the XML compatible with older versions of libvirt which
+         * didn't support USB controllers in the XML but always added the
+         * default one to qemu anyway.
+         */
+        for (i = 0; i < def->ncontrollers; i++) {
+            if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) {
+                if (usb) {
+                    usb = NULL;
+                    break;
+                }
+                usb = def->controllers[i];
+            }
+        }
+        if (usb && usb->idx == 0 && usb->model == -1) {
+            VIR_DEBUG("Removing default USB controller from domain '%s'"
+                      " for migration compatibility", def->name);
+            controllers = def->controllers;
+            ncontrollers = def->ncontrollers;
+            if (VIR_ALLOC_N(def->controllers, ncontrollers - 1) < 0) {
+                controllers = NULL;
+                virReportOOMError();
+                goto cleanup;
+            }
+
+            def->ncontrollers = 0;
+            for (i = 0; i < ncontrollers; i++) {
+                if (controllers[i] != usb)
+                    def->controllers[def->ncontrollers++] = controllers[i];
+            }
+        }
+    }
+
     ret = virDomainDefFormatInternal(def, flags, buf);
 
 cleanup:
     def->cpu = def_cpu;
     virCPUDefFree(cpu);
+    if (controllers) {
+        VIR_FREE(def->controllers);
+        def->controllers = controllers;
+        def->ncontrollers = ncontrollers;
+    }
     return ret;
 }
 
 char *qemuDomainDefFormatXML(struct qemud_driver *driver,
                              virDomainDefPtr def,
-                             unsigned int flags)
+                             unsigned int flags,
+                             bool compatible)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (qemuDomainDefFormatBuf(driver, def, flags, &buf) < 0) {
+    if (qemuDomainDefFormatBuf(driver, def, flags, compatible, &buf) < 0) {
         virBufferFreeAndReset(&buf);
         return NULL;
     }
@@ -1279,7 +1325,8 @@ char *qemuDomainDefFormatXML(struct qemud_driver *driver,
 
 char *qemuDomainFormatXML(struct qemud_driver *driver,
                           virDomainObjPtr vm,
-                          unsigned int flags)
+                          unsigned int flags,
+                          bool compatible)
 {
     virDomainDefPtr def;
 
@@ -1288,20 +1335,21 @@ char *qemuDomainFormatXML(struct qemud_driver *driver,
     else
         def = vm->def;
 
-    return qemuDomainDefFormatXML(driver, def, flags);
+    return qemuDomainDefFormatXML(driver, def, flags, compatible);
 }
 
 char *
 qemuDomainDefFormatLive(struct qemud_driver *driver,
                         virDomainDefPtr def,
-                        bool inactive)
+                        bool inactive,
+                        bool compatible)
 {
     unsigned int flags = QEMU_DOMAIN_FORMAT_LIVE_FLAGS;
 
     if (inactive)
         flags |= VIR_DOMAIN_XML_INACTIVE;
 
-    return qemuDomainDefFormatXML(driver, def, flags);
+    return qemuDomainDefFormatXML(driver, def, flags, compatible);
 }
 
 
