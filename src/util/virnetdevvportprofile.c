@@ -282,7 +282,8 @@ virNetDevVPortProfileOpSetLink(const char *ifname, int ifindex,
     };
     unsigned char *recvbuf = NULL;
     unsigned int recvbuflen = 0;
-    uint32_t pid = 0;
+    int src_pid = 0;
+    uint32_t dst_pid = 0;
     struct nl_msg *nl_msg;
     struct nlattr *vfports = NULL, *vfport;
 
@@ -390,12 +391,13 @@ virNetDevVPortProfileOpSetLink(const char *ifname, int ifindex,
     }
 
     if (!nltarget_kernel) {
-        pid = virNetDevVPortProfileGetLldpadPid();
-        if (pid == 0)
+        if ((src_pid = virNetlinkEventServiceLocalPid()) < 0)
+            goto cleanup;
+        if ((dst_pid = virNetDevVPortProfileGetLldpadPid()) == 0)
             goto cleanup;
     }
 
-    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0, pid) < 0)
+    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, src_pid, dst_pid) < 0)
         goto cleanup;
 
     if (recvbuflen < NLMSG_LENGTH(0) || recvbuf == NULL)
@@ -477,7 +479,7 @@ virNetDevVPortProfileGetNthParent(const char *ifname, int ifindex, unsigned int 
         return -1;
 
     while (!end && i <= nthParent) {
-        rc = virNetDevLinkDump(ifname, ifindex, true, tb, &recvbuf, NULL);
+        rc = virNetDevLinkDump(ifname, ifindex, tb, &recvbuf, 0, 0);
         if (rc < 0)
             break;
 
@@ -524,6 +526,8 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
                               bool setlink_only)
 {
     int rc;
+    int src_pid = 0;
+    uint32_t dst_pid = 0;
     unsigned char *recvbuf = NULL;
     struct nlattr *tb[IFLA_MAX + 1] = { NULL , };
     int repeats = STATUS_POLL_TIMEOUT_USEC / STATUS_POLL_INTERVL_USEC;
@@ -549,9 +553,15 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
     if (setlink_only) /*for re-associations on existing links*/
         return 0;
 
+    if (!nltarget_kernel &&
+        (((src_pid = virNetlinkEventServiceLocalPid()) < 0) ||
+         ((dst_pid = virNetDevVPortProfileGetLldpadPid()) == 0))) {
+        rc = -1;
+        goto cleanup;
+    }
+
     while (--repeats >= 0) {
-        rc = virNetDevLinkDump(NULL, ifindex, nltarget_kernel, tb,
-                               &recvbuf, virNetDevVPortProfileGetLldpadPid);
+        rc = virNetDevLinkDump(NULL, ifindex, tb, &recvbuf, src_pid, dst_pid);
         if (rc < 0)
             goto cleanup;
 

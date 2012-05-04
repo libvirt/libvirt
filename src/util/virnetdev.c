@@ -1229,15 +1229,15 @@ static struct nla_policy ifla_vf_policy[IFLA_VF_MAX+1] = {
  *
  * @ifname: The name of the interface; only use if ifindex < 0
  * @ifindex: The interface index; may be < 0 if ifname is given
- * @nltarget_kernel: whether to send the message to the kernel or another
- *                   process
  * @nlattr: pointer to a pointer of netlink attributes that will contain
  *          the results
  * @recvbuf: Pointer to the buffer holding the returned netlink response
  *           message; free it, once not needed anymore
- * @getPidFunc: Pointer to a function that will be invoked if the kernel
- *              is not the target of the netlink message but it is to be
- *              sent to another process.
+ * @src_pid: pid used for nl_pid of the local end of the netlink message
+ *           (0 == "use getpid()")
+ * @dst_pid: pid of destination nl_pid if the kernel
+ *           is not the target of the netlink message but it is to be
+ *           sent to another process (0 if sending to the kernel)
  *
  * Get information about an interface given its name or index.
  *
@@ -1245,9 +1245,9 @@ static struct nla_policy ifla_vf_policy[IFLA_VF_MAX+1] = {
  */
 int
 virNetDevLinkDump(const char *ifname, int ifindex,
-                  bool nltarget_kernel, struct nlattr **tb,
+                  struct nlattr **tb,
                   unsigned char **recvbuf,
-                  uint32_t (*getPidFunc)(void))
+                  uint32_t src_pid, uint32_t dst_pid)
 {
     int rc = -1;
     struct nlmsghdr *resp;
@@ -1257,7 +1257,6 @@ virNetDevLinkDump(const char *ifname, int ifindex,
         .ifi_index  = ifindex
     };
     unsigned int recvbuflen;
-    uint32_t pid = 0;
     struct nl_msg *nl_msg;
 
     *recvbuf = NULL;
@@ -1281,14 +1280,7 @@ virNetDevLinkDump(const char *ifname, int ifindex,
             goto buffer_too_small;
     }
 
-    if (!nltarget_kernel) {
-        pid = getPidFunc();
-        if (pid == 0) {
-            goto cleanup;
-        }
-    }
-
-    if (virNetlinkCommand(nl_msg, recvbuf, &recvbuflen, 0, pid) < 0)
+    if (virNetlinkCommand(nl_msg, recvbuf, &recvbuflen, src_pid, dst_pid) < 0)
         goto cleanup;
 
     if (recvbuflen < NLMSG_LENGTH(0) || *recvbuf == NULL)
@@ -1526,7 +1518,7 @@ virNetDevGetVfConfig(const char *ifname, int vf, unsigned char *mac,
     struct nlattr *tb[IFLA_MAX + 1] = {NULL, };
     int ifindex = -1;
 
-    rc = virNetDevLinkDump(ifname, ifindex, true, tb, &recvbuf, NULL);
+    rc = virNetDevLinkDump(ifname, ifindex, tb, &recvbuf, 0, 0);
     if (rc < 0)
         return rc;
 
@@ -1658,10 +1650,10 @@ virNetDevRestoreNetConfig(char *linkdev, int vf, char *stateDir)
 int
 virNetDevLinkDump(const char *ifname ATTRIBUTE_UNUSED,
                   int ifindex ATTRIBUTE_UNUSED,
-                  bool nltarget_kernel ATTRIBUTE_UNUSED,
                   struct nlattr **tb ATTRIBUTE_UNUSED,
                   unsigned char **recvbuf ATTRIBUTE_UNUSED,
-                  uint32_t (*getPidFunc)(void) ATTRIBUTE_UNUSED)
+                  uint32_t src_pid ATTRIBUTE_UNUSED,
+                  uint32_t dst_pid ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to dump link info on this platform"));
