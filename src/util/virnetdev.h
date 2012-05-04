@@ -107,9 +107,9 @@ int virNetDevGetVirtualFunctions(const char *pfname,
     ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevLinkDump(const char *ifname, int ifindex,
-                      bool nltarget_kernel, struct nlattr **tb,
+                      struct nlattr **tb,
                       unsigned char **recvbuf,
-                      uint32_t (*getPidFunc)(void))
+                      uint32_t src_pid, uint32_t dst_pid)
     ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevReplaceNetConfig(char *linkdev, int vf,
