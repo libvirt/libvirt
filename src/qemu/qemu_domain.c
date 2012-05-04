@@ -1149,11 +1149,13 @@ void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
 }
 
 
-char *qemuDomainDefFormatXML(struct qemud_driver *driver,
-                             virDomainDefPtr def,
-                             unsigned int flags)
+int
+qemuDomainDefFormatBuf(struct qemud_driver *driver,
+                       virDomainDefPtr def,
+                       unsigned int flags,
+                       virBuffer *buf)
 {
-    char *ret = NULL;
+    int ret = -1;
     virCPUDefPtr cpu = NULL;
     virCPUDefPtr def_cpu = def->cpu;
 
@@ -1173,12 +1175,32 @@ char *qemuDomainDefFormatXML(struct qemud_driver *driver,
         def->cpu = cpu;
     }
 
-    ret = virDomainDefFormat(def, flags);
+    ret = virDomainDefFormatInternal(def, flags, buf);
 
 cleanup:
     def->cpu = def_cpu;
     virCPUDefFree(cpu);
     return ret;
+}
+
+char *qemuDomainDefFormatXML(struct qemud_driver *driver,
+                             virDomainDefPtr def,
+                             unsigned int flags)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (qemuDomainDefFormatBuf(driver, def, flags, &buf) < 0) {
+        virBufferFreeAndReset(&buf);
+        return NULL;
+    }
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        virBufferFreeAndReset(&buf);
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buf);
 }
 
 char *qemuDomainFormatXML(struct qemud_driver *driver,
