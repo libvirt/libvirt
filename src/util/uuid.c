@@ -238,7 +238,8 @@ getDMISystemUUID(char *uuid, int len)
     while (paths[i]) {
         int fd = open(paths[i], O_RDONLY);
         if (fd >= 0) {
-            if (saferead(fd, uuid, len) == len) {
+            if (saferead(fd, uuid, len - 1) == len - 1) {
+                uuid[len - 1] = '\0';
                 VIR_FORCE_CLOSE(fd);
                 return 0;
             }
@@ -270,7 +271,7 @@ virSetHostUUIDStr(const char *uuid)
 
     if (!uuid) {
         memset(dmiuuid, 0, sizeof(dmiuuid));
-        if (!getDMISystemUUID(dmiuuid, sizeof(dmiuuid) - 1)) {
+        if (!getDMISystemUUID(dmiuuid, sizeof(dmiuuid))) {
             if (!virUUIDParse(dmiuuid, host_uuid))
                 return 0;
         }
