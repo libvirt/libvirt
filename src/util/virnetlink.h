@@ -40,7 +40,7 @@ void virNetlinkShutdown(void);
 
 int virNetlinkCommand(struct nl_msg *nl_msg,
                       unsigned char **respbuf, unsigned int *respbuflen,
-                      int nl_pid);
+                      uint32_t src_port, uint32_t dst_port);
 
 typedef void (*virNetlinkEventHandleCallback)(unsigned char *msg, int length, struct sockaddr_nl *peer, bool *handled, void *opaque);
 

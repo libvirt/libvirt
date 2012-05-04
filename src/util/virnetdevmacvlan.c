@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2010-2012 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -154,7 +154,7 @@ virNetDevMacVLanCreate(const char *ifname,
 
     nla_nest_end(nl_msg, linkinfo);
 
-    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0) < 0) {
+    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0, 0) < 0) {
         goto cleanup;
     }
 
@@ -242,7 +242,7 @@ int virNetDevMacVLanDelete(const char *ifname)
     if (nla_put(nl_msg, IFLA_IFNAME, strlen(ifname)+1, ifname) < 0)
         goto buffer_too_small;
 
-    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0) < 0) {
+    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0, 0) < 0) {
         goto cleanup;
     }
 
