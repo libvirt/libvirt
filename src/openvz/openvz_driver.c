@@ -100,68 +100,31 @@ static void cmdExecFree(const char *cmdExec[])
 /* generate arguments to create OpenVZ container
    return -1 - error
            0 - OK
+   Caller has to free the cmd
 */
-static int
-openvzDomainDefineCmd(const char *args[],
-                      int maxarg, virDomainDefPtr vmdef)
+static virCommandPtr
+openvzDomainDefineCmd(virDomainDefPtr vmdef)
 {
-    int narg;
-
-    for (narg = 0; narg < maxarg; narg++)
-        args[narg] = NULL;
+    virCommandPtr cmd = virCommandNewArgList(VZCTL,
+                                             "--quiet",
+                                             "create",
+                                             NULL);
 
     if (vmdef == NULL) {
         openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
                     _("Container is not defined"));
-        return -1;
+        virCommandFree(cmd);
+        return NULL;
     }
 
-#define ADD_ARG(thisarg)                                                \
-    do {                                                                \
-        if (narg >= maxarg)                                             \
-                 goto no_memory;                                        \
-        args[narg++] = thisarg;                                         \
-    } while (0)
-
-#define ADD_ARG_LIT(thisarg)                                            \
-    do {                                                                \
-        if (narg >= maxarg)                                             \
-                 goto no_memory;                                        \
-        if ((args[narg++] = strdup(thisarg)) == NULL)                   \
-            goto no_memory;                                             \
-    } while (0)
-
-    narg = 0;
-    ADD_ARG_LIT(VZCTL);
-    ADD_ARG_LIT("--quiet");
-    ADD_ARG_LIT("create");
-
-    ADD_ARG_LIT(vmdef->name);
-    ADD_ARG_LIT("--name");
-    ADD_ARG_LIT(vmdef->name);
+    virCommandAddArgList(cmd, vmdef->name, "--name", vmdef->name, NULL);
 
     if (vmdef->nfss == 1 &&
         vmdef->fss[0]->type == VIR_DOMAIN_FS_TYPE_TEMPLATE) {
-        ADD_ARG_LIT("--ostemplate");
-        ADD_ARG_LIT(vmdef->fss[0]->src);
+        virCommandAddArgList(cmd, "--ostemplate", vmdef->fss[0]->src, NULL);
     }
-#if 0
-    if ((vmdef->profile && *(vmdef->profile))) {
-        ADD_ARG_LIT("--config");
-        ADD_ARG_LIT(vmdef->profile);
-    }
-#endif
 
-    ADD_ARG(NULL);
-    return 0;
-
-no_memory:
-    openvzError(VIR_ERR_INTERNAL_ERROR,
-                _("Could not put argument to %s"), VZCTL);
-    return -1;
-
-#undef ADD_ARG
-#undef ADD_ARG_LIT
+    return cmd;
 }
 
 
@@ -170,8 +133,7 @@ static int openvzSetInitialConfig(virDomainDefPtr vmdef)
     int ret = -1;
     int vpsid;
     char * confdir = NULL;
-    const char *prog[OPENVZ_MAX_ARG];
-    prog[0] = NULL;
+    virCommandPtr cmd = NULL;
 
     if (vmdef->nfss > 1) {
         openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -210,24 +172,18 @@ static int openvzSetInitialConfig(virDomainDefPtr vmdef)
                         _("Could not set the source dir for the filesystem"));
             goto cleanup;
         }
-    }
-    else
-    {
-        if (openvzDomainDefineCmd(prog, OPENVZ_MAX_ARG, vmdef) < 0) {
-            VIR_ERROR(_("Error creating command for container"));
+    } else {
+        cmd = openvzDomainDefineCmd(vmdef);
+        if (virCommandRun(cmd, NULL) < 0)
             goto cleanup;
-        }
-
-        if (virRun(prog, NULL) < 0) {
-            goto cleanup;
-        }
     }
 
     ret = 0;
 
 cleanup:
   VIR_FREE(confdir);
-  cmdExecFree(prog);
+  virCommandFree(cmd);
+
   return ret;
 }
 
