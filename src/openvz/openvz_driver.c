@@ -189,6 +189,48 @@ cleanup:
 }
 
 
+static int
+openvzSetDiskQuota(virDomainDefPtr vmdef,
+                   virDomainFSDefPtr fss)
+{
+    int ret = -1;
+    unsigned long long sl, hl;
+    virCommandPtr cmd = virCommandNewArgList(VZCTL,
+                                             "--quiet",
+                                             "set",
+                                             vmdef->name,
+                                             "--save",
+                                             NULL);
+
+    if (fss->type == VIR_DOMAIN_FS_TYPE_TEMPLATE) {
+        if (fss->space_hard_limit) {
+            hl = VIR_DIV_UP(fss->space_hard_limit, 1024);
+            virCommandAddArg(cmd, "--diskspace");
+
+            if (fss->space_soft_limit) {
+                sl = VIR_DIV_UP(fss->space_soft_limit, 1024);
+                virCommandAddArgFormat(cmd, "%lld:%lld", sl, hl);
+            } else {
+                virCommandAddArgFormat(cmd, "%lld", hl);
+            }
+        } else if (fss->space_soft_limit) {
+            openvzError(VIR_ERR_INVALID_ARG, "%s",
+                        _("Can't set soft limit without hard limit"));
+            goto cleanup;
+        }
+
+        if (virCommandRun(cmd, NULL) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+  virCommandFree(cmd);
+
+  return ret;
+}
+
+
 static virDomainPtr openvzDomainLookupByID(virConnectPtr conn,
                                            int id) {
     struct openvz_driver *driver = conn->privateData;
@@ -895,7 +937,13 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
         goto cleanup;
     }
 
-    /* TODO: set quota */
+    if (vm->def->nfss == 1) {
+        if (openvzSetDiskQuota(vm->def, vm->def->fss[0]) < 0) {
+            openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not set disk quota"));
+            goto cleanup;
+        }
+    }
 
     if (openvzSetDefinedUUID(strtoI(vm->def->name), vm->def->uuid) < 0) {
         openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -975,6 +1023,14 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     if (openvzSetInitialConfig(vm->def) < 0) {
         VIR_ERROR(_("Error creating initial configuration"));
         goto cleanup;
+    }
+
+    if (vm->def->nfss == 1) {
+        if (openvzSetDiskQuota(vm->def, vm->def->fss[0]) < 0) {
+            openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not set disk quota"));
+            goto cleanup;
+        }
     }
 
     if (openvzSetDefinedUUID(strtoI(vm->def->name), vm->def->uuid) < 0) {
