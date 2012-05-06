@@ -1116,11 +1116,13 @@ error:
     return -1;
 }
 
-
 int qemuDomainAttachHostDevice(struct qemud_driver *driver,
                                virDomainObjPtr vm,
                                virDomainHostdevDefPtr hostdev)
 {
+    usbDeviceList *list;
+    usbDevice *usb = NULL;
+
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
         qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                         _("hostdev mode '%s' not supported"),
@@ -1128,35 +1130,58 @@ int qemuDomainAttachHostDevice(struct qemud_driver *driver,
         return -1;
     }
 
-    /* Resolve USB product/vendor to bus/device */
-    if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
-        hostdev->source.subsys.u.usb.vendor) {
-        usbDevice *usb;
-        usbDeviceList *list;
+    if (!(list = usbDeviceListNew()))
+        goto cleanup;
 
-        if (qemuPrepareHostdevUSBDevices(driver, vm->def->name, &hostdev, 1) < 0)
-            goto error;
+    if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
+        unsigned vendor = hostdev->source.subsys.u.usb.vendor;
+        unsigned product = hostdev->source.subsys.u.usb.product;
+        unsigned bus = hostdev->source.subsys.u.usb.bus;
+        unsigned device = hostdev->source.subsys.u.usb.device;
 
-        list = usbFindDeviceByVendor(hostdev->source.subsys.u.usb.vendor,
-                                     hostdev->source.subsys.u.usb.product);
+        if (vendor && bus) {
+            usb = usbFindDevice(vendor, product, bus, device);
 
-        if (!list)
-            return -1;
+        } else if (vendor && !bus) {
+            usbDeviceList *devs = usbFindDeviceByVendor(vendor, product);
+            if (!devs)
+                goto cleanup;
 
-        usb = usbDeviceListGet(list, 0);
+            if (usbDeviceListCount(devs) > 1) {
+                qemuReportError(VIR_ERR_OPERATION_FAILED,
+                                _("multiple USB devices for %x:%x, "
+                                  "use <address> to specify one"), vendor, product);
+                usbDeviceListFree(devs);
+                goto cleanup;
+            }
+            usb = usbDeviceListGet(devs, 0);
+            usbDeviceListSteal(devs, usb);
+            usbDeviceListFree(devs);
+
+            hostdev->source.subsys.u.usb.bus = usbDeviceGetBus(usb);
+            hostdev->source.subsys.u.usb.device = usbDeviceGetDevno(usb);
+
+        } else if (!vendor && bus) {
+            usb = usbFindDeviceByBus(bus, device);
+        }
+
+        if (!usb)
+            goto cleanup;
+
+        if (usbDeviceListAdd(list, usb) < 0) {
+            usbFreeDevice(usb);
+            goto cleanup;
+        }
+
+        if (qemuPrepareHostdevUSBDevices(driver, vm->def->name, list) < 0)
+            goto cleanup;
+
         usbDeviceListSteal(list, usb);
-        usbDeviceListFree(list);
-
-        hostdev->source.subsys.u.usb.bus = usbDeviceGetBus(usb);
-        hostdev->source.subsys.u.usb.device = usbDeviceGetDevno(usb);
-
-        usbFreeDevice(usb);
     }
-
 
     if (virSecurityManagerSetHostdevLabel(driver->securityManager,
                                           vm->def, hostdev) < 0)
-        return -1;
+        goto cleanup;
 
     switch (hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
@@ -1178,6 +1203,7 @@ int qemuDomainAttachHostDevice(struct qemud_driver *driver,
         goto error;
     }
 
+    usbDeviceListFree(list);
     return 0;
 
 error:
@@ -1185,6 +1211,9 @@ error:
                                               vm->def, hostdev) < 0)
         VIR_WARN("Unable to restore host device labelling on hotplug fail");
 
+cleanup:
+    usbDeviceListFree(list);
+    usbDeviceListSteal(driver->activeUsbHostdevs, usb);
     return -1;
 }
 
