@@ -13,8 +13,14 @@
         <span>Details of new features and bugs fixed in each release</span>
         <ul>
           <li>
+            <a href="http://wiki.libvirt.org/page/Maintenance_Releases">Maintenance Releases</a>
+            <span>Details about libvirt maintenance releases</span>
+          </li>
+        </ul>
+        <ul>
+          <li>
             <a href="http://libvirt.org/git/?p=libvirt.git;a=log">Git log</a>
-            <span>Latest commit messages from the source repository </span>
+            <span>Latest commit messages from the source repository</span>
           </li>
         </ul>
       </li>
