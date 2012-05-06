@@ -1882,7 +1882,9 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
 {
     int result = -1;
     esxVI_ObjectSpec *objectSpec = NULL;
+    bool objectSpec_isAppended = false;
     esxVI_PropertySpec *propertySpec = NULL;
+    bool propertySpec_isAppended = false;
     esxVI_PropertyFilterSpec *propertyFilterSpec = NULL;
 
     if (objectContentList == NULL || *objectContentList != NULL) {
@@ -1951,10 +1953,20 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
 
     if (esxVI_PropertyFilterSpec_Alloc(&propertyFilterSpec) < 0 ||
         esxVI_PropertySpec_AppendToList(&propertyFilterSpec->propSet,
-                                        propertySpec) < 0 ||
-        esxVI_ObjectSpec_AppendToList(&propertyFilterSpec->objectSet,
-                                      objectSpec) < 0 ||
-        esxVI_RetrieveProperties(ctx, propertyFilterSpec,
+                                        propertySpec) < 0) {
+        goto cleanup;
+    }
+
+    propertySpec_isAppended = true;
+
+    if (esxVI_ObjectSpec_AppendToList(&propertyFilterSpec->objectSet,
+                                      objectSpec) < 0) {
+        goto cleanup;
+    }
+
+    objectSpec_isAppended = true;
+
+    if (esxVI_RetrieveProperties(ctx, propertyFilterSpec,
                                  objectContentList) < 0) {
         goto cleanup;
     }
@@ -1994,11 +2006,22 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
      * Remove values given by the caller from the data structures to prevent
      * them from being freed by the call to esxVI_PropertyFilterSpec_Free().
      */
-    objectSpec->obj = NULL;
-    objectSpec->selectSet = NULL;
+    if (objectSpec != NULL) {
+        objectSpec->obj = NULL;
+        objectSpec->selectSet = NULL;
+    }
+
     if (propertySpec != NULL) {
         propertySpec->type = NULL;
         propertySpec->pathSet = NULL;
+    }
+
+    if (!objectSpec_isAppended) {
+        esxVI_ObjectSpec_Free(&objectSpec);
+    }
+
+    if (!propertySpec_isAppended) {
+        esxVI_PropertySpec_Free(&propertySpec);
     }
 
     esxVI_PropertyFilterSpec_Free(&propertyFilterSpec);
@@ -3885,7 +3908,9 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
 {
     int result = -1;
     esxVI_ObjectSpec *objectSpec = NULL;
+    bool objectSpec_isAppended = false;
     esxVI_PropertySpec *propertySpec = NULL;
+    bool propertySpec_isAppended = false;
     esxVI_PropertyFilterSpec *propertyFilterSpec = NULL;
     esxVI_ManagedObjectReference *propertyFilter = NULL;
     char *version = NULL;
@@ -3927,10 +3952,20 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
                                        "info.state") < 0 ||
         esxVI_PropertyFilterSpec_Alloc(&propertyFilterSpec) < 0 ||
         esxVI_PropertySpec_AppendToList(&propertyFilterSpec->propSet,
-                                        propertySpec) < 0 ||
-        esxVI_ObjectSpec_AppendToList(&propertyFilterSpec->objectSet,
-                                      objectSpec) < 0 ||
-        esxVI_CreateFilter(ctx, propertyFilterSpec, esxVI_Boolean_True,
+                                        propertySpec) < 0) {
+        goto cleanup;
+    }
+
+    propertySpec_isAppended = true;
+
+    if (esxVI_ObjectSpec_AppendToList(&propertyFilterSpec->objectSet,
+                                      objectSpec) < 0) {
+        goto cleanup;
+    }
+
+    objectSpec_isAppended = true;
+
+    if (esxVI_CreateFilter(ctx, propertyFilterSpec, esxVI_Boolean_True,
                            &propertyFilter) < 0) {
         goto cleanup;
     }
@@ -4064,6 +4099,14 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
 
     if (propertySpec != NULL) {
         propertySpec->type = NULL;
+    }
+
+    if (!objectSpec_isAppended) {
+        esxVI_ObjectSpec_Free(&objectSpec);
+    }
+
+    if (!propertySpec_isAppended) {
+        esxVI_PropertySpec_Free(&propertySpec);
     }
 
     esxVI_PropertyFilterSpec_Free(&propertyFilterSpec);
