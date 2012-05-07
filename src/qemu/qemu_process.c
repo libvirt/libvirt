@@ -1613,7 +1613,14 @@ qemuProcessDetectVcpuPIDs(struct qemud_driver *driver,
     int ncpupids;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (vm->def->virtType != VIR_DOMAIN_VIRT_KVM) {
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    /* failure to get the VCPU<-> PID mapping or to execute the query
+     * command will not be treated fatal as some versions of qemu don't
+     * support this command */
+    if ((ncpupids = qemuMonitorGetCPUInfo(priv->mon, &cpupids)) <= 0) {
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        virResetLastError();
+
         priv->nvcpupids = 1;
         if (VIR_ALLOC_N(priv->vcpupids, priv->nvcpupids) < 0) {
             virReportOOMError();
@@ -1622,19 +1629,7 @@ qemuProcessDetectVcpuPIDs(struct qemud_driver *driver,
         priv->vcpupids[0] = vm->pid;
         return 0;
     }
-
-    /* What follows is now all KVM specific */
-
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if ((ncpupids = qemuMonitorGetCPUInfo(priv->mon, &cpupids)) < 0) {
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-        return -1;
-    }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
-
-    /* Treat failure to get VCPU<->PID mapping as non-fatal */
-    if (ncpupids == 0)
-        return 0;
 
     if (ncpupids != vm->def->vcpus) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
