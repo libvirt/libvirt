@@ -48,6 +48,7 @@
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "openvz_driver.h"
+#include "openvz_util.h"
 #include "buf.h"
 #include "util.h"
 #include "openvz_conf.h"
@@ -1683,14 +1684,9 @@ openvzDomainGetMemoryParameters(virDomainPtr domain,
 
     virCheckFlags(0, -1);
 
-    kb_per_pages = sysconf(_SC_PAGESIZE);
-    if (kb_per_pages > 0) {
-        kb_per_pages /= 1024;
-    } else {
-        openvzError(VIR_ERR_INTERNAL_ERROR,
-                    _("Can't determine page size"));
+    kb_per_pages = openvzKBPerPages();
+    if (kb_per_pages < 0)
         goto cleanup;
-    }
 
     if (*nparams == 0) {
         *nparams = OPENVZ_NB_MEM_PARAM;
@@ -1754,14 +1750,9 @@ openvzDomainSetMemoryParameters(virDomainPtr domain,
     int i, result = -1;
     long kb_per_pages;
 
-    kb_per_pages = sysconf(_SC_PAGESIZE);
-    if (kb_per_pages > 0) {
-        kb_per_pages /= 1024;
-    } else {
-        openvzError(VIR_ERR_INTERNAL_ERROR,
-                    _("Can't determine page size"));
+    kb_per_pages = openvzKBPerPages();
+    if (kb_per_pages < 0)
         goto cleanup;
-    }
 
     virCheckFlags(0, -1);
     if (virTypedParameterArrayValidate(params, nparams,

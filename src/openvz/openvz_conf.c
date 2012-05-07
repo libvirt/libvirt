@@ -45,6 +45,7 @@
 
 #include "virterror_internal.h"
 #include "openvz_conf.h"
+#include "openvz_util.h"
 #include "uuid.h"
 #include "buf.h"
 #include "memory.h"
@@ -470,16 +471,11 @@ openvzReadMemConf(virDomainDefPtr def, int veid)
     char *temp = NULL;
     unsigned long long barrier, limit;
     const char *param;
-    unsigned long kb_per_pages;
+    long kb_per_pages;
 
-    kb_per_pages = sysconf(_SC_PAGESIZE);
-    if (kb_per_pages > 0) {
-        kb_per_pages /= 1024;
-    } else {
-        openvzError(VIR_ERR_INTERNAL_ERROR,
-                    _("Can't determine page size"));
+    kb_per_pages = openvzKBPerPages();
+    if (kb_per_pages < 0)
         goto error;
-    }
 
     /* Memory allocation guarantee */
     param = "VMGUARPAGES";

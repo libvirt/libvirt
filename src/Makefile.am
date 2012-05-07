@@ -353,7 +353,8 @@ PHYP_DRIVER_SOURCES =						\
 
 OPENVZ_DRIVER_SOURCES =						\
 		openvz/openvz_conf.c openvz/openvz_conf.h	\
-		openvz/openvz_driver.c openvz/openvz_driver.h
+		openvz/openvz_driver.c openvz/openvz_driver.h   \
+		openvz/openvz_util.c openvz/openvz_util.h
 
 VMWARE_DRIVER_SOURCES =						\
 		vmware/vmware_driver.c vmware/vmware_driver.h	\
