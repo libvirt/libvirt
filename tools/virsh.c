@@ -16107,7 +16107,7 @@ vshParseSnapshotDiskspec(vshControl *ctl, virBufferPtr buf, const char *str)
     while ((tmp = strchr(tmp, ','))) {
         if (tmp[1] == ',') {
             /* Recognize ,, as an escape for a literal comma */
-            memmove(&tmp[1], &tmp[2], len - (tmp - spec) + 2);
+            memmove(&tmp[1], &tmp[2], len - (tmp - spec) - 2 + 1);
             len--;
             tmp++;
             continue;
