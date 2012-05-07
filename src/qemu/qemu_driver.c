@@ -9895,6 +9895,7 @@ cleanup:
 static int
 qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
                                          virDomainObjPtr vm,
+                                         virCgroupPtr cgroup,
                                          virDomainSnapshotDiskDefPtr snap,
                                          virDomainDiskDefPtr disk,
                                          virDomainDiskDefPtr persistDisk,
@@ -9948,8 +9949,15 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
 
     if (virDomainLockDiskAttach(driver->lockManager, vm, disk) < 0)
         goto cleanup;
+    if (cgroup && qemuSetupDiskCgroup(driver, vm, cgroup, disk) < 0) {
+        if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
+            VIR_WARN("Unable to release lock on %s", source);
+        goto cleanup;
+    }
     if (virSecurityManagerSetImageLabel(driver->securityManager, vm->def,
                                         disk) < 0) {
+        if (cgroup && qemuTeardownDiskCgroup(driver, vm, cgroup, disk) < 0)
+            VIR_WARN("Failed to teardown cgroup for disk path %s", source);
         if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
             VIR_WARN("Unable to release lock on %s", source);
         goto cleanup;
@@ -10009,6 +10017,7 @@ cleanup:
 static void
 qemuDomainSnapshotUndoSingleDiskActive(struct qemud_driver *driver,
                                        virDomainObjPtr vm,
+                                       virCgroupPtr cgroup,
                                        virDomainDiskDefPtr origdisk,
                                        virDomainDiskDefPtr disk,
                                        virDomainDiskDefPtr persistDisk,
@@ -10033,6 +10042,8 @@ qemuDomainSnapshotUndoSingleDiskActive(struct qemud_driver *driver,
     if (virSecurityManagerRestoreImageLabel(driver->securityManager,
                                             vm->def, disk) < 0)
         VIR_WARN("Unable to restore security label on %s", disk->src);
+    if (cgroup && qemuTeardownDiskCgroup(driver, vm, cgroup, disk) < 0)
+        VIR_WARN("Failed to teardown cgroup for disk path %s", disk->src);
     if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
         VIR_WARN("Unable to release lock on %s", disk->src);
     if (need_unlink && stat(disk->src, &st) == 0 &&
@@ -10084,6 +10095,7 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
     int thaw = 0; /* 1 if freeze succeeded, -1 if freeze failed */
     bool atomic = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC) != 0;
     bool reuse = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
+    virCgroupPtr cgroup = NULL;
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         return -1;
@@ -10093,6 +10105,15 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
                         "%s", _("domain is not running"));
         goto endjob;
     }
+
+    if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES) &&
+        virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Unable to find cgroup for %s"),
+                        vm->def->name);
+        goto endjob;
+    }
+    /* 'cgroup' is still NULL if cgroups are disabled.  */
 
     /* If quiesce was requested, then issue a freeze command, and a
      * counterpart thaw command, no matter what.  The command will
@@ -10156,7 +10177,7 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
             }
         }
 
-        ret = qemuDomainSnapshotCreateSingleDiskActive(driver, vm,
+        ret = qemuDomainSnapshotCreateSingleDiskActive(driver, vm, cgroup,
                                                        &snap->def->disks[i],
                                                        vm->def->disks[i],
                                                        persistDisk, actions,
@@ -10184,7 +10205,7 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
                         persistDisk = vm->newDef->disks[indx];
                 }
 
-                qemuDomainSnapshotUndoSingleDiskActive(driver, vm,
+                qemuDomainSnapshotUndoSingleDiskActive(driver, vm, cgroup,
                                                        snap->def->dom->disks[i],
                                                        vm->def->disks[i],
                                                        persistDisk,
@@ -10234,6 +10255,8 @@ cleanup:
     }
 
 endjob:
+    if (cgroup)
+        virCgroupFree(&cgroup);
     if (vm && thaw != 0 &&
         qemuDomainSnapshotFSThaw(driver, vm, thaw > 0) < 0) {
         /* helper reported the error, if it was needed */
