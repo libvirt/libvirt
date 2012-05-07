@@ -3463,8 +3463,12 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto endjob;
     }
 
-    switch (flags) {
-    case VIR_DOMAIN_AFFECT_CONFIG:
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (qemudDomainHotplugVcpus(driver, vm, nvcpus) < 0)
+            goto endjob;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         if (maximum) {
             persistentDef->maxvcpus = nvcpus;
             if (nvcpus < persistentDef->vcpus)
@@ -3472,24 +3476,12 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         } else {
             persistentDef->vcpus = nvcpus;
         }
-        ret = 0;
-        break;
 
-    case VIR_DOMAIN_AFFECT_LIVE:
-        ret = qemudDomainHotplugVcpus(driver, vm, nvcpus);
-        break;
-
-    case VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG:
-        ret = qemudDomainHotplugVcpus(driver, vm, nvcpus);
-        if (ret == 0) {
-            persistentDef->vcpus = nvcpus;
-        }
-        break;
+        if (virDomainSaveConfig(driver->configDir, persistentDef) < 0)
+            goto endjob;
     }
 
-    /* Save the persistent config to disk */
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-        ret = virDomainSaveConfig(driver->configDir, persistentDef);
+    ret = 0;
 
 endjob:
     if (qemuDomainObjEndJob(driver, vm) == 0)
