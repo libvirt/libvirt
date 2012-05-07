@@ -3343,6 +3343,8 @@ static int qemudDomainHotplugVcpus(struct qemud_driver *driver,
     int ret = -1;
     int oldvcpus = vm->def->vcpus;
     int vcpus = oldvcpus;
+    pid_t *cpupids = NULL;
+    int ncpupids;
 
     qemuDomainObjEnterMonitor(driver, vm);
 
@@ -3373,11 +3375,38 @@ static int qemudDomainHotplugVcpus(struct qemud_driver *driver,
         }
     }
 
+    /* hotplug succeeded */
+
     ret = 0;
+
+    /* After hotplugging the CPUs we need to re-detect threads corresponding
+     * to the virtual CPUs. Some older versions don't provide the thread ID
+     * or don't have the "info cpus" command (and they don't support multiple
+     * CPUs anyways), so errors in the re-detection will not be treated
+     * fatal */
+    if ((ncpupids = qemuMonitorGetCPUInfo(priv->mon, &cpupids)) <= 0) {
+        virResetLastError();
+        goto cleanup;
+    }
+
+    if (ncpupids != vcpus) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("got wrong number of vCPU pids from QEMU monitor. "
+                          "got %d, wanted %d"),
+                        ncpupids, vcpus);
+        ret = -1;
+        goto cleanup;
+    }
+
+    priv->nvcpupids = ncpupids;
+    VIR_FREE(priv->vcpupids);
+    priv->vcpupids = cpupids;
+    cpupids = NULL;
 
 cleanup:
     qemuDomainObjExitMonitor(driver, vm);
     vm->def->vcpus = vcpus;
+    VIR_FREE(cpupids);
     virDomainAuditVcpu(vm, oldvcpus, nvcpus, "update", rc == 1);
     return ret;
 
