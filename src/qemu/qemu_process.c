@@ -1773,7 +1773,7 @@ qemuGetNumadAdvice(virDomainDefPtr def)
 
     cmd = virCommandNewArgList(NUMAD, "-w", NULL);
     virCommandAddArgFormat(cmd, "%d:%llu", def->vcpus,
-                           def->mem.cur_balloon);
+                           VIR_DIV_UP(def->mem.cur_balloon, 1024));
 
     virCommandSetOutputBuffer(cmd, &output);
 
