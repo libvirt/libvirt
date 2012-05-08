@@ -400,6 +400,8 @@ virDomainNostateReasonTypeFromString;
 virDomainNostateReasonTypeToString;
 virDomainNumatuneMemModeTypeFromString;
 virDomainNumatuneMemModeTypeToString;
+virDomainNumatuneMemPlacementModeTypeFromString;
+virDomainNumatuneMemPlacementModeTypeToString;
 virDomainObjAssignDef;
 virDomainObjCopyPersistentDef;
 virDomainObjGetPersistentDef;

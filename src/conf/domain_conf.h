@@ -1418,6 +1418,14 @@ enum virDomainCpuPlacementMode {
     VIR_DOMAIN_CPU_PLACEMENT_MODE_LAST,
 };
 
+enum virDomainNumatuneMemPlacementMode {
+    VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_DEFAULT = 0,
+    VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC,
+    VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO,
+
+    VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_LAST,
+};
+
 typedef struct _virDomainTimerCatchupDef virDomainTimerCatchupDef;
 typedef virDomainTimerCatchupDef *virDomainTimerCatchupDefPtr;
 struct _virDomainTimerCatchupDef {
@@ -1506,6 +1514,7 @@ struct _virDomainNumatuneDef {
     struct {
         char *nodemask;
         int mode;
+        int placement_mode; /* enum virDomainNumatuneMemPlacementMode */
     } memory;
 
     /* Future NUMA tuning related stuff should go here. */
@@ -2178,6 +2187,7 @@ VIR_ENUM_DECL(virDomainGraphicsSpiceStreamingMode)
 VIR_ENUM_DECL(virDomainGraphicsSpiceClipboardCopypaste)
 VIR_ENUM_DECL(virDomainGraphicsSpiceMouseMode)
 VIR_ENUM_DECL(virDomainNumatuneMemMode)
+VIR_ENUM_DECL(virDomainNumatuneMemPlacementMode)
 VIR_ENUM_DECL(virDomainSnapshotState)
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState)

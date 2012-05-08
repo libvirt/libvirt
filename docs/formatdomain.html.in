@@ -362,14 +362,14 @@
         0.9.11 (QEMU and KVM only)</span>, the optional attribute
         <code>placement</code> can be used to indicate the CPU placement
         mode for domain process, its value can be either "static" or
-        "auto", defaults to "static" if <code>cpuset</code> is specified,
-        "auto" indicates the domain process will be pinned to the advisory
-        nodeset from querying numad, and the value of attribute
-        <code>cpuset</code> will be ignored if it's specified. If both
-        <code>cpuset</code> and <code>placement</code> are not specified,
-        or if <code>placement</code> is "static", but no <code>cpuset</code>
-        is specified, the domain process will be pinned to all the
-        available physical CPUs.
+        "auto", defaults to <code>placement</code> of <code>numatune</code>,
+         or "static" if <code>cpuset</code> is specified. "auto" indicates
+        the domain process will be pinned to the advisory nodeset from querying
+        numad, and the value of attribute <code>cpuset</code> will be ignored
+        if it's specified. If both <code>cpuset</code> and <code>placement</code>
+        are not specified, or if <code>placement</code> is "static", but no
+        <code>cpuset</code> is specified, the domain process will be pinned to
+        all the available physical CPUs.
       </dd>
     </dl>
 
@@ -578,11 +578,24 @@
       <dt><code>memory</code></dt>
       <dd>
         The optional <code>memory</code> element specifies how to allocate memory
-        for the domain process on a NUMA host. It contains two attributes,
-        attribute <code>mode</code> is either 'interleave', 'strict',
-        or 'preferred',
-        attribute <code>nodeset</code> specifies the NUMA nodes, it leads same
-        syntax with attribute <code>cpuset</code> of element <code>vcpu</code>.
+        for the domain process on a NUMA host. It contains several optional
+        attributes. Attribute <code>mode</code> is either 'interleave',
+        'strict', or 'preferred', defaults to 'strict'. Attribute
+        <code>nodeset</code> specifies the NUMA nodes, using the same syntax as
+        attribute <code>cpuset</code> of element <code>vcpu</code>. Attribute
+        <code>placement</code> (<span class='since'>since 0.9.12</span>) can be
+        used to indicate the memory placement mode for domain process, its value
+        can be either "static" or "auto", defaults to <code>placement</code> of
+        <code>vcpu</code>, or "static" if <code>nodeset</code> is specified.
+        "auto" indicates the domain process will only allocate memory from the
+        advisory nodeset returned from querying numad, and the value of attribute
+        <code>nodeset</code> will be ignored if it's specified.
+
+        If <code>placement</code> of <code>vcpu</code> is 'auto', and
+        <code>numatune</code> is not specified, a default <code>numatune</code>
+        with <code>placement</code> 'auto' and <code>mode</code> 'strict' will
+        be added implicitly.
+
         <span class='since'>Since 0.9.3</span>
       </dd>
     </dl>

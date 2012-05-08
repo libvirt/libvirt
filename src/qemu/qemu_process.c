@@ -1657,7 +1657,8 @@ qemuProcessDetectVcpuPIDs(struct qemud_driver *driver,
  */
 #if HAVE_NUMACTL
 static int
-qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm)
+qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm,
+                                const char *nodemask)
 {
     nodemask_t mask;
     int mode = -1;
@@ -1666,11 +1667,22 @@ qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm)
     int i = 0;
     int maxnode = 0;
     bool warned = false;
+    virDomainNumatuneDef numatune = vm->def->numatune;
+    const char *tmp_nodemask = NULL;
 
-    if (!vm->def->numatune.memory.nodemask)
+    if (numatune.memory.placement_mode ==
+        VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC) {
+        if (!numatune.memory.nodemask)
+            return 0;
+        VIR_DEBUG("Set NUMA memory policy with specified nodeset");
+        tmp_nodemask = numatune.memory.nodemask;
+    } else if (numatune.memory.placement_mode ==
+               VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO) {
+        VIR_DEBUG("Set NUMA memory policy with advisory nodeset from numad");
+        tmp_nodemask = nodemask;
+    } else {
         return 0;
-
-    VIR_DEBUG("Setting NUMA memory policy");
+    }
 
     if (numa_available() < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1679,11 +1691,10 @@ qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm)
     }
 
     maxnode = numa_max_node() + 1;
-
     /* Convert nodemask to NUMA bitmask. */
     nodemask_zero(&mask);
     for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++) {
-        if (vm->def->numatune.memory.nodemask[i]) {
+        if (tmp_nodemask[i]) {
             if (i > NUMA_NUM_NODES) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 _("Host cannot support NUMA node %d"), i);
@@ -1693,12 +1704,12 @@ qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm)
                 VIR_WARN("nodeset is out of range, there is only %d NUMA "
                          "nodes on host", maxnode);
                 warned = true;
-             }
+            }
             nodemask_set(&mask, i);
         }
     }
 
-    mode = vm->def->numatune.memory.mode;
+    mode = numatune.memory.mode;
 
     if (mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
         numa_set_bind_policy(1);
@@ -1789,7 +1800,8 @@ qemuGetNumadAdvice(virDomainDefPtr def ATTRIBUTE_UNUSED)
  */
 static int
 qemuProcessInitCpuAffinity(struct qemud_driver *driver,
-                           virDomainObjPtr vm)
+                           virDomainObjPtr vm,
+                           const char *nodemask)
 {
     int ret = -1;
     int i, hostcpus, maxcpu = QEMUD_CPUMASK_LEN;
@@ -1815,27 +1827,7 @@ qemuProcessInitCpuAffinity(struct qemud_driver *driver,
     }
 
     if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
-        char *nodeset = NULL;
-        char *nodemask = NULL;
-
-        nodeset = qemuGetNumadAdvice(vm->def);
-        if (!nodeset)
-            goto cleanup;
-
-        if (VIR_ALLOC_N(nodemask, VIR_DOMAIN_CPUMASK_LEN) < 0) {
-            virReportOOMError();
-            VIR_FREE(nodeset);
-            goto cleanup;
-        }
-
-        if (virDomainCpuSetParse(nodeset, 0, nodemask,
-                                 VIR_DOMAIN_CPUMASK_LEN) < 0) {
-            VIR_FREE(nodemask);
-            VIR_FREE(nodeset);
-            goto cleanup;
-        }
-        VIR_FREE(nodeset);
-
+        VIR_DEBUG("Set CPU affinity with advisory nodeset from numad");
         /* numad returns the NUMA node list, convert it to cpumap */
         int prev_total_ncpus = 0;
         for (i = 0; i < driver->caps->host.nnumaCell; i++) {
@@ -1852,9 +1844,8 @@ qemuProcessInitCpuAffinity(struct qemud_driver *driver,
             }
             prev_total_ncpus += cur_ncpus;
         }
-
-        VIR_FREE(nodemask);
     } else {
+        VIR_DEBUG("Set CPU affinity with specified cpuset");
         if (vm->def->cpumask) {
             /* XXX why don't we keep 'cpumask' in the libvirt cpumap
              * format to start with ?!?! */
@@ -2564,6 +2555,8 @@ static int qemuProcessHook(void *data)
     struct qemuProcessHookData *h = data;
     int ret = -1;
     int fd;
+    char *nodeset = NULL;
+    char *nodemask = NULL;
 
     /* Some later calls want pid present */
     h->vm->pid = getpid();
@@ -2597,14 +2590,34 @@ static int qemuProcessHook(void *data)
     if (qemuAddToCgroup(h->driver, h->vm->def) < 0)
         goto cleanup;
 
+    if ((h->vm->def->placement_mode ==
+         VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) ||
+        (h->vm->def->numatune.memory.placement_mode ==
+         VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO)) {
+        nodeset = qemuGetNumadAdvice(h->vm->def);
+        if (!nodeset)
+            goto cleanup;
+
+        VIR_DEBUG("Nodeset returned from numad: %s", nodeset);
+
+        if (VIR_ALLOC_N(nodemask, VIR_DOMAIN_CPUMASK_LEN) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (virDomainCpuSetParse(nodeset, 0, nodemask,
+                                 VIR_DOMAIN_CPUMASK_LEN) < 0)
+            goto cleanup;
+    }
+
     /* This must be done after cgroup placement to avoid resetting CPU
      * affinity */
     VIR_DEBUG("Setup CPU affinity");
-    if (qemuProcessInitCpuAffinity(h->driver, h->vm) < 0)
+    if (qemuProcessInitCpuAffinity(h->driver, h->vm, nodemask) < 0)
         goto cleanup;
 
-    if (qemuProcessInitNumaMemoryPolicy(h->vm) < 0)
-        return -1;
+    if (qemuProcessInitNumaMemoryPolicy(h->vm, nodemask) < 0)
+        goto cleanup;
 
     VIR_DEBUG("Setting up security labelling");
     if (virSecurityManagerSetProcessLabel(h->driver->securityManager, h->vm->def) < 0)
@@ -2614,6 +2627,8 @@ static int qemuProcessHook(void *data)
 
 cleanup:
     VIR_DEBUG("Hook complete ret=%d", ret);
+    VIR_FREE(nodeset);
+    VIR_FREE(nodemask);
     return ret;
 }
 
