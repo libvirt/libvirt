@@ -428,7 +428,8 @@ VIR_ENUM_IMPL(virDomainGraphicsSpiceChannelName,
               "cursor",
               "playback",
               "record",
-              "smartcard");
+              "smartcard",
+              "usbredir");
 
 VIR_ENUM_IMPL(virDomainGraphicsSpiceChannelMode,
               VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_LAST,

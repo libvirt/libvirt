@@ -543,6 +543,12 @@ mymain(void)
             QEMU_CAPS_VGA, QEMU_CAPS_VGA_QXL,
             QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_QXL_VGA);
+    DO_TEST("graphics-spice-usb-redir", false,
+            QEMU_CAPS_VGA, QEMU_CAPS_SPICE,
+            QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_PCI_MULTIFUNCTION, QEMU_CAPS_USB_HUB,
+            QEMU_CAPS_ICH9_USB_EHCI1, QEMU_CAPS_USB_REDIR,
+            QEMU_CAPS_CHARDEV_SPICEVMC);
 
     DO_TEST("input-usbmouse", false, NONE);
     DO_TEST("input-usbtablet", false, NONE);

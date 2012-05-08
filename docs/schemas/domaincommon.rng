@@ -1787,6 +1787,7 @@
                     <value>playback</value>
                     <value>record</value>
                     <value>smartcard</value>
+                    <value>usbredir</value>
                   </choice>
                 </attribute>
                 <attribute name="mode">

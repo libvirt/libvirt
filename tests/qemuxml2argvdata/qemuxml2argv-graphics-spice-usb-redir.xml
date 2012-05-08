@@ -1,0 +1,53 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu>1</vcpu>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu</emulator>
+    <graphics type='spice' port='5903' tlsPort='5904' autoport='no' listen='127.0.0.1'>
+      <listen type='address' address='127.0.0.1'/>
+      <channel name='main' mode='secure'/>
+      <channel name='inputs' mode='insecure'/>
+      <channel name='usbredir' mode='secure'/>
+      <image compression='auto_glz'/>
+      <jpeg compression='auto'/>
+      <zlib compression='auto'/>
+      <playback compression='on'/>
+      <streaming mode='filter'/>
+      <clipboard copypaste='no'/>
+    </graphics>
+    <controller type='usb' index='0' model='ich9-ehci1'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x7'/>
+    </controller>
+    <controller type='usb' index='0' model='ich9-uhci1'>
+      <master startport='0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0' multifunction='on'/>
+    </controller>
+    <controller type='usb' index='0' model='ich9-uhci2'>
+      <master startport='2'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x1'/>
+    </controller>
+    <controller type='usb' index='0' model='ich9-uhci3'>
+      <master startport='4'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x2'/>
+    </controller>
+    <redirdev bus='usb' type='tcp'>
+      <source mode='connect' host='localhost' service='4000'/>
+      <protocol type='raw'/>
+    </redirdev>
+    <redirdev bus='usb' type='spicevmc'>
+      <address type='usb' bus='0' port='4'/>
+    </redirdev>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>

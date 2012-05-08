@@ -2938,9 +2938,11 @@ qemu-kvm -net nic,model=? /dev/null
               main &lt;graphics&gt; element. Valid channel names
               include <code>main</code>, <code>display</code>,
               <code>inputs</code>, <code>cursor</code>,
-              <code>playback</code>, <code>record</code>;
-              and <span class="since">since
-              0.8.8</span>: <code>smartcard</code>.
+              <code>playback</code>, <code>record</code>
+              (all <span class="since"> since 0.8.6</span>);
+              <code>smartcard</code> (<span class="since">since
+              0.8.8</span>); and <code>usbredir</code>
+              (<span class="since">since 0.9.12</span>).
             </p>
             <pre>
   &lt;graphics type='spice' port='-1' tlsPort='-1' autoport='yes'&gt;
