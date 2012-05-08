@@ -3,7 +3,7 @@
   <description>Some |text| to test the &quot;escaping&quot;: ||&quot;&quot;||&quot;| Escaped!</description>
   <memory unit='KiB'>32768</memory>
   <currentMemory unit='KiB'>32768</currentMemory>
-  <vcpu>1</vcpu>
+  <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='i686'>hvm</type>
   </os>

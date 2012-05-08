@@ -3,7 +3,7 @@
   <uuid>564d1223-f835-c4b1-bbf6-e32390d62bd3</uuid>
   <memory unit='KiB'>32768</memory>
   <currentMemory unit='KiB'>32768</currentMemory>
-  <vcpu>1</vcpu>
+  <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='i686'>hvm</type>
   </os>

@@ -2,7 +2,7 @@
   <name>QEMUGuest1</name>
   <uuid>2754dd7b-ac8a-4850-aec0-1f3fcd43235b</uuid>
   <memory unit='KiB'>524288</memory>
-  <vcpu>1</vcpu>
+  <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='ppc64' machine='pseries'>hvm</type>
   </os>

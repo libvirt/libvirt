@@ -633,7 +633,6 @@ VIR_ENUM_IMPL(virDomainStartupPolicy, VIR_DOMAIN_STARTUP_POLICY_LAST,
               "optional");
 
 VIR_ENUM_IMPL(virDomainCpuPlacementMode, VIR_DOMAIN_CPU_PLACEMENT_MODE_LAST,
-              "default",
               "static",
               "auto");
 
@@ -7961,7 +7960,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         }
         VIR_FREE(tmp);
     } else {
-        def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_DEFAULT;
+        def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
     }
 
     if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
@@ -7975,8 +7974,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             if (virDomainCpuSetParse(set, 0, def->cpumask,
                                      def->cpumasklen) < 0)
                 goto error;
-            if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_DEFAULT)
-                def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
             VIR_FREE(tmp);
         }
     }
@@ -8127,13 +8124,10 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                     /* Copy 'placement' of <numatune> to <vcpu> if its 'placement'
                      * is not specified and 'placement' of <numatune> is specified.
                      */
-                    if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_DEFAULT &&
-                        placement_mode != VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_DEFAULT) {
-                        if (placement_mode == VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC)
-                            def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
-                        else
-                            def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO;
-                    }
+                    if (placement_mode == VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO &&
+                        !def->cpumask)
+                        def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO;
+
                     def->numatune.memory.placement_mode = placement_mode;
                 } else {
                     virDomainReportError(VIR_ERR_XML_ERROR,
@@ -12524,9 +12518,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             allones = 0;
 
     virBufferAddLit(buf, "  <vcpu");
-    if (def->placement_mode)
-        virBufferAsprintf(buf, " placement='%s'",
-                          virDomainCpuPlacementModeTypeToString(def->placement_mode));
+    virBufferAsprintf(buf, " placement='%s'",
+                      virDomainCpuPlacementModeTypeToString(def->placement_mode));
     if (!allones) {
         char *cpumask = NULL;
         if ((cpumask =

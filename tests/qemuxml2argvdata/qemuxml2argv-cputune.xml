@@ -3,7 +3,7 @@
   <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
   <memory unit='KiB'>219136</memory>
   <currentMemory unit='KiB'>219136</currentMemory>
-  <vcpu>2</vcpu>
+  <vcpu placement='static'>2</vcpu>
   <cputune>
     <shares>2048</shares>
     <period>1000000</period>

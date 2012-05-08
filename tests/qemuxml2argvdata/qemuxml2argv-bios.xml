@@ -3,7 +3,7 @@
   <uuid>362d1fc1-df7d-193e-5c18-49a71bd1da66</uuid>
   <memory unit='KiB'>1048576</memory>
   <currentMemory unit='KiB'>1048576</currentMemory>
-  <vcpu>1</vcpu>
+  <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='i686' machine='pc'>hvm</type>
     <loader>/usr/share/seabios/bios.bin</loader>

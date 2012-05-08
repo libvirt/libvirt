@@ -3,7 +3,7 @@
   <uuid>a36f6e38-f498-b06c-5fad-b04947392dbe</uuid>
   <memory unit='KiB'>524288</memory>
   <currentMemory unit='KiB'>524288</currentMemory>
-  <vcpu>1</vcpu>
+  <vcpu placement='static'>1</vcpu>
   <bootloader>/usr/bin/pygrub</bootloader>
   <os>
     <type>linux</type>

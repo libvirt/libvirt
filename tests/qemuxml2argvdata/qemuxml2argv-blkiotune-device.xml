@@ -14,7 +14,7 @@
       <weight>900</weight>
     </device>
   </blkiotune>
-  <vcpu>1</vcpu>
+  <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='i686' machine='pc'>hvm</type>
     <boot dev='hd'/>

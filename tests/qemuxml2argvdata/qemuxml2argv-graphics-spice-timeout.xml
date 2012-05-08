@@ -3,7 +3,7 @@
   <uuid>553effab-b5e1-2d80-dfe3-da4344826c43</uuid>
   <memory unit='KiB'>1048576</memory>
   <currentMemory unit='KiB'>1048576</currentMemory>
-  <vcpu>2</vcpu>
+  <vcpu placement='static'>2</vcpu>
   <os>
     <type arch='i686' machine='pc'>hvm</type>
     <boot dev='cdrom'/>

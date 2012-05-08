@@ -7,7 +7,7 @@
   <memtune>
     <min_guarantee unit='KiB'>262144</min_guarantee>
   </memtune>
-  <vcpu>2</vcpu>
+  <vcpu placement='static'>2</vcpu>
   <cputune>
     <shares>2000</shares>
   </cputune>

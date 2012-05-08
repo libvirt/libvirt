@@ -8,7 +8,7 @@
   </os>
   <currentMemory unit='KiB'>403456</currentMemory>
   <memory unit='KiB'>592896</memory>
-  <vcpu>1</vcpu>
+  <vcpu placement='static'>1</vcpu>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>

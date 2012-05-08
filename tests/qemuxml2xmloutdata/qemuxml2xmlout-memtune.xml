@@ -8,7 +8,7 @@
     <soft_limit unit='KiB'>128000</soft_limit>
     <swap_hard_limit unit='KiB'>1024000</swap_hard_limit>
   </memtune>
-  <vcpu>1</vcpu>
+  <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='i686' machine='pc'>hvm</type>
     <boot dev='hd'/>
