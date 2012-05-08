@@ -264,7 +264,8 @@ VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
               "mount",
               "block",
               "file",
-              "template")
+              "template",
+              "ram")
 
 VIR_ENUM_IMPL(virDomainFSDriverType, VIR_DOMAIN_FS_DRIVER_TYPE_LAST,
               "default",
@@ -4213,6 +4214,8 @@ virDomainFSDefParseXML(xmlNodePtr node,
     char *target = NULL;
     char *accessmode = NULL;
     char *wrpolicy = NULL;
+    char *usage = NULL;
+    char *unit = NULL;
 
     ctxt->node = node;
 
@@ -4269,6 +4272,10 @@ virDomainFSDefParseXML(xmlNodePtr node,
                     source = virXMLPropString(cur, "dev");
                 else if (def->type == VIR_DOMAIN_FS_TYPE_TEMPLATE)
                     source = virXMLPropString(cur, "name");
+                else if (def->type == VIR_DOMAIN_FS_TYPE_RAM) {
+                    usage = virXMLPropString(cur, "usage");
+                    unit = virXMLPropString(cur, "unit");
+                }
             } else if (!target &&
                        xmlStrEqual(cur->name, BAD_CAST "target")) {
                 target = virXMLPropString(cur, "dir");
@@ -4300,7 +4307,8 @@ virDomainFSDefParseXML(xmlNodePtr node,
         def->wrpolicy = VIR_DOMAIN_FS_WRPOLICY_DEFAULT;
     }
 
-    if (source == NULL) {
+    if (source == NULL &&
+        def->type != VIR_DOMAIN_FS_TYPE_RAM) {
         virDomainReportError(VIR_ERR_NO_SOURCE,
                              target ? "%s" : NULL, target);
         goto error;
@@ -4310,6 +4318,25 @@ virDomainFSDefParseXML(xmlNodePtr node,
         virDomainReportError(VIR_ERR_NO_TARGET,
                              source ? "%s" : NULL, source);
         goto error;
+    }
+
+    if (def->type == VIR_DOMAIN_FS_TYPE_RAM) {
+        if (!usage) {
+            virDomainReportError(VIR_ERR_XML_ERROR, "%s",
+                                 _("missing 'usage' attribute for RAM filesystem"));
+            goto error;
+        }
+        if (virStrToLong_ull(usage, NULL, 10, &def->usage) < 0) {
+            virDomainReportError(VIR_ERR_XML_ERROR,
+                                 _("cannot parse usage '%s' for RAM filesystem"),
+                                 usage);
+            goto error;
+        }
+        if (unit &&
+            virScaleInteger(&def->usage, unit,
+                            1024, ULONG_LONG_MAX) < 0)
+            goto error;
+        fprintf(stderr, "Useage %lld\n", def->usage);
     }
 
     def->src = source;
@@ -4328,6 +4355,8 @@ cleanup:
     VIR_FREE(source);
     VIR_FREE(accessmode);
     VIR_FREE(wrpolicy);
+    VIR_FREE(usage);
+    VIR_FREE(unit);
 
     return def;
 
@@ -11322,27 +11351,31 @@ virDomainFSDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 
-    if (def->src) {
-        switch (def->type) {
-        case VIR_DOMAIN_FS_TYPE_MOUNT:
-            virBufferEscapeString(buf, "      <source dir='%s'/>\n",
-                                  def->src);
-            break;
+    switch (def->type) {
+    case VIR_DOMAIN_FS_TYPE_MOUNT:
+        virBufferEscapeString(buf, "      <source dir='%s'/>\n",
+                              def->src);
+        break;
 
-        case VIR_DOMAIN_FS_TYPE_BLOCK:
-            virBufferEscapeString(buf, "      <source dev='%s'/>\n",
-                                  def->src);
-            break;
+    case VIR_DOMAIN_FS_TYPE_BLOCK:
+        virBufferEscapeString(buf, "      <source dev='%s'/>\n",
+                              def->src);
+        break;
 
-        case VIR_DOMAIN_FS_TYPE_FILE:
-            virBufferEscapeString(buf, "      <source file='%s'/>\n",
-                                  def->src);
-            break;
+    case VIR_DOMAIN_FS_TYPE_FILE:
+        virBufferEscapeString(buf, "      <source file='%s'/>\n",
+                              def->src);
+        break;
 
-        case VIR_DOMAIN_FS_TYPE_TEMPLATE:
-            virBufferEscapeString(buf, "      <source name='%s'/>\n",
-                                  def->src);
-        }
+    case VIR_DOMAIN_FS_TYPE_TEMPLATE:
+        virBufferEscapeString(buf, "      <source name='%s'/>\n",
+                              def->src);
+        break;
+
+    case VIR_DOMAIN_FS_TYPE_RAM:
+        virBufferAsprintf(buf, "      <source usage='%lld' units='KiB'/>\n",
+                          def->usage / 1024);
+        break;
     }
 
     virBufferEscapeString(buf, "      <target dir='%s'/>\n",

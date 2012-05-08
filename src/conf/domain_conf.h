@@ -661,6 +661,7 @@ enum virDomainFSType {
     VIR_DOMAIN_FS_TYPE_BLOCK,
     VIR_DOMAIN_FS_TYPE_FILE,
     VIR_DOMAIN_FS_TYPE_TEMPLATE,
+    VIR_DOMAIN_FS_TYPE_RAM,
 
     VIR_DOMAIN_FS_TYPE_LAST
 };
@@ -691,11 +692,15 @@ enum virDomainFSWrpolicy {
     VIR_DOMAIN_FS_WRPOLICY_LAST
 };
 
+/* Allow 2 MB ram usage */
+# define VIR_DOMAIN_FS_RAM_DEFAULT_USAGE (1024 * 2)
+
 struct _virDomainFSDef {
     int type;
     int fsdriver;
     int accessmode;
     int wrpolicy; /* enum virDomainFSWrpolicy */
+    unsigned long long usage;
     char *src;
     char *dst;
     unsigned int readonly : 1;

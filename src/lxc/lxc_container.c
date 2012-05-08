@@ -335,6 +335,8 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
 
     ret = -1;
 
+    VIR_DEBUG("Pivot via %s", root->src);
+
     /* root->parent must be private, so make / private. */
     if (mount("", "/", NULL, MS_PRIVATE|MS_REC, NULL) < 0) {
         virReportSystemError(errno, "%s",
@@ -966,6 +968,47 @@ cleanup:
 }
 
 
+static int lxcContainerMountFSTmpfs(virDomainFSDefPtr fs)
+{
+    int ret = -1;
+    char *data = NULL;
+
+    if (virAsprintf(&data, "size=%lldk", fs->usage) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virFileMakePath(fs->dst) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to create %s"),
+                             fs->dst);
+        goto cleanup;
+    }
+
+    if (mount("tmpfs", fs->dst, "tmpfs", MS_NOSUID|MS_NODEV, data) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to mount directory %s as tmpfs"),
+                             fs->dst);
+        goto cleanup;
+    }
+
+    if (fs->readonly) {
+        VIR_DEBUG("Binding %s readonly", fs->dst);
+        if (mount(fs->dst, fs->dst, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY, NULL) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to make directory %s readonly"),
+                                 fs->dst);
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(data);
+    return ret;
+}
+
+
 static int lxcContainerMountFS(virDomainFSDefPtr fs,
                                const char *srcprefix)
 {
@@ -976,6 +1019,10 @@ static int lxcContainerMountFS(virDomainFSDefPtr fs,
         break;
     case VIR_DOMAIN_FS_TYPE_BLOCK:
         if (lxcContainerMountFSBlock(fs, srcprefix) < 0)
+            return -1;
+        break;
+    case VIR_DOMAIN_FS_TYPE_RAM:
+        if (lxcContainerMountFSTmpfs(fs) < 0)
             return -1;
         break;
     case VIR_DOMAIN_FS_TYPE_FILE:
@@ -1441,6 +1488,8 @@ static int lxcContainerResolveSymlinks(virDomainDefPtr vmDef)
 
     for (i = 0 ; i < vmDef->nfss ; i++) {
         virDomainFSDefPtr fs = vmDef->fss[i];
+        if (!fs->src)
+            continue;
         if (virFileResolveAllLinks(fs->src, &newroot) < 0)
             return -1;
 
