@@ -577,6 +577,10 @@ int virtTestMain(int argc,
         progname += 2;
     if (argc > 1) {
         fprintf(stderr, "Usage: %s\n", argv[0]);
+        fputs("effective environment variables:\n"
+              "VIR_TEST_VERBOSE set to show names of individual tests\n"
+              "VIR_TEST_DEBUG set to show information for debugging failures\n",
+              stderr);
         return EXIT_FAILURE;
     }
     fprintf(stderr, "TEST: %s\n", progname);
