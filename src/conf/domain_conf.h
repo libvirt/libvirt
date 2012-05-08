@@ -1233,6 +1233,7 @@ struct _virDomainGraphicsDef {
             virDomainGraphicsAuthDef auth;
             unsigned int autoport :1;
             int channels[VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST];
+            int defaultMode; /* enum virDomainGraphicsSpiceChannelMode */
             int image;
             int jpeg;
             int zlib;

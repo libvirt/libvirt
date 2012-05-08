@@ -6071,6 +6071,8 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
         char *port = virXMLPropString(node, "port");
         char *tlsPort;
         char *autoport;
+        char *defaultMode;
+        int defaultModeVal;
 
         if (port) {
             if (virStrToLong_i(port, NULL, 10, &def->data.spice.port) < 0) {
@@ -6101,6 +6103,20 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
             if (STREQ(autoport, "yes"))
                 def->data.spice.autoport = 1;
             VIR_FREE(autoport);
+        }
+
+        def->data.spice.defaultMode = VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY;
+
+        if ((defaultMode = virXMLPropString(node, "defaultMode")) != NULL) {
+            if ((defaultModeVal = virDomainGraphicsSpiceChannelModeTypeFromString(defaultMode)) < 0) {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     _("unknown default spice channel mode %s"),
+                                     defaultMode);
+                VIR_FREE(defaultMode);
+                goto error;
+            }
+            def->data.spice.defaultMode = defaultModeVal;
+            VIR_FREE(defaultMode);
         }
 
         if (def->data.spice.port == -1 && def->data.spice.tlsPort == -1) {
@@ -12123,6 +12139,10 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         if (def->data.spice.keymap)
             virBufferEscapeString(buf, " keymap='%s'",
                                   def->data.spice.keymap);
+
+        if (def->data.spice.defaultMode != VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY)
+            virBufferAsprintf(buf, " defaultMode='%s'",
+              virDomainGraphicsSpiceChannelModeTypeToString(def->data.spice.defaultMode));
 
         virDomainGraphicsAuthDefFormatAttr(buf, &def->data.spice.auth, flags);
         break;

@@ -1774,6 +1774,15 @@
               </choice>
             </attribute>
           </optional>
+          <optional>
+            <attribute name="defaultMode">
+              <choice>
+                <value>any</value>
+                <value>secure</value>
+                <value>insecure</value>
+              </choice>
+            </attribute>
+          </optional>
           <interleave>
             <ref name="listenElements"/>
             <zeroOrMore>

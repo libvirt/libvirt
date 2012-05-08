@@ -5463,6 +5463,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         const char *listenAddr = NULL;
         char *netAddr = NULL;
         int ret;
+        int defaultMode = def->graphics[0]->data.spice.defaultMode;
 
         if (!qemuCapsGet(qemuCaps, QEMU_CAPS_SPICE)) {
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -5545,6 +5546,18 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (driver->spiceTLS)
             virBufferAsprintf(&opt, ",x509-dir=%s",
                               driver->spiceTLSx509certdir);
+
+        switch (defaultMode) {
+        case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
+            virBufferAsprintf(&opt, ",tls-channel=default");
+            break;
+        case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
+            virBufferAsprintf(&opt, ",plaintext-channel=default");
+            break;
+        case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
+            /* nothing */
+            break;
+        }
 
         for (i = 0 ; i < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST ; i++) {
             int mode = def->graphics[0]->data.spice.channels[i];

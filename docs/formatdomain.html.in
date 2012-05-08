@@ -2929,6 +2929,13 @@ qemu-kvm -net nic,model=? /dev/null
               <span class="since">Since 0.9.3</span>
               NB, this may not be supported by all hypervisors.
               <span class="since">"spice" since 0.8.6</span>.
+              The <code>defaultMode</code> attribute sets the default channel
+              security policy, valid values are <code>secure</code>,
+              <code>insecure</code> and the default <code>any</code>
+              (which is secure if possible, but falls back to insecure
+              rather than erroring out if no secure path is
+              available). <span class="since">"defaultMode" since
+              0.9.12</span>.
             </p>
             <p>
               When SPICE has both a normal and TLS secured TCP port
