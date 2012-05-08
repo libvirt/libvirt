@@ -3,9 +3,9 @@
   <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
   <memory unit='KiB'>219136</memory>
   <currentMemory unit='KiB'>219136</currentMemory>
-  <vcpu cpuset='0-1'>2</vcpu>
+  <vcpu placement='static' cpuset='0-1'>2</vcpu>
   <numatune>
-    <memory mode="strict" nodeset="0-5,^4"/>
+    <memory mode='interleave' placement='auto'/>
   </numatune>
   <os>
     <type arch='i686' machine='pc'>hvm</type>
@@ -26,6 +26,7 @@
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='ide' index='0'/>
+    <controller type='usb' index='0'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

@@ -740,6 +740,9 @@ mymain(void)
     DO_TEST("numatune-memory", false, NONE);
     DO_TEST("numad", false, NONE);
     DO_TEST("numad-auto-vcpu-static-numatune", false, NONE);
+    DO_TEST("numad-auto-memory-vcpu-cpuset", false, NONE);
+    DO_TEST("numad-auto-memory-vcpu-no-cpuset-and-placement", false, NONE);
+    DO_TEST("numad-static-memory-auto-vcpu", false, NONE);
     DO_TEST("blkdeviotune", false, QEMU_CAPS_NAME, QEMU_CAPS_DEVICE,
             QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_IOTUNE);
 

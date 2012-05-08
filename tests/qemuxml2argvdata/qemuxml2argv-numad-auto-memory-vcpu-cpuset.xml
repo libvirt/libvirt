@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>219136</currentMemory>
   <vcpu cpuset='0-1'>2</vcpu>
   <numatune>
-    <memory mode="strict" nodeset="0-5,^4"/>
+    <memory mode='interleave' placement='auto'/>
   </numatune>
   <os>
     <type arch='i686' machine='pc'>hvm</type>

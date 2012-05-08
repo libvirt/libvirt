@@ -8124,6 +8124,16 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                     if (placement_mode == VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO)
                         VIR_FREE(def->numatune.memory.nodemask);
 
+                    /* Copy 'placement' of <numatune> to <vcpu> if its 'placement'
+                     * is not specified and 'placement' of <numatune> is specified.
+                     */
+                    if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_DEFAULT &&
+                        placement_mode != VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_DEFAULT) {
+                        if (placement_mode == VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC)
+                            def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
+                        else
+                            def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO;
+                    }
                     def->numatune.memory.placement_mode = placement_mode;
                 } else {
                     virDomainReportError(VIR_ERR_XML_ERROR,

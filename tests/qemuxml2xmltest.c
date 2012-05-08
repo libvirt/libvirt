@@ -230,6 +230,8 @@ mymain(void)
     DO_TEST_DIFFERENT("graphics-listen-network2");
     DO_TEST_DIFFERENT("graphics-spice-timeout");
     DO_TEST_DIFFERENT("numad-auto-vcpu-no-numatune");
+    DO_TEST_DIFFERENT("numad-auto-memory-vcpu-no-cpuset-and-placement");
+    DO_TEST_DIFFERENT("numad-auto-memory-vcpu-cpuset");
 
     DO_TEST_DIFFERENT("metadata");
 
