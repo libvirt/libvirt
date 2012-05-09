@@ -5572,6 +5572,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
     virTypedParameterPtr params = NULL;
     int i, j, pos, max_id, cpu = -1, show_count = -1, nparams;
     bool show_total = false, show_per_cpu = false;
+    unsigned int flags = 0;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -5599,13 +5600,13 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
         cpu = 0;
 
     /* get number of cpus on the node */
-    if ((max_id = virDomainGetCPUStats(dom, NULL, 0, 0, 0, 0)) < 0)
+    if ((max_id = virDomainGetCPUStats(dom, NULL, 0, 0, 0, flags)) < 0)
         goto failed_stats;
     if (show_count < 0 || show_count > max_id)
         show_count = max_id;
 
     /* get percpu information */
-    if ((nparams = virDomainGetCPUStats(dom, NULL, 0, 0, 1, 0)) < 0)
+    if ((nparams = virDomainGetCPUStats(dom, NULL, 0, 0, 1, flags)) < 0)
         goto failed_stats;
 
     if (!nparams) {
@@ -5619,7 +5620,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
     while (show_count) {
         int ncpus = MIN(show_count, 128);
 
-        if (virDomainGetCPUStats(dom, params, nparams, cpu, ncpus, 0) < 0)
+        if (virDomainGetCPUStats(dom, params, nparams, cpu, ncpus, flags) < 0)
             goto failed_stats;
 
         for (i = 0; i < ncpus; i++) {
@@ -5630,7 +5631,8 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
             for (j = 0; j < nparams; j++) {
                 pos = i * nparams + j;
                 vshPrint(ctl, "\t%-12s ", params[pos].field);
-                if (STREQ(params[pos].field, VIR_DOMAIN_CPU_STATS_CPUTIME) &&
+                if ((STREQ(params[pos].field, VIR_DOMAIN_CPU_STATS_CPUTIME) ||
+                     STREQ(params[pos].field, VIR_DOMAIN_CPU_STATS_VCPUTIME)) &&
                     params[j].type == VIR_TYPED_PARAM_ULLONG) {
                     vshPrint(ctl, "%9lld.%09lld seconds\n",
                              params[pos].value.ul / 1000000000,
@@ -5653,7 +5655,7 @@ do_show_total:
         goto cleanup;
 
     /* get supported num of parameter for total statistics */
-    if ((nparams = virDomainGetCPUStats(dom, NULL, 0, -1, 1, 0)) < 0)
+    if ((nparams = virDomainGetCPUStats(dom, NULL, 0, -1, 1, flags)) < 0)
         goto failed_stats;
 
     if (!nparams) {
@@ -5665,7 +5667,7 @@ do_show_total:
         goto failed_params;
 
     /* passing start_cpu == -1 gives us domain's total status */
-    if ((nparams = virDomainGetCPUStats(dom, params, nparams, -1, 1, 0)) < 0)
+    if ((nparams = virDomainGetCPUStats(dom, params, nparams, -1, 1, flags)) < 0)
         goto failed_stats;
 
     vshPrint(ctl, _("Total:\n"));
