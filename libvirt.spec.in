@@ -224,7 +224,7 @@
 %define with_libpcap  0%{!?_without_libpcap:%{server_drivers}}
 %define with_macvtap  0%{!?_without_macvtap:%{server_drivers}}
 
-# numad is used to manage the CPU placement dynamically,
+# numad is used to manage the CPU and memory placement dynamically,
 # it's not available on s390[x] and ARM.
 %if 0%{?fedora} >= 17 || 0%{?rhel} >= 6
 %ifnarch s390 s390x %{arm}
