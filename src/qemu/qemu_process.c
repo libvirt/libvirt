@@ -1751,7 +1751,8 @@ cleanup:
 }
 #else
 static int
-qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm)
+qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm,
+                                const char *nodemask ATTRIBUTE_UNUSED)
 {
     if (vm->def->numatune.memory.nodemask) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
