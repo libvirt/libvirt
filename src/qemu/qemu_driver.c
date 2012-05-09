@@ -104,7 +104,7 @@
 #define QEMU_NB_NUMA_PARAM 2
 
 #define QEMU_NB_TOTAL_CPU_STAT_PARAM 3
-#define QEMU_NB_PER_CPU_STAT_PARAM 1
+#define QEMU_NB_PER_CPU_STAT_PARAM 2
 
 #if HAVE_LINUX_KVM_H
 # include <linux/kvm.h>
@@ -12563,8 +12563,69 @@ qemuDomainGetTotalcpuStats(virCgroupPtr group,
     return nparams;
 }
 
+/* This function gets the sums of cpu time consumed by all vcpus.
+ * For example, if there are 4 physical cpus, and 2 vcpus in a domain,
+ * then for each vcpu, the cpuacct.usage_percpu looks like this:
+ *   t0 t1 t2 t3
+ * and we have 2 groups of such data:
+ *   v\p   0   1   2   3
+ *   0   t00 t01 t02 t03
+ *   1   t10 t11 t12 t13
+ * for each pcpu, the sum is cpu time consumed by all vcpus.
+ *   s0 = t00 + t10
+ *   s1 = t01 + t11
+ *   s2 = t02 + t12
+ *   s3 = t03 + t13
+ */
+static int
+getSumVcpuPercpuStats(virCgroupPtr group,
+                      unsigned int nvcpu,
+                      unsigned long long *sum_cpu_time,
+                      unsigned int num)
+{
+    int ret = -1;
+    int i;
+    char *buf = NULL;
+    virCgroupPtr group_vcpu = NULL;
+
+    for (i = 0; i < nvcpu; i++) {
+        char *pos;
+        unsigned long long tmp;
+        int j;
+
+        if (virCgroupForVcpu(group, i, &group_vcpu, 0) < 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("error accessing cgroup cpuacct for vcpu"));
+            goto cleanup;
+        }
+
+        if (virCgroupGetCpuacctPercpuUsage(group, &buf) < 0)
+            goto cleanup;
+
+        pos = buf;
+        for (j = 0; j < num; j++) {
+            if (virStrToLong_ull(pos, &pos, 10, &tmp) < 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("cpuacct parse error"));
+                goto cleanup;
+            }
+            sum_cpu_time[j] += tmp;
+        }
+
+        virCgroupFree(&group_vcpu);
+        VIR_FREE(buf);
+    }
+
+    ret = 0;
+cleanup:
+    virCgroupFree(&group_vcpu);
+    VIR_FREE(buf);
+    return ret;
+}
+
 static int
 qemuDomainGetPercpuStats(virDomainPtr domain,
+                         virDomainObjPtr vm,
                          virCgroupPtr group,
                          virTypedParameterPtr params,
                          unsigned int nparams,
@@ -12572,20 +12633,24 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
                          unsigned int ncpus)
 {
     char *map = NULL;
+    char *map2 = NULL;
     int rv = -1;
     int i, max_id;
     char *pos;
     char *buf = NULL;
+    unsigned long long *sum_cpu_time = NULL;
+    unsigned long long *sum_cpu_pos;
+    unsigned int n = 0;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     virTypedParameterPtr ent;
     int param_idx;
+    unsigned long long cpu_time;
 
     /* return the number of supported params */
     if (nparams == 0 && ncpus != 0)
-        return QEMU_NB_PER_CPU_STAT_PARAM; /* only cpu_time is supported */
+        return QEMU_NB_PER_CPU_STAT_PARAM;
 
-    /* return percpu cputime in index 0 */
-    param_idx = 0;
-    /* to parse account file, we need "present" cpu map */
+    /* To parse account file, we need "present" cpu map.  */
     map = nodeGetCPUmap(domain->conn, &max_id, "present");
     if (!map)
         return rv;
@@ -12608,30 +12673,73 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
     pos = buf;
     memset(params, 0, nparams * ncpus);
 
+    /* return percpu cputime in index 0 */
+    param_idx = 0;
+
     if (max_id - start_cpu > ncpus - 1)
         max_id = start_cpu + ncpus - 1;
 
     for (i = 0; i <= max_id; i++) {
-        unsigned long long cpu_time;
-
         if (!map[i]) {
             cpu_time = 0;
         } else if (virStrToLong_ull(pos, &pos, 10, &cpu_time) < 0) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("cpuacct parse error"));
             goto cleanup;
+        } else {
+            n++;
         }
         if (i < start_cpu)
             continue;
-        ent = &params[ (i - start_cpu) * nparams + param_idx];
+        ent = &params[(i - start_cpu) * nparams + param_idx];
         if (virTypedParameterAssign(ent, VIR_DOMAIN_CPU_STATS_CPUTIME,
                                     VIR_TYPED_PARAM_ULLONG, cpu_time) < 0)
             goto cleanup;
     }
+
+    /* return percpu vcputime in index 1 */
+    if (++param_idx >= nparams) {
+        rv = nparams;
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(sum_cpu_time, n) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    if (getSumVcpuPercpuStats(group, priv->nvcpupids, sum_cpu_time, n) < 0)
+        goto cleanup;
+
+    /* Check that the mapping of online cpus didn't change mid-parse.  */
+    map2 = nodeGetCPUmap(domain->conn, &max_id, "present");
+    if (!map2 || memcmp(map, map2, VIR_DOMAIN_CPUMASK_LEN) != 0) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("the set of online cpus changed while reading"));
+        goto cleanup;
+    }
+
+    sum_cpu_pos = sum_cpu_time;
+    for (i = 0; i <= max_id; i++) {
+        if (!map[i])
+            cpu_time = 0;
+        else
+            cpu_time = *(sum_cpu_pos++);
+        if (i < start_cpu)
+            continue;
+        if (virTypedParameterAssign(&params[(i - start_cpu) * nparams +
+                                            param_idx],
+                                    VIR_DOMAIN_CPU_STATS_VCPUTIME,
+                                    VIR_TYPED_PARAM_ULLONG,
+                                    cpu_time) < 0)
+            goto cleanup;
+    }
+
     rv = param_idx + 1;
 cleanup:
+    VIR_FREE(sum_cpu_time);
     VIR_FREE(buf);
     VIR_FREE(map);
+    VIR_FREE(map2);
     return rv;
 }
 
@@ -12683,7 +12791,7 @@ qemuDomainGetCPUStats(virDomainPtr domain,
     if (start_cpu == -1)
         ret = qemuDomainGetTotalcpuStats(group, params, nparams);
     else
-        ret = qemuDomainGetPercpuStats(domain, group, params, nparams,
+        ret = qemuDomainGetPercpuStats(domain, vm, group, params, nparams,
                                        start_cpu, ncpus);
 cleanup:
     virCgroupFree(&group);

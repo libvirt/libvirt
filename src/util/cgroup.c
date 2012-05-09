@@ -530,7 +530,9 @@ static int virCgroupMakeGroup(virCgroupPtr parent, virCgroupPtr group,
             continue;
 
         /* We need to control cpu bandwidth for each vcpu now */
-        if ((flags & VIR_CGROUP_VCPU) && (i != VIR_CGROUP_CONTROLLER_CPU)) {
+        if ((flags & VIR_CGROUP_VCPU) &&
+            (i != VIR_CGROUP_CONTROLLER_CPU &&
+             i != VIR_CGROUP_CONTROLLER_CPUACCT)) {
             /* treat it as unmounted and we can use virCgroupAddTask */
             VIR_FREE(group->controllers[i].mountPoint);
             continue;
