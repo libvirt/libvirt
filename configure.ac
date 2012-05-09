@@ -1505,13 +1505,6 @@ if test "$with_qemu" = "yes" && test "$with_numactl" != "no"; then
   CFLAGS="$old_cflags"
   LIBS="$old_libs"
 fi
-if test "$with_numactl" = "yes"; then
-  NUMACTL_LIBS="-lnuma"
-  AC_DEFINE_UNQUOTED([HAVE_NUMACTL], 1, [whether numactl is available for topology info])
-fi
-AM_CONDITIONAL([HAVE_NUMACTL], [test "$with_numactl" != "no"])
-AC_SUBST([NUMACTL_CFLAGS])
-AC_SUBST([NUMACTL_LIBS])
 
 dnl numad
 AC_ARG_WITH([numad],
@@ -1520,22 +1513,45 @@ AC_ARG_WITH([numad],
   [with_numad=check])
 
 if test "$with_numad" != "no" ; then
+  old_cflags="$CFLAGS"
+  old_libs="$LIBS"
+  fail=0
+
   AC_PATH_PROG([NUMAD], [numad], [], [/bin:/usr/bin])
-  if test -z "$NUMAD" ; then
-    if test "$with_numad" = "check"; then
+
+  if test "$with_numad" = "check"; then
+    AC_CHECK_HEADER([numa.h], [], [fail=1])
+    AC_CHECK_LIB([numa], [numa_available], [], [fail=1])
+    if test -z "$NUMAD" || test $fail = 1; then
       with_numad="no"
     else
-      AC_MSG_ERROR([You must install the 'numad' to manage CPU placement dynamically])
+      with_nuamd="yes"
     fi
   else
-    with_numad="yes"
+    test -z  "$NUMAD" &&
+      AC_MSG_ERROR([You must install numad package to manage CPU and memory placement dynamically])
+
+    AC_CHECK_HEADER([numa.h], [], [fail=1])
+    AC_CHECK_LIB([numa], [numa_available], [], [fail=1])
+    test $fail = 1 &&
+      AC_MSG_ERROR([You must install the numactl development package in order to compile and run libvirt])
   fi
-  if test "$with_numad" = "yes"; then
-    AC_DEFINE_UNQUOTED([HAVE_NUMAD], 1, [whether numad is available])
-    AC_DEFINE_UNQUOTED([NUMAD],["$NUMAD"], [Location or name of the numad program])
-  fi
+
+  CFLAGS="$old_cflags"
+  LIBS="$old_libs"
+fi
+if test "$with_numad" = "yes"; then
+  AC_DEFINE_UNQUOTED([HAVE_NUMAD], 1, [whether numad is available])
+  AC_DEFINE_UNQUOTED([NUMAD],["$NUMAD"], [Location or name of the numad program])
+fi
+if test "$with_numactl" = "yes" || test "$with_numad" = "yes"; then
+  NUMACTL_LIBS="-lnuma"
+  AC_DEFINE_UNQUOTED([HAVE_NUMACTL], 1, [whether numactl-devel is available])
 fi
 AM_CONDITIONAL([HAVE_NUMAD], [test "$with_numad" != "no"])
+AM_CONDITIONAL([HAVE_NUMACTL], [test "$with_numad" != "no" || test "$with_numactl" != "no"])
+AC_SUBST([NUMACTL_CFLAGS])
+AC_SUBST([NUMACTL_LIBS])
 
 dnl pcap lib
 LIBPCAP_CONFIG="pcap-config"
