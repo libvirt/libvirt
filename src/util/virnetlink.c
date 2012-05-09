@@ -98,7 +98,7 @@ static int nextWatch = 1;
 # define NETLINK_EVENT_ALLOC_EXTENT 10
 
 static virNetlinkEventSrvPrivatePtr server = NULL;
-static struct nl_handle *placeholder_nlhandle = NULL;
+static virNetlinkHandle *placeholder_nlhandle = NULL;
 
 /* Function definitions */
 
@@ -130,7 +130,7 @@ virNetlinkStartup(void)
 {
     if (placeholder_nlhandle)
         return 0;
-    placeholder_nlhandle = nl_handle_alloc();
+    placeholder_nlhandle = virNetlinkAlloc();
     if (!placeholder_nlhandle) {
         virReportSystemError(errno, "%s",
                              _("cannot allocate placeholder nlhandle for netlink"));
@@ -149,7 +149,7 @@ void
 virNetlinkShutdown(void)
 {
     if (placeholder_nlhandle) {
-        nl_handle_destroy(placeholder_nlhandle);
+        virNetlinkFree(placeholder_nlhandle);
         placeholder_nlhandle = NULL;
     }
 }
