@@ -44,6 +44,8 @@
 # include <paths.h>
 #endif
 
+#define VIR_FROM_THIS VIR_FROM_NONE
+
 #define GETTIMEOFDAY(T) gettimeofday(T, NULL)
 #define DIFF_MSEC(T, U)                                 \
     ((((int) ((T)->tv_sec - (U)->tv_sec)) * 1000000.0 + \
@@ -469,10 +471,12 @@ virtTestLogOutput(const char *category ATTRIBUTE_UNUSED,
                   const char *funcname ATTRIBUTE_UNUSED,
                   long long lineno ATTRIBUTE_UNUSED,
                   const char *timestamp,
+                  unsigned int flags,
                   const char *str,
                   void *data)
 {
     struct virtTestLogData *log = data;
+    virCheckFlags(VIR_LOG_STACK_TRACE, -1);
     virBufferAsprintf(&log->buf, "%s: %s", timestamp, str);
     return strlen(timestamp) + 2 + strlen(str);
 }

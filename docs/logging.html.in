@@ -114,8 +114,10 @@
     </h3>
     <p>The syntax for filters and outputs is the same for both types of
        variables.</p>
-    <p>The format for a filter is:</p>
-    <pre>x:name</pre>
+    <p>The format for a filter is one of:</p>
+    <pre>
+  x:name  (log message only)
+  x:+name (log message + stack trace)</pre>
     <p>where <code>name</code> is a match string e.g. <code>remote</code> or
     <code>qemu</code> and the x is the minimal level where matching messages
     should be logged:</p>

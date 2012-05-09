@@ -158,7 +158,7 @@ dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([pwd.h paths.h regex.h sys/un.h \
   sys/poll.h syslog.h mntent.h net/ethernet.h linux/magic.h \
   sys/un.h sys/syscall.h netinet/tcp.h ifaddrs.h libtasn1.h \
-  net/if.h])
+  net/if.h execinfo.h])
 
 AC_MSG_CHECKING([for struct ifreq in net/if.h])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(

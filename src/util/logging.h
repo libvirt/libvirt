@@ -79,6 +79,7 @@ typedef enum {
  * @funcname: the function emitting the message
  * @linenr: line where the message was emitted
  * @timestamp: zero terminated string with timestamp of the message
+ * @flags: flags associated with the message
  * @str: the message to log, preformatted and zero terminated
  * @data: extra output logging data
  *
@@ -88,7 +89,9 @@ typedef enum {
  */
 typedef int (*virLogOutputFunc) (const char *category, int priority,
                                  const char *funcname, long long linenr,
-                                 const char *timestamp, const char *str,
+                                 const char *timestamp,
+                                 unsigned int flags,
+                                 const char *str,
                                  void *data);
 
 /**
@@ -98,6 +101,10 @@ typedef int (*virLogOutputFunc) (const char *category, int priority,
  * Callback function used to close a log output
  */
 typedef void (*virLogCloseFunc) (void *data);
+
+typedef enum {
+    VIR_LOG_STACK_TRACE = (1 << 0),
+} virLogFlags;
 
 extern int virLogGetNbFilters(void);
 extern int virLogGetNbOutputs(void);
