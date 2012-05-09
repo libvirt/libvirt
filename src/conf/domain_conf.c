@@ -4895,6 +4895,9 @@ virDomainChrDefParseTargetXML(virCapsPtr caps,
     if ((def->targetType =
          virDomainChrTargetTypeFromString(caps, vmdef,
                                           def->deviceType, targetType)) < 0) {
+        virDomainReportError(VIR_ERR_XML_ERROR,
+                             _("unknown target type '%s' specified for character device"),
+                             targetType);
         goto error;
     }
 
