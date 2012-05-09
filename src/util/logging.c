@@ -34,6 +34,9 @@
 #if HAVE_SYSLOG_H
 # include <syslog.h>
 #endif
+#ifdef HAVE_EXECINFO_H
+# include <execinfo.h>
+#endif
 
 #include "ignore-value.h"
 #include "virterror_internal.h"
@@ -64,6 +67,7 @@ static int virLogEnd = 0;
 struct _virLogFilter {
     const char *match;
     int priority;
+    unsigned int flags;
 };
 typedef struct _virLogFilter virLogFilter;
 typedef virLogFilter *virLogFilterPtr;
@@ -99,7 +103,9 @@ static int virLogResetFilters(void);
 static int virLogResetOutputs(void);
 static int virLogOutputToFd(const char *category, int priority,
                             const char *funcname, long long linenr,
-                            const char *timestamp, const char *str,
+                            const char *timestamp,
+                            unsigned int flags,
+                            const char *str,
                             void *data);
 
 /*
@@ -472,7 +478,7 @@ static int virLogResetFilters(void) {
  * virLogDefineFilter:
  * @match: the pattern to match
  * @priority: the priority to give to messages matching the pattern
- * @flags: extra flag, currently unused
+ * @flags: extra flags, see virLogFilterFlags enum
  *
  * Defines a pattern used for log filtering, it allow to select or
  * reject messages independently of the default priority.
@@ -487,7 +493,7 @@ int virLogDefineFilter(const char *match, int priority,
     int i;
     char *mdup = NULL;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_LOG_STACK_TRACE, -1);
 
     if ((match == NULL) || (priority < VIR_LOG_DEBUG) ||
         (priority > VIR_LOG_ERROR))
@@ -514,6 +520,7 @@ int virLogDefineFilter(const char *match, int priority,
     }
     virLogFilters[i].match = mdup;
     virLogFilters[i].priority = priority;
+    virLogFilters[i].flags = flags;
     virLogNbFilters++;
 cleanup:
     virLogUnlock();
@@ -530,7 +537,8 @@ cleanup:
  *
  * Returns 0 if not matched or the new priority if found.
  */
-static int virLogFiltersCheck(const char *input) {
+static int virLogFiltersCheck(const char *input,
+                              unsigned int *flags) {
     int ret = 0;
     int i;
 
@@ -538,6 +546,7 @@ static int virLogFiltersCheck(const char *input) {
     for (i = 0;i < virLogNbFilters;i++) {
         if (strstr(input, virLogFilters[i].match)) {
             ret = virLogFilters[i].priority;
+            *flags = virLogFilters[i].flags;
             break;
         }
     }
@@ -691,6 +700,7 @@ void virLogMessage(const char *category, int priority, const char *funcname,
     int saved_errno = errno;
     int emit = 1;
     va_list ap;
+    unsigned int filterflags = 0;
 
     if (!virLogInitialized)
         virLogStartup();
@@ -701,7 +711,7 @@ void virLogMessage(const char *category, int priority, const char *funcname,
     /*
      * check against list of specific logging patterns
      */
-    fprio = virLogFiltersCheck(category);
+    fprio = virLogFiltersCheck(category, &filterflags);
     if (fprio == 0) {
         if (priority < virLogDefaultPriority)
             emit = 0;
@@ -753,13 +763,14 @@ void virLogMessage(const char *category, int priority, const char *funcname,
                 if (virLogVersionString(&ver) >= 0)
                     virLogOutputs[i].f(category, VIR_LOG_INFO,
                                        __func__, __LINE__,
-                                       timestamp, ver,
+                                       timestamp, 0, ver,
                                        virLogOutputs[i].data);
                 VIR_FREE(ver);
                 virLogOutputs[i].logVersion = false;
             }
             virLogOutputs[i].f(category, priority, funcname, linenr,
-                               timestamp, msg, virLogOutputs[i].data);
+                               timestamp, filterflags,
+                               msg, virLogOutputs[i].data);
         }
     }
     if ((virLogNbOutputs == 0) && (flags != 1)) {
@@ -768,13 +779,14 @@ void virLogMessage(const char *category, int priority, const char *funcname,
             if (virLogVersionString(&ver) >= 0)
                 virLogOutputToFd(category, VIR_LOG_INFO,
                                  __func__, __LINE__,
-                                 timestamp, ver,
+                                 timestamp, 0, ver,
                                  (void *) STDERR_FILENO);
             VIR_FREE(ver);
             logVersionStderr = false;
         }
         virLogOutputToFd(category, priority, funcname, linenr,
-                         timestamp, msg, (void *) STDERR_FILENO);
+                         timestamp, filterflags,
+                         msg, (void *) STDERR_FILENO);
     }
     virLogUnlock();
 
@@ -783,11 +795,34 @@ cleanup:
     errno = saved_errno;
 }
 
+
+static void virLogStackTraceToFd(int fd)
+{
+#ifdef HAVE_EXECINFO_H
+    void *array[100];
+    int size;
+
+# define STRIP_DEPTH 3
+
+    size = backtrace(array, ARRAY_CARDINALITY(array));
+    backtrace_symbols_fd(array +  STRIP_DEPTH, size - STRIP_DEPTH, fd);
+    ignore_value(safewrite(fd, "\n", 1));
+#else
+    static bool doneWarning = false;
+    const char *msg = "Stack trace not available on this platform\n";
+    if (!doneWarning) {
+        ignore_value(safewrite(fd, msg, strlen(msg)));
+        doneWarning = true;
+    }
+#endif
+}
+
 static int virLogOutputToFd(const char *category ATTRIBUTE_UNUSED,
                             int priority ATTRIBUTE_UNUSED,
                             const char *funcname ATTRIBUTE_UNUSED,
                             long long linenr ATTRIBUTE_UNUSED,
                             const char *timestamp,
+                            unsigned int flags,
                             const char *str,
                             void *data)
 {
@@ -803,6 +838,9 @@ static int virLogOutputToFd(const char *category ATTRIBUTE_UNUSED,
 
     ret = safewrite(fd, msg, strlen(msg));
     VIR_FREE(msg);
+
+    if (flags & VIR_LOG_STACK_TRACE)
+        virLogStackTraceToFd(fd);
 
     return ret;
 }
@@ -841,10 +879,13 @@ static int virLogOutputToSyslog(const char *category ATTRIBUTE_UNUSED,
                                 const char *funcname ATTRIBUTE_UNUSED,
                                 long long linenr ATTRIBUTE_UNUSED,
                                 const char *timestamp ATTRIBUTE_UNUSED,
+                                unsigned int flags,
                                 const char *str,
                                 void *data ATTRIBUTE_UNUSED)
 {
     int prio;
+
+    virCheckFlags(VIR_LOG_STACK_TRACE, -1);
 
     switch (priority) {
         case VIR_LOG_DEBUG:
@@ -1024,12 +1065,17 @@ int virLogParseFilters(const char *filters) {
 
     virSkipSpaces(&cur);
     while (*cur != 0) {
+        unsigned int flags = 0;
         prio= virParseNumber(&cur);
         if ((prio < VIR_LOG_DEBUG) || (prio > VIR_LOG_ERROR))
             goto cleanup;
         if (*cur != ':')
             goto cleanup;
         cur++;
+        if (*cur == '+') {
+            flags |= VIR_LOG_STACK_TRACE;
+            cur++;
+        }
         str = cur;
         while ((*cur != 0) && (!IS_SPACE(cur)))
             cur++;
@@ -1038,7 +1084,7 @@ int virLogParseFilters(const char *filters) {
         name = strndup(str, cur - str);
         if (name == NULL)
             goto cleanup;
-        if (virLogDefineFilter(name, prio, 0) >= 0)
+        if (virLogDefineFilter(name, prio, flags) >= 0)
             count++;
         VIR_FREE(name);
         virSkipSpaces(&cur);
@@ -1072,7 +1118,12 @@ char *virLogGetFilters(void) {
 
     virLogLock();
     for (i = 0; i < virLogNbFilters; i++) {
-        virBufferAsprintf(&filterbuf, "%d:%s ", virLogFilters[i].priority,
+        const char *sep = ":";
+        if (virLogFilters[i].flags & VIR_LOG_STACK_TRACE)
+            sep = ":+";
+        virBufferAsprintf(&filterbuf, "%d%s%s ",
+                          virLogFilters[i].priority,
+                          sep,
                           virLogFilters[i].match);
     }
     virLogUnlock();
