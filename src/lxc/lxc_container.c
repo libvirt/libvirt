@@ -423,12 +423,10 @@ err:
 
 
 static int lxcContainerMountBasicFS(virDomainDefPtr def,
-                                    const char *srcprefix,
                                     bool pivotRoot,
                                     virSecurityManagerPtr securityDriver)
 {
     const struct {
-        bool needPrefix;
         const char *src;
         const char *dst;
         const char *type;
@@ -441,20 +439,20 @@ static int lxcContainerMountBasicFS(virDomainDefPtr def,
          * mount point in the main OS becomes readonly too which is not what
          * we want. Hence some things have two entries here.
          */
-        { false, "proc", "/proc", "proc", NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV },
-        { false, "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND },
-        { false, "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
-        { true, "/sys", "/sys", NULL, NULL, MS_BIND },
-        { true, "/sys", "/sys", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
+        { "proc", "/proc", "proc", NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV },
+        { "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND },
+        { "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
+        { "sysfs", "/sys", "sysfs", NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV },
+        { "sysfs", "/sys", "sysfs", NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
 #if HAVE_SELINUX
-        { true, SELINUX_MOUNT, SELINUX_MOUNT, NULL, NULL, MS_BIND },
-        { true, SELINUX_MOUNT, SELINUX_MOUNT, NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
+        { SELINUX_MOUNT, SELINUX_MOUNT, "selinuxfs", NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV },
+        { SELINUX_MOUNT, SELINUX_MOUNT, NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
 #endif
     };
     int i, rc = -1;
     char *opts = NULL;
 
-    VIR_DEBUG("Mounting basic filesystems %s pivotRoot=%d", NULLSTR(srcprefix), pivotRoot);
+    VIR_DEBUG("Mounting basic filesystems pivotRoot=%d", pivotRoot);
 
     for (i = 0 ; i < ARRAY_CARDINALITY(mnts) ; i++) {
         char *src = NULL;
@@ -470,15 +468,7 @@ static int lxcContainerMountBasicFS(virDomainDefPtr def,
             goto cleanup;
         }
 
-        if (mnts[i].needPrefix && srcprefix) {
-            if (virAsprintf(&src, "%s%s", srcprefix, mnts[i].src) < 0) {
-                virReportOOMError();
-                goto cleanup;
-            }
-            srcpath = src;
-        } else {
-            srcpath = mnts[i].src;
-        }
+        srcpath = mnts[i].src;
 
         /* Skip if mount doesn't exist in source */
         if ((srcpath[0] == '/') &&
@@ -1121,7 +1111,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
         return -1;
 
     /* Mounts the core /proc, /sys, etc filesystems */
-    if (lxcContainerMountBasicFS(vmDef, "/.oldroot", true, securityDriver) < 0)
+    if (lxcContainerMountBasicFS(vmDef, true, securityDriver) < 0)
         return -1;
 
     /* Mounts /dev/pts */
@@ -1166,7 +1156,7 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
         return -1;
 
     /* Mounts the core /proc, /sys, etc filesystems */
-    if (lxcContainerMountBasicFS(vmDef, NULL, false, securityDriver) < 0)
+    if (lxcContainerMountBasicFS(vmDef, false, securityDriver) < 0)
         return -1;
 
     VIR_DEBUG("Mounting completed");
