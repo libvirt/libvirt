@@ -65,7 +65,7 @@ void virSecurityDACSetDynamicOwnership(virSecurityManagerPtr mgr,
 }
 
 static virSecurityDriverStatus
-virSecurityDACProbe(void)
+virSecurityDACProbe(const char *virtDriver ATTRIBUTE_UNUSED)
 {
     return SECURITY_DRIVER_ENABLE;
 }

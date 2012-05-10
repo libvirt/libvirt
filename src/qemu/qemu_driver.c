@@ -95,6 +95,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+#define QEMU_DRIVER_NAME "QEMU"
+
 #define QEMU_NB_MEM_PARAM  3
 
 #define QEMU_NB_BLOCK_IO_TUNE_PARAM  6
@@ -213,6 +215,7 @@ static int
 qemuSecurityInit(struct qemud_driver *driver)
 {
     virSecurityManagerPtr mgr = virSecurityManagerNew(driver->securityDriverName,
+                                                      QEMU_DRIVER_NAME,
                                                       driver->allowDiskFormatProbing,
                                                       driver->securityDefaultConfined,
                                                       driver->securityRequireConfined);
@@ -221,7 +224,8 @@ qemuSecurityInit(struct qemud_driver *driver)
         goto error;
 
     if (driver->privileged) {
-        virSecurityManagerPtr dac = virSecurityManagerNewDAC(driver->user,
+        virSecurityManagerPtr dac = virSecurityManagerNewDAC(QEMU_DRIVER_NAME,
+                                                             driver->user,
                                                              driver->group,
                                                              driver->allowDiskFormatProbing,
                                                              driver->securityDefaultConfined,
@@ -12838,7 +12842,7 @@ cleanup:
 
 static virDriver qemuDriver = {
     .no = VIR_DRV_QEMU,
-    .name = "QEMU",
+    .name = QEMU_DRIVER_NAME,
     .open = qemudOpen, /* 0.2.0 */
     .close = qemudClose, /* 0.2.0 */
     .supports_feature = qemudSupportsFeature, /* 0.5.0 */
@@ -13029,7 +13033,7 @@ qemuVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static virNWFilterCallbackDriver qemuCallbackDriver = {
-    .name = "QEMU",
+    .name = QEMU_DRIVER_NAME,
     .vmFilterRebuild = qemuVMFilterRebuild,
     .vmDriverLock = qemuVMDriverLock,
     .vmDriverUnlock = qemuVMDriverUnlock,

@@ -1723,7 +1723,9 @@ int main(int argc, char *argv[])
             break;
 
         case 'S':
-            if (!(securityDriver = virSecurityManagerNew(optarg, false, false, false))) {
+            if (!(securityDriver = virSecurityManagerNew(optarg,
+                                                         LXC_DRIVER_NAME,
+                                                         false, false, false))) {
                 fprintf(stderr, "Cannot create security manager '%s'",
                         optarg);
                 goto cleanup;
@@ -1750,7 +1752,9 @@ int main(int argc, char *argv[])
     }
 
     if (securityDriver == NULL) {
-        if (!(securityDriver = virSecurityManagerNew("none", false, false, false))) {
+        if (!(securityDriver = virSecurityManagerNew("none",
+                                                     LXC_DRIVER_NAME,
+                                                     false, false, false))) {
             fprintf(stderr, "%s: cannot initialize nop security manager", argv[0]);
             goto cleanup;
         }

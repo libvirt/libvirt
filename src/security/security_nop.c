@@ -21,7 +21,7 @@
 
 #include "security_nop.h"
 
-static virSecurityDriverStatus virSecurityDriverProbeNop(void)
+static virSecurityDriverStatus virSecurityDriverProbeNop(const char *virtDriver ATTRIBUTE_UNUSED)
 {
     return SECURITY_DRIVER_ENABLE;
 }

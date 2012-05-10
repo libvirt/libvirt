@@ -32,6 +32,7 @@ typedef struct _virSecurityManager virSecurityManager;
 typedef virSecurityManager *virSecurityManagerPtr;
 
 virSecurityManagerPtr virSecurityManagerNew(const char *name,
+                                            const char *virtDriver,
                                             bool allowDiskFormatProbing,
                                             bool defaultConfined,
                                             bool requireConfined);
@@ -39,7 +40,8 @@ virSecurityManagerPtr virSecurityManagerNew(const char *name,
 virSecurityManagerPtr virSecurityManagerNewStack(virSecurityManagerPtr primary,
                                                  virSecurityManagerPtr secondary);
 
-virSecurityManagerPtr virSecurityManagerNewDAC(uid_t user,
+virSecurityManagerPtr virSecurityManagerNewDAC(const char *virtDriver,
+                                               uid_t user,
                                                gid_t group,
                                                bool allowDiskFormatProbing,
                                                bool defaultConfined,
@@ -50,6 +52,7 @@ void *virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr);
 
 void virSecurityManagerFree(virSecurityManagerPtr mgr);
 
+const char *virSecurityManagerGetDriver(virSecurityManagerPtr mgr);
 const char *virSecurityManagerGetDOI(virSecurityManagerPtr mgr);
 const char *virSecurityManagerGetModel(virSecurityManagerPtr mgr);
 bool virSecurityManagerGetAllowDiskFormatProbing(virSecurityManagerPtr mgr);

@@ -2533,7 +2533,9 @@ error:
 static int
 lxcSecurityInit(lxc_driver_t *driver)
 {
+    VIR_INFO("lxcSecurityInit %s", driver->securityDriverName);
     virSecurityManagerPtr mgr = virSecurityManagerNew(driver->securityDriverName,
+                                                      LXC_DRIVER_NAME,
                                                       false,
                                                       driver->securityDefaultConfined,
                                                       driver->securityRequireConfined);
@@ -3851,7 +3853,7 @@ static virNWFilterCallbackDriver lxcCallbackDriver = {
 /* Function Tables */
 static virDriver lxcDriver = {
     .no = VIR_DRV_LXC,
-    .name = "LXC",
+    .name = LXC_DRIVER_NAME,
     .open = lxcOpen, /* 0.4.2 */
     .close = lxcClose, /* 0.4.2 */
     .version = lxcVersion, /* 0.4.6 */
@@ -3915,7 +3917,7 @@ static virDriver lxcDriver = {
 };
 
 static virStateDriver lxcStateDriver = {
-    .name = "LXC",
+    .name = LXC_DRIVER_NAME,
     .initialize = lxcStartup,
     .cleanup = lxcShutdown,
     .active = lxcActive,

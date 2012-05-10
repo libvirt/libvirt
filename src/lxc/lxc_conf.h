@@ -36,6 +36,8 @@
 # include "security/security_manager.h"
 # include "configmake.h"
 
+# define LXC_DRIVER_NAME "LXC"
+
 # define LXC_CONFIG_DIR SYSCONFDIR "/libvirt/lxc"
 # define LXC_STATE_DIR LOCALSTATEDIR "/run/libvirt/lxc"
 # define LXC_LOG_DIR LOCALSTATEDIR "/log/libvirt/lxc"

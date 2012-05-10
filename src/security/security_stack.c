@@ -49,7 +49,7 @@ void virSecurityStackSetSecondary(virSecurityManagerPtr mgr,
 }
 
 static virSecurityDriverStatus
-virSecurityStackProbe(void)
+virSecurityStackProbe(const char *virtDriver ATTRIBUTE_UNUSED)
 {
     return SECURITY_DRIVER_ENABLE;
 }

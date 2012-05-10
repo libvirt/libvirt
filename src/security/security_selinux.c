@@ -346,7 +346,7 @@ err:
 
 
 static int
-SELinuxSecurityDriverProbe(void)
+SELinuxSecurityDriverProbe(const char *virtDriver ATTRIBUTE_UNUSED)
 {
     return is_selinux_enabled() ? SECURITY_DRIVER_ENABLE : SECURITY_DRIVER_DISABLE;
 }

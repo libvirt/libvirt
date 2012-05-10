@@ -31,7 +31,7 @@ typedef enum {
 typedef struct _virSecurityDriver virSecurityDriver;
 typedef virSecurityDriver *virSecurityDriverPtr;
 
-typedef virSecurityDriverStatus (*virSecurityDriverProbe) (void);
+typedef virSecurityDriverStatus (*virSecurityDriverProbe) (const char *virtDriver);
 typedef int (*virSecurityDriverOpen) (virSecurityManagerPtr mgr);
 typedef int (*virSecurityDriverClose) (virSecurityManagerPtr mgr);
 
@@ -125,6 +125,7 @@ struct _virSecurityDriver {
     virSecurityDomainSetImageFDLabel domainSetSecurityImageFDLabel;
 };
 
-virSecurityDriverPtr virSecurityDriverLookup(const char *name);
+virSecurityDriverPtr virSecurityDriverLookup(const char *name,
+                                             const char *virtDriver);
 
 #endif /* __VIR_SECURITY_H__ */

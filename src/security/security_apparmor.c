@@ -328,7 +328,7 @@ AppArmorSetSecurityPCILabel(pciDevice *dev ATTRIBUTE_UNUSED,
 
 /* Called on libvirtd startup to see if AppArmor is available */
 static int
-AppArmorSecurityManagerProbe(void)
+AppArmorSecurityManagerProbe(const char *virtDriver ATTRIBUTE_UNUSED)
 {
     char *template = NULL;
     int rc = SECURITY_DRIVER_DISABLE;
