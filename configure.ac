@@ -1525,7 +1525,7 @@ if test "$with_numad" != "no" ; then
     if test -z "$NUMAD" || test $fail = 1; then
       with_numad="no"
     else
-      with_nuamd="yes"
+      with_numad="yes"
     fi
   else
     test -z  "$NUMAD" &&
