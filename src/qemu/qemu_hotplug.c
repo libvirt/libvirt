@@ -1213,7 +1213,8 @@ error:
 
 cleanup:
     usbDeviceListFree(list);
-    usbDeviceListSteal(driver->activeUsbHostdevs, usb);
+    if (usb)
+        usbDeviceListSteal(driver->activeUsbHostdevs, usb);
     return -1;
 }
 
