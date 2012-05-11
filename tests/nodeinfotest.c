@@ -26,12 +26,12 @@ main(void)
 #else
 
 extern int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
-                                    char *sysfs_cpuinfo,
+                                    char *sysfs_dir,
                                     virNodeInfoPtr nodeinfo);
 
 static int
 linuxTestCompareFiles(const char *cpuinfofile,
-                      char *sysfs_cpuinfo,
+                      char *sysfs_dir,
                       const char *outputfile)
 {
     int ret = -1;
@@ -48,7 +48,7 @@ linuxTestCompareFiles(const char *cpuinfofile,
         goto fail;
 
     memset(&nodeinfo, 0, sizeof(nodeinfo));
-    if (linuxNodeInfoCPUPopulate(cpuinfo, sysfs_cpuinfo, &nodeinfo) < 0) {
+    if (linuxNodeInfoCPUPopulate(cpuinfo, sysfs_dir, &nodeinfo) < 0) {
         if (virTestGetDebug()) {
             virErrorPtr error = virSaveLastError();
             if (error && error->code != VIR_ERR_OK)
@@ -60,21 +60,13 @@ linuxTestCompareFiles(const char *cpuinfofile,
     }
     VIR_FORCE_FCLOSE(cpuinfo);
 
-    /* 'nodes' is filled using libnuma.so from current machine
-     * topology, which makes it unsuitable for the test suite
-     * so blank it to a predictable value */
-    nodeinfo.nodes = 1;
-
     if (virAsprintf(&actualData, "CPUs: %u, MHz: %u, Nodes: %u, Cores: %u\n",
                     nodeinfo.cpus, nodeinfo.mhz, nodeinfo.nodes,
                     nodeinfo.cores) < 0)
         goto fail;
 
     if (STRNEQ(actualData, expectData)) {
-        if (getenv("DEBUG_TESTS")) {
-            printf("Expect %d '%s'\n", (int)strlen(expectData), expectData);
-            printf("Actual %d '%s'\n", (int)strlen(actualData), actualData);
-        }
+        virtTestDifference(stderr, expectData, actualData);
         goto fail;
     }
 
@@ -92,34 +84,31 @@ linuxTestNodeInfo(const void *data)
 {
     int result = -1;
     char *cpuinfo = NULL;
-    char *sysfs_cpuinfo = NULL;
+    char *sysfs_dir = NULL;
     char *output = NULL;
+    const char *test = data;
+    const char *arch = "x86";
 
 # if defined(__powerpc__) || \
      defined(__powerpc64__)
-    if (virAsprintf(&sysfs_cpuinfo, "%s/nodeinfodata/linux-%s/cpu/",
-                    abs_srcdir, (const char*)data) < 0 ||
-        virAsprintf(&cpuinfo, "%s/nodeinfodata/linux-%s-ppc.cpuinfo",
-                    abs_srcdir, (const char*)data) < 0 ||
-        virAsprintf(&output, "%s/nodeinfodata/linux-%s-cpu-ppc-output.txt",
-                    abs_srcdir, (const char*)data) < 0) {
-# else
-    if (virAsprintf(&sysfs_cpuinfo, "%s/nodeinfodata/linux-%s/cpu/",
-                    abs_srcdir, (const char*)data) < 0 ||
-        virAsprintf(&cpuinfo, "%s/nodeinfodata/linux-%s-x86.cpuinfo",
-                    abs_srcdir, (const char*)data) < 0 ||
-        virAsprintf(&output, "%s/nodeinfodata/linux-%s-cpu-x86-output.txt",
-                    abs_srcdir, (const char*)data) < 0) {
+    arch = "ppc";
 # endif
+
+    if (virAsprintf(&sysfs_dir, "%s/nodeinfodata/linux-%s",
+                    abs_srcdir, test) < 0 ||
+        virAsprintf(&cpuinfo, "%s/nodeinfodata/linux-%s-%s.cpuinfo",
+                    abs_srcdir, test, arch) < 0 ||
+        virAsprintf(&output, "%s/nodeinfodata/linux-%s-cpu-%s-output.txt",
+                    abs_srcdir, test, arch) < 0) {
         goto cleanup;
     }
 
-    result = linuxTestCompareFiles(cpuinfo, sysfs_cpuinfo, output);
+    result = linuxTestCompareFiles(cpuinfo, sysfs_dir, output);
 
 cleanup:
     VIR_FREE(cpuinfo);
     VIR_FREE(output);
-    VIR_FREE(sysfs_cpuinfo);
+    VIR_FREE(sysfs_dir);
 
     return result;
 }
