@@ -35,6 +35,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <mntent.h>
+#include <dirent.h>
 
 /* Yes, we want linux private one, for _syscall2() macro */
 #include <linux/unistd.h>
@@ -1122,6 +1123,192 @@ cleanup:
 }
 
 
+struct lxcContainerCGroup {
+    const char *dir;
+    const char *linkDest;
+};
+
+
+static void lxcContainerCGroupFree(struct lxcContainerCGroup *mounts,
+                                   size_t nmounts)
+{
+    size_t i;
+
+    if (!mounts)
+        return;
+
+    for (i = 0 ; i < nmounts ; i++) {
+        VIR_FREE(mounts[i].dir);
+        VIR_FREE(mounts[i].linkDest);
+    }
+    VIR_FREE(mounts);
+}
+
+
+static int lxcContainerIdentifyCGroups(struct lxcContainerCGroup **mountsret,
+                                       size_t *nmountsret)
+{
+    FILE *procmnt = NULL;
+    struct mntent mntent;
+    struct dirent *dent;
+    char mntbuf[1024];
+    int ret = -1;
+    struct lxcContainerCGroup *mounts = NULL;
+    size_t nmounts = 0;
+    DIR *dh = NULL;
+    char *path = NULL;
+
+    *mountsret = NULL;
+    *nmountsret = 0;
+
+    VIR_DEBUG("Finding cgroups mount points under %s", VIR_CGROUP_SYSFS_MOUNT);
+
+    if (!(procmnt = setmntent("/proc/mounts", "r"))) {
+        virReportSystemError(errno, "%s",
+                             _("Failed to read /proc/mounts"));
+        return -1;
+    }
+
+    while (getmntent_r(procmnt, &mntent, mntbuf, sizeof(mntbuf)) != NULL) {
+        VIR_DEBUG("Got %s", mntent.mnt_dir);
+        if (STRNEQ(mntent.mnt_type, "cgroup") ||
+            !STRPREFIX(mntent.mnt_dir, VIR_CGROUP_SYSFS_MOUNT))
+            continue;
+
+        /* Skip named mounts with no controller since they're
+         * for application use only ie systemd */
+        if (strstr(mntent.mnt_opts, "name="))
+            continue;
+
+        if (VIR_EXPAND_N(mounts, nmounts, 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        if (!(mounts[nmounts-1].dir = strdup(mntent.mnt_dir))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        VIR_DEBUG("Grabbed %s", mntent.mnt_dir);
+    }
+
+    VIR_DEBUG("Checking for symlinks in %s", VIR_CGROUP_SYSFS_MOUNT);
+    if (!(dh = opendir(VIR_CGROUP_SYSFS_MOUNT))) {
+        virReportSystemError(errno,
+                             _("Unable to read directory %s"),
+                             VIR_CGROUP_SYSFS_MOUNT);
+        goto cleanup;
+    }
+
+    while ((dent = readdir(dh)) != NULL) {
+        ssize_t rv;
+        /* The cgroups links are just relative to the local
+         * dir so we don't need a large buf */
+        char linkbuf[100];
+
+        if (dent->d_name[0] == '.')
+            continue;
+
+        VIR_DEBUG("Checking entry %s", dent->d_name);
+        if (virAsprintf(&path, "%s/%s", VIR_CGROUP_SYSFS_MOUNT, dent->d_name) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if ((rv = readlink(path, linkbuf, sizeof(linkbuf)-1)) < 0) {
+            if (errno != EINVAL) {
+                virReportSystemError(errno,
+                                     _("Unable to resolve link %s"),
+                                     path);
+                VIR_FREE(path);
+                goto cleanup;
+            }
+            /* Ok not a link */
+            VIR_FREE(path);
+        } else {
+            linkbuf[rv] = '\0';
+            VIR_DEBUG("Got a link %s to %s", path, linkbuf);
+            if (VIR_EXPAND_N(mounts, nmounts, 1) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+            if (!(mounts[nmounts-1].linkDest = strdup(linkbuf))) {
+                virReportOOMError();
+                goto cleanup;
+            }
+            mounts[nmounts-1].dir = path;
+            path = NULL;
+        }
+    }
+
+    *mountsret = mounts;
+    *nmountsret = nmounts;
+    ret = 0;
+
+cleanup:
+    closedir(dh);
+    endmntent(procmnt);
+    VIR_FREE(path);
+
+    if (ret < 0)
+        lxcContainerCGroupFree(mounts, nmounts);
+    return ret;
+}
+
+
+static int lxcContainerMountCGroups(struct lxcContainerCGroup *mounts,
+                                    size_t nmounts)
+{
+    size_t i;
+
+    VIR_DEBUG("Mounting cgroups at '%s'", VIR_CGROUP_SYSFS_MOUNT);
+
+    if (virFileMakePath(VIR_CGROUP_SYSFS_MOUNT) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to create directory %s"),
+                             VIR_CGROUP_SYSFS_MOUNT);
+        return -1;
+    }
+
+    if (mount("tmpfs", VIR_CGROUP_SYSFS_MOUNT, "tmpfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, "mode=755") < 0) {
+        virReportSystemError(errno,
+                             _("Failed to mount %s on %s type %s"),
+                             "tmpfs", VIR_CGROUP_SYSFS_MOUNT, "tmpfs");
+        return -1;
+    }
+
+    for (i = 0 ; i < nmounts ; i++) {
+        if (mounts[i].linkDest) {
+            VIR_DEBUG("Link mount point '%s' to '%s'",
+                      mounts[i].dir, mounts[i].linkDest);
+            if (symlink(mounts[i].linkDest, mounts[i].dir) < 0) {
+                virReportSystemError(errno,
+                                     _("Unable to symlink directory %s to %s"),
+                                     mounts[i].dir, mounts[i].linkDest);
+                return -1;
+            }
+        } else {
+            VIR_DEBUG("Create mount point '%s'", mounts[i].dir);
+            if (virFileMakePath(mounts[i].dir) < 0) {
+                virReportSystemError(errno,
+                                     _("Unable to create directory %s"),
+                                     mounts[i].dir);
+                return -1;
+            }
+
+            if (mount("cgroup", mounts[i].dir, "cgroup",
+                      0, mounts[i].dir + strlen(VIR_CGROUP_SYSFS_MOUNT) + 1) < 0) {
+                virReportSystemError(errno,
+                                     _("Failed to mount %s on %s"),
+                                     "cgroup", mounts[i].dir);
+                return -1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+
 /* Got a FS mapped to /, we're going the pivot_root
  * approach to do a better-chroot-than-chroot
  * this is based on this thread http://lkml.org/lkml/2008/3/5/29
@@ -1132,31 +1319,49 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
                                       size_t nttyPaths,
                                       virSecurityManagerPtr securityDriver)
 {
+    struct lxcContainerCGroup *mounts = NULL;
+    size_t nmounts = 0;
+    int ret = -1;
+
+    /* Before pivoting we need to identify any
+     * cgroups controllers that are mounted */
+    if (lxcContainerIdentifyCGroups(&mounts, &nmounts) < 0)
+        goto cleanup;
+
     /* Gives us a private root, leaving all parent OS mounts on /.oldroot */
     if (lxcContainerPivotRoot(root) < 0)
-        return -1;
+        goto cleanup;
 
     /* Mounts the core /proc, /sys, etc filesystems */
     if (lxcContainerMountBasicFS(vmDef, true, securityDriver) < 0)
-        return -1;
+        goto cleanup;
+
+    /* Now we can re-mount the cgroups controllers in the
+     * same configuration as before */
+    if (lxcContainerMountCGroups(mounts, nmounts) < 0)
+        goto cleanup;
 
     /* Mounts /dev/pts */
     if (lxcContainerMountFSDevPTS(root) < 0)
-        return -1;
+        goto cleanup;
 
     /* Populates device nodes in /dev/ */
     if (lxcContainerPopulateDevices(ttyPaths, nttyPaths) < 0)
-        return -1;
+        goto cleanup;
 
     /* Sets up any non-root mounts from guest config */
     if (lxcContainerMountAllFS(vmDef, "/.oldroot", true) < 0)
-        return -1;
+        goto cleanup;
 
     /* Gets rid of all remaining mounts from host OS, including /.oldroot itself */
     if (lxcContainerUnmountSubtree("/.oldroot", true) < 0)
-        return -1;
+        goto cleanup;
 
-    return 0;
+    ret = 0;
+
+cleanup:
+    lxcContainerCGroupFree(mounts, nmounts);
+    return ret;
 }
 
 
@@ -1166,6 +1371,10 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
                                         virDomainFSDefPtr root,
                                         virSecurityManagerPtr securityDriver)
 {
+    int ret = -1;
+    struct lxcContainerCGroup *mounts = NULL;
+    size_t nmounts = 0;
+
     VIR_DEBUG("def=%p", vmDef);
     /*
      * This makes sure that any new filesystems in the
@@ -1190,19 +1399,35 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
     if (lxcContainerMountAllFS(vmDef, "", false) < 0)
         return -1;
 
+    /* Before replacing /sys we need to identify any
+     * cgroups controllers that are mounted */
+    if (lxcContainerIdentifyCGroups(&mounts, &nmounts) < 0)
+        goto cleanup;
+
     /* Gets rid of any existing stuff under /proc, since we need new
      * namespace aware versions of those. We must do /proc second
      * otherwise we won't find /proc/mounts :-) */
     if (lxcContainerUnmountSubtree("/sys", false) < 0 ||
         lxcContainerUnmountSubtree("/proc", false) < 0)
-        return -1;
+        goto cleanup;
 
     /* Mounts the core /proc, /sys, etc filesystems */
     if (lxcContainerMountBasicFS(vmDef, false, securityDriver) < 0)
-        return -1;
+        goto cleanup;
+
+    /* Now we can re-mount the cgroups controllers in the
+     * same configuration as before */
+    if (lxcContainerMountCGroups(mounts, nmounts) < 0)
+        goto cleanup;
 
     VIR_DEBUG("Mounting completed");
     return 0;
+
+    ret = 0;
+
+cleanup:
+    lxcContainerCGroupFree(mounts, nmounts);
+    return ret;
 }
 
 
