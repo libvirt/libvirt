@@ -1137,6 +1137,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
 /* Nothing mapped to /, we're using the main root,
    but with extra stuff mapped in */
 static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
+                                        virDomainFSDefPtr root,
                                         virSecurityManagerPtr securityDriver)
 {
     VIR_DEBUG("def=%p", vmDef);
@@ -1149,6 +1150,14 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
         virReportSystemError(errno, "%s",
                              _("Failed to make / slave"));
         return -1;
+    }
+
+    if (root && root->readonly) {
+        if (mount("", "/", NULL, MS_BIND|MS_REC|MS_RDONLY|MS_REMOUNT, NULL) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Failed to make root readonly"));
+            return -1;
+        }
     }
 
     VIR_DEBUG("Mounting config FS");
@@ -1192,10 +1201,14 @@ static int lxcContainerSetupMounts(virDomainDefPtr vmDef,
     if (lxcContainerResolveSymlinks(vmDef) < 0)
         return -1;
 
-    if (root)
+    /* If the user has specified a dst '/' with a source of '/'
+     * then we don't really want to go down the pivot root
+     * path, as we're just tuning the existing root
+     */
+    if (root && root->src && STRNEQ(root->src, "/"))
         return lxcContainerSetupPivotRoot(vmDef, root, ttyPaths, nttyPaths, securityDriver);
     else
-        return lxcContainerSetupExtraMounts(vmDef, securityDriver);
+        return lxcContainerSetupExtraMounts(vmDef, root, securityDriver);
 }
 
 
