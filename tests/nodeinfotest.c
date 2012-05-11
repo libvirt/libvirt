@@ -121,6 +121,11 @@ mymain(void)
     int i;
     const char *nodeData[] = {
         "nodeinfo-sysfs-test-1",
+# if !(defined(__powerpc__) ||                  \
+       defined(__powerpc64__))
+        "nodeinfo-sysfs-test-2",
+        "nodeinfo-sysfs-test-3",
+# endif
     };
 
     if (virInitialize() < 0)

@@ -1,0 +1,1 @@
+CPUs: 48, MHz: 2100, Nodes: 1, Cores: 6

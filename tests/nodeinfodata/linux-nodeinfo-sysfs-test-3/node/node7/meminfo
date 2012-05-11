@@ -1,0 +1,29 @@
+
+Node 7 MemTotal:       67108864 kB
+Node 7 MemFree:        65303740 kB
+Node 7 MemUsed:         1805124 kB
+Node 7 Active:            60264 kB
+Node 7 Inactive:          77164 kB
+Node 7 Active(anon):      27672 kB
+Node 7 Inactive(anon):      632 kB
+Node 7 Active(file):      32592 kB
+Node 7 Inactive(file):    76532 kB
+Node 7 Unevictable:           0 kB
+Node 7 Mlocked:               0 kB
+Node 7 Dirty:                 0 kB
+Node 7 Writeback:             0 kB
+Node 7 FilePages:        109772 kB
+Node 7 Mapped:             5508 kB
+Node 7 AnonPages:         27668 kB
+Node 7 Shmem:               648 kB
+Node 7 KernelStack:         208 kB
+Node 7 PageTables:         1820 kB
+Node 7 NFS_Unstable:          0 kB
+Node 7 Bounce:                0 kB
+Node 7 WritebackTmp:          0 kB
+Node 7 Slab:              19372 kB
+Node 7 SReclaimable:      11024 kB
+Node 7 SUnreclaim:         8348 kB
+Node 7 HugePages_Total:     0
+Node 7 HugePages_Free:      0
+Node 7 HugePages_Surp:      0

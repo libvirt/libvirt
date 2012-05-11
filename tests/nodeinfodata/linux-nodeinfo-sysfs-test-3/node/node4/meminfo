@@ -1,0 +1,29 @@
+
+Node 4 MemTotal:       67108864 kB
+Node 4 MemFree:        64730416 kB
+Node 4 MemUsed:         2378448 kB
+Node 4 Active:           522732 kB
+Node 4 Inactive:         205384 kB
+Node 4 Active(anon):     411816 kB
+Node 4 Inactive(anon):      384 kB
+Node 4 Active(file):     110916 kB
+Node 4 Inactive(file):   205000 kB
+Node 4 Unevictable:           0 kB
+Node 4 Mlocked:               0 kB
+Node 4 Dirty:                 0 kB
+Node 4 Writeback:             0 kB
+Node 4 FilePages:        316320 kB
+Node 4 Mapped:            10220 kB
+Node 4 AnonPages:        129184 kB
+Node 4 Shmem:               408 kB
+Node 4 KernelStack:         336 kB
+Node 4 PageTables:         2732 kB
+Node 4 NFS_Unstable:          0 kB
+Node 4 Bounce:                0 kB
+Node 4 WritebackTmp:          0 kB
+Node 4 Slab:              54172 kB
+Node 4 SReclaimable:      41160 kB
+Node 4 SUnreclaim:        13012 kB
+Node 4 HugePages_Total:     0
+Node 4 HugePages_Free:      0
+Node 4 HugePages_Surp:      0
