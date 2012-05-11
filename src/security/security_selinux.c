@@ -126,8 +126,73 @@ err:
     return newcontext;
 }
 
+
 static int
-SELinuxInitialize(virSecurityManagerPtr mgr)
+SELinuxLXCInitialize(virSecurityManagerPtr mgr)
+{
+    virConfValuePtr scon = NULL;
+    virConfValuePtr tcon = NULL;
+    virConfValuePtr dcon = NULL;
+    virConfPtr selinux_conf;
+    virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
+
+    selinux_conf = virConfReadFile(selinux_lxc_contexts_path(), 0);
+    if (!selinux_conf) {
+        virReportSystemError(errno,
+                             _("cannot open SELinux lxc contexts file '%s'"),
+                             selinux_lxc_contexts_path());
+        return -1;
+    }
+
+    scon = virConfGetValue(selinux_conf, "process");
+    if (! scon || scon->type != VIR_CONF_STRING || (! scon->str)) {
+        virReportSystemError(errno,
+                             _("cannot read 'process' value from selinux lxc contexts file '%s'"),
+                             selinux_lxc_contexts_path());
+        goto error;
+    }
+
+    tcon = virConfGetValue(selinux_conf, "file");
+    if (! tcon || tcon->type != VIR_CONF_STRING || (! tcon->str)) {
+        virReportSystemError(errno,
+                             _("cannot read 'file' value from selinux lxc contexts file '%s'"),
+                             selinux_lxc_contexts_path());
+        goto error;
+    }
+
+    dcon = virConfGetValue(selinux_conf, "content");
+    if (! dcon || dcon->type != VIR_CONF_STRING || (! dcon->str)) {
+        virReportSystemError(errno,
+                             _("cannot read 'file' value from selinux lxc contexts file '%s'"),
+                             selinux_lxc_contexts_path());
+        goto error;
+    }
+
+    data->domain_context = strdup(scon->str);
+    data->file_context = strdup(tcon->str);
+    data->content_context = strdup(dcon->str);
+    if (!data->domain_context ||
+        !data->file_context ||
+        !data->content_context) {
+        virReportSystemError(errno,
+                             _("cannot allocate memory for LXC SELinux contexts '%s'"),
+                             selinux_lxc_contexts_path());
+        goto error;
+    }
+    virConfFree(selinux_conf);
+    return 0;
+
+error:
+    virConfFree(selinux_conf);
+    VIR_FREE(data->domain_context);
+    VIR_FREE(data->file_context);
+    VIR_FREE(data->content_context);
+    return -1;
+}
+
+
+static int
+SELinuxQEMUInitialize(virSecurityManagerPtr mgr)
 {
     char *ptr;
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
@@ -171,6 +236,19 @@ error:
     VIR_FREE(data->content_context);
     return -1;
 }
+
+
+static int
+SELinuxInitialize(virSecurityManagerPtr mgr)
+{
+    VIR_DEBUG("SELinuxInitialize %s", virSecurityManagerGetDriver(mgr));
+    if (STREQ(virSecurityManagerGetDriver(mgr),  "LXC")) {
+        return SELinuxLXCInitialize(mgr);
+    } else {
+        return SELinuxQEMUInitialize(mgr);
+    }
+}
+
 
 static int
 SELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
