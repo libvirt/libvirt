@@ -36,10 +36,6 @@
 #include <unistd.h>
 #include <mntent.h>
 
-#if HAVE_SELINUX
-# include <selinux/selinux.h>
-#endif
-
 /* Yes, we want linux private one, for _syscall2() macro */
 #include <linux/unistd.h>
 
@@ -426,7 +422,10 @@ err:
 }
 
 
-static int lxcContainerMountBasicFS(const char *srcprefix, bool pivotRoot)
+static int lxcContainerMountBasicFS(virDomainDefPtr def,
+                                    const char *srcprefix,
+                                    bool pivotRoot,
+                                    virSecurityManagerPtr securityDriver)
 {
     const struct {
         bool needPrefix;
@@ -454,9 +453,6 @@ static int lxcContainerMountBasicFS(const char *srcprefix, bool pivotRoot)
     };
     int i, rc = -1;
     char *opts = NULL;
-#if HAVE_SELINUX
-    security_context_t con;
-#endif
 
     VIR_DEBUG("Mounting basic filesystems %s pivotRoot=%d", NULLSTR(srcprefix), pivotRoot);
 
@@ -504,28 +500,15 @@ static int lxcContainerMountBasicFS(const char *srcprefix, bool pivotRoot)
     }
 
     if (pivotRoot) {
-#if HAVE_SELINUX
-        if (getfilecon("/", &con) < 0 &&
-            errno != ENOTSUP) {
-            virReportSystemError(errno, "%s",
-                                 _("Failed to query file context on /"));
-            goto cleanup;
-        }
-#endif
         /*
          * tmpfs is limited to 64kb, since we only have device nodes in there
          * and don't want to DOS the entire OS RAM usage
          */
 
-#if HAVE_SELINUX
-        if (con)
-            ignore_value(virAsprintf(&opts,
-                                     "mode=755,size=65536,context=\"%s\"",
-                                     (const char *)con));
-        else
-#endif
-            opts = strdup("mode=755,size=65536");
-
+        char *mount_options = virSecurityManagerGetMountOptions(securityDriver, def);
+        ignore_value(virAsprintf(&opts,
+                                 "mode=755,size=65536%s",(mount_options ? mount_options : "")));
+        VIR_FREE(mount_options);
         if (!opts) {
             virReportOOMError();
             goto cleanup;
@@ -1130,14 +1113,15 @@ cleanup:
 static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
                                       virDomainFSDefPtr root,
                                       char **ttyPaths,
-                                      size_t nttyPaths)
+                                      size_t nttyPaths,
+                                      virSecurityManagerPtr securityDriver)
 {
     /* Gives us a private root, leaving all parent OS mounts on /.oldroot */
     if (lxcContainerPivotRoot(root) < 0)
         return -1;
 
     /* Mounts the core /proc, /sys, etc filesystems */
-    if (lxcContainerMountBasicFS("/.oldroot", true) < 0)
+    if (lxcContainerMountBasicFS(vmDef, "/.oldroot", true, securityDriver) < 0)
         return -1;
 
     /* Mounts /dev/pts */
@@ -1162,7 +1146,8 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
 
 /* Nothing mapped to /, we're using the main root,
    but with extra stuff mapped in */
-static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef)
+static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
+                                        virSecurityManagerPtr securityDriver)
 {
     VIR_DEBUG("def=%p", vmDef);
     /*
@@ -1181,7 +1166,7 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef)
         return -1;
 
     /* Mounts the core /proc, /sys, etc filesystems */
-    if (lxcContainerMountBasicFS(NULL, false) < 0)
+    if (lxcContainerMountBasicFS(vmDef, NULL, false, securityDriver) < 0)
         return -1;
 
     VIR_DEBUG("Mounting completed");
@@ -1211,15 +1196,16 @@ static int lxcContainerResolveSymlinks(virDomainDefPtr vmDef)
 static int lxcContainerSetupMounts(virDomainDefPtr vmDef,
                                    virDomainFSDefPtr root,
                                    char **ttyPaths,
-                                   size_t nttyPaths)
+                                   size_t nttyPaths,
+                                   virSecurityManagerPtr securityDriver)
 {
     if (lxcContainerResolveSymlinks(vmDef) < 0)
         return -1;
 
     if (root)
-        return lxcContainerSetupPivotRoot(vmDef, root, ttyPaths, nttyPaths);
+        return lxcContainerSetupPivotRoot(vmDef, root, ttyPaths, nttyPaths, securityDriver);
     else
-        return lxcContainerSetupExtraMounts(vmDef);
+        return lxcContainerSetupExtraMounts(vmDef, securityDriver);
 }
 
 
@@ -1330,7 +1316,9 @@ static int lxcContainerChild( void *data )
         goto cleanup;
     }
 
-    if (lxcContainerSetupMounts(vmDef, root, argv->ttyPaths, argv->nttyPaths) < 0)
+    if (lxcContainerSetupMounts(vmDef, root,
+                                argv->ttyPaths, argv->nttyPaths,
+                                argv->securityDriver) < 0)
         goto cleanup;
 
     if (!virFileExists(vmDef->os.init)) {
