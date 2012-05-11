@@ -1017,26 +1017,29 @@ static int lxcContainerMountAllFS(virDomainDefPtr vmDef,
 }
 
 
-static int lxcContainerUnmountOldFS(void)
+static int lxcContainerGetSubtree(const char *prefix,
+                                  char ***mountsret,
+                                  size_t *nmountsret)
 {
-    struct mntent mntent;
-    char **mounts = NULL;
-    int nmounts = 0;
     FILE *procmnt;
-    int i;
+    struct mntent mntent;
     char mntbuf[1024];
-    int saveErrno;
-    const char *failedUmount = NULL;
     int ret = -1;
+    char **mounts = NULL;
+    size_t nmounts = 0;
+
+    *mountsret = NULL;
+    *nmountsret = 0;
 
     if (!(procmnt = setmntent("/proc/mounts", "r"))) {
         virReportSystemError(errno, "%s",
                              _("Failed to read /proc/mounts"));
         return -1;
     }
+
     while (getmntent_r(procmnt, &mntent, mntbuf, sizeof(mntbuf)) != NULL) {
         VIR_DEBUG("Got %s", mntent.mnt_dir);
-        if (!STRPREFIX(mntent.mnt_dir, "/.oldroot"))
+        if (!STRPREFIX(mntent.mnt_dir, prefix))
             continue;
 
         if (VIR_REALLOC_N(mounts, nmounts+1) < 0) {
@@ -1054,13 +1057,36 @@ static int lxcContainerUnmountOldFS(void)
         qsort(mounts, nmounts, sizeof(mounts[0]),
               lxcContainerChildMountSort);
 
+    *mountsret = mounts;
+    *nmountsret = nmounts;
+    ret = 0;
+
+cleanup:
+    endmntent(procmnt);
+    return ret;
+}
+
+static int lxcContainerUnmountSubtree(const char *prefix,
+                                      bool isOldRootFS)
+{
+    char **mounts = NULL;
+    size_t nmounts = 0;
+    size_t i;
+    int saveErrno;
+    const char *failedUmount = NULL;
+    int ret = -1;
+
+    VIR_DEBUG("Unmount subtreee from %s", prefix);
+
+    if (lxcContainerGetSubtree(prefix, &mounts, &nmounts) < 0)
+        return -1;
     for (i = 0 ; i < nmounts ; i++) {
         VIR_DEBUG("Umount %s", mounts[i]);
         if (umount(mounts[i]) < 0) {
             char ebuf[1024];
             failedUmount = mounts[i];
             saveErrno = errno;
-            VIR_WARN("Failed to unmount '%s', trying to detach root '%s': %s",
+            VIR_WARN("Failed to unmount '%s', trying to detach subtree '%s': %s",
                      failedUmount, mounts[nmounts-1],
                      virStrerror(errno, ebuf, sizeof(ebuf)));
             break;
@@ -1068,15 +1094,16 @@ static int lxcContainerUnmountOldFS(void)
     }
 
     if (failedUmount) {
-        /* This detaches the old root filesystem */
+        /* This detaches the subtree */
         if (umount2(mounts[nmounts-1], MNT_DETACH) < 0) {
             virReportSystemError(saveErrno,
-                                 _("Failed to unmount '%s' and could not detach old root '%s'"),
+                                 _("Failed to unmount '%s' and could not detach subtree '%s'"),
                                  failedUmount, mounts[nmounts-1]);
             goto cleanup;
         }
         /* This unmounts the tmpfs on which the old root filesystem was hosted */
-        if (umount(mounts[nmounts-1]) < 0) {
+        if (isOldRootFS &&
+            umount(mounts[nmounts-1]) < 0) {
             virReportSystemError(saveErrno,
                                  _("Failed to unmount '%s' and could not unmount old root '%s'"),
                                  failedUmount, mounts[nmounts-1]);
@@ -1089,7 +1116,6 @@ static int lxcContainerUnmountOldFS(void)
 cleanup:
     for (i = 0 ; i < nmounts ; i++)
         VIR_FREE(mounts[i]);
-    endmntent(procmnt);
     VIR_FREE(mounts);
 
     return ret;
@@ -1127,7 +1153,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
         return -1;
 
     /* Gets rid of all remaining mounts from host OS, including /.oldroot itself */
-    if (lxcContainerUnmountOldFS() < 0)
+    if (lxcContainerUnmountSubtree("/.oldroot", true) < 0)
         return -1;
 
     return 0;
@@ -1162,6 +1188,13 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
 
     VIR_DEBUG("Mounting config FS");
     if (lxcContainerMountAllFS(vmDef, "", false) < 0)
+        return -1;
+
+    /* Gets rid of any existing stuff under /proc, since we need new
+     * namespace aware versions of those. We must do /proc second
+     * otherwise we won't find /proc/mounts :-) */
+    if (lxcContainerUnmountSubtree("/sys", false) < 0 ||
+        lxcContainerUnmountSubtree("/proc", false) < 0)
         return -1;
 
     /* Mounts the core /proc, /sys, etc filesystems */
