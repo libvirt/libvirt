@@ -81,14 +81,14 @@ static int linuxNodeGetMemoryStats(FILE *meminfo,
                                    virNodeMemoryStatsPtr params,
                                    int *nparams);
 
-static char sysfs_path[1024];
 /* Return the positive decimal contents of the given
- * (*sysfs_path)/cpu%u/FILE, or -1 on error.  If MISSING_OK and the
+ * DIR/cpu%u/FILE, or -1 on error.  If MISSING_OK and the
  * file could not be found, return 1 instead of an error; this is
  * because some machines cannot hot-unplug cpu0, or because
  * hot-unplugging is disabled.  */
 static int
-get_cpu_value(unsigned int cpu, const char *file, bool missing_ok)
+virNodeGetCpuValue(const char *dir, unsigned int cpu, const char *file,
+                   bool missing_ok)
 {
     char *path;
     FILE *pathfp;
@@ -96,7 +96,7 @@ get_cpu_value(unsigned int cpu, const char *file, bool missing_ok)
     char value_str[INT_BUFSIZE_BOUND(value)];
     char *tmp;
 
-    if (virAsprintf(&path, "%s/cpu%u/%s", sysfs_path, cpu, file) < 0) {
+    if (virAsprintf(&path, "%s/cpu%u/%s", dir, cpu, file) < 0) {
         virReportOOMError();
         return -1;
     }
@@ -128,15 +128,8 @@ cleanup:
     return value;
 }
 
-/* Check if CPU is online via sysfs_path/cpu%u/online.  Return 1 if online,
-   0 if offline, and -1 on error.  */
-static int
-cpu_online(unsigned int cpu)
-{
-    return get_cpu_value(cpu, "online", true);
-}
-
-static unsigned long count_thread_siblings(unsigned int cpu)
+static unsigned long
+virNodeCountThreadSiblings(const char *dir, unsigned int cpu)
 {
     unsigned long ret = 0;
     char *path;
@@ -145,7 +138,7 @@ static unsigned long count_thread_siblings(unsigned int cpu)
     int i;
 
     if (virAsprintf(&path, "%s/cpu%u/topology/thread_siblings",
-                    sysfs_path, cpu) < 0) {
+                    dir, cpu) < 0) {
         virReportOOMError();
         return 0;
     }
@@ -180,9 +173,11 @@ cleanup:
     return ret;
 }
 
-static int parse_socket(unsigned int cpu)
+static int
+virNodeParseSocket(const char *dir, unsigned int cpu)
 {
-    int ret = get_cpu_value(cpu, "topology/physical_package_id", false);
+    int ret = virNodeGetCpuValue(dir, cpu, "topology/physical_package_id",
+                                 false);
 # if defined(__powerpc__) || \
     defined(__powerpc64__) || \
     defined(__s390__) || \
@@ -192,11 +187,6 @@ static int parse_socket(unsigned int cpu)
         ret = 0;
 # endif
     return ret;
-}
-
-static int parse_core(unsigned int cpu)
-{
-    return get_cpu_value(cpu, "topology/core_id", false);
 }
 
 int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
@@ -222,10 +212,6 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
         nodeinfo->nodes = numa_max_node() + 1;
 # endif
 
-    if (!virStrcpyStatic(sysfs_path, sysfs_cpudir)) {
-        virReportSystemError(errno, _("cannot copy %s"), sysfs_cpudir);
-        return -1;
-    }
     /* NB: It is impossible to fill our nodes, since cpuinfo
      * has no knowledge of NUMA nodes */
 
@@ -296,7 +282,7 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
         if (sscanf(cpudirent->d_name, "cpu%u", &cpu) != 1)
             continue;
 
-        online = cpu_online(cpu);
+        online = virNodeGetCpuValue(sysfs_cpudir, cpu, "online", true);
         if (online < 0) {
             closedir(cpudir);
             return -1;
@@ -306,20 +292,20 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
         nodeinfo->cpus++;
 
         /* Parse core */
-        core = parse_core(cpu);
+        core = virNodeGetCpuValue(sysfs_cpudir, cpu, "topology/core_id", false);
         if (!CPU_ISSET(core, &core_mask)) {
             CPU_SET(core, &core_mask);
             nodeinfo->cores++;
         }
 
         /* Parse socket */
-        sock = parse_socket(cpu);
+        sock = virNodeParseSocket(sysfs_cpudir, cpu);
         if (!CPU_ISSET(sock, &socket_mask)) {
             CPU_SET(sock, &socket_mask);
             nodeinfo->sockets++;
         }
 
-        cur_threads = count_thread_siblings(cpu);
+        cur_threads = virNodeCountThreadSiblings(sysfs_cpudir, cpu);
         if (cur_threads == 0) {
             closedir(cpudir);
             return -1;
@@ -329,7 +315,7 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
     }
     if (errno) {
         virReportSystemError(errno,
-                             _("problem reading %s"), sysfs_path);
+                             _("problem reading %s"), sysfs_cpudir);
         closedir(cpudir);
         return -1;
     }
@@ -627,7 +613,6 @@ int nodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED, virNodeInfoPtr nodeinfo) {
 #ifdef __linux__
     {
     int ret = -1;
-    char *sysfs_cpuinfo = NULL;
     FILE *cpuinfo = fopen(CPUINFO_PATH, "r");
     if (!cpuinfo) {
         virReportSystemError(errno,
@@ -635,12 +620,7 @@ int nodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED, virNodeInfoPtr nodeinfo) {
         return -1;
     }
 
-    if (virAsprintf(&sysfs_cpuinfo, CPU_SYS_PATH) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    ret = linuxNodeInfoCPUPopulate(cpuinfo, sysfs_cpuinfo, nodeinfo);
+    ret = linuxNodeInfoCPUPopulate(cpuinfo, CPU_SYS_PATH, nodeinfo);
     if (ret < 0)
         goto cleanup;
 
@@ -649,7 +629,6 @@ int nodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED, virNodeInfoPtr nodeinfo) {
 
 cleanup:
     VIR_FORCE_FCLOSE(cpuinfo);
-    VIR_FREE(sysfs_cpuinfo);
     return ret;
     }
 #else
