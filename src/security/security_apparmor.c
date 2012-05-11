@@ -328,12 +328,15 @@ AppArmorSetSecurityPCILabel(pciDevice *dev ATTRIBUTE_UNUSED,
 
 /* Called on libvirtd startup to see if AppArmor is available */
 static int
-AppArmorSecurityManagerProbe(const char *virtDriver ATTRIBUTE_UNUSED)
+AppArmorSecurityManagerProbe(const char *virtDriver)
 {
     char *template = NULL;
     int rc = SECURITY_DRIVER_DISABLE;
 
     if (use_apparmor() < 0)
+        return rc;
+
+    if (virtDriver && STREQ(virtDriver, "LXC"))
         return rc;
 
     /* see if template file exists */
