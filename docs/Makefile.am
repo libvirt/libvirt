@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2011 Red Hat, Inc.
+## Copyright (C) 2005-2012 Red Hat, Inc.
 ## See COPYING.LIB for the License of this software
 
 SUBDIRS= schemas
@@ -200,8 +200,8 @@ python_generated_files = \
 		$(srcdir)/libvirt-qemu-api.xml \
 		$(srcdir)/libvirt-qemu-refs.xml
 
-APIBUILD="$(srcdir)/apibuild.py"
-APIBUILD_STAMP="$(APIBUILD).stamp"
+APIBUILD=$(srcdir)/apibuild.py
+APIBUILD_STAMP=$(APIBUILD).stamp
 
 $(python_generated_files): $(APIBUILD_STAMP)
 
