@@ -1825,20 +1825,13 @@ qemuProcessInitCpuAffinity(struct qemud_driver *driver,
     if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
         VIR_DEBUG("Set CPU affinity with advisory nodeset from numad");
         /* numad returns the NUMA node list, convert it to cpumap */
-        int prev_total_ncpus = 0;
         for (i = 0; i < driver->caps->host.nnumaCell; i++) {
             int j;
             int cur_ncpus = driver->caps->host.numaCell[i]->ncpus;
             if (nodemask[i]) {
-                for (j = prev_total_ncpus;
-                     j < cur_ncpus + prev_total_ncpus &&
-                     j < maxcpu &&
-                     j < VIR_DOMAIN_CPUMASK_LEN;
-                     j++) {
-                    VIR_USE_CPU(cpumap, j);
-                }
+                for (j = 0; j < cur_ncpus; j++)
+                    VIR_USE_CPU(cpumap, driver->caps->host.numaCell[i]->cpus[j]);
             }
-            prev_total_ncpus += cur_ncpus;
         }
     } else {
         VIR_DEBUG("Set CPU affinity with specified cpuset");
