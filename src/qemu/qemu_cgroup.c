@@ -194,7 +194,8 @@ int qemuSetupHostUsbDeviceCgroup(usbDevice *dev ATTRIBUTE_UNUSED,
 }
 
 int qemuSetupCgroup(struct qemud_driver *driver,
-                    virDomainObjPtr vm)
+                    virDomainObjPtr vm,
+                    char *nodemask)
 {
     virCgroupPtr cgroup = NULL;
     int rc;
@@ -391,10 +392,18 @@ int qemuSetupCgroup(struct qemud_driver *driver,
         }
     }
 
-    if (vm->def->numatune.memory.nodemask &&
+    if ((vm->def->numatune.memory.nodemask ||
+         (vm->def->numatune.memory.placement_mode ==
+          VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO)) &&
         vm->def->numatune.memory.mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
         qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPUSET)) {
-        char *mask = virDomainCpuSetFormat(vm->def->numatune.memory.nodemask, VIR_DOMAIN_CPUMASK_LEN);
+        char *mask = NULL;
+        if (vm->def->numatune.memory.placement_mode ==
+            VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO)
+            mask = virDomainCpuSetFormat(nodemask, VIR_DOMAIN_CPUMASK_LEN);
+        else
+            mask = virDomainCpuSetFormat(vm->def->numatune.memory.nodemask,
+                                         VIR_DOMAIN_CPUMASK_LEN);
         if (!mask) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("failed to convert memory nodemask"));

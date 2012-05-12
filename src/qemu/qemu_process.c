@@ -2537,6 +2537,7 @@ struct qemuProcessHookData {
     virConnectPtr conn;
     virDomainObjPtr vm;
     struct qemud_driver *driver;
+    char *nodemask;
 };
 
 static int qemuProcessHook(void *data)
@@ -2544,8 +2545,6 @@ static int qemuProcessHook(void *data)
     struct qemuProcessHookData *h = data;
     int ret = -1;
     int fd;
-    char *nodeset = NULL;
-    char *nodemask = NULL;
 
     /* Some later calls want pid present */
     h->vm->pid = getpid();
@@ -2575,37 +2574,16 @@ static int qemuProcessHook(void *data)
     /* This must take place before exec(), so that all QEMU
      * memory allocation is on the correct NUMA node
      */
-    VIR_DEBUG("Moving procss to cgroup");
+    VIR_DEBUG("Moving process to cgroup");
     if (qemuAddToCgroup(h->driver, h->vm->def) < 0)
         goto cleanup;
 
-    if ((h->vm->def->placement_mode ==
-         VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) ||
-        (h->vm->def->numatune.memory.placement_mode ==
-         VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO)) {
-        nodeset = qemuGetNumadAdvice(h->vm->def);
-        if (!nodeset)
-            goto cleanup;
-
-        VIR_DEBUG("Nodeset returned from numad: %s", nodeset);
-
-        if (VIR_ALLOC_N(nodemask, VIR_DOMAIN_CPUMASK_LEN) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-
-        if (virDomainCpuSetParse(nodeset, 0, nodemask,
-                                 VIR_DOMAIN_CPUMASK_LEN) < 0)
-            goto cleanup;
-    }
-
     /* This must be done after cgroup placement to avoid resetting CPU
      * affinity */
-    VIR_DEBUG("Setup CPU affinity");
-    if (qemuProcessInitCpuAffinity(h->driver, h->vm, nodemask) < 0)
+    if (qemuProcessInitCpuAffinity(h->driver, h->vm, h->nodemask) < 0)
         goto cleanup;
 
-    if (qemuProcessInitNumaMemoryPolicy(h->vm, nodemask) < 0)
+    if (qemuProcessInitNumaMemoryPolicy(h->vm, h->nodemask) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting up security labelling");
@@ -2616,8 +2594,6 @@ static int qemuProcessHook(void *data)
 
 cleanup:
     VIR_DEBUG("Hook complete ret=%d", ret);
-    VIR_FREE(nodeset);
-    VIR_FREE(nodemask);
     return ret;
 }
 
@@ -3293,6 +3269,8 @@ int qemuProcessStart(virConnectPtr conn,
     struct qemuProcessHookData hookData;
     unsigned long cur_balloon;
     int i;
+    char *nodeset = NULL;
+    char *nodemask = NULL;
 
     /* Okay, these are just internal flags,
      * but doesn't hurt to check */
@@ -3448,8 +3426,32 @@ int qemuProcessStart(virConnectPtr conn,
                                     flags & VIR_QEMU_PROCESS_START_COLD) < 0)
         goto cleanup;
 
+    /* Get the advisory nodeset from numad if 'placement' of
+     * either <vcpu> or <numatune> is 'auto'.
+     */
+    if ((vm->def->placement_mode ==
+         VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) ||
+        (vm->def->numatune.memory.placement_mode ==
+         VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO)) {
+        nodeset = qemuGetNumadAdvice(vm->def);
+        if (!nodeset)
+            goto cleanup;
+
+        VIR_DEBUG("Nodeset returned from numad: %s", nodeset);
+
+        if (VIR_ALLOC_N(nodemask, VIR_DOMAIN_CPUMASK_LEN) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (virDomainCpuSetParse(nodeset, 0, nodemask,
+                                 VIR_DOMAIN_CPUMASK_LEN) < 0)
+            goto cleanup;
+    }
+    hookData.nodemask = nodemask;
+
     VIR_DEBUG("Setting up domain cgroup (if required)");
-    if (qemuSetupCgroup(driver, vm) < 0)
+    if (qemuSetupCgroup(driver, vm, nodemask) < 0)
         goto cleanup;
 
     if (VIR_ALLOC(priv->monConfig) < 0) {
@@ -3754,6 +3756,8 @@ cleanup:
     /* We jump here if we failed to start the VM for any reason, or
      * if we failed to initialize the now running VM. kill it off and
      * pretend we never started it */
+    VIR_FREE(nodeset);
+    VIR_FREE(nodemask);
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(logfile);
     qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_FAILED);
