@@ -2785,13 +2785,14 @@ int qemuMonitorBlockJob(qemuMonitorPtr mon,
               modern);
 
     /* Convert bandwidth MiB to bytes */
-    if (bandwidth * 1ULL > ULLONG_MAX / 1024 / 1024) {
+    speed = bandwidth;
+    if (speed > ULLONG_MAX / 1024 / 1024) {
         qemuReportError(VIR_ERR_OVERFLOW,
                         _("bandwidth must be less than %llu"),
                         ULLONG_MAX / 1024 / 1024);
         return -1;
     }
-    speed = bandwidth * 1024ULL * 1024ULL;
+    speed <<= 20;
 
     if (mon->json)
         ret = qemuMonitorJSONBlockJob(mon, device, base, speed, info, mode,
