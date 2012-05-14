@@ -1,7 +1,7 @@
 /*
  * lock_driver_sanlock.c: A lock driver for Sanlock
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -65,6 +65,7 @@ struct _virLockManagerSanlockDriver {
     bool requireLeaseForDisks;
     int hostID;
     bool autoDiskLease;
+    bool ignoreReadonlyShared;
     char *autoDiskLeasePath;
 };
 
@@ -113,6 +114,10 @@ static int virLockManagerSanlockLoadConfig(const char *configFile)
     p = virConfGetValue(conf, "auto_disk_leases");
     CHECK_TYPE("auto_disk_leases", VIR_CONF_LONG);
     if (p) driver->autoDiskLease = p->l;
+
+    p = virConfGetValue(conf, "ignore_readonly_and_shared_disks");
+    CHECK_TYPE("ignore_readonly_and_shared_disks", VIR_CONF_LONG);
+    if (p) driver->ignoreReadonlyShared = p->l;
 
     p = virConfGetValue(conf, "disk_lease_dir");
     CHECK_TYPE("disk_lease_dir", VIR_CONF_STRING);
@@ -623,6 +628,12 @@ static int virLockManagerSanlockAddResource(virLockManagerPtr lock,
                      _("Too many resources %d for object"),
                      SANLK_MAX_RESOURCES);
         return -1;
+    }
+
+    if ((flags & (VIR_LOCK_MANAGER_RESOURCE_READONLY |
+                  VIR_LOCK_MANAGER_RESOURCE_SHARED)) &&
+        driver->ignoreReadonlyShared) {
+            return 0;
     }
 
     if (flags & VIR_LOCK_MANAGER_RESOURCE_READONLY) {

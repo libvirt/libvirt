@@ -21,6 +21,7 @@ module Libvirt_sanlock =
              | bool_entry "auto_disk_leases"
              | int_entry "host_id"
              | bool_entry "require_lease_for_disks"
+             | bool_entry "ignore_readonly_and_shared_disks"
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]
 

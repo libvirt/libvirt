@@ -4,6 +4,7 @@ module Test_libvirt_sanlock =
 disk_lease_dir = \"/var/lib/libvirt/sanlock\"
 host_id = 1
 require_lease_for_disks = 1
+ignore_readonly_and_shared_disks = 1
 "
 
    test Libvirt_sanlock.lns get conf =
@@ -11,3 +12,4 @@ require_lease_for_disks = 1
 { "disk_lease_dir" = "/var/lib/libvirt/sanlock" }
 { "host_id" = "1" }
 { "require_lease_for_disks" = "1" }
+{ "ignore_readonly_and_shared_disks" = "1" }
