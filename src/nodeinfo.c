@@ -237,6 +237,7 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
     int online;
     int ret = -1;
     char *sysfs_cpudir = NULL;
+    unsigned int cpu_cores = 0;
 
     nodeinfo->cpus = 0;
     nodeinfo->mhz = 0;
@@ -252,33 +253,58 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
         if (STRPREFIX(buf, "cpu MHz")) {
             char *p;
             unsigned int ui;
+
             buf += 9;
             while (*buf && c_isspace(*buf))
                 buf++;
+
             if (*buf != ':' || !buf[1]) {
                 nodeReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s", _("parsing cpuinfo cpu MHz"));
+                                "%s", _("parsing cpu MHz from cpuinfo"));
                 goto cleanup;
             }
+
             if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0
                 /* Accept trailing fractional part.  */
                 && (*p == '\0' || *p == '.' || c_isspace(*p)))
                 nodeinfo->mhz = ui;
         }
+
+        if (STRPREFIX(buf, "cpu cores")) {
+            char *p;
+            unsigned int ui;
+
+            buf += 9;
+            while (*buf && c_isspace(*buf))
+                buf++;
+
+            if (*buf != ':' || !buf[1]) {
+                nodeReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("parsing cpu cores from cpuinfo"));
+                return -1;
+            }
+
+            if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0
+                && (*p == '\0' || c_isspace(*p)))
+                cpu_cores = ui;
+         }
 # elif defined(__powerpc__) || \
       defined(__powerpc64__)
         char *buf = line;
         if (STRPREFIX(buf, "clock")) {
             char *p;
             unsigned int ui;
+
             buf += 5;
             while (*buf && c_isspace(*buf))
                 buf++;
+
             if (*buf != ':' || !buf[1]) {
                 nodeReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s", _("parsing cpuinfo cpu MHz"));
+                                "%s", _("parsing cpu MHz from cpuinfo"));
                 goto cleanup;
             }
+
             if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0
                 /* Accept trailing fractional part.  */
                 && (*p == '\0' || *p == '.' || c_isspace(*p)))
@@ -376,6 +402,16 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                         "%s", _("no threads found"));
         goto cleanup;
     }
+
+    /* Platform like AMD Magny Cours has two NUMA nodes each package, and
+     * the two nodes share the same core ID set, it results in the cores
+     * number calculated from sysfs is not the actual cores number. Use
+     * "cpu cores" in /proc/cpuinfo as the cores number instead in this case.
+     * More details about the problem:
+     * https://www.redhat.com/archives/libvir-list/2012-May/msg00607.html
+     */
+    if (cpu_cores && (cpu_cores > nodeinfo->cores))
+        nodeinfo->cores = cpu_cores;
 
     /* nodeinfo->sockets is supposed to be a number of sockets per NUMA node,
      * however if NUMA nodes are not composed of whole sockets, we just lie
