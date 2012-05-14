@@ -120,6 +120,7 @@ enum virStoragePoolType {
     VIR_STORAGE_POOL_ISCSI,    /* iSCSI targets */
     VIR_STORAGE_POOL_SCSI,     /* SCSI HBA */
     VIR_STORAGE_POOL_MPATH,    /* Multipath devices */
+    VIR_STORAGE_POOL_RBD,      /* RADOS Block Device */
 
     VIR_STORAGE_POOL_LAST,
 };
@@ -137,6 +138,7 @@ enum virStoragePoolDeviceType {
 enum virStoragePoolAuthType {
     VIR_STORAGE_POOL_AUTH_NONE,
     VIR_STORAGE_POOL_AUTH_CHAP,
+    VIR_STORAGE_POOL_AUTH_CEPHX,
 };
 
 typedef struct _virStoragePoolAuthChap virStoragePoolAuthChap;
@@ -146,6 +148,15 @@ struct _virStoragePoolAuthChap {
     char *passwd;
 };
 
+typedef struct _virStoragePoolAuthCephx virStoragePoolAuthCephx;
+typedef virStoragePoolAuthCephx *virStoragePoolAuthCephxPtr;
+struct _virStoragePoolAuthCephx {
+    char *username;
+    struct {
+            unsigned char uuid[VIR_UUID_BUFLEN];
+            char *usage;
+    } secret;
+};
 
 /*
  * For remote pools, info on how to reach the host
@@ -235,6 +246,7 @@ struct _virStoragePoolSource {
     int authType;       /* virStoragePoolAuthType */
     union {
         virStoragePoolAuthChap chap;
+        virStoragePoolAuthCephx cephx;
     } auth;
 
     /* Vendor of the source */

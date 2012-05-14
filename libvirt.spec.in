@@ -73,6 +73,9 @@
 %define with_storage_iscsi 0%{!?_without_storage_iscsi:%{server_drivers}}
 %define with_storage_disk  0%{!?_without_storage_disk:%{server_drivers}}
 %define with_storage_mpath 0%{!?_without_storage_mpath:%{server_drivers}}
+%if 0%{?fedora} >= 16
+%define with_storage_rbd   0%{!?_without_storage_rbd:%{server_drivers}}
+%endif
 %define with_numactl       0%{!?_without_numactl:%{server_drivers}}
 %define with_selinux       0%{!?_without_selinux:%{server_drivers}}
 
@@ -215,6 +218,7 @@
 %define with_storage_lvm 0
 %define with_storage_iscsi 0
 %define with_storage_mpath 0
+%define with_storage_rbd 0
 %define with_storage_disk 0
 %endif
 
@@ -407,6 +411,9 @@ BuildRequires: device-mapper
 %else
 BuildRequires: device-mapper-devel
 %endif
+%if %{with_storage_rbd}
+BuildRequires: ceph-devel
+%endif
 %endif
 %if %{with_numactl}
 # For QEMU/LXC numa info
@@ -559,6 +566,10 @@ Requires: device-mapper
 %if %{with_storage_mpath}
 # For multipath support
 Requires: device-mapper
+%endif
+%if %{with_storage_rbd}
+# For RBD support
+Requires: ceph
 %endif
 %if %{with_cgconfig}
 Requires: libcgroup
@@ -840,6 +851,10 @@ of recent versions of Linux (and other OSes).
 %define _without_storage_mpath --without-storage-mpath
 %endif
 
+%if ! %{with_storage_rbd}
+%define _without_storage_rbd --without-storage-rbd
+%endif
+
 %if ! %{with_numactl}
 %define _without_numactl --without-numactl
 %endif
@@ -933,6 +948,7 @@ autoreconf -if
            %{?_without_storage_iscsi} \
            %{?_without_storage_disk} \
            %{?_without_storage_mpath} \
+           %{?_without_storage_rbd} \
            %{?_without_numactl} \
            %{?_without_numad} \
            %{?_without_capng} \

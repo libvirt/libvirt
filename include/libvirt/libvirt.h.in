@@ -2361,6 +2361,7 @@ typedef enum {
   VIR_STORAGE_VOL_FILE = 0,     /* Regular file based volumes */
   VIR_STORAGE_VOL_BLOCK = 1,    /* Block based volumes */
   VIR_STORAGE_VOL_DIR = 2,      /* Directory-passthrough based volume */
+  VIR_STORAGE_VOL_NETWORK = 3,  /* Network volumes like RBD (RADOS Block Device) */
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_STORAGE_VOL_LAST

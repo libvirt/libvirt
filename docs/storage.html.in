@@ -107,6 +107,9 @@
       <li>
         <a href="#StorageBackendMultipath">Multipath backend</a>
       </li>
+      <li>
+        <a href="#StorageBackendRBD">RBD (RADOS Block Device) backend</a>
+      </li>
     </ul>
 
     <h2><a name="StorageBackendDir">Directory pool</a></h2>
@@ -491,6 +494,76 @@
       The Multipath volume pool does not use the volume format type element.
     </p>
 
+    <h2><a name="StorageBackendRBD">RBD pools</a></h2>
+    <p>
+      This storage driver provides a pool which contains all RBD
+      images in a RADOS pool.  RBD (RADOS Block Device) is part
+      of the Ceph distributed storage project.<br/>
+      This backend <i>only</i> supports Qemu with RBD support. Kernel RBD
+      which exposes RBD devices as block devices in /dev is <i>not</i>
+      supported. RBD images created with this storage backend
+      can be accessed through kernel RBD if configured manually, but
+      this backend does not provide mapping for these images.<br/>
+      Images created with this backend can be attached to Qemu guests
+      when Qemu is build with RBD support (Since Qemu 0.14.0). The
+      backend supports cephx authentication for communication with the
+      Ceph cluster. Storing the cephx authentication key is done with
+      the libvirt secret mechanism. The UUID in the example pool input
+      refers to the UUID of the stored secret.
+      <span class="since">Since 0.9.13</span>
+    </p>
+
+    <h3>Example pool input</h3>
+    <pre>
+      &lt;pool type="rbd"&gt;
+        &lt;name&gt;myrbdpool&lt;/name&gt;
+        &lt;source&gt;
+          &lt;name&gt;rbdpool&lt;/name&gt;
+            &lt;host name='1.2.3.4' port='6789'/&gt;
+            &lt;host name='my.ceph.monitor' port='6789'/&gt;
+            &lt;host name='third.ceph.monitor' port='6789'/&gt;
+            &lt;auth username='admin' type='ceph'&gt;
+              &lt;secret uuid='2ec115d7-3a88-3ceb-bc12-0ac909a6fd87'/&gt;
+            &lt;/auth&gt;
+        &lt;/source&gt;
+      &lt;/pool&gt;</pre>
+
+    <h3>Example volume output</h3>
+    <pre>
+       &lt;volume&gt;
+         &lt;name&gt;myvol&lt;/name&gt;
+         &lt;key&gt;rbd/myvol&lt;/key&gt;
+         &lt;source&gt;
+         &lt;/source&gt;
+         &lt;capacity unit='bytes'&gt;53687091200&lt;/capacity&gt;
+         &lt;allocation unit='bytes'&gt;53687091200&lt;/allocation&gt;
+         &lt;target&gt;
+           &lt;path&gt;rbd:rbd/myvol&lt;/path&gt;
+           &lt;format type='unknown'/&gt;
+           &lt;permissions&gt;
+             &lt;mode&gt;00&lt;/mode&gt;
+             &lt;owner&gt;0&lt;/owner&gt;
+             &lt;group&gt;0&lt;/group&gt;
+           &lt;/permissions&gt;
+         &lt;/target&gt;
+       &lt;/volume&gt;</pre>
+
+    <h3>Example disk attachement</h3>
+    <p>RBD images can be attached to Qemu guests when Qemu is built
+    with RBD support. Information about attaching a RBD image to a
+    guest can be found
+    at <a href="formatdomain.html#elementsDisks">format domain</a>
+    page.</p>
+
+    <h3>Valid pool format types</h3>
+    <p>
+      The RBD pool does not use the pool format type element.
+    </p>
+
+    <h3>Valid volume format types</h3>
+    <p>
+      The RBD pool does not use the volume format type element.
+    </p>
 
   </body>
 </html>

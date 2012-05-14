@@ -42,6 +42,7 @@
       <li><strong><a href="storage.html#StorageBackendISCSI">iSCSI backend</a></strong></li>
       <li><strong><a href="storage.html#StorageBackendSCSI">SCSI backend</a></strong></li>
       <li><strong><a href="storage.html#StorageBackendMultipath">Multipath backend</a></strong></li>
+      <li><strong><a href="storage.html#StorageBackendRBD">RBD (RADOS Block Device) backend</a></strong></li>
     </ul>
   </body>
 </html>

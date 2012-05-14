@@ -12203,6 +12203,10 @@ cmdVolInfo(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "%-15s %s\n", _("Type:"), _("dir"));
             break;
 
+        case VIR_STORAGE_VOL_NETWORK:
+            vshPrint(ctl, "%-15s %s\n", _("Type:"), _("network"));
+            break;
+
         default:
             vshPrint(ctl, "%-15s %s\n", _("Type:"), _("unknown"));
         }
@@ -20137,6 +20141,9 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #endif
 #ifdef WITH_STORAGE_LVM
     vshPrint(ctl, " LVM");
+#endif
+#ifdef WITH_STORAGE_RBD
+    vshPrint(ctl, " RBD");
 #endif
     vshPrint(ctl, "\n");
 

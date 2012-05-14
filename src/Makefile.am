@@ -500,6 +500,9 @@ STORAGE_DRIVER_MPATH_SOURCES =					\
 STORAGE_DRIVER_DISK_SOURCES =					\
 		storage/storage_backend_disk.h storage/storage_backend_disk.c
 
+STORAGE_DRIVER_RBD_SOURCES =					\
+		storage/storage_backend_rbd.h storage/storage_backend_rbd.c
+
 STORAGE_HELPER_DISK_SOURCES =					\
 		storage/parthelper.c
 
@@ -1047,6 +1050,11 @@ if WITH_STORAGE_DISK
 libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_DISK_SOURCES)
 endif
 
+if WITH_STORAGE_RBD
+libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_RBD_SOURCES)
+libvirt_driver_storage_la_LIBADD += $(LIBRBD_LIBS)
+endif
+
 if WITH_NODE_DEVICES
 # Needed to keep automake quiet about conditionals
 if WITH_DRIVER_MODULES
@@ -1146,6 +1154,7 @@ EXTRA_DIST +=							\
 		$(STORAGE_DRIVER_SCSI_SOURCES)			\
 		$(STORAGE_DRIVER_MPATH_SOURCES)			\
 		$(STORAGE_DRIVER_DISK_SOURCES)			\
+		$(STORAGE_DRIVER_RBD_SOURCES)			\
 		$(NODE_DEVICE_DRIVER_SOURCES)			\
 		$(NODE_DEVICE_DRIVER_HAL_SOURCES)		\
 		$(NODE_DEVICE_DRIVER_UDEV_SOURCES)		\

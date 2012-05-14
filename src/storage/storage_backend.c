@@ -77,6 +77,9 @@
 #if WITH_STORAGE_DIR
 # include "storage_backend_fs.h"
 #endif
+#if WITH_STORAGE_RBD
+# include "storage_backend_rbd.h"
+#endif
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -102,6 +105,9 @@ static virStorageBackendPtr backends[] = {
 #endif
 #if WITH_STORAGE_DISK
     &virStorageBackendDisk,
+#endif
+#if WITH_STORAGE_RBD
+    &virStorageBackendRBD,
 #endif
     NULL
 };

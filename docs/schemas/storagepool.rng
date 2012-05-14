@@ -19,6 +19,7 @@
         <ref name='pooliscsi'/>
         <ref name='poolscsi'/>
         <ref name='poolmpath'/>
+        <ref name='poolrbd'/>
       </choice>
     </element>
   </define>
@@ -105,6 +106,15 @@
     <ref name='target'/>
   </define>
 
+  <define name='poolrbd'>
+    <attribute name='type'>
+      <value>rbd</value>
+    </attribute>
+    <ref name='commonmetadata'/>
+    <ref name='sizing'/>
+    <ref name='sourcerbd'/>
+  </define>
+
   <define name='sourceinfovendor'>
     <optional>
       <element name='vendor'>
@@ -184,17 +194,19 @@
   </define>
 
   <define name='sourceinfohost'>
-    <element name='host'>
-      <attribute name='name'>
-        <text/>
-      </attribute>
-      <optional>
-        <attribute name='port'>
-          <ref name="PortNumber"/>
+    <oneOrMore>
+      <element name='host'>
+        <attribute name='name'>
+          <text/>
         </attribute>
-      </optional>
-      <empty/>
-    </element>
+        <optional>
+          <attribute name='port'>
+            <ref name="PortNumber"/>
+          </attribute>
+        </optional>
+        <empty/>
+      </element>
+    </oneOrMore>
   </define>
 
   <define name='sourceinfodev'>
@@ -265,14 +277,38 @@
       <attribute name='type'>
         <choice>
           <value>chap</value>
+          <value>ceph</value>
         </choice>
       </attribute>
-      <attribute name='login'>
-        <text/>
-      </attribute>
-      <attribute name='passwd'>
-        <text/>
-      </attribute>
+      <choice>
+        <attribute name='login'>
+          <text/>
+        </attribute>
+        <attribute name='username'>
+          <text/>
+        </attribute>
+      </choice>
+      <optional>
+        <attribute name='passwd'>
+          <text/>
+        </attribute>
+      </optional>
+      <optional>
+        <ref name='sourceinfoauthsecret'/>
+      </optional>
+    </element>
+  </define>
+
+  <define name='sourceinfoauthsecret'>
+    <element name='secret'>
+      <choice>
+        <attribute name='uuid'>
+          <text/>
+        </attribute>
+        <attribute name='usage'>
+          <text/>
+        </attribute>
+      </choice>
     </element>
   </define>
 
@@ -447,6 +483,16 @@
   <define name='sourcempath'>
     <element name='source'>
       <empty/>
+    </element>
+  </define>
+
+  <define name='sourcerbd'>
+    <element name='source'>
+      <ref name='sourceinfoname'/>
+      <ref name='sourceinfohost'/>
+      <optional>
+        <ref name='sourceinfoauth'/>
+      </optional>
     </element>
   </define>
 
