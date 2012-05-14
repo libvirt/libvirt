@@ -779,6 +779,7 @@ qemuAssignSpaprVIOAddress(virDomainDefPtr def, virDomainDeviceInfoPtr info,
 int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
 {
     int i, rc;
+    int model;
 
     /* Default values match QEMU. See spapr_(llan|vscsi|vty).c */
 
@@ -790,10 +791,18 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
     }
 
     for (i = 0 ; i < def->ncontrollers; i++) {
-        rc = qemuAssignSpaprVIOAddress(def, &def->controllers[i]->info,
-                                       0x2000ul);
-        if (rc)
-            return rc;
+        model = def->controllers[i]->model;
+        if (model == -1 &&
+            def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
+            model = qemuDefaultScsiControllerModel(def);
+        if (model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI &&
+            def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
+            def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
+            rc = qemuAssignSpaprVIOAddress(def, &def->controllers[i]->info,
+                                           0x2000ul);
+            if (rc)
+                return rc;
+        }
     }
 
     for (i = 0 ; i < def->nserials; i++) {
