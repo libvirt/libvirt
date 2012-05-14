@@ -8,44 +8,40 @@
     <type arch='i686' machine='pc'>hvm</type>
     <boot dev='hd'/>
   </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu</emulator>
-    <!-- Intentionally mixed up ordering to check we assign
-         addresses to the correct matching companions -->
-    <controller type='usb' index='0' model='ich9-ehci1'>
-    </controller>
-    <controller type='usb' index='2' model='ich9-ehci1'>
-    </controller>
-    <controller type='usb' index='1' model='ich9-ehci1'>
-    </controller>
-
+    <controller type='usb' index='0' model='ich9-ehci1'/>
     <controller type='usb' index='0' model='ich9-uhci1'>
       <master startport='0'/>
     </controller>
-    <controller type='usb' index='1' model='ich9-uhci1'>
-      <master startport='0'/>
-    </controller>
-    <controller type='usb' index='2' model='ich9-uhci1'>
-      <master startport='0'/>
-    </controller>
-
     <controller type='usb' index='0' model='ich9-uhci3'>
       <master startport='4'/>
+    </controller>
+    <controller type='usb' index='0' model='ich9-uhci2'>
+      <master startport='2'/>
+    </controller>
+    <controller type='usb' index='1' model='ich9-ehci1'/>
+    <controller type='usb' index='1' model='ich9-uhci1'>
+      <master startport='0'/>
     </controller>
     <controller type='usb' index='1' model='ich9-uhci3'>
       <master startport='4'/>
     </controller>
-    <controller type='usb' index='2' model='ich9-uhci3'>
-      <master startport='4'/>
-    </controller>
-
-    <controller type='usb' index='2' model='ich9-uhci2'>
-      <master startport='2'/>
-    </controller>
     <controller type='usb' index='1' model='ich9-uhci2'>
       <master startport='2'/>
     </controller>
-    <controller type='usb' index='0' model='ich9-uhci2'>
+    <controller type='usb' index='2' model='ich9-ehci1'/>
+    <controller type='usb' index='2' model='ich9-uhci1'>
+      <master startport='0'/>
+    </controller>
+    <controller type='usb' index='2' model='ich9-uhci3'>
+      <master startport='4'/>
+    </controller>
+    <controller type='usb' index='2' model='ich9-uhci2'>
       <master startport='2'/>
     </controller>
     <memballoon model='virtio'/>

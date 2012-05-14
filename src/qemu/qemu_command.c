@@ -1177,8 +1177,7 @@ void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs)
 }
 
 
-int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
-                                    virDomainDeviceInfoPtr dev)
+static int qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs)
 {
     int i;
     int iteration;
@@ -1205,26 +1204,48 @@ int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
             continue;
         }
 
-        VIR_DEBUG("Allocating PCI addr %s", addr);
+        VIR_DEBUG("Found free PCI addr %s", addr);
         VIR_FREE(addr);
 
-        if (qemuDomainPCIAddressReserveSlot(addrs, i) < 0)
-            return -1;
-
-        dev->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-        dev->addr.pci = maybe.addr.pci;
-
-        addrs->nextslot = i + 1;
-        if (QEMU_PCI_ADDRESS_LAST_SLOT < addrs->nextslot)
-            addrs->nextslot = 0;
-
-        return 0;
+        return i;
     }
 
     qemuReportError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("No more available PCI addresses"));
     return -1;
 }
+
+int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
+                                    virDomainDeviceInfoPtr dev)
+{
+    int slot = qemuDomainPCIAddressGetNextSlot(addrs);
+
+    if (slot < 0)
+        return -1;
+
+    if (qemuDomainPCIAddressReserveSlot(addrs, slot) < 0)
+        return -1;
+
+    dev->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+    dev->addr.pci.bus = 0;
+    dev->addr.pci.domain = 0;
+    dev->addr.pci.slot = slot;
+    dev->addr.pci.function = 0;
+
+    addrs->nextslot = slot + 1;
+    if (QEMU_PCI_ADDRESS_LAST_SLOT < addrs->nextslot)
+        addrs->nextslot = 0;
+
+    return 0;
+}
+
+
+#define IS_USB2_CONTROLLER(ctrl) \
+    (((ctrl)->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) && \
+     ((ctrl)->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1 || \
+      (ctrl)->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1 || \
+      (ctrl)->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2 || \
+      (ctrl)->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3))
 
 /*
  * This assigns static PCI slots to all configured devices.
@@ -1261,7 +1282,7 @@ int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
 int
 qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
 {
-    int i;
+    size_t i, j;
     bool reservedIDE = false;
     bool reservedUSB = false;
     int function;
@@ -1405,7 +1426,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
             goto error;
     }
 
-    /* Disk controllers (SCSI only for now) */
+    /* Device controllers (SCSI, USB, but not IDE, FDC or CCID) */
     for (i = 0; i < def->ncontrollers ; i++) {
         /* FDC lives behind the ISA bridge; CCID is a usb device */
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_FDC ||
@@ -1422,8 +1443,58 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
             continue;
         if (def->controllers[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             continue;
-        if (qemuDomainPCIAddressSetNextAddr(addrs, &def->controllers[i]->info) < 0)
-            goto error;
+
+        /* USB2 needs special handling to put all companions in the same slot */
+        if (IS_USB2_CONTROLLER(def->controllers[i])) {
+            virDomainDevicePCIAddress addr = { 0, 0, 0, 0, false };
+            for (j = 0 ; j < i ; j++) {
+                if (IS_USB2_CONTROLLER(def->controllers[j]) &&
+                    def->controllers[j]->idx == def->controllers[i]->idx) {
+                    addr = def->controllers[j]->info.addr.pci;
+                    break;
+                }
+            }
+
+            switch (def->controllers[i]->model) {
+            case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1:
+                addr.function = 7;
+                break;
+            case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1:
+                addr.function = 0;
+                addr.multi = VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_ON;
+                break;
+            case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2:
+                addr.function = 1;
+                break;
+            case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3:
+                addr.function = 2;
+                break;
+            }
+
+            if (addr.slot == 0) {
+                /* This is the first part of the controller, so need
+                 * to find a free slot & then reserve a function */
+                int slot = qemuDomainPCIAddressGetNextSlot(addrs);
+                if (slot < 0)
+                    goto error;
+
+                addr.slot = slot;
+                addrs->nextslot = addr.slot + 1;
+                if (QEMU_PCI_ADDRESS_LAST_SLOT < addrs->nextslot)
+                    addrs->nextslot = 0;
+            }
+            /* Finally we can reserve the slot+function */
+            if (qemuDomainPCIAddressReserveFunction(addrs,
+                                                    addr.slot,
+                                                    addr.function) < 0)
+                goto error;
+
+            def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+            def->controllers[i]->info.addr.pci = addr;
+        } else {
+            if (qemuDomainPCIAddressSetNextAddr(addrs, &def->controllers[i]->info) < 0)
+                goto error;
+        }
     }
 
     /* Disks (VirtIO only for now) */

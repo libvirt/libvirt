@@ -232,6 +232,7 @@ mymain(void)
     DO_TEST_DIFFERENT("numad-auto-vcpu-no-numatune");
     DO_TEST_DIFFERENT("numad-auto-memory-vcpu-no-cpuset-and-placement");
     DO_TEST_DIFFERENT("numad-auto-memory-vcpu-cpuset");
+    DO_TEST_DIFFERENT("usb-ich9-ehci-addr");
 
     DO_TEST_DIFFERENT("metadata");
 
