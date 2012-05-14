@@ -4073,6 +4073,28 @@ virDomainControllerDefParseXML(xmlNodePtr node,
         VIR_FREE(vectors);
         break;
     }
+    case VIR_DOMAIN_CONTROLLER_TYPE_USB: {
+        /* If the XML has a uhci1, uhci2, uhci3 controller and no
+         * master port was given, we should set a sensible one */
+        int masterPort = -1;
+        switch (def->model) {
+        case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1:
+            masterPort = 0;
+            break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2:
+            masterPort = 2;
+            break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3:
+            masterPort = 4;
+            break;
+        }
+        if (masterPort != -1 &&
+            def->info.mastertype == VIR_DOMAIN_CONTROLLER_MASTER_NONE) {
+            def->info.mastertype = VIR_DOMAIN_CONTROLLER_MASTER_USB;
+            def->info.master.usb.startport = masterPort;
+        }
+        break;
+    }
 
     default:
         break;
