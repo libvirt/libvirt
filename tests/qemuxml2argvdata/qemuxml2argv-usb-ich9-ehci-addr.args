@@ -2,5 +2,16 @@ LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S \
 -M pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/test-monitor,server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline -no-acpi -boot c \
--device ich9-usb-ehci1,id=usb,bus=pci.0,addr=0x4.0x7 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
+-device ich9-usb-ehci1,id=usb,bus=pci.0,addr=0x3.0x7 \
+-device ich9-usb-uhci1,masterbus=usb.0,firstport=0,bus=pci.0,multifunction=on,addr=0x3 \
+-device ich9-usb-uhci3,masterbus=usb.0,firstport=4,bus=pci.0,addr=0x3.0x2 \
+-device ich9-usb-uhci2,masterbus=usb.0,firstport=2,bus=pci.0,addr=0x3.0x1 \
+-device ich9-usb-ehci1,id=usb1,bus=pci.0,addr=0x4.0x7 \
+-device ich9-usb-uhci1,masterbus=usb1.0,firstport=0,bus=pci.0,multifunction=on,addr=0x4 \
+-device ich9-usb-uhci3,masterbus=usb1.0,firstport=4,bus=pci.0,addr=0x4.0x2 \
+-device ich9-usb-uhci2,masterbus=usb1.0,firstport=2,bus=pci.0,addr=0x4.0x1 \
+-device ich9-usb-ehci1,id=usb2,bus=pci.0,addr=0x5.0x7 \
+-device ich9-usb-uhci1,masterbus=usb2.0,firstport=0,bus=pci.0,multifunction=on,addr=0x5 \
+-device ich9-usb-uhci3,masterbus=usb2.0,firstport=4,bus=pci.0,addr=0x5.0x2 \
+-device ich9-usb-uhci2,masterbus=usb2.0,firstport=2,bus=pci.0,addr=0x5.0x1 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6
