@@ -1464,6 +1464,11 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %endif
 
 %changelog
+* Mon May 14 2012 Daniel Veillard <veillard@redhat.com> - 0.9.12-1
+- qemu: allow snapshotting of sheepdog and rbd disks
+- blockjob: add new APIs
+- a lot of bug fixes, improvements and portability work
+
 * Tue Apr  3 2012 Daniel Veillard <veillard@redhat.com> - 0.9.11-1
 - Add support for the suspend event
 - Add support for event tray moved of removable disks
