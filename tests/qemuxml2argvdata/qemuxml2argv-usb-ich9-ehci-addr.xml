@@ -10,8 +10,43 @@
   </os>
   <devices>
     <emulator>/usr/bin/qemu</emulator>
+    <!-- Intentionally mixed up ordering to check we assign
+         addresses to the correct matching companions -->
     <controller type='usb' index='0' model='ich9-ehci1'>
-      <address type='pci' domain='0' bus='0' slot='4' function='7'/>
+    </controller>
+    <controller type='usb' index='2' model='ich9-ehci1'>
+    </controller>
+    <controller type='usb' index='1' model='ich9-ehci1'>
+    </controller>
+
+    <controller type='usb' index='0' model='ich9-uhci1'>
+      <master startport='0'/>
+    </controller>
+    <controller type='usb' index='1' model='ich9-uhci1'>
+      <master startport='0'/>
+    </controller>
+    <controller type='usb' index='2' model='ich9-uhci1'>
+      <master startport='0'/>
+    </controller>
+
+    <controller type='usb' index='0' model='ich9-uhci3'>
+      <master startport='4'/>
+    </controller>
+    <controller type='usb' index='1' model='ich9-uhci3'>
+      <master startport='4'/>
+    </controller>
+    <controller type='usb' index='2' model='ich9-uhci3'>
+      <master startport='4'/>
+    </controller>
+
+    <controller type='usb' index='2' model='ich9-uhci2'>
+      <master startport='2'/>
+    </controller>
+    <controller type='usb' index='1' model='ich9-uhci2'>
+      <master startport='2'/>
+    </controller>
+    <controller type='usb' index='0' model='ich9-uhci2'>
+      <master startport='2'/>
     </controller>
     <memballoon model='virtio'/>
   </devices>
