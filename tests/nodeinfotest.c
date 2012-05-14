@@ -60,9 +60,12 @@ linuxTestCompareFiles(const char *cpuinfofile,
     }
     VIR_FORCE_FCLOSE(cpuinfo);
 
-    if (virAsprintf(&actualData, "CPUs: %u, MHz: %u, Nodes: %u, Cores: %u\n",
-                    nodeinfo.cpus, nodeinfo.mhz, nodeinfo.nodes,
-                    nodeinfo.cores) < 0)
+    if (virAsprintf(&actualData,
+                    "CPUs: %u/%u, MHz: %u, Nodes: %u, Sockets: %u, "
+                    "Cores: %u, Threads: %u\n",
+                    nodeinfo.cpus, VIR_NODEINFO_MAXCPUS(nodeinfo),
+                    nodeinfo.mhz, nodeinfo.nodes, nodeinfo.sockets,
+                    nodeinfo.cores, nodeinfo.threads) < 0)
         goto fail;
 
     if (STRNEQ(actualData, expectData)) {

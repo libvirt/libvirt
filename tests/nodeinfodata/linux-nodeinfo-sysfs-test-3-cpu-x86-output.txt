@@ -1,1 +1,1 @@
-CPUs: 48, MHz: 2100, Nodes: 1, Cores: 12
+CPUs: 48/48, MHz: 2100, Nodes: 1, Sockets: 4, Cores: 12, Threads: 1
