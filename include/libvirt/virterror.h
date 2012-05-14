@@ -43,51 +43,64 @@ typedef enum {
     VIR_FROM_XEND = 2,		/* Error at connection with xend daemon */
     VIR_FROM_XENSTORE = 3,	/* Error at connection with xen store */
     VIR_FROM_SEXPR = 4,		/* Error in the S-Expression code */
+
     VIR_FROM_XML = 5,		/* Error in the XML code */
     VIR_FROM_DOM = 6,		/* Error when operating on a domain */
     VIR_FROM_RPC = 7,		/* Error in the XML-RPC code */
     VIR_FROM_PROXY = 8,		/* Error in the proxy code; unused since
                                    0.8.6 */
     VIR_FROM_CONF = 9,		/* Error in the configuration file handling */
+
     VIR_FROM_QEMU = 10,		/* Error at the QEMU daemon */
     VIR_FROM_NET = 11,		/* Error when operating on a network */
     VIR_FROM_TEST = 12,		/* Error from test driver */
     VIR_FROM_REMOTE = 13,	/* Error from remote driver */
     VIR_FROM_OPENVZ = 14,	/* Error from OpenVZ driver */
+
     VIR_FROM_XENXM = 15,	/* Error at Xen XM layer */
     VIR_FROM_STATS_LINUX = 16,	/* Error in the Linux Stats code */
     VIR_FROM_LXC = 17,		/* Error from Linux Container driver */
     VIR_FROM_STORAGE = 18,	/* Error from storage driver */
     VIR_FROM_NETWORK = 19,	/* Error from network config */
+
     VIR_FROM_DOMAIN = 20,	/* Error from domain config */
     VIR_FROM_UML = 21,		/* Error at the UML driver */
     VIR_FROM_NODEDEV = 22,	/* Error from node device monitor */
     VIR_FROM_XEN_INOTIFY = 23,	/* Error from xen inotify layer */
     VIR_FROM_SECURITY = 24,	/* Error from security framework */
+
     VIR_FROM_VBOX = 25,		/* Error from VirtualBox driver */
     VIR_FROM_INTERFACE = 26,	/* Error when operating on an interface */
     VIR_FROM_ONE = 27,		/* The OpenNebula driver no longer exists.
                                    Retained for ABI/API compat only */
     VIR_FROM_ESX = 28,		/* Error from ESX driver */
     VIR_FROM_PHYP = 29,		/* Error from IBM power hypervisor */
+
     VIR_FROM_SECRET = 30,	/* Error from secret storage */
     VIR_FROM_CPU = 31,		/* Error from CPU driver */
     VIR_FROM_XENAPI = 32,	/* Error from XenAPI */
     VIR_FROM_NWFILTER = 33,	/* Error from network filter driver */
     VIR_FROM_HOOK = 34,		/* Error from Synchronous hooks */
+
     VIR_FROM_DOMAIN_SNAPSHOT = 35,/* Error from domain snapshot */
     VIR_FROM_AUDIT = 36,	/* Error from auditing subsystem */
     VIR_FROM_SYSINFO = 37,	/* Error from sysinfo/SMBIOS */
     VIR_FROM_STREAMS = 38,	/* Error from I/O streams */
     VIR_FROM_VMWARE = 39,	/* Error from VMware driver */
+
     VIR_FROM_EVENT = 40,	/* Error from event loop impl */
     VIR_FROM_LIBXL = 41,	/* Error from libxenlight driver */
     VIR_FROM_LOCKING = 42,	/* Error from lock manager */
     VIR_FROM_HYPERV = 43,	/* Error from Hyper-V driver */
     VIR_FROM_CAPABILITIES = 44, /* Error from capabilities */
+
     VIR_FROM_URI = 45,          /* Error from URI handling */
     VIR_FROM_AUTH = 46,         /* Error from auth handling */
     VIR_FROM_DBUS = 47,         /* Error from DBus */
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_ERR_DOMAIN_LAST
+# endif
 } virErrorDomain;
 
 

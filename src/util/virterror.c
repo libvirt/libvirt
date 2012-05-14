@@ -40,156 +40,67 @@ static virLogPriority virErrorLevelPriority(virErrorLevel level) {
     return VIR_LOG_ERROR;
 }
 
-static const char *virErrorDomainName(virErrorDomain domain) {
-    const char *dom = "unknown";
-    switch (domain) {
-        case VIR_FROM_NONE:
-            dom = "";
-            break;
-        case VIR_FROM_XEN:
-            dom = "Xen ";
-            break;
-        case VIR_FROM_XENAPI:
-            dom = "XenAPI ";
-            break;
-        case VIR_FROM_LIBXL:
-            dom = "xenlight ";
-            break;
-        case VIR_FROM_XML:
-            dom = "XML ";
-            break;
-        case VIR_FROM_XEND:
-            dom = "Xen Daemon ";
-            break;
-        case VIR_FROM_XENSTORE:
-            dom = "Xen Store ";
-            break;
-        case VIR_FROM_XEN_INOTIFY:
-            dom = "Xen Inotify ";
-            break;
-        case VIR_FROM_DOM:
-            dom = "Domain ";
-            break;
-        case VIR_FROM_RPC:
-            dom = "RPC ";
-            break;
-        case VIR_FROM_QEMU:
-            dom = "QEMU ";
-            break;
-        case VIR_FROM_NET:
-            dom = "Network ";
-            break;
-        case VIR_FROM_TEST:
-            dom = "Test ";
-            break;
-        case VIR_FROM_REMOTE:
-            dom = "Remote ";
-            break;
-        case VIR_FROM_SEXPR:
-            dom = "S-Expr ";
-            break;
-        case VIR_FROM_PROXY:
-            dom = "PROXY ";
-            break;
-        case VIR_FROM_CONF:
-            dom = "Config ";
-            break;
-        case VIR_FROM_PHYP:
-            dom = "IBM power hypervisor ";
-            break;
-        case VIR_FROM_OPENVZ:
-            dom = "OpenVZ ";
-            break;
-        case VIR_FROM_VMWARE:
-            dom = "VMware ";
-            break;
-        case VIR_FROM_XENXM:
-            dom = "Xen XM ";
-            break;
-        case VIR_FROM_STATS_LINUX:
-            dom = "Linux Stats ";
-            break;
-        case VIR_FROM_LXC:
-            dom = "Linux Container ";
-            break;
-        case VIR_FROM_STORAGE:
-            dom = "Storage ";
-            break;
-        case VIR_FROM_NETWORK:
-            dom = "Network Config ";
-            break;
-        case VIR_FROM_DOMAIN:
-            dom = "Domain Config ";
-            break;
-        case VIR_FROM_NODEDEV:
-            dom = "Node Device ";
-            break;
-        case VIR_FROM_UML:
-            dom = "UML ";
-            break;
-        case VIR_FROM_SECURITY:
-            dom = "Security Labeling ";
-            break;
-        case VIR_FROM_VBOX:
-            dom = "VBOX ";
-            break;
-        case VIR_FROM_INTERFACE:
-            dom = "Interface ";
-            break;
-        case VIR_FROM_ONE:
-            dom = "ONE ";
-            break;
-        case VIR_FROM_ESX:
-            dom = "ESX ";
-            break;
-        case VIR_FROM_SECRET:
-            dom = "Secret Storage ";
-            break;
-        case VIR_FROM_CPU:
-            dom = "CPU ";
-            break;
-        case VIR_FROM_NWFILTER:
-            dom = "Network Filter ";
-            break;
-        case VIR_FROM_HOOK:
-            dom = "Sync Hook ";
-            break;
-        case VIR_FROM_DOMAIN_SNAPSHOT:
-            dom = "Domain Snapshot ";
-            break;
-        case VIR_FROM_AUDIT:
-            dom = "Audit ";
-            break;
-        case VIR_FROM_SYSINFO:
-            dom = "Sysinfo ";
-            break;
-        case VIR_FROM_STREAMS:
-            dom = "Streams ";
-            break;
-        case VIR_FROM_EVENT:
-            dom = "Events ";
-            break;
-        case VIR_FROM_LOCKING:
-            dom = "Locking ";
-            break;
-        case VIR_FROM_HYPERV:
-            dom = "Hyper-V ";
-            break;
-        case VIR_FROM_CAPABILITIES:
-            dom = "Capabilities ";
-            break;
-        case VIR_FROM_URI:
-            dom = "URI ";
-            break;
-        case VIR_FROM_AUTH:
-            dom = "Auth ";
-            break;
-        case VIR_FROM_DBUS:
-            dom = "DBus ";
-            break;
-    }
-    return dom;
-}
+
+VIR_ENUM_DECL(virErrorDomain)
+VIR_ENUM_IMPL(virErrorDomain, VIR_ERR_DOMAIN_LAST,
+              "", /* 0 */
+              "Xen Driver",
+              "Xen Daemon",
+              "Xen Store",
+              "S-Expression",
+
+              "XML Util", /* 5 */
+              "Domain",
+              "XML-RPC",
+              "Proxy Daemon",
+              "Config File",
+
+              "QEMU Driver", /* 10 */
+              "Network",
+              "Test Driver",
+              "Remote Driver",
+              "OpenVZ Driver",
+
+              "Xen XM Driver", /* 15 */
+              "Linux Statistics",
+              "LXC Driver",
+              "Storage Driver",
+              "Network Driver",
+
+              "Domain Config", /* 20 */
+              "User Mode Linux Driver",
+              "Node Device Driver",
+              "Xen Inotify Driver",
+              "Security Driver",
+
+              "VirtualBox Driver", /* 25 */
+              "Network Interface Driver",
+              "Open Nebula Driver",
+              "ESX Driver",
+              "Power Hypervisor Driver",
+
+              "Secrets Driver", /* 30 */
+              "CPU Driver",
+              "XenAPI Driver",
+              "Network Filter Driver",
+              "Lifecycle Hook",
+
+              "Domain Snapshot", /* 35 */
+              "Audit Utils",
+              "Sysinfo Utils",
+              "I/O Stream Utils",
+              "VMWare Driver",
+
+              "Event Loop", /* 40 */
+              "Xen Light Driver",
+              "Lock Driver",
+              "Hyper-V Driver",
+              "Capabilities Utils",
+
+              "URI Utils", /* 45 */
+              "Authentication Utils",
+              "DBus Utils"
+    )
 
 
 /*
@@ -585,7 +496,9 @@ virDefaultErrorFunc(virErrorPtr err)
             lvl = _("error");
             break;
     }
-    dom = virErrorDomainName(err->domain);
+    dom = virErrorDomainTypeToString(err->domain);
+    if (!dom)
+        dom = "Unknown";
     if ((err->dom != NULL) && (err->code != VIR_ERR_INVALID_DOMAIN)) {
         domain = err->dom->name;
     } else if ((err->net != NULL) && (err->code != VIR_ERR_INVALID_NETWORK)) {
@@ -594,13 +507,13 @@ virDefaultErrorFunc(virErrorPtr err)
     len = strlen(err->message);
     if ((err->domain == VIR_FROM_XML) && (err->code == VIR_ERR_XML_DETAIL) &&
         (err->int1 != 0))
-        fprintf(stderr, "libvir: %s%s %s%s: line %d: %s",
+        fprintf(stderr, "libvir: %s %s %s%s: line %d: %s",
                 dom, lvl, domain, network, err->int1, err->message);
     else if ((len == 0) || (err->message[len - 1] != '\n'))
-        fprintf(stderr, "libvir: %s%s %s%s: %s\n",
+        fprintf(stderr, "libvir: %s %s %s%s: %s\n",
                 dom, lvl, domain, network, err->message);
     else
-        fprintf(stderr, "libvir: %s%s %s%s: %s",
+        fprintf(stderr, "libvir: %s %s %s%s: %s",
                 dom, lvl, domain, network, err->message);
 }
 
