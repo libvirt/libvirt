@@ -460,6 +460,8 @@ BuildRequires: scrub
 BuildRequires: numad
 %endif
 
+Provides: bundled(gnulib)
+
 %description
 Libvirt is a C toolkit to interact with the virtualization capabilities
 of recent versions of Linux (and other OSes). The main package includes
