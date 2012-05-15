@@ -2320,10 +2320,10 @@ static char *virGetXDGDirectory(uid_t uid, const char *xdgenvname, const char *x
         path = getenv(xdgenvname);
 
     if (path && path[0]) {
-        if (virAsprintf(&ret, "%s/libvirt/", path) < 0)
+        if (virAsprintf(&ret, "%s/libvirt", path) < 0)
             goto no_memory;
     } else {
-        if (virAsprintf(&ret, "%s/%s/libvirt/", home, xdgdefdir) < 0)
+        if (virAsprintf(&ret, "%s/%s/libvirt", home, xdgdefdir) < 0)
             goto no_memory;
     }
 
@@ -2357,7 +2357,7 @@ char *virGetUserRuntimeDirectory(uid_t uid)
     } else {
         char *ret;
 
-        if (virAsprintf(&ret, "%s/libvirt/", path) < 0) {
+        if (virAsprintf(&ret, "%s/libvirt", path) < 0) {
             virReportOOMError();
             return NULL;
         }
