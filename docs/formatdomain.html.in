@@ -3617,6 +3617,25 @@ qemu-kvm -net nic,model=? /dev/null
     </dl>
 
     <p>
+      <span class="since">Since 0.9.13</span>, a sound element
+      with <code>ich6</code> model can have optional
+      sub-elements <code>&lt;codec&gt;</code> to attach various audio
+      codecs to the audio device. If not specified, a default codec
+      will be attached to allow playback and recording. Valid values
+      are 'duplex' (advertise a line-in and a line-out) and 'micro'
+      (advertise a speaker and a microphone).
+    </p>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;sound model='ich6'&gt;
+      &lt;codec type='micro'/&gt;
+    &lt;sound/&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
+    <p>
       Each <code>sound</code> element has an optional
       sub-element <code>&lt;address&gt;</code> which can tie the
       device to a particular PCI

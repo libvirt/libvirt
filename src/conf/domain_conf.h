@@ -65,6 +65,9 @@ typedef virDomainNetDef *virDomainNetDefPtr;
 typedef struct _virDomainInputDef virDomainInputDef;
 typedef virDomainInputDef *virDomainInputDefPtr;
 
+typedef struct _virDomainSoundCodecDef virDomainSoundCodecDef;
+typedef virDomainSoundCodecDef *virDomainSoundCodecDefPtr;
+
 typedef struct _virDomainSoundDef virDomainSoundDef;
 typedef virDomainSoundDef *virDomainSoundDefPtr;
 
@@ -996,6 +999,13 @@ struct _virDomainInputDef {
     virDomainDeviceInfo info;
 };
 
+enum virDomainSoundCodecType {
+    VIR_DOMAIN_SOUND_CODEC_TYPE_DUPLEX,
+    VIR_DOMAIN_SOUND_CODEC_TYPE_MICRO,
+
+    VIR_DOMAIN_SOUND_CODEC_TYPE_LAST
+};
+
 enum virDomainSoundModel {
     VIR_DOMAIN_SOUND_MODEL_SB16,
     VIR_DOMAIN_SOUND_MODEL_ES1370,
@@ -1006,9 +1016,17 @@ enum virDomainSoundModel {
     VIR_DOMAIN_SOUND_MODEL_LAST
 };
 
+struct _virDomainSoundCodecDef {
+    int type;
+    int cad;
+};
+
 struct _virDomainSoundDef {
     int model;
     virDomainDeviceInfo info;
+
+    int ncodecs;
+    virDomainSoundCodecDefPtr *codecs;
 };
 
 enum virDomainWatchdogModel {
@@ -1848,6 +1866,7 @@ void virDomainChrDefFree(virDomainChrDefPtr def);
 void virDomainChrSourceDefFree(virDomainChrSourceDefPtr def);
 int virDomainChrSourceDefCopy(virDomainChrSourceDefPtr src,
                               virDomainChrSourceDefPtr dest);
+void virDomainSoundCodecDefFree(virDomainSoundCodecDefPtr def);
 void virDomainSoundDefFree(virDomainSoundDefPtr def);
 void virDomainMemballoonDefFree(virDomainMemballoonDefPtr def);
 void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def);
@@ -2164,6 +2183,7 @@ VIR_ENUM_DECL(virDomainSmartcard)
 VIR_ENUM_DECL(virDomainChr)
 VIR_ENUM_DECL(virDomainChrTcpProtocol)
 VIR_ENUM_DECL(virDomainChrSpicevmc)
+VIR_ENUM_DECL(virDomainSoundCodec)
 VIR_ENUM_DECL(virDomainSoundModel)
 VIR_ENUM_DECL(virDomainMemballoonModel)
 VIR_ENUM_DECL(virDomainSmbiosMode)

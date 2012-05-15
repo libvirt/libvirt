@@ -354,6 +354,10 @@ VIR_ENUM_IMPL(virDomainSmartcard, VIR_DOMAIN_SMARTCARD_TYPE_LAST,
               "host-certificates",
               "passthrough")
 
+VIR_ENUM_IMPL(virDomainSoundCodec, VIR_DOMAIN_SOUND_CODEC_TYPE_LAST,
+              "duplex",
+              "micro")
+
 VIR_ENUM_IMPL(virDomainSoundModel, VIR_DOMAIN_SOUND_MODEL_LAST,
               "sb16",
               "es1370",
@@ -1304,12 +1308,25 @@ void virDomainSmartcardDefFree(virDomainSmartcardDefPtr def)
     VIR_FREE(def);
 }
 
+void virDomainSoundCodecDefFree(virDomainSoundCodecDefPtr def)
+{
+    if (!def)
+        return;
+
+    VIR_FREE(def);
+}
+
 void virDomainSoundDefFree(virDomainSoundDefPtr def)
 {
     if (!def)
         return;
 
     virDomainDeviceInfoClear(&def->info);
+
+    int i;
+    for (i = 0 ; i < def->ncodecs ; i++)
+        virDomainSoundCodecDefFree(def->codecs[i]);
+    VIR_FREE(def->codecs);
 
     VIR_FREE(def);
 }
@@ -6374,17 +6391,51 @@ error:
 }
 
 
-static virDomainSoundDefPtr
-virDomainSoundDefParseXML(const xmlNodePtr node,
-                          unsigned int flags)
+static virDomainSoundCodecDefPtr
+virDomainSoundCodecDefParseXML(const xmlNodePtr node)
 {
-    char *model;
-    virDomainSoundDefPtr def;
+    char *type;
+    virDomainSoundCodecDefPtr def;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
         return NULL;
     }
+
+    type = virXMLPropString(node, "type");
+    if ((def->type = virDomainSoundCodecTypeFromString(type)) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unknown codec type '%s'"), type);
+        goto error;
+    }
+
+cleanup:
+    VIR_FREE(type);
+
+    return def;
+
+error:
+    virDomainSoundCodecDefFree(def);
+    def = NULL;
+    goto cleanup;
+}
+
+
+static virDomainSoundDefPtr
+virDomainSoundDefParseXML(const xmlNodePtr node,
+                          xmlXPathContextPtr ctxt,
+                          unsigned int flags)
+{
+    char *model;
+    virDomainSoundDefPtr def;
+    xmlNodePtr save = ctxt->node;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    ctxt->node = node;
 
     model = virXMLPropString(node, "model");
     if ((def->model = virDomainSoundModelTypeFromString(model)) < 0) {
@@ -6393,12 +6444,43 @@ virDomainSoundDefParseXML(const xmlNodePtr node,
         goto error;
     }
 
+    if (def->model == VIR_DOMAIN_SOUND_MODEL_ICH6) {
+        int ncodecs;
+        xmlNodePtr *codecNodes = NULL;
+
+        /* parse the <codec> subelements for sound models that support it */
+        ncodecs = virXPathNodeSet("./codec", ctxt, &codecNodes);
+        if (ncodecs < 0)
+            goto error;
+
+        if (ncodecs > 0) {
+            int ii;
+
+            if (VIR_ALLOC_N(def->codecs, ncodecs) < 0) {
+                virReportOOMError();
+                VIR_FREE(codecNodes);
+                goto error;
+            }
+
+            for (ii = 0; ii < ncodecs; ii++) {
+                virDomainSoundCodecDefPtr codec = virDomainSoundCodecDefParseXML(codecNodes[ii]);
+                if (codec == NULL)
+                    goto error;
+
+                codec->cad = def->ncodecs; /* that will do for now */
+                def->codecs[def->ncodecs++] = codec;
+            }
+            VIR_FREE(codecNodes);
+        }
+    }
+
     if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
 cleanup:
     VIR_FREE(model);
 
+    ctxt->node = save;
     return def;
 
 error:
@@ -6951,7 +7033,7 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "sound")) {
         dev->type = VIR_DOMAIN_DEVICE_SOUND;
-        if (!(dev->data.sound = virDomainSoundDefParseXML(node, flags)))
+        if (!(dev->data.sound = virDomainSoundDefParseXML(node, ctxt, flags)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "watchdog")) {
         dev->type = VIR_DOMAIN_DEVICE_WATCHDOG;
@@ -8818,6 +8900,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto no_memory;
     for (i = 0 ; i < n ; i++) {
         virDomainSoundDefPtr sound = virDomainSoundDefParseXML(nodes[i],
+                                                               ctxt,
                                                                flags);
         if (!sound)
             goto error;
@@ -11783,11 +11866,30 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
 }
 
 static int
+virDomainSoundCodecDefFormat(virBufferPtr buf,
+                             virDomainSoundCodecDefPtr def)
+{
+    const char *type = virDomainSoundCodecTypeToString(def->type);
+
+    if (!type) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected codec type %d"), def->type);
+        return -1;
+    }
+
+    virBufferAsprintf(buf, "      <codec type='%s'/>\n",  type);
+
+    return 0;
+}
+
+static int
 virDomainSoundDefFormat(virBufferPtr buf,
                         virDomainSoundDefPtr def,
                         unsigned int flags)
 {
     const char *model = virDomainSoundModelTypeToString(def->model);
+    bool children = false;
+    int i;
 
     if (!model) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -11797,10 +11899,24 @@ virDomainSoundDefFormat(virBufferPtr buf,
 
     virBufferAsprintf(buf, "    <sound model='%s'",  model);
 
+    for (i = 0; i < def->ncodecs; i++) {
+        if (!children) {
+            virBufferAddLit(buf, ">\n");
+            children = true;
+        }
+        virDomainSoundCodecDefFormat(buf, def->codecs[i]);
+    }
+
     if (virDomainDeviceInfoIsSet(&def->info, flags)) {
-        virBufferAddLit(buf, ">\n");
+        if (!children) {
+            virBufferAddLit(buf, ">\n");
+            children = true;
+        }
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
+    }
+
+    if (children) {
         virBufferAddLit(buf, "    </sound>\n");
     } else {
         virBufferAddLit(buf, "/>\n");

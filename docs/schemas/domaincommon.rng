@@ -2250,6 +2250,16 @@
       </choice>
     </element>
   </define>
+  <define name="codec">
+    <element name="codec">
+      <attribute name="type">
+        <choice>
+          <value>duplex</value>
+          <value>micro</value>
+        </choice>
+      </attribute>
+    </element>
+  </define>
   <define name="sound">
     <element name="sound">
       <attribute name="model">
@@ -2261,12 +2271,19 @@
           <value>ich6</value>
         </choice>
       </attribute>
-      <optional>
-        <ref name="alias"/>
-      </optional>
-      <optional>
-        <ref name="address"/>
-      </optional>
+      <interleave>
+        <optional>
+          <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="address"/>
+        </optional>
+        <zeroOrMore>
+          <choice>
+            <ref name="codec"/>
+          </choice>
+        </zeroOrMore>
+      </interleave>
     </element>
   </define>
   <define name="watchdog">
