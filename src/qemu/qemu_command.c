@@ -89,6 +89,12 @@ VIR_ENUM_IMPL(qemuVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "", /* don't support vbox */
               "qxl");
 
+VIR_ENUM_DECL(qemuSoundCodec)
+
+VIR_ENUM_IMPL(qemuSoundCodec, VIR_DOMAIN_SOUND_CODEC_TYPE_LAST,
+              "hda-duplex",
+              "hda-micro");
+
 VIR_ENUM_DECL(qemuControllerModelUSB)
 
 VIR_ENUM_IMPL(qemuControllerModelUSB, VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST,
@@ -3038,20 +3044,42 @@ error:
     return NULL;
 }
 
+
+static int
+qemuSoundCodecTypeToCaps(int type)
+{
+    switch (type) {
+    case VIR_DOMAIN_SOUND_CODEC_TYPE_DUPLEX:
+        return QEMU_CAPS_HDA_DUPLEX;
+    case VIR_DOMAIN_SOUND_CODEC_TYPE_MICRO:
+        return QEMU_CAPS_HDA_MICRO;
+    default:
+        return -1;
+    }
+}
+
+
 static char *
 qemuBuildSoundCodecStr(virDomainSoundDefPtr sound,
-                       const char *codec)
+                       virDomainSoundCodecDefPtr codec,
+                       virBitmapPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    int cad = 0;
+    const char *stype;
+    int type, caps;
 
-    virBufferAsprintf(&buf, "%s,id=%s-codec%d,bus=%s.0,cad=%d",
-                      codec, sound->info.alias, cad, sound->info.alias, cad);
+    type = codec->type;
+    stype = qemuSoundCodecTypeToString(type);
+    caps = qemuSoundCodecTypeToCaps(type);
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
+    if (caps == -1 || !qemuCapsGet(qemuCaps, caps)) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("%s not supported in this QEMU binary"), stype);
         goto error;
     }
+
+    virBufferAsprintf(&buf, "%s,id=%s-codec%d,bus=%s.0,cad=%d",
+                      stype, sound->info.alias, codec->cad, sound->info.alias, codec->cad);
 
     return virBufferContentAndReset(&buf);
 
@@ -5815,20 +5843,30 @@ qemuBuildCommandLine(virConnectPtr conn,
 
                     if (sound->model == VIR_DOMAIN_SOUND_MODEL_ICH6) {
                         char *codecstr = NULL;
-                        if (!qemuCapsGet(qemuCaps, QEMU_CAPS_HDA_DUPLEX)) {
-                            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                    _("this QEMU binary lacks hda support"));
-                            goto error;
-                        }
+                        int ii;
 
-                        virCommandAddArg(cmd, "-device");
-                        if (!(codecstr = qemuBuildSoundCodecStr(sound,
-                                                            "hda-duplex"))) {
-                            goto error;
-                        }
+                        for (ii = 0 ; ii < sound->ncodecs ; ii++) {
+                            virCommandAddArg(cmd, "-device");
+                            if (!(codecstr = qemuBuildSoundCodecStr(sound, sound->codecs[ii], qemuCaps))) {
+                                goto error;
 
-                        virCommandAddArg(cmd, codecstr);
-                        VIR_FREE(codecstr);
+                            }
+                            virCommandAddArg(cmd, codecstr);
+                            VIR_FREE(codecstr);
+                        }
+                        if (ii == 0) {
+                            virDomainSoundCodecDef codec = {
+                                VIR_DOMAIN_SOUND_CODEC_TYPE_DUPLEX,
+                                0
+                            };
+                            virCommandAddArg(cmd, "-device");
+                            if (!(codecstr = qemuBuildSoundCodecStr(sound, &codec, qemuCaps))) {
+                                goto error;
+
+                            }
+                            virCommandAddArg(cmd, codecstr);
+                            VIR_FREE(codecstr);
+                        }
                     }
 
                     VIR_FREE(str);
