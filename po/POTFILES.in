@@ -59,6 +59,7 @@ src/nwfilter/nwfilter_gentech_driver.c
 src/nwfilter/nwfilter_learnipaddr.c
 src/openvz/openvz_conf.c
 src/openvz/openvz_driver.c
+src/openvz/openvz_util.c
 src/phyp/phyp_driver.c
 src/qemu/qemu_agent.c
 src/qemu/qemu_bridge_filter.c
