@@ -461,26 +461,30 @@ stop() {
     done
     set +f
 
-    while read uri list; do
-        if "$suspending"; then
-            eval_gettext "Suspending guests on \$uri URI..."; echo
-        else
-            eval_gettext "Shutting down guests on \$uri URI..."; echo
-        fi
+    if [ -s "$LISTFILE" ]; then
+        while read uri list; do
+            if "$suspending"; then
+                eval_gettext "Suspending guests on \$uri URI..."; echo
+            else
+                eval_gettext "Shutting down guests on \$uri URI..."; echo
+            fi
 
-        if [ "$PARALLEL_SHUTDOWN" -gt 1 ] &&
-           ! "$suspending"; then
-            shutdown_guests_parallel "$uri" "$list"
-        else
-            for guest in $list; do
-                if "$suspending"; then
-                    suspend_guest "$uri" "$guest"
-                else
-                    shutdown_guest "$uri" "$guest"
-                fi
-            done
-        fi
-    done <"$LISTFILE"
+            if [ "$PARALLEL_SHUTDOWN" -gt 1 ] &&
+               ! "$suspending"; then
+                shutdown_guests_parallel "$uri" "$list"
+            else
+                for guest in $list; do
+                    if "$suspending"; then
+                        suspend_guest "$uri" "$guest"
+                    else
+                        shutdown_guest "$uri" "$guest"
+                    fi
+                done
+            fi
+        done <"$LISTFILE"
+    else
+        rm -f "$LISTFILE"
+    fi
 
     rm -f "$VAR_SUBSYS_LIBVIRT_GUESTS"
 }
