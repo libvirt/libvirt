@@ -17,12 +17,19 @@
     <disk type='block' device='disk'>
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
+    <controller type='usb' index='0'/>
+    <controller type='ide' index='0'/>
     <sound model='pcspk'/>
     <sound model='es1370'/>
     <sound model='sb16'/>
     <sound model='ac97'/>
     <sound model='ich6'/>
+    <sound model='ich6'>
+      <codec type='micro'/>
+      <codec type='duplex'/>
+    </sound>
     <memballoon model='virtio'/>
   </devices>
 </domain>
