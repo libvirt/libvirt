@@ -1508,14 +1508,16 @@ int virDomainDeviceVirtioSerialAddressIsValid(
 }
 
 
-static int
+static bool
 virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info, unsigned int flags)
 {
     if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
-        return 1;
+        return true;
     if (info->alias && !(flags & VIR_DOMAIN_XML_INACTIVE))
-        return 1;
-    return 0;
+        return true;
+    if (info->mastertype != VIR_DOMAIN_CONTROLLER_MASTER_NONE)
+        return true;
+    return false;
 }
 
 
