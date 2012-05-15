@@ -1355,6 +1355,95 @@ class CParser:
                 token = self.token()
         return token
 
+    def parseVirEnumDecl(self, token):
+        if token[0] != "name":
+            self.error("parsing VIR_ENUM_DECL: expecting name", token)
+
+        token = self.token()
+
+        if token[0] != "sep":
+            self.error("parsing VIR_ENUM_DECL: expecting ')'", token)
+
+        if token[1] != ')':
+            self.error("parsing VIR_ENUM_DECL: expecting ')'", token)
+
+        token = self.token()
+        if token[0] == "sep" and token[1] == ';':
+            token = self.token()
+
+        return token
+
+    def parseVirEnumImpl(self, token):
+        # First the type name
+        if token[0] != "name":
+            self.error("parsing VIR_ENUM_IMPL: expecting name", token)
+
+        token = self.token()
+
+        if token[0] != "sep":
+            self.error("parsing VIR_ENUM_IMPL: expecting ','", token)
+
+        if token[1] != ',':
+            self.error("parsing VIR_ENUM_IMPL: expecting ','", token)
+        token = self.token()
+
+        # Now the sentinel name
+        if token[0] != "name":
+            self.error("parsing VIR_ENUM_IMPL: expecting name", token)
+
+        token = self.token()
+
+        if token[0] != "sep":
+            self.error("parsing VIR_ENUM_IMPL: expecting ','", token)
+
+        if token[1] != ',':
+            self.error("parsing VIR_ENUM_IMPL: expecting ','", token)
+
+        token = self.token()
+
+        # Now a list of strings (optional comments)
+        while token is not None:
+            isGettext = False
+            # First a string, optionally with N_(...)
+            if token[0] == 'name':
+                if token[1] != 'N_':
+                    self.error("parsing VIR_ENUM_IMPL: expecting 'N_'", token)
+                token = self.token()
+                if token[0] != "sep" or token[1] != '(':
+                    self.error("parsing VIR_ENUM_IMPL: expecting '('", token)
+                token = self.token()
+                isGettext = True
+
+                if token[0] != "string":
+                    self.error("parsing VIR_ENUM_IMPL: expecting a string", token)
+                token = self.token()
+            elif token[0] == "string":
+                token = self.token()
+            else:
+                self.error("parsing VIR_ENUM_IMPL: expecting a string", token)
+
+            # Then a separator
+            if token[0] == "sep":
+                if isGettext and token[1] == ')':
+                    token = self.token()
+
+                if token[1] == ',':
+                    token = self.token()
+
+                if token[1] == ')':
+                    token = self.token()
+                    break
+
+            # Then an optional comment
+            if token[0] == "comment":
+                token = self.token()
+
+
+        if token[0] == "sep" and token[1] == ';':
+            token = self.token()
+
+        return token
+
      #
      # Parse a C definition block, used for structs or unions it parse till
      # the balancing }
@@ -1501,6 +1590,29 @@ class CParser:
                 self.index_add(enum[0], self.filename,
                                not self.is_header, "enum",
                                (enum[1], enum[2], enum_type))
+            return token
+        elif token[0] == "name" and token[1] == "VIR_ENUM_DECL":
+            token = self.token()
+            if token != None and token[0] == "sep" and token[1] == "(":
+                token = self.token()
+                token = self.parseVirEnumDecl(token)
+            else:
+                self.error("parsing VIR_ENUM_DECL: expecting '('", token)
+            if token != None:
+                self.lexer.push(token)
+                token = ("name", "virenumdecl")
+            return token
+
+        elif token[0] == "name" and token[1] == "VIR_ENUM_IMPL":
+            token = self.token()
+            if token != None and token[0] == "sep" and token[1] == "(":
+                token = self.token()
+                token = self.parseVirEnumImpl(token)
+            else:
+                self.error("parsing VIR_ENUM_IMPL: expecting '('", token)
+            if token != None:
+                self.lexer.push(token)
+                token = ("name", "virenumimpl")
             return token
 
         elif token[0] == "name":
