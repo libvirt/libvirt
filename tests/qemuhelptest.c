@@ -752,7 +752,8 @@ mymain(void)
             QEMU_CAPS_SCSI_BLOCK,
             QEMU_CAPS_SCSI_CD,
             QEMU_CAPS_IDE_CD,
-            QEMU_CAPS_NO_USER_CONFIG);
+            QEMU_CAPS_NO_USER_CONFIG,
+            QEMU_CAPS_HDA_MICRO);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

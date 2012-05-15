@@ -162,6 +162,9 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "scsi-cd",
               "ide-cd",
               "no-user-config",
+
+              "hda-micro", /* 95 */
+
     );
 
 struct qemu_feature_flags {
@@ -1397,6 +1400,8 @@ qemuCapsParseDeviceStr(const char *str, virBitmapPtr flags)
     /* Which devices exist. */
     if (strstr(str, "name \"hda-duplex\""))
         qemuCapsSet(flags, QEMU_CAPS_HDA_DUPLEX);
+    if (strstr(str, "name \"hda-micro\""))
+        qemuCapsSet(flags, QEMU_CAPS_HDA_MICRO);
     if (strstr(str, "name \"ccid-card-emulated\""))
         qemuCapsSet(flags, QEMU_CAPS_CCID_EMULATED);
     if (strstr(str, "name \"ccid-card-passthru\""))
