@@ -16,7 +16,7 @@
 struct virCgroup;
 typedef struct virCgroup *virCgroupPtr;
 
-#define VIR_CGROUP_SYSFS_MOUNT "/sys/fs/cgroup"
+# define VIR_CGROUP_SYSFS_MOUNT "/sys/fs/cgroup"
 
 enum {
     VIR_CGROUP_CONTROLLER_CPU,
