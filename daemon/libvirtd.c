@@ -999,6 +999,12 @@ int main(int argc, char **argv) {
         }
     }
 
+    if (optind != argc) {
+        fprintf(stderr, "%s: unexpected, non-option, command line arguments\n",
+                argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
     if (!(config = daemonConfigNew(privileged))) {
         VIR_ERROR(_("Can't create initial configuration"));
         exit(EXIT_FAILURE);
