@@ -1360,6 +1360,7 @@ else
   fail=0
   AC_CHECK_FUNC([selinux_virtual_domain_context_path], [], [fail=1])
   AC_CHECK_FUNC([selinux_virtual_image_context_path], [], [fail=1])
+  AC_CHECK_FUNCS([selinux_lxc_contexts_path])
   CFLAGS="$old_cflags"
   LIBS="$old_libs"
 
