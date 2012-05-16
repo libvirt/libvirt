@@ -567,7 +567,7 @@ qemuPrepareHostdevUSBDevices(struct qemud_driver *driver,
                              const char *name,
                              usbDeviceList *list)
 {
-    int i;
+    int i, j;
     unsigned int count;
     usbDevice *tmp;
 
@@ -586,7 +586,7 @@ qemuPrepareHostdevUSBDevices(struct qemud_driver *driver,
                 qemuReportError(VIR_ERR_OPERATION_INVALID,
                                 _("USB device %s is already in use"),
                                 usbDeviceGetName(tmp));
-            return -1;
+            goto error;
         }
 
         usbDeviceSetUsedBy(usb, name);
@@ -598,9 +598,16 @@ qemuPrepareHostdevUSBDevices(struct qemud_driver *driver,
          * perform rollback on failure.
          */
         if (usbDeviceListAdd(driver->activeUsbHostdevs, usb) < 0)
-            return -1;
+            goto error;
     }
     return 0;
+
+error:
+    for (j = 0; j < i; j++) {
+        tmp = usbDeviceListGet(list, i);
+        usbDeviceListSteal(driver->activeUsbHostdevs, tmp);
+    }
+    return -1;
 }
 
 static int
@@ -621,8 +628,7 @@ qemuPrepareHostUSBDevices(struct qemud_driver *driver,
     if (!(list = usbDeviceListNew()))
         goto cleanup;
 
-    /* Loop 1: build temporary list and validate no usb device
-     * is already taken
+    /* Loop 1: build temporary list
      */
     for (i = 0 ; i < nhostdevs ; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
@@ -678,7 +684,7 @@ qemuPrepareHostUSBDevices(struct qemud_driver *driver,
      * wrong, perform rollback.
      */
     if (qemuPrepareHostdevUSBDevices(driver, def->name, list) < 0)
-        goto inactivedevs;
+        goto cleanup;
 
     /* Loop 2: Temporary list was successfully merged with
      * driver list, so steal all items to avoid freeing them
@@ -690,16 +696,6 @@ qemuPrepareHostUSBDevices(struct qemud_driver *driver,
     }
 
     ret = 0;
-    goto cleanup;
-
-inactivedevs:
-    /* Steal devices from driver->activeUsbHostdevs.
-     * We will free them later.
-     */
-    for (i = 0; i < usbDeviceListCount(list); i++) {
-        tmp = usbDeviceListGet(list, i);
-        usbDeviceListSteal(driver->activeUsbHostdevs, tmp);
-    }
 
 cleanup:
     usbDeviceListFree(list);
