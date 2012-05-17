@@ -1173,8 +1173,10 @@ int qemuDomainAttachHostDevice(struct qemud_driver *driver,
             goto cleanup;
         }
 
-        if (qemuPrepareHostdevUSBDevices(driver, vm->def->name, list) < 0)
+        if (qemuPrepareHostdevUSBDevices(driver, vm->def->name, list) < 0) {
+            usb = NULL;
             goto cleanup;
+        }
 
         usbDeviceListSteal(list, usb);
     }
