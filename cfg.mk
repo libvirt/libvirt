@@ -819,9 +819,9 @@ exclude_file_name_regexp--sc_prohibit_xmlURI = ^src/util/viruri\.c$$
 
 exclude_file_name_regexp--sc_prohibit_return_as_function = \.py$$
 
-exclude_file_name_regexp--sc_require_config_h = ^examples/
+exclude_file_name_regexp--sc_require_config_h = ^(examples/|tools/virsh-edit.c$$)
 
-exclude_file_name_regexp--sc_require_config_h_first = ^examples/
+exclude_file_name_regexp--sc_require_config_h_first = ^(examples/|tools/virsh-edit.c$$)
 
 exclude_file_name_regexp--sc_trailing_blank = \
   (/qemuhelpdata/|\.(fig|gif|ico|png)$$)

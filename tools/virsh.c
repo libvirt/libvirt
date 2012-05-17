@@ -3422,9 +3422,6 @@ cmdSaveImageEdit(vshControl *ctl, const vshCmd *cmd)
 {
     const char *file = NULL;
     bool ret = false;
-    char *tmp = NULL;
-    char *doc = NULL;
-    char *doc_edited = NULL;
     unsigned int getxml_flags = VIR_DOMAIN_XML_SECURE;
     unsigned int define_flags = 0;
 
@@ -3448,51 +3445,21 @@ cmdSaveImageEdit(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "file", &file) <= 0)
         return false;
 
-    /* Get the XML configuration of the saved image.  */
-    doc = virDomainSaveImageGetXMLDesc(ctl->conn, file, getxml_flags);
-    if (!doc)
-        goto cleanup;
-
-    /* Create and open the temporary file.  */
-    tmp = editWriteToTempFile(ctl, doc);
-    if (!tmp)
-        goto cleanup;
-
-    /* Start the editor.  */
-    if (editFile(ctl, tmp) == -1)
-        goto cleanup;
-
-    /* Read back the edited file.  */
-    doc_edited = editReadBackFile(ctl, tmp);
-    if (!doc_edited)
-        goto cleanup;
-
-    /* Compare original XML with edited.  Short-circuit if it did not
-     * change, and we do not have any flags.  */
-    if (STREQ(doc, doc_edited) && !define_flags) {
-        vshPrint(ctl, _("Saved image %s XML configuration not changed.\n"),
-                 file);
-        ret = true;
-        goto cleanup;
-    }
-
-    /* Everything checks out, so redefine the xml.  */
-    if (virDomainSaveImageDefineXML(ctl->conn, file, doc_edited,
-                                    define_flags) < 0) {
-        vshError(ctl, _("Failed to update %s"), file);
-        goto cleanup;
-    }
+    #define EDIT_GET_XML \
+        virDomainSaveImageGetXMLDesc(ctl->conn, file, getxml_flags)
+    #define EDIT_NOT_CHANGED \
+        vshPrint(ctl, _("Saved image %s XML configuration " \
+                        "not changed.\n"), file);           \
+        ret = true; goto edit_cleanup;
+    #define EDIT_DEFINE \
+        virDomainSaveImageDefineXML(ctl->conn, file, doc_edited, define_flags)
+    #define EDIT_FREE /* */
+    #include "virsh-edit.c"
 
     vshPrint(ctl, _("State file %s edited.\n"), file);
     ret = true;
 
 cleanup:
-    VIR_FREE(doc);
-    VIR_FREE(doc_edited);
-    if (tmp) {
-        unlink(tmp);
-        VIR_FREE(tmp);
-    }
     return ret;
 }
 
@@ -8546,84 +8513,42 @@ static const vshCmdOptDef opts_interface_edit[] = {
 };
 
 static bool
-cmdInterfaceEdit (vshControl *ctl, const vshCmd *cmd)
+cmdInterfaceEdit(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
     virInterfacePtr iface = NULL;
-    char *tmp = NULL;
-    char *doc = NULL;
-    char *doc_edited = NULL;
-    char *doc_reread = NULL;
+    virInterfacePtr iface_edited = NULL;
     unsigned int flags = VIR_INTERFACE_XML_INACTIVE;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
 
-    iface = vshCommandOptInterface (ctl, cmd, NULL);
+    iface = vshCommandOptInterface(ctl, cmd, NULL);
     if (iface == NULL)
         goto cleanup;
 
-    /* Get the XML configuration of the interface. */
-    doc = virInterfaceGetXMLDesc (iface, flags);
-    if (!doc)
-        goto cleanup;
+    #define EDIT_GET_XML virInterfaceGetXMLDesc(iface, flags)
+    #define EDIT_NOT_CHANGED \
+        vshPrint(ctl, _("Interface %s XML configuration not changed.\n"),   \
+                 virInterfaceGetName(iface));                               \
+        ret = true; goto edit_cleanup;
+    #define EDIT_DEFINE \
+        (iface_edited = virInterfaceDefineXML(ctl->conn, doc_edited, 0))
+    #define EDIT_FREE \
+        if (iface_edited)   \
+            virInterfaceFree(iface_edited);
+    #include "virsh-edit.c"
 
-    /* Create and open the temporary file. */
-    tmp = editWriteToTempFile (ctl, doc);
-    if (!tmp) goto cleanup;
-
-    /* Start the editor. */
-    if (editFile (ctl, tmp) == -1) goto cleanup;
-
-    /* Read back the edited file. */
-    doc_edited = editReadBackFile (ctl, tmp);
-    if (!doc_edited) goto cleanup;
-
-    /* Compare original XML with edited.  Has it changed at all? */
-    if (STREQ (doc, doc_edited)) {
-        vshPrint (ctl, _("Interface %s XML configuration not changed.\n"),
-                  virInterfaceGetName (iface));
-        ret = true;
-        goto cleanup;
-    }
-
-    /* Now re-read the interface XML.  Did someone else change it while
-     * it was being edited?  This also catches problems such as us
-     * losing a connection or the interface going away.
-     */
-    doc_reread = virInterfaceGetXMLDesc (iface, flags);
-    if (!doc_reread)
-        goto cleanup;
-
-    if (STRNEQ (doc, doc_reread)) {
-        vshError(ctl, "%s",
-                 _("ERROR: the XML configuration was changed by another user"));
-        goto cleanup;
-    }
-
-    /* Everything checks out, so redefine the interface. */
-    virInterfaceFree (iface);
-    iface = virInterfaceDefineXML(ctl->conn, doc_edited, 0);
-    if (!iface)
-        goto cleanup;
-
-    vshPrint (ctl, _("Interface %s XML configuration edited.\n"),
-              virInterfaceGetName(iface));
+    vshPrint(ctl, _("Interface %s XML configuration edited.\n"),
+             virInterfaceGetName(iface));
 
     ret = true;
 
 cleanup:
     if (iface)
-        virInterfaceFree (iface);
-
-    VIR_FREE(doc);
-    VIR_FREE(doc_edited);
-    VIR_FREE(doc_reread);
-
-    if (tmp) {
-        unlink (tmp);
-        VIR_FREE(tmp);
-    }
+        virInterfaceFree(iface);
+    if (iface_edited)
+        virInterfaceFree(iface_edited);
 
     return ret;
 }
@@ -9983,83 +9908,42 @@ static const vshCmdOptDef opts_nwfilter_edit[] = {
 };
 
 static bool
-cmdNWFilterEdit (vshControl *ctl, const vshCmd *cmd)
+cmdNWFilterEdit(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
     virNWFilterPtr nwfilter = NULL;
-    char *tmp = NULL;
-    char *doc = NULL;
-    char *doc_edited = NULL;
-    char *doc_reread = NULL;
+    virNWFilterPtr nwfilter_edited = NULL;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
 
-    nwfilter = vshCommandOptNWFilter (ctl, cmd, NULL);
+    nwfilter = vshCommandOptNWFilter(ctl, cmd, NULL);
     if (nwfilter == NULL)
         goto cleanup;
 
-    /* Get the XML configuration of the interface. */
-    doc = virNWFilterGetXMLDesc (nwfilter, 0);
-    if (!doc)
-        goto cleanup;
+    #define EDIT_GET_XML virNWFilterGetXMLDesc(nwfilter, 0)
+    #define EDIT_NOT_CHANGED \
+        vshPrint(ctl, _("Network filter %s XML "            \
+                        "configuration not changed.\n"),    \
+                 virNWFilterGetName(nwfilter));             \
+        ret = true; goto edit_cleanup;
+    #define EDIT_DEFINE \
+        (nwfilter_edited = virNWFilterDefineXML(ctl->conn, doc_edited))
+    #define EDIT_FREE \
+        if (nwfilter_edited)    \
+            virNWFilterFree(nwfilter);
+    #include "virsh-edit.c"
 
-    /* Create and open the temporary file. */
-    tmp = editWriteToTempFile (ctl, doc);
-    if (!tmp) goto cleanup;
-
-    /* Start the editor. */
-    if (editFile (ctl, tmp) == -1) goto cleanup;
-
-    /* Read back the edited file. */
-    doc_edited = editReadBackFile (ctl, tmp);
-    if (!doc_edited) goto cleanup;
-
-    /* Compare original XML with edited.  Has it changed at all? */
-    if (STREQ (doc, doc_edited)) {
-        vshPrint (ctl, _("Network filter %s XML configuration not changed.\n"),
-                  virNWFilterGetName (nwfilter));
-        ret = true;
-        goto cleanup;
-    }
-
-    /* Now re-read the network filter XML.  Did someone else change it while
-     * it was being edited?  This also catches problems such as us
-     * losing a connection or the interface going away.
-     */
-    doc_reread = virNWFilterGetXMLDesc (nwfilter, 0);
-    if (!doc_reread)
-        goto cleanup;
-
-    if (STRNEQ (doc, doc_reread)) {
-        vshError(ctl, "%s",
-                 _("ERROR: the XML configuration was changed by another user"));
-        goto cleanup;
-    }
-
-    /* Everything checks out, so redefine the interface. */
-    virNWFilterFree (nwfilter);
-    nwfilter = virNWFilterDefineXML(ctl->conn, doc_edited);
-    if (!nwfilter)
-        goto cleanup;
-
-    vshPrint (ctl, _("Network filter %s XML configuration edited.\n"),
-              virNWFilterGetName(nwfilter));
+    vshPrint(ctl, _("Network filter %s XML configuration edited.\n"),
+             virNWFilterGetName(nwfilter));
 
     ret = true;
 
 cleanup:
     if (nwfilter)
-        virNWFilterFree (nwfilter);
-
-    VIR_FREE(doc);
-    VIR_FREE(doc_edited);
-    VIR_FREE(doc_reread);
-
-    if (tmp) {
-        unlink (tmp);
-        VIR_FREE(tmp);
-    }
+        virNWFilterFree(nwfilter);
+    if (nwfilter_edited)
+        virNWFilterFree(nwfilter_edited);
 
     return ret;
 }
@@ -15805,88 +15689,43 @@ static const vshCmdOptDef opts_edit[] = {
     {NULL, 0, 0, NULL}
 };
 
-/* This function also acts as a template to generate cmdNetworkEdit
- * and cmdPoolEdit functions (below) using a sed script in the Makefile.
- */
 static bool
-cmdEdit (vshControl *ctl, const vshCmd *cmd)
+cmdEdit(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
     virDomainPtr dom = NULL;
-    char *tmp = NULL;
-    char *doc = NULL;
-    char *doc_edited = NULL;
-    char *doc_reread = NULL;
+    virDomainPtr dom_edited = NULL;
     unsigned int flags = VIR_DOMAIN_XML_SECURE | VIR_DOMAIN_XML_INACTIVE;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
 
-    dom = vshCommandOptDomain (ctl, cmd, NULL);
+    dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
         goto cleanup;
 
-    /* Get the XML configuration of the domain. */
-    doc = virDomainGetXMLDesc (dom, flags);
-    if (!doc)
-        goto cleanup;
+    #define EDIT_GET_XML virDomainGetXMLDesc(dom, flags)
+    #define EDIT_NOT_CHANGED \
+        vshPrint(ctl, _("Domain %s XML configuration not changed.\n"),  \
+                 virDomainGetName (dom));                               \
+        ret = true; goto edit_cleanup;
+    #define EDIT_DEFINE \
+        (dom_edited = virDomainDefineXML(ctl->conn, doc_edited))
+    #define EDIT_FREE \
+        if (dom_edited) \
+            virDomainFree(dom_edited);
+    #include "virsh-edit.c"
 
-    /* Create and open the temporary file. */
-    tmp = editWriteToTempFile (ctl, doc);
-    if (!tmp) goto cleanup;
-
-    /* Start the editor. */
-    if (editFile (ctl, tmp) == -1) goto cleanup;
-
-    /* Read back the edited file. */
-    doc_edited = editReadBackFile (ctl, tmp);
-    if (!doc_edited) goto cleanup;
-
-    /* Compare original XML with edited.  Has it changed at all? */
-    if (STREQ (doc, doc_edited)) {
-        vshPrint (ctl, _("Domain %s XML configuration not changed.\n"),
-                  virDomainGetName (dom));
-        ret = true;
-        goto cleanup;
-    }
-
-    /* Now re-read the domain XML.  Did someone else change it while
-     * it was being edited?  This also catches problems such as us
-     * losing a connection or the domain going away.
-     */
-    doc_reread = virDomainGetXMLDesc (dom, flags);
-    if (!doc_reread)
-        goto cleanup;
-
-    if (STRNEQ (doc, doc_reread)) {
-        vshError(ctl,
-                 "%s", _("ERROR: the XML configuration was changed by another user"));
-        goto cleanup;
-    }
-
-    /* Everything checks out, so redefine the domain. */
-    virDomainFree (dom);
-    dom = virDomainDefineXML(ctl->conn, doc_edited);
-    if (!dom)
-        goto cleanup;
-
-    vshPrint (ctl, _("Domain %s XML configuration edited.\n"),
-              virDomainGetName(dom));
+    vshPrint(ctl, _("Domain %s XML configuration edited.\n"),
+             virDomainGetName(dom));
 
     ret = true;
 
  cleanup:
     if (dom)
-        virDomainFree (dom);
-
-    VIR_FREE(doc);
-    VIR_FREE(doc_edited);
-    VIR_FREE(doc_reread);
-
-    if (tmp) {
-        unlink (tmp);
-        VIR_FREE(tmp);
-    }
+        virDomainFree(dom);
+    if (dom_edited)
+        virDomainFree(dom_edited);
 
     return ret;
 }
@@ -15906,8 +15745,46 @@ static const vshCmdOptDef opts_network_edit[] = {
     {NULL, 0, 0, NULL}
 };
 
-/* This is generated from this file by a sed script in the Makefile. */
-#include "virsh-net-edit.c"
+static bool
+cmdNetworkEdit(vshControl *ctl, const vshCmd *cmd)
+{
+    bool ret = false;
+    virNetworkPtr network = NULL;
+    virNetworkPtr network_edited = NULL;
+    unsigned int flags = 0;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        goto cleanup;
+
+    network = vshCommandOptNetwork(ctl, cmd, NULL);
+    if (network == NULL)
+        goto cleanup;
+
+    #define EDIT_GET_XML virNetworkGetXMLDesc(network, flags)
+    #define EDIT_NOT_CHANGED \
+        vshPrint(ctl, _("Network %s XML configuration not changed.\n"), \
+                 virNetworkGetName (network));                          \
+        ret = true; goto edit_cleanup;
+    #define EDIT_DEFINE \
+        (network_edited = virNetworkDefineXML(ctl->conn, doc_edited))
+    #define EDIT_FREE \
+        if (network_edited) \
+            virNetworkFree(network_edited);
+    #include "virsh-edit.c"
+
+    vshPrint(ctl, _("Network %s XML configuration edited.\n"),
+             virNetworkGetName(network));
+
+    ret = true;
+
+ cleanup:
+    if (network)
+        virNetworkFree(network);
+    if (network_edited)
+        virNetworkFree(network_edited);
+
+    return ret;
+}
 
 /*
  * "pool-edit" command
@@ -15923,8 +15800,46 @@ static const vshCmdOptDef opts_pool_edit[] = {
     {NULL, 0, 0, NULL}
 };
 
-/* This is generated from this file by a sed script in the Makefile. */
-#include "virsh-pool-edit.c"
+static bool
+cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
+{
+    bool ret = false;
+    virStoragePoolPtr pool = NULL;
+    virStoragePoolPtr pool_edited = NULL;
+    unsigned int flags = 0;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        goto cleanup;
+
+    pool = vshCommandOptPool(ctl, cmd, "pool", NULL);
+    if (pool == NULL)
+        goto cleanup;
+
+    #define EDIT_GET_XML virStoragePoolGetXMLDesc(pool, flags)
+    #define EDIT_NOT_CHANGED \
+        vshPrint(ctl, _("Pool %s XML configuration not changed.\n"),    \
+                 virStoragePoolGetName (pool));                         \
+        ret = true; goto edit_cleanup;
+    #define EDIT_DEFINE \
+        (pool_edited = virStoragePoolDefineXML(ctl->conn, doc_edited, 0))
+    #define EDIT_FREE \
+        if (pool_edited)    \
+            virStoragePoolFree(pool_edited);
+    #include "virsh-edit.c"
+
+    vshPrint(ctl, _("Pool %s XML configuration edited.\n"),
+             virStoragePoolGetName(pool));
+
+    ret = true;
+
+ cleanup:
+    if (pool)
+        virStoragePoolFree(pool);
+    if (pool_edited)
+        virStoragePoolFree(pool_edited);
+
+    return ret;
+}
 
 /*
  * "quit" command
@@ -16317,9 +16232,6 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     const char *edited_name;
     bool ret = false;
-    char *tmp = NULL;
-    char *doc = NULL;
-    char *doc_edited = NULL;
     unsigned int getxml_flags = VIR_DOMAIN_XML_SECURE;
     unsigned int define_flags = VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
     bool rename_okay = vshCommandOptBool(cmd, "rename");
@@ -16346,45 +16258,25 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
                           &snapshot, &name) < 0)
         goto cleanup;
 
-    /* Get the XML configuration of the snapshot.  */
-    doc = virDomainSnapshotGetXMLDesc(snapshot, getxml_flags);
-    if (!doc)
-        goto cleanup;
-
-    /* strstr is safe here, since xml came from libvirt API and not user */
-    if (strstr(doc, "<state>disk-snapshot</state>"))
-        define_flags |= VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY;
-
-    /* Create and open the temporary file.  */
-    tmp = editWriteToTempFile(ctl, doc);
-    if (!tmp)
-        goto cleanup;
-
-    /* Start the editor.  */
-    if (editFile(ctl, tmp) == -1)
-        goto cleanup;
-
-    /* Read back the edited file.  */
-    doc_edited = editReadBackFile(ctl, tmp);
-    if (!doc_edited)
-        goto cleanup;
-
-    /* Compare original XML with edited.  Short-circuit if it did not
-     * change, and we do not have any flags.  */
-    if (STREQ(doc, doc_edited) &&
-        !(define_flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) {
-        vshPrint(ctl, _("Snapshot %s XML configuration not changed.\n"),
-                 name);
-        ret = true;
-        goto cleanup;
-    }
-
-    /* Everything checks out, so redefine the xml.  */
-    edited = virDomainSnapshotCreateXML(dom, doc_edited, define_flags);
-    if (!edited) {
-        vshError(ctl, _("Failed to update %s"), name);
-        goto cleanup;
-    }
+    #define EDIT_GET_XML \
+        virDomainSnapshotGetXMLDesc(snapshot, getxml_flags)
+    #define EDIT_NOT_CHANGED \
+        /* Depending on flags, we re-edit even if XML is unchanged.  */ \
+        if (!(define_flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) {     \
+            vshPrint(ctl,                                               \
+                     _("Snapshot %s XML configuration not changed.\n"), \
+                     name);                                             \
+            ret = true;                                                 \
+            goto cleanup;                                               \
+        }
+    #define EDIT_DEFINE \
+        (strstr(doc, "<state>disk-snapshot</state>") ? \
+        define_flags |= VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY : 0), \
+        edited = virDomainSnapshotCreateXML(dom, doc_edited, define_flags)
+    #define EDIT_FREE \
+        if (edited) \
+            virDomainSnapshotFree(edited);
+    #include "virsh-edit.c"
 
     edited_name = virDomainSnapshotGetName(edited);
     if (STREQ(name, edited_name)) {
@@ -16413,16 +16305,12 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
 cleanup:
-    VIR_FREE(doc);
-    VIR_FREE(doc_edited);
-    if (tmp) {
-        unlink(tmp);
-        VIR_FREE(tmp);
-    }
-    if (snapshot)
-        virDomainSnapshotFree(snapshot);
     if (edited)
         virDomainSnapshotFree(edited);
+    else
+        vshError(ctl, _("Failed to update %s"), name);
+    if (snapshot)
+        virDomainSnapshotFree(snapshot);
     if (dom)
         virDomainFree(dom);
     return ret;

@@ -25,7 +25,8 @@ EXTRA_DIST = \
 	virt-sanlock-cleanup.in				\
 	virt-sanlock-cleanup.8				\
 	virsh.pod					\
-	libvirt-guests.sysconf
+	libvirt-guests.sysconf		\
+	virsh-edit.c
 
 DISTCLEANFILES =
 
@@ -111,42 +112,7 @@ virsh_CFLAGS =							\
 		$(COVERAGE_CFLAGS)				\
 		$(LIBXML_CFLAGS)				\
 		$(READLINE_CFLAGS)
-BUILT_SOURCES = virsh-net-edit.c virsh-pool-edit.c
-
-virsh-net-edit.c: virsh.c Makefile.am
-	$(AM_V_GEN)rm -f $@-tmp && \
-	echo '/* Automatically generated from: $^ */' > $@-tmp && \
-	echo 'static bool' >> $@-tmp && \
-	awk '/^cmdEdit/, /^}/' $< \
-	  | sed -e 's/domain/network/g' \
-	      -e 's/Domain/Network/g' \
-	      -e 's/cmdEdit/cmdNetworkEdit/g' \
-	      -e 's/dom/network/g' \
-	      -e 's/int flags.*/int flags = 0;/g' \
-	>> $@-tmp && \
-	chmod a-w $@-tmp && \
-	rm -f $@ && \
-	mv $@-tmp $@
-
-virsh-pool-edit.c: virsh.c Makefile.am
-	$(AM_V_GEN)rm -f $@-tmp && \
-	echo '/* Automatically generated from: $^ */' > $@-tmp && \
-	echo 'static bool' >> $@-tmp && \
-	awk '/^cmdEdit/, /^}/' $< \
-	  | sed -e 's/domain/pool/g' \
-	      -e 's/vshCommandOptDomain/vshCommandOptPool/g' \
-	      -e 's/Domain %s/Pool %s/g' \
-	      -e 's/(ctl, cmd, NULL);/(ctl, cmd, "pool", NULL);/' \
-	      -e 's/Domain/StoragePool/g' \
-	      -e 's/cmdEdit/cmdPoolEdit/g' \
-	      -e 's/\(virStoragePoolDefineXML.*\));/\1, 0);/' \
-	      -e 's/dom/pool/g' \
-	      -e 's/int flags.*/int flags = 0;/g' \
-	>> $@-tmp && \
-	chmod a-w $@-tmp && \
-	rm -f $@ && \
-	mv $@-tmp $@
-
+BUILT_SOURCES =
 
 if WITH_WIN_ICON
 virsh_LDADD += virsh_win_icon.$(OBJEXT)
