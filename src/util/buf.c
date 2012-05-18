@@ -612,3 +612,39 @@ virBufferStrcat(virBufferPtr buf, ...)
         virBufferAdd(buf, str, -1);
     va_end(ap);
 }
+
+/**
+ * virBufferTrim:
+ * @buf: the buffer to trim
+ * @str: the optional string, to force an exact trim
+ * @len: the number of bytes to trim, or -1 to use @str
+ *
+ * Trim the tail of a buffer.  If @str is provided, the trim only occurs
+ * if the current tail of the buffer matches @str; a non-negative @len
+ * further limits how much of the tail is trimmed.  If @str is NULL, then
+ * @len must be non-negative.
+ *
+ * Returns -1 if @buf has previously encountered an error or if @len is
+ * invalid, 0 if there was nothing to trim (@buf was too short or @str
+ * didn't match), and 1 if the trim was successful.
+ */
+int
+virBufferTrim(virBufferPtr buf, const char *str, int len)
+{
+    size_t len2 = 0;
+
+    if (!buf || buf->error || (!str && len < 0))
+        return -1;
+
+    if (len > 0 && len > buf->use)
+        return 0;
+    if (str) {
+        len2 = strlen(str);
+        if (len2 > buf->use ||
+            memcmp(&buf->content[buf->use - len2], str, len2) != 0)
+            return 0;
+    }
+    buf->use -= len < 0 ? len2 : len;
+    buf->content[buf->use] = '\0';
+    return 1;
+}

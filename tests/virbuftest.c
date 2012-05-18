@@ -133,6 +133,61 @@ static int testBufAutoIndent(const void *data ATTRIBUTE_UNUSED)
     return ret;
 }
 
+static int testBufTrim(const void *data ATTRIBUTE_UNUSED)
+{
+    virBuffer bufinit = VIR_BUFFER_INITIALIZER;
+    virBufferPtr buf = NULL;
+    char *result = NULL;
+    const char *expected = "a,b";
+    int ret = -1;
+    int i = 1;
+
+#define ACT(str, len, result) \
+    do {                                          \
+        if (virBufferTrim(buf, str, len) != result) {   \
+            TEST_ERROR("trim %d failed", i);            \
+            goto cleanup;                               \
+        }                                               \
+        i++;                                            \
+    } while (0);
+
+    if (virBufferTrim(buf, "", 0) != -1) {
+        TEST_ERROR("Wrong failure detection 1");
+        goto cleanup;
+    }
+    buf = &bufinit;
+    if (virBufferTrim(buf, NULL, -1) != -1) {
+        TEST_ERROR("Wrong failure detection 2");
+        goto cleanup;
+    }
+
+    virBufferAddLit(buf, "a;");
+    ACT("", 0, 1);
+    ACT("", -1, 1);
+    ACT(NULL, 1, 1);
+    ACT(NULL, 5, 0);
+    ACT("a", 2, 0);
+
+    virBufferAddLit(buf, ",b,,");
+    ACT("b", -1, 0);
+    ACT("b,,", 1, 1);
+    ACT(",", -1, 1);
+
+    result = virBufferContentAndReset(buf);
+    if (!result || STRNEQ(result, expected)) {
+        virtTestDifference(stderr, expected, result);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    virBufferFreeAndReset(buf);
+    VIR_FREE(result);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -149,6 +204,7 @@ mymain(void)
     DO_TEST("EscapeString infinite loop", testBufInfiniteLoop, 1);
     DO_TEST("VSprintf infinite loop", testBufInfiniteLoop, 0);
     DO_TEST("Auto-indentation", testBufAutoIndent, 0);
+    DO_TEST("Trim", testBufTrim, 0);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

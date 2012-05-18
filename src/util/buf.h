@@ -64,4 +64,6 @@ void virBufferURIEncodeString(virBufferPtr buf, const char *str);
 void virBufferAdjustIndent(virBufferPtr buf, int indent);
 int virBufferGetIndent(const virBufferPtr buf, bool dynamic);
 
+int virBufferTrim(virBufferPtr buf, const char *trim, int len);
+
 #endif /* __VIR_BUFFER_H__ */
