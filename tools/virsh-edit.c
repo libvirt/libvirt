@@ -55,6 +55,7 @@ do {
     char *doc = NULL;
     char *doc_edited = NULL;
     char *doc_reread = NULL;
+    char *msg = NULL;
 
     /* Get the XML configuration of the object. */
     doc = (EDIT_GET_XML);
@@ -66,6 +67,7 @@ do {
     if (!tmp)
         goto edit_cleanup;
 
+reedit:
     /* Start the editor. */
     if (editFile(ctl, tmp) == -1)
         goto edit_cleanup;
@@ -80,6 +82,9 @@ do {
         EDIT_NOT_CHANGED;
     }
 
+redefine:
+    msg = NULL;
+
     /* Now re-read the object XML.  Did someone else change it while
      * it was being edited?  This also catches problems such as us
      * losing a connection or the object going away.
@@ -89,15 +94,38 @@ do {
         goto edit_cleanup;
 
     if (STRNEQ(doc, doc_reread)) {
-        vshError(ctl, "%s", _("ERROR: the XML configuration "
-                              "was changed by another user"));
-        goto edit_cleanup;
+        msg = _("The XML configuration was changed by another user.");
+        VIR_FREE(doc);
+        doc = doc_reread;
+        doc_reread = NULL;
     }
 
     /* Everything checks out, so redefine the object. */
     EDIT_FREE;
-    if (!(EDIT_DEFINE))
-        goto edit_cleanup;
+    if (!msg && !(EDIT_DEFINE)) {
+        msg = _("Failed.");
+    }
+
+    if (msg) {
+        int c = vshAskReedit(ctl, msg);
+        switch (c) {
+        case 'y':
+            goto reedit;
+            break;
+
+        case 'f':
+            goto redefine;
+            break;
+
+        case 'n':
+            goto edit_cleanup;
+            break;
+
+        default:
+            vshError(ctl, "%s", msg);
+            break;
+        }
+    }
 
     break;
 

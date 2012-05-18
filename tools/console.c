@@ -298,13 +298,36 @@ vshGetEscapeChar(const char *s)
     return *s;
 }
 
+int vshMakeStdinRaw(struct termios *ttyattr, bool report_errors) {
+    struct termios rawattr;
+
+    if (tcgetattr(STDIN_FILENO, ttyattr) < 0) {
+        if (report_errors)
+            VIR_ERROR(_("unable to get tty attributes: %s"),
+                      strerror(errno));
+        return -1;
+    }
+
+    rawattr = *ttyattr;
+    cfmakeraw(&rawattr);
+
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &rawattr) < 0) {
+        if (report_errors)
+            VIR_ERROR(_("unable to set tty attributes: %s"),
+                      strerror(errno));
+        return -1;
+    }
+
+    return 0;
+}
+
 int vshRunConsole(virDomainPtr dom,
                   const char *dev_name,
                   const char *escape_seq,
                   unsigned int flags)
 {
     int ret = -1;
-    struct termios ttyattr, rawattr;
+    struct termios ttyattr;
     void (*old_sigquit)(int);
     void (*old_sigterm)(int);
     void (*old_sigint)(int);
@@ -317,21 +340,8 @@ int vshRunConsole(virDomainPtr dom,
        result in it being echoed back already), and
        also ensure Ctrl-C, etc is blocked, and misc
        other bits */
-    if (tcgetattr(STDIN_FILENO, &ttyattr) < 0) {
-        VIR_ERROR(_("unable to get tty attributes: %s"),
-                  strerror(errno));
-        return -1;
-    }
-
-    rawattr = ttyattr;
-    cfmakeraw(&rawattr);
-
-    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &rawattr) < 0) {
-        VIR_ERROR(_("unable to set tty attributes: %s"),
-                  strerror(errno));
+    if (vshMakeStdinRaw(&ttyattr, true) < 0)
         goto resettty;
-    }
-
 
     /* Trap all common signals so that we can safely restore
        the original terminal settings on STDIN before the

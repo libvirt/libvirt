@@ -33,6 +33,7 @@
 #include <signal.h>
 #include <poll.h>
 #include <strings.h>
+#include <termios.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -652,6 +653,62 @@ vshReconnect(vshControl *ctl)
     disconnected = 0;
     ctl->useGetInfo = false;
     ctl->useSnapshotOld = false;
+}
+
+/**
+ * vshAskReedit:
+ * @msg: Question to ask user
+ *
+ * Ask user if he wants to return to previously
+ * edited file.
+ *
+ * Returns 'y' if he wants to
+ *         'f' if he forcibly wants to
+ *         'n' if he doesn't want to
+ *         -1  on error
+ *          0  otherwise
+ */
+static int
+vshAskReedit(vshControl *ctl, const char *msg)
+{
+#ifndef WIN32
+    int c = -1;
+    struct termios ttyattr;
+
+    if (!isatty(STDIN_FILENO))
+        return -1;
+
+    virshReportError(ctl);
+
+    if (vshMakeStdinRaw(&ttyattr, false) < 0)
+        return -1;
+
+    while (true) {
+        /* TRANSLATORS: For now, we aren't using LC_MESSAGES, and the user
+         * choices really are limited to just 'y', 'n', 'f' and '?'  */
+        vshPrint(ctl, "\r%s %s", msg, _("Try again? [y,n,f,?]:"));
+        c = c_tolower(getchar());
+
+        if (c == '?') {
+            vshPrint(ctl, "\r\n%s", _("y - yes, start editor again\r\n"
+                                      "n - no, throw away my changes\r\n"
+                                      "f - force, try to redefine again\r\n"
+                                      "? - print this help\r\n"));
+            continue;
+        } else if (c == 'y' || c == 'n' || c == 'f') {
+            break;
+        }
+    }
+
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &ttyattr);
+
+    vshPrint(ctl, "\r\n");
+    return c;
+#else
+    vshDebug(ctl, VSH_ERR_WARNING, "%s", _("This function is not "
+                                           "supported on WIN32 platform"));
+    return 0;
+#endif
 }
 
 /* ---------------

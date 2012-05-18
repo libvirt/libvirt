@@ -30,6 +30,8 @@ int vshRunConsole(virDomainPtr dom,
                   const char *escape_seq,
                   unsigned int flags);
 
+int vshMakeStdinRaw(struct termios *ttyattr, bool report_errors);
+
 # endif /* !WIN32 */
 
 #endif /* __VIR_CONSOLE_H__ */
