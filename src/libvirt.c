@@ -1783,7 +1783,14 @@ error:
  *
  * Collect the list of active domains, and store their IDs in array @ids
  *
- * Returns the number of domains found or -1 in case of error
+ * For inactive domains, see virConnectListDefinedDomains().  For more
+ * control over the results, see virConnectListAllDomains().
+ *
+ * Returns the number of domains found or -1 in case of error.  Note that
+ * this command is inherently racy; a domain can be started between a
+ * call to virConnectNumOfDomains() and this call; you are only guaranteed
+ * that all currently active domains were listed if the return is less
+ * than @maxids.
  */
 int
 virConnectListDomains(virConnectPtr conn, int *ids, int maxids)
@@ -7956,7 +7963,14 @@ error:
  * list the defined but inactive domains, stores the pointers to the names
  * in @names
  *
- * Returns the number of names provided in the array or -1 in case of error
+ * For active domains, see virConnectListDomains().  For more control over
+ * the results, see virConnectListAllDomains().
+ *
+ * Returns the number of names provided in the array or -1 in case of error.
+ * Note that this command is inherently racy; a domain can be defined between
+ * a call to virConnectNumOfDefinedDomains() and this call; you are only
+ * guaranteed that all currently defined domains were listed if the return
+ * is less than @maxids.  The client must call free() on each returned name.
  */
 int
 virConnectListDefinedDomains(virConnectPtr conn, char **const names,
@@ -7977,6 +7991,112 @@ virConnectListDefinedDomains(virConnectPtr conn, char **const names,
     if (conn->driver->listDefinedDomains) {
         int ret;
         ret = conn->driver->listDefinedDomains (conn, names, maxnames);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
+ * virConnectListAllDomains:
+ * @conn: Pointer to the hypervisor connection.
+ * @domains: Pointer to a variable to store the array containing domain objects
+ *           or NULL if the list is not required (just returns number of guests).
+ * @flags: bitwise-OR of virConnectListAllDomainsFlags
+ *
+ * Collect a possibly-filtered list of all domains, and return an allocated
+ * array of information for each.  This API solves the race inherent in
+ * virConnectListDomains() and virConnectListDefinedDomains().
+ *
+ * Normally, all domains are returned; however, @flags can be used to
+ * filter the results for a smaller list of targeted domains.  The valid
+ * flags are divided into groups, where each group contains bits that
+ * describe mutually exclusive attributes of a domain, and where all bits
+ * within a group describe all possible domains.  Some hypervisors might
+ * reject explicit bits from a group where the hypervisor cannot make a
+ * distinction (for example, not all hypervisors can tell whether domains
+ * have snapshots).  For a group supported by a given hypervisor, the
+ * behavior when no bits of a group are set is identical to the behavior
+ * when all bits in that group are set.  When setting bits from more than
+ * one group, it is possible to select an impossible combination (such
+ * as an inactive transient domain), in that case a hypervisor may return
+ * either 0 or an error.
+ *
+ * The first group of @flags is VIR_CONNECT_LIST_DOMAINS_ACTIVE (online
+ * domains) and VIR_CONNECT_LIST_DOMAINS_INACTIVE (offline domains).
+ *
+ * The next group of @flags is VIR_CONNECT_LIST_DOMAINS_PERSISTENT (defined
+ * domains) and VIR_CONNECT_LIST_DOMAINS_TRANSIENT (running but not defined).
+ *
+ * The next group of @flags covers various domain states:
+ * VIR_CONNECT_LIST_DOMAINS_RUNNING, VIR_CONNECT_LIST_DOMAINS_PAUSED,
+ * VIR_CONNECT_LIST_DOMAINS_SHUTOFF, and a catch-all for all other states
+ * (such as crashed, this catch-all covers the possibility of adding new
+ * states).
+ *
+ * The remaining groups cover boolean attributes commonly asked about
+ * domains; they include VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE and
+ * VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE, for filtering based on whether
+ * a managed save image exists; VIR_CONNECT_LIST_DOMAINS_AUTOSTART and
+ * VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART, for filtering based on autostart;
+ * VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT and
+ * VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT, for filtering based on whether
+ * a domain has snapshots.
+ *
+ * Returns the number of domains found or -1 and sets domains to NULL in case
+ * of error.  On success, the array stored into @doms is guaranteed to have an
+ * extra allocated element set to NULL but not included in the return count, to
+ * make iteration easier. The caller is responsible for calling virDomainFree()
+ * on each array element, then calling free() on @doms.
+ *
+ * Example of usage:
+ * virDomainPtr *domains;
+ * virDomainPtr dom;
+ * int i;
+ * int ret;
+ * unsigned int flags = VIR_CONNECT_LIST_RUNNING |
+ *                      VIR_CONNECT_LIST_PERSISTENT;
+ *
+ * ret = virConnectListAllDomains(conn, &domains, flags);
+ * if (ret < 0)
+ *     error();
+ *
+ * for (i = 0; i < ret; i++) {
+ *      do_something_with_domain(domains[i]);
+ *
+ *      //here or in a separate loop if needed
+ *      virDomainFree(domains[i]);
+ * }
+ *
+ * free(domains);
+ */
+int
+virConnectListAllDomains(virConnectPtr conn,
+                         virDomainPtr **domains,
+                         unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, domains=%p, flags=%x", conn, domains, flags);
+
+    virResetLastError();
+
+    if (domains)
+        *domains = NULL;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (conn->driver->listAllDomains) {
+        int ret;
+        ret = conn->driver->listAllDomains(conn, domains, flags);
         if (ret < 0)
             goto error;
         return ret;

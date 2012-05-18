@@ -251,9 +251,13 @@ typedef char *
                                            const char *domainXml,
                                            unsigned int flags);
 typedef int
-        (*virDrvListDefinedDomains)	(virConnectPtr conn,
-                                         char **const names,
-                                         int maxnames);
+        (*virDrvListDefinedDomains) (virConnectPtr conn,
+                                     char **const names,
+                                     int maxnames);
+typedef int
+        (*virDrvListAllDomains) (virConnectPtr conn,
+                                 virDomainPtr **domains,
+                                 unsigned int flags);
 typedef int
         (*virDrvNumOfDefinedDomains)	(virConnectPtr conn);
 typedef int
@@ -874,6 +878,7 @@ struct _virDriver {
     virDrvGetCapabilities		getCapabilities;
     virDrvListDomains		listDomains;
     virDrvNumOfDomains		numOfDomains;
+    virDrvListAllDomains    listAllDomains;
     virDrvDomainCreateXML		domainCreateXML;
     virDrvDomainLookupByID		domainLookupByID;
     virDrvDomainLookupByUUID	domainLookupByUUID;

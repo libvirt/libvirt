@@ -1760,8 +1760,40 @@ int                     virDomainUndefineFlags   (virDomainPtr domain,
                                                   unsigned int flags);
 int                     virConnectNumOfDefinedDomains  (virConnectPtr conn);
 int                     virConnectListDefinedDomains (virConnectPtr conn,
-                                                 char **const names,
-                                                 int maxnames);
+                                                      char **const names,
+                                                      int maxnames);
+/**
+ * virConnectListAllDomainsFlags:
+ *
+ * Flags used to tune which domains are listed by virConnectListAllDomains().
+ * Note that these flags come in groups; if all bits from a group are 0,
+ * then that group is not used to filter results.
+ */
+typedef enum {
+    VIR_CONNECT_LIST_DOMAINS_ACTIVE         = 1 << 0,
+    VIR_CONNECT_LIST_DOMAINS_INACTIVE       = 1 << 1,
+
+    VIR_CONNECT_LIST_DOMAINS_PERSISTENT     = 1 << 2,
+    VIR_CONNECT_LIST_DOMAINS_TRANSIENT      = 1 << 3,
+
+    VIR_CONNECT_LIST_DOMAINS_RUNNING        = 1 << 4,
+    VIR_CONNECT_LIST_DOMAINS_PAUSED         = 1 << 5,
+    VIR_CONNECT_LIST_DOMAINS_SHUTOFF        = 1 << 6,
+    VIR_CONNECT_LIST_DOMAINS_OTHER          = 1 << 7,
+
+    VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE    = 1 << 8,
+    VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE = 1 << 9,
+
+    VIR_CONNECT_LIST_DOMAINS_AUTOSTART      = 1 << 10,
+    VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART   = 1 << 11,
+
+    VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT   = 1 << 12,
+    VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT    = 1 << 13,
+} virConnectListAllDomainsFlags;
+
+int                     virConnectListAllDomains (virConnectPtr conn,
+                                                  virDomainPtr **domains,
+                                                  unsigned int flags);
 int                     virDomainCreate         (virDomainPtr domain);
 int                     virDomainCreateWithFlags (virDomainPtr domain,
                                                  unsigned int flags);
