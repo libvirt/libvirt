@@ -185,3 +185,15 @@
             raise libvirtError ('virConnectDomainEventRegisterAny() failed', conn=self)
         self.domainEventCallbackID[ret] = opaque
         return ret
+
+    def listAllDomains(self, flags):
+        """List all domains and returns a list of domain objects"""
+        ret = libvirtmod.virConnectListAllDomains(self._o, flags)
+        if ret is None:
+            raise libvirtError("virConnectListAllDomains() failed", conn=self)
+
+        retlist = list()
+        for domptr in ret:
+            retlist.append(virDomain(self, _obj=domptr))
+
+        return retlist

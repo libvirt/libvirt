@@ -1938,7 +1938,7 @@ libvirt_virConnectGetLibVersion (PyObject *self ATTRIBUTE_UNUSED,
 
 static PyObject *
 libvirt_virConnectListDomainsID(PyObject *self ATTRIBUTE_UNUSED,
-                               PyObject *args) {
+                                PyObject *args) {
     PyObject *py_retval;
     int *ids = NULL, c_retval, i;
     virConnectPtr conn;
@@ -1976,6 +1976,53 @@ libvirt_virConnectListDomainsID(PyObject *self ATTRIBUTE_UNUSED,
         VIR_FREE(ids);
     }
 
+    return py_retval;
+}
+
+static PyObject *
+libvirt_virConnectListAllDomains(PyObject *self ATTRIBUTE_UNUSED,
+                                 PyObject *args)
+{
+    PyObject *pyobj_conn;
+    PyObject *py_retval = NULL;
+    PyObject *tmp = NULL;
+    virConnectPtr conn;
+    virDomainPtr *doms = NULL;
+    int c_retval = 0;
+    int i;
+    unsigned int flags;
+
+    if (!PyArg_ParseTuple(args, (char *)"Oi:virConnectListAllDomains",
+                          &pyobj_conn, &flags))
+        return NULL;
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virConnectListAllDomains(conn, &doms, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    if (!(py_retval = PyList_New(c_retval)))
+        goto cleanup;
+
+    for (i = 0; i < c_retval; i++) {
+        if (!(tmp = libvirt_virDomainPtrWrap(doms[i])) ||
+            PyList_SetItem(py_retval, i, tmp) < 0) {
+            Py_XDECREF(tmp);
+            Py_DECREF(py_retval);
+            py_retval = NULL;
+            goto cleanup;
+        }
+        /* python steals the pointer */
+        doms[i] = NULL;
+    }
+
+cleanup:
+    for (i = 0; i < c_retval; i++)
+        if (doms[i])
+            virDomainFree(doms[i]);
+    VIR_FREE(doms);
     return py_retval;
 }
 
@@ -5634,6 +5681,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virConnectOpenAuth", libvirt_virConnectOpenAuth, METH_VARARGS, NULL},
     {(char *) "virConnectListDomainsID", libvirt_virConnectListDomainsID, METH_VARARGS, NULL},
     {(char *) "virConnectListDefinedDomains", libvirt_virConnectListDefinedDomains, METH_VARARGS, NULL},
+    {(char *) "virConnectListAllDomains", libvirt_virConnectListAllDomains, METH_VARARGS, NULL},
     {(char *) "virConnectDomainEventRegister", libvirt_virConnectDomainEventRegister, METH_VARARGS, NULL},
     {(char *) "virConnectDomainEventDeregister", libvirt_virConnectDomainEventDeregister, METH_VARARGS, NULL},
     {(char *) "virConnectDomainEventRegisterAny", libvirt_virConnectDomainEventRegisterAny, METH_VARARGS, NULL},
