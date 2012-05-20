@@ -1935,6 +1935,17 @@ struct remote_domain_get_disk_errors_ret {
         } errors;
         int                        nerrors;
 };
+struct remote_connect_list_all_domains_args {
+        int                        need_results;
+        u_int                      flags;
+};
+struct remote_connect_list_all_domains_ret {
+        struct {
+                u_int              domains_len;
+                remote_nonnull_domain * domains_val;
+        } domains;
+        u_int                      ret;
+};
 enum remote_procedure {
         REMOTE_PROC_OPEN = 1,
         REMOTE_PROC_CLOSE = 2,
@@ -2208,4 +2219,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT_PMSUSPEND = 270,
         REMOTE_PROC_DOMAIN_SNAPSHOT_IS_CURRENT = 271,
         REMOTE_PROC_DOMAIN_SNAPSHOT_HAS_METADATA = 272,
+        REMOTE_PROC_CONNECT_LIST_ALL_DOMAINS = 273,
 };

@@ -2481,6 +2481,16 @@ struct remote_domain_get_disk_errors_ret {
     int nerrors;
 };
 
+struct remote_connect_list_all_domains_args {
+    int need_results;
+    unsigned int flags;
+};
+
+struct remote_connect_list_all_domains_ret {
+    remote_nonnull_domain domains<>;
+    unsigned int ret;
+};
+
 
 /*----- Protocol. -----*/
 
@@ -2803,7 +2813,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_EVENT_PMSUSPEND = 270, /* autogen autogen */
 
     REMOTE_PROC_DOMAIN_SNAPSHOT_IS_CURRENT = 271, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_SNAPSHOT_HAS_METADATA = 272 /* autogen autogen */
+    REMOTE_PROC_DOMAIN_SNAPSHOT_HAS_METADATA = 272, /* autogen autogen */
+    REMOTE_PROC_CONNECT_LIST_ALL_DOMAINS = 273 /* skipgen skipgen priority:high */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

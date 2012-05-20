@@ -1265,6 +1265,69 @@ done:
     return rv;
 }
 
+static int
+remoteConnectListAllDomains(virConnectPtr conn,
+                            virDomainPtr **domains,
+                            unsigned int flags)
+{
+    int rv = -1;
+    int i;
+    virDomainPtr *doms = NULL;
+    remote_connect_list_all_domains_args args;
+    remote_connect_list_all_domains_ret ret;
+
+    struct private_data *priv = conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.need_results = !!domains;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+    if (call(conn,
+             priv,
+             0,
+             REMOTE_PROC_CONNECT_LIST_ALL_DOMAINS,
+             (xdrproc_t) xdr_remote_connect_list_all_domains_args,
+             (char *) &args,
+             (xdrproc_t) xdr_remote_connect_list_all_domains_ret,
+             (char *) &ret) == -1)
+        goto done;
+
+    if (domains) {
+        if (VIR_ALLOC_N(doms, ret.domains.domains_len + 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        for (i = 0; i < ret.domains.domains_len; i++) {
+            doms[i] = get_nonnull_domain(conn, ret.domains.domains_val[i]);
+            if (!doms[i]) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        }
+        *domains = doms;
+        doms = NULL;
+    }
+
+    rv = ret.ret;
+
+cleanup:
+    if (doms) {
+        for (i = 0; i < ret.domains.domains_len; i++)
+            if (doms[i])
+                virDomainFree(doms[i]);
+        VIR_FREE(doms);
+    }
+
+    xdr_free((xdrproc_t) xdr_remote_connect_list_all_domains_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 /* Helper to free typed parameters. */
 static void
 remoteFreeTypedParameters(remote_typed_param *args_params_val,
@@ -4963,6 +5026,7 @@ static virDriver remote_driver = {
     .getCapabilities = remoteGetCapabilities, /* 0.3.0 */
     .listDomains = remoteListDomains, /* 0.3.0 */
     .numOfDomains = remoteNumOfDomains, /* 0.3.0 */
+    .listAllDomains = remoteConnectListAllDomains, /* 0.9.13 */
     .domainCreateXML = remoteDomainCreateXML, /* 0.3.0 */
     .domainLookupByID = remoteDomainLookupByID, /* 0.3.0 */
     .domainLookupByUUID = remoteDomainLookupByUUID, /* 0.3.0 */
