@@ -2004,13 +2004,16 @@ qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
                        subsys->u.pci.slot,   subsys->u.pci.function);
     if (pci) {
         activePci = pciDeviceListSteal(driver->activePciHostdevs, pci);
-        if (pciResetDevice(activePci, driver->activePciHostdevs,
-                           driver->inactivePciHostdevs) == 0)
+        if (activePci &&
+            pciResetDevice(activePci, driver->activePciHostdevs,
+                           driver->inactivePciHostdevs) == 0) {
             qemuReattachPciDevice(activePci, driver);
-        else
+        } else {
+            /* reset of the device failed, treat it as if it was returned */
+            pciFreeDevice(activePci);
             ret = -1;
+        }
         pciFreeDevice(pci);
-        pciFreeDevice(activePci);
     } else {
         ret = -1;
     }
