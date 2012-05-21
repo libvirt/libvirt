@@ -520,7 +520,6 @@ virDomainEventRebootNewFromDom;
 virDomainEventRebootNewFromObj;
 virDomainEventStateDeregister;
 virDomainEventStateDeregisterID;
-virDomainEventStateDeregisterConn;
 virDomainEventStateEventID;
 virDomainEventStateRegister;
 virDomainEventStateRegisterID;

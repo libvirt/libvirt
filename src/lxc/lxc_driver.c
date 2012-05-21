@@ -178,8 +178,6 @@ static int lxcClose(virConnectPtr conn)
     lxc_driver_t *driver = conn->privateData;
 
     lxcDriverLock(driver);
-    virDomainEventStateDeregisterConn(conn,
-                                      driver->domainEventState);
     lxcProcessAutoDestroyRun(driver, conn);
     lxcDriverUnlock(driver);
 

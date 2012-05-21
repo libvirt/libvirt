@@ -1081,10 +1081,6 @@ libxlClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
 
-    libxlDriverLock(driver);
-    virDomainEventStateDeregisterConn(conn,
-                                      driver->domainEventState);
-    libxlDriverUnlock(driver);
     conn->privateData = NULL;
     return 0;
 }
