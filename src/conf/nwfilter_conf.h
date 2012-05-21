@@ -79,6 +79,7 @@ enum virNWFilterEntryItemFlags {
 
 
 # define MAX_COMMENT_LENGTH  256
+# define MAX_IPSET_NAME_LENGTH 32 /* incl. terminating '\0' */
 
 # define HAS_ENTRY_ITEM(data) \
   (((data)->flags) & NWFILTER_ENTRY_ITEM_FLAG_EXISTS)
@@ -103,8 +104,10 @@ enum attrDatatype {
     DATATYPE_BOOLEAN          = (1 << 12),
     DATATYPE_UINT32           = (1 << 13),
     DATATYPE_UINT32_HEX       = (1 << 14),
+    DATATYPE_IPSETNAME        = (1 << 15),
+    DATATYPE_IPSETFLAGS       = (1 << 16),
 
-    DATATYPE_LAST             = (1 << 15),
+    DATATYPE_LAST             = (1 << 17),
 };
 
 # define NWFILTER_MAC_BGA "01:80:c2:00:00:00"
@@ -136,9 +139,16 @@ struct _nwItemDesc {
             uint8_t  mask;
             uint8_t  flags;
         } tcpFlags;
+        struct {
+            char setname[MAX_IPSET_NAME_LENGTH];
+            uint8_t numFlags;
+            uint8_t flags;
+        } ipset;
     } u;
 };
 
+# define VALID_IPSETNAME \
+  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.:-+ "
 
 typedef struct _ethHdrDataDef ethHdrDataDef;
 typedef ethHdrDataDef *ethHdrDataDefPtr;
@@ -232,6 +242,8 @@ struct _ipHdrDataDef {
     nwItemDesc dataState;
     nwItemDesc dataConnlimitAbove;
     nwItemDesc dataComment;
+    nwItemDesc dataIPSet;
+    nwItemDesc dataIPSetFlags;
 };
 
 

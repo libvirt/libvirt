@@ -183,6 +183,8 @@ static const char dstportstart_str[] = "dstportstart";
 static const char dstportend_str[]   = "dstportend";
 static const char dscp_str[]         = "dscp";
 static const char state_str[]        = "state";
+static const char ipset_str[]        = "ipset";
+static const char ipsetflags_str[]   = "ipsetflags";
 
 #define SRCMACADDR    srcmacaddr_str
 #define SRCMACMASK    srcmacmask_str
@@ -206,6 +208,8 @@ static const char state_str[]        = "state";
 #define DSTPORTEND    dstportend_str
 #define DSCP          dscp_str
 #define STATE         state_str
+#define IPSET         ipset_str
+#define IPSETFLAGS    ipsetflags_str
 
 
 /**
@@ -980,6 +984,97 @@ tcpFlagsFormatter(virBufferPtr buf,
     return true;
 }
 
+static bool
+ipsetValidator(enum attrDatatype datatype ATTRIBUTE_UNUSED, union data *val,
+               virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED,
+               nwItemDesc *item)
+{
+    const char *errmsg = NULL;
+
+    if (virStrcpy(item->u.ipset.setname, val->c,
+                  sizeof(item->u.ipset.setname)) == NULL) {
+        errmsg = _("ipset name is too long");
+        goto arg_err_exit;
+    }
+
+    if (item->u.ipset.setname[strspn(item->u.ipset.setname,
+                                     VALID_IPSETNAME)] != 0) {
+        errmsg = _("ipset name contains invalid characters");
+        goto arg_err_exit;
+    }
+
+    return true;
+
+arg_err_exit:
+    virNWFilterReportError(VIR_ERR_INVALID_ARG,
+                           "%s", errmsg);
+    return false;
+}
+
+static bool
+ipsetFormatter(virBufferPtr buf,
+               virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED,
+               nwItemDesc *item)
+{
+    virBufferAdd(buf, item->u.ipset.setname, -1);
+
+    return true;
+}
+
+static bool
+ipsetFlagsValidator(enum attrDatatype datatype ATTRIBUTE_UNUSED, union data *val,
+                    virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED, nwItemDesc *item)
+{
+    const char *errmsg = NULL;
+    size_t idx = 0;
+
+    item->u.ipset.numFlags = 0;
+    item->u.ipset.flags = 0;
+
+    errmsg = _("malformed ipset flags");
+
+    while (item->u.ipset.numFlags < 6) {
+        if (STRCASEEQLEN(&val->c[idx], "src", 3)) {
+            item->u.ipset.flags |= (1 << item->u.ipset.numFlags);
+        } else if (!STRCASEEQLEN(&val->c[idx], "dst", 3)) {
+            goto arg_err_exit;
+        }
+        item->u.ipset.numFlags++;
+        idx += 3;
+        if (val->c[idx] != ',')
+            break;
+        idx++;
+    }
+
+    if (val->c[idx] != '\0')
+        goto arg_err_exit;
+
+    return true;
+
+arg_err_exit:
+    virNWFilterReportError(VIR_ERR_INVALID_ARG,
+                           "%s", errmsg);
+    return false;
+}
+
+static bool
+ipsetFlagsFormatter(virBufferPtr buf,
+                    virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED,
+                    nwItemDesc *item)
+{
+    uint8_t ctr;
+
+    for (ctr = 0; ctr < item->u.ipset.numFlags; ctr++) {
+        if (ctr != 0)
+            virBufferAddLit(buf, ",");
+        if ((item->u.ipset.flags & (1 << ctr)))
+            virBufferAddLit(buf, "src");
+        else
+            virBufferAddLit(buf, "dst");
+    }
+
+    return true;
+}
 
 #define COMMON_MAC_PROPS(STRUCT) \
     {\
@@ -1411,6 +1506,20 @@ static const virXMLAttr2Struct ipv6Attributes[] = {
         .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataState),\
         .validator = stateValidator,\
         .formatter = stateFormatter,\
+    },\
+    {\
+        .name = IPSET,\
+        .datatype = DATATYPE_IPSETNAME,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataIPSet),\
+        .validator = ipsetValidator,\
+        .formatter = ipsetFormatter,\
+    },\
+    {\
+        .name = IPSETFLAGS,\
+        .datatype = DATATYPE_IPSETFLAGS,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataIPSetFlags),\
+        .validator = ipsetFlagsValidator,\
+        .formatter = ipsetFlagsFormatter,\
     }
 
 #define COMMON_PORT_PROPS(STRUCT) \
@@ -1853,6 +1962,8 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                         break;
 
                         case DATATYPE_STRING:
+                        case DATATYPE_IPSETFLAGS:
+                        case DATATYPE_IPSETNAME:
                             if (!validator) {
                                 /* not supported */
                                 rc = -1;
@@ -1964,6 +2075,19 @@ err_exit:
     goto cleanup;
 }
 
+static void
+virNWFilterRuleDefFixupIPSet(ipHdrDataDefPtr ipHdr)
+{
+    if (HAS_ENTRY_ITEM(&ipHdr->dataIPSet) &&
+        !HAS_ENTRY_ITEM(&ipHdr->dataIPSetFlags)) {
+        ipHdr->dataIPSetFlags.flags = NWFILTER_ENTRY_ITEM_FLAG_EXISTS;
+        ipHdr->dataIPSetFlags.u.ipset.numFlags = 1;
+        ipHdr->dataIPSetFlags.u.ipset.flags = 1;
+    } else {
+        ipHdr->dataIPSet.flags = 0;
+        ipHdr->dataIPSetFlags.flags = 0;
+    }
+}
 
 static void
 virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
@@ -2017,6 +2141,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
                       rule->p.ipHdrFilter.ipHdr.dataSrcIPAddr);
         COPY_NEG_SIGN(rule->p.ipHdrFilter.ipHdr.dataDstIPMask,
                       rule->p.ipHdrFilter.ipHdr.dataDstIPAddr);
+        virNWFilterRuleDefFixupIPSet(&rule->p.ipHdrFilter.ipHdr);
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_IPV6:
@@ -2024,6 +2149,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
                       rule->p.ipv6HdrFilter.ipHdr.dataSrcIPAddr);
         COPY_NEG_SIGN(rule->p.ipv6HdrFilter.ipHdr.dataDstIPMask,
                       rule->p.ipv6HdrFilter.ipHdr.dataDstIPAddr);
+        virNWFilterRuleDefFixupIPSet(&rule->p.ipv6HdrFilter.ipHdr);
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_ARP:
@@ -2047,6 +2173,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
                       rule->p.tcpHdrFilter.portData.dataSrcPortStart);
         COPY_NEG_SIGN(rule->p.tcpHdrFilter.portData.dataDstPortEnd,
                       rule->p.tcpHdrFilter.portData.dataSrcPortStart);
+        virNWFilterRuleDefFixupIPSet(&rule->p.tcpHdrFilter.ipHdr);
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_UDP:
@@ -2065,6 +2192,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
                       rule->p.udpHdrFilter.portData.dataSrcPortStart);
         COPY_NEG_SIGN(rule->p.udpHdrFilter.portData.dataDstPortEnd,
                       rule->p.udpHdrFilter.portData.dataSrcPortStart);
+        virNWFilterRuleDefFixupIPSet(&rule->p.udpHdrFilter.ipHdr);
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_UDPLITE:
@@ -2077,6 +2205,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
                       rule->p.udpliteHdrFilter.ipHdr.dataSrcIPFrom);
         COPY_NEG_SIGN(rule->p.udpliteHdrFilter.ipHdr.dataDstIPTo,
                       rule->p.udpliteHdrFilter.ipHdr.dataDstIPFrom);
+        virNWFilterRuleDefFixupIPSet(&rule->p.udpliteHdrFilter.ipHdr);
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_ESP:
@@ -2089,6 +2218,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
                       rule->p.espHdrFilter.ipHdr.dataSrcIPFrom);
         COPY_NEG_SIGN(rule->p.espHdrFilter.ipHdr.dataDstIPTo,
                       rule->p.espHdrFilter.ipHdr.dataDstIPFrom);
+        virNWFilterRuleDefFixupIPSet(&rule->p.espHdrFilter.ipHdr);
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_AH:
@@ -2101,6 +2231,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
                       rule->p.ahHdrFilter.ipHdr.dataSrcIPFrom);
         COPY_NEG_SIGN(rule->p.ahHdrFilter.ipHdr.dataDstIPTo,
                       rule->p.ahHdrFilter.ipHdr.dataDstIPFrom);
+        virNWFilterRuleDefFixupIPSet(&rule->p.ahHdrFilter.ipHdr);
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_SCTP:
@@ -2119,6 +2250,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
                       rule->p.sctpHdrFilter.portData.dataSrcPortStart);
         COPY_NEG_SIGN(rule->p.sctpHdrFilter.portData.dataDstPortEnd,
                       rule->p.sctpHdrFilter.portData.dataSrcPortStart);
+        virNWFilterRuleDefFixupIPSet(&rule->p.sctpHdrFilter.ipHdr);
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_ICMP:
@@ -2133,6 +2265,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
                       rule->p.icmpHdrFilter.ipHdr.dataDstIPFrom);
         COPY_NEG_SIGN(rule->p.icmpHdrFilter.dataICMPCode,
                       rule->p.icmpHdrFilter.dataICMPType);
+        virNWFilterRuleDefFixupIPSet(&rule->p.icmpHdrFilter.ipHdr);
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_ALL:
@@ -2156,6 +2289,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
                       rule->p.igmpHdrFilter.ipHdr.dataSrcIPFrom);
         COPY_NEG_SIGN(rule->p.igmpHdrFilter.ipHdr.dataDstIPTo,
                       rule->p.igmpHdrFilter.ipHdr.dataDstIPFrom);
+        virNWFilterRuleDefFixupIPSet(&rule->p.igmpHdrFilter.ipHdr);
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_LAST:
@@ -3120,7 +3254,7 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
 
             virBufferAsprintf(buf, " %s='",
                               att[i].name);
-            if (att[i].formatter) {
+            if (att[i].formatter && !(flags & NWFILTER_ENTRY_ITEM_FLAG_HAS_VAR)) {
                if (!att[i].formatter(buf, def, item)) {
                   virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                          _("formatter for %s %s reported error"),

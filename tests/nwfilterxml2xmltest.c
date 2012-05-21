@@ -157,6 +157,8 @@ mymain(void)
     DO_TEST("iter-test2", false);
     DO_TEST("iter-test3", false);
 
+    DO_TEST("ipset-test", false);
+
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

@@ -1,0 +1,24 @@
+<filter name='testcase' chain='root'>
+  <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
+  <rule action='accept' direction='out'>
+     <all  ipset='test' ipsetflags='src,dst' />
+  </rule>
+  <rule action='accept' direction='in'>
+     <all  state='NONE' ipset='test' ipsetflags='src,dst' comment='in+NONE'/>
+  </rule>
+  <rule action='accept' direction='out'>
+     <all  state='NONE' ipset='test' ipsetflags='src,dst' comment='out+NONE'/>
+  </rule>
+  <rule action='accept' direction='in'>
+     <all  ipset='test' ipsetflags='SRC,DST,SRC' />
+  </rule>
+  <rule action='accept' direction='in'>
+     <all  ipset='test:_.-+' ipsetflags='SRC,dSt,SRC' />
+  </rule>
+  <rule action='accept' direction='in'>
+     <all  ipset='$IPSETNAME' ipsetflags='src,dst' />
+  </rule>
+  <rule action='accept' direction='inout'>
+     <all  ipset='$IPSETNAME' ipsetflags='src,dst' comment='inout'/>
+  </rule>
+</filter>

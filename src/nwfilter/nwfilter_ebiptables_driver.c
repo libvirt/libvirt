@@ -256,10 +256,13 @@ static int
 _printDataType(virNWFilterVarCombIterPtr vars,
                char *buf, int bufsize,
                nwItemDescPtr item,
-               bool asHex)
+               bool asHex, bool directionIn)
 {
     int done;
     char *data;
+    uint8_t ctr;
+    virBuffer vb = VIR_BUFFER_INITIALIZER;
+    char *flags;
 
     if (printVar(vars, buf, bufsize, item, &done) < 0)
         return -1;
@@ -346,6 +349,48 @@ _printDataType(virNWFilterVarCombIterPtr vars,
         }
     break;
 
+    case DATATYPE_IPSETNAME:
+        if (virStrcpy(buf, item->u.ipset.setname, bufsize) == NULL) {
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("Buffer to small for ipset name"));
+            return -1;
+        }
+    break;
+
+    case DATATYPE_IPSETFLAGS:
+        for (ctr = 0; ctr < item->u.ipset.numFlags; ctr++) {
+            if (ctr != 0)
+                virBufferAddLit(&vb, ",");
+            if ((item->u.ipset.flags & (1 << ctr))) {
+                if (directionIn)
+                    virBufferAddLit(&vb, "dst");
+                else
+                    virBufferAddLit(&vb, "src");
+            } else {
+                if (directionIn)
+                    virBufferAddLit(&vb, "src");
+                else
+                    virBufferAddLit(&vb, "dst");
+            }
+        }
+
+        if (virBufferError(&vb)) {
+            virReportOOMError();
+            virBufferFreeAndReset(&vb);
+            return -1;
+        }
+
+        flags = virBufferContentAndReset(&vb);
+
+        if (virStrcpy(buf, flags, bufsize) == NULL) {
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("Buffer too small for IPSETFLAGS type"));
+            VIR_FREE(flags);
+            return -1;
+        }
+        VIR_FREE(flags);
+    break;
+
     default:
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unhandled datatype %x"), item->datatype);
@@ -362,16 +407,23 @@ printDataType(virNWFilterVarCombIterPtr vars,
               char *buf, int bufsize,
               nwItemDescPtr item)
 {
-    return _printDataType(vars, buf, bufsize, item, 0);
+    return _printDataType(vars, buf, bufsize, item, 0, 0);
 }
 
+static int
+printDataTypeDirection(virNWFilterVarCombIterPtr vars,
+                       char *buf, int bufsize,
+                       nwItemDescPtr item, bool directionIn)
+{
+    return _printDataType(vars, buf, bufsize, item, 0, directionIn);
+}
 
 static int
 printDataTypeAsHex(virNWFilterVarCombIterPtr vars,
                    char *buf, int bufsize,
                    nwItemDescPtr item)
 {
-    return _printDataType(vars, buf, bufsize, item, 1);
+    return _printDataType(vars, buf, bufsize, item, 1, 0);
 }
 
 
@@ -927,6 +979,7 @@ iptablesHandleIpHdr(virBufferPtr buf,
     char ipaddr[INET6_ADDRSTRLEN],
          number[MAX(INT_BUFSIZE_BOUND(uint32_t),
                     INT_BUFSIZE_BOUND(int))];
+    char str[MAX_IPSET_NAME_LENGTH];
     const char *src = "--source";
     const char *dst = "--destination";
     const char *srcrange = "--src-range";
@@ -936,6 +989,26 @@ iptablesHandleIpHdr(virBufferPtr buf,
         dst = "--source";
         srcrange = "--dst-range";
         dstrange = "--src-range";
+    }
+
+    if (HAS_ENTRY_ITEM(&ipHdr->dataIPSet) &&
+        HAS_ENTRY_ITEM(&ipHdr->dataIPSetFlags)) {
+
+        if (printDataType(vars,
+                          str, sizeof(str),
+                          &ipHdr->dataIPSet) < 0)
+            goto err_exit;
+
+        virBufferAsprintf(afterStateMatch,
+                          " -m set --match-set \"%s\" ",
+                          str);
+
+        if (printDataTypeDirection(vars,
+                                   str, sizeof(str),
+                                   &ipHdr->dataIPSetFlags, directionIn) < 0)
+            goto err_exit;
+
+        virBufferAdd(afterStateMatch, str, -1);
     }
 
     if (HAS_ENTRY_ITEM(&ipHdr->dataSrcIPAddr)) {
