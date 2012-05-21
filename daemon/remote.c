@@ -2653,7 +2653,7 @@ authdeny:
 }
 #elif HAVE_POLKIT0
 static int
-remoteDispatchAuthPolkit(virNetServerPtr server,
+remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
                          virNetServerClientPtr client,
                          virNetMessagePtr msg ATTRIBUTE_UNUSED,
                          virNetMessageErrorPtr rerr,
