@@ -1079,8 +1079,6 @@ libxlOpen(virConnectPtr conn,
 static int
 libxlClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    libxlDriverPrivatePtr driver = conn->privateData;
-
     conn->privateData = NULL;
     return 0;
 }
