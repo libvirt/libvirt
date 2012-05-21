@@ -161,10 +161,6 @@ virDomainEventStateDeregisterID(virConnectPtr conn,
                                 int callbackID)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int
-virDomainEventStateDeregisterConn(virConnectPtr conn,
-                                  virDomainEventStatePtr state)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-int
 virDomainEventStateEventID(virConnectPtr conn,
                            virDomainEventStatePtr state,
                            int callbackID)

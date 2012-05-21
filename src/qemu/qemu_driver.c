@@ -962,8 +962,6 @@ static int qemudClose(virConnectPtr conn) {
 
     /* Get rid of callbacks registered for this conn */
     qemuDriverLock(driver);
-    virDomainEventStateDeregisterConn(conn,
-                                      driver->domainEventState);
     qemuDriverCloseCallbackRunAll(driver, conn);
     qemuDriverUnlock(driver);
 
