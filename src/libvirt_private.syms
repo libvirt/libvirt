@@ -28,6 +28,7 @@ virBufferEscapeString;
 virBufferFreeAndReset;
 virBufferGetIndent;
 virBufferStrcat;
+virBufferTrim;
 virBufferURIEncodeString;
 virBufferUse;
 virBufferVasprintf;
