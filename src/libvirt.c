@@ -17123,9 +17123,8 @@ error:
  * @flags: bitwise-OR of supported virDomainSnapshotListFlags
  *
  * Collect the list of domain snapshots for the given domain, and store
- * their names in @names.  Caller is responsible for freeing each member
- * of the array.  The value to use for @nameslen can be determined by
- * virDomainSnapshotNum() with the same @flags.
+ * their names in @names.  The value to use for @nameslen can be determined
+ * by virDomainSnapshotNum() with the same @flags.
  *
  * By default, this command covers all snapshots; it is also possible to
  * limit things to just snapshots with no parents, when @flags includes
@@ -17149,14 +17148,17 @@ error:
  * whether they have metadata that would prevent the removal of the last
  * reference to a domain.
  *
- * Returns the number of domain snapshots found or -1 in case of error.
  * Note that this command is inherently racy: another connection can
  * define a new snapshot between a call to virDomainSnapshotNum() and
  * this call.  You are only guaranteed that all currently defined
  * snapshots were listed if the return is less than @nameslen.  Likewise,
  * you should be prepared for virDomainSnapshotLookupByName() to fail when
  * converting a name from this call into a snapshot object, if another
- * connection deletes the snapshot in the meantime.
+ * connection deletes the snapshot in the meantime.  For more control over
+ * the results, see virDomainListAllSnapshots().
+ *
+ * Returns the number of domain snapshots found or -1 in case of error.
+ * The caller is responsible for freeing each member of the array.
  */
 int
 virDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
@@ -17183,6 +17185,81 @@ virDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
     if (conn->driver->domainSnapshotListNames) {
         int ret = conn->driver->domainSnapshotListNames(domain, names,
                                                         nameslen, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
+ * virDomainListAllSnapshots:
+ * @domain: a domain object
+ * @snaps: pointer to variable to store the array containing snapshot objects,
+ *         or NULL if the list is not required (just returns number of
+ *         snapshots)
+ * @flags: bitwise-OR of supported virDomainSnapshotListFlags
+ *
+ * Collect the list of domain snapshots for the given domain, and allocate
+ * an array to store those objects.  This API solves the race inherent in
+ * virDomainSnapshotListNames().
+ *
+ * By default, this command covers all snapshots; it is also possible to
+ * limit things to just snapshots with no parents, when @flags includes
+ * VIR_DOMAIN_SNAPSHOT_LIST_ROOTS.  Additional filters are provided in
+ * groups, where each group contains bits that describe mutually exclusive
+ * attributes of a snapshot, and where all bits within a group describe
+ * all possible snapshots.  Some hypervisors might reject explicit bits
+ * from a group where the hypervisor cannot make a distinction.  For a
+ * group supported by a given hypervisor, the behavior when no bits of a
+ * group are set is identical to the behavior when all bits in that group
+ * are set.  When setting bits from more than one group, it is possible to
+ * select an impossible combination, in that case a hypervisor may return
+ * either 0 or an error.
+ *
+ * The first group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_LEAVES and
+ * VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES, to filter based on snapshots that
+ * have no further children (a leaf snapshot).
+ *
+ * The next group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_METADATA and
+ * VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA, for filtering snapshots based on
+ * whether they have metadata that would prevent the removal of the last
+ * reference to a domain.
+ *
+ * Returns the number of domain snapshots found or -1 and sets @snaps to
+ * NULL in case of error.  On success, the array stored into @snaps is
+ * guaranteed to have an extra allocated element set to NULL but not included
+ * in the return count, to make iteration easier.  The caller is responsible
+ * for calling virDomainSnapshotFree() on each array element, then calling
+ * free() on @snaps.
+ */
+int
+virDomainListAllSnapshots(virDomainPtr domain, virDomainSnapshotPtr **snaps,
+                          unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "snaps=%p, flags=%x", snaps, flags);
+
+    virResetLastError();
+
+    if (snaps)
+        *snaps = NULL;
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = domain->conn;
+
+    if (conn->driver->domainListAllSnapshots) {
+        int ret = conn->driver->domainListAllSnapshots(domain, snaps, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -17263,9 +17340,9 @@ error:
  * @flags: bitwise-OR of supported virDomainSnapshotListFlags
  *
  * Collect the list of domain snapshots that are children of the given
- * snapshot, and store their names in @names.  Caller is responsible for
- * freeing each member of the array.  The value to use for @nameslen can
- * be determined by virDomainSnapshotNumChildren() with the same @flags.
+ * snapshot, and store their names in @names.  The value to use for
+ * @nameslen can be determined by virDomainSnapshotNumChildren() with
+ * the same @flags.
  *
  * By default, this command covers only direct children; it is also possible
  * to expand things to cover all descendants, when @flags includes
@@ -17296,7 +17373,11 @@ error:
  * snapshots were listed if the return is less than @nameslen.  Likewise,
  * you should be prepared for virDomainSnapshotLookupByName() to fail when
  * converting a name from this call into a snapshot object, if another
- * connection deletes the snapshot in the meantime.
+ * connection deletes the snapshot in the meantime.  For more control over
+ * the results, see virDomainSnapshotListAllChildren().
+ *
+ * Returns the number of domain snapshots found or -1 in case of error.
+ * The caller is responsible for freeing each member of the array.
  */
 int
 virDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
@@ -17327,6 +17408,84 @@ virDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
                                                                 names,
                                                                 nameslen,
                                                                 flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
+ * virDomainSnapshotListAllChildren:
+ * @snapshot: a domain snapshot object
+ * @snaps: pointer to variable to store the array containing snapshot objects,
+ *         or NULL if the list is not required (just returns number of
+ *         snapshots)
+ * @flags: bitwise-OR of supported virDomainSnapshotListFlags
+ *
+ * Collect the list of domain snapshots that are children of the given
+ * snapshot, and allocate an array to store those objects.  This API solves
+ * the race inherent in virDomainSnapshotListChildrenNames().
+ *
+ * By default, this command covers only direct children; it is also possible
+ * to expand things to cover all descendants, when @flags includes
+ * VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS.  Also, some filters are provided in
+ * groups, where each group contains bits that describe mutually exclusive
+ * attributes of a snapshot, and where all bits within a group describe
+ * all possible snapshots.  Some hypervisors might reject explicit bits
+ * from a group where the hypervisor cannot make a distinction.  For a
+ * group supported by a given hypervisor, the behavior when no bits of a
+ * group are set is identical to the behavior when all bits in that group
+ * are set.  When setting bits from more than one group, it is possible to
+ * select an impossible combination, in that case a hypervisor may return
+ * either 0 or an error.
+ *
+ * The first group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_LEAVES and
+ * VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES, to filter based on snapshots that
+ * have no further children (a leaf snapshot).
+ *
+ * The next group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_METADATA and
+ * VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA, for filtering snapshots based on
+ * whether they have metadata that would prevent the removal of the last
+ * reference to a domain.
+ *
+ * Returns the number of domain snapshots found or -1 and sets @snaps to
+ * NULL in case of error.  On success, the array stored into @snaps is
+ * guaranteed to have an extra allocated element set to NULL but not included
+ * in the return count, to make iteration easier.  The caller is responsible
+ * for calling virDomainSnapshotFree() on each array element, then calling
+ * free() on @snaps.
+ */
+int
+virDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
+                                 virDomainSnapshotPtr **snaps,
+                                 unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DEBUG("snapshot=%p, snaps=%p, flags=%x", snapshot, snaps, flags);
+
+    virResetLastError();
+
+    if (snaps)
+        *snaps = NULL;
+
+    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
+        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
+                                  __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = snapshot->domain->conn;
+
+    if (conn->driver->domainSnapshotListAllChildren) {
+        int ret = conn->driver->domainSnapshotListAllChildren(snapshot, snaps,
+                                                              flags);
         if (ret < 0)
             goto error;
         return ret;

@@ -3390,7 +3390,8 @@ char *virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
  *
  * Flags valid for virDomainSnapshotNum(),
  * virDomainSnapshotListNames(), virDomainSnapshotNumChildren(), and
- * virDomainSnapshotListChildrenNames().  Note that the interpretation
+ * virDomainSnapshotListChildrenNames(), virDomainListAllSnapshots(),
+ * and virDomainSnapshotListAllChildren().  Note that the interpretation
  * of flag (1<<0) depends on which function it is passed to; but serves
  * to toggle the per-call default of whether the listing is shallow or
  * recursive.  Remaining bits come in groups; if all bits from a group are
@@ -3423,6 +3424,11 @@ int virDomainSnapshotNum(virDomainPtr domain, unsigned int flags);
 int virDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
                                unsigned int flags);
 
+/* Get all snapshot objects for this domain */
+int virDomainListAllSnapshots(virDomainPtr domain,
+                              virDomainSnapshotPtr **snaps,
+                              unsigned int flags);
+
 /* Return the number of child snapshots for this snapshot */
 int virDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
                                  unsigned int flags);
@@ -3431,6 +3437,11 @@ int virDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
 int virDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
                                        char **names, int nameslen,
                                        unsigned int flags);
+
+/* Get all snapshot object children for this snapshot */
+int virDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
+                                     virDomainSnapshotPtr **snaps,
+                                     unsigned int flags);
 
 /* Get a handle to a named snapshot */
 virDomainSnapshotPtr virDomainSnapshotLookupByName(virDomainPtr domain,

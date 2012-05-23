@@ -537,8 +537,10 @@ LIBVIRT_0.9.11 {
 LIBVIRT_0.9.13 {
     global:
         virConnectListAllDomains;
+        virDomainListAllSnapshots;
         virDomainSnapshotHasMetadata;
         virDomainSnapshotIsCurrent;
+        virDomainSnapshotListAllChildren;
         virDomainSnapshotRef;
 } LIBVIRT_0.9.11;
 
