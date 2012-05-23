@@ -650,6 +650,14 @@ typedef virDomainSnapshotPtr
                                    unsigned int flags);
 
 typedef int
+    (*virDrvDomainSnapshotIsCurrent)(virDomainSnapshotPtr snapshot,
+                                     unsigned int flags);
+
+typedef int
+    (*virDrvDomainSnapshotHasMetadata)(virDomainSnapshotPtr snapshot,
+                                       unsigned int flags);
+
+typedef int
     (*virDrvDomainRevertToSnapshot)(virDomainSnapshotPtr snapshot,
                                     unsigned int flags);
 
@@ -986,6 +994,8 @@ struct _virDriver {
     virDrvDomainHasCurrentSnapshot domainHasCurrentSnapshot;
     virDrvDomainSnapshotGetParent domainSnapshotGetParent;
     virDrvDomainSnapshotCurrent domainSnapshotCurrent;
+    virDrvDomainSnapshotIsCurrent domainSnapshotIsCurrent;
+    virDrvDomainSnapshotHasMetadata domainSnapshotHasMetadata;
     virDrvDomainRevertToSnapshot domainRevertToSnapshot;
     virDrvDomainSnapshotDelete domainSnapshotDelete;
     virDrvDomainQemuMonitorCommand qemuDomainMonitorCommand;

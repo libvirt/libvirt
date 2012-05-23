@@ -3401,6 +3401,15 @@ virDomainSnapshotPtr virDomainSnapshotCurrent(virDomainPtr domain,
 virDomainSnapshotPtr virDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
                                                 unsigned int flags);
 
+/* Determine if a snapshot is the current snapshot of its domain.  */
+int virDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
+                               unsigned int flags);
+
+/* Determine if a snapshot has associated libvirt metadata that would
+ * prevent the deletion of its domain.  */
+int virDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
+                                 unsigned int flags);
+
 typedef enum {
     VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING = 1 << 0, /* Run after revert */
     VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED  = 1 << 1, /* Pause after revert */

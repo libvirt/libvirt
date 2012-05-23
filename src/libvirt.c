@@ -17331,6 +17331,91 @@ error:
 }
 
 /**
+ * virDomainSnapshotIsCurrent:
+ * @snapshot: a snapshot object
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Determine if the given snapshot is the domain's current snapshot.  See
+ * also virDomainHasCurrentSnapshot().
+ *
+ * Returns 1 if current, 0 if not current, or -1 on error.
+ */
+int virDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
+                               unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DEBUG("snapshot=%p, flags=%x", snapshot, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
+        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
+                                  __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = snapshot->domain->conn;
+
+    if (conn->driver->domainSnapshotIsCurrent) {
+        int ret;
+        ret = conn->driver->domainSnapshotIsCurrent(snapshot, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
+ * virDomainSnapshotHasMetadata:
+ * @snapshot: a snapshot object
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Determine if the given snapshot is associated with libvirt metadata
+ * that would prevent the deletion of the domain.
+ *
+ * Returns 1 if the snapshot has metadata, 0 if the snapshot exists without
+ * help from libvirt, or -1 on error.
+ */
+int virDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
+                                 unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DEBUG("snapshot=%p, flags=%x", snapshot, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
+        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
+                                  __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = snapshot->domain->conn;
+
+    if (conn->driver->domainSnapshotHasMetadata) {
+        int ret;
+        ret = conn->driver->domainSnapshotHasMetadata(snapshot, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
  * virDomainRevertToSnapshot:
  * @snapshot: a domain snapshot object
  * @flags: bitwise-OR of virDomainSnapshotRevertFlags

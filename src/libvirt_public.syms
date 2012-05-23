@@ -536,6 +536,8 @@ LIBVIRT_0.9.11 {
 
 LIBVIRT_0.9.13 {
     global:
+        virDomainSnapshotHasMetadata;
+        virDomainSnapshotIsCurrent;
         virDomainSnapshotRef;
 } LIBVIRT_0.9.11;
 
