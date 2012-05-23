@@ -5,9 +5,6 @@
 
 [Unit]
 Description=Virtualization daemon
-After=syslog.target
-After=avahi.target
-After=dbus.target
 Before=libvirt-guests.service
 
 [Service]
