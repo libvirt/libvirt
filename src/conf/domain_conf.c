@@ -4138,6 +4138,63 @@ cleanup:
     goto cleanup;
 }
 
+
+/* Parse a value located at XPATH within CTXT, and store the
+ * result into val.  If REQUIRED, then the value must exist;
+ * otherwise, the value is optional.  The value is in bytes.
+ * Return 0 on success, -1 on failure after issuing error. */
+static int
+virDomainParseScaledValue(const char *xpath,
+                          xmlXPathContextPtr ctxt,
+                          unsigned long long *val,
+                          unsigned long long scale,
+                          unsigned long long max,
+                          bool required)
+{
+    char *xpath_full = NULL;
+    char *unit = NULL;
+    int ret = -1;
+    unsigned long long bytes;
+
+    *val = 0;
+    if (virAsprintf(&xpath_full, "string(%s)", xpath) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    ret = virXPathULongLong(xpath_full, ctxt, &bytes);
+    if (ret < 0) {
+        if (ret == -2)
+            virDomainReportError(VIR_ERR_XML_ERROR,
+                                 _("could not parse element %s"),
+                                 xpath);
+        else if (required)
+            virDomainReportError(VIR_ERR_XML_ERROR,
+                                 _("missing element %s"),
+                                 xpath);
+        else
+            ret = 0;
+        goto cleanup;
+    }
+    VIR_FREE(xpath_full);
+
+    if (virAsprintf(&xpath_full, "string(%s/@unit)", xpath) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    unit = virXPathString(xpath_full, ctxt);
+
+    if (virScaleInteger(&bytes, unit, scale, max) < 0)
+        goto cleanup;
+
+    *val = bytes;
+    ret = 0;
+cleanup:
+    VIR_FREE(xpath_full);
+    VIR_FREE(unit);
+    return ret;
+}
+
+
 /* Parse the XML definition for a disk
  * @param node XML nodeset to parse for disk definition
  */
@@ -7768,53 +7825,24 @@ static int
 virDomainParseMemory(const char *xpath, xmlXPathContextPtr ctxt,
                      unsigned long long *mem, bool required)
 {
-    char *xpath_full = NULL;
-    char *unit = NULL;
     int ret = -1;
-    unsigned long long bytes;
-    unsigned long long max;
+    unsigned long long bytes, max;
 
-    *mem = 0;
-    if (virAsprintf(&xpath_full, "string(%s)", xpath) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-    ret = virXPathULongLong(xpath_full, ctxt, &bytes);
-    if (ret < 0) {
-        if (ret == -2)
-            virDomainReportError(VIR_ERR_XML_ERROR,
-                                 _("could not parse memory element %s"),
-                                 xpath);
-        else if (required)
-            virDomainReportError(VIR_ERR_XML_ERROR,
-                                 _("missing memory element %s"),
-                                 xpath);
-        else
-            ret = 0;
-        goto cleanup;
-    }
-    VIR_FREE(xpath_full);
-
-    if (virAsprintf(&xpath_full, "string(%s/@unit)", xpath) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-    unit = virXPathString(xpath_full, ctxt);
     /* On 32-bit machines, our bound is 0xffffffff * KiB. On 64-bit
      * machines, our bound is off_t (2^63).  */
     if (sizeof(unsigned long) < sizeof(long long))
         max = 1024ull * ULONG_MAX;
     else
         max = LLONG_MAX;
-    if (virScaleInteger(&bytes, unit, 1024, max) < 0)
+
+    ret = virDomainParseScaledValue(xpath, ctxt, &bytes, 1024, max, required);
+    if (ret < 0)
         goto cleanup;
 
     /* Yes, we really do use kibibytes for our internal sizing.  */
     *mem = VIR_DIV_UP(bytes, 1024);
     ret = 0;
 cleanup:
-    VIR_FREE(xpath_full);
-    VIR_FREE(unit);
     return ret;
 }
 
