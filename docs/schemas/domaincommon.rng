@@ -1316,6 +1316,18 @@
           <ref name="address"/>
         </optional>
       </interleave>
+      <interleave>
+        <optional>
+          <element name="space_hard_limit">
+            <ref name='scaledInteger'/>
+          </element>
+        </optional>
+        <optional>
+          <element name="space_soft_limit">
+            <ref name='scaledInteger'/>
+          </element>
+        </optional>
+      </interleave>
     </element>
   </define>
   <!--

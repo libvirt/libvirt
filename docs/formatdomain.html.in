@@ -1686,6 +1686,20 @@
         default read-write access is given (currently only works for
         QEMU/KVM driver).
       </dd>
+
+      <dt><code>space_hard_limit</code></dt>
+      <dd>
+        Maximum space available to this guest's filesystem.
+        <span class="since">Since 0.9.13</span>
+      </dd>
+
+      <dt><code>space_soft_limit</code></dt>
+      <dd>
+        Maximum space available to this guest's filesystem. The container is
+        permitted to exceed its soft limits for a grace period of time. Afterwards the
+        hard limit is enforced.
+        <span class="since">Since 0.9.13</span>
+      </dd>
     </dl>
 
     <h4><a name="elementsAddress">Device Addresses</a></h4>

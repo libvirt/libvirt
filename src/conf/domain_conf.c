@@ -4200,15 +4200,18 @@ cleanup:
  */
 static virDomainFSDefPtr
 virDomainFSDefParseXML(xmlNodePtr node,
+                       xmlXPathContextPtr ctxt,
                        unsigned int flags) {
     virDomainFSDefPtr def;
-    xmlNodePtr cur;
+    xmlNodePtr cur, save_node = ctxt->node;
     char *type = NULL;
     char *fsdriver = NULL;
     char *source = NULL;
     char *target = NULL;
     char *accessmode = NULL;
     char *wrpolicy = NULL;
+
+    ctxt->node = node;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -4236,6 +4239,18 @@ virDomainFSDefParseXML(xmlNodePtr node,
     } else {
         def->accessmode = VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH;
     }
+
+    if (virDomainParseScaledValue("./space_hard_limit[1]", ctxt,
+                                  &def->space_hard_limit, 1,
+                                  ULONG_LONG_MAX,
+                                  false) < 0)
+        goto error;
+
+    if (virDomainParseScaledValue("./space_soft_limit[1]", ctxt,
+                                  &def->space_soft_limit, 1,
+                                  ULONG_LONG_MAX,
+                                  false) < 0)
+        goto error;
 
     cur = node->children;
     while (cur != NULL) {
@@ -4303,6 +4318,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
         goto error;
 
 cleanup:
+    ctxt->node = save_node;
     VIR_FREE(type);
     VIR_FREE(fsdriver);
     VIR_FREE(target);
@@ -7076,7 +7092,7 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "filesystem")) {
         dev->type = VIR_DOMAIN_DEVICE_FS;
-        if (!(dev->data.fs = virDomainFSDefParseXML(node, flags)))
+        if (!(dev->data.fs = virDomainFSDefParseXML(node, ctxt, flags)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "interface")) {
         dev->type = VIR_DOMAIN_DEVICE_NET;
@@ -8621,7 +8637,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     if (n && VIR_ALLOC_N(def->fss, n) < 0)
         goto no_memory;
     for (i = 0 ; i < n ; i++) {
-        virDomainFSDefPtr fs = virDomainFSDefParseXML(nodes[i],
+        virDomainFSDefPtr fs = virDomainFSDefParseXML(nodes[i], ctxt,
                                                       flags);
         if (!fs)
             goto error;
@@ -11319,6 +11335,14 @@ virDomainFSDefFormat(virBufferPtr buf,
     if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;
 
+
+    if (def->space_hard_limit)
+        virBufferAsprintf(buf, "      <space_hard_limit unit='bytes'>"
+                          "%llu</space_hard_limit>\n", def->space_hard_limit);
+    if (def->space_soft_limit) {
+        virBufferAsprintf(buf, "      <space_soft_limit unit='bytes'>"
+                          "%llu</space_soft_limit>\n", def->space_soft_limit);
+    }
     virBufferAddLit(buf, "    </filesystem>\n");
 
     return 0;

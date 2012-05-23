@@ -699,6 +699,8 @@ struct _virDomainFSDef {
     char *dst;
     unsigned int readonly : 1;
     virDomainDeviceInfo info;
+    unsigned long long space_hard_limit; /* in bytes */
+    unsigned long long space_soft_limit; /* in bytes */
 };
 
 
