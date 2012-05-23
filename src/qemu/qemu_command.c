@@ -3293,8 +3293,9 @@ qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
-        virBufferAsprintf(&buf, "tty,id=char%s,path=%s", alias,
-                          dev->data.file.path);
+        virBufferAsprintf(&buf, "%s,id=char%s,path=%s",
+                          STRPREFIX(alias, "parallel") ? "parport" : "tty",
+                          alias, dev->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
