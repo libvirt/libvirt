@@ -2305,6 +2305,24 @@ struct remote_domain_snapshot_current_ret {
     remote_nonnull_domain_snapshot snap;
 };
 
+struct remote_domain_snapshot_is_current_args {
+    remote_nonnull_domain_snapshot snap;
+    unsigned int flags;
+};
+
+struct remote_domain_snapshot_is_current_ret {
+    int current;
+};
+
+struct remote_domain_snapshot_has_metadata_args {
+    remote_nonnull_domain_snapshot snap;
+    unsigned int flags;
+};
+
+struct remote_domain_snapshot_has_metadata_ret {
+    int metadata;
+};
+
 struct remote_domain_revert_to_snapshot_args {
     remote_nonnull_domain_snapshot snap;
     unsigned int flags;
@@ -2782,7 +2800,10 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_PM_WAKEUP = 267, /* autogen autogen */
     REMOTE_PROC_DOMAIN_EVENT_TRAY_CHANGE = 268, /* autogen autogen */
     REMOTE_PROC_DOMAIN_EVENT_PMWAKEUP = 269, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_EVENT_PMSUSPEND = 270 /* autogen autogen */
+    REMOTE_PROC_DOMAIN_EVENT_PMSUSPEND = 270, /* autogen autogen */
+
+    REMOTE_PROC_DOMAIN_SNAPSHOT_IS_CURRENT = 271, /* autogen autogen */
+    REMOTE_PROC_DOMAIN_SNAPSHOT_HAS_METADATA = 272 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
