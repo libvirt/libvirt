@@ -1591,41 +1591,41 @@ static char *SELinuxGetSecurityMountOptions(virSecurityManagerPtr mgr,
 }
 
 virSecurityDriver virSecurityDriverSELinux = {
-    sizeof(virSecuritySELinuxData),
-    SECURITY_SELINUX_NAME,
-    SELinuxSecurityDriverProbe,
-    SELinuxSecurityDriverOpen,
-    SELinuxSecurityDriverClose,
+    .privateDataLen                     = sizeof(virSecuritySELinuxData),
+    .name                               = SECURITY_SELINUX_NAME,
+    .probe                              = SELinuxSecurityDriverProbe,
+    .open                               = SELinuxSecurityDriverOpen,
+    .close                              = SELinuxSecurityDriverClose,
 
-    SELinuxSecurityGetModel,
-    SELinuxSecurityGetDOI,
+    .getModel                           = SELinuxSecurityGetModel,
+    .getDOI                             = SELinuxSecurityGetDOI,
 
-    SELinuxSecurityVerify,
+    .domainSecurityVerify               = SELinuxSecurityVerify,
 
-    SELinuxSetSecurityImageLabel,
-    SELinuxRestoreSecurityImageLabel,
+    .domainSetSecurityImageLabel        = SELinuxSetSecurityImageLabel,
+    .domainRestoreSecurityImageLabel    = SELinuxRestoreSecurityImageLabel,
 
-    SELinuxSetSecurityDaemonSocketLabel,
-    SELinuxSetSecuritySocketLabel,
-    SELinuxClearSecuritySocketLabel,
+    .domainSetSecurityDaemonSocketLabel = SELinuxSetSecurityDaemonSocketLabel,
+    .domainSetSecuritySocketLabel       = SELinuxSetSecuritySocketLabel,
+    .domainClearSecuritySocketLabel     = SELinuxClearSecuritySocketLabel,
 
-    SELinuxGenSecurityLabel,
-    SELinuxReserveSecurityLabel,
-    SELinuxReleaseSecurityLabel,
+    .domainGenSecurityLabel             = SELinuxGenSecurityLabel,
+    .domainReserveSecurityLabel         = SELinuxReserveSecurityLabel,
+    .domainReleaseSecurityLabel         = SELinuxReleaseSecurityLabel,
 
-    SELinuxGetSecurityProcessLabel,
-    SELinuxSetSecurityProcessLabel,
+    .domainGetSecurityProcessLabel      = SELinuxGetSecurityProcessLabel,
+    .domainSetSecurityProcessLabel      = SELinuxSetSecurityProcessLabel,
 
-    SELinuxSetSecurityAllLabel,
-    SELinuxRestoreSecurityAllLabel,
+    .domainSetSecurityAllLabel          = SELinuxSetSecurityAllLabel,
+    .domainRestoreSecurityAllLabel      = SELinuxRestoreSecurityAllLabel,
 
-    SELinuxSetSecurityHostdevLabel,
-    SELinuxRestoreSecurityHostdevLabel,
+    .domainSetSecurityHostdevLabel      = SELinuxSetSecurityHostdevLabel,
+    .domainRestoreSecurityHostdevLabel  = SELinuxRestoreSecurityHostdevLabel,
 
-    SELinuxSetSavedStateLabel,
-    SELinuxRestoreSavedStateLabel,
+    .domainSetSavedStateLabel           = SELinuxSetSavedStateLabel,
+    .domainRestoreSavedStateLabel       = SELinuxRestoreSavedStateLabel,
 
-    SELinuxSetImageFDLabel,
+    .domainSetSecurityImageFDLabel      = SELinuxSetImageFDLabel,
 
-    SELinuxGetSecurityMountOptions,
+    .domainGetSecurityMountOptions      = SELinuxGetSecurityMountOptions,
 };

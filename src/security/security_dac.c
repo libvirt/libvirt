@@ -723,42 +723,41 @@ static char *virSecurityDACGetMountOptions(virSecurityManagerPtr mgr ATTRIBUTE_U
 }
 
 virSecurityDriver virSecurityDriverDAC = {
-    sizeof(virSecurityDACData),
-    "virDAC",
+    .privateDataLen                     = sizeof(virSecurityDACData),
+    .name                               = "virDAC",
+    .probe                              = virSecurityDACProbe,
+    .open                               = virSecurityDACOpen,
+    .close                              = virSecurityDACClose,
 
-    virSecurityDACProbe,
-    virSecurityDACOpen,
-    virSecurityDACClose,
+    .getModel                           = virSecurityDACGetModel,
+    .getDOI                             = virSecurityDACGetDOI,
 
-    virSecurityDACGetModel,
-    virSecurityDACGetDOI,
+    .domainSecurityVerify               = virSecurityDACVerify,
 
-    virSecurityDACVerify,
+    .domainSetSecurityImageLabel        = virSecurityDACSetSecurityImageLabel,
+    .domainRestoreSecurityImageLabel    = virSecurityDACRestoreSecurityImageLabel,
 
-    virSecurityDACSetSecurityImageLabel,
-    virSecurityDACRestoreSecurityImageLabel,
+    .domainSetSecurityDaemonSocketLabel = virSecurityDACSetDaemonSocketLabel,
+    .domainSetSecuritySocketLabel       = virSecurityDACSetSocketLabel,
+    .domainClearSecuritySocketLabel     = virSecurityDACClearSocketLabel,
 
-    virSecurityDACSetDaemonSocketLabel,
-    virSecurityDACSetSocketLabel,
-    virSecurityDACClearSocketLabel,
+    .domainGenSecurityLabel             = virSecurityDACGenLabel,
+    .domainReserveSecurityLabel         = virSecurityDACReserveLabel,
+    .domainReleaseSecurityLabel         = virSecurityDACReleaseLabel,
 
-    virSecurityDACGenLabel,
-    virSecurityDACReserveLabel,
-    virSecurityDACReleaseLabel,
+    .domainGetSecurityProcessLabel      = virSecurityDACGetProcessLabel,
+    .domainSetSecurityProcessLabel      = virSecurityDACSetProcessLabel,
 
-    virSecurityDACGetProcessLabel,
-    virSecurityDACSetProcessLabel,
+    .domainSetSecurityAllLabel          = virSecurityDACSetSecurityAllLabel,
+    .domainRestoreSecurityAllLabel      = virSecurityDACRestoreSecurityAllLabel,
 
-    virSecurityDACSetSecurityAllLabel,
-    virSecurityDACRestoreSecurityAllLabel,
+    .domainSetSecurityHostdevLabel      = virSecurityDACSetSecurityHostdevLabel,
+    .domainRestoreSecurityHostdevLabel  = virSecurityDACRestoreSecurityHostdevLabel,
 
-    virSecurityDACSetSecurityHostdevLabel,
-    virSecurityDACRestoreSecurityHostdevLabel,
+    .domainSetSavedStateLabel           = virSecurityDACSetSavedStateLabel,
+    .domainRestoreSavedStateLabel       = virSecurityDACRestoreSavedStateLabel,
 
-    virSecurityDACSetSavedStateLabel,
-    virSecurityDACRestoreSavedStateLabel,
+    .domainSetSecurityImageFDLabel      = virSecurityDACSetImageFDLabel,
 
-    virSecurityDACSetImageFDLabel,
-
-    virSecurityDACGetMountOptions,
+    .domainGetSecurityMountOptions      = virSecurityDACGetMountOptions,
 };

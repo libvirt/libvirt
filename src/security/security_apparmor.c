@@ -809,39 +809,39 @@ AppArmorSetImageFDLabel(virSecurityManagerPtr mgr,
 }
 
 virSecurityDriver virAppArmorSecurityDriver = {
-    0,
-    SECURITY_APPARMOR_NAME,
-    AppArmorSecurityManagerProbe,
-    AppArmorSecurityManagerOpen,
-    AppArmorSecurityManagerClose,
+    .privateDataLen                     = 0,
+    .name                               = SECURITY_APPARMOR_NAME,
+    .probe                              = AppArmorSecurityManagerProbe,
+    .open                               = AppArmorSecurityManagerOpen,
+    .close                              = AppArmorSecurityManagerClose,
 
-    AppArmorSecurityManagerGetModel,
-    AppArmorSecurityManagerGetDOI,
+    .getModel                           = AppArmorSecurityManagerGetModel,
+    .getDOI                             = AppArmorSecurityManagerGetDOI,
 
-    AppArmorSecurityVerify,
+    .domainSecurityVerify               = AppArmorSecurityVerify,
 
-    AppArmorSetSecurityImageLabel,
-    AppArmorRestoreSecurityImageLabel,
+    .domainSetSecurityImageLabel        = AppArmorSetSecurityImageLabel,
+    .domainRestoreSecurityImageLabel    = AppArmorRestoreSecurityImageLabel,
 
-    AppArmorSetSecurityDaemonSocketLabel,
-    AppArmorSetSecuritySocketLabel,
-    AppArmorClearSecuritySocketLabel,
+    .domainSetSecurityDaemonSocketLabel = AppArmorSetSecurityDaemonSocketLabel,
+    .domainSetSecuritySocketLabel       = AppArmorSetSecuritySocketLabel,
+    .domainClearSecuritySocketLabel     = AppArmorClearSecuritySocketLabel,
 
-    AppArmorGenSecurityLabel,
-    AppArmorReserveSecurityLabel,
-    AppArmorReleaseSecurityLabel,
+    .domainGenSecurityLabel             = AppArmorGenSecurityLabel,
+    .domainReserveSecurityLabel         = AppArmorReserveSecurityLabel,
+    .domainReleaseSecurityLabel         = AppArmorReleaseSecurityLabel,
 
-    AppArmorGetSecurityProcessLabel,
-    AppArmorSetSecurityProcessLabel,
+    .domainGetSecurityProcessLabel      = AppArmorGetSecurityProcessLabel,
+    .domainSetSecurityProcessLabel      = AppArmorSetSecurityProcessLabel,
 
-    AppArmorSetSecurityAllLabel,
-    AppArmorRestoreSecurityAllLabel,
+    .domainSetSecurityAllLabel          = AppArmorSetSecurityAllLabel,
+    .domainRestoreSecurityAllLabel      = AppArmorRestoreSecurityAllLabel,
 
-    AppArmorSetSecurityHostdevLabel,
-    AppArmorRestoreSecurityHostdevLabel,
+    .domainSetSecurityHostdevLabel      = AppArmorSetSecurityHostdevLabel,
+    .domainRestoreSecurityHostdevLabel  = AppArmorRestoreSecurityHostdevLabel,
 
-    AppArmorSetSavedStateLabel,
-    AppArmorRestoreSavedStateLabel,
+    .domainSetSavedStateLabel           = AppArmorSetSavedStateLabel,
+    .domainRestoreSavedStateLabel       = AppArmorRestoreSavedStateLabel,
 
-    AppArmorSetImageFDLabel,
+    .domainSetSecurityImageFDLabel      = AppArmorSetImageFDLabel,
 };

@@ -170,41 +170,41 @@ static char *virSecurityDomainGetMountOptionsNop(virSecurityManagerPtr mgr ATTRI
 }
 
 virSecurityDriver virSecurityDriverNop = {
-    0,
-    "none",
-    virSecurityDriverProbeNop,
-    virSecurityDriverOpenNop,
-    virSecurityDriverCloseNop,
+    .privateDataLen                     = 0,
+    .name                               = "none",
+    .probe                              = virSecurityDriverProbeNop,
+    .open                               = virSecurityDriverOpenNop,
+    .close                              = virSecurityDriverCloseNop,
 
-    virSecurityDriverGetModelNop,
-    virSecurityDriverGetDOINop,
+    .getModel                           = virSecurityDriverGetModelNop,
+    .getDOI                             = virSecurityDriverGetDOINop,
 
-    virSecurityDomainVerifyNop,
+    .domainSecurityVerify               = virSecurityDomainVerifyNop,
 
-    virSecurityDomainSetImageLabelNop,
-    virSecurityDomainRestoreImageLabelNop,
+    .domainSetSecurityImageLabel        = virSecurityDomainSetImageLabelNop,
+    .domainRestoreSecurityImageLabel    = virSecurityDomainRestoreImageLabelNop,
 
-    virSecurityDomainSetDaemonSocketLabelNop,
-    virSecurityDomainSetSocketLabelNop,
-    virSecurityDomainClearSocketLabelNop,
+    .domainSetSecurityDaemonSocketLabel = virSecurityDomainSetDaemonSocketLabelNop,
+    .domainSetSecuritySocketLabel       = virSecurityDomainSetSocketLabelNop,
+    .domainClearSecuritySocketLabel     = virSecurityDomainClearSocketLabelNop,
 
-    virSecurityDomainGenLabelNop,
-    virSecurityDomainReserveLabelNop,
-    virSecurityDomainReleaseLabelNop,
+    .domainGenSecurityLabel             = virSecurityDomainGenLabelNop,
+    .domainReserveSecurityLabel         = virSecurityDomainReserveLabelNop,
+    .domainReleaseSecurityLabel         = virSecurityDomainReleaseLabelNop,
 
-    virSecurityDomainGetProcessLabelNop,
-    virSecurityDomainSetProcessLabelNop,
+    .domainGetSecurityProcessLabel      = virSecurityDomainGetProcessLabelNop,
+    .domainSetSecurityProcessLabel      = virSecurityDomainSetProcessLabelNop,
 
-    virSecurityDomainSetAllLabelNop,
-    virSecurityDomainRestoreAllLabelNop,
+    .domainSetSecurityAllLabel          = virSecurityDomainSetAllLabelNop,
+    .domainRestoreSecurityAllLabel      = virSecurityDomainRestoreAllLabelNop,
 
-    virSecurityDomainSetHostdevLabelNop,
-    virSecurityDomainRestoreHostdevLabelNop,
+    .domainSetSecurityHostdevLabel      = virSecurityDomainSetHostdevLabelNop,
+    .domainRestoreSecurityHostdevLabel  = virSecurityDomainRestoreHostdevLabelNop,
 
-    virSecurityDomainSetSavedStateLabelNop,
-    virSecurityDomainRestoreSavedStateLabelNop,
+    .domainSetSavedStateLabel           = virSecurityDomainSetSavedStateLabelNop,
+    .domainRestoreSavedStateLabel       = virSecurityDomainRestoreSavedStateLabelNop,
 
-    virSecurityDomainSetFDLabelNop,
+    .domainSetSecurityImageFDLabel      =  virSecurityDomainSetFDLabelNop,
 
-    virSecurityDomainGetMountOptionsNop,
+    .domainGetSecurityMountOptions      = virSecurityDomainGetMountOptionsNop,
 };
