@@ -16568,6 +16568,129 @@ cleanup:
 }
 
 /*
+ * "snapshot-info" command
+ */
+static const vshCmdInfo info_snapshot_info[] = {
+    {"help", N_("snapshot information")},
+    {"desc", N_("Returns basic information about a snapshot.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_snapshot_info[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"snapshotname", VSH_OT_DATA, 0, N_("snapshot name")},
+    {"current", VSH_OT_BOOL, 0, N_("info on current snapshot")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    virDomainSnapshotPtr snapshot = NULL;
+    const char *name;
+    char *doc = NULL;
+    char *tmp;
+    char *parent = NULL;
+    bool ret = false;
+    int count;
+    unsigned int flags;
+    int current;
+    int metadata;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    dom = vshCommandOptDomain(ctl, cmd, NULL);
+    if (dom == NULL)
+        return false;
+
+    if (vshLookupSnapshot(ctl, cmd, "snapshotname", true, dom,
+                          &snapshot, &name) < 0)
+        goto cleanup;
+
+    vshPrint(ctl, "%-15s %s\n", _("Name:"), name);
+    vshPrint(ctl, "%-15s %s\n", _("Domain:"), virDomainGetName(dom));
+
+    /* Determine if snapshot is current; this is useful enough that we
+     * attempt a fallback.  */
+    current = virDomainSnapshotIsCurrent(snapshot, 0);
+    if (current < 0) {
+        virDomainSnapshotPtr other = virDomainSnapshotCurrent(dom, 0);
+
+        virResetLastError();
+        current = 0;
+        if (other) {
+            if (STREQ(name, virDomainSnapshotGetName(other)))
+                current = 1;
+            virDomainSnapshotFree(other);
+        }
+    }
+    vshPrint(ctl, "%-15s %s\n", _("Current:"),
+             current > 0 ? _("yes") : _("no"));
+
+    /* Get the XML configuration of the snapshot to determine the
+     * state of the machine at the time of the snapshot.  */
+    doc = virDomainSnapshotGetXMLDesc(snapshot, 0);
+    if (!doc)
+        goto cleanup;
+
+    tmp = strstr(doc, "<state>");
+    if (!tmp) {
+        vshError(ctl, "%s",
+                 _("unexpected problem reading snapshot xml"));
+        goto cleanup;
+    }
+    tmp += strlen("<state>");
+    vshPrint(ctl, "%-15s %.*s\n", _("State:"),
+             (int) (strchr(tmp, '<') - tmp), tmp);
+
+    if (vshGetSnapshotParent(ctl, snapshot, &parent) < 0)
+        goto cleanup;
+    vshPrint(ctl, "%-15s %s\n", _("Parent:"), parent ? parent : "-");
+
+    /* Children, Descendants.  After this point, the fallback to
+     * compute children is too expensive, so we gracefully quit if the
+     * APIs don't exist.  */
+    if (ctl->useSnapshotOld) {
+        ret = true;
+        goto cleanup;
+    }
+    flags = 0;
+    count = virDomainSnapshotNumChildren(snapshot, flags);
+    if (count < 0)
+        goto cleanup;
+    vshPrint(ctl, "%-15s %d\n", _("Children:"), count);
+    flags = VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
+    count = virDomainSnapshotNumChildren(snapshot, flags);
+    if (count < 0)
+        goto cleanup;
+    vshPrint(ctl, "%-15s %d\n", _("Descendants:"), count);
+
+    /* Metadata; the fallback here relies on the fact that metadata
+     * used to have an all-or-nothing effect on snapshot count.  */
+    metadata = virDomainSnapshotHasMetadata(snapshot, 0);
+    if (metadata < 0) {
+        metadata = virDomainSnapshotNum(dom,
+                                        VIR_DOMAIN_SNAPSHOT_LIST_METADATA);
+        virResetLastError();
+    }
+    if (metadata >= 0)
+        vshPrint(ctl, "%-15s %s\n", _("Metadata:"),
+                 metadata ? _("yes") : _("no"));
+
+    ret = true;
+
+cleanup:
+    VIR_FREE(doc);
+    VIR_FREE(parent);
+    if (snapshot)
+        virDomainSnapshotFree(snapshot);
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "snapshot-list" command
  */
 static const vshCmdInfo info_snapshot_list[] = {
@@ -17661,6 +17784,8 @@ static const vshCmdDef snapshotCmds[] = {
      info_snapshot_dumpxml, 0},
     {"snapshot-edit", cmdSnapshotEdit, opts_snapshot_edit,
      info_snapshot_edit, 0},
+    {"snapshot-info", cmdSnapshotInfo, opts_snapshot_info,
+     info_snapshot_info, 0},
     {"snapshot-list", cmdSnapshotList, opts_snapshot_list,
      info_snapshot_list, 0},
     {"snapshot-parent", cmdSnapshotParent, opts_snapshot_parent,
