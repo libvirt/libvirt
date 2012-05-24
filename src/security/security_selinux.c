@@ -32,6 +32,7 @@
 #include "hostusb.h"
 #include "storage_file.h"
 #include "virfile.h"
+#include "virhash.h"
 #include "virrandom.h"
 #include "util.h"
 #include "conf.h"
@@ -50,6 +51,7 @@ struct _virSecuritySELinuxData {
     char *domain_context;
     char *file_context;
     char *content_context;
+    virHashTablePtr mcs;
 };
 
 struct _virSecuritySELinuxCallbackData {
@@ -60,64 +62,31 @@ struct _virSecuritySELinuxCallbackData {
 #define SECURITY_SELINUX_VOID_DOI       "0"
 #define SECURITY_SELINUX_NAME "selinux"
 
-/* TODO
-   The data struct of used mcs should be replaced with a better data structure in the future
-*/
-
-typedef struct virSecuritySELinuxMCS virSecuritySELinuxMCS;
-typedef virSecuritySELinuxMCS *virSecuritySELinuxMCSPtr;
-struct virSecuritySELinuxMCS {
-    char *mcs;
-    virSecuritySELinuxMCSPtr next;
-};
-static virSecuritySELinuxMCSPtr mcsList = NULL;
-
 /*
  * Returns 0 on success, 1 if already reserved, or -1 on fatal error
  */
 static int
-virSecuritySELinuxMCSAdd(const char *mcs)
+virSecuritySELinuxMCSAdd(virSecurityManagerPtr mgr,
+                         const char *mcs)
 {
-    virSecuritySELinuxMCSPtr ptr;
+    virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
 
-    for (ptr = mcsList; ptr; ptr = ptr->next) {
-        if (STREQ(ptr->mcs, mcs))
-            return 1;
-    }
-    if (VIR_ALLOC(ptr) < 0) {
-        virReportOOMError();
+    if (virHashLookup(data->mcs, mcs))
+        return 1;
+
+    if (virHashAddEntry(data->mcs, mcs, (void*)0x1) < 0)
         return -1;
-    }
-    if (!(ptr->mcs = strdup(mcs))) {
-        virReportOOMError();
-        VIR_FREE(ptr);
-        return -1;
-    }
-    ptr->next = mcsList;
-    mcsList = ptr;
+
     return 0;
 }
 
-static int
-virSecuritySELinuxMCSRemove(const char *mcs)
+static void
+virSecuritySELinuxMCSRemove(virSecurityManagerPtr mgr,
+                            const char *mcs)
 {
-    virSecuritySELinuxMCSPtr prevptr = NULL;
-    virSecuritySELinuxMCSPtr ptr = NULL;
+    virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
 
-    for (ptr = mcsList; ptr; ptr = ptr->next) {
-        if (STREQ(ptr->mcs, mcs)) {
-            if (prevptr)
-                prevptr->next = ptr->next;
-            else {
-                mcsList = ptr->next;
-            }
-            VIR_FREE(ptr->mcs);
-            VIR_FREE(ptr);
-            return 0;
-        }
-        prevptr = ptr;
-    }
-    return -1;
+    virHashRemoveEntry(data->mcs, mcs);
 }
 
 static char *
@@ -191,6 +160,10 @@ virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
                              selinux_lxc_contexts_path());
         goto error;
     }
+
+    if (!(data->mcs = virHashCreate(10, NULL)))
+        goto error;
+
     virConfFree(selinux_conf);
     return 0;
 
@@ -199,6 +172,7 @@ error:
     VIR_FREE(data->domain_context);
     VIR_FREE(data->file_context);
     VIR_FREE(data->content_context);
+    virHashFree(data->mcs);
     return -1;
 }
 #else
@@ -249,12 +223,16 @@ virSecuritySELinuxQEMUInitialize(virSecurityManagerPtr mgr)
             *ptr = '\0';
     }
 
+    if (!(data->mcs = virHashCreate(10, NULL)))
+        goto error;
+
     return 0;
 
 error:
     VIR_FREE(data->domain_context);
     VIR_FREE(data->file_context);
     VIR_FREE(data->content_context);
+    virHashFree(data->mcs);
     return -1;
 }
 
@@ -355,7 +333,7 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
                     goto cleanup;
                 }
             }
-            if ((rv = virSecuritySELinuxMCSAdd(mcs)) < 0)
+            if ((rv = virSecuritySELinuxMCSAdd(mgr, mcs)) < 0)
                 goto cleanup;
             if (rv == 0)
                 break;
@@ -452,7 +430,7 @@ virSecuritySELinuxReserveSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSE
     if (!mcs)
         goto error;
 
-    if ((rv = virSecuritySELinuxMCSAdd(mcs)) < 0)
+    if ((rv = virSecuritySELinuxMCSAdd(mgr, mcs)) < 0)
         goto error;
 
     if (rv == 1) {
@@ -503,6 +481,8 @@ virSecuritySELinuxSecurityDriverClose(virSecurityManagerPtr mgr)
 
     if (!data)
         return 0;
+
+    virHashFree(data->mcs);
 
     VIR_FREE(data->domain_context);
     VIR_FREE(data->file_context);
@@ -1195,7 +1175,7 @@ virSecuritySELinuxRestoreSecurityAllLabel(virSecurityManagerPtr mgr ATTRIBUTE_UN
 }
 
 static int
-virSecuritySELinuxReleaseSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+virSecuritySELinuxReleaseSecurityLabel(virSecurityManagerPtr mgr,
                                        virDomainDefPtr def)
 {
     const virSecurityLabelDefPtr secdef = &def->seclabel;
@@ -1204,7 +1184,7 @@ virSecuritySELinuxReleaseSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSE
         if (secdef->label != NULL) {
             context_t con = context_new(secdef->label);
             if (con) {
-                virSecuritySELinuxMCSRemove(context_range_get(con));
+                virSecuritySELinuxMCSRemove(mgr, context_range_get(con));
                 context_free(con);
             }
         }
