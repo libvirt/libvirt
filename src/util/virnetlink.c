@@ -669,6 +669,12 @@ bool virNetlinkEventServiceIsRunning(void)
     return 0;
 }
 
+int virNetlinkEventServiceLocalPid(void)
+{
+    netlinkError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    return -1;
+}
+
 /**
  * virNetlinkEventAddClient: register a callback for handling of
  * netlink messages
