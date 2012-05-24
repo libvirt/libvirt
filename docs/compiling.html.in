@@ -62,14 +62,57 @@
     <p>
       The libvirt build process uses GNU autotools, so after obtaining a
       checkout it is necessary to generate the configure script and Makefile.in
-      templates using the <code>autogen.sh</code> command, passing the extra
-      arguments as for configure. As an example, to do a complete build and
-      install it into your home directory run:
+      templates using the <code>autogen.sh</code> command. By default when
+      the <code>configure</code> script is run from within a GIT checkout, it
+      will turn on -Werror for builds. This can be disabled with --disable-werror,
+      but this is not recommended. To build &amp; install libvirt to your home
+      directory the following commands can be run:
     </p>
 
     <pre>
-      $ ./autogen.sh --prefix=$HOME/usr --enable-compile-warnings=error
+      $ ./autogen.sh --prefix=$HOME/usr
       $ make
       $ <b>sudo</b> make install</pre>
+
+    <p>
+      Be aware though, that binaries built with a custom prefix will not
+      interoperate with OS vendor provided binaries, since the UNIX socket
+      paths will all be different. To produce a build that is compatible
+      with normal OS vendor prefixes, use
+    </p>
+
+    <pre>
+      $ ./autogen.sh --system
+      $ make
+    </pre>
+
+    <p>
+      When doing this for day-to-day development purposes, it is recommended
+      not to install over the OS vendor provided binaries. Instead simply
+      run libvirt directly from the source tree. For example to run
+      a privileged libvirtd instance
+    </p>
+
+    <pre>
+      $ su -
+      # service libvirtd stop  (or systemctl stop libvirtd.service)
+      # /home/to/your/checkout/daemon/libvirtd
+    </pre>
+
+    <p>
+      It is also possible to run virsh directly from the source tree
+    </p>
+
+    <pre>
+      $ ./tools/virsh ....
+    </pre>
+
+    <p>
+      A normal configuration of libvirt will build hypervisor drivers
+      as loadable modules. When running from a non-installed source
+      tree, libvirtd will attempt to find the modules from the same
+      source tree. If this is not possible though, you can explicitly
+      set <code>LIBVIRT_DRIVER_DIR=/path/to/source/tree/src/.libs</code>
+    </p>
   </body>
 </html>
