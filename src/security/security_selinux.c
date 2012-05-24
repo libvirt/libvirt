@@ -72,6 +72,9 @@ struct virSecuritySELinuxMCS {
 };
 static virSecuritySELinuxMCSPtr mcsList = NULL;
 
+/*
+ * Returns 0 on success, 1 if already reserved, or -1 on fatal error
+ */
 static int
 virSecuritySELinuxMCSAdd(const char *mcs)
 {
@@ -79,11 +82,17 @@ virSecuritySELinuxMCSAdd(const char *mcs)
 
     for (ptr = mcsList; ptr; ptr = ptr->next) {
         if (STREQ(ptr->mcs, mcs))
-            return -1;
+            return 1;
     }
-    if (VIR_ALLOC(ptr) < 0)
+    if (VIR_ALLOC(ptr) < 0) {
+        virReportOOMError();
         return -1;
-    ptr->mcs = strdup(mcs);
+    }
+    if (!(ptr->mcs = strdup(mcs))) {
+        virReportOOMError();
+        VIR_FREE(ptr);
+        return -1;
+    }
     ptr->next = mcsList;
     mcsList = ptr;
     return 0;
@@ -325,7 +334,8 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
         break;
 
     case VIR_DOMAIN_SECLABEL_DYNAMIC:
-        do {
+        for (;;) {
+            int rv;
             c1 = virRandomBits(10);
             c2 = virRandomBits(10);
 
@@ -345,7 +355,11 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
                     goto cleanup;
                 }
             }
-        } while (virSecuritySELinuxMCSAdd(mcs) == -1);
+            if ((rv = virSecuritySELinuxMCSAdd(mcs)) < 0)
+                goto cleanup;
+            if (rv == 0)
+                break;
+        }
 
         def->seclabel.label =
             virSecuritySELinuxGenNewContext(def->seclabel.baselabel ?
@@ -418,6 +432,7 @@ virSecuritySELinuxReserveSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSE
     security_context_t pctx;
     context_t ctx = NULL;
     const char *mcs;
+    int rv;
 
     if (def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC)
         return 0;
@@ -431,19 +446,27 @@ virSecuritySELinuxReserveSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSE
     ctx = context_new(pctx);
     freecon(pctx);
     if (!ctx)
-        goto err;
+        goto error;
 
     mcs = context_range_get(ctx);
     if (!mcs)
-        goto err;
+        goto error;
 
-    virSecuritySELinuxMCSAdd(mcs);
+    if ((rv = virSecuritySELinuxMCSAdd(mcs)) < 0)
+        goto error;
+
+    if (rv == 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("MCS level for existing domain label %s already reserved"),
+                       (char*)pctx);
+        goto error;
+    }
 
     context_free(ctx);
 
     return 0;
 
-err:
+error:
     context_free(ctx);
     return -1;
 }
