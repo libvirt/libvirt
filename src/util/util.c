@@ -64,6 +64,11 @@
 # include <mntent.h>
 #endif
 
+#ifdef WIN32
+# include <windows.h>
+# include <shlobj.h>
+#endif
+
 #include "c-ctype.h"
 #include "dirname.h"
 #include "virterror_internal.h"
@@ -1411,6 +1416,77 @@ int virFileOpenTty(int *ttymaster ATTRIBUTE_UNUSED,
 }
 #endif /* WIN32 */
 
+bool virFileIsAbsPath(const char *path)
+{
+    if (!path)
+        return false;
+
+    if (VIR_FILE_IS_DIR_SEPARATOR(path[0]))
+        return true;
+
+#ifdef WIN32
+    if (c_isalpha(path[0]) &&
+        path[1] == ':' &&
+        VIR_FILE_IS_DIR_SEPARATOR(path[2]))
+        return true;
+#endif
+
+    return false;
+}
+
+
+const char *virFileSkipRoot(const char *path)
+{
+#ifdef WIN32
+    /* Skip \\server\share or //server/share */
+    if (VIR_FILE_IS_DIR_SEPARATOR(path[0]) &&
+        VIR_FILE_IS_DIR_SEPARATOR(path[1]) &&
+        path[2] &&
+        !VIR_FILE_IS_DIR_SEPARATOR(path[2]))
+    {
+        const char *p = strchr(path + 2, VIR_FILE_DIR_SEPARATOR);
+        const char *q = strchr(path + 2, '/');
+
+        if (p == NULL || (q != NULL && q < p))
+            p = q;
+
+        if (p && p > path + 2 && p[1]) {
+            path = p + 1;
+
+            while (path[0] &&
+                   !VIR_FILE_IS_DIR_SEPARATOR(path[0]))
+                path++;
+
+            /* Possibly skip a backslash after the share name */
+            if (VIR_FILE_IS_DIR_SEPARATOR(path[0]))
+                path++;
+
+            return path;
+        }
+    }
+#endif
+
+    /* Skip initial slashes */
+    if (VIR_FILE_IS_DIR_SEPARATOR(path[0])) {
+        while (VIR_FILE_IS_DIR_SEPARATOR(path[0]))
+            path++;
+
+        return path;
+    }
+
+#ifdef WIN32
+    /* Skip X:\ */
+    if (c_isalpha(path[0]) &&
+        path[1] == ':' &&
+        VIR_FILE_IS_DIR_SEPARATOR(path[2]))
+        return path + 3;
+#endif
+
+    return path;
+}
+
+
+
 /*
  * Creates an absolute path for a potentially relative path.
  * Return 0 if the path was not relative, or on success.
@@ -2542,8 +2618,153 @@ error:
     return -1;
 }
 
-#else /* HAVE_GETPWUID_R */
+#else /* ! HAVE_GETPWUID_R */
 
+# ifdef WIN32
+/* These methods are adapted from GLib2 under terms of LGPLv2+ */
+static int
+virGetWin32SpecialFolder(int csidl, char **path)
+{
+    char buf[MAX_PATH+1];
+    LPITEMIDLIST pidl = NULL;
+    int ret = 0;
+
+    *path = NULL;
+
+    if (SHGetSpecialFolderLocation(NULL, csidl, &pidl) == S_OK) {
+        if (SHGetPathFromIDList(pidl, buf)) {
+            if (!(*path = strdup(buf))) {
+                virReportOOMError();
+                ret = -1;
+            }
+        }
+        CoTaskMemFree(pidl);
+    }
+    return ret;
+}
+
+static int
+virGetWin32DirectoryRoot(char **path)
+{
+    char windowsdir[MAX_PATH];
+    int ret = 0;
+
+    *path = NULL;
+
+    if (GetWindowsDirectory(windowsdir, ARRAY_CARDINALITY(windowsdir)))
+    {
+        const char *tmp;
+        /* Usually X:\Windows, but in terminal server environments
+         * might be an UNC path, AFAIK.
+         */
+        tmp = virFileSkipRoot(windowsdir);
+        if (VIR_FILE_IS_DIR_SEPARATOR(tmp[-1]) &&
+            tmp[-2] != ':')
+            tmp--;
+
+        windowsdir[tmp - windowsdir] = '\0';
+    } else {
+        strcpy(windowsdir, "C:\\");
+    }
+
+    if (!(*path = strdup(windowsdir))) {
+        virReportOOMError();
+        ret = -1;
+    }
+
+    return ret;
+}
+
+
+
+char *
+virGetUserDirectory(void)
+{
+    const char *dir;
+    char *ret;
+
+    dir = getenv("HOME");
+
+    /* Only believe HOME if it is an absolute path and exists */
+    if (dir) {
+        if (!virFileIsAbsPath(dir) ||
+            !virFileExists(dir))
+            dir = NULL;
+    }
+
+    /* In case HOME is Unix-style (it happens), convert it to
+     * Windows style.
+     */
+    if (dir) {
+        char *p;
+        while ((p = strchr (dir, '/')) != NULL)
+            *p = '\\';
+    }
+
+    if (!dir)
+        /* USERPROFILE is probably the closest equivalent to $HOME? */
+        dir = getenv("USERPROFILE");
+
+    if (dir) {
+        if (!(ret = strdup(dir))) {
+            virReportOOMError();
+            return NULL;
+        }
+    }
+
+    if (!ret &&
+        virGetWin32SpecialFolder(CSIDL_PROFILE, &ret) < 0)
+        return NULL;
+
+    if (!ret &&
+        virGetWin32DirectoryRoot(&ret) < 0)
+        return NULL;
+
+    if (!ret) {
+        virUtilError(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Unable to determine home directory"));
+        return NULL;
+    }
+
+    return ret;
+}
+
+char *
+virGetUserConfigDirectory(void)
+{
+    char *ret;
+    if (virGetWin32SpecialFolder(CSIDL_LOCAL_APPDATA, &ret) < 0)
+        return NULL;
+
+    if (!ret) {
+        virUtilError(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Unable to determine config directory"));
+        return NULL;
+    }
+    return ret;
+}
+
+char *
+virGetUserCacheDirectory(void)
+{
+    char *ret;
+    if (virGetWin32SpecialFolder(CSIDL_INTERNET_CACHE, &ret) < 0)
+        return NULL;
+
+    if (!ret) {
+        virUtilError(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Unable to determine config directory"));
+        return NULL;
+    }
+    return ret;
+}
+
+char *
+virGetUserRuntimeDirectory(void)
+{
+    return virGetUserCacheDirectory();
+}
+# else /* !HAVE_GETPWUID_R && !WIN32 */
 char *
 virGetUserDirectory(void)
 {
@@ -2552,6 +2773,34 @@ virGetUserDirectory(void)
 
     return NULL;
 }
+
+char *
+virGetUserConfigDirectory(void)
+{
+    virUtilError(VIR_ERR_INTERNAL_ERROR,
+                 "%s", _("virGetUserConfigDirectory is not available"));
+
+    return NULL;
+}
+
+char *
+virGetUserCacheDirectory(void)
+{
+    virUtilError(VIR_ERR_INTERNAL_ERROR,
+                 "%s", _("virGetUserCacheDirectory is not available"));
+
+    return NULL;
+}
+
+char *
+virGetUserRuntimeDirectory(void)
+{
+    virUtilError(VIR_ERR_INTERNAL_ERROR,
+                 "%s", _("virGetUserRuntimeDirectory is not available"));
+
+    return NULL;
+}
+# endif /* ! HAVE_GETPWUID_R && ! WIN32 */
 
 char *
 virGetUserName(uid_t uid ATTRIBUTE_UNUSED)
