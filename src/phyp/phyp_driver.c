@@ -977,7 +977,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     int ret;
     char *pubkey = NULL;
     char *pvtkey = NULL;
-    char *userhome = virGetUserDirectory(geteuid());
+    char *userhome = virGetUserDirectory();
     struct stat pvt_stat, pub_stat;
 
     if (userhome == NULL)

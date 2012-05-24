@@ -392,7 +392,6 @@ cleanup:
 static int
 umlStartup(int privileged)
 {
-    uid_t uid = geteuid();
     char *base = NULL;
     char *userdir = NULL;
 
@@ -418,7 +417,7 @@ umlStartup(int privileged)
     if (!uml_driver->domainEventState)
         goto error;
 
-    userdir = virGetUserDirectory(uid);
+    userdir = virGetUserDirectory();
     if (!userdir)
         goto error;
 
@@ -434,7 +433,7 @@ umlStartup(int privileged)
                         "%s/run/libvirt/uml-guest", LOCALSTATEDIR) == -1)
             goto out_of_memory;
     } else {
-        base = virGetUserConfigDirectory(uid);
+        base = virGetUserConfigDirectory();
         if (!base)
             goto error;
 

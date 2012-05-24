@@ -926,7 +926,7 @@ virConnectGetConfigFilePath(void)
                         SYSCONFDIR) < 0)
             goto no_memory;
     } else {
-        char *userdir = virGetUserConfigDirectory(geteuid());
+        char *userdir = virGetUserConfigDirectory();
         if (!userdir)
             goto error;
 

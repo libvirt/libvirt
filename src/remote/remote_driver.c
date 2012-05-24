@@ -578,7 +578,7 @@ doRemoteOpen (virConnectPtr conn,
     case trans_unix:
         if (!sockname) {
             if (flags & VIR_DRV_OPEN_REMOTE_USER) {
-                char *userdir = virGetUserRuntimeDirectory(getuid());
+                char *userdir = virGetUserRuntimeDirectory();
 
                 if (!userdir)
                     goto failed;

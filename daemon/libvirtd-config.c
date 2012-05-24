@@ -207,7 +207,7 @@ daemonConfigFilePath(bool privileged, char **configfile)
     } else {
         char *configdir = NULL;
 
-        if (!(configdir = virGetUserConfigDirectory(geteuid())))
+        if (!(configdir = virGetUserConfigDirectory()))
             goto error;
 
         if (virAsprintf(configfile, "%s/libvirtd.conf", configdir) < 0) {

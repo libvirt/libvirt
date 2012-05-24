@@ -774,7 +774,7 @@ static int virNetTLSContextLocateCredentials(const char *pkipath,
         /* Check to see if $HOME/.pki contains at least one of the
          * files and if so, use that
          */
-        userdir = virGetUserDirectory(getuid());
+        userdir = virGetUserDirectory();
 
         if (!userdir)
             goto out_of_memory;

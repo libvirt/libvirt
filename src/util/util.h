@@ -228,10 +228,10 @@ char *virGetHostname(virConnectPtr conn);
 
 int virKillProcess(pid_t pid, int sig);
 
-char *virGetUserDirectory(uid_t uid);
-char *virGetUserConfigDirectory(uid_t uid);
-char *virGetUserCacheDirectory(uid_t uid);
-char *virGetUserRuntimeDirectory(uid_t uid);
+char *virGetUserDirectory(void);
+char *virGetUserConfigDirectory(void);
+char *virGetUserCacheDirectory(void);
+char *virGetUserRuntimeDirectory(void);
 char *virGetUserName(uid_t uid);
 char *virGetGroupName(gid_t gid);
 int virGetUserID(const char *name,

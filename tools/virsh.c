@@ -15674,8 +15674,7 @@ cmdCd(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (vshCommandOptString(cmd, "dir", &dir) <= 0) {
-        uid_t uid = geteuid();
-        dir = dir_malloced = virGetUserDirectory(uid);
+        dir = dir_malloced = virGetUserDirectory();
     }
     if (!dir)
         dir = "/";
@@ -19872,7 +19871,7 @@ vshReadlineInit(vshControl *ctl)
     stifle_history(500);
 
     /* Prepare to read/write history from/to the $XDG_CACHE_HOME/virsh/history file */
-    userdir = virGetUserCacheDirectory(getuid());
+    userdir = virGetUserCacheDirectory();
 
     if (userdir == NULL) {
         vshError(ctl, "%s", _("Could not determine home directory"));

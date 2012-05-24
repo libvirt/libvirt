@@ -65,7 +65,7 @@ int virAuthGetConfigFilePath(virConnectPtr conn,
         }
     }
 
-    if (!(userdir = virGetUserConfigDirectory(geteuid())))
+    if (!(userdir = virGetUserConfigDirectory()))
         goto cleanup;
 
     if (virAsprintf(path, "%s/auth.conf", userdir) < 0)

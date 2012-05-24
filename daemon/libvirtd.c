@@ -242,7 +242,7 @@ daemonPidFilePath(bool privileged,
         char *rundir = NULL;
         mode_t old_umask;
 
-        if (!(rundir = virGetUserRuntimeDirectory(geteuid())))
+        if (!(rundir = virGetUserRuntimeDirectory()))
             goto error;
 
         old_umask = umask(077);
@@ -290,7 +290,7 @@ daemonUnixSocketPaths(struct daemonConfig *config,
             char *rundir = NULL;
             mode_t old_umask;
 
-            if (!(rundir = virGetUserRuntimeDirectory(geteuid())))
+            if (!(rundir = virGetUserRuntimeDirectory()))
                 goto error;
 
             old_umask = umask(077);
@@ -634,7 +634,7 @@ daemonSetupLogging(struct daemonConfig *config,
                                 LOCALSTATEDIR) == -1)
                     goto no_memory;
             } else {
-                char *logdir = virGetUserCacheDirectory(geteuid());
+                char *logdir = virGetUserCacheDirectory();
                 mode_t old_umask;
 
                 if (!logdir)
@@ -783,7 +783,7 @@ static int migrateProfile(void)
     int ret = -1;
     mode_t old_umask;
 
-    if (!(home = virGetUserDirectory(geteuid())))
+    if (!(home = virGetUserDirectory()))
         goto cleanup;
 
     if (virAsprintf(&old_base, "%s/.libvirt", home) < 0) {
@@ -791,7 +791,7 @@ static int migrateProfile(void)
     }
 
     /* if the new directory is there or the old one is not: do nothing */
-    if (!(config_dir = virGetUserConfigDirectory(geteuid())))
+    if (!(config_dir = virGetUserConfigDirectory()))
         goto cleanup;
 
     if (!virFileIsDir(old_base) || virFileExists(config_dir)) {
@@ -1112,7 +1112,7 @@ int main(int argc, char **argv) {
     if (privileged) {
         run_dir = strdup(LOCALSTATEDIR "/run/libvirt");
     } else {
-        run_dir = virGetUserRuntimeDirectory(geteuid());
+        run_dir = virGetUserRuntimeDirectory();
 
         if (!run_dir) {
             VIR_ERROR(_("Can't determine user directory"));

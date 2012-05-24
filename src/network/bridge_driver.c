@@ -260,7 +260,6 @@ networkAutostartConfigs(struct network_driver *driver) {
  */
 static int
 networkStartup(int privileged) {
-    uid_t uid = geteuid();
     char *base = NULL;
 
     if (VIR_ALLOC(driverState) < 0)
@@ -280,7 +279,7 @@ networkStartup(int privileged) {
         if ((base = strdup (SYSCONFDIR "/libvirt")) == NULL)
             goto out_of_memory;
     } else {
-        char *userdir = virGetUserCacheDirectory(uid);
+        char *userdir = virGetUserCacheDirectory();
 
         if (!userdir)
             goto error;
@@ -292,7 +291,7 @@ networkStartup(int privileged) {
         }
         VIR_FREE(userdir);
 
-        userdir = virGetUserConfigDirectory(uid);
+        userdir = virGetUserConfigDirectory();
         if (virAsprintf(&base, "%s", userdir) == -1) {
             VIR_FREE(userdir);
             goto out_of_memory;

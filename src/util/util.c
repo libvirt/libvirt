@@ -2305,19 +2305,16 @@ static char *virGetGroupEnt(gid_t gid)
     return ret;
 }
 
-char *virGetUserDirectory(uid_t uid)
+char *virGetUserDirectory(void)
 {
-    return virGetUserEnt(uid, VIR_USER_ENT_DIRECTORY);
+    return virGetUserEnt(geteuid(), VIR_USER_ENT_DIRECTORY);
 }
 
-static char *virGetXDGDirectory(uid_t uid, const char *xdgenvname, const char *xdgdefdir)
+static char *virGetXDGDirectory(const char *xdgenvname, const char *xdgdefdir)
 {
-    const char *path = NULL;
+    const char *path = getenv(xdgenvname);
     char *ret = NULL;
-    char *home = virGetUserEnt(uid, VIR_USER_ENT_DIRECTORY);
-
-    if (uid == getuid())
-        path = getenv(xdgenvname);
+    char *home = virGetUserEnt(geteuid(), VIR_USER_ENT_DIRECTORY);
 
     if (path && path[0]) {
         if (virAsprintf(&ret, "%s/libvirt", path) < 0)
@@ -2335,25 +2332,22 @@ static char *virGetXDGDirectory(uid_t uid, const char *xdgenvname, const char *x
     goto cleanup;
 }
 
-char *virGetUserConfigDirectory(uid_t uid)
+char *virGetUserConfigDirectory(void)
 {
-    return virGetXDGDirectory(uid, "XDG_CONFIG_HOME", ".config");
+    return virGetXDGDirectory("XDG_CONFIG_HOME", ".config");
 }
 
-char *virGetUserCacheDirectory(uid_t uid)
+char *virGetUserCacheDirectory(void)
 {
-     return virGetXDGDirectory(uid, "XDG_CACHE_HOME", ".cache");
+     return virGetXDGDirectory("XDG_CACHE_HOME", ".cache");
 }
 
-char *virGetUserRuntimeDirectory(uid_t uid)
+char *virGetUserRuntimeDirectory(void)
 {
-    const char *path = NULL;
-
-    if (uid == getuid ())
-        path = getenv("XDG_RUNTIME_DIR");
+    const char *path = getenv("XDG_RUNTIME_DIR");
 
     if (!path || !path[0]) {
-        return virGetUserCacheDirectory(uid);
+        return virGetUserCacheDirectory();
     } else {
         char *ret;
 
@@ -2551,7 +2545,7 @@ error:
 #else /* HAVE_GETPWUID_R */
 
 char *
-virGetUserDirectory(uid_t uid ATTRIBUTE_UNUSED)
+virGetUserDirectory(void)
 {
     virUtilError(VIR_ERR_INTERNAL_ERROR,
                  "%s", _("virGetUserDirectory is not available"));
