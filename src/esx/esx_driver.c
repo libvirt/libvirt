@@ -4243,10 +4243,28 @@ esxDomainIsActive(virDomainPtr domain)
 
 
 static int
-esxDomainIsPersistent(virDomainPtr domain ATTRIBUTE_UNUSED)
+esxDomainIsPersistent(virDomainPtr domain)
 {
-    /* ESX has no concept of transient domains, so all of them are persistent */
-    return 1;
+    /* ESX has no concept of transient domains, so all of them are
+     * persistent.  However, we do want to check for existence. */
+    int result = -1;
+    esxPrivate *priv = domain->conn->privateData;
+    esxVI_ObjectContent *virtualMachine = NULL;
+
+    if (esxVI_EnsureSession(priv->primary) < 0)
+        return -1;
+
+    if (esxVI_LookupVirtualMachineByUuid(priv->primary, domain->uuid,
+                                         NULL, &virtualMachine,
+                                         esxVI_Occurrence_RequiredItem) < 0)
+        goto cleanup;
+
+    result = 1;
+
+cleanup:
+    esxVI_ObjectContent_Free(&virtualMachine);
+
+    return result;
 }
 
 
@@ -4254,7 +4272,26 @@ esxDomainIsPersistent(virDomainPtr domain ATTRIBUTE_UNUSED)
 static int
 esxDomainIsUpdated(virDomainPtr domain ATTRIBUTE_UNUSED)
 {
-    return 0;
+    /* ESX domains never have a persistent state that differs from
+     * current state.  However, we do want to check for existence.  */
+    int result = -1;
+    esxPrivate *priv = domain->conn->privateData;
+    esxVI_ObjectContent *virtualMachine = NULL;
+
+    if (esxVI_EnsureSession(priv->primary) < 0)
+        return -1;
+
+    if (esxVI_LookupVirtualMachineByUuid(priv->primary, domain->uuid,
+                                         NULL, &virtualMachine,
+                                         esxVI_Occurrence_RequiredItem) < 0)
+        goto cleanup;
+
+    result = 0;
+
+cleanup:
+    esxVI_ObjectContent_Free(&virtualMachine);
+
+    return result;
 }
 
 
