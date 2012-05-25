@@ -32,11 +32,14 @@ module Libvirtd_qemu =
                  | str_entry "vnc_password"
                  | bool_entry "vnc_sasl"
                  | str_entry "vnc_sasl_dir"
-                 | str_entry "spice_listen"
+                 | bool_entry "vnc_allow_host_audio"
+
+   let spice_entry = str_entry "spice_listen"
                  | bool_entry "spice_tls"
                  | str_entry  "spice_tls_x509_cert_dir"
                  | str_entry "spice_password"
-                 | str_entry "security_driver"
+
+   let security_entry = str_entry "security_driver"
                  | bool_entry "security_default_confined"
                  | bool_entry "security_require_confined"
                  | str_entry "user"
@@ -44,27 +47,37 @@ module Libvirtd_qemu =
                  | bool_entry "dynamic_ownership"
                  | str_array_entry "cgroup_controllers"
                  | str_array_entry "cgroup_device_acl"
-                 | str_entry "save_image_format"
+
+   let save_entry =  str_entry "save_image_format"
                  | str_entry "dump_image_format"
                  | str_entry "auto_dump_path"
                  | bool_entry "auto_dump_bypass_cache"
                  | bool_entry "auto_start_bypass_cache"
-                 | str_entry "hugetlbfs_mount"
-                 | bool_entry "mac_filter"
-                 | bool_entry "relaxed_acs_check"
-                 | bool_entry "vnc_allow_host_audio"
+
+   let process_entry = str_entry "hugetlbfs_mount"
                  | bool_entry "clear_emulator_capabilities"
-                 | bool_entry "allow_disk_format_probing"
                  | bool_entry "set_process_name"
                  | int_entry "max_processes"
                  | int_entry "max_files"
+
+   let device_entry = bool_entry "mac_filter"
+                 | bool_entry "relaxed_acs_check"
+                 | bool_entry "allow_disk_format_probing"
                  | str_entry "lock_manager"
-                 | int_entry "max_queued"
+
+   let rpc_entry = int_entry "max_queued"
                  | int_entry "keepalive_interval"
                  | int_entry "keepalive_count"
 
    (* Each enty in the config is one of the following three ... *)
    let entry = vnc_entry
+             | spice_entry
+             | security_entry
+             | save_entry
+             | process_entry
+             | device_entry
+             | rpc_entry
+
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]
 
