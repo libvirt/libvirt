@@ -35,7 +35,7 @@ module Libvirtd_qemu =
                  | str_entry "spice_listen"
                  | bool_entry "spice_tls"
                  | str_entry  "spice_tls_x509_cert_dir"
-                 | str_entry "spice_passwd"
+                 | str_entry "spice_password"
                  | str_entry "security_driver"
                  | bool_entry "security_default_confined"
                  | bool_entry "security_require_confined"
