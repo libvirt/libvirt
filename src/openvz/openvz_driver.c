@@ -191,7 +191,8 @@ cleanup:
 
 static int
 openvzSetDiskQuota(virDomainDefPtr vmdef,
-                   virDomainFSDefPtr fss)
+                   virDomainFSDefPtr fss,
+                   bool persist)
 {
     int ret = -1;
     unsigned long long sl, hl;
@@ -199,8 +200,9 @@ openvzSetDiskQuota(virDomainDefPtr vmdef,
                                              "--quiet",
                                              "set",
                                              vmdef->name,
-                                             "--save",
                                              NULL);
+    if (persist)
+        virCommandAddArg(cmd, "--save");
 
     if (fss->type == VIR_DOMAIN_FS_TYPE_TEMPLATE) {
         if (fss->space_hard_limit) {
@@ -938,7 +940,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
     }
 
     if (vm->def->nfss == 1) {
-        if (openvzSetDiskQuota(vm->def, vm->def->fss[0]) < 0) {
+        if (openvzSetDiskQuota(vm->def, vm->def->fss[0], true) < 0) {
             openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("Could not set disk quota"));
             goto cleanup;
@@ -1026,7 +1028,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     }
 
     if (vm->def->nfss == 1) {
-        if (openvzSetDiskQuota(vm->def, vm->def->fss[0]) < 0) {
+        if (openvzSetDiskQuota(vm->def, vm->def->fss[0], true) < 0) {
             openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("Could not set disk quota"));
             goto cleanup;
