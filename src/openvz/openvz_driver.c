@@ -1948,6 +1948,111 @@ cleanup:
 }
 
 
+static int
+openvzUpdateDevice(virDomainDefPtr vmdef,
+                   virDomainDeviceDefPtr dev,
+                   bool persist)
+{
+    virDomainFSDefPtr fs, cur;
+    int pos;
+
+    if (dev->type == VIR_DOMAIN_DEVICE_FS) {
+        fs = dev->data.fs;
+        pos = virDomainFSIndexByName(vmdef, fs->dst);
+
+        if (pos < 0) {
+            openvzError(VIR_ERR_INVALID_ARG,
+                        _("target %s doesn't exist."), fs->dst);
+            return -1;
+        }
+        cur = vmdef->fss[pos];
+
+        /* We only allow updating the quota */
+        if (!STREQ(cur->src, fs->src)
+            || cur->type != fs->type
+            || cur->accessmode != fs->accessmode
+            || cur->wrpolicy != fs->wrpolicy
+            || cur->readonly != fs->readonly) {
+            openvzError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("Can only modify disk quota"));
+            return -1;
+        }
+
+        if (openvzSetDiskQuota(vmdef, fs, persist) < 0) {
+            return -1;
+        }
+        cur->space_hard_limit = fs->space_hard_limit;
+        cur->space_soft_limit = fs->space_soft_limit;
+    } else {
+        openvzError(VIR_ERR_CONFIG_UNSUPPORTED,
+                    _("Can't modify device type '%s'"),
+                    virDomainDeviceTypeToString(dev->type));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+openvzDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
+                             unsigned int flags)
+{
+    int ret = -1;
+    int veid;
+    struct  openvz_driver *driver = dom->conn->privateData;
+    virDomainDeviceDefPtr dev = NULL;
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr vmdef = NULL;
+    bool persist = false;
+
+    virCheckFlags(VIR_DOMAIN_DEVICE_MODIFY_LIVE |
+                  VIR_DOMAIN_DEVICE_MODIFY_CONFIG, -1);
+
+    openvzDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vmdef = vm->def;
+
+    if (!vm) {
+        openvzError(VIR_ERR_NO_DOMAIN, "%s",
+                    _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    if (virStrToLong_i(vmdef->name, NULL, 10, &veid) < 0) {
+        openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("Could not convert domain name to VEID"));
+        goto cleanup;
+    }
+
+    if (virDomainLiveConfigHelperMethod(driver->caps,
+                                        vm,
+                                        &flags,
+                                        &vmdef) < 0)
+        goto cleanup;
+
+    dev = virDomainDeviceDefParse(driver->caps, vmdef, xml,
+                                  VIR_DOMAIN_XML_INACTIVE);
+    if (!dev)
+        goto cleanup;
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+        persist = true;
+
+    if (openvzUpdateDevice(vmdef, dev, persist) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    openvzDriverUnlock(driver);
+    virDomainDeviceDefFree(dev);
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+
 static virDriver openvzDriver = {
     .no = VIR_DRV_OPENVZ,
     .name = "OPENVZ",
@@ -2002,6 +2107,7 @@ static virDriver openvzDriver = {
     .domainIsPersistent = openvzDomainIsPersistent, /* 0.7.3 */
     .domainIsUpdated = openvzDomainIsUpdated, /* 0.8.6 */
     .isAlive = openvzIsAlive, /* 0.9.8 */
+    .domainUpdateDeviceFlags = openvzDomainUpdateDeviceFlags, /* 0.9.13 */
 };
 
 int openvzRegister(void) {
