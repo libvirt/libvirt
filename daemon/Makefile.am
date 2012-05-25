@@ -45,7 +45,7 @@ EXTRA_DIST =						\
 	libvirtd.qemu.logrotate.in                      \
 	libvirtd.lxc.logrotate.in                       \
 	libvirtd.uml.logrotate.in                       \
-	test_libvirtd.aug                               \
+	test_libvirtd.aug.in                             \
 	THREADS.txt					\
 	libvirtd.pod.in					\
 	libvirtd.8.in					\
@@ -80,6 +80,8 @@ augeas_DATA = libvirtd.aug
 
 augeastestsdir = $(datadir)/augeas/lenses/tests
 augeastests_DATA = test_libvirtd.aug
+
+CLEANFILES += test_libvirtd.aug
 
 libvirtd.8: $(srcdir)/libvirtd.8.in
 	sed \
@@ -347,7 +349,12 @@ libvirtd.service: libvirtd.service.in $(top_builddir)/config.status
 	    mv $@-t $@
 
 
-check-local:
+check-local: check-augeas
+
+test_libvirtd.aug: test_libvirtd.aug.in libvirtd.conf
+	$(AM_V_GEN)$(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl libvirtd.conf $< $@
+
+check-augeas: test_libvirtd.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
 	  '$(AUGPARSE)' -I $(srcdir) $(srcdir)/test_libvirtd.aug; \
 	fi

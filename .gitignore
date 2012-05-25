@@ -54,6 +54,7 @@
 /daemon/libvirtd.init
 /daemon/libvirtd.pod
 /daemon/libvirtd.service
+/daemon/test_libvirtd.aug
 /docs/apibuild.py.stamp
 /docs/devhelp/libvirt.devhelp
 /docs/hvsupport.html.in
@@ -101,6 +102,9 @@
 /src/libvirt_*probes.h
 /src/libvirt_lxc
 /src/locking/qemu-sanlock.conf
+/src/locking/test_libvirt_sanlock.aug
+/src/lxc/test_libvirtd_lxc.aug
+/src/qemu/test_libvirtd_qemu.aug
 /src/remote/*_client_bodies.h
 /src/remote/*_protocol.[ch]
 /src/rpc/virkeepaliveprotocol.[ch]
