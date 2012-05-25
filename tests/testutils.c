@@ -35,6 +35,7 @@
 #include "logging.h"
 #include "command.h"
 #include "virrandom.h"
+#include "dirname.h"
 
 #if TEST_OOM_TRACE
 # include <execinfo.h>
@@ -576,9 +577,9 @@ int virtTestMain(int argc,
     if (!abs_srcdir)
         exit(EXIT_AM_HARDFAIL);
 
-    progname = argv[0];
-    if (STRPREFIX(progname, "./"))
-        progname += 2;
+    progname = last_component(argv[0]);
+    if (STRPREFIX(progname, "lt-"))
+        progname += 3;
     if (argc > 1) {
         fprintf(stderr, "Usage: %s\n", argv[0]);
         fputs("effective environment variables:\n"
