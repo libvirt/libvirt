@@ -62,6 +62,7 @@ module Libvirtd =
    let logging_entry = int_entry "log_level"
                      | str_entry "log_filters"
                      | str_entry "log_outputs"
+                     | int_entry "log_buffer_size"
 
    let auditing_entry = int_entry "audit_level"
                       | bool_entry "audit_logging"
@@ -69,6 +70,8 @@ module Libvirtd =
    let keepalive_entry = int_entry "keepalive_interval"
                        | int_entry "keepalive_count"
                        | bool_entry "keepalive_required"
+
+   let misc_entry = str_entry "host_uuid"
 
    (* Each enty in the config is one of the following three ... *)
    let entry = network_entry
@@ -80,6 +83,7 @@ module Libvirtd =
              | logging_entry
              | auditing_entry
              | keepalive_entry
+             | misc_entry
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]
 
