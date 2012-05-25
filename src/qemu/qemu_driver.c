@@ -8874,7 +8874,7 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
             goto cleanup;
         asyncJob = QEMU_ASYNC_JOB_MIGRATION_OUT;
     } else {
-        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
             goto cleanup;
         asyncJob = QEMU_ASYNC_JOB_NONE;
     }
