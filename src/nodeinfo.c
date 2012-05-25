@@ -451,8 +451,9 @@ int linuxNodeGetCPUStats(FILE *procstat,
     }
 
     if ((*nparams) != LINUX_NB_CPU_STATS) {
-        nodeReportError(VIR_ERR_INVALID_ARG,
-                        "%s", _("Invalid parameter count"));
+        virReportInvalidArg(*nparams,
+                            _("nparams in %s must be equal to %d"),
+                            __FUNCTION__, LINUX_NB_CPU_STATS);
         goto cleanup;
     }
 
@@ -526,7 +527,9 @@ int linuxNodeGetCPUStats(FILE *procstat,
         }
     }
 
-    nodeReportError(VIR_ERR_INVALID_ARG, "%s", _("Invalid cpu number"));
+    virReportInvalidArg(cpuNum,
+                        _("Invalid cpuNum in %s"),
+                        __FUNCTION__);
 
 cleanup:
     return ret;
@@ -569,8 +572,9 @@ int linuxNodeGetMemoryStats(FILE *meminfo,
     }
 
     if ((*nparams) != nr_param) {
-        nodeReportError(VIR_ERR_INVALID_ARG,
-                        "%s", _("Invalid stats count"));
+        virReportInvalidArg(nparams,
+                            _("nparams in %s must be %d"),
+                            __FUNCTION__, nr_param);
         goto cleanup;
     }
 
@@ -779,8 +783,9 @@ int nodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 # if HAVE_NUMACTL
             if (cellNum > numa_max_node()) {
-                nodeReportError(VIR_ERR_INVALID_ARG, "%s",
-                                _("Invalid cell number"));
+                virReportInvalidArg(cellNum,
+                                    _("cellNum in %s must be less than or equal to %d"),
+                                    __FUNCTION__, numa_max_node());
                 return -1;
             }
 # endif

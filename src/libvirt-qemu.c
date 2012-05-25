@@ -28,6 +28,8 @@
 #include "datatypes.h"
 #include "libvirt/libvirt-qemu.h"
 
+#define VIR_FROM_THIS VIR_FROM_NONE
+
 #define virLibConnError(conn, error, info)                               \
     virReportErrorHelper(VIR_FROM_NONE, error, NULL, __FUNCTION__,       \
                          __LINE__, info)
@@ -87,10 +89,7 @@ virDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
 
     conn = domain->conn;
 
-    if (result == NULL) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        goto error;
-    }
+    virCheckNonNullArgGoto(result, error);
 
     if (conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
@@ -159,8 +158,11 @@ virDomainQemuAttach(virConnectPtr conn,
         return NULL;
     }
 
-    if (pid != pid_value || pid <= 1) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+    virCheckPositiveArgGoto(pid_value, error);
+    if (pid != pid_value) {
+        virReportInvalidArg(pid_value,
+                            _("pid_value in %s is too large"),
+                            __FUNCTION__);
         goto error;
     }
 

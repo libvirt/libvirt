@@ -39,6 +39,7 @@ src/hyperv/hyperv_wmi.c
 src/interface/netcf_driver.c
 src/internal.h
 src/libvirt.c
+src/libvirt-qemu.c
 src/locking/lock_driver_sanlock.c
 src/locking/lock_manager.c
 src/lxc/lxc_container.c
@@ -146,6 +147,7 @@ src/util/virpidfile.c
 src/util/virrandom.c
 src/util/virsocketaddr.c
 src/util/virterror.c
+src/util/virterror_internal.h
 src/util/virtime.c
 src/util/virtypedparam.c
 src/util/xml.c

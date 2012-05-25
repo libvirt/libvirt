@@ -232,16 +232,63 @@
     do {                                                                \
         unsigned long __unsuppflags = flags & ~(supported);             \
         if (__unsuppflags) {                                            \
-            virReportErrorHelper(VIR_FROM_THIS,                         \
-                                 VIR_ERR_INVALID_ARG,                   \
-                                 __FILE__,                              \
-                                 __FUNCTION__,                          \
-                                 __LINE__,                              \
-                                 _("%s: unsupported flags (0x%lx)"),    \
-                                 __FUNCTION__, __unsuppflags);          \
+            virReportInvalidArg(flags,                                  \
+                                _("unsupported flags (0x%lx) in function %s"), \
+                                __unsuppflags, __FUNCTION__);           \
             return retval;                                              \
         }                                                               \
     } while (0)
+
+# define virCheckNonNullArgReturn(argname, retval)  \
+    do {                                            \
+        if (argname == NULL) {                      \
+            virReportInvalidNullArg(argname);       \
+            return retval;                          \
+        }                                           \
+    } while (0)
+# define virCheckNullArgGoto(argname, label)        \
+    do {                                            \
+        if (argname == NULL) {                      \
+            virReportInvalidNullArg(argname);       \
+            goto label;                             \
+        }                                           \
+    } while (0)
+# define virCheckNonNullArgGoto(argname, label)     \
+    do {                                            \
+        if (argname == NULL) {                      \
+            virReportInvalidNonNullArg(argname);    \
+            goto label;                             \
+        }                                           \
+    } while (0)
+# define virCheckPositiveArgGoto(argname, label)    \
+    do {                                            \
+        if (argname <= 0) {                         \
+            virReportInvalidPositiveArg(argname);   \
+            goto label;                             \
+        }                                           \
+    } while (0)
+# define virCheckNonZeroArgGoto(argname, label)     \
+    do {                                            \
+        if (argname == 0) {                         \
+            virReportInvalidNonZeroArg(argname);    \
+            goto label;                             \
+        }                                           \
+    } while (0)
+# define virCheckZeroArgGoto(argname, label)        \
+    do {                                            \
+        if (argname != 0) {                         \
+            virReportInvalidNonZeroArg(argname);    \
+            goto label;                             \
+        }                                           \
+    } while (0)
+# define virCheckNonNegativeArgGoto(argname, label)     \
+    do {                                                \
+        if (argname < 0) {                              \
+            virReportInvalidNonNegativeArg(argname);    \
+            goto label;                                 \
+        }                                               \
+    } while (0)
+
 
 /* divide value by size, rounding up */
 # define VIR_DIV_UP(value, size) (((value) + (size) - 1) / (size))
