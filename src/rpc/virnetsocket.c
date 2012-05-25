@@ -502,7 +502,11 @@ int virNetSocketNewConnectUNIX(const char *path,
 
 retry:
     if (connect(fd, &remoteAddr.data.sa, remoteAddr.len) < 0) {
-        if (errno == ECONNREFUSED && spawnDaemon && retries < 20) {
+        if ((errno == ECONNREFUSED ||
+             errno == ENOENT) &&
+            spawnDaemon && retries < 20) {
+            VIR_DEBUG("Connection refused for %s, trying to spawn %s",
+                      path, binary);
             if (retries == 0 &&
                 virNetSocketForkDaemon(binary) < 0)
                 goto error;
