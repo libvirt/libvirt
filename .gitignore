@@ -98,9 +98,9 @@
 /src/libvirt.syms
 /src/libvirt_*.stp
 /src/libvirt_*helper
+/src/libvirt_*probes.h
 /src/libvirt_lxc
 /src/locking/qemu-sanlock.conf
-/src/probes.h
 /src/remote/*_client_bodies.h
 /src/remote/*_protocol.[ch]
 /src/rpc/virkeepaliveprotocol.[ch]
@@ -143,6 +143,7 @@
 /tests/utiltest
 /tests/virauthconfigtest
 /tests/virbuftest
+/tests/virdrivermoduletest
 /tests/virhashtest
 /tests/virkeyfiletest
 /tests/virnet*test
