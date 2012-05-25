@@ -251,7 +251,7 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
         goto free_vol;
     }
 
-    if (STREQLEN(devpath, vol->target.path, PATH_MAX) &&
+    if (STREQ(devpath, vol->target.path) &&
         !(STREQ(pool->def->target.path, "/dev") ||
           STREQ(pool->def->target.path, "/dev/"))) {
 

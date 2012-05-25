@@ -501,8 +501,6 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             /* Extract the source file path*/
             if (!(offset = strchr(head, ',')))
                 goto skipdisk;
-            if ((offset - head) >= (PATH_MAX-1))
-                goto skipdisk;
 
             if (offset == head) {
                 disk->src = NULL; /* No source file given, eg CDROM with no media */

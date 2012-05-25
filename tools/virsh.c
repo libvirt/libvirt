@@ -15542,11 +15542,12 @@ editWriteToTempFile (vshControl *ctl, const char *doc)
     const char *tmpdir;
     int fd;
 
-    ret = vshMalloc(ctl, PATH_MAX);
-
     tmpdir = getenv ("TMPDIR");
     if (!tmpdir) tmpdir = "/tmp";
-    snprintf (ret, PATH_MAX, "%s/virshXXXXXX.xml", tmpdir);
+    if (virAsprintf(&ret, "%s/virshXXXXXX.xml", tmpdir) < 0) {
+        vshError(ctl, "%s", _("out of memory"));
+        return NULL;
+    }
     fd = mkstemps(ret, 4);
     if (fd == -1) {
         vshError(ctl, _("mkstemps: failed to create temporary file: %s"),

@@ -473,7 +473,7 @@ valid_name(const char *name)
      * used to subvert the profile */
     const char *bad = " /[]*";
 
-    if (strlen(name) == 0 || strlen(name) > PATH_MAX - 1)
+    if (strlen(name) == 0)
         return -1;
 
     if (strcspn(name, bad) != strlen(name))
@@ -544,7 +544,7 @@ valid_path(const char *path, const bool readonly)
         "/sys/devices/pci"	/* for hostdev pci devices */
     };
 
-    if (path == NULL || strlen(path) > PATH_MAX - 1) {
+    if (path == NULL) {
         vah_error(NULL, 0, _("bad pathname"));
         return -1;
     }

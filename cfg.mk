@@ -408,6 +408,11 @@ sc_prohibit_VIR_ERR_NO_MEMORY:
 	halt='use virReportOOMError, not V'IR_ERR_NO_MEMORY		\
 	  $(_sc_search_regexp)
 
+sc_prohibit_PATH_MAX:
+	@prohibit='\<P''ATH_MAX\>'				\
+	halt='dynamically allocate paths, do not use P'ATH_MAX	\
+	  $(_sc_search_regexp)
+
 # Use a subshell for each function, to give the optimal warning message.
 include $(srcdir)/Makefile.nonreentrant
 sc_prohibit_nonreentrant:
