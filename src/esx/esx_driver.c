@@ -4744,6 +4744,75 @@ esxDomainSnapshotCurrent(virDomainPtr domain, unsigned int flags)
 }
 
 
+static int
+esxDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot, unsigned int flags)
+{
+    esxPrivate *priv = snapshot->domain->conn->privateData;
+    esxVI_VirtualMachineSnapshotTree *currentSnapshotTree = NULL;
+    esxVI_VirtualMachineSnapshotTree *rootSnapshotList = NULL;
+    esxVI_VirtualMachineSnapshotTree *snapshotTree = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (esxVI_EnsureSession(priv->primary) < 0) {
+        return -1;
+    }
+
+    /* Check that snapshot exists.  */
+    if (esxVI_LookupRootSnapshotTreeList(priv->primary, snapshot->domain->uuid,
+                                         &rootSnapshotList) < 0 ||
+        esxVI_GetSnapshotTreeByName(rootSnapshotList, snapshot->name,
+                                    &snapshotTree, NULL,
+                                    esxVI_Occurrence_RequiredItem) < 0) {
+        goto cleanup;
+    }
+
+    if (esxVI_LookupCurrentSnapshotTree(priv->primary, snapshot->domain->uuid,
+                                        &currentSnapshotTree,
+                                        esxVI_Occurrence_RequiredItem) < 0) {
+        goto cleanup;
+    }
+
+    ret = STREQ(snapshot->name, currentSnapshotTree->name);
+
+cleanup:
+    esxVI_VirtualMachineSnapshotTree_Free(&currentSnapshotTree);
+    esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotList);
+    return ret;
+}
+
+
+static int
+esxDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot, unsigned int flags)
+{
+    esxPrivate *priv = snapshot->domain->conn->privateData;
+    esxVI_VirtualMachineSnapshotTree *rootSnapshotList = NULL;
+    esxVI_VirtualMachineSnapshotTree *snapshotTree = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (esxVI_EnsureSession(priv->primary) < 0) {
+        return -1;
+    }
+
+    /* Check that snapshot exists.  If so, there is no metadata.  */
+    if (esxVI_LookupRootSnapshotTreeList(priv->primary, snapshot->domain->uuid,
+                                         &rootSnapshotList) < 0 ||
+        esxVI_GetSnapshotTreeByName(rootSnapshotList, snapshot->name,
+                                    &snapshotTree, NULL,
+                                    esxVI_Occurrence_RequiredItem) < 0) {
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotList);
+    return ret;
+}
+
 
 static int
 esxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot, unsigned int flags)
@@ -5058,6 +5127,8 @@ static virDriver esxDriver = {
     .domainSnapshotGetParent = esxDomainSnapshotGetParent, /* 0.9.7 */
     .domainSnapshotCurrent = esxDomainSnapshotCurrent, /* 0.8.0 */
     .domainRevertToSnapshot = esxDomainRevertToSnapshot, /* 0.8.0 */
+    .domainSnapshotIsCurrent = esxDomainSnapshotIsCurrent, /* 0.9.13 */
+    .domainSnapshotHasMetadata = esxDomainSnapshotHasMetadata, /* 0.9.13 */
     .domainSnapshotDelete = esxDomainSnapshotDelete, /* 0.8.0 */
     .isAlive = esxIsAlive, /* 0.9.8 */
 };
