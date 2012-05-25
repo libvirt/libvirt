@@ -252,7 +252,7 @@ sockettest_SOURCES = \
 sockettest_LDADD = $(LDADDS)
 
 if WITH_XEN
-xen_LDADDS = ../src/libvirt_driver_xen.la
+xen_LDADDS = ../src/libvirt_driver_xen_impl.la
 xen_LDADDS += $(LDADDS)
 
 xml2sexprtest_SOURCES = \
@@ -290,9 +290,9 @@ endif
 
 if WITH_QEMU
 
-qemu_LDADDS = ../src/libvirt_driver_qemu.la
+qemu_LDADDS = ../src/libvirt_driver_qemu_impl.la
 if WITH_NETWORK
-qemu_LDADDS += ../src/libvirt_driver_network.la
+qemu_LDADDS += ../src/libvirt_driver_network_impl.la
 endif
 if WITH_DTRACE_PROBES
 qemu_LDADDS += ../src/libvirt_qemu_probes.lo
@@ -337,9 +337,9 @@ endif
 
 if WITH_LXC
 
-lxc_LDADDS = ../src/libvirt_driver_lxc.la
+lxc_LDADDS = ../src/libvirt_driver_lxc_impl.la
 if WITH_NETWORK
-lxc_LDADDS += ../src/libvirt_driver_network.la
+lxc_LDADDS += ../src/libvirt_driver_network_impl.la
 endif
 lxc_LDADDS += $(LDADDS)
 
@@ -393,7 +393,7 @@ if WITH_NETWORK
 networkxml2argvtest_SOURCES = \
 	networkxml2argvtest.c \
 	testutils.c testutils.h
-networkxml2argvtest_LDADD = ../src/libvirt_driver_network.la $(LDADDS)
+networkxml2argvtest_LDADD = ../src/libvirt_driver_network_impl.la $(LDADDS)
 else
 EXTRA_DIST += networkxml2argvtest.c
 endif

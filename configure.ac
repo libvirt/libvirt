@@ -2421,7 +2421,8 @@ AM_CONDITIONAL([WITH_WIN_ICON], [test "$WINDRES" != ""])
 
 dnl Driver-Modules library
 AC_ARG_WITH([driver-modules],
-  AC_HELP_STRING([--with-driver-modules], [build drivers as loadable modules @<:@default=no@:>@]),
+  AC_HELP_STRING([--with-driver-modules],
+  [build drivers as loadable modules @<:@default=check@:>@]),
   [],
   [with_driver_modules=check])
 
