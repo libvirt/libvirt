@@ -80,7 +80,6 @@ dnl Checks for C compiler.
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_CPP
-AM_PROG_CC_STDC
 
 gl_EARLY
 gl_INIT
