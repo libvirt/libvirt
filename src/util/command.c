@@ -2507,6 +2507,11 @@ int virCommandHandshakeWait(virCommandPtr cmd)
             VIR_FORCE_CLOSE(cmd->handshakeWait[0]);
             return -1;
         }
+        /* Close the handshakeNotify fd before trying to read anything
+         * further on the handshakeWait pipe; so that a child waiting
+         * on our acknowledgment will die rather than deadlock.  */
+        VIR_FORCE_CLOSE(cmd->handshakeNotify[1]);
+
         if ((len = saferead(cmd->handshakeWait[0], msg, 1024)) < 0) {
             VIR_FORCE_CLOSE(cmd->handshakeWait[0]);
             VIR_FREE(msg);
