@@ -383,11 +383,6 @@ sc_prohibit_sprintf:
 	halt='use snprintf, not s'printf				\
 	  $(_sc_search_regexp)
 
-sc_prohibit_strncpy:
-	@prohibit='strncpy *\('						\
-	halt='use virStrncpy, not strncpy'				\
-	  $(_sc_search_regexp)
-
 sc_prohibit_readlink:
 	@prohibit='readlink *\('					\
 	halt='use virFileResolveLink, not readlink'			\
