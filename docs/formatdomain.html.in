@@ -3112,7 +3112,7 @@ qemu-kvm -net nic,model=? /dev/null
   &lt;devices&gt;
     &lt;video&gt;
       &lt;model type='vga' vram='8192' heads='1'&gt;
-        &lt;acceleration accel3d='yes' accel3d='yes'/&gt;
+        &lt;acceleration accel3d='yes' accel2d='yes'/&gt;
       &lt;/model&gt;
     &lt;/video&gt;
   &lt;/devices&gt;
