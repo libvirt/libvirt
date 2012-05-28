@@ -554,12 +554,6 @@ AC_DEFINE_UNQUOTED([VBOX_XPCOMC_DIR], ["$vbox_xpcomc_dir"],
                    [Location of directory containing VirtualBox XPCOMC library])
 
 if test "x$with_vbox" = "xyes"; then
-    case "$host" in
-      *-*-mingw* | *-*-msvc*) MSCOM_LIBS="-lole32 -loleaut32" ;;
-      *) MSCOM_LIBS= ;;
-    esac
-    AC_SUBST([MSCOM_LIBS])
-
     AC_DEFINE_UNQUOTED([WITH_VBOX], 1, [whether VirtualBox driver is enabled])
 fi
 AM_CONDITIONAL([WITH_VBOX], [test "$with_vbox" = "yes"])
@@ -2364,16 +2358,23 @@ MINGW_EXTRA_LDFLAGS=
 WIN32_EXTRA_CFLAGS=
 LIBVIRT_SYMBOL_FILE=libvirt.syms
 LIBVIRT_QEMU_SYMBOL_FILE='$(srcdir)/libvirt_qemu.syms'
+MSCOM_LIBS=
 case "$host" in
   *-*-cygwin*)
     CYGWIN_EXTRA_LDFLAGS="-no-undefined"
     CYGWIN_EXTRA_LIBADD="${INTLLIBS}"
+    MSCOM_LIBS="-lole32 -loleaut32"
+
     if test "x$PYTHON_VERSION" != "x"; then
       CYGWIN_EXTRA_PYTHON_LIBADD="-L/usr/lib/python${PYTHON_VERSION}/config -lpython${PYTHON_VERSION}"
     fi
     ;;
   *-*-mingw*)
     MINGW_EXTRA_LDFLAGS="-no-undefined"
+    MSCOM_LIBS="-lole32 -loleaut32"
+    ;;
+  *-*-msvc*)
+    MSCOM_LIBS="-lole32 -loleaut32"
     ;;
 esac
 case "$host" in
@@ -2406,6 +2407,7 @@ AC_SUBST([WIN32_EXTRA_CFLAGS])
 AC_SUBST([LIBVIRT_SYMBOL_FILE])
 AC_SUBST([LIBVIRT_QEMU_SYMBOL_FILE])
 AC_SUBST([VERSION_SCRIPT_FLAGS])
+AC_SUBST([MSCOM_LIBS])
 
 
 dnl Look for windres to build a Windows icon resource.

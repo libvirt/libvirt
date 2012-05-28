@@ -583,7 +583,7 @@ libvirt_util_la_CFLAGS = $(CAPNG_CFLAGS) $(YAJL_CFLAGS) $(LIBNL_CFLAGS) \
 		$(DBUS_CFLAGS)
 libvirt_util_la_LIBADD = $(CAPNG_LIBS) $(YAJL_LIBS) $(LIBNL_LIBS) \
 		$(THREAD_LIBS) $(AUDIT_LIBS) $(DEVMAPPER_LIBS) \
-		$(RT_LIBS) $(DBUS_LIBS)
+		$(RT_LIBS) $(DBUS_LIBS) $(MSCOM_LIBS)
 
 
 noinst_LTLIBRARIES += libvirt_conf.la
