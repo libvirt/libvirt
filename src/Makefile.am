@@ -1271,7 +1271,7 @@ libvirt_la_DEPENDENCIES = $(libvirt_la_BUILT_LIBADD) $(LIBVIRT_SYMBOL_FILE)
 
 if WITH_DTRACE_PROBES
 libvirt_la_BUILT_LIBADD += libvirt_probes.lo
-libvirt_la_DEPENDENCIES += libvirt_probes.o
+libvirt_la_DEPENDENCIES += libvirt_probes.lo libvirt_probes.o
 nodist_libvirt_la_SOURCES = libvirt_probes.h
 if WITH_REMOTE
 $(REMOTE_DRIVER_GENERATED): libvirt_probes.h
@@ -1282,7 +1282,7 @@ BUILT_SOURCES += libvirt_probes.h libvirt_probes.stp libvirt_functions.stp
 if WITH_QEMU
 libvirt_driver_qemu_la_LIBADD += libvirt_qemu_probes.lo
 nodist_libvirt_driver_qemu_la_SOURCES = libvirt_qemu_probes.h
-libvirt_driver_qemu_la_DEPENDENCIES = libvirt_qemu_probes.o
+libvirt_driver_qemu_la_DEPENDENCIES = libvirt_qemu_probes.lo libvirt_qemu_probes.o
 
 $(libvirt_driver_qemu_la_SOURCES): libvirt_qemu_probes.h
 endif
