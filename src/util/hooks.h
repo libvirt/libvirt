@@ -57,6 +57,9 @@ enum virHookQemuOpType {
     VIR_HOOK_QEMU_OP_PREPARE,          /* domain startup initiated */
     VIR_HOOK_QEMU_OP_RELEASE,          /* domain destruction is over */
     VIR_HOOK_QEMU_OP_MIGRATE,          /* domain is being migrated */
+    VIR_HOOK_QEMU_OP_STARTED,          /* domain has started */
+    VIR_HOOK_QEMU_OP_RECONNECT,        /* domain is being reconnected by libvirt */
+    VIR_HOOK_QEMU_OP_ATTACH,           /* domain is being attached to be libvirt */
 
     VIR_HOOK_QEMU_OP_LAST,
 };
@@ -64,6 +67,10 @@ enum virHookQemuOpType {
 enum virHookLxcOpType {
     VIR_HOOK_LXC_OP_START,            /* domain is about to start */
     VIR_HOOK_LXC_OP_STOPPED,          /* domain has stopped */
+    VIR_HOOK_LXC_OP_PREPARE,          /* domain startup initiated */
+    VIR_HOOK_LXC_OP_RELEASE,          /* domain destruction is over */
+    VIR_HOOK_LXC_OP_STARTED,          /* domain has started */
+    VIR_HOOK_LXC_OP_RECONNECT,        /* domain is being reconnected by libvirt */
 
     VIR_HOOK_LXC_OP_LAST,
 };

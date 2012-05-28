@@ -74,11 +74,18 @@ VIR_ENUM_IMPL(virHookQemuOp, VIR_HOOK_QEMU_OP_LAST,
               "stopped",
               "prepare",
               "release",
-              "migrate")
+              "migrate",
+              "started",
+              "reconnect",
+              "attach")
 
 VIR_ENUM_IMPL(virHookLxcOp, VIR_HOOK_LXC_OP_LAST,
               "start",
-              "stopped")
+              "stopped",
+              "prepare",
+              "release",
+              "started",
+              "reconnect")
 
 static int virHooksFound = -1;
 
