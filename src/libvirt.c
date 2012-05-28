@@ -1,4 +1,4 @@
-//*
+/*
  * libvirt.c: Main interfaces for the libvirt library to handle virtualization
  *           domains from a process running in domain 0
  *
