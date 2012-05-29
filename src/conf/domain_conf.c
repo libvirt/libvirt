@@ -11265,6 +11265,22 @@ virDomainControllerDefFormat(virBufferPtr buf,
     return 0;
 }
 
+
+int
+virDomainFSIndexByName(virDomainDefPtr def, const char *name)
+{
+    virDomainFSDefPtr fs;
+    int i;
+
+    for (i = 0; i < def->nfss; i++) {
+        fs = def->fss[i];
+        if (STREQ(fs->dst, name))
+            return i;
+    }
+    return -1;
+}
+
+
 static int
 virDomainFSDefFormat(virBufferPtr buf,
                      virDomainFSDefPtr def,

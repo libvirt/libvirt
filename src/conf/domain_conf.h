@@ -2085,6 +2085,7 @@ int virDiskNameToBusDeviceIndex(virDomainDiskDefPtr disk,
                                 int *devIdx);
 
 virDomainFSDefPtr virDomainGetRootFilesystem(virDomainDefPtr def);
+int virDomainFSIndexByName(virDomainDefPtr def, const char *name);
 int virDomainVideoDefaultType(virDomainDefPtr def);
 int virDomainVideoDefaultRAM(virDomainDefPtr def, int type);
 

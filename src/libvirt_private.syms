@@ -320,6 +320,7 @@ virDomainDiskSnapshotTypeToString;
 virDomainDiskTypeFromString;
 virDomainDiskTypeToString;
 virDomainFSDefFree;
+virDomainFSIndexByName;
 virDomainFSTypeFromString;
 virDomainFSTypeToString;
 virDomainFSWrpolicyTypeFromString;
