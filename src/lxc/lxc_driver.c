@@ -590,7 +590,7 @@ static int lxcDomainGetInfo(virDomainPtr dom,
     }
 
     info->maxMem = vm->def->mem.max_balloon;
-    info->nrVirtCpu = 1;
+    info->nrVirtCpu = vm->def->vcpus;
     ret = 0;
 
 cleanup:
