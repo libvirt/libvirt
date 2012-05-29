@@ -1294,8 +1294,6 @@ BUILT_SOURCES += libvirt_probes.h libvirt_probes.stp libvirt_functions.stp
 if WITH_QEMU
 libvirt_driver_qemu_la_LIBADD += libvirt_qemu_probes.lo
 nodist_libvirt_driver_qemu_la_SOURCES = libvirt_qemu_probes.h
-
-$(libvirt_driver_qemu_la_SOURCES): libvirt_qemu_probes.h
 endif
 
 tapsetdir = $(datadir)/systemtap/tapset
@@ -1304,6 +1302,7 @@ tapset_DATA = libvirt_probes.stp libvirt_qemu_probes.stp libvirt_functions.stp
 %_probes.h: %_probes.d
 	$(AM_V_GEN)$(DTRACE) -o $@ -h -s $<
 
+.PRECIOUS: %_probes.o
 %_probes.o: %_probes.d
 	$(AM_V_GEN)$(DTRACE) -o $@ -G -s $<
 
