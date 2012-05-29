@@ -782,8 +782,8 @@ libvirt_driver_qemu_impl_la_SOURCES = $(QEMU_DRIVER_SOURCES)
 conf_DATA += qemu/qemu.conf
 
 augeas_DATA += qemu/libvirtd_qemu.aug
-augeastest_DATA += qemu/test_libvirtd_qemu.aug
-CLEANFILES += qemu/test_libvirtd_qemu.aug
+augeastest_DATA += test_libvirtd_qemu.aug
+CLEANFILES += test_libvirtd_qemu.aug
 
 endif
 EXTRA_DIST += qemu/qemu.conf qemu/libvirtd_qemu.aug \
@@ -823,8 +823,8 @@ libvirt_driver_lxc_impl_la_SOURCES = $(LXC_DRIVER_SOURCES)
 conf_DATA += lxc/lxc.conf
 
 augeas_DATA += lxc/libvirtd_lxc.aug
-augeastest_DATA += lxc/test_libvirtd_lxc.aug
-CLEANFILES += lxc/test_libvirtd_lxc.aug
+augeastest_DATA += test_libvirtd_lxc.aug
+CLEANFILES += test_libvirtd_lxc.aug
 
 endif
 EXTRA_DIST += lxc/lxc.conf lxc/libvirtd_lxc.aug lxc/test_libvirtd_lxc.aug.in
@@ -1119,41 +1119,41 @@ check-local: check-augeas
 
 check-augeas: check-augeas-qemu check-augeas-lxc check-augeas-sanlock
 
-AUG_GENTEST = $(top_srcdir)/build-aux/augeas-gentest.pl
+AUG_GENTEST = $(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl
 
 if WITH_QEMU
-qemu/test_libvirtd_qemu.aug: qemu/test_libvirtd_qemu.aug.in qemu/qemu.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) qemu/qemu.conf $< $@
+test_libvirtd_qemu.aug: qemu/test_libvirtd_qemu.aug.in \
+		$(srcdir)/qemu/qemu.conf $(AUG_GENTEST)
+	$(AUG_GENTEST) $(srcdir)/qemu/qemu.conf $< $@
 
-check-augeas-qemu: qemu/test_libvirtd_qemu.aug
+check-augeas-qemu: test_libvirtd_qemu.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/qemu \
-	    $(srcdir)/qemu/test_libvirtd_qemu.aug; \
+	    '$(AUGPARSE)' -I $(srcdir)/qemu test_libvirtd_qemu.aug; \
 	fi
 else
 check-augeas-qemu:
 endif
 
 if WITH_LXC
-lxc/test_libvirtd_lxc.aug: lxc/test_libvirtd_lxc.aug.in lxc/lxc.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) lxc/lxc.conf $< $@
+test_libvirtd_lxc.aug: lxc/test_libvirtd_lxc.aug.in \
+		$(srcdir)/lxc/lxc.conf $(AUG_GENTEST)
+	$(AUG_GENTEST) $(srcdir)/lxc/lxc.conf $< $@
 
-check-augeas-lxc: lxc/test_libvirtd_lxc.aug
+check-augeas-lxc: test_libvirtd_lxc.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/lxc \
-	    $(srcdir)/lxc/test_libvirtd_lxc.aug; \
+	    '$(AUGPARSE)' -I $(srcdir)/lxc test_libvirtd_lxc.aug; \
 	fi
 else
 check-augeas-lxc:
 endif
 
-locking/test_libvirt_sanlock.aug: locking/test_libvirt_sanlock.aug.in locking/qemu-sanlock.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-sanlock.conf $< $@
+test_libvirt_sanlock.aug: locking/test_libvirt_sanlock.aug.in \
+		locking/qemu-sanlock.conf $(AUG_GENTEST)
+	$(AUG_GENTEST) locking/qemu-sanlock.conf $< $@
 
-check-augeas-sanlock: locking/test_libvirt_sanlock.aug
+check-augeas-sanlock: test_libvirt_sanlock.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/locking \
-	    $(srcdir)/locking/test_libvirt_sanlock.aug; \
+	    '$(AUGPARSE)' -I $(srcdir)/locking test_libvirt_sanlock.aug; \
 	fi
 
 #
@@ -1357,8 +1357,8 @@ sanlock_la_LIBADD = -lsanlock_client \
 		../gnulib/lib/libgnu.la
 
 augeas_DATA += locking/libvirt_sanlock.aug
-augeastest_DATA += locking/test_libvirt_sanlock.aug
-CLEANFILES += locking/test_libvirt_sanlock.aug
+augeastest_DATA += test_libvirt_sanlock.aug
+CLEANFILES += test_libvirt_sanlock.aug
 
 $(builddir)/locking/%-sanlock.conf: $(srcdir)/locking/sanlock.conf
 	$(AM_V_GEN)$(MKDIR_P) locking ; \

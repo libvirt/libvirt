@@ -2243,6 +2243,9 @@ AM_CONDITIONAL([WITH_PYTHON], [test "$with_python" = "yes"])
 AC_SUBST([PYTHON_VERSION])
 AC_SUBST([PYTHON_INCLUDES])
 
+dnl Allow perl overrides
+AC_PATH_PROG([PERL], [perl])
+
 AC_ARG_ENABLE([with-test-suite],
               AC_HELP_STRING([--with-test-suite], [build test suite by default @<:@default=check@:>@]),
               [case "${withval}" in

@@ -351,12 +351,14 @@ libvirtd.service: libvirtd.service.in $(top_builddir)/config.status
 
 check-local: check-augeas
 
-test_libvirtd.aug: test_libvirtd.aug.in libvirtd.conf
-	$(AM_V_GEN)$(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl libvirtd.conf $< $@
+AUG_GENTEST = $(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl
+
+test_libvirtd.aug: test_libvirtd.aug.in $(srcdir)/libvirtd.conf
+	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/libvirtd.conf $< $@
 
 check-augeas: test_libvirtd.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	  '$(AUGPARSE)' -I $(srcdir) $(srcdir)/test_libvirtd.aug; \
+	  '$(AUGPARSE)' -I $(srcdir) test_libvirtd.aug; \
 	fi
 
 
