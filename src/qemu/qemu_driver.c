@@ -683,6 +683,7 @@ qemudStartup(int privileged) {
                 goto error;
             }
         }
+        VIR_FREE(membase);
 
         qemu_driver->hugepage_path = mempath;
     }
