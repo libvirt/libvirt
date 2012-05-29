@@ -2,6 +2,7 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
+datarootdir=@datarootdir@
 
 libvirt_api=@datadir@/libvirt/api/libvirt-api.xml
 libvirt_qemu_api=@datadir@/libvirt/api/libvirt-qemu-api.xml
