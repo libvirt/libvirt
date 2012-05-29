@@ -1294,7 +1294,6 @@ BUILT_SOURCES += libvirt_probes.h libvirt_probes.stp libvirt_functions.stp
 if WITH_QEMU
 libvirt_driver_qemu_la_LIBADD += libvirt_qemu_probes.lo
 nodist_libvirt_driver_qemu_la_SOURCES = libvirt_qemu_probes.h
-libvirt_driver_qemu_la_DEPENDENCIES = libvirt_qemu_probes.lo libvirt_qemu_probes.o
 
 $(libvirt_driver_qemu_la_SOURCES): libvirt_qemu_probes.h
 endif
