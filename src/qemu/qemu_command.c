@@ -789,6 +789,9 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
     /* Default values match QEMU. See spapr_(llan|vscsi|vty).c */
 
     for (i = 0 ; i < def->nnets; i++) {
+        if (def->nets[i]->model &&
+            STREQ(def->nets[i]->model, "spapr-vlan"))
+            def->nets[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
         rc = qemuAssignSpaprVIOAddress(def, &def->nets[i]->info,
                                        0x1000ul);
         if (rc)
@@ -801,16 +804,20 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
             def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
             model = qemuDefaultScsiControllerModel(def);
         if (model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI &&
-            def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
+            def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
             def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
-            rc = qemuAssignSpaprVIOAddress(def, &def->controllers[i]->info,
-                                           0x2000ul);
-            if (rc)
-                return rc;
-        }
+        rc = qemuAssignSpaprVIOAddress(def, &def->controllers[i]->info,
+                                       0x2000ul);
+        if (rc)
+            return rc;
     }
 
     for (i = 0 ; i < def->nserials; i++) {
+        if (def->serials[i]->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
+            def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
+            STREQ(def->os.arch, "ppc64") &&
+            STREQ(def->os.machine, "pseries"))
+            def->serials[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
         rc = qemuAssignSpaprVIOAddress(def, &def->serials[i]->info,
                                        0x30000000ul);
         if (rc)
@@ -6072,10 +6079,14 @@ qemuBuildChrDeviceStr(virDomainChrDefPtr serial,
     virBuffer cmd = VIR_BUFFER_INITIALIZER;
 
     if (STREQ(os_arch, "ppc64") && STREQ(machine, "pseries")) {
-        virBufferAsprintf(&cmd, "spapr-vty,chardev=char%s",
-                          serial->info.alias);
-        if (qemuBuildDeviceAddressStr(&cmd, &serial->info, qemuCaps) < 0)
-            goto error;
+        if (serial->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
+            serial->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
+            serial->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO) {
+            virBufferAsprintf(&cmd, "spapr-vty,chardev=char%s",
+                              serial->info.alias);
+            if (qemuBuildDeviceAddressStr(&cmd, &serial->info, qemuCaps) < 0)
+                goto error;
+        }
     } else
         virBufferAsprintf(&cmd, "isa-serial,chardev=char%s,id=%s",
                           serial->info.alias, serial->info.alias);
