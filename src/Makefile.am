@@ -220,12 +220,12 @@ REMOTE_DRIVER_PROTOCOL = $(REMOTE_PROTOCOL) $(QEMU_PROTOCOL)
 
 $(srcdir)/remote/remote_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl \
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
 	  -k remote $(REMOTE_PROTOCOL) > $@
 
 $(srcdir)/remote/qemu_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
 		$(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl \
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
 	  -k qemu $(QEMU_PROTOCOL) > $@
 
 REMOTE_DRIVER_SOURCES =						\
@@ -265,7 +265,7 @@ PDWTAGS = \
 	    rm -rf $(@F)-t?;						\
 	    echo 'WARNING: pdwtags appears broken; skipping the $@ test' >&2;\
 	  else								\
-	    perl -0777 -n						\
+	    $(PERL) -0777 -n						\
 		-e 'foreach my $$p (split m!\n*(?:$(r1)|$(r2))\n!) {'	\
 		-e '  if ($$p =~ /^(struct|enum) $(struct_prefix)/ ||'	\
 		-e '      $$p =~ /^enum {/) {'				\
@@ -654,11 +654,11 @@ $(srcdir)/remote/remote_driver.c: $(REMOTE_DRIVER_GENERATED)
 endif WITH_REMOTE
 
 %protocol.c: %protocol.x %protocol.h $(srcdir)/rpc/genprotocol.pl
-	$(AM_V_GEN)perl -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -c \
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -c \
 	       $< $@
 
 %protocol.h: %protocol.x $(srcdir)/rpc/genprotocol.pl
-	$(AM_V_GEN)perl -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -h \
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -h \
 	       $< $@
 
 if WITH_XEN
@@ -1322,10 +1322,10 @@ RPC_PROBE_FILES = $(srcdir)/rpc/virnetprotocol.x \
 		  $(srcdir)/remote/qemu_protocol.x
 
 libvirt_functions.stp: $(RPC_PROBE_FILES) $(srcdir)/rpc/gensystemtap.pl
-	$(AM_V_GEN)perl -w $(srcdir)/rpc/gensystemtap.pl $(RPC_PROBE_FILES) > $@
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gensystemtap.pl $(RPC_PROBE_FILES) > $@
 
 %_probes.stp: %_probes.d $(srcdir)/dtrace2systemtap.pl
-	$(AM_V_GEN)perl -w $(srcdir)/dtrace2systemtap.pl \
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/dtrace2systemtap.pl \
 	  $(bindir) $(sbindir) $(libdir) $< > $@
 
 CLEANFILES += libvirt_probes.h libvirt_probes.o libvirt_probes.lo \

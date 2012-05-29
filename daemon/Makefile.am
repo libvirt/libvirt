@@ -58,12 +58,12 @@ QEMU_PROTOCOL = $(top_srcdir)/src/remote/qemu_protocol.x
 
 $(srcdir)/remote_dispatch.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -b remote \
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/../src/rpc/gendispatch.pl -b remote \
 	  $(REMOTE_PROTOCOL) > $@
 
 $(srcdir)/qemu_dispatch.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(QEMU_PROTOCOL)
-	$(AM_V_GEN)perl -w $(srcdir)/../src/rpc/gendispatch.pl -b qemu \
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/../src/rpc/gendispatch.pl -b qemu \
 	  $(QEMU_PROTOCOL) > $@
 
 if WITH_LIBVIRTD
