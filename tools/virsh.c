@@ -6283,7 +6283,6 @@ cmdMemtune(vshControl *ctl, const vshCmd *cmd)
 
         for (i = 0; i < nparams; i++) {
             temp = &params[i];
-            temp->type = VIR_TYPED_PARAM_ULLONG;
 
             /*
              * Some magic here, this is used to fill the params structure with
@@ -6292,24 +6291,32 @@ cmdMemtune(vshControl *ctl, const vshCmd *cmd)
              * to the next valid argument and so on.
              */
             if (soft_limit) {
-                temp->value.ul = soft_limit;
-                strncpy(temp->field, VIR_DOMAIN_MEMORY_SOFT_LIMIT,
-                        sizeof(temp->field));
+                if (virTypedParameterAssign(temp,
+                                            VIR_DOMAIN_MEMORY_SOFT_LIMIT,
+                                            VIR_TYPED_PARAM_ULLONG,
+                                            soft_limit) < 0)
+                    goto error;
                 soft_limit = 0;
             } else if (hard_limit) {
-                temp->value.ul = hard_limit;
-                strncpy(temp->field, VIR_DOMAIN_MEMORY_HARD_LIMIT,
-                        sizeof(temp->field));
+                if (virTypedParameterAssign(temp,
+                                            VIR_DOMAIN_MEMORY_HARD_LIMIT,
+                                            VIR_TYPED_PARAM_ULLONG,
+                                            hard_limit) < 0)
+                    goto error;
                 hard_limit = 0;
             } else if (swap_hard_limit) {
-                temp->value.ul = swap_hard_limit;
-                strncpy(temp->field, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
-                        sizeof(temp->field));
+                if (virTypedParameterAssign(temp,
+                                            VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
+                                            VIR_TYPED_PARAM_ULLONG,
+                                            swap_hard_limit) < 0)
+                    goto error;
                 swap_hard_limit = 0;
             } else if (min_guarantee) {
-                temp->value.ul = min_guarantee;
-                strncpy(temp->field, VIR_DOMAIN_MEMORY_MIN_GUARANTEE,
-                        sizeof(temp->field));
+                if (virTypedParameterAssign(temp,
+                                            VIR_DOMAIN_MEMORY_MIN_GUARANTEE,
+                                            VIR_TYPED_PARAM_ULLONG,
+                                            min_guarantee) < 0)
+                    goto error;
                 min_guarantee = 0;
             }
 
@@ -6318,15 +6325,19 @@ cmdMemtune(vshControl *ctl, const vshCmd *cmd)
                 temp->value.ul = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
         }
         if (virDomainSetMemoryParameters(dom, params, nparams, flags) != 0)
-            vshError(ctl, "%s", _("Unable to change memory parameters"));
+            goto error;
         else
             ret = true;
     }
 
-  cleanup:
+cleanup:
     VIR_FREE(params);
     virDomainFree(dom);
     return ret;
+
+error:
+    vshError(ctl, "%s", _("Unable to change memory parameters"));
+    goto cleanup;
 }
 
 /*
@@ -8106,7 +8117,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
     unsigned long long total_bytes_sec = 0, read_bytes_sec = 0, write_bytes_sec = 0;
     unsigned long long total_iops_sec = 0, read_iops_sec = 0, write_iops_sec = 0;
     int nparams = 0;
-    virTypedParameterPtr params = NULL, temp = NULL;
+    virTypedParameterPtr params = NULL;
     unsigned int flags = 0, i = 0;
     int rv = 0;
     bool current = vshCommandOptBool(cmd, "current");
@@ -8224,64 +8235,50 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
         params = vshCalloc(ctl, nparams, sizeof(*params));
         i = 0;
 
-        if (i < nparams && vshCommandOptBool(cmd, "total-bytes-sec")) {
-            temp = &params[i];
-            temp->type = VIR_TYPED_PARAM_ULLONG;
-            strncpy(temp->field, VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC,
-                    sizeof(temp->field));
-            temp->value.ul = total_bytes_sec;
-            i++;
-        }
+        if (i < nparams && vshCommandOptBool(cmd, "total-bytes-sec") &&
+            virTypedParameterAssign(&params[i++],
+                                    VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC,
+                                    VIR_TYPED_PARAM_ULLONG,
+                                    total_bytes_sec) < 0)
+            goto error;
 
-        if (i < nparams && vshCommandOptBool(cmd, "read-bytes-sec")) {
-            temp = &params[i];
-            temp->type = VIR_TYPED_PARAM_ULLONG;
-            strncpy(temp->field, VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC,
-                    sizeof(temp->field));
-            temp->value.ul = read_bytes_sec;
-            i++;
-        }
+        if (i < nparams && vshCommandOptBool(cmd, "read-bytes-sec") &&
+            virTypedParameterAssign(&params[i++],
+                                    VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC,
+                                    VIR_TYPED_PARAM_ULLONG,
+                                    read_bytes_sec) < 0)
+            goto error;
 
-        if (i < nparams && vshCommandOptBool(cmd, "write-bytes-sec")) {
-            temp = &params[i];
-            temp->type = VIR_TYPED_PARAM_ULLONG;
-            strncpy(temp->field, VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC,
-                    sizeof(temp->field));
-            temp->value.ul = write_bytes_sec;
-            i++;
-        }
+        if (i < nparams && vshCommandOptBool(cmd, "write-bytes-sec") &&
+            virTypedParameterAssign(&params[i++],
+                                    VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC,
+                                    VIR_TYPED_PARAM_ULLONG,
+                                    write_bytes_sec) < 0)
+            goto error;
 
-        if (i < nparams && vshCommandOptBool(cmd, "total-iops-sec")) {
-            temp = &params[i];
-            temp->type = VIR_TYPED_PARAM_ULLONG;
-            strncpy(temp->field, VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC,
-                    sizeof(temp->field));
-            temp->value.ul = total_iops_sec;
-            i++;
-        }
+        if (i < nparams && vshCommandOptBool(cmd, "total-iops-sec") &&
+            virTypedParameterAssign(&params[i++],
+                                    VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC,
+                                    VIR_TYPED_PARAM_ULLONG,
+                                    total_iops_sec) < 0)
+            goto error;
 
-        if (i < nparams && vshCommandOptBool(cmd, "read-iops-sec")) {
-            temp = &params[i];
-            temp->type = VIR_TYPED_PARAM_ULLONG;
-            strncpy(temp->field, VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC,
-                    sizeof(temp->field));
-            temp->value.ul = read_iops_sec;
-            i++;
-        }
+        if (i < nparams && vshCommandOptBool(cmd, "read-iops-sec") &&
+            virTypedParameterAssign(&params[i++],
+                                    VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC,
+                                    VIR_TYPED_PARAM_ULLONG,
+                                    read_iops_sec) < 0)
+            goto error;
 
-        if (i < nparams && vshCommandOptBool(cmd, "write-iops-sec")) {
-            temp = &params[i];
-            temp->type = VIR_TYPED_PARAM_ULLONG;
-            strncpy(temp->field, VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC,
-                    sizeof(temp->field));
-            temp->value.ul = write_iops_sec;
-        }
+        if (i < nparams && vshCommandOptBool(cmd, "write-iops-sec") &&
+            virTypedParameterAssign(&params[i++],
+                                    VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC,
+                                    VIR_TYPED_PARAM_ULLONG,
+                                    write_iops_sec) < 0)
+            goto error;
 
-        if (virDomainSetBlockIoTune(dom, disk, params, nparams, flags) < 0) {
-            vshError(ctl, "%s",
-                     _("Unable to change block I/O throttle"));
-            goto cleanup;
-        }
+        if (virDomainSetBlockIoTune(dom, disk, params, nparams, flags) < 0)
+            goto error;
     }
 
     ret = true;
@@ -8290,6 +8287,10 @@ cleanup:
     VIR_FREE(params);
     virDomainFree(dom);
     return ret;
+
+error:
+    vshError(ctl, "%s", _("Unable to change block I/O throttle"));
+    goto cleanup;
 }
 
 /*
