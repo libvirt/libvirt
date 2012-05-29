@@ -1359,7 +1359,7 @@ sanlock_la_LIBADD = -lsanlock_client \
 
 augeas_DATA += locking/libvirt_sanlock.aug
 augeastest_DATA += locking/test_libvirt_sanlock.aug
-CLEANFILES += locking/test_libvirt_sanlock.aug.in
+CLEANFILES += locking/test_libvirt_sanlock.aug
 
 $(builddir)/locking/%-sanlock.conf: $(srcdir)/locking/sanlock.conf
 	$(AM_V_GEN)$(MKDIR_P) locking ; \
