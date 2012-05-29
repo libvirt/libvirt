@@ -28,7 +28,9 @@
 
 # define VIR_MAC_BUFLEN 6
 # define VIR_MAC_PREFIX_BUFLEN 3
-# define VIR_MAC_STRING_BUFLEN VIR_MAC_BUFLEN * 3
+# define VIR_MAC_STRING_BUFLEN (VIR_MAC_BUFLEN * 3)
+
+typedef unsigned char virMacAddr[VIR_MAC_BUFLEN];
 
 int virMacAddrCompare(const char *mac1, const char *mac2);
 void virMacAddrFormat(const unsigned char *addr,
