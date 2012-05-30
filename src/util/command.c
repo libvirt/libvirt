@@ -2534,7 +2534,7 @@ int virCommandHandshakeNotify(virCommandPtr cmd)
         return -1;
     }
 
-    VIR_DEBUG("Notify handshake on %d", cmd->handshakeWait[0]);
+    VIR_DEBUG("Notify handshake on %d", cmd->handshakeNotify[1]);
     if (safewrite(cmd->handshakeNotify[1], &c, sizeof(c)) != sizeof(c)) {
         virReportSystemError(errno, "%s", _("Unable to notify child process"));
         VIR_FORCE_CLOSE(cmd->handshakeNotify[1]);
