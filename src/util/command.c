@@ -529,7 +529,7 @@ virExecWithHook(const char *const*argv,
             continue;
         if (!keepfd || !virCommandFDIsSet(i, keepfd, keepfd_size)) {
             tmpfd = i;
-            VIR_FORCE_CLOSE(tmpfd);
+            VIR_MASS_CLOSE(tmpfd);
         } else if (virSetInherit(i, true) < 0) {
             virReportSystemError(errno, _("failed to preserve fd %d"), i);
             goto fork_error;

@@ -35,6 +35,7 @@
 #include "configmake.h"
 #include "memory.h"
 #include "virterror_internal.h"
+#include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 #define virFileError(code, ...)                                   \
@@ -42,19 +43,33 @@
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 
-int virFileClose(int *fdptr, bool preserve_errno)
+int virFileClose(int *fdptr, bool preserve_errno, bool ignore_EBADF)
 {
     int saved_errno = 0;
     int rc = 0;
 
-    if (*fdptr >= 0) {
-        if (preserve_errno)
-            saved_errno = errno;
-        rc = close(*fdptr);
-        *fdptr = -1;
-        if (preserve_errno)
-            errno = saved_errno;
+    if (*fdptr < 0)
+        return 0;
+
+    if (preserve_errno)
+        saved_errno = errno;
+
+    rc = close(*fdptr);
+    if (rc < 0) {
+        if (errno == EBADF) {
+            if (!ignore_EBADF)
+                VIR_WARN("Tried to close invalid fd %d", *fdptr);
+        } else {
+            char ebuf[1024] ATTRIBUTE_UNUSED;
+            VIR_DEBUG("Failed to close fd %d: %s",
+                      *fdptr, virStrerror(errno, ebuf, sizeof(ebuf)));
+        }
+    } else {
+        VIR_DEBUG("Closed fd %d", *fdptr);
     }
+    *fdptr = -1;
+    if (preserve_errno)
+        errno = saved_errno;
 
     return rc;
 }
