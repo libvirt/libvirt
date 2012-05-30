@@ -202,11 +202,14 @@ python_generated_files = \
 
 APIBUILD=$(srcdir)/apibuild.py
 APIBUILD_STAMP=$(APIBUILD).stamp
+EXTRA_DIST += $(APIBUILD_STAMP)
 
 $(python_generated_files): $(APIBUILD_STAMP)
 
 $(APIBUILD_STAMP): $(srcdir)/apibuild.py \
-		$(srcdir)/../include/libvirt/*.h \
+		$(srcdir)/../include/libvirt/libvirt.h.in \
+		$(srcdir)/../include/libvirt/libvirt-qemu.h \
+		$(srcdir)/../include/libvirt/virterror.h \
 		$(srcdir)/../src/libvirt.c \
 		$(srcdir)/../src/libvirt-qemu.c \
 		$(srcdir)/../src/util/virterror.c

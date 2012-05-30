@@ -654,7 +654,8 @@ libvirt_driver_remote_la_LIBADD = $(GNUTLS_LIBS) \
                 libvirt-net-rpc.la
 libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
 
-$(srcdir)/remote/remote_driver.c: $(REMOTE_DRIVER_GENERATED)
+REMOTE_DRIVER_PREREQS = $(REMOTE_DRIVER_GENERATED)
+%remote_driver.lo: $(REMOTE_DRIVER_PREREQS)
 
 endif WITH_REMOTE
 
@@ -1130,7 +1131,7 @@ EXTRA_DIST += $(top_srcdir)/build-aux/augeas-gentest.pl
 if WITH_QEMU
 test_libvirtd_qemu.aug: qemu/test_libvirtd_qemu.aug.in \
 		$(srcdir)/qemu/qemu.conf $(AUG_GENTEST)
-	$(AUG_GENTEST) $(srcdir)/qemu/qemu.conf $< $@
+	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/qemu/qemu.conf $< $@
 
 check-augeas-qemu: test_libvirtd_qemu.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
@@ -1143,7 +1144,7 @@ endif
 if WITH_LXC
 test_libvirtd_lxc.aug: lxc/test_libvirtd_lxc.aug.in \
 		$(srcdir)/lxc/lxc.conf $(AUG_GENTEST)
-	$(AUG_GENTEST) $(srcdir)/lxc/lxc.conf $< $@
+	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/lxc/lxc.conf $< $@
 
 check-augeas-lxc: test_libvirtd_lxc.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
@@ -1156,7 +1157,7 @@ endif
 if HAVE_SANLOCK
 test_libvirt_sanlock.aug: locking/test_libvirt_sanlock.aug.in \
 		locking/qemu-sanlock.conf $(AUG_GENTEST)
-	$(AUG_GENTEST) locking/qemu-sanlock.conf $< $@
+	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-sanlock.conf $< $@
 
 check-augeas-sanlock: test_libvirt_sanlock.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
@@ -1296,7 +1297,7 @@ libvirt_la_BUILT_LIBADD += libvirt_probes.lo
 libvirt_la_DEPENDENCIES += libvirt_probes.lo libvirt_probes.o
 nodist_libvirt_la_SOURCES = libvirt_probes.h
 if WITH_REMOTE
-$(REMOTE_DRIVER_GENERATED): libvirt_probes.h
+REMOTE_DRIVER_PREREQS += libvirt_probes.h
 endif WITH_REMOTE
 
 BUILT_SOURCES += libvirt_probes.h libvirt_probes.stp libvirt_functions.stp
@@ -1370,12 +1371,12 @@ augeas_DATA += locking/libvirt_sanlock.aug
 augeastest_DATA += test_libvirt_sanlock.aug
 CLEANFILES += test_libvirt_sanlock.aug
 
-$(builddir)/locking/%-sanlock.conf: $(srcdir)/locking/sanlock.conf
+locking/%-sanlock.conf: $(srcdir)/locking/sanlock.conf
 	$(AM_V_GEN)$(MKDIR_P) locking ; \
 	cp $< $@
 
 if WITH_QEMU
-conf_DATA += locking/qemu-sanlock.conf
+nodist_conf_DATA = locking/qemu-sanlock.conf
 BUILT_SOURCES += locking/qemu-sanlock.conf
 DISTCLEANFILES += locking/qemu-sanlock.conf
 endif
