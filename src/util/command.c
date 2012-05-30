@@ -2443,8 +2443,10 @@ void virCommandRequireHandshake(virCommandPtr cmd)
         return;
     }
 
-    VIR_DEBUG("Transfer handshake wait=%d notify=%d",
-              cmd->handshakeWait[1], cmd->handshakeNotify[0]);
+    VIR_DEBUG("Transfer handshake wait=%d notify=%d, "
+              "keep handshake wait=%d notify=%d",
+              cmd->handshakeWait[1], cmd->handshakeNotify[0],
+              cmd->handshakeWait[0], cmd->handshakeNotify[1]);
     virCommandTransferFD(cmd, cmd->handshakeWait[1]);
     virCommandTransferFD(cmd, cmd->handshakeNotify[0]);
     cmd->handshake = true;
