@@ -1148,6 +1148,7 @@ else
 check-augeas-lxc:
 endif
 
+if HAVE_SANLOCK
 test_libvirt_sanlock.aug: locking/test_libvirt_sanlock.aug.in \
 		locking/qemu-sanlock.conf $(AUG_GENTEST)
 	$(AUG_GENTEST) locking/qemu-sanlock.conf $< $@
@@ -1156,6 +1157,9 @@ check-augeas-sanlock: test_libvirt_sanlock.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
 	    '$(AUGPARSE)' -I $(srcdir)/locking test_libvirt_sanlock.aug; \
 	fi
+else
+check-augeas-sanlock:
+endif
 
 #
 # Build our version script.  This is composed of three parts:
