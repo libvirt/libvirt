@@ -1120,6 +1120,7 @@ check-local: check-augeas
 check-augeas: check-augeas-qemu check-augeas-lxc check-augeas-sanlock
 
 AUG_GENTEST = $(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl
+EXTRA_DIST += $(top_srcdir)/build-aux/augeas-gentest.pl
 
 if WITH_QEMU
 test_libvirtd_qemu.aug: qemu/test_libvirtd_qemu.aug.in \
