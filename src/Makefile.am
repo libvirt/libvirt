@@ -661,7 +661,8 @@ libvirt_driver_remote_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
 
-$(srcdir)/remote/remote_driver.c: $(REMOTE_DRIVER_GENERATED)
+REMOTE_DRIVER_PREREQS = $(REMOTE_DRIVER_GENERATED)
+%remote_driver.lo: $(REMOTE_DRIVER_PREREQS)
 
 endif WITH_REMOTE
 
@@ -1368,12 +1369,12 @@ sanlock_la_LIBADD = -lsanlock_client \
 augeas_DATA += locking/libvirt_sanlock.aug
 augeastest_DATA += locking/test_libvirt_sanlock.aug
 
-$(builddir)/locking/%-sanlock.conf: $(srcdir)/locking/sanlock.conf
+locking/%-sanlock.conf: $(srcdir)/locking/sanlock.conf
 	$(AM_V_GEN)$(MKDIR_P) locking ; \
 	cp $< $@
 
 if WITH_QEMU
-conf_DATA += locking/qemu-sanlock.conf
+nodist_conf_DATA = locking/qemu-sanlock.conf
 BUILT_SOURCES += locking/qemu-sanlock.conf
 DISTCLEANFILES += locking/qemu-sanlock.conf
 endif
