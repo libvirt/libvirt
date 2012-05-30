@@ -668,6 +668,7 @@ error:
     VIR_FORCE_CLOSE(fds[0]);
     VIR_FORCE_CLOSE(fds[1]);
     VIR_FORCE_CLOSE(fd);
+    VIR_FORCE_CLOSE(errfd);
     if (oflags & O_CREAT)
         unlink(path);
     return -1;
