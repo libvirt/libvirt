@@ -1910,8 +1910,10 @@ qemuMigrationRun(struct qemud_driver *driver,
         break;
 
     case MIGRATION_DEST_FD:
-        if (spec->fwdType != MIGRATION_FWD_DIRECT)
+        if (spec->fwdType != MIGRATION_FWD_DIRECT) {
             fd = spec->dest.fd.local;
+            spec->dest.fd.local = -1;
+        }
         ret = qemuMonitorMigrateToFd(priv->mon, migrate_flags,
                                      spec->dest.fd.qemu);
         VIR_FORCE_CLOSE(spec->dest.fd.qemu);
