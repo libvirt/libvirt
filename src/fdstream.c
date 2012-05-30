@@ -577,7 +577,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
                             int mode)
 {
     int fd = -1;
-    int fds[2] = { -1, -1 };
+    int childfd = -1;
     struct stat sb;
     virCommandPtr cmd = NULL;
     int errfd = -1;
@@ -619,7 +619,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
     if ((st->flags & VIR_STREAM_NONBLOCK) &&
         (!S_ISCHR(sb.st_mode) &&
          !S_ISFIFO(sb.st_mode))) {
-        int childfd;
+        int fds[2] = { -1, -1 };
 
         if ((oflags & O_ACCMODE) == O_RDWR) {
             streamsReportError(VIR_ERR_INTERNAL_ERROR,
@@ -665,9 +665,8 @@ virFDStreamOpenFileInternal(virStreamPtr st,
 
 error:
     virCommandFree(cmd);
-    VIR_FORCE_CLOSE(fds[0]);
-    VIR_FORCE_CLOSE(fds[1]);
     VIR_FORCE_CLOSE(fd);
+    VIR_FORCE_CLOSE(childfd);
     VIR_FORCE_CLOSE(errfd);
     if (oflags & O_CREAT)
         unlink(path);
