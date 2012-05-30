@@ -492,6 +492,10 @@ virExecWithHook(const char *const*argv,
     }
 
     if (pid) { /* parent */
+        if (forkRet < 0) {
+            goto cleanup;
+        }
+
         VIR_FORCE_CLOSE(null);
         if (outfd && *outfd == -1) {
             VIR_FORCE_CLOSE(pipeout[1]);
@@ -500,10 +504,6 @@ virExecWithHook(const char *const*argv,
         if (errfd && *errfd == -1) {
             VIR_FORCE_CLOSE(pipeerr[1]);
             *errfd = pipeerr[0];
-        }
-
-        if (forkRet < 0) {
-            goto cleanup;
         }
 
         *retpid = pid;
