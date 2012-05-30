@@ -4010,7 +4010,7 @@ qemuDomainSaveImageOpen(struct qemud_driver *driver,
                         const char *xmlin, int state, bool edit,
                         bool unlink_corrupt)
 {
-    int fd;
+    int fd = -1;
     struct qemud_save_header header;
     char *xml = NULL;
     virDomainDefPtr def = NULL;
