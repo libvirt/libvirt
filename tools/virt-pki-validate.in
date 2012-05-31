@@ -170,7 +170,8 @@ then
         else
             echo Found client private key $LIBVIRTP/clientkey.pem
             OWN=`ls -l "$LIBVIRTP/clientkey.pem" | awk '{ print $3 }'`
-            MOD=`ls -l "$LIBVIRTP/clientkey.pem" | awk '{ print $1 }'`
+            # The substr($1, 1, 10) gets rid of acl and xattr markers
+            MOD=`ls -l "$LIBVIRTP/clientkey.pem" | awk '{ print substr($1, 1, 10) }'`
             if [ "$OWN" != "root" ]
             then
                 echo The client private key should be owned by root
@@ -222,7 +223,8 @@ then
         else
             echo Found server private key $LIBVIRTP/serverkey.pem
             OWN=`ls -l "$LIBVIRTP/serverkey.pem" | awk '{ print $3 }'`
-            MOD=`ls -l "$LIBVIRTP/serverkey.pem" | awk '{ print $1 }'`
+            # The substr($1, 1, 10) gets rid of acl and xattr markers
+            MOD=`ls -l "$LIBVIRTP/serverkey.pem" | awk '{ print substr($1, 1, 10) }'`
             if [ "$OWN" != "root" ]
             then
                 echo The server private key should be owned by root
