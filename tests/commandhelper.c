@@ -113,6 +113,12 @@ int main(int argc, char **argv) {
 
     VIR_FORCE_FCLOSE(log);
 
+    if (argc > 1 && STREQ(argv[1], "--close-stdin")) {
+        if (freopen("/dev/null", "r", stdin) != stdin)
+            goto error;
+        usleep(100*1000);
+    }
+
     char buf[1024];
     ssize_t got;
 
