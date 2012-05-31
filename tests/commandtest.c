@@ -36,6 +36,9 @@
 #include "command.h"
 #include "virfile.h"
 #include "virpidfile.h"
+#include "virterror_internal.h"
+
+#define VIR_FROM_THIS VIR_FROM_NONE
 
 #ifdef WIN32
 
@@ -784,6 +787,44 @@ cleanup:
     return ret;
 }
 
+/*
+ * Run program, no args, inherit all ENV, keep CWD.
+ * Ignore huge stdin data, to provoke SIGPIPE or EPIPE in parent.
+ */
+static int test20(const void *unused ATTRIBUTE_UNUSED)
+{
+    virCommandPtr cmd = virCommandNewArgList(abs_builddir "/commandhelper",
+                                             "--close-stdin", NULL);
+    char *buf;
+    int ret = -1;
+
+    struct sigaction sig_action;
+
+    sig_action.sa_handler = SIG_IGN;
+    sig_action.sa_flags = 0;
+    sigemptyset(&sig_action.sa_mask);
+
+    sigaction(SIGPIPE, &sig_action, NULL);
+
+    if (virAsprintf(&buf, "1\n%100000d\n", 2) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    virCommandSetInputBuffer(cmd, buf);
+
+    if (virCommandRun(cmd, NULL) < 0) {
+        virErrorPtr err = virGetLastError();
+        printf("Cannot run child %s\n", err->message);
+        goto cleanup;
+    }
+
+    ret = checkoutput("test20");
+cleanup:
+    virCommandFree(cmd);
+    VIR_FREE(buf);
+    return ret;
+}
+
 static const char *const newenv[] = {
     "PATH=/usr/bin:/bin",
     "HOSTNAME=test",
@@ -868,6 +909,7 @@ mymain(void)
     DO_TEST(test17);
     DO_TEST(test18);
     DO_TEST(test19);
+    DO_TEST(test20);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

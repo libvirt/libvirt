@@ -1738,7 +1738,7 @@ virCommandProcessIO(virCommandPtr cmd, int *inpipe)
             break;
 
         if (poll(fds, nfds, -1) < 0) {
-            if ((errno == EAGAIN) || (errno == EINTR))
+            if (errno == EAGAIN || errno == EINTR)
                 continue;
             virReportSystemError(errno, "%s",
                                  _("unable to poll on child"));
@@ -1797,8 +1797,13 @@ virCommandProcessIO(virCommandPtr cmd, int *inpipe)
                 done = write(infd, cmd->inbuf + inoff,
                              inlen - inoff);
                 if (done < 0) {
-                    if (errno != EINTR &&
-                        errno != EAGAIN) {
+                    if (errno == EPIPE) {
+                        VIR_DEBUG("child closed stdin early, ignoring EPIPE "
+                                  "on fd %d", infd);
+                        if (VIR_CLOSE(*inpipe) < 0)
+                            VIR_DEBUG("ignoring failed close on fd %d", infd);
+                        infd = -1;
+                    } else if (errno != EINTR &&  errno != EAGAIN) {
                         virReportSystemError(errno, "%s",
                                              _("unable to write to child input"));
                         goto cleanup;
@@ -1885,6 +1890,7 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
     bool string_io;
     bool async_io = false;
     char *str;
+    int tmpfd;
 
     if (!cmd ||cmd->has_error == ENOMEM) {
         virReportOOMError();
@@ -1965,7 +1971,7 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
     cmd->flags |= VIR_EXEC_RUN_SYNC;
     if (virCommandRunAsync(cmd, NULL) < 0) {
         if (cmd->inbuf) {
-            int tmpfd = infd[0];
+            tmpfd = infd[0];
             if (VIR_CLOSE(infd[0]) < 0)
                 VIR_DEBUG("ignoring failed close on fd %d", tmpfd);
             tmpfd = infd[1];
@@ -1976,6 +1982,9 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
         return -1;
     }
 
+    tmpfd = infd[0];
+    if (VIR_CLOSE(infd[0]) < 0)
+        VIR_DEBUG("ignoring failed close on fd %d", tmpfd);
     if (string_io)
         ret = virCommandProcessIO(cmd, &infd[1]);
 
@@ -1994,15 +2003,11 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
     /* Reset any capturing, in case caller runs
      * this identical command again */
     if (cmd->inbuf) {
-        int tmpfd = infd[0];
-        if (VIR_CLOSE(infd[0]) < 0)
-            VIR_DEBUG("ignoring failed close on fd %d", tmpfd);
         tmpfd = infd[1];
         if (VIR_CLOSE(infd[1]) < 0)
             VIR_DEBUG("ignoring failed close on fd %d", tmpfd);
     }
     if (cmd->outbuf == &outbuf) {
-        int tmpfd ATTRIBUTE_UNUSED;
         tmpfd = cmd->outfd;
         if (VIR_CLOSE(cmd->outfd) < 0)
             VIR_DEBUG("ignoring failed close on fd %d", tmpfd);
@@ -2011,7 +2016,6 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
         VIR_FREE(outbuf);
     }
     if (cmd->errbuf == &errbuf) {
-        int tmpfd ATTRIBUTE_UNUSED;
         tmpfd = cmd->errfd;
         if (VIR_CLOSE(cmd->errfd) < 0)
             VIR_DEBUG("ignoring failed close on fd %d", tmpfd);
