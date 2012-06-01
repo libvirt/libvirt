@@ -52,6 +52,7 @@
 #include "conf/domain_conf.h"
 #include "nwfilter_gentech_driver.h"
 #include "nwfilter_ebiptables_driver.h"
+#include "nwfilter_ipaddrmap.h"
 #include "nwfilter_learnipaddr.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
@@ -117,9 +118,6 @@ struct ether_vlan_header
 
 static virMutex pendingLearnReqLock;
 static virHashTablePtr pendingLearnReq;
-
-static virMutex ipAddressMapLock;
-static virNWFilterHashTablePtr ipAddressMap;
 
 static virMutex ifaceMapLock;
 static virHashTablePtr ifaceLockMap;
@@ -310,112 +308,7 @@ virNWFilterDeregisterLearnReq(int ifindex) {
     return res;
 }
 
-/* Add an IP address to the list of IP addresses an interface is
- * known to use. This function feeds the per-interface cache that
- * is used to instantiate filters with variable '$IP'.
- *
- * @ifname: The name of the (tap) interface
- * @addr: An IPv4 address in dotted decimal format that the (tap)
- *        interface is known to use.
- *
- * This function returns 0 on success, -1 otherwise
- */
-static int
-virNWFilterAddIpAddrForIfname(const char *ifname, char *addr)
-{
-    int ret = -1;
-    virNWFilterVarValuePtr val;
-
-    virMutexLock(&ipAddressMapLock);
-
-    val = virHashLookup(ipAddressMap->hashTable, ifname);
-    if (!val) {
-        val = virNWFilterVarValueCreateSimple(addr);
-        if (!val) {
-            virReportOOMError();
-            goto cleanup;
-        }
-        ret = virNWFilterHashTablePut(ipAddressMap, ifname, val, 1);
-        goto cleanup;
-    } else {
-        if (virNWFilterVarValueAddValue(val, addr) < 0)
-            goto cleanup;
-    }
-
-    ret = 0;
-
-cleanup:
-    virMutexUnlock(&ipAddressMapLock);
-
-    return ret;
-}
 #endif
-
-/* Delete all or a specific IP address from an interface. After this
- * call either all or the given IP address will not be associated
- * with the interface anymore.
- *
- * @ifname: The name of the (tap) interface
- * @addr: An IPv4 address in dotted decimal format that the (tap)
- *        interface is not using anymore; provide NULL to remove all IP
- *        addresses associated with the given interface
- *
- * This function returns the number of IP addresses that are still
- * known to be associated with this interface, in case of an error
- * -1 is returned. Error conditions are:
- * - IP addresses is not known to be associated with the interface
- */
-int
-virNWFilterDelIpAddrForIfname(const char *ifname, const char *ipaddr)
-{
-    int ret = -1;
-    virNWFilterVarValuePtr val = NULL;
-
-    virMutexLock(&ipAddressMapLock);
-
-    if (ipaddr != NULL) {
-        val = virHashLookup(ipAddressMap->hashTable, ifname);
-        if (val) {
-            if (virNWFilterVarValueGetCardinality(val) == 1 &&
-                STREQ(ipaddr,
-                      virNWFilterVarValueGetNthValue(val, 0)))
-                goto remove_entry;
-            virNWFilterVarValueDelValue(val, ipaddr);
-            ret = virNWFilterVarValueGetCardinality(val);
-        }
-    } else {
-remove_entry:
-        /* remove whole entry */
-        val = virNWFilterHashTableRemoveEntry(ipAddressMap, ifname);
-        virNWFilterVarValueFree(val);
-        ret = 0;
-    }
-
-    virMutexUnlock(&ipAddressMapLock);
-
-    return ret;
-}
-
-/* Get the list of IP addresses known to be in use by an interface
- *
- * This function returns NULL in case no IP address is known to be
- * associated with the interface, a virNWFilterVarValuePtr otherwise
- * that then can contain one or multiple entries.
- */
-virNWFilterVarValuePtr
-virNWFilterGetIpAddrForIfname(const char *ifname)
-{
-    virNWFilterVarValuePtr res;
-
-    virMutexLock(&ipAddressMapLock);
-
-    res = virHashLookup(ipAddressMap->hashTable, ifname);
-
-    virMutexUnlock(&ipAddressMapLock);
-
-    return res;
-}
-
 
 #ifdef HAVE_LIBPCAP
 
@@ -699,7 +592,7 @@ learnIPAddressThread(void *arg)
         char *inetaddr;
 
         if ((inetaddr = virSocketAddrFormat(&sa)) != NULL) {
-            if (virNWFilterAddIpAddrForIfname(req->ifname, inetaddr) < 0) {
+            if (virNWFilterIPAddrMapAddIPAddr(req->ifname, inetaddr) < 0) {
                 VIR_ERROR(_("Failed to add IP address %s to IP address "
                           "cache for interface %s"), inetaddr, req->ifname);
             }
@@ -901,18 +794,6 @@ virNWFilterLearnInit(void) {
         return -1;
     }
 
-    ipAddressMap = virNWFilterHashTableCreate(0);
-    if (!ipAddressMap) {
-        virReportOOMError();
-        virNWFilterLearnShutdown();
-        return -1;
-    }
-
-    if (virMutexInit(&ipAddressMapLock) < 0) {
-        virNWFilterLearnShutdown();
-        return -1;
-    }
-
     ifaceLockMap = virHashCreate(0, freeIfaceLock);
     if (!ifaceLockMap) {
         virNWFilterLearnShutdown();
@@ -953,9 +834,6 @@ virNWFilterLearnShutdown(void)
 
     virHashFree(pendingLearnReq);
     pendingLearnReq = NULL;
-
-    virNWFilterHashTableFree(ipAddressMap);
-    ipAddressMap = NULL;
 
     virHashFree(ifaceLockMap);
     ifaceLockMap = NULL;

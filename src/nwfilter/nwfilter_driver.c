@@ -39,6 +39,7 @@
 #include "nwfilter_gentech_driver.h"
 #include "configmake.h"
 
+#include "nwfilter_ipaddrmap.h"
 #include "nwfilter_dhcpsnoop.h"
 #include "nwfilter_learnipaddr.h"
 
@@ -67,10 +68,12 @@ static int
 nwfilterDriverStartup(int privileged) {
     char *base = NULL;
 
-    if (virNWFilterDHCPSnoopInit() < 0)
+    if (virNWFilterIPAddrMapInit() < 0)
         return -1;
     if (virNWFilterLearnInit() < 0)
-        return -1;
+        goto err_exit_ipaddrmapshutdown;
+    if (virNWFilterDHCPSnoopInit() < 0)
+        goto err_exit_learnshutdown;
 
     virNWFilterTechDriversInit(privileged);
 
@@ -123,7 +126,10 @@ alloc_err_exit:
 conf_init_err:
     virNWFilterTechDriversShutdown();
     virNWFilterDHCPSnoopShutdown();
+err_exit_learnshutdown:
     virNWFilterLearnShutdown();
+err_exit_ipaddrmapshutdown:
+    virNWFilterIPAddrMapShutdown();
 
     return -1;
 }
@@ -202,6 +208,7 @@ nwfilterDriverShutdown(void) {
     virNWFilterTechDriversShutdown();
     virNWFilterDHCPSnoopShutdown();
     virNWFilterLearnShutdown();
+    virNWFilterIPAddrMapShutdown();
 
     nwfilterDriverLock(driverState);
 

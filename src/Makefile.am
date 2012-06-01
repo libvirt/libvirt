@@ -160,9 +160,11 @@ NETWORK_CONF_SOURCES =						\
 # Network filter driver generic impl APIs
 NWFILTER_PARAM_CONF_SOURCES =					\
 		conf/nwfilter_params.c conf/nwfilter_params.h	\
+		conf/nwfilter_ipaddrmap.c			\
+		conf/nwfilter_ipaddrmap.h			\
 		conf/nwfilter_conf.h
 
-NWFILTER_CONF_SOURCES =					\
+NWFILTER_CONF_SOURCES =						\
 		$(NWFILTER_PARAM_CONF_SOURCES)			\
 		conf/nwfilter_conf.c conf/nwfilter_conf.h
 

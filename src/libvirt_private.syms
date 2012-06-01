@@ -873,6 +873,14 @@ virNWFilterTestUnassignDef;
 virNWFilterUnlockFilterUpdates;
 
 
+# nwfilter_ipaddrmap
+virNWFilterIPAddrMapAddIPAddr;
+virNWFilterIPAddrMapDelIPAddr;
+virNWFilterIPAddrMapGetIPAddr;
+virNWFilterIPAddrMapInit;
+virNWFilterIPAddrMapShutdown;
+
+
 # nwfilter_params.h
 virNWFilterHashTableCreate;
 virNWFilterHashTableFree;

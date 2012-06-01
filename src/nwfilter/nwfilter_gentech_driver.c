@@ -33,6 +33,7 @@
 #include "nwfilter_gentech_driver.h"
 #include "nwfilter_ebiptables_driver.h"
 #include "nwfilter_dhcpsnoop.h"
+#include "nwfilter_ipaddrmap.h"
 #include "nwfilter_learnipaddr.h"
 #include "virnetdev.h"
 #include "datatypes.h"
@@ -870,7 +871,7 @@ __virNWFilterInstantiateFilter(const unsigned char *vmuuid,
         goto err_exit;
     }
 
-    ipaddr = virNWFilterGetIpAddrForIfname(ifname);
+    ipaddr = virNWFilterIPAddrMapGetIPAddr(ifname);
 
     vars1 = virNWFilterCreateVarHashmap(str_macaddr, ipaddr);
     if (!vars1) {
@@ -1132,7 +1133,7 @@ _virNWFilterTeardownFilter(const char *ifname)
 
     techdriver->allTeardown(ifname);
 
-    virNWFilterDelIpAddrForIfname(ifname, NULL);
+    virNWFilterIPAddrMapDelIPAddr(ifname, NULL);
 
     virNWFilterUnlockIface(ifname);
 
