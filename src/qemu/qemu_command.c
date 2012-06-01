@@ -4184,9 +4184,21 @@ qemuBuildCommandLine(virConnectPtr conn,
         break;
     }
 
-    cmd = virCommandNewArgList(emulator, "-S", NULL);
+    cmd = virCommandNew(emulator);
 
     virCommandAddEnvPassCommon(cmd);
+
+    if (qemuCapsGet(qemuCaps, QEMU_CAPS_NAME)) {
+        virCommandAddArg(cmd, "-name");
+        if (driver->setProcessName &&
+            qemuCapsGet(qemuCaps, QEMU_CAPS_NAME_PROCESS)) {
+            virCommandAddArgFormat(cmd, "%s,process=qemu:%s",
+                                   def->name, def->name);
+        } else {
+            virCommandAddArg(cmd, def->name);
+        }
+    }
+    virCommandAddArg(cmd, "-S"); /* freeze CPU */
 
     /* This should *never* be NULL, since we always provide
      * a machine in the capabilities data for QEMU. So this
@@ -4261,16 +4273,6 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (qemuBuildNumaArgStr(def, cmd) < 0)
             goto error;
 
-    if (qemuCapsGet(qemuCaps, QEMU_CAPS_NAME)) {
-        virCommandAddArg(cmd, "-name");
-        if (driver->setProcessName &&
-            qemuCapsGet(qemuCaps, QEMU_CAPS_NAME_PROCESS)) {
-            virCommandAddArgFormat(cmd, "%s,process=qemu:%s",
-                                   def->name, def->name);
-        } else {
-            virCommandAddArg(cmd, def->name);
-        }
-    }
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_UUID))
         virCommandAddArgList(cmd, "-uuid", uuid, NULL);
     if (def->virtType == VIR_DOMAIN_VIRT_XEN ||

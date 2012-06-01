@@ -1,7 +1,7 @@
 LC_ALL=C PATH=/sbin:/usr/sbin:/bin:/usr/bin HOME=/root USER=root LOGNAME=root \
-/usr/bin/qemu -S -M pc-0.13 -m 1024 -smp 1,sockets=1,cores=1,threads=1 -name \
-encryptdisk -uuid 496898a6-e6ff-f7c8-5dc2-3cf410945ee9 -nographic -nodefconfig \
--nodefaults -chardev socket,id=monitor,\
+/usr/bin/qemu -name encryptdisk -S -M pc-0.13 -m 1024 \
+-smp 1,sockets=1,cores=1,threads=1 -uuid 496898a6-e6ff-f7c8-5dc2-3cf410945ee9 \
+-nographic -nodefconfig -nodefaults -chardev socket,id=monitor,\
 path=//var/lib/libvirt/qemu/encryptdisk.monitor,server,nowait -mon \
 chardev=monitor,mode=readline -rtc base=utc -no-acpi -boot c -drive \
 file=/storage/guest_disks/encryptdisk,if=none,id=drive-virtio-disk0,boot=on,\
