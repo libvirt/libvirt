@@ -542,6 +542,11 @@ qemuAssignDeviceNetAlias(virDomainDefPtr def, virDomainNetDefPtr net, int idx)
         idx = 0;
         for (i = 0 ; i < def->nnets ; i++) {
             int thisidx;
+
+            if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+                /* type='hostdev' interfaces have a hostdev%d alias */
+               continue;
+            }
             if ((thisidx = qemuDomainDeviceAliasIndex(&def->nets[i]->info, "net")) < 0) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                 _("Unable to determine device index for network device"));
