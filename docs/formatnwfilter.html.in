@@ -371,6 +371,118 @@
       Further, the notation of $VARIABLE is short-hand for $VARIABLE[@0]. The
       former notation always assumes the iterator with Id '0'.
     <p>
+
+    <h3><a name="nwfelemsRulesAdvIPAddrDetection">Automatic IP address detection</a></h3>
+    <p>
+       The detection of IP addresses used on a virtual machine's interface
+       is automatically activated if the variable <code>IP</code> is referenced
+       but no value has been assigned to it.
+       <span class="since">Since 0.9.13</span>
+       the variable <code>CTRL_IP_LEARNING</code> can be used to specify
+       the IP address learning method to use. Valid values are <code>any</code>,
+       <code>dhcp</code>, or <code>none</code>.
+       <br/><br/>
+       The value <code>any</code> means that libvirt may use any packet to
+       determine the address in use by a virtual machine, which is the default
+       behavior if the variable <code>CTRL_IP_LEARNING</code> is not set. This method
+       will only detect a single IP address on an interface.
+       Once a VM's IP address has been detected, its IP network traffic
+       will be locked to that address, if for example IP address spoofing
+       is prevented by one of its filters. In that case the user of the VM
+       will not be able to change the IP address on the interface inside
+       the VM, which would be considered IP address spoofing.
+       When a VM is migrated to another host or resumed after a suspend operation,
+       the first packet sent by the VM will again determine the IP address it can
+       use on a particular interface.
+       <br/><br>
+       A value of <code>dhcp</code> specifies that libvirt should only honor DHCP
+       server-assigned addresses with valid leases. This method supports the detection
+       and usage of multiple IP address per interface.
+       When a VM is resumed after a suspend operation, still valid IP address leases
+       are applied to its filters. Otherwise the VM is expected to again use DHCP to obtain new
+       IP addresses. The migration of a VM to another physical host requires that
+       the VM again runs the DHCP protocol.
+       <br/><br/>
+       Use of <code>CTRL_IP_LEARNING=dhcp</code> (DHCP snooping) provides additional
+       anti-spoofing security, especially when combined with a filter allowing
+       only trusted DHCP servers to assign addresses. To enable this, set the
+       variable <code>DHCPSERVER</code> to the IP address of a valid DHCP server
+       and provide filters that use this variable to filter incoming DHCP responses.
+       <br/><br/>
+       When DHCP snooping is enabled and the DHCP lease expires,
+       the VM will no longer be able to use the IP address until it acquires a
+       new, valid lease from a DHCP server. If the VM is migrated, it must get
+       a new valid DHCP lease to use an IP address (e.g., by
+       bringing the VM interface down and up again).
+       <br/><br/>
+       Note that automatic DHCP detection listens to the DHCP traffic
+       the VM exchanges with the DHCP server of the infrastructure. To avoid
+       denial-of-service attacks on libvirt, the evaluation of those packets
+       is rate-limited, meaning that a VM sending an excessive number of DHCP
+       packets per second on an interface will not have all of those packets
+       evaluated and thus filters may not get adapted. Normal DHCP client
+       behavior is assumed to send a low number of DHCP packets per second.
+       Further, it is important to setup appropriate filters on all VMs in
+       the infrastructure to avoid them  being able to send DHCP
+       packets. Therefore VMs must either be prevented from sending UDP and TCP
+       traffic from port 67 to port 68 or the <code>DHCPSERVER</code>
+       variable should be used on all VMs to restrict DHCP server messages to
+       only be allowed to originate from trusted DHCP servers. At the same
+       time anti-spoofing prevention must be enabled on all VMs in the subnet.
+       <br/><br/>
+       If <code>CTRL_IP_LEARNING</code> is set to <code>none</code>, libvirt does not do
+       IP address learning and referencing <code>IP</code> without assigning it an
+       explicit value is an error.
+       <br/><br/>
+       The following XML provides an example for the activation of IP address learning
+       using the DHCP snooping method:
+    </p>
+<pre>
+    &lt;interface type='bridge'&gt;
+      &lt;source bridge='virbr0'/&gt;
+      &lt;filterref filter='clean-traffic'&gt;
+        &lt;parameter name='CTRL_IP_LEARNING' value='dhcp'/&gt;
+      &lt;/filterref&gt;
+    &lt;/interface&gt;
+</pre>
+
+    <h3><a name="nwfelemsReservedVars">Reserved Variables</a></h3>
+    <p>
+      The following table lists reserved variables in use by libvirt.
+    </p>
+      <table class="top_table">
+       <tr>
+         <th> Variable Name </th>
+         <th> Semantics </th>
+       </tr>
+       <tr>
+         <td> MAC </td>
+         <td> The MAC address of the interface </td>
+       </tr>
+       <tr>
+         <td> IP </td>
+         <td> The list of IP addresses in use by an interface </td>
+       </tr>
+       <tr>
+         <td> IPV6 </td>
+         <td> Not currently implemented:
+              the list of IPV6 addresses in use by an interface </td>
+       </tr>
+       <tr>
+         <td> DHCPSERVER </td>
+         <td> The list of IP addresses of trusted DHCP servers</td>
+       </tr>
+       <tr>
+         <td> DHCPSERVERV6 </td>
+         <td> Not currently implemented:
+              The list of IPv6 addresses of trusted DHCP servers</td>
+       </tr>
+       <tr>
+         <td> CTRL_IP_LEARNING </td>
+         <td> The choice of the IP address detection mode </td>
+       </tr>
+      </table>
+
     <h2><a name="nwfelems">Element and attribute overview</a></h2>
 
     <p>
@@ -1694,6 +1806,7 @@
      The following sections discuss advanced filter configuration
      topics.
     </p>
+
     <h4><a name="nwfelemsRulesAdvTracking">Connection tracking</a></h4>
     <p>
      The network filtering subsystem (on Linux) makes use of the connection
@@ -2225,36 +2338,6 @@
      The following sections list (current) limitations of the network
      filtering subsystem.
     </p>
-
-    <h3><a name="nwflimitsIP">IP Address Detection</a></h3>
-     <p>
-       In case a network filter references the variable
-       <i>IP</i> and no variable was defined in any higher layer
-       references to the filter, IP address detection will automatically
-       be started when the filter is to be instantiated (VM start, interface
-       hotplug event). Only IPv4
-       addresses can be detected and only a single IP address
-       legitimately in use by a VM on a single interface will be detected.
-       In case a VM was to use multiple IP address on a single interface
-       (IP aliasing),
-       the IP addresses would have to be provided explicitly either
-       in the network filter itself or as variables used in attributes'
-       values. These
-       variables must then be defined in a higher level reference to the filter
-       and each assigned the value of the IP address that the VM is expected
-       to be using.
-       Different IP addresses in use by multiple interfaces of a VM
-       (one IP address each) will be independently detected.
-       <br/><br/>
-       Once a VM's IP address has been detected, its IP network traffic
-       may be locked to that address, if for example IP address spoofing
-       is prevented by one of its filters. In that case the user of the VM
-       will not be able to change the IP address on the interface inside
-       the VM, which would be considered IP address spoofing.
-       <br/><br/>
-       In case a VM is resumed after suspension or migrated, IP address
-       detection will be restarted.
-     </p>
 
     <h3><a name="nwflimitsmigr">VM Migration</a></h3>
      <p>

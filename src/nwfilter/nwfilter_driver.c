@@ -39,6 +39,7 @@
 #include "nwfilter_gentech_driver.h"
 #include "configmake.h"
 
+#include "nwfilter_dhcpsnoop.h"
 #include "nwfilter_learnipaddr.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
@@ -66,6 +67,8 @@ static int
 nwfilterDriverStartup(int privileged) {
     char *base = NULL;
 
+    if (virNWFilterDHCPSnoopInit() < 0)
+        return -1;
     if (virNWFilterLearnInit() < 0)
         return -1;
 
@@ -119,6 +122,7 @@ alloc_err_exit:
 
 conf_init_err:
     virNWFilterTechDriversShutdown();
+    virNWFilterDHCPSnoopShutdown();
     virNWFilterLearnShutdown();
 
     return -1;
@@ -141,6 +145,7 @@ nwfilterDriverReload(void) {
     conn = virConnectOpen("qemu:///system");
 
     if (conn) {
+        virNWFilterDHCPSnoopEnd(NULL);
         /* shut down all threads -- they will be restarted if necessary */
         virNWFilterLearnThreadsTerminate(true);
 
@@ -195,6 +200,7 @@ nwfilterDriverShutdown(void) {
 
     virNWFilterConfLayerShutdown();
     virNWFilterTechDriversShutdown();
+    virNWFilterDHCPSnoopShutdown();
     virNWFilterLearnShutdown();
 
     nwfilterDriverLock(driverState);

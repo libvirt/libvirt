@@ -514,6 +514,8 @@ NWFILTER_DRIVER_SOURCES =					\
 		nwfilter/nwfilter_driver.h nwfilter/nwfilter_driver.c	\
 		nwfilter/nwfilter_gentech_driver.c			\
 		nwfilter/nwfilter_gentech_driver.h			\
+		nwfilter/nwfilter_dhcpsnoop.c				\
+		nwfilter/nwfilter_dhcpsnoop.h				\
 		nwfilter/nwfilter_ebiptables_driver.c			\
 		nwfilter/nwfilter_ebiptables_driver.h			\
 		nwfilter/nwfilter_learnipaddr.c				\
