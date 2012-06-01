@@ -59,6 +59,7 @@
 #include "conf/domain_conf.h"
 #include "nwfilter_gentech_driver.h"
 #include "nwfilter_dhcpsnoop.h"
+#include "nwfilter_ipaddrmap.h"
 #include "virnetdev.h"
 #include "virfile.h"
 #include "viratomic.h"
@@ -277,7 +278,8 @@ struct _virNWFilterSnoopPcapConf {
 /* local function prototypes */
 static int virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
                                        virSocketAddrPtr ipaddr,
-                                       bool update_leasefile);
+                                       bool update_leasefile,
+                                       bool instantiate);
 
 static void virNWFilterSnoopReqLock(virNWFilterSnoopReqPtr req);
 static void virNWFilterSnoopReqUnlock(virNWFilterSnoopReqPtr req);
@@ -452,32 +454,22 @@ virNWFilterSnoopIPLeaseInstallRule(virNWFilterSnoopIPLeasePtr ipl,
 {
     char *ipaddr;
     int rc = -1;
-    virNWFilterVarValuePtr ipVar;
     virNWFilterSnoopReqPtr req;
 
     ipaddr = virSocketAddrFormat(&ipl->ipAddress);
     if (!ipaddr)
         return -1;
 
-    ipVar = virNWFilterVarValueCreateSimple(ipaddr);
-    if (!ipVar)
-        goto cleanup;
-
-    ipaddr = NULL; /* belongs to ipVar now */
-
     req = ipl->snoopReq;
 
-    /* protect req->ifname and req->vars */
+    /* protect req->ifname */
     virNWFilterSnoopReqLock(req);
 
-    if (virNWFilterHashTablePut(req->vars, NWFILTER_VARNAME_IP,
-                                ipVar, 1) < 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Could not add variable \""
-                                 NWFILTER_VARNAME_IP "\" to hashmap"));
-        virNWFilterVarValueFree(ipVar);
+    if (virNWFilterIPAddrMapAddIPAddr(req->ifname, ipaddr) < 0)
         goto exit_snooprequnlock;
-    }
+
+    /* ipaddr now belongs to the map */
+    ipaddr = NULL;
 
     if (!instantiate) {
         rc = 0;
@@ -500,7 +492,6 @@ virNWFilterSnoopIPLeaseInstallRule(virNWFilterSnoopIPLeasePtr ipl,
 exit_snooprequnlock:
     virNWFilterSnoopReqUnlock(req);
 
-cleanup:
     VIR_FREE(ipaddr);
 
     return rc;
@@ -543,12 +534,18 @@ static unsigned int
 virNWFilterSnoopReqLeaseTimerRun(virNWFilterSnoopReqPtr req)
 {
     time_t now = time(0);
+    bool is_last = false;
 
     /* protect req->start */
     virNWFilterSnoopReqLock(req);
 
-    while (req->start && req->start->timeout <= now)
-        virNWFilterSnoopReqLeaseDel(req, &req->start->ipAddress, true);
+    while (req->start && req->start->timeout <= now) {
+        if (req->start->next == NULL ||
+            req->start->next->timeout > now)
+            is_last = true;
+        virNWFilterSnoopReqLeaseDel(req, &req->start->ipAddress, true,
+                                    is_last);
+    }
 
     virNWFilterSnoopReqUnlock(req);
 
@@ -629,7 +626,7 @@ virNWFilterSnoopReqFree(virNWFilterSnoopReqPtr req)
 
     /* free all leases */
     for (ipl = req->start; ipl; ipl = req->start)
-        virNWFilterSnoopReqLeaseDel(req, &ipl->ipAddress, false);
+        virNWFilterSnoopReqLeaseDel(req, &ipl->ipAddress, false, false);
 
     /* free all req data */
     VIR_FREE(req->ifname);
@@ -763,15 +760,6 @@ virNWFilterSnoopReqLeaseAdd(virNWFilterSnoopReqPtr req,
 
     virNWFilterSnoopReqUnlock(req);
 
-    /* support for multiple addresses requires the ability to add filters
-     * to existing chains, or to instantiate address lists via
-     * virNWFilterInstantiateFilterLate(). Until one of those capabilities
-     * is added, don't allow a new address when one is already assigned to
-     * this interface.
-     */
-    if (req->start)
-        return 0;    /* silently ignore multiple addresses */
-
     if (VIR_ALLOC(pl) < 0) {
         virReportOOMError();
         return -1;
@@ -839,34 +827,62 @@ virNWFilterSnoopReqRestore(virNWFilterSnoopReqPtr req)
  *                    memory or when calling this function while reading
  *                    leases from the file.
  *
+ * @instantiate: when calling this function in a loop, indicate
+ *               the last call with 'true' here so that the
+ *               rules all get instantiated
+ *               Always calling this with 'true' is fine, but less
+ *               efficient.
+ *
  * Returns 0 on success, -1 if the instantiation of the rules failed
  */
 static int
 virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
-                            virSocketAddrPtr ipaddr, bool update_leasefile)
+                            virSocketAddrPtr ipaddr, bool update_leasefile,
+                            bool instantiate)
 {
     int ret = 0;
     virNWFilterSnoopIPLeasePtr ipl;
+    char *ipstr = NULL;
+    int ipAddrLeft;
 
-    /* protect req->start & req->ifname */
+    /* protect req->start, req->ifname and the lease */
     virNWFilterSnoopReqLock(req);
 
     ipl = virNWFilterSnoopIPLeaseGetByIP(req->start, ipaddr);
     if (ipl == NULL)
         goto lease_not_found;
 
-    virNWFilterSnoopIPLeaseTimerDel(ipl);
+    ipstr = virSocketAddrFormat(&ipl->ipAddress);
+    if (!ipstr) {
+        ret = -1;
+        goto lease_not_found;
+    }
 
-    if (update_leasefile) {
+    virNWFilterSnoopIPLeaseTimerDel(ipl);
+    /* lease is off the list now */
+
+    if (update_leasefile)
+        virNWFilterSnoopLeaseFileSave(ipl);
+
+    ipAddrLeft = virNWFilterIPAddrMapDelIPAddr(req->ifname, ipstr);
+
+    if (!req->threadkey || !instantiate)
+        goto skip_instantiate;
+
+    if (ipAddrLeft) {
+        ret = virNWFilterInstantiateFilterLate(NULL,
+                                               req->ifname,
+                                               req->ifindex,
+                                               req->linkdev,
+                                               req->nettype,
+                                               req->macaddr,
+                                               req->filtername,
+                                               req->vars,
+                                               req->driver);
+    } else {
         const virNWFilterVarValuePtr dhcpsrvrs =
             virHashLookup(req->vars->hashTable, NWFILTER_VARNAME_DHCPSERVER);
 
-        virNWFilterSnoopLeaseFileSave(ipl);
-
-        /*
-         * for multiple address support, this needs to remove those rules
-         * referencing "IP" with ipl's ip value.
-         */
         if (req->techdriver &&
             req->techdriver->applyDHCPOnlyRules(req->ifname, req->macaddr,
                                                 dhcpsrvrs, false) < 0) {
@@ -876,11 +892,15 @@ virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
         }
 
     }
+
+skip_instantiate:
     VIR_FREE(ipl);
 
     virAtomicIntDec(&virNWFilterSnoopState.nLeases);
 
 lease_not_found:
+    VIR_FREE(ipstr);
+
     virNWFilterSnoopReqUnlock(req);
 
     return ret;
@@ -1030,7 +1050,7 @@ virNWFilterSnoopDHCPDecode(virNWFilterSnoopReqPtr req,
         break;
     case DHCPDECLINE:
     case DHCPRELEASE:
-        if (virNWFilterSnoopReqLeaseDel(req, &ipl.ipAddress, true) < 0)
+        if (virNWFilterSnoopReqLeaseDel(req, &ipl.ipAddress, true, true) < 0)
             return -1;
         break;
     default:
@@ -1954,7 +1974,7 @@ virNWFilterSnoopLeaseFileLoad(void)
         if (ipl.timeout)
             virNWFilterSnoopReqLeaseAdd(req, &ipl, false);
         else
-            virNWFilterSnoopReqLeaseDel(req, &ipl.ipAddress, false);
+            virNWFilterSnoopReqLeaseDel(req, &ipl.ipAddress, false, false);
 
         virNWFilterSnoopReqPut(req);
     }
@@ -1999,6 +2019,13 @@ virNWFilterSnoopRemAllReqIter(const void *payload,
     if (req->ifname) {
         ignore_value(virHashRemoveEntry(virNWFilterSnoopState.ifnameToKey,
                                         req->ifname));
+
+        /*
+         * Remove all IP addresses known to be associated with this
+         * interface so that a new thread will be started on this
+         * interface
+         */
+        virNWFilterIPAddrMapDelIPAddr(req->ifname, NULL);
 
         VIR_FREE(req->ifname);
     }
