@@ -8505,7 +8505,7 @@ static const vshCmdInfo info_network_info[] = {
 };
 
 static const vshCmdOptDef opts_network_info[] = {
-    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network name")},
+    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network name or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -8522,8 +8522,7 @@ cmdNetworkInfo(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
 
-    if (!(network = vshCommandOptNetworkBy(ctl, cmd, NULL,
-                                           VSH_BYNAME)))
+    if (!(network = vshCommandOptNetwork(ctl, cmd, NULL)))
         return false;
 
     vshPrint(ctl, "%-15s %s\n", _("Name"), virNetworkGetName(network));
@@ -8778,7 +8777,7 @@ static const vshCmdInfo info_network_start[] = {
 };
 
 static const vshCmdOptDef opts_network_start[] = {
-    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, N_("name of the inactive network")},
+    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network name or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -8787,19 +8786,18 @@ cmdNetworkStart(vshControl *ctl, const vshCmd *cmd)
 {
     virNetworkPtr network;
     bool ret = true;
+    const char *name = NULL;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
 
-    if (!(network = vshCommandOptNetworkBy(ctl, cmd, NULL, VSH_BYNAME)))
+    if (!(network = vshCommandOptNetwork(ctl, cmd, &name)))
          return false;
 
     if (virNetworkCreate(network) == 0) {
-        vshPrint(ctl, _("Network %s started\n"),
-                 virNetworkGetName(network));
+        vshPrint(ctl, _("Network %s started\n"), name);
     } else {
-        vshError(ctl, _("Failed to start network %s"),
-                 virNetworkGetName(network));
+        vshError(ctl, _("Failed to start network %s"), name);
         ret = false;
     }
     virNetworkFree(network);
