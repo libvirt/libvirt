@@ -11037,7 +11037,7 @@ static const vshCmdInfo info_pool_start[] = {
 };
 
 static const vshCmdOptDef opts_pool_start[] = {
-    {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("name of the inactive pool")},
+    {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("name or uuid of the inactive pool")},
     {NULL, 0, 0, NULL}
 };
 
@@ -11046,18 +11046,18 @@ cmdPoolStart(vshControl *ctl, const vshCmd *cmd)
 {
     virStoragePoolPtr pool;
     bool ret = true;
+    const char *name = NULL;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
 
-    if (!(pool = vshCommandOptPoolBy(ctl, cmd, "pool", NULL, VSH_BYNAME)))
+    if (!(pool = vshCommandOptPool(ctl, cmd, "pool", &name)))
          return false;
 
     if (virStoragePoolCreate(pool, 0) == 0) {
-        vshPrint(ctl, _("Pool %s started\n"),
-                 virStoragePoolGetName(pool));
+        vshPrint(ctl, _("Pool %s started\n"), name);
     } else {
-        vshError(ctl, _("Failed to start pool %s"), virStoragePoolGetName(pool));
+        vshError(ctl, _("Failed to start pool %s"), name);
         ret = false;
     }
 
@@ -11380,7 +11380,7 @@ static const vshCmdInfo info_vol_create_from[] = {
 };
 
 static const vshCmdOptDef opts_vol_create_from[] = {
-    {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool name")},
+    {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool name or uuid")},
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("file containing an XML vol description")},
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("input vol name or key")},
     {"inputpool", VSH_OT_STRING, 0, N_("pool name or uuid of the input volume's pool")},
@@ -11399,7 +11399,7 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
 
-    if (!(pool = vshCommandOptPoolBy(ctl, cmd, "pool", NULL, VSH_BYNAME)))
+    if (!(pool = vshCommandOptPool(ctl, cmd, "pool", NULL)))
         goto cleanup;
 
     if (vshCommandOptString(cmd, "file", &from) <= 0) {
