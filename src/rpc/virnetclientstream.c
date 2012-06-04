@@ -508,7 +508,7 @@ int virNetClientStreamEventRemoveCallback(virNetClientStreamPtr st)
 {
     int ret = -1;
 
-    virMutexUnlock(&st->lock);
+    virMutexLock(&st->lock);
     if (!st->cb) {
         virNetError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("no stream callback registered"));
