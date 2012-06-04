@@ -11121,18 +11121,24 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptString(cmd, "capacity", &capacityStr) <= 0)
         goto cleanup;
-    if (vshVolSize(capacityStr, &capacity) < 0)
-        vshError(ctl, _("Malformed size %s"), capacityStr);
 
-    if ((vshCommandOptString(cmd, "allocation", &allocationStr) > 0) &&
-        (vshVolSize(allocationStr, &allocation) < 0))
+    if (vshVolSize(capacityStr, &capacity) < 0) {
+        vshError(ctl, _("Malformed size %s"), capacityStr);
+        goto cleanup;
+    }
+
+    if (vshCommandOptString(cmd, "allocation", &allocationStr) > 0 &&
+        vshVolSize(allocationStr, &allocation) < 0) {
         vshError(ctl, _("Malformed size %s"), allocationStr);
+        goto cleanup;
+    }
 
     if (vshCommandOptString(cmd, "format", &format) < 0 ||
         vshCommandOptString(cmd, "backing-vol", &snapshotStrVol) < 0 ||
         vshCommandOptString(cmd, "backing-vol-format",
                             &snapshotStrFormat) < 0) {
         vshError(ctl, "%s", _("missing argument"));
+        goto cleanup;
     }
 
 
