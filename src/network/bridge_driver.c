@@ -2533,6 +2533,7 @@ static char *networkGetXMLDesc(virNetworkPtr net,
 {
     struct network_driver *driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
+    virNetworkDefPtr def;
     char *ret = NULL;
 
     virCheckFlags(VIR_NETWORK_XML_INACTIVE, NULL);
@@ -2547,7 +2548,12 @@ static char *networkGetXMLDesc(virNetworkPtr net,
         goto cleanup;
     }
 
-    ret = virNetworkDefFormat(network->def, flags);
+    if ((flags & VIR_NETWORK_XML_INACTIVE) && network->newDef)
+        def = network->newDef;
+    else
+        def = network->def;
+
+    ret = virNetworkDefFormat(def, flags);
 
 cleanup:
     if (network)

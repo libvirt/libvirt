@@ -1823,7 +1823,7 @@ Edit the XML configuration file for a network.
 
 This is equivalent to:
 
- virsh net-dumpxml network > network.xml
+ virsh net-dumpxml --inactive network > network.xml
  vi network.xml (or make changes with your other text editor)
  virsh net-define network.xml
 

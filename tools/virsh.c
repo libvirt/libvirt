@@ -15823,13 +15823,29 @@ static const vshCmdOptDef opts_network_edit[] = {
     {NULL, 0, 0, NULL}
 };
 
+static char *vshNetworkGetXMLDesc(virNetworkPtr network)
+{
+    unsigned int flags = VIR_NETWORK_XML_INACTIVE;
+    char *doc = virNetworkGetXMLDesc(network, flags);
+
+    if (!doc && last_error->code == VIR_ERR_INVALID_ARG) {
+        /* The server side libvirt doesn't support
+         * VIR_NETWORK_XML_INACTIVE, so retry without it.
+         */
+        virFreeError(last_error);
+        last_error = NULL;
+        flags &= ~VIR_NETWORK_XML_INACTIVE;
+        doc = virNetworkGetXMLDesc(network, flags);
+    }
+    return doc;
+}
+
 static bool
 cmdNetworkEdit(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
     virNetworkPtr network = NULL;
     virNetworkPtr network_edited = NULL;
-    unsigned int flags = 0;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -15838,7 +15854,7 @@ cmdNetworkEdit(vshControl *ctl, const vshCmd *cmd)
     if (network == NULL)
         goto cleanup;
 
-#define EDIT_GET_XML virNetworkGetXMLDesc(network, flags)
+#define EDIT_GET_XML vshNetworkGetXMLDesc(network)
 #define EDIT_NOT_CHANGED \
     vshPrint(ctl, _("Network %s XML configuration not changed.\n"), \
              virNetworkGetName (network));                          \
