@@ -102,8 +102,12 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     # Silence certain warnings in gnulib, and use improved glibc headers
     AC_DEFINE([lint], [1],
       [Define to 1 if the compiler is checking for lint.])
-    AC_DEFINE([_FORTIFY_SOURCE], [2],
-      [enable compile-time and run-time bounds-checking, and some warnings])
+    AH_VERBATIM([FORTIFY_SOURCE],
+    [/* Enable compile-time and run-time bounds-checking, and some warnings. */
+     #if __OPTIMIZE__
+     # define _FORTIFY_SOURCE 2
+     #endif
+    ])
 
     # Extra special flags
     dnl -fstack-protector stuff passes gl_WARN_ADD with gcc
