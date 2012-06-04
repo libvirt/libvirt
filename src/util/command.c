@@ -1803,7 +1803,7 @@ virCommandProcessIO(virCommandPtr cmd, int *inpipe)
                         if (VIR_CLOSE(*inpipe) < 0)
                             VIR_DEBUG("ignoring failed close on fd %d", infd);
                         infd = -1;
-                    } else if (errno != EINTR &&  errno != EAGAIN) {
+                    } else if (errno != EINTR && errno != EAGAIN) {
                         virReportSystemError(errno, "%s",
                                              _("unable to write to child input"));
                         goto cleanup;
@@ -2053,9 +2053,11 @@ virCommandHook(void *data)
     if (cmd->handshake) {
         char c = res < 0 ? '0' : '1';
         int rv;
-        VIR_DEBUG("Notifying parent for handshake start on %d", cmd->handshakeWait[1]);
+        VIR_DEBUG("Notifying parent for handshake start on %d",
+                  cmd->handshakeWait[1]);
         if (safewrite(cmd->handshakeWait[1], &c, sizeof(c)) != sizeof(c)) {
-            virReportSystemError(errno, "%s", _("Unable to notify parent process"));
+            virReportSystemError(errno, "%s",
+                                 _("Unable to notify parent process"));
             return -1;
         }
 
@@ -2068,22 +2070,29 @@ virCommandHook(void *data)
                 _("Unknown failure during hook execution");
             size_t len = strlen(msg) + 1;
             if (safewrite(cmd->handshakeWait[1], msg, len) != len) {
-                virReportSystemError(errno, "%s", _("Unable to send error to parent process"));
+                virReportSystemError(errno, "%s",
+                                     _("Unable to send error to parent"));
                 return -1;
             }
             return -1;
         }
 
-        VIR_DEBUG("Waiting on parent for handshake complete on %d", cmd->handshakeNotify[0]);
-        if ((rv = saferead(cmd->handshakeNotify[0], &c, sizeof(c))) != sizeof(c)) {
+        VIR_DEBUG("Waiting on parent for handshake complete on %d",
+                  cmd->handshakeNotify[0]);
+        if ((rv = saferead(cmd->handshakeNotify[0], &c,
+                           sizeof(c))) != sizeof(c)) {
             if (rv < 0)
-                virReportSystemError(errno, "%s", _("Unable to wait on parent process"));
+                virReportSystemError(errno, "%s",
+                                     _("Unable to wait on parent process"));
             else
-                virReportSystemError(EIO, "%s", _("libvirtd quit during handshake"));
+                virReportSystemError(EIO, "%s",
+                                     _("libvirtd quit during handshake"));
             return -1;
         }
         if (c != '1') {
-            virReportSystemError(EINVAL, _("Unexpected confirm code '%c' from parent process"), c);
+            virReportSystemError(EINVAL,
+                                 _("Unexpected confirm code '%c' from parent"),
+                                 c);
             return -1;
         }
         VIR_FORCE_CLOSE(cmd->handshakeWait[1]);
@@ -2482,9 +2491,11 @@ int virCommandHandshakeWait(virCommandPtr cmd)
     VIR_DEBUG("Wait for handshake on %d", cmd->handshakeWait[0]);
     if ((rv = saferead(cmd->handshakeWait[0], &c, sizeof(c))) != sizeof(c)) {
         if (rv < 0)
-            virReportSystemError(errno, "%s", _("Unable to wait for child process"));
+            virReportSystemError(errno, "%s",
+                                 _("Unable to wait for child process"));
         else
-            virReportSystemError(EIO, "%s", _("Child process quit during startup handshake"));
+            virReportSystemError(EIO, "%s",
+                                 _("Child quit during startup handshake"));
         VIR_FORCE_CLOSE(cmd->handshakeWait[0]);
         return -1;
     }
@@ -2499,7 +2510,8 @@ int virCommandHandshakeWait(virCommandPtr cmd)
         if ((len = saferead(cmd->handshakeWait[0], msg, 1024)) < 0) {
             VIR_FORCE_CLOSE(cmd->handshakeWait[0]);
             VIR_FREE(msg);
-            virReportSystemError(errno, "%s", _("No error message from child failure"));
+            virReportSystemError(errno, "%s",
+                                 _("No error message from child failure"));
             return -1;
         }
         VIR_FORCE_CLOSE(cmd->handshakeWait[0]);
