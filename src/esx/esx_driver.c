@@ -5002,6 +5002,199 @@ esxDomainGetMemoryParameters(virDomainPtr domain, virTypedParameterPtr params,
     return result;
 }
 
+#define MATCH(FLAG) (flags & (FLAG))
+static int
+esxListAllDomains(virConnectPtr conn,
+                  virDomainPtr **domains,
+                  unsigned int flags)
+{
+    int ret = -1;
+    esxPrivate *priv = conn->privateData;
+    virDomainPtr dom;
+    virDomainPtr *doms = NULL;
+    size_t ndoms = 0;
+    esxVI_ObjectContent *virtualMachineList = NULL;
+    esxVI_ObjectContent *virtualMachine = NULL;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_AutoStartDefaults *autostart_defaults = NULL;
+    esxVI_VirtualMachinePowerState powerState;
+    esxVI_AutoStartPowerInfo *powerInfoList = NULL;
+    esxVI_AutoStartPowerInfo *powerInfo = NULL;
+    esxVI_VirtualMachineSnapshotTree *rootSnapshotTreeList = NULL;
+    char *name = NULL;
+    int id;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    int count = 0;
+    int snapshotCount;
+    bool autostart;
+    int state;
+
+    virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
+
+    /* check for flags that would produce empty output lists:
+     * - persistence: all esx machines are persistent
+     * - managed save: esx doesn't support managed save
+     */
+     if ((MATCH(VIR_CONNECT_LIST_DOMAINS_TRANSIENT) &&
+         !MATCH(VIR_CONNECT_LIST_DOMAINS_PERSISTENT)) ||
+        (MATCH(VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE) &&
+         !MATCH(VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE))) {
+        if (domains &&
+            VIR_ALLOC_N(*domains, 1) < 0)
+            goto no_memory;
+
+        ret = 0;
+        goto cleanup;
+    }
+
+     if (esxVI_EnsureSession(priv->primary) < 0)
+        return -1;
+
+    /* check system default autostart value */
+    if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_AUTOSTART)) {
+        if (esxVI_LookupAutoStartDefaults(priv->primary,
+                                          &autostart_defaults) < 0)
+            goto cleanup;
+
+        if (esxVI_LookupAutoStartPowerInfoList(priv->primary,
+                                               &powerInfoList) < 0)
+            goto cleanup;
+    }
+
+    if (esxVI_String_AppendValueToList(&propertyNameList,
+                                       "runtime.powerState") < 0 ||
+        esxVI_LookupVirtualMachineList(priv->primary, propertyNameList,
+                                       &virtualMachineList) < 0)
+        goto cleanup;
+
+    if (domains) {
+        if (VIR_ALLOC_N(doms, 1) < 0)
+            goto no_memory;
+        ndoms = 1;
+    }
+
+    for (virtualMachine = virtualMachineList; virtualMachine != NULL;
+         virtualMachine = virtualMachine->_next) {
+
+        VIR_FREE(name);
+
+        if (esxVI_GetVirtualMachineIdentity(virtualMachine, &id, &name, uuid) < 0 ||
+            esxVI_GetVirtualMachinePowerState(virtualMachine, &powerState) < 0)
+            goto cleanup;
+
+        /* filter by active state */
+        if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE) &&
+            !((MATCH(VIR_CONNECT_LIST_DOMAINS_ACTIVE) &&
+               powerState != esxVI_VirtualMachinePowerState_PoweredOff) ||
+              (MATCH(VIR_CONNECT_LIST_DOMAINS_INACTIVE) &&
+               powerState == esxVI_VirtualMachinePowerState_PoweredOff)))
+            continue;
+
+        /* filter by snapshot existence */
+        if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT)) {
+            if (esxVI_LookupRootSnapshotTreeList(priv->primary, uuid,
+                                                 &rootSnapshotTreeList) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Couldn't retrieve snapshot list for "
+                                 "domain '%s'"), name);
+                goto cleanup;
+            }
+
+            snapshotCount = esxVI_GetNumberOfSnapshotTrees(rootSnapshotTreeList,
+                                                            true, false);
+
+            esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotTreeList);
+
+            if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT) &&
+                   snapshotCount > 0) ||
+                  (MATCH(VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT) &&
+                   snapshotCount == 0)))
+                continue;
+        }
+
+        /* filter by autostart */
+        if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_AUTOSTART)) {
+            autostart = false;
+
+            for (powerInfo = powerInfoList; powerInfo != NULL;
+                 powerInfo = powerInfo->_next) {
+                if (STREQ(powerInfo->key->value, virtualMachine->obj->value)) {
+                    if (STRCASEEQ(powerInfo->startAction, "powerOn"))
+                        autostart = true;
+
+                    break;
+                }
+            }
+
+            autostart = autostart &&
+                        autostart_defaults->enabled == esxVI_Boolean_True;
+
+            if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_AUTOSTART) &&
+                   autostart) ||
+                  (MATCH(VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART) &&
+                   !autostart)))
+                continue;
+        }
+
+        /* filter by domain state */
+        if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE)) {
+            state = esxVI_VirtualMachinePowerState_ConvertToLibvirt(powerState);
+            if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_RUNNING) &&
+                   state == VIR_DOMAIN_RUNNING) ||
+                  (MATCH(VIR_CONNECT_LIST_DOMAINS_PAUSED) &&
+                   state == VIR_DOMAIN_PAUSED) ||
+                  (MATCH(VIR_CONNECT_LIST_DOMAINS_SHUTOFF) &&
+                   state == VIR_DOMAIN_SHUTOFF) ||
+                  (MATCH(VIR_CONNECT_LIST_DOMAINS_OTHER) &&
+                   (state != VIR_DOMAIN_RUNNING &&
+                    state != VIR_DOMAIN_PAUSED &&
+                    state != VIR_DOMAIN_SHUTOFF))))
+                continue;
+        }
+
+        /* just count the machines */
+        if (!doms) {
+            count++;
+            continue;
+        }
+
+        if (!(dom = virGetDomain(conn, name, uuid)))
+            goto no_memory;
+
+        /* Only running/suspended virtual machines have an ID != -1 */
+        if (powerState != esxVI_VirtualMachinePowerState_PoweredOff)
+            dom->id = id;
+        else
+            dom->id = -1;
+
+        if (VIR_EXPAND_N(doms, ndoms, 1) < 0)
+            goto no_memory;
+        doms[count++] = dom;
+    }
+
+    if (doms)
+        *domains = doms;
+    doms = NULL;
+    ret = count;
+
+cleanup:
+    if (doms) {
+        for (id = 0; id < count; id++) {
+            if (doms[id])
+                virDomainFree(doms[id]);
+        }
+    }
+    VIR_FREE(doms);
+    VIR_FREE(name);
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&virtualMachineList);
+    return ret;
+
+no_memory:
+    virReportOOMError();
+    goto cleanup;
+}
+#undef MATCH
 
 
 static virDriver esxDriver = {
@@ -5017,6 +5210,7 @@ static virDriver esxDriver = {
     .getCapabilities = esxGetCapabilities, /* 0.7.1 */
     .listDomains = esxListDomains, /* 0.7.0 */
     .numOfDomains = esxNumberOfDomains, /* 0.7.0 */
+    .listAllDomains = esxListAllDomains, /* 0.10.2 */
     .domainLookupByID = esxDomainLookupByID, /* 0.7.0 */
     .domainLookupByUUID = esxDomainLookupByUUID, /* 0.7.0 */
     .domainLookupByName = esxDomainLookupByName, /* 0.7.0 */
