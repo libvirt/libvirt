@@ -57,6 +57,7 @@
 #include "virfile.h"
 #include "fdstream.h"
 #include "viruri.h"
+#include "virdomainlist.h"
 
 /* This one changes from version to version. */
 #if VBOX_API_VERSION == 2002
@@ -9234,6 +9235,168 @@ endjob:
 }
 #endif /* VBOX_API_VERSION >= 4000 */
 
+
+#define MATCH(FLAG) (flags & (FLAG))
+static int
+vboxListAllDomains(virConnectPtr conn,
+                   virDomainPtr **domains,
+                   unsigned int flags)
+{
+    VBOX_OBJECT_CHECK(conn, int, -1);
+    vboxArray machines = VBOX_ARRAY_INITIALIZER;
+    char      *machineNameUtf8  = NULL;
+    PRUnichar *machineNameUtf16 = NULL;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    vboxIID iid = VBOX_IID_INITIALIZER;
+    PRUint32 state;
+    nsresult rc;
+    int i;
+    virDomainPtr dom;
+    virDomainPtr *doms = NULL;
+    int count = 0;
+    bool active;
+    PRUint32 snapshotCount;
+
+    virCheckFlags(VIR_CONNECT_LIST_FILTERS_ALL, -1);
+
+    /* filter out flag options that will produce 0 results in vbox driver:
+     * - managed save: vbox guests don't have managed save images
+     * - autostart: vbox doesn't support autostarting guests
+     * - persistance: vbox doesn't support transient guests
+     */
+    if ((MATCH(VIR_CONNECT_LIST_DOMAINS_TRANSIENT) &&
+         !MATCH(VIR_CONNECT_LIST_DOMAINS_PERSISTENT)) ||
+        (MATCH(VIR_CONNECT_LIST_DOMAINS_AUTOSTART) &&
+         !MATCH(VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART)) ||
+        (MATCH(VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE) &&
+         !MATCH(VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE))) {
+        if (domains &&
+            VIR_ALLOC_N(*domains, 1) < 0)
+            goto no_memory;
+
+        ret = 0;
+        goto cleanup;
+    }
+
+    rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
+    if (NS_FAILED(rc)) {
+        vboxError(VIR_ERR_INTERNAL_ERROR,
+                  _("Could not get list of domains, rc=%08x"), (unsigned)rc);
+        goto cleanup;
+    }
+
+    if (domains &&
+        VIR_ALLOC_N(doms, machines.count + 1) < 0)
+        goto no_memory;
+
+    for (i = 0; i < machines.count; i++) {
+        IMachine *machine = machines.items[i];
+
+        if (machine) {
+            PRBool isAccessible = PR_FALSE;
+            machine->vtbl->GetAccessible(machine, &isAccessible);
+            if (isAccessible) {
+                machine->vtbl->GetState(machine, &state);
+
+                if (state >= MachineState_FirstOnline &&
+                    state <= MachineState_LastOnline)
+                    active = true;
+                else
+                    active = false;
+
+                /* filter by active state */
+                if (MATCH(VIR_CONNECT_LIST_FILTERS_ACTIVE) &&
+                    !((MATCH(VIR_CONNECT_LIST_DOMAINS_ACTIVE) && active) ||
+                      (MATCH(VIR_CONNECT_LIST_DOMAINS_INACTIVE) && !active)))
+                    continue;
+
+                /* filter by snapshot existence */
+                if (MATCH(VIR_CONNECT_LIST_FILTERS_SNAPSHOT)) {
+                    rc = machine->vtbl->GetSnapshotCount(machine, &snapshotCount);
+                    if (NS_FAILED(rc)) {
+                        vboxError(VIR_ERR_INTERNAL_ERROR,
+                          _("could not get snapshot count for listed domains"));
+                        goto cleanup;
+                    }
+                    if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT) &&
+                           snapshotCount > 0) ||
+                          (MATCH(VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT) &&
+                           snapshotCount == 0)))
+                        continue;
+                }
+
+                /* filter by machine state */
+                if (MATCH(VIR_CONNECT_LIST_FILTERS_STATE) &&
+                    !((MATCH(VIR_CONNECT_LIST_DOMAINS_RUNNING) &&
+                       state == MachineState_Running) ||
+                      (MATCH(VIR_CONNECT_LIST_DOMAINS_PAUSED) &&
+                       state == MachineState_Paused) ||
+                      (MATCH(VIR_CONNECT_LIST_DOMAINS_SHUTOFF) &&
+                       state == MachineState_PoweredOff) ||
+                      (MATCH(VIR_CONNECT_LIST_DOMAINS_OTHER) &&
+                       (state != MachineState_Running &&
+                        state != MachineState_Paused &&
+                        state != MachineState_PoweredOff))))
+                    continue;
+
+                /* just count the machines */
+                if (!doms) {
+                    count++;
+                    continue;
+                }
+
+                machine->vtbl->GetName(machine, &machineNameUtf16);
+                VBOX_UTF16_TO_UTF8(machineNameUtf16, &machineNameUtf8);
+                machine->vtbl->GetId(machine, &iid.value);
+                vboxIIDToUUID(&iid, uuid);
+                vboxIIDUnalloc(&iid);
+
+                dom = virGetDomain(conn, machineNameUtf8, uuid);
+
+                VBOX_UTF8_FREE(machineNameUtf8);
+                VBOX_UTF16_FREE(machineNameUtf16);
+
+                if (!dom)
+                    goto cleanup;
+
+                if (active)
+                    dom->id = i + 1;
+
+                doms[count++] = dom;
+            }
+        }
+    }
+
+    if (doms) {
+        /* safe to ignore, new size will be equal or less than
+         * previous allocation*/
+        ignore_value(VIR_REALLOC_N(doms, count + 1));
+        *domains = doms;
+        doms = NULL;
+    }
+
+    ret = count;
+
+cleanup:
+    if (doms) {
+        for (i = 0; i < count; i++) {
+            if (doms[i])
+                virDomainFree(doms[i]);
+        }
+    }
+    VIR_FREE(doms);
+
+    vboxArrayRelease(&machines);
+    return ret;
+
+no_memory:
+    virReportOOMError();
+    goto cleanup;
+}
+#undef MATCH
+
+
+
 /**
  * Function Tables
  */
@@ -9250,6 +9413,7 @@ virDriver NAME(Driver) = {
     .getCapabilities = vboxGetCapabilities, /* 0.6.3 */
     .listDomains = vboxListDomains, /* 0.6.3 */
     .numOfDomains = vboxNumOfDomains, /* 0.6.3 */
+    .listAllDomains = vboxListAllDomains, /* 0.9.13 */
     .domainCreateXML = vboxDomainCreateXML, /* 0.6.3 */
     .domainLookupByID = vboxDomainLookupByID, /* 0.6.3 */
     .domainLookupByUUID = vboxDomainLookupByUUID, /* 0.6.3 */
