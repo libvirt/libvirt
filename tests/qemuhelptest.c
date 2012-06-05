@@ -678,7 +678,7 @@ mymain(void)
             QEMU_CAPS_SCSI_BLOCK,
             QEMU_CAPS_SCSI_CD,
             QEMU_CAPS_IDE_CD);
-    DO_TEST("qemu-1.1", 1000092, 0, 0,
+    DO_TEST("qemu-1.1.0", 1001000, 0, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
             QEMU_CAPS_DRIVE,
