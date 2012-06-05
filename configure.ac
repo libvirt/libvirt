@@ -2076,6 +2076,19 @@ fi
 AC_SUBST([DEVMAPPER_CFLAGS])
 AC_SUBST([DEVMAPPER_LIBS])
 
+with_storage=no
+for backend in dir fs lvm iscsi scsi mpath rbd disk; do
+    if eval test \$with_storage_$backend = yes; then
+        with_storage=yes
+        break
+    fi
+done
+if test $with_storage = yes; then
+    AC_DEFINE([WITH_STORAGE], [1],
+      [Define to 1 if at least one storage backend is in use])
+fi
+AM_CONDITIONAL([WITH_STORAGE], [test "$with_storage" = "yes"])
+
 dnl
 dnl check for libcurl (ESX/XenAPI)
 dnl

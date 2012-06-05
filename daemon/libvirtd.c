@@ -77,7 +77,7 @@
 # ifdef WITH_NETCF
 #  include "interface/netcf_driver.h"
 # endif
-# ifdef WITH_STORAGE_DIR
+# ifdef WITH_STORAGE
 #  include "storage/storage_driver.h"
 # endif
 # ifdef WITH_NODE_DEVICES
@@ -403,7 +403,7 @@ static void daemonInitialize(void)
 # ifdef WITH_NETCF
     interfaceRegister();
 # endif
-# ifdef WITH_STORAGE_DIR
+# ifdef WITH_STORAGE
     storageRegister();
 # endif
 # ifdef WITH_NODE_DEVICES
