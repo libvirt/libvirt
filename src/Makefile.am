@@ -190,9 +190,14 @@ ENCRYPTION_CONF_SOURCES =					\
 
 CPU_CONF_SOURCES =						\
 		conf/cpu_conf.c conf/cpu_conf.h
+
 # Safe console handling helper APIs
 CONSOLE_CONF_SOURCES =						\
 		conf/virconsole.c conf/virconsole.h
+
+# Domain listing helpers
+DOMAIN_LIST_SOURCES =						\
+		conf/virdomainlist.c conf/virdomainlist.h
 
 CONF_SOURCES =							\
 		$(NETDEV_CONF_SOURCES)				\
@@ -206,7 +211,8 @@ CONF_SOURCES =							\
 		$(INTERFACE_CONF_SOURCES)			\
 		$(SECRET_CONF_SOURCES)				\
 		$(CPU_CONF_SOURCES)				\
-		$(CONSOLE_CONF_SOURCES)
+		$(CONSOLE_CONF_SOURCES)				\
+		$(DOMAIN_LIST_SOURCES)
 
 # The remote RPC driver, covering domains, storage, networks, etc
 REMOTE_DRIVER_GENERATED = \

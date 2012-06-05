@@ -1239,6 +1239,10 @@ virConsoleOpen;
 virDBusGetSystemBus;
 
 
+# virdomainlist.h
+virDomainList;
+
+
 # virfile.h
 virFileClose;
 virFileDirectFdFlag;
