@@ -3141,7 +3141,17 @@ error:
              * to remove danger of it ending up running twice if
              * user tries to start it again later
              */
-            qemuProcessStop(driver, obj, 0, VIR_DOMAIN_SHUTOFF_FAILED);
+            if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
+                /* If we couldn't get the monitor and qemu supports
+                 * no-shutdown, we can safely say that the domain
+                 * crashed ... */
+                state = VIR_DOMAIN_SHUTOFF_CRASHED;
+            } else {
+                /* ... but if it doesn't we can't say what the state
+                 * really is and FAILED means "failed to start" */
+                state = VIR_DOMAIN_SHUTOFF_UNKNOWN;
+            }
+            qemuProcessStop(driver, obj, 0, state);
             if (!obj->persistent)
                 qemuDomainRemoveInactive(driver, obj);
             else
