@@ -654,8 +654,7 @@ libvirt_driver_remote_la_LIBADD = $(GNUTLS_LIBS) \
                 libvirt-net-rpc.la
 libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
 
-REMOTE_DRIVER_PREREQS = $(REMOTE_DRIVER_GENERATED)
-%remote_driver.lo: $(REMOTE_DRIVER_PREREQS)
+BUILT_SOURCES += $(REMOTE_DRIVER_GENERATED)
 
 endif WITH_REMOTE
 
@@ -1297,7 +1296,7 @@ libvirt_la_BUILT_LIBADD += libvirt_probes.lo
 libvirt_la_DEPENDENCIES += libvirt_probes.lo libvirt_probes.o
 nodist_libvirt_la_SOURCES = libvirt_probes.h
 if WITH_REMOTE
-REMOTE_DRIVER_PREREQS += libvirt_probes.h
+nodist_libvirt_driver_remote_la_SOURCES = libvirt_probes.h
 endif WITH_REMOTE
 
 BUILT_SOURCES += libvirt_probes.h libvirt_probes.stp libvirt_functions.stp
