@@ -661,8 +661,7 @@ libvirt_driver_remote_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
 
-REMOTE_DRIVER_PREREQS = $(REMOTE_DRIVER_GENERATED)
-%remote_driver.lo: $(REMOTE_DRIVER_PREREQS)
+BUILT_SOURCES += $(REMOTE_DRIVER_GENERATED)
 
 endif WITH_REMOTE
 
@@ -1299,7 +1298,7 @@ libvirt_la_BUILT_LIBADD += probes.o
 libvirt_la_DEPENDENCIES += probes.o
 nodist_libvirt_la_SOURCES = probes.h
 if WITH_REMOTE
-$(REMOTE_DRIVER_GENERATED): probes.h
+nodist_libvirt_driver_remote_la_SOURCES = probes.h
 endif WITH_REMOTE
 
 BUILT_SOURCES += probes.h libvirt_probes.stp libvirt_functions.stp
