@@ -355,7 +355,11 @@ BuildRequires: augeas
 BuildRequires: hal-devel
 %endif
 %if %{with_udev}
+%if 0%{?fedora} >= 18 || 0%{?rhel} >= 7
+BuildRequires: systemd-devel >= 185
+%else
 BuildRequires: libudev-devel >= 145
+%endif
 BuildRequires: libpciaccess-devel >= 0.10.9
 %endif
 %if %{with_yajl}
@@ -539,7 +543,11 @@ Requires: ebtables
 Requires: hal
 %endif
 %if %{with_udev}
+%if 0%{?fedora} >= 18 || 0%{?rhel} >= 7
+Requires: systemd >= 185
+%else
 Requires: udev >= 145
+%endif
 %endif
 %if %{with_polkit}
 %if 0%{?fedora} >= 12 || 0%{?rhel} >=6
