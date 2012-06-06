@@ -840,10 +840,13 @@ qemuMigrationIsSafe(virDomainDefPtr def)
             !disk->readonly &&
             disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE) {
             int cfs;
-            if ((cfs = virStorageFileIsClusterFS(disk->src)) == 1)
-                continue;
-            else if (cfs < 0)
-                return false;
+
+            if (disk->type == VIR_DOMAIN_DISK_TYPE_FILE) {
+                if ((cfs = virStorageFileIsClusterFS(disk->src)) == 1)
+                    continue;
+                else if (cfs < 0)
+                    return false;
+            }
 
             qemuReportError(VIR_ERR_MIGRATE_UNSAFE, "%s",
                             _("Migration may lead to data corruption if disks"
