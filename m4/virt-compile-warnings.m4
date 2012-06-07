@@ -103,8 +103,9 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     AC_DEFINE([lint], [1],
       [Define to 1 if the compiler is checking for lint.])
     AH_VERBATIM([FORTIFY_SOURCE],
-    [/* Enable compile-time and run-time bounds-checking, and some warnings. */
-     #if __OPTIMIZE__
+    [/* Enable compile-time and run-time bounds-checking, and some warnings,
+        without upsetting newer glibc. */
+     #if defined __OPTIMIZE__ && __OPTIMIZE__
      # define _FORTIFY_SOURCE 2
      #endif
     ])
