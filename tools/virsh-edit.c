@@ -55,7 +55,7 @@ do {
     char *doc = NULL;
     char *doc_edited = NULL;
     char *doc_reread = NULL;
-    char *msg = NULL;
+    const char *msg = NULL;
 
     /* Get the XML configuration of the object. */
     doc = (EDIT_GET_XML);
