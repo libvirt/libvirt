@@ -1200,7 +1200,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
         case VIR_NETWORK_FORWARD_PASSTHROUGH:
             if (def->bridge) {
                 virNetworkReportError(VIR_ERR_XML_ERROR,
-                                      _("bridge name not allowed in %s mode (network '%s'"),
+                                      _("bridge name not allowed in %s mode (network '%s')"),
                                       virNetworkForwardTypeToString(def->forwardType),
                                       def->name);
                 goto error;
