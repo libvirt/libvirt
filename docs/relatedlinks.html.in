@@ -61,5 +61,23 @@
       </li>
     </ul>
 
+    <h2>Blogs and Podcasts</h2>
+
+    <ul>
+      <li>
+        <a href="http://twit.tv/show/floss-weekly/213">FLOSS Weekly
+        podcast on the topic of libvirt</a>
+      </li>
+      <li>
+        <a href="http://berrange.com/topics/libvirt/">Daniel
+        Berrange's blog on useful libvirt development tips</a>
+      </li>
+      <li>
+        <a href="http://planet.virt-tools.org/index.html">Virt Tools
+        Blog Planet: blog aggregation of several virt-related
+        feeds</a>
+      </li>
+    </ul>
+
   </body>
 </html>
