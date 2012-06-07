@@ -43,7 +43,7 @@
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 
-int virFileClose(int *fdptr, bool preserve_errno, bool ignore_EBADF)
+int virFileClose(int *fdptr, virFileCloseFlags flags)
 {
     int saved_errno = 0;
     int rc = 0;
@@ -51,24 +51,28 @@ int virFileClose(int *fdptr, bool preserve_errno, bool ignore_EBADF)
     if (*fdptr < 0)
         return 0;
 
-    if (preserve_errno)
+    if (flags & VIR_FILE_CLOSE_PRESERVE_ERRNO)
         saved_errno = errno;
 
     rc = close(*fdptr);
-    if (rc < 0) {
-        if (errno == EBADF) {
-            if (!ignore_EBADF)
-                VIR_WARN("Tried to close invalid fd %d", *fdptr);
+
+    if (!(flags & VIR_FILE_CLOSE_DONT_LOG)) {
+        if (rc < 0) {
+            if (errno == EBADF) {
+                if (!(flags & VIR_FILE_CLOSE_IGNORE_EBADF))
+                    VIR_WARN("Tried to close invalid fd %d", *fdptr);
+            } else {
+                char ebuf[1024] ATTRIBUTE_UNUSED;
+                VIR_DEBUG("Failed to close fd %d: %s",
+                          *fdptr, virStrerror(errno, ebuf, sizeof(ebuf)));
+            }
         } else {
-            char ebuf[1024] ATTRIBUTE_UNUSED;
-            VIR_DEBUG("Failed to close fd %d: %s",
-                      *fdptr, virStrerror(errno, ebuf, sizeof(ebuf)));
+            VIR_DEBUG("Closed fd %d", *fdptr);
         }
-    } else {
-        VIR_DEBUG("Closed fd %d", *fdptr);
     }
     *fdptr = -1;
-    if (preserve_errno)
+
+    if (flags & VIR_FILE_CLOSE_PRESERVE_ERRNO)
         errno = saved_errno;
 
     return rc;

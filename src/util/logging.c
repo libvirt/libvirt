@@ -864,10 +864,11 @@ static int virLogOutputToFd(const char *category ATTRIBUTE_UNUSED,
     return ret;
 }
 
-static void virLogCloseFd(void *data) {
+static void virLogCloseFd(void *data)
+{
     int fd = (intptr_t) data;
 
-    VIR_FORCE_CLOSE(fd);
+    VIR_LOG_CLOSE(fd);
 }
 
 static int virLogAddOutputToStderr(int priority) {
