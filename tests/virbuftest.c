@@ -73,6 +73,10 @@ static int testBufAutoIndent(const void *data ATTRIBUTE_UNUSED)
         ret = -1;
     }
     virBufferAdjustIndent(buf, 3);
+    if (STRNEQ(virBufferCurrentContent(buf), "")) {
+        TEST_ERROR("Wrong content");
+        ret = -1;
+    }
     if (virBufferGetIndent(buf, false) != 3 ||
         virBufferGetIndent(buf, true) != 3 ||
         virBufferError(buf)) {
@@ -102,6 +106,10 @@ static int testBufAutoIndent(const void *data ATTRIBUTE_UNUSED)
     }
     virBufferAdjustIndent(buf, 2);
     virBufferAddLit(buf, "1");
+    if (STRNEQ(virBufferCurrentContent(buf), "  1")) {
+        TEST_ERROR("Wrong content");
+        ret = -1;
+    }
     if (virBufferGetIndent(buf, false) != 2 ||
         virBufferGetIndent(buf, true) != 0) {
         TEST_ERROR("Wrong indentation");

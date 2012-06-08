@@ -175,12 +175,32 @@ virBufferAddChar(virBufferPtr buf, char c)
 }
 
 /**
+ * virBufferCurrentContent:
+ * @buf: Buffer
+ *
+ * Get the current content from the buffer.  The content is only valid
+ * until the next operation on @buf, and an empty string is returned if
+ * no content is present yet.
+ *
+ * Returns the buffer content or NULL in case of error.
+ */
+const char *
+virBufferCurrentContent(virBufferPtr buf)
+{
+    if (!buf || buf->error)
+        return NULL;
+    return buf->use ? buf->content : "";
+}
+
+/**
  * virBufferContentAndReset:
  * @buf: Buffer
  *
  * Get the content from the buffer and free (only) the buffer structure.
  * The caller owns the returned string & should free it when no longer
- * required. The buffer object is reset to its initial state.
+ * required. The buffer object is reset to its initial state.  This
+ * interface intentionally returns NULL instead of an empty string if
+ * there is no content.
  *
  * Returns the buffer content or NULL in case of error.
  */
