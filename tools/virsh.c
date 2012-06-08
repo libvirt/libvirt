@@ -13164,6 +13164,86 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     return true;
 }
 
+/* Tree listing helpers.  */
+static int
+vshTreePrintInternal(vshControl *ctl,
+                     char **devices,
+                     char **parents,
+                     int num_devices,
+                     int devid,
+                     int lastdev,
+                     bool root,
+                     virBufferPtr indent)
+{
+    int i;
+    int nextlastdev = -1;
+    int ret = -1;
+
+    if (virBufferError(indent))
+        goto cleanup;
+
+    /* Print this device, with indent if not at root */
+    vshPrint(ctl, "%s%s%s\n", virBufferCurrentContent(indent),
+             root ? "" : "+- ", devices[devid]);
+
+    /* Update indent to show '|' or ' ' for child devices */
+    if (!root) {
+        virBufferAddChar(indent, devid == lastdev ? ' ' : '|');
+        virBufferAddChar(indent, ' ');
+        if (virBufferError(indent))
+            goto cleanup;
+    }
+
+    /* Determine the index of the last child device */
+    for (i = 0 ; i < num_devices ; i++) {
+        if (parents[i] &&
+            STREQ(parents[i], devices[devid])) {
+            nextlastdev = i;
+        }
+    }
+
+    /* If there is a child device, then print another blank line */
+    if (nextlastdev != -1)
+        vshPrint(ctl, "%s  |\n", virBufferCurrentContent(indent));
+
+    /* Finally print all children */
+    virBufferAddLit(indent, "  ");
+    for (i = 0 ; i < num_devices ; i++) {
+        if (parents[i] && STREQ(parents[i], devices[devid]) &&
+            vshTreePrintInternal(ctl, devices, parents,
+                                 num_devices, i, nextlastdev,
+                                 false, indent) < 0)
+            goto cleanup;
+    }
+    virBufferTrim(indent, "  ", -1);
+
+    /* If there was no child device, and we're the last in
+     * a list of devices, then print another blank line */
+    if (nextlastdev == -1 && devid == lastdev)
+        vshPrint(ctl, "%s\n", virBufferCurrentContent(indent));
+
+    if (!root)
+        virBufferTrim(indent, NULL, 2);
+    ret = 0;
+cleanup:
+    return ret;
+}
+
+static int
+vshTreePrint(vshControl *ctl, char **devices, char **parents,
+             int num_devices, int devid)
+{
+    int ret;
+    virBuffer indent = VIR_BUFFER_INITIALIZER;
+
+    ret = vshTreePrintInternal(ctl, devices, parents, num_devices,
+                               devid, devid, true, &indent);
+    if (ret < 0)
+        vshError(ctl, "%s", _("Failed to complete tree listing"));
+    virBufferFreeAndReset(&indent);
+    return ret;
+}
+
 /*
  * "nodedev-list" command
  */
@@ -13179,93 +13259,14 @@ static const vshCmdOptDef opts_node_list_devices[] = {
     {NULL, 0, 0, NULL}
 };
 
-#define MAX_DEPTH 100
-#define INDENT_SIZE 4
-#define INDENT_BUFLEN ((MAX_DEPTH * INDENT_SIZE) + 1)
-
-static void
-cmdNodeListDevicesPrint(vshControl *ctl,
-                        char **devices,
-                        char **parents,
-                        int num_devices,
-                        int devid,
-                        int lastdev,
-                        unsigned int depth,
-                        unsigned int indentIdx,
-                        char *indentBuf)
-{
-    int i;
-    int nextlastdev = -1;
-
-    /* Prepare indent for this device, but not if at root */
-    if (depth && depth < MAX_DEPTH) {
-        indentBuf[indentIdx] = '+';
-        indentBuf[indentIdx+1] = '-';
-        indentBuf[indentIdx+2] = ' ';
-        indentBuf[indentIdx+3] = '\0';
-    }
-
-    /* Print this device */
-    vshPrint(ctl, "%s", indentBuf);
-    vshPrint(ctl, "%s\n", devices[devid]);
-
-
-    /* Update indent to show '|' or ' ' for child devices */
-    if (depth && depth < MAX_DEPTH) {
-        if (devid == lastdev)
-            indentBuf[indentIdx] = ' ';
-        else
-            indentBuf[indentIdx] = '|';
-        indentBuf[indentIdx+1] = ' ';
-        indentIdx+=2;
-    }
-
-    /* Determine the index of the last child device */
-    for (i = 0 ; i < num_devices ; i++) {
-        if (parents[i] &&
-            STREQ(parents[i], devices[devid])) {
-            nextlastdev = i;
-        }
-    }
-
-    /* If there is a child device, then print another blank line */
-    if (nextlastdev != -1) {
-        vshPrint(ctl, "%s", indentBuf);
-        vshPrint(ctl, " |\n");
-    }
-
-    /* Finally print all children */
-    if (depth < MAX_DEPTH)
-        indentBuf[indentIdx] = ' ';
-    for (i = 0 ; i < num_devices ; i++) {
-        if (depth < MAX_DEPTH) {
-            indentBuf[indentIdx] = ' ';
-            indentBuf[indentIdx+1] = ' ';
-        }
-        if (parents[i] &&
-            STREQ(parents[i], devices[devid]))
-            cmdNodeListDevicesPrint(ctl, devices, parents,
-                                    num_devices, i, nextlastdev,
-                                    depth + 1, indentIdx + 2, indentBuf);
-        if (depth < MAX_DEPTH)
-            indentBuf[indentIdx] = '\0';
-    }
-
-    /* If there was no child device, and we're the last in
-     * a list of devices, then print another blank line */
-    if (nextlastdev == -1 && devid == lastdev) {
-        vshPrint(ctl, "%s", indentBuf);
-        vshPrint(ctl, "\n");
-    }
-}
-
 static bool
-cmdNodeListDevices (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     const char *cap = NULL;
     char **devices;
     int num_devices, i;
     bool tree = vshCommandOptBool(cmd, "tree");
+    bool ret = true;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -13291,8 +13292,8 @@ cmdNodeListDevices (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     }
     qsort(&devices[0], num_devices, sizeof(char*), namesorter);
     if (tree) {
-        char indentBuf[INDENT_BUFLEN];
         char **parents = vshMalloc(ctl, sizeof(char *) * num_devices);
+
         for (i = 0; i < num_devices; i++) {
             virNodeDevicePtr dev = virNodeDeviceLookupByName(ctl->conn, devices[i]);
             if (dev && STRNEQ(devices[i], "computer")) {
@@ -13304,17 +13305,9 @@ cmdNodeListDevices (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             virNodeDeviceFree(dev);
         }
         for (i = 0 ; i < num_devices ; i++) {
-            memset(indentBuf, '\0', sizeof(indentBuf));
-            if (parents[i] == NULL)
-                cmdNodeListDevicesPrint(ctl,
-                                        devices,
-                                        parents,
-                                        num_devices,
-                                        i,
-                                        i,
-                                        0,
-                                        0,
-                                        indentBuf);
+            if (parents[i] == NULL &&
+                vshTreePrint(ctl, devices, parents, num_devices, i) < 0)
+                ret = false;
         }
         for (i = 0 ; i < num_devices ; i++) {
             VIR_FREE(devices[i]);
@@ -13328,7 +13321,7 @@ cmdNodeListDevices (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         }
     }
     VIR_FREE(devices);
-    return true;
+    return ret;
 }
 
 /*
@@ -16762,20 +16755,11 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         }
     }
     if (tree) {
-        char indentBuf[INDENT_BUFLEN];
         for (i = 0 ; i < actual ; i++) {
-            memset(indentBuf, '\0', sizeof(indentBuf));
             if ((from && ctl->useSnapshotOld) ? STREQ(names[i], from) :
-                !parents[i])
-                cmdNodeListDevicesPrint(ctl,
-                                        names,
-                                        parents,
-                                        actual,
-                                        i,
-                                        i,
-                                        0,
-                                        0,
-                                        indentBuf);
+                !parents[i] &&
+                vshTreePrint(ctl, names, parents, actual, i) < 0)
+                goto cleanup;
         }
 
         ret = true;
