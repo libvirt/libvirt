@@ -534,4 +534,9 @@ LIBVIRT_0.9.11 {
         virDomainPMWakeup;
 } LIBVIRT_0.9.10;
 
+LIBVIRT_0.9.13 {
+    global:
+        virDomainSnapshotRef;
+} LIBVIRT_0.9.11;
+
 # .... define new API here using predicted next version number ....

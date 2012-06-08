@@ -17487,6 +17487,39 @@ error:
 }
 
 /**
+ * virDomainSnapshotRef:
+ * @snapshot: the snapshot to hold a reference on
+ *
+ * Increment the reference count on the snapshot. For each
+ * additional call to this method, there shall be a corresponding
+ * call to virDomainSnapshotFree to release the reference count, once
+ * the caller no longer needs the reference to this object.
+ *
+ * This method is typically useful for applications where multiple
+ * threads are using a connection, and it is required that the
+ * connection and domain remain open until all threads have finished
+ * using the snapshot. ie, each new thread using a snapshot would
+ * increment the reference count.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainSnapshotRef(virDomainSnapshotPtr snapshot)
+{
+    if ((!VIR_IS_DOMAIN_SNAPSHOT(snapshot))) {
+        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
+                                  __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    virMutexLock(&snapshot->domain->conn->lock);
+    VIR_DEBUG("snapshot=%p, refs=%d", snapshot, snapshot->refs);
+    snapshot->refs++;
+    virMutexUnlock(&snapshot->domain->conn->lock);
+    return 0;
+}
+
+/**
  * virDomainSnapshotFree:
  * @snapshot: a domain snapshot object
  *
