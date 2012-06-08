@@ -72,7 +72,7 @@ static int testMessageHeaderEncode(const void *args ATTRIBUTE_UNUSED)
     }
 
     if (msg->bufferLength != msg_buf_size) {
-        VIR_DEBUG("Expect message offset %zu got %zu",
+        VIR_DEBUG("Expect message offset %lu got %zu",
                   msg_buf_size, msg->bufferLength);
         goto cleanup;
     }
