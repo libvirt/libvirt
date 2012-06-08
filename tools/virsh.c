@@ -16599,10 +16599,9 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
     int parent_filter = 0; /* -1 for roots filtering, 0 for no parent
                               information needed, 1 for parent column */
-    int numsnaps;
     char **names = NULL;
     char **parents = NULL;
-    int actual = 0;
+    int count = 0;
     int i;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
@@ -16676,9 +16675,9 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         if (descendants || tree) {
             flags |= VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
         }
-        numsnaps = ctl->useSnapshotOld ? -1 :
+        count = ctl->useSnapshotOld ? -1 :
             virDomainSnapshotNumChildren(start, flags);
-        if (numsnaps < 0) {
+        if (count < 0) {
             if (ctl->useSnapshotOld ||
                 last_error->code == VIR_ERR_NO_SUPPORT) {
                 /* We can emulate --from.  */
@@ -16687,27 +16686,27 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
                 last_error = NULL;
                 ctl->useSnapshotOld = true;
                 flags &= ~VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
-                numsnaps = virDomainSnapshotNum(dom, flags);
+                count = virDomainSnapshotNum(dom, flags);
             }
         } else if (tree) {
-            numsnaps++;
+            count++;
         }
     } else {
-        numsnaps = virDomainSnapshotNum(dom, flags);
+        count = virDomainSnapshotNum(dom, flags);
 
         /* Fall back to simulation if --roots was unsupported. */
         /* XXX can we also emulate --leaves? */
-        if (numsnaps < 0 && last_error->code == VIR_ERR_INVALID_ARG &&
+        if (count < 0 && last_error->code == VIR_ERR_INVALID_ARG &&
             (flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS)) {
             virFreeError(last_error);
             last_error = NULL;
             parent_filter = -1;
             flags &= ~VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
-            numsnaps = virDomainSnapshotNum(dom, flags);
+            count = virDomainSnapshotNum(dom, flags);
         }
     }
 
-    if (numsnaps < 0) {
+    if (count < 0) {
         if (!last_error)
             vshError(ctl, _("missing support"));
         goto cleanup;
@@ -16725,41 +16724,40 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
 "------------------------------------------------------------\n");
     }
 
-    if (!numsnaps) {
+    if (!count) {
         ret = true;
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(names, numsnaps) < 0)
+    if (VIR_ALLOC_N(names, count) < 0)
         goto cleanup;
 
     if (from && !ctl->useSnapshotOld) {
         /* When mixing --from and --tree, we want to start the tree at the
          * given snapshot.  Without --tree, only list the children.  */
         if (tree) {
-            if (numsnaps)
-                actual = virDomainSnapshotListChildrenNames(start, names + 1,
-                                                            numsnaps - 1,
-                                                            flags);
-            if (actual >= 0) {
-                actual++;
+            if (count)
+                count = virDomainSnapshotListChildrenNames(start, names + 1,
+                                                           count - 1, flags);
+            if (count >= 0) {
+                count++;
                 names[0] = vshStrdup(ctl, from);
             }
         } else {
-            actual = virDomainSnapshotListChildrenNames(start, names,
-                                                        numsnaps, flags);
+            count = virDomainSnapshotListChildrenNames(start, names,
+                                                       count, flags);
         }
     } else {
-        actual = virDomainSnapshotListNames(dom, names, numsnaps, flags);
+        count = virDomainSnapshotListNames(dom, names, count, flags);
     }
-    if (actual < 0)
+    if (count < 0)
         goto cleanup;
 
-    qsort(&names[0], actual, sizeof(char*), namesorter);
+    qsort(&names[0], count, sizeof(char*), namesorter);
 
     if (tree || (from && ctl->useSnapshotOld)) {
-        parents = vshCalloc(ctl, sizeof(char *), actual);
-        for (i = (from && !ctl->useSnapshotOld); i < actual; i++) {
+        parents = vshCalloc(ctl, sizeof(char *), count);
+        for (i = (from && !ctl->useSnapshotOld); i < count; i++) {
             if (from && ctl->useSnapshotOld && STREQ(names[i], from)) {
                 start_index = i;
                 continue;
@@ -16781,123 +16779,123 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     if (tree) {
         struct vshTreeArray arrays = { names, parents };
 
-        for (i = 0 ; i < actual ; i++) {
+        for (i = 0 ; i < count ; i++) {
             if ((from && ctl->useSnapshotOld) ? STREQ(names[i], from) :
                 !parents[i] &&
-                vshTreePrint(ctl, vshTreeArrayLookup, &arrays, actual, i) < 0)
+                vshTreePrint(ctl, vshTreeArrayLookup, &arrays, count, i) < 0)
                 goto cleanup;
         }
 
         ret = true;
         goto cleanup;
-    } else {
-        if (ctl->useSnapshotOld && descendants) {
-            bool changed = false;
+    }
 
-            /* Make multiple passes over the list - first pass NULLs
-             * out all roots except start, remaining passes NULL out
-             * any entry whose parent is not still in list.  Also, we
-             * NULL out parent when name is known to be in list.
-             * Sorry, this is O(n^3) - hope your hierarchy isn't huge.  */
-            if (start_index < 0) {
-                vshError(ctl, _("snapshot %s disappeared from list"), from);
-                goto cleanup;
+    if (ctl->useSnapshotOld && descendants) {
+        bool changed = false;
+
+        /* Make multiple passes over the list - first pass NULLs out
+         * all roots except start, remaining passes NULL out any entry
+         * whose parent is not still in list.  Also, we NULL out
+         * parent when name is known to be in list.  Sorry, this is
+         * O(n^3) - hope your hierarchy isn't huge.  */
+        if (start_index < 0) {
+            vshError(ctl, _("snapshot %s disappeared from list"), from);
+            goto cleanup;
+        }
+        for (i = 0; i < count; i++) {
+            if (i == start_index)
+                continue;
+            if (!parents[i]) {
+                VIR_FREE(names[i]);
+            } else if (STREQ(parents[i], from)) {
+                VIR_FREE(parents[i]);
+                changed = true;
             }
-            for (i = 0; i < actual; i++) {
-                if (i == start_index)
+        }
+        if (!changed) {
+            ret = true;
+            goto cleanup;
+        }
+        while (changed) {
+            changed = false;
+            for (i = 0; i < count; i++) {
+                bool found = false;
+                int j;
+
+                if (!names[i] || !parents[i])
                     continue;
-                if (!parents[i]) {
-                    VIR_FREE(names[i]);
-                } else if (STREQ(parents[i], from)) {
-                    VIR_FREE(parents[i]);
-                    changed = true;
-                }
-            }
-            if (!changed) {
-                ret = true;
-                goto cleanup;
-            }
-            while (changed) {
-                changed = false;
-                for (i = 0; i < actual; i++) {
-                    bool found = false;
-                    int j;
-
-                    if (!names[i] || !parents[i])
+                for (j = 0; j < count; j++) {
+                    if (!names[j] || i == j)
                         continue;
-                    for (j = 0; j < actual; j++) {
-                        if (!names[j] || i == j)
-                            continue;
-                        if (STREQ(parents[i], names[j])) {
-                            found = true;
-                            if (!parents[j])
-                                VIR_FREE(parents[i]);
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        changed = true;
-                        VIR_FREE(names[i]);
+                    if (STREQ(parents[i], names[j])) {
+                        found = true;
+                        if (!parents[j])
+                            VIR_FREE(parents[i]);
+                        break;
                     }
                 }
+                if (!found) {
+                    changed = true;
+                    VIR_FREE(names[i]);
+                }
             }
-            VIR_FREE(names[start_index]);
+        }
+        VIR_FREE(names[start_index]);
+    }
+
+    for (i = 0; i < count; i++) {
+        if (from && ctl->useSnapshotOld &&
+            (descendants ? !names[i] : STRNEQ_NULLABLE(parents[i], from)))
+            continue;
+
+        /* free up memory from previous iterations of the loop */
+        VIR_FREE(parent);
+        VIR_FREE(state);
+        if (snapshot)
+            virDomainSnapshotFree(snapshot);
+        xmlXPathFreeContext(ctxt);
+        xmlFreeDoc(xml);
+        VIR_FREE(doc);
+
+        snapshot = virDomainSnapshotLookupByName(dom, names[i], 0);
+        if (snapshot == NULL)
+            continue;
+
+        doc = virDomainSnapshotGetXMLDesc(snapshot, 0);
+        if (!doc)
+            continue;
+
+        xml = virXMLParseStringCtxt(doc, _("(domain_snapshot)"), &ctxt);
+        if (!xml)
+            continue;
+
+        if (parent_filter) {
+            parent = virXPathString("string(/domainsnapshot/parent/name)",
+                                    ctxt);
+            if (!parent && parent_filter < 0)
+                continue;
         }
 
-        for (i = 0; i < actual; i++) {
-            if (from && ctl->useSnapshotOld &&
-                (descendants ? !names[i] : STRNEQ_NULLABLE(parents[i], from)))
-                continue;
-
-            /* free up memory from previous iterations of the loop */
-            VIR_FREE(parent);
-            VIR_FREE(state);
-            if (snapshot)
-                virDomainSnapshotFree(snapshot);
-            xmlXPathFreeContext(ctxt);
-            xmlFreeDoc(xml);
-            VIR_FREE(doc);
-
-            snapshot = virDomainSnapshotLookupByName(dom, names[i], 0);
-            if (snapshot == NULL)
-                continue;
-
-            doc = virDomainSnapshotGetXMLDesc(snapshot, 0);
-            if (!doc)
-                continue;
-
-            xml = virXMLParseStringCtxt(doc, _("(domain_snapshot)"), &ctxt);
-            if (!xml)
-                continue;
-
-            if (parent_filter) {
-                parent = virXPathString("string(/domainsnapshot/parent/name)",
-                                        ctxt);
-                if (!parent && parent_filter < 0)
-                    continue;
-            }
-
-            state = virXPathString("string(/domainsnapshot/state)", ctxt);
-            if (state == NULL)
-                continue;
-            if (virXPathLongLong("string(/domainsnapshot/creationTime)", ctxt,
-                                 &creation_longlong) < 0)
-                continue;
-            creation_time_t = creation_longlong;
-            if (creation_time_t != creation_longlong) {
-                vshError(ctl, "%s", _("time_t overflow"));
-                continue;
-            }
-            localtime_r(&creation_time_t, &time_info);
-            strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%M:%S %z",
-                     &time_info);
-
-            if (parent)
-                vshPrint(ctl, " %-20s %-25s %-15s %s\n",
-                         names[i], timestr, state, parent);
-            else
-                vshPrint(ctl, " %-20s %-25s %s\n", names[i], timestr, state);
+        state = virXPathString("string(/domainsnapshot/state)", ctxt);
+        if (state == NULL)
+            continue;
+        if (virXPathLongLong("string(/domainsnapshot/creationTime)", ctxt,
+                             &creation_longlong) < 0)
+            continue;
+        creation_time_t = creation_longlong;
+        if (creation_time_t != creation_longlong) {
+            vshError(ctl, "%s", _("time_t overflow"));
+            continue;
         }
+        localtime_r(&creation_time_t, &time_info);
+        strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%M:%S %z",
+                 &time_info);
+
+        if (parent)
+            vshPrint(ctl, " %-20s %-25s %-15s %s\n",
+                     names[i], timestr, state, parent);
+        else
+            vshPrint(ctl, " %-20s %-25s %s\n", names[i], timestr, state);
     }
 
     ret = true;
@@ -16913,7 +16911,7 @@ cleanup:
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
     VIR_FREE(doc);
-    for (i = 0; i < actual; i++) {
+    for (i = 0; i < count; i++) {
         VIR_FREE(names[i]);
         if (parents)
             VIR_FREE(parents[i]);
