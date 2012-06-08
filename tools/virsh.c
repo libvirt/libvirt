@@ -13165,10 +13165,15 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 }
 
 /* Tree listing helpers.  */
+
+/* Given an index, return either the name of that device (non-NULL) or
+ * of its parent (NULL if a root).  */
+typedef const char * (*vshTreeLookup)(int devid, bool parent, void *opaque);
+
 static int
 vshTreePrintInternal(vshControl *ctl,
-                     char **devices,
-                     char **parents,
+                     vshTreeLookup lookup,
+                     void *opaque,
                      int num_devices,
                      int devid,
                      int lastdev,
@@ -13178,13 +13183,14 @@ vshTreePrintInternal(vshControl *ctl,
     int i;
     int nextlastdev = -1;
     int ret = -1;
+    const char *dev = (lookup)(devid, false, opaque);
 
     if (virBufferError(indent))
         goto cleanup;
 
     /* Print this device, with indent if not at root */
     vshPrint(ctl, "%s%s%s\n", virBufferCurrentContent(indent),
-             root ? "" : "+- ", devices[devid]);
+             root ? "" : "+- ", dev);
 
     /* Update indent to show '|' or ' ' for child devices */
     if (!root) {
@@ -13196,10 +13202,10 @@ vshTreePrintInternal(vshControl *ctl,
 
     /* Determine the index of the last child device */
     for (i = 0 ; i < num_devices ; i++) {
-        if (parents[i] &&
-            STREQ(parents[i], devices[devid])) {
+        const char *parent = (lookup)(i, true, opaque);
+
+        if (parent && STREQ(parent, dev))
             nextlastdev = i;
-        }
     }
 
     /* If there is a child device, then print another blank line */
@@ -13209,8 +13215,10 @@ vshTreePrintInternal(vshControl *ctl,
     /* Finally print all children */
     virBufferAddLit(indent, "  ");
     for (i = 0 ; i < num_devices ; i++) {
-        if (parents[i] && STREQ(parents[i], devices[devid]) &&
-            vshTreePrintInternal(ctl, devices, parents,
+        const char *parent = (lookup)(i, true, opaque);
+
+        if (parent && STREQ(parent, dev) &&
+            vshTreePrintInternal(ctl, lookup, opaque,
                                  num_devices, i, nextlastdev,
                                  false, indent) < 0)
             goto cleanup;
@@ -13230,18 +13238,32 @@ cleanup:
 }
 
 static int
-vshTreePrint(vshControl *ctl, char **devices, char **parents,
+vshTreePrint(vshControl *ctl, vshTreeLookup lookup, void *opaque,
              int num_devices, int devid)
 {
     int ret;
     virBuffer indent = VIR_BUFFER_INITIALIZER;
 
-    ret = vshTreePrintInternal(ctl, devices, parents, num_devices,
+    ret = vshTreePrintInternal(ctl, lookup, opaque, num_devices,
                                devid, devid, true, &indent);
     if (ret < 0)
         vshError(ctl, "%s", _("Failed to complete tree listing"));
     virBufferFreeAndReset(&indent);
     return ret;
+}
+
+struct vshTreeArray {
+    char **names;
+    char **parents;
+};
+
+static const char *
+vshTreeArrayLookup(int devid, bool parent, void *opaque)
+{
+    struct vshTreeArray *arrays = opaque;
+    if (parent)
+        return arrays->parents[devid];
+    return arrays->names[devid];
 }
 
 /*
@@ -13293,6 +13315,7 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     qsort(&devices[0], num_devices, sizeof(char*), namesorter);
     if (tree) {
         char **parents = vshMalloc(ctl, sizeof(char *) * num_devices);
+        struct vshTreeArray arrays = { devices, parents };
 
         for (i = 0; i < num_devices; i++) {
             virNodeDevicePtr dev = virNodeDeviceLookupByName(ctl->conn, devices[i]);
@@ -13306,7 +13329,8 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         }
         for (i = 0 ; i < num_devices ; i++) {
             if (parents[i] == NULL &&
-                vshTreePrint(ctl, devices, parents, num_devices, i) < 0)
+                vshTreePrint(ctl, vshTreeArrayLookup, &arrays, num_devices,
+                             i) < 0)
                 ret = false;
         }
         for (i = 0 ; i < num_devices ; i++) {
@@ -16755,10 +16779,12 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         }
     }
     if (tree) {
+        struct vshTreeArray arrays = { names, parents };
+
         for (i = 0 ; i < actual ; i++) {
             if ((from && ctl->useSnapshotOld) ? STREQ(names[i], from) :
                 !parents[i] &&
-                vshTreePrint(ctl, names, parents, actual, i) < 0)
+                vshTreePrint(ctl, vshTreeArrayLookup, &arrays, actual, i) < 0)
                 goto cleanup;
         }
 
