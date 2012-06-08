@@ -1555,7 +1555,8 @@ static int virNetClientIO(virNetClientPtr client,
             return -1;
         }
 
-        VIR_DEBUG("Going to sleep %p %p", client->waitDispatch, thiscall);
+        VIR_DEBUG("Going to sleep head=%p call=%p",
+                  client->waitDispatch, thiscall);
         /* Go to sleep while other thread is working... */
         if (virCondWait(&thiscall->cond, &client->lock) < 0) {
             virNetClientCallRemove(&client->waitDispatch, thiscall);
@@ -1564,7 +1565,8 @@ static int virNetClientIO(virNetClientPtr client,
             return -1;
         }
 
-        VIR_DEBUG("Wokeup from sleep %p %p", client->waitDispatch, thiscall);
+        VIR_DEBUG("Woken up from sleep head=%p call=%p",
+                  client->waitDispatch, thiscall);
         /* Three reasons we can be woken up
          *  1. Other thread has got our reply ready for us
          *  2. Other thread is all done, and it is our turn to
@@ -1596,7 +1598,8 @@ static int virNetClientIO(virNetClientPtr client,
         client->haveTheBuck = true;
     }
 
-    VIR_DEBUG("We have the buck %p %p", client->waitDispatch, thiscall);
+    VIR_DEBUG("We have the buck head=%p call=%p",
+              client->waitDispatch, thiscall);
 
     /*
      * The buck stops here!
@@ -1625,7 +1628,8 @@ static int virNetClientIO(virNetClientPtr client,
         rv = -1;
 
 cleanup:
-    VIR_DEBUG("All done with our call %p %p %d", client->waitDispatch, thiscall, rv);
+    VIR_DEBUG("All done with our call head=%p call=%p rv=%d",
+              client->waitDispatch, thiscall, rv);
     return rv;
 }
 
