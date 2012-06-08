@@ -16794,6 +16794,30 @@ vshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
 
     /* 0.9.13 will be adding a new listing API.  */
 
+    /* Assume that if we got this far, then the --no-leaves and
+     * --no-metadata flags were not supported.  Disable groups that
+     * have no impact.  */
+    /* XXX should we emulate --no-leaves?  */
+    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES &&
+        flags & VIR_DOMAIN_SNAPSHOT_LIST_LEAVES)
+        flags &= ~(VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES |
+                   VIR_DOMAIN_SNAPSHOT_LIST_LEAVES);
+    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA &&
+        flags & VIR_DOMAIN_SNAPSHOT_LIST_METADATA)
+        flags &= ~(VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA |
+                   VIR_DOMAIN_SNAPSHOT_LIST_METADATA);
+    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA) {
+        /* We can emulate --no-metadata if --metadata was supported,
+         * since it was an all-or-none attribute on old servers.  */
+        count = virDomainSnapshotNum(dom,
+                                     VIR_DOMAIN_SNAPSHOT_LIST_METADATA);
+        if (count < 0)
+            goto cleanup;
+        if (count > 0)
+            return snaplist;
+        flags &= ~VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA;
+    }
+
     /* This uses the interfaces available in 0.8.0-0.9.6
      * (virDomainSnapshotListNames, global list only) and in
      * 0.9.7-0.9.12 (addition of virDomainSnapshotListChildrenNames
@@ -17028,8 +17052,12 @@ static const vshCmdOptDef opts_snapshot_list[] = {
     {"parent", VSH_OT_BOOL, 0, N_("add a column showing parent snapshot")},
     {"roots", VSH_OT_BOOL, 0, N_("list only snapshots without parents")},
     {"leaves", VSH_OT_BOOL, 0, N_("list only snapshots without children")},
+    {"no-leaves", VSH_OT_BOOL, 0,
+     N_("list only snapshots that are not leaves (with children)")},
     {"metadata", VSH_OT_BOOL, 0,
      N_("list only snapshots that have metadata that would prevent undefine")},
+    {"no-metadata", VSH_OT_BOOL, 0,
+     N_("list only snapshots that have no metadata managed by libvirt")},
     {"tree", VSH_OT_BOOL, 0, N_("list snapshots in a tree")},
     {"from", VSH_OT_DATA, 0, N_("limit list to children of given snapshot")},
     {"current", VSH_OT_BOOL, 0,
@@ -17058,6 +17086,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     struct tm time_info;
     bool tree = vshCommandOptBool(cmd, "tree");
     bool leaves = vshCommandOptBool(cmd, "leaves");
+    bool no_leaves = vshCommandOptBool(cmd, "no-leaves");
     const char *from = NULL;
     virDomainSnapshotPtr start = NULL;
     vshSnapshotListPtr snaplist = NULL;
@@ -17107,9 +17136,20 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         }
         flags |= VIR_DOMAIN_SNAPSHOT_LIST_LEAVES;
     }
+    if (no_leaves) {
+        if (tree) {
+            vshError(ctl, "%s",
+                     _("--no-leaves and --tree are mutually exclusive"));
+            goto cleanup;
+        }
+        flags |= VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES;
+    }
 
     if (vshCommandOptBool(cmd, "metadata")) {
         flags |= VIR_DOMAIN_SNAPSHOT_LIST_METADATA;
+    }
+    if (vshCommandOptBool(cmd, "no-metadata")) {
+        flags |= VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA;
     }
 
     if (vshCommandOptBool(cmd, "descendants")) {
