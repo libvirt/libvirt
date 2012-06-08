@@ -1258,8 +1258,8 @@ virNetClientIOEventLoopPassTheBuck(virNetClientPtr client,
  * get a reply to our own call. Then quit and pass the buck
  * to someone else.
  *
- * Returns 2 if fully sent, 1 if partially sent (only for nonBlock==true),
- * 0 if nothing sent (only for nonBlock==true) and -1 on error
+ * Returns 1 if the call was queued and will be completed later (only
+ * for nonBlock==true), 0 if the call was completed and -1 on error.
  */
 static int virNetClientIOEventLoop(virNetClientPtr client,
                                    virNetClientCallPtr thiscall)
@@ -1383,7 +1383,7 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
         if (thiscall->mode == VIR_NET_CLIENT_MODE_COMPLETE) {
             virNetClientCallRemove(&client->waitDispatch, thiscall);
             virNetClientIOEventLoopPassTheBuck(client, thiscall);
-            return 2;
+            return 0;
         }
 
         /* We're not done, but we're non-blocking; keep the call queued */
@@ -1490,8 +1490,8 @@ static void virNetClientIOUpdateCallback(virNetClientPtr client,
  *
  * NB(7) Don't Panic!
  *
- * Returns 2 if fully sent, 1 if partially sent (only for nonBlock==true),
- * 0 if nothing sent (only for nonBlock==true) and -1 on error
+ * Returns 1 if the call was queued and will be completed later (only
+ * for nonBlock==true), 0 if the call was completed and -1 on error.
  */
 static int virNetClientIO(virNetClientPtr client,
                           virNetClientCallPtr thiscall)
@@ -1549,7 +1549,7 @@ static int virNetClientIO(virNetClientPtr client,
          *     our reply
          */
         if (thiscall->mode == VIR_NET_CLIENT_MODE_COMPLETE) {
-            rv = 2;
+            rv = 0;
             /*
              * We avoided catching the buck and our reply is ready !
              * We've already had 'thiscall' removed from the list
@@ -1643,8 +1643,8 @@ done:
 
 
 /*
- * Returns 2 if fully sent, 1 if queued (only for nonBlock==true),
- * 0 if nothing sent (only for nonBlock==true) and -1 on error
+ * Returns 1 if the call was queued and will be completed later (only
+ * for nonBlock==true), 0 if the call was completed and -1 on error.
  */
 static int virNetClientSendInternal(virNetClientPtr client,
                                     virNetMessagePtr msg,
@@ -1769,7 +1769,8 @@ int virNetClientSendNoReply(virNetClientPtr client,
  * The caller is responsible for free'ing @msg, *except* if
  * this method returns 1.
  *
- * Returns 2 on full send, 1 on partial send, 0 on no send, -1 on error
+ * Returns 1 if the message was queued and will be completed later (only
+ * for nonBlock==true), 0 if the message was completed and -1 on error.
  */
 int virNetClientSendNonBlock(virNetClientPtr client,
                              virNetMessagePtr msg)
