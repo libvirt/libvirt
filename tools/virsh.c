@@ -16786,13 +16786,42 @@ vshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
     int count = -1;
     bool descendants = false;
     bool roots = false;
+    virDomainSnapshotPtr *snaps;
     vshSnapshotListPtr snaplist = vshMalloc(ctl, sizeof(*snaplist));
     vshSnapshotListPtr ret = NULL;
     const char *fromname = NULL;
     int start_index = -1;
     int deleted = 0;
 
-    /* 0.9.13 will be adding a new listing API.  */
+    /* Try the interface available in 0.9.13 and newer.  */
+    if (!ctl->useSnapshotOld) {
+        if (from)
+            count = virDomainSnapshotListAllChildren(from, &snaps, flags);
+        else
+            count = virDomainListAllSnapshots(dom, &snaps, flags);
+    }
+    if (count >= 0) {
+        /* When mixing --from and --tree, we also want a copy of from
+         * in the list, but with no parent for that one entry.  */
+        snaplist->snaps = vshCalloc(ctl, sizeof(*snaplist->snaps),
+                                    count + (tree && from));
+        snaplist->nsnaps = count;
+        for (i = 0; i < count; i++)
+            snaplist->snaps[i].snap = snaps[i];
+        VIR_FREE(snaps);
+        if (tree) {
+            for (i = 0; i < count; i++) {
+                if (vshGetSnapshotParent(ctl, snaplist->snaps[i].snap,
+                                         &snaplist->snaps[i].parent) < 0)
+                    goto cleanup;
+            }
+            if (from) {
+                snaps[snaplist->nsnaps++] = from;
+                virDomainSnapshotRef(from);
+            }
+        }
+        goto success;
+    }
 
     /* Assume that if we got this far, then the --no-leaves and
      * --no-metadata flags were not supported.  Disable groups that
