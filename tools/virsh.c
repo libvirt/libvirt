@@ -16740,10 +16740,10 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
 
     qsort(&names[0], actual, sizeof(char*), namesorter);
 
-    if (tree || ctl->useSnapshotOld) {
+    if (tree || (from && ctl->useSnapshotOld)) {
         parents = vshCalloc(ctl, sizeof(char *), actual);
         for (i = (from && !ctl->useSnapshotOld); i < actual; i++) {
-            if (ctl->useSnapshotOld && STREQ(names[i], from)) {
+            if (from && ctl->useSnapshotOld && STREQ(names[i], from)) {
                 start_index = i;
                 continue;
             }
@@ -16765,7 +16765,8 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         char indentBuf[INDENT_BUFLEN];
         for (i = 0 ; i < actual ; i++) {
             memset(indentBuf, '\0', sizeof(indentBuf));
-            if (ctl->useSnapshotOld ? STREQ(names[i], from) : !parents[i])
+            if ((from && ctl->useSnapshotOld) ? STREQ(names[i], from) :
+                !parents[i])
                 cmdNodeListDevicesPrint(ctl,
                                         names,
                                         parents,
@@ -16834,7 +16835,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         }
 
         for (i = 0; i < actual; i++) {
-            if (ctl->useSnapshotOld &&
+            if (from && ctl->useSnapshotOld &&
                 (descendants ? !names[i] : STRNEQ_NULLABLE(parents[i], from)))
                 continue;
 
