@@ -50,7 +50,6 @@
 # include <signal.h>
 
 # include "internal.h"
-# include "ignore-value.h"
 # include "testutils.h"
 
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;

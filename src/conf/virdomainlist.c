@@ -30,7 +30,6 @@
 #include "memory.h"
 #include "datatypes.h"
 #include "virterror_internal.h"
-#include "ignore-value.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 

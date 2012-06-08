@@ -38,7 +38,6 @@
 # include <execinfo.h>
 #endif
 
-#include "ignore-value.h"
 #include "virterror_internal.h"
 #include "logging.h"
 #include "memory.h"

@@ -53,7 +53,6 @@
 #include "nodeinfo.h"
 #include "virfile.h"
 #include "command.h"
-#include "ignore-value.h"
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 

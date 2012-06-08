@@ -26,7 +26,6 @@
 #include "command.h"
 #include "memory.h"
 #include "virterror_internal.h"
-#include "ignore-value.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

@@ -24,7 +24,6 @@
 #include <stdlib.h>
 
 #include "memory.h"
-#include "ignore-value.h"
 
 
 #if TEST_OOM

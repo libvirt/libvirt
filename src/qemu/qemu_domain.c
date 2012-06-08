@@ -32,7 +32,6 @@
 #include "virterror_internal.h"
 #include "c-ctype.h"
 #include "cpu/cpu.h"
-#include "ignore-value.h"
 #include "uuid.h"
 #include "virfile.h"
 #include "domain_event.h"

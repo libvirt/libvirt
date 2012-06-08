@@ -41,7 +41,6 @@
 #include "virfile.h"
 #include "virpidfile.h"
 #include "buf.h"
-#include "ignore-value.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

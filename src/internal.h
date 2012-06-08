@@ -45,6 +45,7 @@
 # include "libvirt_internal.h"
 
 # include "c-strcase.h"
+# include "ignore-value.h"
 
 /* On architectures which lack these limits, define them (ie. Cygwin).
  * Note that the libvirt code should be robust enough to handle the

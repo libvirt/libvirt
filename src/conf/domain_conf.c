@@ -44,7 +44,6 @@
 #include "c-ctype.h"
 #include "logging.h"
 #include "nwfilter_conf.h"
-#include "ignore-value.h"
 #include "storage_file.h"
 #include "virfile.h"
 #include "bitmap.h"

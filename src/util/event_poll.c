@@ -37,7 +37,6 @@
 #include "memory.h"
 #include "util.h"
 #include "virfile.h"
-#include "ignore-value.h"
 #include "virterror_internal.h"
 #include "virtime.h"
 

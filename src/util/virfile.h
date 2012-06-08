@@ -29,7 +29,6 @@
 # include <stdio.h>
 
 # include "internal.h"
-# include "ignore-value.h"
 
 typedef enum virFileCloseFlags {
     VIR_FILE_CLOSE_PRESERVE_ERRNO = 1 << 0,

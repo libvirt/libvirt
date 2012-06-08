@@ -40,7 +40,6 @@
 #include "xenapi_driver.h"
 #include "xenapi_driver_private.h"
 #include "xenapi_utils.h"
-#include "ignore-value.h"
 
 #define VIR_FROM_THIS VIR_FROM_XENAPI
 

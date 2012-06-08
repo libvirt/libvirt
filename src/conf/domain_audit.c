@@ -31,7 +31,6 @@
 #include "uuid.h"
 #include "logging.h"
 #include "memory.h"
-#include "ignore-value.h"
 
 /* Return nn:mm in hex for block and character devices, and NULL
  * for other file types, stat failure, or allocation failure.  */
