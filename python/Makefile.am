@@ -24,6 +24,8 @@ DOCS = ${srcdir}/TODO
 
 CLASSES_EXTRA = \
 	libvirt-override-virConnect.py \
+	libvirt-override-virDomain.py \
+	libvirt-override-virDomainSnapshot.py \
 	libvirt-override-virStream.py
 
 EXTRA_DIST =			\

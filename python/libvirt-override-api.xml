@@ -406,16 +406,28 @@
       <arg name='flags' type='unsigned int' info='fine-tuning flags, currently unused, pass 0.'/>
     </function>
     <function name='virDomainSnapshotListNames' file='python'>
-      <info>collect the list of snapshots for the given domain</info>
+      <info>collect the list of snapshot names for the given domain</info>
       <arg name='dom' type='virDomainPtr' info='pointer to the domain'/>
       <arg name='flags' type='unsigned int' info='flags'/>
       <return type='str *' info='the list of Names or None in case of error'/>
     </function>
+    <function name='virDomainListAllSnapshots' file='python'>
+      <info>returns the list of snapshots for the given domain</info>
+      <arg name='dom' type='virDomainPtr' info='pointer to the domain'/>
+      <arg name='flags' type='unsigned int' info='flags'/>
+      <return type='snapshot *' info='the list of snapshots or None in case of error'/>
+    </function>
     <function name='virDomainSnapshotListChildrenNames' file='python'>
-      <info>collect the list of child snapshots for the given snapshot</info>
+      <info>collect the list of child snapshot names for the given snapshot</info>
       <arg name='snapshot' type='virDomainSnapshotPtr' info='pointer to the snapshot'/>
       <arg name='flags' type='unsigned int' info='flags'/>
       <return type='str *' info='the list of Names or None in case of error'/>
+    </function>
+    <function name='virDomainSnapshotListAllChildren' file='python'>
+      <info>returns the list of child snapshots for the given snapshot</info>
+      <arg name='snapshot' type='virDomainSnapshotPtr' info='pointer to the snapshot'/>
+      <arg name='flags' type='unsigned int' info='flags'/>
+      <return type='snapshot *' info='the list of snapshots or None in case of error'/>
     </function>
     <function name='virDomainRevertToSnapshot' file='python'>
       <info>revert the domain to the given snapshot</info>

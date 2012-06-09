@@ -2127,6 +2127,51 @@ cleanup:
 }
 
 static PyObject *
+libvirt_virDomainListAllSnapshots(PyObject *self ATTRIBUTE_UNUSED,
+                                  PyObject *args)
+{
+    PyObject *py_retval = NULL;
+    virDomainSnapshotPtr *snaps = NULL;
+    int c_retval, i;
+    virDomainPtr dom;
+    PyObject *pyobj_dom;
+    unsigned int flags;
+    PyObject *pyobj_snap;
+
+    if (!PyArg_ParseTuple(args, (char *)"Oi:virDomainListAllSnapshots",
+                          &pyobj_dom, &flags))
+        return NULL;
+    dom = (virDomainPtr) PyvirDomain_Get(pyobj_dom);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virDomainListAllSnapshots(dom, &snaps, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    if (!(py_retval = PyList_New(c_retval)))
+        goto cleanup;
+
+    for (i = 0; i < c_retval; i++) {
+        if ((pyobj_snap = libvirt_virDomainSnapshotPtrWrap(snaps[i])) == NULL ||
+            PyList_SetItem(py_retval, i, pyobj_snap) < 0) {
+            Py_XDECREF(pyobj_snap);
+            Py_DECREF(py_retval);
+            py_retval = NULL;
+            goto cleanup;
+        }
+        snaps[i] = NULL;
+    }
+
+cleanup:
+    for (i = 0; i < c_retval; i++)
+        if (snaps[i])
+            virDomainSnapshotFree(snaps[i]);
+    VIR_FREE(snaps);
+    return py_retval;
+}
+
+static PyObject *
 libvirt_virDomainSnapshotListChildrenNames(PyObject *self ATTRIBUTE_UNUSED,
                                            PyObject *args)
 {
@@ -2177,6 +2222,51 @@ cleanup:
     for (i = 0; i < c_retval; i++)
         VIR_FREE(names[i]);
     VIR_FREE(names);
+    return py_retval;
+}
+
+static PyObject *
+libvirt_virDomainSnapshotListAllChildren(PyObject *self ATTRIBUTE_UNUSED,
+                                         PyObject *args)
+{
+    PyObject *py_retval = NULL;
+    virDomainSnapshotPtr *snaps = NULL;
+    int c_retval, i;
+    virDomainSnapshotPtr parent;
+    PyObject *pyobj_parent;
+    unsigned int flags;
+    PyObject *pyobj_snap;
+
+    if (!PyArg_ParseTuple(args, (char *)"Oi:virDomainSnapshotListAllChildren",
+                          &pyobj_parent, &flags))
+        return NULL;
+    parent = (virDomainSnapshotPtr) PyvirDomainSnapshot_Get(pyobj_parent);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virDomainSnapshotListAllChildren(parent, &snaps, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    if (!(py_retval = PyList_New(c_retval)))
+        goto cleanup;
+
+    for (i = 0; i < c_retval; i++) {
+        if ((pyobj_snap = libvirt_virDomainSnapshotPtrWrap(snaps[i])) == NULL ||
+            PyList_SetItem(py_retval, i, pyobj_snap) < 0) {
+            Py_XDECREF(pyobj_snap);
+            Py_DECREF(py_retval);
+            py_retval = NULL;
+            goto cleanup;
+        }
+        snaps[i] = NULL;
+    }
+
+cleanup:
+    for (i = 0; i < c_retval; i++)
+        if (snaps[i])
+            virDomainSnapshotFree(snaps[i]);
+    VIR_FREE(snaps);
     return py_retval;
 }
 
@@ -5763,7 +5853,9 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virConnectBaselineCPU", libvirt_virConnectBaselineCPU, METH_VARARGS, NULL},
     {(char *) "virDomainGetJobInfo", libvirt_virDomainGetJobInfo, METH_VARARGS, NULL},
     {(char *) "virDomainSnapshotListNames", libvirt_virDomainSnapshotListNames, METH_VARARGS, NULL},
+    {(char *) "virDomainListAllSnapshots", libvirt_virDomainListAllSnapshots, METH_VARARGS, NULL},
     {(char *) "virDomainSnapshotListChildrenNames", libvirt_virDomainSnapshotListChildrenNames, METH_VARARGS, NULL},
+    {(char *) "virDomainSnapshotListAllChildren", libvirt_virDomainSnapshotListAllChildren, METH_VARARGS, NULL},
     {(char *) "virDomainRevertToSnapshot", libvirt_virDomainRevertToSnapshot, METH_VARARGS, NULL},
     {(char *) "virDomainGetBlockJobInfo", libvirt_virDomainGetBlockJobInfo, METH_VARARGS, NULL},
     {(char *) "virDomainSetBlockIoTune", libvirt_virDomainSetBlockIoTune, METH_VARARGS, NULL},
