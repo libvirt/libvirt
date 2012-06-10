@@ -4873,6 +4873,130 @@ done:
     return rv;
 }
 
+static int
+remoteDomainListAllSnapshots(virDomainPtr dom,
+                             virDomainSnapshotPtr **snapshots,
+                             unsigned int flags)
+{
+    int rv = -1;
+    int i;
+    virDomainSnapshotPtr *snaps = NULL;
+    remote_domain_list_all_snapshots_args args;
+    remote_domain_list_all_snapshots_ret ret;
+
+    struct private_data *priv = dom->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.need_results = !!snapshots;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+    if (call (dom->conn,
+              priv,
+              0,
+              REMOTE_PROC_DOMAIN_LIST_ALL_SNAPSHOTS,
+              (xdrproc_t) xdr_remote_domain_list_all_snapshots_args,
+              (char *) &args,
+              (xdrproc_t) xdr_remote_domain_list_all_snapshots_ret,
+              (char *) &ret) == -1)
+        goto done;
+
+    if (snapshots) {
+        if (VIR_ALLOC_N(snaps, ret.snapshots.snapshots_len + 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        for (i = 0; i < ret.snapshots.snapshots_len; i++) {
+            snaps[i] = get_nonnull_domain_snapshot(dom, ret.snapshots.snapshots_val[i]);
+            if (!snaps[i]) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        }
+        *snapshots = snaps;
+        snaps = NULL;
+    }
+
+    rv = ret.ret;
+
+cleanup:
+    if (snaps) {
+        for (i = 0; i < ret.snapshots.snapshots_len; i++)
+            if (snaps[i])
+                virDomainSnapshotFree(snaps[i]);
+        VIR_FREE(snaps);
+    }
+
+    xdr_free((xdrproc_t) xdr_remote_domain_list_all_snapshots_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteDomainSnapshotListAllChildren(virDomainSnapshotPtr parent,
+                                    virDomainSnapshotPtr **snapshots,
+                                    unsigned int flags)
+{
+    int rv = -1;
+    int i;
+    virDomainSnapshotPtr *snaps = NULL;
+    remote_domain_snapshot_list_all_children_args args;
+    remote_domain_snapshot_list_all_children_ret ret;
+
+    struct private_data *priv = parent->domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.need_results = !!snapshots;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+    if (call (parent->domain->conn,
+              priv,
+              0,
+              REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_ALL_CHILDREN,
+              (xdrproc_t) xdr_remote_domain_snapshot_list_all_children_args,
+              (char *) &args,
+              (xdrproc_t) xdr_remote_domain_snapshot_list_all_children_ret,
+              (char *) &ret) == -1)
+        goto done;
+
+    if (snapshots) {
+        if (VIR_ALLOC_N(snaps, ret.snapshots.snapshots_len + 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        for (i = 0; i < ret.snapshots.snapshots_len; i++) {
+            snaps[i] = get_nonnull_domain_snapshot(parent->domain, ret.snapshots.snapshots_val[i]);
+            if (!snaps[i]) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        }
+        *snapshots = snaps;
+        snaps = NULL;
+    }
+
+    rv = ret.ret;
+
+cleanup:
+    if (snaps) {
+        for (i = 0; i < ret.snapshots.snapshots_len; i++)
+            if (snaps[i])
+                virDomainSnapshotFree(snaps[i]);
+        VIR_FREE(snaps);
+    }
+
+    xdr_free((xdrproc_t) xdr_remote_domain_snapshot_list_all_children_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 static void
 remoteDomainEventQueue(struct private_data *priv, virDomainEventPtr event)
 {
@@ -5139,7 +5263,9 @@ static virDriver remote_driver = {
     .domainSnapshotGetXMLDesc = remoteDomainSnapshotGetXMLDesc, /* 0.8.0 */
     .domainSnapshotNum = remoteDomainSnapshotNum, /* 0.8.0 */
     .domainSnapshotListNames = remoteDomainSnapshotListNames, /* 0.8.0 */
+    .domainListAllSnapshots = remoteDomainListAllSnapshots, /* 0.9.13 */
     .domainSnapshotNumChildren = remoteDomainSnapshotNumChildren, /* 0.9.7 */
+    .domainSnapshotListAllChildren = remoteDomainSnapshotListAllChildren, /* 0.9.13 */
     .domainSnapshotListChildrenNames = remoteDomainSnapshotListChildrenNames, /* 0.9.7 */
     .domainSnapshotLookupByName = remoteDomainSnapshotLookupByName, /* 0.8.0 */
     .domainHasCurrentSnapshot = remoteDomainHasCurrentSnapshot, /* 0.8.0 */

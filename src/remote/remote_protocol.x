@@ -2249,6 +2249,17 @@ struct remote_domain_snapshot_list_names_ret {
     remote_nonnull_string names<REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX>; /* insert@1 */
 };
 
+struct remote_domain_list_all_snapshots_args {
+    remote_nonnull_domain dom;
+    int need_results;
+    unsigned int flags;
+};
+
+struct remote_domain_list_all_snapshots_ret {
+    remote_nonnull_domain_snapshot snapshots<>;
+    int ret;
+};
+
 struct remote_domain_snapshot_num_children_args {
     remote_nonnull_domain_snapshot snap;
     unsigned int flags;
@@ -2266,6 +2277,17 @@ struct remote_domain_snapshot_list_children_names_args {
 
 struct remote_domain_snapshot_list_children_names_ret {
     remote_nonnull_string names<REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX>; /* insert@1 */
+};
+
+struct remote_domain_snapshot_list_all_children_args {
+    remote_nonnull_domain_snapshot snapshot;
+    int need_results;
+    unsigned int flags;
+};
+
+struct remote_domain_snapshot_list_all_children_ret {
+    remote_nonnull_domain_snapshot snapshots<>;
+    int ret;
 };
 
 struct remote_domain_snapshot_lookup_by_name_args {
@@ -2814,7 +2836,9 @@ enum remote_procedure {
 
     REMOTE_PROC_DOMAIN_SNAPSHOT_IS_CURRENT = 271, /* autogen autogen */
     REMOTE_PROC_DOMAIN_SNAPSHOT_HAS_METADATA = 272, /* autogen autogen */
-    REMOTE_PROC_CONNECT_LIST_ALL_DOMAINS = 273 /* skipgen skipgen priority:high */
+    REMOTE_PROC_CONNECT_LIST_ALL_DOMAINS = 273, /* skipgen skipgen priority:high */
+    REMOTE_PROC_DOMAIN_LIST_ALL_SNAPSHOTS = 274, /* skipgen skipgen priority:high */
+    REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_ALL_CHILDREN = 275 /* skipgen skipgen priority:high */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
