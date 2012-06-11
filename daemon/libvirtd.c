@@ -783,6 +783,8 @@ static int migrateProfile(void)
     int ret = -1;
     mode_t old_umask;
 
+    VIR_DEBUG("Checking if user profile needs migrating");
+
     if (!(home = virGetUserDirectory()))
         goto cleanup;
 
@@ -795,6 +797,9 @@ static int migrateProfile(void)
         goto cleanup;
 
     if (!virFileIsDir(old_base) || virFileExists(config_dir)) {
+        VIR_DEBUG("No old profile in '%s' / "
+                  "new profile directory already present '%s'",
+                  old_base, config_dir);
         ret = 0;
         goto cleanup;
     }
@@ -830,6 +835,7 @@ static int migrateProfile(void)
         goto cleanup;
     }
 
+    VIR_DEBUG("Profile migrated from %s to %s", old_base, config_dir);
     ret = 0;
 
  cleanup:
@@ -1063,7 +1069,8 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    if (migrateProfile() < 0)
+    if (!privileged &&
+        migrateProfile() < 0)
         exit(EXIT_FAILURE);
 
     if (config->host_uuid &&
