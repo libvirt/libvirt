@@ -56,10 +56,14 @@ int qemuProcessStart(virConnectPtr conn,
                      virDomainSnapshotObjPtr snapshot,
                      enum virNetDevVPortProfileOp vmop);
 
+typedef enum {
+    VIR_QEMU_PROCESS_STOP_MIGRATED  = 1 << 0,
+} qemuProcessStopFlags;
+
 void qemuProcessStop(struct qemud_driver *driver,
                      virDomainObjPtr vm,
-                     int migrated,
-                     virDomainShutoffReason reason);
+                     virDomainShutoffReason reason,
+                     unsigned int flags);
 
 int qemuProcessAttach(virConnectPtr conn,
                       struct qemud_driver *driver,

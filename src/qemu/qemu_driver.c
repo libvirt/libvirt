@@ -1849,7 +1849,7 @@ qemuDomainDestroyFlags(virDomainPtr dom,
         goto endjob;
     }
 
-    qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_DESTROYED);
+    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED, 0);
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
@@ -2710,7 +2710,7 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
     ret = 0;
 
     /* Shut it down */
-    qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_SAVED);
+    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SAVED, 0);
     virDomainAuditStop(vm, "saved");
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
@@ -3115,7 +3115,7 @@ static int qemudDomainCoreDump(virDomainPtr dom,
 
 endjob:
     if ((ret == 0) && (flags & VIR_DUMP_CRASH)) {
-        qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_CRASHED);
+        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED, 0);
         virDomainAuditStop(vm, "crashed");
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
@@ -9750,7 +9750,7 @@ qemuDomainSnapshotCreateActive(virConnectPtr conn,
 
         event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
-        qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT);
+        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT, 0);
         virDomainAuditStop(vm, "from-snapshot");
         /* We already filtered the _HALT flag for persistent domains
          * only, so this end job never drops the last reference.  */
@@ -10224,7 +10224,7 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
 
         event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
-        qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT);
+        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT, 0);
         virDomainAuditStop(vm, "from-snapshot");
         /* We already filtered the _HALT flag for persistent domains
          * only, so this end job never drops the last reference.  */
@@ -11041,8 +11041,8 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                     goto endjob;
                 }
                 virResetError(err);
-                qemuProcessStop(driver, vm, 0,
-                                VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT);
+                qemuProcessStop(driver, vm,
+                                VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT, 0);
                 virDomainAuditStop(vm, "from-snapshot");
                 detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
                 event = virDomainEventNewFromObj(vm,
@@ -11154,7 +11154,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
         if (virDomainObjIsActive(vm)) {
             /* Transitions 4, 7 */
-            qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT);
+            qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT, 0);
             virDomainAuditStop(vm, "from-snapshot");
             detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
             event = virDomainEventNewFromObj(vm,
