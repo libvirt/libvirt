@@ -926,6 +926,7 @@ retry:
 
 cleanup:
     VIR_FREE(line);
+    VIR_FREE(fslist);
     VIR_FORCE_FCLOSE(fp);
     return ret;
 }
