@@ -33,6 +33,7 @@
 #include "vmx.h"
 #include "vmware_conf.h"
 #include "vmware_driver.h"
+#include "virdomainlist.h"
 
 static const char *vmw_types[] = { "player", "ws" };
 
@@ -994,6 +995,24 @@ vmwareIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
     return 1;
 }
 
+static int
+vmwareListAllDomains(virConnectPtr conn,
+                     virDomainPtr **domains,
+                     unsigned int flags)
+{
+    struct vmware_driver *driver = conn->privateData;
+    int ret = -1;
+
+    virCheckFlags(VIR_CONNECT_LIST_FILTERS_ALL, -1);
+
+    vmwareDriverLock(driver);
+    ret = virDomainList(conn, driver->domains.objs, domains, flags);
+    vmwareDriverUnlock(driver);
+    return ret;
+}
+
+
+
 static virDriver vmwareDriver = {
     .no = VIR_DRV_VMWARE,
     .name = "VMWARE",
@@ -1003,6 +1022,7 @@ static virDriver vmwareDriver = {
     .version = vmwareGetVersion, /* 0.8.7 */
     .listDomains = vmwareListDomains, /* 0.8.7 */
     .numOfDomains = vmwareNumDomains, /* 0.8.7 */
+    .listAllDomains = vmwareListAllDomains, /* 0.9.13 */
     .domainCreateXML = vmwareDomainCreateXML, /* 0.8.7 */
     .domainLookupByID = vmwareDomainLookupByID, /* 0.8.7 */
     .domainLookupByUUID = vmwareDomainLookupByUUID, /* 0.8.7 */

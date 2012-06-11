@@ -13140,6 +13140,23 @@ cleanup:
     return ret;
 }
 
+static int
+qemuListAllDomains(virConnectPtr conn,
+                   virDomainPtr **domains,
+                   unsigned int flags)
+{
+    struct qemud_driver *driver = conn->privateData;
+    int ret = -1;
+
+    virCheckFlags(VIR_CONNECT_LIST_FILTERS_ALL, -1);
+
+    qemuDriverLock(driver);
+    ret = virDomainList(conn, driver->domains.objs, domains, flags);
+    qemuDriverUnlock(driver);
+
+    return ret;
+}
+
 static virDriver qemuDriver = {
     .no = VIR_DRV_QEMU,
     .name = QEMU_DRIVER_NAME,
@@ -13155,6 +13172,7 @@ static virDriver qemuDriver = {
     .getCapabilities = qemudGetCapabilities, /* 0.2.1 */
     .listDomains = qemudListDomains, /* 0.2.0 */
     .numOfDomains = qemudNumDomains, /* 0.2.0 */
+    .listAllDomains = qemuListAllDomains, /* 0.9.13 */
     .domainCreateXML = qemudDomainCreate, /* 0.2.0 */
     .domainLookupByID = qemudDomainLookupByID, /* 0.2.0 */
     .domainLookupByUUID = qemudDomainLookupByUUID, /* 0.2.0 */

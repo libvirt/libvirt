@@ -52,6 +52,7 @@
 #include "virfile.h"
 #include "virtypedparam.h"
 #include "virrandom.h"
+#include "virdomainlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_TEST
 
@@ -5517,6 +5518,23 @@ static int testNWFilterClose(virConnectPtr conn) {
     return 0;
 }
 
+static int testListAllDomains(virConnectPtr conn,
+                              virDomainPtr **domains,
+                              unsigned int flags)
+{
+    testConnPtr privconn = conn->privateData;
+    int ret;
+
+    virCheckFlags(VIR_CONNECT_LIST_FILTERS_ALL, -1);
+
+    testDriverLock(privconn);
+    ret = virDomainList(conn, privconn->domains.objs, domains, flags);
+    testDriverUnlock(privconn);
+
+    return ret;
+}
+
+
 static virDriver testDriver = {
     .no = VIR_DRV_TEST,
     .name = "Test",
@@ -5529,6 +5547,7 @@ static virDriver testDriver = {
     .getCapabilities = testGetCapabilities, /* 0.2.1 */
     .listDomains = testListDomains, /* 0.1.1 */
     .numOfDomains = testNumOfDomains, /* 0.1.1 */
+    .listAllDomains = testListAllDomains, /* 0.9.13 */
     .domainCreateXML = testDomainCreateXML, /* 0.1.4 */
     .domainLookupByID = testLookupDomainByID, /* 0.1.1 */
     .domainLookupByUUID = testLookupDomainByUUID, /* 0.1.1 */

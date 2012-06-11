@@ -61,6 +61,7 @@
 #include "virtime.h"
 #include "virtypedparam.h"
 #include "viruri.h"
+#include "virdomainlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -3881,6 +3882,23 @@ cleanup:
 }
 
 static int
+lxcListAllDomains(virConnectPtr conn,
+                  virDomainPtr **domains,
+                  unsigned int flags)
+{
+    lxc_driver_t *driver = conn->privateData;
+    int ret = -1;
+
+    virCheckFlags(VIR_CONNECT_LIST_FILTERS_ALL, -1);
+
+    lxcDriverLock(driver);
+    ret = virDomainList(conn, driver->domains.objs, domains, flags);
+    lxcDriverUnlock(driver);
+
+    return ret;
+}
+
+static int
 lxcVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
                    virHashIterator iter, void *data)
 {
@@ -3920,6 +3938,7 @@ static virDriver lxcDriver = {
     .getCapabilities = lxcGetCapabilities, /* 0.6.5 */
     .listDomains = lxcListDomains, /* 0.4.2 */
     .numOfDomains = lxcNumDomains, /* 0.4.2 */
+    .listAllDomains = lxcListAllDomains, /* 0.9.13 */
     .domainCreateXML = lxcDomainCreateAndStart, /* 0.4.4 */
     .domainLookupByID = lxcDomainLookupByID, /* 0.4.2 */
     .domainLookupByUUID = lxcDomainLookupByUUID, /* 0.4.2 */

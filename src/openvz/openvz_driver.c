@@ -60,6 +60,7 @@
 #include "command.h"
 #include "viruri.h"
 #include "stats_linux.h"
+#include "virdomainlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 
@@ -2052,6 +2053,23 @@ cleanup:
     return ret;
 }
 
+static int
+openvzListAllDomains(virConnectPtr conn,
+                     virDomainPtr **domains,
+                     unsigned int flags)
+{
+    struct openvz_driver *driver = conn->privateData;
+    int ret = -1;
+
+    virCheckFlags(VIR_CONNECT_LIST_FILTERS_ALL, -1);
+
+    openvzDriverLock(driver);
+    ret = virDomainList(conn, driver->domains.objs, domains, flags);
+    openvzDriverUnlock(driver);
+
+    return ret;
+}
+
 
 static virDriver openvzDriver = {
     .no = VIR_DRV_OPENVZ,
@@ -2070,6 +2088,7 @@ static virDriver openvzDriver = {
     .getCapabilities = openvzGetCapabilities, /* 0.4.6 */
     .listDomains = openvzListDomains, /* 0.3.1 */
     .numOfDomains = openvzNumDomains, /* 0.3.1 */
+    .listAllDomains = openvzListAllDomains, /* 0.9.13 */
     .domainCreateXML = openvzDomainCreateXML, /* 0.3.3 */
     .domainLookupByID = openvzDomainLookupByID, /* 0.3.1 */
     .domainLookupByUUID = openvzDomainLookupByUUID, /* 0.3.1 */

@@ -64,6 +64,7 @@
 #include "virnetdevtap.h"
 #include "virnodesuspend.h"
 #include "viruri.h"
+#include "virdomainlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_UML
 
@@ -2519,6 +2520,22 @@ static void umlDomainEventQueue(struct uml_driver *driver,
     virDomainEventStateQueue(driver->domainEventState, event);
 }
 
+static int umlListAllDomains(virConnectPtr conn,
+                             virDomainPtr **domains,
+                             unsigned int flags)
+{
+    struct uml_driver *driver = conn->privateData;
+    int ret = -1;
+
+    virCheckFlags(VIR_CONNECT_LIST_FILTERS_ALL, -1);
+
+    umlDriverLock(driver);
+    ret = virDomainList(conn, driver->domains.objs, domains, flags);
+    umlDriverUnlock(driver);
+
+    return ret;
+}
+
 
 
 static virDriver umlDriver = {
@@ -2533,6 +2550,7 @@ static virDriver umlDriver = {
     .getCapabilities = umlGetCapabilities, /* 0.5.0 */
     .listDomains = umlListDomains, /* 0.5.0 */
     .numOfDomains = umlNumDomains, /* 0.5.0 */
+    .listAllDomains = umlListAllDomains, /* 0.9.13 */
     .domainCreateXML = umlDomainCreate, /* 0.5.0 */
     .domainLookupByID = umlDomainLookupByID, /* 0.5.0 */
     .domainLookupByUUID = umlDomainLookupByUUID, /* 0.5.0 */

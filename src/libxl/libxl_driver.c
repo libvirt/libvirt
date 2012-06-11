@@ -45,6 +45,7 @@
 #include "xen_xm.h"
 #include "virtypedparam.h"
 #include "viruri.h"
+#include "virdomainlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
@@ -3858,6 +3859,24 @@ libxlIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
     return 1;
 }
 
+static int
+libxlListAllDomains(virConnectPtr conn,
+                    virDomainPtr **domains,
+                    unsigned int flags)
+{
+    libxlDriverPrivatePtr driver = conn->privateData;
+    int ret = -1;
+
+    virCheckFlags(VIR_CONNECT_LIST_FILTERS_ALL, -1);
+
+    libxlDriverLock(driver);
+    ret = virDomainList(conn, driver->domains.objs, domains, flags);
+    libxlDriverUnlock(driver);
+
+    return ret;
+}
+
+
 
 static virDriver libxlDriver = {
     .no = VIR_DRV_LIBXL,
@@ -3872,6 +3891,7 @@ static virDriver libxlDriver = {
     .getCapabilities = libxlGetCapabilities, /* 0.9.0 */
     .listDomains = libxlListDomains, /* 0.9.0 */
     .numOfDomains = libxlNumDomains, /* 0.9.0 */
+    .listAllDomains = libxlListAllDomains, /* 0.9.13 */
     .domainCreateXML = libxlDomainCreateXML, /* 0.9.0 */
     .domainLookupByID = libxlDomainLookupByID, /* 0.9.0 */
     .domainLookupByUUID = libxlDomainLookupByUUID, /* 0.9.0 */
