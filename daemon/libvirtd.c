@@ -1131,7 +1131,10 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
-    old_umask = umask(077);
+    if (privileged)
+        old_umask = umask(022);
+    else
+        old_umask = umask(077);
     if (virFileMakePath(run_dir) < 0) {
         char ebuf[1024];
         VIR_ERROR(_("unable to create rundir %s: %s"), run_dir,
