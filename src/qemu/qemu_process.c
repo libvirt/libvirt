@@ -311,7 +311,7 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      eventReason);
-    qemuProcessStop(driver, vm, 0, stopReason);
+    qemuProcessStop(driver, vm, stopReason, 0);
     virDomainAuditStop(vm, auditReason);
 
     if (!vm->persistent) {
@@ -3151,7 +3151,7 @@ error:
                  * really is and FAILED means "failed to start" */
                 state = VIR_DOMAIN_SHUTOFF_UNKNOWN;
             }
-            qemuProcessStop(driver, obj, 0, state);
+            qemuProcessStop(driver, obj, state, 0);
             if (!obj->persistent)
                 qemuDomainRemoveInactive(driver, obj);
             else
@@ -3229,7 +3229,7 @@ qemuProcessReconnectHelper(void *payload,
         } else if (virDomainObjUnref(obj) > 0) {
            /* We can't spawn a thread and thus connect to monitor.
             * Kill qemu */
-            qemuProcessStop(src->driver, obj, 0, VIR_DOMAIN_SHUTOFF_FAILED);
+            qemuProcessStop(src->driver, obj, VIR_DOMAIN_SHUTOFF_FAILED, 0);
             if (!obj->persistent)
                 qemuDomainRemoveInactive(src->driver, obj);
             else
@@ -3770,7 +3770,7 @@ cleanup:
     VIR_FREE(nodemask);
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(logfile);
-    qemuProcessStop(driver, vm, 0, VIR_DOMAIN_SHUTOFF_FAILED);
+    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, 0);
 
     return -1;
 }
@@ -3873,8 +3873,8 @@ cleanup:
 
 void qemuProcessStop(struct qemud_driver *driver,
                      virDomainObjPtr vm,
-                     int migrated,
-                     virDomainShutoffReason reason)
+                     virDomainShutoffReason reason,
+                     unsigned int flags)
 {
     int ret;
     int retries = 0;
@@ -3887,8 +3887,8 @@ void qemuProcessStop(struct qemud_driver *driver,
     char *timestamp;
     char ebuf[1024];
 
-    VIR_DEBUG("Shutting down VM '%s' pid=%d migrated=%d",
-              vm->def->name, vm->pid, migrated);
+    VIR_DEBUG("Shutting down VM '%s' pid=%d flags=%x",
+              vm->def->name, vm->pid, flags);
 
     if (!virDomainObjIsActive(vm)) {
         VIR_DEBUG("VM '%s' not active", vm->def->name);
@@ -3985,7 +3985,8 @@ void qemuProcessStop(struct qemud_driver *driver,
 
     /* Reset Security Labels */
     virSecurityManagerRestoreAllLabel(driver->securityManager,
-                                      vm->def, migrated);
+                                      vm->def,
+                                      flags & VIR_QEMU_PROCESS_STOP_MIGRATED);
     virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
 
     /* Clear out dynamically assigned labels */
@@ -4304,7 +4305,8 @@ qemuProcessAutoDestroy(struct qemud_driver *driver,
         goto cleanup;
 
     VIR_DEBUG("Killing domain");
-    qemuProcessStop(driver, dom, 1, VIR_DOMAIN_SHUTOFF_DESTROYED);
+    qemuProcessStop(driver, dom, VIR_DOMAIN_SHUTOFF_DESTROYED,
+                    VIR_QEMU_PROCESS_STOP_MIGRATED);
     virDomainAuditStop(dom, "destroyed");
     event = virDomainEventNewFromObj(dom,
                                      VIR_DOMAIN_EVENT_STOPPED,
