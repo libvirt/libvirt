@@ -2364,7 +2364,6 @@
 <pre>
   ...
   &lt;devices&gt;
-    &lt;interface type='direct'/&gt;
     ...
     &lt;interface type='direct'&gt;
       &lt;source dev='eth0' mode='vepa'/&gt;
@@ -2413,7 +2412,6 @@
 <pre>
   ...
   &lt;devices&gt;
-    &lt;interface type='direct'/&gt;
     ...
     &lt;interface type='direct'&gt;
       &lt;source dev='eth0.2' mode='vepa'/&gt;
@@ -2441,7 +2439,6 @@
   <pre>
   ...
   &lt;devices&gt;
-    &lt;interface type='direct'/&gt;
     ...
     &lt;interface type='direct'&gt;
       &lt;source dev='eth0' mode='private'/&gt;
@@ -2462,7 +2459,7 @@
       passthrough, after first optionally setting the device's MAC
       address to the configured value, and associating the device with
       an 802.1Qgh capable switch using an optionally specified
-      %lt;virtualport%gt; element (see the examples of virtualport
+      &lt;virtualport&gt; element (see the examples of virtualport
       given above for type='direct' network devices). Note that - due
       to limitations in standard single-port PCI ethernet card driver
       design - only SR-IOV (Single Root I/O Virtualization) virtual
