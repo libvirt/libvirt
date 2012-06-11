@@ -1415,15 +1415,9 @@ libvirt_virDomainGetVcpus(PyObject *self ATTRIBUTE_UNUSED,
  cleanup:
     VIR_FREE(cpuinfo);
     VIR_FREE(cpumap);
-    /* NB, Py_DECREF is a badly defined macro, so we require
-     * braces here to avoid 'ambiguous else' warnings from
-     * the compiler.
-     * NB. this comment is true at of time of writing wrt to
-     * at least python2.5.
-     */
-    if (pyretval) { Py_DECREF(pyretval); }
-    if (pycpuinfo) { Py_DECREF(pycpuinfo); }
-    if (pycpumap) { Py_DECREF(pycpumap); }
+    Py_XDECREF(pyretval);
+    Py_XDECREF(pycpuinfo);
+    Py_XDECREF(pycpumap);
     return VIR_PY_NONE;
 }
 
@@ -1584,7 +1578,7 @@ libvirt_virDomainGetVcpuPinInfo(PyObject *self ATTRIBUTE_UNUSED,
 cleanup:
     VIR_FREE(cpumaps);
 
-    if (pycpumaps) { Py_DECREF(pycpumaps);}
+    Py_XDECREF(pycpumaps);
 
     return VIR_PY_NONE;
 }
