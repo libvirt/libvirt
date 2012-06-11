@@ -456,7 +456,6 @@ static int lxcContainerMountBasicFS(virDomainDefPtr def,
     VIR_DEBUG("Mounting basic filesystems pivotRoot=%d", pivotRoot);
 
     for (i = 0 ; i < ARRAY_CARDINALITY(mnts) ; i++) {
-        char *src = NULL;
         const char *srcpath = NULL;
 
         VIR_DEBUG("Processing %s -> %s",
@@ -473,21 +472,17 @@ static int lxcContainerMountBasicFS(virDomainDefPtr def,
 
         /* Skip if mount doesn't exist in source */
         if ((srcpath[0] == '/') &&
-            (access(srcpath, R_OK) < 0)) {
-            VIR_FREE(src);
+            (access(srcpath, R_OK) < 0))
             continue;
-        }
 
         VIR_DEBUG("Mount %s on %s type=%s flags=%x, opts=%s",
                   srcpath, mnts[i].dst, mnts[i].type, mnts[i].mflags, mnts[i].opts);
         if (mount(srcpath, mnts[i].dst, mnts[i].type, mnts[i].mflags, mnts[i].opts) < 0) {
-            VIR_FREE(src);
             virReportSystemError(errno,
                                  _("Failed to mount %s on %s type %s"),
                                  mnts[i].src, mnts[i].dst, NULLSTR(mnts[i].type));
             goto cleanup;
         }
-        VIR_FREE(src);
     }
 
     if (pivotRoot) {
