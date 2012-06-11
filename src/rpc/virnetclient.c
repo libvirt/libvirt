@@ -1200,20 +1200,11 @@ static bool virNetClientIOEventLoopRemoveDone(virNetClientCallPtr call,
 }
 
 
-static bool
-virNetClientIOEventLoopDetachNonBlocking(virNetClientCallPtr call,
-                                         void *opaque)
+static void
+virNetClientIODetachNonBlocking(virNetClientCallPtr call)
 {
-    virNetClientCallPtr thiscall = opaque;
-
-    if (call != thiscall && call->nonBlock && call->haveThread) {
-        VIR_DEBUG("Waking up sleep %p", call);
-        call->haveThread = false;
-        virCondSignal(&call->cond);
-        return true;
-    }
-
-    return false;
+    VIR_DEBUG("Keeping unfinished non-blocking call %p in the queue", call);
+    call->haveThread = false;
 }
 
 
@@ -1262,13 +1253,6 @@ virNetClientIOEventLoopPassTheBuck(virNetClientPtr client,
 }
 
 
-static bool
-virNetClientIOEventLoopWantNonBlock(virNetClientCallPtr call,
-                                    void *opaque ATTRIBUTE_UNUSED)
-{
-    return call->nonBlock && call->haveThread;
-}
-
 /*
  * Process all calls pending dispatch/receive until we
  * get a reply to our own call. Then quit and pass the buck
@@ -1299,12 +1283,8 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
         if (virNetSocketHasCachedData(client->sock) || client->wantClose)
             timeout = 0;
 
-        /* If there are any non-blocking calls with an associated thread
-         * in the queue, then we don't want to sleep in poll()
-         */
-        if (virNetClientCallMatchPredicate(client->waitDispatch,
-                                           virNetClientIOEventLoopWantNonBlock,
-                                           NULL))
+        /* If we are non-blocking, then we don't want to sleep in poll() */
+        if (thiscall->nonBlock)
             timeout = 0;
 
         fds[0].events = fds[0].revents = 0;
@@ -1371,19 +1351,6 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
                                      _("read on wakeup fd failed"));
                 goto error;
             }
-
-            /* If we were woken up because a new non-blocking call was queued,
-             * we need to re-poll to check if we can send it. To be precise, we
-             * will re-poll even if a blocking call arrived when unhandled
-             * non-blocking calls are still in the queue. But this can't hurt.
-             */
-            if (virNetClientCallMatchPredicate(client->waitDispatch,
-                                               virNetClientIOEventLoopWantNonBlock,
-                                               NULL)) {
-                VIR_DEBUG("The queue contains new non-blocking call(s);"
-                          " repolling");
-                continue;
-            }
         }
 
         if (ret < 0) {
@@ -1412,13 +1379,6 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
                                         virNetClientIOEventLoopRemoveDone,
                                         thiscall);
 
-        /* Iterate through waiting calls and wake up and detach threads
-         * attached to non-blocking calls.
-         */
-        virNetClientCallMatchPredicate(client->waitDispatch,
-                                       virNetClientIOEventLoopDetachNonBlocking,
-                                       thiscall);
-
         /* Now see if *we* are done */
         if (thiscall->mode == VIR_NET_CLIENT_MODE_COMPLETE) {
             virNetClientCallRemove(&client->waitDispatch, thiscall);
@@ -1428,7 +1388,7 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
 
         /* We're not done, but we're non-blocking; keep the call queued */
         if (thiscall->nonBlock) {
-            thiscall->haveThread = false;
+            virNetClientIODetachNonBlocking(thiscall);
             virNetClientIOEventLoopPassTheBuck(client, thiscall);
             return 1;
         }
@@ -1562,6 +1522,14 @@ static int virNetClientIO(virNetClientPtr client,
             return -1;
         }
 
+        /* If we are non-blocking, detach the thread and keep the call in the
+         * queue. */
+        if (thiscall->nonBlock) {
+            virNetClientIODetachNonBlocking(thiscall);
+            rv = 1;
+            goto cleanup;
+        }
+
         VIR_DEBUG("Going to sleep head=%p call=%p",
                   client->waitDispatch, thiscall);
         /* Go to sleep while other thread is working... */
@@ -1579,7 +1547,6 @@ static int virNetClientIO(virNetClientPtr client,
          *  2. Other thread is all done, and it is our turn to
          *     be the dispatcher to finish waiting for
          *     our reply
-         *  3. I/O was expected to block
          */
         if (thiscall->mode == VIR_NET_CLIENT_MODE_COMPLETE) {
             rv = 2;
@@ -1588,17 +1555,6 @@ static int virNetClientIO(virNetClientPtr client,
              * We've already had 'thiscall' removed from the list
              * so just need to (maybe) handle errors & free it
              */
-            goto cleanup;
-        }
-
-        /* If we're non-blocking, we were either queued (and detached) or the
-         * call was not sent because of an error.
-         */
-        if (thiscall->nonBlock) {
-            if (!thiscall->haveThread)
-                rv = 1; /* In progress */
-            else
-                rv = 0; /* none at all */
             goto cleanup;
         }
 
