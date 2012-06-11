@@ -701,7 +701,7 @@ static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
 
     if (fs->readonly) {
         VIR_DEBUG("Binding %s readonly", fs->dst);
-        if (mount(fs->dst, fs->dst, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY, NULL) < 0) {
+        if (mount(src, fs->dst, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Failed to make directory %s readonly"),
                                  fs->dst);
