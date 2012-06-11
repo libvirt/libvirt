@@ -118,8 +118,9 @@
 %define with_hyperv 0
 %endif
 
-# Although earlier Fedora has systemd, libvirt still used sysvinit
-%if 0%{?fedora} >= 17
+# Fedora 17 / RHEL-7 are first where we use systemd. Although earlier
+# Fedora has systemd, libvirt still used sysvinit there.
+%if 0%{?fedora} >= 17 || 0{?rhel} >= 7
 %define with_systemd 1
 %endif
 
@@ -975,9 +976,9 @@ if [ $1 -eq 1 ] ; then
 fi
 %else
 %if %{with_cgconfig}
-# Starting with Fedora 16, systemd automounts all cgroups, and cgconfig is
-# no longer a necessary service.
-%if 0%{?rhel} || (0%{?fedora} && 0%{?fedora} < 16)
+# Starting with Fedora 16/RHEL-7, systemd automounts all cgroups,
+# and cgconfig is no longer a necessary service.
+%if (0%{?rhel} && 0%{?rhel} < 7) || (0%{?fedora} && 0%{?fedora} < 16)
 if [ "$1" -eq "1" ]; then
 /sbin/chkconfig cgconfig on
 fi
