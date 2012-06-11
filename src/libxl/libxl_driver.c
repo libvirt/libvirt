@@ -59,6 +59,11 @@
 /* Number of Xen scheduler parameters */
 #define XEN_SCHED_CREDIT_NPARAM   2
 
+static void libxlDomainManagedSaveLoad(void *payload,
+                                       const void *n ATTRIBUTE_UNUSED,
+                                       void *opaque);
+
+
 static libxlDriverPrivatePtr libxl_driver = NULL;
 
 /* Function declarations */
@@ -647,6 +652,7 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
                 VIR_WARN("Failed to remove the managed state %s",
                          managed_save_path);
             }
+            vm->hasManagedSave = false;
         }
         VIR_FREE(managed_save_path);
     }
@@ -981,6 +987,9 @@ libxlStartup(int privileged) {
         goto error;
 
     virHashForEach(libxl_driver->domains.objs, libxlAutostartDomain,
+                   libxl_driver);
+
+    virHashForEach(libxl_driver->domains.objs, libxlDomainManagedSaveLoad,
                    libxl_driver);
 
     libxlDriverUnlock(libxl_driver);
@@ -1868,6 +1877,8 @@ libxlDoDomainSave(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
         goto cleanup;
     }
 
+    vm->hasManagedSave = true;
+
     if (!vm->persistent) {
         virDomainRemoveInactive(&driver->domains, vm);
         vm = NULL;
@@ -2124,13 +2135,33 @@ cleanup:
     return ret;
 }
 
+static void
+libxlDomainManagedSaveLoad(void *payload,
+                           const void *n ATTRIBUTE_UNUSED,
+                           void *opaque)
+{
+    virDomainObjPtr vm = payload;
+    libxlDriverPrivatePtr driver = opaque;
+    char *name;
+
+    virDomainObjLock(vm);
+
+    if (!(name = libxlDomainManagedSavePath(driver, vm)))
+        goto cleanup;
+
+    vm->hasManagedSave = virFileExists(name);
+
+cleanup:
+    virDomainObjUnlock(vm);
+    VIR_FREE(name);
+}
+
 static int
 libxlDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     int ret = -1;
-    char *name = NULL;
 
     virCheckFlags(0, -1);
 
@@ -2144,14 +2175,9 @@ libxlDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
-    name = libxlDomainManagedSavePath(driver, vm);
-    if (name == NULL)
-        goto cleanup;
-
-    ret = virFileExists(name);
+    ret = vm->hasManagedSave;
 
 cleanup:
-    VIR_FREE(name);
     if (vm)
         virDomainObjUnlock(vm);
     libxlDriverUnlock(driver);
@@ -2183,6 +2209,7 @@ libxlDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
         goto cleanup;
 
     ret = unlink(name);
+    vm->hasManagedSave = false;
 
 cleanup:
     VIR_FREE(name);

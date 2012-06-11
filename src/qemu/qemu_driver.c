@@ -139,6 +139,11 @@ static int qemuDomainObjStart(virConnectPtr conn,
 
 static int qemudDomainGetMaxVcpus(virDomainPtr dom);
 
+static void qemuDomainManagedSaveLoad(void *payload,
+                                      const void *n ATTRIBUTE_UNUSED,
+                                      void *opaque);
+
+
 struct qemud_driver *qemu_driver = NULL;
 
 
@@ -733,6 +738,9 @@ qemudStartup(int privileged) {
 
     virHashForEach(qemu_driver->domains.objs, qemuDomainSnapshotLoad,
                    qemu_driver->snapshotDir);
+
+    virHashForEach(qemu_driver->domains.objs, qemuDomainManagedSaveLoad,
+                   qemu_driver);
 
     qemu_driver->workerPool = virThreadPoolNew(0, 1, 0, processWatchdogEvent, qemu_driver);
     if (!qemu_driver->workerPool)
@@ -2729,6 +2737,7 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
     }
 
     ret = 0;
+    vm->hasManagedSave = true;
 
     /* Shut it down */
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SAVED, 0);
@@ -2918,13 +2927,33 @@ cleanup:
     return ret;
 }
 
+static void
+qemuDomainManagedSaveLoad(void *payload,
+                          const void *n ATTRIBUTE_UNUSED,
+                          void *opaque)
+{
+    virDomainObjPtr vm = payload;
+    struct qemud_driver *driver = opaque;
+    char *name;
+
+    virDomainObjLock(vm);
+
+    if (!(name = qemuDomainManagedSavePath(driver, vm)))
+        goto cleanup;
+
+    vm->hasManagedSave = virFileExists(name);
+
+cleanup:
+    virDomainObjUnlock(vm);
+    VIR_FREE(name);
+}
+
 static int
 qemuDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     int ret = -1;
-    char *name = NULL;
 
     virCheckFlags(0, -1);
 
@@ -2938,14 +2967,9 @@ qemuDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
-    name = qemuDomainManagedSavePath(driver, vm);
-    if (name == NULL)
-        goto cleanup;
-
-    ret = virFileExists(name);
+    ret = vm->hasManagedSave;
 
 cleanup:
-    VIR_FREE(name);
     if (vm)
         virDomainObjUnlock(vm);
     qemuDriverUnlock(driver);
@@ -2977,6 +3001,7 @@ qemuDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
         goto cleanup;
 
     ret = unlink(name);
+    vm->hasManagedSave = false;
 
 cleanup:
     VIR_FREE(name);
@@ -4820,8 +4845,13 @@ qemuDomainObjStart(virConnectPtr conn,
             ret = qemuDomainObjRestore(conn, driver, vm, managed_save,
                                        start_paused, bypass_cache);
 
-            if (ret == 0 && unlink(managed_save) < 0)
-                VIR_WARN("Failed to remove the managed state %s", managed_save);
+            if (ret == 0) {
+                if (unlink(managed_save) < 0)
+                    VIR_WARN("Failed to remove the managed state %s", managed_save);
+                else
+                    vm->hasManagedSave = false;
+            }
+
             if (ret > 0)
                 VIR_WARN("Ignoring incomplete managed state %s", managed_save);
             else

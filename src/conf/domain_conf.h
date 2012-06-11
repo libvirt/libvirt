@@ -1817,6 +1817,8 @@ struct _virDomainObj {
     virDomainSnapshotObjList snapshots;
     virDomainSnapshotObjPtr current_snapshot;
 
+    bool hasManagedSave;
+
     void *privateData;
     void (*privateDataFreeFunc)(void *);
 
