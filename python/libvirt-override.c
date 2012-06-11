@@ -2025,15 +2025,18 @@ libvirt_virConnectListDefinedDomains(PyObject *self ATTRIBUTE_UNUSED,
 
 static PyObject *
 libvirt_virDomainSnapshotListNames(PyObject *self ATTRIBUTE_UNUSED,
-                                   PyObject *args) {
+                                   PyObject *args)
+{
     PyObject *py_retval;
     char **names = NULL;
     int c_retval, i;
     virDomainPtr dom;
     PyObject *pyobj_dom;
+    PyObject *pyobj_snap;
     unsigned int flags;
 
-    if (!PyArg_ParseTuple(args, (char *)"Oi:virDomainSnapshotListNames", &pyobj_dom, &flags))
+    if (!PyArg_ParseTuple(args, (char *)"Oi:virDomainSnapshotListNames",
+                          &pyobj_dom, &flags))
         return NULL;
     dom = (virDomainPtr) PyvirDomain_Get(pyobj_dom);
 
@@ -2045,7 +2048,7 @@ libvirt_virDomainSnapshotListNames(PyObject *self ATTRIBUTE_UNUSED,
 
     if (c_retval) {
         if (VIR_ALLOC_N(names, c_retval) < 0)
-            return VIR_PY_NONE;
+            return PyErr_NoMemory();
         LIBVIRT_BEGIN_ALLOW_THREADS;
         c_retval = virDomainSnapshotListNames(dom, names, c_retval, flags);
         LIBVIRT_END_ALLOW_THREADS;
@@ -2055,21 +2058,31 @@ libvirt_virDomainSnapshotListNames(PyObject *self ATTRIBUTE_UNUSED,
         }
     }
     py_retval = PyList_New(c_retval);
+    if (!py_retval)
+        goto cleanup;
 
-    if (names) {
-        for (i = 0;i < c_retval;i++) {
-            PyList_SetItem(py_retval, i, libvirt_constcharPtrWrap(names[i]));
-            VIR_FREE(names[i]);
+    for (i = 0; i < c_retval; i++) {
+        if ((pyobj_snap = libvirt_constcharPtrWrap(names[i])) == NULL ||
+            PyList_SetItem(py_retval, i, pyobj_snap) < 0) {
+            Py_XDECREF(pyobj_snap);
+            Py_DECREF(py_retval);
+            py_retval = NULL;
+            goto cleanup;
         }
-        VIR_FREE(names);
+        VIR_FREE(names[i]);
     }
 
+cleanup:
+    for (i = 0; i < c_retval; i++)
+        VIR_FREE(names[i]);
+    VIR_FREE(names);
     return py_retval;
 }
 
 static PyObject *
 libvirt_virDomainSnapshotListChildrenNames(PyObject *self ATTRIBUTE_UNUSED,
-                                   PyObject *args) {
+                                           PyObject *args)
+{
     PyObject *py_retval;
     char **names = NULL;
     int c_retval, i;
@@ -2077,7 +2090,8 @@ libvirt_virDomainSnapshotListChildrenNames(PyObject *self ATTRIBUTE_UNUSED,
     PyObject *pyobj_snap;
     unsigned int flags;
 
-    if (!PyArg_ParseTuple(args, (char *)"Oi:virDomainSnapshotListChildrenNames", &pyobj_snap, &flags))
+    if (!PyArg_ParseTuple(args, (char *)"Oi:virDomainSnapshotListChildrenNames",
+                          &pyobj_snap, &flags))
         return NULL;
     snap = (virDomainSnapshotPtr) PyvirDomainSnapshot_Get(pyobj_snap);
 
@@ -2089,9 +2103,10 @@ libvirt_virDomainSnapshotListChildrenNames(PyObject *self ATTRIBUTE_UNUSED,
 
     if (c_retval) {
         if (VIR_ALLOC_N(names, c_retval) < 0)
-            return VIR_PY_NONE;
+            return PyErr_NoMemory();
         LIBVIRT_BEGIN_ALLOW_THREADS;
-        c_retval = virDomainSnapshotListChildrenNames(snap, names, c_retval, flags);
+        c_retval = virDomainSnapshotListChildrenNames(snap, names, c_retval,
+                                                      flags);
         LIBVIRT_END_ALLOW_THREADS;
         if (c_retval < 0) {
             VIR_FREE(names);
@@ -2100,14 +2115,21 @@ libvirt_virDomainSnapshotListChildrenNames(PyObject *self ATTRIBUTE_UNUSED,
     }
     py_retval = PyList_New(c_retval);
 
-    if (names) {
-        for (i = 0;i < c_retval;i++) {
-            PyList_SetItem(py_retval, i, libvirt_constcharPtrWrap(names[i]));
-            VIR_FREE(names[i]);
+    for (i = 0; i < c_retval; i++) {
+        if ((pyobj_snap = libvirt_constcharPtrWrap(names[i])) == NULL ||
+            PyList_SetItem(py_retval, i, pyobj_snap) < 0) {
+            Py_XDECREF(pyobj_snap);
+            Py_DECREF(py_retval);
+            py_retval = NULL;
+            goto cleanup;
         }
-        VIR_FREE(names);
+        VIR_FREE(names[i]);
     }
 
+cleanup:
+    for (i = 0; i < c_retval; i++)
+        VIR_FREE(names[i]);
+    VIR_FREE(names);
     return py_retval;
 }
 
