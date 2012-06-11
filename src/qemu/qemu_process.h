@@ -61,7 +61,8 @@ int qemuProcessStart(virConnectPtr conn,
                      unsigned int flags);
 
 typedef enum {
-    VIR_QEMU_PROCESS_STOP_MIGRATED  = 1 << 0,
+    VIR_QEMU_PROCESS_STOP_MIGRATED      = 1 << 0,
+    VIR_QEMU_PROCESS_STOP_NO_RELABEL    = 1 << 1,
 } qemuProcessStopFlags;
 
 void qemuProcessStop(struct qemud_driver *driver,

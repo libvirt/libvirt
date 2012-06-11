@@ -3281,12 +3281,19 @@ int qemuProcessStart(virConnectPtr conn,
     int i;
     char *nodeset = NULL;
     char *nodemask = NULL;
+    unsigned int stop_flags;
 
     /* Okay, these are just internal flags,
      * but doesn't hurt to check */
     virCheckFlags(VIR_QEMU_PROCESS_START_COLD |
                   VIR_QEMU_PROCESS_START_PAUSED |
                   VIR_QEMU_PROCESS_START_AUTODESROY, -1);
+
+    /* From now on until domain security labeling is done:
+     * if any operation fails and we goto cleanup, we must not
+     * restore any security label as we would overwrite labels
+     * we did not set. */
+    stop_flags = VIR_QEMU_PROCESS_STOP_NO_RELABEL;
 
     hookData.conn = conn;
     hookData.vm = vm;
@@ -3631,6 +3638,12 @@ int qemuProcessStart(virConnectPtr conn,
                                       vm->def, stdin_path) < 0)
         goto cleanup;
 
+    /* Security manager labeled all devices, therefore
+     * if any operation from now on fails and we goto cleanup,
+     * where virSecurityManagerRestoreAllLabel() is called
+     * (hidden under qemuProcessStop) we need to restore labels. */
+    stop_flags &= ~VIR_QEMU_PROCESS_STOP_NO_RELABEL;
+
     if (stdin_fd != -1) {
         /* if there's an fd to migrate from, and it's a pipe, put the
          * proper security label on it
@@ -3770,7 +3783,7 @@ cleanup:
     VIR_FREE(nodemask);
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(logfile);
-    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, 0);
+    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, stop_flags);
 
     return -1;
 }
@@ -3983,10 +3996,11 @@ void qemuProcessStop(struct qemud_driver *driver,
         VIR_FREE(xml);
     }
 
-    /* Reset Security Labels */
-    virSecurityManagerRestoreAllLabel(driver->securityManager,
-                                      vm->def,
-                                      flags & VIR_QEMU_PROCESS_STOP_MIGRATED);
+    /* Reset Security Labels unless caller don't want us to */
+    if (!(flags & VIR_QEMU_PROCESS_STOP_NO_RELABEL))
+        virSecurityManagerRestoreAllLabel(driver->securityManager,
+                                          vm->def,
+                                          flags & VIR_QEMU_PROCESS_STOP_MIGRATED);
     virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
 
     /* Clear out dynamically assigned labels */
