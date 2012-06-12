@@ -1328,6 +1328,13 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     if (lxcContainerPivotRoot(root) < 0)
         goto cleanup;
 
+    /* Gets rid of any existing stuff under /proc, since we need new
+     * namespace aware versions of those. We must do /proc second
+     * otherwise we won't find /proc/mounts :-) */
+    if (lxcContainerUnmountSubtree("/sys", false) < 0 ||
+        lxcContainerUnmountSubtree("/proc", false) < 0)
+        goto cleanup;
+
     /* Mounts the core /proc, /sys, etc filesystems */
     if (lxcContainerMountBasicFS(vmDef, true, securityDriver) < 0)
         goto cleanup;
@@ -1455,11 +1462,7 @@ static int lxcContainerSetupMounts(virDomainDefPtr vmDef,
     if (lxcContainerResolveSymlinks(vmDef) < 0)
         return -1;
 
-    /* If the user has specified a dst '/' with a source of '/'
-     * then we don't really want to go down the pivot root
-     * path, as we're just tuning the existing root
-     */
-    if (root && root->src && STRNEQ(root->src, "/"))
+    if (root && root->src)
         return lxcContainerSetupPivotRoot(vmDef, root, ttyPaths, nttyPaths, securityDriver);
     else
         return lxcContainerSetupExtraMounts(vmDef, root, securityDriver);
