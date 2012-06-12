@@ -103,13 +103,14 @@ struct _virNetServerClient
     virNetServerClientCloseFunc privateDataCloseFunc;
 
     virKeepAlivePtr keepalive;
-    int keepaliveFilter;
 };
 
 
 static void virNetServerClientDispatchEvent(virNetSocketPtr sock, int events, void *opaque);
 static void virNetServerClientUpdateEvent(virNetServerClientPtr client);
 static void virNetServerClientDispatchRead(virNetServerClientPtr client);
+static int virNetServerClientSendMessageLocked(virNetServerClientPtr client,
+                                               virNetMessagePtr msg);
 
 static void virNetServerClientLock(virNetServerClientPtr client)
 {
@@ -364,7 +365,6 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
     client->readonly = readonly;
     client->tlsCtxt = tls;
     client->nrequests_max = nrequests_max;
-    client->keepaliveFilter = -1;
 
     client->sockTimer = virEventAddTimeout(-1, virNetServerClientSockTimerFunc,
                                            client, NULL);
@@ -644,9 +644,6 @@ void virNetServerClientClose(virNetServerClientPtr client)
         return;
     }
 
-    if (client->keepaliveFilter >= 0)
-        virNetServerClientRemoveFilterLocked(client, client->keepaliveFilter);
-
     if (client->keepalive) {
         virKeepAliveStop(client->keepalive);
         ka = client->keepalive;
@@ -844,6 +841,7 @@ readmore:
     } else {
         /* Grab the completed message */
         virNetMessagePtr msg = client->rx;
+        virNetMessagePtr response = NULL;
         virNetServerClientFilterPtr filter;
         size_t i;
 
@@ -894,23 +892,35 @@ readmore:
               msg->header.prog, msg->header.vers, msg->header.proc,
               msg->header.type, msg->header.status, msg->header.serial);
 
-        /* Maybe send off for queue against a filter */
-        filter = client->filters;
-        while (filter) {
-            int ret = filter->func(client, msg, filter->opaque);
-            if (ret < 0) {
-                virNetMessageFree(msg);
-                msg = NULL;
-                if (ret < 0)
-                    client->wantClose = true;
-                break;
-            }
-            if (ret > 0) {
-                msg = NULL;
-                break;
-            }
+        if (virKeepAliveCheckMessage(client->keepalive, msg, &response)) {
+            virNetMessageFree(msg);
+            client->nrequests--;
+            msg = NULL;
 
-            filter = filter->next;
+            if (response &&
+                virNetServerClientSendMessageLocked(client, response) < 0)
+                virNetMessageFree(response);
+        }
+
+        /* Maybe send off for queue against a filter */
+        if (msg) {
+            filter = client->filters;
+            while (filter) {
+                int ret = filter->func(client, msg, filter->opaque);
+                if (ret < 0) {
+                    virNetMessageFree(msg);
+                    msg = NULL;
+                    if (ret < 0)
+                        client->wantClose = true;
+                    break;
+                }
+                if (ret > 0) {
+                    msg = NULL;
+                    break;
+                }
+
+                filter = filter->next;
+            }
         }
 
         /* Send off to for normal dispatch to workers */
@@ -1117,15 +1127,14 @@ virNetServerClientDispatchEvent(virNetSocketPtr sock, int events, void *opaque)
 }
 
 
-int virNetServerClientSendMessage(virNetServerClientPtr client,
-                                  virNetMessagePtr msg)
+static int
+virNetServerClientSendMessageLocked(virNetServerClientPtr client,
+                                    virNetMessagePtr msg)
 {
     int ret = -1;
     VIR_DEBUG("msg=%p proc=%d len=%zu offset=%zu",
               msg, msg->header.proc,
               msg->bufferLength, msg->bufferOffset);
-
-    virNetServerClientLock(client);
 
     msg->donefds = 0;
     if (client->sock && !client->wantClose) {
@@ -1140,6 +1149,16 @@ int virNetServerClientSendMessage(virNetServerClientPtr client,
         ret = 0;
     }
 
+    return ret;
+}
+
+int virNetServerClientSendMessage(virNetServerClientPtr client,
+                                  virNetMessagePtr msg)
+{
+    int ret;
+
+    virNetServerClientLock(client);
+    ret = virNetServerClientSendMessageLocked(client, msg);
     virNetServerClientUnlock(client);
 
     return ret;
@@ -1176,20 +1195,6 @@ virNetServerClientFreeCB(void *opaque)
     virNetServerClientFree(opaque);
 }
 
-static int
-virNetServerClientKeepAliveFilter(virNetServerClientPtr client,
-                                  virNetMessagePtr msg,
-                                  void *opaque ATTRIBUTE_UNUSED)
-{
-    if (virKeepAliveCheckMessage(client->keepalive, msg)) {
-        virNetMessageFree(msg);
-        client->nrequests--;
-        return 1;
-    }
-
-    return 0;
-}
-
 int
 virNetServerClientInitKeepAlive(virNetServerClientPtr client,
                                 int interval,
@@ -1207,13 +1212,6 @@ virNetServerClientInitKeepAlive(virNetServerClientPtr client,
         goto cleanup;
     /* keepalive object has a reference to client */
     client->refs++;
-
-    client->keepaliveFilter =
-        virNetServerClientAddFilterLocked(client,
-                                          virNetServerClientKeepAliveFilter,
-                                          NULL);
-    if (client->keepaliveFilter < 0)
-        goto cleanup;
 
     client->keepalive = ka;
     ka = NULL;

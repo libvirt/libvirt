@@ -55,6 +55,7 @@ int virKeepAliveTimeout(virKeepAlivePtr ka);
 bool virKeepAliveTrigger(virKeepAlivePtr ka,
                          virNetMessagePtr *msg);
 bool virKeepAliveCheckMessage(virKeepAlivePtr ka,
-                              virNetMessagePtr msg);
+                              virNetMessagePtr msg,
+                              virNetMessagePtr *response);
 
 #endif /* __VIR_KEEPALIVE_H__ */

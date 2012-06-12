@@ -109,6 +109,8 @@ struct _virNetClient {
 
 static void virNetClientIOEventLoopPassTheBuck(virNetClientPtr client,
                                                virNetClientCallPtr thiscall);
+static int virNetClientQueueNonBlocking(virNetClientPtr client,
+                                        virNetMessagePtr msg);
 
 
 static void virNetClientLock(virNetClientPtr client)
@@ -937,14 +939,22 @@ static int virNetClientCallDispatchStream(virNetClientPtr client)
 static int
 virNetClientCallDispatch(virNetClientPtr client)
 {
+    virNetMessagePtr response = NULL;
+
     PROBE(RPC_CLIENT_MSG_RX,
           "client=%p len=%zu prog=%u vers=%u proc=%u type=%u status=%u serial=%u",
           client, client->msg.bufferLength,
           client->msg.header.prog, client->msg.header.vers, client->msg.header.proc,
           client->msg.header.type, client->msg.header.status, client->msg.header.serial);
 
-    if (virKeepAliveCheckMessage(client->keepalive, &client->msg))
+    if (virKeepAliveCheckMessage(client->keepalive, &client->msg, &response)) {
+        if (response &&
+            virNetClientQueueNonBlocking(client, response) < 0) {
+            VIR_WARN("Could not queue keepalive response");
+            virNetMessageFree(response);
+        }
         return 0;
+    }
 
     switch (client->msg.header.type) {
     case VIR_NET_REPLY: /* Normal RPC replies */
@@ -1637,6 +1647,8 @@ void virNetClientIncomingEvent(virNetSocketPtr sock,
     virNetClientCallRemovePredicate(&client->waitDispatch,
                                     virNetClientIOEventLoopRemoveDone,
                                     NULL);
+    virNetClientIOUpdateCallback(client, true);
+
 done:
     virNetClientUnlock(client);
 }
@@ -1693,6 +1705,27 @@ virNetClientCallNew(virNetMessagePtr msg,
 error:
     VIR_FREE(call);
     return NULL;
+}
+
+
+static int
+virNetClientQueueNonBlocking(virNetClientPtr client,
+                             virNetMessagePtr msg)
+{
+    virNetClientCallPtr call;
+
+    PROBE(RPC_CLIENT_MSG_TX_QUEUE,
+          "client=%p len=%zu prog=%u vers=%u proc=%u"
+          " type=%u status=%u serial=%u",
+          client, msg->bufferLength,
+          msg->header.prog, msg->header.vers, msg->header.proc,
+          msg->header.type, msg->header.status, msg->header.serial);
+
+    if (!(call = virNetClientCallNew(msg, false, true)))
+        return -1;
+
+    virNetClientCallQueue(&client->waitDispatch, call);
+    return 0;
 }
 
 
