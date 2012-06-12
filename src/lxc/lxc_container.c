@@ -971,6 +971,7 @@ static int lxcContainerMountFSBlockHelper(virDomainFSDefPtr fs,
     }
 
 cleanup:
+    VIR_FREE(format);
     return ret;
 }
 
