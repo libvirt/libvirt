@@ -45,6 +45,7 @@ struct _virKeepAlive {
     unsigned int count;
     unsigned int countToDeath;
     time_t lastPacketReceived;
+    time_t intervalStart;
     int timer;
 
     virNetMessagePtr response;
@@ -158,8 +159,11 @@ virKeepAliveTimerInternal(virKeepAlivePtr ka,
 {
     time_t now = time(NULL);
 
-    if (now - ka->lastPacketReceived < ka->interval - 1) {
-        int timeout = ka->interval - (now - ka->lastPacketReceived);
+    if (ka->interval <= 0 || ka->intervalStart == 0)
+        return false;
+
+    if (now - ka->intervalStart < ka->interval) {
+        int timeout = ka->interval - (now - ka->intervalStart);
         virEventUpdateTimeout(ka->timer, timeout * 1000);
         return false;
     }
@@ -179,6 +183,7 @@ virKeepAliveTimerInternal(virKeepAlivePtr ka,
         return true;
     } else {
         ka->countToDeath--;
+        ka->intervalStart = now;
         *msg = virKeepAliveMessage(KEEPALIVE_PROC_PING);
         virEventUpdateTimeout(ka->timer, ka->interval * 1000);
         return false;
@@ -335,6 +340,7 @@ virKeepAliveStart(virKeepAlivePtr ka,
     int ret = -1;
     time_t delay;
     int timeout;
+    time_t now;
 
     virKeepAliveLock(ka);
 
@@ -365,11 +371,13 @@ virKeepAliveStart(virKeepAlivePtr ka,
           "ka=%p client=%p interval=%d count=%u",
           ka, ka->client, interval, count);
 
-    delay = time(NULL) - ka->lastPacketReceived;
+    now = time(NULL);
+    delay = now - ka->lastPacketReceived;
     if (delay > ka->interval)
         timeout = 0;
     else
         timeout = ka->interval - delay;
+    ka->intervalStart = now - (ka->interval - timeout);
     ka->timer = virEventAddTimeout(timeout * 1000, virKeepAliveTimer,
                                    ka, virKeepAliveTimerFree);
     if (ka->timer < 0)
@@ -427,6 +435,51 @@ virKeepAliveStopSending(virKeepAlivePtr ka)
 }
 
 
+int
+virKeepAliveTimeout(virKeepAlivePtr ka)
+{
+    int timeout;
+
+    if (!ka)
+        return -1;
+
+    virKeepAliveLock(ka);
+
+    if (ka->interval <= 0 || ka->intervalStart == 0) {
+        timeout = -1;
+    } else {
+        timeout = ka->interval - (time(NULL) - ka->intervalStart);
+        if (timeout < 0)
+            timeout = 0;
+    }
+
+    virKeepAliveUnlock(ka);
+
+    if (timeout < 0)
+        return -1;
+    else
+        return timeout * 1000;
+}
+
+
+bool
+virKeepAliveTrigger(virKeepAlivePtr ka,
+                    virNetMessagePtr *msg)
+{
+    bool dead;
+
+    *msg = NULL;
+    if (!ka)
+        return false;
+
+    virKeepAliveLock(ka);
+    dead = virKeepAliveTimerInternal(ka, msg);
+    virKeepAliveUnlock(ka);
+
+    return dead;
+}
+
+
 bool
 virKeepAliveCheckMessage(virKeepAlivePtr ka,
                          virNetMessagePtr msg)
@@ -442,7 +495,7 @@ virKeepAliveCheckMessage(virKeepAlivePtr ka,
     virKeepAliveLock(ka);
 
     ka->countToDeath = ka->count;
-    ka->lastPacketReceived = time(NULL);
+    ka->lastPacketReceived = ka->intervalStart = time(NULL);
 
     if (msg->header.prog == KEEPALIVE_PROGRAM &&
         msg->header.vers == KEEPALIVE_PROTOCOL_VERSION &&
