@@ -1630,6 +1630,60 @@ done:
 }
 
 
+static virNetClientCallPtr
+virNetClientCallNew(virNetMessagePtr msg,
+                    bool expectReply,
+                    bool nonBlock)
+{
+    virNetClientCallPtr call = NULL;
+
+    if (expectReply &&
+        (msg->bufferLength != 0) &&
+        (msg->header.status == VIR_NET_CONTINUE)) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("Attempt to send an asynchronous message with"
+                      " a synchronous reply"));
+        goto error;
+    }
+
+    if (expectReply && nonBlock) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("Attempt to send a non-blocking message with"
+                      " a synchronous reply"));
+        goto error;
+    }
+
+    if (VIR_ALLOC(call) < 0) {
+        virReportOOMError();
+        goto error;
+    }
+
+    if (virCondInit(&call->cond) < 0) {
+        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("cannot initialize condition variable"));
+        goto error;
+    }
+
+    msg->donefds = 0;
+    if (msg->bufferLength)
+        call->mode = VIR_NET_CLIENT_MODE_WAIT_TX;
+    else
+        call->mode = VIR_NET_CLIENT_MODE_WAIT_RX;
+    call->msg = msg;
+    call->expectReply = expectReply;
+    call->nonBlock = nonBlock;
+
+    VIR_DEBUG("New call %p: msg=%p, expectReply=%d, nonBlock=%d",
+              call, msg, expectReply, nonBlock);
+
+    return call;
+
+error:
+    VIR_FREE(call);
+    return NULL;
+}
+
+
 /*
  * Returns 1 if the call was queued and will be completed later (only
  * for nonBlock==true), 0 if the call was completed and -1 on error.
@@ -1648,47 +1702,18 @@ static int virNetClientSendInternal(virNetClientPtr client,
           msg->header.prog, msg->header.vers, msg->header.proc,
           msg->header.type, msg->header.status, msg->header.serial);
 
-    if (expectReply &&
-        (msg->bufferLength != 0) &&
-        (msg->header.status == VIR_NET_CONTINUE)) {
+    if (!client->sock || client->wantClose) {
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("Attempt to send an asynchronous message with a synchronous reply"));
+                    _("client socket is closed"));
         return -1;
     }
 
-    if (expectReply && nonBlock) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("Attempt to send a non-blocking message with a synchronous reply"));
-        return -1;
-    }
-
-    if (VIR_ALLOC(call) < 0) {
+    if (!(call = virNetClientCallNew(msg, expectReply, nonBlock))) {
         virReportOOMError();
         return -1;
     }
 
-    if (!client->sock || client->wantClose) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("client socket is closed"));
-        goto cleanup;
-    }
-
-    if (virCondInit(&call->cond) < 0) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("cannot initialize condition variable"));
-        goto cleanup;
-    }
-
-    msg->donefds = 0;
-    if (msg->bufferLength)
-        call->mode = VIR_NET_CLIENT_MODE_WAIT_TX;
-    else
-        call->mode = VIR_NET_CLIENT_MODE_WAIT_RX;
-    call->msg = msg;
-    call->expectReply = expectReply;
-    call->nonBlock = nonBlock;
     call->haveThread = true;
-
     ret = virNetClientIO(client, call);
 
     /* If queued, the call will be finished and freed later by another thread;
@@ -1697,8 +1722,6 @@ static int virNetClientSendInternal(virNetClientPtr client,
         return 1;
 
     ignore_value(virCondDestroy(&call->cond));
-
-cleanup:
     VIR_FREE(call);
     return ret;
 }
