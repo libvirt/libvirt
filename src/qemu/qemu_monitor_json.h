@@ -136,6 +136,12 @@ int qemuMonitorJSONMigrate(qemuMonitorPtr mon,
 
 int qemuMonitorJSONMigrateCancel(qemuMonitorPtr mon);
 
+int qemuMonitorJSONDump(qemuMonitorPtr mon,
+                        unsigned int flags,
+                        const char *protocol,
+                        unsigned long long begin,
+                        unsigned long long length);
+
 int qemuMonitorJSONGraphicsRelocate(qemuMonitorPtr mon,
                                     int type,
                                     const char *hostname,

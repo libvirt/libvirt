@@ -2017,6 +2017,43 @@ int qemuMonitorMigrateCancel(qemuMonitorPtr mon)
     return ret;
 }
 
+int qemuMonitorDumpToFd(qemuMonitorPtr mon,
+                        unsigned int flags,
+                        int fd,
+                        unsigned long long begin,
+                        unsigned long long length)
+{
+    int ret;
+    VIR_DEBUG("mon=%p fd=%d flags=%x begin=%llx length=%llx",
+              mon, fd, flags, begin, length);
+
+    if (!mon) {
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        /* We don't have qemuMonitorTextDump(), so we should check mon->json
+         * here.
+         */
+        qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+                        _("dump-guest-memory is not supported in text mode"));
+        return -1;
+    }
+
+    if (qemuMonitorSendFileHandle(mon, "dump", fd) < 0)
+        return -1;
+
+    ret = qemuMonitorJSONDump(mon, flags, "fd:dump", begin, length);
+
+    if (ret < 0) {
+        if (qemuMonitorCloseFileHandle(mon, "dump") < 0)
+            VIR_WARN("failed to close dumping handle");
+    }
+
+    return ret;
+}
 
 int qemuMonitorGraphicsRelocate(qemuMonitorPtr mon,
                                 int type,

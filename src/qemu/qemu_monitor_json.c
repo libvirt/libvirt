@@ -2465,6 +2465,40 @@ int qemuMonitorJSONMigrateCancel(qemuMonitorPtr mon)
     return ret;
 }
 
+int qemuMonitorJSONDump(qemuMonitorPtr mon,
+                        unsigned int flags,
+                        const char *protocol,
+                        unsigned long long begin,
+                        unsigned long long length)
+{
+    int ret;
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+
+    if (flags & QEMU_MONITOR_DUMP_HAVE_FILTER)
+        cmd = qemuMonitorJSONMakeCommand("dump-guest-memory",
+                                         "b:paging", flags & QEMU_MONITOR_DUMP_PAGING ? 1 : 0,
+                                         "s:protocol", protocol,
+                                         "U:begin", begin,
+                                         "U:length", length,
+                                         NULL);
+    else
+        cmd = qemuMonitorJSONMakeCommand("dump-guest-memory",
+                                         "b:paging", flags & QEMU_MONITOR_DUMP_PAGING ? 1 : 0,
+                                         "s:protocol", protocol,
+                                         NULL);
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
 
 int qemuMonitorJSONGraphicsRelocate(qemuMonitorPtr mon,
                                     int type,
