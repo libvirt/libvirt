@@ -1272,6 +1272,7 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
         char ignore;
         sigset_t oldmask, blockedsigs;
         int timeout = -1;
+        virNetMessagePtr msg = NULL;
 
         /* If we have existing SASL decoded data we don't want to sleep in
          * the poll(), just check if any other FDs are also ready.
@@ -1284,6 +1285,10 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
         /* If we are non-blocking, then we don't want to sleep in poll() */
         if (thiscall->nonBlock)
             timeout = 0;
+
+        /* Limit timeout so that we can send keepalive request in time */
+        if (timeout == -1)
+            timeout = virKeepAliveTimeout(client->keepalive);
 
         fds[0].events = fds[0].revents = 0;
         fds[1].events = fds[1].revents = 0;
@@ -1329,6 +1334,13 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
         ignore_value(pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
 
         virNetClientLock(client);
+
+        if (virKeepAliveTrigger(client->keepalive, &msg)) {
+            client->wantClose = true;
+        } else if (msg && virNetClientQueueNonBlocking(client, msg) < 0) {
+            VIR_WARN("Could not queue keepalive request");
+            virNetMessageFree(msg);
+        }
 
         /* If we have existing SASL decoded data, pretend
          * the socket became readable so we consume it
