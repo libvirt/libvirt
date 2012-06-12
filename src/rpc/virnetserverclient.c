@@ -218,19 +218,20 @@ static void virNetServerClientUpdateEvent(virNetServerClientPtr client)
 }
 
 
-static int
-virNetServerClientAddFilterLocked(virNetServerClientPtr client,
-                                  virNetServerClientFilterFunc func,
-                                  void *opaque)
+int virNetServerClientAddFilter(virNetServerClientPtr client,
+                                virNetServerClientFilterFunc func,
+                                void *opaque)
 {
     virNetServerClientFilterPtr filter;
     virNetServerClientFilterPtr *place;
-    int ret = -1;
+    int ret;
 
     if (VIR_ALLOC(filter) < 0) {
         virReportOOMError();
-        goto cleanup;
+        return -1;
     }
+
+    virNetServerClientLock(client);
 
     filter->id = client->nextFilterID++;
     filter->func = func;
@@ -243,27 +244,17 @@ virNetServerClientAddFilterLocked(virNetServerClientPtr client,
 
     ret = filter->id;
 
-cleanup:
-    return ret;
-}
-
-int virNetServerClientAddFilter(virNetServerClientPtr client,
-                                virNetServerClientFilterFunc func,
-                                void *opaque)
-{
-    int ret;
-
-    virNetServerClientLock(client);
-    ret = virNetServerClientAddFilterLocked(client, func, opaque);
     virNetServerClientUnlock(client);
+
     return ret;
 }
 
-static void
-virNetServerClientRemoveFilterLocked(virNetServerClientPtr client,
-                                     int filterID)
+void virNetServerClientRemoveFilter(virNetServerClientPtr client,
+                                    int filterID)
 {
     virNetServerClientFilterPtr tmp, prev;
+
+    virNetServerClientLock(client);
 
     prev = NULL;
     tmp = client->filters;
@@ -280,13 +271,7 @@ virNetServerClientRemoveFilterLocked(virNetServerClientPtr client,
         prev = tmp;
         tmp = tmp->next;
     }
-}
 
-void virNetServerClientRemoveFilter(virNetServerClientPtr client,
-                                    int filterID)
-{
-    virNetServerClientLock(client);
-    virNetServerClientRemoveFilterLocked(client, filterID);
     virNetServerClientUnlock(client);
 }
 
