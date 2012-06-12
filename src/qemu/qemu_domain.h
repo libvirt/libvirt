@@ -104,6 +104,7 @@ struct qemuDomainJobObj {
     int phase;                          /* Job phase (mainly for migrations) */
     unsigned long long mask;            /* Jobs allowed during async job */
     unsigned long long start;           /* When the async job started */
+    bool dump_memory_only;              /* use dump-guest-memory to do dump */
     virDomainJobInfo info;              /* Async job progress data */
 };
 

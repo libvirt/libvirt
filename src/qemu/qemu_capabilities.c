@@ -164,6 +164,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "no-user-config",
 
               "hda-micro", /* 95 */
+              "dump-guest-memory",
 
     );
 

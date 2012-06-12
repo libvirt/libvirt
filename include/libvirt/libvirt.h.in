@@ -927,6 +927,7 @@ typedef enum {
     VIR_DUMP_LIVE         = (1 << 1), /* live dump */
     VIR_DUMP_BYPASS_CACHE = (1 << 2), /* avoid file system cache pollution */
     VIR_DUMP_RESET        = (1 << 3), /* reset domain after dump finishes */
+    VIR_DUMP_MEMORY_ONLY  = (1 << 4), /* use dump-guest-memory */
 } virDomainCoreDumpFlags;
 
 /* Domain migration flags. */

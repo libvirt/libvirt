@@ -991,6 +991,8 @@ qemuMonitorJSONCheckCommands(qemuMonitorPtr mon,
             qemuCapsSet(qemuCaps, QEMU_CAPS_BLOCKJOB_SYNC);
         else if (STREQ(name, "block-job-cancel"))
             qemuCapsSet(qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC);
+        else if (STREQ(name, "dump-guest-memory"))
+            qemuCapsSet(qemuCaps, QEMU_CAPS_DUMP_GUEST_MEMORY);
     }
 
     ret = 0;

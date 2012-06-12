@@ -2986,12 +2986,39 @@ cleanup:
     return ret;
 }
 
+static int qemuDumpToFd(struct qemud_driver *driver, virDomainObjPtr vm,
+                        int fd, enum qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret = -1;
+
+    if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DUMP_GUEST_MEMORY)) {
+        qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+                        _("dump-guest-memory is not supported"));
+        return -1;
+    }
+
+    if (virSecurityManagerSetImageFDLabel(driver->securityManager, vm->def,
+                                          fd) < 0)
+        return -1;
+
+    priv->job.dump_memory_only = true;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    ret = qemuMonitorDumpToFd(priv->mon, 0, fd, 0, 0);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    return ret;
+}
+
 static int
 doCoreDump(struct qemud_driver *driver,
            virDomainObjPtr vm,
            const char *path,
            enum qemud_save_formats compress,
-           bool bypass_cache)
+           unsigned int dump_flags)
 {
     int fd = -1;
     int ret = -1;
@@ -3000,7 +3027,7 @@ doCoreDump(struct qemud_driver *driver,
     unsigned int flags = VIR_FILE_WRAPPER_NON_BLOCKING;
 
     /* Create an empty file with appropriate ownership.  */
-    if (bypass_cache) {
+    if (dump_flags & VIR_DUMP_BYPASS_CACHE) {
         flags |= VIR_FILE_WRAPPER_BYPASS_CACHE;
         directFlag = virFileDirectFdFlag();
         if (directFlag < 0) {
@@ -3020,14 +3047,20 @@ doCoreDump(struct qemud_driver *driver,
     if (!(wrapperFd = virFileWrapperFdNew(&fd, path, flags)))
         goto cleanup;
 
-    if (qemuMigrationToFile(driver, vm, fd, 0, path,
-                            qemuCompressProgramName(compress), false,
-                            QEMU_ASYNC_JOB_DUMP) < 0)
+    if (dump_flags & VIR_DUMP_MEMORY_ONLY) {
+        ret = qemuDumpToFd(driver, vm, fd, QEMU_ASYNC_JOB_DUMP);
+    } else {
+        ret = qemuMigrationToFile(driver, vm, fd, 0, path,
+                                  qemuCompressProgramName(compress), false,
+                                  QEMU_ASYNC_JOB_DUMP);
+    }
+
+    if (ret < 0)
         goto cleanup;
 
     if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno,
-                             _("unable to save file %s"),
+                             _("unable to close file %s"),
                              path);
         goto cleanup;
     }
@@ -3085,7 +3118,8 @@ static int qemudDomainCoreDump(virDomainPtr dom,
     virDomainEventPtr event = NULL;
 
     virCheckFlags(VIR_DUMP_LIVE | VIR_DUMP_CRASH |
-                  VIR_DUMP_BYPASS_CACHE | VIR_DUMP_RESET, -1);
+                  VIR_DUMP_BYPASS_CACHE | VIR_DUMP_RESET |
+                  VIR_DUMP_MEMORY_ONLY, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -3127,8 +3161,7 @@ static int qemudDomainCoreDump(virDomainPtr dom,
         }
     }
 
-    ret = doCoreDump(driver, vm, path, getCompressionType(driver),
-                     (flags & VIR_DUMP_BYPASS_CACHE) != 0);
+    ret = doCoreDump(driver, vm, path, getCompressionType(driver), flags);
     if (ret < 0)
         goto endjob;
 
@@ -3289,6 +3322,7 @@ static void processWatchdogEvent(void *data, void *opaque)
     case VIR_DOMAIN_WATCHDOG_ACTION_DUMP:
         {
             char *dumpfile;
+            unsigned int flags = 0;
 
             if (virAsprintf(&dumpfile, "%s/%s-%u",
                             driver->autoDumpPath,
@@ -3311,9 +3345,9 @@ static void processWatchdogEvent(void *data, void *opaque)
                 goto endjob;
             }
 
+            flags |= driver->autoDumpBypassCache ? VIR_DUMP_BYPASS_CACHE: 0;
             ret = doCoreDump(driver, wdEvent->vm, dumpfile,
-                             getCompressionType(driver),
-                             driver->autoDumpBypassCache);
+                             getCompressionType(driver), flags);
             if (ret < 0)
                 qemuReportError(VIR_ERR_OPERATION_FAILED,
                                 "%s", _("Dump failed"));
@@ -9402,7 +9436,7 @@ static int qemuDomainGetJobInfo(virDomainPtr dom,
     priv = vm->privateData;
 
     if (virDomainObjIsActive(vm)) {
-        if (priv->job.asyncJob) {
+        if (priv->job.asyncJob && !priv->job.dump_memory_only) {
             memcpy(info, &priv->job.info, sizeof(*info));
 
             /* Refresh elapsed time again just to ensure it
@@ -9460,7 +9494,7 @@ static int qemuDomainAbortJob(virDomainPtr dom) {
 
     priv = vm->privateData;
 
-    if (!priv->job.asyncJob) {
+    if (!priv->job.asyncJob || priv->job.dump_memory_only) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("no job is active on the domain"));
         goto endjob;

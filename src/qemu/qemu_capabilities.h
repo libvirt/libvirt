@@ -131,6 +131,7 @@ enum qemuCapsFlags {
     QEMU_CAPS_IDE_CD             = 93, /* -device ide-cd */
     QEMU_CAPS_NO_USER_CONFIG     = 94, /* -no-user-config */
     QEMU_CAPS_HDA_MICRO          = 95, /* -device hda-micro */
+    QEMU_CAPS_DUMP_GUEST_MEMORY  = 96, /* dump-guest-memory command */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
