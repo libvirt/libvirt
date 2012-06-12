@@ -49,7 +49,6 @@ int virKeepAliveStart(virKeepAlivePtr ka,
                       int interval,
                       unsigned int count);
 void virKeepAliveStop(virKeepAlivePtr ka);
-void virKeepAliveStopSending(virKeepAlivePtr ka);
 
 int virKeepAliveTimeout(virKeepAlivePtr ka);
 bool virKeepAliveTrigger(virKeepAlivePtr ka,

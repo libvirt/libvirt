@@ -328,14 +328,14 @@ cleanup:
 }
 
 
-static void
-virKeepAliveStopInternal(virKeepAlivePtr ka, bool all ATTRIBUTE_UNUSED)
+void
+virKeepAliveStop(virKeepAlivePtr ka)
 {
     virKeepAliveLock(ka);
 
     PROBE(RPC_KEEPALIVE_STOP,
-          "ka=%p client=%p all=%d",
-          ka, ka->client, all);
+          "ka=%p client=%p",
+          ka, ka->client);
 
     if (ka->timer > 0) {
         virEventRemoveTimeout(ka->timer);
@@ -343,20 +343,6 @@ virKeepAliveStopInternal(virKeepAlivePtr ka, bool all ATTRIBUTE_UNUSED)
     }
 
     virKeepAliveUnlock(ka);
-}
-
-
-void
-virKeepAliveStop(virKeepAlivePtr ka)
-{
-    virKeepAliveStopInternal(ka, true);
-}
-
-
-void
-virKeepAliveStopSending(virKeepAlivePtr ka)
-{
-    virKeepAliveStopInternal(ka, false);
 }
 
 

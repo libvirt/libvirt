@@ -257,7 +257,7 @@ void
 virNetClientKeepAliveStop(virNetClientPtr client)
 {
     virNetClientLock(client);
-    virKeepAliveStopSending(client->keepalive);
+    virKeepAliveStop(client->keepalive);
     virNetClientUnlock(client);
 }
 
