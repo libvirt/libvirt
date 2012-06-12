@@ -152,51 +152,64 @@ virKeepAliveScheduleResponse(virKeepAlivePtr ka)
 }
 
 
-static void
-virKeepAliveTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
+static bool
+virKeepAliveTimerInternal(virKeepAlivePtr ka,
+                          virNetMessagePtr *msg)
 {
-    virKeepAlivePtr ka = opaque;
     time_t now = time(NULL);
 
-    virKeepAliveLock(ka);
+    if (now - ka->lastPacketReceived < ka->interval - 1) {
+        int timeout = ka->interval - (now - ka->lastPacketReceived);
+        virEventUpdateTimeout(ka->timer, timeout * 1000);
+        return false;
+    }
 
     PROBE(RPC_KEEPALIVE_TIMEOUT,
           "ka=%p client=%p countToDeath=%d idle=%d",
           ka, ka->client, ka->countToDeath,
           (int) (now - ka->lastPacketReceived));
 
-    if (now - ka->lastPacketReceived < ka->interval - 1) {
-        int timeout = ka->interval - (now - ka->lastPacketReceived);
-        virEventUpdateTimeout(ka->timer, timeout * 1000);
-        goto cleanup;
-    }
 
     if (ka->countToDeath == 0) {
-        virKeepAliveDeadFunc deadCB = ka->deadCB;
-        void *client = ka->client;
-
         VIR_WARN("No response from client %p after %d keepalive messages in"
                  " %d seconds",
                  ka->client,
                  ka->count,
                  (int) (now - ka->lastPacketReceived));
+        return true;
+    } else {
+        ka->countToDeath--;
+        *msg = virKeepAliveMessage(KEEPALIVE_PROC_PING);
+        virEventUpdateTimeout(ka->timer, ka->interval * 1000);
+        return false;
+    }
+}
+
+
+static void
+virKeepAliveTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
+{
+    virKeepAlivePtr ka = opaque;
+    virNetMessagePtr msg = NULL;
+    bool dead;
+
+    virKeepAliveLock(ka);
+
+    dead = virKeepAliveTimerInternal(ka, &msg);
+
+    if (dead) {
+        virKeepAliveDeadFunc deadCB = ka->deadCB;
+        void *client = ka->client;
+
         ka->refs++;
         virKeepAliveUnlock(ka);
         deadCB(client);
         virKeepAliveLock(ka);
         ka->refs--;
-    } else {
-        virNetMessagePtr msg;
-
-        ka->countToDeath--;
-        if (!(msg = virKeepAliveMessage(KEEPALIVE_PROC_PING)))
-            VIR_WARN("Failed to generate keepalive request");
-        else
-            virKeepAliveSend(ka, msg);
-        virEventUpdateTimeout(ka->timer, ka->interval * 1000);
+    } else if (msg) {
+        virKeepAliveSend(ka, msg);
     }
 
-cleanup:
     virKeepAliveUnlock(ka);
 }
 
