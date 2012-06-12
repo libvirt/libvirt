@@ -4022,6 +4022,7 @@ static const vshCmdOptDef opts_dump[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("where to dump the core")},
     {"verbose", VSH_OT_BOOL, 0, N_("display the progress of dump")},
+    {"memory-only", VSH_OT_BOOL, 0, N_("dump domain's memory only")},
     {NULL, 0, 0, NULL}
 };
 
@@ -4060,6 +4061,8 @@ doDump(void *opaque)
         flags |= VIR_DUMP_BYPASS_CACHE;
     if (vshCommandOptBool(cmd, "reset"))
         flags |= VIR_DUMP_RESET;
+    if (vshCommandOptBool(cmd, "memory-only"))
+        flags |= VIR_DUMP_MEMORY_ONLY;
 
     if (virDomainCoreDump(dom, to, flags) < 0) {
         vshError(ctl, _("Failed to core dump domain %s to %s"), name, to);

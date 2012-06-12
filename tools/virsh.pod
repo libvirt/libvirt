@@ -827,7 +827,7 @@ the I<format> argument must be B<qemu-argv>. For Xen hypervisor, the
 I<format> argument may be B<xen-xm> or B<xen-sxpr>.
 
 =item B<dump> I<domain-id> I<corefilepath> [I<--bypass-cache>]
-{ [I<--live>] | [I<--crash>] | [I<--reset>] } [I<--verbose>]
+{ [I<--live>] | [I<--crash>] | [I<--reset>] } [I<--verbose>] [I<--memory-only>]
 
 Dumps the core of a domain to a file for analysis.
 If I<--live> is specified, the domain continues to run until the core
@@ -838,6 +838,9 @@ If I<--reset> is specified, the domain is reset after successful dump.
 Note, these three switches are mutually exclusive.
 If I<--bypass-cache> is specified, the save will avoid the file system
 cache, although this may slow down the operation.
+If I<--memory-only> is specified, the file is elf file, and will only
+include domain's memory and cpu common register value. It is very
+useful if the domain uses host devices directly.
 
 The progress may be monitored using B<domjobinfo> virsh command and canceled
 with B<domjobabort> command (sent by another virsh instance). Another option
