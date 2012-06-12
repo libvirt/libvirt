@@ -135,7 +135,7 @@
 
 # Fedora 17 / RHEL-7 are first where we use systemd. Although earlier
 # Fedora has systemd, libvirt still used sysvinit there.
-%if 0%{?fedora} >= 17 || 0{?rhel} >= 7
+%if 0%{?fedora} >= 17 || 0%{?rhel} >= 7
 %define with_systemd 1
 %endif
 
