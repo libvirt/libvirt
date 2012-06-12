@@ -1044,10 +1044,11 @@ static int lxcContainerGetSubtree(const char *prefix,
             virReportOOMError();
             goto cleanup;
         }
-        if (!(mounts[nmounts++] = strdup(mntent.mnt_dir))) {
+        if (!(mounts[nmounts] = strdup(mntent.mnt_dir))) {
             virReportOOMError();
             goto cleanup;
         }
+	nmounts++;
         VIR_DEBUG("Grabbed %s", mntent.mnt_dir);
     }
 
@@ -1055,11 +1056,10 @@ static int lxcContainerGetSubtree(const char *prefix,
         qsort(mounts, nmounts, sizeof(mounts[0]),
               lxcContainerChildMountSort);
 
+    ret = 0;
+cleanup:
     *mountsret = mounts;
     *nmountsret = nmounts;
-    ret = 0;
-
-cleanup:
     endmntent(procmnt);
     return ret;
 }
@@ -1077,7 +1077,7 @@ static int lxcContainerUnmountSubtree(const char *prefix,
     VIR_DEBUG("Unmount subtreee from %s", prefix);
 
     if (lxcContainerGetSubtree(prefix, &mounts, &nmounts) < 0)
-        return -1;
+        goto cleanup;
     for (i = 0 ; i < nmounts ; i++) {
         VIR_DEBUG("Umount %s", mounts[i]);
         if (umount(mounts[i]) < 0) {
