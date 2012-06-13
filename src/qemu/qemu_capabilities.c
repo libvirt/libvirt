@@ -1196,7 +1196,8 @@ qemuCapsComputeCmdFlags(const char *help,
      * forgot to include YAJL libraries when building their own
      * libvirt but is targetting a newer qemu, we are better off
      * telling them to recompile (the spec file includes the
-     * dependency, so distros won't hit this).  */
+     * dependency, so distros won't hit this).  This check is
+     * also in configure.ac (see $with_yajl).  */
     if (version >= 15000 ||
         (version >= 12000 && strstr(help, "libvirt"))) {
         if (check_yajl) {
