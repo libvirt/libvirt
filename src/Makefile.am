@@ -111,11 +111,11 @@ UTIL_SOURCES =							\
 EXTRA_DIST += $(srcdir)/util/virkeymaps.h $(srcdir)/util/keymaps.csv \
 		$(srcdir)/util/virkeycode-mapgen.py
 
+BUILT_SOURCES += $(srcdir)/util/virkeymaps.h
+
 $(srcdir)/util/virkeymaps.h: $(srcdir)/util/keymaps.csv	\
 		$(srcdir)/util/virkeycode-mapgen.py
 	$(AM_V_GEN)$(PYTHON) $(srcdir)/util/virkeycode-mapgen.py <$(srcdir)/util/keymaps.csv >$@
-
-$(srcdir)/util/virkeycode.c: $(srcdir)/util/virkeycode.h $(srcdir)/util/virkeymaps.h
 
 EXTRA_DIST += util/threads-pthread.c util/threads-win32.c
 
@@ -289,7 +289,7 @@ PDWTAGS = \
 		-e '}'							\
 		< $(@F)-t1 > $(@F)-t3;					\
 	    case $$? in 8) rm -f $(@F)-t?; exit 0;; 0) ;; *) exit 1;; esac;\
-	    diff -u $(@F)-t3 $@; st=$$?; rm -f $(@F)-t?; exit $$st;	\
+	    diff -u $(@)s $(@F)-t3; st=$$?; rm -f $(@F)-t?; exit $$st;	\
 	  fi;								\
 	else								\
 	  echo 'WARNING: you lack pdwtags; skipping the $@ test' >&2;	\
@@ -302,21 +302,24 @@ PROTOCOL_STRUCTS = \
 	$(srcdir)/virnetprotocol-structs \
 	$(srcdir)/virkeepaliveprotocol-structs
 if WITH_REMOTE
+check-protocol: $(PROTOCOL_STRUCTS) $(PROTOCOL_STRUCTS:structs=struct)
+
 # The .o file that pdwtags parses is created as a side effect of running
 # libtool; but from make's perspective we depend on the .lo file.
-$(srcdir)/%_protocol-structs: libvirt_driver_remote_la-%_protocol.lo
+$(srcdir)/remote_protocol-struct $(srcdir)/qemu_protocol-struct: \
+		$(srcdir)/%-struct: libvirt_driver_remote_la-%.lo
 	$(PDWTAGS)
-$(srcdir)/virnetprotocol-structs: libvirt_net_rpc_la-virnetprotocol.lo
-	$(PDWTAGS)
-$(srcdir)/virkeepaliveprotocol-structs: libvirt_net_rpc_la-virkeepaliveprotocol.lo
+$(srcdir)/virnetprotocol-struct $(srcdir)/virkeepaliveprotocol-struct: \
+		$(srcdir)/%-struct: libvirt_net_rpc_la-%.lo
 	$(PDWTAGS)
 else !WITH_REMOTE
-# These generated files must live in git, because they cannot be re-generated
-# when configured --without-remote.
-$(PROTOCOL_STRUCTS):
+# The $(PROTOCOL_STRUCTS) files must live in git, because they cannot be
+# re-generated when configured --without-remote.
+check-protocol:
 endif
 EXTRA_DIST += $(PROTOCOL_STRUCTS)
-check-local: $(PROTOCOL_STRUCTS)
+check-local: check-protocol
+.PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
 # Mock driver, covering domains, storage, networks, etc
 TEST_DRIVER_SOURCES =						\
