@@ -180,3 +180,47 @@ cleanup:
     VIR_FREE(data.domains);
     return ret;
 }
+
+int
+virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
+                       virDomainSnapshotObjPtr from,
+                       virDomainPtr dom,
+                       virDomainSnapshotPtr **snaps,
+                       unsigned int flags)
+{
+    int count = virDomainSnapshotObjListNum(snapshots, from, flags);
+    virDomainSnapshotPtr *list;
+    char **names;
+    int ret = -1;
+    int i;
+
+    if (!snaps)
+        return count;
+    if (VIR_ALLOC_N(names, count) < 0 ||
+        VIR_ALLOC_N(list, count + 1) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virDomainSnapshotObjListGetNames(snapshots, from, names, count,
+                                         flags) < 0)
+        goto cleanup;
+    for (i = 0; i < count; i++)
+        if ((list[i] = virGetDomainSnapshot(dom, names[i])) == NULL)
+            goto cleanup;
+
+    ret = count;
+    *snaps = list;
+
+cleanup:
+    for (i = 0; i < count; i++)
+        VIR_FREE(names[i]);
+    VIR_FREE(names);
+    if (ret < 0 && list) {
+        for (i = 0; i < count; i++)
+            if (list[i])
+                virDomainSnapshotFree(list[i]);
+        VIR_FREE(list);
+    }
+    return ret;
+}

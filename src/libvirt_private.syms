@@ -1239,6 +1239,7 @@ virDBusGetSystemBus;
 
 # virdomainlist.h
 virDomainList;
+virDomainListSnapshots;
 
 
 # virfile.h

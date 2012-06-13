@@ -75,4 +75,10 @@
 int virDomainList(virConnectPtr conn, virHashTablePtr domobjs,
                   virDomainPtr **domains, unsigned int flags);
 
+int virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
+                           virDomainSnapshotObjPtr from,
+                           virDomainPtr dom,
+                           virDomainSnapshotPtr **snaps,
+                           unsigned int flags);
+
 #endif /* __VIR_DOMAIN_LIST_H__ */
