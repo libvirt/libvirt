@@ -690,10 +690,10 @@ vshAskReedit(vshControl *ctl, const char *msg)
         c = c_tolower(getchar());
 
         if (c == '?') {
-            vshPrint(ctl, "\r\n%s", _("y - yes, start editor again\r\n"
-                                      "n - no, throw away my changes\r\n"
-                                      "f - force, try to redefine again\r\n"
-                                      "? - print this help\r\n"));
+            vshPrint(ctl, "\r\n%s", _("y - yes, start editor again\n"
+                                      "n - no, throw away my changes\n"
+                                      "f - force, try to redefine again\n"
+                                      "? - print this help\n"));
             continue;
         } else if (c == 'y' || c == 'n' || c == 'f') {
             break;
