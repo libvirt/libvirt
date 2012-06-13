@@ -991,6 +991,24 @@ AC_ARG_WITH([yajl],
   [],
   [with_yajl=check])
 
+if test "$with_qemu:$with_yajl" = yes:check; then
+  dnl Some versions of qemu require the use of yajl; try to detect them
+  dnl here, although we do not require qemu to exist in order to compile.
+  dnl This check mirrors src/qemu/qemu_capabilities.c
+  AC_PATH_PROGS([QEMU], [qemu-kvm qemu kvm qemu-system-x86_64],
+                [], [$PATH:/usr/bin:/usr/libexec])
+  if test -x "$QEMU"; then
+    if `$QEMU -help | grep libvirt` >/dev/null; then
+      with_yajl=yes
+    else
+      [qemu_version_sed='s/.*ersion \([0-9.,]*\).*/\1/']
+      qemu_version=`$QEMU -version | sed "$qemu_version_sed"`
+      AS_VERSION_COMPARE([$qemu_version], [0.15],
+                         [], [with_yajl=yes], [with_yajl=yes])
+    fi
+  fi
+fi
+
 YAJL_CFLAGS=
 YAJL_LIBS=
 with_yajl2=no
