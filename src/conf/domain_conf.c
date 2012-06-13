@@ -14272,8 +14272,9 @@ static void virDomainSnapshotObjListCopyNames(void *payload,
 
     if (data->oom)
         return;
-    /* LIST_ROOTS/LIST_DESCENDANTS was handled by caller,
-     * LIST_METADATA is a no-op if we get this far.  */
+    /* LIST_ROOTS/LIST_DESCENDANTS was handled by the choice of
+     * iteration made in the caller, and LIST_METADATA is a no-op if
+     * we get this far.  */
     if ((data->flags & VIR_DOMAIN_SNAPSHOT_LIST_LEAVES) && obj->nchildren)
         return;
 
@@ -14289,32 +14290,12 @@ int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
                                      char **const names, int maxnames,
                                      unsigned int flags)
 {
-    struct virDomainSnapshotNameData data = { 0, 0, maxnames, names, 0 };
-    int i;
-
-    data.flags = flags & ~VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
-
-    if (!(flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS)) {
-        virHashForEach(snapshots->objs, virDomainSnapshotObjListCopyNames,
-                       &data);
-    } else {
-        virDomainSnapshotObjPtr root = snapshots->first_root;
-        while (root) {
-            virDomainSnapshotObjListCopyNames(root, root->def->name, &data);
-            root = root->sibling;
-        }
-    }
-    if (data.oom) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    return data.numnames;
-
-cleanup:
-    for (i = 0; i < data.numnames; i++)
-        VIR_FREE(data.names[i]);
-    return -1;
+    /* LIST_ROOTS and LIST_DESCENDANTS have the same bit value, but
+     * opposite semantics.  Toggle here to get the correct traversal
+     * on the metaroot.  */
+    flags ^= VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
+    return virDomainSnapshotObjListGetNamesFrom(&snapshots->metaroot, names,
+                                                maxnames, flags);
 }
 
 int virDomainSnapshotObjListGetNamesFrom(virDomainSnapshotObjPtr snapshot,
@@ -14359,8 +14340,9 @@ static void virDomainSnapshotObjListCount(void *payload,
     virDomainSnapshotObjPtr obj = payload;
     struct virDomainSnapshotNumData *data = opaque;
 
-    /* LIST_ROOTS/LIST_DESCENDANTS was handled by caller,
-     * LIST_METADATA is a no-op if we get this far.  */
+    /* LIST_ROOTS/LIST_DESCENDANTS was handled by the choice of
+     * iteration made in the caller, and LIST_METADATA is a no-op if
+     * we get this far.  */
     if ((data->flags & VIR_DOMAIN_SNAPSHOT_LIST_LEAVES) && obj->nchildren)
         return;
     data->count++;
@@ -14369,23 +14351,11 @@ static void virDomainSnapshotObjListCount(void *payload,
 int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
                                 unsigned int flags)
 {
-    struct virDomainSnapshotNumData data = { 0, 0 };
-
-    data.flags = flags & ~VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
-
-    if (!(flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS)) {
-        virHashForEach(snapshots->objs, virDomainSnapshotObjListCount, &data);
-    } else if (data.flags) {
-        virDomainSnapshotObjPtr root = snapshots->first_root;
-        while (root) {
-            virDomainSnapshotObjListCount(root, root->def->name, &data);
-            root = root->sibling;
-        }
-    } else {
-        data.count = snapshots->nroots;
-    }
-
-    return data.count;
+    /* LIST_ROOTS and LIST_DESCENDANTS have the same bit value, but
+     * opposite semantics.  Toggle here to get the correct traversal
+     * on the metaroot.  */
+    flags ^= VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
+    return virDomainSnapshotObjListNumFrom(&snapshots->metaroot, flags);
 }
 
 int
@@ -14413,7 +14383,7 @@ virDomainSnapshotObjPtr
 virDomainSnapshotFindByName(const virDomainSnapshotObjListPtr snapshots,
                             const char *name)
 {
-    return virHashLookup(snapshots->objs, name);
+    return name ? virHashLookup(snapshots->objs, name) : &snapshots->metaroot;
 }
 
 void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
@@ -14499,34 +14469,27 @@ virDomainSnapshotSetRelations(void *payload,
     struct snapshot_set_relation *curr = data;
     virDomainSnapshotObjPtr tmp;
 
-    if (obj->def->parent) {
-        obj->parent = virDomainSnapshotFindByName(curr->snapshots,
-                                                  obj->def->parent);
-        if (!obj->parent) {
-            curr->err = -1;
-            VIR_WARN("snapshot %s lacks parent", obj->def->name);
-        } else {
-            tmp = obj->parent;
-            while (tmp) {
-                if (tmp == obj) {
-                    curr->err = -1;
-                    obj->parent = NULL;
-                    VIR_WARN("snapshot %s in circular chain", obj->def->name);
-                    break;
-                }
-                tmp = tmp->parent;
-            }
-            if (!tmp) {
-                obj->parent->nchildren++;
-                obj->sibling = obj->parent->first_child;
-                obj->parent->first_child = obj;
-            }
-        }
+    obj->parent = virDomainSnapshotFindByName(curr->snapshots,
+                                              obj->def->parent);
+    if (!obj->parent) {
+        curr->err = -1;
+        obj->parent = &curr->snapshots->metaroot;
+        VIR_WARN("snapshot %s lacks parent", obj->def->name);
     } else {
-        curr->snapshots->nroots++;
-        obj->sibling = curr->snapshots->first_root;
-        curr->snapshots->first_root = obj;
+        tmp = obj->parent;
+        while (tmp && tmp->def) {
+            if (tmp == obj) {
+                curr->err = -1;
+                obj->parent = &curr->snapshots->metaroot;
+                VIR_WARN("snapshot %s in circular chain", obj->def->name);
+                break;
+            }
+            tmp = tmp->parent;
+        }
     }
+    obj->parent->nchildren++;
+    obj->sibling = obj->parent->first_child;
+    obj->parent->first_child = obj;
 }
 
 /* Populate parent link and child count of all snapshots, with all
@@ -14546,28 +14509,13 @@ virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots)
  * of a parent, it is faster to just 0 the count rather than calling
  * this function on each child.  */
 void
-virDomainSnapshotDropParent(virDomainSnapshotObjListPtr snapshots,
-                            virDomainSnapshotObjPtr snapshot)
+virDomainSnapshotDropParent(virDomainSnapshotObjPtr snapshot)
 {
     virDomainSnapshotObjPtr prev = NULL;
     virDomainSnapshotObjPtr curr = NULL;
-    size_t *count;
-    virDomainSnapshotObjPtr *first;
 
-    if (snapshot->parent) {
-        count = &snapshot->parent->nchildren;
-        first = &snapshot->parent->first_child;
-    } else {
-        count = &snapshots->nroots;
-        first = &snapshots->first_root;
-    }
-
-    if (!*count || !*first) {
-        VIR_WARN("inconsistent snapshot relations");
-        return;
-    }
-    (*count)--;
-    curr = *first;
+    snapshot->parent->nchildren--;
+    curr = snapshot->parent->first_child;
     while (curr != snapshot) {
         if (!curr) {
             VIR_WARN("inconsistent snapshot relations");
@@ -14579,7 +14527,7 @@ virDomainSnapshotDropParent(virDomainSnapshotObjListPtr snapshots,
     if (prev)
         prev->sibling = snapshot->sibling;
     else
-        *first = snapshot->sibling;
+        snapshot->parent->first_child = snapshot->sibling;
     snapshot->parent = NULL;
     snapshot->sibling = NULL;
 }

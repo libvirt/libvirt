@@ -10514,7 +10514,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
             }
             /* Drop and rebuild the parent relationship, but keep all
              * child relations by reusing snap.  */
-            virDomainSnapshotDropParent(&vm->snapshots, other);
+            virDomainSnapshotDropParent(other);
             virDomainSnapshotDefFree(other->def);
             other->def = NULL;
             snap = other;
@@ -10623,18 +10623,12 @@ cleanup:
             } else {
                 if (update_current)
                     vm->current_snapshot = snap;
-                if (snap->def->parent) {
-                    other = virDomainSnapshotFindByName(&vm->snapshots,
-                                                        snap->def->parent);
-                    snap->parent = other;
-                    other->nchildren++;
-                    snap->sibling = other->first_child;
-                    other->first_child = snap;
-                } else {
-                    vm->snapshots.nroots++;
-                    snap->sibling = vm->snapshots.first_root;
-                    vm->snapshots.first_root = snap;
-                }
+                other = virDomainSnapshotFindByName(&vm->snapshots,
+                                                    snap->def->parent);
+                snap->parent = other;
+                other->nchildren++;
+                snap->sibling = other->first_child;
+                other->first_child = snap;
             }
         } else if (snap) {
             virDomainSnapshotObjListRemove(&vm->snapshots, snap);
@@ -11439,7 +11433,7 @@ qemuDomainSnapshotReparentChildren(void *payload,
     VIR_FREE(snap->def->parent);
     snap->parent = rep->parent;
 
-    if (rep->parent) {
+    if (rep->parent->def) {
         snap->def->parent = strdup(rep->parent->def->name);
 
         if (snap->def->parent == NULL) {
@@ -11547,15 +11541,9 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         if (rep.err < 0)
             goto endjob;
         /* Can't modify siblings during ForEachChild, so do it now.  */
-        if (snap->parent) {
-            snap->parent->nchildren += snap->nchildren;
-            rep.last->sibling = snap->parent->first_child;
-            snap->parent->first_child = snap->first_child;
-        } else {
-            vm->snapshots.nroots += snap->nchildren;
-            rep.last->sibling = vm->snapshots.first_root;
-            vm->snapshots.first_root = snap->first_child;
-        }
+        snap->parent->nchildren += snap->nchildren;
+        rep.last->sibling = snap->parent->first_child;
+        snap->parent->first_child = snap->first_child;
     }
 
     if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) {
@@ -11563,7 +11551,7 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         snap->first_child = NULL;
         ret = 0;
     } else {
-        virDomainSnapshotDropParent(&vm->snapshots, snap);
+        virDomainSnapshotDropParent(snap);
         ret = qemuDomainSnapshotDiscard(driver, vm, snap, true, metadata_only);
     }
 

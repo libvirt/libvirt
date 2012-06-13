@@ -1726,9 +1726,11 @@ struct _virDomainSnapshotDef {
 typedef struct _virDomainSnapshotObj virDomainSnapshotObj;
 typedef virDomainSnapshotObj *virDomainSnapshotObjPtr;
 struct _virDomainSnapshotObj {
-    virDomainSnapshotDefPtr def;
+    virDomainSnapshotDefPtr def; /* non-NULL except for metaroot */
 
-    virDomainSnapshotObjPtr parent; /* NULL if root */
+    virDomainSnapshotObjPtr parent; /* non-NULL except for metaroot, before
+                                       virDomainSnapshotUpdateRelations, or
+                                       after virDomainSnapshotDropParent */
     virDomainSnapshotObjPtr sibling; /* NULL if last child of parent */
     size_t nchildren;
     virDomainSnapshotObjPtr first_child; /* NULL if no children */
@@ -1741,8 +1743,7 @@ struct _virDomainSnapshotObjList {
      * for O(1), lockless lookup-by-name */
     virHashTable *objs;
 
-    size_t nroots;
-    virDomainSnapshotObjPtr first_root;
+    virDomainSnapshotObj metaroot; /* Special parent of all root snapshots */
 };
 
 typedef enum {
@@ -1788,8 +1789,7 @@ int virDomainSnapshotForEachDescendant(virDomainSnapshotObjPtr snapshot,
                                        virHashIterator iter,
                                        void *data);
 int virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots);
-void virDomainSnapshotDropParent(virDomainSnapshotObjListPtr snapshots,
-                                 virDomainSnapshotObjPtr snapshot);
+void virDomainSnapshotDropParent(virDomainSnapshotObjPtr snapshot);
 
 /* Guest VM runtime state */
 typedef struct _virDomainStateReason virDomainStateReason;
