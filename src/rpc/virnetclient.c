@@ -1347,6 +1347,12 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
 
         virNetClientLock(client);
 
+        if (ret < 0) {
+            virReportSystemError(errno,
+                                 "%s", _("poll on socket failed"));
+            goto error;
+        }
+
         if (virKeepAliveTrigger(client->keepalive, &msg)) {
             client->wantClose = true;
         } else if (msg && virNetClientQueueNonBlocking(client, msg) < 0) {
@@ -1373,15 +1379,6 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
                                      _("read on wakeup fd failed"));
                 goto error;
             }
-        }
-
-        if (ret < 0) {
-            /* XXX what's this dubious errno check doing ? */
-            if (errno == EWOULDBLOCK)
-                continue;
-            virReportSystemError(errno,
-                                 "%s", _("poll on socket failed"));
-            goto error;
         }
 
         if (fds[0].revents & POLLOUT) {
