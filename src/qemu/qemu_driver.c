@@ -92,6 +92,7 @@
 #include "virnodesuspend.h"
 #include "virtime.h"
 #include "virtypedparam.h"
+#include "virdomainlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -10650,8 +10651,7 @@ static int qemuDomainSnapshotListNames(virDomainPtr domain, char **names,
     int n = -1;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
-                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA |
-                  VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, -1);
+                  VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
@@ -10681,8 +10681,7 @@ static int qemuDomainSnapshotNum(virDomainPtr domain,
     int n = -1;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
-                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA |
-                  VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, -1);
+                  VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
@@ -10694,11 +10693,37 @@ static int qemuDomainSnapshotNum(virDomainPtr domain,
         goto cleanup;
     }
 
-    /* All qemu snapshots have libvirt metadata, so
-     * VIR_DOMAIN_SNAPSHOT_LIST_METADATA makes no difference to our
-     * answer.  */
-
     n = virDomainSnapshotObjListNum(&vm->snapshots, NULL, flags);
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return n;
+}
+
+static int
+qemuDomainListAllSnapshots(virDomainPtr domain, virDomainSnapshotPtr **snaps,
+                           unsigned int flags)
+{
+    struct qemud_driver *driver = domain->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    int n = -1;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
+                  VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, domain->uuid);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(domain->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    n = virDomainListSnapshots(&vm->snapshots, NULL, domain, snaps, flags);
 
 cleanup:
     if (vm)
@@ -10719,8 +10744,7 @@ qemuDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
     int n = -1;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
-                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA |
-                  VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, -1);
+                  VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, snapshot->domain->uuid);
@@ -10760,8 +10784,7 @@ qemuDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
     int n = -1;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
-                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA |
-                  VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, -1);
+                  VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, snapshot->domain->uuid);
@@ -10781,11 +10804,48 @@ qemuDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    /* All qemu snapshots have libvirt metadata, so
-     * VIR_DOMAIN_SNAPSHOT_LIST_METADATA makes no difference to our
-     * answer.  */
-
     n = virDomainSnapshotObjListNum(&vm->snapshots, snap, flags);
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return n;
+}
+
+static int
+qemuDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
+                                  virDomainSnapshotPtr **snaps,
+                                  unsigned int flags)
+{
+    struct qemud_driver *driver = snapshot->domain->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    virDomainSnapshotObjPtr snap = NULL;
+    int n = -1;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
+                  VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, snapshot->domain->uuid);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(snapshot->domain->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    snap = virDomainSnapshotFindByName(&vm->snapshots, snapshot->name);
+    if (!snap) {
+        qemuReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
+                        _("no domain snapshot with matching name '%s'"),
+                        snapshot->name);
+        goto cleanup;
+    }
+
+    n = virDomainListSnapshots(&vm->snapshots, snap, snapshot->domain, snaps,
+                               flags);
 
 cleanup:
     if (vm)
@@ -13201,8 +13261,10 @@ static virDriver qemuDriver = {
     .domainSnapshotGetXMLDesc = qemuDomainSnapshotGetXMLDesc, /* 0.8.0 */
     .domainSnapshotNum = qemuDomainSnapshotNum, /* 0.8.0 */
     .domainSnapshotListNames = qemuDomainSnapshotListNames, /* 0.8.0 */
+    .domainListAllSnapshots = qemuDomainListAllSnapshots, /* 0.9.13 */
     .domainSnapshotNumChildren = qemuDomainSnapshotNumChildren, /* 0.9.7 */
     .domainSnapshotListChildrenNames = qemuDomainSnapshotListChildrenNames, /* 0.9.7 */
+    .domainSnapshotListAllChildren = qemuDomainSnapshotListAllChildren, /* 0.9.13 */
     .domainSnapshotLookupByName = qemuDomainSnapshotLookupByName, /* 0.8.0 */
     .domainHasCurrentSnapshot = qemuDomainHasCurrentSnapshot, /* 0.8.0 */
     .domainSnapshotGetParent = qemuDomainSnapshotGetParent, /* 0.9.7 */
