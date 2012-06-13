@@ -655,6 +655,19 @@ vshReconnect(vshControl *ctl)
     ctl->useSnapshotOld = false;
 }
 
+static void
+vshPrintRaw(vshControl *ctl, ...)
+{
+    va_list ap;
+    char *key;
+
+    va_start(ap, ctl);
+    while ((key = va_arg(ap, char *)) != NULL) {
+        vshPrint(ctl, "%s\r\n", key);
+    }
+    va_end(ap);
+}
+
 /**
  * vshAskReedit:
  * @msg: Question to ask user
@@ -690,10 +703,13 @@ vshAskReedit(vshControl *ctl, const char *msg)
         c = c_tolower(getchar());
 
         if (c == '?') {
-            vshPrint(ctl, "\r\n%s", _("y - yes, start editor again\n"
-                                      "n - no, throw away my changes\n"
-                                      "f - force, try to redefine again\n"
-                                      "? - print this help\n"));
+            vshPrintRaw(ctl,
+                        "",
+                        _("y - yes, start editor again"),
+                        _("n - no, throw away my changes"),
+                        _("f - force, try to redefine again"),
+                        _("? - print this help"),
+                        NULL);
             continue;
         } else if (c == 'y' || c == 'n' || c == 'f') {
             break;
