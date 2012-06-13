@@ -234,13 +234,15 @@ virCPUDefParseXML(const xmlNodePtr node,
             goto error;
         } else {
             def->mode = virCPUModeTypeFromString(cpuMode);
-            VIR_FREE(cpuMode);
 
             if (def->mode < 0) {
-                virCPUReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                  _("Invalid mode attribute"));
+                virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                                  _("Invalid mode attribute '%s'"),
+                                  cpuMode);
+                VIR_FREE(cpuMode);
                 goto error;
             }
+            VIR_FREE(cpuMode);
         }
     } else {
         if (def->type == VIR_CPU_TYPE_HOST)
