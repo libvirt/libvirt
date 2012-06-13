@@ -14765,18 +14765,18 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         virBufferAddLit(&buf, " rawio='yes'");
     virBufferAddLit(&buf, ">\n");
 
-    if (driver || subdriver)
+    if (driver || subdriver || cache) {
         virBufferAsprintf(&buf, "  <driver");
 
-    if (driver)
-        virBufferAsprintf(&buf, " name='%s'", driver);
-    if (subdriver)
-        virBufferAsprintf(&buf, " type='%s'", subdriver);
-    if (cache)
-        virBufferAsprintf(&buf, " cache='%s'", cache);
+        if (driver)
+            virBufferAsprintf(&buf, " name='%s'", driver);
+        if (subdriver)
+            virBufferAsprintf(&buf, " type='%s'", subdriver);
+        if (cache)
+            virBufferAsprintf(&buf, " cache='%s'", cache);
 
-    if (driver || subdriver || cache)
         virBufferAddLit(&buf, "/>\n");
+    }
 
     if (source)
         virBufferAsprintf(&buf, "  <source %s='%s'/>\n",
