@@ -769,7 +769,8 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType) {
             }
             def->data.bridge.delay = virXMLPropString(bridge, "delay");
             ctxt->node = bridge;
-            virInterfaceDefParseBridge(def, ctxt);
+            if (virInterfaceDefParseBridge(def, ctxt) < 0)
+                goto error;
             break;
         }
         case VIR_INTERFACE_TYPE_BOND: {
