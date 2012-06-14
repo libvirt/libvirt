@@ -106,7 +106,7 @@ virDomainListPopulate(void *payload,
 
     /* filter by snapshot existence */
     if (MATCH(VIR_CONNECT_LIST_FILTERS_SNAPSHOT)) {
-        int nsnap = virDomainSnapshotObjListNum(&vm->snapshots, 0);
+        int nsnap = virDomainSnapshotObjListNum(&vm->snapshots, NULL, 0);
         if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT) && nsnap > 0) ||
               (MATCH(VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT) && nsnap <= 0)))
             goto cleanup;

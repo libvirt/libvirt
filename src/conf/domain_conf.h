@@ -1769,15 +1769,12 @@ virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr s
 
 int virDomainSnapshotObjListInit(virDomainSnapshotObjListPtr objs);
 int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
+                                     virDomainSnapshotObjPtr from,
                                      char **const names, int maxnames,
                                      unsigned int flags);
 int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
+                                virDomainSnapshotObjPtr from,
                                 unsigned int flags);
-int virDomainSnapshotObjListGetNamesFrom(virDomainSnapshotObjPtr snapshot,
-                                         char **const names, int maxnames,
-                                         unsigned int flags);
-int virDomainSnapshotObjListNumFrom(virDomainSnapshotObjPtr snapshot,
-                                    unsigned int flags);
 virDomainSnapshotObjPtr virDomainSnapshotFindByName(const virDomainSnapshotObjListPtr snapshots,
                                                     const char *name);
 void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,

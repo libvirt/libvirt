@@ -5139,7 +5139,7 @@ qemuDomainUndefineFlags(virDomainPtr dom,
     }
 
     if (!virDomainObjIsActive(vm) &&
-        (nsnapshots = virDomainSnapshotObjListNum(&vm->snapshots, 0))) {
+        (nsnapshots = virDomainSnapshotObjListNum(&vm->snapshots, NULL, 0))) {
         if (!(flags & VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA)) {
             qemuReportError(VIR_ERR_OPERATION_INVALID,
                             _("cannot delete inactive domain with %d "
@@ -10663,7 +10663,7 @@ static int qemuDomainSnapshotListNames(virDomainPtr domain, char **names,
         goto cleanup;
     }
 
-    n = virDomainSnapshotObjListGetNames(&vm->snapshots, names, nameslen,
+    n = virDomainSnapshotObjListGetNames(&vm->snapshots, NULL, names, nameslen,
                                          flags);
 
 cleanup:
@@ -10698,7 +10698,7 @@ static int qemuDomainSnapshotNum(virDomainPtr domain,
      * VIR_DOMAIN_SNAPSHOT_LIST_METADATA makes no difference to our
      * answer.  */
 
-    n = virDomainSnapshotObjListNum(&vm->snapshots, flags);
+    n = virDomainSnapshotObjListNum(&vm->snapshots, NULL, flags);
 
 cleanup:
     if (vm)
@@ -10740,7 +10740,8 @@ qemuDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    n = virDomainSnapshotObjListGetNamesFrom(snap, names, nameslen, flags);
+    n = virDomainSnapshotObjListGetNames(&vm->snapshots, snap, names, nameslen,
+                                         flags);
 
 cleanup:
     if (vm)
@@ -10784,7 +10785,7 @@ qemuDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
      * VIR_DOMAIN_SNAPSHOT_LIST_METADATA makes no difference to our
      * answer.  */
 
-    n = virDomainSnapshotObjListNumFrom(snap, flags);
+    n = virDomainSnapshotObjListNum(&vm->snapshots, snap, flags);
 
 cleanup:
     if (vm)

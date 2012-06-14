@@ -14286,34 +14286,37 @@ static void virDomainSnapshotObjListCopyNames(void *payload,
     }
 }
 
-int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
-                                     char **const names, int maxnames,
-                                     unsigned int flags)
-{
-    /* LIST_ROOTS and LIST_DESCENDANTS have the same bit value, but
-     * opposite semantics.  Toggle here to get the correct traversal
-     * on the metaroot.  */
-    flags ^= VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
-    return virDomainSnapshotObjListGetNamesFrom(&snapshots->metaroot, names,
-                                                maxnames, flags);
-}
-
-int virDomainSnapshotObjListGetNamesFrom(virDomainSnapshotObjPtr snapshot,
-                                         char **const names, int maxnames,
-                                         unsigned int flags)
+int
+virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
+                                 virDomainSnapshotObjPtr from,
+                                 char **const names, int maxnames,
+                                 unsigned int flags)
 {
     struct virDomainSnapshotNameData data = { 0, 0, maxnames, names, 0 };
     int i;
 
+    if (!from) {
+        /* LIST_ROOTS and LIST_DESCENDANTS have the same bit value,
+         * but opposite semantics.  Toggle here to get the correct
+         * traversal on the metaroot.  */
+        flags ^= VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
+        from = &snapshots->metaroot;
+    }
+
     data.flags = flags & ~VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
 
-    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS)
-        virDomainSnapshotForEachDescendant(snapshot,
-                                           virDomainSnapshotObjListCopyNames,
-                                           &data);
-    else
-        virDomainSnapshotForEachChild(snapshot,
+    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS) {
+        if (from->def)
+            virDomainSnapshotForEachDescendant(from,
+                                               virDomainSnapshotObjListCopyNames,
+                                               &data);
+        else
+            virHashForEach(snapshots->objs, virDomainSnapshotObjListCopyNames,
+                           &data);
+    } else {
+        virDomainSnapshotForEachChild(from,
                                       virDomainSnapshotObjListCopyNames, &data);
+    }
 
     if (data.oom) {
         virReportOOMError();
@@ -14348,33 +14351,36 @@ static void virDomainSnapshotObjListCount(void *payload,
     data->count++;
 }
 
-int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
-                                unsigned int flags)
-{
-    /* LIST_ROOTS and LIST_DESCENDANTS have the same bit value, but
-     * opposite semantics.  Toggle here to get the correct traversal
-     * on the metaroot.  */
-    flags ^= VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
-    return virDomainSnapshotObjListNumFrom(&snapshots->metaroot, flags);
-}
-
 int
-virDomainSnapshotObjListNumFrom(virDomainSnapshotObjPtr snapshot,
-                                unsigned int flags)
+virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
+                            virDomainSnapshotObjPtr from,
+                            unsigned int flags)
 {
     struct virDomainSnapshotNumData data = { 0, 0 };
 
+    if (!from) {
+        /* LIST_ROOTS and LIST_DESCENDANTS have the same bit value,
+         * but opposite semantics.  Toggle here to get the correct
+         * traversal on the metaroot.  */
+        flags ^= VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
+        from = &snapshots->metaroot;
+    }
+
     data.flags = flags & ~VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
 
-    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS)
-        virDomainSnapshotForEachDescendant(snapshot,
-                                           virDomainSnapshotObjListCount,
-                                           &data);
-    else if (data.flags)
-        virDomainSnapshotForEachChild(snapshot,
+    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS) {
+        if (data.flags || from->def)
+            virDomainSnapshotForEachDescendant(from,
+                                               virDomainSnapshotObjListCount,
+                                               &data);
+        else
+            data.count = virHashSize(snapshots->objs);
+    } else if (data.flags) {
+        virDomainSnapshotForEachChild(from,
                                       virDomainSnapshotObjListCount, &data);
-    else
-        data.count = snapshot->nchildren;
+    } else {
+        data.count = from->nchildren;
+    }
 
     return data.count;
 }
