@@ -157,20 +157,15 @@ char *qemuMonitorUnescapeArg(const char *in)
 {
     int i, j;
     char *out;
-    int len = strlen(in) + 1;
+    int len = strlen(in);
     char next;
 
-    if (VIR_ALLOC_N(out, len) < 0)
+    if (VIR_ALLOC_N(out, len + 1) < 0)
         return NULL;
 
     for (i = j = 0; i < len; ++i) {
         next = in[i];
         if (in[i] == '\\') {
-            if (len < i + 1) {
-                /* trailing backslash shouldn't be possible */
-                VIR_FREE(out);
-                return NULL;
-            }
             ++i;
             switch(in[i]) {
             case 'r':
@@ -184,7 +179,7 @@ char *qemuMonitorUnescapeArg(const char *in)
                 next = in[i];
                 break;
             default:
-                /* invalid input */
+                /* invalid input (including trailing '\' at end of in) */
                 VIR_FREE(out);
                 return NULL;
             }
