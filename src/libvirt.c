@@ -17062,16 +17062,27 @@ error:
  *
  * Provides the number of domain snapshots for this domain.
  *
- * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_ROOTS, then the result is
- * filtered to the number of snapshots that have no parents.  Likewise,
- * if @flags includes VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, then the result is
- * filtered to the number of snapshots that have no children.  Both flags
- * can be used together to find unrelated snapshots.
+ * By default, this command covers all snapshots; it is also possible to
+ * limit things to just snapshots with no parents, when @flags includes
+ * VIR_DOMAIN_SNAPSHOT_LIST_ROOTS.  Additional filters are provided in
+ * groups, where each group contains bits that describe mutually exclusive
+ * attributes of a snapshot, and where all bits within a group describe
+ * all possible snapshots.  Some hypervisors might reject explicit bits
+ * from a group where the hypervisor cannot make a distinction.  For a
+ * group supported by a given hypervisor, the behavior when no bits of a
+ * group are set is identical to the behavior when all bits in that group
+ * are set.  When setting bits from more than one group, it is possible to
+ * select an impossible combination, in that case a hypervisor may return
+ * either 0 or an error.
  *
- * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_METADATA, then the result is
- * the number of snapshots that also include metadata that would prevent
- * the removal of the last reference to a domain; this value will either
- * be 0 or the same value as if the flag were not given.
+ * The first group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_LEAVES and
+ * VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES, to filter based on snapshots that
+ * have no further children (a leaf snapshot).
+ *
+ * The next group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_METADATA and
+ * VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA, for filtering snapshots based on
+ * whether they have metadata that would prevent the removal of the last
+ * reference to a domain.
  *
  * Returns the number of domain snapshots found or -1 in case of error.
  */
@@ -17116,18 +17127,36 @@ error:
  * of the array.  The value to use for @nameslen can be determined by
  * virDomainSnapshotNum() with the same @flags.
  *
- * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_ROOTS, then the result is
- * filtered to the number of snapshots that have no parents.  Likewise,
- * if @flags includes VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, then the result is
- * filtered to the number of snapshots that have no children.  Both flags
- * can be used together to find unrelated snapshots.
+ * By default, this command covers all snapshots; it is also possible to
+ * limit things to just snapshots with no parents, when @flags includes
+ * VIR_DOMAIN_SNAPSHOT_LIST_ROOTS.  Additional filters are provided in
+ * groups, where each group contains bits that describe mutually exclusive
+ * attributes of a snapshot, and where all bits within a group describe
+ * all possible snapshots.  Some hypervisors might reject explicit bits
+ * from a group where the hypervisor cannot make a distinction.  For a
+ * group supported by a given hypervisor, the behavior when no bits of a
+ * group are set is identical to the behavior when all bits in that group
+ * are set.  When setting bits from more than one group, it is possible to
+ * select an impossible combination, in that case a hypervisor may return
+ * either 0 or an error.
  *
- * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_METADATA, then the result is
- * the number of snapshots that also include metadata that would prevent
- * the removal of the last reference to a domain; this value will either
- * be 0 or the same value as if the flag were not given.
+ * The first group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_LEAVES and
+ * VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES, to filter based on snapshots that
+ * have no further children (a leaf snapshot).
+ *
+ * The next group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_METADATA and
+ * VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA, for filtering snapshots based on
+ * whether they have metadata that would prevent the removal of the last
+ * reference to a domain.
  *
  * Returns the number of domain snapshots found or -1 in case of error.
+ * Note that this command is inherently racy: another connection can
+ * define a new snapshot between a call to virDomainSnapshotNum() and
+ * this call.  You are only guaranteed that all currently defined
+ * snapshots were listed if the return is less than @nameslen.  Likewise,
+ * you should be prepared for virDomainSnapshotLookupByName() to fail when
+ * converting a name from this call into a snapshot object, if another
+ * connection deletes the snapshot in the meantime.
  */
 int
 virDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
@@ -17172,16 +17201,27 @@ error:
  *
  * Provides the number of child snapshots for this domain snapshot.
  *
- * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS, then the result
- * includes all descendants, otherwise it is limited to direct children.
+ * By default, this command covers only direct children; it is also possible
+ * to expand things to cover all descendants, when @flags includes
+ * VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS.  Also, some filters are provided in
+ * groups, where each group contains bits that describe mutually exclusive
+ * attributes of a snapshot, and where all bits within a group describe
+ * all possible snapshots.  Some hypervisors might reject explicit bits
+ * from a group where the hypervisor cannot make a distinction.  For a
+ * group supported by a given hypervisor, the behavior when no bits of a
+ * group are set is identical to the behavior when all bits in that group
+ * are set.  When setting bits from more than one group, it is possible to
+ * select an impossible combination, in that case a hypervisor may return
+ * either 0 or an error.
  *
- * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, then the result is
- * filtered to the number of snapshots that have no children.
+ * The first group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_LEAVES and
+ * VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES, to filter based on snapshots that
+ * have no further children (a leaf snapshot).
  *
- * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_METADATA, then the result is
- * the number of snapshots that also include metadata that would prevent
- * the removal of the last reference to a domain; this value will either
- * be 0 or the same value as if the flag were not given.
+ * The next group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_METADATA and
+ * VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA, for filtering snapshots based on
+ * whether they have metadata that would prevent the removal of the last
+ * reference to a domain.
  *
  * Returns the number of domain snapshots found or -1 in case of error.
  */
@@ -17227,18 +17267,36 @@ error:
  * freeing each member of the array.  The value to use for @nameslen can
  * be determined by virDomainSnapshotNumChildren() with the same @flags.
  *
- * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS, then the result
- * includes all descendants, otherwise it is limited to direct children.
+ * By default, this command covers only direct children; it is also possible
+ * to expand things to cover all descendants, when @flags includes
+ * VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS.  Also, some filters are provided in
+ * groups, where each group contains bits that describe mutually exclusive
+ * attributes of a snapshot, and where all bits within a group describe
+ * all possible snapshots.  Some hypervisors might reject explicit bits
+ * from a group where the hypervisor cannot make a distinction.  For a
+ * group supported by a given hypervisor, the behavior when no bits of a
+ * group are set is identical to the behavior when all bits in that group
+ * are set.  When setting bits from more than one group, it is possible to
+ * select an impossible combination, in that case a hypervisor may return
+ * either 0 or an error.
  *
- * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_LEAVES, then the result is
- * filtered to the number of snapshots that have no children.
+ * The first group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_LEAVES and
+ * VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES, to filter based on snapshots that
+ * have no further children (a leaf snapshot).
  *
- * If @flags includes VIR_DOMAIN_SNAPSHOT_LIST_METADATA, then the result is
- * the number of snapshots that also include metadata that would prevent
- * the removal of the last reference to a domain; this value will either
- * be 0 or the same value as if the flag were not given.
+ * The next group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_METADATA and
+ * VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA, for filtering snapshots based on
+ * whether they have metadata that would prevent the removal of the last
+ * reference to a domain.
  *
  * Returns the number of domain snapshots found or -1 in case of error.
+ * Note that this command is inherently racy: another connection can
+ * define a new snapshot between a call to virDomainSnapshotNumChildren()
+ * and this call.  You are only guaranteed that all currently defined
+ * snapshots were listed if the return is less than @nameslen.  Likewise,
+ * you should be prepared for virDomainSnapshotLookupByName() to fail when
+ * converting a name from this call into a snapshot object, if another
+ * connection deletes the snapshot in the meantime.
  */
 int
 virDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,

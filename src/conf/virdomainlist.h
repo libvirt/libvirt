@@ -60,6 +60,18 @@
                  VIR_CONNECT_LIST_FILTERS_AUTOSTART   | \
                  VIR_CONNECT_LIST_FILTERS_SNAPSHOT)
 
+# define VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA           \
+               (VIR_DOMAIN_SNAPSHOT_LIST_METADATA     | \
+                VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA)
+
+# define VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES             \
+               (VIR_DOMAIN_SNAPSHOT_LIST_LEAVES       | \
+                VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES)
+
+# define VIR_DOMAIN_SNAPSHOT_FILTERS_ALL                \
+               (VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA  | \
+                VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES)
+
 int virDomainList(virConnectPtr conn, virHashTablePtr domobjs,
                   virDomainPtr **domains, unsigned int flags);
 

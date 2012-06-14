@@ -3385,10 +3385,16 @@ virDomainSnapshotPtr virDomainSnapshotCreateXML(virDomainPtr domain,
 char *virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
                                   unsigned int flags);
 
-/* Flags valid for virDomainSnapshotNum(),
+/**
+ * virDomainSnapshotListFlags:
+ *
+ * Flags valid for virDomainSnapshotNum(),
  * virDomainSnapshotListNames(), virDomainSnapshotNumChildren(), and
  * virDomainSnapshotListChildrenNames().  Note that the interpretation
- * of flag (1<<0) depends on which function it is passed to.  */
+ * of flag (1<<0) depends on which function it is passed to; but serves
+ * to toggle the per-call default of whether the listing is shallow or
+ * recursive.  Remaining bits come in groups; if all bits from a group are
+ * 0, then that group is not used to filter results.  */
 typedef enum {
     VIR_DOMAIN_SNAPSHOT_LIST_ROOTS       = (1 << 0), /* Filter by snapshots
                                                         with no parents, when
@@ -3396,10 +3402,18 @@ typedef enum {
     VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS = (1 << 0), /* List all descendants,
                                                         not just children, when
                                                         listing a snapshot */
-    VIR_DOMAIN_SNAPSHOT_LIST_METADATA    = (1 << 1), /* Filter by snapshots
-                                                        which have metadata */
+
+    /* For historical reasons, groups do not use contiguous bits.  */
+
     VIR_DOMAIN_SNAPSHOT_LIST_LEAVES      = (1 << 2), /* Filter by snapshots
                                                         with no children */
+    VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES   = (1 << 3), /* Filter by snapshots
+                                                        that have children */
+
+    VIR_DOMAIN_SNAPSHOT_LIST_METADATA    = (1 << 1), /* Filter by snapshots
+                                                        which have metadata */
+    VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA = (1 << 4), /* Filter by snapshots
+                                                        with no metadata */
 } virDomainSnapshotListFlags;
 
 /* Return the number of snapshots for this domain */

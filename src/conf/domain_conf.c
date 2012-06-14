@@ -52,6 +52,7 @@
 #include "secret_conf.h"
 #include "netdev_vport_profile_conf.h"
 #include "netdev_bandwidth_conf.h"
+#include "virdomainlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -14273,10 +14274,11 @@ static void virDomainSnapshotObjListCopyNames(void *payload,
 
     if (data->error)
         return;
-    /* LIST_ROOTS/LIST_DESCENDANTS was handled by the choice of
-     * iteration made in the caller, and LIST_METADATA is a no-op if
-     * we get this far.  */
+    /* Caller already sanitized flags.  Filtering on DESCENDANTS was
+     * done by choice of iteration in the caller.  */
     if ((data->flags & VIR_DOMAIN_SNAPSHOT_LIST_LEAVES) && obj->nchildren)
+        return;
+    if ((data->flags & VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES) && !obj->nchildren)
         return;
 
     if (data->names && data->count < data->maxnames &&
@@ -14306,7 +14308,25 @@ virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
         from = &snapshots->metaroot;
     }
 
+    /* We handle LIST_ROOT/LIST_DESCENDANTS directly, mask that bit
+     * out to determine when we must use the filter callback.  */
     data.flags &= ~VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
+
+    /* If this common code is being used, we assume that all snapshots
+     * have metadata, and thus can handle METADATA up front as an
+     * all-or-none filter.  XXX This might not always be true, if we
+     * add the ability to track qcow2 internal snapshots without the
+     * use of metadata.  */
+    if ((data.flags & VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA) ==
+        VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA)
+        return 0;
+    data.flags &= ~VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA;
+
+    /* For ease of coding the visitor, it is easier to zero the LEAVES
+     * group if both bits are set.  */
+    if ((data.flags & VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES) ==
+        VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES)
+        data.flags &= ~VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES;
 
     if (flags & VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS) {
         if (from->def)
