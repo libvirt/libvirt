@@ -8612,7 +8612,7 @@ cmdInterfaceEdit(vshControl *ctl, const vshCmd *cmd)
 #include "virsh-edit.c"
 
     vshPrint(ctl, _("Interface %s XML configuration edited.\n"),
-             virInterfaceGetName(iface));
+             virInterfaceGetName(iface_edited));
 
     ret = true;
 
@@ -10006,7 +10006,7 @@ cmdNWFilterEdit(vshControl *ctl, const vshCmd *cmd)
 #include "virsh-edit.c"
 
     vshPrint(ctl, _("Network filter %s XML configuration edited.\n"),
-             virNWFilterGetName(nwfilter));
+             virNWFilterGetName(nwfilter_edited));
 
     ret = true;
 
@@ -15811,7 +15811,7 @@ cmdEdit(vshControl *ctl, const vshCmd *cmd)
 #include "virsh-edit.c"
 
     vshPrint(ctl, _("Domain %s XML configuration edited.\n"),
-             virDomainGetName(dom));
+             virDomainGetName(dom_edited));
 
     ret = true;
 
@@ -15883,7 +15883,7 @@ cmdNetworkEdit(vshControl *ctl, const vshCmd *cmd)
 #include "virsh-edit.c"
 
     vshPrint(ctl, _("Network %s XML configuration edited.\n"),
-             virNetworkGetName(network));
+             virNetworkGetName(network_edited));
 
     ret = true;
 
@@ -15938,7 +15938,7 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
 #include "virsh-edit.c"
 
     vshPrint(ctl, _("Pool %s XML configuration edited.\n"),
-             virStoragePoolGetName(pool));
+             virStoragePoolGetName(pool_edited));
 
     ret = true;
 
