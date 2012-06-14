@@ -15085,11 +15085,13 @@ cleanup:
     VIR_FREE(device_type);
     VIR_FREE(disk_type);
     if (xml_buf) {
-        if (VIR_ALLOC_N(ret, xmlBufferLength(xml_buf)) < 0) {
+        int len = xmlBufferLength(xml_buf);
+        if (VIR_ALLOC_N(ret, len + 1) < 0) {
             virReportOOMError();
             return NULL;
         }
-        memcpy(ret, (char *)xmlBufferContent(xml_buf), xmlBufferLength(xml_buf));
+        memcpy(ret, (char *)xmlBufferContent(xml_buf), len);
+        ret[len] = '\0';
         xmlBufferFree(xml_buf);
     }
     return ret;
