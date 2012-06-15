@@ -20,7 +20,7 @@ XML_EXAMPLES = \
 EXTRA_DIST = \
   ChangeLog-old \
   libvirt.spec libvirt.spec.in \
-  mingw32-libvirt.spec.in \
+  mingw-libvirt.spec.in \
   libvirt.pc.in \
   autobuild.sh \
   Makefile.nonreentrant \

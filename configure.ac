@@ -2770,7 +2770,7 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
 	  docs/schemas/Makefile \
 	  gnulib/lib/Makefile \
 	  gnulib/tests/Makefile \
-          libvirt.pc libvirt.spec mingw32-libvirt.spec \
+          libvirt.pc libvirt.spec mingw-libvirt.spec \
           po/Makefile.in \
 	  include/libvirt/Makefile include/libvirt/libvirt.h \
 	  python/Makefile python/tests/Makefile \

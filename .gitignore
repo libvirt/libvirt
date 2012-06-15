@@ -80,7 +80,7 @@
 /ltmain.sh
 /m4/*
 /maint.mk
-/mingw32-libvirt.spec
+/mingw-libvirt.spec
 /mkinstalldirs
 /po/*
 /proxy/
