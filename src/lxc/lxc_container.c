@@ -1425,7 +1425,6 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
         goto cleanup;
 
     VIR_DEBUG("Mounting completed");
-    return 0;
 
     ret = 0;
 
