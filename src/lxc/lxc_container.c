@@ -1771,6 +1771,6 @@ int lxcContainerAvailable(int features)
         return -1;
     }
 
-    VIR_DEBUG("Mounted all filesystems");
+    VIR_DEBUG("container support is enabled");
     return 0;
 }
