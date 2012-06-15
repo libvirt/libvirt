@@ -1170,6 +1170,9 @@ fi
 %endif
 
 %changelog
+* Fri Jun 15 2012 Cole Robinson <crobinso@redhat.com> - 0.9.6.1-1
+- Stable release 0.9.6.1
+
 * Thu Sep 22 2011 Daniel Veillard <veillard@redhat.com> - 0.9.6-1
 - Fix the qemu reboot bug and a few others bug fixes
 
