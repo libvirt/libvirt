@@ -56,6 +56,15 @@ int qemuAgentUnref(qemuAgentPtr mon) ATTRIBUTE_RETURN_CHECK;
 void qemuAgentClose(qemuAgentPtr mon);
 
 typedef enum {
+    QEMU_AGENT_EVENT_NONE = 0,
+    QEMU_AGENT_EVENT_SHUTDOWN,
+    QEMU_AGENT_EVENT_SUSPEND
+} qemuAgentEvent;
+
+void qemuAgentNotifyEvent(qemuAgentPtr mon,
+                          qemuAgentEvent event);
+
+typedef enum {
     QEMU_AGENT_SHUTDOWN_POWERDOWN,
     QEMU_AGENT_SHUTDOWN_REBOOT,
     QEMU_AGENT_SHUTDOWN_HALT,

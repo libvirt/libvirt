@@ -665,6 +665,9 @@ qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                  vm->def->name);
     }
 
+    if (priv->agent)
+        qemuAgentNotifyEvent(priv->agent, QEMU_AGENT_EVENT_SHUTDOWN);
+
     qemuProcessShutdownOrReboot(driver, vm);
 
 unlock:
@@ -1118,6 +1121,7 @@ qemuProcessHandlePMSuspend(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     event = virDomainEventPMSuspendNewFromObj(vm);
 
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+        qemuDomainObjPrivatePtr priv = vm->privateData;
         VIR_DEBUG("Transitioned guest %s to pmsuspended state due to "
                   "QMP suspend event", vm->def->name);
 
@@ -1128,6 +1132,9 @@ qemuProcessHandlePMSuspend(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
             VIR_WARN("Unable to save status on vm %s after suspend event",
                      vm->def->name);
         }
+
+        if (priv->agent)
+            qemuAgentNotifyEvent(priv->agent, QEMU_AGENT_EVENT_SUSPEND);
     }
 
     virDomainObjUnlock(vm);
