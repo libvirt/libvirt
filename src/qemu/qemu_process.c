@@ -167,6 +167,8 @@ static void qemuProcessHandleAgentDestroy(qemuAgentPtr agent,
 {
     qemuDomainObjPrivatePtr priv;
 
+    VIR_DEBUG("Received destroy agent=%p vm=%p", agent, vm);
+
     virDomainObjLock(vm);
     priv = vm->privateData;
     if (priv->agent == agent)

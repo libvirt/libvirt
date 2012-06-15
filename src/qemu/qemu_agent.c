@@ -155,13 +155,14 @@ static void qemuAgentFree(qemuAgentPtr mon)
 int qemuAgentRef(qemuAgentPtr mon)
 {
     mon->refs++;
+    VIR_DEBUG("%d", mon->refs);
     return mon->refs;
 }
 
 int qemuAgentUnref(qemuAgentPtr mon)
 {
     mon->refs--;
-
+    VIR_DEBUG("%d", mon->refs);
     if (mon->refs == 0) {
         qemuAgentUnlock(mon);
         qemuAgentFree(mon);
