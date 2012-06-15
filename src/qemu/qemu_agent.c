@@ -107,6 +107,11 @@ struct _qemuAgent {
     /* If anything went wrong, this will be fed back
      * the next monitor msg */
     virError lastError;
+
+    /* Some guest agent commands don't return anything
+     * but fire up an event on qemu monitor instead.
+     * Take that as indication of successful completion */
+    qemuAgentEvent await_event;
 };
 
 #if DEBUG_RAW_IO
@@ -825,6 +830,13 @@ void qemuAgentClose(qemuAgentPtr mon)
         VIR_FORCE_CLOSE(mon->fd);
     }
 
+    /* If there is somebody waiting for a message
+     * wake him up. No message will arrive anyway. */
+    if (mon->msg && !mon->msg->finished) {
+        mon->msg->finished = 1;
+        virCondSignal(&mon->notify);
+    }
+
     if (qemuAgentUnref(mon) > 0)
         qemuAgentUnlock(mon);
 }
@@ -981,6 +993,7 @@ qemuAgentCommand(qemuAgentPtr mon,
     int ret = -1;
     qemuAgentMessage msg;
     char *cmdstr = NULL;
+    int await_event = mon->await_event;
 
     *reply = NULL;
 
@@ -1009,10 +1022,16 @@ qemuAgentCommand(qemuAgentPtr mon,
               ret, msg.rxObject);
 
     if (ret == 0) {
+        /* If we haven't obtained any reply but we wait for an
+         * event, then don't report this as error */
         if (!msg.rxObject) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("Missing monitor reply object"));
-            ret = -1;
+            if (await_event) {
+                VIR_DEBUG("Woken up by event %d", await_event);
+            } else {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("Missing monitor reply object"));
+                ret = -1;
+            }
         } else {
             *reply = msg.rxObject;
         }
@@ -1237,6 +1256,24 @@ error:
     return NULL;
 }
 
+void qemuAgentNotifyEvent(qemuAgentPtr mon,
+                          qemuAgentEvent event)
+{
+    VIR_DEBUG("mon=%p event=%d", mon, event);
+    if (mon->await_event == event) {
+        VIR_DEBUG("Waking up a tragedian");
+        mon->await_event = QEMU_AGENT_EVENT_NONE;
+        /* somebody waiting for this event, wake him up. */
+        if (mon->msg && !mon->msg->finished) {
+            mon->msg->finished = 1;
+            virCondSignal(&mon->notify);
+        }
+    } else {
+        /* shouldn't happen but one never knows */
+        VIR_WARN("Received unexpected event %d", event);
+    }
+}
+
 VIR_ENUM_DECL(qemuAgentShutdownMode);
 
 VIR_ENUM_IMPL(qemuAgentShutdownMode,
@@ -1256,9 +1293,10 @@ int qemuAgentShutdown(qemuAgentPtr mon,
     if (!cmd)
         return -1;
 
+    mon->await_event = QEMU_AGENT_EVENT_SHUTDOWN;
     ret = qemuAgentCommand(mon, cmd, &reply);
 
-    if (ret == 0)
+    if (reply && ret == 0)
         ret = qemuAgentCheckError(cmd, reply);
 
     virJSONValueFree(cmd);
@@ -1361,9 +1399,10 @@ qemuAgentSuspend(qemuAgentPtr mon,
     if (!cmd)
         return -1;
 
+    mon->await_event = QEMU_AGENT_EVENT_SUSPEND;
     ret = qemuAgentCommand(mon, cmd, &reply);
 
-    if (ret == 0)
+    if (reply && ret == 0)
         ret = qemuAgentCheckError(cmd, reply);
 
     virJSONValueFree(cmd);
