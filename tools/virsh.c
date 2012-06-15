@@ -16727,6 +16727,284 @@ cleanup:
     return ret;
 }
 
+/* Helpers for collecting a list of snapshots.  */
+struct vshSnap {
+    virDomainSnapshotPtr snap;
+    char *parent;
+};
+struct vshSnapshotList {
+    struct vshSnap *snaps;
+    int nsnaps;
+};
+typedef struct vshSnapshotList *vshSnapshotListPtr;
+
+static void
+vshSnapshotListFree(vshSnapshotListPtr snaplist)
+{
+    int i;
+
+    if (!snaplist)
+        return;
+    if (snaplist->snaps) {
+        for (i = 0; i < snaplist->nsnaps; i++) {
+            if (snaplist->snaps[i].snap)
+                virDomainSnapshotFree(snaplist->snaps[i].snap);
+            VIR_FREE(snaplist->snaps[i].parent);
+        }
+        VIR_FREE(snaplist->snaps);
+    }
+    VIR_FREE(snaplist);
+}
+
+static int
+vshSnapSorter(const void *a, const void *b)
+{
+    const struct vshSnap *sa = a;
+    const struct vshSnap *sb = b;
+
+    if (sa->snap && !sb->snap)
+        return -1;
+    if (!sa->snap)
+        return sb->snap != NULL;
+
+    /* User visible sort, so we want locale-specific case comparison.  */
+    return strcasecmp(virDomainSnapshotGetName(sa->snap),
+                      virDomainSnapshotGetName(sb->snap));
+}
+
+/* Compute a list of snapshots from DOM.  If FROM is provided, the
+ * list is limited to descendants of the given snapshot.  If FLAGS is
+ * given, the list is filtered.  If TREE is specified, then all but
+ * FROM or the roots will also have parent information.  */
+static vshSnapshotListPtr ATTRIBUTE_UNUSED
+vshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
+                       virDomainSnapshotPtr from,
+                       unsigned int flags, bool tree)
+{
+    int i;
+    char **names = NULL;
+    int count = -1;
+    bool descendants = false;
+    bool roots = false;
+    vshSnapshotListPtr snaplist = vshMalloc(ctl, sizeof(*snaplist));
+    vshSnapshotListPtr ret = NULL;
+    const char *fromname = NULL;
+    int start_index = -1;
+    int deleted = 0;
+
+    /* 0.9.13 will be adding a new listing API.  */
+
+    /* This uses the interfaces available in 0.8.0-0.9.6
+     * (virDomainSnapshotListNames, global list only) and in
+     * 0.9.7-0.9.12 (addition of virDomainSnapshotListChildrenNames
+     * for child listing, and new flags), as follows, with [*] by the
+     * combinations that need parent info (either for filtering
+     * purposes or for the resulting tree listing):
+     *                              old               new
+     * list                         global as-is      global as-is
+     * list --roots                *global + filter   global + flags
+     * list --from                 *global + filter   child as-is
+     * list --from --descendants   *global + filter   child + flags
+     * list --tree                 *global as-is     *global as-is
+     * list --tree --from          *global + filter  *child + flags
+     *
+     * Additionally, when --tree and --from are both used, from is
+     * added to the final list as the only element without a parent.
+     * Otherwise, --from does not appear in the final list.
+     */
+    if (from) {
+        fromname = virDomainSnapshotGetName(from);
+        if (!fromname) {
+            vshError(ctl, "%s", _("Could not get snapshot name"));
+            goto cleanup;
+        }
+        descendants = (flags & VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS) || tree;
+        if (tree)
+            flags |= VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
+
+        /* Determine if we can use the new child listing API.  */
+        if (ctl->useSnapshotOld ||
+            ((count = virDomainSnapshotNumChildren(from, flags)) < 0 &&
+             last_error->code == VIR_ERR_NO_SUPPORT)) {
+            /* We can emulate --from.  */
+            /* XXX can we also emulate --leaves? */
+            virFreeError(last_error);
+            last_error = NULL;
+            ctl->useSnapshotOld = true;
+            flags &= ~VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
+            goto global;
+        }
+        if (tree && count >= 0)
+            count++;
+    } else {
+    global:
+        /* Global listing (including fallback when --from failed with
+         * child listing).  */
+        count = virDomainSnapshotNum(dom, flags);
+
+        /* Fall back to simulation if --roots was unsupported. */
+        /* XXX can we also emulate --leaves? */
+        if (!from && count < 0 && last_error->code == VIR_ERR_INVALID_ARG &&
+            (flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS)) {
+            virFreeError(last_error);
+            last_error = NULL;
+            roots = true;
+            flags &= ~VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
+            count = virDomainSnapshotNum(dom, flags);
+        }
+    }
+
+    if (count < 0) {
+        if (!last_error)
+            vshError(ctl, _("failed to collect snapshot list"));
+        goto cleanup;
+    }
+
+    if (!count)
+        goto success;
+
+    names = vshCalloc(ctl, sizeof(*names), count);
+
+    /* Now that we have a count, collect the list.  */
+    if (from && !ctl->useSnapshotOld) {
+        if (tree) {
+            if (count)
+                count = virDomainSnapshotListChildrenNames(from, names + 1,
+                                                           count - 1, flags);
+            if (count >= 0) {
+                count++;
+                names[0] = vshStrdup(ctl, fromname);
+            }
+        } else {
+            count = virDomainSnapshotListChildrenNames(from, names,
+                                                       count, flags);
+        }
+    } else {
+        count = virDomainSnapshotListNames(dom, names, count, flags);
+    }
+    if (count < 0)
+        goto cleanup;
+
+    snaplist->snaps = vshCalloc(ctl, sizeof(*snaplist->snaps), count);
+    snaplist->nsnaps = count;
+    for (i = 0; i < count; i++) {
+        snaplist->snaps[i].snap = virDomainSnapshotLookupByName(dom,
+                                                                names[i], 0);
+        if (!snaplist->snaps[i].snap)
+            goto cleanup;
+    }
+
+    /* Collect parents when needed.  With the new API, --tree and
+     * --from together put from as the first element without a parent;
+     * with the old API we still need to do a post-process filtering
+     * based on all parent information.  */
+    if (tree || (from && ctl->useSnapshotOld) || roots) {
+        for (i = (from && !ctl->useSnapshotOld); i < count; i++) {
+            if (from && ctl->useSnapshotOld && STREQ(names[i], fromname)) {
+                start_index = i;
+                if (tree)
+                    continue;
+            }
+            if (vshGetSnapshotParent(ctl, snaplist->snaps[i].snap,
+                                     &snaplist->snaps[i].parent) < 0)
+                goto cleanup;
+            if ((from && ((tree && !snaplist->snaps[i].parent) ||
+                          (!descendants &&
+                           STRNEQ_NULLABLE(fromname,
+                                           snaplist->snaps[i].parent)))) ||
+                (roots && snaplist->snaps[i].parent)) {
+                virDomainSnapshotFree(snaplist->snaps[i].snap);
+                snaplist->snaps[i].snap = NULL;
+                VIR_FREE(snaplist->snaps[i].parent);
+                deleted++;
+            }
+        }
+    }
+    if (tree)
+        goto success;
+
+    if (ctl->useSnapshotOld && descendants) {
+        bool changed = false;
+        bool remaining = false;
+
+        /* Make multiple passes over the list - first pass finds
+         * direct children and NULLs out all roots and from, remaining
+         * passes NULL out any undecided entry whose parent is not
+         * still in list.  We mark known descendants by clearing
+         * snaps[i].parents.  Sorry, this is O(n^3) - hope your
+         * hierarchy isn't huge.  XXX Is it worth making O(n^2 log n)
+         * by using qsort and bsearch?  */
+        if (start_index < 0) {
+            vshError(ctl, _("snapshot %s disappeared from list"), fromname);
+            goto cleanup;
+        }
+        for (i = 0; i < count; i++) {
+            if (i == start_index || !snaplist->snaps[i].parent) {
+                VIR_FREE(names[i]);
+                virDomainSnapshotFree(snaplist->snaps[i].snap);
+                snaplist->snaps[i].snap = NULL;
+                VIR_FREE(snaplist->snaps[i].parent);
+                deleted++;
+            } else if (STREQ(snaplist->snaps[i].parent, fromname)) {
+                VIR_FREE(snaplist->snaps[i].parent);
+                changed = true;
+            } else {
+                remaining = true;
+            }
+        }
+        if (!changed) {
+            ret = vshMalloc(ctl, sizeof(*snaplist));
+            goto cleanup;
+        }
+        while (changed && remaining) {
+            changed = remaining = false;
+            for (i = 0; i < count; i++) {
+                bool found_parent = false;
+                int j;
+
+                if (!names[i] || !snaplist->snaps[i].parent)
+                    continue;
+                for (j = 0; j < count; j++) {
+                    if (!names[j] || i == j)
+                        continue;
+                    if (STREQ(snaplist->snaps[i].parent, names[j])) {
+                        found_parent = true;
+                        if (!snaplist->snaps[j].parent)
+                            VIR_FREE(snaplist->snaps[i].parent);
+                        else
+                            remaining = true;
+                        break;
+                    }
+                }
+                if (!found_parent) {
+                    changed = true;
+                    VIR_FREE(names[i]);
+                    virDomainSnapshotFree(snaplist->snaps[i].snap);
+                    snaplist->snaps[i].snap = NULL;
+                    VIR_FREE(snaplist->snaps[i].parent);
+                    deleted++;
+                }
+            }
+        }
+    }
+
+success:
+    qsort(snaplist->snaps, snaplist->nsnaps, sizeof(*snaplist->snaps),
+          vshSnapSorter);
+    snaplist->nsnaps -= deleted;
+
+    ret = snaplist;
+    snaplist = NULL;
+
+cleanup:
+    vshSnapshotListFree(snaplist);
+    if (names)
+        for (i = 0; i < count; i++)
+            VIR_FREE(names[i]);
+    VIR_FREE(names);
+    return ret;
+}
+
 /*
  * "snapshot-list" command
  */
