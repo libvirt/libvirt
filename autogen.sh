@@ -77,7 +77,7 @@ if test "x$OBJ_DIR" != x; then
     cd "$OBJ_DIR"
 fi
 
-if test -z "$*" && test -f config.status; then
+if test -z "$*" && test -z "$EXTRA_ARGS" && test -f config.status; then
     ./config.status --recheck
 else
     $srcdir/configure $EXTRA_ARGS "$@"
