@@ -222,12 +222,14 @@
             <ref name="absFilePath"/>
           </element>
         </optional>
-        <choice>
+        <optional>
           <ref name="osbootkernel"/>
+        </optional>
+        <optional>
           <zeroOrMore>
             <ref name="osbootdev"/>
           </zeroOrMore>
-        </choice>
+        </optional>
         <optional>
           <element name="bootmenu">
             <attribute name="enable">
