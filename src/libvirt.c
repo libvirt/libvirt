@@ -769,20 +769,23 @@ virRegisterStateDriver(virStateDriverPtr driver)
  * Returns 0 if all succeed, -1 upon any failure.
  */
 int virStateInitialize(int privileged) {
-    int i, ret = 0;
+    int i;
 
     if (virInitialize() < 0)
         return -1;
 
     for (i = 0 ; i < virStateDriverTabCount ; i++) {
-        if (virStateDriverTab[i]->initialize &&
-            virStateDriverTab[i]->initialize(privileged) < 0) {
-            VIR_ERROR(_("Initialization of %s state driver failed"),
+        if (virStateDriverTab[i]->initialize) {
+            VIR_DEBUG("Running global init for %s state driver",
                       virStateDriverTab[i]->name);
-            ret = -1;
+            if (virStateDriverTab[i]->initialize(privileged) < 0) {
+                VIR_ERROR(_("Initialization of %s state driver failed"),
+                          virStateDriverTab[i]->name);
+                return -1;
+            }
         }
     }
-    return ret;
+    return 0;
 }
 
 /**

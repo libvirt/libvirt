@@ -271,6 +271,9 @@ virHookCall(int driver,
         return -1;
     }
 
+    VIR_DEBUG("Calling hook opstr=%s subopstr=%s extra=%s",
+              opstr, subopstr, extra);
+
     cmd = virCommandNewArgList(path, id, opstr, subopstr, extra, NULL);
 
     virCommandAddEnvPassCommon(cmd);

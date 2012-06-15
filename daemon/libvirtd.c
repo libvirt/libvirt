@@ -461,6 +461,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
         goto error;
     }
 
+    VIR_DEBUG("Registering unix socket %s", sock_path);
     if (!(svc = virNetServerServiceNewUNIX(sock_path,
                                            unix_sock_rw_mask,
                                            unix_sock_gid,
@@ -469,15 +470,17 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                                            config->max_client_requests,
                                            NULL)))
         goto error;
-    if (sock_path_ro &&
-        !(svcRO = virNetServerServiceNewUNIX(sock_path_ro,
-                                             unix_sock_ro_mask,
-                                             unix_sock_gid,
-                                             config->auth_unix_ro,
-                                             true,
-                                             config->max_client_requests,
-                                             NULL)))
-        goto error;
+    if (sock_path_ro) {
+        VIR_DEBUG("Registering unix socket %s", sock_path_ro);
+        if (!(svcRO = virNetServerServiceNewUNIX(sock_path_ro,
+                                                 unix_sock_ro_mask,
+                                                 unix_sock_gid,
+                                                 config->auth_unix_ro,
+                                                 true,
+                                                 config->max_client_requests,
+                                                 NULL)))
+            goto error;
+    }
 
     if (virNetServerAddService(srv, svc,
                                config->mdns_adv && !ipsock ?
@@ -491,6 +494,8 @@ static int daemonSetupNetworking(virNetServerPtr srv,
 
     if (ipsock) {
         if (config->listen_tcp) {
+            VIR_DEBUG("Registering TCP socket %s:%s",
+                      config->listen_addr, config->tcp_port);
             if (!(svcTCP = virNetServerServiceNewTCP(config->listen_addr,
                                                      config->tcp_port,
                                                      config->auth_tcp,
@@ -527,6 +532,8 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                     goto error;
             }
 
+            VIR_DEBUG("Registering TLS socket %s:%s",
+                      config->listen_addr, config->tls_port);
             if (!(svcTLS =
                   virNetServerServiceNewTCP(config->listen_addr,
                                             config->tls_port,
@@ -1070,8 +1077,10 @@ int main(int argc, char **argv) {
     }
 
     if (!privileged &&
-        migrateProfile() < 0)
+        migrateProfile() < 0) {
+        VIR_ERROR(_("Exiting due to failure to migrate profile"));
         exit(EXIT_FAILURE);
+    }
 
     if (config->host_uuid &&
         virSetHostUUIDStr(config->host_uuid) < 0) {
@@ -1090,6 +1099,7 @@ int main(int argc, char **argv) {
         VIR_ERROR(_("Can't determine pid file path."));
         exit(EXIT_FAILURE);
     }
+    VIR_DEBUG("Decided on pid file path '%s'", NULLSTR(pid_file));
 
     if (daemonUnixSocketPaths(config,
                               privileged,
@@ -1098,6 +1108,8 @@ int main(int argc, char **argv) {
         VIR_ERROR(_("Can't determine socket paths"));
         exit(EXIT_FAILURE);
     }
+    VIR_DEBUG("Decided on socket paths '%s' and '%s'",
+              sock_file, NULLSTR(sock_file_ro));
 
     if (godaemon) {
         char ebuf[1024];
@@ -1135,6 +1147,7 @@ int main(int argc, char **argv) {
         old_umask = umask(022);
     else
         old_umask = umask(077);
+    VIR_DEBUG("Ensuring run dir '%s' exists", run_dir);
     if (virFileMakePath(run_dir) < 0) {
         char ebuf[1024];
         VIR_ERROR(_("unable to create rundir %s: %s"), run_dir,
@@ -1171,6 +1184,7 @@ int main(int argc, char **argv) {
     /* Beyond this point, nothing should rely on using
      * getuid/geteuid() == 0, for privilege level checks.
      */
+    VIR_DEBUG("Dropping privileges (if required)");
     if (daemonSetupPrivs() < 0) {
         ret = VIR_DAEMON_ERR_PRIVS;
         goto cleanup;
@@ -1207,11 +1221,13 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
-    if (timeout != -1)
+    if (timeout != -1) {
+        VIR_DEBUG("Registering shutdown timeout %d", timeout);
         virNetServerAutoShutdown(srv,
                                  timeout,
                                  daemonShutdownCheck,
                                  NULL);
+    }
 
     if ((daemonSetupSignals(srv)) < 0) {
         ret = VIR_DAEMON_ERR_SIGNAL;
@@ -1219,11 +1235,13 @@ int main(int argc, char **argv) {
     }
 
     if (config->audit_level) {
+        VIR_DEBUG("Attempting to configure auditing subsystem");
         if (virAuditOpen() < 0) {
             if (config->audit_level > 1) {
                 ret = VIR_DAEMON_ERR_AUDIT;
                 goto cleanup;
             }
+            VIR_DEBUG("Proceeding without auditing");
         }
     }
     virAuditLog(config->audit_logging);
