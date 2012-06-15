@@ -782,6 +782,7 @@ virNWFilterLearnInit(void) {
     if (pendingLearnReq)
         return 0;
 
+    VIR_DEBUG("Initializing IP address learning");
     threadsTerminate = false;
 
     pendingLearnReq = virHashCreate(0, freeLearnReqEntry);

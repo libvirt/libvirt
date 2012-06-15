@@ -2056,6 +2056,8 @@ virNWFilterDHCPSnoopInit(void)
     if (virNWFilterSnoopState.snoopReqs)
         return 0;
 
+    VIR_DEBUG("Initializing DHCP snooping");
+
     if (virMutexInitRecursive(&virNWFilterSnoopState.snoopLock) < 0 ||
         virMutexInit(&virNWFilterSnoopState.activeLock) < 0 ||
         virAtomicIntInit(&virNWFilterSnoopState.nLeases) < 0 ||
@@ -2176,7 +2178,8 @@ virNWFilterDHCPSnoopShutdown(void)
 int
 virNWFilterDHCPSnoopInit(void)
 {
-    return -1;
+    VIR_DEBUG("No DHCP snooping support available");
+    return 0;
 }
 
 void

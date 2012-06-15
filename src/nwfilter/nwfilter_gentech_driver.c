@@ -57,6 +57,7 @@ static virNWFilterTechDriverPtr filter_tech_drivers[] = {
 
 void virNWFilterTechDriversInit(bool privileged) {
     int i = 0;
+    VIR_DEBUG("Initializing NWFilter technology drivers");
     while (filter_tech_drivers[i]) {
         if (!(filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED))
             filter_tech_drivers[i]->init(privileged);
