@@ -39,6 +39,9 @@ module Libvirtd_qemu =
                  | str_entry  "spice_tls_x509_cert_dir"
                  | str_entry "spice_password"
 
+   let remote_display_entry = int_entry "remote_display_port_min"
+                 | int_entry "remote_display_port_max"
+
    let security_entry = str_entry "security_driver"
                  | bool_entry "security_default_confined"
                  | bool_entry "security_require_confined"
@@ -72,6 +75,7 @@ module Libvirtd_qemu =
    (* Each enty in the config is one of the following three ... *)
    let entry = vnc_entry
              | spice_entry
+             | remote_display_entry
              | security_entry
              | save_entry
              | process_entry

@@ -1,7 +1,7 @@
 /*
  * qemu_conf.c: QEMU configuration management
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -38,6 +38,7 @@
 
 #include "virterror_internal.h"
 #include "qemu_conf.h"
+#include "qemu_command.h"
 #include "qemu_capabilities.h"
 #include "qemu_bridge_filter.h"
 #include "uuid.h"
@@ -89,6 +90,10 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         virReportOOMError();
         return -1;
     }
+
+    driver->remotePortMin = QEMU_REMOTE_PORT_MIN;
+    driver->remotePortMax = QEMU_REMOTE_PORT_MAX;
+
     if (!(driver->vncTLSx509certdir = strdup(SYSCONFDIR "/pki/libvirt-vnc"))) {
         virReportOOMError();
         return -1;
@@ -293,6 +298,47 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
             virConfFree(conf);
             return -1;
         }
+    }
+
+    p = virConfGetValue (conf, "remote_display_port_min");
+    CHECK_TYPE ("remote_display_port_min", VIR_CONF_LONG);
+    if (p) {
+        if (p->l < QEMU_REMOTE_PORT_MIN) {
+            /* if the port is too low, we can't get the display name
+             * to tell to vnc (usually subtract 5900, e.g. localhost:1
+             * for port 5901) */
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("%s: remote_display_port_min: port must be greater than or equal to %d"),
+                            filename, QEMU_REMOTE_PORT_MIN);
+            virConfFree(conf);
+            return -1;
+        }
+        driver->remotePortMin = p->l;
+    }
+
+    p = virConfGetValue (conf, "remote_display_port_max");
+    CHECK_TYPE ("remote_display_port_max", VIR_CONF_LONG);
+    if (p) {
+        if (p->l > QEMU_REMOTE_PORT_MAX ||
+            p->l < driver->remotePortMin) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("%s: remote_display_port_max: port must be between the minimal port and %d"),
+                            filename, QEMU_REMOTE_PORT_MAX);
+            virConfFree(conf);
+            return -1;
+        }
+        /* increasing the value by 1 makes all the loops going through
+        the bitmap (i = remotePortMin; i < remotePortMax; i++), work as
+        expected. */
+        driver->remotePortMax = p->l + 1;
+    }
+
+    if (driver->remotePortMin > driver->remotePortMax) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("%s: remote_display_port_min: min port must not be greater than max port"),
+                        filename);
+        virConfFree(conf);
+        return -1;
     }
 
     p = virConfGetValue (conf, "user");

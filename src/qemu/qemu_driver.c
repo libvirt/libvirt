@@ -590,11 +590,6 @@ qemudStartup(int privileged) {
     if (!qemu_driver->domainEventState)
         goto error;
 
-    /* Allocate bitmap for vnc port reservation */
-    if ((qemu_driver->reservedRemotePorts =
-         virBitmapAlloc(QEMU_REMOTE_PORT_MAX - QEMU_REMOTE_PORT_MIN)) == NULL)
-        goto out_of_memory;
-
     /* read the host sysinfo */
     if (privileged)
         qemu_driver->hostsysinfo = virSysinfoRead();
@@ -719,6 +714,13 @@ qemudStartup(int privileged) {
         goto error;
     }
     VIR_FREE(driverConf);
+
+    /* Allocate bitmap for remote display port reservations. We cannot
+     * do this before the config is loaded properly, since the port
+     * numbers are configurable now */
+    if ((qemu_driver->reservedRemotePorts =
+         virBitmapAlloc(qemu_driver->remotePortMax - qemu_driver->remotePortMin)) == NULL)
+        goto out_of_memory;
 
     /* We should always at least have the 'nop' manager, so
      * NULLs here are a fatal error

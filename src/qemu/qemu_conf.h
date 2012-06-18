@@ -95,6 +95,8 @@ struct qemud_driver {
     char *spiceTLSx509certdir;
     char *spiceListen;
     char *spicePassword;
+    int remotePortMin;
+    int remotePortMax;
     char *hugetlbfs_mount;
     char *hugepage_path;
 

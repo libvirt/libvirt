@@ -37,6 +37,13 @@
 # define QEMU_VIRTIO_SERIAL_PREFIX "virtio-serial"
 # define QEMU_FSDEV_HOST_PREFIX "fsdev-"
 
+/* These are only defaults, they can be changed now in qemu.conf and
+ * explicitely specified port is checked against these two (makes
+ * sense to limit the values).
+ *
+ * This limitation is mentioned in qemu.conf, so bear in mind that the
+ * configuration file should reflect any changes made to these values.
+ */
 # define QEMU_REMOTE_PORT_MIN  5900
 # define QEMU_REMOTE_PORT_MAX  65535
 

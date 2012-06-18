@@ -2454,15 +2454,15 @@ static int qemuProcessNextFreePort(struct qemud_driver *driver,
 {
     int i;
 
-    for (i = startPort ; i < QEMU_REMOTE_PORT_MAX; i++) {
+    for (i = startPort ; i < driver->remotePortMax; i++) {
         int fd;
         int reuse = 1;
         struct sockaddr_in addr;
         bool used = false;
 
         if (virBitmapGetBit(driver->reservedRemotePorts,
-                            i - QEMU_REMOTE_PORT_MIN, &used) < 0)
-            VIR_DEBUG("virBitmapGetBit failed on bit %d", i - QEMU_REMOTE_PORT_MIN);
+                            i - driver->remotePortMin, &used) < 0)
+            VIR_DEBUG("virBitmapGetBit failed on bit %d", i - driver->remotePortMin);
 
         if (used)
             continue;
@@ -2484,9 +2484,9 @@ static int qemuProcessNextFreePort(struct qemud_driver *driver,
             VIR_FORCE_CLOSE(fd);
             /* Add port to bitmap of reserved ports */
             if (virBitmapSetBit(driver->reservedRemotePorts,
-                                i - QEMU_REMOTE_PORT_MIN) < 0) {
+                                i - driver->remotePortMin) < 0) {
                 VIR_DEBUG("virBitmapSetBit failed on bit %d",
-                          i - QEMU_REMOTE_PORT_MIN);
+                          i - driver->remotePortMin);
             }
             return i;
         }
@@ -2507,11 +2507,11 @@ static void
 qemuProcessReturnPort(struct qemud_driver *driver,
                       int port)
 {
-    if (port < QEMU_REMOTE_PORT_MIN)
+    if (port < driver->remotePortMin)
         return;
 
     if (virBitmapClearBit(driver->reservedRemotePorts,
-                          port - QEMU_REMOTE_PORT_MIN) < 0)
+                          port - driver->remotePortMin) < 0)
         VIR_DEBUG("Could not mark port %d as unused", port);
 }
 
