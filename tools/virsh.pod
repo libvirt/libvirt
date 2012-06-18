@@ -1586,10 +1586,11 @@ needed if the device does not use managed mode.
 [I<--multifunction>]
 
 Attach a new disk device to the domain.
-I<source> and I<target> are paths for the files and devices.
-I<driver> can be I<file>, I<tap> or I<phy> for the Xen hypervisor depending on
-the kind of access; or I<qemu> for the QEMU emulator.
-I<type> can indicate I<cdrom> or I<floppy> as alternative to the disk default,
+I<source> is path for the files and devices. I<target> controls the bus or
+device under which the disk is exposed to the guest OS. It indicates the
+"logical" device name.  I<driver> can be I<file>, I<tap> or I<phy> for the Xen
+hypervisor depending on the kind of access; or I<qemu> for the QEMU emulator.
+I<type> can indicate I<lun>, I<cdrom> or I<floppy> as alternative to the disk default,
 although this use only replaces the media within the existing virtual cdrom or
 floppy device; consider using B<update-device> for this usage instead.
 I<mode> can specify the two specific mode I<readonly> or I<shareable>.
@@ -1614,7 +1615,8 @@ Attach a new network interface to the domain.
 I<type> can be either I<network> to indicate a physical network device or
 I<bridge> to indicate a bridge to a device.
 I<source> indicates the source device.
-I<target> allows to indicate the target device in the guest.
+I<target> allows to indicate the target device in the guest. Names starting
+with 'vnet' are considered as auto-generated an hence blanked out.
 I<mac> allows to specify the MAC address of the network interface.
 I<script> allows to specify a path to a script handling a bridge instead of
 the default one.
