@@ -1048,7 +1048,7 @@ static int lxcContainerGetSubtree(const char *prefix,
             virReportOOMError();
             goto cleanup;
         }
-	nmounts++;
+        nmounts++;
         VIR_DEBUG("Grabbed %s", mntent.mnt_dir);
     }
 
