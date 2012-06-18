@@ -3420,7 +3420,7 @@ int qemuProcessStart(virConnectPtr conn,
             int port = qemuProcessNextFreePort(driver, QEMU_REMOTE_PORT_MIN);
             if (port < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("Unable to find an unused VNC port"));
+                               "%s", _("Unable to find an unused port for VNC"));
                 goto cleanup;
             }
             vm->def->graphics[0]->data.vnc.port = port;
@@ -3432,7 +3432,7 @@ int qemuProcessStart(virConnectPtr conn,
 
                 if (port < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   "%s", _("Unable to find an unused SPICE port"));
+                                   "%s", _("Unable to find an unused port for SPICE"));
                     goto cleanup;
                 }
 
@@ -3445,7 +3445,7 @@ int qemuProcessStart(virConnectPtr conn,
                                                       vm->def->graphics[0]->data.spice.port + 1);
                 if (tlsPort < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   "%s", _("Unable to find an unused SPICE TLS port"));
+                                   "%s", _("Unable to find an unused port for SPICE TLS"));
                     qemuProcessReturnPort(driver, port);
                     goto cleanup;
                 }
