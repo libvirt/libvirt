@@ -153,6 +153,7 @@
       <value>iso</value>
       <value>qcow</value>
       <value>qcow2</value>
+      <value>qed</value>
       <value>vmdk</value>
       <value>vpc</value>
     </choice>

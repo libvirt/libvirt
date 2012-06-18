@@ -11351,7 +11351,7 @@ static const vshCmdOptDef opts_vol_create_as[] = {
     {"allocation", VSH_OT_STRING, 0,
      N_("initial allocation size, as scaled integer (default bytes)")},
     {"format", VSH_OT_STRING, 0,
-     N_("file format type raw,bochs,qcow,qcow2,vmdk")},
+     N_("file format type raw,bochs,qcow,qcow2,qed,vmdk")},
     {"backing-vol", VSH_OT_STRING, 0,
      N_("the backing volume if taking a snapshot")},
     {"backing-vol-format", VSH_OT_STRING, 0,

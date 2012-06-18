@@ -2163,11 +2163,12 @@ I<capacity> is the size of the volume to be created, as a scaled integer
 I<--allocation> I<size> is the initial size to be allocated in the volume,
 also as a scaled integer defaulting to bytes.
 I<--format> I<string> is used in file based storage pools to specify the volume
-file format to use; raw, bochs, qcow, qcow2, vmdk.
+file format to use; raw, bochs, qcow, qcow2, vmdk, qed.
 I<--backing-vol> I<vol-name-or-key-or-path> is the source backing
 volume to be used if taking a snapshot of an existing volume.
 I<--backing-vol-format> I<string> is the format of the snapshot backing volume;
-raw, bochs, qcow, qcow2, vmdk, host_device.
+raw, bochs, qcow, qcow2, qed, vmdk, host_device. These are, however, meant for
+file based storage pools.
 
 =item B<vol-clone> [I<--pool> I<pool-or-uuid>] I<vol-name-or-key-or-path>
 I<name>
