@@ -2454,15 +2454,15 @@ static int qemuProcessNextFreePort(struct qemud_driver *driver,
 {
     int i;
 
-    for (i = startPort ; i < QEMU_VNC_PORT_MAX; i++) {
+    for (i = startPort ; i < QEMU_REMOTE_PORT_MAX; i++) {
         int fd;
         int reuse = 1;
         struct sockaddr_in addr;
         bool used = false;
 
-        if (virBitmapGetBit(driver->reservedVNCPorts,
-                            i - QEMU_VNC_PORT_MIN, &used) < 0)
-            VIR_DEBUG("virBitmapGetBit failed on bit %d", i - QEMU_VNC_PORT_MIN);
+        if (virBitmapGetBit(driver->reservedRemotePorts,
+                            i - QEMU_REMOTE_PORT_MIN, &used) < 0)
+            VIR_DEBUG("virBitmapGetBit failed on bit %d", i - QEMU_REMOTE_PORT_MIN);
 
         if (used)
             continue;
@@ -2483,10 +2483,10 @@ static int qemuProcessNextFreePort(struct qemud_driver *driver,
             /* Not in use, lets grab it */
             VIR_FORCE_CLOSE(fd);
             /* Add port to bitmap of reserved ports */
-            if (virBitmapSetBit(driver->reservedVNCPorts,
-                                i - QEMU_VNC_PORT_MIN) < 0) {
+            if (virBitmapSetBit(driver->reservedRemotePorts,
+                                i - QEMU_REMOTE_PORT_MIN) < 0) {
                 VIR_DEBUG("virBitmapSetBit failed on bit %d",
-                          i - QEMU_VNC_PORT_MIN);
+                          i - QEMU_REMOTE_PORT_MIN);
             }
             return i;
         }
@@ -2507,11 +2507,11 @@ static void
 qemuProcessReturnPort(struct qemud_driver *driver,
                       int port)
 {
-    if (port < QEMU_VNC_PORT_MIN)
+    if (port < QEMU_REMOTE_PORT_MIN)
         return;
 
-    if (virBitmapClearBit(driver->reservedVNCPorts,
-                          port - QEMU_VNC_PORT_MIN) < 0)
+    if (virBitmapClearBit(driver->reservedRemotePorts,
+                          port - QEMU_REMOTE_PORT_MIN) < 0)
         VIR_DEBUG("Could not mark port %d as unused", port);
 }
 
@@ -3417,7 +3417,7 @@ int qemuProcessStart(virConnectPtr conn,
         if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
             !vm->def->graphics[0]->data.vnc.socket &&
             vm->def->graphics[0]->data.vnc.autoport) {
-            int port = qemuProcessNextFreePort(driver, QEMU_VNC_PORT_MIN);
+            int port = qemuProcessNextFreePort(driver, QEMU_REMOTE_PORT_MIN);
             if (port < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("Unable to find an unused VNC port"));
@@ -3428,7 +3428,7 @@ int qemuProcessStart(virConnectPtr conn,
             int port = -1;
             if (vm->def->graphics[0]->data.spice.autoport ||
                 vm->def->graphics[0]->data.spice.port == -1) {
-                port = qemuProcessNextFreePort(driver, QEMU_VNC_PORT_MIN);
+                port = qemuProcessNextFreePort(driver, QEMU_REMOTE_PORT_MIN);
 
                 if (port < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3438,7 +3438,6 @@ int qemuProcessStart(virConnectPtr conn,
 
                 vm->def->graphics[0]->data.spice.port = port;
             }
-
             if (driver->spiceTLS &&
                 (vm->def->graphics[0]->data.spice.autoport ||
                  vm->def->graphics[0]->data.spice.tlsPort == -1)) {
@@ -3451,7 +3450,7 @@ int qemuProcessStart(virConnectPtr conn,
                     goto cleanup;
                 }
 
-                vm->def->graphics[0]->data.spice.tlsPort = tlsPort;
+                vm->def->graphics[0]->data.spice.tlsPort = port;
             }
         }
 

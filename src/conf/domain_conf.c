@@ -6277,7 +6277,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
             }
             VIR_FREE(port);
         } else {
-            def->data.spice.port = 5900;
+            def->data.spice.port = 0;
         }
 
         tlsPort = virXMLPropString(node, "tlsPort");

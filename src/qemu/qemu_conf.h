@@ -135,7 +135,7 @@ struct qemud_driver {
     /* The devices which is are not in use by the host or any guest. */
     pciDeviceList *inactivePciHostdevs;
 
-    virBitmapPtr reservedVNCPorts;
+    virBitmapPtr reservedRemotePorts;
 
     virSysinfoDefPtr hostsysinfo;
 

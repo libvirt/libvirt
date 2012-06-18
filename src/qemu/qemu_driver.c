@@ -591,8 +591,8 @@ qemudStartup(int privileged) {
         goto error;
 
     /* Allocate bitmap for vnc port reservation */
-    if ((qemu_driver->reservedVNCPorts =
-         virBitmapAlloc(QEMU_VNC_PORT_MAX - QEMU_VNC_PORT_MIN)) == NULL)
+    if ((qemu_driver->reservedRemotePorts =
+         virBitmapAlloc(QEMU_REMOTE_PORT_MAX - QEMU_REMOTE_PORT_MIN)) == NULL)
         goto out_of_memory;
 
     /* read the host sysinfo */
@@ -950,7 +950,7 @@ qemudShutdown(void) {
     virCapabilitiesFree(qemu_driver->caps);
 
     virDomainObjListDeinit(&qemu_driver->domains);
-    virBitmapFree(qemu_driver->reservedVNCPorts);
+    virBitmapFree(qemu_driver->reservedRemotePorts);
 
     virSysinfoDefFree(qemu_driver->hostsysinfo);
 
@@ -4926,11 +4926,6 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
         }
         VIR_FREE(net->virtPortProfile);
         net->info.bootIndex = bootIndex;
-    }
-    for (i = 0 ; i < def->ngraphics ; i++) {
-        if (def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-            def->graphics[i]->data.vnc.autoport)
-            def->graphics[i]->data.vnc.port = QEMU_VNC_PORT_MIN;
     }
 
     if (qemuCapsExtractVersionInfo(def->emulator, def->os.arch,
