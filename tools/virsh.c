@@ -500,12 +500,14 @@ static int idsorter(const void *a, const void *b) {
     return -1;
   return 0;
 }
-static int namesorter(const void *a, const void *b) {
-  const char **sa = (const char**)a;
-  const char **sb = (const char**)b;
+static int
+vshNameSorter(const void *a, const void *b)
+{
+    const char **sa = (const char**)a;
+    const char **sb = (const char**)b;
 
-  /* User visible sort, so we want locale-specific case comparison.  */
-  return strcasecmp(*sa, *sb);
+    /* User visible sort, so we want locale-specific case comparison. */
+    return strcasecmp(*sa, *sb);
 }
 
 static double
@@ -1083,7 +1085,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                 goto cleanup;
             }
 
-            qsort(&names[0], maxname, sizeof(char*), namesorter);
+            qsort(&names[0], maxname, sizeof(char*), vshNameSorter);
         }
     }
 
@@ -8672,7 +8674,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                 return false;
             }
 
-            qsort(&activeNames[0], maxactive, sizeof(char *), namesorter);
+            qsort(&activeNames[0], maxactive, sizeof(char *), vshNameSorter);
         }
     }
     if (inactive) {
@@ -8694,7 +8696,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                 return false;
             }
 
-            qsort(&inactiveNames[0], maxinactive, sizeof(char*), namesorter);
+            qsort(&inactiveNames[0], maxinactive, sizeof(char*), vshNameSorter);
         }
     }
     vshPrintExtra(ctl, "%-20s %-10s %s\n", _("Name"), _("State"),
@@ -8944,7 +8946,7 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                 return false;
             }
 
-            qsort(&activeNames[0], maxactive, sizeof(char *), namesorter);
+            qsort(&activeNames[0], maxactive, sizeof(char *), vshNameSorter);
         }
     }
     if (inactive) {
@@ -8966,7 +8968,7 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                 return false;
             }
 
-            qsort(&inactiveNames[0], maxinactive, sizeof(char*), namesorter);
+            qsort(&inactiveNames[0], maxinactive, sizeof(char*), vshNameSorter);
         }
     }
     vshPrintExtra(ctl, "%-20s %-10s %s\n", _("Name"), _("State"),
@@ -9938,7 +9940,7 @@ cmdNWFilterList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         return false;
     }
 
-    qsort(&names[0], numfilters, sizeof(char *), namesorter);
+    qsort(&names[0], numfilters, sizeof(char *), vshNameSorter);
 
     vshPrintExtra(ctl, "%-36s  %-20s \n", _("UUID"), _("Name"));
     vshPrintExtra(ctl,
@@ -10728,7 +10730,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     }
 
     /* Sort the storage pool names */
-    qsort(poolNames, numAllPools, sizeof(*poolNames), namesorter);
+    qsort(poolNames, numAllPools, sizeof(*poolNames), vshNameSorter);
 
     /* Collect the storage pool information for display */
     for (i = 0; i < numAllPools; i++) {
@@ -12385,7 +12387,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         }
 
         /* Sort the volume names */
-        qsort(&activeNames[0], numVolumes, sizeof(*activeNames), namesorter);
+        qsort(&activeNames[0], numVolumes, sizeof(*activeNames), vshNameSorter);
 
         /* Set aside memory for volume information pointers */
         volInfoTexts = vshCalloc(ctl, numVolumes, sizeof(*volInfoTexts));
@@ -13048,7 +13050,7 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         return false;
     }
 
-    qsort(uuids, maxuuids, sizeof(char *), namesorter);
+    qsort(uuids, maxuuids, sizeof(char *), vshNameSorter);
 
     vshPrintExtra(ctl, "%-36s %s\n", _("UUID"), _("Usage"));
     vshPrintExtra(ctl, "-----------------------------------------------------------\n");
@@ -13331,7 +13333,7 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         VIR_FREE(devices);
         return false;
     }
-    qsort(&devices[0], num_devices, sizeof(char*), namesorter);
+    qsort(&devices[0], num_devices, sizeof(char*), vshNameSorter);
     if (tree) {
         char **parents = vshMalloc(ctl, sizeof(char *) * num_devices);
         struct vshNodeList arrays = { devices, parents };
