@@ -306,9 +306,15 @@ The XML also show the NUMA topology information if available.
 
 Inject NMI to the guest.
 
-=item B<list> [I<--inactive> | I<--all>] [I<--managed-save>] [I<--title>]
-              { [I<--table>] | I<--name> | I<--uuid> } [I<--persistent>]
-              [I<--transient>]
+=item B<list> [I<--inactive> | I<--all>]
+              [I<--managed-save>] [I<--title>]
+              { [I<--table>] | I<--name> | I<--uuid> }
+              [I<--persistent>] [I<--transient>]
+              [I<--with-managed-save>] [I<--without-managed-save>]
+              [I<--autostart>] [I<--no-autostart>]
+              [I<--with-snapshot>] [I<--without-snapshot>]
+              [I<--state-running>] [I<--state-paused>]
+              [I<--state-shutoff>] [I<--state-other>]
 
 Prints information about existing domains.  If no options are
 specified it prints out information about running domains.
@@ -316,13 +322,10 @@ specified it prints out information about running domains.
 An example format for the list is as follows:
 
 B<virsh> list
- Id Name                 State
-
-----------------------------------
-
-  0 Domain-0             running
-  2 fedora               paused
-
+  Id    Name                           State
+ ----------------------------------------------------
+  0     Domain-0                       running
+  2     fedora                         paused
 
 Name is the name of the domain.  ID the domain numeric id.
 State is the run state (see below).
@@ -380,23 +383,62 @@ into s3 state.
 
 =back
 
-If I<--managed-save> is specified, then domains that have managed save
-state (only possible if they are in the B<shut off> state, so you need to
-specify I<--inactive> or I<--all> to actually list them) will instead
-show as B<saved> in the listing. This flag is usable only with the
-default I<--table> output.
+Normally only active domains are listed. To list inactive domains specify
+I<--inactive> or I<--all> to list both active and inactive domains.
+
+To filter the list of domains present on the hypervisor you may specify one or
+more of filtering flags supported by the B<list> command.  These flags are
+grouped by function. Specifying one or more flags from a group enables the
+filter group. Supported filtering flags and groups:
+
+=over 4
+
+=item B<Persistence>
+
+Flag I<--persistent> is used to include persistent domains in the returned
+list. To include transient domains specify I<--transient>.
+
+=item B<Existence of managed save image>
+
+To list domains having a managed save image specify flag
+I<--with-managed-save>. For domains that don't have a managed save image
+specify I<--without-managed-save>.
+
+=item B<Domain state>
+
+The following filter flags select a domain by its state:
+I<--state-running> for running domains, I<--state-paused>  for paused domains,
+I<--state-shutoff> for turned off domains and I<--state-other> for all
+other states as a fallback.
+
+=item B<Autostarting domains>
+
+To list autostarting domains use the flag I<--autostart>. To list domains with
+this feature disabled use I<--no-autostart>.
+
+=item B<Snapshot existence>
+
+Domains that have snapshot images can be listed using flag I<--with-snapshot>,
+domains without a snapshot I<--without-snapshot>.
+
+=back
+
+When talking to older servers, this command is forced to use a series of API
+calls with an inherent race, where a domain might not be listed or might appear
+more than once if it changed state between calls while the list was being
+collected.  Newer servers do not have this problem.
+
+If I<--managed-save> is specified, then domains that have managed save state
+(only possible if they are in the B<shut off> state, so you need to specify
+I<--inactive> or I<--all> to actually list them) will instead show as B<saved>
+in the listing. This flag is usable only with the default I<--table> output.
+Note that this flag does not filter the list of domains.
 
 If I<--name> is specified, domain names are printed instead of the table
 formatted one per line. If I<--uuid> is specified domain's UUID's are printed
 instead of names. Flag I<--table> specifies that the legacy table-formatted
 output should be used. This is the default. All of these are mutually
 exclusive.
-
-Flag I<--persistent> specifies that persistent domains should be printed.
-Similarly I<--transient> enables output of transient domains. These flags
-may be combined. Default behavior is as though both were specified. (Note that
-if any of these flags is specified, the check for the persistence state is done
-and may fail. If none of these flags is specified, the check is skipped.)
 
 If I<--title> is specified, then the short domain description (title) is
 printed in an extra column. This flag is usable only with the default
@@ -405,10 +447,10 @@ I<--table> output.
 Example:
 
 B<virsh> list --title
- Id Name                 State      Title
- -----------------------------------------------
-  0 Domain-0             running    Mailserver 1
-  2 fedora               paused
+  Id    Name                           State      Title
+ --------------------------------------------------------------------------
+  0     Domain-0                       running    Mailserver 1
+  2     fedora                         paused
 
 =item B<freecell> [{ [I<--cellno>] B<cellno> | I<--all> }]
 

@@ -64,6 +64,8 @@
 #include "util/bitmap.h"
 #include "conf/domain_conf.h"
 #include "virtypedparam.h"
+#include "intprops.h"
+#include "conf/virdomainlist.h"
 
 static char *progname;
 
@@ -490,16 +492,6 @@ _vshStrdup(vshControl *ctl, const char *s, const char *filename, int line)
 #define realloc use_vshRealloc_instead_of_realloc
 #define strdup use_vshStrdup_instead_of_strdup
 
-static int idsorter(const void *a, const void *b) {
-  const int *ia = (const int *)a;
-  const int *ib = (const int *)b;
-
-  if (*ia > *ib)
-    return 1;
-  else if (*ia < *ib)
-    return -1;
-  return 0;
-}
 static int
 vshNameSorter(const void *a, const void *b)
 {
@@ -990,11 +982,306 @@ static const vshCmdInfo info_list[] = {
     {NULL, NULL}
 };
 
+/* compare domains, pack NULLed ones at the end*/
+static int
+vshDomainSorter(const void *a, const void *b)
+{
+    virDomainPtr *da = (virDomainPtr *) a;
+    virDomainPtr *db = (virDomainPtr *) b;
+    unsigned int ida;
+    unsigned int idb;
+    unsigned int inactive = (unsigned int) -1;
+
+    if (*da && !*db)
+        return -1;
+
+    if (!*da)
+        return *db != NULL;
+
+    ida = virDomainGetID(*da);
+    idb = virDomainGetID(*db);
+
+    if (ida == inactive && idb == inactive)
+        return strcasecmp(virDomainGetName(*da), virDomainGetName(*db));
+
+    if (ida != inactive && idb != inactive) {
+        if (ida > idb)
+            return 1;
+        else if (ida < idb)
+            return -1;
+    }
+
+    if (ida != inactive)
+        return -1;
+    else
+        return 1;
+}
+
+struct vshDomainList {
+    virDomainPtr *domains;
+    size_t ndomains;
+};
+typedef struct vshDomainList *vshDomainListPtr;
+
+static void
+vshDomainListFree(vshDomainListPtr domlist)
+{
+    int i;
+
+    if (domlist && domlist->domains) {
+        for (i = 0; i < domlist->ndomains; i++) {
+            if (domlist->domains[i])
+                virDomainFree(domlist->domains[i]);
+        }
+        VIR_FREE(domlist->domains);
+    }
+    VIR_FREE(domlist);
+}
+
+#define MATCH(FLAG) (flags & (FLAG))
+static vshDomainListPtr
+vshDomainListCollect(vshControl *ctl, unsigned int flags)
+{
+    vshDomainListPtr list = vshMalloc(ctl, sizeof(*list));
+    int i;
+    int ret;
+    int *ids = NULL;
+    int nids = 0;
+    char **names = NULL;
+    int nnames = 0;
+    virDomainPtr dom;
+    bool success = false;
+    size_t deleted = 0;
+    int persistent;
+    int autostart;
+    int state;
+    int nsnap;
+    int mansave;
+
+    /* try the list with flags support (0.9.13 and later) */
+    if ((ret = virConnectListAllDomains(ctl->conn, &list->domains,
+                                        flags)) >= 0) {
+        list->ndomains = ret;
+        goto finished;
+    }
+
+    /* check if the command is actually supported */
+    if (last_error && last_error->code == VIR_ERR_NO_SUPPORT) {
+        virFreeError(last_error);
+        last_error = NULL;
+        goto fallback;
+    }
+
+    if (last_error && last_error->code ==  VIR_ERR_INVALID_ARG) {
+        /* try the new API again but mask non-guaranteed flags */
+        unsigned int newflags = flags & (VIR_CONNECT_LIST_DOMAINS_ACTIVE |
+                                         VIR_CONNECT_LIST_DOMAINS_INACTIVE);
+
+        virFreeError(last_error);
+        last_error = NULL;
+        if ((ret = virConnectListAllDomains(ctl->conn, &list->domains,
+                                            newflags)) >= 0) {
+            list->ndomains = ret;
+            goto filter;
+        }
+    }
+
+    /* there was an error during the first or second call */
+    vshError(ctl, "%s", _("Failed to list domains"));
+    goto cleanup;
+
+
+fallback:
+    /* fall back to old method (0.9.12 and older) */
+    virResetLastError();
+
+    /* list active domains, if necessary */
+    if (!MATCH(VIR_CONNECT_LIST_FILTERS_ACTIVE) ||
+        MATCH(VIR_CONNECT_LIST_DOMAINS_ACTIVE)) {
+        if ((nids = virConnectNumOfDomains(ctl->conn)) < 0) {
+            vshError(ctl, "%s", _("Failed to list active domains"));
+            goto cleanup;
+        }
+
+        if (nids) {
+            ids = vshMalloc(ctl, sizeof(int) * nids);
+
+            if ((nids = virConnectListDomains(ctl->conn, ids, nids)) < 0) {
+                vshError(ctl, "%s", _("Failed to list active domains"));
+                goto cleanup;
+            }
+        }
+    }
+
+    if (!MATCH(VIR_CONNECT_LIST_FILTERS_ACTIVE) ||
+        MATCH(VIR_CONNECT_LIST_DOMAINS_INACTIVE)) {
+        if ((nnames = virConnectNumOfDefinedDomains(ctl->conn)) < 0) {
+            vshError(ctl, "%s", _("Failed to list inactive domains"));
+            goto cleanup;
+        }
+
+        if (nnames) {
+            names = vshMalloc(ctl, sizeof(char *) * nnames);
+
+            if ((nnames = virConnectListDefinedDomains(ctl->conn, names,
+                                                      nnames)) < 0) {
+                vshError(ctl, "%s", _("Failed to list inactive domains"));
+                goto cleanup;
+            }
+        }
+    }
+
+    list->domains = vshMalloc(ctl, sizeof(virDomainPtr) * (nids + nnames));
+    list->ndomains = 0;
+
+    /* get active domains */
+    for (i = 0; i < nids; i++) {
+        if (!(dom = virDomainLookupByID(ctl->conn, ids[i])))
+            continue;
+        list->domains[list->ndomains++] = dom;
+    }
+
+    /* get inactive domains */
+    for (i = 0; i < nnames; i++) {
+        if (!(dom = virDomainLookupByName(ctl->conn, names[i])))
+            continue;
+        list->domains[list->ndomains++] = dom;
+    }
+
+    /* truncate domains that weren't found */
+    deleted = (nids + nnames) - list->ndomains;
+
+filter:
+    /* filter list the list if the list was acquired by fallback means */
+    for (i = 0; i < list->ndomains; i++) {
+        dom = list->domains[i];
+
+        /* persistence filter */
+        if (MATCH(VIR_CONNECT_LIST_FILTERS_PERSISTENT)) {
+            if ((persistent = virDomainIsPersistent(dom)) < 0) {
+                vshError(ctl, "%s", _("Failed to get domain persistence info"));
+                goto cleanup;
+            }
+
+            if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_PERSISTENT) && persistent) ||
+                  (MATCH(VIR_CONNECT_LIST_DOMAINS_TRANSIENT) && !persistent)))
+                goto remove_entry;
+        }
+
+        /* domain state filter */
+        if (MATCH(VIR_CONNECT_LIST_FILTERS_STATE)) {
+            if (virDomainGetState(dom, &state, NULL, 0) < 0) {
+                vshError(ctl, "%s", _("Failed to get domain state"));
+                goto cleanup;
+            }
+
+            if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_RUNNING) &&
+                   state == VIR_DOMAIN_RUNNING) ||
+                  (MATCH(VIR_CONNECT_LIST_DOMAINS_PAUSED) &&
+                   state == VIR_DOMAIN_PAUSED) ||
+                  (MATCH(VIR_CONNECT_LIST_DOMAINS_SHUTOFF) &&
+                   state == VIR_DOMAIN_SHUTOFF) ||
+                  (MATCH(VIR_CONNECT_LIST_DOMAINS_OTHER) &&
+                   (state != VIR_DOMAIN_RUNNING &&
+                    state != VIR_DOMAIN_PAUSED &&
+                    state != VIR_DOMAIN_SHUTOFF))))
+                goto remove_entry;
+        }
+
+        /* autostart filter */
+        if (MATCH(VIR_CONNECT_LIST_FILTERS_AUTOSTART)) {
+            if (virDomainGetAutostart(dom, &autostart) < 0) {
+                vshError(ctl, "%s", _("Failed to get domain autostart state"));
+                goto cleanup;
+            }
+
+            if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_AUTOSTART) && autostart) ||
+                  (MATCH(VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART) && !autostart)))
+                goto remove_entry;
+        }
+
+        /* managed save filter */
+        if (MATCH(VIR_CONNECT_LIST_FILTERS_MANAGEDSAVE)) {
+            if ((mansave = virDomainHasManagedSaveImage(dom, 0)) < 0) {
+                vshError(ctl, "%s",
+                         _("Failed to check for managed save image"));
+                goto cleanup;
+            }
+
+            if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE) && mansave) ||
+                  (MATCH(VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE) && !mansave)))
+                goto remove_entry;
+        }
+
+        /* snapshot filter */
+        if (MATCH(VIR_CONNECT_LIST_FILTERS_SNAPSHOT)) {
+            if ((nsnap = virDomainSnapshotNum(dom, 0)) < 0) {
+                vshError(ctl, "%s", _("Failed to get snapshot count"));
+                goto cleanup;
+            }
+            if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT) && nsnap > 0) ||
+                  (MATCH(VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT) && nsnap == 0)))
+                goto remove_entry;
+        }
+
+        /* the domain matched all filters, it may stay */
+        continue;
+
+remove_entry:
+        /* the domain has to be removed as it failed one of the filters */
+        virDomainFree(list->domains[i]);
+        list->domains[i] = NULL;
+        deleted++;
+    }
+
+finished:
+    /* sort the list */
+    if (list->domains && list->ndomains)
+        qsort(list->domains, list->ndomains, sizeof(*list->domains),
+              vshDomainSorter);
+
+    /* truncate the list if filter simulation deleted entries */
+    if (deleted)
+        VIR_SHRINK_N(list->domains, list->ndomains, deleted);
+
+    success = true;
+
+cleanup:
+    for (i = 0; i < nnames; i++)
+        VIR_FREE(names[i]);
+
+    if (!success) {
+        vshDomainListFree(list);
+        list = NULL;
+    }
+
+    VIR_FREE(names);
+    VIR_FREE(ids);
+    return list;
+}
+#undef MATCH
+
+
 static const vshCmdOptDef opts_list[] = {
     {"inactive", VSH_OT_BOOL, 0, N_("list inactive domains")},
     {"all", VSH_OT_BOOL, 0, N_("list inactive & active domains")},
     {"transient", VSH_OT_BOOL, 0, N_("list transient domains")},
     {"persistent", VSH_OT_BOOL, 0, N_("list persistent domains")},
+    {"with-snapshot", VSH_OT_BOOL, 0,
+     N_("list domains with existing snapshot")},
+    {"without-snapshot", VSH_OT_BOOL, 0,
+     N_("list domains without a snapshot")},
+    {"state-running", VSH_OT_BOOL, 0, N_("list domains in running state")},
+    {"state-paused", VSH_OT_BOOL, 0, N_("list domains in paused state")},
+    {"state-shutoff", VSH_OT_BOOL, 0, N_("list domains in shutoff state")},
+    {"state-other", VSH_OT_BOOL, 0, N_("list domains in other states")},
+    {"autostart", VSH_OT_BOOL, 0, N_("list domains with autostart enabled")},
+    {"no-autostart", VSH_OT_BOOL, 0,
+     N_("list domains with autostart disabled")},
+    {"with-managed-save", VSH_OT_BOOL, 0,
+     N_("list domains with managed save state")},
+    {"without-managed-save", VSH_OT_BOOL, 0,
+     N_("list domains without managed save")},
     {"uuid", VSH_OT_BOOL, 0, N_("list uuid's only")},
     {"name", VSH_OT_BOOL, 0, N_("list domain names only")},
     {"table", VSH_OT_BOOL, 0, N_("list table (default)")},
@@ -1005,38 +1292,52 @@ static const vshCmdOptDef opts_list[] = {
 };
 
 
+#define FILTER(NAME, FLAG)              \
+    if (vshCommandOptBool(cmd, NAME))   \
+        flags |= (FLAG)
 static bool
 cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
-    bool inactive = vshCommandOptBool(cmd, "inactive");
-    bool all = vshCommandOptBool(cmd, "all");
-    bool active = !inactive || all;
-    int *ids = NULL, maxid = 0, i;
-    char **names = NULL;
-    int maxname = 0;
     bool managed = vshCommandOptBool(cmd, "managed-save");
     bool optTitle = vshCommandOptBool(cmd, "title");
     bool optTable = vshCommandOptBool(cmd, "table");
     bool optUUID = vshCommandOptBool(cmd, "uuid");
     bool optName = vshCommandOptBool(cmd, "name");
-    bool optPersistent = vshCommandOptBool(cmd, "persistent");
-    bool optTransient = vshCommandOptBool(cmd, "transient");
-    bool persistUsed = true;
-    virDomainPtr dom = NULL;
+    int i;
     char *title;
     char uuid[VIR_UUID_STRING_BUFLEN];
     int state;
-    int persistent;
     bool ret = false;
+    vshDomainListPtr list = NULL;
+    virDomainPtr dom;
+    char id_buf[INT_BUFSIZE_BOUND(unsigned int)];
+    unsigned int id;
+    unsigned int flags = VIR_CONNECT_LIST_DOMAINS_ACTIVE;
 
-    inactive |= all;
+    /* construct filter flags */
+    if (vshCommandOptBool(cmd, "inactive"))
+        flags = VIR_CONNECT_LIST_DOMAINS_INACTIVE;
 
-    /* process arguments */
-    if (!optPersistent && !optTransient) {
-        optPersistent = true;
-        optTransient = true;
-        persistUsed = false;
-    }
+    if (vshCommandOptBool(cmd, "all"))
+        flags = VIR_CONNECT_LIST_DOMAINS_INACTIVE |
+                VIR_CONNECT_LIST_DOMAINS_ACTIVE;
+
+    FILTER("persistent", VIR_CONNECT_LIST_DOMAINS_PERSISTENT);
+    FILTER("transient",  VIR_CONNECT_LIST_DOMAINS_TRANSIENT);
+
+    FILTER("with-managed-save",    VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE);
+    FILTER("without-managed-save", VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE);
+
+    FILTER("autostart",    VIR_CONNECT_LIST_DOMAINS_AUTOSTART);
+    FILTER("no-autostart", VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART);
+
+    FILTER("with-snapshot",    VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT);
+    FILTER("without-snapshot", VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT);
+
+    FILTER("state-running", VIR_CONNECT_LIST_DOMAINS_RUNNING);
+    FILTER("state-paused",  VIR_CONNECT_LIST_DOMAINS_PAUSED);
+    FILTER("state-shutoff", VIR_CONNECT_LIST_DOMAINS_SHUTOFF);
+    FILTER("state-other",   VIR_CONNECT_LIST_DOMAINS_OTHER);
 
     if (optTable + optName + optUUID > 1) {
         vshError(ctl, "%s",
@@ -1051,169 +1352,69 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
 
-    if (active) {
-        maxid = virConnectNumOfDomains(ctl->conn);
-        if (maxid < 0) {
-            vshError(ctl, "%s", _("Failed to list active domains"));
-            return false;
-        }
-        if (maxid) {
-            ids = vshMalloc(ctl, sizeof(int) * maxid);
-
-            if ((maxid = virConnectListDomains(ctl->conn, ids, maxid)) < 0) {
-                vshError(ctl, "%s", _("Failed to list active domains"));
-                goto cleanup;
-            }
-
-            qsort(ids, maxid, sizeof(int), idsorter);
-        }
-    }
-
-    if (inactive) {
-        maxname = virConnectNumOfDefinedDomains(ctl->conn);
-        if (maxname < 0) {
-            vshError(ctl, "%s", _("Failed to list inactive domains"));
-            goto cleanup;
-        }
-        if (maxname) {
-            names = vshMalloc(ctl, sizeof(char *) * maxname);
-
-            if ((maxname = virConnectListDefinedDomains(ctl->conn,
-                                                        names,
-                                                        maxname)) < 0) {
-                vshError(ctl, "%s", _("Failed to list inactive domains"));
-                goto cleanup;
-            }
-
-            qsort(&names[0], maxname, sizeof(char*), vshNameSorter);
-        }
-    }
+    if (!(list = vshDomainListCollect(ctl, flags)))
+        goto cleanup;
 
     /* print table header in legacy mode */
     if (optTable) {
-        if (optTitle) {
+        if (optTitle)
             vshPrintExtra(ctl, " %-5s %-30s %-10s %-20s\n%s\n",
                           _("Id"), _("Name"), _("State"), _("Title"),
                           "-----------------------------------------"
                           "-----------------------------------------");
-        } else {
+        else
             vshPrintExtra(ctl, " %-5s %-30s %s\n%s\n",
                           _("Id"), _("Name"), _("State"),
                           "-----------------------------------------"
                           "-----------");
-        }
     }
 
-    for (i = 0; i < maxid; i++) {
-         dom = virDomainLookupByID(ctl->conn, ids[i]);
+    for (i = 0; i < list->ndomains; i++) {
+        dom = list->domains[i];
+        id = virDomainGetID(dom);
+        if (id != (unsigned int) -1)
+            snprintf(id_buf, sizeof(id_buf), "%d", id);
+        else
+            ignore_value(virStrcpyStatic(id_buf, "-"));
 
-        /* this kind of work with domains is not atomic operation */
-        if (!dom)
-            continue;
+        state = vshDomainState(ctl, dom, NULL);
+        if (optTable && managed && state == VIR_DOMAIN_SHUTOFF &&
+            virDomainHasManagedSaveImage(dom, 0) > 0)
+            state = -2;
 
-        if (persistUsed) {
-            persistent = virDomainIsPersistent(dom);
-            if (persistent < 0) {
-                vshError(ctl, "%s",
-                         _("Failed to determine domain's persistent state"));
+        if (optTable) {
+            if (optTitle) {
+                if (!(title = vshGetDomainDescription(ctl, dom, true, 0)))
+                    goto cleanup;
+
+                vshPrint(ctl, " %-5s %-30s %-10s %-20s\n", id_buf,
+                         virDomainGetName(dom),
+                         state == -2 ? _("saved") : _(vshDomainStateToString(state)),
+                         title);
+
+                VIR_FREE(title);
+            } else {
+                vshPrint(ctl, " %-5s %-30s %s\n", id_buf,
+                         virDomainGetName(dom),
+                         state == -2 ? _("saved") : _(vshDomainStateToString(state)));
+            }
+        } else if (optUUID) {
+            if (virDomainGetUUIDString(dom, uuid) < 0) {
+                vshError(ctl, "%s", _("Failed to get domain's UUID"));
                 goto cleanup;
             }
-
-            if (!(persistent ? optPersistent : optTransient)) {
-                virDomainFree(dom);
-                dom = NULL;
-                continue;
-            }
-       }
-
-       if (optTable) {
-           if (optTitle) {
-               if (!(title = vshGetDomainDescription(ctl, dom, true, 0)))
-                   goto cleanup;
-
-               vshPrint(ctl, " %-5d %-30s %-10s %-20s\n",
-                        virDomainGetID(dom),
-                        virDomainGetName(dom),
-                        _(vshDomainStateToString(vshDomainState(ctl, dom, NULL))),
-                        title);
-               VIR_FREE(title);
-           } else {
-               vshPrint(ctl, " %-5d %-30s %s\n",
-                        virDomainGetID(dom),
-                        virDomainGetName(dom),
-                        _(vshDomainStateToString(vshDomainState(ctl, dom, NULL))));
-           }
-       } else if (optUUID) {
-           if (virDomainGetUUIDString(dom, uuid) < 0) {
-               vshError(ctl, "%s",
-                        _("Failed to get domain's UUID"));
-               goto cleanup;
-           }
-           vshPrint(ctl, "%s\n", uuid);
-       } else if (optName) {
-           vshPrint(ctl, "%s\n", virDomainGetName(dom));
-       }
-
-       virDomainFree(dom);
-       dom = NULL;
-    }
-
-    if (optPersistent) {
-        for (i = 0; i < maxname; i++) {
-            dom = virDomainLookupByName(ctl->conn, names[i]);
-
-            /* this kind of work with domains is not atomic operation */
-            if (!dom)
-                continue;
-
-            if (optTable) {
-                state = vshDomainState(ctl, dom, NULL);
-                if (managed && state == VIR_DOMAIN_SHUTOFF &&
-                    virDomainHasManagedSaveImage(dom, 0) > 0)
-                    state = -2;
-
-                if (optTitle) {
-                    if (!(title = vshGetDomainDescription(ctl, dom, true, 0)))
-                        goto cleanup;
-
-                    vshPrint(ctl, " %-5s %-30s %-10s %-20s\n",
-                             "-",
-                             names[i],
-                             state == -2 ? _("saved") : _(vshDomainStateToString(state)),
-                             title);
-                    VIR_FREE(title);
-                } else {
-                    vshPrint(ctl, " %-5s %-30s %s\n",
-                             "-",
-                             names[i],
-                             state == -2 ? _("saved") : _(vshDomainStateToString(state)));
-                }
-           } else if (optUUID) {
-               if (virDomainGetUUIDString(dom, uuid) < 0) {
-                   vshError(ctl, "%s",
-                            _("Failed to get domain's UUID"));
-                   goto cleanup;
-               }
-               vshPrint(ctl, "%s\n", uuid);
-           } else if (optName) {
-               vshPrint(ctl, "%s\n", names[i]);
-           }
-
-           virDomainFree(dom);
-           dom = NULL;
+            vshPrint(ctl, "%s\n", uuid);
+        } else if (optName) {
+            vshPrint(ctl, "%s\n", virDomainGetName(dom));
         }
     }
 
     ret = true;
 cleanup:
-    if (dom)
-        virDomainFree(dom);
-    VIR_FREE(ids);
-    for (i = 0; i < maxname; i++)
-        VIR_FREE(names[i]);
-    VIR_FREE(names);
+    vshDomainListFree(list);
     return ret;
 }
+#undef FILTER
 
 /*
  * "desc" command for managing domain description and title
