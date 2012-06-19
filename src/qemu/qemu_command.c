@@ -2605,7 +2605,8 @@ qemuControllerModelUSBToCaps(int model)
 
 
 static int
-qemuBuildUSBControllerDevStr(virDomainControllerDefPtr def,
+qemuBuildUSBControllerDevStr(virDomainDefPtr domainDef,
+                             virDomainControllerDefPtr def,
                              virBitmapPtr qemuCaps,
                              virBuffer *buf)
 {
@@ -2614,8 +2615,12 @@ qemuBuildUSBControllerDevStr(virDomainControllerDefPtr def,
 
     model = def->model;
 
-    if (model == -1)
-        model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
+    if (model == -1) {
+        if (STREQ(domainDef->os.arch, "ppc64"))
+            model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
+        else
+            model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
+    }
 
     smodel = qemuControllerModelUSBTypeToString(model);
     caps = qemuControllerModelUSBToCaps(model);
@@ -2701,7 +2706,7 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_USB:
-        if (qemuBuildUSBControllerDevStr(def, qemuCaps, &buf) == -1)
+        if (qemuBuildUSBControllerDevStr(domainDef, def, qemuCaps, &buf) == -1)
             goto error;
 
         if (nusbcontroller)
