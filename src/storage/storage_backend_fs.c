@@ -789,29 +789,31 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
     /* Now create the final dir in the path with the uid/gid/mode
      * requested in the config. If the dir already exists, just set
      * the perms. */
+    uid_t uid;
+    gid_t gid;
 
-    struct stat st;
+    uid = (pool->def->target.perms.uid == (uid_t) -1)
+        ? getuid() : pool->def->target.perms.uid;
+    gid = (pool->def->target.perms.gid == (gid_t) -1)
+        ? getgid() : pool->def->target.perms.gid;
 
-    if ((stat(pool->def->target.path, &st) < 0)
-        || (pool->def->target.perms.uid != -1)) {
-
-        uid_t uid = (pool->def->target.perms.uid == -1)
-            ? getuid() : pool->def->target.perms.uid;
-        gid_t gid = (pool->def->target.perms.gid == -1)
-            ? getgid() : pool->def->target.perms.gid;
-
-        if ((err = virDirCreate(pool->def->target.path,
-                                pool->def->target.perms.mode,
-                                uid, gid,
-                                VIR_DIR_CREATE_FORCE_PERMS |
-                                VIR_DIR_CREATE_ALLOW_EXIST |
-                                (pool->def->type == VIR_STORAGE_POOL_NETFS
-                                 ? VIR_DIR_CREATE_AS_UID : 0)) < 0)) {
-            virReportSystemError(-err, _("cannot create path '%s'"),
-                                 pool->def->target.path);
-            goto error;
-        }
+    if ((err = virDirCreate(pool->def->target.path,
+                            pool->def->target.perms.mode,
+                            uid, gid,
+                            VIR_DIR_CREATE_FORCE_PERMS |
+                            VIR_DIR_CREATE_ALLOW_EXIST |
+                            (pool->def->type == VIR_STORAGE_POOL_NETFS
+                            ? VIR_DIR_CREATE_AS_UID : 0)) < 0)) {
+        virReportSystemError(-err, _("cannot create path '%s'"),
+                             pool->def->target.path);
+        goto error;
     }
+
+    /* Reflect the actual uid and gid to the config. */
+    if (pool->def->target.perms.uid == (uid_t) -1)
+        pool->def->target.perms.uid = uid;
+    if (pool->def->target.perms.gid == (gid_t) -1)
+        pool->def->target.perms.gid = gid;
 
     if (flags != 0) {
         ret = virStorageBackendMakeFileSystem(pool, flags);
