@@ -195,7 +195,7 @@ virCapsPtr openvzCapsInit(void)
     if ((guest = virCapabilitiesAddGuest(caps,
                                          "exe",
                                          utsname.machine,
-                                         sizeof(int) == 4 ? 32 : 64,
+                                         sizeof(void*) == 4 ? 32 : 64,
                                          NULL,
                                          NULL,
                                          0,
