@@ -1227,7 +1227,7 @@ static const vshCmdOptDef opts_desc[] = {
     {"live", VSH_OT_BOOL, 0, N_("modify/get running state")},
     {"config", VSH_OT_BOOL, 0, N_("modify/get persistent configuration")},
     {"current", VSH_OT_BOOL, 0, N_("modify/get current state configuration")},
-    {"title", VSH_OT_BOOL, 0, N_("modify the title instead of description")},
+    {"title", VSH_OT_BOOL, 0, N_("modify/get the title instead of description")},
     {"edit", VSH_OT_BOOL, 0, N_("open an editor to modify the description")},
     {"new-desc", VSH_OT_ARGV, 0, N_("message")},
     {NULL, 0, 0, NULL}
