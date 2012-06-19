@@ -242,13 +242,13 @@
 # define virCheckNonNullArgReturn(argname, retval)  \
     do {                                            \
         if (argname == NULL) {                      \
-            virReportInvalidNullArg(argname);       \
+            virReportInvalidNonNullArg(argname);    \
             return retval;                          \
         }                                           \
     } while (0)
 # define virCheckNullArgGoto(argname, label)        \
     do {                                            \
-        if (argname == NULL) {                      \
+        if (argname != NULL) {                      \
             virReportInvalidNullArg(argname);       \
             goto label;                             \
         }                                           \
