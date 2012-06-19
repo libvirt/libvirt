@@ -2019,7 +2019,7 @@ static const vshCmdInfo info_domiftune[] = {
 
 static const vshCmdOptDef opts_domiftune[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, N_("interface device")},
+    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, N_("interface device (MAC Address)")},
     {"inbound", VSH_OT_DATA, VSH_OFLAG_NONE, N_("control domain's incoming traffics")},
     {"outbound", VSH_OT_DATA, VSH_OFLAG_NONE, N_("control domain's outgoing traffics")},
     {"config", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("affect next boot")},
