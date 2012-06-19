@@ -1323,7 +1323,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     /* Before pivoting we need to identify any
      * cgroups controllers that are mounted */
     if (lxcContainerIdentifyCGroups(&mounts, &nmounts) < 0)
-        goto cleanup;
+        return -1;
 
     /* Gives us a private root, leaving all parent OS mounts on /.oldroot */
     if (lxcContainerPivotRoot(root) < 0)
@@ -1406,7 +1406,7 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
     /* Before replacing /sys we need to identify any
      * cgroups controllers that are mounted */
     if (lxcContainerIdentifyCGroups(&mounts, &nmounts) < 0)
-        goto cleanup;
+        return -1;
 
     /* Gets rid of any existing stuff under /proc, since we need new
      * namespace aware versions of those. We must do /proc second
