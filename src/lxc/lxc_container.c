@@ -1025,7 +1025,14 @@ static int lxcContainerMountFS(virDomainFSDefPtr fs,
         if (lxcContainerMountFSTmpfs(fs) < 0)
             return -1;
         break;
+    case VIR_DOMAIN_FS_TYPE_BIND:
+        if (lxcContainerMountFSBind(fs, "") < 0)
+            return -1;
+        break;
     case VIR_DOMAIN_FS_TYPE_FILE:
+        /* We do actually support this, but the lxc controller
+         * should have associated the file with a loopback
+         * device and changed this to TYPE_BLOCK for us */
         lxcError(VIR_ERR_INTERNAL_ERROR,
                  _("Unexpected filesystem type %s"),
                  virDomainFSTypeToString(fs->type));

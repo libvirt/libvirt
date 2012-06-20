@@ -265,7 +265,8 @@ VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
               "block",
               "file",
               "template",
-              "ram")
+              "ram",
+              "bind")
 
 VIR_ENUM_IMPL(virDomainFSDriverType, VIR_DOMAIN_FS_DRIVER_TYPE_LAST,
               "default",
@@ -4264,7 +4265,8 @@ virDomainFSDefParseXML(xmlNodePtr node,
             if (!source &&
                 xmlStrEqual(cur->name, BAD_CAST "source")) {
 
-                if (def->type == VIR_DOMAIN_FS_TYPE_MOUNT)
+                if (def->type == VIR_DOMAIN_FS_TYPE_MOUNT ||
+                    def->type == VIR_DOMAIN_FS_TYPE_BIND)
                     source = virXMLPropString(cur, "dir");
                 else if (def->type == VIR_DOMAIN_FS_TYPE_FILE)
                     source = virXMLPropString(cur, "file");
@@ -11353,6 +11355,7 @@ virDomainFSDefFormat(virBufferPtr buf,
 
     switch (def->type) {
     case VIR_DOMAIN_FS_TYPE_MOUNT:
+    case VIR_DOMAIN_FS_TYPE_BIND:
         virBufferEscapeString(buf, "      <source dir='%s'/>\n",
                               def->src);
         break;

@@ -1278,6 +1278,21 @@
           </interleave>
         </group>
         <group>
+          <optional>
+            <attribute name="type">
+              <value>bind</value>
+            </attribute>
+          </optional>
+          <interleave>
+            <element name="source">
+              <attribute name="dir">
+                <ref name="absFilePath"/>
+              </attribute>
+              <empty/>
+            </element>
+          </interleave>
+        </group>
+        <group>
           <attribute name="type">
             <value>template</value>
           </attribute>
