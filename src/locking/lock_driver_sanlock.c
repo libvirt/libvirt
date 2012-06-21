@@ -65,7 +65,6 @@ struct _virLockManagerSanlockDriver {
     bool requireLeaseForDisks;
     int hostID;
     bool autoDiskLease;
-    bool ignoreReadonlyShared;
     char *autoDiskLeasePath;
 };
 
@@ -114,10 +113,6 @@ static int virLockManagerSanlockLoadConfig(const char *configFile)
     p = virConfGetValue(conf, "auto_disk_leases");
     CHECK_TYPE("auto_disk_leases", VIR_CONF_LONG);
     if (p) driver->autoDiskLease = p->l;
-
-    p = virConfGetValue(conf, "ignore_readonly_and_shared_disks");
-    CHECK_TYPE("ignore_readonly_and_shared_disks", VIR_CONF_LONG);
-    if (p) driver->ignoreReadonlyShared = p->l;
 
     p = virConfGetValue(conf, "disk_lease_dir");
     CHECK_TYPE("disk_lease_dir", VIR_CONF_STRING);
@@ -428,7 +423,8 @@ static int virLockManagerSanlockDiskLeaseName(const char *path,
 static int virLockManagerSanlockAddLease(virLockManagerPtr lock,
                                          const char *name,
                                          size_t nparams,
-                                         virLockManagerParamPtr params)
+                                         virLockManagerParamPtr params,
+                                         bool shared)
 {
     virLockManagerSanlockPrivatePtr priv = lock->privateData;
     int ret = -1;
@@ -440,6 +436,7 @@ static int virLockManagerSanlockAddLease(virLockManagerPtr lock,
         goto cleanup;
     }
 
+    res->flags = shared ? SANLK_RES_SHARED : 0;
     res->num_disks = 1;
     if (!virStrcpy(res->name, name, SANLK_NAME_LEN)) {
         virLockError(VIR_ERR_INTERNAL_ERROR,
@@ -485,7 +482,8 @@ cleanup:
 static int virLockManagerSanlockAddDisk(virLockManagerPtr lock,
                                         const char *name,
                                         size_t nparams,
-                                        virLockManagerParamPtr params ATTRIBUTE_UNUSED)
+                                        virLockManagerParamPtr params ATTRIBUTE_UNUSED,
+                                        bool shared)
 {
     virLockManagerSanlockPrivatePtr priv = lock->privateData;
     int ret = -1;
@@ -503,6 +501,7 @@ static int virLockManagerSanlockAddDisk(virLockManagerPtr lock,
         goto cleanup;
     }
 
+    res->flags = shared ? SANLK_RES_SHARED : 0;
     res->num_disks = 1;
     if (virLockManagerSanlockDiskLeaseName(name, res->name, SANLK_NAME_LEN) < 0)
         goto cleanup;
@@ -630,27 +629,15 @@ static int virLockManagerSanlockAddResource(virLockManagerPtr lock,
         return -1;
     }
 
-    if ((flags & (VIR_LOCK_MANAGER_RESOURCE_READONLY |
-                  VIR_LOCK_MANAGER_RESOURCE_SHARED)) &&
-        driver->ignoreReadonlyShared) {
-            return 0;
-    }
-
-    if (flags & VIR_LOCK_MANAGER_RESOURCE_READONLY) {
-        virLockError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                     _("Readonly leases are not supported"));
-        return -1;
-    }
-    if (flags & VIR_LOCK_MANAGER_RESOURCE_SHARED) {
-        virLockError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                     _("Shareable leases are not supported"));
-        return -1;
-    }
+    /* Treat R/O resources as a no-op lock request */
+    if (flags & VIR_LOCK_MANAGER_RESOURCE_READONLY)
+        return 0;
 
     switch (type) {
     case VIR_LOCK_MANAGER_RESOURCE_TYPE_DISK:
         if (driver->autoDiskLease) {
-            if (virLockManagerSanlockAddDisk(lock, name, nparams, params) < 0)
+            if (virLockManagerSanlockAddDisk(lock, name, nparams, params,
+                                             !!(flags & VIR_LOCK_MANAGER_RESOURCE_SHARED)) < 0)
                 return -1;
 
             if (virLockManagerSanlockCreateLease(priv->res_args[priv->res_count-1]) < 0)
@@ -664,7 +651,8 @@ static int virLockManagerSanlockAddResource(virLockManagerPtr lock,
         break;
 
     case VIR_LOCK_MANAGER_RESOURCE_TYPE_LEASE:
-        if (virLockManagerSanlockAddLease(lock, name, nparams, params) < 0)
+        if (virLockManagerSanlockAddLease(lock, name, nparams, params,
+                                          !!(flags & VIR_LOCK_MANAGER_RESOURCE_SHARED)) < 0)
             return -1;
         break;
 
