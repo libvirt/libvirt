@@ -786,17 +786,10 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
     /* Now create the final dir in the path with the uid/gid/mode
      * requested in the config. If the dir already exists, just set
      * the perms. */
-    uid_t uid;
-    gid_t gid;
-
-    uid = (pool->def->target.perms.uid == (uid_t) -1)
-        ? getuid() : pool->def->target.perms.uid;
-    gid = (pool->def->target.perms.gid == (gid_t) -1)
-        ? getgid() : pool->def->target.perms.gid;
-
     if ((err = virDirCreate(pool->def->target.path,
                             pool->def->target.perms.mode,
-                            uid, gid,
+                            pool->def->target.perms.uid,
+                            pool->def->target.perms.gid,
                             VIR_DIR_CREATE_FORCE_PERMS |
                             VIR_DIR_CREATE_ALLOW_EXIST |
                             (pool->def->type == VIR_STORAGE_POOL_NETFS
@@ -808,9 +801,9 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     /* Reflect the actual uid and gid to the config. */
     if (pool->def->target.perms.uid == (uid_t) -1)
-        pool->def->target.perms.uid = uid;
+        pool->def->target.perms.uid = getuid();
     if (pool->def->target.perms.gid == (gid_t) -1)
-        pool->def->target.perms.gid = gid;
+        pool->def->target.perms.gid = getgid();
 
     if (flags != 0) {
         ret = virStorageBackendMakeFileSystem(pool, flags);
@@ -1050,13 +1043,9 @@ static int createFileDir(virConnectPtr conn ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    uid_t uid = (vol->target.perms.uid == -1)
-        ? getuid() : vol->target.perms.uid;
-    gid_t gid = (vol->target.perms.gid == -1)
-        ? getgid() : vol->target.perms.gid;
-
     if ((err = virDirCreate(vol->target.path, vol->target.perms.mode,
-                            uid, gid,
+                            vol->target.perms.uid,
+                            vol->target.perms.gid,
                             VIR_DIR_CREATE_FORCE_PERMS |
                             (pool->def->type == VIR_STORAGE_POOL_NETFS
                              ? VIR_DIR_CREATE_AS_UID : 0))) < 0) {

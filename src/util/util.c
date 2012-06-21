@@ -1126,6 +1126,12 @@ int virDirCreate(const char *path, mode_t mode,
     int waitret;
     int status, ret = 0;
 
+    /* allow using -1 to mean "current value" */
+    if (uid == (uid_t) -1)
+        uid = getuid();
+    if (gid == (gid_t) -1)
+        gid = getgid();
+
     if ((!(flags & VIR_DIR_CREATE_AS_UID))
         || (getuid() != 0)
         || ((uid == 0) && (gid == 0))
