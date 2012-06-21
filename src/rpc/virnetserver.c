@@ -766,10 +766,9 @@ void virNetServerFree(virNetServerPtr srv)
     virNetServerLock(srv);
     VIR_DEBUG("srv=%p refs=%d", srv, srv->refs);
     srv->refs--;
-    if (srv->refs > 0) {
-        virNetServerUnlock(srv);
+    virNetServerUnlock(srv);
+    if (srv->refs > 0)
         return;
-    }
 
     for (i = 0 ; i < srv->nservices ; i++)
         virNetServerServiceToggle(srv->services[i], false);
@@ -805,7 +804,6 @@ void virNetServerFree(virNetServerPtr srv)
     virNetServerMDNSFree(srv->mdns);
 #endif
 
-    virNetServerUnlock(srv);
     virMutexDestroy(&srv->lock);
     VIR_FREE(srv);
 }
