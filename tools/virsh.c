@@ -2765,8 +2765,11 @@ cmdSuspend(vshControl *ctl, const vshCmd *cmd)
  * "dompmsuspend" command
  */
 static const vshCmdInfo info_dom_pm_suspend[] = {
-    {"help", N_("suspend a domain for a given time duration")},
-    {"desc", N_("Suspend a running domain for a given time duration.")},
+    {"help", N_("suspend a domain gracefully using power management "
+                "functions")},
+    {"desc", N_("Suspends a running domain using guest OS's power management. "
+                "(Note: This requires a guest agent configured and running in "
+                "the guest OS).")},
     {NULL, NULL}
 };
 
