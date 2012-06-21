@@ -1820,8 +1820,8 @@
       A "usb" controller has an optional attribute <code>model</code>,
       which is one of "piix3-uhci", "piix4-uhci", "ehci",
       "ich9-ehci1", "ich9-uhci1", "ich9-uhci2", "ich9-uhci3",
-      "vt82c686b-uhci" or "pci-ohci".  The PowerPC64 "spapr-vio"
-      addresses do not have an associated controller.
+      "vt82c686b-uhci", "pci-ohci" or "nec-xhci".  The PowerPC64
+      "spapr-vio" addresses do not have an associated controller.
     </p>
 
     <p>

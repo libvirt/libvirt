@@ -106,7 +106,8 @@ VIR_ENUM_IMPL(qemuControllerModelUSB, VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST,
               "ich9-usb-uhci2",
               "ich9-usb-uhci3",
               "vt82c686b-usb-uhci",
-              "pci-ohci");
+              "pci-ohci",
+              "nec-usb-xhci");
 
 VIR_ENUM_DECL(qemuDomainFSDriver)
 VIR_ENUM_IMPL(qemuDomainFSDriver, VIR_DOMAIN_FS_DRIVER_TYPE_LAST,
@@ -2598,6 +2599,8 @@ qemuControllerModelUSBToCaps(int model)
         return QEMU_CAPS_VT82C686B_USB_UHCI;
     case VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI:
         return QEMU_CAPS_PCI_OHCI;
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI:
+        return QEMU_CAPS_NEC_USB_XHCI;
     default:
         return -1;
     }

@@ -257,7 +257,8 @@ VIR_ENUM_IMPL(virDomainControllerModelUSB, VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST,
               "ich9-uhci2",
               "ich9-uhci3",
               "vt82c686b-uhci",
-              "pci-ohci")
+              "pci-ohci",
+              "nec-xhci")
 
 VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
               "mount",

@@ -1201,6 +1201,7 @@
             <value>ich9-uhci3</value>
             <value>vt82c686b-uhci</value>
             <value>pci-ohci</value>
+            <value>nec-xhci</value>
           </choice>
         </attribute>
       </optional>

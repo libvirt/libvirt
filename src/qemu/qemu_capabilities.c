@@ -165,6 +165,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
 
               "hda-micro", /* 95 */
               "dump-guest-memory",
+              "nec-usb-xhci",
 
     );
 
@@ -1421,6 +1422,8 @@ qemuCapsParseDeviceStr(const char *str, virBitmapPtr flags)
         qemuCapsSet(flags, QEMU_CAPS_VT82C686B_USB_UHCI);
     if (strstr(str, "name \"pci-ohci\""))
         qemuCapsSet(flags, QEMU_CAPS_PCI_OHCI);
+    if (strstr(str, "name \"nec-usb-xhci\""))
+        qemuCapsSet(flags, QEMU_CAPS_NEC_USB_XHCI);
     if (strstr(str, "name \"usb-redir\""))
         qemuCapsSet(flags, QEMU_CAPS_USB_REDIR);
     if (strstr(str, "name \"usb-hub\""))
