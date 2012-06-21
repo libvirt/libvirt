@@ -649,6 +649,7 @@ vshReconnect(vshControl *ctl)
     ctl->useSnapshotOld = false;
 }
 
+#ifndef WIN32
 static void
 vshPrintRaw(vshControl *ctl, ...)
 {
@@ -678,7 +679,6 @@ vshPrintRaw(vshControl *ctl, ...)
 static int
 vshAskReedit(vshControl *ctl, const char *msg)
 {
-#ifndef WIN32
     int c = -1;
     struct termios ttyattr;
 
@@ -714,12 +714,16 @@ vshAskReedit(vshControl *ctl, const char *msg)
 
     vshPrint(ctl, "\r\n");
     return c;
-#else
+}
+#else /* WIN32 */
+static int
+vshAskReedit(vshControl *ctl, const char *msg ATTRIBUTE_UNUSED)
+{
     vshDebug(ctl, VSH_ERR_WARNING, "%s", _("This function is not "
                                            "supported on WIN32 platform"));
     return 0;
-#endif
 }
+#endif /* WIN32 */
 
 /* ---------------
  * Commands
