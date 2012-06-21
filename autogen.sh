@@ -19,7 +19,8 @@ if test "x$1" = "x--no-git"; then
   no_git=" $1"
   shift
 fi
-if test "x$1" = "x--system"; then
+if test -z "$NOCONFIGURE" ; then
+  if test "x$1" = "x--system"; then
     shift
     prefix=/usr
     libdir=$prefix/lib
@@ -30,11 +31,12 @@ if test "x$1" = "x--system"; then
     fi
     EXTRA_ARGS="--prefix=$prefix --sysconfdir=$sysconfdir --localstatedir=$localstatedir --libdir=$libdir"
     echo "Running ./configure with $EXTRA_ARGS $@"
-else
+  else
     if test -z "$*" && test ! -f "$THEDIR/config.status"; then
         echo "I am going to run ./configure with no arguments - if you wish "
         echo "to pass any to it, please specify them on the $0 command line."
     fi
+  fi
 fi
 
 # Compute the hash we'll use to determine whether rerunning bootstrap
@@ -69,6 +71,8 @@ if test -d .git; then
             || { echo "Failed to bootstrap, please investigate."; exit 1; }
     fi
 fi
+
+test -n "$NOCONFIGURE" && exit 0
 
 cd "$THEDIR"
 
