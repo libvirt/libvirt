@@ -1709,12 +1709,12 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
             goto cleanup;
         }
         if (rd_total_times &&
-            virJSONValueObjectHasKey(stats, "rd_total_times_ns") &&
-            (virJSONValueObjectGetNumberLong(stats, "rd_total_times_ns",
+            virJSONValueObjectHasKey(stats, "rd_total_time_ns") &&
+            (virJSONValueObjectGetNumberLong(stats, "rd_total_time_ns",
                                              rd_total_times) < 0)) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("cannot read %s statistic"),
-                            "rd_total_times_ns");
+                            "rd_total_time_ns");
             goto cleanup;
         }
         if (virJSONValueObjectGetNumberLong(stats, "wr_bytes", wr_bytes) < 0) {
@@ -1730,12 +1730,12 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
             goto cleanup;
         }
         if (wr_total_times &&
-            virJSONValueObjectHasKey(stats, "wr_total_times_ns") &&
-            (virJSONValueObjectGetNumberLong(stats, "wr_total_times_ns",
+            virJSONValueObjectHasKey(stats, "wr_total_time_ns") &&
+            (virJSONValueObjectGetNumberLong(stats, "wr_total_time_ns",
                                              wr_total_times) < 0)) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("cannot read %s statistic"),
-                            "wr_total_times_ns");
+                            "wr_total_time_ns");
             goto cleanup;
         }
         if (flush_req &&
@@ -1748,12 +1748,12 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
             goto cleanup;
         }
         if (flush_total_times &&
-            virJSONValueObjectHasKey(stats, "flush_total_times_ns") &&
-            (virJSONValueObjectGetNumberLong(stats, "flush_total_times_ns",
+            virJSONValueObjectHasKey(stats, "flush_total_time_ns") &&
+            (virJSONValueObjectGetNumberLong(stats, "flush_total_time_ns",
                                             flush_total_times) < 0)) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("cannot read %s statistic"),
-                            "flush_total_times_ns");
+                            "flush_total_time_ns");
             goto cleanup;
         }
     }
@@ -1821,12 +1821,12 @@ int qemuMonitorJSONGetBlockStatsParamsNumber(qemuMonitorPtr mon,
 
         if (STREQ(key, "rd_bytes") ||
             STREQ(key, "rd_operations") ||
-            STREQ(key, "rd_total_times_ns") ||
+            STREQ(key, "rd_total_time_ns") ||
             STREQ(key, "wr_bytes") ||
             STREQ(key, "wr_operations") ||
-            STREQ(key, "wr_total_times_ns") ||
+            STREQ(key, "wr_total_time_ns") ||
             STREQ(key, "flush_operations") ||
-            STREQ(key, "flush_total_times_ns")) {
+            STREQ(key, "flush_total_time_ns")) {
             num++;
         } else {
             /* wr_highest_offset is parsed by qemuMonitorJSONGetBlockExtent. */
