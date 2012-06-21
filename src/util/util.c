@@ -995,14 +995,14 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
 
     /* allow using -1 to mean "current value" */
     if (uid == (uid_t) -1)
-       uid = getuid();
+        uid = getuid();
     if (gid == (gid_t) -1)
-       gid = getgid();
+        gid = getgid();
 
     /* treat absence of both flags as presence of both for simpler
      * calling. */
     if (!(flags & (VIR_FILE_OPEN_NOFORK|VIR_FILE_OPEN_FORK)))
-       flags |= VIR_FILE_OPEN_NOFORK|VIR_FILE_OPEN_FORK;
+        flags |= VIR_FILE_OPEN_NOFORK|VIR_FILE_OPEN_FORK;
 
     if ((flags & VIR_FILE_OPEN_NOFORK)
         || (getuid() != 0)
