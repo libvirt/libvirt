@@ -43,6 +43,7 @@
 #include <dirent.h>
 #include <grp.h>
 #include <sys/stat.h>
+#include <time.h>
 
 #if HAVE_CAPNG
 # include <cap-ng.h>
@@ -71,6 +72,7 @@
 #include "command.h"
 #include "processinfo.h"
 #include "nodeinfo.h"
+#include "virrandom.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -1663,7 +1665,8 @@ int main(int argc, char *argv[])
 
     if (setlocale(LC_ALL, "") == NULL ||
         bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
-        textdomain(PACKAGE) == NULL) {
+        textdomain(PACKAGE) == NULL ||
+        virRandomInitialize(time(NULL) ^ getpid())) {
         fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
         exit(EXIT_FAILURE);
     }
