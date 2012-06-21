@@ -5752,7 +5752,7 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptInt(cmd, "count", &count) < 0) {
+    if (vshCommandOptInt(cmd, "count", &count) < 0 || count <= 0) {
         vshError(ctl, "%s", _("Invalid number of virtual CPUs"));
         goto cleanup;
     }
