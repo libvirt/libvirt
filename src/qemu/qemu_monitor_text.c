@@ -973,13 +973,13 @@ int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
                     if (virStrToLong_ll (p, &dummy, 10, wr_req) == -1)
                         VIR_DEBUG ("error reading wr_req: %s", p);
                 } else if (rd_total_times &&
-                           STRPREFIX (p, "rd_total_times_ns=")) {
-                    p += strlen("rd_total_times_ns=");
+                           STRPREFIX (p, "rd_total_time_ns=")) {
+                    p += strlen("rd_total_time_ns=");
                     if (virStrToLong_ll (p, &dummy, 10, rd_total_times) == -1)
                         VIR_DEBUG ("error reading rd_total_times: %s", p);
                 } else if (wr_total_times &&
-                           STRPREFIX (p, "wr_total_times_ns=")) {
-                    p += strlen("wr_total_times_ns=");
+                           STRPREFIX (p, "wr_total_time_ns=")) {
+                    p += strlen("wr_total_time_ns=");
                     if (virStrToLong_ll (p, &dummy, 10, wr_total_times) == -1)
                         VIR_DEBUG ("error reading wr_total_times: %s", p);
                 } else if (flush_req &&
@@ -988,8 +988,8 @@ int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
                     if (virStrToLong_ll (p, &dummy, 10, flush_req) == -1)
                         VIR_DEBUG ("error reading flush_req: %s", p);
                 } else if (flush_total_times &&
-                           STRPREFIX (p, "flush_total_times_ns=")) {
-                    p += strlen("flush_total_times_ns=");
+                           STRPREFIX (p, "flush_total_time_ns=")) {
+                    p += strlen("flush_total_time_ns=");
                     if (virStrToLong_ll (p, &dummy, 10, flush_total_times) == -1)
                         VIR_DEBUG ("error reading flush_total_times: %s", p);
                 } else {
@@ -1067,10 +1067,10 @@ int qemuMonitorTextGetBlockStatsParamsNumber(qemuMonitorPtr mon,
             STRPREFIX (p, " wr_bytes=") ||
             STRPREFIX (p, " rd_operations=") ||
             STRPREFIX (p, " wr_operations=") ||
-            STRPREFIX (p, " rd_total_times_ns=") ||
-            STRPREFIX (p, " wr_total_times_ns=") ||
+            STRPREFIX (p, " rd_total_time_ns=") ||
+            STRPREFIX (p, " wr_total_time_ns=") ||
             STRPREFIX (p, " flush_operations=") ||
-            STRPREFIX (p, " flush_total_times_ns=")) {
+            STRPREFIX (p, " flush_total_time_ns=")) {
             num++;
         } else {
             VIR_DEBUG ("unknown block stat near %s", p);
