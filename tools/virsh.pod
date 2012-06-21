@@ -1372,13 +1372,21 @@ Moves a domain out of the suspended state.  This will allow a previously
 suspended domain to now be eligible for scheduling by the underlying
 hypervisor.
 
-=item B<dompmsuspend> I<domain-id> I<target>
+=item B<dompmsuspend> I<domain-id> I<target> [I<--duration>]
 
 Suspend a running domain into one of these states (possible I<target>
 values):
     mem equivallent of S3 ACPI state
     disk equivallent of S4 ACPI state
     hybrid RAM is saved to disk but not powered off
+
+The I<--duration> argument specifies number of seconds before the domain is
+woken up after it was suspended (see also B<dompmwakeup>). Default is 0 for
+unlimited suspend time. (This feature isn't currently supported by any
+hypervisor driver and 0 should be used.).
+
+Note that this command requires a guest agent configured and running in the
+domain's guest OS.
 
 =item B<dompmwakeup> I<domain-id>
 
