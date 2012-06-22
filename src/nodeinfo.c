@@ -355,7 +355,13 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
         nodeinfo->cpus++;
 
         /* Parse core */
+# if defined(__s390__) || \
+    defined(__s390x__)
+    /* logical cpu is equivalent to a core on s390 */
+        core = cpu;
+# else
         core = virNodeGetCpuValue(sysfs_cpudir, cpu, "topology/core_id", false);
+# endif
         if (!CPU_ISSET(core, &core_mask)) {
             CPU_SET(core, &core_mask);
             nodeinfo->cores++;
