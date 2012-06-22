@@ -44,6 +44,7 @@
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #define SYSINFO_SMBIOS_DECODER "dmidecode"
+#define SYSINFO "/proc/sysinfo"
 #define CPUINFO "/proc/cpuinfo"
 
 VIR_ENUM_IMPL(virSysinfo, VIR_SYSINFO_LAST,
@@ -230,6 +231,160 @@ virSysinfoRead(void) {
     ret->processor = NULL;
     if (virSysinfoParseProcessor(outbuf, ret) < 0)
         goto no_memory;
+
+    if (virSysinfoParseSystem(outbuf, ret) < 0)
+        goto no_memory;
+
+    return ret;
+
+no_memory:
+    VIR_FREE(outbuf);
+    return NULL;
+}
+
+#elif defined(__s390__) || defined(__s390x__)
+
+static int
+virSysinfoParseSystem(const char *base, virSysinfoDefPtr ret)
+{
+    char *cur, *eol = NULL;
+    const char *property;
+
+    /* Return if Manufacturer field is not found */
+    if ((cur = strstr(base, "Manufacturer")) == NULL)
+        return 0;
+
+    base = cur;
+    if ((cur = strstr(base, "Manufacturer")) != NULL) {
+        cur = strchr(cur, ':') + 1;
+        eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
+        if ((eol) && ((property = strndup(cur, eol - cur)) == NULL))
+            goto no_memory;
+        virSkipSpaces(&property);
+        ret->system_manufacturer = (char *) property;
+    }
+    if ((cur = strstr(base, "Type")) != NULL) {
+        cur = strchr(cur, ':') + 1;
+        eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
+        if ((eol) && ((property = strndup(cur, eol - cur)) == NULL))
+            goto no_memory;
+        virSkipSpaces(&property);
+        ret->system_family = (char *) property;
+    }
+    if ((cur = strstr(base, "Sequence Code")) != NULL) {
+        cur = strchr(cur, ':') + 1;
+        eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
+        if ((eol) && ((property = strndup(cur, eol - cur)) == NULL))
+            goto no_memory;
+        virSkipSpaces(&property);
+        ret->system_serial = (char *) property;
+    }
+
+    return 0;
+
+no_memory:
+    return -1;
+}
+
+static int
+virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
+{
+    char *cur, *eol, *tmp_base;
+    char *manufacturer;
+    const char *tmp;
+    virSysinfoProcessorDefPtr processor;
+
+    if ((cur = strstr(base, "vendor_id")) != NULL) {
+        cur = strchr(cur, ':') + 1;
+        eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
+        if ((eol) && ((tmp = strndup(cur, eol - cur)) == NULL))
+            goto no_memory;
+        virSkipSpaces(&tmp);
+        manufacturer = (char *) tmp;
+    }
+
+    /* Find processor N: line and gather the processor manufacturer, version,
+     * serial number, and family */
+    while ((tmp_base = strstr(base, "processor ")) != NULL) {
+        base = tmp_base;
+        eol = strchr(base, '\n');
+        cur = strchr(base, ':') + 1;
+
+        if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0) {
+            goto no_memory;
+        }
+
+        processor = &ret->processor[ret->nprocessor - 1];
+
+        /* Set the processor manufacturer */
+        processor->processor_manufacturer = manufacturer;
+
+        if ((cur = strstr(base, "version =")) != NULL) {
+            cur += sizeof("version =");
+            eol = strchr(cur, ',');
+            if ((eol) &&
+                ((processor->processor_version = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "identification =")) != NULL) {
+            cur += sizeof("identification =");
+            eol = strchr(cur, ',');
+            if ((eol) &&
+                ((processor->processor_serial_number = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+        if ((cur = strstr(base, "machine =")) != NULL) {
+            cur += sizeof("machine =");
+            eol = strchr(cur, '\n');
+            if ((eol) &&
+                ((processor->processor_family = strndup(cur, eol - cur)) == NULL))
+                goto no_memory;
+        }
+
+        base = cur;
+    }
+
+    return 0;
+
+no_memory:
+    return -1;
+}
+
+/* virSysinfoRead for s390x
+ * Gathers sysinfo data from /proc/sysinfo and /proc/cpuinfo */
+virSysinfoDefPtr
+virSysinfoRead(void) {
+    virSysinfoDefPtr ret = NULL;
+    char *outbuf = NULL;
+
+    if (VIR_ALLOC(ret) < 0)
+        goto no_memory;
+
+    /* Gather info from /proc/cpuinfo */
+    if (virFileReadAll(CPUINFO, 2048, &outbuf) < 0) {
+        virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("Failed to open %s"), CPUINFO);
+        return NULL;
+    }
+
+    ret->nprocessor = 0;
+    ret->processor = NULL;
+    if (virSysinfoParseProcessor(outbuf, ret) < 0)
+        goto no_memory;
+
+    /* Free buffer before reading next file */
+    VIR_FREE(outbuf);
+
+    /* Gather info from /proc/sysinfo */
+    if (virFileReadAll(SYSINFO, 4096, &outbuf) < 0) {
+        virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("Failed to open %s"), SYSINFO);
+        return NULL;
+    }
 
     if (virSysinfoParseSystem(outbuf, ret) < 0)
         goto no_memory;
