@@ -759,15 +759,16 @@ void virNetServerQuit(virNetServerPtr srv)
 void virNetServerFree(virNetServerPtr srv)
 {
     int i;
+    int refs;
 
     if (!srv)
         return;
 
     virNetServerLock(srv);
     VIR_DEBUG("srv=%p refs=%d", srv, srv->refs);
-    srv->refs--;
+    refs = --srv->refs;
     virNetServerUnlock(srv);
-    if (srv->refs > 0)
+    if (refs > 0)
         return;
 
     for (i = 0 ; i < srv->nservices ; i++)
