@@ -1,8 +1,4 @@
 <html>
-  <head>
-    <title>Implementing a new API in Libvirt</title>
-  </head>
-
   <body>
     <h1>Implementing a new API in Libvirt</h1>
 

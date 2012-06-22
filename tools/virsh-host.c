@@ -762,7 +762,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     includeVersion %= 1000000;
     minor = includeVersion / 1000;
     rel = includeVersion % 1000;
-    vshPrint(ctl, _("Compiled against library: libvir %d.%d.%d\n"),
+    vshPrint(ctl, _("Compiled against library: libvirt %d.%d.%d\n"),
              major, minor, rel);
 
     ret = virGetVersion(&libVersion, hvType, &apiVersion);
@@ -774,7 +774,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     libVersion %= 1000000;
     minor = libVersion / 1000;
     rel = libVersion % 1000;
-    vshPrint(ctl, _("Using library: libvir %d.%d.%d\n"),
+    vshPrint(ctl, _("Using library: libvirt %d.%d.%d\n"),
              major, minor, rel);
 
     major = apiVersion / 1000000;
