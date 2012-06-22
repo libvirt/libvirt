@@ -237,7 +237,7 @@ static int volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
     vol->type = VIR_STORAGE_VOL_NETWORK;
 
     VIR_FREE(vol->target.path);
-    if (virAsprintf(&vol->target.path, "rbd:%s/%s",
+    if (virAsprintf(&vol->target.path, "%s/%s",
                     pool->def->source.name,
                     vol->name) == -1) {
         virReportOOMError();
