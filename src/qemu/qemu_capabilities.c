@@ -1514,6 +1514,11 @@ int qemuCapsExtractVersionInfo(const char *qemu, const char *arch,
         qemuCapsSet(flags, QEMU_CAPS_PCI_MULTIBUS);
     }
 
+    /* S390 and probably other archs do not support no-acpi -
+       maybe the qemu option parsing should be re-thought. */
+    if (STRPREFIX(arch, "s390"))
+        qemuCapsClear(flags, QEMU_CAPS_NO_ACPI);
+
     /* qemuCapsExtractDeviceStr will only set additional flags if qemu
      * understands the 0.13.0+ notion of "-device driver,".  */
     if (qemuCapsGet(flags, QEMU_CAPS_DEVICE) &&
