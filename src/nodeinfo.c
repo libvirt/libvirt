@@ -275,6 +275,11 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
              * and parsed in next iteration, because it is not in expected
              * format and thus lead to error. */
         }
+# elif defined(__s390__) || \
+      defined(__s390x__)
+        /* s390x has no realistic value for CPU speed,
+         * assign a value of zero to signify this */
+        nodeinfo->mhz = 0;
 # else
 #  warning Parser for /proc/cpuinfo needs to be adapted for your architecture
 # endif
