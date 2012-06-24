@@ -13844,12 +13844,12 @@ static bool
 cmdVNCDisplay(vshControl *ctl, const vshCmd *cmd)
 {
     xmlDocPtr xml = NULL;
-    xmlXPathObjectPtr obj = NULL;
     xmlXPathContextPtr ctxt = NULL;
     virDomainPtr dom;
     bool ret = false;
     int port = 0;
-    char *doc;
+    char *doc = NULL;
+    char *listen_addr = NULL;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -13857,38 +13857,37 @@ cmdVNCDisplay(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    doc = virDomainGetXMLDesc(dom, 0);
-    if (!doc)
-        goto cleanup;
-
-    xml = virXMLParseStringCtxt(doc, _("(domain_definition)"), &ctxt);
-    VIR_FREE(doc);
-    if (!xml)
-        goto cleanup;
-
-    obj = xmlXPathEval(BAD_CAST "string(/domain/devices/graphics[@type='vnc']/@port)", ctxt);
-    if (obj == NULL || obj->type != XPATH_STRING ||
-        obj->stringval == NULL || obj->stringval[0] == 0) {
+    /* Check if the domain is active and don't rely on -1 for this */
+    if (!virDomainIsActive(dom)) {
+        vshError(ctl, _("Domain is not running"));
         goto cleanup;
     }
-    if (virStrToLong_i((const char *)obj->stringval, NULL, 10, &port) || port < 0)
-        goto cleanup;
-    xmlXPathFreeObject(obj);
 
-    obj = xmlXPathEval(BAD_CAST "string(/domain/devices/graphics[@type='vnc']/@listen)", ctxt);
-    if (obj == NULL || obj->type != XPATH_STRING ||
-        obj->stringval == NULL || obj->stringval[0] == 0 ||
-        STREQ((const char*)obj->stringval, "0.0.0.0")) {
+    if (!(doc = virDomainGetXMLDesc(dom, 0)))
+        goto cleanup;
+
+    if (!(xml = virXMLParseStringCtxt(doc, _("(domain_definition)"), &ctxt)))
+        goto cleanup;
+
+    /* Get the VNC port */
+    if (virXPathInt("string(/domain/devices/graphics[@type='vnc']/@port)",
+                    ctxt, &port)) {
+        vshError(ctl, _("Failed to get VNC port. Is this domain using VNC?"));
+        goto cleanup;
+    }
+
+    listen_addr = virXPathString("string(/domain/devices/graphics"
+                                 "[@type='vnc']/@listen)", ctxt);
+    if (listen_addr == NULL || STREQ(listen_addr, "0.0.0.0"))
         vshPrint(ctl, ":%d\n", port-5900);
-    } else {
-        vshPrint(ctl, "%s:%d\n", (const char *)obj->stringval, port-5900);
-    }
-    xmlXPathFreeObject(obj);
-    obj = NULL;
+    else
+        vshPrint(ctl, "%s:%d\n", listen_addr, port-5900);
+
     ret = true;
 
  cleanup:
-    xmlXPathFreeObject(obj);
+    VIR_FREE(doc);
+    VIR_FREE(listen_addr);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
     virDomainFree(dom);
