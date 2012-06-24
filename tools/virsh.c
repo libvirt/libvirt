@@ -13837,6 +13837,177 @@ cmdSysinfo (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 }
 
 /*
+ * "domdisplay" command
+ */
+static const vshCmdInfo info_domdisplay[] = {
+    {"help", N_("domain display connection URI")},
+    {"desc", N_("Output the IP address and port number for the graphical display.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_domdisplay[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"include-password", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("includes the password into the connection URI if available")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
+{
+    xmlDocPtr xml = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    virDomainPtr dom;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    bool ret = false;
+    char *doc;
+    char *xpath;
+    char *listen_addr;
+    int port, tls_port = 0;
+    char *passwd = NULL;
+    char *output = NULL;
+    const char *scheme[] = { "vnc", "spice", "rdp", NULL };
+    int iter = 0;
+    int tmp;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (!virDomainIsActive(dom)) {
+        vshError(ctl, _("Domain is not running"));
+        goto cleanup;
+    }
+
+    doc = virDomainGetXMLDesc(dom, 0);
+    if (!doc)
+        goto cleanup;
+
+    xml = virXMLParseStringCtxt(doc, _("(domain_definition)"), &ctxt);
+    VIR_FREE(doc);
+    if (!xml)
+        goto cleanup;
+
+    /* Attempt to grab our display info */
+    for (iter = 0; scheme[iter] != NULL; iter++) {
+        /* Create our XPATH lookup for the current display's port */
+        virAsprintf(&xpath, "string(/domain/devices/graphics[@type='%s']"
+                "/@port)", scheme[iter]);
+        if (!xpath) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        /* Attempt to get the port number for the current graphics scheme */
+        tmp = virXPathInt(xpath, ctxt, &port);
+        VIR_FREE(xpath);
+
+        /* If there is no port number for this type, then jump to the next
+         * scheme
+         */
+        if (tmp)
+            continue;
+
+        /* Create our XPATH lookup for the current display's address */
+        virAsprintf(&xpath, "string(/domain/devices/graphics[@type='%s']"
+                "/@listen)", scheme[iter]);
+        if (!xpath) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        /* Attempt to get the listening addr if set for the current
+         * graphics scheme
+         */
+        listen_addr = virXPathString(xpath, ctxt);
+        VIR_FREE(xpath);
+
+        /* Per scheme data mangling */
+        if (STREQ(scheme[iter], "vnc")) {
+            /* VNC protocol handlers take their port number as 'port' - 5900 */
+            port -= 5900;
+        } else if (STREQ(scheme[iter], "spice")) {
+            /* Create our XPATH lookup for the SPICE TLS Port */
+            virAsprintf(&xpath, "string(/domain/devices/graphics[@type='%s']"
+                    "/@tlsPort)", scheme[iter]);
+            if (!xpath) {
+                virReportOOMError();
+                goto cleanup;
+            }
+
+            /* Attempt to get the TLS port number for SPICE */
+            tmp = virXPathInt(xpath, ctxt, &tls_port);
+            VIR_FREE(xpath);
+            if (tmp)
+                tls_port = 0;
+
+            if (vshCommandOptBool(cmd, "daemon")) {
+                /* Create our XPATH lookup for the SPICE password */
+                virAsprintf(&xpath, "string(/domain/devices/graphics"
+                        "[@type='%s']/@passwd)", scheme[iter]);
+                if (!xpath) {
+                    virReportOOMError();
+                    goto cleanup;
+                }
+
+                /* Attempt to get the SPICE password */
+                passwd = virXPathString(xpath, ctxt);
+                VIR_FREE(xpath);
+            }
+        }
+
+        /* Build up the full URI, starting with the scheme */
+        virBufferAsprintf(&buf, "%s://", scheme[iter]);
+
+        /* Then host name or IP */
+        if (!listen_addr || STREQ((const char *)listen_addr, "0.0.0.0"))
+            virBufferAddLit(&buf, "localhost");
+        else
+            virBufferAsprintf(&buf, "%s", listen_addr);
+
+        VIR_FREE(listen_addr);
+
+        /* Add the port */
+        if (STREQ(scheme[iter], "spice"))
+            virBufferAsprintf(&buf, "?port=%d", port);
+        else
+            virBufferAsprintf(&buf, ":%d", port);
+
+        /* TLS Port */
+        if (tls_port)
+            virBufferAsprintf(&buf, "&tls-port=%d", tls_port);
+
+        /* Password */
+        if (passwd) {
+            virBufferAsprintf(&buf, "&password=%s", passwd);
+            VIR_FREE(passwd);
+        }
+
+        /* Ensure we can print our URI */
+        if (virBufferError(&buf)) {
+            vshPrint(ctl, "%s", _("Failed to create display URI"));
+            goto cleanup;
+        }
+
+        /* Print out our full URI */
+        output = virBufferContentAndReset(&buf);
+        vshPrint(ctl, "%s", output);
+        VIR_FREE(output);
+
+        /* We got what we came for so return successfully */
+        ret = true;
+        break;
+    }
+
+cleanup:
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(xml);
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "vncdisplay" command
  */
 static const vshCmdInfo info_vncdisplay[] = {
@@ -17997,6 +18168,7 @@ static const vshCmdDef domManagementCmds[] = {
     {"detach-disk", cmdDetachDisk, opts_detach_disk, info_detach_disk, 0},
     {"detach-interface", cmdDetachInterface, opts_detach_interface,
      info_detach_interface, 0},
+    {"domdisplay", cmdDomDisplay, opts_domdisplay, info_domdisplay, 0},
     {"domid", cmdDomid, opts_domid, info_domid, 0},
     {"domif-setlink", cmdDomIfSetLink, opts_domif_setlink, info_domif_setlink, 0},
     {"domiftune", cmdDomIftune, opts_domiftune, info_domiftune, 0},
