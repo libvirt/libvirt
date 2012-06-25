@@ -4338,7 +4338,6 @@ virDomainFSDefParseXML(xmlNodePtr node,
             virScaleInteger(&def->usage, unit,
                             1024, ULONG_LONG_MAX) < 0)
             goto error;
-        fprintf(stderr, "Useage %lld\n", def->usage);
     }
 
     def->src = source;
