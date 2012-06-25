@@ -55,6 +55,14 @@
 
 #define VIR_LOCK_MANAGER_SANLOCK_AUTO_DISK_LOCKSPACE "__LIBVIRT__DISKS__"
 
+/*
+ * temporary fix for the case where the sanlock devel package is
+ * too old to provide that define, and probably the functionality too
+ */
+#ifndef SANLK_RES_SHARED
+#define SANLK_RES_SHARED    0x4
+#endif
+
 typedef struct _virLockManagerSanlockDriver virLockManagerSanlockDriver;
 typedef virLockManagerSanlockDriver *virLockManagerSanlockDriverPtr;
 
