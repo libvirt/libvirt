@@ -650,17 +650,50 @@ static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
 {
     char *src = NULL;
     int ret = -1;
+    struct stat st;
 
     if (virAsprintf(&src, "%s%s", srcprefix, fs->src) < 0) {
         virReportOOMError();
         goto cleanup;
     }
 
-    if (virFileMakePath(fs->dst) < 0) {
-        virReportSystemError(errno,
-                             _("Failed to create %s"),
-                             fs->dst);
-        goto cleanup;
+    if (stat(fs->dst, &st) < 0) {
+        if (errno != ENOENT) {
+            virReportSystemError(errno, _("Unable to stat bind target %s"),
+                                 fs->dst);
+            goto cleanup;
+        }
+        /* ENOENT => create the target dir or file */
+        if (stat(src, &st) < 0) {
+            virReportSystemError(errno, _("Unable to stat bind source %s"),
+                                 src);
+            goto cleanup;
+        }
+        if (S_ISDIR(st.st_mode)) {
+            if (virFileMakePath(fs->dst) < 0) {
+                virReportSystemError(errno,
+                                     _("Failed to create %s"),
+                                     fs->dst);
+                goto cleanup;
+            }
+        } else {
+            /* Create Empty file for target mount point */
+            int fd = open(fs->dst, O_WRONLY|O_CREAT|O_NOCTTY|O_NONBLOCK, 0666);
+            if (fd < 0) {
+                if (errno != EEXIST) {
+                    virReportSystemError(errno,
+                                         _("Failed to create bind target %s"),
+                                         fs->dst);
+                    goto cleanup;
+                }
+            }
+            if (VIR_CLOSE(fd) < 0) {
+                virReportSystemError(errno,
+                                     _("Failed to close bind target %s"),
+                                     fs->dst);
+                goto cleanup;
+            }
+        }
     }
 
     if (mount(src, fs->dst, NULL, MS_BIND, NULL) < 0) {
