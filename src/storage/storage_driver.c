@@ -794,6 +794,10 @@ storagePoolDestroy(virStoragePoolPtr obj) {
     if (pool->configFile == NULL) {
         virStoragePoolObjRemove(&driver->pools, pool);
         pool = NULL;
+    } else if (pool->newDef) {
+        virStoragePoolDefFree(pool->def);
+        pool->def = pool->newDef;
+        pool->newDef = NULL;
     }
     ret = 0;
 
@@ -803,7 +807,6 @@ cleanup:
     storageDriverUnlock(driver);
     return ret;
 }
-
 
 static int
 storagePoolDelete(virStoragePoolPtr obj,
