@@ -960,9 +960,10 @@ storagePoolGetXMLDesc(virStoragePoolPtr obj,
 {
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool;
+    virStoragePoolDefPtr def;
     char *ret = NULL;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_STORAGE_XML_INACTIVE, NULL);
 
     storageDriverLock(driver);
     pool = virStoragePoolObjFindByUUID(&driver->pools, obj->uuid);
@@ -974,7 +975,12 @@ storagePoolGetXMLDesc(virStoragePoolPtr obj,
         goto cleanup;
     }
 
-    ret = virStoragePoolDefFormat(pool->def);
+    if ((flags & VIR_STORAGE_XML_INACTIVE) && pool->newDef)
+        def = pool->newDef;
+    else
+        def = pool->def;
+
+    ret = virStoragePoolDefFormat(def);
 
 cleanup:
     if (pool)

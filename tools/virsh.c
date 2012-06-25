@@ -10807,6 +10807,7 @@ static const vshCmdInfo info_pool_dumpxml[] = {
 
 static const vshCmdOptDef opts_pool_dumpxml[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool name or uuid")},
+    {"inactive", VSH_OT_BOOL, 0, N_("show inactive defined XML")},
     {NULL, 0, 0, NULL}
 };
 
@@ -10815,7 +10816,12 @@ cmdPoolDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
     virStoragePoolPtr pool;
     bool ret = true;
+    bool inactive = vshCommandOptBool(cmd, "inactive");
+    unsigned int flags = 0;
     char *dump;
+
+    if (inactive)
+        flags |= VIR_STORAGE_XML_INACTIVE;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -10823,7 +10829,7 @@ cmdPoolDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (!(pool = vshCommandOptPool(ctl, cmd, "pool", NULL)))
         return false;
 
-    dump = virStoragePoolGetXMLDesc(pool, 0);
+    dump = virStoragePoolGetXMLDesc(pool, flags);
     if (dump != NULL) {
         vshPrint(ctl, "%s", dump);
         VIR_FREE(dump);
@@ -16127,7 +16133,8 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     virStoragePoolPtr pool = NULL;
     virStoragePoolPtr pool_edited = NULL;
-    unsigned int flags = 0;
+    unsigned int flags = VIR_STORAGE_XML_INACTIVE;
+    char *tmp_desc = NULL;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         goto cleanup;
@@ -16135,6 +16142,19 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
     pool = vshCommandOptPool(ctl, cmd, "pool", NULL);
     if (pool == NULL)
         goto cleanup;
+
+    /* Some old daemons don't support _INACTIVE flag */
+    if (!(tmp_desc = virStoragePoolGetXMLDesc(pool, flags))) {
+        if (last_error->code == VIR_ERR_INVALID_ARG) {
+            flags &= ~VIR_STORAGE_XML_INACTIVE;
+            virFreeError(last_error);
+            last_error = NULL;
+        } else {
+            goto cleanup;
+        }
+    } else {
+        VIR_FREE(tmp_desc);
+    }
 
 #define EDIT_GET_XML virStoragePoolGetXMLDesc(pool, flags)
 #define EDIT_NOT_CHANGED \

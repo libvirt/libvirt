@@ -2112,9 +2112,11 @@ Destroy the resources used by a given I<pool> object. This operation
 is non-recoverable.  The I<pool> object will still exist after this
 command, ready for the creation of new storage volumes.
 
-=item B<pool-dumpxml> I<pool-or-uuid>
+=item B<pool-dumpxml> [I<--inactive>] I<pool-or-uuid>
 
 Returns the XML information about the I<pool> object.
+I<--inactive> tells virsh to dump pool configuration that will be used
+on next start of the pool as opposed to the current pool configuration.
 
 =item B<pool-edit> I<pool-or-uuid>
 

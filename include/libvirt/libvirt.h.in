@@ -2445,6 +2445,10 @@ struct _virStorageVolInfo {
 
 typedef virStorageVolInfo *virStorageVolInfoPtr;
 
+typedef enum {
+    VIR_STORAGE_XML_INACTIVE    = (1 << 0), /* dump inactive pool/volume information */
+} virStorageXMLFlags;
+
 /*
  * Get connection from pool.
  */

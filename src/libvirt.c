@@ -12169,7 +12169,7 @@ error:
 /**
  * virStoragePoolGetXMLDesc:
  * @pool: pointer to storage pool
- * @flags: bitwise-OR of virDomainXMLFlags
+ * @flags: bitwise-OR of virStorageXMLFlags
  *
  * Fetch an XML document describing all aspects of the
  * storage pool. This is suitable for later feeding back
