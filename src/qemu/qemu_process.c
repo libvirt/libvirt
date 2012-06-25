@@ -3429,6 +3429,27 @@ int qemuProcessStart(virConnectPtr conn,
                 vm->def->graphics[0]->data.spice.tlsPort = tlsPort;
             }
         }
+
+        if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ||
+            vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+            virDomainGraphicsDefPtr graphics = vm->def->graphics[0];
+            if (graphics->nListens == 0) {
+                if (VIR_EXPAND_N(graphics->listens, graphics->nListens, 1) < 0) {
+                    virReportOOMError();
+                    goto cleanup;
+                }
+                graphics->listens[0].type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
+                if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC)
+                    graphics->listens[0].address = strdup(driver->vncListen);
+                else
+                    graphics->listens[0].address = strdup(driver->spiceListen);
+                if (!graphics->listens[0].address) {
+                    VIR_SHRINK_N(graphics->listens, graphics->nListens, 1);
+                    virReportOOMError();
+                    goto cleanup;
+                }
+            }
+        }
     }
 
     if (virFileMakePath(driver->logDir) < 0) {
