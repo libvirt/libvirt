@@ -60,7 +60,7 @@
  * too old to provide that define, and probably the functionality too
  */
 #ifndef SANLK_RES_SHARED
-#define SANLK_RES_SHARED    0x4
+# define SANLK_RES_SHARED    0x4
 #endif
 
 typedef struct _virLockManagerSanlockDriver virLockManagerSanlockDriver;
