@@ -2037,7 +2037,8 @@ static int qemudDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
             /* Lack of balloon support is a fatal error */
             if (r == 0) {
                 qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                                _("cannot set memory of an active domain"));
+                                _("Unable to change memory of active domain without "
+                                  "the balloon device and guest OS balloon driver"));
                 goto endjob;
             }
         }
