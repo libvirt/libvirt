@@ -1782,6 +1782,8 @@ qemuBuildRBDString(virConnectPtr conn,
                             disk->auth.username);
             goto error;
         }
+    } else {
+        virBufferAddLit(opt, ":auth_supported=none");
     }
 
     if (disk->nhosts > 0) {
