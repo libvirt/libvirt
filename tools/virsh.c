@@ -20781,35 +20781,41 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 
     vshPrint(ctl, "%s", _("Compiled with support for:\n"));
     vshPrint(ctl, "%s", _(" Hypervisors:"));
-#ifdef WITH_XEN
-    vshPrint(ctl, " Xen");
-#endif
 #ifdef WITH_QEMU
     vshPrint(ctl, " QEmu/KVM");
-#endif
-#ifdef WITH_UML
-    vshPrint(ctl, " UML");
-#endif
-#ifdef WITH_OPENVZ
-    vshPrint(ctl, " OpenVZ");
-#endif
-#ifdef WITH_VBOX
-    vshPrint(ctl, " VirtualBox");
-#endif
-#ifdef WITH_XENAPI
-    vshPrint(ctl, " XenAPI");
 #endif
 #ifdef WITH_LXC
     vshPrint(ctl, " LXC");
 #endif
-#ifdef WITH_ESX
-    vshPrint(ctl, " ESX");
+#ifdef WITH_UML
+    vshPrint(ctl, " UML");
+#endif
+#ifdef WITH_XEN
+    vshPrint(ctl, " Xen");
+#endif
+#ifdef WITH_LIBXL
+    vshPrint(ctl, " LibXL");
+#endif
+#ifdef WITH_OPENVZ
+    vshPrint(ctl, " OpenVZ");
+#endif
+#ifdef WITH_VMWARE
+    vshPrint(ctl, " VMWare");
 #endif
 #ifdef WITH_PHYP
     vshPrint(ctl, " PHYP");
 #endif
-#ifdef WITH_ONE
-    vshPrint(ctl, " ONE");
+#ifdef WITH_VBOX
+    vshPrint(ctl, " VirtualBox");
+#endif
+#ifdef WITH_ESX
+    vshPrint(ctl, " ESX");
+#endif
+#ifdef WITH_HYPERV
+    vshPrint(ctl, " Hyper-V");
+#endif
+#ifdef WITH_XENAPI
+    vshPrint(ctl, " XenAPI");
 #endif
 #ifdef WITH_TEST
     vshPrint(ctl, " Test");
@@ -20819,9 +20825,6 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
     vshPrint(ctl, "%s", _(" Networking:"));
 #ifdef WITH_REMOTE
     vshPrint(ctl, " Remote");
-#endif
-#ifdef WITH_PROXY
-    vshPrint(ctl, " Proxy");
 #endif
 #ifdef WITH_LIBVIRTD
     vshPrint(ctl, " Daemon");
@@ -20833,7 +20836,7 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
     vshPrint(ctl, " Bridging");
 #endif
 #ifdef WITH_NETCF
-    vshPrint(ctl, " Netcf");
+    vshPrint(ctl, " Interface");
 #endif
 #ifdef WITH_NWFILTER
     vshPrint(ctl, " Nwfilter");
@@ -20871,6 +20874,9 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
     vshPrint(ctl, "\n");
 
     vshPrint(ctl, "%s", _(" Miscellaneous:"));
+#ifdef WITH_NODE_DEVICES
+    vshPrint(ctl, " Nodedev");
+#endif
 #ifdef WITH_SECDRIVER_APPARMOR
     vshPrint(ctl, " AppArmor");
 #endif
@@ -20883,7 +20889,7 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #ifdef ENABLE_DEBUG
     vshPrint(ctl, " Debug");
 #endif
-#ifdef WITH_DTRACE
+#ifdef WITH_DTRACE_PROBES
     vshPrint(ctl, " DTrace");
 #endif
 #ifdef USE_READLINE
