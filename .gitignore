@@ -160,6 +160,7 @@
 /tests/xmconfigtest
 /tools/*.[18]
 /tools/libvirt-guests.init
+/tools/libvirt-guests.service
 /tools/virsh
 /tools/virsh-*-edit.c
 /tools/virt-*-validate
