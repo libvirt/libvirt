@@ -198,7 +198,7 @@ SYSTEMD_UNIT_DIR = /lib/systemd/system
 if LIBVIRT_INIT_SCRIPT_SYSTEMD
 install-systemd: libvirt-guests.service install-initscript install-sysconfig
 	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR)
-	$(INSTALL_SCRIPT) libvirt-guests.service \
+	$(INSTALL_DATA) libvirt-guests.service \
 	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirt-guests.service
 
 uninstall-systemd: uninstall-initscript uninstall-sysconfig

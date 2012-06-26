@@ -319,7 +319,7 @@ BUILT_SOURCES += libvirtd.service
 
 install-init-systemd: install-sysconfig libvirtd.service
 	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR)
-	$(INSTALL_SCRIPT) libvirtd.service \
+	$(INSTALL_DATA) libvirtd.service \
 	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirtd.service
 
 uninstall-init-systemd: uninstall-sysconfig
