@@ -2211,11 +2211,11 @@ error:
  * Destroy the domain object. The running instance is shutdown if not down
  * already and all resources used by it are given back to the hypervisor. This
  * does not free the associated virDomainPtr object.
- * This function may require privileged access
+ * This function may require privileged access.
  *
  * virDomainDestroy first requests that a guest terminate
  * (e.g. SIGTERM), then waits for it to comply. After a reasonable
- * timeout, if the guest still exists, virDomainDestory will
+ * timeout, if the guest still exists, virDomainDestroy will
  * forcefully terminate the guest (e.g. SIGKILL) if necessary (which
  * may produce undesirable results, for example unflushed disk cache
  * in the guest). To avoid this possibility, it's recommended to
