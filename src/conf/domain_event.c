@@ -363,7 +363,11 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
     for (i = 0 ; i < cbList->count ; i++) {
         if (cbList->callbacks[i]->cb == VIR_DOMAIN_EVENT_CALLBACK(callback) &&
             cbList->callbacks[i]->eventID == eventID &&
-            cbList->callbacks[i]->conn == conn) {
+            cbList->callbacks[i]->conn == conn &&
+            ((dom && cbList->callbacks[i]->dom &&
+              memcmp(cbList->callbacks[i]->dom->uuid,
+                     dom->uuid, VIR_UUID_BUFLEN) == 0) ||
+             (!dom && !cbList->callbacks[i]->dom))) {
             eventReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                              _("event callback already tracked"));
             return -1;
