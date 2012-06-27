@@ -1,0 +1,1 @@
+CPUs: 4/4, MHz: 1861, Nodes: 1, Sockets: 1, Cores: 4, Threads: 1

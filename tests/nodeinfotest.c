@@ -129,6 +129,7 @@ mymain(void)
         "nodeinfo-sysfs-test-2",
         "nodeinfo-sysfs-test-3",
         "nodeinfo-sysfs-test-4",
+        "nodeinfo-sysfs-test-5",
 # endif
     };
 
