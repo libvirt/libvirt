@@ -128,6 +128,7 @@ mymain(void)
        defined(__powerpc64__))
         "nodeinfo-sysfs-test-2",
         "nodeinfo-sysfs-test-3",
+        "nodeinfo-sysfs-test-4",
 # endif
     };
 
