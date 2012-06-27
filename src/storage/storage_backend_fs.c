@@ -424,10 +424,10 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
 
     /* Short-circuit if already mounted */
     if ((ret = virStorageBackendFileSystemIsMounted(pool)) != 0) {
-        if (ret < 0)
-            return -1;
-        else
-            return 0;
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
+                              _("Target '%s' is already mounted"),
+                              pool->def->target.path);
+        return -1;
     }
 
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
