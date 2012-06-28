@@ -574,10 +574,10 @@ virNetworkDNSSrvDefParseXML(virNetworkDNSDefPtr def,
                             xmlNodePtr cur,
                             xmlXPathContextPtr ctxt)
 {
-    char *domain;
-    char *service;
-    char *protocol;
-    char *target;
+    char *domain = NULL;
+    char *service = NULL;
+    char *protocol = NULL;
+    char *target = NULL;
     int port;
     int priority;
     int weight;
