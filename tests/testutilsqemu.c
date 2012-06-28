@@ -116,6 +116,7 @@ virCapsPtr testQemuCapsInit(void) {
         0,                      /* match */
         (char *) "x86_64",      /* arch */
         (char *) "core2duo",    /* model */
+        NULL,                   /* vendor_id */
         0,                      /* fallback */
         (char *) "Intel",       /* vendor */
         1,                      /* sockets */

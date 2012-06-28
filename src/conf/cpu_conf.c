@@ -68,6 +68,7 @@ virCPUDefFreeModel(virCPUDefPtr def)
 
     VIR_FREE(def->model);
     VIR_FREE(def->vendor);
+    VIR_FREE(def->vendor_id);
 
     for (i = 0; i < def->nfeatures; i++)
         VIR_FREE(def->features[i].name);
@@ -104,6 +105,7 @@ virCPUDefCopyModel(virCPUDefPtr dst,
 
     if ((src->model && !(dst->model = strdup(src->model)))
         || (src->vendor && !(dst->vendor = strdup(src->vendor)))
+        || (src->vendor_id && !(dst->vendor_id = strdup(src->vendor_id)))
         || VIR_ALLOC_N(dst->features, src->nfeatures) < 0)
         goto no_memory;
     dst->nfeatures_max = dst->nfeatures = src->nfeatures;
@@ -288,18 +290,46 @@ virCPUDefParseXML(const xmlNodePtr node,
     }
 
     if (def->type == VIR_CPU_TYPE_GUEST &&
-        def->mode != VIR_CPU_MODE_HOST_PASSTHROUGH &&
-        virXPathBoolean("boolean(./model[1]/@fallback)", ctxt)) {
-        const char *fallback;
+        def->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
 
-        fallback = virXPathString("string(./model[1]/@fallback)", ctxt);
-        if (fallback) {
-            def->fallback = virCPUFallbackTypeFromString(fallback);
-            VIR_FREE(fallback);
-            if (def->fallback < 0) {
-                virCPUReportError(VIR_ERR_XML_ERROR, "%s",
-                                  _("Invalid fallback attribute"));
-                goto error;
+        if (virXPathBoolean("boolean(./model[1]/@fallback)", ctxt)) {
+            const char *fallback;
+
+            fallback = virXPathString("string(./model[1]/@fallback)", ctxt);
+            if (fallback) {
+                def->fallback = virCPUFallbackTypeFromString(fallback);
+                VIR_FREE(fallback);
+                if (def->fallback < 0) {
+                    virCPUReportError(VIR_ERR_XML_ERROR, "%s",
+                                      _("Invalid fallback attribute"));
+                    goto error;
+                }
+            }
+
+            if (virXPathBoolean("boolean(./model[1]/@vendor_id)", ctxt)) {
+                char *vendor_id;
+
+                vendor_id = virXPathString("string(./model[1]/@vendor_id)",
+                                           ctxt);
+                if (!vendor_id ||
+                    strlen(vendor_id) != VIR_CPU_VENDOR_ID_LENGTH) {
+                    virCPUReportError(VIR_ERR_XML_ERROR,
+                                      _("vendor_id must be exactly"
+                                        " %d characters long"),
+                                      VIR_CPU_VENDOR_ID_LENGTH);
+                    VIR_FREE(vendor_id);
+                    goto error;
+                }
+                /* ensure that the string can be passed to qemu*/
+                for (i = 0; i < strlen(vendor_id); i++) {
+                    if (vendor_id[i]==',') {
+                        virCPUReportError(VIR_ERR_XML_ERROR, "%s",
+                                          _("vendor id is invalid"));
+                        VIR_FREE(vendor_id);
+                        goto error;
+                    }
+                }
+                def->vendor_id = vendor_id;
             }
         }
     }
@@ -588,6 +618,8 @@ virCPUDefFormatBuf(virBufferPtr buf,
                 return -1;
             }
             virBufferAsprintf(buf, " fallback='%s'", fallback);
+            if (def->vendor_id)
+                virBufferAsprintf(buf, " vendor_id='%s'", def->vendor_id);
         }
         if (formatModel && def->model) {
             virBufferAsprintf(buf, ">%s</model>\n", def->model);
@@ -735,6 +767,13 @@ virCPUDefIsEqual(virCPUDefPtr src,
         virCPUReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                           _("Target CPU vendor %s does not match source %s"),
                           NULLSTR(dst->vendor), NULLSTR(src->vendor));
+        goto cleanup;
+    }
+
+    if (STRNEQ_NULLABLE(src->vendor_id, dst->vendor_id)) {
+        virCPUReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                          _("Target CPU model %s does not match source %s"),
+                          NULLSTR(dst->vendor_id), NULLSTR(src->vendor_id));
         goto cleanup;
     }
 

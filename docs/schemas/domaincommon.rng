@@ -2854,6 +2854,13 @@
           </choice>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="vendor_id">
+          <data type="string">
+            <param name='pattern'>[^,]{12}</param>
+          </data>
+        </attribute>
+      </optional>
       <choice>
         <text/>
         <empty/>

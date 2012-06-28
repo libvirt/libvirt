@@ -3913,7 +3913,9 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
             }
             virBufferAddLit(&buf, "host");
         } else {
-            if (VIR_ALLOC(guest) < 0 || !(guest->arch = strdup(host->arch)))
+            if (VIR_ALLOC(guest) < 0 ||
+                !(guest->arch = strdup(host->arch)) ||
+                (cpu->vendor_id && !(guest->vendor_id = strdup(cpu->vendor_id))))
                 goto no_memory;
 
             if (cpu->match == VIR_CPU_MATCH_MINIMUM)
@@ -3927,6 +3929,8 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
                 goto cleanup;
 
             virBufferAdd(&buf, guest->model, -1);
+            if (guest->vendor_id)
+                virBufferAsprintf(&buf, ",vendor=%s", guest->vendor_id);
             for (i = 0; i < guest->nfeatures; i++) {
                 char sign;
                 if (guest->features[i].policy == VIR_CPU_FEATURE_DISABLE)

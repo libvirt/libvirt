@@ -28,6 +28,8 @@
 # include "buf.h"
 # include "xml.h"
 
+# define VIR_CPU_VENDOR_ID_LENGTH 12
+
 enum virCPUType {
     VIR_CPU_TYPE_HOST,
     VIR_CPU_TYPE_GUEST,
@@ -103,6 +105,7 @@ struct _virCPUDef {
     int match;          /* enum virCPUMatch */
     char *arch;
     char *model;
+    char *vendor_id;    /* vendor id returned by CPUID in the guest */
     int fallback;       /* enum virCPUFallback */
     char *vendor;
     unsigned int sockets;
