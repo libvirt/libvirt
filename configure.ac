@@ -368,7 +368,7 @@ AC_MSG_CHECKING([for init script flavor])
 AC_ARG_WITH([init-script],
             [AC_HELP_STRING([--with-init-script@<:@=STYLE@:>@],
                             [Style of init script to install: redhat, systemd, systemd+redhat,
-                             upstart, auto, none @<:@default=auto@:>@])],[],[with_init_script=check])
+                             upstart, check, none @<:@default=check@:>@])],[],[with_init_script=check])
 init_redhat=no
 init_systemd=no
 init_upstart=no
@@ -407,7 +407,7 @@ AC_MSG_RESULT($with_init_script)
 AC_MSG_CHECKING([for whether to install sysctl config])
 AC_ARG_WITH([sysctl],
             [AC_HELP_STRING([--with-sysctl@<:@=yes/no@:>@],
-                            [Whether to install sysctl configs @<:@default=auto@:>@])],
+                            [Whether to install sysctl configs @<:@default=check@:>@])],
                             [],[with_sysctl=check])
 
 if test "$with_sysctl" = "yes" || test "$with_sysctl" = "check"
