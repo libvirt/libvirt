@@ -117,8 +117,10 @@ virDomainListPopulate(void *payload,
         return;
     }
 
-    if (!(dom = virGetDomain(data->conn, vm->def->name, vm->def->uuid)))
-        goto no_memory;
+    if (!(dom = virGetDomain(data->conn, vm->def->name, vm->def->uuid))) {
+        data->error = true;
+        goto cleanup;
+    }
 
     dom->id = vm->def->id;
 
@@ -127,11 +129,6 @@ virDomainListPopulate(void *payload,
 cleanup:
     virDomainObjUnlock(vm);
     return;
-
-no_memory:
-    virReportOOMError();
-    data->error = true;
-    goto cleanup;
 }
 #undef MATCH
 
