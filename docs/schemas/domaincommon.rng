@@ -283,6 +283,7 @@
           <ref name="hvmsparc"/>
           <ref name="hvmppc"/>
           <ref name="hvmppc64"/>
+          <ref name="hvms390"/>
         </choice>
       </optional>
       <value>hvm</value>
@@ -364,6 +365,25 @@
         <attribute name="machine">
           <choice>
             <value>pseries</value>
+          </choice>
+        </attribute>
+      </optional>
+    </group>
+  </define>
+  <define name="hvms390">
+    <group>
+      <optional>
+        <attribute name="arch">
+          <choice>
+            <value>s390</value>
+            <value>s390x</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="machine">
+          <choice>
+            <value>s390-virtio</value>
           </choice>
         </attribute>
       </optional>
