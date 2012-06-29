@@ -136,7 +136,7 @@ virNetDevBandwidthSet(const char *ifname,
         virCommandAddArgList(cmd, "filter", "add", "dev", ifname, "parent",
                              "ffff:", "protocol", "ip", "u32", "match", "ip",
                              "src", "0.0.0.0/0", "police", "rate", average,
-                             "burst", burst, "mtu", burst, "drop", "flowid",
+                             "burst", burst, "mtu", "64kb", "drop", "flowid",
                              ":1", NULL);
 
         if (virCommandRun(cmd, NULL) < 0)
