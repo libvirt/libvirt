@@ -175,10 +175,14 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
                                         virDomainChrSourceDefPtr *monConfig,
                                         bool *monJSON);
 
-int qemuDomainAssignAddresses(virDomainDefPtr def);
+int qemuDomainAssignAddresses(virDomainDefPtr def,
+                              virBitmapPtr qemuCaps,
+                              virDomainObjPtr);
 int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def);
 
-int qemuDomainAssignPCIAddresses(virDomainDefPtr def);
+int qemuDomainAssignPCIAddresses(virDomainDefPtr def,
+                                 virBitmapPtr qemuCaps,
+                                 virDomainObjPtr obj);
 qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def);
 int qemuDomainPCIAddressReserveFunction(qemuDomainPCIAddressSetPtr addrs,
                                         int slot, int function);

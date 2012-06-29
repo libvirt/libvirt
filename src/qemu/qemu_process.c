@@ -3090,13 +3090,8 @@ qemuProcessReconnect(void *opaque)
         goto endjob;
     }
 
-    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        priv->persistentAddrs = 1;
-
-        if (!(priv->pciaddrs = qemuDomainPCIAddressSetCreate(obj->def)) ||
-            qemuAssignDevicePCISlots(obj->def, priv->pciaddrs) < 0)
-            goto error;
-    }
+    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE))
+        qemuDomainAssignAddresses(obj->def, priv->qemuCaps, obj);
 
     if (virSecurityManagerReserveLabel(driver->securityManager, obj->def, obj->pid) < 0)
         goto error;
@@ -3560,22 +3555,7 @@ int qemuProcessStart(virConnectPtr conn,
      */
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         VIR_DEBUG("Assigning domain PCI addresses");
-        /* Populate cache with current addresses */
-        if (priv->pciaddrs) {
-            qemuDomainPCIAddressSetFree(priv->pciaddrs);
-            priv->pciaddrs = NULL;
-        }
-        if (!(priv->pciaddrs = qemuDomainPCIAddressSetCreate(vm->def)))
-            goto cleanup;
-
-
-        /* Assign any remaining addresses */
-        if (qemuAssignDevicePCISlots(vm->def, priv->pciaddrs) < 0)
-            goto cleanup;
-
-        priv->persistentAddrs = 1;
-    } else {
-        priv->persistentAddrs = 0;
+        qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm);
     }
 
     VIR_DEBUG("Building emulator command line");
@@ -4257,21 +4237,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
      */
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         VIR_DEBUG("Assigning domain PCI addresses");
-        /* Populate cache with current addresses */
-        if (priv->pciaddrs) {
-            qemuDomainPCIAddressSetFree(priv->pciaddrs);
-            priv->pciaddrs = NULL;
-        }
-        if (!(priv->pciaddrs = qemuDomainPCIAddressSetCreate(vm->def)))
-            goto cleanup;
-
-        /* Assign any remaining addresses */
-        if (qemuAssignDevicePCISlots(vm->def, priv->pciaddrs) < 0)
-            goto cleanup;
-
-        priv->persistentAddrs = 1;
-    } else {
-        priv->persistentAddrs = 0;
+        qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm);
     }
 
     if ((timestamp = virTimeStringNow()) == NULL) {

@@ -1404,7 +1404,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     if (qemudCanonicalizeMachine(driver, def) < 0)
         goto cleanup;
 
-    if (qemuDomainAssignAddresses(def) < 0)
+    if (qemuDomainAssignAddresses(def, NULL, NULL) < 0)
         goto cleanup;
 
     if (!(vm = virDomainAssignDef(driver->caps,
@@ -5071,7 +5071,7 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
     if (qemudCanonicalizeMachine(driver, def) < 0)
         goto cleanup;
 
-    if (qemuDomainAssignAddresses(def) < 0)
+    if (qemuDomainAssignAddresses(def, NULL, NULL) < 0)
         goto cleanup;
 
     if (!(vm = virDomainAssignDef(driver->caps,
@@ -5549,7 +5549,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO)
             if (virDomainDefAddImplicitControllers(vmdef) < 0)
                 return -1;
-        if (qemuDomainAssignAddresses(vmdef) < 0)
+        if (qemuDomainAssignAddresses(vmdef, NULL, NULL) < 0)
             return -1;
         break;
 
@@ -5567,7 +5567,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
             return -1;
         }
         dev->data.net = NULL;
-        if (qemuDomainAssignAddresses(vmdef) < 0)
+        if (qemuDomainAssignAddresses(vmdef, NULL, NULL) < 0)
             return -1;
         break;
 
@@ -5583,7 +5583,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
             return -1;
         }
         dev->data.hostdev = NULL;
-        if (qemuDomainAssignAddresses(vmdef) < 0)
+        if (qemuDomainAssignAddresses(vmdef, NULL, NULL) < 0)
             return -1;
         break;
 
@@ -5737,7 +5737,7 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
         vmdef->nets[pos] = net;
         dev->data.net = NULL;
 
-        if (qemuDomainAssignAddresses(vmdef) < 0)
+        if (qemuDomainAssignAddresses(vmdef, NULL, NULL) < 0)
             return -1;
         break;
 
@@ -11734,7 +11734,7 @@ static virDomainPtr qemuDomainAttach(virConnectPtr conn,
     if (qemudCanonicalizeMachine(driver, def) < 0)
         goto cleanup;
 
-    if (qemuDomainAssignAddresses(def) < 0)
+    if (qemuDomainAssignAddresses(def, NULL, NULL) < 0)
         goto cleanup;
 
     if (!(vm = virDomainAssignDef(driver->caps,

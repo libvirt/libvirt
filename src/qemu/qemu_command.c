@@ -942,16 +942,23 @@ cleanup:
 
 
 int
-qemuDomainAssignPCIAddresses(virDomainDefPtr def)
+qemuDomainAssignPCIAddresses(virDomainDefPtr def,
+                             virBitmapPtr qemuCaps,
+                             virDomainObjPtr obj)
 {
     int ret = -1;
-    virBitmapPtr qemuCaps = NULL;
+    virBitmapPtr localCaps = NULL;
     qemuDomainPCIAddressSetPtr addrs = NULL;
+    qemuDomainObjPrivatePtr priv = NULL;
 
-    if (qemuCapsExtractVersionInfo(def->emulator, def->os.arch,
-                                   NULL,
-                                   &qemuCaps) < 0)
-        goto cleanup;
+    if (!qemuCaps) {
+        /* need to get information from real environment */
+        if (qemuCapsExtractVersionInfo(def->emulator, def->os.arch,
+                                       NULL,
+                                       &localCaps) < 0)
+            goto cleanup;
+        qemuCaps = localCaps;
+    }
 
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
         if (!(addrs = qemuDomainPCIAddressSetCreate(def)))
@@ -961,16 +968,31 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def)
             goto cleanup;
     }
 
+    if (obj && obj->privateData) {
+        priv = obj->privateData;
+        if (addrs) {
+            /* if this is the live domain object, we persist the PCI addresses*/
+            qemuDomainPCIAddressSetFree(priv->pciaddrs);
+            priv->persistentAddrs = 1;
+            priv->pciaddrs = addrs;
+            addrs = NULL;
+        } else {
+            priv->persistentAddrs = 0;
+        }
+    }
+
     ret = 0;
 
 cleanup:
-    qemuCapsFree(qemuCaps);
+    qemuCapsFree(localCaps);
     qemuDomainPCIAddressSetFree(addrs);
 
     return ret;
 }
 
-int qemuDomainAssignAddresses(virDomainDefPtr def)
+int qemuDomainAssignAddresses(virDomainDefPtr def,
+                              virBitmapPtr qemuCaps,
+                              virDomainObjPtr obj)
 {
     int rc;
 
@@ -978,7 +1000,7 @@ int qemuDomainAssignAddresses(virDomainDefPtr def)
     if (rc)
         return rc;
 
-    return qemuDomainAssignPCIAddresses(def);
+    return qemuDomainAssignPCIAddresses(def, qemuCaps, obj);
 }
 
 static void
