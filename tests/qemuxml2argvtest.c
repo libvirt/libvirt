@@ -149,21 +149,11 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto out;
 
     if (qemuCapsGet(extraFlags, QEMU_CAPS_DEVICE)) {
-        qemuDomainPCIAddressSetPtr pciaddrs;
-
-        if (qemuDomainAssignSpaprVIOAddresses(vmdef)) {
+        if (qemuDomainAssignAddresses(vmdef, extraFlags, NULL)) {
             if (expectError)
                 goto ok;
             goto out;
         }
-
-        if (!(pciaddrs = qemuDomainPCIAddressSetCreate(vmdef)))
-            goto out;
-
-        if (qemuAssignDevicePCISlots(vmdef, pciaddrs) < 0)
-            goto out;
-
-        qemuDomainPCIAddressSetFree(pciaddrs);
     }
 
     log = virtTestLogContentAndReset();
