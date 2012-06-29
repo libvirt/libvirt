@@ -1,0 +1,5 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S \
+-M s390-virtio -m 214 -smp 1 -nographic -nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \
+-drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-virtio-disk0 \
+-device virtio-blk-s390,drive=drive-virtio-disk0,id=virtio-disk0 -usb

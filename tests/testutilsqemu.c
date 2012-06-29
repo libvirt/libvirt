@@ -87,6 +87,34 @@ error:
     return -1;
 }
 
+static int testQemuAddS390Guest(virCapsPtr caps)
+{
+    static const char *s390_machines[] = { "s390-virtio"};
+    virCapsGuestMachinePtr *machines = NULL;
+    virCapsGuestPtr guest;
+
+    machines = virCapabilitiesAllocMachines(s390_machines,
+                                            ARRAY_CARDINALITY(s390_machines));
+    if (!machines)
+        goto error;
+
+    guest = virCapabilitiesAddGuest(caps, "hvm", "s390x", 64,
+                                    "/usr/bin/qemu-system-s390x", NULL,
+                                    ARRAY_CARDINALITY(s390_machines),
+                                    machines);
+    if (!guest)
+        goto error;
+
+    if (!virCapabilitiesAddGuestDomain(guest, "qemu", NULL, NULL, 0, NULL))
+        goto error;
+
+    return 0;
+
+error:
+    virCapabilitiesFreeMachines(machines, ARRAY_CARDINALITY(s390_machines));
+    return -1;
+}
+
 virCapsPtr testQemuCapsInit(void) {
     virCapsPtr caps;
     virCapsGuestPtr guest;
@@ -207,6 +235,9 @@ virCapsPtr testQemuCapsInit(void) {
         goto cleanup;
 
     if (testQemuAddPPC64Guest(caps))
+        goto cleanup;
+
+    if (testQemuAddS390Guest(caps))
         goto cleanup;
 
     if (virTestGetDebug()) {

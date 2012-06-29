@@ -341,6 +341,7 @@ mymain(void)
     unsetenv("SDL_AUDIODRIVER");
 
     DO_TEST("minimal", false, QEMU_CAPS_NAME);
+    DO_TEST("minimal-s390", false, QEMU_CAPS_NAME);
     DO_TEST("machine-aliases1", false, NONE);
     DO_TEST("machine-aliases2", true, NONE);
     DO_TEST("boot-cdrom", false, NONE);
@@ -393,6 +394,8 @@ mymain(void)
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE);
     DO_TEST("disk-many", false, NONE);
     DO_TEST("disk-virtio", false, QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_BOOT);
+    DO_TEST("disk-virtio-s390", false, QEMU_CAPS_DRIVE,
+            QEMU_CAPS_DEVICE, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("disk-order", false,
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE_BOOT,
             QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
@@ -552,6 +555,8 @@ mymain(void)
             QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_VIRTIO_TX_ALG);
     DO_TEST("net-virtio-netdev", false,
             QEMU_CAPS_DEVICE, QEMU_CAPS_NETDEV, QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("net-virtio-s390", false,
+            QEMU_CAPS_DEVICE, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("net-eth", false, NONE);
     DO_TEST("net-eth-ifname", false, NONE);
     DO_TEST("net-eth-names", false, QEMU_CAPS_NET_NAME);
@@ -609,6 +614,9 @@ mymain(void)
             QEMU_CAPS_DEVICE, QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG);
     DO_TEST("console-virtio-many", false,
             QEMU_CAPS_DEVICE, QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("console-virtio-s390", false,
+            QEMU_CAPS_DEVICE, QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DRIVE,  QEMU_CAPS_VIRTIO_S390);
     DO_TEST("channel-spicevmc", false,
             QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SPICE, QEMU_CAPS_CHARDEV_SPICEVMC);
