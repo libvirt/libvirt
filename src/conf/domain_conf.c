@@ -4248,14 +4248,12 @@ virDomainFSDefParseXML(xmlNodePtr node,
 
     if (virDomainParseScaledValue("./space_hard_limit[1]", ctxt,
                                   &def->space_hard_limit, 1,
-                                  ULONG_LONG_MAX,
-                                  false) < 0)
+                                  ULLONG_MAX, false) < 0)
         goto error;
 
     if (virDomainParseScaledValue("./space_soft_limit[1]", ctxt,
                                   &def->space_soft_limit, 1,
-                                  ULONG_LONG_MAX,
-                                  false) < 0)
+                                  ULLONG_MAX, false) < 0)
         goto error;
 
     cur = node->children;
@@ -4335,7 +4333,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
         }
         if (unit &&
             virScaleInteger(&def->usage, unit,
-                            1024, ULONG_LONG_MAX) < 0)
+                            1024, ULLONG_MAX) < 0)
             goto error;
     }
 
