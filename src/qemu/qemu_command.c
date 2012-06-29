@@ -735,6 +735,67 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virBitmapPtr qemuCaps)
     return -1;
 }
 
+static void
+qemuDomainPrimeS390VirtioDevices(virDomainDefPtr def,
+                                 enum virDomainDeviceAddressType type)
+{
+    /*
+       declare address-less virtio devices to be of address type 'type'
+       only disks, networks, consoles and controllers for now
+    */
+    int i;
+
+    for (i = 0; i < def->ndisks ; i++) {
+        if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_VIRTIO &&
+            def->disks[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            def->disks[i]->info.type = type;
+    }
+
+    for (i = 0; i < def->nnets ; i++) {
+        if (STREQ(def->nets[i]->model,"virtio") &&
+            def->nets[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            def->nets[i]->info.type = type;
+    }
+
+    for (i = 0; i < def->ncontrollers ; i++) {
+        if (def->controllers[i]->type ==
+            VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL &&
+            def->controllers[i]->info.type ==
+            VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            def->controllers[i]->info.type = type;
+    }
+
+}
+
+static int
+qemuDomainAssignS390Addresses(virDomainDefPtr def, virBitmapPtr qemuCaps)
+{
+    int ret = -1;
+    virBitmapPtr localCaps = NULL;
+
+    if (!qemuCaps) {
+        /* need to get information from real environment */
+        if (qemuCapsExtractVersionInfo(def->emulator, def->os.arch,
+                                       NULL,
+                                       &localCaps) < 0)
+            goto cleanup;
+        qemuCaps = localCaps;
+    }
+
+    if (qemuCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390)) {
+        /* deal with legacy virtio-s390 */
+        qemuDomainPrimeS390VirtioDevices(
+            def, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390);
+    }
+
+    ret = 0;
+
+cleanup:
+    qemuCapsFree(localCaps);
+
+    return ret;
+}
+
 static int
 qemuSpaprVIOFindByReg(virDomainDefPtr def ATTRIBUTE_UNUSED,
                       virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
@@ -997,6 +1058,10 @@ int qemuDomainAssignAddresses(virDomainDefPtr def,
     int rc;
 
     rc = qemuDomainAssignSpaprVIOAddresses(def);
+    if (rc)
+        return rc;
+
+    rc = qemuDomainAssignS390Addresses(def, qemuCaps);
     if (rc)
         return rc;
 
@@ -1544,7 +1609,10 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
         if (def->disks[i]->bus != VIR_DOMAIN_DISK_BUS_VIRTIO)
             continue;
 
-        if (def->disks[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
+        /* don't touch s390 devices */
+        if (def->disks[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI ||
+            def->disks[i]->info.type ==
+            VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390)
             continue;
 
         if (def->disks[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
@@ -2021,7 +2089,13 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
         break;
 
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
-        /* Each virtio drive is a separate PCI device, no unit/busid or index */
+        if (qemuCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390) &&
+            (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390)) {
+            /* Paranoia - leave in here for now */
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("unexpected address type for s390-virtio disk"));
+            goto error;
+        }
         idx = -1;
         break;
 
@@ -2451,7 +2525,12 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                           disk->info.addr.drive.unit);
         break;
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
-        virBufferAddLit(&opt, "virtio-blk-pci");
+        if (disk->info.type ==
+            VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390) {
+            virBufferAddLit(&opt, "virtio-blk-s390");
+        } else {
+            virBufferAddLit(&opt, "virtio-blk-pci");
+        }
         qemuBuildIoEventFdStr(&opt, disk->ioeventfd, qemuCaps);
         if (disk->event_idx &&
             qemuCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_EVENT_IDX)) {
@@ -2709,6 +2788,9 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
         if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
             virBufferAddLit(&buf, "virtio-serial-pci");
+        } else if (def->info.type ==
+                   VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390) {
+            virBufferAddLit(&buf, "virtio-serial-s390");
         } else {
             virBufferAddLit(&buf, "virtio-serial");
         }
@@ -2804,7 +2886,12 @@ qemuBuildNicDevStr(virDomainNetDefPtr net,
     if (!net->model) {
         nic = "rtl8139";
     } else if (STREQ(net->model, "virtio")) {
-        nic = "virtio-net-pci";
+        if (net->info.type ==
+            VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390) {
+            nic = "virtio-net-s390";
+        } else  {
+            nic = "virtio-net-pci";
+        }
         usingVirtio = true;
     } else {
         nic = net->model;
@@ -3607,7 +3694,8 @@ qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev,
         return NULL;
     }
 
-    if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+    if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390) {
         /* Check it's a virtio-serial address */
         if (dev->info.type !=
             VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL)

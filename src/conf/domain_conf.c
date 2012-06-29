@@ -149,7 +149,8 @@ VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "virtio-serial",
               "ccid",
               "usb",
-              "spapr-vio")
+              "spapr-vio",
+              "virtio-s390")
 
 VIR_ENUM_IMPL(virDomainDeviceAddressPciMulti,
               VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_LAST,
@@ -2132,7 +2133,8 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 
-    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
+        info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390)
         return 0;
 
     /* We'll be in domain/devices/[device type]/ so 3 level indent */
@@ -4123,6 +4125,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
 
     if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO &&
+        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390 &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                              _("Controllers must use the 'pci' address type"));
@@ -4674,6 +4677,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
      * them we should make sure address type is correct */
     if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO &&
+        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390 &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                              _("Network interfaces must use 'pci' address type"));
@@ -9076,7 +9080,8 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
         def->memballoon = memballoon;
         VIR_FREE(nodes);
-    } else {
+    } else if (!STREQ(def->os.arch,"s390x")) {
+        /* TODO: currently no balloon support on s390 -> no default balloon */
         if (def->virtType == VIR_DOMAIN_VIRT_XEN ||
             def->virtType == VIR_DOMAIN_VIRT_QEMU ||
             def->virtType == VIR_DOMAIN_VIRT_KQEMU ||

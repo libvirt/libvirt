@@ -133,6 +133,7 @@ enum qemuCapsFlags {
     QEMU_CAPS_HDA_MICRO          = 95, /* -device hda-micro */
     QEMU_CAPS_DUMP_GUEST_MEMORY  = 96, /* dump-guest-memory command */
     QEMU_CAPS_NEC_USB_XHCI       = 97, /* -device nec-usb-xhci */
+    QEMU_CAPS_VIRTIO_S390        = 98, /* -device virtio-*-s390 */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

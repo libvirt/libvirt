@@ -166,6 +166,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "hda-micro", /* 95 */
               "dump-guest-memory",
               "nec-usb-xhci",
+              "virtio-s390",
 
     );
 
@@ -1430,6 +1431,10 @@ qemuCapsParseDeviceStr(const char *str, virBitmapPtr flags)
         qemuCapsSet(flags, QEMU_CAPS_USB_HUB);
     if (strstr(str, "name \"ich9-ahci\""))
         qemuCapsSet(flags, QEMU_CAPS_ICH9_AHCI);
+    if (strstr(str, "name \"virtio-blk-s390\"") ||
+        strstr(str, "name \"virtio-net-s390\"") ||
+        strstr(str, "name \"virtio-serial-s390\""))
+        qemuCapsSet(flags, QEMU_CAPS_VIRTIO_S390);
 
     /* Prefer -chardev spicevmc (detected earlier) over -device spicevmc */
     if (!qemuCapsGet(flags, QEMU_CAPS_CHARDEV_SPICEVMC) &&
