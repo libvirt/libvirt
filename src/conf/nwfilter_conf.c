@@ -379,6 +379,7 @@ virNWFilterRuleDefAddVar(virNWFilterRuleDefPtr nwf,
 
     if (VIR_EXPAND_N(nwf->varAccess, nwf->nVarAccess, 1) < 0) {
         virReportOOMError();
+        virNWFilterVarAccessFree(varAccess);
         return -1;
     }
 
