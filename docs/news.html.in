@@ -8,6 +8,338 @@
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
 
+    <h3>0.9.13: July 2 2012</h3>
+    <ul>
+      <li> Features:<br/>
+      S390: support for s390(x) (Thang Pham and Viktor Mihajlovski),<br/>
+      snapshot: implement new APIs for esx and vbox (Eric Blake),<br/>
+      snapshot: new query APIs and many improvements (Eric Blake),<br/>
+      virsh: Allow users to reedit rejected XML (Michal Privoznik),<br/>
+      nwfilter: add DHCP snooping (Stefan Berger),<br/>
+      Enable driver modules in libvirt RPM (Daniel P. Berrange),<br/>
+      Default to enable driver modules for libvirtd (Daniel P. Berrange),<br/>
+      storage backend: Add RBD (RADOS Block Device) support (Wido den Hollander),<br/>
+      sVirt support for LXC domains inprovement (Daniel P. Berrange and Daniel J Walsh)<br/>
+      </li>
+
+      <li> Documentation:<br/>
+      virsh: Cleanup virsh -V output (Doug Goldstein),<br/>
+      configure: show correct default argument in help (Marc-André Lureau),<br/>
+      fix typo in virDomainDestroy API doc (Christophe Fergeau),<br/>
+      virsh: fix few typos on desc command (Martin Kletzander),<br/>
+      virsh: Update vol-create-as manpage (Michal Privoznik),<br/>
+      virsh: Tweak attach-* documentation (Michal Privoznik),<br/>
+      small typo in formatdomain.html (Laine Stump),<br/>
+      client rpc: Improve debug messages in virNetClientIO (Jiri Denemark),<br/>
+      minor fixes to domain interface documentation (Laine Stump),<br/>
+      link to FLOSS Weekly podcast, virt blogs (Eric Blake),<br/>
+      examples: add consolecallback example python script (Dave Allan),<br/>
+      Fix typo in comment start (Daniel P. Berrange),<br/>
+      typo in acceleration element (Martin Kletzander),<br/>
+      Improve docs about compiling libvirt from GIT (Daniel P. Berrange)<br/>
+      </li>
+
+      <li> Portability:<br/>
+      Fix compilation on older sanlock (Daniel Veillard),<br/>
+      Fix unused parameters / functions in virsh on Win32 (Daniel P. Berrange),<br/>
+      Update to latest GNULIB to fix compat with Mingw64 toolchain (Daniel P. Berrange),<br/>
+      winsock2.h must always be included before windows.h (Daniel P. Berrange),<br/>
+      Switch automated builds to use Mingw64 toolchain instead of Mingw32 (Daniel P. Berrange),<br/>
+      openvz: Fix wordsize on 64 bit architectures (Guido Günther),<br/>
+      Fixes for check and rpm builds without sanlock (and qemu) (Martin Kletzander),<br/>
+      Fix Win32 build by linking to ole32 (Daniel P. Berrange),<br/>
+      Add impl of APIs to get user directories on Win32 (Daniel P. Berrange),<br/>
+      fix building error on non fedora system (Wen Congyang),<br/>
+      Add stub impl of virNetlinkEventServiceLocalPid for Win32 (Daniel P. Berrange),<br/>
+      Fix build when configuring with polkit0 (Jim Fehlig),<br/>
+      build: fix virnetlink on glibc 2.11 (Eric Blake),<br/>
+      Fix build compat with older libselinux for LXC (Daniel P. Berrange),<br/>
+      build: really silence the 32-bit warning (Eric Blake)<br/>
+      </li>
+
+      <li> Bug Fixes:<br/>
+      build: use correct limit for unsigned long long (Eric Blake),<br/>
+      nwfilter: Fix memory leak (Stefan Berger),<br/>
+      network_conf: Don't free uninitialized pointers while parsing DNS SRV (Peter Krempa),<br/>
+      storage: Error out if the target is already mounted for netfs pool (Osier Yang),<br/>
+      events: Don't fail on registering events for two different domains (Michal Privoznik),<br/>
+      Don't install systemd service files executable (Guido Günther),<br/>
+      fix a bug of ref count in virnetserver.c (Hu Tao),<br/>
+      Fix deadlock on libvirtd shutdown (Jim Fehlig),<br/>
+      openvz: check pointer size instead of int (Guido Günther),<br/>
+      domain_conf: fix possible memory leak (Martin Kletzander),<br/>
+      error: Fix typos in argument checking macros (Peter Krempa),<br/>
+      LXC: fix incorrect DEBUG info (Gao feng),<br/>
+      LXC: fix memory leak in lxcContainerSetupExtraMounts (Gao feng),<br/>
+      LXC: fix memory leak in lxcContainerGetSubtree (Gao feng),<br/>
+      LXC: fix memory leak in lxcContainerMountFSBlockHelper (Gao feng),<br/>
+      qemu_agent: Wait for events instead of agent response (Michal Privoznik),<br/>
+      Fix launch of libvirtd when DHCP snooping support is not available. (Daniel P. Berrange),<br/>
+      qemu: fix potential dead lock (Wen Congyang),<br/>
+      virsh: Null terminated the string memcpy from buffer explicitly (Osier Yang),<br/>
+      qemu: Fix off-by-one error while unescaping monitor strings (Peter Krempa),<br/>
+      virsh: Don't generate invalid XML in attach-disk command (Peter Krempa),<br/>
+      client rpc: Fix error checking after poll() (Daniel P. Berrange),<br/>
+      client rpc: Send keepalive requests from IO event loop (Jiri Denemark),<br/>
+      Fix typo in RPM specfile (Daniel P. Berrange),<br/>
+      python: fix snapshot listing bugs (Eric Blake),<br/>
+      qemu: Don't overwrite security labels (Michal Privoznik),<br/>
+      rpc: Fix memleak in virNetMessageEncodeHeader (Michal Privoznik),<br/>
+      Fix privileges on /var/run/libvirt directory (Daniel P. Berrange),<br/>
+      Only migrate profile in non-privileged libvirtd instance (Daniel P. Berrange),<br/>
+      snapshot: avoid virsh crash with older servers (Eric Blake),<br/>
+      LXC: fix memory leak in lxcContainerMountFSBlockAuto (Gao feng),<br/>
+      LXC: fix incorrect parameter of mount in lxcContainerMountFSBind (Gao feng),<br/>
+      util: Fix deadlock in virLogReset (Jiri Denemark),<br/>
+      Assign correct address type to spapr-vlan and spapr-vty. (Li Zhang),<br/>
+      command: avoid potential deadlock on handshake (Eric Blake),<br/>
+      qemu: better detection of crashed domains (Martin Kletzander),<br/>
+      command: avoid deadlock on EPIPE situation (Eric Blake),<br/>
+      Fix sync issue in virNetClientStreamEventRemoveCallback (Radu Caragea),<br/>
+      qemu: avoid closing fd more than once (Wen Congyang),<br/>
+      command: check for fork error before closing fd (Wen Congyang),<br/>
+      fdstream: avoid double close bug (Eric Blake),<br/>
+      command: avoid double close bugs (Eric Blake),<br/>
+      avoid fd leak (Wen Congyang),<br/>
+      avoid closing uninitialized fd (Wen Congyang),<br/>
+      lxc: return correct number of CPUs (Martin Kletzander),<br/>
+      leak_fix.diff (Stefan Berger),<br/>
+      Fix typos in RPM dependencies (Daniel P. Berrange),<br/>
+      Remove more bogus systemd service dependencies (Daniel P. Berrange),<br/>
+      qemu_hotplug: Don't free the PCI device structure after hot-unplug (Peter Krempa),<br/>
+      Fix potential events deadlock when unref'ing virConnectPtr (Daniel P. Berrange),<br/>
+      qemu: Don't delete USB device on failed qemuPrepareHostdevUSBDevices (Michal Privoznik),<br/>
+      nodeinfo: Get the correct CPU number on AMD Magny Cours platform (Osier Yang),<br/>
+      nodeinfo: avoid probing host filesystem during test (Eric Blake)<br/>
+      </li>
+
+      <li> Improvements:<br/>
+      Remove sub-mounts under /dev when starting an LXC container (Daniel P. Berrange),<br/>
+      Fix vm's outbound traffic control problem (Eiichi Tsukata),<br/>
+      conf: Don't shadow error from virGetDomain() (Peter Krempa),<br/>
+      maint: include ignore-value in internal.h (Peter Krempa),<br/>
+      vbox: Add support for virConnectListAllDomains() (Peter Krempa),<br/>
+      virsh: Add domdisplay cmd for VNC, SPICE and RDP (Doug Goldstein),<br/>
+      AUTHORS: Update (Michal Privoznik),<br/>
+      S390: Added sysinfo for host on s390(x). (Thang Pham),<br/>
+      S390: Fixed core identification for s390 (Viktor Mihajlovski),<br/>
+      S390: Fixed Parser for /proc/cpuinfo needs to be adapted for your architecture (Thang Pham),<br/>
+      S390: Override QEMU_CAPS_NO_ACPI for s390x (Viktor Mihajlovski),<br/>
+      storage backend rbd: Do not prefix rbd: on volume names. (Wido den Hollander),<br/>
+      qemu: Improve error if setmem fails for lacking of balloon support (Osier Yang),<br/>
+      Include the default listen address in the live guest XML (Daniel P. Berrange),<br/>
+      storage: Introduce --inactive for pool-dumpxml (Michal Privoznik),<br/>
+      storage: Switch to new def on pool-destroy (Michal Privoznik),<br/>
+      Support bind mounting host files, as well as directories in LXC (Daniel J Walsh),<br/>
+      Allow NOCONFIGURE=1 to make autogen.sh skip ./configure (Daniel P. Berrange),<br/>
+      virsh: Use virXPath wrappers for vncdisplay cmd (Doug Goldstein),<br/>
+      Add support for shared sanlock leases (Daniel P. Berrange),<br/>
+      Add support for guest bind mounts with LXC (Daniel P. Berrange),<br/>
+      Add support for RAM filesystems for LXC (Daniel P. Berrange),<br/>
+      virsh: Improve error when trying to change vm's cpu count 0 (Peter Krempa),<br/>
+      qemu: Add xhci support (Gerd Hoffmann),<br/>
+      virsh: add support for virConnectListAllDomains and clean up cmdList (Peter Krempa),<br/>
+      virsh: Rename namesorter to vshNameSorter and clean up indentation (Peter Krempa),<br/>
+      Initialize random generator in lxc controller (Jim Fehlig),<br/>
+      storage: Set the perms if the pool target already exists for fs pools (Osier Yang),<br/>
+      snapshot: require existence before returning success (Eric Blake),<br/>
+      drivers: Implement virListAllDomains for drivers using virDomainObj (Peter Krempa),<br/>
+      Fix default USB controller for ppc64 (Dipankar Sarma),<br/>
+      list: add qemu snapshot list support (Eric Blake),<br/>
+      list: new helper function to collect snapshots (Eric Blake),<br/>
+      list: provide RPC call for snapshots (Eric Blake),<br/>
+      list: provide python bindings for snapshots (Eric Blake),<br/>
+      list: use the new snapshot API in virsh when possible (Eric Blake),<br/>
+      snapshot: expose new flags in virsh (Eric Blake),<br/>
+      snapshot: add additional filters when getting lists (Eric Blake),<br/>
+      virsh: make domiftune interface help string consistent (Martin Kletzander),<br/>
+      snapshot: merge count and name collection (Eric Blake),<br/>
+      snapshot: merge domain and snapshot computation (Eric Blake),<br/>
+      snapshot: use metaroot node to simplify management (Eric Blake),<br/>
+      conf: Add helper for listing domains on drivers supporting virDomainObj (Peter Krempa),<br/>
+      conf: Store managed save image existence in virDomainObj (Peter Krempa),<br/>
+      remote: implement remote protocol for virConnectListAllDomains() (Peter Krempa),<br/>
+      python: add API exports for virConnectListAllDomains() (Peter Krempa),<br/>
+      lib: Add public api to enable atomic listing of guest (Peter Krempa),<br/>
+      Add a custom 404 error page for the website (Daniel P. Berrange),<br/>
+      qemu_agent: Add some more debug prints (Michal Privoznik),<br/>
+      snapshot: use new virsh function for snapshot-list (Eric Blake),<br/>
+      snapshot: new virsh function factored from snapshot-list (Eric Blake),<br/>
+      autogen: Always abide --system (Cole Robinson),<br/>
+      Check for errors when parsing bridge interface XML (Jim Fehlig),<br/>
+      Add more debug logging for libvirtd startup (Daniel P. Berrange),<br/>
+      schema: Update domain XML schema (Osier Yang),<br/>
+      virsh: allow the user to specify vmcore's format (Wen Congyang),<br/>
+      qemu: allow the client to choose the vmcore's format (Wen Congyang),<br/>
+      qemu: implement qemu's dump-guest-memory (Wen Congyang),<br/>
+      Always pivot_root event if the new root source is '/' (Daniel P. Berrange),<br/>
+      Improve error message diagnosing incorrect XML CPU mode (Daniel P. Berrange),<br/>
+      qemu: Enable disconnecting SPICE clients without changing password (Peter Krempa),<br/>
+      virsh: Report name from edited object (Michal Privoznik),<br/>
+      virsh: Honor reedit opts printing to a function (Michal Privoznik),<br/>
+      network: fully support/use VIR_NETWORK_XML_INACTIVE flag (Laine Stump),<br/>
+      Add some missing hook functions (Daniel P. Berrange),<br/>
+      server rpc: Remove APIs for manipulating filters on locked client (Jiri Denemark),<br/>
+      rpc: Remove unused parameter in virKeepAliveStopInternal (Jiri Denemark),<br/>
+      rpc: Do not use timer for sending keepalive responses (Jiri Denemark),<br/>
+      client rpc: Separate call creation from running IO loop (Jiri Denemark),<br/>
+      rpc: Add APIs for direct triggering of keepalive timer (Jiri Denemark),<br/>
+      rpc: Refactor keepalive timer code (Jiri Denemark),<br/>
+      client rpc: Drop unused return value of virNetClientSendNonBlock (Jiri Denemark),<br/>
+      client rpc: Just queue non-blocking call if another thread has the buck (Jiri Denemark),<br/>
+      client rpc: Don't drop non-blocking calls (Jiri Denemark),<br/>
+      client rpc: Use event loop for writing (Jiri Denemark),<br/>
+      build: fix 'make dist' on virgin checkout (Eric Blake),<br/>
+      build: silence gettext warning (Eric Blake),<br/>
+      openvz: wire up domainUpdateDeviceFlags (Guido Günther),<br/>
+      openvz: add persist parameter to openvzSetDiskQuota (Guido Günther),<br/>
+      Introduce virDomainFSIndexByName (Guido Günther),<br/>
+      python: use simpler methods (Eric Blake),<br/>
+      qemuProcessStop: Switch to flags (Michal Privoznik),<br/>
+      snapshot: implement new APIs for qemu (Eric Blake),<br/>
+      snapshot: RPC for new query APIs (Eric Blake),<br/>
+      snapshot: add 'virsh snapshot-info' (Eric Blake),<br/>
+      Two RPM conditional fixes for RHEL-7 (Daniel P. Berrange),<br/>
+      snapshot: virsh indentation cleanup (Eric Blake),<br/>
+      virsh: make tree listing more flexible (Eric Blake),<br/>
+      virsh: remove limits on tree listing (Eric Blake),<br/>
+      buf: support peeking at string contents (Eric Blake),<br/>
+      Update AUTHORS (Osier Yang),<br/>
+      LXC: Delete unused variable src in lxcContainerMountBasicFS (Gao feng),<br/>
+      msg_buf_size is unsigned long not size_t (Guido Günther),<br/>
+      Only check for cluster fs if we're using a filesystem (Guido Günther),<br/>
+      snapshot: add virDomainSnapshotRef API (Eric Blake),<br/>
+      Fix missing ) in 2 strings (Cole Robinson),<br/>
+      maint: make it easier to copy FORTIFY_SOURCE snippet (Eric Blake),<br/>
+      build: fix build without i18n (Eric Blake),<br/>
+      spec: Build against systemd for udev (Cole Robinson),<br/>
+      build: fix build of fresh checkout (Eric Blake),<br/>
+      build: ensure storage driver is used (Eric Blake),<br/>
+      rpc: Size up RPC limits (Michal Privoznik),<br/>
+      rpc: Switch to dynamically allocated message buffer (Michal Privoznik),<br/>
+      build: fix 'make distcheck' issues (Eric Blake),<br/>
+      tests: Refresh qemu-1.1.0 data (Jiri Denemark),<br/>
+      virsh: Back out if the argument for vol-create-as is malformed (Osier Yang),<br/>
+      virsh: Accept UUID as an argument for net-info and net-start (Osier Yang),<br/>
+      virsh: Accept UUID as an argument for storage commands (Osier Yang),<br/>
+      Fix for parallel port passthrough for QEMU (Beat Jörg),<br/>
+      util: fix "make rpm" when viratomic.h is used (Laine Stump),<br/>
+      build: allow building with newer glibc-headers and -O0 (Eric Blake),<br/>
+      fix make syntax-check failed (Wen Congyang),<br/>
+      build: fix sc_prohibit_readlink (Eric Blake),<br/>
+      file: Log closing filedescriptors (Jiri Denemark),<br/>
+      command: Fix debug message during handshake (Jiri Denemark),<br/>
+      virsh: Switch from generated cmd*Edit commands to nongenerated (Michal Privoznik),<br/>
+      nwfilter: Add multiple IP address support to DHCP snooping (Stefan Berger),<br/>
+      nwfilter: move code for IP address map into separate file (Stefan Berger),<br/>
+      qemu: move -name arg to be 1st in "ps x" output (Marti Raudsepp),<br/>
+      qemu: fix netdev alias name assignment wrt type='hostdev' (Laine Stump),<br/>
+      tools: make virt-pki-validate work with acls and xattrs (Martin Kletzander),<br/>
+      build: include augeas-gentest.pl into dist file (Wen Congyang),<br/>
+      build: use same perl binary throughout build (Eric Blake),<br/>
+      build: fix testing of augeas files in VPATH builds (Eric Blake),<br/>
+      build: silence warning from autoconf (Eric Blake),<br/>
+      virCommand: Extend debug message for handshake (Michal Privoznik),<br/>
+      build: Fixed generating of libvirt_qemu_probes.h (Martin Kletzander),<br/>
+      build: don't lose probes.o files (Eric Blake),<br/>
+      build: fix missing dependencies for libvirt-qemu.so (Eric Blake),<br/>
+      build: don't clean a file that belongs in the tarball (Eric Blake),<br/>
+      virsh: avoid strncpy (Eric Blake),<br/>
+      build: update to latest gnulib (Eric Blake),<br/>
+      Introduce virMacAddr typedef (Stefan Berger),<br/>
+      Santize the reporting of VIR_ERR_INVALID_ERROR (Daniel P. Berrange),<br/>
+      build: silence libtool during tests (Eric Blake),<br/>
+      Fix linking to DTrace probes file (Daniel P. Berrange),<br/>
+      Autogenerate augeas test case from default config files (Daniel P. Berrange),<br/>
+      Re-order config options in qemu driver augeas lens (Daniel P. Berrange),<br/>
+      Fix mistakes in augeas lens (Daniel P. Berrange),<br/>
+      Standardize whitespace used in example config files (Daniel P. Berrange),<br/>
+      Remove uid param from directory lookup APIs (Daniel P. Berrange),<br/>
+      Fix check for socket existance / daemon spawn (Daniel P. Berrange),<br/>
+      Remove last usage of PATH_MAX and ban its future use (Daniel P. Berrange),<br/>
+      maint: avoid new automake warning about AM_PROG_CC_STDC (Jim Meyering),<br/>
+      build: silence libtool warning on probes.o (Eric Blake),<br/>
+      tests: run valgrind on real executables, not libtool wrappers (Eric Blake),<br/>
+      qemu augeas: Add spice_tls/spice_tls_x509_cert_dir (Douglas Schilling Landgraf),<br/>
+      tests: back to short test names (Eric Blake),<br/>
+      maint: ignore more files from version control (Eric Blake),<br/>
+      Add sentinel for virErrorDomain enum (Daniel P. Berrange),<br/>
+      Add parsing for VIR_ENUM_IMPL &amp; VIR_ENUM_DECL in apibuild.py (Daniel P. Berrange),<br/>
+      security: Switch to C99-style struct initialization (Michal Privoznik),<br/>
+      Add test case for loading driver modules (Daniel P. Berrange),<br/>
+      Override default driver dir when running from GIT (Daniel P. Berrange),<br/>
+      Split QEMU dtrace probes into separate file (Daniel P. Berrange),<br/>
+      Replace RTLD_LOCAL with RTLD_GLOBAL (Daniel P. Berrange),<br/>
+      Ensure LXC driver links against libblkid explicitly. (Daniel P. Berrange),<br/>
+      Remove libvirt_test.la library (Daniel P. Berrange),<br/>
+      Fix broken linkage of libvirt_driver_nodedev.la (Daniel P. Berrange),<br/>
+      Only build server side drivers as modules (Daniel P. Berrange),<br/>
+      Fix dep from libvirt-lock-sanlock RPM (Daniel P. Berrange),<br/>
+      openvz: add quota argument when creating container (Guido Günther),<br/>
+      openvz: support file system quota reporting (Guido Günther),<br/>
+      Introduce filesystem limits to virDomainFSDef (Guido Günther),<br/>
+      Introduce virDomainParseScaledValue (Guido Günther),<br/>
+      util: export virBufferTrim (Laine Stump),<br/>
+      virBuffer: add way to trim back extra text (Eric Blake),<br/>
+      build: fix unused variable after last patch (Eric Blake),<br/>
+      nwfilter: Add support for ipset (Stefan Berger),<br/>
+      Adds support to param 'vcpu_time' in qemu_driver. (Hu Tao),<br/>
+      Add a new param 'vcpu_time' to virDomainGetCPUStats (Hu Tao),<br/>
+      tests: add ich6 codec type test to qemuxml2argv-sound-device (Marc-André Lureau),<br/>
+      qemu: honour sound &lt;codec&gt; sub-elements (Marc-André Lureau),<br/>
+      domain: add &lt;codec&gt; sound sub-element (Marc-André Lureau),<br/>
+      qemu: test CAPS_HDA_MICRO (Marc-André Lureau),<br/>
+      nodeinfo: test more details (Eric Blake),<br/>
+      Add a virLogMessage alternative taking va_list args (Daniel P. Berrange),<br/>
+      build: fix recent syntax-check breakage (Eric Blake),<br/>
+      qemu: Rollback on used USB devices (Michal Privoznik),<br/>
+      Reject any non-option command line arguments (Daniel P. Berrange),<br/>
+      Remount cgroups controllers after setting up new /sys in LXC (Daniel P. Berrange),<br/>
+      Trim /proc &amp; /sys subtrees before mounting new instances (Daniel P. Berrange),<br/>
+      Avoid LXC pivot root in the root source is still / (Daniel P. Berrange),<br/>
+      Mount fresh instance of sysfs/selinux in LXC (Daniel P. Berrange),<br/>
+      Convert the LXC driver to use the security driver API for mount options (Daniel Walsh),<br/>
+      Add security driver APIs for getting mount options (Daniel Walsh),<br/>
+      Add support for LXC specific SELinux configuration (Daniel Walsh),<br/>
+      Use private data struct in SELinux driver (Daniel Walsh),<br/>
+      Don't enable the AppArmour security driver with LXC (Daniel Walsh),<br/>
+      Pass the virt driver name into security drivers (Daniel Walsh),<br/>
+      Remove bogus udev.target dep from libvirtd unit (Daniel P. Berrange),<br/>
+      qemu: Add support for -no-user-config (Jiri Denemark),<br/>
+      Set a sensible default master start port for ehci companion controllers (Daniel P. Berrange),<br/>
+      Fix logic for assigning PCI addresses to USB2 companion controllers (Daniel P. Berrange),<br/>
+      Fix virDomainDeviceInfoIsSet() to check all struct fields (Daniel P. Berrange),<br/>
+      Remove redundant trailing slash in user dir paths (Daniel P. Berrange),<br/>
+      Allow stack traces to be included with log messages (Daniel P. Berrange),<br/>
+      Move user libvirtd socket out of abstract namespace (Daniel P. Berrange),<br/>
+      Add openvz_util.c to POTFILES (Daniel P. Berrange),<br/>
+      Add bundled(gnulib) to RPM specfile (Daniel P. Berrange),<br/>
+      openvz: determine kb/pages only once (Guido Günther),<br/>
+      libvirt-guests: Remove LISTFILE if it's empty when stopping service (Osier Yang),<br/>
+      qemu: Set memory policy using cgroup if placement is auto (Osier Yang),<br/>
+      qemu: Use the CPU index in capabilities to map NUMA node to cpu list. (Osier Yang),<br/>
+      Assign spapr-vio bus address to ibmvscsi controller (Li Zhang),<br/>
+      sanlock: fix locking for readonly devices (David Weber),<br/>
+      nodeinfo: add some more tests (Eric Blake),<br/>
+      nodeinfo: drop static variable (Eric Blake),<br/>
+      maint: fix AUTHORS (Eric Blake),<br/>
+      Use XDG Base Directories instead of storing in home directory (William Jon McCann)<br/>
+      </li>
+
+      <li> Cleanups:<br/>
+      Remove accidentally added Patch: lines from mingw-libvirt.spec.in (Daniel P. Berrange),<br/>
+      Add /tools/libvirt-guests.service to .gitignore (Guido Günther),<br/>
+      sanlock: Properly indent (Michal Privoznik),<br/>
+      Remove stray debug fprintf in XML parser (Daniel P. Berrange),<br/>
+      util: Fix the indention (Osier Yang),<br/>
+      LXC: avoid useless duplicate memory free (Gao feng),<br/>
+      driver: Clean up driver header to space indentation (Peter Krempa),<br/>
+      build: fix whitespace damage (Eric Blake),<br/>
+      build: hoist qemu dependence on yajl to configure (Eric Blake),<br/>
+      maint: command.c whitespace cleanups (Eric Blake),<br/>
+      Revert "rpc: Discard non-blocking calls only when necessary" (Jiri Denemark<br/>
+      </li>
+    </ul>
     <h3>0.9.12: May 14 2012</h3>
     <ul>
       <li> Features:<br/>
