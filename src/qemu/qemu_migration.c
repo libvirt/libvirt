@@ -846,6 +846,9 @@ qemuMigrationIsSafe(virDomainDefPtr def)
                     continue;
                 else if (cfs < 0)
                     return false;
+            } else if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
+                       disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
+                continue;
             }
 
             qemuReportError(VIR_ERR_MIGRATE_UNSAFE, "%s",
