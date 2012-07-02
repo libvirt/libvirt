@@ -8609,11 +8609,12 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     }
 
     /* analysis of the disk devices */
-    if ((n = virXPathNodeSet("./devices/disk", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/disk", ctxt, &nodes)) < 0)
         goto error;
-    }
+
     if (n && VIR_ALLOC_N(def->disks, n) < 0)
         goto no_memory;
+
     for (i = 0 ; i < n ; i++) {
         virDomainDiskDefPtr disk = virDomainDiskDefParseXML(caps,
                                                             nodes[i],
@@ -8629,11 +8630,12 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     VIR_FREE(nodes);
 
     /* analysis of the controller devices */
-    if ((n = virXPathNodeSet("./devices/controller", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/controller", ctxt, &nodes)) < 0)
         goto error;
-    }
+
     if (n && VIR_ALLOC_N(def->controllers, n) < 0)
         goto no_memory;
+
     for (i = 0 ; i < n ; i++) {
         virDomainControllerDefPtr controller = virDomainControllerDefParseXML(nodes[i],
                                                                               flags);
@@ -8755,9 +8757,9 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     }
     VIR_FREE(nodes);
 
-    if ((n = virXPathNodeSet("./devices/serial", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/serial", ctxt, &nodes)) < 0)
         goto error;
-    }
+
     if (n && VIR_ALLOC_N(def->serials, n) < 0)
         goto no_memory;
 
@@ -9051,8 +9053,8 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto error;
     }
     if (n > 1) {
-        virReportError (VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("only a single watchdog device is supported"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("only a single watchdog device is supported"));
         goto error;
     }
     if (n > 0) {
@@ -9071,8 +9073,8 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto error;
     }
     if (n > 1) {
-        virReportError (VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("only a single memory balloon device is supported"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("only a single memory balloon device is supported"));
         goto error;
     }
     if (n > 0) {

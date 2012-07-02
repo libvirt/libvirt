@@ -4789,25 +4789,28 @@ qemuBuildCommandLine(virConnectPtr conn,
             /* Only recent QEMU implements a SATA (AHCI) controller */
             if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA) {
                 if (!qemuCapsGet(qemuCaps, QEMU_CAPS_ICH9_AHCI)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   "%s", _("SATA is not supported with this QEMU binary"));
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("SATA is not supported with this "
+                                     "QEMU binary"));
                     goto error;
                 } else {
                     char *devstr;
 
                     virCommandAddArg(cmd, "-device");
-                    if (!(devstr = qemuBuildControllerDevStr(def, cont, qemuCaps, NULL)))
+                    if (!(devstr = qemuBuildControllerDevStr(def, cont,
+                                                             qemuCaps, NULL)))
                         goto error;
 
                     virCommandAddArg(cmd, devstr);
                     VIR_FREE(devstr);
                 }
-            } else if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
-                def->controllers[i]->model == -1 &&
-                !qemuCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI)) {
+            } else if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+                       cont->model == -1 &&
+                       !qemuCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI)) {
                 if (usblegacy) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("Multiple legacy USB controller not supported"));
+                                   _("Multiple legacy USB controllers are "
+                                     "not supported"));
                     goto error;
                 }
                 usblegacy = true;
@@ -4815,7 +4818,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                 virCommandAddArg(cmd, "-device");
 
                 char *devstr;
-                if (!(devstr = qemuBuildControllerDevStr(def, def->controllers[i], qemuCaps,
+                if (!(devstr = qemuBuildControllerDevStr(def, cont, qemuCaps,
                                                          &usbcontroller)))
                     goto error;
 
