@@ -259,7 +259,8 @@ VIR_ENUM_IMPL(virDomainControllerModelUSB, VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST,
               "ich9-uhci3",
               "vt82c686b-uhci",
               "pci-ohci",
-              "nec-xhci")
+              "nec-xhci",
+              "none")
 
 VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
               "mount",
@@ -7918,6 +7919,8 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     virBitmapPtr bootMap = NULL;
     unsigned long bootMapSize = 0;
     xmlNodePtr cur;
+    bool usb_none = false;
+    bool usb_other = false;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -8643,6 +8646,27 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         if (!controller)
             goto error;
 
+        /* sanitize handling of "none" usb controller */
+        if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) {
+            if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE) {
+                if (usb_other || usb_none) {
+                    virReportError(VIR_ERR_XML_DETAIL, "%s",
+                                   _("Can't add another USB controller: "
+                                     "USB is disabled for this domain"));
+                    goto error;
+                }
+                usb_none = true;
+            } else {
+                if (usb_none) {
+                    virReportError(VIR_ERR_XML_DETAIL, "%s",
+                                   _("Can't add another USB controller: "
+                                     "USB is disabled for this domain"));
+                    goto error;
+                }
+                usb_other = true;
+            }
+        }
+
         virDomainControllerInsertPreAlloced(def, controller);
     }
     VIR_FREE(nodes);
@@ -8917,6 +8941,13 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         if (!input)
             goto error;
 
+        /* Check if USB bus is required */
+        if (input->bus == VIR_DOMAIN_INPUT_BUS_USB && usb_none) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Can't add USB input device. "
+                             "USB bus is disabled"));
+            goto error;
+        }
 
         /* With QEMU / KVM / Xen graphics, mouse + PS/2 is implicit
          * with graphics, so don't store it.
@@ -9044,6 +9075,14 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         if (!hostdev)
             goto error;
 
+        if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
+            usb_none) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Can't add host USB device: "
+                             "USB is disabled in this host"));
+            goto error;
+        }
+
         def->hostdevs[def->nhostdevs++] = hostdev;
     }
     VIR_FREE(nodes);
@@ -9113,6 +9152,13 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         if (!hub)
             goto error;
 
+        if (hub->type == VIR_DOMAIN_HUB_TYPE_USB && usb_none) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Can't add USB hub: "
+                             "USB is disabled for this domain"));
+            goto error;
+        }
+
         def->hubs[def->nhubs++] = hub;
     }
     VIR_FREE(nodes);
@@ -9128,6 +9174,13 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                                                                         flags);
         if (!redirdev)
             goto error;
+
+        if (redirdev->bus == VIR_DOMAIN_REDIRDEV_BUS_USB && usb_none) {
+             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("Can't add redirected USB device: "
+                              "USB is disabled for this domain"));
+            goto error;
+        }
 
         def->redirdevs[def->nredirdevs++] = redirdev;
     }

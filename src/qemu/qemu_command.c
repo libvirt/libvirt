@@ -107,7 +107,8 @@ VIR_ENUM_IMPL(qemuControllerModelUSB, VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST,
               "ich9-usb-uhci3",
               "vt82c686b-usb-uhci",
               "pci-ohci",
-              "nec-usb-xhci");
+              "nec-usb-xhci",
+              "none");
 
 VIR_ENUM_DECL(qemuDomainFSDriver)
 VIR_ENUM_IMPL(qemuDomainFSDriver, VIR_DOMAIN_FS_DRIVER_TYPE_LAST,

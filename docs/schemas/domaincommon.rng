@@ -1222,6 +1222,7 @@
             <value>vt82c686b-uhci</value>
             <value>pci-ohci</value>
             <value>nec-xhci</value>
+            <value>none</value>
           </choice>
         </attribute>
       </optional>
