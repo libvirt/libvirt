@@ -85,6 +85,7 @@ typedef enum _esxVI_Occurrence esxVI_Occurrence;
 typedef struct _esxVI_ParsedHostCpuIdInfo esxVI_ParsedHostCpuIdInfo;
 typedef struct _esxVI_CURL esxVI_CURL;
 typedef struct _esxVI_SharedCURL esxVI_SharedCURL;
+typedef struct _esxVI_MultiCURL esxVI_MultiCURL;
 typedef struct _esxVI_Context esxVI_Context;
 typedef struct _esxVI_Response esxVI_Response;
 typedef struct _esxVI_Enumeration esxVI_Enumeration;
@@ -160,6 +161,7 @@ struct _esxVI_CURL {
     struct curl_slist *headers;
     char error[CURL_ERROR_SIZE];
     esxVI_SharedCURL *shared;
+    esxVI_MultiCURL *multi;
 };
 
 int esxVI_CURL_Alloc(esxVI_CURL **curl);
@@ -184,6 +186,22 @@ int esxVI_SharedCURL_Alloc(esxVI_SharedCURL **shared);
 void esxVI_SharedCURL_Free(esxVI_SharedCURL **shared);
 int esxVI_SharedCURL_Add(esxVI_SharedCURL *shared, esxVI_CURL *curl);
 int esxVI_SharedCURL_Remove(esxVI_SharedCURL *shared, esxVI_CURL *curl);
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * MultiCURL
+ */
+
+struct _esxVI_MultiCURL {
+    CURLM *handle;
+    size_t count;
+};
+
+int esxVI_MultiCURL_Alloc(esxVI_MultiCURL **multi);
+void esxVI_MultiCURL_Free(esxVI_MultiCURL **multi);
+int esxVI_MultiCURL_Add(esxVI_MultiCURL *multi, esxVI_CURL *curl);
+int esxVI_MultiCURL_Remove(esxVI_MultiCURL *multi, esxVI_CURL *curl);
 
 
 

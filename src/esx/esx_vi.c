@@ -86,12 +86,21 @@ ESX_VI__TEMPLATE__ALLOC(CURL)
 ESX_VI__TEMPLATE__FREE(CURL,
 {
     esxVI_SharedCURL *shared = item->shared;
+    esxVI_MultiCURL *multi = item->multi;
 
     if (shared != NULL) {
         esxVI_SharedCURL_Remove(shared, item);
 
         if (shared->count == 0) {
             esxVI_SharedCURL_Free(&shared);
+        }
+    }
+
+    if (multi != NULL) {
+        esxVI_MultiCURL_Remove(multi, item);
+
+        if (multi->count == 0) {
+            esxVI_MultiCURL_Free(&multi);
         }
     }
 
@@ -555,10 +564,14 @@ esxVI_SharedCURL_Add(esxVI_SharedCURL *shared, esxVI_CURL *curl)
         }
     }
 
+    virMutexLock(&curl->lock);
+
     curl_easy_setopt(curl->handle, CURLOPT_SHARE, shared->handle);
 
     curl->shared = shared;
     ++shared->count;
+
+    virMutexUnlock(&curl->lock);
 
     return 0;
 }
@@ -583,10 +596,108 @@ esxVI_SharedCURL_Remove(esxVI_SharedCURL *shared, esxVI_CURL *curl)
         return -1;
     }
 
+    virMutexLock(&curl->lock);
+
     curl_easy_setopt(curl->handle, CURLOPT_SHARE, NULL);
 
     curl->shared = NULL;
     --shared->count;
+
+    virMutexUnlock(&curl->lock);
+
+    return 0;
+}
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * MultiCURL
+ */
+
+/* esxVI_MultiCURL_Alloc */
+ESX_VI__TEMPLATE__ALLOC(MultiCURL)
+
+/* esxVI_MultiCURL_Free */
+ESX_VI__TEMPLATE__FREE(MultiCURL,
+{
+    if (item->count > 0) {
+        /* Better leak than crash */
+        VIR_ERROR(_("Trying to free MultiCURL object that is still in use"));
+        return;
+    }
+
+    if (item->handle != NULL) {
+        curl_multi_cleanup(item->handle);
+    }
+})
+
+int
+esxVI_MultiCURL_Add(esxVI_MultiCURL *multi, esxVI_CURL *curl)
+{
+    if (curl->handle == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Cannot add uninitialized CURL handle to a multi handle"));
+        return -1;
+    }
+
+    if (curl->multi != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Cannot add CURL handle to a multi handle twice"));
+        return -1;
+    }
+
+    if (multi->handle == NULL) {
+        multi->handle = curl_multi_init();
+
+        if (multi->handle == NULL) {
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("Could not initialize CURL (multi)"));
+            return -1;
+        }
+    }
+
+    virMutexLock(&curl->lock);
+
+    curl_multi_add_handle(multi->handle, curl->handle);
+
+    curl->multi = multi;
+    ++multi->count;
+
+    virMutexUnlock(&curl->lock);
+
+    return 0;
+}
+
+int
+esxVI_MultiCURL_Remove(esxVI_MultiCURL *multi, esxVI_CURL *curl)
+{
+    if (curl->handle == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Cannot remove uninitialized CURL handle from a "
+                       "multi handle"));
+        return -1;
+    }
+
+    if (curl->multi == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Cannot remove CURL handle from a multi handle when it "
+                       "wasn't added before"));
+        return -1;
+    }
+
+    if (curl->multi != multi) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("CURL (multi) mismatch"));
+        return -1;
+    }
+
+    virMutexLock(&curl->lock);
+
+    curl_multi_remove_handle(multi->handle, curl->handle);
+
+    curl->multi = NULL;
+    --multi->count;
+
+    virMutexUnlock(&curl->lock);
 
     return 0;
 }
