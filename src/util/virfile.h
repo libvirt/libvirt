@@ -105,4 +105,7 @@ int virFileUpdatePerm(const char *path,
                       mode_t mode_remove,
                       mode_t mode_add);
 
+int virFileLoopDeviceAssociate(const char *file,
+                               char **dev);
+
 #endif /* __VIR_FILES_H */

@@ -39,8 +39,6 @@
 #include <getopt.h>
 #include <sys/mount.h>
 #include <locale.h>
-#include <linux/loop.h>
-#include <dirent.h>
 #include <grp.h>
 #include <sys/stat.h>
 #include <time.h>
@@ -337,108 +335,14 @@ static int virLXCControllerValidateConsoles(virLXCControllerPtr ctrl)
 }
 
 
-static int lxcGetLoopFD(char **dev_name)
+static int virLXCControllerSetupLoopDevice(virDomainFSDefPtr fs)
 {
-    int fd = -1;
-    DIR *dh = NULL;
-    struct dirent *de;
-    char *looppath;
-    struct loop_info64 lo;
-
-    VIR_DEBUG("Looking for loop devices in /dev");
-
-    if (!(dh = opendir("/dev"))) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to read /dev"));
-        goto cleanup;
-    }
-
-    while ((de = readdir(dh)) != NULL) {
-        if (!STRPREFIX(de->d_name, "loop"))
-            continue;
-
-        if (virAsprintf(&looppath, "/dev/%s", de->d_name) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-
-        VIR_DEBUG("Checking up on device %s", looppath);
-        if ((fd = open(looppath, O_RDWR)) < 0) {
-            virReportSystemError(errno,
-                                 _("Unable to open %s"), looppath);
-            goto cleanup;
-        }
-
-        if (ioctl(fd, LOOP_GET_STATUS64, &lo) < 0) {
-            /* Got a free device, return the fd */
-            if (errno == ENXIO)
-                goto cleanup;
-
-            VIR_FORCE_CLOSE(fd);
-            virReportSystemError(errno,
-                                 _("Unable to get loop status on %s"),
-                                 looppath);
-            goto cleanup;
-        }
-
-        /* Oh well, try the next device */
-        VIR_FORCE_CLOSE(fd);
-        VIR_FREE(looppath);
-    }
-
-    lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-             _("Unable to find a free loop device in /dev"));
-
-cleanup:
-    if (fd != -1) {
-        VIR_DEBUG("Got free loop device %s %d", looppath, fd);
-        *dev_name = looppath;
-    } else {
-        VIR_DEBUG("No free loop devices available");
-        VIR_FREE(looppath);
-    }
-    if (dh)
-        closedir(dh);
-    return fd;
-}
-
-static int lxcSetupLoopDevice(virDomainFSDefPtr fs)
-{
-    int lofd = -1;
-    int fsfd = -1;
-    struct loop_info64 lo;
+    int lofd;
     char *loname = NULL;
-    int ret = -1;
 
-    if ((lofd = lxcGetLoopFD(&loname)) < 0)
+    if ((lofd = virFileLoopDeviceAssociate(fs->src, &loname)) < 0)
         return -1;
 
-    memset(&lo, 0, sizeof(lo));
-    lo.lo_flags = LO_FLAGS_AUTOCLEAR;
-
-    if ((fsfd = open(fs->src, O_RDWR)) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to open %s"), fs->src);
-        goto cleanup;
-    }
-
-    if (ioctl(lofd, LOOP_SET_FD, fsfd) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to attach %s to loop device"),
-                             fs->src);
-        goto cleanup;
-    }
-
-    if (ioctl(lofd, LOOP_SET_STATUS64, &lo) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to mark loop device as autoclear"));
-
-        if (ioctl(lofd, LOOP_CLR_FD, 0) < 0)
-            VIR_WARN("Unable to detach %s from loop device", fs->src);
-        goto cleanup;
-    }
-
-    VIR_DEBUG("Attached loop device  %s %d to %s", fs->src, lofd, loname);
     /*
      * We now change it into a block device type, so that
      * the rest of container setup 'just works'
@@ -448,13 +352,6 @@ static int lxcSetupLoopDevice(virDomainFSDefPtr fs)
     fs->src = loname;
     loname = NULL;
 
-    ret = 0;
-
-cleanup:
-    VIR_FREE(loname);
-    VIR_FORCE_CLOSE(fsfd);
-    if (ret == -1)
-        VIR_FORCE_CLOSE(lofd);
     return lofd;
 }
 
@@ -470,7 +367,7 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
         if (ctrl->def->fss[i]->type != VIR_DOMAIN_FS_TYPE_FILE)
             continue;
 
-        fd = lxcSetupLoopDevice(ctrl->def->fss[i]);
+        fd = virLXCControllerSetupLoopDevice(ctrl->def->fss[i]);
         if (fd < 0)
             goto cleanup;
 

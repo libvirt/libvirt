@@ -30,6 +30,12 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <dirent.h>
+
+#ifdef __linux__
+# include <linux/loop.h>
+# include <sys/ioctl.h>
+#endif
 
 #include "command.h"
 #include "configmake.h"
@@ -493,3 +499,135 @@ int virFileUpdatePerm(const char *path,
 
     return 0;
 }
+
+
+#ifdef __linux__
+static int virFileLoopDeviceOpen(char **dev_name)
+{
+    int fd = -1;
+    DIR *dh = NULL;
+    struct dirent *de;
+    char *looppath;
+    struct loop_info64 lo;
+
+    VIR_DEBUG("Looking for loop devices in /dev");
+
+    if (!(dh = opendir("/dev"))) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to read /dev"));
+        goto cleanup;
+    }
+
+    while ((de = readdir(dh)) != NULL) {
+        if (!STRPREFIX(de->d_name, "loop"))
+            continue;
+
+        if (virAsprintf(&looppath, "/dev/%s", de->d_name) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        VIR_DEBUG("Checking up on device %s", looppath);
+        if ((fd = open(looppath, O_RDWR)) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to open %s"), looppath);
+            goto cleanup;
+        }
+
+        if (ioctl(fd, LOOP_GET_STATUS64, &lo) < 0) {
+            /* Got a free device, return the fd */
+            if (errno == ENXIO)
+                goto cleanup;
+
+            VIR_FORCE_CLOSE(fd);
+            virReportSystemError(errno,
+                                 _("Unable to get loop status on %s"),
+                                 looppath);
+            goto cleanup;
+        }
+
+        /* Oh well, try the next device */
+        VIR_FORCE_CLOSE(fd);
+        VIR_FREE(looppath);
+    }
+
+    virFileError(VIR_ERR_INTERNAL_ERROR, "%s",
+                 _("Unable to find a free loop device in /dev"));
+
+cleanup:
+    if (fd != -1) {
+        VIR_DEBUG("Got free loop device %s %d", looppath, fd);
+        *dev_name = looppath;
+    } else {
+        VIR_DEBUG("No free loop devices available");
+        VIR_FREE(looppath);
+    }
+    if (dh)
+        closedir(dh);
+    return fd;
+}
+
+
+int virFileLoopDeviceAssociate(const char *file,
+                               char **dev)
+{
+    int lofd = -1;
+    int fsfd = -1;
+    struct loop_info64 lo;
+    char *loname = NULL;
+    int ret = -1;
+
+    if ((lofd = virFileLoopDeviceOpen(&loname)) < 0)
+        return -1;
+
+    memset(&lo, 0, sizeof(lo));
+    lo.lo_flags = LO_FLAGS_AUTOCLEAR;
+
+    if ((fsfd = open(file, O_RDWR)) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to open %s"), file);
+        goto cleanup;
+    }
+
+    if (ioctl(lofd, LOOP_SET_FD, fsfd) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to attach %s to loop device"),
+                             file);
+        goto cleanup;
+    }
+
+    if (ioctl(lofd, LOOP_SET_STATUS64, &lo) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to mark loop device as autoclear"));
+
+        if (ioctl(lofd, LOOP_CLR_FD, 0) < 0)
+            VIR_WARN("Unable to detach %s from loop device", file);
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Attached loop device  %s %d to %s", file, lofd, loname);
+    *dev = loname;
+    loname = NULL;
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(loname);
+    VIR_FORCE_CLOSE(fsfd);
+    if (ret == -1)
+        VIR_FORCE_CLOSE(lofd);
+    return lofd;
+}
+
+#else /* __linux__ */
+
+int virFileLoopDeviceAssociate(const char *file,
+                               char **dev)
+{
+    virReportSystemError(ENOSYS,
+                         _("Unable to associate file %s with loop device"),
+                         file);
+    return -1;m
+}
+
+#endif /* __linux__ */
