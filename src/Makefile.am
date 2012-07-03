@@ -1523,6 +1523,8 @@ libvirt_lxc_SOURCES =						\
 libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(AM_LDFLAGS)
 libvirt_lxc_LDADD =			\
 		$(NUMACTL_LIBS) \
+		libvirt-net-rpc-server.la \
+		libvirt-net-rpc.la \
 		libvirt_driver_security.la \
 		libvirt_conf.la \
 		libvirt_util.la \

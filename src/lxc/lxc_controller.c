@@ -68,6 +68,7 @@
 #include "processinfo.h"
 #include "nodeinfo.h"
 #include "virrandom.h"
+#include "rpc/virnetserver.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -124,10 +125,8 @@ struct _virLXCController {
 
     virSecurityManagerPtr securityManager;
 
-    int monitorServerFd;
-    int monitorServerWatch;
-    int monitorClientFd;
-    int monitorClientWatch;
+    /* Server socket */
+    virNetServerPtr server;
 
     virCgroupPtr cgroup;
 };
@@ -142,11 +141,6 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
 
     if (VIR_ALLOC(ctrl) < 0)
         goto no_memory;
-
-    ctrl->monitorServerFd = -1;
-    ctrl->monitorServerWatch = -1;
-    ctrl->monitorClientFd = -1;
-    ctrl->monitorClientWatch = -1;
 
     if (!(ctrl->name = strdup(name)))
         goto no_memory;
@@ -254,12 +248,7 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
     virDomainDefFree(ctrl->def);
     VIR_FREE(ctrl->name);
 
-    if (ctrl->monitorServerWatch != -1)
-        virEventRemoveHandle(ctrl->monitorServerWatch);
-    VIR_FORCE_CLOSE(ctrl->monitorServerFd);
-    if (ctrl->monitorClientWatch != -1)
-        virEventRemoveHandle(ctrl->monitorClientWatch);
-    VIR_FORCE_CLOSE(ctrl->monitorClientFd);
+    virNetServerFree(ctrl->server);
 
     VIR_FREE(ctrl);
 }
@@ -777,54 +766,58 @@ cleanup:
     return rc;
 }
 
-static char*lxcMonitorPath(virLXCControllerPtr ctrl)
+
+static int virLXCControllerClientHook(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                      virNetServerClientPtr client,
+                                      void *opaque)
 {
+    virLXCControllerPtr ctrl = opaque;
+    virNetServerClientSetPrivateData(client, ctrl, NULL);
+    return 0;
+}
+
+
+static int virLXCControllerSetupServer(virLXCControllerPtr ctrl)
+{
+    virNetServerServicePtr svc = NULL;
     char *sockpath;
 
     if (virAsprintf(&sockpath, "%s/%s.sock",
-                    LXC_STATE_DIR, ctrl->def->name) < 0)
+                    LXC_STATE_DIR, ctrl->name) < 0) {
         virReportOOMError();
-    return sockpath;
-}
-
-static int lxcMonitorServer(const char *sockpath)
-{
-    int fd;
-    struct sockaddr_un addr;
-
-    if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
-        virReportSystemError(errno,
-                             _("failed to create server socket '%s'"),
-                             sockpath);
-        goto error;
+        return -1;
     }
 
-    unlink(sockpath);
-    memset(&addr, 0, sizeof(addr));
-    addr.sun_family = AF_UNIX;
-    if (virStrcpyStatic(addr.sun_path, sockpath) == NULL) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("Socket path %s too long for destination"), sockpath);
+    if (!(ctrl->server = virNetServerNew(0, 0, 0, 1,
+                                         -1, 0, false,
+                                         NULL,
+                                         virLXCControllerClientHook,
+                                         ctrl)))
         goto error;
-    }
 
-    if (bind(fd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
-        virReportSystemError(errno,
-                             _("failed to bind server socket '%s'"),
-                             sockpath);
+    if (!(svc = virNetServerServiceNewUNIX(sockpath,
+                                           0700,
+                                           0,
+                                           0,
+                                           false,
+                                           5,
+                                           NULL)))
         goto error;
-    }
-    if (listen(fd, 30 /* backlog */ ) < 0) {
-        virReportSystemError(errno,
-                             _("failed to listen server socket %s"),
-                             sockpath);
-        goto error;
-    }
 
-    return fd;
+    if (virNetServerAddService(ctrl->server, svc, NULL) < 0)
+        goto error;
+    virNetServerServiceFree(svc);
+    svc = NULL;
+
+    virNetServerUpdateServices(ctrl->server, true);
+    VIR_FREE(sockpath);
+    return 0;
 
 error:
-    VIR_FORCE_CLOSE(fd);
+    VIR_FREE(sockpath);
+    virNetServerFree(ctrl->server);
+    ctrl->server = NULL;
+    virNetServerServiceFree(svc);
     return -1;
 }
 
@@ -847,119 +840,22 @@ static int lxcControllerClearCapabilities(void)
     return 0;
 }
 
-/* Return true if it is ok to ignore an accept-after-epoll syscall
-   that fails with the specified errno value.  Else false.  */
-static bool
-ignorable_accept_errno(int errnum)
-{
-  return (errnum == EINVAL
-          || errnum == ECONNABORTED
-          || errnum == EAGAIN
-          || errnum == EWOULDBLOCK);
-}
-
 static bool quit = false;
 static virMutex lock;
-static int sigpipe[2];
 
-static void virLXCControllerSignalChildHandler(int signum ATTRIBUTE_UNUSED)
-{
-    ignore_value(write(sigpipe[1], "1", 1));
-}
 
-static void virLXCControllerSignalChildIO(int watch ATTRIBUTE_UNUSED,
-                                          int fd ATTRIBUTE_UNUSED,
-                                          int events ATTRIBUTE_UNUSED,
+static void virLXCControllerSignalChildIO(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                          siginfo_t *info ATTRIBUTE_UNUSED,
                                           void *opaque)
 {
-    char buf[1];
+    virLXCControllerPtr ctrl = opaque;
     int ret;
-    virLXCControllerPtr ctrl = opaque;
 
-    ignore_value(read(sigpipe[0], buf, 1));
     ret = waitpid(-1, NULL, WNOHANG);
-    if (ret == ctrl->initpid) {
-        virMutexLock(&lock);
-        quit = true;
-        virMutexUnlock(&lock);
-    }
+    if (ret == ctrl->initpid)
+        virNetServerQuit(ctrl->server);
 }
 
-
-static void virLXCControllerClientIO(int watch ATTRIBUTE_UNUSED, int fd, int events, void *opaque)
-{
-    virLXCControllerPtr ctrl = opaque;
-    char buf[1024];
-    ssize_t ret;
-
-    if (events & (VIR_EVENT_HANDLE_HANGUP |
-                  VIR_EVENT_HANDLE_ERROR)) {
-        virEventRemoveHandle(ctrl->monitorClientWatch);
-        ctrl->monitorClientWatch = -1;
-        return;
-    }
-
-reread:
-    ret = read(fd, buf, sizeof(buf));
-    if (ret == -1 && errno == EINTR)
-        goto reread;
-    if (ret == -1 && errno == EAGAIN)
-        return;
-    if (ret == -1) {
-        lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("Unable to read from monitor client"));
-        virMutexLock(&lock);
-        quit = true;
-        virMutexUnlock(&lock);
-        return;
-    }
-    if (ret == 0) {
-        VIR_DEBUG("Client %d gone", fd);
-        VIR_FORCE_CLOSE(ctrl->monitorClientFd);
-        virEventRemoveHandle(ctrl->monitorClientWatch);
-        ctrl->monitorClientWatch = -1;
-    }
-}
-
-
-static void virLXCControllerServerAccept(int watch ATTRIBUTE_UNUSED, int fd, int events ATTRIBUTE_UNUSED, void *opaque)
-{
-    virLXCControllerPtr ctrl = opaque;
-    int client;
-
-    if ((client = accept(fd, NULL, NULL)) < 0) {
-        /* First reflex may be simply to declare accept failure
-           to be a fatal error.  However, accept may fail when
-           a client quits between the above poll and here.
-           That case is not fatal, but rather to be expected,
-           if not common, so ignore it.  */
-        if (ignorable_accept_errno(errno))
-            return;
-        virReportSystemError(errno, "%s",
-                             _("Unable to accept monitor client"));
-        virMutexLock(&lock);
-        quit = true;
-        virMutexUnlock(&lock);
-        return;
-    }
-    VIR_DEBUG("New client %d (old %d)\n", client, ctrl->monitorClientFd);
-    VIR_FORCE_CLOSE(ctrl->monitorClientFd);
-    virEventRemoveHandle(ctrl->monitorClientWatch);
-
-    ctrl->monitorClientFd = client;
-    if ((ctrl->monitorClientWatch = virEventAddHandle(ctrl->monitorClientFd,
-                                                      VIR_EVENT_HANDLE_READABLE,
-                                                      virLXCControllerClientIO,
-                                                      ctrl,
-                                                      NULL)) < 0) {
-        lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("Unable to watch client socket"));
-        virMutexLock(&lock);
-        quit = true;
-        virMutexUnlock(&lock);
-        return;
-    }
-}
 
 static void virLXCControllerConsoleUpdateWatch(virLXCControllerConsolePtr console)
 {
@@ -1222,52 +1118,13 @@ static int virLXCControllerMain(virLXCControllerPtr ctrl)
     if (virMutexInit(&lock) < 0)
         goto cleanup2;
 
-    if (pipe2(sigpipe, O_CLOEXEC|O_NONBLOCK) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Cannot create signal pipe"));
+    if (virNetServerAddSignalHandler(ctrl->server,
+                                     SIGCHLD,
+                                     virLXCControllerSignalChildIO,
+                                     ctrl) < 0)
         goto cleanup;
-    }
 
-    if (virEventAddHandle(sigpipe[0],
-                          VIR_EVENT_HANDLE_READABLE,
-                          virLXCControllerSignalChildIO,
-                          ctrl,
-                          NULL) < 0) {
-        lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("Unable to watch signal pipe"));
-        goto cleanup;
-    }
-
-    if (signal(SIGCHLD, virLXCControllerSignalChildHandler) == SIG_ERR) {
-        virReportSystemError(errno, "%s",
-                             _("Cannot install signal handler"));
-        goto cleanup;
-    }
-
-    VIR_DEBUG("serverFd=%d clientFd=%d",
-              ctrl->monitorServerFd, ctrl->monitorClientFd);
     virResetLastError();
-
-    if ((ctrl->monitorServerWatch = virEventAddHandle(ctrl->monitorServerFd,
-                                                      VIR_EVENT_HANDLE_READABLE,
-                                                      virLXCControllerServerAccept,
-                                                      ctrl,
-                                                      NULL)) < 0) {
-        lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("Unable to watch monitor socket"));
-        goto cleanup;
-    }
-
-    if (ctrl->monitorClientFd != -1 &&
-        (ctrl->monitorClientWatch = virEventAddHandle(ctrl->monitorClientFd,
-                                                      VIR_EVENT_HANDLE_READABLE,
-                                                      virLXCControllerClientIO,
-                                                      ctrl,
-                                                      NULL)) < 0) {
-        lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("Unable to watch client socket"));
-        goto cleanup;
-    }
 
     for (i = 0 ; i < ctrl->nconsoles ; i++) {
         if ((ctrl->consoles[i].epollFd = epoll_create1(EPOLL_CLOEXEC)) < 0) {
@@ -1322,7 +1179,6 @@ static int virLXCControllerMain(virLXCControllerPtr ctrl)
 
 cleanup:
     virMutexDestroy(&lock);
-    signal(SIGCHLD, SIG_DFL);
 cleanup2:
 
     for (i = 0 ; i < ctrl->nconsoles ; i++)
@@ -1669,12 +1525,6 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
     if (virLXCControllerDaemonHandshake(ctrl) < 0)
         goto cleanup;
 
-    if (virSetBlocking(ctrl->monitorServerFd, false) < 0 ||
-        virSetBlocking(ctrl->monitorClientFd, false) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to set file descriptor non-blocking"));
-        goto cleanup;
-    }
     for (i = 0 ; i < ctrl->nconsoles ; i++)
         if (virLXCControllerConsoleSetNonblocking(&(ctrl->consoles[i])) < 0)
             goto cleanup;
@@ -1706,7 +1556,6 @@ int main(int argc, char *argv[])
     char **veths = NULL;
     int handshakeFd = -1;
     int bg = 0;
-    char *sockpath = NULL;
     const struct option options[] = {
         { "background", 0, NULL, 'b' },
         { "name",   1, NULL, 'n' },
@@ -1857,10 +1706,7 @@ int main(int argc, char *argv[])
     if (virLXCControllerValidateConsoles(ctrl) < 0)
         goto cleanup;
 
-    if ((sockpath = lxcMonitorPath(ctrl)) == NULL)
-        goto cleanup;
-
-    if ((ctrl->monitorServerFd = lxcMonitorServer(sockpath)) < 0)
+    if (virLXCControllerSetupServer(ctrl) < 0)
         goto cleanup;
 
     if (bg) {
@@ -1895,21 +1741,11 @@ int main(int argc, char *argv[])
         }
     }
 
-    /* Accept initial client which is the libvirtd daemon */
-    if ((ctrl->monitorClientFd = accept(ctrl->monitorServerFd, NULL, 0)) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to accept a connection from driver"));
-        goto cleanup;
-    }
-
     rc = virLXCControllerRun(ctrl);
 
 cleanup:
     virPidFileDelete(LXC_STATE_DIR, name);
     virLXCControllerDeleteInterfaces(ctrl);
-    if (sockpath)
-        unlink(sockpath);
-    VIR_FREE(sockpath);
     for (i = 0 ; i < nttyFDs ; i++)
         VIR_FORCE_CLOSE(ttyFDs[i]);
     VIR_FREE(ttyFDs);
