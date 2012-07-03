@@ -80,6 +80,64 @@ struct cgroup_device_policy {
 };
 
 
+typedef struct _virLXCController virLXCController;
+typedef virLXCController *virLXCControllerPtr;
+struct _virLXCController {
+    char *name;
+    virDomainDefPtr def;
+};
+
+static void virLXCControllerFree(virLXCControllerPtr ctrl);
+
+static virLXCControllerPtr virLXCControllerNew(const char *name)
+{
+    virLXCControllerPtr ctrl = NULL;
+    virCapsPtr caps = NULL;
+    char *configFile = NULL;
+
+    if (VIR_ALLOC(ctrl) < 0)
+        goto no_memory;
+
+    if (!(ctrl->name = strdup(name)))
+        goto no_memory;
+
+    if ((caps = lxcCapsInit(NULL)) == NULL)
+        goto error;
+
+    if ((configFile = virDomainConfigFile(LXC_STATE_DIR,
+                                          ctrl->name)) == NULL)
+        goto error;
+
+    if ((ctrl->def = virDomainDefParseFile(caps,
+                                           configFile,
+                                           1 << VIR_DOMAIN_VIRT_LXC,
+                                           0)) == NULL)
+        goto error;
+
+cleanup:
+    VIR_FREE(configFile);
+    virCapabilitiesFree(caps);
+    return ctrl;
+
+no_memory:
+    virReportOOMError();
+error:
+    virLXCControllerFree(ctrl);
+    ctrl = NULL;
+    goto cleanup;
+}
+
+static void virLXCControllerFree(virLXCControllerPtr ctrl)
+{
+    if (!ctrl)
+        return;
+
+    virDomainDefFree(ctrl->def);
+    VIR_FREE(ctrl->name);
+
+    VIR_FREE(ctrl);
+}
+
 static int lxcGetLoopFD(char **dev_name)
 {
     int fd = -1;
@@ -625,12 +683,12 @@ cleanup:
     return rc;
 }
 
-static char*lxcMonitorPath(virDomainDefPtr def)
+static char*lxcMonitorPath(virLXCControllerPtr ctrl)
 {
     char *sockpath;
 
     if (virAsprintf(&sockpath, "%s/%s.sock",
-                    LXC_STATE_DIR, def->name) < 0)
+                    LXC_STATE_DIR, ctrl->def->name) < 0)
         virReportOOMError();
     return sockpath;
 }
@@ -1362,15 +1420,15 @@ cleanup:
 }
 
 static int
-lxcControllerRun(virDomainDefPtr def,
-                 virSecurityManagerPtr securityDriver,
-                 unsigned int nveths,
-                 char **veths,
-                 int monitor,
-                 int client,
-                 int *ttyFDs,
-                 size_t nttyFDs,
-                 int handshakefd)
+virLXCControllerRun(virLXCControllerPtr ctrl,
+                    virSecurityManagerPtr securityDriver,
+                    unsigned int nveths,
+                    char **veths,
+                    int monitor,
+                    int client,
+                    int *ttyFDs,
+                    size_t nttyFDs,
+                    int handshakefd)
 {
     int rc = -1;
     int control[2] = { -1, -1};
@@ -1407,12 +1465,12 @@ lxcControllerRun(virDomainDefPtr def,
         goto cleanup;
     }
 
-    if (lxcSetupLoopDevices(def, &nloopDevs, &loopDevs) < 0)
+    if (lxcSetupLoopDevices(ctrl->def, &nloopDevs, &loopDevs) < 0)
         goto cleanup;
 
-    root = virDomainGetRootFilesystem(def);
+    root = virDomainGetRootFilesystem(ctrl->def);
 
-    if (lxcSetContainerResources(def) < 0)
+    if (lxcSetContainerResources(ctrl->def) < 0)
         goto cleanup;
 
     /*
@@ -1436,7 +1494,7 @@ lxcControllerRun(virDomainDefPtr def,
      * marked as shared
      */
     if (root) {
-        mount_options = virSecurityManagerGetMountOptions(securityDriver, def);
+        mount_options = virSecurityManagerGetMountOptions(securityDriver, ctrl->def);
         char *opts;
         VIR_DEBUG("Setting up private /dev/pts");
 
@@ -1525,10 +1583,10 @@ lxcControllerRun(virDomainDefPtr def,
         }
     }
 
-    if (lxcSetPersonality(def) < 0)
+    if (lxcSetPersonality(ctrl->def) < 0)
         goto cleanup;
 
-    if ((container = lxcContainerStart(def,
+    if ((container = lxcContainerStart(ctrl->def,
                                        securityDriver,
                                        nveths,
                                        veths,
@@ -1629,9 +1687,6 @@ int main(int argc, char *argv[])
     int monitor = -1;
     int handshakefd = -1;
     int bg = 0;
-    virCapsPtr caps = NULL;
-    virDomainDefPtr def = NULL;
-    char *configFile = NULL;
     char *sockpath = NULL;
     const struct option options[] = {
         { "background", 0, NULL, 'b' },
@@ -1646,6 +1701,7 @@ int main(int argc, char *argv[])
     int *ttyFDs = NULL;
     size_t nttyFDs = 0;
     virSecurityManagerPtr securityDriver = NULL;
+    virLXCControllerPtr ctrl = NULL;
 
     if (setlocale(LC_ALL, "") == NULL ||
         bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
@@ -1766,31 +1822,22 @@ int main(int argc, char *argv[])
 
     virEventRegisterDefaultImpl();
 
-    if ((caps = lxcCapsInit(NULL)) == NULL)
-        goto cleanup;
-
-    if ((configFile = virDomainConfigFile(LXC_STATE_DIR,
-                                          name)) == NULL)
-        goto cleanup;
-
-    if ((def = virDomainDefParseFile(caps, configFile,
-                                     1 << VIR_DOMAIN_VIRT_LXC,
-                                     0)) == NULL)
+    if (!(ctrl = virLXCControllerNew(name)))
         goto cleanup;
 
     VIR_DEBUG("Security model %s type %s label %s imagelabel %s",
-              NULLSTR(def->seclabel.model),
-              virDomainSeclabelTypeToString(def->seclabel.type),
-              NULLSTR(def->seclabel.label),
-              NULLSTR(def->seclabel.imagelabel));
+              NULLSTR(ctrl->def->seclabel.model),
+              virDomainSeclabelTypeToString(ctrl->def->seclabel.type),
+              NULLSTR(ctrl->def->seclabel.label),
+              NULLSTR(ctrl->def->seclabel.imagelabel));
 
-    if (def->nnets != nveths) {
+    if (ctrl->def->nnets != nveths) {
         fprintf(stderr, "%s: expecting %d veths, but got %d\n",
-                argv[0], def->nnets, nveths);
+                argv[0], ctrl->def->nnets, nveths);
         goto cleanup;
     }
 
-    if ((sockpath = lxcMonitorPath(def)) == NULL)
+    if ((sockpath = lxcMonitorPath(ctrl)) == NULL)
         goto cleanup;
 
     if ((monitor = lxcMonitorServer(sockpath)) < 0)
@@ -1835,17 +1882,17 @@ int main(int argc, char *argv[])
         goto cleanup;
     }
 
-    rc = lxcControllerRun(def, securityDriver,
-                          nveths, veths, monitor, client,
-                          ttyFDs, nttyFDs, handshakefd);
+    rc = virLXCControllerRun(ctrl, securityDriver,
+                             nveths, veths, monitor, client,
+                             ttyFDs, nttyFDs, handshakefd);
 
 cleanup:
-    if (def)
-        virPidFileDelete(LXC_STATE_DIR, def->name);
+    virPidFileDelete(LXC_STATE_DIR, name);
     lxcControllerCleanupInterfaces(nveths, veths);
     if (sockpath)
         unlink(sockpath);
     VIR_FREE(sockpath);
+    virLXCControllerFree(ctrl);
 
     return rc ? EXIT_FAILURE : EXIT_SUCCESS;
 }
