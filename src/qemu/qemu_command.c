@@ -4787,6 +4787,13 @@ qemuBuildCommandLine(virConnectPtr conn,
                 cont->type == VIR_DOMAIN_CONTROLLER_TYPE_FDC)
                 continue;
 
+             /* Also, skip USB controllers with type none.*/
+            if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+                cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE) {
+                usbcontroller = -1; /* mark we don't want a controller */
+                continue;
+            }
+
             /* Only recent QEMU implements a SATA (AHCI) controller */
             if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA) {
                 if (!qemuCapsGet(qemuCaps, QEMU_CAPS_ICH9_AHCI)) {

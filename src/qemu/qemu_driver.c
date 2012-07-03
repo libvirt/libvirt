@@ -5833,6 +5833,9 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (virDomainDefCompatibleDevice(vmdef, dev) < 0)
+            goto endjob;
+
         /* Make a copy for updated domain. */
         vmdef = virDomainObjCopyPersistentDef(driver->caps, vm);
         if (!vmdef)
@@ -5858,6 +5861,9 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (virDomainDefCompatibleDevice(vm->def, dev_copy) < 0)
+            goto endjob;
+
         switch (action) {
         case QEMU_DEVICE_ATTACH:
             ret = qemuDomainAttachDeviceLive(vm, dev_copy, dom);
