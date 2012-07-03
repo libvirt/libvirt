@@ -80,6 +80,30 @@ struct cgroup_device_policy {
 };
 
 
+typedef struct _virLXCControllerConsole virLXCControllerConsole;
+typedef virLXCControllerConsole *virLXCControllerConsolePtr;
+struct _virLXCControllerConsole {
+    int hostWatch;
+    int hostFd;  /* PTY FD in the host OS */
+    bool hostClosed;
+    int hostEpoll;
+    bool hostBlocking;
+
+    int contWatch;
+    int contFd;  /* PTY FD in the container */
+    bool contClosed;
+    int contEpoll;
+    bool contBlocking;
+
+    int epollWatch;
+    int epollFd; /* epoll FD for dealing with EOF */
+
+    size_t fromHostLen;
+    char fromHostBuf[1024];
+    size_t fromContLen;
+    char fromContBuf[1024];
+};
+
 typedef struct _virLXCController virLXCController;
 typedef virLXCController *virLXCControllerPtr;
 struct _virLXCController {
@@ -90,6 +114,9 @@ struct _virLXCController {
 
     size_t nveths;
     char **veths;
+
+    size_t nconsoles;
+    virLXCControllerConsolePtr consoles;
 };
 
 static void virLXCControllerFree(virLXCControllerPtr ctrl);
@@ -143,6 +170,22 @@ static void virLXCControllerStopInit(virLXCControllerPtr ctrl)
 }
 
 
+static void virLXCControllerConsoleClose(virLXCControllerConsolePtr console)
+{
+    if (console->hostWatch != -1)
+        virEventRemoveHandle(console->hostWatch);
+    VIR_FORCE_CLOSE(console->hostFd);
+
+    if (console->contWatch != -1)
+        virEventRemoveHandle(console->contWatch);
+    VIR_FORCE_CLOSE(console->contFd);
+
+    if (console->epollWatch != -1)
+        virEventRemoveHandle(console->epollWatch);
+    VIR_FORCE_CLOSE(console->epollFd);
+}
+
+
 static void virLXCControllerFree(virLXCControllerPtr ctrl)
 {
     size_t i;
@@ -156,10 +199,46 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
         VIR_FREE(ctrl->veths[i]);
     VIR_FREE(ctrl->veths);
 
+    for (i = 0 ; i < ctrl->nconsoles ; i++)
+        virLXCControllerConsoleClose(&(ctrl->consoles[i]));
+    VIR_FREE(ctrl->consoles);
+
     virDomainDefFree(ctrl->def);
     VIR_FREE(ctrl->name);
 
     VIR_FREE(ctrl);
+}
+
+
+static int virLXCControllerAddConsole(virLXCControllerPtr ctrl,
+                                      int hostFd)
+{
+    if (VIR_EXPAND_N(ctrl->consoles, ctrl->nconsoles, 1) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+    ctrl->consoles[ctrl->nconsoles-1].hostFd = hostFd;
+    ctrl->consoles[ctrl->nconsoles-1].hostWatch = -1;
+
+    ctrl->consoles[ctrl->nconsoles-1].contFd = -1;
+    ctrl->consoles[ctrl->nconsoles-1].contWatch = -1;
+
+    ctrl->consoles[ctrl->nconsoles-1].epollFd = -1;
+    ctrl->consoles[ctrl->nconsoles-1].epollWatch = -1;
+    return 0;
+}
+
+
+static int virLXCControllerConsoleSetNonblocking(virLXCControllerConsolePtr console)
+{
+    if (virSetBlocking(console->hostFd, false) < 0 ||
+        virSetBlocking(console->contFd, false) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to set console file descriptor non-blocking"));
+        return -1;
+    }
+
+    return 0;
 }
 
 
@@ -169,6 +248,19 @@ static int virLXCControllerValidateNICs(virLXCControllerPtr ctrl)
         lxcError(VIR_ERR_INTERNAL_ERROR,
                  _("expecting %d veths, but got %zu"),
                  ctrl->def->nnets, ctrl->nveths);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int virLXCControllerValidateConsoles(virLXCControllerPtr ctrl)
+{
+    if (ctrl->def->nconsoles != ctrl->nconsoles) {
+        lxcError(VIR_ERR_INTERNAL_ERROR,
+                 _("expecting %d consoles, but got %zu tty file handlers"),
+                 ctrl->def->nconsoles, ctrl->nconsoles);
         return -1;
     }
 
@@ -830,29 +922,6 @@ static void virLXCControllerSignalChildIO(int watch ATTRIBUTE_UNUSED,
 }
 
 
-struct lxcConsole {
-
-    int hostWatch;
-    int hostFd;  /* PTY FD in the host OS */
-    bool hostClosed;
-    int hostEpoll;
-    bool hostBlocking;
-
-    int contWatch;
-    int contFd;  /* PTY FD in the container */
-    bool contClosed;
-    int contEpoll;
-    bool contBlocking;
-
-    int epollWatch;
-    int epollFd; /* epoll FD for dealing with EOF */
-
-    size_t fromHostLen;
-    char fromHostBuf[1024];
-    size_t fromContLen;
-    char fromContBuf[1024];
-};
-
 struct lxcMonitor {
     int serverWatch;
     int serverFd;  /* Server listen socket */
@@ -936,7 +1005,7 @@ static void lxcServerAccept(int watch ATTRIBUTE_UNUSED, int fd, int events ATTRI
     }
 }
 
-static void lxcConsoleUpdateWatch(struct lxcConsole *console)
+static void virLXCControllerConsoleUpdateWatch(virLXCControllerConsolePtr console)
 {
     int hostEvents = 0;
     int contEvents = 0;
@@ -1038,9 +1107,9 @@ cleanup:
 }
 
 
-static void lxcEpollIO(int watch, int fd, int events, void *opaque)
+static void virLXCControllerConsoleEPoll(int watch, int fd, int events, void *opaque)
 {
-    struct lxcConsole *console = opaque;
+    virLXCControllerConsolePtr console = opaque;
 
     virMutexLock(&lock);
     VIR_DEBUG("IO event watch=%d fd=%d events=%d fromHost=%zu fromcont=%zu",
@@ -1076,7 +1145,7 @@ static void lxcEpollIO(int watch, int fd, int events, void *opaque)
             } else {
                 console->contClosed = false;
             }
-            lxcConsoleUpdateWatch(console);
+            virLXCControllerConsoleUpdateWatch(console);
             break;
         }
     }
@@ -1085,9 +1154,9 @@ cleanup:
     virMutexUnlock(&lock);
 }
 
-static void lxcConsoleIO(int watch, int fd, int events, void *opaque)
+static void virLXCControllerConsoleIO(int watch, int fd, int events, void *opaque)
 {
-    struct lxcConsole *console = opaque;
+    virLXCControllerConsolePtr console = opaque;
 
     virMutexLock(&lock);
     VIR_DEBUG("IO event watch=%d fd=%d events=%d fromHost=%zu fromcont=%zu",
@@ -1166,7 +1235,7 @@ static void lxcConsoleIO(int watch, int fd, int events, void *opaque)
         VIR_DEBUG("Got EOF on %d %d", watch, fd);
     }
 
-    lxcConsoleUpdateWatch(console);
+    virLXCControllerConsoleUpdateWatch(console);
     virMutexUnlock(&lock);
     return;
 
@@ -1183,8 +1252,6 @@ error:
  * lxcControllerMain
  * @serverFd: server socket fd to accept client requests
  * @clientFd: initial client which is the libvirtd daemon
- * @hostFd: open fd for application facing Pty
- * @contFd: open fd for container facing Pty
  *
  * Processes I/O on consoles and the monitor
  *
@@ -1192,12 +1259,8 @@ error:
  */
 static int virLXCControllerMain(virLXCControllerPtr ctrl,
                                 int serverFd,
-                                int clientFd,
-                                int *hostFds,
-                                int *contFds,
-                                size_t nFds)
+                                int clientFd)
 {
-    struct lxcConsole *consoles = NULL;
     struct lxcMonitor monitor = {
         .serverFd = serverFd,
         .clientFd = clientFd,
@@ -1256,53 +1319,38 @@ static int virLXCControllerMain(virLXCControllerPtr ctrl,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(consoles, nFds) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    for (i = 0 ; i < nFds ; i++) {
-        consoles[i].epollFd = -1;
-        consoles[i].epollWatch = -1;
-        consoles[i].hostWatch = -1;
-        consoles[i].contWatch = -1;
-    }
-
-    for (i = 0 ; i < nFds ; i++) {
-        consoles[i].hostFd = hostFds[i];
-        consoles[i].contFd = contFds[i];
-
-        if ((consoles[i].epollFd = epoll_create1(EPOLL_CLOEXEC)) < 0) {
+    for (i = 0 ; i < ctrl->nconsoles ; i++) {
+        if ((ctrl->consoles[i].epollFd = epoll_create1(EPOLL_CLOEXEC)) < 0) {
             virReportSystemError(errno, "%s",
                                  _("Unable to create epoll fd"));
             goto cleanup;
         }
 
-        if ((consoles[i].epollWatch = virEventAddHandle(consoles[i].epollFd,
-                                                        VIR_EVENT_HANDLE_READABLE,
-                                                        lxcEpollIO,
-                                                        &consoles[i],
-                                                        NULL)) < 0) {
+        if ((ctrl->consoles[i].epollWatch = virEventAddHandle(ctrl->consoles[i].epollFd,
+                                                              VIR_EVENT_HANDLE_READABLE,
+                                                              virLXCControllerConsoleEPoll,
+                                                              &(ctrl->consoles[i]),
+                                                              NULL)) < 0) {
             lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("Unable to watch epoll FD"));
             goto cleanup;
         }
 
-        if ((consoles[i].hostWatch = virEventAddHandle(consoles[i].hostFd,
-                                                       VIR_EVENT_HANDLE_READABLE,
-                                                       lxcConsoleIO,
-                                                       &consoles[i],
-                                                       NULL)) < 0) {
+        if ((ctrl->consoles[i].hostWatch = virEventAddHandle(ctrl->consoles[i].hostFd,
+                                                             VIR_EVENT_HANDLE_READABLE,
+                                                             virLXCControllerConsoleIO,
+                                                             &(ctrl->consoles[i]),
+                                                             NULL)) < 0) {
             lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("Unable to watch host console PTY"));
             goto cleanup;
         }
 
-        if ((consoles[i].contWatch = virEventAddHandle(consoles[i].contFd,
-                                                       VIR_EVENT_HANDLE_READABLE,
-                                                       lxcConsoleIO,
-                                                       &consoles[i],
-                                                       NULL)) < 0) {
+        if ((ctrl->consoles[i].contWatch = virEventAddHandle(ctrl->consoles[i].contFd,
+                                                             VIR_EVENT_HANDLE_READABLE,
+                                                             virLXCControllerConsoleIO,
+                                                             &(ctrl->consoles[i]),
+                                                             NULL)) < 0) {
             lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("Unable to watch host console PTY"));
             goto cleanup;
@@ -1329,17 +1377,9 @@ cleanup2:
     VIR_FORCE_CLOSE(monitor.serverFd);
     VIR_FORCE_CLOSE(monitor.clientFd);
 
-    for (i = 0 ; i < nFds ; i++) {
-        if (consoles[i].epollWatch != -1)
-            virEventRemoveHandle(consoles[i].epollWatch);
-        VIR_FORCE_CLOSE(consoles[i].epollFd);
-        if (consoles[i].contWatch != -1)
-            virEventRemoveHandle(consoles[i].contWatch);
-        if (consoles[i].hostWatch != -1)
-            virEventRemoveHandle(consoles[i].hostWatch);
-    }
+    for (i = 0 ; i < ctrl->nconsoles ; i++)
+        virLXCControllerConsoleClose(&(ctrl->consoles[i]));
 
-    VIR_FREE(consoles);
     return rc;
 }
 
@@ -1466,15 +1506,12 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
                     virSecurityManagerPtr securityDriver,
                     int monitor,
                     int client,
-                    int *ttyFDs,
-                    size_t nttyFDs,
                     int handshakefd)
 {
     int rc = -1;
     int control[2] = { -1, -1};
     int containerhandshake[2] = { -1, -1 };
-    int *containerTtyFDs = NULL;
-    char **containerTtyPaths = NULL;
+    char **containerTTYPaths = NULL;
     virDomainFSDefPtr root;
     char *devpts = NULL;
     char *devptmx = NULL;
@@ -1483,11 +1520,7 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
     size_t i;
     char *mount_options = NULL;
 
-    if (VIR_ALLOC_N(containerTtyFDs, nttyFDs) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-    if (VIR_ALLOC_N(containerTtyPaths, nttyFDs) < 0) {
+    if (VIR_ALLOC_N(containerTTYPaths, ctrl->nconsoles) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -1593,27 +1626,28 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
             VIR_FREE(devptmx);
         }
     } else {
-        if (nttyFDs != 1) {
+        if (ctrl->nconsoles != 1) {
             lxcError(VIR_ERR_CONFIG_UNSUPPORTED,
-                     _("Expected exactly one TTY fd, but got %zu"), nttyFDs);
+                     _("Expected exactly one console, but got %zu"),
+                     ctrl->nconsoles);
             goto cleanup;
         }
     }
 
-    for (i = 0 ; i < nttyFDs ; i++) {
+    for (i = 0 ; i < ctrl->nconsoles ; i++) {
         if (devptmx) {
             VIR_DEBUG("Opening tty on private %s", devptmx);
             if (lxcCreateTty(devptmx,
-                             &containerTtyFDs[i],
-                             &containerTtyPaths[i]) < 0) {
+                             &ctrl->consoles[i].contFd,
+                             &containerTTYPaths[i]) < 0) {
                 virReportSystemError(errno, "%s",
                                      _("Failed to allocate tty"));
                 goto cleanup;
             }
         } else {
             VIR_DEBUG("Opening tty on shared /dev/ptmx");
-            if (virFileOpenTty(&containerTtyFDs[i],
-                               &containerTtyPaths[i],
+            if (virFileOpenTty(&ctrl->consoles[i].contFd,
+                               &containerTTYPaths[i],
                                0) < 0) {
                 virReportSystemError(errno, "%s",
                                      _("Failed to allocate tty"));
@@ -1631,8 +1665,8 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
                                            ctrl->veths,
                                            control[1],
                                            containerhandshake[1],
-                                           containerTtyPaths,
-                                           nttyFDs)) < 0)
+                                           containerTTYPaths,
+                                           ctrl->nconsoles)) < 0)
         goto cleanup;
     VIR_FORCE_CLOSE(control[1]);
     VIR_FORCE_CLOSE(containerhandshake[1]);
@@ -1676,16 +1710,11 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
                              _("Unable to set file descriptor non-blocking"));
         goto cleanup;
     }
-    for (i = 0 ; i < nttyFDs ; i++) {
-        if (virSetBlocking(ttyFDs[i], false) < 0 ||
-            virSetBlocking(containerTtyFDs[i], false) < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("Unable to set file descriptor non-blocking"));
+    for (i = 0 ; i < ctrl->nconsoles ; i++)
+        if (virLXCControllerConsoleSetNonblocking(&(ctrl->consoles[i])) < 0)
             goto cleanup;
-        }
-    }
 
-    rc = virLXCControllerMain(ctrl, monitor, client, ttyFDs, containerTtyFDs, nttyFDs);
+    rc = virLXCControllerMain(ctrl, monitor, client);
     monitor = client = -1;
 
 cleanup:
@@ -1698,12 +1727,9 @@ cleanup:
     VIR_FORCE_CLOSE(containerhandshake[0]);
     VIR_FORCE_CLOSE(containerhandshake[1]);
 
-    for (i = 0 ; i < nttyFDs ; i++)
-        VIR_FREE(containerTtyPaths[i]);
-    VIR_FREE(containerTtyPaths);
-    for (i = 0 ; i < nttyFDs ; i++)
-        VIR_FORCE_CLOSE(containerTtyFDs[i]);
-    VIR_FREE(containerTtyFDs);
+    for (i = 0 ; i < ctrl->nconsoles ; i++)
+        VIR_FREE(containerTTYPaths[i]);
+    VIR_FREE(containerTTYPaths);
 
     for (i = 0 ; i < nloopDevs ; i++)
         VIR_FORCE_CLOSE(loopDevs[i]);
@@ -1741,6 +1767,7 @@ int main(int argc, char *argv[])
     size_t nttyFDs = 0;
     virSecurityManagerPtr securityDriver = NULL;
     virLXCControllerPtr ctrl = NULL;
+    size_t i;
 
     if (setlocale(LC_ALL, "") == NULL ||
         bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
@@ -1873,7 +1900,16 @@ int main(int argc, char *argv[])
     ctrl->veths = veths;
     ctrl->nveths = nveths;
 
+    for (i = 0 ; i < nttyFDs ; i++) {
+        if (virLXCControllerAddConsole(ctrl, ttyFDs[i]) < 0)
+            goto cleanup;
+        ttyFDs[i] = -1;
+    }
+
     if (virLXCControllerValidateNICs(ctrl) < 0)
+        goto cleanup;
+
+    if (virLXCControllerValidateConsoles(ctrl) < 0)
         goto cleanup;
 
     if ((sockpath = lxcMonitorPath(ctrl)) == NULL)
@@ -1923,7 +1959,7 @@ int main(int argc, char *argv[])
 
     rc = virLXCControllerRun(ctrl, securityDriver,
                              monitor, client,
-                             ttyFDs, nttyFDs, handshakefd);
+                             handshakefd);
 
 cleanup:
     virPidFileDelete(LXC_STATE_DIR, name);
@@ -1931,6 +1967,10 @@ cleanup:
     if (sockpath)
         unlink(sockpath);
     VIR_FREE(sockpath);
+    for (i = 0 ; i < nttyFDs ; i++)
+        VIR_FORCE_CLOSE(ttyFDs[i]);
+    VIR_FREE(ttyFDs);
+
     virLXCControllerFree(ctrl);
 
     return rc ? EXIT_FAILURE : EXIT_SUCCESS;
