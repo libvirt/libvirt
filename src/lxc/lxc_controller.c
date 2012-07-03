@@ -119,6 +119,7 @@ struct _virLXCController {
 
     size_t nconsoles;
     virLXCControllerConsolePtr consoles;
+    char *devptmx;
 
     size_t nloopDevs;
     int *loopDevFds;
@@ -235,6 +236,8 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
     VIR_FREE(ctrl->consoles);
 
     VIR_FORCE_CLOSE(ctrl->handshakeFd);
+
+    VIR_FREE(ctrl->devptmx);
 
     virDomainDefFree(ctrl->def);
     VIR_FREE(ctrl->name);
@@ -1546,45 +1549,27 @@ cleanup:
     return ret;
 }
 
+
 static int
-virLXCControllerRun(virLXCControllerPtr ctrl,
-                    int monitor,
-                    int client)
+virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
 {
-    int rc = -1;
-    int control[2] = { -1, -1};
-    int containerhandshake[2] = { -1, -1 };
-    char **containerTTYPaths = NULL;
-    virDomainFSDefPtr root;
-    char *devpts = NULL;
-    char *devptmx = NULL;
-    size_t i;
+    virDomainFSDefPtr root = virDomainGetRootFilesystem(ctrl->def);
     char *mount_options = NULL;
+    char *opts;
+    char *devpts = NULL;
+    int ret = -1;
 
-    if (VIR_ALLOC_N(containerTTYPaths, ctrl->nconsoles) < 0) {
-        virReportOOMError();
-        goto cleanup;
+    if (!root) {
+        if (ctrl->nconsoles != 1) {
+            lxcError(VIR_ERR_CONFIG_UNSUPPORTED,
+                     _("Expected exactly one console, but got %zu"),
+                     ctrl->nconsoles);
+            return -1;
+        }
+        return 0;
     }
 
-    if (socketpair(PF_UNIX, SOCK_STREAM, 0, control) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("sockpair failed"));
-        goto cleanup;
-    }
-
-    if (socketpair(PF_UNIX, SOCK_STREAM, 0, containerhandshake) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("socketpair failed"));
-        goto cleanup;
-    }
-
-    if (virLXCControllerSetupLoopDevices(ctrl) < 0)
-        goto cleanup;
-
-    root = virDomainGetRootFilesystem(ctrl->def);
-
-    if (lxcSetContainerResources(ctrl->def) < 0)
-        goto cleanup;
+    VIR_DEBUG("Setting up private /dev/pts");
 
     /*
      * If doing a chroot style setup, we need to prepare
@@ -1606,85 +1591,87 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
      * into slave mode, just in case it was currently
      * marked as shared
      */
-    if (root) {
-        mount_options = virSecurityManagerGetMountOptions(ctrl->securityManager,
-                                                          ctrl->def);
-        char *opts;
-        VIR_DEBUG("Setting up private /dev/pts");
+    mount_options = virSecurityManagerGetMountOptions(ctrl->securityManager,
+                                                      ctrl->def);
 
-        if (!virFileExists(root->src)) {
-            virReportSystemError(errno,
-                                 _("root source %s does not exist"),
-                                 root->src);
-            goto cleanup;
-        }
-
-        if (unshare(CLONE_NEWNS) < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("Cannot unshare mount namespace"));
-            goto cleanup;
-        }
-
-        if (mount("", "/", NULL, MS_SLAVE|MS_REC, NULL) < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("Failed to switch root mount into slave mode"));
-            goto cleanup;
-        }
-
-        if (virAsprintf(&devpts, "%s/dev/pts", root->src) < 0 ||
-            virAsprintf(&devptmx, "%s/dev/pts/ptmx", root->src) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-
-        if (virFileMakePath(devpts) < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to make path %s"),
-                                 devpts);
-            goto cleanup;
-        }
-
-        /* XXX should we support gid=X for X!=5 for distros which use
-         * a different gid for tty?  */
-        if (virAsprintf(&opts, "newinstance,ptmxmode=0666,mode=0620,gid=5%s",
-                        (mount_options ? mount_options : "")) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-
-        VIR_DEBUG("Mount devpts on %s type=tmpfs flags=%x, opts=%s",
-                  devpts, MS_NOSUID, opts);
-        if (mount("devpts", devpts, "devpts", MS_NOSUID, opts) < 0) {
-            VIR_FREE(opts);
-            virReportSystemError(errno,
-                                 _("Failed to mount devpts on %s"),
-                                 devpts);
-            goto cleanup;
-        }
-        VIR_FREE(opts);
-
-        if (access(devptmx, R_OK) < 0) {
-            VIR_WARN("Kernel does not support private devpts, using shared devpts");
-            VIR_FREE(devptmx);
-        }
-    } else {
-        if (ctrl->nconsoles != 1) {
-            lxcError(VIR_ERR_CONFIG_UNSUPPORTED,
-                     _("Expected exactly one console, but got %zu"),
-                     ctrl->nconsoles);
-            goto cleanup;
-        }
+    if (!virFileExists(root->src)) {
+        virReportSystemError(errno,
+                             _("root source %s does not exist"),
+                             root->src);
+        goto cleanup;
     }
 
+    if (unshare(CLONE_NEWNS) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Cannot unshare mount namespace"));
+        goto cleanup;
+    }
+
+    if (mount("", "/", NULL, MS_SLAVE|MS_REC, NULL) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Failed to switch root mount into slave mode"));
+        goto cleanup;
+    }
+
+    if (virAsprintf(&devpts, "%s/dev/pts", root->src) < 0 ||
+        virAsprintf(&ctrl->devptmx, "%s/dev/pts/ptmx", root->src) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virFileMakePath(devpts) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to make path %s"),
+                             devpts);
+        goto cleanup;
+    }
+
+    /* XXX should we support gid=X for X!=5 for distros which use
+     * a different gid for tty?  */
+    if (virAsprintf(&opts, "newinstance,ptmxmode=0666,mode=0620,gid=5%s",
+                    (mount_options ? mount_options : "")) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Mount devpts on %s type=tmpfs flags=%x, opts=%s",
+              devpts, MS_NOSUID, opts);
+    if (mount("devpts", devpts, "devpts", MS_NOSUID, opts) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to mount devpts on %s"),
+                             devpts);
+        goto cleanup;
+    }
+
+    if (access(ctrl->devptmx, R_OK) < 0) {
+        VIR_WARN("Kernel does not support private devpts, using shared devpts");
+        VIR_FREE(ctrl->devptmx);
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(opts);
+    VIR_FREE(devpts);
+    return ret;
+}
+
+
+static int
+virLXCControllerSetupConsoles(virLXCControllerPtr ctrl,
+                              char **containerTTYPaths)
+{
+    size_t i;
+
     for (i = 0 ; i < ctrl->nconsoles ; i++) {
-        if (devptmx) {
-            VIR_DEBUG("Opening tty on private %s", devptmx);
-            if (lxcCreateTty(devptmx,
+        if (ctrl->devptmx) {
+            VIR_DEBUG("Opening tty on private %s", ctrl->devptmx);
+            if (lxcCreateTty(ctrl->devptmx,
                              &ctrl->consoles[i].contFd,
                              &containerTTYPaths[i]) < 0) {
                 virReportSystemError(errno, "%s",
                                      _("Failed to allocate tty"));
-                goto cleanup;
+                return -1;
             }
         } else {
             VIR_DEBUG("Opening tty on shared /dev/ptmx");
@@ -1693,10 +1680,53 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
                                0) < 0) {
                 virReportSystemError(errno, "%s",
                                      _("Failed to allocate tty"));
-                goto cleanup;
+                return -1;
             }
         }
     }
+    return 0;
+}
+
+
+static int
+virLXCControllerRun(virLXCControllerPtr ctrl,
+                    int monitor,
+                    int client)
+{
+    int rc = -1;
+    int control[2] = { -1, -1};
+    int containerhandshake[2] = { -1, -1 };
+    char **containerTTYPaths = NULL;
+    size_t i;
+
+    if (VIR_ALLOC_N(containerTTYPaths, ctrl->nconsoles) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (socketpair(PF_UNIX, SOCK_STREAM, 0, control) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("sockpair failed"));
+        goto cleanup;
+    }
+
+    if (socketpair(PF_UNIX, SOCK_STREAM, 0, containerhandshake) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("socketpair failed"));
+        goto cleanup;
+    }
+
+    if (virLXCControllerSetupLoopDevices(ctrl) < 0)
+        goto cleanup;
+
+    if (lxcSetContainerResources(ctrl->def) < 0)
+        goto cleanup;
+
+    if (virLXCControllerSetupDevPTS(ctrl) < 0)
+        goto cleanup;
+
+    if (virLXCControllerSetupConsoles(ctrl, containerTTYPaths) < 0)
+        goto cleanup;
 
     if (lxcSetPersonality(ctrl->def) < 0)
         goto cleanup;
@@ -1755,9 +1785,6 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
     monitor = client = -1;
 
 cleanup:
-    VIR_FREE(mount_options);
-    VIR_FREE(devptmx);
-    VIR_FREE(devpts);
     VIR_FORCE_CLOSE(control[0]);
     VIR_FORCE_CLOSE(control[1]);
     VIR_FORCE_CLOSE(containerhandshake[0]);
