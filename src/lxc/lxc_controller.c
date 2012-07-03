@@ -119,6 +119,9 @@ struct _virLXCController {
 
     size_t nconsoles;
     virLXCControllerConsolePtr consoles;
+
+    size_t nloopDevs;
+    int *loopDevFds;
 };
 
 static void virLXCControllerFree(virLXCControllerPtr ctrl);
@@ -162,11 +165,33 @@ error:
 }
 
 
+static int virLXCControllerCloseLoopDevices(virLXCControllerPtr ctrl,
+                                            bool force)
+{
+    size_t i;
+
+    for (i = 0 ; i < ctrl->nloopDevs ; i++) {
+        if (force) {
+            VIR_FORCE_CLOSE(ctrl->loopDevFds[i]);
+        } else {
+            if (VIR_CLOSE(ctrl->loopDevFds[i]) < 0) {
+                virReportSystemError(errno, "%s",
+                                     _("Unable to close loop device"));
+                return -1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+
 static void virLXCControllerStopInit(virLXCControllerPtr ctrl)
 {
     if (ctrl->initpid == 0)
         return;
 
+    virLXCControllerCloseLoopDevices(ctrl, true);
     virPidAbort(ctrl->initpid);
     ctrl->initpid = 0;
 }
@@ -406,28 +431,28 @@ cleanup:
 }
 
 
-static int lxcSetupLoopDevices(virDomainDefPtr def, size_t *nloopDevs, int **loopDevs)
+static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
 {
     size_t i;
     int ret = -1;
 
-    for (i = 0 ; i < def->nfss ; i++) {
+    for (i = 0 ; i < ctrl->def->nfss ; i++) {
         int fd;
 
-        if (def->fss[i]->type != VIR_DOMAIN_FS_TYPE_FILE)
+        if (ctrl->def->fss[i]->type != VIR_DOMAIN_FS_TYPE_FILE)
             continue;
 
-        fd = lxcSetupLoopDevice(def->fss[i]);
+        fd = lxcSetupLoopDevice(ctrl->def->fss[i]);
         if (fd < 0)
             goto cleanup;
 
         VIR_DEBUG("Saving loop fd %d", fd);
-        if (VIR_REALLOC_N(*loopDevs, *nloopDevs+1) < 0) {
+        if (VIR_EXPAND_N(ctrl->loopDevFds, ctrl->nloopDevs, 1) < 0) {
             VIR_FORCE_CLOSE(fd);
             virReportOOMError();
             goto cleanup;
         }
-        (*loopDevs)[(*nloopDevs)++] = fd;
+        ctrl->loopDevFds[ctrl->nloopDevs - 1] = fd;
     }
 
     VIR_DEBUG("Setup all loop devices");
@@ -1530,8 +1555,6 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
     virDomainFSDefPtr root;
     char *devpts = NULL;
     char *devptmx = NULL;
-    size_t nloopDevs = 0;
-    int *loopDevs = NULL;
     size_t i;
     char *mount_options = NULL;
 
@@ -1552,7 +1575,7 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
         goto cleanup;
     }
 
-    if (lxcSetupLoopDevices(ctrl->def, &nloopDevs, &loopDevs) < 0)
+    if (virLXCControllerSetupLoopDevices(ctrl) < 0)
         goto cleanup;
 
     root = virDomainGetRootFilesystem(ctrl->def);
@@ -1704,9 +1727,8 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
     /* Now the container is fully setup... */
 
     /* ...we can close the loop devices... */
-
-    for (i = 0 ; i < nloopDevs ; i++)
-        VIR_FORCE_CLOSE(loopDevs[i]);
+    if (virLXCControllerCloseLoopDevices(ctrl, false) < 0)
+        goto cleanup;
 
     /* ...and reduce our privileges */
     if (lxcControllerClearCapabilities() < 0)
@@ -1740,10 +1762,6 @@ cleanup:
     for (i = 0 ; i < ctrl->nconsoles ; i++)
         VIR_FREE(containerTTYPaths[i]);
     VIR_FREE(containerTTYPaths);
-
-    for (i = 0 ; i < nloopDevs ; i++)
-        VIR_FORCE_CLOSE(loopDevs[i]);
-    VIR_FREE(loopDevs);
 
     virLXCControllerStopInit(ctrl);
 
