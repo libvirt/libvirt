@@ -598,7 +598,7 @@ libvirt_util_la_CFLAGS = $(CAPNG_CFLAGS) $(YAJL_CFLAGS) $(LIBNL_CFLAGS) \
 		$(DBUS_CFLAGS)
 libvirt_util_la_LIBADD = $(CAPNG_LIBS) $(YAJL_LIBS) $(LIBNL_LIBS) \
 		$(THREAD_LIBS) $(AUDIT_LIBS) $(DEVMAPPER_LIBS) \
-		$(RT_LIBS) $(DBUS_LIBS) $(MSCOM_LIBS)
+		$(RT_LIBS) $(DBUS_LIBS) $(MSCOM_LIBS) $(LIBXML_LIBS)
 
 
 noinst_LTLIBRARIES += libvirt_conf.la
@@ -783,14 +783,12 @@ endif
 
 libvirt_driver_qemu_impl_la_CFLAGS = $(NUMACTL_CFLAGS) \
                                 $(GNUTLS_CFLAGS) \
-                                $(LIBXML_CFLAGS) \
                                 $(LIBNL_CFLAGS) \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
 libvirt_driver_qemu_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_qemu_impl_la_LIBADD = $(NUMACTL_LIBS) \
 				$(CAPNG_LIBS) \
                                 $(GNUTLS_LIBS) \
-                                $(LIBXML_LIBS) \
 				$(LIBNL_LIBS)
 libvirt_driver_qemu_impl_la_SOURCES = $(QEMU_DRIVER_SOURCES)
 
@@ -1290,7 +1288,7 @@ libvirt_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)$(LIBVIRT_SYMBOL_FILE) \
 		    $(LIBVIRT_NODELETE) $(AM_LDFLAGS) \
 		    $(CYGWIN_EXTRA_LDFLAGS) $(MINGW_EXTRA_LDFLAGS)
 libvirt_la_BUILT_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_la_LIBADD += $(LIBXML_LIBS) \
+libvirt_la_LIBADD += \
 		    $(DRIVER_MODULE_LIBS) \
 		    $(CYGWIN_EXTRA_LIBADD)
 libvirt_la_CFLAGS = -DIN_LIBVIRT $(AM_CFLAGS)
@@ -1521,26 +1519,13 @@ libexec_PROGRAMS += libvirt_lxc
 
 libvirt_lxc_SOURCES =						\
 		$(LXC_CONTROLLER_SOURCES)			\
-		$(UTIL_SOURCES)					\
-		$(NODE_INFO_SOURCES)				\
-		$(ENCRYPTION_CONF_SOURCES)			\
-		$(NETDEV_CONF_SOURCES)				\
-		$(DOMAIN_CONF_SOURCES)				\
-		$(SECRET_CONF_SOURCES)				\
-		$(CPU_CONF_SOURCES)				\
-		$(SECURITY_DRIVER_SOURCES)			\
-		$(NWFILTER_PARAM_CONF_SOURCES)
-if WITH_SECDRIVER_SELINUX
-libvirt_lxc_SOURCES += $(SECURITY_DRIVER_SELINUX_SOURCES)
-endif
-if WITH_SECDRIVER_APPARMOR
-libvirt_lxc_SOURCES += $(SECURITY_DRIVER_APPARMOR_SOURCES)
-endif
+		$(NODE_INFO_SOURCES)
 libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(AM_LDFLAGS)
-libvirt_lxc_LDADD = $(CAPNG_LIBS) $(YAJL_LIBS) \
-		$(LIBXML_LIBS) $(NUMACTL_LIBS) $(THREAD_LIBS) \
-		$(LIBNL_LIBS) $(AUDIT_LIBS) $(DEVMAPPER_LIBS) \
-		$(RT_LIBS) $(DBUS_LIBS) \
+libvirt_lxc_LDADD =			\
+		$(NUMACTL_LIBS) \
+		libvirt_driver_security.la \
+		libvirt_conf.la \
+		libvirt_util.la \
 		../gnulib/lib/libgnu.la
 if WITH_DTRACE_PROBES
 libvirt_lxc_LDADD += libvirt_probes.lo
@@ -1552,13 +1537,6 @@ if WITH_SECDRIVER_APPARMOR
 libvirt_lxc_LDADD += $(APPARMOR_LIBS)
 endif
 libvirt_lxc_CFLAGS =				\
-		$(LIBPARTED_CFLAGS)		\
-		$(NUMACTL_CFLAGS)		\
-		$(CAPNG_CFLAGS)			\
-		$(YAJL_CFLAGS)			\
-		$(AUDIT_CFLAGS)			\
-		$(DBUS_CFLAGS)			\
-		$(LIBNL_CFLAGS)			\
 		-I$(top_srcdir)/src/conf	\
 		$(AM_CFLAGS)
 if HAVE_LIBBLKID
@@ -1583,7 +1561,6 @@ virt_aa_helper_SOURCES = $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
 
 virt_aa_helper_LDFLAGS = $(WARN_LDFLAGS) $(AM_LDFLAGS)
 virt_aa_helper_LDADD =						\
-		$(LIBXML_LIBS)					\
 		libvirt_conf.la					\
 		libvirt_util.la					\
 		../gnulib/lib/libgnu.la
