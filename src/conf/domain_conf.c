@@ -13266,6 +13266,58 @@ error:
     return NULL;
 }
 
+static bool
+virDomainDefHasUSB(virDomainDefPtr def)
+{
+    int i;
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+            def->controllers[i]->model != VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE)
+            return true;
+    }
+
+    return false;
+}
+
+static bool
+virDomainDeviceIsUSB(virDomainDeviceDefPtr dev)
+{
+    int t = dev->type;
+    if ((t == VIR_DOMAIN_DEVICE_DISK &&
+         dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB) ||
+        (t == VIR_DOMAIN_DEVICE_CONTROLLER &&
+         dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) ||
+        (t == VIR_DOMAIN_DEVICE_INPUT &&
+         dev->data.input->type == VIR_DOMAIN_INPUT_BUS_USB) ||
+        (t == VIR_DOMAIN_DEVICE_HOSTDEV &&
+         dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+         dev->data.hostdev->source.subsys.type ==
+         VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) ||
+        (t == VIR_DOMAIN_DEVICE_HUB &&
+         dev->data.hub->type == VIR_DOMAIN_HUB_TYPE_USB) ||
+        (t == VIR_DOMAIN_DEVICE_REDIRDEV &&
+         dev->data.redirdev->bus == VIR_DOMAIN_REDIRDEV_BUS_USB))
+        return true;
+
+    return false;
+}
+
+int
+virDomainDefCompatibleDevice(virDomainDefPtr def,
+                             virDomainDeviceDefPtr dev)
+{
+    if (!virDomainDefHasUSB(def) &&
+        virDomainDeviceIsUSB(dev)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Device configuration is not compatible: "
+                         "Domain has no USB bus support"));
+        return -1;
+    }
+
+    return 0;
+}
+
 int virDomainSaveXML(const char *configDir,
                      virDomainDefPtr def,
                      const char *xml)

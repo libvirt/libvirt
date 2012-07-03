@@ -1972,6 +1972,9 @@ int virDomainDefFormatInternal(virDomainDefPtr def,
                                unsigned int flags,
                                virBufferPtr buf);
 
+int virDomainDefCompatibleDevice(virDomainDefPtr def,
+                                 virDomainDeviceDefPtr dev);
+
 int virDomainCpuSetParse(const char *str,
                          char sep,
                          char *cpuset,

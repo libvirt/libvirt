@@ -281,6 +281,7 @@ virDomainDefAddImplicitControllers;
 virDomainDefCheckABIStability;
 virDomainDefClearDeviceAliases;
 virDomainDefClearPCIAddresses;
+virDomainDefCompatibleDevice;
 virDomainDefFormat;
 virDomainDefFormatInternal;
 virDomainDefFree;
