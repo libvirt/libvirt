@@ -51,7 +51,7 @@ int lxcContainerWaitForContinue(int control);
 
 int lxcContainerStart(virDomainDefPtr def,
                       virSecurityManagerPtr securityDriver,
-                      unsigned int nveths,
+                      size_t nveths,
                       char **veths,
                       int control,
                       int handshakefd,

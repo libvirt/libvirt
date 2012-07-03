@@ -85,6 +85,9 @@ typedef virLXCController *virLXCControllerPtr;
 struct _virLXCController {
     char *name;
     virDomainDefPtr def;
+
+    size_t nveths;
+    char **veths;
 };
 
 static void virLXCControllerFree(virLXCControllerPtr ctrl);
@@ -129,14 +132,34 @@ error:
 
 static void virLXCControllerFree(virLXCControllerPtr ctrl)
 {
+    size_t i;
+
     if (!ctrl)
         return;
+
+    for (i = 0 ; i < ctrl->nveths ; i++)
+        VIR_FREE(ctrl->veths[i]);
+    VIR_FREE(ctrl->veths);
 
     virDomainDefFree(ctrl->def);
     VIR_FREE(ctrl->name);
 
     VIR_FREE(ctrl);
 }
+
+
+static int virLXCControllerValidateNICs(virLXCControllerPtr ctrl)
+{
+    if (ctrl->def->nnets != ctrl->nveths) {
+        lxcError(VIR_ERR_INTERNAL_ERROR,
+                 _("expecting %d veths, but got %zu"),
+                 ctrl->def->nnets, ctrl->nveths);
+        return -1;
+    }
+
+    return 0;
+}
+
 
 static int lxcGetLoopFD(char **dev_name)
 {
@@ -1307,7 +1330,7 @@ cleanup2:
 
 
 /**
- * lxcControllerMoveInterfaces
+ * virLXCControllerMoveInterfaces
  * @nveths: number of interfaces
  * @veths: interface names
  * @container: pid of container
@@ -1316,37 +1339,41 @@ cleanup2:
  *
  * Returns 0 on success or -1 in case of error
  */
-static int lxcControllerMoveInterfaces(unsigned int nveths,
-                                       char **veths,
-                                       pid_t container)
+static int virLXCControllerMoveInterfaces(virLXCControllerPtr ctrl,
+                                          pid_t container)
 {
-    unsigned int i;
-    for (i = 0 ; i < nveths ; i++)
-        if (virNetDevSetNamespace(veths[i], container) < 0)
+    size_t i;
+
+    for (i = 0 ; i < ctrl->nveths ; i++) {
+        if (virNetDevSetNamespace(ctrl->veths[i], container) < 0)
             return -1;
+    }
 
     return 0;
 }
 
 
 /**
- * lxcCleanupInterfaces:
- * @nveths: number of interfaces
- * @veths: interface names
+ * virLXCControllerDeleteInterfaces:
+ * @ctrl: the LXC controller
  *
  * Cleans up the container interfaces by deleting the veth device pairs.
  *
  * Returns 0 on success or -1 in case of error
  */
-static int lxcControllerCleanupInterfaces(unsigned int nveths,
-                                          char **veths)
+static int virLXCControllerDeleteInterfaces(virLXCControllerPtr ctrl)
 {
-    unsigned int i;
-    for (i = 0 ; i < nveths ; i++)
-        ignore_value(virNetDevVethDelete(veths[i]));
+    size_t i;
+    int ret = 0;
 
-    return 0;
+    for (i = 0 ; i < ctrl->nveths ; i++) {
+        if (virNetDevVethDelete(ctrl->veths[i]) < 0)
+            ret = -1;
+    }
+
+    return ret;
 }
+
 
 static int lxcSetPersonality(virDomainDefPtr def)
 {
@@ -1422,8 +1449,6 @@ cleanup:
 static int
 virLXCControllerRun(virLXCControllerPtr ctrl,
                     virSecurityManagerPtr securityDriver,
-                    unsigned int nveths,
-                    char **veths,
                     int monitor,
                     int client,
                     int *ttyFDs,
@@ -1588,8 +1613,8 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
 
     if ((container = lxcContainerStart(ctrl->def,
                                        securityDriver,
-                                       nveths,
-                                       veths,
+                                       ctrl->nveths,
+                                       ctrl->veths,
                                        control[1],
                                        containerhandshake[1],
                                        containerTtyPaths,
@@ -1598,7 +1623,7 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
     VIR_FORCE_CLOSE(control[1]);
     VIR_FORCE_CLOSE(containerhandshake[1]);
 
-    if (lxcControllerMoveInterfaces(nveths, veths, container) < 0)
+    if (virLXCControllerMoveInterfaces(ctrl, container) < 0)
         goto cleanup;
 
     if (lxcContainerSendContinue(control[0]) < 0) {
@@ -1682,7 +1707,7 @@ int main(int argc, char *argv[])
     int rc = 1;
     int client;
     char *name = NULL;
-    int nveths = 0;
+    size_t nveths = 0;
     char **veths = NULL;
     int monitor = -1;
     int handshakefd = -1;
@@ -1831,11 +1856,11 @@ int main(int argc, char *argv[])
               NULLSTR(ctrl->def->seclabel.label),
               NULLSTR(ctrl->def->seclabel.imagelabel));
 
-    if (ctrl->def->nnets != nveths) {
-        fprintf(stderr, "%s: expecting %d veths, but got %d\n",
-                argv[0], ctrl->def->nnets, nveths);
+    ctrl->veths = veths;
+    ctrl->nveths = nveths;
+
+    if (virLXCControllerValidateNICs(ctrl) < 0)
         goto cleanup;
-    }
 
     if ((sockpath = lxcMonitorPath(ctrl)) == NULL)
         goto cleanup;
@@ -1883,12 +1908,12 @@ int main(int argc, char *argv[])
     }
 
     rc = virLXCControllerRun(ctrl, securityDriver,
-                             nveths, veths, monitor, client,
+                             monitor, client,
                              ttyFDs, nttyFDs, handshakefd);
 
 cleanup:
     virPidFileDelete(LXC_STATE_DIR, name);
-    lxcControllerCleanupInterfaces(nveths, veths);
+    virLXCControllerDeleteInterfaces(ctrl);
     if (sockpath)
         unlink(sockpath);
     VIR_FREE(sockpath);

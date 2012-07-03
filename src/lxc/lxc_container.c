@@ -93,7 +93,7 @@ typedef struct __lxc_child_argv lxc_child_argv_t;
 struct __lxc_child_argv {
     virDomainDefPtr config;
     virSecurityManagerPtr securityDriver;
-    unsigned int nveths;
+    size_t nveths;
     char **veths;
     int monitor;
     char **ttyPaths;
@@ -262,15 +262,15 @@ int lxcContainerWaitForContinue(int control)
  * Returns 0 on success or nonzero in case of error
  */
 static int lxcContainerRenameAndEnableInterfaces(bool privNet,
-                                                 unsigned int nveths,
+                                                 size_t nveths,
                                                  char **veths)
 {
     int rc = 0;
-    unsigned int i;
+    size_t i;
     char *newname = NULL;
 
     for (i = 0 ; i < nveths ; i++) {
-        if (virAsprintf(&newname, "eth%d", i) < 0) {
+        if (virAsprintf(&newname, "eth%zu", i) < 0) {
             virReportOOMError();
             rc = -1;
             goto error_out;
@@ -1775,7 +1775,7 @@ const char *lxcContainerGetAlt32bitArch(const char *arch)
  */
 int lxcContainerStart(virDomainDefPtr def,
                       virSecurityManagerPtr securityDriver,
-                      unsigned int nveths,
+                      size_t nveths,
                       char **veths,
                       int control,
                       int handshakefd,
