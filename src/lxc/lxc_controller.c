@@ -122,6 +122,8 @@ struct _virLXCController {
 
     size_t nloopDevs;
     int *loopDevFds;
+
+    virSecurityManagerPtr securityManager;
 };
 
 static void virLXCControllerFree(virLXCControllerPtr ctrl);
@@ -221,6 +223,8 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
         return;
 
     virLXCControllerStopInit(ctrl);
+
+    virSecurityManagerFree(ctrl->securityManager);
 
     for (i = 0 ; i < ctrl->nveths ; i++)
         VIR_FREE(ctrl->veths[i]);
@@ -1544,7 +1548,6 @@ cleanup:
 
 static int
 virLXCControllerRun(virLXCControllerPtr ctrl,
-                    virSecurityManagerPtr securityDriver,
                     int monitor,
                     int client)
 {
@@ -1604,7 +1607,8 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
      * marked as shared
      */
     if (root) {
-        mount_options = virSecurityManagerGetMountOptions(securityDriver, ctrl->def);
+        mount_options = virSecurityManagerGetMountOptions(ctrl->securityManager,
+                                                          ctrl->def);
         char *opts;
         VIR_DEBUG("Setting up private /dev/pts");
 
@@ -1698,7 +1702,7 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
         goto cleanup;
 
     if ((ctrl->initpid = lxcContainerStart(ctrl->def,
-                                           securityDriver,
+                                           ctrl->securityManager,
                                            ctrl->nveths,
                                            ctrl->veths,
                                            control[1],
@@ -1793,9 +1797,9 @@ int main(int argc, char *argv[])
     };
     int *ttyFDs = NULL;
     size_t nttyFDs = 0;
-    virSecurityManagerPtr securityDriver = NULL;
     virLXCControllerPtr ctrl = NULL;
     size_t i;
+    const char *securityDriver = "none";
 
     if (setlocale(LC_ALL, "") == NULL ||
         bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
@@ -1860,13 +1864,7 @@ int main(int argc, char *argv[])
             break;
 
         case 'S':
-            if (!(securityDriver = virSecurityManagerNew(optarg,
-                                                         LXC_DRIVER_NAME,
-                                                         false, false, false))) {
-                fprintf(stderr, "Cannot create security manager '%s'",
-                        optarg);
-                goto cleanup;
-            }
+            securityDriver = optarg;
             break;
 
         case 'h':
@@ -1887,16 +1885,6 @@ int main(int argc, char *argv[])
             goto cleanup;
         }
     }
-
-    if (securityDriver == NULL) {
-        if (!(securityDriver = virSecurityManagerNew("none",
-                                                     LXC_DRIVER_NAME,
-                                                     false, false, false))) {
-            fprintf(stderr, "%s: cannot initialize nop security manager", argv[0]);
-            goto cleanup;
-        }
-    }
-
 
     if (name == NULL) {
         fprintf(stderr, "%s: missing --name argument for configuration\n", argv[0]);
@@ -1920,6 +1908,11 @@ int main(int argc, char *argv[])
         goto cleanup;
 
     ctrl->handshakeFd = handshakeFd;
+
+    if (!(ctrl->securityManager = virSecurityManagerNew(securityDriver,
+                                                        LXC_DRIVER_NAME,
+                                                        false, false, false)))
+        goto cleanup;
 
     VIR_DEBUG("Security model %s type %s label %s imagelabel %s",
               NULLSTR(ctrl->def->seclabel.model),
@@ -1987,7 +1980,7 @@ int main(int argc, char *argv[])
         goto cleanup;
     }
 
-    rc = virLXCControllerRun(ctrl, securityDriver,
+    rc = virLXCControllerRun(ctrl,
                              monitor, client);
 
 cleanup:
