@@ -86,6 +86,8 @@ struct _virLXCController {
     char *name;
     virDomainDefPtr def;
 
+    pid_t initpid;
+
     size_t nveths;
     char **veths;
 };
@@ -130,12 +132,25 @@ error:
     goto cleanup;
 }
 
+
+static void virLXCControllerStopInit(virLXCControllerPtr ctrl)
+{
+    if (ctrl->initpid == 0)
+        return;
+
+    virPidAbort(ctrl->initpid);
+    ctrl->initpid = 0;
+}
+
+
 static void virLXCControllerFree(virLXCControllerPtr ctrl)
 {
     size_t i;
 
     if (!ctrl)
         return;
+
+    virLXCControllerStopInit(ctrl);
 
     for (i = 0 ; i < ctrl->nveths ; i++)
         VIR_FREE(ctrl->veths[i]);
@@ -791,22 +806,23 @@ static bool quit = false;
 static virMutex lock;
 static int sigpipe[2];
 
-static void lxcSignalChildHandler(int signum ATTRIBUTE_UNUSED)
+static void virLXCControllerSignalChildHandler(int signum ATTRIBUTE_UNUSED)
 {
     ignore_value(write(sigpipe[1], "1", 1));
 }
 
-static void lxcSignalChildIO(int watch ATTRIBUTE_UNUSED,
-                             int fd ATTRIBUTE_UNUSED,
-                             int events ATTRIBUTE_UNUSED, void *opaque)
+static void virLXCControllerSignalChildIO(int watch ATTRIBUTE_UNUSED,
+                                          int fd ATTRIBUTE_UNUSED,
+                                          int events ATTRIBUTE_UNUSED,
+                                          void *opaque)
 {
     char buf[1];
     int ret;
-    int *container = opaque;
+    virLXCControllerPtr ctrl = opaque;
 
     ignore_value(read(sigpipe[0], buf, 1));
     ret = waitpid(-1, NULL, WNOHANG);
-    if (ret == *container) {
+    if (ret == ctrl->initpid) {
         virMutexLock(&lock);
         quit = true;
         virMutexUnlock(&lock);
@@ -1174,12 +1190,12 @@ error:
  *
  * Returns 0 on success or -1 in case of error
  */
-static int lxcControllerMain(int serverFd,
-                             int clientFd,
-                             int *hostFds,
-                             int *contFds,
-                             size_t nFds,
-                             pid_t container)
+static int virLXCControllerMain(virLXCControllerPtr ctrl,
+                                int serverFd,
+                                int clientFd,
+                                int *hostFds,
+                                int *contFds,
+                                size_t nFds)
 {
     struct lxcConsole *consoles = NULL;
     struct lxcMonitor monitor = {
@@ -1201,15 +1217,15 @@ static int lxcControllerMain(int serverFd,
 
     if (virEventAddHandle(sigpipe[0],
                           VIR_EVENT_HANDLE_READABLE,
-                          lxcSignalChildIO,
-                          &container,
+                          virLXCControllerSignalChildIO,
+                          ctrl,
                           NULL) < 0) {
         lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
                  _("Unable to watch signal pipe"));
         goto cleanup;
     }
 
-    if (signal(SIGCHLD, lxcSignalChildHandler) == SIG_ERR) {
+    if (signal(SIGCHLD, virLXCControllerSignalChildHandler) == SIG_ERR) {
         virReportSystemError(errno, "%s",
                              _("Cannot install signal handler"));
         goto cleanup;
@@ -1339,13 +1355,12 @@ cleanup2:
  *
  * Returns 0 on success or -1 in case of error
  */
-static int virLXCControllerMoveInterfaces(virLXCControllerPtr ctrl,
-                                          pid_t container)
+static int virLXCControllerMoveInterfaces(virLXCControllerPtr ctrl)
 {
     size_t i;
 
     for (i = 0 ; i < ctrl->nveths ; i++) {
-        if (virNetDevSetNamespace(ctrl->veths[i], container) < 0)
+        if (virNetDevSetNamespace(ctrl->veths[i], ctrl->initpid) < 0)
             return -1;
     }
 
@@ -1460,7 +1475,6 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
     int containerhandshake[2] = { -1, -1 };
     int *containerTtyFDs = NULL;
     char **containerTtyPaths = NULL;
-    pid_t container = -1;
     virDomainFSDefPtr root;
     char *devpts = NULL;
     char *devptmx = NULL;
@@ -1611,19 +1625,19 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
     if (lxcSetPersonality(ctrl->def) < 0)
         goto cleanup;
 
-    if ((container = lxcContainerStart(ctrl->def,
-                                       securityDriver,
-                                       ctrl->nveths,
-                                       ctrl->veths,
-                                       control[1],
-                                       containerhandshake[1],
-                                       containerTtyPaths,
-                                       nttyFDs)) < 0)
+    if ((ctrl->initpid = lxcContainerStart(ctrl->def,
+                                           securityDriver,
+                                           ctrl->nveths,
+                                           ctrl->veths,
+                                           control[1],
+                                           containerhandshake[1],
+                                           containerTtyPaths,
+                                           nttyFDs)) < 0)
         goto cleanup;
     VIR_FORCE_CLOSE(control[1]);
     VIR_FORCE_CLOSE(containerhandshake[1]);
 
-    if (virLXCControllerMoveInterfaces(ctrl, container) < 0)
+    if (virLXCControllerMoveInterfaces(ctrl) < 0)
         goto cleanup;
 
     if (lxcContainerSendContinue(control[0]) < 0) {
@@ -1671,7 +1685,7 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
         }
     }
 
-    rc = lxcControllerMain(monitor, client, ttyFDs, containerTtyFDs, nttyFDs, container);
+    rc = virLXCControllerMain(ctrl, monitor, client, ttyFDs, containerTtyFDs, nttyFDs);
     monitor = client = -1;
 
 cleanup:
@@ -1695,7 +1709,7 @@ cleanup:
         VIR_FORCE_CLOSE(loopDevs[i]);
     VIR_FREE(loopDevs);
 
-    virPidAbort(container);
+    virLXCControllerStopInit(ctrl);
 
     return rc;
 }
