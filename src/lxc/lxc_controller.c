@@ -110,6 +110,8 @@ struct _virLXCController {
     char *name;
     virDomainDefPtr def;
 
+    int handshakeFd;
+
     pid_t initpid;
 
     size_t nveths;
@@ -203,6 +205,8 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
         virLXCControllerConsoleClose(&(ctrl->consoles[i]));
     VIR_FREE(ctrl->consoles);
 
+    VIR_FORCE_CLOSE(ctrl->handshakeFd);
+
     virDomainDefFree(ctrl->def);
     VIR_FREE(ctrl->name);
 
@@ -238,6 +242,18 @@ static int virLXCControllerConsoleSetNonblocking(virLXCControllerConsolePtr cons
         return -1;
     }
 
+    return 0;
+}
+
+
+static int virLXCControllerDaemonHandshake(virLXCControllerPtr ctrl)
+{
+    if (lxcContainerSendContinue(ctrl->handshakeFd) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("error sending continue signal to daemon"));
+        return -1;
+    }
+    VIR_FORCE_CLOSE(ctrl->handshakeFd);
     return 0;
 }
 
@@ -1505,8 +1521,7 @@ static int
 virLXCControllerRun(virLXCControllerPtr ctrl,
                     virSecurityManagerPtr securityDriver,
                     int monitor,
-                    int client,
-                    int handshakefd)
+                    int client)
 {
     int rc = -1;
     int control[2] = { -1, -1};
@@ -1697,12 +1712,8 @@ virLXCControllerRun(virLXCControllerPtr ctrl,
     if (lxcControllerClearCapabilities() < 0)
         goto cleanup;
 
-    if (lxcContainerSendContinue(handshakefd) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("error sending continue signal to parent"));
+    if (virLXCControllerDaemonHandshake(ctrl) < 0)
         goto cleanup;
-    }
-    VIR_FORCE_CLOSE(handshakefd);
 
     if (virSetBlocking(monitor, false) < 0 ||
         virSetBlocking(client, false) < 0) {
@@ -1723,7 +1734,6 @@ cleanup:
     VIR_FREE(devpts);
     VIR_FORCE_CLOSE(control[0]);
     VIR_FORCE_CLOSE(control[1]);
-    VIR_FORCE_CLOSE(handshakefd);
     VIR_FORCE_CLOSE(containerhandshake[0]);
     VIR_FORCE_CLOSE(containerhandshake[1]);
 
@@ -1750,7 +1760,7 @@ int main(int argc, char *argv[])
     size_t nveths = 0;
     char **veths = NULL;
     int monitor = -1;
-    int handshakefd = -1;
+    int handshakeFd = -1;
     int bg = 0;
     char *sockpath = NULL;
     const struct option options[] = {
@@ -1824,7 +1834,7 @@ int main(int argc, char *argv[])
             break;
 
         case 's':
-            if (virStrToLong_i(optarg, NULL, 10, &handshakefd) < 0) {
+            if (virStrToLong_i(optarg, NULL, 10, &handshakeFd) < 0) {
                 fprintf(stderr, "malformed --handshakefd argument '%s'",
                         optarg);
                 goto cleanup;
@@ -1875,7 +1885,7 @@ int main(int argc, char *argv[])
         goto cleanup;
     }
 
-    if (handshakefd < 0) {
+    if (handshakeFd < 0) {
         fprintf(stderr, "%s: missing --handshake argument for container PTY\n",
                 argv[0]);
         goto cleanup;
@@ -1890,6 +1900,8 @@ int main(int argc, char *argv[])
 
     if (!(ctrl = virLXCControllerNew(name)))
         goto cleanup;
+
+    ctrl->handshakeFd = handshakeFd;
 
     VIR_DEBUG("Security model %s type %s label %s imagelabel %s",
               NULLSTR(ctrl->def->seclabel.model),
@@ -1958,8 +1970,7 @@ int main(int argc, char *argv[])
     }
 
     rc = virLXCControllerRun(ctrl, securityDriver,
-                             monitor, client,
-                             handshakefd);
+                             monitor, client);
 
 cleanup:
     virPidFileDelete(LXC_STATE_DIR, name);
