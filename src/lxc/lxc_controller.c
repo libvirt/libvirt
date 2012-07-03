@@ -130,6 +130,8 @@ struct _virLXCController {
     int monitorServerWatch;
     int monitorClientFd;
     int monitorClientWatch;
+
+    virCgroupPtr cgroup;
 };
 
 static void virLXCControllerFree(virLXCControllerPtr ctrl);
@@ -207,6 +209,8 @@ static void virLXCControllerStopInit(virLXCControllerPtr ctrl)
     virLXCControllerCloseLoopDevices(ctrl, true);
     virPidAbort(ctrl->initpid);
     ctrl->initpid = 0;
+
+    virCgroupFree(&ctrl->cgroup);
 }
 
 
@@ -487,7 +491,7 @@ cleanup:
 }
 
 #if HAVE_NUMACTL
-static int lxcSetContainerNUMAPolicy(virDomainDefPtr def)
+static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl)
 {
     nodemask_t mask;
     int mode = -1;
@@ -497,7 +501,7 @@ static int lxcSetContainerNUMAPolicy(virDomainDefPtr def)
     int maxnode = 0;
     bool warned = false;
 
-    if (!def->numatune.memory.nodemask)
+    if (!ctrl->def->numatune.memory.nodemask)
         return 0;
 
     VIR_DEBUG("Setting NUMA memory policy");
@@ -513,7 +517,7 @@ static int lxcSetContainerNUMAPolicy(virDomainDefPtr def)
     /* Convert nodemask to NUMA bitmask. */
     nodemask_zero(&mask);
     for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++) {
-        if (def->numatune.memory.nodemask[i]) {
+        if (ctrl->def->numatune.memory.nodemask[i]) {
             if (i > NUMA_NUM_NODES) {
                 lxcError(VIR_ERR_CONFIG_UNSUPPORTED,
                          _("Host cannot support NUMA node %d"), i);
@@ -528,7 +532,7 @@ static int lxcSetContainerNUMAPolicy(virDomainDefPtr def)
         }
     }
 
-    mode = def->numatune.memory.mode;
+    mode = ctrl->def->numatune.memory.mode;
 
     if (mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
         numa_set_bind_policy(1);
@@ -567,9 +571,9 @@ cleanup:
     return ret;
 }
 #else
-static int lxcSetContainerNUMAPolicy(virDomainDefPtr def)
+static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl)
 {
-    if (def->numatune.memory.nodemask) {
+    if (ctrl->def->numatune.memory.nodemask) {
         lxcError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                  _("NUMA policy is not available on this platform"));
         return -1;
@@ -583,7 +587,7 @@ static int lxcSetContainerNUMAPolicy(virDomainDefPtr def)
 /*
  * To be run while still single threaded
  */
-static int lxcSetContainerCpuAffinity(virDomainDefPtr def)
+static int virLXCControllerSetupCpuAffinity(virLXCControllerPtr ctrl)
 {
     int i, hostcpus, maxcpu = CPU_SETSIZE;
     virNodeInfo nodeinfo;
@@ -607,11 +611,11 @@ static int lxcSetContainerCpuAffinity(virDomainDefPtr def)
         return -1;
     }
 
-    if (def->cpumask) {
+    if (ctrl->def->cpumask) {
         /* XXX why don't we keep 'cpumask' in the libvirt cpumap
          * format to start with ?!?! */
-        for (i = 0 ; i < maxcpu && i < def->cpumasklen ; i++)
-            if (def->cpumask[i])
+        for (i = 0 ; i < maxcpu && i < ctrl->def->cpumasklen ; i++)
+            if (ctrl->def->cpumask[i])
                 VIR_USE_CPU(cpumap, i);
     } else {
         /* You may think this is redundant, but we can't assume libvirtd
@@ -637,33 +641,33 @@ static int lxcSetContainerCpuAffinity(virDomainDefPtr def)
 }
 
 
-static int lxcSetContainerCpuTune(virCgroupPtr cgroup, virDomainDefPtr def)
+static int virLXCControllerSetupCgroupsCpuTune(virLXCControllerPtr ctrl)
 {
     int ret = -1;
-    if (def->cputune.shares != 0) {
-        int rc = virCgroupSetCpuShares(cgroup, def->cputune.shares);
+    if (ctrl->def->cputune.shares != 0) {
+        int rc = virCgroupSetCpuShares(ctrl->cgroup, ctrl->def->cputune.shares);
         if (rc != 0) {
             virReportSystemError(-rc,
                                  _("Unable to set io cpu shares for domain %s"),
-                                 def->name);
+                                 ctrl->def->name);
             goto cleanup;
         }
     }
-    if (def->cputune.quota != 0) {
-        int rc = virCgroupSetCpuCfsQuota(cgroup, def->cputune.quota);
+    if (ctrl->def->cputune.quota != 0) {
+        int rc = virCgroupSetCpuCfsQuota(ctrl->cgroup, ctrl->def->cputune.quota);
         if (rc != 0) {
             virReportSystemError(-rc,
                                  _("Unable to set io cpu quota for domain %s"),
-                                 def->name);
+                                 ctrl->def->name);
             goto cleanup;
         }
     }
-    if (def->cputune.period != 0) {
-        int rc = virCgroupSetCpuCfsPeriod(cgroup, def->cputune.period);
+    if (ctrl->def->cputune.period != 0) {
+        int rc = virCgroupSetCpuCfsPeriod(ctrl->cgroup, ctrl->def->cputune.period);
         if (rc != 0) {
             virReportSystemError(-rc,
                                  _("Unable to set io cpu period for domain %s"),
-                                 def->name);
+                                 ctrl->def->name);
             goto cleanup;
         }
     }
@@ -673,16 +677,16 @@ cleanup:
 }
 
 
-static int lxcSetContainerBlkioTune(virCgroupPtr cgroup, virDomainDefPtr def)
+static int virLXCControllerSetupCgroupsBlkioTune(virLXCControllerPtr ctrl)
 {
     int ret = -1;
 
-    if (def->blkio.weight) {
-        int rc = virCgroupSetBlkioWeight(cgroup, def->blkio.weight);
+    if (ctrl->def->blkio.weight) {
+        int rc = virCgroupSetBlkioWeight(ctrl->cgroup, ctrl->def->blkio.weight);
         if (rc != 0) {
             virReportSystemError(-rc,
                                  _("Unable to set Blkio weight for domain %s"),
-                                 def->name);
+                                 ctrl->def->name);
             goto cleanup;
         }
     }
@@ -693,45 +697,45 @@ cleanup:
 }
 
 
-static int lxcSetContainerMemTune(virCgroupPtr cgroup, virDomainDefPtr def)
+static int virLXCControllerSetupCgroupsMemTune(virLXCControllerPtr ctrl)
 {
     int ret = -1;
     int rc;
 
-    rc = virCgroupSetMemory(cgroup, def->mem.max_balloon);
+    rc = virCgroupSetMemory(ctrl->cgroup, ctrl->def->mem.max_balloon);
     if (rc != 0) {
         virReportSystemError(-rc,
                              _("Unable to set memory limit for domain %s"),
-                             def->name);
+                             ctrl->def->name);
         goto cleanup;
     }
 
-    if (def->mem.hard_limit) {
-        rc = virCgroupSetMemoryHardLimit(cgroup, def->mem.hard_limit);
+    if (ctrl->def->mem.hard_limit) {
+        rc = virCgroupSetMemoryHardLimit(ctrl->cgroup, ctrl->def->mem.hard_limit);
         if (rc != 0) {
             virReportSystemError(-rc,
                                  _("Unable to set memory hard limit for domain %s"),
-                                 def->name);
+                                 ctrl->def->name);
             goto cleanup;
         }
     }
 
-    if (def->mem.soft_limit) {
-        rc = virCgroupSetMemorySoftLimit(cgroup, def->mem.soft_limit);
+    if (ctrl->def->mem.soft_limit) {
+        rc = virCgroupSetMemorySoftLimit(ctrl->cgroup, ctrl->def->mem.soft_limit);
         if (rc != 0) {
             virReportSystemError(-rc,
                                  _("Unable to set memory soft limit for domain %s"),
-                                 def->name);
+                                 ctrl->def->name);
             goto cleanup;
         }
     }
 
-    if (def->mem.swap_hard_limit) {
-        rc = virCgroupSetMemSwapHardLimit(cgroup, def->mem.swap_hard_limit);
+    if (ctrl->def->mem.swap_hard_limit) {
+        rc = virCgroupSetMemSwapHardLimit(ctrl->cgroup, ctrl->def->mem.swap_hard_limit);
         if (rc != 0) {
             virReportSystemError(-rc,
                                  _("Unable to set swap hard limit for domain %s"),
-                                 def->name);
+                                 ctrl->def->name);
             goto cleanup;
         }
     }
@@ -742,7 +746,7 @@ cleanup:
 }
 
 
-static int lxcSetContainerDeviceACL(virCgroupPtr cgroup, virDomainDefPtr def)
+static int virLXCControllerSetupCgroupsDeviceACL(virLXCControllerPtr ctrl)
 {
     int ret = -1;
     int rc;
@@ -757,17 +761,17 @@ static int lxcSetContainerDeviceACL(virCgroupPtr cgroup, virDomainDefPtr def)
         {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_PTMX},
         {0,   0, 0}};
 
-    rc = virCgroupDenyAllDevices(cgroup);
+    rc = virCgroupDenyAllDevices(ctrl->cgroup);
     if (rc != 0) {
         virReportSystemError(-rc,
                              _("Unable to deny devices for domain %s"),
-                             def->name);
+                             ctrl->def->name);
         goto cleanup;
     }
 
     for (i = 0; devices[i].type != 0; i++) {
         const struct cgroup_device_policy *dev = &devices[i];
-        rc = virCgroupAllowDevice(cgroup,
+        rc = virCgroupAllowDevice(ctrl->cgroup,
                                   dev->type,
                                   dev->major,
                                   dev->minor,
@@ -775,34 +779,34 @@ static int lxcSetContainerDeviceACL(virCgroupPtr cgroup, virDomainDefPtr def)
         if (rc != 0) {
             virReportSystemError(-rc,
                                  _("Unable to allow device %c:%d:%d for domain %s"),
-                                 dev->type, dev->major, dev->minor, def->name);
+                                 dev->type, dev->major, dev->minor, ctrl->def->name);
             goto cleanup;
         }
     }
 
-    for (i = 0 ; i < def->nfss ; i++) {
-        if (def->fss[i]->type != VIR_DOMAIN_FS_TYPE_BLOCK)
+    for (i = 0 ; i < ctrl->def->nfss ; i++) {
+        if (ctrl->def->fss[i]->type != VIR_DOMAIN_FS_TYPE_BLOCK)
             continue;
 
-        rc = virCgroupAllowDevicePath(cgroup,
-                                      def->fss[i]->src,
-                                      def->fss[i]->readonly ?
+        rc = virCgroupAllowDevicePath(ctrl->cgroup,
+                                      ctrl->def->fss[i]->src,
+                                      ctrl->def->fss[i]->readonly ?
                                       VIR_CGROUP_DEVICE_READ :
                                       VIR_CGROUP_DEVICE_RW);
         if (rc != 0) {
             virReportSystemError(-rc,
                                  _("Unable to allow device %s for domain %s"),
-                                 def->fss[i]->src, def->name);
+                                 ctrl->def->fss[i]->src, ctrl->def->name);
             goto cleanup;
         }
     }
 
-    rc = virCgroupAllowDeviceMajor(cgroup, 'c', LXC_DEV_MAJ_PTY,
+    rc = virCgroupAllowDeviceMajor(ctrl->cgroup, 'c', LXC_DEV_MAJ_PTY,
                                    VIR_CGROUP_DEVICE_RWM);
     if (rc != 0) {
         virReportSystemError(-rc,
                              _("Unable to allow PTY devices for domain %s"),
-                             def->name);
+                             ctrl->def->name);
         goto cleanup;
     }
 
@@ -813,24 +817,23 @@ cleanup:
 
 
 /**
- * lxcSetContainerResources
- * @def: pointer to virtual machine structure
+ * virLXCControllerSetupResourceLimits
+ * @ctrl: the controller state
  *
  * Creates a cgroup for the container, moves the task inside,
  * and sets resource limits
  *
  * Returns 0 on success or -1 in case of error
  */
-static int lxcSetContainerResources(virDomainDefPtr def)
+static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl)
 {
     virCgroupPtr driver;
-    virCgroupPtr cgroup;
     int rc = -1;
 
-    if (lxcSetContainerCpuAffinity(def) < 0)
+    if (virLXCControllerSetupCpuAffinity(ctrl) < 0)
         return -1;
 
-    if (lxcSetContainerNUMAPolicy(def) < 0)
+    if (virLXCControllerSetupNUMAPolicy(ctrl) < 0)
         return -1;
 
     rc = virCgroupForDriver("lxc", &driver, 1, 0);
@@ -844,36 +847,35 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         return rc;
     }
 
-    rc = virCgroupForDomain(driver, def->name, &cgroup, 1);
+    rc = virCgroupForDomain(driver, ctrl->def->name, &ctrl->cgroup, 1);
     if (rc != 0) {
         virReportSystemError(-rc,
                              _("Unable to create cgroup for domain %s"),
-                             def->name);
+                             ctrl->def->name);
         goto cleanup;
     }
 
-    if (lxcSetContainerCpuTune(cgroup, def) < 0)
+    if (virLXCControllerSetupCgroupsCpuTune(ctrl) < 0)
         goto cleanup;
 
-    if (lxcSetContainerBlkioTune(cgroup, def) < 0)
+    if (virLXCControllerSetupCgroupsBlkioTune(ctrl) < 0)
         goto cleanup;
 
-    if (lxcSetContainerMemTune(cgroup, def) < 0)
+    if (virLXCControllerSetupCgroupsMemTune(ctrl) < 0)
         goto cleanup;
 
-    if (lxcSetContainerDeviceACL(cgroup, def) < 0)
+    if (virLXCControllerSetupCgroupsDeviceACL(ctrl) < 0)
         goto cleanup;
 
-    rc = virCgroupAddTask(cgroup, getpid());
+    rc = virCgroupAddTask(ctrl->cgroup, getpid());
     if (rc != 0) {
         virReportSystemError(-rc,
                              _("Unable to add task %d to cgroup for domain %s"),
-                             getpid(), def->name);
+                             getpid(), ctrl->def->name);
     }
 
 cleanup:
     virCgroupFree(&driver);
-    virCgroupFree(&cgroup);
 
     return rc;
 }
@@ -1718,7 +1720,7 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
     if (virLXCControllerSetupLoopDevices(ctrl) < 0)
         goto cleanup;
 
-    if (lxcSetContainerResources(ctrl->def) < 0)
+    if (virLXCControllerSetupResourceLimits(ctrl) < 0)
         goto cleanup;
 
     if (virLXCControllerSetupDevPTS(ctrl) < 0)
