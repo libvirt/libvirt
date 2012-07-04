@@ -4888,6 +4888,7 @@ remoteDomainListAllSnapshots(virDomainPtr dom,
 
     remoteDriverLock(priv);
 
+    make_nonnull_domain(&args.dom, dom);
     args.need_results = !!snapshots;
     args.flags = flags;
 
