@@ -3104,6 +3104,7 @@ qemuProcessReconnect(void *opaque)
      */
     if (!priv->qemuCaps &&
         qemuCapsExtractVersionInfo(obj->def->emulator, obj->def->os.arch,
+                                   false,
                                    NULL,
                                    &priv->qemuCaps) < 0)
         goto error;
@@ -3504,6 +3505,7 @@ int qemuProcessStart(virConnectPtr conn,
     qemuCapsFree(priv->qemuCaps);
     priv->qemuCaps = NULL;
     if (qemuCapsExtractVersionInfo(vm->def->emulator, vm->def->os.arch,
+                                   true,
                                    NULL,
                                    &priv->qemuCaps) < 0)
         goto cleanup;
@@ -4248,6 +4250,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     priv->qemuCaps = NULL;
     if (qemuCapsExtractVersionInfo(vm->def->emulator,
                                    vm->def->os.arch,
+                                   false,
                                    NULL,
                                    &priv->qemuCaps) < 0)
         goto cleanup;

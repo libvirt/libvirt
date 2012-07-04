@@ -169,7 +169,9 @@ int qemuCapsProbeCPUModels(const char *qemu,
 
 int qemuCapsExtractVersion(virCapsPtr caps,
                            unsigned int *version);
-int qemuCapsExtractVersionInfo(const char *qemu, const char *arch,
+int qemuCapsExtractVersionInfo(const char *qemu,
+                               const char *arch,
+                               bool check_yajl,
                                unsigned int *version,
                                virBitmapPtr *qemuCaps);
 

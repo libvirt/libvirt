@@ -776,7 +776,7 @@ qemuDomainAssignS390Addresses(virDomainDefPtr def, virBitmapPtr qemuCaps)
     if (!qemuCaps) {
         /* need to get information from real environment */
         if (qemuCapsExtractVersionInfo(def->emulator, def->os.arch,
-                                       NULL,
+                                       false, NULL,
                                        &localCaps) < 0)
             goto cleanup;
         qemuCaps = localCaps;
@@ -1015,6 +1015,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
     if (!qemuCaps) {
         /* need to get information from real environment */
         if (qemuCapsExtractVersionInfo(def->emulator, def->os.arch,
+                                       false,
                                        NULL,
                                        &localCaps) < 0)
             goto cleanup;

@@ -4761,6 +4761,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
     }
 
     if (qemuCapsExtractVersionInfo(def->emulator, def->os.arch,
+                                   false,
                                    NULL,
                                    &qemuCaps) < 0)
         goto cleanup;

@@ -661,7 +661,8 @@ qemuCapsInitGuest(virCapsPtr caps,
 
     /* Ignore binary if extracting version info fails */
     if (binary &&
-        qemuCapsExtractVersionInfo(binary, info->arch, NULL, &qemuCaps) < 0)
+        qemuCapsExtractVersionInfo(binary, info->arch,
+                                   false, NULL, &qemuCaps) < 0)
         VIR_FREE(binary);
 
     /* qemu-kvm/kvm binaries can only be used if
@@ -683,7 +684,8 @@ qemuCapsInitGuest(virCapsPtr caps,
                 continue;
 
             if (qemuCapsExtractVersionInfo(kvmbin, info->arch,
-                                           NULL, &kvmCaps) < 0) {
+                                           false, NULL,
+                                           &kvmCaps) < 0) {
                 VIR_FREE(kvmbin);
                 continue;
             }
@@ -1489,7 +1491,9 @@ qemuCapsParseDeviceStr(const char *str, virBitmapPtr flags)
     return 0;
 }
 
-int qemuCapsExtractVersionInfo(const char *qemu, const char *arch,
+int qemuCapsExtractVersionInfo(const char *qemu,
+                               const char *arch,
+                               bool check_yajl,
                                unsigned int *retversion,
                                virBitmapPtr *retflags)
 {
@@ -1522,7 +1526,8 @@ int qemuCapsExtractVersionInfo(const char *qemu, const char *arch,
 
     if (!(flags = qemuCapsNew()) ||
         qemuCapsParseHelpStr(qemu, help, flags,
-                             &version, &is_kvm, &kvm_version, true) == -1)
+                             &version, &is_kvm, &kvm_version,
+                             check_yajl) == -1)
         goto cleanup;
 
     /* Currently only x86_64 and i686 support PCI-multibus. */
@@ -1600,7 +1605,8 @@ int qemuCapsExtractVersion(virCapsPtr caps,
         return -1;
     }
 
-    if (qemuCapsExtractVersionInfo(binary, ut.machine, version, NULL) < 0) {
+    if (qemuCapsExtractVersionInfo(binary, ut.machine, false,
+                                   version, NULL) < 0) {
         return -1;
     }
 
