@@ -2739,7 +2739,6 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
     }
 
     ret = 0;
-    vm->hasManagedSave = true;
 
     /* Shut it down */
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SAVED, 0);
@@ -2916,8 +2915,10 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
     VIR_INFO("Saving state to %s", name);
 
     compressed = QEMUD_SAVE_FORMAT_RAW;
-    ret = qemuDomainSaveInternal(driver, dom, vm, name, compressed,
-                                 NULL, flags);
+    if ((ret = qemuDomainSaveInternal(driver, dom, vm, name, compressed,
+                                      NULL, flags)) == 0)
+        vm->hasManagedSave = true;
+
     vm = NULL;
 
 cleanup:
