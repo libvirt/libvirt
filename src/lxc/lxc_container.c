@@ -1416,12 +1416,14 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     if (lxcContainerPivotRoot(root) < 0)
         goto cleanup;
 
-    /* Gets rid of any existing stuff under /proc, /sys & /tmp
+    /* If we have the root source being '/', then we need to
+     * get rid of any existing stuff under /proc, /sys & /tmp.
      * We need new namespace aware versions of those. We must
      * do /proc last otherwise we won't find /proc/mounts :-) */
-    if (lxcContainerUnmountSubtree("/sys", false) < 0 ||
-        lxcContainerUnmountSubtree("/dev", false) < 0 ||
-        lxcContainerUnmountSubtree("/proc", false) < 0)
+    if (STREQ(root->src, "/") &&
+        (lxcContainerUnmountSubtree("/sys", false) < 0 ||
+         lxcContainerUnmountSubtree("/dev", false) < 0 ||
+         lxcContainerUnmountSubtree("/proc", false) < 0))
         goto cleanup;
 
     /* Mounts the core /proc, /sys, etc filesystems */
