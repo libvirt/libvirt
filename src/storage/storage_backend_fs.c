@@ -190,8 +190,7 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(virStoragePoolObjPtr pool ATTR
 
     path = groups[0];
 
-    name = strrchr(path, '/');
-    if (name == NULL) {
+    if (!(name = strrchr(path, '/'))) {
         virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("invalid netfs path (no /): %s"), path);
         goto cleanup;

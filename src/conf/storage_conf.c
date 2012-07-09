@@ -593,19 +593,19 @@ virStoragePoolDefParseSourceString(const char *srcSpec,
     xmlXPathContextPtr xpath_ctxt = NULL;
     virStoragePoolSourcePtr def = NULL, ret = NULL;
 
-    if (!(doc = virXMLParseStringCtxt(srcSpec, _("(storage_source_specification)"), &xpath_ctxt))) {
+    if (!(doc = virXMLParseStringCtxt(srcSpec,
+                                      _("(storage_source_specification)"),
+                                      &xpath_ctxt)))
         goto cleanup;
-    }
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
         goto cleanup;
     }
 
-    node = virXPathNode("/source", xpath_ctxt);
-    if (!node) {
-        virStorageReportError(VIR_ERR_XML_ERROR,
-                              "%s", _("root element was not source"));
+    if (!(node = virXPathNode("/source", xpath_ctxt))) {
+        virStorageReportError(VIR_ERR_XML_ERROR, "%s",
+                              _("root element was not source"));
         goto cleanup;
     }
 
