@@ -205,11 +205,11 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(virStoragePoolObjPtr pool ATTR
     if (!(src = virStoragePoolSourceListNewSource(&state->list)))
         goto cleanup;
 
-    if (src->nhost != 1) {
-        virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                              _("Expected exactly 1 host for the storage pool"));
+    if (VIR_ALLOC_N(src->hosts, 1) < 0) {
+        virReportOOMError();
         goto cleanup;
     }
+    src->nhost = 1;
 
     if (!(src->hosts[0].name = strdup(state->host)) ||
         !(src->dir = strdup(path))) {
