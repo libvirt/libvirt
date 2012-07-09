@@ -6,6 +6,7 @@
 [Unit]
 Description=Virtualization daemon
 Before=libvirt-guests.service
+After=network.target
 
 [Service]
 EnvironmentFile=-/etc/sysconfig/libvirtd
