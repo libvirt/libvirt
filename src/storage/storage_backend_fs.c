@@ -213,10 +213,8 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(virStoragePoolObjPtr pool ATTR
     }
     src->format = VIR_STORAGE_POOL_NETFS_NFS;
 
-    src = NULL;
     ret = 0;
 cleanup:
-    virStoragePoolSourceFree(src);
     return ret;
 }
 
