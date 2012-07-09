@@ -21,9 +21,46 @@ or:
 
   git diff > libvirt-myfeature.patch
 
+However, the usual workflow of libvirt developer is:
+
+  git checkout master
+  git pull
+  git checkout -t origin -b workbranch
+  Hack, committing any changes along the way
+
+Then, when you want to post your patches:
+
+  git pull --rebase
+  (fix any conflicts)
+  git send-email --cover-letter --no-chain-reply-to --annotate --to=libvir-list@redhat.com master
+
+For a single patch you can omit "--cover-letter", but series of a two or more
+patches needs a cover letter. If you get tired of typing
+"--to=libvir-list@redhat.com" designation you can set it in git config:
+
+  git config sendemail.to libvir-list@redhat.com
+
+Please follow this as close as you can, especially the rebase and git
+send-email part, as it makes life easier for other developers to review your
+patch set. One should avoid sending patches as attachments, but rather send
+them in email body along with commit message. If a developer is sending
+another version of the patch (e.g. to address review comments), he is advised
+to note differences to previous versions after the "---" line in the patch so
+that it helps reviewers but doesn't become part of git history. Moreover, such
+patch needs to be prefixed correctly with "--subject-prefix=PATCHv2" appended
+to "git send-email" (substitute "v2" with the correct version if needed
+though).
+
+
+
 (3) Split large changes into a series of smaller patches, self-contained if
 possible, with an explanation of each patch and an explanation of how the
-sequence of patches fits together.
+sequence of patches fits together. Moreover, please keep in mind that it's
+required to be able to compile cleanly after each patch. A feature does not
+have to work until the end of a series, as long as intermediate patches don't
+cause test-suite failures.
+
+
 
 (4) Make sure your patches apply against libvirt GIT. Developers only follow GIT
 and don't care much about released versions.

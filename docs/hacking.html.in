@@ -20,10 +20,49 @@
 <pre>
   git diff > libvirt-myfeature.patch
 </pre>
+        <p>However, the usual workflow of libvirt developer is:</p>
+<pre>
+  git checkout master
+  git pull
+  git checkout -t origin -b workbranch
+  Hack, committing any changes along the way
+</pre>
+        <p>Then, when you want to post your patches:</p>
+<pre>
+  git pull --rebase
+  (fix any conflicts)
+  git send-email --cover-letter --no-chain-reply-to --annotate --to=libvir-list@redhat.com master
+</pre>
+        <p>For a single patch you can omit <code>--cover-letter</code>, but
+        series of a two or more patches needs a cover letter. If you get tired
+        of typing <code>--to=libvir-list@redhat.com</code> designation you can
+        set it in git config:</p>
+<pre>
+  git config sendemail.to libvir-list@redhat.com
+</pre>
+        <p>Please follow this as close as you can, especially the rebase and
+        git send-email part, as it makes life easier for other developers to
+        review your patch set. One should avoid sending patches as attachments,
+        but rather send them in email body along with commit message. If a
+        developer is sending another version of the patch (e.g. to address
+        review comments), he is advised to note differences to previous
+        versions after the <code>---</code> line in the patch so that it helps
+        reviewers but doesn't become part of git history. Moreover, such patch
+        needs to be prefixed correctly with
+        <code>--subject-prefix=PATCHv2</code> appended to <code>git
+            send-email</code> (substitute <code>v2</code> with the correct
+        version if needed though).</p>
       </li>
-      <li>Split large changes into a series of smaller patches, self-contained
-        if possible, with an explanation of each patch and an explanation of how
-        the sequence of patches fits together.</li>
+
+      <li><p>Split large changes into a series of smaller patches,
+        self-contained if possible, with an explanation of each patch and an
+        explanation of how the sequence of patches fits together. Moreover,
+        please keep in mind that it's required to be able to compile cleanly
+        after each patch.  A feature does not have to work until the end of a
+        series, as long as intermediate patches don't cause test-suite
+        failures.</p>
+      </li>
+
       <li>Make sure your patches apply against libvirt GIT.  Developers
         only follow GIT and don't care much about released versions.</li>
       <li><p>Run the automated tests on your code before submitting any changes.
