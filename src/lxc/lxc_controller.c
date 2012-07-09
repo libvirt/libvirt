@@ -852,8 +852,11 @@ static void virLXCControllerSignalChildIO(virNetServerPtr server ATTRIBUTE_UNUSE
     int ret;
 
     ret = waitpid(-1, NULL, WNOHANG);
-    if (ret == ctrl->initpid)
-        virNetServerQuit(ctrl->server);
+    if (ret == ctrl->initpid) {
+        virMutexLock(&lock);
+        quit = true;
+        virMutexUnlock(&lock);
+    }
 }
 
 
