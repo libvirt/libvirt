@@ -1,7 +1,7 @@
 /*
  * virfile.c: safer file handling
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corporation
  * Copyright (C) 2010 Stefan Berger
  * Copyright (C) 2010 Eric Blake
@@ -627,7 +627,8 @@ int virFileLoopDeviceAssociate(const char *file,
     virReportSystemError(ENOSYS,
                          _("Unable to associate file %s with loop device"),
                          file);
-    return -1;m
+    *dev = NULL;
+    return -1;
 }
 
 #endif /* __linux__ */
