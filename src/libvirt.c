@@ -18977,3 +18977,48 @@ error:
     virDispatchError(dom->conn);
     return -1;
 }
+
+/**
+ * virDomainGetHostname:
+ * @domain: a domain object
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Get the hostname for that domain.
+ *
+ * Dependent on hypervisor used, this may require a guest agent to be
+ * available.
+ *
+ * Returns the hostname which must be freed by the caller, or
+ * NULL if there was an error.
+ */
+char *
+virDomainGetHostname(virDomainPtr domain, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return NULL;
+    }
+
+    conn = domain->conn;
+
+    if (conn->driver->domainGetHostname) {
+        char *ret;
+        ret = conn->driver->domainGetHostname (domain, flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return NULL;
+}

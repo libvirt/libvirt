@@ -544,4 +544,9 @@ LIBVIRT_0.9.13 {
         virDomainSnapshotRef;
 } LIBVIRT_0.9.11;
 
+LIBVIRT_0.9.14 {
+    global:
+        virDomainGetHostname;
+} LIBVIRT_0.9.13;
+
 # .... define new API here using predicted next version number ....

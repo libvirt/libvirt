@@ -1540,6 +1540,8 @@ int                     virDomainSetMemoryFlags (virDomainPtr domain,
 int                     virDomainGetMaxVcpus    (virDomainPtr domain);
 int                     virDomainGetSecurityLabel (virDomainPtr domain,
                                                    virSecurityLabelPtr seclabel);
+char *                  virDomainGetHostname    (virDomainPtr domain,
+                                                 unsigned int flags);
 
 typedef enum {
     VIR_DOMAIN_METADATA_DESCRIPTION = 0, /* Operate on <description> */

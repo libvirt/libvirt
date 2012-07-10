@@ -142,6 +142,11 @@ typedef int
                                          unsigned int flags);
 typedef char *
         (*virDrvDomainGetOSType)        (virDomainPtr domain);
+
+typedef char *
+        (*virDrvDomainGetHostname)      (virDomainPtr domain,
+                                         unsigned int flags);
+
 typedef unsigned long long
         (*virDrvDomainGetMaxMemory)     (virDomainPtr domain);
 typedef int
@@ -904,6 +909,7 @@ struct _virDriver {
     virDrvDomainDestroy                 domainDestroy;
     virDrvDomainDestroyFlags            domainDestroyFlags;
     virDrvDomainGetOSType               domainGetOSType;
+    virDrvDomainGetHostname             domainGetHostname;
     virDrvDomainGetMaxMemory            domainGetMaxMemory;
     virDrvDomainSetMaxMemory            domainSetMaxMemory;
     virDrvDomainSetMemory               domainSetMemory;
