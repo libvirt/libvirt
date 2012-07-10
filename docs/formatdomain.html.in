@@ -779,7 +779,11 @@
         in which case an attempt to start a domain requesting an unsupported
         CPU model will fail. Supported values for <code>fallback</code>
         attribute are: <code>allow</code> (this is the default), and
-        <code>forbid</code>.</dd>
+        <code>forbid</code>. The optional <code>vendor_id</code> attribute
+        (<span class="since">Since 0.9.14</span>)  can be used to set the
+        vendor id seen by the guest. It must be exactly 12 characters long.
+        If not set the vendor id of the host is used. Typical possible
+        values are "AuthenticAMD" and "GenuineIntel".</dd>
 
       <dt><code>vendor</code></dt>
       <dd><span class="since">Since 0.8.3</span> the content of the
