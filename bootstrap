@@ -1,6 +1,6 @@
 #! /bin/sh
 # Print a version string.
-scriptversion=2012-05-15.06; # UTC
+scriptversion=2012-07-19.14; # UTC
 
 # Bootstrap this package from checked-out sources.
 
@@ -77,6 +77,33 @@ Running without arguments will suffice in most cases.
 EOF
 }
 
+# warnf_ FORMAT-STRING ARG1...
+warnf_ ()
+{
+  warnf_format_=$1
+  shift
+  nl='
+'
+  case $* in
+    *$nl*) me_=$(printf "$me"|tr "$nl|" '??')
+       printf "$warnf_format_" "$@" | sed "s|^|$me_: |" ;;
+    *) printf "$me: $warnf_format_" "$@" ;;
+  esac >&2
+}
+
+# warn_ WORD1...
+warn_ ()
+{
+  # If IFS does not start with ' ', set it and emit the warning in a subshell.
+  case $IFS in
+    ' '*) warnf_ '%s\n' "$*";;
+    *)    (IFS=' '; warn_ "$@");;
+  esac
+}
+
+# die WORD1...
+die() { warn_ "$@"; exit 1; }
+
 # Configuration.
 
 # Name of the Makefile.am
@@ -130,7 +157,8 @@ extract_package_name='
      p
   }
 '
-package=$(sed -n "$extract_package_name" configure.ac) || exit
+package=$(sed -n "$extract_package_name" configure.ac) \
+  || die 'cannot find package name in configure.ac'
 gnulib_name=lib$package
 
 build_aux=build-aux
@@ -186,6 +214,8 @@ use_git=true
 # otherwise find the first of the NAMES that can be run (i.e.,
 # supports --version).  If found, set ENVVAR to the program name,
 # die otherwise.
+#
+# FIXME: code duplication, see also gnu-web-doc-update.
 find_tool ()
 {
   find_tool_envvar=$1
@@ -203,19 +233,15 @@ find_tool ()
   else
     find_tool_error_prefix="\$$find_tool_envvar: "
   fi
-  if test x"$find_tool_res" = x; then
-    echo >&2 "$me: one of these is required: $find_tool_names"
-    exit 1
-  fi
-  ($find_tool_res --version </dev/null) >/dev/null 2>&1 || {
-    echo >&2 "$me: ${find_tool_error_prefix}cannot run $find_tool_res --version"
-    exit 1
-  }
+  test x"$find_tool_res" != x \
+    || die "one of these is required: $find_tool_names"
+  ($find_tool_res --version </dev/null) >/dev/null 2>&1 \
+    || die "${find_tool_error_prefix}cannot run $find_tool_res --version"
   eval "$find_tool_envvar=\$find_tool_res"
   eval "export $find_tool_envvar"
 }
 
-# Find sha1sum, named gsha1sum on MacPorts, and shasum on MacOS 10.6.
+# Find sha1sum, named gsha1sum on MacPorts, and shasum on Mac OS X 10.6.
 find_tool SHA1SUM sha1sum gsha1sum shasum
 
 # Override the default configuration, if necessary.
@@ -230,7 +256,6 @@ esac
 test -z "${gnulib_extra_files}" && \
   gnulib_extra_files="
         $build_aux/install-sh
-        $build_aux/missing
         $build_aux/mdate-sh
         $build_aux/texinfo.tex
         $build_aux/depcomp
@@ -270,21 +295,15 @@ do
   --no-git)
     use_git=false;;
   *)
-    echo >&2 "$0: $option: unknown option"
-    exit 1;;
+    die "$option: unknown option";;
   esac
 done
 
-if $use_git || test -d "$GNULIB_SRCDIR"; then
-  :
-else
-  echo "$0: Error: --no-git requires --gnulib-srcdir" >&2
-  exit 1
-fi
+$use_git || test -d "$GNULIB_SRCDIR" \
+  || die "Error: --no-git requires --gnulib-srcdir"
 
 if test -n "$checkout_only_file" && test ! -r "$checkout_only_file"; then
-  echo "$0: Bootstrapping from a non-checked-out distribution is risky." >&2
-  exit 1
+  die "Bootstrapping from a non-checked-out distribution is risky."
 fi
 
 # Ensure that lines starting with ! sort last, per gitignore conventions
@@ -310,7 +329,7 @@ insert_sorted_if_absent() {
   echo "$str" | sort_patterns - $file | cmp -s - $file > /dev/null \
     || { echo "$str" | sort_patterns - $file > $file.bak \
       && mv $file.bak $file; } \
-    || exit 1
+    || die "insert_sorted_if_absent $file $str: failed"
 }
 
 # Adjust $PATTERN for $VC_IGNORE_FILE and insert it with
@@ -334,11 +353,8 @@ grep '^[	 ]*AC_CONFIG_AUX_DIR(\['"$build_aux"'\])' configure.ac \
     >/dev/null && found_aux_dir=yes
 grep '^[	 ]*AC_CONFIG_AUX_DIR('"$build_aux"')' configure.ac \
     >/dev/null && found_aux_dir=yes
-if test $found_aux_dir = no; then
-  echo "$0: expected line not found in configure.ac. Add the following:" >&2
-  echo "  AC_CONFIG_AUX_DIR([$build_aux])" >&2
-  exit 1
-fi
+test $found_aux_dir = yes \
+  || die "configure.ac lacks 'AC_CONFIG_AUX_DIR([$build_aux])'; add it"
 
 # If $build_aux doesn't exist, create it now, otherwise some bits
 # below will malfunction.  If creating it, also mark it as ignored.
@@ -444,7 +460,7 @@ check_versions() {
       automake-ng|aclocal-ng)
         app=${app%-ng}
         ($app --version | grep '(GNU automake-ng)') >/dev/null 2>&1 || {
-          echo "$me: Error: '$app' not found or not from Automake-NG" >&2
+          warn_ "Error: '$app' not found or not from Automake-NG"
           ret=1
           continue
         } ;;
@@ -454,20 +470,21 @@ check_versions() {
       # so we have to rely on $? rather than get_version.
       $app --version >/dev/null 2>&1
       if [ 126 -le $? ]; then
-        echo "$me: Error: '$app' not found" >&2
+        warn_ "Error: '$app' not found"
         ret=1
       fi
     else
       # Require app to produce a new enough version string.
       inst_ver=$(get_version $app)
       if [ ! "$inst_ver" ]; then
-        echo "$me: Error: '$app' not found" >&2
+        warn_ "Error: '$app' not found"
         ret=1
       else
         latest_ver=$(sort_ver $req_ver $inst_ver | cut -d' ' -f2)
         if [ ! "$latest_ver" = "$inst_ver" ]; then
-          echo "$me: Error: '$app' version == $inst_ver is too old" >&2
-          echo "       '$app' version >= $req_ver is required" >&2
+          warnf_ '%s\n'                                        \
+              "Error: '$app' version == $inst_ver is too old"  \
+              "       '$app' version >= $req_ver is required"
           ret=1
         fi
       fi
@@ -524,11 +541,10 @@ fi
 if ! printf "$buildreq" | check_versions; then
   echo >&2
   if test -f README-prereq; then
-    echo "$0: See README-prereq for how to get the prerequisite programs" >&2
+    die "See README-prereq for how to get the prerequisite programs"
   else
-    echo "$0: Please install the prerequisite programs" >&2
+    die "Please install the prerequisite programs"
   fi
-  exit 1
 fi
 
 echo "$0: Bootstrapping from checked-out $package sources..."
@@ -739,11 +755,10 @@ symlink_to_dir()
         *)
           case /$dst/ in
           *//* | */../* | */./* | /*/*/*/*/*/)
-             echo >&2 "$me: invalid symlink calculation: $src -> $dst"
-             exit 1;;
-          /*/*/*/*/)	dot_dots=../../../;;
-          /*/*/*/)	dot_dots=../../;;
-          /*/*/)	dot_dots=../;;
+             die "invalid symlink calculation: $src -> $dst";;
+          /*/*/*/*/)    dot_dots=../../../;;
+          /*/*/*/)      dot_dots=../../;;
+          /*/*/)        dot_dots=../;;
           esac;;
         esac
 
@@ -765,7 +780,7 @@ version_controlled_file() {
     grep -F "/${file##*/}/" "$parent/CVS/Entries" 2>/dev/null |
              grep '^/[^/]*/[0-9]' > /dev/null
   else
-    echo "$me: no version control for $file?" >&2
+    warn_ "no version control for $file?"
     false
   fi
 }
@@ -855,11 +870,12 @@ echo "$0: $gnulib_tool $gnulib_tool_options --import ..."
 $gnulib_tool $gnulib_tool_options --import $gnulib_modules &&
 
 for file in $gnulib_files; do
-  symlink_to_dir "$GNULIB_SRCDIR" $file || exit
+  symlink_to_dir "$GNULIB_SRCDIR" $file \
+    || die "failed to symlink $file"
 done
 
 bootstrap_post_import_hook \
-  || { echo >&2 "$me: bootstrap_post_import_hook failed"; exit 1; }
+  || die "bootstrap_post_import_hook failed"
 
 # Remove any dangling symlink matching "*.m4" or "*.[ch]" in some
 # gnulib-populated directories.  Such .m4 files would cause aclocal to fail.
@@ -887,7 +903,7 @@ echo "running: AUTOPOINT=true LIBTOOLIZE=true " \
     "$AUTORECONF --verbose --install $no_recursive -I $m4_base $ACLOCAL_FLAGS"
 AUTOPOINT=true LIBTOOLIZE=true \
     $AUTORECONF --verbose --install $no_recursive -I $m4_base $ACLOCAL_FLAGS \
-  || exit 1
+  || die "autoreconf failed"
 
 # Get some extra files from gnulib, overriding existing files.
 for file in $gnulib_extra_files; do
@@ -896,7 +912,8 @@ for file in $gnulib_extra_files; do
   build-aux/*) dst=$build_aux/${file#build-aux/};;
   *) dst=$file;;
   esac
-  symlink_to_dir "$GNULIB_SRCDIR" $file $dst || exit
+  symlink_to_dir "$GNULIB_SRCDIR" $file $dst \
+    || die "failed to symlink $file"
 done
 
 if test $with_gettext = yes; then
@@ -912,7 +929,8 @@ if test $with_gettext = yes; then
       a\
           '"$XGETTEXT_OPTIONS"' $${end_of_xgettext_options+}
     }
-  ' po/Makevars.template >po/Makevars || exit 1
+  ' po/Makevars.template >po/Makevars \
+    || die 'cannot generate po/Makevars'
 
   # If the 'gettext' module is in use, grab the latest Makefile.in.in.
   # If only the 'gettext-h' module is in use, assume autopoint already
@@ -920,7 +938,8 @@ if test $with_gettext = yes; then
   case $gnulib_modules in
   *gettext-h*) ;;
   *gettext*)
-    cp $GNULIB_SRCDIR/build-aux/po/Makefile.in.in po/Makefile.in.in || exit 1
+    cp $GNULIB_SRCDIR/build-aux/po/Makefile.in.in po/Makefile.in.in \
+      || die "cannot create po/Makefile.in.in"
     ;;
   esac
 
@@ -936,7 +955,8 @@ if test $with_gettext = yes; then
         a\
             '"$XGETTEXT_OPTIONS_RUNTIME"' $${end_of_xgettext_options+}
       }
-    ' po/Makevars.template >runtime-po/Makevars || exit 1
+    ' po/Makevars.template >runtime-po/Makevars \
+    || die 'cannot generate runtime-po/Makevars'
 
     # Copy identical files from po to runtime-po.
     (cd po && cp -p Makefile.in.in *-quot *.header *.sed *.sin ../runtime-po)
