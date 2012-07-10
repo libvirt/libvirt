@@ -234,6 +234,47 @@ cleanup:
 }
 
 
+static char *
+openvzDomainGetHostname(virDomainPtr dom, unsigned int flags)
+{
+    char *hostname = NULL;
+    struct openvz_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+
+    virCheckFlags(0, NULL);
+
+    openvzDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    openvzDriverUnlock(driver);
+
+    if (!vm) {
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    hostname = openvzVEGetStringParam(dom, "hostname");
+    if (hostname == NULL)
+        goto error;
+
+    /* vzlist prints an unset hostname as '-' */
+    if (STREQ(hostname, "-")) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Hostname of '%s' is unset"), vm->def->name);
+        goto error;
+    }
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return hostname;
+
+error:
+    VIR_FREE(hostname);
+    goto cleanup;
+}
+
+
 static virDomainPtr openvzDomainLookupByID(virConnectPtr conn,
                                            int id) {
     struct openvz_driver *driver = conn->privateData;
@@ -2129,6 +2170,7 @@ static virDriver openvzDriver = {
     .domainIsUpdated = openvzDomainIsUpdated, /* 0.8.6 */
     .isAlive = openvzIsAlive, /* 0.9.8 */
     .domainUpdateDeviceFlags = openvzDomainUpdateDeviceFlags, /* 0.9.13 */
+    .domainGetHostname = openvzDomainGetHostname, /* 0.9.14 */
 };
 
 int openvzRegister(void) {
