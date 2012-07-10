@@ -24,5 +24,6 @@
 # define OPENVZ_UTIL_H
 
 long openvzKBPerPages(void);
+char *openvzVEGetStringParam(virDomainPtr dom, const char *param);
 
 #endif

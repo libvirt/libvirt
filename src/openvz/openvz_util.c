@@ -26,6 +26,9 @@
 #include "internal.h"
 
 #include "virterror_internal.h"
+#include "command.h"
+#include "datatypes.h"
+#include "memory.h"
 
 #include "openvz_conf.h"
 #include "openvz_util.h"
@@ -49,4 +52,33 @@ openvzKBPerPages(void)
         }
     }
     return kb_per_pages;
+}
+
+char*
+openvzVEGetStringParam(virDomainPtr domain, const char* param)
+{
+    int len;
+    char *output = NULL;
+
+    virCommandPtr cmd = virCommandNewArgList(VZLIST,
+                                             "-o",
+                                             param,
+                                             domain->name,
+                                             "-H" , NULL);
+
+    virCommandSetOutputBuffer(cmd, &output);
+    if (virCommandRun(cmd, NULL) < 0) {
+        VIR_FREE(output);
+        /* virCommandRun sets the virError */
+        goto cleanup;
+    }
+
+    /* delete trailing newline */
+    len = strlen(output);
+    if (len && output[len - 1] == '\n')
+        output[len - 1] = '\0';
+
+cleanup:
+    virCommandFree(cmd);
+    return output;
 }

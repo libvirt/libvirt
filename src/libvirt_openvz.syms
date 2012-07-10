@@ -1,7 +1,7 @@
 #
 # These symbols are dependent upon --with-openvz via WITH_OPENVZ
 #
-
 openvzReadConfigParam;
 openvzReadNetworkConf;
 openvzLocateConfFile;
+openvzVEGetStringParam;
