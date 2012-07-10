@@ -73,6 +73,17 @@ local-checks-to-skip =			\
   sc_makefile_check			\
   sc_useless_cpp_parens
 
+# Most developers don't run 'make distcheck'.  We want the official
+# dist to be secure, but don't want to penalize other developers
+# using a distro that has not yet picked up the automake fix.
+# FIXME remove this ifeq (making the syntax check unconditional)
+# once fixed automake (1.11.6 or 1.12.2+) is more common.
+ifeq ($(filter dist%, $(MAKECMDGOALS)), )
+local-checks-to-skip +=	sc_vulnerable_makefile_CVE-2012-3386
+else
+distdir: sc_vulnerable_makefile_CVE-2012-3386
+endif
+
 # Files that should never cause syntax check failures.
 VC_LIST_ALWAYS_EXCLUDE_REGEX = \
   (^(HACKING|docs/(news\.html\.in|.*\.patch))|\.po)$$
