@@ -14133,6 +14133,49 @@ cmdTTYConsole(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "domhostname" command
+ */
+static const vshCmdInfo info_domhostname[] = {
+    {"help", N_("print the domain's hostname")},
+    {"desc", ""},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_domhostname[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdDomHostname(vshControl *ctl, const vshCmd *cmd)
+{
+    char *hostname;
+    virDomainPtr dom;
+    bool ret = false;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    hostname = virDomainGetHostname(dom, 0);
+    if (hostname == NULL) {
+        vshError(ctl, "%s", _("failed to get hostname"));
+        goto error;
+    }
+
+    vshPrint(ctl, "%s\n", hostname);
+    ret = true;
+
+error:
+    VIR_FREE(hostname);
+    virDomainFree(dom);
+    return ret;
+}
+
+
+/*
  * "attach-device" command
  */
 static const vshCmdInfo info_attach_device[] = {
@@ -18171,6 +18214,7 @@ static const vshCmdDef domManagementCmds[] = {
     {"detach-interface", cmdDetachInterface, opts_detach_interface,
      info_detach_interface, 0},
     {"domdisplay", cmdDomDisplay, opts_domdisplay, info_domdisplay, 0},
+    {"domhostname", cmdDomHostname, opts_domhostname, info_domhostname, 0},
     {"domid", cmdDomid, opts_domid, info_domid, 0},
     {"domif-setlink", cmdDomIfSetLink, opts_domif_setlink, info_domif_setlink, 0},
     {"domiftune", cmdDomIftune, opts_domiftune, info_domiftune, 0},
