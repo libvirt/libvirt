@@ -1146,6 +1146,7 @@ virFileIsDir;
 virFileLinkPointsTo;
 virFileLock;
 virFileMakePath;
+virFileMakePathWithMode;
 virFileMatchesNameSuffix;
 virFileOpenAs;
 virFileOpenTty;

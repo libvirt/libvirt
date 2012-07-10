@@ -20627,7 +20627,8 @@ static void
 vshReadlineDeinit (vshControl *ctl)
 {
     if (ctl->historyfile != NULL) {
-        if (mkdir(ctl->historydir, 0755) < 0 && errno != EEXIST) {
+        if (virFileMakePathWithMode(ctl->historydir, 0755) < 0 &&
+            errno != EEXIST) {
             char ebuf[1024];
             vshError(ctl, _("Failed to create '%s': %s"),
                      ctl->historydir, virStrerror(errno, ebuf, sizeof(ebuf)));

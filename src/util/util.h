@@ -115,6 +115,8 @@ enum {
 int virDirCreate(const char *path, mode_t mode, uid_t uid, gid_t gid,
                  unsigned int flags) ATTRIBUTE_RETURN_CHECK;
 int virFileMakePath(const char *path) ATTRIBUTE_RETURN_CHECK;
+int virFileMakePathWithMode(const char *path,
+                            mode_t mode) ATTRIBUTE_RETURN_CHECK;
 
 char *virFileBuildPath(const char *dir,
                        const char *name,

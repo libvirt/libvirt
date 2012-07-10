@@ -1248,7 +1248,7 @@ int virDirCreate(const char *path ATTRIBUTE_UNUSED,
 }
 #endif /* WIN32 */
 
-static int virFileMakePathHelper(char *path)
+static int virFileMakePathHelper(char *path, mode_t mode)
 {
     struct stat st;
     char *p;
@@ -1272,13 +1272,13 @@ static int virFileMakePathHelper(char *path)
     if (p != path) {
         *p = '\0';
 
-        if (virFileMakePathHelper(path) < 0)
+        if (virFileMakePathHelper(path, mode) < 0)
             return -1;
 
         *p = '/';
     }
 
-    if (mkdir(path, 0777) < 0 && errno != EEXIST)
+    if (mkdir(path, mode) < 0 && errno != EEXIST)
         return -1;
 
     return 0;
@@ -1292,13 +1292,20 @@ static int virFileMakePathHelper(char *path)
  */
 int virFileMakePath(const char *path)
 {
+    return virFileMakePathWithMode(path, 0777);
+}
+
+int
+virFileMakePathWithMode(const char *path,
+                        mode_t mode)
+{
     int ret = -1;
     char *tmp;
 
     if ((tmp = strdup(path)) == NULL)
         goto cleanup;
 
-    ret = virFileMakePathHelper(tmp);
+    ret = virFileMakePathHelper(tmp, mode);
 
 cleanup:
     VIR_FREE(tmp);
