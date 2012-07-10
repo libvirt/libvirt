@@ -8,6 +8,9 @@
     <type arch='i686' machine='pc'>hvm</type>
     <boot dev='network'/>
   </os>
+  <features>
+    <pae/>
+  </features>
   <clock offset='utc'>
     <timer name='kvmclock' present='no'/>
   </clock>
