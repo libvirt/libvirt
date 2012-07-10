@@ -7553,7 +7553,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
         goto no_memory;
 
     if (STREQ(def->os.arch, "i686")||STREQ(def->os.arch, "x86_64"))
-        def->features = (1 << VIR_DOMAIN_FEATURE_ACPI)
+        def->features |= (1 << VIR_DOMAIN_FEATURE_ACPI)
         /*| (1 << VIR_DOMAIN_FEATURE_APIC)*/;
 #define WANT_VALUE()                                                   \
     const char *val = progargv[++i];                                   \
