@@ -1,7 +1,7 @@
 /*
  * qemu_cgroup.c: QEMU cgroup management
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -472,8 +472,7 @@ cleanup:
     if (period) {
         rc = virCgroupSetCpuCfsPeriod(cgroup, old_period);
         if (rc < 0)
-            virReportSystemError(-rc,
-                                 "%s",
+            virReportSystemError(-rc, "%s",
                                  _("Unable to rollback cpu bandwidth period"));
     }
 
@@ -507,9 +506,8 @@ int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm)
         if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
             /* Ensure that we can multiply by vcpus without overflowing. */
             if (quota > LLONG_MAX / vm->def->vcpus) {
-                virReportSystemError(EINVAL,
-                                     _("%s"),
-                                     "Unable to set cpu bandwidth quota");
+                virReportSystemError(EINVAL, "%s",
+                                     _("Unable to set cpu bandwidth quota"));
                 goto cleanup;
             }
 

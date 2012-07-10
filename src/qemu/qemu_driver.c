@@ -7134,9 +7134,8 @@ qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
 
     /* Ensure that we can multiply by vcpus without overflowing. */
     if (quota > LLONG_MAX / vm->def->vcpus) {
-        virReportSystemError(EINVAL,
-                             _("%s"),
-                             "Unable to set cpu bandwidth quota");
+        virReportSystemError(EINVAL, "%s",
+                             _("Unable to set cpu bandwidth quota"));
         goto cleanup;
     }
 

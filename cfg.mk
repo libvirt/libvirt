@@ -622,6 +622,12 @@ sc_prohibit_newline_at_end_of_diagnostic:
 	  && { echo '$(ME): newline at end of message(s)' 1>&2;		\
 	    exit 1; } || :
 
+# The strings "" and "%s" should never be marked for translation.
+sc_prohibit_useless_translation:
+	@prohibit='_\("(%s)?"\)'					\
+	halt='$(ME): found useless translation'				\
+	  $(_sc_search_regexp)
+
 # Enforce recommended preprocessor indentation style.
 sc_preprocessor_indentation:
 	@if cppi --version >/dev/null 2>&1; then			\

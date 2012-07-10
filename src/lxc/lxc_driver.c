@@ -2965,9 +2965,8 @@ cleanup:
     if (period) {
         rc = virCgroupSetCpuCfsPeriod(cgroup, old_period);
         if (rc < 0)
-            virReportSystemError(-rc,
-                                 _("%s"),
-                                 "Unable to rollback cpu bandwidth period");
+            virReportSystemError(-rc, "%s",
+                                 _("Unable to rollback cpu bandwidth period"));
     }
 
     return -1;

@@ -1,6 +1,6 @@
 /*
  * xenapi_utils.c: Xen API driver -- utils parts.
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  * Copyright (C) 2009, 2010 Citrix Ltd.
  *
  * This library is free software; you can redistribute it and/or
@@ -372,11 +372,13 @@ xenapiSessionErrorHandle(virConnectPtr conn, virErrorNumber errNum,
 
     if (buf == NULL && priv != NULL && priv->session != NULL) {
         char *ret = returnErrorFromSession(priv->session);
-        virReportErrorHelper(VIR_FROM_XENAPI, errNum, filename, func, lineno, _("%s"), ret);
+        virReportErrorHelper(VIR_FROM_XENAPI, errNum, filename, func, lineno,
+                             "%s", ret);
         xen_session_clear_error(priv->session);
         VIR_FREE(ret);
     } else {
-        virReportErrorHelper(VIR_FROM_XENAPI, errNum, filename, func, lineno, _("%s"), buf);
+        virReportErrorHelper(VIR_FROM_XENAPI, errNum, filename, func, lineno,
+                             "%s", buf);
     }
 }
 
