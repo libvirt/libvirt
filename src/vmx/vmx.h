@@ -90,6 +90,8 @@ int virVMXParseDisk(virVMXContext *ctx, virCapsPtr caps, virConfPtr conf,
                     int device, int busType, int controllerOrBus, int unit,
                     virDomainDiskDefPtr *def);
 
+int virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def);
+
 int virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def);
 
 int virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,

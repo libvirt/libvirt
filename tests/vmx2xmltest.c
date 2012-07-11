@@ -240,6 +240,8 @@ mymain(void)
     DO_TEST("floppy-file", "floppy-file");
     DO_TEST("floppy-device", "floppy-device");
 
+    DO_TEST("sharedfolder", "sharedfolder");
+
     DO_TEST("ethernet-e1000", "ethernet-e1000");
     DO_TEST("ethernet-vmxnet2", "ethernet-vmxnet2");
 

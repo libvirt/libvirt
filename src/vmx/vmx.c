@@ -1233,6 +1233,8 @@ virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
     bool present;
     int scsi_virtualDev[4] = { -1, -1, -1, -1 };
     int unit;
+    bool hgfs_disabled = true;
+    long long sharedFolder_maxNum = 0;
 
     if (ctx->parseFileName == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1672,7 +1674,39 @@ virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
     }
 
     /* def:fss */
-    /* FIXME */
+    if (virVMXGetConfigBoolean(conf, "isolation.tools.hgfs.disable",
+                               &hgfs_disabled, true, true) < 0) {
+        goto cleanup;
+    }
+
+    if (!hgfs_disabled) {
+        if (virVMXGetConfigLong(conf, "sharedFolder.maxNum", &sharedFolder_maxNum,
+                                0, true) < 0) {
+            goto cleanup;
+        }
+
+        if (sharedFolder_maxNum > 0) {
+            int number;
+
+            if (VIR_ALLOC_N(def->fss, sharedFolder_maxNum) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+
+            def->nfss = 0;
+
+            for (number = 0; number < sharedFolder_maxNum; ++number) {
+                if (virVMXParseFileSystem(conf, number,
+                                          &def->fss[def->nfss]) < 0) {
+                    goto cleanup;
+                }
+
+                if (def->fss[def->nfss] != NULL) {
+                    ++def->nfss;
+                }
+            }
+        }
+    }
 
     /* def:nets */
     if (VIR_ALLOC_N(def->nets, 4) < 0) {
@@ -2275,6 +2309,108 @@ virVMXParseDisk(virVMXContext *ctx, virCapsPtr caps, virConfPtr conf,
 
   ignore:
     virDomainDiskDefFree(*def);
+    *def = NULL;
+
+    result = 0;
+
+    goto cleanup;
+}
+
+
+
+int virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def)
+{
+    int result = -1;
+    char prefix[48] = "";
+
+    char present_name[48] = "";
+    bool present = false;
+
+    char enabled_name[48] = "";
+    bool enabled = false;
+
+    char hostPath_name[48] = "";
+    char *hostPath = NULL;
+
+    char guestName_name[48] = "";
+    char *guestName = NULL;
+
+    char writeAccess_name[48] = "";
+    bool writeAccess = false;
+
+    if (def == NULL || *def != NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (VIR_ALLOC(*def) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    (*def)->type = VIR_DOMAIN_FS_TYPE_MOUNT;
+
+    snprintf(prefix, sizeof(prefix), "sharedFolder%d", number);
+
+    VMX_BUILD_NAME(present);
+    VMX_BUILD_NAME(enabled);
+    VMX_BUILD_NAME(hostPath);
+    VMX_BUILD_NAME(guestName);
+    VMX_BUILD_NAME(writeAccess);
+
+    /* vmx:present */
+    if (virVMXGetConfigBoolean(conf, present_name, &present, false, true) < 0) {
+        goto cleanup;
+    }
+
+    /* vmx:enabled */
+    if (virVMXGetConfigBoolean(conf, enabled_name, &enabled, false, true) < 0) {
+        goto cleanup;
+    }
+
+    if (!(present && enabled)) {
+        goto ignore;
+    }
+
+    /* vmx:hostPath */
+    if (virVMXGetConfigString(conf, hostPath_name, &hostPath, false) < 0) {
+        goto cleanup;
+    }
+
+    (*def)->src = hostPath;
+    hostPath = NULL;
+
+    /* vmx:guestName */
+    if (virVMXGetConfigString(conf, guestName_name, &guestName, false) < 0) {
+        goto cleanup;
+    }
+
+    (*def)->dst = guestName;
+    guestName = NULL;
+
+    /* vmx:writeAccess */
+    if (virVMXGetConfigBoolean(conf, writeAccess_name, &writeAccess, false,
+                               true) < 0) {
+        goto cleanup;
+    }
+
+    (*def)->readonly = !writeAccess;
+
+    result = 0;
+
+  cleanup:
+    if (result < 0) {
+        virDomainFSDefFree(*def);
+        *def = NULL;
+    }
+
+    VIR_FREE(hostPath);
+    VIR_FREE(guestName);
+
+    return result;
+
+  ignore:
+    virDomainFSDefFree(*def);
     *def = NULL;
 
     result = 0;
