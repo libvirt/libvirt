@@ -269,17 +269,20 @@ virStorageBackendDiskReadPartitions(virStoragePoolObjPtr pool,
      * -              normal   metadata 100027630080 100030242304      2612736
      *
      */
-    const char *prog[] = {
-        PARTHELPER, pool->def->source.devices[0].path, NULL,
-    };
+    virCommandPtr cmd = virCommandNewArgList(PARTHELPER,
+                                             pool->def->source.devices[0].path,
+                                             NULL);
+    int ret;
 
     pool->def->allocation = pool->def->capacity = pool->def->available = 0;
 
-    return virStorageBackendRunProgNul(pool,
-                                       prog,
-                                       6,
-                                       virStorageBackendDiskMakeVol,
-                                       vol);
+    ret = virStorageBackendRunProgNul(pool,
+                                      cmd,
+                                      6,
+                                      virStorageBackendDiskMakeVol,
+                                      vol);
+    virCommandFree(cmd);
+    return ret;
 }
 
 static int
@@ -299,15 +302,19 @@ virStorageBackendDiskMakePoolGeometry(virStoragePoolObjPtr pool,
 static int
 virStorageBackendDiskReadGeometry(virStoragePoolObjPtr pool)
 {
-    const char *prog[] = {
-        PARTHELPER, pool->def->source.devices[0].path, "-g", NULL,
-    };
+    virCommandPtr cmd = virCommandNewArgList(PARTHELPER,
+                                             pool->def->source.devices[0].path,
+                                             "-g",
+                                             NULL);
+    int ret;
 
-    return virStorageBackendRunProgNul(pool,
-                                       prog,
-                                       3,
-                                       virStorageBackendDiskMakePoolGeometry,
-                                       NULL);
+    ret = virStorageBackendRunProgNul(pool,
+                                      cmd,
+                                      3,
+                                      virStorageBackendDiskMakePoolGeometry,
+                                      NULL);
+    virCommandFree(cmd);
+    return ret;
 }
 
 static int
@@ -379,15 +386,13 @@ virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     bool ok_to_mklabel = false;
     int ret = -1;
     /* eg parted /dev/sda mklabel msdos */
-    const char *prog[] = {
-        PARTED,
-        pool->def->source.devices[0].path,
-        "mklabel",
-        "--script",
-        ((pool->def->source.format == VIR_STORAGE_POOL_DISK_DOS) ? "msdos" :
-          virStoragePoolFormatDiskTypeToString(pool->def->source.format)),
-        NULL,
-    };
+    virCommandPtr cmd = virCommandNewArgList(PARTED,
+                                             pool->def->source.devices[0].path,
+                                             "mklabel",
+                                             "--script",
+                                             ((pool->def->source.format == VIR_STORAGE_POOL_DISK_DOS) ? "msdos" :
+                                              virStoragePoolFormatDiskTypeToString(pool->def->source.format)),
+                                             NULL);
 
     virCheckFlags(VIR_STORAGE_POOL_BUILD_OVERWRITE |
                   VIR_STORAGE_POOL_BUILD_NO_OVERWRITE, ret);
@@ -419,9 +424,10 @@ virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     if (ok_to_mklabel)
-        ret = virRun(prog, NULL);
+        ret = virCommandRun(cmd, NULL);
 
 error:
+    virCommandFree(cmd);
     return ret;
 }
 
@@ -628,20 +634,13 @@ virStorageBackendDiskCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
                                virStorageVolDefPtr vol)
 {
     int res = -1;
-    char *start = NULL;
-    char *end = NULL;
     char *partFormat;
     unsigned long long startOffset = 0, endOffset = 0;
-    const char *cmdargv[] = {
-        PARTED,
-        pool->def->source.devices[0].path,
-        "mkpart",
-        "--script",
-        NULL /*partFormat*/,
-        NULL /*start*/,
-        NULL /*end*/,
-        NULL
-    };
+    virCommandPtr cmd = virCommandNewArgList(PARTED,
+                                             pool->def->source.devices[0].path,
+                                             "mkpart",
+                                             "--script",
+                                             NULL);
 
     if (vol->target.encryption != NULL) {
         virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -653,7 +652,7 @@ virStorageBackendDiskCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (virStorageBackendDiskPartFormat(pool, vol, &partFormat) != 0) {
         return -1;
     }
-    cmdargv[4] = partFormat;
+    virCommandAddArg(cmd, partFormat);
 
     if (virStorageBackendDiskPartBoundries(pool, &startOffset,
                                            &endOffset,
@@ -661,15 +660,10 @@ virStorageBackendDiskCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if (virAsprintf(&start, "%lluB", startOffset) < 0 ||
-        virAsprintf(&end, "%lluB", endOffset) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-    cmdargv[5] = start;
-    cmdargv[6] = end;
+    virCommandAddArgFormat(cmd, "%lluB", startOffset);
+    virCommandAddArgFormat(cmd, "%lluB", endOffset);
 
-    if (virRun(cmdargv, NULL) < 0)
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
     /* wait for device node to show up */
@@ -690,8 +684,7 @@ virStorageBackendDiskCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 cleanup:
     VIR_FREE(partFormat);
-    VIR_FREE(start);
-    VIR_FREE(end);
+    virCommandFree(cmd);
     return res;
 }
 

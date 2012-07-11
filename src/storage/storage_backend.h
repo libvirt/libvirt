@@ -27,6 +27,7 @@
 # include <stdint.h>
 # include "internal.h"
 # include "storage_conf.h"
+# include "command.h"
 
 typedef char * (*virStorageBackendFindPoolSources)(virConnectPtr conn, const char *srcSpec, unsigned int flags);
 typedef int (*virStorageBackendCheckPool)(virConnectPtr conn, virStoragePoolObjPtr pool, bool *active);
@@ -141,7 +142,7 @@ typedef int (*virStorageBackendListVolNulFunc)(virStoragePoolObjPtr pool,
                                                void *data);
 
 int virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
-                                  const char *const*prog,
+                                  virCommandPtr cmd,
                                   int nregex,
                                   const char **regex,
                                   int *nvars,
@@ -149,7 +150,7 @@ int virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
                                   void *data, const char *cmd_to_ignore);
 
 int virStorageBackendRunProgNul(virStoragePoolObjPtr pool,
-                                const char **prog,
+                                virCommandPtr cmd,
                                 size_t n_columns,
                                 virStorageBackendListVolNulFunc func,
                                 void *data);

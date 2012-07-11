@@ -57,7 +57,6 @@
 #include "storage_backend.h"
 #include "logging.h"
 #include "virfile.h"
-#include "command.h"
 
 #if WITH_STORAGE_LVM
 # include "storage_backend_logical.h"
@@ -1418,7 +1417,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
  */
 int
 virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
-                              const char *const*prog,
+                              virCommandPtr cmd,
                               int nregex,
                               const char **regex,
                               int *nvars,
@@ -1433,7 +1432,6 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
     int maxReg = 0, i, j;
     int totgroups = 0, ngroup = 0, maxvars = 0;
     char **groups;
-    virCommandPtr cmd = NULL;
 
     /* Compile all regular expressions */
     if (VIR_ALLOC_N(reg, nregex) < 0) {
@@ -1470,7 +1468,6 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
         goto cleanup;
     }
 
-    cmd = virCommandNewArgs(prog);
     virCommandSetOutputFD(cmd, &fd);
     if (virCommandRunAsync(cmd, NULL) < 0) {
         goto cleanup;
@@ -1541,7 +1538,6 @@ cleanup:
         regfree(&reg[i]);
 
     VIR_FREE(reg);
-    virCommandFree(cmd);
 
     VIR_FORCE_FCLOSE(list);
     VIR_FORCE_CLOSE(fd);
@@ -1562,7 +1558,7 @@ cleanup:
  */
 int
 virStorageBackendRunProgNul(virStoragePoolObjPtr pool,
-                            const char **prog,
+                            virCommandPtr cmd,
                             size_t n_columns,
                             virStorageBackendListVolNulFunc func,
                             void *data)
@@ -1573,7 +1569,6 @@ virStorageBackendRunProgNul(virStoragePoolObjPtr pool,
     char **v;
     int ret = -1;
     int i;
-    virCommandPtr cmd = NULL;
 
     if (n_columns == 0)
         return -1;
@@ -1585,7 +1580,6 @@ virStorageBackendRunProgNul(virStoragePoolObjPtr pool,
     for (i = 0; i < n_columns; i++)
         v[i] = NULL;
 
-    cmd = virCommandNewArgs(prog);
     virCommandSetOutputFD(cmd, &fd);
     if (virCommandRunAsync(cmd, NULL) < 0) {
         goto cleanup;
@@ -1622,9 +1616,9 @@ virStorageBackendRunProgNul(virStoragePoolObjPtr pool,
         }
     }
 
-    if (feof (fp) < 0) {
-        virReportSystemError(errno,
-                             _("read error on pipe to '%s'"), prog[0]);
+    if (feof(fp) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("read error on pipe"));
         goto cleanup;
     }
 
@@ -1633,7 +1627,6 @@ virStorageBackendRunProgNul(virStoragePoolObjPtr pool,
     for (i = 0; i < n_columns; i++)
         VIR_FREE(v[i]);
     VIR_FREE(v);
-    virCommandFree(cmd);
 
     VIR_FORCE_FCLOSE(fp);
     VIR_FORCE_CLOSE(fd);

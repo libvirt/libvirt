@@ -151,31 +151,32 @@ virStorageBackendISCSISession(virStoragePoolObjPtr pool,
     int vars[] = {
         2,
     };
-    const char *const prog[] = {
-        ISCSIADM, "--mode", "session", NULL
-    };
     char *session = NULL;
+
+    virCommandPtr cmd = virCommandNewArgList(ISCSIADM, "--mode", "session", NULL);
 
     /* Note that we ignore the exitstatus.  Older versions of iscsiadm tools
      * returned an exit status of > 0, even if they succeeded.  We will just
      * rely on whether session got filled in properly.
      */
     if (virStorageBackendRunProgRegex(pool,
-                                      prog,
+                                      cmd,
                                       1,
                                       regexes,
                                       vars,
                                       virStorageBackendISCSIExtractSession,
                                       &session, NULL) < 0)
-        return NULL;
+        goto cleanup;
 
     if (session == NULL &&
         !probe) {
         virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               "%s", _("cannot find session"));
-        return NULL;
+        goto cleanup;
     }
 
+cleanup:
+    virCommandFree(cmd);
     return session;
 }
 
@@ -279,42 +280,52 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
                                 char **ifacename)
 {
     int ret = -1, exitstatus = -1;
-    char temp_ifacename[32];
-    const char *const cmdargv1[] = {
-        ISCSIADM, "--mode", "iface", "--interface",
-        temp_ifacename, "--op", "new", NULL
-    };
-    const char *const cmdargv2[] = {
-        ISCSIADM, "--mode", "iface", "--interface", temp_ifacename,
-        "--op", "update", "--name", "iface.initiatorname", "--value",
-        initiatoriqn, NULL
-    };
+    char *temp_ifacename;
+    virCommandPtr cmd = NULL;
 
-    snprintf(temp_ifacename, sizeof(temp_ifacename), "libvirt-iface-%08llx",
-             (unsigned long long)virRandomBits(30));
+    if (virAsprintf(&temp_ifacename,
+                    "libvirt-iface-%08llx",
+                    (unsigned long long)virRandomBits(30)) < 0) {
+        virReportOOMError();
+        return -1;
+    }
 
     VIR_DEBUG("Attempting to create interface '%s' with IQN '%s'",
-              &temp_ifacename[0], initiatoriqn);
+              temp_ifacename, initiatoriqn);
 
+    cmd = virCommandNewArgList(ISCSIADM,
+                               "--mode", "iface",
+                               "--interface", temp_ifacename,
+                               "--op", "new",
+                               NULL);
     /* Note that we ignore the exitstatus.  Older versions of iscsiadm
      * tools returned an exit status of > 0, even if they succeeded.
      * We will just rely on whether the interface got created
      * properly. */
-    if (virRun(cmdargv1, &exitstatus) < 0) {
+    if (virCommandRun(cmd, &exitstatus) < 0) {
         virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Failed to run command '%s' to create new iscsi interface"),
-                              cmdargv1[0]);
-        goto out;
+                              ISCSIADM);
+        goto cleanup;
     }
+    virCommandFree(cmd);
 
+    cmd = virCommandNewArgList(ISCSIADM,
+                               "--mode", "iface",
+                               "--interface", temp_ifacename,
+                               "--op", "update",
+                               "--name", "iface.initiatorname",
+                               "--value",
+                               initiatoriqn,
+                               NULL);
     /* Note that we ignore the exitstatus.  Older versions of iscsiadm tools
      * returned an exit status of > 0, even if they succeeded.  We will just
      * rely on whether iface file got updated properly. */
-    if (virRun(cmdargv2, &exitstatus) < 0) {
+    if (virCommandRun(cmd, &exitstatus) < 0) {
         virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Failed to run command '%s' to update iscsi interface with IQN '%s'"),
-                              cmdargv2[0], initiatoriqn);
-        goto out;
+                              ISCSIADM, initiatoriqn);
+        goto cleanup;
     }
 
     /* Check again to make sure the interface was created. */
@@ -322,7 +333,7 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
         VIR_DEBUG("Failed to find interface '%s' with IQN '%s' "
                   "after attempting to create it",
                   &temp_ifacename[0], initiatoriqn);
-        goto out;
+        goto cleanup;
     } else {
         VIR_DEBUG("Interface '%s' with IQN '%s' was created successfully",
                   *ifacename, initiatoriqn);
@@ -330,7 +341,9 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
 
     ret = 0;
 
-out:
+cleanup:
+    virCommandFree(cmd);
+    VIR_FREE(temp_ifacename);
     if (ret != 0)
         VIR_FREE(*ifacename);
     return ret;
@@ -426,14 +439,14 @@ static int
 virStorageBackendISCSIRescanLUNs(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                  const char *session)
 {
-    const char *const cmdargv[] = {
-        ISCSIADM, "--mode", "session", "-r", session, "-R", NULL,
-    };
-
-    if (virRun(cmdargv, NULL) < 0)
-        return -1;
-
-    return 0;
+    virCommandPtr cmd = virCommandNewArgList(ISCSIADM,
+                                             "--mode", "session",
+                                             "-r", session,
+                                             "-R",
+                                             NULL);
+    int ret = virCommandRun(cmd, NULL);
+    virCommandFree(cmd);
+    return ret;
 }
 
 struct virStorageBackendISCSITargetList {
@@ -501,24 +514,25 @@ virStorageBackendISCSIScanTargets(const char *portal,
         "^\\s*(\\S+)\\s+(\\S+)\\s*$"
     };
     int vars[] = { 2 };
-    const char *const cmdsendtarget[] = {
-        ISCSIADM, "--mode", "discovery", "--type", "sendtargets",
-        "--portal", portal, NULL
-    };
     struct virStorageBackendISCSITargetList list;
-    int i;
+    size_t i;
+    int ret = -1;
+    virCommandPtr cmd = virCommandNewArgList(ISCSIADM,
+                                             "--mode", "discovery",
+                                             "--type", "sendtargets",
+                                             "--portal", portal,
+                                             NULL);
 
     memset(&list, 0, sizeof(list));
 
     if (virStorageBackendRunProgRegex(NULL, /* No pool for callback */
-                                      cmdsendtarget,
+                                      cmd,
                                       1,
                                       regexes,
                                       vars,
                                       virStorageBackendISCSIGetTargets,
-                                      &list, NULL) < 0) {
-        return -1;
-    }
+                                      &list, NULL) < 0)
+        goto cleanup;
 
     for (i = 0 ; i < list.ntargets ; i++) {
         /* We have to ignore failure, because we can't undo
@@ -542,7 +556,10 @@ virStorageBackendISCSIScanTargets(const char *portal,
         VIR_FREE(list.targets);
     }
 
-    return 0;
+    ret = 0;
+cleanup:
+    virCommandFree(cmd);
+    return ret;
 }
 
 

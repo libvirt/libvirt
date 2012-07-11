@@ -251,10 +251,10 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
             .sources = NULL
         }
     };
-    const char *prog[] = { SHOWMOUNT, "--no-headers", "--exports", NULL, NULL };
     virStoragePoolSourcePtr source = NULL;
     char *retval = NULL;
     unsigned int i;
+    virCommandPtr cmd = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -270,9 +270,14 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
     }
 
     state.host = source->hosts[0].name;
-    prog[3] = source->hosts[0].name;
 
-    if (virStorageBackendRunProgRegex(NULL, prog, 1, regexes, vars,
+    cmd = virCommandNewArgList(SHOWMOUNT,
+                               "--no-headers",
+                               "--exports",
+                               source->hosts[0].name,
+                               NULL);
+
+    if (virStorageBackendRunProgRegex(NULL, cmd, 1, regexes, vars,
                             virStorageBackendFileSystemNetFindPoolSourcesFunc,
                             &state, NULL) < 0)
         goto cleanup;
@@ -289,7 +294,7 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
     VIR_FREE(state.list.sources);
 
     virStoragePoolSourceFree(source);
-
+    virCommandFree(cmd);
     return retval;
 }
 
@@ -337,63 +342,16 @@ virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool) {
  */
 static int
 virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
-    char *src;
-    const char **mntargv;
-
+    char *src = NULL;
     /* 'mount -t auto' doesn't seem to auto determine nfs (or cifs),
      *  while plain 'mount' does. We have to craft separate argvs to
      *  accommodate this */
-    int netauto = (pool->def->type == VIR_STORAGE_POOL_NETFS &&
-                   pool->def->source.format == VIR_STORAGE_POOL_NETFS_AUTO);
-    int glusterfs = (pool->def->type == VIR_STORAGE_POOL_NETFS &&
-                 pool->def->source.format == VIR_STORAGE_POOL_NETFS_GLUSTERFS);
-
-    int source_index;
-
-    const char *netfs_auto_argv[] = {
-        MOUNT,
-        NULL, /* source path */
-        pool->def->target.path,
-        NULL,
-    };
-
-    const char *fs_argv[] =  {
-        MOUNT,
-        "-t",
-        pool->def->type == VIR_STORAGE_POOL_FS ?
-        virStoragePoolFormatFileSystemTypeToString(pool->def->source.format) :
-        virStoragePoolFormatFileSystemNetTypeToString(pool->def->source.format),
-        NULL, /* Fill in shortly - careful not to add extra fields
-                 before this */
-        pool->def->target.path,
-        NULL,
-    };
-
-    const char *glusterfs_argv[] = {
-        MOUNT,
-        "-t",
-        pool->def->type == VIR_STORAGE_POOL_FS ?
-        virStoragePoolFormatFileSystemTypeToString(pool->def->source.format) :
-        virStoragePoolFormatFileSystemNetTypeToString(pool->def->source.format),
-        NULL,
-        "-o",
-        "direct-io-mode=1",
-        pool->def->target.path,
-        NULL,
-    };
-
-    if (netauto) {
-        mntargv = netfs_auto_argv;
-        source_index = 1;
-    } else if (glusterfs) {
-        mntargv = glusterfs_argv;
-        source_index = 3;
-    } else {
-        mntargv = fs_argv;
-        source_index = 3;
-    }
-
-    int ret;
+    bool netauto = (pool->def->type == VIR_STORAGE_POOL_NETFS &&
+                    pool->def->source.format == VIR_STORAGE_POOL_NETFS_AUTO);
+    bool glusterfs = (pool->def->type == VIR_STORAGE_POOL_NETFS &&
+                      pool->def->source.format == VIR_STORAGE_POOL_NETFS_GLUSTERFS);
+    virCommandPtr cmd = NULL;
+    int ret = -1;
 
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
         if (pool->def->source.nhost != 1) {
@@ -441,14 +399,41 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
             return -1;
         }
     }
-    mntargv[source_index] = src;
 
-    if (virRun(mntargv, NULL) < 0) {
-        VIR_FREE(src);
-        return -1;
-    }
+    if (netauto)
+        cmd = virCommandNewArgList(MOUNT,
+                                   src,
+                                   pool->def->target.path,
+                                   NULL);
+    else if (glusterfs)
+        cmd = virCommandNewArgList( MOUNT,
+                                    "-t",
+                                    (pool->def->type == VIR_STORAGE_POOL_FS ?
+                                     virStoragePoolFormatFileSystemTypeToString(pool->def->source.format) :
+                                     virStoragePoolFormatFileSystemNetTypeToString(pool->def->source.format)),
+                                    src,
+                                    "-o",
+                                    "direct-io-mode=1",
+                                    pool->def->target.path,
+                                    NULL);
+    else
+        cmd = virCommandNewArgList(MOUNT,
+                                   "-t",
+                                   (pool->def->type == VIR_STORAGE_POOL_FS ?
+                                    virStoragePoolFormatFileSystemTypeToString(pool->def->source.format) :
+                                    virStoragePoolFormatFileSystemNetTypeToString(pool->def->source.format)),
+                                   src,
+                                   pool->def->target.path,
+                                   NULL);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    virCommandFree(cmd);
     VIR_FREE(src);
-    return 0;
+    return ret;
 }
 
 /**
@@ -462,8 +447,8 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
  */
 static int
 virStorageBackendFileSystemUnmount(virStoragePoolObjPtr pool) {
-    const char *mntargv[3];
-    int ret;
+    virCommandPtr cmd = NULL;
+    int ret = -1;
 
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
         if (pool->def->source.nhost != 1) {
@@ -497,14 +482,17 @@ virStorageBackendFileSystemUnmount(virStoragePoolObjPtr pool) {
             return 0;
     }
 
-    mntargv[0] = UMOUNT;
-    mntargv[1] = pool->def->target.path;
-    mntargv[2] = NULL;
+    cmd = virCommandNewArgList(UMOUNT,
+                               pool->def->target.path,
+                               NULL);
 
-    if (virRun(mntargv, NULL) < 0) {
-        return -1;
-    }
-    return 0;
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    virCommandFree(cmd);
+    return ret;
 }
 #endif /* WITH_STORAGE_FS */
 

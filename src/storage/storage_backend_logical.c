@@ -48,17 +48,16 @@ static int
 virStorageBackendLogicalSetActive(virStoragePoolObjPtr pool,
                                   int on)
 {
-    const char *cmdargv[4];
+    int ret;
+    virCommandPtr cmd =
+        virCommandNewArgList(VGCHANGE,
+                             on ? "-aly" : "-aln",
+                             pool->def->source.name,
+                             NULL);
 
-    cmdargv[0] = VGCHANGE;
-    cmdargv[1] = on ? "-aly" : "-aln";
-    cmdargv[2] = pool->def->source.name;
-    cmdargv[3] = NULL;
-
-    if (virRun(cmdargv, NULL) < 0)
-        return -1;
-
-    return 0;
+    ret = virCommandRun(cmd, NULL);
+    virCommandFree(cmd);
+    return ret;
 }
 
 
@@ -296,24 +295,31 @@ virStorageBackendLogicalFindLVs(virStoragePoolObjPtr pool,
     int vars[] = {
         8
     };
-    const char *prog[] = {
-        LVS, "--separator", "#", "--noheadings", "--units", "b",
-        "--unbuffered", "--nosuffix", "--options",
-        "lv_name,origin,uuid,devices,segtype,stripes,seg_size,vg_extent_size",
-        pool->def->source.name, NULL
-    };
+    int ret = -1;
+    virCommandPtr cmd;
 
+    cmd = virCommandNewArgList(LVS,
+                               "--separator", "#",
+                               "--noheadings",
+                               "--units", "b",
+                               "--unbuffered",
+                               "--nosuffix",
+                               "--options", "lv_name,origin,uuid,devices,segtype,stripes,seg_size,vg_extent_size",
+                               pool->def->source.name,
+                               NULL);
     if (virStorageBackendRunProgRegex(pool,
-                                      prog,
+                                      cmd,
                                       1,
                                       regexes,
                                       vars,
                                       virStorageBackendLogicalMakeVol,
-                                      vol, "lvs") < 0) {
-        return -1;
-    }
+                                      vol, "lvs") < 0)
+        goto cleanup;
 
-    return 0;
+    ret = 0;
+cleanup:
+    virCommandFree(cmd);
+    return ret;
 }
 
 static int
@@ -405,8 +411,7 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
     int vars[] = {
         2
     };
-    const char *const prog[] = { PVS, "--noheadings", "-o", "pv_name,vg_name", NULL };
-    const char *const scanprog[] = { VGSCAN, NULL };
+    virCommandPtr cmd;
     char *retval = NULL;
     virStoragePoolSourceList sourceList;
     int i;
@@ -418,17 +423,25 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
      * that might be hanging around, so if this fails for some reason, the
      * worst that happens is that scanning doesn't pick everything up
      */
-    if (virRun(scanprog, NULL) < 0) {
+    cmd = virCommandNew(VGSCAN);
+    if (virCommandRun(cmd, NULL) < 0)
         VIR_WARN("Failure when running vgscan to refresh physical volumes");
-    }
+    virCommandFree(cmd);
 
     memset(&sourceList, 0, sizeof(sourceList));
     sourceList.type = VIR_STORAGE_POOL_LOGICAL;
 
-    if (virStorageBackendRunProgRegex(NULL, prog, 1, regexes, vars,
-                                virStorageBackendLogicalFindPoolSourcesFunc,
-                                &sourceList, "pvs") < 0)
+    cmd = virCommandNewArgList(PVS,
+                               "--noheadings",
+                               "-o", "pv_name,vg_name",
+                               NULL);
+    if (virStorageBackendRunProgRegex(NULL, cmd, 1, regexes, vars,
+                                      virStorageBackendLogicalFindPoolSourcesFunc,
+                                      &sourceList, "pvs") < 0) {
+        virCommandFree(cmd);
         return NULL;
+    }
+    virCommandFree(cmd);
 
     retval = virStoragePoolSourceListFormat(&sourceList);
     if (retval == NULL) {
@@ -483,26 +496,20 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virStoragePoolObjPtr pool,
                                   unsigned int flags)
 {
-    const char **vgargv;
-    const char *pvargv[3];
-    int n = 0, i, fd;
+    virCommandPtr vgcmd;
+    int fd;
     char zeros[PV_BLANK_SECTOR_SIZE];
+    int ret = -1;
+    size_t i;
 
     virCheckFlags(0, -1);
 
     memset(zeros, 0, sizeof(zeros));
 
-    if (VIR_ALLOC_N(vgargv, 3 + pool->def->source.ndevice) < 0) {
-        virReportOOMError();
-        return -1;
-    }
+    vgcmd = virCommandNewArgList(VGCREATE, pool->def->source.name, NULL);
 
-    vgargv[n++] = VGCREATE;
-    vgargv[n++] = pool->def->source.name;
-
-    pvargv[0] = PVCREATE;
-    pvargv[2] = NULL;
     for (i = 0 ; i < pool->def->source.ndevice ; i++) {
+        virCommandPtr pvcmd;
         /*
          * LVM requires that the first sector is blanked if using
          * a whole disk as a PV. So we just blank them out regardless
@@ -539,25 +546,27 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
          * Initialize the physical volume because vgcreate is not
          * clever enough todo this for us :-(
          */
-        vgargv[n++] = pool->def->source.devices[i].path;
-        pvargv[1] = pool->def->source.devices[i].path;
-        if (virRun(pvargv, NULL) < 0)
+        pvcmd = virCommandNewArgList(PVCREATE,
+                                     pool->def->source.devices[i].path,
+                                     NULL);
+        if (virCommandRun(pvcmd, NULL) < 0) {
+            virCommandFree(pvcmd);
             goto cleanup;
+        }
+        virCommandFree(pvcmd);
+
+        virCommandAddArg(vgcmd, pool->def->source.devices[i].path);
     }
 
-    vgargv[n] = NULL;
-
     /* Now create the volume group itself */
-    if (virRun(vgargv, NULL) < 0)
+    if (virCommandRun(vgcmd, NULL) < 0)
         goto cleanup;
 
-    VIR_FREE(vgargv);
+    ret = 0;
 
-    return 0;
-
- cleanup:
-    VIR_FREE(vgargv);
-    return -1;
+cleanup:
+    virCommandFree(vgcmd);
+    return ret;
 }
 
 
@@ -579,33 +588,42 @@ virStorageBackendLogicalRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     int vars[] = {
         2
     };
-    const char *prog[] = {
-        VGS, "--separator", ":", "--noheadings", "--units", "b", "--unbuffered",
-        "--nosuffix", "--options", "vg_size,vg_free",
-        pool->def->source.name, NULL
-    };
+    virCommandPtr cmd = NULL;
+    int ret = -1;
 
     virFileWaitForDevices();
 
     /* Get list of all logical volumes */
-    if (virStorageBackendLogicalFindLVs(pool, NULL) < 0) {
-        virStoragePoolObjClearVols(pool);
-        return -1;
-    }
+    if (virStorageBackendLogicalFindLVs(pool, NULL) < 0)
+        goto cleanup;
+
+    cmd = virCommandNewArgList(VGS,
+                               "--separator", ":",
+                               "--noheadings",
+                               "--units", "b",
+                               "--unbuffered",
+                               "--nosuffix",
+                               "--options", "vg_size,vg_free",
+                               pool->def->source.name,
+                               NULL);
 
     /* Now get basic volgrp metadata */
     if (virStorageBackendRunProgRegex(pool,
-                                      prog,
+                                      cmd,
                                       1,
                                       regexes,
                                       vars,
                                       virStorageBackendLogicalRefreshPoolFunc,
-                                      NULL, "vgs") < 0) {
-        virStoragePoolObjClearVols(pool);
-        return -1;
-    }
+                                      NULL, "vgs") < 0)
+        goto cleanup;
 
-    return 0;
+    ret = 0;
+
+cleanup:
+    virCommandFree(cmd);
+    if (ret < 0)
+        virStoragePoolObjClearVols(pool);
+    return ret;
 }
 
 /*
@@ -628,31 +646,37 @@ virStorageBackendLogicalDeletePool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                    virStoragePoolObjPtr pool,
                                    unsigned int flags)
 {
-    const char *cmdargv[] = {
-        VGREMOVE, "-f", pool->def->source.name, NULL
-    };
-    const char *pvargv[3];
-    int i, error;
+    virCommandPtr cmd = NULL;
+    size_t i;
+    int ret = -1;
 
     virCheckFlags(0, -1);
 
     /* first remove the volume group */
-    if (virRun(cmdargv, NULL) < 0)
-        return -1;
+    cmd = virCommandNewArgList(VGREMOVE,
+                               "-f", pool->def->source.name,
+                               NULL);
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+    virCommandFree(cmd);
 
     /* now remove the pv devices and clear them out */
-    error = 0;
-    pvargv[0] = PVREMOVE;
-    pvargv[2] = NULL;
+    ret = 0;
     for (i = 0 ; i < pool->def->source.ndevice ; i++) {
-        pvargv[1] = pool->def->source.devices[i].path;
-        if (virRun(pvargv, NULL) < 0) {
-            error = -1;
+        cmd = virCommandNewArgList(PVREMOVE,
+                                   pool->def->source.devices[i].path,
+                                   NULL);
+        if (virCommandRun(cmd, NULL) < 0) {
+            ret = -1;
             break;
         }
+        virCommandFree(cmd);
+        cmd = NULL;
     }
 
-    return error;
+cleanup:
+    virCommandFree(cmd);
+    return ret;
 }
 
 
@@ -669,16 +693,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
                                   virStorageVolDefPtr vol)
 {
     int fdret, fd = -1;
-    char size[100];
-    const char *cmdargvnew[] = {
-        LVCREATE, "--name", vol->name, "-L", size,
-        pool->def->source.name, NULL
-    };
-    const char *cmdargvsnap[] = {
-        LVCREATE, "--name", vol->name, "-L", size,
-        "-s", vol->backingStore.path, NULL
-    };
-    const char **cmdargv = cmdargvnew;
+    virCommandPtr cmd = NULL;
 
     if (vol->target.encryption != NULL) {
         virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -686,15 +701,6 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
                                       "volumes"));
         return -1;
     }
-
-    if (vol->backingStore.path) {
-        cmdargv = cmdargvsnap;
-    }
-
-    snprintf(size, sizeof(size)-1, "%lluK", VIR_DIV_UP(vol->capacity, 1024));
-    size[sizeof(size)-1] = '\0';
-
-    vol->type = VIR_STORAGE_VOL_BLOCK;
 
     if (vol->target.path != NULL) {
         /* A target path passed to CreateVol has no meaning */
@@ -708,8 +714,18 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
         return -1;
     }
 
-    if (virRun(cmdargv, NULL) < 0)
-        return -1;
+    cmd = virCommandNewArgList(LVCREATE,
+                               "--name", vol->name,
+                               NULL);
+    virCommandAddArg(cmd, "-L");
+    virCommandAddArgFormat(cmd, "%lluK", VIR_DIV_UP(vol->capacity, 1024));
+    if (vol->backingStore.path)
+        virCommandAddArgPair(cmd, "-s", vol->backingStore.path);
+    else
+        virCommandAddArg(cmd, pool->def->source.name);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
 
     if ((fdret = virStorageBackendVolOpen(vol->target.path)) < 0)
         goto cleanup;
@@ -752,6 +768,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
  cleanup:
     VIR_FORCE_CLOSE(fd);
     virStorageBackendLogicalDeleteVol(conn, pool, vol, 0);
+    virCommandFree(cmd);
     return -1;
 }
 
