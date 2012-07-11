@@ -156,9 +156,6 @@ int qemuMonitorCheckHMP(qemuMonitorPtr mon, const char *cmd);
 void qemuMonitorLock(qemuMonitorPtr mon);
 void qemuMonitorUnlock(qemuMonitorPtr mon);
 
-int qemuMonitorRef(qemuMonitorPtr mon);
-int qemuMonitorUnref(qemuMonitorPtr mon) ATTRIBUTE_RETURN_CHECK;
-
 int qemuMonitorSetLink(qemuMonitorPtr mon,
                        const char *name,
                        enum virDomainNetInterfaceLinkState state) ;

@@ -50,9 +50,6 @@ qemuAgentPtr qemuAgentOpen(virDomainObjPtr vm,
 void qemuAgentLock(qemuAgentPtr mon);
 void qemuAgentUnlock(qemuAgentPtr mon);
 
-int qemuAgentRef(qemuAgentPtr mon);
-int qemuAgentUnref(qemuAgentPtr mon) ATTRIBUTE_RETURN_CHECK;
-
 void qemuAgentClose(qemuAgentPtr mon);
 
 typedef enum {

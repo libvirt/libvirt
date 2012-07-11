@@ -994,7 +994,7 @@ qemuDomainObjEnterMonitorInternal(struct qemud_driver *driver,
     }
 
     qemuMonitorLock(priv->mon);
-    qemuMonitorRef(priv->mon);
+    virObjectRef(priv->mon);
     ignore_value(virTimeMillisNow(&priv->monStart));
     virDomainObjUnlock(obj);
     if (driver_locked)
@@ -1009,11 +1009,11 @@ qemuDomainObjExitMonitorInternal(struct qemud_driver *driver,
                                  virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
-    int refs;
+    bool hasRefs;
 
-    refs = qemuMonitorUnref(priv->mon);
+    hasRefs = virObjectUnref(priv->mon);
 
-    if (refs > 0)
+    if (hasRefs)
         qemuMonitorUnlock(priv->mon);
 
     if (driver_locked)
@@ -1021,9 +1021,8 @@ qemuDomainObjExitMonitorInternal(struct qemud_driver *driver,
     virDomainObjLock(obj);
 
     priv->monStart = 0;
-    if (refs == 0) {
+    if (!hasRefs)
         priv->mon = NULL;
-    }
 
     if (priv->job.active == QEMU_JOB_ASYNC_NESTED) {
         qemuDomainObjResetJob(priv);
@@ -1118,7 +1117,7 @@ qemuDomainObjEnterAgentInternal(struct qemud_driver *driver,
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
     qemuAgentLock(priv->agent);
-    qemuAgentRef(priv->agent);
+    virObjectRef(priv->agent);
     ignore_value(virTimeMillisNow(&priv->agentStart));
     virDomainObjUnlock(obj);
     if (driver_locked)
@@ -1133,11 +1132,11 @@ qemuDomainObjExitAgentInternal(struct qemud_driver *driver,
                                virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
-    int refs;
+    bool hasRefs;
 
-    refs = qemuAgentUnref(priv->agent);
+    hasRefs = virObjectUnref(priv->agent);
 
-    if (refs > 0)
+    if (hasRefs)
         qemuAgentUnlock(priv->agent);
 
     if (driver_locked)
@@ -1145,9 +1144,8 @@ qemuDomainObjExitAgentInternal(struct qemud_driver *driver,
     virDomainObjLock(obj);
 
     priv->agentStart = 0;
-    if (refs == 0) {
+    if (!hasRefs)
         priv->agent = NULL;
-    }
 }
 
 /*

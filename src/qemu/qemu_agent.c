@@ -40,6 +40,7 @@
 #include "json.h"
 #include "virfile.h"
 #include "virtime.h"
+#include "virobject.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -80,10 +81,10 @@ struct _qemuAgentMessage {
 
 
 struct _qemuAgent {
+    virObject object;
+
     virMutex lock; /* also used to protect fd */
     virCond notify;
-
-    int refs;
 
     int fd;
     int watch;
@@ -113,6 +114,22 @@ struct _qemuAgent {
      * Take that as indication of successful completion */
     qemuAgentEvent await_event;
 };
+
+static virClassPtr qemuAgentClass;
+static void qemuAgentDispose(void *obj);
+
+static int qemuAgentOnceInit(void)
+{
+    if (!(qemuAgentClass = virClassNew("qemuAgent",
+                                       sizeof(qemuAgent),
+                                       qemuAgentDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(qemuAgent)
+
 
 #if DEBUG_RAW_IO
 # include <c-ctype.h>
@@ -146,45 +163,15 @@ void qemuAgentUnlock(qemuAgentPtr mon)
 }
 
 
-static void qemuAgentFree(qemuAgentPtr mon)
+static void qemuAgentDispose(void *obj)
 {
+    qemuAgentPtr mon = obj;
     VIR_DEBUG("mon=%p", mon);
     if (mon->cb && mon->cb->destroy)
         (mon->cb->destroy)(mon, mon->vm);
     ignore_value(virCondDestroy(&mon->notify));
     virMutexDestroy(&mon->lock);
     VIR_FREE(mon->buffer);
-    VIR_FREE(mon);
-}
-
-int qemuAgentRef(qemuAgentPtr mon)
-{
-    mon->refs++;
-    VIR_DEBUG("%d", mon->refs);
-    return mon->refs;
-}
-
-int qemuAgentUnref(qemuAgentPtr mon)
-{
-    mon->refs--;
-    VIR_DEBUG("%d", mon->refs);
-    if (mon->refs == 0) {
-        qemuAgentUnlock(mon);
-        qemuAgentFree(mon);
-        return 0;
-    }
-
-    return mon->refs;
-}
-
-static void
-qemuAgentUnwatch(void *monitor)
-{
-    qemuAgentPtr mon = monitor;
-
-    qemuAgentLock(mon);
-    if (qemuAgentUnref(mon) > 0)
-        qemuAgentUnlock(mon);
 }
 
 static int
@@ -599,9 +586,9 @@ qemuAgentIO(int watch, int fd, int events, void *opaque) {
     bool error = false;
     bool eof = false;
 
+    virObjectRef(mon);
     /* lock access to the monitor and protect fd */
     qemuAgentLock(mon);
-    qemuAgentRef(mon);
 #if DEBUG_IO
     VIR_DEBUG("Agent %p I/O on watch %d fd %d events %d", mon, watch, fd, events);
 #endif
@@ -704,8 +691,8 @@ qemuAgentIO(int watch, int fd, int events, void *opaque) {
 
         /* Make sure anyone waiting wakes up now */
         virCondSignal(&mon->notify);
-        if (qemuAgentUnref(mon) > 0)
-            qemuAgentUnlock(mon);
+        qemuAgentUnlock(mon);
+        virObjectUnref(mon);
         VIR_DEBUG("Triggering EOF callback");
         (eofNotify)(mon, vm);
     } else if (error) {
@@ -715,13 +702,13 @@ qemuAgentIO(int watch, int fd, int events, void *opaque) {
 
         /* Make sure anyone waiting wakes up now */
         virCondSignal(&mon->notify);
-        if (qemuAgentUnref(mon) > 0)
-            qemuAgentUnlock(mon);
+        qemuAgentUnlock(mon);
+        virObjectUnref(mon);
         VIR_DEBUG("Triggering error callback");
         (errorNotify)(mon, vm);
     } else {
-        if (qemuAgentUnref(mon) > 0)
-            qemuAgentUnlock(mon);
+        qemuAgentUnlock(mon);
+        virObjectUnref(mon);
     }
 }
 
@@ -739,10 +726,11 @@ qemuAgentOpen(virDomainObjPtr vm,
         return NULL;
     }
 
-    if (VIR_ALLOC(mon) < 0) {
-        virReportOOMError();
+    if (qemuAgentInitialize() < 0)
         return NULL;
-    }
+
+    if (!(mon = virObjectNew(qemuAgentClass)))
+        return NULL;
 
     if (virMutexInit(&mon->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -758,7 +746,6 @@ qemuAgentOpen(virDomainObjPtr vm,
         return NULL;
     }
     mon->fd = -1;
-    mon->refs = 1;
     mon->vm = vm;
     mon->cb = cb;
     qemuAgentLock(mon);
@@ -791,12 +778,13 @@ qemuAgentOpen(virDomainObjPtr vm,
                                          VIR_EVENT_HANDLE_WRITABLE :
                                          0),
                                         qemuAgentIO,
-                                        mon, qemuAgentUnwatch)) < 0) {
+                                        mon,
+                                        virObjectFreeCallback)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unable to register monitor events"));
         goto cleanup;
     }
-    qemuAgentRef(mon);
+    virObjectRef(mon);
 
     VIR_DEBUG("New mon %p fd =%d watch=%d", mon, mon->fd, mon->watch);
     qemuAgentUnlock(mon);
@@ -837,9 +825,9 @@ void qemuAgentClose(qemuAgentPtr mon)
         mon->msg->finished = 1;
         virCondSignal(&mon->notify);
     }
+    qemuAgentUnlock(mon);
 
-    if (qemuAgentUnref(mon) > 0)
-        qemuAgentUnlock(mon);
+    virObjectUnref(mon);
 }
 
 #define QEMU_AGENT_WAIT_TIME (1000ull * 5)

@@ -36,6 +36,7 @@
 #include "memory.h"
 #include "logging.h"
 #include "virfile.h"
+#include "virobject.h"
 
 #ifdef WITH_DTRACE_PROBES
 # include "libvirt_qemu_probes.h"
@@ -47,10 +48,10 @@
 #define DEBUG_RAW_IO 0
 
 struct _qemuMonitor {
+    virObject object;
+
     virMutex lock; /* also used to protect fd */
     virCond notify;
-
-    int refs;
 
     int fd;
     int watch;
@@ -79,6 +80,21 @@ struct _qemuMonitor {
     unsigned json: 1;
     unsigned json_hmp: 1;
 };
+
+static virClassPtr qemuMonitorClass;
+static void qemuMonitorDispose(void *obj);
+
+static int qemuMonitorOnceInit(void)
+{
+    if (!(qemuMonitorClass = virClassNew("qemuMonitor",
+                                          sizeof(qemuMonitor),
+                                          qemuMonitorDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(qemuMonitor)
 
 
 VIR_ENUM_IMPL(qemuMonitorMigrationStatus,
@@ -224,8 +240,10 @@ void qemuMonitorUnlock(qemuMonitorPtr mon)
 }
 
 
-static void qemuMonitorFree(qemuMonitorPtr mon)
+static void qemuMonitorDispose(void *obj)
 {
+    qemuMonitorPtr mon = obj;
+
     VIR_DEBUG("mon=%p", mon);
     if (mon->cb && mon->cb->destroy)
         (mon->cb->destroy)(mon, mon->vm);
@@ -233,41 +251,8 @@ static void qemuMonitorFree(qemuMonitorPtr mon)
     {}
     virMutexDestroy(&mon->lock);
     VIR_FREE(mon->buffer);
-    VIR_FREE(mon);
 }
 
-int qemuMonitorRef(qemuMonitorPtr mon)
-{
-    mon->refs++;
-    PROBE(QEMU_MONITOR_REF,
-          "mon=%p refs=%d", mon, mon->refs);
-    return mon->refs;
-}
-
-int qemuMonitorUnref(qemuMonitorPtr mon)
-{
-    mon->refs--;
-
-    PROBE(QEMU_MONITOR_UNREF,
-          "mon=%p refs=%d", mon, mon->refs);
-    if (mon->refs == 0) {
-        qemuMonitorUnlock(mon);
-        qemuMonitorFree(mon);
-        return 0;
-    }
-
-    return mon->refs;
-}
-
-static void
-qemuMonitorUnwatch(void *monitor)
-{
-    qemuMonitorPtr mon = monitor;
-
-    qemuMonitorLock(mon);
-    if (qemuMonitorUnref(mon) > 0)
-        qemuMonitorUnlock(mon);
-}
 
 static int
 qemuMonitorOpenUnix(const char *monitor, pid_t cpid)
@@ -567,9 +552,10 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
     bool error = false;
     bool eof = false;
 
+    virObjectRef(mon);
+
     /* lock access to the monitor and protect fd */
     qemuMonitorLock(mon);
-    qemuMonitorRef(mon);
 #if DEBUG_IO
     VIR_DEBUG("Monitor %p I/O on watch %d fd %d events %d", mon, watch, fd, events);
 #endif
@@ -667,8 +653,8 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
 
         /* Make sure anyone waiting wakes up now */
         virCondSignal(&mon->notify);
-        if (qemuMonitorUnref(mon) > 0)
-            qemuMonitorUnlock(mon);
+        qemuMonitorUnlock(mon);
+        virObjectUnref(mon);
         VIR_DEBUG("Triggering EOF callback");
         (eofNotify)(mon, vm);
     } else if (error) {
@@ -678,13 +664,13 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
 
         /* Make sure anyone waiting wakes up now */
         virCondSignal(&mon->notify);
-        if (qemuMonitorUnref(mon) > 0)
-            qemuMonitorUnlock(mon);
+        qemuMonitorUnlock(mon);
+        virObjectUnref(mon);
         VIR_DEBUG("Triggering error callback");
         (errorNotify)(mon, vm);
     } else {
-        if (qemuMonitorUnref(mon) > 0)
-            qemuMonitorUnlock(mon);
+        qemuMonitorUnlock(mon);
+        virObjectUnref(mon);
     }
 }
 
@@ -703,10 +689,11 @@ qemuMonitorOpen(virDomainObjPtr vm,
         return NULL;
     }
 
-    if (VIR_ALLOC(mon) < 0) {
-        virReportOOMError();
+    if (qemuMonitorInitialize() < 0)
         return NULL;
-    }
+
+    if (!(mon = virObjectNew(qemuMonitorClass)))
+        return NULL;
 
     if (virMutexInit(&mon->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -722,7 +709,6 @@ qemuMonitorOpen(virDomainObjPtr vm,
         return NULL;
     }
     mon->fd = -1;
-    mon->refs = 1;
     mon->vm = vm;
     mon->json = json;
     mon->cb = cb;
@@ -764,16 +750,17 @@ qemuMonitorOpen(virDomainObjPtr vm,
                                         VIR_EVENT_HANDLE_ERROR |
                                         VIR_EVENT_HANDLE_READABLE,
                                         qemuMonitorIO,
-                                        mon, qemuMonitorUnwatch)) < 0) {
+                                        mon,
+                                        virObjectFreeCallback)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unable to register monitor events"));
         goto cleanup;
     }
-    qemuMonitorRef(mon);
+    virObjectRef(mon);
 
     PROBE(QEMU_MONITOR_NEW,
           "mon=%p refs=%d fd=%d",
-          mon, mon->refs, mon->fd);
+          mon, mon->object.refs, mon->fd);
     qemuMonitorUnlock(mon);
 
     return mon;
@@ -798,7 +785,7 @@ void qemuMonitorClose(qemuMonitorPtr mon)
 
     qemuMonitorLock(mon);
     PROBE(QEMU_MONITOR_CLOSE,
-          "mon=%p refs=%d", mon, mon->refs);
+          "mon=%p refs=%d", mon, mon->object.refs);
 
     if (mon->fd >= 0) {
         if (mon->watch)
@@ -827,8 +814,8 @@ void qemuMonitorClose(qemuMonitorPtr mon)
         virCondSignal(&mon->notify);
     }
 
-    if (qemuMonitorUnref(mon) > 0)
-        qemuMonitorUnlock(mon);
+    qemuMonitorUnlock(mon);
+    virObjectUnref(mon);
 }
 
 
@@ -919,12 +906,12 @@ cleanup:
 /* Ensure proper locking around callbacks.  */
 #define QEMU_MONITOR_CALLBACK(mon, ret, callback, ...)          \
     do {                                                        \
-        qemuMonitorRef(mon);                                    \
+        virObjectRef(mon);                                      \
         qemuMonitorUnlock(mon);                                 \
         if ((mon)->cb && (mon)->cb->callback)                   \
             (ret) = ((mon)->cb->callback)(mon, __VA_ARGS__);    \
         qemuMonitorLock(mon);                                   \
-        ignore_value(qemuMonitorUnref(mon));                    \
+        virObjectUnref(mon);                                    \
     } while (0)
 
 int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
