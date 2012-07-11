@@ -1127,7 +1127,7 @@ virStorageBackendFileSystemVolBuildFrom(virConnectPtr conn,
 }
 
 /**
- * Remove a volume - just unlinks for now
+ * Remove a volume - no support for BLOCK and NETWORK yet
  */
 static int
 virStorageBackendFileSystemVolDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
@@ -1137,14 +1137,33 @@ virStorageBackendFileSystemVolDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     virCheckFlags(0, -1);
 
-    if (unlink(vol->target.path) < 0) {
-        /* Silently ignore failures where the vol has already gone away */
-        if (errno != ENOENT) {
+    switch (vol->type) {
+    case VIR_STORAGE_VOL_FILE:
+        if (unlink(vol->target.path) < 0) {
+            /* Silently ignore failures where the vol has already gone away */
+            if (errno != ENOENT) {
+                virReportSystemError(errno,
+                                     _("cannot unlink file '%s'"),
+                                     vol->target.path);
+                return -1;
+            }
+        }
+        break;
+    case VIR_STORAGE_VOL_DIR:
+        if (rmdir(vol->target.path) < 0) {
             virReportSystemError(errno,
-                                 _("cannot unlink file '%s'"),
+                                 _("cannot remove directory '%s'"),
                                  vol->target.path);
             return -1;
         }
+        break;
+    case VIR_STORAGE_VOL_BLOCK:
+    case VIR_STORAGE_VOL_NETWORK:
+    default:
+        virStorageReportError(VIR_ERR_NO_SUPPORT,
+                              _("removing block or network volumes is not supported: %s"),
+                              vol->target.path);
+        return -1;
     }
     return 0;
 }
