@@ -24,6 +24,7 @@
 # define __VIR_KEEPALIVE_H__
 
 # include "virnetmessage.h"
+# include "virobject.h"
 
 typedef int (*virKeepAliveSendFunc)(void *client, virNetMessagePtr msg);
 typedef void (*virKeepAliveDeadFunc)(void *client);
@@ -41,9 +42,6 @@ virKeepAlivePtr virKeepAliveNew(int interval,
                                 virKeepAliveFreeFunc freeCB)
                                 ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
                                 ATTRIBUTE_NONNULL(5) ATTRIBUTE_NONNULL(6);
-
-void virKeepAliveRef(virKeepAlivePtr ka);
-void virKeepAliveFree(virKeepAlivePtr ka);
 
 int virKeepAliveStart(virKeepAlivePtr ka,
                       int interval,

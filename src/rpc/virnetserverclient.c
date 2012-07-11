@@ -629,7 +629,7 @@ void virNetServerClientClose(virNetServerClientPtr client)
         client->keepalive = NULL;
         client->refs++;
         virNetServerClientUnlock(client);
-        virKeepAliveFree(ka);
+        virObjectUnref(ka);
         virNetServerClientLock(client);
         client->refs--;
     }
@@ -1199,7 +1199,7 @@ cleanup:
     virNetServerClientUnlock(client);
     if (ka)
         virKeepAliveStop(ka);
-    virKeepAliveFree(ka);
+    virObjectUnref(ka);
 
     return ret;
 }

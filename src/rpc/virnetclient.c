@@ -361,7 +361,7 @@ error:
     VIR_FORCE_CLOSE(wakeupFD[1]);
     if (ka) {
         virKeepAliveStop(ka);
-        virKeepAliveFree(ka);
+        virObjectUnref(ka);
     }
     virNetClientFree(client);
     return NULL;
@@ -551,7 +551,7 @@ virNetClientCloseLocked(virNetClientPtr client)
 
         if (ka) {
             virKeepAliveStop(ka);
-            virKeepAliveFree(ka);
+            virObjectUnref(ka);
         }
         if (closeCb)
             closeCb(client, closeReason, closeOpaque);

@@ -35,7 +35,8 @@
 #define VIR_FROM_THIS VIR_FROM_RPC
 
 struct _virKeepAlive {
-    int refs;
+    virObject object;
+
     virMutex lock;
 
     int interval;
@@ -51,6 +52,21 @@ struct _virKeepAlive {
     void *client;
 };
 
+
+static virClassPtr virKeepAliveClass;
+static void virKeepAliveDispose(void *obj);
+
+static int virKeepAliveOnceInit(void)
+{
+    if (!(virKeepAliveClass = virClassNew("virKeepAlive",
+                                          sizeof(virKeepAlive),
+                                          virKeepAliveDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virKeepAlive)
 
 static void
 virKeepAliveLock(virKeepAlivePtr ka)
@@ -165,7 +181,7 @@ virKeepAliveTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
     if (!dead && !msg)
         goto cleanup;
 
-    ka->refs++;
+    virObjectRef(ka);
     virKeepAliveUnlock(ka);
 
     if (dead) {
@@ -176,17 +192,10 @@ virKeepAliveTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
     }
 
     virKeepAliveLock(ka);
-    ka->refs--;
+    virObjectUnref(ka);
 
 cleanup:
     virKeepAliveUnlock(ka);
-}
-
-
-static void
-virKeepAliveTimerFree(void *opaque)
-{
-    virKeepAliveFree(opaque);
 }
 
 
@@ -202,17 +211,17 @@ virKeepAliveNew(int interval,
 
     VIR_DEBUG("client=%p, interval=%d, count=%u", client, interval, count);
 
-    if (VIR_ALLOC(ka) < 0) {
-        virReportOOMError();
+    if (virKeepAliveInitialize() < 0)
         return NULL;
-    }
+
+    if (!(ka = virObjectNew(virKeepAliveClass)))
+        return NULL;
 
     if (virMutexInit(&ka->lock) < 0) {
         VIR_FREE(ka);
         return NULL;
     }
 
-    ka->refs = 1;
     ka->interval = interval;
     ka->count = count;
     ka->countToDeath = count;
@@ -223,44 +232,20 @@ virKeepAliveNew(int interval,
     ka->freeCB = freeCB;
 
     PROBE(RPC_KEEPALIVE_NEW,
-          "ka=%p client=%p refs=%d",
-          ka, ka->client, ka->refs);
+          "ka=%p client=%p",
+          ka, ka->client);
 
     return ka;
 }
 
 
 void
-virKeepAliveRef(virKeepAlivePtr ka)
+virKeepAliveDispose(void *obj)
 {
-    virKeepAliveLock(ka);
-    ka->refs++;
-    PROBE(RPC_KEEPALIVE_REF,
-          "ka=%p client=%p refs=%d",
-          ka, ka->client, ka->refs);
-    virKeepAliveUnlock(ka);
-}
-
-
-void
-virKeepAliveFree(virKeepAlivePtr ka)
-{
-    if (!ka)
-        return;
-
-    virKeepAliveLock(ka);
-    PROBE(RPC_KEEPALIVE_FREE,
-          "ka=%p client=%p refs=%d",
-          ka, ka->client, ka->refs);
-
-    if (--ka->refs > 0) {
-        virKeepAliveUnlock(ka);
-        return;
-    }
+    virKeepAlivePtr ka = obj;
 
     virMutexDestroy(&ka->lock);
     ka->freeCB(ka->client);
-    VIR_FREE(ka);
 }
 
 
@@ -311,12 +296,12 @@ virKeepAliveStart(virKeepAlivePtr ka,
         timeout = ka->interval - delay;
     ka->intervalStart = now - (ka->interval - timeout);
     ka->timer = virEventAddTimeout(timeout * 1000, virKeepAliveTimer,
-                                   ka, virKeepAliveTimerFree);
+                                   ka, virObjectFreeCallback);
     if (ka->timer < 0)
         goto cleanup;
 
     /* the timer now has another reference to this object */
-    ka->refs++;
+    virObjectRef(ka);
     ret = 0;
 
 cleanup:

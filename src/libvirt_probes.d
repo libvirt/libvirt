@@ -77,9 +77,7 @@ provider libvirt {
 
 	# file: src/rpc/virkeepalive.c
 	# prefix: rpc
-	probe rpc_keepalive_new(void *ka, void *client, int refs);
-	probe rpc_keepalive_ref(void *ka, void *client, int refs);
-	probe rpc_keepalive_free(void *ka, void *client, int refs);
+	probe rpc_keepalive_new(void *ka, void *client);
 	probe rpc_keepalive_start(void *ka, void *client, int interval, int count);
 	probe rpc_keepalive_stop(void *ka, void *client);
 	probe rpc_keepalive_send(void *ka, void *client, int prog, int vers, int proc);
