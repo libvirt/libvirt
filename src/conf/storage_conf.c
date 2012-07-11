@@ -47,6 +47,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
+#define DEFAULT_POOL_PERM_MODE 0755
+#define DEFAULT_VOL_PERM_MODE  0600
 
 VIR_ENUM_IMPL(virStoragePool,
               VIR_STORAGE_POOL_LAST,
@@ -812,7 +814,8 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt) {
             goto cleanup;
 
         if (virStorageDefParsePerms(ctxt, &ret->target.perms,
-                                    "./target/permissions", 0700) < 0)
+                                    "./target/permissions",
+                                    DEFAULT_POOL_PERM_MODE) < 0)
             goto cleanup;
     }
 
@@ -1137,7 +1140,8 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     }
 
     if (virStorageDefParsePerms(ctxt, &ret->target.perms,
-                                "./target/permissions", 0600) < 0)
+                                "./target/permissions",
+                                DEFAULT_VOL_PERM_MODE) < 0)
         goto cleanup;
 
     node = virXPathNode("./target/encryption", ctxt);
@@ -1168,7 +1172,8 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     }
 
     if (virStorageDefParsePerms(ctxt, &ret->backingStore.perms,
-                                "./backingStore/permissions", 0600) < 0)
+                                "./backingStore/permissions",
+                                DEFAULT_VOL_PERM_MODE) < 0)
         goto cleanup;
 
     return ret;
