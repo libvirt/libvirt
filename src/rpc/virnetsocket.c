@@ -51,8 +51,9 @@
 
 
 struct _virNetSocket {
+    virObject object;
+
     virMutex lock;
-    int refs;
 
     int fd;
     int watch;
@@ -85,6 +86,22 @@ struct _virNetSocket {
 };
 
 
+static virClassPtr virNetSocketClass;
+static void virNetSocketDispose(void *obj);
+
+static int virNetSocketOnceInit(void)
+{
+    if (!(virNetSocketClass = virClassNew("virNetSocket",
+                                          sizeof(virNetSocket),
+                                          virNetSocketDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virNetSocket)
+
+
 #ifndef WIN32
 static int virNetSocketForkDaemon(const char *binary)
 {
@@ -114,6 +131,9 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
     virNetSocketPtr sock;
     int no_slow_start = 1;
 
+    if (virNetSocketInitialize() < 0)
+        return NULL;
+
     VIR_DEBUG("localAddr=%p remoteAddr=%p fd=%d errfd=%d pid=%lld",
               localAddr, remoteAddr,
               fd, errfd, (long long) pid);
@@ -129,10 +149,8 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
         return NULL;
     }
 
-    if (VIR_ALLOC(sock) < 0) {
-        virReportOOMError();
+    if (!(sock = virObjectNew(virNetSocketClass)))
         return NULL;
-    }
 
     if (virMutexInit(&sock->lock) < 0) {
         virReportSystemError(errno, "%s",
@@ -140,7 +158,6 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
         VIR_FREE(sock);
         return NULL;
     }
-    sock->refs = 1;
 
     if (localAddr)
         sock->localAddr = *localAddr;
@@ -174,15 +191,15 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
     sock->client = isClient;
 
     PROBE(RPC_SOCKET_NEW,
-          "sock=%p refs=%d fd=%d errfd=%d pid=%lld localAddr=%s, remoteAddr=%s",
-          sock, sock->refs, fd, errfd, (long long) pid,
+          "sock=%p fd=%d errfd=%d pid=%lld localAddr=%s, remoteAddr=%s",
+          sock, fd, errfd, (long long) pid,
           NULLSTR(sock->localAddrStr), NULLSTR(sock->remoteAddrStr));
 
     return sock;
 
 error:
     sock->fd = sock->errfd = -1; /* Caller owns fd/errfd on failure */
-    virNetSocketFree(sock);
+    virObjectUnref(sock);
     return NULL;
 }
 
@@ -296,7 +313,7 @@ int virNetSocketNewListenTCP(const char *nodename,
 
 error:
     for (i = 0 ; i < nsocks ; i++)
-        virNetSocketFree(socks[i]);
+        virObjectUnref(socks[i]);
     VIR_FREE(socks);
     freeaddrinfo(ai);
     VIR_FORCE_CLOSE(fd);
@@ -704,32 +721,9 @@ int virNetSocketNewConnectExternal(const char **cmdargv,
 }
 
 
-void virNetSocketRef(virNetSocketPtr sock)
+void virNetSocketDispose(void *obj)
 {
-    virMutexLock(&sock->lock);
-    sock->refs++;
-    PROBE(RPC_SOCKET_REF,
-          "sock=%p refs=%d",
-          sock, sock->refs);
-    virMutexUnlock(&sock->lock);
-}
-
-
-void virNetSocketFree(virNetSocketPtr sock)
-{
-    if (!sock)
-        return;
-
-    virMutexLock(&sock->lock);
-    PROBE(RPC_SOCKET_FREE,
-          "sock=%p refs=%d",
-          sock, sock->refs);
-
-    sock->refs--;
-    if (sock->refs > 0) {
-        virMutexUnlock(&sock->lock);
-        return;
-    }
+    virNetSocketPtr sock = obj;
 
     VIR_DEBUG("sock=%p fd=%d", sock, sock->fd);
     if (sock->watch > 0) {
@@ -761,10 +755,7 @@ void virNetSocketFree(virNetSocketPtr sock)
     VIR_FREE(sock->localAddrStr);
     VIR_FREE(sock->remoteAddrStr);
 
-    virMutexUnlock(&sock->lock);
     virMutexDestroy(&sock->lock);
-
-    VIR_FREE(sock);
 }
 
 
@@ -1331,7 +1322,7 @@ static void virNetSocketEventFree(void *opaque)
     if (ff)
         ff(eopaque);
 
-    virNetSocketFree(sock);
+    virObjectUnref(sock);
 }
 
 int virNetSocketAddIOCallback(virNetSocketPtr sock,
@@ -1342,7 +1333,7 @@ int virNetSocketAddIOCallback(virNetSocketPtr sock,
 {
     int ret = -1;
 
-    virNetSocketRef(sock);
+    virObjectRef(sock);
     virMutexLock(&sock->lock);
     if (sock->watch > 0) {
         VIR_DEBUG("Watch already registered on socket %p", sock);
@@ -1366,7 +1357,7 @@ int virNetSocketAddIOCallback(virNetSocketPtr sock,
 cleanup:
     virMutexUnlock(&sock->lock);
     if (ret != 0)
-        virNetSocketFree(sock);
+        virObjectUnref(sock);
     return ret;
 }
 

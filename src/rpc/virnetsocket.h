@@ -27,6 +27,7 @@
 # include "virsocketaddr.h"
 # include "command.h"
 # include "virnettlscontext.h"
+# include "virobject.h"
 # ifdef HAVE_SASL
 #  include "virnetsaslcontext.h"
 # endif
@@ -108,8 +109,6 @@ void virNetSocketSetSASLSession(virNetSocketPtr sock,
 # endif
 bool virNetSocketHasCachedData(virNetSocketPtr sock);
 bool virNetSocketHasPendingData(virNetSocketPtr sock);
-void virNetSocketRef(virNetSocketPtr sock);
-void virNetSocketFree(virNetSocketPtr sock);
 
 const char *virNetSocketLocalAddrString(virNetSocketPtr sock);
 const char *virNetSocketRemoteAddrString(virNetSocketPtr sock);

@@ -494,7 +494,7 @@ void virNetClientFree(virNetClientPtr client)
 
     if (client->sock)
         virNetSocketRemoveIOCallback(client->sock);
-    virNetSocketFree(client->sock);
+    virObjectUnref(client->sock);
     virObjectUnref(client->tls);
 #if HAVE_SASL
     virObjectUnref(client->sasl);
@@ -530,7 +530,7 @@ virNetClientCloseLocked(virNetClientPtr client)
     if (!client->sock)
         return;
 
-    virNetSocketFree(client->sock);
+    virObjectUnref(client->sock);
     client->sock = NULL;
     virObjectUnref(client->tls);
     client->tls = NULL;

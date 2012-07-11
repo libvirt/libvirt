@@ -155,7 +155,6 @@ useless_free_options =				\
   --name=virNetServerMDNSGroupFree              \
   --name=virNetServerProgramFree                \
   --name=virNetServerServiceFree                \
-  --name=virNetSocketFree                       \
   --name=virNWFilterDefFree			\
   --name=virNWFilterEntryFree			\
   --name=virNWFilterHashTableFree		\

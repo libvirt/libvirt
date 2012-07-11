@@ -86,7 +86,7 @@ error:
         virNetServerClientClose(client);
         virNetServerClientFree(client);
     } else {
-        virNetSocketFree(clientsock);
+        virObjectUnref(clientsock);
     }
 }
 
@@ -258,7 +258,7 @@ void virNetServerServiceFree(virNetServerServicePtr svc)
         return;
 
     for (i = 0 ; i < svc->nsocks ; i++)
-        virNetSocketFree(svc->socks[i]);
+        virObjectUnref(svc->socks[i]);
     VIR_FREE(svc->socks);
 
     virObjectUnref(svc->tls);

@@ -172,7 +172,7 @@ static int testSocketTCPAccept(const void *opaque)
     if (virNetSocketNewConnectTCP(data->cnode, portstr, &csock) < 0)
         goto cleanup;
 
-    virNetSocketFree(csock);
+    virObjectUnref(csock);
 
     for (i = 0 ; i < nlsock ; i++) {
         if (virNetSocketAccept(lsock[i], &ssock) != -1 && ssock) {
@@ -183,16 +183,16 @@ static int testSocketTCPAccept(const void *opaque)
                 goto cleanup;
             }
         }
-        virNetSocketFree(ssock);
+        virObjectUnref(ssock);
         ssock = NULL;
     }
 
     ret = 0;
 
 cleanup:
-    virNetSocketFree(ssock);
+    virObjectUnref(ssock);
     for (i = 0 ; i < nlsock ; i++)
-        virNetSocketFree(lsock[i]);
+        virObjectUnref(lsock[i]);
     VIR_FREE(lsock);
     return ret;
 }
@@ -228,7 +228,7 @@ static int testSocketUNIXAccept(const void *data ATTRIBUTE_UNUSED)
     if (virNetSocketNewConnectUNIX(path, false, NULL, &csock) < 0)
         goto cleanup;
 
-    virNetSocketFree(csock);
+    virObjectUnref(csock);
 
     if (virNetSocketAccept(lsock, &ssock) != -1) {
         char c = 'a';
@@ -242,8 +242,8 @@ static int testSocketUNIXAccept(const void *data ATTRIBUTE_UNUSED)
 
 cleanup:
     VIR_FREE(path);
-    virNetSocketFree(lsock);
-    virNetSocketFree(ssock);
+    virObjectUnref(lsock);
+    virObjectUnref(ssock);
     if (tmpdir)
         rmdir(tmpdir);
     return ret;
@@ -320,9 +320,9 @@ static int testSocketUNIXAddrs(const void *data ATTRIBUTE_UNUSED)
 
 cleanup:
     VIR_FREE(path);
-    virNetSocketFree(lsock);
-    virNetSocketFree(ssock);
-    virNetSocketFree(csock);
+    virObjectUnref(lsock);
+    virObjectUnref(ssock);
+    virObjectUnref(csock);
     if (tmpdir)
         rmdir(tmpdir);
     return ret;
@@ -352,7 +352,7 @@ static int testSocketCommandNormal(const void *data ATTRIBUTE_UNUSED)
     ret = 0;
 
 cleanup:
-    virNetSocketFree(csock);
+    virObjectUnref(csock);
     return ret;
 }
 
@@ -375,7 +375,7 @@ static int testSocketCommandFail(const void *data ATTRIBUTE_UNUSED)
     ret = 0;
 
 cleanup:
-    virNetSocketFree(csock);
+    virObjectUnref(csock);
     return ret;
 }
 
@@ -444,7 +444,7 @@ static int testSocketSSH(const void *opaque)
     ret = 0;
 
 cleanup:
-    virNetSocketFree(csock);
+    virObjectUnref(csock);
     return ret;
 }
 

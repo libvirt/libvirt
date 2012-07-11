@@ -1805,7 +1805,7 @@ qemuMigrationConnect(struct qemud_driver *driver,
         goto cleanup;
     if (virNetSocketNewConnectTCP(host, port, &sock) == 0) {
         spec->dest.fd.qemu = virNetSocketDupFD(sock, true);
-        virNetSocketFree(sock);
+        virObjectUnref(sock);
     }
     if (virSecurityManagerClearSocketLabel(driver->securityManager, vm->def) < 0 ||
         spec->dest.fd.qemu == -1)
@@ -2157,7 +2157,7 @@ cleanup:
         VIR_FORCE_CLOSE(spec.dest.fd.qemu);
         VIR_FORCE_CLOSE(spec.dest.fd.local);
     } else {
-        virNetSocketFree(sock);
+        virObjectUnref(sock);
         VIR_FREE(spec.dest.unix_socket.file);
     }
 

@@ -596,7 +596,7 @@ void virNetServerClientFree(virNetServerClientPtr client)
         virEventRemoveTimeout(client->sockTimer);
     virObjectUnref(client->tls);
     virObjectUnref(client->tlsCtxt);
-    virNetSocketFree(client->sock);
+    virObjectUnref(client->sock);
     virNetServerClientUnlock(client);
     virMutexDestroy(&client->lock);
     VIR_FREE(client);
@@ -667,7 +667,7 @@ void virNetServerClientClose(virNetServerClientPtr client)
     }
 
     if (client->sock) {
-        virNetSocketFree(client->sock);
+        virObjectUnref(client->sock);
         client->sock = NULL;
     }
 
