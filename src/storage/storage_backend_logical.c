@@ -171,6 +171,11 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
                               "%s", _("malformed volume extent size value"));
         goto cleanup;
     }
+    if (virStrToLong_ull(groups[8], NULL, 10, &vol->allocation) < 0) {
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+                              "%s", _("malformed volume allocation value"));
+        goto cleanup;
+    }
 
     /* Now parse the "devices" field separately */
     regex = strdup(regex_unit);
@@ -271,12 +276,12 @@ virStorageBackendLogicalFindLVs(virStoragePoolObjPtr pool,
                                 virStorageVolDefPtr vol)
 {
     /*
-     *  # lvs --separator , --noheadings --units b --unbuffered --nosuffix --options "lv_name,origin,uuid,devices,seg_size,vg_extent_size" VGNAME
-     *  RootLV,,06UgP5-2rhb-w3Bo-3mdR-WeoL-pytO-SAa2ky,/dev/hda2(0),5234491392,33554432
-     *  SwapLV,,oHviCK-8Ik0-paqS-V20c-nkhY-Bm1e-zgzU0M,/dev/hda2(156),1040187392,33554432
-     *  Test2,,3pg3he-mQsA-5Sui-h0i6-HNmc-Cz7W-QSndcR,/dev/hda2(219),1073741824,33554432
-     *  Test3,,UB5hFw-kmlm-LSoX-EI1t-ioVd-h7GL-M0W8Ht,/dev/hda2(251),2181038080,33554432
-     *  Test3,Test2,UB5hFw-kmlm-LSoX-EI1t-ioVd-h7GL-M0W8Ht,/dev/hda2(187),1040187392,33554432
+     *  # lvs --separator , --noheadings --units b --unbuffered --nosuffix --options "lv_name,origin,uuid,devices,seg_size,vg_extent_size,size" VGNAME
+     *  RootLV,,06UgP5-2rhb-w3Bo-3mdR-WeoL-pytO-SAa2ky,/dev/hda2(0),5234491392,33554432,5234491392
+     *  SwapLV,,oHviCK-8Ik0-paqS-V20c-nkhY-Bm1e-zgzU0M,/dev/hda2(156),1040187392,33554432,1040187392
+     *  Test2,,3pg3he-mQsA-5Sui-h0i6-HNmc-Cz7W-QSndcR,/dev/hda2(219),1073741824,33554432,1073741824
+     *  Test3,,UB5hFw-kmlm-LSoX-EI1t-ioVd-h7GL-M0W8Ht,/dev/hda2(251),2181038080,33554432,2181038080
+     *  Test3,Test2,UB5hFw-kmlm-LSoX-EI1t-ioVd-h7GL-M0W8Ht,/dev/hda2(187),1040187392,33554432,1040187392
      *
      * Pull out name, origin, & uuid, device, device extent start #, segment size, extent size.
      *
@@ -290,10 +295,10 @@ virStorageBackendLogicalFindLVs(virStoragePoolObjPtr pool,
      *    striped, so "," is not a suitable separator either (rhbz 727474).
      */
     const char *regexes[] = {
-       "^\\s*(\\S+)#(\\S*)#(\\S+)#(\\S+)#(\\S+)#([0-9]+)#(\\S+)#([0-9]+)#?\\s*$"
+       "^\\s*(\\S+)#(\\S*)#(\\S+)#(\\S+)#(\\S+)#([0-9]+)#(\\S+)#([0-9]+)#([0-9]+)#?\\s*$"
     };
     int vars[] = {
-        8
+        9
     };
     int ret = -1;
     virCommandPtr cmd;
@@ -304,7 +309,7 @@ virStorageBackendLogicalFindLVs(virStoragePoolObjPtr pool,
                                "--units", "b",
                                "--unbuffered",
                                "--nosuffix",
-                               "--options", "lv_name,origin,uuid,devices,segtype,stripes,seg_size,vg_extent_size",
+                               "--options", "lv_name,origin,uuid,devices,segtype,stripes,seg_size,vg_extent_size,size",
                                pool->def->source.name,
                                NULL);
     if (virStorageBackendRunProgRegex(pool,
@@ -718,6 +723,10 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
                                "--name", vol->name,
                                NULL);
     virCommandAddArg(cmd, "-L");
+    if (vol->capacity != vol->allocation) {
+        virCommandAddArgFormat(cmd, "%lluK", VIR_DIV_UP(vol->allocation, 1024));
+        virCommandAddArg(cmd, "--virtualsize");
+    }
     virCommandAddArgFormat(cmd, "%lluK", VIR_DIV_UP(vol->capacity, 1024));
     if (vol->backingStore.path)
         virCommandAddArgPair(cmd, "-s", vol->backingStore.path);
