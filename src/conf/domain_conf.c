@@ -660,6 +660,21 @@ VIR_ENUM_IMPL(virDomainNumatuneMemPlacementMode,
 #define VIR_DOMAIN_XML_WRITE_FLAGS  VIR_DOMAIN_XML_SECURE
 #define VIR_DOMAIN_XML_READ_FLAGS   VIR_DOMAIN_XML_INACTIVE
 
+static virClassPtr virDomainObjClass;
+static void virDomainObjDispose(void *obj);
+
+static int virDomainObjOnceInit(void)
+{
+    if (!(virDomainObjClass = virClassNew("virDomainObj",
+                                          sizeof(virDomainObj),
+                                          virDomainObjDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virDomainObj)
+
 void
 virBlkioDeviceWeightArrayClear(virBlkioDeviceWeightPtr deviceWeights,
                                int ndevices)
@@ -725,7 +740,7 @@ virDomainObjListDataFree(void *payload, const void *name ATTRIBUTE_UNUSED)
 {
     virDomainObjPtr obj = payload;
     virDomainObjLock(obj);
-    if (virDomainObjUnref(obj) > 0)
+    if (virObjectUnref(obj))
         virDomainObjUnlock(obj);
 }
 
@@ -1639,10 +1654,10 @@ void virDomainDefFree(virDomainDefPtr def)
 }
 
 static void virDomainSnapshotObjListDeinit(virDomainSnapshotObjListPtr snapshots);
-static void virDomainObjFree(virDomainObjPtr dom)
+
+static void virDomainObjDispose(void *obj)
 {
-    if (!dom)
-        return;
+    virDomainObjPtr dom = obj;
 
     VIR_DEBUG("obj=%p", dom);
     virDomainDefFree(dom->def);
@@ -1654,37 +1669,18 @@ static void virDomainObjFree(virDomainObjPtr dom)
     virMutexDestroy(&dom->lock);
 
     virDomainSnapshotObjListDeinit(&dom->snapshots);
-
-    VIR_FREE(dom);
-}
-
-void virDomainObjRef(virDomainObjPtr dom)
-{
-    dom->refs++;
-    VIR_DEBUG("obj=%p refs=%d", dom, dom->refs);
 }
 
 
-int virDomainObjUnref(virDomainObjPtr dom)
-{
-    dom->refs--;
-    VIR_DEBUG("obj=%p refs=%d", dom, dom->refs);
-    if (dom->refs == 0) {
-        virDomainObjUnlock(dom);
-        virDomainObjFree(dom);
-        return 0;
-    }
-    return dom->refs;
-}
-
-static virDomainObjPtr virDomainObjNew(virCapsPtr caps)
+virDomainObjPtr virDomainObjNew(virCapsPtr caps)
 {
     virDomainObjPtr domain;
 
-    if (VIR_ALLOC(domain) < 0) {
-        virReportOOMError();
+    if (virDomainObjInitialize() < 0)
         return NULL;
-    }
+
+    if (!(domain = virObjectNew(virDomainObjClass)))
+        return NULL;
 
     if (caps->privateDataAllocFunc &&
         !(domain->privateData = (caps->privateDataAllocFunc)())) {
@@ -1706,7 +1702,6 @@ static virDomainObjPtr virDomainObjNew(virCapsPtr caps)
     virDomainObjLock(domain);
     virDomainObjSetState(domain, VIR_DOMAIN_SHUTOFF,
                                  VIR_DOMAIN_SHUTOFF_UNKNOWN);
-    domain->refs = 1;
 
     virDomainSnapshotObjListInit(&domain->snapshots);
 
@@ -9417,8 +9412,7 @@ static virDomainObjPtr virDomainObjParseXML(virCapsPtr caps,
     return obj;
 
 error:
-    /* obj was never shared, so unref should return 0 */
-    ignore_value(virDomainObjUnref(obj));
+    virObjectUnref(obj);
     VIR_FREE(nodes);
     return NULL;
 }
@@ -13527,9 +13521,7 @@ static virDomainObjPtr virDomainLoadStatus(virCapsPtr caps,
     return obj;
 
 error:
-    /* obj was never shared, so unref should return 0 */
-    if (obj)
-        ignore_value(virDomainObjUnref(obj));
+    virObjectUnref(obj);
     VIR_FREE(statusFile);
     return NULL;
 }

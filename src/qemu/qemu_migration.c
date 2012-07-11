@@ -1369,7 +1369,7 @@ qemuMigrationPrepareAny(struct qemud_driver *driver,
      * This prevents any other APIs being invoked while incoming
      * migration is taking place.
      */
-    if (qemuMigrationJobContinue(vm) == 0) {
+    if (!qemuMigrationJobContinue(vm)) {
         vm = NULL;
         virReportError(VIR_ERR_OPERATION_FAILED,
                        "%s", _("domain disappeared"));
@@ -1396,7 +1396,7 @@ cleanup:
     return ret;
 
 endjob:
-    if (qemuMigrationJobFinish(driver, vm) == 0) {
+    if (!qemuMigrationJobFinish(driver, vm)) {
         vm = NULL;
     }
     goto cleanup;
@@ -2680,7 +2680,7 @@ endjob:
                                          VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
     }
 
-    if (qemuMigrationJobFinish(driver, vm) == 0) {
+    if (!qemuMigrationJobFinish(driver, vm)) {
         vm = NULL;
     } else if (!virDomainObjIsActive(vm) &&
                (!vm->persistent ||
@@ -2722,7 +2722,7 @@ qemuMigrationPerformPhase(struct qemud_driver *driver,
     virDomainEventPtr event = NULL;
     int ret = -1;
     bool resume;
-    int refs;
+    bool hasrefs;
 
     /* If we didn't start the job in the begin phase, start it now. */
     if (!(flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
@@ -2770,10 +2770,10 @@ qemuMigrationPerformPhase(struct qemud_driver *driver,
 
 endjob:
     if (ret < 0)
-        refs = qemuMigrationJobFinish(driver, vm);
+        hasrefs = qemuMigrationJobFinish(driver, vm);
     else
-        refs = qemuMigrationJobContinue(vm);
-    if (refs == 0) {
+        hasrefs = qemuMigrationJobContinue(vm);
+    if (!hasrefs) {
         vm = NULL;
     } else if (!virDomainObjIsActive(vm) && !vm->persistent) {
         qemuDomainRemoveInactive(driver, vm);
@@ -3374,15 +3374,15 @@ qemuMigrationJobStartPhase(struct qemud_driver *driver,
                            virDomainObjPtr vm,
                            enum qemuMigrationJobPhase phase)
 {
-    virDomainObjRef(vm);
+    virObjectRef(vm);
     qemuMigrationJobSetPhase(driver, vm, phase);
 }
 
-int
+bool
 qemuMigrationJobContinue(virDomainObjPtr vm)
 {
     qemuDomainObjReleaseAsyncJob(vm);
-    return virDomainObjUnref(vm);
+    return virObjectUnref(vm);
 }
 
 bool
@@ -3405,7 +3405,7 @@ qemuMigrationJobIsActive(virDomainObjPtr vm,
     return true;
 }
 
-int
+bool
 qemuMigrationJobFinish(struct qemud_driver *driver, virDomainObjPtr vm)
 {
     return qemuDomainObjEndAsyncJob(driver, vm);

@@ -134,7 +134,7 @@ libxlDomainObjUnref(void *data)
 {
     virDomainObjPtr vm = data;
 
-    ignore_value(virDomainObjUnref(vm));
+    virObjectUnref(vm);
 }
 
 static void
@@ -484,13 +484,13 @@ libxlCreateDomEvents(virDomainObjPtr vm)
     /* Add a reference to the domain object while it is injected in
      * the event loop.
      */
-    virDomainObjRef(vm);
+    virObjectRef(vm);
     if ((priv->eventHdl = virEventAddHandle(
              fd,
              VIR_EVENT_HANDLE_READABLE | VIR_EVENT_HANDLE_ERROR,
              libxlEventHandler,
              vm, libxlDomainObjUnref)) < 0) {
-        ignore_value(virDomainObjUnref(vm));
+        virObjectUnref(vm);
         goto error;
     }
 

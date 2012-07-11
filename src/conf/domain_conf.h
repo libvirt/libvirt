@@ -43,6 +43,7 @@
 # include "virnetdevvportprofile.h"
 # include "virnetdevopenvswitch.h"
 # include "virnetdevbandwidth.h"
+# include "virobject.h"
 
 /* forward declarations of all device types, required by
  * virDomainDeviceDef
@@ -1809,8 +1810,9 @@ struct _virDomainStateReason {
 typedef struct _virDomainObj virDomainObj;
 typedef virDomainObj *virDomainObjPtr;
 struct _virDomainObj {
+    virObject object;
+
     virMutex lock;
-    int refs;
 
     pid_t pid;
     virDomainStateReason state;
@@ -1847,6 +1849,7 @@ virDomainObjIsActive(virDomainObjPtr dom)
     return dom->def->id != -1;
 }
 
+virDomainObjPtr virDomainObjNew(virCapsPtr caps);
 
 int virDomainObjListInit(virDomainObjListPtr objs);
 void virDomainObjListDeinit(virDomainObjListPtr objs);
@@ -1909,9 +1912,6 @@ int virDomainDeviceInfoIterate(virDomainDefPtr def,
                                void *opaque);
 
 void virDomainDefFree(virDomainDefPtr vm);
-void virDomainObjRef(virDomainObjPtr vm);
-/* Returns 1 if the object was freed, 0 if more refs exist */
-int virDomainObjUnref(virDomainObjPtr vm) ATTRIBUTE_RETURN_CHECK;
 
 virDomainChrDefPtr virDomainChrDefNew(void);
 

@@ -774,7 +774,7 @@ qemuDomainObjBeginJobInternal(struct qemud_driver *driver,
         return -1;
     then = now + QEMU_JOB_WAIT_TIME;
 
-    virDomainObjRef(obj);
+    virObjectRef(obj);
     if (driver_locked)
         qemuDriverUnlock(driver);
 
@@ -854,8 +854,7 @@ error:
         qemuDriverLock(driver);
         virDomainObjLock(obj);
     }
-    /* Safe to ignore value since ref count was incremented above */
-    ignore_value(virDomainObjUnref(obj));
+    virObjectUnref(obj);
     return -1;
 }
 
@@ -922,10 +921,10 @@ int qemuDomainObjBeginAsyncJobWithDriver(struct qemud_driver *driver,
  * To be called after completing the work associated with the
  * earlier qemuDomainBeginJob() call
  *
- * Returns remaining refcount on 'obj', maybe 0 to indicated it
- * was deleted
+ * Returns true if @obj was still referenced, false if it was
+ * disposed of.
  */
-int qemuDomainObjEndJob(struct qemud_driver *driver, virDomainObjPtr obj)
+bool qemuDomainObjEndJob(struct qemud_driver *driver, virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
     enum qemuDomainJob job = priv->job.active;
@@ -941,10 +940,10 @@ int qemuDomainObjEndJob(struct qemud_driver *driver, virDomainObjPtr obj)
         qemuDomainObjSaveJob(driver, obj);
     virCondSignal(&priv->job.cond);
 
-    return virDomainObjUnref(obj);
+    return virObjectUnref(obj);
 }
 
-int
+bool
 qemuDomainObjEndAsyncJob(struct qemud_driver *driver, virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
@@ -958,7 +957,7 @@ qemuDomainObjEndAsyncJob(struct qemud_driver *driver, virDomainObjPtr obj)
     qemuDomainObjSaveJob(driver, obj);
     virCondBroadcast(&priv->job.asyncCond);
 
-    return virDomainObjUnref(obj);
+    return virObjectUnref(obj);
 }
 
 static int
@@ -1031,9 +1030,7 @@ qemuDomainObjExitMonitorInternal(struct qemud_driver *driver,
         qemuDomainObjSaveJob(driver, obj);
         virCondSignal(&priv->job.cond);
 
-        /* safe to ignore since the surrounding async job increased
-         * the reference counter as well */
-        ignore_value(virDomainObjUnref(obj));
+        virObjectUnref(obj);
     }
 }
 
@@ -1207,7 +1204,7 @@ void qemuDomainObjExitAgentWithDriver(struct qemud_driver *driver,
 void qemuDomainObjEnterRemoteWithDriver(struct qemud_driver *driver,
                                         virDomainObjPtr obj)
 {
-    virDomainObjRef(obj);
+    virObjectRef(obj);
     virDomainObjUnlock(obj);
     qemuDriverUnlock(driver);
 }
@@ -1217,9 +1214,7 @@ void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
 {
     qemuDriverLock(driver);
     virDomainObjLock(obj);
-    /* Safe to ignore value, since we incremented ref in
-     * qemuDomainObjEnterRemoteWithDriver */
-    ignore_value(virDomainObjUnref(obj));
+    virObjectUnref(obj);
 }
 
 

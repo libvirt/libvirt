@@ -565,7 +565,7 @@ static void virLXCProcessMonitorDestroy(virLXCMonitorPtr mon,
     priv = vm->privateData;
     if (priv->monitor == mon)
         priv->monitor = NULL;
-    if (virDomainObjUnref(vm) > 0)
+    if (virObjectUnref(vm))
         virDomainObjUnlock(vm);
 }
 
@@ -666,12 +666,12 @@ static virLXCMonitorPtr virLXCProcessConnectMonitor(virLXCDriverPtr driver,
 
     /* Hold an extra reference because we can't allow 'vm' to be
      * deleted while the monitor is active */
-    virDomainObjRef(vm);
+    virObjectRef(vm);
 
     monitor = virLXCMonitorNew(vm, driver->stateDir, &monitorCallbacks);
 
     if (monitor == NULL)
-        ignore_value(virDomainObjUnref(vm));
+        virObjectUnref(vm);
 
     if (virSecurityManagerClearSocketLabel(driver->securityManager, vm->def) < 0) {
         if (monitor) {

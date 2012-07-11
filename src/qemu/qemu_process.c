@@ -173,7 +173,7 @@ static void qemuProcessHandleAgentDestroy(qemuAgentPtr agent,
     priv = vm->privateData;
     if (priv->agent == agent)
         priv->agent = NULL;
-    if (virDomainObjUnref(vm) > 0)
+    if (virObjectUnref(vm))
         virDomainObjUnlock(vm);
 }
 
@@ -225,7 +225,7 @@ qemuConnectAgent(struct qemud_driver *driver, virDomainObjPtr vm)
 
     /* Hold an extra reference because we can't allow 'vm' to be
      * deleted while the agent is active */
-    virDomainObjRef(vm);
+    virObjectRef(vm);
 
     ignore_value(virTimeMillisNow(&priv->agentStart));
     virDomainObjUnlock(vm);
@@ -246,9 +246,8 @@ qemuConnectAgent(struct qemud_driver *driver, virDomainObjPtr vm)
         goto cleanup;
     }
 
-    /* Safe to ignore value since ref count was incremented above */
     if (agent == NULL)
-        ignore_value(virDomainObjUnref(vm));
+        virObjectUnref(vm);
 
     if (!virDomainObjIsActive(vm)) {
         qemuAgentClose(agent);
@@ -584,7 +583,7 @@ qemuProcessFakeReboot(void *opaque)
     ret = 0;
 
 endjob:
-    if (qemuDomainObjEndJob(driver, vm) == 0)
+    if (!qemuDomainObjEndJob(driver, vm))
         vm = NULL;
 
 cleanup:
@@ -593,7 +592,7 @@ cleanup:
             ignore_value(qemuProcessKill(driver, vm,
                                          VIR_QEMU_PROCESS_KILL_FORCE));
         }
-        if (virDomainObjUnref(vm) > 0)
+        if (virObjectUnref(vm))
             virDomainObjUnlock(vm);
     }
     if (event)
@@ -610,7 +609,7 @@ qemuProcessShutdownOrReboot(struct qemud_driver *driver,
 
     if (priv->fakeReboot) {
         qemuDomainSetFakeReboot(driver, vm, false);
-        virDomainObjRef(vm);
+        virObjectRef(vm);
         virThread th;
         if (virThreadCreate(&th,
                             false,
@@ -619,8 +618,7 @@ qemuProcessShutdownOrReboot(struct qemud_driver *driver,
             VIR_ERROR(_("Failed to create reboot thread, killing domain"));
             ignore_value(qemuProcessKill(driver, vm,
                                          VIR_QEMU_PROCESS_KILL_NOWAIT));
-            /* Safe to ignore value since ref count was incremented above */
-            ignore_value(virDomainObjUnref(vm));
+            virObjectUnref(vm);
         }
     } else {
         ignore_value(qemuProcessKill(driver, vm, VIR_QEMU_PROCESS_KILL_NOWAIT));
@@ -801,9 +799,9 @@ qemuProcessHandleWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
             /* Hold an extra reference because we can't allow 'vm' to be
              * deleted before handling watchdog event is finished.
              */
-            virDomainObjRef(vm);
+            virObjectRef(vm);
             if (virThreadPoolSendJob(driver->workerPool, 0, wdEvent) < 0) {
-                if (virDomainObjUnref(vm) == 0)
+                if (!virObjectUnref(vm))
                     vm = NULL;
                 VIR_FREE(wdEvent);
             }
@@ -1022,7 +1020,7 @@ static void qemuProcessHandleMonitorDestroy(qemuMonitorPtr mon,
     priv = vm->privateData;
     if (priv->mon == mon)
         priv->mon = NULL;
-    if (virDomainObjUnref(vm) > 0)
+    if (virObjectUnref(vm))
         virDomainObjUnlock(vm);
 }
 
@@ -1213,7 +1211,7 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
 
     /* Hold an extra reference because we can't allow 'vm' to be
      * deleted while the monitor is active */
-    virDomainObjRef(vm);
+    virObjectRef(vm);
 
     ignore_value(virTimeMillisNow(&priv->monStart));
     virDomainObjUnlock(vm);
@@ -1228,9 +1226,8 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
     virDomainObjLock(vm);
     priv->monStart = 0;
 
-    /* Safe to ignore value since ref count was incremented above */
     if (mon == NULL)
-        ignore_value(virDomainObjUnref(vm));
+        virObjectUnref(vm);
 
     if (!virDomainObjIsActive(vm)) {
         qemuMonitorClose(mon);
@@ -3068,7 +3065,7 @@ qemuProcessReconnect(void *opaque)
 
     /* Hold an extra reference because we can't allow 'vm' to be
      * deleted if qemuConnectMonitor() failed */
-    virDomainObjRef(obj);
+    virObjectRef(obj);
 
     /* XXX check PID liveliness & EXE path */
     if (qemuConnectMonitor(driver, obj) < 0)
@@ -3165,10 +3162,10 @@ qemuProcessReconnect(void *opaque)
         driver->nextvmid = obj->def->id + 1;
 
 endjob:
-    if (qemuDomainObjEndJob(driver, obj) == 0)
+    if (!qemuDomainObjEndJob(driver, obj))
         obj = NULL;
 
-    if (obj && virDomainObjUnref(obj) > 0)
+    if (obj && virObjectUnref(obj))
         virDomainObjUnlock(obj);
 
     qemuDriverUnlock(driver);
@@ -3178,18 +3175,18 @@ endjob:
     return;
 
 error:
-    if (qemuDomainObjEndJob(driver, obj) == 0)
+    if (!qemuDomainObjEndJob(driver, obj))
         obj = NULL;
 
     if (obj) {
         if (!virDomainObjIsActive(obj)) {
-            if (virDomainObjUnref(obj) > 0)
+            if (virObjectUnref(obj))
                 virDomainObjUnlock(obj);
             qemuDriverUnlock(driver);
             return;
         }
 
-        if (virDomainObjUnref(obj) > 0) {
+        if (virObjectUnref(obj)) {
             /* We can't get the monitor back, so must kill the VM
              * to remove danger of it ending up running twice if
              * user tries to start it again later
@@ -3277,9 +3274,9 @@ qemuProcessReconnectHelper(void *payload,
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not create thread. QEMU initialization "
                          "might be incomplete"));
-        if (qemuDomainObjEndJob(src->driver, obj) == 0) {
+        if (!qemuDomainObjEndJob(src->driver, obj)) {
             obj = NULL;
-        } else if (virDomainObjUnref(obj) > 0) {
+        } else if (virObjectUnref(obj)) {
            /* We can't spawn a thread and thus connect to monitor.
             * Kill qemu */
             qemuProcessStop(src->driver, obj, VIR_DOMAIN_SHUTOFF_FAILED, 0);
@@ -3950,12 +3947,11 @@ cleanup:
          * a case, but there are too many to maintain certainty, so we
          * will do this as a precaution).
          */
-        virDomainObjRef(vm);
+        virObjectRef(vm);
         virDomainObjUnlock(vm);
         qemuDriverLock(driver);
         virDomainObjLock(vm);
-        /* Safe to ignore value since ref count was incremented above */
-        ignore_value(virDomainObjUnref(vm));
+        virObjectUnref(vm);
     }
     return ret;
 }
@@ -4407,7 +4403,7 @@ qemuProcessAutoDestroy(struct qemud_driver *driver,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
 
-    if (qemuDomainObjEndJob(driver, dom) == 0)
+    if (!qemuDomainObjEndJob(driver, dom))
         dom = NULL;
     if (dom && !dom->persistent)
         qemuDomainRemoveInactive(driver, dom);

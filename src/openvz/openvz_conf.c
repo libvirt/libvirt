@@ -598,17 +598,8 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         }
         *line++ = '\0';
 
-        if (VIR_ALLOC(dom) < 0)
-            goto no_memory;
-
-        if (virMutexInit(&dom->lock) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cannot initialize mutex"));
-            VIR_FREE(dom);
-            goto cleanup;
-        }
-
-        virDomainObjLock(dom);
+        if (!(dom = virDomainObjNew(driver->caps)))
+             goto cleanup;
 
         if (VIR_ALLOC(dom->def) < 0)
             goto no_memory;
@@ -623,7 +614,6 @@ int openvzLoadDomains(struct openvz_driver *driver) {
                                  VIR_DOMAIN_RUNNING_UNKNOWN);
         }
 
-        dom->refs = 1;
         dom->pid = veid;
         if (virDomainObjGetState(dom, NULL) == VIR_DOMAIN_SHUTOFF)
             dom->def->id = -1;
@@ -683,7 +673,6 @@ int openvzLoadDomains(struct openvz_driver *driver) {
             goto cleanup;
         }
 
-        virDomainObjUnlock(dom);
         dom = NULL;
     }
 
@@ -700,9 +689,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
     virCommandFree(cmd);
     VIR_FREE(temp);
     VIR_FREE(outbuf);
-    /* dom hasn't been shared yet, so unref should return 0 */
-    if (dom)
-        ignore_value(virDomainObjUnref(dom));
+    virObjectUnref(dom);
     return -1;
 }
 
