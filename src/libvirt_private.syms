@@ -1644,6 +1644,16 @@ nodeSuspendForDuration;
 virNodeSuspendGetTargetMask;
 
 
+# virobject.h
+virClassName;
+virClassNew;
+virObjectFreeCallback;
+virObjectIsClass;
+virObjectNew;
+virObjectRef;
+virObjectUnref;
+
+
 # virpidfile.h
 virPidFileAcquire;
 virPidFileAcquirePath;

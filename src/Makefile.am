@@ -85,6 +85,7 @@ UTIL_SOURCES =							\
 		util/virauthconfig.c util/virauthconfig.h	\
 		util/virfile.c util/virfile.h			\
 		util/virnodesuspend.c util/virnodesuspend.h	\
+		util/virobject.c util/virobject.h		\
 		util/virpidfile.c util/virpidfile.h		\
 		util/virtypedparam.c util/virtypedparam.h	\
 		util/xml.c util/xml.h				\

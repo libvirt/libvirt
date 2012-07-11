@@ -16,6 +16,13 @@ provider libvirt {
 	probe event_poll_run(int nfds, int timeout);
 
 
+        # file: src/util/virobject.c
+        # prefix: object
+        probe object_new(void *obj, const char *klassname);
+        probe object_ref(void *obj);
+        probe object_unref(void *obj);
+        probe object_dispose(void *obj);
+
 	# file: src/rpc/virnetsocket.c
 	# prefix: rpc
 	probe rpc_socket_new(void *sock, int refs, int fd, int errfd, pid_t pid, const char *localAddr, const char *remoteAddr);
