@@ -147,25 +147,14 @@ static const char *virLogPriorityString(virLogPriority lvl) {
     return "unknown";
 }
 
-static int virLogInitialized = 0;
 
-/**
- * virLogStartup:
- *
- * Initialize the logging module
- *
- * Returns 0 if successful, and -1 in case or error
- */
-int virLogStartup(void) {
+static int virLogOnceInit(void)
+{
     const char *pbm = NULL;
-
-    if (virLogInitialized)
-        return -1;
 
     if (virMutexInit(&virLogMutex) < 0)
         return -1;
 
-    virLogInitialized = 1;
     virLogLock();
     if (VIR_ALLOC_N(virLogBuffer, virLogSize + 1) < 0) {
         /*
@@ -191,6 +180,8 @@ int virLogStartup(void) {
     return 0;
 }
 
+VIR_ONCE_GLOBAL_INIT(virLog)
+
 /**
  * virLogSetBufferSize:
  * @size: size of the buffer in kilobytes or <= 0 to deactivate
@@ -211,7 +202,10 @@ virLogSetBufferSize(int size) {
     if (size < 0)
         size = 0;
 
-    if ((virLogInitialized == 0) || (size * 1024 == virLogSize))
+    if (virLogInitialize() < 0)
+        return -1;
+
+    if (size * 1024 == virLogSize)
         return ret;
 
     virLogLock();
@@ -253,8 +247,8 @@ error:
  * Returns 0 if successful, and -1 in case or error
  */
 int virLogReset(void) {
-    if (!virLogInitialized)
-        return virLogStartup();
+    if (virLogInitialize() < 0)
+        return -1;
 
     virLogLock();
     virLogResetFilters();
@@ -265,25 +259,6 @@ int virLogReset(void) {
     virLogDefaultPriority = VIR_LOG_DEFAULT;
     virLogUnlock();
     return 0;
-}
-/**
- * virLogShutdown:
- *
- * Shutdown the logging module
- */
-void virLogShutdown(void) {
-    if (!virLogInitialized)
-        return;
-    virLogLock();
-    virLogResetFilters();
-    virLogResetOutputs();
-    virLogLen = 0;
-    virLogStart = 0;
-    virLogEnd = 0;
-    VIR_FREE(virLogBuffer);
-    virLogUnlock();
-    virMutexDestroy(&virLogMutex);
-    virLogInitialized = 0;
 }
 
 /*
@@ -450,8 +425,9 @@ int virLogSetDefaultPriority(int priority) {
         VIR_WARN("Ignoring invalid log level setting.");
         return -1;
     }
-    if (!virLogInitialized)
-        virLogStartup();
+    if (virLogInitialize() < 0)
+        return -1;
+
     virLogDefaultPriority = priority;
     return 0;
 }
@@ -723,8 +699,8 @@ void virLogVMessage(const char *category, int priority, const char *funcname,
     int emit = 1;
     unsigned int filterflags = 0;
 
-    if (!virLogInitialized)
-        virLogStartup();
+    if (virLogInitialize() < 0)
+        return;
 
     if (fmt == NULL)
         goto cleanup;

@@ -762,8 +762,6 @@ virLogReset;
 virLogSetBufferSize;
 virLogSetDefaultPriority;
 virLogSetFromEnv;
-virLogShutdown;
-virLogStartup;
 virLogUnlock;
 
 
@@ -1609,7 +1607,6 @@ virNetTLSSessionWrite;
 
 # virnodesuspend.h
 nodeSuspendForDuration;
-virNodeSuspendInit;
 virNodeSuspendGetTargetMask;
 
 

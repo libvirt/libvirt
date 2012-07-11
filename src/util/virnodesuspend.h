@@ -30,7 +30,6 @@ int nodeSuspendForDuration(virConnectPtr conn,
                            unsigned long long duration,
                            unsigned int flags);
 
-int virNodeSuspendInit(void);
 int virNodeSuspendGetTargetMask(unsigned int *bitmask);
 
 #endif /* __VIR_NODE_SUSPEND_H__ */

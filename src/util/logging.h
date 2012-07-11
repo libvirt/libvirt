@@ -135,9 +135,7 @@ extern int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c, void *data,
 
 extern void virLogLock(void);
 extern void virLogUnlock(void);
-extern int virLogStartup(void);
 extern int virLogReset(void);
-extern void virLogShutdown(void);
 extern int virLogParseDefaultPriority(const char *priority);
 extern int virLogParseFilters(const char *filters);
 extern int virLogParseOutputs(const char *output);

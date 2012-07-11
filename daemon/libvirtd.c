@@ -1349,7 +1349,6 @@ cleanup:
     VIR_FREE(run_dir);
 
     daemonConfigFree(config);
-    virLogShutdown();
 
     return ret;
 }

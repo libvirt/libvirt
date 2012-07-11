@@ -53,7 +53,6 @@
 #include "conf.h"
 #include "rpc/virnettlscontext.h"
 #include "command.h"
-#include "virnodesuspend.h"
 #include "virrandom.h"
 #include "viruri.h"
 
@@ -410,8 +409,7 @@ virInitialize(void)
 
     if (virThreadInitialize() < 0 ||
         virErrorInitialize() < 0 ||
-        virRandomInitialize(time(NULL) ^ getpid()) ||
-        virNodeSuspendInit() < 0)
+        virRandomInitialize(time(NULL) ^ getpid()))
         return -1;
 
     gcry_control(GCRYCTL_SET_THREAD_CBS, &virTLSThreadImpl);

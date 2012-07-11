@@ -59,23 +59,18 @@ static void virNodeSuspendUnlock(void)
 }
 
 
-/**
- * virNodeSuspendInit:
- *
- * Get the system-wide sleep states supported by the host, such as
- * Suspend-to-RAM, Suspend-to-Disk, or Hybrid-Suspend, so that a request
- * to suspend/hibernate the host can be handled appropriately based on
- * this information.
- *
- * Returns 0 if successful, and -1 in case of error.
- */
-int virNodeSuspendInit(void)
+static int virNodeSuspendOnceInit(void)
 {
-    if (virMutexInit(&virNodeSuspendMutex) < 0)
+    if (virMutexInit(&virNodeSuspendMutex) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to initialize mutex"));
         return -1;
+    }
 
     return 0;
 }
+
+VIR_ONCE_GLOBAL_INIT(virNodeSuspend)
 
 
 /**
@@ -182,6 +177,9 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     virCheckFlags(0, -1);
 
+    if (virNodeSuspendInitialize() < 0)
+        return -1;
+
     if (virNodeSuspendGetTargetMask(&supported) < 0)
         return -1;
 
@@ -267,6 +265,9 @@ virNodeSuspendSupportsTarget(unsigned int target, bool *supported)
     virCommandPtr cmd;
     int status;
     int ret = -1;
+
+    if (virNodeSuspendInitialize() < 0)
+        return -1;
 
     *supported = false;
 
