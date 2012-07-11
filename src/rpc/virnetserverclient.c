@@ -346,16 +346,13 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
     client->sock = sock;
     client->auth = auth;
     client->readonly = readonly;
-    client->tlsCtxt = tls;
+    client->tlsCtxt = virObjectRef(tls);
     client->nrequests_max = nrequests_max;
 
     client->sockTimer = virEventAddTimeout(-1, virNetServerClientSockTimerFunc,
                                            client, NULL);
     if (client->sockTimer < 0)
         goto error;
-
-    if (tls)
-        virNetTLSContextRef(tls);
 
     /* Prepare one for packet receive */
     if (!(client->rx = virNetMessageNew(true)))
@@ -598,8 +595,8 @@ void virNetServerClientFree(virNetServerClientPtr client)
 #endif
     if (client->sockTimer > 0)
         virEventRemoveTimeout(client->sockTimer);
-    virNetTLSSessionFree(client->tls);
-    virNetTLSContextFree(client->tlsCtxt);
+    virObjectUnref(client->tls);
+    virObjectUnref(client->tlsCtxt);
     virNetSocketFree(client->sock);
     virNetServerClientUnlock(client);
     virMutexDestroy(&client->lock);
@@ -654,7 +651,7 @@ void virNetServerClientClose(virNetServerClientPtr client)
         virNetSocketRemoveIOCallback(client->sock);
 
     if (client->tls) {
-        virNetTLSSessionFree(client->tls);
+        virObjectUnref(client->tls);
         client->tls = NULL;
     }
     client->wantClose = true;

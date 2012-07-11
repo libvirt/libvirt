@@ -541,7 +541,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                                             false,
                                             config->max_client_requests,
                                             ctxt))) {
-                virNetTLSContextFree(ctxt);
+                virObjectUnref(ctxt);
                 goto error;
             }
             if (virNetServerAddService(srv, svcTLS,
@@ -549,7 +549,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                                        !config->listen_tcp ? "_libvirt._tcp" : NULL) < 0)
                 goto error;
 
-            virNetTLSContextFree(ctxt);
+            virObjectUnref(ctxt);
         }
     }
 

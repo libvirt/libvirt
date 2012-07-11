@@ -158,7 +158,6 @@ useless_free_options =				\
   --name=virNetSocketFree                       \
   --name=virNetSASLContextFree                  \
   --name=virNetSASLSessionFree                  \
-  --name=virNetTLSSessionFree                   \
   --name=virNWFilterDefFree			\
   --name=virNWFilterEntryFree			\
   --name=virNWFilterHashTableFree		\

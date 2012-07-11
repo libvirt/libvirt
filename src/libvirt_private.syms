@@ -1625,20 +1625,16 @@ virNetSocketWrite;
 
 # virnettlscontext.h
 virNetTLSContextCheckCertificate;
-virNetTLSContextFree;
 virNetTLSContextNewClient;
 virNetTLSContextNewClientPath;
 virNetTLSContextNewServer;
 virNetTLSContextNewServerPath;
-virNetTLSContextRef;
 virNetTLSInit;
-virNetTLSSessionFree;
 virNetTLSSessionGetHandshakeStatus;
 virNetTLSSessionGetKeySize;
 virNetTLSSessionHandshake;
 virNetTLSSessionNew;
 virNetTLSSessionRead;
-virNetTLSSessionRef;
 virNetTLSSessionSetIOCallbacks;
 virNetTLSSessionWrite;
 

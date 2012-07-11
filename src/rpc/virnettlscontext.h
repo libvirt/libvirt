@@ -22,6 +22,7 @@
 # define __VIR_NET_TLS_CONTEXT_H__
 
 # include "internal.h"
+# include "virobject.h"
 
 typedef struct _virNetTLSContext virNetTLSContext;
 typedef virNetTLSContext *virNetTLSContextPtr;
@@ -58,12 +59,8 @@ virNetTLSContextPtr virNetTLSContextNewClient(const char *cacert,
                                               bool sanityCheckCert,
                                               bool requireValidCert);
 
-void virNetTLSContextRef(virNetTLSContextPtr ctxt);
-
 int virNetTLSContextCheckCertificate(virNetTLSContextPtr ctxt,
                                      virNetTLSSessionPtr sess);
-
-void virNetTLSContextFree(virNetTLSContextPtr ctxt);
 
 
 typedef ssize_t (*virNetTLSSessionWriteFunc)(const char *buf, size_t len,
@@ -78,8 +75,6 @@ void virNetTLSSessionSetIOCallbacks(virNetTLSSessionPtr sess,
                                     virNetTLSSessionWriteFunc writeFunc,
                                     virNetTLSSessionReadFunc readFunc,
                                     void *opaque);
-
-void virNetTLSSessionRef(virNetTLSSessionPtr sess);
 
 ssize_t virNetTLSSessionWrite(virNetTLSSessionPtr sess,
                               const char *buf, size_t len);
@@ -98,8 +93,5 @@ virNetTLSSessionHandshakeStatus
 virNetTLSSessionGetHandshakeStatus(virNetTLSSessionPtr sess);
 
 int virNetTLSSessionGetKeySize(virNetTLSSessionPtr sess);
-
-void virNetTLSSessionFree(virNetTLSSessionPtr sess);
-
 
 #endif

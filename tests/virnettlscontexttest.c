@@ -496,7 +496,7 @@ static int testTLSContextInit(const void *opaque)
     ret = 0;
 
 cleanup:
-    virNetTLSContextFree(ctxt);
+    virObjectUnref(ctxt);
     gnutls_x509_crt_deinit(data->careq.crt);
     gnutls_x509_crt_deinit(data->certreq.crt);
     data->careq.crt = data->certreq.crt = NULL;
@@ -710,10 +710,10 @@ static int testTLSSessionInit(const void *opaque)
     ret = 0;
 
 cleanup:
-    virNetTLSContextFree(serverCtxt);
-    virNetTLSContextFree(clientCtxt);
-    virNetTLSSessionFree(serverSess);
-    virNetTLSSessionFree(clientSess);
+    virObjectUnref(serverCtxt);
+    virObjectUnref(clientCtxt);
+    virObjectUnref(serverSess);
+    virObjectUnref(clientSess);
     gnutls_x509_crt_deinit(data->careq.crt);
     if (data->othercareq.filename)
         gnutls_x509_crt_deinit(data->othercareq.crt);

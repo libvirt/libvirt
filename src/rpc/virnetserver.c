@@ -642,8 +642,7 @@ no_memory:
 int virNetServerSetTLSContext(virNetServerPtr srv,
                               virNetTLSContextPtr tls)
 {
-    srv->tls = tls;
-    virNetTLSContextRef(tls);
+    srv->tls = virObjectRef(tls);
     return 0;
 }
 

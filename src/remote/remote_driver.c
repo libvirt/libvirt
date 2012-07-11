@@ -943,7 +943,7 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
               (xdrproc_t) xdr_void, (char *) NULL) == -1)
         ret = -1;
 
-    virNetTLSContextFree(priv->tls);
+    virObjectUnref(priv->tls);
     priv->tls = NULL;
     virNetClientClose(priv->client);
     virNetClientFree(priv->client);

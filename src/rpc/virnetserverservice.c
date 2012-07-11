@@ -116,9 +116,7 @@ virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
     svc->auth = auth;
     svc->readonly = readonly;
     svc->nrequests_client_max = nrequests_client_max;
-    svc->tls = tls;
-    if (tls)
-        virNetTLSContextRef(tls);
+    svc->tls = virObjectRef(tls);
 
     if (virNetSocketNewListenTCP(nodename,
                                  service,
@@ -172,9 +170,7 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
     svc->auth = auth;
     svc->readonly = readonly;
     svc->nrequests_client_max = nrequests_client_max;
-    svc->tls = tls;
-    if (tls)
-        virNetTLSContextRef(tls);
+    svc->tls = virObjectRef(tls);
 
     svc->nsocks = 1;
     if (VIR_ALLOC_N(svc->socks, svc->nsocks) < 0)
@@ -265,7 +261,7 @@ void virNetServerServiceFree(virNetServerServicePtr svc)
         virNetSocketFree(svc->socks[i]);
     VIR_FREE(svc->socks);
 
-    virNetTLSContextFree(svc->tls);
+    virObjectUnref(svc->tls);
 
     VIR_FREE(svc);
 }
