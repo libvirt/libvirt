@@ -766,11 +766,11 @@ int     virDomainSetSchedulerParametersFlags (virDomainPtr domain,
 typedef struct _virDomainBlockStats virDomainBlockStatsStruct;
 
 struct _virDomainBlockStats {
-  long long rd_req; /* number of read requests */
-  long long rd_bytes; /* number of read bytes */
-  long long wr_req; /* number of write requests */
-  long long wr_bytes; /* number of written bytes */
-  long long errs;   /* In Xen this returns the mysterious 'oo_req'. */
+    long long rd_req; /* number of read requests */
+    long long rd_bytes; /* number of read bytes */
+    long long wr_req; /* number of write requests */
+    long long wr_bytes; /* number of written bytes */
+    long long errs;   /* In Xen this returns the mysterious 'oo_req'. */
 };
 
 /**
@@ -873,14 +873,14 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
 typedef struct _virDomainInterfaceStats virDomainInterfaceStatsStruct;
 
 struct _virDomainInterfaceStats {
-  long long rx_bytes;
-  long long rx_packets;
-  long long rx_errs;
-  long long rx_drop;
-  long long tx_bytes;
-  long long tx_packets;
-  long long tx_errs;
-  long long tx_drop;
+    long long rx_bytes;
+    long long rx_packets;
+    long long rx_errs;
+    long long rx_drop;
+    long long tx_bytes;
+    long long tx_packets;
+    long long tx_errs;
+    long long tx_drop;
 };
 
 /**
@@ -1781,8 +1781,8 @@ int                     virDomainMemoryStats (virDomainPtr dom,
 /* Memory peeking flags. */
 
 typedef enum {
-  VIR_MEMORY_VIRTUAL            = 1 << 0, /* addresses are virtual addresses */
-  VIR_MEMORY_PHYSICAL           = 1 << 1, /* addresses are physical addresses */
+    VIR_MEMORY_VIRTUAL            = 1 << 0, /* addresses are virtual addresses */
+    VIR_MEMORY_PHYSICAL           = 1 << 1, /* addresses are physical addresses */
 } virDomainMemoryFlags;
 
 int                     virDomainMemoryPeek (virDomainPtr dom,
@@ -2411,17 +2411,17 @@ typedef enum {
 } virStoragePoolBuildFlags;
 
 typedef enum {
-  VIR_STORAGE_POOL_DELETE_NORMAL = 0, /* Delete metadata only    (fast) */
-  VIR_STORAGE_POOL_DELETE_ZEROED = 1 << 0,  /* Clear all data to zeros (slow) */
+    VIR_STORAGE_POOL_DELETE_NORMAL = 0, /* Delete metadata only    (fast) */
+    VIR_STORAGE_POOL_DELETE_ZEROED = 1 << 0,  /* Clear all data to zeros (slow) */
 } virStoragePoolDeleteFlags;
 
 typedef struct _virStoragePoolInfo virStoragePoolInfo;
 
 struct _virStoragePoolInfo {
-  int state;                     /* virStoragePoolState flags */
-  unsigned long long capacity;   /* Logical size bytes */
-  unsigned long long allocation; /* Current allocation bytes */
-  unsigned long long available;  /* Remaining free space bytes */
+    int state;                     /* virStoragePoolState flags */
+    unsigned long long capacity;   /* Logical size bytes */
+    unsigned long long allocation; /* Current allocation bytes */
+    unsigned long long available;  /* Remaining free space bytes */
 };
 
 typedef virStoragePoolInfo *virStoragePoolInfoPtr;
@@ -2444,10 +2444,10 @@ typedef virStorageVol *virStorageVolPtr;
 
 
 typedef enum {
-  VIR_STORAGE_VOL_FILE = 0,     /* Regular file based volumes */
-  VIR_STORAGE_VOL_BLOCK = 1,    /* Block based volumes */
-  VIR_STORAGE_VOL_DIR = 2,      /* Directory-passthrough based volume */
-  VIR_STORAGE_VOL_NETWORK = 3,  /* Network volumes like RBD (RADOS Block Device) */
+    VIR_STORAGE_VOL_FILE = 0,     /* Regular file based volumes */
+    VIR_STORAGE_VOL_BLOCK = 1,    /* Block based volumes */
+    VIR_STORAGE_VOL_DIR = 2,      /* Directory-passthrough based volume */
+    VIR_STORAGE_VOL_NETWORK = 3,  /* Network volumes like RBD (RADOS Block Device) */
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_STORAGE_VOL_LAST
@@ -2455,45 +2455,45 @@ typedef enum {
 } virStorageVolType;
 
 typedef enum {
-  VIR_STORAGE_VOL_DELETE_NORMAL = 0, /* Delete metadata only    (fast) */
-  VIR_STORAGE_VOL_DELETE_ZEROED = 1 << 0,  /* Clear all data to zeros (slow) */
+    VIR_STORAGE_VOL_DELETE_NORMAL = 0, /* Delete metadata only    (fast) */
+    VIR_STORAGE_VOL_DELETE_ZEROED = 1 << 0,  /* Clear all data to zeros (slow) */
 } virStorageVolDeleteFlags;
 
 typedef enum {
-  VIR_STORAGE_VOL_WIPE_ALG_ZERO = 0, /* 1-pass, all zeroes */
-  VIR_STORAGE_VOL_WIPE_ALG_NNSA = 1, /* 4-pass  NNSA Policy Letter
+    VIR_STORAGE_VOL_WIPE_ALG_ZERO = 0, /* 1-pass, all zeroes */
+    VIR_STORAGE_VOL_WIPE_ALG_NNSA = 1, /* 4-pass  NNSA Policy Letter
                                         NAP-14.1-C (XVI-8) */
-  VIR_STORAGE_VOL_WIPE_ALG_DOD = 2, /* 4-pass DoD 5220.22-M section
+    VIR_STORAGE_VOL_WIPE_ALG_DOD = 2, /* 4-pass DoD 5220.22-M section
                                        8-306 procedure */
-  VIR_STORAGE_VOL_WIPE_ALG_BSI = 3, /* 9-pass method recommended by the
+    VIR_STORAGE_VOL_WIPE_ALG_BSI = 3, /* 9-pass method recommended by the
                                        German Center of Security in
                                        Information Technologies */
-  VIR_STORAGE_VOL_WIPE_ALG_GUTMANN = 4, /* The canonical 35-pass sequence */
-  VIR_STORAGE_VOL_WIPE_ALG_SCHNEIER = 5, /* 7-pass method described by
+    VIR_STORAGE_VOL_WIPE_ALG_GUTMANN = 4, /* The canonical 35-pass sequence */
+    VIR_STORAGE_VOL_WIPE_ALG_SCHNEIER = 5, /* 7-pass method described by
                                              Bruce Schneier in "Applied
                                              Cryptography" (1996) */
-  VIR_STORAGE_VOL_WIPE_ALG_PFITZNER7 = 6, /* 7-pass random */
+    VIR_STORAGE_VOL_WIPE_ALG_PFITZNER7 = 6, /* 7-pass random */
 
-  VIR_STORAGE_VOL_WIPE_ALG_PFITZNER33 = 7, /* 33-pass random */
+    VIR_STORAGE_VOL_WIPE_ALG_PFITZNER33 = 7, /* 33-pass random */
 
-  VIR_STORAGE_VOL_WIPE_ALG_RANDOM = 8, /* 1-pass random */
+    VIR_STORAGE_VOL_WIPE_ALG_RANDOM = 8, /* 1-pass random */
 
 #ifdef VIR_ENUM_SENTINELS
-  /*
-   * NB: this enum value will increase over time as new algorithms are
-   * added to the libvirt API. It reflects the last algorithm supported
-   * by this version of the libvirt API.
-   */
-  VIR_STORAGE_VOL_WIPE_ALG_LAST
+    /*
+     * NB: this enum value will increase over time as new algorithms are
+     * added to the libvirt API. It reflects the last algorithm supported
+     * by this version of the libvirt API.
+     */
+    VIR_STORAGE_VOL_WIPE_ALG_LAST
 #endif
 } virStorageVolWipeAlgorithm;
 
 typedef struct _virStorageVolInfo virStorageVolInfo;
 
 struct _virStorageVolInfo {
-  int type;                      /* virStorageVolType flags */
-  unsigned long long capacity;   /* Logical size bytes */
-  unsigned long long allocation; /* Current allocation bytes */
+    int type;                      /* virStorageVolType flags */
+    unsigned long long capacity;   /* Logical size bytes */
+    unsigned long long allocation; /* Current allocation bytes */
 };
 
 typedef virStorageVolInfo *virStorageVolInfoPtr;
@@ -2643,9 +2643,9 @@ char *                  virStorageVolGetXMLDesc         (virStorageVolPtr pool,
 char *                  virStorageVolGetPath            (virStorageVolPtr vol);
 
 typedef enum {
-  VIR_STORAGE_VOL_RESIZE_ALLOCATE = 1 << 0, /* force allocation of new size */
-  VIR_STORAGE_VOL_RESIZE_DELTA    = 1 << 1, /* size is relative to current */
-  VIR_STORAGE_VOL_RESIZE_SHRINK   = 1 << 2, /* allow decrease in capacity */
+    VIR_STORAGE_VOL_RESIZE_ALLOCATE = 1 << 0, /* force allocation of new size */
+    VIR_STORAGE_VOL_RESIZE_DELTA    = 1 << 1, /* size is relative to current */
+    VIR_STORAGE_VOL_RESIZE_SHRINK   = 1 << 2, /* allow decrease in capacity */
 } virStorageVolResizeFlags;
 
 int                     virStorageVolResize             (virStorageVolPtr vol,
