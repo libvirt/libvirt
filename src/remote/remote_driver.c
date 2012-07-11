@@ -3397,8 +3397,8 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv,
 
     remoteAuthInteractStateClear(&state, true);
     VIR_FREE(saslcb);
-    virNetSASLSessionFree(sasl);
-    virNetSASLContextFree(saslCtxt);
+    virObjectUnref(sasl);
+    virObjectUnref(saslCtxt);
 
     return ret;
 }

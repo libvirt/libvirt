@@ -6,7 +6,6 @@
 virNetSASLContextCheckIdentity;
 virNetSASLContextNewServer;
 virNetSASLSessionExtKeySize;
-virNetSASLSessionFree;
 virNetSASLSessionGetIdentity;
 virNetSASLSessionGetKeySize;
 virNetSASLSessionListMechanisms;

@@ -750,7 +750,7 @@ void virNetSocketFree(virNetSocketPtr sock)
         virNetTLSSessionSetIOCallbacks(sock->tlsSession, NULL, NULL, NULL);
     virObjectUnref(sock->tlsSession);
 #if HAVE_SASL
-    virNetSASLSessionFree(sock->saslSession);
+    virObjectUnref(sock->saslSession);
 #endif
 
     VIR_FORCE_CLOSE(sock->fd);
@@ -924,9 +924,8 @@ void virNetSocketSetSASLSession(virNetSocketPtr sock,
                                 virNetSASLSessionPtr sess)
 {
     virMutexLock(&sock->lock);
-    virNetSASLSessionFree(sock->saslSession);
-    sock->saslSession = sess;
-    virNetSASLSessionRef(sess);
+    virObjectUnref(sock->saslSession);
+    sock->saslSession = virObjectRef(sess);
     virMutexUnlock(&sock->lock);
 }
 #endif

@@ -33,23 +33,51 @@
 #define VIR_FROM_THIS VIR_FROM_RPC
 
 struct _virNetSASLContext {
+    virObject object;
+
     virMutex lock;
     const char *const*usernameWhitelist;
-    int refs;
 };
 
 struct _virNetSASLSession {
+    virObject object;
+
     virMutex lock;
     sasl_conn_t *conn;
-    int refs;
     size_t maxbufsize;
 };
+
+
+static virClassPtr virNetSASLContextClass;
+static virClassPtr virNetSASLSessionClass;
+static void virNetSASLContextDispose(void *obj);
+static void virNetSASLSessionDispose(void *obj);
+
+static int virNetSASLContextOnceInit(void)
+{
+    if (!(virNetSASLContextClass = virClassNew("virNetSASLContext",
+                                               sizeof(virNetSASLContext),
+                                               virNetSASLContextDispose)))
+        return -1;
+
+    if (!(virNetSASLSessionClass = virClassNew("virNetSASLSession",
+                                               sizeof(virNetSASLSession),
+                                               virNetSASLSessionDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virNetSASLContext)
 
 
 virNetSASLContextPtr virNetSASLContextNewClient(void)
 {
     virNetSASLContextPtr ctxt;
     int err;
+
+    if (virNetSASLContextInitialize() < 0)
+        return NULL;
 
     err = sasl_client_init(NULL);
     if (err != SASL_OK) {
@@ -59,10 +87,8 @@ virNetSASLContextPtr virNetSASLContextNewClient(void)
         return NULL;
     }
 
-    if (VIR_ALLOC(ctxt) < 0) {
-        virReportOOMError();
+    if (!(ctxt = virObjectNew(virNetSASLContextClass)))
         return NULL;
-    }
 
     if (virMutexInit(&ctxt->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -70,8 +96,6 @@ virNetSASLContextPtr virNetSASLContextNewClient(void)
         VIR_FREE(ctxt);
         return NULL;
     }
-
-    ctxt->refs = 1;
 
     return ctxt;
 }
@@ -81,6 +105,9 @@ virNetSASLContextPtr virNetSASLContextNewServer(const char *const*usernameWhitel
     virNetSASLContextPtr ctxt;
     int err;
 
+    if (virNetSASLContextInitialize() < 0)
+        return NULL;
+
     err = sasl_server_init(NULL, "libvirt");
     if (err != SASL_OK) {
         virReportError(VIR_ERR_AUTH_FAILED,
@@ -89,10 +116,8 @@ virNetSASLContextPtr virNetSASLContextNewServer(const char *const*usernameWhitel
         return NULL;
     }
 
-    if (VIR_ALLOC(ctxt) < 0) {
-        virReportOOMError();
+    if (!(ctxt = virObjectNew(virNetSASLContextClass)))
         return NULL;
-    }
 
     if (virMutexInit(&ctxt->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -102,7 +127,6 @@ virNetSASLContextPtr virNetSASLContextNewServer(const char *const*usernameWhitel
     }
 
     ctxt->usernameWhitelist = usernameWhitelist;
-    ctxt->refs = 1;
 
     return ctxt;
 }
@@ -152,28 +176,11 @@ cleanup:
 }
 
 
-void virNetSASLContextRef(virNetSASLContextPtr ctxt)
+void virNetSASLContextDispose(void *obj)
 {
-    virMutexLock(&ctxt->lock);
-    ctxt->refs++;
-    virMutexUnlock(&ctxt->lock);
-}
+    virNetSASLContextPtr ctxt = obj;
 
-void virNetSASLContextFree(virNetSASLContextPtr ctxt)
-{
-    if (!ctxt)
-        return;
-
-    virMutexLock(&ctxt->lock);
-    ctxt->refs--;
-    if (ctxt->refs > 0) {
-        virMutexUnlock(&ctxt->lock);
-        return;
-    }
-
-    virMutexUnlock(&ctxt->lock);
     virMutexDestroy(&ctxt->lock);
-    VIR_FREE(ctxt);
 }
 
 virNetSASLSessionPtr virNetSASLSessionNewClient(virNetSASLContextPtr ctxt ATTRIBUTE_UNUSED,
@@ -186,10 +193,8 @@ virNetSASLSessionPtr virNetSASLSessionNewClient(virNetSASLContextPtr ctxt ATTRIB
     virNetSASLSessionPtr sasl = NULL;
     int err;
 
-    if (VIR_ALLOC(sasl) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    if (!(sasl = virObjectNew(virNetSASLSessionClass)))
+        return NULL;
 
     if (virMutexInit(&sasl->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -198,7 +203,6 @@ virNetSASLSessionPtr virNetSASLSessionNewClient(virNetSASLContextPtr ctxt ATTRIB
         return NULL;
     }
 
-    sasl->refs = 1;
     /* Arbitrary size for amount of data we can encode in a single block */
     sasl->maxbufsize = 1 << 16;
 
@@ -219,7 +223,7 @@ virNetSASLSessionPtr virNetSASLSessionNewClient(virNetSASLContextPtr ctxt ATTRIB
     return sasl;
 
 cleanup:
-    virNetSASLSessionFree(sasl);
+    virObjectUnref(sasl);
     return NULL;
 }
 
@@ -231,10 +235,8 @@ virNetSASLSessionPtr virNetSASLSessionNewServer(virNetSASLContextPtr ctxt ATTRIB
     virNetSASLSessionPtr sasl = NULL;
     int err;
 
-    if (VIR_ALLOC(sasl) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    if (!(sasl = virObjectNew(virNetSASLSessionClass)))
+        return NULL;
 
     if (virMutexInit(&sasl->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -243,7 +245,6 @@ virNetSASLSessionPtr virNetSASLSessionNewServer(virNetSASLContextPtr ctxt ATTRIB
         return NULL;
     }
 
-    sasl->refs = 1;
     /* Arbitrary size for amount of data we can encode in a single block */
     sasl->maxbufsize = 1 << 16;
 
@@ -265,15 +266,8 @@ virNetSASLSessionPtr virNetSASLSessionNewServer(virNetSASLContextPtr ctxt ATTRIB
     return sasl;
 
 cleanup:
-    virNetSASLSessionFree(sasl);
+    virObjectUnref(sasl);
     return NULL;
-}
-
-void virNetSASLSessionRef(virNetSASLSessionPtr sasl)
-{
-    virMutexLock(&sasl->lock);
-    sasl->refs++;
-    virMutexUnlock(&sasl->lock);
 }
 
 int virNetSASLSessionExtKeySize(virNetSASLSessionPtr sasl,
@@ -712,22 +706,12 @@ cleanup:
     return ret;
 }
 
-void virNetSASLSessionFree(virNetSASLSessionPtr sasl)
+void virNetSASLSessionDispose(void *obj)
 {
-    if (!sasl)
-        return;
-
-    virMutexLock(&sasl->lock);
-    sasl->refs--;
-    if (sasl->refs > 0) {
-        virMutexUnlock(&sasl->lock);
-        return;
-    }
+    virNetSASLSessionPtr sasl = obj;
 
     if (sasl->conn)
         sasl_dispose(&sasl->conn);
 
-    virMutexUnlock(&sasl->lock);
     virMutexDestroy(&sasl->lock);
-    VIR_FREE(sasl);
 }

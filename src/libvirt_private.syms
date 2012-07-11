@@ -1470,27 +1470,13 @@ xdr_virNetMessageError;
 
 
 # virnetsaslcontext.h
-virNetSASLContextCheckIdentity;
-virNetSASLContextFree;
 virNetSASLContextNewClient;
-virNetSASLContextNewServer;
-virNetSASLContextRef;
 virNetSASLSessionClientStart;
 virNetSASLSessionClientStep;
 virNetSASLSessionDecode;
 virNetSASLSessionEncode;
-virNetSASLSessionExtKeySize;
-virNetSASLSessionFree;
-virNetSASLSessionGetIdentity;
-virNetSASLSessionGetKeySize;
 virNetSASLSessionGetMaxBufSize;
-virNetSASLSessionListMechanisms;
 virNetSASLSessionNewClient;
-virNetSASLSessionNewServer;
-virNetSASLSessionRef;
-virNetSASLSessionSecProps;
-virNetSASLSessionServerStart;
-virNetSASLSessionServerStep;
 
 
 # virnetserver.h
@@ -1542,7 +1528,6 @@ virNetServerClientSetCloseHook;
 virNetServerClientSetDispatcher;
 virNetServerClientSetIdentity;
 virNetServerClientSetPrivateData;
-virNetServerClientSetSASLSession;
 virNetServerClientStartKeepAlive;
 virNetServerClientWantClose;
 

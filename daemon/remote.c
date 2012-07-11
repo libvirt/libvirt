@@ -2325,7 +2325,7 @@ authfail:
     PROBE(RPC_SERVER_CLIENT_AUTH_FAIL,
           "client=%p auth=%d",
           client, REMOTE_AUTH_SASL);
-    virNetSASLSessionFree(sasl);
+    virObjectUnref(sasl);
     virMutexUnlock(&priv->lock);
     return -1;
 }
@@ -2369,7 +2369,7 @@ remoteSASLFinish(virNetServerClientPtr client)
           "client=%p auth=%d identity=%s",
           client, REMOTE_AUTH_SASL, identity);
 
-    virNetSASLSessionFree(priv->sasl);
+    virObjectUnref(priv->sasl);
     priv->sasl = NULL;
 
     return 0;
@@ -2467,7 +2467,7 @@ authdeny:
     goto error;
 
 error:
-    virNetSASLSessionFree(priv->sasl);
+    virObjectUnref(priv->sasl);
     priv->sasl = NULL;
     virResetLastError();
     virReportError(VIR_ERR_AUTH_FAILED, "%s",
@@ -2565,7 +2565,7 @@ authdeny:
     goto error;
 
 error:
-    virNetSASLSessionFree(priv->sasl);
+    virObjectUnref(priv->sasl);
     priv->sasl = NULL;
     virResetLastError();
     virReportError(VIR_ERR_AUTH_FAILED, "%s",

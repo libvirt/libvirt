@@ -497,7 +497,7 @@ void virNetClientFree(virNetClientPtr client)
     virNetSocketFree(client->sock);
     virObjectUnref(client->tls);
 #if HAVE_SASL
-    virNetSASLSessionFree(client->sasl);
+    virObjectUnref(client->sasl);
 #endif
 
     virNetMessageClear(&client->msg);
@@ -535,7 +535,7 @@ virNetClientCloseLocked(virNetClientPtr client)
     virObjectUnref(client->tls);
     client->tls = NULL;
 #if HAVE_SASL
-    virNetSASLSessionFree(client->sasl);
+    virObjectUnref(client->sasl);
     client->sasl = NULL;
 #endif
     ka = client->keepalive;
@@ -607,8 +607,7 @@ void virNetClientSetSASLSession(virNetClientPtr client,
                                 virNetSASLSessionPtr sasl)
 {
     virNetClientLock(client);
-    client->sasl = sasl;
-    virNetSASLSessionRef(sasl);
+    client->sasl = virObjectRef(sasl);
     virNetSocketSetSASLSession(client->sock, client->sasl);
     virNetClientUnlock(client);
 }

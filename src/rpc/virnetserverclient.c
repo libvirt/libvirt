@@ -474,8 +474,7 @@ void virNetServerClientSetSASLSession(virNetServerClientPtr client,
      * operation do we switch to SASL mode
      */
     virNetServerClientLock(client);
-    client->sasl = sasl;
-    virNetSASLSessionRef(sasl);
+    client->sasl = virObjectRef(sasl);
     virNetServerClientUnlock(client);
 }
 #endif
@@ -591,7 +590,7 @@ void virNetServerClientFree(virNetServerClientPtr client)
 
     VIR_FREE(client->identity);
 #if HAVE_SASL
-    virNetSASLSessionFree(client->sasl);
+    virObjectUnref(client->sasl);
 #endif
     if (client->sockTimer > 0)
         virEventRemoveTimeout(client->sockTimer);
@@ -1009,7 +1008,7 @@ virNetServerClientDispatchWrite(virNetServerClientPtr client)
              */
             if (client->sasl) {
                 virNetSocketSetSASLSession(client->sock, client->sasl);
-                virNetSASLSessionFree(client->sasl);
+                virObjectUnref(client->sasl);
                 client->sasl = NULL;
             }
 #endif
