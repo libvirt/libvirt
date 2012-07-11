@@ -264,7 +264,7 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
     if (ctrl->timerShutdown != -1)
         virEventRemoveTimeout(ctrl->timerShutdown);
 
-    virNetServerFree(ctrl->server);
+    virObjectUnref(ctrl->server);
 
     VIR_FREE(ctrl);
 }
@@ -620,7 +620,7 @@ static int virLXCControllerSetupServer(virLXCControllerPtr ctrl)
 
     if (virNetServerAddService(ctrl->server, svc, NULL) < 0)
         goto error;
-    virNetServerServiceFree(svc);
+    virObjectUnref(svc);
     svc = NULL;
 
     if (!(ctrl->prog = virNetServerProgramNew(VIR_LXC_PROTOCOL_PROGRAM,
@@ -635,9 +635,9 @@ static int virLXCControllerSetupServer(virLXCControllerPtr ctrl)
 
 error:
     VIR_FREE(sockpath);
-    virNetServerFree(ctrl->server);
+    virObjectUnref(ctrl->server);
     ctrl->server = NULL;
-    virNetServerServiceFree(svc);
+    virObjectUnref(svc);
     return -1;
 }
 

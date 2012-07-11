@@ -26,6 +26,7 @@
 
 # include "virnetsocket.h"
 # include "virnetmessage.h"
+# include "virobject.h"
 
 typedef struct _virNetServerClient virNetServerClient;
 typedef virNetServerClient *virNetServerClientPtr;
@@ -73,8 +74,6 @@ const char *virNetServerClientGetIdentity(virNetServerClientPtr client);
 int virNetServerClientGetUNIXIdentity(virNetServerClientPtr client,
                                       uid_t *uid, gid_t *gid, pid_t *pid);
 
-void virNetServerClientRef(virNetServerClientPtr client);
-
 typedef void (*virNetServerClientFreeFunc)(void *data);
 
 void virNetServerClientSetPrivateData(virNetServerClientPtr client,
@@ -113,8 +112,6 @@ int virNetServerClientSendMessage(virNetServerClientPtr client,
                                   virNetMessagePtr msg);
 
 bool virNetServerClientNeedAuth(virNetServerClientPtr client);
-
-void virNetServerClientFree(virNetServerClientPtr client);
 
 
 #endif /* __VIR_NET_SERVER_CLIENT_H__ */

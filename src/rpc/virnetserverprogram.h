@@ -26,6 +26,7 @@
 
 # include "virnetmessage.h"
 # include "virnetserverclient.h"
+# include "virobject.h"
 
 typedef struct _virNetServer virNetServer;
 typedef virNetServer *virNetServerPtr;
@@ -67,8 +68,6 @@ int virNetServerProgramGetVersion(virNetServerProgramPtr prog);
 unsigned int virNetServerProgramGetPriority(virNetServerProgramPtr prog,
                                             int procedure);
 
-void virNetServerProgramRef(virNetServerProgramPtr prog);
-
 int virNetServerProgramMatches(virNetServerProgramPtr prog,
                                virNetMessagePtr msg);
 
@@ -101,10 +100,5 @@ int virNetServerProgramSendStreamData(virNetServerProgramPtr prog,
                                       int serial,
                                       const char *data,
                                       size_t len);
-
-void virNetServerProgramFree(virNetServerProgramPtr prog);
-
-
-
 
 #endif /* __VIR_NET_SERVER_PROGRAM_H__ */

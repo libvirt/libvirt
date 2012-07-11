@@ -1485,14 +1485,11 @@ virNetServerAddService;
 virNetServerAddSignalHandler;
 virNetServerAutoShutdown;
 virNetServerClose;
-virNetServerFree;
 virNetServerIsPrivileged;
 virNetServerKeepAliveRequired;
 virNetServerNew;
 virNetServerQuit;
-virNetServerRef;
 virNetServerRun;
-virNetServerServiceFree;
 virNetServerServiceNewTCP;
 virNetServerServiceNewUNIX;
 virNetServerSetTLSContext;
@@ -1503,7 +1500,6 @@ virNetServerUpdateServices;
 virNetServerClientAddFilter;
 virNetServerClientClose;
 virNetServerClientDelayedClose;
-virNetServerClientFree;
 virNetServerClientGetAuth;
 virNetServerClientGetFD;
 virNetServerClientGetIdentity;
@@ -1520,7 +1516,6 @@ virNetServerClientIsSecure;
 virNetServerClientLocalAddrString;
 virNetServerClientNeedAuth;
 virNetServerClientNew;
-virNetServerClientRef;
 virNetServerClientRemoteAddrString;
 virNetServerClientRemoveFilter;
 virNetServerClientSendMessage;
@@ -1547,13 +1542,11 @@ virNetServerMDNSStop;
 
 # virnetserverprogram.h
 virNetServerProgramDispatch;
-virNetServerProgramFree;
 virNetServerProgramGetID;
 virNetServerProgramGetPriority;
 virNetServerProgramGetVersion;
 virNetServerProgramMatches;
 virNetServerProgramNew;
-virNetServerProgramRef;
 virNetServerProgramSendReplyError;
 virNetServerProgramSendStreamData;
 virNetServerProgramSendStreamError;
@@ -1562,13 +1555,11 @@ virNetServerProgramUnknownError;
 
 # virnetserverservice.h
 virNetServerServiceClose;
-virNetServerServiceFree;
 virNetServerServiceGetAuth;
 virNetServerServiceGetPort;
 virNetServerServiceIsReadonly;
 virNetServerServiceNewTCP;
 virNetServerServiceNewUNIX;
-virNetServerServiceRef;
 virNetServerServiceSetDispatcher;
 virNetServerServiceToggle;
 

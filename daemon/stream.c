@@ -104,14 +104,6 @@ daemonStreamMessageFinished(virNetMessagePtr msg ATTRIBUTE_UNUSED,
 }
 
 
-static void
-daemonStreamEventFreeFunc(void *opaque)
-{
-    virNetServerClientPtr client = opaque;
-
-    virNetServerClientFree(client);
-}
-
 /*
  * Callback that gets invoked when a stream becomes writable/readable
  */
@@ -332,13 +324,11 @@ daemonCreateClientStream(virNetServerClientPtr client,
 
     stream->refs = 1;
     stream->priv = priv;
-    stream->prog = prog;
+    stream->prog = virObjectRef(prog);
     stream->procedure = header->proc;
     stream->serial = header->serial;
     stream->filterID = -1;
     stream->st = st;
-
-    virNetServerProgramRef(prog);
 
     return stream;
 }
@@ -365,7 +355,7 @@ int daemonFreeClientStream(virNetServerClientPtr client,
     VIR_DEBUG("client=%p, proc=%d, serial=%d",
               client, stream->procedure, stream->serial);
 
-    virNetServerProgramFree(stream->prog);
+    virObjectUnref(stream->prog);
 
     msg = stream->rx;
     while (msg) {
@@ -411,10 +401,11 @@ int daemonAddClientStream(virNetServerClientPtr client,
 
     if (virStreamEventAddCallback(stream->st, 0,
                                   daemonStreamEvent, client,
-                                  daemonStreamEventFreeFunc) < 0)
+                                  virObjectFreeCallback) < 0)
         return -1;
 
-    virNetServerClientRef(client);
+    virObjectRef(client);
+
     if ((stream->filterID = virNetServerClientAddFilter(client,
                                                         daemonStreamFilter,
                                                         stream)) < 0) {

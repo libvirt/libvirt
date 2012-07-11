@@ -30,6 +30,7 @@
 # include "virnetserverprogram.h"
 # include "virnetserverclient.h"
 # include "virnetserverservice.h"
+# include "virobject.h"
 
 typedef int (*virNetServerClientInitHook)(virNetServerPtr srv,
                                           virNetServerClientPtr client,
@@ -47,8 +48,6 @@ virNetServerPtr virNetServerNew(size_t min_workers,
                                 void *opaque);
 
 typedef int (*virNetServerAutoShutdownFunc)(virNetServerPtr srv, void *opaque);
-
-void virNetServerRef(virNetServerPtr srv);
 
 bool virNetServerIsPrivileged(virNetServerPtr srv);
 
@@ -80,8 +79,6 @@ void virNetServerUpdateServices(virNetServerPtr srv,
 void virNetServerRun(virNetServerPtr srv);
 
 void virNetServerQuit(virNetServerPtr srv);
-
-void virNetServerFree(virNetServerPtr srv);
 
 void virNetServerClose(virNetServerPtr srv);
 

@@ -30,17 +30,35 @@
 #include "virterror_internal.h"
 #include "logging.h"
 #include "virfile.h"
+#include "threads.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
 struct _virNetServerProgram {
-    int refs;
+    virObject object;
 
     unsigned program;
     unsigned version;
     virNetServerProgramProcPtr procs;
     size_t nprocs;
 };
+
+
+static virClassPtr virNetServerProgramClass;
+static void virNetServerProgramDispose(void *obj);
+
+static int virNetServerProgramOnceInit(void)
+{
+    if (!(virNetServerProgramClass = virClassNew("virNetServerProgram",
+                                                 sizeof(virNetServerProgram),
+                                                 virNetServerProgramDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virNetServerProgram)
+
 
 virNetServerProgramPtr virNetServerProgramNew(unsigned program,
                                               unsigned version,
@@ -49,18 +67,18 @@ virNetServerProgramPtr virNetServerProgramNew(unsigned program,
 {
     virNetServerProgramPtr prog;
 
-    if (VIR_ALLOC(prog) < 0) {
-        virReportOOMError();
+    if (virNetServerProgramInitialize() < 0)
         return NULL;
-    }
 
-    prog->refs = 1;
+    if (!(prog = virObjectNew(virNetServerProgramClass)))
+        return NULL;
+
     prog->program = program;
     prog->version = version;
     prog->procs = procs;
     prog->nprocs = nprocs;
 
-    VIR_DEBUG("prog=%p refs=%d", prog, prog->refs);
+    VIR_DEBUG("prog=%p", prog);
 
     return prog;
 }
@@ -75,13 +93,6 @@ int virNetServerProgramGetID(virNetServerProgramPtr prog)
 int virNetServerProgramGetVersion(virNetServerProgramPtr prog)
 {
     return prog->version;
-}
-
-
-void virNetServerProgramRef(virNetServerProgramPtr prog)
-{
-    prog->refs++;
-    VIR_DEBUG("prog=%p refs=%d", prog, prog->refs);
 }
 
 
@@ -516,16 +527,6 @@ int virNetServerProgramSendStreamData(virNetServerProgramPtr prog,
 }
 
 
-void virNetServerProgramFree(virNetServerProgramPtr prog)
+void virNetServerProgramDispose(void *obj ATTRIBUTE_UNUSED)
 {
-    if (!prog)
-        return;
-
-    VIR_DEBUG("prog=%p refs=%d", prog, prog->refs);
-
-    prog->refs--;
-    if (prog->refs > 0)
-        return;
-
-    VIR_FREE(prog);
 }

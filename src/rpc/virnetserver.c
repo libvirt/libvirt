@@ -64,7 +64,7 @@ struct _virNetServerJob {
 };
 
 struct _virNetServer {
-    int refs;
+    virObjectPtr object;
 
     virMutex lock;
 
@@ -107,6 +107,22 @@ struct _virNetServer {
     virNetServerClientInitHook clientInitHook;
     void *clientInitOpaque;
 };
+
+
+static virClassPtr virNetServerClass;
+static void virNetServerDispose(void *obj);
+
+static int virNetServerOnceInit(void)
+{
+    if (!(virNetServerClass = virClassNew("virNetServer",
+                                          sizeof(virNetServer),
+                                          virNetServerDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virNetServer)
 
 
 static void virNetServerLock(virNetServerPtr srv)
@@ -175,18 +191,18 @@ static void virNetServerHandleJob(void *jobOpaque, void *opaque)
         goto error;
 
     virNetServerLock(srv);
-    virNetServerProgramFree(job->prog);
+    virObjectUnref(job->prog);
     virNetServerUnlock(srv);
 
-    virNetServerClientFree(job->client);
+    virObjectUnref(job->client);
     VIR_FREE(job);
     return;
 
 error:
-    virNetServerProgramFree(job->prog);
+    virObjectUnref(job->prog);
     virNetMessageFree(job->msg);
     virNetServerClientClose(job->client);
-    virNetServerClientFree(job->client);
+    virObjectUnref(job->client);
     VIR_FREE(job);
 }
 
@@ -223,7 +239,7 @@ static int virNetServerDispatchNewMessage(virNetServerClientPtr client,
         job->msg = msg;
 
         if (prog) {
-            virNetServerProgramRef(prog);
+            virObjectRef(prog);
             job->prog = prog;
             priority = virNetServerProgramGetPriority(prog, msg->header.proc);
         }
@@ -232,7 +248,7 @@ static int virNetServerDispatchNewMessage(virNetServerClientPtr client,
 
         if (ret < 0) {
             VIR_FREE(job);
-            virNetServerProgramFree(prog);
+            virObjectUnref(prog);
         }
     } else {
         ret = virNetServerProcessMsg(srv, client, prog, msg);
@@ -272,7 +288,7 @@ static int virNetServerDispatchNewClient(virNetServerServicePtr svc ATTRIBUTE_UN
         goto error;
     }
     srv->clients[srv->nclients-1] = client;
-    virNetServerClientRef(client);
+    virObjectRef(client);
 
     virNetServerClientSetDispatcher(client,
                                     virNetServerDispatchNewMessage,
@@ -332,12 +348,11 @@ virNetServerPtr virNetServerNew(size_t min_workers,
     virNetServerPtr srv;
     struct sigaction sig_action;
 
-    if (VIR_ALLOC(srv) < 0) {
-        virReportOOMError();
+    if (virNetServerInitialize() < 0)
         return NULL;
-    }
 
-    srv->refs = 1;
+    if (!(srv = virObjectNew(virNetServerClass)))
+        return NULL;
 
     if (max_workers &&
         !(srv->workers = virThreadPoolNew(min_workers, max_workers,
@@ -398,21 +413,11 @@ virNetServerPtr virNetServerNew(size_t min_workers,
     sigaction(SIGUSR2, &sig_action, NULL);
 #endif
 
-    VIR_DEBUG("srv=%p refs=%d", srv, srv->refs);
     return srv;
 
 error:
-    virNetServerFree(srv);
+    virObjectUnref(srv);
     return NULL;
-}
-
-
-void virNetServerRef(virNetServerPtr srv)
-{
-    virNetServerLock(srv);
-    srv->refs++;
-    VIR_DEBUG("srv=%p refs=%d", srv, srv->refs);
-    virNetServerUnlock(srv);
 }
 
 
@@ -603,7 +608,7 @@ int virNetServerAddService(virNetServerPtr srv,
     }
 
     srv->services[srv->nservices-1] = svc;
-    virNetServerServiceRef(svc);
+    virObjectRef(svc);
 
     virNetServerServiceSetDispatcher(svc,
                                      virNetServerDispatchNewClient,
@@ -627,8 +632,7 @@ int virNetServerAddProgram(virNetServerPtr srv,
     if (VIR_EXPAND_N(srv->programs, srv->nprograms, 1) < 0)
         goto no_memory;
 
-    srv->programs[srv->nprograms-1] = prog;
-    virNetServerProgramRef(prog);
+    srv->programs[srv->nprograms-1] = virObjectRef(prog);
 
     virNetServerUnlock(srv);
     return 0;
@@ -737,7 +741,7 @@ void virNetServerRun(virNetServerPtr srv)
             if (virNetServerClientWantClose(srv->clients[i]))
                 virNetServerClientClose(srv->clients[i]);
             if (virNetServerClientIsClosed(srv->clients[i])) {
-                virNetServerClientFree(srv->clients[i]);
+                virObjectUnref(srv->clients[i]);
                 if (srv->nclients > 1) {
                     memmove(srv->clients + i,
                             srv->clients + i + 1,
@@ -768,20 +772,10 @@ void virNetServerQuit(virNetServerPtr srv)
     virNetServerUnlock(srv);
 }
 
-void virNetServerFree(virNetServerPtr srv)
+void virNetServerDispose(void *obj)
 {
+    virNetServerPtr srv = obj;
     int i;
-    int refs;
-
-    if (!srv)
-        return;
-
-    virNetServerLock(srv);
-    VIR_DEBUG("srv=%p refs=%d", srv, srv->refs);
-    refs = --srv->refs;
-    virNetServerUnlock(srv);
-    if (refs > 0)
-        return;
 
     for (i = 0 ; i < srv->nservices ; i++)
         virNetServerServiceToggle(srv->services[i], false);
@@ -799,16 +793,16 @@ void virNetServerFree(virNetServerPtr srv)
         virEventRemoveHandle(srv->sigwatch);
 
     for (i = 0 ; i < srv->nservices ; i++)
-        virNetServerServiceFree(srv->services[i]);
+        virObjectUnref(srv->services[i]);
     VIR_FREE(srv->services);
 
     for (i = 0 ; i < srv->nprograms ; i++)
-        virNetServerProgramFree(srv->programs[i]);
+        virObjectUnref(srv->programs[i]);
     VIR_FREE(srv->programs);
 
     for (i = 0 ; i < srv->nclients ; i++) {
         virNetServerClientClose(srv->clients[i]);
-        virNetServerClientFree(srv->clients[i]);
+        virObjectUnref(srv->clients[i]);
     }
     VIR_FREE(srv->clients);
 
@@ -816,7 +810,6 @@ void virNetServerFree(virNetServerPtr srv)
     virNetServerMDNSFree(srv->mdns);
 
     virMutexDestroy(&srv->lock);
-    VIR_FREE(srv);
 }
 
 void virNetServerClose(virNetServerPtr srv)

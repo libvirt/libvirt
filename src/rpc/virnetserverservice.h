@@ -25,6 +25,7 @@
 # define __VIR_NET_SERVER_SERVICE_H__
 
 # include "virnetserverprogram.h"
+# include "virobject.h"
 
 enum {
     VIR_NET_SERVER_SERVICE_AUTH_NONE = 0,
@@ -55,13 +56,9 @@ int virNetServerServiceGetPort(virNetServerServicePtr svc);
 int virNetServerServiceGetAuth(virNetServerServicePtr svc);
 bool virNetServerServiceIsReadonly(virNetServerServicePtr svc);
 
-void virNetServerServiceRef(virNetServerServicePtr svc);
-
 void virNetServerServiceSetDispatcher(virNetServerServicePtr svc,
                                       virNetServerServiceDispatchFunc func,
                                       void *opaque);
-
-void virNetServerServiceFree(virNetServerServicePtr svc);
 
 void virNetServerServiceToggle(virNetServerServicePtr svc,
                                bool enabled);

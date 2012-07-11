@@ -568,10 +568,10 @@ static int daemonSetupNetworking(virNetServerPtr srv,
     return 0;
 
 error:
-    virNetServerServiceFree(svcTLS);
-    virNetServerServiceFree(svcTCP);
-    virNetServerServiceFree(svc);
-    virNetServerServiceFree(svcRO);
+    virObjectUnref(svcTLS);
+    virObjectUnref(svcTCP);
+    virObjectUnref(svc);
+    virObjectUnref(svcRO);
     return -1;
 }
 
@@ -759,21 +759,21 @@ static void daemonRunStateInit(void *opaque)
         VIR_ERROR(_("Driver state initialization failed"));
         /* Ensure the main event loop quits */
         kill(getpid(), SIGTERM);
-        virNetServerFree(srv);
+        virObjectUnref(srv);
         return;
     }
 
     /* Only now accept clients from network */
     virNetServerUpdateServices(srv, true);
-    virNetServerFree(srv);
+    virObjectUnref(srv);
 }
 
 static int daemonStateInit(virNetServerPtr srv)
 {
     virThread thr;
-    virNetServerRef(srv);
+    virObjectRef(srv);
     if (virThreadCreate(&thr, false, daemonRunStateInit, srv) < 0) {
-        virNetServerFree(srv);
+        virObjectUnref(srv);
         return -1;
     }
     return 0;
@@ -1325,10 +1325,10 @@ int main(int argc, char **argv) {
 
 cleanup:
     virNetlinkEventServiceStop();
-    virNetServerProgramFree(remoteProgram);
-    virNetServerProgramFree(qemuProgram);
+    virObjectUnref(remoteProgram);
+    virObjectUnref(qemuProgram);
     virNetServerClose(srv);
-    virNetServerFree(srv);
+    virObjectUnref(srv);
     virNetlinkShutdown();
     if (statuswrite != -1) {
         if (ret != 0) {
