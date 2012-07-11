@@ -262,6 +262,29 @@ def->disks[0]...
 
 
 ################################################################################
+## filesystems #################################################################
+
+                                        isolation.tools.hgfs.disable = "false"  # defaults to "true"
+
+def->nfss = 1                     <=>   sharedFolder.maxNum = "1"               # must match the number of shared folders
+
+                                        sharedFolder[0..n] -> <filesystem>
+
+def->fss[0]...                    <=>   sharedFolder0.present = "true"          # defaults to "false"
+                                        sharedFolder0.enabled = "true"          # defaults to "false"
+                                        sharedFolder0.expiration = "never"      # defaults to "never"
+                                        sharedFolder0.readAccess = "true"       # defaults to "false"
+->type = _FS_TYPE_MOUNT
+->fsdriver
+->accessmode
+->wrpolicy
+->src = <value>                   <=>   sharedFolder0.hostPath = "<value>"      # defaults to ?
+->dst = <value>                   <=>   sharedFolder0.guestName = "<value>"
+->readonly = <readonly>           <=>   sharedFolder0.writeAccess = "<value>"   # "true" -> <readonly> = 0, "false" -> <readonly> = 1
+
+
+
+################################################################################
 ## nets ########################################################################
 
                                         ethernet[0..3] -> <controller>
@@ -3138,7 +3161,16 @@ virVMXFormatConfig(virVMXContext *ctx, virCapsPtr caps, virDomainDefPtr def,
     }
 
     /* def:fss */
-    /* FIXME */
+    if (def->nfss > 0) {
+        virBufferAddLit(&buffer, "isolation.tools.hgfs.disable = \"false\"\n");
+        virBufferAsprintf(&buffer, "sharedFolder.maxNum = \"%d\"\n", def->nfss);
+    }
+
+    for (i = 0; i < def->nfss; ++i) {
+        if (virVMXFormatFileSystem(def->fss[i], i, &buffer) < 0) {
+            goto cleanup;
+        }
+    }
 
     /* def:nets */
     for (i = 0; i < def->nnets; ++i) {
@@ -3485,6 +3517,31 @@ virVMXFormatFloppy(virVMXContext *ctx, virDomainDiskDefPtr def,
                        virDomainDiskTypeToString(VIR_DOMAIN_DISK_TYPE_BLOCK));
         return -1;
     }
+
+    return 0;
+}
+
+
+
+int
+virVMXFormatFileSystem(virDomainFSDefPtr def, int number, virBufferPtr buffer)
+{
+    if (def->type != VIR_DOMAIN_FS_TYPE_MOUNT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Only '%s' filesystem type is supported"),
+                       virDomainFSTypeToString(VIR_DOMAIN_FS_TYPE_MOUNT));
+        return -1;
+    }
+
+    virBufferAsprintf(buffer, "sharedFolder%d.present = \"true\"\n", number);
+    virBufferAsprintf(buffer, "sharedFolder%d.enabled = \"true\"\n", number);
+    virBufferAsprintf(buffer, "sharedFolder%d.readAccess = \"true\"\n", number);
+    virBufferAsprintf(buffer, "sharedFolder%d.writeAccess = \"%s\"\n", number,
+                      def->readonly ? "false" : "true");
+    virBufferAsprintf(buffer, "sharedFolder%d.hostPath = \"%s\"\n", number,
+                      def->src);
+    virBufferAsprintf(buffer, "sharedFolder%d.guestName = \"%s\"\n", number,
+                      def->dst);
 
     return 0;
 }

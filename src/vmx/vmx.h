@@ -120,6 +120,9 @@ int virVMXFormatCDROM(virVMXContext *ctx, virDomainDiskDefPtr def,
 int virVMXFormatFloppy(virVMXContext *ctx, virDomainDiskDefPtr def,
                        virBufferPtr buffer, bool floppy_present[2]);
 
+int virVMXFormatFileSystem(virDomainFSDefPtr def, int number,
+                           virBufferPtr buffer);
+
 int virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
                          virBufferPtr buffer);
 

@@ -1,0 +1,14 @@
+<domain type='vmware'>
+  <name>sharedFolder</name>
+  <uuid>564d9bef-acd9-b4e0-c8f0-aea8b9103515</uuid>
+  <memory unit='KiB'>4096</memory>
+  <os>
+    <type>hvm</type>
+  </os>
+  <devices>
+    <filesystem type='mount'>
+      <source dir='/path/to/shared'/>
+      <target dir='shared'/>
+    </filesystem>
+  </devices>
+</domain>
