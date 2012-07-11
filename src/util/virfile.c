@@ -618,7 +618,7 @@ cleanup:
 #else /* __linux__ */
 
 int virFileLoopDeviceAssociate(const char *file,
-                               char **dev)
+                               char **dev ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS,
                          _("Unable to associate file %s with loop device"),

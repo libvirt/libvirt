@@ -152,6 +152,7 @@
 /tests/statstest
 /tests/storagebackendsheepdogtest
 /tests/utiltest
+/tests/viratomictest
 /tests/virauthconfigtest
 /tests/virbuftest
 /tests/virdrivermoduletest

@@ -1,10 +1,11 @@
 /*
  * viratomic.h: atomic integer operations
  *
- * Copyright (C) 2012 IBM Corporation
+ * Copyright (C) 2012 Red Hat, Inc.
  *
- * Authors:
- *     Stefan Berger <stefanb@linux.vnet.ibm.com>
+ * Based on code taken from GLib 2.32, under the LGPLv2+
+ *
+ * Copyright (C) 2011 Ryan Lortie
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,130 +26,422 @@
 #ifndef __VIR_ATOMIC_H__
 # define __VIR_ATOMIC_H__
 
-# include "threads.h"
+# include "internal.h"
 
-typedef struct _virAtomicInt virAtomicInt;
-typedef virAtomicInt *virAtomicIntPtr;
+/**
+ * virAtomicIntGet:
+ * Gets the current value of atomic.
+ *
+ * This call acts as a full compiler and hardware memory barrier
+ * (before the get)
+ */
+int virAtomicIntGet(volatile int *atomic)
+    ATTRIBUTE_NONNULL(1);
 
-# define __VIR_ATOMIC_USES_LOCK
+/**
+ * virAtomicIntSet:
+ * Sets the value of atomic to newval.
+ *
+ * This call acts as a full compiler and hardware memory barrier
+ * (after the set)
+ */
+void virAtomicIntSet(volatile int *atomic,
+                     int newval)
+    ATTRIBUTE_NONNULL(1);
 
-# if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 1)) || (__GNUC__ > 4)
-#  undef __VIR_ATOMIC_USES_LOCK
+/**
+ * virAtomicIntInc:
+ * Increments the value of atomic by 1.
+ *
+ * Think of this operation as an atomic version of
+ * { *atomic += 1; return *atomic; }
+ *
+ * This call acts as a full compiler and hardware memory barrier.
+ */
+int virAtomicIntInc(volatile int *atomic)
+    ATTRIBUTE_NONNULL(1);
+
+/**
+ * virAtomicIntDecAndTest:
+ * Decrements the value of atomic by 1.
+ *
+ * Think of this operation as an atomic version of
+ * { *atomic -= 1; return *atomic == 0; }
+ *
+ * This call acts as a full compiler and hardware memory barrier.
+ */
+bool virAtomicIntDecAndTest(volatile int *atomic)
+    ATTRIBUTE_NONNULL(1);
+
+/**
+ * virAtomicIntCompareExchange:
+ * Compares atomic to oldval and, if equal, sets it to newval. If
+ * atomic was not equal to oldval then no change occurs.
+ *
+ * This compare and exchange is done atomically.
+ *
+ * Think of this operation as an atomic version of
+ * { if (*atomic == oldval) { *atomic = newval; return true; }
+ *    else return false; }
+ *
+ * This call acts as a full compiler and hardware memory barrier.
+ */
+bool virAtomicIntCompareExchange(volatile int *atomic,
+                                 int oldval,
+                                 int newval)
+    ATTRIBUTE_NONNULL(1);
+
+/**
+ * virAtomicIntAdd:
+ * Atomically adds val to the value of atomic.
+ *
+ * Think of this operation as an atomic version of
+ * { tmp = *atomic; *atomic += val; return tmp; }
+ *
+ * This call acts as a full compiler and hardware memory barrier.
+ */
+int virAtomicIntAdd(volatile int *atomic,
+                    int val)
+    ATTRIBUTE_NONNULL(1);
+
+/**
+ * virAtomicIntAnd:
+ * Performs an atomic bitwise 'and' of the value of atomic
+ * and val, storing the result back in atomic.
+ *
+ * This call acts as a full compiler and hardware memory barrier.
+ *
+ * Think of this operation as an atomic version of
+ * { tmp = *atomic; *atomic &= val; return tmp; }
+ */
+unsigned int virAtomicIntAnd(volatile unsigned int *atomic,
+                             unsigned int val)
+    ATTRIBUTE_NONNULL(1);
+
+/**
+ * virAtomicIntOr:
+ * Performs an atomic bitwise 'or' of the value of atomic
+ * and val, storing the result back in atomic.
+ *
+ * Think of this operation as an atomic version of
+ * { tmp = *atomic; *atomic |= val; return tmp; }
+ *
+ * This call acts as a full compiler and hardware memory barrier.
+ */
+unsigned int virAtomicIntOr(volatile unsigned int *atomic,
+                            unsigned int val)
+    ATTRIBUTE_NONNULL(1);
+
+/**
+ * virAtomicIntXor:
+ * Performs an atomic bitwise 'xor' of the value of atomic
+ * and val, storing the result back in atomic.
+ *
+ * Think of this operation as an atomic version of
+ * { tmp = *atomic; *atomic ^= val; return tmp; }
+ *
+ * This call acts as a full compiler and hardware memory barrier.
+ */
+unsigned int virAtomicIntXor(volatile unsigned int *atomic,
+                             unsigned int val)
+    ATTRIBUTE_NONNULL(1);
+
+
+# ifdef VIR_ATOMIC_OPS_GCC
+
+#  define virAtomicIntGet(atomic)                                       \
+    (__extension__ ({                                                   \
+            (void)verify_true(sizeof(*(atomic)) == sizeof(int));        \
+            (void)(0 ? *(atomic) ^ *(atomic) : 0);                      \
+            __sync_synchronize();                                       \
+            (int)*(atomic);                                             \
+        }))
+#  define virAtomicIntSet(atomic, newval)                               \
+    (__extension__ ({                                                   \
+            (void)verify_true(sizeof(*(atomic)) == sizeof(int));        \
+            (void)(0 ? *(atomic) ^ (newval) : 0);                       \
+            *(atomic) = (newval);                                       \
+            __sync_synchronize();                                       \
+        }))
+#  define virAtomicIntInc(atomic)                                       \
+    (__extension__ ({                                                   \
+            (void)verify_true(sizeof(*(atomic)) == sizeof(int));        \
+            (void)(0 ? *(atomic) ^ *(atomic) : 0);                      \
+            __sync_add_and_fetch((atomic), 1);                          \
+        }))
+#  define virAtomicIntDecAndTest(atomic)                                \
+    (__extension__ ({                                                   \
+            (void)verify_true(sizeof(*(atomic)) == sizeof(int));        \
+            (void)(0 ? *(atomic) ^ *(atomic) : 0);                      \
+            __sync_fetch_and_sub((atomic), 1) == 1;                     \
+        }))
+#  define virAtomicIntCompareExchange(atomic, oldval, newval)           \
+    (__extension__ ({                                                   \
+            (void)verify_true(sizeof(*(atomic)) == sizeof(int));        \
+            (void)(0 ? *(atomic) ^ (newval) ^ (oldval) : 0);            \
+            (bool)__sync_bool_compare_and_swap((atomic),                \
+                                               (oldval), (newval));     \
+        }))
+#  define virAtomicIntAdd(atomic, val)                                  \
+    (__extension__ ({                                                   \
+            (void)verify_true(sizeof(*(atomic)) == sizeof(int));        \
+            (void)(0 ? *(atomic) ^ (val) : 0);                          \
+            (int) __sync_fetch_and_add((atomic), (val));                \
+        }))
+#  define virAtomicIntAnd(atomic, val)                                  \
+    (__extension__ ({                                                   \
+            (void)verify_true(sizeof(*(atomic)) == sizeof(int));              \
+            (void) (0 ? *(atomic) ^ (val) : 0);                         \
+            (unsigned int) __sync_fetch_and_and((atomic), (val));       \
+        }))
+#  define virAtomicIntOr(atomic, val)                                   \
+    (__extension__ ({                                                   \
+            (void)verify_true(sizeof(*(atomic)) == sizeof(int));              \
+            (void) (0 ? *(atomic) ^ (val) : 0);                         \
+            (unsigned int) __sync_fetch_and_or((atomic), (val));        \
+        }))
+#  define virAtomicIntXor(atomic, val)                                  \
+    (__extension__ ({                                                   \
+            (void)verify_true(sizeof(*(atomic)) == sizeof(int));              \
+            (void) (0 ? *(atomic) ^ (val) : 0);                         \
+            (unsigned int) __sync_fetch_and_xor((atomic), (val));       \
+        }))
+
+
+# else
+
+#  ifdef VIR_ATOMIC_OPS_WIN32
+
+#   include <winsock2.h>
+#   include <windows.h>
+#   include <intrin.h>
+#   if !defined(_M_AMD64) && !defined (_M_IA64) && !defined(_M_X64)
+#    define InterlockedAnd _InterlockedAnd
+#    define InterlockedOr _InterlockedOr
+#    define InterlockedXor _InterlockedXor
+#   endif
+
+/*
+ * http://msdn.microsoft.com/en-us/library/ms684122(v=vs.85).aspx
+ */
+inline int
+virAtomicIntGet(volatile int *atomic)
+{
+    MemoryBarrier();
+    return *atomic;
+}
+
+inline void
+virAtomicIntSet(volatile int *atomic,
+                int newval)
+{
+    *atomic = newval;
+    MemoryBarrier();
+}
+
+inline int
+virAtomicIntInc(volatile int *atomic)
+{
+    return InterlockedIncrement((volatile LONG *)atomic);
+}
+
+inline bool
+virAtomicIntDecAndTest(volatile int *atomic)
+{
+    return InterlockedDecrement((volatile LONG *)atomic) == 0;
+}
+
+inline bool
+virAtomicIntCompareExchange(volatile int *atomic,
+                            int oldval,
+                            int newval)
+{
+    return InterlockedCompareExchange((volatile LONG *)atomic, newval, oldval) == oldval;
+}
+
+inline int
+virAtomicIntAdd(volatile int *atomic,
+                int val)
+{
+    return InterlockedExchangeAdd((volatile LONG *)atomic, val);
+}
+
+inline unsigned int
+virAtomicIntAnd(volatile unsigned int *atomic,
+                unsigned int val)
+{
+    return InterlockedAnd((volatile LONG *)atomic, val);
+}
+
+inline unsigned int
+virAtomicIntOr(volatile unsigned int *atomic,
+               unsigned int val)
+{
+    return InterlockedOr((volatile LONG *)atomic, val);
+}
+
+inline unsigned int
+virAtomicIntXor(volatile unsigned int *atomic,
+                unsigned int val)
+{
+    return InterlockedXor((volatile LONG *)atomic, val);
+}
+
+
+#  else
+#   ifdef VIR_ATOMIC_OPS_PTHREAD
+#    include <pthread.h>
+
+extern pthread_mutex_t virAtomicLock;
+
+inline int
+virAtomicIntGet(volatile int *atomic)
+{
+    int value;
+
+    pthread_mutex_lock(&virAtomicLock);
+    value = *atomic;
+    pthread_mutex_unlock(&virAtomicLock);
+
+    return value;
+}
+
+inline void
+virAtomicIntSet(volatile int *atomic,
+                int value)
+{
+    pthread_mutex_lock(&virAtomicLock);
+    *atomic = value;
+    pthread_mutex_unlock(&virAtomicLock);
+}
+
+inline int
+virAtomicIntInc(volatile int *atomic)
+{
+    int value;
+
+    pthread_mutex_lock(&virAtomicLock);
+    value = ++(*atomic);
+    pthread_mutex_unlock(&virAtomicLock);
+
+    return value;
+}
+
+inline bool
+virAtomicIntDecAndTest(volatile int *atomic)
+{
+    bool is_zero;
+
+    pthread_mutex_lock(&virAtomicLock);
+    is_zero = --(*atomic) == 0;
+    pthread_mutex_unlock(&virAtomicLock);
+
+    return is_zero;
+}
+
+inline bool
+virAtomicIntCompareExchange(volatile int *atomic,
+                            int oldval,
+                            int newval)
+{
+    bool success;
+
+    pthread_mutex_lock(&virAtomicLock);
+
+    if ((success = (*atomic == oldval)))
+        *atomic = newval;
+
+    pthread_mutex_unlock(&virAtomicLock);
+
+    return success;
+}
+
+inline int
+virAtomicIntAdd(volatile int *atomic,
+                int val)
+{
+    int oldval;
+
+    pthread_mutex_lock(&virAtomicLock);
+    oldval = *atomic;
+    *atomic = oldval + val;
+    pthread_mutex_unlock(&virAtomicLock);
+
+    return oldval;
+}
+
+inline unsigned int
+virAtomicIntAnd(volatile unsigned int *atomic,
+                unsigned int val)
+{
+    unsigned int oldval;
+
+    pthread_mutex_lock(&virAtomicLock);
+    oldval = *atomic;
+    *atomic = oldval & val;
+    pthread_mutex_unlock(&virAtomicLock);
+
+    return oldval;
+}
+
+inline unsigned int
+virAtomicIntOr(volatile unsigned int *atomic,
+               unsigned int val)
+{
+    unsigned int oldval;
+
+    pthread_mutex_lock(&virAtomicLock);
+    oldval = *atomic;
+    *atomic = oldval | val;
+    pthread_mutex_unlock(&virAtomicLock);
+
+    return oldval;
+}
+
+inline unsigned int
+virAtomicIntXor(volatile unsigned int *atomic,
+                unsigned int val)
+{
+    unsigned int oldval;
+
+    pthread_mutex_lock(&virAtomicLock);
+    oldval = *atomic;
+    *atomic = oldval ^ val;
+    pthread_mutex_unlock(&virAtomicLock);
+
+    return oldval;
+}
+
+
+#   else
+#    error "No atomic integer impl for this platform"
+#   endif
+#  endif
+
+/* The int/unsigned int casts here ensure that you can
+ * pass either an int or unsigned int to all atomic op
+ * functions, in the same way that we can with GCC
+ * atomic op helpers.
+ */
+#  define virAtomicIntGet(atomic)               \
+    virAtomicIntGet((int *)atomic)
+#  define virAtomicIntSet(atomic, val)          \
+    virAtomicIntSet((int *)atomic, val)
+#  define virAtomicIntInc(atomic)               \
+    virAtomicIntInc((int *)atomic)
+#  define virAtomicIntDecAndTest(atomic)        \
+    virAtomicIntDecAndTest((int *)atomic)
+#  define virAtomicIntCompareExchange(atomic, oldval, newval)   \
+    virAtomicIntCompareExchange((int *)atomic, oldval, newval)
+#  define virAtomicIntAdd(atomic, val)          \
+    virAtomicIntAdd((int *)atomic, val)
+#  define virAtomicIntAnd(atomic, val)          \
+    virAtomicIntAnd((unsigned int *)atomic, val)
+#  define virAtomicIntOr(atomic, val)           \
+    virAtomicIntOr((unsigned int *)atomic, val)
+#  define virAtomicIntXor(atomic, val)          \
+    virAtomicIntXor((unsigned int *)atomic, val)
+
 # endif
-
-static inline int virAtomicIntInit(virAtomicIntPtr vaip)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
-static inline int virAtomicIntRead(virAtomicIntPtr vaip)
-    ATTRIBUTE_NONNULL(1);
-static inline void virAtomicIntSet(virAtomicIntPtr vaip, int val)
-    ATTRIBUTE_NONNULL(1);
-static inline int virAtomicIntAdd(virAtomicIntPtr vaip, int add)
-    ATTRIBUTE_NONNULL(1);
-static inline int virAtomicIntSub(virAtomicIntPtr vaip, int add)
-    ATTRIBUTE_NONNULL(1);
-static inline int virAtomicIntInc(virAtomicIntPtr vaip)
-    ATTRIBUTE_NONNULL(1);
-static inline int virAtomicIntDec(virAtomicIntPtr vaip)
-    ATTRIBUTE_NONNULL(1);
-
-# ifdef __VIR_ATOMIC_USES_LOCK
-
-struct _virAtomicInt {
-    virMutex lock;
-    int value;
-};
-
-static inline int
-virAtomicIntInit(virAtomicIntPtr vaip)
-{
-    vaip->value = 0;
-    return virMutexInit(&vaip->lock);
-}
-
-static inline int
-virAtomicIntAdd(virAtomicIntPtr vaip, int add)
-{
-    int ret;
-
-    virMutexLock(&vaip->lock);
-
-    vaip->value += add;
-    ret = vaip->value;
-
-    virMutexUnlock(&vaip->lock);
-
-    return ret;
-}
-
-static inline int
-virAtomicIntSub(virAtomicIntPtr vaip, int sub)
-{
-    int ret;
-
-    virMutexLock(&vaip->lock);
-
-    vaip->value -= sub;
-    ret = vaip->value;
-
-    virMutexUnlock(&vaip->lock);
-
-    return ret;
-}
-
-# else /* __VIR_ATOMIC_USES_LOCK */
-
-struct _virAtomicInt {
-    int value;
-};
-
-static inline int
-virAtomicIntInit(virAtomicIntPtr vaip)
-{
-    vaip->value = 0;
-    return 0;
-}
-
-static inline int
-virAtomicIntAdd(virAtomicIntPtr vaip, int add)
-{
-    return __sync_add_and_fetch(&vaip->value, add);
-}
-
-static inline int
-virAtomicIntSub(virAtomicIntPtr vaip, int sub)
-{
-    return __sync_sub_and_fetch(&vaip->value, sub);
-}
-
-# endif /* __VIR_ATOMIC_USES_LOCK */
-
-
-
-/* common operations that need no locking or build on others */
-
-
-static inline void
-virAtomicIntSet(virAtomicIntPtr vaip, int value)
-{
-     vaip->value = value;
-}
-
-static inline int
-virAtomicIntRead(virAtomicIntPtr vaip)
-{
-     return *(volatile int *)&vaip->value;
-}
-
-static inline int
-virAtomicIntInc(virAtomicIntPtr vaip)
-{
-    return virAtomicIntAdd(vaip, 1);
-}
-
-static inline int
-virAtomicIntDec(virAtomicIntPtr vaip)
-{
-    return virAtomicIntSub(vaip, 1);
-}
 
 #endif /* __VIR_ATOMIC_H */

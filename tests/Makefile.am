@@ -89,6 +89,7 @@ test_programs = virshtest sockettest \
 	nodeinfotest virbuftest \
 	commandtest seclabeltest \
 	virhashtest virnetmessagetest virnetsockettest \
+	viratomictest \
 	utiltest virnettlscontexttest shunloadtest \
 	virtimetest viruritest virkeyfiletest \
 	virauthconfigtest
@@ -529,6 +530,10 @@ virbuftest_LDADD = $(LDADDS)
 virhashtest_SOURCES = \
 	virhashtest.c virhashdata.h testutils.h testutils.c
 virhashtest_LDADD = $(LDADDS)
+
+viratomictest_SOURCES = \
+	viratomictest.c viratomicdata.h testutils.h testutils.c
+viratomictest_LDADD = $(LDADDS)
 
 jsontest_SOURCES = \
 	jsontest.c testutils.h testutils.c

@@ -79,7 +79,7 @@ UTIL_SOURCES =							\
 		util/threadpool.c util/threadpool.h		\
 		util/uuid.c util/uuid.h				\
 		util/util.c util/util.h				\
-		util/viratomic.h				\
+		util/viratomic.h util/viratomic.c		\
 		util/viraudit.c util/viraudit.h			\
 		util/virauth.c util/virauth.h			\
 		util/virauthconfig.c util/virauthconfig.h	\
@@ -1317,9 +1317,14 @@ if HAVE_SASL
 USED_SYM_FILES += libvirt_sasl.syms
 endif
 
+if WITH_ATOMIC_OPS_PTHREAD
+USED_SYM_FILES += libvirt_atomic.syms
+endif
+
 EXTRA_DIST += \
   libvirt_public.syms		\
   libvirt_private.syms		\
+  libvirt_atomic.syms		\
   libvirt_driver_modules.syms	\
   libvirt_daemon.syms		\
   libvirt_linux.syms		\

@@ -78,9 +78,9 @@
 struct virNWFilterSnoopState {
     /* lease file */
     int                  leaseFD;
-    virAtomicInt         nLeases; /* number of active leases */
-    virAtomicInt         wLeases; /* number of written leases */
-    virAtomicInt         nThreads; /* number of running threads */
+    int                  nLeases; /* number of active leases */
+    int                  wLeases; /* number of written leases */
+    int                  nThreads; /* number of running threads */
     /* thread management */
     virHashTablePtr      snoopReqs;
     virHashTablePtr      ifnameToKey;
@@ -126,7 +126,7 @@ struct _virNWFilterSnoopReq {
      * publicSnoopReqs hash, the refctr may only
      * be modified with the SnoopLock held
      */
-    virAtomicInt                         refctr;
+    int                                  refctr;
 
     virNWFilterTechDriverPtr             techdriver;
     char                                *ifname;
@@ -240,7 +240,7 @@ struct _virNWFilterDHCPDecodeJob {
     unsigned char packet[PCAP_PBUFSIZE];
     int caplen;
     bool fromVM;
-    virAtomicIntPtr qCtr;
+    int *qCtr;
 };
 
 # define DHCP_PKT_RATE          10 /* pkts/sec */
@@ -271,7 +271,7 @@ struct _virNWFilterSnoopPcapConf {
     const pcap_direction_t dir;
     const char *filter;
     virNWFilterSnoopRateLimitConf rateLimit; /* indep. rate limiters */
-    virAtomicInt qCtr; /* number of jobs in the worker's queue */
+    int qCtr; /* number of jobs in the worker's queue */
     const unsigned int maxQSize;
     unsigned long long penaltyTimeoutAbs;
 };
@@ -588,8 +588,7 @@ virNWFilterSnoopReqNew(const char *ifkey)
 
     req->threadStatus = THREAD_STATUS_NONE;
 
-    if (virAtomicIntInit(&req->refctr) < 0 ||
-        virStrcpyStatic(req->ifkey, ifkey) == NULL ||
+    if (virStrcpyStatic(req->ifkey, ifkey) == NULL ||
         virMutexInitRecursive(&req->lock) < 0)
         goto err_free_req;
 
@@ -622,7 +621,7 @@ virNWFilterSnoopReqFree(virNWFilterSnoopReqPtr req)
     if (!req)
         return;
 
-    if (virAtomicIntRead(&req->refctr) != 0)
+    if (virAtomicIntGet(&req->refctr) != 0)
         return;
 
     /* free all leases */
@@ -715,7 +714,7 @@ virNWFilterSnoopReqPut(virNWFilterSnoopReqPtr req)
 
     virNWFilterSnoopLock();
 
-    if (virAtomicIntDec(&req->refctr) == 0) {
+    if (virAtomicIntDecAndTest(&req->refctr)) {
         /*
          * delete the request:
          * - if we don't find req on the global list anymore
@@ -897,7 +896,7 @@ virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
 skip_instantiate:
     VIR_FREE(ipl);
 
-    virAtomicIntDec(&virNWFilterSnoopState.nLeases);
+    virAtomicIntDecAndTest(&virNWFilterSnoopState.nLeases);
 
 lease_not_found:
     VIR_FREE(ipstr);
@@ -1159,7 +1158,7 @@ static void virNWFilterDHCPDecodeWorker(void *jobdata, void *opaque)
                        _("Instantiation of rules failed on "
                          "interface '%s'"), req->ifname);
     }
-    virAtomicIntDec(job->qCtr);
+    virAtomicIntDecAndTest(job->qCtr);
     VIR_FREE(job);
 }
 
@@ -1170,7 +1169,7 @@ static int
 virNWFilterSnoopDHCPDecodeJobSubmit(virThreadPoolPtr pool,
                                     virNWFilterSnoopEthHdrPtr pep,
                                     int len, pcap_direction_t dir,
-                                    virAtomicIntPtr qCtr)
+                                    int *qCtr)
 {
     virNWFilterDHCPDecodeJobPtr job;
     int ret;
@@ -1376,8 +1375,7 @@ virNWFilterDHCPSnoopThread(void *req0)
                 virNWFilterSnoopDHCPOpen(req->ifname, &req->macaddr,
                                          pcapConf[i].filter,
                                          pcapConf[i].dir);
-            if (!pcapConf[i].handle ||
-                virAtomicIntInit(&pcapConf[i].qCtr) < 0) {
+            if (!pcapConf[i].handle) {
                 error = true;
                 break;
             }
@@ -1488,7 +1486,7 @@ virNWFilterDHCPSnoopThread(void *req0)
                 unsigned int diff;
 
                 /* submit packet to worker thread */
-                if (virAtomicIntRead(&pcapConf[i].qCtr) >
+                if (virAtomicIntGet(&pcapConf[i].qCtr) >
                     pcapConf[i].maxQSize) {
                     if (last_displayed_queue - time(0) > 10) {
                         last_displayed_queue = time(0);
@@ -1554,7 +1552,7 @@ exit:
             pcap_close(pcapConf[i].handle);
     }
 
-    virAtomicIntDec(&virNWFilterSnoopState.nThreads);
+    virAtomicIntDecAndTest(&virNWFilterSnoopState.nThreads);
 
     return;
 }
@@ -1805,7 +1803,7 @@ virNWFilterSnoopLeaseFileSave(virNWFilterSnoopIPLeasePtr ipl)
 
     /* keep dead leases at < ~95% of file size */
     if (virAtomicIntInc(&virNWFilterSnoopState.wLeases) >=
-        virAtomicIntRead(&virNWFilterSnoopState.nLeases) * 20)
+        virAtomicIntGet(&virNWFilterSnoopState.nLeases) * 20)
         virNWFilterSnoopLeaseFileLoad();   /* load & refresh lease file */
 
 err_exit:
@@ -1836,7 +1834,7 @@ virNWFilterSnoopPruneIter(const void *payload,
     /*
      * have the entry removed if it has no leases and no one holds a ref
      */
-    del_req = ((req->start == NULL) && (virAtomicIntRead(&req->refctr) == 0));
+    del_req = ((req->start == NULL) && (virAtomicIntGet(&req->refctr) == 0));
 
     virNWFilterSnoopReqUnlock(req);
 
@@ -1994,9 +1992,9 @@ virNWFilterSnoopLeaseFileLoad(void)
 static void
 virNWFilterSnoopJoinThreads(void)
 {
-    while (virAtomicIntRead(&virNWFilterSnoopState.nThreads) != 0) {
+    while (virAtomicIntGet(&virNWFilterSnoopState.nThreads) != 0) {
         VIR_WARN("Waiting for snooping threads to terminate: %u\n",
-                 virAtomicIntRead(&virNWFilterSnoopState.nThreads));
+                 virAtomicIntGet(&virNWFilterSnoopState.nThreads));
         usleep(1000 * 1000);
     }
 }
@@ -2061,10 +2059,7 @@ virNWFilterDHCPSnoopInit(void)
     VIR_DEBUG("Initializing DHCP snooping");
 
     if (virMutexInitRecursive(&virNWFilterSnoopState.snoopLock) < 0 ||
-        virMutexInit(&virNWFilterSnoopState.activeLock) < 0 ||
-        virAtomicIntInit(&virNWFilterSnoopState.nLeases) < 0 ||
-        virAtomicIntInit(&virNWFilterSnoopState.wLeases) < 0 ||
-        virAtomicIntInit(&virNWFilterSnoopState.nThreads) < 0)
+        virMutexInit(&virNWFilterSnoopState.activeLock) < 0)
         return -1;
 
     virNWFilterSnoopState.ifnameToKey = virHashCreate(0, NULL);
