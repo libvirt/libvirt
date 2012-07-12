@@ -869,6 +869,9 @@ is implicitly enabled when supported by the hypervisor, but can be explicitly
 used to reject the migration if the hypervisor lacks change protection
 support.  I<--verbose> displays the progress of migration.
 
+B<Note>: Individual hypervisors usually do not support all possible types of
+migration. For example, QEMU does not support direct migration.
+
 In some cases libvirt may refuse to migrate the domain because doing so may
 lead to potential problems such as data corruption, and thus the migration is
 considered unsafe. For QEMU domain, this may happen if the domain uses disks
