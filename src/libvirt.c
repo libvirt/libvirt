@@ -5562,7 +5562,9 @@ virDomainMigrateToURI (virDomainPtr domain,
                 goto error;
         } else {
             /* Cannot do a migration with only the perform step */
-            virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            virLibConnError(VIR_ERR_OPERATION_INVALID, "%s",
+                            _("direct migration is not supported by the"
+                              " connection driver"));
             goto error;
         }
     }
@@ -5696,7 +5698,9 @@ virDomainMigrateToURI2(virDomainPtr domain,
                 goto error;
         } else {
             /* Cannot do a migration with only the perform step */
-            virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            virLibConnError(VIR_ERR_OPERATION_INVALID, "%s",
+                            _("direct migration is not supported by the"
+                              " connection driver"));
             goto error;
         }
     }
