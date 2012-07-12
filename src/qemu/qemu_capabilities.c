@@ -167,6 +167,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "dump-guest-memory",
               "nec-usb-xhci",
               "virtio-s390",
+              "balloon-event",
 
     );
 

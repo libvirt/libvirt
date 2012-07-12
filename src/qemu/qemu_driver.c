@@ -2234,6 +2234,8 @@ static int qemudDomainGetInfo(virDomainPtr dom,
         if ((vm->def->memballoon != NULL) &&
             (vm->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE)) {
             info->memory = vm->def->mem.max_balloon;
+        } else if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_BALLOON_EVENT)) {
+            info->memory = vm->def->mem.cur_balloon;
         } else if (qemuDomainJobAllowed(priv, QEMU_JOB_QUERY)) {
             if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
                 goto cleanup;
@@ -4560,6 +4562,7 @@ static char *qemuDomainGetXMLDesc(virDomainPtr dom,
     char *ret = NULL;
     unsigned long long balloon;
     int err = 0;
+    qemuDomainObjPrivatePtr priv;
 
     /* Flags checked by virDomainDefFormat */
 
@@ -4574,11 +4577,13 @@ static char *qemuDomainGetXMLDesc(virDomainPtr dom,
         goto cleanup;
     }
 
+    priv = vm->privateData;
+
     /* Refresh current memory based on balloon info if supported */
     if ((vm->def->memballoon != NULL) &&
         (vm->def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_NONE) &&
+        !qemuCapsGet(priv->qemuCaps, QEMU_CAPS_BALLOON_EVENT) &&
         (virDomainObjIsActive(vm))) {
-        qemuDomainObjPrivatePtr priv = vm->privateData;
         /* Don't delay if someone's using the monitor, just use
          * existing most recent data instead */
         if (qemuDomainJobAllowed(priv, QEMU_JOB_QUERY)) {

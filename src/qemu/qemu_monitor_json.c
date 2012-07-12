@@ -69,6 +69,7 @@ static void qemuMonitorJSONHandlePMWakeup(qemuMonitorPtr mon, virJSONValuePtr da
 static void qemuMonitorJSONHandlePMSuspend(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleBlockJobCompleted(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleBlockJobCanceled(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleBalloonChange(qemuMonitorPtr mon, virJSONValuePtr data);
 
 typedef struct {
     const char *type;
@@ -76,6 +77,7 @@ typedef struct {
 } qemuEventHandler;
 
 static qemuEventHandler eventHandlers[] = {
+    { "BALLOON_CHANGE", qemuMonitorJSONHandleBalloonChange, },
     { "BLOCK_IO_ERROR", qemuMonitorJSONHandleIOError, },
     { "BLOCK_JOB_CANCELLED", qemuMonitorJSONHandleBlockJobCanceled, },
     { "BLOCK_JOB_COMPLETED", qemuMonitorJSONHandleBlockJobCompleted, },
@@ -875,6 +877,19 @@ qemuMonitorJSONHandleBlockJobCanceled(qemuMonitorPtr mon,
                                       VIR_DOMAIN_BLOCK_JOB_CANCELED);
 }
 
+static void
+qemuMonitorJSONHandleBalloonChange(qemuMonitorPtr mon,
+                                   virJSONValuePtr data)
+{
+    unsigned long long actual = 0;
+    if (virJSONValueObjectGetNumberUlong(data, "actual", &actual) < 0) {
+        VIR_WARN("missing actual in balloon change event");
+        return;
+    }
+    actual = VIR_DIV_UP(actual, 1024);
+    qemuMonitorEmitBalloonChange(mon, actual);
+}
+
 int
 qemuMonitorJSONHumanCommandWithFd(qemuMonitorPtr mon,
                                   const char *cmd_str,
@@ -992,6 +1007,56 @@ qemuMonitorJSONCheckCommands(qemuMonitorPtr mon,
             qemuCapsSet(qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC);
         else if (STREQ(name, "dump-guest-memory"))
             qemuCapsSet(qemuCaps, QEMU_CAPS_DUMP_GUEST_MEMORY);
+    }
+
+    ret = 0;
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
+int
+qemuMonitorJSONCheckEvents(qemuMonitorPtr mon,
+                           virBitmapPtr qemuCaps)
+{
+    int ret = -1;
+    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-events", NULL);
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+    int i, n;
+
+    if (!cmd)
+        return ret;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    if (!(data = virJSONValueObjectGet(reply, "return")) ||
+        data->type != VIR_JSON_TYPE_ARRAY ||
+        (n = virJSONValueArraySize(data)) <= 0)
+        goto cleanup;
+
+    for (i = 0; i < n; i++) {
+        virJSONValuePtr entry;
+        const char *name;
+
+        if (!(entry = virJSONValueArrayGet(data, i)) ||
+            !(name = virJSONValueObjectGetString(entry, "name")))
+            goto cleanup;
+
+        if (STREQ(name, "BALLOON_CHANGE"))
+            qemuCapsSet(qemuCaps, QEMU_CAPS_BALLOON_EVENT);
     }
 
     ret = 0;

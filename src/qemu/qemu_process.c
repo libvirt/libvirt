@@ -1148,6 +1148,36 @@ qemuProcessHandlePMSuspend(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+qemuProcessHandleBalloonChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                               virDomainObjPtr vm,
+                               unsigned long long actual)
+{
+    struct qemud_driver *driver = qemu_driver;
+    virDomainEventPtr event;
+
+    virDomainObjLock(vm);
+    event = virDomainEventBalloonChangeNewFromObj(vm, actual);
+
+    VIR_DEBUG("Updating balloon from %lld to %lld kb",
+              vm->def->mem.cur_balloon, actual);
+    vm->def->mem.cur_balloon = actual;
+
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+        VIR_WARN("unable to save domain status with balloon change");
+
+    virDomainObjUnlock(vm);
+
+    if (event) {
+        qemuDriverLock(driver);
+        qemuDomainEventQueue(driver, event);
+        qemuDriverUnlock(driver);
+    }
+
+    return 0;
+}
+
+
 static qemuMonitorCallbacks monitorCallbacks = {
     .destroy = qemuProcessHandleMonitorDestroy,
     .eofNotify = qemuProcessHandleMonitorEOF,
@@ -1164,6 +1194,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .domainTrayChange = qemuProcessHandleTrayChange,
     .domainPMWakeup = qemuProcessHandlePMWakeup,
     .domainPMSuspend = qemuProcessHandlePMSuspend,
+    .domainBalloonChange = qemuProcessHandleBalloonChange,
 };
 
 static int

@@ -1086,6 +1086,16 @@ int qemuMonitorEmitBlockJob(qemuMonitorPtr mon,
 }
 
 
+int qemuMonitorEmitBalloonChange(qemuMonitorPtr mon,
+                                 unsigned long long actual)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p", mon);
+
+    QEMU_MONITOR_CALLBACK(mon, ret, domainBalloonChange, mon->vm, actual);
+    return ret;
+}
+
 
 int qemuMonitorSetCapabilities(qemuMonitorPtr mon,
                                virBitmapPtr qemuCaps)
@@ -1102,11 +1112,17 @@ int qemuMonitorSetCapabilities(qemuMonitorPtr mon,
 
     if (mon->json) {
         ret = qemuMonitorJSONSetCapabilities(mon);
-        if (ret)
+        if (ret < 0)
             goto cleanup;
 
         ret = qemuMonitorJSONCheckCommands(mon, qemuCaps, &json_hmp);
+        if (ret < 0)
+            goto cleanup;
         mon->json_hmp = json_hmp > 0;
+
+        ret = qemuMonitorJSONCheckEvents(mon, qemuCaps);
+        if (ret < 0)
+            goto cleanup;
     } else {
         ret = 0;
     }
