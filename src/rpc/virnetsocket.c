@@ -97,6 +97,9 @@ static int virNetSocketForkDaemon(const char *binary)
                                              NULL);
 
     virCommandAddEnvPassCommon(cmd);
+    virCommandAddEnvPass(cmd, "XDG_CACHE_HOME");
+    virCommandAddEnvPass(cmd, "XDG_CONFIG_HOME");
+    virCommandAddEnvPass(cmd, "XDG_RUNTIME_DIR");
     virCommandClearCaps(cmd);
     virCommandDaemonize(cmd);
     ret = virCommandRun(cmd, NULL);
