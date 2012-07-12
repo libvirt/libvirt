@@ -167,7 +167,8 @@ struct _esxVI_CURL {
 int esxVI_CURL_Alloc(esxVI_CURL **curl);
 void esxVI_CURL_Free(esxVI_CURL **curl);
 int esxVI_CURL_Connect(esxVI_CURL *curl, esxUtil_ParsedUri *parsedUri);
-int esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content);
+int esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content,
+                        unsigned long long offset, unsigned long long *length);
 int esxVI_CURL_Upload(esxVI_CURL *curl, const char *url, const char *content);
 
 

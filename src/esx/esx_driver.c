@@ -2802,7 +2802,7 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     url = virBufferContentAndReset(&buffer);
 
-    if (esxVI_CURL_Download(priv->primary->curl, url, &vmx) < 0) {
+    if (esxVI_CURL_Download(priv->primary->curl, url, &vmx, 0, NULL) < 0) {
         goto cleanup;
     }
 

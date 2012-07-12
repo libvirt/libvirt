@@ -116,9 +116,9 @@ ESX_VI__TEMPLATE__FREE(CURL,
 })
 
 static size_t
-esxVI_CURL_ReadString(char *data, size_t size, size_t nmemb, void *ptrptr)
+esxVI_CURL_ReadString(char *data, size_t size, size_t nmemb, void *userdata)
 {
-    const char *content = *(const char **)ptrptr;
+    const char *content = *(const char **)userdata;
     size_t available = 0;
     size_t requested = size * nmemb;
 
@@ -138,16 +138,28 @@ esxVI_CURL_ReadString(char *data, size_t size, size_t nmemb, void *ptrptr)
 
     memcpy(data, content, requested);
 
-    *(const char **)ptrptr = content + requested;
+    *(const char **)userdata = content + requested;
 
     return requested;
 }
 
 static size_t
-esxVI_CURL_WriteBuffer(char *data, size_t size, size_t nmemb, void *buffer)
+esxVI_CURL_WriteBuffer(char *data, size_t size, size_t nmemb, void *userdata)
 {
+    virBufferPtr buffer = userdata;
+
     if (buffer != NULL) {
-        virBufferAdd((virBufferPtr) buffer, data, size * nmemb);
+        /*
+         * Using a virBuffer to store the download data limits the downloadable
+         * size. This is no problem as esxVI_CURL_Download and esxVI_CURL_Perform
+         * are meant to download small things such as VMX files, VMDK metadata
+         * files and SOAP responses.
+         */
+        if (size * nmemb > INT32_MAX / 2 - virBufferUse(buffer)) {
+            return 0;
+        }
+
+        virBufferAdd(buffer, data, size * nmemb);
 
         return size * nmemb;
     }
@@ -160,7 +172,7 @@ esxVI_CURL_WriteBuffer(char *data, size_t size, size_t nmemb, void *buffer)
 #if ESX_VI__CURL__ENABLE_DEBUG_OUTPUT
 static int
 esxVI_CURL_Debug(CURL *curl ATTRIBUTE_UNUSED, curl_infotype type,
-                 char *info, size_t size, void *data ATTRIBUTE_UNUSED)
+                 char *info, size_t size, void *userdata ATTRIBUTE_UNUSED)
 {
     char *buffer = NULL;
 
@@ -355,8 +367,10 @@ esxVI_CURL_Connect(esxVI_CURL *curl, esxUtil_ParsedUri *parsedUri)
 }
 
 int
-esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content)
+esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content,
+                    unsigned long long offset, unsigned long long *length)
 {
+    char *range = NULL;
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
     int responseCode = 0;
 
@@ -365,9 +379,33 @@ esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content)
         return -1;
     }
 
+    if (length != NULL && *length > 0) {
+        /*
+         * Using a virBuffer to store the download data limits the downloadable
+         * size. This is no problem as esxVI_CURL_Download is meant to download
+         * small things such as VMX of VMDK metadata files.
+         */
+        if (*length > INT32_MAX / 2) {
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("Download length it too large"));
+            return -1;
+        }
+
+        if (virAsprintf(&range, "%llu-%llu", offset, offset + *length - 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    } else if (offset > 0) {
+        if (virAsprintf(&range, "%llu-", offset) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
     virMutexLock(&curl->lock);
 
     curl_easy_setopt(curl->handle, CURLOPT_URL, url);
+    curl_easy_setopt(curl->handle, CURLOPT_RANGE, range);
     curl_easy_setopt(curl->handle, CURLOPT_WRITEDATA, &buffer);
     curl_easy_setopt(curl->handle, CURLOPT_UPLOAD, 0);
     curl_easy_setopt(curl->handle, CURLOPT_HTTPGET, 1);
@@ -378,7 +416,7 @@ esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content)
 
     if (responseCode < 0) {
         goto cleanup;
-    } else if (responseCode != 200) {
+    } else if (responseCode != 200 && responseCode != 206) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
                      _("HTTP response code %d for download from '%s'"),
                      responseCode, url);
@@ -390,9 +428,15 @@ esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content)
         goto cleanup;
     }
 
+    if (length != NULL) {
+        *length = virBufferUse(&buffer);
+    }
+
     *content = virBufferContentAndReset(&buffer);
 
   cleanup:
+    VIR_FREE(range);
+
     if (*content == NULL) {
         virBufferFreeAndReset(&buffer);
         return -1;
@@ -414,6 +458,7 @@ esxVI_CURL_Upload(esxVI_CURL *curl, const char *url, const char *content)
     virMutexLock(&curl->lock);
 
     curl_easy_setopt(curl->handle, CURLOPT_URL, url);
+    curl_easy_setopt(curl->handle, CURLOPT_RANGE, NULL);
     curl_easy_setopt(curl->handle, CURLOPT_READDATA, &content);
     curl_easy_setopt(curl->handle, CURLOPT_UPLOAD, 1);
     curl_easy_setopt(curl->handle, CURLOPT_INFILESIZE, strlen(content));
@@ -1231,6 +1276,7 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
     virMutexLock(&ctx->curl->lock);
 
     curl_easy_setopt(ctx->curl->handle, CURLOPT_URL, ctx->url);
+    curl_easy_setopt(ctx->curl->handle, CURLOPT_RANGE, NULL);
     curl_easy_setopt(ctx->curl->handle, CURLOPT_WRITEDATA, &buffer);
     curl_easy_setopt(ctx->curl->handle, CURLOPT_UPLOAD, 0);
     curl_easy_setopt(ctx->curl->handle, CURLOPT_POSTFIELDS, request);
