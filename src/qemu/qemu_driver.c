@@ -9322,9 +9322,12 @@ qemuCPUCompare(virConnectPtr conn,
 
     qemuDriverLock(driver);
 
-    if (!driver->caps || !driver->caps->host.cpu) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("cannot get host CPU capabilities"));
+    if (!driver->caps) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("cannot get host capabilities"));
+    } else if (!driver->caps->host.cpu) {
+        VIR_WARN("cannot get host CPU capabilities");
+        ret = VIR_CPU_COMPARE_INCOMPATIBLE;
     } else {
         ret = cpuCompareXML(driver->caps->host.cpu, xmlDesc);
     }
