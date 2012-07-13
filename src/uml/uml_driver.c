@@ -553,8 +553,6 @@ umlReload(void) {
                             umlNotifyLoadDomain, uml_driver);
     umlDriverUnlock(uml_driver);
 
-    umlAutostartConfigs(uml_driver);
-
     return 0;
 }
 
