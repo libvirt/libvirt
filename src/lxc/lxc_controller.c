@@ -58,6 +58,7 @@
 
 #include "lxc_conf.h"
 #include "lxc_container.h"
+#include "lxc_cgroup.h"
 #include "virnetdev.h"
 #include "virnetdevveth.h"
 #include "memory.h"
@@ -71,13 +72,6 @@
 #include "rpc/virnetserver.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
-
-struct cgroup_device_policy {
-    char type;
-    int major;
-    int minor;
-};
-
 
 typedef struct _virLXCControllerConsole virLXCControllerConsole;
 typedef virLXCControllerConsole *virLXCControllerConsolePtr;
@@ -127,8 +121,6 @@ struct _virLXCController {
 
     /* Server socket */
     virNetServerPtr server;
-
-    virCgroupPtr cgroup;
 };
 
 static void virLXCControllerFree(virLXCControllerPtr ctrl);
@@ -201,8 +193,6 @@ static void virLXCControllerStopInit(virLXCControllerPtr ctrl)
     virLXCControllerCloseLoopDevices(ctrl, true);
     virPidAbort(ctrl->initpid);
     ctrl->initpid = 0;
-
-    virCgroupFree(&ctrl->cgroup);
 }
 
 
@@ -527,181 +517,6 @@ static int virLXCControllerSetupCpuAffinity(virLXCControllerPtr ctrl)
 }
 
 
-static int virLXCControllerSetupCgroupsCpuTune(virLXCControllerPtr ctrl)
-{
-    int ret = -1;
-    if (ctrl->def->cputune.shares != 0) {
-        int rc = virCgroupSetCpuShares(ctrl->cgroup, ctrl->def->cputune.shares);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set io cpu shares for domain %s"),
-                                 ctrl->def->name);
-            goto cleanup;
-        }
-    }
-    if (ctrl->def->cputune.quota != 0) {
-        int rc = virCgroupSetCpuCfsQuota(ctrl->cgroup, ctrl->def->cputune.quota);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set io cpu quota for domain %s"),
-                                 ctrl->def->name);
-            goto cleanup;
-        }
-    }
-    if (ctrl->def->cputune.period != 0) {
-        int rc = virCgroupSetCpuCfsPeriod(ctrl->cgroup, ctrl->def->cputune.period);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set io cpu period for domain %s"),
-                                 ctrl->def->name);
-            goto cleanup;
-        }
-    }
-    ret = 0;
-cleanup:
-    return ret;
-}
-
-
-static int virLXCControllerSetupCgroupsBlkioTune(virLXCControllerPtr ctrl)
-{
-    int ret = -1;
-
-    if (ctrl->def->blkio.weight) {
-        int rc = virCgroupSetBlkioWeight(ctrl->cgroup, ctrl->def->blkio.weight);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set Blkio weight for domain %s"),
-                                 ctrl->def->name);
-            goto cleanup;
-        }
-    }
-
-    ret = 0;
-cleanup:
-    return ret;
-}
-
-
-static int virLXCControllerSetupCgroupsMemTune(virLXCControllerPtr ctrl)
-{
-    int ret = -1;
-    int rc;
-
-    rc = virCgroupSetMemory(ctrl->cgroup, ctrl->def->mem.max_balloon);
-    if (rc != 0) {
-        virReportSystemError(-rc,
-                             _("Unable to set memory limit for domain %s"),
-                             ctrl->def->name);
-        goto cleanup;
-    }
-
-    if (ctrl->def->mem.hard_limit) {
-        rc = virCgroupSetMemoryHardLimit(ctrl->cgroup, ctrl->def->mem.hard_limit);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set memory hard limit for domain %s"),
-                                 ctrl->def->name);
-            goto cleanup;
-        }
-    }
-
-    if (ctrl->def->mem.soft_limit) {
-        rc = virCgroupSetMemorySoftLimit(ctrl->cgroup, ctrl->def->mem.soft_limit);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set memory soft limit for domain %s"),
-                                 ctrl->def->name);
-            goto cleanup;
-        }
-    }
-
-    if (ctrl->def->mem.swap_hard_limit) {
-        rc = virCgroupSetMemSwapHardLimit(ctrl->cgroup, ctrl->def->mem.swap_hard_limit);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set swap hard limit for domain %s"),
-                                 ctrl->def->name);
-            goto cleanup;
-        }
-    }
-
-    ret = 0;
-cleanup:
-    return ret;
-}
-
-
-static int virLXCControllerSetupCgroupsDeviceACL(virLXCControllerPtr ctrl)
-{
-    int ret = -1;
-    int rc;
-    size_t i;
-    static const struct cgroup_device_policy devices[] = {
-        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_NULL},
-        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_ZERO},
-        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_FULL},
-        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_RANDOM},
-        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_URANDOM},
-        {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_TTY},
-        {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_PTMX},
-        {0,   0, 0}};
-
-    rc = virCgroupDenyAllDevices(ctrl->cgroup);
-    if (rc != 0) {
-        virReportSystemError(-rc,
-                             _("Unable to deny devices for domain %s"),
-                             ctrl->def->name);
-        goto cleanup;
-    }
-
-    for (i = 0; devices[i].type != 0; i++) {
-        const struct cgroup_device_policy *dev = &devices[i];
-        rc = virCgroupAllowDevice(ctrl->cgroup,
-                                  dev->type,
-                                  dev->major,
-                                  dev->minor,
-                                  VIR_CGROUP_DEVICE_RWM);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to allow device %c:%d:%d for domain %s"),
-                                 dev->type, dev->major, dev->minor, ctrl->def->name);
-            goto cleanup;
-        }
-    }
-
-    for (i = 0 ; i < ctrl->def->nfss ; i++) {
-        if (ctrl->def->fss[i]->type != VIR_DOMAIN_FS_TYPE_BLOCK)
-            continue;
-
-        rc = virCgroupAllowDevicePath(ctrl->cgroup,
-                                      ctrl->def->fss[i]->src,
-                                      ctrl->def->fss[i]->readonly ?
-                                      VIR_CGROUP_DEVICE_READ :
-                                      VIR_CGROUP_DEVICE_RW);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to allow device %s for domain %s"),
-                                 ctrl->def->fss[i]->src, ctrl->def->name);
-            goto cleanup;
-        }
-    }
-
-    rc = virCgroupAllowDeviceMajor(ctrl->cgroup, 'c', LXC_DEV_MAJ_PTY,
-                                   VIR_CGROUP_DEVICE_RWM);
-    if (rc != 0) {
-        virReportSystemError(-rc,
-                             _("Unable to allow PTY devices for domain %s"),
-                             ctrl->def->name);
-        goto cleanup;
-    }
-
-    ret = 0;
-cleanup:
-    return ret;
-}
-
-
 /**
  * virLXCControllerSetupResourceLimits
  * @ctrl: the controller state
@@ -713,8 +528,6 @@ cleanup:
  */
 static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl)
 {
-    virCgroupPtr driver;
-    int rc = -1;
 
     if (virLXCControllerSetupCpuAffinity(ctrl) < 0)
         return -1;
@@ -722,48 +535,7 @@ static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl)
     if (virLXCControllerSetupNUMAPolicy(ctrl) < 0)
         return -1;
 
-    rc = virCgroupForDriver("lxc", &driver, 1, 0);
-    if (rc != 0) {
-        /* Skip all if no driver cgroup is configured */
-        if (rc == -ENXIO || rc == -ENOENT)
-            return 0;
-
-        virReportSystemError(-rc, "%s",
-                             _("Unable to get cgroup for driver"));
-        return rc;
-    }
-
-    rc = virCgroupForDomain(driver, ctrl->def->name, &ctrl->cgroup, 1);
-    if (rc != 0) {
-        virReportSystemError(-rc,
-                             _("Unable to create cgroup for domain %s"),
-                             ctrl->def->name);
-        goto cleanup;
-    }
-
-    if (virLXCControllerSetupCgroupsCpuTune(ctrl) < 0)
-        goto cleanup;
-
-    if (virLXCControllerSetupCgroupsBlkioTune(ctrl) < 0)
-        goto cleanup;
-
-    if (virLXCControllerSetupCgroupsMemTune(ctrl) < 0)
-        goto cleanup;
-
-    if (virLXCControllerSetupCgroupsDeviceACL(ctrl) < 0)
-        goto cleanup;
-
-    rc = virCgroupAddTask(ctrl->cgroup, getpid());
-    if (rc != 0) {
-        virReportSystemError(-rc,
-                             _("Unable to add task %d to cgroup for domain %s"),
-                             getpid(), ctrl->def->name);
-    }
-
-cleanup:
-    virCgroupFree(&driver);
-
-    return rc;
+    return virLXCCgroupSetup(ctrl->def);
 }
 
 
