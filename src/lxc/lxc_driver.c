@@ -126,7 +126,7 @@ static int lxcClose(virConnectPtr conn)
     lxc_driver_t *driver = conn->privateData;
 
     lxcDriverLock(driver);
-    lxcProcessAutoDestroyRun(driver, conn);
+    virLXCProcessAutoDestroyRun(driver, conn);
     lxcDriverUnlock(driver);
 
     conn->privateData = NULL;
@@ -978,9 +978,9 @@ static int lxcDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
-    ret = lxcVmStart(dom->conn, driver, vm,
-                     (flags & VIR_DOMAIN_START_AUTODESTROY),
-                     VIR_DOMAIN_RUNNING_BOOTED);
+    ret = virLXCProcessStart(dom->conn, driver, vm,
+                             (flags & VIR_DOMAIN_START_AUTODESTROY),
+                             VIR_DOMAIN_RUNNING_BOOTED);
 
     if (ret == 0) {
         event = virDomainEventNewFromObj(vm,
@@ -1059,9 +1059,9 @@ lxcDomainCreateAndStart(virConnectPtr conn,
         goto cleanup;
     def = NULL;
 
-    if (lxcVmStart(conn, driver, vm,
-                   (flags & VIR_DOMAIN_START_AUTODESTROY),
-                   VIR_DOMAIN_RUNNING_BOOTED) < 0) {
+    if (virLXCProcessStart(conn, driver, vm,
+                           (flags & VIR_DOMAIN_START_AUTODESTROY),
+                           VIR_DOMAIN_RUNNING_BOOTED) < 0) {
         virDomainAuditStart(vm, "booted", false);
         virDomainRemoveInactive(&driver->domains, vm);
         vm = NULL;
@@ -1296,7 +1296,7 @@ lxcDomainDestroyFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    ret = lxcVmTerminate(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
+    ret = virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
@@ -1436,7 +1436,7 @@ static int lxcStartup(int privileged)
 
     lxcDomainSetPrivateDataHooks(lxc_driver->caps);
 
-    if (lxcProcessAutoDestroyInit(lxc_driver) < 0)
+    if (virLXCProcessAutoDestroyInit(lxc_driver) < 0)
         goto cleanup;
 
     /* Get all the running persistent or transient configs first */
@@ -1448,7 +1448,7 @@ static int lxcStartup(int privileged)
                                 NULL, NULL) < 0)
         goto cleanup;
 
-    lxcReconnectAll(lxc_driver, &lxc_driver->domains);
+    virLXCProcessReconnectAll(lxc_driver, &lxc_driver->domains);
 
     /* Then inactive persistent configs */
     if (virDomainLoadAllConfigs(lxc_driver->caps,
@@ -1461,7 +1461,7 @@ static int lxcStartup(int privileged)
 
     lxcDriverUnlock(lxc_driver);
 
-    lxcAutostartConfigs(lxc_driver);
+    virLXCProcessAutostartAll(lxc_driver);
 
     return 0;
 
@@ -1517,7 +1517,7 @@ static int lxcShutdown(void)
     virDomainObjListDeinit(&lxc_driver->domains);
     virDomainEventStateFree(lxc_driver->domainEventState);
 
-    lxcProcessAutoDestroyShutdown(lxc_driver);
+    virLXCProcessAutoDestroyShutdown(lxc_driver);
 
     virCapabilitiesFree(lxc_driver->caps);
     virSecurityManagerFree(lxc_driver->securityManager);

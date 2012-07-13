@@ -24,26 +24,27 @@
 
 # include "lxc_conf.h"
 
-int lxcVmStart(virConnectPtr conn,
-               lxc_driver_t * driver,
-               virDomainObjPtr vm,
-               bool autoDestroy,
-               virDomainRunningReason reason);
-int lxcVmTerminate(lxc_driver_t *driver,
-                   virDomainObjPtr vm,
-                   virDomainShutoffReason reason);
-int lxcProcessAutoDestroyInit(lxc_driver_t *driver);
-void lxcProcessAutoDestroyRun(lxc_driver_t *driver,
-                              virConnectPtr conn);
-void lxcProcessAutoDestroyShutdown(lxc_driver_t *driver);
-int lxcProcessAutoDestroyAdd(lxc_driver_t *driver,
-                             virDomainObjPtr vm,
-                             virConnectPtr conn);
-int lxcProcessAutoDestroyRemove(lxc_driver_t *driver,
-                                virDomainObjPtr vm);
+int virLXCProcessStart(virConnectPtr conn,
+                       lxc_driver_t * driver,
+                       virDomainObjPtr vm,
+                       bool autoDestroy,
+                       virDomainRunningReason reason);
+int virLXCProcessStop(lxc_driver_t *driver,
+                      virDomainObjPtr vm,
+                      virDomainShutoffReason reason);
 
-void lxcAutostartConfigs(lxc_driver_t *driver);
-int lxcReconnectAll(lxc_driver_t *driver,
-                    virDomainObjListPtr doms);
+int virLXCProcessAutoDestroyInit(lxc_driver_t *driver);
+void virLXCProcessAutoDestroyRun(lxc_driver_t *driver,
+                                 virConnectPtr conn);
+void virLXCProcessAutoDestroyShutdown(lxc_driver_t *driver);
+int virLXCProcessAutoDestroyAdd(lxc_driver_t *driver,
+                                virDomainObjPtr vm,
+                                virConnectPtr conn);
+int virLXCProcessAutoDestroyRemove(lxc_driver_t *driver,
+                                   virDomainObjPtr vm);
+
+void virLXCProcessAutostartAll(lxc_driver_t *driver);
+int virLXCProcessReconnectAll(lxc_driver_t *driver,
+                              virDomainObjListPtr doms);
 
 #endif /* __LXC_PROCESS_H__ */
