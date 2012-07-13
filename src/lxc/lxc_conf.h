@@ -78,4 +78,14 @@ virCapsPtr lxcCapsInit(lxc_driver_t *driver);
     virReportErrorHelper(VIR_FROM_LXC, code, __FILE__,                   \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
+static inline void lxcDriverLock(lxc_driver_t *driver)
+{
+    virMutexLock(&driver->lock);
+}
+static inline void lxcDriverUnlock(lxc_driver_t *driver)
+{
+    virMutexUnlock(&driver->lock);
+}
+
+
 #endif /* LXC_CONF_H */
