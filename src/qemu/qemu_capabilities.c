@@ -646,6 +646,7 @@ qemuCapsInitGuest(virCapsPtr caps,
     struct stat st;
     unsigned int ncpus;
     virBitmapPtr qemuCaps = NULL;
+    virBitmapPtr kvmCaps = NULL;
     int ret = -1;
 
     /* Check for existance of base emulator, or alternate base
@@ -658,7 +659,12 @@ qemuCapsInitGuest(virCapsPtr caps,
         binary = virFindFileInPath(info->altbinary);
     }
 
-    /* Can use acceleration for KVM/KQEMU if
+    /* Ignore binary if extracting version info fails */
+    if (binary &&
+        qemuCapsExtractVersionInfo(binary, info->arch, NULL, &qemuCaps) < 0)
+        VIR_FREE(binary);
+
+    /* qemu-kvm/kvm binaries can only be used if
      *  - host & guest arches match
      * Or
      *  - hostarch is x86_64 and guest arch is i686
@@ -666,37 +672,44 @@ qemuCapsInitGuest(virCapsPtr caps,
      */
     if (STREQ(info->arch, hostmachine) ||
         (STREQ(hostmachine, "x86_64") && STREQ(info->arch, "i686"))) {
-        if (access("/dev/kvm", F_OK) == 0) {
-            const char *const kvmbins[] = { "/usr/libexec/qemu-kvm", /* RHEL */
-                                            "qemu-kvm", /* Fedora */
-                                            "kvm" }; /* Upstream .spec */
+        const char *const kvmbins[] = { "/usr/libexec/qemu-kvm", /* RHEL */
+                                        "qemu-kvm", /* Fedora */
+                                        "kvm" }; /* Upstream .spec */
 
-            for (i = 0; i < ARRAY_CARDINALITY(kvmbins); ++i) {
-                kvmbin = virFindFileInPath(kvmbins[i]);
+        for (i = 0; i < ARRAY_CARDINALITY(kvmbins); ++i) {
+            kvmbin = virFindFileInPath(kvmbins[i]);
 
-                if (!kvmbin)
-                    continue;
+            if (!kvmbin)
+                continue;
 
-                haskvm = 1;
-                if (!binary)
-                    binary = kvmbin;
-
-                break;
+            if (qemuCapsExtractVersionInfo(kvmbin, info->arch,
+                                           NULL, &kvmCaps) < 0) {
+                VIR_FREE(kvmbin);
+                continue;
             }
-        }
 
-        if (access("/dev/kqemu", F_OK) == 0)
-            haskqemu = 1;
+            if (!binary) {
+                binary = kvmbin;
+                qemuCaps = kvmCaps;
+                kvmbin = NULL;
+                kvmCaps = NULL;
+            }
+            break;
+        }
     }
 
     if (!binary)
         return 0;
 
-    /* Ignore binary if extracting version info fails */
-    if (qemuCapsExtractVersionInfo(binary, info->arch, NULL, &qemuCaps) < 0) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (access("/dev/kvm", F_OK) == 0 &&
+        (qemuCapsGet(qemuCaps, QEMU_CAPS_KVM) ||
+         qemuCapsGet(qemuCaps, QEMU_CAPS_ENABLE_KVM) ||
+         kvmbin))
+        haskvm = 1;
+
+    if (access("/dev/kqemu", F_OK) == 0 &&
+        qemuCapsGet(qemuCaps, QEMU_CAPS_KQEMU))
+        haskqemu = 1;
 
     if (stat(binary, &st) == 0) {
         binary_mtime = st.st_mtime;
@@ -788,21 +801,23 @@ qemuCapsInitGuest(virCapsPtr caps,
         if (haskvm) {
             virCapsGuestDomainPtr dom;
 
-            if (stat(kvmbin, &st) == 0) {
-                binary_mtime = st.st_mtime;
-            } else {
-                char ebuf[1024];
-                VIR_WARN("Failed to stat %s, most peculiar : %s",
-                         binary, virStrerror(errno, ebuf, sizeof(ebuf)));
-                binary_mtime = 0;
-            }
-
-            if (!STREQ(binary, kvmbin)) {
+            if (kvmbin) {
                 int probe = 1;
+
+                if (stat(kvmbin, &st) == 0) {
+                    binary_mtime = st.st_mtime;
+                } else {
+                    char ebuf[1024];
+                    VIR_WARN("Failed to stat %s, most peculiar : %s",
+                             binary, virStrerror(errno, ebuf, sizeof(ebuf)));
+                    binary_mtime = 0;
+                }
+
                 if (old_caps && binary_mtime)
-                    probe = !qemuCapsGetOldMachines("hvm", info->arch, info->wordsize,
-                                                    kvmbin, binary_mtime,
-                                                    old_caps, &machines, &nmachines);
+                    probe = !qemuCapsGetOldMachines("hvm", info->arch,
+                                                    info->wordsize, kvmbin,
+                                                    binary_mtime, old_caps,
+                                                    &machines, &nmachines);
                 if (probe &&
                     qemuCapsProbeMachineTypes(kvmbin, qemuCaps,
                                               &machines, &nmachines) < 0)
@@ -811,7 +826,7 @@ qemuCapsInitGuest(virCapsPtr caps,
 
             if ((dom = virCapabilitiesAddGuestDomain(guest,
                                                      "kvm",
-                                                     kvmbin,
+                                                     kvmbin ? kvmbin : binary,
                                                      NULL,
                                                      nmachines,
                                                      machines)) == NULL) {
@@ -846,14 +861,10 @@ qemuCapsInitGuest(virCapsPtr caps,
     ret = 0;
 
 cleanup:
-    if (binary == kvmbin) {
-        /* don't double free */
-        VIR_FREE(binary);
-    } else {
-        VIR_FREE(binary);
-        VIR_FREE(kvmbin);
-    }
+    VIR_FREE(binary);
+    VIR_FREE(kvmbin);
     qemuCapsFree(qemuCaps);
+    qemuCapsFree(kvmCaps);
 
     return ret;
 
