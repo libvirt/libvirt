@@ -783,8 +783,6 @@ qemudReload(void) {
                             qemudNotifyLoadDomain, qemu_driver);
     qemuDriverUnlock(qemu_driver);
 
-    qemuAutostartDomains(qemu_driver);
-
     return 0;
 }
 

@@ -2687,8 +2687,6 @@ lxcReload(void) {
                             lxcNotifyLoadDomain, lxc_driver);
     lxcDriverUnlock(lxc_driver);
 
-    lxcAutostartConfigs(lxc_driver);
-
     return 0;
 }
 
