@@ -6840,8 +6840,10 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
     memset(cpu_stats, 0, sizeof(cpu_stats));
     params = vshCalloc(ctl, nparams, sizeof(*params));
 
-    i = 0;
-    do {
+    for (i = 0; i < 2; i++) {
+        if (i > 0)
+            sleep(1);
+
         if (virNodeGetCPUStats(ctl->conn, cpuNum, params, &nparams, 0) != 0) {
             vshError(ctl, "%s", _("Unable to get node cpu stats"));
             goto cleanup;
@@ -6866,10 +6868,7 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
 
         if (flag_utilization || !flag_percent)
             break;
-
-        i++;
-        sleep(1);
-    } while (i < 2);
+    }
 
     if (!flag_percent) {
         if (!flag_utilization) {
