@@ -40,6 +40,7 @@
 #include "datatypes.h"
 #include "lxc_conf.h"
 #include "lxc_container.h"
+#include "lxc_domain.h"
 #include "lxc_driver.h"
 #include "memory.h"
 #include "util.h"
@@ -69,14 +70,6 @@
 
 #define LXC_NB_MEM_PARAM  3
 
-typedef struct _lxcDomainObjPrivate lxcDomainObjPrivate;
-typedef lxcDomainObjPrivate *lxcDomainObjPrivatePtr;
-struct _lxcDomainObjPrivate {
-    int monitor;
-    int monitorWatch;
-};
-
-
 static int lxcStartup(int privileged);
 static int lxcShutdown(void);
 static lxc_driver_t *lxc_driver = NULL;
@@ -91,27 +84,6 @@ static void lxcDriverUnlock(lxc_driver_t *driver)
 {
     virMutexUnlock(&driver->lock);
 }
-
-static void *lxcDomainObjPrivateAlloc(void)
-{
-    lxcDomainObjPrivatePtr priv;
-
-    if (VIR_ALLOC(priv) < 0)
-        return NULL;
-
-    priv->monitor = -1;
-    priv->monitorWatch = -1;
-
-    return priv;
-}
-
-static void lxcDomainObjPrivateFree(void *data)
-{
-    lxcDomainObjPrivatePtr priv = data;
-
-    VIR_FREE(priv);
-}
-
 
 static void lxcDomainEventQueue(lxc_driver_t *driver,
                                 virDomainEventPtr event);
@@ -2678,8 +2650,7 @@ static int lxcStartup(int privileged)
     if ((lxc_driver->caps = lxcCapsInit(lxc_driver)) == NULL)
         goto cleanup;
 
-    lxc_driver->caps->privateDataAllocFunc = lxcDomainObjPrivateAlloc;
-    lxc_driver->caps->privateDataFreeFunc = lxcDomainObjPrivateFree;
+    lxcDomainSetPrivateDataHooks(lxc_driver->caps);
 
     if (lxcProcessAutoDestroyInit(lxc_driver) < 0)
         goto cleanup;
