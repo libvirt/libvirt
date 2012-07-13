@@ -48,7 +48,7 @@
 
 #define START_POSTFIX ": starting up\n"
 
-int virLXCProcessAutoDestroyInit(lxc_driver_t *driver)
+int virLXCProcessAutoDestroyInit(virLXCDriverPtr driver)
 {
     if (!(driver->autodestroy = virHashCreate(5, NULL)))
         return -1;
@@ -57,7 +57,7 @@ int virLXCProcessAutoDestroyInit(lxc_driver_t *driver)
 }
 
 struct virLXCProcessAutoDestroyData {
-    lxc_driver_t *driver;
+    virLXCDriverPtr driver;
     virConnectPtr conn;
 };
 
@@ -108,7 +108,7 @@ static void virLXCProcessAutoDestroyDom(void *payload,
 /*
  * Precondition: driver is locked
  */
-void virLXCProcessAutoDestroyRun(lxc_driver_t *driver, virConnectPtr conn)
+void virLXCProcessAutoDestroyRun(virLXCDriverPtr driver, virConnectPtr conn)
 {
     struct virLXCProcessAutoDestroyData data = {
         driver, conn
@@ -117,12 +117,12 @@ void virLXCProcessAutoDestroyRun(lxc_driver_t *driver, virConnectPtr conn)
     virHashForEach(driver->autodestroy, virLXCProcessAutoDestroyDom, &data);
 }
 
-void virLXCProcessAutoDestroyShutdown(lxc_driver_t *driver)
+void virLXCProcessAutoDestroyShutdown(virLXCDriverPtr driver)
 {
     virHashFree(driver->autodestroy);
 }
 
-int virLXCProcessAutoDestroyAdd(lxc_driver_t *driver,
+int virLXCProcessAutoDestroyAdd(virLXCDriverPtr driver,
                                 virDomainObjPtr vm,
                                 virConnectPtr conn)
 {
@@ -134,7 +134,7 @@ int virLXCProcessAutoDestroyAdd(lxc_driver_t *driver,
     return 0;
 }
 
-int virLXCProcessAutoDestroyRemove(lxc_driver_t *driver,
+int virLXCProcessAutoDestroyRemove(virLXCDriverPtr driver,
                                    virDomainObjPtr vm)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -155,7 +155,7 @@ int virLXCProcessAutoDestroyRemove(lxc_driver_t *driver,
  * Cleanout resources associated with the now dead VM
  *
  */
-static void virLXCProcessCleanup(lxc_driver_t *driver,
+static void virLXCProcessCleanup(virLXCDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virDomainShutoffReason reason)
 {
@@ -300,7 +300,7 @@ static int virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
 {
     int ret = 0;
     char *res_ifname = NULL;
-    lxc_driver_t *driver = conn->privateData;
+    virLXCDriverPtr driver = conn->privateData;
     virNetDevBandwidthPtr bw;
     virNetDevVPortProfilePtr prof;
 
@@ -472,7 +472,7 @@ cleanup:
 }
 
 
-static int virLXCProcessMonitorClient(lxc_driver_t * driver,
+static int virLXCProcessMonitorClient(virLXCDriverPtr  driver,
                                       virDomainObjPtr vm)
 {
     char *sockpath = NULL;
@@ -529,7 +529,7 @@ error:
 }
 
 
-int virLXCProcessStop(lxc_driver_t *driver,
+int virLXCProcessStop(virLXCDriverPtr driver,
                       virDomainObjPtr vm,
                       virDomainShutoffReason reason)
 {
@@ -581,13 +581,13 @@ cleanup:
     return rc;
 }
 
-extern lxc_driver_t *lxc_driver;
+extern virLXCDriverPtr lxc_driver;
 static void virLXCProcessMonitorEvent(int watch,
                                       int fd,
                                       int events ATTRIBUTE_UNUSED,
                                       void *data)
 {
-    lxc_driver_t *driver = lxc_driver;
+    virLXCDriverPtr driver = lxc_driver;
     virDomainObjPtr vm = data;
     virDomainEventPtr event = NULL;
     virLXCDomainObjPrivatePtr priv;
@@ -628,7 +628,7 @@ cleanup:
 
 
 static virCommandPtr
-virLXCProcessBuildControllerCmd(lxc_driver_t *driver,
+virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
                                 virDomainObjPtr vm,
                                 int nveths,
                                 char **veths,
@@ -789,7 +789,7 @@ cleanup:
  * Returns 0 on success or -1 in case of error
  */
 int virLXCProcessStart(virConnectPtr conn,
-                       lxc_driver_t * driver,
+                       virLXCDriverPtr  driver,
                        virDomainObjPtr vm,
                        bool autoDestroy,
                        virDomainRunningReason reason)
@@ -1119,7 +1119,7 @@ error:
 }
 
 struct virLXCProcessAutostartData {
-    lxc_driver_t *driver;
+    virLXCDriverPtr driver;
     virConnectPtr conn;
 };
 
@@ -1154,7 +1154,8 @@ virLXCProcessAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, v
 
 
 void
-virLXCProcessAutostartAll(lxc_driver_t *driver) {
+virLXCProcessAutostartAll(virLXCDriverPtr driver)
+{
     /* XXX: Figure out a better way todo this. The domain
      * startup code needs a connection handle in order
      * to lookup the bridge associated with a virtual
@@ -1177,7 +1178,7 @@ static void
 virLXCProcessReconnectDomain(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
 {
     virDomainObjPtr vm = payload;
-    lxc_driver_t *driver = opaque;
+    virLXCDriverPtr driver = opaque;
     virLXCDomainObjPrivatePtr priv;
 
     virDomainObjLock(vm);
@@ -1234,7 +1235,7 @@ error:
 }
 
 
-int virLXCProcessReconnectAll(lxc_driver_t *driver,
+int virLXCProcessReconnectAll(virLXCDriverPtr driver,
                               virDomainObjListPtr doms)
 {
     virHashForEach(doms->objs, virLXCProcessReconnectDomain, driver);

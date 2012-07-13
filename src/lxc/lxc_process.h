@@ -25,26 +25,26 @@
 # include "lxc_conf.h"
 
 int virLXCProcessStart(virConnectPtr conn,
-                       lxc_driver_t * driver,
+                       virLXCDriverPtr  driver,
                        virDomainObjPtr vm,
                        bool autoDestroy,
                        virDomainRunningReason reason);
-int virLXCProcessStop(lxc_driver_t *driver,
+int virLXCProcessStop(virLXCDriverPtr driver,
                       virDomainObjPtr vm,
                       virDomainShutoffReason reason);
 
-int virLXCProcessAutoDestroyInit(lxc_driver_t *driver);
-void virLXCProcessAutoDestroyRun(lxc_driver_t *driver,
+int virLXCProcessAutoDestroyInit(virLXCDriverPtr driver);
+void virLXCProcessAutoDestroyRun(virLXCDriverPtr driver,
                                  virConnectPtr conn);
-void virLXCProcessAutoDestroyShutdown(lxc_driver_t *driver);
-int virLXCProcessAutoDestroyAdd(lxc_driver_t *driver,
+void virLXCProcessAutoDestroyShutdown(virLXCDriverPtr driver);
+int virLXCProcessAutoDestroyAdd(virLXCDriverPtr driver,
                                 virDomainObjPtr vm,
                                 virConnectPtr conn);
-int virLXCProcessAutoDestroyRemove(lxc_driver_t *driver,
+int virLXCProcessAutoDestroyRemove(virLXCDriverPtr driver,
                                    virDomainObjPtr vm);
 
-void virLXCProcessAutostartAll(lxc_driver_t *driver);
-int virLXCProcessReconnectAll(lxc_driver_t *driver,
+void virLXCProcessAutostartAll(virLXCDriverPtr driver);
+int virLXCProcessReconnectAll(virLXCDriverPtr driver,
                               virDomainObjListPtr doms);
 
 #endif /* __LXC_PROCESS_H__ */

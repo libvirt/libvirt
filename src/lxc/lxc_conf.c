@@ -49,7 +49,7 @@ static int lxcDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED)
 
 
 /* Functions */
-virCapsPtr lxcCapsInit(lxc_driver_t *driver)
+virCapsPtr lxcCapsInit(virLXCDriverPtr driver)
 {
     struct utsname utsname;
     virCapsPtr caps;
@@ -156,7 +156,7 @@ error:
     return NULL;
 }
 
-int lxcLoadDriverConfig(lxc_driver_t *driver)
+int lxcLoadDriverConfig(virLXCDriverPtr driver)
 {
     char *filename;
     virConfPtr conf;

@@ -43,8 +43,10 @@
 # define LXC_LOG_DIR LOCALSTATEDIR "/log/libvirt/lxc"
 # define LXC_AUTOSTART_DIR LXC_CONFIG_DIR "/autostart"
 
-typedef struct __lxc_driver lxc_driver_t;
-struct __lxc_driver {
+typedef struct _virLXCDriver virLXCDriver;
+typedef virLXCDriver *virLXCDriverPtr;
+
+struct _virLXCDriver {
     virMutex lock;
 
     virCapsPtr caps;
@@ -71,18 +73,18 @@ struct __lxc_driver {
     virHashTablePtr autodestroy;
 };
 
-int lxcLoadDriverConfig(lxc_driver_t *driver);
-virCapsPtr lxcCapsInit(lxc_driver_t *driver);
+int lxcLoadDriverConfig(virLXCDriverPtr driver);
+virCapsPtr lxcCapsInit(virLXCDriverPtr driver);
 
 # define lxcError(code, ...)                                             \
     virReportErrorHelper(VIR_FROM_LXC, code, __FILE__,                   \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
-static inline void lxcDriverLock(lxc_driver_t *driver)
+static inline void lxcDriverLock(virLXCDriverPtr driver)
 {
     virMutexLock(&driver->lock);
 }
-static inline void lxcDriverUnlock(lxc_driver_t *driver)
+static inline void lxcDriverUnlock(virLXCDriverPtr driver)
 {
     virMutexUnlock(&driver->lock);
 }
