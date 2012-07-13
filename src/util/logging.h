@@ -1,7 +1,7 @@
 /*
  * logging.h: internal logging and debugging
  *
- * Copyright (C) 2006-2008, 2011 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2011-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,8 +34,18 @@
 #  define VIR_DEBUG_INT(category, f, l, ...)                            \
     virLogMessage(category, VIR_LOG_DEBUG, f, l, 0, __VA_ARGS__)
 # else
+/**
+ * virLogEatParams:
+ *
+ * Do nothing but eat parameters.
+ */
+static inline void virLogEatParams(const char *unused, ...)
+{
+    /* Silence gcc */
+    unused = unused;
+}
 #  define VIR_DEBUG_INT(category, f, l, ...)    \
-    do { } while (0)
+    virLogEatParams(category, f, l, __VA_ARGS__)
 # endif /* !ENABLE_DEBUG */
 
 # define VIR_INFO_INT(category, f, l, ...)                              \
