@@ -1661,6 +1661,10 @@ struct remote_domain_event_pmwakeup_msg {
 struct remote_domain_event_pmsuspend_msg {
         remote_nonnull_domain      dom;
 };
+struct remote_domain_event_balloon_change_msg {
+        remote_nonnull_domain      dom;
+        uint64_t                   actual;
+};
 struct remote_domain_managed_save_args {
         remote_nonnull_domain      dom;
         u_int                      flags;
@@ -2246,4 +2250,5 @@ enum remote_procedure {
         REMOTE_PROC_CONNECT_LIST_ALL_DOMAINS = 273,
         REMOTE_PROC_DOMAIN_LIST_ALL_SNAPSHOTS = 274,
         REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_ALL_CHILDREN = 275,
+        REMOTE_PROC_DOMAIN_EVENT_BALLOON_CHANGE = 276,
 };

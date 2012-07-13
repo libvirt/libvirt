@@ -582,6 +582,33 @@ static int remoteRelayDomainEventPMSuspend(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+remoteRelayDomainEventBalloonChange(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                    virDomainPtr dom,
+                                    unsigned long long actual,
+                                    void *opaque)
+{
+    virNetServerClientPtr client = opaque;
+    remote_domain_event_balloon_change_msg data;
+
+    if (!client)
+        return -1;
+
+    VIR_DEBUG("Relaying domain balloon change event %s %d %lld", dom->name, dom->id, actual);
+
+    /* build return data */
+    memset(&data, 0, sizeof(data));
+    make_nonnull_domain(&data.dom, dom);
+    data.actual = actual;
+
+    remoteDispatchDomainEventSend(client, remoteProgram,
+                                  REMOTE_PROC_DOMAIN_EVENT_BALLOON_CHANGE,
+                                  (xdrproc_t)xdr_remote_domain_event_balloon_change_msg, &data);
+
+    return 0;
+}
+
+
 static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventReboot),
@@ -596,6 +623,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventTrayChange),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventPMWakeup),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventPMSuspend),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventBalloonChange),
 };
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

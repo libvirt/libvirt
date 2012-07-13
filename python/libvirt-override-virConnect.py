@@ -161,6 +161,15 @@
         cb(self, virDomain(self, _obj=dom), reason, opaque)
         return 0;
 
+    def _dispatchDomainEventBalloonChangeCallback(self, dom, actual, cbData):
+        """Dispatches events to python user domain balloon change event callbacks
+        """
+        cb = cbData["cb"]
+        opaque = cbData["opaque"]
+
+        cb(self, virDomain(self, _obj=dom), actual, opaque)
+        return 0
+
     def domainEventDeregisterAny(self, callbackID):
         """Removes a Domain Event Callback. De-registering for a
            domain callback will disable delivery of this event type """

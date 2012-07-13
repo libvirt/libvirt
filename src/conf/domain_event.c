@@ -121,6 +121,10 @@ struct _virDomainEvent {
             char *devAlias;
             int reason;
         } trayChange;
+        struct {
+            /* In unit of 1024 bytes */
+            unsigned long long actual;
+        } balloonChange;
     } data;
 };
 
@@ -1109,6 +1113,31 @@ virDomainEventPMSuspendNewFromDom(virDomainPtr dom)
     return virDomainEventPMSuspendNew(dom->id, dom->name, dom->uuid);
 }
 
+virDomainEventPtr virDomainEventBalloonChangeNewFromDom(virDomainPtr dom,
+                                                        unsigned long long actual)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE,
+                                  dom->id, dom->name, dom->uuid);
+
+    if (ev)
+        ev->data.balloonChange.actual = actual;
+
+    return ev;
+}
+virDomainEventPtr virDomainEventBalloonChangeNewFromObj(virDomainObjPtr obj,
+                                                        unsigned long long actual)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE,
+                                  obj->def->id, obj->def->name, obj->def->uuid);
+
+    if (ev)
+        ev->data.balloonChange.actual = actual;
+
+    return ev;
+}
+
 /**
  * virDomainEventQueuePush:
  * @evtQueue: the dom event queue
@@ -1245,6 +1274,12 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
 
     case VIR_DOMAIN_EVENT_ID_PMSUSPEND:
         ((virConnectDomainEventPMSuspendCallback)cb)(conn, dom, 0, cbopaque);
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE:
+        ((virConnectDomainEventBalloonChangeCallback)cb)(conn, dom,
+                                                         event->data.balloonChange.actual,
+                                                         cbopaque);
         break;
 
     default:

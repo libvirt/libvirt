@@ -125,6 +125,9 @@ virDomainEventPtr virDomainEventPMWakeupNewFromDom(virDomainPtr dom);
 virDomainEventPtr virDomainEventPMSuspendNewFromObj(virDomainObjPtr obj);
 virDomainEventPtr virDomainEventPMSuspendNewFromDom(virDomainPtr dom);
 
+virDomainEventPtr virDomainEventBalloonChangeNewFromDom(virDomainPtr dom, unsigned long long actual);
+virDomainEventPtr virDomainEventBalloonChangeNewFromObj(virDomainObjPtr obj, unsigned long long actual);
+
 void virDomainEventFree(virDomainEventPtr event);
 
 void virDomainEventStateFree(virDomainEventStatePtr state);

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include <inttypes.h>
 
 #include <libvirt/libvirt.h>
 #include <libvirt/virterror.h>
@@ -222,6 +223,17 @@ static int myDomainEventRTCChangeCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int myDomainEventBalloonChangeCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                              virDomainPtr dom,
+                                              unsigned long long actual,
+                                              void *opaque ATTRIBUTE_UNUSED)
+{
+    printf("%s EVENT: Domain %s(%d) balloon change %" PRIuMAX "KB\n",
+           __func__, virDomainGetName(dom), virDomainGetID(dom), (uintmax_t)actual);
+
+    return 0;
+}
+
 static int myDomainEventWatchdogCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
                                          virDomainPtr dom,
                                          int action,
@@ -391,6 +403,7 @@ int main(int argc, char **argv)
     int callback10ret = -1;
     int callback11ret = -1;
     int callback12ret = -1;
+    int callback13ret = -1;
     struct sigaction action_stop;
 
     memset(&action_stop, 0, sizeof(action_stop));
@@ -476,6 +489,11 @@ int main(int argc, char **argv)
                                                      VIR_DOMAIN_EVENT_ID_PMSUSPEND,
                                                      VIR_DOMAIN_EVENT_CALLBACK(myDomainEventPMSuspendCallback),
                                                      strdup("pmsuspend"), myFreeFunc);
+    callback13ret = virConnectDomainEventRegisterAny(dconn,
+                                                     NULL,
+                                                     VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE,
+                                                     VIR_DOMAIN_EVENT_CALLBACK(myDomainEventBalloonChangeCallback),
+                                                     strdup("callback balloonchange"), myFreeFunc);
     if ((callback1ret != -1) &&
         (callback2ret != -1) &&
         (callback3ret != -1) &&
@@ -486,7 +504,8 @@ int main(int argc, char **argv)
         (callback9ret != -1) &&
         (callback10ret != -1) &&
         (callback11ret != -1) &&
-        (callback12ret != -1)) {
+        (callback12ret != -1) &&
+        (callback13ret != -1)) {
         if (virConnectSetKeepAlive(dconn, 5, 3) < 0) {
             virErrorPtr err = virGetLastError();
             fprintf(stderr, "Failed to start keepalive protocol: %s\n",
@@ -514,6 +533,7 @@ int main(int argc, char **argv)
         virConnectDomainEventDeregisterAny(dconn, callback10ret);
         virConnectDomainEventDeregisterAny(dconn, callback11ret);
         virConnectDomainEventDeregisterAny(dconn, callback12ret);
+        virConnectDomainEventDeregisterAny(dconn, callback13ret);
         if (callback8ret != -1)
             virConnectDomainEventDeregisterAny(dconn, callback8ret);
     }

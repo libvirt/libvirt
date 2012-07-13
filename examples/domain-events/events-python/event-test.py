@@ -483,6 +483,8 @@ def myDomainEventPMWakeupCallback(conn, dom, reason, opaque):
 def myDomainEventPMSuspendCallback(conn, dom, reason, opaque):
     print "myDomainEventPMSuspendCallback: Domain %s(%s) system pmsuspend" % (
             dom.name(), dom.ID())
+def myDomainEventBalloonChangeCallback(conn, dom, utcoffset, actual):
+    print "myDomainEventBalloonChangeCallback: Domain %s(%s) %d" % (dom.name(), dom.ID(), actual)
 def usage(out=sys.stderr):
     print >>out, "usage: "+os.path.basename(sys.argv[0])+" [-hdl] [uri]"
     print >>out, "   uri will default to qemu:///system"
@@ -544,6 +546,7 @@ def main():
     vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_TRAY_CHANGE, myDomainEventTrayChangeCallback, None)
     vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_PMWAKEUP, myDomainEventPMWakeupCallback, None)
     vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_PMSUSPEND, myDomainEventPMSuspendCallback, None)
+    vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE, myDomainEventBalloonChangeCallback, None)
 
     vc.setKeepAlive(5, 3)
 
