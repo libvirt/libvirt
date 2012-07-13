@@ -77,8 +77,8 @@ virCapsPtr lxcCapsInit(virLXCDriverPtr driver)
         VIR_WARN("Failed to get host power management capabilities");
 
     if (virGetHostUUID(caps->host.host_uuid)) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("cannot get the host uuid"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("cannot get the host uuid"));
         goto error;
     }
 
@@ -187,9 +187,9 @@ int lxcLoadDriverConfig(virLXCDriverPtr driver)
         goto done;
 
 #define CHECK_TYPE(name,typ) if (p && p->type != (typ)) {               \
-        lxcError(VIR_ERR_INTERNAL_ERROR,                                \
-                 "%s: %s: expected type " #typ,                         \
-                 filename, (name));                                     \
+        virReportError(VIR_ERR_INTERNAL_ERROR,                          \
+                       "%s: %s: expected type " #typ,                   \
+                       filename, (name));                               \
         virConfFree(conf);                                              \
         return -1;                                                      \
     }

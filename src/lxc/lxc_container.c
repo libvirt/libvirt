@@ -872,9 +872,9 @@ retry:
          * /etc/filesystems is only allowed to contain '*' on the last line
          */
         if (gotStar && !tryProc) {
-            lxcError(VIR_ERR_INTERNAL_ERROR,
-                     _("%s has unexpected '*' before last line"),
-                     fslist);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("%s has unexpected '*' before last line"),
+                           fslist);
             goto cleanup;
         }
 
@@ -1066,14 +1066,14 @@ static int lxcContainerMountFS(virDomainFSDefPtr fs,
         /* We do actually support this, but the lxc controller
          * should have associated the file with a loopback
          * device and changed this to TYPE_BLOCK for us */
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("Unexpected filesystem type %s"),
-                 virDomainFSTypeToString(fs->type));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected filesystem type %s"),
+                       virDomainFSTypeToString(fs->type));
         break;
     default:
-        lxcError(VIR_ERR_CONFIG_UNSUPPORTED,
-                 _("Cannot mount filesystem type %s"),
-                 virDomainFSTypeToString(fs->type));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Cannot mount filesystem type %s"),
+                       virDomainFSTypeToString(fs->type));
         break;
     }
     return 0;
@@ -1599,14 +1599,14 @@ static int lxcContainerDropCapabilities(void)
                              CAP_AUDIT_CONTROL, /* No messing with auditing status */
                              CAP_MAC_ADMIN, /* No messing with LSM config */
                              -1 /* sentinal */)) < 0) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("Failed to remove capabilities: %d"), ret);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to remove capabilities: %d"), ret);
         return -1;
     }
 
     if ((ret = capng_apply(CAPNG_SELECT_BOTH)) < 0) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("Failed to apply capabilities: %d"), ret);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to apply capabilities: %d"), ret);
         return -1;
     }
 
@@ -1646,8 +1646,8 @@ static int lxcContainerChild( void *data )
     virCommandPtr cmd = NULL;
 
     if (NULL == vmDef) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("lxcChild() passed invalid vm definition"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("lxcChild() passed invalid vm definition"));
         goto cleanup;
     }
 

@@ -291,9 +291,9 @@ static int virLXCControllerDaemonHandshake(virLXCControllerPtr ctrl)
 static int virLXCControllerValidateNICs(virLXCControllerPtr ctrl)
 {
     if (ctrl->def->nnets != ctrl->nveths) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("expecting %d veths, but got %zu"),
-                 ctrl->def->nnets, ctrl->nveths);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("expecting %d veths, but got %zu"),
+                       ctrl->def->nnets, ctrl->nveths);
         return -1;
     }
 
@@ -304,9 +304,9 @@ static int virLXCControllerValidateNICs(virLXCControllerPtr ctrl)
 static int virLXCControllerValidateConsoles(virLXCControllerPtr ctrl)
 {
     if (ctrl->def->nconsoles != ctrl->nconsoles) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("expecting %d consoles, but got %zu tty file handlers"),
-                 ctrl->def->nconsoles, ctrl->nconsoles);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("expecting %d consoles, but got %zu tty file handlers"),
+                       ctrl->def->nconsoles, ctrl->nconsoles);
         return -1;
     }
 
@@ -383,8 +383,8 @@ static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl)
     VIR_DEBUG("Setting NUMA memory policy");
 
     if (numa_available() < 0) {
-        lxcError(VIR_ERR_CONFIG_UNSUPPORTED,
-                 "%s", _("Host kernel is not aware of NUMA."));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       "%s", _("Host kernel is not aware of NUMA."));
         return -1;
     }
 
@@ -395,8 +395,8 @@ static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl)
     for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++) {
         if (ctrl->def->numatune.memory.nodemask[i]) {
             if (i > NUMA_NUM_NODES) {
-                lxcError(VIR_ERR_CONFIG_UNSUPPORTED,
-                         _("Host cannot support NUMA node %d"), i);
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Host cannot support NUMA node %d"), i);
                 return -1;
             }
             if (i > maxnode && !warned) {
@@ -424,9 +424,9 @@ static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl)
         }
 
         if (nnodes != 1) {
-            lxcError(VIR_ERR_CONFIG_UNSUPPORTED,
-                     "%s", _("NUMA memory tuning in 'preferred' mode "
-                             "only supports single node"));
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("NUMA memory tuning in 'preferred' mode "
+                                   "only supports single node"));
             goto cleanup;
         }
 
@@ -435,9 +435,9 @@ static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl)
     } else if (mode == VIR_DOMAIN_NUMATUNE_MEM_INTERLEAVE) {
         numa_set_interleave_mask(&mask);
     } else {
-        lxcError(VIR_ERR_CONFIG_UNSUPPORTED,
-                 _("Unable to set NUMA policy %s"),
-                 virDomainNumatuneMemModeTypeToString(mode));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unable to set NUMA policy %s"),
+                       virDomainNumatuneMemModeTypeToString(mode));
         goto cleanup;
     }
 
@@ -450,8 +450,8 @@ cleanup:
 static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl)
 {
     if (ctrl->def->numatune.memory.nodemask) {
-        lxcError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                 _("NUMA policy is not available on this platform"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("NUMA policy is not available on this platform"));
         return -1;
     }
 
@@ -602,8 +602,8 @@ static int lxcControllerClearCapabilities(void)
     capng_clear(CAPNG_SELECT_BOTH);
 
     if ((ret = capng_apply(CAPNG_SELECT_BOTH)) < 0) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("failed to apply capabilities: %d"), ret);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to apply capabilities: %d"), ret);
         return -1;
     }
 #else
@@ -913,8 +913,8 @@ static int virLXCControllerMain(virLXCControllerPtr ctrl)
                                                               virLXCControllerConsoleEPoll,
                                                               &(ctrl->consoles[i]),
                                                               NULL)) < 0) {
-            lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Unable to watch epoll FD"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unable to watch epoll FD"));
             goto cleanup;
         }
 
@@ -923,8 +923,8 @@ static int virLXCControllerMain(virLXCControllerPtr ctrl)
                                                              virLXCControllerConsoleIO,
                                                              &(ctrl->consoles[i]),
                                                              NULL)) < 0) {
-            lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Unable to watch host console PTY"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unable to watch host console PTY"));
             goto cleanup;
         }
 
@@ -933,8 +933,8 @@ static int virLXCControllerMain(virLXCControllerPtr ctrl)
                                                              virLXCControllerConsoleIO,
                                                              &(ctrl->consoles[i]),
                                                              NULL)) < 0) {
-            lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Unable to watch host console PTY"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unable to watch host console PTY"));
             goto cleanup;
         }
     }
@@ -1092,9 +1092,9 @@ virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
 
     if (!root) {
         if (ctrl->nconsoles != 1) {
-            lxcError(VIR_ERR_CONFIG_UNSUPPORTED,
-                     _("Expected exactly one console, but got %zu"),
-                     ctrl->nconsoles);
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Expected exactly one console, but got %zu"),
+                           ctrl->nconsoles);
             return -1;
         }
         return 0;

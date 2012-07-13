@@ -101,16 +101,16 @@ static virDrvOpenStatus lxcOpen(virConnectPtr conn,
         /* If path isn't '/' then they typoed, tell them correct path */
         if (conn->uri->path != NULL &&
             STRNEQ(conn->uri->path, "/")) {
-            lxcError(VIR_ERR_INTERNAL_ERROR,
-                     _("Unexpected LXC URI path '%s', try lxc:///"),
-                     conn->uri->path);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unexpected LXC URI path '%s', try lxc:///"),
+                           conn->uri->path);
             return VIR_DRV_OPEN_ERROR;
         }
 
         /* URI was good, but driver isn't active */
         if (lxc_driver == NULL) {
-            lxcError(VIR_ERR_INTERNAL_ERROR,
-                     "%s", _("lxc state driver is not active"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("lxc state driver is not active"));
             return VIR_DRV_OPEN_ERROR;
         }
     }
@@ -178,8 +178,8 @@ static virDomainPtr lxcDomainLookupByID(virConnectPtr conn,
     lxcDriverUnlock(driver);
 
     if (!vm) {
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching id %d"), id);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching id %d"), id);
         goto cleanup;
     }
 
@@ -207,8 +207,8 @@ static virDomainPtr lxcDomainLookupByUUID(virConnectPtr conn,
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -233,8 +233,8 @@ static virDomainPtr lxcDomainLookupByName(virConnectPtr conn,
     vm = virDomainFindByName(&driver->domains, name);
     lxcDriverUnlock(driver);
     if (!vm) {
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching name '%s'"), name);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching name '%s'"), name);
         goto cleanup;
     }
 
@@ -261,8 +261,8 @@ static int lxcDomainIsActive(virDomainPtr dom)
     if (!obj) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
     ret = virDomainObjIsActive(obj);
@@ -286,8 +286,8 @@ static int lxcDomainIsPersistent(virDomainPtr dom)
     if (!obj) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
     ret = obj->persistent;
@@ -310,8 +310,8 @@ static int lxcDomainIsUpdated(virDomainPtr dom)
     if (!obj) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
     ret = obj->updated;
@@ -392,8 +392,8 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
         goto cleanup;
 
     if ((def->nets != NULL) && !(driver->have_netns)) {
-        lxcError(VIR_ERR_OPERATION_INVALID,
-                 "%s", _("System lacks NETNS support"));
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("System lacks NETNS support"));
         goto cleanup;
     }
 
@@ -445,14 +445,14 @@ static int lxcDomainUndefineFlags(virDomainPtr dom,
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
     if (!vm->persistent) {
-        lxcError(VIR_ERR_OPERATION_INVALID,
-                 "%s", _("Cannot undefine transient domain"));
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("Cannot undefine transient domain"));
         goto cleanup;
     }
 
@@ -502,8 +502,8 @@ static int lxcDomainGetInfo(virDomainPtr dom,
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -514,19 +514,19 @@ static int lxcDomainGetInfo(virDomainPtr dom,
         info->memory = vm->def->mem.cur_balloon;
     } else {
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
-            lxcError(VIR_ERR_INTERNAL_ERROR,
-                     _("Unable to get cgroup for %s"), vm->def->name);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to get cgroup for %s"), vm->def->name);
             goto cleanup;
         }
 
         if (virCgroupGetCpuacctUsage(cgroup, &(info->cpuTime)) < 0) {
-            lxcError(VIR_ERR_OPERATION_FAILED,
-                     "%s", _("Cannot read cputime for domain"));
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           "%s", _("Cannot read cputime for domain"));
             goto cleanup;
         }
         if ((rc = virCgroupGetMemoryUsage(cgroup, &(info->memory))) < 0) {
-            lxcError(VIR_ERR_OPERATION_FAILED,
-                     "%s", _("Cannot read memory usage for domain"));
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           "%s", _("Cannot read memory usage for domain"));
             if (rc == -ENOENT) {
                 /* Don't fail if we can't read memory usage due to a lack of
                  * kernel support */
@@ -568,8 +568,8 @@ lxcDomainGetState(virDomainPtr dom,
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -595,8 +595,8 @@ static char *lxcGetOSType(virDomainPtr dom)
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -626,8 +626,8 @@ lxcDomainGetMaxMemory(virDomainPtr dom)
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                         _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -651,14 +651,14 @@ static int lxcDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                         _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
     if (newmax < vm->def->mem.cur_balloon) {
-        lxcError(VIR_ERR_INVALID_ARG,
-                         "%s", _("Cannot set max memory lower than current memory"));
+        virReportError(VIR_ERR_INVALID_ARG,
+                       "%s", _("Cannot set max memory lower than current memory"));
         goto cleanup;
     }
 
@@ -683,38 +683,38 @@ static int lxcDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
     if (newmem > vm->def->mem.max_balloon) {
-        lxcError(VIR_ERR_INVALID_ARG,
-                 "%s", _("Cannot set memory higher than max memory"));
+        virReportError(VIR_ERR_INVALID_ARG,
+                       "%s", _("Cannot set memory higher than max memory"));
         goto cleanup;
     }
 
     if (!virDomainObjIsActive(vm)) {
-        lxcError(VIR_ERR_OPERATION_INVALID,
-                 "%s", _("Domain is not running"));
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("Domain is not running"));
         goto cleanup;
     }
 
     if (driver->cgroup == NULL) {
-        lxcError(VIR_ERR_OPERATION_INVALID,
-                 "%s", _("cgroups must be configured on the host"));
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("cgroups must be configured on the host"));
         goto cleanup;
     }
 
     if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("Unable to get cgroup for %s"), vm->def->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to get cgroup for %s"), vm->def->name);
         goto cleanup;
     }
 
     if (virCgroupSetMemory(cgroup, newmem) < 0) {
-        lxcError(VIR_ERR_OPERATION_FAILED,
-                 "%s", _("Failed to set memory for domain"));
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       "%s", _("Failed to set memory for domain"));
         goto cleanup;
     }
 
@@ -758,14 +758,14 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
     if (vm == NULL) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
     if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("cannot find cgroup for domain %s"), vm->def->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot find cgroup for domain %s"), vm->def->name);
         goto cleanup;
     }
 
@@ -828,8 +828,8 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
     if (vm == NULL) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -841,8 +841,8 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
     }
 
     if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("Unable to get cgroup for %s"), vm->def->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to get cgroup for %s"), vm->def->name);
         goto cleanup;
     }
 
@@ -921,8 +921,8 @@ static char *lxcDomainGetXMLDesc(virDomainPtr dom,
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -960,20 +960,20 @@ static int lxcDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
     if ((vm->def->nets != NULL) && !(driver->have_netns)) {
-        lxcError(VIR_ERR_OPERATION_INVALID,
-                 "%s", _("System lacks NETNS support"));
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("System lacks NETNS support"));
         goto cleanup;
     }
 
     if (virDomainObjIsActive(vm)) {
-        lxcError(VIR_ERR_OPERATION_INVALID,
-                 "%s", _("Domain is already running"));
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("Domain is already running"));
         goto cleanup;
     }
 
@@ -1047,8 +1047,8 @@ lxcDomainCreateAndStart(virConnectPtr conn,
         goto cleanup;
 
     if ((def->nets != NULL) && !(driver->have_netns)) {
-        lxcError(VIR_ERR_CONFIG_UNSUPPORTED,
-                 "%s", _("System lacks NETNS support"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       "%s", _("System lacks NETNS support"));
         goto cleanup;
     }
 
@@ -1101,15 +1101,15 @@ static int lxcDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr secla
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("no domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
     if (!virDomainVirtTypeToString(vm->def->virtType)) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("unknown virt type in domain definition '%d'"),
-                 vm->def->virtType);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unknown virt type in domain definition '%d'"),
+                       vm->def->virtType);
         goto cleanup;
     }
 
@@ -1130,8 +1130,8 @@ static int lxcDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr secla
     if (virDomainObjIsActive(vm)) {
         if (virSecurityManagerGetProcessLabel(driver->securityManager,
                                               vm->def, vm->pid, seclabel) < 0) {
-            lxcError(VIR_ERR_INTERNAL_ERROR,
-                     "%s", _("Failed to get security label"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("Failed to get security label"));
             goto cleanup;
         }
     }
@@ -1161,18 +1161,18 @@ static int lxcNodeGetSecurityModel(virConnectPtr conn,
 
     if (!virStrcpy(secmodel->model, driver->caps->host.secModel.model,
                    VIR_SECURITY_MODEL_BUFLEN)) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("security model string exceeds max %d bytes"),
-                 VIR_SECURITY_MODEL_BUFLEN - 1);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("security model string exceeds max %d bytes"),
+                       VIR_SECURITY_MODEL_BUFLEN - 1);
         ret = -1;
         goto cleanup;
     }
 
     if (!virStrcpy(secmodel->doi, driver->caps->host.secModel.doi,
                    VIR_SECURITY_DOI_BUFLEN)) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("security DOI string exceeds max %d bytes"),
-                 VIR_SECURITY_DOI_BUFLEN-1);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("security DOI string exceeds max %d bytes"),
+                       VIR_SECURITY_DOI_BUFLEN-1);
         ret = -1;
         goto cleanup;
     }
@@ -1284,14 +1284,14 @@ lxcDomainDestroyFlags(virDomainPtr dom,
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
     if (!virDomainObjIsActive(vm)) {
-        lxcError(VIR_ERR_OPERATION_INVALID,
-                 "%s", _("Domain is not running"));
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("Domain is not running"));
         goto cleanup;
     }
 
@@ -1559,7 +1559,7 @@ static int lxcVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned long *versio
     uname(&ver);
 
     if (virParseVersionString(ver.release, version, true) < 0) {
-        lxcError(VIR_ERR_INTERNAL_ERROR, _("Unknown release: %s"), ver.release);
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Unknown release: %s"), ver.release);
         return -1;
     }
 
@@ -1627,8 +1627,8 @@ static char *lxcGetSchedulerType(virDomainPtr domain,
 
     lxcDriverLock(driver);
     if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
-        lxcError(VIR_ERR_OPERATION_INVALID,
-                 "%s", _("cgroup CPU controller is not mounted"));
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("cgroup CPU controller is not mounted"));
         goto cleanup;
     }
 
@@ -1756,8 +1756,8 @@ lxcSetSchedulerParametersFlags(virDomainPtr dom,
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (vm == NULL) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("No such domain %s"), dom->uuid);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("No such domain %s"), dom->uuid);
         goto cleanup;
     }
 
@@ -1774,14 +1774,14 @@ lxcSetSchedulerParametersFlags(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
-            lxcError(VIR_ERR_OPERATION_INVALID,
-                     "%s", _("cgroup CPU controller is not mounted"));
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           "%s", _("cgroup CPU controller is not mounted"));
             goto cleanup;
         }
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
-            lxcError(VIR_ERR_INTERNAL_ERROR,
-                     _("cannot find cgroup for domain %s"),
-                     vm->def->name);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot find cgroup for domain %s"),
+                           vm->def->name);
             goto cleanup;
         }
     }
@@ -1898,8 +1898,8 @@ lxcGetSchedulerParametersFlags(virDomainPtr dom,
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (vm == NULL) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("No such domain %s"), dom->uuid);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("No such domain %s"), dom->uuid);
         goto cleanup;
     }
 
@@ -1917,14 +1917,14 @@ lxcGetSchedulerParametersFlags(virDomainPtr dom,
     }
 
     if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
-        lxcError(VIR_ERR_OPERATION_INVALID,
-                 "%s", _("cgroup CPU controller is not mounted"));
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("cgroup CPU controller is not mounted"));
         goto cleanup;
     }
 
     if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("cannot find cgroup for domain %s"), vm->def->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot find cgroup for domain %s"), vm->def->name);
         goto cleanup;
     }
 
@@ -2011,8 +2011,8 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (vm == NULL) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                        _("No such domain %s"), dom->uuid);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("No such domain %s"), dom->uuid);
         goto cleanup;
     }
 
@@ -2022,14 +2022,14 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
-            lxcError(VIR_ERR_OPERATION_INVALID, "%s",
-                     _("blkio cgroup isn't mounted"));
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("blkio cgroup isn't mounted"));
             goto cleanup;
         }
 
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
-            lxcError(VIR_ERR_INTERNAL_ERROR,
-                     _("cannot find cgroup for domain %s"), vm->def->name);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot find cgroup for domain %s"), vm->def->name);
             goto cleanup;
         }
 
@@ -2040,8 +2040,8 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
                 int rc;
 
                 if (params[i].value.ui > 1000 || params[i].value.ui < 100) {
-                    lxcError(VIR_ERR_INVALID_ARG, "%s",
-                             _("out of blkio weight range."));
+                    virReportError(VIR_ERR_INVALID_ARG, "%s",
+                                   _("out of blkio weight range."));
                     goto cleanup;
                 }
 
@@ -2063,8 +2063,8 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
 
             if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
                 if (params[i].value.ui > 1000 || params[i].value.ui < 100) {
-                    lxcError(VIR_ERR_INVALID_ARG, "%s",
-                             _("out of blkio weight range."));
+                    virReportError(VIR_ERR_INVALID_ARG, "%s",
+                                   _("out of blkio weight range."));
                     goto cleanup;
                 }
 
@@ -2109,8 +2109,8 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (vm == NULL) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("No such domain %s"), dom->uuid);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("No such domain %s"), dom->uuid);
         goto cleanup;
     }
 
@@ -2127,14 +2127,14 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
-            lxcError(VIR_ERR_OPERATION_INVALID, "%s",
-                     _("blkio cgroup isn't mounted"));
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("blkio cgroup isn't mounted"));
             goto cleanup;
         }
 
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
-            lxcError(VIR_ERR_INTERNAL_ERROR,
-                     _("cannot find cgroup for domain %s"), vm->def->name);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot find cgroup for domain %s"), vm->def->name);
             goto cleanup;
         }
 
@@ -2211,14 +2211,14 @@ lxcDomainInterfaceStats(virDomainPtr dom,
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
     if (!virDomainObjIsActive(vm)) {
-        lxcError(VIR_ERR_OPERATION_INVALID,
-                 "%s", _("Domain is not running"));
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("Domain is not running"));
         goto cleanup;
     }
 
@@ -2234,8 +2234,8 @@ lxcDomainInterfaceStats(virDomainPtr dom,
     if (ret == 0)
         ret = linuxDomainInterfaceStats(path, stats);
     else
-        lxcError(VIR_ERR_INVALID_ARG,
-                 _("Invalid path, '%s' is not a known interface"), path);
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Invalid path, '%s' is not a known interface"), path);
 
 cleanup:
     if (vm)
@@ -2248,7 +2248,7 @@ lxcDomainInterfaceStats(virDomainPtr dom,
                         const char *path ATTRIBUTE_UNUSED,
                         struct _virDomainInterfaceStats *stats ATTRIBUTE_UNUSED)
 {
-    lxcError(VIR_ERR_NO_SUPPORT, "%s", __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, "%s", __FUNCTION__);
     return -1;
 }
 #endif
@@ -2266,8 +2266,8 @@ static int lxcDomainGetAutostart(virDomainPtr dom,
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -2293,14 +2293,14 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
     if (!vm->persistent) {
-        lxcError(VIR_ERR_OPERATION_INVALID,
-                 "%s", _("Cannot set autostart for transient domain"));
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("Cannot set autostart for transient domain"));
         goto cleanup;
     }
 
@@ -2461,21 +2461,21 @@ static int lxcDomainSuspend(virDomainPtr dom)
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
     if (!virDomainObjIsActive(vm)) {
-        lxcError(VIR_ERR_OPERATION_INVALID,
-                 "%s", _("Domain is not running"));
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("Domain is not running"));
         goto cleanup;
     }
 
     if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
         if (lxcFreezeContainer(driver, vm) < 0) {
-            lxcError(VIR_ERR_OPERATION_FAILED,
-                     "%s", _("Suspend operation failed"));
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           "%s", _("Suspend operation failed"));
             goto cleanup;
         }
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
@@ -2526,21 +2526,21 @@ static int lxcDomainResume(virDomainPtr dom)
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("No domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
     if (!virDomainObjIsActive(vm)) {
-        lxcError(VIR_ERR_OPERATION_INVALID,
-                 "%s", _("Domain is not running"));
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("Domain is not running"));
         goto cleanup;
     }
 
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
         if (lxcUnfreezeContainer(driver, vm) < 0) {
-            lxcError(VIR_ERR_OPERATION_FAILED,
-                     "%s", _("Resume operation failed"));
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           "%s", _("Resume operation failed"));
             goto cleanup;
         }
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
@@ -2583,14 +2583,14 @@ lxcDomainOpenConsole(virDomainPtr dom,
     virUUIDFormat(dom->uuid, uuidstr);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
-        lxcError(VIR_ERR_NO_DOMAIN,
-                 _("no domain with matching uuid '%s'"), uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
     if (!virDomainObjIsActive(vm)) {
-        lxcError(VIR_ERR_OPERATION_INVALID,
-                 "%s", _("domain is not running"));
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
         goto cleanup;
     }
 
@@ -2610,15 +2610,15 @@ lxcDomainOpenConsole(virDomainPtr dom,
     }
 
     if (!chr) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("cannot find console device '%s'"),
-                 dev_name ? dev_name : _("default"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot find console device '%s'"),
+                       dev_name ? dev_name : _("default"));
         goto cleanup;
     }
 
     if (chr->source.type != VIR_DOMAIN_CHR_TYPE_PTY) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("character device %s is not using a PTY"), dev_name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("character device %s is not using a PTY"), dev_name);
         goto cleanup;
     }
 

@@ -275,9 +275,9 @@ static int virLXCProcessSetupInterfaceBridged(virConnectPtr conn,
 
     if (virNetDevBandwidthSet(net->ifname,
                               virDomainNetGetActualBandwidth(net)) < 0) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("cannot set bandwidth limits on %s"),
-                 net->ifname);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot set bandwidth limits on %s"),
+                       net->ifname);
         goto cleanup;
     }
 
@@ -311,8 +311,8 @@ static int virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
      */
     bw = virDomainNetGetActualBandwidth(net);
     if (bw) {
-        lxcError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                 _("Unable to set network bandwidth on direct interfaces"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Unable to set network bandwidth on direct interfaces"));
         return -1;
     }
 
@@ -325,8 +325,8 @@ static int virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
      */
     prof = virDomainNetGetActualVirtPortProfile(net);
     if (prof) {
-        lxcError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                 _("Unable to set port profile on direct interfaces"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Unable to set port profile on direct interfaces"));
         return -1;
     }
 
@@ -416,8 +416,8 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
         case VIR_DOMAIN_NET_TYPE_BRIDGE: {
             const char *brname = virDomainNetGetActualBridgeName(def->nets[i]);
             if (!brname) {
-                lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                         _("No bridge name specified"));
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("No bridge name specified"));
                 goto cleanup;
             }
             if (virLXCProcessSetupInterfaceBridged(conn,
@@ -445,11 +445,11 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
         case VIR_DOMAIN_NET_TYPE_MCAST:
         case VIR_DOMAIN_NET_TYPE_INTERNAL:
         case VIR_DOMAIN_NET_TYPE_LAST:
-            lxcError(VIR_ERR_INTERNAL_ERROR,
-                     _("Unsupported network type %s"),
-                     virDomainNetTypeToString(
-                         virDomainNetGetActualType(def->nets[i])
-                         ));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unsupported network type %s"),
+                           virDomainNetTypeToString(
+                               virDomainNetGetActualType(def->nets[i])
+                               ));
             goto cleanup;
         }
     }
@@ -508,8 +508,8 @@ static int virLXCProcessMonitorClient(virLXCDriverPtr  driver,
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
     if (virStrcpyStatic(addr.sun_path, sockpath) == NULL) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("Socket path %s too big for destination"), sockpath);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Socket path %s too big for destination"), sockpath);
         goto error;
     }
 
@@ -537,8 +537,8 @@ int virLXCProcessStop(virLXCDriverPtr driver,
     int rc;
 
     if (vm->pid <= 0) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("Invalid PID %d for container"), vm->pid);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid PID %d for container"), vm->pid);
         return -1;
     }
 
@@ -561,8 +561,8 @@ int virLXCProcessStop(virLXCDriverPtr driver,
             goto cleanup;
         }
         if (rc == 1) {
-            lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Some container PIDs refused to die"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Some container PIDs refused to die"));
             rc = -1;
             goto cleanup;
         }
@@ -811,27 +811,27 @@ int virLXCProcessStart(virConnectPtr conn,
     virErrorPtr err = NULL;
 
     if (!lxc_driver->cgroup) {
-        lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("The 'cpuacct', 'devices' & 'memory' cgroups controllers must be mounted"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("The 'cpuacct', 'devices' & 'memory' cgroups controllers must be mounted"));
         return -1;
     }
 
     if (!virCgroupMounted(lxc_driver->cgroup,
                           VIR_CGROUP_CONTROLLER_CPUACCT)) {
-        lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("Unable to find 'cpuacct' cgroups controller mount"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to find 'cpuacct' cgroups controller mount"));
         return -1;
     }
     if (!virCgroupMounted(lxc_driver->cgroup,
                           VIR_CGROUP_CONTROLLER_DEVICES)) {
-        lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("Unable to find 'devices' cgroups controller mount"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to find 'devices' cgroups controller mount"));
         return -1;
     }
     if (!virCgroupMounted(lxc_driver->cgroup,
                           VIR_CGROUP_CONTROLLER_MEMORY)) {
-        lxcError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("Unable to find 'memory' cgroups controller mount"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to find 'memory' cgroups controller mount"));
         return -1;
     }
 
@@ -906,8 +906,8 @@ int virLXCProcessStart(virConnectPtr conn,
     for (i = 0 ; i < vm->def->nconsoles ; i++) {
         char *ttyPath;
         if (vm->def->consoles[i]->source.type != VIR_DOMAIN_CHR_TYPE_PTY) {
-            lxcError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                     _("Only PTY console types are supported"));
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Only PTY console types are supported"));
             goto cleanup;
         }
 
@@ -1021,8 +1021,8 @@ int virLXCProcessStart(virConnectPtr conn,
         char out[1024];
 
         if (!(virLXCProcessReadLogOutput(vm, logfile, pos, out, 1024) < 0)) {
-            lxcError(VIR_ERR_INTERNAL_ERROR,
-                     _("guest failed to start: %s"), out);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("guest failed to start: %s"), out);
         }
 
         goto error;

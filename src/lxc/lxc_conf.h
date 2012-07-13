@@ -76,10 +76,6 @@ struct _virLXCDriver {
 int lxcLoadDriverConfig(virLXCDriverPtr driver);
 virCapsPtr lxcCapsInit(virLXCDriverPtr driver);
 
-# define lxcError(code, ...)                                             \
-    virReportErrorHelper(VIR_FROM_LXC, code, __FILE__,                   \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 static inline void lxcDriverLock(virLXCDriverPtr driver)
 {
     virMutexLock(&driver->lock);
@@ -88,6 +84,5 @@ static inline void lxcDriverUnlock(virLXCDriverPtr driver)
 {
     virMutexUnlock(&driver->lock);
 }
-
 
 #endif /* LXC_CONF_H */
