@@ -5347,6 +5347,7 @@ static virDriver remote_driver = {
     .domainGetDiskErrors = remoteDomainGetDiskErrors, /* 0.9.10 */
     .domainSetMetadata = remoteDomainSetMetadata, /* 0.9.10 */
     .domainGetMetadata = remoteDomainGetMetadata, /* 0.9.10 */
+    .domainGetHostname = remoteDomainGetHostname, /* 0.9.14 */
 };
 
 static virNetworkDriver network_driver = {

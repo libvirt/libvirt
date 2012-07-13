@@ -1221,6 +1221,15 @@ struct remote_domain_get_cpu_stats_ret {
     int nparams;
 };
 
+struct remote_domain_get_hostname_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_get_hostname_ret {
+    remote_nonnull_string hostname;
+};
+
 /* Network calls: */
 
 struct remote_num_of_networks_ret {
@@ -2844,7 +2853,8 @@ enum remote_procedure {
     REMOTE_PROC_CONNECT_LIST_ALL_DOMAINS = 273, /* skipgen skipgen priority:high */
     REMOTE_PROC_DOMAIN_LIST_ALL_SNAPSHOTS = 274, /* skipgen skipgen priority:high */
     REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_ALL_CHILDREN = 275, /* skipgen skipgen priority:high */
-    REMOTE_PROC_DOMAIN_EVENT_BALLOON_CHANGE = 276 /* autogen autogen */
+    REMOTE_PROC_DOMAIN_EVENT_BALLOON_CHANGE = 276, /* autogen autogen */
+    REMOTE_PROC_DOMAIN_GET_HOSTNAME = 277 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

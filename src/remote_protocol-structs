@@ -881,6 +881,13 @@ struct remote_domain_get_cpu_stats_ret {
         } params;
         int                        nparams;
 };
+struct remote_domain_get_hostname_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
+struct remote_domain_get_hostname_ret {
+        remote_nonnull_string      hostname;
+};
 struct remote_num_of_networks_ret {
         int                        num;
 };
@@ -2251,4 +2258,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_LIST_ALL_SNAPSHOTS = 274,
         REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_ALL_CHILDREN = 275,
         REMOTE_PROC_DOMAIN_EVENT_BALLOON_CHANGE = 276,
+        REMOTE_PROC_DOMAIN_GET_HOSTNAME = 277,
 };
