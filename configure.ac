@@ -1999,7 +1999,7 @@ if test "$with_storage_rbd" = "yes" || test "$with_storage_rbd" = "check"; then
 
     if test "$LIBRBD_FOUND" = "yes"; then
         with_storage_rbd=yes
-        LIBRBD_LIBS="-lrbd -lrados -lcrypto"
+        LIBRBD_LIBS="-lrbd -lrados"
         AC_DEFINE_UNQUOTED([WITH_STORAGE_RBD], [1],
          [whether RBD backend for storage driver is enabled])
     else
@@ -2962,6 +2962,12 @@ AC_MSG_NOTICE([     xdr: $XDR_CFLAGS])
 else
 AC_MSG_NOTICE([     xdr: no])
 fi
+if test "$with_storage_rbd" = "yes" ; then
+AC_MSG_NOTICE([     rbd: $LIBRBD_LIBS])
+else
+AC_MSG_NOTICE([     rbd: no])
+fi
+
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Test suite])
 AC_MSG_NOTICE([])
