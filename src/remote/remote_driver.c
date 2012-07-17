@@ -385,6 +385,8 @@ static void remoteClientCloseFunc(virNetClientPtr client ATTRIBUTE_UNUSED,
  *   - xxx+tcp:///            -> TCP connection to localhost
  *   - xxx+unix:///           -> UNIX domain socket
  *   - xxx:///                -> UNIX domain socket
+ *   - xxx+ssh:///            -> SSH connection (legacy)
+ *   - xxx+libssh2:///        -> SSH connection (using libssh2)
  */
 static int
 doRemoteOpen(virConnectPtr conn,
@@ -397,6 +399,7 @@ doRemoteOpen(virConnectPtr conn,
         trans_tls,
         trans_unix,
         trans_ssh,
+        trans_libssh2,
         trans_ext,
         trans_tcp,
     } transport;
@@ -439,6 +442,8 @@ doRemoteOpen(virConnectPtr conn,
                     }
                 } else if (STRCASEEQ(transport_str, "ssh"))
                     transport = trans_ssh;
+                else if (STRCASEEQ(transport_str, "libssh2"))
+                    transport = trans_libssh2;
                 else if (STRCASEEQ(transport_str, "ext"))
                     transport = trans_ext;
                 else if (STRCASEEQ(transport_str, "tcp"))
@@ -446,7 +451,7 @@ doRemoteOpen(virConnectPtr conn,
                 else {
                     virReportError(VIR_ERR_INVALID_ARG, "%s",
                                    _("remote_open: transport in URL not recognised "
-                                     "(should be tls|unix|ssh|ext|tcp)"));
+                                     "(should be tls|unix|ssh|ext|tcp|libssh2)"));
                     return VIR_DRV_OPEN_ERROR;
                 }
             }
@@ -462,7 +467,9 @@ doRemoteOpen(virConnectPtr conn,
     char *name = NULL, *command = NULL, *sockname = NULL, *netcat = NULL;
     char *port = NULL, *authtype = NULL, *username = NULL;
     bool sanity = true, verify = true, tty ATTRIBUTE_UNUSED = true;
-    char *pkipath = NULL, *keyfile = NULL;
+    char *pkipath = NULL, *keyfile = NULL, *sshauth = NULL;
+
+    char *knownHostsVerify = NULL,  *knownHosts = NULL;
 
     /* Return code from this function, and the private data. */
     int retcode = VIR_DRV_OPEN_ERROR;
@@ -505,9 +512,12 @@ doRemoteOpen(virConnectPtr conn,
             EXTRACT_URI_ARG_STR("command", command);
             EXTRACT_URI_ARG_STR("socket", sockname);
             EXTRACT_URI_ARG_STR("auth", authtype);
+            EXTRACT_URI_ARG_STR("sshauth", sshauth);
             EXTRACT_URI_ARG_STR("netcat", netcat);
             EXTRACT_URI_ARG_STR("keyfile", keyfile);
             EXTRACT_URI_ARG_STR("pkipath", pkipath);
+            EXTRACT_URI_ARG_STR("known_hosts", knownHosts);
+            EXTRACT_URI_ARG_STR("known_hosts_verify", knownHostsVerify);
 
             EXTRACT_URI_ARG_BOOL("no_sanity", sanity);
             EXTRACT_URI_ARG_BOOL("no_verify", verify);
@@ -595,6 +605,35 @@ doRemoteOpen(virConnectPtr conn,
                 goto failed;
         }
 
+        break;
+
+    case trans_libssh2:
+        if (!sockname) {
+            if (flags & VIR_DRV_OPEN_REMOTE_RO)
+                sockname = strdup(LIBVIRTD_PRIV_UNIX_SOCKET_RO);
+            else
+                sockname = strdup(LIBVIRTD_PRIV_UNIX_SOCKET);
+
+            if (sockname == NULL)
+                goto no_memory;
+        }
+
+        VIR_DEBUG("Starting LibSSH2 session");
+
+        priv->client = virNetClientNewLibSSH2(priv->hostname,
+                                              port,
+                                              username,
+                                              keyfile,
+                                              knownHosts,
+                                              knownHostsVerify,
+                                              sshauth,
+                                              netcat,
+                                              sockname,
+                                              auth);
+        if (!priv->client)
+            goto failed;
+
+        priv->is_secure = 1;
         break;
 
 #ifndef WIN32
@@ -782,10 +821,13 @@ doRemoteOpen(virConnectPtr conn,
     VIR_FREE(sockname);
     VIR_FREE(authtype);
     VIR_FREE(netcat);
+    VIR_FREE(sshauth);
     VIR_FREE(keyfile);
     VIR_FREE(username);
     VIR_FREE(port);
     VIR_FREE(pkipath);
+    VIR_FREE(knownHostsVerify);
+    VIR_FREE(knownHosts);
 
     return retcode;
 
