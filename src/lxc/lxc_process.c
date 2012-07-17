@@ -71,6 +71,7 @@ static void virLXCProcessAutoDestroyDom(void *payload,
     unsigned char uuid[VIR_UUID_BUFLEN];
     virDomainObjPtr dom;
     virDomainEventPtr event = NULL;
+    virLXCDomainObjPrivatePtr priv;
 
     VIR_DEBUG("conn=%p uuidstr=%s thisconn=%p", conn, uuidstr, data->conn);
 
@@ -88,12 +89,14 @@ static void virLXCProcessAutoDestroyDom(void *payload,
         return;
     }
 
+    priv = dom->privateData;
     VIR_DEBUG("Killing domain");
     virLXCProcessStop(data->driver, dom, VIR_DOMAIN_SHUTOFF_DESTROYED);
     virDomainAuditStop(dom, "destroyed");
     event = virDomainEventNewFromObj(dom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
+    priv->doneStopEvent = true;
 
     if (dom && !dom->persistent)
         virDomainRemoveInactive(&data->driver->domains, dom);
@@ -178,8 +181,9 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
     /* Stop autodestroy in case guest is restarted */
     virLXCProcessAutoDestroyRemove(driver, vm);
 
-    virEventRemoveHandle(priv->monitorWatch);
-    VIR_FORCE_CLOSE(priv->monitor);
+    virNetClientClose(priv->monitor);
+    virNetClientFree(priv->monitor);
+    priv->monitor = NULL;
 
     virPidFileDelete(driver->stateDir, vm->def->name);
     virDomainDeleteConfig(driver->stateDir, NULL, vm);
@@ -187,8 +191,6 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
     vm->pid = -1;
     vm->def->id = -1;
-    priv->monitor = -1;
-    priv->monitorWatch = -1;
 
     for (i = 0 ; i < vm->def->nnets ; i++) {
         virDomainNetDefPtr iface = vm->def->nets[i];
@@ -472,60 +474,76 @@ cleanup:
 }
 
 
-static int virLXCProcessMonitorClient(virLXCDriverPtr  driver,
-                                      virDomainObjPtr vm)
+extern virLXCDriverPtr lxc_driver;
+static void virLXCProcessMonitorEOFNotify(virNetClientPtr client ATTRIBUTE_UNUSED,
+                                          int reason ATTRIBUTE_UNUSED,
+                                          void *opaque)
+{
+    virLXCDriverPtr driver = lxc_driver;
+    virDomainObjPtr vm = opaque;
+    virDomainEventPtr event = NULL;
+    virLXCDomainObjPrivatePtr priv;
+
+    lxcDriverLock(driver);
+    virDomainObjLock(vm);
+    lxcDriverUnlock(driver);
+
+    priv = vm->privateData;
+    virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+    if (!priv->doneStopEvent) {
+        event = virDomainEventNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_STOPPED,
+                                         VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
+        virDomainAuditStop(vm, "shutdown");
+    } else {
+        VIR_DEBUG("Stop event has already been sent");
+    }
+    if (!vm->persistent) {
+        virDomainRemoveInactive(&driver->domains, vm);
+        vm = NULL;
+    }
+
+    if (vm)
+        virDomainObjUnlock(vm);
+    if (event) {
+        lxcDriverLock(driver);
+        virDomainEventStateQueue(driver->domainEventState, event);
+        lxcDriverUnlock(driver);
+    }
+}
+
+
+static virNetClientPtr virLXCProcessConnectMonitor(virLXCDriverPtr  driver,
+                                                   virDomainObjPtr vm)
 {
     char *sockpath = NULL;
-    int fd = -1;
-    struct sockaddr_un addr;
+    virNetClientPtr monitor = NULL;
 
     if (virAsprintf(&sockpath, "%s/%s.sock",
                     driver->stateDir, vm->def->name) < 0) {
         virReportOOMError();
-        return -1;
+        return NULL;
     }
 
-    if (virSecurityManagerSetSocketLabel(driver->securityManager, vm->def) < 0) {
-        VIR_ERROR(_("Failed to set security context for monitor for %s"),
-                  vm->def->name);
-        goto error;
-    }
+    if (virSecurityManagerSetSocketLabel(driver->securityManager, vm->def) < 0)
+        goto cleanup;
 
-    fd = socket(PF_UNIX, SOCK_STREAM, 0);
+    monitor = virNetClientNewUNIX(sockpath, false, NULL);
 
     if (virSecurityManagerClearSocketLabel(driver->securityManager, vm->def) < 0) {
-        VIR_ERROR(_("Failed to clear security context for monitor for %s"),
-                  vm->def->name);
-        goto error;
+        virNetClientFree(monitor);
+        monitor = NULL;
+        goto cleanup;
     }
 
-    if (fd < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to create client socket"));
-        goto error;
-    }
+    if (!monitor)
+        goto cleanup;
 
-    memset(&addr, 0, sizeof(addr));
-    addr.sun_family = AF_UNIX;
-    if (virStrcpyStatic(addr.sun_path, sockpath) == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Socket path %s too big for destination"), sockpath);
-        goto error;
-    }
+    virNetClientSetCloseCallback(monitor, virLXCProcessMonitorEOFNotify, vm, NULL);
 
-    if (connect(fd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to connect to client socket"));
-        goto error;
-    }
-
+cleanup:
     VIR_FREE(sockpath);
-    return fd;
-
-error:
-    VIR_FREE(sockpath);
-    VIR_FORCE_CLOSE(fd);
-    return -1;
+    return monitor;
 }
 
 
@@ -579,51 +597,6 @@ int virLXCProcessStop(virLXCDriverPtr driver,
 cleanup:
     virCgroupFree(&group);
     return rc;
-}
-
-extern virLXCDriverPtr lxc_driver;
-static void virLXCProcessMonitorEvent(int watch,
-                                      int fd,
-                                      int events ATTRIBUTE_UNUSED,
-                                      void *data)
-{
-    virLXCDriverPtr driver = lxc_driver;
-    virDomainObjPtr vm = data;
-    virDomainEventPtr event = NULL;
-    virLXCDomainObjPrivatePtr priv;
-
-    lxcDriverLock(driver);
-    virDomainObjLock(vm);
-    lxcDriverUnlock(driver);
-
-    priv = vm->privateData;
-
-    if (priv->monitor != fd || priv->monitorWatch != watch) {
-        virEventRemoveHandle(watch);
-        goto cleanup;
-    }
-
-    if (virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN) < 0) {
-        virEventRemoveHandle(watch);
-    } else {
-        event = virDomainEventNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_STOPPED,
-                                         VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
-        virDomainAuditStop(vm, "shutdown");
-    }
-    if (!vm->persistent) {
-        virDomainRemoveInactive(&driver->domains, vm);
-        vm = NULL;
-    }
-
-cleanup:
-    if (vm)
-        virDomainObjUnlock(vm);
-    if (event) {
-        lxcDriverLock(driver);
-        virDomainEventStateQueue(driver->domainEventState, event);
-        lxcDriverUnlock(driver);
-    }
 }
 
 
@@ -1003,7 +976,7 @@ int virLXCProcessStart(virConnectPtr conn,
     /* Connect to the controller as a client *first* because
      * this will block until the child has written their
      * pid file out to disk */
-    if ((priv->monitor = virLXCProcessMonitorClient(driver, vm)) < 0)
+    if (!(priv->monitor = virLXCProcessConnectMonitor(driver, vm)))
         goto cleanup;
 
     /* And get its pid */
@@ -1016,6 +989,7 @@ int virLXCProcessStart(virConnectPtr conn,
 
     vm->def->id = vm->pid;
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
+    priv->doneStopEvent = false;
 
     if (lxcContainerWaitForContinue(handshakefds[0]) < 0) {
         char out[1024];
@@ -1025,14 +999,6 @@ int virLXCProcessStart(virConnectPtr conn,
                            _("guest failed to start: %s"), out);
         }
 
-        goto error;
-    }
-
-    if ((priv->monitorWatch = virEventAddHandle(
-             priv->monitor,
-             VIR_EVENT_HANDLE_ERROR | VIR_EVENT_HANDLE_HANGUP,
-             virLXCProcessMonitorEvent,
-             vm, NULL)) < 0) {
         goto error;
     }
 
@@ -1085,7 +1051,9 @@ cleanup:
         VIR_FREE(veths[i]);
     }
     if (rc != 0) {
-        VIR_FORCE_CLOSE(priv->monitor);
+        virNetClientClose(priv->monitor);
+        virNetClientFree(priv->monitor);
+        priv->monitor = NULL;
         virDomainConfVMNWFilterTeardown(vm);
 
         virSecurityManagerRestoreAllLabel(driver->securityManager,
@@ -1191,14 +1159,7 @@ virLXCProcessReconnectDomain(void *payload, const void *name ATTRIBUTE_UNUSED, v
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
                              VIR_DOMAIN_RUNNING_UNKNOWN);
 
-        if ((priv->monitor = virLXCProcessMonitorClient(driver, vm)) < 0)
-            goto error;
-
-        if ((priv->monitorWatch = virEventAddHandle(
-                 priv->monitor,
-                 VIR_EVENT_HANDLE_ERROR | VIR_EVENT_HANDLE_HANGUP,
-                 virLXCProcessMonitorEvent,
-                 vm, NULL)) < 0)
+        if (!(priv->monitor = virLXCProcessConnectMonitor(driver, vm)))
             goto error;
 
         if (virSecurityManagerReserveLabel(driver->securityManager,
@@ -1221,7 +1182,6 @@ virLXCProcessReconnectDomain(void *payload, const void *name ATTRIBUTE_UNUSED, v
 
     } else {
         vm->def->id = -1;
-        VIR_FORCE_CLOSE(priv->monitor);
     }
 
 cleanup:

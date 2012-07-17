@@ -32,9 +32,6 @@ static void *virLXCDomainObjPrivateAlloc(void)
     if (VIR_ALLOC(priv) < 0)
         return NULL;
 
-    priv->monitor = -1;
-    priv->monitorWatch = -1;
-
     return priv;
 }
 

@@ -1276,6 +1276,7 @@ lxcDomainDestroyFlags(virDomainPtr dom,
     virDomainObjPtr vm;
     virDomainEventPtr event = NULL;
     int ret = -1;
+    virLXCDomainObjPrivatePtr priv;
 
     virCheckFlags(0, -1);
 
@@ -1295,10 +1296,12 @@ lxcDomainDestroyFlags(virDomainPtr dom,
         goto cleanup;
     }
 
+    priv = vm->privateData;
     ret = virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
+    priv->doneStopEvent = true;
     virDomainAuditStop(vm, "destroyed");
     if (!vm->persistent) {
         virDomainRemoveInactive(&driver->domains, vm);
