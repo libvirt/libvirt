@@ -181,9 +181,13 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
     /* Stop autodestroy in case guest is restarted */
     virLXCProcessAutoDestroyRemove(driver, vm);
 
-    virNetClientClose(priv->monitor);
-    virNetClientFree(priv->monitor);
-    priv->monitor = NULL;
+    if (priv->monitor) {
+        virLXCMonitorClose(priv->monitor);
+        virLXCMonitorLock(priv->monitor);
+        if (virLXCMonitorUnref(priv->monitor) > 0)
+            virLXCMonitorUnlock(priv->monitor);
+        priv->monitor = NULL;
+    }
 
     virPidFileDelete(driver->stateDir, vm->def->name);
     virDomainDeleteConfig(driver->stateDir, NULL, vm);
@@ -474,13 +478,25 @@ cleanup:
 }
 
 
+static void virLXCProcessMonitorDestroy(virLXCMonitorPtr mon,
+                                        virDomainObjPtr vm)
+{
+    virLXCDomainObjPrivatePtr priv;
+
+    virDomainObjLock(vm);
+    priv = vm->privateData;
+    if (priv->monitor == mon)
+        priv->monitor = NULL;
+    if (virDomainObjUnref(vm) > 0)
+        virDomainObjUnlock(vm);
+}
+
+
 extern virLXCDriverPtr lxc_driver;
-static void virLXCProcessMonitorEOFNotify(virNetClientPtr client ATTRIBUTE_UNUSED,
-                                          int reason ATTRIBUTE_UNUSED,
-                                          void *opaque)
+static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED,
+                                          virDomainObjPtr vm)
 {
     virLXCDriverPtr driver = lxc_driver;
-    virDomainObjPtr vm = opaque;
     virDomainEventPtr event = NULL;
     virLXCDomainObjPrivatePtr priv;
 
@@ -513,36 +529,39 @@ static void virLXCProcessMonitorEOFNotify(virNetClientPtr client ATTRIBUTE_UNUSE
 }
 
 
-static virNetClientPtr virLXCProcessConnectMonitor(virLXCDriverPtr  driver,
-                                                   virDomainObjPtr vm)
-{
-    char *sockpath = NULL;
-    virNetClientPtr monitor = NULL;
+static virLXCMonitorCallbacks monitorCallbacks = {
+    .eofNotify = virLXCProcessMonitorEOFNotify,
+    .destroy = virLXCProcessMonitorDestroy,
+};
 
-    if (virAsprintf(&sockpath, "%s/%s.sock",
-                    driver->stateDir, vm->def->name) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
+
+static virLXCMonitorPtr virLXCProcessConnectMonitor(virLXCDriverPtr driver,
+                                                    virDomainObjPtr vm)
+{
+    virLXCMonitorPtr monitor = NULL;
 
     if (virSecurityManagerSetSocketLabel(driver->securityManager, vm->def) < 0)
         goto cleanup;
 
-    monitor = virNetClientNewUNIX(sockpath, false, NULL);
+    /* Hold an extra reference because we can't allow 'vm' to be
+     * deleted while the monitor is active */
+    virDomainObjRef(vm);
+
+    monitor = virLXCMonitorNew(vm, driver->stateDir, &monitorCallbacks);
+
+    if (monitor == NULL)
+        ignore_value(virDomainObjUnref(vm));
 
     if (virSecurityManagerClearSocketLabel(driver->securityManager, vm->def) < 0) {
-        virNetClientFree(monitor);
-        monitor = NULL;
+        if (monitor) {
+            virLXCMonitorLock(monitor);
+            virLXCMonitorUnref(monitor);
+            monitor = NULL;
+        }
         goto cleanup;
     }
 
-    if (!monitor)
-        goto cleanup;
-
-    virNetClientSetCloseCallback(monitor, virLXCProcessMonitorEOFNotify, vm, NULL);
-
 cleanup:
-    VIR_FREE(sockpath);
     return monitor;
 }
 
@@ -1051,9 +1070,12 @@ cleanup:
         VIR_FREE(veths[i]);
     }
     if (rc != 0) {
-        virNetClientClose(priv->monitor);
-        virNetClientFree(priv->monitor);
-        priv->monitor = NULL;
+        if (priv->monitor) {
+            virLXCMonitorLock(priv->monitor);
+            if (virLXCMonitorUnref(priv->monitor) > 0)
+                virLXCMonitorUnlock(priv->monitor);
+            priv->monitor = NULL;
+        }
         virDomainConfVMNWFilterTeardown(vm);
 
         virSecurityManagerRestoreAllLabel(driver->securityManager,

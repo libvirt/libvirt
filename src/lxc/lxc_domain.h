@@ -24,13 +24,13 @@
 # define __LXC_DOMAIN_H__
 
 # include "lxc_conf.h"
-# include "rpc/virnetclient.h"
+# include "lxc_monitor.h"
 
 
 typedef struct _virLXCDomainObjPrivate virLXCDomainObjPrivate;
 typedef virLXCDomainObjPrivate *virLXCDomainObjPrivatePtr;
 struct _virLXCDomainObjPrivate {
-    virNetClientPtr monitor;
+    virLXCMonitorPtr monitor;
     bool doneStopEvent;
 };
 
