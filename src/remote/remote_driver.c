@@ -346,6 +346,29 @@ static void remoteClientCloseFunc(virNetClientPtr client ATTRIBUTE_UNUSED,
     virMutexUnlock(&conn->lock);
 }
 
+/* helper macro to ease extraction of arguments from the URI */
+#define EXTRACT_URI_ARG_STR(ARG_NAME, ARG_VAR)          \
+    if (STRCASEEQ(var->name, ARG_NAME)) {               \
+        VIR_FREE(ARG_VAR);                              \
+        if (!(ARG_VAR = strdup(var->value)))            \
+            goto no_memory;                             \
+        var->ignore = 1;                                \
+        continue;                                       \
+    }
+
+#define EXTRACT_URI_ARG_BOOL(ARG_NAME, ARG_VAR)                             \
+    if (STRCASEEQ(var->name, ARG_NAME)) {                                   \
+        int tmp;                                                            \
+        if (virStrToLong_i(var->value, NULL, 10, &tmp) < 0) {               \
+            virReportError(VIR_ERR_INVALID_ARG,                             \
+                           _("Failed to parse value of URI component %s"),  \
+                           var->name);                                      \
+            goto failed;                                                    \
+        }                                                                   \
+        ARG_VAR = tmp == 0;                                                 \
+        var->ignore = 1;                                                    \
+        continue;                                                           \
+    }
 /*
  * URIs that this driver needs to handle:
  *
@@ -364,10 +387,10 @@ static void remoteClientCloseFunc(virNetClientPtr client ATTRIBUTE_UNUSED,
  *   - xxx:///                -> UNIX domain socket
  */
 static int
-doRemoteOpen (virConnectPtr conn,
-              struct private_data *priv,
-              virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-              unsigned int flags)
+doRemoteOpen(virConnectPtr conn,
+             struct private_data *priv,
+             virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+             unsigned int flags)
 {
     char *transport_str = NULL;
     enum {
@@ -381,7 +404,7 @@ doRemoteOpen (virConnectPtr conn,
     const char *daemonPath;
 #endif
 
-    /* We handle *ALL*  URIs here. The caller has rejected any
+    /* We handle *ALL* URIs here. The caller has rejected any
      * URIs we don't care about */
 
     if (conn->uri) {
@@ -394,7 +417,7 @@ doRemoteOpen (virConnectPtr conn,
 
             transport = trans_unix;
         } else {
-            transport_str = get_transport_from_scheme (conn->uri->scheme);
+            transport_str = get_transport_from_scheme(conn->uri->scheme);
 
             if (!transport_str) {
                 if (conn->uri->server)
@@ -402,9 +425,9 @@ doRemoteOpen (virConnectPtr conn,
                 else
                     transport = trans_unix;
             } else {
-                if (STRCASEEQ (transport_str, "tls"))
+                if (STRCASEEQ(transport_str, "tls"))
                     transport = trans_tls;
-                else if (STRCASEEQ (transport_str, "unix")) {
+                else if (STRCASEEQ(transport_str, "unix")) {
                     if (conn->uri->server) {
                         virReportError(VIR_ERR_INVALID_ARG,
                                        _("using unix socket and remote "
@@ -414,11 +437,11 @@ doRemoteOpen (virConnectPtr conn,
                     } else {
                         transport = trans_unix;
                     }
-                } else if (STRCASEEQ (transport_str, "ssh"))
+                } else if (STRCASEEQ(transport_str, "ssh"))
                     transport = trans_ssh;
-                else if (STRCASEEQ (transport_str, "ext"))
+                else if (STRCASEEQ(transport_str, "ext"))
                     transport = trans_ext;
-                else if (STRCASEEQ (transport_str, "tcp"))
+                else if (STRCASEEQ(transport_str, "tcp"))
                     transport = trans_tcp;
                 else {
                     virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -446,26 +469,27 @@ doRemoteOpen (virConnectPtr conn,
 
     /* Remote server defaults to "localhost" if not specified. */
     if (conn->uri && conn->uri->port != 0) {
-        if (virAsprintf(&port, "%d", conn->uri->port) == -1) goto out_of_memory;
+        if (virAsprintf(&port, "%d", conn->uri->port) < 0)
+            goto no_memory;
     } else if (transport == trans_tls) {
-        port = strdup (LIBVIRTD_TLS_PORT);
-        if (!port) goto out_of_memory;
+        if (!(port = strdup(LIBVIRTD_TLS_PORT)))
+            goto no_memory;
     } else if (transport == trans_tcp) {
-        port = strdup (LIBVIRTD_TCP_PORT);
-        if (!port) goto out_of_memory;
-    } else
-        port = NULL; /* Port not used for unix, ext., default for ssh */
+        if (!(port = strdup(LIBVIRTD_TCP_PORT)))
+            goto no_memory;
+    } /* Port not used for unix, ext., default for ssh */
 
+    if (conn->uri && conn->uri->server)
+        priv->hostname = strdup(conn->uri->server);
+    else
+        priv->hostname = strdup("localhost");
 
-    priv->hostname = strdup (conn->uri && conn->uri->server ?
-                             conn->uri->server : "localhost");
     if (!priv->hostname)
-        goto out_of_memory;
-    if (conn->uri && conn->uri->user) {
-        username = strdup (conn->uri->user);
-        if (!username)
-            goto out_of_memory;
-    }
+        goto no_memory;
+
+    if (conn->uri && conn->uri->user &&
+        !(username = strdup (conn->uri->user)))
+        goto no_memory;
 
     /* Get the variables from the query string.
      * Then we need to reconstruct the query string (because
@@ -477,56 +501,26 @@ doRemoteOpen (virConnectPtr conn,
     if (conn->uri) {
         for (i = 0; i < conn->uri->paramsCount ; i++) {
             virURIParamPtr var = &conn->uri->params[i];
-            if (STRCASEEQ (var->name, "name")) {
-                VIR_FREE(name);
-                name = strdup (var->value);
-                if (!name) goto out_of_memory;
-                var->ignore = 1;
-            } else if (STRCASEEQ (var->name, "command")) {
-                VIR_FREE(command);
-                command = strdup (var->value);
-                if (!command) goto out_of_memory;
-                var->ignore = 1;
-            } else if (STRCASEEQ (var->name, "socket")) {
-                VIR_FREE(sockname);
-                sockname = strdup (var->value);
-                if (!sockname) goto out_of_memory;
-                var->ignore = 1;
-            } else if (STRCASEEQ (var->name, "auth")) {
-                VIR_FREE(authtype);
-                authtype = strdup (var->value);
-                if (!authtype) goto out_of_memory;
-                var->ignore = 1;
-            } else if (STRCASEEQ (var->name, "netcat")) {
-                VIR_FREE(netcat);
-                netcat = strdup (var->value);
-                if (!netcat) goto out_of_memory;
-                var->ignore = 1;
-            } else if (STRCASEEQ (var->name, "keyfile")) {
-                VIR_FREE(keyfile);
-                keyfile = strdup (var->value);
-                if (!keyfile) goto out_of_memory;
-            } else if (STRCASEEQ (var->name, "no_sanity")) {
-                sanity = atoi(var->value) == 0;
-                var->ignore = 1;
-            } else if (STRCASEEQ (var->name, "no_verify")) {
-                verify = atoi (var->value) == 0;
-                var->ignore = 1;
-            } else if (STRCASEEQ (var->name, "no_tty")) {
-                tty = atoi (var->value) == 0;
-                var->ignore = 1;
-            } else if (STRCASEEQ(var->name, "pkipath")) {
-                VIR_FREE(pkipath);
-                pkipath = strdup(var->value);
-                if (!pkipath) goto out_of_memory;
-                var->ignore = 1;
-            } else if (STRCASEEQ(var->name, "authfile")) {
+            EXTRACT_URI_ARG_STR("name", name);
+            EXTRACT_URI_ARG_STR("command", command);
+            EXTRACT_URI_ARG_STR("socket", sockname);
+            EXTRACT_URI_ARG_STR("auth", authtype);
+            EXTRACT_URI_ARG_STR("netcat", netcat);
+            EXTRACT_URI_ARG_STR("keyfile", keyfile);
+            EXTRACT_URI_ARG_STR("pkipath", pkipath);
+
+            EXTRACT_URI_ARG_BOOL("no_sanity", sanity);
+            EXTRACT_URI_ARG_BOOL("no_verify", verify);
+            EXTRACT_URI_ARG_BOOL("no_tty", tty);
+
+            if (STRCASEEQ(var->name, "authfile")) {
                 /* Strip this param, used by virauth.c */
                 var->ignore = 1;
-            } else {
-                VIR_DEBUG("passing through variable '%s' ('%s') to remote end",
-                      var->name, var->value);
+                continue;
             }
+
+            VIR_DEBUG("passing through variable '%s' ('%s') to remote end",
+                       var->name, var->value);
         }
 
         /* Construct the original name. */
@@ -536,7 +530,7 @@ doRemoteOpen (virConnectPtr conn,
                  STRPREFIX(conn->uri->scheme, "remote+"))) {
                 /* Allow remote serve to probe */
                 if (!(name = strdup("")))
-                    goto out_of_memory;
+                    goto no_memory;
             } else {
                 virURI tmpuri = {
                     .scheme = conn->uri->scheme,
@@ -547,7 +541,7 @@ doRemoteOpen (virConnectPtr conn,
 
                 /* Evil, blank out transport scheme temporarily */
                 if (transport_str) {
-                    assert (transport_str[-1] == '+');
+                    assert(transport_str[-1] == '+');
                     transport_str[-1] = '\0';
                 }
 
@@ -566,7 +560,7 @@ doRemoteOpen (virConnectPtr conn,
     } else {
         /* Probe URI server side */
         if (!(name = strdup("")))
-            goto out_of_memory;
+            goto no_memory;
     }
 
     VIR_DEBUG("proceeding with name = %s", name);
@@ -577,7 +571,6 @@ doRemoteOpen (virConnectPtr conn,
                        _("remote_open: for 'ext' transport, command is required"));
         goto failed;
     }
-
 
     VIR_DEBUG("Connecting with transport %d", transport);
     /* Connect to the remote service. */
@@ -615,7 +608,7 @@ doRemoteOpen (virConnectPtr conn,
 
                 if (virAsprintf(&sockname, "%s/" LIBVIRTD_USER_UNIX_SOCKET, userdir) < 0) {
                     VIR_FREE(userdir);
-                    goto out_of_memory;
+                    goto no_memory;
                 }
                 VIR_FREE(userdir);
             } else {
@@ -624,7 +617,7 @@ doRemoteOpen (virConnectPtr conn,
                 else
                     sockname = strdup(LIBVIRTD_PRIV_UNIX_SOCKET);
                 if (sockname == NULL)
-                    goto out_of_memory;
+                    goto no_memory;
             }
             VIR_DEBUG("Proceeding with sockname %s", sockname);
         }
@@ -643,17 +636,16 @@ doRemoteOpen (virConnectPtr conn,
         break;
 
     case trans_ssh:
-        command = command ? command : strdup ("ssh");
-        if (command == NULL)
-            goto out_of_memory;
+        if (!command && !(command = strdup("ssh")))
+            goto no_memory;
 
         if (!sockname) {
             if (flags & VIR_DRV_OPEN_REMOTE_RO)
                 sockname = strdup(LIBVIRTD_PRIV_UNIX_SOCKET_RO);
             else
                 sockname = strdup(LIBVIRTD_PRIV_UNIX_SOCKET);
-            if (sockname == NULL)
-                goto out_of_memory;
+            if (!sockname)
+                goto no_memory;
         }
 
         if (!(priv->client = virNetClientNewSSH(priv->hostname,
@@ -743,9 +735,9 @@ doRemoteOpen (virConnectPtr conn,
         remote_open_args args = { &name, flags };
 
         VIR_DEBUG("Trying to open URI %s", name);
-        if (call (conn, priv, 0, REMOTE_PROC_OPEN,
-                  (xdrproc_t) xdr_remote_open_args, (char *) &args,
-                  (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        if (call(conn, priv, 0, REMOTE_PROC_OPEN,
+                 (xdrproc_t) xdr_remote_open_args, (char *) &args,
+                 (xdrproc_t) xdr_void, (char *) NULL) == -1)
             goto failed;
     }
 
@@ -754,11 +746,11 @@ doRemoteOpen (virConnectPtr conn,
         remote_get_uri_ret uriret;
 
         VIR_DEBUG("Trying to query remote URI");
-        memset (&uriret, 0, sizeof(uriret));
-        if (call (conn, priv, 0,
-                  REMOTE_PROC_GET_URI,
-                  (xdrproc_t) xdr_void, (char *) NULL,
-                  (xdrproc_t) xdr_remote_get_uri_ret, (char *) &uriret) < 0)
+        memset(&uriret, 0, sizeof(uriret));
+        if (call(conn, priv, 0,
+                 REMOTE_PROC_GET_URI,
+                 (xdrproc_t) xdr_void, (char *) NULL,
+                 (xdrproc_t) xdr_remote_get_uri_ret, (char *) &uriret) < 0)
             goto failed;
 
         VIR_DEBUG("Auto-probed URI is %s", uriret.uri);
@@ -788,7 +780,7 @@ doRemoteOpen (virConnectPtr conn,
 
     return retcode;
 
- out_of_memory:
+no_memory:
     virReportOOMError();
 
  failed:
@@ -801,6 +793,8 @@ doRemoteOpen (virConnectPtr conn,
     VIR_FREE(priv->hostname);
     goto cleanup;
 }
+#undef EXTRACT_URI_ARG_STR
+#undef EXTRACT_URI_ARG_BOOL
 
 static struct private_data *
 remoteAllocPrivateData(void)
@@ -924,23 +918,23 @@ remoteOpen (virConnectPtr conn,
 
 /* In a string "driver+transport" return a pointer to "transport". */
 static char *
-get_transport_from_scheme (char *scheme)
+get_transport_from_scheme(char *scheme)
 {
-    char *p = strchr (scheme, '+');
-    return p ? p+1 : 0;
+    char *p = strchr(scheme, '+');
+    return p ? p + 1 : NULL;
 }
 
 /*----------------------------------------------------------------------*/
 
 
 static int
-doRemoteClose (virConnectPtr conn, struct private_data *priv)
+doRemoteClose(virConnectPtr conn, struct private_data *priv)
 {
     int ret = 0;
 
-    if (call (conn, priv, 0, REMOTE_PROC_CLOSE,
-              (xdrproc_t) xdr_void, (char *) NULL,
-              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+    if (call(conn, priv, 0, REMOTE_PROC_CLOSE,
+             (xdrproc_t) xdr_void, (char *) NULL,
+             (xdrproc_t) xdr_void, (char *) NULL) == -1)
         ret = -1;
 
     virObjectUnref(priv->tls);
@@ -965,7 +959,7 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
 }
 
 static int
-remoteClose (virConnectPtr conn)
+remoteClose(virConnectPtr conn)
 {
     int ret = 0;
     struct private_data *priv = conn->privateData;
@@ -995,7 +989,7 @@ remoteClose (virConnectPtr conn)
  * http://www.redhat.com/archives/libvir-list/2007-February/msg00096.html
  */
 static const char *
-remoteType (virConnectPtr conn)
+remoteType(virConnectPtr conn)
 {
     char *rv = NULL;
     remote_get_type_ret ret;
@@ -1009,10 +1003,10 @@ remoteType (virConnectPtr conn)
         goto done;
     }
 
-    memset (&ret, 0, sizeof(ret));
-    if (call (conn, priv, 0, REMOTE_PROC_GET_TYPE,
-              (xdrproc_t) xdr_void, (char *) NULL,
-              (xdrproc_t) xdr_remote_get_type_ret, (char *) &ret) == -1)
+    memset(&ret, 0, sizeof(ret));
+    if (call(conn, priv, 0, REMOTE_PROC_GET_TYPE,
+             (xdrproc_t) xdr_void, (char *) NULL,
+             (xdrproc_t) xdr_remote_get_type_ret, (char *) &ret) == -1)
         goto done;
 
     /* Stash. */
@@ -1030,10 +1024,10 @@ static int remoteIsSecure(virConnectPtr conn)
     remote_is_secure_ret ret;
     remoteDriverLock(priv);
 
-    memset (&ret, 0, sizeof(ret));
-    if (call (conn, priv, 0, REMOTE_PROC_IS_SECURE,
-              (xdrproc_t) xdr_void, (char *) NULL,
-              (xdrproc_t) xdr_remote_is_secure_ret, (char *) &ret) == -1)
+    memset(&ret, 0, sizeof(ret));
+    if (call(conn, priv, 0, REMOTE_PROC_IS_SECURE,
+             (xdrproc_t) xdr_void, (char *) NULL,
+             (xdrproc_t) xdr_remote_is_secure_ret, (char *) &ret) == -1)
         goto done;
 
     /* We claim to be secure, if the remote driver
@@ -1059,10 +1053,10 @@ static int remoteIsEncrypted(virConnectPtr conn)
     remote_is_secure_ret ret;
     remoteDriverLock(priv);
 
-    memset (&ret, 0, sizeof(ret));
-    if (call (conn, priv, 0, REMOTE_PROC_IS_SECURE,
-              (xdrproc_t) xdr_void, (char *) NULL,
-              (xdrproc_t) xdr_remote_is_secure_ret, (char *) &ret) == -1)
+    memset(&ret, 0, sizeof(ret));
+    if (call(conn, priv, 0, REMOTE_PROC_IS_SECURE,
+             (xdrproc_t) xdr_void, (char *) NULL,
+             (xdrproc_t) xdr_remote_is_secure_ret, (char *) &ret) == -1)
         goto done;
 
     if (virNetClientIsEncrypted(priv->client))
@@ -1084,10 +1078,10 @@ done:
 }
 
 static int
-remoteNodeGetCPUStats (virConnectPtr conn,
-                       int cpuNum,
-                       virNodeCPUStatsPtr params, int *nparams,
-                       unsigned int flags)
+remoteNodeGetCPUStats(virConnectPtr conn,
+                      int cpuNum,
+                      virNodeCPUStatsPtr params, int *nparams,
+                      unsigned int flags)
 {
     int rv = -1;
     remote_node_get_cpu_stats_args args;
@@ -1101,12 +1095,12 @@ remoteNodeGetCPUStats (virConnectPtr conn,
     args.cpuNum = cpuNum;
     args.flags = flags;
 
-    memset (&ret, 0, sizeof(ret));
-    if (call (conn, priv, 0, REMOTE_PROC_NODE_GET_CPU_STATS,
-              (xdrproc_t) xdr_remote_node_get_cpu_stats_args,
-              (char *) &args,
-              (xdrproc_t) xdr_remote_node_get_cpu_stats_ret,
-              (char *) &ret) == -1)
+    memset(&ret, 0, sizeof(ret));
+    if (call(conn, priv, 0, REMOTE_PROC_NODE_GET_CPU_STATS,
+             (xdrproc_t) xdr_remote_node_get_cpu_stats_args,
+             (char *) &args,
+             (xdrproc_t) xdr_remote_node_get_cpu_stats_ret,
+             (char *) &ret) == -1)
         goto done;
 
     /* Check the length of the returned list carefully. */
@@ -1142,18 +1136,18 @@ remoteNodeGetCPUStats (virConnectPtr conn,
     rv = 0;
 
 cleanup:
-    xdr_free ((xdrproc_t) xdr_remote_node_get_cpu_stats_ret,
-              (char *) &ret);
+    xdr_free((xdrproc_t) xdr_remote_node_get_cpu_stats_ret, (char *) &ret);
 done:
     remoteDriverUnlock(priv);
     return rv;
 }
 
 static int
-remoteNodeGetMemoryStats (virConnectPtr conn,
-                          int cellNum,
-                          virNodeMemoryStatsPtr params, int *nparams,
-                          unsigned int flags)
+remoteNodeGetMemoryStats(virConnectPtr conn,
+                         int cellNum,
+                         virNodeMemoryStatsPtr params,
+                         int *nparams,
+                         unsigned int flags)
 {
     int rv = -1;
     remote_node_get_memory_stats_args args;
@@ -1168,9 +1162,9 @@ remoteNodeGetMemoryStats (virConnectPtr conn,
     args.flags = flags;
 
     memset (&ret, 0, sizeof(ret));
-    if (call (conn, priv, 0, REMOTE_PROC_NODE_GET_MEMORY_STATS,
-              (xdrproc_t) xdr_remote_node_get_memory_stats_args, (char *) &args,
-              (xdrproc_t) xdr_remote_node_get_memory_stats_ret, (char *) &ret) == -1)
+    if (call(conn, priv, 0, REMOTE_PROC_NODE_GET_MEMORY_STATS,
+             (xdrproc_t) xdr_remote_node_get_memory_stats_args, (char *) &args,
+             (xdrproc_t) xdr_remote_node_get_memory_stats_ret, (char *) &ret) == -1)
         goto done;
 
     /* Check the length of the returned list carefully. */
@@ -1206,8 +1200,7 @@ remoteNodeGetMemoryStats (virConnectPtr conn,
     rv = 0;
 
 cleanup:
-    xdr_free ((xdrproc_t) xdr_remote_node_get_memory_stats_ret,
-              (char *) &ret);
+    xdr_free((xdrproc_t) xdr_remote_node_get_memory_stats_ret, (char *) &ret);
 done:
     remoteDriverUnlock(priv);
     return rv;
@@ -1215,9 +1208,9 @@ done:
 
 static int
 remoteNodeGetCellsFreeMemory(virConnectPtr conn,
-                            unsigned long long *freeMems,
-                            int startCell,
-                            int maxCells)
+                             unsigned long long *freeMems,
+                             int startCell,
+                             int maxCells)
 {
     int rv = -1;
     remote_node_get_cells_free_memory_args args;
@@ -1237,10 +1230,10 @@ remoteNodeGetCellsFreeMemory(virConnectPtr conn,
     args.startCell = startCell;
     args.maxcells = maxCells;
 
-    memset (&ret, 0, sizeof(ret));
-    if (call (conn, priv, 0, REMOTE_PROC_NODE_GET_CELLS_FREE_MEMORY,
-              (xdrproc_t) xdr_remote_node_get_cells_free_memory_args, (char *)&args,
-              (xdrproc_t) xdr_remote_node_get_cells_free_memory_ret, (char *)&ret) == -1)
+    memset(&ret, 0, sizeof(ret));
+    if (call(conn, priv, 0, REMOTE_PROC_NODE_GET_CELLS_FREE_MEMORY,
+             (xdrproc_t) xdr_remote_node_get_cells_free_memory_args, (char *)&args,
+             (xdrproc_t) xdr_remote_node_get_cells_free_memory_ret, (char *)&ret) == -1)
         goto done;
 
     for (i = 0 ; i < ret.cells.cells_len ; i++)
@@ -1256,7 +1249,7 @@ done:
 }
 
 static int
-remoteListDomains (virConnectPtr conn, int *ids, int maxids)
+remoteListDomains(virConnectPtr conn, int *ids, int maxids)
 {
     int rv = -1;
     int i;
@@ -1274,10 +1267,10 @@ remoteListDomains (virConnectPtr conn, int *ids, int maxids)
     }
     args.maxids = maxids;
 
-    memset (&ret, 0, sizeof(ret));
-    if (call (conn, priv, 0, REMOTE_PROC_LIST_DOMAINS,
-              (xdrproc_t) xdr_remote_list_domains_args, (char *) &args,
-              (xdrproc_t) xdr_remote_list_domains_ret, (char *) &ret) == -1)
+    memset(&ret, 0, sizeof(ret));
+    if (call(conn, priv, 0, REMOTE_PROC_LIST_DOMAINS,
+             (xdrproc_t) xdr_remote_list_domains_args, (char *) &args,
+             (xdrproc_t) xdr_remote_list_domains_ret, (char *) &ret) == -1)
         goto done;
 
     if (ret.ids.ids_len > maxids) {
@@ -1293,7 +1286,7 @@ remoteListDomains (virConnectPtr conn, int *ids, int maxids)
     rv = ret.ids.ids_len;
 
 cleanup:
-    xdr_free ((xdrproc_t) xdr_remote_list_domains_ret, (char *) &ret);
+    xdr_free((xdrproc_t) xdr_remote_list_domains_ret, (char *) &ret);
 
 done:
     remoteDriverUnlock(priv);
