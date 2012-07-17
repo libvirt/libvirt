@@ -22,6 +22,8 @@
 
 #include "lxc_monitor.h"
 #include "lxc_conf.h"
+#include "lxc_protocol.h"
+#include "lxc_monitor_dispatch.h"
 
 #include "memory.h"
 
@@ -41,9 +43,35 @@ struct _virLXCMonitor {
     virLXCMonitorCallbacksPtr cb;
 
     virNetClientPtr client;
+    virNetClientProgramPtr program;
 };
 
 static void virLXCMonitorFree(virLXCMonitorPtr mon);
+static void
+virLXCMonitorHandleEventExit(virNetClientProgramPtr prog,
+                             virNetClientPtr client,
+                             void *evdata, void *opaque);
+
+static virNetClientProgramEvent virLXCProtocolEvents[] = {
+    { VIR_LXC_PROTOCOL_PROC_EXIT_EVENT,
+      virLXCMonitorHandleEventExit,
+      sizeof(virLXCProtocolExitEventMsg),
+      (xdrproc_t)xdr_virLXCProtocolExitEventMsg },
+};
+
+
+static void
+virLXCMonitorHandleEventExit(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                             virNetClientPtr client ATTRIBUTE_UNUSED,
+                             void *evdata, void *opaque)
+{
+    virLXCMonitorPtr mon = opaque;
+    virLXCProtocolExitEventMsg *msg = evdata;
+
+    VIR_DEBUG("Event exit %d", msg->status);
+    if (mon->cb->exitNotify)
+        mon->cb->exitNotify(mon, msg->status, mon->vm);
+}
 
 
 static void virLXCMonitorEOFNotify(virNetClientPtr client ATTRIBUTE_UNUSED,
@@ -54,6 +82,7 @@ static void virLXCMonitorEOFNotify(virNetClientPtr client ATTRIBUTE_UNUSED,
     virLXCMonitorCallbackEOFNotify eofNotify;
     virDomainObjPtr vm;
 
+    VIR_DEBUG("EOF notify");
     virLXCMonitorLock(mon);
     eofNotify = mon->cb->eofNotify;
     vm = mon->vm;
@@ -101,6 +130,17 @@ virLXCMonitorPtr virLXCMonitorNew(virDomainObjPtr vm,
         goto error;
 
 
+    if (!(mon->program = virNetClientProgramNew(VIR_LXC_PROTOCOL_PROGRAM,
+                                                VIR_LXC_PROTOCOL_PROGRAM_VERSION,
+                                                virLXCProtocolEvents,
+                                                ARRAY_CARDINALITY(virLXCProtocolEvents),
+                                                mon)))
+        goto error;
+
+    if (virNetClientAddProgram(mon->client,
+                               mon->program) < 0)
+        goto error;
+
     mon->vm = vm;
     mon->cb = cb;
 
@@ -130,6 +170,7 @@ static void virLXCMonitorFree(virLXCMonitorPtr mon)
     if (mon->cb && mon->cb->destroy)
         (mon->cb->destroy)(mon, mon->vm);
     virMutexDestroy(&mon->lock);
+    virNetClientProgramFree(mon->program);
     VIR_FREE(mon);
 }
 

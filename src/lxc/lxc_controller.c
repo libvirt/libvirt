@@ -59,6 +59,7 @@
 #include "lxc_conf.h"
 #include "lxc_container.h"
 #include "lxc_cgroup.h"
+#include "lxc_protocol.h"
 #include "virnetdev.h"
 #include "virnetdevveth.h"
 #include "memory.h"
@@ -121,9 +122,24 @@ struct _virLXCController {
 
     /* Server socket */
     virNetServerPtr server;
+    virNetServerClientPtr client;
+    virNetServerProgramPtr prog;
+    bool inShutdown;
+    int timerShutdown;
 };
 
+#include "lxc_controller_dispatch.h"
+
 static void virLXCControllerFree(virLXCControllerPtr ctrl);
+
+static void virLXCControllerQuitTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
+{
+    virLXCControllerPtr ctrl = opaque;
+
+    VIR_DEBUG("Triggering event loop quit");
+    virNetServerQuit(ctrl->server);
+}
+
 
 static virLXCControllerPtr virLXCControllerNew(const char *name)
 {
@@ -133,6 +149,8 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
 
     if (VIR_ALLOC(ctrl) < 0)
         goto no_memory;
+
+    ctrl->timerShutdown = -1;
 
     if (!(ctrl->name = strdup(name)))
         goto no_memory;
@@ -148,6 +166,11 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
                                            configFile,
                                            1 << VIR_DOMAIN_VIRT_LXC,
                                            0)) == NULL)
+        goto error;
+
+    if ((ctrl->timerShutdown = virEventAddTimeout(-1,
+                                                  virLXCControllerQuitTimer, ctrl,
+                                                  NULL)) < 0)
         goto error;
 
 cleanup:
@@ -237,6 +260,9 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
 
     virDomainDefFree(ctrl->def);
     VIR_FREE(ctrl->name);
+
+    if (ctrl->timerShutdown != -1)
+        virEventRemoveTimeout(ctrl->timerShutdown);
 
     virNetServerFree(ctrl->server);
 
@@ -539,12 +565,28 @@ static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl)
 }
 
 
+static void virLXCControllerClientCloseHook(virNetServerClientPtr client)
+{
+    virLXCControllerPtr ctrl = virNetServerClientGetPrivateData(client);
+
+    VIR_DEBUG("Client %p has closed", client);
+    if (ctrl->client == client)
+        ctrl->client = NULL;
+    if (ctrl->inShutdown) {
+        VIR_DEBUG("Arm timer to quit event loop");
+        virEventUpdateTimeout(ctrl->timerShutdown, 0);
+    }
+}
+
 static int virLXCControllerClientHook(virNetServerPtr server ATTRIBUTE_UNUSED,
                                       virNetServerClientPtr client,
                                       void *opaque)
 {
     virLXCControllerPtr ctrl = opaque;
     virNetServerClientSetPrivateData(client, ctrl, NULL);
+    virNetServerClientSetCloseHook(client, virLXCControllerClientCloseHook);
+    VIR_DEBUG("Got new client %p", client);
+    ctrl->client = client;
     return 0;
 }
 
@@ -580,6 +622,12 @@ static int virLXCControllerSetupServer(virLXCControllerPtr ctrl)
         goto error;
     virNetServerServiceFree(svc);
     svc = NULL;
+
+    if (!(ctrl->prog = virNetServerProgramNew(VIR_LXC_PROTOCOL_PROGRAM,
+                                              VIR_LXC_PROTOCOL_PROGRAM_VERSION,
+                                              virLXCProtocolProcs,
+                                              virLXCProtocolNProcs)))
+        goto error;
 
     virNetServerUpdateServices(ctrl->server, true);
     VIR_FREE(sockpath);
@@ -1219,6 +1267,79 @@ virLXCControllerSetupConsoles(virLXCControllerPtr ctrl,
 }
 
 
+static void
+virLXCControllerEventSend(virLXCControllerPtr ctrl,
+                          int procnr,
+                          xdrproc_t proc,
+                          void *data)
+{
+    virNetMessagePtr msg;
+
+    if (!ctrl->client)
+        return;
+
+    VIR_DEBUG("Send event %d client=%p", procnr, ctrl->client);
+    if (!(msg = virNetMessageNew(false)))
+        goto error;
+
+    msg->header.prog = virNetServerProgramGetID(ctrl->prog);
+    msg->header.vers = virNetServerProgramGetVersion(ctrl->prog);
+    msg->header.proc = procnr;
+    msg->header.type = VIR_NET_MESSAGE;
+    msg->header.serial = 1;
+    msg->header.status = VIR_NET_OK;
+
+    if (virNetMessageEncodeHeader(msg) < 0)
+        goto error;
+
+    if (virNetMessageEncodePayload(msg, proc, data) < 0)
+        goto error;
+
+    VIR_DEBUG("Queue event %d %zu", procnr, msg->bufferLength);
+    virNetServerClientSendMessage(ctrl->client, msg);
+
+    xdr_free(proc, data);
+    return;
+
+error:
+    virNetMessageFree(msg);
+    xdr_free(proc, data);
+}
+
+
+static int
+virLXCControllerEventSendExit(virLXCControllerPtr ctrl,
+                              int exitstatus)
+{
+    virLXCProtocolExitEventMsg msg;
+
+    VIR_DEBUG("Exit status %d", exitstatus);
+    memset(&msg, 0, sizeof(msg));
+    switch (exitstatus) {
+    case 0:
+        msg.status = VIR_LXC_PROTOCOL_EXIT_STATUS_SHUTDOWN;
+        break;
+    default:
+        msg.status = VIR_LXC_PROTOCOL_EXIT_STATUS_ERROR;
+        break;
+    }
+
+    virLXCControllerEventSend(ctrl,
+                              VIR_LXC_PROTOCOL_PROC_EXIT_EVENT,
+                              (xdrproc_t)xdr_virLXCProtocolExitEventMsg,
+                              (void*)&msg);
+
+    if (ctrl->client) {
+        VIR_DEBUG("Waiting for client to complete dispatch");
+        ctrl->inShutdown = true;
+        virNetServerClientDelayedClose(ctrl->client);
+        virNetServerRun(ctrl->server);
+    }
+    VIR_DEBUG("Client has gone away");
+    return 0;
+}
+
+
 static int
 virLXCControllerRun(virLXCControllerPtr ctrl)
 {
@@ -1305,6 +1426,8 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
             goto cleanup;
 
     rc = virLXCControllerMain(ctrl);
+
+    virLXCControllerEventSendExit(ctrl, rc);
 
 cleanup:
     VIR_FORCE_CLOSE(control[0]);
@@ -1527,5 +1650,5 @@ cleanup:
 
     virLXCControllerFree(ctrl);
 
-    return rc ? EXIT_FAILURE : EXIT_SUCCESS;
+    return rc < 0? EXIT_FAILURE : EXIT_SUCCESS;
 }

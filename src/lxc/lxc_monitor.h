@@ -22,6 +22,7 @@
 # define __LXC_MONITOR_H__
 
 # include "domain_conf.h"
+# include "lxc_protocol.h"
 
 typedef struct _virLXCMonitor virLXCMonitor;
 typedef virLXCMonitor *virLXCMonitorPtr;
@@ -34,9 +35,14 @@ typedef void (*virLXCMonitorCallbackDestroy)(virLXCMonitorPtr mon,
 typedef void (*virLXCMonitorCallbackEOFNotify)(virLXCMonitorPtr mon,
                                                virDomainObjPtr vm);
 
+typedef void (*virLXCMonitorCallbackExitNotify)(virLXCMonitorPtr mon,
+                                                virLXCProtocolExitStatus status,
+                                                virDomainObjPtr vm);
+
 struct _virLXCMonitorCallbacks {
     virLXCMonitorCallbackDestroy destroy;
     virLXCMonitorCallbackEOFNotify eofNotify;
+    virLXCMonitorCallbackExitNotify exitNotify;
 };
 
 virLXCMonitorPtr virLXCMonitorNew(virDomainObjPtr vm,

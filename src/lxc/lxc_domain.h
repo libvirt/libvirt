@@ -32,6 +32,7 @@ typedef virLXCDomainObjPrivate *virLXCDomainObjPrivatePtr;
 struct _virLXCDomainObjPrivate {
     virLXCMonitorPtr monitor;
     bool doneStopEvent;
+    int stopReason;
 };
 
 void virLXCDomainSetPrivateDataHooks(virCapsPtr caps);

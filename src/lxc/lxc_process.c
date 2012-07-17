@@ -167,6 +167,9 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     virNetDevVPortProfilePtr vport = NULL;
 
+    VIR_DEBUG("Stopping VM name=%s pid=%d reason=%d",
+              vm->def->name, (int)vm->pid, (int)reason);
+
     /* now that we know it's stopped call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
         char *xml = virDomainDefFormat(vm->def, 0);
@@ -509,7 +512,7 @@ static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED,
     if (!priv->doneStopEvent) {
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
-                                         VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
+                                         priv->stopReason);
         virDomainAuditStop(vm, "shutdown");
     } else {
         VIR_DEBUG("Stop event has already been sent");
@@ -528,10 +531,31 @@ static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED,
     }
 }
 
+static void virLXCProcessMonitorExitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED,
+                                           virLXCProtocolExitStatus status,
+                                           virDomainObjPtr vm)
+{
+    virLXCDomainObjPrivatePtr priv = vm->privateData;
+
+    switch (status) {
+    case VIR_LXC_PROTOCOL_EXIT_STATUS_SHUTDOWN:
+        priv->stopReason = VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN;
+        break;
+    case VIR_LXC_PROTOCOL_EXIT_STATUS_ERROR:
+        priv->stopReason = VIR_DOMAIN_EVENT_STOPPED_FAILED;
+        break;
+    default:
+        priv->stopReason = VIR_DOMAIN_EVENT_STOPPED_FAILED;
+        break;
+    }
+    VIR_DEBUG("Domain shutoff reason %d (from status %d)",
+              priv->stopReason, status);
+}
 
 static virLXCMonitorCallbacks monitorCallbacks = {
     .eofNotify = virLXCProcessMonitorEOFNotify,
     .destroy = virLXCProcessMonitorDestroy,
+    .exitNotify = virLXCProcessMonitorExitNotify,
 };
 
 
@@ -573,6 +597,8 @@ int virLXCProcessStop(virLXCDriverPtr driver,
     virCgroupPtr group = NULL;
     int rc;
 
+    VIR_DEBUG("Stopping VM name=%s pid=%d reason=%d",
+              vm->def->name, (int)vm->pid, (int)reason);
     if (vm->pid <= 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid PID %d for container"), vm->pid);
@@ -1006,6 +1032,7 @@ int virLXCProcessStart(virConnectPtr conn,
         goto cleanup;
     }
 
+    priv->stopReason = VIR_DOMAIN_EVENT_STOPPED_FAILED;
     vm->def->id = vm->pid;
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
     priv->doneStopEvent = false;
