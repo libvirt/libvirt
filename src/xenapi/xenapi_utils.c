@@ -453,7 +453,6 @@ createVMRecordFromXml (virConnectPtr conn, virDomainDefPtr def,
     char uuidStr[VIR_UUID_STRING_BUFLEN];
     xen_string_string_map *strings = NULL;
     int device_number = 0;
-    char *bridge = NULL, *mac = NULL;
     int i;
 
     *record = xen_vm_record_alloc();
@@ -542,28 +541,21 @@ createVMRecordFromXml (virConnectPtr conn, virDomainDefPtr def,
     }
 
     for (i = 0; i < def->nnets; i++) {
-        if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-            if (def->nets[i]->data.bridge.brname)
-                if (!(bridge = strdup(def->nets[i]->data.bridge.brname)))
-                    goto error_cleanup;
-            if (def->nets[i]->mac) {
-                char macStr[VIR_MAC_STRING_BUFLEN];
-                virMacAddrFormat(def->nets[i]->mac, macStr);
-                if (!(mac = strdup(macStr))) {
-                    VIR_FREE(bridge);
-                    goto error_cleanup;
-                }
+        if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_BRIDGE &&
+            def->nets[i]->data.bridge.brname) {
+            char *mac;
+
+            if (VIR_ALLOC_N(mac, VIR_MAC_STRING_BUFLEN) < 0)
+                goto error_cleanup;
+            virMacAddrFormat(&def->nets[i]->mac, mac);
+
+            if (createVifNetwork(conn, *vm, device_number,
+                                 def->nets[i]->data.bridge.brname,
+                                 mac) < 0) {
+                VIR_FREE(mac);
+                goto error_cleanup;
             }
-            if (mac != NULL && bridge != NULL) {
-                if (createVifNetwork(conn, *vm, device_number, bridge,
-                                     mac) < 0) {
-                    VIR_FREE(bridge);
-                    goto error_cleanup;
-                }
-                VIR_FREE(bridge);
-                device_number++;
-            }
-            VIR_FREE(bridge);
+            device_number++;
         }
     }
     return 0;
