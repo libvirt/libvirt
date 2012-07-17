@@ -2200,7 +2200,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver ATTRIBUTE_UNUSED,
                         const char *linkdev ATTRIBUTE_UNUSED,
                         enum virDomainNetType nettype ATTRIBUTE_UNUSED,
                         const unsigned char *vmuuid ATTRIBUTE_UNUSED,
-                        const unsigned char *macaddr ATTRIBUTE_UNUSED,
+                        const virMacAddrPtr *macaddr ATTRIBUTE_UNUSED,
                         const char *filtername ATTRIBUTE_UNUSED,
                         virNWFilterHashTablePtr filterparams ATTRIBUTE_UNUSED,
                         virNWFilterDriverStatePtr driver ATTRIBUTE_UNUSED)
