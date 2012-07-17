@@ -339,42 +339,54 @@ int qemuSetupCgroup(struct qemud_driver *driver,
         }
     }
 
-    if (vm->def->mem.hard_limit != 0 ||
-        vm->def->mem.soft_limit != 0 ||
-        vm->def->mem.swap_hard_limit != 0) {
-        if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_MEMORY)) {
-            if (vm->def->mem.hard_limit != 0) {
-                rc = virCgroupSetMemoryHardLimit(cgroup, vm->def->mem.hard_limit);
-                if (rc != 0) {
-                    virReportSystemError(-rc,
-                                         _("Unable to set memory hard limit for domain %s"),
-                                         vm->def->name);
-                    goto cleanup;
-                }
-            }
-            if (vm->def->mem.soft_limit != 0) {
-                rc = virCgroupSetMemorySoftLimit(cgroup, vm->def->mem.soft_limit);
-                if (rc != 0) {
-                    virReportSystemError(-rc,
-                                         _("Unable to set memory soft limit for domain %s"),
-                                         vm->def->name);
-                    goto cleanup;
-                }
-            }
+    if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_MEMORY)) {
+        unsigned long long hard_limit = vm->def->mem.hard_limit;
 
-            if (vm->def->mem.swap_hard_limit != 0) {
-                rc = virCgroupSetMemSwapHardLimit(cgroup, vm->def->mem.swap_hard_limit);
-                if (rc != 0) {
-                    virReportSystemError(-rc,
-                                         _("Unable to set swap hard limit for domain %s"),
-                                         vm->def->name);
-                    goto cleanup;
-                }
-            }
-        } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Memory cgroup is not available on this host"));
+        if (!hard_limit) {
+            /* If there is no hard_limit set, set a reasonable
+             * one to avoid system trashing caused by exploited qemu.
+             * As 'reasonable limit' has been chosen:
+             *     (1 + k) * (domain memory + total video memory) + F
+             * where k = 0.02 and F = 200MB. */
+            hard_limit = vm->def->mem.max_balloon;
+            for (i = 0; i < vm->def->nvideos; i++)
+                hard_limit += vm->def->videos[i]->vram;
+            hard_limit = hard_limit * 1.02 + 204800;
         }
+
+        rc = virCgroupSetMemoryHardLimit(cgroup, hard_limit);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to set memory hard limit for domain %s"),
+                                 vm->def->name);
+            goto cleanup;
+        }
+        if (vm->def->mem.soft_limit != 0) {
+            rc = virCgroupSetMemorySoftLimit(cgroup, vm->def->mem.soft_limit);
+            if (rc != 0) {
+                virReportSystemError(-rc,
+                                     _("Unable to set memory soft limit for domain %s"),
+                                     vm->def->name);
+                goto cleanup;
+            }
+        }
+
+        if (vm->def->mem.swap_hard_limit != 0) {
+            rc = virCgroupSetMemSwapHardLimit(cgroup, vm->def->mem.swap_hard_limit);
+            if (rc != 0) {
+                virReportSystemError(-rc,
+                                     _("Unable to set swap hard limit for domain %s"),
+                                     vm->def->name);
+                goto cleanup;
+            }
+        }
+    } else if (vm->def->mem.hard_limit != 0 ||
+               vm->def->mem.soft_limit != 0 ||
+               vm->def->mem.swap_hard_limit != 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Memory cgroup is not available on this host"));
+    } else {
+        VIR_WARN("Could not autoset a RSS limit for domain %s", vm->def->name);
     }
 
     if (vm->def->cputune.shares != 0) {
