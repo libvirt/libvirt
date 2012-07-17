@@ -1775,15 +1775,6 @@ static const virAttributes virAttr[] = {
     PROTOCOL_ENTRY_LAST
 };
 
-
-static int
-virNWMACAddressParser(const char *input,
-                      nwMACAddressPtr output)
-{
-    return virMacAddrParse(input, &output->addr[0]);
-}
-
-
 static int
 virNWFilterRuleDetailsParse(xmlNodePtr node,
                             virNWFilterRuleDefPtr nwf,
@@ -1916,8 +1907,8 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                         break;
 
                         case DATATYPE_MACADDR:
-                            if (virNWMACAddressParser(prop,
-                                                      &item->u.macaddr) < 0) {
+                            if (virMacAddrParse(prop,
+                                                &item->u.macaddr) < 0) {
                                 rc = -1;
                             }
                             found = 1;
@@ -1925,8 +1916,8 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
 
                         case DATATYPE_MACMASK:
                             validator = checkMACMask;
-                            if (virNWMACAddressParser(prop,
-                                                      &item->u.macaddr) < 0) {
+                            if (virMacAddrParse(prop,
+                                                &item->u.macaddr) < 0) {
                                 rc = -1;
                             }
                             data.v = &item->u.macaddr;

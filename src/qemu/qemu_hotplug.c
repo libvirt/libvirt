@@ -1226,7 +1226,7 @@ static virDomainNetDefPtr qemuDomainFindNet(virDomainObjPtr vm,
     int i;
 
     for (i = 0; i < vm->def->nnets; i++) {
-        if (memcmp(vm->def->nets[i]->mac, dev->mac, VIR_MAC_BUFLEN) == 0)
+        if (virMacAddrCmp(&vm->def->nets[i]->mac, &dev->mac) == 0)
             return vm->def->nets[i];
     }
 
@@ -2190,7 +2190,7 @@ qemuDomainDetachNetDevice(struct qemud_driver *driver,
     for (i = 0 ; i < vm->def->nnets ; i++) {
         virDomainNetDefPtr net = vm->def->nets[i];
 
-        if (!memcmp(net->mac, dev->data.net->mac,  sizeof(net->mac))) {
+        if (!virMacAddrCmp(&net->mac, &dev->data.net->mac)) {
             detach = net;
             break;
         }
@@ -2199,9 +2199,9 @@ qemuDomainDetachNetDevice(struct qemud_driver *driver,
     if (!detach) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         _("network device %02x:%02x:%02x:%02x:%02x:%02x not found"),
-                        dev->data.net->mac[0], dev->data.net->mac[1],
-                        dev->data.net->mac[2], dev->data.net->mac[3],
-                        dev->data.net->mac[4], dev->data.net->mac[5]);
+                        dev->data.net->mac.addr[0], dev->data.net->mac.addr[1],
+                        dev->data.net->mac.addr[2], dev->data.net->mac.addr[3],
+                        dev->data.net->mac.addr[4], dev->data.net->mac.addr[5]);
         goto cleanup;
     }
 
@@ -2280,7 +2280,7 @@ qemuDomainDetachNetDevice(struct qemud_driver *driver,
 
     if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_DIRECT) {
         ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
-                         detach->ifname, detach->mac,
+                         detach->ifname, &detach->mac,
                          virDomainNetGetActualDirectDev(detach),
                          virDomainNetGetActualDirectMode(detach),
                          virDomainNetGetActualVirtPortProfile(detach),
@@ -2291,7 +2291,7 @@ qemuDomainDetachNetDevice(struct qemud_driver *driver,
     if ((driver->macFilter) && (detach->ifname != NULL)) {
         if ((errno = networkDisallowMacOnPort(driver,
                                               detach->ifname,
-                                              detach->mac))) {
+                                              &detach->mac))) {
             virReportSystemError(errno,
              _("failed to remove ebtables rule on  '%s'"),
                                  detach->ifname);

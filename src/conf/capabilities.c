@@ -859,14 +859,14 @@ virCapabilitiesFormatXML(virCapsPtr caps)
 
 extern void
 virCapabilitiesSetMacPrefix(virCapsPtr caps,
-                            unsigned char *prefix)
+                            const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN])
 {
     memcpy(caps->macPrefix, prefix, sizeof(caps->macPrefix));
 }
 
 extern void
 virCapabilitiesGenerateMac(virCapsPtr caps,
-                           unsigned char *mac)
+                           virMacAddrPtr mac)
 {
     virMacAddrGenerate(caps->macPrefix, mac);
 }

@@ -484,7 +484,7 @@ virNWFilterSnoopIPLeaseInstallRule(virNWFilterSnoopIPLeasePtr ipl,
                                               req->ifindex,
                                               req->linkdev,
                                               req->nettype,
-                                              req->macaddr,
+                                              &req->macaddr,
                                               req->filtername,
                                               req->vars,
                                               req->driver);
@@ -875,7 +875,7 @@ virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
                                                req->ifindex,
                                                req->linkdev,
                                                req->nettype,
-                                               req->macaddr,
+                                               &req->macaddr,
                                                req->filtername,
                                                req->vars,
                                                req->driver);
@@ -884,7 +884,7 @@ virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
             virHashLookup(req->vars->hashTable, NWFILTER_VARNAME_DHCPSERVER);
 
         if (req->techdriver &&
-            req->techdriver->applyDHCPOnlyRules(req->ifname, req->macaddr,
+            req->techdriver->applyDHCPOnlyRules(req->ifname, &req->macaddr,
                                                 dhcpsrvrs, false) < 0) {
             virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("virNWFilterSnoopListDel failed"));
@@ -1071,7 +1071,7 @@ virNWFilterSnoopDHCPOpen(const char *ifname, virMacAddr *mac,
     char macaddr[VIR_MAC_STRING_BUFLEN];
     const char *ext;
 
-    virMacAddrFormat((unsigned char *)mac, macaddr);
+    virMacAddrFormat(mac, macaddr);
 
     if (dir == PCAP_D_IN /* from VM */) {
         /*
@@ -1560,7 +1560,7 @@ exit:
 
 static void
 virNWFilterSnoopIFKeyFMT(char *ifkey, const unsigned char *vmuuid,
-                         unsigned const char *macaddr)
+                         const virMacAddrPtr macaddr)
 {
     virUUIDFormat(vmuuid, ifkey);
     ifkey[VIR_UUID_STRING_BUFLEN - 1] = '-';
@@ -1573,7 +1573,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
                         const char *linkdev,
                         enum virDomainNetType nettype,
                         const unsigned char *vmuuid,
-                        const unsigned char *macaddr,
+                        const virMacAddrPtr macaddr,
                         const char *filtername,
                         virNWFilterHashTablePtr filterparams,
                         virNWFilterDriverStatePtr driver)
@@ -1609,7 +1609,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
     req->linkdev = linkdev ? strdup(linkdev) : NULL;
     req->nettype = nettype;
     req->ifname = strdup(ifname);
-    memcpy(req->macaddr, macaddr, sizeof(req->macaddr));
+    virMacAddrSet(&req->macaddr, macaddr);
     req->filtername = strdup(filtername);
     req->vars = virNWFilterHashTableCreate(0);
 
@@ -1631,7 +1631,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
     dhcpsrvrs = virHashLookup(filterparams->hashTable,
                               NWFILTER_VARNAME_DHCPSERVER);
 
-    if (techdriver->applyDHCPOnlyRules(req->ifname, req->macaddr,
+    if (techdriver->applyDHCPOnlyRules(req->ifname, &req->macaddr,
                                        dhcpsrvrs, false) < 0) {
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, _("applyDHCPOnlyRules "
                                "failed - spoofing not protected!"));

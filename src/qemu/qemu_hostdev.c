@@ -257,7 +257,7 @@ cleanup:
 static int
 qemuDomainHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
                                           virNetDevVPortProfilePtr virtPort,
-                                          const unsigned char *macaddr,
+                                          const virMacAddrPtr macaddr,
                                           const unsigned char *uuid,
                                           int associate)
 {
@@ -320,12 +320,12 @@ qemuDomainHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
                                  hostdev->parent.data.net);
     if (virtPort)
         ret = qemuDomainHostdevNetConfigVirtPortProfile(linkdev, vf,
-                            virtPort, hostdev->parent.data.net->mac, uuid,
+                            virtPort, &hostdev->parent.data.net->mac, uuid,
                             port_profile_associate);
     else
         /* Set only mac */
         ret = virNetDevReplaceNetConfig(linkdev, vf,
-                                        hostdev->parent.data.net->mac, vlanid,
+                                        &hostdev->parent.data.net->mac, vlanid,
                                         stateDir);
     VIR_FREE(linkdev);
 
@@ -358,7 +358,7 @@ qemuDomainHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
                                  hostdev->parent.data.net);
     if (virtPort)
         ret = qemuDomainHostdevNetConfigVirtPortProfile(linkdev, vf, virtPort,
-                                          hostdev->parent.data.net->mac, NULL,
+                                          &hostdev->parent.data.net->mac, NULL,
                                           port_profile_associate);
     else
         ret = virNetDevRestoreNetConfig(linkdev, vf, stateDir);

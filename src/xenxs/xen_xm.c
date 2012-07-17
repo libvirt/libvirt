@@ -742,7 +742,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 goto no_memory;
 
             if (mac[0]) {
-                if (virMacAddrParse(mac, net->mac) < 0) {
+                if (virMacAddrParse(mac, &net->mac) < 0) {
                     XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
                                _("malformed mac address '%s'"), mac);
                     goto cleanup;
@@ -1326,9 +1326,9 @@ static int xenFormatXMNet(virConnectPtr conn,
     virConfValuePtr val, tmp;
 
     virBufferAsprintf(&buf, "mac=%02x:%02x:%02x:%02x:%02x:%02x",
-                      net->mac[0], net->mac[1],
-                      net->mac[2], net->mac[3],
-                      net->mac[4], net->mac[5]);
+                      net->mac.addr[0], net->mac.addr[1],
+                      net->mac.addr[2], net->mac.addr[3],
+                      net->mac.addr[4], net->mac.addr[5]);
 
     switch (net->type) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:

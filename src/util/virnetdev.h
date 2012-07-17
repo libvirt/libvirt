@@ -25,6 +25,7 @@
 
 # include "virsocketaddr.h"
 # include "virnetlink.h"
+# include "virmacaddr.h"
 
 int virNetDevExists(const char *brname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
@@ -49,14 +50,14 @@ int virNetDevGetIPv4Address(const char *ifname, virSocketAddrPtr addr)
 
 
 int virNetDevSetMAC(const char *ifname,
-                    const unsigned char *macaddr)
+                    const virMacAddrPtr macaddr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 int virNetDevGetMAC(const char *ifname,
-                    unsigned char *macaddr)
+                    virMacAddrPtr macaddr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevReplaceMacAddress(const char *linkdev,
-                               const unsigned char *macaddress,
+                               const virMacAddrPtr macaddress,
                                const char *stateDir)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_RETURN_CHECK;
@@ -86,7 +87,7 @@ int virNetDevGetVLanID(const char *ifname, int *vlanid)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevValidateConfig(const char *ifname,
-                            const unsigned char *macaddr, int ifindex)
+                            const virMacAddrPtr macaddr, int ifindex)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevIsVirtualFunction(const char *ifname)
@@ -113,7 +114,7 @@ int virNetDevLinkDump(const char *ifname, int ifindex,
     ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevReplaceNetConfig(char *linkdev, int vf,
-                              const unsigned char *macaddress, int vlanid,
+                              const virMacAddrPtr macaddress, int vlanid,
                               char *stateDir)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(5);
 

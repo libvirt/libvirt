@@ -306,7 +306,7 @@ _printDataType(virNWFilterVarCombIterPtr vars,
             return -1;
         }
 
-        virMacAddrFormat(item->u.macaddr.addr, buf);
+        virMacAddrFormat(&item->u.macaddr, buf);
     break;
 
     case DATATYPE_IPV6MASK:
@@ -3189,7 +3189,7 @@ ebiptablesCanApplyBasicRules(void) {
  */
 static int
 ebtablesApplyBasicRules(const char *ifname,
-                        const unsigned char *macaddr)
+                        const virMacAddrPtr macaddr)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char chain[MAX_CHAINNAME_LENGTH];
@@ -3282,7 +3282,7 @@ tear_down_tmpebchains:
  */
 static int
 ebtablesApplyDHCPOnlyRules(const char *ifname,
-                           const unsigned char *macaddr,
+                           const virMacAddrPtr macaddr,
                            virNWFilterVarValuePtr dhcpsrvrs,
                            bool leaveTemporary)
 {

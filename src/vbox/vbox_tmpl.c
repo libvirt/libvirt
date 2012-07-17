@@ -3038,7 +3038,7 @@ sharedFoldersCleanup:
                                  MACAddress[8], MACAddress[9], MACAddress[10], MACAddress[11]);
 
                         /* XXX some real error handling here some day ... */
-                        if (virMacAddrParse(macaddr, def->nets[netAdpIncCnt]->mac) < 0)
+                        if (virMacAddrParse(macaddr, &def->nets[netAdpIncCnt]->mac) < 0)
                         {}
 
                         netAdpIncCnt++;
@@ -4387,15 +4387,15 @@ vboxAttachNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         char macaddr[VIR_MAC_STRING_BUFLEN] = {0};
         char macaddrvbox[VIR_MAC_STRING_BUFLEN - 5] = {0};
 
-        virMacAddrFormat(def->nets[i]->mac, macaddr);
+        virMacAddrFormat(&def->nets[i]->mac, macaddr);
         snprintf(macaddrvbox, VIR_MAC_STRING_BUFLEN - 5,
                  "%02X%02X%02X%02X%02X%02X",
-                 def->nets[i]->mac[0],
-                 def->nets[i]->mac[1],
-                 def->nets[i]->mac[2],
-                 def->nets[i]->mac[3],
-                 def->nets[i]->mac[4],
-                 def->nets[i]->mac[5]);
+                 def->nets[i]->mac.addr[0],
+                 def->nets[i]->mac.addr[1],
+                 def->nets[i]->mac.addr[2],
+                 def->nets[i]->mac.addr[3],
+                 def->nets[i]->mac.addr[4],
+                 def->nets[i]->mac.addr[5]);
         macaddrvbox[VIR_MAC_STRING_BUFLEN - 6] = '\0';
 
         VIR_DEBUG("NIC(%d): Type:   %d", i, def->nets[i]->type);

@@ -31,7 +31,7 @@
 
 int virNetDevOpenvswitchAddPort(const char *brname,
                                 const char *ifname,
-                                const unsigned char *macaddr,
+                                const virMacAddrPtr macaddr,
                                 const unsigned char *vmuuid,
                                 virNetDevVPortProfilePtr ovsport)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)

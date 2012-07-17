@@ -28,6 +28,7 @@
 # include "internal.h"
 # include "uuid.h"
 # include "util.h"
+# include "virmacaddr.h"
 
 # define LIBVIRT_IFLA_VF_PORT_PROFILE_MAX 40
 
@@ -83,7 +84,7 @@ bool virNetDevVPortProfileEqual(virNetDevVPortProfilePtr a,
 
 int virNetDevVPortProfileAssociate(const char *ifname,
                                    const virNetDevVPortProfilePtr virtPort,
-                                   const unsigned char *macaddr,
+                                   const virMacAddrPtr macaddr,
                                    const char *linkdev,
                                    int vf,
                                    const unsigned char *vmuuid,
@@ -94,7 +95,7 @@ int virNetDevVPortProfileAssociate(const char *ifname,
 
 int virNetDevVPortProfileDisassociate(const char *ifname,
                                       const virNetDevVPortProfilePtr virtPort,
-                                      const unsigned char *macaddr,
+                                      const virMacAddrPtr macaddr,
                                       const char *linkdev,
                                       int vf,
                                       enum virNetDevVPortProfileOp vmOp)

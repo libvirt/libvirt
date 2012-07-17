@@ -62,6 +62,76 @@ virMacAddrCompare(const char *p, const char *q)
 }
 
 /**
+ * virMacAddrCmp:
+ * @mac1: pointer to 1st MAC address
+ * @mac2: pointer to 2nd MAC address
+ *
+ * Return 0 if MAC addresses are equal,
+ * < 0 if mac1 < mac2,
+ * > 0 if mac1 > mac2
+ */
+int
+virMacAddrCmp(const virMacAddrPtr mac1, const virMacAddrPtr mac2)
+{
+    return memcmp(mac1->addr, mac2->addr, VIR_MAC_BUFLEN);
+}
+
+/**
+ * virMacAddrCmpRaw:
+ * @mac1: pointer to 1st MAC address
+ * @mac2: pointer to 2nd MAC address in plain buffer
+ *
+ * Return 0 if MAC addresses are equal,
+ * < 0 if mac1 < mac2,
+ * > 0 if mac1 > mac2
+ */
+int
+virMacAddrCmpRaw(const virMacAddrPtr mac1,
+                 const unsigned char mac2[VIR_MAC_BUFLEN])
+{
+    return memcmp(mac1->addr, mac2, VIR_MAC_BUFLEN);
+}
+
+/**
+ * virMacAddrSet
+ * @dst: pointer to destination
+ * @src: pointer to source
+ *
+ * Copy src to dst
+ */
+void
+virMacAddrSet(virMacAddrPtr dst, const virMacAddrPtr src)
+{
+    memcpy(dst, src, sizeof(*src));
+}
+
+/**
+ * virMacAddrSetRaw
+ * @dst: pointer to destination to hold MAC address
+ * @src: raw MAC address data
+ *
+ * Set the MAC address to the given value
+ */
+void
+virMacAddrSetRaw(virMacAddrPtr dst, const unsigned char src[VIR_MAC_BUFLEN])
+{
+    memcpy(dst->addr, src, VIR_MAC_BUFLEN);
+}
+
+/**
+ * virMacAddrGetRaw
+ * @src: pointer to MAC address
+ * @dst: pointer to raw memory to write MAC address into
+ *
+ * Copies the MAC address into raw memory
+ */
+void
+virMacAddrGetRaw(virMacAddrPtr src, unsigned char dst[VIR_MAC_BUFLEN])
+{
+    memcpy(dst, src->addr, VIR_MAC_BUFLEN);
+}
+
+/**
  * virMacAddrParse:
  * @str: string representation of MAC address, e.g., "0:1E:FC:E:3a:CB"
  * @addr: 6-byte MAC address
@@ -71,7 +141,7 @@ virMacAddrCompare(const char *p, const char *q)
  * Return 0 upon success, or -1 in case of error.
  */
 int
-virMacAddrParse(const char* str, unsigned char *addr)
+virMacAddrParse(const char* str, virMacAddrPtr addr)
 {
     int i;
 
@@ -93,7 +163,7 @@ virMacAddrParse(const char* str, unsigned char *addr)
             (0xFF < result))
             break;
 
-        addr[i] = (unsigned char) result;
+        addr->addr[i] = (unsigned char) result;
 
         if ((i == 5) && (*end_ptr == '\0'))
             return 0;
@@ -106,36 +176,36 @@ virMacAddrParse(const char* str, unsigned char *addr)
     return -1;
 }
 
-void virMacAddrFormat(const unsigned char *addr,
+void virMacAddrFormat(const virMacAddrPtr addr,
                       char *str)
 {
     snprintf(str, VIR_MAC_STRING_BUFLEN,
              "%02X:%02X:%02X:%02X:%02X:%02X",
-             addr[0], addr[1], addr[2],
-             addr[3], addr[4], addr[5]);
+             addr->addr[0], addr->addr[1], addr->addr[2],
+             addr->addr[3], addr->addr[4], addr->addr[5]);
     str[VIR_MAC_STRING_BUFLEN-1] = '\0';
 }
 
-void virMacAddrGenerate(const unsigned char *prefix,
-                        unsigned char *addr)
+void virMacAddrGenerate(const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN],
+                        virMacAddrPtr addr)
 {
-    addr[0] = prefix[0];
-    addr[1] = prefix[1];
-    addr[2] = prefix[2];
-    addr[3] = virRandomBits(8);
-    addr[4] = virRandomBits(8);
-    addr[5] = virRandomBits(8);
+    addr->addr[0] = prefix[0];
+    addr->addr[1] = prefix[1];
+    addr->addr[2] = prefix[2];
+    addr->addr[3] = virRandomBits(8);
+    addr->addr[4] = virRandomBits(8);
+    addr->addr[5] = virRandomBits(8);
 }
 
 /* The low order bit of the first byte is the "multicast" bit. */
 bool
-virMacAddrIsMulticast(const unsigned char *addr)
+virMacAddrIsMulticast(const virMacAddrPtr mac)
 {
-    return !!(addr[0] & 1);
+    return !!(mac->addr[0] & 1);
 }
 
 bool
-virMacAddrIsUnicast(const unsigned char *addr)
+virMacAddrIsUnicast(const virMacAddrPtr mac)
 {
-    return !(addr[0] & 1);
+    return !(mac->addr[0] & 1);
 }

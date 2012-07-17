@@ -1277,12 +1277,17 @@ virKeyFileGetValueString;
 
 
 # virmacaddr.h
+virMacAddrCmp;
+virMacAddrCmpRaw;
 virMacAddrCompare;
 virMacAddrFormat;
 virMacAddrGenerate;
+virMacAddrGetRaw;
 virMacAddrIsMulticast;
 virMacAddrIsUnicast;
 virMacAddrParse;
+virMacAddrSet;
+virMacAddrSetRaw;
 
 
 # virnetclient.h

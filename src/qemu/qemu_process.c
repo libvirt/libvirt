@@ -4027,7 +4027,7 @@ void qemuProcessStop(struct qemud_driver *driver,
             if (net->ifname == NULL)
                 continue;
             if ((errno = networkDisallowMacOnPort(driver, net->ifname,
-                                                  net->mac))) {
+                                                  &net->mac))) {
                 virReportSystemError(errno,
              _("failed to remove ebtables rule to allow MAC address on  '%s'"),
                                      net->ifname);
@@ -4100,7 +4100,7 @@ void qemuProcessStop(struct qemud_driver *driver,
         virDomainNetDefPtr net = def->nets[i];
         if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
             ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
-                             net->ifname, net->mac,
+                             net->ifname, &net->mac,
                              virDomainNetGetActualDirectDev(net),
                              virDomainNetGetActualDirectMode(net),
                              virDomainNetGetActualVirtPortProfile(net),

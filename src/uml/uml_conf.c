@@ -138,7 +138,7 @@ umlConnectTapDevice(virConnectPtr conn,
         template_ifname = true;
     }
 
-    if (virNetDevTapCreateInBridgePort(bridge, &net->ifname, net->mac,
+    if (virNetDevTapCreateInBridgePort(bridge, &net->ifname, &net->mac,
                                        vm->uuid, NULL,
                                        virDomainNetGetActualVirtPortProfile(net),
                                        VIR_NETDEV_TAP_CREATE_IFUP) < 0) {
@@ -271,8 +271,8 @@ umlBuildCommandLineNet(virConnectPtr conn,
     }
 
     virBufferAsprintf(&buf, ",%02x:%02x:%02x:%02x:%02x:%02x",
-                      def->mac[0], def->mac[1], def->mac[2],
-                      def->mac[3], def->mac[4], def->mac[5]);
+                      def->mac.addr[0], def->mac.addr[1], def->mac.addr[2],
+                      def->mac.addr[3], def->mac.addr[4], def->mac.addr[5]);
 
     if (def->type == VIR_DOMAIN_NET_TYPE_MCAST) {
         virBufferAsprintf(&buf, ",%s,%d",

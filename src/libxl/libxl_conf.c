@@ -596,7 +596,7 @@ libxlMakeNic(virDomainDefPtr def, virDomainNetDefPtr l_nic,
     //x_nics[i].mtu = 1492;
 
     x_nic->domid = def->id;
-    memcpy(x_nic->mac, l_nic->mac, sizeof(libxl_mac));
+    virMacAddrGetRaw(&l_nic->mac, x_nic->mac);
 
     if (l_nic->model && !STREQ(l_nic->model, "netfront")) {
         if ((x_nic->model = strdup(l_nic->model)) == NULL) {

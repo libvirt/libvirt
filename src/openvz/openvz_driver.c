@@ -735,7 +735,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
     int rc = 0, narg;
     const char *prog[OPENVZ_MAX_ARG];
     char macaddr[VIR_MAC_STRING_BUFLEN];
-    unsigned char host_mac[VIR_MAC_BUFLEN];
+    virMacAddr host_mac;
     char host_macaddr[VIR_MAC_STRING_BUFLEN];
     struct openvz_driver *driver =  conn->privateData;
     char *opt = NULL;
@@ -770,9 +770,9 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
         ADD_ARG_LIT(vpsid);
     }
 
-    virMacAddrFormat(net->mac, macaddr);
-    virCapabilitiesGenerateMac(driver->caps, host_mac);
-    virMacAddrFormat(host_mac, host_macaddr);
+    virMacAddrFormat(&net->mac, macaddr);
+    virCapabilitiesGenerateMac(driver->caps, &host_mac);
+    virMacAddrFormat(&host_mac, host_macaddr);
 
     if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
         (net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&

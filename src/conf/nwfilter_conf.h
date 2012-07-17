@@ -36,6 +36,7 @@
 # include "xml.h"
 # include "buf.h"
 # include "virsocketaddr.h"
+# include "virmacaddr.h"
 
 /* XXX
  * The config parser/structs should not be using platform specific
@@ -113,13 +114,6 @@ enum attrDatatype {
 # define NWFILTER_MAC_BGA "01:80:c2:00:00:00"
 
 
-typedef struct _nwMACAddress nwMACAddress;
-typedef nwMACAddress *nwMACAddressPtr;
-struct _nwMACAddress {
-    unsigned char addr[6];
-};
-
-
 typedef struct _nwItemDesc nwItemDesc;
 typedef nwItemDesc *nwItemDescPtr;
 struct _nwItemDesc {
@@ -127,7 +121,7 @@ struct _nwItemDesc {
     virNWFilterVarAccessPtr varAccess;
     enum attrDatatype datatype;
     union {
-        nwMACAddress macaddr;
+        virMacAddr macaddr;
         virSocketAddr ipaddr;
         bool         boolean;
         uint8_t      u8;
@@ -633,10 +627,10 @@ typedef int (*virNWFilterRuleDisplayInstanceData)(void *_inst);
 typedef int (*virNWFilterCanApplyBasicRules)(void);
 
 typedef int (*virNWFilterApplyBasicRules)(const char *ifname,
-                                          const unsigned char *macaddr);
+                                          const virMacAddrPtr macaddr);
 
 typedef int (*virNWFilterApplyDHCPOnlyRules)(const char *ifname,
-                                             const unsigned char *macaddr,
+                                             const virMacAddrPtr macaddr,
                                              virNWFilterVarValuePtr dhcpsrvs,
                                              bool leaveTemporary);
 

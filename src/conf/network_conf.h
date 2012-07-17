@@ -154,7 +154,7 @@ struct _virNetworkDef {
     char *domain;
     unsigned long delay;   /* Bridge forward delay (ms) */
     unsigned int stp :1; /* Spanning tree protocol */
-    unsigned char mac[VIR_MAC_BUFLEN]; /* mac address of bridge device */
+    virMacAddr mac; /* mac address of bridge device */
     bool mac_specified;
 
     int forwardType;    /* One of virNetworkForwardType constants */

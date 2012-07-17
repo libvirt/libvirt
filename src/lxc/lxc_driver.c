@@ -1202,11 +1202,11 @@ static int lxcSetupInterfaceBridged(virConnectPtr conn,
     (*veths)[(*nveths)] = containerVeth;
     (*nveths)++;
 
-    if (virNetDevSetMAC(containerVeth, net->mac) < 0)
+    if (virNetDevSetMAC(containerVeth, &net->mac) < 0)
         goto cleanup;
 
     if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
-        ret = virNetDevOpenvswitchAddPort(brname, parentVeth, net->mac,
+        ret = virNetDevOpenvswitchAddPort(brname, parentVeth, &net->mac,
                                           vm->uuid, vport);
     else
         ret = virNetDevBridgeAddPort(brname, parentVeth);
@@ -1280,7 +1280,7 @@ static int lxcSetupInterfaceDirect(virConnectPtr conn,
     (*veths)[(*nveths)] = NULL;
 
     if (virNetDevMacVLanCreateWithVPortProfile(
-            net->ifname, net->mac,
+            net->ifname, &net->mac,
             virDomainNetGetActualDirectDev(net),
             virDomainNetGetActualDirectMode(net),
             false, false, def->uuid,

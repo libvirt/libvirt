@@ -66,7 +66,7 @@ networkDisableAllFrames(struct qemud_driver *driver) {
 int
 networkAllowMacOnPort(struct qemud_driver *driver,
                       const char * ifname,
-                      const unsigned char * mac) {
+                      const virMacAddrPtr mac) {
 
     int err;
 
@@ -87,7 +87,7 @@ networkAllowMacOnPort(struct qemud_driver *driver,
 int
 networkDisallowMacOnPort(struct qemud_driver *driver,
                          const char * ifname,
-                         const unsigned char * mac) {
+                         const virMacAddrPtr mac) {
 
     int err;
 

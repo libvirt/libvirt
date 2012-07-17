@@ -44,7 +44,7 @@
  * Returns 0 in case of success or -1 in case of failure.
  */
 int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
-                                   const unsigned char *macaddr,
+                                   const virMacAddrPtr macaddr,
                                    const unsigned char *vmuuid,
                                    virNetDevVPortProfilePtr ovsport)
 {

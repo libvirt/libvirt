@@ -4641,20 +4641,20 @@ virDomainNetDefParseXML(virCapsPtr caps,
     }
 
     if (macaddr) {
-        if (virMacAddrParse((const char *)macaddr, def->mac) < 0) {
+        if (virMacAddrParse((const char *)macaddr, &def->mac) < 0) {
             virDomainReportError(VIR_ERR_XML_ERROR,
                                  _("unable to parse mac address '%s'"),
                                  (const char *)macaddr);
             goto error;
         }
-        if (virMacAddrIsMulticast(def->mac)) {
+        if (virMacAddrIsMulticast(&def->mac)) {
             virDomainReportError(VIR_ERR_XML_ERROR,
                                  _("expected unicast mac address, found multicast '%s'"),
                                  (const char *)macaddr);
             goto error;
         }
     } else {
-        virCapabilitiesGenerateMac(caps, def->mac);
+        virCapabilitiesGenerateMac(caps, &def->mac);
     }
 
     if (devaddr) {
@@ -7443,12 +7443,12 @@ int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net)
     return 0;
 }
 
-int virDomainNetIndexByMac(virDomainDefPtr def, const unsigned char *mac)
+int virDomainNetIndexByMac(virDomainDefPtr def, const virMacAddrPtr mac)
 {
     int i;
 
     for (i = 0; i < def->nnets; i++)
-        if (!memcmp(def->nets[i]->mac, mac, VIR_MAC_BUFLEN))
+        if (!virMacAddrCmp(&def->nets[i]->mac, mac))
             return i;
     return -1;
 }
@@ -7489,7 +7489,7 @@ virDomainNetRemove(virDomainDefPtr def, size_t i)
 }
 
 virDomainNetDefPtr
-virDomainNetRemoveByMac(virDomainDefPtr def, const unsigned char *mac)
+virDomainNetRemoveByMac(virDomainDefPtr def, const virMacAddrPtr mac)
 {
     int i = virDomainNetIndexByMac(def, mac);
 
@@ -9712,14 +9712,14 @@ static bool virDomainNetDefCheckABIStability(virDomainNetDefPtr src,
 {
     bool identical = false;
 
-    if (memcmp(src->mac, dst->mac, VIR_MAC_BUFLEN) != 0) {
+    if (virMacAddrCmp(&src->mac, &dst->mac) != 0) {
         virDomainReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                              _("Target network card mac %02x:%02x:%02x:%02x:%02x:%02x"
                                "does not match source %02x:%02x:%02x:%02x:%02x:%02x"),
-                             dst->mac[0], dst->mac[1], dst->mac[2],
-                             dst->mac[3], dst->mac[4], dst->mac[5],
-                             src->mac[0], src->mac[1], src->mac[2],
-                             src->mac[3], src->mac[4], src->mac[5]);
+                             dst->mac.addr[0], dst->mac.addr[1], dst->mac.addr[2],
+                             dst->mac.addr[3], dst->mac.addr[4], dst->mac.addr[5],
+                             src->mac.addr[0], src->mac.addr[1], src->mac.addr[2],
+                             src->mac.addr[3], src->mac.addr[4], src->mac.addr[5]);
         goto cleanup;
     }
 
@@ -11575,8 +11575,8 @@ virDomainNetDefFormat(virBufferPtr buf,
 
     virBufferAsprintf(buf,
                       "      <mac address='%02x:%02x:%02x:%02x:%02x:%02x'/>\n",
-                      def->mac[0], def->mac[1], def->mac[2],
-                      def->mac[3], def->mac[4], def->mac[5]);
+                      def->mac.addr[0], def->mac.addr[1], def->mac.addr[2],
+                      def->mac.addr[3], def->mac.addr[4], def->mac.addr[5]);
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
@@ -15146,15 +15146,15 @@ virDomainNetFind(virDomainDefPtr def, const char *device)
 {
     bool isMac = false;
     virDomainNetDefPtr net = NULL;
-    unsigned char mac[VIR_MAC_BUFLEN];
+    virMacAddr mac;
     int i;
 
-    if (virMacAddrParse(device, mac) == 0)
+    if (virMacAddrParse(device, &mac) == 0)
         isMac = true;
 
     if (isMac) {
         for (i = 0; i < def->nnets; i++) {
-            if (memcmp(mac, def->nets[i]->mac, VIR_MAC_BUFLEN) == 0) {
+            if (virMacAddrCmp(&mac, &def->nets[i]->mac) == 0) {
                 net = def->nets[i];
                 break;
             }

@@ -26,10 +26,10 @@
 
 int networkAllowMacOnPort(struct qemud_driver *driver,
                           const char * ifname,
-                          const unsigned char * mac);
+                          const virMacAddrPtr mac);
 int networkDisallowMacOnPort(struct qemud_driver *driver,
                              const char * ifname,
-                             const unsigned char * mac);
+                             const virMacAddrPtr mac);
 int networkDisableAllFrames(struct qemud_driver *driver);
 int networkAddEbtablesRules(struct qemud_driver *driver);
 

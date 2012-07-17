@@ -22,6 +22,7 @@
 
 # include "config.h"
 # include "internal.h"
+# include "virmacaddr.h"
 
 # include <stdint.h>
 
@@ -46,7 +47,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
 
 typedef void (*virNetlinkEventHandleCallback)(unsigned char *msg, int length, struct sockaddr_nl *peer, bool *handled, void *opaque);
 
-typedef void (*virNetlinkEventRemoveCallback)(int watch, const unsigned char *macaddr, void *opaque);
+typedef void (*virNetlinkEventRemoveCallback)(int watch, const virMacAddrPtr macaddr, void *opaque);
 
 /**
  * stopNetlinkEventServer: stop the monitor to receive netlink messages for libvirtd
@@ -73,11 +74,11 @@ int virNetlinkEventServiceLocalPid(void);
  */
 int virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
                              virNetlinkEventRemoveCallback removeCB,
-                             void *opaque, const unsigned char *macaddr);
+                             void *opaque, const virMacAddrPtr macaddr);
 
 /**
  * virNetlinkEventRemoveClient: unregister a callback from a netlink monitor
  */
-int virNetlinkEventRemoveClient(int watch, const unsigned char *macaddr);
+int virNetlinkEventRemoveClient(int watch, const virMacAddrPtr macaddr);
 
 #endif /* __VIR_NETLINK_H__ */

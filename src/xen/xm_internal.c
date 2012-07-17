@@ -1533,9 +1533,7 @@ xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
     case VIR_DOMAIN_DEVICE_NET:
     {
         for (i = 0 ; i < def->nnets ; i++) {
-            if (!memcmp(def->nets[i]->mac,
-                        dev->data.net->mac,
-                        sizeof(def->nets[i]->mac))) {
+            if (!virMacAddrCmp(&def->nets[i]->mac, &dev->data.net->mac)) {
                 virDomainNetDefFree(def->nets[i]);
                 if (i < (def->nnets - 1))
                     memmove(def->nets + i,

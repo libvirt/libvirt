@@ -30,15 +30,26 @@
 # define VIR_MAC_PREFIX_BUFLEN 3
 # define VIR_MAC_STRING_BUFLEN (VIR_MAC_BUFLEN * 3)
 
-typedef unsigned char virMacAddr[VIR_MAC_BUFLEN];
+typedef struct _virMacAddr virMacAddr;
+typedef virMacAddr *virMacAddrPtr;
+
+struct _virMacAddr {
+    unsigned char addr[VIR_MAC_BUFLEN];
+};
 
 int virMacAddrCompare(const char *mac1, const char *mac2);
-void virMacAddrFormat(const unsigned char *addr,
+int virMacAddrCmp(const virMacAddrPtr mac1, const virMacAddrPtr mac2);
+int virMacAddrCmpRaw(const virMacAddrPtr mac1,
+                     const unsigned char s[VIR_MAC_BUFLEN]);
+void virMacAddrSet(virMacAddrPtr dst, const virMacAddrPtr src);
+void virMacAddrSetRaw(virMacAddrPtr dst, const unsigned char s[VIR_MAC_BUFLEN]);
+void virMacAddrGetRaw(virMacAddrPtr src, unsigned char dst[VIR_MAC_BUFLEN]);
+void virMacAddrFormat(const virMacAddrPtr addr,
                       char *str);
-void virMacAddrGenerate(const unsigned char *prefix,
-                        unsigned char *addr);
+void virMacAddrGenerate(const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN],
+                        virMacAddrPtr addr);
 int virMacAddrParse(const char* str,
-                    unsigned char *addr) ATTRIBUTE_RETURN_CHECK;
-bool virMacAddrIsUnicast(const unsigned char *addr);
-bool virMacAddrIsMulticast(const unsigned char *addr);
+                    virMacAddrPtr addr) ATTRIBUTE_RETURN_CHECK;
+bool virMacAddrIsUnicast(const virMacAddrPtr addr);
+bool virMacAddrIsMulticast(const virMacAddrPtr addr);
 #endif /* __VIR_MACADDR_H__ */

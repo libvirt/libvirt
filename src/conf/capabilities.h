@@ -172,11 +172,11 @@ virCapabilitiesFreeNUMAInfo(virCapsPtr caps);
 
 extern void
 virCapabilitiesSetMacPrefix(virCapsPtr caps,
-                            unsigned char *prefix);
+                            const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN]);
 
 extern void
 virCapabilitiesGenerateMac(virCapsPtr caps,
-                           unsigned char *mac);
+                           virMacAddrPtr mac);
 
 extern void
 virCapabilitiesSetEmulatorRequired(virCapsPtr caps);

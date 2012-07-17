@@ -785,7 +785,7 @@ struct _virDomainActualNetDef {
 /* Stores the virtual network interface configuration */
 struct _virDomainNetDef {
     enum virDomainNetType type;
-    unsigned char mac[VIR_MAC_BUFLEN];
+    virMacAddr mac;
     char *model;
     union {
         struct {
@@ -1998,12 +1998,12 @@ virDomainDiskRemove(virDomainDefPtr def, size_t i);
 virDomainDiskDefPtr
 virDomainDiskRemoveByName(virDomainDefPtr def, const char *name);
 
-int virDomainNetIndexByMac(virDomainDefPtr def, const unsigned char *mac);
+int virDomainNetIndexByMac(virDomainDefPtr def, const virMacAddrPtr mac);
 int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net);
 virDomainNetDefPtr
 virDomainNetRemove(virDomainDefPtr def, size_t i);
 virDomainNetDefPtr
-virDomainNetRemoveByMac(virDomainDefPtr def, const unsigned char *mac);
+virDomainNetRemoveByMac(virDomainDefPtr def, const virMacAddrPtr mac);
 
 int virDomainHostdevInsert(virDomainDefPtr def, virDomainHostdevDefPtr hostdev);
 virDomainHostdevDefPtr

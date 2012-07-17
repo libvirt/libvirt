@@ -2857,7 +2857,7 @@ qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def) {
         if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
             if (virNetDevVPortProfileAssociate(net->ifname,
                                                virDomainNetGetActualVirtPortProfile(net),
-                                               net->mac,
+                                               &net->mac,
                                                virDomainNetGetActualDirectDev(net),
                                                -1,
                                                def->uuid,
@@ -2870,7 +2870,7 @@ qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def) {
             }
             VIR_DEBUG("Port profile Associate succeeded for %s", net->ifname);
 
-            if (virNetDevMacVLanVPortProfileRegisterCallback(net->ifname, net->mac,
+            if (virNetDevMacVLanVPortProfileRegisterCallback(net->ifname, &net->mac,
                                                              virDomainNetGetActualDirectDev(net), def->uuid,
                                                              virDomainNetGetActualVirtPortProfile(net),
                                                              VIR_NETDEV_VPORT_PROFILE_OP_CREATE))
@@ -2887,7 +2887,7 @@ err_exit:
         if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
             ignore_value(virNetDevVPortProfileDisassociate(net->ifname,
                                                            virDomainNetGetActualVirtPortProfile(net),
-                                                           net->mac,
+                                                           &net->mac,
                                                            virDomainNetGetActualDirectDev(net),
                                                            -1,
                                                            VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_FINISH));

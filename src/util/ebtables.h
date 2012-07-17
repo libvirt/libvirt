@@ -24,6 +24,8 @@
 #ifndef __QEMUD_EBTABLES_H__
 # define __QEMUD_EBTABLES_H__
 
+# include "virmacaddr.h"
+
 typedef struct
 {
     char  *rule;
@@ -50,10 +52,10 @@ void             ebtablesSaveRules               (ebtablesContext *ctx);
 
 int              ebtablesAddForwardAllowIn       (ebtablesContext *ctx,
                                                   const char *iface,
-                                                  const unsigned char *mac);
+                                                  const virMacAddrPtr mac);
 int              ebtablesRemoveForwardAllowIn    (ebtablesContext *ctx,
                                                   const char *iface,
-                                                  const unsigned char *mac);
+                                                  const virMacAddrPtr mac);
 
 int              ebtablesAddForwardPolicyReject(ebtablesContext *ctx);
 

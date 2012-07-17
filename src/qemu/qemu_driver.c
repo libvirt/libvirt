@@ -443,7 +443,7 @@ static void qemuDomainNetsRestart(void *payload,
             VIR_DEBUG("VEPA mode device %s active in domain %s. Reassociating.",
                       net->ifname, def->name);
             ignore_value(virNetDevMacVLanRestartWithVPortProfile(net->ifname,
-                                                                 net->mac,
+                                                                 &net->mac,
                                                                  virDomainNetGetActualDirectDev(net),
                                                                  def->uuid,
                                                                  virDomainNetGetActualVirtPortProfile(net),
@@ -5560,9 +5560,10 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
 
     case VIR_DOMAIN_DEVICE_NET:
         net = dev->data.net;
-        if (virDomainNetIndexByMac(vmdef, net->mac) >= 0) {
+        if (virDomainNetIndexByMac(vmdef, &net->mac) >= 0) {
             char macbuf[VIR_MAC_STRING_BUFLEN];
-            virMacAddrFormat(net->mac, macbuf);
+
+            virMacAddrFormat(&net->mac, macbuf);
             qemuReportError(VIR_ERR_INVALID_ARG,
                             _("mac %s already exists"), macbuf);
             return -1;
@@ -5638,10 +5639,10 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
 
     case VIR_DOMAIN_DEVICE_NET:
         net = dev->data.net;
-        if (!(det_net = virDomainNetRemoveByMac(vmdef, net->mac))) {
+        if (!(det_net = virDomainNetRemoveByMac(vmdef, &net->mac))) {
             char macbuf[VIR_MAC_STRING_BUFLEN];
 
-            virMacAddrFormat(net->mac, macbuf);
+            virMacAddrFormat(&net->mac, macbuf);
             qemuReportError(VIR_ERR_INVALID_ARG,
                             _("no nic of mac %s"), macbuf);
             return -1;
@@ -5729,9 +5730,10 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
 
     case VIR_DOMAIN_DEVICE_NET:
         net = dev->data.net;
-        if ((pos = virDomainNetIndexByMac(vmdef, net->mac)) < 0) {
+        if ((pos = virDomainNetIndexByMac(vmdef, &net->mac)) < 0) {
             char macbuf[VIR_MAC_STRING_BUFLEN];
-            virMacAddrFormat(net->mac, macbuf);
+
+            virMacAddrFormat(&net->mac, macbuf);
             qemuReportError(VIR_ERR_INVALID_ARG,
                             _("mac %s doesn't exist"), macbuf);
             return -1;

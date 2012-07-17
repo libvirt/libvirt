@@ -392,15 +392,15 @@ ebtablesForwardAllowIn(ebtablesContext *ctx,
 int
 ebtablesAddForwardAllowIn(ebtablesContext *ctx,
                           const char *iface,
-                          const unsigned char *mac)
+                          const virMacAddrPtr mac)
 {
     char *macaddr;
 
     if (virAsprintf(&macaddr,
                     "%02x:%02x:%02x:%02x:%02x:%02x",
-                    mac[0], mac[1],
-                    mac[2], mac[3],
-                    mac[4], mac[5]) < 0) {
+                    mac->addr[0], mac->addr[1],
+                    mac->addr[2], mac->addr[3],
+                    mac->addr[4], mac->addr[5]) < 0) {
         return -1;
     }
     return ebtablesForwardAllowIn(ctx, iface, macaddr, ADD);
@@ -421,15 +421,15 @@ ebtablesAddForwardAllowIn(ebtablesContext *ctx,
 int
 ebtablesRemoveForwardAllowIn(ebtablesContext *ctx,
                              const char *iface,
-                             const unsigned char *mac)
+                             const virMacAddrPtr mac)
 {
     char *macaddr;
 
     if (virAsprintf(&macaddr,
                     "%02x:%02x:%02x:%02x:%02x:%02x",
-                    mac[0], mac[1],
-                    mac[2], mac[3],
-                    mac[4], mac[5]) < 0) {
+                    mac->addr[0], mac->addr[1],
+                    mac->addr[2], mac->addr[3],
+                    mac->addr[4], mac->addr[5]) < 0) {
        return -1;
     }
     return ebtablesForwardAllowIn(ctx, iface, macaddr, REMOVE);

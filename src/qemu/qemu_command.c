@@ -157,7 +157,7 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
         vnet_hdr = 1;
 
     rc = virNetDevMacVLanCreateWithVPortProfile(
-        net->ifname, net->mac,
+        net->ifname, &net->mac,
         virDomainNetGetActualDirectDev(net),
         virDomainNetGetActualDirectMode(net),
         true, vnet_hdr, def->uuid,
@@ -251,7 +251,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         tap_create_flags |= VIR_NETDEV_TAP_CREATE_VNET_HDR;
     }
 
-    err = virNetDevTapCreateInBridgePort(brname, &net->ifname, net->mac,
+    err = virNetDevTapCreateInBridgePort(brname, &net->ifname, &net->mac,
                                          def->uuid, &tapfd,
                                          virDomainNetGetActualVirtPortProfile(net),
                                          tap_create_flags);
@@ -263,7 +263,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
     }
 
     if (driver->macFilter) {
-        if ((err = networkAllowMacOnPort(driver, net->ifname, net->mac))) {
+        if ((err = networkAllowMacOnPort(driver, net->ifname, &net->mac))) {
             virReportSystemError(err,
                  _("failed to add ebtables rule to allow MAC address on  '%s'"),
                                  net->ifname);
@@ -2857,9 +2857,9 @@ qemuBuildNicStr(virDomainNetDefPtr net,
     if (virAsprintf(&str,
                     "%smacaddr=%02x:%02x:%02x:%02x:%02x:%02x,vlan=%d%s%s%s%s",
                     prefix ? prefix : "",
-                    net->mac[0], net->mac[1],
-                    net->mac[2], net->mac[3],
-                    net->mac[4], net->mac[5],
+                    net->mac.addr[0], net->mac.addr[1],
+                    net->mac.addr[2], net->mac.addr[3],
+                    net->mac.addr[4], net->mac.addr[5],
                     vlan,
                     (net->model ? ",model=" : ""),
                     (net->model ? net->model : ""),
@@ -2937,9 +2937,9 @@ qemuBuildNicDevStr(virDomainNetDefPtr net,
         virBufferAsprintf(&buf, ",vlan=%d", vlan);
     virBufferAsprintf(&buf, ",id=%s", net->info.alias);
     virBufferAsprintf(&buf, ",mac=%02x:%02x:%02x:%02x:%02x:%02x",
-                      net->mac[0], net->mac[1],
-                      net->mac[2], net->mac[3],
-                      net->mac[4], net->mac[5]);
+                      net->mac.addr[0], net->mac.addr[1],
+                      net->mac.addr[2], net->mac.addr[3],
+                      net->mac.addr[4], net->mac.addr[5]);
     if (qemuBuildDeviceAddressStr(&buf, &net->info, qemuCaps) < 0)
         goto error;
     if (qemuBuildRomStr(&buf, &net->info, qemuCaps) < 0)
@@ -7038,7 +7038,7 @@ qemuParseCommandLineNet(virCapsPtr caps,
     for (i = 0 ; i < nkeywords ; i++) {
         if (STREQ(keywords[i], "macaddr")) {
             genmac = 0;
-            if (virMacAddrParse(values[i], def->mac) < 0) {
+            if (virMacAddrParse(values[i], &def->mac) < 0) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 _("unable to parse mac address '%s'"),
                                 values[i]);
@@ -7068,7 +7068,7 @@ qemuParseCommandLineNet(virCapsPtr caps,
     }
 
     if (genmac)
-        virCapabilitiesGenerateMac(caps, def->mac);
+        virCapabilitiesGenerateMac(caps, &def->mac);
 
 cleanup:
     for (i = 0 ; i < nkeywords ; i++) {

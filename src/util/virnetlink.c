@@ -56,7 +56,7 @@ struct virNetlinkEventHandle {
     virNetlinkEventHandleCallback handleCB;
     virNetlinkEventRemoveCallback removeCB;
     void *opaque;
-    unsigned char macaddr[VIR_MAC_BUFLEN];
+    virMacAddr macaddr;
     int deleted;
 };
 
@@ -278,7 +278,7 @@ virNetlinkEventRemoveClientPrimitive(size_t i)
 
     if (removeCB) {
         (removeCB)(server->handles[i].watch,
-                   server->handles[i].macaddr,
+                   &server->handles[i].macaddr,
                    server->handles[i].opaque);
     }
     server->handles[i].deleted = VIR_NETLINK_HANDLE_DELETED;
@@ -506,7 +506,7 @@ error_locked:
 int
 virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
                          virNetlinkEventRemoveCallback removeCB,
-                         void *opaque, const unsigned char *macaddr)
+                         void *opaque, const virMacAddrPtr macaddr)
 {
     int i, r, ret = -1;
     virNetlinkEventSrvPrivatePtr srv = server;
@@ -548,9 +548,10 @@ addentry:
     srv->handles[r].opaque   = opaque;
     srv->handles[r].deleted  = VIR_NETLINK_HANDLE_VALID;
     if (macaddr)
-        memcpy(srv->handles[r].macaddr, macaddr, VIR_MAC_BUFLEN);
+        virMacAddrSet(&srv->handles[r].macaddr, macaddr);
     else
-        memset(srv->handles[r].macaddr, 0, VIR_MAC_BUFLEN);
+        virMacAddrSetRaw(&srv->handles[r].macaddr,
+                         (unsigned char[VIR_MAC_BUFLEN]){0,0,0,0,0,0});
 
     VIR_DEBUG("added client to loop slot: %d. with macaddr ptr=%p", r, macaddr);
 
@@ -573,7 +574,7 @@ error:
  * Returns -1 if the file handle was not registered, 0 upon success
  */
 int
-virNetlinkEventRemoveClient(int watch, const unsigned char *macaddr)
+virNetlinkEventRemoveClient(int watch, const virMacAddrPtr macaddr)
 {
     int i;
     int ret = -1;
@@ -594,7 +595,7 @@ virNetlinkEventRemoveClient(int watch, const unsigned char *macaddr)
 
         if ((watch && srv->handles[i].watch == watch) ||
             (!watch &&
-             memcmp(macaddr, srv->handles[i].macaddr, VIR_MAC_BUFLEN) == 0)) {
+             virMacAddrCmp(macaddr, &srv->handles[i].macaddr) == 0)) {
 
             VIR_DEBUG("removed client: %d by %s.",
                       srv->handles[i].watch, watch ? "index" : "mac");

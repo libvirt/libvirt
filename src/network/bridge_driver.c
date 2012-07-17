@@ -1765,7 +1765,7 @@ networkStartNetworkVirtual(struct network_driver *driver,
             goto err0;
         }
         if (virNetDevTapCreateInBridgePort(network->def->bridge,
-                                           &macTapIfName, network->def->mac,
+                                           &macTapIfName, &network->def->mac,
                                            NULL, NULL, NULL,
                                            VIR_NETDEV_TAP_CREATE_USE_MAC_FOR_BRIDGE) < 0) {
             VIR_FREE(macTapIfName);

@@ -404,12 +404,12 @@ learnIPAddressThread(void *arg)
         goto done;
     }
 
-    virMacAddrFormat(req->macaddr, macaddr);
+    virMacAddrFormat(&req->macaddr, macaddr);
 
     switch (req->howDetect) {
     case DETECT_DHCP:
         if (techdriver->applyDHCPOnlyRules(req->ifname,
-                                           req->macaddr,
+                                           &req->macaddr,
                                            NULL, false) < 0) {
             req->status = EINVAL;
             goto done;
@@ -420,7 +420,7 @@ learnIPAddressThread(void *arg)
         break;
     default:
         if (techdriver->applyBasicRules(req->ifname,
-                                        req->macaddr) < 0) {
+                                        &req->macaddr) < 0) {
             req->status = EINVAL;
             goto done;
         }
@@ -493,9 +493,7 @@ learnIPAddressThread(void *arg)
                 continue;
             }
 
-            if (memcmp(ether_hdr->ether_shost,
-                       req->macaddr,
-                       VIR_MAC_BUFLEN) == 0) {
+            if (virMacAddrCmpRaw(&req->macaddr, ether_hdr->ether_shost) == 0) {
                 /* packets from the VM */
 
                 if (etherType == ETHERTYPE_IP &&
@@ -530,9 +528,8 @@ learnIPAddressThread(void *arg)
                     break;
                     }
                 }
-            } else if (memcmp(ether_hdr->ether_dhost,
-                              req->macaddr,
-                              VIR_MAC_BUFLEN) == 0) {
+            } else if (virMacAddrCmpRaw(&req->macaddr,
+                                        ether_hdr->ether_dhost) == 0) {
                 /* packets to the VM */
                 if (etherType == ETHERTYPE_IP &&
                     (header.len >= ethHdrSize +
@@ -554,9 +551,9 @@ learnIPAddressThread(void *arg)
                             struct dhcp *dhcp = (struct dhcp *)
                                         ((char *)udphdr + sizeof(udphdr));
                             if (dhcp->op == 2 /* BOOTREPLY */ &&
-                                !memcmp(&dhcp->chaddr[0],
-                                        req->macaddr,
-                                        6)) {
+                                virMacAddrCmpRaw(
+                                        &req->macaddr,
+                                        &dhcp->chaddr[0]) == 0) {
                                 dhcp_opts_len = header.len -
                                     (ethHdrSize + iphdr->ihl * 4 +
                                      sizeof(struct udphdr) +
@@ -602,7 +599,7 @@ learnIPAddressThread(void *arg)
                                                    req->ifindex,
                                                    req->linkdev,
                                                    req->nettype,
-                                                   req->macaddr,
+                                                   &req->macaddr,
                                                    req->filtername,
                                                    req->filterparams,
                                                    req->driver);
@@ -662,7 +659,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
                           int ifindex,
                           const char *linkdev,
                           enum virDomainNetType nettype,
-                          const unsigned char *macaddr,
+                          const virMacAddrPtr macaddr,
                           const char *filtername,
                           virNWFilterHashTablePtr filterparams,
                           virNWFilterDriverStatePtr driver,
@@ -720,7 +717,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
 
     req->ifindex = ifindex;
     req->nettype = nettype;
-    memcpy(req->macaddr, macaddr, sizeof(req->macaddr));
+    virMacAddrSet(&req->macaddr, macaddr);
     req->driver = driver;
     req->filterparams = ht;
     ht = NULL;
@@ -758,7 +755,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver ATTRIBUTE_UNUSED,
                           int ifindex ATTRIBUTE_UNUSED,
                           const char *linkdev ATTRIBUTE_UNUSED,
                           enum virDomainNetType nettype ATTRIBUTE_UNUSED,
-                          const unsigned char *macaddr ATTRIBUTE_UNUSED,
+                          const virMacAddrPtr macaddr ATTRIBUTE_UNUSED,
                           const char *filtername ATTRIBUTE_UNUSED,
                           virNWFilterHashTablePtr filterparams ATTRIBUTE_UNUSED,
                           virNWFilterDriverStatePtr driver ATTRIBUTE_UNUSED,

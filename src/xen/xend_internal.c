@@ -2718,7 +2718,7 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
             goto cleanup;
 
         char macStr[VIR_MAC_STRING_BUFLEN];
-        virMacAddrFormat(dev->data.net->mac, macStr);
+        virMacAddrFormat(&dev->data.net->mac, macStr);
 
         if (!(target = strdup(macStr))) {
             virReportOOMError();
@@ -3955,8 +3955,8 @@ virDomainXMLDevID(virDomainPtr domain,
         char mac[30];
         virDomainNetDefPtr def = dev->data.net;
         snprintf(mac, sizeof(mac), "%02x:%02x:%02x:%02x:%02x:%02x",
-                 def->mac[0], def->mac[1], def->mac[2],
-                 def->mac[3], def->mac[4], def->mac[5]);
+                 def->mac.addr[0], def->mac.addr[1], def->mac.addr[2],
+                 def->mac.addr[3], def->mac.addr[4], def->mac.addr[5]);
 
         strcpy(class, "vif");
 

@@ -600,7 +600,7 @@ xenParseSxprNets(virDomainDefPtr def,
 
             tmp = sexpr_node(node, "device/vif/mac");
             if (tmp) {
-                if (virMacAddrParse(tmp, net->mac) < 0) {
+                if (virMacAddrParse(tmp, &net->mac) < 0) {
                     XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
                                  _("malformed mac address '%s'"), tmp);
                     goto cleanup;
@@ -1932,8 +1932,8 @@ xenFormatSxprNet(virConnectPtr conn,
 
     virBufferAsprintf(buf,
                       "(mac '%02x:%02x:%02x:%02x:%02x:%02x')",
-                      def->mac[0], def->mac[1], def->mac[2],
-                      def->mac[3], def->mac[4], def->mac[5]);
+                      def->mac.addr[0], def->mac.addr[1], def->mac.addr[2],
+                      def->mac.addr[3], def->mac.addr[4], def->mac.addr[5]);
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:

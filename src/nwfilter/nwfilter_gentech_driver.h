@@ -50,7 +50,7 @@ int virNWFilterInstantiateFilterLate(const unsigned char *vmuuid,
                                      int ifindex,
                                      const char *linkdev,
                                      enum virDomainNetType nettype,
-                                     const unsigned char *macaddr,
+                                     const virMacAddrPtr macaddr,
                                      const char *filtername,
                                      virNWFilterHashTablePtr filterparams,
                                      virNWFilterDriverStatePtr driver);

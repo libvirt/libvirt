@@ -25,6 +25,7 @@
 
 # include "virhash.h"
 # include "buf.h"
+# include "virmacaddr.h"
 
 enum virNWFilterVarValueType {
     NWFILTER_VALUE_TYPE_SIMPLE,

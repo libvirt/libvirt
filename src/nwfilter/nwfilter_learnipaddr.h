@@ -40,7 +40,7 @@ struct _virNWFilterIPAddrLearnReq {
     int ifindex;
     char linkdev[IF_NAMESIZE];
     enum virDomainNetType nettype;
-    unsigned char macaddr[VIR_MAC_BUFLEN];
+    virMacAddr macaddr;
     char *filtername;
     virNWFilterHashTablePtr filterparams;
     virNWFilterDriverStatePtr driver;
@@ -56,7 +56,7 @@ int virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
                               int ifindex,
                               const char *linkdev,
                               enum virDomainNetType nettype,
-                              const unsigned char *macaddr,
+                              const virMacAddrPtr macaddr,
                               const char *filtername,
                               virNWFilterHashTablePtr filterparams,
                               virNWFilterDriverStatePtr driver,

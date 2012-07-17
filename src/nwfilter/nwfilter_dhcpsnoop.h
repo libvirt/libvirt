@@ -31,7 +31,7 @@ int virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
                             const char *linkdev,
                             enum virDomainNetType nettype,
                             const unsigned char *vmuuid,
-                            const unsigned char *macaddr,
+                            const virMacAddrPtr macaddr,
                             const char *filtername,
                             virNWFilterHashTablePtr filterparams,
                             virNWFilterDriverStatePtr driver);

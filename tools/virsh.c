@@ -1935,7 +1935,7 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
     const char *state;
     const char *value;
     const char *desc;
-    unsigned char macaddr[VIR_MAC_BUFLEN];
+    virMacAddr macaddr;
     const char *element;
     const char *attr;
     bool config;
@@ -1997,7 +1997,7 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (virMacAddrParse(iface, macaddr) == 0) {
+    if (virMacAddrParse(iface, &macaddr) == 0) {
         element = "mac";
         attr = "address";
     } else {
@@ -2111,7 +2111,7 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
     int flags = 0;
     char *state = NULL;
     char *value = NULL;
-    unsigned char macaddr[VIR_MAC_BUFLEN];
+    virMacAddr macaddr;
     const char *element;
     const char *attr;
     bool ret = false;
@@ -2156,7 +2156,7 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (virMacAddrParse(iface, macaddr) == 0) {
+    if (virMacAddrParse(iface, &macaddr) == 0) {
         element = "mac";
         attr = "address";
     } else {

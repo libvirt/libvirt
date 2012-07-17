@@ -256,7 +256,7 @@ int virNetDevTapDelete(const char *ifname ATTRIBUTE_UNUSED)
  * virNetDevTapCreateInBridgePort:
  * @brname: the bridge name
  * @ifname: the interface name (or name template)
- * @macaddr: desired MAC address (VIR_MAC_BUFLEN long)
+ * @macaddr: desired MAC address
  * @tapfd: file descriptor return value for the new tap device
  * @virtPortProfile: bridge/port specific configuration
  * @flags: OR of virNetDevTapCreateFlags:
@@ -280,13 +280,13 @@ int virNetDevTapDelete(const char *ifname ATTRIBUTE_UNUSED)
  */
 int virNetDevTapCreateInBridgePort(const char *brname,
                                    char **ifname,
-                                   const unsigned char *macaddr,
+                                   const virMacAddrPtr macaddr,
                                    const unsigned char *vmuuid,
                                    int *tapfd,
                                    virNetDevVPortProfilePtr virtPortProfile,
                                    unsigned int flags)
 {
-    unsigned char tapmac[VIR_MAC_BUFLEN];
+    virMacAddr tapmac;
 
     if (virNetDevTapCreate(ifname, tapfd, flags) < 0)
         return -1;
@@ -297,9 +297,9 @@ int virNetDevTapCreateInBridgePort(const char *brname,
      * seeing the kernel allocate random MAC for the TAP
      * device before we set our static MAC.
      */
-    memcpy(tapmac, macaddr, VIR_MAC_BUFLEN);
+    virMacAddrSet(&tapmac, macaddr);
     if (!(flags & VIR_NETDEV_TAP_CREATE_USE_MAC_FOR_BRIDGE)) {
-        if (macaddr[0] == 0xFE) {
+        if (macaddr->addr[0] == 0xFE) {
             /* For normal use, the tap device's MAC address cannot
              * match the MAC address used by the guest. This results
              * in "received packet on vnetX with own address as source
@@ -308,14 +308,15 @@ int virNetDevTapCreateInBridgePort(const char *brname,
             virNetDevTapError(VIR_ERR_CONFIG_UNSUPPORTED,
                               "Unable to use MAC address starting with "
                               "reserved value 0xFE - '%02X:%02X:%02X:%02X:%02X:%02X' - ",
-                              macaddr[0], macaddr[1], macaddr[2],
-                              macaddr[3], macaddr[4], macaddr[5]);
+                              macaddr->addr[0], macaddr->addr[1],
+                              macaddr->addr[2], macaddr->addr[3],
+                              macaddr->addr[4], macaddr->addr[5]);
             goto error;
         }
-        tapmac[0] = 0xFE; /* Discourage bridge from using TAP dev MAC */
+        tapmac.addr[0] = 0xFE; /* Discourage bridge from using TAP dev MAC */
     }
 
-    if (virNetDevSetMAC(*ifname, tapmac) < 0)
+    if (virNetDevSetMAC(*ifname, &tapmac) < 0)
         goto error;
 
     /* We need to set the interface MTU before adding it
