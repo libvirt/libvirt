@@ -39,23 +39,19 @@
 
 #define VIR_FROM_THIS VIR_FROM_LOCKING
 
-#define virLockError(code, ...)                                      \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,              \
-                             __FUNCTION__, __LINE__, __VA_ARGS__)
-
 #define CHECK_PLUGIN(field, errret)                                  \
     if (!plugin->driver->field) {                                    \
-        virLockError(VIR_ERR_INTERNAL_ERROR,                         \
-                     _("Missing '%s' field in lock manager driver"), \
-                     #field);                                        \
+        virReportError(VIR_ERR_INTERNAL_ERROR,                         \
+                       _("Missing '%s' field in lock manager driver"), \
+                       #field);                                        \
         return errret;                                               \
     }
 
 #define CHECK_MANAGER(field, errret)                                 \
     if (!lock->driver->field) {                                      \
-        virLockError(VIR_ERR_INTERNAL_ERROR,                         \
-                     _("Missing '%s' field in lock manager driver"), \
-                     #field);                                        \
+        virReportError(VIR_ERR_INTERNAL_ERROR,                         \
+                       _("Missing '%s' field in lock manager driver"), \
+                       #field);                                        \
         return errret;                                               \
     }
 
@@ -150,15 +146,15 @@ virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
 
         handle = dlopen(modfile, RTLD_NOW | RTLD_LOCAL);
         if (!handle) {
-            virLockError(VIR_ERR_SYSTEM_ERROR,
-                         _("Failed to load plugin %s: %s"),
-                         modfile, dlerror());
+            virReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("Failed to load plugin %s: %s"),
+                           modfile, dlerror());
             goto cleanup;
         }
 
         if (!(driver = dlsym(handle, "virLockDriverImpl"))) {
-            virLockError(VIR_ERR_INTERNAL_ERROR, "%s",
-                         _("Missing plugin initialization symbol 'virLockDriverImpl'"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing plugin initialization symbol 'virLockDriverImpl'"));
             goto cleanup;
         }
     }
@@ -195,8 +191,8 @@ virLockManagerPluginNew(const char *name ATTRIBUTE_UNUSED,
                         const char *configFile ATTRIBUTE_UNUSED,
                         unsigned int flags_unused ATTRIBUTE_UNUSED)
 {
-    virLockError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("this platform is missing dlopen"));
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("this platform is missing dlopen"));
     return NULL;
 }
 #endif /* !HAVE_DLFCN_H */
