@@ -212,9 +212,6 @@ struct _virDeviceMonitorState {
     void *privateData;			/* driver-specific private data */
 };
 
-# define virNodeDeviceReportError(code, ...)                             \
-    virReportErrorHelper(VIR_FROM_NODEDEV, code, __FILE__,               \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 int virNodeDeviceHasCap(const virNodeDeviceObjPtr dev, const char *cap);
 

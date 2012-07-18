@@ -27,9 +27,6 @@
 #include "memory.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
-#define virNetDevError(code, ...)                                       \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,                 \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 
 VIR_ENUM_IMPL(virNetDevVPort, VIR_NETDEV_VPORT_PROFILE_LAST,
@@ -59,13 +56,13 @@ virNetDevVPortProfileParse(xmlNodePtr node)
 
     virtPortType = virXMLPropString(node, "type");
     if (!virtPortType) {
-        virNetDevError(VIR_ERR_XML_ERROR, "%s",
+        virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing virtualportprofile type"));
         goto error;
     }
 
     if ((virtPort->virtPortType = virNetDevVPortTypeFromString(virtPortType)) <= 0) {
-        virNetDevError(VIR_ERR_XML_ERROR,
+        virReportError(VIR_ERR_XML_ERROR,
                        _("unknown virtualportprofile type %s"), virtPortType);
         goto error;
     }
@@ -92,13 +89,13 @@ virNetDevVPortProfileParse(xmlNodePtr node)
             unsigned int val;
 
             if (virStrToLong_ui(virtPortManagerID, NULL, 0, &val)) {
-                virNetDevError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_XML_ERROR, "%s",
                                      _("cannot parse value of managerid parameter"));
                 goto error;
             }
 
             if (val > 0xff) {
-                virNetDevError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_XML_ERROR, "%s",
                                      _("value of managerid out of range"));
                 goto error;
             }
@@ -106,13 +103,13 @@ virNetDevVPortProfileParse(xmlNodePtr node)
             virtPort->u.virtPort8021Qbg.managerID = (uint8_t)val;
 
             if (virStrToLong_ui(virtPortTypeID, NULL, 0, &val)) {
-                virNetDevError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_XML_ERROR, "%s",
                                      _("cannot parse value of typeid parameter"));
                 goto error;
             }
 
             if (val > 0xffffff) {
-                virNetDevError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_XML_ERROR, "%s",
                                      _("value for typeid out of range"));
                 goto error;
             }
@@ -120,13 +117,13 @@ virNetDevVPortProfileParse(xmlNodePtr node)
             virtPort->u.virtPort8021Qbg.typeID = (uint32_t)val;
 
             if (virStrToLong_ui(virtPortTypeIDVersion, NULL, 0, &val)) {
-                virNetDevError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_XML_ERROR, "%s",
                                      _("cannot parse value of typeidversion parameter"));
                 goto error;
             }
 
             if (val > 0xff) {
-                virNetDevError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_XML_ERROR, "%s",
                                      _("value of typeidversion out of range"));
                 goto error;
             }
@@ -136,13 +133,13 @@ virNetDevVPortProfileParse(xmlNodePtr node)
             if (virtPortInstanceID != NULL) {
                 if (virUUIDParse(virtPortInstanceID,
                                  virtPort->u.virtPort8021Qbg.instanceID)) {
-                    virNetDevError(VIR_ERR_XML_ERROR, "%s",
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
                                          _("cannot parse instanceid parameter as a uuid"));
                     goto error;
                 }
             } else {
                 if (virUUIDGenerate(virtPort->u.virtPort8021Qbg.instanceID)) {
-                    virNetDevError(VIR_ERR_XML_ERROR, "%s",
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
                                          _("cannot generate a random uuid for instanceid"));
                     goto error;
                 }
@@ -151,7 +148,7 @@ virNetDevVPortProfileParse(xmlNodePtr node)
             virtPort->virtPortType = VIR_NETDEV_VPORT_PROFILE_8021QBG;
 
         } else {
-                    virNetDevError(VIR_ERR_XML_ERROR, "%s",
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
                                          _("a parameter is missing for 802.1Qbg description"));
             goto error;
         }
@@ -163,12 +160,12 @@ virNetDevVPortProfileParse(xmlNodePtr node)
                                 virtPortProfileID) != NULL) {
                 virtPort->virtPortType = VIR_NETDEV_VPORT_PROFILE_8021QBH;
             } else {
-                virNetDevError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_XML_ERROR, "%s",
                                      _("profileid parameter too long"));
                 goto error;
             }
         } else {
-            virNetDevError(VIR_ERR_XML_ERROR, "%s",
+            virReportError(VIR_ERR_XML_ERROR, "%s",
                                  _("profileid parameter is missing for 802.1Qbh description"));
             goto error;
         }
@@ -177,13 +174,13 @@ virNetDevVPortProfileParse(xmlNodePtr node)
         if (virtPortInterfaceID != NULL) {
             if (virUUIDParse(virtPortInterfaceID,
                              virtPort->u.openvswitch.interfaceID)) {
-                virNetDevError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("cannot parse interfaceid parameter as a uuid"));
                 goto error;
             }
         } else {
             if (virUUIDGenerate(virtPort->u.openvswitch.interfaceID)) {
-                virNetDevError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("cannot generate a random uuid for interfaceid"));
                 goto error;
             }
@@ -192,7 +189,7 @@ virNetDevVPortProfileParse(xmlNodePtr node)
         if (virtPortProfileID != NULL) {
             if (virStrcpyStatic(virtPort->u.openvswitch.profileID,
                                 virtPortProfileID) == NULL) {
-                virNetDevError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("profileid parameter too long"));
                 goto error;
             }
@@ -202,7 +199,7 @@ virNetDevVPortProfileParse(xmlNodePtr node)
         break;
 
     default:
-        virNetDevError(VIR_ERR_XML_ERROR,
+        virReportError(VIR_ERR_XML_ERROR,
                        _("unexpected virtualport type %d"), virtPort->virtPortType);
         goto error;
     }
@@ -269,7 +266,7 @@ virNetDevVPortProfileFormat(virNetDevVPortProfilePtr virtPort,
         break;
 
     default:
-        virNetDevError(VIR_ERR_XML_ERROR,
+        virReportError(VIR_ERR_XML_ERROR,
                        _("unexpected virtualport type %d"), virtPort->virtPortType);
         return -1;
     }

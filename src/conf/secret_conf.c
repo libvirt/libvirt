@@ -73,14 +73,14 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
 
     type_str = virXPathString("string(./usage/@type)", ctxt);
     if (type_str == NULL) {
-        virSecretReportError(VIR_ERR_XML_ERROR, "%s",
-                             _("unknown secret usage type"));
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("unknown secret usage type"));
         return -1;
     }
     type = virSecretUsageTypeTypeFromString(type_str);
     if (type < 0) {
-        virSecretReportError(VIR_ERR_XML_ERROR,
-                             _("unknown secret usage type %s"), type_str);
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unknown secret usage type %s"), type_str);
         VIR_FREE(type_str);
         return -1;
     }
@@ -93,8 +93,8 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
     case VIR_SECRET_USAGE_TYPE_VOLUME:
         def->usage.volume = virXPathString("string(./usage/volume)", ctxt);
         if (!def->usage.volume) {
-            virSecretReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                 _("volume usage specified, but volume path is missing"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("volume usage specified, but volume path is missing"));
             return -1;
         }
         break;
@@ -102,16 +102,16 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
     case VIR_SECRET_USAGE_TYPE_CEPH:
         def->usage.ceph = virXPathString("string(./usage/name)", ctxt);
         if (!def->usage.ceph) {
-            virSecretReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                 _("Ceph usage specified, but name is missing"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Ceph usage specified, but name is missing"));
             return -1;
         }
         break;
 
     default:
-        virSecretReportError(VIR_ERR_INTERNAL_ERROR,
-                             _("unexpected secret usage type %d"),
-                             def->usage_type);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected secret usage type %d"),
+                       def->usage_type);
         return -1;
     }
     return 0;
@@ -126,10 +126,10 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
     char *uuidstr = NULL;
 
     if (!xmlStrEqual(root->name, BAD_CAST "secret")) {
-        virSecretReportError(VIR_ERR_XML_ERROR,
-                             _("unexpected root element <%s>, "
-                               "expecting <secret>"),
-                             root->name);
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unexpected root element <%s>, "
+                         "expecting <secret>"),
+                       root->name);
         goto cleanup;
     }
 
@@ -152,8 +152,8 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
         else if (STREQ(prop, "no"))
             def->ephemeral = 0;
         else {
-            virSecretReportError(VIR_ERR_XML_ERROR, "%s",
-                                 _("invalid value of 'ephemeral'"));
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("invalid value of 'ephemeral'"));
             goto cleanup;
         }
         VIR_FREE(prop);
@@ -166,8 +166,8 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
         else if (STREQ(prop, "no"))
             def->private = 0;
         else {
-            virSecretReportError(VIR_ERR_XML_ERROR, "%s",
-                                 _("invalid value of 'private'"));
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("invalid value of 'private'"));
             goto cleanup;
         }
         VIR_FREE(prop);
@@ -176,14 +176,14 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
     uuidstr = virXPathString("string(./uuid)", ctxt);
     if (!uuidstr) {
         if (virUUIDGenerate(def->uuid)) {
-            virSecretReportError(VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("Failed to generate UUID"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("Failed to generate UUID"));
             goto cleanup;
         }
     } else {
         if (virUUIDParse(uuidstr, def->uuid) < 0) {
-            virSecretReportError(VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("malformed uuid element"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("malformed uuid element"));
             goto cleanup;
         }
         VIR_FREE(uuidstr);
@@ -239,9 +239,9 @@ virSecretDefFormatUsage(virBufferPtr buf,
 
     type = virSecretUsageTypeTypeToString(def->usage_type);
     if (type == NULL) {
-        virSecretReportError(VIR_ERR_INTERNAL_ERROR,
-                             _("unexpected secret usage type %d"),
-                             def->usage_type);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected secret usage type %d"),
+                       def->usage_type);
         return -1;
     }
     virBufferAsprintf(buf, "  <usage type='%s'>\n", type);
@@ -263,9 +263,9 @@ virSecretDefFormatUsage(virBufferPtr buf,
         break;
 
     default:
-        virSecretReportError(VIR_ERR_INTERNAL_ERROR,
-                             _("unexpected secret usage type %d"),
-                             def->usage_type);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected secret usage type %d"),
+                       def->usage_type);
         return -1;
     }
     virBufferAddLit(buf, "  </usage>\n");

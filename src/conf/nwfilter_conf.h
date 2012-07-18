@@ -731,10 +731,6 @@ void virNWFilterConfLayerShutdown(void);
 
 int virNWFilterInstFiltersOnAllVMs(virConnectPtr conn);
 
-# define virNWFilterReportError(code, fmt...)                      \
-        virReportErrorHelper(VIR_FROM_NWFILTER, code, __FILE__,    \
-                             __FUNCTION__, __LINE__, fmt)
-
 
 typedef int (*virNWFilterRebuild)(virConnectPtr conn,
                                   virHashIterator, void *data);

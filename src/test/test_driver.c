@@ -5129,7 +5129,7 @@ testNodeDeviceLookupByName(virConnectPtr conn, const char *name)
     testDriverUnlock(driver);
 
     if (!obj) {
-        virNodeDeviceReportError(VIR_ERR_NO_NODE_DEVICE, NULL);
+        testError(VIR_ERR_NO_NODE_DEVICE, NULL);
         goto cleanup;
     }
 
@@ -5156,9 +5156,9 @@ testNodeDeviceGetXMLDesc(virNodeDevicePtr dev,
     testDriverUnlock(driver);
 
     if (!obj) {
-        virNodeDeviceReportError(VIR_ERR_NO_NODE_DEVICE,
-                                 _("no node device with matching name '%s'"),
-                                 dev->name);
+        testError(VIR_ERR_NO_NODE_DEVICE,
+                  _("no node device with matching name '%s'"),
+                  dev->name);
         goto cleanup;
     }
 
@@ -5182,9 +5182,9 @@ testNodeDeviceGetParent(virNodeDevicePtr dev)
     testDriverUnlock(driver);
 
     if (!obj) {
-        virNodeDeviceReportError(VIR_ERR_NO_NODE_DEVICE,
-                                _("no node device with matching name '%s'"),
-                                 dev->name);
+        testError(VIR_ERR_NO_NODE_DEVICE,
+                  _("no node device with matching name '%s'"),
+                  dev->name);
         goto cleanup;
     }
 
@@ -5193,8 +5193,8 @@ testNodeDeviceGetParent(virNodeDevicePtr dev)
         if (!ret)
             virReportOOMError();
     } else {
-        virNodeDeviceReportError(VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("no parent for this device"));
+        testError(VIR_ERR_INTERNAL_ERROR,
+                  "%s", _("no parent for this device"));
     }
 
 cleanup:
@@ -5218,9 +5218,9 @@ testNodeDeviceNumOfCaps(virNodeDevicePtr dev)
     testDriverUnlock(driver);
 
     if (!obj) {
-        virNodeDeviceReportError(VIR_ERR_NO_NODE_DEVICE,
-                                 _("no node device with matching name '%s'"),
-                                 dev->name);
+        testError(VIR_ERR_NO_NODE_DEVICE,
+                  _("no node device with matching name '%s'"),
+                  dev->name);
         goto cleanup;
     }
 
@@ -5249,9 +5249,9 @@ testNodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
     testDriverUnlock(driver);
 
     if (!obj) {
-        virNodeDeviceReportError(VIR_ERR_NO_NODE_DEVICE,
-                                _("no node device with matching name '%s'"),
-                                 dev->name);
+        testError(VIR_ERR_NO_NODE_DEVICE,
+                  _("no node device with matching name '%s'"),
+                  dev->name);
         goto cleanup;
     }
 
@@ -5356,7 +5356,7 @@ testNodeDeviceDestroy(virNodeDevicePtr dev)
     testDriverUnlock(driver);
 
     if (!obj) {
-        virNodeDeviceReportError(VIR_ERR_NO_NODE_DEVICE, NULL);
+        testError(VIR_ERR_NO_NODE_DEVICE, NULL);
         goto out;
     }
 

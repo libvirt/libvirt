@@ -1007,8 +1007,8 @@ ipsetValidator(enum attrDatatype datatype ATTRIBUTE_UNUSED, union data *val,
     return true;
 
 arg_err_exit:
-    virNWFilterReportError(VIR_ERR_INVALID_ARG,
-                           "%s", errmsg);
+    virReportError(VIR_ERR_INVALID_ARG,
+                   "%s", errmsg);
     return false;
 }
 
@@ -1053,8 +1053,8 @@ ipsetFlagsValidator(enum attrDatatype datatype ATTRIBUTE_UNUSED, union data *val
     return true;
 
 arg_err_exit:
-    virNWFilterReportError(VIR_ERR_INVALID_ARG,
-                           "%s", errmsg);
+    virReportError(VIR_ERR_INVALID_ARG,
+                   "%s", errmsg);
     return false;
 }
 
@@ -2014,9 +2014,9 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
             }
 
             if (!found || rc) {
-                virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("%s has illegal value %s"),
-                                       att[idx].name, prop);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("%s has illegal value %s"),
+                               att[idx].name, prop);
                 rc = -1;
             }
             VIR_FREE(prop);
@@ -2048,9 +2048,9 @@ virNWFilterIncludeParse(xmlNodePtr cur)
 
     ret->filterref = virXMLPropString(cur, "filter");
     if (!ret->filterref) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s",
-                               _("rule node requires action attribute"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s",
+                       _("rule node requires action attribute"));
         goto err_exit;
     }
 
@@ -2316,30 +2316,30 @@ virNWFilterRuleParse(xmlNodePtr node)
     statematch= virXMLPropString(node, "statematch");
 
     if (!action) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s",
-                               _("rule node requires action attribute"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s",
+                       _("rule node requires action attribute"));
         goto err_exit;
     }
 
     if ((ret->action = virNWFilterRuleActionTypeFromString(action)) < 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s",
-                               _("unknown rule action attribute value"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s",
+                       _("unknown rule action attribute value"));
         goto err_exit;
     }
 
     if (!direction) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s",
-                               _("rule node requires direction attribute"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s",
+                       _("rule node requires direction attribute"));
         goto err_exit;
     }
 
     if ((ret->tt = virNWFilterRuleDirectionTypeFromString(direction)) < 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s",
-                               _("unknown rule direction attribute value"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s",
+                       _("unknown rule direction attribute value"));
         goto err_exit;
     }
 
@@ -2415,16 +2415,16 @@ static bool
 virNWFilterIsValidChainName(const char *chainname)
 {
     if (strlen(chainname) > MAX_CHAIN_SUFFIX_SIZE) {
-        virNWFilterReportError(VIR_ERR_INVALID_ARG,
-                               _("Name of chain is longer than "
-                                 "%u characters"),
-                               MAX_CHAIN_SUFFIX_SIZE);
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Name of chain is longer than "
+                         "%u characters"),
+                       MAX_CHAIN_SUFFIX_SIZE);
         return false;
     }
 
     if (chainname[strspn(chainname, VALID_CHAINNAME)] != 0) {
-        virNWFilterReportError(VIR_ERR_INVALID_ARG,
-                               _("Chain name contains invalid characters"));
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Chain name contains invalid characters"));
         return false;
     }
 
@@ -2483,7 +2483,7 @@ virNWFilterIsAllowedChain(const char *chainname)
 
     msg = virBufferContentAndReset(&buf);
 
-    virNWFilterReportError(VIR_ERR_INVALID_ARG, "%s", msg);
+    virReportError(VIR_ERR_INVALID_ARG, "%s", msg);
     VIR_FREE(msg);
 
 err_exit:
@@ -2508,27 +2508,27 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
 
     ret->name = virXPathString("string(./@name)", ctxt);
     if (!ret->name) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("filter has no name"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("filter has no name"));
         goto cleanup;
     }
 
     chain_pri_s = virXPathString("string(./@priority)", ctxt);
     if (chain_pri_s) {
         if (virStrToLong_i(chain_pri_s, NULL, 10, &chain_priority) < 0) {
-            virNWFilterReportError(VIR_ERR_INVALID_ARG,
-                                   _("Could not parse chain priority '%s'"),
-                                   chain_pri_s);
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Could not parse chain priority '%s'"),
+                           chain_pri_s);
             goto cleanup;
         }
         if (chain_priority < NWFILTER_MIN_FILTER_PRIORITY ||
             chain_priority > NWFILTER_MAX_FILTER_PRIORITY) {
-            virNWFilterReportError(VIR_ERR_INVALID_ARG,
-                                   _("Priority '%d' is outside valid "
-                                   "range of [%d,%d]"),
-                                   chain_priority,
-                                   NWFILTER_MIN_FILTER_PRIORITY,
-                                   NWFILTER_MAX_FILTER_PRIORITY);
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Priority '%d' is outside valid "
+                             "range of [%d,%d]"),
+                           chain_priority,
+                           NWFILTER_MIN_FILTER_PRIORITY,
+                           NWFILTER_MAX_FILTER_PRIORITY);
             goto cleanup;
         }
     }
@@ -2565,14 +2565,14 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
     uuid = virXPathString("string(./uuid)", ctxt);
     if (uuid == NULL) {
         if (virUUIDGenerate(ret->uuid) < 0) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                  "%s", _("unable to generate uuid"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("unable to generate uuid"));
             goto cleanup;
         }
     } else {
         if (virUUIDParse(uuid, ret->uuid) < 0) {
-            virNWFilterReportError(VIR_ERR_XML_ERROR,
-                                  "%s", _("malformed uuid element"));
+            virReportError(VIR_ERR_XML_ERROR,
+                           "%s", _("malformed uuid element"));
             goto cleanup;
         }
         VIR_FREE(uuid);
@@ -2627,9 +2627,9 @@ virNWFilterDefParseNode(xmlDocPtr xml,
     virNWFilterDefPtr def = NULL;
 
     if (STRNEQ((const char *)root->name, "filter")) {
-        virNWFilterReportError(VIR_ERR_XML_ERROR,
-                               "%s",
-                               _("unknown root element for nw filter"));
+        virReportError(VIR_ERR_XML_ERROR,
+                       "%s",
+                       _("unknown root element for nw filter"));
         goto cleanup;
     }
 
@@ -2976,10 +2976,10 @@ virNWFilterObjAssignDef(virConnectPtr conn,
 
     if (nwfilter) {
         if (!STREQ(def->name, nwfilter->def->name)) {
-            virNWFilterReportError(VIR_ERR_OPERATION_FAILED,
-                                   _("filter with same UUID but different name "
-                                     "('%s') already exists"),
-                                   nwfilter->def->name);
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("filter with same UUID but different name "
+                             "('%s') already exists"),
+                           nwfilter->def->name);
             virNWFilterObjUnlock(nwfilter);
             return NULL;
         }
@@ -2987,8 +2987,8 @@ virNWFilterObjAssignDef(virConnectPtr conn,
     }
 
     if (virNWFilterDefLoopDetect(conn, nwfilters, def) < 0) {
-        virNWFilterReportError(VIR_ERR_OPERATION_FAILED,
-                              "%s", _("filter would introduce a loop"));
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       "%s", _("filter would introduce a loop"));
         return NULL;
     }
 
@@ -3027,8 +3027,8 @@ virNWFilterObjAssignDef(virConnectPtr conn,
     }
 
     if (virMutexInitRecursive(&nwfilter->lock) < 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("cannot initialize mutex"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("cannot initialize mutex"));
         VIR_FREE(nwfilter);
         return NULL;
     }
@@ -3063,9 +3063,9 @@ virNWFilterObjLoad(virConnectPtr conn,
     }
 
     if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
-        virNWFilterReportError(VIR_ERR_XML_ERROR,
-            _("network filter config filename '%s' does not match name '%s'"),
-            path, def->name);
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("network filter config filename '%s' does not match name '%s'"),
+                       path, def->name);
         virNWFilterDefFree(def);
         return NULL;
     }
@@ -3153,8 +3153,8 @@ virNWFilterObjSaveDef(virNWFilterDriverStatePtr driver,
     }
 
     if (!(xml = virNWFilterDefFormat(def))) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("failed to generate XML"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("failed to generate XML"));
         return -1;
     }
 
@@ -3169,15 +3169,15 @@ int
 virNWFilterObjDeleteDef(virNWFilterObjPtr nwfilter)
 {
     if (!nwfilter->configFile) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("no config file for %s"), nwfilter->def->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("no config file for %s"), nwfilter->def->name);
         return -1;
     }
 
     if (unlink(nwfilter->configFile) < 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("cannot remove config for %s"),
-                               nwfilter->def->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot remove config for %s"),
+                       nwfilter->def->name);
         return -1;
     }
 
@@ -3248,10 +3248,10 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
                               att[i].name);
             if (att[i].formatter && !(flags & NWFILTER_ENTRY_ITEM_FLAG_HAS_VAR)) {
                if (!att[i].formatter(buf, def, item)) {
-                  virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                         _("formatter for %s %s reported error"),
-                                         type,
-                                         att[i].name);
+                  virReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("formatter for %s %s reported error"),
+                                 type,
+                                 att[i].name);
                    goto err_exit;
                }
             } else if ((flags & NWFILTER_ENTRY_ITEM_FLAG_HAS_VAR)) {

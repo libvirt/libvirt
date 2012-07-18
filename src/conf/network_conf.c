@@ -53,10 +53,6 @@ VIR_ENUM_IMPL(virNetworkForward,
               VIR_NETWORK_FORWARD_LAST,
               "none", "nat", "route", "bridge", "private", "vepa", "passthrough" )
 
-#define virNetworkReportError(code, ...)                                \
-    virReportErrorHelper(VIR_FROM_NETWORK, code, __FILE__,              \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 virNetworkObjPtr virNetworkFindByUUID(const virNetworkObjListPtr nets,
                                       const unsigned char *uuid)
 {
@@ -237,8 +233,8 @@ virNetworkObjPtr virNetworkAssignDef(virNetworkObjListPtr nets,
         return NULL;
     }
     if (virMutexInit(&network->lock) < 0) {
-        virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("cannot initialize mutex"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("cannot initialize mutex"));
         VIR_FREE(network);
         return NULL;
     }
@@ -400,9 +396,9 @@ virNetworkDHCPRangeDefParseXML(const char *networkName,
 
             range = virSocketAddrGetRange(&saddr, &eaddr);
             if (range < 0) {
-                virNetworkReportError(VIR_ERR_XML_ERROR,
-                                      _("Invalid dhcp range '%s' to '%s' in network '%s'"),
-                                      start, end, networkName);
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Invalid dhcp range '%s' to '%s' in network '%s'"),
+                               start, end, networkName);
                 VIR_FREE(start);
                 VIR_FREE(end);
                 return -1;
@@ -426,25 +422,25 @@ virNetworkDHCPRangeDefParseXML(const char *networkName,
             mac = virXMLPropString(cur, "mac");
             if (mac != NULL) {
                 if (virMacAddrParse(mac, &addr) < 0) {
-                    virNetworkReportError(VIR_ERR_XML_ERROR,
-                                          _("Cannot parse MAC address '%s' in network '%s'"),
-                                          mac, networkName);
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("Cannot parse MAC address '%s' in network '%s'"),
+                                   mac, networkName);
                     VIR_FREE(mac);
                     return -1;
                 }
                 if (virMacAddrIsMulticast(&addr)) {
-                    virNetworkReportError(VIR_ERR_XML_ERROR,
-                                         _("expected unicast mac address, found multicast '%s' in network '%s'"),
-                                         (const char *)mac, networkName);
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("expected unicast mac address, found multicast '%s' in network '%s'"),
+                                   (const char *)mac, networkName);
                     VIR_FREE(mac);
                     return -1;
                 }
             }
             name = virXMLPropString(cur, "name");
             if ((name != NULL) && (!c_isalpha(name[0]))) {
-                virNetworkReportError(VIR_ERR_XML_ERROR,
-                                      _("Cannot use name address '%s' in network '%s'"),
-                                      name, networkName);
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Cannot use name address '%s' in network '%s'"),
+                               name, networkName);
                 VIR_FREE(mac);
                 VIR_FREE(name);
                 return -1;
@@ -453,17 +449,17 @@ virNetworkDHCPRangeDefParseXML(const char *networkName,
              * You need at least one MAC address or one host name
              */
             if ((mac == NULL) && (name == NULL)) {
-                virNetworkReportError(VIR_ERR_XML_ERROR,
-                                      _("Static host definition in network '%s' must have mac or name attribute"),
-                                      networkName);
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Static host definition in network '%s' must have mac or name attribute"),
+                               networkName);
                 return -1;
             }
             ip = virXMLPropString(cur, "ip");
             if ((ip == NULL) ||
                 (virSocketAddrParse(&inaddr, ip, AF_UNSPEC) < 0)) {
-                virNetworkReportError(VIR_ERR_XML_ERROR,
-                                      _("Missing IP address in static host definition for network '%s'"),
-                                      networkName);
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Missing IP address in static host definition for network '%s'"),
+                               networkName);
                 VIR_FREE(ip);
                 VIR_FREE(mac);
                 VIR_FREE(name);
@@ -523,8 +519,8 @@ virNetworkDNSHostsDefParseXML(virNetworkDNSDefPtr def,
 
     if (!(ip = virXMLPropString(node, "ip")) ||
         (virSocketAddrParse(&inaddr, ip, AF_UNSPEC) < 0)) {
-        virNetworkReportError(VIR_ERR_XML_DETAIL,
-                              _("Missing IP address in DNS host definition"));
+        virReportError(VIR_ERR_XML_DETAIL,
+                       _("Missing IP address in DNS host definition"));
         VIR_FREE(ip);
         goto error;
     }
@@ -584,28 +580,28 @@ virNetworkDNSSrvDefParseXML(virNetworkDNSDefPtr def,
     int ret = 0;
 
     if (!(service = virXMLPropString(cur, "service"))) {
-        virNetworkReportError(VIR_ERR_XML_DETAIL,
-                              "%s", _("Missing required service attribute in dns srv record"));
+        virReportError(VIR_ERR_XML_DETAIL,
+                       "%s", _("Missing required service attribute in dns srv record"));
         goto error;
     }
 
     if (strlen(service) > DNS_RECORD_LENGTH_SRV) {
-        virNetworkReportError(VIR_ERR_XML_DETAIL,
-                              _("Service name is too long, limit is %d bytes"),
-                              DNS_RECORD_LENGTH_SRV);
+        virReportError(VIR_ERR_XML_DETAIL,
+                       _("Service name is too long, limit is %d bytes"),
+                       DNS_RECORD_LENGTH_SRV);
         goto error;
     }
 
     if (!(protocol = virXMLPropString(cur, "protocol"))) {
-        virNetworkReportError(VIR_ERR_XML_DETAIL,
-                              _("Missing required protocol attribute in dns srv record '%s'"), service);
+        virReportError(VIR_ERR_XML_DETAIL,
+                       _("Missing required protocol attribute in dns srv record '%s'"), service);
         goto error;
     }
 
     /* Check whether protocol value is the supported one */
     if (STRNEQ(protocol, "tcp") && (STRNEQ(protocol, "udp"))) {
-        virNetworkReportError(VIR_ERR_XML_DETAIL,
-                              _("Invalid protocol attribute value '%s'"), protocol);
+        virReportError(VIR_ERR_XML_DETAIL,
+                       _("Invalid protocol attribute value '%s'"), protocol);
         goto error;
     }
 
@@ -681,19 +677,19 @@ virNetworkDNSDefParseXML(virNetworkDNSDefPtr *dnsdef,
         if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "txt")) {
             if (!(name = virXMLPropString(cur, "name"))) {
-                virNetworkReportError(VIR_ERR_XML_DETAIL,
-                                      "%s", _("Missing required name attribute in dns txt record"));
+                virReportError(VIR_ERR_XML_DETAIL,
+                               "%s", _("Missing required name attribute in dns txt record"));
                 goto error;
             }
             if (!(value = virXMLPropString(cur, "value"))) {
-                virNetworkReportError(VIR_ERR_XML_DETAIL,
-                                      _("Missing required value attribute in dns txt record '%s'"), name);
+                virReportError(VIR_ERR_XML_DETAIL,
+                               _("Missing required value attribute in dns txt record '%s'"), name);
                 goto error;
             }
 
             if (strchr(name, ' ') != NULL) {
-                virNetworkReportError(VIR_ERR_XML_DETAIL,
-                                      _("spaces are not allowed in DNS TXT record names (name is '%s')"), name);
+                virReportError(VIR_ERR_XML_DETAIL,
+                               _("spaces are not allowed in DNS TXT record names (name is '%s')"), name);
                 goto error;
             }
 
@@ -765,9 +761,9 @@ virNetworkIPParseXML(const char *networkName,
 
     if (address) {
         if (virSocketAddrParse(&def->address, address, AF_UNSPEC) < 0) {
-            virNetworkReportError(VIR_ERR_XML_ERROR,
-                                  _("Bad address '%s' in definition of network '%s'"),
-                                  address, networkName);
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Bad address '%s' in definition of network '%s'"),
+                           address, networkName);
             goto error;
         }
 
@@ -777,29 +773,29 @@ virNetworkIPParseXML(const char *networkName,
     if (def->family == NULL) {
         if (!(VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET) ||
               VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_UNSPEC))) {
-            virNetworkReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                  _("no family specified for non-IPv4 address '%s' in network '%s'"),
-                                  address, networkName);
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("no family specified for non-IPv4 address '%s' in network '%s'"),
+                           address, networkName);
             goto error;
         }
     } else if (STREQ(def->family, "ipv4")) {
         if (!VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET)) {
-            virNetworkReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                  _("family 'ipv4' specified for non-IPv4 address '%s' in network '%s'"),
-                                  address, networkName);
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("family 'ipv4' specified for non-IPv4 address '%s' in network '%s'"),
+                           address, networkName);
             goto error;
         }
     } else if (STREQ(def->family, "ipv6")) {
         if (!VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET6)) {
-            virNetworkReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                  _("family 'ipv6' specified for non-IPv6 address '%s' in network '%s'"),
-                                  address, networkName);
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("family 'ipv6' specified for non-IPv6 address '%s' in network '%s'"),
+                           address, networkName);
             goto error;
         }
     } else {
-        virNetworkReportError(VIR_ERR_XML_ERROR,
-                              _("Unrecognized family '%s' in definition of network '%s'"),
-                              def->family, networkName);
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Unrecognized family '%s' in definition of network '%s'"),
+                       def->family, networkName);
         goto error;
     }
 
@@ -807,24 +803,24 @@ virNetworkIPParseXML(const char *networkName,
     if (netmask) {
         if (address == NULL) {
             /* netmask is meaningless without an address */
-            virNetworkReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                  _("netmask specified without address in network '%s'"),
-                                  networkName);
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("netmask specified without address in network '%s'"),
+                           networkName);
             goto error;
         }
 
         if (!VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET)) {
-            virNetworkReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                  _("netmask not supported for address '%s' in network '%s' (IPv4 only)"),
-                                  address, networkName);
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("netmask not supported for address '%s' in network '%s' (IPv4 only)"),
+                           address, networkName);
             goto error;
         }
 
         if (def->prefix > 0) {
             /* can't have both netmask and prefix at the same time */
-            virNetworkReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                  _("network '%s' cannot have both prefix='%u' and a netmask"),
-                                  networkName, def->prefix);
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("network '%s' cannot have both prefix='%u' and a netmask"),
+                           networkName, def->prefix);
             goto error;
         }
 
@@ -832,9 +828,9 @@ virNetworkIPParseXML(const char *networkName,
             goto error;
 
         if (!VIR_SOCKET_ADDR_IS_FAMILY(&def->netmask, AF_INET)) {
-            virNetworkReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                  _("network '%s' has invalid netmask '%s' for address '%s' (both must be IPv4)"),
-                                  networkName, netmask, address);
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("network '%s' has invalid netmask '%s' for address '%s' (both must be IPv4)"),
+                           networkName, netmask, address);
             goto error;
         }
     }
@@ -951,7 +947,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     /* Extract network name */
     def->name = virXPathString("string(./name[1])", ctxt);
     if (!def->name) {
-        virNetworkReportError(VIR_ERR_NO_NAME, NULL);
+        virReportError(VIR_ERR_NO_NAME, NULL);
         goto error;
     }
 
@@ -959,15 +955,15 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     tmp = virXPathString("string(./uuid[1])", ctxt);
     if (!tmp) {
         if (virUUIDGenerate(def->uuid)) {
-            virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
-                                  "%s", _("Failed to generate UUID"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("Failed to generate UUID"));
             goto error;
         }
     } else {
         if (virUUIDParse(tmp, def->uuid) < 0) {
             VIR_FREE(tmp);
-            virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
-                                  "%s", _("malformed uuid element"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("malformed uuid element"));
             goto error;
         }
         VIR_FREE(tmp);
@@ -990,16 +986,16 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     tmp = virXPathString("string(./mac[1]/@address)", ctxt);
     if (tmp) {
         if (virMacAddrParse(tmp, &def->mac) < 0) {
-            virNetworkReportError(VIR_ERR_XML_ERROR,
-                                  _("Invalid bridge mac address '%s' in network '%s'"),
-                                  tmp, def->name);
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid bridge mac address '%s' in network '%s'"),
+                           tmp, def->name);
             VIR_FREE(tmp);
             goto error;
         }
         if (virMacAddrIsMulticast(&def->mac)) {
-            virNetworkReportError(VIR_ERR_XML_ERROR,
-                                 _("Invalid multicast bridge mac address '%s' in network '%s'"),
-                                 tmp, def->name);
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid multicast bridge mac address '%s' in network '%s'"),
+                           tmp, def->name);
             VIR_FREE(tmp);
             goto error;
         }
@@ -1073,8 +1069,8 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
         tmp = virXPathString("string(./@mode)", ctxt);
         if (tmp) {
             if ((def->forwardType = virNetworkForwardTypeFromString(tmp)) < 0) {
-                virNetworkReportError(VIR_ERR_XML_ERROR,
-                                      _("unknown forwarding type '%s'"), tmp);
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("unknown forwarding type '%s'"), tmp);
                 VIR_FREE(tmp);
                 goto error;
             }
@@ -1090,8 +1086,8 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
         nForwardPfs = virXPathNodeSet("./pf", ctxt, &forwardPfNodes);
 
         if (nForwardIfs < 0 || nForwardPfs < 0) {
-            virNetworkReportError(VIR_ERR_XML_ERROR,
-                                  _("No interface pool or SRIOV physical device given"));
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("No interface pool or SRIOV physical device given"));
             goto error;
         }
 
@@ -1102,16 +1098,16 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             }
 
             if (forwardDev) {
-                virNetworkReportError(VIR_ERR_XML_ERROR,
-                                      _("A forward Dev should not be used when using a SRIOV PF"));
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("A forward Dev should not be used when using a SRIOV PF"));
                 goto error;
             }
 
             forwardDev = virXMLPropString(*forwardPfNodes, "dev");
             if (!forwardDev) {
-                virNetworkReportError(VIR_ERR_XML_ERROR,
-                                      _("Missing required dev attribute in network '%s' pf element"),
-                                      def->name);
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Missing required dev attribute in network '%s' pf element"),
+                               def->name);
                 goto error;
             }
 
@@ -1120,8 +1116,8 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             forwardDev = NULL;
             def->nForwardPfs++;
         } else if (nForwardPfs > 1) {
-            virNetworkReportError(VIR_ERR_XML_ERROR,
-                                  _("Use of more than one physical interface is not allowed"));
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Use of more than one physical interface is not allowed"));
             goto error;
         }
         if (nForwardIfs > 0 || forwardDev) {
@@ -1144,9 +1140,9 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             for (ii = 0; ii < nForwardIfs; ii++) {
                 forwardDev = virXMLPropString(forwardIfNodes[ii], "dev");
                 if (!forwardDev) {
-                    virNetworkReportError(VIR_ERR_XML_ERROR,
-                                          _("Missing required dev attribute in network '%s' forward interface element"),
-                                          def->name);
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("Missing required dev attribute in network '%s' forward interface element"),
+                                   def->name);
                     goto error;
                 }
 
@@ -1154,10 +1150,10 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
                     /* both forwardDev and an interface element are present.
                      * If they don't match, it's an error. */
                     if (STRNEQ(forwardDev, def->forwardIfs[0].dev)) {
-                        virNetworkReportError(VIR_ERR_XML_ERROR,
-                                              _("forward dev '%s' must match first interface element dev '%s' in network '%s'"),
-                                              def->forwardIfs[0].dev,
-                                              forwardDev, def->name);
+                        virReportError(VIR_ERR_XML_ERROR,
+                                       _("forward dev '%s' must match first interface element dev '%s' in network '%s'"),
+                                       def->forwardIfs[0].dev,
+                                       forwardDev, def->name);
                         goto error;
                     }
                     VIR_FREE(forwardDev);
@@ -1181,16 +1177,16 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
              * the network we're on.
              */
             if (def->nips == 0) {
-                virNetworkReportError(VIR_ERR_XML_ERROR,
-                                      _("%s forwarding requested, but no IP address provided for network '%s'"),
-                                      virNetworkForwardTypeToString(def->forwardType),
-                                      def->name);
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("%s forwarding requested, but no IP address provided for network '%s'"),
+                               virNetworkForwardTypeToString(def->forwardType),
+                               def->name);
                 goto error;
             }
             if (def->nForwardIfs > 1) {
-                virNetworkReportError(VIR_ERR_XML_ERROR,
-                                      _("multiple forwarding interfaces specified for network '%s', only one is supported"),
-                                      def->name);
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("multiple forwarding interfaces specified for network '%s', only one is supported"),
+                               def->name);
                 goto error;
             }
             def->stp = (stp && STREQ(stp, "off")) ? 0 : 1;
@@ -1199,19 +1195,19 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
         case VIR_NETWORK_FORWARD_VEPA:
         case VIR_NETWORK_FORWARD_PASSTHROUGH:
             if (def->bridge) {
-                virNetworkReportError(VIR_ERR_XML_ERROR,
-                                      _("bridge name not allowed in %s mode (network '%s')"),
-                                      virNetworkForwardTypeToString(def->forwardType),
-                                      def->name);
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("bridge name not allowed in %s mode (network '%s')"),
+                               virNetworkForwardTypeToString(def->forwardType),
+                               def->name);
                 goto error;
             }
             /* fall through to next case */
         case VIR_NETWORK_FORWARD_BRIDGE:
             if (def->delay || stp) {
-                virNetworkReportError(VIR_ERR_XML_ERROR,
-                                      _("bridge delay/stp options only allowed in route, nat, and isolated mode, not in %s (network '%s')"),
-                                      virNetworkForwardTypeToString(def->forwardType),
-                                      def->name);
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("bridge delay/stp options only allowed in route, nat, and isolated mode, not in %s (network '%s')"),
+                               virNetworkForwardTypeToString(def->forwardType),
+                               def->name);
                 goto error;
             }
             break;
@@ -1266,10 +1262,10 @@ virNetworkDefPtr virNetworkDefParseNode(xmlDocPtr xml,
     virNetworkDefPtr def = NULL;
 
     if (!xmlStrEqual(root->name, BAD_CAST "network")) {
-        virNetworkReportError(VIR_ERR_XML_ERROR,
-                              _("unexpected root element <%s>, "
-                                "expecting <network>"),
-                              root->name);
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unexpected root element <%s>, "
+                         "expecting <network>"),
+                       root->name);
         return NULL;
     }
 
@@ -1476,9 +1472,9 @@ char *virNetworkDefFormat(const virNetworkDefPtr def, unsigned int flags)
         const char *mode = virNetworkForwardTypeToString(def->forwardType);
 
         if (!mode) {
-            virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
-                                  _("Unknown forward type %d in network '%s'"),
-                                  def->forwardType, def->name);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown forward type %d in network '%s'"),
+                           def->forwardType, def->name);
             goto error;
         }
         virBufferAddLit(&buf, "  <forward");
@@ -1644,10 +1640,10 @@ virNetworkObjPtr virNetworkLoadConfig(virNetworkObjListPtr nets,
         goto error;
 
     if (!STREQ(name, def->name)) {
-        virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("Network config filename '%s'"
-                                " does not match network name '%s'"),
-                              configFile, def->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Network config filename '%s'"
+                         " does not match network name '%s'"),
+                       configFile, def->name);
         goto error;
     }
 
@@ -1806,9 +1802,9 @@ char *virNetworkAllocateBridge(const virNetworkObjListPtr nets,
         id++;
     } while (id <= MAX_BRIDGE_ID);
 
-    virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
-                          _("Bridge generation exceeded max id %d"),
-                          MAX_BRIDGE_ID);
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Bridge generation exceeded max id %d"),
+                   MAX_BRIDGE_ID);
     return NULL;
 }
 
@@ -1824,9 +1820,9 @@ int virNetworkSetBridgeName(const virNetworkObjListPtr nets,
          * defined. */
         if (check_collision &&
             virNetworkBridgeInUse(nets, def->bridge, def->name)) {
-            virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
-                                  _("bridge name '%s' already in use."),
-                                  def->bridge);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("bridge name '%s' already in use."),
+                           def->bridge);
             goto error;
         }
     } else {
@@ -1879,18 +1875,18 @@ virNetworkObjIsDuplicate(virNetworkObjListPtr doms,
         if (STRNEQ(vm->def->name, def->name)) {
             char uuidstr[VIR_UUID_STRING_BUFLEN];
             virUUIDFormat(vm->def->uuid, uuidstr);
-            virNetworkReportError(VIR_ERR_OPERATION_FAILED,
-                                  _("network '%s' is already defined with uuid %s"),
-                                  vm->def->name, uuidstr);
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("network '%s' is already defined with uuid %s"),
+                           vm->def->name, uuidstr);
             goto cleanup;
         }
 
         if (check_active) {
             /* UUID & name match, but if VM is already active, refuse it */
             if (virNetworkObjIsActive(vm)) {
-                virNetworkReportError(VIR_ERR_OPERATION_INVALID,
-                                      _("network is already active as '%s'"),
-                                      vm->def->name);
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("network is already active as '%s'"),
+                               vm->def->name);
                 goto cleanup;
             }
         }
@@ -1902,9 +1898,9 @@ virNetworkObjIsDuplicate(virNetworkObjListPtr doms,
         if (vm) {
             char uuidstr[VIR_UUID_STRING_BUFLEN];
             virUUIDFormat(vm->def->uuid, uuidstr);
-            virNetworkReportError(VIR_ERR_OPERATION_FAILED,
-                                  _("network '%s' already exists with uuid %s"),
-                                  def->name, uuidstr);
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("network '%s' already exists with uuid %s"),
+                           def->name, uuidstr);
             goto cleanup;
         }
     }

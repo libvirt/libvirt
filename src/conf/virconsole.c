@@ -39,9 +39,6 @@
 #include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
-#define virConsoleError(code, ...)                                      \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,                  \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /* structure holding information about consoles
  * open in a given domain */
@@ -127,10 +124,10 @@ static int virConsoleLockFileCreate(const char *pty)
     /* check if a log file and process holding the lock still exists */
     if (virPidFileReadPathIfAlive(path, &pid, NULL) == 0 && pid >= 0) {
         /* the process exists, the lockfile is valid */
-        virConsoleError(VIR_ERR_OPERATION_FAILED,
-                        _("Requested console pty '%s' is locked by "
-                          "lock file '%s' held by process %lld"),
-                        pty, path, (long long) pid);
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Requested console pty '%s' is locked by "
+                         "lock file '%s' held by process %lld"),
+                       pty, path, (long long) pid);
         goto cleanup;
     } else {
         /* clean up the stale/corrupted/nonexistent lockfile */

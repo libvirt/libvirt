@@ -56,6 +56,9 @@
 #include "nwfilter_learnipaddr.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
+#define virNWFilterReportError(code, fmt...)                       \
+    virReportErrorHelper(VIR_FROM_NWFILTER, code, __FILE__,        \
+                         __FUNCTION__, __LINE__, fmt)
 
 #define IFINDEX2STR(VARNAME, ifindex) \
     char VARNAME[INT_BUFSIZE_BOUND(ifindex)]; \

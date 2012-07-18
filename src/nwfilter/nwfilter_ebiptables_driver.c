@@ -45,7 +45,9 @@
 
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
-
+#define virNWFilterReportError(code, fmt...)                       \
+    virReportErrorHelper(VIR_FROM_NWFILTER, code, __FILE__,        \
+                         __FUNCTION__, __LINE__, fmt)
 
 #define EBTABLES_CHAIN_INCOMING "PREROUTING"
 #define EBTABLES_CHAIN_OUTGOING "POSTROUTING"

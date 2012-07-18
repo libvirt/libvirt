@@ -69,6 +69,10 @@
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
+#define virNWFilterReportError(code, fmt...)                       \
+    virReportErrorHelper(VIR_FROM_NWFILTER, code, __FILE__,        \
+                         __FUNCTION__, __LINE__, fmt)
+
 #ifdef HAVE_LIBPCAP
 
 # define LEASEFILE LOCALSTATEDIR "/run/libvirt/network/nwfilter.leases"

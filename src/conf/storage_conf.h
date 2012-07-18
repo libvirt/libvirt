@@ -336,10 +336,6 @@ static inline int virStoragePoolObjIsActive(virStoragePoolObjPtr pool) {
     return pool->active;
 }
 
-# define virStorageReportError(code, ...)                                \
-    virReportErrorHelper(VIR_FROM_STORAGE, code, __FILE__,               \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 int virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
                                  const char *configDir,
                                  const char *autostartDir);

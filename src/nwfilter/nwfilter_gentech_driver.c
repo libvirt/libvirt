@@ -39,6 +39,9 @@
 #include "datatypes.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
+#define virNWFilterReportError(code, fmt...)                       \
+    virReportErrorHelper(VIR_FROM_NWFILTER, code, __FILE__,        \
+                         __FUNCTION__, __LINE__, fmt)
 
 
 #define NWFILTER_STD_VAR_MAC NWFILTER_VARNAME_MAC

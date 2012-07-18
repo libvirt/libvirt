@@ -31,10 +31,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define eventReportError(code, ...)                                 \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,             \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 struct _virDomainMeta {
     int id;
     char *name;
@@ -196,8 +192,8 @@ virDomainEventCallbackListRemove(virConnectPtr conn,
         }
     }
 
-    eventReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("could not find event callback for removal"));
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("could not find event callback for removal"));
     return -1;
 }
 
@@ -246,8 +242,8 @@ virDomainEventCallbackListRemoveID(virConnectPtr conn,
         }
     }
 
-    eventReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("could not find event callback for removal"));
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("could not find event callback for removal"));
     return -1;
 }
 
@@ -272,8 +268,8 @@ virDomainEventCallbackListMarkDelete(virConnectPtr conn,
         }
     }
 
-    eventReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("could not find event callback for deletion"));
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("could not find event callback for deletion"));
     return -1;
 }
 
@@ -297,8 +293,8 @@ virDomainEventCallbackListMarkDeleteID(virConnectPtr conn,
         }
     }
 
-    eventReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("could not find event callback for deletion"));
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("could not find event callback for deletion"));
     return -1;
 }
 
@@ -372,8 +368,8 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
               memcmp(cbList->callbacks[i]->dom->uuid,
                      dom->uuid, VIR_UUID_BUFLEN) == 0) ||
              (!dom && !cbList->callbacks[i]->dom))) {
-            eventReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                             _("event callback already tracked"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("event callback already tracked"));
             return -1;
         }
     }
@@ -1456,8 +1452,8 @@ virDomainEventStateRegister(virConnectPtr conn,
                                            virDomainEventTimer,
                                            state,
                                            NULL)) < 0) {
-        eventReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                         _("could not initialize domain event timer"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not initialize domain event timer"));
         goto cleanup;
     }
 
@@ -1512,8 +1508,8 @@ virDomainEventStateRegisterID(virConnectPtr conn,
                                            virDomainEventTimer,
                                            state,
                                            NULL)) < 0) {
-        eventReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                         _("could not initialize domain event timer"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not initialize domain event timer"));
         goto cleanup;
     }
 

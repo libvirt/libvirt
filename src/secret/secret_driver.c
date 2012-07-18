@@ -45,6 +45,10 @@
 
 #define VIR_FROM_THIS VIR_FROM_SECRET
 
+#define virSecretReportError(code, ...)                         \
+    virReportErrorHelper(VIR_FROM_SECRET, code, __FILE__,       \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
+
 enum { SECRET_MAX_XML_FILE = 10*1024*1024 };
 
  /* Internal driver state */

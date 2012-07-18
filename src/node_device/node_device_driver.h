@@ -28,6 +28,10 @@
 # include "driver.h"
 # include "node_device_conf.h"
 
+# define virNodeDeviceReportError(code, ...)                            \
+    virReportErrorHelper(VIR_FROM_NODEDEV, code, __FILE__,              \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
+
 # define LINUX_SYSFS_SCSI_HOST_PREFIX "/sys/class/scsi_host/"
 # define LINUX_SYSFS_SCSI_HOST_POSTFIX "device"
 # define LINUX_SYSFS_FC_HOST_PREFIX "/sys/class/fc_host/"
