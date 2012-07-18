@@ -240,7 +240,7 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (virThreadCreate(&thread, false, virNodeSuspend, (void *)cmdString) < 0) {
         virNodeSuspendError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("Failed to create thread to suspend the host\n"));
+                        _("Failed to create thread to suspend the host"));
         goto cleanup;
     }
 
