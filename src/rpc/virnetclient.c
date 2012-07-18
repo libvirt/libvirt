@@ -1694,16 +1694,6 @@ void virNetClientIncomingEvent(virNetSocketPtr sock,
 
     VIR_DEBUG("Event fired %p %d", sock, events);
 
-    if (events & (VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR)) {
-        VIR_DEBUG("%s : VIR_EVENT_HANDLE_HANGUP or "
-                  "VIR_EVENT_HANDLE_ERROR encountered", __FUNCTION__);
-        virNetClientMarkClose(client,
-                              (events & VIR_EVENT_HANDLE_HANGUP) ?
-                              VIR_CONNECT_CLOSE_REASON_EOF :
-                              VIR_CONNECT_CLOSE_REASON_ERROR);
-        goto done;
-    }
-
     if (events & VIR_EVENT_HANDLE_WRITABLE) {
         if (virNetClientIOHandleOutput(client) < 0)
             virNetClientMarkClose(client, VIR_CONNECT_CLOSE_REASON_ERROR);
@@ -1712,6 +1702,16 @@ void virNetClientIncomingEvent(virNetSocketPtr sock,
     if (events & VIR_EVENT_HANDLE_READABLE) {
         if (virNetClientIOHandleInput(client) < 0)
             virNetClientMarkClose(client, VIR_CONNECT_CLOSE_REASON_ERROR);
+    }
+
+    if (events & (VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR)) {
+        VIR_DEBUG("VIR_EVENT_HANDLE_HANGUP or "
+                  "VIR_EVENT_HANDLE_ERROR encountered");
+        virNetClientMarkClose(client,
+                              (events & VIR_EVENT_HANDLE_HANGUP) ?
+                              VIR_CONNECT_CLOSE_REASON_EOF :
+                              VIR_CONNECT_CLOSE_REASON_ERROR);
+        goto done;
     }
 
     /* Remove completed calls or signal their threads. */
