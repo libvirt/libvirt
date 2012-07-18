@@ -96,10 +96,6 @@ struct _libxlSavefileHeader {
     uint32_t unused[10];
 };
 
-# define libxlError(code, ...)                                     \
-    virReportErrorHelper(VIR_FROM_LIBXL, code, __FILE__,           \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 virCapsPtr
 libxlMakeCapabilities(libxl_ctx *ctx);
 

@@ -513,7 +513,6 @@ msg_gen_function += PHYP_ERROR
 msg_gen_function += VIR_ERROR
 msg_gen_function += VMX_ERROR
 msg_gen_function += lxcError
-msg_gen_function += libxlError
 msg_gen_function += nodeReportError
 msg_gen_function += regerror
 msg_gen_function += statsError
