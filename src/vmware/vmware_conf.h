@@ -30,10 +30,6 @@
 # define VIR_FROM_THIS VIR_FROM_VMWARE
 # define PROGRAM_SENTINAL ((char *)0x1)
 
-# define vmwareError(code, ...) \
-         virReportErrorHelper(VIR_FROM_VMWARE, code, __FILE__, \
-                              __FUNCTION__, __LINE__, __VA_ARGS__)
-
 # define TYPE_PLAYER        0
 # define TYPE_WORKSTATION   1
 

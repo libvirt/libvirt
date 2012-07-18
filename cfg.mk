@@ -543,7 +543,6 @@ msg_gen_function += virSecurityReportError
 msg_gen_function += virXenInotifyError
 msg_gen_function += virXenStoreError
 msg_gen_function += virXendError
-msg_gen_function += vmwareError
 msg_gen_function += xenapiSessionErrorHandler
 msg_gen_function += xenUnifiedError
 msg_gen_function += xenXMError
