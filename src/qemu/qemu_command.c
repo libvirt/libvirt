@@ -265,7 +265,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
     if (driver->macFilter) {
         if ((err = networkAllowMacOnPort(driver, net->ifname, &net->mac))) {
             virReportSystemError(err,
-                 _("failed to add ebtables rule to allow MAC address on  '%s'"),
+                 _("failed to add ebtables rule to allow MAC address on '%s'"),
                                  net->ifname);
         }
     }

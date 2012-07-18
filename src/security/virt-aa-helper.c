@@ -2,7 +2,7 @@
 /*
  * virt-aa-helper: wrapper program used by AppArmor security driver.
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2009-2011 Canonical Ltd.
  *
  * See COPYING.LIB for the License of this software
@@ -762,14 +762,14 @@ vah_add_file(virBufferPtr buf, const char *path, const char *perms)
      */
     if (STRNEQLEN(path, "/", 1)) {
         vah_warning(path);
-        vah_warning(_("  skipped non-absolute path"));
+        vah_warning(_("skipped non-absolute path"));
         return 0;
     }
 
     if (virFileExists(path)) {
         if ((tmp = realpath(path, NULL)) == NULL) {
             vah_error(NULL, 0, path);
-            vah_error(NULL, 0, _("  could not find realpath for disk"));
+            vah_error(NULL, 0, _("could not find realpath for disk"));
             return rc;
         }
     } else
@@ -783,7 +783,7 @@ vah_add_file(virBufferPtr buf, const char *path, const char *perms)
     if (rc != 0) {
         if (rc > 0) {
             vah_error(NULL, 0, path);
-            vah_error(NULL, 0, _("  skipped restricted file"));
+            vah_error(NULL, 0, _("skipped restricted file"));
         }
         goto clean;
     }

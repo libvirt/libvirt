@@ -4029,7 +4029,7 @@ void qemuProcessStop(struct qemud_driver *driver,
             if ((errno = networkDisallowMacOnPort(driver, net->ifname,
                                                   &net->mac))) {
                 virReportSystemError(errno,
-             _("failed to remove ebtables rule to allow MAC address on  '%s'"),
+             _("failed to remove ebtables rule to allow MAC address on '%s'"),
                                      net->ifname);
             }
         }

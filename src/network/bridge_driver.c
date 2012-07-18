@@ -850,7 +850,7 @@ networkStartRadvd(virNetworkObjPtr network)
         prefix = virNetworkIpDefPrefix(ipdef);
         if (prefix < 0) {
             networkReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("bridge  '%s' has an invalid prefix"),
+                               _("bridge '%s' has an invalid prefix"),
                                network->def->bridge);
             goto cleanup;
         }

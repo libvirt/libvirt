@@ -511,7 +511,7 @@ openvzReadMemConf(virDomainDefPtr def, int veid)
         ret = openvzParseBarrierLimit(temp, &barrier, NULL);
         if (ret < 0) {
             openvzError(VIR_ERR_INTERNAL_ERROR,
-                        _("Could not parse  barrier of '%s' "
+                        _("Could not parse barrier of '%s' "
                           "from config for container %d"), param, veid);
             goto error;
         }

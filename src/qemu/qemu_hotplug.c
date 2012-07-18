@@ -2293,7 +2293,7 @@ qemuDomainDetachNetDevice(struct qemud_driver *driver,
                                               detach->ifname,
                                               &detach->mac))) {
             virReportSystemError(errno,
-             _("failed to remove ebtables rule on  '%s'"),
+             _("failed to remove ebtables rule on '%s'"),
                                  detach->ifname);
         }
     }
