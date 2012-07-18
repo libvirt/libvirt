@@ -56,8 +56,8 @@ static int xenXMConfigGetBool(virConfPtr conf,
     } else if (val->type == VIR_CONF_STRING) {
         *value = STREQ(val->str, "1") ? 1 : 0;
     } else {
-        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                   _("config value %s was malformed"), name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("config value %s was malformed"), name);
         return -1;
     }
     return 0;
@@ -83,13 +83,13 @@ static int xenXMConfigGetULong(virConfPtr conf,
         char *ret;
         *value = strtol(val->str, &ret, 10);
         if (ret == val->str) {
-            XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                       _("config value %s was malformed"), name);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("config value %s was malformed"), name);
             return -1;
         }
     } else {
-        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                   _("config value %s was malformed"), name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("config value %s was malformed"), name);
         return -1;
     }
     return 0;
@@ -115,13 +115,13 @@ static int xenXMConfigGetULongLong(virConfPtr conf,
         char *ret;
         *value = strtoll(val->str, &ret, 10);
         if (ret == val->str) {
-            XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                       _("config value %s was malformed"), name);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("config value %s was malformed"), name);
             return -1;
         }
     } else {
-        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                   _("config value %s was malformed"), name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("config value %s was malformed"), name);
         return -1;
     }
     return 0;
@@ -142,8 +142,8 @@ static int xenXMConfigGetString(virConfPtr conf,
     }
 
     if (val->type != VIR_CONF_STRING) {
-        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                   _("config value %s was malformed"), name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("config value %s was malformed"), name);
         return -1;
     }
     if (!val->str)
@@ -163,21 +163,21 @@ static int xenXMConfigCopyStringInternal(virConfPtr conf,
     if (!(val = virConfGetValue(conf, name))) {
         if (allowMissing)
             return 0;
-        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                   _("config value %s was missing"), name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("config value %s was missing"), name);
         return -1;
     }
 
     if (val->type != VIR_CONF_STRING) {
-        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                   _("config value %s was not a string"), name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("config value %s was not a string"), name);
         return -1;
     }
     if (!val->str) {
         if (allowMissing)
             return 0;
-        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                   _("config value %s was missing"), name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("config value %s was missing"), name);
         return -1;
     }
 
@@ -208,32 +208,32 @@ static int xenXMConfigGetUUID(virConfPtr conf, const char *name, unsigned char *
     virConfValuePtr val;
 
     if (!uuid || !name || !conf) {
-        XENXS_ERROR(VIR_ERR_INVALID_ARG,
-                   _("Arguments must be non null"));
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Arguments must be non null"));
         return -1;
     }
 
     if (!(val = virConfGetValue(conf, name))) {
-        XENXS_ERROR(VIR_ERR_CONF_SYNTAX,
-                   _("config value %s was missing"), name);
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("config value %s was missing"), name);
         return -1;
     }
 
     if (val->type != VIR_CONF_STRING) {
-        XENXS_ERROR(VIR_ERR_CONF_SYNTAX,
-                   _("config value %s not a string"), name);
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("config value %s not a string"), name);
         return -1;
     }
 
     if (!val->str) {
-        XENXS_ERROR(VIR_ERR_CONF_SYNTAX,
-                   _("%s can't be empty"), name);
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("%s can't be empty"), name);
         return -1;
     }
 
     if (virUUIDParse(val->str, uuid) < 0) {
-        XENXS_ERROR(VIR_ERR_CONF_SYNTAX,
-                   _("%s not parseable"), val->str);
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("%s not parseable"), val->str);
         return -1;
     }
 
@@ -287,9 +287,9 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
 
     defaultArch = virCapabilitiesDefaultGuestArch(caps, def->os.type, virDomainVirtTypeToString(def->virtType));
     if (defaultArch == NULL) {
-        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                   _("no supported architecture for os type '%s'"),
-                   def->os.type);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("no supported architecture for os type '%s'"),
+                       def->os.type);
         goto cleanup;
     }
     if (!(def->os.arch = strdup(defaultArch)))
@@ -379,24 +379,24 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     if (xenXMConfigGetString(conf, "on_poweroff", &str, "destroy") < 0)
         goto cleanup;
     if ((def->onPoweroff = virDomainLifecycleTypeFromString(str)) < 0) {
-        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                   _("unexpected value %s for on_poweroff"), str);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected value %s for on_poweroff"), str);
         goto cleanup;
     }
 
     if (xenXMConfigGetString(conf, "on_reboot", &str, "restart") < 0)
         goto cleanup;
     if ((def->onReboot = virDomainLifecycleTypeFromString(str)) < 0) {
-        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                   _("unexpected value %s for on_reboot"), str);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected value %s for on_reboot"), str);
         goto cleanup;
     }
 
     if (xenXMConfigGetString(conf, "on_crash", &str, "restart") < 0)
         goto cleanup;
     if ((def->onCrash = virDomainLifecycleCrashTypeFromString(str)) < 0) {
-        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                   _("unexpected value %s for on_crash"), str);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected value %s for on_crash"), str);
         goto cleanup;
     }
 
@@ -509,9 +509,9 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                     goto no_memory;
                 if (virStrncpy(disk->src, head, offset - head,
                                (offset - head) + 1) == NULL) {
-                    XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                               _("Source file %s too big for destination"),
-                               head);
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("Source file %s too big for destination"),
+                                   head);
                     goto cleanup;
                 }
             }
@@ -528,8 +528,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 goto no_memory;
             if (virStrncpy(disk->dst, head, offset - head,
                            (offset - head) + 1) == NULL) {
-                XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                           _("Dest file %s too big for destination"), head);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Dest file %s too big for destination"), head);
                 goto cleanup;
             }
             head = offset + 1;
@@ -544,9 +544,9 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                     if (virStrncpy(disk->driverName, disk->src,
                                    (tmp - disk->src),
                                    (tmp - disk->src) + 1) == NULL) {
-                        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                                   _("Driver name %s too big for destination"),
-                                   disk->src);
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("Driver name %s too big for destination"),
+                                       disk->src);
                         goto cleanup;
                     }
 
@@ -565,9 +565,9 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                     if (virStrncpy(disk->driverType, disk->src,
                                    (tmp - disk->src),
                                    (tmp - disk->src) + 1) == NULL) {
-                        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                                   _("Driver type %s too big for destination"),
-                                   disk->src);
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("Driver type %s too big for destination"),
+                                       disk->src);
                         goto cleanup;
                     }
 
@@ -681,17 +681,17 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 if (STRPREFIX(key, "mac=")) {
                     int len = nextkey ? (nextkey - data) : sizeof(mac) - 1;
                     if (virStrncpy(mac, data, len, sizeof(mac)) == NULL) {
-                        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                                   _("MAC address %s too big for destination"),
-                                   data);
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("MAC address %s too big for destination"),
+                                       data);
                         goto skipnic;
                     }
                 } else if (STRPREFIX(key, "bridge=")) {
                     int len = nextkey ? (nextkey - data) : sizeof(bridge) - 1;
                     if (virStrncpy(bridge, data, len, sizeof(bridge)) == NULL) {
-                        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                                   _("Bridge %s too big for destination"),
-                                   data);
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("Bridge %s too big for destination"),
+                                       data);
                         goto skipnic;
                     }
                 } else if (STRPREFIX(key, "script=")) {
@@ -703,30 +703,30 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 } else if (STRPREFIX(key, "model=")) {
                     int len = nextkey ? (nextkey - data) : sizeof(model) - 1;
                     if (virStrncpy(model, data, len, sizeof(model)) == NULL) {
-                        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                                   _("Model %s too big for destination"), data);
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("Model %s too big for destination"), data);
                         goto skipnic;
                     }
                 } else if (STRPREFIX(key, "type=")) {
                     int len = nextkey ? (nextkey - data) : sizeof(type) - 1;
                     if (virStrncpy(type, data, len, sizeof(type)) == NULL) {
-                        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                                   _("Type %s too big for destination"), data);
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("Type %s too big for destination"), data);
                         goto skipnic;
                     }
                 } else if (STRPREFIX(key, "vifname=")) {
                     int len = nextkey ? (nextkey - data) : sizeof(vifname) - 1;
                     if (virStrncpy(vifname, data, len, sizeof(vifname)) == NULL) {
-                        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                                   _("Vifname %s too big for destination"),
-                                   data);
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("Vifname %s too big for destination"),
+                                       data);
                         goto skipnic;
                     }
                 } else if (STRPREFIX(key, "ip=")) {
                     int len = nextkey ? (nextkey - data) : sizeof(ip) - 1;
                     if (virStrncpy(ip, data, len, sizeof(ip)) == NULL) {
-                        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                                   _("IP %s too big for destination"), data);
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("IP %s too big for destination"), data);
                         goto skipnic;
                     }
                 }
@@ -743,8 +743,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
 
             if (mac[0]) {
                 if (virMacAddrParse(mac, &net->mac) < 0) {
-                    XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                               _("malformed mac address '%s'"), mac);
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("malformed mac address '%s'"), mac);
                     goto cleanup;
                 }
             }
@@ -823,8 +823,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 goto skippci;
 
             if (virStrncpy(domain, key, (nextkey - key), sizeof(domain)) == NULL) {
-                XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                           _("Domain %s too big for destination"), key);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Domain %s too big for destination"), key);
                 goto skippci;
             }
 
@@ -833,8 +833,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 goto skippci;
 
             if (virStrncpy(bus, key, (nextkey - key), sizeof(bus)) == NULL) {
-                XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                           _("Bus %s too big for destination"), key);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Bus %s too big for destination"), key);
                 goto skippci;
             }
 
@@ -843,8 +843,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 goto skippci;
 
             if (virStrncpy(slot, key, (nextkey - key), sizeof(slot)) == NULL) {
-                XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                           _("Slot %s too big for destination"), key);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Slot %s too big for destination"), key);
                 goto skippci;
             }
 
@@ -853,8 +853,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 goto skippci;
 
             if (virStrncpy(func, key, 1, sizeof(func)) == NULL) {
-                XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                           _("Function %s too big for destination"), key);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Function %s too big for destination"), key);
                 goto skippci;
             }
 
@@ -979,9 +979,9 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             char *key = vfb;
 
             if (virStrcpyStatic(vfb, list->list->str) == NULL) {
-                XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                           _("VFB %s too big for destination"),
-                           list->list->str);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("VFB %s too big for destination"),
+                               list->list->str);
                 goto cleanup;
             }
 
@@ -1159,8 +1159,8 @@ int xenXMConfigSetInt(virConfPtr conf, const char *setting, long long l) {
     virConfValuePtr value = NULL;
 
     if ((long) l != l) {
-        XENXS_ERROR(VIR_ERR_OVERFLOW, _("failed to store %lld to %s"),
-                    l, setting);
+        virReportError(VIR_ERR_OVERFLOW, _("failed to store %lld to %s"),
+                       l, setting);
         return -1;
     }
     if (VIR_ALLOC(value) < 0) {
@@ -1219,9 +1219,9 @@ static int xenFormatXMDisk(virConfValuePtr list,
                 virBufferAddLit(&buf, "phy:");
                 break;
             default:
-                XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                           _("unsupported disk type %s"),
-                           virDomainDiskTypeToString(disk->type));
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unsupported disk type %s"),
+                               virDomainDiskTypeToString(disk->type));
                 goto cleanup;
             }
         }
@@ -1242,8 +1242,8 @@ static int xenFormatXMDisk(virConfValuePtr list,
     else
         virBufferAddLit(&buf, ",w");
     if (disk->transient) {
-        XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
-                    _("transient disks not supported yet"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("transient disks not supported yet"));
         return -1;
     }
 
@@ -1350,16 +1350,16 @@ static int xenFormatXMNet(virConnectPtr conn,
         virNetworkPtr network = virNetworkLookupByName(conn, net->data.network.name);
         char *bridge;
         if (!network) {
-            XENXS_ERROR(VIR_ERR_NO_NETWORK, "%s",
-                       net->data.network.name);
+            virReportError(VIR_ERR_NO_NETWORK, "%s",
+                           net->data.network.name);
             return -1;
         }
         bridge = virNetworkGetBridgeName(network);
         virNetworkFree(network);
         if (!bridge) {
-            XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                       _("network %s is not active"),
-                       net->data.network.name);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("network %s is not active"),
+                           net->data.network.name);
             return -1;
         }
 
@@ -1369,9 +1369,9 @@ static int xenFormatXMNet(virConnectPtr conn,
     break;
 
     default:
-        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                   _("unsupported network type %d"),
-                   net->type);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unsupported network type %d"),
+                       net->type);
         goto cleanup;
     }
 
@@ -1670,9 +1670,9 @@ virConfPtr xenFormatXM(virConnectPtr conn,
             vmlocaltime = 1;
             break;
         default:
-            XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
-                        _("unsupported clock offset='%s'"),
-                        virDomainClockOffsetTypeToString(def->clock.offset));
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported clock offset='%s'"),
+                           virDomainClockOffsetTypeToString(def->clock.offset));
             goto cleanup;
         }
     } else {
@@ -1686,8 +1686,8 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                 break;
             case VIR_DOMAIN_CLOCK_OFFSET_UTC:
                 if (def->clock.data.utc_reset) {
-                    XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
-                                _("unsupported clock adjustment='reset'"));
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unsupported clock adjustment='reset'"));
                     goto cleanup;
                 }
                 vmlocaltime = 0;
@@ -1695,17 +1695,17 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                 break;
             case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
                 if (def->clock.data.utc_reset) {
-                    XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
-                                _("unsupported clock adjustment='reset'"));
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unsupported clock adjustment='reset'"));
                     goto cleanup;
                 }
                 vmlocaltime = 1;
                 rtc_timeoffset = 0;
                 break;
             default:
-                XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
-                            _("unsupported clock offset='%s'"),
-                            virDomainClockOffsetTypeToString(def->clock.offset));
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported clock offset='%s'"),
+                               virDomainClockOffsetTypeToString(def->clock.offset));
                 goto cleanup;
             }
             if (xenXMConfigSetInt(conf, "rtc_timeoffset", rtc_timeoffset) < 0)
@@ -1720,9 +1720,9 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                 vmlocaltime = 1;
                 break;
             default:
-                XENXS_ERROR(VIR_ERR_CONFIG_UNSUPPORTED,
-                            _("unsupported clock offset='%s'"),
-                            virDomainClockOffsetTypeToString(def->clock.offset));
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported clock offset='%s'"),
+                               virDomainClockOffsetTypeToString(def->clock.offset));
                 goto cleanup;
             }
         } /* !hvm */
@@ -1732,8 +1732,8 @@ virConfPtr xenFormatXM(virConnectPtr conn,
 
 
     if (!(lifecycle = virDomainLifecycleTypeToString(def->onPoweroff))) {
-        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                   _("unexpected lifecycle action %d"), def->onPoweroff);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected lifecycle action %d"), def->onPoweroff);
         goto cleanup;
     }
     if (xenXMConfigSetString(conf, "on_poweroff", lifecycle) < 0)
@@ -1741,8 +1741,8 @@ virConfPtr xenFormatXM(virConnectPtr conn,
 
 
     if (!(lifecycle = virDomainLifecycleTypeToString(def->onReboot))) {
-        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                   _("unexpected lifecycle action %d"), def->onReboot);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected lifecycle action %d"), def->onReboot);
         goto cleanup;
     }
     if (xenXMConfigSetString(conf, "on_reboot", lifecycle) < 0)
@@ -1750,8 +1750,8 @@ virConfPtr xenFormatXM(virConnectPtr conn,
 
 
     if (!(lifecycle = virDomainLifecycleCrashTypeToString(def->onCrash))) {
-        XENXS_ERROR(VIR_ERR_INTERNAL_ERROR,
-                   _("unexpected lifecycle action %d"), def->onCrash);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected lifecycle action %d"), def->onCrash);
         goto cleanup;
     }
     if (xenXMConfigSetString(conf, "on_crash", lifecycle) < 0)
