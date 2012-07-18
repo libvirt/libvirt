@@ -1227,11 +1227,26 @@ esxVI_String_SerializeValue(const char *value, const char *element,
     return 0;
 }
 
-/* esxVI_String_Deserialize */
-ESX_VI__TEMPLATE__DESERIALIZE(String,
+int
+esxVI_String_Deserialize(xmlNodePtr node, esxVI_String **string)
 {
-    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, value)
-})
+    if (string == NULL || *string != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (esxVI_String_Alloc(string) < 0 ||
+        esxVI_String_DeserializeValue(node, &(*string)->value) < 0) {
+        goto failure;
+    }
+
+    return 0;
+
+  failure:
+    esxVI_String_Free(string);
+
+    return -1;
+}
 
 /* esxVI_String_DeserializeList */
 ESX_VI__TEMPLATE__LIST__DESERIALIZE(String)
