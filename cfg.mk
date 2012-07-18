@@ -506,7 +506,6 @@ sc_avoid_attribute_unused_in_header:
 # |grep -vE '^(qsort|if|close|assert|fputc|free|N_|vir.*GetName|.*Unlock|virNodeListDevices|virHashRemoveEntry|freeaddrinfo|.*[fF]ree|xdrmem_create|xmlXPathFreeObject|virUUIDFormat|openvzSetProgramSentinal|polkit_action_unref)$'
 
 msg_gen_function =
-msg_gen_function += PHYP_ERROR
 msg_gen_function += VIR_ERROR
 msg_gen_function += VMX_ERROR
 msg_gen_function += lxcError
