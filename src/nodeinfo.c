@@ -225,6 +225,12 @@ virNodeParseNode(const char *node, int *sockets, int *cores, int *threads)
         if (sscanf(cpudirent->d_name, "cpu%u", &cpu) != 1)
             continue;
 
+        if ((online = virNodeGetCpuValue(node, cpu, "online", true)) < 0)
+            goto cleanup;
+
+        if (!online)
+            continue;
+
         /* Parse socket */
         sock = virNodeParseSocket(node, cpu);
         CPU_SET(sock, &sock_map);

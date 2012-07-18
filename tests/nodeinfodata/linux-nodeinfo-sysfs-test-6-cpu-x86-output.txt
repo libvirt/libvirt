@@ -1,0 +1,1 @@
+CPUs: 6/8, MHz: 1596, Nodes: 1, Sockets: 1, Cores: 4, Threads: 2
