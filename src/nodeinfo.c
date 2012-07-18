@@ -52,10 +52,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define nodeReportError(code, ...)                                      \
-    virReportErrorHelper(VIR_FROM_NONE, code, __FILE__,                 \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 #ifdef __linux__
 # define CPUINFO_PATH "/proc/cpuinfo"
 # define SYSFS_SYSTEM_PATH "/sys/devices/system"
@@ -114,9 +110,9 @@ virNodeGetCpuValue(const char *dir, unsigned int cpu, const char *file,
         goto cleanup;
     }
     if (virStrToLong_i(value_str, &tmp, 10, &value) < 0) {
-        nodeReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("could not convert '%s' to an integer"),
-                        value_str);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not convert '%s' to an integer"),
+                       value_str);
         goto cleanup;
     }
 
@@ -275,8 +271,8 @@ virNodeParseNode(const char *node, int *sockets, int *cores, int *threads)
         /* Parse socket */
         sock = virNodeParseSocket(node, cpu);
         if (!CPU_ISSET(sock, &sock_map)) {
-            nodeReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("CPU socket topology has changed"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("CPU socket topology has changed"));
             goto cleanup;
         }
 
@@ -363,8 +359,8 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                 buf++;
 
             if (*buf != ':' || !buf[1]) {
-                nodeReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                _("parsing cpu MHz from cpuinfo"));
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("parsing cpu MHz from cpuinfo"));
                 goto cleanup;
             }
 
@@ -386,8 +382,8 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                 buf++;
 
             if (*buf != ':' || !buf[1]) {
-                nodeReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                _("parsing cpu MHz from cpuinfo"));
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("parsing cpu MHz from cpuinfo"));
                 goto cleanup;
             }
 
@@ -485,17 +481,17 @@ fallback:
 done:
     /* There should always be at least one cpu, socket, node, and thread. */
     if (nodeinfo->cpus == 0) {
-        nodeReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("no CPUs found"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("no CPUs found"));
         goto cleanup;
     }
 
     if (nodeinfo->sockets == 0) {
-        nodeReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("no sockets found"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("no sockets found"));
         goto cleanup;
     }
 
     if (nodeinfo->threads == 0) {
-        nodeReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("no threads found"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("no threads found"));
         goto cleanup;
     }
 
@@ -566,8 +562,8 @@ int linuxNodeGetCPUStats(FILE *procstat,
                 switch (i) {
                 case 0: /* fill kernel cpu time here */
                     if (virStrcpyStatic(param->field, VIR_NODE_CPU_STATS_KERNEL) == NULL) {
-                        nodeReportError(VIR_ERR_INTERNAL_ERROR,
-                                        "%s", _("Field kernel cpu time too long for destination"));
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       "%s", _("Field kernel cpu time too long for destination"));
                         goto cleanup;
                     }
                     param->value = (sys + irq + softirq) * TICK_TO_NSEC;
@@ -575,8 +571,8 @@ int linuxNodeGetCPUStats(FILE *procstat,
 
                 case 1: /* fill user cpu time here */
                     if (virStrcpyStatic(param->field, VIR_NODE_CPU_STATS_USER) == NULL) {
-                        nodeReportError(VIR_ERR_INTERNAL_ERROR,
-                                        "%s", _("Field kernel cpu time too long for destination"));
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       "%s", _("Field kernel cpu time too long for destination"));
                         goto cleanup;
                     }
                     param->value = (usr + ni) * TICK_TO_NSEC;
@@ -584,8 +580,8 @@ int linuxNodeGetCPUStats(FILE *procstat,
 
                 case 2: /* fill idle cpu time here */
                     if (virStrcpyStatic(param->field, VIR_NODE_CPU_STATS_IDLE) == NULL) {
-                        nodeReportError(VIR_ERR_INTERNAL_ERROR,
-                                        "%s", _("Field kernel cpu time too long for destination"));
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       "%s", _("Field kernel cpu time too long for destination"));
                         goto cleanup;
                     }
                     param->value = idle * TICK_TO_NSEC;
@@ -593,8 +589,8 @@ int linuxNodeGetCPUStats(FILE *procstat,
 
                 case 3: /* fill iowait cpu time here */
                     if (virStrcpyStatic(param->field, VIR_NODE_CPU_STATS_IOWAIT) == NULL) {
-                        nodeReportError(VIR_ERR_INTERNAL_ERROR,
-                                        "%s", _("Field kernel cpu time too long for destination"));
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       "%s", _("Field kernel cpu time too long for destination"));
                         goto cleanup;
                     }
                     param->value = iowait * TICK_TO_NSEC;
@@ -679,8 +675,8 @@ int linuxNodeGetMemoryStats(FILE *meminfo,
             for (i = 0; i < 2; i++) {
                 p = strchr(p, ' ');
                 if (p == NULL) {
-                    nodeReportError(VIR_ERR_INTERNAL_ERROR,
-                                    "%s", _("no prefix found"));
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   "%s", _("no prefix found"));
                     goto cleanup;
                 }
                 p++;
@@ -698,8 +694,8 @@ int linuxNodeGetMemoryStats(FILE *meminfo,
                 virNodeMemoryStatsPtr param = &params[k++];
 
                 if (virStrcpyStatic(param->field, convp->field) == NULL) {
-                    nodeReportError(VIR_ERR_INTERNAL_ERROR,
-                                    "%s", _("Field kernel memory too long for destination"));
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   "%s", _("Field kernel memory too long for destination"));
                     goto cleanup;
                 }
                 param->value = val;
@@ -712,8 +708,8 @@ int linuxNodeGetMemoryStats(FILE *meminfo,
     }
 
     if (found == 0) {
-        nodeReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("no available memory line found"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("no available memory line found"));
         goto cleanup;
     }
 
@@ -798,8 +794,8 @@ cleanup:
     }
 #else
     /* XXX Solaris will need an impl later if they port QEMU driver */
-    nodeReportError(VIR_ERR_NO_SUPPORT, "%s",
-                    _("node info not implemented on this platform"));
+    virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                   _("node info not implemented on this platform"));
     return -1;
 #endif
 }
@@ -827,8 +823,8 @@ int nodeGetCPUStats(virConnectPtr conn ATTRIBUTE_UNUSED,
         return ret;
     }
 #else
-    nodeReportError(VIR_ERR_NO_SUPPORT, "%s",
-                    _("node CPU stats not implemented on this platform"));
+    virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                   _("node CPU stats not implemented on this platform"));
     return -1;
 #endif
 }
@@ -857,8 +853,8 @@ int nodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
 # if HAVE_NUMACTL
             if (numa_available() < 0) {
 # endif
-                nodeReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s", _("NUMA not supported on this host"));
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("NUMA not supported on this host"));
                 return -1;
 # if HAVE_NUMACTL
             }
@@ -894,8 +890,8 @@ int nodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
         return ret;
     }
 #else
-    nodeReportError(VIR_ERR_NO_SUPPORT, "%s",
-                    _("node memory stats not implemented on this platform"));
+    virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                   _("node memory stats not implemented on this platform"));
     return -1;
 #endif
 }
@@ -918,8 +914,8 @@ nodeGetCPUmap(virConnectPtr conn ATTRIBUTE_UNUSED,
     VIR_FREE(path);
     return cpumap;
 #else
-    nodeReportError(VIR_ERR_NO_SUPPORT, "%s",
-                    _("node cpumap not implemented on this platform"));
+    virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                   _("node cpumap not implemented on this platform"));
     return NULL;
 #endif
 }
@@ -1012,15 +1008,15 @@ nodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
     int maxCell;
 
     if (numa_available() < 0) {
-        nodeReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("NUMA not supported on this host"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("NUMA not supported on this host"));
         goto cleanup;
     }
     maxCell = numa_max_node();
     if (startCell > maxCell) {
-        nodeReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("start cell %d out of range (0-%d)"),
-                        startCell, maxCell);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("start cell %d out of range (0-%d)"),
+                       startCell, maxCell);
         goto cleanup;
     }
     lastCell = startCell + maxCells - 1;
@@ -1030,7 +1026,7 @@ nodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
     for (numCells = 0, n = startCell ; n <= lastCell ; n++) {
         long long mem;
         if (numa_node_size64(n, &mem) < 0) {
-            nodeReportError(VIR_ERR_INTERNAL_ERROR,
+            virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to query NUMA free memory for node: %d"),
                            n);
             goto cleanup;
@@ -1050,16 +1046,16 @@ nodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
     int n;
 
     if (numa_available() < 0) {
-        nodeReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("NUMA not supported on this host"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("NUMA not supported on this host"));
         goto cleanup;
     }
 
     for (n = 0 ; n <= numa_max_node() ; n++) {
         long long mem;
         if (numa_node_size64(n, &mem) < 0) {
-            nodeReportError(VIR_ERR_INTERNAL_ERROR,
-                            "%s", _("Failed to query NUMA free memory"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("Failed to query NUMA free memory"));
             goto cleanup;
         }
         freeMem += mem;
@@ -1079,15 +1075,15 @@ int nodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
                               int startCell ATTRIBUTE_UNUSED,
                               int maxCells ATTRIBUTE_UNUSED)
 {
-    nodeReportError(VIR_ERR_NO_SUPPORT, "%s",
-                    _("NUMA memory information not available on this platform"));
+    virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                   _("NUMA memory information not available on this platform"));
     return -1;
 }
 
 unsigned long long nodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    nodeReportError(VIR_ERR_NO_SUPPORT, "%s",
-                    _("NUMA memory information not available on this platform"));
+    virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                   _("NUMA memory information not available on this platform"));
     return 0;
 }
 #endif

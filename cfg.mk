@@ -509,7 +509,6 @@ msg_gen_function =
 msg_gen_function += VIR_ERROR
 msg_gen_function += VMX_ERROR
 msg_gen_function += lxcError
-msg_gen_function += nodeReportError
 msg_gen_function += regerror
 msg_gen_function += statsError
 msg_gen_function += vah_error
