@@ -23,11 +23,6 @@
 #ifndef VIR_SECURITY_MANAGER_H__
 # define VIR_SECURITY_MANAGER_H__
 
-# define virSecurityReportError(code, ...)                          \
-    virReportErrorHelper(VIR_FROM_SECURITY, code, __FILE__,         \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
-
 typedef struct _virSecurityManager virSecurityManager;
 typedef virSecurityManager *virSecurityManagerPtr;
 

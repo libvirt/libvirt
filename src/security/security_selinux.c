@@ -277,29 +277,29 @@ SELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
     if ((def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC) &&
         !def->seclabel.baselabel &&
         def->seclabel.model) {
-        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("security model already defined for VM"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("security model already defined for VM"));
         return rc;
     }
 
     if (def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
         def->seclabel.label) {
-        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("security label already defined for VM"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("security label already defined for VM"));
         return rc;
     }
 
     if (def->seclabel.imagelabel) {
-        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("security image label already defined for VM"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("security image label already defined for VM"));
         return rc;
     }
 
     if (def->seclabel.model &&
         STRNEQ(def->seclabel.model, SECURITY_SELINUX_NAME)) {
-        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("security label model %s is not supported with selinux"),
-                               def->seclabel.model);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("security label model %s is not supported with selinux"),
+                       def->seclabel.model);
         return rc;
     }
 
@@ -350,8 +350,8 @@ SELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
                                  def->seclabel.baselabel :
                                  data->domain_context, mcs);
         if (! def->seclabel.label)  {
-            virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("cannot generate selinux context for %s"), mcs);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot generate selinux context for %s"), mcs);
             goto cleanup;
         }
         break;
@@ -361,17 +361,17 @@ SELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
         break;
 
     default:
-        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unexpected security label type '%s'"),
-                               virDomainSeclabelTypeToString(def->seclabel.type));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected security label type '%s'"),
+                       virDomainSeclabelTypeToString(def->seclabel.type));
         goto cleanup;
     }
 
     if (!def->seclabel.norelabel) {
         def->seclabel.imagelabel = SELinuxGenNewContext(data->file_context, mcs);
         if (!def->seclabel.imagelabel)  {
-            virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("cannot generate selinux context for %s"), mcs);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot generate selinux context for %s"), mcs);
             goto cleanup;
         }
     }
@@ -517,10 +517,10 @@ SELinuxGetSecurityProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     }
 
     if (strlen((char *) ctx) >= VIR_SECURITY_LABEL_BUFLEN) {
-        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("security label exceeds "
-                                 "maximum length: %d"),
-                               VIR_SECURITY_LABEL_BUFLEN - 1);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("security label exceeds "
+                         "maximum length: %d"),
+                       VIR_SECURITY_LABEL_BUFLEN - 1);
         freecon(ctx);
         return -1;
     }
@@ -1106,9 +1106,9 @@ SELinuxRestoreSecuritySmartcardCallback(virDomainDefPtr def,
         return SELinuxRestoreSecurityChardevLabel(def, &dev->data.passthru);
 
     default:
-        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unknown smartcard type %d"),
-                               dev->type);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unknown smartcard type %d"),
+                       dev->type);
         return -1;
     }
 
@@ -1225,18 +1225,18 @@ SELinuxSecurityVerify(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 {
     const virSecurityLabelDefPtr secdef = &def->seclabel;
     if (!STREQ(virSecurityManagerGetModel(mgr), secdef->model)) {
-        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("security label driver mismatch: "
-                                 "'%s' model configured for domain, but "
-                                 "hypervisor driver is '%s'."),
-                               secdef->model, virSecurityManagerGetModel(mgr));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("security label driver mismatch: "
+                         "'%s' model configured for domain, but "
+                         "hypervisor driver is '%s'."),
+                       secdef->model, virSecurityManagerGetModel(mgr));
         return -1;
     }
 
     if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC) {
         if (security_check_context(secdef->label) != 0) {
-            virSecurityReportError(VIR_ERR_XML_ERROR,
-                                   _("Invalid security label %s"), secdef->label);
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid security label %s"), secdef->label);
             return -1;
         }
     }
@@ -1255,11 +1255,11 @@ SELinuxSetSecurityProcessLabel(virSecurityManagerPtr mgr,
         return 0;
 
     if (!STREQ(virSecurityManagerGetModel(mgr), secdef->model)) {
-        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("security label driver mismatch: "
-                                 "'%s' model configured for domain, but "
-                                 "hypervisor driver is '%s'."),
-                               secdef->model, virSecurityManagerGetModel(mgr));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("security label driver mismatch: "
+                         "'%s' model configured for domain, but "
+                         "hypervisor driver is '%s'."),
+                       secdef->model, virSecurityManagerGetModel(mgr));
         if (security_getenforce() == 1)
             return -1;
     }
@@ -1290,11 +1290,11 @@ SELinuxSetSecurityDaemonSocketLabel(virSecurityManagerPtr mgr,
         return 0;
 
     if (!STREQ(virSecurityManagerGetModel(mgr), secdef->model)) {
-        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("security label driver mismatch: "
-                                 "'%s' model configured for domain, but "
-                                 "hypervisor driver is '%s'."),
-                               secdef->model, virSecurityManagerGetModel(mgr));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("security label driver mismatch: "
+                         "'%s' model configured for domain, but "
+                         "hypervisor driver is '%s'."),
+                       secdef->model, virSecurityManagerGetModel(mgr));
         goto done;
     }
 
@@ -1357,11 +1357,11 @@ SELinuxSetSecuritySocketLabel(virSecurityManagerPtr mgr,
         return 0;
 
     if (!STREQ(virSecurityManagerGetModel(mgr), secdef->model)) {
-        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("security label driver mismatch: "
-                                 "'%s' model configured for domain, but "
-                                 "hypervisor driver is '%s'."),
-                               secdef->model, virSecurityManagerGetModel(mgr));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("security label driver mismatch: "
+                         "'%s' model configured for domain, but "
+                         "hypervisor driver is '%s'."),
+                       secdef->model, virSecurityManagerGetModel(mgr));
         goto done;
     }
 
@@ -1394,11 +1394,11 @@ SELinuxClearSecuritySocketLabel(virSecurityManagerPtr mgr,
         return 0;
 
     if (!STREQ(virSecurityManagerGetModel(mgr), secdef->model)) {
-        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("security label driver mismatch: "
-                                 "'%s' model configured for domain, but "
-                                 "hypervisor driver is '%s'."),
-                               secdef->model, virSecurityManagerGetModel(mgr));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("security label driver mismatch: "
+                         "'%s' model configured for domain, but "
+                         "hypervisor driver is '%s'."),
+                       secdef->model, virSecurityManagerGetModel(mgr));
         if (security_getenforce() == 1)
             return -1;
     }
@@ -1451,9 +1451,9 @@ SELinuxSetSecuritySmartcardCallback(virDomainDefPtr def,
         return SELinuxSetSecurityChardevLabel(def, &dev->data.passthru);
 
     default:
-        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unknown smartcard type %d"),
-                               dev->type);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unknown smartcard type %d"),
+                       dev->type);
         return -1;
     }
 

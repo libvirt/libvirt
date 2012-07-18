@@ -125,8 +125,8 @@ virSecurityManagerPtr virSecurityManagerNew(const char *name,
     /* driver "none" needs some special handling of *Confined bools */
     if (STREQ(drv->name, "none")) {
         if (requireConfined) {
-            virSecurityReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                    _("Security driver \"none\" cannot create confined guests"));
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Security driver \"none\" cannot create confined guests"));
             return NULL;
         }
 
@@ -180,7 +180,7 @@ virSecurityManagerGetDOI(virSecurityManagerPtr mgr)
     if (mgr->drv->getDOI)
         return mgr->drv->getDOI(mgr);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
 }
 
@@ -190,7 +190,7 @@ virSecurityManagerGetModel(virSecurityManagerPtr mgr)
     if (mgr->drv->getModel)
         return mgr->drv->getModel(mgr);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
 }
 
@@ -216,7 +216,7 @@ int virSecurityManagerRestoreImageLabel(virSecurityManagerPtr mgr,
     if (mgr->drv->domainRestoreSecurityImageLabel)
         return mgr->drv->domainRestoreSecurityImageLabel(mgr, vm, disk);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -226,7 +226,7 @@ int virSecurityManagerSetDaemonSocketLabel(virSecurityManagerPtr mgr,
     if (mgr->drv->domainSetSecurityDaemonSocketLabel)
         return mgr->drv->domainSetSecurityDaemonSocketLabel(mgr, vm);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -236,7 +236,7 @@ int virSecurityManagerSetSocketLabel(virSecurityManagerPtr mgr,
     if (mgr->drv->domainSetSecuritySocketLabel)
         return mgr->drv->domainSetSecuritySocketLabel(mgr, vm);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -246,7 +246,7 @@ int virSecurityManagerClearSocketLabel(virSecurityManagerPtr mgr,
     if (mgr->drv->domainClearSecuritySocketLabel)
         return mgr->drv->domainClearSecuritySocketLabel(mgr, vm);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -257,7 +257,7 @@ int virSecurityManagerSetImageLabel(virSecurityManagerPtr mgr,
     if (mgr->drv->domainSetSecurityImageLabel)
         return mgr->drv->domainSetSecurityImageLabel(mgr, vm, disk);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -268,7 +268,7 @@ int virSecurityManagerRestoreHostdevLabel(virSecurityManagerPtr mgr,
     if (mgr->drv->domainRestoreSecurityHostdevLabel)
         return mgr->drv->domainRestoreSecurityHostdevLabel(mgr, vm, dev);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -279,7 +279,7 @@ int virSecurityManagerSetHostdevLabel(virSecurityManagerPtr mgr,
     if (mgr->drv->domainSetSecurityHostdevLabel)
         return mgr->drv->domainSetSecurityHostdevLabel(mgr, vm, dev);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -290,7 +290,7 @@ int virSecurityManagerSetSavedStateLabel(virSecurityManagerPtr mgr,
     if (mgr->drv->domainSetSavedStateLabel)
         return mgr->drv->domainSetSavedStateLabel(mgr, vm, savefile);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -301,7 +301,7 @@ int virSecurityManagerRestoreSavedStateLabel(virSecurityManagerPtr mgr,
     if (mgr->drv->domainRestoreSavedStateLabel)
         return mgr->drv->domainRestoreSavedStateLabel(mgr, vm, savefile);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -317,15 +317,15 @@ int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
 
     if ((vm->seclabel.type == VIR_DOMAIN_SECLABEL_NONE) &&
         mgr->requireConfined) {
-        virSecurityReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Unconfined guests are not allowed on this host"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Unconfined guests are not allowed on this host"));
         return -1;
     }
 
     if (mgr->drv->domainGenSecurityLabel)
         return mgr->drv->domainGenSecurityLabel(mgr, vm);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -336,7 +336,7 @@ int virSecurityManagerReserveLabel(virSecurityManagerPtr mgr,
     if (mgr->drv->domainReserveSecurityLabel)
         return mgr->drv->domainReserveSecurityLabel(mgr, vm, pid);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -346,7 +346,7 @@ int virSecurityManagerReleaseLabel(virSecurityManagerPtr mgr,
     if (mgr->drv->domainReleaseSecurityLabel)
         return mgr->drv->domainReleaseSecurityLabel(mgr, vm);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -357,7 +357,7 @@ int virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
     if (mgr->drv->domainSetSecurityAllLabel)
         return mgr->drv->domainSetSecurityAllLabel(mgr, vm, stdin_path);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -368,7 +368,7 @@ int virSecurityManagerRestoreAllLabel(virSecurityManagerPtr mgr,
     if (mgr->drv->domainRestoreSecurityAllLabel)
         return mgr->drv->domainRestoreSecurityAllLabel(mgr, vm, migrated);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -380,7 +380,7 @@ int virSecurityManagerGetProcessLabel(virSecurityManagerPtr mgr,
     if (mgr->drv->domainGetSecurityProcessLabel)
         return mgr->drv->domainGetSecurityProcessLabel(mgr, vm, pid, sec);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -390,7 +390,7 @@ int virSecurityManagerSetProcessLabel(virSecurityManagerPtr mgr,
     if (mgr->drv->domainSetSecurityProcessLabel)
         return mgr->drv->domainSetSecurityProcessLabel(mgr, vm);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -408,7 +408,7 @@ int virSecurityManagerVerify(virSecurityManagerPtr mgr,
     if (mgr->drv->domainSecurityVerify)
         return mgr->drv->domainSecurityVerify(mgr, def);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -419,7 +419,7 @@ int virSecurityManagerSetImageFDLabel(virSecurityManagerPtr mgr,
     if (mgr->drv->domainSetSecurityImageFDLabel)
         return mgr->drv->domainSetSecurityImageFDLabel(mgr, vm, fd);
 
-    virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -431,7 +431,7 @@ char *virSecurityManagerGetMountOptions(virSecurityManagerPtr mgr,
 
     /*
       I don't think this is an error, these should be optional
-      virSecurityReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+      virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     */
     return NULL;
 }

@@ -28,6 +28,8 @@
 
 #include "security_nop.h"
 
+#define VIR_FROM_THIS VIR_FROM_SECURITY
+
 static virSecurityDriverPtr security_drivers[] = {
 #ifdef WITH_SECDRIVER_SELINUX
     &virSecurityDriverSELinux,
@@ -69,9 +71,9 @@ virSecurityDriverPtr virSecurityDriverLookup(const char *name,
     }
 
     if (!drv) {
-        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Security driver %s not found"),
-                               NULLSTR(name));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Security driver %s not found"),
+                       NULLSTR(name));
         return NULL;
     }
 
