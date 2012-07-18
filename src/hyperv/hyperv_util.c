@@ -42,7 +42,7 @@ hypervParseUri(hypervParsedUri **parsedUri, virURIPtr uri)
     int i;
 
     if (parsedUri == NULL || *parsedUri != NULL) {
-        HYPERV_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
@@ -66,10 +66,10 @@ hypervParseUri(hypervParsedUri **parsedUri, virURIPtr uri)
 
             if (STRNEQ((*parsedUri)->transport, "http") &&
                 STRNEQ((*parsedUri)->transport, "https")) {
-                HYPERV_ERROR(VIR_ERR_INVALID_ARG,
-                             _("Query parameter 'transport' has unexpected value "
-                               "'%s' (should be http|https)"),
-                             (*parsedUri)->transport);
+                virReportError(VIR_ERR_INVALID_ARG,
+                               _("Query parameter 'transport' has unexpected value "
+                                 "'%s' (should be http|https)"),
+                               (*parsedUri)->transport);
                 goto cleanup;
             }
         } else {

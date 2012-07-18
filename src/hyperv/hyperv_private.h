@@ -29,10 +29,6 @@
 # include "hyperv_util.h"
 # include "openwsman.h"
 
-# define HYPERV_ERROR(code, ...)                                              \
-    virReportErrorHelper(VIR_FROM_HYPERV, code, __FILE__, __FUNCTION__,       \
-                         __LINE__, __VA_ARGS__)
-
 typedef struct _hypervPrivate hypervPrivate;
 
 struct _hypervPrivate {
