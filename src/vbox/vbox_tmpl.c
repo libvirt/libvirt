@@ -141,10 +141,6 @@ typedef IMediumAttachment IHardDiskAttachment;
 
 #endif /* VBOX_API_VERSION >= 3001 */
 
-#define vboxError(code, ...) \
-        virReportErrorHelper(VIR_FROM_VBOX, code, __FILE__, \
-                             __FUNCTION__, __LINE__, __VA_ARGS__)
-
 #define DEBUGPRUnichar(msg, strUtf16) \
 if (strUtf16) {\
     char *strUtf8 = NULL;\
@@ -901,8 +897,8 @@ vboxInitialize(vboxGlobalData *data)
     data->pFuncs->pfnGetEventQueue(&data->vboxQueue);
 
     if (data->vboxQueue == NULL) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("nsIEventQueue object is null"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("nsIEventQueue object is null"));
         goto cleanup;
     }
 
@@ -910,14 +906,14 @@ vboxInitialize(vboxGlobalData *data)
 #endif /* !(VBOX_XPCOMC_VERSION == 0x00010000U) */
 
     if (data->vboxObj == NULL) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("IVirtualBox object is null"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("IVirtualBox object is null"));
         goto cleanup;
     }
 
     if (data->vboxSession == NULL) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("ISession object is null"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("ISession object is null"));
         goto cleanup;
     }
 
@@ -949,8 +945,8 @@ static int vboxExtractVersion(vboxGlobalData *data) {
     }
 
     if (ret != 0)
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("Could not extract VirtualBox version"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not extract VirtualBox version"));
 
     return ret;
 }
@@ -994,22 +990,22 @@ static virDrvOpenStatus vboxOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_DECLINED;
 
     if (conn->uri->path == NULL || STREQ(conn->uri->path, "")) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("no VirtualBox driver path specified (try vbox:///session)"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("no VirtualBox driver path specified (try vbox:///session)"));
         return VIR_DRV_OPEN_ERROR;
     }
 
     if (uid != 0) {
         if (STRNEQ (conn->uri->path, "/session")) {
-            vboxError(VIR_ERR_INTERNAL_ERROR,
-                      _("unknown driver path '%s' specified (try vbox:///session)"), conn->uri->path);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unknown driver path '%s' specified (try vbox:///session)"), conn->uri->path);
             return VIR_DRV_OPEN_ERROR;
         }
     } else { /* root */
         if (STRNEQ (conn->uri->path, "/system") &&
             STRNEQ (conn->uri->path, "/session")) {
-            vboxError(VIR_ERR_INTERNAL_ERROR,
-                      _("unknown driver path '%s' specified (try vbox:///system)"), conn->uri->path);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unknown driver path '%s' specified (try vbox:///system)"), conn->uri->path);
             return VIR_DRV_OPEN_ERROR;
         }
     }
@@ -1125,8 +1121,8 @@ static int vboxListDomains(virConnectPtr conn, int *ids, int nids) {
 
     rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("Could not get list of Domains, rc=%08x"),(unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get list of Domains, rc=%08x"),(unsigned)rc);
         goto cleanup;
     }
 
@@ -1162,8 +1158,8 @@ static int vboxNumOfDomains(virConnectPtr conn) {
 
     rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("Could not get number of Domains, rc=%08x"), (unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get number of Domains, rc=%08x"), (unsigned)rc);
         goto cleanup;
     }
 
@@ -1226,16 +1222,16 @@ static virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id) {
     /* Internal vbox IDs start from 0, the public libvirt ID
      * starts from 1, so refuse id==0, and adjust the rest*/
     if (id == 0) {
-        vboxError(VIR_ERR_NO_DOMAIN,
-                  _("no domain with matching id %d"), id);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching id %d"), id);
         return NULL;
     }
     id = id - 1;
 
     rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("Could not get list of machines, rc=%08x"), (unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get list of machines, rc=%08x"), (unsigned)rc);
         return NULL;
     }
 
@@ -1294,8 +1290,8 @@ static virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn, const unsigned ch
 
     rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("Could not get list of machines, rc=%08x"), (unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get list of machines, rc=%08x"), (unsigned)rc);
         return NULL;
     }
 
@@ -1364,8 +1360,8 @@ static virDomainPtr vboxDomainLookupByName(virConnectPtr conn, const char *name)
 
     rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("Could not get list of machines, rc=%08x"), (unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get list of machines, rc=%08x"), (unsigned)rc);
         return NULL;
     }
 
@@ -1438,8 +1434,8 @@ static int vboxDomainIsActive(virDomainPtr dom) {
 
     rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("Could not get list of machines, rc=%08x"), (unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get list of machines, rc=%08x"), (unsigned)rc);
         return ret;
     }
 
@@ -1503,8 +1499,8 @@ static int vboxDomainIsPersistent(virDomainPtr dom ATTRIBUTE_UNUSED)
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching UUID"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching UUID"));
         goto cleanup;
     }
 
@@ -1528,8 +1524,8 @@ static int vboxDomainIsUpdated(virDomainPtr dom ATTRIBUTE_UNUSED) {
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching UUID"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching UUID"));
         goto cleanup;
     }
 
@@ -1553,8 +1549,8 @@ static int vboxDomainSuspend(virDomainPtr dom) {
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN,
-                  _("no domain with matching id %d"), dom->id);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching id %d"), dom->id);
         goto cleanup;
     }
 
@@ -1574,14 +1570,14 @@ static int vboxDomainSuspend(virDomainPtr dom) {
                 VBOX_RELEASE(console);
                 ret = 0;
             } else {
-                vboxError(VIR_ERR_OPERATION_FAILED, "%s",
-                          _("error while suspending the domain"));
+                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                               _("error while suspending the domain"));
                 goto cleanup;
             }
             VBOX_SESSION_CLOSE();
         } else {
-            vboxError(VIR_ERR_OPERATION_FAILED, "%s",
-                      _("machine not in running state to suspend it"));
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("machine not in running state to suspend it"));
             goto cleanup;
         }
     }
@@ -1605,8 +1601,8 @@ static int vboxDomainResume(virDomainPtr dom) {
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN,
-                  _("no domain with matching id %d"), dom->id);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching id %d"), dom->id);
         goto cleanup;
     }
 
@@ -1626,14 +1622,14 @@ static int vboxDomainResume(virDomainPtr dom) {
                 VBOX_RELEASE(console);
                 ret = 0;
             } else {
-                vboxError(VIR_ERR_OPERATION_FAILED, "%s",
-                          _("error while resuming the domain"));
+                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                               _("error while resuming the domain"));
                 goto cleanup;
             }
             VBOX_SESSION_CLOSE();
         } else {
-            vboxError(VIR_ERR_OPERATION_FAILED, "%s",
-                      _("machine not paused, so can't resume it"));
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("machine not paused, so can't resume it"));
             goto cleanup;
         }
     }
@@ -1659,8 +1655,8 @@ static int vboxDomainShutdownFlags(virDomainPtr dom,
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN,
-                  _("no domain with matching id %d"), dom->id);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching id %d"), dom->id);
         goto cleanup;
     }
 
@@ -1672,12 +1668,12 @@ static int vboxDomainShutdownFlags(virDomainPtr dom,
         machine->vtbl->GetState(machine, &state);
 
         if (state == MachineState_Paused) {
-            vboxError(VIR_ERR_OPERATION_FAILED, "%s",
-                      _("machine paused, so can't power it down"));
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("machine paused, so can't power it down"));
             goto cleanup;
         } else if (state == MachineState_PoweredOff) {
-            vboxError(VIR_ERR_OPERATION_FAILED, "%s",
-                      _("machine already powered down"));
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("machine already powered down"));
             goto cleanup;
         }
 
@@ -1717,8 +1713,8 @@ static int vboxDomainReboot(virDomainPtr dom, unsigned int flags)
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN,
-                  _("no domain with matching id %d"), dom->id);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching id %d"), dom->id);
         goto cleanup;
     }
 
@@ -1739,8 +1735,8 @@ static int vboxDomainReboot(virDomainPtr dom, unsigned int flags)
             }
             VBOX_SESSION_CLOSE();
         } else {
-            vboxError(VIR_ERR_OPERATION_FAILED, "%s",
-                      _("machine not running, so can't reboot it"));
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("machine not running, so can't reboot it"));
             goto cleanup;
         }
     }
@@ -1768,8 +1764,8 @@ vboxDomainDestroyFlags(virDomainPtr dom,
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN,
-                  _("no domain with matching id %d"), dom->id);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching id %d"), dom->id);
         goto cleanup;
     }
 
@@ -1781,8 +1777,8 @@ vboxDomainDestroyFlags(virDomainPtr dom,
         machine->vtbl->GetState(machine, &state);
 
         if (state == MachineState_PoweredOff) {
-            vboxError(VIR_ERR_OPERATION_FAILED, "%s",
-                      _("machine already powered down"));
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("machine already powered down"));
             goto cleanup;
         }
 
@@ -1844,8 +1840,8 @@ static int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory) {
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN,
-                  _("no domain with matching id %d"), dom->id);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching id %d"), dom->id);
         goto cleanup;
     }
 
@@ -1857,8 +1853,8 @@ static int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory) {
         machine->vtbl->GetState(machine, &state);
 
         if (state != MachineState_PoweredOff) {
-            vboxError(VIR_ERR_OPERATION_FAILED, "%s",
-                      _("memory size can't be changed unless domain is powered down"));
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("memory size can't be changed unless domain is powered down"));
             goto cleanup;
         }
 
@@ -1873,10 +1869,10 @@ static int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory) {
                     machine->vtbl->SaveSettings(machine);
                     ret = 0;
                 } else {
-                    vboxError(VIR_ERR_INTERNAL_ERROR,
-                              _("could not set the memory size of the "
-                                "domain to: %lu Kb, rc=%08x"),
-                              memory, (unsigned)rc);
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("could not set the memory size of the "
+                                     "domain to: %lu Kb, rc=%08x"),
+                                   memory, (unsigned)rc);
                 }
             }
             VBOX_SESSION_CLOSE();
@@ -1899,8 +1895,8 @@ static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info) {
 
     rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("Could not get list of machines, rc=%08x"), (unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get list of machines, rc=%08x"), (unsigned)rc);
         goto cleanup;
     }
 
@@ -2010,8 +2006,8 @@ vboxDomainGetState(virDomainPtr dom,
     vboxIIDFromUUID(&domiid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(domiid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching UUID"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching UUID"));
         goto cleanup;
     }
 
@@ -2072,8 +2068,8 @@ static int vboxDomainSave(virDomainPtr dom, const char *path ATTRIBUTE_UNUSED) {
     /* Get machine for the call to VBOX_SESSION_OPEN_EXISTING */
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching uuid"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching uuid"));
         return -1;
     }
 #endif
@@ -2123,7 +2119,7 @@ vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     nsresult rc;
 
     if (flags != VIR_DOMAIN_AFFECT_LIVE) {
-        vboxError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
+        virReportError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
         return -1;
     }
 
@@ -2132,8 +2128,8 @@ vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     /* Get machine for the call to VBOX_SESSION_OPEN */
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching uuid"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching uuid"));
         return -1;
     }
 #endif
@@ -2147,19 +2143,19 @@ vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                 machine->vtbl->SaveSettings(machine);
                 ret = 0;
             } else {
-                vboxError(VIR_ERR_INTERNAL_ERROR,
-                          _("could not set the number of cpus of the domain "
-                            "to: %u, rc=%08x"),
-                          CPUCount, (unsigned)rc);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("could not set the number of cpus of the domain "
+                                 "to: %u, rc=%08x"),
+                               CPUCount, (unsigned)rc);
             }
             VBOX_RELEASE(machine);
         } else {
-            vboxError(VIR_ERR_NO_DOMAIN,
-                      _("no domain with matching id %d"), dom->id);
+            virReportError(VIR_ERR_NO_DOMAIN,
+                           _("no domain with matching id %d"), dom->id);
         }
     } else {
-        vboxError(VIR_ERR_NO_DOMAIN,
-                  _("can't open session to the domain with id %d"), dom->id);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("can't open session to the domain with id %d"), dom->id);
     }
     VBOX_SESSION_CLOSE();
 
@@ -2181,7 +2177,7 @@ vboxDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
     PRUint32 maxCPUCount = 0;
 
     if (flags != (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
-        vboxError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
+        virReportError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"), flags);
         return -1;
     }
 
@@ -2811,10 +2807,10 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                                                                     maxPortPerInst,
                                                                     maxSlotPerPort);
                 if (!def->disks[diskCount]->dst) {
-                    vboxError(VIR_ERR_INTERNAL_ERROR,
-                              _("Could not generate medium name for the disk "
-                                "at: controller instance:%u, port:%d, slot:%d"),
-                              deviceInst, devicePort, deviceSlot);
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("Could not generate medium name for the disk "
+                                     "at: controller instance:%u, port:%d, slot:%d"),
+                                   deviceInst, devicePort, deviceSlot);
                     VBOX_RELEASE(medium);
                     VBOX_RELEASE(storageController);
                     error = true;
@@ -3451,9 +3447,9 @@ static int vboxListDefinedDomains(virConnectPtr conn, char ** const names, int m
 
     rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("Could not get list of Defined Domains, rc=%08x"),
-                  (unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get list of Defined Domains, rc=%08x"),
+                       (unsigned)rc);
         goto cleanup;
     }
 
@@ -3501,9 +3497,9 @@ static int vboxNumOfDefinedDomains(virConnectPtr conn) {
 
     rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("Could not get number of Defined Domains, rc=%08x"),
-                  (unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get number of Defined Domains, rc=%08x"),
+                       (unsigned)rc);
         goto cleanup;
     }
 
@@ -3671,8 +3667,8 @@ vboxStartMachine(virDomainPtr dom, int i, IMachine *machine,
 #endif /* VBOX_API_VERSION >= 4000 */
 
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_OPERATION_FAILED, "%s",
-                  _("OpenRemoteSession/LaunchVMProcess failed, domain can't be started"));
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("OpenRemoteSession/LaunchVMProcess failed, domain can't be started"));
         ret = -1;
     } else {
         PRBool completed = 0;
@@ -3718,15 +3714,15 @@ static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags) {
     virCheckFlags(0, -1);
 
     if (!dom->name) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("Error while reading the domain name"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Error while reading the domain name"));
         goto cleanup;
     }
 
     rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("Could not get list of machines, rc=%08x"), (unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get list of machines, rc=%08x"), (unsigned)rc);
         goto cleanup;
     }
 
@@ -3755,9 +3751,9 @@ static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags) {
                      (state == MachineState_Aborted) ) {
                     ret = vboxStartMachine(dom, i, machine, &iid);
                 } else {
-                    vboxError(VIR_ERR_OPERATION_FAILED, "%s",
-                              _("machine is not in poweroff|saved|"
-                                "aborted state, so couldn't start it"));
+                    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                                   _("machine is not in poweroff|saved|"
+                                     "aborted state, so couldn't start it"));
                     ret = -1;
                 }
             }
@@ -3888,16 +3884,16 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                         rc = dvdImage->vtbl->imedium.GetId((IMedium *)dvdImage,
                                                            &dvduuid.value);
                         if (NS_FAILED(rc)) {
-                            vboxError(VIR_ERR_INTERNAL_ERROR,
-                                      _("can't get the uuid of the file to "
-                                        "be attached to cdrom: %s, rc=%08x"),
-                                      def->disks[i]->src, (unsigned)rc);
+                            virReportError(VIR_ERR_INTERNAL_ERROR,
+                                           _("can't get the uuid of the file to "
+                                             "be attached to cdrom: %s, rc=%08x"),
+                                           def->disks[i]->src, (unsigned)rc);
                         } else {
                             rc = dvdDrive->vtbl->MountImage(dvdDrive, dvduuid.value);
                             if (NS_FAILED(rc)) {
-                                vboxError(VIR_ERR_INTERNAL_ERROR,
-                                          _("could not attach the file to cdrom: %s, rc=%08x"),
-                                          def->disks[i]->src, (unsigned)rc);
+                                virReportError(VIR_ERR_INTERNAL_ERROR,
+                                               _("could not attach the file to cdrom: %s, rc=%08x"),
+                                               def->disks[i]->src, (unsigned)rc);
                             } else {
                                 DEBUGIID("CD/DVDImage UUID:", dvduuid.value);
                             }
@@ -3952,10 +3948,10 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                     rc = hardDisk->vtbl->imedium.GetId((IMedium *)hardDisk,
                                                        &hdduuid.value);
                     if (NS_FAILED(rc)) {
-                        vboxError(VIR_ERR_INTERNAL_ERROR,
-                                  _("can't get the uuid of the file to be "
-                                    "attached as harddisk: %s, rc=%08x"),
-                                  def->disks[i]->src, (unsigned)rc);
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("can't get the uuid of the file to be "
+                                         "attached as harddisk: %s, rc=%08x"),
+                                       def->disks[i]->src, (unsigned)rc);
                     } else {
                         if (def->disks[i]->readonly) {
                             hardDisk->vtbl->SetType(hardDisk,
@@ -3998,10 +3994,10 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                                 VBOX_UTF16_FREE(hddcnameUtf16);
 
                                 if (NS_FAILED(rc)) {
-                                    vboxError(VIR_ERR_INTERNAL_ERROR,
-                                              _("could not attach the file as "
-                                                "harddisk: %s, rc=%08x"),
-                                              def->disks[i]->src, (unsigned)rc);
+                                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                                   _("could not attach the file as "
+                                                     "harddisk: %s, rc=%08x"),
+                                                   def->disks[i]->src, (unsigned)rc);
                                 } else {
                                     DEBUGIID("Attached HDD with UUID", hdduuid.value);
                                 }
@@ -4044,18 +4040,18 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                             rc = floppyImage->vtbl->imedium.GetId((IMedium *)floppyImage,
                                                                   &fduuid.value);
                             if (NS_FAILED(rc)) {
-                                vboxError(VIR_ERR_INTERNAL_ERROR,
-                                          _("can't get the uuid of the file to "
-                                            "be attached to floppy drive: %s, rc=%08x"),
-                                          def->disks[i]->src, (unsigned)rc);
+                                virReportError(VIR_ERR_INTERNAL_ERROR,
+                                               _("can't get the uuid of the file to "
+                                                 "be attached to floppy drive: %s, rc=%08x"),
+                                               def->disks[i]->src, (unsigned)rc);
                             } else {
                                 rc = floppyDrive->vtbl->MountImage(floppyDrive,
                                                                    fduuid.value);
                                 if (NS_FAILED(rc)) {
-                                    vboxError(VIR_ERR_INTERNAL_ERROR,
-                                              _("could not attach the file to "
-                                                "floppy drive: %s, rc=%08x"),
-                                              def->disks[i]->src, (unsigned)rc);
+                                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                                   _("could not attach the file to "
+                                                     "floppy drive: %s, rc=%08x"),
+                                                   def->disks[i]->src, (unsigned)rc);
                                 } else {
                                     DEBUGIID("floppyImage UUID", fduuid.value);
                                 }
@@ -4232,20 +4228,20 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             }
 
             if (!medium) {
-                vboxError(VIR_ERR_INTERNAL_ERROR,
-                          _("Failed to attach the following disk/dvd/floppy "
-                            "to the machine: %s, rc=%08x"),
-                          def->disks[i]->src, (unsigned)rc);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Failed to attach the following disk/dvd/floppy "
+                                 "to the machine: %s, rc=%08x"),
+                               def->disks[i]->src, (unsigned)rc);
                 VBOX_UTF16_FREE(mediumFileUtf16);
                 continue;
             }
 
             rc = medium->vtbl->GetId(medium, &mediumUUID);
             if (NS_FAILED(rc)) {
-                vboxError(VIR_ERR_INTERNAL_ERROR,
-                          _("can't get the uuid of the file to be attached "
-                            "as harddisk/dvd/floppy: %s, rc=%08x"),
-                          def->disks[i]->src, (unsigned)rc);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("can't get the uuid of the file to be attached "
+                                 "as harddisk/dvd/floppy: %s, rc=%08x"),
+                               def->disks[i]->src, (unsigned)rc);
                 VBOX_RELEASE(medium);
                 VBOX_UTF16_FREE(mediumFileUtf16);
                 continue;
@@ -4283,10 +4279,10 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                                       &deviceInst,
                                       &devicePort,
                                       &deviceSlot)) {
-                vboxError(VIR_ERR_INTERNAL_ERROR,
-                          _("can't get the port/slot number of harddisk/"
-                            "dvd/floppy to be attached: %s, rc=%08x"),
-                          def->disks[i]->src, (unsigned)rc);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("can't get the port/slot number of harddisk/"
+                                 "dvd/floppy to be attached: %s, rc=%08x"),
+                               def->disks[i]->src, (unsigned)rc);
                 VBOX_RELEASE(medium);
                 VBOX_UTF16_FREE(mediumUUID);
                 VBOX_UTF16_FREE(mediumFileUtf16);
@@ -4306,10 +4302,10 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 # endif /* VBOX_API_VERSION >= 4000 */
 
             if (NS_FAILED(rc)) {
-                vboxError(VIR_ERR_INTERNAL_ERROR,
-                          _("could not attach the file as harddisk/"
-                            "dvd/floppy: %s, rc=%08x"),
-                          def->disks[i]->src, (unsigned)rc);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("could not attach the file as harddisk/"
+                                 "dvd/floppy: %s, rc=%08x"),
+                               def->disks[i]->src, (unsigned)rc);
             } else {
                 DEBUGIID("Attached HDD/DVD/Floppy with UUID", mediumUUID);
             }
@@ -5080,29 +5076,29 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
     VBOX_UTF16_FREE(machineNameUtf16);
 
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not define a domain, rc=%08x"), (unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not define a domain, rc=%08x"), (unsigned)rc);
         goto cleanup;
     }
 
     rc = machine->vtbl->SetMemorySize(machine,
                                       VIR_DIV_UP(def->mem.cur_balloon, 1024));
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not set the memory size of the domain to: %llu Kb, "
-                    "rc=%08x"),
-                  def->mem.cur_balloon, (unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not set the memory size of the domain to: %llu Kb, "
+                         "rc=%08x"),
+                       def->mem.cur_balloon, (unsigned)rc);
     }
 
     if (def->vcpus != def->maxvcpus) {
-        vboxError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                    _("current vcpu count must equal maximum"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("current vcpu count must equal maximum"));
     }
     rc = machine->vtbl->SetCPUCount(machine, def->maxvcpus);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not set the number of virtual CPUs to: %u, rc=%08x"),
-                  def->maxvcpus, (unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not set the number of virtual CPUs to: %u, rc=%08x"),
+                       def->maxvcpus, (unsigned)rc);
     }
 
 #if VBOX_API_VERSION < 3001
@@ -5118,10 +5114,10 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                        (1 << VIR_DOMAIN_FEATURE_PAE));
 #endif
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not change PAE status to: %s, rc=%08x"),
-                  ((def->features) & (1 << VIR_DOMAIN_FEATURE_PAE))
-                  ? _("Enabled") : _("Disabled"), (unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not change PAE status to: %s, rc=%08x"),
+                       ((def->features) & (1 << VIR_DOMAIN_FEATURE_PAE))
+                       ? _("Enabled") : _("Disabled"), (unsigned)rc);
     }
 
     machine->vtbl->GetBIOSSettings(machine, &bios);
@@ -5129,18 +5125,18 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
         rc = bios->vtbl->SetACPIEnabled(bios, (def->features) &
                                         (1 << VIR_DOMAIN_FEATURE_ACPI));
         if (NS_FAILED(rc)) {
-            vboxError(VIR_ERR_INTERNAL_ERROR,
-                      _("could not change ACPI status to: %s, rc=%08x"),
-                      ((def->features) & (1 << VIR_DOMAIN_FEATURE_ACPI))
-                      ? _("Enabled") : _("Disabled"), (unsigned)rc);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("could not change ACPI status to: %s, rc=%08x"),
+                           ((def->features) & (1 << VIR_DOMAIN_FEATURE_ACPI))
+                           ? _("Enabled") : _("Disabled"), (unsigned)rc);
         }
         rc = bios->vtbl->SetIOAPICEnabled(bios, (def->features) &
                                           (1 << VIR_DOMAIN_FEATURE_APIC));
         if (NS_FAILED(rc)) {
-            vboxError(VIR_ERR_INTERNAL_ERROR,
-                      _("could not change APIC status to: %s, rc=%08x"),
-                      ((def->features) & (1 << VIR_DOMAIN_FEATURE_APIC))
-                      ? _("Enabled") : _("Disabled"), (unsigned)rc);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("could not change APIC status to: %s, rc=%08x"),
+                           ((def->features) & (1 << VIR_DOMAIN_FEATURE_APIC))
+                           ? _("Enabled") : _("Disabled"), (unsigned)rc);
         }
         VBOX_RELEASE(bios);
     }
@@ -5148,8 +5144,8 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
     /* Register the machine before attaching other devices to it */
     rc = data->vboxObj->vtbl->RegisterMachine(data->vboxObj, machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not define a domain, rc=%08x"), (unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not define a domain, rc=%08x"), (unsigned)rc);
         goto cleanup;
     }
 
@@ -5302,8 +5298,8 @@ vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
 #else /* VBOX_API_VERSION >= 4000 */
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching uuid"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching uuid"));
         return -1;
     }
 
@@ -5347,8 +5343,8 @@ vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
 #endif /* VBOX_API_VERSION >= 4000 */
         ret = 0;
     } else {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not delete the domain, rc=%08x"), (unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not delete the domain, rc=%08x"), (unsigned)rc);
     }
 
 #if VBOX_API_VERSION >= 4000
@@ -5399,8 +5395,8 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching uuid"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching uuid"));
         goto cleanup;
     }
 
@@ -5442,18 +5438,18 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
                                 if (dvdImage) {
                                     rc = dvdImage->vtbl->imedium.GetId((IMedium *)dvdImage, &dvduuid.value);
                                     if (NS_FAILED(rc)) {
-                                        vboxError(VIR_ERR_INTERNAL_ERROR,
-                                                  _("can't get the uuid of the file to "
-                                                    "be attached to cdrom: %s, rc=%08x"),
-                                                  dev->data.disk->src, (unsigned)rc);
+                                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                                       _("can't get the uuid of the file to "
+                                                         "be attached to cdrom: %s, rc=%08x"),
+                                                       dev->data.disk->src, (unsigned)rc);
                                     } else {
                                         /* unmount the previous mounted image */
                                         dvdDrive->vtbl->Unmount(dvdDrive);
                                         rc = dvdDrive->vtbl->MountImage(dvdDrive, dvduuid.value);
                                         if (NS_FAILED(rc)) {
-                                            vboxError(VIR_ERR_INTERNAL_ERROR,
-                                                      _("could not attach the file to cdrom: %s, rc=%08x"),
-                                                      dev->data.disk->src, (unsigned)rc);
+                                            virReportError(VIR_ERR_INTERNAL_ERROR,
+                                                           _("could not attach the file to cdrom: %s, rc=%08x"),
+                                                           dev->data.disk->src, (unsigned)rc);
                                         } else {
                                             ret = 0;
                                             DEBUGIID("CD/DVD Image UUID:", dvduuid.value);
@@ -5495,16 +5491,16 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
                                     if (floppyImage) {
                                         rc = floppyImage->vtbl->imedium.GetId((IMedium *)floppyImage, &fduuid.value);
                                         if (NS_FAILED(rc)) {
-                                            vboxError(VIR_ERR_INTERNAL_ERROR,
-                                                      _("can't get the uuid of the file to be "
-                                                        "attached to floppy drive: %s, rc=%08x"),
-                                                      dev->data.disk->src, (unsigned)rc);
+                                            virReportError(VIR_ERR_INTERNAL_ERROR,
+                                                           _("can't get the uuid of the file to be "
+                                                             "attached to floppy drive: %s, rc=%08x"),
+                                                           dev->data.disk->src, (unsigned)rc);
                                         } else {
                                             rc = floppyDrive->vtbl->MountImage(floppyDrive, fduuid.value);
                                             if (NS_FAILED(rc)) {
-                                                vboxError(VIR_ERR_INTERNAL_ERROR,
-                                                          _("could not attach the file to floppy drive: %s, rc=%08x"),
-                                                          dev->data.disk->src, (unsigned)rc);
+                                                virReportError(VIR_ERR_INTERNAL_ERROR,
+                                                               _("could not attach the file to floppy drive: %s, rc=%08x"),
+                                                               dev->data.disk->src, (unsigned)rc);
                                             } else {
                                                 ret = 0;
                                                 DEBUGIID("attached floppy, UUID:", fduuid.value);
@@ -5547,9 +5543,9 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
 #endif /* VBOX_API_VERSION >= 4000 */
 
                     if (NS_FAILED(rc)) {
-                        vboxError(VIR_ERR_INTERNAL_ERROR,
-                                  _("could not attach shared folder '%s', rc=%08x"),
-                                  dev->data.fs->dst, (unsigned)rc);
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("could not attach shared folder '%s', rc=%08x"),
+                                       dev->data.fs->dst, (unsigned)rc);
                     } else {
                         ret = 0;
                     }
@@ -5582,8 +5578,8 @@ vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        vboxError(VIR_ERR_OPERATION_INVALID, "%s",
-                  _("cannot modify the persistent configuration of a domain"));
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot modify the persistent configuration of a domain"));
         return -1;
     }
 
@@ -5597,8 +5593,8 @@ static int vboxDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        vboxError(VIR_ERR_OPERATION_INVALID, "%s",
-                  _("cannot modify the persistent configuration of a domain"));
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot modify the persistent configuration of a domain"));
         return -1;
     }
 
@@ -5636,8 +5632,8 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml) {
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching uuid"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching uuid"));
         goto cleanup;
     }
 
@@ -5667,9 +5663,9 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml) {
                             if (dvdDrive) {
                                 rc = dvdDrive->vtbl->Unmount(dvdDrive);
                                 if (NS_FAILED(rc)) {
-                                    vboxError(VIR_ERR_INTERNAL_ERROR,
-                                              _("could not de-attach the mounted ISO, rc=%08x"),
-                                              (unsigned)rc);
+                                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                                   _("could not de-attach the mounted ISO, rc=%08x"),
+                                                   (unsigned)rc);
                                 } else {
                                     ret = 0;
                                 }
@@ -5688,10 +5684,10 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml) {
                                 if (enabled) {
                                     rc = floppyDrive->vtbl->Unmount(floppyDrive);
                                     if (NS_FAILED(rc)) {
-                                        vboxError(VIR_ERR_INTERNAL_ERROR,
-                                                  _("could not attach the file "
-                                                    "to floppy drive, rc=%08x"),
-                                                  (unsigned)rc);
+                                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                                       _("could not attach the file "
+                                                         "to floppy drive, rc=%08x"),
+                                                       (unsigned)rc);
                                     } else {
                                         ret = 0;
                                     }
@@ -5723,9 +5719,9 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml) {
                     rc = machine->vtbl->RemoveSharedFolder(machine, nameUtf16);
 
                     if (NS_FAILED(rc)) {
-                        vboxError(VIR_ERR_INTERNAL_ERROR,
-                                  _("could not detach shared folder '%s', rc=%08x"),
-                                  dev->data.fs->dst, (unsigned)rc);
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("could not detach shared folder '%s', rc=%08x"),
+                                       dev->data.fs->dst, (unsigned)rc);
                     } else {
                         ret = 0;
                     }
@@ -5753,8 +5749,8 @@ vboxDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        vboxError(VIR_ERR_OPERATION_INVALID, "%s",
-                  _("cannot modify the persistent configuration of a domain"));
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot modify the persistent configuration of a domain"));
         return -1;
     }
 
@@ -5775,9 +5771,9 @@ vboxDomainSnapshotGetAll(virDomainPtr dom,
 
     rc = machine->vtbl->GetSnapshotCount(machine, &count);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not get snapshot count for domain %s"),
-                  dom->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get snapshot count for domain %s"),
+                       dom->name);
         goto error;
     }
 
@@ -5795,9 +5791,9 @@ vboxDomainSnapshotGetAll(virDomainPtr dom,
     rc = machine->vtbl->FindSnapshot(machine, empty.value, list);
 #endif /* VBOX_API_VERSION >= 4000 */
     if (NS_FAILED(rc) || !list[0]) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not get root snapshot for domain %s"),
-                  dom->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get root snapshot for domain %s"),
+                       dom->name);
         goto error;
     }
 
@@ -5808,16 +5804,16 @@ vboxDomainSnapshotGetAll(virDomainPtr dom,
         unsigned int i;
 
         if (!list[next]) {
-            vboxError(VIR_ERR_INTERNAL_ERROR,
-                      _("unexpected number of snapshots < %u"), count);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected number of snapshots < %u"), count);
             goto error;
         }
 
         rc = vboxArrayGet(&children, list[next],
                                list[next]->vtbl->GetChildren);
         if (NS_FAILED(rc)) {
-            vboxError(VIR_ERR_INTERNAL_ERROR,
-                      "%s", _("could not get children snapshots"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("could not get children snapshots"));
             goto error;
         }
         for (i = 0; i < children.count; i++) {
@@ -5825,8 +5821,8 @@ vboxDomainSnapshotGetAll(virDomainPtr dom,
             if (!child)
                 continue;
             if (top == count) {
-                vboxError(VIR_ERR_INTERNAL_ERROR,
-                          _("unexpected number of snapshots > %u"), count);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected number of snapshots > %u"), count);
                 vboxArrayRelease(&children);
                 goto error;
             }
@@ -5871,8 +5867,8 @@ vboxDomainSnapshotGet(vboxGlobalData *data,
 
         rc = snapshots[i]->vtbl->GetName(snapshots[i], &nameUtf16);
         if (NS_FAILED(rc) || !nameUtf16) {
-            vboxError(VIR_ERR_INTERNAL_ERROR,
-                      "%s", _("could not get snapshot name"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("could not get snapshot name"));
             goto cleanup;
         }
         VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
@@ -5886,9 +5882,9 @@ vboxDomainSnapshotGet(vboxGlobalData *data,
     }
 
     if (!snapshot) {
-        vboxError(VIR_ERR_OPERATION_INVALID,
-                  _("domain %s has no snapshots with name %s"),
-                  dom->name, name);
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("domain %s has no snapshots with name %s"),
+                       dom->name, name);
         goto cleanup;
     }
 
@@ -5932,23 +5928,23 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
         goto cleanup;
 
     if (def->ndisks) {
-        vboxError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                  _("disk snapshots not supported yet"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("disk snapshots not supported yet"));
         goto cleanup;
     }
 
     vboxIIDFromUUID(&domiid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(domiid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching UUID"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching UUID"));
         goto cleanup;
     }
 
     rc = machine->vtbl->GetState(machine, &state);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("could not get domain state"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get domain state"));
         goto cleanup;
     }
 
@@ -5962,9 +5958,9 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     if (NS_SUCCEEDED(rc))
         rc = data->vboxSession->vtbl->GetConsole(data->vboxSession, &console);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not open VirtualBox session with domain %s"),
-                  dom->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not open VirtualBox session with domain %s"),
+                       dom->name);
         goto cleanup;
     }
 
@@ -5984,23 +5980,23 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
 
     rc = console->vtbl->TakeSnapshot(console, name, description, &progress);
     if (NS_FAILED(rc) || !progress) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not take snapshot of domain %s"), dom->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not take snapshot of domain %s"), dom->name);
         goto cleanup;
     }
 
     progress->vtbl->WaitForCompletion(progress, -1);
     progress->vtbl->GetResultCode(progress, &result);
     if (NS_FAILED(result)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not take snapshot of domain %s"), dom->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not take snapshot of domain %s"), dom->name);
         goto cleanup;
     }
 
     rc = machine->vtbl->GetCurrentSnapshot(machine, &snapshot);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not get current snapshot of domain %s"),
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get current snapshot of domain %s"),
                   dom->name);
         goto cleanup;
     }
@@ -6042,8 +6038,8 @@ vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     vboxIIDFromUUID(&domiid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(domiid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching UUID"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching UUID"));
         goto cleanup;
     }
 
@@ -6056,9 +6052,9 @@ vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     rc = snap->vtbl->GetDescription(snap, &str16);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not get description of snapshot %s"),
-                  snapshot->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get description of snapshot %s"),
+                       snapshot->name);
         goto cleanup;
     }
     if (str16) {
@@ -6072,9 +6068,9 @@ vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     rc = snap->vtbl->GetTimeStamp(snap, &timestamp);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not get creation time of snapshot %s"),
-                  snapshot->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get creation time of snapshot %s"),
+                       snapshot->name);
         goto cleanup;
     }
     /* timestamp is in milliseconds while creationTime in seconds */
@@ -6082,17 +6078,17 @@ vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     rc = snap->vtbl->GetParent(snap, &parent);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not get parent of snapshot %s"),
-                  snapshot->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get parent of snapshot %s"),
+                       snapshot->name);
         goto cleanup;
     }
     if (parent) {
         rc = parent->vtbl->GetName(parent, &str16);
         if (NS_FAILED(rc) || !str16) {
-            vboxError(VIR_ERR_INTERNAL_ERROR,
-                      _("could not get name of parent of snapshot %s"),
-                      snapshot->name);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("could not get name of parent of snapshot %s"),
+                           snapshot->name);
             goto cleanup;
         }
         VBOX_UTF16_TO_UTF8(str16, &str8);
@@ -6105,9 +6101,9 @@ vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     rc = snap->vtbl->GetOnline(snap, &online);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not get online state of snapshot %s"),
-                  snapshot->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get online state of snapshot %s"),
+                       snapshot->name);
         goto cleanup;
     }
     if (online)
@@ -6147,8 +6143,8 @@ vboxDomainSnapshotNum(virDomainPtr dom,
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching UUID"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching UUID"));
         goto cleanup;
     }
 
@@ -6160,9 +6156,9 @@ vboxDomainSnapshotNum(virDomainPtr dom,
 
     rc = machine->vtbl->GetSnapshotCount(machine, &snapshotCount);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not get snapshot count for domain %s"),
-                  dom->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get snapshot count for domain %s"),
+                       dom->name);
         goto cleanup;
     }
 
@@ -6198,8 +6194,8 @@ vboxDomainSnapshotListNames(virDomainPtr dom,
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching UUID"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching UUID"));
         goto cleanup;
     }
 
@@ -6221,9 +6217,9 @@ vboxDomainSnapshotListNames(virDomainPtr dom,
         rc = machine->vtbl->FindSnapshot(machine, empty.value, snapshots);
 #endif /* VBOX_API_VERSION >= 4000 */
         if (NS_FAILED(rc) || !snapshots[0]) {
-            vboxError(VIR_ERR_INTERNAL_ERROR,
-                      _("could not get root snapshot for domain %s"),
-                      dom->name);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("could not get root snapshot for domain %s"),
+                           dom->name);
             goto cleanup;
         }
         count = 1;
@@ -6241,8 +6237,8 @@ vboxDomainSnapshotListNames(virDomainPtr dom,
 
         rc = snapshots[i]->vtbl->GetName(snapshots[i], &nameUtf16);
         if (NS_FAILED(rc) || !nameUtf16) {
-            vboxError(VIR_ERR_INTERNAL_ERROR,
-                      "%s", _("could not get snapshot name"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("could not get snapshot name"));
             goto cleanup;
         }
         VBOX_UTF16_TO_UTF8(nameUtf16, &name);
@@ -6287,8 +6283,8 @@ vboxDomainSnapshotLookupByName(virDomainPtr dom,
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching UUID"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching UUID"));
         goto cleanup;
     }
 
@@ -6319,15 +6315,15 @@ vboxDomainHasCurrentSnapshot(virDomainPtr dom,
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching UUID"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching UUID"));
         goto cleanup;
     }
 
     rc = machine->vtbl->GetCurrentSnapshot(machine, &snapshot);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("could not get current snapshot"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get current snapshot"));
         goto cleanup;
     }
 
@@ -6361,8 +6357,8 @@ vboxDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching UUID"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching UUID"));
         goto cleanup;
     }
 
@@ -6371,23 +6367,23 @@ vboxDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
 
     rc = snap->vtbl->GetParent(snap, &parent);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not get parent of snapshot %s"),
-                  snapshot->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get parent of snapshot %s"),
+                       snapshot->name);
         goto cleanup;
     }
     if (!parent) {
-        vboxError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
-                  _("snapshot '%s' does not have a parent"),
-                  snapshot->name);
+        virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
+                       _("snapshot '%s' does not have a parent"),
+                       snapshot->name);
         goto cleanup;
     }
 
     rc = parent->vtbl->GetName(parent, &nameUtf16);
     if (NS_FAILED(rc) || !nameUtf16) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not get name of parent of snapshot %s"),
-                  snapshot->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get name of parent of snapshot %s"),
+                       snapshot->name);
         goto cleanup;
     }
     VBOX_UTF16_TO_UTF8(nameUtf16, &name);
@@ -6425,28 +6421,28 @@ vboxDomainSnapshotCurrent(virDomainPtr dom,
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching UUID"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching UUID"));
         goto cleanup;
     }
 
     rc = machine->vtbl->GetCurrentSnapshot(machine, &snapshot);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("could not get current snapshot"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get current snapshot"));
         goto cleanup;
     }
 
     if (!snapshot) {
-        vboxError(VIR_ERR_OPERATION_INVALID, "%s",
-                  _("domain has no snapshots"));
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain has no snapshots"));
         goto cleanup;
     }
 
     rc = snapshot->vtbl->GetName(snapshot, &nameUtf16);
     if (NS_FAILED(rc) || !nameUtf16) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("could not get current snapshot name"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get current snapshot name"));
         goto cleanup;
     }
 
@@ -6486,8 +6482,8 @@ vboxDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching UUID"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching UUID"));
         goto cleanup;
     }
 
@@ -6496,8 +6492,8 @@ vboxDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
 
     rc = machine->vtbl->GetCurrentSnapshot(machine, &current);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("could not get current snapshot"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get current snapshot"));
         goto cleanup;
     }
     if (!current) {
@@ -6507,8 +6503,8 @@ vboxDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
 
     rc = current->vtbl->GetName(current, &nameUtf16);
     if (NS_FAILED(rc) || !nameUtf16) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("could not get current snapshot name"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get current snapshot name"));
         goto cleanup;
     }
 
@@ -6546,8 +6542,8 @@ vboxDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching UUID"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching UUID"));
         goto cleanup;
     }
 
@@ -6576,15 +6572,15 @@ vboxDomainSnapshotRestore(virDomainPtr dom,
 
     rc = snapshot->vtbl->GetId(snapshot, &iid.value);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("could not get snapshot UUID"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get snapshot UUID"));
         goto cleanup;
     }
 
     rc = machine->vtbl->SetCurrentSnapshot(machine, iid.value);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not restore snapshot for domain %s"), dom->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not restore snapshot for domain %s"), dom->name);
         goto cleanup;
     }
 
@@ -6610,22 +6606,22 @@ vboxDomainSnapshotRestore(virDomainPtr dom,
 
     rc = machine->vtbl->GetId(machine, &domiid.value);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("could not get domain UUID"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get domain UUID"));
         goto cleanup;
     }
 
     rc = machine->vtbl->GetState(machine, &state);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("could not get domain state"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get domain state"));
         goto cleanup;
     }
 
     if (state >= MachineState_FirstOnline
         && state <= MachineState_LastOnline) {
-        vboxError(VIR_ERR_OPERATION_INVALID,
-                  _("domain %s is already running"), dom->name);
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("domain %s is already running"), dom->name);
         goto cleanup;
     }
 
@@ -6633,21 +6629,21 @@ vboxDomainSnapshotRestore(virDomainPtr dom,
     if (NS_SUCCEEDED(rc))
         rc = data->vboxSession->vtbl->GetConsole(data->vboxSession, &console);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not open VirtualBox session with domain %s"),
-                  dom->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not open VirtualBox session with domain %s"),
+                       dom->name);
         goto cleanup;
     }
 
     rc = console->vtbl->RestoreSnapshot(console, snapshot, &progress);
     if (NS_FAILED(rc) || !progress) {
         if (rc == VBOX_E_INVALID_VM_STATE) {
-            vboxError(VIR_ERR_OPERATION_INVALID, "%s",
-                      _("cannot restore domain snapshot for running domain"));
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cannot restore domain snapshot for running domain"));
         } else {
-            vboxError(VIR_ERR_INTERNAL_ERROR,
-                      _("could not restore snapshot for domain %s"),
-                      dom->name);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("could not restore snapshot for domain %s"),
+                           dom->name);
         }
         goto cleanup;
     }
@@ -6655,8 +6651,8 @@ vboxDomainSnapshotRestore(virDomainPtr dom,
     progress->vtbl->WaitForCompletion(progress, -1);
     progress->vtbl->GetResultCode(progress, &result);
     if (NS_FAILED(result)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not restore snapshot for domain %s"), dom->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not restore snapshot for domain %s"), dom->name);
         goto cleanup;
     }
 
@@ -6690,8 +6686,8 @@ vboxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     vboxIIDFromUUID(&domiid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(domiid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching UUID"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching UUID"));
         goto cleanup;
     }
 
@@ -6701,31 +6697,31 @@ vboxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
     rc = newSnapshot->vtbl->GetOnline(newSnapshot, &online);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not get online state of snapshot %s"),
-                  snapshot->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get online state of snapshot %s"),
+                       snapshot->name);
         goto cleanup;
     }
 
     rc = machine->vtbl->GetCurrentSnapshot(machine, &prevSnapshot);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not get current snapshot of domain %s"),
-                  dom->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get current snapshot of domain %s"),
+                       dom->name);
         goto cleanup;
     }
 
     rc = machine->vtbl->GetState(machine, &state);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("could not get domain state"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get domain state"));
         goto cleanup;
     }
 
     if (state >= MachineState_FirstOnline
         && state <= MachineState_LastOnline) {
-        vboxError(VIR_ERR_OPERATION_INVALID, "%s",
-                  _("cannot revert snapshot of running domain"));
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot revert snapshot of running domain"));
         goto cleanup;
     }
 
@@ -6763,8 +6759,8 @@ vboxDomainSnapshotDeleteSingle(vboxGlobalData *data,
 
     rc = snapshot->vtbl->GetId(snapshot, &iid.value);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("could not get snapshot UUID"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get snapshot UUID"));
         goto cleanup;
     }
 
@@ -6775,11 +6771,11 @@ vboxDomainSnapshotDeleteSingle(vboxGlobalData *data,
 #endif
     if (NS_FAILED(rc) || !progress) {
         if (rc == VBOX_E_INVALID_VM_STATE) {
-            vboxError(VIR_ERR_OPERATION_INVALID, "%s",
-                      _("cannot delete domain snapshot for running domain"));
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cannot delete domain snapshot for running domain"));
         } else {
-            vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                      _("could not delete snapshot"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("could not delete snapshot"));
         }
         goto cleanup;
     }
@@ -6787,8 +6783,8 @@ vboxDomainSnapshotDeleteSingle(vboxGlobalData *data,
     progress->vtbl->WaitForCompletion(progress, -1);
     progress->vtbl->GetResultCode(progress, &result);
     if (NS_FAILED(result)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("could not delete snapshot"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not delete snapshot"));
         goto cleanup;
     }
 
@@ -6812,8 +6808,8 @@ vboxDomainSnapshotDeleteTree(vboxGlobalData *data,
 
     rc = vboxArrayGet(&children, snapshot, snapshot->vtbl->GetChildren);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("could not get children snapshots"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get children snapshots"));
         goto cleanup;
     }
 
@@ -6848,8 +6844,8 @@ vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     vboxIIDFromUUID(&domiid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(domiid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching UUID"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching UUID"));
         goto cleanup;
     }
 
@@ -6859,8 +6855,8 @@ vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
 
     rc = machine->vtbl->GetState(machine, &state);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("could not get domain state"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("could not get domain state"));
         goto cleanup;
     }
 
@@ -6873,8 +6869,8 @@ vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
 
     if (state >= MachineState_FirstOnline
         && state <= MachineState_LastOnline) {
-        vboxError(VIR_ERR_OPERATION_INVALID, "%s",
-                  _("cannot delete snapshots of running domain"));
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot delete snapshots of running domain"));
         goto cleanup;
     }
 
@@ -6882,9 +6878,9 @@ vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     if (NS_SUCCEEDED(rc))
         rc = data->vboxSession->vtbl->GetConsole(data->vboxSession, &console);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not open VirtualBox session with domain %s"),
-                  dom->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not open VirtualBox session with domain %s"),
+                       dom->name);
         goto cleanup;
     }
 
@@ -8351,9 +8347,9 @@ static int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool) {
         ret = hardDiskAccessible;
     } else {
         ret = -1;
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not get number of volumes in the pool: %s, rc=%08x"),
-                  pool->name, (unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get number of volumes in the pool: %s, rc=%08x"),
+                       pool->name, (unsigned)rc);
     }
 
     return ret;
@@ -8403,9 +8399,9 @@ static int vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names
         ret = numActive;
     } else {
         ret = -1;
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("could not get the volume list in the pool: %s, rc=%08x"),
-                  pool->name, (unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get the volume list in the pool: %s, rc=%08x"),
+                       pool->name, (unsigned)rc);
     }
 
     return ret;
@@ -8485,8 +8481,8 @@ static virStorageVolPtr vboxStorageVolLookupByKey(virConnectPtr conn, const char
         return ret;
 
     if (virUUIDParse(key, uuid) < 0) {
-        vboxError(VIR_ERR_INVALID_ARG,
-                  _("Could not parse UUID from '%s'"), key);
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Could not parse UUID from '%s'"), key);
         return NULL;
     }
 
@@ -8716,8 +8712,8 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
     virCheckFlags(0, -1);
 
     if (virUUIDParse(vol->key, uuid) < 0) {
-        vboxError(VIR_ERR_INVALID_ARG,
-                  _("Could not parse UUID from '%s'"), vol->key);
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Could not parse UUID from '%s'"), vol->key);
         return -1;
     }
 
@@ -8765,8 +8761,8 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
 #if VBOX_API_VERSION >= 4000
                 rc = VBOX_OBJECT_GET_MACHINE(machineId.value, &machine);
                 if (NS_FAILED(rc)) {
-                    vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                              _("no domain with matching uuid"));
+                    virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                                   _("no domain with matching uuid"));
                     break;
                 }
 #endif
@@ -8885,8 +8881,8 @@ static int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info
         return ret;
 
     if (virUUIDParse(vol->key, uuid) < 0) {
-        vboxError(VIR_ERR_INVALID_ARG,
-                  _("Could not parse UUID from '%s'"), vol->key);
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Could not parse UUID from '%s'"), vol->key);
         return ret;
     }
 
@@ -8955,8 +8951,8 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
     memset(&def, 0, sizeof(def));
 
     if (virUUIDParse(vol->key, uuid) < 0) {
-        vboxError(VIR_ERR_INVALID_ARG,
-                  _("Could not parse UUID from '%s'"), vol->key);
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Could not parse UUID from '%s'"), vol->key);
         return ret;
     }
 
@@ -9062,8 +9058,8 @@ static char *vboxStorageVolGetPath(virStorageVolPtr vol) {
     nsresult rc;
 
     if (virUUIDParse(vol->key, uuid) < 0) {
-        vboxError(VIR_ERR_INVALID_ARG,
-                  _("Could not parse UUID from '%s'"), vol->key);
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Could not parse UUID from '%s'"), vol->key);
         return ret;
     }
 
@@ -9130,22 +9126,23 @@ vboxDomainScreenshot(virDomainPtr dom,
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_NO_DOMAIN, "%s",
-                  _("no domain with matching uuid"));
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching uuid"));
         return NULL;
     }
 
     rc = machine->vtbl->GetMonitorCount(machine, &max_screen);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_OPERATION_FAILED, "%s",
-                  _("unable to get monitor count"));
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("unable to get monitor count"));
         VBOX_RELEASE(machine);
         return NULL;
     }
 
     if (screen >= max_screen) {
-        vboxError(VIR_ERR_INVALID_ARG, _("screen ID higher than monitor "
-                  "count (%d)"), max_screen);
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("screen ID higher than monitor "
+                         "count (%d)"), max_screen);
         VBOX_RELEASE(machine);
         return NULL;
     }
@@ -9182,8 +9179,8 @@ vboxDomainScreenshot(virDomainPtr dom,
                                                         &bitsPerPixel);
 
                 if (NS_FAILED(rc) || !width || !height) {
-                    vboxError(VIR_ERR_OPERATION_FAILED, "%s",
-                              _("unable to get screen resolution"));
+                    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                                   _("unable to get screen resolution"));
                     goto endjob;
                 }
 
@@ -9192,8 +9189,8 @@ vboxDomainScreenshot(virDomainPtr dom,
                                                              &screenDataSize,
                                                              &screenData);
                 if (NS_FAILED(rc)) {
-                    vboxError(VIR_ERR_OPERATION_FAILED, "%s",
-                              _("failed to take screenshot"));
+                    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                                   _("failed to take screenshot"));
                     goto endjob;
                 }
 
@@ -9210,8 +9207,8 @@ vboxDomainScreenshot(virDomainPtr dom,
                 }
 
                 if (virFDStreamOpenFile(st, tmp, 0, 0, O_RDONLY) < 0) {
-                    vboxError(VIR_ERR_OPERATION_FAILED, "%s",
-                              _("unable to open stream"));
+                    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                                   _("unable to open stream"));
                     goto endjob;
                 }
 
@@ -9280,8 +9277,8 @@ vboxListAllDomains(virConnectPtr conn,
 
     rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
-        vboxError(VIR_ERR_INTERNAL_ERROR,
-                  _("Could not get list of domains, rc=%08x"), (unsigned)rc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get list of domains, rc=%08x"), (unsigned)rc);
         goto cleanup;
     }
 
@@ -9314,8 +9311,8 @@ vboxListAllDomains(virConnectPtr conn,
                 if (MATCH(VIR_CONNECT_LIST_FILTERS_SNAPSHOT)) {
                     rc = machine->vtbl->GetSnapshotCount(machine, &snapshotCount);
                     if (NS_FAILED(rc)) {
-                        vboxError(VIR_ERR_INTERNAL_ERROR,
-                          _("could not get snapshot count for listed domains"));
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("could not get snapshot count for listed domains"));
                         goto cleanup;
                     }
                     if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT) &&

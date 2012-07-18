@@ -68,10 +68,6 @@ static virDriver vboxDriverDummy;
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
-#define vboxError(code, ...) \
-        virReportErrorHelper(VIR_FROM_VBOX, code, __FILE__, \
-                             __FUNCTION__, __LINE__, __VA_ARGS__)
-
 int vboxRegister(void) {
     virDriverPtr        driver;
     virNetworkDriverPtr networkDriver;
@@ -162,28 +158,28 @@ static virDrvOpenStatus vboxOpenDummy(virConnectPtr conn,
         return VIR_DRV_OPEN_DECLINED;
 
     if (conn->uri->path == NULL || STREQ(conn->uri->path, "")) {
-        vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("no VirtualBox driver path specified (try vbox:///session)"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("no VirtualBox driver path specified (try vbox:///session)"));
         return VIR_DRV_OPEN_ERROR;
     }
 
     if (uid != 0) {
         if (STRNEQ (conn->uri->path, "/session")) {
-            vboxError(VIR_ERR_INTERNAL_ERROR,
-                      _("unknown driver path '%s' specified (try vbox:///session)"), conn->uri->path);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unknown driver path '%s' specified (try vbox:///session)"), conn->uri->path);
             return VIR_DRV_OPEN_ERROR;
         }
     } else { /* root */
         if (STRNEQ (conn->uri->path, "/system") &&
             STRNEQ (conn->uri->path, "/session")) {
-            vboxError(VIR_ERR_INTERNAL_ERROR,
-                      _("unknown driver path '%s' specified (try vbox:///system)"), conn->uri->path);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unknown driver path '%s' specified (try vbox:///system)"), conn->uri->path);
             return VIR_DRV_OPEN_ERROR;
         }
     }
 
-    vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
-              _("unable to initialize VirtualBox driver API"));
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("unable to initialize VirtualBox driver API"));
     return VIR_DRV_OPEN_ERROR;
 }
 
