@@ -43,10 +43,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_XENAPI
 
-#define xenapiError(code, ...)                                    \
-        virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,       \
-                             __FUNCTION__, __LINE__, __VA_ARGS__)
-
 
 static int xenapiDefaultConsoleType(const char *ostype)
 {
@@ -1123,8 +1119,8 @@ xenapiDomainSetVcpusFlags (virDomainPtr dom, unsigned int nvcpus,
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
 
     if (flags != VIR_DOMAIN_VCPU_LIVE) {
-        xenapiError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"),
-                    flags);
+        virReportError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"),
+                       flags);
         return -1;
     }
 
@@ -1293,8 +1289,8 @@ xenapiDomainGetVcpusFlags (virDomainPtr dom, unsigned int flags)
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
 
     if (flags != (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM)) {
-        xenapiError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"),
-                    flags);
+        virReportError(VIR_ERR_INVALID_ARG, _("unsupported flags: (0x%x)"),
+                       flags);
         return -1;
     }
 
