@@ -30,11 +30,6 @@
 # include "cpu_x86_data.h"
 
 
-# define virCPUReportError(code, ...)                              \
-    virReportErrorHelper(VIR_FROM_CPU, code, __FILE__,             \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
-
 union cpuData {
     struct cpuX86Data x86;
     /* generic driver needs no data */

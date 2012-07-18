@@ -54,8 +54,8 @@ cpuGetSubDriver(const char *arch)
     unsigned int j;
 
     if (arch == NULL) {
-        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
-                          "%s", _("undefined hardware architecture"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("undefined hardware architecture"));
         return NULL;
     }
 
@@ -90,8 +90,8 @@ cpuCompareXML(virCPUDefPtr host,
         goto cleanup;
 
     if (!cpu->model) {
-        virCPUReportError(VIR_ERR_OPERATION_INVALID,
-                "%s", _("no CPU model specified"));
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("no CPU model specified"));
         goto cleanup;
     }
 
@@ -118,9 +118,9 @@ cpuCompare(virCPUDefPtr host,
         return VIR_CPU_COMPARE_ERROR;
 
     if (driver->compare == NULL) {
-        virCPUReportError(VIR_ERR_NO_SUPPORT,
-                _("cannot compare CPUs of %s architecture"),
-                host->arch);
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("cannot compare CPUs of %s architecture"),
+                       host->arch);
         return VIR_CPU_COMPARE_ERROR;
     }
 
@@ -146,14 +146,14 @@ cpuDecode(virCPUDefPtr cpu,
     }
 
     if (models == NULL && nmodels != 0) {
-        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
-                "%s", _("nonzero nmodels doesn't match with NULL models"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("nonzero nmodels doesn't match with NULL models"));
         return -1;
     }
 
     if (cpu == NULL) {
-        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
-                          "%s", _("invalid CPU definition"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("invalid CPU definition"));
         return -1;
     }
 
@@ -161,9 +161,9 @@ cpuDecode(virCPUDefPtr cpu,
         return -1;
 
     if (driver->decode == NULL) {
-        virCPUReportError(VIR_ERR_NO_SUPPORT,
-                _("cannot decode CPU data for %s architecture"),
-                cpu->arch);
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("cannot decode CPU data for %s architecture"),
+                       cpu->arch);
         return -1;
     }
 
@@ -192,9 +192,9 @@ cpuEncode(const char *arch,
         return -1;
 
     if (driver->encode == NULL) {
-        virCPUReportError(VIR_ERR_NO_SUPPORT,
-                _("cannot encode CPU data for %s architecture"),
-                arch);
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("cannot encode CPU data for %s architecture"),
+                       arch);
         return -1;
     }
 
@@ -218,9 +218,9 @@ cpuDataFree(const char *arch,
         return;
 
     if (driver->free == NULL) {
-        virCPUReportError(VIR_ERR_NO_SUPPORT,
-                _("cannot free CPU data for %s architecture"),
-                arch);
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("cannot free CPU data for %s architecture"),
+                       arch);
         return;
     }
 
@@ -239,9 +239,9 @@ cpuNodeData(const char *arch)
         return NULL;
 
     if (driver->nodeData == NULL) {
-        virCPUReportError(VIR_ERR_NO_SUPPORT,
-                _("cannot get node CPU data for %s architecture"),
-                arch);
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("cannot get node CPU data for %s architecture"),
+                       arch);
         return NULL;
     }
 
@@ -263,9 +263,9 @@ cpuGuestData(virCPUDefPtr host,
         return VIR_CPU_COMPARE_ERROR;
 
     if (driver->guestData == NULL) {
-        virCPUReportError(VIR_ERR_NO_SUPPORT,
-                _("cannot compute guest CPU data for %s architecture"),
-                host->arch);
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("cannot compute guest CPU data for %s architecture"),
+                       host->arch);
         return VIR_CPU_COMPARE_ERROR;
     }
 
@@ -297,13 +297,13 @@ cpuBaselineXML(const char **xmlCPUs,
     }
 
     if (xmlCPUs == NULL && ncpus != 0) {
-        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
-                "%s", _("nonzero ncpus doesn't match with NULL xmlCPUs"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("nonzero ncpus doesn't match with NULL xmlCPUs"));
         return NULL;
     }
 
     if (ncpus < 1) {
-        virCPUReportError(VIR_ERR_INVALID_ARG, "%s", _("No CPUs given"));
+        virReportError(VIR_ERR_INVALID_ARG, "%s", _("No CPUs given"));
         return NULL;
     }
 
@@ -369,19 +369,19 @@ cpuBaseline(virCPUDefPtr *cpus,
     }
 
     if (cpus == NULL && ncpus != 0) {
-        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
-                "%s", _("nonzero ncpus doesn't match with NULL cpus"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("nonzero ncpus doesn't match with NULL cpus"));
         return NULL;
     }
 
     if (ncpus < 1) {
-        virCPUReportError(VIR_ERR_INVALID_ARG, "%s", _("No CPUs given"));
+        virReportError(VIR_ERR_INVALID_ARG, "%s", _("No CPUs given"));
         return NULL;
     }
 
     if (models == NULL && nmodels != 0) {
-        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
-                "%s", _("nonzero nmodels doesn't match with NULL models"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("nonzero nmodels doesn't match with NULL models"));
         return NULL;
     }
 
@@ -389,9 +389,9 @@ cpuBaseline(virCPUDefPtr *cpus,
         return NULL;
 
     if (driver->baseline == NULL) {
-        virCPUReportError(VIR_ERR_NO_SUPPORT,
-                _("cannot compute baseline CPU of %s architecture"),
-                cpus[0]->arch);
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("cannot compute baseline CPU of %s architecture"),
+                       cpus[0]->arch);
         return NULL;
     }
 
@@ -411,9 +411,9 @@ cpuUpdate(virCPUDefPtr guest,
         return -1;
 
     if (driver->update == NULL) {
-        virCPUReportError(VIR_ERR_NO_SUPPORT,
-                _("cannot update guest CPU data for %s architecture"),
-                host->arch);
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("cannot update guest CPU data for %s architecture"),
+                       host->arch);
         return -1;
     }
 
@@ -434,9 +434,9 @@ cpuHasFeature(const char *arch,
         return -1;
 
     if (driver->hasFeature == NULL) {
-        virCPUReportError(VIR_ERR_NO_SUPPORT,
-                _("cannot check guest CPU data for %s architecture"),
-                          arch);
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("cannot check guest CPU data for %s architecture"),
+                       arch);
         return -1;
     }
 

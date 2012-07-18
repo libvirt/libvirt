@@ -86,21 +86,21 @@ int cpuMapLoad(const char *arch,
     const char *mapfile = (cpumap ? cpumap : CPUMAPFILE);
 
     if (arch == NULL) {
-        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
-                          "%s", _("undefined hardware architecture"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("undefined hardware architecture"));
         return -1;
     }
 
     if (cb == NULL) {
-        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
-                          "%s", _("no callback provided"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("no callback provided"));
         return -1;
     }
 
     if ((xml = xmlParseFile(mapfile)) == NULL) {
-        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
-                _("cannot parse CPU map file: %s"),
-                mapfile);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot parse CPU map file: %s"),
+                       mapfile);
         goto cleanup;
     }
 
@@ -116,15 +116,15 @@ int cpuMapLoad(const char *arch,
     ctxt->node = xmlDocGetRootElement(xml);
 
     if ((ctxt->node = virXPathNode(xpath, ctxt)) == NULL) {
-        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
-                _("cannot find CPU map for %s architecture"), arch);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot find CPU map for %s architecture"), arch);
         goto cleanup;
     }
 
     for (element = 0; element < CPU_MAP_ELEMENT_LAST; element++) {
         if (load(ctxt, element, cb, data) < 0) {
-            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
-                    _("cannot parse CPU map for %s architecture"), arch);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot parse CPU map for %s architecture"), arch);
             goto cleanup;
         }
     }
