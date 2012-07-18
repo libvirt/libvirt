@@ -513,7 +513,6 @@ msg_gen_function += regerror
 msg_gen_function += statsError
 msg_gen_function += vah_error
 msg_gen_function += vah_warning
-msg_gen_function += virConfError
 msg_gen_function += virGenericReportError
 msg_gen_function += virLibConnError
 msg_gen_function += virLibDomainError
