@@ -106,7 +106,7 @@ linuxDomainInterfaceStats(const char *path,
     }
     VIR_FORCE_FCLOSE(fp);
 
-    virStatsError(VIR_ERR_INTERNAL_ERROR,
+    virStatsError(VIR_ERR_INTERNAL_ERROR, "%s",
                   _("/proc/net/dev: Interface not found"));
     return -1;
 }
