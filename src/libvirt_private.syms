@@ -60,11 +60,14 @@ virCapabilitiesSetMacPrefix;
 
 # cgroup.h
 virCgroupAddTask;
+virCgroupAllowDevice;
 virCgroupAllowDeviceMajor;
 virCgroupAllowDevicePath;
 virCgroupControllerTypeFromString;
 virCgroupControllerTypeToString;
 virCgroupDenyAllDevices;
+virCgroupDenyDevice;
+virCgroupDenyDeviceMajor;
 virCgroupDenyDevicePath;
 virCgroupForDomain;
 virCgroupForDriver;
@@ -1291,7 +1294,61 @@ virMacAddrSetRaw;
 
 
 # virnetclient.h
+virNetClientAddProgram;
+virNetClientAddStream;
+virNetClientClose;
+virNetClientDupFD;
+virNetClientFree;
+virNetClientGetFD;
+virNetClientGetTLSKeySize;
 virNetClientHasPassFD;
+virNetClientIsEncrypted;
+virNetClientIsOpen;
+virNetClientKeepAliveIsSupported;
+virNetClientKeepAliveStart;
+virNetClientKeepAliveStop;
+virNetClientLocalAddrString;
+virNetClientNewExternal;
+virNetClientNewSSH;
+virNetClientNewTCP;
+virNetClientNewUNIX;
+virNetClientRef;
+virNetClientRemoteAddrString;
+virNetClientRemoveStream;
+virNetClientSendNoReply;
+virNetClientSendNonBlock;
+virNetClientSendWithReply;
+virNetClientSendWithReplyStream;
+virNetClientSetEOFNotify;
+virNetClientSetSASLSession;
+virNetClientSetTLSSession;
+
+
+# virnetclientprogram.h
+virNetClientProgramCall;
+virNetClientProgramDispatch;
+virNetClientProgramFree;
+virNetClientProgramGetProgram;
+virNetClientProgramGetVersion;
+virNetClientProgramMatches;
+virNetClientProgramNew;
+virNetClientProgramRef;
+
+
+# virnetclientstream.h
+virNetClientStreamEOF;
+virNetClientStreamEventAddCallback;
+virNetClientStreamEventRemoveCallback;
+virNetClientStreamEventUpdateCallback;
+virNetClientStreamFree;
+virNetClientStreamMatches;
+virNetClientStreamNew;
+virNetClientStreamQueuePacket;
+virNetClientStreamRaiseError;
+virNetClientStreamRecvPacket;
+virNetClientStreamRef;
+virNetClientStreamSendPacket;
+virNetClientStreamSetError;
 
 
 # virnetdev.h
@@ -1406,6 +1463,30 @@ virNetMessageSaveError;
 xdr_virNetMessageError;
 
 
+# virnetsaslcontext.h
+virNetSASLContextCheckIdentity;
+virNetSASLContextFree;
+virNetSASLContextNewClient;
+virNetSASLContextNewServer;
+virNetSASLContextRef;
+virNetSASLSessionClientStart;
+virNetSASLSessionClientStep;
+virNetSASLSessionDecode;
+virNetSASLSessionEncode;
+virNetSASLSessionExtKeySize;
+virNetSASLSessionFree;
+virNetSASLSessionGetIdentity;
+virNetSASLSessionGetKeySize;
+virNetSASLSessionGetMaxBufSize;
+virNetSASLSessionListMechanisms;
+virNetSASLSessionNewClient;
+virNetSASLSessionNewServer;
+virNetSASLSessionRef;
+virNetSASLSessionSecProps;
+virNetSASLSessionServerStart;
+virNetSASLSessionServerStep;
+
+
 # virnetserver.h
 virNetServerAddProgram;
 virNetServerAddService;
@@ -1422,6 +1503,7 @@ virNetServerRun;
 virNetServerServiceFree;
 virNetServerServiceNewTCP;
 virNetServerServiceNewUNIX;
+virNetServerSetTLSContext;
 virNetServerUpdateServices;
 
 
@@ -1432,27 +1514,51 @@ virNetServerClientDelayedClose;
 virNetServerClientFree;
 virNetServerClientGetAuth;
 virNetServerClientGetFD;
+virNetServerClientGetIdentity;
 virNetServerClientGetPrivateData;
 virNetServerClientGetReadonly;
 virNetServerClientGetTLSKeySize;
 virNetServerClientGetUNIXIdentity;
 virNetServerClientHasTLSSession;
 virNetServerClientImmediateClose;
+virNetServerClientInit;
+virNetServerClientInitKeepAlive;
+virNetServerClientIsClosed;
 virNetServerClientIsSecure;
 virNetServerClientLocalAddrString;
+virNetServerClientNeedAuth;
+virNetServerClientNew;
 virNetServerClientRef;
 virNetServerClientRemoteAddrString;
 virNetServerClientRemoveFilter;
 virNetServerClientSendMessage;
 virNetServerClientSetCloseHook;
+virNetServerClientSetDispatcher;
 virNetServerClientSetIdentity;
 virNetServerClientSetPrivateData;
+virNetServerClientSetSASLSession;
 virNetServerClientStartKeepAlive;
+virNetServerClientWantClose;
+
+
+# virnetservermdns.h
+virNetServerMDNSAddEntry;
+virNetServerMDNSAddGroup;
+virNetServerMDNSEntryFree;
+virNetServerMDNSFree;
+virNetServerMDNSGroupFree;
+virNetServerMDNSNew;
+virNetServerMDNSRemoveEntry;
+virNetServerMDNSRemoveGroup;
+virNetServerMDNSStart;
+virNetServerMDNSStop;
 
 
 # virnetserverprogram.h
+virNetServerProgramDispatch;
 virNetServerProgramFree;
 virNetServerProgramGetID;
+virNetServerProgramGetPriority;
 virNetServerProgramGetVersion;
 virNetServerProgramMatches;
 virNetServerProgramNew;
@@ -1460,18 +1566,39 @@ virNetServerProgramRef;
 virNetServerProgramSendReplyError;
 virNetServerProgramSendStreamData;
 virNetServerProgramSendStreamError;
+virNetServerProgramUnknownError;
+
+
+# virnetserverservice.h
+virNetServerServiceClose;
+virNetServerServiceFree;
+virNetServerServiceGetAuth;
+virNetServerServiceGetPort;
+virNetServerServiceIsReadonly;
+virNetServerServiceNewTCP;
+virNetServerServiceNewUNIX;
+virNetServerServiceRef;
+virNetServerServiceSetDispatcher;
+virNetServerServiceToggle;
 
 
 # virnetsocket.h
 virNetSocketAccept;
+virNetSocketAddIOCallback;
+virNetSocketClose;
 virNetSocketDupFD;
 virNetSocketFree;
 virNetSocketGetFD;
+virNetSocketGetPort;
+virNetSocketGetUNIXIdentity;
+virNetSocketHasCachedData;
 virNetSocketHasPassFD;
+virNetSocketHasPendingData;
 virNetSocketIsLocal;
 virNetSocketListen;
 virNetSocketLocalAddrString;
 virNetSocketNewConnectCommand;
+virNetSocketNewConnectExternal;
 virNetSocketNewConnectSSH;
 virNetSocketNewConnectTCP;
 virNetSocketNewConnectUNIX;
@@ -1479,9 +1606,14 @@ virNetSocketNewListenTCP;
 virNetSocketNewListenUNIX;
 virNetSocketRead;
 virNetSocketRecvFD;
+virNetSocketRef;
 virNetSocketRemoteAddrString;
+virNetSocketRemoveIOCallback;
 virNetSocketSendFD;
 virNetSocketSetBlocking;
+virNetSocketSetSASLSession;
+virNetSocketSetTLSSession;
+virNetSocketUpdateIOCallback;
 virNetSocketWrite;
 
 
@@ -1489,12 +1621,20 @@ virNetSocketWrite;
 virNetTLSContextCheckCertificate;
 virNetTLSContextFree;
 virNetTLSContextNewClient;
+virNetTLSContextNewClientPath;
 virNetTLSContextNewServer;
 virNetTLSContextNewServerPath;
+virNetTLSContextRef;
+virNetTLSInit;
 virNetTLSSessionFree;
+virNetTLSSessionGetHandshakeStatus;
+virNetTLSSessionGetKeySize;
 virNetTLSSessionHandshake;
 virNetTLSSessionNew;
+virNetTLSSessionRead;
+virNetTLSSessionRef;
 virNetTLSSessionSetIOCallbacks;
+virNetTLSSessionWrite;
 
 
 # virnodesuspend.h
