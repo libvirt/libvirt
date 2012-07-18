@@ -306,8 +306,8 @@ int virNetDevTapCreateInBridgePort(const char *brname,
              * address" error logs from the kernel.
              */
             virNetDevTapError(VIR_ERR_CONFIG_UNSUPPORTED,
-                              "Unable to use MAC address starting with "
-                              "reserved value 0xFE - '%02X:%02X:%02X:%02X:%02X:%02X' - ",
+                              _("Unable to use MAC address starting with "
+                                "reserved value 0xFE - '%02X:%02X:%02X:%02X:%02X:%02X' - "),
                               macaddr->addr[0], macaddr->addr[1],
                               macaddr->addr[2], macaddr->addr[3],
                               macaddr->addr[4], macaddr->addr[5]);

@@ -156,7 +156,7 @@ virURIParse(const char *uri)
     if (!xmluri) {
         /* libxml2 does not tell us what failed. Grr :-( */
         virURIReportError(VIR_ERR_INTERNAL_ERROR,
-                          "Unable to parse URI %s", uri);
+                          _("Unable to parse URI %s"), uri);
         return NULL;
     }
 

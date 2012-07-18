@@ -151,6 +151,7 @@ src/util/virterror.c
 src/util/virterror_internal.h
 src/util/virtime.c
 src/util/virtypedparam.c
+src/util/viruri.c
 src/util/xml.c
 src/vbox/vbox_MSCOMGlue.c
 src/vbox/vbox_XPCOMCGlue.c
