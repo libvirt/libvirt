@@ -344,8 +344,8 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
 
     if (!(monitorpath =
           virXPathString("string(./monitor[1]/@path)", ctxt))) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("no monitor path"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("no monitor path"));
         goto error;
     }
 
@@ -371,9 +371,9 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
         break;
     default:
         VIR_FREE(monitorpath);
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("unsupported monitor type '%s'"),
-                        virDomainChrTypeToString(priv->monConfig->type));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unsupported monitor type '%s'"),
+                       virDomainChrTypeToString(priv->monConfig->type));
         goto error;
     }
 
@@ -402,8 +402,8 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
     }
 
     if ((n = virXPathNodeSet("./qemuCaps/flag", ctxt, &nodes)) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("failed to parse qemu capabilities flags"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("failed to parse qemu capabilities flags"));
         goto error;
     }
     if (n > 0) {
@@ -415,8 +415,8 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
             if (str) {
                 int flag = qemuCapsTypeFromString(str);
                 if (flag < 0) {
-                    qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                    _("Unknown qemu capabilities flag %s"), str);
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("Unknown qemu capabilities flag %s"), str);
                     VIR_FREE(str);
                     goto error;
                 }
@@ -435,8 +435,8 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
         int type;
 
         if ((type = qemuDomainJobTypeFromString(tmp)) < 0) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Unknown job type %s"), tmp);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown job type %s"), tmp);
             VIR_FREE(tmp);
             goto error;
         }
@@ -448,8 +448,8 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
         int async;
 
         if ((async = qemuDomainAsyncJobTypeFromString(tmp)) < 0) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Unknown async job type %s"), tmp);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown async job type %s"), tmp);
             VIR_FREE(tmp);
             goto error;
         }
@@ -459,8 +459,8 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
         if ((tmp = virXPathString("string(./job[1]/@phase)", ctxt))) {
             priv->job.phase = qemuDomainAsyncJobPhaseFromString(async, tmp);
             if (priv->job.phase < 0) {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("Unknown job phase %s"), tmp);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Unknown job phase %s"), tmp);
                 VIR_FREE(tmp);
                 goto error;
             }
@@ -514,9 +514,9 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
     int n, i;
 
     if (xmlXPathRegisterNs(ctxt, BAD_CAST "qemu", BAD_CAST QEMU_NAMESPACE_HREF) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Failed to register xml namespace '%s'"),
-                        QEMU_NAMESPACE_HREF);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to register xml namespace '%s'"),
+                       QEMU_NAMESPACE_HREF);
         return -1;
     }
 
@@ -537,8 +537,8 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
     for (i = 0; i < n; i++) {
         cmd->args[cmd->num_args] = virXMLPropString(nodes[i], "value");
         if (cmd->args[cmd->num_args] == NULL) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            "%s", _("No qemu command-line argument specified"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("No qemu command-line argument specified"));
             goto error;
         }
         cmd->num_args++;
@@ -563,23 +563,23 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
 
         tmp = virXMLPropString(nodes[i], "name");
         if (tmp == NULL) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            "%s", _("No qemu environment name specified"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("No qemu environment name specified"));
             goto error;
         }
         if (tmp[0] == '\0') {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            "%s", _("Empty qemu environment name specified"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("Empty qemu environment name specified"));
             goto error;
         }
         if (!c_isalpha(tmp[0]) && tmp[0] != '_') {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            "%s", _("Invalid environment name, it must begin with a letter or underscore"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("Invalid environment name, it must begin with a letter or underscore"));
             goto error;
         }
         if (strspn(tmp, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_") != strlen(tmp)) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            "%s", _("Invalid environment name, it must contain only alphanumerics and underscore"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("Invalid environment name, it must contain only alphanumerics and underscore"));
             goto error;
         }
 
@@ -838,13 +838,13 @@ error:
              priv->job.owner, priv->job.asyncOwner);
 
     if (errno == ETIMEDOUT)
-        qemuReportError(VIR_ERR_OPERATION_TIMEOUT,
-                        "%s", _("cannot acquire state change lock"));
+        virReportError(VIR_ERR_OPERATION_TIMEOUT,
+                       "%s", _("cannot acquire state change lock"));
     else if (driver->max_queued &&
              priv->jobs_queued > driver->max_queued)
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        "%s", _("cannot acquire state change lock "
-                                "due to max_queued limit"));
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       "%s", _("cannot acquire state change lock "
+                               "due to max_queued limit"));
     else
         virReportSystemError(errno,
                              "%s", _("cannot acquire job mutex"));
@@ -899,8 +899,8 @@ int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
                                     enum qemuDomainJob job)
 {
     if (job <= QEMU_JOB_NONE || job >= QEMU_JOB_ASYNC) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("Attempt to start invalid job"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Attempt to start invalid job"));
         return -1;
     }
 
@@ -971,8 +971,8 @@ qemuDomainObjEnterMonitorInternal(struct qemud_driver *driver,
 
     if (asyncJob != QEMU_ASYNC_JOB_NONE) {
         if (asyncJob != priv->job.asyncJob) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("unexpected async job %d"), asyncJob);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected async job %d"), asyncJob);
             return -1;
         }
         if (priv->job.asyncOwner != virThreadSelfID())
@@ -983,8 +983,8 @@ qemuDomainObjEnterMonitorInternal(struct qemud_driver *driver,
                                           QEMU_ASYNC_JOB_NONE) < 0)
             return -1;
         if (!virDomainObjIsActive(obj)) {
-            qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                            _("domain is no longer running"));
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("domain is no longer running"));
             /* Still referenced by the containing async job.  */
             ignore_value(qemuDomainObjEndJob(driver, obj));
             return -1;
@@ -1241,8 +1241,8 @@ qemuDomainDefFormatBuf(struct qemud_driver *driver,
         def_cpu &&
         (def_cpu->mode != VIR_CPU_MODE_CUSTOM || def_cpu->model)) {
         if (!driver->caps || !driver->caps->host.cpu) {
-            qemuReportError(VIR_ERR_OPERATION_FAILED,
-                            "%s", _("cannot get host CPU capabilities"));
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           "%s", _("cannot get host CPU capabilities"));
             goto cleanup;
         }
 
@@ -1575,8 +1575,8 @@ qemuFindQemuImgBinary(struct qemud_driver *driver)
         if (!driver->qemuImgBinary)
             driver->qemuImgBinary = virFindFileInPath("qemu-img");
         if (!driver->qemuImgBinary)
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            "%s", _("unable to find kvm-img or qemu-img"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("unable to find kvm-img or qemu-img"));
     }
 
     return driver->qemuImgBinary;
@@ -1672,10 +1672,10 @@ qemuDomainSnapshotForEachQcow2Raw(struct qemud_driver *driver,
                     qemuDomainSnapshotForEachQcow2Raw(driver, def, name,
                                                       "-d", false, i);
                 }
-                qemuReportError(VIR_ERR_OPERATION_INVALID,
-                                _("Disk device '%s' does not support"
-                                  " snapshotting"),
-                                def->disks[i]->dst);
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("Disk device '%s' does not support"
+                                 " snapshotting"),
+                               def->disks[i]->dst);
                 return -1;
             }
 

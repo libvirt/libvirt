@@ -31,6 +31,8 @@
 #include "hostusb.h"
 #include "virnetdev.h"
 
+#define VIR_FROM_THIS VIR_FROM_QEMU
+
 static pciDeviceList *
 qemuGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
 {
@@ -271,10 +273,11 @@ qemuDomainHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
     case VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH:
     case VIR_NETDEV_VPORT_PROFILE_8021QBG:
     case VIR_NETDEV_VPORT_PROFILE_LAST:
-        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("virtualport type %s is "
-                        "currently not supported on interfaces of type "
-                        "hostdev"),
-                        virNetDevVPortTypeToString(virtPort->virtPortType));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("virtualport type %s is "
+                         "currently not supported on interfaces of type "
+                         "hostdev"),
+                       virNetDevVPortTypeToString(virtPort->virtPortType));
         break;
 
     case VIR_NETDEV_VPORT_PROFILE_8021QBH:
@@ -307,9 +310,9 @@ qemuDomainHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
 
     isvf = qemuDomainHostdevIsVirtualFunction(hostdev);
     if (isvf <= 0) {
-        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                        _("Interface type hostdev is currently supported on"
-                        " SR-IOV Virtual Functions only"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Interface type hostdev is currently supported on"
+                         " SR-IOV Virtual Functions only"));
         return ret;
     }
 
@@ -345,9 +348,9 @@ qemuDomainHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
 
     isvf = qemuDomainHostdevIsVirtualFunction(hostdev);
     if (isvf <= 0) {
-        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                        _("Interface type hostdev is currently supported on"
-                        " SR-IOV Virtual Functions only"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Interface type hostdev is currently supported on"
+                         " SR-IOV Virtual Functions only"));
         return ret;
     }
 
@@ -399,9 +402,9 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
         pciDevice *other;
 
         if (!pciDeviceIsAssignable(dev, !driver->relaxedACS)) {
-            qemuReportError(VIR_ERR_OPERATION_INVALID,
-                            _("PCI device %s is not assignable"),
-                            pciDeviceGetName(dev));
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("PCI device %s is not assignable"),
+                           pciDeviceGetName(dev));
             goto cleanup;
         }
         /* The device is in use by other active domain if
@@ -411,13 +414,13 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
             const char *other_name = pciDeviceGetUsedBy(other);
 
             if (other_name)
-                qemuReportError(VIR_ERR_OPERATION_INVALID,
-                                _("PCI device %s is in use by domain %s"),
-                                pciDeviceGetName(dev), other_name);
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("PCI device %s is in use by domain %s"),
+                               pciDeviceGetName(dev), other_name);
             else
-                qemuReportError(VIR_ERR_OPERATION_INVALID,
-                                _("PCI device %s is already in use"),
-                                pciDeviceGetName(dev));
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("PCI device %s is already in use"),
+                               pciDeviceGetName(dev));
             goto cleanup;
         }
     }
@@ -579,13 +582,13 @@ qemuPrepareHostdevUSBDevices(struct qemud_driver *driver,
             const char *other_name = usbDeviceGetUsedBy(tmp);
 
             if (other_name)
-                qemuReportError(VIR_ERR_OPERATION_INVALID,
-                                _("USB device %s is in use by domain %s"),
-                                usbDeviceGetName(tmp), other_name);
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("USB device %s is in use by domain %s"),
+                               usbDeviceGetName(tmp), other_name);
             else
-                qemuReportError(VIR_ERR_OPERATION_INVALID,
-                                _("USB device %s is already in use"),
-                                usbDeviceGetName(tmp));
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("USB device %s is already in use"),
+                               usbDeviceGetName(tmp));
             goto error;
         }
 
@@ -653,9 +656,9 @@ qemuPrepareHostUSBDevices(struct qemud_driver *driver,
                 goto cleanup;
 
             if (usbDeviceListCount(devs) > 1) {
-                qemuReportError(VIR_ERR_OPERATION_FAILED,
-                                _("multiple USB devices for %x:%x, "
-                                  "use <address> to specify one"), vendor, product);
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                               _("multiple USB devices for %x:%x, "
+                                 "use <address> to specify one"), vendor, product);
                 usbDeviceListFree(devs);
                 goto cleanup;
             }

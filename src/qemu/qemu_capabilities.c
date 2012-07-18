@@ -1226,9 +1226,9 @@ qemuCapsComputeCmdFlags(const char *help,
     if (version >= 15000 ||
         (version >= 12000 && strstr(help, "libvirt"))) {
         if (check_yajl) {
-            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                            _("this qemu binary requires libvirt to be "
-                              "compiled with yajl"));
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this qemu binary requires libvirt to be "
+                             "compiled with yajl"));
             return -1;
         }
         qemuCapsSet(flags, QEMU_CAPS_NETDEV);
@@ -1363,9 +1363,9 @@ fail:
     if (!p)
         p = strchr(help, '\0');
 
-    qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                    _("cannot parse %s version number in '%.*s'"),
-                    qemu, (int) (p - help), help);
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("cannot parse %s version number in '%.*s'"),
+                   qemu, (int) (p - help), help);
 
 cleanup:
     return -1;
@@ -1589,8 +1589,8 @@ int qemuCapsExtractVersion(virCapsPtr caps,
                                                       "hvm",
                                                       ut.machine,
                                                       "qemu")) == NULL) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Cannot find suitable emulator for %s"), ut.machine);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot find suitable emulator for %s"), ut.machine);
         return -1;
     }
 

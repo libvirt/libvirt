@@ -140,9 +140,9 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
 
 
 #define CHECK_TYPE(name,typ) if (p && p->type != (typ)) {               \
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,                         \
-                        "%s: %s: expected type " #typ,                  \
-                        filename, (name));                              \
+        virReportError(VIR_ERR_INTERNAL_ERROR,                          \
+                       "%s: %s: expected type " #typ,                   \
+                       filename, (name));                               \
         virConfFree(conf);                                              \
         return -1;                                                      \
     }
@@ -535,16 +535,16 @@ qemuDriverCloseCallbackSet(struct qemud_driver *driver,
     closeDef = virHashLookup(driver->closeCallbacks, uuidstr);
     if (closeDef) {
         if (closeDef->conn != conn) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Close callback for domain %s already registered"
-                              " with another connection %p"),
-                            vm->def->name, closeDef->conn);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Close callback for domain %s already registered"
+                             " with another connection %p"),
+                           vm->def->name, closeDef->conn);
             return -1;
         }
         if (closeDef->cb && closeDef->cb != cb) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Another close callback is already defined for"
-                              " domain %s"), vm->def->name);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Another close callback is already defined for"
+                             " domain %s"), vm->def->name);
             return -1;
         }
 
@@ -582,9 +582,9 @@ qemuDriverCloseCallbackUnset(struct qemud_driver *driver,
         return -1;
 
     if (closeDef->cb && closeDef->cb != cb) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Trying to remove mismatching close callback for"
-                          " domain %s"), vm->def->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Trying to remove mismatching close callback for"
+                         " domain %s"), vm->def->name);
         return -1;
     }
 

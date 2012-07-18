@@ -167,10 +167,6 @@ struct _qemuDomainCmdlineDef {
 # define QEMUD_MIGRATION_FIRST_PORT 49152
 # define QEMUD_MIGRATION_NUM_PORTS 64
 
-# define qemuReportError(code, ...)                                      \
-    virReportErrorHelper(VIR_FROM_QEMU, code, __FILE__,                  \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 
 void qemuDriverLock(struct qemud_driver *driver);
 void qemuDriverUnlock(struct qemud_driver *driver);

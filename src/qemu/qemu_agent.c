@@ -204,22 +204,22 @@ qemuAgentOpenUnix(const char *monitor, pid_t cpid, bool *inProgress)
     }
 
     if (virSetNonBlock(monfd) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("Unable to put monitor into non-blocking mode"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("Unable to put monitor into non-blocking mode"));
         goto error;
     }
 
     if (virSetCloseExec(monfd) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("Unable to set monitor close-on-exec flag"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("Unable to set monitor close-on-exec flag"));
         goto error;
     }
 
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
     if (virStrcpyStatic(addr.sun_path, monitor) == NULL) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Agent path %s too big for destination"), monitor);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Agent path %s too big for destination"), monitor);
         goto error;
     }
 
@@ -269,14 +269,14 @@ qemuAgentOpenPty(const char *monitor)
     int monfd;
 
     if ((monfd = open(monitor, O_RDWR | O_NONBLOCK)) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Unable to open monitor path %s"), monitor);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to open monitor path %s"), monitor);
         return -1;
     }
 
     if (virSetCloseExec(monfd) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("Unable to set monitor close-on-exec flag"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("Unable to set monitor close-on-exec flag"));
         goto error;
     }
 
@@ -331,8 +331,8 @@ qemuAgentIOProcessLine(qemuAgentPtr mon,
         goto cleanup;
 
     if (obj->type != VIR_JSON_TYPE_OBJECT) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Parsed JSON reply '%s' isn't an object"), line);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Parsed JSON reply '%s' isn't an object"), line);
         goto cleanup;
     }
 
@@ -362,12 +362,12 @@ qemuAgentIOProcessLine(qemuAgentPtr mon,
                 goto cleanup;
             }
 
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Unexpected JSON reply '%s'"), line);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unexpected JSON reply '%s'"), line);
         }
     } else {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Unknown JSON reply '%s'"), line);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown JSON reply '%s'"), line);
     }
 
 cleanup:
@@ -609,9 +609,9 @@ qemuAgentIO(int watch, int fd, int events, void *opaque) {
     if (mon->fd != fd || mon->watch != watch) {
         if (events & (VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR))
             eof = true;
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("event from unexpected fd %d!=%d / watch %d!=%d"),
-                        mon->fd, fd, mon->watch, watch);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("event from unexpected fd %d!=%d / watch %d!=%d"),
+                       mon->fd, fd, mon->watch, watch);
         error = true;
     } else if (mon->lastError.code != VIR_ERR_OK) {
         if (events & (VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR))
@@ -649,23 +649,23 @@ qemuAgentIO(int watch, int fd, int events, void *opaque) {
 
         if (!error &&
             events & VIR_EVENT_HANDLE_HANGUP) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("End of file from monitor"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("End of file from monitor"));
             eof = 1;
             events &= ~VIR_EVENT_HANDLE_HANGUP;
         }
 
         if (!error && !eof &&
             events & VIR_EVENT_HANDLE_ERROR) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("Invalid file descriptor while waiting for monitor"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Invalid file descriptor while waiting for monitor"));
             eof = 1;
             events &= ~VIR_EVENT_HANDLE_ERROR;
         }
         if (!error && events) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Unhandled event %d for monitor fd %d"),
-                            events, mon->fd);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unhandled event %d for monitor fd %d"),
+                           events, mon->fd);
             error = 1;
         }
     }
@@ -677,8 +677,8 @@ qemuAgentIO(int watch, int fd, int events, void *opaque) {
         } else {
             virErrorPtr err = virGetLastError();
             if (!err)
-                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                _("Error while processing monitor IO"));
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Error while processing monitor IO"));
             virCopyLastError(&mon->lastError);
             virResetLastError();
         }
@@ -734,8 +734,8 @@ qemuAgentOpen(virDomainObjPtr vm,
     qemuAgentPtr mon;
 
     if (!cb || !cb->eofNotify) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("EOF notify callback must be supplied"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("EOF notify callback must be supplied"));
         return NULL;
     }
 
@@ -745,14 +745,14 @@ qemuAgentOpen(virDomainObjPtr vm,
     }
 
     if (virMutexInit(&mon->lock) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("cannot initialize monitor mutex"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot initialize monitor mutex"));
         VIR_FREE(mon);
         return NULL;
     }
     if (virCondInit(&mon->notify) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("cannot initialize monitor condition"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot initialize monitor condition"));
         virMutexDestroy(&mon->lock);
         VIR_FREE(mon);
         return NULL;
@@ -774,9 +774,9 @@ qemuAgentOpen(virDomainObjPtr vm,
         break;
 
     default:
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("unable to handle monitor type: %s"),
-                        virDomainChrTypeToString(config->type));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unable to handle monitor type: %s"),
+                       virDomainChrTypeToString(config->type));
         goto cleanup;
     }
 
@@ -792,8 +792,8 @@ qemuAgentOpen(virDomainObjPtr vm,
                                          0),
                                         qemuAgentIO,
                                         mon, qemuAgentUnwatch)) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("unable to register monitor events"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("unable to register monitor events"));
         goto cleanup;
     }
     qemuAgentRef(mon);
@@ -886,12 +886,12 @@ static int qemuAgentSend(qemuAgentPtr mon,
         if ((timeout && virCondWaitUntil(&mon->notify, &mon->lock, then) < 0) ||
             (!timeout && virCondWait(&mon->notify, &mon->lock) < 0)) {
             if (errno == ETIMEDOUT) {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                _("Guest agent not available for now"));
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Guest agent not available for now"));
                 ret = -2;
             } else {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                _("Unable to wait on monitor condition"));
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Unable to wait on monitor condition"));
             }
             goto cleanup;
         }
@@ -959,23 +959,23 @@ qemuAgentGuestSync(qemuAgentPtr mon)
     }
 
     if (!sync_msg.rxObject) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("Missing monitor reply object"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing monitor reply object"));
         goto cleanup;
     }
 
     if (virJSONValueObjectGetNumberUlong(sync_msg.rxObject,
                                          "return", &id_ret) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("Malformed return value"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Malformed return value"));
         goto cleanup;
     }
 
     VIR_DEBUG("Guest returned ID: %llu", id_ret);
     if (id_ret != id) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Guest agent returned ID: %llu instead of %llu"),
-                        id_ret, id);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Guest agent returned ID: %llu instead of %llu"),
+                       id_ret, id);
         goto cleanup;
     }
     ret = 0;
@@ -1029,8 +1029,8 @@ qemuAgentCommand(qemuAgentPtr mon,
             if (await_event) {
                 VIR_DEBUG("Woken up by event %d", await_event);
             } else {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                _("Missing monitor reply object"));
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Missing monitor reply object"));
                 ret = -1;
             }
         } else {
@@ -1128,14 +1128,14 @@ qemuAgentCheckError(virJSONValuePtr cmd,
 
         /* Only send the user the command name + friendly error */
         if (!error)
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("unable to execute QEMU command '%s'"),
-                            qemuAgentCommandName(cmd));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unable to execute QEMU command '%s'"),
+                           qemuAgentCommandName(cmd));
         else
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("unable to execute QEMU command '%s': %s"),
-                            qemuAgentCommandName(cmd),
-                            qemuAgentStringifyError(error));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unable to execute QEMU command '%s': %s"),
+                           qemuAgentCommandName(cmd),
+                           qemuAgentStringifyError(error));
 
         VIR_FREE(cmdstr);
         VIR_FREE(replystr);
@@ -1146,9 +1146,9 @@ qemuAgentCheckError(virJSONValuePtr cmd,
 
         VIR_DEBUG("Neither 'return' nor 'error' is set in the JSON reply %s: %s",
                   cmdstr, replystr);
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("unable to execute QEMU command '%s'"),
-                        qemuAgentCommandName(cmd));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unable to execute QEMU command '%s'"),
+                       qemuAgentCommandName(cmd));
         VIR_FREE(cmdstr);
         VIR_FREE(replystr);
         return -1;
@@ -1178,9 +1178,9 @@ qemuAgentMakeCommand(const char *cmdname,
         char type;
 
         if (strlen(key) < 3) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("argument key '%s' is too short, missing type prefix"),
-                            key);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("argument key '%s' is too short, missing type prefix"),
+                           key);
             goto error;
         }
 
@@ -1232,8 +1232,8 @@ qemuAgentMakeCommand(const char *cmdname,
             ret = virJSONValueObjectAppendNull(jargs, key);
         }   break;
         default:
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("unsupported data type '%c' for arg '%s'"), type, key - 2);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unsupported data type '%c' for arg '%s'"), type, key - 2);
             goto error;
         }
         if (ret < 0)
@@ -1332,8 +1332,8 @@ int qemuAgentFSFreeze(qemuAgentPtr mon)
         goto cleanup;
 
     if (virJSONValueObjectGetNumberInt(reply, "return", &ret) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("malformed return value"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("malformed return value"));
     }
 
 cleanup:
@@ -1369,8 +1369,8 @@ int qemuAgentFSThaw(qemuAgentPtr mon)
         goto cleanup;
 
     if (virJSONValueObjectGetNumberInt(reply, "return", &ret) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("malformed return value"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("malformed return value"));
     }
 
 cleanup:

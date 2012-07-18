@@ -310,8 +310,8 @@ int qemuSetupCgroup(struct qemud_driver *driver,
                 goto cleanup;
             }
         } else {
-            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                            _("Block I/O tuning is not available on this host"));
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Block I/O tuning is not available on this host"));
             goto cleanup;
         }
     }
@@ -333,8 +333,8 @@ int qemuSetupCgroup(struct qemud_driver *driver,
                 }
             }
         } else {
-            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            _("Block I/O tuning is not available on this host"));
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Block I/O tuning is not available on this host"));
             goto cleanup;
         }
     }
@@ -372,8 +372,8 @@ int qemuSetupCgroup(struct qemud_driver *driver,
                 }
             }
         } else {
-            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            _("Memory cgroup is not available on this host"));
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Memory cgroup is not available on this host"));
         }
     }
 
@@ -387,8 +387,8 @@ int qemuSetupCgroup(struct qemud_driver *driver,
                 goto cleanup;
             }
         } else {
-            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                            _("CPU tuning is not available on this host"));
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("CPU tuning is not available on this host"));
         }
     }
 
@@ -405,8 +405,8 @@ int qemuSetupCgroup(struct qemud_driver *driver,
             mask = virDomainCpuSetFormat(vm->def->numatune.memory.nodemask,
                                          VIR_DOMAIN_CPUMASK_LEN);
         if (!mask) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("failed to convert memory nodemask"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to convert memory nodemask"));
             goto cleanup;
         }
 
@@ -585,9 +585,9 @@ int qemuRemoveCgroup(struct qemud_driver *driver,
     rc = virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0);
     if (rc != 0) {
         if (!quiet)
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Unable to find cgroup for %s"),
-                            vm->def->name);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to find cgroup for %s"),
+                           vm->def->name);
         return rc;
     }
 
