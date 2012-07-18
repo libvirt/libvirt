@@ -141,6 +141,10 @@ if WITH_NETWORK
 test_programs += networkxml2argvtest
 endif
 
+if WITH_STORAGE_SHEEPDOG
+test_programs += storagebackendsheepdogtest
+endif
+
 test_programs += nwfilterxml2xmltest
 
 test_programs += storagevolxml2xmltest storagepoolxml2xmltest
@@ -396,6 +400,15 @@ networkxml2argvtest_SOURCES = \
 networkxml2argvtest_LDADD = ../src/libvirt_driver_network_impl.la $(LDADDS)
 else
 EXTRA_DIST += networkxml2argvtest.c
+endif
+
+if WITH_STORAGE_SHEEPDOG
+storagebackendsheepdogtest_SOURCES = \
+	storagebackendsheepdogtest.c \
+	testutils.c testutils.h
+storagebackendsheepdogtest_LDADD = ../src/libvirt_driver_storage.la $(LDADDS)
+else
+EXTRA_DIST += storagebackendsheepdogtest.c
 endif
 
 nwfilterxml2xmltest_SOURCES = \

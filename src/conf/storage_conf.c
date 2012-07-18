@@ -54,7 +54,7 @@ VIR_ENUM_IMPL(virStoragePool,
               VIR_STORAGE_POOL_LAST,
               "dir", "fs", "netfs",
               "logical", "disk", "iscsi",
-              "scsi", "mpath", "rbd")
+              "scsi", "mpath", "rbd", "sheepdog")
 
 VIR_ENUM_IMPL(virStoragePoolFormatFileSystem,
               VIR_STORAGE_POOL_FS_LAST,
@@ -198,6 +198,17 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
         }
     },
     { .poolType = VIR_STORAGE_POOL_RBD,
+      .poolOptions = {
+             .flags = (VIR_STORAGE_POOL_SOURCE_HOST |
+                       VIR_STORAGE_POOL_SOURCE_NETWORK |
+                       VIR_STORAGE_POOL_SOURCE_NAME),
+        },
+       .volOptions = {
+            .defaultFormat = VIR_STORAGE_FILE_RAW,
+            .formatToString = virStoragePoolFormatDiskTypeToString,
+        }
+    },
+    { .poolType = VIR_STORAGE_POOL_SHEEPDOG,
       .poolOptions = {
              .flags = (VIR_STORAGE_POOL_SOURCE_HOST |
                        VIR_STORAGE_POOL_SOURCE_NETWORK |
@@ -1014,9 +1025,9 @@ virStoragePoolDefFormat(virStoragePoolDefPtr def) {
     if (virStoragePoolSourceFormat(&buf, options, &def->source) < 0)
         goto cleanup;
 
-    /* RBD devices are not local block devs nor files, so it doesn't
+    /* RBD and Sheepdog devices are not local block devs nor files, so it doesn't
      * have a target */
-    if (def->type != VIR_STORAGE_POOL_RBD) {
+    if (def->type != VIR_STORAGE_POOL_RBD && def->type != VIR_STORAGE_POOL_SHEEPDOG) {
         virBufferAddLit(&buf,"  <target>\n");
 
         if (def->target.path)
@@ -1301,7 +1312,7 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
 
     virBufferAddLit(&buf, "<volume>\n");
     virBufferAsprintf(&buf,"  <name>%s</name>\n", def->name);
-    virBufferAsprintf(&buf,"  <key>%s</key>\n", def->key);
+    virBufferAsprintf(&buf,"  <key>%s</key>\n", def->key ? def->key : "(null)");
     virBufferAddLit(&buf, "  <source>\n");
 
     if (def->source.nextent) {

@@ -67,7 +67,7 @@
     <element name='target'>
       <optional>
         <element name='path'>
-          <ref name='absFilePath'/>
+          <data type='anyURI'/>
         </element>
       </optional>
       <ref name='format'/>
@@ -144,6 +144,7 @@
 
   <define name='formatfile'>
     <choice>
+      <value>unknown</value>
       <value>raw</value>
       <value>dir</value>
       <value>bochs</value>

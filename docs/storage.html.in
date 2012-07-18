@@ -110,6 +110,9 @@
       <li>
         <a href="#StorageBackendRBD">RBD (RADOS Block Device) backend</a>
       </li>
+      <li>
+        <a href="#StorageBackendSheepdog">Sheepdog backend</a>
+      </li>
     </ul>
 
     <h2><a name="StorageBackendDir">Directory pool</a></h2>
@@ -563,6 +566,65 @@
     <h3>Valid volume format types</h3>
     <p>
       The RBD pool does not use the volume format type element.
+    </p>
+
+    <h2><a name="StorageBackendSheepdog">Sheepdog pools</a></h2>
+    <p>
+      This provides a pool based on a Sheepdog Cluster.
+      Sheepdog is a distributed storage system for QEMU/KVM.
+      It provides highly available block level storage volumes that
+      can be attached to QEMU/KVM virtual machines.
+
+      The cluster must already be formatted.
+
+      <span class="since">Since 0.9.13</span>
+    </p>
+
+    <h3>Example pool input</h3>
+    <pre>
+      &lt;pool type="sheepdog"&gt;
+        &lt;name&gt;mysheeppool&lt;/name&gt;
+        &lt;source&gt;
+          &lt;name&gt;mysheeppool&lt;/name&gt;
+          &lt;host name='localhost' port='7000'/&gt;
+        &lt;/source&gt;
+      &lt;/pool&gt;</pre>
+
+    <h3>Example volume output</h3>
+    <pre>
+       &lt;volume&gt;
+         &lt;name&gt;myvol&lt;/name&gt;
+         &lt;key&gt;sheep/myvol&lt;/key&gt;
+         &lt;source&gt;
+         &lt;/source&gt;
+         &lt;capacity unit='bytes'&gt;53687091200&lt;/capacity&gt;
+         &lt;allocation unit='bytes'&gt;53687091200&lt;/allocation&gt;
+         &lt;target&gt;
+           &lt;path&gt;sheepdog:myvol&lt;/path&gt;
+           &lt;format type='unknown'/&gt;
+           &lt;permissions&gt;
+             &lt;mode&gt;00&lt;/mode&gt;
+             &lt;owner&gt;0&lt;/owner&gt;
+             &lt;group&gt;0&lt;/group&gt;
+           &lt;/permissions&gt;
+         &lt;/target&gt;
+       &lt;/volume&gt;</pre>
+
+    <h3>Example disk attachment</h3>
+    <p>Sheepdog images can be attached to Qemu guests.
+    Information about attaching a Sheepdog image to a
+    guest can be found
+    at the <a href="formatdomain.html#elementsDisks">format domain</a>
+    page.</p>
+
+    <h3>Valid pool format types</h3>
+    <p>
+      The Sheepdog pool does not use the pool format type element.
+    </p>
+
+    <h3>Valid volume format types</h3>
+    <p>
+      The Sheepdog pool does not use the volume format type element.
     </p>
 
   </body>

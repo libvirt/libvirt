@@ -20,6 +20,7 @@
         <ref name='poolscsi'/>
         <ref name='poolmpath'/>
         <ref name='poolrbd'/>
+        <ref name='poolsheepdog'/>
       </choice>
     </element>
   </define>
@@ -113,6 +114,15 @@
     <ref name='commonmetadata'/>
     <ref name='sizing'/>
     <ref name='sourcerbd'/>
+  </define>
+
+  <define name='poolsheepdog'>
+    <attribute name='type'>
+      <value>sheepdog</value>
+    </attribute>
+    <ref name='commonmetadata'/>
+    <ref name='sizing'/>
+    <ref name='sourcesheepdog'/>
   </define>
 
   <define name='sourceinfovendor'>
@@ -493,6 +503,13 @@
       <optional>
         <ref name='sourceinfoauth'/>
       </optional>
+    </element>
+  </define>
+
+  <define name='sourcesheepdog'>
+    <element name='source'>
+      <ref name='sourceinfohost'/>
+      <ref name='sourceinfoname'/>
     </element>
   </define>
 

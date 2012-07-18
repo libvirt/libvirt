@@ -1825,6 +1825,8 @@ AC_ARG_WITH([storage-disk],
   AC_HELP_STRING([--with-storage-disk], [with GPartd Disk backend for the storage driver @<:@default=check@:>@]),[],[with_storage_disk=check])
 AC_ARG_WITH([storage-rbd],
   AC_HELP_STRING([--with-storage-rbd], [with RADOS Block Device backend for the storage driver @<:@default=check@:>@]),[],[with_storage_rbd=check])
+AC_ARG_WITH([storage-sheepdog],
+  AC_HELP_STRING([--with-storage-sheepdog], [with Sheepdog backend for the storage driver @<:@default=check@:>@]),[],[with_storage_sheepdog=check])
 
 if test "$with_libvirtd" = "no"; then
   with_storage_dir=no
@@ -1835,6 +1837,7 @@ if test "$with_libvirtd" = "no"; then
   with_storage_mpath=no
   with_storage_disk=no
   with_storage_rbd=no
+  with_storage_sheepdog=no
 fi
 if test "$with_storage_dir" = "yes" ; then
   AC_DEFINE_UNQUOTED([WITH_STORAGE_DIR], 1, [whether directory backend for storage driver is enabled])
@@ -2008,6 +2011,34 @@ if test "$with_storage_rbd" = "yes" || test "$with_storage_rbd" = "check"; then
 fi
 AM_CONDITIONAL([WITH_STORAGE_RBD], [test "$with_storage_rbd" = "yes"])
 AC_SUBST([LIBRBD_LIBS])
+
+if test "$with_storage_sheepdog" = "yes" ||
+   test "$with_storage_sheepdog" = "check"; then
+  AC_PATH_PROG([COLLIE], [collie], [], [$PATH:/sbin:/usr/sbin])
+
+  if test "$with_storage_sheepdog" = "yes"; then
+    if test -z "$COLLIE"; then
+      AC_MSG_ERROR([We need collie for Sheepdog storage driver])
+    fi
+  else
+    if test -z "$COLLIE"; then
+      with_storage_sheepdog=no
+    fi
+
+    if test "$with_storage_sheepdog" = "check"; then
+      with_storage_sheepdog=yes
+    fi
+  fi
+
+  if test "$with_storage_sheepdog" = "yes"; then
+    AC_DEFINE_UNQUOTED([WITH_STORAGE_SHEEPDOG], 1,
+      [whether Sheepdog backend for storage driver is enabled])
+    AC_DEFINE_UNQUOTED([COLLIE],["$COLLIE"],[Location of collie program])
+  fi
+fi
+AM_CONDITIONAL([WITH_STORAGE_SHEEPDOG],
+  [test "$with_storage_sheepdog" = "yes"])
+
 
 LIBPARTED_CFLAGS=
 LIBPARTED_LIBS=
@@ -2824,6 +2855,7 @@ AC_MSG_NOTICE([    SCSI: $with_storage_scsi])
 AC_MSG_NOTICE([   mpath: $with_storage_mpath])
 AC_MSG_NOTICE([    Disk: $with_storage_disk])
 AC_MSG_NOTICE([     RBD: $with_storage_rbd])
+AC_MSG_NOTICE([Sheepdog: $with_storage_sheepdog])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Security Drivers])
 AC_MSG_NOTICE([])

@@ -69,19 +69,24 @@
 %define with_xenapi        0%{!?_without_xenapi:1}
 
 # Then the secondary host drivers, which run inside libvirtd
-%define with_network       0%{!?_without_network:%{server_drivers}}
-%define with_storage_fs    0%{!?_without_storage_fs:%{server_drivers}}
-%define with_storage_lvm   0%{!?_without_storage_lvm:%{server_drivers}}
-%define with_storage_iscsi 0%{!?_without_storage_iscsi:%{server_drivers}}
-%define with_storage_disk  0%{!?_without_storage_disk:%{server_drivers}}
-%define with_storage_mpath 0%{!?_without_storage_mpath:%{server_drivers}}
+%define with_network          0%{!?_without_network:%{server_drivers}}
+%define with_storage_fs       0%{!?_without_storage_fs:%{server_drivers}}
+%define with_storage_lvm      0%{!?_without_storage_lvm:%{server_drivers}}
+%define with_storage_iscsi    0%{!?_without_storage_iscsi:%{server_drivers}}
+%define with_storage_disk     0%{!?_without_storage_disk:%{server_drivers}}
+%define with_storage_mpath    0%{!?_without_storage_mpath:%{server_drivers}}
 %if 0%{?fedora} >= 16
-%define with_storage_rbd   0%{!?_without_storage_rbd:%{server_drivers}}
+%define with_storage_rbd      0%{!?_without_storage_rbd:%{server_drivers}}
 %else
-%define with_storage_rbd   0
+%define with_storage_rbd      0
 %endif
-%define with_numactl       0%{!?_without_numactl:%{server_drivers}}
-%define with_selinux       0%{!?_without_selinux:%{server_drivers}}
+%if 0%{?fedora} >= 17
+%define with_storage_sheepdog 0%{!?_without_storage_sheepdog:%{server_drivers}}
+%else
+%define with_storage_sheepdog 0
+%endif
+%define with_numactl          0%{!?_without_numactl:%{server_drivers}}
+%define with_selinux          0%{!?_without_selinux:%{server_drivers}}
 
 # A few optional bits off by default, we enable later
 %define with_polkit        0%{!?_without_polkit:0}
@@ -224,6 +229,7 @@
 %define with_storage_iscsi 0
 %define with_storage_mpath 0
 %define with_storage_rbd 0
+%define with_storage_sheepdog 0
 %define with_storage_disk 0
 %endif
 
@@ -602,6 +608,10 @@ Requires: device-mapper
 %if %{with_storage_rbd}
 # For RBD support
 Requires: ceph
+%endif
+%if %{with_storage_sheepdog}
+# For Sheepdog support
+Requires: sheepdog
 %endif
 %if %{with_cgconfig}
 Requires: libcgroup
@@ -1080,6 +1090,10 @@ of recent versions of Linux (and other OSes).
 %define _without_storage_rbd --without-storage-rbd
 %endif
 
+%if ! %{with_storage_sheepdog}
+%define _without_storage_sheepdog --without-storage-sheepdog
+%endif
+
 %if ! %{with_numactl}
 %define _without_numactl --without-numactl
 %endif
@@ -1178,6 +1192,7 @@ autoreconf -if
            %{?_without_storage_disk} \
            %{?_without_storage_mpath} \
            %{?_without_storage_rbd} \
+           %{?_without_storage_sheepdog} \
            %{?_without_numactl} \
            %{?_without_numad} \
            %{?_without_capng} \

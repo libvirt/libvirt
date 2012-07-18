@@ -20874,6 +20874,9 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #ifdef WITH_STORAGE_RBD
     vshPrint(ctl, " RBD");
 #endif
+#ifdef WITH_STORAGE_SHEEPDOG
+    vshPrint(ctl, " Sheepdog");
+#endif
     vshPrint(ctl, "\n");
 
     vshPrint(ctl, "%s", _(" Miscellaneous:"));

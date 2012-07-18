@@ -1,0 +1,11 @@
+<pool type='sheepdog'>
+  <name>sheepdog</name>
+  <uuid>65fcba04-5b13-bd93-cff3-52ce48e11ad7</uuid>
+  <capacity unit='bytes'>0</capacity>
+  <allocation unit='bytes'>0</allocation>
+  <available unit='bytes'>0</available>
+  <source>
+    <host name='localhost' port='7000'/>
+    <name>sheepdog</name>
+  </source>
+</pool>

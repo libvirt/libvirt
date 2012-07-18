@@ -145,6 +145,7 @@
 /tests/sockettest
 /tests/ssh
 /tests/statstest
+/tests/storagebackendsheepdogtest
 /tests/utiltest
 /tests/virauthconfigtest
 /tests/virbuftest
