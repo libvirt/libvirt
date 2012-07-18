@@ -51,6 +51,15 @@ virNetClientPtr virNetClientNewSSH(const char *nodename,
 
 virNetClientPtr virNetClientNewExternal(const char **cmdargv);
 
+typedef void (*virNetClientCloseFunc)(virNetClientPtr client,
+                                      int reason,
+                                      void *opaque);
+
+void virNetClientSetCloseCallback(virNetClientPtr client,
+                                  virNetClientCloseFunc cb,
+                                  void *opaque,
+                                  virFreeCallback ff);
+
 void virNetClientRef(virNetClientPtr client);
 
 int virNetClientGetFD(virNetClientPtr client);

@@ -102,6 +102,10 @@ struct _virNetClient {
     virKeepAlivePtr keepalive;
     bool wantClose;
     int closeReason;
+
+    virNetClientCloseFunc closeCb;
+    void *closeOpaque;
+    virFreeCallback closeFf;
 };
 
 
@@ -122,6 +126,19 @@ static void virNetClientLock(virNetClientPtr client)
 static void virNetClientUnlock(virNetClientPtr client)
 {
     virMutexUnlock(&client->lock);
+}
+
+
+void virNetClientSetCloseCallback(virNetClientPtr client,
+                                  virNetClientCloseFunc cb,
+                                  void *opaque,
+                                  virFreeCallback ff)
+{
+    virNetClientLock(client);
+    client->closeCb = cb;
+    client->closeOpaque = opaque;
+    client->closeFf = ff;
+    virNetClientUnlock(client);
 }
 
 
@@ -463,6 +480,9 @@ void virNetClientFree(virNetClientPtr client)
         return;
     }
 
+    if (client->closeFf)
+        client->closeFf(client->closeOpaque);
+
     for (i = 0 ; i < client->nprograms ; i++)
         virNetClientProgramFree(client->programs[i]);
     VIR_FREE(client->programs);
@@ -519,12 +539,19 @@ virNetClientCloseLocked(virNetClientPtr client)
     client->keepalive = NULL;
     client->wantClose = false;
 
-    if (ka) {
+    if (ka || client->closeCb) {
+        virNetClientCloseFunc closeCb = client->closeCb;
+        void *closeOpaque = client->closeOpaque;
+        int closeReason = client->closeReason;
         client->refs++;
         virNetClientUnlock(client);
 
-        virKeepAliveStop(ka);
-        virKeepAliveFree(ka);
+        if (ka) {
+            virKeepAliveStop(ka);
+            virKeepAliveFree(ka);
+        }
+        if (closeCb)
+            closeCb(client, closeReason, closeOpaque);
 
         virNetClientLock(client);
         client->refs--;
@@ -534,7 +561,7 @@ virNetClientCloseLocked(virNetClientPtr client)
 static void virNetClientCloseInternal(virNetClientPtr client,
                                       int reason)
 {
-    VIR_DEBUG("client=%p", client);
+    VIR_DEBUG("client=%p wantclose=%d", client, client ? client->wantClose : false);
 
     if (!client)
         return;
