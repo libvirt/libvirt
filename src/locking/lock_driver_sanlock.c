@@ -862,7 +862,7 @@ static int virLockManagerSanlockInquire(virLockManagerPtr lock,
     virCheckFlags(0, -1);
 
     if (!state) {
-        virLockError(VIR_ERR_INVALID_ARG, "state");
+        virLockError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return -1;
     }
 
