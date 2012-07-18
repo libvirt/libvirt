@@ -87,7 +87,7 @@ virCapsPtr umlCapsInit(void) {
         VIR_WARN("Failed to get host power management capabilities");
 
     if (virGetHostUUID(caps->host.host_uuid)) {
-        umlReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot get the host uuid"));
         goto error;
     }
@@ -188,19 +188,19 @@ umlBuildCommandLineNet(virConnectPtr conn,
             virBufferAdd(&buf, def->ifname, -1);
         }
         if (def->data.ethernet.ipaddr) {
-            umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("IP address not supported for ethernet interface"));
             goto error;
         }
         break;
 
     case VIR_DOMAIN_NET_TYPE_SERVER:
-        umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("TCP server networking type not supported"));
         goto error;
 
     case VIR_DOMAIN_NET_TYPE_CLIENT:
-        umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("TCP client networking type not supported"));
         goto error;
 
@@ -215,7 +215,7 @@ umlBuildCommandLineNet(virConnectPtr conn,
         virNetworkPtr network = virNetworkLookupByName(conn,
                                                        def->data.network.name);
         if (!network) {
-            umlReportError(VIR_ERR_INTERNAL_ERROR,
+            virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Network '%s' not found"),
                            def->data.network.name);
             goto error;
@@ -246,17 +246,17 @@ umlBuildCommandLineNet(virConnectPtr conn,
         break;
 
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
-        umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("internal networking type not supported"));
         goto error;
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
-        umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("direct networking type not supported"));
         goto error;
 
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
-        umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("hostdev networking type not supported"));
         goto error;
 
@@ -265,7 +265,7 @@ umlBuildCommandLineNet(virConnectPtr conn,
     }
 
     if (def->script) {
-        umlReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("interface script execution not supported by this driver"));
         goto error;
     }
@@ -331,7 +331,7 @@ umlBuildCommandLineChr(virDomainChrDefPtr def,
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
         if (def->source.data.tcp.listen != 1) {
-            umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("only TCP listen is supported for chr device"));
             return NULL;
         }
@@ -370,7 +370,7 @@ umlBuildCommandLineChr(virDomainChrDefPtr def,
     case VIR_DOMAIN_CHR_TYPE_UDP:
     case VIR_DOMAIN_CHR_TYPE_UNIX:
     default:
-        umlReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unsupported chr device type %d"), def->source.type);
         break;
     }
@@ -433,7 +433,7 @@ virCommandPtr umlBuildCommandLine(virConnectPtr conn,
         virDomainDiskDefPtr disk = vm->def->disks[i];
 
         if (!STRPREFIX(disk->dst, "ubd")) {
-            umlReportError(VIR_ERR_INTERNAL_ERROR,
+            virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unsupported disk type '%s'"), disk->dst);
             goto error;
         }

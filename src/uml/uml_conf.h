@@ -70,11 +70,6 @@ struct uml_driver {
     virHashTablePtr autodestroy;
 };
 
-
-# define umlReportError(code, ...)                                      \
-    virReportErrorHelper(VIR_FROM_UML, code, __FILE__,                  \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 virCapsPtr  umlCapsInit               (void);
 
 virCommandPtr umlBuildCommandLine(virConnectPtr conn,

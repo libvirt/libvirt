@@ -522,7 +522,6 @@ msg_gen_function += regerror
 msg_gen_function += remoteError
 msg_gen_function += statsError
 msg_gen_function += streamsReportError
-msg_gen_function += umlReportError
 msg_gen_function += vah_error
 msg_gen_function += vah_warning
 msg_gen_function += vboxError
