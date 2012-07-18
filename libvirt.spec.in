@@ -326,8 +326,18 @@ Requires: libvirt-daemon-config-network = %{version}-%{release}
 %if %{with_nwfilter}
 Requires: libvirt-daemon-config-nwfilter = %{version}-%{release}
 %endif
-# XXX when we turn on driver modules, we need to add
-# deps on each driver (Requires: libvirt-daemon-drv-qemu)
+Requires: libvirt-daemon-driver-libxl = %{version}-%{release}
+Requires: libvirt-daemon-driver-lxc = %{version}-%{release}
+Requires: libvirt-daemon-driver-qemu = %{version}-%{release}
+Requires: libvirt-daemon-driver-uml = %{version}-%{release}
+Requires: libvirt-daemon-driver-xen = %{version}-%{release}
+
+Requires: libvirt-daemon-driver-interface = %{version}-%{release}
+Requires: libvirt-daemon-driver-secret = %{version}-%{release}
+Requires: libvirt-daemon-driver-storage = %{version}-%{release}
+Requires: libvirt-daemon-driver-network = %{version}-%{release}
+Requires: libvirt-daemon-driver-nodedev = %{version}-%{release}
+Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
 %endif
 Requires: libvirt-client = %{version}-%{release}
 
