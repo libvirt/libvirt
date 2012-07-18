@@ -513,7 +513,6 @@ msg_gen_function += PHYP_ERROR
 msg_gen_function += VIR_ERROR
 msg_gen_function += VMX_ERROR
 msg_gen_function += XENXS_ERROR
-msg_gen_function += interfaceReportError
 msg_gen_function += lxcError
 msg_gen_function += libxlError
 msg_gen_function += networkReportError

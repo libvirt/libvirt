@@ -33,10 +33,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_INTERFACE
 
-#define interfaceReportError(code, ...)                               \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,               \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 /* Main driver state */
 struct interface_driver
 {
@@ -106,14 +102,14 @@ static struct netcf_if *interfaceDriverGetNetcfIF(struct netcf *ncf, virInterfac
         const char *errmsg, *details;
         int errcode = ncf_error(ncf, &errmsg, &details);
         if (errcode != NETCF_NOERROR) {
-            interfaceReportError(netcf_to_vir_err(errcode),
-                                 _("couldn't find interface named '%s': %s%s%s"),
-                                 ifinfo->name, errmsg, details ? " - " : "",
-                                 details ? details : "");
+            virReportError(netcf_to_vir_err(errcode),
+                           _("couldn't find interface named '%s': %s%s%s"),
+                           ifinfo->name, errmsg, details ? " - " : "",
+                           details ? details : "");
         } else {
-            interfaceReportError(VIR_ERR_NO_INTERFACE,
-                                 _("couldn't find interface named '%s'"),
-                                 ifinfo->name);
+            virReportError(VIR_ERR_NO_INTERFACE,
+                           _("couldn't find interface named '%s'"),
+                           ifinfo->name);
         }
     }
     return iface;
@@ -190,9 +186,9 @@ static int interfaceNumOfInterfaces(virConnectPtr conn)
     if (count < 0) {
         const char *errmsg, *details;
         int errcode = ncf_error(driver->netcf, &errmsg, &details);
-        interfaceReportError(netcf_to_vir_err(errcode),
-                             _("failed to get number of interfaces on host: %s%s%s"),
-                             errmsg, details ? " - " : "", details ? details : "");
+        virReportError(netcf_to_vir_err(errcode),
+                       _("failed to get number of interfaces on host: %s%s%s"),
+                       errmsg, details ? " - " : "", details ? details : "");
     }
 
     interfaceDriverUnlock(driver);
@@ -210,10 +206,10 @@ static int interfaceListInterfaces(virConnectPtr conn, char **const names, int n
     if (count < 0) {
         const char *errmsg, *details;
         int errcode = ncf_error(driver->netcf, &errmsg, &details);
-        interfaceReportError(netcf_to_vir_err(errcode),
-                             _("failed to list host interfaces: %s%s%s"),
-                             errmsg, details ? " - " : "",
-                             details ? details : "");
+        virReportError(netcf_to_vir_err(errcode),
+                       _("failed to list host interfaces: %s%s%s"),
+                       errmsg, details ? " - " : "",
+                       details ? details : "");
     }
 
     interfaceDriverUnlock(driver);
@@ -231,10 +227,10 @@ static int interfaceNumOfDefinedInterfaces(virConnectPtr conn)
     if (count < 0) {
         const char *errmsg, *details;
         int errcode = ncf_error(driver->netcf, &errmsg, &details);
-        interfaceReportError(netcf_to_vir_err(errcode),
-                             _("failed to get number of defined interfaces on host: %s%s%s"),
-                             errmsg, details ? " - " : "",
-                             details ? details : "");
+        virReportError(netcf_to_vir_err(errcode),
+                       _("failed to get number of defined interfaces on host: %s%s%s"),
+                       errmsg, details ? " - " : "",
+                       details ? details : "");
     }
 
     interfaceDriverUnlock(driver);
@@ -252,10 +248,10 @@ static int interfaceListDefinedInterfaces(virConnectPtr conn, char **const names
     if (count < 0) {
         const char *errmsg, *details;
         int errcode = ncf_error(driver->netcf, &errmsg, &details);
-        interfaceReportError(netcf_to_vir_err(errcode),
-                             _("failed to list host defined interfaces: %s%s%s"),
-                             errmsg, details ? " - " : "",
-                             details ? details : "");
+        virReportError(netcf_to_vir_err(errcode),
+                       _("failed to list host defined interfaces: %s%s%s"),
+                       errmsg, details ? " - " : "",
+                       details ? details : "");
     }
 
     interfaceDriverUnlock(driver);
@@ -276,13 +272,13 @@ static virInterfacePtr interfaceLookupByName(virConnectPtr conn,
         const char *errmsg, *details;
         int errcode = ncf_error(driver->netcf, &errmsg, &details);
         if (errcode != NETCF_NOERROR) {
-            interfaceReportError(netcf_to_vir_err(errcode),
-                                 _("couldn't find interface named '%s': %s%s%s"),
-                                 name, errmsg,
-                                 details ? " - " : "", details ? details : "");
+            virReportError(netcf_to_vir_err(errcode),
+                           _("couldn't find interface named '%s': %s%s%s"),
+                           name, errmsg,
+                           details ? " - " : "", details ? details : "");
         } else {
-            interfaceReportError(VIR_ERR_NO_INTERFACE,
-                                 _("couldn't find interface named '%s'"), name);
+            virReportError(VIR_ERR_NO_INTERFACE,
+                           _("couldn't find interface named '%s'"), name);
         }
         goto cleanup;
     }
@@ -309,21 +305,21 @@ static virInterfacePtr interfaceLookupByMACString(virConnectPtr conn,
     if (niface < 0) {
         const char *errmsg, *details;
         int errcode = ncf_error(driver->netcf, &errmsg, &details);
-        interfaceReportError(netcf_to_vir_err(errcode),
-                             _("couldn't find interface with MAC address '%s': %s%s%s"),
-                             macstr, errmsg, details ? " - " : "",
-                             details ? details : "");
+        virReportError(netcf_to_vir_err(errcode),
+                       _("couldn't find interface with MAC address '%s': %s%s%s"),
+                       macstr, errmsg, details ? " - " : "",
+                       details ? details : "");
         goto cleanup;
     }
     if (niface == 0) {
-        interfaceReportError(VIR_ERR_NO_INTERFACE,
-                             _("couldn't find interface with MAC address '%s'"),
-                             macstr);
+        virReportError(VIR_ERR_NO_INTERFACE,
+                       _("couldn't find interface with MAC address '%s'"),
+                       macstr);
         goto cleanup;
     }
     if (niface > 1) {
-        interfaceReportError(VIR_ERR_MULTIPLE_INTERFACES,
-                             "%s", _("multiple interfaces with matching MAC address"));
+        virReportError(VIR_ERR_MULTIPLE_INTERFACES,
+                       "%s", _("multiple interfaces with matching MAC address"));
         goto cleanup;
     }
 
@@ -362,10 +358,10 @@ static char *interfaceGetXMLDesc(virInterfacePtr ifinfo,
     if (!xmlstr) {
         const char *errmsg, *details;
         int errcode = ncf_error(driver->netcf, &errmsg, &details);
-        interfaceReportError(netcf_to_vir_err(errcode),
-                             _("could not get interface XML description: %s%s%s"),
-                             errmsg, details ? " - " : "",
-                             details ? details : "");
+        virReportError(netcf_to_vir_err(errcode),
+                       _("could not get interface XML description: %s%s%s"),
+                       errmsg, details ? " - " : "",
+                       details ? details : "");
         goto cleanup;
     }
 
@@ -419,10 +415,10 @@ static virInterfacePtr interfaceDefineXML(virConnectPtr conn,
     if (!iface) {
         const char *errmsg, *details;
         int errcode = ncf_error(driver->netcf, &errmsg, &details);
-        interfaceReportError(netcf_to_vir_err(errcode),
-                             _("could not get interface XML description: %s%s%s"),
-                             errmsg, details ? " - " : "",
-                             details ? details : "");
+        virReportError(netcf_to_vir_err(errcode),
+                       _("could not get interface XML description: %s%s%s"),
+                       errmsg, details ? " - " : "",
+                       details ? details : "");
         goto cleanup;
     }
 
@@ -453,10 +449,10 @@ static int interfaceUndefine(virInterfacePtr ifinfo) {
     if (ret < 0) {
         const char *errmsg, *details;
         int errcode = ncf_error(driver->netcf, &errmsg, &details);
-        interfaceReportError(netcf_to_vir_err(errcode),
-                             _("failed to undefine interface %s: %s%s%s"),
-                             ifinfo->name, errmsg, details ? " - " : "",
-                             details ? details : "");
+        virReportError(netcf_to_vir_err(errcode),
+                       _("failed to undefine interface %s: %s%s%s"),
+                       ifinfo->name, errmsg, details ? " - " : "",
+                       details ? details : "");
         goto cleanup;
     }
 
@@ -487,10 +483,10 @@ static int interfaceCreate(virInterfacePtr ifinfo,
     if (ret < 0) {
         const char *errmsg, *details;
         int errcode = ncf_error(driver->netcf, &errmsg, &details);
-        interfaceReportError(netcf_to_vir_err(errcode),
-                             _("failed to create (start) interface %s: %s%s%s"),
-                             ifinfo->name, errmsg, details ? " - " : "",
-                             details ? details : "");
+        virReportError(netcf_to_vir_err(errcode),
+                       _("failed to create (start) interface %s: %s%s%s"),
+                       ifinfo->name, errmsg, details ? " - " : "",
+                       details ? details : "");
         goto cleanup;
     }
 
@@ -521,10 +517,10 @@ static int interfaceDestroy(virInterfacePtr ifinfo,
     if (ret < 0) {
         const char *errmsg, *details;
         int errcode = ncf_error(driver->netcf, &errmsg, &details);
-        interfaceReportError(netcf_to_vir_err(errcode),
-                             _("failed to destroy (stop) interface %s: %s%s%s"),
-                             ifinfo->name, errmsg, details ? " - " : "",
-                             details ? details : "");
+        virReportError(netcf_to_vir_err(errcode),
+                       _("failed to destroy (stop) interface %s: %s%s%s"),
+                       ifinfo->name, errmsg, details ? " - " : "",
+                       details ? details : "");
         goto cleanup;
     }
 
@@ -552,10 +548,10 @@ static int interfaceIsActive(virInterfacePtr ifinfo)
     if (ncf_if_status(iface, &flags) < 0) {
         const char *errmsg, *details;
         int errcode = ncf_error(driver->netcf, &errmsg, &details);
-        interfaceReportError(netcf_to_vir_err(errcode),
-                             _("failed to get status of interface %s: %s%s%s"),
-                             ifinfo->name, errmsg, details ? " - " : "",
-                             details ? details : "");
+        virReportError(netcf_to_vir_err(errcode),
+                       _("failed to get status of interface %s: %s%s%s"),
+                       ifinfo->name, errmsg, details ? " - " : "",
+                       details ? details : "");
         goto cleanup;
     }
 
@@ -581,10 +577,10 @@ static int interfaceChangeBegin(virConnectPtr conn, unsigned int flags)
     if (ret < 0) {
         const char *errmsg, *details;
         int errcode = ncf_error(driver->netcf, &errmsg, &details);
-        interfaceReportError(netcf_to_vir_err(errcode),
-                             _("failed to begin transaction: %s%s%s"),
-                             errmsg, details ? " - " : "",
-                             details ? details : "");
+        virReportError(netcf_to_vir_err(errcode),
+                       _("failed to begin transaction: %s%s%s"),
+                       errmsg, details ? " - " : "",
+                       details ? details : "");
     }
 
     interfaceDriverUnlock(driver);
@@ -604,10 +600,10 @@ static int interfaceChangeCommit(virConnectPtr conn, unsigned int flags)
     if (ret < 0) {
         const char *errmsg, *details;
         int errcode = ncf_error(driver->netcf, &errmsg, &details);
-        interfaceReportError(netcf_to_vir_err(errcode),
-                             _("failed to commit transaction: %s%s%s"),
-                             errmsg, details ? " - " : "",
-                             details ? details : "");
+        virReportError(netcf_to_vir_err(errcode),
+                       _("failed to commit transaction: %s%s%s"),
+                       errmsg, details ? " - " : "",
+                       details ? details : "");
     }
 
     interfaceDriverUnlock(driver);
@@ -627,10 +623,10 @@ static int interfaceChangeRollback(virConnectPtr conn, unsigned int flags)
     if (ret < 0) {
         const char *errmsg, *details;
         int errcode = ncf_error(driver->netcf, &errmsg, &details);
-        interfaceReportError(netcf_to_vir_err(errcode),
-                             _("failed to rollback transaction: %s%s%s"),
-                             errmsg, details ? " - " : "",
-                             details ? details : "");
+        virReportError(netcf_to_vir_err(errcode),
+                       _("failed to rollback transaction: %s%s%s"),
+                       errmsg, details ? " - " : "",
+                       details ? details : "");
     }
 
     interfaceDriverUnlock(driver);
