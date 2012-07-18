@@ -425,9 +425,8 @@ err:
 }
 
 
-static int lxcContainerMountBasicFS(virDomainDefPtr def,
-                                    bool pivotRoot,
-                                    virSecurityManagerPtr securityDriver)
+static int lxcContainerMountBasicFS(bool pivotRoot,
+                                    char *sec_mount_options)
 {
     const struct {
         const char *src;
@@ -493,10 +492,8 @@ static int lxcContainerMountBasicFS(virDomainDefPtr def,
          * and don't want to DOS the entire OS RAM usage
          */
 
-        char *mount_options = virSecurityManagerGetMountOptions(securityDriver, def);
         ignore_value(virAsprintf(&opts,
-                                 "mode=755,size=65536%s",(mount_options ? mount_options : "")));
-        VIR_FREE(mount_options);
+                                 "mode=755,size=65536%s",(sec_mount_options ? sec_mount_options : "")));
         if (!opts) {
             virReportOOMError();
             goto cleanup;
@@ -1001,12 +998,14 @@ cleanup:
 }
 
 
-static int lxcContainerMountFSTmpfs(virDomainFSDefPtr fs)
+static int lxcContainerMountFSTmpfs(virDomainFSDefPtr fs,
+                                    char *sec_mount_options)
 {
     int ret = -1;
     char *data = NULL;
 
-    if (virAsprintf(&data, "size=%lldk", fs->usage) < 0) {
+    if (virAsprintf(&data,
+                    "size=%lldk%s", fs->usage, (sec_mount_options ? sec_mount_options : "")) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -1043,7 +1042,8 @@ cleanup:
 
 
 static int lxcContainerMountFS(virDomainFSDefPtr fs,
-                               const char *srcprefix)
+                               const char *srcprefix,
+                               char *sec_mount_options)
 {
     switch (fs->type) {
     case VIR_DOMAIN_FS_TYPE_MOUNT:
@@ -1055,7 +1055,7 @@ static int lxcContainerMountFS(virDomainFSDefPtr fs,
             return -1;
         break;
     case VIR_DOMAIN_FS_TYPE_RAM:
-        if (lxcContainerMountFSTmpfs(fs) < 0)
+        if (lxcContainerMountFSTmpfs(fs, sec_mount_options) < 0)
             return -1;
         break;
     case VIR_DOMAIN_FS_TYPE_BIND:
@@ -1082,7 +1082,8 @@ static int lxcContainerMountFS(virDomainFSDefPtr fs,
 
 static int lxcContainerMountAllFS(virDomainDefPtr vmDef,
                                   const char *dstprefix,
-                                  bool skipRoot)
+                                  bool skipRoot,
+                                  char *sec_mount_options)
 {
     size_t i;
     VIR_DEBUG("Mounting %s %d", dstprefix, skipRoot);
@@ -1093,7 +1094,7 @@ static int lxcContainerMountAllFS(virDomainDefPtr vmDef,
             STREQ(vmDef->fss[i]->dst, "/"))
             continue;
 
-        if (lxcContainerMountFS(vmDef->fss[i], dstprefix) < 0)
+        if (lxcContainerMountFS(vmDef->fss[i], dstprefix, sec_mount_options) < 0)
             return -1;
     }
 
@@ -1401,7 +1402,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
                                       virDomainFSDefPtr root,
                                       char **ttyPaths,
                                       size_t nttyPaths,
-                                      virSecurityManagerPtr securityDriver)
+                                      char *sec_mount_options)
 {
     struct lxcContainerCGroup *mounts = NULL;
     size_t nmounts = 0;
@@ -1427,7 +1428,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
         goto cleanup;
 
     /* Mounts the core /proc, /sys, etc filesystems */
-    if (lxcContainerMountBasicFS(vmDef, true, securityDriver) < 0)
+    if (lxcContainerMountBasicFS(true, sec_mount_options) < 0)
         goto cleanup;
 
     /* Now we can re-mount the cgroups controllers in the
@@ -1444,7 +1445,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
         goto cleanup;
 
     /* Sets up any non-root mounts from guest config */
-    if (lxcContainerMountAllFS(vmDef, "/.oldroot", true) < 0)
+    if (lxcContainerMountAllFS(vmDef, "/.oldroot", true, sec_mount_options) < 0)
         goto cleanup;
 
     /* Gets rid of all remaining mounts from host OS, including /.oldroot itself */
@@ -1463,7 +1464,7 @@ cleanup:
    but with extra stuff mapped in */
 static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
                                         virDomainFSDefPtr root,
-                                        virSecurityManagerPtr securityDriver)
+                                        char *sec_mount_options)
 {
     int ret = -1;
     struct lxcContainerCGroup *mounts = NULL;
@@ -1490,7 +1491,7 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
     }
 
     VIR_DEBUG("Mounting config FS");
-    if (lxcContainerMountAllFS(vmDef, "", false) < 0)
+    if (lxcContainerMountAllFS(vmDef, "", false, sec_mount_options) < 0)
         return -1;
 
     /* Before replacing /sys we need to identify any
@@ -1506,7 +1507,7 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
         goto cleanup;
 
     /* Mounts the core /proc, /sys, etc filesystems */
-    if (lxcContainerMountBasicFS(vmDef, false, securityDriver) < 0)
+    if (lxcContainerMountBasicFS(false, sec_mount_options) < 0)
         goto cleanup;
 
     /* Now we can re-mount the cgroups controllers in the
@@ -1551,13 +1552,19 @@ static int lxcContainerSetupMounts(virDomainDefPtr vmDef,
                                    size_t nttyPaths,
                                    virSecurityManagerPtr securityDriver)
 {
+    int rc = -1;
+    char *sec_mount_options = NULL;
     if (lxcContainerResolveSymlinks(vmDef) < 0)
         return -1;
 
+    sec_mount_options = virSecurityManagerGetMountOptions(securityDriver, vmDef);
     if (root && root->src)
-        return lxcContainerSetupPivotRoot(vmDef, root, ttyPaths, nttyPaths, securityDriver);
+        rc =  lxcContainerSetupPivotRoot(vmDef, root, ttyPaths, nttyPaths, sec_mount_options);
     else
-        return lxcContainerSetupExtraMounts(vmDef, root, securityDriver);
+        rc = lxcContainerSetupExtraMounts(vmDef, root, sec_mount_options);
+
+    VIR_FREE(sec_mount_options);
+    return rc;
 }
 
 
