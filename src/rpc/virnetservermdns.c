@@ -368,7 +368,7 @@ static AvahiTimeout *virNetServerMDNSTimeoutNew(const AvahiPoll *api ATTRIBUTE_U
 
     if (t->timer < 0) {
         virNetError(VIR_ERR_INTERNAL_ERROR,
-                    _("Failed to add timer with timeout %d"), (int)timeout);
+                    _("Failed to add timer with timeout %lld"), timeout);
         VIR_FREE(t);
         return NULL;
     }
