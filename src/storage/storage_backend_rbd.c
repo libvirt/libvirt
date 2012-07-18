@@ -145,7 +145,7 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
                               pool->def->source.hosts[i].name,
                               pool->def->source.hosts[i].port);
         } else {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+            virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                   _("received malformed monitor, check the XML definition"));
         }
     }
