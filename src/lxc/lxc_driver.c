@@ -1434,7 +1434,7 @@ static int lxcStartup(int privileged)
     if ((lxc_driver->caps = lxcCapsInit(lxc_driver)) == NULL)
         goto cleanup;
 
-    lxcDomainSetPrivateDataHooks(lxc_driver->caps);
+    virLXCDomainSetPrivateDataHooks(lxc_driver->caps);
 
     if (virLXCProcessAutoDestroyInit(lxc_driver) < 0)
         goto cleanup;

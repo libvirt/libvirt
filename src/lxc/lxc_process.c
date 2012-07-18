@@ -161,7 +161,7 @@ static void virLXCProcessCleanup(lxc_driver_t *driver,
 {
     virCgroupPtr cgroup;
     int i;
-    lxcDomainObjPrivatePtr priv = vm->privateData;
+    virLXCDomainObjPrivatePtr priv = vm->privateData;
     virNetDevVPortProfilePtr vport = NULL;
 
     /* now that we know it's stopped call the hook if present */
@@ -590,7 +590,7 @@ static void virLXCProcessMonitorEvent(int watch,
     lxc_driver_t *driver = lxc_driver;
     virDomainObjPtr vm = data;
     virDomainEventPtr event = NULL;
-    lxcDomainObjPrivatePtr priv;
+    virLXCDomainObjPrivatePtr priv;
 
     lxcDriverLock(driver);
     virDomainObjLock(vm);
@@ -807,7 +807,7 @@ int virLXCProcessStart(virConnectPtr conn,
     char ebuf[1024];
     char *timestamp;
     virCommandPtr cmd = NULL;
-    lxcDomainObjPrivatePtr priv = vm->privateData;
+    virLXCDomainObjPrivatePtr priv = vm->privateData;
     virErrorPtr err = NULL;
 
     if (!lxc_driver->cgroup) {
@@ -1178,7 +1178,7 @@ virLXCProcessReconnectDomain(void *payload, const void *name ATTRIBUTE_UNUSED, v
 {
     virDomainObjPtr vm = payload;
     lxc_driver_t *driver = opaque;
-    lxcDomainObjPrivatePtr priv;
+    virLXCDomainObjPrivatePtr priv;
 
     virDomainObjLock(vm);
     VIR_DEBUG("Reconnect %d %d %d\n", vm->def->id, vm->pid, vm->state.state);

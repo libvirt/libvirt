@@ -25,9 +25,9 @@
 
 #include "memory.h"
 
-static void *lxcDomainObjPrivateAlloc(void)
+static void *virLXCDomainObjPrivateAlloc(void)
 {
-    lxcDomainObjPrivatePtr priv;
+    virLXCDomainObjPrivatePtr priv;
 
     if (VIR_ALLOC(priv) < 0)
         return NULL;
@@ -38,16 +38,16 @@ static void *lxcDomainObjPrivateAlloc(void)
     return priv;
 }
 
-static void lxcDomainObjPrivateFree(void *data)
+static void virLXCDomainObjPrivateFree(void *data)
 {
-    lxcDomainObjPrivatePtr priv = data;
+    virLXCDomainObjPrivatePtr priv = data;
 
     VIR_FREE(priv);
 }
 
 
-void lxcDomainSetPrivateDataHooks(virCapsPtr caps)
+void virLXCDomainSetPrivateDataHooks(virCapsPtr caps)
 {
-    caps->privateDataAllocFunc = lxcDomainObjPrivateAlloc;
-    caps->privateDataFreeFunc = lxcDomainObjPrivateFree;
+    caps->privateDataAllocFunc = virLXCDomainObjPrivateAlloc;
+    caps->privateDataFreeFunc = virLXCDomainObjPrivateFree;
 }

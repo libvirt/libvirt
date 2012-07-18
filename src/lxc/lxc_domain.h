@@ -25,13 +25,13 @@
 
 # include "lxc_conf.h"
 
-typedef struct _lxcDomainObjPrivate lxcDomainObjPrivate;
-typedef lxcDomainObjPrivate *lxcDomainObjPrivatePtr;
-struct _lxcDomainObjPrivate {
+typedef struct _virLXCDomainObjPrivate virLXCDomainObjPrivate;
+typedef virLXCDomainObjPrivate *virLXCDomainObjPrivatePtr;
+struct _virLXCDomainObjPrivate {
     int monitor;
     int monitorWatch;
 };
 
-void lxcDomainSetPrivateDataHooks(virCapsPtr caps);
+void virLXCDomainSetPrivateDataHooks(virCapsPtr caps);
 
 #endif /* __LXC_DOMAIN_H__ */
