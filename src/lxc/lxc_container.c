@@ -1341,9 +1341,11 @@ cleanup:
 
 
 static int lxcContainerMountCGroups(struct lxcContainerCGroup *mounts,
-                                    size_t nmounts)
+                                    size_t nmounts,
+                                    char * sec_mount_options)
 {
     size_t i;
+    char *opts = NULL;
 
     VIR_DEBUG("Mounting cgroups at '%s'", VIR_CGROUP_SYSFS_MOUNT);
 
@@ -1354,12 +1356,20 @@ static int lxcContainerMountCGroups(struct lxcContainerCGroup *mounts,
         return -1;
     }
 
-    if (mount("tmpfs", VIR_CGROUP_SYSFS_MOUNT, "tmpfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, "mode=755") < 0) {
+    if (virAsprintf(&opts,
+                    "mode=755,size=65536%s",(sec_mount_options ? sec_mount_options : "")) < 0 ) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (mount("tmpfs", VIR_CGROUP_SYSFS_MOUNT, "tmpfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, opts) < 0) {
+        VIR_FREE(opts);
         virReportSystemError(errno,
                              _("Failed to mount %s on %s type %s"),
                              "tmpfs", VIR_CGROUP_SYSFS_MOUNT, "tmpfs");
         return -1;
     }
+    VIR_FREE(opts);
 
     for (i = 0 ; i < nmounts ; i++) {
         if (mounts[i].linkDest) {
@@ -1433,7 +1443,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
 
     /* Now we can re-mount the cgroups controllers in the
      * same configuration as before */
-    if (lxcContainerMountCGroups(mounts, nmounts) < 0)
+    if (lxcContainerMountCGroups(mounts, nmounts, sec_mount_options) < 0)
         goto cleanup;
 
     /* Mounts /dev/pts */
@@ -1512,7 +1522,7 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
 
     /* Now we can re-mount the cgroups controllers in the
      * same configuration as before */
-    if (lxcContainerMountCGroups(mounts, nmounts) < 0)
+    if (lxcContainerMountCGroups(mounts, nmounts, sec_mount_options) < 0)
         goto cleanup;
 
     VIR_DEBUG("Mounting completed");
