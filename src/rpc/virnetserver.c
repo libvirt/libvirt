@@ -700,6 +700,8 @@ void virNetServerRun(virNetServerPtr srv)
         goto cleanup;
 #endif
 
+    srv->quit = 0;
+
     if (srv->autoShutdownTimeout &&
         (timerid = virEventAddTimeout(-1,
                                       virNetServerAutoShutdownTimer,
