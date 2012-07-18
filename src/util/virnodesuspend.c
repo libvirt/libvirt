@@ -32,11 +32,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define virNodeSuspendError(code, ...)                                     \
-        virReportErrorHelper(VIR_FROM_NONE, code, __FILE__,                \
-                             __FUNCTION__, __LINE__, __VA_ARGS__)
-
-
 #define SUSPEND_DELAY 10 /* in seconds */
 
 /* Give sufficient time for performing the suspend operation on the host */
@@ -96,7 +91,7 @@ static int virNodeSuspendSetNodeWakeup(unsigned long long alarmTime)
     int ret = -1;
 
     if (alarmTime <= MIN_TIME_REQ_FOR_SUSPEND) {
-        virNodeSuspendError(VIR_ERR_INVALID_ARG, "%s", _("Suspend duration is too short"));
+        virReportError(VIR_ERR_INVALID_ARG, "%s", _("Suspend duration is too short"));
         return -1;
     }
 
@@ -198,8 +193,8 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (aboutToSuspend) {
         /* A suspend operation is already in progress */
-        virNodeSuspendError(VIR_ERR_OPERATION_INVALID, "%s",
-                            _("Suspend operation already in progress"));
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Suspend operation already in progress"));
         goto cleanup;
     }
 
@@ -207,7 +202,7 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
     switch (target) {
     case VIR_NODE_SUSPEND_TARGET_MEM:
         if (!(supported & (1 << VIR_NODE_SUSPEND_TARGET_MEM))) {
-            virNodeSuspendError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s", _("Suspend-to-RAM"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s", _("Suspend-to-RAM"));
             goto cleanup;
         }
         cmdString = "pm-suspend";
@@ -215,7 +210,7 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     case VIR_NODE_SUSPEND_TARGET_DISK:
         if (!(supported & (1 << VIR_NODE_SUSPEND_TARGET_DISK))) {
-            virNodeSuspendError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s", _("Suspend-to-Disk"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s", _("Suspend-to-Disk"));
             goto cleanup;
         }
         cmdString = "pm-hibernate";
@@ -223,14 +218,14 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     case VIR_NODE_SUSPEND_TARGET_HYBRID:
         if (!(supported & (1 << VIR_NODE_SUSPEND_TARGET_HYBRID))) {
-            virNodeSuspendError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s", _("Hybrid-Suspend"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s", _("Hybrid-Suspend"));
             goto cleanup;
         }
         cmdString = "pm-suspend-hybrid";
         break;
 
     default:
-        virNodeSuspendError(VIR_ERR_INVALID_ARG, "%s", _("Invalid suspend target"));
+        virReportError(VIR_ERR_INVALID_ARG, "%s", _("Invalid suspend target"));
         goto cleanup;
     }
 
@@ -239,8 +234,8 @@ int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
 
     if (virThreadCreate(&thread, false, virNodeSuspend, (void *)cmdString) < 0) {
-        virNodeSuspendError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("Failed to create thread to suspend the host"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to create thread to suspend the host"));
         goto cleanup;
     }
 

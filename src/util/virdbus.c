@@ -29,10 +29,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_DBUS
 
-#define virDBusReportError(code, ...)                                   \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,                 \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 #ifdef HAVE_DBUS
 
 static DBusConnection *systembus = NULL;
@@ -70,15 +66,15 @@ static void virDBusSystemBusInit(void)
 DBusConnection *virDBusGetSystemBus(void)
 {
     if (virOnce(&once, virDBusSystemBusInit) < 0) {
-        virDBusReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Unable to run one time DBus initializer"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to run one time DBus initializer"));
         return NULL;
     }
 
     if (!systembus) {
-        virDBusReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to get DBus system bus connection: %s"),
-                           dbuserr.message ? dbuserr.message : "watch setup failed");
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to get DBus system bus connection: %s"),
+                       dbuserr.message ? dbuserr.message : "watch setup failed");
         return NULL;
     }
 
@@ -193,8 +189,8 @@ static void virDBusToggleWatch(DBusWatch *watch,
 #else /* ! HAVE_DBUS */
 DBusConnection *virDBusGetSystemBus(void)
 {
-    virDBusReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("DBus support not compiled into this binary"));
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("DBus support not compiled into this binary"));
     return NULL;
 }
 

@@ -44,10 +44,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_EVENT
 
-#define virEventError(code, ...)                                    \
-    virReportErrorHelper(VIR_FROM_EVENT, code, __FILE__,            \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 static int virEventPollInterruptLocked(void);
 
 /* State for a single file handle being monitored */
@@ -680,9 +676,9 @@ int virEventPollInit(void)
     if (virEventPollAddHandle(eventLoop.wakeupfd[0],
                               VIR_EVENT_HANDLE_READABLE,
                               virEventPollHandleWakeup, NULL, NULL) < 0) {
-        virEventError(VIR_ERR_INTERNAL_ERROR,
-                      _("Unable to add handle %d to event loop"),
-                      eventLoop.wakeupfd[0]);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to add handle %d to event loop"),
+                       eventLoop.wakeupfd[0]);
         VIR_FORCE_CLOSE(eventLoop.wakeupfd[0]);
         VIR_FORCE_CLOSE(eventLoop.wakeupfd[1]);
         return -1;

@@ -34,11 +34,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NET
 
-#define virNetDevError(code, ...)                                       \
-    virReportErrorHelper(VIR_FROM_NET, code, __FILE__,                  \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
-
 VIR_ENUM_IMPL(virNetDevMacVLanMode, VIR_NETDEV_MACVLAN_MODE_LAST,
               "vepa",
               "private",
@@ -200,12 +195,12 @@ cleanup:
     return rc;
 
 malformed_resp:
-    virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("malformed netlink response message"));
     goto cleanup;
 
 buffer_too_small:
-    virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("allocated netlink buffer is too small"));
     goto cleanup;
 }
@@ -279,12 +274,12 @@ cleanup:
     return rc;
 
 malformed_resp:
-    virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("malformed netlink response message"));
     goto cleanup;
 
 buffer_too_small:
-    virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("allocated netlink buffer is too small"));
     goto cleanup;
 }
@@ -929,7 +924,7 @@ create_name:
     }
 
     if (virNetDevBandwidthSet(cr_ifname, bandwidth) < 0) {
-        virNetDevError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot set bandwidth limits on %s"),
                        cr_ifname);
         if (withTap)

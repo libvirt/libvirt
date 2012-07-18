@@ -30,10 +30,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define virUtilError(code, ...)                                            \
-        virReportErrorHelper(VIR_FROM_NONE, code, __FILE__,                \
-                             __FUNCTION__, __LINE__, __VA_ARGS__)
-
 VIR_ENUM_DECL(virTypedParameter)
 VIR_ENUM_IMPL(virTypedParameter, VIR_TYPED_PARAM_LAST,
               "unknown",
@@ -93,27 +89,27 @@ virTypedParameterArrayValidate(virTypedParameterPtr params, int nparams, ...)
                     badtype = virTypedParameterTypeToString(params[i].type);
                     if (!badtype)
                         badtype = virTypedParameterTypeToString(0);
-                    virUtilError(VIR_ERR_INVALID_ARG,
-                                 _("invalid type '%s' for parameter '%s', "
-                                   "expected '%s'"),
-                                 badtype, params[i].field,
-                                 virTypedParameterTypeToString(type));
+                    virReportError(VIR_ERR_INVALID_ARG,
+                                   _("invalid type '%s' for parameter '%s', "
+                                     "expected '%s'"),
+                                   badtype, params[i].field,
+                                   virTypedParameterTypeToString(type));
                 }
                 break;
             }
             name = va_arg(ap, const char *);
         }
         if (!name) {
-            virUtilError(VIR_ERR_INVALID_ARG,
-                         _("parameter '%s' not supported"),
-                         params[i].field);
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("parameter '%s' not supported"),
+                           params[i].field);
             goto cleanup;
         }
         for (j = 0; j < i; j++) {
             if (STREQ(params[i].field, params[j].field)) {
-                virUtilError(VIR_ERR_INVALID_ARG,
-                             _("parameter '%s' occurs multiple times"),
-                             params[i].field);
+                virReportError(VIR_ERR_INVALID_ARG,
+                               _("parameter '%s' occurs multiple times"),
+                               params[i].field);
                 goto cleanup;
             }
         }
@@ -140,8 +136,8 @@ virTypedParameterAssign(virTypedParameterPtr param, const char *name,
     va_start(ap, type);
 
     if (virStrcpyStatic(param->field, name) == NULL) {
-        virUtilError(VIR_ERR_INTERNAL_ERROR, _("Field name '%s' too long"),
-                     name);
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Field name '%s' too long"),
+                       name);
         goto cleanup;
     }
     param->type = type;
@@ -175,8 +171,8 @@ virTypedParameterAssign(virTypedParameterPtr param, const char *name,
         }
         break;
     default:
-        virUtilError(VIR_ERR_INTERNAL_ERROR,
-                     _("unexpected type %d for field %s"), type, name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected type %d for field %s"), type, name);
         goto cleanup;
     }
 

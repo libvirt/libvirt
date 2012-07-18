@@ -33,10 +33,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define virNetDevvError(code, ...)                                  \
-    virReportErrorHelper(VIR_FROM_NONE, code, __FILE__,             \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 /* Functions */
 /**
  * virNetDevVethGetFreeName:

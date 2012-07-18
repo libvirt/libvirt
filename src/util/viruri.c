@@ -17,11 +17,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_URI
 
-#define virURIReportError(code, ...)                                    \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,                 \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
-
 static int
 virURIParamAppend(virURIPtr uri,
                   const char *name,
@@ -155,8 +150,8 @@ virURIParse(const char *uri)
 
     if (!xmluri) {
         /* libxml2 does not tell us what failed. Grr :-( */
-        virURIReportError(VIR_ERR_INTERNAL_ERROR,
-                          _("Unable to parse URI %s"), uri);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to parse URI %s"), uri);
         return NULL;
     }
 

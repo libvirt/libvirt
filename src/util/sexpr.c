@@ -24,9 +24,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_SEXPR
 
-#define virSexprError(code, ...)                                           \
-        virReportErrorHelper(VIR_FROM_SEXPR, code, __FILE__,               \
-                             __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /**
  * sexpr_new:
@@ -241,8 +238,8 @@ sexpr2string(const struct sexpr *sexpr, virBufferPtr buffer)
         virBufferAddLit(buffer, "()");
         break;
     default:
-        virSexprError(VIR_ERR_SEXPR_SERIAL,
-                      _("unknown s-expression kind %d"), sexpr->kind);
+        virReportError(VIR_ERR_SEXPR_SERIAL,
+                       _("unknown s-expression kind %d"), sexpr->kind);
         return -1;
     }
 

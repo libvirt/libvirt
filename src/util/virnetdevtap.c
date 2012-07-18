@@ -45,10 +45,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define virNetDevTapError(code, ...)                    \
-    virReportErrorHelper(VIR_FROM_NONE, code, __FILE__, \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 /**
  * virNetDevProbeVnetHdr:
  * @tapfd: a tun/tap file descriptor
@@ -305,12 +301,12 @@ int virNetDevTapCreateInBridgePort(const char *brname,
              * in "received packet on vnetX with own address as source
              * address" error logs from the kernel.
              */
-            virNetDevTapError(VIR_ERR_CONFIG_UNSUPPORTED,
-                              _("Unable to use MAC address starting with "
-                                "reserved value 0xFE - '%02X:%02X:%02X:%02X:%02X:%02X' - "),
-                              macaddr->addr[0], macaddr->addr[1],
-                              macaddr->addr[2], macaddr->addr[3],
-                              macaddr->addr[4], macaddr->addr[5]);
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unable to use MAC address starting with "
+                             "reserved value 0xFE - '%02X:%02X:%02X:%02X:%02X:%02X' - "),
+                           macaddr->addr[0], macaddr->addr[1],
+                           macaddr->addr[2], macaddr->addr[3],
+                           macaddr->addr[4], macaddr->addr[5]);
             goto error;
         }
         tapmac.addr[0] = 0xFE; /* Discourage bridge from using TAP dev MAC */

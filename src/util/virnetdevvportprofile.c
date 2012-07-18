@@ -27,11 +27,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NET
 
-#define virNetDevError(code, ...)                                       \
-    virReportErrorHelper(VIR_FROM_NET, code, __FILE__,                  \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
-
 VIR_ENUM_IMPL(virNetDevVPortProfileOp, VIR_NETDEV_VPORT_PROFILE_OP_LAST,
               "create",
               "save",
@@ -145,7 +140,7 @@ virNetDevVPortProfileGetLldpadPid(void) {
                 && res != 0) {
                 pid = res;
             } else {
-                virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("error parsing pid of lldpad"));
             }
         }
@@ -185,12 +180,12 @@ virNetDevVPortProfileGetStatus(struct nlattr **tb, int32_t vf,
         if (tb[IFLA_PORT_SELF]) {
             if (nla_parse_nested(tb_port, IFLA_PORT_MAX, tb[IFLA_PORT_SELF],
                                  ifla_port_policy)) {
-                virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("error parsing IFLA_PORT_SELF part"));
                 goto cleanup;
             }
         } else {
-            virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("IFLA_PORT_SELF is missing"));
             goto cleanup;
         }
@@ -203,7 +198,7 @@ virNetDevVPortProfileGetStatus(struct nlattr **tb, int32_t vf,
             nla_for_each_nested(tb_vf_ports, tb[IFLA_VF_PORTS], rem) {
 
                 if (nla_type(tb_vf_ports) != IFLA_VF_PORT) {
-                    virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("error while iterating over "
                                      "IFLA_VF_PORTS part"));
                     goto cleanup;
@@ -211,7 +206,7 @@ virNetDevVPortProfileGetStatus(struct nlattr **tb, int32_t vf,
 
                 if (nla_parse_nested(tb_port, IFLA_PORT_MAX, tb_vf_ports,
                                      ifla_port_policy)) {
-                    virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("error parsing IFLA_VF_PORT part"));
                     goto cleanup;
                 }
@@ -230,13 +225,13 @@ virNetDevVPortProfileGetStatus(struct nlattr **tb, int32_t vf,
             }
 
             if (!found) {
-                virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Could not find netlink response with "
                                  "expected parameters"));
                 goto cleanup;
             }
         } else {
-            virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("IFLA_VF_PORTS is missing"));
             goto cleanup;
         }
@@ -251,7 +246,7 @@ virNetDevVPortProfileGetStatus(struct nlattr **tb, int32_t vf,
             *status = PORT_PROFILE_RESPONSE_INPROGRESS;
             rc = 0;
         } else {
-            virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("no IFLA_PORT_RESPONSE found in netlink message"));
             goto cleanup;
         }
@@ -433,12 +428,12 @@ cleanup:
     return rc;
 
 malformed_resp:
-    virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("malformed netlink response message"));
     goto cleanup;
 
 buffer_too_small:
-    virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("allocated netlink buffer is too small"));
     goto cleanup;
 }
@@ -486,7 +481,7 @@ virNetDevVPortProfileGetNthParent(const char *ifname, int ifindex, unsigned int 
         if (tb[IFLA_IFNAME]) {
             if (!virStrcpy(parent_ifname, (char*)RTA_DATA(tb[IFLA_IFNAME]),
                            IFNAMSIZ)) {
-                virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("buffer for root interface name is too small"));
                 VIR_FREE(recvbuf);
                 return -1;
@@ -545,7 +540,7 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
                                         vf,
                                         op);
     if (rc < 0) {
-        virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("sending of PortProfileRequest failed."));
         return rc;
     }
@@ -589,7 +584,7 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
     }
 
     if (status == PORT_PROFILE_RESPONSE_INPROGRESS) {
-        virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("port-profile setlink timed out"));
         rc = -2;
     }
@@ -678,7 +673,7 @@ virNetDevVPortProfileOp8021Qbg(const char *ifname,
         op = PORT_REQUEST_DISASSOCIATE;
         break;
     default:
-        virNetDevError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("operation type %d not supported"), virtPortOp);
         goto cleanup;
     }
@@ -794,7 +789,7 @@ virNetDevVPortProfileOp8021Qbh(const char *ifname,
         break;
 
     default:
-        virNetDevError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("operation type %d not supported"), virtPortOp);
         rc = -1;
     }

@@ -44,9 +44,6 @@
 #endif
 
 #define VIR_FROM_THIS VIR_FROM_NONE
-#define virNetDevError(code, ...)                                      \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,                \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #if defined(HAVE_STRUCT_IFREQ)
 static int virNetDevSetupControlFull(const char *ifname,
@@ -307,7 +304,7 @@ virNetDevRestoreMacAddress(const char *linkdev,
         return -1;
 
     if (virMacAddrParse(macstr, &oldmac) != 0) {
-        virNetDevError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Cannot parse MAC address from '%s'"),
                        oldmacname);
         VIR_FREE(macstr);
@@ -1322,12 +1319,12 @@ cleanup:
     return rc;
 
 malformed_resp:
-    virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("malformed netlink response message"));
     goto cleanup;
 
 buffer_too_small:
-    virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("allocated netlink buffer is too small"));
     goto cleanup;
 }
@@ -1446,12 +1443,12 @@ cleanup:
     return rc;
 
 malformed_resp:
-    virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("malformed netlink response message"));
     goto cleanup;
 
 buffer_too_small:
-    virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("allocated netlink buffer is too small"));
     goto cleanup;
 }
@@ -1505,7 +1502,7 @@ virNetDevParseVfConfig(struct nlattr **tb, int32_t vf, virMacAddrPtr mac,
 
 cleanup:
     if (msg)
-        virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s", msg);
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", msg);
 
     return rc;
 }
@@ -1587,7 +1584,7 @@ virNetDevRestoreVfConfig(const char *pflinkdev, int vf,
     }
 
     if (virMacAddrParse(macstr, &oldmac) != 0) {
-        virNetDevError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Cannot parse MAC address from '%s'"),
                        macstr);
         goto cleanup;

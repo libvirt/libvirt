@@ -29,10 +29,6 @@
 
 # define VIR_FROM_THIS VIR_FROM_STATS_LINUX
 
-# define virStatsError(code, ...)                               \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,         \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 
 /*-------------------- interface stats --------------------*/
 /* Just reads the named interface, so not Xen or QEMU-specific.
@@ -106,8 +102,8 @@ linuxDomainInterfaceStats(const char *path,
     }
     VIR_FORCE_FCLOSE(fp);
 
-    virStatsError(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("/proc/net/dev: Interface not found"));
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("/proc/net/dev: Interface not found"));
     return -1;
 }
 

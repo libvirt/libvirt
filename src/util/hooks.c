@@ -41,10 +41,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_HOOK
 
-#define virHookReportError(code, ...)                              \
-    virReportErrorHelper(VIR_FROM_HOOK, code, __FILE__,            \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 #define LIBVIRT_HOOK_DIR SYSCONFDIR "/libvirt/hooks"
 
 VIR_ENUM_DECL(virHookDriver)
@@ -105,16 +101,16 @@ virHookCheck(int no, const char *driver) {
     int ret;
 
     if (driver == NULL) {
-        virHookReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Invalid hook name for #%d"), no);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid hook name for #%d"), no);
         return -1;
     }
 
     ret = virBuildPath(&path, LIBVIRT_HOOK_DIR, driver);
     if ((ret < 0) || (path == NULL)) {
-        virHookReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to build path for %s hook"),
-                           driver);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to build path for %s hook"),
+                       driver);
         return -1;
     }
 
@@ -252,9 +248,9 @@ virHookCall(int driver,
             break;
     }
     if (opstr == NULL) {
-        virHookReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Hook for %s, failed to find operation #%d"),
-                           drvstr, op);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Hook for %s, failed to find operation #%d"),
+                       drvstr, op);
         return 1;
     }
     subopstr = virHookSubopTypeToString(sub_op);
@@ -265,9 +261,9 @@ virHookCall(int driver,
 
     ret = virBuildPath(&path, LIBVIRT_HOOK_DIR, drvstr);
     if ((ret < 0) || (path == NULL)) {
-        virHookReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to build path for %s hook"),
-                           drvstr);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to build path for %s hook"),
+                       drvstr);
         return -1;
     }
 
@@ -285,9 +281,9 @@ virHookCall(int driver,
 
     ret = virCommandRun(cmd, &exitstatus);
     if (ret == 0 && exitstatus != 0) {
-        virHookReportError(VIR_ERR_HOOK_SCRIPT_FAILED,
-                           _("Hook script %s %s failed with error code %d"),
-                           path, drvstr, exitstatus);
+        virReportError(VIR_ERR_HOOK_SCRIPT_FAILED,
+                       _("Hook script %s %s failed with error code %d"),
+                       path, drvstr, exitstatus);
         ret = -1;
     }
 

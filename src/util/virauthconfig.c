@@ -38,10 +38,6 @@ struct _virAuthConfig {
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define virAuthReportError(code, ...)                                   \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,                 \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 
 virAuthConfigPtr virAuthConfigNew(const char *path)
 {
@@ -141,9 +137,9 @@ int virAuthConfigLookup(virAuthConfigPtr auth,
     }
 
     if (!(authcred = virKeyFileGetValueString(auth->keyfile, authgroup, "credentials"))) {
-        virAuthReportError(VIR_ERR_CONF_SYNTAX,
-                           _("Missing item 'credentials' in group '%s' in '%s'"),
-                           authgroup, auth->path);
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("Missing item 'credentials' in group '%s' in '%s'"),
+                       authgroup, auth->path);
         goto cleanup;
     }
 
@@ -153,9 +149,9 @@ int virAuthConfigLookup(virAuthConfigPtr auth,
     }
 
     if (!virKeyFileHasGroup(auth->keyfile, credgroup)) {
-        virAuthReportError(VIR_ERR_CONF_SYNTAX,
-                           _("Missing group 'credentials-%s' referenced from group '%s' in '%s'"),
-                           authcred, authgroup, auth->path);
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("Missing group 'credentials-%s' referenced from group '%s' in '%s'"),
+                       authcred, authgroup, auth->path);
         goto cleanup;
     }
 

@@ -30,9 +30,6 @@
 #include <netdb.h>
 
 #define VIR_FROM_THIS VIR_FROM_NONE
-#define virSocketError(code, ...)                                       \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,                 \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /*
  * Helpers to extract the IP arrays from the virSocketAddrPtr
@@ -92,7 +89,7 @@ int virSocketAddrParse(virSocketAddrPtr addr, const char *val, int family) {
     int err;
 
     if (val == NULL) {
-        virSocketError(VIR_ERR_INVALID_ARG, "%s", _("Missing address"));
+        virReportError(VIR_ERR_INVALID_ARG, "%s", _("Missing address"));
         return -1;
     }
 
@@ -100,14 +97,14 @@ int virSocketAddrParse(virSocketAddrPtr addr, const char *val, int family) {
     hints.ai_family = family;
     hints.ai_flags = AI_NUMERICHOST;
     if ((err = getaddrinfo(val, NULL, &hints, &res)) != 0) {
-        virSocketError(VIR_ERR_SYSTEM_ERROR,
+        virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("Cannot parse socket address '%s': %s"),
                        val, gai_strerror(err));
         return -1;
     }
 
     if (res == NULL) {
-        virSocketError(VIR_ERR_SYSTEM_ERROR,
+        virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("No socket addresses found for '%s'"),
                        val);
         return -1;
@@ -230,7 +227,7 @@ virSocketAddrFormatFull(virSocketAddrPtr addr,
     int err;
 
     if (addr == NULL) {
-        virSocketError(VIR_ERR_INVALID_ARG, "%s", _("Missing address"));
+        virReportError(VIR_ERR_INVALID_ARG, "%s", _("Missing address"));
         return NULL;
     }
 
@@ -253,7 +250,7 @@ virSocketAddrFormatFull(virSocketAddrPtr addr,
                            host, sizeof(host),
                            port, sizeof(port),
                            NI_NUMERICHOST | NI_NUMERICSERV)) != 0) {
-        virSocketError(VIR_ERR_SYSTEM_ERROR,
+        virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("Cannot convert socket address to string: %s"),
                        gai_strerror(err));
         return NULL;

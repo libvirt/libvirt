@@ -44,10 +44,6 @@
 #include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
-#define virFileError(code, ...)                                   \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,           \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 
 int virFileClose(int *fdptr, virFileCloseFlags flags)
 {
@@ -178,8 +174,8 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
     int mode = -1;
 
     if (!flags) {
-        virFileError(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("invalid use with no flags"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("invalid use with no flags"));
         return NULL;
     }
 
@@ -191,8 +187,8 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
      */
 
     if ((flags & VIR_FILE_WRAPPER_BYPASS_CACHE) && !O_DIRECT) {
-        virFileError(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("O_DIRECT unsupported on this platform"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("O_DIRECT unsupported on this platform"));
         return NULL;
     }
 
@@ -204,20 +200,20 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
     mode = fcntl(*fd, F_GETFL);
 
     if (mode < 0) {
-        virFileError(VIR_ERR_INTERNAL_ERROR, _("invalid fd %d for %s"),
-                     *fd, name);
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("invalid fd %d for %s"),
+                       *fd, name);
         goto error;
     } else if ((mode & O_ACCMODE) == O_WRONLY) {
         output = true;
     } else if ((mode & O_ACCMODE) != O_RDONLY) {
-        virFileError(VIR_ERR_INTERNAL_ERROR, _("unexpected mode %x for %s"),
-                     mode & O_ACCMODE, name);
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("unexpected mode %x for %s"),
+                       mode & O_ACCMODE, name);
         goto error;
     }
 
     if (pipe2(pipefd, O_CLOEXEC) < 0) {
-        virFileError(VIR_ERR_INTERNAL_ERROR,
-                     _("unable to create pipe for %s"), name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unable to create pipe for %s"), name);
         goto error;
     }
 
@@ -237,7 +233,7 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
         goto error;
 
     if (VIR_CLOSE(pipefd[!output]) < 0) {
-        virFileError(VIR_ERR_INTERNAL_ERROR, "%s", _("unable to close pipe"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("unable to close pipe"));
         goto error;
     }
 
@@ -257,7 +253,7 @@ virFileWrapperFdNew(int *fd ATTRIBUTE_UNUSED,
                     const char *name ATTRIBUTE_UNUSED,
                     unsigned int fdflags ATTRIBUTE_UNUSED)
 {
-    virFileError(VIR_ERR_INTERNAL_ERROR, "%s",
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                  _("virFileWrapperFd unsupported on this platform"));
     return NULL;
 }
@@ -474,7 +470,7 @@ int virFileUpdatePerm(const char *path,
     mode_t mode;
 
     if (mode_remove & ~MODE_BITS || mode_add & ~MODE_BITS) {
-        virFileError(VIR_ERR_INVALID_ARG, "%s", _("invalid mode"));
+        virReportError(VIR_ERR_INVALID_ARG, "%s", _("invalid mode"));
         return -1;
     }
 
@@ -551,8 +547,8 @@ static int virFileLoopDeviceOpen(char **dev_name)
         VIR_FREE(looppath);
     }
 
-    virFileError(VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("Unable to find a free loop device in /dev"));
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("Unable to find a free loop device in /dev"));
 
 cleanup:
     if (fd != -1) {

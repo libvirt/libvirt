@@ -32,10 +32,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define virRandomError(code, ...)                                      \
-    virReportErrorHelper(VIR_FROM_NONE, code, __FILE__,                 \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 static char randomState[128];
 static struct random_data randomData;
 static virMutex randomLock;
@@ -100,7 +96,7 @@ virRandomGenerateWWN(char **wwn,
     const char *oui = NULL;
 
     if (!virt_type) {
-        virRandomError(VIR_ERR_INVALID_ARG, "%s",
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("argument virt_type must not be NULL"));
         return -1;
     }
@@ -117,7 +113,7 @@ virRandomGenerateWWN(char **wwn,
     } else if (STREQ(virt_type, "HYPER-V")) {
         oui = MICROSOFT_OUI;
     } else {
-        virRandomError(VIR_ERR_INTERNAL_ERROR, "%s",
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unsupported virt type"));
         return -1;
     }

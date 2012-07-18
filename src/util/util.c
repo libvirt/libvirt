@@ -96,10 +96,6 @@ verify(sizeof(gid_t) <= sizeof(unsigned int) &&
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define virUtilError(code, ...)                                            \
-        virReportErrorHelper(VIR_FROM_NONE, code, __FILE__,                \
-                             __FUNCTION__, __LINE__, __VA_ARGS__)
-
 /* Like read(), but restarts after EINTR */
 ssize_t
 saferead(int fd, void *buf, size_t count)
@@ -333,8 +329,8 @@ virPipeReadUntilEOF(int outfd, int errfd,
                 if (fds[i].revents & POLLHUP)
                     continue;
 
-                virUtilError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("Unknown poll response."));
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("Unknown poll response."));
                 goto error;
             }
 
@@ -1235,8 +1231,8 @@ int virFileOpenAs(const char *path ATTRIBUTE_UNUSED,
                   gid_t gid ATTRIBUTE_UNUSED,
                   unsigned int flags_unused ATTRIBUTE_UNUSED)
 {
-    virUtilError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("virFileOpenAs is not implemented for WIN32"));
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("virFileOpenAs is not implemented for WIN32"));
 
     return -ENOSYS;
 }
@@ -1247,8 +1243,8 @@ int virDirCreate(const char *path ATTRIBUTE_UNUSED,
                  gid_t gid ATTRIBUTE_UNUSED,
                  unsigned int flags_unused ATTRIBUTE_UNUSED)
 {
-    virUtilError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("virDirCreate is not implemented for WIN32"));
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("virDirCreate is not implemented for WIN32"));
 
     return -ENOSYS;
 }
@@ -1749,8 +1745,8 @@ virScaleInteger(unsigned long long *value, const char *suffix,
 {
     if (!suffix || !*suffix) {
         if (!scale) {
-            virUtilError(VIR_ERR_INTERNAL_ERROR,
-                         _("invalid scale %llu"), scale);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("invalid scale %llu"), scale);
             return -1;
         }
         suffix = "";
@@ -1765,7 +1761,7 @@ virScaleInteger(unsigned long long *value, const char *suffix,
         } else if (c_tolower(suffix[1]) == 'b' && !suffix[2]) {
             base = 1000;
         } else {
-            virUtilError(VIR_ERR_INVALID_ARG,
+            virReportError(VIR_ERR_INVALID_ARG,
                          _("unknown suffix '%s'"), suffix);
             return -1;
         }
@@ -1790,15 +1786,15 @@ virScaleInteger(unsigned long long *value, const char *suffix,
             scale *= base;
             break;
         default:
-            virUtilError(VIR_ERR_INVALID_ARG,
-                         _("unknown suffix '%s'"), suffix);
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("unknown suffix '%s'"), suffix);
             return -1;
         }
     }
 
     if (*value && *value >= (limit / scale)) {
-        virUtilError(VIR_ERR_OVERFLOW, _("value too large: %llu%s"),
-                     *value, suffix);
+        virReportError(VIR_ERR_OVERFLOW, _("value too large: %llu%s"),
+                       *value, suffix);
         return -1;
     }
     *value *= scale;
@@ -2120,8 +2116,8 @@ char *virIndexToDiskName(int idx, const char *prefix)
     int i, k, offset;
 
     if (idx < 0) {
-        virUtilError(VIR_ERR_INTERNAL_ERROR,
-                     _("Disk index %d is negative"), idx);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Disk index %d is negative"), idx);
         return NULL;
     }
 
@@ -2737,8 +2733,8 @@ virGetUserDirectory(void)
         return NULL;
 
     if (!ret) {
-        virUtilError(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Unable to determine home directory"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to determine home directory"));
         return NULL;
     }
 
@@ -2753,8 +2749,8 @@ virGetUserConfigDirectory(void)
         return NULL;
 
     if (!ret) {
-        virUtilError(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Unable to determine config directory"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to determine config directory"));
         return NULL;
     }
     return ret;
@@ -2768,8 +2764,8 @@ virGetUserCacheDirectory(void)
         return NULL;
 
     if (!ret) {
-        virUtilError(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Unable to determine config directory"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to determine config directory"));
         return NULL;
     }
     return ret;
@@ -2784,8 +2780,8 @@ virGetUserRuntimeDirectory(void)
 char *
 virGetUserDirectory(void)
 {
-    virUtilError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("virGetUserDirectory is not available"));
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("virGetUserDirectory is not available"));
 
     return NULL;
 }
@@ -2793,8 +2789,8 @@ virGetUserDirectory(void)
 char *
 virGetUserConfigDirectory(void)
 {
-    virUtilError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("virGetUserConfigDirectory is not available"));
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("virGetUserConfigDirectory is not available"));
 
     return NULL;
 }
@@ -2802,8 +2798,8 @@ virGetUserConfigDirectory(void)
 char *
 virGetUserCacheDirectory(void)
 {
-    virUtilError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("virGetUserCacheDirectory is not available"));
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("virGetUserCacheDirectory is not available"));
 
     return NULL;
 }
@@ -2811,8 +2807,8 @@ virGetUserCacheDirectory(void)
 char *
 virGetUserRuntimeDirectory(void)
 {
-    virUtilError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("virGetUserRuntimeDirectory is not available"));
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("virGetUserRuntimeDirectory is not available"));
 
     return NULL;
 }
@@ -2821,8 +2817,8 @@ virGetUserRuntimeDirectory(void)
 char *
 virGetUserName(uid_t uid ATTRIBUTE_UNUSED)
 {
-    virUtilError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("virGetUserName is not available"));
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("virGetUserName is not available"));
 
     return NULL;
 }
@@ -2830,8 +2826,8 @@ virGetUserName(uid_t uid ATTRIBUTE_UNUSED)
 int virGetUserID(const char *name ATTRIBUTE_UNUSED,
                  uid_t *uid ATTRIBUTE_UNUSED)
 {
-    virUtilError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("virGetUserID is not available"));
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("virGetUserID is not available"));
 
     return 0;
 }
@@ -2840,8 +2836,8 @@ int virGetUserID(const char *name ATTRIBUTE_UNUSED,
 int virGetGroupID(const char *name ATTRIBUTE_UNUSED,
                   gid_t *gid ATTRIBUTE_UNUSED)
 {
-    virUtilError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("virGetGroupID is not available"));
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("virGetGroupID is not available"));
 
     return 0;
 }
@@ -2850,16 +2846,16 @@ int
 virSetUIDGID(uid_t uid ATTRIBUTE_UNUSED,
              gid_t gid ATTRIBUTE_UNUSED)
 {
-    virUtilError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("virSetUIDGID is not available"));
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("virSetUIDGID is not available"));
     return -1;
 }
 
 char *
 virGetGroupName(gid_t gid ATTRIBUTE_UNUSED)
 {
-    virUtilError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("virGetGroupName is not available"));
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("virGetGroupName is not available"));
 
     return NULL;
 }

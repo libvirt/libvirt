@@ -39,10 +39,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_SYSINFO
 
-#define virSmbiosReportError(code, ...)                               \
-    virReportErrorHelper(VIR_FROM_SYSINFO, code, __FILE__,            \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 #define SYSINFO_SMBIOS_DECODER "dmidecode"
 #define SYSINFO "/proc/sysinfo"
 #define CPUINFO "/proc/cpuinfo"
@@ -222,8 +218,8 @@ virSysinfoRead(void) {
         goto no_memory;
 
     if(virFileReadAll(CPUINFO, 2048, &outbuf) < 0) {
-        virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
-                             _("Failed to open %s"), CPUINFO);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to open %s"), CPUINFO);
         return NULL;
     }
 
@@ -366,8 +362,8 @@ virSysinfoRead(void) {
 
     /* Gather info from /proc/cpuinfo */
     if (virFileReadAll(CPUINFO, 2048, &outbuf) < 0) {
-        virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
-                             _("Failed to open %s"), CPUINFO);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to open %s"), CPUINFO);
         return NULL;
     }
 
@@ -381,8 +377,8 @@ virSysinfoRead(void) {
 
     /* Gather info from /proc/sysinfo */
     if (virFileReadAll(SYSINFO, 4096, &outbuf) < 0) {
-        virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
-                             _("Failed to open %s"), SYSINFO);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to open %s"), SYSINFO);
         return NULL;
     }
 
@@ -408,7 +404,7 @@ virSysinfoRead(void) {
      * http://www.microsoft.com/whdc/system/platform/firmware/SMBIOS.mspx
      */
     virReportSystemError(ENOSYS, "%s",
-                 _("Host sysinfo extraction not supported on this platform"));
+                         _("Host sysinfo extraction not supported on this platform"));
     return NULL;
 }
 
@@ -762,9 +758,9 @@ virSysinfoRead(void) {
 
     path = virFindFileInPath(SYSINFO_SMBIOS_DECODER);
     if (path == NULL) {
-        virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
-                             _("Failed to find path for %s binary"),
-                             SYSINFO_SMBIOS_DECODER);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to find path for %s binary"),
+                       SYSINFO_SMBIOS_DECODER);
         return NULL;
     }
 
@@ -772,9 +768,9 @@ virSysinfoRead(void) {
     VIR_FREE(path);
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (virCommandRun(cmd, NULL) < 0) {
-        virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
-                             _("Failed to execute command %s"),
-                             path);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to execute command %s"),
+                       path);
         goto cleanup;
     }
 
@@ -976,9 +972,9 @@ virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
     const char *type = virSysinfoTypeToString(def->type);
 
     if (!type) {
-        virSmbiosReportError(VIR_ERR_INTERNAL_ERROR,
-                             _("unexpected sysinfo type model %d"),
-                             def->type);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected sysinfo type model %d"),
+                       def->type);
         virBufferFreeAndReset(buf);
         return -1;
     }
@@ -1009,25 +1005,25 @@ bool virSysinfoIsEqual(virSysinfoDefPtr src,
         return true;
 
     if ((src && !dst) || (!src && dst)) {
-        virSmbiosReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                             _("Target sysinfo does not match source"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Target sysinfo does not match source"));
         goto cleanup;
     }
 
     if (src->type != dst->type) {
-        virSmbiosReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                             _("Target sysinfo %s does not match source %s"),
-                             virSysinfoTypeToString(dst->type),
-                             virSysinfoTypeToString(src->type));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target sysinfo %s does not match source %s"),
+                       virSysinfoTypeToString(dst->type),
+                       virSysinfoTypeToString(src->type));
         goto cleanup;
     }
 
 #define CHECK_FIELD(name, desc)                                         \
     do {                                                                \
         if (STRNEQ_NULLABLE(src->name, dst->name)) {                    \
-            virSmbiosReportError(VIR_ERR_CONFIG_UNSUPPORTED,            \
-                                 _("Target sysinfo %s %s does not match source %s"), \
-                                 desc, NULLSTR(src->name), NULLSTR(dst->name)); \
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,                  \
+                           _("Target sysinfo %s %s does not match source %s"), \
+                           desc, NULLSTR(src->name), NULLSTR(dst->name)); \
         }                                                               \
     } while (0)
 

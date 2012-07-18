@@ -43,10 +43,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NET
 
-#define netlinkError(code, ...)                                           \
-        virReportErrorHelper(VIR_FROM_NET, code, __FILE__,                 \
-                             __FUNCTION__, __LINE__, __VA_ARGS__)
-
 #define NETLINK_ACK_TIMEOUT_S  2
 
 #if defined(__linux__) && defined(HAVE_LIBNL)
@@ -389,8 +385,8 @@ virNetlinkEventServiceIsRunning(void)
 int virNetlinkEventServiceLocalPid(void)
 {
     if (!(server && server->netlinknh)) {
-        netlinkError(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("netlink event service not running"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("netlink event service not running"));
         return -1;
     }
     return (int)nl_socket_get_local_port(server->netlinknh);
@@ -462,8 +458,8 @@ virNetlinkEventServiceStart(void)
                                              VIR_EVENT_HANDLE_READABLE,
                                              virNetlinkEventCallback,
                                              srv, NULL)) < 0) {
-        netlinkError(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Failed to add netlink event handle watch"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to add netlink event handle watch"));
         goto error_server;
     }
 
@@ -512,8 +508,8 @@ virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
     virNetlinkEventSrvPrivatePtr srv = server;
 
     if (handleCB == NULL) {
-        netlinkError(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Invalid NULL callback provided"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Invalid NULL callback provided"));
         return -1;
     }
 
@@ -637,7 +633,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
                       uint32_t src_pid ATTRIBUTE_UNUSED,
                       uint32_t dst_pid ATTRIBUTE_UNUSED)
 {
-    netlinkError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 
@@ -667,13 +663,13 @@ int virNetlinkEventServiceStart(void)
  */
 bool virNetlinkEventServiceIsRunning(void)
 {
-    netlinkError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return 0;
 }
 
 int virNetlinkEventServiceLocalPid(void)
 {
-    netlinkError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 
@@ -686,7 +682,7 @@ int virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB ATTRIBUTE_UN
                              void *opaque ATTRIBUTE_UNUSED,
                              const unsigned char *macaddr ATTRIBUTE_UNUSED)
 {
-    netlinkError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 
@@ -696,7 +692,7 @@ int virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB ATTRIBUTE_UN
 int virNetlinkEventRemoveClient(int watch ATTRIBUTE_UNUSED,
                                 const unsigned char *macaddr ATTRIBUTE_UNUSED)
 {
-    netlinkError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 
