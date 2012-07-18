@@ -33,10 +33,6 @@
 # include "domain_conf.h"
 # include "threads.h"
 
-# define openvzError(code, ...)                                            \
-        virReportErrorHelper(VIR_FROM_OPENVZ, code, __FILE__,              \
-                             __FUNCTION__, __LINE__, __VA_ARGS__)
-
 
 /* OpenVZ commands - Replace with wrapper scripts later? */
 # define VZLIST  "/usr/sbin/vzlist"

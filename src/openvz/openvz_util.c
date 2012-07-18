@@ -30,6 +30,7 @@
 #include "openvz_conf.h"
 #include "openvz_util.h"
 
+#define VIR_FROM_THIS VIR_FROM_OPENVZ
 
 long
 openvzKBPerPages(void)
@@ -41,8 +42,8 @@ openvzKBPerPages(void)
         if (kb_per_pages > 0) {
             kb_per_pages /= 1024;
         } else {
-            openvzError(VIR_ERR_INTERNAL_ERROR,
-                        _("Can't determine page size"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Can't determine page size"));
             kb_per_pages = 0;
             return -1;
         }
