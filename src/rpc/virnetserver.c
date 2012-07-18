@@ -45,9 +45,6 @@
 #endif
 
 #define VIR_FROM_THIS VIR_FROM_RPC
-#define virNetError(code, ...)                                    \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,           \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 typedef struct _virNetServerSignal virNetServerSignal;
 typedef virNetServerSignal *virNetServerSignalPtr;
@@ -261,9 +258,9 @@ static int virNetServerDispatchNewClient(virNetServerServicePtr svc ATTRIBUTE_UN
     virNetServerLock(srv);
 
     if (srv->nclients >= srv->nclients_max) {
-        virNetError(VIR_ERR_RPC,
-                    _("Too many active clients (%zu), dropping connection from %s"),
-                    srv->nclients_max, virNetServerClientRemoteAddrString(client));
+        virReportError(VIR_ERR_RPC,
+                       _("Too many active clients (%zu), dropping connection from %s"),
+                       srv->nclients_max, virNetServerClientRemoteAddrString(client));
         goto error;
     }
 
@@ -378,8 +375,8 @@ virNetServerPtr virNetServerNew(size_t min_workers,
 #endif
 
     if (virMutexInit(&srv->lock) < 0) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("cannot initialize mutex"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot initialize mutex"));
         goto error;
     }
 
@@ -507,8 +504,8 @@ virNetServerSignalEvent(int watch,
         }
     }
 
-    virNetError(VIR_ERR_INTERNAL_ERROR,
-                _("Unexpected signal received: %d"), siginfo.si_signo);
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Unexpected signal received: %d"), siginfo.si_signo);
 
 cleanup:
     virNetServerUnlock(srv);
@@ -531,8 +528,8 @@ static int virNetServerSignalSetup(virNetServerPtr srv)
                                            VIR_EVENT_HANDLE_READABLE,
                                            virNetServerSignalEvent,
                                            srv, NULL)) < 0) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("Failed to add signal handle watch"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to add signal handle watch"));
         goto error;
     }
 
@@ -707,8 +704,8 @@ void virNetServerRun(virNetServerPtr srv)
         (timerid = virEventAddTimeout(-1,
                                       virNetServerAutoShutdownTimer,
                                       srv, NULL)) < 0) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("Failed to register shutdown timeout"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to register shutdown timeout"));
         goto cleanup;
     }
 

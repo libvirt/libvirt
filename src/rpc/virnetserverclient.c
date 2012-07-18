@@ -36,9 +36,6 @@
 #include "virkeepalive.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
-#define virNetError(code, ...)                                    \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,           \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /* Allow for filtering of incoming messages to a custom
  * dispatch processing queue, instead of the workers.
@@ -775,9 +772,9 @@ static ssize_t virNetServerClientRead(virNetServerClientPtr client)
     ssize_t ret;
 
     if (client->rx->bufferLength <= client->rx->bufferOffset) {
-        virNetError(VIR_ERR_RPC,
-                    _("unexpected zero/negative length request %lld"),
-                    (long long int)(client->rx->bufferLength - client->rx->bufferOffset));
+        virReportError(VIR_ERR_RPC,
+                       _("unexpected zero/negative length request %lld"),
+                       (long long int)(client->rx->bufferLength - client->rx->bufferOffset));
         client->wantClose = true;
         return -1;
     }
@@ -953,9 +950,9 @@ static ssize_t virNetServerClientWrite(virNetServerClientPtr client)
     ssize_t ret;
 
     if (client->tx->bufferLength < client->tx->bufferOffset) {
-        virNetError(VIR_ERR_RPC,
-                    _("unexpected zero/negative length request %lld"),
-                    (long long int)(client->tx->bufferLength - client->tx->bufferOffset));
+        virReportError(VIR_ERR_RPC,
+                       _("unexpected zero/negative length request %lld"),
+                       (long long int)(client->tx->bufferLength - client->tx->bufferOffset));
         client->wantClose = true;
         return -1;
     }

@@ -32,9 +32,6 @@
 #include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
-#define virNetError(code, ...)                                    \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,           \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 struct _virNetServerProgram {
     int refs;
@@ -218,8 +215,8 @@ int virNetServerProgramUnknownError(virNetServerClientPtr client,
 {
     virNetMessageError rerr;
 
-    virNetError(VIR_ERR_RPC,
-                _("Cannot find program %d version %d"), req->prog, req->vers);
+    virReportError(VIR_ERR_RPC,
+                   _("Cannot find program %d version %d"), req->prog, req->vers);
 
     memset(&rerr, 0, sizeof(rerr));
     return virNetServerProgramSendError(req->prog,
@@ -270,16 +267,16 @@ int virNetServerProgramDispatch(virNetServerProgramPtr prog,
 
     /* Check version, etc. */
     if (msg->header.prog != prog->program) {
-        virNetError(VIR_ERR_RPC,
-                    _("program mismatch (actual %x, expected %x)"),
-                    msg->header.prog, prog->program);
+        virReportError(VIR_ERR_RPC,
+                       _("program mismatch (actual %x, expected %x)"),
+                       msg->header.prog, prog->program);
         goto error;
     }
 
     if (msg->header.vers != prog->version) {
-        virNetError(VIR_ERR_RPC,
-                    _("version mismatch (actual %x, expected %x)"),
-                    msg->header.vers, prog->version);
+        virReportError(VIR_ERR_RPC,
+                       _("version mismatch (actual %x, expected %x)"),
+                       msg->header.vers, prog->version);
         goto error;
     }
 
@@ -307,9 +304,9 @@ int virNetServerProgramDispatch(virNetServerProgramPtr prog,
         break;
 
     default:
-        virNetError(VIR_ERR_RPC,
-                    _("Unexpected message type %u"),
-                    msg->header.type);
+        virReportError(VIR_ERR_RPC,
+                       _("Unexpected message type %u"),
+                       msg->header.type);
         goto error;
     }
 
@@ -363,18 +360,18 @@ virNetServerProgramDispatchCall(virNetServerProgramPtr prog,
     memset(&rerr, 0, sizeof(rerr));
 
     if (msg->header.status != VIR_NET_OK) {
-        virNetError(VIR_ERR_RPC,
-                    _("Unexpected message status %u"),
-                    msg->header.status);
+        virReportError(VIR_ERR_RPC,
+                       _("Unexpected message status %u"),
+                       msg->header.status);
         goto error;
     }
 
     dispatcher = virNetServerProgramGetProc(prog, msg->header.proc);
 
     if (!dispatcher) {
-        virNetError(VIR_ERR_RPC,
-                    _("unknown procedure: %d"),
-                    msg->header.proc);
+        virReportError(VIR_ERR_RPC,
+                       _("unknown procedure: %d"),
+                       msg->header.proc);
         goto error;
     }
 
@@ -386,8 +383,8 @@ virNetServerProgramDispatchCall(virNetServerProgramPtr prog,
         /* Explicitly *NOT* calling  remoteDispatchAuthError() because
            we want back-compatibility with libvirt clients which don't
            support the VIR_ERR_AUTH_FAILED error code */
-        virNetError(VIR_ERR_RPC,
-                    "%s", _("authentication required"));
+        virReportError(VIR_ERR_RPC,
+                       "%s", _("authentication required"));
         goto error;
     }
 

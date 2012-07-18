@@ -31,10 +31,6 @@
 #include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
-#define virNetError(code, ...)                                    \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,           \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 
 struct _virNetSASLContext {
     virMutex lock;
@@ -57,9 +53,9 @@ virNetSASLContextPtr virNetSASLContextNewClient(void)
 
     err = sasl_client_init(NULL);
     if (err != SASL_OK) {
-        virNetError(VIR_ERR_AUTH_FAILED,
-                    _("failed to initialize SASL library: %d (%s)"),
-                    err, sasl_errstring(err, NULL, NULL));
+        virReportError(VIR_ERR_AUTH_FAILED,
+                       _("failed to initialize SASL library: %d (%s)"),
+                       err, sasl_errstring(err, NULL, NULL));
         return NULL;
     }
 
@@ -69,8 +65,8 @@ virNetSASLContextPtr virNetSASLContextNewClient(void)
     }
 
     if (virMutexInit(&ctxt->lock) < 0) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("Failed to initialized mutex"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to initialized mutex"));
         VIR_FREE(ctxt);
         return NULL;
     }
@@ -87,9 +83,9 @@ virNetSASLContextPtr virNetSASLContextNewServer(const char *const*usernameWhitel
 
     err = sasl_server_init(NULL, "libvirt");
     if (err != SASL_OK) {
-        virNetError(VIR_ERR_AUTH_FAILED,
-                    _("failed to initialize SASL library: %d (%s)"),
-                    err, sasl_errstring(err, NULL, NULL));
+        virReportError(VIR_ERR_AUTH_FAILED,
+                       _("failed to initialize SASL library: %d (%s)"),
+                       err, sasl_errstring(err, NULL, NULL));
         return NULL;
     }
 
@@ -99,8 +95,8 @@ virNetSASLContextPtr virNetSASLContextNewServer(const char *const*usernameWhitel
     }
 
     if (virMutexInit(&ctxt->lock) < 0) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("Failed to initialized mutex"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to initialized mutex"));
         VIR_FREE(ctxt);
         return NULL;
     }
@@ -133,9 +129,9 @@ int virNetSASLContextCheckIdentity(virNetSASLContextPtr ctxt,
             goto cleanup; /* Succesful match */
         }
         if (rv != FNM_NOMATCH) {
-            virNetError(VIR_ERR_INTERNAL_ERROR,
-                        _("Malformed TLS whitelist regular expression '%s'"),
-                        *wildcards);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Malformed TLS whitelist regular expression '%s'"),
+                           *wildcards);
             goto cleanup;
         }
 
@@ -146,8 +142,8 @@ int virNetSASLContextCheckIdentity(virNetSASLContextPtr ctxt,
     VIR_ERROR(_("SASL client %s not allowed in whitelist"), identity);
 
     /* This is the most common error: make it informative. */
-    virNetError(VIR_ERR_SYSTEM_ERROR, "%s",
-                _("Client's username is not on the list of allowed clients"));
+    virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
+                   _("Client's username is not on the list of allowed clients"));
     ret = 0;
 
 cleanup:
@@ -196,8 +192,8 @@ virNetSASLSessionPtr virNetSASLSessionNewClient(virNetSASLContextPtr ctxt ATTRIB
     }
 
     if (virMutexInit(&sasl->lock) < 0) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("Failed to initialized mutex"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to initialized mutex"));
         VIR_FREE(sasl);
         return NULL;
     }
@@ -214,9 +210,9 @@ virNetSASLSessionPtr virNetSASLSessionNewClient(virNetSASLContextPtr ctxt ATTRIB
                           SASL_SUCCESS_DATA,
                           &sasl->conn);
     if (err != SASL_OK) {
-        virNetError(VIR_ERR_AUTH_FAILED,
-                    _("Failed to create SASL client context: %d (%s)"),
-                    err, sasl_errstring(err, NULL, NULL));
+        virReportError(VIR_ERR_AUTH_FAILED,
+                       _("Failed to create SASL client context: %d (%s)"),
+                       err, sasl_errstring(err, NULL, NULL));
         goto cleanup;
     }
 
@@ -241,8 +237,8 @@ virNetSASLSessionPtr virNetSASLSessionNewServer(virNetSASLContextPtr ctxt ATTRIB
     }
 
     if (virMutexInit(&sasl->lock) < 0) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("Failed to initialized mutex"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to initialized mutex"));
         VIR_FREE(sasl);
         return NULL;
     }
@@ -260,9 +256,9 @@ virNetSASLSessionPtr virNetSASLSessionNewServer(virNetSASLContextPtr ctxt ATTRIB
                           SASL_SUCCESS_DATA,
                           &sasl->conn);
     if (err != SASL_OK) {
-        virNetError(VIR_ERR_AUTH_FAILED,
-                    _("Failed to create SASL client context: %d (%s)"),
-                    err, sasl_errstring(err, NULL, NULL));
+        virReportError(VIR_ERR_AUTH_FAILED,
+                       _("Failed to create SASL client context: %d (%s)"),
+                       err, sasl_errstring(err, NULL, NULL));
         goto cleanup;
     }
 
@@ -289,9 +285,9 @@ int virNetSASLSessionExtKeySize(virNetSASLSessionPtr sasl,
 
     err = sasl_setprop(sasl->conn, SASL_SSF_EXTERNAL, &ssf);
     if (err != SASL_OK) {
-        virNetError(VIR_ERR_INTERNAL_ERROR,
-                    _("cannot set external SSF %d (%s)"),
-                    err, sasl_errstring(err, NULL, NULL));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot set external SSF %d (%s)"),
+                       err, sasl_errstring(err, NULL, NULL));
         goto cleanup;
     }
 
@@ -310,15 +306,15 @@ const char *virNetSASLSessionGetIdentity(virNetSASLSessionPtr sasl)
 
     err = sasl_getprop(sasl->conn, SASL_USERNAME, &val);
     if (err != SASL_OK) {
-        virNetError(VIR_ERR_AUTH_FAILED,
-                    _("cannot query SASL username on connection %d (%s)"),
-                    err, sasl_errstring(err, NULL, NULL));
+        virReportError(VIR_ERR_AUTH_FAILED,
+                       _("cannot query SASL username on connection %d (%s)"),
+                       err, sasl_errstring(err, NULL, NULL));
         val = NULL;
         goto cleanup;
     }
     if (val == NULL) {
-        virNetError(VIR_ERR_AUTH_FAILED,
-                    _("no client username was found"));
+        virReportError(VIR_ERR_AUTH_FAILED,
+                       _("no client username was found"));
         goto cleanup;
     }
     VIR_DEBUG("SASL client username %s", (const char *)val);
@@ -338,9 +334,9 @@ int virNetSASLSessionGetKeySize(virNetSASLSessionPtr sasl)
     virMutexLock(&sasl->lock);
     err = sasl_getprop(sasl->conn, SASL_SSF, &val);
     if (err != SASL_OK) {
-        virNetError(VIR_ERR_AUTH_FAILED,
-                    _("cannot query SASL ssf on connection %d (%s)"),
-                    err, sasl_errstring(err, NULL, NULL));
+        virReportError(VIR_ERR_AUTH_FAILED,
+                       _("cannot query SASL ssf on connection %d (%s)"),
+                       err, sasl_errstring(err, NULL, NULL));
         ssf = -1;
         goto cleanup;
     }
@@ -374,9 +370,9 @@ int virNetSASLSessionSecProps(virNetSASLSessionPtr sasl,
 
     err = sasl_setprop(sasl->conn, SASL_SEC_PROPS, &secprops);
     if (err != SASL_OK) {
-        virNetError(VIR_ERR_INTERNAL_ERROR,
-                    _("cannot set security props %d (%s)"),
-                    err, sasl_errstring(err, NULL, NULL));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot set security props %d (%s)"),
+                       err, sasl_errstring(err, NULL, NULL));
         goto cleanup;
     }
 
@@ -398,9 +394,9 @@ static int virNetSASLSessionUpdateBufSize(virNetSASLSessionPtr sasl)
 
     err = sasl_getprop(sasl->conn, SASL_MAXOUTBUF, &u.ptr);
     if (err != SASL_OK) {
-        virNetError(VIR_ERR_INTERNAL_ERROR,
-                    _("cannot get security props %d (%s)"),
-                    err, sasl_errstring(err, NULL, NULL));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot get security props %d (%s)"),
+                       err, sasl_errstring(err, NULL, NULL));
         return -1;
     }
 
@@ -426,9 +422,9 @@ char *virNetSASLSessionListMechanisms(virNetSASLSessionPtr sasl)
                         NULL,
                         NULL);
     if (err != SASL_OK) {
-        virNetError(VIR_ERR_INTERNAL_ERROR,
-                    _("cannot list SASL mechanisms %d (%s)"),
-                    err, sasl_errdetail(sasl->conn));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot list SASL mechanisms %d (%s)"),
+                       err, sasl_errdetail(sasl->conn));
         goto cleanup;
     }
     if (!(ret = strdup(mechlist))) {
@@ -479,9 +475,9 @@ int virNetSASLSessionClientStart(virNetSASLSessionPtr sasl,
         ret = VIR_NET_SASL_INTERACT;
         break;
     default:
-        virNetError(VIR_ERR_AUTH_FAILED,
-                    _("Failed to start SASL negotiation: %d (%s)"),
-                    err, sasl_errdetail(sasl->conn));
+        virReportError(VIR_ERR_AUTH_FAILED,
+                       _("Failed to start SASL negotiation: %d (%s)"),
+                       err, sasl_errdetail(sasl->conn));
         break;
     }
 
@@ -528,9 +524,9 @@ int virNetSASLSessionClientStep(virNetSASLSessionPtr sasl,
         ret = VIR_NET_SASL_INTERACT;
         break;
     default:
-        virNetError(VIR_ERR_AUTH_FAILED,
-                    _("Failed to step SASL negotiation: %d (%s)"),
-                    err, sasl_errdetail(sasl->conn));
+        virReportError(VIR_ERR_AUTH_FAILED,
+                       _("Failed to step SASL negotiation: %d (%s)"),
+                       err, sasl_errdetail(sasl->conn));
         break;
     }
 
@@ -574,9 +570,9 @@ int virNetSASLSessionServerStart(virNetSASLSessionPtr sasl,
         ret = VIR_NET_SASL_INTERACT;
         break;
     default:
-        virNetError(VIR_ERR_AUTH_FAILED,
-                    _("Failed to start SASL negotiation: %d (%s)"),
-                    err, sasl_errdetail(sasl->conn));
+        virReportError(VIR_ERR_AUTH_FAILED,
+                       _("Failed to start SASL negotiation: %d (%s)"),
+                       err, sasl_errdetail(sasl->conn));
         break;
     }
 
@@ -619,9 +615,9 @@ int virNetSASLSessionServerStep(virNetSASLSessionPtr sasl,
         ret = VIR_NET_SASL_INTERACT;
         break;
     default:
-        virNetError(VIR_ERR_AUTH_FAILED,
-                    _("Failed to start SASL negotiation: %d (%s)"),
-                    err, sasl_errdetail(sasl->conn));
+        virReportError(VIR_ERR_AUTH_FAILED,
+                       _("Failed to start SASL negotiation: %d (%s)"),
+                       err, sasl_errdetail(sasl->conn));
         break;
     }
 
@@ -666,9 +662,9 @@ ssize_t virNetSASLSessionEncode(virNetSASLSessionPtr sasl,
     *outputlen = outlen;
 
     if (err != SASL_OK) {
-        virNetError(VIR_ERR_INTERNAL_ERROR,
-                    _("failed to encode SASL data: %d (%s)"),
-                    err, sasl_errstring(err, NULL, NULL));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to encode SASL data: %d (%s)"),
+                       err, sasl_errstring(err, NULL, NULL));
         goto cleanup;
     }
     ret = 0;
@@ -704,9 +700,9 @@ ssize_t virNetSASLSessionDecode(virNetSASLSessionPtr sasl,
                       &outlen);
     *outputlen = outlen;
     if (err != SASL_OK) {
-        virNetError(VIR_ERR_INTERNAL_ERROR,
-                    _("failed to decode SASL data: %d (%s)"),
-                    err, sasl_errstring(err, NULL, NULL));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to decode SASL data: %d (%s)"),
+                       err, sasl_errstring(err, NULL, NULL));
         goto cleanup;
     }
     ret = 0;

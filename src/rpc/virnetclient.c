@@ -38,9 +38,6 @@
 #include "virterror_internal.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
-#define virNetError(code, ...)                                    \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,           \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 typedef struct _virNetClientCall virNetClientCall;
 typedef virNetClientCall *virNetClientCallPtr;
@@ -651,9 +648,9 @@ int virNetClientSetTLSSession(virNetClientPtr client,
         goto error;
     }
     if (len != 1 || buf[0] != '\1') {
-        virNetError(VIR_ERR_RPC, "%s",
-                    _("server verification (of our certificate or IP "
-                      "address) failed"));
+        virReportError(VIR_ERR_RPC, "%s",
+                       _("server verification (of our certificate or IP "
+                         "address) failed"));
         goto error;
     }
 
@@ -802,9 +799,9 @@ virNetClientCallDispatchReply(virNetClientPtr client)
         thecall = thecall->next;
 
     if (!thecall) {
-        virNetError(VIR_ERR_RPC,
-                    _("no call waiting for reply with prog %d vers %d serial %d"),
-                    client->msg.header.prog, client->msg.header.vers, client->msg.header.serial);
+        virReportError(VIR_ERR_RPC,
+                       _("no call waiting for reply with prog %d vers %d serial %d"),
+                       client->msg.header.prog, client->msg.header.vers, client->msg.header.serial);
         return -1;
     }
 
@@ -968,10 +965,10 @@ virNetClientCallDispatch(virNetClientPtr client)
         return virNetClientCallDispatchStream(client);
 
     default:
-        virNetError(VIR_ERR_RPC,
-                    _("got unexpected RPC call prog %d vers %d proc %d type %d"),
-                    client->msg.header.prog, client->msg.header.vers,
-                    client->msg.header.proc, client->msg.header.type);
+        virReportError(VIR_ERR_RPC,
+                       _("got unexpected RPC call prog %d vers %d proc %d type %d"),
+                       client->msg.header.prog, client->msg.header.vers,
+                       client->msg.header.proc, client->msg.header.type);
         return -1;
     }
 }
@@ -1413,8 +1410,8 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
         }
 
         if (fds[0].revents & (POLLHUP | POLLERR)) {
-            virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("received hangup / error event on socket"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("received hangup / error event on socket"));
             goto error;
         }
     }
@@ -1554,8 +1551,8 @@ static int virNetClientIO(virNetClientPtr client,
         /* Go to sleep while other thread is working... */
         if (virCondWait(&thiscall->cond, &client->lock) < 0) {
             virNetClientCallRemove(&client->waitDispatch, thiscall);
-            virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("failed to wait on condition"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to wait on condition"));
             return -1;
         }
 
@@ -1673,16 +1670,16 @@ virNetClientCallNew(virNetMessagePtr msg,
     if (expectReply &&
         (msg->bufferLength != 0) &&
         (msg->header.status == VIR_NET_CONTINUE)) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("Attempt to send an asynchronous message with"
-                      " a synchronous reply"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Attempt to send an asynchronous message with"
+                         " a synchronous reply"));
         goto error;
     }
 
     if (expectReply && nonBlock) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("Attempt to send a non-blocking message with"
-                      " a synchronous reply"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Attempt to send a non-blocking message with"
+                         " a synchronous reply"));
         goto error;
     }
 
@@ -1692,8 +1689,8 @@ virNetClientCallNew(virNetMessagePtr msg,
     }
 
     if (virCondInit(&call->cond) < 0) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("cannot initialize condition variable"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot initialize condition variable"));
         goto error;
     }
 
@@ -1757,8 +1754,8 @@ static int virNetClientSendInternal(virNetClientPtr client,
           msg->header.type, msg->header.status, msg->header.serial);
 
     if (!client->sock || client->wantClose) {
-        virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("client socket is closed"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("client socket is closed"));
         return -1;
     }
 

@@ -35,9 +35,6 @@
 #include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
-#define virNetError(code, ...)                                    \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,           \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 struct _virNetClientProgram {
     int refs;
@@ -336,20 +333,20 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
      */
     if (msg->header.type != VIR_NET_REPLY &&
         msg->header.type != VIR_NET_REPLY_WITH_FDS) {
-        virNetError(VIR_ERR_INTERNAL_ERROR,
-                    _("Unexpected message type %d"), msg->header.type);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected message type %d"), msg->header.type);
         goto error;
     }
     if (msg->header.proc != proc) {
-        virNetError(VIR_ERR_INTERNAL_ERROR,
-                    _("Unexpected message proc %d != %d"),
-                    msg->header.proc, proc);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected message proc %d != %d"),
+                       msg->header.proc, proc);
         goto error;
     }
     if (msg->header.serial != serial) {
-        virNetError(VIR_ERR_INTERNAL_ERROR,
-                    _("Unexpected message serial %d != %d"),
-                    msg->header.serial, serial);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected message serial %d != %d"),
+                       msg->header.serial, serial);
         goto error;
     }
 
@@ -388,8 +385,8 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
         goto error;
 
     default:
-        virNetError(VIR_ERR_RPC,
-                    _("Unexpected message status %d"), msg->header.status);
+        virReportError(VIR_ERR_RPC,
+                       _("Unexpected message status %d"), msg->header.status);
         goto error;
     }
 

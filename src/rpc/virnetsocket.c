@@ -48,10 +48,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
-#define virNetError(code, ...)                                    \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,           \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 
 struct _virNetSocket {
     virMutex lock;
@@ -212,9 +208,9 @@ int virNetSocketNewListenTCP(const char *nodename,
 
     int e = getaddrinfo(nodename, service, &hints, &ai);
     if (e != 0) {
-        virNetError(VIR_ERR_SYSTEM_ERROR,
-                    _("Unable to resolve address '%s' service '%s': %s"),
-                    nodename, service, gai_strerror(e));
+        virReportError(VIR_ERR_SYSTEM_ERROR,
+                       _("Unable to resolve address '%s' service '%s': %s"),
+                       nodename, service, gai_strerror(e));
         return -1;
     }
 
@@ -409,9 +405,9 @@ int virNetSocketNewConnectTCP(const char *nodename,
 
     int e = getaddrinfo(nodename, service, &hints, &ai);
     if (e != 0) {
-        virNetError(VIR_ERR_SYSTEM_ERROR,
-                    _("Unable to resolve address '%s' service '%s': %s"),
-                    nodename, service, gai_strerror (e));
+        virReportError(VIR_ERR_SYSTEM_ERROR,
+                       _("Unable to resolve address '%s' service '%s': %s"),
+                       nodename, service, gai_strerror (e));
         return -1;
     }
 
@@ -485,8 +481,8 @@ int virNetSocketNewConnectUNIX(const char *path,
     remoteAddr.len = sizeof(remoteAddr.data.un);
 
     if (spawnDaemon && !binary) {
-        virNetError(VIR_ERR_INTERNAL_ERROR,
-                    _("Auto-spawn of daemon requested, but no binary specified"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Auto-spawn of daemon requested, but no binary specified"));
         return -1;
     }
 
@@ -1180,8 +1176,8 @@ int virNetSocketSendFD(virNetSocketPtr sock, int fd)
 {
     int ret = -1;
     if (!virNetSocketHasPassFD(sock)) {
-        virNetError(VIR_ERR_INTERNAL_ERROR,
-                    _("Sending file descriptors is not supported on this socket"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Sending file descriptors is not supported on this socket"));
         return -1;
     }
     virMutexLock(&sock->lock);
@@ -1214,8 +1210,8 @@ int virNetSocketRecvFD(virNetSocketPtr sock, int *fd)
     *fd = -1;
 
     if (!virNetSocketHasPassFD(sock)) {
-        virNetError(VIR_ERR_INTERNAL_ERROR,
-                    _("Receiving file descriptors is not supported on this socket"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Receiving file descriptors is not supported on this socket"));
         return -1;
     }
     virMutexLock(&sock->lock);

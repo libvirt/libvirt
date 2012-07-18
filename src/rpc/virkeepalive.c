@@ -33,9 +33,6 @@
 #include "virkeepalive.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
-#define virNetError(code, ...)                                    \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,           \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 struct _virKeepAlive {
     int refs;
@@ -287,8 +284,8 @@ virKeepAliveStart(virKeepAlivePtr ka,
 
     if (interval > 0) {
         if (ka->interval > 0) {
-            virNetError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("keepalive interval already set"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("keepalive interval already set"));
             goto cleanup;
         }
         ka->interval = interval;

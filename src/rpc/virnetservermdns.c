@@ -46,9 +46,6 @@
 #include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
-#define virNetError(code, ...)                                    \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,           \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 struct _virNetServerMDNSEntry {
     char *type;
@@ -285,8 +282,8 @@ static AvahiWatch *virNetServerMDNSWatchNew(const AvahiPoll *api ATTRIBUTE_UNUSE
                                       virNetServerMDNSWatchDispatch,
                                       w,
                                       virNetServerMDNSWatchDofree)) < 0) {
-        virNetError(VIR_ERR_INTERNAL_ERROR,
-                    _("Failed to add watch for fd %d events %d"), fd, hEvents);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to add watch for fd %d events %d"), fd, hEvents);
         VIR_FREE(w);
         return NULL;
     }
@@ -367,8 +364,8 @@ static AvahiTimeout *virNetServerMDNSTimeoutNew(const AvahiPoll *api ATTRIBUTE_U
     t->userdata = userdata;
 
     if (t->timer < 0) {
-        virNetError(VIR_ERR_INTERNAL_ERROR,
-                    _("Failed to add timer with timeout %lld"), timeout);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to add timer with timeout %lld"), timeout);
         VIR_FREE(t);
         return NULL;
     }
@@ -455,9 +452,9 @@ int virNetServerMDNSStart(virNetServerMDNS *mdns)
                                     mdns, &error);
 
     if (!mdns->client) {
-        virNetError(VIR_ERR_INTERNAL_ERROR,
-                    _("Failed to create mDNS client: %s"),
-                    avahi_strerror(error));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to create mDNS client: %s"),
+                       avahi_strerror(error));
         return -1;
     }
 
