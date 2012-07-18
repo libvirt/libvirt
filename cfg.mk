@@ -541,7 +541,6 @@ msg_gen_function += virLibNWFilterError
 msg_gen_function += virLibSecretError
 msg_gen_function += virLibStoragePoolError
 msg_gen_function += virLibStorageVolError
-msg_gen_function += virNWFilterReportError
 msg_gen_function += virRaiseError
 msg_gen_function += virReportError
 msg_gen_function += virReportErrorHelper

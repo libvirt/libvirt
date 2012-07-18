@@ -69,10 +69,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
-#define virNWFilterReportError(code, fmt...)                       \
-    virReportErrorHelper(VIR_FROM_NWFILTER, code, __FILE__,        \
-                         __FUNCTION__, __LINE__, fmt)
-
 #ifdef HAVE_LIBPCAP
 
 # define LEASEFILE LOCALSTATEDIR "/run/libvirt/network/nwfilter.leases"
@@ -576,11 +572,11 @@ virNWFilterSnoopReqNew(const char *ifkey)
     virNWFilterSnoopReqPtr req;
 
     if (ifkey == NULL || strlen(ifkey) != VIR_IFKEY_LEN - 1) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("virNWFilterSnoopReqNew called with invalid "
-                                 "key \"%s\" (%zu)"),
-                               ifkey ? ifkey : "",
-                               strlen(ifkey));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("virNWFilterSnoopReqNew called with invalid "
+                         "key \"%s\" (%zu)"),
+                       ifkey ? ifkey : "",
+                       strlen(ifkey));
         return NULL;
     }
 
@@ -890,8 +886,8 @@ virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
         if (req->techdriver &&
             req->techdriver->applyDHCPOnlyRules(req->ifname, &req->macaddr,
                                                 dhcpsrvrs, false) < 0) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("virNWFilterSnoopListDel failed"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("virNWFilterSnoopListDel failed"));
             ret = -1;
         }
 
@@ -1097,35 +1093,35 @@ virNWFilterSnoopDHCPOpen(const char *ifname, virMacAddr *mac,
     handle = pcap_create(ifname, pcap_errbuf);
 
     if (handle == NULL) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("pcap_create failed"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("pcap_create failed"));
         goto cleanup_nohandle;
     }
 
     if (pcap_set_snaplen(handle, PCAP_PBUFSIZE) < 0 ||
         pcap_set_buffer_size(handle, PCAP_BUFFERSIZE) < 0 ||
         pcap_activate(handle) < 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("setup of pcap handle failed"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("setup of pcap handle failed"));
         goto cleanup;
     }
 
     if (pcap_compile(handle, &fp, ext_filter, 1, PCAP_NETMASK_UNKNOWN) != 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("pcap_compile: %s"), pcap_geterr(handle));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("pcap_compile: %s"), pcap_geterr(handle));
         goto cleanup;
     }
 
     if (pcap_setfilter(handle, &fp) != 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("pcap_setfilter: %s"), pcap_geterr(handle));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("pcap_setfilter: %s"), pcap_geterr(handle));
         goto cleanup_freecode;
     }
 
     if (pcap_setdirection(handle, dir) < 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("pcap_setdirection: %s"),
-                               pcap_geterr(handle));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("pcap_setdirection: %s"),
+                       pcap_geterr(handle));
         goto cleanup_freecode;
     }
 
@@ -1158,9 +1154,9 @@ static void virNWFilterDHCPDecodeWorker(void *jobdata, void *opaque)
                                    job->caplen, job->fromVM) == -1) {
         req->jobCompletionStatus = -1;
 
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Instantiation of rules failed on "
-                                 "interface '%s'"), req->ifname);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Instantiation of rules failed on "
+                         "interface '%s'"), req->ifname);
     }
     virAtomicIntDec(job->qCtr);
     VIR_FREE(job);
@@ -1465,10 +1461,10 @@ virNWFilterDHCPSnoopThread(void *req0)
                     /* protect req->ifname */
                     virNWFilterSnoopReqLock(req);
 
-                    virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                           _("interface '%s' failing; "
-                                             "reopening"),
-                                           req->ifname);
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("interface '%s' failing; "
+                                     "reopening"),
+                                   req->ifname);
                     if (req->ifname)
                         pcapConf[i].handle =
                             virNWFilterSnoopDHCPOpen(req->ifname, &req->macaddr,
@@ -1519,9 +1515,9 @@ virNWFilterDHCPSnoopThread(void *req0)
                                                       hdr->caplen,
                                                       pcapConf[i].dir,
                                                       &pcapConf[i].qCtr) < 0) {
-                    virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                           _("Job submission failed on "
-                                           "interface '%s'"), req->ifname);
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("Job submission failed on "
+                                     "interface '%s'"), req->ifname);
                     error = true;
                     break;
                 }
@@ -1625,10 +1621,10 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
 
     /* check that all tools are available for applying the filters (late) */
     if ( !techdriver->canApplyBasicRules()) {
-        virNWFilterReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("IP parameter must be provided since "
-                                 "snooping the IP address does not work "
-                                 "possibly due to missing tools"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("IP parameter must be provided since "
+                         "snooping the IP address does not work "
+                         "possibly due to missing tools"));
         goto exit_snoopreqput;
     }
 
@@ -1637,15 +1633,16 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
 
     if (techdriver->applyDHCPOnlyRules(req->ifname, &req->macaddr,
                                        dhcpsrvrs, false) < 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, _("applyDHCPOnlyRules "
-                               "failed - spoofing not protected!"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("applyDHCPOnlyRules "
+                         "failed - spoofing not protected!"));
         goto exit_snoopreqput;
     }
 
     if (virNWFilterHashTablePutAll(filterparams, req->vars) < 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("virNWFilterDHCPSnoopReq: can't copy variables"
-                                " on if %s"), ifkey);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("virNWFilterDHCPSnoopReq: can't copy variables"
+                         " on if %s"), ifkey);
         goto exit_snoopreqput;
     }
 
@@ -1653,19 +1650,19 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
 
     if (virHashAddEntry(virNWFilterSnoopState.ifnameToKey, ifname,
                         req->ifkey) < 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("virNWFilterDHCPSnoopReq ifname map failed"
-                                 " on interface \"%s\" key \"%s\""), ifname,
-                               ifkey);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("virNWFilterDHCPSnoopReq ifname map failed"
+                         " on interface \"%s\" key \"%s\""), ifname,
+                       ifkey);
         goto exit_snoopunlock;
     }
 
     if (isnewreq &&
         virHashAddEntry(virNWFilterSnoopState.snoopReqs, ifkey, req) < 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("virNWFilterDHCPSnoopReq req add failed on"
-                               " interface \"%s\" ifkey \"%s\""), ifname,
-                               ifkey);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("virNWFilterDHCPSnoopReq req add failed on"
+                         " interface \"%s\" ifkey \"%s\""), ifname,
+                       ifkey);
         goto exit_rem_ifnametokey;
     }
 
@@ -1674,9 +1671,9 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
 
     if (virThreadCreate(&thread, false, virNWFilterDHCPSnoopThread,
                         req) != 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("virNWFilterDHCPSnoopReq virThreadCreate "
-                                 "failed on interface '%s'"), ifname);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("virNWFilterDHCPSnoopReq virThreadCreate "
+                         "failed on interface '%s'"), ifname);
         goto exit_snoopreq_unlock;
     }
 
@@ -1684,16 +1681,16 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
 
     req->threadkey = virNWFilterSnoopActivate(req);
     if (!req->threadkey) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Activation of snoop request failed on "
-                                 "interface '%s'"), req->ifname);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Activation of snoop request failed on "
+                         "interface '%s'"), req->ifname);
         goto exit_snoopreq_unlock;
     }
 
     if (virNWFilterSnoopReqRestore(req) < 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Restoring of leases failed on "
-                               "interface '%s'"), req->ifname);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Restoring of leases failed on "
+                         "interface '%s'"), req->ifname);
         goto exit_snoop_cancel;
     }
 
@@ -1932,18 +1929,18 @@ virNWFilterSnoopLeaseFileLoad(void)
     time(&now);
     while (fp && fgets(line, sizeof(line), fp)) {
         if (line[strlen(line)-1] != '\n') {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("virNWFilterSnoopLeaseFileLoad lease file "
-                                     "line %d corrupt"), ln);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("virNWFilterSnoopLeaseFileLoad lease file "
+                             "line %d corrupt"), ln);
             break;
         }
         ln++;
         /* key len 55 = "VMUUID"+'-'+"MAC" */
         if (sscanf(line, "%u %55s %16s %16s", &ipl.timeout,
                    ifkey, ipstr, srvstr) < 4) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("virNWFilterSnoopLeaseFileLoad lease file "
-                                     "line %d corrupt"), ln);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("virNWFilterSnoopLeaseFileLoad lease file "
+                             "line %d corrupt"), ln);
             break;
         }
         if (ipl.timeout && ipl.timeout < now)
@@ -1958,17 +1955,17 @@ virNWFilterSnoopLeaseFileLoad(void)
 
             if (tmp < 0) {
                 virNWFilterSnoopReqPut(req);
-                virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("virNWFilterSnoopLeaseFileLoad req add"
-                                         " failed on interface \"%s\""), ifkey);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("virNWFilterSnoopLeaseFileLoad req add"
+                                 " failed on interface \"%s\""), ifkey);
                 continue;
             }
         }
 
         if (virSocketAddrParseIPv4(&ipl.ipAddress, ipstr) < 0) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                  _("line %d corrupt ipaddr \"%s\""),
-                                  ln, ipstr);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("line %d corrupt ipaddr \"%s\""),
+                           ln, ipstr);
             virNWFilterSnoopReqPut(req);
             continue;
         }
@@ -2113,8 +2110,8 @@ virNWFilterDHCPSnoopEnd(const char *ifname)
         ifkey = (char *)virHashLookup(virNWFilterSnoopState.ifnameToKey,
                                       ifname);
         if (!ifkey) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("ifname \"%s\" not in key map"), ifname);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("ifname \"%s\" not in key map"), ifname);
             goto cleanup;
         }
 
@@ -2127,8 +2124,8 @@ virNWFilterDHCPSnoopEnd(const char *ifname)
 
         req = virNWFilterSnoopReqGetByIFKey(ifkey);
         if (!req) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("ifkey \"%s\" has no req"), ifkey);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("ifkey \"%s\" has no req"), ifkey);
             goto cleanup;
         }
 
@@ -2209,10 +2206,10 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver ATTRIBUTE_UNUSED,
                         virNWFilterHashTablePtr filterparams ATTRIBUTE_UNUSED,
                         virNWFilterDriverStatePtr driver ATTRIBUTE_UNUSED)
 {
-    virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("libvirt was not compiled with libpcap and \""
-                           NWFILTER_VARNAME_CTRL_IP_LEARNING
-                           "='dhcp'\" requires it."));
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("libvirt was not compiled with libpcap and \""
+                     NWFILTER_VARNAME_CTRL_IP_LEARNING
+                     "='dhcp'\" requires it."));
     return -1;
 }
 #endif /* HAVE_LIBPCAP */

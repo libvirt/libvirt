@@ -44,9 +44,6 @@
 #include "nwfilter_learnipaddr.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
-#define virNWFilterReportError(code, fmt...)                       \
-    virReportErrorHelper(VIR_FROM_NWFILTER, code, __FILE__,        \
-                         __FUNCTION__, __LINE__, fmt)
 
 static virNWFilterDriverStatePtr driverState;
 
@@ -239,8 +236,8 @@ nwfilterLookupByUUID(virConnectPtr conn,
     nwfilterDriverUnlock(driver);
 
     if (!nwfilter) {
-        virNWFilterReportError(VIR_ERR_NO_NWFILTER,
-                               "%s", _("no nwfilter with matching uuid"));
+        virReportError(VIR_ERR_NO_NWFILTER,
+                       "%s", _("no nwfilter with matching uuid"));
         goto cleanup;
     }
 
@@ -265,8 +262,8 @@ nwfilterLookupByName(virConnectPtr conn,
     nwfilterDriverUnlock(driver);
 
     if (!nwfilter) {
-        virNWFilterReportError(VIR_ERR_NO_NWFILTER,
-                               _("no nwfilter with matching name '%s'"), name);
+        virReportError(VIR_ERR_NO_NWFILTER,
+                       _("no nwfilter with matching name '%s'"), name);
         goto cleanup;
     }
 
@@ -389,15 +386,15 @@ nwfilterUndefine(virNWFilterPtr obj) {
 
     nwfilter = virNWFilterObjFindByUUID(&driver->nwfilters, obj->uuid);
     if (!nwfilter) {
-        virNWFilterReportError(VIR_ERR_NO_NWFILTER,
-                               "%s", _("no nwfilter with matching uuid"));
+        virReportError(VIR_ERR_NO_NWFILTER,
+                       "%s", _("no nwfilter with matching uuid"));
         goto cleanup;
     }
 
     if (virNWFilterTestUnassignDef(obj->conn, nwfilter) < 0) {
-        virNWFilterReportError(VIR_ERR_OPERATION_INVALID,
-                               "%s",
-                               _("nwfilter is in use"));
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s",
+                       _("nwfilter is in use"));
         goto cleanup;
     }
 
@@ -437,8 +434,8 @@ nwfilterGetXMLDesc(virNWFilterPtr obj,
     nwfilterDriverUnlock(driver);
 
     if (!nwfilter) {
-        virNWFilterReportError(VIR_ERR_NO_NWFILTER,
-                               "%s", _("no nwfilter with matching uuid"));
+        virReportError(VIR_ERR_NO_NWFILTER,
+                       "%s", _("no nwfilter with matching uuid"));
         goto cleanup;
     }
 

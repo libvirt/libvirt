@@ -45,9 +45,6 @@
 
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
-#define virNWFilterReportError(code, fmt...)                       \
-    virReportErrorHelper(VIR_FROM_NWFILTER, code, __FILE__,        \
-                         __FUNCTION__, __LINE__, fmt)
 
 #define EBTABLES_CHAIN_INCOMING "PREROUTING"
 #define EBTABLES_CHAIN_OUTGOING "POSTROUTING"
@@ -242,9 +239,9 @@ printVar(virNWFilterVarCombIterPtr vars,
             const char *varName;
 
             varName = virNWFilterVarAccessGetVarName(item->varAccess);
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Buffer too small to print variable "
-                                   "'%s' into"), varName);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Buffer too small to print variable "
+                             "'%s' into"), varName);
             return -1;
         }
 
@@ -278,8 +275,8 @@ _printDataType(virNWFilterVarCombIterPtr vars,
         if (!data)
             return -1;
         if (snprintf(buf, bufsize, "%s", data) >= bufsize) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("buffer too small for IP address"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("buffer too small for IP address"));
             VIR_FREE(data);
             return -1;
         }
@@ -292,8 +289,8 @@ _printDataType(virNWFilterVarCombIterPtr vars,
             return -1;
 
         if (snprintf(buf, bufsize, "%s", data) >= bufsize) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("buffer too small for IPv6 address"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("buffer too small for IPv6 address"));
             VIR_FREE(data);
             return -1;
         }
@@ -303,8 +300,8 @@ _printDataType(virNWFilterVarCombIterPtr vars,
     case DATATYPE_MACADDR:
     case DATATYPE_MACMASK:
         if (bufsize < VIR_MAC_STRING_BUFLEN) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("Buffer too small for MAC address"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Buffer too small for MAC address"));
             return -1;
         }
 
@@ -315,8 +312,8 @@ _printDataType(virNWFilterVarCombIterPtr vars,
     case DATATYPE_IPMASK:
         if (snprintf(buf, bufsize, "%d",
                      item->u.u8) >= bufsize) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("Buffer too small for uint8 type"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Buffer too small for uint8 type"));
             return -1;
         }
     break;
@@ -325,8 +322,8 @@ _printDataType(virNWFilterVarCombIterPtr vars,
     case DATATYPE_UINT32_HEX:
         if (snprintf(buf, bufsize, asHex ? "0x%x" : "%u",
                      item->u.u32) >= bufsize) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("Buffer too small for uint32 type"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Buffer too small for uint32 type"));
             return -1;
         }
     break;
@@ -335,8 +332,8 @@ _printDataType(virNWFilterVarCombIterPtr vars,
     case DATATYPE_UINT16_HEX:
         if (snprintf(buf, bufsize, asHex ? "0x%x" : "%d",
                      item->u.u16) >= bufsize) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("Buffer too small for uint16 type"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Buffer too small for uint16 type"));
             return -1;
         }
     break;
@@ -345,16 +342,16 @@ _printDataType(virNWFilterVarCombIterPtr vars,
     case DATATYPE_UINT8_HEX:
         if (snprintf(buf, bufsize, asHex ? "0x%x" : "%d",
                      item->u.u8) >= bufsize) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("Buffer too small for uint8 type"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Buffer too small for uint8 type"));
             return -1;
         }
     break;
 
     case DATATYPE_IPSETNAME:
         if (virStrcpy(buf, item->u.ipset.setname, bufsize) == NULL) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("Buffer to small for ipset name"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Buffer to small for ipset name"));
             return -1;
         }
     break;
@@ -385,8 +382,8 @@ _printDataType(virNWFilterVarCombIterPtr vars,
         flags = virBufferContentAndReset(&vb);
 
         if (virStrcpy(buf, flags, bufsize) == NULL) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("Buffer too small for IPSETFLAGS type"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Buffer too small for IPSETFLAGS type"));
             VIR_FREE(flags);
             return -1;
         }
@@ -394,8 +391,8 @@ _printDataType(virNWFilterVarCombIterPtr vars,
     break;
 
     default:
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unhandled datatype %x"), item->datatype);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unhandled datatype %x"), item->datatype);
         return -1;
     break;
     }
@@ -1297,10 +1294,10 @@ _iptablesCreateRuleInstance(int directionIn,
     bool hasICMPType = false;
 
     if (!iptables_cmd) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("cannot create rule since %s tool is "
-                                 "missing."),
-                               isIPv6 ? "ip6tables" : "iptables");
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot create rule since %s tool is "
+                         "missing."),
+                       isIPv6 ? "ip6tables" : "iptables");
         goto err_exit;
     }
 
@@ -2015,9 +2012,9 @@ ebtablesCreateRuleInstance(char chainPrefix,
     const char *target;
 
     if (!ebtables_cmd_path) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("cannot create rule since ebtables tool is "
-                                 "missing."));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot create rule since ebtables tool is "
+                         "missing."));
         goto err_exit;
     }
 
@@ -2116,11 +2113,11 @@ ebtablesCreateRuleInstance(char chainPrefix,
            since this clashes with -d below... */
         if (reverse &&
             HAS_ENTRY_ITEM(&rule->p.stpHdrFilter.ethHdr.dataSrcMACAddr)) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("STP filtering in %s direction with "
-                                   "source MAC address set is not supported"),
-                                   virNWFilterRuleDirectionTypeToString(
-                                       VIR_NWFILTER_RULE_DIRECTION_INOUT));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("STP filtering in %s direction with "
+                             "source MAC address set is not supported"),
+                           virNWFilterRuleDirectionTypeToString(
+                               VIR_NWFILTER_RULE_DIRECTION_INOUT));
             return -1;
         }
 
@@ -2683,8 +2680,8 @@ ebiptablesCreateRuleInstance(enum virDomainNetType nettype ATTRIBUTE_UNUSED,
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_LAST:
-        virNWFilterReportError(VIR_ERR_OPERATION_FAILED,
-                               "%s", _("illegal protocol type"));
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       "%s", _("illegal protocol type"));
         rc = -1;
     break;
     }
@@ -3199,9 +3196,9 @@ ebtablesApplyBasicRules(const char *ifname,
     char macaddr_str[VIR_MAC_STRING_BUFLEN];
 
     if (!ebtables_cmd_path) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("cannot create rules since ebtables tool is "
-                                 "missing."));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot create rules since ebtables tool is "
+                         "missing."));
         return -1;
     }
 
@@ -3257,9 +3254,9 @@ ebtablesApplyBasicRules(const char *ifname,
 tear_down_tmpebchains:
     ebtablesCleanAll(ifname);
 
-    virNWFilterReportError(VIR_ERR_BUILD_FIREWALL,
-                           "%s",
-                           _("Some rules could not be created."));
+    virReportError(VIR_ERR_BUILD_FIREWALL,
+                   "%s",
+                   _("Some rules could not be created."));
 
     return -1;
 }
@@ -3296,9 +3293,9 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
     unsigned int num_dhcpsrvrs;
 
     if (!ebtables_cmd_path) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("cannot create rules since ebtables tool is "
-                                 "missing."));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot create rules since ebtables tool is "
+                         "missing."));
         return -1;
     }
 
@@ -3400,9 +3397,9 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
 tear_down_tmpebchains:
     ebtablesCleanAll(ifname);
 
-    virNWFilterReportError(VIR_ERR_BUILD_FIREWALL,
-                           "%s",
-                           _("Some rules could not be created."));
+    virReportError(VIR_ERR_BUILD_FIREWALL,
+                   "%s",
+                   _("Some rules could not be created."));
 
     return -1;
 }
@@ -3425,9 +3422,9 @@ ebtablesApplyDropAllRules(const char *ifname)
          chain_out[MAX_CHAINNAME_LENGTH];
 
     if (!ebtables_cmd_path) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("cannot create rules since ebtables tool is "
-                                 "missing."));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot create rules since ebtables tool is "
+                         "missing."));
         return -1;
     }
 
@@ -3470,9 +3467,9 @@ ebtablesApplyDropAllRules(const char *ifname)
 tear_down_tmpebchains:
     ebtablesCleanAll(ifname);
 
-    virNWFilterReportError(VIR_ERR_BUILD_FIREWALL,
-                           "%s",
-                           _("Some rules could not be created."));
+    virReportError(VIR_ERR_BUILD_FIREWALL,
+                   "%s",
+                   _("Some rules could not be created."));
 
     return -1;
 }
@@ -3903,12 +3900,12 @@ tear_down_tmpebchains:
 
     ebiptablesExecCLI(&buf, &cli_status, NULL);
 
-    virNWFilterReportError(VIR_ERR_BUILD_FIREWALL,
-                           _("Some rules could not be created for "
-                             "interface %s%s%s"),
-                           ifname,
-                           errmsg ? ": " : "",
-                           errmsg ? errmsg : "");
+    virReportError(VIR_ERR_BUILD_FIREWALL,
+                   _("Some rules could not be created for "
+                     "interface %s%s%s"),
+                   ifname,
+                   errmsg ? ": " : "",
+                   errmsg ? errmsg : "");
 
 exit_free_sets:
     virHashFree(chains_in_set);
@@ -4042,9 +4039,9 @@ ebiptablesRemoveRules(const char *ifname ATTRIBUTE_UNUSED,
         goto err_exit;
 
     if (cli_status) {
-        virNWFilterReportError(VIR_ERR_BUILD_FIREWALL,
-                               "%s",
-                               _("error while executing CLI commands"));
+        virReportError(VIR_ERR_BUILD_FIREWALL,
+                       "%s",
+                       _("error while executing CLI commands"));
         rc = -1;
     }
 

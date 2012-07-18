@@ -56,9 +56,6 @@
 #include "nwfilter_learnipaddr.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
-#define virNWFilterReportError(code, fmt...)                       \
-    virReportErrorHelper(VIR_FROM_NWFILTER, code, __FILE__,        \
-                         __FUNCTION__, __LINE__, fmt)
 
 #define IFINDEX2STR(VARNAME, ifindex) \
     char VARNAME[INT_BUFSIZE_BOUND(ifindex)]; \
@@ -151,17 +148,17 @@ virNWFilterLockIface(const char *ifname) {
         }
 
         if (virMutexInitRecursive(&ifaceLock->lock) < 0) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("mutex initialization failed"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("mutex initialization failed"));
             VIR_FREE(ifaceLock);
             goto err_exit;
         }
 
         if (virStrcpyStatic(ifaceLock->ifname, ifname) == NULL) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("interface name %s does not fit into "
-                                     "buffer "),
-                                   ifaceLock->ifname);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("interface name %s does not fit into "
+                             "buffer "),
+                           ifaceLock->ifname);
             VIR_FREE(ifaceLock);
             goto err_exit;
         }
@@ -675,10 +672,10 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
         return -1;
 
     if ( !techdriver->canApplyBasicRules()) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("IP parameter must be provided since "
-                                 "snooping the IP address does not work "
-                                 "possibly due to missing tools"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("IP parameter must be provided since "
+                         "snooping the IP address does not work "
+                         "possibly due to missing tools"));
         return -1;
     }
 
@@ -703,17 +700,17 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
     }
 
     if (virStrcpyStatic(req->ifname, ifname) == NULL) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Destination buffer for ifname ('%s') "
-                               "not large enough"), ifname);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Destination buffer for ifname ('%s') "
+                         "not large enough"), ifname);
         goto err_free_ht;
     }
 
     if (linkdev) {
         if (virStrcpyStatic(req->linkdev, linkdev) == NULL) {
-            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Destination buffer for linkdev ('%s') "
-                                   "not large enough"), linkdev);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Destination buffer for linkdev ('%s') "
+                             "not large enough"), linkdev);
             goto err_free_ht;
         }
     }
@@ -763,10 +760,10 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver ATTRIBUTE_UNUSED,
                           virNWFilterHashTablePtr filterparams ATTRIBUTE_UNUSED,
                           virNWFilterDriverStatePtr driver ATTRIBUTE_UNUSED,
                           enum howDetect howDetect ATTRIBUTE_UNUSED) {
-    virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("IP parameter must be given since libvirt "
-                             "was not compiled with IP address learning "
-                             "support"));
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("IP parameter must be given since libvirt "
+                     "was not compiled with IP address learning "
+                     "support"));
     return -1;
 }
 #endif /* HAVE_LIBPCAP */
