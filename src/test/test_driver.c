@@ -2203,7 +2203,7 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
 
     if (nrCpus > maxvcpus) {
         testError(VIR_ERR_INVALID_ARG,
-                  "requested cpu amount exceeds maximum (%d > %d)",
+                  _("requested cpu amount exceeds maximum (%d > %d)"),
                   nrCpus, maxvcpus);
         goto cleanup;
     }
@@ -4057,7 +4057,7 @@ testStorageFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
     case VIR_STORAGE_POOL_NETFS:
         if (!source || !source->hosts[0].name) {
             testError(VIR_ERR_INVALID_ARG,
-                      "%s", "hostname must be specified for netfs sources");
+                      "%s", _("hostname must be specified for netfs sources"));
             goto cleanup;
         }
 
