@@ -1097,7 +1097,7 @@ virNWFilterSnoopDHCPOpen(const char *ifname, virMacAddr *mac,
     handle = pcap_create(ifname, pcap_errbuf);
 
     if (handle == NULL) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("pcap_create failed"));
         goto cleanup_nohandle;
     }
@@ -1105,7 +1105,7 @@ virNWFilterSnoopDHCPOpen(const char *ifname, virMacAddr *mac,
     if (pcap_set_snaplen(handle, PCAP_PBUFSIZE) < 0 ||
         pcap_set_buffer_size(handle, PCAP_BUFFERSIZE) < 0 ||
         pcap_activate(handle) < 0) {
-        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("setup of pcap handle failed"));
         goto cleanup;
     }
