@@ -680,7 +680,7 @@ int virNetlinkEventServiceLocalPid(void)
 int virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB ATTRIBUTE_UNUSED,
                              virNetlinkEventRemoveCallback removeCB ATTRIBUTE_UNUSED,
                              void *opaque ATTRIBUTE_UNUSED,
-                             const unsigned char *macaddr ATTRIBUTE_UNUSED)
+                             const virMacAddrPtr macaddr ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
@@ -690,7 +690,7 @@ int virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB ATTRIBUTE_UN
  * virNetlinkEventRemoveClient: unregister a callback from a netlink monitor
  */
 int virNetlinkEventRemoveClient(int watch ATTRIBUTE_UNUSED,
-                                const unsigned char *macaddr ATTRIBUTE_UNUSED)
+                                const virMacAddrPtr macaddr ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
