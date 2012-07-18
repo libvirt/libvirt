@@ -86,9 +86,9 @@ getDeviceType(uint32_t host,
      * character is not \0, virStrToLong_i complains
      */
     if (virStrToLong_i(typestr, &p, 10, type) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("Device type '%s' is not an integer"),
-                              typestr);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Device type '%s' is not an integer"),
+                       typestr);
         /* Hm, type wasn't an integer; seems strange */
         retval = -1;
         goto out;
@@ -266,9 +266,9 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
                                                  &vol->allocation,
                                                  &vol->capacity) < 0) {
 
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("Failed to update volume for '%s'"),
-                              devpath);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to update volume for '%s'"),
+                       devpath);
         retval = -1;
         goto free_vol;
     }
@@ -365,9 +365,9 @@ getOldStyleBlockDevice(const char *lun_path ATTRIBUTE_UNUSED,
     blockp = strrchr(block_name, ':');
     if (blockp == NULL) {
         /* Hm, wasn't what we were expecting; have to give up */
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("Failed to parse block name %s"),
-                              block_name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to parse block name %s"),
+                       block_name);
         retval = -1;
     } else {
         blockp++;
@@ -453,9 +453,9 @@ processLU(virStoragePoolObjPtr pool,
               host, bus, target, lun);
 
     if (getDeviceType(host, bus, target, lun, &device_type) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("Failed to determine if %u:%u:%u:%u is a Direct-Access LUN"),
-                              host, bus, target, lun);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to determine if %u:%u:%u:%u is a Direct-Access LUN"),
+                       host, bus, target, lun);
         retval = -1;
         goto out;
     }

@@ -63,25 +63,25 @@ virStorageBackendISCSITargetIP(const char *hostname,
 
     ret = getaddrinfo(hostname, NULL, &hints, &result);
     if (ret != 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("host lookup failed %s"),
-                              gai_strerror(ret));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("host lookup failed %s"),
+                       gai_strerror(ret));
         return -1;
     }
 
     if (result == NULL) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("no IP address for target %s"),
-                              hostname);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("no IP address for target %s"),
+                       hostname);
         return -1;
     }
 
     if (getnameinfo(result->ai_addr, result->ai_addrlen,
                     ipaddr, ipaddrlen, NULL, 0,
                     NI_NUMERICHOST) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("cannot format ip addr for %s"),
-                              hostname);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot format ip addr for %s"),
+                       hostname);
         freeaddrinfo(result);
         return -1;
     }
@@ -97,8 +97,8 @@ virStorageBackendISCSIPortal(virStoragePoolSourcePtr source)
     char *portal;
 
     if (source->nhost != 1) {
-        virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                              _("Expected exactly 1 host for the storage pool"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Expected exactly 1 host for the storage pool"));
         return NULL;
     }
 
@@ -170,8 +170,8 @@ virStorageBackendISCSISession(virStoragePoolObjPtr pool,
 
     if (session == NULL &&
         !probe) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("cannot find session"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("cannot find session"));
         goto cleanup;
     }
 
@@ -196,9 +196,9 @@ virStorageBackendIQNFound(const char *initiatoriqn,
 
     if (VIR_ALLOC_N(line, LINE_SIZE) != 0) {
         ret = IQN_ERROR;
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("Could not allocate memory for output of '%s'"),
-                              ISCSIADM);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not allocate memory for output of '%s'"),
+                       ISCSIADM);
         goto out;
     }
 
@@ -211,10 +211,10 @@ virStorageBackendIQNFound(const char *initiatoriqn,
     }
 
     if ((fp = VIR_FDOPEN(fd, "r")) == NULL) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("Failed to open stream for file descriptor "
-                                "when reading output from '%s': '%s'"),
-                              ISCSIADM, virStrerror(errno, ebuf, sizeof(ebuf)));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to open stream for file descriptor "
+                         "when reading output from '%s': '%s'"),
+                       ISCSIADM, virStrerror(errno, ebuf, sizeof(ebuf)));
         ret = IQN_ERROR;
         goto out;
     }
@@ -223,10 +223,10 @@ virStorageBackendIQNFound(const char *initiatoriqn,
         newline = strrchr(line, '\n');
         if (newline == NULL) {
             ret = IQN_ERROR;
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  _("Unexpected line > %d characters "
-                                    "when parsing output of '%s'"),
-                                  LINE_SIZE, ISCSIADM);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unexpected line > %d characters "
+                             "when parsing output of '%s'"),
+                           LINE_SIZE, ISCSIADM);
             goto out;
         }
         *newline = '\0';
@@ -241,9 +241,9 @@ virStorageBackendIQNFound(const char *initiatoriqn,
             token = strchr(line, ' ');
             if (!token) {
                 ret = IQN_ERROR;
-                virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                      _("Missing space when parsing output "
-                                        "of '%s'"), ISCSIADM);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Missing space when parsing output "
+                                 "of '%s'"), ISCSIADM);
                 goto out;
             }
             *ifacename = strndup(line, token - line);
@@ -303,9 +303,9 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
      * We will just rely on whether the interface got created
      * properly. */
     if (virCommandRun(cmd, &exitstatus) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("Failed to run command '%s' to create new iscsi interface"),
-                              ISCSIADM);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to run command '%s' to create new iscsi interface"),
+                       ISCSIADM);
         goto cleanup;
     }
     virCommandFree(cmd);
@@ -322,9 +322,9 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
      * returned an exit status of > 0, even if they succeeded.  We will just
      * rely on whether iface file got updated properly. */
     if (virCommandRun(cmd, &exitstatus) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("Failed to run command '%s' to update iscsi interface with IQN '%s'"),
-                              ISCSIADM, initiatoriqn);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to run command '%s' to update iscsi interface with IQN '%s'"),
+                       ISCSIADM, initiatoriqn);
         goto cleanup;
     }
 
@@ -587,8 +587,8 @@ virStorageBackendISCSIFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
         return NULL;
 
     if (source->nhost != 1) {
-        virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                              _("Expected exactly 1 host for the storage pool"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Expected exactly 1 host for the storage pool"));
         goto cleanup;
     }
 
@@ -651,21 +651,21 @@ virStorageBackendISCSICheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     *isActive = false;
 
     if (pool->def->source.nhost != 1) {
-         virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Expected exactly 1 host for the storage pool"));
+         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("Expected exactly 1 host for the storage pool"));
         return -1;
     }
 
     if (pool->def->source.hosts[0].name == NULL) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("missing source host"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("missing source host"));
         return -1;
     }
 
     if (pool->def->source.ndevice != 1 ||
         pool->def->source.devices[0].path == NULL) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("missing source device"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("missing source device"));
         return -1;
     }
 
@@ -689,21 +689,21 @@ virStorageBackendISCSIStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     const char *loginargv[] = { "--login", NULL };
 
     if (pool->def->source.nhost != 1) {
-         virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Expected exactly 1 host for the storage pool"));
+         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("Expected exactly 1 host for the storage pool"));
         return -1;
     }
 
     if (pool->def->source.hosts[0].name == NULL) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("missing source host"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("missing source host"));
         return -1;
     }
 
     if (pool->def->source.ndevice != 1 ||
         pool->def->source.devices[0].path == NULL) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("missing source device"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("missing source device"));
         return -1;
     }
 

@@ -106,15 +106,15 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
 
         if (virStrToLong_ull(groups[3], NULL, 10,
                              &vol->source.extents[0].start) < 0) {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  "%s", _("cannot parse device start location"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("cannot parse device start location"));
             return -1;
         }
 
         if (virStrToLong_ull(groups[4], NULL, 10,
                              &vol->source.extents[0].end) < 0) {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  "%s", _("cannot parse device end location"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("cannot parse device end location"));
             return -1;
         }
 
@@ -327,9 +327,9 @@ virStorageBackendDiskRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     virFileWaitForDevices();
 
     if (!virFileExists(pool->def->source.devices[0].path)) {
-        virStorageReportError(VIR_ERR_INVALID_ARG,
-                              _("device path '%s' doesn't exist"),
-                              pool->def->source.devices[0].path);
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("device path '%s' doesn't exist"),
+                       pool->def->source.devices[0].path);
         return -1;
     }
 
@@ -399,9 +399,9 @@ virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (flags == (VIR_STORAGE_POOL_BUILD_OVERWRITE |
                   VIR_STORAGE_POOL_BUILD_NO_OVERWRITE)) {
-        virStorageReportError(VIR_ERR_OPERATION_INVALID,
-                              _("Overwrite and no overwrite flags"
-                                " are mutually exclusive"));
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("Overwrite and no overwrite flags"
+                         " are mutually exclusive"));
         goto error;
     }
 
@@ -415,11 +415,11 @@ virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         if (check > 0) {
             ok_to_mklabel = true;
         } else if (check < 0) {
-            virStorageReportError(VIR_ERR_OPERATION_FAILED,
-                                  _("Error checking for disk label"));
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("Error checking for disk label"));
         } else {
-            virStorageReportError(VIR_ERR_OPERATION_INVALID,
-                                  _("Disk label already present"));
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("Disk label already present"));
         }
     }
 
@@ -468,8 +468,8 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
         const char *partedFormat;
         partedFormat = virStoragePartedFsTypeTypeToString(vol->target.format);
         if (partedFormat == NULL) {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  "%s", _("Invalid partition type"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("Invalid partition type"));
             return -1;
         }
         if (vol->target.format == VIR_STORAGE_VOL_DISK_EXTENDED) {
@@ -477,8 +477,8 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
             for (i = 0; i < pool->volumes.count; i++) {
                 if (pool->volumes.objs[i]->target.format ==
                     VIR_STORAGE_VOL_DISK_EXTENDED) {
-                    virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                          _("extended partition already exists"));
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("extended partition already exists"));
                     return -1;
                 }
             }
@@ -512,14 +512,14 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
                     }
                 }
                 if (i == pool->volumes.count) {
-                    virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                          "%s", _("no extended partition found and no primary partition available"));
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   "%s", _("no extended partition found and no primary partition available"));
                     return -1;
                 }
                 break;
             default:
-                virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                      "%s", _("unknown partition type"));
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("unknown partition type"));
                 return -1;
             }
         }
@@ -602,8 +602,8 @@ virStorageBackendDiskPartBoundries(virStoragePoolObjPtr pool,
     }
 
     if (smallestExtent == -1) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("no large enough free extent"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("no large enough free extent"));
         return -1;
     }
 
@@ -643,9 +643,9 @@ virStorageBackendDiskCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
                                              NULL);
 
     if (vol->target.encryption != NULL) {
-        virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                              "%s", _("storage pool does not support encrypted "
-                                      "volumes"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       "%s", _("storage pool does not support encrypted "
+                               "volumes"));
         return -1;
     }
 
@@ -733,9 +733,9 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     isDevMapperDevice = virIsDevMapperDevice(devpath);
 
     if (!isDevMapperDevice && !STRPREFIX(dev_name, srcname)) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("Volume path '%s' did not start with parent "
-                                "pool source device name."), dev_name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Volume path '%s' did not start with parent "
+                         "pool source device name."), dev_name);
         goto cleanup;
     }
 
@@ -743,9 +743,9 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
         part_num = dev_name + strlen(srcname);
 
         if (*part_num == 0) {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot parse partition number from target "
-                                    "'%s'"), dev_name);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot parse partition number from target "
+                             "'%s'"), dev_name);
             goto cleanup;
         }
 

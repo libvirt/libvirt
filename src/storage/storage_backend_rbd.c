@@ -65,8 +65,8 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
         VIR_DEBUG("Using cephx authorization");
         if (rados_create(&ptr->cluster,
             pool->def->source.auth.cephx.username) < 0) {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  _("failed to initialize RADOS"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to initialize RADOS"));
             goto cleanup;
         }
 
@@ -84,8 +84,8 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
         }
 
         if (secret == NULL) {
-            virStorageReportError(VIR_ERR_NO_SECRET,
-                                  _("failed to find the secret"));
+            virReportError(VIR_ERR_NO_SECRET,
+                           _("failed to find the secret"));
             goto cleanup;
         }
 
@@ -95,38 +95,38 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
         memset(secret_value, 0, secret_value_size);
 
         if (rados_key == NULL) {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  _("failed to decode the RADOS key"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to decode the RADOS key"));
             goto cleanup;
         }
 
         VIR_DEBUG("Found cephx key: %s", rados_key);
         if (rados_conf_set(ptr->cluster, "key", rados_key) < 0) {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  _("failed to set RADOS option: %s"),
-                                  "rados_key");
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to set RADOS option: %s"),
+                           "rados_key");
             goto cleanup;
         }
 
         memset(rados_key, 0, strlen(rados_key));
 
         if (rados_conf_set(ptr->cluster, "auth_supported", "cephx") < 0) {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  _("failed to set RADOS option: %s"),
-                                  "auth_supported");
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to set RADOS option: %s"),
+                           "auth_supported");
             goto cleanup;
         }
     } else {
         VIR_DEBUG("Not using cephx authorization");
         if (rados_create(&ptr->cluster, NULL) < 0) {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  _("failed to create the RADOS cluster"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to create the RADOS cluster"));
             goto cleanup;
         }
         if (rados_conf_set(ptr->cluster, "auth_supported", "none") < 0) {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  _("failed to set RADOS option: %s"),
-                                  "auth_supported");
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to set RADOS option: %s"),
+                           "auth_supported");
             goto cleanup;
         }
     }
@@ -145,8 +145,8 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
                               pool->def->source.hosts[i].name,
                               pool->def->source.hosts[i].port);
         } else {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                  _("received malformed monitor, check the XML definition"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("received malformed monitor, check the XML definition"));
         }
     }
 
@@ -158,17 +158,17 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
     mon_buff = virBufferContentAndReset(&mon_host);
     VIR_DEBUG("RADOS mon_host has been set to: %s", mon_buff);
     if (rados_conf_set(ptr->cluster, "mon_host", mon_buff) < 0) {
-       virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                             _("failed to set RADOS option: %s"),
-                             "mon_host");
+       virReportError(VIR_ERR_INTERNAL_ERROR,
+                      _("failed to set RADOS option: %s"),
+                      "mon_host");
         goto cleanup;
     }
 
     ptr->starttime = time(0);
     if (rados_connect(ptr->cluster) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("failed to connect to the RADOS monitor on: %s"),
-                              mon_buff);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to connect to the RADOS monitor on: %s"),
+                       mon_buff);
         goto cleanup;
     }
 
@@ -214,16 +214,16 @@ static int volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
     int ret = -1;
     rbd_image_t image;
     if (rbd_open(ptr.ioctx, vol->name, &image, NULL) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("failed to open the RBD image '%s'"),
-                              vol->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to open the RBD image '%s'"),
+                       vol->name);
         return ret;
     }
 
     rbd_image_info_t info;
     if (rbd_stat(image, &info, sizeof(info)) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                              _("failed to stat the RBD image"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to stat the RBD image"));
         goto cleanup;
     }
 
@@ -277,24 +277,24 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (rados_ioctx_create(ptr.cluster,
         pool->def->source.name, &ptr.ioctx) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("failed to create the RBD IoCTX. Does the pool '%s' exist?"),
-                              pool->def->source.name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to create the RBD IoCTX. Does the pool '%s' exist?"),
+                       pool->def->source.name);
         goto cleanup;
     }
 
     struct rados_cluster_stat_t stat;
     if (rados_cluster_stat(ptr.cluster, &stat) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                              _("failed to stat the RADOS cluster"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to stat the RADOS cluster"));
         goto cleanup;
     }
 
     struct rados_pool_stat_t poolstat;
     if (rados_ioctx_pool_stat(ptr.ioctx, &poolstat) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("failed to stat the RADOS pool '%s'"),
-                              pool->def->source.name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to stat the RADOS pool '%s'"),
+                       pool->def->source.name);
         goto cleanup;
     }
 
@@ -382,17 +382,17 @@ static int virStorageBackendRBDDeleteVol(virConnectPtr conn,
 
     if (rados_ioctx_create(ptr.cluster,
         pool->def->source.name, &ptr.ioctx) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("failed to create the RBD IoCTX. Does the pool '%s' exist?"),
-                              pool->def->source.name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to create the RBD IoCTX. Does the pool '%s' exist?"),
+                       pool->def->source.name);
         goto cleanup;
     }
 
     if (rbd_remove(ptr.ioctx, vol->name) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("failed to remove volume '%s/%s'"),
-                              pool->def->source.name,
-                              vol->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to remove volume '%s/%s'"),
+                       pool->def->source.name,
+                       vol->name);
         goto cleanup;
     }
 
@@ -423,23 +423,23 @@ static int virStorageBackendRBDCreateVol(virConnectPtr conn,
 
     if (rados_ioctx_create(ptr.cluster,
         pool->def->source.name,&ptr.ioctx) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("failed to create the RBD IoCTX. Does the pool '%s' exist?"),
-                               pool->def->source.name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to create the RBD IoCTX. Does the pool '%s' exist?"),
+                       pool->def->source.name);
         goto cleanup;
     }
 
     if (vol->target.encryption != NULL) {
-        virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                              _("storage pool does not support encrypted volumes"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("storage pool does not support encrypted volumes"));
         goto cleanup;
     }
 
     if (rbd_create(ptr.ioctx, vol->name, vol->capacity, &order) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("failed to create volume '%s/%s'"),
-                              pool->def->source.name,
-                              vol->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to create volume '%s/%s'"),
+                       pool->def->source.name,
+                       vol->name);
         goto cleanup;
     }
 
@@ -469,9 +469,9 @@ static int virStorageBackendRBDRefreshVol(virConnectPtr conn,
 
     if (rados_ioctx_create(ptr.cluster,
         pool->def->source.name, &ptr.ioctx) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("failed to create the RBD IoCTX. Does the pool '%s' exist?"),
-                               pool->def->source.name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to create the RBD IoCTX. Does the pool '%s' exist?"),
+                       pool->def->source.name);
         goto cleanup;
     }
 
@@ -506,23 +506,23 @@ static int virStorageBackendRBDResizeVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (rados_ioctx_create(ptr.cluster,
         pool->def->source.name, &ptr.ioctx) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("failed to create the RBD IoCTX. Does the pool '%s' exist?"),
-                               pool->def->source.name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to create the RBD IoCTX. Does the pool '%s' exist?"),
+                       pool->def->source.name);
         goto cleanup;
     }
 
     if (rbd_open(ptr.ioctx, vol->name, &image, NULL) < 0) {
-       virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("failed to open the RBD image '%s'"),
-                            vol->name);
+       virReportError(VIR_ERR_INTERNAL_ERROR,
+                      _("failed to open the RBD image '%s'"),
+                      vol->name);
        goto cleanup;
     }
 
     if (rbd_resize(image, capacity) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("failed to resize the RBD image '%s'"),
-                            vol->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to resize the RBD image '%s'"),
+                       vol->name);
         goto cleanup;
     }
 

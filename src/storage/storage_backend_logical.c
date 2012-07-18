@@ -148,8 +148,8 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
     nextents = 1;
     if (STREQ(groups[4], VIR_STORAGE_VOL_LOGICAL_SEGTYPE_STRIPED)) {
         if (virStrToLong_i(groups[5], NULL, 10, &nextents) < 0) {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                  _("malformed volume extent stripes value"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("malformed volume extent stripes value"));
             goto cleanup;
         }
     }
@@ -162,18 +162,18 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
     }
 
     if (virStrToLong_ull(groups[6], NULL, 10, &length) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("malformed volume extent length value"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("malformed volume extent length value"));
         goto cleanup;
     }
     if (virStrToLong_ull(groups[7], NULL, 10, &size) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("malformed volume extent size value"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("malformed volume extent size value"));
         goto cleanup;
     }
     if (virStrToLong_ull(groups[8], NULL, 10, &vol->allocation) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("malformed volume allocation value"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("malformed volume allocation value"));
         goto cleanup;
     }
 
@@ -208,15 +208,15 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
     if (err != 0) {
         char error[100];
         regerror(err, reg, error, sizeof(error));
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("Failed to compile regex %s"),
-                              error);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to compile regex %s"),
+                       error);
         goto cleanup;
     }
 
     if (regexec(reg, groups[3], nvars, vars, 0) != 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                              _("malformed volume extent devices value"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("malformed volume extent devices value"));
         goto cleanup;
     }
 
@@ -244,8 +244,8 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
         }
 
         if (virStrToLong_ull(offset_str, NULL, 10, &offset) < 0) {
-            virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                  _("malformed volume extent offset value"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("malformed volume extent offset value"));
             VIR_FREE(offset_str);
             goto cleanup;
         }
@@ -450,8 +450,8 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     retval = virStoragePoolSourceListFormat(&sourceList);
     if (retval == NULL) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                              _("failed to get source from sourceList"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to get source from sourceList"));
         goto cleanup;
     }
 
@@ -701,9 +701,9 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     virCommandPtr cmd = NULL;
 
     if (vol->target.encryption != NULL) {
-        virStorageReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                              "%s", _("storage pool does not support encrypted "
-                                      "volumes"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       "%s", _("storage pool does not support encrypted "
+                               "volumes"));
         return -1;
     }
 

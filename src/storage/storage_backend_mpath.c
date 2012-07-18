@@ -228,9 +228,9 @@ virStorageBackendCreateVols(virStoragePoolObjPtr pool,
             }
 
             if (virStorageBackendGetMinorNumber(names->name, &minor) < 0) {
-                virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                      _("Failed to get %s minor number"),
-                                      names->name);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Failed to get %s minor number"),
+                               names->name);
                 goto out;
             }
 

@@ -29,10 +29,6 @@
 # include "storage_conf.h"
 # include "command.h"
 
-# define virStorageReportError(code, ...)                               \
-    virReportErrorHelper(VIR_FROM_STORAGE, code, __FILE__,              \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
 typedef char * (*virStorageBackendFindPoolSources)(virConnectPtr conn, const char *srcSpec, unsigned int flags);
 typedef int (*virStorageBackendCheckPool)(virConnectPtr conn, virStoragePoolObjPtr pool, bool *active);
 typedef int (*virStorageBackendStartPool)(virConnectPtr conn, virStoragePoolObjPtr pool);
