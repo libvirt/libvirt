@@ -35,13 +35,6 @@
 # include "esx_util.h"
 
 
-
-# define ESX_VI_ERROR(code, ...)                                              \
-    virReportErrorHelper(VIR_FROM_ESX, code, __FILE__, __FUNCTION__,          \
-                         __LINE__, __VA_ARGS__)
-
-
-
 # define ESX_VI__SOAP__REQUEST_HEADER                                         \
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"                            \
     "<soapenv:Envelope\n"                                                     \

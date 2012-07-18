@@ -28,10 +28,6 @@
 # include "capabilities.h"
 # include "esx_vi.h"
 
-# define ESX_ERROR(code, ...)                                                 \
-    virReportErrorHelper(VIR_FROM_ESX, code, __FILE__, __FUNCTION__,          \
-                         __LINE__, __VA_ARGS__)
-
 typedef struct _esxPrivate {
     esxVI_Context *primary; /* points to host or vCenter */
     esxVI_Context *host;

@@ -41,7 +41,7 @@
 
 #define ESX_VI__METHOD__CHECK_OUTPUT__NotNone                                 \
     if (output == NULL || *output != 0) {                                     \
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));    \
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));  \
         return -1;                                                            \
     }
 
@@ -162,7 +162,7 @@
     esxVI_##_type *_this = NULL;                                              \
                                                                               \
     if (ctx->service == NULL) {                                               \
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid call"));        \
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid call"));      \
         return -1;                                                            \
     }                                                                         \
                                                                               \
@@ -183,9 +183,9 @@
  */
 #define ESX_VI__METHOD__PARAMETER__REQUIRE(_name)                             \
     if (_name == 0) {                                                         \
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                                  \
-                     "Required parameter '%s' is missing for call to %s",     \
-                     #_name, methodName);                                     \
+        virReportError(VIR_ERR_INTERNAL_ERROR,                                \
+                       "Required parameter '%s' is missing for call to %s",   \
+                       #_name, methodName);                                   \
         return -1;                                                            \
     }
 
@@ -237,7 +237,7 @@ esxVI_RetrieveServiceContent(esxVI_Context *ctx,
     esxVI_Response *response = NULL;
 
     if (serviceContent == NULL || *serviceContent != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 

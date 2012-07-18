@@ -84,8 +84,8 @@ esxStoragePoolLookupType(esxVI_Context *ctx, const char *poolName,
     } else if (esxVI_VmfsDatastoreInfo_DynamicCast(datastoreInfo) != NULL) {
         *poolType = VIR_STORAGE_POOL_FS;
     } else {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("DatastoreInfo has unexpected type"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("DatastoreInfo has unexpected type"));
         goto cleanup;
     }
 
@@ -336,9 +336,9 @@ esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (datastore == NULL) {
         virUUIDFormat(uuid, uuid_string);
 
-        ESX_VI_ERROR(VIR_ERR_NO_STORAGE_POOL,
-                     _("Could not find datastore with UUID '%s'"),
-                     uuid_string);
+        virReportError(VIR_ERR_NO_STORAGE_POOL,
+                       _("Could not find datastore with UUID '%s'"),
+                       uuid_string);
 
         goto cleanup;
     }
@@ -557,9 +557,9 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
         } else  if (STRCASEEQ(nasInfo->nas->type, "CIFS")) {
             def.source.format = VIR_STORAGE_POOL_NETFS_CIFS;
         } else {
-            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("Datastore has unexpected type '%s'"),
-                      nasInfo->nas->type);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Datastore has unexpected type '%s'"),
+                           nasInfo->nas->type);
             goto cleanup;
         }
     } else if (esxVI_VmfsDatastoreInfo_DynamicCast(info) != NULL) {
@@ -569,8 +569,8 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
          * VMFS based datastore in libvirt terms
          */
     } else {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("DatastoreInfo has unexpected type"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("DatastoreInfo has unexpected type"));
         goto cleanup;
     }
 
@@ -607,8 +607,8 @@ esxStoragePoolSetAutostart(virStoragePoolPtr pool ATTRIBUTE_UNUSED,
     autostart = (autostart != 0);
 
     if (! autostart) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("Cannot deactivate storage pool autostart"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot deactivate storage pool autostart"));
         return -1;
     }
 
@@ -670,7 +670,7 @@ esxStoragePoolListStorageVolumes(virStoragePoolPtr pool, char **const names,
     int i;
 
     if (names == NULL || maxnames < 0) {
-        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s", _("Invalid argument"));
+        virReportError(VIR_ERR_INVALID_ARG, "%s", _("Invalid argument"));
         return -1;
     }
 
@@ -837,9 +837,9 @@ esxStorageVolumeLookupByKey(virConnectPtr conn, const char *key)
     }
 
     if (!priv->primary->hasQueryVirtualDiskUuid) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("QueryVirtualDiskUuid not available, cannot lookup storage "
-                    "volume by UUID"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("QueryVirtualDiskUuid not available, cannot lookup storage "
+                         "volume by UUID"));
         return NULL;
     }
 
@@ -999,8 +999,8 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
     }
 
     if (def->type != VIR_STORAGE_VOL_FILE) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("Creating non-file volumes is not supported"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Creating non-file volumes is not supported"));
         goto cleanup;
     }
 
@@ -1008,16 +1008,16 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
     tmp = strrchr(def->name, '/');
 
     if (tmp == NULL || *def->name == '/' || tmp[1] == '\0') {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Volume name '%s' doesn't have expected format "
-                    "'<directory>/<file>'"), def->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Volume name '%s' doesn't have expected format "
+                         "'<directory>/<file>'"), def->name);
         goto cleanup;
     }
 
     if (! virFileHasSuffix(def->name, ".vmdk")) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Volume name '%s' has unsupported suffix, expecting '.vmdk'"),
-                  def->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Volume name '%s' has unsupported suffix, expecting '.vmdk'"),
+                       def->name);
         goto cleanup;
     }
 
@@ -1095,8 +1095,8 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
              */
             virtualDiskSpec->diskType = (char *)"thin";
         } else {
-            ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                      _("Unsupported capacity-to-allocation relation"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unsupported capacity-to-allocation relation"));
             goto cleanup;
         }
 
@@ -1122,8 +1122,8 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
         }
 
         if (taskInfoState != esxVI_TaskInfoState_Success) {
-            ESX_ERROR(VIR_ERR_INTERNAL_ERROR, _("Could not create volume: %s"),
-                      taskInfoErrorMessage);
+            virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not create volume: %s"),
+                           taskInfoErrorMessage);
             goto cleanup;
         }
 
@@ -1149,9 +1149,9 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
             }
         }
     } else {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Creation of %s volumes is not supported"),
-                  virStorageFileFormatTypeToString(def->target.format));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Creation of %s volumes is not supported"),
+                       virStorageFileFormatTypeToString(def->target.format));
         goto cleanup;
     }
 
@@ -1233,8 +1233,8 @@ esxStorageVolumeCreateXMLFrom(virStoragePoolPtr pool, const char *xmldesc,
     }
 
     if (def->type != VIR_STORAGE_VOL_FILE) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("Creating non-file volumes is not supported"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Creating non-file volumes is not supported"));
         goto cleanup;
     }
 
@@ -1242,16 +1242,16 @@ esxStorageVolumeCreateXMLFrom(virStoragePoolPtr pool, const char *xmldesc,
     tmp = strrchr(def->name, '/');
 
     if (tmp == NULL || *def->name == '/' || tmp[1] == '\0') {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Volume name '%s' doesn't have expected format "
-                    "'<directory>/<file>'"), def->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Volume name '%s' doesn't have expected format "
+                         "'<directory>/<file>'"), def->name);
         goto cleanup;
     }
 
     if (! virFileHasSuffix(def->name, ".vmdk")) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Volume name '%s' has unsupported suffix, expecting '.vmdk'"),
-                  def->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Volume name '%s' has unsupported suffix, expecting '.vmdk'"),
+                       def->name);
         goto cleanup;
     }
 
@@ -1324,8 +1324,8 @@ esxStorageVolumeCreateXMLFrom(virStoragePoolPtr pool, const char *xmldesc,
         }
 
         if (taskInfoState != esxVI_TaskInfoState_Success) {
-            ESX_ERROR(VIR_ERR_INTERNAL_ERROR, _("Could not copy volume: %s"),
-                      taskInfoErrorMessage);
+            virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not copy volume: %s"),
+                           taskInfoErrorMessage);
             goto cleanup;
         }
 
@@ -1351,9 +1351,9 @@ esxStorageVolumeCreateXMLFrom(virStoragePoolPtr pool, const char *xmldesc,
             }
         }
     } else {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Creation of %s volumes is not supported"),
-                  virStorageFileFormatTypeToString(def->target.format));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Creation of %s volumes is not supported"),
+                       virStorageFileFormatTypeToString(def->target.format));
         goto cleanup;
     }
 
@@ -1412,8 +1412,8 @@ esxStorageVolumeDelete(virStorageVolPtr volume, unsigned int flags)
     }
 
     if (taskInfoState != esxVI_TaskInfoState_Success) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, _("Could not delete volume: %s"),
-                  taskInfoErrorMessage);
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not delete volume: %s"),
+                       taskInfoErrorMessage);
         goto cleanup;
     }
 
@@ -1461,8 +1461,8 @@ esxStorageVolumeWipe(virStorageVolPtr volume, unsigned int flags)
     }
 
     if (taskInfoState != esxVI_TaskInfoState_Success) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, _("Could not wipe volume: %s"),
-                  taskInfoErrorMessage);
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not wipe volume: %s"),
+                       taskInfoErrorMessage);
         goto cleanup;
     }
 
@@ -1595,8 +1595,8 @@ esxStorageVolumeGetXMLDesc(virStorageVolPtr volume, unsigned int flags)
 
         def.target.format = VIR_STORAGE_FILE_RAW;
     } else {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("File '%s' has unknown type"), datastorePath);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("File '%s' has unknown type"), datastorePath);
         goto cleanup;
     }
 
