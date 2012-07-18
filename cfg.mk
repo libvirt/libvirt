@@ -560,6 +560,7 @@ msg_gen_function += virNetworkReportError
 msg_gen_function += virNodeDeviceReportError
 msg_gen_function += virNWFilterReportError
 msg_gen_function += virRaiseError
+msg_gen_function += virReportError
 msg_gen_function += virReportErrorHelper
 msg_gen_function += virReportSystemError
 msg_gen_function += virSecretReportError

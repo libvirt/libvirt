@@ -76,6 +76,9 @@ void virReportOOMErrorFull(int domcode,
 # define virReportOOMError() \
     virReportOOMErrorFull(VIR_FROM_THIS, __FILE__, __FUNCTION__, __LINE__)
 
+# define virReportError(code, ...)                                   \
+    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,              \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 int virSetError(virErrorPtr newerr);
 void virDispatchError(virConnectPtr conn);
