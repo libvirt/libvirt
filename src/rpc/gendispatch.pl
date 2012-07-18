@@ -1424,9 +1424,9 @@ elsif ($opt_k) {
         foreach my $args_check (@args_check_list) {
             print "\n";
             print "    if ($args_check->{arg} > $args_check->{limit}) {\n";
-            print "        remoteError(VIR_ERR_RPC,\n";
-            print "                    _(\"%s length greater than maximum: %d > %d\"),\n";
-            print "                    $args_check->{name}, (int)$args_check->{arg}, $args_check->{limit});\n";
+            print "        virReportError(VIR_ERR_RPC,\n";
+            print "                       _(\"%s length greater than maximum: %d > %d\"),\n";
+            print "                       $args_check->{name}, (int)$args_check->{arg}, $args_check->{limit});\n";
             print "        goto done;\n";
             print "    }\n";
         }
@@ -1434,9 +1434,9 @@ elsif ($opt_k) {
         if ($single_ret_as_list) {
             print "\n";
             print "    if ($single_ret_list_max_var > $single_ret_list_max_define) {\n";
-            print "        remoteError(VIR_ERR_RPC,\n";
-            print "                    _(\"too many remote ${single_ret_list_error_msg_type}s: %d > %d\"),\n";
-            print "                    $single_ret_list_max_var, $single_ret_list_max_define);\n";
+            print "        virReportError(VIR_ERR_RPC,\n";
+            print "                       _(\"too many remote ${single_ret_list_error_msg_type}s: %d > %d\"),\n";
+            print "                       $single_ret_list_max_var, $single_ret_list_max_define);\n";
             print "        goto done;\n";
             print "    }\n";
         }
@@ -1491,9 +1491,9 @@ elsif ($opt_k) {
 
         if ($single_ret_as_list) {
             print "    if (ret.$single_ret_list_name.${single_ret_list_name}_len > $single_ret_list_max_var) {\n";
-            print "        remoteError(VIR_ERR_RPC,\n";
-            print "                    _(\"too many remote ${single_ret_list_error_msg_type}s: %d > %d\"),\n";
-            print "                    ret.$single_ret_list_name.${single_ret_list_name}_len, $single_ret_list_max_var);\n";
+            print "        virReportError(VIR_ERR_RPC,\n";
+            print "                       _(\"too many remote ${single_ret_list_error_msg_type}s: %d > %d\"),\n";
+            print "                       ret.$single_ret_list_name.${single_ret_list_name}_len, $single_ret_list_max_var);\n";
             print "        goto cleanup;\n";
             print "    }\n";
             print "\n";

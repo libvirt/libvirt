@@ -516,7 +516,6 @@ msg_gen_function += lxcError
 msg_gen_function += libxlError
 msg_gen_function += nodeReportError
 msg_gen_function += regerror
-msg_gen_function += remoteError
 msg_gen_function += statsError
 msg_gen_function += streamsReportError
 msg_gen_function += vah_error
