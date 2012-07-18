@@ -547,7 +547,6 @@ msg_gen_function += virRaiseError
 msg_gen_function += virReportError
 msg_gen_function += virReportErrorHelper
 msg_gen_function += virReportSystemError
-msg_gen_function += virSecretReportError
 msg_gen_function += virSecurityReportError
 msg_gen_function += virXenInotifyError
 msg_gen_function += virXenStoreError
