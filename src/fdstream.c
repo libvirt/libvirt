@@ -42,9 +42,6 @@
 #include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_STREAMS
-#define streamsReportError(code, ...)                                \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,              \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /* Tunnelled migration stream support */
 struct virFDStreamData {
@@ -82,15 +79,15 @@ static int virFDStreamRemoveCallback(virStreamPtr stream)
     int ret = -1;
 
     if (!fdst) {
-        streamsReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("stream is not open"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("stream is not open"));
         return -1;
     }
 
     virMutexLock(&fdst->lock);
     if (fdst->watch == 0) {
-        streamsReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("stream does not have a callback registered"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("stream does not have a callback registered"));
         goto cleanup;
     }
 
@@ -119,15 +116,15 @@ static int virFDStreamUpdateCallback(virStreamPtr stream, int events)
     int ret = -1;
 
     if (!fdst) {
-        streamsReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("stream is not open"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("stream is not open"));
         return -1;
     }
 
     virMutexLock(&fdst->lock);
     if (fdst->watch == 0) {
-        streamsReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("stream does not have a callback registered"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("stream does not have a callback registered"));
         goto cleanup;
     }
 
@@ -201,15 +198,15 @@ virFDStreamAddCallback(virStreamPtr st,
     int ret = -1;
 
     if (!fdst) {
-        streamsReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("stream is not open"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("stream is not open"));
         return -1;
     }
 
     virMutexLock(&fdst->lock);
     if (fdst->watch != 0) {
-        streamsReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("stream already has a callback registered"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("stream already has a callback registered"));
         goto cleanup;
     }
 
@@ -218,8 +215,8 @@ virFDStreamAddCallback(virStreamPtr st,
                                            virFDStreamEvent,
                                            st,
                                            virFDStreamCallbackFree)) < 0) {
-        streamsReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("cannot register file watch on stream"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("cannot register file watch on stream"));
         goto cleanup;
     }
 
@@ -297,16 +294,16 @@ virFDStreamCloseInt(virStreamPtr st, bool streamAbort)
         } else if (status != 0) {
             if (buf[0] == '\0') {
                 if (WIFEXITED(status)) {
-                    streamsReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("I/O helper exited with status %d"),
-                                       WEXITSTATUS(status));
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("I/O helper exited with status %d"),
+                                   WEXITSTATUS(status));
                 } else {
-                    streamsReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                       _("I/O helper exited abnormally"));
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("I/O helper exited abnormally"));
                 }
             } else {
-                streamsReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   buf);
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               buf);
             }
             ret = -1;
         }
@@ -363,8 +360,8 @@ static int virFDStreamWrite(virStreamPtr st, const char *bytes, size_t nbytes)
     }
 
     if (!fdst) {
-        streamsReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("stream is not open"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("stream is not open"));
         return -1;
     }
 
@@ -415,8 +412,8 @@ static int virFDStreamRead(virStreamPtr st, char *bytes, size_t nbytes)
     }
 
     if (!fdst) {
-        streamsReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("stream is not open"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("stream is not open"));
         return -1;
     }
 
@@ -489,8 +486,8 @@ static int virFDStreamOpenInternal(virStreamPtr st,
     fdst->length = length;
     if (virMutexInit(&fdst->lock) < 0) {
         VIR_FREE(fdst);
-        streamsReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Unable to initialize mutex"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to initialize mutex"));
         return -1;
     }
 
@@ -622,9 +619,9 @@ virFDStreamOpenFileInternal(virStreamPtr st,
         int fds[2] = { -1, -1 };
 
         if ((oflags & O_ACCMODE) == O_RDWR) {
-            streamsReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("%s: Cannot request read and write flags together"),
-                               path);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("%s: Cannot request read and write flags together"),
+                           path);
             goto error;
         }
 
@@ -680,9 +677,9 @@ int virFDStreamOpenFile(virStreamPtr st,
                         int oflags)
 {
     if (oflags & O_CREAT) {
-        streamsReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Attempt to create %s without specifying mode"),
-                           path);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Attempt to create %s without specifying mode"),
+                       path);
         return -1;
     }
     return virFDStreamOpenFileInternal(st, path,
