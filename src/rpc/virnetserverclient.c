@@ -152,9 +152,10 @@ virNetServerClientCalculateHandleMode(virNetServerClientPtr client) {
                 mode |= VIR_EVENT_HANDLE_WRITABLE;
         }
     } else {
-        /* If there is a message on the rx queue then
+        /* If there is a message on the rx queue, and
+         * we're not in middle of a delayedClose, then
          * we're wanting more input */
-        if (client->rx)
+        if (client->rx && !client->delayedClose)
             mode |= VIR_EVENT_HANDLE_READABLE;
 
         /* If there are one or more messages to send back to client,
