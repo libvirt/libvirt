@@ -778,15 +778,15 @@ elsif ($opt_b) {
 
         print "\n";
         print "    if (!priv->conn) {\n";
-        print "        virNetError(VIR_ERR_INTERNAL_ERROR, \"%s\", _(\"connection not open\"));\n";
+        print "        virReportError(VIR_ERR_INTERNAL_ERROR, \"%s\", _(\"connection not open\"));\n";
         print "        goto cleanup;\n";
         print "    }\n";
         print "\n";
 
         if ($single_ret_as_list) {
             print "    if (args->$single_ret_list_max_var > $single_ret_list_max_define) {\n";
-            print "        virNetError(VIR_ERR_INTERNAL_ERROR,\n";
-            print "                    \"%s\", _(\"max$single_ret_list_name > $single_ret_list_max_define\"));\n";
+            print "        virReportError(VIR_ERR_INTERNAL_ERROR,\n";
+            print "                       \"%s\", _(\"max$single_ret_list_name > $single_ret_list_max_define\"));\n";
             print "        goto cleanup;\n";
             print "    }\n";
             print "\n";
