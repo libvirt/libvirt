@@ -35,6 +35,7 @@
 # include <netinet/tcp.h>
 #endif
 
+#include "c-ctype.h"
 #include "virnetsocket.h"
 #include "util.h"
 #include "memory.h"
@@ -981,8 +982,9 @@ reread:
         virFileReadLimFD(sock->errfd, 1024, &errout) >= 0 &&
         errout != NULL) {
         size_t elen = strlen(errout);
-        if (elen && errout[elen-1] == '\n')
-            errout[elen-1] = '\0';
+        /* remove trailing whitespace */
+        while (elen && c_isspace(errout[elen - 1]))
+            errout[--elen] = '\0';
     }
 
     if (ret < 0) {
