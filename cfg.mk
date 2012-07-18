@@ -509,7 +509,6 @@ msg_gen_function =
 msg_gen_function += VIR_ERROR
 msg_gen_function += lxcError
 msg_gen_function += regerror
-msg_gen_function += statsError
 msg_gen_function += vah_error
 msg_gen_function += vah_warning
 msg_gen_function += virGenericReportError
@@ -527,13 +526,7 @@ msg_gen_function += virRaiseError
 msg_gen_function += virReportError
 msg_gen_function += virReportErrorHelper
 msg_gen_function += virReportSystemError
-msg_gen_function += virXenError
-msg_gen_function += virXenInotifyError
-msg_gen_function += virXenStoreError
-msg_gen_function += virXendError
 msg_gen_function += xenapiSessionErrorHandler
-msg_gen_function += xenUnifiedError
-msg_gen_function += xenXMError
 
 # Uncomment the following and run "make syntax-check" to see diagnostics
 # that are not yet marked for translation, but that need to be rewritten

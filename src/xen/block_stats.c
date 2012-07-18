@@ -32,12 +32,6 @@
 # define VIR_FROM_THIS VIR_FROM_STATS_LINUX
 
 
-
-# define statsError(code, ...)                                                 \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__, __FUNCTION__,         \
-                         __LINE__, __VA_ARGS__)
-
-
 /*-------------------- Xen: block stats --------------------*/
 
 # include <linux/major.h>
@@ -172,9 +166,9 @@ read_bd_stats(xenUnifiedPrivatePtr priv,
     if (stats->rd_req == -1 && stats->rd_bytes == -1 &&
         stats->wr_req == -1 && stats->wr_bytes == -1 &&
         stats->errs == -1) {
-        statsError(VIR_ERR_INTERNAL_ERROR,
-                   _("Failed to read any block statistics for domain %d"),
-                   domid);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to read any block statistics for domain %d"),
+                       domid);
         return -1;
     }
 
@@ -186,9 +180,9 @@ read_bd_stats(xenUnifiedPrivatePtr priv,
         stats->wr_req == 0 && stats->wr_bytes == 0 &&
         stats->errs == 0 &&
         !check_bd_connected (priv, device, domid)) {
-        statsError(VIR_ERR_INTERNAL_ERROR,
-                   _("Frontend block device not connected for domain %d"),
-                   domid);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Frontend block device not connected for domain %d"),
+                       domid);
         return -1;
     }
 
@@ -197,18 +191,18 @@ read_bd_stats(xenUnifiedPrivatePtr priv,
      */
     if (stats->rd_bytes > 0) {
         if (stats->rd_bytes >= ((unsigned long long)1)<<(63-9)) {
-            statsError(VIR_ERR_INTERNAL_ERROR,
-                       _("stats->rd_bytes would overflow 64 bit counter for domain %d"),
-                       domid);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("stats->rd_bytes would overflow 64 bit counter for domain %d"),
+                           domid);
             return -1;
         }
         stats->rd_bytes *= 512;
     }
     if (stats->wr_bytes > 0) {
         if (stats->wr_bytes >= ((unsigned long long)1)<<(63-9)) {
-            statsError(VIR_ERR_INTERNAL_ERROR,
-                       _("stats->wr_bytes would overflow 64 bit counter for domain %d"),
-                       domid);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("stats->wr_bytes would overflow 64 bit counter for domain %d"),
+                           domid);
             return -1;
         }
         stats->wr_bytes *= 512;
@@ -326,21 +320,21 @@ xenLinuxDomainDeviceID(int domid, const char *path)
      * beginning of the strings for better error messages
      */
     else if (strlen(mod_path) >= 7 && STRPREFIX(mod_path, "/dev/sd"))
-        statsError(VIR_ERR_INVALID_ARG,
-                   _("invalid path, device names must be in the range "
-                     "sda[1-15] - sdiv[1-15] for domain %d"), domid);
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("invalid path, device names must be in the range "
+                         "sda[1-15] - sdiv[1-15] for domain %d"), domid);
     else if (strlen(mod_path) >= 7 && STRPREFIX(mod_path, "/dev/hd"))
-        statsError(VIR_ERR_INVALID_ARG,
-                   _("invalid path, device names must be in the range "
-                     "hda[1-63] - hdt[1-63] for domain %d"), domid);
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("invalid path, device names must be in the range "
+                         "hda[1-63] - hdt[1-63] for domain %d"), domid);
     else if (strlen(mod_path) >= 8 && STRPREFIX(mod_path, "/dev/xvd"))
-        statsError(VIR_ERR_INVALID_ARG,
-                   _("invalid path, device names must be in the range "
-                     "xvda[1-15] - xvdiz[1-15] for domain %d"), domid);
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("invalid path, device names must be in the range "
+                         "xvda[1-15] - xvdiz[1-15] for domain %d"), domid);
     else
-        statsError(VIR_ERR_INVALID_ARG,
-                   _("unsupported path, use xvdN, hdN, or sdN for domain %d"),
-                   domid);
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unsupported path, use xvdN, hdN, or sdN for domain %d"),
+                       domid);
 
     VIR_FREE(mod_path);
 
