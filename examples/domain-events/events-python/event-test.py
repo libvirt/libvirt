@@ -178,48 +178,53 @@ class virEventLoopPure:
     def run_once(self):
         sleep = -1
         self.runningPoll = True
-        next = self.next_timeout()
-        debug("Next timeout due at %d" % next)
-        if next > 0:
+        try:
+            next = self.next_timeout()
+            debug("Next timeout due at %d" % next)
+            if next > 0:
+                now = int(time.time() * 1000)
+                if now >= next:
+                    sleep = 0
+                else:
+                    sleep = (next - now) / 1000.0
+
+            debug("Poll with a sleep of %d" % sleep)
+            events = self.poll.poll(sleep)
+
+            # Dispatch any file handle events that occurred
+            for (fd, revents) in events:
+                # See if the events was from the self-pipe
+                # telling us to wakup. if so, then discard
+                # the data just continue
+                if fd == self.pipetrick[0]:
+                    self.pendingWakeup = False
+                    data = os.read(fd, 1)
+                    continue
+
+                h = self.get_handle_by_fd(fd)
+                if h:
+                    debug("Dispatch fd %d handle %d events %d" % (fd, h.get_id(), revents))
+                    h.dispatch(self.events_from_poll(revents))
+
             now = int(time.time() * 1000)
-            if now >= next:
-                sleep = 0
-            else:
-                sleep = (next - now) / 1000.0
+            for t in self.timers:
+                interval = t.get_interval()
+                if interval < 0:
+                    continue
 
-        debug("Poll with a sleep of %d" % sleep)
-        events = self.poll.poll(sleep)
+                want = t.get_last_fired() + interval
+                # Deduct 20ms, since scheduler timeslice
+                # means we could be ever so slightly early
+                if now >= (want-20):
+                    debug("Dispatch timer %d now %s want %s" % (t.get_id(), str(now), str(want)))
+                    t.set_last_fired(now)
+                    t.dispatch()
 
-        # Dispatch any file handle events that occurred
-        for (fd, revents) in events:
-            # See if the events was from the self-pipe
-            # telling us to wakup. if so, then discard
-            # the data just continue
-            if fd == self.pipetrick[0]:
-                self.pendingWakeup = False
-                data = os.read(fd, 1)
-                continue
-
-            h = self.get_handle_by_fd(fd)
-            if h:
-                debug("Dispatch fd %d handle %d events %d" % (fd, h.get_id(), revents))
-                h.dispatch(self.events_from_poll(revents))
-
-        now = int(time.time() * 1000)
-        for t in self.timers:
-            interval = t.get_interval()
-            if interval < 0:
-                continue
-
-            want = t.get_last_fired() + interval
-            # Deduct 20ms, since schedular timeslice
-            # means we could be ever so slightly early
-            if now >= (want-20):
-                debug("Dispatch timer %d now %s want %s" % (t.get_id(), str(now), str(want)))
-                t.set_last_fired(now)
-                t.dispatch()
-
-        self.runningPoll = False
+        except (os.error, select.error), e:
+            if e.args[0] != errno.EINTR:
+                raise
+        finally:
+            self.runningPoll = False
 
 
     # Actually the event loop forever
