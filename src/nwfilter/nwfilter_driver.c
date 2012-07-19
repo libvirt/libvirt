@@ -68,6 +68,9 @@ static int
 nwfilterDriverStartup(int privileged) {
     char *base = NULL;
 
+    if (!privileged)
+        return 0;
+
     if (virNWFilterIPAddrMapInit() < 0)
         return -1;
     if (virNWFilterLearnInit() < 0)
