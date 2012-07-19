@@ -191,6 +191,8 @@ struct _virConnect {
     virConnectCloseFunc closeCallback;
     void *closeOpaque;
     virFreeCallback closeFreeCallback;
+    bool closeDispatch;
+    unsigned closeUnregisterCount;
 
     int refs;                 /* reference count */
 };

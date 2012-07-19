@@ -320,6 +320,32 @@ enum virDrvOpenRemoteFlags {
 };
 
 
+static void remoteClientCloseFunc(virNetClientPtr client ATTRIBUTE_UNUSED,
+                                  int reason,
+                                  void *opaque)
+{
+    virConnectPtr conn = opaque;
+
+    virMutexLock(&conn->lock);
+    if (conn->closeCallback) {
+        virConnectCloseFunc closeCallback = conn->closeCallback;
+        void *closeOpaque = conn->closeOpaque;
+        virFreeCallback closeFreeCallback = conn->closeFreeCallback;
+        unsigned closeUnregisterCount = conn->closeUnregisterCount;
+
+        VIR_DEBUG("Triggering connection close callback %p reason=%d",
+                  conn->closeCallback, reason);
+        conn->closeDispatch = true;
+        virMutexUnlock(&conn->lock);
+        closeCallback(conn, reason, closeOpaque);
+        virMutexLock(&conn->lock);
+        conn->closeDispatch = false;
+        if (conn->closeUnregisterCount != closeUnregisterCount)
+            closeFreeCallback(closeOpaque);
+    }
+    virMutexUnlock(&conn->lock);
+}
+
 /*
  * URIs that this driver needs to handle:
  *
@@ -666,6 +692,11 @@ doRemoteOpen (virConnectPtr conn,
 
 #endif /* WIN32 */
     } /* switch (transport) */
+
+
+    virNetClientSetCloseCallback(priv->client,
+                                 remoteClientCloseFunc,
+                                 conn, NULL);
 
     if (!(priv->remoteProgram = virNetClientProgramNew(REMOTE_PROGRAM,
                                                        REMOTE_PROTOCOL_VERSION,

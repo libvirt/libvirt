@@ -18723,7 +18723,8 @@ int virConnectUnregisterCloseCallback(virConnectPtr conn,
     }
 
     conn->closeCallback = NULL;
-    if (conn->closeFreeCallback)
+    conn->closeUnregisterCount++;
+    if (!conn->closeDispatch && conn->closeFreeCallback)
         conn->closeFreeCallback(conn->closeOpaque);
     conn->closeFreeCallback = NULL;
     conn->closeOpaque = NULL;
