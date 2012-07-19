@@ -18625,6 +18625,120 @@ error:
 
 
 /**
+ * virConnectRegisterCloseCallback:
+ * @conn: pointer to connection object
+ * @cb: callback to invoke upon close
+ * @opaque: user data to pass to @cb
+ * @freecb: callback to free @opaque
+ *
+ * Registers a callback to be invoked when the connection
+ * is closed. This callback is invoked when there is any
+ * condition that causes the socket connection to the
+ * hypervisor to be closed.
+ *
+ * This function is only applicable to hypervisor drivers
+ * which maintain a persistent open connection. Drivers
+ * which open a new connection for every operation will
+ * not invoke this.
+ *
+ * The @freecb must not invoke any other libvirt public
+ * APIs, since it is not called from a re-entrant safe
+ * context.
+ *
+ * Returns 0 on success, -1 on error
+ */
+int virConnectRegisterCloseCallback(virConnectPtr conn,
+                                    virConnectCloseFunc cb,
+                                    void *opaque,
+                                    virFreeCallback freecb)
+{
+    VIR_DEBUG("conn=%p", conn);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    virMutexLock(&conn->lock);
+
+    virCheckNonNullArgGoto(cb, error);
+
+    if (conn->closeCallback) {
+        virLibConnError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("A close callback is already registered"));
+        goto error;
+    }
+
+    conn->closeCallback = cb;
+    conn->closeOpaque = opaque;
+    conn->closeFreeCallback = freecb;
+
+    virMutexUnlock(&conn->lock);
+
+    return 0;
+
+error:
+    virMutexUnlock(&conn->lock);
+    virDispatchError(NULL);
+    return -1;
+}
+
+/**
+ * virConnectUnregisterCloseCallback:
+ * @conn: pointer to connection object
+ * @cb: pointer to the current registered callback
+ *
+ * Unregisters the callback previously set with the
+ * virConnectRegisterCloseCallback method. The callback
+ * will no longer receive notifications when the connection
+ * closes. If a virFreeCallback was provided at time of
+ * registration, it will be invoked
+ *
+ * Returns 0 on success, -1 on error
+ */
+int virConnectUnregisterCloseCallback(virConnectPtr conn,
+                                      virConnectCloseFunc cb)
+{
+    VIR_DEBUG("conn=%p", conn);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    virMutexLock(&conn->lock);
+
+    virCheckNonNullArgGoto(cb, error);
+
+    if (conn->closeCallback != cb) {
+        virLibConnError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("A different callback was requested"));
+        goto error;
+    }
+
+    conn->closeCallback = NULL;
+    if (conn->closeFreeCallback)
+        conn->closeFreeCallback(conn->closeOpaque);
+    conn->closeFreeCallback = NULL;
+    conn->closeOpaque = NULL;
+
+    virMutexUnlock(&conn->lock);
+
+    return 0;
+
+error:
+    virMutexUnlock(&conn->lock);
+    virDispatchError(NULL);
+    return -1;
+}
+
+/**
  * virDomainSetBlockIoTune:
  * @dom: pointer to domain object
  * @disk: path to the block device, or device shorthand

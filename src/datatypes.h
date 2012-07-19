@@ -187,6 +187,11 @@ struct _virConnect {
     virErrorFunc handler;   /* associated handlet */
     void *userData;         /* the user data */
 
+    /* Per-connection close callback */
+    virConnectCloseFunc closeCallback;
+    void *closeOpaque;
+    virFreeCallback closeFreeCallback;
+
     int refs;                 /* reference count */
 };
 

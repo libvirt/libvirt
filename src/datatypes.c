@@ -115,6 +115,9 @@ virReleaseConnect(virConnectPtr conn) {
 
     virMutexLock(&conn->lock);
 
+    if (conn->closeFreeCallback)
+        conn->closeFreeCallback(conn->closeOpaque);
+
     virResetError(&conn->err);
 
     virURIFree(conn->uri);
