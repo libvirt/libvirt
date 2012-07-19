@@ -16,6 +16,8 @@
 # define ATTRIBUTE_UNUSED __attribute__((__unused__))
 #endif
 
+int run = 1;
+
 /* Prototypes */
 const char *eventToString(int event);
 int myEventAddHandleFunc  (int fd, int event,
@@ -38,6 +40,31 @@ virEventHandleType myPollEventToEventHandleType(int events);
 void usage(const char *pname);
 
 /* Callback functions */
+
+
+static void connectClose(virConnectPtr conn ATTRIBUTE_UNUSED,
+                         int reason,
+                         void *opaque ATTRIBUTE_UNUSED)
+{
+    switch (reason) {
+    case VIR_CONNECT_CLOSE_REASON_ERROR:
+        fprintf(stderr, "Connection closed due to I/O error\n");
+        break;
+    case VIR_CONNECT_CLOSE_REASON_EOF:
+        fprintf(stderr, "Connection closed due to end of file\n");
+        break;
+    case VIR_CONNECT_CLOSE_REASON_KEEPALIVE:
+        fprintf(stderr, "Connection closed due to keepalive timeout\n");
+        break;
+    case VIR_CONNECT_CLOSE_REASON_CLIENT:
+        fprintf(stderr, "Connection closed due to client request\n");
+        break;
+    default:
+        fprintf(stderr, "Connection closed due to unknown reason\n");
+        break;
+    };
+    run = 0;
+}
 
 const char *eventToString(int event) {
     const char *ret = "";
@@ -380,7 +407,6 @@ void usage(const char *pname)
     printf("%s uri\n", pname);
 }
 
-int run = 1;
 
 static void stop(int sig)
 {
@@ -425,6 +451,9 @@ int main(int argc, char **argv)
         printf("error opening\n");
         return -1;
     }
+
+    virConnectRegisterCloseCallback(dconn,
+                                    connectClose, NULL, NULL);
 
     sigaction(SIGTERM, &action_stop, NULL);
     sigaction(SIGINT, &action_stop, NULL);
@@ -513,7 +542,7 @@ int main(int argc, char **argv)
             run = 0;
         }
 
-        while (run && virConnectIsAlive(dconn) == 1) {
+        while (run) {
             if (virEventRunDefaultImpl() < 0) {
                 virErrorPtr err = virGetLastError();
                 fprintf(stderr, "Failed to run event loop: %s\n",
