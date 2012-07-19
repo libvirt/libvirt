@@ -1920,7 +1920,7 @@ qemuProcessSetLinkStates(virDomainObjPtr vm)
             VIR_DEBUG("Setting link state: %s", def->nets[i]->info.alias);
 
             if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV)) {
-                qemuReportError(VIR_ERR_NO_SUPPORT,
+                qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
                                 _("Setting of link state is not supported by this qemu"));
                 return -1;
             }

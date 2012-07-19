@@ -5701,7 +5701,7 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
         orig = vmdef->disks[pos];
         if (!(orig->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
             !(orig->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)) {
-            qemuReportError(VIR_ERR_INVALID_ARG,
+            qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                             _("this disk doesn't support update"));
             return -1;
         }
@@ -6272,7 +6272,7 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
-            qemuReportError(VIR_ERR_OPERATION_INVALID,
+            qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
                             _("blkio cgroup isn't mounted"));
             goto cleanup;
         }
@@ -6433,7 +6433,8 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
-            qemuReportError(VIR_ERR_OPERATION_INVALID, _("blkio cgroup isn't mounted"));
+            qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                            _("blkio cgroup isn't mounted"));
             goto cleanup;
         }
 
@@ -11214,7 +11215,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
               || snap->def->state == VIR_DOMAIN_PAUSED) &&
             (flags & (VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
                       VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED))) {
-            qemuReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY,
+            qemuReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY, "%s",
                             _("must respawn qemu to start inactive snapshot"));
             goto cleanup;
         }
@@ -11860,7 +11861,7 @@ qemuDomainOpenConsole(virDomainPtr dom,
                          (flags & VIR_DOMAIN_CONSOLE_FORCE) != 0);
 
     if (ret == 1) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
+        qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
                         _("Active console session exists for this domain"));
         ret = -1;
     }
@@ -12795,7 +12796,7 @@ getSumVcpuPercpuStats(virCgroupPtr group,
         int j;
 
         if (virCgroupForVcpu(group, i, &group_vcpu, 0) < 0) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("error accessing cgroup cpuacct for vcpu"));
             goto cleanup;
         }
@@ -12806,7 +12807,7 @@ getSumVcpuPercpuStats(virCgroupPtr group,
         pos = buf;
         for (j = 0; j < num; j++) {
             if (virStrToLong_ull(pos, &pos, 10, &tmp) < 0) {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                 _("cpuacct parse error"));
                 goto cleanup;
             }

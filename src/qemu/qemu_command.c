@@ -1616,7 +1616,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
             continue;
 
         if (def->disks[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                           _("virtio only support device address type 'PCI'"));
             goto error;
         }
@@ -3990,7 +3990,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
                                 _("guest and host CPU are not compatible: %s"),
                                 compare_msg);
             } else {
-                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                             _("guest CPU is not compatible with host CPU"));
             }
             /* fall through */
@@ -5723,7 +5723,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
         if (def->graphics[0]->data.spice.tlsPort > 0) {
             if (!driver->spiceTLS) {
-                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                 _("spice TLS port set in XML configuration,"
                                   " but TLS is disabled in qemu.conf"));
                 goto error;
@@ -7432,7 +7432,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
 
                 if (dom->clock.timers[i]->present != -1 &&
                     dom->clock.timers[i]->present != present) {
-                    qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                    qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                     _("conflicting occurrences of kvmclock feature"));
                     goto error;
                 }
@@ -8217,7 +8217,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
         }
 
         if (!first_rbd_disk) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("CEPH_ARGS was set without an rbd disk"));
             goto error;
         }

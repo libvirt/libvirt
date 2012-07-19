@@ -307,7 +307,7 @@ qemuDomainHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
 
     isvf = qemuDomainHostdevIsVirtualFunction(hostdev);
     if (isvf <= 0) {
-        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("Interface type hostdev is currently supported on"
                         " SR-IOV Virtual Functions only"));
         return ret;
@@ -345,7 +345,7 @@ qemuDomainHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
 
     isvf = qemuDomainHostdevIsVirtualFunction(hostdev);
     if (isvf <= 0) {
-        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("Interface type hostdev is currently supported on"
                         " SR-IOV Virtual Functions only"));
         return ret;

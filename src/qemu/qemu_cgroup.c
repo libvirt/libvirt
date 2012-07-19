@@ -310,7 +310,7 @@ int qemuSetupCgroup(struct qemud_driver *driver,
                 goto cleanup;
             }
         } else {
-            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                             _("Block I/O tuning is not available on this host"));
             goto cleanup;
         }
@@ -387,7 +387,7 @@ int qemuSetupCgroup(struct qemud_driver *driver,
                 goto cleanup;
             }
         } else {
-            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                             _("CPU tuning is not available on this host"));
         }
     }
@@ -405,7 +405,7 @@ int qemuSetupCgroup(struct qemud_driver *driver,
             mask = virDomainCpuSetFormat(vm->def->numatune.memory.nodemask,
                                          VIR_DOMAIN_CPUMASK_LEN);
         if (!mask) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("failed to convert memory nodemask"));
             goto cleanup;
         }

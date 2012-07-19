@@ -649,7 +649,7 @@ qemuAgentIO(int watch, int fd, int events, void *opaque) {
 
         if (!error &&
             events & VIR_EVENT_HANDLE_HANGUP) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("End of file from monitor"));
             eof = 1;
             events &= ~VIR_EVENT_HANDLE_HANGUP;
@@ -657,7 +657,7 @@ qemuAgentIO(int watch, int fd, int events, void *opaque) {
 
         if (!error && !eof &&
             events & VIR_EVENT_HANDLE_ERROR) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("Invalid file descriptor while waiting for monitor"));
             eof = 1;
             events &= ~VIR_EVENT_HANDLE_ERROR;
@@ -677,7 +677,7 @@ qemuAgentIO(int watch, int fd, int events, void *opaque) {
         } else {
             virErrorPtr err = virGetLastError();
             if (!err)
-                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                 _("Error while processing monitor IO"));
             virCopyLastError(&mon->lastError);
             virResetLastError();

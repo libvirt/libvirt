@@ -2240,7 +2240,7 @@ static int doPeer2PeerMigrate2(struct qemud_driver *driver,
 
     if (!(flags & VIR_MIGRATE_TUNNELLED) &&
         (uri_out == NULL)) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("domainMigratePrepare2 did not set uri"));
         cancelled = 1;
         goto finish;
@@ -2378,7 +2378,7 @@ static int doPeer2PeerMigrate3(struct qemud_driver *driver,
 
     if (!(flags & VIR_MIGRATE_TUNNELLED) &&
         (uri_out == NULL)) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("domainMigratePrepare3 did not set uri"));
         cancelled = 1;
         goto finish;

@@ -612,7 +612,7 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
 
         if (!error &&
             events & VIR_EVENT_HANDLE_HANGUP) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("End of file from monitor"));
             eof = 1;
             events &= ~VIR_EVENT_HANDLE_HANGUP;
@@ -620,7 +620,7 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
 
         if (!error && !eof &&
             events & VIR_EVENT_HANDLE_ERROR) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("Invalid file descriptor while waiting for monitor"));
             eof = 1;
             events &= ~VIR_EVENT_HANDLE_ERROR;
@@ -640,7 +640,7 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
         } else {
             virErrorPtr err = virGetLastError();
             if (!err)
-                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                 _("Error while processing monitor IO"));
             virCopyLastError(&mon->lastError);
             virResetLastError();
@@ -813,7 +813,7 @@ void qemuMonitorClose(qemuMonitorPtr mon)
         if (mon->lastError.code == VIR_ERR_OK) {
             virErrorPtr err = virSaveLastError();
 
-            qemuReportError(VIR_ERR_OPERATION_FAILED,
+            qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
                             _("Qemu monitor was closed"));
             virCopyLastError(&mon->lastError);
             if (err) {
@@ -1275,7 +1275,7 @@ int qemuMonitorSetLink(qemuMonitorPtr mon,
     VIR_DEBUG("mon=%p, name=%p:%s, state=%u", mon, name, name, state);
 
     if (!mon || !name) {
-        qemuReportError(VIR_ERR_INVALID_ARG,
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
                         _("monitor || name must not be NULL"));
         return -1;
     }
