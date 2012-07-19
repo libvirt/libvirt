@@ -559,7 +559,7 @@
 
 #define ESX_VI__TEMPLATE__DISPATCH__DEEP_COPY(_type)                          \
     case esxVI_Type_##_type:                                                  \
-      return esxVI_##_type##_DeepCopy((esxVI_##_type **)dst,                  \
+      return esxVI_##_type##_DeepCopy((esxVI_##_type **)dest,                 \
                                       (esxVI_##_type *)src);
 
 
@@ -615,6 +615,13 @@
                                                                               \
         return NULL;                                                          \
     }
+
+
+
+#define ESX_VI__TEMPLATE__DYNAMIC_DEEP_COPY(__type, _dispatch, _deep_copy)    \
+    ESX_VI__TEMPLATE__DEEP_COPY(__type,                                       \
+      ESX_VI__TEMPLATE__DISPATCH(src->_type, __type, _dispatch, -1)           \
+      _deep_copy)
 
 
 
@@ -1336,6 +1343,12 @@ ESX_VI__TEMPLATE__VALIDATE(Long,
 
 /* esxVI_Long_AppendToList */
 ESX_VI__TEMPLATE__LIST__APPEND(Long)
+
+/* esxVI_Long_DeepCopy */
+ESX_VI__TEMPLATE__DEEP_COPY(Long,
+{
+    (*dest)->value = src->value;
+})
 
 /* esxVI_Long_CastFromAnyType */
 ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(Long)

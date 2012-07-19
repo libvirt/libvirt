@@ -832,7 +832,7 @@ class Object(Type):
         else:
             if self.features & Object.FEATURE__DEEP_COPY:
                 source += "/* esxVI_%s_DeepCopy */\n" % self.name
-                source += "ESX_VI__TEMPLATE__DYNAMIC_DEEP_COPY(%s)\n" % self.name
+                source += "ESX_VI__TEMPLATE__DYNAMIC_DEEP_COPY(%s,\n" % self.name
                 source += "{\n"
 
                 for extended_by in self.extended_by:
