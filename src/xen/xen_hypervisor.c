@@ -526,9 +526,15 @@ static int
 lock_pages(void *addr, size_t len)
 {
 #ifdef __linux__
-        return mlock(addr, len);
+    if (mlock(addr, len) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to lock %zu bytes of memory"),
+                             len);
+        return -1;
+    }
+    return 0;
 #elif defined(__sun)
-        return 0;
+    return 0;
 #endif
 }
 
@@ -536,9 +542,15 @@ static int
 unlock_pages(void *addr, size_t len)
 {
 #ifdef __linux__
-        return munlock(addr, len);
+    if (munlock(addr, len) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to unlock %zu bytes of memory"),
+                             len);
+        return -1;
+    }
+    return 0;
 #elif defined(__sun)
-        return 0;
+    return 0;
 #endif
 }
 
@@ -900,21 +912,18 @@ xenHypervisorDoV0Op(int handle, xen_op_v0 * op)
     hc.op = __HYPERVISOR_dom0_op;
     hc.arg[0] = (unsigned long) op;
 
-    if (lock_pages(op, sizeof(dom0_op_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " locking");
+    if (lock_pages(op, sizeof(dom0_op_t)) < 0)
         return -1;
-    }
 
     ret = ioctl(handle, xen_ioctl_hypercall_cmd, (unsigned long) &hc);
     if (ret < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " ioctl %d",
-                    xen_ioctl_hypercall_cmd);
+        virReportSystemError(errno,
+                             _("Unable to issue hypervisor ioctl %d"),
+                             xen_ioctl_hypercall_cmd);
     }
 
-    if (unlock_pages(op, sizeof(dom0_op_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " releasing");
+    if (unlock_pages(op, sizeof(dom0_op_t)) < 0)
         ret = -1;
-    }
 
     if (ret < 0)
         return -1;
@@ -942,21 +951,18 @@ xenHypervisorDoV1Op(int handle, xen_op_v1* op)
     hc.op = __HYPERVISOR_dom0_op;
     hc.arg[0] = (unsigned long) op;
 
-    if (lock_pages(op, sizeof(dom0_op_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " locking");
+    if (lock_pages(op, sizeof(dom0_op_t)) < 0)
         return -1;
-    }
 
     ret = ioctl(handle, xen_ioctl_hypercall_cmd, (unsigned long) &hc);
     if (ret < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " ioctl %d",
-                    xen_ioctl_hypercall_cmd);
+        virReportSystemError(errno,
+                             _("Unable to issue hypervisor ioctl %d"),
+                             xen_ioctl_hypercall_cmd);
     }
 
-    if (unlock_pages(op, sizeof(dom0_op_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " releasing");
+    if (unlock_pages(op, sizeof(dom0_op_t)) < 0)
         ret = -1;
-    }
 
     if (ret < 0)
         return -1;
@@ -985,21 +991,18 @@ xenHypervisorDoV2Sys(int handle, xen_op_v2_sys* op)
     hc.op = __HYPERVISOR_sysctl;
     hc.arg[0] = (unsigned long) op;
 
-    if (lock_pages(op, sizeof(dom0_op_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " locking");
+    if (lock_pages(op, sizeof(dom0_op_t)) < 0)
         return -1;
-    }
 
     ret = ioctl(handle, xen_ioctl_hypercall_cmd, (unsigned long) &hc);
     if (ret < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " sys ioctl %d",
-                                            xen_ioctl_hypercall_cmd);
+        virReportSystemError(errno,
+                             _("Unable to issue hypervisor ioctl %d"),
+                             xen_ioctl_hypercall_cmd);
     }
 
-    if (unlock_pages(op, sizeof(dom0_op_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " releasing");
+    if (unlock_pages(op, sizeof(dom0_op_t)) < 0)
         ret = -1;
-    }
 
     if (ret < 0)
         return -1;
@@ -1028,21 +1031,18 @@ xenHypervisorDoV2Dom(int handle, xen_op_v2_dom* op)
     hc.op = __HYPERVISOR_domctl;
     hc.arg[0] = (unsigned long) op;
 
-    if (lock_pages(op, sizeof(dom0_op_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " locking");
+    if (lock_pages(op, sizeof(dom0_op_t)) < 0)
         return -1;
-    }
 
     ret = ioctl(handle, xen_ioctl_hypercall_cmd, (unsigned long) &hc);
     if (ret < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " ioctl %d",
-                    xen_ioctl_hypercall_cmd);
+        virReportSystemError(errno,
+                             _("Unable to issue hypervisor ioctl %d"),
+                             xen_ioctl_hypercall_cmd);
     }
 
-    if (unlock_pages(op, sizeof(dom0_op_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " releasing");
+    if (unlock_pages(op, sizeof(dom0_op_t)) < 0)
         ret = -1;
-    }
 
     if (ret < 0)
         return -1;
@@ -1068,10 +1068,9 @@ virXen_getdomaininfolist(int handle, int first_domain, int maxids,
     int ret = -1;
 
     if (lock_pages(XEN_GETDOMAININFOLIST_DATA(dominfos),
-              XEN_GETDOMAININFO_SIZE * maxids) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " locking");
+                   XEN_GETDOMAININFO_SIZE * maxids) < 0)
         return -1;
-    }
+
     if (hv_versions.hypervisor > 1) {
         xen_op_v2_sys op;
 
@@ -1123,10 +1122,9 @@ virXen_getdomaininfolist(int handle, int first_domain, int maxids,
             ret = op.u.getdomaininfolist.num_domains;
     }
     if (unlock_pages(XEN_GETDOMAININFOLIST_DATA(dominfos),
-                XEN_GETDOMAININFO_SIZE * maxids) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " release");
+                     XEN_GETDOMAININFO_SIZE * maxids) < 0)
         ret = -1;
-    }
+
     return ret;
 }
 
@@ -1747,10 +1745,9 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
     if (hv_versions.hypervisor > 1) {
         xen_op_v2_dom op;
 
-        if (lock_pages(cpumap, maplen) < 0) {
-            virXenError(VIR_ERR_XEN_CALL, " locking");
+        if (lock_pages(cpumap, maplen) < 0)
             return -1;
-        }
+
         memset(&op, 0, sizeof(op));
         op.cmd = XEN_V2_OP_SETVCPUMAP;
         op.domain = (domid_t) id;
@@ -1782,10 +1779,8 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
         ret = xenHypervisorDoV2Dom(handle, &op);
         VIR_FREE(new);
 
-        if (unlock_pages(cpumap, maplen) < 0) {
-            virXenError(VIR_ERR_XEN_CALL, " release");
+        if (unlock_pages(cpumap, maplen) < 0)
             ret = -1;
-        }
     } else {
         cpumap_t xen_cpumap; /* limited to 64 CPUs in old hypervisors */
         uint64_t *pm = &xen_cpumap;
@@ -1879,10 +1874,9 @@ virXen_getvcpusinfo(int handle, int id, unsigned int vcpu, virVcpuInfoPtr ipt,
             ipt->cpu = op.u.getvcpuinfod5.online ? (int)op.u.getvcpuinfod5.cpu : -1;
         }
         if ((cpumap != NULL) && (maplen > 0)) {
-            if (lock_pages(cpumap, maplen) < 0) {
-                virXenError(VIR_ERR_XEN_CALL, " locking");
+            if (lock_pages(cpumap, maplen) < 0)
                 return -1;
-            }
+
             memset(cpumap, 0, maplen);
             memset(&op, 0, sizeof(op));
             op.cmd = XEN_V2_OP_GETVCPUMAP;
@@ -1897,10 +1891,8 @@ virXen_getvcpusinfo(int handle, int id, unsigned int vcpu, virVcpuInfoPtr ipt,
                 op.u.getvcpumapd5.cpumap.nr_cpus = maplen * 8;
             }
             ret = xenHypervisorDoV2Dom(handle, &op);
-            if (unlock_pages(cpumap, maplen) < 0) {
-                virXenError(VIR_ERR_XEN_CALL, " release");
+            if (unlock_pages(cpumap, maplen) < 0)
                 ret = -1;
-            }
         }
     } else {
         int mapl = maplen;
@@ -2079,8 +2071,9 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
      */
 
     hv_versions.hypervisor = -1;
-    virXenError(VIR_ERR_XEN_CALL, " ioctl %lu",
-                (unsigned long) IOCTL_PRIVCMD_HYPERCALL);
+    virReportSystemError(errno,
+                         _("Unable to issue hypervisor ioctl %lu"),
+                         (unsigned long)IOCTL_PRIVCMD_HYPERCALL);
     VIR_FORCE_CLOSE(fd);
     in_init = 0;
     return -1;
@@ -2178,14 +2171,15 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
         goto done;
     }
 
+
     /*
      * we failed to make the getdomaininfolist hypercall
      */
-
-    VIR_DEBUG("Failed to find any Xen hypervisor method");
     hv_versions.hypervisor = -1;
-    virXenError(VIR_ERR_XEN_CALL, " ioctl %lu",
-                (unsigned long)IOCTL_PRIVCMD_HYPERCALL);
+    virReportSystemError(errno,
+                         _("Unable to issue hypervisor ioctl %lu"),
+                         (unsigned long)IOCTL_PRIVCMD_HYPERCALL);
+    VIR_DEBUG("Failed to find any Xen hypervisor method");
     VIR_FORCE_CLOSE(fd);
     in_init = 0;
     VIR_FREE(ipt);

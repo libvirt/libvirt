@@ -540,6 +540,7 @@ msg_gen_function += virReportError
 msg_gen_function += virReportErrorHelper
 msg_gen_function += virReportSystemError
 msg_gen_function += virSecurityReportError
+msg_gen_function += virXenError
 msg_gen_function += virXenInotifyError
 msg_gen_function += virXenStoreError
 msg_gen_function += virXendError
@@ -552,7 +553,6 @@ msg_gen_function += xenXMError
 # so that they are translatable.
 # msg_gen_function += fprintf
 # msg_gen_function += testError
-# msg_gen_function += virXenError
 # msg_gen_function += vshPrint
 # msg_gen_function += vshError
 
