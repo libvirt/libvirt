@@ -65,6 +65,7 @@
 #include "buf.h"
 #include "capabilities.h"
 #include "memory.h"
+#include "threads.h"
 #include "virfile.h"
 #include "virnodesuspend.h"
 #include "virtypedparam.h"
@@ -113,8 +114,6 @@ typedef privcmd_hypercall_t hypercall_t;
 #endif
 
 static int xen_ioctl_hypercall_cmd = 0;
-static int initialized = 0;
-static int in_init = 0;
 static struct xenHypervisorVersions hv_versions = {
     .hv = 0,
     .hypervisor = 2,
@@ -887,7 +886,6 @@ struct xenUnifiedDriver xenHypervisorDriver = {
 };
 
 #define virXenError(code, ...)                                             \
-        if (in_init == 0)                                                  \
             virReportErrorHelper(VIR_FROM_XEN, code, __FILE__,             \
                                  __FUNCTION__, __LINE__, __VA_ARGS__)
 
@@ -1973,14 +1971,6 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
     xen_getdomaininfo info;
     virVcpuInfoPtr ipt = NULL;
 
-    if (initialized) {
-        if (hv_versions.hypervisor == -1)
-            return -1;
-        return 0;
-    }
-    initialized = 1;
-    in_init = 1;
-
     /* Compile regular expressions used by xenHypervisorGetCapabilities.
      * Note that errors here are really internal errors since these
      * regexps should never fail to compile.
@@ -1991,7 +1981,6 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
         regerror (errcode, &flags_hvm_rec, error, sizeof(error));
         regfree (&flags_hvm_rec);
         virXenError(VIR_ERR_INTERNAL_ERROR, "%s", error);
-        in_init = 0;
         return -1;
     }
     errcode = regcomp (&flags_pae_rec, flags_pae_re, REG_EXTENDED);
@@ -2001,7 +1990,6 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
         regfree (&flags_pae_rec);
         regfree (&flags_hvm_rec);
         virXenError(VIR_ERR_INTERNAL_ERROR, "%s", error);
-        in_init = 0;
         return -1;
     }
     errcode = regcomp (&xen_cap_rec, xen_cap_re, REG_EXTENDED);
@@ -2012,13 +2000,11 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
         regfree (&flags_pae_rec);
         regfree (&flags_hvm_rec);
         virXenError(VIR_ERR_INTERNAL_ERROR, "%s", error);
-        in_init = 0;
         return -1;
     }
 
     if (override_versions) {
       hv_versions = *override_versions;
-      in_init = 0;
       return 0;
     }
 
@@ -2075,7 +2061,6 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
                          _("Unable to issue hypervisor ioctl %lu"),
                          (unsigned long)IOCTL_PRIVCMD_HYPERCALL);
     VIR_FORCE_CLOSE(fd);
-    in_init = 0;
     return -1;
 
  detect_v2:
@@ -2181,16 +2166,21 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
                          (unsigned long)IOCTL_PRIVCMD_HYPERCALL);
     VIR_DEBUG("Failed to find any Xen hypervisor method");
     VIR_FORCE_CLOSE(fd);
-    in_init = 0;
     VIR_FREE(ipt);
     return -1;
 
  done:
     VIR_FORCE_CLOSE(fd);
-    in_init = 0;
     VIR_FREE(ipt);
     return 0;
 }
+
+
+static int xenHypervisorOnceInit(void) {
+    return xenHypervisorInit(NULL);
+}
+
+VIR_ONCE_GLOBAL_INIT(xenHypervisor)
 
 /**
  * xenHypervisorOpen:
@@ -2212,9 +2202,8 @@ xenHypervisorOpen(virConnectPtr conn,
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (initialized == 0)
-        if (xenHypervisorInit(NULL) == -1)
-            return -1;
+    if (xenHypervisorInitialize() < 0)
+        return -1;
 
     priv->handle = -1;
 
