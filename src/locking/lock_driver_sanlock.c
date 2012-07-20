@@ -296,7 +296,7 @@ static int virLockManagerSanlockInit(unsigned int version,
         goto error;
 
     if (driver->autoDiskLease && !driver->hostID) {
-        virLockError(VIR_ERR_INTERNAL_ERROR,
+        virLockError(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("Automatic disk lease mode enabled, but no host ID is set"));
         goto error;
     }
@@ -338,7 +338,7 @@ static int virLockManagerSanlockNew(virLockManagerPtr lock,
     virCheckFlags(0, -1);
 
     if (!driver) {
-        virLockError(VIR_ERR_INTERNAL_ERROR,
+        virLockError(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("Sanlock plugin is not initialized"));
         return -1;
     }
@@ -409,13 +409,13 @@ static int virLockManagerSanlockDiskLeaseName(const char *path,
     int i;
 
     if (strbuflen < ((MD5_DIGEST_SIZE * 2) + 1)) {
-        virLockError(VIR_ERR_INTERNAL_ERROR,
+        virLockError(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("String length too small to store md5 checksum"));
         return -1;
     }
 
     if (!(md5_buffer(path, strlen(path), buf))) {
-        virLockError(VIR_ERR_INTERNAL_ERROR,
+        virLockError(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("Unable to compute md5 checksum"));
         return -1;
     }
@@ -499,7 +499,7 @@ static int virLockManagerSanlockAddDisk(virLockManagerPtr lock,
     char *path = NULL;
 
     if (nparams) {
-        virLockError(VIR_ERR_INTERNAL_ERROR,
+        virLockError(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("Unexpected lock parameters for disk resource"));
         return -1;
     }
