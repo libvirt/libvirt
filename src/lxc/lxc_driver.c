@@ -72,7 +72,7 @@
 
 static int lxcStartup(int privileged);
 static int lxcShutdown(void);
-static lxc_driver_t *lxc_driver = NULL;
+lxc_driver_t *lxc_driver = NULL;
 
 /* Functions */
 
