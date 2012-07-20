@@ -100,9 +100,9 @@ linuxTestNodeInfo(const void *data)
     if (virAsprintf(&sysfs_dir, "%s/nodeinfodata/linux-%s",
                     abs_srcdir, test) < 0 ||
         virAsprintf(&cpuinfo, "%s/nodeinfodata/linux-%s-%s.cpuinfo",
-                    abs_srcdir, test, arch) < 0 ||
-        virAsprintf(&output, "%s/nodeinfodata/linux-%s-cpu-%s-output.txt",
-                    abs_srcdir, test, arch) < 0) {
+                    abs_srcdir, arch, test) < 0 ||
+        virAsprintf(&output, "%s/nodeinfodata/linux-%s-%s.expected",
+                    abs_srcdir, arch, test) < 0) {
         goto cleanup;
     }
 
@@ -123,14 +123,14 @@ mymain(void)
     int ret = 0;
     int i;
     const char *nodeData[] = {
-        "nodeinfo-sysfs-test-1",
+        "test1",
 # if !(defined(__powerpc__) ||                  \
        defined(__powerpc64__))
-        "nodeinfo-sysfs-test-2",
-        "nodeinfo-sysfs-test-3",
-        "nodeinfo-sysfs-test-4",
-        "nodeinfo-sysfs-test-5",
-        "nodeinfo-sysfs-test-6",
+        "test2",
+        "test3",
+        "test4",
+        "test5",
+        "test6",
 # endif
     };
 
