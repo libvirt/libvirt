@@ -36,6 +36,8 @@
 #include <unistd.h>
 #include <mntent.h>
 #include <dirent.h>
+#include <sys/reboot.h>
+#include <linux/reboot.h>
 
 /* Yes, we want linux private one, for _syscall2() macro */
 #include <linux/unistd.h>
@@ -100,6 +102,80 @@ struct __lxc_child_argv {
     size_t nttyPaths;
     int handshakefd;
 };
+
+
+/*
+ * reboot(LINUX_REBOOT_CMD_CAD_ON) will return -EINVAL
+ * in a child pid namespace if container reboot support exists.
+ * Otherwise, it will either succeed or return -EPERM.
+ */
+ATTRIBUTE_NORETURN static int
+lxcContainerRebootChild(void *argv)
+{
+    int *cmd = argv;
+    int ret;
+
+    ret = reboot(*cmd);
+    if (ret == -1 && errno == EINVAL)
+        _exit(1);
+    _exit(0);
+}
+
+
+static
+int lxcContainerHasReboot(void)
+{
+    int flags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|
+        CLONE_NEWIPC|SIGCHLD;
+    int cpid;
+    char *childStack;
+    char *stack;
+    char *buf;
+    int cmd, v;
+    int status;
+    char *tmp;
+
+    if (virFileReadAll("/proc/sys/kernel/ctrl-alt-del", 10, &buf) < 0)
+        return -1;
+
+    if ((tmp = strchr(buf, '\n')))
+        *tmp = '\0';
+
+    if (virStrToLong_i(buf, NULL, 10, &v) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Malformed ctrl-alt-del setting '%s'"), buf);
+        VIR_FREE(buf);
+        return -1;
+    }
+    VIR_FREE(buf);
+    cmd = v ? LINUX_REBOOT_CMD_CAD_ON : LINUX_REBOOT_CMD_CAD_OFF;
+
+    if (VIR_ALLOC_N(stack, getpagesize() * 4) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    childStack = stack + (getpagesize() * 4);
+
+    cpid = clone(lxcContainerRebootChild, childStack, flags, &cmd);
+    VIR_FREE(stack);
+    if (cpid < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to clone to check reboot support"));
+        return -1;
+    } else if (virPidWait(cpid, &status) < 0) {
+        return -1;
+    }
+
+    if (WEXITSTATUS(status) != 1) {
+        VIR_DEBUG("Containerized reboot support is missing "
+                  "(kernel probably too old < 3.4)");
+        return 0;
+    }
+
+    VIR_DEBUG("Containerized reboot support is available");
+    return 1;
+}
 
 
 /**
@@ -1583,7 +1659,7 @@ static int lxcContainerSetupMounts(virDomainDefPtr vmDef,
  * It removes some capabilities that could be dangerous to
  * host system, since they are not currently "containerized"
  */
-static int lxcContainerDropCapabilities(void)
+static int lxcContainerDropCapabilities(bool keepReboot)
 {
 #if HAVE_CAPNG
     int ret;
@@ -1593,11 +1669,11 @@ static int lxcContainerDropCapabilities(void)
     if ((ret = capng_updatev(CAPNG_DROP,
                              CAPNG_EFFECTIVE | CAPNG_PERMITTED |
                              CAPNG_INHERITABLE | CAPNG_BOUNDING_SET,
-                             CAP_SYS_BOOT, /* No use of reboot */
                              CAP_SYS_MODULE, /* No kernel module loading */
                              CAP_SYS_TIME, /* No changing the clock */
                              CAP_AUDIT_CONTROL, /* No messing with auditing status */
                              CAP_MAC_ADMIN, /* No messing with LSM config */
+                             keepReboot ? -1 : CAP_SYS_BOOT, /* No use of reboot */
                              -1 /* sentinal */)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to remove capabilities: %d"), ret);
@@ -1644,12 +1720,16 @@ static int lxcContainerChild( void *data )
     char *ttyPath = NULL;
     virDomainFSDefPtr root;
     virCommandPtr cmd = NULL;
+    int hasReboot;
 
     if (NULL == vmDef) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("lxcChild() passed invalid vm definition"));
         goto cleanup;
     }
+
+    if ((hasReboot = lxcContainerHasReboot()) < 0)
+        goto cleanup;
 
     cmd = lxcContainerBuildInitCmd(vmDef);
     virCommandWriteArgLog(cmd, 1);
@@ -1714,7 +1794,7 @@ static int lxcContainerChild( void *data )
     }
 
     /* drop a set of root capabilities */
-    if (lxcContainerDropCapabilities() < 0)
+    if (lxcContainerDropCapabilities(!!hasReboot) < 0)
         goto cleanup;
 
     if (lxcContainerSendContinue(argv->handshakefd) < 0) {
