@@ -378,7 +378,7 @@ static void daemonInitialize(void)
 # ifdef WITH_NWFILTER
     virDriverLoadModule("nwfilter");
 # endif
-# ifdef WITH_INTERFACE
+# ifdef WITH_NETCF
     virDriverLoadModule("interface");
 # endif
 # ifdef WITH_QEMU

@@ -79,7 +79,7 @@ mymain(void)
 #ifdef WITH_NWFILTER
     TEST("nwfilter", NULL);
 #endif
-#ifdef WITH_INTERFACE
+#ifdef WITH_NETCF
     TEST("interface", NULL);
 #endif
 #ifdef WITH_QEMU
