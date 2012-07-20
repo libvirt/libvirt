@@ -33,8 +33,8 @@
  * magic value used to protect the API when pointers to connection structures
  * are passed down by the users.
  */
-# define VIR_CONNECT_MAGIC	0x4F23DEAD
-# define VIR_IS_CONNECT(obj)	((obj) && (obj)->magic==VIR_CONNECT_MAGIC)
+# define VIR_CONNECT_MAGIC   0x4F23DEAD
+# define VIR_IS_CONNECT(obj) ((obj) && (obj)->magic==VIR_CONNECT_MAGIC)
 
 
 /**
@@ -43,9 +43,9 @@
  * magic value used to protect the API when pointers to domain structures
  * are passed down by the users.
  */
-# define VIR_DOMAIN_MAGIC		0xDEAD4321
-# define VIR_IS_DOMAIN(obj)		((obj) && (obj)->magic==VIR_DOMAIN_MAGIC)
-# define VIR_IS_CONNECTED_DOMAIN(obj)	(VIR_IS_DOMAIN(obj) && VIR_IS_CONNECT((obj)->conn))
+# define VIR_DOMAIN_MAGIC             0xDEAD4321
+# define VIR_IS_DOMAIN(obj)           ((obj) && (obj)->magic==VIR_DOMAIN_MAGIC)
+# define VIR_IS_CONNECTED_DOMAIN(obj) (VIR_IS_DOMAIN(obj) && VIR_IS_CONNECT((obj)->conn))
 
 /**
  * VIR_NETWORK_MAGIC:
@@ -53,9 +53,9 @@
  * magic value used to protect the API when pointers to network structures
  * are passed down by the users.
  */
-# define VIR_NETWORK_MAGIC		0xDEAD1234
-# define VIR_IS_NETWORK(obj)		((obj) && (obj)->magic==VIR_NETWORK_MAGIC)
-# define VIR_IS_CONNECTED_NETWORK(obj)	(VIR_IS_NETWORK(obj) && VIR_IS_CONNECT((obj)->conn))
+# define VIR_NETWORK_MAGIC             0xDEAD1234
+# define VIR_IS_NETWORK(obj)           ((obj) && (obj)->magic==VIR_NETWORK_MAGIC)
+# define VIR_IS_CONNECTED_NETWORK(obj) (VIR_IS_NETWORK(obj) && VIR_IS_CONNECT((obj)->conn))
 
 /**
  * VIR_INTERFACE_MAGIC:
@@ -63,9 +63,9 @@
  * magic value used to protect the API when pointers to interface structures
  * are passed down by the users.
  */
-# define VIR_INTERFACE_MAGIC		0xDEAD5309
-# define VIR_IS_INTERFACE(obj)		((obj) && (obj)->magic==VIR_INTERFACE_MAGIC)
-# define VIR_IS_CONNECTED_INTERFACE(obj)	(VIR_IS_INTERFACE(obj) && VIR_IS_CONNECT((obj)->conn))
+# define VIR_INTERFACE_MAGIC             0xDEAD5309
+# define VIR_IS_INTERFACE(obj)           ((obj) && (obj)->magic==VIR_INTERFACE_MAGIC)
+# define VIR_IS_CONNECTED_INTERFACE(obj) (VIR_IS_INTERFACE(obj) && VIR_IS_CONNECT((obj)->conn))
 
 /**
  * VIR_STORAGE_POOL_MAGIC:
@@ -73,9 +73,9 @@
  * magic value used to protect the API when pointers to storage pool structures
  * are passed down by the users.
  */
-# define VIR_STORAGE_POOL_MAGIC		0xDEAD5678
-# define VIR_IS_STORAGE_POOL(obj)		((obj) && (obj)->magic==VIR_STORAGE_POOL_MAGIC)
-# define VIR_IS_CONNECTED_STORAGE_POOL(obj)	(VIR_IS_STORAGE_POOL(obj) && VIR_IS_CONNECT((obj)->conn))
+# define VIR_STORAGE_POOL_MAGIC             0xDEAD5678
+# define VIR_IS_STORAGE_POOL(obj)           ((obj) && (obj)->magic==VIR_STORAGE_POOL_MAGIC)
+# define VIR_IS_CONNECTED_STORAGE_POOL(obj) (VIR_IS_STORAGE_POOL(obj) && VIR_IS_CONNECT((obj)->conn))
 
 /**
  * VIR_STORAGE_VOL_MAGIC:
@@ -83,9 +83,9 @@
  * magic value used to protect the API when pointers to storage vol structures
  * are passed down by the users.
  */
-# define VIR_STORAGE_VOL_MAGIC		0xDEAD8765
-# define VIR_IS_STORAGE_VOL(obj)		((obj) && (obj)->magic==VIR_STORAGE_VOL_MAGIC)
-# define VIR_IS_CONNECTED_STORAGE_VOL(obj)	(VIR_IS_STORAGE_VOL(obj) && VIR_IS_CONNECT((obj)->conn))
+# define VIR_STORAGE_VOL_MAGIC             0xDEAD8765
+# define VIR_IS_STORAGE_VOL(obj)           ((obj) && (obj)->magic==VIR_STORAGE_VOL_MAGIC)
+# define VIR_IS_CONNECTED_STORAGE_VOL(obj) (VIR_IS_STORAGE_VOL(obj) && VIR_IS_CONNECT((obj)->conn))
 
 /**
  * VIR_NODE_DEVICE_MAGIC:
@@ -93,9 +93,9 @@
  * magic value used to protect the API when pointers to storage vol structures
  * are passed down by the users.
  */
-# define VIR_NODE_DEVICE_MAGIC                   0xDEAD5679
-# define VIR_IS_NODE_DEVICE(obj)                 ((obj) && (obj)->magic==VIR_NODE_DEVICE_MAGIC)
-# define VIR_IS_CONNECTED_NODE_DEVICE(obj)       (VIR_IS_NODE_DEVICE(obj) && VIR_IS_CONNECT((obj)->conn))
+# define VIR_NODE_DEVICE_MAGIC             0xDEAD5679
+# define VIR_IS_NODE_DEVICE(obj)           ((obj) && (obj)->magic==VIR_NODE_DEVICE_MAGIC)
+# define VIR_IS_CONNECTED_NODE_DEVICE(obj) (VIR_IS_NODE_DEVICE(obj) && VIR_IS_CONNECT((obj)->conn))
 
 /**
  * VIR_SECRET_MAGIC:
@@ -103,9 +103,9 @@
  * magic value used to protect the API when pointers to secret structures are
  * passed down by the users.
  */
-# define VIR_SECRET_MAGIC		0x5678DEAD
-# define VIR_IS_SECRET(obj)		((obj) && (obj)->magic==VIR_SECRET_MAGIC)
-# define VIR_IS_CONNECTED_SECRET(obj)	(VIR_IS_SECRET(obj) && VIR_IS_CONNECT((obj)->conn))
+# define VIR_SECRET_MAGIC             0x5678DEAD
+# define VIR_IS_SECRET(obj)           ((obj) && (obj)->magic==VIR_SECRET_MAGIC)
+# define VIR_IS_CONNECTED_SECRET(obj) (VIR_IS_SECRET(obj) && VIR_IS_CONNECT((obj)->conn))
 
 
 /**
@@ -114,9 +114,9 @@
  * magic value used to protect the API when pointers to stream structures
  * are passed down by the users.
  */
-# define VIR_STREAM_MAGIC                   0x1DEAD666
-# define VIR_IS_STREAM(obj)                 ((obj) && (obj)->magic==VIR_STREAM_MAGIC)
-# define VIR_IS_CONNECTED_STREAM(obj)       (VIR_IS_STREAM(obj) && VIR_IS_CONNECT((obj)->conn))
+# define VIR_STREAM_MAGIC             0x1DEAD666
+# define VIR_IS_STREAM(obj)           ((obj) && (obj)->magic==VIR_STREAM_MAGIC)
+# define VIR_IS_CONNECTED_STREAM(obj) (VIR_IS_STREAM(obj) && VIR_IS_CONNECT((obj)->conn))
 
 
 /**
@@ -125,9 +125,9 @@
  * magic value used to protect the API when pointers to network filter
  * pool structures are passed down by the users.
  */
-# define VIR_NWFILTER_MAGIC			0xDEAD7777
-# define VIR_IS_NWFILTER(obj)			((obj) && (obj)->magic==VIR_NWFILTER_MAGIC)
-# define VIR_IS_CONNECTED_NWFILTER(obj)		(VIR_IS_NWFILTER(obj) && VIR_IS_CONNECT((obj)->conn))
+# define VIR_NWFILTER_MAGIC             0xDEAD7777
+# define VIR_IS_NWFILTER(obj)           ((obj) && (obj)->magic==VIR_NWFILTER_MAGIC)
+# define VIR_IS_CONNECTED_NWFILTER(obj) (VIR_IS_NWFILTER(obj) && VIR_IS_CONNECT((obj)->conn))
 
 /**
  * VIR_SNAPSHOT_MAGIC:
@@ -135,9 +135,9 @@
  * magic value used to protect the API when pointers to snapshot structures
  * are passed down by the users.
  */
-# define VIR_SNAPSHOT_MAGIC                0x6666DEAD
-# define VIR_IS_SNAPSHOT(obj)              ((obj) && (obj)->magic==VIR_SNAPSHOT_MAGIC)
-# define VIR_IS_DOMAIN_SNAPSHOT(obj)    (VIR_IS_SNAPSHOT(obj) && VIR_IS_DOMAIN((obj)->domain))
+# define VIR_SNAPSHOT_MAGIC          0x6666DEAD
+# define VIR_IS_SNAPSHOT(obj)        ((obj) && (obj)->magic==VIR_SNAPSHOT_MAGIC)
+# define VIR_IS_DOMAIN_SNAPSHOT(obj) (VIR_IS_SNAPSHOT(obj) && VIR_IS_DOMAIN((obj)->domain))
 
 /**
  * _virConnect:
@@ -331,12 +331,12 @@ struct _virDomainSnapshot {
 virConnectPtr virGetConnect(void);
 int virUnrefConnect(virConnectPtr conn);
 virDomainPtr virGetDomain(virConnectPtr conn,
-                            const char *name,
-                            const unsigned char *uuid);
+                          const char *name,
+                          const unsigned char *uuid);
 int virUnrefDomain(virDomainPtr domain);
 virNetworkPtr virGetNetwork(virConnectPtr conn,
-                              const char *name,
-                              const unsigned char *uuid);
+                            const char *name,
+                            const unsigned char *uuid);
 int virUnrefNetwork(virNetworkPtr network);
 
 virInterfacePtr virGetInterface(virConnectPtr conn,
@@ -345,13 +345,13 @@ virInterfacePtr virGetInterface(virConnectPtr conn,
 int virUnrefInterface(virInterfacePtr iface);
 
 virStoragePoolPtr virGetStoragePool(virConnectPtr conn,
-                                      const char *name,
-                                      const unsigned char *uuid);
+                                    const char *name,
+                                    const unsigned char *uuid);
 int virUnrefStoragePool(virStoragePoolPtr pool);
 virStorageVolPtr virGetStorageVol(virConnectPtr conn,
-                                     const char *pool,
-                                    const char *name,
-                                    const char *key);
+                                  const char *pool,
+                                  const char *name,
+                                  const char *key);
 int virUnrefStorageVol(virStorageVolPtr vol);
 
 virNodeDevicePtr virGetNodeDevice(virConnectPtr conn,
@@ -381,8 +381,8 @@ struct _virNWFilter {
 };
 
 virNWFilterPtr virGetNWFilter(virConnectPtr conn,
-                                  const char *name,
-                                  const unsigned char *uuid);
+                              const char *name,
+                              const unsigned char *uuid);
 int virUnrefNWFilter(virNWFilterPtr nwfilter);
 
 virDomainSnapshotPtr virGetDomainSnapshot(virDomainPtr domain,
