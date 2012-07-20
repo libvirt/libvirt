@@ -230,12 +230,12 @@ REMOTE_DRIVER_PROTOCOL = $(REMOTE_PROTOCOL) $(QEMU_PROTOCOL)
 $(srcdir)/remote/remote_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL)
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
-	  -k remote $(REMOTE_PROTOCOL) > $@
+	  -k remote REMOTE $(REMOTE_PROTOCOL) > $@
 
 $(srcdir)/remote/qemu_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
 		$(QEMU_PROTOCOL)
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
-	  -k qemu $(QEMU_PROTOCOL) > $@
+	  -k qemu QEMU $(QEMU_PROTOCOL) > $@
 
 REMOTE_DRIVER_SOURCES =						\
 		gnutls_1_0_compat.h				\
