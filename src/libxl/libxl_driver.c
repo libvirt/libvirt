@@ -168,13 +168,13 @@ libxlDoNodeGetInfo(libxlDriverPrivatePtr driver, virNodeInfoPtr info)
     struct utsname utsname;
 
     if (libxl_get_physinfo(&driver->ctx, &phy_info)) {
-        libxlError(VIR_ERR_INTERNAL_ERROR,
+        libxlError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("libxl_get_physinfo_info failed"));
         return -1;
     }
 
     if ((ver_info = libxl_get_version_info(&driver->ctx)) == NULL) {
-        libxlError(VIR_ERR_INTERNAL_ERROR,
+        libxlError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("libxl_get_version_info failed"));
         return -1;
     }
@@ -696,7 +696,7 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
 
     if (libxl_userdata_store(&priv->ctx, domid, "libvirt-xml",
                              (uint8_t *)dom_xml, strlen(dom_xml) + 1)) {
-        libxlError(VIR_ERR_INTERNAL_ERROR,
+        libxlError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("libxenlight failed to store userdata"));
         goto error;
     }
@@ -1851,13 +1851,13 @@ libxlDoDomainSave(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     hdr.xmlLen = xml_len;
 
     if (safewrite(fd, &hdr, sizeof(hdr)) != sizeof(hdr)) {
-        libxlError(VIR_ERR_OPERATION_FAILED,
+        libxlError(VIR_ERR_OPERATION_FAILED, "%s",
                     _("Failed to write save file header"));
         goto cleanup;
     }
 
     if (safewrite(fd, xml, xml_len) != xml_len) {
-        libxlError(VIR_ERR_OPERATION_FAILED,
+        libxlError(VIR_ERR_OPERATION_FAILED, "%s",
                     _("Failed to write xml description"));
         goto cleanup;
     }
@@ -2250,7 +2250,7 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     }
 
     if (!nvcpus) {
-        libxlError(VIR_ERR_INVALID_ARG, _("nvcpus is zero"));
+        libxlError(VIR_ERR_INVALID_ARG, "%s", _("nvcpus is zero"));
         return -1;
     }
 
@@ -2813,7 +2813,7 @@ libxlDomainUndefineFlags(virDomainPtr dom,
     if (virFileExists(name)) {
         if (flags & VIR_DOMAIN_UNDEFINE_MANAGED_SAVE) {
             if (unlink(name) < 0) {
-                libxlError(VIR_ERR_INTERNAL_ERROR,
+                libxlError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Failed to remove domain managed save image"));
                 goto cleanup;
             }
@@ -3179,7 +3179,7 @@ libxlDomainUpdateDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
             }
             orig = vmdef->disks[i];
             if (!(orig->device == VIR_DOMAIN_DISK_DEVICE_CDROM)) {
-                libxlError(VIR_ERR_INVALID_ARG,
+                libxlError(VIR_ERR_INVALID_ARG, "%s",
                            _("this disk doesn't support update"));
                 goto cleanup;
             }
@@ -3378,12 +3378,14 @@ libxlNodeGetFreeMemory(virConnectPtr conn)
     libxlDriverPrivatePtr driver = conn->privateData;
 
     if (libxl_get_physinfo(&driver->ctx, &phy_info)) {
-        libxlError(VIR_ERR_INTERNAL_ERROR, _("libxl_get_physinfo_info failed"));
+        libxlError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("libxl_get_physinfo_info failed"));
         return 0;
     }
 
     if ((ver_info = libxl_get_version_info(&driver->ctx)) == NULL) {
-        libxlError(VIR_ERR_INTERNAL_ERROR, _("libxl_get_version_info failed"));
+        libxlError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("libxl_get_version_info failed"));
         return 0;
     }
 
@@ -3621,7 +3623,7 @@ libxlDomainGetSchedulerParametersFlags(virDomainPtr dom,
     }
 
     if (sched_id != XEN_SCHEDULER_CREDIT) {
-        libxlError(VIR_ERR_INTERNAL_ERROR,
+        libxlError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("Only 'credit' scheduler is supported"));
         goto cleanup;
     }
@@ -3707,7 +3709,7 @@ libxlDomainSetSchedulerParametersFlags(virDomainPtr dom,
     }
 
     if (sched_id != XEN_SCHEDULER_CREDIT) {
-        libxlError(VIR_ERR_INTERNAL_ERROR,
+        libxlError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("Only 'credit' scheduler is supported"));
         goto cleanup;
     }

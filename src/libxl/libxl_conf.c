@@ -397,7 +397,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
      * only 32 can be represented.
      */
     if (def->maxvcpus > 32 || def->vcpus > 32) {
-        libxlError(VIR_ERR_INTERNAL_ERROR,
+        libxlError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("This version of libxenlight only supports 32 "
                      "vcpus per domain"));
         return -1;
@@ -917,13 +917,13 @@ libxlMakeCapabilities(libxl_ctx *ctx)
     regcomp (&xen_cap_rec, xen_cap_re, REG_EXTENDED);
 
     if (libxl_get_physinfo(ctx, &phy_info) != 0) {
-        libxlError(VIR_ERR_INTERNAL_ERROR,
+        libxlError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("Failed to get node physical info from libxenlight"));
         return NULL;
     }
 
     if ((ver_info = libxl_get_version_info(ctx)) == NULL) {
-        libxlError(VIR_ERR_INTERNAL_ERROR,
+        libxlError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("Failed to get version info from libxenlight"));
         return NULL;
     }
