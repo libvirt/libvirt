@@ -983,11 +983,11 @@
 
 <pre>
   ...
-  &lt;clock offset="localtime"&gt;
-    &lt;timer name="rtc" tickpolicy="catchup" track="guest"&gt;
-      &lt;catchup threshold=123 slew=120 limit=10000/&gt;
+  &lt;clock offset='localtime'&gt;
+    &lt;timer name='rtc' tickpolicy='catchup' track='guest'&gt;
+      &lt;catchup threshold='123' slew='120' limit='10000'/&gt;
     &lt;/timer&gt;
-    &lt;timer name="pit" tickpolicy="delay"/&gt;
+    &lt;timer name='pit' tickpolicy='delay'/&gt;
   &lt;/clock&gt;
   ...</pre>
 
