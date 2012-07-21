@@ -14,8 +14,8 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ * License along with this library;  If not, see
+ * <http://www.gnu.org/licenses/>.
  *
  * The hash code generation is based on the public domain MurmurHash3 from Austin Appleby:
  * http://code.google.com/p/smhasher/source/browse/trunk/MurmurHash3.cpp
