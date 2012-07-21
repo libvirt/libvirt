@@ -1481,7 +1481,7 @@ esxVI_Enumeration_CastFromAnyType(const esxVI_Enumeration *enumeration,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Expecting type '%s' but found '%s'"),
                        esxVI_Type_ToString(enumeration->type),
-                       esxVI_Type_ToString(anyType->type));
+                       esxVI_AnyType_TypeToString(anyType));
         return -1;
     }
 

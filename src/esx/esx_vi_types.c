@@ -533,8 +533,8 @@
  * Macros to implement dynamic dispatched functions
  */
 
-#define ESX_VI__TEMPLATE__DISPATCH(_actual_type, __type, _dispatch,           \
-                                   _error_return)                             \
+#define ESX_VI__TEMPLATE__DISPATCH(_actual_type, _actual_type_name, __type,   \
+                                   _dispatch,  _error_return)                 \
     switch (_actual_type) {                                                   \
       _dispatch                                                               \
                                                                               \
@@ -543,8 +543,8 @@
                                                                               \
       default:                                                                \
         virReportError(VIR_ERR_INTERNAL_ERROR,                                \
-                       _("Call to %s for unexpected type '%s'"), __FUNCTION__,\
-                       esxVI_Type_ToString(_actual_type));                    \
+                       _("Call to %s for unexpected type '%s'"),              \
+                       __FUNCTION__, _actual_type_name);                      \
         return _error_return;                                                 \
     }
 
@@ -586,7 +586,9 @@
 
 #define ESX_VI__TEMPLATE__DYNAMIC_FREE(__type, _dispatch, _body)              \
     ESX_VI__TEMPLATE__FREE(__type,                                            \
-      ESX_VI__TEMPLATE__DISPATCH(item->_type, __type, _dispatch,              \
+      ESX_VI__TEMPLATE__DISPATCH(item->_type,                                 \
+                                 esxVI_Type_ToString(item->_type),            \
+                                 __type, _dispatch,                           \
                                  /* nothing */)                               \
       _body)
 
@@ -620,21 +622,27 @@
 
 #define ESX_VI__TEMPLATE__DYNAMIC_DEEP_COPY(__type, _dispatch, _deep_copy)    \
     ESX_VI__TEMPLATE__DEEP_COPY(__type,                                       \
-      ESX_VI__TEMPLATE__DISPATCH(src->_type, __type, _dispatch, -1)           \
+      ESX_VI__TEMPLATE__DISPATCH(src->_type,                                  \
+                                 esxVI_Type_ToString(src->_type),             \
+                                 __type, _dispatch, -1)                       \
       _deep_copy)
 
 
 
 #define ESX_VI__TEMPLATE__DYNAMIC_CAST_FROM_ANY_TYPE(__type, _dispatch)       \
     ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE_EXTRA(__type, esxVI_##__type,        \
-      ESX_VI__TEMPLATE__DISPATCH(anyType->type, __type, _dispatch, -1),       \
+      ESX_VI__TEMPLATE__DISPATCH(anyType->type,                               \
+                                 esxVI_AnyType_TypeToString(anyType),         \
+                                __type, _dispatch, -1),                       \
       /* nothing */)
 
 
 
 #define ESX_VI__TEMPLATE__DYNAMIC_SERIALIZE(__type, _dispatch, _serialize)    \
     ESX_VI__TEMPLATE__SERIALIZE_EXTRA(__type,                                 \
-      ESX_VI__TEMPLATE__DISPATCH(item->_type, __type, _dispatch, -1),         \
+      ESX_VI__TEMPLATE__DISPATCH(item->_type,                                 \
+                                 esxVI_Type_ToString(item->_type),            \
+                                 __type, _dispatch, -1),                      \
       _serialize)
 
 
@@ -690,7 +698,7 @@ esxVI_GetActualObjectType(xmlNodePtr node, esxVI_Type baseType,
 
     *actualType = esxVI_Type_FromString(type);
 
-    if (*actualType == esxVI_Type_Undefined) {
+    if (*actualType == esxVI_Type_Undefined || *actualType == esxVI_Type_Other) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown value '%s' for %s 'type' property"),
                        type, esxVI_Type_ToString(baseType));
@@ -869,6 +877,16 @@ ESX_VI__TEMPLATE__FREE(AnyType,
     VIR_FREE(item->value);
 })
 
+const char *
+esxVI_AnyType_TypeToString(esxVI_AnyType *anyType)
+{
+    if (anyType->type == esxVI_Type_Other) {
+        return anyType->other;
+    } else {
+        return esxVI_Type_ToString(anyType->type);
+    }
+}
+
 int
 esxVI_AnyType_ExpectType(esxVI_AnyType *anyType, esxVI_Type type)
 {
@@ -876,9 +894,7 @@ esxVI_AnyType_ExpectType(esxVI_AnyType *anyType, esxVI_Type type)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Expecting type '%s' but found '%s'"),
                        esxVI_Type_ToString(type),
-                       anyType->type != esxVI_Type_Other
-                       ? esxVI_Type_ToString(anyType->type)
-                       : anyType->other);
+                       esxVI_AnyType_TypeToString(anyType));
         return -1;
     }
 

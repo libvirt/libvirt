@@ -154,6 +154,7 @@ struct _esxVI_AnyType {
 
 int esxVI_AnyType_Alloc(esxVI_AnyType **anyType);
 void esxVI_AnyType_Free(esxVI_AnyType **anyType);
+const char *esxVI_AnyType_TypeToString(esxVI_AnyType *anyType);
 int esxVI_AnyType_ExpectType(esxVI_AnyType *anyType, esxVI_Type type);
 int esxVI_AnyType_DeepCopy(esxVI_AnyType **dest, esxVI_AnyType *src);
 int esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType);
