@@ -90,11 +90,13 @@ checkProtocols(bool *hasIPv4, bool *hasIPv6,
         if ((s4 = socket(AF_INET, SOCK_STREAM, 0)) < 0)
             goto cleanup;
 
-        if ((s6 = socket(AF_INET6, SOCK_STREAM, 0)) < 0)
-            goto cleanup;
+        if (*hasIPv6) {
+            if ((s6 = socket(AF_INET6, SOCK_STREAM, 0)) < 0)
+                goto cleanup;
 
-        if (setsockopt(s6, IPPROTO_IPV6, IPV6_V6ONLY, &only, sizeof(only)) < 0)
-            goto cleanup;
+            if (setsockopt(s6, IPPROTO_IPV6, IPV6_V6ONLY, &only, sizeof(only)) < 0)
+                goto cleanup;
+        }
 
         memset(&in4, 0, sizeof(in4));
         memset(&in6, 0, sizeof(in6));
@@ -114,13 +116,16 @@ checkProtocols(bool *hasIPv4, bool *hasIPv6,
             }
             goto cleanup;
         }
-        if (bind(s6, (struct sockaddr *)&in6, sizeof(in6)) < 0) {
-            if (errno == EADDRINUSE) {
-                VIR_FORCE_CLOSE(s4);
-                VIR_FORCE_CLOSE(s6);
-                continue;
+
+        if (*hasIPv6) {
+            if (bind(s6, (struct sockaddr *)&in6, sizeof(in6)) < 0) {
+                if (errno == EADDRINUSE) {
+                    VIR_FORCE_CLOSE(s4);
+                    VIR_FORCE_CLOSE(s6);
+                    continue;
+                }
+                goto cleanup;
             }
-            goto cleanup;
         }
 
         *freePort = BASE_PORT + i;
