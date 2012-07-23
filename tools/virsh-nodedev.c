@@ -380,3 +380,23 @@ cmdNodeDeviceReset(vshControl *ctl, const vshCmd *cmd)
     virNodeDeviceFree(device);
     return ret;
 }
+
+static const vshCmdDef nodedevCmds[] = {
+    {"nodedev-create", cmdNodeDeviceCreate, opts_node_device_create,
+     info_node_device_create, 0},
+    {"nodedev-destroy", cmdNodeDeviceDestroy, opts_node_device_destroy,
+     info_node_device_destroy, 0},
+    {"nodedev-detach", cmdNodeDeviceDetach, opts_node_device_detach,
+     info_node_device_detach, 0},
+    {"nodedev-dettach", cmdNodeDeviceDetach, opts_node_device_detach,
+     info_node_device_detach, VSH_CMD_FLAG_ALIAS},
+    {"nodedev-dumpxml", cmdNodeDeviceDumpXML, opts_node_device_dumpxml,
+     info_node_device_dumpxml, 0},
+    {"nodedev-list", cmdNodeListDevices, opts_node_list_devices,
+     info_node_list_devices, 0},
+    {"nodedev-reattach", cmdNodeDeviceReAttach, opts_node_device_reattach,
+     info_node_device_reattach, 0},
+    {"nodedev-reset", cmdNodeDeviceReset, opts_node_device_reset,
+     info_node_device_reset, 0},
+    {NULL, NULL, NULL, NULL, 0}
+};

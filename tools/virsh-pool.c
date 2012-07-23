@@ -1413,3 +1413,30 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
 
     return ret;
 }
+
+static const vshCmdDef storagePoolCmds[] = {
+    {"find-storage-pool-sources-as", cmdPoolDiscoverSourcesAs,
+     opts_find_storage_pool_sources_as, info_find_storage_pool_sources_as, 0},
+    {"find-storage-pool-sources", cmdPoolDiscoverSources,
+     opts_find_storage_pool_sources, info_find_storage_pool_sources, 0},
+    {"pool-autostart", cmdPoolAutostart, opts_pool_autostart,
+     info_pool_autostart, 0},
+    {"pool-build", cmdPoolBuild, opts_pool_build, info_pool_build, 0},
+    {"pool-create-as", cmdPoolCreateAs, opts_pool_X_as, info_pool_create_as, 0},
+    {"pool-create", cmdPoolCreate, opts_pool_create, info_pool_create, 0},
+    {"pool-define-as", cmdPoolDefineAs, opts_pool_X_as, info_pool_define_as, 0},
+    {"pool-define", cmdPoolDefine, opts_pool_define, info_pool_define, 0},
+    {"pool-delete", cmdPoolDelete, opts_pool_delete, info_pool_delete, 0},
+    {"pool-destroy", cmdPoolDestroy, opts_pool_destroy, info_pool_destroy, 0},
+    {"pool-dumpxml", cmdPoolDumpXML, opts_pool_dumpxml, info_pool_dumpxml, 0},
+    {"pool-edit", cmdPoolEdit, opts_pool_edit, info_pool_edit, 0},
+    {"pool-info", cmdPoolInfo, opts_pool_info, info_pool_info, 0},
+    {"pool-list", cmdPoolList, opts_pool_list, info_pool_list, 0},
+    {"pool-name", cmdPoolName, opts_pool_name, info_pool_name, 0},
+    {"pool-refresh", cmdPoolRefresh, opts_pool_refresh, info_pool_refresh, 0},
+    {"pool-start", cmdPoolStart, opts_pool_start, info_pool_start, 0},
+    {"pool-undefine", cmdPoolUndefine, opts_pool_undefine,
+     info_pool_undefine, 0},
+    {"pool-uuid", cmdPoolUuid, opts_pool_uuid, info_pool_uuid, 0},
+    {NULL, NULL, NULL, NULL, 0}
+};

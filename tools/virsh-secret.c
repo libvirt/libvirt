@@ -356,3 +356,18 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     VIR_FREE(uuids);
     return true;
 }
+
+static const vshCmdDef secretCmds[] = {
+    {"secret-define", cmdSecretDefine, opts_secret_define,
+     info_secret_define, 0},
+    {"secret-dumpxml", cmdSecretDumpXML, opts_secret_dumpxml,
+     info_secret_dumpxml, 0},
+    {"secret-get-value", cmdSecretGetValue, opts_secret_get_value,
+     info_secret_get_value, 0},
+    {"secret-list", cmdSecretList, NULL, info_secret_list, 0},
+    {"secret-set-value", cmdSecretSetValue, opts_secret_set_value,
+     info_secret_set_value, 0},
+    {"secret-undefine", cmdSecretUndefine, opts_secret_undefine,
+     info_secret_undefine, 0},
+    {NULL, NULL, NULL, NULL, 0}
+};

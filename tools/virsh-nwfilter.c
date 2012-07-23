@@ -308,3 +308,17 @@ cleanup:
 
     return ret;
 }
+
+static const vshCmdDef nwfilterCmds[] = {
+    {"nwfilter-define", cmdNWFilterDefine, opts_nwfilter_define,
+     info_nwfilter_define, 0},
+    {"nwfilter-dumpxml", cmdNWFilterDumpXML, opts_nwfilter_dumpxml,
+     info_nwfilter_dumpxml, 0},
+    {"nwfilter-edit", cmdNWFilterEdit, opts_nwfilter_edit,
+     info_nwfilter_edit, 0},
+    {"nwfilter-list", cmdNWFilterList, opts_nwfilter_list,
+     info_nwfilter_list, 0},
+    {"nwfilter-undefine", cmdNWFilterUndefine, opts_nwfilter_undefine,
+     info_nwfilter_undefine, 0},
+    {NULL, NULL, NULL, NULL, 0}
+};

@@ -818,3 +818,22 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     return true;
 }
+
+static const vshCmdDef hostAndHypervisorCmds[] = {
+    {"capabilities", cmdCapabilities, NULL, info_capabilities, 0},
+    {"connect", cmdConnect, opts_connect, info_connect,
+     VSH_CMD_FLAG_NOCONNECT},
+    {"freecell", cmdFreecell, opts_freecell, info_freecell, 0},
+    {"hostname", cmdHostname, NULL, info_hostname, 0},
+    {"nodecpustats", cmdNodeCpuStats, opts_node_cpustats, info_nodecpustats, 0},
+    {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo, 0},
+    {"nodememstats", cmdNodeMemStats, opts_node_memstats, info_nodememstats, 0},
+    {"nodesuspend", cmdNodeSuspend, opts_node_suspend, info_nodesuspend, 0},
+    {"qemu-attach", cmdQemuAttach, opts_qemu_attach, info_qemu_attach, 0},
+    {"qemu-monitor-command", cmdQemuMonitorCommand, opts_qemu_monitor_command,
+     info_qemu_monitor_command, 0},
+    {"sysinfo", cmdSysinfo, NULL, info_sysinfo, 0},
+    {"uri", cmdURI, NULL, info_uri, 0},
+    {"version", cmdVersion, opts_version, info_version, 0},
+    {NULL, NULL, NULL, NULL, 0}
+};

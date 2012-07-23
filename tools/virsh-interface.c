@@ -998,3 +998,35 @@ cmdInterfaceUnbridge(vshControl *ctl, const vshCmd *cmd)
     xmlFreeDoc(xml_doc);
     return ret;
 }
+
+static const vshCmdDef ifaceCmds[] = {
+    {"iface-begin", cmdInterfaceBegin, opts_interface_begin,
+     info_interface_begin, 0},
+    {"iface-bridge", cmdInterfaceBridge, opts_interface_bridge,
+     info_interface_bridge, 0},
+    {"iface-commit", cmdInterfaceCommit, opts_interface_commit,
+     info_interface_commit, 0},
+    {"iface-define", cmdInterfaceDefine, opts_interface_define,
+     info_interface_define, 0},
+    {"iface-destroy", cmdInterfaceDestroy, opts_interface_destroy,
+     info_interface_destroy, 0},
+    {"iface-dumpxml", cmdInterfaceDumpXML, opts_interface_dumpxml,
+     info_interface_dumpxml, 0},
+    {"iface-edit", cmdInterfaceEdit, opts_interface_edit,
+     info_interface_edit, 0},
+    {"iface-list", cmdInterfaceList, opts_interface_list,
+     info_interface_list, 0},
+    {"iface-mac", cmdInterfaceMAC, opts_interface_mac,
+     info_interface_mac, 0},
+    {"iface-name", cmdInterfaceName, opts_interface_name,
+     info_interface_name, 0},
+    {"iface-rollback", cmdInterfaceRollback, opts_interface_rollback,
+     info_interface_rollback, 0},
+    {"iface-start", cmdInterfaceStart, opts_interface_start,
+     info_interface_start, 0},
+    {"iface-unbridge", cmdInterfaceUnbridge, opts_interface_unbridge,
+     info_interface_unbridge, 0},
+    {"iface-undefine", cmdInterfaceUndefine, opts_interface_undefine,
+     info_interface_undefine, 0},
+    {NULL, NULL, NULL, NULL, 0}
+};

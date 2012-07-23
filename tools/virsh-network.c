@@ -686,3 +686,25 @@ cmdNetworkEdit(vshControl *ctl, const vshCmd *cmd)
 
     return ret;
 }
+
+static const vshCmdDef networkCmds[] = {
+    {"net-autostart", cmdNetworkAutostart, opts_network_autostart,
+     info_network_autostart, 0},
+    {"net-create", cmdNetworkCreate, opts_network_create,
+     info_network_create, 0},
+    {"net-define", cmdNetworkDefine, opts_network_define,
+     info_network_define, 0},
+    {"net-destroy", cmdNetworkDestroy, opts_network_destroy,
+     info_network_destroy, 0},
+    {"net-dumpxml", cmdNetworkDumpXML, opts_network_dumpxml,
+     info_network_dumpxml, 0},
+    {"net-edit", cmdNetworkEdit, opts_network_edit, info_network_edit, 0},
+    {"net-info", cmdNetworkInfo, opts_network_info, info_network_info, 0},
+    {"net-list", cmdNetworkList, opts_network_list, info_network_list, 0},
+    {"net-name", cmdNetworkName, opts_network_name, info_network_name, 0},
+    {"net-start", cmdNetworkStart, opts_network_start, info_network_start, 0},
+    {"net-undefine", cmdNetworkUndefine, opts_network_undefine,
+     info_network_undefine, 0},
+    {"net-uuid", cmdNetworkUuid, opts_network_uuid, info_network_uuid, 0},
+    {NULL, NULL, NULL, NULL, 0}
+};

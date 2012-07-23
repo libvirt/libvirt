@@ -1602,3 +1602,27 @@ cleanup:
 
     return ret;
 }
+
+static const vshCmdDef snapshotCmds[] = {
+    {"snapshot-create", cmdSnapshotCreate, opts_snapshot_create,
+     info_snapshot_create, 0},
+    {"snapshot-create-as", cmdSnapshotCreateAs, opts_snapshot_create_as,
+     info_snapshot_create_as, 0},
+    {"snapshot-current", cmdSnapshotCurrent, opts_snapshot_current,
+     info_snapshot_current, 0},
+    {"snapshot-delete", cmdSnapshotDelete, opts_snapshot_delete,
+     info_snapshot_delete, 0},
+    {"snapshot-dumpxml", cmdSnapshotDumpXML, opts_snapshot_dumpxml,
+     info_snapshot_dumpxml, 0},
+    {"snapshot-edit", cmdSnapshotEdit, opts_snapshot_edit,
+     info_snapshot_edit, 0},
+    {"snapshot-info", cmdSnapshotInfo, opts_snapshot_info,
+     info_snapshot_info, 0},
+    {"snapshot-list", cmdSnapshotList, opts_snapshot_list,
+     info_snapshot_list, 0},
+    {"snapshot-parent", cmdSnapshotParent, opts_snapshot_parent,
+     info_snapshot_parent, 0},
+    {"snapshot-revert", cmdDomainSnapshotRevert, opts_snapshot_revert,
+     info_snapshot_revert, 0},
+    {NULL, NULL, NULL, NULL, 0}
+};

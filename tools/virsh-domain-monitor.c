@@ -1686,3 +1686,19 @@ cleanup:
     return ret;
 }
 #undef FILTER
+
+static const vshCmdDef domMonitoringCmds[] = {
+    {"domblkerror", cmdDomBlkError, opts_domblkerror, info_domblkerror, 0},
+    {"domblkinfo", cmdDomblkinfo, opts_domblkinfo, info_domblkinfo, 0},
+    {"domblklist", cmdDomblklist, opts_domblklist, info_domblklist, 0},
+    {"domblkstat", cmdDomblkstat, opts_domblkstat, info_domblkstat, 0},
+    {"domcontrol", cmdDomControl, opts_domcontrol, info_domcontrol, 0},
+    {"domif-getlink", cmdDomIfGetLink, opts_domif_getlink, info_domif_getlink, 0},
+    {"domiflist", cmdDomiflist, opts_domiflist, info_domiflist, 0},
+    {"domifstat", cmdDomIfstat, opts_domifstat, info_domifstat, 0},
+    {"dominfo", cmdDominfo, opts_dominfo, info_dominfo, 0},
+    {"dommemstat", cmdDomMemStat, opts_dommemstat, info_dommemstat, 0},
+    {"domstate", cmdDomstate, opts_domstate, info_domstate, 0},
+    {"list", cmdList, opts_list, info_list, 0},
+    {NULL, NULL, NULL, NULL, 0}
+};

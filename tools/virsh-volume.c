@@ -1438,3 +1438,25 @@ cmdVolPath(vshControl *ctl, const vshCmd *cmd)
     virStorageVolFree(vol);
     return true;
 }
+
+static const vshCmdDef storageVolCmds[] = {
+    {"vol-clone", cmdVolClone, opts_vol_clone, info_vol_clone, 0},
+    {"vol-create-as", cmdVolCreateAs, opts_vol_create_as,
+     info_vol_create_as, 0},
+    {"vol-create", cmdVolCreate, opts_vol_create, info_vol_create, 0},
+    {"vol-create-from", cmdVolCreateFrom, opts_vol_create_from,
+     info_vol_create_from, 0},
+    {"vol-delete", cmdVolDelete, opts_vol_delete, info_vol_delete, 0},
+    {"vol-download", cmdVolDownload, opts_vol_download, info_vol_download, 0},
+    {"vol-dumpxml", cmdVolDumpXML, opts_vol_dumpxml, info_vol_dumpxml, 0},
+    {"vol-info", cmdVolInfo, opts_vol_info, info_vol_info, 0},
+    {"vol-key", cmdVolKey, opts_vol_key, info_vol_key, 0},
+    {"vol-list", cmdVolList, opts_vol_list, info_vol_list, 0},
+    {"vol-name", cmdVolName, opts_vol_name, info_vol_name, 0},
+    {"vol-path", cmdVolPath, opts_vol_path, info_vol_path, 0},
+    {"vol-pool", cmdVolPool, opts_vol_pool, info_vol_pool, 0},
+    {"vol-resize", cmdVolResize, opts_vol_resize, info_vol_resize, 0},
+    {"vol-upload", cmdVolUpload, opts_vol_upload, info_vol_upload, 0},
+    {"vol-wipe", cmdVolWipe, opts_vol_wipe, info_vol_wipe, 0},
+    {NULL, NULL, NULL, NULL, 0}
+};
