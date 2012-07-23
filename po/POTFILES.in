@@ -180,6 +180,7 @@ tools/virsh.c
 tools/virsh-domain-monitor.c
 tools/virsh-domain.c
 tools/virsh-edit.c
+tools/virsh-network.c
 tools/virsh-pool.c
 tools/virsh-volume.c
 tools/virt-host-validate-common.c
