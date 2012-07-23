@@ -5535,6 +5535,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
     virDomainNetDefPtr net;
     virDomainHostdevDefPtr hostdev;
     virDomainLeaseDefPtr lease;
+    virDomainControllerDefPtr controller;
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
@@ -5607,6 +5608,23 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         dev->data.lease = NULL;
         break;
 
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+        controller = dev->data.controller;
+        if (virDomainControllerFind(vmdef, controller->type,
+                                    controller->idx) > 0) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("Target already exists"));
+            return -1;
+        }
+
+        if (virDomainControllerInsert(vmdef, controller) < 0)
+            return -1;
+        dev->data.controller = NULL;
+
+        if (qemuDomainAssignAddresses(vmdef, NULL, NULL) < 0)
+            return -1;
+        break;
+
     default:
          virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("persistent attach of device is not supported"));
@@ -5624,6 +5642,8 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
     virDomainNetDefPtr net, det_net;
     virDomainHostdevDefPtr hostdev, det_hostdev;
     virDomainLeaseDefPtr lease, det_lease;
+    virDomainControllerDefPtr cont, det_cont;
+    int idx;
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
@@ -5650,8 +5670,6 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         break;
 
     case VIR_DOMAIN_DEVICE_HOSTDEV: {
-        int idx;
-
         hostdev = dev->data.hostdev;
         if ((idx = virDomainHostdevFind(vmdef, hostdev, &det_hostdev)) < 0) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -5672,6 +5690,19 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
             return -1;
         }
         virDomainLeaseDefFree(det_lease);
+        break;
+
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+        cont = dev->data.controller;
+        if ((idx = virDomainControllerFind(vmdef, cont->type,
+                                           cont->idx)) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("device not present in domain configuration"));
+            return -1;
+        }
+        det_cont = virDomainControllerRemove(vmdef, idx);
+        virDomainControllerDefFree(det_cont);
+
         break;
 
     default:

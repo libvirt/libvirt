@@ -308,21 +308,17 @@ int qemuDomainAttachPciControllerDevice(struct qemud_driver *driver,
                                         virDomainObjPtr vm,
                                         virDomainControllerDefPtr controller)
 {
-    int i;
     int ret = -1;
     const char* type = virDomainControllerTypeToString(controller->type);
     char *devstr = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool releaseaddr = false;
 
-    for (i = 0 ; i < vm->def->ncontrollers ; i++) {
-        if ((vm->def->controllers[i]->type == controller->type) &&
-            (vm->def->controllers[i]->idx == controller->idx)) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("target %s:%d already exists"),
-                           type, controller->idx);
-            return -1;
-        }
+    if (virDomainControllerFind(vm->def, controller->type, controller->idx) > 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("target %s:%d already exists"),
+                       type, controller->idx);
+        return -1;
     }
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
@@ -1875,25 +1871,21 @@ int qemuDomainDetachPciControllerDevice(struct qemud_driver *driver,
                                         virDomainObjPtr vm,
                                         virDomainDeviceDefPtr dev)
 {
-    int i, ret = -1;
+    int idx, ret = -1;
     virDomainControllerDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    for (i = 0 ; i < vm->def->ncontrollers ; i++) {
-        if ((vm->def->controllers[i]->type == dev->data.controller->type) &&
-            (vm->def->controllers[i]->idx == dev->data.controller->idx)) {
-            detach = vm->def->controllers[i];
-            break;
-        }
-    }
-
-    if (!detach) {
+    if ((idx = virDomainControllerFind(vm->def,
+                                       dev->data.controller->type,
+                                       dev->data.controller->idx)) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("disk controller %s:%d not found"),
                        virDomainControllerTypeToString(dev->data.controller->type),
                        dev->data.controller->idx);
         goto cleanup;
     }
+
+    detach = vm->def->controllers[idx];
 
     if (!virDomainDeviceAddressIsValid(&detach->info,
                                        VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
@@ -1935,26 +1927,13 @@ int qemuDomainDetachPciControllerDevice(struct qemud_driver *driver,
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    if (vm->def->ncontrollers > 1) {
-        memmove(vm->def->controllers + i,
-                vm->def->controllers + i + 1,
-                sizeof(*vm->def->controllers) *
-                (vm->def->ncontrollers - (i + 1)));
-        vm->def->ncontrollers--;
-        if (VIR_REALLOC_N(vm->def->controllers, vm->def->ncontrollers) < 0) {
-            /* ignore, harmless */
-        }
-    } else {
-        VIR_FREE(vm->def->controllers);
-        vm->def->ncontrollers = 0;
-    }
+    virDomainControllerRemove(vm->def, idx);
+    virDomainControllerDefFree(detach);
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
         qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
                                         detach->info.addr.pci.slot) < 0)
         VIR_WARN("Unable to release PCI address on controller");
-
-    virDomainControllerDefFree(detach);
 
     ret = 0;
 

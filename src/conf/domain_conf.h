@@ -2048,7 +2048,8 @@ int virDomainControllerInsert(virDomainDefPtr def,
                               virDomainControllerDefPtr controller);
 void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
                                          virDomainControllerDefPtr controller);
-
+int virDomainControllerFind(virDomainDefPtr def, int type, int idx);
+virDomainControllerDefPtr virDomainControllerRemove(virDomainDefPtr def, size_t i);
 
 int virDomainLeaseIndex(virDomainDefPtr def,
                         virDomainLeaseDefPtr lease);

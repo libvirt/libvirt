@@ -7556,6 +7556,43 @@ void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
     def->ncontrollers++;
 }
 
+int
+virDomainControllerFind(virDomainDefPtr def,
+                        int type, int idx)
+{
+    int i;
+
+    for (i = 0 ; i < def->ncontrollers ; i++) {
+        if ((def->controllers[i]->type == type) &&
+            (def->controllers[i]->idx == idx)) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+virDomainControllerDefPtr
+virDomainControllerRemove(virDomainDefPtr def, size_t i)
+{
+    virDomainControllerDefPtr controller = def->controllers[i];
+
+    if (def->ncontrollers > 1) {
+        memmove(def->controllers + i,
+                def->controllers + i + 1,
+                sizeof(*def->controllers) *
+                (def->ncontrollers - (i + 1)));
+        def->ncontrollers--;
+        if (VIR_REALLOC_N(def->controllers, def->ncontrollers) < 0) {
+            /* ignore, harmless */
+        }
+    } else {
+        VIR_FREE(def->controllers);
+        def->ncontrollers = 0;
+    }
+
+    return controller;
+}
 
 int virDomainLeaseIndex(virDomainDefPtr def,
                         virDomainLeaseDefPtr lease)
