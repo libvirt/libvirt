@@ -2555,7 +2555,7 @@ virDomainSave(virDomainPtr domain, const char *to)
 
         /* We must absolutize the file path as the save is done out of process */
         if (virFileAbsPath(to, &absolute_to) < 0) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR,
+            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("could not build absolute output file path"));
             goto error;
         }
@@ -2650,7 +2650,7 @@ virDomainSaveFlags(virDomainPtr domain, const char *to,
 
         /* We must absolutize the file path as the save is done out of process */
         if (virFileAbsPath(to, &absolute_to) < 0) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR,
+            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("could not build absolute output file path"));
             goto error;
         }
@@ -2706,7 +2706,7 @@ virDomainRestore(virConnectPtr conn, const char *from)
 
         /* We must absolutize the file path as the restore is done out of process */
         if (virFileAbsPath(from, &absolute_from) < 0) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR,
+            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("could not build absolute input file path"));
             goto error;
         }
@@ -2788,7 +2788,7 @@ virDomainRestoreFlags(virConnectPtr conn, const char *from, const char *dxml,
 
         /* We must absolutize the file path as the restore is done out of process */
         if (virFileAbsPath(from, &absolute_from) < 0) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR,
+            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("could not build absolute input file path"));
             goto error;
         }
@@ -2845,7 +2845,7 @@ virDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *file,
     virCheckNonNullArgGoto(file, error);
 
     if ((conn->flags & VIR_CONNECT_RO) && (flags & VIR_DOMAIN_XML_SECURE)) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED,
+        virLibConnError(VIR_ERR_OPERATION_DENIED, "%s",
                         _("virDomainSaveImageGetXMLDesc with secure flag"));
         goto error;
     }
@@ -2856,7 +2856,7 @@ virDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *file,
 
         /* We must absolutize the file path as the read is done out of process */
         if (virFileAbsPath(file, &absolute_file) < 0) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR,
+            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("could not build absolute input file path"));
             goto error;
         }
@@ -2937,7 +2937,7 @@ virDomainSaveImageDefineXML(virConnectPtr conn, const char *file,
 
         /* We must absolutize the file path as the read is done out of process */
         if (virFileAbsPath(file, &absolute_file) < 0) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR,
+            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("could not build absolute input file path"));
             goto error;
         }
@@ -3029,7 +3029,7 @@ virDomainCoreDump(virDomainPtr domain, const char *to, unsigned int flags)
 
         /* We must absolutize the file path as the save is done out of process */
         if (virFileAbsPath(to, &absolute_to) < 0) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR,
+            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
                             _("could not build absolute core file path"));
             goto error;
         }
@@ -4341,7 +4341,7 @@ virDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     conn = domain->conn;
 
     if ((conn->flags & VIR_CONNECT_RO) && (flags & VIR_DOMAIN_XML_SECURE)) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED,
+        virLibConnError(VIR_ERR_OPERATION_DENIED, "%s",
                         _("virDomainGetXMLDesc with secure flag"));
         goto error;
     }
@@ -4523,7 +4523,7 @@ virDomainMigrateVersion1 (virDomainPtr domain,
         goto done;
 
     if (uri == NULL && uri_out == NULL) {
-        virLibConnError(VIR_ERR_INTERNAL_ERROR,
+        virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
                          _("domainMigratePrepare did not set uri"));
         goto done;
     }
@@ -4635,7 +4635,7 @@ virDomainMigrateVersion2 (virDomainPtr domain,
         goto done;
 
     if (uri == NULL && uri_out == NULL) {
-        virLibConnError(VIR_ERR_INTERNAL_ERROR,
+        virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
                          _("domainMigratePrepare2 did not set uri"));
         virDispatchError(domain->conn);
         cancelled = 1;
@@ -4781,7 +4781,7 @@ virDomainMigrateVersion3(virDomainPtr domain,
     }
 
     if (uri == NULL && uri_out == NULL) {
-        virLibConnError(VIR_ERR_INTERNAL_ERROR,
+        virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("domainMigratePrepare3 did not set uri"));
         virDispatchError(domain->conn);
         goto finish;
@@ -5198,7 +5198,7 @@ virDomainMigrate (virDomainPtr domain,
         }
         flags &= ~VIR_MIGRATE_CHANGE_PROTECTION;
         if (flags & VIR_MIGRATE_TUNNELLED) {
-            virLibConnError(VIR_ERR_OPERATION_INVALID,
+            virLibConnError(VIR_ERR_OPERATION_INVALID, "%s",
                             _("cannot perform tunnelled migration without using peer2peer flag"));
             goto error;
         }
@@ -5400,7 +5400,7 @@ virDomainMigrate2(virDomainPtr domain,
         }
         flags &= ~VIR_MIGRATE_CHANGE_PROTECTION;
         if (flags & VIR_MIGRATE_TUNNELLED) {
-            virLibConnError(VIR_ERR_OPERATION_INVALID,
+            virLibConnError(VIR_ERR_OPERATION_INVALID, "%s",
                             _("cannot perform tunnelled migration without using peer2peer flag"));
             goto error;
         }
@@ -14951,7 +14951,7 @@ int virStreamSendAll(virStreamPtr stream,
     virCheckNonNullArgGoto(handler, cleanup);
 
     if (stream->flags & VIR_STREAM_NONBLOCK) {
-        virLibConnError(VIR_ERR_OPERATION_INVALID,
+        virLibConnError(VIR_ERR_OPERATION_INVALID, "%s",
                         _("data sources cannot be used for non-blocking streams"));
         goto cleanup;
     }
@@ -15050,7 +15050,7 @@ int virStreamRecvAll(virStreamPtr stream,
     virCheckNonNullArgGoto(handler, cleanup);
 
     if (stream->flags & VIR_STREAM_NONBLOCK) {
-        virLibConnError(VIR_ERR_OPERATION_INVALID,
+        virLibConnError(VIR_ERR_OPERATION_INVALID, "%s",
                         _("data sinks cannot be used for non-blocking streams"));
         goto cleanup;
     }
@@ -17040,7 +17040,7 @@ virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     conn = snapshot->domain->conn;
 
     if ((conn->flags & VIR_CONNECT_RO) && (flags & VIR_DOMAIN_XML_SECURE)) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED,
+        virLibConnError(VIR_ERR_OPERATION_DENIED, "%s",
                         _("virDomainSnapshotGetXMLDesc with secure flag"));
         goto error;
     }

@@ -1,7 +1,7 @@
 /*
  * datatypes.h: management of structs for public data types
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -138,7 +138,7 @@ virUnrefConnect(virConnectPtr conn) {
     int refs;
 
     if ((!VIR_IS_CONNECT(conn))) {
-        virLibConnError(VIR_ERR_INVALID_CONN, _("no connection"));
+        virLibConnError(VIR_ERR_INVALID_CONN, "%s", _("no connection"));
         return -1;
     }
     virMutexLock(&conn->lock);
@@ -173,7 +173,7 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, _("no connection"));
+        virLibConnError(VIR_ERR_INVALID_CONN, "%s", _("no connection"));
         return NULL;
     }
     virCheckNonNullArgReturn(name, NULL);
@@ -264,7 +264,8 @@ virUnrefDomain(virDomainPtr domain) {
     int refs;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibConnError(VIR_ERR_INVALID_DOMAIN, _("bad domain or no connection"));
+        virLibConnError(VIR_ERR_INVALID_DOMAIN, "%s",
+                        _("bad domain or no connection"));
         return -1;
     }
     virMutexLock(&domain->conn->lock);
@@ -300,7 +301,7 @@ virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, _("no connection"));
+        virLibConnError(VIR_ERR_INVALID_CONN, "%s", _("no connection"));
         return NULL;
     }
     virCheckNonNullArgReturn(name, NULL);
@@ -389,7 +390,7 @@ virUnrefNetwork(virNetworkPtr network) {
     int refs;
 
     if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibConnError(VIR_ERR_INVALID_NETWORK,
+        virLibConnError(VIR_ERR_INVALID_NETWORK, "%s",
                         _("bad network or no connection"));
         return -1;
     }
@@ -427,7 +428,7 @@ virGetInterface(virConnectPtr conn, const char *name, const char *mac) {
     virInterfacePtr ret = NULL;
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, _("no connection"));
+        virLibConnError(VIR_ERR_INVALID_CONN, "%s", _("no connection"));
         return NULL;
     }
     virCheckNonNullArgReturn(name, NULL);
@@ -522,7 +523,7 @@ virUnrefInterface(virInterfacePtr iface) {
     int refs;
 
     if (!VIR_IS_CONNECTED_INTERFACE(iface)) {
-        virLibConnError(VIR_ERR_INVALID_INTERFACE,
+        virLibConnError(VIR_ERR_INVALID_INTERFACE, "%s",
                         _("bad interface or no connection"));
         return -1;
     }
@@ -561,7 +562,7 @@ virGetStoragePool(virConnectPtr conn, const char *name,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, _("no connection"));
+        virLibConnError(VIR_ERR_INVALID_CONN, "%s", _("no connection"));
         return NULL;
     }
     virCheckNonNullArgReturn(name, NULL);
@@ -651,7 +652,7 @@ virUnrefStoragePool(virStoragePoolPtr pool) {
     int refs;
 
     if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibConnError(VIR_ERR_INVALID_STORAGE_POOL,
+        virLibConnError(VIR_ERR_INVALID_STORAGE_POOL, "%s",
                         _("bad storage pool or no connection"));
         return -1;
     }
@@ -690,7 +691,7 @@ virGetStorageVol(virConnectPtr conn, const char *pool, const char *name,
     virStorageVolPtr ret = NULL;
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, _("no connection"));
+        virLibConnError(VIR_ERR_INVALID_CONN, "%s", _("no connection"));
         return NULL;
     }
     virCheckNonNullArgReturn(name, NULL);
@@ -790,7 +791,7 @@ virUnrefStorageVol(virStorageVolPtr vol) {
     int refs;
 
     if (!VIR_IS_CONNECTED_STORAGE_VOL(vol)) {
-        virLibConnError(VIR_ERR_INVALID_STORAGE_VOL,
+        virLibConnError(VIR_ERR_INVALID_STORAGE_VOL, "%s",
                         _("bad storage volume or no connection"));
         return -1;
     }
@@ -827,7 +828,7 @@ virGetNodeDevice(virConnectPtr conn, const char *name)
     virNodeDevicePtr ret = NULL;
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, _("no connection"));
+        virLibConnError(VIR_ERR_INVALID_CONN, "%s", _("no connection"));
         return NULL;
     }
     virCheckNonNullArgReturn(name, NULL);
@@ -945,7 +946,7 @@ virGetSecret(virConnectPtr conn, const unsigned char *uuid,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, _("no connection"));
+        virLibConnError(VIR_ERR_INVALID_CONN, "%s", _("no connection"));
         return NULL;
     }
     virCheckNonNullArgReturn(uuid, NULL);
@@ -1031,7 +1032,8 @@ virUnrefSecret(virSecretPtr secret) {
     int refs;
 
     if (!VIR_IS_CONNECTED_SECRET(secret)) {
-        virLibConnError(VIR_ERR_INVALID_SECRET, _("bad secret or no connection"));
+        virLibConnError(VIR_ERR_INVALID_SECRET, "%s",
+                        _("bad secret or no connection"));
         return -1;
     }
     virMutexLock(&secret->conn->lock);
@@ -1126,7 +1128,7 @@ virGetNWFilter(virConnectPtr conn, const char *name, const unsigned char *uuid) 
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, _("no connection"));
+        virLibConnError(VIR_ERR_INVALID_CONN, "%s", _("no connection"));
         return NULL;
     }
     virCheckNonNullArgReturn(name, NULL);
@@ -1218,7 +1220,7 @@ virUnrefNWFilter(virNWFilterPtr nwfilter)
     int refs;
 
     if (!VIR_IS_CONNECTED_NWFILTER(nwfilter)) {
-        virLibConnError(VIR_ERR_INVALID_NWFILTER,
+        virLibConnError(VIR_ERR_INVALID_NWFILTER, "%s",
                         _("bad nwfilter or no connection"));
         return -1;
     }
@@ -1244,7 +1246,7 @@ virGetDomainSnapshot(virDomainPtr domain, const char *name)
     virDomainSnapshotPtr ret = NULL;
 
     if (!VIR_IS_DOMAIN(domain)) {
-        virLibConnError(VIR_ERR_INVALID_DOMAIN, _("bad domain"));
+        virLibConnError(VIR_ERR_INVALID_DOMAIN, "%s", _("bad domain"));
         return NULL;
     }
     virCheckNonNullArgReturn(name, NULL);
@@ -1307,7 +1309,8 @@ virUnrefDomainSnapshot(virDomainSnapshotPtr snapshot)
     int refs;
 
     if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
-        virLibConnError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT, _("not a snapshot"));
+        virLibConnError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT, "%s",
+                        _("not a snapshot"));
         return -1;
     }
 

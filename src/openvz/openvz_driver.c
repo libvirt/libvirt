@@ -2017,7 +2017,7 @@ openvzUpdateDevice(virDomainDefPtr vmdef,
             || cur->accessmode != fs->accessmode
             || cur->wrpolicy != fs->wrpolicy
             || cur->readonly != fs->readonly) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Can only modify disk quota"));
             return -1;
         }

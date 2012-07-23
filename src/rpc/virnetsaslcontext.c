@@ -1,7 +1,7 @@
 /*
  * virnetsaslcontext.c: SASL encryption/auth handling
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -313,7 +313,7 @@ const char *virNetSASLSessionGetIdentity(virNetSASLSessionPtr sasl)
         goto cleanup;
     }
     if (val == NULL) {
-        virReportError(VIR_ERR_AUTH_FAILED,
+        virReportError(VIR_ERR_AUTH_FAILED, "%s",
                        _("no client username was found"));
         goto cleanup;
     }

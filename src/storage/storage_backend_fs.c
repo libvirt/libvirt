@@ -1,7 +1,7 @@
 /*
  * storage_backend_fs.c: storage backend for FS and directory handling
  *
- * Copyright (C) 2007-2011 Red Hat, Inc.
+ * Copyright (C) 2007-2012 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -598,7 +598,7 @@ virStorageBackendFileSystemProbe(const char *device,
     }
 
     if (blkid_do_probe(probe) != 1) {
-        virReportError(VIR_ERR_STORAGE_PROBE_FAILED,
+        virReportError(VIR_ERR_STORAGE_PROBE_FAILED, "%s",
                        _("Found additional probes to run, "
                          "filesystem probing may be incorrect"));
         ret = FILESYSTEM_PROBE_ERROR;
@@ -620,7 +620,7 @@ static virStoragePoolProbeResult
 virStorageBackendFileSystemProbe(const char *device ATTRIBUTE_UNUSED,
                                  const char *format ATTRIBUTE_UNUSED)
 {
-    virReportError(VIR_ERR_OPERATION_INVALID,
+    virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                    _("probing for filesystems is unsupported "
                      "by this build"));
 
@@ -743,7 +743,7 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (flags == (VIR_STORAGE_POOL_BUILD_OVERWRITE |
                   VIR_STORAGE_POOL_BUILD_NO_OVERWRITE)) {
 
-        virReportError(VIR_ERR_OPERATION_INVALID,
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Overwrite and no overwrite flags"
                          " are mutually exclusive"));
         goto error;

@@ -333,7 +333,7 @@ int qemuSetupCgroup(struct qemud_driver *driver,
                 }
             }
         } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Block I/O tuning is not available on this host"));
             goto cleanup;
         }
@@ -372,7 +372,7 @@ int qemuSetupCgroup(struct qemud_driver *driver,
                 }
             }
         } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Memory cgroup is not available on this host"));
         }
     }

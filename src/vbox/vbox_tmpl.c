@@ -9311,7 +9311,7 @@ vboxListAllDomains(virConnectPtr conn,
                 if (MATCH(VIR_CONNECT_LIST_FILTERS_SNAPSHOT)) {
                     rc = machine->vtbl->GetSnapshotCount(machine, &snapshotCount);
                     if (NS_FAILED(rc)) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                        _("could not get snapshot count for listed domains"));
                         goto cleanup;
                     }

@@ -1,7 +1,7 @@
 /*
  * storage_backend_disk.c: storage backend for disk handling
  *
- * Copyright (C) 2007-2008, 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2007-2008, 2010-2012 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -399,7 +399,7 @@ virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (flags == (VIR_STORAGE_POOL_BUILD_OVERWRITE |
                   VIR_STORAGE_POOL_BUILD_NO_OVERWRITE)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Overwrite and no overwrite flags"
                          " are mutually exclusive"));
         goto error;
@@ -415,10 +415,10 @@ virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         if (check > 0) {
             ok_to_mklabel = true;
         } else if (check < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("Error checking for disk label"));
         } else {
-            virReportError(VIR_ERR_OPERATION_INVALID,
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("Disk label already present"));
         }
     }

@@ -2,7 +2,7 @@
  * nwfilter_conf.c: network filter XML processing
  *                  (derived from storage_conf.c)
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * Copyright (C) 2010-2011 IBM Corporation
@@ -2423,7 +2423,7 @@ virNWFilterIsValidChainName(const char *chainname)
     }
 
     if (chainname[strspn(chainname, VALID_CHAINNAME)] != 0) {
-        virReportError(VIR_ERR_INVALID_ARG,
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Chain name contains invalid characters"));
         return false;
     }

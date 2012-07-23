@@ -3424,7 +3424,7 @@ qemuBuildHubDevStr(virDomainHubDefPtr dev,
     }
 
     if (!qemuCapsGet(qemuCaps, QEMU_CAPS_USB_HUB)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("usb-hub not supported by QEMU binary"));
         goto error;
     }
@@ -3553,7 +3553,7 @@ qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias,
 
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
         if (!qemuCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEVMC)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("spicevmc not supported in this QEMU binary"));
             goto error;
         }
@@ -4808,7 +4808,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                        cont->model == -1 &&
                        !qemuCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI)) {
                 if (usblegacy) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("Multiple legacy USB controllers are "
                                      "not supported"));
                     goto error;
@@ -5816,7 +5816,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             switch (mode) {
             case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
                 if (!driver->spiceTLS) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("spice secure channels set in XML configuration, but TLS is disabled in qemu.conf"));
                     goto error;
                 }

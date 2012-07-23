@@ -1715,13 +1715,13 @@ storageVolumeResize(virStorageVolPtr obj,
     storageDriverUnlock(driver);
 
     if (!pool) {
-        virReportError(VIR_ERR_NO_STORAGE_POOL,
+        virReportError(VIR_ERR_NO_STORAGE_POOL, "%s",
                        _("no storage pool with matching uuid"));
         goto out;
     }
 
     if (!virStoragePoolObjIsActive(pool)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("storage pool is not active"));
         goto out;
     }
@@ -1753,20 +1753,20 @@ storageVolumeResize(virStorageVolPtr obj,
     }
 
     if (abs_capacity < vol->allocation) {
-        virReportError(VIR_ERR_INVALID_ARG,
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("can't shrink capacity below "
                          "existing allocation"));
         goto out;
     }
 
     if (abs_capacity > vol->capacity + pool->def->available) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Not enough space left on storage pool"));
         goto out;
     }
 
     if (!backend->resizeVol) {
-        virReportError(VIR_ERR_NO_SUPPORT,
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
                        _("storage pool does not support changing of "
                          "volume capacity"));
         goto out;

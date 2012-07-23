@@ -832,7 +832,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
                     goto try_remove;
                 }
             } else {
-                virReportError(VIR_ERR_OPERATION_FAILED,
+                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                _("setting of link state not supported: Link is up"));
             }
 

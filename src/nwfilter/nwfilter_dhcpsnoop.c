@@ -2,6 +2,7 @@
  * nwfilter_dhcpsnoop.c: support for DHCP snooping used by a VM
  *                       on an interface
  *
+ * Copyright (C) 2012 Red Hat, Inc.
  * Copyright (C) 2011,2012 IBM Corp.
  *
  * Authors:
@@ -886,7 +887,7 @@ virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
         if (req->techdriver &&
             req->techdriver->applyDHCPOnlyRules(req->ifname, &req->macaddr,
                                                 dhcpsrvrs, false) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("virNWFilterSnoopListDel failed"));
             ret = -1;
         }
@@ -1633,7 +1634,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
 
     if (techdriver->applyDHCPOnlyRules(req->ifname, &req->macaddr,
                                        dhcpsrvrs, false) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("applyDHCPOnlyRules "
                          "failed - spoofing not protected!"));
         goto exit_snoopreqput;

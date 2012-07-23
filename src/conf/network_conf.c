@@ -519,7 +519,7 @@ virNetworkDNSHostsDefParseXML(virNetworkDNSDefPtr def,
 
     if (!(ip = virXMLPropString(node, "ip")) ||
         (virSocketAddrParse(&inaddr, ip, AF_UNSPEC) < 0)) {
-        virReportError(VIR_ERR_XML_DETAIL,
+        virReportError(VIR_ERR_XML_DETAIL, "%s",
                        _("Missing IP address in DNS host definition"));
         VIR_FREE(ip);
         goto error;
@@ -1086,7 +1086,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
         nForwardPfs = virXPathNodeSet("./pf", ctxt, &forwardPfNodes);
 
         if (nForwardIfs < 0 || nForwardPfs < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
+            virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("No interface pool or SRIOV physical device given"));
             goto error;
         }
@@ -1098,7 +1098,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             }
 
             if (forwardDev) {
-                virReportError(VIR_ERR_XML_ERROR,
+                virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("A forward Dev should not be used when using a SRIOV PF"));
                 goto error;
             }
@@ -1116,7 +1116,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             forwardDev = NULL;
             def->nForwardPfs++;
         } else if (nForwardPfs > 1) {
-            virReportError(VIR_ERR_XML_ERROR,
+            virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Use of more than one physical interface is not allowed"));
             goto error;
         }

@@ -65,7 +65,7 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
         VIR_DEBUG("Using cephx authorization");
         if (rados_create(&ptr->cluster,
             pool->def->source.auth.cephx.username) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to initialize RADOS"));
             goto cleanup;
         }
@@ -84,7 +84,7 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
         }
 
         if (secret == NULL) {
-            virReportError(VIR_ERR_NO_SECRET,
+            virReportError(VIR_ERR_NO_SECRET, "%s",
                            _("failed to find the secret"));
             goto cleanup;
         }
@@ -95,7 +95,7 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
         memset(secret_value, 0, secret_value_size);
 
         if (rados_key == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to decode the RADOS key"));
             goto cleanup;
         }
@@ -119,7 +119,7 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
     } else {
         VIR_DEBUG("Not using cephx authorization");
         if (rados_create(&ptr->cluster, NULL) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to create the RADOS cluster"));
             goto cleanup;
         }

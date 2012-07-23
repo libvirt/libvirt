@@ -2023,7 +2023,8 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
-            lxcError(VIR_ERR_OPERATION_INVALID, _("blkio cgroup isn't mounted"));
+            lxcError(VIR_ERR_OPERATION_INVALID, "%s",
+                     _("blkio cgroup isn't mounted"));
             goto cleanup;
         }
 
@@ -2127,7 +2128,8 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
-            lxcError(VIR_ERR_OPERATION_INVALID, _("blkio cgroup isn't mounted"));
+            lxcError(VIR_ERR_OPERATION_INVALID, "%s",
+                     _("blkio cgroup isn't mounted"));
             goto cleanup;
         }
 

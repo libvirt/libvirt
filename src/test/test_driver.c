@@ -3534,7 +3534,7 @@ static int testInterfaceChangeBegin(virConnectPtr conn,
 
     testDriverLock(privconn);
     if (privconn->transaction_running) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("there is another transaction running."));
         goto cleanup;
     }
@@ -3562,7 +3562,7 @@ static int testInterfaceChangeCommit(virConnectPtr conn,
     testDriverLock(privconn);
 
     if (!privconn->transaction_running) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("no transaction running, "
                          "nothing to be committed."));
         goto cleanup;
@@ -3590,7 +3590,7 @@ static int testInterfaceChangeRollback(virConnectPtr conn,
     testDriverLock(privconn);
 
     if (!privconn->transaction_running) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("no transaction running, "
                          "nothing to rollback."));
         goto cleanup;

@@ -1870,7 +1870,7 @@ xenFormatSxprDisk(virDomainDiskDefPtr def,
     else
         virBufferAddLit(buf, "(mode 'w')");
     if (def->transient) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("transient disks not supported yet"));
         return -1;
     }
@@ -2515,7 +2515,7 @@ xenFormatSxpr(virConnectPtr conn,
                 break;
             case VIR_DOMAIN_CLOCK_OFFSET_UTC:
                 if (def->clock.data.utc_reset) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("unsupported clock adjustment='reset'"));
                     goto error;
                 }
@@ -2524,7 +2524,7 @@ xenFormatSxpr(virConnectPtr conn,
                 break;
             case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
                 if (def->clock.data.utc_reset) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("unsupported clock adjustment='reset'"));
                     goto error;
                 }

@@ -3236,7 +3236,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr *def,
     (*def)->label = p;
 
     if ((*def)->label && (*def)->norelabel) {
-        virReportError(VIR_ERR_XML_ERROR,
+        virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Cannot specify a label if relabelling is turned off"));
         VIR_FREE((*def)->label);
         VIR_FREE(*def);
@@ -3423,7 +3423,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                     }
                     if (!(source = virXMLPropString(cur, "name")) &&
                         def->protocol != VIR_DOMAIN_DISK_PROTOCOL_NBD) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                        _("missing name for disk source"));
                         goto error;
                     }
@@ -3509,7 +3509,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
             } else if (xmlStrEqual(cur->name, BAD_CAST "auth")) {
                 authUsername = virXMLPropString(cur, "username");
                 if (authUsername == NULL) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("missing username for auth"));
                     goto error;
                 }
@@ -3521,7 +3521,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                         xmlStrEqual(child->name, BAD_CAST "secret")) {
                         usageType = virXMLPropString(child, "type");
                         if (usageType == NULL) {
-                            virReportError(VIR_ERR_XML_ERROR,
+                            virReportError(VIR_ERR_XML_ERROR, "%s",
                                            _("missing type for secret"));
                             goto error;
                         }
@@ -3537,7 +3537,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                         authUsage = virXMLPropString(child, "usage");
 
                         if (authUUID != NULL && authUsage != NULL) {
-                            virReportError(VIR_ERR_XML_ERROR,
+                            virReportError(VIR_ERR_XML_ERROR, "%s",
                                            _("only one of uuid and usage can be specified"));
                             goto error;
                         }
@@ -3599,7 +3599,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                      def->blkdeviotune.read_bytes_sec) ||
                     (def->blkdeviotune.total_bytes_sec &&
                      def->blkdeviotune.write_bytes_sec)) {
-                    virReportError(VIR_ERR_XML_ERROR,
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("total and read/write bytes_sec "
                                      "cannot be set at the same time"));
                     goto error;
@@ -3609,7 +3609,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                      def->blkdeviotune.read_iops_sec) ||
                     (def->blkdeviotune.total_iops_sec &&
                      def->blkdeviotune.write_iops_sec)) {
-                    virReportError(VIR_ERR_XML_ERROR,
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("total and read/write iops_sec "
                                      "cannot be set at the same time"));
                     goto error;
@@ -3825,7 +3825,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
 
     if (ioeventfd) {
         if (def->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("disk ioeventfd mode supported "
                              "only for virtio bus"));
             goto error;
@@ -3843,7 +3843,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
 
     if (event_idx) {
         if (def->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("disk event_idx mode supported "
                              "only for virtio bus"));
             goto error;
@@ -6411,7 +6411,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
 
                     if ((compressionVal =
                          virDomainGraphicsSpicePlaybackCompressionTypeFromString(compression)) <= 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                        _("unknown spice playback compression"));
                         VIR_FREE(compression);
                         goto error;
@@ -6431,7 +6431,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
                     }
                     if ((modeVal =
                          virDomainGraphicsSpiceStreamingModeTypeFromString(mode)) <= 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                        _("unknown spice streaming mode"));
                         VIR_FREE(mode);
                         goto error;

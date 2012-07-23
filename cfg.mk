@@ -581,6 +581,19 @@ sc_prohibit_newline_at_end_of_diagnostic:
 	  && { echo '$(ME): newline at end of message(s)' 1>&2;		\
 	    exit 1; } || :
 
+# Look for diagnostics that lack a % in the format string, except that we
+# allow VIR_ERROR to do this, and ignore functions that take a single
+# string rather than a format argument.
+sc_prohibit_diagnostic_without_format:
+	@{ grep     -nE '\<$(func_re) *\(.*;$$' $$($(VC_LIST_EXCEPT));   \
+	   grep -A2 -nE '\<$(func_re) *\(.*,$$' $$($(VC_LIST_EXCEPT)); } \
+	   | sed -rn -e ':l; /[,"]$$/ {N;b l;}'				 \
+		-e '/(xenapiSessionErrorHandler|vah_(error|warning))/d'	 \
+		-e '/\<$(func_re) *\([^"]*"([^%"]|"\n[^"]*")*"[,)]/p'	 \
+           | grep -vE 'VIR_ERROR' &&					 \
+	  { echo '$(ME): found diagnostic without %' 1>&2;		 \
+	    exit 1; } || :
+
 # The strings "" and "%s" should never be marked for translation.
 sc_prohibit_useless_translation:
 	@prohibit='_\("(%s)?"\)'					\

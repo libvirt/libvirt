@@ -482,7 +482,7 @@ int virNetSocketNewConnectUNIX(const char *path,
     remoteAddr.len = sizeof(remoteAddr.data.un);
 
     if (spawnDaemon && !binary) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Auto-spawn of daemon requested, but no binary specified"));
         return -1;
     }
@@ -1178,7 +1178,7 @@ int virNetSocketSendFD(virNetSocketPtr sock, int fd)
 {
     int ret = -1;
     if (!virNetSocketHasPassFD(sock)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Sending file descriptors is not supported on this socket"));
         return -1;
     }
@@ -1212,7 +1212,7 @@ int virNetSocketRecvFD(virNetSocketPtr sock, int *fd)
     *fd = -1;
 
     if (!virNetSocketHasPassFD(sock)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Receiving file descriptors is not supported on this socket"));
         return -1;
     }

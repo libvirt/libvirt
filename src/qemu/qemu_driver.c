@@ -12885,7 +12885,7 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
         if (!map[i]) {
             cpu_time = 0;
         } else if (virStrToLong_ull(pos, &pos, 10, &cpu_time) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("cpuacct parse error"));
             goto cleanup;
         } else {

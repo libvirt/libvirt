@@ -208,7 +208,7 @@ static int xenXMConfigGetUUID(virConfPtr conf, const char *name, unsigned char *
     virConfValuePtr val;
 
     if (!uuid || !name || !conf) {
-        virReportError(VIR_ERR_INVALID_ARG,
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Arguments must be non null"));
         return -1;
     }
@@ -1242,7 +1242,7 @@ static int xenFormatXMDisk(virConfValuePtr list,
     else
         virBufferAddLit(&buf, ",w");
     if (disk->transient) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("transient disks not supported yet"));
         return -1;
     }
@@ -1686,7 +1686,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                 break;
             case VIR_DOMAIN_CLOCK_OFFSET_UTC:
                 if (def->clock.data.utc_reset) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("unsupported clock adjustment='reset'"));
                     goto cleanup;
                 }
@@ -1695,7 +1695,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                 break;
             case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
                 if (def->clock.data.utc_reset) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("unsupported clock adjustment='reset'"));
                     goto cleanup;
                 }

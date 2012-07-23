@@ -113,7 +113,7 @@ virNWFilterVarValueCreateSimple(char *value)
     virNWFilterVarValuePtr val;
 
     if (!isValidVarValue(value)) {
-        virReportError(VIR_ERR_INVALID_ARG,
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Variable value contains invalid character"));
         return NULL;
     }
@@ -998,10 +998,10 @@ virNWFilterVarAccessParse(const char *varAccess)
         }
         if (parseError) {
             if (dest->accessType == VIR_NWFILTER_VAR_ACCESS_ELEMENT)
-                virReportError(VIR_ERR_INVALID_ARG,
+                virReportError(VIR_ERR_INVALID_ARG, "%s",
                                _("Malformatted array index"));
             else
-                virReportError(VIR_ERR_INVALID_ARG,
+                virReportError(VIR_ERR_INVALID_ARG, "%s",
                                _("Malformatted iterator id"));
             goto err_exit;
         }
@@ -1026,7 +1026,7 @@ virNWFilterVarAccessParse(const char *varAccess)
 
         return dest;
     } else {
-        virReportError(VIR_ERR_INVALID_ARG,
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Malformatted variable"));
     }
 
