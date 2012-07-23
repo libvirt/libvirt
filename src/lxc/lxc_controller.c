@@ -661,6 +661,7 @@ static int lxcControllerClearCapabilities(void)
 }
 
 static bool quit = false;
+static bool wantReboot = false;
 static virMutex lock;
 
 
@@ -670,11 +671,15 @@ static void virLXCControllerSignalChildIO(virNetServerPtr server ATTRIBUTE_UNUSE
 {
     virLXCControllerPtr ctrl = opaque;
     int ret;
+    int status;
 
-    ret = waitpid(-1, NULL, WNOHANG);
+    ret = waitpid(-1, &status, WNOHANG);
     if (ret == ctrl->initpid) {
         virMutexLock(&lock);
         quit = true;
+        if (WIFSIGNALED(status) &&
+            WTERMSIG(status) == SIGHUP)
+            wantReboot = true;
         virMutexUnlock(&lock);
     }
 }
@@ -998,7 +1003,7 @@ static int virLXCControllerMain(virLXCControllerPtr ctrl)
 
     err = virGetLastError();
     if (!err || err->code == VIR_ERR_OK)
-        rc = 0;
+        rc = wantReboot ? 1 : 0;
 
 cleanup:
     virMutexDestroy(&lock);
@@ -1318,6 +1323,9 @@ virLXCControllerEventSendExit(virLXCControllerPtr ctrl,
     switch (exitstatus) {
     case 0:
         msg.status = VIR_LXC_PROTOCOL_EXIT_STATUS_SHUTDOWN;
+        break;
+    case 1:
+        msg.status = VIR_LXC_PROTOCOL_EXIT_STATUS_REBOOT;
         break;
     default:
         msg.status = VIR_LXC_PROTOCOL_EXIT_STATUS_ERROR;

@@ -148,6 +148,58 @@ int virLXCProcessAutoDestroyRemove(virLXCDriverPtr driver,
     return 0;
 }
 
+static virConnectPtr
+virLXCProcessAutoDestroyGetConn(virLXCDriverPtr driver,
+                                virDomainObjPtr vm)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    VIR_DEBUG("vm=%s uuid=%s", vm->def->name, uuidstr);
+    return virHashLookup(driver->autodestroy, uuidstr);
+}
+
+
+static int
+virLXCProcessReboot(virLXCDriverPtr driver,
+                    virDomainObjPtr vm)
+{
+    virConnectPtr conn = virLXCProcessAutoDestroyGetConn(driver, vm);
+    int reason = vm->state.reason;
+    bool autodestroy = false;
+    int ret = -1;
+    virDomainDefPtr savedDef;
+
+    if (conn) {
+        virConnectRef(conn);
+        autodestroy = true;
+    } else {
+        conn = virConnectOpen("lxc:///");
+        /* Ignoring NULL conn which is mostly harmless here */
+    }
+
+    /* In a reboot scenario, we need to make sure we continue
+     * to use the current 'def', and not switch to 'newDef'.
+     * So temporarily hide the newDef and then reinstate it
+     */
+    savedDef = vm->newDef;
+    vm->newDef = NULL;
+    virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+    vm->newDef = savedDef;
+    if (virLXCProcessStart(conn, driver, vm, autodestroy, reason) < 0) {
+        VIR_WARN("Unable to handle reboot of vm %s",
+                 vm->def->name);
+        goto cleanup;
+    }
+
+    if (conn)
+        virConnectClose(conn);
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
 
 /**
  * virLXCProcessCleanup:
@@ -509,17 +561,35 @@ static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED,
 
     priv = vm->privateData;
     virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
-    if (!priv->doneStopEvent) {
-        event = virDomainEventNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_STOPPED,
-                                         priv->stopReason);
-        virDomainAuditStop(vm, "shutdown");
+    if (!priv->wantReboot) {
+        virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+        if (!priv->doneStopEvent) {
+            event = virDomainEventNewFromObj(vm,
+                                             VIR_DOMAIN_EVENT_STOPPED,
+                                             priv->stopReason);
+            virDomainAuditStop(vm, "shutdown");
+        } else {
+            VIR_DEBUG("Stop event has already been sent");
+        }
+        if (!vm->persistent) {
+            virDomainRemoveInactive(&driver->domains, vm);
+            vm = NULL;
+        }
     } else {
-        VIR_DEBUG("Stop event has already been sent");
-    }
-    if (!vm->persistent) {
-        virDomainRemoveInactive(&driver->domains, vm);
-        vm = NULL;
+        int ret = virLXCProcessReboot(driver, vm);
+        virDomainAuditStop(vm, "reboot");
+        virDomainAuditStart(vm, "reboot", ret == 0);
+        if (ret == 0) {
+            event = virDomainEventRebootNewFromObj(vm);
+        } else {
+            event = virDomainEventNewFromObj(vm,
+                                             VIR_DOMAIN_EVENT_STOPPED,
+                                             priv->stopReason);
+            if (!vm->persistent) {
+                virDomainRemoveInactive(&driver->domains, vm);
+                vm = NULL;
+            }
+        }
     }
 
     if (vm)
@@ -543,6 +613,10 @@ static void virLXCProcessMonitorExitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
         break;
     case VIR_LXC_PROTOCOL_EXIT_STATUS_ERROR:
         priv->stopReason = VIR_DOMAIN_EVENT_STOPPED_FAILED;
+        break;
+    case VIR_LXC_PROTOCOL_EXIT_STATUS_REBOOT:
+        priv->stopReason = VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN;
+        priv->wantReboot = true;
         break;
     default:
         priv->stopReason = VIR_DOMAIN_EVENT_STOPPED_FAILED;
@@ -1033,6 +1107,7 @@ int virLXCProcessStart(virConnectPtr conn,
     }
 
     priv->stopReason = VIR_DOMAIN_EVENT_STOPPED_FAILED;
+    priv->wantReboot = false;
     vm->def->id = vm->pid;
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
     priv->doneStopEvent = false;
