@@ -326,11 +326,22 @@ Requires: libvirt-daemon-config-network = %{version}-%{release}
 %if %{with_nwfilter}
 Requires: libvirt-daemon-config-nwfilter = %{version}-%{release}
 %endif
+%if %{with_driver_modules}
+%if %{with_libxl}
 Requires: libvirt-daemon-driver-libxl = %{version}-%{release}
+%endif
+%if %{with_lxc}
 Requires: libvirt-daemon-driver-lxc = %{version}-%{release}
+%endif
+%if %{with_qemu}
 Requires: libvirt-daemon-driver-qemu = %{version}-%{release}
+%endif
+%if %{with_uml}
 Requires: libvirt-daemon-driver-uml = %{version}-%{release}
+%endif
+%if %{with_xen}
 Requires: libvirt-daemon-driver-xen = %{version}-%{release}
+%endif
 
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-secret = %{version}-%{release}
@@ -338,6 +349,7 @@ Requires: libvirt-daemon-driver-storage = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
 Requires: libvirt-daemon-driver-nodedev = %{version}-%{release}
 Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
+%endif
 %endif
 Requires: libvirt-client = %{version}-%{release}
 
@@ -750,7 +762,9 @@ Summary: Qemu driver plugin for the libvirtd daemon
 Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
 # There really is a hard cross-driver dependency here
+%if %{with_driver_modules}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
+%endif
 
 %description daemon-driver-qemu
 The qemu driver plugin for the libvirtd daemon, providing
@@ -765,7 +779,9 @@ Summary: LXC driver plugin for the libvirtd daemon
 Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
 # There really is a hard cross-driver dependency here
+%if %{with_driver_modules}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
+%endif
 
 %description daemon-driver-lxc
 The LXC driver plugin for the libvirtd daemon, providing
