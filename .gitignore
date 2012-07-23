@@ -93,6 +93,7 @@
 /python/libvirt.py
 /python/libvirt_qemu.py
 /sc_*
+/src/.*.stamp
 /src/esx/*.generated.*
 /src/hyperv/*.generated.*
 /src/libvirt*.def

@@ -874,9 +874,17 @@ endif
 
 BUILT_SOURCES += $(ESX_DRIVER_GENERATED)
 
-$(ESX_DRIVER_GENERATED): $(srcdir)/esx/esx_vi_generator.input \
+ESX_GENERATED_STAMP = .esx_vi_generator.stamp
+
+$(ESX_DRIVER_GENERATED): $(ESX_GENERATED_STAMP)
+
+$(ESX_GENERATED_STAMP): $(srcdir)/esx/esx_vi_generator.input \
                          $(srcdir)/esx/esx_vi_generator.py
-	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) $(srcdir)/esx/esx_vi_generator.py
+	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) $(srcdir)/esx/esx_vi_generator.py \
+	  && touch $@
+
+MAINTAINERCLEANFILES += $(ESX_DRIVER_GENERATED) $(ESX_GENERATED_STAMP)
+
 
 if WITH_ESX
 noinst_LTLIBRARIES += libvirt_driver_esx.la
@@ -892,9 +900,16 @@ endif
 
 BUILT_SOURCES += $(HYPERV_DRIVER_GENERATED)
 
-$(HYPERV_DRIVER_GENERATED): $(srcdir)/hyperv/hyperv_wmi_generator.input \
+HYPERV_GENERATED_STAMP = .hyperv_wmi_generator.stamp
+
+$(HYPERV_DRIVER_GENERATED): $(HYPERV_GENERATED_STAMP)
+
+$(HYPERV_GENERATED_STAMP): $(srcdir)/hyperv/hyperv_wmi_generator.input \
                             $(srcdir)/hyperv/hyperv_wmi_generator.py
-	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) $(srcdir)/hyperv/hyperv_wmi_generator.py
+	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) $(srcdir)/hyperv/hyperv_wmi_generator.py \
+	  && touch $@
+
+MAINTAINERCLEANFILES += $(HYPERV_DRIVER_GENERATED) $(HYPERV_GENERATED_STAMP)
 
 if WITH_HYPERV
 noinst_LTLIBRARIES += libvirt_driver_hyperv.la
@@ -1675,4 +1690,4 @@ endif
 
 CLEANFILES += *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
 DISTCLEANFILES += $(GENERATED_SYM_FILES)
-MAINTAINERCLEANFILES += $(REMOTE_DRIVER_GENERATED) $(VIR_NET_RPC_GENERATED) $(ESX_DRIVER_GENERATED)
+MAINTAINERCLEANFILES += $(REMOTE_DRIVER_GENERATED) $(VIR_NET_RPC_GENERATED)
