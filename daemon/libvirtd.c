@@ -972,9 +972,27 @@ int main(int argc, char **argv) {
     virLogSetFromEnv();
 
 #ifdef WITH_DRIVER_MODULES
-    if (strstr(argv[0], "lt-libvirtd") &&
-        (access("./.git", R_OK) >= 0 || access("../.git", R_OK) >= 0))
-        virDriverModuleInitialize("./src/.libs");
+    if (strstr(argv[0], "lt-libvirtd")) {
+        char *tmp = strrchr(argv[0], '/');
+        if (!tmp) {
+            fprintf(stderr, _("%s: cannot identify driver directory\n"), argv[0]);
+            exit(EXIT_FAILURE);
+        }
+        *tmp = '\0';
+        char *driverdir;
+        if (virAsprintf(&driverdir, "%s/../../src/.libs", argv[0]) < 0) {
+            fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
+            exit(EXIT_FAILURE);
+        }
+        if (access(driverdir, R_OK) < 0) {
+            fprintf(stderr, _("%s: expected driver directory '%s' is missing\n"),
+                    argv[0], driverdir);
+            exit(EXIT_FAILURE);
+        }
+        virDriverModuleInitialize(driverdir);
+        *tmp = '/';
+        /* Must not free 'driverdir' - it is still used */
+    }
 #endif
 
     while (1) {
