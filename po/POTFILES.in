@@ -184,6 +184,7 @@ tools/virsh-interface.c
 tools/virsh-network.c
 tools/virsh-nwfilter.c
 tools/virsh-pool.c
+tools/virsh-secret.c
 tools/virsh-volume.c
 tools/virt-host-validate-common.c
 tools/virt-host-validate-lxc.c
