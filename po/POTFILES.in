@@ -183,6 +183,7 @@ tools/virsh-edit.c
 tools/virsh-host.c
 tools/virsh-interface.c
 tools/virsh-network.c
+tools/virsh-nodedev.c
 tools/virsh-nwfilter.c
 tools/virsh-pool.c
 tools/virsh-secret.c
