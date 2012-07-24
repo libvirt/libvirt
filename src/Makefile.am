@@ -306,6 +306,46 @@ PDWTAGS = \
 	  echo 'WARNING: install the dwarves package to get pdwtags' >&2; \
 	fi
 
+ALL_ELF_LIBS = $(builddir)/.libs/libvirt.so
+if WITH_DRIVER_MODULES
+if WITH_QEMU
+ALL_ELF_LIBS += $(builddir)/.libs/libvirt_driver_qemu.so
+endif
+if WITH_LXC
+ALL_ELF_LIBS += $(builddir)/.libs/libvirt_driver_lxc.so
+endif
+if WITH_UML
+ALL_ELF_LIBS += $(builddir)/.libs/libvirt_driver_uml.so
+endif
+if WITH_XEN
+ALL_ELF_LIBS += $(builddir)/.libs/libvirt_driver_xen.so
+endif
+if WITH_LIBXL
+ALL_ELF_LIBS += $(builddir)/.libs/libvirt_driver_libxl.so
+endif
+if WITH_NETCF
+ALL_ELF_LIBS += $(builddir)/.libs/libvirt_driver_interface.so
+endif
+if WITH_NETWORK
+ALL_ELF_LIBS += $(builddir)/.libs/libvirt_driver_network.so
+endif
+if WITH_NODE_DEVICES
+ALL_ELF_LIBS += $(builddir)/.libs/libvirt_driver_nodedev.so
+endif
+if WITH_NWFILTER
+ALL_ELF_LIBS += $(builddir)/.libs/libvirt_driver_nwfilter.so
+endif
+if WITH_SECRETS
+ALL_ELF_LIBS += $(builddir)/.libs/libvirt_driver_secret.so
+endif
+if WITH_STORAGE
+ALL_ELF_LIBS += $(builddir)/.libs/libvirt_driver_storage.so
+endif
+endif
+
+check-symfile: libvirt.syms $(ALL_ELF_LIBS:%.so=%.la)
+	$(AM_V_GEN)$(PERL) $(srcdir)/check-symfile.pl libvirt.syms $(ALL_ELF_LIBS)
+
 PROTOCOL_STRUCTS = \
 	$(srcdir)/remote_protocol-structs \
 	$(srcdir)/qemu_protocol-structs \
@@ -328,7 +368,7 @@ else !WITH_REMOTE
 check-protocol:
 endif
 EXTRA_DIST += $(PROTOCOL_STRUCTS)
-check-local: check-protocol
+check-local: check-protocol check-symfile
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
 # Mock driver, covering domains, storage, networks, etc
