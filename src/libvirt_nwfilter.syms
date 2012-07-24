@@ -9,6 +9,4 @@ virNWFilterTeardownFilter;
 
 
 # nwfilter_learnipaddr.h
-virNWFilterGetIpAddrForIfname;
-virNWFilterDelIpAddrForIfname;
 virNWFilterLookupLearnReq;
