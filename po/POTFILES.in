@@ -180,6 +180,7 @@ tools/virsh.c
 tools/virsh-domain-monitor.c
 tools/virsh-domain.c
 tools/virsh-edit.c
+tools/virsh-volume.c
 tools/virt-host-validate-common.c
 tools/virt-host-validate-lxc.c
 tools/virt-host-validate-qemu.c
