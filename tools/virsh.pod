@@ -1366,7 +1366,10 @@ appropriate limit is adjusted if supported by the hypervisor.  LXC and
 QEMU/KVM support I<--hard-limit>, I<--soft-limit>, and I<--swap-hard-limit>.
 I<--min-guarantee> is supported only by ESX hypervisor.  Each of these
 limits are scaled integers (see B<NOTES> above), with a default of
-kibibytes (blocks of 1024 bytes) if no suffix is present.
+kibibytes (blocks of 1024 bytes) if no suffix is present. Libvirt rounds
+up to the nearest kibibyte.  Some hypervisors require a larger granularity
+than KiB, and requests that are not an even multiple will be rounded up.
+For example, vSphere/ESX rounds the parameter up to mebibytes (1024 kibibytes).
 
 If I<--live> is specified, affect a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.
