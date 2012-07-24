@@ -1,6 +1,7 @@
 /*
  * virauth.c: authentication related utility functions
  *
+ * Copyright (C) 2012 Red Hat, Inc.
  * Copyright (C) 2010 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -54,14 +55,16 @@ int virAuthGetConfigFilePath(virConnectPtr conn,
         return 0;
     }
 
-    for (i = 0 ; i < conn->uri->paramsCount ; i++) {
-        if (STREQ_NULLABLE(conn->uri->params[i].name, "authfile") &&
-            conn->uri->params[i].value) {
-            VIR_DEBUG("Using path from URI '%s'",
-                      conn->uri->params[i].value);
-            if (!(*path = strdup(conn->uri->params[i].value)))
-                goto no_memory;
-            return 0;
+    if (conn && conn->uri) {
+        for (i = 0 ; i < conn->uri->paramsCount ; i++) {
+            if (STREQ_NULLABLE(conn->uri->params[i].name, "authfile") &&
+                conn->uri->params[i].value) {
+                VIR_DEBUG("Using path from URI '%s'",
+                          conn->uri->params[i].value);
+                if (!(*path = strdup(conn->uri->params[i].value)))
+                    goto no_memory;
+                return 0;
+            }
         }
     }
 
