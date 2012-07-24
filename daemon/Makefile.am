@@ -376,7 +376,7 @@ POD2MAN = pod2man -c "Virtualization Support" \
 			-r "$(PACKAGE)-$(VERSION)" -s 8
 
 $(srcdir)/libvirtd.8.in: libvirtd.pod.in
-	$(AM_V_GEN)$(POD2MAN) $< $@
+	$(AM_V_GEN)$(POD2MAN) --name LIBVIRTD $< $@
 
 # This is needed for clients too, so can't wrap in
 # the WITH_LIBVIRTD conditional

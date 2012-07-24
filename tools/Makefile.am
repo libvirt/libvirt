@@ -52,17 +52,17 @@ virt-xml-validate: virt-xml-validate.in Makefile
 	    || (rm $@ && exit 1) && chmod +x $@
 
 virt-xml-validate.1: virt-xml-validate.in
-	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@
+	$(AM_V_GEN)$(POD2MAN) --name VIRT-XML-VALIDATE $< $(srcdir)/$@
 
 virt-pki-validate: virt-pki-validate.in Makefile
 	$(AM_V_GEN)sed -e 's,[@]SYSCONFDIR@,$(sysconfdir),' < $< > $@ \
 	    || (rm $@ && exit 1) && chmod +x $@
 
 virt-pki-validate.1: virt-pki-validate.in
-	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@
+	$(AM_V_GEN)$(POD2MAN) --name VIRT-PKI-VALIDATE $< $(srcdir)/$@
 
 virt-host-validate.1: virt-host-validate.c
-	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@
+	$(AM_V_GEN)$(POD2MAN) --name VIRT-HOST-VALIDATE $< $(srcdir)/$@
 
 virt-sanlock-cleanup: virt-sanlock-cleanup.in Makefile
 	$(AM_V_GEN)sed -e 's,[@]SYSCONFDIR@,$(sysconfdir),' \
@@ -70,7 +70,7 @@ virt-sanlock-cleanup: virt-sanlock-cleanup.in Makefile
 	    || (rm $@ && exit 1) && chmod +x $@
 
 virt-sanlock-cleanup.8: virt-sanlock-cleanup.in
-	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@
+	$(AM_V_GEN)$(POD2MAN) --name VIRT-SANLOCK-CLEANUP $< $(srcdir)/$@
 
 virt_host_validate_SOURCES = \
 		virt-host-validate.c \
