@@ -13870,6 +13870,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     const char *scheme[] = { "vnc", "spice", "rdp", NULL };
     int iter = 0;
     int tmp;
+    int flags = 0;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
@@ -13882,7 +13883,11 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    doc = virDomainGetXMLDesc(dom, 0);
+    if (vshCommandOptBool(cmd, "include-password"))
+        flags |= VIR_DOMAIN_XML_SECURE;
+
+    doc = virDomainGetXMLDesc(dom, flags);
+
     if (!doc)
         goto cleanup;
 
@@ -13944,7 +13949,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
             if (tmp)
                 tls_port = 0;
 
-            if (vshCommandOptBool(cmd, "daemon")) {
+            if (vshCommandOptBool(cmd, "include-password")) {
                 /* Create our XPATH lookup for the SPICE password */
                 virAsprintf(&xpath, "string(/domain/devices/graphics"
                         "[@type='%s']/@passwd)", scheme[iter]);
