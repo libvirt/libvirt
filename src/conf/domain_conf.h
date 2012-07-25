@@ -366,7 +366,7 @@ enum virDomainHostdevSubsysType {
 typedef struct _virDomainHostdevSubsys virDomainHostdevSubsys;
 typedef virDomainHostdevSubsys *virDomainHostdevSubsysPtr;
 struct _virDomainHostdevSubsys {
-    int type; /* enum virDomainHostdevBusType */
+    int type; /* enum virDomainHostdevSubsysType */
     union {
         struct {
             unsigned bus;
