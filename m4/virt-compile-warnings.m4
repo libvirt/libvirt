@@ -55,6 +55,8 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     dontwarn="$dontwarn -Wunsafe-loop-optimizations"
     # Things like virAsprintf mean we can't use this
     dontwarn="$dontwarn -Wformat-nonliteral"
+    # Gnulib's stat-time.h violates this
+    dontwarn="$dontwarn -Waggregate-return"
 
     # We might fundamentally need some of these disabled forever, but
     # ideally we'd turn many of them on

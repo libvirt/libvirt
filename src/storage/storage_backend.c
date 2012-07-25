@@ -1,7 +1,7 @@
 /*
  * storage_backend.c: internal storage driver backend contract
  *
- * Copyright (C) 2007-2011 Red Hat, Inc.
+ * Copyright (C) 2007-2012 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -57,6 +57,7 @@
 #include "storage_backend.h"
 #include "logging.h"
 #include "virfile.h"
+#include "stat-time.h"
 
 #if WITH_STORAGE_LVM
 # include "storage_backend_logical.h"
@@ -1213,6 +1214,15 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
     target->perms.mode = sb.st_mode & S_IRWXUGO;
     target->perms.uid = sb.st_uid;
     target->perms.gid = sb.st_gid;
+
+    if (!target->timestamps && VIR_ALLOC(target->timestamps) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+    target->timestamps->atime = get_stat_atime(&sb);
+    target->timestamps->btime = get_stat_birthtime(&sb);
+    target->timestamps->ctime = get_stat_ctime(&sb);
+    target->timestamps->mtime = get_stat_mtime(&sb);
 
     VIR_FREE(target->perms.label);
 

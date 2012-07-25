@@ -141,6 +141,11 @@
             &lt;mode&gt;0744&lt;/mode&gt;
             &lt;label&gt;virt_image_t&lt;/label&gt;
           &lt;/permissions&gt;
+          &lt;timestamps&gt;
+            &lt;atime&gt;1341933637.273190990&lt;/atime&gt;
+            &lt;mtime&gt;1341930622.047245868&lt;/mtime&gt;
+            &lt;ctime&gt;1341930622.047245868&lt;/ctime&gt;
+          &lt;/timestamps&gt;
           &lt;encryption type='...'&gt;
             ...
           &lt;/encryption&gt;
@@ -171,6 +176,19 @@
         element contains the numeric group ID. The <code>label</code> element
         contains the MAC (eg SELinux) label string.
         <span class="since">Since 0.4.1</span>
+      </dd>
+      <dt><code>timestamps</code></dt>
+      <dd>Provides timing information about the volume. Up to four
+        sub-elements are present,
+        where <code>atime</code>, <code>btime</code>, <code>ctime</code>
+        and <code>mtime</code> hold the access, birth, change and
+        modification time of the volume, where known. The used time
+        format is &lt;seconds&gt;.&lt;nanoseconds&gt; since the
+        beginning of the epoch (1 Jan 1970). If nanosecond resolution
+        is 0 or otherwise unsupported by the host OS or filesystem,
+        then the nanoseconds part is omitted.  This is a readonly
+        attribute and is ignored when creating a volume.
+        <span class="since">Since 0.10.0</span>
       </dd>
       <dt><code>encryption</code></dt>
       <dd>If present, specifies how the volume is encrypted.  See

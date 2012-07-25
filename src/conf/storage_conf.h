@@ -46,6 +46,18 @@ struct _virStoragePerms {
 
 /* Storage volumes */
 
+typedef struct _virStorageTimestamps virStorageTimestamps;
+typedef virStorageTimestamps *virStorageTimestampsPtr;
+struct _virStorageTimestamps {
+    struct timespec atime;
+    /* if btime.tv_nsec == -1 then
+     * birth time is unknown
+     */
+    struct timespec btime;
+    struct timespec ctime;
+    struct timespec mtime;
+};
+
 
 /*
  * How the volume's data is stored on underlying
@@ -77,6 +89,7 @@ struct _virStorageVolTarget {
     char *path;
     int format;
     virStoragePerms perms;
+    virStorageTimestampsPtr timestamps;
     int type; /* only used by disk backend for partition type */
     /* Currently used only in virStorageVolDef.target, not in .backingstore. */
     virStorageEncryptionPtr encryption;

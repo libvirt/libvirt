@@ -286,9 +286,11 @@ virStorageVolDefFree(virStorageVolDefPtr def) {
 
     VIR_FREE(def->target.path);
     VIR_FREE(def->target.perms.label);
+    VIR_FREE(def->target.timestamps);
     virStorageEncryptionFree(def->target.encryption);
     VIR_FREE(def->backingStore.path);
     VIR_FREE(def->backingStore.perms.label);
+    VIR_FREE(def->backingStore.timestamps);
     virStorageEncryptionFree(def->backingStore.encryption);
     VIR_FREE(def);
 }
@@ -1252,6 +1254,19 @@ virStorageVolDefParseFile(virStoragePoolDefPtr pool,
     return virStorageVolDefParse(pool, NULL, filename);
 }
 
+static void
+virStorageVolTimestampFormat(virBufferPtr buf, const char *name,
+                             struct timespec *ts)
+{
+    if (ts->tv_nsec < 0)
+        return;
+    virBufferAsprintf(buf, "      <%s>%llu", name,
+                      (unsigned long long) ts->tv_sec);
+    if (ts->tv_nsec)
+       virBufferAsprintf(buf, ".%09ld", ts->tv_nsec);
+    virBufferAsprintf(buf, "</%s>\n", name);
+}
+
 static int
 virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
                              virBufferPtr buf,
@@ -1287,6 +1302,15 @@ virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
                           def->perms.label);
 
     virBufferAddLit(buf,"    </permissions>\n");
+
+    if (def->timestamps) {
+        virBufferAddLit(buf, "    <timestamps>\n");
+        virStorageVolTimestampFormat(buf, "atime", &def->timestamps->atime);
+        virStorageVolTimestampFormat(buf, "mtime", &def->timestamps->mtime);
+        virStorageVolTimestampFormat(buf, "ctime", &def->timestamps->ctime);
+        virStorageVolTimestampFormat(buf, "btime", &def->timestamps->btime);
+        virBufferAddLit(buf, "    </timestamps>\n");
+    }
 
     if (def->encryption) {
         virBufferAdjustIndent(buf, 4);

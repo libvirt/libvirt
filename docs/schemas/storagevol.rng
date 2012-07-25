@@ -63,6 +63,41 @@
     </optional>
   </define>
 
+  <define name='timestamps'>
+    <optional>
+      <element name='timestamps'>
+        <interleave>
+          <optional>
+            <element name='atime'>
+              <ref name='timestamp'/>
+            </element>
+          </optional>
+          <optional>
+            <element name='btime'>
+              <ref name='timestamp'/>
+            </element>
+          </optional>
+          <optional>
+            <element name='ctime'>
+              <ref name='timestamp'/>
+            </element>
+          </optional>
+          <optional>
+            <element name='mtime'>
+              <ref name='timestamp'/>
+            </element>
+          </optional>
+        </interleave>
+      </element>
+    </optional>
+  </define>
+
+  <define name='timestamp'>
+    <data type='string'>
+      <param name="pattern">[0-9]+(\.[0-9]{0,9})?</param>
+    </data>
+  </define>
+
   <define name='target'>
     <element name='target'>
       <optional>
@@ -72,6 +107,7 @@
       </optional>
       <ref name='format'/>
       <ref name='permissions'/>
+      <ref name='timestamps'/>
       <optional>
         <ref name='encryption'/>
       </optional>
