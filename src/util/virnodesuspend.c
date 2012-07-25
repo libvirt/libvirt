@@ -90,7 +90,7 @@ static int virNodeSuspendSetNodeWakeup(unsigned long long alarmTime)
     virCommandPtr setAlarmCmd;
     int ret = -1;
 
-    if (alarmTime <= MIN_TIME_REQ_FOR_SUSPEND) {
+    if (alarmTime < MIN_TIME_REQ_FOR_SUSPEND) {
         virReportError(VIR_ERR_INVALID_ARG, "%s", _("Suspend duration is too short"));
         return -1;
     }

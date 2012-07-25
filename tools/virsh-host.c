@@ -465,7 +465,7 @@ static const vshCmdInfo info_nodesuspend[] = {
 static const vshCmdOptDef opts_node_suspend[] = {
     {"target", VSH_OT_DATA, VSH_OFLAG_REQ, N_("mem(Suspend-to-RAM), "
                                                "disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)")},
-    {"duration", VSH_OT_INT, VSH_OFLAG_REQ, N_("Suspend duration in seconds")},
+    {"duration", VSH_OT_INT, VSH_OFLAG_REQ, N_("Suspend duration in seconds, at least 60")},
     {"flags", VSH_OT_INT, VSH_OFLAG_NONE, N_("Suspend flags, 0 for default")},
     {NULL, 0, 0, NULL}
 };
