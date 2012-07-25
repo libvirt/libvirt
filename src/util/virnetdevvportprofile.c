@@ -95,15 +95,15 @@ virNetDevVPortProfileEqual(virNetDevVPortProfilePtr a, virNetDevVPortProfilePtr 
         break;
 
     case VIR_NETDEV_VPORT_PROFILE_8021QBG:
-        if (a->u.virtPort8021Qbg.managerID != b->u.virtPort8021Qbg.managerID ||
-            a->u.virtPort8021Qbg.typeID != b->u.virtPort8021Qbg.typeID ||
-            a->u.virtPort8021Qbg.typeIDVersion != b->u.virtPort8021Qbg.typeIDVersion ||
-            memcmp(a->u.virtPort8021Qbg.instanceID, b->u.virtPort8021Qbg.instanceID, VIR_UUID_BUFLEN) != 0)
+        if (a->managerID != b->managerID ||
+            a->typeID != b->typeID ||
+            a->typeIDVersion != b->typeIDVersion ||
+            memcmp(a->instanceID, b->instanceID, VIR_UUID_BUFLEN) != 0)
             return false;
         break;
 
     case VIR_NETDEV_VPORT_PROFILE_8021QBH:
-        if (STRNEQ(a->u.virtPort8021Qbh.profileID, b->u.virtPort8021Qbh.profileID))
+        if (STRNEQ(a->profileID, b->profileID))
             return false;
         break;
 
@@ -637,8 +637,8 @@ virNetDevVPortProfileOp8021Qbg(const char *ifname,
     int rc = -1;
     int op = PORT_REQUEST_ASSOCIATE;
     struct ifla_port_vsi portVsi = {
-        .vsi_mgr_id       = virtPort->u.virtPort8021Qbg.managerID,
-        .vsi_type_version = virtPort->u.virtPort8021Qbg.typeIDVersion,
+        .vsi_mgr_id       = virtPort->managerID,
+        .vsi_type_version = virtPort->typeIDVersion,
     };
     bool nltarget_kernel = false;
     int vlanid;
@@ -658,9 +658,9 @@ virNetDevVPortProfileOp8021Qbg(const char *ifname,
     if (vlanid < 0)
         vlanid = 0;
 
-    portVsi.vsi_type_id[2] = virtPort->u.virtPort8021Qbg.typeID >> 16;
-    portVsi.vsi_type_id[1] = virtPort->u.virtPort8021Qbg.typeID >> 8;
-    portVsi.vsi_type_id[0] = virtPort->u.virtPort8021Qbg.typeID;
+    portVsi.vsi_type_id[2] = virtPort->typeID >> 16;
+    portVsi.vsi_type_id[1] = virtPort->typeID >> 8;
+    portVsi.vsi_type_id[0] = virtPort->typeID;
 
     switch (virtPortOp) {
     case VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE:
@@ -684,7 +684,7 @@ virNetDevVPortProfileOp8021Qbg(const char *ifname,
                                        vlanid,
                                        NULL,
                                        &portVsi,
-                                       virtPort->u.virtPort8021Qbg.instanceID,
+                                       virtPort->instanceID,
                                        NULL,
                                        vf,
                                        op,
@@ -749,7 +749,7 @@ virNetDevVPortProfileOp8021Qbh(const char *ifname,
                                            nltarget_kernel,
                                            macaddr,
                                            vlanid,
-                                           virtPort->u.virtPort8021Qbh.profileID,
+                                           virtPort->profileID,
                                            NULL,
                                            vm_uuid,
                                            hostuuid,

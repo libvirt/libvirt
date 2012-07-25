@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -100,7 +100,7 @@ virNetDevVPortProfileParse(xmlNodePtr node)
                 goto error;
             }
 
-            virtPort->u.virtPort8021Qbg.managerID = (uint8_t)val;
+            virtPort->managerID = (uint8_t)val;
 
             if (virStrToLong_ui(virtPortTypeID, NULL, 0, &val)) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -114,7 +114,7 @@ virNetDevVPortProfileParse(xmlNodePtr node)
                 goto error;
             }
 
-            virtPort->u.virtPort8021Qbg.typeID = (uint32_t)val;
+            virtPort->typeID = (uint32_t)val;
 
             if (virStrToLong_ui(virtPortTypeIDVersion, NULL, 0, &val)) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -128,17 +128,17 @@ virNetDevVPortProfileParse(xmlNodePtr node)
                 goto error;
             }
 
-            virtPort->u.virtPort8021Qbg.typeIDVersion = (uint8_t)val;
+            virtPort->typeIDVersion = (uint8_t)val;
 
             if (virtPortInstanceID != NULL) {
                 if (virUUIDParse(virtPortInstanceID,
-                                 virtPort->u.virtPort8021Qbg.instanceID)) {
+                                 virtPort->instanceID)) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                          _("cannot parse instanceid parameter as a uuid"));
                     goto error;
                 }
             } else {
-                if (virUUIDGenerate(virtPort->u.virtPort8021Qbg.instanceID)) {
+                if (virUUIDGenerate(virtPort->instanceID)) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                          _("cannot generate a random uuid for instanceid"));
                     goto error;
@@ -156,7 +156,7 @@ virNetDevVPortProfileParse(xmlNodePtr node)
 
     case VIR_NETDEV_VPORT_PROFILE_8021QBH:
         if (virtPortProfileID != NULL) {
-            if (virStrcpyStatic(virtPort->u.virtPort8021Qbh.profileID,
+            if (virStrcpyStatic(virtPort->profileID,
                                 virtPortProfileID) != NULL) {
                 virtPort->virtPortType = VIR_NETDEV_VPORT_PROFILE_8021QBH;
             } else {
@@ -173,13 +173,13 @@ virNetDevVPortProfileParse(xmlNodePtr node)
     case VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH:
         if (virtPortInterfaceID != NULL) {
             if (virUUIDParse(virtPortInterfaceID,
-                             virtPort->u.openvswitch.interfaceID)) {
+                             virtPort->interfaceID)) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("cannot parse interfaceid parameter as a uuid"));
                 goto error;
             }
         } else {
-            if (virUUIDGenerate(virtPort->u.openvswitch.interfaceID)) {
+            if (virUUIDGenerate(virtPort->interfaceID)) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("cannot generate a random uuid for interfaceid"));
                 goto error;
@@ -187,14 +187,14 @@ virNetDevVPortProfileParse(xmlNodePtr node)
         }
         /* profileid is not mandatory for Open vSwitch */
         if (virtPortProfileID != NULL) {
-            if (virStrcpyStatic(virtPort->u.openvswitch.profileID,
+            if (virStrcpyStatic(virtPort->profileID,
                                 virtPortProfileID) == NULL) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("profileid parameter too long"));
                 goto error;
             }
         } else {
-            virtPort->u.openvswitch.profileID[0] = '\0';
+            virtPort->profileID[0] = '\0';
         }
         break;
 
@@ -234,33 +234,33 @@ virNetDevVPortProfileFormat(virNetDevVPortProfilePtr virtPort,
 
     switch (virtPort->virtPortType) {
     case VIR_NETDEV_VPORT_PROFILE_8021QBG:
-        virUUIDFormat(virtPort->u.virtPort8021Qbg.instanceID,
+        virUUIDFormat(virtPort->instanceID,
                       uuidstr);
         virBufferAsprintf(buf,
                           "  <parameters managerid='%d' typeid='%d' "
                           "typeidversion='%d' instanceid='%s'/>\n",
-                          virtPort->u.virtPort8021Qbg.managerID,
-                          virtPort->u.virtPort8021Qbg.typeID,
-                          virtPort->u.virtPort8021Qbg.typeIDVersion,
+                          virtPort->managerID,
+                          virtPort->typeID,
+                          virtPort->typeIDVersion,
                           uuidstr);
         break;
 
     case VIR_NETDEV_VPORT_PROFILE_8021QBH:
         virBufferAsprintf(buf,
                           "  <parameters profileid='%s'/>\n",
-                          virtPort->u.virtPort8021Qbh.profileID);
+                          virtPort->profileID);
         break;
 
     case VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH:
-        virUUIDFormat(virtPort->u.openvswitch.interfaceID,
+        virUUIDFormat(virtPort->interfaceID,
                       uuidstr);
-        if (virtPort->u.openvswitch.profileID[0] == '\0') {
+        if (virtPort->profileID[0] == '\0') {
             virBufferAsprintf(buf, "  <parameters interfaceid='%s'/>\n",
                               uuidstr);
         } else {
             virBufferAsprintf(buf, "  <parameters interfaceid='%s' "
                               "profileid='%s'/>\n", uuidstr,
-                              virtPort->u.openvswitch.profileID);
+                              virtPort->profileID);
         }
 
         break;

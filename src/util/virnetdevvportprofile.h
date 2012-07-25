@@ -59,21 +59,18 @@ typedef struct _virNetDevVPortProfile virNetDevVPortProfile;
 typedef virNetDevVPortProfile *virNetDevVPortProfilePtr;
 struct _virNetDevVPortProfile {
     enum virNetDevVPortProfile   virtPortType;
-    union {
-        struct {
-            uint8_t       managerID;
-            uint32_t      typeID; /* 24 bit valid */
-            uint8_t       typeIDVersion;
-            unsigned char instanceID[VIR_UUID_BUFLEN];
-        } virtPort8021Qbg;
-        struct {
-            char          profileID[LIBVIRT_IFLA_VF_PORT_PROFILE_MAX];
-        } virtPort8021Qbh;
-        struct {
-            unsigned char interfaceID[VIR_UUID_BUFLEN];
-            char          profileID[LIBVIRT_IFLA_VF_PORT_PROFILE_MAX];
-        } openvswitch;
-    } u;
+    /* these members are used when virtPortType == 802.1Qbg */
+    uint8_t       managerID;
+    uint32_t      typeID; /* 24 bit valid */
+    uint8_t       typeIDVersion;
+    unsigned char instanceID[VIR_UUID_BUFLEN];
+
+    /* this member is used when virtPortType == 802.1Qbh|openvswitch */
+    char          profileID[LIBVIRT_IFLA_VF_PORT_PROFILE_MAX];
+
+    /* this member is used when virtPortType == openvswitch */
+    unsigned char interfaceID[VIR_UUID_BUFLEN];
+    /* NB - if virtPortType == NONE, any/all of the items could be used */
 };
 
 
