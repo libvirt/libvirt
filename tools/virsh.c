@@ -492,6 +492,16 @@ virshErrorHandler(void *unused ATTRIBUTE_UNUSED, virErrorPtr error)
 }
 
 /*
+ * Reset libvirt error on graceful fallback paths
+ */
+static void
+vshResetLibvirtError(void)
+{
+    virFreeError(last_error);
+    last_error = NULL;
+}
+
+/*
  * Report an error when a command finishes.  This is better than before
  * (when correct operation would report errors), but it has some
  * problems: we lose the smarter formatting of virDefaultErrorFunc(),
@@ -521,8 +531,7 @@ virshReportError(vshControl *ctl)
     vshError(ctl, "%s", last_error->message);
 
 out:
-    virFreeError(last_error);
-    last_error = NULL;
+    vshResetLibvirtError();
 }
 
 static volatile sig_atomic_t intCaught = 0;

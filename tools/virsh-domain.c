@@ -2332,8 +2332,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
         if (has_managed_save < 0) {
             if (last_error->code != VIR_ERR_NO_SUPPORT)
                 goto error;
-            virFreeError(last_error);
-            last_error = NULL;
+            vshResetLibvirtError();
             has_managed_save = 0;
         }
 
@@ -2341,8 +2340,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
         if (has_snapshots < 0) {
             if (last_error->code != VIR_ERR_NO_SUPPORT)
                 goto error;
-            virFreeError(last_error);
-            last_error = NULL;
+            vshResetLibvirtError();
             has_snapshots = 0;
         }
         if (has_snapshots) {
@@ -2351,8 +2349,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
             if (has_snapshots_metadata < 0) {
                 /* The server did not know the new flag, assume that all
                    snapshots have metadata.  */
-                virFreeError(last_error);
-                last_error = NULL;
+                vshResetLibvirtError();
                 has_snapshots_metadata = has_snapshots;
             } else {
                 /* The server knew the new flag, all aspects of
@@ -2461,8 +2458,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
                 vshPrint(ctl,
                          _("Storage volume '%s'(%s) is not managed by libvirt. "
                            "Remove it manually.\n"), target, source);
-                virFreeError(last_error);
-                last_error = NULL;
+                vshResetLibvirtError();
                 continue;
             }
             vlist[nvols].source = source;
@@ -2497,8 +2493,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
         if (rc == 0 || (last_error->code != VIR_ERR_NO_SUPPORT &&
                         last_error->code != VIR_ERR_INVALID_ARG))
             goto out;
-        virFreeError(last_error);
-        last_error = NULL;
+        vshResetLibvirtError();
     }
 
     /* The new API is unsupported or unsafe; fall back to doing things
@@ -2657,13 +2652,11 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
             virshReportError(ctl);
             goto cleanup;
         }
-        virFreeError(last_error);
-        last_error = NULL;
+        vshResetLibvirtError();
         rc = virDomainHasManagedSaveImage(dom, 0);
         if (rc < 0) {
             /* No managed save image to remove */
-            virFreeError(last_error);
-            last_error = NULL;
+            vshResetLibvirtError();
         } else if (rc > 0) {
             if (virDomainManagedSaveRemove(dom, 0) < 0) {
                 virshReportError(ctl);
@@ -4173,8 +4166,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
                 if (!tmp || virStrToLong_i(tmp + 1, &tmp, 10, &count) < 0)
                     count = -1;
             }
-            virFreeError(last_error);
-            last_error = NULL;
+            vshResetLibvirtError();
             VIR_FREE(xml);
         }
 
@@ -4187,8 +4179,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
         } else {
             vshPrint(ctl, "%d\n", count);
         }
-        virFreeError(last_error);
-        last_error = NULL;
+        vshResetLibvirtError();
     }
 
     if (all || (maximum && live)) {
@@ -4208,8 +4199,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
         } else {
             vshPrint(ctl, "%d\n", count);
         }
-        virFreeError(last_error);
-        last_error = NULL;
+        vshResetLibvirtError();
     }
 
     if (all || (active && config)) {
@@ -4245,8 +4235,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
         } else {
             vshPrint(ctl, "%d\n", count);
         }
-        virFreeError(last_error);
-        last_error = NULL;
+        vshResetLibvirtError();
     }
 
     if (all || (active && live)) {
@@ -4267,8 +4256,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
         } else {
             vshPrint(ctl, "%d\n", count);
         }
-        virFreeError(last_error);
-        last_error = NULL;
+        vshResetLibvirtError();
     }
 
     virDomainFree(dom);

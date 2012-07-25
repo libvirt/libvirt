@@ -639,8 +639,7 @@ static char *vshNetworkGetXMLDesc(virNetworkPtr network)
         /* The server side libvirt doesn't support
          * VIR_NETWORK_XML_INACTIVE, so retry without it.
          */
-        virFreeError(last_error);
-        last_error = NULL;
+        vshResetLibvirtError();
         flags &= ~VIR_NETWORK_XML_INACTIVE;
         doc = virNetworkGetXMLDesc(network, flags);
     }

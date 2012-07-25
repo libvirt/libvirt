@@ -849,8 +849,7 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
         if (last_error->code != VIR_ERR_NO_SUPPORT)
             goto cleanup;
 
-        virFreeError(last_error);
-        last_error = NULL;
+        vshResetLibvirtError();
 
         if (virDomainBlockStats(dom, device, &stats,
                                 sizeof(stats)) == -1) {
@@ -1166,8 +1165,7 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
             virDomainFree(dom);
             return false;
         } else {
-            virFreeError(last_error);
-            last_error = NULL;
+            vshResetLibvirtError();
         }
     } else {
         /* Only print something if a security model is active */
@@ -1340,8 +1338,7 @@ vshDomainListCollect(vshControl *ctl, unsigned int flags)
 
     /* check if the command is actually supported */
     if (last_error && last_error->code == VIR_ERR_NO_SUPPORT) {
-        virFreeError(last_error);
-        last_error = NULL;
+        vshResetLibvirtError();
         goto fallback;
     }
 
@@ -1350,8 +1347,7 @@ vshDomainListCollect(vshControl *ctl, unsigned int flags)
         unsigned int newflags = flags & (VIR_CONNECT_LIST_DOMAINS_ACTIVE |
                                          VIR_CONNECT_LIST_DOMAINS_INACTIVE);
 
-        virFreeError(last_error);
-        last_error = NULL;
+        vshResetLibvirtError();
         if ((ret = virConnectListAllDomains(ctl->conn, &list->domains,
                                             newflags)) >= 0) {
             list->ndomains = ret;

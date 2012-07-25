@@ -1379,8 +1379,7 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
     if (!(tmp_desc = virStoragePoolGetXMLDesc(pool, flags))) {
         if (last_error->code == VIR_ERR_INVALID_ARG) {
             flags &= ~VIR_STORAGE_XML_INACTIVE;
-            virFreeError(last_error);
-            last_error = NULL;
+            vshResetLibvirtError();
         } else {
             goto cleanup;
         }

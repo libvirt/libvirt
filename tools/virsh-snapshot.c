@@ -43,8 +43,7 @@ vshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
         (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT)) {
         int persistent;
 
-        virFreeError(last_error);
-        last_error = NULL;
+        vshResetLibvirtError();
         persistent = virDomainIsPersistent(dom);
         if (persistent < 0) {
             virshReportError(ctl);
@@ -644,8 +643,7 @@ cleanup:
         virshReportError(ctl);
         vshError(ctl, "%s", _("unable to determine if snapshot has parent"));
     } else {
-        virFreeError(last_error);
-        last_error = NULL;
+        vshResetLibvirtError();
     }
     if (parent)
         virDomainSnapshotFree(parent);
@@ -932,8 +930,7 @@ vshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
              last_error->code == VIR_ERR_NO_SUPPORT)) {
             /* We can emulate --from.  */
             /* XXX can we also emulate --leaves? */
-            virFreeError(last_error);
-            last_error = NULL;
+            vshResetLibvirtError();
             ctl->useSnapshotOld = true;
             flags &= ~VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
             goto global;
@@ -950,8 +947,7 @@ vshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
         /* XXX can we also emulate --leaves? */
         if (!from && count < 0 && last_error->code == VIR_ERR_INVALID_ARG &&
             (flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS)) {
-            virFreeError(last_error);
-            last_error = NULL;
+            vshResetLibvirtError();
             roots = true;
             flags &= ~VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
             count = virDomainSnapshotNum(dom, flags);
@@ -1514,8 +1510,7 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
     if (result < 0 && force &&
         last_error->code == VIR_ERR_SNAPSHOT_REVERT_RISKY) {
         flags |= VIR_DOMAIN_SNAPSHOT_REVERT_FORCE;
-        virFreeError(last_error);
-        last_error = NULL;
+        vshResetLibvirtError();
         result = virDomainRevertToSnapshot(snapshot, flags);
     }
     if (result < 0)
