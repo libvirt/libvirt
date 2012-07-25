@@ -309,10 +309,12 @@ int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
                                virDomainDefPtr vm)
 {
     if (vm->seclabel.type == VIR_DOMAIN_SECLABEL_DEFAULT) {
-        if (mgr->defaultConfined)
+        if (mgr->defaultConfined) {
             vm->seclabel.type = VIR_DOMAIN_SECLABEL_DYNAMIC;
-        else
+        } else {
             vm->seclabel.type = VIR_DOMAIN_SECLABEL_NONE;
+            vm->seclabel.norelabel = true;
+        }
     }
 
     if ((vm->seclabel.type == VIR_DOMAIN_SECLABEL_NONE) &&
