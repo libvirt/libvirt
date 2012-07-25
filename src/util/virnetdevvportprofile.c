@@ -107,6 +107,12 @@ virNetDevVPortProfileEqual(virNetDevVPortProfilePtr a, virNetDevVPortProfilePtr 
             return false;
         break;
 
+    case VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH:
+        if (STRNEQ(a->profileID, b->profileID) ||
+            memcmp(a->interfaceID, b->interfaceID, VIR_UUID_BUFLEN) != 0)
+            return false;
+        break;
+
     default:
         break;
     }
