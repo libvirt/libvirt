@@ -121,7 +121,7 @@ virNetDevProbeVnetHdr(int tapfd)
  * persistent and closed. The caller must use virNetDevTapDelete to
  * remove a persistent TAP devices when it is no longer needed.
  *
- * Returns 0 in case of success or an errno code in case of failure.
+ * Returns 0 in case of success or -1 on failure.
  */
 int virNetDevTapCreate(char **ifname,
                        int *tapfd,
@@ -341,5 +341,5 @@ int virNetDevTapCreateInBridgePort(const char *brname,
     if (tapfd)
         VIR_FORCE_CLOSE(*tapfd);
 
-    return errno;
+    return -1;
 }
