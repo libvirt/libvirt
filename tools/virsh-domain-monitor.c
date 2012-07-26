@@ -66,7 +66,7 @@ vshGetDomainDescription(vshControl *ctl, virDomainPtr dom, bool title,
 
         if (err && err->code == VIR_ERR_NO_DOMAIN_METADATA) {
             desc = vshStrdup(ctl, "");
-            virResetLastError();
+            vshResetLibvirtError();
             return desc;
         }
 
@@ -1362,7 +1362,7 @@ vshDomainListCollect(vshControl *ctl, unsigned int flags)
 
 fallback:
     /* fall back to old method (0.9.12 and older) */
-    virResetLastError();
+    vshResetLibvirtError();
 
     /* list active domains, if necessary */
     if (!MATCH(VIR_CONNECT_LIST_FILTERS_ACTIVE) ||

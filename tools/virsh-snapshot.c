@@ -704,7 +704,7 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
     if (current < 0) {
         virDomainSnapshotPtr other = virDomainSnapshotCurrent(dom, 0);
 
-        virResetLastError();
+        vshResetLibvirtError();
         current = 0;
         if (other) {
             if (STREQ(name, virDomainSnapshotGetName(other)))
@@ -759,7 +759,7 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
     if (metadata < 0) {
         metadata = virDomainSnapshotNum(dom,
                                         VIR_DOMAIN_SNAPSHOT_LIST_METADATA);
-        virResetLastError();
+        vshResetLibvirtError();
     }
     if (metadata >= 0)
         vshPrint(ctl, "%-15s %s\n", _("Metadata:"),
