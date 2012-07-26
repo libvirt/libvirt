@@ -3073,7 +3073,7 @@ vshAllowedEscapeChar(char c)
 static bool
 vshParseArgv(vshControl *ctl, int argc, char **argv)
 {
-    int arg, len;
+    int arg, len, debug;
     struct option opt[] = {
         {"debug", required_argument, NULL, 'd'},
         {"help", no_argument, NULL, 'h'},
@@ -3093,10 +3093,15 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
     while ((arg = getopt_long(argc, argv, "+d:hqtc:vVrl:e:", opt, NULL)) != -1) {
         switch (arg) {
         case 'd':
-            if (virStrToLong_i(optarg, NULL, 10, &ctl->debug) < 0) {
+            if (virStrToLong_i(optarg, NULL, 10, &debug) < 0) {
                 vshError(ctl, "%s", _("option -d takes a numeric argument"));
                 exit(EXIT_FAILURE);
             }
+            if (debug < VSH_ERR_DEBUG || debug > VSH_ERR_ERROR)
+                vshError(ctl, _("ignoring debug level %d out of range [%d-%d]"),
+                         debug, VSH_ERR_DEBUG, VSH_ERR_ERROR);
+            else
+                ctl->debug = debug;
             break;
         case 'h':
             vshUsage();
