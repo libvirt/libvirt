@@ -412,6 +412,27 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
              * and parsed in next iteration, because it is not in expected
              * format and thus lead to error. */
         }
+# elif defined(__arm__)
+        char *buf = line;
+        if (STRPREFIX(buf, "BogoMIPS")) {
+            char *p;
+            unsigned int ui;
+
+            buf += 8;
+            while (*buf && c_isspace(*buf))
+                buf++;
+
+            if (*buf != ':' || !buf[1]) {
+                nodeReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("parsing cpu MHz from cpuinfo"));
+                goto cleanup;
+            }
+
+            if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0
+                /* Accept trailing fractional part.  */
+                && (*p == '\0' || *p == '.' || c_isspace(*p)))
+                nodeinfo->mhz = ui;
+        }
 # elif defined(__s390__) || \
       defined(__s390x__)
         /* s390x has no realistic value for CPU speed,
