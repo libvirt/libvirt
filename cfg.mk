@@ -547,7 +547,7 @@ msg_gen_function += xenapiSessionErrorHandler
 # msg_gen_function += vshPrint
 # msg_gen_function += vshError
 
-func_or := $(shell printf '$(msg_gen_function)'|tr -s '[[:space:]]' '|')
+func_or := $(shell echo $(msg_gen_function)|tr -s ' ' '|')
 func_re := ($(func_or))
 
 # Look for diagnostics that aren't marked for translation.
