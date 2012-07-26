@@ -13,7 +13,8 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program.  If not, see
+# <http://www.gnu.org/licenses/>.
 
 # Use alpha.gnu.org for alpha and beta releases.
 # Use ftp.gnu.org for major releases.
@@ -622,6 +623,13 @@ sc_copyright_format:
 	halt='spell Red Hat as two words'				\
 	  $(_sc_search_regexp)
 
+# Prefer the new URL listing over the old street address listing when
+# calling out where to get a copy of the [L]GPL.
+sc_copyright_address:
+	@prohibit=Boston,' MA'						\
+	halt='Point to <http://www.gnu.org/licenses/>, not an address'	\
+	  $(_sc_search_regexp)
+
 # Some functions/macros produce messages intended solely for developers
 # and maintainers.  Do not mark them for translation.
 sc_prohibit_gettext_markup:
@@ -735,6 +743,9 @@ exclude_file_name_regexp--sc_avoid_write = \
   ^(src/($(_src1))|daemon/libvirtd|tools/console|tests/(shunload|virnettlscontext)test)\.c$$
 
 exclude_file_name_regexp--sc_bindtextdomain = ^(tests|examples)/
+
+exclude_file_name_regexp--sc_copyright_address = \
+  ^COPYING\.LIB$$
 
 exclude_file_name_regexp--sc_flags_usage = ^(docs/|src/util/virnetdevtap\.c$$)
 
