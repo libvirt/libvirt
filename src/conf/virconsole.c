@@ -219,6 +219,9 @@ static void virConsoleHashEntryFree(void *data,
     const char *pty = name;
     virStreamPtr st = data;
 
+    /* remove callback from stream */
+    virFDStreamSetInternalCloseCb(st, NULL, NULL, NULL);
+
     /* free stream reference */
     virStreamFree(st);
 
