@@ -1961,6 +1961,11 @@ class docBuilder:
         self.index = {}
         self.basename = name
 
+    def warning(self, msg):
+        global warnings
+        warnings = warnings + 1
+        print msg
+
     def indexString(self, id, str):
         if str == None:
             return
