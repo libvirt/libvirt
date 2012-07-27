@@ -41,28 +41,28 @@ open TEMPLATE, "<", $template or die "cannot read $template: $!";
 my $group = 0;
 while (<TEMPLATE>) {
     if (/::CONFIG::/) {
-	my $group = 0;
-	print AUGTEST "  let conf = \"";
-	while (<CONFIG>) {
-	    if (/^#\w/) {
-		s/^#//;
-		s/\"/\\\"/g;
-		print AUGTEST $_;
-		$group = /\[\s$/;
-	    } elsif ($group) {
-		s/\"/\\\"/g;
-		if (/#\s*\]/) {
-		    $group = 0;
-		}
-		if (/^#/) {
-		    s/^#//;
-		    print AUGTEST $_;
-		}
-	    }
-	}
-	print AUGTEST "\"\n";
+        my $group = 0;
+        print AUGTEST "  let conf = \"";
+        while (<CONFIG>) {
+            if (/^#\w/) {
+                s/^#//;
+                s/\"/\\\"/g;
+                print AUGTEST $_;
+                $group = /\[\s$/;
+            } elsif ($group) {
+                s/\"/\\\"/g;
+                if (/#\s*\]/) {
+                    $group = 0;
+                }
+                if (/^#/) {
+                    s/^#//;
+                    print AUGTEST $_;
+                }
+            }
+        }
+        print AUGTEST "\"\n";
     } else {
-	print AUGTEST $_;
+        print AUGTEST $_;
     }
 }
 

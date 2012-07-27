@@ -54,11 +54,11 @@ sub name_to_ProcName {
 
     my @elems;
     if ($name =~ /_/ || (lc $name) eq "open" || (lc $name) eq "close") {
-	@elems = split /_/, $name;
-	@elems = map lc, @elems;
-	@elems = map ucfirst, @elems;
+        @elems = split /_/, $name;
+        @elems = map lc, @elems;
+        @elems = map ucfirst, @elems;
     } else {
-	@elems = $name;
+        @elems = $name;
     }
     @elems = map { fixup_name($_) } @elems;
     my $procname = join "", @elems;
@@ -332,53 +332,53 @@ elsif ($opt_b) {
         # skip things which are REMOTE_MESSAGE
         next if $call->{msg};
 
-	my $name = $structprefix . "Dispatch" . $call->{ProcName};
-	my $argtype = $call->{args};
-	my $rettype = $call->{ret};
+        my $name = $structprefix . "Dispatch" . $call->{ProcName};
+        my $argtype = $call->{args};
+        my $rettype = $call->{ret};
 
-	my $argann = $argtype ne "void" ? "" : " ATTRIBUTE_UNUSED";
-	my $retann = $rettype ne "void" ? "" : " ATTRIBUTE_UNUSED";
+        my $argann = $argtype ne "void" ? "" : " ATTRIBUTE_UNUSED";
+        my $retann = $rettype ne "void" ? "" : " ATTRIBUTE_UNUSED";
 
-	# First we print out a function declaration for the
-	# real dispatcher body
-	print "static int ${name}(\n";
-	print "    virNetServerPtr server,\n";
-	print "    virNetServerClientPtr client,\n";
-	print "    virNetMessagePtr msg,\n";
-	print "    virNetMessageErrorPtr rerr";
-	if ($argtype ne "void") {
-	    print ",\n    $argtype *args";
-	}
-	if ($rettype ne "void") {
-	    print ",\n    $rettype *ret";
-	}
-	print ");\n";
+        # First we print out a function declaration for the
+        # real dispatcher body
+        print "static int ${name}(\n";
+        print "    virNetServerPtr server,\n";
+        print "    virNetServerClientPtr client,\n";
+        print "    virNetMessagePtr msg,\n";
+        print "    virNetMessageErrorPtr rerr";
+        if ($argtype ne "void") {
+            print ",\n    $argtype *args";
+        }
+        if ($rettype ne "void") {
+            print ",\n    $rettype *ret";
+        }
+        print ");\n";
 
 
-	# Next we print out a generic wrapper method which has
-	# fixed function signature, for use in the dispatcher
-	# table. This simply callers the real dispatcher method
-	print "static int ${name}Helper(\n";
-	print "    virNetServerPtr server,\n";
-	print "    virNetServerClientPtr client,\n";
-	print "    virNetMessagePtr msg,\n";
-	print "    virNetMessageErrorPtr rerr,\n";
-	print "    void *args$argann,\n";
-	print "    void *ret$retann)\n";
-	print "{\n";
-	print "  VIR_DEBUG(\"server=%p client=%p msg=%p rerr=%p args=%p ret=%p\", server, client, msg, rerr, args, ret);\n";
-	print "  return $name(server, client, msg, rerr";
-	if ($argtype ne "void") {
-	    print ", args";
-	}
-	if ($rettype ne "void") {
-	    print ", ret";
-	}
-	print ");\n";
-	print "}\n";
+        # Next we print out a generic wrapper method which has
+        # fixed function signature, for use in the dispatcher
+        # table. This simply callers the real dispatcher method
+        print "static int ${name}Helper(\n";
+        print "    virNetServerPtr server,\n";
+        print "    virNetServerClientPtr client,\n";
+        print "    virNetMessagePtr msg,\n";
+        print "    virNetMessageErrorPtr rerr,\n";
+        print "    void *args$argann,\n";
+        print "    void *ret$retann)\n";
+        print "{\n";
+        print "  VIR_DEBUG(\"server=%p client=%p msg=%p rerr=%p args=%p ret=%p\", server, client, msg, rerr, args, ret);\n";
+        print "  return $name(server, client, msg, rerr";
+        if ($argtype ne "void") {
+            print ", args";
+        }
+        if ($rettype ne "void") {
+            print ", ret";
+        }
+        print ");\n";
+        print "}\n";
 
-	# Finally we print out the dispatcher method body impl
-	# (if possible)
+        # Finally we print out the dispatcher method body impl
+        # (if possible)
         if (!exists($generate{$call->{ProcName}})) {
             print "/* ${structprefix}Dispatch$call->{ProcName} body has " .
                   "to be implemented manually */\n\n\n\n";
@@ -794,18 +794,18 @@ elsif ($opt_b) {
         }
 
         # print functions signature
-	print "static int $name(\n";
-	print "    virNetServerPtr server ATTRIBUTE_UNUSED,\n";
-	print "    virNetServerClientPtr client,\n";
-	print "    virNetMessagePtr msg ATTRIBUTE_UNUSED,\n";
-	print "    virNetMessageErrorPtr rerr";
+        print "static int $name(\n";
+        print "    virNetServerPtr server ATTRIBUTE_UNUSED,\n";
+        print "    virNetServerClientPtr client,\n";
+        print "    virNetMessagePtr msg ATTRIBUTE_UNUSED,\n";
+        print "    virNetMessageErrorPtr rerr";
         if ($argtype ne "void") {
-	    print ",\n    $argtype *args";
-	}
+            print ",\n    $argtype *args";
+        }
         if ($rettype ne "void") {
-	    print ",\n    $rettype *ret";
-	}
-	print ")\n";
+            print ",\n    $rettype *ret";
+        }
+        print ")\n";
 
         # print function body
         print "{\n";
@@ -814,7 +814,7 @@ elsif ($opt_b) {
         foreach my $var (@vars_list) {
             print "    $var;\n";
         }
-	print "    struct daemonClientPrivate *priv =\n";
+        print "    struct daemonClientPrivate *priv =\n";
         print "        virNetServerClientGetPrivateData(client);\n";
 
         if ($call->{streamflag} ne "none") {
@@ -994,32 +994,32 @@ elsif ($opt_b) {
 
     print "virNetServerProgramProc ${structprefix}Procs[] = {\n";
     for ($id = 0 ; $id <= $#calls ; $id++) {
-	my ($comment, $name, $argtype, $arglen, $argfilter, $retlen, $retfilter, $priority);
+        my ($comment, $name, $argtype, $arglen, $argfilter, $retlen, $retfilter, $priority);
 
-	if (defined $calls[$id] && !$calls[$id]->{msg}) {
-	    $comment = "/* Method $calls[$id]->{ProcName} => $id */";
-	    $name = $structprefix . "Dispatch" . $calls[$id]->{ProcName} . "Helper";
-	    my $argtype = $calls[$id]->{args};
-	    my $rettype = $calls[$id]->{ret};
-	    $arglen = $argtype ne "void" ? "sizeof($argtype)" : "0";
-	    $retlen = $rettype ne "void" ? "sizeof($rettype)" : "0";
-	    $argfilter = $argtype ne "void" ? "xdr_$argtype" : "xdr_void";
-	    $retfilter = $rettype ne "void" ? "xdr_$rettype" : "xdr_void";
-	} else {
-	    if ($calls[$id]->{msg}) {
-		$comment = "/* Async event $calls[$id]->{ProcName} => $id */";
-	    } else {
-		$comment = "/* Unused $id */";
-	    }
-	    $name = "NULL";
-	    $arglen = $retlen = 0;
-	    $argfilter = "xdr_void";
-	    $retfilter = "xdr_void";
-	}
+        if (defined $calls[$id] && !$calls[$id]->{msg}) {
+            $comment = "/* Method $calls[$id]->{ProcName} => $id */";
+            $name = $structprefix . "Dispatch" . $calls[$id]->{ProcName} . "Helper";
+            my $argtype = $calls[$id]->{args};
+            my $rettype = $calls[$id]->{ret};
+            $arglen = $argtype ne "void" ? "sizeof($argtype)" : "0";
+            $retlen = $rettype ne "void" ? "sizeof($rettype)" : "0";
+            $argfilter = $argtype ne "void" ? "xdr_$argtype" : "xdr_void";
+            $retfilter = $rettype ne "void" ? "xdr_$rettype" : "xdr_void";
+        } else {
+            if ($calls[$id]->{msg}) {
+                $comment = "/* Async event $calls[$id]->{ProcName} => $id */";
+            } else {
+                $comment = "/* Unused $id */";
+            }
+            $name = "NULL";
+            $arglen = $retlen = 0;
+            $argfilter = "xdr_void";
+            $retfilter = "xdr_void";
+        }
 
     $priority = defined $calls[$id]->{priority} ? $calls[$id]->{priority} : 0;
 
-	print "{ $comment\n   ${name},\n   $arglen,\n   (xdrproc_t)$argfilter,\n   $retlen,\n   (xdrproc_t)$retfilter,\n   true,\n   $priority\n},\n";
+        print "{ $comment\n   ${name},\n   $arglen,\n   (xdrproc_t)$argfilter,\n   $retlen,\n   (xdrproc_t)$retfilter,\n   true,\n   $priority\n},\n";
     }
     print "};\n";
     print "size_t ${structprefix}NProcs = ARRAY_CARDINALITY(${structprefix}Procs);\n";
@@ -1039,8 +1039,8 @@ elsif ($opt_k) {
         # skip procedures not on generate list
         next if ! exists($generate{$call->{ProcName}});
 
-	my $argtype = $call->{args};
-	my $rettype = $call->{ret};
+        my $argtype = $call->{args};
+        my $rettype = $call->{ret};
 
         # handle arguments to the function
         my @args_list = ();
@@ -1574,10 +1574,10 @@ elsif ($opt_k) {
         }
 
         if ($call->{ProcName} eq "DomainDestroy" ||
-	    $call->{ProcName} eq "DomainSave" ||
-	    $call->{ProcName} eq "DomainManagedSave") {
+            $call->{ProcName} eq "DomainSave" ||
+            $call->{ProcName} eq "DomainManagedSave") {
             # SPECIAL: virDomain{Destroy|Save|ManagedSave} need to reset
-	    # the domain id explicitly on success
+            # the domain id explicitly on success
             print "    dom->id = -1;\n";
         }
 

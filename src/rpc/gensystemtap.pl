@@ -37,33 +37,33 @@ my $intype = 0;
 my $inauth = 0;
 while (<>) {
     if (/enum\s+virNetMessageType/) {
-	$intype = 1;
+        $intype = 1;
     } elsif (/enum\s+virNetMessageStatus/) {
-	$instatus = 1;
+        $instatus = 1;
     } elsif (/enum remote_auth_type/) {
-	$inauth = 1;
+        $inauth = 1;
     } elsif (/}/) {
-	$instatus = $intype = $inauth = 0;
+        $instatus = $intype = $inauth = 0;
     } elsif ($instatus) {
-	if (/^\s+VIR_NET_(\w+)\s*=\s*(\d+),?$/) {
-	    $status{$2} = lc $1;
-	}
+        if (/^\s+VIR_NET_(\w+)\s*=\s*(\d+),?$/) {
+            $status{$2} = lc $1;
+        }
     } elsif ($intype) {
-	if (/^\s+VIR_NET_(\w+)\s*=\s*(\d+),?$/) {
-	    $type{$2} = lc $1;
-	}
+        if (/^\s+VIR_NET_(\w+)\s*=\s*(\d+),?$/) {
+            $type{$2} = lc $1;
+        }
     } elsif ($inauth) {
-	if (/^\s+REMOTE_AUTH_(\w+)\s*=\s*(\d+),?$/) {
-	    $auth{$2} = lc $1;
-	}
+        if (/^\s+REMOTE_AUTH_(\w+)\s*=\s*(\d+),?$/) {
+            $auth{$2} = lc $1;
+        }
     } else {
-	if (/(\w+)_PROGRAM\s*=\s*0x([a-fA-F0-9]+)\s*;/) {
-	    $funcs{lc $1} = { id => hex($2), version => undef, progs => [] };
-	} elsif (/(\w+)_PROTOCOL_VERSION\s*=\s*(\d+)\s*;/) {
-	    $funcs{lc $1}->{version} = $2;
-	} elsif (/(\w+)_PROC_(.*?)\s+=\s+(\d+)/) {
-	    $funcs{lc $1}->{progs}->[$3] = lc $2;
-	}
+        if (/(\w+)_PROGRAM\s*=\s*0x([a-fA-F0-9]+)\s*;/) {
+            $funcs{lc $1} = { id => hex($2), version => undef, progs => [] };
+        } elsif (/(\w+)_PROTOCOL_VERSION\s*=\s*(\d+)\s*;/) {
+            $funcs{lc $1}->{version} = $2;
+        } elsif (/(\w+)_PROC_(.*?)\s+=\s+(\d+)/) {
+            $funcs{lc $1}->{progs}->[$3] = lc $2;
+        }
     }
 }
 
@@ -172,10 +172,10 @@ foreach my $prog (keys %funcs) {
 
     my $pfirst = 1;
     for (my $id = 1 ; $id <= $#{$funcs{$prog}->{progs}} ; $id++) {
-	my $cond = $pfirst ? "if" : "} else if";
-	$pfirst = 0;
-	print "      $cond (proc == $id) {\n";
-	print "          procstr = \"", $funcs{$prog}->{progs}->[$id], "\";\n";
+        my $cond = $pfirst ? "if" : "} else if";
+        $pfirst = 0;
+        print "      $cond (proc == $id) {\n";
+        print "          procstr = \"", $funcs{$prog}->{progs}->[$id], "\";\n";
     }
     print "      } else {\n";
     print "          procstr = \"unknown\";\n";

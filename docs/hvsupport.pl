@@ -27,9 +27,9 @@ my %groupheaders = (
 my @srcs;
 find({
     wanted => sub {
-	if (m!$srcdir/.*/\w+_(driver|tmpl|monitor|hal|udev)\.c$!) {
-	    push @srcs, $_ if $_ !~ /vbox_driver\.c/;
-	}
+        if (m!$srcdir/.*/\w+_(driver|tmpl|monitor|hal|udev)\.c$!) {
+            push @srcs, $_ if $_ !~ /vbox_driver\.c/;
+        }
     }, no_chdir => 1}, $srcdir);
 my $line;
 
@@ -47,26 +47,26 @@ while (defined($line = <FILE>)) {
     next if $line =~ /^\s*$/;
     next if $line =~ /^\s*(global|local):/;
     if ($line =~ /^\s*LIBVIRT_(\d+\.\d+\.\d+)\s*{\s*$/) {
-	if (defined $vers) {
-	    die "malformed syms file";
-	}
-	$vers = $1;
+        if (defined $vers) {
+            die "malformed syms file";
+        }
+        $vers = $1;
     } elsif ($line =~ /\s*}\s*;\s*$/) {
-	if (defined $prevvers) {
-	    die "malformed syms file";
-	}
-	$prevvers = $vers;
-	$vers = undef;
+        if (defined $prevvers) {
+            die "malformed syms file";
+        }
+        $prevvers = $vers;
+        $vers = undef;
     } elsif ($line =~ /\s*}\s*LIBVIRT_(\d+\.\d+\.\d+)\s*;\s*$/) {
-	if ($1 ne $prevvers) {
-	    die "malformed syms file $1 != $vers";
-	}
-	$prevvers = $vers;
-	$vers = undef;
+        if ($1 ne $prevvers) {
+            die "malformed syms file $1 != $vers";
+        }
+        $prevvers = $vers;
+        $vers = undef;
     } elsif ($line =~ /\s*(\w+)\s*;\s*$/) {
-	$apis{$1} = $vers;
+        $apis{$1} = $vers;
     } else {
-	die "unexpected data $line\n";
+        die "unexpected data $line\n";
     }
 }
 
@@ -86,26 +86,26 @@ while (defined($line = <FILE>)) {
     next if $line =~ /^\s*$/;
     next if $line =~ /^\s*(global|local):/;
     if ($line =~ /^\s*LIBVIRT_QEMU_(\d+\.\d+\.\d+)\s*{\s*$/) {
-	if (defined $vers) {
-	    die "malformed syms file";
-	}
-	$vers = $1;
+        if (defined $vers) {
+            die "malformed syms file";
+        }
+        $vers = $1;
     } elsif ($line =~ /\s*}\s*;\s*$/) {
-	if (defined $prevvers) {
-	    die "malformed syms file";
-	}
-	$prevvers = $vers;
-	$vers = undef;
+        if (defined $prevvers) {
+            die "malformed syms file";
+        }
+        $prevvers = $vers;
+        $vers = undef;
     } elsif ($line =~ /\s*}\s*LIBVIRT_QEMU_(\d+\.\d+\.\d+)\s*;\s*$/) {
-	if ($1 ne $prevvers) {
-	    die "malformed syms file $1 != $vers";
-	}
-	$prevvers = $vers;
-	$vers = undef;
+        if ($1 ne $prevvers) {
+            die "malformed syms file $1 != $vers";
+        }
+        $prevvers = $vers;
+        $vers = undef;
     } elsif ($line =~ /\s*(\w+)\s*;\s*$/) {
-	$apis{$1} = $vers;
+        $apis{$1} = $vers;
     } else {
-	die "unexpected data $line\n";
+        die "unexpected data $line\n";
     }
 }
 
@@ -143,31 +143,31 @@ my %groups;
 my $ingrp;
 while (defined($line = <FILE>)) {
     if ($line =~ /struct _(vir\w*(?:Driver|Monitor))/) {
-	my $grp = $1;
-	if ($grp ne "virStateDriver" &&
-	    $grp ne "virStreamDriver") {
-	    $ingrp = $grp;
-	    $groups{$ingrp} = { apis => {}, drivers => {} };
-	}
+        my $grp = $1;
+        if ($grp ne "virStateDriver" &&
+            $grp ne "virStreamDriver") {
+            $ingrp = $grp;
+            $groups{$ingrp} = { apis => {}, drivers => {} };
+        }
     } elsif ($ingrp) {
-	if ($line =~ /^\s*vir(?:Drv|DevMon)(\w+)\s+(\w+);\s*$/) {
-	    my $field = $2;
-	    my $name = $1;
+        if ($line =~ /^\s*vir(?:Drv|DevMon)(\w+)\s+(\w+);\s*$/) {
+            my $field = $2;
+            my $name = $1;
 
-	    my $api;
-	    if (exists $apis{"vir$name"}) {
-		$api = "vir$name";
-	    } elsif (exists $apis{"virConnect$name"}) {
-		$api = "virConnect$name";
-	    } elsif (exists $apis{"virNode$name"}) {
-		$api = "virNode$name";
-	    } else {
-		die "driver $name does not have a public API";
-	    }
-	    $groups{$ingrp}->{apis}->{$field} = $api;
-	} elsif ($line =~ /};/) {
-	    $ingrp = undef;
-	}
+            my $api;
+            if (exists $apis{"vir$name"}) {
+                $api = "vir$name";
+            } elsif (exists $apis{"virConnect$name"}) {
+                $api = "virConnect$name";
+            } elsif (exists $apis{"virNode$name"}) {
+                $api = "virNode$name";
+            } else {
+                die "driver $name does not have a public API";
+            }
+            $groups{$ingrp}->{apis}->{$field} = $api;
+        } elsif ($line =~ /};/) {
+            $ingrp = undef;
+        }
     }
 }
 
@@ -179,60 +179,60 @@ close FILE;
 
 foreach my $src (@srcs) {
     open FILE, "<$src" or
-	die "cannot read $src: $!";
+        die "cannot read $src: $!";
 
     $ingrp = undef;
     my $impl;
     while (defined($line = <FILE>)) {
-	if (!$ingrp) {
-	    foreach my $grp (keys %groups) {
-		if ($line =~ /^\s*(?:static\s+)?$grp\s+(\w+)\s*=\s*{/ ||
-		    $line =~ /^\s*(?:static\s+)?$grp\s+NAME\(\w+\)\s*=\s*{/) {
-		    $ingrp = $grp;
-		    $impl = $src;
+        if (!$ingrp) {
+            foreach my $grp (keys %groups) {
+                if ($line =~ /^\s*(?:static\s+)?$grp\s+(\w+)\s*=\s*{/ ||
+                    $line =~ /^\s*(?:static\s+)?$grp\s+NAME\(\w+\)\s*=\s*{/) {
+                    $ingrp = $grp;
+                    $impl = $src;
 
-		    if ($impl =~ m,.*/node_device_(\w+)\.c,) {
-			$impl = $1;
-		    } else {
-			$impl =~ s,.*/(\w+?)_((\w+)_)?(\w+)\.c,$1,;
-		    }
+                    if ($impl =~ m,.*/node_device_(\w+)\.c,) {
+                        $impl = $1;
+                    } else {
+                        $impl =~ s,.*/(\w+?)_((\w+)_)?(\w+)\.c,$1,;
+                    }
 
-		    if ($groups{$ingrp}->{drivers}->{$impl}) {
-			die "Group $ingrp already contains $impl";
-		    }
+                    if ($groups{$ingrp}->{drivers}->{$impl}) {
+                        die "Group $ingrp already contains $impl";
+                    }
 
-		    $groups{$ingrp}->{drivers}->{$impl} = {};
-		}
-	    }
+                    $groups{$ingrp}->{drivers}->{$impl} = {};
+                }
+            }
 
-	} else {
-	    if ($line =~ m!\s*\.(\w+)\s*=\s*(\w+)\s*,?\s*(?:/\*\s*(\d+\.\d+\.\d+)\s*\*/\s*)?$!) {
-		my $api = $1;
-		my $meth = $2;
-		my $vers = $3;
+        } else {
+            if ($line =~ m!\s*\.(\w+)\s*=\s*(\w+)\s*,?\s*(?:/\*\s*(\d+\.\d+\.\d+)\s*\*/\s*)?$!) {
+                my $api = $1;
+                my $meth = $2;
+                my $vers = $3;
 
-		next if $api eq "no" || $api eq "name";
+                next if $api eq "no" || $api eq "name";
 
-		die "Method $meth in $src is missing version" unless defined $vers;
+                die "Method $meth in $src is missing version" unless defined $vers;
 
-		die "Driver method for $api is NULL in $src" if $meth eq "NULL";
+                die "Driver method for $api is NULL in $src" if $meth eq "NULL";
 
-		if (!exists($groups{$ingrp}->{apis}->{$api})) {
-		    die "Found unexpected method $api in $ingrp\n";
-		}
+                if (!exists($groups{$ingrp}->{apis}->{$api})) {
+                    die "Found unexpected method $api in $ingrp\n";
+                }
 
-		$groups{$ingrp}->{drivers}->{$impl}->{$api} = $vers;
-		if ($api eq "domainMigratePrepare" ||
-		    $api eq "domainMigratePrepare2" ||
-		    $api eq "domainMigratePrepare3") {
-		    $groups{$ingrp}->{drivers}->{$impl}->{"domainMigrate"} = $vers
-			unless $groups{$ingrp}->{drivers}->{$impl}->{"domainMigrate"};
-		}
+                $groups{$ingrp}->{drivers}->{$impl}->{$api} = $vers;
+                if ($api eq "domainMigratePrepare" ||
+                    $api eq "domainMigratePrepare2" ||
+                    $api eq "domainMigratePrepare3") {
+                    $groups{$ingrp}->{drivers}->{$impl}->{"domainMigrate"} = $vers
+                        unless $groups{$ingrp}->{drivers}->{$impl}->{"domainMigrate"};
+                }
 
-	    } elsif ($line =~ /}/) {
-		$ingrp = undef;
-	    }
-	}
+            } elsif ($line =~ /}/) {
+                $ingrp = undef;
+            }
+        }
     }
 
     close FILE;
@@ -253,21 +253,21 @@ foreach my $drv (keys %{$groups{"virDriver"}->{drivers}}) {
     my $openVersStr = $groups{"virDriver"}->{drivers}->{$drv}->{"open"};
     my $openVers;
     if ($openVersStr =~ /(\d+)\.(\d+)\.(\d+)/) {
-	$openVers = ($1 * 1000 * 1000) + ($2 * 1000) + $3;
+        $openVers = ($1 * 1000 * 1000) + ($2 * 1000) + $3;
     }
 
     # virConnectOpenReadOnly always matches virConnectOpen version
     $groups{"virDriver"}->{drivers}->{$drv}->{"openReadOnly"} =
-	$groups{"virDriver"}->{drivers}->{$drv}->{"open"};
+        $groups{"virDriver"}->{drivers}->{$drv}->{"open"};
 
     # virConnectOpenAuth is always 0.4.0 if the driver existed
     # before this time, otherwise it matches the version of
     # the driver's virConnectOpen entry
     if ($openVersStr eq "Y" ||
-	$openVers >= $openAuthVers) {
-	$groups{"virDriver"}->{drivers}->{$drv}->{"openAuth"} = $openVersStr;
+        $openVers >= $openAuthVers) {
+        $groups{"virDriver"}->{drivers}->{$drv}->{"openAuth"} = $openVersStr;
     } else {
-	$groups{"virDriver"}->{drivers}->{$drv}->{"openAuth"} = "0.4.0";
+        $groups{"virDriver"}->{drivers}->{$drv}->{"openAuth"} = "0.4.0";
     }
 }
 
@@ -283,17 +283,17 @@ foreach my $drv (keys %{$groups{"virDriver"}->{drivers}}) {
     next unless defined $createVersStr;
     my $createVers;
     if ($createVersStr =~ /(\d+)\.(\d+)\.(\d+)/) {
-	$createVers = ($1 * 1000 * 1000) + ($2 * 1000) + $3;
+        $createVers = ($1 * 1000 * 1000) + ($2 * 1000) + $3;
     }
 
     # virCreateLinux is always 0.0.3 if the driver existed
     # before this time, otherwise it matches the version of
     # the driver's virCreateXML entry
     if ($createVersStr eq "Y" ||
-	$createVers >= $createAPIVers) {
-	$groups{"virDriver"}->{drivers}->{$drv}->{"domainCreateLinux"} = $createVersStr;
+        $createVers >= $createAPIVers) {
+        $groups{"virDriver"}->{drivers}->{$drv}->{"domainCreateLinux"} = $createVersStr;
     } else {
-	$groups{"virDriver"}->{drivers}->{$drv}->{"domainCreateLinux"} = "0.0.3";
+        $groups{"virDriver"}->{drivers}->{$drv}->{"domainCreateLinux"} = "0.0.3";
     }
 }
 
@@ -329,7 +329,7 @@ foreach my $grp (sort { $a cmp $b } keys %groups) {
 EOF
 
     foreach my $drv (sort { $a cmp $b } keys %{$groups{$grp}->{drivers}}) {
-	print "  <th>$drv</th>\n";
+        print "  <th>$drv</th>\n";
     }
 
     print <<EOF;
@@ -340,27 +340,27 @@ EOF
 
     my $row = 0;
     foreach my $field (sort {
-	$groups{$grp}->{apis}->{$a}
-	cmp
-	$groups{$grp}->{apis}->{$b}
-	} keys %{$groups{$grp}->{apis}}) {
-	my $api = $groups{$grp}->{apis}->{$field};
-	my $vers = $apis{$api};
-	print <<EOF;
+        $groups{$grp}->{apis}->{$a}
+        cmp
+        $groups{$grp}->{apis}->{$b}
+        } keys %{$groups{$grp}->{apis}}) {
+        my $api = $groups{$grp}->{apis}->{$field};
+        my $vers = $apis{$api};
+        print <<EOF;
 <tr>
 <td><a href=\"html/libvirt-libvirt.html#$api\">$api</a></td>
 <td>$vers</td>
 EOF
 
         foreach my $drv (sort {$a cmp $b } keys %{$groups{$grp}->{drivers}}) {
-	    if (exists $groups{$grp}->{drivers}->{$drv}->{$field}) {
-		print "<td>", $groups{$grp}->{drivers}->{$drv}->{$field}, "</td>\n";
-	    } else {
-		print "<td></td>\n";
-	    }
+            if (exists $groups{$grp}->{drivers}->{$drv}->{$field}) {
+                print "<td>", $groups{$grp}->{drivers}->{$drv}->{$field}, "</td>\n";
+            } else {
+                print "<td></td>\n";
+            }
         }
 
-	print <<EOF;
+        print <<EOF;
 </tr>
 EOF
 
@@ -373,13 +373,13 @@ EOF
 EOF
 
             foreach my $drv (sort { $a cmp $b } keys %{$groups{$grp}->{drivers}}) {
-	        print "  <th>$drv</th>\n";
+                print "  <th>$drv</th>\n";
             }
 
         print <<EOF;
 </tr>
 EOF
-	}
+        }
 
     }
 

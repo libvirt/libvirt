@@ -22,17 +22,17 @@ my $blurb = $cfg->get("output/blurb", undef);
 $SIG{__DIE__} = sub {
     my $err = shift;
     if (UNIVERSAL::isa($err, "BZ::Client::Exception")) {
-	die "Unable to access bugzilla: " . $err->message;
+        die "Unable to access bugzilla: " . $err->message;
     }
     die $err;
 };
 
 my $client = BZ::Client->new(url => $server,
-			     user => $username,
-			     password => $password);
+                             user => $username,
+                             password => $password);
 
 my $todo = BZ::Client::Bug->search($client, {'product' => $product,
-					     'alias' => $todoalias});
+                                             'alias' => $todoalias});
 
 die "Cannot find bug alias 'libvirtTodo'" unless $#{$todo} > -1;
 my $todoid = $todo->[0]->{'bug_id'};
@@ -42,7 +42,7 @@ $todosummary =~ s/^\s*\[\s*RFE\s*\]\s*:?\s*//;
 $todosummary =~ s/^\s*Tracker\s*:\s*//;
 
 my $trackers = BZ::Client::Bug->search($client, {'product' => $product,
-						 'blocked' => $todoid });
+                                                 'blocked' => $todoid });
 
 my @trackers;
 
@@ -55,27 +55,27 @@ foreach my $tracker (@{$trackers}) {
     $summary =~ s/^\s*Tracker\s*:\s*//;
 
     push @trackers, {
-	id => $tracker->{'bug_id'},
-	summary => $summary,
-	features => [],
+        id => $tracker->{'bug_id'},
+        summary => $summary,
+        features => [],
     };
 }
 
 foreach my $tracker (@trackers) {
     my $features = BZ::Client::Bug->search($client, {'product' => $product,
-						     'blocked' => $tracker->{id}});
+                                                     'blocked' => $tracker->{id}});
 
     foreach my $feature (@{$features}) {
-	next if $feature->{'bug_status'} eq "CLOSED";
+        next if $feature->{'bug_status'} eq "CLOSED";
 
-	my $summary = $feature->{'short_desc'};
-	$summary =~ s/^\s*RFE\s*:\s*//;
-	$summary =~ s/^\s*\[\s*RFE\s*\]\s*:?\s*//;
+        my $summary = $feature->{'short_desc'};
+        $summary =~ s/^\s*RFE\s*:\s*//;
+        $summary =~ s/^\s*\[\s*RFE\s*\]\s*:?\s*//;
 
-	push @{$tracker->{features}}, {
-	    id => $feature->{'bug_id'},
-	    summary => $summary,
-	};
+        push @{$tracker->{features}}, {
+            id => $feature->{'bug_id'},
+            summary => $summary,
+        };
     }
 }
 
@@ -108,11 +108,11 @@ foreach my $tracker (sort { $a->{summary} cmp $b->{summary} } @trackers) {
     print "    <h2><a href=\"$server/$id\">$summary</a></h2>\n";
     print "    <ul>\n";
     foreach my $feature (sort { $a->{summary} cmp $b->{summary} } @{$tracker->{features}}) {
-	$summary = &escape($feature->{summary});
-	$summary =~ s,^([^:]+):,<strong>$1</strong>,;
+        $summary = &escape($feature->{summary});
+        $summary =~ s,^([^:]+):,<strong>$1</strong>,;
 
-	$id = $feature->{id};
-	print "      <li>$summary (<strong>rhbz <a href=\"$server/$id\">$id</a></strong>)</li>\n";
+        $id = $feature->{id};
+        print "      <li>$summary (<strong>rhbz <a href=\"$server/$id\">$id</a></strong>)</li>\n";
     }
     print "    </ul>\n";
 }

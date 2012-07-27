@@ -21,7 +21,7 @@ my %lines;
 
 foreach (@data) {
     if (/^\s*TRACE:\s+(\S+?)(?:\(.*\))?\s+\[0x(.*)\]\s*$/ ) {
-	$trace{$2} = $1;
+        $trace{$2} = $1;
     }
 }
 
@@ -34,8 +34,8 @@ foreach my $key (keys %trace) {
 
 foreach (@data) {
     if (/^\s*TRACE:\s+(\S+?)(?:\(.*\))?\s+\[0x(.*)\]\s*$/ ) {
-	print $lines{$2};
+        print $lines{$2};
     } else {
-	print;
+        print;
     }
 }
