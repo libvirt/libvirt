@@ -1,5 +1,8 @@
 /*
  * virterror.h: Error handling interfaces for the libvirt library
+ * Summary: error handling interfaces for the libvirt library
+ * Description: Provides the interfaces of the libvirt library to handle
+ *              errors raised while using the library.
  *
  * Copyright (C) 2006, 2010-2012 Red Hat, Inc.
  *

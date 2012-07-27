@@ -1,5 +1,8 @@
 /* -*- c -*-
  * libvirt.h: Core interfaces for the libvirt library
+ * Summary: core interfaces for the libvirt library
+ * Description: Provides the interfaces of the libvirt library to handle
+ *              virtualized domains
  *
  * Copyright (C) 2005-2006, 2010-2012 Red Hat, Inc.
  *

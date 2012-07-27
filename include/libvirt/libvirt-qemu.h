@@ -1,5 +1,8 @@
 /* -*- c -*-
  * libvirt-qemu.h: Interfaces specific for QEMU/KVM driver
+ * Summary: qemu specific interfaces
+ * Description: Provides the interfaces of the libvirt library to handle
+ *              qemu specific methods
  *
  * Copyright (C) 2010, 2012 Red Hat, Inc.
  *
