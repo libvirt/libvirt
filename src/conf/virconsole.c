@@ -381,15 +381,11 @@ int virConsoleOpen(virConsolesPtr cons,
     if (virFDStreamOpenFile(st, pty, 0, 0, O_RDWR) < 0)
         goto error;
 
-    savedStream = st;
-    st = NULL;
-
     /* add cleanup callback */
-    virFDStreamSetInternalCloseCb(savedStream,
+    virFDStreamSetInternalCloseCb(st,
                                   virConsoleFDStreamCloseCb,
                                   cbdata,
                                   virConsoleFDStreamCloseCbFree);
-    cbdata = NULL;
 
     virMutexUnlock(&cons->lock);
     return 0;
