@@ -425,6 +425,8 @@ skip_impl = (
     'virDomainGetInterfaceParameters',
     'virDomainGetCPUStats',
     'virDomainGetDiskErrors',
+    'virConnectUnregisterCloseCallback',
+    'virConnectRegisterCloseCallback',
 )
 
 qemu_skip_impl = (
