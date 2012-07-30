@@ -1304,7 +1304,6 @@ virNetClientAddProgram;
 virNetClientAddStream;
 virNetClientClose;
 virNetClientDupFD;
-virNetClientFree;
 virNetClientGetFD;
 virNetClientGetTLSKeySize;
 virNetClientHasPassFD;
@@ -1318,7 +1317,6 @@ virNetClientNewExternal;
 virNetClientNewSSH;
 virNetClientNewTCP;
 virNetClientNewUNIX;
-virNetClientRef;
 virNetClientRemoteAddrString;
 virNetClientRemoveStream;
 virNetClientSendNoReply;
@@ -1333,12 +1331,10 @@ virNetClientSetTLSSession;
 # virnetclientprogram.h
 virNetClientProgramCall;
 virNetClientProgramDispatch;
-virNetClientProgramFree;
 virNetClientProgramGetProgram;
 virNetClientProgramGetVersion;
 virNetClientProgramMatches;
 virNetClientProgramNew;
-virNetClientProgramRef;
 
 
 # virnetclientstream.h
@@ -1346,13 +1342,11 @@ virNetClientStreamEOF;
 virNetClientStreamEventAddCallback;
 virNetClientStreamEventRemoveCallback;
 virNetClientStreamEventUpdateCallback;
-virNetClientStreamFree;
 virNetClientStreamMatches;
 virNetClientStreamNew;
 virNetClientStreamQueuePacket;
 virNetClientStreamRaiseError;
 virNetClientStreamRecvPacket;
-virNetClientStreamRef;
 virNetClientStreamSendPacket;
 virNetClientStreamSetError;
 

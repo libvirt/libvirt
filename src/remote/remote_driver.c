@@ -792,10 +792,10 @@ doRemoteOpen (virConnectPtr conn,
     virReportOOMError();
 
  failed:
-    virNetClientProgramFree(priv->remoteProgram);
-    virNetClientProgramFree(priv->qemuProgram);
+    virObjectUnref(priv->remoteProgram);
+    virObjectUnref(priv->qemuProgram);
     virNetClientClose(priv->client);
-    virNetClientFree(priv->client);
+    virObjectUnref(priv->client);
     priv->client = NULL;
 
     VIR_FREE(priv->hostname);
@@ -946,10 +946,10 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
     virObjectUnref(priv->tls);
     priv->tls = NULL;
     virNetClientClose(priv->client);
-    virNetClientFree(priv->client);
+    virObjectUnref(priv->client);
     priv->client = NULL;
-    virNetClientProgramFree(priv->remoteProgram);
-    virNetClientProgramFree(priv->qemuProgram);
+    virObjectUnref(priv->remoteProgram);
+    virObjectUnref(priv->qemuProgram);
     priv->remoteProgram = priv->qemuProgram = NULL;
 
     /* Free hostname copy */
@@ -4171,7 +4171,7 @@ remoteStreamFinish(virStreamPtr st)
 
 cleanup:
     virNetClientRemoveStream(priv->client, privst);
-    virNetClientStreamFree(privst);
+    virObjectUnref(privst);
     st->privateData = NULL;
     st->driver = NULL;
 
@@ -4206,7 +4206,7 @@ remoteStreamAbort(virStreamPtr st)
 
 cleanup:
     virNetClientRemoveStream(priv->client, privst);
-    virNetClientStreamFree(privst);
+    virObjectUnref(privst);
     st->privateData = NULL;
     st->driver = NULL;
 
@@ -4507,7 +4507,7 @@ remoteDomainMigratePrepareTunnel3(virConnectPtr dconn,
         goto done;
 
     if (virNetClientAddStream(priv->client, netst) < 0) {
-        virNetClientStreamFree(netst);
+        virObjectUnref(netst);
         goto done;
     }
 
@@ -4525,7 +4525,7 @@ remoteDomainMigratePrepareTunnel3(virConnectPtr dconn,
              (xdrproc_t) xdr_remote_domain_migrate_prepare_tunnel3_args, (char *) &args,
              (xdrproc_t) xdr_remote_domain_migrate_prepare_tunnel3_ret, (char *) &ret) == -1) {
         virNetClientRemoveStream(priv->client, netst);
-        virNetClientStreamFree(netst);
+        virObjectUnref(netst);
         goto done;
     }
 

@@ -24,6 +24,7 @@
 # define __VIR_NET_CLIENT_STREAM_H__
 
 # include "virnetclientprogram.h"
+# include "virobject.h"
 
 typedef struct _virNetClientStream virNetClientStream;
 typedef virNetClientStream *virNetClientStreamPtr;
@@ -34,10 +35,6 @@ typedef void (*virNetClientStreamEventCallback)(virNetClientStreamPtr stream,
 virNetClientStreamPtr virNetClientStreamNew(virNetClientProgramPtr prog,
                                             int proc,
                                             unsigned serial);
-
-void virNetClientStreamRef(virNetClientStreamPtr st);
-
-void virNetClientStreamFree(virNetClientStreamPtr st);
 
 bool virNetClientStreamRaiseError(virNetClientStreamPtr st);
 

@@ -27,6 +27,7 @@
 # include <rpc/xdr.h>
 
 # include "virnetmessage.h"
+# include "virobject.h"
 
 typedef struct _virNetClient virNetClient;
 typedef virNetClient *virNetClientPtr;
@@ -61,10 +62,6 @@ virNetClientProgramPtr virNetClientProgramNew(unsigned program,
 
 unsigned virNetClientProgramGetProgram(virNetClientProgramPtr prog);
 unsigned virNetClientProgramGetVersion(virNetClientProgramPtr prog);
-
-void virNetClientProgramRef(virNetClientProgramPtr prog);
-
-void virNetClientProgramFree(virNetClientProgramPtr prog);
 
 int virNetClientProgramMatches(virNetClientProgramPtr prog,
                                virNetMessagePtr msg);

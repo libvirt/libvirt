@@ -63,7 +63,7 @@ struct _virNetClientCall {
 
 
 struct _virNetClient {
-    int refs;
+    virObject object;
 
     virMutex lock;
 
@@ -108,6 +108,21 @@ struct _virNetClient {
     virFreeCallback closeFf;
 };
 
+
+static virClassPtr virNetClientClass;
+static void virNetClientDispose(void *obj);
+
+static int virNetClientOnceInit(void)
+{
+    if (!(virNetClientClass = virClassNew("virNetClient",
+                                          sizeof(virNetClient),
+                                          virNetClientDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virNetClient)
 
 static void virNetClientIOEventLoopPassTheBuck(virNetClientPtr client,
                                                virNetClientCallPtr thiscall);
@@ -237,13 +252,6 @@ static bool virNetClientCallMatchPredicate(virNetClientCallPtr head,
 }
 
 
-static void virNetClientEventFree(void *opaque)
-{
-    virNetClientPtr client = opaque;
-
-    virNetClientFree(client);
-}
-
 bool
 virNetClientKeepAliveIsSupported(virNetClientPtr client)
 {
@@ -303,19 +311,22 @@ static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
     int wakeupFD[2] = { -1, -1 };
     virKeepAlivePtr ka = NULL;
 
+    if (virNetClientInitialize() < 0)
+        return NULL;
+
     if (pipe2(wakeupFD, O_CLOEXEC) < 0) {
         virReportSystemError(errno, "%s",
                              _("unable to make pipe"));
         goto error;
     }
 
-    if (VIR_ALLOC(client) < 0)
-        goto no_memory;
-
-    client->refs = 1;
-
-    if (virMutexInit(&client->lock) < 0)
+    if (!(client = virObjectNew(virNetClientClass)))
         goto error;
+
+    if (virMutexInit(&client->lock) < 0) {
+        VIR_FREE(client);
+        goto error;
+    }
 
     client->sock = sock;
     client->wakeupReadFD = wakeupFD[0];
@@ -327,13 +338,13 @@ static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
         goto no_memory;
 
     /* Set up a callback to listen on the socket data */
-    client->refs++;
+    virObjectRef(client);
     if (virNetSocketAddIOCallback(client->sock,
                                   VIR_EVENT_HANDLE_READABLE,
                                   virNetClientIncomingEvent,
                                   client,
-                                  virNetClientEventFree) < 0) {
-        client->refs--;
+                                  virObjectFreeCallback) < 0) {
+        virObjectUnref(client);
         VIR_DEBUG("Failed to add event watch, disabling events and support for"
                   " keepalive messages");
     } else {
@@ -342,16 +353,16 @@ static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
         if (!(ka = virKeepAliveNew(-1, 0, client,
                                    virNetClientKeepAliveSendCB,
                                    virNetClientKeepAliveDeadCB,
-                                   virNetClientEventFree)))
+                                   virObjectFreeCallback)))
             goto error;
         /* keepalive object has a reference to client */
-        client->refs++;
+        virObjectRef(client);
     }
 
     client->keepalive = ka;
     PROBE(RPC_CLIENT_NEW,
-          "client=%p refs=%d sock=%p",
-          client, client->refs, client->sock);
+          "client=%p sock=%p",
+          client, client->sock);
     return client;
 
 no_memory:
@@ -363,7 +374,7 @@ error:
         virKeepAliveStop(ka);
         virObjectUnref(ka);
     }
-    virNetClientFree(client);
+    virObjectUnref(client);
     return NULL;
 }
 
@@ -422,17 +433,6 @@ virNetClientPtr virNetClientNewExternal(const char **cmdargv)
 }
 
 
-void virNetClientRef(virNetClientPtr client)
-{
-    virNetClientLock(client);
-    client->refs++;
-    PROBE(RPC_CLIENT_REF,
-          "client=%p refs=%d",
-          client, client->refs);
-    virNetClientUnlock(client);
-}
-
-
 int virNetClientGetFD(virNetClientPtr client)
 {
     int fd;
@@ -463,28 +463,16 @@ bool virNetClientHasPassFD(virNetClientPtr client)
 }
 
 
-void virNetClientFree(virNetClientPtr client)
+void virNetClientDispose(void *obj)
 {
+    virNetClientPtr client = obj;
     int i;
-
-    if (!client)
-        return;
-
-    virNetClientLock(client);
-    PROBE(RPC_CLIENT_FREE,
-          "client=%p refs=%d",
-          client, client->refs);
-    client->refs--;
-    if (client->refs > 0) {
-        virNetClientUnlock(client);
-        return;
-    }
 
     if (client->closeFf)
         client->closeFf(client->closeOpaque);
 
     for (i = 0 ; i < client->nprograms ; i++)
-        virNetClientProgramFree(client->programs[i]);
+        virObjectUnref(client->programs[i]);
     VIR_FREE(client->programs);
 
     VIR_FORCE_CLOSE(client->wakeupSendFD);
@@ -504,8 +492,6 @@ void virNetClientFree(virNetClientPtr client)
 
     virNetClientUnlock(client);
     virMutexDestroy(&client->lock);
-
-    VIR_FREE(client);
 }
 
 
@@ -546,7 +532,7 @@ virNetClientCloseLocked(virNetClientPtr client)
         virNetClientCloseFunc closeCb = client->closeCb;
         void *closeOpaque = client->closeOpaque;
         int closeReason = client->closeReason;
-        client->refs++;
+        virObjectRef(client);
         virNetClientUnlock(client);
 
         if (ka) {
@@ -557,7 +543,7 @@ virNetClientCloseLocked(virNetClientPtr client)
             closeCb(client, closeReason, closeOpaque);
 
         virNetClientLock(client);
-        client->refs--;
+        virObjectUnref(client);
     }
 }
 
@@ -754,8 +740,7 @@ int virNetClientAddProgram(virNetClientPtr client,
     if (VIR_EXPAND_N(client->programs, client->nprograms, 1) < 0)
         goto no_memory;
 
-    client->programs[client->nprograms-1] = prog;
-    virNetClientProgramRef(prog);
+    client->programs[client->nprograms-1] = virObjectRef(prog);
 
     virNetClientUnlock(client);
     return 0;
@@ -775,8 +760,7 @@ int virNetClientAddStream(virNetClientPtr client,
     if (VIR_EXPAND_N(client->streams, client->nstreams, 1) < 0)
         goto no_memory;
 
-    client->streams[client->nstreams-1] = st;
-    virNetClientStreamRef(st);
+    client->streams[client->nstreams-1] = virObjectRef(st);
 
     virNetClientUnlock(client);
     return 0;
@@ -810,7 +794,7 @@ void virNetClientRemoveStream(virNetClientPtr client,
         VIR_FREE(client->streams);
         client->nstreams = 0;
     }
-    virNetClientStreamFree(st);
+    virObjectUnref(st);
 
 cleanup:
     virNetClientUnlock(client);

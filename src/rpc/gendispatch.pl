@@ -1450,7 +1450,7 @@ elsif ($opt_k) {
             print "        goto done;\n";
             print "\n";
             print "    if (virNetClientAddStream(priv->client, netst) < 0) {\n";
-            print "        virNetClientStreamFree(netst);\n";
+            print "        virObjectUnref(netst);\n";
             print "        goto done;\n";
             print "    }";
             print "\n";
@@ -1526,7 +1526,7 @@ elsif ($opt_k) {
 
         if ($call->{streamflag} ne "none") {
             print "        virNetClientRemoveStream(priv->client, netst);\n";
-            print "        virNetClientStreamFree(netst);\n";
+            print "        virObjectUnref(netst);\n";
             print "        st->driver = NULL;\n";
             print "        st->privateData = NULL;\n";
         }

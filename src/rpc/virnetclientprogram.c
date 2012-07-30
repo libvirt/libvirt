@@ -33,11 +33,12 @@
 #include "logging.h"
 #include "util.h"
 #include "virfile.h"
+#include "threads.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
 struct _virNetClientProgram {
-    int refs;
+    virObject object;
 
     unsigned program;
     unsigned version;
@@ -45,6 +46,22 @@ struct _virNetClientProgram {
     size_t nevents;
     void *eventOpaque;
 };
+
+static virClassPtr virNetClientProgramClass;
+static void virNetClientProgramDispose(void *obj);
+
+static int virNetClientProgramOnceInit(void)
+{
+    if (!(virNetClientProgramClass = virClassNew("virNetClientProgram",
+                                                 sizeof(virNetClientProgram),
+                                                 virNetClientProgramDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virNetClientProgram)
+
 
 virNetClientProgramPtr virNetClientProgramNew(unsigned program,
                                               unsigned version,
@@ -54,12 +71,12 @@ virNetClientProgramPtr virNetClientProgramNew(unsigned program,
 {
     virNetClientProgramPtr prog;
 
-    if (VIR_ALLOC(prog) < 0) {
-        virReportOOMError();
+    if (virNetClientProgramInitialize() < 0)
         return NULL;
-    }
 
-    prog->refs = 1;
+    if (!(prog = virObjectNew(virNetClientProgramClass)))
+        return NULL;
+
     prog->program = program;
     prog->version = version;
     prog->events = events;
@@ -70,22 +87,8 @@ virNetClientProgramPtr virNetClientProgramNew(unsigned program,
 }
 
 
-void virNetClientProgramRef(virNetClientProgramPtr prog)
+void virNetClientProgramDispose(void *obj ATTRIBUTE_UNUSED)
 {
-    prog->refs++;
-}
-
-
-void virNetClientProgramFree(virNetClientProgramPtr prog)
-{
-    if (!prog)
-        return;
-
-    prog->refs--;
-    if (prog->refs > 0)
-        return;
-
-    VIR_FREE(prog);
 }
 
 

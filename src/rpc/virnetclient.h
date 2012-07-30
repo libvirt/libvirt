@@ -30,6 +30,7 @@
 # endif
 # include "virnetclientprogram.h"
 # include "virnetclientstream.h"
+# include "virobject.h"
 
 
 virNetClientPtr virNetClientNewUNIX(const char *path,
@@ -59,8 +60,6 @@ void virNetClientSetCloseCallback(virNetClientPtr client,
                                   virNetClientCloseFunc cb,
                                   void *opaque,
                                   virFreeCallback ff);
-
-void virNetClientRef(virNetClientPtr client);
 
 int virNetClientGetFD(virNetClientPtr client);
 int virNetClientDupFD(virNetClientPtr client, bool cloexec);
@@ -105,7 +104,6 @@ const char *virNetClientRemoteAddrString(virNetClientPtr client);
 
 int virNetClientGetTLSKeySize(virNetClientPtr client);
 
-void virNetClientFree(virNetClientPtr client);
 void virNetClientClose(virNetClientPtr client);
 
 bool virNetClientKeepAliveIsSupported(virNetClientPtr client);

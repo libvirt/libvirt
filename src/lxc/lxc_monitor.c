@@ -170,7 +170,7 @@ static void virLXCMonitorFree(virLXCMonitorPtr mon)
     if (mon->cb && mon->cb->destroy)
         (mon->cb->destroy)(mon, mon->vm);
     virMutexDestroy(&mon->lock);
-    virNetClientProgramFree(mon->program);
+    virObjectUnref(mon->program);
     VIR_FREE(mon);
 }
 
@@ -199,7 +199,7 @@ void virLXCMonitorClose(virLXCMonitorPtr mon)
 {
     if (mon->client) {
         virNetClientClose(mon->client);
-        virNetClientFree(mon->client);
+        virObjectUnref(mon->client);
         mon->client = NULL;
     }
 }

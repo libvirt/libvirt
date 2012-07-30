@@ -40,9 +40,7 @@ provider libvirt {
 
 	# file: src/rpc/virnetclient.c
 	# prefix: rpc
-	probe rpc_client_new(void *client, int refs, void *sock);
-	probe rpc_client_ref(void *client, int refs);
-	probe rpc_client_free(void *client, int refs);
+	probe rpc_client_new(void *client, void *sock);
 
 	probe rpc_client_msg_tx_queue(void *client, int len, int prog, int vers, int proc, int type, int status, int serial);
 	probe rpc_client_msg_rx(void *client, int len, int prog, int vers, int proc, int type, int status, int serial);
