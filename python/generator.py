@@ -425,8 +425,6 @@ skip_impl = (
     'virDomainGetInterfaceParameters',
     'virDomainGetCPUStats',
     'virDomainGetDiskErrors',
-    'virConnectUnregisterCloseCallback',
-    'virConnectRegisterCloseCallback',
     'virNodeGetMemoryParameters',
     'virNodeSetMemoryParameters',
     'virNodeGetCPUMap',
@@ -475,6 +473,9 @@ skip_function = (
     'virStreamSendAll', # Pure python libvirt-override-virStream.py
     'virStreamRecv', # overridden in libvirt-override-virStream.py
     'virStreamSend', # overridden in libvirt-override-virStream.py
+
+    'virConnectUnregisterCloseCallback', # overriden in virConnect.py
+    'virConnectRegisterCloseCallback', # overriden in virConnect.py
 
     # 'Ref' functions have no use for bindings users.
     "virConnectRef",

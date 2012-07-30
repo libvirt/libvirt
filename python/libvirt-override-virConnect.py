@@ -287,3 +287,26 @@
             retlist.append(virSecret(self, _obj=secret_ptr))
 
         return retlist
+
+    def _dispatchCloseCallback(self, reason, cbData):
+        """Dispatches events to python user close callback"""
+        cb = cbData["cb"]
+        opaque = cbData["opaque"]
+
+        cb(self, reason, opaque)
+        return 0
+
+
+    def unregisterCloseCallback(self):
+        """Removes a close event callback"""
+        ret = libvirtmod.virConnectUnregisterCloseCallback(self._o)
+        if ret == -1: raise libvirtError ('virConnectUnregisterCloseCallback() failed', conn=self)
+
+    def registerCloseCallback(self, cb, opaque):
+        """Adds a close event callback, providing a notification
+         when a connection fails / closes"""
+        cbData = { "cb": cb, "conn": self, "opaque": opaque }
+        ret = libvirtmod.virConnectRegisterCloseCallback(self._o, cbData)
+        if ret == -1:
+            raise libvirtError ('virConnectRegisterCloseCallback() failed', conn=self)
+        return ret

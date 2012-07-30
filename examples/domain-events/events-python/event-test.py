@@ -495,6 +495,16 @@ def myDomainEventBalloonChangeCallback(conn, dom, utcoffset, actual):
 def myDomainEventPMSuspendDiskCallback(conn, dom, reason, opaque):
     print "myDomainEventPMSuspendDiskCallback: Domain %s(%s) system pmsuspend_disk" % (
             dom.name(), dom.ID())
+
+run = True
+
+def myConnectionCloseCallback(conn, reason, opaque):
+    reasonStrings = (
+        "Error", "End-of-file", "Keepalive", "Client",
+        )
+    print "myConnectionCloseCallback: %s: %s" % (conn.getURI(), reasonStrings[reason])
+    run = False
+
 def usage(out=sys.stderr):
     print >>out, "usage: "+os.path.basename(sys.argv[0])+" [-hdl] [uri]"
     print >>out, "   uri will default to qemu:///system"
@@ -544,6 +554,8 @@ def main():
         if (old_exitfunc): old_exitfunc()
     sys.exitfunc = exit
 
+    vc.registerCloseCallback(myConnectionCloseCallback, None)
+
     #Add 2 callbacks to prove this works with more than just one
     vc.domainEventRegister(myDomainEventCallback1,None)
     vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_LIFECYCLE, myDomainEventCallback2, None)
@@ -565,7 +577,7 @@ def main():
     # of demo we'll just go to sleep. The other option is to
     # run the event loop in your main thread if your app is
     # totally event based.
-    while vc.isAlive() == 1:
+    while run:
         time.sleep(1)
 
 

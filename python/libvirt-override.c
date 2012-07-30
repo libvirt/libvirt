@@ -6001,6 +6001,111 @@ libvirt_virConnectDomainEventDeregisterAny(ATTRIBUTE_UNUSED PyObject * self,
     return py_retval;
 }
 
+
+static void
+libvirt_virConnectCloseCallbackDispatch(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                        int reason,
+                                        void *opaque)
+{
+    PyObject *pyobj_cbData = (PyObject*)opaque;
+    PyObject *pyobj_ret;
+    PyObject *pyobj_conn;
+    PyObject *dictKey;
+
+    LIBVIRT_ENSURE_THREAD_STATE;
+
+    Py_INCREF(pyobj_cbData);
+
+    dictKey = libvirt_constcharPtrWrap("conn");
+    pyobj_conn = PyDict_GetItem(pyobj_cbData, dictKey);
+    Py_DECREF(dictKey);
+
+    /* Call the Callback Dispatcher */
+    pyobj_ret = PyObject_CallMethod(pyobj_conn,
+                                    (char*)"_dispatchCloseCallback",
+                                    (char*)"iO",
+                                    reason,
+                                    pyobj_cbData);
+
+    Py_DECREF(pyobj_cbData);
+
+    if(!pyobj_ret) {
+        DEBUG("%s - ret:%p\n", __FUNCTION__, pyobj_ret);
+        PyErr_Print();
+    } else {
+        Py_DECREF(pyobj_ret);
+    }
+
+    LIBVIRT_RELEASE_THREAD_STATE;
+}
+
+static PyObject *
+libvirt_virConnectRegisterCloseCallback(ATTRIBUTE_UNUSED PyObject * self,
+                                        PyObject * args)
+{
+    PyObject *py_retval;        /* return value */
+    PyObject *pyobj_conn;       /* virConnectPtr */
+    PyObject *pyobj_cbData;     /* hash of callback data */
+    virConnectPtr conn;
+    int ret = 0;
+
+    if (!PyArg_ParseTuple
+        (args, (char *) "OO:virConnectRegisterCloseCallback",
+         &pyobj_conn, &pyobj_cbData)) {
+        DEBUG("%s failed parsing tuple\n", __FUNCTION__);
+        return VIR_PY_INT_FAIL;
+    }
+
+    DEBUG("libvirt_virConnectRegisterCloseCallback(%p %p) called\n",
+           pyobj_conn, pyobj_cbData);
+    conn = PyvirConnect_Get(pyobj_conn);
+
+    Py_INCREF(pyobj_cbData);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    ret = virConnectRegisterCloseCallback(conn,
+                                          libvirt_virConnectCloseCallbackDispatch,
+                                          pyobj_cbData,
+                                          libvirt_virConnectDomainEventFreeFunc);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (ret < 0) {
+        Py_DECREF(pyobj_cbData);
+    }
+
+    py_retval = libvirt_intWrap(ret);
+    return py_retval;
+}
+
+static PyObject *
+libvirt_virConnectUnregisterCloseCallback(ATTRIBUTE_UNUSED PyObject * self,
+                                          PyObject * args)
+{
+    PyObject *py_retval;
+    PyObject *pyobj_conn;
+    virConnectPtr conn;
+    int ret = 0;
+
+    if (!PyArg_ParseTuple
+        (args, (char *) "O:virConnectDomainEventUnregister",
+         &pyobj_conn))
+        return NULL;
+
+    DEBUG("libvirt_virConnectDomainEventUnregister(%p) called\n",
+          pyobj_conn);
+
+    conn = PyvirConnect_Get(pyobj_conn);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+
+    ret = virConnectUnregisterCloseCallback(conn,
+                                            libvirt_virConnectCloseCallbackDispatch);
+
+    LIBVIRT_END_ALLOW_THREADS;
+    py_retval = libvirt_intWrap(ret);
+    return py_retval;
+}
+
 static void
 libvirt_virStreamEventFreeFunc(void *opaque)
 {
@@ -6502,6 +6607,8 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virConnectDomainEventDeregister", libvirt_virConnectDomainEventDeregister, METH_VARARGS, NULL},
     {(char *) "virConnectDomainEventRegisterAny", libvirt_virConnectDomainEventRegisterAny, METH_VARARGS, NULL},
     {(char *) "virConnectDomainEventDeregisterAny", libvirt_virConnectDomainEventDeregisterAny, METH_VARARGS, NULL},
+    {(char *) "virConnectRegisterCloseCallback", libvirt_virConnectRegisterCloseCallback, METH_VARARGS, NULL},
+    {(char *) "virConnectUnregisterCloseCallback", libvirt_virConnectUnregisterCloseCallback, METH_VARARGS, NULL},
     {(char *) "virStreamEventAddCallback", libvirt_virStreamEventAddCallback, METH_VARARGS, NULL},
     {(char *) "virStreamRecv", libvirt_virStreamRecv, METH_VARARGS, NULL},
     {(char *) "virStreamSend", libvirt_virStreamSend, METH_VARARGS, NULL},
