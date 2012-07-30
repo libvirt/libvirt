@@ -964,7 +964,7 @@ remoteDispatchDomainGetSchedulerParameters(virNetServerPtr server ATTRIBUTE_UNUS
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
-    if (VIR_ALLOC_N(params, nparams) < 0)
+    if (nparams && VIR_ALLOC_N(params, nparams) < 0)
         goto no_memory;
 
     if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
@@ -1019,7 +1019,7 @@ remoteDispatchDomainGetSchedulerParametersFlags(virNetServerPtr server ATTRIBUTE
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
-    if (VIR_ALLOC_N(params, nparams) < 0)
+    if (nparams && VIR_ALLOC_N(params, nparams) < 0)
         goto no_memory;
 
     if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
@@ -1200,7 +1200,7 @@ remoteDispatchDomainBlockStatsFlags(virNetServerPtr server ATTRIBUTE_UNUSED,
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
-    if (VIR_ALLOC_N(params, nparams) < 0) {
+    if (nparams && VIR_ALLOC_N(params, nparams) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -1674,7 +1674,7 @@ remoteDispatchDomainGetMemoryParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
-    if (VIR_ALLOC_N(params, nparams) < 0) {
+    if (nparams && VIR_ALLOC_N(params, nparams) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -1739,7 +1739,7 @@ remoteDispatchDomainGetNumaParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
-    if (VIR_ALLOC_N(params, nparams) < 0) {
+    if (nparams && VIR_ALLOC_N(params, nparams) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -1804,7 +1804,7 @@ remoteDispatchDomainGetBlkioParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
-    if (VIR_ALLOC_N(params, nparams) < 0) {
+    if (nparams && VIR_ALLOC_N(params, nparams) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -2064,7 +2064,7 @@ remoteDispatchDomainGetBlockIoTune(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(params, nparams) < 0) {
+    if (nparams && VIR_ALLOC_N(params, nparams) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -3567,7 +3567,7 @@ remoteDispatchDomainGetInterfaceParameters(virNetServerPtr server ATTRIBUTE_UNUS
         virNetError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
-    if (VIR_ALLOC_N(params, nparams) < 0) {
+    if (nparams && VIR_ALLOC_N(params, nparams) < 0) {
         virReportOOMError();
         goto cleanup;
     }
