@@ -11546,7 +11546,6 @@ virDomainActualNetDefFormat(virBufferPtr buf,
                             virDomainActualNetDefPtr def,
                             unsigned int flags)
 {
-    int ret = -1;
     const char *type;
     const char *mode;
 
@@ -11557,7 +11556,7 @@ virDomainActualNetDefFormat(virBufferPtr buf,
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected net type %d"), def->type);
-        return ret;
+        return -1;
     }
 
     virBufferAsprintf(buf, "      <actual type='%s'", type);
@@ -11584,7 +11583,7 @@ virDomainActualNetDefFormat(virBufferPtr buf,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected source mode %d"),
                            def->data.direct.mode);
-            return ret;
+            return -1;
         }
         virBufferAsprintf(buf, " mode='%s'/>\n", mode);
         break;
@@ -11603,21 +11602,18 @@ virDomainActualNetDefFormat(virBufferPtr buf,
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected net type %s"), type);
-        goto error;
+        return -1;
     }
 
     virBufferAdjustIndent(buf, 8);
     if (virNetDevVPortProfileFormat(def->virtPortProfile, buf) < 0)
        return -1;
     if (virNetDevBandwidthFormat(def->bandwidth, buf) < 0)
-        goto error;
+        return -1;
     virBufferAdjustIndent(buf, -8);
 
     virBufferAddLit(buf, "      </actual>\n");
-
-    ret = 0;
-error:
-    return ret;
+    return 0;
 }
 
 static int
