@@ -1340,6 +1340,11 @@ int qemuDomainChangeNet(struct qemud_driver *driver,
         return -1;
     }
 
+    if (!virNetDevVPortProfileEqual(olddev->virtPortProfile, dev->virtPortProfile)) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("cannot change <virtualport> settings"));
+    }
+
     switch (olddev->type) {
     case VIR_DOMAIN_NET_TYPE_USER:
         break;
@@ -1367,8 +1372,7 @@ int qemuDomainChangeNet(struct qemud_driver *driver,
 
     case VIR_DOMAIN_NET_TYPE_NETWORK:
         if (STRNEQ_NULLABLE(olddev->data.network.name, dev->data.network.name) ||
-            STRNEQ_NULLABLE(olddev->data.network.portgroup, dev->data.network.portgroup) ||
-            !virNetDevVPortProfileEqual(olddev->data.network.virtPortProfile, dev->data.network.virtPortProfile)) {
+            STRNEQ_NULLABLE(olddev->data.network.portgroup, dev->data.network.portgroup)) {
             virReportError(VIR_ERR_NO_SUPPORT, "%s",
                            _("cannot modify network device configuration"));
             return -1;
@@ -1377,13 +1381,7 @@ int qemuDomainChangeNet(struct qemud_driver *driver,
         break;
 
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-       /* allow changing brname, but not portprofile */
-       if (!virNetDevVPortProfileEqual(olddev->data.bridge.virtPortProfile,
-                                       dev->data.bridge.virtPortProfile)) {
-           virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                          _("cannot modify bridge network device configuration"));
-           return -1;
-       }
+       /* allow changing brname */
        break;
 
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
@@ -1396,8 +1394,7 @@ int qemuDomainChangeNet(struct qemud_driver *driver,
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
         if (STRNEQ_NULLABLE(olddev->data.direct.linkdev, dev->data.direct.linkdev) ||
-            olddev->data.direct.mode != dev->data.direct.mode ||
-            !virNetDevVPortProfileEqual(olddev->data.direct.virtPortProfile, dev->data.direct.virtPortProfile)) {
+            olddev->data.direct.mode != dev->data.direct.mode) {
             virReportError(VIR_ERR_NO_SUPPORT, "%s",
                            _("cannot modify direct network device configuration"));
             return -1;

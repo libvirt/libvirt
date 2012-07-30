@@ -4762,7 +4762,6 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
             }
         } else if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
             VIR_FREE(net->data.direct.linkdev);
-            VIR_FREE(net->data.direct.virtPortProfile);
 
             memset(net, 0, sizeof(*net));
 
@@ -4782,6 +4781,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
             net->data.ethernet.dev = brname;
             net->data.ethernet.ipaddr = ipaddr;
         }
+        VIR_FREE(net->virtPortProfile);
         net->info.bootIndex = bootIndex;
     }
     for (i = 0 ; i < def->ngraphics ; i++) {

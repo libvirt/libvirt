@@ -770,18 +770,16 @@ struct _virDomainActualNetDef {
     union {
         struct {
             char *brname;
-            virNetDevVPortProfilePtr virtPortProfile;
         } bridge;
         struct {
             char *linkdev;
             int mode; /* enum virMacvtapMode from util/macvtap.h */
-            virNetDevVPortProfilePtr virtPortProfile;
         } direct;
         struct {
             virDomainHostdevDef def;
-            virNetDevVPortProfilePtr virtPortProfile;
         } hostdev;
     } data;
+    virNetDevVPortProfilePtr virtPortProfile;
     virNetDevBandwidthPtr bandwidth;
 };
 
@@ -810,7 +808,6 @@ struct _virDomainNetDef {
         struct {
             char *name;
             char *portgroup;
-            virNetDevVPortProfilePtr virtPortProfile;
             /* actual has info about the currently used physical
              * device (if the network is of type
              * bridge/private/vepa/passthrough). This is saved in the
@@ -824,7 +821,6 @@ struct _virDomainNetDef {
         struct {
             char *brname;
             char *ipaddr;
-            virNetDevVPortProfilePtr virtPortProfile;
         } bridge;
         struct {
             char *name;
@@ -832,13 +828,13 @@ struct _virDomainNetDef {
         struct {
             char *linkdev;
             int mode; /* enum virMacvtapMode from util/macvtap.h */
-            virNetDevVPortProfilePtr virtPortProfile;
         } direct;
         struct {
             virDomainHostdevDef def;
-            virNetDevVPortProfilePtr virtPortProfile;
         } hostdev;
     } data;
+    /* virtPortProfile is used by network/bridge/direct/hostdev */
+    virNetDevVPortProfilePtr virtPortProfile;
     struct {
         bool sndbuf_specified;
         unsigned long sndbuf;

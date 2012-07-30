@@ -2854,8 +2854,8 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         }
 
         /* Find the most specific virtportprofile and copy it */
-        if (iface->data.network.virtPortProfile) {
-            virtport = iface->data.network.virtPortProfile;
+        if (iface->virtPortProfile) {
+            virtport = iface->virtPortProfile;
         } else {
             if (portgroup)
                 virtport = portgroup->virtPortProfile;
@@ -2863,14 +2863,14 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                 virtport = netdef->virtPortProfile;
         }
         if (virtport) {
-            if (VIR_ALLOC(iface->data.network.actual->data.direct.virtPortProfile) < 0) {
+            if (VIR_ALLOC(iface->data.network.actual->virtPortProfile) < 0) {
                 virReportOOMError();
                 goto cleanup;
             }
             /* There are no pointers in a virtualPortProfile, so a shallow copy
              * is sufficient
              */
-            *iface->data.network.actual->data.direct.virtPortProfile = *virtport;
+            *iface->data.network.actual->virtPortProfile = *virtport;
         }
 
         /* If there is only a single device, just return it (caller will detect
@@ -2935,8 +2935,8 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                     }
                 }
             } else if ((netdef->forwardType == VIR_NETWORK_FORWARD_PRIVATE) &&
-                       iface->data.network.actual->data.direct.virtPortProfile &&
-                       (iface->data.network.actual->data.direct.virtPortProfile->virtPortType
+                       iface->data.network.actual->virtPortProfile &&
+                       (iface->data.network.actual->virtPortProfile->virtPortType
                         == VIR_NETDEV_VPORT_PROFILE_8021QBH)) {
 
                 /* pick first dev with 0 usageCount */
@@ -3068,8 +3068,8 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
         if ((dev->usageCount > 0) &&
             ((netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH) ||
              ((netdef->forwardType == VIR_NETWORK_FORWARD_PRIVATE) &&
-              iface->data.network.actual->data.direct.virtPortProfile &&
-              (iface->data.network.actual->data.direct.virtPortProfile->virtPortType
+              iface->data.network.actual->virtPortProfile &&
+              (iface->data.network.actual->virtPortProfile->virtPortType
                == VIR_NETDEV_VPORT_PROFILE_8021QBH)))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("network '%s' claims dev='%s' is already in use by a different domain"),
