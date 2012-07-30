@@ -1659,7 +1659,7 @@ static int lxcContainerSetupMounts(virDomainDefPtr vmDef,
  * It removes some capabilities that could be dangerous to
  * host system, since they are not currently "containerized"
  */
-static int lxcContainerDropCapabilities(bool keepReboot)
+static int lxcContainerDropCapabilities(bool keepReboot ATTRIBUTE_UNUSED)
 {
 #if HAVE_CAPNG
     int ret;
