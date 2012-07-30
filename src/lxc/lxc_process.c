@@ -452,14 +452,37 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
         case VIR_DOMAIN_NET_TYPE_NETWORK: {
             virNetworkPtr network;
             char *brname = NULL;
+            bool fail = false;
+            int active;
+            virErrorPtr errobj;
 
             if (!(network = virNetworkLookupByName(conn,
                                                    def->nets[i]->data.network.name)))
                 goto cleanup;
 
-            brname = virNetworkGetBridgeName(network);
+            active = virNetworkIsActive(network);
+            if (active != 1) {
+                fail = true;
+                if (active == 0)
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("Network '%s' is not active."),
+                                   def->nets[i]->data.network.name);
+                goto cleanup;
+            }
+
+            if (!fail) {
+                brname = virNetworkGetBridgeName(network);
+                if (brname == NULL)
+                    fail = true;
+            }
+
+            /* Make sure any above failure is preserved */
+            errobj = virSaveLastError();
             virNetworkFree(network);
-            if (!brname)
+            virSetError(errobj);
+            virFreeError(errobj);
+
+            if (fail)
                 goto cleanup;
 
             if (virLXCProcessSetupInterfaceBridged(conn,
