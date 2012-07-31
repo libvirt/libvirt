@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,8 +28,21 @@
 # include "buf.h"
 # include "xml.h"
 
+typedef enum {
+    /* generate random defaults for interfaceID/interfaceID
+     * when appropriate
+     */
+    VIR_VPORT_XML_GENERATE_MISSING_DEFAULTS = (1<<0),
+    /* fail if any attribute required for the specified
+     * type is missing
+     */
+    VIR_VPORT_XML_REQUIRE_ALL_ATTRIBUTES    = (1<<1),
+    /* fail if no type is specified */
+    VIR_VPORT_XML_REQUIRE_TYPE              = (1<<2),
+} virNetDevVPortXMLFlags;
+
 virNetDevVPortProfilePtr
-virNetDevVPortProfileParse(xmlNodePtr node);
+virNetDevVPortProfileParse(xmlNodePtr node, unsigned int flags);
 
 int
 virNetDevVPortProfileFormat(virNetDevVPortProfilePtr virtPort,

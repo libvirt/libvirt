@@ -4403,8 +4403,13 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
         if (actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
             actual->type == VIR_DOMAIN_NET_TYPE_DIRECT ||
             actual->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+            /* the virtualport in <actual> should always already
+             * have an instanceid/interfaceid if its required,
+             * so don't let the parser generate one */
             if (!(actual->virtPortProfile
-                  = virNetDevVPortProfileParse(virtPortNode))) {
+                  = virNetDevVPortProfileParse(virtPortNode,
+                                               VIR_VPORT_XML_REQUIRE_ALL_ATTRIBUTES |
+                                               VIR_VPORT_XML_REQUIRE_TYPE))) {
                 goto error;
             }
         } else {
@@ -4557,12 +4562,20 @@ virDomainNetDefParseXML(virCapsPtr caps,
                 mode = virXMLPropString(cur, "mode");
             } else if (!def->virtPortProfile
                        && xmlStrEqual(cur->name, BAD_CAST "virtualport")) {
-                if (def->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
-                    def->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-                    def->type == VIR_DOMAIN_NET_TYPE_DIRECT ||
-                    def->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+                if (def->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
                     if (!(def->virtPortProfile
-                          = virNetDevVPortProfileParse(cur))) {
+                          = virNetDevVPortProfileParse(cur,
+                                                       VIR_VPORT_XML_GENERATE_MISSING_DEFAULTS))) {
+                        goto error;
+                    }
+                } else if (def->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+                           def->type == VIR_DOMAIN_NET_TYPE_DIRECT ||
+                           def->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+                    if (!(def->virtPortProfile
+                          = virNetDevVPortProfileParse(cur,
+                                                       VIR_VPORT_XML_GENERATE_MISSING_DEFAULTS|
+                                                       VIR_VPORT_XML_REQUIRE_ALL_ATTRIBUTES|
+                                                       VIR_VPORT_XML_REQUIRE_TYPE))) {
                         goto error;
                     }
                 } else {

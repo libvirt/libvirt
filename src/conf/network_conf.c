@@ -899,8 +899,9 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
 
     virtPortNode = virXPathNode("./virtualport", ctxt);
     if (virtPortNode &&
-        (!(def->virtPortProfile = virNetDevVPortProfileParse(virtPortNode))))
+        (!(def->virtPortProfile = virNetDevVPortProfileParse(virtPortNode, 0)))) {
         goto error;
+    }
 
     bandwidth_node = virXPathNode("./bandwidth", ctxt);
     if (bandwidth_node &&
@@ -1010,8 +1011,10 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
 
     virtPortNode = virXPathNode("./virtualport", ctxt);
     if (virtPortNode &&
-        (!(def->virtPortProfile = virNetDevVPortProfileParse(virtPortNode))))
+        (!(def->virtPortProfile = virNetDevVPortProfileParse(virtPortNode,
+                                                             VIR_VPORT_XML_REQUIRE_TYPE)))) {
         goto error;
+    }
 
     nPortGroups = virXPathNodeSet("./portgroup", ctxt, &portGroupNodes);
     if (nPortGroups < 0)
