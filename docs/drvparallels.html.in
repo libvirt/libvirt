@@ -1,0 +1,28 @@
+<html><body>
+    <h1>Parallels Cloud Server driver</h1>
+    <ul id="toc"></ul>
+    <p>
+        The libvirt Parallels driver can manage Parallels Cloud Server starting from version 6.0.
+    </p>
+
+
+    <h2><a name="project">Project Links</a></h2>
+    <ul>
+      <li>
+        The <a href="http://www.parallels.com/products/server/baremetal/sp/">Parallels Cloud Server</a> Virtualization Solution.
+      </li>
+    </ul>
+
+
+    <h2><a name="uri">Connections to the Parallels Cloud Server driver</a></h2>
+    <p>
+        The libvirt Parallels driver is a single-instance privileged driver, with a driver name of 'parallels'. Some example connection URIs for the libvirt driver are:
+    </p>
+<pre>
+parallels:///default                     (local access)
+parallels+unix:///default                (local access)
+parallels://example.com/default          (remote access, TLS/x509)
+parallels+tcp://example.com/default      (remote access, SASl/Kerberos)
+parallels+ssh://root@example.com/default (remote access, SSH tunnelled)
+</pre>
+</body></html>

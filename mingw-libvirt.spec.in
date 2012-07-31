@@ -13,6 +13,7 @@
 # missing libwsman, so can't build hyper-v
 %define with_hyperv        0%{!?_without_hyperv:0}
 %define with_xenapi        0%{!?_without_xenapi:1}
+%define with_parallels           0%{!?_without_parallels:0}
 
 # RHEL ships ESX but not PowerHypervisor, HyperV, or libxenserver (xenapi)
 %if 0%{?rhel}
@@ -125,6 +126,10 @@ MinGW Windows libvirt virtualization library, static version.
 %define _without_xenapi --without-xenapi
 %endif
 
+%if ! %{with_parallels}
+%define _without_parallels --without-parallels
+%endif
+
 %if 0%{?enable_autotools}
 autoreconf -if
 %endif
@@ -148,6 +153,7 @@ autoreconf -if
   %{?_without_esx} \
   %{?_without_hyperv} \
   --without-vmware \
+  --without-parallels \
   --without-netcf \
   --without-audit \
   --without-dtrace

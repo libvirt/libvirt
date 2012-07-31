@@ -67,6 +67,7 @@
 %define with_esx           0%{!?_without_esx:1}
 %define with_hyperv        0%{!?_without_hyperv:1}
 %define with_xenapi        0%{!?_without_xenapi:1}
+%define with_parallels     0%{!?_without_parallels:1}
 
 # Then the secondary host drivers, which run inside libvirtd
 %define with_network          0%{!?_without_network:%{server_drivers}}
@@ -136,6 +137,7 @@
 %define with_xenapi 0
 %define with_libxl 0
 %define with_hyperv 0
+%define with_parallels 0
 %endif
 
 # Fedora 17 / RHEL-7 are first where we use systemd. Although earlier
@@ -1068,6 +1070,10 @@ of recent versions of Linux (and other OSes).
 %define _without_vmware --without-vmware
 %endif
 
+%if ! %{with_parallels}
+%define _without_parallels --without-parallels
+%endif
+
 %if ! %{with_polkit}
 %define _without_polkit --without-polkit
 %endif
@@ -1210,6 +1216,7 @@ autoreconf -if
            %{?_without_esx} \
            %{?_without_hyperv} \
            %{?_without_vmware} \
+           %{?_without_parallels} \
            %{?_without_network} \
            %{?_with_rhel5_api} \
            %{?_without_storage_fs} \
@@ -1401,7 +1408,7 @@ fi
 
 /sbin/chkconfig --add libvirtd
 if [ "$1" -ge "1" ]; then
-	/sbin/service libvirtd condrestart > /dev/null 2>&1
+    /sbin/service libvirtd condrestart > /dev/null 2>&1
 fi
 %endif
 

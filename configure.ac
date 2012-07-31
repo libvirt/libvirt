@@ -330,6 +330,8 @@ AC_ARG_WITH([esx],
   AC_HELP_STRING([--with-esx], [add ESX support @<:@default=check@:>@]),[],[with_esx=check])
 AC_ARG_WITH([hyperv],
   AC_HELP_STRING([--with-hyperv], [add Hyper-V support @<:@default=check@:>@]),[],[with_hyperv=check])
+AC_ARG_WITH([parallels],
+  AC_HELP_STRING([--with-parallels], [add Parallels Cloud Server support @<:@default=check@:>@]),[],[with_parallels=check])
 AC_ARG_WITH([test],
   AC_HELP_STRING([--with-test], [add test driver support @<:@default=yes@:>@]),[],[with_test=yes])
 AC_ARG_WITH([remote],
@@ -786,6 +788,26 @@ if test "$with_lxc" = "yes" ; then
     AC_DEFINE_UNQUOTED([WITH_LXC], 1, [whether LXC driver is enabled])
 fi
 AM_CONDITIONAL([WITH_LXC], [test "$with_lxc" = "yes"])
+
+dnl
+dnl Checks for the Parallels driver
+dnl
+
+if test "$with_parallels" = "check"; then
+    with_parallels=$with_linux
+    if test ! $host_cpu = 'x86_64'; then
+        with_parallels=no
+    fi
+fi
+
+if test "$with_parallels" = "yes" && test "$with_linux" = "no"; then
+    AC_MSG_ERROR([The Parallels driver can be enabled on Linux only.])
+fi
+
+if test "$with_parallels" = "yes"; then
+    AC_DEFINE_UNQUOTED([WITH_PARALLELS], 1, [whether Parallels driver is enabled])
+fi
+AM_CONDITIONAL([WITH_PARALLELS], [test "$with_parallels" = "yes"])
 
 dnl
 dnl check for shell that understands <> redirection without truncation,
@@ -2824,25 +2846,26 @@ AC_MSG_NOTICE([=====================])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Drivers])
 AC_MSG_NOTICE([])
-AC_MSG_NOTICE([     Xen: $with_xen])
-AC_MSG_NOTICE([    QEMU: $with_qemu])
-AC_MSG_NOTICE([     UML: $with_uml])
-AC_MSG_NOTICE([  OpenVZ: $with_openvz])
-AC_MSG_NOTICE([  VMware: $with_vmware])
-AC_MSG_NOTICE([    VBox: $with_vbox])
-AC_MSG_NOTICE([  XenAPI: $with_xenapi])
-AC_MSG_NOTICE([xenlight: $with_libxl])
-AC_MSG_NOTICE([     LXC: $with_lxc])
-AC_MSG_NOTICE([    PHYP: $with_phyp])
-AC_MSG_NOTICE([     ESX: $with_esx])
-AC_MSG_NOTICE([ Hyper-V: $with_hyperv])
-AC_MSG_NOTICE([    Test: $with_test])
-AC_MSG_NOTICE([  Remote: $with_remote])
-AC_MSG_NOTICE([ Network: $with_network])
-AC_MSG_NOTICE([Libvirtd: $with_libvirtd])
-AC_MSG_NOTICE([   netcf: $with_netcf])
-AC_MSG_NOTICE([ macvtap: $with_macvtap])
-AC_MSG_NOTICE([virtport: $with_virtualport])
+AC_MSG_NOTICE([      Xen: $with_xen])
+AC_MSG_NOTICE([     QEMU: $with_qemu])
+AC_MSG_NOTICE([      UML: $with_uml])
+AC_MSG_NOTICE([   OpenVZ: $with_openvz])
+AC_MSG_NOTICE([   VMware: $with_vmware])
+AC_MSG_NOTICE([     VBox: $with_vbox])
+AC_MSG_NOTICE([   XenAPI: $with_xenapi])
+AC_MSG_NOTICE([ xenlight: $with_libxl])
+AC_MSG_NOTICE([      LXC: $with_lxc])
+AC_MSG_NOTICE([     PHYP: $with_phyp])
+AC_MSG_NOTICE([      ESX: $with_esx])
+AC_MSG_NOTICE([  Hyper-V: $with_hyperv])
+AC_MSG_NOTICE([Parallels: $with_parallels])
+AC_MSG_NOTICE([     Test: $with_test])
+AC_MSG_NOTICE([   Remote: $with_remote])
+AC_MSG_NOTICE([  Network: $with_network])
+AC_MSG_NOTICE([ Libvirtd: $with_libvirtd])
+AC_MSG_NOTICE([    netcf: $with_netcf])
+AC_MSG_NOTICE([  macvtap: $with_macvtap])
+AC_MSG_NOTICE([ virtport: $with_virtualport])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Storage Drivers])
 AC_MSG_NOTICE([])

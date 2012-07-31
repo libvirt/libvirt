@@ -84,6 +84,9 @@
 #ifdef WITH_XENAPI
 # include "xenapi/xenapi_driver.h"
 #endif
+#ifdef WITH_PARALLELS
+# include "parallels/parallels_driver.h"
+#endif
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -454,6 +457,9 @@ virInitialize(void)
 #endif
 #ifdef WITH_XENAPI
     if (xenapiRegister() == -1) return -1;
+#endif
+#ifdef WITH_PARALLELS
+    if (parallelsRegister() == -1) return -1;
 #endif
 #ifdef WITH_REMOTE
     if (remoteRegister () == -1) return -1;
@@ -1155,6 +1161,9 @@ do_open (const char *name,
 #endif
 #ifndef WITH_XENAPI
              STRCASEEQ(ret->uri->scheme, "xenapi") ||
+#endif
+#ifndef WITH_PARALLELS
+             STRCASEEQ(ret->uri->scheme, "parallels") ||
 #endif
              false)) {
             virReportErrorHelper(VIR_FROM_NONE, VIR_ERR_CONFIG_UNSUPPORTED,

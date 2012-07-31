@@ -529,6 +529,10 @@ HYPERV_DRIVER_EXTRA_DIST =							\
 		hyperv/hyperv_wmi_generator.py					\
 		$(HYPERV_DRIVER_GENERATED)
 
+PARALLELS_DRIVER_SOURCES =					\
+		parallels/parallels_driver.h			\
+		parallels/parallels_driver.c
+
 NETWORK_DRIVER_SOURCES =					\
 		network/bridge_driver.h network/bridge_driver.c
 
@@ -967,6 +971,14 @@ libvirt_driver_hyperv_la_LIBADD = $(OPENWSMAN_LIBS)
 libvirt_driver_hyperv_la_SOURCES = $(HYPERV_DRIVER_SOURCES)
 endif
 
+if WITH_PARALLELS
+noinst_LTLIBRARIES += libvirt_driver_parallels.la
+libvirt_la_BUILT_LIBADD += libvirt_driver_parallels.la
+libvirt_driver_parallels_la_CFLAGS = \
+		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
+libvirt_driver_parallels_la_SOURCES = $(PARALLELS_DRIVER_SOURCES)
+endif
+
 if WITH_NETWORK
 noinst_LTLIBRARIES += libvirt_driver_network_impl.la
 libvirt_driver_network_la_SOURCES =
@@ -1180,6 +1192,7 @@ EXTRA_DIST +=							\
 		$(ESX_DRIVER_EXTRA_DIST)			\
 		$(HYPERV_DRIVER_SOURCES)			\
 		$(HYPERV_DRIVER_EXTRA_DIST)			\
+		$(PARALLELS_DRIVER_SOURCES)				\
 		$(NETWORK_DRIVER_SOURCES)			\
 		$(INTERFACE_DRIVER_SOURCES)			\
 		$(STORAGE_DRIVER_SOURCES)			\
