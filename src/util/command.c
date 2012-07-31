@@ -815,6 +815,28 @@ virCommandNewArgList(const char *binary, ...)
     return cmd;
 }
 
+/**
+ * virCommandNewVAList:
+ * @binary: program to run
+ * @va_list: additional arguments
+ *
+ * Create a new command with a NULL terminated
+ * variable argument list.  @binary is handled as in virCommandNew.
+ */
+virCommandPtr
+virCommandNewVAList(const char *binary, va_list list)
+{
+    virCommandPtr cmd = virCommandNew(binary);
+    const char *arg;
+
+    if (!cmd || cmd->has_error)
+        return cmd;
+
+    while ((arg = va_arg(list, const char *)) != NULL)
+        virCommandAddArg(cmd, arg);
+    return cmd;
+}
+
 
 /*
  * Preserve the specified file descriptor in the child, instead of

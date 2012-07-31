@@ -45,6 +45,9 @@ virCommandPtr virCommandNewArgs(const char *const*args) ATTRIBUTE_NONNULL(1);
 virCommandPtr virCommandNewArgList(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
 
+virCommandPtr virCommandNewVAList(const char *binary, va_list list)
+    ATTRIBUTE_NONNULL(1);
+
 /* All error report from these setup APIs is
  * delayed until the Run/RunAsync methods
  */
