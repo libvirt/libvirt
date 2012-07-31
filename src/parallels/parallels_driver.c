@@ -288,6 +288,83 @@ parallelsAddDomainHardware(virDomainDefPtr def, virJSONValuePtr jobj)
     return -1;
 }
 
+static int
+parallelsAddVNCInfo(virDomainDefPtr def, virJSONValuePtr jobj_root)
+{
+    const char *tmp;
+    unsigned int port;
+    virJSONValuePtr jobj;
+    int ret = -1;
+    virDomainGraphicsDefPtr gr = NULL;
+
+    jobj = virJSONValueObjectGet(jobj_root, "Remote display");
+    if (!jobj) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    tmp = virJSONValueObjectGetString(jobj, "mode");
+    if (!tmp) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (STREQ(tmp, "off")) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(gr) < 0)
+        goto no_memory;
+
+    if (STREQ(tmp, "auto")) {
+        if (virJSONValueObjectGetNumberUint(jobj, "port", &port) < 0)
+            port = 0;
+        gr->data.vnc.autoport = 1;
+    } else {
+        if (virJSONValueObjectGetNumberUint(jobj, "port", &port) < 0) {
+            parallelsParseError();
+            goto cleanup;
+        }
+        gr->data.vnc.autoport = 0;
+    }
+
+    gr->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;
+    gr->data.vnc.port = port;
+    gr->data.vnc.keymap = NULL;
+    gr->data.vnc.socket = NULL;
+    gr->data.vnc.auth.passwd = NULL;
+    gr->data.vnc.auth.expires = 0;
+    gr->data.vnc.auth.connected = 0;
+
+    if (!(tmp = virJSONValueObjectGetString(jobj, "address"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(gr->listens) < 0)
+        goto no_memory;
+
+    gr->nListens = 1;
+
+    if (!(gr->listens[0].address = strdup(tmp)))
+        goto no_memory;
+
+    gr->listens[0].type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
+
+    if (VIR_REALLOC_N(def->graphics, def->ngraphics + 1) < 0)
+        goto no_memory;
+
+    def->graphics[def->ngraphics++] = gr;
+    return 0;
+
+  no_memory:
+    virReportOOMError();
+  cleanup:
+    virDomainGraphicsDefFree(gr);
+    return ret;
+}
+
 /*
  * Must be called with privconn->lock held
  */
@@ -410,6 +487,9 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
     }
 
     if (parallelsAddDomainHardware(def, jobj2) < 0)
+        goto cleanup;
+
+    if (parallelsAddVNCInfo(def, jobj) < 0)
         goto cleanup;
 
     if (!(dom = virDomainAssignDef(privconn->caps,
