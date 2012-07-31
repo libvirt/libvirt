@@ -53,13 +53,28 @@
 #include "nodeinfo.h"
 #include "json.h"
 #include "domain_conf.h"
+#include "virdomainlist.h"
 
 #include "parallels_driver.h"
+#include "parallels_utils.h"
 
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
 
 #define PRLCTL                      "prlctl"
+#define PRLSRVCTL                   "prlsrvctl"
 #define PARALLELS_DEFAULT_ARCH      "x86_64"
+
+#define parallelsDomNotFoundError(domain)                                \
+    do {                                                                 \
+        char uuidstr[VIR_UUID_STRING_BUFLEN];                            \
+        virUUIDFormat(domain->uuid, uuidstr);                            \
+        virReportError(VIR_ERR_NO_DOMAIN,                                \
+                       _("no domain with matching uuid '%s'"), uuidstr); \
+    } while (0)
+
+#define parallelsParseError()                                                  \
+    virReportErrorHelper(VIR_FROM_TEST, VIR_ERR_OPERATION_FAILED, __FILE__,    \
+                     __FUNCTION__, __LINE__, _("Can't parse prlctl output"))
 
 struct _parallelsConn {
     virMutex lock;
@@ -70,6 +85,14 @@ struct _parallelsConn {
 
 typedef struct _parallelsConn parallelsConn;
 typedef struct _parallelsConn *parallelsConnPtr;
+
+struct parallelsDomObj {
+    int id;
+    char *uuid;
+    char *os;
+};
+
+typedef struct parallelsDomObj *parallelsDomObjPtr;
 
 static int parallelsClose(virConnectPtr conn);
 
@@ -90,6 +113,18 @@ parallelsDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED)
 {
     return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
 }
+
+static void
+parallelsDomObjFreePrivate(void *p)
+{
+    parallelsDomObjPtr pdom = p;
+
+    if (!pdom)
+        return;
+
+    VIR_FREE(pdom->uuid);
+    VIR_FREE(p);
+};
 
 static virCapsPtr
 parallelsBuildCapabilities(void)
@@ -139,6 +174,207 @@ parallelsGetCapabilities(virConnectPtr conn)
     return xml;
 }
 
+/*
+ * Must be called with privconn->lock held
+ */
+static virDomainObjPtr
+parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
+{
+    virDomainObjPtr dom = NULL;
+    virDomainDefPtr def = NULL;
+    parallelsDomObjPtr pdom = NULL;
+    virJSONValuePtr jobj2, jobj3;
+    const char *tmp;
+    char *endptr;
+    unsigned long mem;
+    unsigned int x;
+    const char *autostart;
+    const char *state;
+
+    if (VIR_ALLOC(def) < 0)
+        goto no_memory;
+
+    def->virtType = VIR_DOMAIN_VIRT_PARALLELS;
+    def->id = -1;
+
+    if (!(tmp = virJSONValueObjectGetString(jobj, "Name"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+    if (!(def->name = strdup(tmp)))
+        goto no_memory;
+
+    if (!(tmp = virJSONValueObjectGetString(jobj, "ID"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (virUUIDParse(tmp, def->uuid) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("UUID in config file malformed"));
+        goto cleanup;
+    }
+
+    if (!(tmp = virJSONValueObjectGetString(jobj, "Description"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+    if (!(def->description = strdup(tmp)))
+        goto no_memory;
+
+    if (!(jobj2 = virJSONValueObjectGet(jobj, "Hardware"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (!(jobj3 = virJSONValueObjectGet(jobj2, "cpu"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (virJSONValueObjectGetNumberUint(jobj3, "cpus", &x) < 0) {
+        parallelsParseError();
+        goto cleanup;
+    }
+    def->vcpus = x;
+    def->maxvcpus = x;
+
+    if (!(jobj3 = virJSONValueObjectGet(jobj2, "memory"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (!(tmp = virJSONValueObjectGetString(jobj3, "size"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (virStrToLong_ul(tmp, &endptr, 10, &mem) < 0) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (!STREQ(endptr, "Mb")) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    def->mem.max_balloon = mem;
+    def->mem.max_balloon <<= 10;
+    def->mem.cur_balloon = def->mem.max_balloon;
+
+    if (!(def->os.type = strdup("hvm")))
+        goto no_memory;
+
+    if (!(def->os.arch = strdup(PARALLELS_DEFAULT_ARCH)))
+        goto no_memory;
+
+    if (VIR_ALLOC(pdom) < 0)
+        goto no_memory;
+
+    if (virJSONValueObjectGetNumberUint(jobj, "EnvID", &x) < 0)
+        goto cleanup;
+    pdom->id = x;
+    if (!(tmp = virJSONValueObjectGetString(jobj, "ID"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+    if (!(pdom->uuid = strdup(tmp)))
+        goto no_memory;
+
+    if (!(tmp = virJSONValueObjectGetString(jobj, "OS")))
+        goto cleanup;
+
+    if (!(state = virJSONValueObjectGetString(jobj, "State"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (!(autostart = virJSONValueObjectGetString(jobj, "Autostart"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (!(dom = virDomainAssignDef(privconn->caps,
+                                   &privconn->domains, def, false)))
+        goto cleanup;
+    /* dom is locked here */
+
+    dom->privateDataFreeFunc = parallelsDomObjFreePrivate;
+    dom->privateData = pdom;
+    dom->persistent = 1;
+
+    /* TODO: handle all possible states */
+    if (STREQ(state, "running")) {
+        virDomainObjSetState(dom, VIR_DOMAIN_RUNNING,
+                             VIR_DOMAIN_RUNNING_BOOTED);
+        def->id = pdom->id;
+    }
+
+    if (STREQ(autostart, "on"))
+        dom->autostart = 1;
+    else
+        dom->autostart = 0;
+
+    virDomainObjUnlock(dom);
+
+    return dom;
+
+  no_memory:
+    virReportOOMError();
+  cleanup:
+    virDomainDefFree(def);
+    parallelsDomObjFreePrivate(pdom);
+    return NULL;
+}
+
+/*
+ * Must be called with privconn->lock held
+ *
+ * if domain_name is NULL - load information about all
+ * registered domains.
+ */
+static int
+parallelsLoadDomains(parallelsConnPtr privconn, const char *domain_name)
+{
+    int count, i;
+    virJSONValuePtr jobj;
+    virJSONValuePtr jobj2;
+    virDomainObjPtr dom = NULL;
+    int ret = -1;
+
+    jobj = parallelsParseOutput(PRLCTL, "list", "-j", "-a", "-i", "-H",
+                                "--vmtype", "vm", domain_name, NULL);
+    if (!jobj) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    count = virJSONValueArraySize(jobj);
+    if (count < 0) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    for (i = 0; i < count; i++) {
+        jobj2 = virJSONValueArrayGet(jobj, i);
+        if (!jobj2) {
+            parallelsParseError();
+            goto cleanup;
+        }
+
+        dom = parallelsLoadDomain(privconn, jobj2);
+        if (!dom)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+  cleanup:
+    virJSONValueFree(jobj);
+    return ret;
+}
+
 static int
 parallelsOpenDefault(virConnectPtr conn)
 {
@@ -161,6 +397,9 @@ parallelsOpenDefault(virConnectPtr conn)
         goto error;
 
     conn->privateData = privconn;
+
+    if (parallelsLoadDomains(privconn, NULL))
+        goto error;
 
     return VIR_DRV_OPEN_SUCCESS;
 
@@ -232,9 +471,358 @@ parallelsClose(virConnectPtr conn)
 static int
 parallelsGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned long *hvVer)
 {
-    /* TODO */
-    *hvVer = 6;
-    return 0;
+    char *output, *sVer, *tmp;
+    const char *searchStr = "prlsrvctl version ";
+    int ret = -1;
+
+    output = parallelsGetOutput(PRLSRVCTL, "--help", NULL);
+
+    if (!output) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (!(sVer = strstr(output, searchStr))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    sVer = sVer + strlen(searchStr);
+
+    /* parallels server has versions number like 6.0.17977.782218,
+     * so libvirt can handle only first two numbers. */
+    if (!(tmp = strchr(sVer, '.'))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (!(tmp = strchr(tmp + 1, '.'))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    tmp[0] = '\0';
+    if (virParseVersionString(sVer, hvVer, true) < 0) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(output);
+    return ret;
+}
+
+static int
+parallelsListDomains(virConnectPtr conn, int *ids, int maxids)
+{
+    parallelsConnPtr privconn = conn->privateData;
+    int n;
+
+    parallelsDriverLock(privconn);
+    n = virDomainObjListGetActiveIDs(&privconn->domains, ids, maxids);
+    parallelsDriverUnlock(privconn);
+
+    return n;
+}
+
+static int
+parallelsNumOfDomains(virConnectPtr conn)
+{
+    parallelsConnPtr privconn = conn->privateData;
+    int count;
+
+    parallelsDriverLock(privconn);
+    count = virDomainObjListNumOfDomains(&privconn->domains, 1);
+    parallelsDriverUnlock(privconn);
+
+    return count;
+}
+
+static int
+parallelsListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
+{
+    parallelsConnPtr privconn = conn->privateData;
+    int n;
+
+    parallelsDriverLock(privconn);
+    memset(names, 0, sizeof(*names) * maxnames);
+    n = virDomainObjListGetInactiveNames(&privconn->domains, names,
+                                         maxnames);
+    parallelsDriverUnlock(privconn);
+
+    return n;
+}
+
+static int
+parallelsNumOfDefinedDomains(virConnectPtr conn)
+{
+    parallelsConnPtr privconn = conn->privateData;
+    int count;
+
+    parallelsDriverLock(privconn);
+    count = virDomainObjListNumOfDomains(&privconn->domains, 0);
+    parallelsDriverUnlock(privconn);
+
+    return count;
+}
+
+static int
+parallelsListAllDomains(virConnectPtr conn,
+                        virDomainPtr **domains,
+                        unsigned int flags)
+{
+    parallelsConnPtr privconn = conn->privateData;
+    int ret = -1;
+
+    virCheckFlags(VIR_CONNECT_LIST_FILTERS_ALL, -1);
+    parallelsDriverLock(privconn);
+    ret = virDomainList(conn, privconn->domains.objs, domains, flags);
+    parallelsDriverUnlock(privconn);
+
+    return ret;
+}
+
+static virDomainPtr
+parallelsLookupDomainByID(virConnectPtr conn, int id)
+{
+    parallelsConnPtr privconn = conn->privateData;
+    virDomainPtr ret = NULL;
+    virDomainObjPtr dom;
+
+    parallelsDriverLock(privconn);
+    dom = virDomainFindByID(&privconn->domains, id);
+    parallelsDriverUnlock(privconn);
+
+    if (dom == NULL) {
+        virReportError(VIR_ERR_NO_DOMAIN, NULL);
+        goto cleanup;
+    }
+
+    ret = virGetDomain(conn, dom->def->name, dom->def->uuid);
+    if (ret)
+        ret->id = dom->def->id;
+
+  cleanup:
+    if (dom)
+        virDomainObjUnlock(dom);
+    return ret;
+}
+
+static virDomainPtr
+parallelsLookupDomainByUUID(virConnectPtr conn, const unsigned char *uuid)
+{
+    parallelsConnPtr privconn = conn->privateData;
+    virDomainPtr ret = NULL;
+    virDomainObjPtr dom;
+
+    parallelsDriverLock(privconn);
+    dom = virDomainFindByUUID(&privconn->domains, uuid);
+    parallelsDriverUnlock(privconn);
+
+    if (dom == NULL) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(uuid, uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    ret = virGetDomain(conn, dom->def->name, dom->def->uuid);
+    if (ret)
+        ret->id = dom->def->id;
+
+  cleanup:
+    if (dom)
+        virDomainObjUnlock(dom);
+    return ret;
+}
+
+static virDomainPtr
+parallelsLookupDomainByName(virConnectPtr conn, const char *name)
+{
+    parallelsConnPtr privconn = conn->privateData;
+    virDomainPtr ret = NULL;
+    virDomainObjPtr dom;
+
+    parallelsDriverLock(privconn);
+    dom = virDomainFindByName(&privconn->domains, name);
+    parallelsDriverUnlock(privconn);
+
+    if (dom == NULL) {
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching name '%s'"), name);
+        goto cleanup;
+    }
+
+    ret = virGetDomain(conn, dom->def->name, dom->def->uuid);
+    if (ret)
+        ret->id = dom->def->id;
+
+  cleanup:
+    if (dom)
+        virDomainObjUnlock(dom);
+    return ret;
+}
+
+static int
+parallelsGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
+{
+    parallelsConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr privdom;
+    int ret = -1;
+
+    parallelsDriverLock(privconn);
+    privdom = virDomainFindByUUID(&privconn->domains, domain->uuid);
+    parallelsDriverUnlock(privconn);
+
+    if (privdom == NULL) {
+        parallelsDomNotFoundError(domain);
+        goto cleanup;
+    }
+
+    info->state = virDomainObjGetState(privdom, NULL);
+    info->memory = privdom->def->mem.cur_balloon;
+    info->maxMem = privdom->def->mem.max_balloon;
+    info->nrVirtCpu = privdom->def->vcpus;
+    info->cpuTime = 0;
+    ret = 0;
+
+  cleanup:
+    if (privdom)
+        virDomainObjUnlock(privdom);
+    return ret;
+}
+
+static char *
+parallelsGetOSType(virDomainPtr domain)
+{
+    parallelsConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr privdom;
+
+    char *ret = NULL;
+
+    parallelsDriverLock(privconn);
+    privdom = virDomainFindByUUID(&privconn->domains, domain->uuid);
+    if (privdom == NULL) {
+        parallelsDomNotFoundError(domain);
+        goto cleanup;
+    }
+
+    if (!(ret = strdup(privdom->def->os.type)))
+        virReportOOMError();
+
+  cleanup:
+    if (privdom)
+        virDomainObjUnlock(privdom);
+    parallelsDriverUnlock(privconn);
+    return ret;
+}
+
+static int
+parallelsDomainIsPersistent(virDomainPtr domain)
+{
+    parallelsConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr privdom;
+    int ret = -1;
+
+    parallelsDriverLock(privconn);
+    privdom = virDomainFindByUUID(&privconn->domains, domain->uuid);
+    if (privdom == NULL) {
+        parallelsDomNotFoundError(domain);
+        goto cleanup;
+    }
+
+    ret = 1;
+
+  cleanup:
+    if (privdom)
+        virDomainObjUnlock(privdom);
+    parallelsDriverUnlock(privconn);
+    return ret;
+}
+
+static int
+parallelsDomainGetState(virDomainPtr domain,
+                  int *state, int *reason, unsigned int flags)
+{
+    parallelsConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr privdom;
+    int ret = -1;
+    virCheckFlags(0, -1);
+
+    parallelsDriverLock(privconn);
+    privdom = virDomainFindByUUID(&privconn->domains, domain->uuid);
+    parallelsDriverUnlock(privconn);
+
+    if (privdom == NULL) {
+        parallelsDomNotFoundError(domain);
+        goto cleanup;
+    }
+
+    *state = virDomainObjGetState(privdom, reason);
+    ret = 0;
+
+  cleanup:
+    if (privdom)
+        virDomainObjUnlock(privdom);
+    return ret;
+}
+
+static char *
+parallelsDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
+{
+    parallelsConnPtr privconn = domain->conn->privateData;
+    virDomainDefPtr def;
+    virDomainObjPtr privdom;
+    char *ret = NULL;
+
+    /* Flags checked by virDomainDefFormat */
+
+    parallelsDriverLock(privconn);
+    privdom = virDomainFindByUUID(&privconn->domains, domain->uuid);
+    parallelsDriverUnlock(privconn);
+
+    if (privdom == NULL) {
+        parallelsDomNotFoundError(domain);
+        goto cleanup;
+    }
+
+    def = (flags & VIR_DOMAIN_XML_INACTIVE) &&
+        privdom->newDef ? privdom->newDef : privdom->def;
+
+    ret = virDomainDefFormat(def, flags);
+
+  cleanup:
+    if (privdom)
+        virDomainObjUnlock(privdom);
+    return ret;
+}
+
+static int
+parallelsDomainGetAutostart(virDomainPtr domain, int *autostart)
+{
+    parallelsConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr privdom;
+    int ret = -1;
+
+    parallelsDriverLock(privconn);
+    privdom = virDomainFindByUUID(&privconn->domains, domain->uuid);
+    parallelsDriverUnlock(privconn);
+
+    if (privdom == NULL) {
+        parallelsDomNotFoundError(domain);
+        goto cleanup;
+    }
+
+    *autostart = privdom->autostart;
+    ret = 0;
+
+  cleanup:
+    if (privdom)
+        virDomainObjUnlock(privdom);
+    return ret;
 }
 
 static virDriver parallelsDriver = {
@@ -246,6 +834,20 @@ static virDriver parallelsDriver = {
     .getHostname = virGetHostname,      /* 0.10.0 */
     .nodeGetInfo = nodeGetInfo,      /* 0.10.0 */
     .getCapabilities = parallelsGetCapabilities,      /* 0.10.0 */
+    .listDomains = parallelsListDomains,      /* 0.10.0 */
+    .numOfDomains = parallelsNumOfDomains,    /* 0.10.0 */
+    .listDefinedDomains = parallelsListDefinedDomains,        /* 0.10.0 */
+    .numOfDefinedDomains = parallelsNumOfDefinedDomains,      /* 0.10.0 */
+    .listAllDomains = parallelsListAllDomains, /* 0.10.0 */
+    .domainLookupByID = parallelsLookupDomainByID,    /* 0.10.0 */
+    .domainLookupByUUID = parallelsLookupDomainByUUID,        /* 0.10.0 */
+    .domainLookupByName = parallelsLookupDomainByName,        /* 0.10.0 */
+    .domainGetOSType = parallelsGetOSType,    /* 0.10.0 */
+    .domainGetInfo = parallelsGetDomainInfo,  /* 0.10.0 */
+    .domainGetState = parallelsDomainGetState,        /* 0.10.0 */
+    .domainGetXMLDesc = parallelsDomainGetXMLDesc,    /* 0.10.0 */
+    .domainIsPersistent = parallelsDomainIsPersistent,        /* 0.10.0 */
+    .domainGetAutostart = parallelsDomainGetAutostart,        /* 0.10.0 */
 };
 
 /**

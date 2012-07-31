@@ -1,0 +1,109 @@
+/*
+ * parallels_utils.c: core driver functions for managing
+ * Parallels Cloud Server hosts
+ *
+ * Copyright (C) 2012 Parallels, Inc.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ */
+
+#include <config.h>
+
+#include <stdarg.h>
+
+#include "command.h"
+#include "virterror_internal.h"
+#include "memory.h"
+#include "json.h"
+
+#include "parallels_utils.h"
+
+#define VIR_FROM_THIS VIR_FROM_PARALLELS
+
+static int
+parallelsDoCmdRun(char **outbuf, const char *binary, va_list list)
+{
+    virCommandPtr cmd = virCommandNewVAList(binary, list);
+    char *scmd = NULL;
+    int ret = -1;
+
+    if (outbuf)
+        virCommandSetOutputBuffer(cmd, outbuf);
+
+    scmd = virCommandToString(cmd);
+    if (!scmd)
+        goto cleanup;
+
+    if (virCommandRun(cmd, NULL))
+        goto cleanup;
+
+    ret = 0;
+
+  cleanup:
+    VIR_FREE(scmd);
+    virCommandFree(cmd);
+    if (ret)
+        VIR_FREE(*outbuf);
+    return ret;
+}
+
+/*
+ * Run command and parse its JSON output, return
+ * pointer to virJSONValue or NULL in case of error.
+ */
+virJSONValuePtr
+parallelsParseOutput(const char *binary, ...)
+{
+    char *outbuf;
+    virJSONValuePtr jobj = NULL;
+    va_list list;
+    int ret;
+
+    va_start(list, binary);
+    ret = parallelsDoCmdRun(&outbuf, binary, list);
+    va_end(list);
+    if (ret)
+        return NULL;
+
+    jobj = virJSONValueFromString(outbuf);
+    if (!jobj)
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid output from prlctl: %s"), outbuf);
+
+    VIR_FREE(outbuf);
+    return jobj;
+}
+
+/*
+ * Run command and return its output, pointer to
+ * buffer or NULL in case of error. Caller os responsible
+ * for freeing the buffer.
+ */
+char *
+parallelsGetOutput(const char *binary, ...)
+{
+    char *outbuf;
+    va_list list;
+    int ret;
+
+    va_start(list, binary);
+    ret = parallelsDoCmdRun(&outbuf, binary, list);
+    va_end(list);
+    if (ret)
+        return NULL;
+
+    return outbuf;
+}
