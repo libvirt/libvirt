@@ -1165,8 +1165,9 @@ if WITH_NWFILTER
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_nwfilter.la
 else
-libvirt_la_BUILT_LIBADD += libvirt_driver_nwfilter.la
 noinst_LTLIBRARIES += libvirt_driver_nwfilter.la
+# Stateful, so linked to daemon instead
+#libvirt_la_BUILT_LIBADD += libvirt_driver_nwfilter.la
 endif
 libvirt_driver_nwfilter_la_CFLAGS = $(LIBPCAP_CFLAGS) \
 		-I$(top_srcdir)/src/conf $(LIBNL_CFLAGS) $(AM_CFLAGS)
@@ -1182,7 +1183,8 @@ endif
 
 libvirt_driver_security_la_SOURCES = $(SECURITY_DRIVER_SOURCES)
 noinst_LTLIBRARIES += libvirt_driver_security.la
-libvirt_la_BUILT_LIBADD += libvirt_driver_security.la
+# Stateful, so linked to daemon instead
+#libvirt_la_BUILT_LIBADD += libvirt_driver_security.la
 libvirt_driver_security_la_CFLAGS = \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
 libvirt_driver_security_la_LDFLAGS = $(AM_LDFLAGS)
@@ -1320,10 +1322,6 @@ if WITH_LIBVIRTD
 USED_SYM_FILES += libvirt_daemon.syms
 endif
 
-if WITH_NWFILTER
-USED_SYM_FILES += libvirt_nwfilter.syms
-endif
-
 if WITH_OPENVZ
 USED_SYM_FILES += libvirt_openvz.syms
 endif
@@ -1347,7 +1345,6 @@ EXTRA_DIST += \
   libvirt_daemon.syms		\
   libvirt_linux.syms		\
   libvirt_esx.syms		\
-  libvirt_nwfilter.syms		\
   libvirt_openvz.syms		\
   libvirt_qemu.syms		\
   libvirt_sasl.syms		\
