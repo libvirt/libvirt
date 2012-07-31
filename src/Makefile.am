@@ -1336,10 +1336,6 @@ if WITH_XENXS
 USED_SYM_FILES += libvirt_xenxs.syms
 endif
 
-if WITH_NETWORK
-USED_SYM_FILES += libvirt_network.syms
-endif
-
 if HAVE_SASL
 USED_SYM_FILES += libvirt_sasl.syms
 endif
@@ -1351,7 +1347,6 @@ EXTRA_DIST += \
   libvirt_daemon.syms		\
   libvirt_linux.syms		\
   libvirt_esx.syms		\
-  libvirt_network.syms		\
   libvirt_nwfilter.syms		\
   libvirt_openvz.syms		\
   libvirt_qemu.syms		\
