@@ -258,10 +258,15 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
 
     virCheckFlags(0, NULL);
 
-    source = virStoragePoolDefParseSourceString(srcSpec,
-                                                VIR_STORAGE_POOL_NETFS);
-    if (!source)
-        goto cleanup;
+    if (!srcSpec) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       "%s", _("hostname must be specified for netfs sources"));
+        return NULL;
+    }
+
+    if (!(source = virStoragePoolDefParseSourceString(srcSpec,
+                                                      VIR_STORAGE_POOL_NETFS)))
+        return NULL;
 
     if (source->nhost != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

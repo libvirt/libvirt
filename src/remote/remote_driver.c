@@ -2648,23 +2648,11 @@ remoteFindStoragePoolSources (virConnectPtr conn,
     remote_find_storage_pool_sources_args args;
     remote_find_storage_pool_sources_ret ret;
     struct private_data *priv = conn->storagePrivateData;
-    const char *emptyString = "";
 
     remoteDriverLock(priv);
 
     args.type = (char*)type;
-    /*
-     * I'd think the following would work here:
-     *    args.srcSpec = (char**)&srcSpec;
-     * since srcSpec is a remote_string (not a remote_nonnull_string).
-     *
-     * But when srcSpec is NULL, this yields:
-     *    libvir: Remote error : marshaling args
-     *
-     * So for now I'm working around this by turning NULL srcSpecs
-     * into empty strings.
-     */
-    args.srcSpec = srcSpec ? (char **)&srcSpec : (char **)&emptyString;
+    args.srcSpec = srcSpec ? (char **)&srcSpec : NULL;
     args.flags = flags;
 
     memset (&ret, 0, sizeof(ret));
