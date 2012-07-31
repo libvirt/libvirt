@@ -235,7 +235,7 @@ parallelsGetSerialInfo(virDomainChrDefPtr chr,
 }
 
 static int
-parallelsAddSerialInfo(virDomainDefPtr def,
+parallelsAddSerialInfo(virDomainChrDefPtr **serials, int *nserials,
                        const char *key, virJSONValuePtr value)
 {
     virDomainChrDefPtr chr = NULL;
@@ -246,10 +246,10 @@ parallelsAddSerialInfo(virDomainDefPtr def,
     if (parallelsGetSerialInfo(chr, key, value))
         goto cleanup;
 
-    if (VIR_REALLOC_N(def->serials, def->nserials + 1) < 0)
+    if (VIR_REALLOC_N(*serials, *nserials + 1) < 0)
         goto no_memory;
 
-    def->serials[def->nserials++] = chr;
+    (*serials)[(*nserials)++] = chr;
 
     return 0;
 
@@ -257,6 +257,55 @@ parallelsAddSerialInfo(virDomainDefPtr def,
     virReportOOMError();
   cleanup:
     virDomainChrDefFree(chr);
+    return -1;
+}
+
+static int
+parallelsAddVideoInfo(virDomainDefPtr def, virJSONValuePtr value)
+{
+    virDomainVideoDefPtr video = NULL;
+    virDomainVideoAccelDefPtr accel = NULL;
+    const char *tmp;
+    char *endptr;
+    unsigned long mem;
+
+    if (!(tmp = virJSONValueObjectGetString(value, "size"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (virStrToLong_ul(tmp, &endptr, 10, &mem) < 0) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (!STREQ(endptr, "Mb")) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(video) < 0)
+        goto no_memory;
+
+    if (VIR_ALLOC(accel) < 0)
+        goto no_memory;
+
+    if (VIR_REALLOC_N(def->videos, def->nvideos) < 0)
+        goto no_memory;
+
+    def->videos[def->nvideos++] = video;
+
+    video->type = VIR_DOMAIN_VIDEO_TYPE_VGA;
+    video->vram = mem << 20;
+    video->heads = 1;
+    video->accel = accel;
+
+    return 0;
+
+no_memory:
+    virReportOOMError();
+cleanup:
+    virDomainVideoDefFree(video);
     return -1;
 }
 
@@ -277,7 +326,16 @@ parallelsAddDomainHardware(virDomainDefPtr def, virJSONValuePtr jobj)
         value = virJSONValueObjectGetValue(jobj, i);
 
         if (STRPREFIX(key, "serial")) {
-            if (parallelsAddSerialInfo(def, key, value))
+            if (parallelsAddSerialInfo(&def->serials,
+                                       &def->nserials, key, value))
+                goto cleanup;
+            if (def->nconsoles == 0) {
+                if (parallelsAddSerialInfo(&def->consoles,
+                                           &def->nconsoles, key, value))
+                    goto cleanup;
+            }
+        } else if (STREQ(key, "video")) {
+            if (parallelsAddVideoInfo(def, value))
                 goto cleanup;
         }
     }
@@ -1136,6 +1194,429 @@ parallelsShutdownDomain(virDomainPtr domain)
                                       VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
 }
 
+static int
+parallelsApplyGraphicsParams(virDomainGraphicsDefPtr *oldgraphics, int nold,
+                             virDomainGraphicsDefPtr *newgraphics, int nnew)
+{
+    virDomainGraphicsDefPtr new, old;
+
+    /* parallels server supports only 1 VNC display per VM */
+    if (nold != nnew || nnew > 1)
+        goto error;
+
+    if (nnew == 0)
+        return 0;
+
+    if (newgraphics[0]->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC)
+        goto error;
+
+    old = oldgraphics[0];
+    new = newgraphics[0];
+
+    if (old->data.vnc.port != new->data.vnc.port &&
+        (old->data.vnc.port != 0 && new->data.vnc.port != -1)) {
+
+        goto error;
+    } else if (old->data.vnc.autoport != new->data.vnc.autoport ||
+        new->data.vnc.keymap != NULL ||
+        new->data.vnc.socket != NULL ||
+        !STREQ_NULLABLE(old->data.vnc.auth.passwd, new->data.vnc.auth.passwd) ||
+        old->data.vnc.auth.expires != new->data.vnc.auth.expires ||
+        old->data.vnc.auth.validTo != new->data.vnc.auth.validTo ||
+        old->data.vnc.auth.connected != new->data.vnc.auth.connected) {
+
+        goto error;
+    } else if (old->nListens != new->nListens ||
+               new->nListens > 1 ||
+               old->listens[0].type != new->listens[0].type ||
+                 !STREQ_NULLABLE(old->listens[0].address, new->listens[0].address) ||
+                 !STREQ_NULLABLE(old->listens[0].network, new->listens[0].network)) {
+
+        goto error;
+    }
+
+    return 0;
+error:
+    virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                   _("changing display parameters is not supported "
+                     "by parallels driver"));
+    return -1;
+}
+
+static int
+parallelsApplySerialParams(virDomainChrDefPtr *oldserials, int nold,
+                           virDomainChrDefPtr *newserials, int nnew)
+{
+    if (nold != nnew)
+        goto error;
+
+    for (int i = 0; i < nold; i++) {
+        virDomainChrDefPtr oldserial = oldserials[i];
+        virDomainChrDefPtr newserial = NULL;
+
+        for (int j = 0; j < nnew; j++) {
+            if (newserials[j]->target.port == oldserial->target.port) {
+                newserial = newserials[j];
+                break;
+            }
+        }
+
+        if (!newserial)
+            goto error;
+
+        if (oldserial->source.type != newserial->source.type)
+            goto error;
+
+        if ((newserial->source.type == VIR_DOMAIN_CHR_TYPE_DEV ||
+            newserial->source.type == VIR_DOMAIN_CHR_TYPE_FILE) &&
+            !STREQ_NULLABLE(oldserial->source.data.file.path,
+                            newserial->source.data.file.path))
+            goto error;
+        if(newserial->source.type == VIR_DOMAIN_CHR_TYPE_UNIX &&
+           (!STREQ_NULLABLE(oldserial->source.data.nix.path,
+                            newserial->source.data.nix.path) ||
+            oldserial->source.data.nix.listen == newserial->source.data.nix.listen)) {
+
+            goto error;
+        }
+    }
+
+    return 0;
+error:
+    virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                   _("changing serial device parameters is "
+                     "not supported by parallels driver"));
+    return -1;
+}
+
+static int
+parallelsApplyVideoParams(parallelsDomObjPtr pdom,
+                          virDomainVideoDefPtr *oldvideos, int nold,
+                           virDomainVideoDefPtr *newvideos, int nnew)
+{
+    virDomainVideoDefPtr old, new;
+    char str_vram[32];
+
+    if (nold != 1 || nnew != 1) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Only one video device is "
+                         "supported by parallels driver"));
+        return -1;
+    }
+
+    old = oldvideos[0];
+    new = newvideos[0];
+    if (new->type != VIR_DOMAIN_VIDEO_TYPE_VGA) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Only VGA video device is "
+                         "supported by parallels driver"));
+        return -1;
+    }
+
+    if (new->heads != 1) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Only one monitor is supported by parallels driver"));
+        return -1;
+    }
+
+    /* old->accel must be always non-NULL */
+    if (new->accel == NULL ||
+        old->accel->support2d != new->accel->support2d ||
+        old->accel->support3d != new->accel->support3d) {
+
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                   _("Changing video acceleration parameters is "
+                     "not supported by parallels driver"));
+        return -1;
+    }
+
+    if (old->vram != new->vram) {
+        if (new->vram % (1 << 20) != 0) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Video RAM size should be multiple of 1Mb."));
+            return -1;
+        }
+
+        snprintf(str_vram, 31, "%d", new->vram >> 20);
+        str_vram[31] = '\0';
+
+        if (parallelsCmdRun(PRLCTL, "set", pdom->uuid,
+                            "--videosize", str_vram, NULL))
+            return -1;
+    }
+    return 0;
+}
+
+static int
+parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
+{
+    char buf[32];
+
+    virDomainDefPtr old = dom->def;
+    parallelsDomObjPtr pdom = dom->privateData;
+
+    if (new->description && !STREQ_NULLABLE(old->description, new->description)) {
+        if (parallelsCmdRun(PRLCTL, "set", pdom->uuid,
+                            "--description", new->description, NULL))
+            return -1;
+    }
+
+    if (new->name && !STREQ_NULLABLE(old->name, new->name)) {
+        if (parallelsCmdRun(PRLCTL, "set", pdom->uuid,
+                            "--name", new->name, NULL))
+            return -1;
+    }
+
+    if (new->title && !STREQ_NULLABLE(old->title, new->title)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("titles are not supported by parallels driver"));
+        return -1;
+    }
+
+    if (new->blkio.ndevices > 0) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("blkio parameters are not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    if (old->mem.max_balloon != new->mem.max_balloon) {
+        if (new->mem.max_balloon != new->mem.cur_balloon) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("changing balloon parameters is not supported "
+                         "by parallels driver"));
+           return -1;
+        }
+
+        if (new->mem.max_balloon % (1 << 10) != 0) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Memory size should be multiple of 1Mb."));
+            return -1;
+        }
+
+        snprintf(buf, 31, "%llu", new->mem.max_balloon >> 10);
+        buf[31] = '\0';
+
+        if (parallelsCmdRun(PRLCTL, "set", pdom->uuid,
+                            "--memsize", buf, NULL))
+            return -1;
+    }
+
+    if (old->mem.hugepage_backed != new->mem.hugepage_backed ||
+        old->mem.hard_limit != new->mem.hard_limit ||
+        old->mem.soft_limit != new->mem.soft_limit ||
+        old->mem.min_guarantee != new->mem.min_guarantee ||
+        old->mem.swap_hard_limit != new->mem.swap_hard_limit) {
+
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Memory parameter is not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    if (old->vcpus != new->vcpus) {
+        if (new->vcpus != new->maxvcpus) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("current vcpus must be equal to maxvcpus"));
+            return -1;
+        }
+
+        snprintf(buf, 31, "%d", new->vcpus);
+        buf[31] = '\0';
+
+        if (parallelsCmdRun(PRLCTL, "set", pdom->uuid,
+                            "--cpus", buf, NULL))
+            return -1;
+    }
+
+    if (old->placement_mode != new->placement_mode) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("changing cpu placement mode is not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    if (old->cpumasklen != new->cpumasklen ||
+        (memcmp(old->cpumask, new->cpumask, old->cpumasklen))) {
+
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("changing cpu mask is not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    if (old->cputune.shares != new->cputune.shares ||
+        old->cputune.period != new->cputune.period ||
+        old->cputune.quota != new->cputune.quota ||
+        old->cputune.nvcpupin != new->cputune.nvcpupin) {
+
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("cputune is not supported by parallels driver"));
+        return -1;
+    }
+
+    if (old->numatune.memory.mode != new->numatune.memory.mode ||
+        old->numatune.memory.placement_mode != new->numatune.memory.placement_mode ||
+        !STREQ_NULLABLE(old->numatune.memory.nodemask, new->numatune.memory.nodemask)) {
+
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                        _("numa parameters are not supported "
+                          "by parallels driver"));
+        return -1;
+    }
+
+    if (old->onReboot != new->onReboot ||
+        old->onPoweroff != new->onPoweroff ||
+        old->onCrash != new->onCrash) {
+
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("on_reboot, on_poweroff and on_crash parameters "
+                         "are not supported by parallels driver"));
+        return -1;
+    }
+
+    /* we fill only type and arch fields in parallelsLoadDomain, so
+     * we can check that all other paramenters are null */
+    if (!STREQ_NULLABLE(old->os.type, new->os.type) ||
+        !STREQ_NULLABLE(old->os.arch, new->os.arch) ||
+        new->os.machine != NULL || new->os.nBootDevs != 1 ||
+        new->os.bootDevs[0] != VIR_DOMAIN_BOOT_DISK ||
+        new->os.bootmenu != 0 || new->os.init != NULL ||
+        new->os.initargv != NULL || new->os.kernel != NULL ||
+        new->os.initrd != NULL || new->os.cmdline != NULL ||
+        new->os.root != NULL || new->os.loader != NULL ||
+        new->os.bootloader != NULL || new->os.bootloaderArgs != NULL ||
+        new->os.smbios_mode != 0 || new->os.bios.useserial != 0) {
+
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("changing OS parameters is not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    if (!STREQ_NULLABLE(old->emulator, new->emulator)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("changing emulator is not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    if (old->features != new->features) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("changing features is not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    if (new->clock.offset != VIR_DOMAIN_CLOCK_OFFSET_UTC ||
+        new->clock.ntimers != 0) {
+
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("changing clock parameters is not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    if (parallelsApplyGraphicsParams(old->graphics, old->ngraphics,
+                                   new->graphics, new->ngraphics) < 0)
+        return -1;
+
+    if (new->ndisks != 0 || new->ncontrollers != 0 ||
+        new->nfss != 0 || new->nnets != 0 ||
+        new->nsounds != 0 || new->nhostdevs != 0 ||
+        new->nredirdevs != 0 || new->nsmartcards != 0 ||
+        new->nparallels || new->nchannels != 0 ||
+        new->nleases != 0 || new->nhubs != 0) {
+
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("changing devices parameters is not supported "
+                         "by parallels driver"));
+        return -1;
+    }
+
+    /* there may be one auto-input */
+    if (new->ninputs > 1 ||
+        (new->ninputs > 1 &&
+        (new->inputs[0]->type != VIR_DOMAIN_INPUT_TYPE_MOUSE ||
+        new->inputs[0]->bus != VIR_DOMAIN_INPUT_BUS_PS2))) {
+
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("changing input devices parameters is not supported "
+                         "by parallels driver"));
+    }
+
+
+    if (parallelsApplySerialParams(old->serials, old->nserials,
+                                   new->serials, new->nserials) < 0)
+        return -1;
+
+    if (parallelsApplySerialParams(old->consoles, old->nconsoles,
+                                   new->consoles, new->nconsoles) < 0)
+        return -1;
+
+    if (parallelsApplyVideoParams(pdom, old->videos, old->nvideos,
+                                   new->videos, new->nvideos) < 0)
+        return -1;
+    return 0;
+}
+
+static virDomainPtr
+parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
+{
+    parallelsConnPtr privconn = conn->privateData;
+    virDomainPtr ret = NULL;
+    virDomainDefPtr def;
+    virDomainObjPtr dom = NULL, olddom = NULL;
+    int dupVM;
+
+    parallelsDriverLock(privconn);
+    if ((def = virDomainDefParseString(privconn->caps, xml,
+                                       1 << VIR_DOMAIN_VIRT_PARALLELS,
+                                       VIR_DOMAIN_XML_INACTIVE)) == NULL) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Can't parse XML desc"));
+        goto cleanup;
+    }
+
+    if ((dupVM = virDomainObjIsDuplicate(&privconn->domains, def, 0)) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s", _("Already exists"));
+        goto cleanup;
+    }
+
+    if (dupVM == 1) {
+        olddom = virDomainFindByUUID(&privconn->domains, def->uuid);
+        if (parallelsApplyChanges(olddom, def) < 0) {
+            virDomainObjUnlock(olddom);
+            goto cleanup;
+        }
+        virDomainObjUnlock(olddom);
+
+        if (!(dom = virDomainAssignDef(privconn->caps,
+                                       &privconn->domains, def, false))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Can't allocate domobj"));
+            goto cleanup;
+        }
+
+        def = NULL;
+    } else {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("Not implemented yet"));
+            goto cleanup;
+    }
+
+    ret = virGetDomain(conn, dom->def->name, dom->def->uuid);
+    if (ret)
+        ret->id = dom->def->id;
+
+  cleanup:
+    virDomainDefFree(def);
+    if (dom)
+        virDomainObjUnlock(dom);
+    parallelsDriverUnlock(privconn);
+    return ret;
+}
+
 static virDriver parallelsDriver = {
     .no = VIR_DRV_PARALLELS,
     .name = "Parallels",
@@ -1164,6 +1645,7 @@ static virDriver parallelsDriver = {
     .domainDestroy = parallelsDestroyDomain,  /* 0.10.0 */
     .domainShutdown = parallelsShutdownDomain, /* 0.10.0 */
     .domainCreate = parallelsDomainCreate,    /* 0.10.0 */
+    .domainDefineXML = parallelsDomainDefineXML,      /* 0.10.0 */
 };
 
 /**
