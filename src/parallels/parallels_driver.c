@@ -825,6 +825,120 @@ parallelsDomainGetAutostart(virDomainPtr domain, int *autostart)
     return ret;
 }
 
+typedef int (*parallelsChangeStateFunc)    (virDomainObjPtr privdom);
+#define PARALLELS_UUID(x)     (((parallelsDomObjPtr)(x->privateData))->uuid)
+
+static int
+parallelsDomainChangeState(virDomainPtr domain,
+                           virDomainState req_state, const char *req_state_name,
+                           parallelsChangeStateFunc chstate,
+                           virDomainState new_state, int reason)
+{
+    parallelsConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr privdom;
+    int state;
+    int ret = -1;
+
+    parallelsDriverLock(privconn);
+    privdom = virDomainFindByUUID(&privconn->domains, domain->uuid);
+    parallelsDriverUnlock(privconn);
+
+    if (privdom == NULL) {
+        parallelsDomNotFoundError(domain);
+        goto cleanup;
+    }
+
+    state = virDomainObjGetState(privdom, NULL);
+    if (state != req_state) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("domain '%s' not %s"),
+                       privdom->def->name, req_state_name);
+        goto cleanup;
+    }
+
+    if (chstate(privdom))
+        goto cleanup;
+
+    virDomainObjSetState(privdom, new_state, reason);
+
+    ret = 0;
+
+  cleanup:
+    if (privdom)
+        virDomainObjUnlock(privdom);
+
+    return ret;
+}
+
+static int parallelsPause(virDomainObjPtr privdom)
+{
+    return parallelsCmdRun(PRLCTL, "pause", PARALLELS_UUID(privdom), NULL);
+}
+
+static int
+parallelsPauseDomain(virDomainPtr domain)
+{
+    return parallelsDomainChangeState(domain,
+                                      VIR_DOMAIN_RUNNING, "running",
+                                      parallelsPause,
+                                      VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
+}
+
+static int parallelsResume(virDomainObjPtr privdom)
+{
+    return parallelsCmdRun(PRLCTL, "resume", PARALLELS_UUID(privdom), NULL);
+}
+
+static int
+parallelsResumeDomain(virDomainPtr domain)
+{
+    return parallelsDomainChangeState(domain,
+                                      VIR_DOMAIN_PAUSED, "paused",
+                                      parallelsResume,
+                                      VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_UNPAUSED);
+}
+
+static int parallelsStart(virDomainObjPtr privdom)
+{
+    return parallelsCmdRun(PRLCTL, "start", PARALLELS_UUID(privdom), NULL);
+}
+
+static int
+parallelsDomainCreate(virDomainPtr domain)
+{
+    return parallelsDomainChangeState(domain,
+                                      VIR_DOMAIN_SHUTOFF, "stopped",
+                                      parallelsStart,
+                                      VIR_DOMAIN_RUNNING, VIR_DOMAIN_EVENT_STARTED_BOOTED);
+}
+
+static int parallelsKill(virDomainObjPtr privdom)
+{
+    return parallelsCmdRun(PRLCTL, "stop", PARALLELS_UUID(privdom), "--kill", NULL);
+}
+
+static int
+parallelsDestroyDomain(virDomainPtr domain)
+{
+    return parallelsDomainChangeState(domain,
+                                      VIR_DOMAIN_RUNNING, "running",
+                                      parallelsKill,
+                                      VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_DESTROYED);
+}
+
+static int parallelsStop(virDomainObjPtr privdom)
+{
+    return parallelsCmdRun(PRLCTL, "stop", PARALLELS_UUID(privdom), NULL);
+}
+
+static int
+parallelsShutdownDomain(virDomainPtr domain)
+{
+    return parallelsDomainChangeState(domain,
+                                      VIR_DOMAIN_RUNNING, "running",
+                                      parallelsStop,
+                                      VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+}
+
 static virDriver parallelsDriver = {
     .no = VIR_DRV_PARALLELS,
     .name = "Parallels",
@@ -848,6 +962,11 @@ static virDriver parallelsDriver = {
     .domainGetXMLDesc = parallelsDomainGetXMLDesc,    /* 0.10.0 */
     .domainIsPersistent = parallelsDomainIsPersistent,        /* 0.10.0 */
     .domainGetAutostart = parallelsDomainGetAutostart,        /* 0.10.0 */
+    .domainSuspend = parallelsPauseDomain,    /* 0.10.0 */
+    .domainResume = parallelsResumeDomain,    /* 0.10.0 */
+    .domainDestroy = parallelsDestroyDomain,  /* 0.10.0 */
+    .domainShutdown = parallelsShutdownDomain, /* 0.10.0 */
+    .domainCreate = parallelsDomainCreate,    /* 0.10.0 */
 };
 
 /**

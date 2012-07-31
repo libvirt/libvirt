@@ -107,3 +107,21 @@ parallelsGetOutput(const char *binary, ...)
 
     return outbuf;
 }
+
+/*
+ * Run prlctl command and check for errors
+ *
+ * Return value is 0 in case of success, else - -1
+ */
+int
+parallelsCmdRun(const char *binary, ...)
+{
+    int ret;
+    va_list list;
+
+    va_start(list, binary);
+    ret = parallelsDoCmdRun(NULL, binary, list);
+    va_end(list);
+
+    return ret;
+}

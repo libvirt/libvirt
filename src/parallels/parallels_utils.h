@@ -27,5 +27,7 @@ virJSONValuePtr parallelsParseOutput(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
 char * parallelsGetOutput(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
+int parallelsCmdRun(const char *binary, ...)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
 
 #endif
