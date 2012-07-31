@@ -60,5 +60,7 @@ int parallelsCmdRun(const char *binary, ...)
 char * parallelsAddFileExt(const char *path, const char *ext);
 void parallelsDriverLock(parallelsConnPtr driver);
 void parallelsDriverUnlock(parallelsConnPtr driver);
+virStorageVolPtr parallelsStorageVolumeLookupByPathLocked(virConnectPtr conn,
+                                                          const char *path);
 
 #endif

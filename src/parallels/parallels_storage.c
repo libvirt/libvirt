@@ -44,9 +44,6 @@ static virStorageVolDefPtr
 parallelsStorageVolumeDefine(virStoragePoolObjPtr pool, const char *xmldesc,
                              const char *xmlfile, bool is_new);
 static virStorageVolPtr
-parallelsStorageVolumeLookupByPathLocked(virConnectPtr conn, const char *path);
-
-static virStorageVolPtr
 parallelsStorageVolumeLookupByPath(virConnectPtr conn, const char *path);
 
 static int
@@ -874,7 +871,7 @@ parallelsStorageVolumeLookupByKey(virConnectPtr conn, const char *key)
     return ret;
 }
 
-static virStorageVolPtr
+virStorageVolPtr
 parallelsStorageVolumeLookupByPathLocked(virConnectPtr conn, const char *path)
 {
     parallelsConnPtr privconn = conn->privateData;

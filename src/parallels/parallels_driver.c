@@ -1539,6 +1539,78 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
     return 0;
 }
 
+static int
+parallelsCreateVm(virConnectPtr conn, virDomainDefPtr def)
+{
+    parallelsConnPtr privconn = conn->privateData;
+    int i;
+    virStorageVolDefPtr privvol = NULL;
+    virStoragePoolObjPtr pool = NULL;
+    virStorageVolPtr vol = NULL;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    for (i = 0; i < def->ndisks; i++) {
+        if (def->disks[i]->device != VIR_DOMAIN_DISK_DEVICE_DISK)
+            continue;
+
+        vol = parallelsStorageVolumeLookupByPathLocked(conn, def->disks[i]->src);
+        if (!vol) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Can't find volume with path '%s'"),
+                           def->disks[i]->src);
+            return -1;
+        }
+        break;
+    }
+
+    if (!vol) {
+        /* We determine path to VM directory from volume, so
+         * let's report error if no disk until better solution
+         * will be found */
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Can't create VM '%s' without hard disks"),
+                       (def->name ? def->name : "no name"));
+        return -1;
+    }
+
+    pool = virStoragePoolObjFindByName(&privconn->pools, vol->pool);
+    if (!pool) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Can't find storage pool with name '%s'"),
+                       vol->pool);
+        goto error;
+    }
+
+    privvol = virStorageVolDefFindByPath(pool, def->disks[i]->src);
+    if (!privvol) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Can't find storage volume definition for path '%s'"),
+                       def->disks[i]->src);
+        goto error2;
+    }
+
+    virUUIDFormat(def->uuid, uuidstr);
+
+    if (parallelsCmdRun(PRLCTL, "create", def->name, "--dst",
+                        pool->def->target.path, "--no-hdd",
+                        "--uuid", uuidstr, NULL) < 0)
+        goto error2;
+
+    if (parallelsCmdRun(PRLCTL, "set", def->name, "--vnc-mode", "auto", NULL) < 0)
+        goto error2;
+
+    virStoragePoolObjUnlock(pool);
+    virUnrefStorageVol(vol);
+
+    return 0;
+
+  error2:
+    virStoragePoolObjUnlock(pool);
+  error:
+    virUnrefStorageVol(vol);
+    return -1;
+}
+
 static virDomainPtr
 parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
 {
@@ -1579,9 +1651,17 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
 
         def = NULL;
     } else {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                       _("Not implemented yet"));
+        if (parallelsCreateVm(conn, def))
             goto cleanup;
+        if (parallelsLoadDomains(privconn, def->name))
+            goto cleanup;
+        dom = virDomainFindByName(&privconn->domains, def->name);
+        if (!dom) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Domain for '%s' is not defined after creation"),
+                           (def->name ? def->name : "no name"));
+            goto cleanup;
+        }
     }
 
     ret = virGetDomain(conn, dom->def->name, dom->def->uuid);
