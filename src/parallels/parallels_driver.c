@@ -174,6 +174,120 @@ parallelsGetCapabilities(virConnectPtr conn)
     return xml;
 }
 
+static int
+parallelsGetSerialInfo(virDomainChrDefPtr chr,
+                       const char *name, virJSONValuePtr value)
+{
+    const char *tmp;
+
+    chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
+    chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+    if (virStrToLong_i(name + strlen("serial"),
+                       NULL, 10, &chr->target.port) < 0) {
+        parallelsParseError();
+        return -1;
+    }
+
+    if (virJSONValueObjectHasKey(value, "output")) {
+        chr->source.type = VIR_DOMAIN_CHR_TYPE_FILE;
+
+        tmp = virJSONValueObjectGetString(value, "output");
+        if (!tmp) {
+            parallelsParseError();
+            return -1;
+        }
+
+        if (!(chr->source.data.file.path = strdup(tmp)))
+            goto no_memory;
+    } else if (virJSONValueObjectHasKey(value, "socket")) {
+        chr->source.type = VIR_DOMAIN_CHR_TYPE_UNIX;
+
+        tmp = virJSONValueObjectGetString(value, "socket");
+        if (!tmp) {
+            parallelsParseError();
+            return -1;
+        }
+
+        if (!(chr->source.data.nix.path = strdup(tmp)))
+            goto no_memory;
+        chr->source.data.nix.listen = false;
+    } else if (virJSONValueObjectHasKey(value, "real")) {
+        chr->source.type = VIR_DOMAIN_CHR_TYPE_DEV;
+
+        tmp = virJSONValueObjectGetString(value, "real");
+        if (!tmp) {
+            parallelsParseError();
+            return -1;
+        }
+
+        if (!(chr->source.data.file.path = strdup(tmp)))
+            goto no_memory;
+    } else {
+        parallelsParseError();
+        return -1;
+    }
+
+    return 0;
+
+  no_memory:
+    virReportOOMError();
+    return -1;
+}
+
+static int
+parallelsAddSerialInfo(virDomainDefPtr def,
+                       const char *key, virJSONValuePtr value)
+{
+    virDomainChrDefPtr chr = NULL;
+
+    if (!(chr = virDomainChrDefNew()))
+        goto no_memory;
+
+    if (parallelsGetSerialInfo(chr, key, value))
+        goto cleanup;
+
+    if (VIR_REALLOC_N(def->serials, def->nserials + 1) < 0)
+        goto no_memory;
+
+    def->serials[def->nserials++] = chr;
+
+    return 0;
+
+  no_memory:
+    virReportOOMError();
+  cleanup:
+    virDomainChrDefFree(chr);
+    return -1;
+}
+
+static int
+parallelsAddDomainHardware(virDomainDefPtr def, virJSONValuePtr jobj)
+{
+    int n;
+    size_t i;
+    virJSONValuePtr value;
+    const char *key;
+
+    n = virJSONValueObjectKeysNumber(jobj);
+    if (n < 1)
+        goto cleanup;
+
+    for (i = 0; i < n; i++) {
+        key = virJSONValueObjectGetKey(jobj, i);
+        value = virJSONValueObjectGetValue(jobj, i);
+
+        if (STRPREFIX(key, "serial")) {
+            if (parallelsAddSerialInfo(def, key, value))
+                goto cleanup;
+        }
+    }
+
+    return 0;
+
+  cleanup:
+    return -1;
+}
+
 /*
  * Must be called with privconn->lock held
  */
@@ -294,6 +408,9 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
         parallelsParseError();
         goto cleanup;
     }
+
+    if (parallelsAddDomainHardware(def, jobj2) < 0)
+        goto cleanup;
 
     if (!(dom = virDomainAssignDef(privconn->caps,
                                    &privconn->domains, def, false)))
