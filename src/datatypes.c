@@ -173,7 +173,6 @@ virUnrefConnect(virConnectPtr conn) {
 virDomainPtr
 virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     virDomainPtr ret = NULL;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(VIR_ERR_INVALID_CONN, "%s", _("no connection"));
@@ -183,8 +182,6 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     virCheckNonNullArgReturn(uuid, NULL);
 
     virMutexLock(&conn->lock);
-
-    virUUIDFormat(uuid, uuidstr);
 
     if (VIR_ALLOC(ret) < 0) {
         virMutexUnlock(&conn->lock);
@@ -301,7 +298,6 @@ virUnrefDomain(virDomainPtr domain) {
 virNetworkPtr
 virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     virNetworkPtr ret = NULL;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(VIR_ERR_INVALID_CONN, "%s", _("no connection"));
@@ -311,8 +307,6 @@ virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     virCheckNonNullArgReturn(uuid, NULL);
 
     virMutexLock(&conn->lock);
-
-    virUUIDFormat(uuid, uuidstr);
 
     if (VIR_ALLOC(ret) < 0) {
         virMutexUnlock(&conn->lock);
@@ -562,7 +556,6 @@ virStoragePoolPtr
 virGetStoragePool(virConnectPtr conn, const char *name,
                   const unsigned char *uuid) {
     virStoragePoolPtr ret = NULL;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(VIR_ERR_INVALID_CONN, "%s", _("no connection"));
@@ -572,8 +565,6 @@ virGetStoragePool(virConnectPtr conn, const char *name,
     virCheckNonNullArgReturn(uuid, NULL);
 
     virMutexLock(&conn->lock);
-
-    virUUIDFormat(uuid, uuidstr);
 
     if (VIR_ALLOC(ret) < 0) {
         virMutexUnlock(&conn->lock);
@@ -946,7 +937,6 @@ virGetSecret(virConnectPtr conn, const unsigned char *uuid,
              int usageType, const char *usageID)
 {
     virSecretPtr ret = NULL;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(VIR_ERR_INVALID_CONN, "%s", _("no connection"));
@@ -956,8 +946,6 @@ virGetSecret(virConnectPtr conn, const unsigned char *uuid,
     virCheckNonNullArgReturn(usageID, NULL);
 
     virMutexLock(&conn->lock);
-
-    virUUIDFormat(uuid, uuidstr);
 
     if (VIR_ALLOC(ret) < 0) {
         virMutexUnlock(&conn->lock);
@@ -1128,7 +1116,6 @@ int virUnrefStream(virStreamPtr st) {
 virNWFilterPtr
 virGetNWFilter(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     virNWFilterPtr ret = NULL;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(VIR_ERR_INVALID_CONN, "%s", _("no connection"));
@@ -1138,8 +1125,6 @@ virGetNWFilter(virConnectPtr conn, const char *name, const unsigned char *uuid) 
     virCheckNonNullArgReturn(uuid, NULL);
 
     virMutexLock(&conn->lock);
-
-    virUUIDFormat(uuid, uuidstr);
 
     if (VIR_ALLOC(ret) < 0) {
         virMutexUnlock(&conn->lock);
