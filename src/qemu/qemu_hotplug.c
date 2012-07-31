@@ -1170,6 +1170,7 @@ int qemuDomainAttachHostDevice(struct qemud_driver *driver,
 
         if (usbDeviceListAdd(list, usb) < 0) {
             usbFreeDevice(usb);
+            usb = NULL:
             goto cleanup;
         }
 
