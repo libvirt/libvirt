@@ -2285,14 +2285,13 @@ finish:
 
 cleanup:
     if (ddomain) {
-        virUnrefDomain(ddomain);
+        virObjectUnref(ddomain);
         ret = 0;
     } else {
         ret = -1;
     }
 
-    if (st)
-        virUnrefStream(st);
+    virObjectUnref(st);
 
     if (orig_err) {
         virSetError(orig_err);
@@ -2479,14 +2478,13 @@ finish:
 
  cleanup:
     if (ddomain) {
-        virUnrefDomain(ddomain);
+        virObjectUnref(ddomain);
         ret = 0;
     } else {
         ret = -1;
     }
 
-    if (st)
-        virUnrefStream(st);
+    virObjectUnref(st);
 
     if (orig_err) {
         virSetError(orig_err);

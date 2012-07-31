@@ -194,6 +194,9 @@ virCPUModeTypeToString;
 
 
 # datatypes.h
+virConnectClass;
+virDomainClass;
+virDomainSnapshotClass;
 virGetConnect;
 virGetDomain;
 virGetDomainSnapshot;
@@ -205,12 +208,14 @@ virGetSecret;
 virGetStoragePool;
 virGetStorageVol;
 virGetStream;
-virUnrefConnect;
-virUnrefDomain;
-virUnrefNWFilter;
-virUnrefSecret;
-virUnrefStorageVol;
-virUnrefStream;
+virInterfaceClass;
+virNetworkClass;
+virNodeDeviceClass;
+virNWFilterClass;
+virSecretClass;
+virStoragePoolClass;
+virStorageVolClass;
+virStreamClass;
 
 
 # dnsmasq.h

@@ -1600,14 +1600,14 @@ parallelsCreateVm(virConnectPtr conn, virDomainDefPtr def)
         goto error2;
 
     virStoragePoolObjUnlock(pool);
-    virUnrefStorageVol(vol);
+    virObjectUnref(vol);
 
     return 0;
 
   error2:
     virStoragePoolObjUnlock(pool);
   error:
-    virUnrefStorageVol(vol);
+    virObjectUnref(vol);
     return -1;
 }
 

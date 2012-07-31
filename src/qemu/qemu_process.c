@@ -447,7 +447,7 @@ qemuProcessGetVolumeQcowPassphrase(virConnectPtr conn,
         goto cleanup;
     data = conn->secretDriver->getValue(secret, &size, 0,
                                         VIR_SECRET_GET_VALUE_INTERNAL_CALL);
-    virUnrefSecret(secret);
+    virObjectUnref(secret);
     if (data == NULL)
         goto cleanup;
 

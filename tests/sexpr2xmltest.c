@@ -71,8 +71,7 @@ testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion)
   VIR_FREE(sexprData);
   VIR_FREE(gotxml);
   virDomainDefFree(def);
-  if (conn)
-    virUnrefConnect(conn);
+  virObjectUnref(conn);
 
   return ret;
 }

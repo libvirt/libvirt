@@ -169,7 +169,7 @@ virDomainEventCallbackListRemove(virConnectPtr conn,
             virFreeCallback freecb = cbList->callbacks[i]->freecb;
             if (freecb)
                 (*freecb)(cbList->callbacks[i]->opaque);
-            virUnrefConnect(cbList->callbacks[i]->conn);
+            virObjectUnref(cbList->callbacks[i]->conn);
             VIR_FREE(cbList->callbacks[i]);
 
             if (i < (cbList->count - 1))
@@ -219,7 +219,7 @@ virDomainEventCallbackListRemoveID(virConnectPtr conn,
             virFreeCallback freecb = cbList->callbacks[i]->freecb;
             if (freecb)
                 (*freecb)(cbList->callbacks[i]->opaque);
-            virUnrefConnect(cbList->callbacks[i]->conn);
+            virObjectUnref(cbList->callbacks[i]->conn);
             VIR_FREE(cbList->callbacks[i]);
 
             if (i < (cbList->count - 1))
@@ -309,7 +309,7 @@ virDomainEventCallbackListPurgeMarked(virDomainEventCallbackListPtr cbList)
             virFreeCallback freecb = cbList->callbacks[i]->freecb;
             if (freecb)
                 (*freecb)(cbList->callbacks[i]->opaque);
-            virUnrefConnect(cbList->callbacks[i]->conn);
+            virObjectUnref(cbList->callbacks[i]->conn);
             VIR_FREE(cbList->callbacks[i]);
 
             if (i < (cbList->count - 1))
@@ -395,7 +395,7 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
     if (VIR_REALLOC_N(cbList->callbacks, cbList->count + 1) < 0)
         goto no_memory;
 
-    event->conn->refs++;
+    virObjectRef(event->conn);
 
     cbList->callbacks[cbList->count] = event;
     cbList->count++;

@@ -93,7 +93,7 @@ testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion)
     if (conf)
         virConfFree(conf);
     virDomainDefFree(def);
-    virUnrefConnect(conn);
+    virObjectUnref(conn);
 
     return ret;
 }
@@ -147,7 +147,7 @@ testCompareFormatXML(const char *xmcfg, const char *xml, int xendConfigVersion)
     VIR_FREE(xmcfgData);
     VIR_FREE(gotxml);
     virDomainDefFree(def);
-    virUnrefConnect(conn);
+    virObjectUnref(conn);
 
     return ret;
 }

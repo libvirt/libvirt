@@ -1896,8 +1896,7 @@ qemuBuildRBDString(virConnectPtr conn,
 
 cleanup:
     VIR_FREE(secret);
-    if (sec)
-        virUnrefSecret(sec);
+    virObjectUnref(sec);
 
     return ret;
 

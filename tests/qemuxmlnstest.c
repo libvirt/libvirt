@@ -157,7 +157,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     VIR_FREE(actualargv);
     virCommandFree(cmd);
     virDomainDefFree(vmdef);
-    virUnrefConnect(conn);
+    virObjectUnref(conn);
     return ret;
 }
 

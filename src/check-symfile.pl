@@ -34,7 +34,7 @@ foreach my $elflib (@elflibs) {
     open NM, "-|", "nm", $elflib or die "cannot run 'nm $elflib': $!";
 
     while (<NM>) {
-        next unless /^\S+\s(?:T|D)\s(\S+)\s*$/;
+        next unless /^\S+\s(?:[TBD])\s(\S+)\s*$/;
 
         $gotsyms{$1} = 1;
     }

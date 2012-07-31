@@ -2085,7 +2085,7 @@ phypStorageVolCreateXML(virStoragePoolPtr pool,
     /* checking if this name already exists on this system */
     if ((dup_vol = phypVolumeLookupByName(pool, voldef->name)) != NULL) {
         VIR_ERROR(_("StoragePool name already exists."));
-        virUnrefStorageVol(dup_vol);
+        virObjectUnref(dup_vol);
         goto err;
     }
 
@@ -2121,8 +2121,7 @@ err:
     VIR_FREE(key);
     virStorageVolDefFree(voldef);
     virStoragePoolDefFree(spdef);
-    if (vol)
-        virUnrefStorageVol(vol);
+    virObjectUnref(vol);
     return NULL;
 }
 
@@ -2321,8 +2320,7 @@ phypVolumeGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
     VIR_FREE(voldef.key);
 
 cleanup:
-    if (sp)
-        virUnrefStoragePool(sp);
+    virObjectUnref(sp);
     return xml;
 }
 
@@ -2718,14 +2716,14 @@ phypStoragePoolCreateXML(virConnectPtr conn,
     /* checking if this name already exists on this system */
     if ((dup_sp = phypStoragePoolLookupByName(conn, def->name)) != NULL) {
         VIR_WARN("StoragePool name already exists.");
-        virUnrefStoragePool(dup_sp);
+        virObjectUnref(dup_sp);
         goto err;
     }
 
     /* checking if ID or UUID already exists on this system */
     if ((dup_sp = phypGetStoragePoolLookUpByUUID(conn, def->uuid)) != NULL) {
         VIR_WARN("StoragePool uuid already exists.");
-        virUnrefStoragePool(dup_sp);
+        virObjectUnref(dup_sp);
         goto err;
     }
 
@@ -2739,8 +2737,7 @@ phypStoragePoolCreateXML(virConnectPtr conn,
 
 err:
     virStoragePoolDefFree(def);
-    if (sp)
-        virUnrefStoragePool(sp);
+    virObjectUnref(sp);
     return NULL;
 }
 
@@ -3685,8 +3682,7 @@ phypDomainCreateAndStart(virConnectPtr conn,
 
 err:
     virDomainDefFree(def);
-    if (dom)
-        virUnrefDomain(dom);
+    virObjectUnref(dom);
     return NULL;
 }
 

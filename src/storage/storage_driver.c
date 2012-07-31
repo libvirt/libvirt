@@ -1398,8 +1398,7 @@ storageVolumeCreateXML(virStoragePoolPtr obj,
     voldef = NULL;
 
 cleanup:
-    if (volobj)
-        virUnrefStorageVol(volobj);
+    virObjectUnref(volobj);
     virStorageVolDefFree(voldef);
     if (pool)
         virStoragePoolObjUnlock(pool);
@@ -1560,8 +1559,7 @@ storageVolumeCreateXMLFrom(virStoragePoolPtr obj,
     volobj = NULL;
 
 cleanup:
-    if (volobj)
-        virUnrefStorageVol(volobj);
+    virObjectUnref(volobj);
     virStorageVolDefFree(newvol);
     if (pool)
         virStoragePoolObjUnlock(pool);

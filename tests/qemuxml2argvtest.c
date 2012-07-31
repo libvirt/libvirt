@@ -40,23 +40,12 @@ fakeSecretLookupByUsage(virConnectPtr conn,
                         int usageType ATTRIBUTE_UNUSED,
                         const char *usageID)
 {
-    virSecretPtr ret = NULL;
-    int err;
+    unsigned char uuid[VIR_UUID_BUFLEN];
     if (STRNEQ(usageID, "mycluster_myname"))
         return NULL;
-    err = VIR_ALLOC(ret);
-    if (err < 0)
-        return NULL;
-    ret->magic = VIR_SECRET_MAGIC;
-    ret->refs = 1;
-    ret->usageID = strdup(usageID);
-    if (!ret->usageID) {
-        VIR_FREE(ret);
-        return NULL;
-    }
-    ret->conn = conn;
-    conn->refs++;
-    return ret;
+
+    virUUIDGenerate(uuid);
+    return virGetSecret(conn, uuid, usageType, usageID);
 }
 
 static int
@@ -239,7 +228,7 @@ out:
     VIR_FREE(actualargv);
     virCommandFree(cmd);
     virDomainDefFree(vmdef);
-    virUnrefConnect(conn);
+    virObjectUnref(conn);
     return ret;
 }
 

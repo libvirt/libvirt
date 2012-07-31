@@ -1236,8 +1236,7 @@ sexpr_to_domain(virConnectPtr conn, const struct sexpr *root)
 error:
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("failed to parse Xend domain information"));
-    if (ret != NULL)
-        virUnrefDomain(ret);
+    virObjectUnref(ret);
     return NULL;
 }
 
@@ -2600,7 +2599,7 @@ xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc,
     /* Make sure we don't leave a still-born domain around */
     if (dom != NULL) {
         xenDaemonDomainDestroyFlags(dom, 0);
-        virUnrefDomain(dom);
+        virObjectUnref(dom);
     }
     virDomainDefFree(def);
     return NULL;

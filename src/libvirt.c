@@ -1293,7 +1293,7 @@ do_open (const char *name,
 
 failed:
     virConfFree(conf);
-    virUnrefConnect(ret);
+    virObjectUnref(ret);
 
     return NULL;
 }
@@ -1428,14 +1428,16 @@ error:
  * matching virConnectClose, and all other references will be released
  * after the corresponding operation completes.
  *
- * Returns the number of remaining references on success
- * (positive implies that some other call still has a reference open,
- * 0 implies that no references remain and the connection is closed),
- * or -1 on failure.  It is possible for the last virConnectClose to
- * return a positive value if some other object still has a temporary
- * reference to the connection, but the application should not try to
- * further use a connection after the virConnectClose that matches the
- * initial open.
+ * Returns a positive number if at least 1 reference remains on
+ * success. The returned value should not be assumed to be the total
+ * reference count. A return of 0 implies no references remain and
+ * the connection is closed and memory has been freed. A return of -1
+ * implies a failure.
+ *
+ * It is possible for the last virConnectClose to return a positive
+ * value if some other object still has a temporary reference to the
+ * connection, but the application should not try to further use a
+ * connection after the virConnectClose that matches the initial open.
  */
 int
 virConnectClose(virConnectPtr conn)
@@ -1450,10 +1452,9 @@ virConnectClose(virConnectPtr conn)
         goto error;
     }
 
-    ret = virUnrefConnect(conn);
-    if (ret < 0)
-        goto error;
-    return ret;
+    if (!virObjectUnref(conn))
+        return 0;
+    return 1;
 
 error:
     virDispatchError(NULL);
@@ -1485,10 +1486,8 @@ virConnectRef(virConnectPtr conn)
         virDispatchError(NULL);
         return -1;
     }
-    virMutexLock(&conn->lock);
-    VIR_DEBUG("conn=%p refs=%d", conn, conn->refs);
-    conn->refs++;
-    virMutexUnlock(&conn->lock);
+    VIR_DEBUG("conn=%p refs=%d", conn, conn->object.refs);
+    virObjectRef(conn);
     return 0;
 }
 
@@ -2285,10 +2284,7 @@ virDomainFree(virDomainPtr domain)
         virDispatchError(NULL);
         return -1;
     }
-    if (virUnrefDomain(domain) < 0) {
-        virDispatchError(NULL);
-        return -1;
-    }
+    virObjectUnref(domain);
     return 0;
 }
 
@@ -2317,10 +2313,9 @@ virDomainRef(virDomainPtr domain)
         virDispatchError(NULL);
         return -1;
     }
-    virMutexLock(&domain->conn->lock);
-    VIR_DOMAIN_DEBUG(domain, "refs=%d", domain->refs);
-    domain->refs++;
-    virMutexUnlock(&domain->conn->lock);
+
+    VIR_DOMAIN_DEBUG(domain, "refs=%d", domain->object.refs);
+    virObjectRef(domain);
     return 0;
 }
 
@@ -10117,10 +10112,7 @@ virNetworkFree(virNetworkPtr network)
         virDispatchError(NULL);
         return -1;
     }
-    if (virUnrefNetwork(network) < 0) {
-        virDispatchError(NULL);
-        return -1;
-    }
+    virObjectUnref(network);
     return 0;
 }
 
@@ -10149,10 +10141,8 @@ virNetworkRef(virNetworkPtr network)
         virDispatchError(NULL);
         return -1;
     }
-    virMutexLock(&network->conn->lock);
-    VIR_DEBUG("network=%p refs=%d", network, network->refs);
-    network->refs++;
-    virMutexUnlock(&network->conn->lock);
+    VIR_DEBUG("network=%p refs=%d", network, network->object.refs);
+    virObjectRef(network);
     return 0;
 }
 
@@ -11022,10 +11012,8 @@ virInterfaceRef(virInterfacePtr iface)
         virDispatchError(NULL);
         return -1;
     }
-    virMutexLock(&iface->conn->lock);
-    VIR_DEBUG("iface=%p refs=%d", iface, iface->refs);
-    iface->refs++;
-    virMutexUnlock(&iface->conn->lock);
+    VIR_DEBUG("iface=%p refs=%d", iface, iface->object.refs);
+    virObjectRef(iface);
     return 0;
 }
 
@@ -11050,10 +11038,7 @@ virInterfaceFree(virInterfacePtr iface)
         virDispatchError(NULL);
         return -1;
     }
-    if (virUnrefInterface(iface) < 0) {
-        virDispatchError(NULL);
-        return -1;
-    }
+    virObjectUnref(iface);
     return 0;
 }
 
@@ -11959,10 +11944,7 @@ virStoragePoolFree(virStoragePoolPtr pool)
         virDispatchError(NULL);
         return -1;
     }
-    if (virUnrefStoragePool(pool) < 0) {
-        virDispatchError(NULL);
-        return -1;
-    }
+    virObjectUnref(pool);
     return 0;
 
 }
@@ -11993,10 +11975,8 @@ virStoragePoolRef(virStoragePoolPtr pool)
         virDispatchError(NULL);
         return -1;
     }
-    virMutexLock(&pool->conn->lock);
-    VIR_DEBUG("pool=%p refs=%d", pool, pool->refs);
-    pool->refs++;
-    virMutexUnlock(&pool->conn->lock);
+    VIR_DEBUG("pool=%p refs=%d", pool, pool->object.refs);
+    virObjectRef(pool);
     return 0;
 }
 
@@ -13025,10 +13005,7 @@ virStorageVolFree(virStorageVolPtr vol)
         virDispatchError(NULL);
         return -1;
     }
-    if (virUnrefStorageVol(vol) < 0) {
-        virDispatchError(NULL);
-        return -1;
-    }
+    virObjectUnref(vol);
     return 0;
 }
 
@@ -13058,10 +13035,8 @@ virStorageVolRef(virStorageVolPtr vol)
         virDispatchError(NULL);
         return -1;
     }
-    virMutexLock(&vol->conn->lock);
-    VIR_DEBUG("vol=%p refs=%d", vol, vol->refs);
-    vol->refs++;
-    virMutexUnlock(&vol->conn->lock);
+    VIR_DEBUG("vol=%p refs=%d", vol, vol->object.refs);
+    virObjectRef(vol);
     return 0;
 }
 
@@ -13600,10 +13575,7 @@ int virNodeDeviceFree(virNodeDevicePtr dev)
         virDispatchError(NULL);
         return -1;
     }
-    if (virUnrefNodeDevice(dev) < 0) {
-        virDispatchError(NULL);
-        return -1;
-    }
+    virObjectUnref(dev);
     return 0;
 }
 
@@ -13633,10 +13605,8 @@ virNodeDeviceRef(virNodeDevicePtr dev)
         virDispatchError(NULL);
         return -1;
     }
-    virMutexLock(&dev->conn->lock);
-    VIR_DEBUG("dev=%p refs=%d", dev, dev->refs);
-    dev->refs++;
-    virMutexUnlock(&dev->conn->lock);
+    VIR_DEBUG("dev=%p refs=%d", dev, dev->object.refs);
+    virObjectRef(dev);
     return 0;
 }
 
@@ -14606,10 +14576,8 @@ virSecretRef(virSecretPtr secret)
         virDispatchError(NULL);
         return -1;
     }
-    virMutexLock(&secret->conn->lock);
-    VIR_DEBUG("secret=%p refs=%d", secret, secret->refs);
-    secret->refs++;
-    virMutexUnlock(&secret->conn->lock);
+    VIR_DEBUG("secret=%p refs=%d", secret, secret->object.refs);
+    virObjectRef(secret);
     return 0;
 }
 
@@ -14633,10 +14601,7 @@ virSecretFree(virSecretPtr secret)
         virDispatchError(NULL);
         return -1;
     }
-    if (virUnrefSecret(secret) < 0) {
-        virDispatchError(NULL);
-        return -1;
-    }
+    virObjectUnref(secret);
     return 0;
 }
 
@@ -14705,10 +14670,8 @@ virStreamRef(virStreamPtr stream)
         virDispatchError(NULL);
         return -1;
     }
-    virMutexLock(&stream->conn->lock);
-    VIR_DEBUG("stream=%p refs=%d", stream, stream->refs);
-    stream->refs++;
-    virMutexUnlock(&stream->conn->lock);
+    VIR_DEBUG("stream=%p refs=%d", stream, stream->object.refs);
+    virObjectRef(stream);
     return 0;
 }
 
@@ -15349,10 +15312,7 @@ int virStreamFree(virStreamPtr stream)
 
     /* XXX Enforce shutdown before free'ing resources ? */
 
-    if (virUnrefStream(stream) < 0) {
-        virDispatchError(NULL);
-        return -1;
-    }
+    virObjectUnref(stream);
     return 0;
 }
 
@@ -15813,10 +15773,8 @@ virNWFilterFree(virNWFilterPtr nwfilter)
         virDispatchError(NULL);
         return -1;
     }
-    if (virUnrefNWFilter(nwfilter) < 0) {
-        virDispatchError(NULL);
-        return -1;
-    }
+
+    virObjectUnref(nwfilter);
     return 0;
 }
 
@@ -16072,10 +16030,8 @@ virNWFilterRef(virNWFilterPtr nwfilter)
         virDispatchError(NULL);
         return -1;
     }
-    virMutexLock(&nwfilter->conn->lock);
-    VIR_DEBUG("nwfilter=%p refs=%d", nwfilter, nwfilter->refs);
-    nwfilter->refs++;
-    virMutexUnlock(&nwfilter->conn->lock);
+    VIR_DEBUG("nwfilter=%p refs=%d", nwfilter, nwfilter->object.refs);
+    virObjectRef(nwfilter);
     return 0;
 }
 
@@ -17959,10 +17915,8 @@ virDomainSnapshotRef(virDomainSnapshotPtr snapshot)
         virDispatchError(NULL);
         return -1;
     }
-    virMutexLock(&snapshot->domain->conn->lock);
-    VIR_DEBUG("snapshot=%p, refs=%d", snapshot, snapshot->refs);
-    snapshot->refs++;
-    virMutexUnlock(&snapshot->domain->conn->lock);
+    VIR_DEBUG("snapshot=%p, refs=%d", snapshot, snapshot->object.refs);
+    virObjectRef(snapshot);
     return 0;
 }
 
@@ -17988,10 +17942,7 @@ virDomainSnapshotFree(virDomainSnapshotPtr snapshot)
         virDispatchError(NULL);
         return -1;
     }
-    if (virUnrefDomainSnapshot(snapshot) < 0) {
-        virDispatchError(NULL);
-        return -1;
-    }
+    virObjectUnref(snapshot);
     return 0;
 }
 
