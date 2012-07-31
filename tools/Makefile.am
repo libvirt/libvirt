@@ -25,8 +25,17 @@ EXTRA_DIST = \
 	virt-sanlock-cleanup.in				\
 	virt-sanlock-cleanup.8				\
 	virsh.pod					\
-	libvirt-guests.sysconf		\
-	virsh-edit.c
+	libvirt-guests.sysconf				\
+	virsh-edit.c					\
+	virsh-domain.c					\
+	virsh-domain-monitor.c				\
+	virsh-host.c virsh-interface.c			\
+	virsh-network.c virsh-nodedev.c			\
+	virsh-nwfilter.c virsh-pool.c			\
+	virsh-secret.c virsh-snapshot.c			\
+	virsh-volume.c
+
+
 
 DISTCLEANFILES =
 
