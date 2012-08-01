@@ -164,6 +164,7 @@ endif
 if WITH_NWFILTER
     libvirtd_LDADD += ../src/libvirt_driver_nwfilter.la
 endif
+libvirtd_LDADD += ../src/libvirt_driver_security.la
 endif
 
 libvirtd_LDADD += ../src/libvirt.la
