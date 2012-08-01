@@ -1533,14 +1533,8 @@ libvirt_net_rpc_server_la_SOURCES = \
 	rpc/virnetserverprogram.h rpc/virnetserverprogram.c \
 	rpc/virnetserverservice.h rpc/virnetserverservice.c \
 	rpc/virnetserverclient.h rpc/virnetserverclient.c \
+	rpc/virnetservermdns.h rpc/virnetservermdns.c \
 	rpc/virnetserver.h rpc/virnetserver.c
-if HAVE_AVAHI
-libvirt_net_rpc_server_la_SOURCES += \
-	rpc/virnetservermdns.h rpc/virnetservermdns.c
-else
-EXTRA_DIST += \
-	rpc/virnetservermdns.h rpc/virnetservermdns.c
-endif
 libvirt_net_rpc_server_la_CFLAGS = \
 			$(AVAHI_CFLAGS) \
 			$(XDR_CFLAGS) \

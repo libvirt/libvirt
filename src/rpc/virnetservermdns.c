@@ -1,7 +1,7 @@
 /*
  * virnetservermdns.c: advertise server sockets
  *
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  * Copyright (C) 2007 Daniel P. Berrange
  *
  * Derived from Avahi example service provider code.
@@ -29,14 +29,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <avahi-client/client.h>
-#include <avahi-client/publish.h>
+#if HAVE_AVAHI
+# include <avahi-client/client.h>
+# include <avahi-client/publish.h>
 
-#include <avahi-common/alternative.h>
-#include <avahi-common/simple-watch.h>
-#include <avahi-common/malloc.h>
-#include <avahi-common/error.h>
-#include <avahi-common/timeval.h>
+# include <avahi-common/alternative.h>
+# include <avahi-common/simple-watch.h>
+# include <avahi-common/malloc.h>
+# include <avahi-common/error.h>
+# include <avahi-common/timeval.h>
+#endif
 
 #include "virnetservermdns.h"
 #include "event.h"
@@ -55,18 +57,23 @@ struct _virNetServerMDNSEntry {
 
 struct _virNetServerMDNSGroup {
     virNetServerMDNSPtr mdns;
+#if HAVE_AVAHI
     AvahiEntryGroup *handle;
+#endif
     char *name;
     virNetServerMDNSEntryPtr entry;
     virNetServerMDNSGroupPtr next;
 };
 
 struct _virNetServerMDNS {
+#if HAVE_AVAHI
     AvahiClient *client;
     AvahiPoll *poller;
+#endif
     virNetServerMDNSGroupPtr group;
 };
 
+#if HAVE_AVAHI
 /* Avahi API requires this struct name in the app :-( */
 struct AvahiWatch {
     int watch;
@@ -612,3 +619,78 @@ void virNetServerMDNSEntryFree(virNetServerMDNSEntryPtr entry)
     VIR_FREE(entry->type);
     VIR_FREE(entry);
 }
+
+#else /* ! HAVE_AVAHI */
+
+static const char *unsupported = N_("avahi not available at build time");
+
+virNetServerMDNS *
+virNetServerMDNSNew(void)
+{
+    VIR_DEBUG("%s", _(unsupported));
+    return NULL;
+}
+
+int
+virNetServerMDNSStart(virNetServerMDNS *mdns ATTRIBUTE_UNUSED)
+{
+    VIR_DEBUG("%s", _(unsupported));
+    return -1;
+}
+
+virNetServerMDNSGroupPtr
+virNetServerMDNSAddGroup(virNetServerMDNS *mdns ATTRIBUTE_UNUSED,
+                         const char *name ATTRIBUTE_UNUSED)
+{
+    VIR_DEBUG("%s", _(unsupported));
+    return NULL;
+}
+
+void
+virNetServerMDNSRemoveGroup(virNetServerMDNSPtr mdns ATTRIBUTE_UNUSED,
+                            virNetServerMDNSGroupPtr group ATTRIBUTE_UNUSED)
+{
+    VIR_DEBUG("%s", _(unsupported));
+}
+
+virNetServerMDNSEntryPtr
+virNetServerMDNSAddEntry(virNetServerMDNSGroupPtr group ATTRIBUTE_UNUSED,
+                         const char *type ATTRIBUTE_UNUSED,
+                         int port ATTRIBUTE_UNUSED)
+{
+    VIR_DEBUG("%s", _(unsupported));
+    return NULL;
+}
+
+void
+virNetServerMDNSRemoveEntry(virNetServerMDNSGroupPtr group ATTRIBUTE_UNUSED,
+                            virNetServerMDNSEntryPtr entry ATTRIBUTE_UNUSED)
+{
+    VIR_DEBUG("%s", _(unsupported));
+}
+
+void
+virNetServerMDNSStop(virNetServerMDNSPtr mdns ATTRIBUTE_UNUSED)
+{
+    VIR_DEBUG("%s", _(unsupported));
+}
+
+void
+virNetServerMDNSFree(virNetServerMDNSPtr mdns ATTRIBUTE_UNUSED)
+{
+    VIR_DEBUG("%s", _(unsupported));
+}
+
+void
+virNetServerMDNSGroupFree(virNetServerMDNSGroupPtr grp ATTRIBUTE_UNUSED)
+{
+    VIR_DEBUG("%s", _(unsupported));
+}
+
+void
+virNetServerMDNSEntryFree(virNetServerMDNSEntryPtr entry ATTRIBUTE_UNUSED)
+{
+    VIR_DEBUG("%s", _(unsupported));
+}
+
+#endif /* ! HAVE_AVAHI */

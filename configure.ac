@@ -1305,7 +1305,6 @@ if test "x$with_avahi" = "xyes" || test "x$with_avahi" = "xcheck"; then
       [whether Avahi is used to broadcast server presense])
   fi
 fi
-AM_CONDITIONAL([HAVE_AVAHI], [test "x$with_avahi" = "xyes"])
 AC_SUBST([AVAHI_CFLAGS])
 AC_SUBST([AVAHI_LIBS])
 
