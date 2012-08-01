@@ -23,11 +23,42 @@
 #ifndef PARALLELS_UTILS_H
 # define PARALLELS_UTILS_H
 
+# include "driver.h"
+# include "util/threads.h"
+# include "conf/domain_conf.h"
+# include "conf/storage_conf.h"
+# include "conf/domain_event.h"
+# include "json.h"
+
+struct _parallelsConn {
+    virMutex lock;
+    virDomainObjList domains;
+    virStoragePoolObjList pools;
+    virCapsPtr caps;
+    virDomainEventStatePtr domainEventState;
+};
+
+typedef struct _parallelsConn parallelsConn;
+typedef struct _parallelsConn *parallelsConnPtr;
+
+struct parallelsDomObj {
+    int id;
+    char *uuid;
+    char *os;
+};
+
+typedef struct parallelsDomObj *parallelsDomObjPtr;
+
+int parallelsStorageRegister(void);
+
 virJSONValuePtr parallelsParseOutput(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
 char * parallelsGetOutput(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
 int parallelsCmdRun(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
+char * parallelsAddFileExt(const char *path, const char *ext);
+void parallelsDriverLock(parallelsConnPtr driver);
+void parallelsDriverUnlock(parallelsConnPtr driver);
 
 #endif

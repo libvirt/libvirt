@@ -125,3 +125,25 @@ parallelsCmdRun(const char *binary, ...)
 
     return ret;
 }
+
+/*
+ * Return new file path in malloced string created by
+ * concatenating first and second function arguments.
+ */
+char *
+parallelsAddFileExt(const char *path, const char *ext)
+{
+    char *new_path = NULL;
+    size_t len = strlen(path) + strlen(ext) + 1;
+
+    if (VIR_ALLOC_N(new_path, len) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    if (!virStrcpy(new_path, path, len))
+        return NULL;
+    strcat(new_path, ext);
+
+    return new_path;
+}

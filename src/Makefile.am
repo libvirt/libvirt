@@ -532,7 +532,8 @@ HYPERV_DRIVER_EXTRA_DIST =							\
 PARALLELS_DRIVER_SOURCES =					\
 		parallels/parallels_driver.h			\
 		parallels/parallels_driver.c			\
-		parallels/parallels_utils.c
+		parallels/parallels_utils.c				\
+		parallels/parallels_storage.c
 
 NETWORK_DRIVER_SOURCES =					\
 		network/bridge_driver.h network/bridge_driver.c

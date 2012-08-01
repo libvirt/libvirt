@@ -49,10 +49,7 @@
 #include "command.h"
 #include "configmake.h"
 #include "storage_file.h"
-#include "storage_conf.h"
 #include "nodeinfo.h"
-#include "json.h"
-#include "domain_conf.h"
 #include "virdomainlist.h"
 
 #include "parallels_driver.h"
@@ -76,33 +73,15 @@
     virReportErrorHelper(VIR_FROM_TEST, VIR_ERR_OPERATION_FAILED, __FILE__,    \
                      __FUNCTION__, __LINE__, _("Can't parse prlctl output"))
 
-struct _parallelsConn {
-    virMutex lock;
-    virDomainObjList domains;
-    virStoragePoolObjList pools;
-    virCapsPtr caps;
-};
-
-typedef struct _parallelsConn parallelsConn;
-typedef struct _parallelsConn *parallelsConnPtr;
-
-struct parallelsDomObj {
-    int id;
-    char *uuid;
-    char *os;
-};
-
-typedef struct parallelsDomObj *parallelsDomObjPtr;
-
 static int parallelsClose(virConnectPtr conn);
 
-static void
+void
 parallelsDriverLock(parallelsConnPtr driver)
 {
     virMutexLock(&driver->lock);
 }
 
-static void
+void
 parallelsDriverUnlock(parallelsConnPtr driver)
 {
     virMutexUnlock(&driver->lock);
@@ -1667,6 +1646,8 @@ parallelsRegister(void)
     VIR_FREE(prlctl_path);
 
     if (virRegisterDriver(&parallelsDriver) < 0)
+        return -1;
+    if (parallelsStorageRegister())
         return -1;
 
     return 0;
