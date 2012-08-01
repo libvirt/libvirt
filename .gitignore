@@ -61,6 +61,7 @@
 /docs/libvirt-api.xml
 /docs/libvirt-qemu-*.xml
 /docs/libvirt-refs.xml
+/docs/search.php
 /docs/todo.html.in
 /examples/domain-events/events-c/event-test
 /examples/dominfo/info1

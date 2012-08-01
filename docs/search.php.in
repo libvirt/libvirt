@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<html>
+  <body>
+    <h1>Search the documentation on Libvirt.org</h1>
+
+    <p>
+      The search service indexes the libvirt APIs and documentation as
+    well as the libvir-list@redhat.com mailing-list archives. To use
+    it simply provide a set of keywords:
+    </p>
+
+<a id="php_placeholder"/>
+
+    <img src="libvirtLogo.png" alt="libvirt Logo" />
+
+  </body>
+</html>

@@ -75,6 +75,10 @@ dot_html_in = $(notdir $(wildcard $(srcdir)/*.html.in)) todo.html.in hvsupport.h
       $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/internals/*.html.in))
 dot_html = $(dot_html_in:%.html.in=%.html)
 
+dot_php_in = $(notdir $(wildcard $(srcdir)/*.php.in))
+dot_php_code_in = $(dot_php_in:%.php.in=%.php.code.in)
+dot_php = $(dot_php_in:%.php.in=%.php)
+
 patches = $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/api_extension/*.patch))
 
 xml = \
@@ -107,21 +111,22 @@ EXTRA_DIST=					\
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
   $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
   $(xml) $(qemu_xml) $(fig) $(png) $(css) \
-  $(patches) \
+  $(patches) $(dot_php_in) $(dot_php_code_in) $(dot_php)\
   sitemap.html.in \
   todo.pl hvsupport.pl todo.cfg-example
 
 MAINTAINERCLEANFILES = \
   $(addprefix $(srcdir)/,$(dot_html)) \
   $(addprefix $(srcdir)/,$(apihtml)) \
-  $(addprefix $(srcdir)/,$(devhelphtml))
+  $(addprefix $(srcdir)/,$(devhelphtml)) \
+  $(addprefix $(srcdir)/,$(dot_php))
 
 all-am: web
 
 api: $(srcdir)/libvirt-api.xml $(srcdir)/libvirt-refs.xml
 qemu_api: $(srcdir)/libvirt-qemu-api.xml $(srcdir)/libvirt-qemu-refs.xml
 
-web: $(dot_html) html/index.html devhelp/index.html
+web: $(dot_html) html/index.html devhelp/index.html $(dot_php)
 
 todo.html.in: todo.pl
 	if [ -f  todo.cfg ]; then \
@@ -173,6 +178,18 @@ internals/%.html.tmp: internals/%.html.in subsite.xsl page.xsl sitemap.html.in
 	  || { rm $(srcdir)/$@ && exit 1; }; \
 	  else echo "missing XHTML1 DTD" ; fi ; fi
 
+%.php.tmp: %.php.in site.xsl page.xsl sitemap.html.in
+	@if [ -x $(XSLTPROC) ] ; then \
+	  echo "Generating $@"; \
+	  $(XSLTPROC) --stringparam pagename $(@:.tmp=) --nonet --html \
+	    $(top_srcdir)/docs/site.xsl $< > $@ \
+	    || { rm $@ && exit 1; }; fi
+
+%.php: %.php.tmp %.php.code.in
+	@echo "Scripting $@"; \
+	  sed -e '/<a id="php_placeholder"><\/a>/r '"$(srcdir)/$@.code.in" \
+	  -e /php_placeholder/d < $@.tmp > $(srcdir)/$@ \
+	  || { rm $(srcdir)/$@ && exit 1; }
 
 html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
 	$(AM_V_GEN)if [ -x $(XSLTPROC) ] ; then \
