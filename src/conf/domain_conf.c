@@ -11559,21 +11559,22 @@ virDomainActualNetDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "      <actual type='%s'", type);
+    virBufferAsprintf(buf, "<actual type='%s'", type);
     if (def->type == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
         def->data.hostdev.def.managed) {
         virBufferAddLit(buf, " managed='yes'");
     }
     virBufferAddLit(buf, ">\n");
 
+    virBufferAdjustIndent(buf, 2);
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        virBufferEscapeString(buf, "        <source bridge='%s'/>\n",
+        virBufferEscapeString(buf, "<source bridge='%s'/>\n",
                               def->data.bridge.brname);
         break;
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
-        virBufferAddLit(buf, "        <source");
+        virBufferAddLit(buf, "<source");
         if (def->data.direct.linkdev)
             virBufferEscapeString(buf, " dev='%s'",
                                   def->data.direct.linkdev);
@@ -11589,12 +11590,10 @@ virDomainActualNetDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
-        virBufferAdjustIndent(buf, 8);
         if (virDomainHostdevSourceFormat(buf, &def->data.hostdev.def,
                                          flags, true) < 0) {
             return -1;
         }
-        virBufferAdjustIndent(buf, -8);
         break;
 
     case VIR_DOMAIN_NET_TYPE_NETWORK:
@@ -11605,14 +11604,13 @@ virDomainActualNetDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAdjustIndent(buf, 8);
     if (virNetDevVPortProfileFormat(def->virtPortProfile, buf) < 0)
        return -1;
     if (virNetDevBandwidthFormat(def->bandwidth, buf) < 0)
         return -1;
-    virBufferAdjustIndent(buf, -8);
 
-    virBufferAddLit(buf, "      </actual>\n");
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</actual>\n");
     return 0;
 }
 
@@ -11636,14 +11634,15 @@ virDomainNetDefFormat(virBufferPtr buf,
     }
     virBufferAddLit(buf, ">\n");
 
+    virBufferAdjustIndent(buf, 6);
     virBufferAsprintf(buf,
-                      "      <mac address='%02x:%02x:%02x:%02x:%02x:%02x'/>\n",
+                      "<mac address='%02x:%02x:%02x:%02x:%02x:%02x'/>\n",
                       def->mac.addr[0], def->mac.addr[1], def->mac.addr[2],
                       def->mac.addr[3], def->mac.addr[4], def->mac.addr[5]);
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
-        virBufferEscapeString(buf, "      <source network='%s'",
+        virBufferEscapeString(buf, "<source network='%s'",
                               def->data.network.name);
         virBufferEscapeString(buf, " portgroup='%s'",
                               def->data.network.portgroup);
@@ -11654,39 +11653,41 @@ virDomainNetDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        virBufferEscapeString(buf, "      <source dev='%s'/>\n",
+        virBufferEscapeString(buf, "<source dev='%s'/>\n",
                               def->data.ethernet.dev);
         if (def->data.ethernet.ipaddr)
-            virBufferAsprintf(buf, "      <ip address='%s'/>\n",
+            virBufferAsprintf(buf, "<ip address='%s'/>\n",
                               def->data.ethernet.ipaddr);
         break;
 
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        virBufferEscapeString(buf, "      <source bridge='%s'/>\n",
+        virBufferEscapeString(buf, "<source bridge='%s'/>\n",
                               def->data.bridge.brname);
-        if (def->data.bridge.ipaddr)
-            virBufferAsprintf(buf, "      <ip address='%s'/>\n",
+        if (def->data.bridge.ipaddr) {
+            virBufferAsprintf(buf, "<ip address='%s'/>\n",
                               def->data.bridge.ipaddr);
+        }
         break;
 
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_CLIENT:
     case VIR_DOMAIN_NET_TYPE_MCAST:
-        if (def->data.socket.address)
-            virBufferAsprintf(buf, "      <source address='%s' port='%d'/>\n",
+        if (def->data.socket.address) {
+            virBufferAsprintf(buf, "<source address='%s' port='%d'/>\n",
                               def->data.socket.address, def->data.socket.port);
-        else
-            virBufferAsprintf(buf, "      <source port='%d'/>\n",
+        } else {
+            virBufferAsprintf(buf, "<source port='%d'/>\n",
                               def->data.socket.port);
+        }
         break;
 
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
-        virBufferEscapeString(buf, "      <source name='%s'/>\n",
+        virBufferEscapeString(buf, "<source name='%s'/>\n",
                               def->data.internal.name);
         break;
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
-        virBufferEscapeString(buf, "      <source dev='%s'",
+        virBufferEscapeString(buf, "<source dev='%s'",
                               def->data.direct.linkdev);
         virBufferAsprintf(buf, " mode='%s'",
                           virNetDevMacVLanModeTypeToString(def->data.direct.mode));
@@ -11694,12 +11695,10 @@ virDomainNetDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
-        virBufferAdjustIndent(buf, 6);
         if (virDomainHostdevSourceFormat(buf, &def->data.hostdev.def,
                                          flags, true) < 0) {
             return -1;
         }
-        virBufferAdjustIndent(buf, -6);
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
@@ -11707,26 +11706,22 @@ virDomainNetDefFormat(virBufferPtr buf,
         break;
     }
 
-    virBufferAdjustIndent(buf, 6);
     if (virNetDevVPortProfileFormat(def->virtPortProfile, buf) < 0)
        return -1;
-    virBufferAdjustIndent(buf, -6);
-
-    virBufferEscapeString(buf, "      <script path='%s'/>\n",
+    virBufferEscapeString(buf, "<script path='%s'/>\n",
                           def->script);
     if (def->ifname &&
         !((flags & VIR_DOMAIN_XML_INACTIVE) &&
           (STRPREFIX(def->ifname, VIR_NET_GENERATED_PREFIX)))) {
         /* Skip auto-generated target names for inactive config. */
-        virBufferEscapeString(buf, "      <target dev='%s'/>\n",
-                              def->ifname);
+        virBufferEscapeString(buf, "<target dev='%s'/>\n", def->ifname);
     }
     if (def->model) {
-        virBufferEscapeString(buf, "      <model type='%s'/>\n",
+        virBufferEscapeString(buf, "<model type='%s'/>\n",
                               def->model);
         if (STREQ(def->model, "virtio") &&
             (def->driver.virtio.name || def->driver.virtio.txmode)) {
-            virBufferAddLit(buf, "      <driver");
+            virBufferAddLit(buf, "<driver");
             if (def->driver.virtio.name) {
                 virBufferAsprintf(buf, " name='%s'",
                                   virDomainNetBackendTypeToString(def->driver.virtio.name));
@@ -11747,27 +11742,25 @@ virDomainNetDefFormat(virBufferPtr buf,
         }
     }
     if (def->filter) {
-        virBufferAdjustIndent(buf, 6);
         if (virNWFilterFormatParamAttributes(buf, def->filterparams,
                                              def->filter) < 0)
             return -1;
-        virBufferAdjustIndent(buf, -6);
     }
 
     if (def->tune.sndbuf_specified) {
-        virBufferAddLit(buf,   "      <tune>\n");
-        virBufferAsprintf(buf, "        <sndbuf>%lu</sndbuf>\n",
-                          def->tune.sndbuf);
-        virBufferAddLit(buf,   "      </tune>\n");
+        virBufferAddLit(buf,   "<tune>\n");
+        virBufferAsprintf(buf, "  <sndbuf>%lu</sndbuf>\n", def->tune.sndbuf);
+        virBufferAddLit(buf,   "</tune>\n");
     }
 
-    if (def->linkstate)
-        virBufferAsprintf(buf, "      <link state='%s'/>\n",
+    if (def->linkstate) {
+        virBufferAsprintf(buf, "<link state='%s'/>\n",
                           virDomainNetInterfaceLinkStateTypeToString(def->linkstate));
+    }
 
-    virBufferAdjustIndent(buf, 6);
     if (virNetDevBandwidthFormat(def->bandwidth, buf) < 0)
         return -1;
+
     virBufferAdjustIndent(buf, -6);
 
     if (virDomainDeviceInfoFormat(buf, &def->info,
