@@ -38,6 +38,7 @@ typedef struct _esxVI_ManagedObject esxVI_ManagedObject;
 typedef enum _esxVI_Boolean esxVI_Boolean;
 typedef struct _esxVI_AnyType esxVI_AnyType;
 typedef struct _esxVI_String esxVI_String;
+typedef struct _esxVI_Byte esxVI_Byte;
 typedef struct _esxVI_Int esxVI_Int;
 typedef struct _esxVI_Long esxVI_Long;
 typedef struct _esxVI_DateTime esxVI_DateTime;
@@ -73,6 +74,7 @@ enum _esxVI_Type {
     esxVI_Type_Boolean,
     esxVI_Type_AnyType,
     esxVI_Type_String,
+    esxVI_Type_Byte,
     esxVI_Type_Short,
     esxVI_Type_Int,
     esxVI_Type_Long,
@@ -146,6 +148,7 @@ struct _esxVI_AnyType {
     union {
         esxVI_Boolean boolean;                             /* optional */
         char *string;                                      /* optional */
+        int8_t int8;                                       /* optional */
         int16_t int16;                                     /* optional */
         int32_t int32;                                     /* optional */
         int64_t int64;                                     /* optional */
@@ -195,6 +198,31 @@ int esxVI_String_SerializeValue(const char *value, const char *element,
 int esxVI_String_Deserialize(xmlNodePtr node, esxVI_String **string);
 int esxVI_String_DeserializeList(xmlNodePtr node, esxVI_String **stringList);
 int esxVI_String_DeserializeValue(xmlNodePtr node, char **value);
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * XSD: Byte
+ */
+
+struct _esxVI_Byte {
+    esxVI_Byte *_next;                                     /* optional */
+    esxVI_Type _type;                                      /* required */
+
+    int8_t value;                                          /* required */
+};
+
+int esxVI_Byte_Alloc(esxVI_Byte **number);
+void esxVI_Byte_Free(esxVI_Byte **numberList);
+int esxVI_Byte_Validate(esxVI_Byte *number);
+int esxVI_Byte_AppendToList(esxVI_Byte **numberList, esxVI_Byte *number);
+int esxVI_Byte_DeepCopy(esxVI_Byte **dest, esxVI_Byte *src);
+int esxVI_Byte_DeepCopyList(esxVI_Byte **destList, esxVI_Byte *srcList);
+int esxVI_Byte_Serialize(esxVI_Byte *number, const char *element,
+                         virBufferPtr output);
+int esxVI_Byte_SerializeList(esxVI_Byte *numberList, const char *element,
+                             virBufferPtr output);
+int esxVI_Byte_Deserialize(xmlNodePtr node, esxVI_Byte **number);
 
 
 

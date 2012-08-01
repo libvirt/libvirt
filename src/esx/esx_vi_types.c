@@ -774,6 +774,9 @@ esxVI_Type_ToString(esxVI_Type type)
       case esxVI_Type_String:
         return "xsd:string";
 
+      case esxVI_Type_Byte:
+        return "xsd:byte";
+
       case esxVI_Type_Short:
         return "xsd:short";
 
@@ -816,6 +819,8 @@ esxVI_Type_FromString(const char *type)
         return esxVI_Type_AnyType;
     } else if (STREQ(type, "xsd:string")) {
         return esxVI_Type_String;
+    } else if (STREQ(type, "xsd:byte")) {
+        return esxVI_Type_Byte;
     } else if (STREQ(type, "xsd:short")) {
         return esxVI_Type_Short;
     } else if (STREQ(type, "xsd:int")) {
@@ -942,6 +947,10 @@ esxVI_AnyType_DeepCopy(esxVI_AnyType **dest, esxVI_AnyType *src)
         (*dest)->string = (*dest)->value;
         break;
 
+      case esxVI_Type_Byte:
+        (*dest)->int8 = src->int8;
+        break;
+
       case esxVI_Type_Short:
         (*dest)->int16 = src->int16;
         break;
@@ -1057,6 +1066,10 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
 
       case esxVI_Type_String:
         (*anyType)->string = (*anyType)->value;
+        break;
+
+      case esxVI_Type_Byte:
+        _DESERIALIZE_NUMBER(Byte, "xsd:byte", int8, INT8_MIN, INT8_MAX);
         break;
 
       case esxVI_Type_Short:
@@ -1295,6 +1308,50 @@ esxVI_String_DeserializeValue(xmlNodePtr node, char **value)
 
     return 0;
 }
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * XSD: Byte
+ */
+
+/* esxVI_Byte_Alloc */
+ESX_VI__TEMPLATE__ALLOC(Byte)
+
+/* esxVI_Byte_Free */
+ESX_VI__TEMPLATE__FREE(Byte,
+{
+    esxVI_Byte_Free(&item->_next);
+})
+
+/* esxVI_Byte_Validate */
+ESX_VI__TEMPLATE__VALIDATE(Byte,
+{
+})
+
+/* esxVI_Byte_AppendToList */
+ESX_VI__TEMPLATE__LIST__APPEND(Byte)
+
+/* esxVI_Byte_DeepCopy */
+ESX_VI__TEMPLATE__DEEP_COPY(Byte,
+{
+    (*dest)->value = src->value;
+})
+
+/* esxVI_Byte_DeepCopyList */
+ESX_VI__TEMPLATE__LIST__DEEP_COPY(Byte)
+
+/* esxVI_Byte_Serialize */
+ESX_VI__TEMPLATE__SERIALIZE(Byte,
+{
+    virBufferAsprintf(output, "%d", (int)item->value);
+})
+
+/* esxVI_Byte_SerializeList */
+ESX_VI__TEMPLATE__LIST__SERIALIZE(Byte)
+
+/* esxVI_Byte_Deserialize */
+ESX_VI__TEMPLATE__DESERIALIZE_NUMBER(Byte, "xsd:byte", INT8_MIN, INT8_MAX);
 
 
 

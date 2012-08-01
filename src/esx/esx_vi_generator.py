@@ -1496,6 +1496,7 @@ def open_and_print(filename):
 predefined_enums = ["Boolean"]
 
 predefined_objects = ["AnyType",
+                      "Byte",
                       "Int",
                       "Long",
                       "String",
