@@ -544,7 +544,7 @@ LIBVIRT_0.9.13 {
         virDomainSnapshotRef;
 } LIBVIRT_0.9.11;
 
-LIBVIRT_0.9.14 {
+LIBVIRT_0.10.0 {
     global:
         virDomainGetHostname;
         virConnectRegisterCloseCallback;

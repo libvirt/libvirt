@@ -2170,7 +2170,7 @@ static virDriver openvzDriver = {
     .domainIsUpdated = openvzDomainIsUpdated, /* 0.8.6 */
     .isAlive = openvzIsAlive, /* 0.9.8 */
     .domainUpdateDeviceFlags = openvzDomainUpdateDeviceFlags, /* 0.9.13 */
-    .domainGetHostname = openvzDomainGetHostname, /* 0.9.14 */
+    .domainGetHostname = openvzDomainGetHostname, /* 0.10.0 */
 };
 
 int openvzRegister(void) {
