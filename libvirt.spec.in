@@ -1323,11 +1323,13 @@ rm -fr %{buildroot}
 
 %check
 cd tests
-# These 3 tests don't current work in a mock build root
-for i in nodeinfotest daemon-conf seclabeltest
+make
+# These tests don't current work in a mock build root
+for i in nodeinfotest seclabeltest
 do
   rm -f $i
-  printf "#!/bin/sh\nexit 0\n" > $i
+  printf 'int main(void) { return(0); }' > $i.c
+  printf '#!/bin/sh\nexit 0\n' > $i
   chmod +x $i
 done
 make check
