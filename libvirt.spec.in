@@ -1328,7 +1328,7 @@ make
 for i in nodeinfotest seclabeltest
 do
   rm -f $i
-  printf 'int main(void) { return(0); }' > $i.c
+  printf 'int main(void) { return 0; }' > $i.c
   printf '#!/bin/sh\nexit 0\n' > $i
   chmod +x $i
 done
