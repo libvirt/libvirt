@@ -53,6 +53,9 @@
         <ref name="features"/>
         <ref name="termination"/>
         <optional>
+          <ref name="pm"/>
+        </optional>
+        <optional>
           <ref name="devices"/>
         </optional>
         <zeroOrMore>
@@ -2270,6 +2273,40 @@
       <value>coredump-destroy</value>
       <value>coredump-restart</value>
     </choice>
+  </define>
+  <!--
+      Control ACPI sleep states (dis)allowed for the domain
+      For each of the states the following rules apply:
+      on: the state will be forcefully enabled
+      off: the state will be forcefully disabled
+      not specified: hypervisor will be left to decide its defaults
+  -->
+  <define name="pm">
+    <element name="pm">
+      <interleave>
+        <optional>
+          <element name="suspend-to-mem">
+            <ref name="suspendChoices"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="suspend-to-disk">
+            <ref name="suspendChoices"/>
+          </element>
+        </optional>
+      </interleave>
+      <empty/>
+    </element>
+  </define>
+  <define name="suspendChoices">
+    <optional>
+      <attribute name="enabled">
+        <choice>
+          <value>yes</value>
+          <value>no</value>
+        </choice>
+      </attribute>
+    </optional>
   </define>
   <!--
       Specific setup for a qemu emulated character device.  Note: this

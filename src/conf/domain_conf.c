@@ -124,6 +124,11 @@ VIR_ENUM_IMPL(virDomainLifecycleCrash, VIR_DOMAIN_LIFECYCLE_CRASH_LAST,
               "coredump-destroy",
               "coredump-restart")
 
+VIR_ENUM_IMPL(virDomainPMState, VIR_DOMAIN_PM_STATE_LAST,
+              "default",
+              "yes",
+              "no")
+
 VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "none",
               "disk",
@@ -7239,6 +7244,28 @@ static int virDomainLifecycleParseXML(xmlXPathContextPtr ctxt,
     return 0;
 }
 
+static int
+virDomainPMStateParseXML(xmlXPathContextPtr ctxt,
+                         const char *xpath,
+                         int *val)
+{
+    int ret = -1;
+    char *tmp = virXPathString(xpath, ctxt);
+    if (tmp) {
+        *val = virDomainPMStateTypeFromString(tmp);
+        if (*val < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown PM state value %s"), tmp);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(tmp);
+    return ret;
+}
+
 virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
                                               virDomainDefPtr def,
                                               const char *xmlStr,
@@ -8609,6 +8636,16 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                                         &def->onCrash,
                                    VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY,
                                    virDomainLifecycleCrashTypeFromString) < 0)
+        goto error;
+
+    if (virDomainPMStateParseXML(ctxt,
+                                 "string(./pm/suspend-to-mem/@enabled)",
+                                 &def->pm.s3) < 0)
+        goto error;
+
+    if (virDomainPMStateParseXML(ctxt,
+                                 "string(./pm/suspend-to-disk/@enabled)",
+                                 &def->pm.s4) < 0)
         goto error;
 
     tmp = virXPathString("string(./clock/@offset)", ctxt);
@@ -13423,6 +13460,19 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                                     "on_crash",
                                     virDomainLifecycleCrashTypeToString) < 0)
         goto cleanup;
+
+    if (def->pm.s3 || def->pm.s4) {
+        virBufferAddLit(buf, "  <pm>\n");
+        if (def->pm.s3) {
+            virBufferAsprintf(buf, "    <suspend-to-mem enabled='%s'/>\n",
+                              virDomainPMStateTypeToString(def->pm.s3));
+        }
+        if (def->pm.s4) {
+            virBufferAsprintf(buf, "    <suspend-to-disk enabled='%s'/>\n",
+                              virDomainPMStateTypeToString(def->pm.s4));
+        }
+        virBufferAddLit(buf, "  </pm>\n");
+    }
 
     virBufferAddLit(buf, "  <devices>\n");
 

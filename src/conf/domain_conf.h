@@ -1371,6 +1371,14 @@ enum virDomainLifecycleCrashAction {
     VIR_DOMAIN_LIFECYCLE_CRASH_LAST
 };
 
+enum virDomainPMState {
+    VIR_DOMAIN_PM_STATE_DEFAULT = 0,
+    VIR_DOMAIN_PM_STATE_ENABLED,
+    VIR_DOMAIN_PM_STATE_DISABLED,
+
+    VIR_DOMAIN_PM_STATE_LAST,
+};
+
 enum virDomainBIOSUseserial {
     VIR_DOMAIN_BIOS_USESERIAL_DEFAULT = 0,
     VIR_DOMAIN_BIOS_USESERIAL_YES,
@@ -1624,6 +1632,12 @@ struct _virDomainDef {
     int onReboot;
     int onPoweroff;
     int onCrash;
+
+    struct {
+        /* These options are actually type of enum virDomainPMState */
+        int s3;
+        int s4;
+    } pm;
 
     virDomainOSDef os;
     char *emulator;
@@ -2092,6 +2106,7 @@ VIR_ENUM_DECL(virDomainBoot)
 VIR_ENUM_DECL(virDomainFeature)
 VIR_ENUM_DECL(virDomainLifecycle)
 VIR_ENUM_DECL(virDomainLifecycleCrash)
+VIR_ENUM_DECL(virDomainPMState)
 VIR_ENUM_DECL(virDomainDevice)
 VIR_ENUM_DECL(virDomainDeviceAddress)
 VIR_ENUM_DECL(virDomainDisk)
