@@ -205,6 +205,9 @@ mymain(void)
     /* Can't rountrip xenner arch */
     /*DO_TEST("input-xen");*/
     DO_TEST("misc-acpi");
+    DO_TEST("misc-disable-s3");
+    DO_TEST("misc-disable-suspends");
+    DO_TEST("misc-enable-s4");
     DO_TEST("misc-no-reboot");
     DO_TEST("misc-uuid");
     DO_TEST("net-user");

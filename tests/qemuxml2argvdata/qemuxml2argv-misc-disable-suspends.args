@@ -1,0 +1,4 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S \
+-M pc -m 214 -smp 1 -nographic -monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi -global PIIX4_PM.disable_s3=1 -global PIIX4_PM.disable_s4=1 -boot c \
+-hda /dev/HostVG/QEMUGuest1 -net none -serial none -parallel none -usb

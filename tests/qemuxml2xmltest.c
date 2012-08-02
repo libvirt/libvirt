@@ -170,6 +170,9 @@ mymain(void)
     DO_TEST("input-usbtablet");
     DO_TEST("input-xen");
     DO_TEST("misc-acpi");
+    DO_TEST("misc-disable-s3");
+    DO_TEST("misc-disable-suspends");
+    DO_TEST("misc-enable-s4");
     DO_TEST("misc-no-reboot");
     DO_TEST("net-user");
     DO_TEST("net-virtio");
