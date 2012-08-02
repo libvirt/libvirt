@@ -972,7 +972,8 @@ int main(int argc, char **argv) {
     virLogSetFromEnv();
 
 #ifdef WITH_DRIVER_MODULES
-    if (strstr(argv[0], "lt-libvirtd")) {
+    if (strstr(argv[0], "lt-libvirtd") ||
+        strstr(argv[0], "/daemon/.libs/libvirtd")) {
         char *tmp = strrchr(argv[0], '/');
         if (!tmp) {
             fprintf(stderr, _("%s: cannot identify driver directory\n"), argv[0]);
