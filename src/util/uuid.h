@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007, 2011 Red Hat, Inc.
+ * Copyright (C) 2007, 2011, 2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,7 +35,7 @@ int virUUIDParse(const char *uuidstr,
                  unsigned char *uuid)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
-void virUUIDFormat(const unsigned char *uuid,
-                   char *uuidstr) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+const char *virUUIDFormat(const unsigned char *uuid,
+                          char *uuidstr) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 #endif /* __VIR_UUID_H__ */

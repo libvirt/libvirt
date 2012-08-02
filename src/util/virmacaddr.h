@@ -44,8 +44,8 @@ int virMacAddrCmpRaw(const virMacAddrPtr mac1,
 void virMacAddrSet(virMacAddrPtr dst, const virMacAddrPtr src);
 void virMacAddrSetRaw(virMacAddrPtr dst, const unsigned char s[VIR_MAC_BUFLEN]);
 void virMacAddrGetRaw(virMacAddrPtr src, unsigned char dst[VIR_MAC_BUFLEN]);
-void virMacAddrFormat(const virMacAddrPtr addr,
-                      char *str);
+const char *virMacAddrFormat(const virMacAddrPtr addr,
+                             char *str);
 void virMacAddrGenerate(const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN],
                         virMacAddrPtr addr);
 int virMacAddrParse(const char* str,

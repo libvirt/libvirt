@@ -176,14 +176,23 @@ virMacAddrParse(const char* str, virMacAddrPtr addr)
     return -1;
 }
 
-void virMacAddrFormat(const virMacAddrPtr addr,
-                      char *str)
+/* virMacAddrFormat
+ * Converts the binary mac address in addr into a NULL-terminated
+ * character string in str. It is assumed that the memory pointed to
+ * by str is at least VIR_MAC_STRING_BUFLEN bytes long.
+ *
+ * Returns a pointer to the resulting character string.
+ */
+const char *
+virMacAddrFormat(const virMacAddrPtr addr,
+                 char *str)
 {
     snprintf(str, VIR_MAC_STRING_BUFLEN,
              "%02X:%02X:%02X:%02X:%02X:%02X",
              addr->addr[0], addr->addr[1], addr->addr[2],
              addr->addr[3], addr->addr[4], addr->addr[5]);
     str[VIR_MAC_STRING_BUFLEN-1] = '\0';
+    return str;
 }
 
 void virMacAddrGenerate(const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN],
