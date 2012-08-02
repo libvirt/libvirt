@@ -4790,6 +4790,28 @@ qemuBuildCommandLine(virConnectPtr conn,
             virCommandAddArg(cmd, "-no-acpi");
     }
 
+    if (def->pm.s3) {
+        if (!qemuCapsGet(qemuCaps, QEMU_CAPS_DISABLE_S3)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("setting ACPI S3 not supported"));
+            goto error;
+        }
+        virCommandAddArg(cmd, "-global");
+        virCommandAddArgFormat(cmd, "PIIX4_PM.disable_s3=%d",
+                               def->pm.s3 == VIR_DOMAIN_PM_STATE_DISABLED);
+    }
+
+    if (def->pm.s4) {
+        if (!qemuCapsGet(qemuCaps, QEMU_CAPS_DISABLE_S4)) {
+         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("setting ACPI S4 not supported"));
+            goto error;
+        }
+        virCommandAddArg(cmd, "-global");
+        virCommandAddArgFormat(cmd, "PIIX4_PM.disable_s4=%d",
+                               def->pm.s4 == VIR_DOMAIN_PM_STATE_DISABLED);
+    }
+
     if (!def->os.bootloader) {
         /*
          * We prefer using explicit bootindex=N parameters for predictable
@@ -8376,6 +8398,42 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
 
                 *monConfig = chr;
             }
+        } else if (STREQ(arg, "-global") &&
+                   STRPREFIX(progargv[i + 1], "PIIX4_PM.disable_s3=")) {
+            /* We want to parse only the known "-global" parameters,
+             * so the ones that we don't know are still added to the
+             * namespace */
+            WANT_VALUE();
+
+            val += strlen("PIIX4_PM.disable_s3=");
+            if (STREQ(val, "0"))
+                def->pm.s3 = VIR_DOMAIN_PM_STATE_ENABLED;
+            else if (STREQ(val, "1"))
+                def->pm.s3 = VIR_DOMAIN_PM_STATE_DISABLED;
+            else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("invalid value for disable_s3 parameter: "
+                                 "'%s'"), val);
+                goto error;
+            }
+
+        } else if (STREQ(arg, "-global") &&
+                   STRPREFIX(progargv[i + 1], "PIIX4_PM.disable_s4=")) {
+
+            WANT_VALUE();
+
+            val += strlen("PIIX4_PM.disable_s4=");
+            if (STREQ(val, "0"))
+                def->pm.s4 = VIR_DOMAIN_PM_STATE_ENABLED;
+            else if (STREQ(val, "1"))
+                def->pm.s4 = VIR_DOMAIN_PM_STATE_DISABLED;
+            else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("invalid value for disable_s4 parameter: "
+                                 "'%s'"), val);
+                goto error;
+            }
+
         } else if (STREQ(arg, "-S")) {
             /* ignore, always added by libvirt */
         } else {

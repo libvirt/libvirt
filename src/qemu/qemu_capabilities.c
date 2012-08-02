@@ -173,7 +173,9 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "lsi",
               "virtio-scsi-pci",
               "iolimits",
+              "disable-s3",
 
+              "disable-s4", /* 105 */
     );
 
 struct qemu_feature_flags {
@@ -1404,6 +1406,7 @@ qemuCapsExtractDeviceStr(const char *qemu,
                          "-device", "virtio-blk-pci,?",
                          "-device", "virtio-net-pci,?",
                          "-device", "scsi-disk,?",
+                         "-device", "PIIX4_PM,?",
                          NULL);
     /* qemu -help goes to stdout, but qemu -device ? goes to stderr.  */
     virCommandSetErrorBuffer(cmd, &output);
@@ -1510,6 +1513,10 @@ qemuCapsParseDeviceStr(const char *str, virBitmapPtr flags)
     if (strstr(str, ".logical_block_size") &&
         strstr(str, ".physical_block_size"))
         qemuCapsSet(flags, QEMU_CAPS_IOLIMITS);
+    if (strstr(str, "PIIX4_PM.disable_s3="))
+        qemuCapsSet(flags, QEMU_CAPS_DISABLE_S3);
+    if (strstr(str, "PIIX4_PM.disable_s4="))
+        qemuCapsSet(flags, QEMU_CAPS_DISABLE_S4);
 
     return 0;
 }

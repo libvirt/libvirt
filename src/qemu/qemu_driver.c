@@ -13722,6 +13722,23 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
         goto cleanup;
     }
 
+    if (vm->def->pm.s3 || vm->def->pm.s4) {
+        if (vm->def->pm.s3 == VIR_DOMAIN_PM_STATE_DISABLED &&
+            (target == VIR_NODE_SUSPEND_TARGET_MEM ||
+             target == VIR_NODE_SUSPEND_TARGET_HYBRID)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("S3 state is disabled for this domain"));
+            goto cleanup;
+        }
+
+        if (vm->def->pm.s4 == VIR_DOMAIN_PM_STATE_DISABLED &&
+            target == VIR_NODE_SUSPEND_TARGET_DISK) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("S4 state is disabled for this domain"));
+            goto cleanup;
+        }
+    }
+
     if (priv->agentError) {
         virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
                        _("QEMU guest agent is not "
