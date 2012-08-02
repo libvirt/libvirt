@@ -568,31 +568,16 @@ static int disconnected = 0; /* we may have been disconnected */
 /*
  * vshCatchDisconnect:
  *
- * We get here when a SIGPIPE is being raised, we can't do much in the
- * handler, just save the fact it was raised
- */
-static void vshCatchDisconnect(int sig, siginfo_t *siginfo,
-                               void *context ATTRIBUTE_UNUSED) {
-    if (sig == SIGPIPE ||
-        (SA_SIGINFO && siginfo->si_signo == SIGPIPE))
-        disconnected++;
-}
-
-/*
- * vshSetupSignals:
- *
- * Catch SIGPIPE signals which may arise when disconnection
- * from libvirtd occurs
+ * We get here when the connection was closed.  We can't do much in the
+ * handler, just save the fact it was raised.
  */
 static void
-vshSetupSignals(void) {
-    struct sigaction sig_action;
-
-    sig_action.sa_sigaction = vshCatchDisconnect;
-    sig_action.sa_flags = SA_SIGINFO;
-    sigemptyset(&sig_action.sa_mask);
-
-    sigaction(SIGPIPE, &sig_action, NULL);
+vshCatchDisconnect(virConnectPtr conn ATTRIBUTE_UNUSED,
+                   int reason,
+                   void *opaque ATTRIBUTE_UNUSED)
+{
+    if (reason != VIR_CONNECT_CLOSE_REASON_CLIENT)
+        disconnected++;
 }
 
 /*
@@ -614,10 +599,15 @@ vshReconnect(vshControl *ctl)
     ctl->conn = virConnectOpenAuth(ctl->name,
                                    virConnectAuthPtrDefault,
                                    ctl->readonly ? VIR_CONNECT_RO : 0);
-    if (!ctl->conn)
+    if (!ctl->conn) {
         vshError(ctl, "%s", _("Failed to reconnect to the hypervisor"));
-    else if (connected)
-        vshError(ctl, "%s", _("Reconnected to the hypervisor"));
+    } else {
+        if (virConnectRegisterCloseCallback(ctl->conn, vshCatchDisconnect,
+                                            NULL, NULL) < 0)
+            vshError(ctl, "%s", _("Unable to register disconnect callback"));
+        if (connected)
+            vshError(ctl, "%s", _("Reconnected to the hypervisor"));
+    }
     disconnected = 0;
     ctl->useGetInfo = false;
     ctl->useSnapshotOld = false;
@@ -2457,9 +2447,6 @@ vshInit(vshControl *ctl)
 
     /* set up the library error handler */
     virSetErrorFunc(NULL, virshErrorHandler);
-
-    /* set up the signals handlers to catch disconnections */
-    vshSetupSignals();
 
     if (virEventRegisterDefaultImpl() < 0)
         return false;
