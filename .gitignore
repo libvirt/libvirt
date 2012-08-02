@@ -165,6 +165,7 @@
 /tests/virdrivermoduletest
 /tests/virhashtest
 /tests/virkeyfiletest
+/tests/virlockspacetest
 /tests/virnet*test
 /tests/virshtest
 /tests/virtimetest

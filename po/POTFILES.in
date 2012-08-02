@@ -150,6 +150,7 @@ src/util/virdbus.c
 src/util/virfile.c
 src/util/virhash.c
 src/util/virkeyfile.c
+src/util/virlockspace.c
 src/util/virnetdev.c
 src/util/virnetdevbridge.c
 src/util/virnetdevmacvlan.c

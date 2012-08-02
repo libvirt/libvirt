@@ -112,7 +112,8 @@ typedef enum {
     VIR_FROM_PARALLELS = 48,    /* Error from Parallels */
     VIR_FROM_DEVICE = 49,       /* Error from Device */
 
-    VIR_FROM_SSH = 50,       /* Error from libssh2 connection transport */
+    VIR_FROM_SSH = 50,          /* Error from libssh2 connection transport */
+    VIR_FROM_LOCKSPACE = 51,    /* Error from lockspace */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_ERR_DOMAIN_LAST
@@ -285,6 +286,7 @@ typedef enum {
     VIR_ERR_SSH = 85,                   /* error in ssh transport driver */
     VIR_ERR_AGENT_UNRESPONSIVE = 86,    /* guest agent is unresponsive,
                                            not running or not usable */
+    VIR_ERR_RESOURCE_BUSY = 87,         /* resource is already in use */
 } virErrorNumber;
 
 /**

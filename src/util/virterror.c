@@ -115,7 +115,8 @@ VIR_ENUM_IMPL(virErrorDomain, VIR_ERR_DOMAIN_LAST,
               "Parallels Cloud Server",
               "Device Config",
 
-              "SSH transport layer" /* 50 */
+              "SSH transport layer", /* 50 */
+              "Lock Space",
     )
 
 
@@ -1204,6 +1205,12 @@ virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = _("Guest agent is not responding");
             else
                 errmsg = _("Guest agent is not responding: %s");
+            break;
+        case VIR_ERR_RESOURCE_BUSY:
+            if (info == NULL)
+                errmsg = _("resource busy");
+            else
+                errmsg = _("resource busy %s");
             break;
     }
     return errmsg;

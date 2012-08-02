@@ -1355,6 +1355,17 @@ virKeyFileHasGroup;
 virKeyFileGetValueString;
 
 
+# virlockspace.h
+virLockSpaceAcquireResource;
+virLockSpaceCreateResource;
+virLockSpaceDeleteResource;
+virLockSpaceFree;
+virLockSpaceGetDirectory;
+virLockSpaceNew;
+virLockSpaceReleaseResource;
+virLockSpaceReleaseResourcesForOwner;
+
+
 # virmacaddr.h
 virMacAddrCmp;
 virMacAddrCmpRaw;

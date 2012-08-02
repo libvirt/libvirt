@@ -1,0 +1,560 @@
+/*
+ * virlockspace.c: simple file based lockspaces
+ *
+ * Copyright (C) 2012 Red Hat, Inc.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library;  If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ */
+
+#include <config.h>
+
+#include "virlockspace.h"
+#include "logging.h"
+#include "memory.h"
+#include "virterror_internal.h"
+#include "util.h"
+#include "virfile.h"
+#include "virhash.h"
+#include "threads.h"
+
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+
+#define VIR_FROM_THIS VIR_FROM_LOCKSPACE
+
+#define VIR_LOCKSPACE_TABLE_SIZE 10
+
+typedef struct _virLockSpaceResource virLockSpaceResource;
+typedef virLockSpaceResource *virLockSpaceResourcePtr;
+
+struct _virLockSpaceResource {
+    char *name;
+    char *path;
+    int fd;
+    bool lockHeld;
+    unsigned int flags;
+    size_t nOwners;
+    pid_t *owners;
+};
+
+struct _virLockSpace {
+    char *dir;
+    virMutex lock;
+
+    virHashTablePtr resources;
+};
+
+
+static char *virLockSpaceGetResourcePath(virLockSpacePtr lockspace,
+                                         const char *resname)
+{
+    char *ret;
+    if (lockspace->dir) {
+        if (virAsprintf(&ret, "%s/%s", lockspace->dir, resname) < 0) {
+            virReportOOMError();
+            return NULL;
+        }
+    } else {
+        if (!(ret = strdup(resname))) {
+            virReportOOMError();
+            return NULL;
+        }
+    }
+
+    return ret;
+}
+
+
+static void virLockSpaceResourceFree(virLockSpaceResourcePtr res)
+{
+    if (!res)
+        return;
+
+    if (res->lockHeld &&
+        (res->flags & VIR_LOCK_SPACE_ACQUIRE_AUTOCREATE)) {
+        if (res->flags & VIR_LOCK_SPACE_ACQUIRE_SHARED) {
+            /* We must upgrade to an exclusive lock to ensure
+             * no one else still has it before trying to delete */
+            if (virFileLock(res->fd, false, 0, 1) < 0) {
+                VIR_DEBUG("Could not upgrade shared lease to exclusive, not deleting");
+            } else {
+                if (unlink(res->path) < 0 &&
+                    errno != ENOENT) {
+                    char ebuf[1024];
+                    VIR_WARN("Failed to unlink resource %s: %s",
+                             res->path, virStrerror(errno, ebuf, sizeof(ebuf)));
+                }
+            }
+        } else {
+            if (unlink(res->path) < 0 &&
+                errno != ENOENT) {
+                char ebuf[1024];
+                VIR_WARN("Failed to unlink resource %s: %s",
+                         res->path, virStrerror(errno, ebuf, sizeof(ebuf)));
+            }
+        }
+    }
+
+    VIR_FORCE_CLOSE(res->fd);
+    VIR_FREE(res->path);
+    VIR_FREE(res->name);
+    VIR_FREE(res);
+}
+
+
+static virLockSpaceResourcePtr
+virLockSpaceResourceNew(virLockSpacePtr lockspace,
+                        const char *resname,
+                        unsigned int flags,
+                        pid_t owner)
+{
+    virLockSpaceResourcePtr res;
+    bool shared = !!(flags & VIR_LOCK_SPACE_ACQUIRE_SHARED);
+
+    if (VIR_ALLOC(res) < 0)
+        return NULL;
+
+    res->fd = -1;
+    res->flags = flags;
+
+    if (!(res->name = strdup(resname)))
+        goto no_memory;
+
+    if (!(res->path = virLockSpaceGetResourcePath(lockspace, resname)))
+        goto no_memory;
+
+    if (flags & VIR_LOCK_SPACE_ACQUIRE_AUTOCREATE) {
+        while (1) {
+            struct stat a, b;
+            if ((res->fd = open(res->path, O_RDWR|O_CREAT, 0600)) < 0) {
+                virReportSystemError(errno,
+                                     _("Unable to open/create resource %s"),
+                                     res->path);
+                goto error;
+            }
+
+            if (virSetCloseExec(res->fd) < 0) {
+                virReportSystemError(errno,
+                                     _("Failed to set close-on-exec flag '%s'"),
+                                     res->path);
+                goto error;
+            }
+
+            if (fstat(res->fd, &b) < 0) {
+                virReportSystemError(errno,
+                                     _("Unable to check status of pid file '%s'"),
+                                     res->path);
+                goto error;
+            }
+
+            if (virFileLock(res->fd, shared, 0, 1) < 0) {
+                if (errno == EACCES || errno == EAGAIN) {
+                    virReportError(VIR_ERR_RESOURCE_BUSY,
+                                   _("Lockspace resource '%s' is locked"),
+                                   resname);
+                } else {
+                    virReportSystemError(errno,
+                                         _("Unable to acquire lock on '%s'"),
+                                         res->path);
+                }
+                goto error;
+            }
+
+            /* Now make sure the pidfile we locked is the same
+             * one that now exists on the filesystem
+             */
+            if (stat(res->path, &a) < 0) {
+                char ebuf[1024] ATTRIBUTE_UNUSED;
+                VIR_DEBUG("Resource '%s' disappeared: %s",
+                          res->path, virStrerror(errno, ebuf, sizeof(ebuf)));
+                VIR_FORCE_CLOSE(res->fd);
+                /* Someone else must be racing with us, so try again */
+                continue;
+            }
+
+            if (a.st_ino == b.st_ino)
+                break;
+
+            VIR_DEBUG("Resource '%s' was recreated", res->path);
+            VIR_FORCE_CLOSE(res->fd);
+            /* Someone else must be racing with us, so try again */
+        }
+    } else {
+        if ((res->fd = open(res->path, O_RDWR)) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to open resource %s"),
+                                 res->path);
+            goto error;
+        }
+
+        if (virSetCloseExec(res->fd) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to set close-on-exec flag '%s'"),
+                                 res->path);
+            goto error;
+        }
+
+        if (virFileLock(res->fd, shared, 0, 1) < 0) {
+            if (errno == EACCES || errno == EAGAIN) {
+                virReportError(VIR_ERR_RESOURCE_BUSY,
+                               _("Lockspace resource '%s' is locked"),
+                               resname);
+            } else {
+                virReportSystemError(errno,
+                                     _("Unable to acquire lock on '%s'"),
+                                     res->path);
+            }
+            goto error;
+        }
+    }
+    res->lockHeld = true;
+
+    if (VIR_EXPAND_N(res->owners, res->nOwners, 1) < 0)
+        goto no_memory;
+
+    res->owners[res->nOwners-1] = owner;
+
+    return res;
+
+no_memory:
+    virReportOOMError();
+error:
+    virLockSpaceResourceFree(res);
+    return NULL;
+}
+
+
+static void virLockSpaceResourceDataFree(void *opaque, const void *name ATTRIBUTE_UNUSED)
+{
+    virLockSpaceResourcePtr res = opaque;
+    virLockSpaceResourceFree(res);
+}
+
+
+virLockSpacePtr virLockSpaceNew(const char *directory)
+{
+    virLockSpacePtr lockspace;
+
+    VIR_DEBUG("directory=%s", NULLSTR(directory));
+
+    if (VIR_ALLOC(lockspace) < 0)
+        return NULL;
+
+    if (virMutexInit(&lockspace->lock) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to initialize lockspace mutex"));
+        VIR_FREE(lockspace);
+        return NULL;
+    }
+
+    if (directory &&
+        !(lockspace->dir = strdup(directory)))
+        goto no_memory;
+
+    if (!(lockspace->resources = virHashCreate(VIR_LOCKSPACE_TABLE_SIZE,
+                                               virLockSpaceResourceDataFree)))
+        goto error;
+
+    if (directory) {
+        if (virFileExists(directory)) {
+            if (!virFileIsDir(directory)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Lockspace location %s exists, but is not a directory"),
+                           directory);
+                goto error;
+            }
+        } else {
+            if (virFileMakePathWithMode(directory, 0700) < 0) {
+                virReportSystemError(errno,
+                                     _("Unable to create lockspace %s"),
+                                     directory);
+                goto error;
+            }
+        }
+    }
+
+    return lockspace;
+
+no_memory:
+    virReportOOMError();
+error:
+    virLockSpaceFree(lockspace);
+    return NULL;
+}
+
+
+void virLockSpaceFree(virLockSpacePtr lockspace)
+{
+    if (!lockspace)
+        return;
+
+    virHashFree(lockspace->resources);
+    VIR_FREE(lockspace->dir);
+    virMutexDestroy(&lockspace->lock);
+    VIR_FREE(lockspace);
+}
+
+
+const char *virLockSpaceGetDirectory(virLockSpacePtr lockspace)
+{
+    return lockspace->dir;
+}
+
+
+int virLockSpaceCreateResource(virLockSpacePtr lockspace,
+                               const char *resname)
+{
+    int ret = -1;
+    char *respath = NULL;
+    virLockSpaceResourcePtr res;
+
+    VIR_DEBUG("lockspace=%p resname=%s", lockspace, resname);
+
+    virMutexLock(&lockspace->lock);
+
+    if ((res = virHashLookup(lockspace->resources, resname))) {
+        virReportError(VIR_ERR_RESOURCE_BUSY,
+                       _("Lockspace resource '%s' is locked"),
+                       resname);
+        goto cleanup;
+    }
+
+    if (!(respath = virLockSpaceGetResourcePath(lockspace, resname)))
+        goto cleanup;
+
+    if (virFileTouch(respath, 0600) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    virMutexUnlock(&lockspace->lock);
+    VIR_FREE(respath);
+    return ret;
+}
+
+
+int virLockSpaceDeleteResource(virLockSpacePtr lockspace,
+                               const char *resname)
+{
+    int ret = -1;
+    char *respath = NULL;
+    virLockSpaceResourcePtr res;
+
+    VIR_DEBUG("lockspace=%p resname=%s", lockspace, resname);
+
+    virMutexLock(&lockspace->lock);
+
+    if ((res = virHashLookup(lockspace->resources, resname))) {
+        virReportError(VIR_ERR_RESOURCE_BUSY,
+                       _("Lockspace resource '%s' is locked"),
+                       resname);
+        goto cleanup;
+    }
+
+    if (!(respath = virLockSpaceGetResourcePath(lockspace, resname)))
+        goto cleanup;
+
+    if (unlink(respath) < 0 &&
+        errno != ENOENT) {
+        virReportSystemError(errno,
+                             _("Unable to delete lockspace resource %s"),
+                             respath);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    virMutexUnlock(&lockspace->lock);
+    VIR_FREE(respath);
+    return ret;
+}
+
+
+int virLockSpaceAcquireResource(virLockSpacePtr lockspace,
+                                const char *resname,
+                                pid_t owner,
+                                unsigned int flags)
+{
+    int ret = -1;
+    virLockSpaceResourcePtr res;
+
+    VIR_DEBUG("lockspace=%p resname=%s flags=%x owner=%lld",
+              lockspace, resname, flags, (unsigned long long)owner);
+
+    virCheckFlags(VIR_LOCK_SPACE_ACQUIRE_SHARED |
+                  VIR_LOCK_SPACE_ACQUIRE_AUTOCREATE, -1);
+
+    virMutexLock(&lockspace->lock);
+
+    if ((res = virHashLookup(lockspace->resources, resname))) {
+        if ((res->flags & VIR_LOCK_SPACE_ACQUIRE_SHARED) &&
+            (flags & VIR_LOCK_SPACE_ACQUIRE_SHARED)) {
+
+            if (VIR_EXPAND_N(res->owners, res->nOwners, 1) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+            res->owners[res->nOwners-1] = owner;
+
+            goto done;
+        }
+        virReportError(VIR_ERR_RESOURCE_BUSY,
+                       _("Lockspace resource '%s' is locked"),
+                       resname);
+        goto cleanup;
+    }
+
+    if (!(res = virLockSpaceResourceNew(lockspace, resname, flags, owner)))
+        goto cleanup;
+
+    if (virHashAddEntry(lockspace->resources, resname, res) < 0) {
+        virLockSpaceResourceFree(res);
+        goto cleanup;
+    }
+
+done:
+    ret = 0;
+
+cleanup:
+    virMutexUnlock(&lockspace->lock);
+    return ret;
+}
+
+
+int virLockSpaceReleaseResource(virLockSpacePtr lockspace,
+                                const char *resname,
+                                pid_t owner)
+{
+    int ret = -1;
+    virLockSpaceResourcePtr res;
+    size_t i;
+
+    VIR_DEBUG("lockspace=%p resname=%s owner=%lld",
+              lockspace, resname, (unsigned long long)owner);
+
+    virMutexLock(&lockspace->lock);
+
+    if (!(res = virHashLookup(lockspace->resources, resname))) {
+        virReportError(VIR_ERR_RESOURCE_BUSY,
+                       _("Lockspace resource '%s' is not locked"),
+                       resname);
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < res->nOwners ; i++) {
+        if (res->owners[i] == owner) {
+            break;
+        }
+    }
+
+    if (i == res->nOwners) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("owner %lld does not hold the resource lock"),
+                       (unsigned long long)owner);
+        goto cleanup;
+    }
+
+    if (i < (res->nOwners - 1))
+        memmove(res->owners + i,
+                res->owners + i + 1,
+                (res->nOwners - i - 1) * sizeof(res->owners[0]));
+    VIR_SHRINK_N(res->owners, res->nOwners, 1);
+
+    if ((res->nOwners == 0) &&
+        virHashRemoveEntry(lockspace->resources, resname) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    virMutexUnlock(&lockspace->lock);
+    return ret;
+}
+
+
+struct virLockSpaceRemoveData {
+    pid_t owner;
+    size_t count;
+};
+
+
+static int
+virLockSpaceRemoveResourcesForOwner(const void *payload,
+                                    const void *name ATTRIBUTE_UNUSED,
+                                    const void *opaque)
+{
+    virLockSpaceResourcePtr res = (virLockSpaceResourcePtr)payload;
+    struct virLockSpaceRemoveData *data = (struct virLockSpaceRemoveData *)opaque;
+    size_t i;
+
+    VIR_DEBUG("res %s owner %lld", res->name, (unsigned long long)data->owner);
+
+    for (i = 0 ; i < res->nOwners ; i++) {
+        if (res->owners[i] == data->owner) {
+            break;
+        }
+    }
+
+    if (i == res->nOwners)
+        return 0;
+
+    data->count++;
+
+    if (i < (res->nOwners - 1))
+        memmove(res->owners + i,
+                res->owners + i + 1,
+                (res->nOwners - i - 1) * sizeof(res->owners[0]));
+    VIR_SHRINK_N(res->owners, res->nOwners, 1);
+
+    if (res->nOwners) {
+        VIR_DEBUG("Other shared owners remain");
+        return 0;
+    }
+
+    VIR_DEBUG("No more owners, remove it");
+    return 1;
+}
+
+
+int virLockSpaceReleaseResourcesForOwner(virLockSpacePtr lockspace,
+                                         pid_t owner)
+{
+    int ret = 0;
+    struct virLockSpaceRemoveData data = {
+        owner, 0
+    };
+
+    VIR_DEBUG("lockspace=%p owner=%lld", lockspace, (unsigned long long)owner);
+
+    virMutexLock(&lockspace->lock);
+
+    if (virHashRemoveSet(lockspace->resources,
+                         virLockSpaceRemoveResourcesForOwner,
+                         &data) < 0)
+        goto error;
+
+    ret = data.count;
+
+    virMutexUnlock(&lockspace->lock);
+    return ret;
+
+error:
+    virMutexUnlock(&lockspace->lock);
+    return -1;
+}
