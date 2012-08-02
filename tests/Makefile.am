@@ -295,8 +295,7 @@ endif
 
 if WITH_QEMU
 
-qemu_LDADDS = ../src/libvirt_driver_qemu_impl.la \
-              ../src/libvirt_driver_security.la
+qemu_LDADDS = ../src/libvirt_driver_qemu_impl.la
 if WITH_NETWORK
 qemu_LDADDS += ../src/libvirt_driver_network_impl.la
 endif
@@ -521,7 +520,7 @@ virauthconfigtest_LDADD = $(LDADDS)
 
 seclabeltest_SOURCES = \
 	seclabeltest.c
-seclabeltest_LDADD = $(LDADDS) ../src/libvirt_driver_security.la
+seclabeltest_LDADD = $(LDADDS)
 
 virbuftest_SOURCES = \
 	virbuftest.c testutils.h testutils.c

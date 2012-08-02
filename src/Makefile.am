@@ -1161,8 +1161,7 @@ endif
 
 libvirt_driver_security_la_SOURCES = $(SECURITY_DRIVER_SOURCES)
 noinst_LTLIBRARIES += libvirt_driver_security.la
-# Stateful, so linked to daemon instead
-#libvirt_la_BUILT_LIBADD += libvirt_driver_security.la
+libvirt_la_BUILT_LIBADD += libvirt_driver_security.la
 libvirt_driver_security_la_CFLAGS = \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
 libvirt_driver_security_la_LDFLAGS = $(AM_LDFLAGS)
