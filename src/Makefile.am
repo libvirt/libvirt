@@ -1159,22 +1159,22 @@ libvirt_driver_nwfilter_la_SOURCES = $(NWFILTER_DRIVER_SOURCES)
 endif
 
 
-libvirt_driver_security_la_SOURCES = $(SECURITY_DRIVER_SOURCES)
-noinst_LTLIBRARIES += libvirt_driver_security.la
-libvirt_la_BUILT_LIBADD += libvirt_driver_security.la
-libvirt_driver_security_la_CFLAGS = \
+libvirt_security_manager_la_SOURCES = $(SECURITY_DRIVER_SOURCES)
+noinst_LTLIBRARIES += libvirt_security_manager.la
+libvirt_la_BUILT_LIBADD += libvirt_security_manager.la
+libvirt_security_manager_la_CFLAGS = \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
-libvirt_driver_security_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_security_la_LIBADD =
+libvirt_security_manager_la_LDFLAGS = $(AM_LDFLAGS)
+libvirt_security_manager_la_LIBADD =
 if WITH_SECDRIVER_SELINUX
-libvirt_driver_security_la_SOURCES += $(SECURITY_DRIVER_SELINUX_SOURCES)
-libvirt_driver_security_la_CFLAGS += $(SELINUX_CFLAGS)
-libvirt_driver_security_la_LIBADD += $(SELINUX_LIBS)
+libvirt_security_manager_la_SOURCES += $(SECURITY_DRIVER_SELINUX_SOURCES)
+libvirt_security_manager_la_CFLAGS += $(SELINUX_CFLAGS)
+libvirt_security_manager_la_LIBADD += $(SELINUX_LIBS)
 endif
 if WITH_SECDRIVER_APPARMOR
-libvirt_driver_security_la_SOURCES += $(SECURITY_DRIVER_APPARMOR_SOURCES)
-libvirt_driver_security_la_CFLAGS += $(APPARMOR_CFLAGS)
-libvirt_driver_security_la_LIBADD += $(APPARMOR_LIBS)
+libvirt_security_manager_la_SOURCES += $(SECURITY_DRIVER_APPARMOR_SOURCES)
+libvirt_security_manager_la_CFLAGS += $(APPARMOR_CFLAGS)
+libvirt_security_manager_la_LIBADD += $(APPARMOR_LIBS)
 endif
 
 # Add all conditional sources just in case...
@@ -1611,7 +1611,7 @@ libvirt_lxc_LDADD =			\
 		$(NUMACTL_LIBS) \
 		libvirt-net-rpc-server.la \
 		libvirt-net-rpc.la \
-		libvirt_driver_security.la \
+		libvirt_security_manager.la \
 		libvirt_conf.la \
 		libvirt_util.la \
 		../gnulib/lib/libgnu.la
