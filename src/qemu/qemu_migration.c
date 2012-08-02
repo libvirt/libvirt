@@ -2459,7 +2459,7 @@ finish:
      * If cancelled, then src VM will be restarted, else
      * it will be killed
      */
-    VIR_DEBUG("Confirm3 %p ret=%d vm=%p", sconn, ret, vm);
+    VIR_DEBUG("Confirm3 %p cancelled=%d vm=%p", sconn, cancelled, vm);
     VIR_FREE(cookiein);
     cookiein = cookieout;
     cookieinlen = cookieoutlen;
