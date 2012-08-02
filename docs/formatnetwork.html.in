@@ -147,10 +147,17 @@
             This network describes either 1) an existing host bridge
             that was configured outside of libvirt (if
             a <code>&lt;bridge name='xyz'/&gt;</code> element has been
-            specified), or 2) an interface or group of interfaces to
-            be used for a "direct" connection via macvtap using
-            macvtap's "bridge" mode (if the forward element has one or
-            more <code>&lt;interface&gt;</code> subelements)
+            specified, <span class="since">Since 0.9.4</span>), 2) an
+            existing Open vSwitch bridge that was configured outside of
+            libvirt (if both a <code>&lt;bridge name='xyz'/&gt;</code>
+            element <b>and</b> a <code>&lt;virtualport
+            type='openvswitch'/&gt;</code> have been
+            specified <span class="since">Since 0.10.0</span>) 3) an
+            interface or group of interfaces to be used for a "direct"
+            connection via macvtap using macvtap's "bridge" mode (if
+            the forward element has one or
+            more <code>&lt;interface&gt;</code>
+            subelements, <span class="since">Since 0.9.4</span>)
             (see <a href="formatdomain.html#elementsNICSDirect">Direct
             attachment to physical interface</a> for descriptions of
             the various macvtap modes). libvirt doesn't attempt to
@@ -337,9 +344,15 @@
       default portgroup will be used. If no portgroup is given in the
       interface definition, and there is no default portgroup, then
       none will be used. Any <code>&lt;bandwidth&gt;</code>
-      or <code>&lt;virtualport&gt;</code> specified directly in the
-      domain XML will take precedence over any setting in the chosen
-      portgroup.
+
+      specified directly in the domain XML will take precedence over
+      any setting in the chosen portgroup. if
+      a <code>&lt;virtualport&gt;</code> is specified in the portgroup
+      (and/or directly in the network definition), the multiple
+      virtualports will be merged, and any parameter that is specified
+      in more than one virtualport, and is not identical, will be
+      considered an error, and will prevent the interface from
+      starting.
     </p>
 
     <h3><a name="elementsAddress">Addressing</a></h3>

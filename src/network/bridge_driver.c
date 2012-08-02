@@ -61,6 +61,7 @@
 #include "virnetdev.h"
 #include "virnetdevbridge.h"
 #include "virnetdevtap.h"
+#include "virnetdevvportprofile.h"
 
 #define NETWORK_PID_DIR LOCALSTATEDIR "/run/libvirt/network"
 #define NETWORK_STATE_DIR LOCALSTATEDIR "/lib/libvirt/network"
@@ -2746,6 +2747,8 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
     virNetworkObjPtr network;
     virNetworkDefPtr netdef;
     virPortGroupDefPtr portgroup;
+    virNetDevVPortProfilePtr virtport = NULL;
+    virNetworkForwardIfDefPtr dev = NULL;
     unsigned int num_virt_fns = 0;
     char **vfname = NULL;
     int ii;
@@ -2820,11 +2823,33 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
             goto cleanup;
         }
 
+        /* merge virtualports from interface, network, and portgroup to
+         * arrive at actual virtualport to use
+         */
+        if (virNetDevVPortProfileMerge3(&iface->data.network.actual->virtPortProfile,
+                                        iface->virtPortProfile,
+                                        netdef->virtPortProfile,
+                                        portgroup
+                                        ? portgroup->virtPortProfile : NULL) < 0) {
+            goto cleanup;
+        }
+        virtport = iface->data.network.actual->virtPortProfile;
+        if (virtport) {
+            /* only type='openvswitch' is allowed for bridges */
+            if (virtport->virtPortType != VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("<virtualport type='%s'> not supported for network "
+                                 "'%s' which uses a bridge device"),
+                               virNetDevVPortTypeToString(virtport->virtPortType),
+                               netdef->name);
+                goto cleanup;
+            }
+        }
+
     } else if ((netdef->forwardType == VIR_NETWORK_FORWARD_BRIDGE) ||
                (netdef->forwardType == VIR_NETWORK_FORWARD_PRIVATE) ||
                (netdef->forwardType == VIR_NETWORK_FORWARD_VEPA) ||
                (netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH)) {
-        virNetDevVPortProfilePtr virtport = NULL;
 
         /* <forward type='bridge|private|vepa|passthrough'> are all
          * VIR_DOMAIN_NET_TYPE_DIRECT.
@@ -2853,24 +2878,28 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
             break;
         }
 
-        /* Find the most specific virtportprofile and copy it */
-        if (iface->virtPortProfile) {
-            virtport = iface->virtPortProfile;
-        } else {
-            if (portgroup)
-                virtport = portgroup->virtPortProfile;
-            else
-                virtport = netdef->virtPortProfile;
+        /* merge virtualports from interface, network, and portgroup to
+         * arrive at actual virtualport to use
+         */
+        if (virNetDevVPortProfileMerge3(&iface->data.network.actual->virtPortProfile,
+                                        iface->virtPortProfile,
+                                        netdef->virtPortProfile,
+                                        portgroup
+                                        ? portgroup->virtPortProfile : NULL) < 0) {
+            goto cleanup;
         }
+        virtport = iface->data.network.actual->virtPortProfile;
         if (virtport) {
-            if (VIR_ALLOC(iface->data.network.actual->virtPortProfile) < 0) {
-                virReportOOMError();
+            /* make sure type is supported for macvtap connections */
+            if (virtport->virtPortType != VIR_NETDEV_VPORT_PROFILE_8021QBG &&
+                virtport->virtPortType != VIR_NETDEV_VPORT_PROFILE_8021QBH) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("<virtualport type='%s'> not supported for network "
+                                 "'%s' which uses a macvtap device"),
+                               virNetDevVPortTypeToString(virtport->virtPortType),
+                               netdef->name);
                 goto cleanup;
             }
-            /* There are no pointers in a virtualPortProfile, so a shallow copy
-             * is sufficient
-             */
-            *iface->data.network.actual->virtPortProfile = *virtport;
         }
 
         /* If there is only a single device, just return it (caller will detect
@@ -2883,8 +2912,6 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                            netdef->name);
             goto cleanup;
         } else {
-            virNetworkForwardIfDefPtr dev = NULL;
-
             /* pick an interface from the pool */
 
             /* PASSTHROUGH mode, and PRIVATE Mode + 802.1Qbh both require
@@ -2967,13 +2994,18 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                 virReportOOMError();
                 goto cleanup;
             }
-            /* we are now assured of success, so mark the allocation */
-            dev->usageCount++;
-            VIR_DEBUG("Using physical device %s, usageCount %d",
-                      dev->dev, dev->usageCount);
         }
     }
 
+    if (virNetDevVPortProfileCheckComplete(virtport, true) < 0)
+        goto cleanup;
+
+    if (dev) {
+        /* we are now assured of success, so mark the allocation */
+        dev->usageCount++;
+        VIR_DEBUG("Using physical device %s, usageCount %d",
+                  dev->dev, dev->usageCount);
+    }
     ret = 0;
 cleanup:
     for (ii = 0; ii < num_virt_fns; ii++)
