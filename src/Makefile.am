@@ -148,6 +148,13 @@ LOCK_DRIVER_SANLOCK_SOURCES = \
 LOCK_DRIVER_SANLOCK_HELPER_SOURCES = \
 		locking/sanlock_helper.c
 
+LOCK_DAEMON_SOURCES = \
+		locking/lock_daemon.h \
+		locking/lock_daemon.c \
+		locking/lock_daemon_config.h \
+		locking/lock_daemon_config.c \
+		$(NULL)
+
 NETDEV_CONF_SOURCES =						\
 		conf/netdev_bandwidth_conf.h conf/netdev_bandwidth_conf.c \
 		conf/netdev_vport_profile_conf.h conf/netdev_vport_profile_conf.c \
@@ -1510,6 +1517,76 @@ libvirt_qemu_la_CFLAGS = $(AM_CFLAGS)
 libvirt_qemu_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
 EXTRA_DIST += $(LIBVIRT_QEMU_SYMBOL_FILE)
 
+if WITH_LIBVIRTD
+sbin_PROGRAMS = virtlockd
+
+virtlockd_SOURCES = $(LOCK_DAEMON_SOURCES)
+virtlockd_CFLAGS = \
+		$(AM_CFLAGS) \
+		$(NULL)
+virtlockd_LDFLAGS = \
+		$(AM_LDFLAGS) \
+		$(CYGWIN_EXTRA_LDFLAGS) \
+		$(MINGW_EXTRA_LDFLAGS) \
+		$(NULL)
+virtlockd_LDADD = \
+		libvirt-net-rpc-server.la \
+		libvirt-net-rpc.la \
+		libvirt_util.la \
+		../gnulib/lib/libgnu.la \
+		$(CYGWIN_EXTRA_LIBADD) \
+		$(NULL)
+if WITH_DTRACE_PROBES
+virtlockd_LDADD += libvirt_probes.lo
+endif
+
+else
+EXTRA_DIST += $(LOCK_DAEMON_SOURCES)
+endif
+
+EXTRA_DIST += locking/virtlockd.sysconf
+
+install-sysconfig:
+	mkdir -p $(DESTDIR)$(sysconfdir)/sysconfig
+	$(INSTALL_DATA) $(srcdir)/locking/virtlockd.sysconf \
+	  $(DESTDIR)$(sysconfdir)/sysconfig/virtlockd
+
+uninstall-sysconfig:
+	rm -f $(DESTDIR)$(sysconfdir)/sysconfig/virtlockd
+
+EXTRA_DIST += locking/virtlockd.init.in
+
+if WITH_LIBVIRTD
+if LIBVIRT_INIT_SCRIPT_RED_HAT
+install-init:: virtlockd.init install-sysconfig
+	mkdir -p $(DESTDIR)$(sysconfdir)/rc.d/init.d
+	$(INSTALL_SCRIPT) virtlockd.init \
+	  $(DESTDIR)$(sysconfdir)/rc.d/init.d/virtlockd
+
+uninstall-init:: uninstall-sysconfig
+	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
+
+BUILT_SOURCES += virtlockd.init
+else
+install-init::
+uninstall-init::
+endif
+else
+install-init::
+uninstall-init::
+endif
+
+virtlockd.init: locking/virtlockd.init.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed					\
+	    -e "s!::localstatedir::!$(localstatedir)!g"	\
+	    -e "s!::sbindir::!$(sbindir)!g"		\
+	    -e "s!::sysconfdir::!$(sysconfdir)!g"	\
+	    < $< > $@-t &&				\
+	    chmod a+x $@-t &&				\
+	    mv $@-t $@
+
+
+
 if HAVE_SANLOCK
 lockdriverdir = $(libdir)/libvirt/lock-driver
 lockdriver_LTLIBRARIES = sanlock.la
@@ -1747,7 +1824,11 @@ endif
 endif
 EXTRA_DIST += $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
 
-install-data-local:
+install-data-local: install-init
+if WITH_LIBVIRTD
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/lockd"
+endif
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/cache/libvirt"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/images"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/filesystems"
@@ -1796,7 +1877,11 @@ if WITH_NETWORK
 	    $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
 endif
 
-uninstall-local::
+uninstall-local:: uninstall-init
+if WITH_LIBVIRTD
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/lockd" ||:
+endif
 	rmdir "$(DESTDIR)$(localstatedir)/cache/libvirt" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/images" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/filesystems" ||:

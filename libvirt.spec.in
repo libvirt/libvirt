@@ -1662,9 +1662,11 @@ fi
 %else
 %{_sysconfdir}/rc.d/init.d/libvirtd
 %{_sysconfdir}/rc.d/init.d/libvirt-guests
+%{_sysconfdir}/rc.d/init.d/virtlockd
 %endif
 %doc daemon/libvirtd.upstart
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
+%config(noreplace) %{_sysconfdir}/sysconfig/virtlockd
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
 %if 0%{?fedora} >= 14 || 0%{?rhel} >= 6
 %config(noreplace) %{_sysconfdir}/sysctl.d/libvirtd
@@ -1731,6 +1733,10 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/dnsmasq/
 %endif
 
+%if %{with_libvirtd}
+%dir %attr(0755, root, root) %{_libdir}/libvirt/lock-driver
+%endif
+
 %if %{with_qemu}
 %{_datadir}/augeas/lenses/libvirtd_qemu.aug
 %{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
@@ -1764,6 +1770,7 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 
 %attr(0755, root, root) %{_libexecdir}/libvirt_iohelper
 %attr(0755, root, root) %{_sbindir}/libvirtd
+%attr(0755, root, root) %{_sbindir}/virtlockd
 
 %{_mandir}/man8/libvirtd.8*
 

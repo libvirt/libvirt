@@ -123,6 +123,8 @@
 /src/test_libvirt*.aug
 /src/util/virkeymaps.h
 /src/virt-aa-helper
+/src/virtlockd
+/src/virtlockd.init
 /tests/*.log
 /tests/*.pid
 /tests/*xml2*test
