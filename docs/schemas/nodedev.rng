@@ -15,6 +15,12 @@
         <element name="parent"><text/></element>
       </optional>
 
+      <optional>
+        <element name="driver">
+          <element name="name"><text/></element>
+        </element>
+      </optional>
+
       <zeroOrMore>
         <ref name="capability"/>
       </zeroOrMore>
@@ -114,6 +120,28 @@
         <empty/>
       </choice>
     </element>
+
+    <optional>
+      <element name='capability'>
+        <attribute name='type'>
+          <value>phys_function</value>
+        </attribute>
+        <optional>
+          <ref name='address'/>
+        </optional>
+      </element>
+    </optional>
+
+    <optional>
+      <element name='capability'>
+        <attribute name='type'>
+          <value>virt_functions</value>
+        </attribute>
+        <optional>
+          <ref name='address'/>
+        </optional>
+      </element>
+    </optional>
 
   </define>
 
@@ -366,6 +394,15 @@
   <define name='capstoragefixed'>
     <element name='size'>
       <ref name='unsignedLong'/>
+    </element>
+  </define>
+
+  <define name='address'>
+    <element name='address'>
+      <attribute name='domain'><ref name='hexuint'/></attribute>
+      <attribute name='bus'><ref name='hexuint'/></attribute>
+      <attribute name='slot'><ref name='hexuint'/></attribute>
+      <attribute name='function'><ref name='hexuint'/></attribute>
     </element>
   </define>
 

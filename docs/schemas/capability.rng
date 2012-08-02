@@ -296,43 +296,45 @@
 
   <define name='features'>
     <element name='features'>
-      <optional>
-        <element name='pae'>
-          <empty/>
-        </element>
-      </optional>
-      <optional>
-        <element name='nonpae'>
-          <empty/>
-        </element>
-      </optional>
-      <optional>
-        <element name='ia64_be'>
-          <empty/>
-        </element>
-      </optional>
-      <optional>
-        <element name='acpi'>
-          <ref name='featuretoggle'/>
-          <empty/>
-        </element>
-      </optional>
-      <optional>
-        <element name='apic'>
-          <ref name='featuretoggle'/>
-          <empty/>
-        </element>
-      </optional>
-      <optional>
-        <element name='cpuselection'>
-          <empty/>
-        </element>
-      </optional>
-      <optional>
-        <element name='deviceboot'>
-          <empty/>
-        </element>
-      </optional>
+      <interleave>
+        <optional>
+          <element name='pae'>
+            <empty/>
+          </element>
+        </optional>
+        <optional>
+          <element name='nonpae'>
+            <empty/>
+          </element>
+        </optional>
+        <optional>
+          <element name='ia64_be'>
+            <empty/>
+          </element>
+        </optional>
+        <optional>
+          <element name='acpi'>
+            <ref name='featuretoggle'/>
+            <empty/>
+          </element>
+        </optional>
+        <optional>
+          <element name='apic'>
+            <ref name='featuretoggle'/>
+            <empty/>
+          </element>
+        </optional>
+        <optional>
+          <element name='cpuselection'>
+            <empty/>
+          </element>
+        </optional>
+        <optional>
+          <element name='deviceboot'>
+            <empty/>
+          </element>
+        </optional>
+      </interleave>
     </element>
   </define>
 

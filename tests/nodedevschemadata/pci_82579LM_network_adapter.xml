@@ -1,0 +1,17 @@
+<device>
+  <name>pci_0000_00_19_0</name>
+  <parent>computer</parent>
+  <driver>
+    <name>e1000e</name>
+  </driver>
+  <capability type='pci'>
+    <domain>0</domain>
+    <bus>0</bus>
+    <slot>25</slot>
+    <function>0</function>
+    <product id='0x1502'>82579LM Gigabit Network Connection</product>
+    <vendor id='0x8086'>Intel Corporation</vendor>
+    <capability type='virt_functions'>
+    </capability>
+  </capability>
+</device>

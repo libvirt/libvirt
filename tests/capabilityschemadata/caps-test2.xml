@@ -1,0 +1,122 @@
+<capabilities>
+
+  <host>
+    <cpu>
+      <arch>x86_64</arch>
+      <model>SandyBridge</model>
+      <vendor>Intel</vendor>
+      <topology sockets='1' cores='2' threads='2'/>
+      <feature name='osxsave'/>
+      <feature name='pdcm'/>
+      <feature name='xtpr'/>
+      <feature name='tm2'/>
+      <feature name='est'/>
+      <feature name='smx'/>
+      <feature name='vmx'/>
+      <feature name='ds_cpl'/>
+      <feature name='monitor'/>
+      <feature name='dtes64'/>
+      <feature name='pbe'/>
+      <feature name='tm'/>
+      <feature name='ht'/>
+      <feature name='ss'/>
+      <feature name='acpi'/>
+      <feature name='ds'/>
+      <feature name='vme'/>
+    </cpu>
+    <power_management>
+      <suspend_mem/>
+    </power_management>
+    <migration_features>
+      <live/>
+      <uri_transports>
+        <uri_transport>tcp</uri_transport>
+      </uri_transports>
+    </migration_features>
+  </host>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='i686'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-x86_64</emulator>
+      <machine>pc-1.2</machine>
+      <machine canonical='pc-1.2'>pc</machine>
+      <machine>pc-1.1</machine>
+      <machine>pc-1.0</machine>
+      <machine>pc-0.15</machine>
+      <machine>pc-0.14</machine>
+      <machine>pc-0.13</machine>
+      <machine>pc-0.12</machine>
+      <machine>pc-0.11</machine>
+      <machine>pc-0.10</machine>
+      <machine>isapc</machine>
+      <domain type='qemu'>
+      </domain>
+      <domain type='kvm'>
+        <emulator>/usr/libexec/qemu-kvm</emulator>
+        <machine>pc-1.2</machine>
+        <machine canonical='pc-1.2'>pc</machine>
+        <machine>pc-1.1</machine>
+        <machine>pc-1.0</machine>
+        <machine>pc-0.15</machine>
+        <machine>pc-0.14</machine>
+        <machine>pc-0.13</machine>
+        <machine>pc-0.12</machine>
+        <machine>pc-0.11</machine>
+        <machine>pc-0.10</machine>
+        <machine>isapc</machine>
+      </domain>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <pae/>
+      <nonpae/>
+      <acpi default='on' toggle='yes'/>
+      <apic default='on' toggle='no'/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='x86_64'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-x86_64</emulator>
+      <machine>pc-1.2</machine>
+      <machine canonical='pc-1.2'>pc</machine>
+      <machine>pc-1.1</machine>
+      <machine>pc-1.0</machine>
+      <machine>pc-0.15</machine>
+      <machine>pc-0.14</machine>
+      <machine>pc-0.13</machine>
+      <machine>pc-0.12</machine>
+      <machine>pc-0.11</machine>
+      <machine>pc-0.10</machine>
+      <machine>isapc</machine>
+      <domain type='qemu'>
+      </domain>
+      <domain type='kvm'>
+        <emulator>/usr/libexec/qemu-kvm</emulator>
+        <machine>pc-1.2</machine>
+        <machine canonical='pc-1.2'>pc</machine>
+        <machine>pc-1.1</machine>
+        <machine>pc-1.0</machine>
+        <machine>pc-0.15</machine>
+        <machine>pc-0.14</machine>
+        <machine>pc-0.13</machine>
+        <machine>pc-0.12</machine>
+        <machine>pc-0.11</machine>
+        <machine>pc-0.10</machine>
+        <machine>isapc</machine>
+      </domain>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <acpi default='on' toggle='yes'/>
+      <apic default='on' toggle='no'/>
+    </features>
+  </guest>
+
+</capabilities>

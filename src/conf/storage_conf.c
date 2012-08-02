@@ -1036,10 +1036,10 @@ virStoragePoolDefFormat(virStoragePoolDefPtr def) {
         virBufferAddLit(&buf,"    <permissions>\n");
         virBufferAsprintf(&buf,"      <mode>0%o</mode>\n",
                           def->target.perms.mode);
-        virBufferAsprintf(&buf,"      <owner>%u</owner>\n",
-                          (unsigned int) def->target.perms.uid);
-        virBufferAsprintf(&buf,"      <group>%u</group>\n",
-                          (unsigned int) def->target.perms.gid);
+        virBufferAsprintf(&buf,"      <owner>%d</owner>\n",
+                          (int) def->target.perms.uid);
+        virBufferAsprintf(&buf,"      <group>%d</group>\n",
+                          (int) def->target.perms.gid);
 
         if (def->target.perms.label)
             virBufferAsprintf(&buf,"      <label>%s</label>\n",
