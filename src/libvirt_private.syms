@@ -1210,6 +1210,7 @@ virGetHostUUID;
 virSetHostUUIDStr;
 virUUIDFormat;
 virUUIDGenerate;
+virUUIDIsValid;
 virUUIDParse;
 
 
