@@ -52,7 +52,6 @@
 #include "virfile.h"
 #include "virtypedparam.h"
 #include "virrandom.h"
-#include "virdomainlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_TEST
 
@@ -5526,7 +5525,7 @@ static int testListAllDomains(virConnectPtr conn,
     testConnPtr privconn = conn->privateData;
     int ret;
 
-    virCheckFlags(VIR_CONNECT_LIST_FILTERS_ALL, -1);
+    virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
 
     testDriverLock(privconn);
     ret = virDomainList(conn, privconn->domains.objs, domains, flags);

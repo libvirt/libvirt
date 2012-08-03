@@ -76,7 +76,6 @@
 #include "util/bitmap.h"
 #include "conf/domain_conf.h"
 #include "virtypedparam.h"
-#include "conf/virdomainlist.h"
 
 static char *progname;
 

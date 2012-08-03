@@ -124,16 +124,17 @@ EXTRA_DIST += util/threads-pthread.c util/threads-win32.c
 
 # Internal generic driver infrastructure
 NODE_INFO_SOURCES = nodeinfo.h nodeinfo.c
-DRIVER_SOURCES =						\
-		driver.c driver.h				\
-		internal.h					\
-		datatypes.c datatypes.h				\
-		fdstream.c fdstream.h                 \
-		$(NODE_INFO_SOURCES)				\
-		libvirt.c libvirt_internal.h			\
-		locking/lock_manager.c locking/lock_manager.h   \
-		locking/lock_driver.h 				\
-		locking/lock_driver_nop.h locking/lock_driver_nop.c \
+DATATYPES_SOURCES = datatypes.h datatypes.c
+DRIVER_SOURCES =							\
+		driver.c driver.h					\
+		internal.h						\
+		$(DATATYPES_SOURCES)					\
+		fdstream.c fdstream.h					\
+		$(NODE_INFO_SOURCES)					\
+		libvirt.c libvirt_internal.h				\
+		locking/lock_manager.c locking/lock_manager.h		\
+		locking/lock_driver.h					\
+		locking/lock_driver_nop.h locking/lock_driver_nop.c	\
 		locking/domain_lock.h locking/domain_lock.c
 
 LOCK_DRIVER_SANLOCK_SOURCES = \
@@ -196,10 +197,6 @@ CPU_CONF_SOURCES =						\
 CONSOLE_CONF_SOURCES =						\
 		conf/virconsole.c conf/virconsole.h
 
-# Domain listing helpers
-DOMAIN_LIST_SOURCES =						\
-		conf/virdomainlist.c conf/virdomainlist.h
-
 CONF_SOURCES =							\
 		$(NETDEV_CONF_SOURCES)				\
 		$(DOMAIN_CONF_SOURCES)				\
@@ -212,8 +209,7 @@ CONF_SOURCES =							\
 		$(INTERFACE_CONF_SOURCES)			\
 		$(SECRET_CONF_SOURCES)				\
 		$(CPU_CONF_SOURCES)				\
-		$(CONSOLE_CONF_SOURCES)				\
-		$(DOMAIN_LIST_SOURCES)
+		$(CONSOLE_CONF_SOURCES)
 
 # The remote RPC driver, covering domains, storage, networks, etc
 REMOTE_DRIVER_GENERATED = \
@@ -438,29 +434,29 @@ VBOX_DRIVER_EXTRA_DIST =					\
 		vbox/vbox_MSCOMGlue.c vbox/vbox_MSCOMGlue.h	\
 		vbox/vbox_XPCOMCGlue.c vbox/vbox_XPCOMCGlue.h
 
-QEMU_DRIVER_SOURCES =						\
-		qemu/qemu_agent.c qemu/qemu_agent.h             \
-		qemu/qemu_capabilities.c qemu/qemu_capabilities.h\
-		qemu/qemu_command.c qemu/qemu_command.h		\
-		qemu/qemu_domain.c qemu/qemu_domain.h		\
-		qemu/qemu_cgroup.c qemu/qemu_cgroup.h		\
-		qemu/qemu_hostdev.c qemu/qemu_hostdev.h		\
-		qemu/qemu_hotplug.c qemu/qemu_hotplug.h		\
-		qemu/qemu_conf.c qemu/qemu_conf.h		\
-		qemu/qemu_process.c qemu/qemu_process.h		\
-		qemu/qemu_migration.c qemu/qemu_migration.h	\
-		qemu/qemu_monitor.c qemu/qemu_monitor.h		\
-		qemu/qemu_monitor_text.c			\
-		qemu/qemu_monitor_text.h			\
-		qemu/qemu_monitor_json.c			\
-		qemu/qemu_monitor_json.h			\
-		qemu/qemu_driver.c qemu/qemu_driver.h		\
-		qemu/qemu_bridge_filter.c			\
+QEMU_DRIVER_SOURCES =							\
+		qemu/qemu_agent.c qemu/qemu_agent.h			\
+		qemu/qemu_capabilities.c qemu/qemu_capabilities.h	\
+		qemu/qemu_command.c qemu/qemu_command.h			\
+		qemu/qemu_domain.c qemu/qemu_domain.h			\
+		qemu/qemu_cgroup.c qemu/qemu_cgroup.h			\
+		qemu/qemu_hostdev.c qemu/qemu_hostdev.h			\
+		qemu/qemu_hotplug.c qemu/qemu_hotplug.h			\
+		qemu/qemu_conf.c qemu/qemu_conf.h			\
+		qemu/qemu_process.c qemu/qemu_process.h			\
+		qemu/qemu_migration.c qemu/qemu_migration.h		\
+		qemu/qemu_monitor.c qemu/qemu_monitor.h			\
+		qemu/qemu_monitor_text.c				\
+		qemu/qemu_monitor_text.h				\
+		qemu/qemu_monitor_json.c				\
+		qemu/qemu_monitor_json.h				\
+		qemu/qemu_driver.c qemu/qemu_driver.h			\
+		qemu/qemu_bridge_filter.c				\
 		qemu/qemu_bridge_filter.h
 
-XENAPI_DRIVER_SOURCES =								\
+XENAPI_DRIVER_SOURCES =						\
 		xenapi/xenapi_driver.c xenapi/xenapi_driver.h	\
-		xenapi/xenapi_driver_private.h					\
+		xenapi/xenapi_driver_private.h			\
 		xenapi/xenapi_utils.c xenapi/xenapi_utils.h
 
 LIBXL_DRIVER_SOURCES =						\
@@ -471,18 +467,18 @@ UML_DRIVER_SOURCES =						\
 		uml/uml_conf.c uml/uml_conf.h			\
 		uml/uml_driver.c uml/uml_driver.h
 
-ESX_DRIVER_SOURCES =						\
-		esx/esx_private.h						\
-		esx/esx_driver.c esx/esx_driver.h		\
-		esx/esx_interface_driver.c esx/esx_interface_driver.h		\
-		esx/esx_network_driver.c esx/esx_network_driver.h		\
-		esx/esx_storage_driver.c esx/esx_storage_driver.h		\
-		esx/esx_device_monitor.c esx/esx_device_monitor.h		\
+ESX_DRIVER_SOURCES =							\
+		esx/esx_private.h					\
+		esx/esx_driver.c esx/esx_driver.h			\
+		esx/esx_interface_driver.c esx/esx_interface_driver.h	\
+		esx/esx_network_driver.c esx/esx_network_driver.h	\
+		esx/esx_storage_driver.c esx/esx_storage_driver.h	\
+		esx/esx_device_monitor.c esx/esx_device_monitor.h	\
 		esx/esx_secret_driver.c esx/esx_secret_driver.h		\
-		esx/esx_nwfilter_driver.c esx/esx_nwfilter_driver.h		\
-		esx/esx_util.c esx/esx_util.h			\
-		esx/esx_vi.c esx/esx_vi.h			\
-		esx/esx_vi_methods.c esx/esx_vi_methods.h	\
+		esx/esx_nwfilter_driver.c esx/esx_nwfilter_driver.h	\
+		esx/esx_util.c esx/esx_util.h				\
+		esx/esx_vi.c esx/esx_vi.h				\
+		esx/esx_vi_methods.c esx/esx_vi_methods.h		\
 		esx/esx_vi_types.c esx/esx_vi_types.h
 
 ESX_DRIVER_GENERATED =							\
@@ -498,13 +494,13 @@ ESX_DRIVER_GENERATED =							\
 		esx/esx_vi.generated.c					\
 		esx/esx_vi.generated.h
 
-ESX_DRIVER_EXTRA_DIST =						\
+ESX_DRIVER_EXTRA_DIST =							\
 		esx/README						\
 		esx/esx_vi_generator.input				\
 		esx/esx_vi_generator.py					\
 		$(ESX_DRIVER_GENERATED)
 
-HYPERV_DRIVER_SOURCES =								\
+HYPERV_DRIVER_SOURCES =									\
 		hyperv/hyperv_private.h							\
 		hyperv/hyperv_driver.c hyperv/hyperv_driver.h				\
 		hyperv/hyperv_interface_driver.c hyperv/hyperv_interface_driver.h	\
@@ -547,15 +543,15 @@ SECRET_DRIVER_SOURCES =						\
 		secret/secret_driver.h secret/secret_driver.c
 
 # Storage backend specific impls
-STORAGE_DRIVER_SOURCES =					\
-		storage/storage_driver.h storage/storage_driver.c		\
+STORAGE_DRIVER_SOURCES =						\
+		storage/storage_driver.h storage/storage_driver.c	\
 		storage/storage_backend.h storage/storage_backend.c
 
 STORAGE_DRIVER_FS_SOURCES =					\
 		storage/storage_backend_fs.h storage/storage_backend_fs.c
 
 STORAGE_DRIVER_LVM_SOURCES =					\
-		storage/storage_backend_logical.h			\
+		storage/storage_backend_logical.h		\
 		storage/storage_backend_logical.c
 
 STORAGE_DRIVER_ISCSI_SOURCES =					\
@@ -583,7 +579,7 @@ UTIL_IO_HELPER_SOURCES =					\
 		util/iohelper.c
 
 # Network filters
-NWFILTER_DRIVER_SOURCES =					\
+NWFILTER_DRIVER_SOURCES =						\
 		nwfilter/nwfilter_driver.h nwfilter/nwfilter_driver.c	\
 		nwfilter/nwfilter_gentech_driver.c			\
 		nwfilter/nwfilter_gentech_driver.h			\
@@ -596,11 +592,11 @@ NWFILTER_DRIVER_SOURCES =					\
 
 
 # Security framework and drivers for various models
-SECURITY_DRIVER_SOURCES =					\
-		security/security_driver.h security/security_driver.c \
-		security/security_nop.h security/security_nop.c \
-		security/security_stack.h security/security_stack.c \
-		security/security_dac.h security/security_dac.c \
+SECURITY_DRIVER_SOURCES =						\
+		security/security_driver.h security/security_driver.c	\
+		security/security_nop.h security/security_nop.c		\
+		security/security_stack.h security/security_stack.c	\
+		security/security_dac.h security/security_dac.c		\
 		security/security_manager.h security/security_manager.c
 
 SECURITY_DRIVER_SELINUX_SOURCES =				\
@@ -611,8 +607,8 @@ SECURITY_DRIVER_APPARMOR_SOURCES =				\
 
 
 NODE_DEVICE_DRIVER_SOURCES =					\
-		node_device/node_device_driver.c \
-		node_device/node_device_driver.h \
+		node_device/node_device_driver.c		\
+		node_device/node_device_driver.h		\
 		node_device/node_device_linux_sysfs.c
 
 NODE_DEVICE_DRIVER_HAL_SOURCES =				\
@@ -1005,8 +1001,6 @@ endif
 EXTRA_DIST += network/default.xml
 
 
-
-
 if WITH_NETCF
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_interface.la
@@ -1190,12 +1184,12 @@ EXTRA_DIST +=							\
 		$(PHYP_DRIVER_SOURCES)				\
 		$(VBOX_DRIVER_SOURCES)				\
 		$(XENAPI_DRIVER_SOURCES)			\
-		$(LIBXL_DRIVER_SOURCES)			\
+		$(LIBXL_DRIVER_SOURCES)				\
 		$(ESX_DRIVER_SOURCES)				\
 		$(ESX_DRIVER_EXTRA_DIST)			\
 		$(HYPERV_DRIVER_SOURCES)			\
 		$(HYPERV_DRIVER_EXTRA_DIST)			\
-		$(PARALLELS_DRIVER_SOURCES)				\
+		$(PARALLELS_DRIVER_SOURCES)			\
 		$(NETWORK_DRIVER_SOURCES)			\
 		$(INTERFACE_DRIVER_SOURCES)			\
 		$(STORAGE_DRIVER_SOURCES)			\
@@ -1603,7 +1597,8 @@ libexec_PROGRAMS += libvirt_lxc
 
 libvirt_lxc_SOURCES =						\
 		$(LXC_CONTROLLER_SOURCES)			\
-		$(NODE_INFO_SOURCES)
+		$(NODE_INFO_SOURCES)				\
+		$(DATATYPES_SOURCES)
 libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(AM_LDFLAGS)
 libvirt_lxc_LDADD =			\
 		$(NUMACTL_LIBS) \

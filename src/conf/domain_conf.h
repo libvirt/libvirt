@@ -2256,4 +2256,60 @@ VIR_ENUM_DECL(virDomainStartupPolicy)
 
 virDomainNetDefPtr virDomainNetFind(virDomainDefPtr def,
                                     const char *device);
+
+# define VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE   \
+                (VIR_CONNECT_LIST_DOMAINS_ACTIVE | \
+                 VIR_CONNECT_LIST_DOMAINS_INACTIVE)
+
+# define VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT   \
+                (VIR_CONNECT_LIST_DOMAINS_PERSISTENT | \
+                 VIR_CONNECT_LIST_DOMAINS_TRANSIENT)
+
+# define VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE     \
+                (VIR_CONNECT_LIST_DOMAINS_RUNNING | \
+                 VIR_CONNECT_LIST_DOMAINS_PAUSED  | \
+                 VIR_CONNECT_LIST_DOMAINS_SHUTOFF | \
+                 VIR_CONNECT_LIST_DOMAINS_OTHER)
+
+# define VIR_CONNECT_LIST_DOMAINS_FILTERS_MANAGEDSAVE   \
+                (VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE | \
+                 VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE)
+
+# define VIR_CONNECT_LIST_DOMAINS_FILTERS_AUTOSTART   \
+                (VIR_CONNECT_LIST_DOMAINS_AUTOSTART | \
+                 VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART)
+
+# define VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT       \
+                (VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT | \
+                 VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT)
+
+# define VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL                   \
+                (VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE      | \
+                 VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT  | \
+                 VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE       | \
+                 VIR_CONNECT_LIST_DOMAINS_FILTERS_MANAGEDSAVE | \
+                 VIR_CONNECT_LIST_DOMAINS_FILTERS_AUTOSTART   | \
+                 VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT)
+
+# define VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA           \
+               (VIR_DOMAIN_SNAPSHOT_LIST_METADATA     | \
+                VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA)
+
+# define VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES             \
+               (VIR_DOMAIN_SNAPSHOT_LIST_LEAVES       | \
+                VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES)
+
+# define VIR_DOMAIN_SNAPSHOT_FILTERS_ALL                \
+               (VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA  | \
+                VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES)
+
+int virDomainList(virConnectPtr conn, virHashTablePtr domobjs,
+                  virDomainPtr **domains, unsigned int flags);
+
+int virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
+                           virDomainSnapshotObjPtr from,
+                           virDomainPtr dom,
+                           virDomainSnapshotPtr **snaps,
+                           unsigned int flags);
+
 #endif /* __DOMAIN_CONF_H */

@@ -63,7 +63,6 @@
 #include "virtime.h"
 #include "virtypedparam.h"
 #include "viruri.h"
-#include "virdomainlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -2676,7 +2675,7 @@ lxcListAllDomains(virConnectPtr conn,
     virLXCDriverPtr driver = conn->privateData;
     int ret = -1;
 
-    virCheckFlags(VIR_CONNECT_LIST_FILTERS_ALL, -1);
+    virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
 
     lxcDriverLock(driver);
     ret = virDomainList(conn, driver->domains.objs, domains, flags);

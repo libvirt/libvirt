@@ -57,7 +57,6 @@
 #include "virfile.h"
 #include "fdstream.h"
 #include "viruri.h"
-#include "virdomainlist.h"
 
 /* This one changes from version to version. */
 #if VBOX_API_VERSION == 2002
@@ -9254,7 +9253,7 @@ vboxListAllDomains(virConnectPtr conn,
     bool active;
     PRUint32 snapshotCount;
 
-    virCheckFlags(VIR_CONNECT_LIST_FILTERS_ALL, -1);
+    virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
 
     /* filter out flag options that will produce 0 results in vbox driver:
      * - managed save: vbox guests don't have managed save images
@@ -9302,13 +9301,13 @@ vboxListAllDomains(virConnectPtr conn,
                     active = false;
 
                 /* filter by active state */
-                if (MATCH(VIR_CONNECT_LIST_FILTERS_ACTIVE) &&
+                if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE) &&
                     !((MATCH(VIR_CONNECT_LIST_DOMAINS_ACTIVE) && active) ||
                       (MATCH(VIR_CONNECT_LIST_DOMAINS_INACTIVE) && !active)))
                     continue;
 
                 /* filter by snapshot existence */
-                if (MATCH(VIR_CONNECT_LIST_FILTERS_SNAPSHOT)) {
+                if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT)) {
                     rc = machine->vtbl->GetSnapshotCount(machine, &snapshotCount);
                     if (NS_FAILED(rc)) {
                         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -9323,7 +9322,7 @@ vboxListAllDomains(virConnectPtr conn,
                 }
 
                 /* filter by machine state */
-                if (MATCH(VIR_CONNECT_LIST_FILTERS_STATE) &&
+                if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE) &&
                     !((MATCH(VIR_CONNECT_LIST_DOMAINS_RUNNING) &&
                        state == MachineState_Running) ||
                       (MATCH(VIR_CONNECT_LIST_DOMAINS_PAUSED) &&

@@ -50,7 +50,6 @@
 #include "configmake.h"
 #include "storage_file.h"
 #include "nodeinfo.h"
-#include "virdomainlist.h"
 
 #include "parallels_driver.h"
 #include "parallels_utils.h"
@@ -810,7 +809,7 @@ parallelsListAllDomains(virConnectPtr conn,
     parallelsConnPtr privconn = conn->privateData;
     int ret = -1;
 
-    virCheckFlags(VIR_CONNECT_LIST_FILTERS_ALL, -1);
+    virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
     parallelsDriverLock(privconn);
     ret = virDomainList(conn, privconn->domains.objs, domains, flags);
     parallelsDriverUnlock(privconn);

@@ -1365,7 +1365,7 @@ fallback:
     vshResetLibvirtError();
 
     /* list active domains, if necessary */
-    if (!MATCH(VIR_CONNECT_LIST_FILTERS_ACTIVE) ||
+    if (!MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE) ||
         MATCH(VIR_CONNECT_LIST_DOMAINS_ACTIVE)) {
         if ((nids = virConnectNumOfDomains(ctl->conn)) < 0) {
             vshError(ctl, "%s", _("Failed to list active domains"));
@@ -1382,7 +1382,7 @@ fallback:
         }
     }
 
-    if (!MATCH(VIR_CONNECT_LIST_FILTERS_ACTIVE) ||
+    if (!MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE) ||
         MATCH(VIR_CONNECT_LIST_DOMAINS_INACTIVE)) {
         if ((nnames = virConnectNumOfDefinedDomains(ctl->conn)) < 0) {
             vshError(ctl, "%s", _("Failed to list inactive domains"));
@@ -1426,7 +1426,7 @@ filter:
         dom = list->domains[i];
 
         /* persistence filter */
-        if (MATCH(VIR_CONNECT_LIST_FILTERS_PERSISTENT)) {
+        if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT)) {
             if ((persistent = virDomainIsPersistent(dom)) < 0) {
                 vshError(ctl, "%s", _("Failed to get domain persistence info"));
                 goto cleanup;
@@ -1438,7 +1438,7 @@ filter:
         }
 
         /* domain state filter */
-        if (MATCH(VIR_CONNECT_LIST_FILTERS_STATE)) {
+        if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE)) {
             if (virDomainGetState(dom, &state, NULL, 0) < 0) {
                 vshError(ctl, "%s", _("Failed to get domain state"));
                 goto cleanup;
@@ -1458,7 +1458,7 @@ filter:
         }
 
         /* autostart filter */
-        if (MATCH(VIR_CONNECT_LIST_FILTERS_AUTOSTART)) {
+        if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_AUTOSTART)) {
             if (virDomainGetAutostart(dom, &autostart) < 0) {
                 vshError(ctl, "%s", _("Failed to get domain autostart state"));
                 goto cleanup;
@@ -1470,7 +1470,7 @@ filter:
         }
 
         /* managed save filter */
-        if (MATCH(VIR_CONNECT_LIST_FILTERS_MANAGEDSAVE)) {
+        if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_MANAGEDSAVE)) {
             if ((mansave = virDomainHasManagedSaveImage(dom, 0)) < 0) {
                 vshError(ctl, "%s",
                          _("Failed to check for managed save image"));
@@ -1483,7 +1483,7 @@ filter:
         }
 
         /* snapshot filter */
-        if (MATCH(VIR_CONNECT_LIST_FILTERS_SNAPSHOT)) {
+        if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT)) {
             if ((nsnap = virDomainSnapshotNum(dom, 0)) < 0) {
                 vshError(ctl, "%s", _("Failed to get snapshot count"));
                 goto cleanup;
