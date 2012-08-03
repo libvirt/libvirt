@@ -499,6 +499,9 @@ void virNetClientFree(virNetClientPtr client)
 #if HAVE_SASL
     virNetSASLSessionFree(client->sasl);
 #endif
+
+    virNetMessageClear(&client->msg);
+
     virNetClientUnlock(client);
     virMutexDestroy(&client->lock);
 
