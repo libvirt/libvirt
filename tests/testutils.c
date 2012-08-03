@@ -603,8 +603,7 @@ int virtTestMain(int argc,
     fprintf(stderr, "TEST: %s\n", progname);
 
     if (virThreadInitialize() < 0 ||
-        virErrorInitialize() < 0 ||
-        virRandomInitialize(time(NULL) ^ getpid()))
+        virErrorInitialize() < 0)
         return 1;
 
     virLogSetFromEnv();

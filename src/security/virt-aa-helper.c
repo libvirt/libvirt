@@ -1199,9 +1199,6 @@ main(int argc, char **argv)
 
     memset(ctl, 0, sizeof(vahControl));
 
-    if (virRandomInitialize(time(NULL) ^ getpid()) < 0)
-        vah_error(ctl, 1, _("could not initialize random generator"));
-
     if (vahParseArgv(ctl, argc, argv) != 0)
         vah_error(ctl, 1, _("could not parse arguments"));
 

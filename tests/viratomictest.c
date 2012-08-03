@@ -165,8 +165,6 @@ mymain(void)
 {
     int ret = 0;
 
-    if (virRandomInitialize(time(NULL)) < 0)
-        return -1;
     if (virThreadInitialize() < 0)
         return -1;
 

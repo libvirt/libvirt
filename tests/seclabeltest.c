@@ -14,8 +14,7 @@ main (int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
     virSecurityManagerPtr mgr;
     const char *doi, *model;
 
-    if (virThreadInitialize() < 0 ||
-        virRandomInitialize(time(NULL) ^ getpid()))
+    if (virThreadInitialize() < 0)
         exit(EXIT_FAILURE);
 
     mgr = virSecurityManagerNew(NULL, "QEMU", false, true, false);

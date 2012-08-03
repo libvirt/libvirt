@@ -1,7 +1,7 @@
 /*
  * iohelper.c: Helper program to perform I/O operations on files
  *
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -230,8 +230,7 @@ main(int argc, char **argv)
     }
 
     if (virThreadInitialize() < 0 ||
-        virErrorInitialize() < 0 ||
-        virRandomInitialize(time(NULL) ^ getpid())) {
+        virErrorInitialize() < 0) {
         fprintf(stderr, _("%s: initialization failed\n"), program_name);
         exit(EXIT_FAILURE);
     }

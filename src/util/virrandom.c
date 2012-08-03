@@ -29,6 +29,7 @@
 #include "count-one-bits.h"
 #include "util.h"
 #include "virterror_internal.h"
+#include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -37,8 +38,21 @@ static struct random_data randomData;
 static virMutex randomLock;
 
 
-int virRandomInitialize(uint32_t seed)
+static int
+virRandomOnceInit(void)
 {
+    unsigned int seed = time(NULL) ^ getpid();
+
+#if 0
+    /* Normally we want a decent seed.  But if reproducible debugging
+     * of a fixed pseudo-random sequence is ever required, uncomment
+     * this block to let an environment variable force the seed.  */
+    const char *debug = getenv("VIR_DEBUG_RANDOM_SEED");
+
+    if (debug && virStrToLong_ui(debug, NULL, 0, &seed) < 0)
+        return -1;
+#endif
+
     if (virMutexInit(&randomLock) < 0)
         return -1;
 
@@ -50,6 +64,8 @@ int virRandomInitialize(uint32_t seed)
 
     return 0;
 }
+
+VIR_ONCE_GLOBAL_INIT(virRandom)
 
 /* The algorithm of virRandomBits requires that RAND_MAX == 2^n-1 for
  * some n; gnulib's random_r meets this property. */
@@ -69,6 +85,13 @@ uint64_t virRandomBits(int nbits)
     int bits_per_iter = count_one_bits(RAND_MAX);
     uint64_t ret = 0;
     int32_t bits;
+
+    if (virRandomInitialize() < 0) {
+        /* You're already hosed, so this particular non-random value
+         * isn't any worse.  */
+        VIR_WARN("random number generation is broken");
+        return 0;
+    }
 
     virMutexLock(&randomLock);
 
