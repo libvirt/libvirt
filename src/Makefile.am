@@ -157,12 +157,25 @@ EXTRA_DIST += locking/lock_protocol.x
 BUILT_SOURCES += $(LOCK_PROTOCOL_GENERATED)
 MAINTAINERCLEANFILES += $(LOCK_PROTOCOL_GENERATED)
 
+LOCK_DAEMON_GENERATED = \
+		locking/lock_daemon_dispatch_stubs.h
+		$(NULL)
+
+BUILT_SOURCES += $(LOCK_DAEMON_GENERATED)
+MAINTAINERCLEANFILES += $(LOCK_DAEMON_GENERATED)
+
 LOCK_DAEMON_SOURCES = \
 		locking/lock_daemon.h \
 		locking/lock_daemon.c \
 		locking/lock_daemon_config.h \
 		locking/lock_daemon_config.c \
+		locking/lock_daemon_dispatch.c \
+		locking/lock_daemon_dispatch.h \
 		$(NULL)
+
+$(srcdir)/locking/lock_daemon_dispatch_stubs.h: locking/lock_protocol.x $(srcdir)/rpc/gendispatch.pl Makefile.am
+	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl -b virLockSpaceProtocol VIR_LOCK_SPACE_PROTOCOL $< > $@
+
 
 NETDEV_CONF_SOURCES =						\
 		conf/netdev_bandwidth_conf.h conf/netdev_bandwidth_conf.c \
@@ -1532,6 +1545,7 @@ sbin_PROGRAMS = virtlockd
 virtlockd_SOURCES = \
 		$(LOCK_DAEMON_SOURCES) \
 		$(LOCK_PROTOCOL_GENERATED) \
+		$(LOCK_DAEMON_GENERATED) \
 		$(NULL)
 virtlockd_CFLAGS = \
 		$(AM_CFLAGS) \

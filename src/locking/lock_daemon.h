@@ -34,10 +34,23 @@ typedef virLockDaemonClient *virLockDaemonClientPtr;
 
 struct _virLockDaemonClient {
     virMutex lock;
+    bool restricted;
+
+    pid_t ownerPid;
+    char *ownerName;
+    unsigned char ownerUUID[VIR_UUID_BUFLEN];
+    unsigned int ownerId;
 
     pid_t clientPid;
 };
 
 extern virLockDaemonPtr lockDaemon;
+
+int virLockDaemonAddLockSpace(virLockDaemonPtr lockd,
+                              const char *path,
+                              virLockSpacePtr lockspace);
+
+virLockSpacePtr virLockDaemonFindLockSpace(virLockDaemonPtr lockd,
+                                           const char *path);
 
 #endif /* __VIR_LOCK_DAEMON_H__ */

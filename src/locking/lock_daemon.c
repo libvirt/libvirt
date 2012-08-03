@@ -36,6 +36,7 @@
 #include "util.h"
 #include "virfile.h"
 #include "virpidfile.h"
+#include "virprocess.h"
 #include "virterror_internal.h"
 #include "logging.h"
 #include "memory.h"
@@ -44,13 +45,20 @@
 #include "virrandom.h"
 #include "virhash.h"
 
+#include "locking/lock_daemon_dispatch.h"
+#include "locking/lock_protocol.h"
+
 #include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_LOCKING
 
+#define VIR_LOCK_DAEMON_NUM_LOCKSPACES 3
+
 struct _virLockDaemon {
     virMutex lock;
     virNetServerPtr srv;
+    virHashTablePtr lockspaces;
+    virLockSpacePtr defaultLockspace;
 };
 
 virLockDaemonPtr lockDaemon = NULL;
@@ -94,10 +102,18 @@ virLockDaemonFree(virLockDaemonPtr lockd)
         return;
 
     virObjectUnref(lockd->srv);
+    virHashFree(lockd->lockspaces);
+    virLockSpaceFree(lockd->defaultLockspace);
 
     VIR_FREE(lockd);
 }
 
+
+static void virLockDaemonLockSpaceDataFree(void *data,
+                                           const void *key ATTRIBUTE_UNUSED)
+{
+    virLockSpaceFree(data);
+}
 
 static virLockDaemonPtr
 virLockDaemonNew(bool privileged)
@@ -125,11 +141,43 @@ virLockDaemonNew(bool privileged)
                                        (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
         goto error;
 
+    if (!(lockd->lockspaces = virHashCreate(VIR_LOCK_DAEMON_NUM_LOCKSPACES,
+                                            virLockDaemonLockSpaceDataFree)))
+        goto error;
+
+    if (!(lockd->defaultLockspace = virLockSpaceNew(NULL)))
+        goto error;
+
     return lockd;
 
 error:
     virLockDaemonFree(lockd);
     return NULL;
+}
+
+
+int virLockDaemonAddLockSpace(virLockDaemonPtr lockd,
+                              const char *path,
+                              virLockSpacePtr lockspace)
+{
+    int ret;
+    virMutexLock(&lockd->lock);
+    ret = virHashAddEntry(lockd->lockspaces, path, lockspace);
+    virMutexUnlock(&lockd->lock);
+    return ret;
+}
+
+virLockSpacePtr virLockDaemonFindLockSpace(virLockDaemonPtr lockd,
+                                           const char *path)
+{
+    virLockSpacePtr lockspace;
+    virMutexLock(&lockd->lock);
+    if (path && STRNEQ(path, ""))
+        lockspace = virHashLookup(lockd->lockspaces, path);
+    else
+        lockspace = lockd->defaultLockspace;
+    virMutexUnlock(&lockd->lock);
+    return lockspace;
 }
 
 
@@ -466,6 +514,30 @@ virLockDaemonSetupNetworking(virNetServerPtr srv, const char *sock_path)
 }
 
 
+struct virLockDaemonClientReleaseData {
+    virLockDaemonClientPtr client;
+    bool hadSomeLeases;
+    bool gotError;
+};
+
+static void
+virLockDaemonClientReleaseLockspace(void *payload,
+                                    const void *name ATTRIBUTE_UNUSED,
+                                    void *opaque)
+{
+    virLockSpacePtr lockspace = payload;
+    struct virLockDaemonClientReleaseData *data = opaque;
+    int rc;
+
+    rc = virLockSpaceReleaseResourcesForOwner(lockspace,
+                                              data->client->clientPid);
+    if (rc > 0)
+        data->hadSomeLeases = true;
+    else if (rc < 0)
+        data->gotError = true;
+}
+
+
 static void
 virLockDaemonClientFree(void *opaque)
 {
@@ -474,9 +546,52 @@ virLockDaemonClientFree(void *opaque)
     if (!priv)
         return;
 
-    VIR_DEBUG("priv=%p client=%lld",
+    VIR_DEBUG("priv=%p client=%lld owner=%lld",
               priv,
-              (unsigned long long)priv->clientPid);
+              (unsigned long long)priv->clientPid,
+              (unsigned long long)priv->ownerPid);
+
+    /* If client & owner match, this is the lock holder */
+    if (priv->clientPid == priv->ownerPid) {
+        size_t i;
+        struct virLockDaemonClientReleaseData data = {
+            .client = priv, .hadSomeLeases = false, .gotError = false
+        };
+
+        /* Release all locks associated with this
+         * owner in all lockspaces */
+        virMutexLock(&lockDaemon->lock);
+        virHashForEach(lockDaemon->lockspaces,
+                       virLockDaemonClientReleaseLockspace,
+                       &data);
+        virLockDaemonClientReleaseLockspace(lockDaemon->defaultLockspace,
+                                            "",
+                                            &data);
+        virMutexUnlock(&lockDaemon->lock);
+
+        /* If the client had some active leases when it
+         * closed the connection, we must kill it off
+         * to make sure it doesn't do nasty stuff */
+        if (data.gotError || data.hadSomeLeases) {
+            for (i = 0 ; i < 15 ; i++) {
+                int signum;
+                if (i == 0)
+                    signum = SIGTERM;
+                else if (i == 8)
+                    signum = SIGKILL;
+                else
+                    signum = 0;
+                if (virProcessKill(priv->clientPid, signum) < 0) {
+                    if (errno == ESRCH)
+                        break;
+
+                    VIR_WARN("Failed to kill off pid %lld",
+                             (unsigned long long)priv->clientPid);
+                }
+                usleep(200 * 1000);
+            }
+        }
+    }
 
     virMutexDestroy(&priv->lock);
     VIR_FREE(priv);
@@ -597,6 +712,7 @@ enum {
 
 #define MAX_LISTEN 5
 int main(int argc, char **argv) {
+    virNetServerProgramPtr lockProgram = NULL;
     char *remote_config_file = NULL;
     int statuswrite = -1;
     int ret = 1;
@@ -795,6 +911,18 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
+    if (!(lockProgram = virNetServerProgramNew(VIR_LOCK_SPACE_PROTOCOL_PROGRAM,
+                                               VIR_LOCK_SPACE_PROTOCOL_PROGRAM_VERSION,
+                                               virLockSpaceProtocolProcs,
+                                               virLockSpaceProtocolNProcs))) {
+        ret = VIR_LOCK_DAEMON_ERR_INIT;
+        goto cleanup;
+    }
+    if (virNetServerAddProgram(lockDaemon->srv, lockProgram) < 0) {
+        ret = VIR_LOCK_DAEMON_ERR_INIT;
+        goto cleanup;
+    }
+
     /* Disable error func, now logging is setup */
     virSetErrorFunc(NULL, virLockDaemonErrorHandler);
 
@@ -818,6 +946,7 @@ int main(int argc, char **argv) {
     ret = 0;
 
 cleanup:
+    virObjectUnref(lockProgram);
     virLockDaemonFree(lockDaemon);
     if (statuswrite != -1) {
         if (ret != 0) {

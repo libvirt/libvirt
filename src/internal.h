@@ -236,6 +236,28 @@
         }                                                               \
     } while (0)
 
+/**
+ * virCheckFlagsGoto:
+ * @supported: an OR'ed set of supported flags
+ * @label: label to jump to on error
+ *
+ * To avoid memory leaks this macro has to be used before any non-trivial
+ * code which could possibly allocate some memory.
+ *
+ * Returns nothing. Jumps to a label if unsupported flags were
+ * passed to it.
+ */
+# define virCheckFlagsGoto(supported, label)                            \
+    do {                                                                \
+        unsigned long __unsuppflags = flags & ~(supported);             \
+        if (__unsuppflags) {                                            \
+            virReportInvalidArg(flags,                                  \
+                                _("unsupported flags (0x%lx) in function %s"), \
+                                __unsuppflags, __FUNCTION__);           \
+            goto label;                                                 \
+        }                                                               \
+    } while (0)
+
 # define virCheckNonNullArgReturn(argname, retval)  \
     do {                                            \
         if (argname == NULL) {                      \
