@@ -531,7 +531,7 @@ virhashtest_SOURCES = \
 virhashtest_LDADD = $(LDADDS)
 
 viratomictest_SOURCES = \
-	viratomictest.c viratomicdata.h testutils.h testutils.c
+	viratomictest.c testutils.h testutils.c
 viratomictest_LDADD = $(LDADDS)
 
 jsontest_SOURCES = \
