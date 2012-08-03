@@ -695,12 +695,21 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
 
     if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
         actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        if ((tapfd = qemuNetworkIfaceConnect(vm->def, conn, driver, net,
-                                             priv->qemuCaps)) < 0)
-            goto cleanup;
-        iface_connected = true;
-        if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, &vhostfd) < 0)
-            goto cleanup;
+        /*
+         * If type=bridge then we attempt to allocate the tap fd here only if
+         * running under a privilged user or -netdev bridge option is not
+         * supported.
+         */
+        if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+            driver->privileged ||
+            (!qemuCapsGet (priv->qemuCaps, QEMU_CAPS_NETDEV_BRIDGE))) {
+            if ((tapfd = qemuNetworkIfaceConnect(vm->def, conn, driver, net,
+                                                 priv->qemuCaps)) < 0)
+                goto cleanup;
+            iface_connected = true;
+            if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, &vhostfd) < 0)
+                goto cleanup;
+        }
     } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
         if ((tapfd = qemuPhysIfaceConnect(vm->def, driver, net,
                                           priv->qemuCaps,
@@ -748,12 +757,14 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV) &&
         qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (!(netstr = qemuBuildHostNetStr(net, ',',
-                                           -1, tapfd_name, vhostfd_name)))
+        if (!(netstr = qemuBuildHostNetStr(net, driver, priv->qemuCaps,
+                                           ',', -1, tapfd_name,
+                                           vhostfd_name)))
             goto cleanup;
     } else {
-        if (!(netstr = qemuBuildHostNetStr(net, ' ',
-                                           vlan, tapfd_name, vhostfd_name)))
+        if (!(netstr = qemuBuildHostNetStr(net, driver, priv->qemuCaps,
+                                           ' ', vlan, tapfd_name,
+                                           vhostfd_name)))
             goto cleanup;
     }
 
