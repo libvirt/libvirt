@@ -5015,6 +5015,7 @@ remoteDomainSnapshotListAllChildren(virDomainSnapshotPtr parent,
 
     args.need_results = !!snapshots;
     args.flags = flags;
+    make_nonnull_domain_snapshot(&args.snapshot, parent);
 
     memset(&ret, 0, sizeof(ret));
     if (call (parent->domain->conn,
