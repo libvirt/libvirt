@@ -101,6 +101,7 @@ virConsoleShutdown(virConsolePtr con)
         virStreamEventRemoveCallback(con->st);
         virStreamAbort(con->st);
         virStreamFree(con->st);
+        con->st = NULL;
     }
     VIR_FREE(con->streamToTerminal.data);
     VIR_FREE(con->terminalToStream.data);
