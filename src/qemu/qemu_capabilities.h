@@ -135,6 +135,7 @@ enum qemuCapsFlags {
     QEMU_CAPS_NEC_USB_XHCI       = 97, /* -device nec-usb-xhci */
     QEMU_CAPS_VIRTIO_S390        = 98, /* -device virtio-*-s390 */
     QEMU_CAPS_BALLOON_EVENT      = 99, /* Async event for balloon changes */
+    QEMU_CAPS_NETDEV_BRIDGE      = 100, /* bridge helper support */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
