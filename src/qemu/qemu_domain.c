@@ -217,7 +217,7 @@ static void *qemuDomainObjPrivateAlloc(void)
     if (!(priv->cons = virConsoleAlloc()))
         goto error;
 
-    priv->migMaxBandwidth = QEMU_DOMAIN_DEFAULT_MIG_BANDWIDTH_MAX;
+    priv->migMaxBandwidth = QEMU_DOMAIN_MIG_BANDWIDTH_MAX;
 
     return priv;
 

@@ -3187,8 +3187,8 @@ qemuMigrationToFile(struct qemud_driver *driver, virDomainObjPtr vm,
      * Failure to change migration speed is not fatal. */
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
         qemuMonitorSetMigrationSpeed(priv->mon,
-                                     QEMU_DOMAIN_FILE_MIG_BANDWIDTH_MAX);
-        priv->migMaxBandwidth = QEMU_DOMAIN_FILE_MIG_BANDWIDTH_MAX;
+                                     QEMU_DOMAIN_MIG_BANDWIDTH_MAX);
+        priv->migMaxBandwidth = QEMU_DOMAIN_MIG_BANDWIDTH_MAX;
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     }
 
