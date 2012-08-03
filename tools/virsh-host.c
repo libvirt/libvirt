@@ -573,7 +573,7 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
     if (virDomainQemuMonitorCommand(dom, monitor_cmd, &result, flags) < 0)
         goto cleanup;
 
-    printf("%s\n", result);
+    vshPrint(ctl, "%s\n", result);
 
     ret = true;
 
