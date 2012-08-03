@@ -1569,7 +1569,7 @@ parallelsCreateVm(virConnectPtr conn, virDomainDefPtr def)
          * will be found */
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Can't create VM '%s' without hard disks"),
-                       (def->name ? def->name : "no name"));
+                       def->name ? def->name : _("(unnamed)"));
         return -1;
     }
 
@@ -1659,7 +1659,7 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
         if (!dom) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Domain for '%s' is not defined after creation"),
-                           (def->name ? def->name : "no name"));
+                           def->name ? def->name : _("(unnamed)"));
             goto cleanup;
         }
     }
