@@ -214,9 +214,13 @@ static int xenXMConfigGetUUID(virConfPtr conf, const char *name, unsigned char *
     }
 
     if (!(val = virConfGetValue(conf, name))) {
-        virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("config value %s was missing"), name);
-        return -1;
+        if (virUUIDGenerate(uuid)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("Failed to generate UUID"));
+            return -1;
+        } else {
+            return 0;
+        }
     }
 
     if (val->type != VIR_CONF_STRING) {
