@@ -1,4 +1,4 @@
-# Last Modified: Mon Apr  5 15:11:27 2010
+# Last Modified: Fri Mar 9 14:43:22 2012
 
   #include <abstractions/base>
   #include <abstractions/consoles>
@@ -108,3 +108,22 @@
   /bin/dash rmix,
   /bin/dd rmix,
   /bin/cat rmix,
+
+  /usr/libexec/qemu-bridge-helper Cx,
+  # child profile for bridge helper process
+  profile /usr/libexec/qemu-bridge-helper {
+   #include <abstractions/base>
+
+   capability setuid,
+   capability setgid,
+   capability setpcap,
+   capability net_admin,
+
+   network inet stream,
+
+   /dev/net/tun rw,
+   /etc/qemu/** r,
+   owner @{PROC}/*/status r,
+
+   /usr/libexec/qemu-bridge-helper rmix,
+  }
