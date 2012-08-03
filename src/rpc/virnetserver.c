@@ -36,9 +36,7 @@
 #include "util.h"
 #include "virfile.h"
 #include "event.h"
-#if HAVE_AVAHI
-# include "virnetservermdns.h"
-#endif
+#include "virnetservermdns.h"
 
 #ifndef SA_SIGINFO
 # define SA_SIGINFO 0
@@ -81,10 +79,8 @@ struct _virNetServer {
     int sigwatch;
 
     char *mdnsGroupName;
-#if HAVE_AVAHI
     virNetServerMDNSPtr mdns;
     virNetServerMDNSGroupPtr mdnsGroup;
-#endif
 
     size_t nservices;
     virNetServerServicePtr *services;
@@ -364,7 +360,6 @@ virNetServerPtr virNetServerNew(size_t min_workers,
         virReportOOMError();
         goto error;
     }
-#if HAVE_AVAHI
     if (srv->mdnsGroupName) {
         if (!(srv->mdns = virNetServerMDNSNew()))
             goto error;
@@ -372,7 +367,6 @@ virNetServerPtr virNetServerNew(size_t min_workers,
                                                         srv->mdnsGroupName)))
             goto error;
     }
-#endif
 
     if (virMutexInit(&srv->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -592,14 +586,13 @@ error:
 
 int virNetServerAddService(virNetServerPtr srv,
                            virNetServerServicePtr svc,
-                           const char *mdnsEntryName ATTRIBUTE_UNUSED)
+                           const char *mdnsEntryName)
 {
     virNetServerLock(srv);
 
     if (VIR_EXPAND_N(srv->services, srv->nservices, 1) < 0)
         goto no_memory;
 
-#if HAVE_AVAHI
     if (mdnsEntryName) {
         int port = virNetServerServiceGetPort(svc);
 
@@ -608,7 +601,6 @@ int virNetServerAddService(virNetServerPtr srv,
                                       port))
             goto error;
     }
-#endif
 
     srv->services[srv->nservices-1] = svc;
     virNetServerServiceRef(svc);
@@ -622,9 +614,7 @@ int virNetServerAddService(virNetServerPtr srv,
 
 no_memory:
     virReportOOMError();
-#if HAVE_AVAHI
 error:
-#endif
     virNetServerUnlock(srv);
     return -1;
 }
@@ -694,11 +684,9 @@ void virNetServerRun(virNetServerPtr srv)
 
     virNetServerLock(srv);
 
-#if HAVE_AVAHI
     if (srv->mdns &&
         virNetServerMDNSStart(srv->mdns) < 0)
         goto cleanup;
-#endif
 
     srv->quit = 0;
 
@@ -826,9 +814,7 @@ void virNetServerFree(virNetServerPtr srv)
     VIR_FREE(srv->clients);
 
     VIR_FREE(srv->mdnsGroupName);
-#if HAVE_AVAHI
     virNetServerMDNSFree(srv->mdns);
-#endif
 
     virMutexDestroy(&srv->lock);
     VIR_FREE(srv);
