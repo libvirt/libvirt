@@ -1428,8 +1428,11 @@ virNetDevVethDelete;
 
 # virnetdevvportprofile.h
 virNetDevVPortProfileAssociate;
+virNetDevVPortProfileCheckComplete;
+virNetDevVPortProfileCheckNoExtras;
 virNetDevVPortProfileDisassociate;
 virNetDevVPortProfileEqual;
+virNetDevVPortProfileMerge3;
 virNetDevVPortProfileOpTypeFromString;
 virNetDevVPortProfileOpTypeToString;
 

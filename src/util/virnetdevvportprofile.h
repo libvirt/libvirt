@@ -58,24 +58,39 @@ VIR_ENUM_DECL(virNetDevVPortProfileOp)
 typedef struct _virNetDevVPortProfile virNetDevVPortProfile;
 typedef virNetDevVPortProfile *virNetDevVPortProfilePtr;
 struct _virNetDevVPortProfile {
-    enum virNetDevVPortProfile   virtPortType;
+    int           virtPortType; /* enum virNetDevVPortProfile */
     /* these members are used when virtPortType == 802.1Qbg */
     uint8_t       managerID;
+    bool          managerID_specified;
     uint32_t      typeID; /* 24 bit valid */
+    bool          typeID_specified;
     uint8_t       typeIDVersion;
+    bool          typeIDVersion_specified;
     unsigned char instanceID[VIR_UUID_BUFLEN];
+    bool          instanceID_specified;
 
     /* this member is used when virtPortType == 802.1Qbh|openvswitch */
+    /* this is a null-terminated character string */
     char          profileID[LIBVIRT_IFLA_VF_PORT_PROFILE_MAX];
 
     /* this member is used when virtPortType == openvswitch */
     unsigned char interfaceID[VIR_UUID_BUFLEN];
+    bool          interfaceID_specified;
     /* NB - if virtPortType == NONE, any/all of the items could be used */
 };
 
 
 bool virNetDevVPortProfileEqual(virNetDevVPortProfilePtr a,
                                 virNetDevVPortProfilePtr b);
+
+int virNetDevVPortProfileCheckComplete(virNetDevVPortProfilePtr virtport,
+                                       bool generateMissing);
+int virNetDevVPortProfileCheckNoExtras(virNetDevVPortProfilePtr virtport);
+
+int virNetDevVPortProfileMerge3(virNetDevVPortProfilePtr *result,
+                                virNetDevVPortProfilePtr fromInterface,
+                                virNetDevVPortProfilePtr fromNetwork,
+                                virNetDevVPortProfilePtr fromPortgroup);
 
 int virNetDevVPortProfileAssociate(const char *ifname,
                                    const virNetDevVPortProfilePtr virtPort,
