@@ -317,6 +317,13 @@ object HostFileSystemVolume
 end
 
 
+object HostIpConfig
+    Boolean                                  dhcp                           r
+    String                                   ipAddress                      o
+    String                                   subnetMask                     o
+end
+
+
 object HostMountInfo
     String                                   path                           o
     String                                   accessMode                     r
@@ -455,6 +462,31 @@ object PerfSampleInfo
 end
 
 
+object PhysicalNic
+    String                                   key                            o
+    String                                   device                         r
+    String                                   pci                            r
+    String                                   driver                         o
+    PhysicalNicLinkInfo                      linkSpeed                      o
+    PhysicalNicLinkInfo                      validLinkSpecification         ol
+    PhysicalNicSpec                          spec                           r
+    Boolean                                  wakeOnLanSupported             r
+    String                                   mac                            r
+end
+
+
+object PhysicalNicLinkInfo
+    Int                                      speedMb                        r
+    Boolean                                  duplex                         r
+end
+
+
+object PhysicalNicSpec
+    HostIpConfig                             ip                             o
+    PhysicalNicLinkInfo                      linkSpeed                      o
+end
+
+
 object PropertyChange
     String                                   name                           r
     PropertyChangeOp                         op                             r
@@ -569,7 +601,7 @@ object TemplateConfigFileQuery       extends VmConfigFileQuery
 end
 
 
-object TraversalSpec extends SelectionSpec
+object TraversalSpec                 extends SelectionSpec
     String                                   type                           r
     String                                   path                           r
     Boolean                                  skip                           o

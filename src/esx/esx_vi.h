@@ -3,7 +3,7 @@
  * esx_vi.h: client for the VMware VI API 2.5 to manage ESX hosts
  *
  * Copyright (C) 2011 Red Hat, Inc.
- * Copyright (C) 2009-2010 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009-2012 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -480,6 +480,17 @@ int esxVI_LookupAutoStartDefaults(esxVI_Context *ctx,
 
 int esxVI_LookupAutoStartPowerInfoList(esxVI_Context *ctx,
                                        esxVI_AutoStartPowerInfo **powerInfoList);
+
+int esxVI_LookupPhysicalNicList(esxVI_Context *ctx,
+                                esxVI_PhysicalNic **physicalNicList);
+
+int esxVI_LookupPhysicalNicByName(esxVI_Context *ctx, const char *name,
+                                  esxVI_PhysicalNic **physicalNic,
+                                  esxVI_Occurrence occurrence);
+
+int esxVI_LookupPhysicalNicByMACAddress(esxVI_Context *ctx, const char *mac,
+                                        esxVI_PhysicalNic **physicalNic,
+                                        esxVI_Occurrence occurrence);
 
 int esxVI_HandleVirtualMachineQuestion
       (esxVI_Context *ctx, esxVI_ManagedObjectReference *virtualMachine,

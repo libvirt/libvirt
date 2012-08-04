@@ -3,7 +3,7 @@
  * esx_vi.c: client for the VMware VI API 2.5 to manage ESX hosts
  *
  * Copyright (C) 2010-2011 Red Hat, Inc.
- * Copyright (C) 2009-2011 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009-2012 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -3942,6 +3942,148 @@ esxVI_LookupAutoStartPowerInfoList(esxVI_Context *ctx,
   cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&hostAutoStartManager);
+
+    return result;
+}
+
+
+
+int
+esxVI_LookupPhysicalNicList(esxVI_Context *ctx,
+                            esxVI_PhysicalNic **physicalNicList)
+{
+    int result = -1;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *hostSystem = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+
+    if (physicalNicList == NULL || *physicalNicList != NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (esxVI_String_AppendValueToList(&propertyNameList,
+                                       "config.network.pnic") < 0 ||
+        esxVI_LookupHostSystemProperties(ctx, propertyNameList,
+                                         &hostSystem) < 0) {
+        goto cleanup;
+    }
+
+    for (dynamicProperty = hostSystem->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "config.network.pnic")) {
+            if (esxVI_PhysicalNic_CastListFromAnyType(dynamicProperty->val,
+                                                      physicalNicList) < 0) {
+                goto cleanup;
+            }
+        } else {
+            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
+        }
+    }
+
+    result = 0;
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&hostSystem);
+
+    return result;
+}
+
+
+
+int
+esxVI_LookupPhysicalNicByName(esxVI_Context *ctx, const char *name,
+                              esxVI_PhysicalNic **physicalNic,
+                              esxVI_Occurrence occurrence)
+{
+    int result = -1;
+    esxVI_PhysicalNic *physicalNicList = NULL;
+    esxVI_PhysicalNic *candidate = NULL;
+
+    if (physicalNic == NULL || *physicalNic != NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (esxVI_LookupPhysicalNicList(ctx, &physicalNicList) < 0) {
+        goto cleanup;
+    }
+
+    /* Search for a matching physical NIC */
+    for (candidate = physicalNicList; candidate != NULL;
+         candidate = candidate->_next) {
+        if (STRCASEEQ(candidate->device, name)) {
+            if (esxVI_PhysicalNic_DeepCopy(physicalNic, candidate) < 0) {
+                goto cleanup;
+            }
+
+            /* Found physical NIC with matching name */
+            result = 0;
+
+            goto cleanup;
+        }
+    }
+
+    if (*physicalNic == NULL && occurrence != esxVI_Occurrence_OptionalItem) {
+        virReportError(VIR_ERR_NO_INTERFACE,
+                       _("Could not find physical NIC with name '%s'"), name);
+        goto cleanup;
+    }
+
+    result = 0;
+
+  cleanup:
+    esxVI_PhysicalNic_Free(&physicalNicList);
+
+    return result;
+}
+
+
+
+int
+esxVI_LookupPhysicalNicByMACAddress(esxVI_Context *ctx, const char *mac,
+                                    esxVI_PhysicalNic **physicalNic,
+                                    esxVI_Occurrence occurrence)
+{
+    int result = -1;
+    esxVI_PhysicalNic *physicalNicList = NULL;
+    esxVI_PhysicalNic *candidate = NULL;
+
+    if (physicalNic == NULL || *physicalNic != NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (esxVI_LookupPhysicalNicList(ctx, &physicalNicList) < 0) {
+        goto cleanup;
+    }
+
+    /* Search for a matching physical NIC */
+    for (candidate = physicalNicList; candidate != NULL;
+         candidate = candidate->_next) {
+        if (STRCASEEQ(candidate->mac, mac)) {
+            if (esxVI_PhysicalNic_DeepCopy(physicalNic, candidate) < 0) {
+                goto cleanup;
+            }
+
+            /* Found physical NIC with matching MAC address */
+            result = 0;
+
+            goto cleanup;
+        }
+    }
+
+    if (*physicalNic == NULL && occurrence != esxVI_Occurrence_OptionalItem) {
+        virReportError(VIR_ERR_NO_INTERFACE,
+                       _("Could not find physical NIC with MAC address '%s'"), mac);
+        goto cleanup;
+    }
+
+    result = 0;
+
+  cleanup:
+    esxVI_PhysicalNic_Free(&physicalNicList);
 
     return result;
 }
