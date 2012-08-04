@@ -621,11 +621,36 @@
 
 
 #define ESX_VI__TEMPLATE__DYNAMIC_DEEP_COPY(__type, _dispatch, _deep_copy)    \
-    ESX_VI__TEMPLATE__DEEP_COPY(__type,                                       \
-      ESX_VI__TEMPLATE__DISPATCH(src->_type,                                  \
-                                 esxVI_Type_ToString(src->_type),             \
-                                 __type, _dispatch, -1)                       \
-      _deep_copy)
+    int                                                                       \
+    esxVI_##__type##_DeepCopy(esxVI_##__type **dest, esxVI_##__type *src)     \
+    {                                                                         \
+        if (dest == NULL || *dest != NULL) {                                  \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
+                           _("Invalid argument"));                            \
+            return -1;                                                        \
+        }                                                                     \
+                                                                              \
+        if (src == NULL) {                                                    \
+            return 0;                                                         \
+        }                                                                     \
+                                                                              \
+        ESX_VI__TEMPLATE__DISPATCH(src->_type,                                \
+                                   esxVI_Type_ToString(src->_type),           \
+                                   __type, _dispatch, -1)                     \
+                                                                              \
+        if (esxVI_##__type##_Alloc(dest) < 0) {                               \
+            goto failure;                                                     \
+        }                                                                     \
+                                                                              \
+        _deep_copy                                                            \
+                                                                              \
+        return 0;                                                             \
+                                                                              \
+      failure:                                                                \
+        esxVI_##__type##_Free(dest);                                          \
+                                                                              \
+        return -1;                                                            \
+    }
 
 
 
