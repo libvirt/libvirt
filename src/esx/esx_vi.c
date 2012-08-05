@@ -4570,8 +4570,8 @@ esxVI_ProductVersionToDefaultVirtualHWVersion(esxVI_ProductVersion productVersio
         esxVI_DynamicProperty *dynamicProperty = NULL;                        \
                                                                               \
         if (ptrptr == NULL || *ptrptr != NULL) {                              \
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                        \
-                           _("Invalid argument"));                      \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
+                           _("Invalid argument"));                            \
             return -1;                                                        \
         }                                                                     \
                                                                               \

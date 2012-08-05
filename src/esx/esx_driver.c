@@ -3,7 +3,7 @@
  * esx_driver.c: core driver functions for managing VMware ESX hosts
  *
  * Copyright (C) 2010-2012 Red Hat, Inc.
- * Copyright (C) 2009-2011 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009-2012 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2009 Maximilian Wilhelm <max@rfc2324.org>
  *
  * This library is free software; you can redistribute it and/or
@@ -467,12 +467,6 @@ esxSupportsLongMode(esxPrivate *priv)
         goto cleanup;
     }
 
-    if (hostSystem == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Could not retrieve the HostSystem object"));
-        goto cleanup;
-    }
-
     for (dynamicProperty = hostSystem->propSet; dynamicProperty != NULL;
          dynamicProperty = dynamicProperty->_next) {
         if (STREQ(dynamicProperty->name, "hardware.cpuFeature")) {
@@ -534,7 +528,7 @@ esxLookupHostSystemBiosUuid(esxPrivate *priv, unsigned char *uuid)
     int result = -1;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *hostSystem = NULL;
-    esxVI_DynamicProperty *dynamicProperty = NULL;
+    char *uuid_string = NULL;
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
@@ -543,41 +537,22 @@ esxLookupHostSystemBiosUuid(esxPrivate *priv, unsigned char *uuid)
     if (esxVI_String_AppendValueToList(&propertyNameList,
                                        "hardware.systemInfo.uuid") < 0 ||
         esxVI_LookupHostSystemProperties(priv->primary, propertyNameList,
-                                         &hostSystem) < 0) {
+                                         &hostSystem) < 0 ||
+        esxVI_GetStringValue(hostSystem, "hardware.systemInfo.uuid",
+                             &uuid_string, esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
     }
 
-    if (hostSystem == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Could not retrieve the HostSystem object"));
-        goto cleanup;
-    }
+    if (strlen(uuid_string) > 0) {
+        if (virUUIDParse(uuid_string, uuid) < 0) {
+            VIR_WARN("Could not parse host UUID from string '%s'", uuid_string);
 
-    for (dynamicProperty = hostSystem->propSet; dynamicProperty != NULL;
-         dynamicProperty = dynamicProperty->_next) {
-        if (STREQ(dynamicProperty->name, "hardware.systemInfo.uuid")) {
-            if (esxVI_AnyType_ExpectType(dynamicProperty->val,
-                                         esxVI_Type_String) < 0) {
-                goto cleanup;
-            }
-
-            if (strlen(dynamicProperty->val->string) > 0) {
-                if (virUUIDParse(dynamicProperty->val->string, uuid) < 0) {
-                    VIR_WARN("Could not parse host UUID from string '%s'",
-                             dynamicProperty->val->string);
-
-                    /* HostSystem has an invalid UUID, ignore it */
-                    memset(uuid, 0, VIR_UUID_BUFLEN);
-                }
-            } else {
-                /* HostSystem has an empty UUID */
-                memset(uuid, 0, VIR_UUID_BUFLEN);
-            }
-
-            break;
-        } else {
-            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
+            /* HostSystem has an invalid UUID, ignore it */
+            memset(uuid, 0, VIR_UUID_BUFLEN);
         }
+    } else {
+        /* HostSystem has an empty UUID */
+        memset(uuid, 0, VIR_UUID_BUFLEN);
     }
 
     result = 0;
@@ -1176,17 +1151,8 @@ esxSupportsVMotion(esxPrivate *priv)
     if (esxVI_String_AppendValueToList(&propertyNameList,
                                        "capability.vmotionSupported") < 0 ||
         esxVI_LookupHostSystemProperties(priv->primary, propertyNameList,
-                                         &hostSystem) < 0) {
-        goto cleanup;
-    }
-
-    if (hostSystem == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Could not retrieve the HostSystem object"));
-        goto cleanup;
-    }
-
-    if (esxVI_GetBoolean(hostSystem, "capability.vmotionSupported",
+                                         &hostSystem) < 0 ||
+        esxVI_GetBoolean(hostSystem, "capability.vmotionSupported",
                          &priv->supportsVMotion,
                          esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
@@ -1281,12 +1247,6 @@ esxGetHostname(virConnectPtr conn)
         goto cleanup;
     }
 
-    if (hostSystem == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Could not retrieve the HostSystem object"));
-        goto cleanup;
-    }
-
     for (dynamicProperty = hostSystem->propSet; dynamicProperty != NULL;
          dynamicProperty = dynamicProperty->_next) {
         if (STREQ(dynamicProperty->name,
@@ -1376,12 +1336,6 @@ esxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo)
                                            "summary.hardware.cpuModel\0") < 0 ||
         esxVI_LookupHostSystemProperties(priv->primary, propertyNameList,
                                          &hostSystem) < 0) {
-        goto cleanup;
-    }
-
-    if (hostSystem == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Could not retrieve the HostSystem object"));
         goto cleanup;
     }
 
@@ -2699,12 +2653,6 @@ esxDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
                                        "capability.maxSupportedVcpus") < 0 ||
         esxVI_LookupHostSystemProperties(priv->primary, propertyNameList,
                                          &hostSystem) < 0) {
-        goto cleanup;
-    }
-
-    if (hostSystem == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Could not retrieve the HostSystem object"));
         goto cleanup;
     }
 

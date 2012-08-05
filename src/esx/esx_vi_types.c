@@ -296,7 +296,8 @@
              childNode = childNode->next) {                                   \
             if (childNode->type != XML_ELEMENT_NODE) {                        \
                 virReportError(VIR_ERR_INTERNAL_ERROR,                        \
-                               _("Wrong XML element type %d"), childNode->type); \
+                               _("Wrong XML element type %d"),                \
+                               childNode->type);                              \
                 goto failure;                                                 \
             }                                                                 \
                                                                               \
