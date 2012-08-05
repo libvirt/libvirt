@@ -1219,8 +1219,10 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
         }
     }
 
-    vshError(ctl, _("command '%s' doesn't support option --%s"),
-             cmd->name, name);
+    if (STRNEQ(cmd->name, "help")) {
+        vshError(ctl, _("command '%s' doesn't support option --%s"),
+                 cmd->name, name);
+    }
     return NULL;
 }
 
@@ -1987,9 +1989,12 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
                     *optstr = '\0'; /* convert the '=' to '\0' */
                     optstr = vshStrdup(ctl, optstr + 1);
                 }
+                /* Special case 'help' to ignore all spurious options */
                 if (!(opt = vshCmddefGetOption(ctl, cmd, tkdata + 2,
                                                &opts_seen, &opt_index))) {
                     VIR_FREE(optstr);
+                    if (STREQ(cmd->name, "help"))
+                        continue;
                     goto syntaxError;
                 }
                 VIR_FREE(tkdata);
@@ -2027,8 +2032,10 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
                 continue;
             } else {
 get_data:
+                /* Special case 'help' to ignore spurious data */
                 if (!(opt = vshCmddefGetData(cmd, &opts_need_arg,
-                                             &opts_seen))) {
+                                             &opts_seen)) &&
+                     STRNEQ(cmd->name, "help")) {
                     vshError(ctl, _("unexpected data '%s'"), tkdata);
                     goto syntaxError;
                 }
