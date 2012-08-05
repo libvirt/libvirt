@@ -2914,10 +2914,11 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         } else {
             /* pick an interface from the pool */
 
-            /* PASSTHROUGH mode, and PRIVATE Mode + 802.1Qbh both require
-             * exclusive access to a device, so current usageCount must be
-             * 0.  Other modes can share, so just search for the one with
-             * the lowest usageCount.
+            /* PASSTHROUGH mode, and PRIVATE Mode + 802.1Qbh both
+             * require exclusive access to a device, so current
+             * connections count must be 0.  Other modes can share, so
+             * just search for the one with the lowest number of
+             * connections.
              */
             if (netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH) {
                 if ((netdef->nForwardPfs > 0) && (netdef->nForwardIfs <= 0)) {
@@ -2949,14 +2950,13 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                             virReportOOMError();
                             goto cleanup;
                         }
-                        netdef->forwardIfs[ii].usageCount = 0;
                     }
                 }
 
-                /* pick first dev with 0 usageCount */
+                /* pick first dev with 0 connections */
 
                 for (ii = 0; ii < netdef->nForwardIfs; ii++) {
-                    if (netdef->forwardIfs[ii].usageCount == 0) {
+                    if (netdef->forwardIfs[ii].connections == 0) {
                         dev = &netdef->forwardIfs[ii];
                         break;
                     }
@@ -2966,9 +2966,9 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                        (iface->data.network.actual->virtPortProfile->virtPortType
                         == VIR_NETDEV_VPORT_PROFILE_8021QBH)) {
 
-                /* pick first dev with 0 usageCount */
+                /* pick first dev with 0 connections */
                 for (ii = 0; ii < netdef->nForwardIfs; ii++) {
-                    if (netdef->forwardIfs[ii].usageCount == 0) {
+                    if (netdef->forwardIfs[ii].connections == 0) {
                         dev = &netdef->forwardIfs[ii];
                         break;
                     }
@@ -2977,7 +2977,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                 /* pick least used dev */
                 dev = &netdef->forwardIfs[0];
                 for (ii = 1; ii < netdef->nForwardIfs; ii++) {
-                    if (netdef->forwardIfs[ii].usageCount < dev->usageCount)
+                    if (netdef->forwardIfs[ii].connections < dev->connections)
                         dev = &netdef->forwardIfs[ii];
                 }
             }
@@ -3002,9 +3002,9 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
 
     if (dev) {
         /* we are now assured of success, so mark the allocation */
-        dev->usageCount++;
-        VIR_DEBUG("Using physical device %s, usageCount %d",
-                  dev->dev, dev->usageCount);
+        dev->connections++;
+        VIR_DEBUG("Using physical device %s, %d connections",
+                  dev->dev, dev->connections);
     }
     ret = 0;
 cleanup:
@@ -3077,7 +3077,7 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
         int ii;
         virNetworkForwardIfDefPtr dev = NULL;
 
-        /* find the matching interface in the pool and increment its usageCount */
+        /* find the matching interface and increment its connections */
 
         for (ii = 0; ii < netdef->nForwardIfs; ii++) {
             if (STREQ(actualDev, netdef->forwardIfs[ii].dev)) {
@@ -3094,10 +3094,10 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
         }
 
         /* PASSTHROUGH mode, and PRIVATE Mode + 802.1Qbh both require
-         * exclusive access to a device, so current usageCount must be
-         * 0 in those cases.
+         * exclusive access to a device, so current connections count
+         * must be 0 in those cases.
          */
-        if ((dev->usageCount > 0) &&
+        if ((dev->connections > 0) &&
             ((netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH) ||
              ((netdef->forwardType == VIR_NETWORK_FORWARD_PRIVATE) &&
               iface->data.network.actual->virtPortProfile &&
@@ -3109,9 +3109,9 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
             goto cleanup;
         }
         /* we are now assured of success, so mark the allocation */
-        dev->usageCount++;
-        VIR_DEBUG("Using physical device %s, usageCount %d",
-                  dev->dev, dev->usageCount);
+        dev->connections++;
+        VIR_DEBUG("Using physical device %s, %d connections",
+                  dev->dev, dev->connections);
     }
 
     ret = 0;
@@ -3194,9 +3194,9 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
             goto cleanup;
         }
 
-        dev->usageCount--;
-        VIR_DEBUG("Releasing physical device %s, usageCount %d",
-                  dev->dev, dev->usageCount);
+        dev->connections--;
+        VIR_DEBUG("Releasing physical device %s, %d connections",
+                  dev->dev, dev->connections);
     }
 
     ret = 0;

@@ -1137,7 +1137,6 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             }
 
             if (forwardDev) {
-                def->forwardIfs[0].usageCount = 0;
                 def->forwardIfs[0].dev = forwardDev;
                 forwardDev = NULL;
                 def->nForwardIfs++;
@@ -1169,7 +1168,6 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
 
                 def->forwardIfs[ii].dev = forwardDev;
                 forwardDev = NULL;
-                def->forwardIfs[ii].usageCount = 0;
                 def->nForwardIfs++;
             }
         }

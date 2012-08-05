@@ -132,7 +132,7 @@ typedef struct _virNetworkForwardIfDef virNetworkForwardIfDef;
 typedef virNetworkForwardIfDef *virNetworkForwardIfDefPtr;
 struct _virNetworkForwardIfDef {
     char *dev;      /* name of device */
-    int usageCount; /* how many guest interfaces are bound to this device? */
+    int   connections; /* how many guest interfaces are connected to this device? */
 };
 
 typedef struct _virNetworkForwardPfDef virNetworkForwardPfDef;
