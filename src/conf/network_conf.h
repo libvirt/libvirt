@@ -135,6 +135,12 @@ struct _virNetworkForwardIfDef {
     int usageCount; /* how many guest interfaces are bound to this device? */
 };
 
+typedef struct _virNetworkForwardPfDef virNetworkForwardPfDef;
+typedef virNetworkForwardPfDef *virNetworkForwardPfDefPtr;
+struct _virNetworkForwardPfDef {
+    char *dev;      /* name of device */
+};
+
 typedef struct _virPortGroupDef virPortGroupDef;
 typedef virPortGroupDef *virPortGroupDefPtr;
 struct _virPortGroupDef {
@@ -164,7 +170,7 @@ struct _virNetworkDef {
      * interfaces), they will be listed here.
      */
     size_t nForwardPfs;
-    virNetworkForwardIfDefPtr forwardPfs;
+    virNetworkForwardPfDefPtr forwardPfs;
 
     size_t nForwardIfs;
     virNetworkForwardIfDefPtr forwardIfs;

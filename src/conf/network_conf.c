@@ -97,6 +97,12 @@ virNetworkForwardIfDefClear(virNetworkForwardIfDefPtr def)
     VIR_FREE(def->dev);
 }
 
+static void
+virNetworkForwardPfDefClear(virNetworkForwardPfDefPtr def)
+{
+    VIR_FREE(def->dev);
+}
+
 static void virNetworkIpDefClear(virNetworkIpDefPtr def)
 {
     int ii;
@@ -157,7 +163,7 @@ void virNetworkDefFree(virNetworkDefPtr def)
     VIR_FREE(def->domain);
 
     for (ii = 0 ; ii < def->nForwardPfs && def->forwardPfs ; ii++) {
-        virNetworkForwardIfDefClear(&def->forwardPfs[ii]);
+        virNetworkForwardPfDefClear(&def->forwardPfs[ii]);
     }
     VIR_FREE(def->forwardPfs);
 
@@ -1113,7 +1119,6 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
                 goto error;
             }
 
-            def->forwardPfs->usageCount = 0;
             def->forwardPfs->dev = forwardDev;
             forwardDev = NULL;
             def->nForwardPfs++;
