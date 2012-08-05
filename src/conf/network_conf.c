@@ -1495,8 +1495,14 @@ char *virNetworkDefFormat(const virNetworkDefPtr def, unsigned int flags)
         if (def->nForwardIfs &&
             (!def->nForwardPfs || !(flags & VIR_NETWORK_XML_INACTIVE))) {
             for (ii = 0; ii < def->nForwardIfs; ii++) {
-                virBufferEscapeString(&buf, "    <interface dev='%s'/>\n",
+                virBufferEscapeString(&buf, "    <interface dev='%s'",
                                       def->forwardIfs[ii].dev);
+                if (!(flags & VIR_NETWORK_XML_INACTIVE) &&
+                    (def->forwardIfs[ii].connections > 0)) {
+                    virBufferAsprintf(&buf, " connections='%d'",
+                                      def->forwardIfs[ii].connections);
+                }
+                virBufferAddLit(&buf, "/>\n");
             }
         }
         if (def->nForwardPfs || def->nForwardIfs)
