@@ -338,9 +338,135 @@ object HostNasVolume                 extends HostFileSystemVolume
 end
 
 
+object HostNetOffloadCapabilities
+    Boolean                                  csumOffload                    o
+    Boolean                                  tcpSegmentation                o
+    Boolean                                  zeroCopyXmit                   o
+end
+
+
+object HostNetworkPolicy
+    HostNetworkSecurityPolicy                security                       o
+    HostNicTeamingPolicy                     nicTeaming                     o
+    HostNetOffloadCapabilities               offloadPolicy                  o
+    HostNetworkTrafficShapingPolicy          shapingPolicy                  o
+end
+
+
+object HostNetworkSecurityPolicy
+    Boolean                                  allowPromiscuous               o
+    Boolean                                  macChanges                     o
+    Boolean                                  forgedTransmits                o
+end
+
+
+object HostNetworkTrafficShapingPolicy
+    Boolean                                  enabled                        o
+    Long                                     averageBandwidth               o
+    Long                                     peakBandwidth                  o
+    Long                                     burstSize                      o
+end
+
+
+object HostNicFailureCriteria
+    String                                   checkSpeed                     o
+    Int                                      speed                          o
+    Boolean                                  checkDuplex                    o
+    Boolean                                  fullDuplex                     o
+    Boolean                                  checkErrorPercent              o
+    Int                                      percentage                     o
+    Boolean                                  checkBeacon                    o
+end
+
+
+object HostNicOrderPolicy
+    String                                   activeNic                      ol
+    String                                   standbyNic                     ol
+end
+
+
+object HostNicTeamingPolicy
+    String                                   policy                         o
+    Boolean                                  reversePolicy                  o
+    Boolean                                  notifySwitches                 o
+    Boolean                                  rollingOrder                   o
+    HostNicFailureCriteria                   failureCriteria                o
+    HostNicOrderPolicy                       nicOrder                       o
+end
+
+
+object HostPortGroup
+    String                                   key                            o
+    HostPortGroupPort                        port                           ol
+    String                                   vswitch                        o
+    HostNetworkPolicy                        computedPolicy                 r
+    HostPortGroupSpec                        spec                           r
+end
+
+
+object HostPortGroupPort
+    String                                   key                            o
+    String                                   mac                            ol
+    String                                   type                           r
+end
+
+
+object HostPortGroupSpec
+    String                                   name                           r
+    Int                                      vlanId                         r
+    String                                   vswitchName                    r
+    HostNetworkPolicy                        policy                         r
+end
+
+
 object HostScsiDiskPartition
     String                                   diskName                       r
     Int                                      partition                      r
+end
+
+
+object HostVirtualSwitch
+    String                                   name                           r
+    String                                   key                            r
+    Int                                      numPorts                       r
+    Int                                      numPortsAvailable              r
+    Int                                      mtu                            o
+    String                                   portgroup                      ol
+    String                                   pnic                           ol
+    HostVirtualSwitchSpec                    spec                           r
+end
+
+
+object HostVirtualSwitchAutoBridge   extends HostVirtualSwitchBridge
+    String                                   excludedNicDevice              ol
+end
+
+
+object HostVirtualSwitchBeaconConfig
+    Int                                      interval                       r
+end
+
+
+object HostVirtualSwitchBondBridge   extends HostVirtualSwitchBridge
+    String                                   nicDevice                      rl
+    HostVirtualSwitchBeaconConfig            beacon                         o
+end
+
+
+object HostVirtualSwitchBridge
+end
+
+
+object HostVirtualSwitchSimpleBridge extends HostVirtualSwitchBridge
+    String                                   nicDevice                      r
+end
+
+
+object HostVirtualSwitchSpec
+    Int                                      numPorts                       r
+    HostVirtualSwitchBridge                  bridge                         o
+    HostNetworkPolicy                        policy                         o
+    Int                                      mtu                            o
 end
 
 
@@ -805,6 +931,19 @@ end
 # Methods
 #
 
+method AddPortGroup
+    ManagedObjectReference                   _this                          r
+    HostPortGroupSpec                        portgrp                        r
+end
+
+
+method AddVirtualSwitch
+    ManagedObjectReference                   _this                          r
+    String                                   vswitchName                    r
+    HostVirtualSwitchSpec                    spec                           o
+end
+
+
 method AnswerVM
     ManagedObjectReference                   _this                          r
     String                                   questionId                     r
@@ -981,9 +1120,21 @@ method RegisterVM_Task               returns ManagedObjectReference         r
 end
 
 
+method RemovePortGroup
+    ManagedObjectReference                   _this                          r
+    String                                   pgName                         r
+end
+
+
 method RemoveSnapshot_Task           returns ManagedObjectReference         r
     ManagedObjectReference                   _this                          r
     Boolean                                  removeChildren                 r
+end
+
+
+method RemoveVirtualSwitch
+    ManagedObjectReference                   _this                          r
+    String                                   vswitchName                    r
 end
 
 

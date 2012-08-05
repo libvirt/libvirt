@@ -783,6 +783,7 @@ ESX_VI__TEMPLATE__FREE(Context,
     esxVI_SelectionSpec_Free(&item->selectSet_hostSystemToDatastore);
     esxVI_SelectionSpec_Free(&item->selectSet_computeResourceToHost);
     esxVI_SelectionSpec_Free(&item->selectSet_computeResourceToParentToParent);
+    esxVI_SelectionSpec_Free(&item->selectSet_datacenterToNetwork);
 })
 
 int
@@ -1927,6 +1928,13 @@ esxVI_BuildSelectSetCollection(esxVI_Context *ctx)
         return -1;
     }
 
+    /* Datacenter -> network (Network) */
+    if (esxVI_BuildSelectSet(&ctx->selectSet_datacenterToNetwork,
+                             "datacenterToNetwork",
+                             "Datacenter", "network", NULL) < 0) {
+        return -1;
+    }
+
     return 0;
 }
 
@@ -2088,6 +2096,15 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
                 objectSpec->selectSet = ctx->selectSet_hostSystemToVm;
             } else if (STREQ(type, "Datastore")) {
                 objectSpec->selectSet = ctx->selectSet_hostSystemToDatastore;
+            } else {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Invalid lookup of '%s' from '%s'"),
+                               type, root->type);
+                goto cleanup;
+            }
+        } else if (STREQ(root->type, "Datacenter")) {
+            if (STREQ(type, "Network")) {
+                objectSpec->selectSet = ctx->selectSet_datacenterToNetwork;
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Invalid lookup of '%s' from '%s'"),
@@ -4086,6 +4103,160 @@ esxVI_LookupPhysicalNicByMACAddress(esxVI_Context *ctx, const char *mac,
     esxVI_PhysicalNic_Free(&physicalNicList);
 
     return result;
+}
+
+
+
+int
+esxVI_LookupHostVirtualSwitchList(esxVI_Context *ctx,
+                                  esxVI_HostVirtualSwitch **hostVirtualSwitchList)
+{
+    int result = -1;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *hostSystem = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+
+    if (hostVirtualSwitchList == NULL || *hostVirtualSwitchList != NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (esxVI_String_AppendValueToList(&propertyNameList,
+                                       "config.network.vswitch") < 0 ||
+        esxVI_LookupHostSystemProperties(ctx, propertyNameList,
+                                         &hostSystem) < 0) {
+        goto cleanup;
+    }
+
+    for (dynamicProperty = hostSystem->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "config.network.vswitch")) {
+            if (esxVI_HostVirtualSwitch_CastListFromAnyType
+                 (dynamicProperty->val, hostVirtualSwitchList) < 0) {
+                goto cleanup;
+            }
+        } else {
+            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
+        }
+    }
+
+    result = 0;
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&hostSystem);
+
+    return result;
+}
+
+
+
+int
+esxVI_LookupHostVirtualSwitchByName(esxVI_Context *ctx, const char *name,
+                                    esxVI_HostVirtualSwitch **hostVirtualSwitch,
+                                    esxVI_Occurrence occurrence)
+{
+    int result = -1;
+    esxVI_HostVirtualSwitch *hostVirtualSwitchList = NULL;
+    esxVI_HostVirtualSwitch *candidate = NULL;
+
+    if (hostVirtualSwitch == NULL || *hostVirtualSwitch != NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (esxVI_LookupHostVirtualSwitchList(ctx, &hostVirtualSwitchList) < 0) {
+        goto cleanup;
+    }
+
+    /* Search for a matching HostVirtualSwitch */
+    for (candidate = hostVirtualSwitchList; candidate != NULL;
+         candidate = candidate->_next) {
+        if (STREQ(candidate->name, name)) {
+            if (esxVI_HostVirtualSwitch_DeepCopy(hostVirtualSwitch,
+                                                 candidate) < 0) {
+                goto cleanup;
+            }
+
+            /* Found HostVirtualSwitch with matching name */
+            result = 0;
+
+            goto cleanup;
+        }
+    }
+
+    if (*hostVirtualSwitch == NULL &&
+        occurrence != esxVI_Occurrence_OptionalItem) {
+        virReportError(VIR_ERR_NO_NETWORK,
+                       _("Could not find HostVirtualSwitch with name '%s'"),
+                       name);
+        goto cleanup;
+    }
+
+    result = 0;
+
+  cleanup:
+    esxVI_HostVirtualSwitch_Free(&hostVirtualSwitchList);
+
+    return result;
+}
+
+
+
+int
+esxVI_LookupHostPortGroupList(esxVI_Context *ctx,
+                              esxVI_HostPortGroup **hostPortGroupList)
+{
+    int result = -1;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *hostSystem = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+
+    if (hostPortGroupList == NULL || *hostPortGroupList != NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (esxVI_String_AppendValueToList(&propertyNameList,
+                                       "config.network.portgroup") < 0 ||
+        esxVI_LookupHostSystemProperties(ctx, propertyNameList,
+                                         &hostSystem) < 0) {
+        goto cleanup;
+    }
+
+    for (dynamicProperty = hostSystem->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "config.network.portgroup")) {
+            if (esxVI_HostPortGroup_CastListFromAnyType
+                  (dynamicProperty->val, hostPortGroupList) < 0) {
+                goto cleanup;
+            }
+
+            break;
+        } else {
+            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
+        }
+    }
+
+    result = 0;
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&hostSystem);
+
+    return result;
+}
+
+
+
+int
+esxVI_LookupNetworkList(esxVI_Context *ctx, esxVI_String *propertyNameList,
+                        esxVI_ObjectContent **networkList)
+{
+    return esxVI_LookupObjectContentByType(ctx, ctx->datacenter->_reference,
+                                           "Network", propertyNameList,
+                                           networkList,
+                                           esxVI_Occurrence_OptionalList);
 }
 
 

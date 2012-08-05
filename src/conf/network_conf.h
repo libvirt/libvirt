@@ -148,6 +148,7 @@ typedef struct _virNetworkDef virNetworkDef;
 typedef virNetworkDef *virNetworkDefPtr;
 struct _virNetworkDef {
     unsigned char uuid[VIR_UUID_BUFLEN];
+    bool uuid_specified;
     char *name;
 
     char *bridge;       /* Name of bridge device */
@@ -288,5 +289,7 @@ int virNetworkObjIsDuplicate(virNetworkObjListPtr doms,
 
 void virNetworkObjLock(virNetworkObjPtr obj);
 void virNetworkObjUnlock(virNetworkObjPtr obj);
+
+VIR_ENUM_DECL(virNetworkForward)
 
 #endif /* __NETWORK_CONF_H__ */

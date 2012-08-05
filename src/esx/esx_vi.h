@@ -227,6 +227,7 @@ struct _esxVI_Context {
     esxVI_SelectionSpec *selectSet_hostSystemToDatastore;
     esxVI_SelectionSpec *selectSet_computeResourceToHost;
     esxVI_SelectionSpec *selectSet_computeResourceToParentToParent;
+    esxVI_SelectionSpec *selectSet_datacenterToNetwork;
     bool hasQueryVirtualDiskUuid;
     bool hasSessionIsActive;
 };
@@ -491,6 +492,19 @@ int esxVI_LookupPhysicalNicByName(esxVI_Context *ctx, const char *name,
 int esxVI_LookupPhysicalNicByMACAddress(esxVI_Context *ctx, const char *mac,
                                         esxVI_PhysicalNic **physicalNic,
                                         esxVI_Occurrence occurrence);
+
+int esxVI_LookupHostVirtualSwitchList
+      (esxVI_Context *ctx, esxVI_HostVirtualSwitch **hostVirtualSwitchList);
+
+int esxVI_LookupHostVirtualSwitchByName(esxVI_Context *ctx, const char *name,
+                                        esxVI_HostVirtualSwitch **hostVirtualSwitch,
+                                        esxVI_Occurrence occurrence);
+
+int esxVI_LookupHostPortGroupList(esxVI_Context *ctx,
+                                  esxVI_HostPortGroup **hostPortGroupList);
+
+int esxVI_LookupNetworkList(esxVI_Context *ctx, esxVI_String *propertyNameList,
+                            esxVI_ObjectContent **networkList);
 
 int esxVI_HandleVirtualMachineQuestion
       (esxVI_Context *ctx, esxVI_ManagedObjectReference *virtualMachine,

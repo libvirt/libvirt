@@ -47,8 +47,6 @@
 #define MAX_BRIDGE_ID 256
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 
-VIR_ENUM_DECL(virNetworkForward)
-
 VIR_ENUM_IMPL(virNetworkForward,
               VIR_NETWORK_FORWARD_LAST,
               "none", "nat", "route", "bridge", "private", "vepa", "passthrough" )
@@ -967,6 +965,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             goto error;
         }
         VIR_FREE(tmp);
+        def->uuid_specified = true;
     }
 
     /* Parse network domain information */

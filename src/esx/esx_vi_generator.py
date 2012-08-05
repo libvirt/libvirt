@@ -1520,6 +1520,11 @@ additional_object_features = { "AutoStartDefaults"          : Object.FEATURE__AN
                                                               Object.FEATURE__ANY_TYPE,
                                "HostDatastoreBrowserSearchResults" : Object.FEATURE__LIST |
                                                               Object.FEATURE__ANY_TYPE,
+                               "HostPortGroup"              : Object.FEATURE__LIST |
+                                                              Object.FEATURE__ANY_TYPE,
+                               "HostVirtualSwitch"          : Object.FEATURE__DEEP_COPY |
+                                                              Object.FEATURE__LIST |
+                                                              Object.FEATURE__ANY_TYPE,
                                "ManagedObjectReference"     : Object.FEATURE__ANY_TYPE,
                                "ObjectContent"              : Object.FEATURE__DEEP_COPY,
                                "PhysicalNic"                : Object.FEATURE__DEEP_COPY |
