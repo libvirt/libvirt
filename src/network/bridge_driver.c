@@ -3005,6 +3005,10 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         VIR_DEBUG("Using physical device %s, %d connections",
                   dev->dev, dev->connections);
     }
+
+    netdef->connections++;
+    VIR_DEBUG("Using network %s, %d connections",
+              netdef->name, netdef->connections);
     ret = 0;
 cleanup:
     for (ii = 0; ii < num_virt_fns; ii++)
@@ -3117,6 +3121,9 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
     }
 
 success:
+    netdef->connections++;
+    VIR_DEBUG("Using network %s, %d connections",
+              netdef->name, netdef->connections);
     ret = 0;
 cleanup:
     if (network)
@@ -3205,6 +3212,9 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
     }
 
 success:
+    netdef->connections--;
+    VIR_DEBUG("Releasing network %s, %d connections",
+              netdef->name, netdef->connections);
     ret = 0;
 cleanup:
     if (network)

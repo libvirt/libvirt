@@ -12,6 +12,11 @@
   <define name="network">
 
     <element name="network">
+      <optional>
+        <attribute name="connections">
+          <data type="unsignedInt"/>
+        </attribute>
+      </optional>
       <interleave>
 
         <!-- The name of the network, used to refer to it through the API
@@ -91,6 +96,11 @@
                   <attribute name='dev'>
                     <ref name='deviceName'/>
                   </attribute>
+                  <optional>
+                    <attribute name="connections">
+                      <data type="unsignedInt"/>
+                    </attribute>
+                  </optional>
                 </element>
               </zeroOrMore>
               <optional>

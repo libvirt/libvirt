@@ -15,8 +15,14 @@
 
     <p>
       The root element required for all virtual networks is
-      named <code>network</code> and has no attributes.
-      The network XML format is available <span class="since">since 0.3.0</span>
+      named <code>network</code> and has no configurable attributes
+      (although <span class="since">since 0.10.0</span> there is one
+      optional read-only attribute - when examining the live
+      configuration of a network, the
+      attribute <code>connections</code>, if present, specifies the
+      number of guest interfaces currently connected via this
+      network).  The network XML format is
+      available <span class="since">since 0.3.0</span>
     </p>
 
     <h3><a name="elementsMetadata">General metadata</a></h3>
@@ -233,12 +239,22 @@
   &lt;/forward&gt;
 ...
         </pre>
-        Additionally, <span class="since">since 0.9.10</span>, libvirt
-        allows a shorthand for specifying all virtual interfaces
-        associated with a single physical function, by using
-        the <code>&lt;pf&gt;</code> subelement to call out the
-        corresponding physical interface associated with multiple
-        virtual interfaces:
+        <p>
+          <span class="since">since 0.10.0</span>,
+          <code>&lt;interface&gt;</code> also has an optional read-only
+          attribute - when examining the live configuration of a
+          network, the attribute <code>connections</code>, if present,
+          specifies the number of guest interfaces currently connected
+          via this physical interface.
+        </p>
+        <p>
+          Additionally, <span class="since">since 0.9.10</span>, libvirt
+          allows a shorthand for specifying all virtual interfaces
+          associated with a single physical function, by using
+          the <code>&lt;pf&gt;</code> subelement to call out the
+          corresponding physical interface associated with multiple
+          virtual interfaces:
+        </p>
         <pre>
 ...
   &lt;forward mode='passthrough'&gt;

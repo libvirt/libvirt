@@ -1463,7 +1463,11 @@ char *virNetworkDefFormat(const virNetworkDefPtr def, unsigned int flags)
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     int ii;
 
-    virBufferAddLit(&buf, "<network>\n");
+    virBufferAddLit(&buf, "<network");
+    if (!(flags & VIR_NETWORK_XML_INACTIVE) && (def->connections > 0)) {
+        virBufferAsprintf(&buf, " connections='%d'", def->connections);
+    }
+    virBufferAddLit(&buf, ">\n");
     virBufferEscapeString(&buf, "  <name>%s</name>\n", def->name);
 
     uuid = def->uuid;
