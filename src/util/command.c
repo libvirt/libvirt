@@ -2269,7 +2269,7 @@ virPidWait(pid_t pid, int *exitstatus)
         if (status != 0) {
             char *st = virCommandTranslateStatus(status);
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Child process (%lld) status unexpected: %s"),
+                           _("Child process (%lld) unexpected %s"),
                            (long long) pid, NULLSTR(st));
             VIR_FREE(st);
             return -1;
@@ -2327,9 +2327,13 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
         if (status) {
             char *str = virCommandToString(cmd);
             char *st = virCommandTranslateStatus(status);
+            bool haveErrMsg = cmd->errbuf && *cmd->errbuf && (*cmd->errbuf)[0];
+
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Child process (%s) status unexpected: %s"),
-                           str ? str : cmd->args[0], NULLSTR(st));
+                           _("Child process (%s) unexpected %s%s%s"),
+                           str ? str : cmd->args[0], NULLSTR(st),
+                           haveErrMsg ? ": " : "",
+                           haveErrMsg ? *cmd->errbuf : "");
             VIR_FREE(str);
             VIR_FREE(st);
             return -1;
