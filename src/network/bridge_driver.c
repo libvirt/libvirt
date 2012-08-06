@@ -2767,9 +2767,8 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         virReportError(VIR_ERR_NO_NETWORK,
                        _("no network with matching name '%s'"),
                        iface->data.network.name);
-        goto cleanup;
+        goto error;
     }
-
     netdef = network->def;
 
     /* portgroup can be present for any type of network, in particular
@@ -2786,12 +2785,12 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         if (!iface->data.network.actual
             && (VIR_ALLOC(iface->data.network.actual) < 0)) {
             virReportOOMError();
-            goto cleanup;
+            goto error;
         }
 
         if (virNetDevBandwidthCopy(&iface->data.network.actual->bandwidth,
                                    portgroup->bandwidth) < 0)
-            goto cleanup;
+            goto error;
     }
 
     if ((netdef->forwardType == VIR_NETWORK_FORWARD_NONE) ||
@@ -2813,14 +2812,14 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         if (!iface->data.network.actual
             && (VIR_ALLOC(iface->data.network.actual) < 0)) {
             virReportOOMError();
-            goto cleanup;
+            goto error;
         }
 
         iface->data.network.actual->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
         iface->data.network.actual->data.bridge.brname = strdup(netdef->bridge);
         if (!iface->data.network.actual->data.bridge.brname) {
             virReportOOMError();
-            goto cleanup;
+            goto error;
         }
 
         /* merge virtualports from interface, network, and portgroup to
@@ -2831,7 +2830,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                                         netdef->virtPortProfile,
                                         portgroup
                                         ? portgroup->virtPortProfile : NULL) < 0) {
-            goto cleanup;
+            goto error;
         }
         virtport = iface->data.network.actual->virtPortProfile;
         if (virtport) {
@@ -2842,7 +2841,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                                  "'%s' which uses a bridge device"),
                                virNetDevVPortTypeToString(virtport->virtPortType),
                                netdef->name);
-                goto cleanup;
+                goto error;
             }
         }
 
@@ -2858,7 +2857,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         if (!iface->data.network.actual
             && (VIR_ALLOC(iface->data.network.actual) < 0)) {
             virReportOOMError();
-            goto cleanup;
+            goto error;
         }
 
         /* Set type=direct and appropriate <source mode='xxx'/> */
@@ -2886,7 +2885,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                                         netdef->virtPortProfile,
                                         portgroup
                                         ? portgroup->virtPortProfile : NULL) < 0) {
-            goto cleanup;
+            goto error;
         }
         virtport = iface->data.network.actual->virtPortProfile;
         if (virtport) {
@@ -2898,7 +2897,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                                  "'%s' which uses a macvtap device"),
                                virNetDevVPortTypeToString(virtport->virtPortType),
                                netdef->name);
-                goto cleanup;
+                goto error;
             }
         }
 
@@ -2910,7 +2909,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                            _("network '%s' uses a direct mode, but "
                              "has no forward dev and no interface pool"),
                            netdef->name);
-            goto cleanup;
+            goto error;
         } else {
             /* pick an interface from the pool */
 
@@ -2927,19 +2926,19 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("Could not get Virtual functions on %s"),
                                        netdef->forwardPfs->dev);
-                        goto cleanup;
+                        goto error;
                     }
 
                     if (num_virt_fns == 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("No Vf's present on SRIOV PF %s"),
                                        netdef->forwardPfs->dev);
-                        goto cleanup;
+                        goto error;
                     }
 
                     if ((VIR_ALLOC_N(netdef->forwardIfs, num_virt_fns)) < 0) {
                         virReportOOMError();
-                        goto cleanup;
+                        goto error;
                     }
 
                     netdef->nForwardIfs = num_virt_fns;
@@ -2948,7 +2947,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                         netdef->forwardIfs[ii].dev = strdup(vfname[ii]);
                         if (!netdef->forwardIfs[ii].dev) {
                             virReportOOMError();
-                            goto cleanup;
+                            goto error;
                         }
                     }
                 }
@@ -2987,18 +2986,18 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                                _("network '%s' requires exclusive access "
                                  "to interfaces, but none are available"),
                                netdef->name);
-                goto cleanup;
+                goto error;
             }
             iface->data.network.actual->data.direct.linkdev = strdup(dev->dev);
             if (!iface->data.network.actual->data.direct.linkdev) {
                 virReportOOMError();
-                goto cleanup;
+                goto error;
             }
         }
     }
 
     if (virNetDevVPortProfileCheckComplete(virtport, true) < 0)
-        goto cleanup;
+        goto error;
 
     if (dev) {
         /* we are now assured of success, so mark the allocation */
@@ -3013,11 +3012,14 @@ cleanup:
     VIR_FREE(vfname);
     if (network)
         virNetworkObjUnlock(network);
-    if (ret < 0) {
+    return ret;
+
+error:
+    if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
         virDomainActualNetDefFree(iface->data.network.actual);
         iface->data.network.actual = NULL;
     }
-    return ret;
+    goto cleanup;
 }
 
 /* networkNotifyActualDevice:
@@ -3042,12 +3044,6 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
        return 0;
 
-    if (!iface->data.network.actual ||
-        (virDomainNetGetActualType(iface) != VIR_DOMAIN_NET_TYPE_DIRECT)) {
-        VIR_DEBUG("Nothing to claim from network %s", iface->data.network.name);
-        return 0;
-    }
-
     networkDriverLock(driver);
     network = virNetworkFindByName(&driver->networks, iface->data.network.name);
     networkDriverUnlock(driver);
@@ -3055,7 +3051,14 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
         virReportError(VIR_ERR_NO_NETWORK,
                        _("no network with matching name '%s'"),
                        iface->data.network.name);
-        goto cleanup;
+        goto error;
+    }
+    netdef = network->def;
+
+    if (!iface->data.network.actual ||
+        (virDomainNetGetActualType(iface) != VIR_DOMAIN_NET_TYPE_DIRECT)) {
+        VIR_DEBUG("Nothing to claim from network %s", iface->data.network.name);
+        goto success;
     }
 
     actualDev = virDomainNetGetActualDirectDev(iface);
@@ -3063,16 +3066,15 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("the interface uses a direct "
                                "mode, but has no source dev"));
-        goto cleanup;
+        goto error;
     }
 
-    netdef = network->def;
     if (netdef->nForwardIfs == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("network '%s' uses a direct mode, but "
                          "has no forward dev and no interface pool"),
                        netdef->name);
-        goto cleanup;
+        goto error;
     } else {
         int ii;
         virNetworkForwardIfDefPtr dev = NULL;
@@ -3090,7 +3092,7 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("network '%s' doesn't have dev='%s' in use by domain"),
                            netdef->name, actualDev);
-            goto cleanup;
+            goto error;
         }
 
         /* PASSTHROUGH mode, and PRIVATE Mode + 802.1Qbh both require
@@ -3106,7 +3108,7 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("network '%s' claims dev='%s' is already in use by a different domain"),
                            netdef->name, actualDev);
-            goto cleanup;
+            goto error;
         }
         /* we are now assured of success, so mark the allocation */
         dev->connections++;
@@ -3114,11 +3116,15 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
                   dev->dev, dev->connections);
     }
 
+success:
     ret = 0;
 cleanup:
     if (network)
         virNetworkObjUnlock(network);
     return ret;
+
+error:
+    goto cleanup;
 }
 
 
@@ -3136,20 +3142,13 @@ int
 networkReleaseActualDevice(virDomainNetDefPtr iface)
 {
     struct network_driver *driver = driverState;
-    virNetworkObjPtr network = NULL;
+    virNetworkObjPtr network;
     virNetworkDefPtr netdef;
     const char *actualDev;
     int ret = -1;
 
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
        return 0;
-
-    if (!iface->data.network.actual ||
-        (virDomainNetGetActualType(iface) != VIR_DOMAIN_NET_TYPE_DIRECT)) {
-        VIR_DEBUG("Nothing to release to network %s", iface->data.network.name);
-        ret = 0;
-        goto cleanup;
-    }
 
     networkDriverLock(driver);
     network = virNetworkFindByName(&driver->networks, iface->data.network.name);
@@ -3158,7 +3157,14 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
         virReportError(VIR_ERR_NO_NETWORK,
                        _("no network with matching name '%s'"),
                        iface->data.network.name);
-        goto cleanup;
+        goto error;
+    }
+    netdef = network->def;
+
+    if (!iface->data.network.actual ||
+        (virDomainNetGetActualType(iface) != VIR_DOMAIN_NET_TYPE_DIRECT)) {
+        VIR_DEBUG("Nothing to release to network %s", iface->data.network.name);
+        goto success;
     }
 
     actualDev = virDomainNetGetActualDirectDev(iface);
@@ -3166,16 +3172,15 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("the interface uses a direct "
                                "mode, but has no source dev"));
-        goto cleanup;
+        goto error;
     }
 
-    netdef = network->def;
     if (netdef->nForwardIfs == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("network '%s' uses a direct mode, but "
                          "has no forward dev and no interface pool"),
                        netdef->name);
-        goto cleanup;
+        goto error;
     } else {
         int ii;
         virNetworkForwardIfDefPtr dev = NULL;
@@ -3191,7 +3196,7 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("network '%s' doesn't have dev='%s' in use by domain"),
                            netdef->name, actualDev);
-            goto cleanup;
+            goto error;
         }
 
         dev->connections--;
@@ -3199,13 +3204,19 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
                   dev->dev, dev->connections);
     }
 
+success:
     ret = 0;
 cleanup:
     if (network)
         virNetworkObjUnlock(network);
-    virDomainActualNetDefFree(iface->data.network.actual);
-    iface->data.network.actual = NULL;
+    if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+        virDomainActualNetDefFree(iface->data.network.actual);
+        iface->data.network.actual = NULL;
+    }
     return ret;
+
+error:
+    goto cleanup;
 }
 
 /*
@@ -3232,7 +3243,7 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
 {
     int ret = -1;
     struct network_driver *driver = driverState;
-    virNetworkObjPtr network = NULL;
+    virNetworkObjPtr network;
     virNetworkDefPtr netdef;
     virNetworkIpDefPtr ipdef;
     virSocketAddr addr;
@@ -3247,7 +3258,7 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
         virReportError(VIR_ERR_NO_NETWORK,
                        _("no network with matching name '%s'"),
                        netname);
-        goto cleanup;
+        goto error;
     }
     netdef = network->def;
 
@@ -3289,18 +3300,21 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
 
     if (dev_name) {
         if (virNetDevGetIPv4Address(dev_name, &addr) < 0)
-            goto cleanup;
-
+            goto error;
         addrptr = &addr;
     }
 
-    if (addrptr &&
-        (*netaddr = virSocketAddrFormat(addrptr))) {
-        ret = 0;
+    if (!(addrptr &&
+          (*netaddr = virSocketAddrFormat(addrptr)))) {
+        goto error;
     }
 
+    ret = 0;
 cleanup:
     if (network)
         virNetworkObjUnlock(network);
     return ret;
+
+error:
+    goto cleanup;
 }
