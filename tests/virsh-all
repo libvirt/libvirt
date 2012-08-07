@@ -25,7 +25,7 @@ fail=0
 
 test_url=test:///default
 
-$abs_top_builddir/tools/virsh -c $test_url help > cmds || framework_failure
+$abs_top_builddir/tools/virsh -c $test_url help | grep -v connect > cmds || framework_failure
 cmds=$(sed -n 's/^    \([^ ][^ ]*\) .*/\1/p' cmds) || framework_failure
 test -n "$cmds" || framework_failure
 
