@@ -1546,7 +1546,10 @@ fi
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 if [ $1 -ge 1 ] ; then
     # Package upgrade, not uninstall
-    /bin/systemctl try-restart virtlockd.service >/dev/null 2>&1 || :
+    /bin/systemctl status virtlockd.service >/dev/null 2>&1
+    if [ $? = 1 ] ; then
+        /bin/systemctl kill --signal=USR1 virtlockd.service >/dev/null 2>&1 || :
+    fi
     /bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 || :
 fi
 %endif

@@ -44,6 +44,7 @@
 #include "rpc/virnetserver.h"
 #include "virrandom.h"
 #include "virhash.h"
+#include "uuid.h"
 
 #include "locking/lock_daemon_dispatch.h"
 #include "locking/lock_protocol.h"
@@ -62,6 +63,8 @@ struct _virLockDaemon {
 };
 
 virLockDaemonPtr lockDaemon = NULL;
+
+static bool execRestart = false;
 
 enum {
     VIR_LOCK_DAEMON_ERR_NONE = 0,
@@ -94,6 +97,14 @@ virLockDaemonClientNew(virNetServerClientPtr client,
                        void *opaque);
 static void
 virLockDaemonClientFree(void *opaque);
+
+static void *
+virLockDaemonClientNewPostExecRestart(virNetServerClientPtr client,
+                                      virJSONValuePtr object,
+                                      void *opaque);
+static virJSONValuePtr
+virLockDaemonClientPreExecRestart(virNetServerClientPtr client,
+                                  void *opaque);
 
 static void
 virLockDaemonFree(virLockDaemonPtr lockd)
@@ -136,7 +147,7 @@ virLockDaemonNew(bool privileged)
                                        -1, 0,
                                        false, NULL,
                                        virLockDaemonClientNew,
-                                       NULL,
+                                       virLockDaemonClientPreExecRestart,
                                        virLockDaemonClientFree,
                                        (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
         goto error;
@@ -146,6 +157,90 @@ virLockDaemonNew(bool privileged)
         goto error;
 
     if (!(lockd->defaultLockspace = virLockSpaceNew(NULL)))
+        goto error;
+
+    return lockd;
+
+error:
+    virLockDaemonFree(lockd);
+    return NULL;
+}
+
+
+static virLockDaemonPtr
+virLockDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
+{
+    virLockDaemonPtr lockd;
+    virJSONValuePtr child;
+    virJSONValuePtr lockspaces;
+    size_t i;
+    int n;
+
+    if (VIR_ALLOC(lockd) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    if (virMutexInit(&lockd->lock) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to initialize mutex"));
+        VIR_FREE(lockd);
+        return NULL;
+    }
+
+    if (!(lockd->lockspaces = virHashCreate(VIR_LOCK_DAEMON_NUM_LOCKSPACES,
+                                            virLockDaemonLockSpaceDataFree)))
+        goto error;
+
+    if (!(child = virJSONValueObjectGet(object, "defaultLockspace"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing defaultLockspace data from JSON file"));
+        goto error;
+    }
+
+    if (!(lockd->defaultLockspace =
+          virLockSpaceNewPostExecRestart(child)))
+        goto error;
+
+    if (!(lockspaces = virJSONValueObjectGet(object, "lockspaces"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing lockspaces data from JSON file"));
+        goto error;
+    }
+
+    if ((n = virJSONValueArraySize(lockspaces)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Malformed lockspaces data from JSON file"));
+        goto error;
+    }
+
+    for (i = 0 ; i < n ; i++) {
+        virLockSpacePtr lockspace;
+
+        child = virJSONValueArrayGet(lockspaces, i);
+
+        if (!(lockspace = virLockSpaceNewPostExecRestart(child)))
+            goto error;
+
+        if (virHashAddEntry(lockd->lockspaces,
+                            virLockSpaceGetDirectory(lockspace),
+                            lockspace) < 0) {
+            virLockSpaceFree(lockspace);
+        }
+    }
+
+    if (!(child = virJSONValueObjectGet(object, "server"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing server data from JSON file"));
+        goto error;
+    }
+
+    if (!(lockd->srv = virNetServerNewPostExecRestart(child,
+                                                      virLockDaemonClientNew,
+                                                      virLockDaemonClientNewPostExecRestart,
+                                                      virLockDaemonClientPreExecRestart,
+                                                      virLockDaemonClientFree,
+                                                      (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
         goto error;
 
     return lockd;
@@ -484,6 +579,15 @@ virLockDaemonShutdownHandler(virNetServerPtr srv,
     virNetServerQuit(srv);
 }
 
+static void
+virLockDaemonExecRestartHandler(virNetServerPtr srv,
+                                siginfo_t *sig ATTRIBUTE_UNUSED,
+                                void *opaque ATTRIBUTE_UNUSED)
+{
+    execRestart = true;
+    virNetServerQuit(srv);
+}
+
 static int
 virLockDaemonSetupSignals(virNetServerPtr srv)
 {
@@ -492,6 +596,8 @@ virLockDaemonSetupSignals(virNetServerPtr srv)
     if (virNetServerAddSignalHandler(srv, SIGQUIT, virLockDaemonShutdownHandler, NULL) < 0)
         return -1;
     if (virNetServerAddSignalHandler(srv, SIGTERM, virLockDaemonShutdownHandler, NULL) < 0)
+        return -1;
+    if (virNetServerAddSignalHandler(srv, SIGUSR1, virLockDaemonExecRestartHandler, NULL) < 0)
         return -1;
     return 0;
 }
@@ -505,6 +611,8 @@ virLockDaemonSetupNetworkingSystemD(virNetServerPtr srv)
     const char *fdstr;
     unsigned long long procid;
     unsigned int nfds;
+
+    VIR_DEBUG("Setting up networking from systemd");
 
     if (!(pidstr = getenv("LISTEN_PID"))) {
         VIR_DEBUG("No LISTEN_FDS from systemd");
@@ -713,6 +821,277 @@ error:
     virMutexDestroy(&priv->lock);
     VIR_FREE(priv);
     return NULL;
+}
+
+
+static void *
+virLockDaemonClientNewPostExecRestart(virNetServerClientPtr client,
+                                      virJSONValuePtr object,
+                                      void *opaque)
+{
+    virLockDaemonClientPtr priv = virLockDaemonClientNew(client, opaque);
+    unsigned int ownerPid;
+    const char *ownerUUID;
+    const char *ownerName;
+
+    if (!priv)
+        return NULL;
+
+    if (virJSONValueObjectGetBoolean(object, "restricted", &priv->restricted) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing restricted data in JSON document"));
+        goto error;
+    }
+    if (virJSONValueObjectGetNumberUint(object, "ownerPid", &ownerPid) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing ownerPid data in JSON document"));
+        goto error;
+    }
+    priv->ownerPid = (pid_t)ownerPid;
+    if (virJSONValueObjectGetNumberUint(object, "ownerId", &priv->ownerId) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing ownerId data in JSON document"));
+        goto error;
+    }
+    if (!(ownerName = virJSONValueObjectGetString(object, "ownerName"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing ownerName data in JSON document"));
+        goto error;
+    }
+    if (!(priv->ownerName = strdup(ownerName))) {
+        virReportOOMError();
+        goto error;
+    }
+    if (!(ownerUUID = virJSONValueObjectGetString(object, "ownerUUID"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing ownerUUID data in JSON document"));
+        goto error;
+    }
+    if (virUUIDParse(ownerUUID, priv->ownerUUID) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing ownerUUID data in JSON document"));
+        goto error;
+    }
+    return priv;
+
+error:
+    virLockDaemonClientFree(priv);
+    return NULL;
+}
+
+
+static virJSONValuePtr
+virLockDaemonClientPreExecRestart(virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                  void *opaque)
+{
+    virLockDaemonClientPtr priv = opaque;
+    virJSONValuePtr object = virJSONValueNewObject();
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    if (!object)
+        return NULL;
+
+    if (virJSONValueObjectAppendBoolean(object, "restricted", priv->restricted) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot set restricted data in JSON document"));
+        goto error;
+    }
+    if (virJSONValueObjectAppendNumberUint(object, "ownerPid", priv->ownerPid) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot set ownerPid data in JSON document"));
+        goto error;
+    }
+    if (virJSONValueObjectAppendNumberUint(object, "ownerId", priv->ownerId) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot set ownerId data in JSON document"));
+        goto error;
+    }
+    if (virJSONValueObjectAppendString(object, "ownerName", priv->ownerName) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot set ownerName data in JSON document"));
+        goto error;
+    }
+    virUUIDFormat(priv->ownerUUID, uuidstr);
+    if (virJSONValueObjectAppendString(object, "ownerUUID", uuidstr) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot set ownerUUID data in JSON document"));
+        goto error;
+    }
+
+    return object;
+
+error:
+    virJSONValueFree(object);
+    return NULL;
+}
+
+
+#define VIR_LOCK_DAEMON_RESTART_EXEC_FILE LOCALSTATEDIR "/run/virtlockd-restart-exec.json"
+
+static char *
+virLockDaemonGetExecRestartMagic(void)
+{
+    char *ret;
+
+    if (virAsprintf(&ret, "%lld",
+                    (long long int)getpid()) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    return ret;
+}
+
+
+static int
+virLockDaemonPostExecRestart(bool privileged)
+{
+    const char *gotmagic;
+    char *wantmagic = NULL;
+    int ret = -1;
+    char *state = NULL;
+    virJSONValuePtr object = NULL;
+
+    VIR_DEBUG("Running post-restart exec");
+
+    if (!virFileExists(VIR_LOCK_DAEMON_RESTART_EXEC_FILE)) {
+        VIR_DEBUG("No restart file %s present",
+                  VIR_LOCK_DAEMON_RESTART_EXEC_FILE);
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (virFileReadAll(VIR_LOCK_DAEMON_RESTART_EXEC_FILE,
+                       1024 * 1024 * 10, /* 10 MB */
+                       &state) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Loading state %s", state);
+
+    if (!(object = virJSONValueFromString(state)))
+        goto cleanup;
+
+    gotmagic = virJSONValueObjectGetString(object, "magic");
+    if (!gotmagic) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing magic data in JSON document"));
+        goto cleanup;
+    }
+
+    if (!(wantmagic = virLockDaemonGetExecRestartMagic()))
+        goto cleanup;
+
+    if (STRNEQ(gotmagic, wantmagic)) {
+        VIR_WARN("Found restart exec file with old magic %s vs wanted %s",
+                 gotmagic, wantmagic);
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (!(lockDaemon = virLockDaemonNewPostExecRestart(object, privileged)))
+        goto cleanup;
+
+    ret = 1;
+
+cleanup:
+    unlink(VIR_LOCK_DAEMON_RESTART_EXEC_FILE);
+    VIR_FREE(wantmagic);
+    VIR_FREE(state);
+    virJSONValueFree(object);
+    return ret;
+}
+
+
+static int
+virLockDaemonPreExecRestart(virNetServerPtr srv,
+                            char **argv)
+{
+    virJSONValuePtr child;
+    char *state = NULL;
+    int ret = -1;
+    virJSONValuePtr object;
+    char *magic;
+    virHashKeyValuePairPtr pairs = NULL, tmp;
+    virJSONValuePtr lockspaces;
+
+    VIR_DEBUG("Running pre-restart exec");
+
+    if (!(object = virJSONValueNewObject()))
+        goto cleanup;
+
+    if (!(child = virNetServerPreExecRestart(srv)))
+        goto cleanup;
+
+    if (virJSONValueObjectAppend(object, "server", child) < 0) {
+        virJSONValueFree(child);
+        goto cleanup;
+    }
+
+    if (!(child = virLockSpacePreExecRestart(lockDaemon->defaultLockspace)))
+        goto cleanup;
+
+    if (virJSONValueObjectAppend(object, "defaultLockspace", child) < 0) {
+        virJSONValueFree(child);
+        goto cleanup;
+    }
+
+    if (!(lockspaces = virJSONValueNewArray()))
+        goto cleanup;
+    if (virJSONValueObjectAppend(object, "lockspaces", lockspaces) < 0) {
+        virJSONValueFree(lockspaces);
+        goto cleanup;
+    }
+
+
+    tmp = pairs = virHashGetItems(lockDaemon->lockspaces, NULL);
+    while (tmp && tmp->key) {
+        virLockSpacePtr lockspace = (virLockSpacePtr)tmp->value;
+
+        if (!(child = virLockSpacePreExecRestart(lockspace)))
+            goto cleanup;
+
+        if (virJSONValueArrayAppend(lockspaces, child) < 0) {
+            virJSONValueFree(child);
+            goto cleanup;
+        }
+
+        tmp++;
+    }
+
+    if (!(magic = virLockDaemonGetExecRestartMagic()))
+        goto cleanup;
+
+    if (virJSONValueObjectAppendString(object, "magic", magic) < 0) {
+        VIR_FREE(magic);
+        goto cleanup;
+    }
+
+    if (!(state = virJSONValueToString(object, true)))
+        goto cleanup;
+
+    VIR_DEBUG("Saving state %s", state);
+
+    if (virFileWriteStr(VIR_LOCK_DAEMON_RESTART_EXEC_FILE,
+                        state, 0700) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to save state file %s"),
+                             VIR_LOCK_DAEMON_RESTART_EXEC_FILE);
+        goto cleanup;
+    }
+
+    if (execv(argv[0], argv) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to restart self"));
+        goto cleanup;
+    }
+
+    abort(); /* This should be impossible to reach */
+
+cleanup:
+    VIR_FREE(pairs);
+    VIR_FREE(state);
+    virJSONValueFree(object);
+    return ret;
 }
 
 
@@ -958,21 +1337,30 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
-    if (!(lockDaemon = virLockDaemonNew(privileged))) {
+    if ((rv = virLockDaemonPostExecRestart(privileged)) < 0) {
         ret = VIR_LOCK_DAEMON_ERR_INIT;
         goto cleanup;
     }
 
-    if ((rv = virLockDaemonSetupNetworkingSystemD(lockDaemon->srv)) < 0) {
-        ret = VIR_LOCK_DAEMON_ERR_NETWORK;
-        goto cleanup;
-    }
+    /* rv == 1, means we setup everything from saved state,
+     * so we only setup stuff from scratch if rv == 0 */
+    if (rv == 0) {
+        if (!(lockDaemon = virLockDaemonNew(privileged))) {
+            ret = VIR_LOCK_DAEMON_ERR_INIT;
+            goto cleanup;
+        }
 
-    /* Only do this, if systemd did not pass a FD */
-    if (rv == 0 &&
-        virLockDaemonSetupNetworkingNative(lockDaemon->srv, sock_file) < 0) {
-        ret = VIR_LOCK_DAEMON_ERR_NETWORK;
-        goto cleanup;
+        if ((rv = virLockDaemonSetupNetworkingSystemD(lockDaemon->srv)) < 0) {
+            ret = VIR_LOCK_DAEMON_ERR_NETWORK;
+            goto cleanup;
+        }
+
+        /* Only do this, if systemd did not pass a FD */
+        if (rv == 0 &&
+            virLockDaemonSetupNetworkingNative(lockDaemon->srv, sock_file) < 0) {
+            ret = VIR_LOCK_DAEMON_ERR_NETWORK;
+            goto cleanup;
+        }
     }
 
     if ((virLockDaemonSetupSignals(lockDaemon->srv)) < 0) {
@@ -1012,7 +1400,12 @@ int main(int argc, char **argv) {
 
     virNetServerUpdateServices(lockDaemon->srv, true);
     virNetServerRun(lockDaemon->srv);
-    ret = 0;
+
+    if (execRestart &&
+        virLockDaemonPreExecRestart(lockDaemon->srv, argv) < 0)
+        ret = -1;
+    else
+        ret = 0;
 
 cleanup:
     virObjectUnref(lockProgram);
