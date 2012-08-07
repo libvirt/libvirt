@@ -1322,6 +1322,8 @@ virNetClientNewExternal;
 virNetClientNewSSH;
 virNetClientNewTCP;
 virNetClientNewUNIX;
+virNetClientRegisterAsyncIO;
+virNetClientRegisterKeepAlive;
 virNetClientRemoteAddrString;
 virNetClientRemoveStream;
 virNetClientSendNoReply;

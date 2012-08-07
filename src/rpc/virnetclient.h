@@ -52,6 +52,9 @@ virNetClientPtr virNetClientNewSSH(const char *nodename,
 
 virNetClientPtr virNetClientNewExternal(const char **cmdargv);
 
+int virNetClientRegisterAsyncIO(virNetClientPtr client);
+int virNetClientRegisterKeepAlive(virNetClientPtr client);
+
 typedef void (*virNetClientCloseFunc)(virNetClientPtr client,
                                       int reason,
                                       void *opaque);

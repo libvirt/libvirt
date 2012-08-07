@@ -68,6 +68,7 @@ struct _virNetClient {
     virMutex lock;
 
     virNetSocketPtr sock;
+    bool asyncIO;
 
     virNetTLSSessionPtr tls;
     char *hostname;
@@ -309,7 +310,6 @@ static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
 {
     virNetClientPtr client = NULL;
     int wakeupFD[2] = { -1, -1 };
-    virKeepAlivePtr ka = NULL;
 
     if (virNetClientInitialize() < 0)
         return NULL;
@@ -337,29 +337,6 @@ static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
         !(client->hostname = strdup(hostname)))
         goto no_memory;
 
-    /* Set up a callback to listen on the socket data */
-    virObjectRef(client);
-    if (virNetSocketAddIOCallback(client->sock,
-                                  VIR_EVENT_HANDLE_READABLE,
-                                  virNetClientIncomingEvent,
-                                  client,
-                                  virObjectFreeCallback) < 0) {
-        virObjectUnref(client);
-        VIR_DEBUG("Failed to add event watch, disabling events and support for"
-                  " keepalive messages");
-    } else {
-        /* Keepalive protocol consists of async messages so it can only be used
-         * if the client supports them */
-        if (!(ka = virKeepAliveNew(-1, 0, client,
-                                   virNetClientKeepAliveSendCB,
-                                   virNetClientKeepAliveDeadCB,
-                                   virObjectFreeCallback)))
-            goto error;
-        /* keepalive object has a reference to client */
-        virObjectRef(client);
-    }
-
-    client->keepalive = ka;
     PROBE(RPC_CLIENT_NEW,
           "client=%p sock=%p",
           client, client->sock);
@@ -370,10 +347,6 @@ no_memory:
 error:
     VIR_FORCE_CLOSE(wakeupFD[0]);
     VIR_FORCE_CLOSE(wakeupFD[1]);
-    if (ka) {
-        virKeepAliveStop(ka);
-        virObjectUnref(ka);
-    }
     virObjectUnref(client);
     return NULL;
 }
@@ -430,6 +403,58 @@ virNetClientPtr virNetClientNewExternal(const char **cmdargv)
         return NULL;
 
     return virNetClientNew(sock, NULL);
+}
+
+
+int virNetClientRegisterAsyncIO(virNetClientPtr client)
+{
+    if (client->asyncIO)
+        return 0;
+
+    /* Set up a callback to listen on the socket data */
+    virObjectRef(client);
+    if (virNetSocketAddIOCallback(client->sock,
+                                  VIR_EVENT_HANDLE_READABLE,
+                                  virNetClientIncomingEvent,
+                                  client,
+                                  virObjectFreeCallback) < 0) {
+        virObjectUnref(client);
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to register async IO callback"));
+        return -1;
+    }
+
+    client->asyncIO = true;
+    return 0;
+}
+
+
+int virNetClientRegisterKeepAlive(virNetClientPtr client)
+{
+    virKeepAlivePtr ka;
+
+    if (client->keepalive)
+        return 0;
+
+    if (!client->asyncIO) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Unable to enable keepalives without async IO support"));
+        return -1;
+    }
+
+    /* Keepalive protocol consists of async messages so it can only be used
+     * if the client supports them */
+    if (!(ka = virKeepAliveNew(-1, 0, client,
+                               virNetClientKeepAliveSendCB,
+                               virNetClientKeepAliveDeadCB,
+                               virObjectFreeCallback)))
+        return -1;
+
+    /* keepalive object has a reference to client */
+    virObjectRef(client);
+
+    client->keepalive = ka;
+    return 0;
 }
 
 

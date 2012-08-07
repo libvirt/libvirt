@@ -686,6 +686,15 @@ doRemoteOpen(virConnectPtr conn,
     } /* switch (transport) */
 
 
+    if (virNetClientRegisterAsyncIO(priv->client) < 0) {
+        VIR_DEBUG("Failed to add event watch, disabling events and support for"
+                  " keepalive messages");
+        virResetLastError();
+    } else {
+        if (virNetClientRegisterKeepAlive(priv->client) < 0)
+            goto failed;
+    }
+
     virNetClientSetCloseCallback(priv->client,
                                  remoteClientCloseFunc,
                                  conn, NULL);

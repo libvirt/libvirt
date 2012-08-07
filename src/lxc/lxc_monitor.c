@@ -129,6 +129,8 @@ virLXCMonitorPtr virLXCMonitorNew(virDomainObjPtr vm,
     if (!(mon->client = virNetClientNewUNIX(sockpath, false, NULL)))
         goto error;
 
+    if (virNetClientRegisterAsyncIO(mon->client) < 0)
+        goto error;
 
     if (!(mon->program = virNetClientProgramNew(VIR_LXC_PROTOCOL_PROGRAM,
                                                 VIR_LXC_PROTOCOL_PROGRAM_VERSION,
