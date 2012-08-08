@@ -469,19 +469,58 @@ static int qemuAssignDeviceDiskAliasFixed(virDomainDiskDefPtr disk)
 }
 
 static int
-qemuDefaultScsiControllerModel(virDomainDefPtr def) {
-    if (STREQ(def->os.arch, "ppc64") &&
-        STREQ(def->os.machine, "pseries")) {
-        return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
+qemuCheckScsiControllerModel(virDomainDefPtr def,
+                             virBitmapPtr qemuCaps,
+                             int *model)
+{
+    if (*model > 0) {
+        switch (*model) {
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC:
+            if (!qemuCapsGet(qemuCaps, QEMU_CAPS_SCSI_LSI)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("This QEMU doesn't support "
+                                 "lsi scsi controller"));
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
+            if (!qemuCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_SCSI_PCI)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("This QEMU doesn't support "
+                                 "virtio scsi controller"));
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
+            /*TODO: need checking work here if necessary */
+            break;
+        default:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported controller model: %s"),
+                           virDomainControllerModelSCSITypeToString(*model));
+            return -1;
+        }
     } else {
-        return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
+        if (STREQ(def->os.arch, "ppc64") &&
+            STREQ(def->os.machine, "pseries")) {
+            *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
+        } else if (qemuCapsGet(qemuCaps, QEMU_CAPS_SCSI_LSI)) {
+            *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unable to determine model for scsi controller"));
+            return -1;
+        }
     }
+
+    return 0;
 }
 
 /* Our custom -drive naming scheme used with id= */
 static int
 qemuAssignDeviceDiskAliasCustom(virDomainDefPtr def,
-                                virDomainDiskDefPtr disk)
+                                virDomainDiskDefPtr disk,
+                                virBitmapPtr qemuCaps)
 {
     const char *prefix = virDomainDiskBusTypeToString(disk->bus);
     int controllerModel = -1;
@@ -491,11 +530,10 @@ qemuAssignDeviceDiskAliasCustom(virDomainDefPtr def,
             controllerModel =
                 virDomainDiskFindControllerModel(def, disk,
                                                  VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
-        }
 
-        if (controllerModel == -1 ||
-            controllerModel == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO)
-            controllerModel = qemuDefaultScsiControllerModel(def);
+            if ((qemuCheckScsiControllerModel(def, qemuCaps, &controllerModel)) < 0)
+                return -1;
+        }
 
         if (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI ||
             controllerModel == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
@@ -533,7 +571,7 @@ qemuAssignDeviceDiskAlias(virDomainDefPtr vmdef,
 {
     if (qemuCapsGet(qemuCaps, QEMU_CAPS_DRIVE)) {
         if (qemuCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
-            return qemuAssignDeviceDiskAliasCustom(vmdef, def);
+            return qemuAssignDeviceDiskAliasCustom(vmdef, def, qemuCaps);
         else
             return qemuAssignDeviceDiskAliasFixed(def);
     } else {
@@ -850,12 +888,23 @@ qemuAssignSpaprVIOAddress(virDomainDefPtr def, virDomainDeviceInfoPtr info,
     return 0;
 }
 
-int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
+int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
+                                      virBitmapPtr qemuCaps)
 {
-    int i, rc;
+    int i, rc = -1;
     int model;
+    virBitmapPtr localCaps = NULL;
 
     /* Default values match QEMU. See spapr_(llan|vscsi|vty).c */
+
+    if (!qemuCaps) {
+        /* need to get information from real environment */
+        if (qemuCapsExtractVersionInfo(def->emulator, def->os.arch,
+                                       false, NULL,
+                                       &localCaps) < 0)
+            goto cleanup;
+        qemuCaps = localCaps;
+    }
 
     for (i = 0 ; i < def->nnets; i++) {
         if (def->nets[i]->model &&
@@ -864,21 +913,24 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
         rc = qemuAssignSpaprVIOAddress(def, &def->nets[i]->info,
                                        0x1000ul);
         if (rc)
-            return rc;
+            goto cleanup;
     }
 
     for (i = 0 ; i < def->ncontrollers; i++) {
         model = def->controllers[i]->model;
-        if (model == -1 &&
-            def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
-            model = qemuDefaultScsiControllerModel(def);
+        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
+            rc = qemuCheckScsiControllerModel(def, qemuCaps, &model);
+            if (rc)
+                goto cleanup;
+        }
+
         if (model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI &&
             def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
             def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
         rc = qemuAssignSpaprVIOAddress(def, &def->controllers[i]->info,
                                        0x2000ul);
         if (rc)
-            return rc;
+            goto cleanup;
     }
 
     for (i = 0 ; i < def->nserials; i++) {
@@ -890,12 +942,16 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
         rc = qemuAssignSpaprVIOAddress(def, &def->serials[i]->info,
                                        0x30000000ul);
         if (rc)
-            return rc;
+            goto cleanup;
     }
 
     /* No other devices are currently supported on spapr-vio */
 
-    return 0;
+    rc = 0;
+
+cleanup:
+    qemuCapsFree(localCaps);
+    return rc;
 }
 
 #define QEMU_PCI_ADDRESS_LAST_SLOT 31
@@ -1059,7 +1115,7 @@ int qemuDomainAssignAddresses(virDomainDefPtr def,
 {
     int rc;
 
-    rc = qemuDomainAssignSpaprVIOAddresses(def);
+    rc = qemuDomainAssignSpaprVIOAddresses(def, qemuCaps);
     if (rc)
         return rc;
 
@@ -2433,9 +2489,8 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
         controllerModel =
             virDomainDiskFindControllerModel(def, disk,
                                              VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
-        if (controllerModel == -1 ||
-            controllerModel == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO)
-            controllerModel = qemuDefaultScsiControllerModel(def);
+        if ((qemuCheckScsiControllerModel(def, qemuCaps, &controllerModel)) < 0)
+            goto error;
 
         if (controllerModel == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
             if (disk->info.addr.drive.target != 0) {
@@ -2764,10 +2819,9 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
     switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
         model = def->model;
-        if (model == -1 ||
-            model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO) {
-            model = qemuDefaultScsiControllerModel(domainDef);
-        }
+        if ((qemuCheckScsiControllerModel(domainDef, qemuCaps, &model)) < 0)
+            return NULL;
+
         switch (model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
             virBufferAddLit(&buf, "virtio-scsi-pci");

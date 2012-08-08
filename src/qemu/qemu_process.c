@@ -3120,7 +3120,8 @@ qemuProcessReconnect(void *opaque)
     }
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE))
-        qemuDomainAssignAddresses(obj->def, priv->qemuCaps, obj);
+        if ((qemuDomainAssignAddresses(obj->def, priv->qemuCaps, obj)) < 0)
+            goto error;
 
     if (virSecurityManagerReserveLabel(driver->securityManager, obj->def, obj->pid) < 0)
         goto error;
@@ -3585,7 +3586,8 @@ int qemuProcessStart(virConnectPtr conn,
      */
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         VIR_DEBUG("Assigning domain PCI addresses");
-        qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm);
+        if ((qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm)) < 0)
+            goto cleanup;
     }
 
     VIR_DEBUG("Building emulator command line");
@@ -4267,7 +4269,8 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
      */
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         VIR_DEBUG("Assigning domain PCI addresses");
-        qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm);
+        if ((qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm)) < 0)
+            goto cleanup;
     }
 
     if ((timestamp = virTimeStringNow()) == NULL) {

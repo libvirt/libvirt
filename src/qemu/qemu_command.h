@@ -180,7 +180,8 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
 int qemuDomainAssignAddresses(virDomainDefPtr def,
                               virBitmapPtr qemuCaps,
                               virDomainObjPtr);
-int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def);
+int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
+                                      virBitmapPtr qemuCaps);
 
 int qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                                  virBitmapPtr qemuCaps,
