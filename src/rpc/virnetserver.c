@@ -64,7 +64,7 @@ struct _virNetServerJob {
 };
 
 struct _virNetServer {
-    virObjectPtr object;
+    virObject object;
 
     virMutex lock;
 
