@@ -1,9 +1,9 @@
 /*
  * nwfilter_ebiptables_driver.c: driver for ebtables/iptables on tap devices
  *
- * Copyright (C) 2011 Red Hat, Inc.
- * Copyright (C) 2010 IBM Corp.
- * Copyright (C) 2010 Stefan Berger
+ * Copyright (C) 2011-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2012 IBM Corp.
+ * Copyright (C) 2010-2012 Stefan Berger
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,6 +36,7 @@
 #include "virterror_internal.h"
 #include "domain_conf.h"
 #include "nwfilter_conf.h"
+#include "nwfilter_driver.h"
 #include "nwfilter_gentech_driver.h"
 #include "nwfilter_ebiptables_driver.h"
 #include "virfile.h"
@@ -151,11 +152,11 @@ static const char ebiptables_script_set_ifs[] =
 #define NWFILTER_FUNC_SET_IFS ebiptables_script_set_ifs
 
 #define NWFILTER_SET_EBTABLES_SHELLVAR(BUFPTR) \
-    virBufferAsprintf(BUFPTR, "EBT=%s\n", ebtables_cmd_path);
+    virBufferAsprintf(BUFPTR, "EBT=\"%s\"\n", ebtables_cmd_path);
 #define NWFILTER_SET_IPTABLES_SHELLVAR(BUFPTR) \
-    virBufferAsprintf(BUFPTR, "IPT=%s\n", iptables_cmd_path);
+    virBufferAsprintf(BUFPTR, "IPT=\"%s\"\n", iptables_cmd_path);
 #define NWFILTER_SET_IP6TABLES_SHELLVAR(BUFPTR) \
-    virBufferAsprintf(BUFPTR, "IPT=%s\n", ip6tables_cmd_path);
+    virBufferAsprintf(BUFPTR, "IPT=\"%s\"\n", ip6tables_cmd_path);
 
 #define VIRT_IN_CHAIN      "libvirt-in"
 #define VIRT_OUT_CHAIN     "libvirt-out"
@@ -4127,23 +4128,98 @@ virNWFilterTechDriver ebiptables_driver = {
     .removeBasicRules    = ebtablesRemoveBasicRules,
 };
 
+/*
+ * ebiptablesDriverInitWithFirewallD
+ *
+ * Try to use firewall-cmd by testing it once; if it works, have ebtables
+ * and ip6tables commands use firewall-cmd.
+ */
+static int
+ebiptablesDriverInitWithFirewallD(void)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *firewall_cmd_path;
+    char *output = NULL;
+    int ret = -1;
+
+    if (!virNWFilterDriverIsWatchingFirewallD())
+        return -1;
+
+    firewall_cmd_path = virFindFileInPath("firewall-cmd");
+
+    if (firewall_cmd_path) {
+        virBufferAsprintf(&buf, "FWC=%s\n", firewall_cmd_path);
+        virBufferAsprintf(&buf,
+                          CMD_DEF("$FWC --state") CMD_SEPARATOR
+                          CMD_EXEC
+                          "%s",
+                          CMD_STOPONERR(1));
+
+        if (ebiptablesExecCLI(&buf, NULL, &output) == 0 &&
+            strlen(output) == 0) {
+            VIR_DEBUG("Using firewall-cmd in nwfilter_ebiptables_driver.");
+
+            ignore_value(virAsprintf(&ebtables_cmd_path,
+                                     "%s --direct --passthrough eb",
+                                     firewall_cmd_path));
+            ignore_value(virAsprintf(&iptables_cmd_path,
+                                     "%s --direct --passthrough ipv4",
+                                     firewall_cmd_path));
+            ignore_value(virAsprintf(&ip6tables_cmd_path,
+                                     "%s --direct --passthrough ipv6",
+                                     firewall_cmd_path));
+
+            if (!ebtables_cmd_path || !iptables_cmd_path ||
+                !ip6tables_cmd_path) {
+                virReportOOMError();
+                VIR_FREE(ebtables_cmd_path);
+                VIR_FREE(iptables_cmd_path);
+                VIR_FREE(ip6tables_cmd_path);
+                ret = -1;
+                goto err_exit;
+            }
+            ret = 0;
+        }
+    }
+
+err_exit:
+    VIR_FREE(firewall_cmd_path);
+    VIR_FREE(output);
+
+    return ret;
+}
 
 static int
-ebiptablesDriverInit(bool privileged)
+ebiptablesDriverInitCLITools(void)
+{
+    ebtables_cmd_path = virFindFileInPath("ebtables");
+    if (!ebtables_cmd_path)
+        VIR_WARN("Could not find 'ebtables' executable");
+
+    iptables_cmd_path = virFindFileInPath("iptables");
+    if (!iptables_cmd_path)
+        VIR_WARN("Could not find 'iptables' executable");
+
+    ip6tables_cmd_path = virFindFileInPath("ip6tables");
+    if (!ip6tables_cmd_path)
+        VIR_WARN("Could not find 'ip6tables' executable");
+
+    return 0;
+}
+
+/*
+ * ebiptablesDriverTestCLITools
+ *
+ * Test the CLI tools. If one is found not to be working, free the buffer
+ * holding its path as a sign that the tool cannot be used.
+ */
+static int
+ebiptablesDriverTestCLITools(void)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *errmsg = NULL;
+    int ret = 0;
 
-    if (!privileged)
-        return 0;
-
-    if (virMutexInit(&execCLIMutex) < 0)
-        return -EINVAL;
-
-    gawk_cmd_path = virFindFileInPath("gawk");
-    grep_cmd_path = virFindFileInPath("grep");
-
-    ebtables_cmd_path = virFindFileInPath("ebtables");
     if (ebtables_cmd_path) {
         NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
         /* basic probing */
@@ -4157,12 +4233,10 @@ ebiptablesDriverInit(bool privileged)
             VIR_FREE(ebtables_cmd_path);
             VIR_ERROR(_("Testing of ebtables command failed: %s"),
                       errmsg);
+            ret = -1;
         }
-    } else {
-        VIR_WARN("Could not find 'ebtables' executable");
     }
 
-    iptables_cmd_path = virFindFileInPath("iptables");
     if (iptables_cmd_path) {
         NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
 
@@ -4176,12 +4250,10 @@ ebiptablesDriverInit(bool privileged)
             VIR_FREE(iptables_cmd_path);
             VIR_ERROR(_("Testing of iptables command failed: %s"),
                       errmsg);
+            ret = -1;
         }
-    } else {
-        VIR_WARN("Could not find 'iptables' executable");
     }
 
-    ip6tables_cmd_path = virFindFileInPath("ip6tables");
     if (ip6tables_cmd_path) {
         NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
 
@@ -4195,10 +4267,37 @@ ebiptablesDriverInit(bool privileged)
             VIR_FREE(ip6tables_cmd_path);
             VIR_ERROR(_("Testing of ip6tables command failed: %s"),
                       errmsg);
+            ret = -1;
         }
-    } else {
-        VIR_WARN("Could not find 'ip6tables' executable");
     }
+
+    VIR_FREE(errmsg);
+
+    return ret;
+}
+
+static int
+ebiptablesDriverInit(bool privileged)
+{
+    if (!privileged)
+        return 0;
+
+    if (virMutexInit(&execCLIMutex) < 0)
+        return -EINVAL;
+
+    gawk_cmd_path = virFindFileInPath("gawk");
+    grep_cmd_path = virFindFileInPath("grep");
+
+    /*
+     * check whether we can run with firewalld's tools --
+     * if not, we just fall back to eb/iptables command
+     * line tools.
+     */
+    if (ebiptablesDriverInitWithFirewallD() < 0)
+        ebiptablesDriverInitCLITools();
+
+    /* make sure tools are available and work */
+    ebiptablesDriverTestCLITools();
 
     /* ip(6)tables support needs gawk & grep, ebtables doesn't */
     if ((iptables_cmd_path != NULL || ip6tables_cmd_path != NULL) &&
@@ -4208,8 +4307,6 @@ ebiptablesDriverInit(bool privileged)
         VIR_FREE(iptables_cmd_path);
         VIR_FREE(ip6tables_cmd_path);
     }
-
-    VIR_FREE(errmsg);
 
     if (!ebtables_cmd_path && !iptables_cmd_path && !ip6tables_cmd_path) {
         VIR_ERROR(_("firewall tools were not found or cannot be used"));

@@ -560,6 +560,7 @@ struct _virNWFilterDriverState {
     virNWFilterObjList nwfilters;
 
     char *configDir;
+    bool watchingFirewallD;
 };
 
 

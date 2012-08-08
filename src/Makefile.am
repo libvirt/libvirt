@@ -1156,9 +1156,9 @@ noinst_LTLIBRARIES += libvirt_driver_nwfilter.la
 #libvirt_la_BUILT_LIBADD += libvirt_driver_nwfilter.la
 endif
 libvirt_driver_nwfilter_la_CFLAGS = $(LIBPCAP_CFLAGS) \
-		-I$(top_srcdir)/src/conf $(LIBNL_CFLAGS) $(AM_CFLAGS)
+		-I$(top_srcdir)/src/conf $(LIBNL_CFLAGS) $(AM_CFLAGS) $(DBUS_CFLAGS)
 libvirt_driver_nwfilter_la_LDFLAGS = $(LD_AMFLAGS)
-libvirt_driver_nwfilter_la_LIBADD = $(LIBPCAP_LIBS) $(LIBNL_LIBS)
+libvirt_driver_nwfilter_la_LIBADD = $(LIBPCAP_LIBS) $(LIBNL_LIBS) $(DBUS_LIBS)
 if WITH_DRIVER_MODULES
 libvirt_driver_nwfilter_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_nwfilter_la_LDFLAGS += -module -avoid-version
