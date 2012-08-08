@@ -1,7 +1,7 @@
 /*
  * event.c: event loop for monitoring file handles
  *
- * Copyright (C) 2007, 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2007, 2010-2012 Red Hat, Inc.
  * Copyright (C) 2007 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -615,7 +615,7 @@ int virEventPollRunOnce(void) {
     ret = poll(fds, nfds, timeout);
     if (ret < 0) {
         EVENT_DEBUG("Poll got error event %d", errno);
-        if (errno == EINTR) {
+        if (errno == EINTR || errno == EAGAIN) {
             goto retry;
         }
         virReportSystemError(errno, "%s",

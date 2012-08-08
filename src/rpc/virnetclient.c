@@ -1,7 +1,7 @@
 /*
  * virnetclient.c: generic network RPC client
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -651,7 +651,7 @@ int virNetClientSetTLSSession(virNetClientPtr client,
 
     repoll:
         ret = poll(fds, ARRAY_CARDINALITY(fds), -1);
-        if (ret < 0 && errno == EAGAIN)
+        if (ret < 0 && (errno == EAGAIN || errno == EINTR))
             goto repoll;
 
         ignore_value(pthread_sigmask(SIG_BLOCK, &oldmask, NULL));
@@ -675,7 +675,7 @@ int virNetClientSetTLSSession(virNetClientPtr client,
 
     repoll2:
     ret = poll(fds, ARRAY_CARDINALITY(fds), -1);
-    if (ret < 0 && errno == EAGAIN)
+    if (ret < 0 && (errno == EAGAIN || errno == EINTR))
         goto repoll2;
 
     ignore_value(pthread_sigmask(SIG_BLOCK, &oldmask, NULL));
@@ -1374,7 +1374,7 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
 
     repoll:
         ret = poll(fds, ARRAY_CARDINALITY(fds), timeout);
-        if (ret < 0 && errno == EAGAIN)
+        if (ret < 0 && (errno == EAGAIN || errno == EINTR))
             goto repoll;
 
         ignore_value(pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
