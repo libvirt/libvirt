@@ -589,8 +589,8 @@ virStorageFileMatchesVersion(int format,
 static bool
 virBackingStoreIsFile(const char *backing)
 {
-    /* Backing store is a network block device */
-    if (STRPREFIX(backing, "nbd:"))
+    /* Backing store is a network block device or Rados block device */
+    if (STRPREFIX(backing, "nbd:") || STRPREFIX(backing, "rbd:"))
         return false;
     return true;
 }
