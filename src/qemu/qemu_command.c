@@ -469,9 +469,9 @@ static int qemuAssignDeviceDiskAliasFixed(virDomainDiskDefPtr disk)
 }
 
 static int
-qemuCheckScsiControllerModel(virDomainDefPtr def,
-                             virBitmapPtr qemuCaps,
-                             int *model)
+qemuSetScsiControllerModel(virDomainDefPtr def,
+                           virBitmapPtr qemuCaps,
+                           int *model)
 {
     if (*model > 0) {
         switch (*model) {
@@ -531,7 +531,7 @@ qemuAssignDeviceDiskAliasCustom(virDomainDefPtr def,
                 virDomainDiskFindControllerModel(def, disk,
                                                  VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
 
-            if ((qemuCheckScsiControllerModel(def, qemuCaps, &controllerModel)) < 0)
+            if ((qemuSetScsiControllerModel(def, qemuCaps, &controllerModel)) < 0)
                 return -1;
         }
 
@@ -919,7 +919,7 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
     for (i = 0 ; i < def->ncontrollers; i++) {
         model = def->controllers[i]->model;
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
-            rc = qemuCheckScsiControllerModel(def, qemuCaps, &model);
+            rc = qemuSetScsiControllerModel(def, qemuCaps, &model);
             if (rc)
                 goto cleanup;
         }
@@ -2489,7 +2489,7 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
         controllerModel =
             virDomainDiskFindControllerModel(def, disk,
                                              VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
-        if ((qemuCheckScsiControllerModel(def, qemuCaps, &controllerModel)) < 0)
+        if ((qemuSetScsiControllerModel(def, qemuCaps, &controllerModel)) < 0)
             goto error;
 
         if (controllerModel == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
@@ -2819,7 +2819,7 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
     switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
         model = def->model;
-        if ((qemuCheckScsiControllerModel(domainDef, qemuCaps, &model)) < 0)
+        if ((qemuSetScsiControllerModel(domainDef, qemuCaps, &model)) < 0)
             return NULL;
 
         switch (model) {
