@@ -176,7 +176,7 @@ static const char *eventDetailToString(int event, int detail) {
                 ret = "Migrated";
                 break;
             case VIR_DOMAIN_EVENT_STOPPED_SAVED:
-                ret = "Failed";
+                ret = "Saved";
                 break;
             case VIR_DOMAIN_EVENT_STOPPED_FAILED:
                 ret = "Failed";
