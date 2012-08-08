@@ -170,6 +170,8 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "balloon-event",
 
               "bridge", /* 100 */
+              "lsi",
+              "virtio-scsi-pci",
 
     );
 
@@ -1454,6 +1456,11 @@ qemuCapsParseDeviceStr(const char *str, virBitmapPtr flags)
         strstr(str, "name \"virtio-net-s390\"") ||
         strstr(str, "name \"virtio-serial-s390\""))
         qemuCapsSet(flags, QEMU_CAPS_VIRTIO_S390);
+
+    if (strstr(str, "name \"lsi53c895a\""))
+        qemuCapsSet(flags, QEMU_CAPS_SCSI_LSI);
+    if (strstr(str, "name \"virtio-scsi-pci\""))
+        qemuCapsSet(flags, QEMU_CAPS_VIRTIO_SCSI_PCI);
 
     /* Prefer -chardev spicevmc (detected earlier) over -device spicevmc */
     if (!qemuCapsGet(flags, QEMU_CAPS_CHARDEV_SPICEVMC) &&

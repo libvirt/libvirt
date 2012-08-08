@@ -482,7 +482,8 @@ mymain(void)
             QEMU_CAPS_PCI_ROMBAR,
             QEMU_CAPS_NO_ACPI,
             QEMU_CAPS_VIRTIO_BLK_SG_IO,
-            QEMU_CAPS_CPU_HOST);
+            QEMU_CAPS_CPU_HOST,
+            QEMU_CAPS_SCSI_LSI);
     DO_TEST("qemu-kvm-0.12.1.2-rhel61", 12001, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -677,7 +678,8 @@ mymain(void)
             QEMU_CAPS_FSDEV_WRITEOUT,
             QEMU_CAPS_SCSI_BLOCK,
             QEMU_CAPS_SCSI_CD,
-            QEMU_CAPS_IDE_CD);
+            QEMU_CAPS_IDE_CD,
+            QEMU_CAPS_SCSI_LSI);
     DO_TEST("qemu-1.1.0", 1001000, 0, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -755,7 +757,9 @@ mymain(void)
             QEMU_CAPS_NO_USER_CONFIG,
             QEMU_CAPS_HDA_MICRO,
             QEMU_CAPS_NEC_USB_XHCI,
-            QEMU_CAPS_NETDEV_BRIDGE);
+            QEMU_CAPS_NETDEV_BRIDGE,
+            QEMU_CAPS_SCSI_LSI,
+            QEMU_CAPS_VIRTIO_SCSI_PCI);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
