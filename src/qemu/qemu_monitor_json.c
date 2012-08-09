@@ -3648,6 +3648,16 @@ int qemuMonitorJSONOpenGraphics(qemuMonitorPtr mon,
 }
 
 
+#define GET_THROTTLE_STATS(FIELD, STORE)                                      \
+    if (virJSONValueObjectGetNumberUlong(inserted,                            \
+                                         FIELD,                               \
+                                         &reply->STORE) < 0) {                \
+        virReportError(VIR_ERR_INTERNAL_ERROR,                                \
+                       _("block_io_throttle field '%s' missing "              \
+                         "in qemu's output"),                                 \
+                       #STORE);                                               \
+            goto cleanup;                                                     \
+    }
 static int
 qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
                                    const char *device,
@@ -3656,7 +3666,7 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
     virJSONValuePtr io_throttle;
     int ret = -1;
     int i;
-    int found = 0;
+    bool found = false;
 
     io_throttle = virJSONValueObjectGet(result, "return");
 
@@ -3673,13 +3683,15 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
 
         if (!temp_dev || temp_dev->type != VIR_JSON_TYPE_OBJECT) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("block_io_throttle device entry was not in expected format"));
+                           _("block_io_throttle device entry "
+                             "was not in expected format"));
             goto cleanup;
         }
 
-        if ((current_dev = virJSONValueObjectGetString(temp_dev, "device")) == NULL) {
+        if (!(current_dev = virJSONValueObjectGetString(temp_dev, "device"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("block_io_throttle device entry was not in expected format"));
+                           _("block_io_throttle device entry "
+                             "was not in expected format"));
             goto cleanup;
         }
 
@@ -3689,49 +3701,22 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
         if (STREQ(current_dev, device))
             continue;
 
-        found = 1;
+        found = true;
         if ((inserted = virJSONValueObjectGet(temp_dev, "inserted")) == NULL ||
             inserted->type != VIR_JSON_TYPE_OBJECT) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("block_io_throttle inserted entry was not in expected format"));
+                           _("block_io_throttle inserted entry "
+                             "was not in expected format"));
             goto cleanup;
         }
 
-        if (virJSONValueObjectGetNumberUlong(inserted, "bps", &reply->total_bytes_sec) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cannot read total_bytes_sec"));
-            goto cleanup;
-        }
+        GET_THROTTLE_STATS("bps", total_bytes_sec);
+        GET_THROTTLE_STATS("bps_rd", read_bytes_sec);
+        GET_THROTTLE_STATS("bps_wr", write_bytes_sec);
+        GET_THROTTLE_STATS("iops", total_iops_sec);
+        GET_THROTTLE_STATS("iops_rd", read_iops_sec);
+        GET_THROTTLE_STATS("iops_wr", write_iops_sec);
 
-        if (virJSONValueObjectGetNumberUlong(inserted, "bps_rd", &reply->read_bytes_sec) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cannot read read_bytes_sec"));
-            goto cleanup;
-        }
-
-        if (virJSONValueObjectGetNumberUlong(inserted, "bps_wr", &reply->write_bytes_sec) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cannot read write_bytes_sec"));
-            goto cleanup;
-        }
-
-        if (virJSONValueObjectGetNumberUlong(inserted, "iops", &reply->total_iops_sec) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cannot read total_iops_sec"));
-            goto cleanup;
-        }
-
-        if (virJSONValueObjectGetNumberUlong(inserted, "iops_rd", &reply->read_iops_sec) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cannot read read_iops_sec"));
-            goto cleanup;
-        }
-
-        if (virJSONValueObjectGetNumberUlong(inserted, "iops_wr", &reply->write_iops_sec) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cannot read write_iops_sec"));
-            goto cleanup;
-        }
         break;
     }
 
@@ -3746,6 +3731,7 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
 cleanup:
     return ret;
 }
+#undef GET_THROTTLE_STATS
 
 int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
                                       const char *device,
