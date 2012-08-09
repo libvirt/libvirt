@@ -34,7 +34,7 @@ enum {
 };
 
 typedef int (*virNetServerServiceDispatchFunc)(virNetServerServicePtr svc,
-                                               virNetServerClientPtr client,
+                                               virNetSocketPtr sock,
                                                void *opaque);
 
 virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
@@ -55,6 +55,8 @@ int virNetServerServiceGetPort(virNetServerServicePtr svc);
 
 int virNetServerServiceGetAuth(virNetServerServicePtr svc);
 bool virNetServerServiceIsReadonly(virNetServerServicePtr svc);
+size_t virNetServerServiceGetMaxRequests(virNetServerServicePtr svc);
+virNetTLSContextPtr virNetServerServiceGetTLSContext(virNetServerServicePtr svc);
 
 void virNetServerServiceSetDispatcher(virNetServerServicePtr svc,
                                       virNetServerServiceDispatchFunc func,

@@ -1492,8 +1492,6 @@ virNetServerKeepAliveRequired;
 virNetServerNew;
 virNetServerQuit;
 virNetServerRun;
-virNetServerServiceNewTCP;
-virNetServerServiceNewUNIX;
 virNetServerSetTLSContext;
 virNetServerUpdateServices;
 
@@ -1558,7 +1556,9 @@ virNetServerProgramUnknownError;
 # virnetserverservice.h
 virNetServerServiceClose;
 virNetServerServiceGetAuth;
+virNetServerServiceGetMaxRequests;
 virNetServerServiceGetPort;
+virNetServerServiceGetTLSContext;
 virNetServerServiceIsReadonly;
 virNetServerServiceNewTCP;
 virNetServerServiceNewUNIX;

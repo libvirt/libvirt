@@ -261,11 +261,12 @@ cleanup:
 }
 
 
-static int virNetServerDispatchNewClient(virNetServerServicePtr svc ATTRIBUTE_UNUSED,
-                                         virNetServerClientPtr client,
+static int virNetServerDispatchNewClient(virNetServerServicePtr svc,
+                                         virNetSocketPtr clientsock,
                                          void *opaque)
 {
     virNetServerPtr srv = opaque;
+    virNetServerClientPtr client = NULL;
 
     virNetServerLock(srv);
 
@@ -275,6 +276,13 @@ static int virNetServerDispatchNewClient(virNetServerServicePtr svc ATTRIBUTE_UN
                        srv->nclients_max, virNetServerClientRemoteAddrString(client));
         goto error;
     }
+
+    if (!(client = virNetServerClientNew(clientsock,
+                                         virNetServerServiceGetAuth(svc),
+                                         virNetServerServiceIsReadonly(svc),
+                                         virNetServerServiceGetMaxRequests(svc),
+                                         virNetServerServiceGetTLSContext(svc))))
+        goto error;
 
     if (virNetServerClientInit(client) < 0)
         goto error;
@@ -301,6 +309,8 @@ static int virNetServerDispatchNewClient(virNetServerServicePtr svc ATTRIBUTE_UN
     return 0;
 
 error:
+    virNetServerClientClose(client);
+    virObjectUnref(client);
     virNetServerUnlock(srv);
     return -1;
 }

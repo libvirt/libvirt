@@ -69,40 +69,21 @@ static void virNetServerServiceAccept(virNetSocketPtr sock,
                                       void *opaque)
 {
     virNetServerServicePtr svc = opaque;
-    virNetServerClientPtr client = NULL;
     virNetSocketPtr clientsock = NULL;
 
     if (virNetSocketAccept(sock, &clientsock) < 0)
-        goto error;
+        goto cleanup;
 
     if (!clientsock) /* Connection already went away */
         goto cleanup;
 
-    if (!(client = virNetServerClientNew(clientsock,
-                                         svc->auth,
-                                         svc->readonly,
-                                         svc->nrequests_client_max,
-                                         svc->tls)))
-        goto error;
-
     if (!svc->dispatchFunc)
-        goto error;
+        goto cleanup;
 
-    if (svc->dispatchFunc(svc, client, svc->dispatchOpaque) < 0)
-        virNetServerClientClose(client);
-
-    virObjectUnref(client);
+    svc->dispatchFunc(svc, clientsock, svc->dispatchOpaque);
 
 cleanup:
-    return;
-
-error:
-    if (client) {
-        virNetServerClientClose(client);
-        virObjectUnref(client);
-    } else {
-        virObjectUnref(clientsock);
-    }
+    virObjectUnref(clientsock);
 }
 
 
@@ -237,6 +218,17 @@ int virNetServerServiceGetAuth(virNetServerServicePtr svc)
 bool virNetServerServiceIsReadonly(virNetServerServicePtr svc)
 {
     return svc->readonly;
+}
+
+
+size_t virNetServerServiceGetMaxRequests(virNetServerServicePtr svc)
+{
+    return svc->nrequests_client_max;
+}
+
+virNetTLSContextPtr virNetServerServiceGetTLSContext(virNetServerServicePtr svc)
+{
+    return svc->tls;
 }
 
 

@@ -357,7 +357,7 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
         return NULL;
     }
 
-    client->sock = sock;
+    client->sock = virObjectRef(sock);
     client->auth = auth;
     client->readonly = readonly;
     client->tlsCtxt = virObjectRef(tls);
@@ -385,8 +385,6 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
     return client;
 
 error:
-    /* XXX ref counting is better than this */
-    client->sock = NULL; /* Caller owns 'sock' upon failure */
     virObjectUnref(client);
     return NULL;
 }
