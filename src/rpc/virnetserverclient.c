@@ -336,18 +336,14 @@ static void virNetServerClientSockTimerFunc(int timer,
 }
 
 
-virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
-                                            int auth,
-                                            bool readonly,
-                                            size_t nrequests_max,
-                                            virNetTLSContextPtr tls,
-                                            virNetServerClientPrivNew privNew,
-                                            virFreeCallback privFree,
-                                            void *privOpaque)
+static virNetServerClientPtr
+virNetServerClientNewInternal(virNetSocketPtr sock,
+                              int auth,
+                              bool readonly,
+                              size_t nrequests_max,
+                              virNetTLSContextPtr tls)
 {
     virNetServerClientPtr client;
-
-    VIR_DEBUG("sock=%p auth=%d tls=%p", sock, auth, tls);
 
     if (virNetServerClientInitialize() < 0)
         return NULL;
@@ -381,14 +377,6 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
     }
     client->nrequests = 1;
 
-    if (privNew) {
-        if (!(client->privateData = privNew(client, privOpaque))) {
-            virObjectUnref(client);
-            goto error;
-        }
-        client->privateDataFreeFunc = privFree;
-    }
-
     PROBE(RPC_SERVER_CLIENT_NEW,
           "client=%p sock=%p",
           client, client->sock);
@@ -398,6 +386,34 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
 error:
     virObjectUnref(client);
     return NULL;
+}
+
+
+virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
+                                            int auth,
+                                            bool readonly,
+                                            size_t nrequests_max,
+                                            virNetTLSContextPtr tls,
+                                            virNetServerClientPrivNew privNew,
+                                            virFreeCallback privFree,
+                                            void *privOpaque)
+{
+    virNetServerClientPtr client;
+
+    VIR_DEBUG("sock=%p auth=%d tls=%p", sock, auth, tls);
+
+    if (!(client = virNetServerClientNewInternal(sock, auth, readonly, nrequests_max, tls)))
+        return NULL;
+
+    if (privNew) {
+        if (!(client->privateData = privNew(client, privOpaque))) {
+            virObjectUnref(client);
+            return NULL;
+        }
+        client->privateDataFreeFunc = privFree;
+    }
+
+    return client;
 }
 
 
