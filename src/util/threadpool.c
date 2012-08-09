@@ -66,6 +66,7 @@ struct _virThreadPool {
     virCond quit_cond;
 
     size_t maxWorkers;
+    size_t minWorkers;
     size_t freeWorkers;
     size_t nWorkers;
     virThreadPtr workers;
@@ -188,7 +189,9 @@ virThreadPoolPtr virThreadPoolNew(size_t minWorkers,
     if (VIR_ALLOC_N(pool->workers, minWorkers) < 0)
         goto error;
 
+    pool->minWorkers = minWorkers;
     pool->maxWorkers = maxWorkers;
+
     for (i = 0; i < minWorkers; i++) {
         if (VIR_ALLOC(data) < 0) {
             virReportOOMError();
@@ -275,6 +278,22 @@ void virThreadPoolFree(virThreadPoolPtr pool)
         ignore_value(virCondDestroy(&pool->prioCond));
     }
     VIR_FREE(pool);
+}
+
+
+size_t virThreadPoolGetMinWorkers(virThreadPoolPtr pool)
+{
+    return pool->minWorkers;
+}
+
+size_t virThreadPoolGetMaxWorkers(virThreadPoolPtr pool)
+{
+    return pool->maxWorkers;
+}
+
+size_t virThreadPoolGetPriorityWorkers(virThreadPoolPtr pool)
+{
+    return pool->nPrioWorkers;
 }
 
 /*

@@ -1086,6 +1086,9 @@ virSysinfoRead;
 virThreadPoolFree;
 virThreadPoolNew;
 virThreadPoolSendJob;
+virThreadPoolGetMinWorkers;
+virThreadPoolGetMaxWorkers;
+virThreadPoolGetPriorityWorkers;
 
 
 # threads.h

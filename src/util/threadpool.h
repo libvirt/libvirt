@@ -39,6 +39,10 @@ virThreadPoolPtr virThreadPoolNew(size_t minWorkers,
                                   virThreadPoolJobFunc func,
                                   void *opaque) ATTRIBUTE_NONNULL(4);
 
+size_t virThreadPoolGetMinWorkers(virThreadPoolPtr pool);
+size_t virThreadPoolGetMaxWorkers(virThreadPoolPtr pool);
+size_t virThreadPoolGetPriorityWorkers(virThreadPoolPtr pool);
+
 void virThreadPoolFree(virThreadPoolPtr pool);
 
 int virThreadPoolSendJob(virThreadPoolPtr pool,
