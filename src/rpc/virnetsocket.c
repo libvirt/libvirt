@@ -882,6 +882,114 @@ int virNetSocketNewConnectExternal(const char **cmdargv,
 }
 
 
+virNetSocketPtr virNetSocketNewPostExecRestart(virJSONValuePtr object)
+{
+    virSocketAddr localAddr;
+    virSocketAddr remoteAddr;
+    int fd, thepid, errfd;
+    bool isClient;
+
+    if (virJSONValueObjectGetNumberInt(object, "fd", &fd) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing fd data in JSON document"));
+        return NULL;
+    }
+
+    if (virJSONValueObjectGetNumberInt(object, "pid", &thepid) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing pid data in JSON document"));
+        return NULL;
+    }
+
+    if (virJSONValueObjectGetNumberInt(object, "errfd", &errfd) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing errfd data in JSON document"));
+        return NULL;
+    }
+    if (virJSONValueObjectGetBoolean(object, "isClient", &isClient) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing isClient data in JSON document"));
+        return NULL;
+    }
+
+    memset(&localAddr, 0, sizeof(localAddr));
+    memset(&remoteAddr, 0, sizeof(remoteAddr));
+
+    remoteAddr.len = sizeof(remoteAddr.data.stor);
+    if (getsockname(fd, &remoteAddr.data.sa, &remoteAddr.len) < 0) {
+        virReportSystemError(errno, "%s", _("Unable to get peer socket name"));
+        return NULL;
+    }
+
+    localAddr.len = sizeof(localAddr.data.stor);
+    if (getsockname(fd, &localAddr.data.sa, &localAddr.len) < 0) {
+        virReportSystemError(errno, "%s", _("Unable to get local socket name"));
+        return NULL;
+    }
+
+    return virNetSocketNew(&localAddr, &remoteAddr,
+                           isClient, fd, errfd, thepid);
+}
+
+
+virJSONValuePtr virNetSocketPreExecRestart(virNetSocketPtr sock)
+{
+    virJSONValuePtr object = NULL;
+
+    virMutexLock(&sock->lock);
+
+#if HAVE_SASL
+    if (sock->saslSession) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Unable to save socket state when SASL session is active"));
+        goto error;
+    }
+#endif
+    if (sock->tlsSession) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Unable to save socket state when TLS session is active"));
+        goto error;
+    }
+
+    if (!(object = virJSONValueNewObject()))
+        goto error;
+
+    if (virJSONValueObjectAppendNumberInt(object, "fd", sock->fd) < 0)
+        goto error;
+
+    if (virJSONValueObjectAppendNumberInt(object, "errfd", sock->errfd) < 0)
+        goto error;
+
+    if (virJSONValueObjectAppendNumberInt(object, "pid", sock->pid) < 0)
+        goto error;
+
+    if (virJSONValueObjectAppendBoolean(object, "isClient", sock->client) < 0)
+        goto error;
+
+    if (virSetInherit(sock->fd, true) < 0) {
+        virReportSystemError(errno,
+                             _("Cannot disable close-on-exec flag on socket %d"),
+                             sock->fd);
+        goto error;
+    }
+    if (sock->errfd != -1 &&
+        virSetInherit(sock->errfd, true) < 0) {
+        virReportSystemError(errno,
+                             _("Cannot disable close-on-exec flag on pipe %d"),
+                             sock->errfd);
+        goto error;
+    }
+
+    virMutexUnlock(&sock->lock);
+    return object;
+
+error:
+    virMutexUnlock(&sock->lock);
+    virJSONValueFree(object);
+    return NULL;
+}
+
+
 void virNetSocketDispose(void *obj)
 {
     virNetSocketPtr sock = obj;

@@ -1667,6 +1667,8 @@ virNetSocketNewConnectUNIX;
 virNetSocketNewListenFD;
 virNetSocketNewListenTCP;
 virNetSocketNewListenUNIX;
+virNetSocketNewPostExecRestart;
+virNetSocketPreExecRestart;
 virNetSocketRead;
 virNetSocketRecvFD;
 virNetSocketRemoteAddrString;

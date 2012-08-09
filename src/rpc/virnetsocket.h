@@ -31,6 +31,7 @@
 # ifdef HAVE_SASL
 #  include "virnetsaslcontext.h"
 # endif
+# include "json.h"
 
 typedef struct _virNetSocket virNetSocket;
 typedef virNetSocket *virNetSocketPtr;
@@ -92,6 +93,11 @@ int virNetSocketNewConnectLibSSH2(const char *host,
 
 int virNetSocketNewConnectExternal(const char **cmdargv,
                                    virNetSocketPtr *addr);
+
+
+virNetSocketPtr virNetSocketNewPostExecRestart(virJSONValuePtr object);
+
+virJSONValuePtr virNetSocketPreExecRestart(virNetSocketPtr sock);
 
 int virNetSocketGetFD(virNetSocketPtr sock);
 int virNetSocketDupFD(virNetSocketPtr sock, bool cloexec);
