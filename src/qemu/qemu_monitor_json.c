@@ -3652,11 +3652,11 @@ int qemuMonitorJSONOpenGraphics(qemuMonitorPtr mon,
     if (virJSONValueObjectGetNumberUlong(inserted,                            \
                                          FIELD,                               \
                                          &reply->STORE) < 0) {                \
-        virReportError(VIR_ERR_INTERNAL_ERROR,                                \
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,                         \
                        _("block_io_throttle field '%s' missing "              \
                          "in qemu's output"),                                 \
                        #STORE);                                               \
-            goto cleanup;                                                     \
+        goto cleanup;                                                         \
     }
 static int
 qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,

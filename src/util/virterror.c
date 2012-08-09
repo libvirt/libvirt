@@ -1185,6 +1185,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("block copy still active: %s");
             break;
+        case VIR_ERR_OPERATION_UNSUPPORTED:
+            if (!info)
+                errmsg = _("Operation not supported");
+            else
+                errmsg = _("Operation not supported: %s");
+            break;
     }
     return errmsg;
 }
