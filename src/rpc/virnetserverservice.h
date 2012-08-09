@@ -56,6 +56,10 @@ virNetServerServicePtr virNetServerServiceNewFD(int fd,
                                                 size_t nrequests_client_max,
                                                 virNetTLSContextPtr tls);
 
+virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr object);
+
+virJSONValuePtr virNetServerServicePreExecRestart(virNetServerServicePtr service);
+
 int virNetServerServiceGetPort(virNetServerServicePtr svc);
 
 int virNetServerServiceGetAuth(virNetServerServicePtr svc);

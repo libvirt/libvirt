@@ -103,6 +103,7 @@ src/rpc/virnetserver.c
 src/rpc/virnetserverclient.c
 src/rpc/virnetservermdns.c
 src/rpc/virnetserverprogram.c
+src/rpc/virnetserverservice.c
 src/rpc/virnetsshsession.c
 src/rpc/virnettlscontext.c
 src/secret/secret_driver.c

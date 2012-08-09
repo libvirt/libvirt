@@ -250,6 +250,130 @@ error:
 }
 
 
+virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr object)
+{
+    virNetServerServicePtr svc;
+    virJSONValuePtr socks;
+    size_t i;
+    int n;
+
+    if (virNetServerServiceInitialize() < 0)
+        return NULL;
+
+    if (!(svc = virObjectNew(virNetServerServiceClass)))
+        return NULL;
+
+    if (virJSONValueObjectGetNumberInt(object, "auth", &svc->auth) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing auth field in JSON state document"));
+        goto error;
+    }
+    if (virJSONValueObjectGetBoolean(object, "readonly", &svc->readonly) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing readonly field in JSON state document"));
+        goto error;
+    }
+    if (virJSONValueObjectGetNumberUint(object, "nrequests_client_max",
+                                        (unsigned int *)&svc->nrequests_client_max) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing nrequests_client_max field in JSON state document"));
+        goto error;
+    }
+
+    if (!(socks = virJSONValueObjectGet(object, "socks"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing socks field in JSON state document"));
+        goto error;
+    }
+
+    if ((n = virJSONValueArraySize(socks)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("socks field in JSON was not an array"));
+        goto error;
+    }
+
+    svc->nsocks = n;
+    if (VIR_ALLOC_N(svc->socks, svc->nsocks) < 0) {
+        virReportOOMError();
+        goto error;
+    }
+
+    for (i = 0 ; i < svc->nsocks ; i++) {
+        virJSONValuePtr child = virJSONValueArrayGet(socks, i);
+        virNetSocketPtr sock;
+
+        if (!(sock = virNetSocketNewPostExecRestart(child))) {
+            virObjectUnref(sock);
+            goto error;
+        }
+
+        svc->socks[i] = sock;
+
+        /* IO callback is initially disabled, until we're ready
+         * to deal with incoming clients */
+        virObjectRef(svc);
+        if (virNetSocketAddIOCallback(sock,
+                                      0,
+                                      virNetServerServiceAccept,
+                                      svc,
+                                      virObjectFreeCallback) < 0) {
+            virObjectUnref(svc);
+            virObjectUnref(sock);
+            goto error;
+        }
+    }
+
+    return svc;
+
+error:
+    virObjectUnref(svc);
+    return NULL;
+}
+
+
+virJSONValuePtr virNetServerServicePreExecRestart(virNetServerServicePtr svc)
+{
+    virJSONValuePtr object = virJSONValueNewObject();
+    virJSONValuePtr socks;
+    size_t i;
+
+    if (!object)
+        return NULL;
+
+    if (!(socks = virJSONValueNewArray()))
+        goto error;
+
+    if (virJSONValueObjectAppendNumberInt(object, "auth", svc->auth) < 0)
+        goto error;
+    if (virJSONValueObjectAppendBoolean(object, "readonly", svc->readonly) < 0)
+        goto error;
+    if (virJSONValueObjectAppendNumberUint(object, "nrequests_client_max", svc->nrequests_client_max) < 0)
+        goto error;
+
+    if (virJSONValueObjectAppend(object, "socks", socks) < 0) {
+        virJSONValueFree(socks);
+        goto error;
+    }
+
+    for (i = 0 ; i < svc->nsocks ; i++) {
+        virJSONValuePtr child;
+        if (!(child = virNetSocketPreExecRestart(svc->socks[i])))
+            goto error;
+
+        if (virJSONValueArrayAppend(socks, child) < 0) {
+            virJSONValueFree(child);
+            goto error;
+        }
+    }
+
+    return object;
+
+error:
+    virJSONValueFree(object);
+    return NULL;
+}
+
+
 int virNetServerServiceGetPort(virNetServerServicePtr svc)
 {
     /* We're assuming if there are multiple sockets
