@@ -31,6 +31,7 @@
 # include "virnetserverclient.h"
 # include "virnetserverservice.h"
 # include "virobject.h"
+# include "json.h"
 
 virNetServerPtr virNetServerNew(size_t min_workers,
                                 size_t max_workers,
@@ -44,6 +45,15 @@ virNetServerPtr virNetServerNew(size_t min_workers,
                                 virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
                                 virFreeCallback clientPrivFree,
                                 void *clientPrivOpaque);
+
+virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
+                                               virNetServerClientPrivNew clientPrivNew,
+                                               virNetServerClientPrivNewPostExecRestart clientPrivNewPostExecRestart,
+                                               virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
+                                               virFreeCallback clientPrivFree,
+                                               void *clientPrivOpaque);
+
+virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv);
 
 typedef int (*virNetServerAutoShutdownFunc)(virNetServerPtr srv, void *opaque);
 

@@ -444,6 +444,258 @@ error:
 }
 
 
+virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
+                                               virNetServerClientPrivNew clientPrivNew,
+                                               virNetServerClientPrivNewPostExecRestart clientPrivNewPostExecRestart,
+                                               virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
+                                               virFreeCallback clientPrivFree,
+                                               void *clientPrivOpaque)
+{
+    virNetServerPtr srv = NULL;
+    virJSONValuePtr clients;
+    virJSONValuePtr services;
+    size_t i;
+    int n;
+    unsigned int min_workers;
+    unsigned int max_workers;
+    unsigned int priority_workers;
+    unsigned int max_clients;
+    unsigned int keepaliveInterval;
+    unsigned int keepaliveCount;
+    bool keepaliveRequired;
+    const char *mdnsGroupName = NULL;
+
+    if (virJSONValueObjectGetNumberUint(object, "min_workers", &min_workers) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing min_workers data in JSON document"));
+        goto error;
+    }
+    if (virJSONValueObjectGetNumberUint(object, "max_workers", &max_workers) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing max_workers data in JSON document"));
+        goto error;
+    }
+    if (virJSONValueObjectGetNumberUint(object, "priority_workers", &priority_workers) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing priority_workers data in JSON document"));
+        goto error;
+    }
+    if (virJSONValueObjectGetNumberUint(object, "max_clients", &max_clients) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing max_clients data in JSON document"));
+        goto error;
+    }
+    if (virJSONValueObjectGetNumberUint(object, "keepaliveInterval", &keepaliveInterval) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing keepaliveInterval data in JSON document"));
+        goto error;
+    }
+    if (virJSONValueObjectGetNumberUint(object, "keepaliveCount", &keepaliveCount) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing keepaliveCount data in JSON document"));
+        goto error;
+    }
+    if (virJSONValueObjectGetBoolean(object, "keepaliveRequired", &keepaliveRequired) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing keepaliveRequired data in JSON document"));
+        goto error;
+    }
+
+    if (virJSONValueObjectHasKey(object, "mdnsGroupName") &&
+        (!(mdnsGroupName = virJSONValueObjectGetString(object, "mdnsGroupName")))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Malformed mdnsGroupName data in JSON document"));
+        goto error;
+    }
+
+    if (!(srv = virNetServerNew(min_workers, max_clients,
+                                priority_workers, max_clients,
+                                keepaliveInterval, keepaliveCount,
+                                keepaliveRequired, mdnsGroupName,
+                                clientPrivNew, clientPrivPreExecRestart,
+                                clientPrivFree, clientPrivOpaque)))
+        goto error;
+
+    if (!(services = virJSONValueObjectGet(object, "services"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing services data in JSON document"));
+        goto error;
+    }
+
+    n =  virJSONValueArraySize(services);
+    if (n < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Malformed services data in JSON document"));
+        goto error;
+    }
+
+    for (i = 0 ; i < n ; i++) {
+        virNetServerServicePtr service;
+        virJSONValuePtr child = virJSONValueArrayGet(services, i);
+        if (!child) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing service data in JSON document"));
+            goto error;
+        }
+
+        if (!(service = virNetServerServiceNewPostExecRestart(child)))
+            goto error;
+
+        /* XXX mdns entry names ? */
+        if (virNetServerAddService(srv, service, NULL) < 0) {
+            virObjectUnref(service);
+            goto error;
+        }
+    }
+
+
+    if (!(clients = virJSONValueObjectGet(object, "clients"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing clients data in JSON document"));
+        goto error;
+    }
+
+    n =  virJSONValueArraySize(clients);
+    if (n < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Malformed clients data in JSON document"));
+        goto error;
+    }
+
+    for (i = 0 ; i < n ; i++) {
+        virNetServerClientPtr client;
+        virJSONValuePtr child = virJSONValueArrayGet(clients, i);
+        if (!child) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing client data in JSON document"));
+            goto error;
+        }
+
+        if (!(client = virNetServerClientNewPostExecRestart(child,
+                                                            clientPrivNewPostExecRestart,
+                                                            clientPrivPreExecRestart,
+                                                            clientPrivFree,
+                                                            clientPrivOpaque)))
+            goto error;
+
+        if (virNetServerAddClient(srv, client) < 0) {
+            virObjectUnref(client);
+            goto error;
+        }
+        virObjectUnref(client);
+    }
+
+    return srv;
+
+error:
+    virObjectUnref(srv);
+    return NULL;
+}
+
+
+virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv)
+{
+    virJSONValuePtr object;
+    virJSONValuePtr clients;
+    virJSONValuePtr services;
+    size_t i;
+
+    virMutexLock(&srv->lock);
+
+    if (!(object = virJSONValueNewObject()))
+        goto error;
+
+    if (virJSONValueObjectAppendNumberUint(object, "min_workers",
+                                           virThreadPoolGetMinWorkers(srv->workers)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot set min_workers data in JSON document"));
+        goto error;
+    }
+    if (virJSONValueObjectAppendNumberUint(object, "max_workers",
+                                           virThreadPoolGetMaxWorkers(srv->workers)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot set max_workers data in JSON document"));
+        goto error;
+    }
+    if (virJSONValueObjectAppendNumberUint(object, "priority_workers",
+                                           virThreadPoolGetPriorityWorkers(srv->workers)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot set priority_workers data in JSON document"));
+        goto error;
+    }
+    if (virJSONValueObjectAppendNumberUint(object, "max_clients", srv->nclients_max) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot set max_clients data in JSON document"));
+        goto error;
+    }
+    if (virJSONValueObjectAppendNumberUint(object, "keepaliveInterval", srv->keepaliveInterval) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot set keepaliveInterval data in JSON document"));
+        goto error;
+    }
+    if (virJSONValueObjectAppendNumberUint(object, "keepaliveCount", srv->keepaliveCount) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot set keepaliveCount data in JSON document"));
+        goto error;
+    }
+    if (virJSONValueObjectAppendBoolean(object, "keepaliveRequired", srv->keepaliveRequired) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot set keepaliveRequired data in JSON document"));
+        goto error;
+    }
+
+    if (srv->mdnsGroupName &&
+        virJSONValueObjectAppendString(object, "mdnsGroupName", srv->mdnsGroupName) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot set mdnsGroupName data in JSON document"));
+        goto error;
+    }
+
+    services = virJSONValueNewArray();
+    if (virJSONValueObjectAppend(object, "services", services) < 0) {
+        virJSONValueFree(services);
+        goto error;
+    }
+
+    for (i = 0 ; i < srv->nservices ; i++) {
+        virJSONValuePtr child;
+        if (!(child = virNetServerServicePreExecRestart(srv->services[i])))
+            goto error;
+
+        if (virJSONValueArrayAppend(services, child) < 0) {
+            virJSONValueFree(child);
+            goto error;
+        }
+    }
+
+    clients = virJSONValueNewArray();
+    if (virJSONValueObjectAppend(object, "clients", clients) < 0) {
+        virJSONValueFree(clients);
+        goto error;
+    }
+
+    for (i = 0 ; i < srv->nclients ; i++) {
+        virJSONValuePtr child;
+        if (!(child = virNetServerClientPreExecRestart(srv->clients[i])))
+            goto error;
+
+        if (virJSONValueArrayAppend(clients, child) < 0) {
+            virJSONValueFree(child);
+            goto error;
+        }
+    }
+
+    virMutexUnlock(&srv->lock);
+
+    return object;
+
+error:
+    virJSONValueFree(object);
+    virMutexUnlock(&srv->lock);
+    return NULL;
+}
+
+
 bool virNetServerIsPrivileged(virNetServerPtr srv)
 {
     bool priv;

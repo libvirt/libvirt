@@ -1568,6 +1568,8 @@ virNetServerClose;
 virNetServerIsPrivileged;
 virNetServerKeepAliveRequired;
 virNetServerNew;
+virNetServerNewPostExecRestart;
+virNetServerPreExecRestart;
 virNetServerQuit;
 virNetServerRun;
 virNetServerSetTLSContext;
