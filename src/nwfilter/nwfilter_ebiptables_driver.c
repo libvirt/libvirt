@@ -125,12 +125,18 @@ static const char ebiptables_script_func_rm_chains[] =
     "}\n";
 
 static const char ebiptables_script_func_rename_chains[] =
+    "rename_chain()\n"
+    "{\n"
+    "  $EBT -t nat -F $2\n"
+    "  $EBT -t nat -X $2\n"
+    "  $EBT -t nat -E $1 $2\n"
+    "}\n"
     "rename_chains()\n"
     "{\n"
     "  for tmp in $*; do\n"
     "    case $tmp in\n"
-    "      %c*) $EBT -t nat -E $tmp %c${tmp#?} ;;\n"
-    "      %c*) $EBT -t nat -E $tmp %c${tmp#?} ;;\n"
+    "      %c*) rename_chain $tmp %c${tmp#?} ;;\n"
+    "      %c*) rename_chain $tmp %c${tmp#?} ;;\n"
     "    esac\n"
     "  done\n"
     "}\n";
